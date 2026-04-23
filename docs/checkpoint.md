@@ -9,6 +9,8 @@
 
 - `docs/session-geolocalizzazione-e-mappa.md` — consuntivo completo, checkpoint storici, backlog. **I checkpoint “ufficiali” di sessione vanno aggiornati lì** (sezione in fondo); questo file è solo un indice corto per `@` in chat.
 - `docs/PROJECT_notes.md` — living document tecnico: overview repo, mappa sezioni del monolite, stack incorporato, stato feature, roadmap sintetica, comando Repomix.
+- `docs/roadmap.md` — **rev. 2** (2026-04-23). Strategic reference: vision, §3 Distribution Strategy, §4 Architectural Principles, §8 Out of Scope. Contiene la "Notice to AI Assistants" mirrorata in `.cursor/rules/00-project-core.mdc`.
+- `docs/cursor-workflow.md` — companion operativo della roadmap: quando @-menzionarla, come combinarla con le rules, pattern di uso in sessione.
 
 ## Cursor — Project Rules (`.cursor/rules/`)
 
@@ -16,12 +18,16 @@ Struttura attuale (efficienza token: core sempre attivo, HTML auto-attached, dom
 
 | File | Ruolo |
 |------|--------|
-| `00-project-core.mdc` | **Always** — vincoli assoluti, stile risposta (IT), patch non file interi; non modificare file fuori `.cursor/rules/` senza permesso esplicito. |
+| `00-project-core.mdc` | **Always** — vincoli assoluti, stile risposta (IT), patch non file interi; non modificare file fuori `.cursor/rules/` senza permesso esplicito. **Contiene Mirror notice + Rejected patterns (ref) + Disagreement protocol** allineati a `docs/roadmap.md` §Notice. |
 | `10-html-architecture.mdc` | **Auto** `*.html` — stato `state`, `coordconv_v1`, IDB, GPS opt-in, offline tile, `skipHistory`, i18n `data-i18n` vs `data-i18n-html`, idempotenza/cleanup. |
 | `20-domain-knowledge.mdc` | **Agent Requested** — CRS/datum extra, DTG, geocoding Nominatim/OPSEC, tile pack/coverage, track, export, misura on-map. |
 | `99-known-state.mdc` | **Manual** (`@99-known-state`) — solo invarianti “non rompere queste cose”. |
 
 **Rimosso:** `regole.mdc` (contenuto ripartito nei file sopra, per evitare duplicazione `alwaysApply`).
+
+## Relazione mirror roadmap ↔ rules
+
+`docs/roadmap.md` (sezione "Notice to AI Assistants") e `.cursor/rules/00-project-core.mdc` (sezioni Mirror notice / Rejected patterns / Disagreement protocol) contengono **contenuto duplicato per design**. Quando si modifica uno, aggiornare l'altro nella stessa operazione. La roadmap resta la sorgente autoritativa per la lista Rejected patterns estesa; le rules contengono il principio + esempi principali.
 
 ## Invarianti da non rompere (sintesi)
 
