@@ -1,0 +1,45 @@
+---
+description: "Implementation constraints for the single-file HTML app (state, storage, UI patterns). Auto-attached when working on HTML."
+globs: "*.html"
+alwaysApply: false
+---
+
+# Coordinate Converter — HTML Architecture Guardrails
+
+## Canonical file / scope
+- The canonical app lives in a **single** HTML file (currently: `coordinate_converter Claude.html`).
+- Keep changes surgical and consistent with the existing patterns in that file.
+
+## State, persistence, and invariants
+- Centralized app state object: `state`.
+- Persistence via localStorage key: `coordconv_v1`.
+- IndexedDB is used for offline map tile pack and some geo caches.
+- On load, persisted data must be **sanitized/clamped** (numbers, string length, arrays caps). Do not trust localStorage content.
+
+## Map + offline behavior
+- The mini-map must be usable even with no active conversion:
+  - Default startup center is **La Spezia** fallback (no silent GPS at startup).
+- Offline behavior:
+  - When effectively offline, prefer rendering cached tiles from IndexedDB and show placeholders for missing tiles.
+  - Do not introduce an automatic “online fallback” that defeats the user’s offline/OPSEC choices.
+
+## Geolocation UX (opt-in only)
+- Geolocation must be **explicit opt-in** via UI actions (no automatic `getCurrentPosition()` on page load).
+- Respect secure context constraints (`window.isSecureContext`): if not secure, disable geo UI and explain why.
+- Live tracking uses `watchPosition` and must be stoppable; avoid spamming history during live ticks.
+
+## Rendering and history
+- `renderResults(lat, lon, meta, opts)` supports an option like `{ skipHistory: true }` used for:
+  - live tracking updates after the first fix
+  - language re-apply / UI rerender that must not duplicate history
+
+## i18n
+- i18n dictionary exists inline (IT/EN/FR).
+- There is both:
+  - `data-i18n` → updates via `textContent` (default, safe)
+  - `data-i18n-html` → updates via `innerHTML` (only for explicitly allowed rich-text help content)
+- Do not expand `innerHTML` usage beyond the intended rich-text areas.
+
+## Event handlers / cleanup
+- Handlers for map tools (bbox draw, draggable panels, pick modes) are designed to be **idempotent** (install once) and provide explicit cleanup on cancel/Esc.
+- Do not add listeners in hot paths without a cleanup plan.

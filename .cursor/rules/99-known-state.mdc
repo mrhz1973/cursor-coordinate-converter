@@ -1,0 +1,28 @@
+---
+description: "Manual snapshot of current implemented features + non-obvious invariants. Include only when you need full alignment (e.g., big refactors, regression triage)."
+alwaysApply: false
+---
+
+# Coordinate Converter — Known State (Manual)
+
+Use this rule only when a task risks regressions or needs full context alignment.
+
+## Canonical & constraints
+- Canonical file: `coordinate_converter Claude.html` (single-file app).
+- Offline-first, OPSEC-aware. No silent network calls. No frameworks/build step.
+
+## “Do not break these” invariants
+- No silent geolocation at startup (permission UX + OPSEC).
+- Geolocation works only in secure context; UI must reflect this.
+- Live tracking must not spam history (`renderResults(..., { skipHistory:true })` for ticks).
+- When offline, prefer IndexedDB cached tiles + placeholders; do not add auto-online fallbacks.
+- Named areas may be legacy (missing `z0/z1`) and must keep working.
+- OPSEC strict mode (`state.opsecStrict`) must block external geocoding fetches.
+- i18n:
+  - `data-i18n` → `textContent` default
+  - `data-i18n-html` → `innerHTML` only for explicit rich-text help strings
+- Persisted storage must be sanitized/clamped on load (localStorage can be corrupted).
+- Event handlers for tool modes should be idempotent + cleaned up on cancel/Esc.
+
+## Known pitfalls to avoid
+- Avoid expanding `innerHTML` surfaces beyond the intended i18n help blocks.

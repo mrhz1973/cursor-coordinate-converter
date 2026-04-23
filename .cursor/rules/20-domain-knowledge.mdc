@@ -1,0 +1,63 @@
+---
+description: "REQUEST THIS RULE if the task involves: CRS/datum conversions (UTM/MGRS/PlusCodes/Italian datums + extra datums), DTG NATO, geocoding (Nominatim + OPSEC strict + offline fallback), offline tile packs/coverage overlay/IndexedDB, track builder, import/export (GPX/KML/GeoJSON/CSV), or map measurement tools."
+alwaysApply: false
+---
+
+# Coordinate Converter — Domain Knowledge (On Demand)
+
+## Coordinate / GIS domain
+- App is a lightweight GIS tool: parsing + conversions + mini-map + tools.
+- Coordinate formats include: WGS84 (DD/DDM/DMS), UTM, MGRS, Plus Codes.
+- There are Italian datums and additional datum support introduced later (see below).
+
+## Datum / CRS additions (implemented)
+- Extra datum section exists in results (collapsible):
+  - NAD27 / NAD83 / OSGB36 / CH1903 / SK42 (as implemented in the HTML).
+- Auto-detect extended for:
+  - BNG (British National Grid)
+  - SK42 Gauss–Krüger
+- Export toggle exists to include datum extras as metadata/extensions in GPX/KML/GeoJSON.
+
+## DTG NATO (Date-Time Group)
+- Full support for DTG format: `DDHHMMZMMMYY` (e.g. `211630ZAPR26`).
+- Parsing/formatting is implemented without external deps; `J` timezone letter is intentionally rejected.
+- Keyboard shortcuts prefer `Alt+T` / `Alt+Shift+T` due to browser conflicts with `Ctrl+T`.
+- DTG is stored as **Zulu** in history/favorites/exports to avoid ambiguity.
+
+## Geocoding (OPSEC-aware)
+- Forward geocoding and reverse geocoding exist, using Nominatim.
+- Strict/OPSEC mode exists (`state.opsecStrict`): must block any external fetch.
+- Defensive UX patterns:
+  - geocode UI is closed by default; opening implies consent to read the disclaimer
+  - no silent exfiltration: non-coordinate paste prompts explicit `confirm()` before searching online
+- Resilience:
+  - client-side rate limiting (≈ 1 request / second)
+  - retry with backoff
+  - circuit breaker (temporary lockout after repeated failures)
+- Offline fallback exists via a small built-in cities dataset + optional user-imported JSON stored in IDB.
+
+## Offline map tiles / coverage overlay
+- IndexedDB tile pack exists; when offline, the mini-map renders cached tiles and uses placeholders for missing tiles.
+- Coverage overlay exists:
+  - per-tile green tint when tile is served from IDB cache
+  - named areas overlay rectangles with zoom-range signaling
+- Named areas include bbox + optional zoom range `z0..z1` (legacy entries without `z0/z1` must keep working).
+- Offline panel can dock/floating depending on map size; it can be draggable in full mode.
+- Deleting a named area can optionally delete tiles from IDB (supports wiping both map layers if layer is not tracked per pack).
+
+## Tools drawer / navigation hub
+- Tools drawer is a navigation hub: it scrolls to existing `<details>` tool sections in `<main>` and flashes/highlights them.
+- Do not refactor it into a “workspace drawer”; keep main sections in the DOM.
+
+## Track builder
+- Track builder exists with:
+  - add current result, click map pick mode, paste list, import GPX/KML/GeoJSON
+  - export GPX/KML/GeoJSON/CSV
+- `Esc` exits pick modes before doing global clear actions.
+
+## Map measurement
+- On-map measurement supports:
+  - line (distance + azimuth)
+  - polygon (perimeter + area)
+  - drag handles + right-click delete
+  - units (m/km/nm/mi/ft) persisted in storage
