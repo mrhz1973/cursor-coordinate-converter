@@ -742,7 +742,7 @@ html[data-theme="light"] .geo-warn{color:#991b1b}
 .locality-row .loc-text{
   flex:1 1 auto; min-width:0;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-  color:var(--fg); font-weight:600;
+  color:var(--text); font-weight:600;
   max-width:46ch;
 }
 .locality-row .loc-empty{color:var(--muted); font-style:italic; font-weight:normal}
@@ -2950,7 +2950,7 @@ body.mm-enlarged .sig-badge{display:none}
 
 /* ================= TRACK BUILDER (new tool) =================
  * Creates a multi-point track by pasting coordinates, clicking the
- * mini-map, or importing GPX/KML/GeoJSON. Shows an ordered list of
+ * mini-map, or importing GPX/KML/KMZ/GeoJSON. Shows an ordered list of
  * points with drag-and-drop reorder, per-leg distance/bearing, total
  * distance, ETA walking, and polyline overlay on the mini-map.
  */
@@ -3395,6 +3395,21 @@ body.gis-mode > main > #printReport{
   width:100% !important; height:100% !important;
 }
 
+/* GIS hub: keep mm-full for enlarged control metrics, but do NOT use the
+ * classic "viewport-fixed" map layer (z-index:9000). That layer stacks above
+ * header <select> menus, #appTopbar, tab drawer (30), help/tools modals, etc. */
+body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  max-width:none;
+  z-index:0;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+}
+
 /* Tab drawer: right-side panel, slides in when a tab is active.
  * Uses a CSS transform so animations stay on the compositor. */
 .tab-drawer{
@@ -3745,7 +3760,7 @@ dialog.app-modal::backdrop{
   <!-- ============ AUTOMATIC INPUT (paste / detect) ============ -->
   <section class="paste-section" id="pasteSection" data-i18n-drop="paste.dropMsg" data-drop-msg="Rilascia il file per importare">
     <label class="title" data-i18n="paste.title">Input automatico</label>
-    <div class="hint" data-i18n="paste.hint">Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato. Puoi anche trascinare qui un file GPX/KML/GeoJSON.</div>
+    <div class="hint" data-i18n="paste.hint">Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato. Puoi anche trascinare qui un file GPX/KML/KMZ/GeoJSON.</div>
     <div class="paste-row">
       <textarea id="pasteInput" data-i18n-ph="paste.placeholder" placeholder="es. 5°15'34.0&quot;N 4°02'38.1&quot;W  ·  33T2919524640699  ·  30NUL8431881439"></textarea>
       <div class="paste-actions-col">
@@ -3956,7 +3971,9 @@ dialog.app-modal::backdrop{
           <button id="btnFavSaveQuick" class="btn btn-sm" data-i18n-tip="tip.favAdd">★</button>
           <button id="btnExportGpx" class="btn btn-sm" data-i18n="export.gpx" data-i18n-tip="tip.exportGpx">GPX</button>
           <button id="btnExportKml" class="btn btn-sm" data-i18n="export.kml" data-i18n-tip="tip.exportKml">KML</button>
+          <button id="btnExportKmz" class="btn btn-sm" data-i18n="export.kmz" data-i18n-tip="tip.exportKmz">KMZ</button>
           <button id="btnExportGeoJson" class="btn btn-sm" data-i18n="export.geojson" data-i18n-tip="tip.exportGeoJson">GeoJSON</button>
+          <button id="btnExportCsv" class="btn btn-sm" data-i18n="export.csv" data-i18n-tip="tip.exportCsv">CSV</button>
           <label class="persist-toggle" style="margin-left:auto">
             <input type="checkbox" id="exportDatumExtrasToggle">
             <span data-i18n="export.datumExtras">Includi datum extra</span>
@@ -4065,11 +4082,15 @@ dialog.app-modal::backdrop{
           <span class="export-group-label" data-i18n="batch.wpLabel">Waypoint:</span>
           <button id="btnBatchGpx" class="btn btn-sm" data-i18n="batch.gpx" data-i18n-tip="tip.batchGpx">GPX</button>
           <button id="btnBatchKml" class="btn btn-sm" data-i18n="batch.kml" data-i18n-tip="tip.batchKml">KML</button>
+          <button id="btnBatchKmz" class="btn btn-sm" data-i18n="batch.kmz" data-i18n-tip="tip.batchKmz">KMZ</button>
           <button id="btnBatchGeoJson" class="btn btn-sm" data-i18n="batch.geojson" data-i18n-tip="tip.batchGeoJson">GeoJSON</button>
+          <button id="btnBatchExportCsv" class="btn btn-sm" data-i18n="batch.exportCsv" data-i18n-tip="tip.batchExportCsv">CSV</button>
           <span class="export-group-label" data-i18n="batch.rtLabel">Rotta:</span>
           <button id="btnRouteGpx" class="btn btn-sm" data-i18n="batch.rtGpx" data-i18n-tip="tip.routeGpx">GPX</button>
           <button id="btnRouteKml" class="btn btn-sm" data-i18n="batch.rtKml" data-i18n-tip="tip.routeKml">KML</button>
+          <button id="btnRouteKmz" class="btn btn-sm" data-i18n="batch.rtKmz" data-i18n-tip="tip.routeKmz">KMZ</button>
           <button id="btnRouteGeoJson" class="btn btn-sm" data-i18n="batch.rtGeoJson" data-i18n-tip="tip.routeGeoJson">GeoJSON</button>
+          <button id="btnRouteCsv" class="btn btn-sm" data-i18n="batch.rtCsv" data-i18n-tip="tip.routeCsv">CSV</button>
           <button id="btnBatchImport" class="btn btn-sm" data-i18n="batch.import" data-i18n-tip="tip.batchImport">Importa file…</button>
           <input type="file" id="batchFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
         </div>
@@ -4089,12 +4110,12 @@ dialog.app-modal::backdrop{
     <details id="sec-track" data-tab-key="track">
       <summary data-i18n="sec.track">📍 Traccia a punti</summary>
       <div class="section-body track-builder">
-        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.hint">Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/GeoJSON. Esporta la traccia in qualsiasi formato.</p>
+        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.hint">Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/KMZ/GeoJSON. Esporta la traccia in qualsiasi formato.</p>
         <div class="track-toolbar">
           <button type="button" id="btnTrackAddCurrent" class="btn btn-sm btn-primary" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
           <button type="button" id="btnTrackPickMap" class="btn btn-sm" data-i18n="track.pickMap" data-i18n-tip="tip.trackPickMap">🖱️ Aggiungi cliccando mappa</button>
           <button type="button" id="btnTrackPaste" class="btn btn-sm" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
-          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">📥 Importa GPX/KML/GeoJSON…</button>
+          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">📥 Importa GPX/KML/KMZ/GeoJSON…</button>
           <input type="file" id="trackFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
           <span class="sep"></span>
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
@@ -4119,6 +4140,7 @@ dialog.app-modal::backdrop{
           <span class="export-group-label" data-i18n="track.exportLabel">Esporta traccia:</span>
           <button type="button" id="btnTrackExportGpx" class="btn btn-sm" data-i18n="track.expGpx" data-i18n-tip="tip.trackExpGpx">GPX (track)</button>
           <button type="button" id="btnTrackExportKml" class="btn btn-sm" data-i18n="track.expKml" data-i18n-tip="tip.trackExpKml">KML</button>
+          <button type="button" id="btnTrackExportKmz" class="btn btn-sm" data-i18n="track.expKmz" data-i18n-tip="tip.trackExpKmz">KMZ</button>
           <button type="button" id="btnTrackExportGeoJson" class="btn btn-sm" data-i18n="track.expGeoJson" data-i18n-tip="tip.trackExpGeoJson">GeoJSON</button>
           <button type="button" id="btnTrackExportCsv" class="btn btn-sm" data-i18n="track.expCsv" data-i18n-tip="tip.trackExpCsv">CSV</button>
           <button type="button" id="btnTrackExportWkt" class="btn btn-sm" data-i18n="track.expWkt" data-i18n-tip="tip.trackExpWkt">WKT</button>
@@ -4480,7 +4502,7 @@ dialog.app-modal::backdrop{
         <span class="tool-label">
           <span data-i18n="tools.track">Traccia a punti</span>
           <span class="tool-badge" data-i18n="tools.new">NEW</span>
-          <span class="tool-desc" data-i18n="tools.track.desc">Crea polyline/poligono con N punti, esporta GPX/KML/GeoJSON.</span>
+          <span class="tool-desc" data-i18n="tools.track.desc">Crea polyline/poligono con N punti, esporta GPX/KML/KMZ/GeoJSON/CSV.</span>
         </span>
       </button>
       <button type="button" class="tool-item" data-tool-target-sec="sec.batch">
@@ -4623,7 +4645,7 @@ dialog.app-modal::backdrop{
         <ul>
           <li data-i18n-html="help.guide.share.link"><b>Copia link</b>: URL con la coordinata codificata, funziona offline.</li>
           <li data-i18n-html="help.guide.share.qr"><b>QR code</b>: apre il punto su Google/Apple Maps dallo smartphone.</li>
-          <li data-i18n-html="help.guide.share.export">Esporta punti/tracce in <b>GPX</b>, <b>KML</b>, <b>GeoJSON</b>, <b>CSV</b>.</li>
+          <li data-i18n-html="help.guide.share.export">Esporta punti/tracce in <b>GPX</b>, <b>KML</b>, <b>KMZ</b>, <b>GeoJSON</b>, <b>CSV</b>.</li>
         </ul>
       </div>
 
@@ -4655,7 +4677,7 @@ dialog.app-modal::backdrop{
         <tr><td><kbd>P</kbd></td><td data-i18n="help.kbd.print">Stampa i risultati</td></tr>
       </tbody>
     </table>
-    <p style="margin-top:14px" data-i18n="help.other">Altre funzioni utili: trascina qui un file GPX/KML/GeoJSON per importare automaticamente; usa "Copia link" per condividere la conversione corrente.</p>
+    <p style="margin-top:14px" data-i18n="help.other">Altre funzioni utili: trascina qui un file GPX/KML/KMZ/GeoJSON per importare automaticamente; usa "Copia link" per condividere la conversione corrente.</p>
     <hr class="sub-sep">
     <div class="sub-section-title" data-i18n="persist.title">Dati locali</div>
     <p class="sub-section-hint" data-i18n="persist.desc">Cronologia, favoriti e preferenze sono salvati solo nel tuo browser (localStorage). Non vengono mai inviati online.</p>
@@ -4763,7 +4785,7 @@ const I18N = {
     "tools.grp.info":"Info del punto",
     "tools.grp.archive":"Archivio",
     "tools.track":"Traccia a punti",
-    "tools.track.desc":"Crea polyline/poligono con N punti, esporta GPX/KML/GeoJSON.",
+    "tools.track.desc":"Crea polyline/poligono con N punti, esporta GPX/KML/KMZ/GeoJSON/CSV.",
     "tools.batch":"Batch — lista di coordinate",
     "tools.batch.desc":"Converti molte coordinate in blocco; importa/esporta file.",
     "tools.fav":"Favoriti",
@@ -4777,7 +4799,7 @@ const I18N = {
     "tools.session":"Sessione (import / export JSON)",
     "tools.session.desc":"Backup di favoriti, cronologia, impostazioni.",
     "sec.track":"📍 Traccia a punti",
-    "track.hint":"Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/GeoJSON. Esporta la traccia in qualsiasi formato.",
+    "track.hint":"Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/KMZ/GeoJSON. Esporta la traccia in qualsiasi formato.",
     "track.addCurrent":"➕ Aggiungi punto convertito",
     "track.pickMap":"🖱️ Aggiungi cliccando mappa",
     "track.pickMapHint":"Modalità click-su-mappa attiva. Clicca per aggiungere un punto. ESC per uscire.",
@@ -4866,6 +4888,7 @@ const I18N = {
     "track.exportLabel":"Esporta traccia:",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
+    "track.expKmz":"KMZ",
     "track.expGeoJson":"GeoJSON",
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
@@ -4897,6 +4920,7 @@ const I18N = {
     "tip.trackClear":"Rimuove tutti i punti dalla traccia corrente.",
     "tip.trackExpGpx":"Scarica la traccia come file GPX (elemento <trk>).",
     "tip.trackExpKml":"Scarica la traccia come file KML (LineString o Polygon se chiusa).",
+    "tip.trackExpKmz":"Scarica la traccia come KMZ (KML zippato).",
     "tip.trackExpGeoJson":"Scarica la traccia come FeatureCollection GeoJSON.",
     "tip.trackExpCsv":"Scarica la lista punti come CSV.",
     "tip.trackExpWkt":"Esporta geometrie come testo WKT (una riga per feature).",
@@ -5133,15 +5157,17 @@ const I18N = {
     "tip.measure":"Calcola distanza geodetica e azimuth tra i due punti",
     "tip.histClear":"Svuota la cronologia di sessione",
     "tip.histReload":"Ricarica questo punto nei risultati",
-    "paste.dropMsg":"Rilascia il file per importare (GPX · KML · GeoJSON · CSV)",
+    "paste.dropMsg":"Rilascia il file per importare (GPX · KML · KMZ · GeoJSON · CSV)",
     "paste.chip.ll":"Lat/Lon","paste.chip.utm":"UTM","paste.chip.mgrs":"MGRS",
     "btn.copyLink":"Copia link","btn.linkCopied":"Link copiato",
-    "export.gpx":"GPX","export.kml":"KML","export.geojson":"GeoJSON",
+    "export.gpx":"GPX","export.kml":"KML","export.kmz":"KMZ","export.geojson":"GeoJSON","export.csv":"CSV",
     "export.datumExtras":"Includi datum extra",
     "tip.copyLink":"Copia un link condivisibile a questa conversione",
     "tip.exportGpx":"Scarica il punto come file GPX (Garmin, GPS)",
     "tip.exportKml":"Scarica il punto come file KML (Google Earth)",
+    "tip.exportKmz":"Scarica il punto come KMZ (Google Earth)",
     "tip.exportGeoJson":"Scarica il punto come file GeoJSON (GIS)",
+    "tip.exportCsv":"Scarica il punto come CSV",
     "tip.help":"Mostra scorciatoie da tastiera (?)",
     "tip.print":"Stampa o salva i risultati come PDF (P)",
     "meas.inverse":"Distanza e azimuth tra due punti",
@@ -5153,11 +5179,13 @@ const I18N = {
     "meas.computeDirect":"Calcola destinazione",
     "meas.destPoint":"Destinazione","meas.destBearingFinal":"Azimuth finale (inverso)",
     "tip.direct":"Proietta il punto iniziale in base a distanza e azimuth",
-    "batch.gpx":"GPX","batch.kml":"KML","batch.geojson":"GeoJSON","batch.import":"Importa file…",
+    "batch.gpx":"GPX","batch.kml":"KML","batch.kmz":"KMZ","batch.geojson":"GeoJSON","batch.exportCsv":"CSV","batch.import":"Importa file…",
     "tip.batchGpx":"Scarica la lista come GPX (waypoint)",
     "tip.batchKml":"Scarica la lista come KML (placemark)",
+    "tip.batchKmz":"Scarica la lista come KMZ (placemark)",
     "tip.batchGeoJson":"Scarica la lista come GeoJSON (FeatureCollection)",
-    "tip.batchImport":"Importa coordinate da un file GPX/KML/GeoJSON/CSV",
+    "tip.batchExportCsv":"Scarica la lista waypoint come CSV",
+    "tip.batchImport":"Importa coordinate da un file GPX/KML/KMZ/GeoJSON/CSV",
     "help.title":"Guida rapida & scorciatoie",
     "help.intro":"Una panoramica veloce delle funzioni principali. In fondo trovi tutte le scorciatoie da tastiera.",
     "help.guide.title":"Mini-guida",
@@ -5181,7 +5209,7 @@ const I18N = {
     "help.guide.share.title":"Condividere & esportare",
     "help.guide.share.link":"<b>Copia link</b>: URL con la coordinata codificata, funziona offline.",
     "help.guide.share.qr":"<b>QR code</b>: apre il punto su Google/Apple Maps dallo smartphone.",
-    "help.guide.share.export":"Esporta punti/tracce in <b>GPX</b>, <b>KML</b>, <b>GeoJSON</b>, <b>CSV</b>.",
+    "help.guide.share.export":"Esporta punti/tracce in <b>GPX</b>, <b>KML</b>, <b>KMZ</b>, <b>GeoJSON</b>, <b>CSV</b>.",
     "help.guide.import.title":"Importare file",
     "help.guide.import.body":"Trascina un file <code>.gpx</code> / <code>.kml</code> / <code>.geojson</code> / <code>.csv</code> ovunque sulla pagina: i punti vengono rilevati automaticamente e caricati nel Track o nel Batch.",
     "help.guide.privacy.title":"Privacy & offline",
@@ -5195,7 +5223,7 @@ const I18N = {
     "help.kbd.esc":"Pulisci campi e risultati (o chiudi questa finestra)",
     "help.kbd.help":"Apri questa finestra",
     "help.kbd.print":"Stampa i risultati",
-    "help.other":"Altre funzioni utili: trascina qui un file GPX/KML/GeoJSON per importare; usa \"Copia link\" per condividere la conversione corrente.",
+    "help.other":"Altre funzioni utili: trascina qui un file GPX/KML/KMZ/GeoJSON per importare; usa \"Copia link\" per condividere la conversione corrente.",
     "err.importFailed":"Impossibile importare il file. Formato non riconosciuto.",
     "err.importEmpty":"Il file non contiene coordinate valide.",
     "err.distance":"Distanza non valida (numero positivo richiesto).",
@@ -5326,10 +5354,14 @@ const I18N = {
     "batch.rtLabel":"Rotta:",
     "batch.rtGpx":"GPX",
     "batch.rtKml":"KML",
+    "batch.rtKmz":"KMZ",
     "batch.rtGeoJson":"GeoJSON",
+    "batch.rtCsv":"CSV",
     "tip.routeGpx":"Esporta la lista come traccia GPX (aperta o chiusa in base al toggle qui sotto)",
     "tip.routeKml":"Esporta come KML LineString (aperta) o Polygon (chiusa)",
+    "tip.routeKmz":"Esporta come KMZ LineString o Polygon",
     "tip.routeGeoJson":"Esporta come GeoJSON LineString o Polygon + waypoint",
+    "tip.routeCsv":"Esporta la sequenza della rotta come CSV",
     "err.routeNeed2":"Servono almeno 2 punti validi nel batch per esportare la rotta.",
     "btn.qr":"QR",
     "tip.qr":"Mostra un QR Code da scansionare con lo smartphone (apre il punto in Google Maps / Apple Maps)",
@@ -5444,7 +5476,7 @@ const I18N = {
     "tools.grp.info":"Point info",
     "tools.grp.archive":"Archive",
     "tools.track":"Track from points",
-    "tools.track.desc":"Build a polyline/polygon from N points; export GPX/KML/GeoJSON.",
+    "tools.track.desc":"Build a polyline/polygon from N points; export GPX/KML/KMZ/GeoJSON/CSV.",
     "tools.batch":"Batch — coordinate list",
     "tools.batch.desc":"Convert many coordinates at once; import/export files.",
     "tools.fav":"Favorites",
@@ -5458,7 +5490,7 @@ const I18N = {
     "tools.session":"Session (JSON import / export)",
     "tools.session.desc":"Backup of favorites, history, settings.",
     "sec.track":"📍 Track from points",
-    "track.hint":"Build a track (polyline or polygon) by adding points one at a time: from Automatic input, by clicking the mini-map, from a list, or by importing GPX/KML/GeoJSON. Export the track in any format.",
+    "track.hint":"Build a track (polyline or polygon) by adding points one at a time: from Automatic input, by clicking the mini-map, from a list, or by importing GPX/KML/KMZ/GeoJSON. Export the track in any format.",
     "track.addCurrent":"➕ Add converted point",
     "track.pickMap":"🖱️ Click map to add",
     "track.pickMapHint":"Click-to-add mode active. Click the map to add a point. ESC to exit.",
@@ -5547,6 +5579,7 @@ const I18N = {
     "track.exportLabel":"Export track:",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
+    "track.expKmz":"KMZ",
     "track.expGeoJson":"GeoJSON",
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
@@ -5578,6 +5611,7 @@ const I18N = {
     "tip.trackClear":"Remove all points from the current track.",
     "tip.trackExpGpx":"Download the track as a GPX file (<trk> element).",
     "tip.trackExpKml":"Download the track as a KML file (LineString or Polygon if closed).",
+    "tip.trackExpKmz":"Download the track as KMZ (zipped KML).",
     "tip.trackExpGeoJson":"Download the track as a GeoJSON FeatureCollection.",
     "tip.trackExpCsv":"Download the point list as CSV.",
     "tip.trackExpWkt":"Export geometries as WKT text (one line per feature).",
@@ -5813,15 +5847,17 @@ const I18N = {
     "tip.measure":"Compute geodesic distance and bearing between the two points",
     "tip.histClear":"Clear session history",
     "tip.histReload":"Reload this point into results",
-    "paste.dropMsg":"Drop the file to import (GPX · KML · GeoJSON · CSV)",
+    "paste.dropMsg":"Drop the file to import (GPX · KML · KMZ · GeoJSON · CSV)",
     "paste.chip.ll":"Lat/Lon","paste.chip.utm":"UTM","paste.chip.mgrs":"MGRS",
     "btn.copyLink":"Copy link","btn.linkCopied":"Link copied",
-    "export.gpx":"GPX","export.kml":"KML","export.geojson":"GeoJSON",
+    "export.gpx":"GPX","export.kml":"KML","export.kmz":"KMZ","export.geojson":"GeoJSON","export.csv":"CSV",
     "export.datumExtras":"Include extra datums",
     "tip.copyLink":"Copy a shareable link to this conversion",
     "tip.exportGpx":"Download the point as GPX (Garmin, GPS)",
     "tip.exportKml":"Download the point as KML (Google Earth)",
+    "tip.exportKmz":"Download the point as KMZ (Google Earth)",
     "tip.exportGeoJson":"Download the point as GeoJSON (GIS)",
+    "tip.exportCsv":"Download the point as CSV",
     "tip.help":"Show keyboard shortcuts (?)",
     "tip.print":"Print or save results as PDF (P)",
     "meas.inverse":"Distance and bearing between two points",
@@ -5833,11 +5869,13 @@ const I18N = {
     "meas.computeDirect":"Compute destination",
     "meas.destPoint":"Destination","meas.destBearingFinal":"Final bearing (reverse)",
     "tip.direct":"Project the origin point by distance and bearing",
-    "batch.gpx":"GPX","batch.kml":"KML","batch.geojson":"GeoJSON","batch.import":"Import file…",
+    "batch.gpx":"GPX","batch.kml":"KML","batch.kmz":"KMZ","batch.geojson":"GeoJSON","batch.exportCsv":"CSV","batch.import":"Import file…",
     "tip.batchGpx":"Download the list as GPX (waypoints)",
     "tip.batchKml":"Download the list as KML (placemarks)",
+    "tip.batchKmz":"Download the list as KMZ (placemarks)",
     "tip.batchGeoJson":"Download the list as GeoJSON (FeatureCollection)",
-    "tip.batchImport":"Import coordinates from a GPX/KML/GeoJSON/CSV file",
+    "tip.batchExportCsv":"Download the waypoint list as CSV",
+    "tip.batchImport":"Import coordinates from a GPX/KML/KMZ/GeoJSON/CSV file",
     "help.title":"Shortcuts and tips",
     "help.intro":"A quick overview of the main features. Keyboard shortcuts at the bottom.",
     "help.guide.title":"Mini-guide",
@@ -5861,7 +5899,7 @@ const I18N = {
     "help.guide.share.title":"Share & export",
     "help.guide.share.link":"<b>Copy link</b>: URL with the coordinate encoded, works offline.",
     "help.guide.share.qr":"<b>QR code</b>: opens the point in Google/Apple Maps from your phone.",
-    "help.guide.share.export":"Export points/tracks to <b>GPX</b>, <b>KML</b>, <b>GeoJSON</b>, <b>CSV</b>.",
+    "help.guide.share.export":"Export points/tracks to <b>GPX</b>, <b>KML</b>, <b>KMZ</b>, <b>GeoJSON</b>, <b>CSV</b>.",
     "help.guide.import.title":"Import files",
     "help.guide.import.body":"Drop a <code>.gpx</code> / <code>.kml</code> / <code>.geojson</code> / <code>.csv</code> file anywhere on the page: points are auto-detected and loaded into Track or Batch.",
     "help.guide.privacy.title":"Privacy & offline",
@@ -5875,7 +5913,7 @@ const I18N = {
     "help.kbd.esc":"Clear fields and results (or close this window)",
     "help.kbd.help":"Open this window",
     "help.kbd.print":"Print results",
-    "help.other":"Other useful functions: drag a GPX/KML/GeoJSON file here to import; use \"Copy link\" to share the current conversion.",
+    "help.other":"Other useful functions: drag a GPX/KML/KMZ/GeoJSON file here to import; use \"Copy link\" to share the current conversion.",
     "err.importFailed":"Could not import the file. Unrecognized format.",
     "err.importEmpty":"The file contains no valid coordinates.",
     "err.distance":"Invalid distance (positive number required).",
@@ -6007,10 +6045,14 @@ const I18N = {
     "batch.rtLabel":"Route:",
     "batch.rtGpx":"GPX",
     "batch.rtKml":"KML",
+    "batch.rtKmz":"KMZ",
     "batch.rtGeoJson":"GeoJSON",
+    "batch.rtCsv":"CSV",
     "tip.routeGpx":"Export the list as a GPX track (open or closed based on the toggle below)",
     "tip.routeKml":"Export as KML LineString (open) or Polygon (closed)",
+    "tip.routeKmz":"Export as KMZ LineString or Polygon",
     "tip.routeGeoJson":"Export as GeoJSON LineString or Polygon + waypoints",
+    "tip.routeCsv":"Export the route sequence as CSV",
     "err.routeNeed2":"Need at least 2 valid points in the batch to export the route.",
     "btn.qr":"QR",
     "tip.qr":"Show a QR code to scan with your phone (opens the point in Google Maps / Apple Maps)",
@@ -6125,7 +6167,7 @@ const I18N = {
     "tools.grp.info":"Infos du point",
     "tools.grp.archive":"Archivage",
     "tools.track":"Trace à partir de points",
-    "tools.track.desc":"Construire une polyligne/polygone avec N points ; exporter GPX/KML/GeoJSON.",
+    "tools.track.desc":"Construire une polyligne/polygone avec N points ; exporter GPX/KML/KMZ/GeoJSON/CSV.",
     "tools.batch":"Batch — liste de coordonnées",
     "tools.batch.desc":"Convertir des coordonnées en lot ; importer/exporter des fichiers.",
     "tools.fav":"Favoris",
@@ -6139,7 +6181,7 @@ const I18N = {
     "tools.session":"Session (import / export JSON)",
     "tools.session.desc":"Sauvegarde des favoris, historique, paramètres.",
     "sec.track":"📍 Trace à partir de points",
-    "track.hint":"Construisez une trace (polyligne ou polygone) en ajoutant des points un par un : depuis Saisie automatique, en cliquant sur la mini-carte, depuis une liste, ou en important GPX/KML/GeoJSON. Exportez la trace dans n'importe quel format.",
+    "track.hint":"Construisez une trace (polyligne ou polygone) en ajoutant des points un par un : depuis Saisie automatique, en cliquant sur la mini-carte, depuis une liste, ou en important GPX/KML/KMZ/GeoJSON. Exportez la trace dans n'importe quel format.",
     "track.addCurrent":"➕ Ajouter le point converti",
     "track.pickMap":"🖱️ Ajouter en cliquant la carte",
     "track.pickMapHint":"Mode clic-pour-ajouter actif. Cliquez sur la carte pour ajouter un point. ÉCHAP pour sortir.",
@@ -6228,6 +6270,7 @@ const I18N = {
     "track.exportLabel":"Exporter la trace :",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
+    "track.expKmz":"KMZ",
     "track.expGeoJson":"GeoJSON",
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
@@ -6259,6 +6302,7 @@ const I18N = {
     "tip.trackClear":"Supprime tous les points de la trace actuelle.",
     "tip.trackExpGpx":"Télécharger la trace en fichier GPX (élément <trk>).",
     "tip.trackExpKml":"Télécharger la trace en fichier KML (LineString ou Polygon si fermée).",
+    "tip.trackExpKmz":"Télécharger la trace en KMZ (KML zippé).",
     "tip.trackExpGeoJson":"Télécharger la trace en FeatureCollection GeoJSON.",
     "tip.trackExpCsv":"Télécharger la liste des points en CSV.",
     "tip.trackExpWkt":"Exporter les géométries en WKT (une ligne par entité).",
@@ -6494,15 +6538,17 @@ const I18N = {
     "tip.measure":"Calculer la distance géodésique et l'azimut entre les deux points",
     "tip.histClear":"Effacer l'historique de session",
     "tip.histReload":"Recharger ce point dans les résultats",
-    "paste.dropMsg":"Déposez le fichier pour importer (GPX · KML · GeoJSON · CSV)",
+    "paste.dropMsg":"Déposez le fichier pour importer (GPX · KML · KMZ · GeoJSON · CSV)",
     "paste.chip.ll":"Lat/Lon","paste.chip.utm":"UTM","paste.chip.mgrs":"MGRS",
     "btn.copyLink":"Copier le lien","btn.linkCopied":"Lien copié",
-    "export.gpx":"GPX","export.kml":"KML","export.geojson":"GeoJSON",
+    "export.gpx":"GPX","export.kml":"KML","export.kmz":"KMZ","export.geojson":"GeoJSON","export.csv":"CSV",
     "export.datumExtras":"Inclure datums extra",
     "tip.copyLink":"Copier un lien partageable vers cette conversion",
     "tip.exportGpx":"Télécharger le point en GPX (Garmin, GPS)",
     "tip.exportKml":"Télécharger le point en KML (Google Earth)",
+    "tip.exportKmz":"Télécharger le point en KMZ (Google Earth)",
     "tip.exportGeoJson":"Télécharger le point en GeoJSON (SIG)",
+    "tip.exportCsv":"Télécharger le point en CSV",
     "tip.help":"Afficher les raccourcis clavier (?)",
     "tip.print":"Imprimer ou enregistrer en PDF (P)",
     "meas.inverse":"Distance et azimut entre deux points",
@@ -6514,11 +6560,13 @@ const I18N = {
     "meas.computeDirect":"Calculer la destination",
     "meas.destPoint":"Destination","meas.destBearingFinal":"Azimut final (inverse)",
     "tip.direct":"Projeter le point d'origine selon distance et azimut",
-    "batch.gpx":"GPX","batch.kml":"KML","batch.geojson":"GeoJSON","batch.import":"Importer un fichier…",
+    "batch.gpx":"GPX","batch.kml":"KML","batch.kmz":"KMZ","batch.geojson":"GeoJSON","batch.exportCsv":"CSV","batch.import":"Importer un fichier…",
     "tip.batchGpx":"Télécharger la liste en GPX (waypoints)",
     "tip.batchKml":"Télécharger la liste en KML (placemarks)",
+    "tip.batchKmz":"Télécharger la liste en KMZ (placemarks)",
     "tip.batchGeoJson":"Télécharger la liste en GeoJSON (FeatureCollection)",
-    "tip.batchImport":"Importer des coordonnées depuis un fichier GPX/KML/GeoJSON/CSV",
+    "tip.batchExportCsv":"Télécharger la liste de waypoints en CSV",
+    "tip.batchImport":"Importer des coordonnées depuis un fichier GPX/KML/KMZ/GeoJSON/CSV",
     "help.title":"Raccourcis et conseils",
     "help.intro":"Un aperçu rapide des fonctions principales. Les raccourcis clavier sont listés en bas.",
     "help.guide.title":"Mini-guide",
@@ -6542,7 +6590,7 @@ const I18N = {
     "help.guide.share.title":"Partager & exporter",
     "help.guide.share.link":"<b>Copier le lien</b> : URL encodant la coordonnée, fonctionne hors ligne.",
     "help.guide.share.qr":"<b>QR code</b> : ouvre le point dans Google/Apple Maps depuis le téléphone.",
-    "help.guide.share.export":"Exporter points/traces en <b>GPX</b>, <b>KML</b>, <b>GeoJSON</b>, <b>CSV</b>.",
+    "help.guide.share.export":"Exporter points/traces en <b>GPX</b>, <b>KML</b>, <b>KMZ</b>, <b>GeoJSON</b>, <b>CSV</b>.",
     "help.guide.import.title":"Importer des fichiers",
     "help.guide.import.body":"Déposez un fichier <code>.gpx</code> / <code>.kml</code> / <code>.geojson</code> / <code>.csv</code> n'importe où sur la page : les points sont détectés et chargés dans Trace ou Batch.",
     "help.guide.privacy.title":"Confidentialité & hors ligne",
@@ -6556,7 +6604,7 @@ const I18N = {
     "help.kbd.esc":"Effacer champs et résultats (ou fermer cette fenêtre)",
     "help.kbd.help":"Ouvrir cette fenêtre",
     "help.kbd.print":"Imprimer les résultats",
-    "help.other":"Autres fonctions utiles : déposez ici un fichier GPX/KML/GeoJSON pour l'importer ; utilisez « Copier le lien » pour partager la conversion.",
+    "help.other":"Autres fonctions utiles : déposez ici un fichier GPX/KML/KMZ/GeoJSON pour l'importer ; utilisez « Copier le lien » pour partager la conversion.",
     "err.importFailed":"Impossible d'importer le fichier. Format non reconnu.",
     "err.importEmpty":"Le fichier ne contient aucune coordonnée valide.",
     "err.distance":"Distance invalide (nombre positif requis).",
@@ -6688,10 +6736,14 @@ const I18N = {
     "batch.rtLabel":"Trajet:",
     "batch.rtGpx":"GPX",
     "batch.rtKml":"KML",
+    "batch.rtKmz":"KMZ",
     "batch.rtGeoJson":"GeoJSON",
+    "batch.rtCsv":"CSV",
     "tip.routeGpx":"Exporter la liste comme trace GPX (ouverte ou fermée selon le toggle)",
     "tip.routeKml":"Exporter en KML LineString (ouvert) ou Polygon (fermé)",
+    "tip.routeKmz":"Exporter en KMZ LineString ou Polygon",
     "tip.routeGeoJson":"Exporter en GeoJSON LineString ou Polygon + points",
+    "tip.routeCsv":"Exporter la séquence du trajet en CSV",
     "err.routeNeed2":"Au moins 2 points valides sont nécessaires pour exporter le trajet.",
     "btn.qr":"QR",
     "tip.qr":"Affiche un QR code à scanner avec le smartphone (ouvre le point dans Google Maps / Apple Maps)",
@@ -6859,7 +6911,7 @@ const state = {
   showExtraFormats: false,
   // Extra historical datums block under results (NAD27/NAD83/OSGB36/CH1903/SK42).
   showDatumExtras: false,
-  // When true, exports (GPX/KML/GeoJSON/CSV) include the alternative datum
+  // When true, exports (GPX/KML/KMZ/GeoJSON/CSV) include the alternative datum
   // coordinates as metadata/extensions (still always WGS84 for geometry).
   exportDatumExtras: false,
   // When true, the bottom strip of collapsible tool sections (Batch, Track,
@@ -9654,6 +9706,53 @@ function buildGeoJSON(points){
     features
   }, null, 2);
 }
+function csvEsc(s){
+  const v = String(s == null ? "" : s);
+  return /[",\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+}
+function csvElev(p){
+  if (!p) return "";
+  if (p.ele != null) return p.ele;
+  if (p.elevation != null) return p.elevation;
+  return "";
+}
+function csvTimestamp(p){
+  if (!p) return "";
+  return p.time || p.timestamp || "";
+}
+function buildCsv(points){
+  const rows = ["name,lat,lon,elevation,description,timestamp"];
+  for (const p of (points || [])){
+    rows.push([
+      p.name || "",
+      round(p.lat, 7),
+      round(p.lon, 7),
+      csvElev(p),
+      p.desc || p.description || "",
+      csvTimestamp(p)
+    ].map(csvEsc).join(","));
+  }
+  return "\ufeff" + rows.join("\n");
+}
+function buildCsvRoute(points, closed, routeName){
+  const rows = ["order,name,lat,lon,elevation,description,timestamp"];
+  (points || []).forEach((p, i) => {
+    rows.push([
+      i + 1,
+      p.name || "",
+      round(p.lat, 7),
+      round(p.lon, 7),
+      csvElev(p),
+      p.desc || p.description || "",
+      csvTimestamp(p)
+    ].map(csvEsc).join(","));
+  });
+  return "\ufeff" + rows.join("\n");
+}
+function buildKmz(kmlContent, filename){
+  const data = new TextEncoder().encode(String(kmlContent || ""));
+  return spatialZipCreateStored([{ name: filename || "doc.kml", data }]);
+}
 /**
  * GPX with waypoints + a <trk><trkseg> track. When closed is true, the
  * track is explicitly closed (last trkpt duplicates the first).
@@ -9783,7 +9882,9 @@ function exportSingle(kind){
   const fname = `point_${round(p.lat,4)}_${round(p.lon,4)}_${stamp}`;
   if (kind === "gpx")          downloadBlob(buildGPX([p]),     fname + ".gpx",     "application/gpx+xml;charset=utf-8");
   else if (kind === "kml")     downloadBlob(buildKML([p]),     fname + ".kml",     "application/vnd.google-earth.kml+xml;charset=utf-8");
+  else if (kind === "kmz")     downloadBlob(buildKmz(buildKML([p]), "doc.kml"), fname + ".kmz", "application/vnd.google-earth.kmz");
   else if (kind === "geojson") downloadBlob(buildGeoJSON([p]), fname + ".geojson", "application/geo+json;charset=utf-8");
+  else if (kind === "csv")     downloadBlob(buildCsv([p]),     fname + ".csv",     "text/csv;charset=utf-8");
 }
 function buildBatchPoints(){
   const root = document.getElementById("batch-results");
@@ -9803,7 +9904,7 @@ function buildBatchPoints(){
     }
     if (lat == null || lon == null) return null;
     // When a locality is available, use it as the primary name so exported
-    // waypoints in GPX/KML/GeoJSON carry a human-friendly label instead of
+    // waypoints in GPX/KML/KMZ/GeoJSON carry a human-friendly label instead of
     // the raw index/input string.
     const name = r.loc ? String(r.loc).slice(0, 80) : `P${i+1}: ${String(r.input).slice(0, 60)}`;
     const descBits = [`UTM: ${r.utm} | MGRS: ${r.mgrs}`];
@@ -9823,7 +9924,9 @@ function exportBatch(kind){
   const fname = `batch_${pts.length}pts_${stamp}`;
   if (kind === "gpx")          downloadBlob(buildGPX(pts),     fname + ".gpx",     "application/gpx+xml;charset=utf-8");
   else if (kind === "kml")     downloadBlob(buildKML(pts),     fname + ".kml",     "application/vnd.google-earth.kml+xml;charset=utf-8");
+  else if (kind === "kmz")     downloadBlob(buildKmz(buildKML(pts), "doc.kml"), fname + ".kmz", "application/vnd.google-earth.kmz");
   else if (kind === "geojson") downloadBlob(buildGeoJSON(pts), fname + ".geojson", "application/geo+json;charset=utf-8");
+  else if (kind === "csv")     downloadBlob(buildCsv(pts),     fname + ".csv",     "text/csv;charset=utf-8");
 }
 
 /**
@@ -9842,7 +9945,9 @@ function exportRoute(kind){
   const routeName = closed ? `Polygon (${pts.length} pts)` : `Route (${pts.length} pts)`;
   if (kind === "gpx")          downloadBlob(buildGPXRoute(pts, closed, routeName),     fname + ".gpx",     "application/gpx+xml;charset=utf-8");
   else if (kind === "kml")     downloadBlob(buildKMLRoute(pts, closed, routeName),     fname + ".kml",     "application/vnd.google-earth.kml+xml;charset=utf-8");
+  else if (kind === "kmz")     downloadBlob(buildKmz(buildKMLRoute(pts, closed, routeName), "doc.kml"), fname + ".kmz", "application/vnd.google-earth.kmz");
   else if (kind === "geojson") downloadBlob(buildGeoJSONRoute(pts, closed, routeName), fname + ".geojson", "application/geo+json;charset=utf-8");
+  else if (kind === "csv")     downloadBlob(buildCsvRoute(pts, closed, routeName),     fname + ".csv",     "text/csv;charset=utf-8");
 }
 
 /* ========================= SECTION 14D0: SPATIAL HUB (GeoJSON center) ========================= */
@@ -9924,8 +10029,8 @@ function spatialZipCreateStored(files){
   edv.setUint32(0, 0x06054b50, true);
   edv.setUint16(8, files.length, true);
   edv.setUint16(10, files.length, true);
-  edv.setUint32(12, cdStart, true);
-  edv.setUint32(16, offset - cdStart, true);
+  edv.setUint32(12, offset - cdStart, true);
+  edv.setUint32(16, cdStart, true);
   edv.setUint16(20, 0, true);
   return spatialConcatUint8Arrays([...chunks, ...central, eocd]);
 }
@@ -15514,7 +15619,7 @@ function buildCsvFromTrack(){
   return rows.join("\n");
 }
 
-/** Export the current track as one of: gpx / kml / geojson / csv. */
+/** Export the current track as one of: gpx / kml / kmz / geojson / csv. */
 function exportTrack(kind){
   ensureTrackState();
   ensureMapWaypointsState();
@@ -15535,6 +15640,9 @@ function exportTrack(kind){
   } else if (kind === "kml"){
     const x = buildKmlFromTrack();
     if (x) downloadBlob(x, "track-" + ts + ".kml", "application/vnd.google-earth.kml+xml");
+  } else if (kind === "kmz"){
+    const x = buildKmlFromTrack();
+    if (x) downloadBlob(buildKmz(x, "doc.kml"), "track-" + ts + ".kmz", "application/vnd.google-earth.kmz");
   } else if (kind === "geojson"){
     const fc = spatialBuildFeatureCollectionFromAppState();
     downloadBlob(JSON.stringify(fc, null, 2), "track-" + ts + ".geojson", "application/geo+json");
@@ -18337,15 +18445,21 @@ function bindUI(){
   document.getElementById("btnQrCopy").addEventListener("click", (ev) => qrCopyUrl(ev.currentTarget));
   document.getElementById("btnExportGpx").addEventListener("click", () => exportSingle("gpx"));
   document.getElementById("btnExportKml").addEventListener("click", () => exportSingle("kml"));
+  document.getElementById("btnExportKmz").addEventListener("click", () => exportSingle("kmz"));
   document.getElementById("btnExportGeoJson").addEventListener("click", () => exportSingle("geojson"));
+  document.getElementById("btnExportCsv").addEventListener("click", () => exportSingle("csv"));
 
   // Batch export & import
   document.getElementById("btnBatchGpx").addEventListener("click", () => exportBatch("gpx"));
   document.getElementById("btnBatchKml").addEventListener("click", () => exportBatch("kml"));
+  document.getElementById("btnBatchKmz").addEventListener("click", () => exportBatch("kmz"));
   document.getElementById("btnBatchGeoJson").addEventListener("click", () => exportBatch("geojson"));
+  document.getElementById("btnBatchExportCsv").addEventListener("click", () => exportBatch("csv"));
   document.getElementById("btnRouteGpx").addEventListener("click", () => exportRoute("gpx"));
   document.getElementById("btnRouteKml").addEventListener("click", () => exportRoute("kml"));
+  document.getElementById("btnRouteKmz").addEventListener("click", () => exportRoute("kmz"));
   document.getElementById("btnRouteGeoJson").addEventListener("click", () => exportRoute("geojson"));
+  document.getElementById("btnRouteCsv").addEventListener("click", () => exportRoute("csv"));
   const batchImportBtn = document.getElementById("btnBatchImport");
   const batchFileInput = document.getElementById("batchFileInput");
   batchImportBtn.addEventListener("click", () => batchFileInput.click());
@@ -18639,6 +18753,8 @@ function bindUI(){
   if (btnTeGpx) btnTeGpx.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("gpx"); });
   const btnTeKml = document.getElementById("btnTrackExportKml");
   if (btnTeKml) btnTeKml.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("kml"); });
+  const btnTeKmz = document.getElementById("btnTrackExportKmz");
+  if (btnTeKmz) btnTeKmz.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("kmz"); });
   const btnTeGj = document.getElementById("btnTrackExportGeoJson");
   if (btnTeGj) btnTeGj.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("geojson"); });
   const btnTeCsv = document.getElementById("btnTrackExportCsv");
