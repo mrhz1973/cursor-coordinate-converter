@@ -27,6 +27,22 @@ Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), n
 - `docs/session-geolocalizzazione-e-mappa.md` — append in fondo di una sezione `## Checkpoint YYYY-MM-DD — …` **datata** (cronaca autoritativa: cosa è cambiato, perché, eventuali TODO).
 - `docs/checkpoint.md` — aggiorna lo **snapshot breve** (data, puntatori ai file canonici, tabella `.cursor/rules/` se cambia, invarianti se cambiano).
 
+## Session close trigger («Finito»)
+Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase breve tipo «ok finito», «per oggi finito»), eseguire in sequenza **senza chiedere conferma intermedia**:
+
+1. **Checkpoint md** come da sezione precedente: aggiornare `docs/checkpoint.md` **e** appendere sezione datata in `docs/session-geolocalizzazione-e-mappa.md`.
+2. Nel terminale, dalla root del repo, in ordine:
+   - `git add .`
+   - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`.
+   - `git push`
+3. Confermare all’utente con: **hash commit** (short), **elenco file modificati** (da `git show --stat HEAD` o equivalente), **stato push** (successo / errore + messaggio testuale).
+
+Vincoli operativi:
+- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai due file doc dello step 1 e alle operazioni git dello step 2–3.
+- Se lo step 1 fallisce (file non scrivibile, conflitto), **fermarsi**, riportare l’errore, non procedere con git.
+- Se lo step 2 fallisce (pre-commit hook rifiuta, push rejected, conflitto remoto), riportare l’errore testualmente e **non** tentare `--force`, `--amend`, né hard reset senza nuova istruzione esplicita.
+- Non modificare mai la git config. Non saltare hook (`--no-verify`).
+
 ## Response style
 - Reply in Italian.
 - Be direct: no long preambles.
