@@ -26,3 +26,15 @@ Use this rule only when a task risks regressions or needs full context alignment
 
 ## Known pitfalls to avoid
 - Avoid expanding `innerHTML` surfaces beyond the intended i18n help blocks.
+
+## GIS-first layout (current default, net replacement of classic home)
+- Boot layout is **GIS viewer/planner** (`body.gis-mode`), with:
+  - Compact top `<header>` (global controls) + `<nav id="appTopbar">` (tabs + Converti CTA + Altri strumenti).
+  - Full-screen map inside `#gisMapMount` (the `#miniMap` is reparented there at init by `gisInit()`).
+  - Classic home cards (paste / manual input / geocoding / results / tools strip) are **hidden when in their home slots** (`body.gis-mode > main > …` selectors) and appear only when reparented into the tab drawer / convert modal / tools modal.
+- Do not clone sections — always move them with `appendChild` and restore them via the `GIS_HOME_SLOTS` map. Cloning breaks already-cabled event listeners.
+- Tabs reparent into `<aside id="tabDrawer">`; secondary tools reparent into `<dialog id="toolsModal">`'s panel slot; conversion flow reparents into `<dialog id="convertModal">`.
+- `state.activeTab` values are whitelisted by `GIS_VALID_TABS`; any unknown value must be coerced to `null` on load.
+- `mapSize` is forced to `"full"` when entering GIS mode; the legacy `mm-full` fixed-float for `#offlineTilePanel` is neutralized via `.tab-drawer-body #offlineTilePanel` / `.tools-panel-wrap #offlineTilePanel` overrides.
+- The on-map coverage button (`[data-role="offline-panel-open"]`) is intercepted in capture phase to open the `layers` tab — never call `state.offlineDownloadVisible = true` on its own in GIS mode and expect to see the panel.
+- `gisInit()` is idempotent (guarded by `_gisInitDone`). It runs at the end of `init()`, after `applyLanguage` and before `initMiniMapOnStartup` so the first map render happens inside `#gisMapMount`.

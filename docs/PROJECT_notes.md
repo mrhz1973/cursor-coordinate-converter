@@ -83,7 +83,9 @@ Riferimenti testuali UI (non necessariamente implementazione letterale dell’in
 
 ## 4. Stato attuale delle feature principali
 
-Sintesi allineata a `.cursor/rules/20-domain-knowledge.mdc`, `99-known-state.mdc`, e alla cronaca in `docs/session-geolocalizzazione-e-mappa.md` (ultimi checkpoint **2026-04-23**):
+Sintesi allineata a `.cursor/rules/20-domain-knowledge.mdc`, `99-known-state.mdc`, e alla cronaca in `docs/session-geolocalizzazione-e-mappa.md` (ultimi checkpoint **2026-04-24 — GIS-first layout pivot**):
+
+- **Layout GIS-first (default):** `body.gis-mode` attivo al boot; topbar (`#appTopbar`) con tab bar (Traccia, Misura, Favoriti, DTG, Geocoding, Cronologia, Mappa/Offline) + CTA **Converti** (apre `<dialog id="convertModal">`) + kebab **Altri strumenti** (`<dialog id="toolsModal">` con Batch/Note/Sessione/Astro/Mag/Range). Mappa full-viewport in `#gisMapMount`. Dettaglio meccanica reparenting / CSS override / invarianti in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
 
 - **Conversioni / formati:** DD, DDM, DMS, UTM, MGRS, Plus Codes; datum italiani (Gauss-Boaga / ROMA40, ED50) e **datum aggiuntivi** (NAD27, NAD83, OSGB36, CH1903, SK42); auto-detect esteso (es. BNG, SK42 Gauss–Krüger) come da sessione.
 - **Input:** paste universale, schede manuali, drag&drop GPX/KML/GeoJSON, batch.
@@ -153,6 +155,12 @@ Concetti e norme ricorrenti in **rules** + **docs** + stringhe/tecnologie citate
 - **Geodesia:** **Vincenty** diretto/inverso; commento normativo ISO per **QR** in `SECTION 26`.
 - **Web mapping:** uso di tile **Carto Voyager**; layer satellitare con metadati **Esri** (checkpoint 2026-04-23 in sessione).
 - **Geocoding:** **OpenStreetMap Nominatim** (policy uso, rate limit, endpoint custom).
+
+
+## 8. COSE DA FARE
+Possibilità di salvare le tracce nei formati piu diffusi
+possibilità di salvare i waypoint nei formati piu diffusi
+
 
 ---
 

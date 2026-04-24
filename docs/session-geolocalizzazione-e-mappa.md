@@ -679,3 +679,117 @@ l'equivalente affidabile. Entrambe sono documentate nell'help overlay.
 - Aggiunto **`docs/checkpoint.md`**: snapshot corto (tabella rules + invarianti) da `@`-menzionare in Cursor senza ricaricare tutto questo documento.
 
 > La **cronaca completa** delle feature resta in questo file; `docs/checkpoint.md` serve come “biglietto da visita” per il contesto Cursor.
+
+---
+
+## Checkpoint 2026-04-23 — Roadmap rev. 2 + mirror rules + cursor-workflow
+
+### Cosa è cambiato (documentazione, zero codice)
+
+- **`docs/roadmap.md` promosso a rev. 2** (stato già sul disco, verificato integrità):
+  - Nuovo blocco non-numerato **"Notice to AI Assistants"** prima di §1 con 5 sottosezioni (Authority / Precedence / Rejected patterns non-exhaustive / Disagreement protocol / Reading order).
+  - Nuova **§3 Distribution Strategy** — tre scenari: (a) air-gapped / classified **PRIMARY**, (b) informal peer-to-peer sharing **PRIMARY**, (c) PWA futura **non-blocking**. Ogni principio di §4 è ora tracciato allo scenario che lo genera.
+  - Renumbering: §3 (ex Arch. Principles) → §4, §4 → §5, …, §10 → §11 (mapping completo in Appendice A della roadmap).
+  - §10 Revision Policy include il trigger esplicito "Notice to AI Assistants updated — must be mirrored in `.cursor/rules/00-project-core.mdc`".
+
+- **`.cursor/rules/00-project-core.mdc` esteso** con tre blocchi in append (nessuna riscrittura):
+  - `## Mirror notice` — dichiara la duplicazione bidirezionale con `docs/roadmap.md` §Notice.
+  - `## Rejected patterns (mirror of roadmap §Notice)` — riferimento autoritativo alla roadmap + principio sottostante (a/b/c/d) + esempi noti (ES Modules, framework UI, TypeScript, bundler, transpiler, CSS preprocessor, centralized-store refactor, global event-delegation, rewrite, refactor > 50 righe senza approvazione, NPM).
+  - `## Disagreement protocol` — versione integrale operativa: una strategic concern per turn, formato prefisso `> Strategic concern: …`, no lecture, no ripetizione cross-turn.
+  - File passato da 34 a 55 righe.
+
+- **`docs/checkpoint.md` aggiornato** (indice corto):
+  - Aggiunti bullet `docs/roadmap.md` rev. 2 e `docs/cursor-workflow.md` in "Documentazione lunga".
+  - Cella "Ruolo" di `00-project-core.mdc` annota i nuovi blocchi mirror.
+  - Nuova sezione `## Relazione mirror roadmap ↔ rules` come terzo vertice che registra la duplicazione per future sessioni.
+
+- **`docs/cursor-workflow.md`** (già presente sul disco) confermato come companion operativo della roadmap; citato da `checkpoint.md`.
+
+### Cosa NON è cambiato
+
+- Nessuna modifica al file canonico `coordinate_converter Claude.html`.
+- Nessuna modifica a `10-html-architecture.mdc`, `20-domain-knowledge.mdc`, `99-known-state.mdc` — contenuti ortogonali al Notice, nessuna duplicazione né conflitto.
+- Nessuna decisione architetturale rivista: i principi §3/§4/§8 della roadmap sono propagati, non ridiscussi.
+
+### Relazione mirror — tre vertici da tenere allineati
+
+Ogni modifica al Notice o alla lista Rejected patterns richiede aggiornamento coerente su:
+
+1. `docs/roadmap.md` — sorgente autoritativa (Notice to AI Assistants + tabella Rejected patterns completa).
+2. `.cursor/rules/00-project-core.mdc` — mirror con principio + esempi principali + Disagreement protocol integrale.
+3. `docs/checkpoint.md` — registra che la duplicazione è intenzionale (sezione "Relazione mirror roadmap ↔ rules").
+
+Il trigger §10 della roadmap ("must be mirrored") formalizza il vincolo.
+
+### TODO residui per sessioni future
+
+- Se un futuro assistente bypassa la Rejected patterns list con un nuovo anti-pattern, aggiungerlo alla tabella in roadmap e verificare che il principio sottostante nel mirror di `00-project-core.mdc` lo copra (altrimenti estendere anche quello).
+- Tier list refinement di §5 (working hypothesis) resta su dedicata futura sessione strategica — invariato rispetto a rev. 1.
+- Valutare se `docs/PROJECT_notes.md` necessita un bullet cross-link alla roadmap rev. 2 (non fatto ora, fuori scope del checkpoint corrente).
+
+---
+
+## Checkpoint 2026-04-24 — GIS-first layout pivot (net replacement)
+
+Implementazione del piano `.cursor/plans/gis-first_layout_pivot_7c8df2ea.plan.md`: l'app passa da "conversion-first con mini-mappa" a **GIS viewer/planner con conversione on-demand**. Sostituzione netta, nessun toggle legacy/GIS.
+
+### Nuovo scheletro DOM (coordinate_converter Claude.html)
+
+- `<body class="gis-mode">` come boot state (persistito in `state.gisMode`, default `true`; il flag resta nel `state` per eventuale disattivazione futura ma non c'è UI per spegnerlo).
+- `<header>` compattato: resta brand + controlli globali (settings, theme, print, help, Strumenti, lang switch).
+- Nuova `<nav id="appTopbar">` subito sotto l'header, con:
+  - **Tab buttons** (`data-tab-key`): `track`, `measure`, `favorites`, `dtg`, `geocoding`, `history`, `layers`.
+  - **CTA Converti** (`#btnOpenConvert`) → apre `<dialog id="convertModal">`.
+  - **Kebab Altri strumenti** (`#btnOpenToolsMenu`) → apre `<dialog id="toolsModal">` con 6 tile (Batch, Note, Sessione, Astro, Mag, Range).
+- `<main>` ora ospita solo `<div id="gisMapMount">` (mappa full-viewport: `height: calc(100vh - var(--gis-topbar-h) - 76px)`). Le card classiche (`#pasteSection`, `#manualInputSection`, `#geocodeCard`, `.grid`, `#toolsCollapsible`) restano nel DOM ma sono nascoste in home via `body.gis-mode > main > …`, perché vengono riparentate on-demand.
+- `<aside id="tabDrawer">` + `<dialog id="convertModal">` + `<dialog id="toolsModal">` aggiunti dopo `</main>` (prima del footer).
+
+### Meccanica reparenting (no clone, no innerHTML)
+
+- Ogni `<details>` target ha `id` stabile + `data-tab-key`. Il modulo **GIS hub** (inserito prima di `SECTION 24: INIT`) mantiene una `Map GIS_HOME_SLOTS` con `{ parent, nextSibling }` originali, popolata una sola volta da `gisInit()`.
+- `activateTab(tabKey)`:
+  1. riporta l'eventuale tab corrente nello home slot (`gisRestoreSection`);
+  2. `appendChild` del target in `#tabDrawerBody`;
+  3. apre `details.open = true`, setta `state.activeTab`, salva in `coordconv_v1`.
+- `deactivateTab()` inverte 1-2, resetta `state.activeTab = null`.
+- Convert modal: reparenta `pasteSection`, `manualInputSection`, `geocodeCard` (saltato se la tab `geocoding` è attiva), `.results-col` in `#convertModalBody`. Chiusura = restore verso home slots nello stesso ordine inverso.
+- Tools modal: 6 tile → ognuno `activateToolPanel(tool)` reparenta il corrispondente `<details id="sec-*">` in `.tools-panel-wrap` (slot unico, uno alla volta); chiusura del modale restituisce tutto.
+- **Idempotenza**: click ripetuto su un tab attivo non rimuove/ricollega, solo focus.
+
+### Invarianti preservati (QA)
+
+- **OPSEC**: nessuna chiamata di rete automatica aggiunta; il Convert modal apre solo la UI, la conversione resta gated dall'azione utente; Geocoding mantiene `state.opsecStrict`.
+- **Niente silent geo**: `gisInit()` non tocca `navigator.geolocation`; il boot continua a passare per `refreshGeolocationBarriers()`; centro fallback La Spezia invariato.
+- **Offline tiles / coverage**: il pulsante on-map `[data-role="offline-panel-open"]` è intercettato in capture phase quando `body.gis-mode` è attivo → esegue `activateTab("layers")` + `otp.open = true`. `#offlineTilePanel` non viene mai disattivato, solo spostato; la IDB pipeline è invariata.
+- **CSS override**: la regola legacy `body.mm-full #offlineTilePanel { position:fixed … }` entrerebbe in conflitto dentro il drawer → override con `position:static !important`, reset di `left/top/width/margin/border/box-shadow/padding`, e hide della `summary` interna quando il pannello è nested (`.tab-drawer-body`, `.tools-panel-wrap`, `#convertModalBody`).
+- **Idempotenza handler**: `gisInit()` guardia `_gisInitDone`, i listener topbar/modal sono registrati una sola volta; Esc chiude nell'ordine `convert → tools → drawer`.
+- **Sanitize state**: in `init()`, al load da `localStorage`, `state.gisMode` è forzato a `true` (invariante finché non c'è UI di switch) e `state.activeTab` è validato contro `GIS_VALID_TABS`; valori sconosciuti → `null`.
+
+### Ordine di init (rilevante per la prima renderizzazione mappa)
+
+```
+init() → applyLanguage() → gisInit() → initMiniMapOnStartup() → refreshGeolocationBarriers()
+```
+
+`gisInit()` **prima** di `initMiniMapOnStartup()` così il primo render della mappa avviene già dentro `#gisMapMount` (post-reparent) evitando flicker / dimensioni errate. `applyLanguage()` prima ancora perché le label statiche del topbar usano `data-i18n` standard.
+
+### i18n
+
+Nuove chiavi IT/EN/FR aggiunte al dizionario inline: `tabs.track`, `tabs.measure`, `tabs.layers`, `tabs.favorites`, `tabs.dtg`, `tabs.geocoding`, `tabs.history`, `cta.convert`, `menu.otherTools`, `menu.batch|notes|session|astro|mag|range`, più tooltip equivalenti. Regola `gisRefreshI18n()` aggiorna i titoli di drawer/modali al cambio lingua (titolo dinamico derivato da `GIS_TAB_TITLE_KEY[activeTab]`).
+
+### Tools drawer legacy
+
+Non rimosso: i link al suo interno (`navigateToToolSection`) ora controllano `body.gis-mode` e delegano a `gisNavigateToolTarget()` che mappa target-id → tab o tool modal, preservando il comportamento dei deep-link.
+
+### Cosa NON è cambiato
+
+- Logica di conversione, parser, formatter, Vincenty, WMM, SunCalc, QR, DTG, Geocoding: **zero modifiche**.
+- Pipeline IndexedDB per tile / cache geocoding: invariata.
+- Permalink (`#ll=`, `#mgrs=`, `dtg=…`): invariato — `readPermalink()` continua a short-circuitare `initMiniMapOnStartup()` via `state.lastResult`.
+
+### TODO residui
+
+- Valutare copertura tastiera: l'attuale topbar non ha `role="tablist"` / `aria-controls` (i tab sono `<button data-tab-key>`); in un giro futuro serve ARIA completa + focus trap per i `<dialog>` (Chrome lo fa nativamente, ma verifica iOS Safari).
+- Valutare se il boot in GIS mode debba essere toggleable via setting avanzato; per ora è hard-coded a `true` come richiesto dal piano ("sostituzione netta").
+- Rifare lo screenshot in `docs/` / README una volta validata la UX su mobile landscape.
+

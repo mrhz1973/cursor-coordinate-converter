@@ -43,3 +43,21 @@ alwaysApply: false
 ## Event handlers / cleanup
 - Handlers for map tools (bbox draw, draggable panels, pick modes) are designed to be **idempotent** (install once) and provide explicit cleanup on cancel/Esc.
 - Do not add listeners in hot paths without a cleanup plan.
+
+## GIS viewer/planner layout (current default)
+- The app boots in **GIS mode** (`<body class="gis-mode">`). Layout:
+  - Compact `<header>` (brand + settings/theme/print/help/Strumenti).
+  - `<nav id="appTopbar">`: tab buttons (`track`, `measure`, `favorites`, `dtg`, `geocoding`, `history`, `layers`), CTA **Converti**, kebab **Altri strumenti**.
+  - `<main>` only hosts `<div id="gisMapMount">` (the map fills the viewport); classic homepage cards (`#pasteSection`, `#manualInputSection`, `#geocodeCard`, `.grid`, `#toolsCollapsible`) are hidden via `body.gis-mode > main > …` selectors.
+- Tab activation **reparents** the target `<details>` into `<aside id="tabDrawer">` via `appendChild` (no clone). `GIS_HOME_SLOTS` caches the original parent+nextSibling so `deactivateTab()` restores the section verbatim. Summaries are hidden inside the drawer; the drawer header supplies the title.
+- Convert modal (`<dialog id="convertModal">`) reparents the classic conversion cards (paste / manual input / `#geocodeCard` / `.results-col`) on open and restores them on close. The geocoding card is skipped if the `geocoding` tab is active.
+- Altri strumenti modal (`<dialog id="toolsModal">`) hosts Batch / Note / Sessione / Astro / Mag / Range via the same reparenting pattern (section id ↔ tile button).
+- Esc is wired at document level to close modals/drawer in that order.
+- The on-map coverage button is intercepted in capture phase: in GIS mode it activates the `layers` tab (so the user sees `#offlineTilePanel` in context) instead of toggling a hidden home slot.
+- Persistence: only `state.gisMode` and `state.activeTab` (whitelist: `GIS_VALID_TABS`) are saved across sessions; `convertOpen` and `toolsMenuOpen` are transient.
+
+## Section ids required by the GIS hub
+- Tabs: `sec-track`, `sec-measure`, `sec-favorites`, `dtgCard`, `geocodeCard`, `sec-history`, `offlineTilePanel`.
+- Tools modal: `sec-batch`, `sec-notes`, `sec-session`, `sec-astro`, `sec-mag`, `sec-range`.
+- The manual-input section wrapper must carry `id="manualInputSection"` (used by both the home-hide CSS and the Convert modal reparenting).
+- The map root `#miniMap` is reparented once at init into `#gisMapMount`; rendering code queries by id, so this is transparent.

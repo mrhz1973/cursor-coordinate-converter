@@ -1,7 +1,9 @@
 # Checkpoint progetto — Coordinate Converter
 
-**Data snapshot:** 2026-04-23  
+**Data snapshot:** 2026-04-24  
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
+
+**Ultimo grande cambio:** 2026-04-24 — **GIS-first layout pivot** (piano `.cursor/plans/gis-first_layout_pivot_7c8df2ea.plan.md`). L'app boota in GIS mode (`body.gis-mode`): topbar con tab bar, mappa full-viewport, conversione come modale on-demand, "Altri strumenti" kebab. Reparenting via `appendChild` (no clone) per preservare i listener. Dettagli completi in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
 
 **Convenzione:** quando chiedi in chat **«Checkpoint md»**, si aggiornano **sempre** questo file **e** `docs/session-geolocalizzazione-e-mappa.md` (append in fondo), salvo che specifichi «solo session» o «solo checkpoint.md».
 
@@ -37,6 +39,8 @@ Struttura attuale (efficienza token: core sempre attivo, HTML auto-attached, dom
 - Geocoding: `opsecStrict` blocca rete; niente invio automatico di paste non-coordinate senza conferma.
 - i18n: `data-i18n` sicuro (`textContent`); `data-i18n-html` solo dove esplicitamente previsto.
 - Persistenza: sanitizzare/clampare al load tutto ciò che arriva da `localStorage`.
+- **GIS-first**: le sezioni classiche (paste, manual, geocoding, results, tools) restano nel DOM ma sono nascoste in home (`body.gis-mode > main > …`); vengono **spostate** con `appendChild` via `GIS_HOME_SLOTS`, **mai clonate**. `gisInit()` deve girare prima di `initMiniMapOnStartup()` per far rendere la mappa direttamente in `#gisMapMount`.
+- Il pulsante on-map `[data-role="offline-panel-open"]` in GIS mode attiva la tab `layers` (capture-phase intercept): non bypassare con nuovi handler.
 
 ## Prossimo passo suggerito (solo se serve)
 
