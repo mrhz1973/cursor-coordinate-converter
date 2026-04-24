@@ -976,3 +976,94 @@ Prima di procedere con Fase 1 GIS plan:
 
 Commit cleanup → ritorno in Plan mode per **Fase 1 del GIS progressive plan** (data model GeoJSON + CRUD + scaffolding undo). Vedi `.cursor/plans/gis_progressive_plan_aef64b4b.plan.md`.
 
+---
+
+## Checkpoint 2026-04-24 — GIS Phase 1 (fondazione GeoJSON invisibile)
+
+### Decisioni operative
+
+- Phase 1 è rimasta **invisibile**: nessuna nuova UI, nessuno stub Layers, nessun pannello debug.
+- Modello dati confermato: **ibrido pigro**. `state.mapWaypoints[]` resta la fonte canonica dei waypoint; `state.track` resta il builder legacy; i nuovi store GeoJSON-native partono in parallelo.
+- Priorità successiva: **WaypointModal enrichment** con categorie generiche, non APP-6/MIL-STD-2525 completo.
+- Tile/cache futura: smart cache solo come **opt-in persistente** in fase dedicata; nessun download automatico introdotto qui.
+
+### Cosa è cambiato nel codice
+
+1. Aggiunti cap e seed layer:
+   - `GIS_TRACK_CAP = 50`
+   - `GIS_POLYGON_CAP = 50`
+   - `GIS_LAYER_CAP = 20`
+   - `GIS_ACTION_STACK_CAP = 100`
+   - seed `lay-seed-waypoints`, `lay-seed-tracks`, `lay-seed-polygons`
+2. Esteso `state` con:
+   - `gisTracks: []`
+   - `gisPolygons: []`
+   - `gisLayers: []`
+   - `gisSelection: []` transient
+   - `undoStack: []` / `redoStack: []` transient
+3. Estesa persistenza `coordconv_v2`:
+   - `gisTracks`, `gisPolygons`, `gisLayers` vengono salvati e ripristinati.
+   - `gisSelection`, `undoStack`, `redoStack` **non** vengono salvati.
+   - load/save passa da sanitize/clamp dedicati: feature GeoJSON valide, string caps, coordinate clamp, cap array, seed layer sempre presenti.
+4. Aggiunta sezione JS `SECTION 18B: GIS DATA MODEL (Phase 1)`:
+   - sanitize helper: `gisSanitizeCoordinate`, `gisSanitizeGeometry`, `gisSanitizeProperties`, `gisSanitizeFeatureArray`, `gisSanitizeLayerArray`.
+   - stato helper: `ensureGisState()`, `gisSyncLayerFeatureIds()`.
+   - CRUD feature: `gisFeatureAdd`, `gisFeatureUpdate`, `gisFeatureDelete`, `gisFeatureGet`.
+   - CRUD layer: `gisLayerAdd`, `gisLayerUpdate`, `gisLayerDelete`, `gisLayerGet`.
+   - undo scaffold: `gisActionRecord()` registra record transient e resetta `redoStack`, senza UI/shortcut.
+   - read-lens: `gisAllAsFeatureCollection(opts)` emette una FeatureCollection GeoJSON con waypoint esistenti + `gisTracks` + `gisPolygons`.
+5. Esteso `runSelfCheck()` (`?debug`):
+   - FeatureCollection vuota valida.
+   - Seed layer presenti.
+   - Undo scaffold registra record transient.
+   - CRUD accetta LineString e Polygon.
+   - Read-lens include track/polygon nuovi.
+   - `saveStore()` / `loadStore()` preservano gli store GIS ma non `undoStack`/`redoStack`/`gisSelection`.
+
+### Invarianti
+
+- Nessuna nuova UI in questa fase.
+- Nessuna rinomina `layers` → `basemap` ancora.
+- Nessun editor track/polygon ancora.
+- Nessuna attivazione globale Ctrl/Cmd+Z.
+- `mapWaypoints[]` non è stato migrato né duplicato: la FeatureCollection è una vista, non una nuova fonte di verità waypoint.
+- Le feature line/polygon v1 supportano solo `LineString` e `Polygon` single-ring; niente Multi*, holes o self-intersection validation avanzata.
+
+### QA
+
+- `ReadLints` su `coordinate_converter Claude.html`: nessun errore IDE.
+- QA runtime browser/manuale ancora da fare: boot app, `?debug` self-check, flussi legacy Convert / WaypointModal / track / favorites.
+
+---
+
+## Checkpoint 2026-04-24 — UI tokens semantici + glass sweep (solo CSS)
+
+### Perché
+
+Il precedente restyle glass aveva già applicato blur/ombre/Inter, ma la cima dello `<style>` mescolava ancora valori concreti (`rgba(...)`, pixel) con i token esposti. Rendeva fragili i prossimi refresh: per cambiare look bisognava toccare più punti del foglio. Questa passata separa i livelli:
+
+- livello 1: **token semantici** (`--surface-*`, `--radius-*`, `--shadow-*`, `--border-hairline`, `--border-glow`, `--map-control-*`, `--tooltip-*`).
+- livello 2: **alias legacy** (`--bg`, `--panel`, `--panel2`, `--text`, `--muted`, `--border`, `--shadow`, `--shadow-lg`) derivati dai semantici, per non toccare centinaia di reference nel resto del foglio.
+
+### Cosa è cambiato (solo `<style>`)
+
+1. **Design tokens** in `:root[data-theme="light"]` e `:root,:root[data-theme="dark"]`: aggiunte variabili semantiche + riassegnati gli alias legacy come `var(--surface-*)` / `var(--shadow-*)`. I componenti continuano a funzionare senza modifiche; i refresh futuri si fanno in cima al foglio.
+2. **Body background**: gradienti radiali sottili (accent blu + violetto) sopra `--bg` per dare profondità.
+3. **Card/pannelli** (`.paste-section`, `.paste-section + .input-col`, `.input-col`, `.results-col`, `.maps-col`, `.result-card`, `.modal`, `.mini-map`) passano a `--radius-card`, glass blur coerente, ombra elevata.
+4. **Form controls** (`input[type=text|number]`, `textarea`, `select`): sfondo `--surface-field`, `--radius-control`, focus `--ring-focus`.
+5. **Bottoni** (`.btn`): radius e hover tramite token; stile primario conservato.
+6. **Overlay** (`.modal-overlay`, `dialog.app-modal`, `.tools-drawer`, `.tools-drawer-backdrop`, `.tab-drawer`, `.tab-drawer-head`, `.app-topbar`, `#appTopbar`, `.app-modal-head`): blur coerente, `--radius-card` su dialog/drawer, head gradienti con `--surface-glass-hover`.
+7. **Mappa** (`.tile-map .tile-recenter/.tile-pick/.tile-cov`, `.tile-zoom`, `.tg-btn`, `.tcov-btn`, `.tile-size`, `.tlayer-btn`, `.tlayer-menu`, `.tlayer-item`, `.mini-map .mm-offline-size`): controlli dark unificati su `--map-control-bg` / `--map-control-border`, radius da `--radius-chip`; il menu basemap è ora glass coerente con modal/drawer.
+8. **Tooltip** (`[data-tip]:hover::after`) unificato su `--tooltip-bg` / `--tooltip-fg`.
+
+### Non cambiato
+
+- Zero modifiche a HTML, classi, id, `data-*`, JavaScript.
+- Nessuna nuova regola layout: solo sostituzioni mirate di valori hard-coded con token.
+- Nessun cambio di behaviour su hover/active/focus/open/hidden: stessi selectors, solo valori.
+
+### QA
+
+- `ReadLints` su `coordinate_converter Claude.html`: nessun errore.
+- QA runtime browser/manuale ancora da fare: hover su controlli mappa, apertura modal/drawer, focus visibile su input, menu basemap, contrasto light vs dark.
+

@@ -23,6 +23,12 @@ Use this rule only when a task risks regressions or needs full context alignment
   - `data-i18n-html` → `innerHTML` only for explicit rich-text help strings
 - Persisted storage must be sanitized/clamped on load (localStorage can be corrupted).
 - Event handlers for tool modes should be idempotent + cleaned up on cancel/Esc.
+- GIS Phase 1 stores are intentionally hybrid/additive:
+  - `state.mapWaypoints[]` remains the waypoint source of truth.
+  - `state.gisTracks[]` cap 50 and `state.gisPolygons[]` cap 50 store new GeoJSON-native line/polygon features.
+  - `state.gisLayers[]` cap 20 always includes seed layers `lay-seed-waypoints`, `lay-seed-tracks`, `lay-seed-polygons`.
+  - `state.gisSelection`, `state.undoStack`, and `state.redoStack` are transient; do not persist or expose global undo UI until the dedicated undo phase.
+  - Use `gisAllAsFeatureCollection()` for unified reads; do not migrate `mapWaypoints[]` into a unified store before the planned Phase 6 decision.
 
 ## Known pitfalls to avoid
 - Avoid expanding `innerHTML` surfaces beyond the intended i18n help blocks.
@@ -42,6 +48,6 @@ Use this rule only when a task risks regressions or needs full context alignment
 ## Waypoints modal (split from sec-track)
 - `state.mapWaypoints` is the single source of truth for map waypoints; the modal never duplicates the array. Rendering in the modal's `#wp-list` must be kept in sync with `renderMapWaypointsList()` (both are called by `renderMapWaypointsAll()`).
 - The Waypoints tab is a `tab-as-modal`: `GIS_TAB_SECTIONS.waypoints === "sec-waypoints"` and `"waypoints"` is in `GIS_TABS_AS_MODAL`. Opening reparents `sec-waypoints` into the dialog body via `gisMoveSectionTo`, closing calls `gisRestoreSection("sec-waypoints")`. Do not clone; do not render the section twice.
-- `state.waypointsModalOpen` and `state.waypointEditorDraft` are transient. Nothing new is persisted in `coordconv_v2` beyond what was already there (`mapWaypoints`, `activeTab`, …).
+- `state.waypointsModalOpen` and `state.waypointEditorDraft` are transient. The modal persists only through the canonical `mapWaypoints[]`; the separate Phase 1 GIS stores are not a waypoint-modal duplicate.
 - Import/export of waypoints uses only GeoJSON (not a new format). Import goes through `spatialGeojsonTextToFeatureCollection` → `spatialNormalizeGeoJSON` → filter `Point`; export reuses `spatialBuildFeatureCollectionFromAppState` filtered to `properties.kind === "waypoint"`. The cap of 200 waypoints must be respected (same as `saveStore`).
 - Sanitize on load already clamps `mapWaypoints` to 200 and `name` to 60 chars. The modal also clamps `meta.notes` to 500 chars (same ceiling used by `favorites.notes`).

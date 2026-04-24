@@ -13,6 +13,12 @@ alwaysApply: false
 ## State, persistence, and invariants
 - Centralized app state object: `state`.
 - Persistence via localStorage key: `coordconv_v2` (bumped from `coordconv_v1` during the pre-GIS cleanup; the old v1 key is intentionally ignored, not actively wiped).
+- GIS Phase 1 data model is additive and hybrid:
+  - `state.mapWaypoints[]` remains the canonical waypoint store (cap 200).
+  - `state.track` remains the legacy draft track builder.
+  - `state.gisTracks[]` (cap 50), `state.gisPolygons[]` (cap 50), and `state.gisLayers[]` (cap 20) are persisted GeoJSON-native stores for future GIS features.
+  - `state.gisSelection`, `state.undoStack`, and `state.redoStack` are transient; undo/redo is scaffolded but has no UI/shortcut activation in Phase 1.
+  - `gisAllAsFeatureCollection()` is the read-lens that emits a GeoJSON FeatureCollection across existing waypoints plus GIS tracks/polygons.
 - IndexedDB is used for offline map tile pack and some geo caches.
 - On load, persisted data must be **sanitized/clamped** (numbers, string length, arrays caps). Do not trust localStorage content.
 
@@ -53,7 +59,7 @@ alwaysApply: false
 - Altri strumenti modal (`<dialog id="toolsModal">`) hosts Batch / Note / Sessione / Astro / Mag via the same reparenting pattern (section id ↔ tile button).
 - Esc is wired at document level to close modals/drawer in that order.
 - The on-map coverage button is intercepted in capture phase: in GIS mode it activates the `layers` tab (so the user sees `#offlineTilePanel` in context) instead of toggling a hidden home slot.
-- Persistence: only `state.gisMode` and `state.activeTab` (whitelist: `GIS_VALID_TABS`) are saved across sessions; `convertOpen` and `toolsMenuOpen` are transient.
+- Layout persistence: `state.gisMode` and `state.activeTab` (whitelist: `GIS_VALID_TABS`) are saved across sessions; `convertOpen` and `toolsMenuOpen` are transient.
 
 ## Section ids required by the GIS hub
 - Tabs: `sec-track`, `sec-waypoints`, `sec-measure`, `sec-favorites`, `geocodeCard`, `sec-history`, `offlineTilePanel`.
