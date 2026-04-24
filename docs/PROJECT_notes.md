@@ -1,4 +1,4 @@
-# Coordinate Converter — note di progetto (living document)
+# GOI GIS Tool — note di progetto (living document)
 
 **Percorso:** `docs/PROJECT_notes.md` — panoramica tecnica (moduli, stack, roadmap sintetica); resta accanto a `session-geolocalizzazione-e-mappa.md` e `checkpoint.md`.
 
@@ -12,11 +12,11 @@ Fonti usate per questa stesura: `coordinate_converter Claude.html`, `docs/sessio
 
 | Voce | Valore reale nel repo |
 |------|------------------------|
-| **Nome / brand (pagina)** | Dal `<title>`: *Convertitore Coordinate · DD/DDM/DMS/UTM/MGRS · WGS84*; sottotitolo UI: *DD · DDM · DMS · UTM · MGRS — WGS84*. |
+| **Nome / brand (pagina)** | Dal `<title>`: *GOI GIS Tool* (rename 2026-04-24, cleanup pre-GIS). Header e footer UI uniformati a "GOI GIS Tool". |
 | **File principale (app canonica)** | `coordinate_converter Claude.html` — applicazione **single-file** (HTML + CSS + JS inline). |
 | **Righe attuali** | **16317** righe (`wc -l` su questo file). |
 | **Dipendenze runtime** | **Nessun** `<script src="…">` esterno: un solo blocco `<script>` inline. In rete (solo con azione utente / contesto online): tile raster **Carto** (`*.basemaps.cartocdn.com`), geocoding **Nominatim** (default `nominatim.openstreetmap.org`; endpoint configurabile), link esterni mappa (Google Maps, OSM, ArcGIS Map Viewer / servizi Esri), e chiamate ausiliarie documentate in sessione (es. metadati immagine satellitare Esri). |
-| **Persistenza** | `localStorage` chiave **`coordconv_v1`**; **IndexedDB** per tile pack offline e cache geocoding (come da rules e sessione). |
+| **Persistenza** | `localStorage` chiave **`coordconv_v2`** (bump 2026-04-24, cleanup pre-GIS; la chiave `coordconv_v1` resta in place ma non è più letta); **IndexedDB** per tile pack offline e cache geocoding. |
 | **Come aprirla** | Aprire il file `.html` nel browser (doppio click o *Open with*). Per **Geolocation API** serve contesto sicuro: **HTTPS** o **localhost** (`window.isSecureContext`); su `file://` o HTTP non sicuro la geo è disabilitata come da documentazione in `docs/session-geolocalizzazione-e-mappa.md`. Opzionale: server statico locale se preferisci non usare `file://`. |
 | **Workspace** | `Cursor.code-workspace` presente in root. **Non** c’è `package.json` in root (il progetto non è un monorepo Node per l’app). |
 
@@ -73,7 +73,6 @@ Suddivisione **JavaScript** secondo i commenti `SECTION` nel file (anchor reali)
 | **SunCalc (subset)** | IIFE `SunCalc` con `getTimes`, `getMoonTimes`, `getMoonIllumination`; attribuzione *Vladimir Agafonkin, MIT* e riferimento repo `mourner/suncalc` nel commento sorgente. |
 | **Plus Code** | `SECTION 12b` — *Open Location Code* nel nome sezione. |
 | **QR Code** | `SECTION 26` — encoder *Model 2*, **ISO/IEC 18004**, Reed–Solomon, output SVG inline (commenti nel file). |
-| **DTG NATO** | `SECTION 14K` — implementazione senza dipendenze esterne (vedi `docs/session-geolocalizzazione-e-mappa.md`). |
 | **Geocoding** | `SECTION 14L` — coda/rate limit/retry/circuit breaker verso API stile Nominatim; dataset città offline + import JSON. |
 | **Mini-mappa** | Tile web (URL Carto in codice) + cache **IndexedDB**; overlay copertura, bbox, misura on-map, griglia MGRS/UTM (tutto nel medesimo file). |
 
@@ -85,15 +84,14 @@ Riferimenti testuali UI (non necessariamente implementazione letterale dell’in
 
 Sintesi allineata a `.cursor/rules/20-domain-knowledge.mdc`, `99-known-state.mdc`, e alla cronaca in `docs/session-geolocalizzazione-e-mappa.md` (ultimi checkpoint **2026-04-24 — GIS-first layout pivot**):
 
-- **Layout GIS-first (default):** `body.gis-mode` attivo al boot; topbar (`#appTopbar`) con tab bar (Traccia, Misura, Favoriti, DTG, Geocoding, Cronologia, Mappa/Offline) + CTA **Converti** (apre `<dialog id="convertModal">`) + kebab **Altri strumenti** (`<dialog id="toolsModal">` con Batch/Note/Sessione/Astro/Mag/Range). Mappa full-viewport in `#gisMapMount`. Dettaglio meccanica reparenting / CSS override / invarianti in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
+- **Layout GIS-first (default):** `body.gis-mode` attivo al boot; topbar (`#appTopbar`) con tab bar (Traccia, Waypoint, Misura, Favoriti, Geocoding, Cronologia, Mappa/Offline) + CTA **Converti** (apre `<dialog id="convertModal">`) + kebab **Altri strumenti** (`<dialog id="toolsModal">` con Batch/Note/Sessione/Astro/Mag). Mappa full-viewport in `#gisMapMount`. Dettaglio meccanica reparenting / CSS override / invarianti in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
 
 - **Conversioni / formati:** DD, DDM, DMS, UTM, MGRS, Plus Codes; datum italiani (Gauss-Boaga / ROMA40, ED50) e **datum aggiuntivi** (NAD27, NAD83, OSGB36, CH1903, SK42); auto-detect esteso (es. BNG, SK42 Gauss–Krüger) come da sessione.
 - **Input:** paste universale, schede manuali, drag&drop GPX/KML/GeoJSON, batch.
-- **Output / import-export:** GPX, KML, GeoJSON, CSV (track); toggle export per metadati datum extra ove previsto.
-- **DTG NATO:** parsing/formatting `DDHHMMZMMMYY`, policy anno due cifre, `J` rifiutato; integrazione cronologia, export, permalink (`#ll=` + `dtg=` opzionale) — dettaglio tabellare in sessione.
+- **Output / import-export:** GPX, KML, GeoJSON, CSV (track); toggle export per metadati datum extra ove previsto. `creator` = "GOI GIS Tool" in tutti i formati.
 - **Geocoding:** forward/reverse Nominatim, modalità **OPSEC strict**, fallback offline, rate limit e circuit breaker — dettaglio in sessione.
-- **Mappa:** centro fallback **La Spezia**; niente GPS silenzioso all’avvio; tracking live con `skipHistory` sui tick; tile offline da IDB; overlay copertura; bbox e named areas con zoom range; pannello offline dockabile/draggable in half/full.
-- **Strumenti:** drawer navigazione (`Ctrl+K` documentato in sessione), measure (Vincenty + poligono/area), range (ventaglio/cerchio con `vincentyDirect`), astro (SunCalc), magnetico (WMM), track builder, favoriti, sessione import/export.
+- **Mappa:** centro fallback **La Spezia**; niente GPS silenzioso all’avvio; geolocation **solo single-shot** (`btnMyLocation` → `getCurrentPosition`; il live tracking via `watchPosition` è stato rimosso nel cleanup pre-GIS 2026-04-24); tile offline da IDB; overlay copertura; bbox e named areas con zoom range; pannello offline dockabile/draggable in half/full.
+- **Strumenti:** drawer navigazione (`Ctrl+K` documentato in sessione), measure (Vincenty + poligono/area), astro (SunCalc), magnetico (WMM), track builder, waypoint manager (tab-as-modal), favoriti, sessione import/export. **Rimossi** nel cleanup pre-GIS 2026-04-24: Radius/LOS tool (`sec-range`), DTG NATO (tab + card + parser), Live Tracking.
 - **i18n:** IT / EN / FR con `data-i18n` e `data-i18n-html` per help ricco.
 - **Diagnostica:** blocco self-check in `SECTION 25` (assert su range, SunCalc, ecc.).
 
@@ -158,9 +156,14 @@ Concetti e norme ricorrenti in **rules** + **docs** + stringhe/tecnologie citate
 
 
 ## 8. COSE DA FARE
-Possibilità di salvare le tracce nei formati piu diffusi
-possibilità di salvare i waypoint nei formati piu diffusi
 
+_(nessun item attualmente aperto su waypoint — vedi §9 "COSE FATTE")_
+
+## 9. COSE FATTE (ultime)
+
+- **GIS Tool cleanup pre-phase (2026-04-24).** Pulizia di superficie prima dell'inizio del GIS progressive plan. Rimosse feature: **DTG NATO** completo (tab `dtg`, `dtgCard`, `formatDTG/parseDTG/DTG_TZ/DTG_MONTHS`, shortcut `Alt+T/Alt+Shift+T`, callsite in history/favorites/permalink/GPX-KML-GeoJSON-CSV export, tutte le chiavi i18n IT/EN/FR `dtg.*`, `sec.dtg`, `tabs.dtg`, `tools.dtg`, `help.guide.dtg.*`, `help.kbd.dtg*`); **Live Tracking** (`btnGeoLive`, CSS `.geo-nav-btn#btnGeoLive.is-live`, `state.geoWatchId`, tutta la pipeline `watchPosition`, i18n correlate — preserva `btnMyLocation` single-shot + OPSEC); **Radius/LOS tool** (`<details id="sec-range">`, tile toolsModal, `state.rangeOverlay`, `GIS_TOOL_SECTIONS.range`, helper `buildRangePolygon`, i18n `sec.range`/`range.*`/`tools.range`/`tip.range`). **Rename globale** `Convertitore Coordinate` / `Coordinate Converter` → **GOI GIS Tool** (`<title>`, `app.title`, `footer.appName` IT/EN/FR, GPX `creator`, KML `<name>`, GeoJSON `metadata.creator`, waypoint export). **LS bump** `coordconv_v1` → `coordconv_v2` con commento in-code; la chiave v1 resta ma non è più letta (stato fresh al primo boot post-upgrade). Piano: `.cursor/plans/gis_tool_cleanup_pre-phase_0ce7df27.plan.md`.
+
+- **WaypointModal manager split (2026-04-24).** Nuova `<details id="sec-waypoints">` + `<dialog id="waypointModal">` come tab-as-modal (`GIS_TABS_AS_MODAL = new Set(["waypoints"])`), `GIS_TAB_SECTIONS.waypoints → "sec-waypoints"`, manager completo (list + editor inline con `autoDetect` + import/export GeoJSON dedicato, cap 200, sanitize load esteso a `meta.icon/color/notes`). Riuso totale di `autoDetect` / `validateLatLon` / `waypointAdd` / `gisMoveSectionTo` / `spatialBuildFeatureCollectionFromAppState`. Dettagli piano: `.cursor/plans/waypointmodal_manager_split_4a8b4ca8.plan.md`.
 
 ---
 

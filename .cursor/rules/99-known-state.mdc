@@ -3,7 +3,7 @@ description: "Manual snapshot of current implemented features + non-obvious inva
 alwaysApply: false
 ---
 
-# Coordinate Converter — Known State (Manual)
+# GOI GIS Tool — Known State (Manual)
 
 Use this rule only when a task risks regressions or needs full context alignment.
 
@@ -14,7 +14,7 @@ Use this rule only when a task risks regressions or needs full context alignment
 ## “Do not break these” invariants
 - No silent geolocation at startup (permission UX + OPSEC).
 - Geolocation works only in secure context; UI must reflect this.
-- Live tracking must not spam history (`renderResults(..., { skipHistory:true })` for ticks).
+- Geolocation is single-shot only (`getCurrentPosition`); continuous `watchPosition` tracking has been removed in the pre-GIS cleanup — do not reintroduce it casually.
 - When offline, prefer IndexedDB cached tiles + placeholders; do not add auto-online fallbacks.
 - Named areas may be legacy (missing `z0/z1`) and must keep working.
 - OPSEC strict mode (`state.opsecStrict`) must block external geocoding fetches.
@@ -38,3 +38,10 @@ Use this rule only when a task risks regressions or needs full context alignment
 - `mapSize` is forced to `"full"` when entering GIS mode; the legacy `mm-full` fixed-float for `#offlineTilePanel` is neutralized via `.tab-drawer-body #offlineTilePanel` / `.tools-panel-wrap #offlineTilePanel` overrides.
 - The on-map coverage button (`[data-role="offline-panel-open"]`) is intercepted in capture phase to open the `layers` tab — never call `state.offlineDownloadVisible = true` on its own in GIS mode and expect to see the panel.
 - `gisInit()` is idempotent (guarded by `_gisInitDone`). It runs at the end of `init()`, after `applyLanguage` and before `initMiniMapOnStartup` so the first map render happens inside `#gisMapMount`.
+
+## Waypoints modal (split from sec-track)
+- `state.mapWaypoints` is the single source of truth for map waypoints; the modal never duplicates the array. Rendering in the modal's `#wp-list` must be kept in sync with `renderMapWaypointsList()` (both are called by `renderMapWaypointsAll()`).
+- The Waypoints tab is a `tab-as-modal`: `GIS_TAB_SECTIONS.waypoints === "sec-waypoints"` and `"waypoints"` is in `GIS_TABS_AS_MODAL`. Opening reparents `sec-waypoints` into the dialog body via `gisMoveSectionTo`, closing calls `gisRestoreSection("sec-waypoints")`. Do not clone; do not render the section twice.
+- `state.waypointsModalOpen` and `state.waypointEditorDraft` are transient. Nothing new is persisted in `coordconv_v2` beyond what was already there (`mapWaypoints`, `activeTab`, …).
+- Import/export of waypoints uses only GeoJSON (not a new format). Import goes through `spatialGeojsonTextToFeatureCollection` → `spatialNormalizeGeoJSON` → filter `Point`; export reuses `spatialBuildFeatureCollectionFromAppState` filtered to `properties.kind === "waypoint"`. The cap of 200 waypoints must be respected (same as `saveStore`).
+- Sanitize on load already clamps `mapWaypoints` to 200 and `name` to 60 chars. The modal also clamps `meta.notes` to 500 chars (same ceiling used by `favorites.notes`).

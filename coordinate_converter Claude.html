@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Convertitore Coordinate · DD/DDM/DMS/UTM/MGRS · WGS84</title>
+<title>GOI GIS Tool</title>
 <style>
 /* =============================================================================
    DESIGN SYSTEM (Vercel/Linear, glass) — Inter · edit :root here to re-skin UI
@@ -453,7 +453,6 @@ main{max-width:1400px; margin:0 auto; padding:18px 20px 40px}
 .geo-nav-btn{min-height:44px; min-width:44px; display:inline-flex; align-items:center; justify-content:center; gap:4px; padding:8px 10px; font-size:.88rem; text-align:center}
 .geo-nav-btn:disabled{opacity:.55; cursor:not-allowed}
 .geo-nav-btn.geo-acquiring{pointer-events:none; opacity:.85}
-.geo-nav-btn#btnGeoLive.is-live{border-color:var(--success); box-shadow:0 0 0 1px var(--success) inset; background:color-mix(in srgb, var(--success) 12%, var(--panel2))}
 #pasteStatus.geo-pending{position:relative; padding-left:2px; color:var(--accent)}
 #pasteStatus.geo-pending::before{
   content:""; display:inline-block; width:14px; height:14px; margin-right:6px; vertical-align:-2px;
@@ -470,13 +469,6 @@ main{max-width:1400px; margin:0 auto; padding:18px 20px 40px}
   gap:10px 12px; min-width:0; flex:1 1 auto;
 }
 .results-col .results-head-main h2{ margin:0 }
-.geo-live-badge{
-  display:inline-flex; align-items:center; gap:4px; padding:4px 10px; font-size:.7rem; font-weight:800;
-  letter-spacing:.04em; color:#fff; background:linear-gradient(120deg, #0a4, #083); border-radius:999px; box-shadow:0 0 0 1px color-mix(in srgb, #0f0 30%, transparent);
-  animation:geoLivePulse 1.5s ease-in-out infinite;
-}
-.geo-live-led{font-size:.65rem; line-height:1; filter:saturate(1.1)}
-@keyframes geoLivePulse{ 0%, 100% { filter:brightness(1) } 50% { filter:brightness(1.2) } }
 .gps-metadata{
   font-size:.8rem; line-height:1.45; color:var(--text); background:var(--panel2);
   border:1px solid var(--border); border-radius:8px; padding:10px 12px; margin:10px 0 0;
@@ -767,91 +759,6 @@ html[data-theme="light"] .geo-warn{color:#991b1b}
 .geo-settings .geo-set-row{display:flex; gap:8px; align-items:center; margin-top:6px}
 .geo-settings input[type="url"], .geo-settings input[type="text"]{flex:1 1 auto; font-family:ui-monospace, monospace; font-size:.82rem; padding:4px 8px}
 .geo-settings button{font-size:.82rem}
-
-/* ================ DTG (Date-Time Group) CARD ================
- * A collapsible <details> below the results/maps row. The live display
- * uses a dim "console" feel (monospace, soft green on dark, soft blue on
- * light) so it stands out from the surrounding panels without shouting.
- * The parse box is a simple table of derived times, filled in real time
- * as the user types. */
-.dtg-card{
-  margin:10px 0 14px; padding:12px 16px;
-  border:1px solid var(--border); border-radius:16px;
-  background:var(--panel);
-  backdrop-filter:blur(var(--glass-blur)) saturate(140%);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(140%);
-  box-shadow:var(--shadow), var(--shadow-inset-card);
-  font-size:.88rem;
-}
-.dtg-card > summary{
-  cursor:pointer; font-weight:700; color:var(--accent);
-  list-style:none; padding:4px 0;
-  display:flex; align-items:center; gap:10px;
-}
-.dtg-card > summary::-webkit-details-marker{display:none}
-.dtg-sum-icon{font-size:1.15rem}
-.dtg-now-inline{
-  margin-left:auto; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-weight:600; font-size:.85rem; color:var(--muted);
-  letter-spacing:.3px; opacity:.85;
-}
-.dtg-body{margin-top:12px; display:flex; flex-direction:column; gap:10px}
-.dtg-now-row, .dtg-display-row, .dtg-parse-row{
-  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
-}
-.dtg-lbl{font-size:.78rem; color:var(--muted); min-width:4.5em}
-.dtg-tz-select{
-  flex:0 0 auto; font-size:.85rem; padding:5px 8px;
-  min-width:220px; max-width:100%;
-}
-.dtg-hintchk{
-  display:flex; align-items:center; gap:6px;
-  font-size:.78rem; color:var(--muted); cursor:pointer;
-  margin-left:auto;
-}
-.dtg-hintchk input{accent-color:var(--accent)}
-.dtg-display{
-  flex:1 1 260px;
-  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size:1.35rem; font-weight:700; letter-spacing:.8px;
-  padding:10px 14px; border-radius:8px;
-  background:linear-gradient(135deg, #0d1117 0%, #161b22 100%);
-  color:#7ee787; border:1px solid #30363d;
-  text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-html[data-theme="light"] .dtg-display{
-  background:linear-gradient(135deg, #f0f6fc 0%, #dbeeff 100%);
-  color:#0550ae; border-color:#b8d4ff;
-}
-.dtg-display-actions{display:flex; gap:6px; flex:0 0 auto}
-.dtg-input{
-  flex:1 1 220px;
-  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size:1rem; padding:7px 10px; letter-spacing:.5px;
-  text-transform:uppercase;
-}
-.dtg-input.dtg-invalid{ border-color:#ef4444; box-shadow:0 0 0 2px rgba(239,68,68,.18) }
-.dtg-input.dtg-valid  { border-color:#22c55e; box-shadow:0 0 0 2px rgba(34,197,94,.18) }
-.dtg-parse-out{
-  margin:0;
-  border-radius:6px; border:1px solid var(--border);
-  padding:10px 14px; background:var(--panel);
-  font-size:.82rem; line-height:1.55;
-  display:grid; grid-template-columns:max-content 1fr; gap:4px 14px;
-}
-.dtg-parse-out dt{ color:var(--muted); font-weight:600 }
-.dtg-parse-out dd{
-  margin:0; font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing:.2px; word-break:break-all;
-}
-
-/* On narrow viewports the TZ select and the "Formato corto" checkbox stack
- * below; the live display keeps full width so it's always readable. */
-@media (max-width:600px){
-  .dtg-tz-select{min-width:100%}
-  .dtg-hintchk{margin-left:0}
-  .dtg-display{font-size:1.15rem; letter-spacing:.6px}
-}
 
 .offline-panel-mount{ margin-top:14px }
 .offline-panel-mount[hidden]{ display:none !important }
@@ -3517,6 +3424,53 @@ dialog.app-modal::backdrop{
 #convertModalBody > .input-col{ margin:0 0 12px; }
 #convertModalBody > .results-col{ margin:0; }
 
+/* Waypoint manager (sec-waypoints + #waypointModal). Uses existing
+ * glass tokens; no new variables. Kept close to the app-modal block
+ * so future re-skins only touch :root. */
+#waypointModalBody > #sec-waypoints{ margin:0; border:none; background:transparent; padding:0; }
+#waypointModalBody > #sec-waypoints > summary{ display:none; }
+.wp-toolbar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:10px 0 12px; }
+.wp-toolbar .sep{ width:1px; height:22px; background:var(--border); margin:0 2px; }
+.wp-editor{
+  border:1px solid var(--border-glow, var(--border)); border-radius:14px;
+  background:var(--panel2); padding:12px 14px; margin:8px 0 14px;
+  box-shadow:var(--shadow-inset-card, none);
+}
+.wp-editor-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.wp-editor-head strong{ font-size:.98rem; }
+.wp-editor-grid{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+  gap:10px 12px;
+}
+.wp-field{ display:flex; flex-direction:column; gap:4px; font-size:.85rem; color:var(--muted); }
+.wp-field--wide{ grid-column:1 / -1; }
+.wp-field input[type="color"]{ width:56px; height:34px; padding:2px; }
+.wp-feedback{ font-size:.78rem; min-height:1em; color:var(--muted); }
+.wp-feedback.is-ok{ color:var(--success, var(--accent)); }
+.wp-feedback.is-err{ color:var(--error); }
+.wp-field input[aria-invalid="true"]{ border-color:var(--error); }
+.wp-editor-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+.wp-list{ margin-top:6px; }
+.wp-list:empty::before{
+  content:attr(data-empty); color:var(--muted); font-size:.88rem;
+  display:block; padding:10px 4px;
+}
+.wp-row{
+  display:flex; align-items:center; gap:10px; padding:8px 10px;
+  border:1px solid var(--border); border-radius:10px; margin:6px 0;
+  background:var(--panel);
+}
+.wp-row + .wp-row{ margin-top:6px; }
+.wp-row.is-editing{ border-color:var(--accent); background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
+.wp-row__main{ flex:1 1 auto; min-width:0; }
+.wp-row__name{ font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.wp-row__coord{ font-size:.8rem; color:var(--muted); font-variant-numeric:tabular-nums; }
+.wp-row__actions{ display:flex; gap:6px; flex-shrink:0; }
+.wp-row__actions .btn{ padding:4px 8px; }
+.wp-count{ font-size:.8rem; color:var(--muted); margin-top:8px; text-align:right; }
+/* sec-waypoints lives inside the same .grid wrapper as sec-track, so it
+ * is already hidden on the GIS home by the blanket `body.gis-mode > main > .grid` rule. */
+
 /* Altri strumenti grid */
 .tools-menu-grid{
   display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr));
@@ -3607,7 +3561,7 @@ dialog.app-modal::backdrop{
       <span class="net-label" data-i18n="net.online">Online</span>
     </button>
     <div class="brand">
-      <h1 data-i18n="app.title">Convertitore Coordinate</h1>
+      <h1 data-i18n="app.title">GOI GIS Tool</h1>
       <p data-i18n="app.subtitle">DD · DDM · DMS · UTM · MGRS — WGS84</p>
     </div>
     <!-- ==================== HEADER TOOLBAR ====================
@@ -3706,11 +3660,6 @@ dialog.app-modal::backdrop{
       <span class="app-tab-ico" aria-hidden="true">★</span>
       <span class="app-tab-lbl" data-i18n="tabs.favorites">Favoriti</span>
     </button>
-    <button class="app-tab" data-tab="dtg" type="button" role="tab" aria-selected="false"
-            data-i18n-tip="tabs.dtg.tip">
-      <span class="app-tab-ico" aria-hidden="true">🕐</span>
-      <span class="app-tab-lbl" data-i18n="tabs.dtg">DTG</span>
-    </button>
     <button class="app-tab" data-tab="geocoding" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.geocoding.tip">
       <span class="app-tab-ico" aria-hidden="true">🔎</span>
@@ -3754,9 +3703,6 @@ dialog.app-modal::backdrop{
         <div class="geo-actions" role="group" aria-label="Geolocation">
           <button type="button" id="btnMyLocation" class="btn btn-sm geo-nav-btn" data-i18n-tip="tip.myLocation" disabled>
             <span class="geo-ico" aria-hidden="true">📍</span> <span data-i18n="btn.myLocation">La mia posizione</span>
-          </button>
-          <button type="button" id="btnGeoLive" class="btn btn-sm geo-nav-btn" data-i18n-tip="tip.geoLive" disabled>
-            <span class="geo-ico" aria-hidden="true">▶️</span> <span data-i18n="btn.geoLive">Tracking live</span>
           </button>
         </div>
       </div>
@@ -3950,9 +3896,6 @@ dialog.app-modal::backdrop{
               <button type="button" class="loc-refresh" data-i18n-tip="loc.refreshTip" aria-label="Refresh">🔄</button>
             </div>
           </div>
-          <span id="geoLiveBadge" class="geo-live-badge" hidden>
-            <span class="geo-live-led" aria-hidden="true">🔴</span> <span data-i18n="badge.geoLive">LIVE</span>
-          </span>
         </div>
         <div id="results"><p style="color:var(--muted); font-size:.88rem" data-i18n="res.empty">Inserisci una coordinata e premi Converti.</p></div>
         <div id="gpsMetadata" class="gps-metadata" hidden></div>
@@ -4061,39 +4004,6 @@ dialog.app-modal::backdrop{
       </button>
     </div>
 
-    <!-- ============ DTG CARD (Date-Time Group NATO) ============
-         Moved here from the main column so the homepage stays focused on
-         conversion. Reached via the Tools drawer → "🕐 DTG". -->
-    <details id="dtgCard" class="dtg-card" data-tab-key="dtg">
-      <summary>
-        <span class="dtg-sum-icon" aria-hidden="true">🕐</span>
-        <span data-i18n="dtg.title">DTG (Date-Time Group)</span>
-        <span id="dtgNowInline" class="dtg-now-inline" aria-hidden="true"></span>
-      </summary>
-      <div class="dtg-body">
-        <div class="dtg-now-row">
-          <label class="dtg-lbl" for="dtgNowTz" data-i18n="dtg.tz">Fuso</label>
-          <select id="dtgNowTz" class="dtg-tz-select"></select>
-          <label class="dtg-hintchk" data-i18n-tip="dtg.shortTip">
-            <input type="checkbox" id="dtgShortToggle">
-            <span data-i18n="dtg.short">Formato corto (senza anno)</span>
-          </label>
-        </div>
-        <div class="dtg-display-row">
-          <div id="dtgNowDisplay" class="dtg-display" aria-live="polite">—</div>
-          <div class="dtg-display-actions">
-            <button id="btnDtgCopy" class="btn btn-sm" data-i18n="dtg.copy" data-i18n-tip="dtg.copyTip">📋 Copia</button>
-          </div>
-        </div>
-        <div class="dtg-parse-row">
-          <label class="dtg-lbl" for="dtgInput" data-i18n="dtg.parse">Leggi DTG</label>
-          <input type="text" id="dtgInput" class="dtg-input" placeholder="211630ZAPR26" autocomplete="off" spellcheck="false" maxlength="14">
-          <button id="btnDtgNowFill" class="btn btn-sm" data-i18n="dtg.useNow" data-i18n-tip="dtg.useNowTip">⏱ Usa ora</button>
-        </div>
-        <dl id="dtgParseResult" class="dtg-parse-out" hidden></dl>
-      </div>
-    </details>
-
     <details id="sec-batch" data-tab-key="batch">
       <summary data-i18n="sec.batch">Batch — lista di coordinate</summary>
       <div class="section-body">
@@ -4164,6 +4074,69 @@ dialog.app-modal::backdrop{
           <button type="button" id="btnTrackExportWkt" class="btn btn-sm" data-i18n="track.expWkt" data-i18n-tip="tip.trackExpWkt">WKT</button>
           <button type="button" id="btnTrackExportShpZip" class="btn btn-sm" data-i18n="track.expShpZip" data-i18n-tip="tip.trackExpShpZip">SHP (ZIP)</button>
         </div>
+      </div>
+    </details>
+
+    <details id="sec-waypoints" data-tab-key="waypoints" class="wp-section">
+      <summary data-i18n="waypointModal.title">Waypoint</summary>
+      <div class="section-body wp-manager">
+        <p class="hint" data-i18n="waypointModal.hint">Crea, modifica e gestisci i waypoint sulla mappa. Ogni waypoint ha nome, coordinata, icona NATO, colore e note opzionali.</p>
+        <div class="wp-toolbar">
+          <button type="button" id="wpAddBtn" class="btn btn-sm btn-primary" data-i18n="waypointModal.new" data-i18n-tip="tip.waypointModal.new">➕ Nuovo waypoint</button>
+          <button type="button" id="wpPickBtn" class="btn btn-sm" aria-pressed="false" data-i18n="waypointModal.pickOnMap" data-i18n-tip="tip.waypointModal.pickOnMap">🖱️ Pick sulla mappa</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="wpImportBtn" class="btn btn-sm" data-i18n="waypointModal.importGeoJSON" data-i18n-tip="tip.waypointModal.importGeoJSON">📥 Importa GeoJSON</button>
+          <button type="button" id="wpExportBtn" class="btn btn-sm" data-i18n="waypointModal.exportGeoJSON" data-i18n-tip="tip.waypointModal.exportGeoJSON">📤 Esporta GeoJSON</button>
+          <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="wpClearBtn" class="btn btn-sm" data-i18n="waypointModal.clearAll" data-i18n-tip="tip.waypointModal.clearAll">❌ Svuota tutto</button>
+        </div>
+        <div id="waypointEditor" class="wp-editor" hidden aria-live="polite">
+          <div class="wp-editor-head">
+            <strong id="wpEditorTitle" data-i18n="waypointModal.editor.newTitle">Nuovo waypoint</strong>
+            <button type="button" id="wpEditorCancel" class="btn btn-sm" data-i18n="waypointModal.editor.cancel">Annulla</button>
+          </div>
+          <div class="wp-editor-grid">
+            <label class="wp-field">
+              <span data-i18n="waypointModal.editor.name">Nome</span>
+              <input type="text" id="wpFieldName" maxlength="60" data-i18n-ph="waypointModal.editor.namePh" placeholder="Nome (opz.)">
+            </label>
+            <label class="wp-field wp-field--wide">
+              <span data-i18n="waypointModal.editor.coord">Coordinata (qualsiasi formato)</span>
+              <input type="text" id="wpFieldCoord" autocomplete="off" spellcheck="false" data-i18n-ph="waypointModal.editor.coordPh" placeholder="45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W">
+              <span id="wpFieldCoordFeedback" class="wp-feedback" aria-live="polite"></span>
+            </label>
+            <label class="wp-field">
+              <span data-i18n="waypointModal.editor.icon">Icona (NATO)</span>
+              <select id="wpFieldIcon">
+                <option value="hq"      data-i18n="track.icon.hq">HQ</option>
+                <option value="inf"     data-i18n="track.icon.inf">INF</option>
+                <option value="armor"   data-i18n="track.icon.armor">ARM</option>
+                <option value="recon"   data-i18n="track.icon.recon">REC</option>
+                <option value="supply"  data-i18n="track.icon.supply">SUP</option>
+                <option value="medical" data-i18n="track.icon.medical">MED</option>
+                <option value="air"     data-i18n="track.icon.air">AIR</option>
+                <option value="comms"   data-i18n="track.icon.comms">SIG</option>
+                <option value="naval"   data-i18n="track.icon.naval">NAV</option>
+                <option value="eng"     data-i18n="track.icon.eng">ENG</option>
+              </select>
+            </label>
+            <label class="wp-field">
+              <span data-i18n="waypointModal.editor.color">Colore</span>
+              <input type="color" id="wpFieldColor" value="#2563eb">
+            </label>
+            <label class="wp-field wp-field--wide">
+              <span data-i18n="waypointModal.editor.notes">Note (opz.)</span>
+              <textarea id="wpFieldNotes" maxlength="500" rows="2" data-i18n-ph="waypointModal.editor.notesPh" placeholder="Note (max 500 caratteri)"></textarea>
+            </label>
+          </div>
+          <div class="wp-editor-actions">
+            <button type="button" id="wpEditorDelete" class="btn btn-sm" hidden data-i18n="waypointModal.editor.delete">🗑 Elimina</button>
+            <button type="button" id="wpEditorSave" class="btn btn-sm btn-primary" data-i18n="waypointModal.editor.save">💾 Salva</button>
+          </div>
+        </div>
+        <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="list" aria-live="polite"></div>
+        <div id="wp-count" class="wp-count" aria-live="polite"></div>
       </div>
     </details>
 
@@ -4345,32 +4318,6 @@ dialog.app-modal::backdrop{
       </div>
     </details>
 
-    <details id="sec-range" data-tab-key="range">
-      <summary data-i18n="sec.range">Raggio / settore (LOS)</summary>
-      <div class="section-body">
-        <p class="sub-section-hint" data-i18n="range.hint">Disegna un cerchio o un ventaglio (Vincenty diretto) sulla mini-mappa. Esporta poligono GeoJSON.</p>
-        <div class="measure-grid">
-          <div class="field-group">
-            <label data-i18n="range.radius">Raggio (km)</label>
-            <input type="text" id="rangeRadiusKm" inputmode="decimal" placeholder="5">
-          </div>
-          <div class="field-group">
-            <label data-i18n="range.azCenter">Azimuth centro (° vero, 0–360)</label>
-            <input type="text" id="rangeAz" inputmode="decimal" placeholder="0">
-          </div>
-          <div class="field-group">
-            <label data-i18n="range.width">Apertura settore (°) · 360 = cerchio</label>
-            <input type="text" id="rangeWidth" inputmode="decimal" placeholder="60">
-          </div>
-        </div>
-        <div class="actions" style="flex-wrap:wrap">
-          <button type="button" class="btn btn-primary" id="btnRangeDraw" data-i18n="range.draw" data-i18n-tip="tip.rangeDraw">Disegna sulla mappa</button>
-          <button type="button" class="btn btn-sm" id="btnRangeClear" data-i18n="range.clear" data-i18n-tip="tip.rangeClear">Rimuovi disegno</button>
-          <button type="button" class="btn btn-sm" id="btnRangeGeo" data-i18n="range.geojson" data-i18n-tip="tip.rangeGeo">Scarica GeoJSON</button>
-        </div>
-        <p class="sub-section-hint" id="range-geo-hint" style="color:var(--muted)"></p>
-      </div>
-    </details>
   </section>
 
 <section id="printReport" class="for-print" aria-hidden="true"></section>
@@ -4395,7 +4342,7 @@ dialog.app-modal::backdrop{
      Content is reparented in on open and restored on close. -->
 <dialog id="convertModal" class="app-modal convert-modal">
   <div class="app-modal-head">
-    <h2 class="app-modal-title" data-i18n="convert.title">Convertitore Coordinate</h2>
+    <h2 class="app-modal-title" data-i18n="convert.title">Convertitore — inserisci coordinate</h2>
     <button type="button" class="app-modal-close" id="convertModalClose"
             aria-label="Close">×</button>
   </div>
@@ -4434,13 +4381,23 @@ dialog.app-modal::backdrop{
         <span class="tmb-ico" aria-hidden="true">🧭</span>
         <span class="tmb-lbl" data-i18n="sec.mag">Declinazione</span>
       </button>
-      <button type="button" class="tools-menu-btn" data-tool="range">
-        <span class="tmb-ico" aria-hidden="true">⭕</span>
-        <span class="tmb-lbl" data-i18n="sec.range">Raggio</span>
-      </button>
     </div>
     <div class="tools-panel-wrap" id="toolsPanelWrap" aria-live="polite"></div>
   </div>
+</dialog>
+
+<!-- ============ WAYPOINT MODAL ============
+     Manager dedicato ai waypoint della mappa (list + inline editor +
+     import/export GeoJSON). Opens as a tab-as-modal when the user
+     selects the "Waypoints" tab. Content (sec-waypoints) is
+     reparented in on open and restored on close. -->
+<dialog id="waypointModal" class="app-modal waypoint-modal" aria-labelledby="waypointModalTitle">
+  <div class="app-modal-head">
+    <h2 id="waypointModalTitle" class="app-modal-title" data-i18n="waypointModal.title">Waypoint</h2>
+    <button type="button" class="app-modal-close" id="waypointModalClose"
+            aria-label="Close">×</button>
+  </div>
+  <div class="app-modal-body" id="waypointModalBody"></div>
 </dialog>
 
 <footer>
@@ -4449,7 +4406,7 @@ dialog.app-modal::backdrop{
     <span data-i18n="footer.made">Realizzato da</span>
     <strong>T.M.</strong>
     <span class="sig-sep">·</span>
-    <span data-i18n="footer.appName">Convertitore Coordinate</span>
+    <span data-i18n="footer.appName">GOI GIS Tool</span>
     <span class="sig-sep">·</span>
     <span>v1.0</span>
     <span class="sig-sep">·</span>
@@ -4501,13 +4458,6 @@ dialog.app-modal::backdrop{
           <span class="tool-desc" data-i18n="tools.meas.desc">Vincenty inverso (A→B) e diretto (A + azimuth + distanza → B).</span>
         </span>
       </button>
-      <button type="button" class="tool-item" data-tool-target-sec="sec.range">
-        <span class="tool-ico">⭕</span>
-        <span class="tool-label">
-          <span data-i18n="tools.range">Raggio / settore (LOS)</span>
-          <span class="tool-desc" data-i18n="tools.range.desc">Cerchio o ventaglio sulla mini-mappa, export GeoJSON.</span>
-        </span>
-      </button>
     </div>
 
     <div class="tools-group">
@@ -4524,13 +4474,6 @@ dialog.app-modal::backdrop{
         <span class="tool-label">
           <span data-i18n="tools.mag">Declinazione magnetica WMM</span>
           <span class="tool-desc" data-i18n="tools.mag.desc">Conversione grid ↔ magnetico ↔ vero.</span>
-        </span>
-      </button>
-      <button type="button" class="tool-item" data-tool-target="dtgCard">
-        <span class="tool-ico">🕐</span>
-        <span class="tool-label">
-          <span data-i18n="tools.dtg">DTG (Date-Time Group NATO)</span>
-          <span class="tool-desc" data-i18n="tools.dtg.desc">Formato militare DDHHMMZMMMYY, fuso Alpha-Zulu, parser permissivo.</span>
         </span>
       </button>
     </div>
@@ -4598,16 +4541,6 @@ dialog.app-modal::backdrop{
       </div>
 
       <div class="mg-card">
-        <h3><span class="mg-ico">🕐</span><span data-i18n="help.guide.dtg.title">DTG (Date-Time Group)</span></h3>
-        <ul>
-          <li data-i18n-html="help.guide.dtg.live">Display live aggiornato ogni secondo, con selettore di fuso NATO (A-Y + Z).</li>
-          <li data-i18n-html="help.guide.dtg.parse">Incolla un DTG come <code>211630ZAPR26</code> per ottenere data/ora locale, UTC, giorno della settimana e delta da "ora".</li>
-          <li data-i18n-html="help.guide.dtg.keys">Scorciatoie: <kbd>Alt+T</kbd> apre/focus sulla card DTG, <kbd>Alt+Shift+T</kbd> inserisce l'ora corrente. <kbd>Ctrl+T</kbd> e <kbd>Ctrl+Shift+T</kbd> funzionano solo se il browser non li intercetta per "nuova scheda".</li>
-          <li data-i18n-html="help.guide.dtg.exports">Il DTG viene incluso in cronologia, favoriti, permalink (<code>&amp;dtg=…</code>) ed export GPX/KML/GeoJSON/CSV.</li>
-        </ul>
-      </div>
-
-      <div class="mg-card">
         <h3><span class="mg-ico">🔎</span><span data-i18n="help.guide.geo.title">Geocoding (indirizzo ↔ coordinate)</span></h3>
         <ul>
           <li data-i18n-html="help.guide.geo.fwd">Card <b>Cerca indirizzo</b>: digita un luogo, scegli tra i risultati, il punto viene caricato e convertito. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> apre il campo.</li>
@@ -4665,8 +4598,6 @@ dialog.app-modal::backdrop{
         <tr><td><kbd>Ctrl</kbd>+<kbd>L</kbd></td><td data-i18n="help.kbd.focus">Vai a Input automatico e seleziona tutto</td></tr>
         <tr><td><kbd>S</kbd></td><td data-i18n="help.kbd.bboxSelect">Attiva/annulla la selezione area sulla mini-mappa (pre-cache)</td></tr>
         <tr><td><kbd>V</kbd></td><td data-i18n="help.kbd.bboxViewport">Usa il viewport corrente come area pre-cache</td></tr>
-        <tr><td><kbd>Alt</kbd>+<kbd>T</kbd></td><td data-i18n="help.kbd.dtgFocus">Apri/focus sulla card DTG (Alt+T, anche Ctrl+T se il browser lo consente)</td></tr>
-        <tr><td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd></td><td data-i18n="help.kbd.dtgNow">Inserisci il DTG corrente nel campo (Alt+Shift+T / Ctrl+Shift+T)</td></tr>
         <tr><td><kbd>Alt</kbd>+<kbd>F</kbd></td><td data-i18n="help.kbd.geoFocus">Apri/focus sulla card Cerca indirizzo (Alt+F, anche Ctrl+F se il browser lo consente)</td></tr>
         <tr><td><kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd></td><td data-i18n="help.kbd.tabs">Cambia scheda: Lat/Lon, UTM, MGRS</td></tr>
         <tr><td><kbd>Esc</kbd></td><td data-i18n="help.kbd.esc">Pulisci campi e risultati (o chiudi questa finestra)</td></tr>
@@ -4746,7 +4677,7 @@ dialog.app-modal::backdrop{
 /* ========================= SECTION 1: I18N ========================= */
 const I18N = {
   it: {
-    "app.title":"Convertitore Coordinate",
+    "app.title":"GOI GIS Tool",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Converti",
     "convert.title":"Convertitore — inserisci coordinate",
@@ -4759,8 +4690,6 @@ const I18N = {
     "tabs.measure.tip":"Distanza, azimuth e destinazione (Vincenty).",
     "tabs.favorites":"Favoriti",
     "tabs.favorites.tip":"Punti salvati (localStorage) con ricerca e convenzione naming.",
-    "tabs.dtg":"DTG",
-    "tabs.dtg.tip":"Date-Time Group NATO: display live e parser.",
     "tabs.geocoding":"Cerca",
     "tabs.geocoding.tip":"Ricerca indirizzo / località (Nominatim). Rispetta OPSEC strict.",
     "tabs.history":"Cronologia",
@@ -4791,14 +4720,10 @@ const I18N = {
     "tools.fav.desc":"Punti salvati persistenti (localStorage).",
     "tools.meas":"Distanza · azimuth · destinazione",
     "tools.meas.desc":"Vincenty inverso (A→B) e diretto (A + azimuth + distanza → B).",
-    "tools.range":"Raggio / settore (LOS)",
-    "tools.range.desc":"Cerchio o ventaglio sulla mini-mappa, export GeoJSON.",
     "tools.astro":"Alba / tramonto / luna",
     "tools.astro.desc":"Meeus/suncalc locale, zero rete.",
     "tools.mag":"Declinazione magnetica WMM",
     "tools.mag.desc":"Conversione grid ↔ magnetico ↔ vero.",
-    "tools.dtg":"DTG (Date-Time Group NATO)",
-    "tools.dtg.desc":"Formato militare DDHHMMZMMMYY, fuso Alpha-Zulu, parser permissivo.",
     "tools.session":"Sessione (import / export JSON)",
     "tools.session.desc":"Backup di favoriti, cronologia, impostazioni.",
     "sec.track":"📍 Traccia a punti",
@@ -4831,6 +4756,42 @@ const I18N = {
     "track.icon.eng":"GN",
     "mapWp.title":"Waypoints sulla mappa",
     "mapWp.hint":"Punti sulla mappa separati dalla polyline della traccia: simboli NATO, nome e colore. In GPX escono come waypoint accanto al track.",
+    "waypointModal.title":"Waypoint",
+    "waypointModal.hint":"Crea, modifica e gestisci i waypoint sulla mappa. Ogni waypoint ha nome, coordinata, icona NATO, colore e note opzionali.",
+    "waypointModal.new":"➕ Nuovo waypoint",
+    "waypointModal.pickOnMap":"🖱️ Pick sulla mappa",
+    "waypointModal.importGeoJSON":"📥 Importa GeoJSON",
+    "waypointModal.exportGeoJSON":"📤 Esporta GeoJSON",
+    "waypointModal.clearAll":"❌ Svuota tutto",
+    "waypointModal.empty":"Nessun waypoint. Aggiungi il primo con \"Nuovo\" o \"Pick sulla mappa\".",
+    "waypointModal.unnamed":"(senza nome)",
+    "waypointModal.capWarn":"Il file contiene {0} waypoint, ma restano solo {1} slot (cap 200). Importare comunque i primi {1}?",
+    "waypointModal.capFull":"Cap 200 waypoint raggiunto. Elimina qualcosa prima di importare.",
+    "waypointModal.importEmpty":"Nessun Point trovato nel GeoJSON.",
+    "waypointModal.importedN":"Importati {0} waypoint ({1} scartati).",
+    "waypointModal.exportedN":"Esportati {0} waypoint.",
+    "waypointModal.clearConfirm":"Eliminare TUTTI i waypoint?",
+    "waypointModal.deleteConfirm":"Eliminare questo waypoint?",
+    "waypointModal.zoomTo":"Centra mappa sul waypoint",
+    "waypointModal.editor.newTitle":"Nuovo waypoint",
+    "waypointModal.editor.editTitle":"Modifica waypoint",
+    "waypointModal.editor.edit":"Modifica",
+    "waypointModal.editor.name":"Nome",
+    "waypointModal.editor.namePh":"Nome (opz.)",
+    "waypointModal.editor.coord":"Coordinata (qualsiasi formato)",
+    "waypointModal.editor.coordPh":"45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W",
+    "waypointModal.editor.icon":"Icona (NATO)",
+    "waypointModal.editor.color":"Colore",
+    "waypointModal.editor.notes":"Note (opz.)",
+    "waypointModal.editor.notesPh":"Note (max 500 caratteri)",
+    "waypointModal.editor.save":"💾 Salva",
+    "waypointModal.editor.cancel":"Annulla",
+    "waypointModal.editor.delete":"🗑 Elimina",
+    "tip.waypointModal.new":"Apre l'editor inline per inserire un nuovo waypoint (coordinate, nome, icona, colore, note).",
+    "tip.waypointModal.pickOnMap":"Attiva/disattiva la modalità pick sulla mappa per creare un waypoint cliccando.",
+    "tip.waypointModal.importGeoJSON":"Importa solo i Point da un file GeoJSON (cap 200).",
+    "tip.waypointModal.exportGeoJSON":"Esporta i waypoint come FeatureCollection GeoJSON (kind: waypoint).",
+    "tip.waypointModal.clearAll":"Elimina tutti i waypoint (chiede conferma).",
     "mapWp.clear":"❌ Svuota waypoints",
     "mapWp.clearConfirm":"Eliminare tutti i waypoints sulla mappa?",
     "mapWp.empty":"Nessun waypoint. Usa il pulsante waypoint sulla mini-mappa o qui sotto.",
@@ -5080,7 +5041,7 @@ const I18N = {
     "notes.datumExtra":"<b>Datum aggiuntivi</b> (NAD27/NAD83/OSGB36/CH1903/SK42): usali solo se la tua carta è in quel datum. Confondere WGS84↔SK42 può introdurre errori dell'ordine di <b>100–200 m</b>; OSGB36 senza griglia OSTN può essere fuori di <b>fino a ~10 m</b> in UK; NAD27 varia molto per area (senza NTv2).",
     "footer.text":"Applicazione 100% offline. Nessun dato lascia il browser. WGS84.",
     "footer.made":"Realizzato da",
-    "footer.appName":"Convertitore Coordinate",
+    "footer.appName":"GOI GIS Tool",
     "about.title":"Informazioni",
     "about.author":"Autore",
     "about.version":"Versione",
@@ -5272,18 +5233,6 @@ const I18N = {
     "mag.outTrue":"Vero",
     "mag.outGrid":"Griglia UTM",
     "mag.outMag":"Magnetico",
-    "sec.range":"Raggio / settore (LOS)",
-    "range.hint":"Cerchio o ventaglio da Vincenty diretto; disegnato sulla mini-mappa. Azimuth: vero.",
-    "range.radius":"Raggio (km)",
-    "range.azCenter":"Azimuth centro (° vero)",
-    "range.width":"Apertura (°) · 360 = cerchio",
-    "range.draw":"Disegna sulla mappa",
-    "range.clear":"Rimuovi disegno",
-    "range.geojson":"Scarica GeoJSON",
-    "tip.rangeDraw":"Disegna dalla posizione del risultato corrente",
-    "tip.rangeClear":"Nascondi sovrapposizione",
-    "tip.rangeGeo":"Poligono GeoJSON (WGS84)",
-    "range.ready":"Poligono pronto. Esporta GeoJSON o zoom sulla mappa.",
     "map.pickTip":"Attiva modalità: clicca la mappa per impostare un nuovo punto (conversione immediata). Ripremi il pulsante per annullare.",
     "map.pickRaw":"Mappa (clic)",
     "map.measure":"Misura",
@@ -5341,10 +5290,7 @@ const I18N = {
     "tip.qrCopyUrl":"Copia l'URL Google Maps negli appunti",
     "tip.qrDownload":"Salva il QR come PNG ad alta risoluzione (stampabile)",
     "btn.myLocation":"La mia posizione",
-    "btn.geoLive":"Tracking live",
-    "badge.geoLive":"LIVE",
     "tip.myLocation":"Ottiene le coordinate con il GPS o Wi‑Fi/reti (permesso del browser). Non invia nulla a internet: l’elaborazione è solo sul dispositivo. In modalità OPSEC severa, resta un’operazione puramente locale.",
-    "tip.geoLive":"Aggiorna automaticamente i risultati e la mappa seguendo il movimento (solo nel browser). Ferma con un secondo clic: interrompe il tracciamento.",
     "tip.geoDisabled":"La geolocalizzazione in-browser richiede una pagina servita in HTTPS o su localhost. Apri l’app da un server locale (stesso dispositivo, vedi PWA) oppure trascinala in un tunnelling sicuro. Il pulsante resta disabilitato in file: o in HTTP in rete locale non sicuro.",
     "geo.acquiring":"Acquisizione GPS in corso…",
     "gps.sourceTitle":"Dati fornitore (GPS / GNSS)",
@@ -5364,40 +5310,6 @@ const I18N = {
     "geo.err.nosupport":"Questo browser non espone l’API Geolocation o è troppo obsoleto. Prova con un browser recente o aggiornalo.",
     "geo.err.insecure":"La geolocalizzazione richiede HTTPS o localhost. Apri l’app tramite un server locale sullo stesso PC o telefono (p. es. pacchetto PWA) invece di file:// o HTTP non sicuro.",
     "geo.err.generic":"Impossibile ottenere la posizione. Riprova o verifica le impostazioni del browser.",
-    "dtg.title":"DTG (Date-Time Group)",
-    "dtg.tz":"Fuso",
-    "dtg.short":"Formato corto (senza anno)",
-    "dtg.shortTip":"Mostra la variante DDHHMMZ senza mese e anno, usata in comunicazioni rapide.",
-    "dtg.copy":"📋 Copia",
-    "dtg.copyTip":"Copia il DTG corrente negli appunti",
-    "dtg.parse":"Leggi DTG",
-    "dtg.useNow":"⏱ Usa ora",
-    "dtg.useNowTip":"Compila il campo con il DTG del momento nel fuso selezionato",
-    "dtg.invalid":"DTG non valido",
-    "dtg.out.canonical":"DTG canonico",
-    "dtg.out.shortFmt":"Formato corto",
-    "dtg.out.tz":"Fuso orario",
-    "dtg.out.utc":"UTC (ISO-8601)",
-    "dtg.out.local":"Ora locale",
-    "dtg.out.dow":"Giorno della settimana",
-    "dtg.out.delta":"Differenza da ora",
-    "dtg.out.unix":"Unix timestamp (s)",
-    "dtg.delta.now":"adesso",
-    "dtg.delta.ago":"{0} fa",
-    "dtg.delta.in":"tra {0}",
-    "dtg.unit.min":"min",
-    "dtg.unit.day":"giorno",
-    "dtg.unit.days":"giorni",
-    "dtg.unit.month":"mese",
-    "dtg.unit.months":"mesi",
-    "dtg.unit.years":"anni",
-    "help.guide.dtg.title":"DTG (Date-Time Group)",
-    "help.guide.dtg.live":"Display live aggiornato ogni secondo, con selettore di fuso NATO (A-Y + Z).",
-    "help.guide.dtg.parse":"Incolla un DTG come <code>211630ZAPR26</code> per ottenere data/ora locale, UTC, giorno della settimana e delta da \"ora\".",
-    "help.guide.dtg.keys":"Scorciatoie: <kbd>Alt+T</kbd> apre/focus sulla card DTG, <kbd>Alt+Shift+T</kbd> inserisce l'ora corrente. <kbd>Ctrl+T</kbd> e <kbd>Ctrl+Shift+T</kbd> funzionano solo se il browser non li intercetta per \"nuova scheda\".",
-    "help.guide.dtg.exports":"Il DTG viene incluso in cronologia, favoriti, permalink (<code>&amp;dtg=…</code>) ed export GPX/KML/GeoJSON/CSV.",
-    "help.kbd.dtgFocus":"Apri/focus sulla card DTG (Alt+T, anche Ctrl+T se il browser lo consente)",
-    "help.kbd.dtgNow":"Inserisci il DTG corrente nel campo (Alt+Shift+T / Ctrl+Shift+T)",
     "help.kbd.geoFocus":"Apri/focus sulla card Cerca indirizzo (Alt+F, anche Ctrl+F se il browser lo consente)",
     "geo.title":"Cerca indirizzo / località",
     "geo.placeholder":"es: Abidjan, Côte d'Ivoire — oppure 'Torre di Pisa'",
@@ -5446,7 +5358,7 @@ const I18N = {
     "batch.locTip":"Ogni riga valida invierà una query a Nominatim (~1/sec). Rispetta la usage policy."
   },
   en: {
-    "app.title":"Coordinate Converter",
+    "app.title":"GOI GIS Tool",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Convert",
     "convert.title":"Converter — enter coordinates",
@@ -5459,8 +5371,6 @@ const I18N = {
     "tabs.measure.tip":"Distance, azimuth and destination (Vincenty).",
     "tabs.favorites":"Favorites",
     "tabs.favorites.tip":"Saved points (localStorage) with search and naming convention.",
-    "tabs.dtg":"DTG",
-    "tabs.dtg.tip":"NATO Date-Time Group: live display and parser.",
     "tabs.geocoding":"Search",
     "tabs.geocoding.tip":"Address / place search (Nominatim). Respects OPSEC strict mode.",
     "tabs.history":"History",
@@ -5491,14 +5401,10 @@ const I18N = {
     "tools.fav.desc":"Persistent saved points (localStorage).",
     "tools.meas":"Distance · bearing · destination",
     "tools.meas.desc":"Vincenty inverse (A→B) and direct (A + bearing + distance → B).",
-    "tools.range":"Range / sector (LOS)",
-    "tools.range.desc":"Circle or fan on the mini-map, GeoJSON export.",
     "tools.astro":"Sunrise / sunset / moon",
     "tools.astro.desc":"Local Meeus/suncalc, no network.",
     "tools.mag":"Magnetic declination WMM",
     "tools.mag.desc":"Grid ↔ magnetic ↔ true conversion.",
-    "tools.dtg":"DTG (NATO Date-Time Group)",
-    "tools.dtg.desc":"Military format DDHHMMZMMMYY, Alpha-Zulu timezones, permissive parser.",
     "tools.session":"Session (JSON import / export)",
     "tools.session.desc":"Backup of favorites, history, settings.",
     "sec.track":"📍 Track from points",
@@ -5531,6 +5437,42 @@ const I18N = {
     "track.icon.eng":"ENG",
     "mapWp.title":"Map waypoints",
     "mapWp.hint":"Map points separate from the track polyline: NATO-style symbol, name, and colour. In GPX they export as waypoints alongside the track.",
+    "waypointModal.title":"Waypoints",
+    "waypointModal.hint":"Create, edit and manage map waypoints. Each has a name, coordinate, NATO icon, colour and optional notes.",
+    "waypointModal.new":"➕ New waypoint",
+    "waypointModal.pickOnMap":"🖱️ Pick on map",
+    "waypointModal.importGeoJSON":"📥 Import GeoJSON",
+    "waypointModal.exportGeoJSON":"📤 Export GeoJSON",
+    "waypointModal.clearAll":"❌ Clear all",
+    "waypointModal.empty":"No waypoints yet. Add the first one via \"New\" or \"Pick on map\".",
+    "waypointModal.unnamed":"(unnamed)",
+    "waypointModal.capWarn":"File has {0} waypoints but only {1} slots remain (cap 200). Import the first {1} anyway?",
+    "waypointModal.capFull":"Cap of 200 waypoints reached. Delete some before importing.",
+    "waypointModal.importEmpty":"No Point geometries found in the GeoJSON.",
+    "waypointModal.importedN":"Imported {0} waypoints ({1} skipped).",
+    "waypointModal.exportedN":"Exported {0} waypoints.",
+    "waypointModal.clearConfirm":"Delete ALL waypoints?",
+    "waypointModal.deleteConfirm":"Delete this waypoint?",
+    "waypointModal.zoomTo":"Center the map on this waypoint",
+    "waypointModal.editor.newTitle":"New waypoint",
+    "waypointModal.editor.editTitle":"Edit waypoint",
+    "waypointModal.editor.edit":"Edit",
+    "waypointModal.editor.name":"Name",
+    "waypointModal.editor.namePh":"Name (optional)",
+    "waypointModal.editor.coord":"Coordinate (any format)",
+    "waypointModal.editor.coordPh":"45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W",
+    "waypointModal.editor.icon":"Icon (NATO)",
+    "waypointModal.editor.color":"Colour",
+    "waypointModal.editor.notes":"Notes (optional)",
+    "waypointModal.editor.notesPh":"Notes (max 500 chars)",
+    "waypointModal.editor.save":"💾 Save",
+    "waypointModal.editor.cancel":"Cancel",
+    "waypointModal.editor.delete":"🗑 Delete",
+    "tip.waypointModal.new":"Open the inline editor to enter a new waypoint (coords, name, icon, colour, notes).",
+    "tip.waypointModal.pickOnMap":"Toggle click-on-map mode to create a waypoint with a single click.",
+    "tip.waypointModal.importGeoJSON":"Import only the Point features from a GeoJSON file (cap 200).",
+    "tip.waypointModal.exportGeoJSON":"Export waypoints as a GeoJSON FeatureCollection (kind: waypoint).",
+    "tip.waypointModal.clearAll":"Delete every waypoint (asks for confirmation).",
     "mapWp.clear":"❌ Clear waypoints",
     "mapWp.clearConfirm":"Delete all map waypoints?",
     "mapWp.empty":"No waypoints yet. Use the waypoint button on the mini-map or below.",
@@ -5779,7 +5721,7 @@ const I18N = {
     "notes.datumExtra":"<b>Extra datums</b> (NAD27/NAD83/OSGB36/CH1903/SK42): use only if your map is in that datum. Mixing WGS84↔SK42 can introduce <b>100–200 m</b> errors; OSGB36 without OSTN grid can be off by <b>up to ~10 m</b> in the UK; NAD27 varies widely (no NTv2 here).",
     "footer.text":"100% offline app. No data leaves the browser. WGS84.",
     "footer.made":"Made by",
-    "footer.appName":"Coordinate Converter",
+    "footer.appName":"GOI GIS Tool",
     "about.title":"About",
     "about.author":"Author",
     "about.version":"Version",
@@ -5972,18 +5914,6 @@ const I18N = {
     "mag.outTrue":"True",
     "mag.outGrid":"UTM grid",
     "mag.outMag":"Magnetic",
-    "sec.range":"Radius / sector (LOS)",
-    "range.hint":"Distance circle or fan (Vincenty). Azimuth is true. Drawn on the mini-map.",
-    "range.radius":"Radius (km)",
-    "range.azCenter":"Center azimuth (° true)",
-    "range.width":"Sector width (°) · 360 = full circle",
-    "range.draw":"Draw on map",
-    "range.clear":"Remove overlay",
-    "range.geojson":"Download GeoJSON",
-    "tip.rangeDraw":"Uses the current result as center",
-    "tip.rangeClear":"Hide sector overlay",
-    "tip.rangeGeo":"GeoJSON polygon (WGS84)",
-    "range.ready":"Polygon ready. Export GeoJSON or zoom the map.",
     "map.pickTip":"Toggle mode: click the map to set a new point (converts immediately). Press again to cancel.",
     "map.pickRaw":"Map (click)",
     "map.measure":"Measure",
@@ -6041,10 +5971,7 @@ const I18N = {
     "tip.qrCopyUrl":"Copy the Google Maps URL to clipboard",
     "tip.qrDownload":"Save the QR as a high-resolution PNG (printable)",
     "btn.myLocation":"My location",
-    "btn.geoLive":"Live tracking",
-    "badge.geoLive":"LIVE",
     "tip.myLocation":"Gets coordinates via GPS, Wi‑Fi, or cell (browser permission). Nothing is sent online — processing is on-device. In strict OPSEC mode, this remains a purely local action.",
-    "tip.geoLive":"Updates results and the map as you move (in-browser only). Click again to stop and clear the watch.",
     "tip.geoDisabled":"In-browser geolocation needs HTTPS or localhost. Open the app from a local server (PWA) instead of file:// or plain HTTP. This button is disabled in insecure contexts.",
     "geo.acquiring":"Acquiring GPS…",
     "gps.sourceTitle":"Provider data (GPS / GNSS)",
@@ -6064,40 +5991,6 @@ const I18N = {
     "geo.err.nosupport":"This browser does not expose the Geolocation API. Use a recent browser and update it.",
     "geo.err.insecure":"Geolocation requires HTTPS or localhost. Open the app via a local dev server (e.g. the PWA flow) instead of file:// or insecure HTTP.",
     "geo.err.generic":"Could not read position. Retry or check browser settings.",
-    "dtg.title":"DTG (Date-Time Group)",
-    "dtg.tz":"Time zone",
-    "dtg.short":"Short form (no year)",
-    "dtg.shortTip":"Use the DDHHMMZ variant without month & year, common in short comms.",
-    "dtg.copy":"📋 Copy",
-    "dtg.copyTip":"Copy the current DTG to the clipboard",
-    "dtg.parse":"Parse DTG",
-    "dtg.useNow":"⏱ Use now",
-    "dtg.useNowTip":"Fill the field with the current DTG in the selected time zone",
-    "dtg.invalid":"Invalid DTG",
-    "dtg.out.canonical":"Canonical DTG",
-    "dtg.out.shortFmt":"Short form",
-    "dtg.out.tz":"Time zone",
-    "dtg.out.utc":"UTC (ISO-8601)",
-    "dtg.out.local":"Local time",
-    "dtg.out.dow":"Day of week",
-    "dtg.out.delta":"Delta from now",
-    "dtg.out.unix":"Unix timestamp (s)",
-    "dtg.delta.now":"now",
-    "dtg.delta.ago":"{0} ago",
-    "dtg.delta.in":"in {0}",
-    "dtg.unit.min":"min",
-    "dtg.unit.day":"day",
-    "dtg.unit.days":"days",
-    "dtg.unit.month":"month",
-    "dtg.unit.months":"months",
-    "dtg.unit.years":"years",
-    "help.guide.dtg.title":"DTG (Date-Time Group)",
-    "help.guide.dtg.live":"Live display refreshed every second, with NATO time-zone selector (A-Y + Z).",
-    "help.guide.dtg.parse":"Paste a DTG such as <code>211630ZAPR26</code> to get local & UTC time, weekday and delta from \"now\".",
-    "help.guide.dtg.keys":"Shortcuts: <kbd>Alt+T</kbd> opens/focuses the DTG card, <kbd>Alt+Shift+T</kbd> inserts the current time. <kbd>Ctrl+T</kbd> and <kbd>Ctrl+Shift+T</kbd> only work if the browser does not steal them for \"new tab\".",
-    "help.guide.dtg.exports":"The DTG is attached to history, favorites, permalinks (<code>&amp;dtg=…</code>) and GPX/KML/GeoJSON/CSV exports.",
-    "help.kbd.dtgFocus":"Open/focus the DTG card (Alt+T, Ctrl+T if allowed by the browser)",
-    "help.kbd.dtgNow":"Insert the current DTG into the field (Alt+Shift+T / Ctrl+Shift+T)",
     "help.kbd.geoFocus":"Open/focus the geocoding card (Alt+F, Ctrl+F if allowed by the browser)",
     "geo.title":"Address / place search",
     "geo.placeholder":"e.g.: Abidjan, Côte d'Ivoire — or 'Leaning Tower of Pisa'",
@@ -6146,7 +6039,7 @@ const I18N = {
     "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy."
   },
   fr: {
-    "app.title":"Convertisseur de Coordonnées",
+    "app.title":"GOI GIS Tool",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Convertir",
     "convert.title":"Convertisseur — saisir les coordonnées",
@@ -6159,8 +6052,6 @@ const I18N = {
     "tabs.measure.tip":"Distance, azimut et destination (Vincenty).",
     "tabs.favorites":"Favoris",
     "tabs.favorites.tip":"Points enregistrés (localStorage) avec recherche et convention de nommage.",
-    "tabs.dtg":"DTG",
-    "tabs.dtg.tip":"Date-Time Group OTAN : affichage live et analyseur.",
     "tabs.geocoding":"Recherche",
     "tabs.geocoding.tip":"Recherche adresse / lieu (Nominatim). Respecte le mode OPSEC strict.",
     "tabs.history":"Historique",
@@ -6191,14 +6082,10 @@ const I18N = {
     "tools.fav.desc":"Points enregistrés persistants (localStorage).",
     "tools.meas":"Distance · azimut · destination",
     "tools.meas.desc":"Vincenty inverse (A→B) et direct (A + azimut + distance → B).",
-    "tools.range":"Portée / secteur (LOS)",
-    "tools.range.desc":"Cercle ou secteur sur la mini-carte, export GeoJSON.",
     "tools.astro":"Lever / coucher / lune",
     "tools.astro.desc":"Meeus/suncalc local, sans réseau.",
     "tools.mag":"Déclinaison magnétique WMM",
     "tools.mag.desc":"Conversion grille ↔ magnétique ↔ vrai.",
-    "tools.dtg":"DTG (Date-Time Group OTAN)",
-    "tools.dtg.desc":"Format militaire DDHHMMZMMMYY, fuseaux Alpha-Zulu, parseur tolérant.",
     "tools.session":"Session (import / export JSON)",
     "tools.session.desc":"Sauvegarde des favoris, historique, paramètres.",
     "sec.track":"📍 Trace à partir de points",
@@ -6231,6 +6118,42 @@ const I18N = {
     "track.icon.eng":"GN",
     "mapWp.title":"Waypoints sur la carte",
     "mapWp.hint":"Points sur la carte distincts de la polyligne de la trace : symbole type OTAN, nom et couleur. Dans le GPX ils sont exportés comme waypoints à côté de la trace.",
+    "waypointModal.title":"Points de cheminement",
+    "waypointModal.hint":"Créez, modifiez et gérez les waypoints sur la carte. Chaque waypoint a un nom, une coordonnée, une icône OTAN, une couleur et des notes facultatives.",
+    "waypointModal.new":"➕ Nouveau waypoint",
+    "waypointModal.pickOnMap":"🖱️ Pointer sur la carte",
+    "waypointModal.importGeoJSON":"📥 Importer GeoJSON",
+    "waypointModal.exportGeoJSON":"📤 Exporter GeoJSON",
+    "waypointModal.clearAll":"❌ Tout effacer",
+    "waypointModal.empty":"Aucun waypoint. Ajoutez le premier via « Nouveau » ou « Pointer sur la carte ».",
+    "waypointModal.unnamed":"(sans nom)",
+    "waypointModal.capWarn":"Le fichier contient {0} waypoints mais seulement {1} emplacements restent (cap 200). Importer les {1} premiers ?",
+    "waypointModal.capFull":"Plafond de 200 waypoints atteint. Supprimez-en avant d'importer.",
+    "waypointModal.importEmpty":"Aucune géométrie Point trouvée dans le GeoJSON.",
+    "waypointModal.importedN":"{0} waypoints importés ({1} ignorés).",
+    "waypointModal.exportedN":"{0} waypoints exportés.",
+    "waypointModal.clearConfirm":"Supprimer TOUS les waypoints ?",
+    "waypointModal.deleteConfirm":"Supprimer ce waypoint ?",
+    "waypointModal.zoomTo":"Centrer la carte sur ce waypoint",
+    "waypointModal.editor.newTitle":"Nouveau waypoint",
+    "waypointModal.editor.editTitle":"Modifier le waypoint",
+    "waypointModal.editor.edit":"Modifier",
+    "waypointModal.editor.name":"Nom",
+    "waypointModal.editor.namePh":"Nom (facultatif)",
+    "waypointModal.editor.coord":"Coordonnée (tout format)",
+    "waypointModal.editor.coordPh":"45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W",
+    "waypointModal.editor.icon":"Icône (OTAN)",
+    "waypointModal.editor.color":"Couleur",
+    "waypointModal.editor.notes":"Notes (facultatives)",
+    "waypointModal.editor.notesPh":"Notes (500 caractères max)",
+    "waypointModal.editor.save":"💾 Enregistrer",
+    "waypointModal.editor.cancel":"Annuler",
+    "waypointModal.editor.delete":"🗑 Supprimer",
+    "tip.waypointModal.new":"Ouvre l'éditeur en ligne pour saisir un nouveau waypoint (coord., nom, icône, couleur, notes).",
+    "tip.waypointModal.pickOnMap":"Active/désactive le mode clic sur la carte pour créer un waypoint.",
+    "tip.waypointModal.importGeoJSON":"Importe uniquement les géométries Point d'un fichier GeoJSON (plafond 200).",
+    "tip.waypointModal.exportGeoJSON":"Exporte les waypoints en FeatureCollection GeoJSON (kind : waypoint).",
+    "tip.waypointModal.clearAll":"Supprime tous les waypoints (confirmation demandée).",
     "mapWp.clear":"❌ Vider les waypoints",
     "mapWp.clearConfirm":"Supprimer tous les waypoints sur la carte ?",
     "mapWp.empty":"Aucun waypoint. Utilisez le bouton waypoint sur la mini-carte ou ci-dessous.",
@@ -6479,7 +6402,7 @@ const I18N = {
     "notes.datumExtra":"<b>Datums supplémentaires</b> (NAD27/NAD83/OSGB36/CH1903/SK42) : à utiliser seulement si la carte est dans ce datum. Confondre WGS84↔SK42 peut donner <b>100–200 m</b> d'erreur ; OSGB36 sans grille OSTN peut dévier de <b>~10 m</b> au UK ; NAD27 varie beaucoup (pas de NTv2 ici).",
     "footer.text":"Application 100% hors ligne. Aucune donnée ne quitte le navigateur. WGS84.",
     "footer.made":"Réalisé par",
-    "footer.appName":"Convertisseur de Coordonnées",
+    "footer.appName":"GOI GIS Tool",
     "about.title":"À propos",
     "about.author":"Auteur",
     "about.version":"Version",
@@ -6672,18 +6595,6 @@ const I18N = {
     "mag.outTrue":"Vrai",
     "mag.outGrid":"Grille UTM",
     "mag.outMag":"Magnétique",
-    "sec.range":"Rayon / secteur (LOS)",
-    "range.hint":"Cercle ou secteur (Vincenty). Azimut vrai. Mini-carte.",
-    "range.radius":"Rayon (km)",
-    "range.azCenter":"Azimut central (° vrai)",
-    "range.width":"Ouverture (°) · 360 = disque",
-    "range.draw":"Tracer sur la carte",
-    "range.clear":"Effacer le tracé",
-    "range.geojson":"Télécharger GeoJSON",
-    "tip.rangeDraw":"Centre = résultat courant",
-    "tip.rangeClear":"Masquer le tracé",
-    "tip.rangeGeo":"Polygone GeoJSON (WGS84)",
-    "range.ready":"Polygone prêt. Exportez en GeoJSON.",
     "map.pickTip":"Activer le mode : cliquez la carte pour définir un nouveau point (conversion immédiate). Cliquez à nouveau pour annuler.",
     "map.pickRaw":"Carte (clic)",
     "map.measure":"Mesure",
@@ -6741,10 +6652,7 @@ const I18N = {
     "tip.qrCopyUrl":"Copier l'URL Google Maps dans le presse-papiers",
     "tip.qrDownload":"Enregistrer le QR en PNG haute résolution (imprimable)",
     "btn.myLocation":"Ma position",
-    "btn.geoLive":"Suivi en direct",
-    "badge.geoLive":"LIVE",
     "tip.myLocation":"Obtient les coordonnées via GPS, Wi‑Fi ou réseau mobile (permission du navigateur). Aucun envoi sur Internet : tout est traité en local. En mode OPSEC strict, cela reste strictement sur l’appareil.",
-    "tip.geoLive":"Met à jour résultats et carte quand vous bougez (dans le navigateur uniquement). Recliquez pour arrêter (clearWatch).",
     "tip.geoDisabled":"La géolocalisation Web nécessite HTTPS ou localhost. Ouvrez l’app via un serveur local (PWA) plutôt que file:// ou HTTP non sécurisé — bouton désactivé.",
     "geo.acquiring":"Acquisition GPS en cours…",
     "gps.sourceTitle":"Données du fournisseur (GPS / GNSS)",
@@ -6764,40 +6672,6 @@ const I18N = {
     "geo.err.nosupport":"Le navigateur n’expose pas l’API Geolocation ou est trop ancien. Utilisez un navigateur récent et à jour.",
     "geo.err.insecure":"La géolocalisation requiert HTTPS ou localhost. Ouvrez l’app via un serveur local (PWA) plutôt que file:// ou HTTP non sécurisé.",
     "geo.err.generic":"Impossible d’obtenir la position. Réessayez ou vérifiez les paramètres.",
-    "dtg.title":"DTG (Date-Time Group)",
-    "dtg.tz":"Fuseau",
-    "dtg.short":"Format court (sans année)",
-    "dtg.shortTip":"Afficher la variante DDHHMMZ sans mois ni année, utile en comms courtes.",
-    "dtg.copy":"📋 Copier",
-    "dtg.copyTip":"Copier le DTG courant dans le presse-papiers",
-    "dtg.parse":"Lire un DTG",
-    "dtg.useNow":"⏱ Maintenant",
-    "dtg.useNowTip":"Remplir le champ avec le DTG courant dans le fuseau sélectionné",
-    "dtg.invalid":"DTG invalide",
-    "dtg.out.canonical":"DTG canonique",
-    "dtg.out.shortFmt":"Forme courte",
-    "dtg.out.tz":"Fuseau horaire",
-    "dtg.out.utc":"UTC (ISO-8601)",
-    "dtg.out.local":"Heure locale",
-    "dtg.out.dow":"Jour de la semaine",
-    "dtg.out.delta":"Écart depuis maintenant",
-    "dtg.out.unix":"Horodatage Unix (s)",
-    "dtg.delta.now":"maintenant",
-    "dtg.delta.ago":"il y a {0}",
-    "dtg.delta.in":"dans {0}",
-    "dtg.unit.min":"min",
-    "dtg.unit.day":"jour",
-    "dtg.unit.days":"jours",
-    "dtg.unit.month":"mois",
-    "dtg.unit.months":"mois",
-    "dtg.unit.years":"ans",
-    "help.guide.dtg.title":"DTG (Date-Time Group)",
-    "help.guide.dtg.live":"Affichage temps réel (1 s), avec sélecteur de fuseau OTAN (A-Y + Z).",
-    "help.guide.dtg.parse":"Collez un DTG comme <code>211630ZAPR26</code> pour obtenir l'heure locale, UTC, le jour et l'écart par rapport à \"maintenant\".",
-    "help.guide.dtg.keys":"Raccourcis : <kbd>Alt+T</kbd> ouvre la carte DTG, <kbd>Alt+Shift+T</kbd> insère l'heure courante. <kbd>Ctrl+T</kbd> et <kbd>Ctrl+Shift+T</kbd> ne fonctionnent que si le navigateur ne les utilise pas pour \"nouvel onglet\".",
-    "help.guide.dtg.exports":"Le DTG est ajouté à l'historique, aux favoris, aux permaliens (<code>&amp;dtg=…</code>) et aux exports GPX/KML/GeoJSON/CSV.",
-    "help.kbd.dtgFocus":"Ouvrir/cibler la carte DTG (Alt+T, Ctrl+T si autorisé)",
-    "help.kbd.dtgNow":"Insérer le DTG courant dans le champ (Alt+Shift+T / Ctrl+Shift+T)",
     "help.kbd.geoFocus":"Ouvrir/cibler la carte Recherche d'adresse (Alt+F, Ctrl+F si autorisé)",
     "geo.title":"Rechercher une adresse / un lieu",
     "geo.placeholder":"ex : Abidjan, Côte d'Ivoire — ou 'Tour de Pise'",
@@ -6914,8 +6788,6 @@ const state = {
   showGrid: false,       // MGRS grid overlay toggle
   showCoverage: true,    // Offline coverage overlay (cached tiles + named areas)
   showSeamarks: false,   // OpenSeaMap seamarks overlay (online-only)
-  dtgTz: "Z",            // Last chosen NATO tz letter for live DTG display
-  dtgShort: false,       // Use short DTG (no MMMYY)
   // Geocoding (Nominatim) — all opt-outable from settings.
   geocodeEnabled: true,  // Master switch for all Nominatim calls.
   geocodeReverseAuto: true, // Auto-populate "📍 Località" after each conversion.
@@ -6962,7 +6834,6 @@ const state = {
   mapMeasureKind: "line", // line | poly
   mapPolyPts: null,       // transient: [{lat,lon},...]
   mapPolyClosed: true,
-  rangeOverlay: null,
   /** Pre-cache bounding-box selection drawn visually on the map.
    * { n, s, e, w } in degrees WGS84, or null if nothing drawn. */
   bboxSelection: null,
@@ -6983,15 +6854,18 @@ const state = {
   favCatTag: "PT",
   reportTitle: "",
   reportClass: "",
-  /** `watchPosition` id while live tracking; `null` when off */
-  geoWatchId: null,
   /** Transient: waypoint editor on map { lat, lon, name, color, icon } — not persisted. */
   trackWaypointDraft: null,
   /** GIS viewer/planner layout state. Persisted (partially). */
   gisMode: true,          // when true, the new GIS layout is active on startup
   activeTab: null,        // currently active tab key (track/measure/favorites/...)
   convertOpen: false,     // transient: Convert modal visibility
-  toolsMenuOpen: null     // transient: active tile inside Altri strumenti modal (or null)
+  toolsMenuOpen: null,    // transient: active tile inside Altri strumenti modal (or null)
+  /** Transient: Waypoint manager modal open flag. */
+  waypointsModalOpen: false,
+  /** Transient: editor draft inside the Waypoint manager.
+   *  Shape: { id?, lat, lon, name, icon, color, notes }. */
+  waypointEditorDraft: null
 };
 
 let _basemapMenuOutsideBound = false;
@@ -7315,7 +7189,13 @@ function degToMils(deg){ return deg * DEG_TO_MIL; }
 function fmtMils(deg){ return Math.round(degToMils(deg)).toString(); }
 
 /* ========================= LOCAL STORAGE (offline persistence) ========================= */
-const STORAGE_KEY = "coordconv_v1";
+// Bumped from "coordconv_v1" to "coordconv_v2" during the pre-GIS cleanup
+// (DTG removal, live tracking removal, radius/LOS removal, app rename).
+// The old v1 key is intentionally left in localStorage; it is simply not
+// read, so the app starts with a fresh state for every user on first boot
+// after the upgrade. This avoids migrating a data shape that no longer
+// reflects the current feature surface.
+const STORAGE_KEY = "coordconv_v2";
 function loadStore(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -7342,8 +7222,6 @@ function saveStore(){
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
-        dtgTz: String(state.dtgTz || "Z").toUpperCase().slice(0,1),
-        dtgShort: !!state.dtgShort,
         geocodeEnabled: state.geocodeEnabled !== false,
         geocodeReverseAuto: state.geocodeReverseAuto !== false,
         geocodeEndpoint: String(state.geocodeEndpoint || "").slice(0, 200),
@@ -9145,31 +9023,6 @@ function lmtFromUtcDate(d, lon){
   const ms = d.getTime() + (lon * 4 * 60 * 1000);
   return new Date(ms).toISOString().replace("T", " ").slice(0, 19) + " LMT*";
 }
-function buildRangePolygon(lat, lon, radiusKm, azCenterDeg, sectorWidthDeg, segments){
-  const Rm = Math.max(1, radiusKm * 1000);
-  const segs = Math.max(8, Math.min(128, Math.round(segments || 64)));
-  let w = Number(sectorWidthDeg);
-  if (!Number.isFinite(w) || w <= 0) w = 360;
-  if (w > 360) w = 360;
-  if (w >= 359.99) {
-    const ring = [];
-    for (let i = 0; i <= segs; i++){
-      const br = (i / segs) * 360;
-      const p = vincentyDirect(lat, lon, Rm, br);
-      ring.push([p.lon, p.lat]);
-    }
-    return ring;
-  }
-  const a0 = ((azCenterDeg - w / 2) + 360) % 360;
-  const ring = [[lon, lat]];
-  for (let i = 0; i <= segs; i++){
-    const br = (a0 + (i / segs) * w) % 360;
-    const p = vincentyDirect(lat, lon, Rm, br);
-    ring.push([p.lon, p.lat]);
-  }
-  ring.push([lon, lat]);
-  return ring;
-}
 function mapClientToLatLonMap(root, markerLat, markerLon, zoom, clientX, clientY){
   const tileMap = root.querySelector(".tile-map");
   const layer = root.querySelector(".tile-layer");
@@ -9686,11 +9539,9 @@ function kmlExtendedData(p){
 function buildGPX(points){
   const nowDate = new Date();
   const now     = nowDate.toISOString();
-  const dtg     = formatDTG(nowDate, "Z", { short: false });
   let s = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  s += `<gpx version="1.1" creator="Convertitore Coordinate" xmlns="http://www.topografix.com/GPX/1/1">\n`;
-  s += `  <metadata>\n    <time>${now}</time>\n`;
-  s += `    <desc>DTG: ${xmlEsc(dtg)}</desc>\n  </metadata>\n`;
+  s += `<gpx version="1.1" creator="GOI GIS Tool" xmlns="http://www.topografix.com/GPX/1/1">\n`;
+  s += `  <metadata>\n    <time>${now}</time>\n  </metadata>\n`;
   for (const p of points){
     s += `  <wpt lat="${round(p.lat,7)}" lon="${round(p.lon,7)}">\n`;
     if (p.name) s += `    <name>${xmlEsc(p.name)}</name>\n`;
@@ -9702,11 +9553,9 @@ function buildGPX(points){
   return s;
 }
 function buildKML(points){
-  const dtg = formatDTG(new Date(), "Z", { short: false });
   let s = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   s += `<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n`;
-  s += `  <name>Convertitore Coordinate</name>\n`;
-  s += `  <description>DTG: ${xmlEsc(dtg)}</description>\n`;
+  s += `  <name>GOI GIS Tool</name>\n`;
   for (const p of points){
     s += `  <Placemark>\n`;
     if (p.name) s += `    <name>${xmlEsc(p.name)}</name>\n`;
@@ -9729,8 +9578,7 @@ function buildGeoJSON(points){
     type: "FeatureCollection",
     metadata: {
       generated: nowDate.toISOString(),
-      dtg: formatDTG(nowDate, "Z", { short: false }),
-      creator: "Convertitore Coordinate"
+      creator: "GOI GIS Tool"
     },
     features
   }, null, 2);
@@ -9743,10 +9591,9 @@ function buildGPXRoute(points, closed, routeName){
   if (!points || points.length < 2) return buildGPX(points || []);
   const nowDate = new Date();
   const now     = nowDate.toISOString();
-  const dtg     = formatDTG(nowDate, "Z", { short: false });
   let s = `<?xml version="1.0" encoding="UTF-8"?>\n`;
-  s += `<gpx version="1.1" creator="Convertitore Coordinate" xmlns="http://www.topografix.com/GPX/1/1">\n`;
-  s += `  <metadata>\n    <time>${now}</time>\n    <desc>DTG: ${xmlEsc(dtg)}</desc>\n  </metadata>\n`;
+  s += `<gpx version="1.1" creator="GOI GIS Tool" xmlns="http://www.topografix.com/GPX/1/1">\n`;
+  s += `  <metadata>\n    <time>${now}</time>\n  </metadata>\n`;
   for (const p of points){
     s += `  <wpt lat="${round(p.lat,7)}" lon="${round(p.lon,7)}">\n`;
     if (p.name) s += `    <name>${xmlEsc(p.name)}</name>\n`;
@@ -9769,11 +9616,9 @@ function buildGPXRoute(points, closed, routeName){
  */
 function buildKMLRoute(points, closed, routeName){
   if (!points || points.length < 2) return buildKML(points || []);
-  const dtg = formatDTG(new Date(), "Z", { short: false });
   let s = `<?xml version="1.0" encoding="UTF-8"?>\n`;
   s += `<kml xmlns="http://www.opengis.net/kml/2.2">\n<Document>\n`;
   s += `  <name>${xmlEsc(routeName || "Route")}</name>\n`;
-  s += `  <description>DTG: ${xmlEsc(dtg)}</description>\n`;
   s += `  <Style id="routeStyle"><LineStyle><color>ff0066ff</color><width>3</width></LineStyle>`;
   s += `<PolyStyle><color>660066ff</color></PolyStyle></Style>\n`;
 
@@ -9830,8 +9675,7 @@ function buildGeoJSONRoute(points, closed, routeName){
     type: "FeatureCollection",
     metadata: {
       generated: new Date().toISOString(),
-      dtg: formatDTG(new Date(), "Z", { short: false }),
-      creator: "Convertitore Coordinate",
+      creator: "GOI GIS Tool",
       routeName: routeName || null,
       closed: !!closed
     },
@@ -10556,7 +10400,6 @@ function spatialXmlEsc(s){ return xmlEsc(String(s)); }
 function spatialGeoJSONToGpx(fc){
   const nowDate = new Date();
   const now = nowDate.toISOString();
-  const dtg = formatDTG(nowDate, "Z", { short: false });
   let body = "";
   for (const f of fc.features || []){
     const g = f.geometry;
@@ -10611,10 +10454,9 @@ function spatialGeoJSONToGpx(fc){
       body += "    </trkseg>\n  </trk>\n";
     }
   }
-  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gpx version=\"1.1\" creator=\"Convertitore Coordinate\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n<metadata><time>" + now + "</time><desc>DTG: " + spatialXmlEsc(dtg) + "</desc></metadata>\n" + body + "</gpx>\n";
+  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gpx version=\"1.1\" creator=\"GOI GIS Tool\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n<metadata><time>" + now + "</time></metadata>\n" + body + "</gpx>\n";
 }
 function spatialGeoJSONToKml(fc){
-  const dtg = formatDTG(new Date(), "Z", { short: false });
   let marks = "";
   for (const f of fc.features || []){
     const g = f.geometry;
@@ -10644,7 +10486,7 @@ function spatialGeoJSONToKml(fc){
     }
     marks += "  </Placemark>\n";
   }
-  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>\n  <name>Convertitore Coordinate</name>\n  <description>DTG: " + esc(dtg) + "</description>\n" + marks + "</Document>\n</kml>\n";
+  return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>\n  <name>GOI GIS Tool</name>\n" + marks + "</Document>\n</kml>\n";
 }
 function spatialBuildFeatureCollectionFromAppState(){
   ensureTrackState();
@@ -10679,8 +10521,7 @@ function spatialBuildFeatureCollectionFromAppState(){
     type: "FeatureCollection",
     metadata: {
       generated: new Date().toISOString(),
-      dtg: formatDTG(new Date(), "Z", { short: false }),
-      creator: "Convertitore Coordinate"
+      creator: "GOI GIS Tool"
     },
     features
   };
@@ -10939,33 +10780,18 @@ function importFileIntoBatch(file){
 
 /* ========================= SECTION 14E: PERMALINK ========================= */
 function encodePermalink(lat, lon, opts){
-  // Always include an explicit DTG (Zulu, full form) in permalinks so a
-  // link shared/pasted elsewhere carries the time it was created.
-  const dtg = (opts && typeof opts.dtg === "string" && opts.dtg)
-    ? opts.dtg
-    : getCurrentDTG("Z", { short: false });
-  return "#ll=" + round(lat,6) + "," + round(lon,6) + "&dtg=" + encodeURIComponent(dtg);
+  return "#ll=" + round(lat,6) + "," + round(lon,6);
 }
 function readPermalink(){
   const h = location.hash || "";
   let m;
-  // Pull an optional DTG from the fragment (shared by both #ll= and #mgrs= links).
-  let dtg = null;
-  const mdtg = h.match(/[#&]dtg=([^&]+)/);
-  if (mdtg){
-    try {
-      const raw = decodeURIComponent(mdtg[1]);
-      const p   = parseDTG(raw);
-      if (p) dtg = { raw, date: p.date, tzLetter: p.tzLetter };
-    } catch(_){}
-  }
   if ((m = h.match(/[#&]ll=(-?\d+(?:\.\d+)?)[,;](-?\d+(?:\.\d+)?)/)))
-    return { lat: parseFloat(m[1]), lon: parseFloat(m[2]), dtg };
+    return { lat: parseFloat(m[1]), lon: parseFloat(m[2]) };
   if ((m = h.match(/[#&]mgrs=([^&]+)/))){
     try {
       const decoded = decodeURIComponent(m[1]);
       const mg = mgrsToLatLonExt(decoded);
-      return { lat: mg.lat, lon: mg.lon, source: "MGRS", raw: decoded, dtg };
+      return { lat: mg.lat, lon: mg.lon, source: "MGRS", raw: decoded };
     } catch(_){}
   }
   return null;
@@ -11147,26 +10973,6 @@ function bindHotkeys(){
       else openToolsDrawer();
       return;
     }
-    // DTG shortcuts.
-    //   Ctrl+Shift+T / Alt+Shift+T : insert current DTG into the parser
-    //   Ctrl+T       / Alt+T       : open / focus the DTG card
-    //
-    // Note: most browsers eat Ctrl+T ("new tab") and Ctrl+Shift+T
-    // ("reopen closed tab") before the page sees them, so the Alt
-    // variants are the reliable ones. We still wire Ctrl+… so that
-    // keyboard-remapping users / Linux with the browser shortcuts
-    // disabled still get them.
-    const isT = (k === "t" || k === "T");
-    if (isT && ev.shiftKey && (ev.ctrlKey || ev.metaKey || ev.altKey)){
-      ev.preventDefault();
-      focusDTGCard(/*fill=*/true);
-      return;
-    }
-    if (isT && !ev.shiftKey && (ev.ctrlKey || ev.metaKey || ev.altKey)){
-      ev.preventDefault();
-      focusDTGCard(/*fill=*/false);
-      return;
-    }
     // Bbox shortcuts (only when the pre-cache panel is present and a map
     // is visible). "s" starts/toggles draw mode, "v" uses current viewport.
     if ((k === "s" || k === "S") && !ev.ctrlKey && !ev.metaKey && !ev.altKey){
@@ -11232,163 +11038,6 @@ function doDirect(){
   } catch(e){
     root.innerHTML = `<div class="error-box">${esc(translateError(e))}</div>`;
   }
-}
-
-/* ========================= SECTION 14K: DTG (Date-Time Group NATO) =========================
- *
- * DTG format:   DDHHMMZMMMYY   (e.g. 211630ZAPR26)
- *   DD  = day of month (01-31)
- *   HH  = hour         (00-23)
- *   MM  = minute       (00-59)
- *   Z   = single letter time zone, NATO table (Z=UTC, J skipped)
- *   MMM = 3-letter English month name (JAN..DEC)
- *   YY  = last two digits of year
- *
- * The time zone letter determines how the wall-clock part of the DTG maps
- * to an absolute instant (Date): a DTG is a wall-clock time inside the tz,
- * so the absolute UTC instant = Date.UTC(wallClock) - offsetHours * 3600e3.
- *
- * We also support a "short" form (no month/year): DDHHMMZ, useful inside
- * a single mission when the month/year are implicit.
- *
- * Everything is local-only (no external deps, no network).
- */
-const DTG_MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
-const DTG_TZ = (() => {
-  // NATO phonetic names for each letter (J intentionally missing).
-  const names = {
-    A:"Alfa", B:"Bravo", C:"Charlie", D:"Delta", E:"Echo", F:"Foxtrot",
-    G:"Golf", H:"Hotel", I:"India", K:"Kilo", L:"Lima", M:"Mike",
-    N:"November", O:"Oscar", P:"Papa", Q:"Quebec", R:"Romeo", S:"Sierra",
-    T:"Tango", U:"Uniform", V:"Victor", W:"Whiskey", X:"X-ray", Y:"Yankee",
-    Z:"Zulu"
-  };
-  const out = [];
-  // +1..+9 → A..I (chars 65..73)
-  for (let i = 1; i <= 9; i++)  out.push({ l:String.fromCharCode(64 + i),     offset:i,  name:names[String.fromCharCode(64+i)] });
-  // +10..+12 → K..M (skip J at 74)
-  for (let i = 10; i <= 12; i++) out.push({ l:String.fromCharCode(64 + i + 1), offset:i,  name:names[String.fromCharCode(64+i+1)] });
-  // -1..-12 → N..Y (chars 78..89)
-  for (let i = 1; i <= 12; i++) out.push({ l:String.fromCharCode(77 + i),     offset:-i, name:names[String.fromCharCode(77+i)] });
-  // Zulu = UTC
-  out.push({ l:"Z", offset:0, name:"Zulu" });
-  return out;
-})();
-const DTG_TZ_MAP = DTG_TZ.reduce((m, e) => (m[e.l] = e, m), {});
-
-/** Offset in hours for a NATO tz letter, or null if unknown (e.g. "J"). */
-function dtgTzOffset(letter){
-  const e = DTG_TZ_MAP[String(letter || "").toUpperCase()];
-  return e ? e.offset : null;
-}
-
-/** Phonetic name for a NATO tz letter ("A" → "Alfa"), or "" if unknown. */
-function dtgTzName(letter){
-  const e = DTG_TZ_MAP[String(letter || "").toUpperCase()];
-  return e ? e.name : "";
-}
-
-/** Pretty UTC-offset string like "+02:00" / "-05:00" / "+00:00". */
-function dtgOffsetPretty(offsetHours){
-  if (!Number.isFinite(offsetHours)) return "";
-  const sign = offsetHours >= 0 ? "+" : "-";
-  const h = Math.abs(offsetHours) | 0;
-  return sign + String(h).padStart(2,"0") + ":00";
-}
-
-/**
- * Format a Date as a DTG string in the given tz letter.
- * @param {Date}    date     JS Date (absolute instant in UTC time).
- * @param {string}  tzLetter NATO letter (e.g. "Z", "B"). Default "Z".
- * @param {object}  [opts]   { short: true } for the no-month-no-year variant.
- * @returns {string}         DTG, or "" if inputs are invalid.
- */
-function formatDTG(date, tzLetter, opts){
-  if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
-  const L = String(tzLetter || "Z").toUpperCase();
-  const off = dtgTzOffset(L);
-  if (off === null) return "";
-  const short = !!(opts && opts.short);
-  // Shift the absolute UTC instant by the tz offset so that getUTC* on the
-  // shifted date returns the wall-clock components in that tz.
-  const shifted = new Date(date.getTime() + off * 3600000);
-  const DD  = String(shifted.getUTCDate()).padStart(2, "0");
-  const HH  = String(shifted.getUTCHours()).padStart(2, "0");
-  const MM  = String(shifted.getUTCMinutes()).padStart(2, "0");
-  const MON = DTG_MONTHS[shifted.getUTCMonth()];
-  const YY  = String(shifted.getUTCFullYear() % 100).padStart(2, "0");
-  return short ? (DD + HH + MM + L) : (DD + HH + MM + L + MON + YY);
-}
-
-/**
- * Parse a DTG string into { date, tzLetter, short, raw }.
- * Tolerant of spaces between groups: "21 1630Z APR 26" / "211630Z APR 26"
- * are normalized to "211630ZAPR26". Returns null when the input doesn't
- * match the expected shape.
- *
- * Two shapes accepted:
- *   full  : DDHHMMZMMMYY   (e.g. 211630ZAPR26)
- *   short : DDHHMMZ        (no month/year — uses current month/year in UTC)
- */
-function parseDTG(str){
-  if (str == null) return null;
-  const raw = String(str);
-  const s = raw.toUpperCase().replace(/\s+/g, "");
-  const reFull  = /^(\d{2})(\d{2})(\d{2})([A-Z])([A-Z]{3})(\d{2})$/;
-  const reShort = /^(\d{2})(\d{2})(\d{2})([A-Z])$/;
-  let m = s.match(reFull);
-  let short = false;
-  let DD, HH, MM, L, MON, YY;
-  if (m){
-    DD = m[1]; HH = m[2]; MM = m[3]; L = m[4]; MON = m[5]; YY = m[6];
-  } else if ((m = s.match(reShort))){
-    DD = m[1]; HH = m[2]; MM = m[3]; L = m[4];
-    const now = new Date();
-    MON = DTG_MONTHS[now.getUTCMonth()];
-    YY  = String(now.getUTCFullYear() % 100).padStart(2, "0");
-    short = true;
-  } else {
-    return null;
-  }
-  if (L === "J") return null;            // J is reserved / ambiguous
-  const off = dtgTzOffset(L);
-  if (off === null) return null;
-  const monIdx = DTG_MONTHS.indexOf(MON);
-  if (monIdx < 0) return null;
-  const day = +DD, hr = +HH, mi = +MM;
-  if (day < 1 || day > 31 || hr > 23 || mi > 59) return null;
-  // 2-digit year policy: 00–69 → 2000–2069, 70–99 → 1970–1999.
-  const yy = +YY;
-  const year = yy >= 70 ? 1900 + yy : 2000 + yy;
-  // Absolute instant: wall-clock in tz → shift back to UTC by offset.
-  const utcMs = Date.UTC(year, monIdx, day, hr, mi, 0) - off * 3600000;
-  const d = new Date(utcMs);
-  if (Number.isNaN(d.getTime())) return null;
-  // Sanity: month/day must round-trip (catches inputs like 31 FEB).
-  const roundTripShifted = new Date(d.getTime() + off * 3600000);
-  if (roundTripShifted.getUTCDate()  !== day ||
-      roundTripShifted.getUTCMonth() !== monIdx){
-    return null;
-  }
-  return { date: d, tzLetter: L, short, raw };
-}
-
-/** DTG for "now" in the given tz letter (default Zulu). */
-function getCurrentDTG(tzLetter, opts){
-  return formatDTG(new Date(), tzLetter || "Z", opts);
-}
-
-/** Convenience wrappers. */
-function dtgToUTC(dtgStr){
-  const p = parseDTG(dtgStr);
-  return p ? p.date : null;
-}
-function dtgToLocalTime(dtgStr){
-  const d = dtgToUTC(dtgStr);
-  if (!d) return null;
-  // Return a Date that, when formatted with LOCAL getters, prints the
-  // local wall-clock of the original absolute instant.
-  return d;
 }
 
 /* ========================= SECTION 14L: GEOCODING (Nominatim + offline fallback) =========================
@@ -12149,7 +11798,6 @@ function renderResults(lat, lon, meta, opts = {}){
 
   if (!skipHistory) pushHistory({ lat, lon, meta });
   renderGpsMetadata(meta);
-  updateGeoLiveBadge();
 }
 
 /** Ensure the locality row is wired up. It lives in the DOM already (inside
@@ -12273,25 +11921,20 @@ function refreshGeolocationBarriers(){
   const hasApi = typeof navigator !== "undefined" && !!navigator.geolocation;
   const ctxOk = hasApi && window.isSecureContext;
   const my = document.getElementById("btnMyLocation");
-  const li = document.getElementById("btnGeoLive");
   const acquiring = !!(my && my.classList.contains("geo-acquiring"));
   if (!hasApi){
     if (my){ my.disabled = true; my.setAttribute("data-tip", t("geo.err.nosupport")); }
-    if (li){ li.disabled = true; li.setAttribute("data-tip", t("geo.err.nosupport")); }
     return;
   }
   if (!ctxOk){
     if (my){ my.disabled = true; my.setAttribute("data-tip", t("tip.geoDisabled")); }
-    if (li){ li.disabled = true; li.setAttribute("data-tip", t("tip.geoDisabled")); }
     return;
   }
   if (acquiring){
     if (my){ my.disabled = true; my.setAttribute("data-tip", t("tip.myLocation")); }
-    if (li){ li.disabled = true; li.setAttribute("data-tip", t("tip.geoLive")); }
     return;
   }
   if (my){ my.disabled = false; my.setAttribute("data-tip", t("tip.myLocation")); }
-  if (li){ li.disabled = false; li.setAttribute("data-tip", t("tip.geoLive")); }
 }
 
 function renderGpsMetadata(meta){
@@ -12334,29 +11977,6 @@ function renderGpsMetadata(meta){
     <p class="gps-terrain-hint">${esc(t("gps.vsTerrain"))}</p>`;
 }
 
-function updateGeoLiveBadge(){
-  const b = document.getElementById("geoLiveBadge");
-  if (b) b.hidden = (state.geoWatchId == null);
-  const liveBtn = document.getElementById("btnGeoLive");
-  if (liveBtn) liveBtn.setAttribute("aria-pressed", state.geoWatchId != null ? "true" : "false");
-}
-
-function stopLocationTracking(){
-  if (state.geoWatchId != null){
-    try { navigator.geolocation.clearWatch(state.geoWatchId); } catch(_){}
-    state.geoWatchId = null;
-  }
-  const liveBtn = document.getElementById("btnGeoLive");
-  if (liveBtn) liveBtn.classList.remove("is-live");
-  const st = document.getElementById("pasteStatus");
-  if (st && st.classList.contains("geo-pending")){
-    st.textContent = "";
-    st.className = "";
-  }
-  updateGeoLiveBadge();
-  refreshGeolocationBarriers();
-}
-
 function requestCurrentLocation(){
   clearError();
   if (!navigator.geolocation){
@@ -12370,7 +11990,6 @@ function requestCurrentLocation(){
   const my = document.getElementById("btnMyLocation");
   const st = document.getElementById("pasteStatus");
   const ico = my && my.querySelector(".geo-ico");
-  stopLocationTracking();
   if (my) my.classList.add("geo-acquiring");
   if (st){ st.textContent = t("geo.acquiring"); st.className = "ok geo-pending"; }
   refreshGeolocationBarriers();
@@ -12412,62 +12031,6 @@ function requestCurrentLocation(){
     },
     GEO_OPTIONS
   );
-}
-
-function startLocationTracking(){
-  clearError();
-  if (!navigator.geolocation){
-    showError(t("geo.err.nosupport"));
-    return;
-  }
-  if (!window.isSecureContext){
-    showError(t("geo.err.insecure"));
-    return;
-  }
-  const st = document.getElementById("pasteStatus");
-  const liveBtn = document.getElementById("btnGeoLive");
-  if (st){ st.textContent = t("geo.acquiring"); st.className = "ok geo-pending"; }
-  let first = true;
-  state.geoWatchId = navigator.geolocation.watchPosition(
-    (pos) => {
-      const lat = pos.coords.latitude, lon = pos.coords.longitude;
-      if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
-      const meta = {
-        type: "LatLon",
-        raw: formatGpsRawLine(pos),
-        gps: buildGpsMetaFromPosition(pos)
-      };
-      const pi = document.getElementById("pasteInput");
-      if (pi) pi.value = round(lat, 7) + ", " + round(lon, 7);
-      setBadge("LatLon", fmtDD(lat, lon).cardinal);
-      const skipHistory = !first;
-      if (first){
-        if (st){ st.textContent = t("paste.detectedLL"); st.className = "ok"; st.classList.remove("geo-pending"); }
-      }
-      first = false;
-      renderResults(lat, lon, meta, { skipHistory });
-      if (liveBtn) liveBtn.classList.add("is-live");
-      updateGeoLiveBadge();
-      refreshGeolocationBarriers();
-    },
-    (err) => {
-      stopLocationTracking();
-      if (st){ st.classList.remove("geo-pending"); }
-      handleGeolocationError(err);
-    },
-    GEO_OPTIONS
-  );
-  if (liveBtn) liveBtn.classList.add("is-live");
-  updateGeoLiveBadge();
-  refreshGeolocationBarriers();
-}
-
-function onBtnGeoLiveClick(){
-  if (state.geoWatchId != null){
-    stopLocationTracking();
-    return;
-  }
-  startLocationTracking();
 }
 
 /**
@@ -12734,183 +12297,6 @@ function makeOfflinePanelDraggable(panel){
   handle.addEventListener("mousedown", onDown);
   handle.addEventListener("touchstart", onDown, { passive: true });
   panel._draggableInstalled = true;
-}
-
-/**
- * Wire up the DTG card: populate the TZ dropdown, start a once-per-second
- * tick that refreshes the live display and the inline summary chip, parse
- * the user input on every keystroke (with live red/green border), and bind
- * the "use now" + "copy" buttons.
- *
- * The tick is idempotent: calling bindDTG twice will clear and reinstall
- * the interval instead of running two timers.
- */
-function bindDTG(){
-  const tzSel   = document.getElementById("dtgNowTz");
-  const disp    = document.getElementById("dtgNowDisplay");
-  const inline  = document.getElementById("dtgNowInline");
-  const shortCb = document.getElementById("dtgShortToggle");
-  const input   = document.getElementById("dtgInput");
-  const parseEl = document.getElementById("dtgParseResult");
-  const btnCopy = document.getElementById("btnDtgCopy");
-  const btnFill = document.getElementById("btnDtgNowFill");
-  if (!tzSel || !disp || !input || !parseEl) return;
-
-  // --- Populate the TZ dropdown (once) ---
-  if (!tzSel._populated){
-    // Order: Zulu first (most common), then positive offsets A..M, then negative N..Y.
-    const ordered = [DTG_TZ_MAP.Z]
-      .concat(DTG_TZ.filter(e => e.offset > 0).sort((a,b) => a.offset - b.offset))
-      .concat(DTG_TZ.filter(e => e.offset < 0).sort((a,b) => b.offset - a.offset));
-    const frag = document.createDocumentFragment();
-    ordered.forEach(e => {
-      const opt = document.createElement("option");
-      opt.value = e.l;
-      opt.textContent = e.l + " — " + e.name + " (UTC" + dtgOffsetPretty(e.offset) + ")";
-      frag.appendChild(opt);
-    });
-    tzSel.appendChild(frag);
-    tzSel.value = state.dtgTz || "Z";
-    tzSel._populated = true;
-  }
-
-  // --- Initial state restoration ---
-  if (shortCb) shortCb.checked = !!state.dtgShort;
-
-  // --- Live tick (1s) ---
-  if (window._dtgTickId) clearInterval(window._dtgTickId);
-  const refreshNow = () => {
-    const tz = tzSel.value || "Z";
-    const short = !!(shortCb && shortCb.checked);
-    const s = getCurrentDTG(tz, { short });
-    disp.textContent = s || "—";
-    // Minimal inline chip in the summary (always Zulu for consistency)
-    if (inline) inline.textContent = getCurrentDTG("Z", { short: false });
-  };
-  refreshNow();
-  window._dtgTickId = setInterval(refreshNow, 1000);
-
-  // --- TZ change / short toggle: persist + refresh + re-parse input ---
-  const onTzOrShortChange = () => {
-    state.dtgTz = tzSel.value || "Z";
-    state.dtgShort = !!(shortCb && shortCb.checked);
-    saveStore();
-    refreshNow();
-    // If there's a parsed DTG, re-render the derived times because they
-    // depend on the currently selected TZ (for "local to tz" display).
-    renderDTGParse(input.value);
-  };
-  tzSel.addEventListener("change", onTzOrShortChange);
-  if (shortCb) shortCb.addEventListener("change", onTzOrShortChange);
-
-  // --- Parse input (live) ---
-  const renderDTGParse = (val) => {
-    const s = String(val || "").trim();
-    if (!s){
-      input.classList.remove("dtg-valid", "dtg-invalid");
-      parseEl.hidden = true;
-      parseEl.innerHTML = "";
-      return;
-    }
-    const p = parseDTG(s);
-    if (!p){
-      input.classList.add("dtg-invalid");
-      input.classList.remove("dtg-valid");
-      parseEl.hidden = false;
-      parseEl.innerHTML = `<dt>${esc(t("dtg.invalid"))}</dt><dd>—</dd>`;
-      return;
-    }
-    input.classList.add("dtg-valid");
-    input.classList.remove("dtg-invalid");
-    const d = p.date;
-    // Canonical full + short re-render
-    const canonicalFull  = formatDTG(d, p.tzLetter, { short: false });
-    const canonicalShort = formatDTG(d, p.tzLetter, { short: true  });
-    // Local wall clock (user's browser tz)
-    const localStr = d.toLocaleString();
-    // Pure UTC ISO (…Z)
-    const utcStr   = d.toISOString().replace(/\.\d{3}Z$/, "Z");
-    // Day of week in user's locale (long)
-    const dow      = d.toLocaleDateString(undefined, { weekday: "long" });
-    // Delta from now, in human-readable form
-    const deltaMs  = d.getTime() - Date.now();
-    const deltaStr = dtgDeltaHuman(deltaMs);
-    // Unix ts (seconds)
-    const unix     = Math.floor(d.getTime() / 1000);
-    parseEl.hidden = false;
-    parseEl.innerHTML = `
-      <dt>${esc(t("dtg.out.canonical"))}</dt><dd>${esc(canonicalFull)}</dd>
-      <dt>${esc(t("dtg.out.shortFmt"))}</dt><dd>${esc(canonicalShort)}</dd>
-      <dt>${esc(t("dtg.out.tz"))}</dt><dd>${esc(p.tzLetter + " — " + dtgTzName(p.tzLetter) + " (UTC" + dtgOffsetPretty(dtgTzOffset(p.tzLetter)) + ")")}</dd>
-      <dt>${esc(t("dtg.out.utc"))}</dt><dd>${esc(utcStr)}</dd>
-      <dt>${esc(t("dtg.out.local"))}</dt><dd>${esc(localStr)}</dd>
-      <dt>${esc(t("dtg.out.dow"))}</dt><dd>${esc(dow)}</dd>
-      <dt>${esc(t("dtg.out.delta"))}</dt><dd>${esc(deltaStr)}</dd>
-      <dt>${esc(t("dtg.out.unix"))}</dt><dd>${esc(String(unix))}</dd>
-    `;
-  };
-  // Expose the renderer so onTzOrShortChange can reuse it via closure.
-  const renderer = renderDTGParse;
-  // eslint-disable-next-line no-func-assign
-  bindDTG._renderParse = renderer;
-
-  input.addEventListener("input", (ev) => {
-    // Auto-uppercase without moving caret off the end
-    const up = ev.target.value.toUpperCase();
-    if (up !== ev.target.value) ev.target.value = up;
-    renderer(ev.target.value);
-  });
-
-  // --- Copy current DTG ---
-  if (btnCopy){
-    btnCopy.addEventListener("click", () => {
-      const s = disp.textContent || "";
-      if (!s || s === "—") return;
-      copyText(s, btnCopy);
-    });
-  }
-
-  // --- Fill input with current DTG in the selected TZ ---
-  if (btnFill){
-    btnFill.addEventListener("click", () => {
-      const tz = tzSel.value || "Z";
-      const short = !!(shortCb && shortCb.checked);
-      input.value = getCurrentDTG(tz, { short });
-      renderer(input.value);
-      input.focus();
-      input.select();
-    });
-  }
-}
-
-/**
- * Human-readable delta: "3 days ago", "in 2 h 14 min", "now".
- * Uses absolute rounded ms → adjusts unit from minutes up to years.
- */
-function dtgDeltaHuman(ms){
-  const abs = Math.abs(ms);
-  if (abs < 30 * 1000) return t("dtg.delta.now") || "adesso";
-  const past = ms < 0;
-  const mins = Math.round(abs / 60000);
-  let label;
-  if (mins < 60){
-    label = mins + " " + (t("dtg.unit.min") || "min");
-  } else if (mins < 60 * 24){
-    const h = Math.floor(mins / 60), m = mins % 60;
-    label = h + " h" + (m ? " " + m + " min" : "");
-  } else if (mins < 60 * 24 * 30){
-    const d = Math.floor(mins / (60 * 24));
-    label = d + " " + (d === 1 ? (t("dtg.unit.day") || "giorno") : (t("dtg.unit.days") || "giorni"));
-  } else if (mins < 60 * 24 * 365){
-    const mo = Math.floor(mins / (60 * 24 * 30));
-    label = mo + " " + (mo === 1 ? (t("dtg.unit.month") || "mese") : (t("dtg.unit.months") || "mesi"));
-  } else {
-    const y = (mins / (60 * 24 * 365)).toFixed(1);
-    label = y + " " + (t("dtg.unit.years") || "anni");
-  }
-  return past
-    ? ((t("dtg.delta.ago") || "{0} fa").replace("{0}", label))
-    : ((t("dtg.delta.in")  || "tra {0}").replace("{0}", label));
 }
 
 /**
@@ -13215,36 +12601,6 @@ function currentViewBbox(){
     // viewbox order per Nominatim: left(lon), top(lat), right(lon), bottom(lat)
     return `${nw.lon},${nw.lat},${se.lon},${se.lat}`;
   } catch(_){ return null; }
-}
-
-/**
- * Open the DTG card, scroll it into view, focus the parser input, and
- * optionally pre-fill it with the current DTG (using the currently
- * selected TZ + short-format toggle).
- */
-function focusDTGCard(fillWithNow){
-  const card = document.getElementById("dtgCard");
-  if (!card) return;
-  // DTG now lives inside the hidden tools strip (toolsCollapsible). Reveal it
-  // first, otherwise the card has display:none and scroll/open are no-ops.
-  try { revealToolsCollapsible(); } catch(_){}
-  if (!card.open) card.open = true;
-  const input = document.getElementById("dtgInput");
-  card.scrollIntoView({ behavior: "smooth", block: "center" });
-  if (fillWithNow){
-    const tzSel   = document.getElementById("dtgNowTz");
-    const shortCb = document.getElementById("dtgShortToggle");
-    const tz      = (tzSel && tzSel.value) || "Z";
-    const short   = !!(shortCb && shortCb.checked);
-    if (input){
-      input.value = getCurrentDTG(tz, { short });
-      // Trigger the "input" listener so the parse table renders.
-      input.dispatchEvent(new Event("input"));
-    }
-  }
-  if (input){
-    setTimeout(() => { input.focus(); input.select(); }, 120);
-  }
 }
 
 /** Switch basemap ("osm" | "sat") and re-render. */
@@ -15033,6 +14389,11 @@ function trackSyncPickModeUi(){
   if (btn) btn.classList.toggle("btn-primary", polyOn);
   const btnWpTab = document.getElementById("btnMapWpPickMap");
   if (btnWpTab) btnWpTab.classList.toggle("btn-primary", wpOn);
+  const btnWpModal = document.getElementById("wpPickBtn");
+  if (btnWpModal){
+    btnWpModal.classList.toggle("btn-primary", wpOn);
+    btnWpModal.setAttribute("aria-pressed", wpOn ? "true" : "false");
+  }
   const mapTgl = root && root.querySelector('[data-role="track-map-toggle"]');
   if (mapTgl){
     mapTgl.classList.toggle("active", polyOn);
@@ -15593,6 +14954,8 @@ function renderMapWaypointsList(){
 
 function renderMapWaypointsAll(){
   renderMapWaypointsList();
+  // Keep the Waypoint-manager modal list in sync with the on-map data.
+  if (typeof renderWpModalList === "function") renderWpModalList();
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (tileMap){
@@ -15637,12 +15000,10 @@ function buildCsvFromTrack(){
   const wps = state.mapWaypoints;
   if (!pts.length && !wps.length) return null;
   const nowDate = new Date();
-  const dtg = formatDTG(nowDate, "Z", { short: false });
   const iso = nowDate.toISOString();
   const rows = [
     `# generated: ${iso}`,
-    `# dtg: ${dtg}`,
-    `# creator: Convertitore Coordinate`,
+    `# creator: GOI GIS Tool`,
     "kind,idx,name,lat,lon,mgrs"
   ];
   pts.forEach((p, i) => {
@@ -15942,18 +15303,6 @@ function renderTileMap(lat, lon, zoom){
         <g transform="translate(128 128)">${gridSVG}</g>
       </svg>`;
     }
-  }
-  if (state.rangeOverlay && state.rangeOverlay.ring && state.rangeOverlay.ring.length > 2){
-    const rring = state.rangeOverlay.ring;
-    const pts = rring.map(ll => {
-      const la = Math.max(-85.05, Math.min(85.05, ll[1]));
-      const mx = lonToTileX(ll[0], zoom) * 256 - originX;
-      const my = latToTileY(la, zoom) * 256 - originY;
-      return round(mx, 2) + "," + round(my, 2);
-    });
-    html += `<svg class="tile-range" style="position:absolute;left:0;top:0;width:${W}px;height:${H}px;pointer-events:none;overflow:visible" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">` +
-      `<polygon points="${esc(pts.join(" "))}" fill="rgba(99,102,241,0.12)" stroke="#818cf8" stroke-width="2" stroke-linejoin="round"/>` +
-      `</svg>`;
   }
   // Inline SVG pin: classic teardrop outline with a white core, drawn at
   // 28×40 viewBox so the tip sits precisely at (14, 40). The wrapper div
@@ -16950,6 +16299,24 @@ function attachPanHandlers(root, lat, lon, zoom){
               color: "#2563eb",
               icon: "hq"
             };
+            // When the Waypoint-manager modal is open, drive the draft
+            // into its inline editor instead of the on-map .tile-waypoint-editor.
+            if (state.waypointsModalOpen){
+              state.waypointEditorDraft = {
+                id: null,
+                lat: pick.lat,
+                lon: pick.lon,
+                name: "",
+                icon: "hq",
+                color: "#2563eb",
+                notes: ""
+              };
+              state.trackWaypointDraft = null;
+              if (typeof openWaypointEditor === "function"){
+                openWaypointEditor({ fromDraft: true });
+              }
+              return;
+            }
             renderTileMap(lat, lon, zPick);
           } else {
           trackAddPoint(pick.lat, pick.lon, "", { from: "map-click" });
@@ -17265,7 +16632,6 @@ function clearForm(){
   ["measure-results","direct-results"].forEach(id => { const x = document.getElementById(id); if (x) x.innerHTML = ""; });
   clearError();
   state.lastResult = null;
-  if (typeof stopLocationTracking === "function") stopLocationTracking();
   const gm = document.getElementById("gpsMetadata");
   if (gm){ gm.innerHTML = ""; gm.hidden = true; }
   const my = document.getElementById("btnMyLocation");
@@ -17335,9 +16701,6 @@ function pushHistory(entry){
     type: entry.meta && entry.meta.type ? entry.meta.type : "LatLon",
     raw:  entry.meta && entry.meta.raw  ? entry.meta.raw  : null,
     when: now.getTime(),
-    // Canonical Zulu DTG so history entries can be sorted / filtered / quoted
-    // in military comms without further conversion.
-    dtg:  formatDTG(now, "Z", { short: false }),
     srcTag,
     locality: loc ? (loc.display_name || "") : ""
   });
@@ -17370,10 +16733,6 @@ function renderHistory(){
     const item = document.createElement("div");
     item.className = "history-item";
     const when = new Date(h.when).toLocaleTimeString();
-    // Older history entries (pre-DTG feature) may miss h.dtg → compute
-    // on the fly from h.when so they still show one.
-    const dtg  = h.dtg || (h.when ? formatDTG(new Date(h.when), "Z") : "");
-    const dtgHtml = dtg ? ` · <span class="mono">${esc(dtg)}</span>` : "";
     const srcHtml = h.srcTag ? `<span class="hist-tag">${esc(h.srcTag)}</span> ` : "";
     // Fall back to in-memory lastLocality for fresh entries that haven't been
     // saved with a locality field yet (first render before reverse completes).
@@ -17385,7 +16744,7 @@ function renderHistory(){
     item.innerHTML = `
       <div>
         <div>${srcHtml}${esc(h.raw || fmtDD(h.lat, h.lon).cardinal)}</div>
-        <div class="meta">${h.type} · ${when}${dtgHtml}</div>
+        <div class="meta">${h.type} · ${when}</div>
         ${locHtml}
       </div>
       <button class="btn btn-sm" data-hist="${i}" data-tip="${esc(t("tip.histReload"))}">↻</button>
@@ -17469,8 +16828,6 @@ function addCurrentAsFavorite(){
     notes: notes || "",
     lat: r.lat, lon: r.lon,
     createdAt,
-    // Canonical Zulu DTG of creation — useful for mission logs / comms.
-    dtg: formatDTG(new Date(createdAt), "Z", { short: false }),
     // Persist the locality so exports / post-load displays don't need a
     // fresh reverse lookup (and keep working offline).
     locality: loc ? (loc.display_name || "") : "",
@@ -17527,15 +16884,13 @@ function renderFavorites(){
     item.className = "favorite-item";
     const when = new Date(f.createdAt).toLocaleString();
     const notes = (f.notes != null ? String(f.notes) : "").slice(0, 500);
-    const dtg   = f.dtg || (f.createdAt ? formatDTG(new Date(f.createdAt), "Z") : "");
-    const dtgHtml = dtg ? ` · <span class="mono">${esc(dtg)}</span>` : "";
     const locHtml = f.locality ? `<div class="fav-loc" title="${esc(f.locality)}">📍 ${esc(f.locality)}</div>` : "";
     item.innerHTML = `
       <div class="fav-col-main">
         <div class="fav-name">${esc(f.name)}</div>
         <div class="fav-coords">${esc(fmtDD(f.lat, f.lon).cardinal)}</div>
         ${locHtml}
-        <div class="fav-meta">${when}${dtgHtml}</div>
+        <div class="fav-meta">${when}</div>
       </div>
       <div class="fav-actions">
         <button class="btn btn-sm" data-fav-load="${f.id}" data-tip="${esc(t("tip.favLoad"))}">↻</button>
@@ -17656,37 +17011,6 @@ function runMagAz(){
    <div class="line">${esc(t("mag.outMag"))} <b>${round(a.magDeg,3)}°</b> (D=${round(w.decl,3)}°)</div>
   </div>`;
 }
-function onRangeDraw(){
-  const r = state.lastResult;
-  if (!r) return;
-  const km = parseFloatStrict(document.getElementById("rangeRadiusKm") && document.getElementById("rangeRadiusKm").value);
-  const az = parseFloatStrict(document.getElementById("rangeAz") && document.getElementById("rangeAz").value);
-  const wid = parseFloatStrict(document.getElementById("rangeWidth") && document.getElementById("rangeWidth").value);
-  if (!Number.isFinite(km) || km <= 0) return;
-  if (!Number.isFinite(az)) return;
-  const w = Number.isFinite(wid) ? wid : 360;
-  const ring = buildRangePolygon(r.lat, r.lon, km, az, w, 72);
-  state.rangeOverlay = { ring, center: { lat: r.lat, lon: r.lon }, km, az, w };
-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
-  const hint = document.getElementById("range-geo-hint");
-  if (hint) hint.textContent = t("range.ready");
-  saveStore();
-}
-function onRangeClear(){
-  state.rangeOverlay = null;
-  const hint = document.getElementById("range-geo-hint");
-  if (hint) hint.textContent = "";
-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
-  saveStore();
-}
-function onRangeGeo(){
-  const ro = state.rangeOverlay;
-  if (!ro || !ro.ring) return;
-  const gj = { type: "Feature", properties: { kind: "range", radius_km: ro.km, azimuth_deg: ro.az, width_deg: ro.w },
-    geometry: { type: "Polygon", coordinates: [ro.ring] } };
-  const stamp = new Date().toISOString().slice(0, 10);
-  downloadBlob(JSON.stringify(gj, null, 2), "range_" + stamp + ".geojson", "application/geo+json;charset=utf-8");
-}
 function syncOpsFieldsFromState(){
   const d = new Date();
   const ds = d.toISOString().slice(0, 10);
@@ -17718,7 +17042,6 @@ function getSessionExportObject(){
   return {
     coordconvSession: 1,
     exportedAt: new Date().toISOString(),
-    rangeOverlay: state.rangeOverlay,
     settings: {
       persist: state.persist !== false, theme: state.theme, lang: state.lang, primary: state.primary,
       batchClosed: !!state.batchClosed, forceOffline: !!state.forceOffline, mapZoom: state.mapZoom || 11,
@@ -17748,8 +17071,6 @@ function importSessionObject(data){
     if (s.mapLayer === "osm" || s.mapLayer === "sat") state.mapLayer = s.mapLayer;
     if (typeof s.showGrid === "boolean") state.showGrid = s.showGrid;
     if (typeof s.showCoverage === "boolean") state.showCoverage = s.showCoverage;
-    if (typeof s.dtgTz === "string" && /^[A-IK-Z]$/.test(s.dtgTz.toUpperCase())) state.dtgTz = s.dtgTz.toUpperCase();
-    if (typeof s.dtgShort === "boolean") state.dtgShort = s.dtgShort;
     if (typeof s.geocodeEnabled === "boolean") state.geocodeEnabled = s.geocodeEnabled;
     if (typeof s.geocodeReverseAuto === "boolean") state.geocodeReverseAuto = s.geocodeReverseAuto;
     if (typeof s.geocodeEndpoint === "string") state.geocodeEndpoint = s.geocodeEndpoint.slice(0, 200);
@@ -17764,7 +17085,6 @@ function importSessionObject(data){
     if (typeof s.reportTitle === "string") state.reportTitle = s.reportTitle;
     if (typeof s.reportClass === "string") state.reportClass = s.reportClass;
   }
-  if (data.rangeOverlay && typeof data.rangeOverlay === "object") state.rangeOverlay = data.rangeOverlay;
   if (Array.isArray(data.history)) state.history = data.history.slice(0, 30);
   if (Array.isArray(data.favorites)) {
     state.favorites = data.favorites.map(f => ({
@@ -18369,8 +17689,6 @@ function bindUI(){
   document.getElementById("pasteDetect").addEventListener("click", doPasteDetect);
   const bMy = document.getElementById("btnMyLocation");
   if (bMy) bMy.addEventListener("click", () => requestCurrentLocation());
-  const bGl = document.getElementById("btnGeoLive");
-  if (bGl) bGl.addEventListener("click", () => onBtnGeoLiveClick());
   document.getElementById("btnBatch").addEventListener("click", doBatch);
   document.getElementById("btnBatchCsv").addEventListener("click", batchCsv);
   document.getElementById("btnMeasure").addEventListener("click", doMeasure);
@@ -18493,12 +17811,6 @@ function bindUI(){
   if (bMag) bMag.addEventListener("click", runMagUI);
   const bMagA = document.getElementById("btnMagConvert");
   if (bMagA) bMagA.addEventListener("click", runMagAz);
-  const bRg = document.getElementById("btnRangeDraw");
-  if (bRg) bRg.addEventListener("click", onRangeDraw);
-  const bRgc = document.getElementById("btnRangeClear");
-  if (bRgc) bRgc.addEventListener("click", onRangeClear);
-  const bRgj = document.getElementById("btnRangeGeo");
-  if (bRgj) bRgj.addEventListener("click", onRangeGeo);
 
   const btnFavGpx = document.getElementById("btnFavGpx");
   if (btnFavGpx) btnFavGpx.addEventListener("click", () => exportFavorites("gpx"));
@@ -18672,9 +17984,6 @@ function bindUI(){
   // (half or full). In small-map mode the drag handler is a no-op.
   const otpEl = document.getElementById("offlineTilePanel");
   if (otpEl) makeOfflinePanelDraggable(otpEl);
-
-  // DTG card: live tick, TZ selector, parse input, copy, "Use now" button.
-  bindDTG();
 
   // Geocoding card: forward search + autocomplete dropdown + OPSEC banner.
   bindGeocode();
@@ -18877,15 +18186,18 @@ function bindUI(){
 /** Allowed tab keys + the id of the <details> section each opens. */
 const GIS_TAB_SECTIONS = Object.freeze({
   track:     "sec-track",
-  waypoints: "sec-track",
+  waypoints: "sec-waypoints",
   measure:   "sec-measure",
   favorites: "sec-favorites",
-  dtg:       "dtgCard",
   geocoding: "geocodeCard",
   history:   "sec-history",
   layers:    "offlineTilePanel"
 });
 const GIS_VALID_TABS = Object.freeze(Object.keys(GIS_TAB_SECTIONS));
+/** Tabs that open a dedicated <dialog class="app-modal"> instead of the
+ *  side drawer. Kept as an explicit whitelist so future tabs stay drawer
+ *  by default; adding one here requires an opener/closer pair. */
+const GIS_TABS_AS_MODAL = Object.freeze(new Set(["waypoints"]));
 
 /** Allowed tool keys for the "Altri strumenti" modal. */
 const GIS_TOOL_SECTIONS = Object.freeze({
@@ -18893,8 +18205,7 @@ const GIS_TOOL_SECTIONS = Object.freeze({
   notes:   "sec-notes",
   session: "sec-session",
   astro:   "sec-astro",
-  mag:     "sec-mag",
-  range:   "sec-range"
+  mag:     "sec-mag"
 });
 const GIS_VALID_TOOLS = Object.freeze(Object.keys(GIS_TOOL_SECTIONS));
 
@@ -18904,7 +18215,6 @@ const GIS_TAB_TITLE_KEY = Object.freeze({
   waypoints: "tabs.waypoints",
   measure:   "tabs.measure",
   favorites: "tabs.favorites",
-  dtg:       "tabs.dtg",
   geocoding: "tabs.geocoding",
   history:   "tabs.history",
   layers:    "tabs.layers"
@@ -19015,6 +18325,83 @@ function gisInit(){
       if (ev.target === tm) closeToolsModal();
     });
   }
+
+  // Waypoint modal: close via X / Esc / backdrop. When the modal is
+  // closed by any of those paths, also clear `state.activeTab` so the
+  // topbar pill goes inactive (mirrors deactivateTab semantics).
+  const wmClose = document.getElementById("waypointModalClose");
+  const wm = document.getElementById("waypointModal");
+  const handleWpClose = () => {
+    closeWaypointModal();
+    if (state.activeTab === "waypoints"){
+      state.activeTab = null;
+      document.querySelectorAll("#appTopbar .app-tab").forEach(b => {
+        b.classList.remove("is-active");
+        b.setAttribute("aria-selected", "false");
+      });
+      saveStore();
+    }
+  };
+  if (wmClose) wmClose.addEventListener("click", (ev) => {
+    ev.preventDefault(); handleWpClose();
+  });
+  if (wm){
+    wm.addEventListener("cancel", (ev) => { ev.preventDefault(); handleWpClose(); });
+    wm.addEventListener("click", (ev) => {
+      if (ev.target === wm) handleWpClose();
+    });
+  }
+
+  // Waypoint manager toolbar + inline editor buttons. Wired once in
+  // gisInit so the section keeps working even after being reparented
+  // in and out of the modal body. Each handler is idempotent.
+  const wpAdd = document.getElementById("wpAddBtn");
+  if (wpAdd) wpAdd.addEventListener("click", (ev) => {
+    ev.preventDefault(); openWaypointEditor();
+  });
+  const wpPick = document.getElementById("wpPickBtn");
+  if (wpPick) wpPick.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    // Reuse the existing shared toggle so state + on-map chrome stay in sync.
+    if (typeof trackToggleWaypointPickMode === "function") trackToggleWaypointPickMode();
+  });
+  const wpImp = document.getElementById("wpImportBtn");
+  const wpImpFile = document.getElementById("wpImportFile");
+  if (wpImp && wpImpFile) wpImp.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    try { wpImpFile.value = ""; } catch(_){}
+    wpImpFile.click();
+  });
+  if (wpImpFile) wpImpFile.addEventListener("change", (ev) => {
+    const f = ev.target && ev.target.files && ev.target.files[0];
+    if (f) waypointsImportGeoJSON(f);
+  });
+  const wpExp = document.getElementById("wpExportBtn");
+  if (wpExp) wpExp.addEventListener("click", (ev) => {
+    ev.preventDefault(); waypointsExportGeoJSON();
+  });
+  const wpClr = document.getElementById("wpClearBtn");
+  if (wpClr) wpClr.addEventListener("click", (ev) => {
+    ev.preventDefault(); waypointsClearAll();
+  });
+  const wpEdCancel = document.getElementById("wpEditorCancel");
+  if (wpEdCancel) wpEdCancel.addEventListener("click", (ev) => {
+    ev.preventDefault(); closeWaypointEditor();
+  });
+  const wpEdSave = document.getElementById("wpEditorSave");
+  if (wpEdSave) wpEdSave.addEventListener("click", (ev) => {
+    ev.preventDefault(); commitWaypointEditor();
+  });
+  const wpEdDel = document.getElementById("wpEditorDelete");
+  if (wpEdDel) wpEdDel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const d = state.waypointEditorDraft;
+    if (d && d.id) waypointDelete(d.id);
+  });
+  const wpCoord = document.getElementById("wpFieldCoord");
+  if (wpCoord) wpCoord.addEventListener("input", (ev) => {
+    onEditorCoordInput(ev.target.value);
+  });
   document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(btn => {
     btn.addEventListener("click", (ev) => {
       ev.preventDefault();
@@ -19084,9 +18471,40 @@ function gisRestoreSection(sectionId){
   if (el.tagName && el.tagName.toLowerCase() === "details") el.open = false;
 }
 
-/** Activate a tab: move its section to the right-side drawer. */
+/** Activate a tab: move its section to the right-side drawer (default)
+ *  or into a dedicated dialog (for tabs whitelisted in `GIS_TABS_AS_MODAL`). */
 function activateTab(tabKey){
   if (!GIS_VALID_TABS.includes(tabKey)) return;
+
+  // Tab-as-modal branch: delegate to the modal opener. The opener owns
+  // reparenting/state and must set `state.activeTab = tabKey` itself.
+  if (GIS_TABS_AS_MODAL.has(tabKey)){
+    // Restore any previously-active drawer tab first, so its section
+    // goes home before we open a modal.
+    if (state.activeTab && state.activeTab !== tabKey
+        && !GIS_TABS_AS_MODAL.has(state.activeTab)){
+      const prevId = GIS_TAB_SECTIONS[state.activeTab];
+      gisRestoreSection(prevId);
+      const drawerPrev = document.getElementById("tabDrawer");
+      if (drawerPrev){
+        drawerPrev.classList.remove("is-open");
+        drawerPrev.setAttribute("aria-hidden", "true");
+        setTimeout(() => { if (!state.activeTab) drawerPrev.hidden = true; }, 240);
+      }
+    }
+    if (tabKey === "waypoints"){
+      openWaypointModal();
+    }
+    document.querySelectorAll("#appTopbar .app-tab").forEach(b => {
+      const on = b.getAttribute("data-tab") === tabKey;
+      b.classList.toggle("is-active", on);
+      b.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    state.activeTab = tabKey;
+    saveStore();
+    return;
+  }
+
   const drawer = document.getElementById("tabDrawer");
   const body = document.getElementById("tabDrawerBody");
   const title = document.getElementById("tabDrawerTitle");
@@ -19095,7 +18513,12 @@ function activateTab(tabKey){
   // If another tab is active, restore its section first
   if (state.activeTab && state.activeTab !== tabKey){
     const prevId = GIS_TAB_SECTIONS[state.activeTab];
-    gisRestoreSection(prevId);
+    // Modal tabs have their own closer — call it so state is clean.
+    if (GIS_TABS_AS_MODAL.has(state.activeTab)){
+      if (state.activeTab === "waypoints") closeWaypointModal();
+    } else {
+      gisRestoreSection(prevId);
+    }
   }
 
   const sectionId = GIS_TAB_SECTIONS[tabKey];
@@ -19120,32 +18543,27 @@ function activateTab(tabKey){
   drawer.offsetHeight;
   drawer.classList.add("is-open");
 
-  // Special-case: Waypoints tab is an alias for the track section, but it
-  // should enable the standalone waypoint click-to-add mode immediately.
-  if (tabKey === "waypoints"){
-    try {
-      ensureTrackState();
-      ensureMapWaypointsState();
-      state.waypointPickMode = true;
-      if (state.track) state.track.pickMode = false;
-      state.trackWaypointDraft = null;
-      trackSyncPickModeUi();
-      refreshTileMapForTrackUi();
-      requestAnimationFrame(() => {
-        const btn = document.getElementById("btnMapWpPickMap");
-        if (btn && btn.scrollIntoView) btn.scrollIntoView({ block: "center", inline: "nearest" });
-      });
-    } catch(_){}
-  }
-
   saveStore();
 }
 
-/** Close the tab drawer and return its content home. */
+/** Close the drawer/modal for the currently active tab and return its
+ *  content home. Handles both drawer-tabs and `GIS_TABS_AS_MODAL` tabs. */
 function deactivateTab(){
   const drawer = document.getElementById("tabDrawer");
   if (!state.activeTab) return;
-  const sectionId = GIS_TAB_SECTIONS[state.activeTab];
+  const wasTab = state.activeTab;
+  const sectionId = GIS_TAB_SECTIONS[wasTab];
+  // Tab-as-modal: let the closer handle reparenting + dialog close.
+  if (GIS_TABS_AS_MODAL.has(wasTab)){
+    if (wasTab === "waypoints") closeWaypointModal();
+    state.activeTab = null;
+    document.querySelectorAll("#appTopbar .app-tab").forEach(b => {
+      b.classList.remove("is-active");
+      b.setAttribute("aria-selected", "false");
+    });
+    saveStore();
+    return;
+  }
   gisRestoreSection(sectionId);
   state.activeTab = null;
   document.querySelectorAll("#appTopbar .app-tab").forEach(b => {
@@ -19248,6 +18666,425 @@ function closeToolsModal(){
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
 }
 
+/* ========================= WAYPOINT MANAGER (modal) =========================
+ *  Opens a dedicated <dialog id="waypointModal"> and reparents the
+ *  sec-waypoints section into it. Single source of truth stays
+ *  `state.mapWaypoints`; the on-map toolbar (#btnMapWpPickMap on
+ *  sec-track) and the modal toolbar (#wpPickBtn) share
+ *  `state.waypointPickMode`. The inline editor reuses `autoDetect`
+ *  for free-text coord input and `validateLatLon` for range checks.
+ */
+
+function openWaypointModal(){
+  const dlg = document.getElementById("waypointModal");
+  const body = document.getElementById("waypointModalBody");
+  if (!dlg || !body) return;
+  gisMoveSectionTo("sec-waypoints", body);
+  state.waypointsModalOpen = true;
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    ensureTrackState();
+    ensureMapWaypointsState();
+    if (state.track) state.track.pickMode = false;
+    state.trackWaypointDraft = null;
+  } catch(_){}
+  closeWaypointEditor(); // start clean
+  renderWpModalList();
+  if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+}
+
+function closeWaypointModal(){
+  const dlg = document.getElementById("waypointModal");
+  if (!state.waypointsModalOpen && !(dlg && dlg.open)) return;
+  closeWaypointEditor();
+  gisRestoreSection("sec-waypoints");
+  if (state.waypointPickMode){
+    state.waypointPickMode = false;
+    state.trackWaypointDraft = null;
+    if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+    if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+  }
+  state.waypointsModalOpen = false;
+  if (dlg){
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
+}
+
+/** Render the waypoint list inside `#wp-list`. Kept in sync by
+ *  `renderMapWaypointsAll()`. No-op if the list node is missing. */
+function renderWpModalList(){
+  const root = document.getElementById("wp-list");
+  if (!root) return;
+  ensureMapWaypointsState();
+  const pts = state.mapWaypoints;
+  root.setAttribute("data-empty", t("waypointModal.empty"));
+  const countEl = document.getElementById("wp-count");
+  if (countEl) countEl.textContent = pts.length ? (pts.length + " / 200") : "";
+  if (!pts.length){ root.innerHTML = ""; return; }
+  const draftId = state.waypointEditorDraft && state.waypointEditorDraft.id || "";
+  const html = pts.map(p => {
+    const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
+    let mgrs = "";
+    try { mgrs = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
+    const ic = (p.meta && p.meta.icon) ? String(p.meta.icon) : "—";
+    const editing = (p.id === draftId) ? " is-editing" : "";
+    const nm = p.name || t("waypointModal.unnamed");
+    return `<div class="wp-row${editing}" data-id="${esc(p.id)}" role="listitem">
+      <div class="wp-row__main">
+        <div class="wp-row__name">${esc(nm)}</div>
+        <div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)} · ${esc(t("mapWp.iconLabel"))}: ${esc(ic)}</div>
+      </div>
+      <div class="wp-row__actions">
+        <button type="button" class="btn btn-sm" data-role="wp-zoom" title="${esc(t("waypointModal.zoomTo"))}">🎯</button>
+        <button type="button" class="btn btn-sm" data-role="wp-edit" title="${esc(t("waypointModal.editor.edit"))}">✎</button>
+        <button type="button" class="btn btn-sm" data-role="wp-del"  title="${esc(t("mapWp.removeOne"))}">✕</button>
+      </div>
+    </div>`;
+  }).join("");
+  root.innerHTML = html;
+  root.querySelectorAll('[data-role="wp-edit"]').forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const row = btn.closest(".wp-row");
+      if (row) openWaypointEditor({ id: row.dataset.id });
+    });
+  });
+  root.querySelectorAll('[data-role="wp-del"]').forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const row = btn.closest(".wp-row");
+      if (row) waypointDelete(row.dataset.id);
+    });
+  });
+  root.querySelectorAll('[data-role="wp-zoom"]').forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const row = btn.closest(".wp-row");
+      if (row) waypointsZoomTo(row.dataset.id);
+    });
+  });
+}
+
+/** Open the inline editor for a new draft (no id) or an existing
+ *  waypoint (by id). Prefills from `state.mapWaypoints` or from
+ *  `state.waypointEditorDraft` (e.g. pick-on-map just set one). */
+function openWaypointEditor(opts){
+  const editor = document.getElementById("waypointEditor");
+  if (!editor) return;
+  ensureMapWaypointsState();
+  const id = opts && opts.id;
+  const fromDraft = !!(opts && opts.fromDraft);
+  let d;
+  if (id){
+    const p = state.mapWaypoints.find(x => x.id === id);
+    if (!p) return;
+    d = {
+      id: p.id,
+      lat: p.lat,
+      lon: p.lon,
+      name: p.name || "",
+      icon: (p.meta && p.meta.icon) || "hq",
+      color: (p.meta && p.meta.color) || "#2563eb",
+      notes: (p.meta && p.meta.notes) || ""
+    };
+  } else if (fromDraft && state.waypointEditorDraft){
+    d = Object.assign({}, state.waypointEditorDraft);
+  } else {
+    d = {
+      id: null,
+      lat: NaN, lon: NaN,
+      name: "",
+      icon: "hq",
+      color: "#2563eb",
+      notes: ""
+    };
+  }
+  state.waypointEditorDraft = d;
+
+  const titleEl = document.getElementById("wpEditorTitle");
+  if (titleEl) titleEl.textContent = id ? t("waypointModal.editor.editTitle") : t("waypointModal.editor.newTitle");
+  const nameEl = document.getElementById("wpFieldName");
+  const coordEl = document.getElementById("wpFieldCoord");
+  const iconEl = document.getElementById("wpFieldIcon");
+  const colorEl = document.getElementById("wpFieldColor");
+  const notesEl = document.getElementById("wpFieldNotes");
+  const delBtn = document.getElementById("wpEditorDelete");
+  if (nameEl) nameEl.value = d.name || "";
+  if (coordEl){
+    coordEl.value = (Number.isFinite(d.lat) && Number.isFinite(d.lon))
+      ? (d.lat.toFixed(5) + ", " + d.lon.toFixed(5))
+      : "";
+    coordEl.removeAttribute("aria-invalid");
+  }
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
+  if (iconEl){
+    const icRaw = TRACK_WPT_ICON_SET.has(String(d.icon || "").toLowerCase())
+      ? String(d.icon).toLowerCase() : "hq";
+    iconEl.value = icRaw;
+  }
+  if (colorEl) colorEl.value = sanitizeTrackColor(d.color);
+  if (notesEl) notesEl.value = d.notes || "";
+  if (delBtn) delBtn.hidden = !id;
+
+  editor.hidden = false;
+  renderWpModalList(); // refresh is-editing state
+  if (nameEl) try { nameEl.focus(); } catch(_){}
+}
+
+function closeWaypointEditor(){
+  const editor = document.getElementById("waypointEditor");
+  if (editor) editor.hidden = true;
+  state.waypointEditorDraft = null;
+  renderWpModalList();
+}
+
+/** Parse the free-text coordinate input and update the draft on success.
+ *  Gives inline feedback (aria-invalid + localized message) on failure. */
+function onEditorCoordInput(str){
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  const input = document.getElementById("wpFieldCoord");
+  if (!state.waypointEditorDraft) return;
+  const s = String(str || "").trim();
+  if (!s){
+    if (input) input.removeAttribute("aria-invalid");
+    if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
+    state.waypointEditorDraft.lat = NaN;
+    state.waypointEditorDraft.lon = NaN;
+    return;
+  }
+  try {
+    const det = autoDetect(s);
+    validateLatLon(det.lat, det.lon);
+    state.waypointEditorDraft.lat = det.lat;
+    state.waypointEditorDraft.lon = normalizeLon(det.lon);
+    if (input) input.removeAttribute("aria-invalid");
+    if (fb){
+      fb.textContent = det.lat.toFixed(5) + ", " + det.lon.toFixed(5) + " (" + (det.type || "LatLon") + ")";
+      fb.classList.remove("is-err"); fb.classList.add("is-ok");
+    }
+  } catch(err){
+    state.waypointEditorDraft.lat = NaN;
+    state.waypointEditorDraft.lon = NaN;
+    if (input) input.setAttribute("aria-invalid", "true");
+    if (fb){
+      const key = (err && (err.key || err.i18nKey)) || "err.notRecognized";
+      fb.textContent = t(key);
+      fb.classList.remove("is-ok"); fb.classList.add("is-err");
+    }
+  }
+}
+
+/** Validate + commit the current editor draft. New waypoints are
+ *  appended via `waypointAdd`; existing ones are patched in place. */
+function commitWaypointEditor(){
+  const d = state.waypointEditorDraft;
+  if (!d) return;
+  // Accept coord from the input box if it wasn't triggered yet.
+  const coordEl = document.getElementById("wpFieldCoord");
+  if (coordEl && coordEl.value && (!Number.isFinite(d.lat) || !Number.isFinite(d.lon))){
+    onEditorCoordInput(coordEl.value);
+  }
+  if (!Number.isFinite(d.lat) || !Number.isFinite(d.lon)){
+    const fb = document.getElementById("wpFieldCoordFeedback");
+    if (fb){ fb.textContent = t("err.notRecognized"); fb.classList.add("is-err"); }
+    return;
+  }
+  try { validateLatLon(d.lat, d.lon); }
+  catch(err){
+    const fb = document.getElementById("wpFieldCoordFeedback");
+    if (fb){ fb.textContent = t((err && (err.key || err.i18nKey)) || "err.latRange"); fb.classList.add("is-err"); }
+    return;
+  }
+  const lat = Math.max(-90, Math.min(90, d.lat));
+  const lon = normalizeLon(d.lon);
+
+  const nameEl = document.getElementById("wpFieldName");
+  const iconEl = document.getElementById("wpFieldIcon");
+  const colorEl = document.getElementById("wpFieldColor");
+  const notesEl = document.getElementById("wpFieldNotes");
+  const name = (nameEl && nameEl.value ? String(nameEl.value) : "").trim().slice(0, 60);
+  const iconRaw = iconEl && iconEl.value ? String(iconEl.value).toLowerCase() : "hq";
+  const icon = TRACK_WPT_ICON_SET.has(iconRaw) ? iconRaw : "hq";
+  const color = sanitizeTrackColor((colorEl && colorEl.value) || "#2563eb");
+  const notes = (notesEl && notesEl.value ? String(notesEl.value) : "").slice(0, 500);
+  const meta = { from: d.id ? "waypoint-editor-modal" : "waypoint-editor-modal-new", icon, color };
+  if (notes) meta.notes = notes;
+
+  if (d.id){
+    waypointUpdate(d.id, { lat, lon, name, meta });
+  } else {
+    waypointAdd(lat, lon, name, meta);
+  }
+  closeWaypointEditor();
+}
+
+/** Patch an existing waypoint. Used by the modal editor save flow. */
+function waypointUpdate(id, patch){
+  ensureMapWaypointsState();
+  const p = state.mapWaypoints.find(x => x.id === id);
+  if (!p) return false;
+  if (patch && Number.isFinite(patch.lat) && Number.isFinite(patch.lon)){
+    p.lat = Math.max(-90, Math.min(90, patch.lat));
+    p.lon = normalizeLon(patch.lon);
+  }
+  if (patch && typeof patch.name === "string") p.name = patch.name.slice(0, 60);
+  if (patch && patch.meta && typeof patch.meta === "object"){
+    const mi = patch.meta;
+    const cur = p.meta || {};
+    p.meta = {
+      from: cur.from || mi.from || "waypoint-editor-modal",
+      icon: TRACK_WPT_ICON_SET.has(String(mi.icon || cur.icon || "hq").toLowerCase())
+        ? String(mi.icon || cur.icon || "hq").toLowerCase() : "hq",
+      color: sanitizeTrackColor(mi.color || cur.color || "#2563eb"),
+      notes: (typeof mi.notes === "string" ? mi.notes : (cur.notes || "")).slice(0, 500)
+    };
+    if (!p.meta.notes) delete p.meta.notes;
+  }
+  saveStore();
+  renderMapWaypointsAll();
+  return true;
+}
+
+function waypointDelete(id){
+  ensureMapWaypointsState();
+  const p = state.mapWaypoints.find(x => x.id === id);
+  if (!p) return;
+  if (typeof window.confirm === "function" && !window.confirm(t("waypointModal.deleteConfirm"))) return;
+  state.mapWaypoints = state.mapWaypoints.filter(x => x.id !== id);
+  if (state.waypointEditorDraft && state.waypointEditorDraft.id === id) closeWaypointEditor();
+  saveStore();
+  renderMapWaypointsAll();
+}
+
+function waypointsClearAll(){
+  ensureMapWaypointsState();
+  if (!state.mapWaypoints.length) return;
+  if (typeof window.confirm === "function" && !window.confirm(t("waypointModal.clearConfirm"))) return;
+  state.mapWaypoints = [];
+  closeWaypointEditor();
+  saveStore();
+  renderMapWaypointsAll();
+}
+
+/** Center the tile-map on the given waypoint. Uses `state.viewCenter`
+ *  + the existing mini-map renderer; does not touch the map zoom. */
+function waypointsZoomTo(id){
+  ensureMapWaypointsState();
+  const p = state.mapWaypoints.find(x => x.id === id);
+  if (!p) return;
+  try {
+    state.viewCenter = { lat: p.lat, lon: p.lon };
+    const z = state.mapZoom || 13;
+    const root = document.getElementById("miniMap");
+    if (root && root.querySelector(".tile-map") && typeof renderTileMap === "function"){
+      renderTileMap(p.lat, p.lon, z);
+    } else if (typeof renderMiniMap === "function"){
+      renderMiniMap(p.lat, p.lon, false);
+    }
+  } catch(_){}
+}
+
+/* ---- GeoJSON import / export (waypoints only) ---- */
+
+function waypointsImportGeoJSON(file){
+  if (!file) return;
+  ensureMapWaypointsState();
+  const reader = new FileReader();
+  reader.onerror = () => setBadge("error", t("spatial.err.read") || "File read error");
+  reader.onload = () => {
+    let fc;
+    try { fc = spatialGeojsonTextToFeatureCollection(String(reader.result || "")); }
+    catch(err){ setBadge("error", t("spatial.err.parse") || "GeoJSON parse error"); return; }
+    const feats = (fc && Array.isArray(fc.features)) ? fc.features : [];
+    const points = feats.filter(f => f && f.geometry && f.geometry.type === "Point");
+    if (!points.length){
+      setBadge("info", t("waypointModal.importEmpty"));
+      return;
+    }
+    const remaining = 200 - state.mapWaypoints.length;
+    let toImport = points;
+    if (points.length > remaining){
+      if (remaining <= 0){ setBadge("error", t("waypointModal.capFull")); return; }
+      const msg = t("waypointModal.capWarn").replace("{0}", String(points.length)).replace("{1}", String(remaining));
+      if (typeof window.confirm === "function" && !window.confirm(msg)) return;
+      toImport = points.slice(0, remaining);
+    }
+    let added = 0, skipped = 0;
+    for (const f of toImport){
+      const c = f.geometry && f.geometry.coordinates;
+      if (!Array.isArray(c) || c.length < 2){ skipped++; continue; }
+      const lon = Number(c[0]), lat = Number(c[1]);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90){ skipped++; continue; }
+      const props = f.properties || {};
+      const iconRaw = String(props.icon || "").toLowerCase();
+      const icon = TRACK_WPT_ICON_SET.has(iconRaw) ? iconRaw : "hq";
+      const color = sanitizeTrackColor(props.color || "#2563eb");
+      const notes = (typeof props.notes === "string" ? props.notes : "").slice(0, 500);
+      const meta = { from: "geojson-import", icon, color };
+      if (notes) meta.notes = notes;
+      const ok = waypointAdd(
+        Math.max(-90, Math.min(90, lat)),
+        normalizeLon(lon),
+        (typeof props.name === "string" ? props.name : "").slice(0, 60),
+        meta
+      );
+      if (ok) added++; else skipped++;
+    }
+    const msg = (t("waypointModal.importedN") || "Imported {0} waypoints ({1} skipped).")
+      .replace("{0}", String(added)).replace("{1}", String(skipped));
+    setBadge(added ? "success" : "info", msg);
+  };
+  reader.readAsText(file);
+}
+
+function waypointsExportGeoJSON(){
+  ensureMapWaypointsState();
+  if (!state.mapWaypoints.length){
+    setBadge("info", t("waypointModal.empty"));
+    return;
+  }
+  // Reuse the canonical builder, filter to waypoints, and attach notes/color
+  // (the canonical builder today only emits name + icon for waypoints).
+  const base = spatialBuildFeatureCollectionFromAppState();
+  const byKey = new Map();
+  for (const p of state.mapWaypoints){
+    byKey.set(round(p.lon, 7) + ":" + round(p.lat, 7), p);
+  }
+  const features = (base.features || [])
+    .filter(f => f && f.properties && f.properties.kind === "waypoint")
+    .map(f => {
+      const k = (f.geometry && f.geometry.coordinates)
+        ? (round(f.geometry.coordinates[0], 7) + ":" + round(f.geometry.coordinates[1], 7))
+        : null;
+      const src = k ? byKey.get(k) : null;
+      if (src && src.meta){
+        const props = Object.assign({}, f.properties);
+        if (src.meta.color) props.color = src.meta.color;
+        if (src.meta.notes) props.notes = String(src.meta.notes).slice(0, 500);
+        return Object.assign({}, f, { properties: props });
+      }
+      return f;
+    });
+  const generated = new Date().toISOString();
+  const fc = {
+    type: "FeatureCollection",
+    metadata: {
+      generated,
+      creator: "GOI GIS Tool",
+      kind: "waypoints"
+    },
+    features
+  };
+  const fname = "waypoints-" + generated.replace(/[^\w-]/g, "").slice(0, 24) + ".geojson";
+  downloadBlob(JSON.stringify(fc, null, 2), fname || "waypoints.geojson", "application/geo+json");
+  setBadge("success", (t("waypointModal.exportedN") || "Exported {0} waypoints.").replace("{0}", String(features.length)));
+}
+
 function activateToolPanel(tool){
   if (!GIS_VALID_TOOLS.includes(tool)) return;
   const wrap = document.getElementById("toolsPanelWrap");
@@ -19298,7 +19135,7 @@ function gisNavigateToolTarget(targetId, i18nKey){
     const byKey = {
       "sec.track":"track", "sec.measure":"measure", "sec.favorites":"favorites",
       "sec.history":"history", "sec.batch":"batch", "sec.notes":"notes",
-      "sec.session":"session", "sec.astro":"astro", "sec.mag":"mag", "sec.range":"range"
+      "sec.session":"session", "sec.astro":"astro", "sec.mag":"mag"
     }[i18nKey];
     if (byKey){
       if (GIS_VALID_TABS.includes(byKey)) tabKey = byKey;
@@ -19351,8 +19188,6 @@ function init(){
       }
       if (typeof stored.settings.tilePackHints === "boolean") state.tilePackHints = stored.settings.tilePackHints;
       if (typeof stored.settings.showCoverage === "boolean") state.showCoverage = stored.settings.showCoverage;
-      if (typeof stored.settings.dtgTz === "string" && /^[A-IK-Z]$/.test(stored.settings.dtgTz.toUpperCase())) state.dtgTz = stored.settings.dtgTz.toUpperCase();
-      if (typeof stored.settings.dtgShort === "boolean") state.dtgShort = stored.settings.dtgShort;
       if (typeof stored.settings.geocodeEnabled === "boolean") state.geocodeEnabled = stored.settings.geocodeEnabled;
       if (typeof stored.settings.geocodeReverseAuto === "boolean") state.geocodeReverseAuto = stored.settings.geocodeReverseAuto;
       if (typeof stored.settings.geocodeEndpoint === "string") state.geocodeEndpoint = stored.settings.geocodeEndpoint.slice(0, 200);
@@ -19399,12 +19234,34 @@ function init(){
       state.mapWaypoints = stored.mapWaypoints
           .filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon))
         .slice(0, 200)
-          .map(p => ({
-            id: String(p.id || uidNamed()),
-            lat: p.lat, lon: p.lon,
-            name: String(p.name || "").slice(0, 60),
-            meta: p.meta || null
-        }));
+          .map(p => {
+            // Sanitize meta: accept only the known whitelist
+            // (from/icon/color/notes) and clamp strings. Everything
+            // else is dropped defensively — localStorage is untrusted.
+            let meta = null;
+            if (p.meta && typeof p.meta === "object"){
+              const m = {};
+              if (typeof p.meta.from === "string") m.from = p.meta.from.slice(0, 40);
+              if (typeof p.meta.icon === "string"){
+                const ic = p.meta.icon.toLowerCase();
+                if (TRACK_WPT_ICON_SET.has(ic)) m.icon = ic;
+              }
+              if (typeof p.meta.color === "string"){
+                try { m.color = sanitizeTrackColor(p.meta.color); } catch(_){}
+              }
+              if (typeof p.meta.notes === "string"){
+                const n = p.meta.notes.slice(0, 500);
+                if (n) m.notes = n;
+              }
+              meta = Object.keys(m).length ? m : null;
+            }
+            return {
+              id: String(p.id || uidNamed()),
+              lat: p.lat, lon: p.lon,
+              name: String(p.name || "").slice(0, 60),
+              meta
+            };
+        });
     } else {
       state.mapWaypoints = [];
     }
@@ -19453,16 +19310,7 @@ function init(){
   renderFavorites();
   syncOpsFieldsFromState();
 
-  // Permalink: if URL has #ll= or #mgrs=, auto-load the point. If an
-  // optional &dtg= is present, pre-fill the DTG card so the user can see
-  // exactly when the link was created.
-  const applyPermalinkDtg = (ph) => {
-    if (!ph || !ph.dtg || !ph.dtg.raw) return;
-    const input = document.getElementById("dtgInput");
-    if (!input) return;
-    input.value = String(ph.dtg.raw).toUpperCase();
-    input.dispatchEvent(new Event("input"));
-  };
+  // Permalink: if URL has #ll= or #mgrs=, auto-load the point.
   const fromHash = readPermalink();
   if (fromHash){
     try {
@@ -19470,7 +19318,6 @@ function init(){
         ? { type: "MGRS", raw: fromHash.raw }
         : { type: "LatLon", raw: `link · ${round(fromHash.lat,6)}, ${round(fromHash.lon,6)}` };
       renderResults(fromHash.lat, fromHash.lon, meta);
-      applyPermalinkDtg(fromHash);
     } catch(_){}
   }
 
@@ -19482,7 +19329,6 @@ function init(){
         ? { type: "MGRS", raw: h.raw }
         : { type: "LatLon", raw: `link · ${round(h.lat,6)}, ${round(h.lon,6)}` };
       renderResults(h.lat, h.lon, meta);
-      applyPermalinkDtg(h);
     }
   });
 
@@ -19627,37 +19473,6 @@ function runSelfCheck(){
     console.assert(polyFeat && polyFeat.geometry.coordinates[0].length === 4,
                    "GeoJSON closed route should have a Polygon ring with 4 points (closed)");
 
-    // DTG (Date-Time Group NATO) — format, parse, round-trip.
-    // The canonical example: 2026-04-21 16:30 UTC → 211630ZAPR26.
-    const dtgSample = new Date(Date.UTC(2026, 3, 21, 16, 30, 0));
-    console.assert(formatDTG(dtgSample, "Z") === "211630ZAPR26",
-                   "formatDTG Zulu canonical: got " + formatDTG(dtgSample, "Z"));
-    // Bravo (+02) of 16:30Z is 18:30 local
-    console.assert(formatDTG(dtgSample, "B") === "211830BAPR26",
-                   "formatDTG Bravo offset: got " + formatDTG(dtgSample, "B"));
-    // Short form drops month + year
-    console.assert(formatDTG(dtgSample, "Z", { short: true }) === "211630Z",
-                   "formatDTG short: got " + formatDTG(dtgSample, "Z", { short: true }));
-    // Round trip parse → same Date
-    const p1 = parseDTG("211630ZAPR26");
-    console.assert(p1 && p1.date.getTime() === dtgSample.getTime() && p1.tzLetter === "Z",
-                   "parseDTG full Z round-trip");
-    // Permissive whitespace / case
-    const p2 = parseDTG(" 21 1630z Apr 26 ");
-    console.assert(p2 && p2.date.getTime() === dtgSample.getTime(),
-                   "parseDTG permissive whitespace/case");
-    // Bravo tz: wall-clock 18:30 in B → same UTC instant as 16:30Z
-    const p3 = parseDTG("211830BAPR26");
-    console.assert(p3 && p3.date.getTime() === dtgSample.getTime(),
-                   "parseDTG Bravo → same UTC instant");
-    // Invalid: "J" is reserved
-    console.assert(parseDTG("211630JAPR26") === null, "parseDTG rejects J");
-    // Invalid: impossible date (31 FEB) must fail the round-trip check
-    console.assert(parseDTG("311200ZFEB26") === null, "parseDTG rejects 31 FEB");
-    // TZ table: 25 letters (J skipped)
-    console.assert(DTG_TZ.length === 25, "DTG_TZ has 25 entries, got " + DTG_TZ.length);
-    console.assert(!DTG_TZ_MAP.J, "J must be missing from DTG_TZ_MAP");
-
     // QR encoder — structural checks. Matrix size + finder/timing/dark module
     // positions are standard; full output was cross-verified module-by-module
     // against python-qrcode in development.
@@ -19763,8 +19578,6 @@ function runSelfCheck(){
 
     const wmmP = wmmMagneticField(48.85, 2.35, 0, new Date("2026-01-15T12:00:00Z"));
     console.assert(Math.abs(wmmP.decl) < 90 && Math.abs(wmmP.declAnnual) < 5, "WMM decl Paris-ish: " + wmmP.decl);
-    const fan = buildRangePolygon(5, 0, 10, 90, 60, 24);
-    console.assert(fan.length >= 4 && Math.abs(fan[0][0] - 0) < 0.1 && Math.abs(fan[fan.length - 1][0] - 0) < 0.1, "Range sector returns closed ring");
     const st0 = SunCalc.getTimes(new Date("2026-06-01T12:00:00Z"), 0, 0, 0);
     console.assert(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
 

@@ -342,7 +342,7 @@ Service worker + asset manifest + separate modules. Only when scenario (c) becom
 
 ### 5.6 Parallel — Monitoring & technical health
 
-- **File-size threshold monitoring**: at 22k lines, evaluate split strategy per §4.8
+- **File-size threshold monitoring**: at 25k lines, evaluate split strategy per §4.8
 - **Self-check harness extension**: every critical new module adds a test in `runSelfCheck()`
 - **Performance audit**: tile rendering with track > 500 points, MGRS grid redraw on pan
 

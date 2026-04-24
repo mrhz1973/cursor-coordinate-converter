@@ -4,7 +4,7 @@ globs: "*.html"
 alwaysApply: false
 ---
 
-# Coordinate Converter — HTML Architecture Guardrails
+# GOI GIS Tool — HTML Architecture Guardrails
 
 ## Canonical file / scope
 - The canonical app lives in a **single** HTML file (currently: `coordinate_converter Claude.html`).
@@ -12,7 +12,7 @@ alwaysApply: false
 
 ## State, persistence, and invariants
 - Centralized app state object: `state`.
-- Persistence via localStorage key: `coordconv_v1`.
+- Persistence via localStorage key: `coordconv_v2` (bumped from `coordconv_v1` during the pre-GIS cleanup; the old v1 key is intentionally ignored, not actively wiped).
 - IndexedDB is used for offline map tile pack and some geo caches.
 - On load, persisted data must be **sanitized/clamped** (numbers, string length, arrays caps). Do not trust localStorage content.
 
@@ -26,11 +26,10 @@ alwaysApply: false
 ## Geolocation UX (opt-in only)
 - Geolocation must be **explicit opt-in** via UI actions (no automatic `getCurrentPosition()` on page load).
 - Respect secure context constraints (`window.isSecureContext`): if not secure, disable geo UI and explain why.
-- Live tracking uses `watchPosition` and must be stoppable; avoid spamming history during live ticks.
+- Single-shot only: `btnMyLocation` uses `getCurrentPosition`. Continuous tracking via `watchPosition` has been removed (pre-GIS cleanup).
 
 ## Rendering and history
 - `renderResults(lat, lon, meta, opts)` supports an option like `{ skipHistory: true }` used for:
-  - live tracking updates after the first fix
   - language re-apply / UI rerender that must not duplicate history
 
 ## i18n
@@ -47,17 +46,23 @@ alwaysApply: false
 ## GIS viewer/planner layout (current default)
 - The app boots in **GIS mode** (`<body class="gis-mode">`). Layout:
   - Compact `<header>` (brand + settings/theme/print/help/Strumenti).
-  - `<nav id="appTopbar">`: tab buttons (`track`, `measure`, `favorites`, `dtg`, `geocoding`, `history`, `layers`), CTA **Converti**, kebab **Altri strumenti**.
+  - `<nav id="appTopbar">`: tab buttons (`track`, `waypoints`, `measure`, `favorites`, `geocoding`, `history`, `layers`), CTA **Converti**, kebab **Altri strumenti**.
   - `<main>` only hosts `<div id="gisMapMount">` (the map fills the viewport); classic homepage cards (`#pasteSection`, `#manualInputSection`, `#geocodeCard`, `.grid`, `#toolsCollapsible`) are hidden via `body.gis-mode > main > …` selectors.
 - Tab activation **reparents** the target `<details>` into `<aside id="tabDrawer">` via `appendChild` (no clone). `GIS_HOME_SLOTS` caches the original parent+nextSibling so `deactivateTab()` restores the section verbatim. Summaries are hidden inside the drawer; the drawer header supplies the title.
 - Convert modal (`<dialog id="convertModal">`) reparents the classic conversion cards (paste / manual input / `#geocodeCard` / `.results-col`) on open and restores them on close. The geocoding card is skipped if the `geocoding` tab is active.
-- Altri strumenti modal (`<dialog id="toolsModal">`) hosts Batch / Note / Sessione / Astro / Mag / Range via the same reparenting pattern (section id ↔ tile button).
+- Altri strumenti modal (`<dialog id="toolsModal">`) hosts Batch / Note / Sessione / Astro / Mag via the same reparenting pattern (section id ↔ tile button).
 - Esc is wired at document level to close modals/drawer in that order.
 - The on-map coverage button is intercepted in capture phase: in GIS mode it activates the `layers` tab (so the user sees `#offlineTilePanel` in context) instead of toggling a hidden home slot.
 - Persistence: only `state.gisMode` and `state.activeTab` (whitelist: `GIS_VALID_TABS`) are saved across sessions; `convertOpen` and `toolsMenuOpen` are transient.
 
 ## Section ids required by the GIS hub
-- Tabs: `sec-track`, `sec-measure`, `sec-favorites`, `dtgCard`, `geocodeCard`, `sec-history`, `offlineTilePanel`.
-- Tools modal: `sec-batch`, `sec-notes`, `sec-session`, `sec-astro`, `sec-mag`, `sec-range`.
+- Tabs: `sec-track`, `sec-waypoints`, `sec-measure`, `sec-favorites`, `geocodeCard`, `sec-history`, `offlineTilePanel`.
+- Tools modal: `sec-batch`, `sec-notes`, `sec-session`, `sec-astro`, `sec-mag`.
 - The manual-input section wrapper must carry `id="manualInputSection"` (used by both the home-hide CSS and the Convert modal reparenting).
 - The map root `#miniMap` is reparented once at init into `#gisMapMount`; rendering code queries by id, so this is transparent.
+
+## Tab-as-modal pattern (waypoints)
+- Some tabs open as a dedicated `<dialog class="app-modal">` instead of the side drawer. The whitelist is `GIS_TABS_AS_MODAL` (currently `new Set(["waypoints"])`).
+- For tabs in that set, `activateTab()` calls the modal-specific opener (`openWaypointModal()` for waypoints) which reparents the target section (`sec-waypoints`) into the modal body via `gisMoveSectionTo`, and `deactivateTab()` symmetrically calls the closer (which restores the section via `gisRestoreSection`).
+- Persistence: `state.activeTab === "waypoints"` is still saved, so reload reopens the modal. `state.waypointsModalOpen` and `state.waypointEditorDraft` are transient (not persisted), same pattern as `state.convertOpen` / `state.toolsMenuOpen`.
+- The Waypoints modal reuses the same `state.mapWaypoints` array and the same on-map pick flow (`state.waypointPickMode`, `state.trackWaypointDraft`) as the in-`sec-track` waypoint toolbar. Do not duplicate these arrays or add a second click handler on the map.

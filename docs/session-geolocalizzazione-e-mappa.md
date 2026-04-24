@@ -852,3 +852,127 @@ La maggior parte dei componenti legge questi token via alias e si adatta da sola
 
 - `coordinate_converter Claude.html` — **solo** blocco `<style>` (da ~line 7 a ~line 3503). Nessun'altra porzione.
 
+---
+
+## Checkpoint 2026-04-24 — WaypointModal manager split
+
+### Perché
+
+Il tab **Waypoint** in topbar puntava per alias alla stessa sezione del Track (`GIS_TAB_SECTIONS.waypoints === "sec-track"`), quindi waypoint autonomi e vertici della traccia condividevano UI e spazio visivo. Per un pianificatore GIS-first serviva un **manager dedicato**: list + editor inline + import/export GeoJSON separato, con pattern modale coerente a `convertModal` / `toolsModal`.
+
+### Cosa è cambiato
+
+1. **Sezione HTML dedicata** (`<details id="sec-waypoints">`) aggiunta nel `<main>` subito dopo `sec-track`. Contiene la propria toolbar (Nuovo / Pick sulla mappa / Importa GeoJSON / Esporta GeoJSON / Svuota tutto), un `<div id="waypointEditor" hidden>` con editor inline (nome, coord free-text con `autoDetect`, icona NATO `<select>`, colore, note) e `<div id="wp-list">` sincronizzato con `state.mapWaypoints`.
+2. **Nuovo `<dialog id="waypointModal" class="app-modal waypoint-modal">`** accanto a `convertModal` / `toolsModal`. `sec-waypoints` viene **riparentato** nel body del dialog via `gisMoveSectionTo` (no clone), ripristinato al close via `gisRestoreSection`.
+3. **Pattern "tab-as-modal"**: introdotta costante `GIS_TABS_AS_MODAL = new Set(["waypoints"])`. `activateTab` / `deactivateTab` hanno un branch early-return che delega apertura/chiusura al coppia `openWaypointModal` / `closeWaypointModal`. `GIS_TAB_SECTIONS.waypoints` ora punta a **`"sec-waypoints"`** (non più alias di `sec-track`).
+4. **Manager JS** (`openWaypointModal`, `closeWaypointModal`, `renderWpModalList`, `openWaypointEditor`, `closeWaypointEditor`, `onEditorCoordInput`, `commitWaypointEditor`, `waypointUpdate`, `waypointDelete`, `waypointsClearAll`, `waypointsZoomTo`, `waypointsImportGeoJSON`, `waypointsExportGeoJSON`). Tutti additivi. `renderMapWaypointsAll()` chiama ora anche `renderWpModalList()` per mantenere in sync la lista del modal.
+5. **Validazione coordinate**: input libero → `autoDetect(str)` (BNG / SK42 / PlusCode / MGRS / UTM / lat-lon free-text) → `validateLatLon` + clamp `lat ∈ [-90,90]`, `lon = normalizeLon(lon)`. Feedback inline con `aria-invalid` e localizzato (`err.notRecognized`).
+6. **Import / Export GeoJSON**: import via `spatialGeojsonTextToFeatureCollection` + filtro `Point` + cap 200 con `confirm()` di troncamento al residuo (i18n `waypointModal.capWarn`). Export tramite `spatialBuildFeatureCollectionFromAppState` filtrato a `properties.kind === "waypoint"`, arricchito localmente con `color` / `notes` (non emessi dal builder canonico), `metadata = { generated, dtg, creator, kind: "waypoints" }`, filename `waypoints-<DTG>.geojson`.
+7. **Hook mappa**: 1 branch in `renderTileMap > onUp` — quando `state.waypointsModalOpen` e si è in `waypointPickMode`, il click sulla mappa alimenta **direttamente** `state.waypointEditorDraft` e apre `#waypointEditor` invece del `.tile-waypoint-editor` on-map. Resto invariato.
+8. **gisInit**: nuovo cablaggio per `#waypointModalClose`, evento `cancel` (Esc nativo del `<dialog>`), click sul backdrop (`ev.target === dlg`) e tutti i bottoni del manager (`#wpAddBtn`, `#wpPickBtn` → `trackToggleWaypointPickMode`, `#wpImportBtn`/`#wpImportFile`, `#wpExportBtn`, `#wpClearBtn`, editor save/cancel/delete, `#wpFieldCoord` input). Idempotente (attaccato una sola volta a elementi che vengono riparentati, non clonati).
+9. **i18n**: chiavi `waypointModal.*` (title, hint, new, pickOnMap, importGeoJSON, exportGeoJSON, clearAll, empty, unnamed, capWarn, capFull, importEmpty, importedN, exportedN, clearConfirm, deleteConfirm, zoomTo, editor.newTitle/editTitle/edit/name/namePh/coord/coordPh/icon/color/notes/notesPh/save/cancel/delete) + `tip.waypointModal.*` in **IT / EN / FR**.
+10. **Persistenza / sanitize**: niente di nuovo persistito (`state.waypointsModalOpen`, `state.waypointEditorDraft` transient come `convertOpen` / `toolsMenuOpen`). Sanitize load **esteso** per `state.mapWaypoints`: whitelist di `meta.from` (≤40), `meta.icon` (solo se in `TRACK_WPT_ICON_SET`), `meta.color` (via `sanitizeTrackColor`), `meta.notes` (≤500); tutto il resto viene droppato difensivamente.
+
+### Invarianti nuovi (→ `.cursor/rules/99-known-state.mdc`)
+
+- `state.mapWaypoints` è l'**unica** fonte di verità (il modal non duplica l'array).
+- Il modal **riparenta** `sec-waypoints` — non clona — seguendo il pattern di `convertModal` / `toolsModal`.
+- `state.waypointsModalOpen` e `state.waypointEditorDraft` sono **transient**.
+- Cap **200 waypoint** rispettato anche in import (residuo calcolato + `confirm()`).
+
+### Architettura aggiornata (→ `.cursor/rules/10-html-architecture.mdc`)
+
+- Section ids GIS hub ora elencano `sec-waypoints`.
+- Nuova sottosezione **"Tab-as-modal pattern (waypoints)"** documenta `GIS_TABS_AS_MODAL`, la delega activateTab → opener, la persistenza di `state.activeTab === "waypoints"` (riapre il modal al reload).
+
+### File toccati
+
+- `coordinate_converter Claude.html` — HTML (nuova `sec-waypoints` + `<dialog id="waypointModal">`), CSS (~30 righe per `.wp-list` / `.wp-row` / `.wp-editor` / `.wp-toolbar`, tokens esistenti, nessuna nuova variabile), JS (~320 righe aggregate), i18n (IT/EN/FR), sanitize load, hook mappa (+1 branch).
+- `.cursor/rules/10-html-architecture.mdc` — sec-waypoints in lista + nuova sottosezione tab-as-modal.
+- `.cursor/rules/99-known-state.mdc` — sottosezione *"Waypoints modal (split from sec-track)"*.
+- `docs/checkpoint.md` — voce "Ultimo cambio feature".
+- `docs/PROJECT_notes.md` — §9 "COSE FATTE (ultime)" con la voce WaypointModal.
+
+### QA minima (locale)
+
+1. Add manuale con coord MGRS → persistenza dopo reload.
+2. Pick sulla mappa → draft → editor precompilato → Save.
+3. Edit inline (cambio nome / coord) → persist + overlay mappa aggiornato.
+4. Delete + Clear all (con `confirm`).
+5. Import GeoJSON (5 Point, 1 con lat fuori range) → 4 importati, 1 scartato.
+6. Export GeoJSON → file valido, solo `kind:"waypoint"`, `metadata.dtg` presente.
+7. Esc chain: Esc chiude modal e rilascia `sec-waypoints` in `<main>`.
+8. Reload con `activeTab === "waypoints"` → modal si riapre.
+9. `opsecStrict` non impedisce import/export (non sono fetch).
+10. Switch lingua IT/EN/FR → titoli modal/editor aggiornati senza re-render distruttivo.
+
+---
+
+## Checkpoint 2026-04-24 — Cleanup pre-GIS (rename + rimozione DTG / Live Tracking / Radius/LOS)
+
+### Perché
+
+Pulizia di superficie **prima** di iniziare il GIS progressive plan. Motivazioni strategiche:
+
+- Ridurre il file HTML di ~1.000 righe per recuperare margine sotto la soft-threshold del monolite (§4.8) prima di iniziare l'addizione GIS.
+- Rimuovere superficie (DTG, Live Tracking, Radius/LOS) che altrimenti le fasi 9/10 del GIS plan dovrebbero mantenere inutilmente.
+- Separare **sottrazione** e **addizione** in commit distinti per rendere bisect di regressioni banale.
+- Rebranding strategico: l'app non è più un "Convertitore Coordinate" ma un **GOI GIS Tool** a tutti gli effetti (conversione resta funzionalità, non è più il titolo).
+
+### Cosa è cambiato
+
+1. **Rename globale** `Convertitore Coordinate` / `Coordinate Converter` → **GOI GIS Tool**. Toccati: `<title>`, `<h1 data-i18n="app.title">` (IT/EN/FR tutti "GOI GIS Tool"; brand non tradotto), `<span data-i18n="footer.appName">`, `<gpx creator="...">` in tutti i builder (`buildGPX`, `buildGPXRoute`, `spatialGeoJSONToGpx`), `<name>` in KML, `metadata.creator` in GeoJSON (`buildGeoJSON`, `buildGeoJSONRoute`, `spatialBuildFeatureCollectionFromAppState`, waypoint export), commento CSV batch. Il titolo del modal di conversione (`convert.title`) è rimasto descrittivo ("Convertitore — inserisci coordinate" IT) perché è il titolo di una *funzione*, non del brand.
+2. **Rimozione Radius/LOS tools**: eliminata `<details id="sec-range">` completa, tile `data-tool="range"` dal `toolsModal`, `state.rangeOverlay`, `GIS_TOOL_SECTIONS.range`, funzioni `onRangeDraw/onRangeClear/onRangeGeo/buildRangePolygon`, event listeners `btnRangeDraw/Clear/Geo`, assertion self-check, tutte le chiavi i18n IT/EN/FR (`sec.range`, `range.*`, `tools.range`, `tip.range`), whitelist sanitize `rangeOverlay`. Grep `sec-range|rangeOverlay|buildRangePolygon` → 0 match.
+3. **Rimozione Live Tracking**: eliminato `<button id="btnGeoLive">` + `<span id="geoLiveBadge">`, CSS `.geo-nav-btn#btnGeoLive.is-live` + `@keyframes geoLivePulse`, `state.geoWatchId`, funzioni `updateGeoLiveBadge/startLocationTracking/stopLocationTracking/onBtnGeoLiveClick`, chiamate da `renderResults/refreshGeolocationBarriers/requestCurrentLocation/clearForm`, event listener `btnGeoLive`, i18n `btn.geoLive`/`badge.geoLive`/`tip.geoLive` IT/EN/FR. **Invariante preservato**: `btnMyLocation` single-shot resta intatto, così come `navigator.geolocation.getCurrentPosition` e tutto l'opt-in/OPSEC geo. Solo `watchPosition` sparisce.
+4. **Rimozione DTG completa** (la più invasiva — ~800 righe nette):
+   - **HTML**: tab `<button data-tab="dtg">` dal topbar, `<details id="dtgCard">` intera sezione, tile `data-tool-target="dtgCard"` dal `toolsModal`, sezione DTG da help guide (`mg-card`), righe shortcut `help.kbd.dtgFocus/dtgNow` dall'help overlay.
+   - **JS core**: intera `SECTION 14K: DTG (Date-Time Group NATO)` — `DTG_MONTHS`, `DTG_TZ`, `DTG_TZ_MAP`, `dtgTzOffset/dtgTzName/dtgOffsetPretty`, `formatDTG`, `parseDTG`, `getCurrentDTG`, `dtgToUTC`, `dtgToLocalTime`, `bindDTG`, `focusDTGCard`. Rimossa `GIS_TAB_SECTIONS.dtg` e `GIS_TAB_TITLE_KEY.dtg`. Rimosso `state.dtgTz`, `state.dtgShort` dall'initializer.
+   - **Callsite**: history entry senza campo `dtg` + render senza `dtgHtml` + compat backward cancellata; favorite add/render idem; permalink `encodePermalink`/`readPermalink` senza `&dtg=` (solo `#ll=` / `#mgrs=`); export metadata (`buildGPX/KML/GeoJSON`, `buildGPX/KML/GeoJSONRoute`, `spatialGeoJSONToGpx/Kml`, `spatialBuildFeatureCollectionFromAppState`, waypoint export, CSV batch) — nessun `metadata.dtg`, nessun `<desc>DTG: ...</desc>` in GPX, nessuna `<description>DTG: ...</description>` in KML; boot permalink senza `applyPermalinkDtg`; session export/import senza `dtgTz/dtgShort`; store load senza lettura `stored.settings.dtgTz/dtgShort`.
+   - **Shortcut**: rimosso `bindHotkeys` branch `Alt+T`/`Alt+Shift+T`/`Ctrl+T`/`Ctrl+Shift+T` e la chiamata a `bindDTG()` in `init()`.
+   - **i18n**: rimosse tutte le chiavi `sec.dtg`, `dtg.*` (25+), `tabs.dtg`, `tabs.dtg.tip`, `tools.dtg`, `tools.dtg.desc`, `help.guide.dtg.*`, `help.kbd.dtgFocus/dtgNow` in **IT / EN / FR**. Audit finale: grep `"dtg` in JSON dict → 0 match.
+   - **Self-check**: rimossi i 9 `console.assert` su `formatDTG`/`parseDTG`/`DTG_TZ` dalla `SECTION 25: INIT (+ self-check)`.
+   - **CSS**: rimosse regole `.dtg-card`, `.dtg-sum-icon`, `.dtg-now-inline`, `.dtg-body`, `.dtg-now-row`, `.dtg-lbl`, `.dtg-tz-select`, `.dtg-hintchk`, `.dtg-display`, `.dtg-display-actions`, `.dtg-input`, `.dtg-parse-out` + override mobile.
+5. **LocalStorage bump** `coordconv_v1` → `coordconv_v2`. La chiave v1 **resta** in `localStorage` del browser ma non è più letta (scelta confermata dall'utente: "drop and bump", fresh start per tutti). Commento in-code dettagliato motiva il bump per chi rileggerà il file. Favorites / history / mapWaypoints / named areas / settings dell'utente esistenti vengono di fatto azzerati al primo boot post-upgrade.
+
+### Invarianti aggiornati
+
+- **Geolocation**: ora **solo single-shot** (`getCurrentPosition` via `btnMyLocation`). `watchPosition` è stato rimosso; reintrodurlo richiede decisione esplicita. OPSEC + secure context invariati.
+- **Storage**: chiave corrente **`coordconv_v2`**. Tutto ciò che era persistente prima resta persistibile ora, solo lo schema è ripartito pulito.
+- **Brand**: "GOI GIS Tool" in tutti gli asset export (GPX/KML/GeoJSON `creator`). Favorisce audit post-hoc dei file generati.
+
+### File toccati
+
+- `coordinate_converter Claude.html` — **unico file di codice**. Rimozioni nette: ~1.000 righe (CSS + HTML + JS + i18n + self-check).
+- `.cursor/rules/00-project-core.mdc` — rename header/description.
+- `.cursor/rules/10-html-architecture.mdc` — rimosso `dtgCard` dalla lista section-ids + `sec-range` dai tool modal ids; `coordconv_v1` → `coordconv_v2` con nota bump; `watchPosition` → single-shot only.
+- `.cursor/rules/20-domain-knowledge.mdc` — **rimossa intera sezione** "DTG NATO (Date-Time Group)"; header description e titolo aggiornati.
+- `.cursor/rules/99-known-state.mdc` — invariante live tracking → single-shot; nota rimozione watchPosition; chiave v2.
+- `docs/checkpoint.md` — aggiornato titolo + "Ultimo grande cambio" (cleanup pre-GIS) + righe tabella rules + invarianti geolocation.
+- `docs/PROJECT_notes.md` — titolo/brand; chiave v2; rimossa riga DTG da tabella stack; aggiornato §4 status feature (rimosso DTG/Range/Live, menzione rename in export); aggiunta voce §9 "COSE FATTE" per il cleanup.
+- `docs/session-geolocalizzazione-e-mappa.md` — **questo checkpoint**.
+
+### NON toccato (volutamente)
+
+- `docs/roadmap.md` §7 — il riferimento dottrinale a DTG / STANAG come standard **esterno** resta documentato, anche se l'app non implementa più il parser. È un riferimento consultabile, non una feature promessa.
+
+### QA minima (locale, browser)
+
+Prima di procedere con Fase 1 GIS plan:
+
+1. Boot `file://.../coordinate_converter Claude.html` → nessun errore console, mappa visibile.
+2. Titolo tab browser = "GOI GIS Tool"; header e footer coerenti.
+3. Topbar mostra tabs `track / waypoints / measure / favorites / geocoding / history / layers` (DTG assente).
+4. Apri "Altri strumenti" → tile presenti: Batch, Note, Sessione, Astro, Magnetico (nessun DTG, nessun Range/LOS).
+5. Aggiungi favorite → persistenza su reload (stato v2 fresco).
+6. Export waypoint GeoJSON → `metadata` contiene `generated` + `creator: "GOI GIS Tool"` + `kind: "waypoints"` (**no** campo `dtg`).
+7. Export GPX → `<gpx creator="GOI GIS Tool">` + `<metadata><time>...</time></metadata>` (no `<desc>DTG: ...</desc>`).
+8. Geolocation: `btnMyLocation` funziona (single-shot); nessun pulsante "Tracking live" presente.
+9. Switch i18n IT → EN → FR: nessuna stringa "—" placeholder, nessun crash.
+10. DevTools → localStorage: chiave `coordconv_v2` presente; la vecchia `coordconv_v1` (se era presente da prima) rimane ma viene ignorata.
+11. Console self-check: nessun `console.assert` fallito (le 9 asserzioni DTG sono state rimosse).
+12. Permalink: `#ll=45.46,9.19` funziona (niente `&dtg=...` nella URL generata).
+
+### Prossimo passo
+
+Commit cleanup → ritorno in Plan mode per **Fase 1 del GIS progressive plan** (data model GeoJSON + CRUD + scaffolding undo). Vedi `.cursor/plans/gis_progressive_plan_aef64b4b.plan.md`.
+
