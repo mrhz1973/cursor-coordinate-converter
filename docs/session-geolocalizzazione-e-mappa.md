@@ -793,3 +793,62 @@ Non rimosso: i link al suo interno (`navigateToToolSection`) ora controllano `bo
 - Valutare se il boot in GIS mode debba essere toggleable via setting avanzato; per ora è hard-coded a `true` come richiesto dal piano ("sostituzione netta").
 - Rifare lo screenshot in `docs/` / README una volta validata la UX su mobile landscape.
 
+---
+
+## Checkpoint 2026-04-24 — Glass UI restyle (solo CSS)
+
+### Contesto
+
+Sessione UI/UX: modernizzare l'aspetto dell'app a stile Vercel/Linear (Glassmorphism, Inter, ombre morbide) **senza** toccare markup/JS, e organizzare il CSS in modo che i prossimi re-skin si facciano modificando principalmente i token in cima al `<style>`. Piano: `.cursor/plans/css_glass_ui_+_tokens_24558147.plan.md`.
+
+### Vincoli rispettati
+
+- Modifiche **solo** dentro il tag `<style>` di `coordinate_converter Claude.html`.
+- Nessun cambio a `id`, `class`, `data-*`, ordine nodi, contenuti di `<body>` o del blocco `<script>`.
+- Nessuna nuova dipendenza runtime se non **Google Fonts Inter** via `@import` nel CSS (nessun `<link>` in `<head>`).
+
+### Cosa è cambiato (riassunto per sezione del `<style>`)
+
+- **Tipografia**: `@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap')` all'inizio del CSS; `body` ora usa `font-family:'Inter', system-ui, ...` con antialias + `font-feature-settings` (cv02/03/04/11).
+- **Design tokens** (`:root[data-theme="light"]` e `:root,:root[data-theme="dark"]`): riscritti in chiave semantica glass con **alias legacy** (le vecchie variabili `--bg`, `--panel`, `--panel2`, `--text`, `--muted`, `--border`, `--border-strong`, `--shadow`, `--shadow-lg`, `--accent*`, `--gradient*` sono conservate ma il loro **valore** è stato aggiornato al nuovo look, così il resto del foglio non si rompe).
+  - Aggiunti: `--border-glow`, `--ring-focus`, `--glass-blur`, `--shadow-inset-card`.
+  - Dark: `--bg:#09090b`, `--panel:rgba(255,255,255,0.04)`, `--panel2:rgba(255,255,255,0.07)`, `--text:#f8fafc`, `--muted:#94a3b8`, `--accent:#3b82f6`, `--gradient-btn:linear-gradient(135deg,#3b82f6,#8b5cf6)`, `--shadow-lg:0 20px 40px rgba(0,0,0,0.5),0 8px 20px rgba(0,0,0,0.35)`.
+  - Light: paletta speculare, bordi `rgba(15,23,42,0.1/0.16)`, `--ring-focus:0 0 0 3px rgba(37,99,235,0.14)`.
+- **Base**: `body` → font Inter + line-height 1.5; nessun altro toccato.
+- **Card con glass** (`backdrop-filter:blur(var(--glass-blur)) saturate(140%)` + bordo 1px + `--shadow-lg` + `--shadow-inset-card`):
+  - `.paste-section` (radius 20px), `.paste-section + .input-col` (radius 20px, niente più gradient duro), `.geocode-card` (radius 20px), `.dtg-card` (radius 16px), `.result-card` (radius 16px, hover con lift `-2px` e bordo `--border-glow`), `details` generici (radius 16px), `header` globale.
+- **Form**: `input[type=text|number]`, `textarea`, `select` → radius 12px, padding 10×14, focus `border-color:var(--border-glow) + box-shadow:var(--ring-focus)`.
+- **Bottoni**: `.btn` con lift e bordo glow; `.btn-primary` con gradiente `--gradient-btn`, ombra blu `rgba(59,130,246,0.3)`, pseudo `::before` satin (overlay bianco sfumato trasparente), hover `translateY(-2px)` + ombra ampliata, active reset ombra.
+- **Overlay glass**: `.modal-overlay` (backdrop blur 6px), `.modal` (radius 20px), `dialog.app-modal` (radius 20px + backdrop blur 6px), `.tools-drawer`, `.tab-drawer`, `#appTopbar.app-topbar` (sticky + blur).
+- **Controlli mappa** resi coerenti col tema (scuri traslucidi): `.tile-map .tile-size`, `.tile-zoom`, `.ts-btn`, `.tz-btn`, `.tg-btn`, `.tcov-btn`, `.mini-map .mm-offline-size`. Bordo 1px `rgba(255,255,255,.12)`, sfondo `rgba(15,23,42,0.55)`, `backdrop-filter:blur(10px) saturate(140%)`, icone chiare.
+- **Tooltip**: regola globale `[data-tip]::after` → glass (blur + border + shadow 24px), radius 10px.
+
+### Cosa NON è stato toccato
+
+- Struttura HTML, id, class, handler, script, logica di conversione/parser/i18n, pipeline IndexedDB, DTG, geocoding, tile, track.
+- Regole light/dark esistenti fuori dai token: i vecchi selettori `html[data-theme="light"] …` continuano a funzionare perché i token puntano allo stesso nome.
+- `.hdr-chip` e i `<select>` "chip" in header (non toccati in modo invasivo: i nuovi stili `input/select/textarea` generici non rompono i chip perché questi hanno override locali più specifici; la chevron custom dell'esempio Vercel NON è stata copiata).
+
+### Manutenibilità — Come rifare un look diverso in futuro
+
+Il punto di ingresso unico è il **primo blocco `:root`** in cima al `<style>` (light + dark). Cambiando lì:
+
+1. `--bg` / `--panel` / `--panel2` → colore generale + traslucenza dei vetri.
+2. `--glass-blur` → forza del vetro (es. 12 / 16 / 20 / 24).
+3. `--accent` + `--gradient-btn` → tonalità delle CTA.
+4. `--border-glow` + `--ring-focus` → stati focus/hover.
+5. `--shadow` / `--shadow-lg` / `--shadow-inset-card` → profondità card/overlay.
+
+La maggior parte dei componenti legge questi token via alias e si adatta da sola.
+
+### QA minimale consigliato (non bloccante per il commit)
+
+- Verifica contrasto testi su card light/dark (soprattutto `.geocode-card` / `.dtg-card`).
+- Verifica focus visibile su `input`/`select` dentro `.hdr-chip` (potrebbe servire un override locale se la ring si nota troppo).
+- Verifica leggibilità tooltip su base molto chiara (testo bianco su tooltip `rgba(15,23,42,.92)` → OK).
+- Test drawer/modal: `Esc` chiude in ordine `convert → tools → drawer` (logica JS invariata).
+
+### File toccato
+
+- `coordinate_converter Claude.html` — **solo** blocco `<style>` (da ~line 7 a ~line 3503). Nessun'altra porzione.
+

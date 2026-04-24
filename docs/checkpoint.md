@@ -5,6 +5,8 @@
 
 **Ultimo grande cambio:** 2026-04-24 — **GIS-first layout pivot** (piano `.cursor/plans/gis-first_layout_pivot_7c8df2ea.plan.md`). L'app boota in GIS mode (`body.gis-mode`): topbar con tab bar, mappa full-viewport, conversione come modale on-demand, "Altri strumenti" kebab. Reparenting via `appendChild` (no clone) per preservare i listener. Dettagli completi in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
 
+**Ultimo cambio UI:** 2026-04-24 — **Glass UI restyle (solo CSS)** (piano `.cursor/plans/css_glass_ui_+_tokens_24558147.plan.md`). Aggiornato solo il blocco `<style>`: `@import` Inter, token semantici in `:root` (light/dark) con `--border-glow`, `--ring-focus`, `--glass-blur`, `--shadow-inset-card`, ombre ampie e morbide; glassmorphism (blur 16px) su card, form, overlay (modal/drawer/topbar), controlli mappa translucidi scuri, tooltip glass. Aliases legacy (`--bg`, `--panel`, `--panel2`, `--shadow*`) mantenuti: refresh UI futuri = solo token in cima. HTML/JS invariati. Dettagli in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24 — Glass UI*.
+
 **Convenzione:** quando chiedi in chat **«Checkpoint md»**, si aggiornano **sempre** questo file **e** `docs/session-geolocalizzazione-e-mappa.md` (append in fondo), salvo che specifichi «solo session» o «solo checkpoint.md».
 
 ## Documentazione lunga (autoritativa per feature / decisioni)
