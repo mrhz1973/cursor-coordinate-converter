@@ -1101,3 +1101,44 @@ Il Waypoint Manager (`#sec-waypoints` / modal) esponeva già import ed export **
 
 - `ReadLints` sul monolite: nessun errore.
 
+---
+
+## Checkpoint 2026-04-25 — GIS floating panels e UI polish
+
+### Perché
+
+Dopo la migrazione verso layout GIS-first, vari pannelli e controlli vivevano ancora come modali o overlay poco coerenti con la mappa full-screen. La sessione ha stabilizzato il modello “pannelli flottanti” per mantenere la mappa cliccabile e ridurre interferenze tra toolbar, basemap, Track/Waypoint e strumenti accessori.
+
+### Cosa è cambiato
+
+1. **Pannelli GIS flottanti**
+   - Introdotti helper condivisi per portare pannelli in primo piano, salvare/clampare layout, applicare posizione/dimensione, drag e resize.
+   - Track, Waypoint, Convert, Search, Favorites e Layers usano handle di resize coerenti e z-index ordinati sopra la mappa.
+   - Search/Favorites/Layers hanno dialog dedicati (`searchPanel`, `favoritesPanel`, `layersPanel`) con body reparentabile.
+
+2. **Track workflow**
+   - Aggiunti controlli e stringhe i18n per pausa/riprendi inserimento, termina traccia, nuova traccia, stato traccia, prompt salvataggio e “continua modifica”.
+   - La lista punti può essere collassata quando cresce, con heading/summary dedicati.
+   - Il click mappa in modalità track usa una logica differita per distinguere inserimento punti e doppio click di completamento.
+
+3. **UI chrome e controlli mappa**
+   - Header/settings consolidati in menu dedicato.
+   - Azioni GIS integrate nell’header invece di restare come overlay flottante separato.
+   - Controlli basemap/layer riposizionati e clampati via JS per evitare collisioni con tooltip e bordo viewport.
+   - Waypoint e Convert funzionano come pannelli non bloccanti in GIS mode.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+
+### Invarianti
+
+- App ancora single-file HTML, vanilla JS, nessuna dipendenza CDN.
+- Nessuna introduzione di framework/build step.
+- Nessun cambio intenzionale ai formati export Waypoint Manager della sessione precedente.
+
+### QA
+
+- Commit di riferimento: `b2546e0` (`Stabilize GIS floating panels and UI polish`).
+- QA runtime consigliata: aprire/trascinare/ridimensionare Track, Waypoint, Convert, Search, Favorites, Layers; verificare inserimento traccia, doppio click di completamento, basemap menu e click mappa sotto i pannelli.
+
