@@ -1067,3 +1067,37 @@ Il precedente restyle glass aveva già applicato blur/ombre/Inter, ma la cima de
 - `ReadLints` su `coordinate_converter Claude.html`: nessun errore.
 - QA runtime browser/manuale ancora da fare: hover su controlli mappa, apertura modal/drawer, focus visibile su input, menu basemap, contrasto light vs dark.
 
+---
+
+## Checkpoint 2026-04-25 — Waypoint Manager: export GPX / KML / KMZ / CSV
+
+### Perché
+
+Il Waypoint Manager (`#sec-waypoints` / modal) esponeva già import ed export **GeoJSON**; mancavano formati vettoriali comuni (GPX, KML, KMZ, CSV) allineati al resto dell’app (stessi builder, stesso vincolo single-file, i18n obbligatorio).
+
+### Cosa è cambiato (solo monolite, additivo)
+
+- Nuova funzione `waypointsExport(kind)` con `kind` ∈ `gpx`, `kml`, `kmz`, `csv`.
+- Pre-mapping da `state.mapWaypoints` a `points` con shape `{ lat, lon, name, desc: (w.meta && w.meta.notes) || "" }` così le note finiscono in `<desc>` / description (GPX, KML) e colonna description (CSV) senza duplicare logica.
+- Reuso builder esistenti, senza modificarli:
+  - gpx → `buildGPX(points)`
+  - kml → `buildKML(points)`
+  - kmz → `buildKmz(buildKML(points), "doc.kml")` (stesso pattern di `exportTrack("kmz")`)
+  - csv → `buildCsv(points)`
+- Stesso pattern di `waypointsExportGeoJSON`: elenco vuoto → `setBadge("info", t("waypointModal.empty"))`; file `waypoints-<timestamp>.<ext>`; successo con `t("waypointModal.exportedN")` e `{0}` = numero waypoint.
+- Toolbar: quattro `button#wpExportGpx` … `wpExportCsv` accanto a `#wpExportBtn` (GeoJSON invariato).
+- `bindUI()`: listener subito dopo il blocco `#wpExportBtn`.
+- i18n IT/EN/FR: `waypointModal.exportGpx|Kml|Kmz|Csv` e `tip.waypointModal.export*`.
+
+### File toccati
+
+- `coordinate_converter Claude.html` (HTML, JS, dizionari i18n).
+
+### Non cambiato
+
+- `exportTrack`, `buildCsvFromTrack`, e tutti i builder condivisi (`buildGPX`, `buildKML`, `buildKmz`, `buildCsv`) restano invariati rispetto a questa attività.
+
+### QA
+
+- `ReadLints` sul monolite: nessun errore.
+

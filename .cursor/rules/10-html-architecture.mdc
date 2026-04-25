@@ -1,9 +1,6 @@
 ---
-description: "Implementation constraints for the single-file HTML app (state, storage, UI patterns). Auto-attached when working on HTML."
-globs: "*.html"
-alwaysApply: false
+alwaysApply: true
 ---
-
 # GOI GIS Tool — HTML Architecture Guardrails
 
 ## Canonical file / scope
@@ -67,8 +64,9 @@ alwaysApply: false
 - The manual-input section wrapper must carry `id="manualInputSection"` (used by both the home-hide CSS and the Convert modal reparenting).
 - The map root `#miniMap` is reparented once at init into `#gisMapMount`; rendering code queries by id, so this is transparent.
 
-## Tab-as-modal pattern (waypoints)
-- Some tabs open as a dedicated `<dialog class="app-modal">` instead of the side drawer. The whitelist is `GIS_TABS_AS_MODAL` (currently `new Set(["waypoints"])`).
-- For tabs in that set, `activateTab()` calls the modal-specific opener (`openWaypointModal()` for waypoints) which reparents the target section (`sec-waypoints`) into the modal body via `gisMoveSectionTo`, and `deactivateTab()` symmetrically calls the closer (which restores the section via `gisRestoreSection`).
-- Persistence: `state.activeTab === "waypoints"` is still saved, so reload reopens the modal. `state.waypointsModalOpen` and `state.waypointEditorDraft` are transient (not persisted), same pattern as `state.convertOpen` / `state.toolsMenuOpen`.
-- The Waypoints modal reuses the same `state.mapWaypoints` array and the same on-map pick flow (`state.waypointPickMode`, `state.trackWaypointDraft`) as the in-`sec-track` waypoint toolbar. Do not duplicate these arrays or add a second click handler on the map.
+## Tab-as-modal pattern (waypoints + track)
+- Some tools open as a dedicated `<dialog class="app-modal">` instead of the side drawer. **Waypoints:** `openWaypointModal()` reparents `sec-waypoints` into `#waypointModalBody`. **Track (GIS):** `openTrackModal()` reparents `sec-track` into `#trackModalBody` (builder + saved-track archive). The map toolbar toggles call these openers/closers; `GIS_VALID_TABS` excludes both `waypoints` and `track` so they never use `#tabDrawer`.
+- `deactivateTab()` only restores drawer-hosted sections. Modal sections restore via `closeWaypointModal()` / `closeTrackModal()` (`gisRestoreSection`).
+- Persistence: `state.activeTab === "waypoints"` is still saved for the waypoint topbar pill; track is not a topbar tab — legacy saves with `activeTab === "track"` reopen the track modal once via `state._pendingTrackModal`. `state.waypointsModalOpen`, `state.trackModalOpen`, and editor/draft flags are transient (not persisted), same pattern as `state.convertOpen` / `state.toolsMenuOpen`.
+- The Waypoints modal reuses `state.mapWaypoints` and the same on-map pick flow (`state.waypointPickMode`, `state.trackWaypointDraft`) as before. Do not duplicate these arrays or add a second click handler on the map.
+- Saved track archive: `state.savedTracks[]` (cap 50, persisted) holds snapshots `{ id, name, savedAt, closed, visible, points }`; visible entries render under the draft overlay as read-only dashed lines.
