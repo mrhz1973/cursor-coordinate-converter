@@ -1350,3 +1350,30 @@ Serviva una terza modalità **Automatico** oltre a chiaro/scuro, con regole fiss
 
 - Impostare Automatico → verificare in `localStorage` `theme: "auto"` e `data-theme` solo light/dark; cambiare orario di sistema o attendere fascia per transizione; switch lingua e etichette select; import sessione con `auto`.
 
+---
+
+## Checkpoint 2026-04-26 — Theme-1 select aria (micro)
+
+### Perché
+
+Dalla verifica post-commit: la chiave `settings.themeAria` era definita nei dizionari IT/EN/FR ma non collegata al markup della select tema.
+
+### Cosa è cambiato
+
+- Su `#themeSelect` aggiunto solo l’attributo **`data-i18n-aria="settings.themeAria"`**, sfruttando il loop esistente di `applyLanguage` su `[data-i18n-aria]`.
+- **`aria-labelledby="themeSettingsLbl"`** lasciato invariato (nessun conflitto con la logica i18n corrente).
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a funzioni tema, CSS, testi i18n, `coordconv_ui_v1`, OPSEC, geocoding, IndexedDB tile, waypoint, track, `mapView` / `panelOpen`.
+
+### QA
+
+- Dopo reload: cambiare lingua e verificare che `aria-label` sulla select tema rifletta `settings.themeAria` nella lingua attiva (DevTools → Accessibility).
+
