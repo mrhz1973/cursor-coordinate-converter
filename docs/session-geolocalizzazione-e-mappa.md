@@ -1179,3 +1179,55 @@ Il pannello download tile offline aveva già bbox su mappa e salvataggio aree co
 - Apri tab/pannello Mappa/Offline: verifica rendering lista con 0 / N aree, selezione multipla, mostra/nascondi su mappa, «Usa area» → campi N/S/E/W, «Centra», eliminazione con confirm.
 - Disegna bbox: verifica messaggio feedback e overlay sopra controlli mappa.
 
+---
+
+## Checkpoint 2026-04-26 — Offline areas O1-O4c
+
+### Perché
+
+La gestione aree offline aveva bisogno di diventare operativa senza introdurre uno store parallelo o toccare la cache tile fisica: le tile IndexedDB restano sparse per `layerId:z/x/y`, mentre `state.namedAreas[]` diventa il registro metadata canonico per bbox salvati, stato, visibilità e azioni utente.
+
+### Cosa è cambiato
+
+1. **Metadata retrocompatibili su `state.namedAreas[]` (O1)**
+   - Aggiunti helper di normalizzazione/sanitize (`normalizeOfflineArea`, `sanitizeNamedAreas`, `getCurrentOfflineLayerId`, stima tile) con fallback legacy: `layerId: null`, `status: "unknown"`, `visible: true`, `updatedAt` da `createdAt`.
+   - `saveNamedArea()` arricchisce i nuovi record con layer corrente, timestamp, stima tile, status prudente.
+   - `onPrecacheStart()` aggiorna metadata di un'area già corrispondente a fine download/abort/error, senza auto-creare record e senza modificare download core.
+
+2. **Tabella aree offline nel pannello Mappa/Offline (O2-O4b)**
+   - `#offlineAreasSection` / `#offlineAreasList` renderizzano una tabella ordinabile con colonne: selezione, visibilità, nome, stato, data, zoom, strato, tile, spazio, azioni leggere.
+   - Ordinamento transient in `state._offlineAreasSort`, non persistito.
+   - Card iniziali sostituite da tabella compatta ispirata alla lista tracce salvate.
+
+3. **Azioni metadata-only (O3/O4/O4c)**
+   - Visibilità persistente per area (`visible`) con checkbox in colonna `Vis.` e batch Mostra/Nascondi selezionate.
+   - Eliminazione aree dalla tabella solo metadata: rimuove record da `state.namedAreas[]`, aggiorna lista/optgroup/overlay, **non cancella tile** e non chiama `deleteNamedAreaTiles()` dalle nuove azioni.
+   - Rimosso il canale distruttivo sulla mappa: l'overlay named area non mostra più la X di delete.
+
+4. **Selezione multipla batch (O4c)**
+   - Stato transient per id: `state._offlineAreasSelectedIds` + `state._offlineAreasLastSelectedIndex`.
+   - Checkbox riga, checkbox header select-all con stato indeterminate, shift-click per intervallo secondo ordine visibile, ctrl/cmd-click per toggle singolo.
+   - Toolbar batch esterna con conteggio selezionate: Mostra selezionate, Nascondi selezionate, Elimina selezionate; «Usa area» e «Centra» sono abilitati solo con una singola area selezionata.
+   - Nessun batch download/pre-cache implementato in questa fase.
+
+5. **i18n e CSS**
+   - Nuove chiavi IT/EN/FR sotto `offcache.list.*`, `offcache.sel.*`, `offcache.area.*`.
+   - CSS `.offline-areas-*` per toolbar, tabella, righe selezionate, badge stato, colonne compatte.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun nuovo `offlineAreas[]`, nessun nuovo storage e nessuna modifica allo schema IndexedDB.
+- Download/cache/coverage tile verde restano invariati; il pre-cache parte ancora solo dal pulsante `Pre-cache area`.
+- Eliminazione in lista e batch è metadata-only: le tile già scaricate restano nella cache.
+
+### QA
+
+- Parse JS dell'intero `<script>` con `new Function(...)`: OK durante la sessione.
+- QA manuale consigliata: aprire Mappa/Offline, ordinare colonne, selezionare singola/multiple aree, shift-click, select-all, mostra/nascondi, elimina metadata-only, usare/centrare area singola, verificare che refresh azzeri la selezione transient ma conservi metadata/visibilità.
+
