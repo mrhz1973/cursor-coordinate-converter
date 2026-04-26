@@ -1302,14 +1302,15 @@ html[data-theme="dark"] .bbox-overlay{
 .bbox-overlay .bbox-handle.h-sw{ left:0; top:100%; cursor:nesw-resize }
 .bbox-overlay .bbox-handle.h-se{ left:100%; top:100%; cursor:nwse-resize }
 
-/* B3: drag entire bbox (interior, inset so corners keep resize priority). */
+/* B3: drag entire bbox — full inset so tiny rects stay grabbable; corners/X
+ * stay usable because handles + .bbox-remove sit above (higher z + later DOM). */
 .bbox-overlay .bbox-move{
   position:absolute;
-  left:14px; top:14px; right:14px; bottom:14px;
+  inset:0;
   cursor:grab;
   pointer-events:auto;
   z-index:6;
-  border-radius:4px;
+  border-radius:2px;
 }
 .bbox-overlay .bbox-move:active{ cursor:grabbing; }
 
