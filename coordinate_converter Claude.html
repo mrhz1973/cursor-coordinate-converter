@@ -2003,8 +2003,24 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .tile-map .tile-measure-box .mb-close,
 .tile-map .tile-track-float .mb-close,
 .tile-map .tile-waypoint-editor .mb-close{
-  border:none; background:rgba(255,255,255,.12); color:#fff;
+  border:1px solid rgba(248,113,113,.45);
+  background:rgba(0,0,0,.58);
+  color:#f87171;
   border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:900;
+  box-shadow:0 0 0 1px rgba(248,113,113,.12);
+  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.tile-map .tile-measure-box .mb-close:hover,
+.tile-map .tile-measure-box .mb-close:focus-visible,
+.tile-map .tile-track-float .mb-close:hover,
+.tile-map .tile-track-float .mb-close:focus-visible,
+.tile-map .tile-waypoint-editor .mb-close:hover,
+.tile-map .tile-waypoint-editor .mb-close:focus-visible{
+  color:#fecaca;
+  background:rgba(24,4,8,.88);
+  border-color:#fca5a5;
+  box-shadow:0 0 14px rgba(220,38,38,.35);
+  outline:none;
 }
 .tile-map .tile-measure-box .mb-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:6px 0 }
 .tile-map .tile-measure-box .mb-row label{ font-size:.78rem; color:rgba(255,255,255,.75); font-weight:700 }
@@ -3002,10 +3018,15 @@ body.mm-enlarged .sig-badge{display:none}
 }
 
 /* ================= TOOLTIPS ================= */
-[data-tip]{position:relative}
+[data-tip]{
+  position:relative;
+  /* Horizontal nudge (px) set by installTipEdgeClampOnce() so centered tips stay in viewport */
+  --tip-nudge:0px;
+}
 [data-tip]:hover::after,[data-tip]:focus-visible::after{
   content:attr(data-tip); position:absolute;
-  bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+  bottom:calc(100% + 8px); left:50%;
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
   background:var(--tooltip-bg); color:var(--tooltip-fg);
   border:1px solid var(--border-strong);
   backdrop-filter:blur(10px) saturate(160%);
@@ -3014,6 +3035,7 @@ body.mm-enlarged .sig-badge{display:none}
   font-size:.8rem; font-weight:500; line-height:1.38;
   max-width:min(300px, calc(100vw - 24px));
   width:max-content;
+  min-width:0;
   white-space:normal;
   overflow-wrap:anywhere;
   text-align:left;
@@ -3024,20 +3046,21 @@ body.mm-enlarged .sig-badge{display:none}
 }
 [data-tip]:hover::before,[data-tip]:focus-visible::before{
   content:""; position:absolute;
-  bottom:calc(100% + 3px); left:50%; transform:translateX(-50%);
+  bottom:calc(100% + 3px); left:50%;
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
   border:5px solid transparent; border-top-color:var(--tooltip-bg);
   pointer-events:none; z-index:200;
 }
 @keyframes tipIn{
-  from{opacity:0; transform:translateX(-50%) translateY(4px)}
-  to  {opacity:1; transform:translateX(-50%) translateY(0)}
+  from{opacity:0; transform:translateX(calc(-50% + var(--tip-nudge, 0px))) translateY(4px)}
+  to  {opacity:1; transform:translateX(calc(-50% + var(--tip-nudge, 0px))) translateY(0)}
 }
 /* Header tooltips point down (sticky header would clip them) */
 .header-ctrls [data-tip]:hover::after{bottom:auto; top:calc(100% + 8px); animation:tipInDown .15s ease-out}
 .header-ctrls [data-tip]:hover::before{bottom:auto; top:calc(100% + 3px); border-top-color:transparent; border-bottom-color:var(--tooltip-bg)}
 @keyframes tipInDown{
-  from{opacity:0; transform:translateX(-50%) translateY(-4px)}
-  to  {opacity:1; transform:translateX(-50%) translateY(0)}
+  from{opacity:0; transform:translateX(calc(-50% + var(--tip-nudge, 0px))) translateY(-4px)}
+  to  {opacity:1; transform:translateX(calc(-50% + var(--tip-nudge, 0px))) translateY(0)}
 }
 
 /* ================= BADGE CHIP (detected format) ================= */
@@ -3092,12 +3115,39 @@ body.mm-enlarged .sig-badge{display:none}
 }
 .modal h2{margin-bottom:10px; font-size:1.35rem}
 .modal .modal-close{
-  position:absolute; top:10px; right:12px;
-  background:transparent; border:none; font-size:1.4rem; cursor:pointer;
-  color:var(--muted); padding:2px 10px; border-radius:6px;
-  line-height:1;
+  position:absolute; top:12px; right:12px;
+  width:22px; height:22px; min-width:22px;
+  padding:0; margin:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.26);
+  cursor:pointer; line-height:1;
+  font-size:0;
+  color:transparent;
+  background:linear-gradient(180deg, #ff6b64, #e0453d);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
+  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
 }
-.modal .modal-close:hover{color:var(--text); background:var(--panel2)}
+.modal .modal-close:hover,
+.modal .modal-close:focus-visible{
+  font-size:13px;
+  color:rgba(38,14,14,.94);
+  background:linear-gradient(180deg, #ff7f78, #f05850);
+  transform:scale(1.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
+}
+.modal .modal-close:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--error) 55%, transparent);
+  outline-offset:2px;
+}
+html[data-theme="light"] .modal .modal-close{
+  background:linear-gradient(180deg, #ff908a, #f06e66);
+  border-color:rgba(0,0,0,.12);
+}
+html[data-theme="light"] .modal .modal-close:hover,
+html[data-theme="light"] .modal .modal-close:focus-visible{
+  color:rgba(55,18,18,.95);
+}
 /* QR modal: centered code + URL readout */
 .qr-modal{max-width:440px}
 .qr-svg-wrap{
@@ -3172,11 +3222,39 @@ body.mm-enlarged .sig-badge{display:none}
   display:flex; align-items:center; gap:8px;
 }
 .tools-drawer-head .drawer-close{
-  background:transparent; border:0; color:var(--muted);
-  font-size:1.6rem; cursor:pointer; padding:0 6px;
-  line-height:1; border-radius:6px;
+  width:22px; height:22px; min-width:22px;
+  padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.26);
+  font-size:0;
+  line-height:1;
+  color:transparent;
+  cursor:pointer;
+  background:linear-gradient(180deg, #ff6b64, #e0453d);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
+  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
 }
-.tools-drawer-head .drawer-close:hover{color:var(--text); background:var(--panel)}
+.tools-drawer-head .drawer-close:hover,
+.tools-drawer-head .drawer-close:focus-visible{
+  font-size:15px;
+  color:rgba(38,14,14,.94);
+  background:linear-gradient(180deg, #ff7f78, #f05850);
+  transform:scale(1.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
+}
+.tools-drawer-head .drawer-close:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--error) 55%, transparent);
+  outline-offset:2px;
+}
+html[data-theme="light"] .tools-drawer-head .drawer-close{
+  background:linear-gradient(180deg, #ff908a, #f06e66);
+  border-color:rgba(0,0,0,.12);
+}
+html[data-theme="light"] .tools-drawer-head .drawer-close:hover,
+html[data-theme="light"] .tools-drawer-head .drawer-close:focus-visible{
+  color:rgba(55,18,18,.95);
+}
 .tools-drawer-body{
   flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
   padding:12px 14px max(18px, env(safe-area-inset-bottom, 0));
@@ -3522,12 +3600,78 @@ body.mm-enlarged .sig-badge{display:none}
 }
 .persist-toggle input{width:auto; margin:0; accent-color:var(--accent)}
 
-/* Link-style button for modal "danger" actions */
+/* Destructive actions: strong red on dark field (GIS/dark-first) */
 .btn-danger{
-  color:var(--error); border-color:var(--error);
-  background:var(--error-bg);
+  color:#fecaca;
+  border-color:color-mix(in srgb, #f87171 70%, var(--border) 30%);
+  background:linear-gradient(180deg, rgba(12,6,8,.98) 0%, rgba(28,8,12,.96) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 0 0 1px rgba(220,38,38,.18);
+  font-weight:600;
+  transition:color .14s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease, transform .12s ease;
 }
-.btn-danger:hover{background:var(--error); color:#fff; border-color:var(--error)}
+.btn-danger:hover,
+.btn-danger:focus-visible{
+  color:#fff;
+  background:linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+  border-color:#fca5a5;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(254,202,202,.35), 0 4px 20px rgba(220,38,38,.38);
+  outline:none;
+}
+.btn-danger:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--error) 70%, transparent);
+  outline-offset:2px;
+}
+html[data-theme="light"] .btn-danger{
+  color:#991b1b;
+  border-color:color-mix(in srgb, #b91c1c 55%, var(--border) 45%);
+  background:color-mix(in srgb, #fef2f2 88%, var(--panel2) 12%);
+  box-shadow:inset 0 1px 0 #fff, 0 0 0 1px rgba(185,28,28,.12);
+}
+html[data-theme="light"] .btn-danger:hover,
+html[data-theme="light"] .btn-danger:focus-visible{
+  color:#fff;
+  background:linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
+  border-color:#fecaca;
+  box-shadow:0 4px 18px rgba(220,38,38,.28);
+}
+/* Inline ✕ on track / map rows (not always .btn-danger) */
+button.btn.btn-sm[data-role="tp-rm"],
+button.btn.btn-sm[data-role="mwp-rm"]{
+  color:#f87171 !important;
+  background:rgba(0,0,0,.72) !important;
+  border:1px solid color-mix(in srgb, #f87171 55%, transparent) !important;
+  font-weight:800;
+  min-width:2em;
+  box-shadow:0 0 0 1px rgba(248,113,113,.12);
+  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+button.btn.btn-sm[data-role="tp-rm"]:hover,
+button.btn.btn-sm[data-role="tp-rm"]:focus-visible,
+button.btn.btn-sm[data-role="mwp-rm"]:hover,
+button.btn.btn-sm[data-role="mwp-rm"]:focus-visible{
+  color:#fecaca !important;
+  background:rgba(30,6,10,.92) !important;
+  border-color:#fca5a5 !important;
+  box-shadow:0 0 12px rgba(220,38,38,.35);
+  outline:none;
+}
+#waypointModal button.btn.btn-sm[data-role="wp-del"]{
+  color:#f87171 !important;
+  background:rgba(0,0,0,.72) !important;
+  border:1px solid color-mix(in srgb, #f87171 55%, transparent) !important;
+  font-weight:800;
+  min-width:2em;
+  box-shadow:0 0 0 1px rgba(248,113,113,.12);
+  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+#waypointModal button.btn.btn-sm[data-role="wp-del"]:hover,
+#waypointModal button.btn.btn-sm[data-role="wp-del"]:focus-visible{
+  color:#fecaca !important;
+  background:rgba(30,6,10,.92) !important;
+  border-color:#fca5a5 !important;
+  box-shadow:0 0 12px rgba(220,38,38,.35);
+  outline:none;
+}
 
 /* =====================================================================
  * MOBILE POLISH (≤600 px): phones in portrait orientation.
@@ -4022,10 +4166,38 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
 .tab-drawer-title{ font-weight:700; letter-spacing:-.01em; font-size:1.05rem; }
 .tab-drawer-close{
   appearance:none; cursor:pointer;
-  width:32px; height:32px; border:1px solid var(--border); border-radius:6px;
-  background:var(--panel2); color:var(--text); font-size:1.2rem; line-height:1;
+  width:22px; height:22px; min-width:22px;
+  padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.26);
+  font-size:0;
+  line-height:1;
+  color:transparent;
+  background:linear-gradient(180deg, #ff6b64, #e0453d);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
+  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
 }
-.tab-drawer-close:hover{ color:var(--error); border-color:var(--error); }
+.tab-drawer-close:hover,
+.tab-drawer-close:focus-visible{
+  font-size:13px;
+  color:rgba(38,14,14,.94);
+  background:linear-gradient(180deg, #ff7f78, #f05850);
+  transform:scale(1.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
+}
+.tab-drawer-close:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--error) 60%, transparent);
+  outline-offset:2px;
+}
+html[data-theme="light"] .tab-drawer-close{
+  background:linear-gradient(180deg, #ff908a, #f06e66);
+  border-color:rgba(0,0,0,.12);
+}
+html[data-theme="light"] .tab-drawer-close:hover,
+html[data-theme="light"] .tab-drawer-close:focus-visible{
+  color:rgba(55,18,18,.95);
+}
 .tab-drawer-body{
   flex:1 1 auto; overflow-y:auto; overflow-x:hidden;
   padding:12px 14px 20px;
@@ -4066,11 +4238,39 @@ dialog.app-modal::backdrop{
 .app-modal-title{ margin:0; font-size:1.15rem; font-weight:700; }
 .app-modal-close{
   appearance:none; cursor:pointer;
-  width:34px; height:34px; border:1px solid var(--border); border-radius:6px;
-  background:var(--panel2); color:var(--text); font-size:1.25rem; line-height:1;
-  margin-right:2px;
+  width:22px; height:22px; min-width:22px;
+  margin:0 4px 0 0;
+  padding:0;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.26);
+  font-size:0;
+  line-height:1;
+  color:transparent;
+  background:linear-gradient(180deg, #ff6b64, #e0453d);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
+  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
 }
-.app-modal-close:hover{ color:var(--error); border-color:var(--error); }
+.app-modal-close:hover,
+.app-modal-close:focus-visible{
+  font-size:14px;
+  color:rgba(38,14,14,.94);
+  background:linear-gradient(180deg, #ff7f78, #f05850);
+  transform:scale(1.08);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
+}
+.app-modal-close:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--error) 65%, transparent);
+  outline-offset:2px;
+}
+html[data-theme="light"] .app-modal-close{
+  background:linear-gradient(180deg, #ff908a, #f06e66);
+  border-color:rgba(0,0,0,.12);
+}
+html[data-theme="light"] .app-modal-close:hover,
+html[data-theme="light"] .app-modal-close:focus-visible{
+  color:rgba(55,18,18,.95);
+}
 .app-modal-body{
   padding:14px 18px 20px;
   overflow-x:hidden;
@@ -4358,8 +4558,8 @@ dialog.track-modal.app-modal{
   box-shadow:none;
   touch-action:none;
   cursor:nwse-resize;
-  --gis-grip-stroke:color-mix(in srgb, #fff 34%, var(--muted) 52%, var(--accent) 14%);
-  --gis-grip-stroke-hi:color-mix(in srgb, #fff 52%, var(--accent) 38%, var(--muted) 10%);
+  --gis-grip-stroke:rgba(255,255,255,.72);
+  --gis-grip-stroke-hi:rgba(255,255,255,.96);
 }
 #trackModal .track-resize-handle[data-handle="se"],
 #waypointModal .gis-panel-resize-handle[data-handle="se"],
@@ -4373,7 +4573,7 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="nw"],
 #favoritesPanel .gis-panel-resize-handle[data-handle="nw"],
 #layersPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
-/* NE: clear app-modal-close (~34px) + padding */
+/* NE: offset from corner so resize does not grab the Mac-style close chip */
 #trackModal .track-resize-handle[data-handle="ne"],
 #waypointModal .gis-panel-resize-handle[data-handle="ne"],
 #convertModal .gis-panel-resize-handle[data-handle="ne"],
@@ -4388,6 +4588,21 @@ dialog.track-modal.app-modal{
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
 .gis-panel-resize-handle:hover,
 #trackModal .track-resize-handle:hover{ background:color-mix(in srgb, var(--accent) 7%, transparent); }
+/* NE: nessun alone visivo (la X è qui); hit-area resize invariata */
+#trackModal .track-resize-handle[data-handle="ne"]:hover,
+#waypointModal .gis-panel-resize-handle[data-handle="ne"]:hover,
+#convertModal .gis-panel-resize-handle[data-handle="ne"]:hover,
+#searchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#layersPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#trackModal .track-resize-handle[data-handle="ne"]:focus-visible,
+#waypointModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#convertModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#searchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#layersPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
 .gis-panel-resize-handle:focus-visible,
 #trackModal .track-resize-handle:focus-visible{
   outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
@@ -4398,23 +4613,25 @@ dialog.track-modal.app-modal{
   content:"";
   position:absolute;
   pointer-events:none;
-  width:17px;
-  height:17px;
+  width:22px;
+  height:22px;
   box-sizing:border-box;
-  opacity:.36;
-  transition:opacity .14s ease;
+  opacity:.58;
+  filter:drop-shadow(0 0 3px rgba(255,255,255,.22));
+  transition:opacity .16s ease, filter .16s ease;
 }
+/* Angoli visibili: arco sul bordo esterno del pannello (raggio allineato al dialog) */
 #trackModal .track-resize-handle[data-handle="se"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="se"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="se"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="se"]::after,
 #favoritesPanel .gis-panel-resize-handle[data-handle="se"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="se"]::after{
-  right:1px;
-  bottom:1px;
-  border-right:1px solid var(--gis-grip-stroke);
-  border-bottom:1px solid var(--gis-grip-stroke);
-  border-radius:0 0 3px 0;
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
 }
 #trackModal .track-resize-handle[data-handle="nw"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="nw"]::after,
@@ -4422,23 +4639,23 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="nw"]::after,
 #favoritesPanel .gis-panel-resize-handle[data-handle="nw"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="nw"]::after{
-  left:1px;
-  top:1px;
-  border-left:1px solid var(--gis-grip-stroke);
-  border-top:1px solid var(--gis-grip-stroke);
-  border-radius:3px 0 0 0;
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
 }
+/* NE: indicatore visivo assente (solo resize funzionale) */
 #trackModal .track-resize-handle[data-handle="ne"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="ne"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="ne"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]::after,
 #favoritesPanel .gis-panel-resize-handle[data-handle="ne"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]::after{
-  right:1px;
-  top:1px;
-  border-top:1px solid var(--gis-grip-stroke);
-  border-right:1px solid var(--gis-grip-stroke);
-  border-radius:0 3px 0 0;
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
 }
 #trackModal .track-resize-handle[data-handle="sw"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="sw"]::after,
@@ -4446,39 +4663,26 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="sw"]::after,
 #favoritesPanel .gis-panel-resize-handle[data-handle="sw"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]::after{
-  left:1px;
-  bottom:1px;
-  border-left:1px solid var(--gis-grip-stroke);
-  border-bottom:1px solid var(--gis-grip-stroke);
-  border-radius:0 0 0 3px;
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
 }
 .gis-panel-resize-handle:hover::after,
 #trackModal .track-resize-handle:hover::after{
-  opacity:.82;
+  opacity:.92;
+  filter:drop-shadow(0 0 8px rgba(255,255,255,.42));
 }
 .gis-panel-resize-handle:focus-visible::after,
-#trackModal .track-resize-handle:focus-visible::after{ opacity:1; }
-/* NE grip: keep hit area but hide the visual “L” near the close button. */
-#trackModal .track-resize-handle[data-handle="ne"]::after,
-#waypointModal .gis-panel-resize-handle[data-handle="ne"]::after,
-#convertModal .gis-panel-resize-handle[data-handle="ne"]::after,
-#searchPanel .gis-panel-resize-handle[data-handle="ne"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]::after,
-#layersPanel .gis-panel-resize-handle[data-handle="ne"]::after{
-  opacity:0;
-}
-#trackModal .track-resize-handle[data-handle="ne"]:hover::after,
-#waypointModal .gis-panel-resize-handle[data-handle="ne"]:hover::after,
-#convertModal .gis-panel-resize-handle[data-handle="ne"]:hover::after,
-#searchPanel .gis-panel-resize-handle[data-handle="ne"]:hover::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:hover::after,
-#layersPanel .gis-panel-resize-handle[data-handle="ne"]:hover::after{
-  opacity:.62;
+#trackModal .track-resize-handle:focus-visible::after{
+  opacity:1;
+  filter:drop-shadow(0 0 10px rgba(255,255,255,.5));
 }
 html[data-theme="light"] .gis-panel-resize-handle,
 html[data-theme="light"] #trackModal .track-resize-handle{
-  --gis-grip-stroke:color-mix(in srgb, var(--muted) 75%, #64748b 25%);
-  --gis-grip-stroke-hi:color-mix(in srgb, var(--accent) 50%, #334155 50%);
+  --gis-grip-stroke:rgba(51,65,85,.62);
+  --gis-grip-stroke-hi:rgba(15,23,42,.88);
 }
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
@@ -6396,7 +6600,7 @@ const I18N = {
     "tip.bboxViewport":"Usa come area da scaricare l'area attualmente visibile nella mini-mappa.",
     "tip.saveNamed":"Salva l'area corrente con un nome per riusarla in futuro.",
     "tip.bboxClear":"Rimuovi area dai campi",
-    "tip.precacheStart":"Avvia pre-cache tile per l’area indicata",
+    "tip.precacheStart":"Scarica in cache offline i tile dell’area selezionata",
     "tip.precacheStop":"Interrompi download in corso",
     "tip.precacheClear":"Svuota tile salvati nell’archivio offline",
     "tip.offlineHints":"Evidenzia tile non ancora in cache",
@@ -7269,7 +7473,7 @@ const I18N = {
     "tip.bboxViewport":"Use the area currently visible in the mini-map as download area.",
     "tip.saveNamed":"Save the current area with a name to reuse it later.",
     "tip.bboxClear":"Clear area from fields",
-    "tip.precacheStart":"Start tile pre-cache for the set area",
+    "tip.precacheStart":"Download offline cache tiles for the selected area",
     "tip.precacheStop":"Stop the current download",
     "tip.precacheClear":"Clear saved offline tiles from storage",
     "tip.offlineHints":"Highlight tiles not yet cached",
@@ -8143,7 +8347,7 @@ const I18N = {
     "tip.bboxViewport":"Utiliser comme zone de téléchargement la zone actuellement visible dans la mini-carte.",
     "tip.saveNamed":"Enregistrer la zone actuelle avec un nom pour la réutiliser plus tard.",
     "tip.bboxClear":"Effacer la zone des champs",
-    "tip.precacheStart":"Démarrer le pré-cache des tuiles pour la zone",
+    "tip.precacheStart":"Télécharger en cache hors ligne les tuiles de la zone sélectionnée",
     "tip.precacheStop":"Interrompre le téléchargement en cours",
     "tip.precacheClear":"Vider les tuiles hors ligne enregistrées",
     "tip.offlineHints":"Mettre en évidence les tuiles non encore en cache",
@@ -21605,6 +21809,71 @@ function applyLanguage(lang){
   saveStore();
 }
 
+/** Idempotent: nudge centered [data-tip] tooltips horizontally so they stay inside the viewport (CSS var --tip-nudge). No app logic. */
+function installTipEdgeClampOnce(){
+  if (document.documentElement.dataset.tipEdgeClamp === "1") return;
+  document.documentElement.dataset.tipEdgeClamp = "1";
+  const margin = 10;
+  function tipMaxW(){
+    return Math.min(300, Math.max(120, window.innerWidth - margin * 2));
+  }
+  function clampTipNudge(el){
+    if (!el || !el.isConnected || !el.hasAttribute("data-tip")) return;
+    const raw = el.getAttribute("data-tip");
+    if (!raw || !String(raw).trim()) return;
+    const cs = window.getComputedStyle(el);
+    if (cs.display === "none" || cs.visibility === "hidden") return;
+    const rect = el.getBoundingClientRect();
+    if (!rect.width && !rect.height) return;
+    const tw = tipMaxW();
+    const cx = rect.left + rect.width / 2;
+    let lo = margin;
+    let hi = window.innerWidth - margin;
+    const dlg = el.closest("dialog.app-modal");
+    if (dlg && dlg.open){
+      try {
+        const mr = dlg.getBoundingClientRect();
+        lo = Math.max(lo, mr.left + 8);
+        hi = Math.min(hi, mr.right - 8);
+      } catch(_){}
+    }
+    const drw = el.closest("#tabDrawer, aside.tab-drawer");
+    if (drw && !drw.hidden){
+      try {
+        const dr = drw.getBoundingClientRect();
+        lo = Math.max(lo, dr.left + 8);
+        hi = Math.min(hi, dr.right - 8);
+      } catch(_){}
+    }
+    let nudge = 0;
+    let left = cx - tw / 2;
+    if (left < lo) nudge += lo - left;
+    left = cx - tw / 2 + nudge;
+    if (left + tw > hi) nudge += hi - (left + tw);
+    el.style.setProperty("--tip-nudge", Math.round(nudge) + "px");
+  }
+  function clearTipNudge(el){
+    if (el && el.style) el.style.removeProperty("--tip-nudge");
+  }
+  document.addEventListener("pointerenter", (ev) => {
+    const el = ev.target && ev.target.closest ? ev.target.closest("[data-tip]") : null;
+    if (el) clampTipNudge(el);
+  }, true);
+  document.addEventListener("focusin", (ev) => {
+    const el = ev.target && ev.target.closest ? ev.target.closest("[data-tip]") : null;
+    if (el && el.hasAttribute("data-tip")) clampTipNudge(el);
+  });
+  document.addEventListener("focusout", (ev) => {
+    const el = ev.target && ev.target.closest ? ev.target.closest("[data-tip]") : null;
+    if (el) clearTipNudge(el);
+  });
+  window.addEventListener("resize", () => {
+    try {
+      document.querySelectorAll("[data-tip]").forEach((n) => { n.style.removeProperty("--tip-nudge"); });
+    } catch(_){}
+  }, { passive: true });
+}
+
 function renderNotes(){
   const root = document.getElementById("notes-body");
   if (!root) return;
@@ -24970,6 +25239,7 @@ function init(){
   bindHotkeys();
   applyTheme(initTheme);
   applyLanguage(initLang);
+  installTipEdgeClampOnce();
   updateNetStatus();
   renderHistory();
   renderFavorites();
