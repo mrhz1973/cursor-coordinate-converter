@@ -1119,6 +1119,27 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   padding-right:2px;
   scrollbar-gutter:stable;
 }
+/* A3: preset <select> resta nel DOM per optgroup / applyPrecachePreset, fuori dalla UI. */
+.offcache-preset-hidden{
+  position:absolute !important;
+  left:-9999px !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  clip-path:inset(50%) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+}
+.offcache-toggles{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin:10px 0 12px;
+}
+.offcache-bbox-actions{ margin-bottom:8px; }
 .offline-areas-table{ width:100%; border-collapse:collapse; font-size:.78rem; }
 .offline-areas-table th, .offline-areas-table td{
   padding:6px 8px;
@@ -1258,7 +1279,7 @@ html[data-theme="dark"] .bbox-draft{
 .bbox-overlay{
   position:absolute;
   border:2px dashed var(--accent);
-  background:rgba(37,99,235,.08);
+  background:rgba(37,99,235,.06);
   pointer-events:none;
   z-index:6;
   box-sizing:border-box;
@@ -1281,9 +1302,21 @@ html[data-theme="dark"] .bbox-overlay{
 .bbox-overlay .bbox-handle.h-sw{ left:0; top:100%; cursor:nesw-resize }
 .bbox-overlay .bbox-handle.h-se{ left:100%; top:100%; cursor:nwse-resize }
 
-/* Little "X" remove button at top-right of the overlay. */
+/* B3: drag entire bbox (interior, inset so corners keep resize priority). */
+.bbox-overlay .bbox-move{
+  position:absolute;
+  left:14px; top:14px; right:14px; bottom:14px;
+  cursor:grab;
+  pointer-events:auto;
+  z-index:6;
+  border-radius:4px;
+}
+.bbox-overlay .bbox-move:active{ cursor:grabbing; }
+
+/* B2: close/remove on top edge center — away from corner handles. */
 .bbox-overlay .bbox-remove{
-  position:absolute; right:-10px; top:-10px;
+  position:absolute; left:50%; top:0;
+  transform:translate(-50%, -50%);
   width:22px; height:22px; border-radius:50%;
   background:var(--error, #dc2626); color:#fff;
   border:2px solid #fff;
@@ -1291,9 +1324,17 @@ html[data-theme="dark"] .bbox-overlay{
   display:flex; align-items:center; justify-content:center;
   cursor:pointer; pointer-events:auto; padding:0;
   box-shadow:0 2px 6px rgba(0,0,0,.4);
-  z-index:8;
+  z-index:9;
 }
-.bbox-overlay .bbox-remove:hover{transform:scale(1.1)}
+.bbox-overlay .bbox-remove:hover{ transform:translate(-50%, -50%) scale(1.08); }
+
+.offline-draft-warn-actions{
+  display:flex; flex-wrap:wrap; gap:10px; margin-top:14px;
+  justify-content:flex-end;
+}
+.offline-areas-table tr[data-offa-row].offa-row--complete{
+  background:color-mix(in srgb, #2e8b57 10%, var(--panel));
+}
 
 /* Live estimate tooltip that follows the cursor while drawing. */
 .bbox-live-tip{
@@ -4277,6 +4318,61 @@ html[data-theme="light"] .app-modal-close:focus-visible{
   overflow-y:auto;
   max-height:calc(min(92vh, 92dvh) - 60px);
 }
+/* A2: scrollbars coerenti con il tema (pannelli floating + liste scrollabili correlate) */
+html[data-theme="dark"] .app-modal-body,
+html[data-theme="dark"] .waypoint-modal-panel,
+html[data-theme="dark"] .offline-areas-list,
+html[data-theme="dark"] #trackModalBody .track-points-list{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.34) rgba(0,0,0,.2);
+}
+html[data-theme="light"] .app-modal-body,
+html[data-theme="light"] .waypoint-modal-panel,
+html[data-theme="light"] .offline-areas-list,
+html[data-theme="light"] #trackModalBody .track-points-list{
+  scrollbar-width:thin;
+  scrollbar-color:rgba(0,0,0,.42) rgba(0,0,0,.06);
+}
+html[data-theme="dark"] .app-modal-body::-webkit-scrollbar,
+html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar,
+html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar,
+html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar{ width:10px; height:10px; }
+html[data-theme="dark"] .app-modal-body::-webkit-scrollbar-track,
+html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar-track,
+html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar-track,
+html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-track{
+  background:rgba(0,0,0,.22);
+  border-radius:8px;
+}
+html[data-theme="dark"] .app-modal-body::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar-thumb,
+html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.28);
+  border-radius:8px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+}
+html[data-theme="light"] .app-modal-body::-webkit-scrollbar,
+html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar,
+html[data-theme="light"] .offline-areas-list::-webkit-scrollbar,
+html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar{ width:10px; height:10px; }
+html[data-theme="light"] .app-modal-body::-webkit-scrollbar-track,
+html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar-track,
+html[data-theme="light"] .offline-areas-list::-webkit-scrollbar-track,
+html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-track{
+  background:rgba(0,0,0,.05);
+  border-radius:8px;
+}
+html[data-theme="light"] .app-modal-body::-webkit-scrollbar-thumb,
+html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar-thumb,
+html[data-theme="light"] .offline-areas-list::-webkit-scrollbar-thumb,
+html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-thumb{
+  background:rgba(0,0,0,.22);
+  border-radius:8px;
+  border:2px solid transparent;
+  background-clip:padding-box;
+}
 /* Classic conversion cards inside the Convert modal keep their
  * existing visual style — these overrides strip away duplicate
  * outer padding from being nested inside the modal body. */
@@ -4967,7 +5063,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <button class="app-tab" data-tab="layers" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.layers.tip">
       <span class="app-tab-ico" aria-hidden="true">🗺</span>
-      <span class="app-tab-lbl" data-i18n="tabs.layers">Mappa/Offline</span>
+      <span class="app-tab-lbl" data-i18n="tabs.layers">Mappe Offline</span>
     </button>
   </div>
   </div>
@@ -5218,17 +5314,22 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <details class="offline-tile-panel" id="offlineTilePanel">
           <summary data-i18n="offcache.summary">Download mappe Offline</summary>
           <p class="offcache-blurb" data-i18n="offcache.blurb">Scarica tile in anticipo (IndexedDB); apri il pannello dal pulsante sulla mappa.</p>
-          <div class="offcache-actions" style="margin-top:6px">
-            <button type="button" class="btn btn-sm" id="btnOfflineForceMode" data-i18n="offcache.forceOffline" data-i18n-tip="tip.offcacheForceMode">Mostra mappe offline sulla mappa</button>
+          <select id="pcPreset" class="offcache-preset-hidden" aria-hidden="true" tabindex="-1">
+            <option value="custom" data-i18n="offcache.presetCustom">Personalizzata</option>
+            <option value="civ" data-i18n="offcache.presetCiv">Côte d'Ivoire (stima)</option>
+            <option value="italy" data-i18n="offcache.presetIt">Italia (stima)</option>
+          </select>
+          <div class="offcache-toggles">
+            <label class="offcache-hintchk" data-i18n-tip="tip.offlineHints"><input type="checkbox" id="pcHints" checked> <span data-i18n="offcache.hints">Evidenzia tile live</span></label>
+            <label class="offcache-hintchk" data-i18n-tip="tip.coverage"><input type="checkbox" id="pcCoverage" checked> <span data-i18n="offcache.coverage">Mostra copertura offline</span></label>
+            <label class="offcache-hintchk" data-i18n-tip="tip.offcacheForceMode"><input type="checkbox" id="chkForceOffline"> <span data-i18n="offcache.forceOfflineChk">Usa solo tile già scaricati (simula assenza di rete)</span></label>
           </div>
-          <div class="offcache-row">
-            <label class="offcache-lbl" data-i18n="offcache.preset">Area</label>
-            <select id="pcPreset" class="offcache-select">
-              <option value="custom" data-i18n="offcache.presetCustom">Personalizzata</option>
-              <option value="civ" data-i18n="offcache.presetCiv">Côte d'Ivoire (stima)</option>
-              <option value="italy" data-i18n="offcache.presetIt">Italia (stima)</option>
-            </select>
+          <div class="offcache-actions offcache-bbox-actions">
+            <button type="button" class="btn btn-sm" id="btnBboxPick" data-i18n="offcache.bboxPick" data-i18n-tip="tip.bboxPick">📐 Seleziona area sulla mappa</button>
+            <button type="button" class="btn btn-sm" id="btnBboxViewport" data-i18n="offcache.bboxViewport" data-i18n-tip="tip.bboxViewport">🎯 Usa viewport</button>
+            <button type="button" class="btn btn-sm" id="btnBboxClear" hidden data-i18n="offcache.bboxClear" data-i18n-tip="tip.bboxClear">❌ Rimuovi area</button>
           </div>
+          <div id="pcBboxFieldsWrap" class="pc-bbox-fields-wrap" hidden>
           <div class="offcache-grid4">
             <label><span data-i18n="offcache.north">Nord</span><input type="number" id="pcN" step="0.01" value="10.8"></label>
             <label><span data-i18n="offcache.south">Sud</span><input type="number" id="pcS" step="0.01" value="4.2"></label>
@@ -5254,22 +5355,16 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </select>
           </div>
           <div class="offcache-est" id="pcEstimate" aria-live="polite"></div>
-          <div class="offcache-actions">
-            <button type="button" class="btn btn-sm" id="btnBboxPick" data-i18n="offcache.bboxPick" data-i18n-tip="tip.bboxPick">📐 Seleziona area sulla mappa</button>
-            <button type="button" class="btn btn-sm" id="btnBboxViewport" data-i18n="offcache.bboxViewport" data-i18n-tip="tip.bboxViewport">🎯 Usa viewport</button>
-            <button type="button" class="btn btn-sm" id="btnBboxClear" hidden data-i18n="offcache.bboxClear" data-i18n-tip="tip.bboxClear">❌ Rimuovi area</button>
           </div>
           <div class="offcache-named">
             <input type="text" id="pcAreaName" maxlength="40" data-i18n-ph="offcache.areaNamePh" placeholder="Nome area (es. AO FLINTLOCK)">
             <button type="button" class="btn btn-sm" id="btnSaveNamedArea" data-i18n="offcache.saveNamed" data-i18n-tip="tip.saveNamed">💾 Salva</button>
           </div>
           <div class="offcache-actions">
-            <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Pre-cache area</button>
+            <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica tutte le aree</button>
             <button type="button" class="btn btn-sm" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Interrompi</button>
             <button type="button" class="btn btn-sm" id="btnPrecacheClear" data-i18n="offcache.clear" data-i18n-tip="tip.precacheClear">Svuota tile</button>
           </div>
-          <label class="offcache-hintchk" data-i18n-tip="tip.offlineHints"><input type="checkbox" id="pcHints" checked> <span data-i18n="offcache.hints">Evidenzia tile live</span></label>
-          <label class="offcache-hintchk" data-i18n-tip="tip.coverage"><input type="checkbox" id="pcCoverage" checked> <span data-i18n="offcache.coverage">Mostra copertura offline</span></label>
           <div class="offcache-bar" id="pcBar" hidden>
             <progress id="pcProgress" max="100" value="0"></progress>
             <span id="pcStatus" class="offcache-status"></span>
@@ -5287,6 +5382,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 <button type="button" class="btn btn-sm btn-danger" id="btnOfflineAreasDeleteSel" data-i18n="offcache.sel.deleteSelected" data-i18n-tip="tip.offlineDelSel" disabled>Elimina selezionate</button>
                 <button type="button" class="btn btn-sm" id="btnOfflineAreasUseOne" data-i18n="offcache.sel.useOne" data-i18n-tip="tip.offlineUseOne" disabled>Usa area</button>
                 <button type="button" class="btn btn-sm" id="btnOfflineAreasFitOne" data-i18n="offcache.sel.fitOne" data-i18n-tip="tip.offlineFitOne" disabled>Centra</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnOfflineAreasPrecacheSel" data-i18n="offcache.sel.precacheSelected" data-i18n-tip="tip.offlinePrecacheSel" data-i18n-aria="tip.offlinePrecacheSel" disabled>Scarica selezionate</button>
               </div>
             </div>
             <div id="offlineAreasList" class="offline-areas-list" role="list"></div>
@@ -5785,7 +5881,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
 <dialog id="layersPanel" class="app-modal layers-panel" aria-labelledby="layersPanelTitle" aria-modal="false">
   <div class="app-modal-head" id="layersPanelHead">
-    <h2 id="layersPanelTitle" class="app-modal-title" data-i18n="tabs.layers">Mappa/Offline</h2>
+    <h2 id="layersPanelTitle" class="app-modal-title" data-i18n="tabs.layers">Mappe Offline</h2>
     <button type="button" class="app-modal-close" id="layersPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
   </div>
   <div class="app-modal-body" id="layersPanelBody"></div>
@@ -5793,6 +5889,21 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
+<dialog id="offlineDraftWarnDialog" class="app-modal" aria-labelledby="offlineDraftWarnTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="offlineDraftWarnTitle" class="app-modal-title" data-i18n="offcache.draftWarnTitle">Area non salvata</h2>
+    <button type="button" class="app-modal-close" data-close-offline-draft data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p data-i18n="offcache.draftWarnBody">Hai un’area sulla mappa non salvata in elenco. Se continui senza salvarla, andrà persa.</p>
+    <div class="offline-draft-warn-actions">
+      <button type="button" class="btn btn-sm btn-primary" id="offlineDraftWarnSave" data-i18n="offcache.draftWarnSave">Salva / dai un nome</button>
+      <button type="button" class="btn btn-sm" id="offlineDraftWarnDiscard" data-i18n="offcache.draftWarnDiscard">Continua senza salvare</button>
+      <button type="button" class="btn btn-sm" id="offlineDraftWarnCancel" data-i18n="offcache.draftWarnCancel">Annulla</button>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="trackModal" class="app-modal track-modal" aria-labelledby="trackModalTitle" aria-modal="false">
@@ -6127,7 +6238,7 @@ const I18N = {
     "tabs.geocoding.tip":"Cerca località",
     "tabs.history":"Cronologia",
     "tabs.history.tip":"Apri cronologia",
-    "tabs.layers":"Mappa/Offline",
+    "tabs.layers":"Mappe Offline",
     "tabs.layers.tip":"Mappa e offline",
     "tip.convertCta":"Apri il modulo di conversione (Ctrl+Invio da qui).",
     "tip.otherTools":"Nel pannello Strumenti (header): griglia Batch, Note, Sessione, Astro, declinazione.",
@@ -6476,6 +6587,7 @@ const I18N = {
     "offcache.summary":"Download mappe Offline",
     "offcache.blurb":"Da qui scarichi tile in anticipo (IndexedDB) per usare la mappa senza rete. Apri questo pannello con il pulsante «Copertura offline» sulla mappa. In navigazione: bordo blu = tile da rete (non in pacchetto), grigio ? = non disponibile offline.",
     "offcache.forceOffline":"Mostra mappe offline sulla mappa",
+    "offcache.forceOfflineChk":"Usa solo tile già scaricati (simula assenza di rete)",
     "offcache.forceOnline":"Torna alle mappe online",
     "offcache.close":"Chiudi pannello",
     "tip.offcacheForceMode":"Quando attivo, la mini-mappa usa solo tile già scaricati (offline), anche se hai rete.",
@@ -6493,7 +6605,7 @@ const I18N = {
     "offcache.onlineOnly":"Questo strato è solo online e non può essere scaricato offline.",
     "offcache.estimate":"Tile stimate",
     "offcache.mb":"MB indicativi",
-    "offcache.start":"Pre-cache area",
+    "offcache.start":"Scarica tutte le aree",
     "offcache.stop":"Interrompi",
     "offcache.clear":"Svuota tile salvati",
     "offcache.hints":"Evidenzia tile “live” (non in pacchetto)",
@@ -6552,10 +6664,19 @@ const I18N = {
     "offcache.sel.deleteSelected":"Elimina selezionate",
     "offcache.sel.useOne":"Usa area",
     "offcache.sel.fitOne":"Centra",
+    "offcache.sel.precacheSelected":"Scarica selezionate",
+    "offcache.precacheConflictBatch":"È in corso lo scaricamento di più aree offline. Attendi il termine prima di avviare un download singolo.",
+    "offcache.draftWarnTitle":"Area sulla mappa non salvata",
+    "offcache.draftWarnBody":"Hai un’area sulla mappa non ancora salvata in elenco. Se continui senza salvarla, andrà persa.",
+    "offcache.draftWarnSave":"Salva / dai un nome",
+    "offcache.draftWarnDiscard":"Continua senza salvare",
+    "offcache.draftWarnCancel":"Annulla",
+    "offcache.downloadAllNone":"Nessuna area in elenco scaricabile (controlla zoom, strato e limiti).",
+    "offcache.batchAreaLine":"Area {0}/{1}: {2}",
     "offcache.sel.deleteConfirmMeta":"Eliminare le aree selezionate dall’elenco? Le tile offline già scaricate resteranno nella cache.",
     "offcache.area.statusUnknown":"Sconosciuto",
     "offcache.area.statusPartial":"Parziale",
-    "offcache.area.statusComplete":"Completo",
+    "offcache.area.statusComplete":"Completata",
     "offcache.area.statusError":"Errore",
     "offcache.area.bbox":"Area",
     "offcache.area.zoom":"Zoom",
@@ -6595,12 +6716,14 @@ const I18N = {
     "offcache.bboxFeedbackReady":"Area pronta per il download",
     "offcache.bboxFeedbackNone":"Nessuna area selezionata",
     "offcache.bboxResizeAria":"Ridimensiona area offline",
+    "offcache.bboxMoveAria":"Sposta area intera",
     "offcache.bboxRemoveAria":"Rimuovi area offline",
     "tip.bboxPick":"Disegna un rettangolo sulla mini-mappa per definire l'area da scaricare (ESC per annullare).",
+    "tip.bboxMove":"Trascina l’interno del rettangolo per spostare l’intera area (non ridimensiona).",
     "tip.bboxViewport":"Usa come area da scaricare l'area attualmente visibile nella mini-mappa.",
     "tip.saveNamed":"Salva l'area corrente con un nome per riusarla in futuro.",
     "tip.bboxClear":"Rimuovi area dai campi",
-    "tip.precacheStart":"Scarica in cache offline i tile dell’area selezionata",
+    "tip.precacheStart":"Scarica in sequenza tutte le aree salvate (dalla più vecchia alla più recente). Per una o più aree specifiche usa la selezione in tabella e «Scarica selezionate».",
     "tip.precacheStop":"Interrompi download in corso",
     "tip.precacheClear":"Svuota tile salvati nell’archivio offline",
     "tip.offlineHints":"Evidenzia tile non ancora in cache",
@@ -6609,6 +6732,7 @@ const I18N = {
     "tip.offlineDelSel":"Elimina aree selezionate dall’elenco",
     "tip.offlineUseOne":"Usa area nei campi di download",
     "tip.offlineFitOne":"Centra mappa sull’area selezionata",
+    "tip.offlinePrecacheSel":"Scarica in sequenza le tile offline per le aree selezionate (una alla volta).",
     "tip.modalClose":"Chiudi pannello",
     "tip.panelResize":"Ridimensiona pannello",
     "tip.toolsDrawerClose":"Chiudi strumenti",
@@ -7001,7 +7125,7 @@ const I18N = {
     "tabs.geocoding.tip":"Address / place search (Nominatim). Respects OPSEC strict mode.",
     "tabs.history":"History",
     "tabs.history.tip":"Open history",
-    "tabs.layers":"Map/Offline",
+    "tabs.layers":"Offline maps",
     "tabs.layers.tip":"Map and offline",
     "tip.convertCta":"Open the conversion form (Ctrl+Enter from here).",
     "tip.otherTools":"In the Tools panel (header): grid for Batch, Notes, Session, Astro, magnetic declination.",
@@ -7350,6 +7474,7 @@ const I18N = {
     "offcache.summary":"Offline map download",
     "offcache.blurb":"Download tiles ahead of time (IndexedDB) for offline map use. Open this panel with the “Offline coverage” button on the map. While browsing, blue border = network tile (not in pack), grey ? = unavailable offline.",
     "offcache.forceOffline":"Show offline tiles on map",
+    "offcache.forceOfflineChk":"Use only downloaded tiles (simulate no network)",
     "offcache.forceOnline":"Back to online tiles",
     "offcache.close":"Close panel",
     "tip.offcacheForceMode":"When enabled, the mini-map uses only downloaded tiles (offline), even if you're connected.",
@@ -7367,7 +7492,7 @@ const I18N = {
     "offcache.onlineOnly":"This layer is online-only and cannot be downloaded for offline use.",
     "offcache.estimate":"Estimated tiles",
     "offcache.mb":"Approx. MB",
-    "offcache.start":"Pre-cache area",
+    "offcache.start":"Download all areas",
     "offcache.stop":"Stop",
     "offcache.clear":"Clear saved tiles",
     "offcache.hints":"Highlight “live” tiles (not in pack)",
@@ -7425,10 +7550,19 @@ const I18N = {
     "offcache.sel.deleteSelected":"Delete selected",
     "offcache.sel.useOne":"Use area",
     "offcache.sel.fitOne":"Center",
+    "offcache.sel.precacheSelected":"Download selected",
+    "offcache.precacheConflictBatch":"A multi-area offline download is in progress. Wait for it to finish before starting a single download.",
+    "offcache.draftWarnTitle":"Unsaved map area",
+    "offcache.draftWarnBody":"You have a map area that is not yet saved to the list. If you continue without saving, it will be lost.",
+    "offcache.draftWarnSave":"Save / enter a name",
+    "offcache.draftWarnDiscard":"Continue without saving",
+    "offcache.draftWarnCancel":"Cancel",
+    "offcache.downloadAllNone":"No areas in the list can be downloaded (check zoom range, layer, and limits).",
+    "offcache.batchAreaLine":"Area {0}/{1}: {2}",
     "offcache.sel.deleteConfirmMeta":"Remove the selected areas from the list? Downloaded offline tiles will remain in the cache.",
     "offcache.area.statusUnknown":"Unknown",
     "offcache.area.statusPartial":"Partial",
-    "offcache.area.statusComplete":"Complete",
+    "offcache.area.statusComplete":"Completed",
     "offcache.area.statusError":"Error",
     "offcache.area.bbox":"Bounds",
     "offcache.area.zoom":"Zoom",
@@ -7468,12 +7602,14 @@ const I18N = {
     "offcache.bboxFeedbackReady":"Area ready for download",
     "offcache.bboxFeedbackNone":"No area selected",
     "offcache.bboxResizeAria":"Resize offline area",
+    "offcache.bboxMoveAria":"Move entire area",
     "offcache.bboxRemoveAria":"Remove offline area",
     "tip.bboxPick":"Draw a rectangle on the mini-map to define the area to download (ESC to cancel).",
+    "tip.bboxMove":"Drag inside the rectangle to move the whole area (does not resize).",
     "tip.bboxViewport":"Use the area currently visible in the mini-map as download area.",
     "tip.saveNamed":"Save the current area with a name to reuse it later.",
     "tip.bboxClear":"Clear area from fields",
-    "tip.precacheStart":"Download offline cache tiles for the selected area",
+    "tip.precacheStart":"Download all saved areas in sequence (oldest first). For one or more specific areas, select rows in the table then use “Download selected”.",
     "tip.precacheStop":"Stop the current download",
     "tip.precacheClear":"Clear saved offline tiles from storage",
     "tip.offlineHints":"Highlight tiles not yet cached",
@@ -7482,6 +7618,7 @@ const I18N = {
     "tip.offlineDelSel":"Remove selected areas from the list",
     "tip.offlineUseOne":"Load selected area into download fields",
     "tip.offlineFitOne":"Center map on selected area",
+    "tip.offlinePrecacheSel":"Download offline tiles for the selected areas sequentially (one area at a time).",
     "tip.modalClose":"Close panel",
     "tip.panelResize":"Resize panel",
     "tip.toolsDrawerClose":"Close tools",
@@ -7875,7 +8012,7 @@ const I18N = {
     "tabs.geocoding.tip":"Rechercher un lieu",
     "tabs.history":"Historique",
     "tabs.history.tip":"Ouvrir l’historique",
-    "tabs.layers":"Carte/Hors-ligne",
+    "tabs.layers":"Cartes hors ligne",
     "tabs.layers.tip":"Carte et hors ligne",
     "tip.convertCta":"Ouvrir le formulaire de conversion (Ctrl+Entrée).",
     "tip.otherTools":"Dans le panneau Outils (barre du haut) : grille Batch, Notes, Session, Astro, déclinaison.",
@@ -8224,6 +8361,7 @@ const I18N = {
     "offcache.summary":"Téléchargement cartes hors ligne",
     "offcache.blurb":"Téléchargez les tuiles en avance (IndexedDB) pour la carte sans réseau. Ouvrez ce panneau avec le bouton « Couverture hors ligne » sur la carte. Bordure bleue = tuile en direct, gris ? = indisponible hors ligne.",
     "offcache.forceOffline":"Afficher les tuiles hors ligne",
+    "offcache.forceOfflineChk":"Utiliser uniquement les tuiles déjà téléchargées (simuler l’absence de réseau)",
     "offcache.forceOnline":"Revenir aux tuiles en ligne",
     "offcache.close":"Fermer le panneau",
     "tip.offcacheForceMode":"Quand activé, la mini-carte utilise seulement les tuiles déjà téléchargées (hors ligne), même si vous êtes connecté.",
@@ -8241,7 +8379,7 @@ const I18N = {
     "offcache.onlineOnly":"Cette couche est uniquement en ligne et ne peut pas être téléchargée hors ligne.",
     "offcache.estimate":"Tuiles est.",
     "offcache.mb":"Mo approx.",
-    "offcache.start":"Pré-télécharger la zone",
+    "offcache.start":"Télécharger toutes les zones",
     "offcache.stop":"Arrêter",
     "offcache.clear":"Vider les tuiles",
     "offcache.hints":"Souligner les tuiles “live”",
@@ -8299,10 +8437,19 @@ const I18N = {
     "offcache.sel.deleteSelected":"Supprimer sélectionnées",
     "offcache.sel.useOne":"Utiliser la zone",
     "offcache.sel.fitOne":"Centrer",
+    "offcache.sel.precacheSelected":"Télécharger les sélectionnées",
+    "offcache.precacheConflictBatch":"Un téléchargement hors ligne de plusieurs zones est en cours. Attendez la fin avant de lancer un téléchargement unique.",
+    "offcache.draftWarnTitle":"Zone sur la carte non enregistrée",
+    "offcache.draftWarnBody":"Une zone sur la carte n’est pas encore enregistrée dans la liste. Si vous continuez sans l’enregistrer, elle sera perdue.",
+    "offcache.draftWarnSave":"Enregistrer / donner un nom",
+    "offcache.draftWarnDiscard":"Continuer sans enregistrer",
+    "offcache.draftWarnCancel":"Annuler",
+    "offcache.downloadAllNone":"Aucune zone de la liste n’est téléchargeable (vérifiez zoom, couche et limites).",
+    "offcache.batchAreaLine":"Zone {0}/{1} : {2}",
     "offcache.sel.deleteConfirmMeta":"Supprimer les zones sélectionnées de la liste ? Les tuiles hors ligne téléchargées resteront dans le cache.",
     "offcache.area.statusUnknown":"Inconnu",
     "offcache.area.statusPartial":"Partiel",
-    "offcache.area.statusComplete":"Complet",
+    "offcache.area.statusComplete":"Complétée",
     "offcache.area.statusError":"Erreur",
     "offcache.area.bbox":"Emprise",
     "offcache.area.zoom":"Zoom",
@@ -8342,12 +8489,14 @@ const I18N = {
     "offcache.bboxFeedbackReady":"Zone prête au téléchargement",
     "offcache.bboxFeedbackNone":"Aucune zone sélectionnée",
     "offcache.bboxResizeAria":"Redimensionner la zone hors ligne",
+    "offcache.bboxMoveAria":"Déplacer toute la zone",
     "offcache.bboxRemoveAria":"Supprimer la zone hors ligne",
     "tip.bboxPick":"Dessinez un rectangle sur la mini-carte pour définir la zone à télécharger (ÉCHAP pour annuler).",
+    "tip.bboxMove":"Glisser à l’intérieur du rectangle pour déplacer toute la zone (sans redimensionner).",
     "tip.bboxViewport":"Utiliser comme zone de téléchargement la zone actuellement visible dans la mini-carte.",
     "tip.saveNamed":"Enregistrer la zone actuelle avec un nom pour la réutiliser plus tard.",
     "tip.bboxClear":"Effacer la zone des champs",
-    "tip.precacheStart":"Télécharger en cache hors ligne les tuiles de la zone sélectionnée",
+    "tip.precacheStart":"Télécharge toutes les zones enregistrées dans l’ordre (plus anciennes d’abord). Pour une ou plusieurs zones précises, sélectionnez les lignes puis « Télécharger les sélectionnées ».",
     "tip.precacheStop":"Interrompre le téléchargement en cours",
     "tip.precacheClear":"Vider les tuiles hors ligne enregistrées",
     "tip.offlineHints":"Mettre en évidence les tuiles non encore en cache",
@@ -8356,6 +8505,7 @@ const I18N = {
     "tip.offlineDelSel":"Supprimer les zones sélectionnées de la liste",
     "tip.offlineUseOne":"Charger la zone dans les champs de téléchargement",
     "tip.offlineFitOne":"Centrer la carte sur la zone sélectionnée",
+    "tip.offlinePrecacheSel":"Télécharger hors ligne les tuiles des zones sélectionnées l’une après l’autre.",
     "tip.modalClose":"Fermer le panneau",
     "tip.panelResize":"Redimensionner le panneau",
     "tip.toolsDrawerClose":"Fermer les outils",
@@ -8831,6 +8981,10 @@ const state = {
   // Do not persist to localStorage.
   _offlineAreasSelectedIds: [],
   _offlineAreasLastSelectedIndex: null,
+  /** O6a: transient batch precache (sequential); never persisted to localStorage. */
+  _offlineBatchPrecache: null,
+  /** B4: bbox modificata da mappa/viewport ma non salvata come named area. */
+  _offlineUnsavedBboxDraft: false,
   viewCenter: null,
   lastPoint: null,
   lastResult: null,
@@ -13319,18 +13473,32 @@ function bindHotkeys(){
     // is visible). "s" starts/toggles draw mode, "v" uses current viewport.
     if ((k === "s" || k === "S") && !ev.ctrlKey && !ev.metaKey && !ev.altKey){
       const panel = document.getElementById("offlineTilePanel");
-      if (panel && state.offlineDownloadVisible){
+      const layersDlg = document.getElementById("layersPanel");
+      const offlineUiFocus = !!(panel && (
+        state.offlineDownloadVisible ||
+        state.layersPanelOpen ||
+        (layersDlg && layersDlg.open) ||
+        state.activeTab === "layers"
+      ));
+      if (offlineUiFocus){
         ev.preventDefault();
         if (state._bboxSelecting) cancelBboxSelection();
-        else startBboxSelection();
+        else void startBboxSelection();
         return;
       }
     }
     if ((k === "v" || k === "V") && !ev.ctrlKey && !ev.metaKey && !ev.altKey){
       const panel = document.getElementById("offlineTilePanel");
-      if (panel && state.offlineDownloadVisible){
+      const layersDlg = document.getElementById("layersPanel");
+      const offlineUiFocus = !!(panel && (
+        state.offlineDownloadVisible ||
+        state.layersPanelOpen ||
+        (layersDlg && layersDlg.open) ||
+        state.activeTab === "layers"
+      ));
+      if (offlineUiFocus){
         ev.preventDefault();
-        useCurrentViewport();
+        void useCurrentViewport();
         return;
       }
     }
@@ -15537,6 +15705,12 @@ function revokeMapBlobUrls(root){
 }
 
 let _precacheAbort = null;
+/** True while a single-form precache or an O6a batch precache run holds the download slot. */
+function isOfflinePrecacheBusy(){
+  if (_precacheAbort !== null) return true;
+  const bp = state._offlineBatchPrecache;
+  return !!(bp && bp.running);
+}
 async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
   const key  = makeTileKey(layerId, z, x, y);
   const have = await getTileBlobByKey(key);
@@ -15646,10 +15820,9 @@ function updatePrecacheEstimate(){
   const layer = TILE_LAYERS[layerId];
   if (layer && layer.cacheable === false){
     el.textContent = t("offcache.onlineOnly");
-    if (btnS) btnS.disabled = true;
+    if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton();
     return;
   }
-  if (btnS) btnS.disabled = false;
   // Accept both "41.18" and "41,18" — Italian/French browsers type-number
   // fields accept a comma; plain parseFloat("41,18") silently truncates
   // to 41 and breaks the badbox check (n===s → empty selection).
@@ -15661,81 +15834,65 @@ function updatePrecacheEstimate(){
   const w = pf(document.getElementById("pcW")?.value);
   const z0 = pi(document.getElementById("pcZ0")?.value);
   const z1 = pi(document.getElementById("pcZ1")?.value);
-  if (![n, s, e, w, z0, z1].every(Number.isFinite)) { el.textContent = ""; return; }
-  if (n <= s || w > e || z0 > z1){ el.textContent = t("offcache.badbox"); return; }
+  if (![n, s, e, w, z0, z1].every(Number.isFinite)) { el.textContent = ""; if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton(); return; }
+  if (n <= s || w > e || z0 > z1){ el.textContent = t("offcache.badbox"); if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton(); return; }
   const c = countBboxTiles(n, s, e, w, z0, z1);
   const mb = (c * 20) / 1024; // ~20 KB / tile
   el.textContent = t("offcache.estimate") + ": " + c + " · " + t("offcache.mb") + " ≈ " + (mb < 0.1 ? "<0.1" : mb.toFixed(0)) + " MB";
+  if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton();
 }
 
+/** B5: download all saved areas (oldest first). Uses shared queue + #pcBar. */
 function onPrecacheStart(){
   if (!window.indexedDB){
     const st = document.getElementById("pcStatus");
     if (st) st.textContent = t("offcache.noIdb");
     return;
   }
-  // Same parse helpers as updatePrecacheEstimate (see comment there).
-  const pf = (v) => parseFloat(String(v == null ? "" : v).replace(",", "."));
-  const pi = (v) => parseInt(String(v == null ? "" : v).replace(",", "."), 10);
-  const n = pf(document.getElementById("pcN")?.value);
-  const s = pf(document.getElementById("pcS")?.value);
-  const e = pf(document.getElementById("pcE")?.value);
-  const w = pf(document.getElementById("pcW")?.value);
-  const z0 = pi(document.getElementById("pcZ0")?.value);
-  const z1 = pi(document.getElementById("pcZ1")?.value);
-  const layerId = sanitizeMapLayer(document.getElementById("pcLayer")?.value || "osm");
-  const layer = TILE_LAYERS[layerId];
-  if (layer && layer.cacheable === false){
+  if (state._offlineBatchPrecache && state._offlineBatchPrecache.running){
     const st = document.getElementById("pcStatus");
-    if (st) st.textContent = t("offcache.onlineOnly");
+    if (st) st.textContent = t("offcache.precacheConflictBatch");
     return;
   }
-  if (![n, s, e, w, z0, z1].every(Number.isFinite) || n <= s || w > e || z0 > z1 || z0 < 2 || z1 > 19){
-    const st = document.getElementById("pcStatus");
-    if (st) st.textContent = t("offcache.badbox");
-    return;
-  }
-  const tot = countBboxTiles(n, s, e, w, z0, z1);
-  if (tot === 0){ const st = document.getElementById("pcStatus"); if (st) st.textContent = t("offcache.badbox"); return; }
-  if (tot > MAX_PRECACHE_TILES){ const st = document.getElementById("pcStatus"); if (st) st.textContent = t("offcache.tooMany"); return; }
+  const queue = buildOldestFirstPrecacheQueueIds();
+  const st = document.getElementById("pcStatus");
   const bar = document.getElementById("pcBar");
   const prog = document.getElementById("pcProgress");
-  const st = document.getElementById("pcStatus");
   const btnS = document.getElementById("btnPrecacheStart");
   const btnP = document.getElementById("btnPrecacheStop");
+  if (!queue.length){
+    if (st) st.textContent = t("offcache.downloadAllNone");
+    return;
+  }
   if (bar) bar.hidden = false;
   if (btnP) btnP.hidden = false;
   if (btnS) btnS.disabled = true;
   if (prog){ prog.max = 100; prog.value = 0; }
   if (st) st.textContent = t("offcache.progress");
-  const precacheMeta = { n, s, e, w, z0, z1, layerId, tot };
-  let lastPrecacheEv = { done: 0, total: tot, err: 0, aborted: false };
-  startPrecacheDownload({ n, s, e, w, z0, z1, layerId, onProgress: (ev) => {
-    lastPrecacheEv = { done: ev.done, total: ev.total, err: ev.err, aborted: !!ev.aborted };
-    if (prog && ev.total) prog.value = Math.min(100, (ev.done / ev.total) * 100);
-    if (st) st.textContent = t("offcache.progress") + " " + ev.done + " / " + ev.total + (ev.err ? " (" + ev.err + " err)" : "");
-  }}).then((info) => {
-    applyPrecacheMetadataToNamedArea(precacheMeta, info || {});
-    if (st) st.textContent = (info && info.aborted) ? t("offcache.aborted") : t("offcache.done");
+
+  void runOfflineAreasPrecacheQueue(queue, { useProgressBar: true }).then(() => {
+    if (st) st.textContent = t("offcache.done");
     if (btnS) btnS.disabled = false;
     if (btnP) btnP.hidden = true;
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
-  }).catch((err) => {
-    if (!(err && err.message === "tooMany")){
-      applyPrecacheMetadataToNamedArea(precacheMeta, Object.assign({}, lastPrecacheEv, {
-        aborted: !!lastPrecacheEv.aborted,
-        fatal: true
-      }));
-    }
-    if (st) st.textContent = (err && err.message === "tooMany") ? t("offcache.tooMany") : t("offcache.err");
+    updatePrecacheEstimate();
+    updateOfflineAreasToolbarUI();
+  }).catch(() => {
+    if (st) st.textContent = t("offcache.err");
     if (btnS) btnS.disabled = false;
     if (btnP) btnP.hidden = true;
+    updatePrecacheEstimate();
+    updateOfflineAreasToolbarUI();
   });
+  updateOfflineAreasToolbarUI();
 }
 
 function applyPrecachePreset(){
   const p = document.getElementById("pcPreset");
-  if (!p || p.value === "custom") return;
+  if (!p || p.value === "custom"){
+    syncPcBboxEditorSectionFromState();
+    return;
+  }
   // Named areas are stored with id prefix "named:"
   if (String(p.value).startsWith("named:")){
     const id = p.value.slice(6);
@@ -15754,11 +15911,16 @@ function applyPrecachePreset(){
       updateBboxClearButton();
       updateOfflineBboxAreaFeedback();
       refreshTileMapForOfflineBboxUi();
+      state._offlineUnsavedBboxDraft = false;
     }
+    syncPcBboxEditorSectionFromState();
     return;
   }
   const b = PRECACHE_PRESETS[p.value];
-  if (!b) return;
+  if (!b){
+    syncPcBboxEditorSectionFromState();
+    return;
+  }
   const i = id => document.getElementById(id);
   if (i("pcN")) i("pcN").value = b.n;
   if (i("pcS")) i("pcS").value = b.s;
@@ -15769,6 +15931,8 @@ function applyPrecachePreset(){
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
   refreshTileMapForOfflineBboxUi();
+  state._offlineUnsavedBboxDraft = true;
+  syncPcBboxEditorSectionFromState();
 }
 
 /* ============== BBOX SELECTION ON MAP (helpers) ==============
@@ -15858,6 +16022,19 @@ function updateOfflineBboxAreaFeedback(){
   }
 }
 
+/** A4: show/hide Nord–Est / zoom / layer block (collapsed until bbox pick or saved area). */
+function setPcBboxFieldsWrapExpanded(want){
+  const box = document.getElementById("pcBboxFieldsWrap");
+  if (!box) return;
+  if (want) box.removeAttribute("hidden");
+  else box.setAttribute("hidden", "");
+}
+
+function syncPcBboxEditorSectionFromState(){
+  const want = !!(state._bboxSelecting || state.bboxSelection);
+  setPcBboxFieldsWrapExpanded(want);
+}
+
 /** Write 4 numbers to the bbox fields; switches the preset to "custom". */
 function writeBboxFields(b){
   const i = id => document.getElementById(id);
@@ -15873,6 +16050,8 @@ function writeBboxFields(b){
   updatePrecacheEstimate();
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
+  state._offlineUnsavedBboxDraft = true;
+  syncPcBboxEditorSectionFromState();
 }
 
 /** Show/hide the "Remove area" button based on whether a bbox is selected. */
@@ -15971,8 +16150,15 @@ function computeBboxTip(b){
   };
 }
 
+/** B4: prompt if bbox on map is not yet saved to the named list. */
+async function resolveOfflineDraftBeforeReplacingBbox(){
+  if (!state._offlineUnsavedBboxDraft || !state.bboxSelection) return true;
+  const r = await showOfflineDraftWarnDialog();
+  return (r === "discard");
+}
+
 /** Start an interactive bbox selection session on the mini-map. */
-function startBboxSelection(){
+async function startBboxSelection(){
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (!tileMap){
@@ -15981,8 +16167,10 @@ function startBboxSelection(){
     return;
   }
   if (state._bboxSelecting) return;
+  if (!(await resolveOfflineDraftBeforeReplacingBbox())) return;
   state._bboxSelecting = true;
   tileMap.classList.add("bbox-selecting");
+  syncPcBboxEditorSectionFromState();
 
   // Inject banner
   let banner = tileMap.querySelector(".bbox-mode-banner");
@@ -16022,6 +16210,7 @@ function endBboxSelection(){
   const tip = document.querySelector(".bbox-live-tip");
   if (tip) tip.remove();
   state._bboxSelecting = false;
+  syncPcBboxEditorSectionFromState();
 }
 
 function cancelBboxSelection(){ endBboxSelection(); }
@@ -16166,12 +16355,13 @@ function attachBboxDrawHandlers(tileMap){
 }
 
 /** Use the currently visible map viewport as the bbox selection. */
-function useCurrentViewport(){
+async function useCurrentViewport(){
   const root = document.getElementById("miniMap");
   if (!root || !root.clientWidth){
     setBadge("error", t("maps.empty") || "Apri prima la mappa.");
     return;
   }
+  if (!(await resolveOfflineDraftBeforeReplacingBbox())) return;
   const W = root.clientWidth;
   const H = (state.mapSize === "small") ? W : (root.clientHeight || W);
   const nw = tileMapPxToLatLon(root, 0, 0);
@@ -16191,9 +16381,11 @@ function useCurrentViewport(){
 /** Clear the current bbox selection (visual + state + fields stay). */
 function clearBboxSelection(){
   state.bboxSelection = null;
+  state._offlineUnsavedBboxDraft = false;
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
   refreshTileMapForOfflineBboxUi();
+  syncPcBboxEditorSectionFromState();
 }
 
 /* __BBOX_CONTINUES__ */
@@ -16370,6 +16562,200 @@ function applyPrecacheMetadataToNamedArea(meta, info){
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
 }
 
+/**
+ * O6a: same metadata merge as applyPrecacheMetadataToNamedArea, but keyed by named-area id
+ * (no bbox/layer index match).
+ */
+function applyPrecacheMetadataToNamedAreaById(areaId, info){
+  const areas = state.namedAreas;
+  if (!Array.isArray(areas) || areaId == null || areaId === "") return;
+  const idx = areas.findIndex(x => x && String(x.id) === String(areaId));
+  if (idx < 0) return;
+  const cur = areas[idx];
+  const n = Number(cur.n), s = Number(cur.s), e = Number(cur.e), w = Number(cur.w);
+  const z0 = Number.isFinite(cur.z0) ? (cur.z0 | 0) : NaN;
+  const z1 = Number.isFinite(cur.z1) ? (cur.z1 | 0) : NaN;
+  const layerId = sanitizeMapLayer((cur.layerId != null && cur.layerId !== "") ? String(cur.layerId) : "osm");
+  if (![n, s, e, w, z0, z1].every(Number.isFinite) || !layerId) return;
+  let tot = NaN;
+  try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return; }
+  if (!Number.isFinite(tot) || tot <= 0) return;
+
+  const done = Math.max(0, info && Number.isFinite(info.done) ? info.done : 0);
+  const total = Math.max(0, info && Number.isFinite(info.total) ? info.total : tot || 0);
+  const err = Math.max(0, info && Number.isFinite(info.err) ? info.err : 0);
+  const aborted = !!(info && info.aborted);
+  const fatal = !!(info && info.fatal);
+
+  let status = "unknown";
+  if (fatal) status = "error";
+  else if (aborted) status = "partial";
+  else if (err > 0) status = "partial";
+  else if (done >= total && total > 0) status = "complete";
+  else status = "partial";
+
+  const tileCountDownloaded = Math.max(0, done - err);
+  const tileCountEstimated = Number.isFinite(cur.tileCountEstimated)
+    ? cur.tileCountEstimated
+    : (Number.isFinite(tot) ? tot : countOfflineAreaTilesEstimated(cur));
+
+  const merged = Object.assign({}, cur, {
+    updatedAt: Date.now(),
+    downloadedAt: Date.now(),
+    tileCountDownloaded,
+    tileCountEstimated: tileCountEstimated == null ? null : tileCountEstimated,
+    status
+  });
+  state.namedAreas[idx] = normalizeOfflineArea(merged);
+  saveStore();
+  if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
+}
+
+function namedAreaToPrecacheParams(a){
+  if (!a || typeof a !== "object") return null;
+  const n = Number(a.n), s = Number(a.s), e = Number(a.e), w = Number(a.w);
+  const z0 = Number.isFinite(a.z0) ? (a.z0 | 0) : NaN;
+  const z1 = Number.isFinite(a.z1) ? (a.z1 | 0) : NaN;
+  if (![n, s, e, w, z0, z1].every(Number.isFinite) || n <= s || w > e || z0 > z1 || z0 < 2 || z1 > 19) return null;
+  const layerId = sanitizeMapLayer((a.layerId != null && a.layerId !== "") ? String(a.layerId) : "osm");
+  const layer = TILE_LAYERS[layerId];
+  if (layer && layer.cacheable === false) return null;
+  let tot;
+  try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return null; }
+  if (!Number.isFinite(tot) || tot <= 0 || tot > MAX_PRECACHE_TILES) return null;
+  return { n, s, e, w, z0, z1, layerId, tot };
+}
+
+function countPrecacheableNamedAreas(){
+  return (state.namedAreas || []).reduce((n, a) => n + (namedAreaToPrecacheParams(a) ? 1 : 0), 0);
+}
+
+function syncOfflinePrecacheMainButton(){
+  const btnS = document.getElementById("btnPrecacheStart");
+  if (!btnS) return;
+  if (isOfflinePrecacheBusy()){ btnS.disabled = true; return; }
+  btnS.disabled = (countPrecacheableNamedAreas() === 0);
+}
+
+/** B5: ids in createdAt order (oldest first), stable tie-break on id. */
+function buildOldestFirstPrecacheQueueIds(){
+  const areas = (state.namedAreas || []).slice().sort((a, b) => {
+    const ca = Number(a && a.createdAt), cb = Number(b && b.createdAt);
+    if (Number.isFinite(ca) && Number.isFinite(cb) && ca !== cb) return ca - cb;
+    return String(a && a.id || "").localeCompare(String(b && b.id || ""));
+  });
+  const queue = [];
+  for (const a of areas){
+    if (a && namedAreaToPrecacheParams(a)) queue.push(String(a.id));
+  }
+  return queue;
+}
+
+/**
+ * Sequential precache for a list of named-area ids (shared by B5 “all” and B6 selection batch).
+ * opts.useProgressBar: drive #pcBar / #pcProgress (main button path).
+ */
+async function runOfflineAreasPrecacheQueue(queueIds, opts){
+  opts = opts || {};
+  const useBar = !!opts.useProgressBar;
+  if (!window.indexedDB) return;
+  const ids = (queueIds || []).map(String).filter(Boolean);
+  if (!ids.length) return;
+  let bp = state._offlineBatchPrecache;
+  if (!bp || typeof bp !== "object"){
+    bp = state._offlineBatchPrecache = {
+      running: false,
+      queue: [],
+      currentId: null,
+      areaIndex: 0,
+      total: 0,
+      abortRequested: false,
+      startedAt: null
+    };
+  }
+  if (bp.running) return;
+  if (_precacheAbort !== null) return;
+
+  const bar = document.getElementById("pcBar");
+  const prog = document.getElementById("pcProgress");
+  const st = document.getElementById("pcStatus");
+
+  bp.running = true;
+  bp.queue = ids.slice();
+  bp.total = ids.length;
+  bp.areaIndex = 0;
+  bp.abortRequested = false;
+  bp.startedAt = Date.now();
+  bp.currentId = null;
+
+  if (useBar && bar) bar.hidden = false;
+  if (useBar && prog){ prog.max = 100; prog.value = 0; }
+
+  updatePrecacheEstimate();
+  updateOfflineAreasToolbarUI();
+
+  try {
+    for (let i = 0; i < ids.length; i++){
+      if (bp.abortRequested) break;
+      const id = ids[i];
+      const area = (state.namedAreas || []).find(x => x && String(x.id) === id);
+      const params = area && namedAreaToPrecacheParams(area);
+      if (!params) continue;
+      bp.areaIndex = i;
+      bp.currentId = id;
+      const label = (area && area.name) ? area.name : id;
+      if (st) st.textContent = (t("offcache.batchAreaLine") || "Area {0}/{1}: {2}")
+        .replace("{0}", String(i + 1)).replace("{1}", String(ids.length)).replace("{2}", String(label));
+      let lastEv = { done: 0, total: params.tot, err: 0, aborted: false };
+      try {
+        const info = await startPrecacheDownload(Object.assign({}, params, {
+          onProgress(ev){
+            lastEv = { done: ev.done, total: ev.total, err: ev.err, aborted: !!ev.aborted };
+            if (useBar && prog && ev.total) prog.value = Math.min(100, (ev.done / ev.total) * 100);
+          }
+        }));
+        applyPrecacheMetadataToNamedAreaById(id, info || lastEv);
+      } catch (err){
+        if (!(err && err.message === "tooMany")){
+          applyPrecacheMetadataToNamedAreaById(id, Object.assign({}, lastEv, { fatal: true }));
+        }
+      }
+    }
+  } finally {
+    bp.running = false;
+    bp.currentId = null;
+    bp.queue = [];
+    bp.areaIndex = 0;
+    bp.total = 0;
+    bp.startedAt = null;
+    bp.abortRequested = false;
+    if (useBar && bar) bar.hidden = true;
+    updatePrecacheEstimate();
+    updateOfflineAreasToolbarUI();
+    if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+  }
+}
+
+/** B6: sequential precache for table selection (subset). */
+async function startOfflineAreasBatchPrecache(){
+  if (!window.indexedDB) return;
+  if (state._offlineBatchPrecache && state._offlineBatchPrecache.running) return;
+  if (_precacheAbort !== null) return;
+  const sel = Array.isArray(state._offlineAreasSelectedIds) ? state._offlineAreasSelectedIds.map(String) : [];
+  if (!sel.length) return;
+
+  const queue = [];
+  for (const id of sel){
+    const ar = (state.namedAreas || []).find(x => x && String(x.id) === id);
+    if (ar && namedAreaToPrecacheParams(ar)) queue.push(id);
+  }
+  if (!queue.length){
+    updateOfflineAreasToolbarUI();
+    return;
+  }
+  await runOfflineAreasPrecacheQueue(queue, { useProgressBar: false });
+}
+
 function uidNamed(){
   return "na" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
@@ -16427,6 +16813,7 @@ function saveNamedArea(name){
   // Refresh the coverage overlay immediately so the new rectangle shows up.
   const _tm = document.querySelector("#miniMap .tile-map");
   if (_tm) drawCoverageOverlay(_tm);
+  state._offlineUnsavedBboxDraft = false;
 }
 
 /** Delete a named area by id (with confirm). */
@@ -16521,7 +16908,10 @@ function drawBboxOverlay(tileMap){
   overlay.style.height = Math.max(4, h) + "px";
   const rLbl = esc(t("offcache.bboxResizeAria") || "Resize area");
   const xLbl = esc(t("offcache.bboxRemoveAria") || "Remove offline area");
+  const mLbl = esc(t("offcache.bboxMoveAria") || "Sposta area");
+  const mTip = esc(t("tip.bboxMove") || "");
   overlay.innerHTML = `
+    <div class="bbox-move" data-bbox-move="1" aria-label="${mLbl}"${mTip ? ` title="${mTip}"` : ""}></div>
     <div class="bbox-handle h-nw" data-handle="nw" aria-label="${rLbl}"></div>
     <div class="bbox-handle h-ne" data-handle="ne" aria-label="${rLbl}"></div>
     <div class="bbox-handle h-sw" data-handle="sw" aria-label="${rLbl}"></div>
@@ -16530,17 +16920,17 @@ function drawBboxOverlay(tileMap){
   `;
   tileLayer.appendChild(overlay);
 
-  // Remove button
   overlay.querySelector(".bbox-remove").addEventListener("click", (ev) => {
     ev.stopPropagation();
     ev.preventDefault();
     clearBboxSelection();
   });
 
-  // Resize handles
   overlay.querySelectorAll(".bbox-handle").forEach(h => {
     attachResizeHandle(h, overlay, tileMap, root);
   });
+  const mv = overlay.querySelector(".bbox-move");
+  if (mv) attachBboxMove(mv, overlay, tileMap, root);
 }
 
 /**
@@ -16732,6 +17122,53 @@ function attachResizeHandle(handle, overlay, tileMap, root){
 
   handle.addEventListener("mousedown", onDown);
   handle.addEventListener("touchstart", onDown, { passive: false });
+}
+
+/** B3: drag-move entire bbox (same size), interior hit target. */
+function attachBboxMove(moveEl, overlay, tileMap, root){
+  function onDown(ev){
+    if (ev.button !== undefined && ev.button !== 0) return;
+    ev.stopPropagation();
+    ev.preventDefault();
+    const b0 = Object.assign({}, state.bboxSelection);
+    if (!b0 || !Number.isFinite(b0.n)) return;
+    const midLat = (b0.n + b0.s) / 2;
+    const midLon = (b0.e + b0.w) / 2;
+    const p0 = tileMapLatLonToPx(root, midLat, midLon);
+    const start = { x: ev.touches ? ev.touches[0].clientX : ev.clientX,
+                    y: ev.touches ? ev.touches[0].clientY : ev.clientY };
+
+    function onMove(ev2){
+      ev2.preventDefault();
+      const cx = ev2.touches ? ev2.touches[0].clientX : ev2.clientX;
+      const cy = ev2.touches ? ev2.touches[0].clientY : ev2.clientY;
+      const dx = cx - start.x, dy = cy - start.y;
+      const p1 = { x: p0.x + dx, y: p0.y + dy };
+      const ll1 = tileMapPxToLatLon(root, p1.x, p1.y);
+      const dlat = ll1.lat - midLat, dlon = ll1.lon - midLon;
+      state.bboxSelection = {
+        n: b0.n + dlat, s: b0.s + dlat,
+        e: b0.e + dlon, w: b0.w + dlon
+      };
+      writeBboxFields(state.bboxSelection);
+      drawBboxOverlay(tileMap);
+    }
+
+    function onUp(){
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("touchmove", onMove);
+      window.removeEventListener("touchend", onUp);
+    }
+
+    window.addEventListener("mousemove", onMove, { passive: false });
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("touchend", onUp);
+  }
+
+  moveEl.addEventListener("mousedown", onDown);
+  moveEl.addEventListener("touchstart", onDown, { passive: false });
 }
 
 /* ============== TRACK BUILDER (multi-point track) ==============
@@ -17014,6 +17451,8 @@ function loadNamedAreaIntoPrecacheFieldsById(id){
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
   refreshTileMapForOfflineBboxUi();
+  syncPcBboxEditorSectionFromState();
+  state._offlineUnsavedBboxDraft = false;
 }
 
 /** O2: render the saved offline areas list inside #offlineTilePanel. */
@@ -17127,8 +17566,9 @@ function renderOfflineAreasList(){
     const when = tsOf(a);
     const whenTxt = when ? formatSavedTrackWhen(when) : "—";
     const sel = selectedSet.has(String(a.id));
+    const rowComplete = (st === "complete") ? " offa-row--complete" : "";
 
-    html += `<tr data-offa-row data-id="${esc(a.id)}" class="${sel ? "is-selected" : ""}">
+    html += `<tr data-offa-row data-id="${esc(a.id)}" class="${sel ? "is-selected" : ""}${rowComplete}">
       <td><input type="checkbox" data-offa-sel="${esc(a.id)}" data-i18n-tip="offcache.row.selTip" data-tip="${esc(t("offcache.row.selTip"))}" data-i18n-aria="offcache.row.selTip" ${sel ? "checked" : ""}></td>
       <td><input type="checkbox" data-offa-vis="${esc(a.id)}" data-i18n-tip="offcache.row.visTip" data-tip="${esc(t("offcache.row.visTip"))}" data-i18n-aria="offcache.row.visTip" ${vis ? "checked" : ""}></td>
       <td><span class="offa-name">${esc(a.name || "—")}</span></td>
@@ -17186,6 +17626,7 @@ function ensureOfflineAreasListDelegation(){
     const btnDel  = document.getElementById("btnOfflineAreasDeleteSel");
     const btnUse  = document.getElementById("btnOfflineAreasUseOne");
     const btnFit  = document.getElementById("btnOfflineAreasFitOne");
+    const btnPrecacheSel = document.getElementById("btnOfflineAreasPrecacheSel");
 
     const applyVis = (vis) => {
       const ids = new Set(selectedIds());
@@ -17226,6 +17667,10 @@ function ensureOfflineAreasListDelegation(){
       ev.preventDefault();
       const ids = selectedIds();
       if (ids.length === 1) flyMiniMapToOfflineNamedAreaById(ids[0]);
+    });
+    if (btnPrecacheSel) btnPrecacheSel.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      void startOfflineAreasBatchPrecache();
     });
   }
 
@@ -17341,15 +17786,18 @@ function updateOfflineAreasToolbarUI(){
   const btnDel  = document.getElementById("btnOfflineAreasDeleteSel");
   const btnUse  = document.getElementById("btnOfflineAreasUseOne");
   const btnFit  = document.getElementById("btnOfflineAreasFitOne");
+  const btnPrecacheSel = document.getElementById("btnOfflineAreasPrecacheSel");
   const n = Array.isArray(state._offlineAreasSelectedIds) ? state._offlineAreasSelectedIds.length : 0;
   if (cntEl) cntEl.textContent = String(n);
   const any = n > 0;
   const one = n === 1;
+  const busy = typeof isOfflinePrecacheBusy === "function" && isOfflinePrecacheBusy();
   if (btnShow) btnShow.disabled = !any;
   if (btnHide) btnHide.disabled = !any;
   if (btnDel)  btnDel.disabled  = !any;
   if (btnUse)  btnUse.disabled  = !one;
   if (btnFit)  btnFit.disabled  = !one;
+  if (btnPrecacheSel) btnPrecacheSel.disabled = !any || busy;
 }
 
 function renderSavedTracksList(){
@@ -20437,7 +20885,7 @@ function attachPanHandlers(root, lat, lon, zoom){
     // on .tile-map, the bbox draw handlers own the pointer. Also bail out
     // if the user clicked directly on an overlay handle or remove button.
     if (state._bboxSelecting) return;
-    if (ev.target.closest(".bbox-handle, .bbox-remove")) return;
+    if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
     const pt = getPt(ev);
     const drag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0, moved: false };
 
@@ -21923,6 +22371,12 @@ function syncHdrChipValue(selectEl){
  * When the state changes, the mini-map is re-rendered so it can swap
  * between OSM tiles and the SVG fallback.
  */
+function syncForceOfflineCheckbox(){
+  const chk = document.getElementById("chkForceOffline");
+  if (!chk) return;
+  chk.checked = !!state.forceOffline;
+}
+
 function updateNetStatus(){
   const el = document.getElementById("netStatus");
   if (!el) return;
@@ -21949,6 +22403,7 @@ function updateNetStatus(){
   if (state.lastPoint){
     renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
   }
+  try { syncForceOfflineCheckbox(); } catch(_){}
 }
 
 function bindUI(){
@@ -22217,23 +22672,14 @@ function bindUI(){
       if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     });
   }
-  // Offline panel: toggle "force offline tiles" button.
-  const btnOffForce = document.getElementById("btnOfflineForceMode");
-  const updateOffForceBtn = () => {
-    if (!btnOffForce) return;
-    const forced = !!state.forceOffline;
-    btnOffForce.setAttribute("data-i18n", forced ? "offcache.forceOnline" : "offcache.forceOffline");
-    btnOffForce.textContent = forced ? (t("offcache.forceOnline") || "Back to online tiles")
-                                     : (t("offcache.forceOffline") || "Show offline tiles on map");
-  };
-  if (btnOffForce){
-    updateOffForceBtn();
-    btnOffForce.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      state.forceOffline = !state.forceOffline;
+  // Offline panel: force-offline simulation (checkbox; state mirrors header badge).
+  const chkOff = document.getElementById("chkForceOffline");
+  if (chkOff){
+    syncForceOfflineCheckbox();
+    chkOff.addEventListener("change", (ev) => {
+      state.forceOffline = !!ev.target.checked;
       saveStore();
       updateNetStatus();
-      updateOffForceBtn();
       if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
       else if (state.viewCenter) renderTileMap(state.viewCenter.lat, state.viewCenter.lon, state.mapZoom || 11);
     });
@@ -22284,7 +22730,15 @@ function bindUI(){
   if (pcPreset) pcPreset.addEventListener("change", applyPrecachePreset);
   ["pcN","pcS","pcE","pcW","pcZ0","pcZ1"].forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.addEventListener("input", () => { const pr = document.getElementById("pcPreset"); if (pr) pr.value = "custom"; updatePrecacheEstimate(); });
+    if (!el) return;
+    const expandFields = () => { setPcBboxFieldsWrapExpanded(true); };
+    el.addEventListener("focus", expandFields);
+    el.addEventListener("input", () => {
+      expandFields();
+      const pr = document.getElementById("pcPreset");
+      if (pr) pr.value = "custom";
+      updatePrecacheEstimate();
+    });
   });
   const btnPc = document.getElementById("btnPrecacheStart");
   if (btnPc) btnPc.addEventListener("click", onPrecacheStart);
@@ -22307,12 +22761,12 @@ function bindUI(){
   if (btnPick) btnPick.addEventListener("click", (ev) => {
     ev.preventDefault();
     if (state._bboxSelecting) cancelBboxSelection();
-    else startBboxSelection();
+    else void startBboxSelection();
   });
   const btnVp = document.getElementById("btnBboxViewport");
   if (btnVp) btnVp.addEventListener("click", (ev) => {
     ev.preventDefault();
-    useCurrentViewport();
+    void useCurrentViewport();
   });
   const btnBClr = document.getElementById("btnBboxClear");
   if (btnBClr) btnBClr.addEventListener("click", (ev) => {
@@ -22359,6 +22813,7 @@ function bindUI(){
         updateOfflineBboxAreaFeedback();
         refreshTileMapForOfflineBboxUi();
       }
+      syncPcBboxEditorSectionFromState();
     });
   });
 
@@ -22366,6 +22821,7 @@ function bindUI(){
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
   updatePrecacheEstimate();
+  try { syncPcBboxEditorSectionFromState(); } catch(_){}
 
   // ---- Tools drawer ----
   const btnTools = document.getElementById("btnTools");
@@ -22703,7 +23159,7 @@ function gisInit(){
   // Layers panel close (GIS floating)
   const lpClose = document.getElementById("layersPanelClose");
   const lp = document.getElementById("layersPanel");
-  const handleLpClose = () => { closeLayersPanel(); };
+  const handleLpClose = () => { void closeLayersPanel(); };
   if (lpClose) lpClose.addEventListener("click", (ev) => { ev.preventDefault(); handleLpClose(); });
   if (lp){
     lp.addEventListener("cancel", (ev) => { ev.preventDefault(); handleLpClose(); });
@@ -22837,7 +23293,7 @@ function gisInit(){
     }
     const lpd = document.getElementById("layersPanel");
     if (state.layersPanelOpen || (lpd && lpd.open)){
-      closeLayersPanel();
+      void closeLayersPanel();
       return;
     }
     const wmd = document.getElementById("waypointModal");
@@ -24462,9 +24918,81 @@ function openLayersPanel(){
   try { trackSyncPickModeUi(); } catch(_){}
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
 }
-function closeLayersPanel(){
+let _offlineDraftResolve = null;
+function ensureOfflineDraftWarnDialogWired(){
+  const d = document.getElementById("offlineDraftWarnDialog");
+  if (!d || d._draftWarnWired) return;
+  d._draftWarnWired = true;
+  const done = (act) => {
+    if (!_offlineDraftResolve) return;
+    const r = _offlineDraftResolve;
+    _offlineDraftResolve = null;
+    try { d.close(); } catch(_){}
+    r(act);
+  };
+  d.addEventListener("cancel", (ev) => { ev.preventDefault(); done("cancel"); });
+  d.querySelector("[data-close-offline-draft]")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("cancel");
+  });
+  document.getElementById("offlineDraftWarnSave")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const nm = document.getElementById("pcAreaName");
+    if (nm){
+      try {
+        requestAnimationFrame(() => {
+          try { nm.focus(); nm.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch(_){}
+        });
+      } catch(_){}
+    }
+    done("save");
+  });
+  document.getElementById("offlineDraftWarnDiscard")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    clearBboxSelection();
+    done("discard");
+  });
+  document.getElementById("offlineDraftWarnCancel")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("cancel");
+  });
+}
+
+function showOfflineDraftWarnDialog(){
+  ensureOfflineDraftWarnDialogWired();
+  const d = document.getElementById("offlineDraftWarnDialog");
+  return new Promise((resolve) => {
+    if (!d || typeof d.showModal !== "function"){
+      if (window.confirm(t("offcache.draftWarnBody"))){
+        clearBboxSelection();
+        resolve("discard");
+      } else {
+        resolve("cancel");
+      }
+      return;
+    }
+    _offlineDraftResolve = resolve;
+    try { d.showModal(); } catch(_){
+      _offlineDraftResolve = null;
+      resolve("cancel");
+    }
+  });
+}
+
+async function closeLayersPanel(){
   const dlg = document.getElementById("layersPanel");
   if (!state.layersPanelOpen && !(dlg && dlg.open)) return;
+  if (state._offlineUnsavedBboxDraft && state.bboxSelection){
+    const r = await showOfflineDraftWarnDialog();
+    if (r === "cancel") return;
+    if (r === "save"){
+      const nm = document.getElementById("pcAreaName");
+      if (nm){
+        try { nm.focus(); nm.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch(_){}
+      }
+      return;
+    }
+  }
   try { gisRestoreSection("offlineTilePanel"); } catch(_){}
   state.layersPanelOpen = false;
   if (dlg){
@@ -24479,7 +25007,7 @@ function closeLayersPanel(){
 }
 function toggleLayersPanel(){
   const dlg = document.getElementById("layersPanel");
-  if (state.layersPanelOpen || (dlg && dlg.open)) closeLayersPanel();
+  if (state.layersPanelOpen || (dlg && dlg.open)) void closeLayersPanel();
   else openLayersPanel();
 }
 
