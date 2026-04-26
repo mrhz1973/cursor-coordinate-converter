@@ -1231,3 +1231,36 @@ La gestione aree offline aveva bisogno di diventare operativa senza introdurre u
 - Parse JS dell'intero `<script>` con `new Function(...)`: OK durante la sessione.
 - QA manuale consigliata: aprire Mappa/Offline, ordinare colonne, selezionare singola/multiple aree, shift-click, select-all, mostra/nascondi, elimina metadata-only, usare/centrare area singola, verificare che refresh azzeri la selezione transient ma conservi metadata/visibilità.
 
+---
+
+## Checkpoint 2026-04-26 — Cursor workspace memoria/editor
+
+### Perché
+
+Il monolite `coordinate_converter Claude.html` (~26k righe, ~1 MB) e file generati grossi (es. `repomix-output.xml`) tendono ad aumentare RAM/CPU dell’editor (tokenizzazione, language service, watcher, search). Serviva una configurazione **solo workspace** per mitigare senza toccare roadmap (single-file, no split, no build).
+
+### Cosa è cambiato
+
+- `Cursor.code-workspace` → `settings` con:
+  - `editor.largeFileOptimizations: true`
+  - `typescript.tsserver.maxTsServerMemory: 2048`
+  - `typescript.disableAutomaticTypeAcquisition: true`
+  - `typescript.suggest.autoImports` / `javascript.suggest.autoImports`: false
+  - Override `[html]`: `editor.quickSuggestions` tutti false, `editor.suggestOnTriggerCharacters: true`, `editor.wordBasedSuggestions: "off"`
+  - `files.watcherExclude` e `search.exclude`: repomix (`*.xml`), backup, `~`, cartelle `backup/` / `backups/`, `.git/objects` e subtree-cache
+  - `files.exclude`: solo `repomix-output*.xml` (tree più leggero)
+- **Non** esclusi `docs/`, `docs/roadmap.md`, `docs/checkpoint.md`, `docs/PROJECT_notes.md`, `docs/session-geolocalizzazione-e-mappa.md`.
+
+### File toccati
+
+- `Cursor.code-workspace`
+
+### Invarianti
+
+- Nessuna modifica al monolite, alle rules, né alla logica applicativa.
+
+### QA
+
+- Riaprire workspace in Cursor e verificare che `repomix-output.xml` non compaia nel file tree se presente in root; cercare in workspace che `docs/*` resti indicizzabile.
+- Monitorare RAM dopo qualche minuto con Process Explorer (confronto prima/dopo orientativo).
+
