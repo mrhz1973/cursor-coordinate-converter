@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>GIS Tool/Converter by Marty</title>
 <style>
+/* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
    DESIGN SYSTEM (Vercel/Linear, glass) — Inter · edit :root here to re-skin UI
    Legacy aliases --bg, --panel, --panel2, --shadow* keep the rest of the sheet working.
@@ -116,7 +117,8 @@
   --gradient-btn:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 100%);
   --gradient-soft:linear-gradient(135deg,rgba(59,130,246,.12) 0%,rgba(139,92,246,.12) 100%);
 }
-
+/* #endregion CSS — DESIGN TOKENS THEMES */
+/* #region CSS — BASE RESET AND TYPOGRAPHY */
 *,*::before,*::after{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
@@ -139,7 +141,8 @@ p{margin:0 0 .4rem}
 a{color:var(--accent); text-decoration:none}
 a:hover{text-decoration:underline}
 code,.mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Roboto Mono",monospace}
-
+/* #endregion CSS — BASE RESET AND TYPOGRAPHY */
+/* #region CSS — LAYOUT HEADER MAIN AND HOME GRID */
 /* ================= LAYOUT ================= */
 header{
   background:var(--panel); border-bottom:1px solid var(--border);
@@ -747,7 +750,8 @@ main{max-width:1400px; margin:0 auto; padding:18px 20px 40px}
 @media (max-width:380px){
   .map-links-panel a{flex:1 1 100%}
 }
-
+/* #endregion CSS — LAYOUT HEADER MAIN AND HOME GRID */
+/* #region CSS — BATCH GEOCODING AND LOCALITY */
 /* --- Offline tile pack (B1/B2): pre-cache UI + visual tile state --- */
 /* Batch mode locality toggle + progress bar (reverse lookup column). */
 .batch-extras{margin:8px 0 6px; display:flex; flex-direction:column; gap:6px; font-size:.82rem}
@@ -946,7 +950,8 @@ html[data-theme="light"] .geo-warn{color:#991b1b}
 .geo-settings .geo-set-row{display:flex; gap:8px; align-items:center; margin-top:6px}
 .geo-settings input[type="url"], .geo-settings input[type="text"]{flex:1 1 auto; font-family:ui-monospace, monospace; font-size:.82rem; padding:4px 8px}
 .geo-settings button{font-size:.82rem}
-
+/* #endregion CSS — BATCH GEOCODING AND LOCALITY */
+/* #region CSS — OFFLINE TILES UI AND MAP MODES */
 .offline-panel-mount{ margin-top:14px }
 .offline-panel-mount[hidden]{ display:none !important }
 .offline-tile-panel{
@@ -1202,7 +1207,8 @@ html[data-theme="dark"] .offline-area-status--error{ color:#f08080; }
   display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;
 }
 .offline-area-card-actions .btn{ padding:4px 9px; font-size:.72rem; }
-
+/* #endregion CSS — OFFLINE TILES UI AND MAP MODES */
+/* #region CSS — MAP TILES BBOX COVERAGE AND MINI MAP */
 /* ============== BBOX SELECTION ON MAP (draw-to-cache area) ==============
  * User flow:
  *   1) Click "Seleziona area sulla mappa" → .tile-map gets .bbox-selecting.
@@ -2294,7 +2300,8 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .mini-map-offline-banner::before{
   content:""; width:6px; height:6px; border-radius:50%; background:#fff;
 }
-
+/* #endregion CSS — MAP TILES BBOX COVERAGE AND MINI MAP */
+/* #region CSS — MAP ENLARGED TOOLTIPS AND CONTROL CHROME */
 /* ========= ENLARGED MAP VIEW (half / full) =========
  * The same #miniMap element is promoted to position:fixed and resized via
  * classes .mm-half (right half of viewport) and .mm-full (whole viewport).
@@ -2656,7 +2663,8 @@ body.mm-enlarged{overflow:hidden}
 }
 @media (max-width:900px){ #results .extra-formats-body{grid-template-columns:1fr} }
 #results .extra-formats:not(.is-open) .extra-formats-body{display:none}
-
+/* #endregion CSS — MAP ENLARGED TOOLTIPS AND CONTROL CHROME */
+/* #region CSS — FORMS TABS BUTTONS RESULTS AND COLLAPSIBLES */
 /* ================= TABS ================= */
 .tabs, .subtabs{
   display:flex; gap:6px; border-bottom:1px solid var(--border);
@@ -2975,7 +2983,8 @@ table.batch-table td.num{
 
 .notes-list li{margin-bottom:6px}
 .notes-list code{background:var(--panel2); padding:1px 4px; border-radius:3px}
-
+/* #endregion CSS — FORMS TABS BUTTONS RESULTS AND COLLAPSIBLES */
+/* #region CSS — FOOTER AND FLOATING BADGE */
 footer{
   max-width:1400px; margin:0 auto; padding:12px 16px 14px;
   color:var(--muted); font-size:.85rem; text-align:center;
@@ -3030,7 +3039,8 @@ footer .sig-sep{margin:0 6px; opacity:.5}
 /* Hide floating badge when an enlarged map covers the screen, and when printing */
 body.mm-enlarged .sig-badge{display:none}
 @media print{ .sig-badge{display:none !important} }
-
+/* #endregion CSS — FOOTER AND FLOATING BADGE */
+/* #region CSS — ABOUT TOOLTIPS AND MODALS */
 /* ========= ABOUT BLOCK inside help modal ========= */
 .about-block{
   background:var(--panel2); border:1px solid var(--border);
@@ -3222,7 +3232,8 @@ html[data-theme="light"] .modal .modal-close:focus-visible{
   box-shadow:0 1px 0 var(--border);
 }
 @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-
+/* #endregion CSS — ABOUT TOOLTIPS AND MODALS */
+/* #region CSS — TOOLS DRAWER TRACK AND WAYPOINT */
 /* ================= TOOLS DRAWER =================
  * Side drawer opened by the "🧰 Strumenti" header button.
  * Lists shortcuts to operational tools (batch, astro, mag, session JSON,
@@ -3597,7 +3608,8 @@ html[data-theme="light"] .tools-drawer-head .drawer-close:focus-visible{
   z-index:50; pointer-events:none;
   white-space:nowrap;
 }
-
+/* #endregion CSS — TOOLS DRAWER TRACK AND WAYPOINT */
+/* #region CSS — TABLES FAVORITES PRINT AND MOBILE POLISH */
 /* ================= SUB-SECTION SEPARATORS inside collapsibles ================= */
 .sub-sep{margin:20px 0 12px; height:1px; background:var(--border); border:none}
 .sub-section-title{font-size:1.05rem; margin-bottom:4px; color:var(--text); font-weight:700}
@@ -3787,7 +3799,8 @@ body.printing-report #printReport:not(:empty){
 .fav-pat{ max-width:120px; padding:6px 8px; border-radius:6px; border:1px solid var(--border); background:var(--panel2); color:var(--text); }
 .favorite-item .fav-notes{ width:100%; min-height:38px; resize:vertical; font-size:.82rem; margin-top:6px; padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); }
 .tile-map.map-pick-mode{ cursor:crosshair; outline:2px dashed var(--accent); outline-offset:2px; }
-
+/* #endregion CSS — TABLES FAVORITES PRINT AND MOBILE POLISH */
+/* #region CSS — PRINT */
 /* ================= PRINT ================= */
 @media print{
   :root,:root[data-theme]{
@@ -3816,7 +3829,8 @@ body.printing-report #printReport:not(:empty){
     border:none; padding:0; box-shadow:none;
   }
 }
-
+/* #endregion CSS — PRINT */
+/* #region CSS — GIS VIEWER PLANNER LAYOUT */
 /* ================= GIS VIEWER / PLANNER LAYOUT =================
  * Active when <body> has class .gis-mode. The map becomes the
  * primary canvas, the classic conversion cards are hidden on the
@@ -4621,6 +4635,8 @@ dialog.track-modal.app-modal{
   box-shadow:0 8px 40px rgba(0,0,0,.45), var(--shadow-inset-card);
   border-radius:var(--radius-card, 12px);
 }
+/* #endregion CSS — GIS VIEWER PLANNER LAYOUT */
+/* #region CSS — GIS FLOATING PANELS AND DIALOGS */
 /* ================= GIS FLOATING PANEL STANDARD (Phase A) =================
  * Generic classes introduced for incremental adoption across GIS panels.
  * In Phase A they are effectively aliases for the already-stable Track panel.
@@ -4938,6 +4954,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 #layersPanelBody #offlineTilePanel > summary::after{
   content:"" !important;
 }
+/* #endregion CSS — GIS FLOATING PANELS AND DIALOGS */
 </style>
 </head>
 <body>
@@ -6209,14 +6226,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
 <script>
 "use strict";
-// #region JS — SCRIPT PROLOG
+// #region JS — I18N
 /* =====================================================================
    CONVERTITORE COORDINATE — WGS84
    DD / DDM / DMS / UTM / MGRS + paste universale + misura + batch
    Tutto in un file, zero dipendenze, funziona offline (file://).
    ===================================================================== */
-// #endregion JS — SCRIPT PROLOG
-// #region JS — I18N
 /* ========================= SECTION 1: I18N ========================= */
 const I18N = {
   it: {
@@ -8936,7 +8951,7 @@ const MGRS_ROW_EVEN = "FGHJKLMNPQRSTUVABCDE";
 // Latitude bands (no I, no O); X is 12° tall from 72°N to 84°N
 const LAT_BANDS = "CDEFGHJKLMNPQRSTUVWX"; // 20 letters starting at -80°
 // #endregion JS — CONSTANTS
-// #region JS — STATE STORE AND LOCAL STORAGE
+// #region JS — STATE AND STORAGE
 /* ========================= SECTION 3: STATE ========================= */
 const GIS_TRACK_CAP = 50;
 const GIS_POLYGON_CAP = 50;
@@ -9638,8 +9653,8 @@ const parseFloatStrict = (s) => {
   if (!/^-?\d+(\.\d+)?$/.test(t)) return NaN;
   return parseFloat(t);
 };
-// #endregion JS — STATE STORE AND LOCAL STORAGE
-// #region JS — PARSERS VALIDATORS COORD MATH
+// #endregion JS — STATE AND STORAGE
+// #region JS — VALIDATORS AND PARSERS
 /* ========================= SECTION 4: VALIDATORS ========================= */
 function validateLatLon(lat, lon){
   if (!Number.isFinite(lat) || lat < -90 || lat > 90)  throw new ErrI18n("err.latRange");
@@ -14011,8 +14026,8 @@ function autoDetect(input){
   catch(_){}
   throw new ErrI18n("err.notRecognized");
 }
-// #endregion JS — PARSERS VALIDATORS COORD MATH
-// #region JS — RENDERING CORE
+// #endregion JS — VALIDATORS AND PARSERS
+// #region JS — TILE MAP INDEXEDDB OFFLINE CACHE AND BBOX
 /* ========================= SECTION 16: RENDERING ========================= */
 function el(tag, cls, html){
   const e = document.createElement(tag);
@@ -15582,8 +15597,6 @@ function refreshCoordCycleMapUi(){
     btn.setAttribute("data-tip", tip + (stamp === "a" ? "\u200d" : "\u200c"));
   });
 }
-// #endregion JS — RENDERING CORE
-// #region JS — OFFLINE TILES INDEXEDDB
 /* ============== B1/B2: IndexedDB tile pack + map hydration ============== */
 const TILE_IDB   = { name: "CoordConvMapTiles", ver: 1, store: "tiles" };
 const MAX_PRECACHE_TILES = 150000;
@@ -15942,8 +15955,6 @@ function applyPrecachePreset(){
   state._offlineUnsavedBboxDraft = true;
   syncPcBboxEditorSectionFromState();
 }
-// #endregion JS — OFFLINE TILES INDEXEDDB
-// #region JS — OFFLINE MAPS BBOX AND NAMED AREAS
 /* ============== BBOX SELECTION ON MAP (helpers) ==============
  *
  * Design notes:
@@ -17179,8 +17190,8 @@ function attachBboxMove(moveEl, overlay, tileMap, root){
   moveEl.addEventListener("mousedown", onDown);
   moveEl.addEventListener("touchstart", onDown, { passive: false });
 }
-// #endregion JS — OFFLINE MAPS BBOX AND NAMED AREAS
-// #region JS — TRACK AND WAYPOINT BUILDER
+// #endregion JS — TILE MAP INDEXEDDB OFFLINE CACHE AND BBOX
+// #region JS — TRACK WAYPOINT GIS LAYERS AND TOOLS
 /* ============== TRACK BUILDER (multi-point track) ==============
  *
  * Data model:
@@ -17953,8 +17964,6 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
 }
-// #endregion JS — TRACK AND WAYPOINT BUILDER
-// #region JS — GIS DATA MODEL
 /* ========================= SECTION 18B: GIS DATA MODEL (Phase 1) =========================
  * Invisible foundation for future GIS layers/features. Waypoints and the legacy
  * track builder remain canonical; these helpers add GeoJSON-native tracks and
@@ -19733,8 +19742,6 @@ function importTrackFile(file){
   reader.onerror = () => setBadge("error", t("err.importFailed") || "Import failed.");
   reader.readAsArrayBuffer(file);
 }
-// #endregion JS — GIS DATA MODEL
-// #region JS — TOOLS DRAWER
 /* ============== TOOLS DRAWER ============== */
 
 function openToolsDrawer(){
@@ -21330,7 +21337,7 @@ function clearForm(){
   try { history.replaceState(null, "", location.pathname + location.search); } catch(_){}
   initMiniMapOnStartup();
 }
-// #endregion JS — TOOLS DRAWER
+// #endregion JS — TRACK WAYPOINT GIS LAYERS AND TOOLS
 // #region JS — CLIPBOARD HISTORY FAVORITES BATCH
 /* ========================= SECTION 17: COPY / CLIPBOARD ========================= */
 async function copyText(text, btn){
@@ -22037,7 +22044,7 @@ function batchCsv(){
   copyText(lines.join("\n"), document.getElementById("btnBatchCsv"));
 }
 // #endregion JS — CLIPBOARD HISTORY FAVORITES BATCH
-// #region JS — MEASURE VALIDATION AND CONVERT
+// #region JS — MEASURE VALIDATION CONVERT AND PASTE
 /* ========================= SECTION 20: MEASURE ========================= */
 function doMeasure(){
   const t1 = document.getElementById("meas-p1").value;
@@ -22219,8 +22226,8 @@ function doPasteDetect(){
     setBadge("ERR", state.lang === "en" ? "Not recognized" : state.lang === "fr" ? "Non reconnu" : "Non riconosciuto");
   }
 }
-// #endregion JS — MEASURE VALIDATION AND CONVERT
-// #region JS — UI WIRING
+// #endregion JS — MEASURE VALIDATION CONVERT AND PASTE
+// #region JS — UI BINDINGS AND GIS HUB
 /* ========================= SECTION 23: UI WIRING ========================= */
 function applyLanguage(lang){
   state.lang = lang;
@@ -22940,8 +22947,6 @@ function bindUI(){
     document.addEventListener("mousedown", basemapMenuOutsideClose, true);
   }
 }
-// #endregion JS — UI WIRING
-// #region JS — GIS HUB
 /* ========================= SECTION 23B: GIS HUB =========================
  * The GIS Hub layer implements the GIS viewer/planner pivot:
  *   - a topbar with tab buttons that reparent target <details> sections
@@ -25625,7 +25630,7 @@ function gisNavigateToolTarget(targetId, i18nKey){
   }
   return false;
 }
-// #endregion JS — GIS HUB
+// #endregion JS — UI BINDINGS AND GIS HUB
 // #region JS — INIT AND SELF CHECK
 /* ========================= SECTION 24: INIT ========================= */
 function init(){
