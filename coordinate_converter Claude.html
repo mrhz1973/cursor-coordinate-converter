@@ -9564,6 +9564,7 @@ function fmtMils(deg){ return Math.round(degToMils(deg)).toString(); }
 // after the upgrade. This avoids migrating a data shape that no longer
 // reflects the current feature surface.
 const STORAGE_KEY = "coordconv_v2";
+const UI_STORAGE_KEY = "coordconv_ui_v1";
 function loadStore(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -9640,6 +9641,133 @@ function saveStore(){
 }
 function clearStore(){
   try { localStorage.removeItem(STORAGE_KEY); } catch(_){}
+  try { localStorage.removeItem(UI_STORAGE_KEY); } catch(_){}
+}
+
+const UI_PANEL_KEYS = Object.freeze(["track","waypoint","convert","search","favorites","layers"]);
+let _uiSaveDebounceTimer = null;
+
+function _uiPanelLayoutOptsForKey(key){
+  try {
+    if (key === "track"    && typeof _trackPanelLayoutOpts === "function") return _trackPanelLayoutOpts();
+    if (key === "waypoint" && typeof _waypointPanelLayoutOpts === "function") return _waypointPanelLayoutOpts();
+    if (key === "convert"  && typeof _convertPanelLayoutOpts === "function") return _convertPanelLayoutOpts();
+    if (key === "search"   && typeof _searchPanelLayoutOpts === "function") return _searchPanelLayoutOpts();
+    if (key === "favorites"&& typeof _favoritesPanelLayoutOpts === "function") return _favoritesPanelLayoutOpts();
+    if (key === "layers"   && typeof _layersPanelLayoutOpts === "function") return _layersPanelLayoutOpts();
+  } catch(_){}
+  return { key };
+}
+
+function captureUiState(){
+  const src = (typeof gPanelLayouts === "object" && gPanelLayouts) ? gPanelLayouts : null;
+  const panels = {};
+  if (src){
+    for (const k of UI_PANEL_KEYS){
+      const cur = src[k];
+      if (!cur || typeof cur !== "object") continue;
+      panels[k] = {
+        left: cur.left,
+        top: cur.top,
+        w: cur.w,
+        h: cur.h,
+        touched: !!cur.touched
+      };
+    }
+  }
+  return { uiVersion: 1, panels };
+}
+
+function sanitizeUiState(raw){
+  if (!raw || typeof raw !== "object") return { uiVersion: 1, panels: {} };
+  const uiVersion = (raw.uiVersion === 1) ? 1 : 1;
+  const out = { uiVersion, panels: {} };
+  const inp = raw.panels && typeof raw.panels === "object" ? raw.panels : null;
+  if (!inp) return out;
+  for (const k of UI_PANEL_KEYS){
+    const v = inp[k];
+    if (!v || typeof v !== "object") continue;
+    const rect0 = {
+      left: Number.isFinite(v.left) ? v.left : NaN,
+      top:  Number.isFinite(v.top)  ? v.top  : NaN,
+      w:    Number.isFinite(v.w)    ? v.w    : NaN,
+      h:    Number.isFinite(v.h)    ? v.h    : NaN
+    };
+    const touched = !!v.touched;
+    // Clamp to current viewport using existing panel clamp logic.
+    let rect = null;
+    try {
+      if (typeof gisPanelClampRect === "function"){
+        const opts = _uiPanelLayoutOptsForKey(k) || { key: k };
+        rect = gisPanelClampRect(rect0, opts);
+      }
+    } catch(_){}
+    if (!rect){
+      rect = rect0;
+    }
+    const clean = {};
+    if (Number.isFinite(rect.left)) clean.left = rect.left;
+    if (Number.isFinite(rect.top))  clean.top  = rect.top;
+    if (Number.isFinite(rect.w))    clean.w    = rect.w;
+    if (Number.isFinite(rect.h))    clean.h    = rect.h;
+    clean.touched = touched;
+    out.panels[k] = clean;
+  }
+  return out;
+}
+
+function loadUiState(){
+  try {
+    const raw = localStorage.getItem(UI_STORAGE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    return sanitizeUiState(data);
+  } catch(_){ return null; }
+}
+
+function saveUiState(){
+  try {
+    const payload = captureUiState();
+    localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(payload));
+  } catch(_){}
+}
+
+function scheduleSaveUiState(delayMs){
+  const ms = Number.isFinite(delayMs) ? Math.max(0, delayMs) : 260;
+  try { if (_uiSaveDebounceTimer) clearTimeout(_uiSaveDebounceTimer); } catch(_){}
+  _uiSaveDebounceTimer = setTimeout(() => {
+    _uiSaveDebounceTimer = null;
+    saveUiState();
+  }, ms);
+}
+
+function applyUiState(){
+  const ui = loadUiState();
+  if (!ui || !ui.panels) return;
+  if (typeof gPanelLayouts !== "object" || !gPanelLayouts) return;
+  for (const k of UI_PANEL_KEYS){
+    const v = ui.panels[k];
+    if (!v || typeof v !== "object") continue;
+    gPanelLayouts[k] = Object.assign({}, gPanelLayouts[k] || {}, v);
+  }
+  // If any panel is already open, immediately apply the restored layout
+  // without changing open/close state.
+  try {
+    const map = {
+      track: "trackModal",
+      waypoint: "waypointModal",
+      convert: "convertModal",
+      search: "searchPanel",
+      favorites: "favoritesPanel",
+      layers: "layersPanel"
+    };
+    for (const [k, id] of Object.entries(map)){
+      const el = document.getElementById(id);
+      if (!el || !el.open) continue;
+      const opts = _uiPanelLayoutOptsForKey(k);
+      if (typeof gisPanelApplyLayout === "function") gisPanelApplyLayout(el, opts);
+    }
+  } catch(_){}
 }
 
 const DEG = Math.PI/180, RAD = 180/Math.PI;
@@ -23718,6 +23846,7 @@ function gisPanelAttachDrag(root, opts){
     if (!down || ev.pointerId !== down.pid) return;
     try { head.classList.remove(opts.draggingClass || "dragging"); } catch(_){}
     try { if (head.releasePointerCapture) head.releasePointerCapture(ev.pointerId); } catch(_){}
+    try { if (moved && typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
     clean();
     down = null;
     moved = false;
@@ -23814,6 +23943,7 @@ function gisPanelAttachResize(root, opts){
   function onUp(ev){
     if (!down || ev.pointerId !== down.pid) return;
     try { if (down.handleEl && down.handleEl.releasePointerCapture) down.handleEl.releasePointerCapture(ev.pointerId); } catch(_){}
+    try { if (moved && typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
     clean();
     down = null;
     moved = false;
@@ -25828,6 +25958,7 @@ function init(){
   // happens inside #gisMapMount (post-reparent), and AFTER applyLanguage
   // so drawer/modal labels already have their translations.
   gisInit();
+  applyUiState();
 
   // Mini-mappa subito (La Spezia) se nessun punto da permalink/converti
   initMiniMapOnStartup();

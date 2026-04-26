@@ -1264,3 +1264,45 @@ Il monolite `coordinate_converter Claude.html` (~26k righe, ~1 MB) e file genera
 - Riaprire workspace in Cursor e verificare che `repomix-output.xml` non compaia nel file tree se presente in root; cercare in workspace che `docs/*` resti indicizzabile.
 - Monitorare RAM dopo qualche minuto con Process Explorer (confronto prima/dopo orientativo).
 
+---
+
+## Checkpoint 2026-04-26 — Region markers, persistent UI Fase 1, micro UX
+
+### Perché
+
+Dopo l’ottimizzazione workspace, serviva rendere il monolite più navigabile in editor (folding) e introdurre una persistenza **separata e controllata** solo per il layout dei pannelli GIS floating, senza toccare `coordconv_v2` oltre a `clearStore` coordinato, senza IndexedDB tile e senza salvare stato modale o coordinate.
+
+### Cosa è cambiato
+
+1. **Region markers (solo commenti)**
+   - **CSS** in `<style>`: 15 coppie `/* #region CSS — … */` / `/* #endregion CSS — … */` allineate a blocchi esistenti (tokens, layout, mappe, GIS, modali, ecc.).
+   - **JavaScript** in `<script>`: macro-regioni `// #region JS — …` consolidate (11 coppie), es. `TILE MAP INDEXEDDB OFFLINE CACHE AND BBOX`, `TRACK WAYPOINT GIS LAYERS AND TOOLS`, `UI BINDINGS AND GIS HUB`, ecc.
+
+2. **Persistent UI — Fase 1 (solo geometria pannelli)**
+   - Nuova chiave **`coordconv_ui_v1`** in `localStorage` con `{ uiVersion: 1, panels: { … } }`.
+   - Whitelist chiavi pannello: `track`, `waypoint`, `convert`, `search`, `favorites`, `layers`; campi per pannello: `left`, `top`, `w`, `h`, `touched`.
+   - Funzioni: `captureUiState`, `sanitizeUiState` (numeri finiti + clamp via `gisPanelClampRect` + opts per pannello), `loadUiState`, `saveUiState`, `applyUiState`, `scheduleSaveUiState` (debounce ~260 ms).
+   - Salvataggio invocato **solo a fine drag/resize** se il gesture ha effettivamente mosso (`moved`), non per-pixel.
+   - `applyUiState()` dopo `gisInit()` in `init()`; per ogni dialog già `open`, `gisPanelApplyLayout` se esiste.
+   - `clearStore()` rimuove anche `coordconv_ui_v1`.
+
+3. **Micro UX**
+   - Tooltip `tip.offlineHints` (IT/EN/FR) chiarito: tile live vs tile già in cache offline.
+   - CSS `.bbox-move`: area di trascinamento intero rettangolo (`inset:0`) così i bbox piccoli restano trascinabili; handle e × restano sopra per hit-test.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun nuovo store reattivo; nessun cambio a schema IndexedDB tile, download offline, parser, export/import, geocoding, CRS/datum.
+- Fase 1 **non** persiste apertura/chiusura pannelli, `mapView`, GPS, `lastPoint` / `viewCenter`.
+
+### QA
+
+- Lint su monolite: OK in sessione.
+- QA manuale consigliata: trascina/resize un pannello GIS → reload → riapri pannello e verifica posizione/dimensione clampata; `clearStore` / clear dati app → verifica sparizione `coordconv_ui_v1`; folding regioni in Cursor.
+
