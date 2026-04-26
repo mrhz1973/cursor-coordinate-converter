@@ -1414,3 +1414,38 @@ Evitare archivi di “tracce” con 0 o 1 punto (non geometricamente una linea) 
 - 0/1 punto: pulsante archivio, Salva da prompt completamento, Salva e nuova → messaggio visibile, nessuna riga nuova in archivio.
 - ≥2 punti: salvataggio come prima; avviso scompare passando a ≥2 punti o dopo salvataggio ok.
 
+---
+
+## Checkpoint 2026-04-26 — Fase 3A Convert modal (chiusura patch)
+
+### Perché
+
+Dopo un crash di sessione restava una patch parziale sull’uniformazione grafica della sola modal **Converti**; la verifica richiedeva **completare**, non revertire: scope CSS più stretto, una sola fonte per il footer opzioni, rimozione regole morte.
+
+### Cosa è cambiato
+
+1. **CSS scoped al Convertitore**
+   - Blocco dedicato su `#convertModal` / `#convertModalBody` (variabili locali, header, close discreto non “destructive”, body padding, card per paste/manual/results, tipografia campi, mono su `#results`).
+   - `.convert-cm-footer-options` e `.convert-cm-footer-options .persist-toggle` definiti **solo** come `#convertModalBody .results-col …` (niente regole globali su `.results-col` che colpissero la home o altre viste).
+
+2. **`.gis-coord`**
+   - Rimosso il selettore CSS senza uso in markup né rendering JS in questo turno (nessuna aggiunta dinamica della classe).
+
+3. **Markup risultati (Convert)**
+   - Riordino leggero: riga azioni principali + blocco footer opzioni coerente con gli stili scoped.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a JavaScript operativo (conversione, parser, geocoding, OPSEC), IndexedDB tile offline, waypoint manager, track builder, misura, mapView, altre modal, Theme-1, `coordconv_ui_v1`.
+
+### QA
+
+- Lint editor sul monolite: OK in sessione.
+- Manuale: aprire **Converti** in GIS → incolla/converti → verificare layout risultati, toggle persistenza nel footer, assenza di regressioni sulla `.results-col` fuori dalla modal (home nascosta / altri flussi).
+

@@ -4377,13 +4377,229 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   border:2px solid transparent;
   background-clip:padding-box;
 }
-/* Classic conversion cards inside the Convert modal keep their
- * existing visual style — these overrides strip away duplicate
- * outer padding from being nested inside the modal body. */
-#convertModalBody #hdrPrimaryWrap{ margin:0 0 14px; max-width:100%; }
-#convertModalBody > .paste-section{ margin:0 0 12px; }
-#convertModalBody > .input-col{ margin:0 0 12px; }
-#convertModalBody > .results-col{ margin:0; }
+/* ---------- Convert modal — GIS shell (Phase 3 block 1) ----------
+ * Scoped to #convertModal / #convertModalBody only; other modals
+ * keep global .app-modal-close styling. */
+#convertModal.convert-modal{
+  --gis-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  --gis-r-sm: 8px;
+  --gis-r-md: var(--radius-control, 10px);
+  --gis-r-lg: var(--radius-card, 14px);
+  --gis-space-1: 4px;
+  --gis-space-2: 8px;
+  --gis-space-3: 12px;
+  --gis-space-4: 16px;
+  --gis-space-5: 20px;
+  --gis-ease: 0.15s ease;
+}
+#convertModal .app-modal-head{
+  padding: var(--gis-space-3) var(--gis-space-3) var(--gis-space-3) var(--gis-space-5);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  gap: var(--gis-space-2);
+}
+#convertModal .app-modal-title{
+  font-size: clamp(1rem, 2.4vw, 1.12rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+}
+/* Close: discrete neutral control (no destructive red in this modal). */
+#convertModal .app-modal-close{
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--gis-r-md);
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--panel2) 92%, transparent);
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: none;
+  background-image: none;
+  margin: 0 2px 0 0;
+  transition: background var(--gis-ease), border-color var(--gis-ease), color var(--gis-ease);
+}
+#convertModal .app-modal-close:hover,
+#convertModal .app-modal-close:focus-visible{
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  transform: none;
+  font-size: 17px;
+  box-shadow: var(--ring-focus);
+}
+#convertModal .app-modal-close:focus-visible{
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+}
+html[data-theme="light"] #convertModal .app-modal-close{
+  background: color-mix(in srgb, var(--surface-field, var(--panel)) 90%, var(--panel));
+  color: var(--muted);
+  border-color: var(--border-strong);
+}
+html[data-theme="light"] #convertModal .app-modal-close:hover,
+html[data-theme="light"] #convertModal .app-modal-close:focus-visible{
+  color: var(--text-primary);
+}
+#convertModal .app-modal-body{
+  padding: var(--gis-space-4) var(--gis-space-5) var(--gis-space-5);
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+/* Nesting: strip duplicate outer gaps; add unified card rhythm. */
+#convertModalBody #hdrPrimaryWrap{
+  margin: 0 0 var(--gis-space-4);
+  max-width: 100%;
+}
+#convertModalBody > .paste-section,
+#convertModalBody > .input-col{
+  margin: 0 0 var(--gis-space-3);
+  padding: var(--gis-space-5) var(--gis-space-5) var(--gis-space-5) calc(var(--gis-space-5) + 2px);
+  border-radius: var(--gis-r-lg);
+}
+#convertModalBody > .results-col{
+  margin: 0;
+  padding: var(--gis-space-5) var(--gis-space-5);
+  border-radius: var(--gis-r-lg);
+}
+#convertModalBody label.title{
+  font-size: 1.06rem;
+  font-weight: 700;
+  margin-bottom: var(--gis-space-2);
+  line-height: 1.3;
+}
+#convertModalBody .paste-section .hint,
+#convertModalBody .input-hint,
+#convertModalBody .manual-input-details > summary .mid-hint{
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+#convertModalBody .paste-row textarea{
+  border-radius: var(--gis-r-md);
+  min-height: 120px;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+#convertModalBody .field-group input:not([type="checkbox"]):not([type="radio"]),
+#convertModalBody .field-group select,
+#convertModalBody .field-group textarea,
+#convertModalBody #geoInput,
+#convertModalBody .geo-country{
+  border-radius: var(--gis-r-md);
+  min-height: 40px;
+  border-color: color-mix(in srgb, var(--border) 92%, var(--border-glow, var(--border)) 8%);
+  font-size: 0.92rem;
+}
+#convertModalBody .field-group input:focus-visible,
+#convertModalBody .field-group select:focus-visible,
+#convertModalBody .field-group textarea:focus-visible,
+#convertModalBody #geoInput:focus-visible,
+#convertModalBody .geo-country:focus-visible,
+#convertModalBody .paste-row textarea:focus-visible{
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+#convertModalBody #pasteDetect.btn-primary{
+  min-height: 44px;
+  padding-inline: var(--gis-space-4);
+  font-weight: 700;
+}
+#convertModalBody #btnMyLocation.geo-nav-btn{
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-weight: 600;
+  min-height: 40px;
+}
+#convertModalBody #btnMyLocation.geo-nav-btn:hover:not(:disabled),
+#convertModalBody #btnMyLocation.geo-nav-btn:focus-visible:not(:disabled){
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent-soft) 38%, transparent);
+}
+#convertModalBody #btnConvert.btn-primary{
+  min-height: 44px;
+  padding-inline: var(--gis-space-4);
+  font-weight: 700;
+}
+#convertModalBody #btnClear.btn{
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-weight: 600;
+  min-height: 40px;
+  padding-inline: var(--gis-space-4);
+}
+#convertModalBody #btnClear.btn:hover,
+#convertModalBody #btnClear.btn:focus-visible{
+  border-color: var(--accent);
+  color: var(--accent);
+}
+#convertModalBody .results-col .results-head-main h2{
+  font-size: clamp(1.05rem, 2.2vw, 1.35rem);
+  line-height: 1.25;
+}
+#convertModalBody .locality-row{
+  font-size: 0.88rem;
+}
+#convertModalBody #results .result-body,
+#convertModalBody #results code,
+#convertModalBody #results .mono{
+  font-family: var(--gis-font-mono);
+}
+#convertModalBody .results-col .convert-cm-actions-row{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gis-space-2);
+  margin-top: var(--gis-space-3);
+}
+#convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary){
+  background: color-mix(in srgb, var(--panel2) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 600;
+  box-shadow: none;
+}
+#convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary):hover,
+#convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary):focus-visible{
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
+}
+#convertModalBody .results-col .convert-cm-footer-options{
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: var(--gis-space-3);
+  padding-top: var(--gis-space-2);
+  border-top: 1px solid color-mix(in srgb, var(--border) 72%, transparent);
+  gap: var(--gis-space-2);
+}
+#convertModalBody .results-col .convert-cm-footer-options .persist-toggle{
+  margin-left: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+#convertModalBody .geocode-card{
+  border-radius: var(--gis-r-lg);
+}
+#convertModalBody .geocode-card > summary{
+  border-radius: var(--gis-r-md);
+}
+#convertModalBody .geo-warn{
+  border-radius: var(--gis-r-sm);
+  padding: var(--gis-space-3);
+  font-size: 0.84rem;
+  line-height: 1.45;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, var(--warn, #f59e0b) 20%);
+  background: color-mix(in srgb, var(--panel2) 88%, transparent);
+}
+#convertModalBody .error-box{
+  border-radius: var(--gis-r-md);
+  padding: var(--gis-space-3);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
 
 /* Waypoint manager (sec-waypoints + #waypointModal). Uses existing
  * glass tokens; no new variables. Kept close to the app-modal block
@@ -5298,7 +5514,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         </div>
         <div id="results"><p style="color:var(--muted); font-size:.88rem" data-i18n="res.empty">Inserisci una coordinata e premi Converti.</p></div>
         <div id="gpsMetadata" class="gps-metadata" hidden></div>
-        <div class="actions">
+        <div class="actions convert-cm-actions-row">
           <button id="btnCopyAll" class="btn btn-sm" data-i18n="btn.copyAll" data-i18n-tip="tip.copyAll">Copia tutto</button>
           <button id="btnCopyLink" class="btn btn-sm" data-i18n="btn.copyLink" data-i18n-tip="tip.copyLink">Copia link</button>
           <button id="btnQr" class="btn btn-sm" data-i18n="btn.qr" data-i18n-tip="tip.qr">QR</button>
@@ -5308,7 +5524,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button id="btnExportKmz" class="btn btn-sm" data-i18n="export.kmz" data-i18n-tip="tip.exportKmz">KMZ</button>
           <button id="btnExportGeoJson" class="btn btn-sm" data-i18n="export.geojson" data-i18n-tip="tip.exportGeoJson">GeoJSON</button>
           <button id="btnExportCsv" class="btn btn-sm" data-i18n="export.csv" data-i18n-tip="tip.exportCsv">CSV</button>
-          <label class="persist-toggle" style="margin-left:auto" data-i18n-tip="tip.exportDatumExtras">
+        </div>
+        <div class="convert-cm-footer-options">
+          <label class="persist-toggle" data-i18n-tip="tip.exportDatumExtras">
             <input type="checkbox" id="exportDatumExtrasToggle">
             <span data-i18n="export.datumExtras">Includi datum extra</span>
           </label>
