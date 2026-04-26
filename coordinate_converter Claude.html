@@ -319,7 +319,7 @@ header::before{
   letter-spacing:.02em;
 }
 
-/* --- Icon-only toolbar buttons (theme, print): segmented group
+/* --- Icon-only toolbar buttons (print): segmented group
  * with a single shared background pill — very Linear/Vercel. */
 .header-ctrls .hdr-iconbar{
   padding:6px; gap:4px;
@@ -350,7 +350,8 @@ header::before{
   display:flex; align-items:center; justify-content:space-between; gap:10px;
   flex-wrap:wrap;
 }
-.header-ctrls .hdr-settings-row-lang{ align-items:stretch; }
+.header-ctrls .hdr-settings-row-lang,
+.header-ctrls .hdr-settings-row-theme{ align-items:stretch; }
 .header-ctrls .hdr-settings-lbl{
   flex:0 0 auto;
   font-size:.8rem; font-weight:700; color:var(--muted);
@@ -361,13 +362,6 @@ header::before{
   padding:0 36px 0 12px;
   flex:1 1 160px;
   min-width:min(220px, 74vw);
-}
-.header-ctrls .hdr-icon-btn-theme-menu{
-  width:52px; height:50px;
-  flex-shrink:0;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:color-mix(in srgb, var(--panel2) 92%, transparent);
 }
 .header-ctrls .hdr-settings-help-btn{
   width:100%;
@@ -415,11 +409,6 @@ header::before{
 .header-ctrls .hdr-icon-btn:focus-visible{
   outline:2px solid var(--accent); outline-offset:2px;
 }
-/* Theme glyph swap: show moon in light mode (click to go dark), sun in dark mode. */
-.header-ctrls .hdr-icon-light{ display:none }
-[data-theme="dark"] .header-ctrls .hdr-icon-dark{ display:none }
-[data-theme="dark"] .header-ctrls .hdr-icon-light{ display:inline }
-
 /* Network status badge: green = online, red = offline. Clickable to force
  * offline mode (useful for testing / when online tiles shouldn't be fetched). */
 .net-status{
@@ -5021,12 +5010,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 </label>
               </div>
               <div class="hdr-settings-row hdr-settings-row-theme">
-                <span class="hdr-settings-lbl" data-i18n="settings.theme">Tema</span>
-                <button id="themeToggle" class="hdr-icon-btn hdr-icon-btn-theme-menu" type="button"
-                        data-i18n-tip="tip.theme" data-i18n-aria="settings.themeAria">
-                  <span class="hdr-icon-glyph hdr-icon-dark" aria-hidden="true">🌙</span>
-          <span class="hdr-icon-glyph hdr-icon-light" aria-hidden="true">☀</span>
-        </button>
+                <span class="hdr-settings-lbl" id="themeSettingsLbl" data-i18n="settings.theme">Tema</span>
+                <label class="hdr-chip hdr-chip-menu" data-i18n-tip="tip.theme">
+                  <span class="hdr-chip-ico" aria-hidden="true">◐</span>
+                  <select id="themeSelect" class="hdr-chip-select"
+                          aria-labelledby="themeSettingsLbl">
+                    <option value="light">Chiaro</option>
+                    <option value="dark">Scuro</option>
+                    <option value="auto">Automatico</option>
+                  </select>
+                  <span class="hdr-chip-chev" aria-hidden="true">▾</span>
+                </label>
               </div>
               <div class="hdr-settings-row hdr-settings-row-help">
                 <button id="btnHelp" class="hdr-settings-help-btn" type="button"
@@ -6268,7 +6262,10 @@ const I18N = {
     "settings.title":"Impostazioni",
     "settings.lang":"Lingua",
     "settings.theme":"Tema",
-    "settings.themeAria":"Tema chiaro o scuro",
+    "settings.themeAria":"Chiaro, scuro o automatico (orario locale)",
+    "theme.optLight":"Chiaro",
+    "theme.optDark":"Scuro",
+    "theme.optAuto":"Automatico",
     "tip.headerSettings":"Impostazioni",
     "tip.tools":"Apri il pannello Strumenti (batch, astro, magnetica, note…)",
     "tools.title":"Strumenti",
@@ -6821,9 +6818,7 @@ const I18N = {
     "err.utmNorthRange":"Northing fuori dai limiti plausibili.",
     "tip.primary":"Scegli quale formato evidenziare come risultato primario",
     "tip.lang":"Cambia lingua dell'interfaccia",
-    "tip.theme":"Passa tra tema chiaro e scuro",
-    "tip.themeDark":"Passa al tema scuro",
-    "tip.themeLight":"Passa al tema chiaro",
+    "tip.theme":"Scegli tema chiaro, scuro o automatico in base all’orario locale (07:00–18:59 chiaro).",
     "tip.detect":"Rileva automaticamente il formato e converti (Ctrl+Invio)",
     "tip.convert":"Converti l'input nei formati mostrati a destra",
     "tip.clear":"Svuota tutti i campi e i risultati",
@@ -7155,7 +7150,10 @@ const I18N = {
     "settings.title":"Settings",
     "settings.lang":"Language",
     "settings.theme":"Theme",
-    "settings.themeAria":"Light or dark theme",
+    "settings.themeAria":"Light, dark, or automatic (local time)",
+    "theme.optLight":"Light",
+    "theme.optDark":"Dark",
+    "theme.optAuto":"Automatic",
     "tip.headerSettings":"Settings",
     "tip.tools":"Open the tools panel (batch, astro, magnetic, notes…)",
     "tools.title":"Tools",
@@ -7707,9 +7705,7 @@ const I18N = {
     "err.utmNorthRange":"Northing out of plausible bounds.",
     "tip.primary":"Choose which format to highlight as primary",
     "tip.lang":"Change interface language",
-    "tip.theme":"Switch between light and dark theme",
-    "tip.themeDark":"Switch to dark theme",
-    "tip.themeLight":"Switch to light theme",
+    "tip.theme":"Choose light, dark, or automatic from local time (07:00–18:59 light).",
     "tip.detect":"Auto-detect the format and convert (Ctrl+Enter)",
     "tip.convert":"Convert input to the formats shown on the right",
     "tip.clear":"Clear all fields and results",
@@ -8042,7 +8038,10 @@ const I18N = {
     "settings.title":"Paramètres",
     "settings.lang":"Langue",
     "settings.theme":"Thème",
-    "settings.themeAria":"Thème clair ou sombre",
+    "settings.themeAria":"Clair, sombre ou automatique (heure locale)",
+    "theme.optLight":"Clair",
+    "theme.optDark":"Sombre",
+    "theme.optAuto":"Automatique",
     "tip.headerSettings":"Paramètres",
     "tip.tools":"Ouvrir le panneau Outils (batch, astro, magnétique, notes…)",
     "tools.title":"Outils",
@@ -8594,9 +8593,7 @@ const I18N = {
     "err.utmNorthRange":"Northing hors limites plausibles.",
     "tip.primary":"Choisir le format à mettre en évidence comme principal",
     "tip.lang":"Changer la langue de l'interface",
-    "tip.theme":"Basculer entre thème clair et sombre",
-    "tip.themeDark":"Passer au thème sombre",
-    "tip.themeLight":"Passer au thème clair",
+    "tip.theme":"Choisir clair, sombre ou automatique selon l’heure locale (07:00–18:59 clair).",
     "tip.detect":"Détecter automatiquement le format et convertir (Ctrl+Entrée)",
     "tip.convert":"Convertir l'entrée vers les formats affichés à droite",
     "tip.clear":"Effacer tous les champs et résultats",
@@ -21887,7 +21884,7 @@ function importSessionObject(data){
   const s = data.settings;
   if (s && typeof s === "object"){
     if (["it","en","fr"].includes(s.lang)) state.lang = s.lang;
-    if (["dark","light"].includes(s.theme)) state.theme = s.theme;
+    if (["dark","light","auto"].includes(s.theme)) state.theme = s.theme;
     if (["DD","DDM","DMS","UTM","MGRS"].includes(s.primary)) state.primary = s.primary;
     if (typeof s.batchClosed === "boolean") state.batchClosed = s.batchClosed;
     if (typeof s.forceOffline === "boolean") state.forceOffline = s.forceOffline;
@@ -21928,7 +21925,7 @@ function importSessionObject(data){
   }
   saveStore();
   applyLanguage(state.lang);
-  applyTheme(state.theme);
+  applyThemePreference(state.theme, { save: false });
   document.getElementById("primarySelect").value = state.primary;
   syncHdrChipValue(document.getElementById("primarySelect"));
   document.getElementById("persistToggle").checked = state.persist !== false;
@@ -22357,6 +22354,78 @@ function doPasteDetect(){
 // #endregion JS — MEASURE VALIDATION CONVERT AND PASTE
 // #region JS — UI BINDINGS AND GIS HUB
 /* ========================= SECTION 23: UI WIRING ========================= */
+const THEME_PREFS = ["light", "dark", "auto"];
+let themeAutoIntervalId = null;
+
+function resolveThemeFromLocalClock(now){
+  const d = (now instanceof Date) ? now : new Date();
+  const m = d.getHours() * 60 + d.getMinutes();
+  if (m >= 7 * 60 && m <= 18 * 60 + 59) return "light";
+  return "dark";
+}
+
+function getEffectiveTheme(){
+  if (state.theme === "auto") return resolveThemeFromLocalClock();
+  if (state.theme === "light" || state.theme === "dark") return state.theme;
+  return "dark";
+}
+
+function clearThemeAutoRefresh(){
+  if (themeAutoIntervalId != null){
+    clearInterval(themeAutoIntervalId);
+    themeAutoIntervalId = null;
+  }
+}
+
+function scheduleThemeAutoRefresh(){
+  clearThemeAutoRefresh();
+  if (state.theme !== "auto") return;
+  themeAutoIntervalId = setInterval(function(){
+    syncThemeDomFromState();
+  }, 60000);
+}
+
+function syncThemeDomFromState(){
+  const eff = getEffectiveTheme();
+  document.documentElement.setAttribute("data-theme", eff);
+  const sel = document.getElementById("themeSelect");
+  if (sel && THEME_PREFS.includes(state.theme) && sel.value !== state.theme) sel.value = state.theme;
+}
+
+function syncThemeSelectOptions(){
+  const sel = document.getElementById("themeSelect");
+  if (!sel) return;
+  const oL = sel.querySelector("option[value=\"light\"]");
+  const oD = sel.querySelector("option[value=\"dark\"]");
+  const oA = sel.querySelector("option[value=\"auto\"]");
+  if (oL) oL.textContent = t("theme.optLight");
+  if (oD) oD.textContent = t("theme.optDark");
+  if (oA) oA.textContent = t("theme.optAuto");
+}
+
+function installThemeVisibilityListenerOnce(){
+  if (document.documentElement.dataset.themeVisListen === "1") return;
+  document.documentElement.dataset.themeVisListen = "1";
+  document.addEventListener("visibilitychange", function(){
+    if (!document.hidden) syncThemeDomFromState();
+  }, { passive: true });
+}
+
+function applyThemePreference(pref, opts){
+  opts = opts || {};
+  if (!THEME_PREFS.includes(pref)) return;
+  state.theme = pref;
+  syncThemeDomFromState();
+  const sel = document.getElementById("themeSelect");
+  if (sel) sel.value = pref;
+  scheduleThemeAutoRefresh();
+  if (opts.save !== false) saveStore();
+}
+
+function applyTheme(theme){
+  applyThemePreference(theme, { save: true });
+}
+
 function applyLanguage(lang){
   state.lang = lang;
   document.documentElement.setAttribute("lang", lang);
@@ -22400,10 +22469,7 @@ function applyLanguage(lang){
   if (typeof gisRefreshI18n === "function") gisRefreshI18n();
   if (state.trackModalOpen && typeof renderSavedTracksList === "function") renderSavedTracksList();
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
-  try {
-    const tb = document.getElementById("themeToggle");
-    if (tb) tb.setAttribute("data-tip", t(state.theme === "dark" ? "tip.themeLight" : "tip.themeDark"));
-  } catch(_){}
+  syncThemeSelectOptions();
   saveStore();
 }
 
@@ -22487,17 +22553,6 @@ function renderNotes(){
       <li>${t("notes.k")}</li>
       <li>${t("notes.datumExtra")}</li>
     </ul>`;
-}
-
-function applyTheme(theme){
-  state.theme = theme;
-  document.documentElement.setAttribute("data-theme", theme);
-  // The theme toggle now carries both glyphs (moon + sun) — CSS shows the
-  // one appropriate to the current theme, so no textContent mutation needed.
-  // We update the tooltip so it always announces the next action.
-  const btn = document.getElementById("themeToggle");
-  if (btn) btn.setAttribute("data-tip", t(theme === "dark" ? "tip.themeLight" : "tip.themeDark"));
-  saveStore();
 }
 
 /** Mirror the currently selected option of a chip-select into a data-value
@@ -22593,11 +22648,13 @@ function bindUI(){
     applyLanguage(e.target.value);
     try { closeHeaderSettingsMenu(); } catch(_){}
   });
-  // Theme toggle
-  document.getElementById("themeToggle").addEventListener("click", () => {
-    applyTheme(state.theme === "dark" ? "light" : "dark");
-    try { closeHeaderSettingsMenu(); } catch(_){}
-  });
+  const themeSel = document.getElementById("themeSelect");
+  if (themeSel){
+    themeSel.addEventListener("change", (e) => {
+      applyThemePreference(e.target.value, {});
+      try { closeHeaderSettingsMenu(); } catch(_){}
+    });
+  }
   bindHeaderSettingsMenu();
   // Main buttons
   document.getElementById("btnConvert").addEventListener("click", doConvert);
@@ -25767,17 +25824,15 @@ function init(){
   // Default language: navigator
   const nav = (navigator.language || "it").toLowerCase().slice(0,2);
   const defaultLang = ["it","en","fr"].includes(nav) ? nav : "it";
-  // Default theme: prefers-color-scheme
-  const defaultTheme = (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light";
 
   // Restore persisted state from localStorage (offline, browser-only)
   const stored = loadStore();
-  let initLang = defaultLang, initTheme = defaultTheme, initPrimary = state.primary;
+  let initLang = defaultLang, initTheme = state.theme, initPrimary = state.primary;
   if (stored){
     if (stored.settings){
       if (typeof stored.settings.persist === "boolean") state.persist = stored.settings.persist;
       if (["it","en","fr"].includes(stored.settings.lang)) initLang = stored.settings.lang;
-      if (["dark","light"].includes(stored.settings.theme)) initTheme = stored.settings.theme;
+      if (["dark","light","auto"].includes(stored.settings.theme)) initTheme = stored.settings.theme;
       if (["DD","DDM","DMS","UTM","MGRS"].includes(stored.settings.primary)) initPrimary = stored.settings.primary;
       if (typeof stored.settings.batchClosed === "boolean") state.batchClosed = stored.settings.batchClosed;
       if (typeof stored.settings.forceOffline === "boolean") state.forceOffline = stored.settings.forceOffline;
@@ -25915,9 +25970,10 @@ function init(){
   state.primary = initPrimary;
 
   bindUI();
+  installThemeVisibilityListenerOnce();
   bindDragDrop();
   bindHotkeys();
-  applyTheme(initTheme);
+  applyThemePreference(initTheme, { save: true });
   applyLanguage(initLang);
   installTipEdgeClampOnce();
   updateNetStatus();

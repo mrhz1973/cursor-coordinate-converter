@@ -1306,3 +1306,47 @@ Dopo l’ottimizzazione workspace, serviva rendere il monolite più navigabile i
 - Lint su monolite: OK in sessione.
 - QA manuale consigliata: trascina/resize un pannello GIS → reload → riapri pannello e verifica posizione/dimensione clampata; `clearStore` / clear dati app → verifica sparizione `coordconv_ui_v1`; folding regioni in Cursor.
 
+---
+
+## Checkpoint 2026-04-26 — Theme-1 tema automatico locale
+
+### Perché
+
+Serviva una terza modalità **Automatico** oltre a chiaro/scuro, con regole fisse sull’orario locale del browser (senza OS theme, GPS, rete, alba/tramonto reale).
+
+### Cosa è cambiato
+
+1. **Modello preferenza vs DOM**
+   - `state.theme` in `coordconv_v2.settings` vale `light`, `dark` o `auto` (retrocompatibile con salvataggi precedenti solo light/dark).
+   - `<html data-theme>` riceve sempre il tema **effettivo** `light` o `dark`; mai `auto`.
+
+2. **Risoluzione orologio**
+   - `resolveThemeFromLocalClock(now)` usa solo `Date` locale (`getHours`, `getMinutes`): 07:00–18:59 → chiaro, 19:00–06:59 → scuro.
+   - `getEffectiveTheme()` delega a quella funzione se la preferenza è `auto`.
+
+3. **Init e refresh**
+   - Rimosso l’uso di `matchMedia("(prefers-color-scheme: dark)")` per il default al primo caricamento; senza tema in store si resta sul default del `const state` (`dark`).
+   - `scheduleThemeAutoRefresh`: `setInterval` 60s solo in modalità `auto`; `clearThemeAutoRefresh` al passaggio a manuale.
+   - `installThemeVisibilityListenerOnce`: su `visibilitychange`, se il documento torna visibile, `syncThemeDomFromState()`.
+
+4. **UI e i18n**
+   - Menu header: select a tre opzioni (`#themeSelect`) in stile chip come la lingua, al posto del pulsante toggle.
+   - Chiavi IT/EN/FR: `theme.optLight`, `theme.optDark`, `theme.optAuto`; aggiornati `tip.theme`, `settings.themeAria`; rimosse `tip.themeDark` / `tip.themeLight`.
+
+5. **Sessione JSON**
+   - `importSessionObject` accetta `settings.theme: "auto"` oltre a light/dark.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a `coordconv_ui_v1`, OPSEC, geocoding, IndexedDB tile offline, export/import coordinate, parser, waypoint, track, `mapView` / `panelOpen`.
+
+### QA
+
+- Impostare Automatico → verificare in `localStorage` `theme: "auto"` e `data-theme` solo light/dark; cambiare orario di sistema o attendere fascia per transizione; switch lingua e etichette select; import sessione con `auto`.
+
