@@ -6209,12 +6209,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
 <script>
 "use strict";
+// #region JS — SCRIPT PROLOG
 /* =====================================================================
    CONVERTITORE COORDINATE — WGS84
    DD / DDM / DMS / UTM / MGRS + paste universale + misura + batch
    Tutto in un file, zero dipendenze, funziona offline (file://).
    ===================================================================== */
-
+// #endregion JS — SCRIPT PROLOG
+// #region JS — I18N
 /* ========================= SECTION 1: I18N ========================= */
 const I18N = {
   it: {
@@ -8891,7 +8893,8 @@ function translateError(e){
   if (e && e.key) return t(e.key);
   return e && e.message ? e.message : String(e);
 }
-
+// #endregion JS — I18N
+// #region JS — CONSTANTS
 /* ========================= SECTION 2: CONSTANTS ========================= */
 const WGS84 = {
   a: 6378137,
@@ -8932,7 +8935,8 @@ const MGRS_ROW_ODD  = "ABCDEFGHJKLMNPQRSTUV";
 const MGRS_ROW_EVEN = "FGHJKLMNPQRSTUVABCDE";
 // Latitude bands (no I, no O); X is 12° tall from 72°N to 84°N
 const LAT_BANDS = "CDEFGHJKLMNPQRSTUVWX"; // 20 letters starting at -80°
-
+// #endregion JS — CONSTANTS
+// #region JS — STATE STORE AND LOCAL STORAGE
 /* ========================= SECTION 3: STATE ========================= */
 const GIS_TRACK_CAP = 50;
 const GIS_POLYGON_CAP = 50;
@@ -9634,7 +9638,8 @@ const parseFloatStrict = (s) => {
   if (!/^-?\d+(\.\d+)?$/.test(t)) return NaN;
   return parseFloat(t);
 };
-
+// #endregion JS — STATE STORE AND LOCAL STORAGE
+// #region JS — PARSERS VALIDATORS COORD MATH
 /* ========================= SECTION 4: VALIDATORS ========================= */
 function validateLatLon(lat, lon){
   if (!Number.isFinite(lat) || lat < -90 || lat > 90)  throw new ErrI18n("err.latRange");
@@ -14006,7 +14011,8 @@ function autoDetect(input){
   catch(_){}
   throw new ErrI18n("err.notRecognized");
 }
-
+// #endregion JS — PARSERS VALIDATORS COORD MATH
+// #region JS — RENDERING CORE
 /* ========================= SECTION 16: RENDERING ========================= */
 function el(tag, cls, html){
   const e = document.createElement(tag);
@@ -15576,7 +15582,8 @@ function refreshCoordCycleMapUi(){
     btn.setAttribute("data-tip", tip + (stamp === "a" ? "\u200d" : "\u200c"));
   });
 }
-
+// #endregion JS — RENDERING CORE
+// #region JS — OFFLINE TILES INDEXEDDB
 /* ============== B1/B2: IndexedDB tile pack + map hydration ============== */
 const TILE_IDB   = { name: "CoordConvMapTiles", ver: 1, store: "tiles" };
 const MAX_PRECACHE_TILES = 150000;
@@ -15935,7 +15942,8 @@ function applyPrecachePreset(){
   state._offlineUnsavedBboxDraft = true;
   syncPcBboxEditorSectionFromState();
 }
-
+// #endregion JS — OFFLINE TILES INDEXEDDB
+// #region JS — OFFLINE MAPS BBOX AND NAMED AREAS
 /* ============== BBOX SELECTION ON MAP (helpers) ==============
  *
  * Design notes:
@@ -17171,7 +17179,8 @@ function attachBboxMove(moveEl, overlay, tileMap, root){
   moveEl.addEventListener("mousedown", onDown);
   moveEl.addEventListener("touchstart", onDown, { passive: false });
 }
-
+// #endregion JS — OFFLINE MAPS BBOX AND NAMED AREAS
+// #region JS — TRACK AND WAYPOINT BUILDER
 /* ============== TRACK BUILDER (multi-point track) ==============
  *
  * Data model:
@@ -17944,7 +17953,8 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
 }
-
+// #endregion JS — TRACK AND WAYPOINT BUILDER
+// #region JS — GIS DATA MODEL
 /* ========================= SECTION 18B: GIS DATA MODEL (Phase 1) =========================
  * Invisible foundation for future GIS layers/features. Waypoints and the legacy
  * track builder remain canonical; these helpers add GeoJSON-native tracks and
@@ -19723,7 +19733,8 @@ function importTrackFile(file){
   reader.onerror = () => setBadge("error", t("err.importFailed") || "Import failed.");
   reader.readAsArrayBuffer(file);
 }
-
+// #endregion JS — GIS DATA MODEL
+// #region JS — TOOLS DRAWER
 /* ============== TOOLS DRAWER ============== */
 
 function openToolsDrawer(){
@@ -21319,7 +21330,8 @@ function clearForm(){
   try { history.replaceState(null, "", location.pathname + location.search); } catch(_){}
   initMiniMapOnStartup();
 }
-
+// #endregion JS — TOOLS DRAWER
+// #region JS — CLIPBOARD HISTORY FAVORITES BATCH
 /* ========================= SECTION 17: COPY / CLIPBOARD ========================= */
 async function copyText(text, btn){
   try {
@@ -22024,7 +22036,8 @@ function batchCsv(){
   }
   copyText(lines.join("\n"), document.getElementById("btnBatchCsv"));
 }
-
+// #endregion JS — CLIPBOARD HISTORY FAVORITES BATCH
+// #region JS — MEASURE VALIDATION AND CONVERT
 /* ========================= SECTION 20: MEASURE ========================= */
 function doMeasure(){
   const t1 = document.getElementById("meas-p1").value;
@@ -22206,7 +22219,8 @@ function doPasteDetect(){
     setBadge("ERR", state.lang === "en" ? "Not recognized" : state.lang === "fr" ? "Non reconnu" : "Non riconosciuto");
   }
 }
-
+// #endregion JS — MEASURE VALIDATION AND CONVERT
+// #region JS — UI WIRING
 /* ========================= SECTION 23: UI WIRING ========================= */
 function applyLanguage(lang){
   state.lang = lang;
@@ -22926,7 +22940,8 @@ function bindUI(){
     document.addEventListener("mousedown", basemapMenuOutsideClose, true);
   }
 }
-
+// #endregion JS — UI WIRING
+// #region JS — GIS HUB
 /* ========================= SECTION 23B: GIS HUB =========================
  * The GIS Hub layer implements the GIS viewer/planner pivot:
  *   - a topbar with tab buttons that reparent target <details> sections
@@ -25610,7 +25625,8 @@ function gisNavigateToolTarget(targetId, i18nKey){
   }
   return false;
 }
-
+// #endregion JS — GIS HUB
+// #region JS — INIT AND SELF CHECK
 /* ========================= SECTION 24: INIT ========================= */
 function init(){
   // Default language: navigator
@@ -26109,7 +26125,8 @@ function runSelfCheck(){
     console.error("✘ Self-check failed:", e);
   }
 }
-
+// #endregion JS — INIT AND SELF CHECK
+// #region JS — QR ENCODER AND MODAL
 /* ========================= SECTION 26: QR CODE ENCODER =========================
  * Compact offline QR Code Model 2 encoder (ISO/IEC 18004).
  * - Byte mode (UTF-8), EC level M (~15 % recoverable)
@@ -26593,6 +26610,7 @@ function qrCopyUrl(btn){
   const url = urlEl && urlEl.dataset.url;
   if (url) copyText(url, btn);
 }
+// #endregion JS — QR ENCODER AND MODAL
 
 document.addEventListener("DOMContentLoaded", init);
 </script>
