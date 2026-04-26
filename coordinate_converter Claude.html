@@ -5474,6 +5474,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
           <button type="button" id="btnTrackClear" class="btn btn-sm" data-i18n="track.clear" data-i18n-tip="tip.trackClear">❌ Svuota traccia</button>
         </div>
+        <div id="trackSaveGuardMsg" class="hint geo-warn" role="alert" hidden
+             style="margin-top:8px;font-weight:600;line-height:1.35;"></div>
         <label class="track-closed-row">
           <input type="checkbox" id="trackClosed">
           <span data-i18n="track.closed">Chiudi come poligono (calcola anche area)</span>
@@ -6444,7 +6446,7 @@ const I18N = {
     "track.deleteSelected":"❌ Elimina selezionate",
     "track.savePrompt":"Nome traccia salvata:",
     "track.saveDefaultName":"Traccia",
-    "track.saveNeedPoints":"Aggiungi almeno un punto alla traccia.",
+    "track.saveMinTwoPoints":"La traccia deve contenere almeno 2 punti per essere salvata.",
     "track.savedOk":"Traccia salvata: {0}",
     "track.savedEmpty":"Nessuna traccia salvata.",
     "track.deletedLastOk":"Ultima traccia salvata eliminata.",
@@ -7332,7 +7334,7 @@ const I18N = {
     "track.deleteSelected":"❌ Delete selected",
     "track.savePrompt":"Saved track name:",
     "track.saveDefaultName":"Track",
-    "track.saveNeedPoints":"Add at least one point to the track.",
+    "track.saveMinTwoPoints":"The track must contain at least 2 points before it can be saved.",
     "track.savedOk":"Track saved: {0}",
     "track.savedEmpty":"No saved tracks yet.",
     "track.deletedLastOk":"Last saved track removed.",
@@ -8220,7 +8222,7 @@ const I18N = {
     "track.deleteSelected":"❌ Supprimer la sélection",
     "track.savePrompt":"Nom de la trace enregistrée :",
     "track.saveDefaultName":"Trace",
-    "track.saveNeedPoints":"Ajoutez au moins un point à la trace.",
+    "track.saveMinTwoPoints":"La trace doit contenir au moins 2 points pour être enregistrée.",
     "track.savedOk":"Trace enregistrée : {0}",
     "track.savedEmpty":"Aucune trace enregistrée.",
     "track.deletedLastOk":"Dernière trace enregistrée supprimée.",
@@ -17436,14 +17438,33 @@ function flyMapToTrackPoints(pts){
   saveStore();
   renderTileMap(clat, clon, state.mapZoom);
 }
+function clearTrackSaveMinPointsNotice(){
+  const ids = ["trackSaveGuardMsg", "trackPromptSaveErr", "trackNewPromptSaveErr"];
+  for (const id of ids){
+    const el = document.getElementById(id);
+    if (el){ el.textContent = ""; el.hidden = true; }
+  }
+}
+/** Visibile nel contesto Traccia (riquadro + prompt) oltre al badge globale. */
+function notifyTrackSaveMinPointsBlocked(){
+  const msg = t("track.saveMinTwoPoints") || "La traccia deve contenere almeno 2 punti per essere salvata.";
+  try { setBadge("error", msg); } catch(_){}
+  const strip = document.getElementById("trackSaveGuardMsg");
+  if (strip){ strip.textContent = msg; strip.hidden = false; }
+  const pe = document.getElementById("trackPromptSaveErr");
+  if (pe){ pe.textContent = msg; pe.hidden = false; }
+  const ne = document.getElementById("trackNewPromptSaveErr");
+  if (ne){ ne.textContent = msg; ne.hidden = false; }
+}
 function saveCurrentTrackToLibrary(name){
   ensureTrackState();
   ensureSavedTracksState();
   const pts = state.track.points;
-  if (!pts.length){
-    setBadge("error", t("track.saveNeedPoints") || "Aggiungi almeno un punto alla traccia.");
-    return;
+  if (!pts || pts.length < 2){
+    notifyTrackSaveMinPointsBlocked();
+    return false;
   }
+  clearTrackSaveMinPointsNotice();
   const nm = String(name == null ? "" : name).trim().slice(0, 80) || (t("track.saveDefaultName") || "Traccia");
   const snap = pts.map(p => ({
     id: uidNamed(),
@@ -17468,6 +17489,7 @@ function saveCurrentTrackToLibrary(name){
   state._trackSavedAt = Date.now();
   state._trackPromptOpen = false;
   setBadge("success", (t("track.savedOk") || "Traccia salvata: {0}").replace("{0}", nm));
+  return true;
 }
 function deleteLastSavedTrack(){
   ensureSavedTracksState();
@@ -18680,6 +18702,8 @@ function renderTrackNewTrackPrompt(){
   root.innerHTML = `
     <div class="tnp-title">${ttl}</div>
     <p class="tnp-text">${txt}</p>
+    <div id="trackNewPromptSaveErr" class="hint geo-warn" role="alert" hidden
+         style="margin:8px 0 0;font-weight:600;line-height:1.35;"></div>
     <div class="tnp-actions">
       <button type="button" class="btn btn-sm btn-primary" data-role="tnp-save-new">${bSave}</button>
       <button type="button" class="btn btn-sm" data-role="tnp-discard-new">${bDiscard}</button>
@@ -18693,8 +18717,8 @@ function renderTrackNewTrackPrompt(){
       if (s){
         ev.preventDefault();
         const nm = trackMakeAutoName();
-        try { saveCurrentTrackToLibrary(nm); } catch(_){}
-        trackResetCurrentOnly({ pickMode: true });
+        if (saveCurrentTrackToLibrary(nm))
+          trackResetCurrentOnly({ pickMode: true });
         return;
       }
       const d = ev.target && ev.target.closest && ev.target.closest('[data-role="tnp-discard-new"]');
@@ -18912,6 +18936,8 @@ function renderTrackCompletionPrompt(){
   root.hidden = false;
   root.innerHTML = `
     <div class="tcp-title">✅ ${esc(t("track.completed") || "Traccia completata")}</div>
+    <div id="trackPromptSaveErr" class="hint geo-warn" role="alert" hidden
+         style="margin:0 0 8px;font-weight:600;line-height:1.35;"></div>
     <div class="tcp-row">
       <label>${lbl}
         <input type="text" id="trackPromptName" maxlength="80" value="${def}">
@@ -18933,7 +18959,10 @@ function renderTrackCompletionPrompt(){
         const inp = document.getElementById("trackPromptName");
         const nm = String(inp && inp.value || "").trim();
         state._trackPromptName = nm;
-        saveCurrentTrackToLibrary(nm);
+        if (!saveCurrentTrackToLibrary(nm)){
+          renderTrackSummary();
+          return;
+        }
         state._trackPromptOpen = false;
         state._trackCompleted = true;
         state._trackSavedAt = Date.now();
@@ -19294,6 +19323,7 @@ function renderTrackSummary(){
   ensureTrackState();
   const pts = state.track.points;
   if (pts.length < 2){ root.innerHTML = ""; return; }
+  clearTrackSaveMinPointsNotice();
   let statusHtml = "";
   try {
     let s = "";

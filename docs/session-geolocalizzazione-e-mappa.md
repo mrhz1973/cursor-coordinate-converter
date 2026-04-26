@@ -1377,3 +1377,40 @@ Dalla verifica post-commit: la chiave `settings.themeAria` era definita nei dizi
 
 - Dopo reload: cambiare lingua e verificare che `aria-label` sulla select tema rifletta `settings.themeAria` nella lingua attiva (DevTools → Accessibility).
 
+---
+
+## Checkpoint 2026-04-26 — Track save min 2 punti
+
+### Perché
+
+Evitare archivi di “tracce” con 0 o 1 punto (non geometricamente una linea) e dare feedback visibile se l’utente prova a salvare.
+
+### Cosa è cambiato
+
+1. **Guard in `saveCurrentTrackToLibrary`**
+   - Salvataggio solo se `state.track.points.length >= 2`; altrimenti `return false`, nessun push in `savedTracks`, nessun `saveStore` da quel percorso.
+   - Chiave i18n `track.saveMinTwoPoints` (IT/EN/FR) al posto di `track.saveNeedPoints`.
+
+2. **Flussi collegati**
+   - “Salva e nuova” (`tnp-save-new`): `trackResetCurrentOnly` solo se il salvataggio restituisce `true`.
+   - Prompt completamento (`track-prompt-save`): non imposta `_trackPromptOpen` / `_trackCompleted` / `_trackSavedAt` se il salvataggio fallisce.
+
+3. **UX avviso in contesto Traccia**
+   - `notifyTrackSaveMinPointsBlocked`: `setBadge("error")` + messaggio in `#trackSaveGuardMsg` sotto la toolbar, e negli slot errore dei prompt se presenti nel DOM.
+   - `clearTrackSaveMinPointsNotice` dopo salvataggio riuscito e in `renderTrackSummary` quando i punti sono ≥ 2.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun cambio a export/import generale, waypoint manager, `coordconv_ui_v1`, Theme-1, OPSEC, geocoding, IndexedDB tile, parser, mapView/panelOpen oltre al percorso traccia descritto.
+
+### QA
+
+- 0/1 punto: pulsante archivio, Salva da prompt completamento, Salva e nuova → messaggio visibile, nessuna riga nuova in archivio.
+- ≥2 punti: salvataggio come prima; avviso scompare passando a ≥2 punti o dopo salvataggio ok.
+
