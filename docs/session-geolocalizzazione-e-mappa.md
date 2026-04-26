@@ -1142,3 +1142,40 @@ Dopo la migrazione verso layout GIS-first, vari pannelli e controlli vivevano an
 - Commit di riferimento: `b2546e0` (`Stabilize GIS floating panels and UI polish`).
 - QA runtime consigliata: aprire/trascinare/ridimensionare Track, Waypoint, Convert, Search, Favorites, Layers; verificare inserimento traccia, doppio click di completamento, basemap menu e click mappa sotto i pannelli.
 
+---
+
+## Checkpoint 2026-04-26 — Offline areas list + bbox feedback
+
+### Perché
+
+Il pannello download tile offline aveva già bbox su mappa e salvataggio aree con nome, ma mancava un **elenco gestibile** delle aree salvate (visibilità, stato cache, azioni rapide) e un feedback testuale chiaro quando l’area selezionata è pronta per il download o quando non c’è selezione.
+
+### Cosa è cambiato
+
+1. **UI elenco aree offline** (`#offlineAreasSection`)
+   - Toolbar con conteggio selezione, azioni bulk (mostra/nascondi selezionate, elimina da elenco), «Usa area» e «Centra» su selezione.
+   - Lista/tabella con colonne nome, stato, date, zoom, strato, tile, spazio, azioni per riga; badge stato (sconosciuto / parziale / completo / errore) con tema chiaro/scuro.
+   - Rendering aggiornato da `renderOfflineAreasList()` e stato toolbar da `updateOfflineAreasToolbarUI()`; etichette stato via `offlineAreaStatusLabel()`.
+
+2. **Feedback bbox** (`#pcBboxFeedback`)
+   - Messaggio primario/secondario `aria-live` collegato alle stringhe `offcache.bboxFeedback*` (selezione / pronta / nessuna area).
+
+3. **Stile overlay bbox**
+   - Overlay rettangolo: bordo tratteggiato, z-index rialzati per restare sopra altri layer mappa; handle e pulsante rimozione allineati.
+
+4. **i18n**
+   - Nuove chiavi IT/EN/FR: `offcache.list.*`, `offcache.sel.*`, `offcache.area.*`, `offcache.bboxFeedback*`, ARIA resize/remove bbox.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+
+### Invarianti
+
+- Nessun download tile automatico aggiunto: le azioni restano su input esplicito utente; eliminazione da elenco non implica necessariamente wipe cache (come da copy nei confirm).
+
+### QA
+
+- Apri tab/pannello Mappa/Offline: verifica rendering lista con 0 / N aree, selezione multipla, mostra/nascondi su mappa, «Usa area» → campi N/S/E/W, «Centra», eliminazione con confirm.
+- Disegna bbox: verifica messaggio feedback e overlay sopra controlli mappa.
+
