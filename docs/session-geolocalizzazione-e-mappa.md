@@ -1605,3 +1605,42 @@ Allineare l’**import** al pattern già avviato con l’**export dialog** Waypo
 - Errore parse / nessun Point / cap / annulla conferma → dialog resta aperta (o messaggio coerente), badge come prima.
 - Esc con import aperta chiude import; poi export se aperta.
 
+---
+
+## Checkpoint 2026-04-27 — Track modal file picker + delete saved track map
+
+### Perché
+
+Dopo **Importa traccia → file picker → Annulla**, la modal Traccia si chiudeva ancora: la guardia su `_trackFilePickerGuardUntil` interveniva solo sul ramo **Esc** globale, mentre **`cancel`** sul `<dialog>` e altri handler chiamano **`closeTrackModal()`** senza quel controllo. In parallelo, eliminando una traccia salvata ancora “speculare” della bozza corrente, la polilinea poteva restare a schermo finché la bozza non veniva resettata.
+
+### Cosa è cambiato
+
+1. **Guardia centralizzata**
+   - All’inizio di **`closeTrackModal(opts)`**: se non **`opts.force`** e `Date.now() < state._trackFilePickerGuardUntil`, **return** (nessuna chiusura).
+   - **`openWaypointModal`**: **`closeTrackModal({ force: true })`** così la sostituzione con la modal Waypoint non resta bloccata dalla guardia.
+
+2. **Arm / disarm Import (`#btnTrackImport` / `#trackFileInput`)**
+   - All’click: `_trackImportPickerFileChosen = false`, guardia **120 s**; listener **`focus`** `{ once: true }` che, se il file non è stato scelto (`!_trackImportPickerFileChosen`), imposta una coda breve (~500 ms + timeout ~600 ms) per azzerare la guardia e ripristinare la chiusura normale della modal.
+   - Su **`change`**: `_trackImportPickerFileChosen = true`, `importTrackFile` se c’è file, reset `value`, **`_trackFilePickerGuardUntil = 0`** così il `focus` post-successo non ri-arma.
+
+3. **Delete tracce salvate**
+   - Helper **`trackCurrentPointsMatchSavedSnapshot`** / **`maybeClearCurrentTrackIfMatchesDeletedSaved`**.
+   - **`deleteSavedTracksByIds`** e **`deleteLastSavedTrack`**: snapshot dei `points` prima della rimozione; dopo persist/render/refresh, se la bozza coincide con un’eliminata → **`trackResetCurrentOnly({ pickMode })`**; se la geometria è diversa (traccia nuova o modificata) → nessun reset.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun intervento su Waypoint, builder import/export traccia oltre ai punti sopra, `state.mapWaypoints[]`, altre modal.
+
+### QA
+
+- GIS: apri Traccia → Importa → Annulla nel Finder → la modal Traccia resta aperta; dopo ~1 s la chiusura manuale (X/backdrop) funziona.
+- Import file valido → guardia azzerata; nessun blocco prolungato alla chiusura.
+- Apri Waypoint con Traccia aperta → Traccia si chiude comunque.
+- Elimina salvata che coincide con bozza corrente → sparisce dalla mappa; bozza diversa → invariata.
+

@@ -5095,6 +5095,93 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
 .waypoint-import-dialog-msg.is-err{ color: var(--error, #ef4444); }
 .waypoint-import-dialog-msg.is-ok{ color: var(--success, var(--accent)); }
 
+/* Track export dialog (showModal; current track only). */
+#trackExportDialog.track-export-dialog{
+  max-width: min(420px, calc(100vw - 48px));
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-card, 14px);
+  background: var(--panel);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0,0,0,.45));
+}
+#trackExportDialog.track-export-dialog::backdrop{
+  background: rgba(0,0,0,.42);
+}
+#trackExportDialog .app-modal-head{
+  padding: 12px 12px 12px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  gap: 8px;
+}
+#trackExportDialog .app-modal-title{
+  font-size: clamp(1rem, 2.4vw, 1.12rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+}
+#trackExportDialog .app-modal-close{
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--radius-control, 10px);
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--panel2) 92%, transparent);
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: none;
+  background-image: none;
+  margin: 0 2px 0 0;
+}
+#trackExportDialog .app-modal-close:hover,
+#trackExportDialog .app-modal-close:focus-visible{
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.track-export-dialog-body{
+  padding: 16px 20px 20px;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.track-export-dialog-desc{ margin: 0 0 12px; color: var(--muted); }
+.track-export-dialog-empty{
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.track-export-format-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.track-export-format-list .track-export-fmt{
+  justify-content: flex-start;
+  text-align: left;
+  min-height: 40px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--panel2) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.track-export-format-list .track-export-fmt:hover:not(:disabled),
+.track-export-format-list .track-export-fmt:focus-visible:not(:disabled){
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
+}
+.track-export-format-list .track-export-fmt:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Saved tracks: selection-only destructive action, placed near the list. */
+.saved-tracks-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top: 10px;
+}
+
 #waypointModalPanel .wp-count-badge{
   display: block;
   width: fit-content;
@@ -6205,8 +6292,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" id="btnTrackFinish" class="btn btn-sm" data-i18n="track.finish" data-i18n-tip="tip.trackFinish" hidden>✅ Termina traccia</button>
           <button type="button" id="btnTrackNew" class="btn btn-sm" data-i18n="track.new" data-i18n-tip="tip.trackNew">🆕 Nuova traccia</button>
           <button type="button" id="btnTrackPaste" class="btn btn-sm" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
-          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">📥 Importa GPX/KML/KMZ/GeoJSON…</button>
+          <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">Importa</button>
           <input type="file" id="trackFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
+          <button type="button" id="btnTrackExportOpenBtn" class="btn btn-sm"
+                  data-i18n="track.exportOpen" data-i18n-tip="tip.trackExportOpen" data-i18n-aria="track.exportOpenAria">Esporta</button>
           <span class="sep"></span>
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
           <button type="button" id="btnTrackClear" class="btn btn-sm" data-i18n="track.clear" data-i18n-tip="tip.trackClear">❌ Svuota traccia</button>
@@ -6232,18 +6321,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div class="track-toolbar track-saved-toolbar">
           <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
           <button type="button" id="btnTrackDeleteLastSaved" class="btn btn-sm" data-i18n="track.deleteLastSaved" data-i18n-tip="tip.trackDeleteLastSaved">🗑 Elimina ultima salvata</button>
-          <button type="button" id="btnSavedTracksDeleteSelected" class="btn btn-sm btn-danger" data-i18n="track.deleteSelected" data-i18n-tip="tip.trackDeleteSelected">❌ Elimina selezionate</button>
         </div>
         <div id="savedTracksMount" class="saved-tracks-wrap" aria-live="polite"></div>
-        <div class="actions" style="flex-wrap:wrap; margin-top:10px">
-          <span class="export-group-label" data-i18n="track.exportLabel">Esporta traccia:</span>
-          <button type="button" id="btnTrackExportGpx" class="btn btn-sm" data-i18n="track.expGpx" data-i18n-tip="tip.trackExpGpx">GPX (track)</button>
-          <button type="button" id="btnTrackExportKml" class="btn btn-sm" data-i18n="track.expKml" data-i18n-tip="tip.trackExpKml">KML</button>
-          <button type="button" id="btnTrackExportKmz" class="btn btn-sm" data-i18n="track.expKmz" data-i18n-tip="tip.trackExpKmz">KMZ</button>
-          <button type="button" id="btnTrackExportGeoJson" class="btn btn-sm" data-i18n="track.expGeoJson" data-i18n-tip="tip.trackExpGeoJson">GeoJSON</button>
-          <button type="button" id="btnTrackExportCsv" class="btn btn-sm" data-i18n="track.expCsv" data-i18n-tip="tip.trackExpCsv">CSV</button>
-          <button type="button" id="btnTrackExportWkt" class="btn btn-sm" data-i18n="track.expWkt" data-i18n-tip="tip.trackExpWkt">WKT</button>
-          <button type="button" id="btnTrackExportShpZip" class="btn btn-sm" data-i18n="track.expShpZip" data-i18n-tip="tip.trackExpShpZip">SHP (ZIP)</button>
+        <div class="saved-tracks-actions">
+          <button type="button" id="btnSavedTracksDeleteSelected" class="btn btn-sm btn-danger" hidden data-i18n="track.deleteSelected" data-i18n-tip="tip.trackDeleteSelected">Elimina selezionate</button>
         </div>
       </div>
     </details>
@@ -6642,6 +6723,28 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
     <p id="waypointImportDialogMsg" class="hint waypoint-import-dialog-msg" hidden></p>
+  </div>
+</dialog>
+
+<!-- Track-only export format picker (pattern Export dialog — step 2). -->
+<dialog id="trackExportDialog" class="app-modal track-export-dialog" aria-labelledby="trackExportDialogTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="trackExportDialogTitle" class="app-modal-title" data-i18n="track.exportDialogTitle">Esporta traccia</h2>
+    <button type="button" class="app-modal-close" id="trackExportDialogClose"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body track-export-dialog-body">
+    <p id="trackExportDialogDesc" class="hint track-export-dialog-desc" data-i18n="track.exportDialogBody">Scegli un formato per esportare la traccia corrente.</p>
+    <p id="trackExportDialogEmpty" class="hint track-export-dialog-empty" hidden data-i18n="track.exportDialogEmpty">Nessuna traccia da esportare.</p>
+    <div id="trackExportDialogFormats" class="track-export-format-list" role="group" aria-labelledby="trackExportDialogTitle">
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="gpx" data-i18n="export.gpx" data-i18n-tip="tip.trackExpGpx">GPX</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="kml" data-i18n="export.kml" data-i18n-tip="tip.trackExpKml">KML</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.trackExpKmz">KMZ</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="geojson" data-i18n="export.geojson" data-i18n-tip="tip.trackExpGeoJson">GeoJSON</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.trackExpCsv">CSV</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="wkt" data-i18n="track.expWkt" data-i18n-tip="tip.trackExpWkt">WKT</button>
+      <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="shapezip" data-i18n="track.expShpZip" data-i18n-tip="tip.trackExpShpZip">SHP (ZIP)</button>
+    </div>
   </div>
 </dialog>
 
@@ -7216,7 +7319,7 @@ const I18N = {
     "tip.mapWpClear":"Elimina tutti i waypoints (non la traccia)",
     "track.paste":"📋 Incolla lista punti",
     "track.pastePrompt":"Incolla qui le coordinate (una per riga, qualsiasi formato):",
-    "track.import":"📥 Importa GPX/KML/KMZ/GeoJSON…",
+    "track.import":"Importa",
     "track.clear":"❌ Svuota traccia",
     "track.clearConfirm":"Eliminare tutti i punti della traccia corrente?",
     "track.undo":"↶ Annulla ultimo punto",
@@ -7224,6 +7327,8 @@ const I18N = {
     "track.undoOk":"Ultimo punto annullato.",
     "track.closed":"Chiudi come poligono (calcola anche area)",
     "track.exportLabel":"Esporta traccia:",
+    "track.exportOpen":"Esporta",
+    "track.exportOpenAria":"Apri la finestra di esportazione traccia",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
     "track.expKmz":"KMZ",
@@ -7231,6 +7336,9 @@ const I18N = {
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
     "track.expShpZip":"SHP (ZIP)",
+    "track.exportDialogTitle":"Esporta traccia",
+    "track.exportDialogBody":"Traccia corrente.",
+    "track.exportDialogEmpty":"Nessuna traccia da esportare.",
     "track.savedTitle":"Tracce salvate",
     "track.savedHint":"Salva la traccia corrente, mostrala sulla mappa, centra la vista su una riga o gestisci l'archivio (rinomina, elimina, selezione multipla).",
     "track.saveLibrary":"💾 Salva traccia in archivio…",
@@ -7281,7 +7389,7 @@ const I18N = {
     "tip.waypointMapBuild":"Apri o chiudi pannello waypoint",
     "tip.mapUndo":"Annulla ultimo punto (misura sulla mappa o traccia in modalità clic)",
     "tip.trackPaste":"Apre un box per incollare una lista di coordinate da aggiungere in blocco.",
-    "tip.trackImport":"Importa traccia/waypoint da GPX, KML, KMZ, GeoJSON, CSV, WKT o shapefile .shp.",
+    "tip.trackImport":"Importa tracce da GPX, KML, KMZ, GeoJSON, CSV, WKT o SHP se supportati.",
     "tip.trackUndo":"Rimuove l'ultimo punto aggiunto alla traccia.",
     "tip.trackClear":"Rimuove tutti i punti dalla traccia corrente.",
     "tip.trackExpGpx":"Scarica la traccia come file GPX (elemento <trk>).",
@@ -7291,6 +7399,7 @@ const I18N = {
     "tip.trackExpCsv":"Scarica la lista punti come CSV.",
     "tip.trackExpWkt":"Esporta geometrie come testo WKT (una riga per feature).",
     "tip.trackExpShpZip":"Scarica shapefile elementari (.shp/.shx) in un archivio ZIP.",
+    "tip.trackExportOpen":"Esporta la traccia corrente in GPX, KML, KMZ, GeoJSON, CSV, WKT o SHP ZIP.",
     "tip.trackSaveLibrary":"Salva una copia della traccia corrente nell'archivio (max 50).",
     "tip.trackDeleteLastSaved":"Rimuove l'ultima traccia aggiunta all'archivio (ordine di salvataggio).",
     "tip.trackDeleteSelected":"Elimina le tracce spuntate nella colonna a sinistra.",
@@ -8121,7 +8230,7 @@ const I18N = {
     "tip.mapWpClear":"Remove all waypoints (not the track)",
     "track.paste":"📋 Paste point list",
     "track.pastePrompt":"Paste coordinates here (one per line, any format):",
-    "track.import":"📥 Import GPX/KML/KMZ/GeoJSON…",
+    "track.import":"Import",
     "track.clear":"❌ Clear track",
     "track.clearConfirm":"Delete all points from the current track?",
     "track.undo":"↶ Undo last point",
@@ -8129,6 +8238,8 @@ const I18N = {
     "track.undoOk":"Last point removed.",
     "track.closed":"Close as polygon (also compute area)",
     "track.exportLabel":"Export track:",
+    "track.exportOpen":"Export",
+    "track.exportOpenAria":"Open the track export dialog",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
     "track.expKmz":"KMZ",
@@ -8136,6 +8247,9 @@ const I18N = {
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
     "track.expShpZip":"SHP (ZIP)",
+    "track.exportDialogTitle":"Export track",
+    "track.exportDialogBody":"Current track.",
+    "track.exportDialogEmpty":"No track to export.",
     "track.savedTitle":"Saved tracks",
     "track.savedHint":"Save the current track, show saved tracks on the map, centre the map from a row, or manage the archive (rename, delete, multi-select).",
     "track.saveLibrary":"💾 Save track to archive…",
@@ -8186,7 +8300,7 @@ const I18N = {
     "tip.waypointMapBuild":"Open or close waypoint panel",
     "tip.mapUndo":"Undo last point (on-map measure or track while click-to-add is on)",
     "tip.trackPaste":"Opens a box to paste a list of coordinates to be added at once.",
-    "tip.trackImport":"Import a track or waypoints from GPX, KML, KMZ, GeoJSON, CSV, WKT, or a .shp file.",
+    "tip.trackImport":"Import tracks from GPX, KML, KMZ, GeoJSON, CSV, WKT or SHP when supported.",
     "tip.trackUndo":"Remove the last point added to the track.",
     "tip.trackClear":"Remove all points from the current track.",
     "tip.trackExpGpx":"Download the track as a GPX file (<trk> element).",
@@ -8196,6 +8310,7 @@ const I18N = {
     "tip.trackExpCsv":"Download the point list as CSV.",
     "tip.trackExpWkt":"Export geometries as WKT text (one line per feature).",
     "tip.trackExpShpZip":"Download basic shapefiles (.shp/.shx) inside a ZIP archive.",
+    "tip.trackExportOpen":"Export the current track as GPX, KML, KMZ, GeoJSON, CSV, WKT or SHP ZIP.",
     "tip.trackSaveLibrary":"Save a snapshot of the current track to the archive (max 50).",
     "tip.trackDeleteLastSaved":"Remove the most recently saved archive entry.",
     "tip.trackDeleteSelected":"Delete the tracks checked in the left column.",
@@ -9026,7 +9141,7 @@ const I18N = {
     "tip.mapWpClear":"Supprimer tous les waypoints (pas la trace)",
     "track.paste":"📋 Coller une liste",
     "track.pastePrompt":"Collez les coordonnées ici (une par ligne, tout format) :",
-    "track.import":"📥 Importer GPX/KML/KMZ/GeoJSON…",
+    "track.import":"Importer",
     "track.clear":"❌ Vider la trace",
     "track.clearConfirm":"Supprimer tous les points de la trace actuelle ?",
     "track.undo":"↶ Annuler le dernier point",
@@ -9034,6 +9149,8 @@ const I18N = {
     "track.undoOk":"Dernier point annulé.",
     "track.closed":"Fermer en polygone (calcule aussi l'aire)",
     "track.exportLabel":"Exporter la trace :",
+    "track.exportOpen":"Exporter",
+    "track.exportOpenAria":"Ouvrir la fenêtre d’export de la trace",
     "track.expGpx":"GPX (track)",
     "track.expKml":"KML",
     "track.expKmz":"KMZ",
@@ -9041,6 +9158,9 @@ const I18N = {
     "track.expCsv":"CSV",
     "track.expWkt":"WKT",
     "track.expShpZip":"SHP (ZIP)",
+    "track.exportDialogTitle":"Exporter la trace",
+    "track.exportDialogBody":"Trace actuelle.",
+    "track.exportDialogEmpty":"Aucune trace à exporter.",
     "track.savedTitle":"Traces enregistrées",
     "track.savedHint":"Enregistrez la trace courante, affichez-la sur la carte, centrez la vue depuis une ligne ou gérez l'archive (renommer, supprimer, sélection multiple).",
     "track.saveLibrary":"💾 Enregistrer la trace…",
@@ -9091,7 +9211,7 @@ const I18N = {
     "tip.waypointMapBuild":"Ouvrir ou fermer le panneau waypoint",
     "tip.mapUndo":"Annuler le dernier point (mesure sur la carte ou trace en mode clic)",
     "tip.trackPaste":"Ouvre une boîte pour coller une liste de coordonnées à ajouter en bloc.",
-    "tip.trackImport":"Importer une trace ou des waypoints depuis GPX, KML, KMZ, GeoJSON, CSV, WKT ou un fichier .shp.",
+    "tip.trackImport":"Importer des traces depuis GPX, KML, KMZ, GeoJSON, CSV, WKT ou SHP si pris en charge.",
     "tip.trackUndo":"Supprime le dernier point ajouté à la trace.",
     "tip.trackClear":"Supprime tous les points de la trace actuelle.",
     "tip.trackExpGpx":"Télécharger la trace en fichier GPX (élément <trk>).",
@@ -9101,6 +9221,7 @@ const I18N = {
     "tip.trackExpCsv":"Télécharger la liste des points en CSV.",
     "tip.trackExpWkt":"Exporter les géométries en WKT (une ligne par entité).",
     "tip.trackExpShpZip":"Télécharger des shapefiles simples (.shp/.shx) dans une archive ZIP.",
+    "tip.trackExportOpen":"Exporter la trace actuelle en GPX, KML, KMZ, GeoJSON, CSV, WKT ou SHP ZIP.",
     "tip.trackSaveLibrary":"Enregistre une copie de la trace courante dans l'archive (max 50).",
     "tip.trackDeleteLastSaved":"Supprime la dernière trace ajoutée à l'archive.",
     "tip.trackDeleteSelected":"Supprime les traces cochées dans la colonne de gauche.",
@@ -18317,26 +18438,59 @@ function saveCurrentTrackToLibrary(name){
   setBadge("success", (t("track.savedOk") || "Traccia salvata: {0}").replace("{0}", nm));
   return true;
 }
+/** True if the editable track geometry matches a saved-track snapshot (same point count and coords). */
+function trackCurrentPointsMatchSavedSnapshot(savedPts){
+  ensureTrackState();
+  const cur = state.track.points || [];
+  const a = savedPts || [];
+  if (!a.length || a.length !== cur.length) return false;
+  for (let i = 0; i < a.length; i++){
+    const la = Number(a[i].lat), lo = Number(a[i].lon);
+    const lb = Number(cur[i].lat), mb = Number(cur[i].lon);
+    if (!Number.isFinite(la) || !Number.isFinite(lo) || !Number.isFinite(lb) || !Number.isFinite(mb)) return false;
+    if (Math.abs(la - lb) > 1e-7 || Math.abs(lo - mb) > 1e-7) return false;
+  }
+  return true;
+}
+/** If the user deletes a saved track that is still shown as the current draft (same coords), clear the draft; if the draft diverged, leave it. */
+function maybeClearCurrentTrackIfMatchesDeletedSaved(deletedPointSnapshots){
+  if (!Array.isArray(deletedPointSnapshots) || !deletedPointSnapshots.length) return;
+  for (let i = 0; i < deletedPointSnapshots.length; i++){
+    if (trackCurrentPointsMatchSavedSnapshot(deletedPointSnapshots[i])){
+      const pick = !!(state.track && state.track.pickMode);
+      trackResetCurrentOnly({ pickMode: pick });
+      return;
+    }
+  }
+}
 function deleteLastSavedTrack(){
   ensureSavedTracksState();
   if (!state.savedTracks.length){
     setBadge("info", t("track.savedEmpty") || "Nessuna traccia salvata.");
     return;
   }
+  const last = state.savedTracks[state.savedTracks.length - 1];
+  const snap = (last && Array.isArray(last.points)) ? last.points.slice() : null;
   state.savedTracks.pop();
   saveStore();
   renderSavedTracksList();
   refreshTileMapForTrackUi();
+  if (snap) maybeClearCurrentTrackIfMatchesDeletedSaved([snap]);
   setBadge("success", t("track.deletedLastOk") || "Ultima traccia salvata eliminata.");
 }
 function deleteSavedTracksByIds(ids){
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   if (!set.size) return;
+  const deletedPointSnapshots = [];
+  for (const st of state.savedTracks){
+    if (st && set.has(st.id) && Array.isArray(st.points)) deletedPointSnapshots.push(st.points.slice());
+  }
   state.savedTracks = state.savedTracks.filter(st => !set.has(st.id));
   saveStore();
   renderSavedTracksList();
   refreshTileMapForTrackUi();
+  maybeClearCurrentTrackIfMatchesDeletedSaved(deletedPointSnapshots);
   setBadge("success", (t("track.deletedN") || "Eliminate {0} tracce.").replace("{0}", String(set.size)));
 }
 function flyToSavedTrackById(id){
@@ -18832,6 +18986,7 @@ function renderSavedTracksList(){
   }
   html += "</tbody></table>";
   mount.innerHTML = html;
+  if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   if (!mount._savedTracksDelegated){
     mount._savedTracksDelegated = true;
     mount.addEventListener("change", (ev) => {
@@ -18839,6 +18994,11 @@ function renderSavedTracksList(){
       if (!t || !t.matches) return;
       if (t.id === "savedTracksSelectAll"){
         mount.querySelectorAll(".saved-sel-cb").forEach(cb => { cb.checked = t.checked; });
+        if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
+        return;
+      }
+      if (t.matches(".saved-sel-cb[data-saved-sel]")){
+        if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
         return;
       }
       if (t.matches("[data-saved-vis]")){
@@ -23923,10 +24083,30 @@ function bindUI(){
   const btnTImp = document.getElementById("btnTrackImport");
   const tFileIn = document.getElementById("trackFileInput");
   if (btnTImp && tFileIn){
-    btnTImp.addEventListener("click", (ev) => { ev.preventDefault(); tFileIn.click(); });
+    btnTImp.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      // While the native file dialog is open (or just dismissed with Annulla),
+      // some UAs fire <dialog> cancel / synthetic Esc before window "focus".
+      // Arm a long window from click, then tighten after focus so normal close works soon.
+      const GUARD_PICKER_MS = 120000;
+      state._trackImportPickerFileChosen = false;
+      state._trackFilePickerGuardUntil = Date.now() + GUARD_PICKER_MS;
+      const onFocus = () => {
+        window.removeEventListener("focus", onFocus);
+        if (state._trackImportPickerFileChosen) return;
+        state._trackFilePickerGuardUntil = Date.now() + 500;
+        try {
+          setTimeout(() => { state._trackFilePickerGuardUntil = 0; }, 600);
+        } catch(_){ state._trackFilePickerGuardUntil = 0; }
+      };
+      try { window.addEventListener("focus", onFocus, { once: true }); } catch(_){}
+      tFileIn.click();
+    });
     tFileIn.addEventListener("change", () => {
+      state._trackImportPickerFileChosen = true;
       if (tFileIn.files && tFileIn.files[0]) importTrackFile(tFileIn.files[0]);
       tFileIn.value = ""; // reset so the same file can be re-selected
+      state._trackFilePickerGuardUntil = 0;
     });
   }
   const btnTUndo = document.getElementById("btnTrackUndo");
@@ -23966,20 +24146,38 @@ function bindUI(){
       renderTrackAll();
     });
   }
-  const btnTeGpx = document.getElementById("btnTrackExportGpx");
-  if (btnTeGpx) btnTeGpx.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("gpx"); });
-  const btnTeKml = document.getElementById("btnTrackExportKml");
-  if (btnTeKml) btnTeKml.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("kml"); });
-  const btnTeKmz = document.getElementById("btnTrackExportKmz");
-  if (btnTeKmz) btnTeKmz.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("kmz"); });
-  const btnTeGj = document.getElementById("btnTrackExportGeoJson");
-  if (btnTeGj) btnTeGj.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("geojson"); });
-  const btnTeCsv = document.getElementById("btnTrackExportCsv");
-  if (btnTeCsv) btnTeCsv.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("csv"); });
-  const btnTeWkt = document.getElementById("btnTrackExportWkt");
-  if (btnTeWkt) btnTeWkt.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("wkt"); });
-  const btnTeShp = document.getElementById("btnTrackExportShpZip");
-  if (btnTeShp) btnTeShp.addEventListener("click", (ev) => { ev.preventDefault(); exportTrack("shapezip"); });
+  const btnTxOpen = document.getElementById("btnTrackExportOpenBtn");
+  if (btnTxOpen) btnTxOpen.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openTrackExportDialog === "function") openTrackExportDialog();
+  });
+  const txDlg = document.getElementById("trackExportDialog");
+  const txClose = document.getElementById("trackExportDialogClose");
+  if (txClose) txClose.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+  });
+  if (txDlg){
+    txDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+    });
+    txDlg.addEventListener("click", (ev) => {
+      if (ev.target === txDlg && typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+    });
+    const fmtRoot = document.getElementById("trackExportDialogFormats");
+    if (fmtRoot && !fmtRoot._trackFmtBound){
+      fmtRoot._trackFmtBound = true;
+      fmtRoot.addEventListener("click", (ev) => {
+        const b = ev.target && ev.target.closest && ev.target.closest("[data-track-export-fmt]");
+        if (!b || b.disabled) return;
+        ev.preventDefault();
+        const k = b.getAttribute("data-track-export-fmt");
+        if (k && typeof exportTrack === "function") exportTrack(k);
+        if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+      });
+    }
+  }
 
   renderTrackAll();
   renderMapWaypointsAll();
@@ -24417,6 +24615,12 @@ function gisInit(){
       if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
       return;
     }
+    const tx = document.getElementById("trackExportDialog");
+    if (tx && tx.open){
+      ev.preventDefault();
+      if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+      return;
+    }
     if (state.convertOpen){ closeConvertModal(); return; }
     if (state.toolsMenuOpen !== null){ closeToolsModal(); return; }
     const spd = document.getElementById("searchPanel");
@@ -24441,6 +24645,11 @@ function gisInit(){
     }
     const tmd = document.getElementById("trackModal");
     if (state.trackModalOpen || (tmd && tmd.open)){
+      const until = Number(state._trackFilePickerGuardUntil || 0);
+      if (until && Date.now() < until){
+        ev.preventDefault();
+        return;
+      }
       closeTrackModal();
       return;
     }
@@ -25248,7 +25457,7 @@ function openWaypointModal(opts){
     return;
   }
   try {
-    if (state.trackModalOpen && typeof closeTrackModal === "function") closeTrackModal();
+    if (state.trackModalOpen && typeof closeTrackModal === "function") closeTrackModal({ force: true });
   } catch(_){}
   const panel = document.getElementById("waypointModalPanel");
   gisMoveSectionTo("sec-waypoints", panel || body);
@@ -26323,9 +26532,19 @@ function openTrackModal(){
   } catch(_){ applyTrackModalSavedSize(dlg); applyTrackModalSavedPosition(dlg); clampTrackModalRect(dlg); }
   if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
 }
-function closeTrackModal(){
+function closeTrackModal(opts){
+  opts = opts || {};
+  if (!opts.force){
+    const until = Number(state._trackFilePickerGuardUntil || 0);
+    if (until && Date.now() < until) return;
+  }
   const dlg = document.getElementById("trackModal");
   if (!state.trackModalOpen && !(dlg && dlg.open)) return;
+  const tx = document.getElementById("trackExportDialog");
+  if (tx && tx.open){
+    try { if (typeof closeTrackExportDialog === "function") closeTrackExportDialog(); }
+    catch(_){ try { tx.close(); } catch(__){} }
+  }
   try {
     ensureTrackState();
     if (state.track) state.track.pickMode = false;
@@ -26339,6 +26558,61 @@ function closeTrackModal(){
   }
   if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
   if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+}
+
+function syncTrackExportDialogUi(){
+  ensureTrackState();
+  ensureMapWaypointsState();
+  const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
+  const wps = Array.isArray(state.mapWaypoints) ? state.mapWaypoints : [];
+  const has = (pts.length >= 2) || (wps.length > 0);
+  const emptyEl = document.getElementById("trackExportDialogEmpty");
+  const descEl = document.getElementById("trackExportDialogDesc");
+  if (emptyEl) emptyEl.hidden = has;
+  if (descEl) descEl.hidden = !has;
+  document.querySelectorAll("#trackExportDialogFormats .track-export-fmt").forEach((b) => {
+    b.disabled = !has;
+  });
+}
+
+function openTrackExportDialog(){
+  const dlg = document.getElementById("trackExportDialog");
+  if (!dlg) return;
+  syncTrackExportDialogUi();
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(); } catch(_){}
+  }
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    const first = dlg.querySelector("#trackExportDialogFormats .track-export-fmt:not([disabled])");
+    if (first) first.focus();
+    else {
+      const c = document.getElementById("trackExportDialogClose");
+      if (c) c.focus();
+    }
+  } catch(_){}
+}
+
+function closeTrackExportDialog(){
+  const dlg = document.getElementById("trackExportDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  const opener = document.getElementById("btnTrackExportOpenBtn");
+  if (opener){
+    try { opener.focus(); } catch(_){}
+  }
+}
+
+function syncSavedTracksSelectionActions(){
+  const btn = document.getElementById("btnSavedTracksDeleteSelected");
+  const mount = document.getElementById("savedTracksMount");
+  if (!btn || !mount) return;
+  const any = !!mount.querySelector(".saved-sel-cb[data-saved-sel]:checked");
+  btn.hidden = !any;
 }
 
 /** Localized label for waypoint icon keys (hq, inf, …). */
