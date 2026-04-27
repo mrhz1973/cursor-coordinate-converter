@@ -1489,6 +1489,45 @@ Portare la modal **Waypoint** sullo stesso linguaggio grafico della modal **Conv
 
 ---
 
+## Checkpoint 2026-04-27 — Waypoint modal: lista duplicata + empty / simbolo / elimina selezionati
+
+### Perché
+
+Dopo Export dialog (step 1) e Fase 3B restavano attriti in test: **seconda lista** sotto “Nome sulla mappa” (host legacy `#map-waypoints` ancora popolato da `renderMapWaypointsList()`), **doppio messaggio** a lista vuota, riga dettagli con **Simbolo** troppo rumorosa in questa fase, pulsante **Elimina selezionati** sempre visibile e percepito come comando globale fuori dal blocco lista.
+
+### Cosa è cambiato
+
+1. **Lista duplicata**
+   - CSS `#sec-waypoints #map-waypoints { display: none !important; }` — il DOM legacy resta aggiornato da JS; UI canonica solo `#wp-list`.
+
+2. **Stato vuoto**
+   - Su `#waypointModalPanel #wp-list.track-points-list:empty` soppresso `::after` di `.track-points-list`, mantenuto l’empty-state via `.wp-list:empty::before` e `data-empty`.
+
+3. **Simbolo in lista**
+   - In `renderWpModalList()` rimosso dalla cella dettagli il segmento testuale con `mapWp.iconLabel` / etichetta icona (schema `meta.icon` e form editor invariati).
+
+4. **Elimina selezionati**
+   - Markup: pulsante con `hidden` di default; `.wp-list-actions` **dentro** `#wp-listWrap` sotto `#wp-list`, stile toolbar a bordo lista.
+   - `syncWpSelectAllState(root)` aggiorna anche visibilità `#wpDeleteSelectedBtn` in base alle checkbox; dopo toggle **Seleziona tutte** viene richiamato `syncWpSelectAllState` (prima mancava); lista vuota → `syncWpSelectAllState` dopo clear.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a `state.mapWaypoints[]`, `renderMapWaypointsList()` / overlay mappa, import/export, **Waypoint Export dialog**, builder, Traccia, Convert, Offline, Favoriti, Cerca, Misura, Theme-1, `coordconv_ui_v1`, OPSEC, geocoding, IndexedDB tile, track builder, parser.
+
+### QA
+
+- Lista vuota: un solo messaggio i18n; con waypoint: una sola lista tabellare; nessuna card duplicata sotto “Nome sulla mappa”.
+- Checkbox: “Elimina selezionati” compare solo con selezione; “Seleziona tutte” aggiorna il pulsante.
+- Export da dialog invariato.
+
+---
+
 ## Checkpoint 2026-04-27 — Waypoint Export dialog (step 1)
 
 ### Perché

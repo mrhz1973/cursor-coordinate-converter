@@ -4871,6 +4871,12 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   position: relative;
   z-index: 0;
 }
+/* #wp-list ha sia .wp-list:empty::before che .track-points-list:empty::after → doppio messaggio. */
+#waypointModalPanel #wp-list.track-points-list:empty::after{
+  content: none !important;
+  display: none !important;
+  padding: 0 !important;
+}
 #waypointModalPanel #wp-list [data-tip]{
   z-index: 1;
 }
@@ -4907,12 +4913,20 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   accent-color: var(--accent);
 }
 
-/* List actions: destructive button belongs to selection area. */
-#waypointModalPanel .wp-list-actions{
+/* List actions: toolbar in fondo al blocco lista (#wp-listWrap). */
+#waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
   justify-content:flex-end;
+  align-items:center;
   gap: var(--wp-space-2);
-  margin-top: var(--wp-space-3);
+  margin: 0;
+  padding: var(--wp-space-2) var(--wp-space-3) var(--wp-space-3);
+  border-top: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  background: color-mix(in srgb, var(--panel2) 55%, var(--panel) 45%);
+  border-radius: 0 0 var(--wp-r-lg) var(--wp-r-lg);
+}
+#waypointModalPanel .wp-modal-table-wrap #wpDeleteSelectedBtn[hidden]{
+  display: none !important;
 }
 
 /* Remove dangerous "clear all" from UI (keep node for JS binding safety). */
@@ -5162,6 +5176,12 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-row__actions{ display:flex; gap:6px; flex-shrink:0; }
 .wp-row__actions .btn{ padding:4px 8px; }
 .wp-count{ font-size:.8rem; color:var(--muted); margin-top:8px; text-align:right; }
+/* Legacy `#map-waypoints` is still filled by `renderMapWaypointsList()` for parity;
+   UI canonica = `#wp-list`. Forza assenza dalla UI: `.track-points-list { display:flex }`
+   può rendere visibile il nodo nonostante `hidden` in alcuni contesti. */
+#sec-waypoints #map-waypoints{
+  display:none !important;
+}
 #waypointModalPanel .track-points-list{
   max-height:min(52vh, 520px);
   background:color-mix(in srgb, var(--panel) 88%, var(--surface-page) 12%);
@@ -6205,11 +6225,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         </div>
         <div class="wp-modal-table-wrap" id="wp-listWrap">
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
+          <div class="wp-list-actions">
+            <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger" hidden data-i18n="waypointModal.deleteSelected" data-i18n-tip="tip.waypointModal.deleteSelected">Elimina selezionati</button>
+          </div>
         </div>
         <div id="wp-count" class="wp-count wp-count-badge" aria-live="polite"></div>
-        <div class="wp-list-actions">
-          <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger" data-i18n="waypointModal.deleteSelected" data-i18n-tip="tip.waypointModal.deleteSelected">Elimina selezionati</button>
-        </div>
         <div class="wp-map-name-row" role="radiogroup" aria-labelledby="wpMapNameLabel">
           <span id="wpMapNameLabel" class="wp-map-name-row__title" data-i18n="waypointModal.mapNameLabel">Nome sulla mappa</span>
           <label class="wp-radio-inline" data-i18n-tip="tip.waypointModal.mapNameAlwaysTip"><input type="radio" name="wpMapNameDisp" id="wpMapNameAlways" value="always"> <span data-i18n="waypointModal.mapNameAlways">Sempre visibile</span></label>
@@ -26073,13 +26093,19 @@ function waypointIconHumanLabel(code){
 
 function syncWpSelectAllState(root){
   const sa = root && root.querySelector("#wpSelectAll");
-  if (!sa) return;
-  const cbs = root.querySelectorAll(".wp-sel-cb[data-wp-sel]");
-  const n = cbs.length;
-  let ck = 0;
-  cbs.forEach(cb => { if (cb.checked) ck++; });
-  sa.checked = n > 0 && ck === n;
-  sa.indeterminate = ck > 0 && ck < n;
+  if (sa){
+    const cbs = root.querySelectorAll(".wp-sel-cb[data-wp-sel]");
+    const n = cbs.length;
+    let ck = 0;
+    cbs.forEach(cb => { if (cb.checked) ck++; });
+    sa.checked = n > 0 && ck === n;
+    sa.indeterminate = ck > 0 && ck < n;
+  }
+  const delBtn = document.getElementById("wpDeleteSelectedBtn");
+  if (delBtn){
+    const anySel = root && root.querySelector(".wp-sel-cb[data-wp-sel]:checked");
+    delBtn.hidden = !anySel;
+  }
 }
 
 /** Render the waypoint list inside `#wp-list`. Kept in sync by
@@ -26092,7 +26118,7 @@ function renderWpModalList(){
   root.setAttribute("data-empty", t("waypointModal.empty"));
   const countEl = document.getElementById("wp-count");
   if (countEl) countEl.textContent = pts.length ? (pts.length + " / 200") : "";
-  if (!pts.length){ root.innerHTML = ""; return; }
+  if (!pts.length){ root.innerHTML = ""; syncWpSelectAllState(root); return; }
   const draftId = state.waypointEditorDraft && state.waypointEditorDraft.id || "";
   const selAllTitle = esc(t("track.selAll") || "Tutte");
   let html = `<table class="wp-modal-table"><thead><tr>
@@ -26105,15 +26131,13 @@ function renderWpModalList(){
     const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
     let mgrs = "";
     try { mgrs = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
-    const icRaw = (p.meta && p.meta.icon) ? String(p.meta.icon) : "hq";
-    const icLbl = waypointIconHumanLabel(icRaw);
     const rowCls = (p.id === draftId) ? " is-editing" : "";
     const nmVal = esc(p.name || "");
     const ph = esc(t("waypointModal.editor.namePh"));
     return `<tr data-wp-row data-id="${esc(p.id)}" class="${esc(rowCls.trim())}">
       <td><input type="checkbox" class="wp-sel-cb" data-wp-sel="${esc(p.id)}"></td>
       <td><input type="text" class="wp-row-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}"></td>
-      <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)} · ${esc(t("mapWp.iconLabel"))}: ${esc(icLbl)}</div></td>
+      <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)}</div></td>
       <td style="text-align:right;white-space:nowrap">
         <button type="button" class="btn btn-sm" data-role="wp-zoom" data-i18n-tip="waypointModal.zoomTo" data-tip="${esc(t("waypointModal.zoomTo"))}" data-i18n-aria="waypointModal.zoomTo">🎯</button>
         <button type="button" class="btn btn-sm" data-role="wp-edit" data-i18n-tip="waypointModal.editor.edit" data-tip="${esc(t("waypointModal.editor.edit"))}" data-i18n-aria="waypointModal.editor.edit">✎</button>
@@ -26132,6 +26156,7 @@ function renderWpModalList(){
       if (t.id === "wpSelectAll"){
         root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = !!t.checked; });
         t.indeterminate = false;
+        syncWpSelectAllState(root);
         return;
       }
       if (t.matches("[data-wp-sel]")){
