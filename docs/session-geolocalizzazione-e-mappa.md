@@ -1449,3 +1449,41 @@ Dopo un crash di sessione restava una patch parziale sull’uniformazione grafic
 - Lint editor sul monolite: OK in sessione.
 - Manuale: aprire **Converti** in GIS → incolla/converti → verificare layout risultati, toggle persistenza nel footer, assenza di regressioni sulla `.results-col` fuori dalla modal (home nascosta / altri flussi).
 
+---
+
+## Checkpoint 2026-04-27 — Fase 3B Waypoint + micro rifiniture
+
+### Perché
+
+Portare la modal **Waypoint** sullo stesso linguaggio grafico della modal **Converti** (Fase 3A) e correggere attriti UX emersi in test (tooltip in lista, comandi distruttivi troppo esposti, opzioni “Nome sulla mappa” senza spiegazione al passaggio del mouse).
+
+### Cosa è cambiato
+
+1. **Shell e contenuto Waypoint (solo CSS/markup/i18n)**
+   - Blocco scoped `#waypointModal` / `#waypointModalPanel`: token locali, header/titolo/close coerenti col Convert, toolbar “a card”, cluster secondario export/import, primary su Nuovo, destructive-hard su eliminazione batch, editor e tabella più leggibili, contatore in stile badge.
+   - Etichette toolbar senza emoji nei testi principali (i18n IT/EN/FR aggiornate dove serviva).
+
+2. **Comandi distruttivi**
+   - **Elimina tutto**: nascosto in UI (`hidden` + `display:none` scoped); `waypointsClearAll` e binding restano nel codice.
+   - **Elimina selezionati**: spostato sotto la lista in `.wp-list-actions` (stesso `id` → nessun cambio JS).
+
+3. **Tooltip in contesto lista**
+   - Riduzione clipping: wrapper tabella con overflow visibile dove serve, scroll sulla lista; z-index più alto sui tooltip dentro `#waypointModal`.
+
+4. **Opzioni “Nome sulla mappa”**
+   - Blocco spostato in fondo al flusso principale (dopo lista/contatore/azioni lista); aggiunti `tip.waypointModal.mapNameAlwaysTip` e `tip.waypointModal.mapNameTooltipModeTip` sulle `<label>` delle radio.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a `state.mapWaypoints[]`, pick mode, `renderWpModalList()`, geocoding, OPSEC, IndexedDB tile offline, track builder, parser, altre modal, Theme-1, `coordconv_ui_v1`, Persistent UI State.
+
+### QA
+
+- Aprire Waypoint in GIS: toolbar, lista, tooltip pulsanti riga e opzioni nome mappa; verificare assenza di “Elimina tutto” visibile e posizione di “Elimina selezionati”; cambio lingua IT/EN/FR sui nuovi tip.
+
