@@ -6319,8 +6319,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div class="sub-section-title" data-i18n="track.savedTitle">Tracce salvate</div>
         <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva la traccia corrente, mostrala sulla mappa, centra la vista su una traccia o gestisci l'archivio (rinomina, elimina, selezione multipla).</p>
         <div class="track-toolbar track-saved-toolbar">
-          <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
-          <button type="button" id="btnTrackDeleteLastSaved" class="btn btn-sm" data-i18n="track.deleteLastSaved" data-i18n-tip="tip.trackDeleteLastSaved">🗑 Elimina ultima salvata</button>
+          <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
         </div>
         <div id="savedTracksMount" class="saved-tracks-wrap" aria-live="polite"></div>
         <div class="saved-tracks-actions">
@@ -19913,6 +19912,8 @@ function renderTrackCompletionPrompt(){
     trackSyncPromptsSticky();
     return;
   }
+  ensureTrackState();
+  const canSave = !!(state.track && Array.isArray(state.track.points) && state.track.points.length >= 2);
   const title = esc(t("track.saveDialogTitle") || "Salva traccia");
   const lbl = esc(t("track.saveNameLabel") || "Nome traccia");
   const save = esc(t("track.saveLibrary") || "Salva");
@@ -19929,7 +19930,7 @@ function renderTrackCompletionPrompt(){
         <input type="text" id="trackPromptName" maxlength="80" value="${def}">
       </label>
       <div class="tcp-actions">
-        <button type="button" class="btn btn-sm btn-primary" data-role="track-prompt-save">${save}</button>
+        <button type="button" class="btn btn-sm btn-primary" data-role="track-prompt-save" ${canSave ? "" : "hidden disabled"}>${save}</button>
         <button type="button" class="btn btn-sm" data-role="track-prompt-continue">${cont}</button>
         <button type="button" class="btn btn-sm" data-role="track-prompt-close">${close}</button>
       </div>
@@ -20757,6 +20758,7 @@ function renderTrackAll(){
   renderTrackSummary();
   renderTrackNewTrackPrompt();
   renderTrackCompletionPrompt();
+  syncTrackSaveLibraryActionsState();
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (tileMap){
@@ -20768,6 +20770,26 @@ function renderTrackAll(){
   }
   if (root) updateTrackMapFloatReadout(root);
   renderSavedTracksList();
+}
+
+function syncTrackSaveLibraryActionsState(){
+  ensureTrackState();
+  const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
+  const canSave = pts.length >= 2;
+  const bMain = document.getElementById("btnTrackSaveLibrary");
+  if (bMain){
+    // Final rule:
+    // - hide when <2 points
+    // - also hide when completion prompt is visible (avoid duplicate CTA)
+    bMain.hidden = !canSave || !!state._trackPromptOpen;
+    bMain.disabled = !canSave;
+  }
+  const p = document.getElementById("track-completion-prompt");
+  const bPrompt = p && p.querySelector ? p.querySelector('[data-role="track-prompt-save"]') : null;
+  if (bPrompt){
+    bPrompt.hidden = !canSave;
+    bPrompt.disabled = !canSave;
+  }
 }
 
 /** GPX: `<wpt>` + `<trk>` / `<rte>` da FeatureCollection interna. */

@@ -1644,3 +1644,48 @@ Dopo **Importa traccia → file picker → Annulla**, la modal Traccia si chiude
 - Apri Waypoint con Traccia aperta → Traccia si chiude comunque.
 - Elimina salvata che coincide con bozza corrente → sparisce dalla mappa; bozza diversa → invariata.
 
+---
+
+## Checkpoint 2026-04-27 — Track archive UI cleanup + save gating
+
+### Perché
+
+Durante i test della modal Traccia sono emerse due criticità UI:
+
+- Doppione azione “Salva traccia in archivio…” quando il prompt “Traccia completata” era già visibile con la stessa CTA.
+- Azione “Elimina ultima salvata” ritenuta **ridondante e pericolosa** (cancellazioni accidentali) rispetto al flusso coerente basato su selezione esplicita (“Elimina selezionate”).
+
+Inoltre, anche con `disabled`, il pulsante “Salva” poteva apparire ancora “premibile”: si è preferito **nascondere** i comandi di salvataggio quando la traccia non è valida (<2 punti).
+
+### Cosa è cambiato
+
+1. **Rimozione comando pericoloso**
+   - Rimosso dal markup il bottone **`#btnTrackDeleteLastSaved`** (“Elimina ultima salvata”).
+   - Il binding JS resta null-safe (nessun refactor richiesto).
+   - Rimane come flusso corretto: **“Elimina selezionate”** (già `hidden` finché non ci sono checkbox selezionate).
+
+2. **Anti-doppione salvataggio**
+   - Quando il prompt “Traccia completata” (`state._trackPromptOpen`) è visibile, `#btnTrackSaveLibrary` nella toolbar “Tracce salvate” resta nascosto per evitare doppioni.
+
+3. **Gating visibilità “Salva traccia in archivio…”**
+   - Introdotta `syncTrackSaveLibraryActionsState()` e chiamata in `renderTrackAll()`.
+   - Regola finale:
+     - Se `state.track.points.length < 2`: nasconde sia `#btnTrackSaveLibrary` sia il bottone prompt `data-role="track-prompt-save"` (e li lascia anche `disabled` come safety).
+     - Se `>= 2`: il bottone del prompt è visibile; `#btnTrackSaveLibrary` è visibile solo se il prompt non è aperto.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica a `saveCurrentTrackToLibrary`, modello dati tracce, import/export dialog, Waypoint, Convert, Offline, Favoriti, Cerca, Misura, Theme-1, Persistent UI, OPSEC, geocoding, IndexedDB/tile.
+
+### QA
+
+- Con 0–1 punto: i comandi “Salva traccia in archivio…” non sono visibili.
+- Con ≥2 punti: il salvataggio compare (nel prompt se aperto, altrimenti nella toolbar) e funziona come prima.
+- “Elimina selezionate” resta l’unica cancellazione in UI e compare solo con selezione.
+
