@@ -1562,3 +1562,46 @@ Allentare la toolbar Waypoint (troppi pulsanti export sempre visibili) introduce
 - Con waypoint: ogni formato scarica come prima; dialog si chiude; focus torna a “Esporta”.
 - Senza waypoint: dialog con messaggio vuoto e pulsanti disabilitati; Esc/chiusura waypoint modal coerenti.
 
+---
+
+## Checkpoint 2026-04-27 — Waypoint Import dialog (step 1)
+
+### Perché
+
+Allineare l’**import** al pattern già avviato con l’**export dialog** Waypoint: un solo entrypoint in toolbar, finestra dedicata con scelta file e **drag & drop locale** (non sulla mappa), riuso della logica **`waypointsImportGeoJSON`** senza nuovi parser o formati in questo turno.
+
+### Cosa è cambiato
+
+1. **Toolbar**
+   - `#wpImportBtn`: testo corto **Importa / Import / Importer** (`waypointModal.importOpen`), tooltip `tip.waypointModal.importOpen`, `aria` `waypointModal.importOpenAria`.
+   - Click apre **`#waypointImportDialog`** invece di aprire direttamente il file picker.
+
+2. **Dialog `#waypointImportDialog`**
+   - Titolo/descrizione i18n; area drop `#waypointImportDropZone` (evidenziazione `.dragover`); pulsante **Sfoglia…** → click su **`#wpImportFile`** (reset `value` per re-import).
+   - Messaggio inline `#waypointImportDialogMsg` per formato non supportato (solo `.geojson`/`.json` per nome file) e per esito import quando la dialog resta aperta.
+
+3. **Import**
+   - `waypointsImportGeoJSON(file, opts?)`: secondo argomento opzionale con **`onDone(ok, msg)`**; `ok === true` solo se almeno un waypoint è stato **aggiunto** (`added > 0`); in tutti gli altri casi `ok === false` così la dialog può restare aperta mostrando l’errore/motivo.
+   - Chiusura dialog automatica solo su `ok === true`.
+
+4. **Esc / chiusura waypoint modal**
+   - Handler Esc additivo: chiude prima `#waypointImportDialog`, poi `#waypointExportDialog`.
+   - `closeWaypointModal()` chiude anche `#waypointImportDialog` se aperta.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun drag & drop globale sulla mappa; nessun import GPX/KML/KMZ/CSV waypoint; nessuna modifica al modello `state.mapWaypoints[]` oltre a quanto già faceva `waypointsImportGeoJSON`; nessun tocco a Traccia, Convert, Offline, Favoriti, Cerca, Misura, Theme-1, `coordconv_ui_v1`, OPSEC, geocoding, IndexedDB tile, track builder, parser, builder export.
+
+### QA
+
+- Aprire Import: dialog, Sfoglia, drop `.geojson` valido → dialog si chiude, lista/mappa aggiornate come prima.
+- File `.gpx` o altro → messaggio “formato non supportato”, nessuna chiamata import.
+- Errore parse / nessun Point / cap / annulla conferma → dialog resta aperta (o messaggio coerente), badge come prima.
+- Esc con import aperta chiude import; poi export se aperta.
+

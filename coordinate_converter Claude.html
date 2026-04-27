@@ -5012,6 +5012,89 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   cursor: not-allowed;
 }
 
+/* Waypoint import dialog (showModal; Waypoint-only, GeoJSON/JSON). */
+#waypointImportDialog.waypoint-import-dialog{
+  max-width: min(480px, calc(100vw - 48px));
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-card, 14px);
+  background: var(--panel);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0,0,0,.45));
+}
+#waypointImportDialog.waypoint-import-dialog::backdrop{
+  background: rgba(0,0,0,.42);
+}
+#waypointImportDialog .app-modal-head{
+  padding: 12px 12px 12px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  gap: 8px;
+}
+#waypointImportDialog .app-modal-title{
+  font-size: clamp(1rem, 2.4vw, 1.12rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+}
+#waypointImportDialog .app-modal-close{
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--radius-control, 10px);
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--panel2) 92%, transparent);
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: none;
+  background-image: none;
+  margin: 0 2px 0 0;
+}
+#waypointImportDialog .app-modal-close:hover,
+#waypointImportDialog .app-modal-close:focus-visible{
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.waypoint-import-dialog-body{
+  padding: 16px 20px 20px;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.waypoint-import-dialog-desc{ margin: 0 0 12px; color: var(--muted); }
+.wp-import-dropzone{
+  border: 1.5px dashed color-mix(in srgb, var(--border) 92%, transparent);
+  border-radius: 14px;
+  padding: 14px;
+  background: color-mix(in srgb, var(--panel2) 70%, transparent);
+}
+.wp-import-dropzone.dragover{
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.wp-import-dropzone__inner{
+  display: grid;
+  gap: 10px;
+  place-items: center;
+  text-align: center;
+  min-height: 110px;
+}
+.wp-import-dropzone__title{
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.wp-import-dropzone__or{
+  font-size: .85rem;
+  color: var(--muted);
+}
+.waypoint-import-dialog-msg{
+  margin: 12px 0 0;
+  color: var(--muted);
+}
+.waypoint-import-dialog-msg.is-err{ color: var(--error, #ef4444); }
+.waypoint-import-dialog-msg.is-ok{ color: var(--success, var(--accent)); }
+
 #waypointModalPanel .wp-count-badge{
   display: block;
   width: fit-content;
@@ -6173,7 +6256,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" id="wpAddBtn" class="btn btn-sm btn-primary" data-i18n="waypointModal.new" data-i18n-tip="tip.waypointModal.new">Nuovo waypoint</button>
           <button type="button" id="wpPickBtn" class="btn btn-sm" aria-pressed="false" data-i18n="waypointModal.pickOnMap" data-i18n-tip="tip.waypointModal.pickOnMap">Pick sulla mappa</button>
           <span class="sep" aria-hidden="true"></span>
-          <button type="button" id="wpImportBtn" class="btn btn-sm" data-i18n="waypointModal.importGeoJSON" data-i18n-tip="tip.waypointModal.importGeoJSON">Importa GeoJSON</button>
+          <button type="button" id="wpImportBtn" class="btn btn-sm" data-i18n="waypointModal.importOpen" data-i18n-tip="tip.waypointModal.importOpen" data-i18n-aria="waypointModal.importOpenAria">Importa</button>
           <button type="button" id="wpExportOpenBtn" class="btn btn-sm" data-i18n="waypointModal.exportOpen" data-i18n-tip="tip.waypointModal.exportOpen" data-i18n-aria="waypointModal.exportOpenAria">Esporta</button>
           <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
           <span class="sep" aria-hidden="true"></span>
@@ -6539,6 +6622,26 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
     </div>
+  </div>
+</dialog>
+
+<!-- Waypoint-only import picker (pattern Import dialog — step 1). -->
+<dialog id="waypointImportDialog" class="app-modal waypoint-import-dialog" aria-labelledby="waypointImportDialogTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="waypointImportDialogTitle" class="app-modal-title" data-i18n="waypointModal.importDialogTitle">Importa waypoint</h2>
+    <button type="button" class="app-modal-close" id="waypointImportDialogClose"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body waypoint-import-dialog-body">
+    <p id="waypointImportDialogDesc" class="hint waypoint-import-dialog-desc" data-i18n="waypointModal.importDialogBody">Seleziona o trascina un file GeoJSON/JSON con waypoint puntuali.</p>
+    <div id="waypointImportDropZone" class="wp-import-dropzone" role="region" aria-labelledby="waypointImportDialogTitle">
+      <div class="wp-import-dropzone__inner">
+        <div class="wp-import-dropzone__title" data-i18n="waypointModal.importDialogDrop">Trascina qui il file</div>
+        <div class="wp-import-dropzone__or" aria-hidden="true">—</div>
+        <button type="button" class="btn btn-sm" id="waypointImportDialogBrowseBtn" data-i18n="waypointModal.importDialogBrowse">Sfoglia…</button>
+      </div>
+    </div>
+    <p id="waypointImportDialogMsg" class="hint waypoint-import-dialog-msg" hidden></p>
   </div>
 </dialog>
 
@@ -7027,6 +7130,14 @@ const I18N = {
     "waypointModal.hint":"Crea, modifica e gestisci i waypoint sulla mappa. Ogni waypoint ha nome, coordinata, icona NATO, colore e note opzionali.",
     "waypointModal.new":"Nuovo waypoint",
     "waypointModal.pickOnMap":"Pick sulla mappa",
+    "waypointModal.importOpen":"Importa",
+    "waypointModal.importOpenAria":"Apri la finestra di import waypoint",
+    "waypointModal.importDialogTitle":"Importa waypoint",
+    "waypointModal.importDialogBody":"Seleziona o trascina un file GeoJSON/JSON con waypoint puntuali.",
+    "waypointModal.importDialogDrop":"Trascina qui il file",
+    "waypointModal.importDialogBrowse":"Sfoglia…",
+    "waypointModal.importUnsupported":"Formato non supportato. Per ora importa solo GeoJSON o JSON.",
+    "waypointModal.importTooMany":"Hai trascinato più file. Per ora viene usato solo il primo.",
     "waypointModal.importGeoJSON":"Importa GeoJSON",
     "waypointModal.exportGeoJSON":"Esporta GeoJSON",
     "waypointModal.exportGpx":"Esporta GPX",
@@ -7079,6 +7190,7 @@ const I18N = {
     "waypointModal.editor.delete":"Elimina",
     "tip.waypointModal.new":"Crea un waypoint",
     "tip.waypointModal.pickOnMap":"Attiva/disattiva la modalità pick sulla mappa per creare un waypoint cliccando.",
+    "tip.waypointModal.importOpen":"Importa waypoint da file GeoJSON o JSON.",
     "tip.waypointModal.importGeoJSON":"Importa solo i Point da un file GeoJSON (cap 200).",
     "tip.waypointModal.exportGeoJSON":"Esporta i waypoint come FeatureCollection GeoJSON (kind: waypoint).",
     "tip.waypointModal.exportGpx":"Esporta i waypoint in GPX (wpt), includendo le note come descrizione.",
@@ -7923,6 +8035,14 @@ const I18N = {
     "waypointModal.hint":"Create, edit and manage map waypoints. Each has a name, coordinate, NATO icon, colour and optional notes.",
     "waypointModal.new":"New waypoint",
     "waypointModal.pickOnMap":"Pick on map",
+    "waypointModal.importOpen":"Import",
+    "waypointModal.importOpenAria":"Open the waypoint import dialog",
+    "waypointModal.importDialogTitle":"Import waypoints",
+    "waypointModal.importDialogBody":"Choose or drop a GeoJSON/JSON file containing point waypoints.",
+    "waypointModal.importDialogDrop":"Drop the file here",
+    "waypointModal.importDialogBrowse":"Browse…",
+    "waypointModal.importUnsupported":"Unsupported format. For now, only GeoJSON or JSON can be imported.",
+    "waypointModal.importTooMany":"You dropped multiple files. For now, only the first one is used.",
     "waypointModal.importGeoJSON":"Import GeoJSON",
     "waypointModal.exportGeoJSON":"Export GeoJSON",
     "waypointModal.exportGpx":"Export GPX",
@@ -7975,6 +8095,7 @@ const I18N = {
     "waypointModal.editor.delete":"Delete",
     "tip.waypointModal.new":"Create waypoint",
     "tip.waypointModal.pickOnMap":"Toggle click-on-map mode to create a waypoint with a single click.",
+    "tip.waypointModal.importOpen":"Import waypoints from a GeoJSON or JSON file.",
     "tip.waypointModal.importGeoJSON":"Import only the Point features from a GeoJSON file (cap 200).",
     "tip.waypointModal.exportGeoJSON":"Export waypoints as a GeoJSON FeatureCollection (kind: waypoint).",
     "tip.waypointModal.exportGpx":"Export waypoints as GPX (wpt), including notes as the description.",
@@ -8819,6 +8940,14 @@ const I18N = {
     "waypointModal.hint":"Créez, modifiez et gérez les waypoints sur la carte. Chaque waypoint a un nom, une coordonnée, une icône OTAN, une couleur et des notes facultatives.",
     "waypointModal.new":"Nouveau waypoint",
     "waypointModal.pickOnMap":"Pointer sur la carte",
+    "waypointModal.importOpen":"Importer",
+    "waypointModal.importOpenAria":"Ouvrir la fenêtre d’import des waypoints",
+    "waypointModal.importDialogTitle":"Importer des waypoints",
+    "waypointModal.importDialogBody":"Sélectionnez ou déposez un fichier GeoJSON/JSON contenant des waypoints ponctuels.",
+    "waypointModal.importDialogDrop":"Déposez le fichier ici",
+    "waypointModal.importDialogBrowse":"Parcourir…",
+    "waypointModal.importUnsupported":"Format non pris en charge. Pour l’instant, seuls GeoJSON ou JSON peuvent être importés.",
+    "waypointModal.importTooMany":"Vous avez déposé plusieurs fichiers. Pour l’instant, seul le premier est utilisé.",
     "waypointModal.importGeoJSON":"Importer GeoJSON",
     "waypointModal.exportGeoJSON":"Exporter GeoJSON",
     "waypointModal.exportGpx":"Exporter GPX",
@@ -8871,6 +9000,7 @@ const I18N = {
     "waypointModal.editor.delete":"Supprimer",
     "tip.waypointModal.new":"Créer un waypoint",
     "tip.waypointModal.pickOnMap":"Active/désactive le mode clic sur la carte pour créer un waypoint.",
+    "tip.waypointModal.importOpen":"Importer des waypoints depuis un fichier GeoJSON ou JSON.",
     "tip.waypointModal.importGeoJSON":"Importe uniquement les géométries Point d'un fichier GeoJSON (plafond 200).",
     "tip.waypointModal.exportGeoJSON":"Exporte les waypoints en FeatureCollection GeoJSON (kind : waypoint).",
     "tip.waypointModal.exportGpx":"Exporte les waypoints en GPX (wpt), en incluant les notes comme description.",
@@ -24127,13 +24257,60 @@ function gisInit(){
   const wpImpFile = document.getElementById("wpImportFile");
   if (wpImp && wpImpFile) wpImp.addEventListener("click", (ev) => {
     ev.preventDefault();
-    try { wpImpFile.value = ""; } catch(_){}
-    wpImpFile.click();
+    if (typeof openWaypointImportDialog === "function") openWaypointImportDialog();
   });
   if (wpImpFile) wpImpFile.addEventListener("change", (ev) => {
     const f = ev.target && ev.target.files && ev.target.files[0];
-    if (f) waypointsImportGeoJSON(f);
+    if (f) handleWaypointImportFile(f);
   });
+  const wpiDlg = document.getElementById("waypointImportDialog");
+  const wpiClose = document.getElementById("waypointImportDialogClose");
+  if (wpiClose) wpiClose.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog();
+  });
+  const wpiBrowse = document.getElementById("waypointImportDialogBrowseBtn");
+  if (wpiBrowse && wpImpFile) wpiBrowse.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    try { wpImpFile.value = ""; } catch(_){}
+    wpImpFile.click();
+  });
+  const wpiDrop = document.getElementById("waypointImportDropZone");
+  if (wpiDrop && !wpiDrop._wpImportDropBound){
+    wpiDrop._wpImportDropBound = true;
+    let depth = 0;
+    const stop = (ev) => { ev.preventDefault(); ev.stopPropagation(); };
+    wpiDrop.addEventListener("dragenter", (ev) => { stop(ev); depth++; wpiDrop.classList.add("dragover"); });
+    wpiDrop.addEventListener("dragover", stop);
+    wpiDrop.addEventListener("dragleave", (ev) => {
+      stop(ev);
+      depth--;
+      if (depth <= 0){ depth = 0; wpiDrop.classList.remove("dragover"); }
+    });
+    wpiDrop.addEventListener("drop", (ev) => {
+      stop(ev);
+      depth = 0;
+      wpiDrop.classList.remove("dragover");
+      const files = ev.dataTransfer && ev.dataTransfer.files;
+      if (files && files.length){
+        const f = files[0];
+        if (files.length > 1){
+          try { showWaypointImportDialogMessage("error", t("waypointModal.importTooMany") || "Only one file at a time."); }
+          catch(_){}
+        }
+        handleWaypointImportFile(f);
+      }
+    });
+  }
+  if (wpiDlg){
+    wpiDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog();
+    });
+    wpiDlg.addEventListener("click", (ev) => {
+      if (ev.target === wpiDlg && typeof closeWaypointImportDialog === "function") closeWaypointImportDialog();
+    });
+  }
   const wpExpOpen = document.getElementById("wpExportOpenBtn");
   if (wpExpOpen) wpExpOpen.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -24226,6 +24403,12 @@ function gisInit(){
     if (wptM && !wptM.hidden){
       ev.preventDefault();
       hideWptMapContextMenu();
+      return;
+    }
+    const wpi = document.getElementById("waypointImportDialog");
+    if (wpi && wpi.open){
+      ev.preventDefault();
+      if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog();
       return;
     }
     const wpx = document.getElementById("waypointExportDialog");
@@ -25111,6 +25294,11 @@ function openWaypointModal(opts){
 function closeWaypointModal(){
   const dlg = document.getElementById("waypointModal");
   if (!state.waypointsModalOpen && !(dlg && dlg.open)) return;
+  const wpi = document.getElementById("waypointImportDialog");
+  if (wpi && wpi.open){
+    try { if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog(); }
+    catch(_){ try { wpi.close(); } catch(__){} }
+  }
   const wpx = document.getElementById("waypointExportDialog");
   if (wpx && wpx.open){
     try { if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog(); }
@@ -25181,6 +25369,78 @@ function closeWaypointExportDialog(){
   if (!dlg) return;
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   const opener = document.getElementById("wpExportOpenBtn");
+  if (opener){
+    try { opener.focus(); } catch(_){}
+  }
+}
+
+function showWaypointImportDialogMessage(kind, msg){
+  const el = document.getElementById("waypointImportDialogMsg");
+  if (!el) return;
+  const m = (msg == null) ? "" : String(msg);
+  el.textContent = m;
+  el.hidden = !m.trim();
+  el.classList.remove("is-err", "is-ok");
+  if (kind === "error") el.classList.add("is-err");
+  if (kind === "success") el.classList.add("is-ok");
+}
+
+function isWaypointImportFileSupported(file){
+  if (!file) return false;
+  const n = String(file.name || "");
+  return /\.(geojson|json)$/i.test(n);
+}
+
+function handleWaypointImportFile(file){
+  if (!file) return;
+  if (!isWaypointImportFileSupported(file)){
+    showWaypointImportDialogMessage("error", t("waypointModal.importUnsupported") || "Unsupported format.");
+    return;
+  }
+  showWaypointImportDialogMessage("", "");
+  try {
+    waypointsImportGeoJSON(file, {
+      onDone: (ok, msg) => {
+        if (ok){
+          showWaypointImportDialogMessage("success", msg || "");
+          try { closeWaypointImportDialog(); } catch(_){}
+        } else {
+          showWaypointImportDialogMessage("error", msg || "");
+        }
+      }
+    });
+  } catch(err){
+    showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+  }
+}
+
+function openWaypointImportDialog(){
+  const dlg = document.getElementById("waypointImportDialog");
+  if (!dlg) return;
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(); } catch(_){}
+  }
+  showWaypointImportDialogMessage("", "");
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    const b = document.getElementById("waypointImportDialogBrowseBtn");
+    if (b) b.focus();
+    else {
+      const c = document.getElementById("waypointImportDialogClose");
+      if (c) c.focus();
+    }
+  } catch(_){}
+}
+
+function closeWaypointImportDialog(){
+  const dlg = document.getElementById("waypointImportDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  const opener = document.getElementById("wpImportBtn");
   if (opener){
     try { opener.focus(); } catch(_){}
   }
@@ -26417,26 +26677,51 @@ function waypointsZoomTo(id){
 /* ---- GeoJSON import / export (waypoints only) ---- */
 
 function waypointsImportGeoJSON(file){
+  const opts = arguments.length > 1 ? arguments[1] : null;
   if (!file) return;
   ensureMapWaypointsState();
+  const done = (ok, msg) => {
+    if (opts && typeof opts.onDone === "function"){
+      try { opts.onDone(!!ok, msg); } catch(_){}
+    }
+  };
   const reader = new FileReader();
-  reader.onerror = () => setBadge("error", t("spatial.err.read") || "File read error");
+  reader.onerror = () => {
+    const msg = t("spatial.err.read") || "File read error";
+    setBadge("error", msg);
+    done(false, msg);
+  };
   reader.onload = () => {
     let fc;
     try { fc = spatialGeojsonTextToFeatureCollection(String(reader.result || "")); }
-    catch(err){ setBadge("error", t("spatial.err.parse") || "GeoJSON parse error"); return; }
+    catch(err){
+      const msg = t("spatial.err.parse") || "GeoJSON parse error";
+      setBadge("error", msg);
+      done(false, msg);
+      return;
+    }
     const feats = (fc && Array.isArray(fc.features)) ? fc.features : [];
     const points = feats.filter(f => f && f.geometry && f.geometry.type === "Point");
     if (!points.length){
-      setBadge("info", t("waypointModal.importEmpty"));
+      const msg = t("waypointModal.importEmpty");
+      setBadge("info", msg);
+      done(false, msg);
       return;
     }
     const remaining = 200 - state.mapWaypoints.length;
     let toImport = points;
     if (points.length > remaining){
-      if (remaining <= 0){ setBadge("error", t("waypointModal.capFull")); return; }
+      if (remaining <= 0){
+        const msg = t("waypointModal.capFull");
+        setBadge("error", msg);
+        done(false, msg);
+        return;
+      }
       const msg = t("waypointModal.capWarn").replace("{0}", String(points.length)).replace("{1}", String(remaining));
-      if (typeof window.confirm === "function" && !window.confirm(msg)) return;
+      if (typeof window.confirm === "function" && !window.confirm(msg)){
+        done(false, msg);
+        return;
+      }
       toImport = points.slice(0, remaining);
     }
     let added = 0, skipped = 0;
@@ -26463,6 +26748,7 @@ function waypointsImportGeoJSON(file){
     const msg = (t("waypointModal.importedN") || "Imported {0} waypoints ({1} skipped).")
       .replace("{0}", String(added)).replace("{1}", String(skipped));
     setBadge(added ? "success" : "info", msg);
+    done(added > 0, msg);
   };
   reader.readAsText(file);
 }
