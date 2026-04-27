@@ -5632,23 +5632,142 @@ body:not(.gis-mode) #convertModal .gis-panel-resize-handle{ display:none !import
 body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   max-height:calc(min(50vh, 480px) - 58px);
 }
+/* Outer wrap stays overflow:visible so [data-tip]::after is not clipped; scroll lives inside. */
 .saved-tracks-wrap{
-  margin-top:8px; max-height:min(38vh, 320px); overflow:auto;
+  margin-top:8px;
+  overflow:visible;
   border:1px solid var(--border); border-radius:12px;
   background:color-mix(in srgb, var(--panel) 90%, var(--surface-page) 10%);
+}
+.saved-tracks-wrap .saved-tracks-scroll-inner{
+  max-height:min(38vh, 320px);
+  overflow:auto;
 }
 .saved-tracks-table{ width:100%; border-collapse:collapse; font-size:.82rem; }
 .saved-tracks-table th, .saved-tracks-table td{
   padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:middle;
 }
 .saved-tracks-table th{ text-align:left; color:var(--muted); font-weight:600; position:sticky; top:0; background:var(--panel2); z-index:1; }
+.saved-tracks-table .saved-tracks-sort-btn{
+  background:transparent; border:none; padding:0; margin:0;
+  font:inherit; color:inherit; cursor:pointer; text-align:inherit;
+}
+.saved-tracks-table .saved-tracks-sort-btn:hover{ color:var(--text); text-decoration:underline; }
+/* Saved tracks table: tips below anchor (sticky thead + inner scroll would clip upward tips); tight max-width; local z above sticky th */
+@keyframes tipInDownSavedL{
+  from{ opacity:0; transform:translateY(-4px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:focus-visible::after{
+  bottom:auto;
+  top:calc(100% + 8px);
+  max-width:min(260px, calc(100vw - 32px));
+  line-height:1.42;
+  white-space:normal;
+  overflow-wrap:break-word;
+  width:max-content;
+  min-width:0;
+  z-index:60;
+  animation:tipInDown .15s ease-out;
+}
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:focus-visible::before{
+  bottom:auto;
+  top:calc(100% + 3px);
+  border-top-color:transparent;
+  border-bottom-color:var(--tooltip-bg);
+  z-index:60;
+}
+/* Select-all + Vis.: anchor left — avoids bubble extending past panel left edge */
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2) [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2) [data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:focus-visible::after{
+  left:0;
+  right:auto;
+  transform:translateX(0);
+  animation:tipInDownSavedL .15s ease-out;
+}
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:focus-visible::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2) [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2) [data-tip]:focus-visible::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:focus-visible::before{
+  left:10px;
+  right:auto;
+  transform:none;
+}
+/* Centra + ultima colonna (×): anchor right */
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:focus-visible::after{
+  left:auto;
+  right:0;
+  transform:translateX(0);
+  animation:tipInDownSavedL .15s ease-out;
+}
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:focus-visible::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:focus-visible::before{
+  left:auto;
+  right:10px;
+  transform:none;
+}
 .saved-tracks-table tr[data-saved-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
+.saved-tracks-table tr[data-saved-row].is-selected:hover{
+  background:color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
 .saved-tracks-table .saved-name-inp{
   width:100%; max-width:160px; font:inherit; padding:4px 6px; border-radius:8px;
   border:1px solid var(--border); background:var(--panel);
 }
 .saved-tracks-table .btn-saved-fly{ padding:3px 8px; font-size:.78rem; }
 .track-saved-toolbar{ margin-top:8px; }
+.saved-tracks-batch-bar{
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px;
+  margin-top:8px;
+}
+.saved-tracks-batch-bar .sep{ margin:0 2px; opacity:.45; }
+.saved-tracks-table tr[data-saved-row].is-selected{
+  background:color-mix(in srgb, var(--accent) 10%, var(--panel));
+}
+/* Tracce salvate: riduce sfarfallio hover (sticky+scroll, backdrop-filter, animazioni tooltip). */
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:focus-visible::after{
+  animation:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+}
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table [data-tip]:focus-visible::before{
+  animation:none !important;
+}
+/* Nessun tooltip a bolle su checkbox / col. Vis. (evita loop hover con pseudo sotto la cella). */
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(1) [data-tip]:focus-visible::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2)[data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2)[data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2)[data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table th:nth-child(2)[data-tip]:focus-visible::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:focus-visible::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:nth-child(2) [data-tip]:focus-visible::before{
+  content:none !important;
+  display:none !important;
+}
+.saved-tracks-table th:nth-child(1),
+.saved-tracks-table td:nth-child(1){ width:36px; min-width:36px; box-sizing:border-box; }
+.saved-tracks-table th:nth-child(2),
+.saved-tracks-table td:nth-child(2){ width:44px; min-width:44px; box-sizing:border-box; }
 .saved-tracks-empty{ padding:12px; color:var(--muted); font-size:.86rem; }
 .saved-tracks-overlay .track-line{
   fill:none; stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round;
@@ -6334,10 +6453,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="track-summary"></div>
         <hr class="sub-sep" style="margin:14px 0">
         <div class="sub-section-title" data-i18n="track.savedTitle">Tracce salvate</div>
-        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva la traccia corrente, mostrala sulla mappa, centra la vista su una traccia o gestisci l'archivio (rinomina, elimina, selezione multipla).</p>
+        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» mostra o nasconde la traccia sulla mappa; «Centra» sposta la vista sulla traccia; puoi rinominare, selezionare per export ed eliminare.</p>
         <div class="track-toolbar track-saved-toolbar">
           <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
           <span id="savedTracksSelectionMeta" class="hint" style="margin-left:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
+        </div>
+        <div id="savedTracksBatchBar" class="saved-tracks-batch-bar" hidden>
+          <button type="button" id="btnSavedTracksShowSelected" class="btn btn-sm" disabled data-i18n="track.batchShowSelected" data-i18n-tip="tip.trackBatchShowSelected">Mostra selezionate</button>
+          <button type="button" id="btnSavedTracksHideSelected" class="btn btn-sm" disabled data-i18n="track.batchHideSelected" data-i18n-tip="tip.trackBatchHideSelected">Nascondi selezionate</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="btnSavedTracksShowAll" class="btn btn-sm" disabled data-i18n="track.batchShowAll" data-i18n-tip="tip.trackBatchShowAll">Mostra tutte</button>
+          <button type="button" id="btnSavedTracksHideAll" class="btn btn-sm" disabled data-i18n="track.batchHideAll" data-i18n-tip="tip.trackBatchHideAll">Nascondi tutte</button>
         </div>
         <div id="savedTracksMount" class="saved-tracks-wrap" aria-live="polite"></div>
         <div class="saved-tracks-actions">
@@ -7224,7 +7350,12 @@ const I18N = {
     "track.savedEdit":"Modifica",
     "track.savedEditLoaded":"Modifica: caricata “{0}” nell’editor.",
     "tip.trackEditSaved":"Carica la traccia salvata nell’editor (diventa modificabile).",
-    "track.savedSelectionCount":"Selezione: {0}",
+    "track.savedSelectionCount":"Selezione: {0} / {1}",
+    "track.batchShowSelected":"Mostra selezionate",
+    "track.batchHideSelected":"Nascondi selezionate",
+    "track.batchShowOnlySelected":"Mostra solo selezionate",
+    "track.batchShowAll":"Mostra tutte",
+    "track.batchHideAll":"Nascondi tutte",
     "track.startLabel":"I",
     "track.endLabel":"F",
     "track.waypointDefaultName":"Waypoint",
@@ -7366,7 +7497,7 @@ const I18N = {
     "track.exportDialogBody":"Esporta le tracce selezionate nell’archivio ({0}). Se ne selezioni più di una, verrà generato un file .zip con un file per traccia.",
     "track.exportDialogEmpty":"Nessuna traccia selezionata nell’archivio. Spunta una o più righe nella tabella “Tracce salvate”.",
     "track.savedTitle":"Tracce salvate",
-    "track.savedHint":"Salva la traccia corrente, mostrala sulla mappa, centra la vista su una riga o gestisci l'archivio (rinomina, elimina, selezione multipla).",
+    "track.savedHint":"Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» mostra o nasconde la traccia sulla mappa; «Centra» sposta la vista sulla traccia; puoi rinominare, selezionare per export ed eliminare.",
     "track.saveLibrary":"💾 Salva traccia in archivio…",
     "track.updateLibrary":"Aggiorna traccia",
     "track.closeLoseSavedEditConfirm":"Le modifiche non salvate verranno annullate. La traccia salvata nell’archivio resterà intatta. Continuare?",
@@ -7388,10 +7519,10 @@ const I18N = {
     "track.colPts":"Pti",
     "track.colWhen":"Data",
     "track.colDist":"Distanza",
-    "track.colGo":"Mappa",
+    "track.colGo":"Centra",
     "track.colDel":"✕",
     "track.delOne":"×",
-    "track.flyBtn":"Mappa",
+    "track.flyBtn":"Centra",
     "track.empty":"Nessun punto. Aggiungi il primo con uno dei pulsanti sopra.",
     "track.point":"Punto",
     "track.pointNamePh":"Nome punto (opz.)",
@@ -7435,6 +7566,7 @@ const I18N = {
     "tip.trackDeleteLastSaved":"Rimuove l'ultima traccia aggiunta all'archivio (ordine di salvataggio).",
     "tip.trackDeleteSelected":"Elimina le tracce spuntate nella colonna a sinistra.",
     "tip.trackSavedDelOne":"Elimina questa traccia dall'archivio",
+    "tip.trackSavedVisToggle":"Mostra o nasconde questa traccia sulla mappa.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -7695,9 +7827,14 @@ const I18N = {
     "tip.trackRemovePoint":"Rimuovi punto dalla traccia",
     "tip.mapWpRemove":"Rimuovi waypoint",
     "tip.geoPickResult":"Usa risultato e converti",
-    "tip.trackSavedFly":"Mostra traccia sulla mappa",
+    "tip.trackSavedFly":"Centra la mappa su questa traccia.",
     "tip.trackColVis":"Visibilità su mappa",
     "tip.trackSelAllSaved":"Seleziona tutte le tracce",
+    "tip.trackBatchShowSelected":"Rendi visibili su mappa le tracce selezionate (colonna Vis.).",
+    "tip.trackBatchHideSelected":"Nascondi su mappa le tracce selezionate.",
+    "tip.trackBatchShowOnlySelected":"Mostra su mappa solo le tracce selezionate; nascondi tutte le altre.",
+    "tip.trackBatchShowAll":"Mostra tutte le tracce salvate sulla mappa.",
+    "tip.trackBatchHideAll":"Nascondi tutte le tracce salvate dalla mappa.",
     "tip.exportDatumExtras":"Includi conversioni datum extra nell’export",
     "net.online":"Online",
     "net.offline":"Offline",
@@ -8149,7 +8286,12 @@ const I18N = {
     "track.savedEdit":"Edit",
     "track.savedEditLoaded":"Edit: loaded “{0}” into the editor.",
     "tip.trackEditSaved":"Load the saved track into the editor (it becomes editable).",
-    "track.savedSelectionCount":"Selected: {0}",
+    "track.savedSelectionCount":"Selected: {0} / {1}",
+    "track.batchShowSelected":"Show selected",
+    "track.batchHideSelected":"Hide selected",
+    "track.batchShowOnlySelected":"Show only selected",
+    "track.batchShowAll":"Show all",
+    "track.batchHideAll":"Hide all",
     "track.startLabel":"S",
     "track.endLabel":"E",
     "track.waypointDefaultName":"Waypoint",
@@ -8291,7 +8433,7 @@ const I18N = {
     "track.exportDialogBody":"Export the selected tracks from the archive ({0}). If you select more than one, a .zip file will be generated with one file per track.",
     "track.exportDialogEmpty":"No saved track selected. Tick one or more rows in the “Saved tracks” table.",
     "track.savedTitle":"Saved tracks",
-    "track.savedHint":"Save the current track, show saved tracks on the map, centre the map from a row, or manage the archive (rename, delete, multi-select).",
+    "track.savedHint":"Save the current track to the archive. In the table: the “Show” column toggles visibility on the map; “Center” moves the map view to the track; you can rename, select rows for export, and delete.",
     "track.saveLibrary":"💾 Save track to archive…",
     "track.updateLibrary":"Update track",
     "track.closeLoseSavedEditConfirm":"Unsaved changes will be discarded. The saved track in the archive will remain unchanged. Continue?",
@@ -8313,10 +8455,10 @@ const I18N = {
     "track.colPts":"Pts",
     "track.colWhen":"Date",
     "track.colDist":"Distance",
-    "track.colGo":"Map",
+    "track.colGo":"Center",
     "track.colDel":"✕",
     "track.delOne":"×",
-    "track.flyBtn":"Map",
+    "track.flyBtn":"Center",
     "track.empty":"No points yet. Add the first one with a button above.",
     "track.point":"Point",
     "track.pointNamePh":"Point name (opt.)",
@@ -8360,6 +8502,7 @@ const I18N = {
     "tip.trackDeleteLastSaved":"Remove the most recently saved archive entry.",
     "tip.trackDeleteSelected":"Delete the tracks checked in the left column.",
     "tip.trackSavedDelOne":"Remove this track from the archive",
+    "tip.trackSavedVisToggle":"Show or hide this track on the map.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -8619,9 +8762,14 @@ const I18N = {
     "tip.trackRemovePoint":"Remove point from track",
     "tip.mapWpRemove":"Remove waypoint",
     "tip.geoPickResult":"Use result and convert",
-    "tip.trackSavedFly":"Show track on map",
+    "tip.trackSavedFly":"Center the map on this track.",
     "tip.trackColVis":"Visibility on map",
     "tip.trackSelAllSaved":"Select all tracks",
+    "tip.trackBatchShowSelected":"Show selected saved tracks on the map (Vis. column).",
+    "tip.trackBatchHideSelected":"Hide selected saved tracks from the map.",
+    "tip.trackBatchShowOnlySelected":"Show only selected saved tracks on the map; hide all others.",
+    "tip.trackBatchShowAll":"Show all saved tracks on the map.",
+    "tip.trackBatchHideAll":"Hide all saved tracks from the map.",
     "tip.exportDatumExtras":"Include extra-datum conversions in export",
     "net.online":"Online",
     "net.offline":"Offline",
@@ -9074,7 +9222,12 @@ const I18N = {
     "track.savedEdit":"Modifier",
     "track.savedEditLoaded":"Modification : “{0}” chargée dans l’éditeur.",
     "tip.trackEditSaved":"Charge la trace enregistrée dans l’éditeur (elle devient modifiable).",
-    "track.savedSelectionCount":"Sélection : {0}",
+    "track.savedSelectionCount":"Sélection : {0} / {1}",
+    "track.batchShowSelected":"Afficher la sélection",
+    "track.batchHideSelected":"Masquer la sélection",
+    "track.batchShowOnlySelected":"Afficher seulement sélectionnées",
+    "track.batchShowAll":"Tout afficher",
+    "track.batchHideAll":"Tout masquer",
     "track.startLabel":"I",
     "track.endLabel":"F",
     "track.waypointDefaultName":"Waypoint",
@@ -9216,7 +9369,7 @@ const I18N = {
     "track.exportDialogBody":"Exporter les traces sélectionnées dans l’archive ({0}). Si vous en sélectionnez plusieurs, un fichier .zip sera généré avec un fichier par trace.",
     "track.exportDialogEmpty":"Aucune trace enregistrée sélectionnée. Cochez une ou plusieurs lignes du tableau « Traces enregistrées ».",
     "track.savedTitle":"Traces enregistrées",
-    "track.savedHint":"Enregistrez la trace courante, affichez-la sur la carte, centrez la vue depuis une ligne ou gérez l'archive (renommer, supprimer, sélection multiple).",
+    "track.savedHint":"Enregistrez la trace courante dans l’archive. Dans le tableau : la colonne « Aff. » affiche ou masque la trace sur la carte ; « Centrer » déplace la vue sur la trace ; vous pouvez renommer, sélectionner pour l’export et supprimer.",
     "track.saveLibrary":"💾 Enregistrer la trace…",
     "track.updateLibrary":"Mettre à jour la trace",
     "track.closeLoseSavedEditConfirm":"Les modifications non enregistrées seront annulées. La trace enregistrée dans l'archive restera intacte. Continuer ?",
@@ -9238,10 +9391,10 @@ const I18N = {
     "track.colPts":"Pts",
     "track.colWhen":"Date",
     "track.colDist":"Distance",
-    "track.colGo":"Carte",
+    "track.colGo":"Centrer",
     "track.colDel":"✕",
     "track.delOne":"×",
-    "track.flyBtn":"Carte",
+    "track.flyBtn":"Centrer",
     "track.empty":"Aucun point. Ajoutez le premier avec un bouton ci-dessus.",
     "track.point":"Point",
     "track.pointNamePh":"Nom du point (opt.)",
@@ -9285,6 +9438,7 @@ const I18N = {
     "tip.trackDeleteLastSaved":"Supprime la dernière trace ajoutée à l'archive.",
     "tip.trackDeleteSelected":"Supprime les traces cochées dans la colonne de gauche.",
     "tip.trackSavedDelOne":"Supprimer cette trace de l'archive",
+    "tip.trackSavedVisToggle":"Afficher ou masquer cette trace sur la carte.",
     "paste.title":"Saisie automatique",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM ou MGRS — avec ou sans espaces : l'app détecte automatiquement le format.",
     "paste.placeholder":"ex. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -9544,9 +9698,14 @@ const I18N = {
     "tip.trackRemovePoint":"Retirer le point de la trace",
     "tip.mapWpRemove":"Supprimer le waypoint",
     "tip.geoPickResult":"Utiliser ce résultat et convertir",
-    "tip.trackSavedFly":"Afficher la trace sur la carte",
+    "tip.trackSavedFly":"Centrer la carte sur cette trace.",
     "tip.trackColVis":"Visibilité sur la carte",
     "tip.trackSelAllSaved":"Tout sélectionner (traces)",
+    "tip.trackBatchShowSelected":"Afficher sur la carte les traces sélectionnées (colonne affichage).",
+    "tip.trackBatchHideSelected":"Masquer sur la carte les traces sélectionnées.",
+    "tip.trackBatchShowOnlySelected":"Afficher sur la carte uniquement les traces sélectionnées ; masquer les autres.",
+    "tip.trackBatchShowAll":"Afficher toutes les traces enregistrées sur la carte.",
+    "tip.trackBatchHideAll":"Masquer toutes les traces enregistrées de la carte.",
     "tip.exportDatumExtras":"Inclure les datums supplémentaires dans l’export",
     "net.online":"En ligne",
     "net.offline":"Hors ligne",
@@ -10089,6 +10248,10 @@ const state = {
   _pendingTrackModal: false,
   /** Persisted: saved track archive (polyline/polygon snapshots), max 50. */
   savedTracks: [],
+  /** Transient: saved-track row ids selected for export / batch (not persisted). */
+  _savedTracksSelectedIds: [],
+  /** Transient: table sort for saved tracks list (session only; not persisted). */
+  _savedTracksSort: { key: "when", dir: "desc" },
   /** Transient: editor draft inside the Waypoint manager.
    *  Shape: { id?, lat, lon, name, icon, color, notes }. */
   waypointEditorDraft: null
@@ -18395,6 +18558,9 @@ function ensureSavedTracksState(){
     }
     st.points = clean;
   }
+  if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+  const _stIdSet = new Set(state.savedTracks.map(s => String(s.id)));
+  state._savedTracksSelectedIds = state._savedTracksSelectedIds.filter(id => _stIdSet.has(String(id)));
 }
 function savedTrackDistanceM(st){
   const pts = st && Array.isArray(st.points) ? st.points : [];
@@ -18569,15 +18735,7 @@ function deleteLastSavedTrack(){
   saveStore();
   renderSavedTracksList();
   refreshTileMapForTrackUi();
-  try {
-    const mount = document.getElementById("savedTracksMount");
-    if (mount){
-      mount.querySelectorAll(".saved-sel-cb[data-saved-sel]").forEach(cb => { cb.checked = false; });
-      const sa = mount.querySelector("#savedTracksSelectAll");
-      if (sa) sa.checked = false;
-    }
-    if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
-  } catch(_){}
+  if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   if (snap) maybeClearCurrentTrackIfMatchesDeletedSaved([snap]);
   setBadge("success", t("track.deletedLastOk") || "Ultima traccia salvata eliminata.");
 }
@@ -18593,15 +18751,7 @@ function deleteSavedTracksByIds(ids){
   saveStore();
   renderSavedTracksList();
   refreshTileMapForTrackUi();
-  try {
-    const mount = document.getElementById("savedTracksMount");
-    if (mount){
-      mount.querySelectorAll(".saved-sel-cb[data-saved-sel]").forEach(cb => { cb.checked = false; });
-      const sa = mount.querySelector("#savedTracksSelectAll");
-      if (sa) sa.checked = false;
-    }
-    if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
-  } catch(_){}
+  if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   maybeClearCurrentTrackIfMatchesDeletedSaved(deletedPointSnapshots);
   setBadge("success", (t("track.deletedN") || "Eliminate {0} tracce.").replace("{0}", String(set.size)));
 }
@@ -19124,9 +19274,11 @@ function renderSavedTracksList(){
     if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
     return;
   }
+  const tipFly = esc(t("tip.trackSavedFly") || "");
+  const selSet = new Set((state._savedTracksSelectedIds || []).map(String));
   let html = `<table class="saved-tracks-table"><thead><tr>
-    <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-tip="tip.trackSelAllSaved" data-tip="${esc(t("tip.trackSelAllSaved"))}" data-i18n-aria="tip.trackSelAllSaved"></th>
-    <th style="width:44px">${esc(t("track.colVis") || "Vis.")}</th>
+    <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"></th>
+    <th style="width:44px" data-i18n-aria="tip.trackSavedVisToggle">${esc(t("track.colVis") || "Vis.")}</th>
     <th>${esc(t("track.colName") || "Nome")}</th>
     <th style="width:52px">${esc(t("track.colPts") || "Pti")}</th>
     <th>${esc(t("track.colWhen") || "Data")}</th>
@@ -19139,20 +19291,21 @@ function renderSavedTracksList(){
     const d = savedTrackDistanceM(st);
     const distStr = d != null ? formatMapMeasureDistance(d, u) : "—";
     const vis = st.visible !== false;
-    html += `<tr data-saved-row data-id="${esc(st.id)}">
-      <td><input type="checkbox" class="saved-sel-cb" data-saved-sel="${esc(st.id)}"></td>
-      <td><input type="checkbox" data-saved-vis="${esc(st.id)}" ${vis ? "checked" : ""}></td>
+    const rowSel = selSet.has(String(st.id));
+    html += `<tr data-saved-row data-id="${esc(st.id)}" class="${rowSel ? "is-selected" : ""}">
+      <td><input type="checkbox" class="saved-sel-cb" data-saved-sel="${esc(st.id)}"${rowSel ? " checked" : ""}></td>
+      <td><input type="checkbox" data-saved-vis="${esc(st.id)}" data-i18n-aria="tip.trackSavedVisToggle" ${vis ? "checked" : ""}></td>
       <td><input type="text" class="saved-name-inp" data-saved-rename="${esc(st.id)}" value="${esc(st.name)}" maxlength="80"></td>
       <td>${st.points.length}</td>
       <td>${esc(formatSavedTrackWhen(st.savedAt))}</td>
       <td>${esc(distStr)}</td>
       <td><button type="button" class="btn btn-sm" data-saved-edit="${esc(st.id)}" data-i18n="track.savedEdit" data-i18n-tip="tip.trackEditSaved" data-i18n-aria="tip.trackEditSaved">${esc(t("track.savedEdit") || "Modifica")}</button></td>
-      <td><button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}">${esc(t("track.flyBtn") || "Mappa")}</button></td>
+      <td><button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}" data-i18n="track.flyBtn" data-i18n-tip="tip.trackSavedFly" data-i18n-aria="tip.trackSavedFly" data-tip="${tipFly}">${esc(t("track.flyBtn") || "Centra")}</button></td>
       <td><button type="button" class="btn btn-sm btn-danger" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne">${esc(t("track.delOne") || "×")}</button></td>
     </tr>`;
   }
   html += "</tbody></table>";
-  mount.innerHTML = html;
+  mount.innerHTML = `<div class="saved-tracks-scroll-inner">${html}</div>`;
   try {
     const tipEdit = (typeof t === "function") ? (t("tip.trackEditSaved") || "") : "";
     if (tipEdit){
@@ -19162,6 +19315,23 @@ function renderSavedTracksList(){
       });
     }
   } catch(_){}
+  try {
+    const sa = mount.querySelector("#savedTracksSelectAll");
+    if (sa){
+      const a = (typeof t === "function") ? (t("tip.trackSelAllSaved") || "") : "";
+      if (a) sa.setAttribute("aria-label", a);
+    }
+    const visTh = mount.querySelector(".saved-tracks-table thead th:nth-child(2)");
+    if (visTh){
+      const a = (typeof t === "function") ? (t("tip.trackSavedVisToggle") || "") : "";
+      if (a) visTh.setAttribute("aria-label", a);
+    }
+    const vt = (typeof t === "function") ? (t("tip.trackSavedVisToggle") || "") : "";
+    if (vt){
+      mount.querySelectorAll("[data-saved-vis]").forEach((el) => { el.setAttribute("aria-label", vt); });
+    }
+  } catch(_){}
+  if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
   if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   if (!mount._savedTracksDelegated){
     mount._savedTracksDelegated = true;
@@ -19169,11 +19339,35 @@ function renderSavedTracksList(){
       const t = ev.target;
       if (!t || !t.matches) return;
       if (t.id === "savedTracksSelectAll"){
-        mount.querySelectorAll(".saved-sel-cb").forEach(cb => { cb.checked = t.checked; });
+        if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+        const allCbs = [...mount.querySelectorAll(".saved-sel-cb[data-saved-sel]")];
+        if (t.checked){
+          state._savedTracksSelectedIds = [...new Set(allCbs.map(cb => String(cb.getAttribute("data-saved-sel") || "")).filter(Boolean))];
+        } else {
+          state._savedTracksSelectedIds = [];
+        }
+        allCbs.forEach(cb => { cb.checked = t.checked; });
+        t.indeterminate = false;
+        mount.querySelectorAll("tr[data-saved-row]").forEach((tr) => {
+          if (t.checked) tr.classList.add("is-selected");
+          else tr.classList.remove("is-selected");
+        });
         if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
         return;
       }
       if (t.matches(".saved-sel-cb[data-saved-sel]")){
+        if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+        const sid = String(t.getAttribute("data-saved-sel") || "");
+        const arr = state._savedTracksSelectedIds;
+        const ix = arr.indexOf(sid);
+        if (t.checked && ix < 0) arr.push(sid);
+        if (!t.checked && ix >= 0) arr.splice(ix, 1);
+        if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
+        const tr = t.closest && t.closest("tr[data-saved-row]");
+        if (tr){
+          if (t.checked) tr.classList.add("is-selected");
+          else tr.classList.remove("is-selected");
+        }
         if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
         return;
       }
@@ -21165,12 +21359,9 @@ function buildCsvFromTrack(){
 }
 
 function getSelectedSavedTrackIdsForExport(){
-  const mount = document.getElementById("savedTracksMount");
-  if (!mount) return [];
-  return [...mount.querySelectorAll(".saved-sel-cb[data-saved-sel]:checked")]
-    .map(cb => cb.getAttribute("data-saved-sel"))
-    .filter(Boolean)
-    .map(String);
+  ensureSavedTracksState();
+  if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+  return state._savedTracksSelectedIds.map(String);
 }
 
 function sanitizeTrackExportFilenameBase(name){
@@ -24601,14 +24792,36 @@ function bindUI(){
   const btnSelDel = document.getElementById("btnSavedTracksDeleteSelected");
   if (btnSelDel) btnSelDel.addEventListener("click", (ev) => {
     ev.preventDefault();
-    const mount = document.getElementById("savedTracksMount");
-    if (!mount) return;
-    const ids = [...mount.querySelectorAll(".saved-sel-cb:checked")].map(cb => cb.getAttribute("data-saved-sel")).filter(Boolean);
+    const ids = (typeof getSelectedSavedTrackIdsForExport === "function") ? getSelectedSavedTrackIdsForExport() : [];
     if (!ids.length){
       setBadge("info", t("track.noSelection") || "Seleziona almeno una traccia.");
       return;
     }
     deleteSavedTracksByIds(ids);
+  });
+  const btnSvShowSel = document.getElementById("btnSavedTracksShowSelected");
+  if (btnSvShowSel) btnSvShowSel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const ids = (typeof getSelectedSavedTrackIdsForExport === "function") ? getSelectedSavedTrackIdsForExport() : [];
+    if (!ids.length){ setBadge("info", t("track.noSelection") || ""); return; }
+    applySavedTracksVisibilityByIds(ids, true);
+  });
+  const btnSvHideSel = document.getElementById("btnSavedTracksHideSelected");
+  if (btnSvHideSel) btnSvHideSel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const ids = (typeof getSelectedSavedTrackIdsForExport === "function") ? getSelectedSavedTrackIdsForExport() : [];
+    if (!ids.length){ setBadge("info", t("track.noSelection") || ""); return; }
+    applySavedTracksVisibilityByIds(ids, false);
+  });
+  const btnSvShowAll = document.getElementById("btnSavedTracksShowAll");
+  if (btnSvShowAll) btnSvShowAll.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    applySavedTracksVisibilityAll(true);
+  });
+  const btnSvHideAll = document.getElementById("btnSavedTracksHideAll");
+  if (btnSvHideAll) btnSvHideAll.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    applySavedTracksVisibilityAll(false);
   });
   const chkClosed = document.getElementById("trackClosed");
   if (chkClosed){
@@ -27160,23 +27373,107 @@ function closeTrackExportDialog(){
   }
 }
 
+function syncSavedTracksSelectAllState(mount){
+  if (!mount) return;
+  const sa = mount.querySelector("#savedTracksSelectAll");
+  if (!sa) return;
+  const cbs = mount.querySelectorAll(".saved-sel-cb[data-saved-sel]");
+  const n = cbs.length;
+  if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+  const selSet = new Set(state._savedTracksSelectedIds.map(String));
+  let ck = 0;
+  cbs.forEach(cb => {
+    const id = String(cb.getAttribute("data-saved-sel") || "");
+    const on = selSet.has(id);
+    cb.checked = on;
+    if (on) ck++;
+  });
+  sa.checked = n > 0 && ck === n;
+  sa.indeterminate = ck > 0 && ck < n;
+}
+
+function applySavedTracksVisibilityByIds(ids, wantVisible){
+  ensureSavedTracksState();
+  const set = new Set((ids || []).map(String));
+  if (!set.size) return false;
+  let hit = false;
+  for (const st of state.savedTracks){
+    if (st && set.has(String(st.id))){ st.visible = !!wantVisible; hit = true; }
+  }
+  if (!hit) return false;
+  saveStore();
+  refreshTileMapForTrackUi();
+  renderSavedTracksList();
+  return true;
+}
+
+function applySavedTracksVisibilityOnlySelected(ids){
+  ensureSavedTracksState();
+  const set = new Set((ids || []).map(String));
+  if (!set.size) return false;
+  let changed = false;
+  for (const st of state.savedTracks){
+    if (!st) continue;
+    const wantVis = set.has(String(st.id));
+    if (!!st.visible !== wantVis){ st.visible = wantVis; changed = true; }
+  }
+  if (!changed) return false;
+  saveStore();
+  refreshTileMapForTrackUi();
+  renderSavedTracksList();
+  return true;
+}
+
+function applySavedTracksVisibilityAll(wantVisible){
+  ensureSavedTracksState();
+  if (!state.savedTracks.length) return;
+  for (const st of state.savedTracks){ st.visible = !!wantVisible; }
+  saveStore();
+  refreshTileMapForTrackUi();
+  renderSavedTracksList();
+}
+
 function syncSavedTracksSelectionActions(){
-  const btn = document.getElementById("btnSavedTracksDeleteSelected");
-  const mount = document.getElementById("savedTracksMount");
+  ensureSavedTracksState();
+  const btnDel = document.getElementById("btnSavedTracksDeleteSelected");
+  const batchBar = document.getElementById("savedTracksBatchBar");
+  const btnShowSel = document.getElementById("btnSavedTracksShowSelected");
+  const btnHideSel = document.getElementById("btnSavedTracksHideSelected");
+  const btnShowAll = document.getElementById("btnSavedTracksShowAll");
+  const btnHideAll = document.getElementById("btnSavedTracksHideAll");
   const meta = document.getElementById("savedTracksSelectionMeta");
-  if (!btn || !mount) return;
-  const anyRow = !!mount.querySelector("tr[data-saved-row]");
-  const any = !!mount.querySelector(".saved-sel-cb[data-saved-sel]:checked");
-  btn.hidden = !(anyRow && any);
+  const total = state.savedTracks.length;
+  const anyRow = total > 0;
+  if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
+  const selSet = new Set(state._savedTracksSelectedIds.map(String));
+  const sel = state._savedTracksSelectedIds.length;
+  const selectedTracks = state.savedTracks.filter(st => selSet.has(String(st.id)));
+
+  if (batchBar) batchBar.hidden = !anyRow;
+
   if (meta){
-    if (!anyRow){
-      meta.textContent = "";
-    } else {
-      const total = mount.querySelectorAll(".saved-sel-cb[data-saved-sel]").length;
-      const sel = mount.querySelectorAll(".saved-sel-cb[data-saved-sel]:checked").length;
+    if (!anyRow) meta.textContent = "";
+    else {
       const tpl = (typeof t === "function") ? (t("track.savedSelectionCount") || "") : "";
-      meta.textContent = tpl ? String(tpl).replace("{0}", String(sel)) : (String(sel) + " / " + String(total));
+      meta.textContent = tpl
+        ? String(tpl).replace("{0}", String(sel)).replace("{1}", String(total))
+        : (String(sel) + " / " + String(total));
     }
+  }
+
+  const showSelDis = selectedTracks.length === 0 || selectedTracks.every(st => st.visible !== false);
+  const hideSelDis = selectedTracks.length === 0 || selectedTracks.every(st => st.visible === false);
+  const showAllDis = !anyRow || state.savedTracks.every(st => st.visible !== false);
+  const hideAllDis = !anyRow || state.savedTracks.every(st => st.visible === false);
+
+  if (btnShowSel) btnShowSel.disabled = showSelDis;
+  if (btnHideSel) btnHideSel.disabled = hideSelDis;
+  if (btnShowAll) btnShowAll.disabled = showAllDis;
+  if (btnHideAll) btnHideAll.disabled = hideAllDis;
+
+  if (btnDel){
+    btnDel.hidden = !anyRow;
+    btnDel.disabled = sel === 0;
   }
 }
 

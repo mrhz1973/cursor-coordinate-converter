@@ -1731,3 +1731,38 @@ Dopo il crash Cursor sul monolite, consolidamento del **Blocco 1** “modifica t
 - Modifica salvata: solo **Aggiorna traccia** in testata; niente **Termina traccia**; niente doppia linea saved+draft sulla mappa; dopo chiudi senza modifiche non resta bozza orfana; dopo **Aggiorna** nessun prompt nome e nessun click-mappa che aggiunge punti.
 - Bozza nuova: salva con prompt nome; lista punti resta collassata fino a “Mostra punti”.
 
+## Checkpoint 2026-04-27 — Tracce salvate saved-tracks UI + riepilogo workflow
+
+### Contesto
+
+Lavoro sul monolite `coordinate_converter Claude.html` (Tracce salvate: selezione, batch visibilità, ordinamento tabellare dove implementato, tooltip) e su `.cursor/rules/30-output-workflow.mdc` (formato RIEPILOGO e nome file in `/tmp`).
+
+### Cosa è cambiato
+
+1. **Tracce salvate — funzionalità**
+   - Selezione per id (`_savedTracksSelectedIds`), select-all, batch Mostra/Nascondi selezionate e tutte, Elimina selezionate; meta selezione in toolbar.
+   - Logica `applySavedTracksVisibilityOnlySelected(ids)` (isolate visibilità) mantenuta nel JS anche dopo rimozione pulsante dedicato.
+   - Stato transient `_savedTracksSort` e stili `.saved-tracks-sort-btn` (ordinamento B2 nel branch di sviluppo; verificare allineamento render se la tabella usa ancora solo `reverse()`).
+
+2. **Tracce salvate — UX / anti-sfarfallio**
+   - Rimosso dalla toolbar il pulsante **«Isola selezionate»** (`#btnSavedTracksShowOnlySelected`): ridondante rispetto a Nascondi tutte + Mostra selezionate; rimossi listener e riferimenti in `syncSavedTracksSelectionActions`.
+   - Mitigazione sfarfallio hover su prima colonna / Vis. / riga selezionata: CSS dedicato `#savedTracksMount` (niente animazione/backdrop pesanti sui tooltip della tabella; disattivazione pseudo-tooltip su col. 1–2 dove applicabile; colonne a larghezza minima; `tr.is-selected:hover` con sfondo uguale alla sola selezione); rimossi `data-tip` su checkbox/header critici con `aria-label` impostato dopo `renderSavedTracksList`.
+
+3. **Workflow output**
+   - Regola `30-output-workflow.mdc`: RIEPILOGO con sezioni numerate nel messaggio; file Markdown obbligatorio `/tmp/NN-goi-gis-riepilogo.md` (primo `NN` libero); percorso senza prefisso numerico non più standard.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `.cursor/rules/30-output-workflow.mdc`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessun commit fino al trigger «Finito»; nessuna nuova dipendenza; export/import core, Waypoint, Offline, Converti, geocoding, IndexedDB, CRS e schema `coordconv_v2` non modificati per questi interventi (salvo linee già presenti nel monolite da sessioni precedenti).
+
+### TODO / note
+
+- Verificare in browser che l’ordinamento a colonne (B2) sia ancora presente nel markup se richiesto; in alcuni snapshot solo `slice().reverse()` era attivo nella lista.
+
