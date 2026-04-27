@@ -1487,3 +1487,39 @@ Portare la modal **Waypoint** sullo stesso linguaggio grafico della modal **Conv
 
 - Aprire Waypoint in GIS: toolbar, lista, tooltip pulsanti riga e opzioni nome mappa; verificare assenza di “Elimina tutto” visibile e posizione di “Elimina selezionati”; cambio lingua IT/EN/FR sui nuovi tip.
 
+---
+
+## Checkpoint 2026-04-27 — Waypoint Export dialog (step 1)
+
+### Perché
+
+Allentare la toolbar Waypoint (troppi pulsanti export sempre visibili) introducendo il **primo blocco** del pattern approvato “Export dialog”: un entrypoint unico che apre una finestra con i formati; le funzioni di export restano quelle già testate nel monolite.
+
+### Cosa è cambiato
+
+1. **Toolbar Waypoint**
+   - Rimossi dalla toolbar i pulsanti `#wpExportBtn` / `#wpExportGpx` / `#wpExportKml` / `#wpExportKmz` / `#wpExportCsv`.
+   - Aggiunto **`#wpExportOpenBtn`** (testo i18n `waypointModal.exportOpen`, tooltip `tip.waypointModal.exportOpen`, `aria` da `waypointModal.exportOpenAria`), stile secondario coerente col cluster import/pick.
+
+2. **Dialog dedicata**
+   - Nuova **`<dialog id="waypointExportDialog">`** dopo `#waypointModal`: titolo/descrizione/messaggio vuoto i18n; lista pulsanti formato con `data-wp-export-fmt` che chiama **`waypointsExportGeoJSON()`** o **`waypointsExport(kind)`**; chiusura dopo export; CSS scoped sulla dialog (non eredita i token `--wp-*` del solo `#waypointModal`).
+
+3. **UX / accessibilità**
+   - Con zero waypoint: messaggio visibile e formati **disabilitati** (toolbar “Esporta” resta apribile senza hook aggiuntivi in `renderWpModalList`).
+   - **Esc**: handler documento chiude prima la export dialog se aperta; **`closeWaypointModal`** chiude anche la export dialog.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti
+
+- Nessuna modifica ai builder GPX/KML/KMZ/CSV/GeoJSON waypoint, nessuna modifica a `state.mapWaypoints[]`, import waypoint, altre modal (Traccia, Convert, Favoriti, Cerca, Offline, Batch, Sessione), Theme-1, `coordconv_ui_v1`, OPSEC, geocoding, IndexedDB tile, track builder, parser.
+
+### QA
+
+- Con waypoint: ogni formato scarica come prima; dialog si chiude; focus torna a “Esporta”.
+- Senza waypoint: dialog con messaggio vuoto e pulsanti disabilitati; Esc/chiusura waypoint modal coerenti.
+

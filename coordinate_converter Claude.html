@@ -4728,11 +4728,7 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
 /* Secondary cluster: pick, import, exports. */
 #waypointModalPanel #wpPickBtn,
 #waypointModalPanel #wpImportBtn,
-#waypointModalPanel #wpExportBtn,
-#waypointModalPanel #wpExportGpx,
-#waypointModalPanel #wpExportKml,
-#waypointModalPanel #wpExportKmz,
-#waypointModalPanel #wpExportCsv{
+#waypointModalPanel #wpExportOpenBtn{
   background: color-mix(in srgb, var(--panel2) 88%, transparent);
   border: 1px solid var(--border);
   color: var(--text-primary);
@@ -4744,16 +4740,8 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
 #waypointModalPanel #wpPickBtn:focus-visible,
 #waypointModalPanel #wpImportBtn:hover,
 #waypointModalPanel #wpImportBtn:focus-visible,
-#waypointModalPanel #wpExportBtn:hover,
-#waypointModalPanel #wpExportBtn:focus-visible,
-#waypointModalPanel #wpExportGpx:hover,
-#waypointModalPanel #wpExportGpx:focus-visible,
-#waypointModalPanel #wpExportKml:hover,
-#waypointModalPanel #wpExportKml:focus-visible,
-#waypointModalPanel #wpExportKmz:hover,
-#waypointModalPanel #wpExportKmz:focus-visible,
-#waypointModalPanel #wpExportCsv:hover,
-#waypointModalPanel #wpExportCsv:focus-visible{
+#waypointModalPanel #wpExportOpenBtn:hover,
+#waypointModalPanel #wpExportOpenBtn:focus-visible{
   border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
   background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
 }
@@ -4929,6 +4917,86 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
 
 /* Remove dangerous "clear all" from UI (keep node for JS binding safety). */
 #waypointModalPanel #wpClearBtn{ display:none !important; }
+
+/* Waypoint export dialog (showModal; only Waypoint entrypoint in this phase). */
+#waypointExportDialog.waypoint-export-dialog{
+  max-width: min(420px, calc(100vw - 48px));
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-card, 14px);
+  background: var(--panel);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg, 0 16px 48px rgba(0,0,0,.45));
+}
+#waypointExportDialog.waypoint-export-dialog::backdrop{
+  background: rgba(0,0,0,.42);
+}
+#waypointExportDialog .app-modal-head{
+  padding: 12px 12px 12px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
+  gap: 8px;
+}
+#waypointExportDialog .app-modal-title{
+  font-size: clamp(1rem, 2.4vw, 1.12rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.28;
+}
+#waypointExportDialog .app-modal-close{
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: var(--radius-control, 10px);
+  border: 1px solid var(--border-strong);
+  background: color-mix(in srgb, var(--panel2) 92%, transparent);
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1;
+  box-shadow: none;
+  background-image: none;
+  margin: 0 2px 0 0;
+}
+#waypointExportDialog .app-modal-close:hover,
+#waypointExportDialog .app-modal-close:focus-visible{
+  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
+  color: var(--text-primary);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.waypoint-export-dialog-body{
+  padding: 16px 20px 20px;
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+.waypoint-export-dialog-desc{ margin: 0 0 12px; color: var(--muted); }
+.waypoint-export-dialog-empty{
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.wp-export-format-list{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.wp-export-format-list .wp-export-fmt{
+  justify-content: flex-start;
+  text-align: left;
+  min-height: 40px;
+  font-weight: 600;
+  background: color-mix(in srgb, var(--panel2) 88%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}
+.wp-export-format-list .wp-export-fmt:hover:not(:disabled),
+.wp-export-format-list .wp-export-fmt:focus-visible:not(:disabled){
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
+}
+.wp-export-format-list .wp-export-fmt:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 
 #waypointModalPanel .wp-count-badge{
   display: block;
@@ -6086,11 +6154,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" id="wpPickBtn" class="btn btn-sm" aria-pressed="false" data-i18n="waypointModal.pickOnMap" data-i18n-tip="tip.waypointModal.pickOnMap">Pick sulla mappa</button>
           <span class="sep" aria-hidden="true"></span>
           <button type="button" id="wpImportBtn" class="btn btn-sm" data-i18n="waypointModal.importGeoJSON" data-i18n-tip="tip.waypointModal.importGeoJSON">Importa GeoJSON</button>
-          <button type="button" id="wpExportBtn" class="btn btn-sm" data-i18n="waypointModal.exportGeoJSON" data-i18n-tip="tip.waypointModal.exportGeoJSON">Esporta GeoJSON</button>
-          <button type="button" id="wpExportGpx" class="btn btn-sm" data-i18n="waypointModal.exportGpx" data-i18n-tip="tip.waypointModal.exportGpx">GPX</button>
-          <button type="button" id="wpExportKml" class="btn btn-sm" data-i18n="waypointModal.exportKml" data-i18n-tip="tip.waypointModal.exportKml">KML</button>
-          <button type="button" id="wpExportKmz" class="btn btn-sm" data-i18n="waypointModal.exportKmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
-          <button type="button" id="wpExportCsv" class="btn btn-sm" data-i18n="waypointModal.exportCsv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
+          <button type="button" id="wpExportOpenBtn" class="btn btn-sm" data-i18n="waypointModal.exportOpen" data-i18n-tip="tip.waypointModal.exportOpen" data-i18n-aria="waypointModal.exportOpenAria">Esporta</button>
           <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
           <span class="sep" aria-hidden="true"></span>
           <button type="button" id="wpClearBtn" class="btn btn-sm" hidden data-i18n="waypointModal.clearAll" data-i18n-tip="tip.waypointModal.clearAll">Elimina tutto</button>
@@ -6436,6 +6500,26 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
+<!-- Waypoint-only export format picker (pattern Export dialog — step 1). -->
+<dialog id="waypointExportDialog" class="app-modal waypoint-export-dialog" aria-labelledby="waypointExportDialogTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="waypointExportDialogTitle" class="app-modal-title" data-i18n="waypointModal.exportDialogTitle">Esporta waypoint</h2>
+    <button type="button" class="app-modal-close" id="waypointExportDialogClose"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body waypoint-export-dialog-body">
+    <p id="waypointExportDialogDesc" class="hint waypoint-export-dialog-desc" data-i18n="waypointModal.exportDialogBody">Scegli un formato per esportare i waypoint salvati.</p>
+    <p id="waypointExportDialogEmpty" class="hint waypoint-export-dialog-empty" hidden data-i18n="waypointModal.exportDialogEmpty">Nessun waypoint da esportare.</p>
+    <div id="waypointExportDialogFormats" class="wp-export-format-list" role="group" aria-labelledby="waypointExportDialogTitle">
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="geojson" data-i18n="export.geojson" data-i18n-tip="tip.waypointModal.exportGeoJSON">GeoJSON</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="gpx" data-i18n="export.gpx" data-i18n-tip="tip.waypointModal.exportGpx">GPX</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kml" data-i18n="export.kml" data-i18n-tip="tip.waypointModal.exportKml">KML</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
+    </div>
+  </div>
 </dialog>
 
 <dialog id="searchPanel" class="app-modal search-panel" aria-labelledby="searchPanelTitle" aria-modal="false">
@@ -6929,6 +7013,11 @@ const I18N = {
     "waypointModal.exportKml":"Esporta KML",
     "waypointModal.exportKmz":"Esporta KMZ",
     "waypointModal.exportCsv":"Esporta CSV",
+    "waypointModal.exportOpen":"Esporta",
+    "waypointModal.exportOpenAria":"Apri la finestra di esportazione waypoint",
+    "waypointModal.exportDialogTitle":"Esporta waypoint",
+    "waypointModal.exportDialogBody":"Scegli un formato per esportare i waypoint salvati.",
+    "waypointModal.exportDialogEmpty":"Nessun waypoint da esportare.",
     "waypointModal.clearAll":"Elimina tutto",
     "waypointModal.empty":"Nessun waypoint. Aggiungi il primo con \"Nuovo\" o \"Pick sulla mappa\".",
     "waypointModal.unnamed":"(senza nome)",
@@ -6976,6 +7065,7 @@ const I18N = {
     "tip.waypointModal.exportKml":"Esporta i waypoint in KML, includendo le note come descrizione.",
     "tip.waypointModal.exportKmz":"Esporta i waypoint in KMZ (ZIP con doc.kml).",
     "tip.waypointModal.exportCsv":"Esporta i waypoint in CSV (UTF-8 con BOM), includendo le note come descrizione.",
+    "tip.waypointModal.exportOpen":"Scegli il formato di esportazione dei waypoint.",
     "tip.waypointModal.clearAll":"Elimina tutti i waypoint (chiede conferma).",
     "tip.waypointModal.deleteSelected":"Elimina i waypoint selezionati con la checkbox nella lista.",
     "tip.waypointModal.mapNameAlwaysTip":"Mostra sempre il nome del waypoint sulla mappa.",
@@ -7819,6 +7909,11 @@ const I18N = {
     "waypointModal.exportKml":"Export KML",
     "waypointModal.exportKmz":"Export KMZ",
     "waypointModal.exportCsv":"Export CSV",
+    "waypointModal.exportOpen":"Export",
+    "waypointModal.exportOpenAria":"Open the waypoint export dialog",
+    "waypointModal.exportDialogTitle":"Export waypoints",
+    "waypointModal.exportDialogBody":"Choose a format to export the saved waypoints.",
+    "waypointModal.exportDialogEmpty":"No waypoints to export.",
     "waypointModal.clearAll":"Delete all",
     "waypointModal.empty":"No waypoints yet. Add the first one via \"New\" or \"Pick on map\".",
     "waypointModal.unnamed":"(unnamed)",
@@ -7866,6 +7961,7 @@ const I18N = {
     "tip.waypointModal.exportKml":"Export waypoints as KML, including notes as the description.",
     "tip.waypointModal.exportKmz":"Export waypoints as KMZ (ZIP containing doc.kml).",
     "tip.waypointModal.exportCsv":"Export waypoints as CSV (UTF-8 with BOM), including notes as the description.",
+    "tip.waypointModal.exportOpen":"Choose the waypoint export format.",
     "tip.waypointModal.clearAll":"Delete every waypoint (asks for confirmation).",
     "tip.waypointModal.deleteSelected":"Delete the waypoints checked in the list.",
     "tip.waypointModal.mapNameAlwaysTip":"Always show the waypoint name on the map.",
@@ -8709,6 +8805,11 @@ const I18N = {
     "waypointModal.exportKml":"Exporter KML",
     "waypointModal.exportKmz":"Exporter KMZ",
     "waypointModal.exportCsv":"Exporter CSV",
+    "waypointModal.exportOpen":"Exporter",
+    "waypointModal.exportOpenAria":"Ouvrir la fenêtre d’export des waypoints",
+    "waypointModal.exportDialogTitle":"Exporter les waypoints",
+    "waypointModal.exportDialogBody":"Choisissez un format pour exporter les waypoints enregistrés.",
+    "waypointModal.exportDialogEmpty":"Aucun waypoint à exporter.",
     "waypointModal.clearAll":"Tout supprimer",
     "waypointModal.empty":"Aucun waypoint. Ajoutez le premier via « Nouveau » ou « Pointer sur la carte ».",
     "waypointModal.unnamed":"(sans nom)",
@@ -8756,6 +8857,7 @@ const I18N = {
     "tip.waypointModal.exportKml":"Exporte les waypoints en KML, en incluant les notes comme description.",
     "tip.waypointModal.exportKmz":"Exporte les waypoints en KMZ (ZIP contenant doc.kml).",
     "tip.waypointModal.exportCsv":"Exporte les waypoints en CSV (UTF-8 avec BOM), en incluant les notes comme description.",
+    "tip.waypointModal.exportOpen":"Choisir le format d’export des waypoints.",
     "tip.waypointModal.clearAll":"Supprime tous les waypoints (confirmation demandée).",
     "tip.waypointModal.deleteSelected":"Supprime les waypoints cochés dans la liste.",
     "tip.waypointModal.mapNameAlwaysTip":"Toujours afficher le nom du waypoint sur la carte.",
@@ -24012,26 +24114,42 @@ function gisInit(){
     const f = ev.target && ev.target.files && ev.target.files[0];
     if (f) waypointsImportGeoJSON(f);
   });
-  const wpExp = document.getElementById("wpExportBtn");
-  if (wpExp) wpExp.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsExportGeoJSON();
+  const wpExpOpen = document.getElementById("wpExportOpenBtn");
+  if (wpExpOpen) wpExpOpen.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openWaypointExportDialog === "function") openWaypointExportDialog();
   });
-  const wpExpGpx = document.getElementById("wpExportGpx");
-  if (wpExpGpx) wpExpGpx.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsExport("gpx");
+  const wpxDlg = document.getElementById("waypointExportDialog");
+  const wpxClose = document.getElementById("waypointExportDialogClose");
+  if (wpxClose) wpxClose.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
   });
-  const wpExpKml = document.getElementById("wpExportKml");
-  if (wpExpKml) wpExpKml.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsExport("kml");
-  });
-  const wpExpKmz = document.getElementById("wpExportKmz");
-  if (wpExpKmz) wpExpKmz.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsExport("kmz");
-  });
-  const wpExpCsv = document.getElementById("wpExportCsv");
-  if (wpExpCsv) wpExpCsv.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsExport("csv");
-  });
+  if (wpxDlg){
+    wpxDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
+    });
+    wpxDlg.addEventListener("click", (ev) => {
+      if (ev.target === wpxDlg && typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
+    });
+    const fmtRoot = document.getElementById("waypointExportDialogFormats");
+    if (fmtRoot && !fmtRoot._wpFmtBound){
+      fmtRoot._wpFmtBound = true;
+      fmtRoot.addEventListener("click", (ev) => {
+        const b = ev.target.closest && ev.target.closest("[data-wp-export-fmt]");
+        if (!b || b.disabled) return;
+        ev.preventDefault();
+        const k = b.getAttribute("data-wp-export-fmt");
+        if (k === "geojson"){
+          if (typeof waypointsExportGeoJSON === "function") waypointsExportGeoJSON();
+        } else if (k && typeof waypointsExport === "function"){
+          waypointsExport(k);
+        }
+        if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
+      });
+    }
+  }
   const wpClr = document.getElementById("wpClearBtn");
   if (wpClr) wpClr.addEventListener("click", (ev) => {
     ev.preventDefault(); waypointsClearAll();
@@ -24088,6 +24206,12 @@ function gisInit(){
     if (wptM && !wptM.hidden){
       ev.preventDefault();
       hideWptMapContextMenu();
+      return;
+    }
+    const wpx = document.getElementById("waypointExportDialog");
+    if (wpx && wpx.open){
+      ev.preventDefault();
+      if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
       return;
     }
     if (state.convertOpen){ closeConvertModal(); return; }
@@ -24967,6 +25091,11 @@ function openWaypointModal(opts){
 function closeWaypointModal(){
   const dlg = document.getElementById("waypointModal");
   if (!state.waypointsModalOpen && !(dlg && dlg.open)) return;
+  const wpx = document.getElementById("waypointExportDialog");
+  if (wpx && wpx.open){
+    try { if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog(); }
+    catch(_){ try { wpx.close(); } catch(__){} }
+  }
   hideWptMapContextMenu();
   if (state._waypointModalEmbeddedMap) waypointModalDetachMap();
   state._waypointModalEmbeddedMap = false;
@@ -24989,6 +25118,52 @@ function closeWaypointModal(){
   }
   if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
   if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+}
+
+/** Sync empty state + disabled flags inside `#waypointExportDialog`. */
+function syncWaypointExportDialogUi(){
+  ensureMapWaypointsState();
+  const n = state.mapWaypoints.length;
+  const has = n > 0;
+  const emptyEl = document.getElementById("waypointExportDialogEmpty");
+  const descEl = document.getElementById("waypointExportDialogDesc");
+  if (emptyEl) emptyEl.hidden = has;
+  if (descEl) descEl.hidden = !has;
+  document.querySelectorAll("#waypointExportDialogFormats .wp-export-fmt").forEach((b) => {
+    b.disabled = !has;
+  });
+}
+
+function openWaypointExportDialog(){
+  const dlg = document.getElementById("waypointExportDialog");
+  if (!dlg) return;
+  syncWaypointExportDialogUi();
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(); } catch(_){}
+  }
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    const first = dlg.querySelector("#waypointExportDialogFormats .wp-export-fmt:not([disabled])");
+    if (first) first.focus();
+    else {
+      const c = document.getElementById("waypointExportDialogClose");
+      if (c) c.focus();
+    }
+  } catch(_){}
+}
+
+function closeWaypointExportDialog(){
+  const dlg = document.getElementById("waypointExportDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  const opener = document.getElementById("wpExportOpenBtn");
+  if (opener){
+    try { opener.focus(); } catch(_){}
+  }
 }
 
 function syncWaypointMapNameRadios(){
