@@ -1891,3 +1891,51 @@ Prosecuzione dal commit `72aed86` e dal riepilogo `/tmp/17-goi-gis-riepilogo.md`
 
 - Riepilogo sessione utente: `/tmp/18-goi-gis-riepilogo.md` (non versionato in repo).
 
+
+## Checkpoint 2026-04-28 — Mappe Offline rifinitura
+
+### Contesto
+
+Allineamento UI/UX della sezione **Mappe Offline** dopo il flusso **Modifica / Aggiorna**: ridurre ambiguità tra azioni batch vs per-riga, rendere visibile il progress del download batch, dare un primo feedback visivo “delta” tra tile già in cache vs mancanti (senza riscrivere il core download), eliminare eredità accidentale del campo nome e bloccare nomi duplicati cross-area, attenuare la tinta verde generica della copertura tile così non compete con le named areas.
+
+### Cosa è cambiato
+
+1. **Toolbar batch — solo azioni batch**
+   - Rimossi dalla toolbar alta `#offlineAreasToolbar` i pulsanti duplicati `#btnOfflineAreasUseOne` (Modifica) e `#btnOfflineAreasFitOne` (Centra).
+   - Restano solo: Mostra/Nascondi selezionate, Elimina selezionate, Scarica selezionate (`btnOfflineAreasPrecacheSel`).
+   - Modifica/Centra restano **solo per-riga** (`data-offline-load`, `data-offline-fit`).
+   - Aggiornati handler/toolbar sync e portal tooltip per non referenziare id rimossi (mantenuto `#btnPrecacheStart` nel portal).
+
+2. **Progress batch — riuso barra principale**
+   - `startOfflineAreasBatchPrecache()` ora esegue `runOfflineAreasPrecacheQueue(..., { useProgressBar: true })`.
+   - Risultato: `#pcBar`, `#pcProgress`, `#pcStatus` visibili anche durante **Scarica selezionate**, con testo `offcache.batchAreaLine` (indice + nome) e avanzamento percentuale quando disponibile.
+
+3. **Delta copertura (v1 prudente)**
+   - Stato transiente: `state._offlineDeltaAreaId` (non persistito).
+   - `syncOfflineDeltaViewportHints(mapRoot, opts)`: per i tile visibili nel viewport, solo allo zoom corrente, con cap (default 120) classifica in cache vs mancante via `getTileBlobByKey` e applica `tile-delta-cached` / `tile-delta-missing`.
+   - Hook: dopo `hydrateMapTiles()`; attivazione su “Modifica” per aree `partial/unknown` in `loadNamedAreaIntoPrecacheFieldsById()`.
+   - Nota: aggiornamento “live” durante download **non** è un loop continuo su ogni tick progress (prima versione prudente); si può estendere in seguito con throttle su `onProgress`.
+
+4. **Nome area / deduplica**
+   - Su **Seleziona area sulla mappa** e **Usa viewport** fuori modifica: `_offlineExitEditForNewDraft()` pulisce `#pcAreaName` e azzera stati collegati (editing/loaded/prompt, delta).
+   - Nuova chiave i18n: `offcache.nameAlreadyUsed` (IT/EN/FR) + `findNamedAreaIndexByName()`.
+   - Blocco creazione se il nome esiste già su un’area con geometria diversa: `saveNamedArea` (nuova area) e `onPrecacheStart` (creazione nuova area per download).
+
+5. **Tinta cache generica**
+   - Ulteriore attenuazione del `::after` su `.tile-wrap.tile-mission` quando `coverage-on` per ridurre confusione con named areas (che restano su `.named-cov` / `.named-cov--partial`).
+
+### Invarianti rispettati (vincoli sessione)
+
+- **Non toccati:** geocoding, waypoint, tracce, favoriti, export/import, Layers, `#btnBboxPick`, semantica reset globale, dialog X a tre scelte, label “Scarica area corrente”, tooltip portal precache oltre la rimozione selettori id eliminati.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### QA (tecnica)
+
+- `git diff --check` su monolite: OK in sessione.
+- `node --check` su JS inline estratto: OK in sessione (range script aggiornato nel tempo).
+
