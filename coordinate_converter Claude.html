@@ -1016,12 +1016,28 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .tile-map .tile-offline-float .toff-close{
   align-self:flex-end;
   margin:0 0 4px;
-  width:28px; height:26px; border:none; border-radius:6px;
-  background:rgba(255,255,255,.14); color:#fff;
-  font-weight:900; cursor:pointer; line-height:1;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:var(--radius-control, 10px);
+  background:rgba(30,41,59,.75);
+  color:rgba(226,232,240,.92);
+  font-size:17px;
+  line-height:1;
+  font-weight:700;
+  cursor:pointer;
   flex-shrink:0;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
 }
-.tile-map .tile-offline-float .toff-close:hover{ background:rgba(255,255,255,.22) }
+.tile-map .tile-offline-float .toff-close:hover,
+.tile-map .tile-offline-float .toff-close:focus-visible{
+  background:rgba(51,65,85,.9);
+  color:#f8fafc;
+  border-color:rgba(255,255,255,.35);
+  outline:none;
+  box-shadow:0 0 0 2px color-mix(in srgb, var(--accent, #3b82f6) 45%, transparent);
+}
 .tile-map .tile-offline-float .offline-panel-mount{
   margin-top:0;
   overflow:auto;
@@ -1109,8 +1125,14 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offline-areas-toolbar .btn[disabled]{ opacity:.55; cursor:not-allowed; }
 .offline-areas-list{
   display:flex; flex-direction:column; gap:8px;
-  max-height:min(42vh, 320px); overflow-y:auto; overflow-x:hidden;
+  overflow:visible;
   padding-right:2px;
+  scrollbar-gutter:stable;
+}
+.offline-areas-list > .offline-areas-list-scroll{
+  max-height:min(42vh, 320px);
+  overflow-y:auto;
+  overflow-x:auto;
   scrollbar-gutter:stable;
 }
 /* A3: preset <select> resta nel DOM per optgroup / applyPrecachePreset, fuori dalla UI. */
@@ -1134,7 +1156,64 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   margin:10px 0 12px;
 }
 .offcache-bbox-actions{ margin-bottom:8px; }
-.offline-areas-table{ width:100%; border-collapse:collapse; font-size:.78rem; }
+/* Icona «area visibile / viewport»: rettangolo tratteggiato (currentColor → leggibile light/dark). */
+.offcache-bbox-actions #btnBboxViewport{
+  display:inline-flex;
+  align-items:center;
+  gap:0.4em;
+  vertical-align:middle;
+}
+.offcache-bbox-actions #btnBboxViewport .offcache-bbox-vp-ico{
+  display:inline-flex;
+  flex-shrink:0;
+  line-height:0;
+  opacity:0.95;
+}
+.offcache-bbox-actions #btnBboxViewport .offcache-bbox-vp-svg{ display:block; }
+/* Icona «seleziona bbox»: rettangolo tratteggiato (stesso schema di #btnBboxViewport). */
+.offcache-bbox-actions #btnBboxPick{
+  display:inline-flex;
+  align-items:center;
+  gap:0.4em;
+  vertical-align:middle;
+}
+.offcache-bbox-actions #btnBboxPick .offcache-bbox-pick-ico{
+  display:inline-flex;
+  flex-shrink:0;
+  line-height:0;
+  opacity:0.95;
+}
+.offcache-bbox-actions #btnBboxPick .offcache-bbox-pick-svg{ display:block; }
+.offline-areas-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.78rem;
+  --offa-name-col:160px;
+}
+.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:80px; }
+.offline-areas-table .offa-th-name{
+  position:relative;
+  padding-right:12px;
+  vertical-align:bottom;
+}
+.offline-areas-table .offa-name-col-resize{
+  position:absolute;
+  top:0;
+  right:0;
+  width:10px;
+  height:100%;
+  min-height:28px;
+  cursor:col-resize;
+  user-select:none;
+  touch-action:none;
+  border-radius:4px;
+}
+.offline-areas-table .offa-name-col-resize:hover{
+  background:color-mix(in srgb, var(--accent) 22%, transparent);
+}
+@media (hover:none) and (pointer:coarse){
+  .offline-areas-table .offa-name-col-resize{ display:none; }
+}
 .offline-areas-table th, .offline-areas-table td{
   padding:6px 8px;
   border-bottom:1px solid color-mix(in srgb, var(--border) 60%, transparent);
@@ -1152,7 +1231,140 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offline-areas-table tr[data-offa-row].is-selected{
   background:color-mix(in srgb, var(--accent) 10%, var(--panel));
 }
-.offline-areas-table .offa-name{ font-weight:700; color:var(--text); }
+/* Riga in hover sopra le successive: i tooltip azione restano leggibili. */
+.offline-areas-table tr[data-offa-row]:hover,
+.offline-areas-table tr[data-offa-row]:focus-within{
+  position:relative;
+  z-index:4;
+}
+.offline-areas-table .offa-name-inp{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  font:inherit;
+  font-weight:700;
+  color:var(--text);
+  padding:4px 6px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.offline-areas-table .offa-name-inp:focus{
+  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset:1px;
+}
+/* Tooltip sotto i bottoni azione: evita copertura da thead sticky e da righe sopra. */
+.offline-areas-list .offa-actions [data-tip]:hover::after,
+.offline-areas-list .offa-actions [data-tip]:focus-visible::after{
+  bottom:auto;
+  top:calc(100% + 8px);
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
+  z-index:8000;
+  animation:tipInDown .15s ease-out;
+}
+.offline-areas-list .offa-actions [data-tip]:hover::before,
+.offline-areas-list .offa-actions [data-tip]:focus-visible::before{
+  bottom:auto;
+  top:calc(100% + 3px);
+  border-top-color:transparent;
+  border-bottom-color:var(--tooltip-bg);
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
+  z-index:8000;
+}
+/* Toolbar lista offline (pannello Layers): tooltip sopra i bottoni, sopra tabella/header. */
+#layersPanelBody .offline-areas-toolbar-actions .btn[data-tip]:hover::after,
+#layersPanelBody .offline-areas-toolbar-actions .btn[data-tip]:focus-visible::after{
+  bottom:calc(100% + 8px);
+  top:auto;
+  left:50%;
+  right:auto;
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
+  z-index:20050;
+  animation:none;
+}
+#layersPanelBody .offline-areas-toolbar-actions .btn[data-tip]:hover::before,
+#layersPanelBody .offline-areas-toolbar-actions .btn[data-tip]:focus-visible::before{
+  bottom:calc(100% + 3px);
+  top:auto;
+  left:50%;
+  right:auto;
+  transform:translateX(calc(-50% + var(--tip-nudge, 0px)));
+  border:5px solid transparent;
+  border-top-color:var(--tooltip-bg);
+  border-bottom-color:transparent;
+  z-index:20050;
+}
+/* Pannello Mappe Offline: tooltip toolbar/lista sono gestiti da `.offline-area-tip-portal` (fixed).
+ * Resta solo l’override overflow-x per evitare clip orizzontale da stili inline su .app-modal-body. */
+#layersPanelBody.app-modal-body{
+  /* gisPanelSyncBodySize imposta overflow-x:hidden inline: !important mantiene visibilità tooltip orizzontali */
+  overflow-x:visible !important;
+}
+#layersPanelBody .offline-areas-toolbar{
+  position:relative;
+  z-index:6;
+  overflow:visible;
+}
+#layersPanelBody .offline-areas-toolbar-actions .btn:hover,
+#layersPanelBody .offline-areas-toolbar-actions .btn:focus-visible{
+  position:relative;
+  z-index:8;
+}
+.offline-areas-list [data-tip]:hover::after,
+.offline-areas-list [data-tip]:focus-visible::after,
+.offline-areas-list [data-tip]:hover::before,
+.offline-areas-list [data-tip]:focus-visible::before{
+  z-index:300;
+}
+/* Mappe Offline: i tooltip dei comandi "Usa area" / "Centra" usano un portal fixed,
+ * così non vengono tagliati dallo scroll della tabella. */
+#offlineAreasList [data-offline-load][data-tip]:hover::after,
+#offlineAreasList [data-offline-load][data-tip]:focus-visible::after,
+#offlineAreasList [data-offline-load][data-tip]:hover::before,
+#offlineAreasList [data-offline-load][data-tip]:focus-visible::before,
+#offlineAreasList [data-offline-fit][data-tip]:hover::after,
+#offlineAreasList [data-offline-fit][data-tip]:focus-visible::after,
+#offlineAreasList [data-offline-fit][data-tip]:hover::before,
+#offlineAreasList [data-offline-fit][data-tip]:focus-visible::before,
+#btnOfflineAreasUseOne[data-tip]:hover::after,
+#btnOfflineAreasUseOne[data-tip]:focus-visible::after,
+#btnOfflineAreasUseOne[data-tip]:hover::before,
+#btnOfflineAreasUseOne[data-tip]:focus-visible::before,
+#btnOfflineAreasFitOne[data-tip]:hover::after,
+#btnOfflineAreasFitOne[data-tip]:focus-visible::after,
+#btnOfflineAreasFitOne[data-tip]:hover::before,
+#btnOfflineAreasFitOne[data-tip]:focus-visible::before{
+  content:none !important;
+  display:none !important;
+}
+.offline-area-tip-portal{
+  position:fixed;
+  left:0;
+  top:0;
+  z-index:30000;
+  max-width:min(260px, calc(100vw - 24px));
+  padding:7px 10px;
+  border-radius:8px;
+  border:1px solid var(--border-strong);
+  background:var(--tooltip-bg);
+  color:var(--tooltip-fg);
+  box-shadow:0 10px 26px rgba(0,0,0,.35);
+  font-size:.78rem;
+  line-height:1.25;
+  font-weight:650;
+  white-space:normal;
+  text-align:center;
+  pointer-events:none;
+  opacity:0;
+  transform:translate3d(-9999px, -9999px, 0);
+  transition:opacity .08s ease;
+}
+.offline-area-tip-portal.is-visible{
+  opacity:1;
+}
 .offline-areas-table .offa-sort-btn{
   background:transparent; border:none; padding:0; margin:0;
   font:inherit; color:inherit; cursor:pointer;
@@ -1162,7 +1374,20 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offline-areas-table .offa-actions .btn{ padding:4px 9px; font-size:.72rem; }
 .offline-areas-table .offline-area-status{ display:inline-block; }
 .offline-areas-table .offa-selcell{ width:34px; }
-.offline-areas-table .offa-viscell{ width:44px; }
+.offline-areas-table .offa-viscell{ width:44px; text-align:center; vertical-align:middle; }
+.offline-areas-table .offline-area-vis-indicator{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  pointer-events:none;
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent);
+}
+.offline-areas-table .offline-area-vis-indicator.is-visible{ background:#16a34a; }
+.offline-areas-table .offline-area-vis-indicator.is-hidden{
+  background:color-mix(in srgb, var(--muted) 55%, var(--panel2) 45%);
+}
 .offline-areas-empty{
   padding:10px 8px; font-size:.8rem; color:var(--muted); line-height:1.45;
   border-radius:8px; background:color-mix(in srgb, var(--panel2) 88%, transparent);
@@ -2040,12 +2265,20 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .tile-map .tile-measure-box .mb-close,
 .tile-map .tile-track-float .mb-close,
 .tile-map .tile-waypoint-editor .mb-close{
-  border:1px solid rgba(248,113,113,.45);
-  background:rgba(0,0,0,.58);
-  color:#f87171;
-  border-radius:8px; padding:4px 8px; cursor:pointer; font-weight:900;
-  box-shadow:0 0 0 1px rgba(248,113,113,.12);
-  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  padding:0;
+  border-radius:var(--radius-control, 10px);
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(30,41,59,.75);
+  color:rgba(226,232,240,.92);
+  font-size:17px;
+  line-height:1;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:none;
+  transition:background .15s ease, border-color .15s ease, color .15s ease;
 }
 .tile-map .tile-measure-box .mb-close:hover,
 .tile-map .tile-measure-box .mb-close:focus-visible,
@@ -2053,11 +2286,11 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .tile-map .tile-track-float .mb-close:focus-visible,
 .tile-map .tile-waypoint-editor .mb-close:hover,
 .tile-map .tile-waypoint-editor .mb-close:focus-visible{
-  color:#fecaca;
-  background:rgba(24,4,8,.88);
-  border-color:#fca5a5;
-  box-shadow:0 0 14px rgba(220,38,38,.35);
+  background:rgba(51,65,85,.9);
+  color:#f8fafc;
+  border-color:rgba(255,255,255,.35);
   outline:none;
+  box-shadow:0 0 0 2px color-mix(in srgb, var(--accent, #3b82f6) 45%, transparent);
 }
 .tile-map .tile-measure-box .mb-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:6px 0 }
 .tile-map .tile-measure-box .mb-row label{ font-size:.78rem; color:rgba(255,255,255,.75); font-weight:700 }
@@ -2342,6 +2575,12 @@ body.mm-enlarged{overflow:hidden}
 }
 .tile-map .tlayer-btn .tlayer-ico{
   width:30px; height:30px; display:block; object-fit:contain; pointer-events:none;
+}
+/* Allineamento altezza con gli altri controlli nella colonna destra (#/MGRS, zoom, …). */
+.tile-map .tile-ctrls .tile-layers .tlayer-btn{
+  min-height:var(--ctrlW);
+  flex-shrink:0;
+  box-sizing:border-box;
 }
 .tile-map .tlayer-menu{
   display:flex;
@@ -3636,7 +3875,28 @@ html[data-theme="light"] .tools-drawer-head .drawer-close:focus-visible{
 }
 .favorite-item .fav-name{
   font-weight:700; color:var(--text); font-size:.95rem;
-  word-break:break-word;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
+}
+.favorite-item .fav-name-inp{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+  min-width:0;
+  font:inherit;
+  font-weight:700;
+  font-size:.95rem;
+  color:var(--text);
+  padding:4px 8px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--panel);
+}
+.favorite-item .fav-name-inp:focus{
+  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset:1px;
 }
 .favorite-item .fav-coords{
   color:var(--muted); font-size:.82rem;
@@ -3691,6 +3951,37 @@ html[data-theme="light"] .btn-danger:focus-visible{
   background:linear-gradient(180deg, #dc2626 0%, #b91c1c 100%);
   border-color:#fecaca;
   box-shadow:0 4px 18px rgba(220,38,38,.28);
+}
+/* Secondary destructive: red ✕ + normal label (Track / saved tracks). */
+.btn-danger-subtle{
+  color:var(--text);
+  border:1px solid color-mix(in srgb, #dc2626 28%, var(--border));
+  background:var(--panel);
+  font-weight:500;
+  transition:color .14s ease, background .14s ease, border-color .14s ease, outline-color .14s ease;
+}
+.btn-danger-subtle .danger-x{
+  color:#dc2626;
+  font-weight:700;
+  margin-right:4px;
+}
+.btn-danger-subtle:hover,
+.btn-danger-subtle:focus-visible{
+  border-color:color-mix(in srgb, #dc2626 55%, var(--border));
+  background:color-mix(in srgb, #dc2626 10%, var(--panel));
+}
+.btn-danger-subtle:focus-visible{
+  outline:2px solid color-mix(in srgb, #dc2626 55%, transparent);
+  outline-offset:1px;
+}
+html[data-theme="light"] .btn-danger-subtle{
+  background:var(--panel);
+  border-color:color-mix(in srgb, #dc2626 32%, var(--border));
+}
+html[data-theme="light"] .btn-danger-subtle:hover,
+html[data-theme="light"] .btn-danger-subtle:focus-visible{
+  border-color:color-mix(in srgb, #dc2626 50%, var(--border));
+  background:color-mix(in srgb, #dc2626 8%, var(--panel));
 }
 /* Inline ✕ on track / map rows (not always .btn-danger) */
 button.btn.btn-sm[data-role="tp-rm"],
@@ -4093,7 +4384,8 @@ body.gis-mode #appTopbar [data-tip]:focus-visible::before{
   height:calc(100dvh - var(--gis-topbar-h) - 76px);
   min-height:360px;
   background:#0a1a2d;
-  overflow:hidden;
+  /* GIS: non clip controlli mappa (Layers / ombre) che possono estendersi di pochi px fuori dal box tile. */
+  overflow:visible;
 }
 body.gis-mode #gisMapMount{ display:block; }
 body.gis-mode #gisMapMount[hidden]{ display:block !important; }
@@ -4121,6 +4413,15 @@ body.gis-mode > main > #printReport{
 #gisMapMount > #miniMap .tile-map{
   aspect-ratio:auto !important;
   width:100% !important; height:100% !important;
+  /* Angoli arrotondati della .tile-map classica tagliavano i controlli in angolo; in GIS border-radius 0. */
+  border-radius:0;
+  /* Riduce clip sub-pixel su ombre/tooltip del primo controllo (Layers) senza togliere overflow ai tile. */
+  overflow-clip-margin: 6px;
+}
+/* GIS: .mini-map ha overflow:hidden globale — sul mount a viewport intera può clippare
+ * ombreggiature / subpixel del primo controllo (Layers). I tile restano clip da .tile-map. */
+body.gis-mode #gisMapMount > #miniMap.mini-map{
+  overflow:visible;
 }
 
 /* Map controls (right column): clear sticky header + integrated topbar row. */
@@ -4134,6 +4435,12 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
   top:max(12px, env(safe-area-inset-top, 0px) + var(--gis-map-ctrl-top));
   right:10px;
   gap:8px;
+  /* Sopra marker (z8) e readout: il primo bottone (Layers) non deve restare sotto il pin. */
+  z-index:12;
+  isolation:isolate;
+}
+body.gis-mode #gisMapMount .tile-map .tile-readout{
+  z-index:5;
 }
 /* GIS: basemap (Layer) lives in the right stack, first — flow layout, full button width. */
 body.gis-mode #gisMapMount .tile-map .tile-layers{
@@ -4143,10 +4450,24 @@ body.gis-mode #gisMapMount .tile-map .tile-layers{
   width:var(--ctrlW, 56px);
   align-items:stretch;
   margin:0;
+  flex-shrink:0;
+  overflow:visible;
+  z-index:1;
 }
 body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn{
   width:100%;
+  min-width:var(--ctrlW, 56px);
+  min-height:var(--ctrlW, 56px);
   box-sizing:border-box;
+  flex-shrink:0;
+  overflow:visible;
+}
+body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
+  width:26px;
+  height:26px;
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
 }
 /* GIS: basemap menu is positioned via JS (fixed + clamp). Keep it neutral here. */
 body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-layers{
@@ -4341,6 +4662,7 @@ html[data-theme="light"] .app-modal-close:focus-visible{
 html[data-theme="dark"] .app-modal-body,
 html[data-theme="dark"] .waypoint-modal-panel,
 html[data-theme="dark"] .offline-areas-list,
+html[data-theme="dark"] .offline-areas-list-scroll,
 html[data-theme="dark"] #trackModalBody .track-points-list{
   scrollbar-width:thin;
   scrollbar-color:rgba(255,255,255,.34) rgba(0,0,0,.2);
@@ -4348,6 +4670,7 @@ html[data-theme="dark"] #trackModalBody .track-points-list{
 html[data-theme="light"] .app-modal-body,
 html[data-theme="light"] .waypoint-modal-panel,
 html[data-theme="light"] .offline-areas-list,
+html[data-theme="light"] .offline-areas-list-scroll,
 html[data-theme="light"] #trackModalBody .track-points-list{
   scrollbar-width:thin;
   scrollbar-color:rgba(0,0,0,.42) rgba(0,0,0,.06);
@@ -4355,10 +4678,12 @@ html[data-theme="light"] #trackModalBody .track-points-list{
 html[data-theme="dark"] .app-modal-body::-webkit-scrollbar,
 html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar,
 html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar,
+html[data-theme="dark"] .offline-areas-list-scroll::-webkit-scrollbar,
 html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar{ width:10px; height:10px; }
 html[data-theme="dark"] .app-modal-body::-webkit-scrollbar-track,
 html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar-track,
 html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar-track,
+html[data-theme="dark"] .offline-areas-list-scroll::-webkit-scrollbar-track,
 html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-track{
   background:rgba(0,0,0,.22);
   border-radius:8px;
@@ -4366,6 +4691,7 @@ html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-tr
 html[data-theme="dark"] .app-modal-body::-webkit-scrollbar-thumb,
 html[data-theme="dark"] .waypoint-modal-panel::-webkit-scrollbar-thumb,
 html[data-theme="dark"] .offline-areas-list::-webkit-scrollbar-thumb,
+html[data-theme="dark"] .offline-areas-list-scroll::-webkit-scrollbar-thumb,
 html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-thumb{
   background:rgba(255,255,255,.28);
   border-radius:8px;
@@ -4375,10 +4701,12 @@ html[data-theme="dark"] #trackModalBody .track-points-list::-webkit-scrollbar-th
 html[data-theme="light"] .app-modal-body::-webkit-scrollbar,
 html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar,
 html[data-theme="light"] .offline-areas-list::-webkit-scrollbar,
+html[data-theme="light"] .offline-areas-list-scroll::-webkit-scrollbar,
 html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar{ width:10px; height:10px; }
 html[data-theme="light"] .app-modal-body::-webkit-scrollbar-track,
 html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar-track,
 html[data-theme="light"] .offline-areas-list::-webkit-scrollbar-track,
+html[data-theme="light"] .offline-areas-list-scroll::-webkit-scrollbar-track,
 html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-track{
   background:rgba(0,0,0,.05);
   border-radius:8px;
@@ -4386,6 +4714,7 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
 html[data-theme="light"] .app-modal-body::-webkit-scrollbar-thumb,
 html[data-theme="light"] .waypoint-modal-panel::-webkit-scrollbar-thumb,
 html[data-theme="light"] .offline-areas-list::-webkit-scrollbar-thumb,
+html[data-theme="light"] .offline-areas-list-scroll::-webkit-scrollbar-thumb,
 html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-thumb{
   background:rgba(0,0,0,.22);
   border-radius:8px;
@@ -4393,8 +4722,8 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   background-clip:padding-box;
 }
 /* ---------- Convert modal — GIS shell (Phase 3 block 1) ----------
- * Scoped to #convertModal / #convertModalBody only; other modals
- * keep global .app-modal-close styling. */
+ * Scoped to #convertModal / #convertModalBody; close chip condiviso
+ * con altri pannelli GIS (vedi regola .app-modal-close multi-sotto). */
 #convertModal.convert-modal{
   --gis-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --gis-r-sm: 8px;
@@ -4418,12 +4747,16 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   letter-spacing: -0.02em;
   line-height: 1.28;
 }
-/* Close: discrete neutral control (no destructive red in this modal). */
-#convertModal .app-modal-close{
+/* Close: discrete neutral — Converti + pannelli GIS principali (stesso chip). */
+#convertModal .app-modal-close,
+#trackModal .app-modal-close,
+#searchPanel .app-modal-close,
+#favoritesPanel .app-modal-close,
+#layersPanel .app-modal-close{
   width: 34px;
   height: 34px;
   min-width: 34px;
-  border-radius: var(--gis-r-md);
+  border-radius: var(--radius-control, 10px);
   border: 1px solid var(--border-strong);
   background: color-mix(in srgb, var(--panel2) 92%, transparent);
   color: var(--muted);
@@ -4432,10 +4765,18 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   box-shadow: none;
   background-image: none;
   margin: 0 2px 0 0;
-  transition: background var(--gis-ease), border-color var(--gis-ease), color var(--gis-ease);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 #convertModal .app-modal-close:hover,
-#convertModal .app-modal-close:focus-visible{
+#convertModal .app-modal-close:focus-visible,
+#trackModal .app-modal-close:hover,
+#trackModal .app-modal-close:focus-visible,
+#searchPanel .app-modal-close:hover,
+#searchPanel .app-modal-close:focus-visible,
+#favoritesPanel .app-modal-close:hover,
+#favoritesPanel .app-modal-close:focus-visible,
+#layersPanel .app-modal-close:hover,
+#layersPanel .app-modal-close:focus-visible{
   background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
   color: var(--text-primary);
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
@@ -4443,17 +4784,33 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   font-size: 17px;
   box-shadow: var(--ring-focus);
 }
-#convertModal .app-modal-close:focus-visible{
+#convertModal .app-modal-close:focus-visible,
+#trackModal .app-modal-close:focus-visible,
+#searchPanel .app-modal-close:focus-visible,
+#favoritesPanel .app-modal-close:focus-visible,
+#layersPanel .app-modal-close:focus-visible{
   outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
   outline-offset: 2px;
 }
-html[data-theme="light"] #convertModal .app-modal-close{
+html[data-theme="light"] #convertModal .app-modal-close,
+html[data-theme="light"] #trackModal .app-modal-close,
+html[data-theme="light"] #searchPanel .app-modal-close,
+html[data-theme="light"] #favoritesPanel .app-modal-close,
+html[data-theme="light"] #layersPanel .app-modal-close{
   background: color-mix(in srgb, var(--surface-field, var(--panel)) 90%, var(--panel));
   color: var(--muted);
   border-color: var(--border-strong);
 }
 html[data-theme="light"] #convertModal .app-modal-close:hover,
-html[data-theme="light"] #convertModal .app-modal-close:focus-visible{
+html[data-theme="light"] #convertModal .app-modal-close:focus-visible,
+html[data-theme="light"] #trackModal .app-modal-close:hover,
+html[data-theme="light"] #trackModal .app-modal-close:focus-visible,
+html[data-theme="light"] #searchPanel .app-modal-close:hover,
+html[data-theme="light"] #searchPanel .app-modal-close:focus-visible,
+html[data-theme="light"] #favoritesPanel .app-modal-close:hover,
+html[data-theme="light"] #favoritesPanel .app-modal-close:focus-visible,
+html[data-theme="light"] #layersPanel .app-modal-close:hover,
+html[data-theme="light"] #layersPanel .app-modal-close:focus-visible{
   color: var(--text-primary);
 }
 #convertModal .app-modal-body{
@@ -5190,13 +5547,6 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   cursor: not-allowed;
 }
 
-/* Saved tracks: selection-only destructive action, placed near the list. */
-.saved-tracks-actions{
-  display:flex;
-  justify-content:flex-end;
-  margin-top: 10px;
-}
-
 #waypointModalPanel .wp-count-badge{
   display: block;
   width: fit-content;
@@ -5723,6 +6073,25 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 .saved-tracks-table tr[data-saved-row].is-selected:hover{
   background:color-mix(in srgb, var(--accent) 10%, var(--panel));
 }
+.saved-tracks-table .saved-tracks-vis-cell{
+  text-align:center;
+  vertical-align:middle;
+}
+.saved-tracks-table .saved-track-vis-indicator{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  pointer-events:none;
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent);
+}
+.saved-tracks-table .saved-track-vis-indicator.is-visible{
+  background:#16a34a;
+}
+.saved-tracks-table .saved-track-vis-indicator.is-hidden{
+  background:color-mix(in srgb, var(--muted) 55%, var(--panel2) 45%);
+}
 .saved-tracks-table .saved-name-inp{
   width:100%; max-width:160px; font:inherit; padding:4px 6px; border-radius:8px;
   border:1px solid var(--border); background:var(--panel);
@@ -5734,6 +6103,27 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   margin-top:8px;
 }
 .saved-tracks-batch-bar .sep{ margin:0 2px; opacity:.45; }
+.saved-tracks-table .btn-danger-subtle[data-saved-del]{
+  min-width:2.25em;
+  padding-inline:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.saved-tracks-table .btn-danger-subtle[data-saved-del] .danger-x{ margin-right:0; }
+.saved-tracks-table th .saved-tracks-sort-btn{
+  font:inherit; font-weight:600; color:inherit; background:transparent; border:none; cursor:pointer;
+  padding:2px 4px; margin:0; border-radius:6px; text-align:inherit; width:100%;
+  display:inline-flex; align-items:center; justify-content:flex-start; gap:4px;
+}
+.saved-tracks-table th .saved-tracks-sort-btn:hover{
+  background:color-mix(in srgb, var(--accent) 8%, transparent);
+}
+.saved-tracks-table th .saved-tracks-sort-btn:focus-visible{
+  outline:2px solid var(--accent); outline-offset:1px;
+}
+.saved-tracks-table th.saved-tracks-vis-head .saved-tracks-sort-btn{ justify-content:center; }
+.saved-tracks-sort-mark{ font-size:.72em; line-height:1; opacity:.88; flex-shrink:0; }
 .saved-tracks-table tr[data-saved-row].is-selected{
   background:color-mix(in srgb, var(--accent) 10%, var(--panel));
 }
@@ -6296,8 +6686,23 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <label class="offcache-hintchk" data-i18n-tip="tip.offcacheForceMode"><input type="checkbox" id="chkForceOffline"> <span data-i18n="offcache.forceOfflineChk">Usa solo tile già scaricati (simula assenza di rete)</span></label>
           </div>
           <div class="offcache-actions offcache-bbox-actions">
-            <button type="button" class="btn btn-sm" id="btnBboxPick" data-i18n="offcache.bboxPick" data-i18n-tip="tip.bboxPick">📐 Seleziona area sulla mappa</button>
-            <button type="button" class="btn btn-sm" id="btnBboxViewport" data-i18n="offcache.bboxViewport" data-i18n-tip="tip.bboxViewport">🎯 Usa viewport</button>
+            <button type="button" class="btn btn-sm" id="btnBboxPick" hidden aria-hidden="true" tabindex="-1" data-i18n-tip="tip.bboxPick">
+              <span class="offcache-bbox-pick-ico" aria-hidden="true">
+                <svg class="offcache-bbox-pick-svg" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                  <rect x="4" y="4" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-dasharray="3.25 3.25"/>
+                </svg>
+              </span>
+              <span data-i18n="offcache.bboxPick">Seleziona area sulla mappa</span>
+            </button>
+            <button type="button" class="btn btn-sm" id="btnBboxViewport" data-i18n-tip="tip.bboxViewport">
+              <span class="offcache-bbox-vp-ico" aria-hidden="true">
+                <svg class="offcache-bbox-vp-svg" viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg" focusable="false">
+                  <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                  <rect x="8" y="8" width="8" height="8" rx="1.25" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" opacity="0.9"/>
+                </svg>
+              </span>
+              <span data-i18n="offcache.bboxViewport">Usa viewport</span>
+            </button>
             <button type="button" class="btn btn-sm" id="btnBboxClear" hidden data-i18n="offcache.bboxClear" data-i18n-tip="tip.bboxClear">❌ Rimuovi area</button>
           </div>
           <div id="pcBboxFieldsWrap" class="pc-bbox-fields-wrap" hidden>
@@ -6427,14 +6832,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <span class="track-new-plus" aria-hidden="true">+</span>
             <span data-i18n="track.new">Nuova traccia</span>
           </button>
-          <button type="button" id="btnTrackPaste" class="btn btn-sm" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
+          <button type="button" id="btnTrackPaste" class="btn btn-sm" hidden aria-hidden="true" tabindex="-1" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
           <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">Importa</button>
           <input type="file" id="trackFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
           <button type="button" id="btnTrackExportOpenBtn" class="btn btn-sm"
                   data-i18n="track.exportOpen" data-i18n-tip="tip.trackExportOpen" data-i18n-aria="track.exportOpenAria">Esporta</button>
           <span class="sep"></span>
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
-          <button type="button" id="btnTrackClear" class="btn btn-sm" data-i18n="track.clear" data-i18n-tip="tip.trackClear">❌ Elimina traccia corrente</button>
+          <button type="button" id="btnTrackClear" class="btn btn-sm btn-danger-subtle" data-i18n-tip="tip.trackClear"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="track.clear">Elimina traccia corrente</span></button>
         </div>
         <div id="trackSaveGuardMsg" class="hint geo-warn" role="alert" hidden
              style="margin-top:8px;font-weight:600;line-height:1.35;"></div>
@@ -6453,7 +6858,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="track-summary"></div>
         <hr class="sub-sep" style="margin:14px 0">
         <div class="sub-section-title" data-i18n="track.savedTitle">Tracce salvate</div>
-        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» mostra o nasconde la traccia sulla mappa; «Centra» sposta la vista sulla traccia; puoi rinominare, selezionare per export ed eliminare.</p>
+        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.</p>
         <div class="track-toolbar track-saved-toolbar">
           <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
           <span id="savedTracksSelectionMeta" class="hint" style="margin-left:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
@@ -6464,11 +6869,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <span class="sep" aria-hidden="true"></span>
           <button type="button" id="btnSavedTracksShowAll" class="btn btn-sm" disabled data-i18n="track.batchShowAll" data-i18n-tip="tip.trackBatchShowAll">Mostra tutte</button>
           <button type="button" id="btnSavedTracksHideAll" class="btn btn-sm" disabled data-i18n="track.batchHideAll" data-i18n-tip="tip.trackBatchHideAll">Nascondi tutte</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="btnSavedTracksDeleteSelected" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.trackDeleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="track.deleteSelected">Elimina selezionate</span></button>
         </div>
         <div id="savedTracksMount" class="saved-tracks-wrap" aria-live="polite"></div>
-        <div class="saved-tracks-actions">
-          <button type="button" id="btnSavedTracksDeleteSelected" class="btn btn-sm btn-danger" hidden data-i18n="track.deleteSelected" data-i18n-tip="tip.trackDeleteSelected">Elimina selezionate</button>
-        </div>
       </div>
     </details>
 
@@ -7429,6 +7833,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Eliminare {0} waypoint?",
     "waypointModal.bulkDeletedOk":"Eliminati {0} waypoint.",
     "waypointModal.listColName":"Nome",
+    "waypoint.renameConfirm":"Salvare il nuovo nome del waypoint?",
     "waypointModal.listColDetails":"Dettagli",
     "waypointModal.listColActions":"Azioni",
     "waypointModal.editor.newTitle":"Nuovo waypoint",
@@ -7475,7 +7880,7 @@ const I18N = {
     "track.paste":"📋 Incolla lista punti",
     "track.pastePrompt":"Incolla qui le coordinate (una per riga, qualsiasi formato):",
     "track.import":"Importa",
-    "track.clear":"❌ Elimina traccia corrente",
+    "track.clear":"Elimina traccia corrente",
     "track.clearConfirm":"Eliminare la traccia corrente (tutti i punti in modifica)?",
     "track.undo":"↶ Annulla ultimo punto",
     "track.undoEmpty":"Nessun punto da annullare.",
@@ -7497,24 +7902,31 @@ const I18N = {
     "track.exportDialogBody":"Esporta le tracce selezionate nell’archivio ({0}). Se ne selezioni più di una, verrà generato un file .zip con un file per traccia.",
     "track.exportDialogEmpty":"Nessuna traccia selezionata nell’archivio. Spunta una o più righe nella tabella “Tracce salvate”.",
     "track.savedTitle":"Tracce salvate",
-    "track.savedHint":"Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» mostra o nasconde la traccia sulla mappa; «Centra» sposta la vista sulla traccia; puoi rinominare, selezionare per export ed eliminare.",
+    "track.savedHint":"Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.",
     "track.saveLibrary":"💾 Salva traccia in archivio…",
     "track.updateLibrary":"Aggiorna traccia",
     "track.closeLoseSavedEditConfirm":"Le modifiche non salvate verranno annullate. La traccia salvata nell’archivio resterà intatta. Continuare?",
     "track.editDiscardedNotify":"Modifiche alla traccia annullate.",
     "track.updatedOk":"Traccia aggiornata: {0}",
     "track.deleteLastSaved":"🗑 Elimina ultima salvata",
-    "track.deleteSelected":"❌ Elimina selezionate",
+    "track.deleteSelected":"Elimina selezionate",
+    "tip.savedTracksSortCol":"Ordina per {0}. Secondo clic inverte l’ordine.",
     "track.savePrompt":"Nome traccia salvata:",
     "track.saveDefaultName":"Traccia",
     "track.saveMinTwoPoints":"La traccia deve contenere almeno 2 punti per essere salvata.",
     "track.savedOk":"Traccia salvata: {0}",
     "track.savedEmpty":"Nessuna traccia salvata.",
+    "track.renameConfirm":"Salvare il nuovo nome della traccia?",
     "track.deletedLastOk":"Ultima traccia salvata eliminata.",
     "track.deletedN":"Eliminate {0} tracce.",
+    "track.confirmDeleteSavedOne":"Eliminare questa traccia salvata? L'operazione non si può annullare.",
+    "track.confirmDeleteSavedN":"Eliminare {0} tracce salvate? L'operazione non si può annullare.",
     "track.noSelection":"Seleziona almeno una traccia.",
     "track.selAll":"Seleziona tutte",
     "track.colVis":"Vis.",
+    "track.savedVisOnMap":"Visibile sulla mappa",
+    "track.savedVisHiddenFromMap":"Nascosta dalla mappa",
+    "tip.trackColVisHeader":"Stato di visibilità sulla mappa (indicatore, non selezione).",
     "track.colName":"Nome",
     "track.colPts":"Pti",
     "track.colWhen":"Data",
@@ -7714,7 +8126,7 @@ const I18N = {
     "offcache.noIdb":"IndexedDB non disponibile in questo browser.",
     "offcache.clearConfirm":"Eliminare tutte le tile mappe salvate in memoria? L’operazione non si può annullare.",
     "offcache.bboxPick":"📐 Seleziona area sulla mappa",
-    "offcache.bboxViewport":"🎯 Usa viewport",
+    "offcache.bboxViewport":"Usa viewport",
     "offcache.bboxClear":"❌ Rimuovi area",
     "offcache.bboxBannerMsg":"Trascina sulla mappa per disegnare l'area, oppure premi ESC per annullare.",
     "offcache.bboxCancel":"Annulla",
@@ -7730,7 +8142,10 @@ const I18N = {
     "offcache.namedAreasLabel":"Aree salvate",
     "offcache.list.title":"Aree offline salvate",
     "offcache.list.empty":"Nessuna area offline salvata. Seleziona un'area e salvala.",
+    "offcache.renameConfirm":"Salvare il nuovo nome dell’area offline?",
     "offcache.list.colVis":"Vis.",
+    "offcache.area.visAriaOn":"Visibile sulla mappa",
+    "offcache.area.visAriaOff":"Nascosta dalla mappa",
     "offcache.list.colName":"Nome",
     "offcache.list.colStatus":"Stato",
     "offcache.list.colWhen":"Data",
@@ -7983,11 +8398,13 @@ const I18N = {
     "sec.favorites":"★ Favoriti",
     "fav.hint":"Salva i punti importanti con un nome per ritrovarli velocemente. Sono memorizzati solo nel tuo browser.",
     "fav.empty":"Nessun favorito. Salva il punto corrente con \"★ Aggiungi corrente\".",
+    "fav.renameConfirm":"Salvare il nuovo nome del favorito?",
     "fav.add":"★ Aggiungi corrente",
     "fav.exportKml":"Esporta KML","fav.exportGeoJson":"Esporta GeoJSON","fav.clear":"Elimina tutti",
     "fav.namePrompt":"Nome del favorito:",
     "fav.defaultName":"Punto",
     "fav.confirmClear":"Eliminare tutti i favoriti? L'operazione è irreversibile.",
+    "fav.confirmDeleteOne":"Eliminare questo favorito? L'operazione non si può annullare.",
     "fav.saved":"Favorito salvato.",
     "fav.search":"Cerca favoriti","fav.searchPh":"nome, note, MGRS…",
     "fav.naming":"Convenzione nome [ES]-[CAT]-[num]","fav.namingHint":"Esempio: FL26-FOB-001 (numero sequenziale per prefisso+categoria).",
@@ -8365,6 +8782,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Delete {0} waypoints?",
     "waypointModal.bulkDeletedOk":"Deleted {0} waypoints.",
     "waypointModal.listColName":"Name",
+    "waypoint.renameConfirm":"Save the new waypoint name?",
     "waypointModal.listColDetails":"Details",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"New waypoint",
@@ -8411,7 +8829,7 @@ const I18N = {
     "track.paste":"📋 Paste point list",
     "track.pastePrompt":"Paste coordinates here (one per line, any format):",
     "track.import":"Import",
-    "track.clear":"❌ Delete current track",
+    "track.clear":"Delete current track",
     "track.clearConfirm":"Delete the current track (all points being edited)?",
     "track.undo":"↶ Undo last point",
     "track.undoEmpty":"No point to undo.",
@@ -8433,24 +8851,31 @@ const I18N = {
     "track.exportDialogBody":"Export the selected tracks from the archive ({0}). If you select more than one, a .zip file will be generated with one file per track.",
     "track.exportDialogEmpty":"No saved track selected. Tick one or more rows in the “Saved tracks” table.",
     "track.savedTitle":"Saved tracks",
-    "track.savedHint":"Save the current track to the archive. In the table: the “Show” column toggles visibility on the map; “Center” moves the map view to the track; you can rename, select rows for export, and delete.",
+    "track.savedHint":"Save the current track to the archive. In the table: the “Show” column is only a status (visible/hidden on the map); use the buttons above the table to change visibility; the first column selects rows (batch and export). “Center” moves the view; you can rename and delete.",
     "track.saveLibrary":"💾 Save track to archive…",
     "track.updateLibrary":"Update track",
     "track.closeLoseSavedEditConfirm":"Unsaved changes will be discarded. The saved track in the archive will remain unchanged. Continue?",
     "track.editDiscardedNotify":"Track edits discarded.",
     "track.updatedOk":"Track updated: {0}",
     "track.deleteLastSaved":"🗑 Delete last saved",
-    "track.deleteSelected":"❌ Delete selected",
+    "track.deleteSelected":"Delete selected",
+    "tip.savedTracksSortCol":"Sort by {0}. Click again to reverse.",
     "track.savePrompt":"Saved track name:",
     "track.saveDefaultName":"Track",
     "track.saveMinTwoPoints":"The track must contain at least 2 points before it can be saved.",
     "track.savedOk":"Track saved: {0}",
     "track.savedEmpty":"No saved tracks yet.",
+    "track.renameConfirm":"Save the new track name?",
     "track.deletedLastOk":"Last saved track removed.",
     "track.deletedN":"Deleted {0} tracks.",
+    "track.confirmDeleteSavedOne":"Delete this saved track? This cannot be undone.",
+    "track.confirmDeleteSavedN":"Delete {0} saved tracks? This cannot be undone.",
     "track.noSelection":"Select at least one track.",
     "track.selAll":"Select all",
     "track.colVis":"Show",
+    "track.savedVisOnMap":"Visible on the map",
+    "track.savedVisHiddenFromMap":"Hidden from the map",
+    "tip.trackColVisHeader":"Map visibility status (indicator only, not row selection).",
     "track.colName":"Name",
     "track.colPts":"Pts",
     "track.colWhen":"Date",
@@ -8649,7 +9074,7 @@ const I18N = {
     "offcache.noIdb":"IndexedDB is not available in this browser.",
     "offcache.clearConfirm":"Delete all saved map tiles? This cannot be undone.",
     "offcache.bboxPick":"📐 Select area on map",
-    "offcache.bboxViewport":"🎯 Use viewport",
+    "offcache.bboxViewport":"Use viewport",
     "offcache.bboxClear":"❌ Remove area",
     "offcache.bboxBannerMsg":"Drag on the map to draw the area, or press ESC to cancel.",
     "offcache.bboxCancel":"Cancel",
@@ -8665,7 +9090,10 @@ const I18N = {
     "offcache.namedAreasLabel":"Saved areas",
     "offcache.list.title":"Saved offline areas",
     "offcache.list.empty":"No saved offline areas. Select an area and save it.",
+    "offcache.renameConfirm":"Save the new offline area name?",
     "offcache.list.colVis":"Vis.",
+    "offcache.area.visAriaOn":"Visible on the map",
+    "offcache.area.visAriaOff":"Hidden from the map",
     "offcache.list.colName":"Name",
     "offcache.list.colStatus":"Status",
     "offcache.list.colWhen":"Date",
@@ -8918,11 +9346,13 @@ const I18N = {
     "sec.favorites":"★ Favorites",
     "fav.hint":"Save important points with a name to retrieve them quickly. Stored only in your browser.",
     "fav.empty":"No favorites. Save the current point with \"★ Add current\".",
+    "fav.renameConfirm":"Save the new favorite name?",
     "fav.add":"★ Add current",
     "fav.exportKml":"Export KML","fav.exportGeoJson":"Export GeoJSON","fav.clear":"Clear all",
     "fav.namePrompt":"Favorite name:",
     "fav.defaultName":"Point",
     "fav.confirmClear":"Remove all favorites? This cannot be undone.",
+    "fav.confirmDeleteOne":"Delete this favorite? This cannot be undone.",
     "fav.saved":"Favorite saved.",
     "fav.search":"Search favorites","fav.searchPh":"name, notes, MGRS…",
     "fav.naming":"Name pattern [EX]-[CAT]-[num]",
@@ -9301,6 +9731,7 @@ const I18N = {
     "waypointModal.bulkDeleteConfirm":"Supprimer {0} waypoints ?",
     "waypointModal.bulkDeletedOk":"{0} waypoints supprimés.",
     "waypointModal.listColName":"Nom",
+    "waypoint.renameConfirm":"Enregistrer le nouveau nom du waypoint ?",
     "waypointModal.listColDetails":"Détails",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"Nouveau waypoint",
@@ -9347,7 +9778,7 @@ const I18N = {
     "track.paste":"📋 Coller une liste",
     "track.pastePrompt":"Collez les coordonnées ici (une par ligne, tout format) :",
     "track.import":"Importer",
-    "track.clear":"❌ Supprimer la trace courante",
+    "track.clear":"Supprimer la trace courante",
     "track.clearConfirm":"Supprimer la trace courante (tous les points en modification) ?",
     "track.undo":"↶ Annuler le dernier point",
     "track.undoEmpty":"Aucun point à annuler.",
@@ -9369,24 +9800,31 @@ const I18N = {
     "track.exportDialogBody":"Exporter les traces sélectionnées dans l’archive ({0}). Si vous en sélectionnez plusieurs, un fichier .zip sera généré avec un fichier par trace.",
     "track.exportDialogEmpty":"Aucune trace enregistrée sélectionnée. Cochez une ou plusieurs lignes du tableau « Traces enregistrées ».",
     "track.savedTitle":"Traces enregistrées",
-    "track.savedHint":"Enregistrez la trace courante dans l’archive. Dans le tableau : la colonne « Aff. » affiche ou masque la trace sur la carte ; « Centrer » déplace la vue sur la trace ; vous pouvez renommer, sélectionner pour l’export et supprimer.",
+    "track.savedHint":"Enregistrez la trace courante dans l’archive. Dans le tableau : la colonne « Aff. » indique seulement l’état (visible/masquée sur la carte) ; la visibilité se règle avec les boutons au-dessus du tableau ; la première colonne sert à sélectionner les lignes (lot et export). « Centrer » déplace la vue ; vous pouvez renommer et supprimer.",
     "track.saveLibrary":"💾 Enregistrer la trace…",
     "track.updateLibrary":"Mettre à jour la trace",
     "track.closeLoseSavedEditConfirm":"Les modifications non enregistrées seront annulées. La trace enregistrée dans l'archive restera intacte. Continuer ?",
     "track.editDiscardedNotify":"Modifications de la trace annulées.",
     "track.updatedOk":"Trace mise à jour : {0}",
     "track.deleteLastSaved":"🗑 Supprimer la dernière enregistrée",
-    "track.deleteSelected":"❌ Supprimer la sélection",
+    "track.deleteSelected":"Supprimer la sélection",
+    "tip.savedTracksSortCol":"Trier par {0}. Nouveau clic pour inverser.",
     "track.savePrompt":"Nom de la trace enregistrée :",
     "track.saveDefaultName":"Trace",
     "track.saveMinTwoPoints":"La trace doit contenir au moins 2 points pour être enregistrée.",
     "track.savedOk":"Trace enregistrée : {0}",
     "track.savedEmpty":"Aucune trace enregistrée.",
+    "track.renameConfirm":"Enregistrer le nouveau nom de la trace ?",
     "track.deletedLastOk":"Dernière trace enregistrée supprimée.",
     "track.deletedN":"{0} traces supprimées.",
+    "track.confirmDeleteSavedOne":"Supprimer cette trace enregistrée ? Cette action est irréversible.",
+    "track.confirmDeleteSavedN":"Supprimer {0} traces enregistrées ? Cette action est irréversible.",
     "track.noSelection":"Sélectionnez au moins une trace.",
     "track.selAll":"Tout sélectionner",
     "track.colVis":"Aff.",
+    "track.savedVisOnMap":"Visible sur la carte",
+    "track.savedVisHiddenFromMap":"Masquée sur la carte",
+    "tip.trackColVisHeader":"État de visibilité sur la carte (indicateur seulement, pas la sélection).",
     "track.colName":"Nom",
     "track.colPts":"Pts",
     "track.colWhen":"Date",
@@ -9585,7 +10023,7 @@ const I18N = {
     "offcache.noIdb":"IndexedDB indisponible.",
     "offcache.clearConfirm":"Supprimer toutes les tuiles mémorisées ? Irréversible.",
     "offcache.bboxPick":"📐 Sélectionner une zone sur la carte",
-    "offcache.bboxViewport":"🎯 Utiliser la vue",
+    "offcache.bboxViewport":"Utiliser la vue",
     "offcache.bboxClear":"❌ Retirer la zone",
     "offcache.bboxBannerMsg":"Glissez sur la carte pour dessiner la zone, ou appuyez sur ÉCHAP pour annuler.",
     "offcache.bboxCancel":"Annuler",
@@ -9601,7 +10039,10 @@ const I18N = {
     "offcache.namedAreasLabel":"Zones enregistrées",
     "offcache.list.title":"Zones hors ligne enregistrées",
     "offcache.list.empty":"Aucune zone hors ligne enregistrée. Sélectionnez une zone et enregistrez-la.",
+    "offcache.renameConfirm":"Enregistrer le nouveau nom de la zone hors ligne ?",
     "offcache.list.colVis":"Vis.",
+    "offcache.area.visAriaOn":"Visible sur la carte",
+    "offcache.area.visAriaOff":"Masquée sur la carte",
     "offcache.list.colName":"Nom",
     "offcache.list.colStatus":"Statut",
     "offcache.list.colWhen":"Date",
@@ -9854,11 +10295,13 @@ const I18N = {
     "sec.favorites":"★ Favoris",
     "fav.hint":"Enregistrez les points importants avec un nom pour les retrouver rapidement. Stockés uniquement dans votre navigateur.",
     "fav.empty":"Aucun favori. Enregistrez le point courant avec « ★ Ajouter ».",
+    "fav.renameConfirm":"Enregistrer le nouveau nom du favori ?",
     "fav.add":"★ Ajouter le courant",
     "fav.exportKml":"Exporter KML","fav.exportGeoJson":"Exporter GeoJSON","fav.clear":"Tout supprimer",
     "fav.namePrompt":"Nom du favori :",
     "fav.defaultName":"Point",
     "fav.confirmClear":"Supprimer tous les favoris ? Irréversible.",
+    "fav.confirmDeleteOne":"Supprimer ce favori ? Cette action est irréversible.",
     "fav.saved":"Favori enregistré.",
     "fav.search":"Rechercher","fav.searchPh":"nom, note, MGRS…",
     "fav.naming":"Convention [ES]-[CAT]-[num]",
@@ -10289,7 +10732,8 @@ function positionBasemapMenuGis(miniMapRoot){
   menu.style.overflowX = "hidden";
   menu.style.overflowY = "auto";
 
-  // Measure after styles applied.
+  // Measure after styles applied (force layout so width/height non siano 0 al primo frame).
+  try { void menu.offsetWidth; } catch(_){}
   const pad = 8;
   const vw = window.innerWidth, vh = window.innerHeight;
   const br = btn.getBoundingClientRect();
@@ -14308,6 +14752,45 @@ function spatialLineToTrackPoints(coords, meta){
     meta: meta || { from: "spatial-import" }
   }));
 }
+/** Nome traccia suggerito dopo import spaziale (testo semplice, no HTML). */
+function spatialSanitizeImportedTrackLabel(raw, maxLen){
+  let s = String(raw || "").replace(/[\u0000-\u001F\u007F]/g, "").trim();
+  if (!s) return "";
+  s = s.replace(/[<>]/g, "");
+  const lim = (Number.isFinite(maxLen) && (maxLen | 0) > 0) ? (maxLen | 0) : 80;
+  return s.slice(0, lim);
+}
+function spatialBaseNameNoExt(filename){
+  const f = String(filename || "").replace(/\\/g, "/");
+  const leaf = f.split("/").pop() || f;
+  return leaf.replace(/\.(zip|kmz|kml|gpx|json|geojson|csv|txt|shp|wkt)$/i, "").trim();
+}
+function spatialDeriveImportedTrackPromptName(fc, filename){
+  const base = spatialSanitizeImportedTrackLabel(spatialBaseNameNoExt(filename), 80);
+  const generic = new Set(["", "track", "route", "untitled", "unnamed", "traccia", "percorso", "polygon", "line", "import"]);
+  const feats = (fc && fc.features) ? fc.features : [];
+  const lineNames = [];
+  for (const f of feats){
+    const g = f && f.geometry;
+    if (!g) continue;
+    const t = g.type;
+    if (t !== "LineString" && t !== "MultiLineString" && t !== "Polygon") continue;
+    const pr = f.properties || {};
+    const nm = spatialSanitizeImportedTrackLabel(pr.name || pr.Name || "", 80);
+    if (nm && !generic.has(nm.toLowerCase())) lineNames.push(nm);
+  }
+  const uniq = [];
+  const seen = new Set();
+  for (const n of lineNames){
+    const k = n.toLowerCase();
+    if (seen.has(k)) continue;
+    seen.add(k);
+    uniq.push(n);
+  }
+  if (uniq.length === 1) return uniq[0];
+  if (uniq.length > 1) return base || uniq[0];
+  return base || "";
+}
 function spatialApplyFeatureCollectionToTrackMerge(fc, opts){
   opts = opts || {};
   const fname = opts.filename || "";
@@ -14348,6 +14831,12 @@ function spatialApplyFeatureCollectionToTrackMerge(fc, opts){
   }
   if (anyPoly) state.track.closed = true;
   if (state.track.points.length > 500) state.track.points.splice(0, state.track.points.length - 500);
+  try {
+    const derived = spatialDeriveImportedTrackPromptName(fc, fname);
+    if (derived){
+      state._trackPromptName = String(derived).slice(0, 80);
+    }
+  } catch(_){}
   saveStore();
   renderTrackAll();
   renderMapWaypointsAll();
@@ -18743,6 +19232,12 @@ function deleteSavedTracksByIds(ids){
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   if (!set.size) return;
+  if (typeof window.confirm === "function"){
+    const msg = (set.size === 1)
+      ? t("track.confirmDeleteSavedOne")
+      : (t("track.confirmDeleteSavedN") || "").replace("{0}", String(set.size));
+    if (!window.confirm(msg)) return;
+  }
   const deletedPointSnapshots = [];
   for (const st of state.savedTracks){
     if (st && set.has(st.id) && Array.isArray(st.points)) deletedPointSnapshots.push(st.points.slice());
@@ -18822,6 +19317,93 @@ function formatSavedTrackWhen(ts){
   } catch(_){
     return new Date(n).toISOString().slice(0, 16);
   }
+}
+
+const SAVED_TRACKS_SORT_KEYS = new Set(["vis", "name", "pts", "when", "dist"]);
+function savedTrackSortTs(st){
+  if (!st) return 0;
+  const u = st.updatedAt;
+  if (Number.isFinite(u) && u > 0) return u;
+  const s = st.savedAt;
+  if (Number.isFinite(s) && s > 0) return s;
+  const c = st.createdAt;
+  if (Number.isFinite(c) && c > 0) return c;
+  return 0;
+}
+function ensureSavedTracksSortState(){
+  const KEYS = SAVED_TRACKS_SORT_KEYS;
+  let s = state._savedTracksSort;
+  if (!s || typeof s !== "object"){
+    state._savedTracksSort = { key: "when", dir: "desc" };
+    return;
+  }
+  const key = KEYS.has(String(s.key)) ? String(s.key) : "when";
+  const dir = (s.dir === "asc" || s.dir === "desc") ? s.dir : savedTracksSortDefaultDir(key);
+  state._savedTracksSort = { key, dir };
+}
+function savedTracksSortDefaultDir(key){
+  if (key === "name") return "asc";
+  return "desc";
+}
+function getSavedTracksSortValue(st, key){
+  if (!st) return null;
+  switch (key){
+    case "vis": return (typeof savedTrackMapVisible === "function" && savedTrackMapVisible(st)) ? 1 : 0;
+    case "name": return String(st.name || "").toLowerCase();
+    case "pts": return Array.isArray(st.points) ? st.points.length : 0;
+    case "when": return savedTrackSortTs(st);
+    case "dist": {
+      const d = savedTrackDistanceM(st);
+      return Number.isFinite(d) ? d : -1;
+    }
+    default: return 0;
+  }
+}
+function savedTrackSortCompare(a, b, key, dir){
+  const mul = dir === "asc" ? 1 : -1;
+  const va = getSavedTracksSortValue(a, key);
+  const vb = getSavedTracksSortValue(b, key);
+  if (typeof va === "string" && typeof vb === "string"){
+    const c = va.localeCompare(vb, undefined, { sensitivity: "base" });
+    if (c !== 0) return c * mul;
+  } else {
+    const na = Number(va), nb = Number(vb);
+    if (na < nb) return -1 * mul;
+    if (na > nb) return 1 * mul;
+  }
+  return String(a.id).localeCompare(String(b.id));
+}
+function sortSavedTracksForRender(tracks){
+  ensureSavedTracksState();
+  ensureSavedTracksSortState();
+  const { key, dir } = state._savedTracksSort;
+  const arr = (tracks || []).slice();
+  arr.sort((a, b) => savedTrackSortCompare(a, b, key, dir));
+  return arr;
+}
+function applySavedTracksSortHeaderClick(key){
+  const k = String(key || "");
+  if (!SAVED_TRACKS_SORT_KEYS.has(k)) return;
+  ensureSavedTracksSortState();
+  const cur = state._savedTracksSort;
+  if (cur.key === k) state._savedTracksSort = { key: k, dir: cur.dir === "asc" ? "desc" : "asc" };
+  else state._savedTracksSort = { key: k, dir: savedTracksSortDefaultDir(k) };
+  renderSavedTracksList();
+}
+function savedTracksSortHeaderHtml(colKey, i18nKey, opts){
+  opts = opts || {};
+  ensureSavedTracksSortState();
+  const labelPlain = (typeof t === "function") ? (t(i18nKey) || colKey) : colKey;
+  const label = esc(labelPlain);
+  const { key, dir } = state._savedTracksSort;
+  const active = key === colKey;
+  const mark = active ? (dir === "desc" ? "▼" : "▲") : "";
+  const rawTip = (typeof t === "function") ? (t("tip.savedTracksSortCol") || "") : "";
+  const tipPlain = rawTip ? String(rawTip).replace(/\{0\}/g, labelPlain) : labelPlain;
+  const tipEsc = esc(tipPlain);
+  const cls = opts.visHead ? " class=\"saved-tracks-vis-head\"" : "";
+  const st = opts.thStyle ? ` style="${esc(opts.thStyle)}"` : "";
+  return `<th${cls}${st}><button type="button" class="saved-tracks-sort-btn" data-saved-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="saved-tracks-sort-mark" aria-hidden="true">${mark}</span></button></th>`;
 }
 
 /** O2: localized status chip label for a saved offline named area. */
@@ -18932,6 +19514,7 @@ function renderOfflineAreasList(){
   if (!areas.length){
     list.innerHTML = `<div class="offline-areas-empty" data-i18n="offcache.list.empty">${esc(t("offcache.list.empty"))}</div>`;
     ensureOfflineAreasListDelegation();
+    ensureOfflineAreasTooltipPortal();
     // Toolbar sync
     try { updateOfflineAreasToolbarUI(); } catch(_){}
     return;
@@ -18996,10 +19579,21 @@ function renderOfflineAreasList(){
   // Remember current visible order for shift-range selection.
   list._offaRowOrder = rows.map(a => String(a.id));
 
-  let html = `<table class="offline-areas-table"><thead><tr>
+  let html = `<table class="offline-areas-table"><colgroup>
+    <col style="width:34px" />
+    <col style="width:44px" />
+    <col class="offa-col-name" />
+    <col style="width:90px" />
+    <col style="width:120px" />
+    <col style="width:90px" />
+    <col style="width:110px" />
+    <col style="width:110px" />
+    <col style="width:110px" />
+    <col />
+  </colgroup><thead><tr>
     <th class="offa-selcell"><input type="checkbox" id="offaSelectAll" data-i18n-tip="offcache.sel.selectAll" data-tip="${esc(t("offcache.sel.selectAll"))}" data-i18n-aria="offcache.sel.selectAll"></th>
     <th class="offa-viscell"><button type="button" class="offa-sort-btn" data-offa-sort="vis" data-i18n-tip="offcache.sort.vis" data-tip="${esc(t("offcache.sort.vis"))}">${esc(t("offcache.list.colVis"))}${sortMark("vis")}</button></th>
-    <th><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button></th>
+    <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button><span class="offa-name-col-resize" aria-hidden="true"></span></th>
     <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="status" data-i18n-tip="offcache.sort.status" data-tip="${esc(t("offcache.sort.status"))}">${esc(t("offcache.list.colStatus"))}${sortMark("status")}</button></th>
     <th style="width:120px"><button type="button" class="offa-sort-btn" data-offa-sort="when" data-i18n-tip="offcache.sort.when" data-tip="${esc(t("offcache.sort.when"))}">${esc(t("offcache.list.colWhen"))}${sortMark("when")}</button></th>
     <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="zoom" data-i18n-tip="offcache.sort.zoom" data-tip="${esc(t("offcache.sort.zoom"))}">${esc(t("offcache.list.colZoom"))}${sortMark("zoom")}</button></th>
@@ -19030,11 +19624,12 @@ function renderOfflineAreasList(){
     const whenTxt = when ? formatSavedTrackWhen(when) : "—";
     const sel = selectedSet.has(String(a.id));
     const rowComplete = (st === "complete") ? " offa-row--complete" : "";
+    const ariaVis = esc(vis ? t("offcache.area.visAriaOn") : t("offcache.area.visAriaOff"));
 
     html += `<tr data-offa-row data-id="${esc(a.id)}" class="${sel ? "is-selected" : ""}${rowComplete}">
       <td><input type="checkbox" data-offa-sel="${esc(a.id)}" data-i18n-tip="offcache.row.selTip" data-tip="${esc(t("offcache.row.selTip"))}" data-i18n-aria="offcache.row.selTip" ${sel ? "checked" : ""}></td>
-      <td><input type="checkbox" data-offa-vis="${esc(a.id)}" data-i18n-tip="offcache.row.visTip" data-tip="${esc(t("offcache.row.visTip"))}" data-i18n-aria="offcache.row.visTip" ${vis ? "checked" : ""}></td>
-      <td><span class="offa-name">${esc(a.name || "—")}</span></td>
+      <td class="offa-viscell"><span class="offline-area-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${ariaVis}"></span></td>
+      <td data-tip="${esc(String(a.name != null ? a.name : "—").slice(0, 200))}"><input type="text" class="offa-name-inp" data-offa-rename="${esc(a.id)}" value="${esc(a.name || "")}" maxlength="40" aria-label="${esc(t("offcache.list.colName"))}"></td>
       <td><span class="offline-area-status offline-area-status--${esc(stClass)}">${esc(stLbl)}</span></td>
       <td>${esc(whenTxt)}</td>
       <td>${esc(zLine)}</td>
@@ -19048,7 +19643,13 @@ function renderOfflineAreasList(){
     </tr>`;
   }
   html += "</tbody></table>";
-  list.innerHTML = html;
+  list.innerHTML = `<div class="offline-areas-list-scroll">${html}</div>`;
+  try {
+    const tbl = list.querySelector(".offline-areas-table");
+    if (tbl && Number.isFinite(list._offaNameColPx)){
+      tbl.style.setProperty("--offa-name-col", list._offaNameColPx + "px");
+    }
+  } catch(_){}
   // Update select-all checkbox state (checked/indeterminate) and toolbar.
   try {
     const selAll = document.getElementById("offaSelectAll");
@@ -19061,6 +19662,130 @@ function renderOfflineAreasList(){
   } catch(_){}
   try { updateOfflineAreasToolbarUI(); } catch(_){}
   ensureOfflineAreasListDelegation();
+  ensureOfflineAreasNameColResizeWired();
+  ensureOfflineAreasTooltipPortal();
+}
+
+/** Desktop: ridimensiona solo la colonna Nome in Mappe Offline (sessione, senza localStorage). */
+function ensureOfflineAreasNameColResizeWired(){
+  if (window._offaNameColResizeWired) return;
+  window._offaNameColResizeWired = true;
+  let drag = null;
+  function endDrag(){
+    drag = null;
+    try {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
+    } catch(_){}
+  }
+  function onMove(ev){
+    if (!drag) return;
+    const dx = ev.clientX - drag.startX;
+    const nw = Math.max(80, Math.min(drag.maxW, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty("--offa-name-col", nw + "px");
+    const list = document.getElementById("offlineAreasList");
+    if (list) list._offaNameColPx = nw;
+  }
+  document.addEventListener("pointerdown", (ev) => {
+    const h = ev.target.closest && ev.target.closest(".offa-name-col-resize");
+    if (!h) return;
+    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
+    const table = h.closest(".offline-areas-table");
+    if (!table) return;
+    const list = document.getElementById("offlineAreasList");
+    if (!list || !list.contains(table)) return;
+    const cell = table.querySelector("tbody tr td:nth-child(3)");
+    const rectT = table.getBoundingClientRect();
+    const startW = cell ? cell.getBoundingClientRect().width : 160;
+    drag = {
+      table,
+      startX: ev.clientX,
+      startW,
+      maxW: Math.max(120, Math.floor(rectT.width * 0.55))
+    };
+    ev.preventDefault();
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+  }, true);
+}
+
+/** Tooltip fixed solo per Usa area/Centra offline: evita clip da scroll/table. */
+function ensureOfflineAreasTooltipPortal(){
+  if (document._offlineAreasTooltipPortalInstalled) return;
+  document._offlineAreasTooltipPortalInstalled = true;
+  const selector = "#offlineAreasList [data-offline-load], #offlineAreasList [data-offline-fit], #btnOfflineAreasUseOne, #btnOfflineAreasFitOne";
+  let active = null;
+
+  function portal(){
+    let el = document.getElementById("offlineAreasTooltipPortal");
+    if (!el){
+      el = document.createElement("div");
+      el.id = "offlineAreasTooltipPortal";
+      el.className = "offline-area-tip-portal";
+      el.setAttribute("role", "tooltip");
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function hide(){
+    active = null;
+    const el = document.getElementById("offlineAreasTooltipPortal");
+    if (el) el.classList.remove("is-visible");
+  }
+  function positionFor(btn){
+    const el = portal();
+    const br = btn.getBoundingClientRect();
+    const pad = 8;
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const ew = el.offsetWidth || 180;
+    const eh = el.offsetHeight || 32;
+    let left = br.left + (br.width / 2) - (ew / 2);
+    left = Math.max(pad, Math.min(vw - ew - pad, left));
+    let top = br.top - eh - 8;
+    if (top < pad) top = br.bottom + 8;
+    top = Math.max(pad, Math.min(vh - eh - pad, top));
+    el.style.transform = `translate3d(${Math.round(left)}px, ${Math.round(top)}px, 0)`;
+  }
+  function show(btn){
+    if (!btn || btn.disabled) return;
+    const txt = String(btn.getAttribute("data-tip") || "").trim();
+    if (!txt) return;
+    active = btn;
+    const el = portal();
+    el.textContent = txt;
+    el.classList.add("is-visible");
+    positionFor(btn);
+  }
+  function targetFrom(ev){
+    const t = ev.target;
+    return t && t.closest ? t.closest(selector) : null;
+  }
+
+  document.addEventListener("mouseover", (ev) => {
+    const btn = targetFrom(ev);
+    if (btn) show(btn);
+  }, true);
+  document.addEventListener("focusin", (ev) => {
+    const btn = targetFrom(ev);
+    if (btn) show(btn);
+  }, true);
+  document.addEventListener("mouseout", (ev) => {
+    if (!active) return;
+    const rel = ev.relatedTarget;
+    if (rel && active.contains && active.contains(rel)) return;
+    if (targetFrom(ev) === active) hide();
+  }, true);
+  document.addEventListener("focusout", (ev) => {
+    if (targetFrom(ev) === active) hide();
+  }, true);
+  window.addEventListener("resize", hide, { passive: true });
+  document.addEventListener("scroll", () => {
+    if (active && document.body.contains(active)) positionFor(active);
+    else hide();
+  }, true);
 }
 
 /** O2: single delegated click handler on #offlineAreasList (idempotent). */
@@ -19068,6 +19793,50 @@ function ensureOfflineAreasListDelegation(){
   const list = document.getElementById("offlineAreasList");
   if (!list || list._offlineAreasDelegated) return;
   list._offlineAreasDelegated = true;
+
+  list.addEventListener("focusin", (ev) => {
+    const inp = ev.target;
+    if (!inp || !inp.matches || !inp.matches("[data-offa-rename]")) return;
+    const id = String(inp.getAttribute("data-offa-rename") || "");
+    const a = (state.namedAreas || []).find(x => x && String(x.id) === id);
+    inp.dataset._prevOffaName = a ? String(a.name || "") : "";
+  });
+  list.addEventListener("change", (ev) => {
+    const inp = ev.target;
+    if (!inp || !inp.matches || !inp.matches("[data-offa-rename]")) return;
+    const id = String(inp.getAttribute("data-offa-rename") || "");
+    const areas = state.namedAreas || [];
+    const idx = areas.findIndex(x => x && String(x.id) === id);
+    if (idx < 0) return;
+    const cur = areas[idx];
+    const raw = String(inp.value || "").trim().slice(0, 40);
+    const prev = String(inp.dataset._prevOffaName != null ? inp.dataset._prevOffaName : cur.name || "");
+    if (!raw){
+      inp.value = prev;
+      return;
+    }
+    if (raw === String(prev || "").trim()){
+      inp.dataset._prevOffaName = raw;
+      return;
+    }
+    const q = (typeof t === "function" ? t("offcache.renameConfirm") : "") || "Salvare il nuovo nome dell’area offline?";
+    const ok = (typeof window.confirm !== "function") || window.confirm(q);
+    if (!ok){
+      inp.value = prev;
+      return;
+    }
+    const merged = Object.assign({}, cur, { name: raw, updatedAt: Date.now() });
+    const norm = normalizeOfflineArea(merged);
+    if (!norm){
+      inp.value = prev;
+      return;
+    }
+    state.namedAreas[idx] = norm;
+    saveStore();
+    inp.dataset._prevOffaName = raw;
+    renderNamedAreasOptgroup();
+    renderOfflineAreasList();
+  });
 
   function selectedIds(){
     if (!Array.isArray(state._offlineAreasSelectedIds)) state._offlineAreasSelectedIds = [];
@@ -19137,22 +19906,6 @@ function ensureOfflineAreasListDelegation(){
     });
   }
 
-  list.addEventListener("change", (ev) => {
-    const tEl = ev.target;
-    if (!tEl || !tEl.matches) return;
-    if (tEl.matches("[data-offa-vis]")){
-      const id = String(tEl.getAttribute("data-offa-vis") || "");
-      const a = (state.namedAreas || []).find(x => x && x.id === id);
-      if (a){
-        a.visible = !!tEl.checked;
-        saveStore();
-        renderNamedAreasOptgroup();
-        renderOfflineAreasList();
-        const tm = document.querySelector("#miniMap .tile-map");
-        if (tm) drawCoverageOverlay(tm);
-      }
-    }
-  });
   list.addEventListener("click", (ev) => {
     const sortBtn = ev.target.closest && ev.target.closest("[data-offa-sort]");
     if (sortBtn){
@@ -19267,7 +20020,7 @@ function renderSavedTracksList(){
   const mount = document.getElementById("savedTracksMount");
   if (!mount) return;
   ensureSavedTracksState();
-  const rows = state.savedTracks.slice().reverse();
+  const rows = sortSavedTracksForRender(state.savedTracks);
   const u = state.mapMeasureUnit || "km";
   if (!rows.length){
     mount.innerHTML = `<div class="saved-tracks-empty" data-i18n="track.savedEmpty">${esc(t("track.savedEmpty") || "Nessuna traccia salvata.")}</div>`;
@@ -19278,11 +20031,11 @@ function renderSavedTracksList(){
   const selSet = new Set((state._savedTracksSelectedIds || []).map(String));
   let html = `<table class="saved-tracks-table"><thead><tr>
     <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"></th>
-    <th style="width:44px" data-i18n-aria="tip.trackSavedVisToggle">${esc(t("track.colVis") || "Vis.")}</th>
-    <th>${esc(t("track.colName") || "Nome")}</th>
-    <th style="width:52px">${esc(t("track.colPts") || "Pti")}</th>
-    <th>${esc(t("track.colWhen") || "Data")}</th>
-    <th>${esc(t("track.colDist") || "Distanza")}</th>
+    ${savedTracksSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
+    ${savedTracksSortHeaderHtml("name", "track.colName", {})}
+    ${savedTracksSortHeaderHtml("pts", "track.colPts", { thStyle: "width:52px" })}
+    ${savedTracksSortHeaderHtml("when", "track.colWhen", {})}
+    ${savedTracksSortHeaderHtml("dist", "track.colDist", {})}
     <th style="width:92px">${esc(t("track.savedEdit") || "Modifica")}</th>
     <th style="width:72px">${esc(t("track.colGo") || "Vai")}</th>
     <th style="width:44px">${esc(t("track.colDel") || "✕")}</th>
@@ -19290,18 +20043,19 @@ function renderSavedTracksList(){
   for (const st of rows){
     const d = savedTrackDistanceM(st);
     const distStr = d != null ? formatMapMeasureDistance(d, u) : "—";
-    const vis = st.visible !== false;
+    const vis = (typeof savedTrackMapVisible === "function") ? savedTrackMapVisible(st) : (st.visible !== false);
     const rowSel = selSet.has(String(st.id));
+    const ariaVis = esc((typeof t === "function") ? (vis ? (t("track.savedVisOnMap") || "") : (t("track.savedVisHiddenFromMap") || "")) : "");
     html += `<tr data-saved-row data-id="${esc(st.id)}" class="${rowSel ? "is-selected" : ""}">
       <td><input type="checkbox" class="saved-sel-cb" data-saved-sel="${esc(st.id)}"${rowSel ? " checked" : ""}></td>
-      <td><input type="checkbox" data-saved-vis="${esc(st.id)}" data-i18n-aria="tip.trackSavedVisToggle" ${vis ? "checked" : ""}></td>
-      <td><input type="text" class="saved-name-inp" data-saved-rename="${esc(st.id)}" value="${esc(st.name)}" maxlength="80"></td>
+      <td class="saved-tracks-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${ariaVis}"></span></td>
+      <td data-tip="${esc(String(st.name != null ? st.name : "").slice(0, 200))}"><input type="text" class="saved-name-inp" data-saved-rename="${esc(st.id)}" value="${esc(st.name)}" maxlength="80"></td>
       <td>${st.points.length}</td>
-      <td>${esc(formatSavedTrackWhen(st.savedAt))}</td>
+      <td>${esc(formatSavedTrackWhen(savedTrackSortTs(st)))}</td>
       <td>${esc(distStr)}</td>
       <td><button type="button" class="btn btn-sm" data-saved-edit="${esc(st.id)}" data-i18n="track.savedEdit" data-i18n-tip="tip.trackEditSaved" data-i18n-aria="tip.trackEditSaved">${esc(t("track.savedEdit") || "Modifica")}</button></td>
       <td><button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}" data-i18n="track.flyBtn" data-i18n-tip="tip.trackSavedFly" data-i18n-aria="tip.trackSavedFly" data-tip="${tipFly}">${esc(t("track.flyBtn") || "Centra")}</button></td>
-      <td><button type="button" class="btn btn-sm btn-danger" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne">${esc(t("track.delOne") || "×")}</button></td>
+      <td><button type="button" class="btn btn-sm btn-danger-subtle" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne" data-i18n-aria="tip.trackSavedDelOne"><span class="danger-x" aria-hidden="true">✕</span></button></td>
     </tr>`;
   }
   html += "</tbody></table>";
@@ -19314,6 +20068,13 @@ function renderSavedTracksList(){
         b.setAttribute("aria-label", tipEdit);
       });
     }
+    const tipDelOne = (typeof t === "function") ? (t("tip.trackSavedDelOne") || "") : "";
+    if (tipDelOne){
+      mount.querySelectorAll("[data-saved-del]").forEach((b) => {
+        b.setAttribute("data-tip", tipDelOne);
+        b.setAttribute("aria-label", tipDelOne);
+      });
+    }
   } catch(_){}
   try {
     const sa = mount.querySelector("#savedTracksSelectAll");
@@ -19321,75 +20082,89 @@ function renderSavedTracksList(){
       const a = (typeof t === "function") ? (t("tip.trackSelAllSaved") || "") : "";
       if (a) sa.setAttribute("aria-label", a);
     }
-    const visTh = mount.querySelector(".saved-tracks-table thead th:nth-child(2)");
-    if (visTh){
-      const a = (typeof t === "function") ? (t("tip.trackSavedVisToggle") || "") : "";
-      if (a) visTh.setAttribute("aria-label", a);
-    }
-    const vt = (typeof t === "function") ? (t("tip.trackSavedVisToggle") || "") : "";
-    if (vt){
-      mount.querySelectorAll("[data-saved-vis]").forEach((el) => { el.setAttribute("aria-label", vt); });
-    }
   } catch(_){}
   if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
   if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   if (!mount._savedTracksDelegated){
     mount._savedTracksDelegated = true;
+    mount.addEventListener("focusin", (ev) => {
+      const inp = ev.target;
+      if (!inp || !inp.matches || !inp.matches("[data-saved-rename]")) return;
+      const id = inp.getAttribute("data-saved-rename");
+      ensureSavedTracksState();
+      const st = state.savedTracks.find(x => x.id === id);
+      inp.dataset._prevSavedName = st ? String(st.name || "") : "";
+    });
     mount.addEventListener("change", (ev) => {
-      const t = ev.target;
-      if (!t || !t.matches) return;
-      if (t.id === "savedTracksSelectAll"){
+      const el = ev.target;
+      if (!el || !el.matches) return;
+      if (el.id === "savedTracksSelectAll"){
         if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
         const allCbs = [...mount.querySelectorAll(".saved-sel-cb[data-saved-sel]")];
-        if (t.checked){
+        if (el.checked){
           state._savedTracksSelectedIds = [...new Set(allCbs.map(cb => String(cb.getAttribute("data-saved-sel") || "")).filter(Boolean))];
         } else {
           state._savedTracksSelectedIds = [];
         }
-        allCbs.forEach(cb => { cb.checked = t.checked; });
-        t.indeterminate = false;
+        allCbs.forEach(cb => { cb.checked = el.checked; });
+        el.indeterminate = false;
         mount.querySelectorAll("tr[data-saved-row]").forEach((tr) => {
-          if (t.checked) tr.classList.add("is-selected");
+          if (el.checked) tr.classList.add("is-selected");
           else tr.classList.remove("is-selected");
         });
         if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
         return;
       }
-      if (t.matches(".saved-sel-cb[data-saved-sel]")){
+      if (el.matches(".saved-sel-cb[data-saved-sel]")){
         if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
-        const sid = String(t.getAttribute("data-saved-sel") || "");
+        const sid = String(el.getAttribute("data-saved-sel") || "");
         const arr = state._savedTracksSelectedIds;
         const ix = arr.indexOf(sid);
-        if (t.checked && ix < 0) arr.push(sid);
-        if (!t.checked && ix >= 0) arr.splice(ix, 1);
+        if (el.checked && ix < 0) arr.push(sid);
+        if (!el.checked && ix >= 0) arr.splice(ix, 1);
         if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
-        const tr = t.closest && t.closest("tr[data-saved-row]");
+        const tr = el.closest && el.closest("tr[data-saved-row]");
         if (tr){
-          if (t.checked) tr.classList.add("is-selected");
+          if (el.checked) tr.classList.add("is-selected");
           else tr.classList.remove("is-selected");
         }
         if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
         return;
       }
-      if (t.matches("[data-saved-vis]")){
-        const id = t.getAttribute("data-saved-vis");
-        ensureSavedTracksState();
-        const st = state.savedTracks.find(x => x.id === id);
-        if (st){ st.visible = !!t.checked; saveStore(); refreshTileMapForTrackUi(); }
-        return;
-      }
-      if (t.matches("[data-saved-rename]")){
-        const id = t.getAttribute("data-saved-rename");
+      if (el.matches("[data-saved-rename]")){
+        const id = el.getAttribute("data-saved-rename");
         ensureSavedTracksState();
         const st = state.savedTracks.find(x => x.id === id);
         if (st){
-          const nm = String(t.value || "").trim().slice(0, 80);
-          if (nm) st.name = nm;
-          saveStore();
+          const nm = String(el.value || "").trim().slice(0, 80);
+          const prev = String(el.dataset._prevSavedName != null ? el.dataset._prevSavedName : st.name || "");
+          if (!nm){
+            el.value = prev;
+            return;
+          }
+          if (nm === String(prev || "").trim()){
+            el.dataset._prevSavedName = nm;
+            return;
+          }
+          const q = (typeof t === "function" ? t("track.renameConfirm") : "") || "Salvare il nuovo nome della traccia?";
+          const ok = (typeof window.confirm !== "function") || window.confirm(q);
+          if (ok){
+            st.name = nm;
+            saveStore();
+            el.dataset._prevSavedName = nm;
+          } else {
+            el.value = prev;
+          }
         }
       }
     });
     mount.addEventListener("click", (ev) => {
+      const sortBtn = ev.target.closest && ev.target.closest("[data-saved-sort]");
+      if (sortBtn){
+        ev.preventDefault();
+        applySavedTracksSortHeaderClick(sortBtn.getAttribute("data-saved-sort"));
+        return;
+      }
       const del = ev.target.closest && ev.target.closest("[data-saved-del]");
       if (del){
         ev.preventDefault();
@@ -19979,7 +20754,7 @@ function waypointRename(id, name){
   ensureMapWaypointsState();
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
-  p.name = String(name || "").slice(0, 60);
+  p.name = String(name || "").trim().slice(0, 60);
   saveStore();
   renderMapWaypointsAll();
 }
@@ -22073,9 +22848,17 @@ function renderTileMap(lat, lon, zoom){
   html += `</div>`;
   ensureOfflineMountOutsideMiniMap(root);
   root.innerHTML = html;
-  // GIS: if basemap menu is open, position it left + clamped (fixed) after paint.
+  // GIS: if basemap menu is open, position it left + clamped (fixed) dopo layout stabile.
   if (document.body.classList.contains("gis-mode") && state.mapBasemapMenuOpen){
-    try { requestAnimationFrame(() => positionBasemapMenuGis(root)); } catch(_){ try { positionBasemapMenuGis(root); } catch(__){} }
+    try {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          try { positionBasemapMenuGis(root); } catch(_){}
+        });
+      });
+    } catch(_){
+      try { positionBasemapMenuGis(root); } catch(__){}
+    }
   }
 
   // Kick off (or resolve from cache) the elevation for the waypoint row.
@@ -23342,6 +24125,7 @@ function addCurrentAsFavorite(){
 }
 
 function removeFavorite(id){
+  if (typeof window.confirm === "function" && !window.confirm(t("fav.confirmDeleteOne"))) return;
   state.favorites = state.favorites.filter(f => f.id !== id);
   renderFavorites(); saveStore();
 }
@@ -23361,6 +24145,42 @@ function loadFavorite(id){
 function renderFavorites(){
   const root = document.getElementById("favorites-list");
   if (!root) return;
+  if (!root._favRenameDelegated){
+    root._favRenameDelegated = true;
+    root.addEventListener("focusin", (ev) => {
+      const inp = ev.target;
+      if (!inp || !inp.matches || !inp.matches("[data-fav-rename]")) return;
+      const id = inp.getAttribute("data-fav-rename");
+      const fav = state.favorites.find(x => x.id === id);
+      inp.dataset._prevFavName = fav ? String(fav.name || "") : "";
+    });
+    root.addEventListener("change", (ev) => {
+      const inp = ev.target;
+      if (!inp || !inp.matches || !inp.matches("[data-fav-rename]")) return;
+      const id = inp.getAttribute("data-fav-rename");
+      const fav = state.favorites.find(x => x.id === id);
+      if (!fav) return;
+      const raw = String(inp.value || "").trim().slice(0, 120);
+      const prev = String(inp.dataset._prevFavName != null ? inp.dataset._prevFavName : fav.name || "");
+      if (!raw){
+        inp.value = prev;
+        return;
+      }
+      if (raw === String(prev || "").trim()){
+        inp.dataset._prevFavName = raw;
+        return;
+      }
+      const q = (typeof t === "function" ? t("fav.renameConfirm") : "") || "Salvare il nuovo nome del favorito?";
+      const ok = (typeof window.confirm !== "function") || window.confirm(q);
+      if (!ok){
+        inp.value = prev;
+        return;
+      }
+      fav.name = raw;
+      saveStore();
+      inp.dataset._prevFavName = raw;
+    });
+  }
   const flt = (document.getElementById("favFilter") && document.getElementById("favFilter").value || "").trim().toLowerCase();
   const list = state.favorites.filter(f => {
     if (!flt) return true;
@@ -23383,10 +24203,11 @@ function renderFavorites(){
     item.className = "favorite-item";
     const when = new Date(f.createdAt).toLocaleString();
     const notes = (f.notes != null ? String(f.notes) : "").slice(0, 500);
-    const locHtml = f.locality ? `<div class="fav-loc" data-tip="${esc(f.locality)}">📍 ${esc(f.locality)}</div>` : "";
+    const locTip = esc(String(f.locality || "").slice(0, 240));
+    const locHtml = f.locality ? `<div class="fav-loc" data-tip="${locTip}">📍 ${esc(f.locality)}</div>` : "";
     item.innerHTML = `
       <div class="fav-col-main">
-        <div class="fav-name">${esc(f.name)}</div>
+        <input type="text" class="fav-name-inp" data-fav-rename="${esc(f.id)}" data-tip="${esc(String(f.name || "").slice(0, 200))}" value="${esc(f.name)}" maxlength="120" aria-label="${esc(t("print.thName") || "Nome")}">
         <div class="fav-coords">${esc(fmtDD(f.lat, f.lon).cardinal)}</div>
         ${locHtml}
         <div class="fav-meta">${when}</div>
@@ -26004,7 +26825,6 @@ function openConvertModal(){
   const dlg = document.getElementById("convertModal");
   const body = document.getElementById("convertModalBody");
   if (!dlg || !body || state.convertOpen) return;
-  if (!gisTryCloseTrackModalForContextSwitch()) return;
 
   const pw = document.getElementById("hdrPrimaryWrap");
   if (pw && !body.contains(pw)){
@@ -26145,11 +26965,6 @@ function openWaypointModal(opts){
     if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
     return;
   }
-  try {
-    if (state.trackModalOpen && typeof closeTrackModal === "function"){
-      if (!closeTrackModal()) return;
-    }
-  } catch(_){}
   const panel = document.getElementById("waypointModalPanel");
   gisMoveSectionTo("sec-waypoints", panel || body);
   const secWp = document.getElementById("sec-waypoints");
@@ -26490,9 +27305,9 @@ function _trackPanelLayoutOpts(){
   return {
     key: "track",
     pad: 12,
-    minW: 320,
+    minW: 380,
     minH: 220,
-    defaultW: 620,
+    defaultW: 760,
     defaultH: null,
     defaultHeightFraction: 0.82,
     defaultHeightCap: 760,
@@ -26627,9 +27442,9 @@ function _waypointPanelLayoutOpts(){
   return {
     key: "waypoint",
     pad: 12,
-    minW: 320,
+    minW: 380,
     minH: 220,
-    defaultW: 640,
+    defaultW: 720,
     defaultH: null,
     defaultHeightFraction: 0.8,
     defaultHeightCap: 740,
@@ -26663,9 +27478,9 @@ function _searchPanelLayoutOpts(){
   return {
     key: "search",
     pad: 12,
-    minW: 320,
+    minW: 360,
     minH: 220,
-    defaultW: 460,
+    defaultW: 520,
     defaultH: null,
     defaultHeightFraction: 0.58,
     defaultHeightCap: 520,
@@ -26680,9 +27495,9 @@ function _favoritesPanelLayoutOpts(){
   return {
     key: "favorites",
     pad: 12,
-    minW: 320,
+    minW: 380,
     minH: 260,
-    defaultW: 460,
+    defaultW: 560,
     defaultH: null,
     /* ~75–82vh: previous cap 640px capped almost all desktops too short. */
     defaultHeightFraction: 0.78,
@@ -26698,9 +27513,9 @@ function _layersPanelLayoutOpts(){
   return {
     key: "layers",
     pad: 12,
-    minW: 420,
+    minW: 480,
     minH: 340,
-    defaultW: 580,
+    defaultW: 720,
     defaultH: null,
     /** ~82–88% altezza utile quando layout non touched; cap alto così non limita i desktop. */
     defaultHeightFraction: 0.85,
@@ -26988,7 +27803,6 @@ function openSearchPanel(){
   const dlg = document.getElementById("searchPanel");
   const body = document.getElementById("searchPanelBody");
   if (!dlg || !body) return;
-  if (!gisTryCloseTrackModalForContextSwitch()) return;
   // If drawer is showing geocoding, close it first so ownership is singular.
   if (state.activeTab === "geocoding") deactivateTab();
   // Ensure no convert-owned geocodeCard remains inside Convert: move it here first.
@@ -26996,9 +27810,7 @@ function openSearchPanel(){
   if (geo && geo.parentNode && geo.parentNode.id === "convertModalBody"){
     body.appendChild(geo);
   }
-  // If Convert is open, close it (but do NOT yank geocodeCard back).
   state.searchPanelOpen = true;
-  if (state.convertOpen) closeConvertModal();
   if (geo) gisMoveSectionTo("geocodeCard", body);
   // Show as non-modal floating panel.
   try { dlg.show(); } catch(_){ dlg.setAttribute("open",""); }
@@ -27035,7 +27847,6 @@ function openFavoritesPanel(){
   const dlg = document.getElementById("favoritesPanel");
   const body = document.getElementById("favoritesPanelBody");
   if (!dlg || !body) return;
-  if (!gisTryCloseTrackModalForContextSwitch()) return;
   if (state.activeTab === "favorites") deactivateTab();
   state.favoritesPanelOpen = true;
   gisMoveSectionTo("sec-favorites", body);
@@ -27070,7 +27881,6 @@ function openLayersPanel(){
   const dlg = document.getElementById("layersPanel");
   const body = document.getElementById("layersPanelBody");
   if (!dlg || !body) return;
-  if (!gisTryCloseTrackModalForContextSwitch()) return;
   // If drawer is showing layers, close it first so ownership is singular.
   if (state.activeTab === "layers") deactivateTab();
   state.layersPanelOpen = true;
@@ -27202,9 +28012,6 @@ function openTrackModal(){
     if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
     return;
   }
-  try {
-    if (state.waypointsModalOpen && typeof closeWaypointModal === "function") closeWaypointModal();
-  } catch(_){}
   try { closeToolsDrawer(); } catch(_){}
   try { deactivateTab(); } catch(_){}
   gisMoveSectionTo("sec-track", body);
@@ -27429,8 +28236,19 @@ function applySavedTracksVisibilityAll(wantVisible){
   if (!state.savedTracks.length) return;
   for (const st of state.savedTracks){ st.visible = !!wantVisible; }
   saveStore();
-  refreshTileMapForTrackUi();
-  renderSavedTracksList();
+  if (typeof renderTrackAll === "function"){
+    renderTrackAll();
+  } else {
+    refreshTileMapForTrackUi();
+    renderSavedTracksList();
+  }
+}
+
+function savedTrackMapVisible(st){
+  if (!st) return true;
+  if (st.visible === false) return false;
+  if (st.visible === true) return true;
+  return st.visible !== false;
 }
 
 function syncSavedTracksSelectionActions(){
@@ -27461,10 +28279,10 @@ function syncSavedTracksSelectionActions(){
     }
   }
 
-  const showSelDis = selectedTracks.length === 0 || selectedTracks.every(st => st.visible !== false);
-  const hideSelDis = selectedTracks.length === 0 || selectedTracks.every(st => st.visible === false);
-  const showAllDis = !anyRow || state.savedTracks.every(st => st.visible !== false);
-  const hideAllDis = !anyRow || state.savedTracks.every(st => st.visible === false);
+  const showSelDis = selectedTracks.length === 0 || selectedTracks.every(st => savedTrackMapVisible(st));
+  const hideSelDis = selectedTracks.length === 0 || selectedTracks.every(st => !savedTrackMapVisible(st));
+  const showAllDis = !anyRow || state.savedTracks.every(st => savedTrackMapVisible(st));
+  const hideAllDis = !anyRow || state.savedTracks.every(st => !savedTrackMapVisible(st));
 
   if (btnShowSel) btnShowSel.disabled = showSelDis;
   if (btnHideSel) btnHideSel.disabled = hideSelDis;
@@ -27530,9 +28348,11 @@ function renderWpModalList(){
     const rowCls = (p.id === draftId) ? " is-editing" : "";
     const nmVal = esc(p.name || "");
     const ph = esc(t("waypointModal.editor.namePh"));
+    const nmTipRaw = (p.name && String(p.name).trim()) ? String(p.name).trim().slice(0, 60) : (coordStr + mgrs).slice(0, 120);
+    const nmTip = esc(nmTipRaw);
     return `<tr data-wp-row data-id="${esc(p.id)}" class="${esc(rowCls.trim())}">
       <td><input type="checkbox" class="wp-sel-cb" data-wp-sel="${esc(p.id)}"></td>
-      <td><input type="text" class="wp-row-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}"></td>
+      <td data-tip="${nmTip}"><input type="text" class="wp-row-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}"></td>
       <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)}</div></td>
       <td style="text-align:right;white-space:nowrap">
         <button type="button" class="btn btn-sm" data-role="wp-zoom" data-i18n-tip="waypointModal.zoomTo" data-tip="${esc(t("waypointModal.zoomTo"))}" data-i18n-aria="waypointModal.zoomTo">🎯</button>
@@ -27546,22 +28366,51 @@ function renderWpModalList(){
   syncWpSelectAllState(root);
   if (!root._wpModalListDelegated){
     root._wpModalListDelegated = true;
+    root.addEventListener("focusin", (ev) => {
+      const inp = ev.target;
+      if (!inp || !inp.matches || !inp.matches("[data-wp-rename]")) return;
+      const id = inp.getAttribute("data-wp-rename");
+      ensureMapWaypointsState();
+      const p = state.mapWaypoints.find(x => x.id === id);
+      inp.dataset._prevWpName = p ? String(p.name || "") : "";
+    });
     root.addEventListener("change", (ev) => {
-      const t = ev.target;
-      if (!t || !t.matches) return;
-      if (t.id === "wpSelectAll"){
-        root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = !!t.checked; });
-        t.indeterminate = false;
+      const el = ev.target;
+      if (!el || !el.matches) return;
+      if (el.id === "wpSelectAll"){
+        root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = !!el.checked; });
+        el.indeterminate = false;
         syncWpSelectAllState(root);
         return;
       }
-      if (t.matches("[data-wp-sel]")){
+      if (el.matches("[data-wp-sel]")){
         syncWpSelectAllState(root);
         return;
       }
-      if (t.matches("[data-wp-rename]")){
-        const id = t.getAttribute("data-wp-rename");
-        if (id) waypointRename(id, t.value);
+      if (el.matches("[data-wp-rename]")){
+        const id = el.getAttribute("data-wp-rename");
+        if (!id) return;
+        ensureMapWaypointsState();
+        const p = state.mapWaypoints.find(x => x.id === id);
+        if (!p) return;
+        const nm = String(el.value || "").trim().slice(0, 60);
+        const prev = String(el.dataset._prevWpName != null ? el.dataset._prevWpName : p.name || "");
+        if (!nm){
+          el.value = prev;
+          return;
+        }
+        if (nm === String(prev || "").trim()){
+          el.dataset._prevWpName = nm;
+          return;
+        }
+        const q = (typeof t === "function" ? t("waypoint.renameConfirm") : "") || "Salvare il nuovo nome del waypoint?";
+        const ok = (typeof window.confirm !== "function") || window.confirm(q);
+        if (ok){
+          waypointRename(id, nm);
+          el.dataset._prevWpName = nm;
+        } else {
+          el.value = prev;
+        }
       }
     });
     root.addEventListener("click", (ev) => {

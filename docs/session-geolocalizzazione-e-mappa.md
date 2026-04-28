@@ -1766,3 +1766,53 @@ Lavoro sul monolite `coordinate_converter Claude.html` (Tracce salvate: selezion
 
 - Verificare in browser che l’ordinamento a colonne (B2) sia ancora presente nel markup se richiesto; in alcuni snapshot solo `slice().reverse()` era attivo nella lista.
 
+## Checkpoint 2026-04-28 — MEGA-PATCH UI/UX controllata
+
+### Contesto
+
+Sessione su richiesta utente: **10 blocchi** UI/UX sul solo `coordinate_converter Claude.html` (vanilla, single-file), con vincoli OPSEC/offline/IndexedDB; trigger chiusura **«Finito»** con aggiornamento documentazione e commit.
+
+### Cosa è cambiato
+
+1. **Mappe Offline / pannello Layers (body)**  
+   - Verifica assenza di `padding-top` elevato su `#layersPanelBody.app-modal-body` (compattezza elenco).  
+   - Tooltip **Usa area** / **Centra**: nessuna modifica al meccanismo `.offline-area-tip-portal`.
+
+2. **Toolbar mappa / Layers**  
+   - Diagnostica clip: contenitore `#gisMapMount.gis-map-mount` con `overflow: visible` per non tagliare controlli/ombre; su `#gisMapMount > #miniMap .tile-map` aggiunto `overflow-clip-margin: 6px` (dove supportato). Nessuno spostamento DOM di `.tile-layers`.
+
+3. **Bbox UI**  
+   - `#btnBboxPick` nascosto dalla UI (`hidden`, `aria-hidden`, `tabindex=-1`); logica `startBboxSelection` / listener invariati; `#btnBboxViewport` intatto.
+
+4. **Chiusura float mappa**  
+   - Stile neutro (non danger) per `.mb-close` (misura / traccia / waypoint editor) e `.toff-close` (float offline), coerente con chip chiusura pannelli GIS.
+
+5. **Rename con conferma**  
+   - Tracce salvate (`renderSavedTracksList`), aree offline (`renderOfflineAreasList` + delegazione `#offlineAreasList`), waypoint (`renderWpModalList`), favoriti (`renderFavorites` + input nome).  
+   - `waypointRename`: trim su persistenza.  
+   - i18n: `track.renameConfirm`, `offcache.renameConfirm`, `waypoint.renameConfirm`, `fav.renameConfirm` (IT/EN/FR).
+
+6. **Tabella aree offline**  
+   - Colonna nome editabile con input; `colgroup` + variabile `--offa-name-col`; handle ridimensionamento solo desktop (`ensureOfflineAreasNameColResizeWired`); larghezza sessione opzionale su `list._offaNameColPx` (no localStorage).
+
+7. **Export**  
+   - Solo audit: nessun cambio formati/builder.
+
+8. **Workflow / repo**  
+   - `.cursor/rules/30-output-workflow.mdc`: convenzione RIEPILOGO + `/tmp/NN-goi-gis-riepilogo.md` (già in lavorazione utente, incluso nel commit «Finito»).
+
+### File toccati (commit)
+
+- `coordinate_converter Claude.html`
+- `.cursor/rules/30-output-workflow.mdc`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### Invarianti rispettati
+
+- Nessun commit fino al trigger «Finito»; dopo «Finito» commit unico. Nessuna nuova dipendenza; CRS/datum, geocoding remoto, OPSEC strict, IndexedDB/cache tile/download core, builder/parser export/import, `#btnBboxViewport`, `.danger-x`, `.offline-area-tip-portal` non alterati nel loro contratto (portal solo verificato intatto).
+
+### Riferimento operativo
+
+- Riepilogo sessione utente: `/tmp/17-goi-gis-riepilogo.md` (non versionato in repo).
+
