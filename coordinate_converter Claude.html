@@ -80,6 +80,13 @@
   --accent-soft:rgba(59,130,246,0.18);
   --success:#4ade80; --warn:#fbbf24; --error:#f87171; --error-bg:rgba(50,20,20,0.45);
   --primary-bg:rgba(42,36,17,0.55); --primary-border:#fbbf24;
+  /* Dark-only button tokens (neutral/secondary) — keep glass but increase separation vs panels. */
+  --btn-surface:color-mix(in srgb, var(--panel2) 72%, var(--surface-raised) 28%);
+  --btn-border:color-mix(in srgb, var(--border-strong) 82%, rgba(255,255,255,0.22) 18%);
+  --btn-hover-surface:color-mix(in srgb, var(--surface-glass-hover) 78%, var(--surface-raised) 22%);
+  --btn-hover-border:color-mix(in srgb, var(--border-glow) 40%, var(--btn-border));
+  --btn-disabled-opacity:.48;
+  --btn-disabled-surface:color-mix(in srgb, var(--panel2) 78%, #000 22%);
   --glass-blur:16px;
   --radius-card:20px;
   --radius-control:12px;
@@ -1013,30 +1020,11 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 }
 .tile-map .tile-offline-float[hidden]{ display:none !important }
 .tile-map .tile-offline-float.dragging{ box-shadow:0 18px 44px rgba(0,0,0,.5) }
+/* Mappe Offline (float): layout del close; aspetto = famiglia .ui-panel-close (sotto). */
 .tile-map .tile-offline-float .toff-close{
   align-self:flex-end;
   margin:0 0 4px;
-  width:34px;
-  height:34px;
-  min-width:34px;
-  border:1px solid rgba(255,255,255,.22);
-  border-radius:var(--radius-control, 10px);
-  background:rgba(30,41,59,.75);
-  color:rgba(226,232,240,.92);
-  font-size:17px;
-  line-height:1;
-  font-weight:700;
-  cursor:pointer;
   flex-shrink:0;
-  transition:background .15s ease, border-color .15s ease, color .15s ease;
-}
-.tile-map .tile-offline-float .toff-close:hover,
-.tile-map .tile-offline-float .toff-close:focus-visible{
-  background:rgba(51,65,85,.9);
-  color:#f8fafc;
-  border-color:rgba(255,255,255,.35);
-  outline:none;
-  box-shadow:0 0 0 2px color-mix(in srgb, var(--accent, #3b82f6) 45%, transparent);
 }
 .tile-map .tile-offline-float .offline-panel-mount{
   margin-top:0;
@@ -1160,6 +1148,10 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   overflow-x:auto;
   scrollbar-gutter:stable;
 }
+/* Mappe Offline (#layersPanel): area tabella più alta del default globale (coerenza con pannelli Waypoint/Traccia). */
+#layersPanelBody #offlineAreasList > .offline-areas-list-scroll{
+  max-height:min(70vh, 560px);
+}
 /* A3: preset <select> resta nel DOM per optgroup / applyPrecachePreset, fuori dalla UI. */
 .offcache-preset-hidden{
   position:absolute !important;
@@ -1215,16 +1207,47 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   border-collapse:collapse;
   font-size:.78rem;
   --offa-name-col:160px;
+  --offa-status-col:90px;
+  --offa-when-col:120px;
+  --offa-zoom-col:90px;
+  --offa-layer-col:110px;
+  --offa-tiles-col:110px;
+  --offa-space-col:110px;
+  --offa-actions-col:220px;
 }
 .offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:72px; }
-.offline-areas-table .offa-th-name{
+.offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:64px; }
+.offline-areas-table col.offa-col-when{ width:var(--offa-when-col); min-width:72px; }
+.offline-areas-table col.offa-col-zoom{ width:var(--offa-zoom-col); min-width:56px; }
+.offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:72px; }
+.offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:72px; }
+.offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:72px; }
+.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:200px; }
+.offline-areas-table .offa-th-name,
+.offline-areas-table .offa-th-status,
+.offline-areas-table .offa-th-when,
+.offline-areas-table .offa-th-zoom,
+.offline-areas-table .offa-th-layer,
+.offline-areas-table .offa-th-tiles,
+.offline-areas-table .offa-th-space,
+.offline-areas-table .offa-th-actions{
   position:relative;
   padding-right:12px;
   vertical-align:bottom;
 }
 .offline-areas-table .offa-name-col-resize,
+.offline-areas-table .offa-status-col-resize,
+.offline-areas-table .offa-when-col-resize,
+.offline-areas-table .offa-zoom-col-resize,
+.offline-areas-table .offa-layer-col-resize,
+.offline-areas-table .offa-tiles-col-resize,
+.offline-areas-table .offa-space-col-resize,
+.offline-areas-table .offa-actions-col-resize,
 .saved-tracks-table .saved-name-col-resize,
-.wp-modal-table .wp-name-col-resize{
+.saved-tracks-table .saved-when-col-resize,
+.saved-tracks-table .saved-dist-col-resize,
+.wp-modal-table .wp-name-col-resize,
+.wp-modal-table .wp-details-col-resize{
   position:absolute;
   top:0;
   right:0;
@@ -1237,14 +1260,34 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   border-radius:4px;
 }
 .offline-areas-table .offa-name-col-resize:hover,
+.offline-areas-table .offa-status-col-resize:hover,
+.offline-areas-table .offa-when-col-resize:hover,
+.offline-areas-table .offa-zoom-col-resize:hover,
+.offline-areas-table .offa-layer-col-resize:hover,
+.offline-areas-table .offa-tiles-col-resize:hover,
+.offline-areas-table .offa-space-col-resize:hover,
+.offline-areas-table .offa-actions-col-resize:hover,
 .saved-tracks-table .saved-name-col-resize:hover,
-.wp-modal-table .wp-name-col-resize:hover{
+.saved-tracks-table .saved-when-col-resize:hover,
+.saved-tracks-table .saved-dist-col-resize:hover,
+.wp-modal-table .wp-name-col-resize:hover,
+.wp-modal-table .wp-details-col-resize:hover{
   background:color-mix(in srgb, var(--accent) 22%, transparent);
 }
 @media (hover:none) and (pointer:coarse){
   .offline-areas-table .offa-name-col-resize,
+  .offline-areas-table .offa-status-col-resize,
+  .offline-areas-table .offa-when-col-resize,
+  .offline-areas-table .offa-zoom-col-resize,
+  .offline-areas-table .offa-layer-col-resize,
+  .offline-areas-table .offa-tiles-col-resize,
+  .offline-areas-table .offa-space-col-resize,
+  .offline-areas-table .offa-actions-col-resize,
   .saved-tracks-table .saved-name-col-resize,
-  .wp-modal-table .wp-name-col-resize{ display:none; }
+  .saved-tracks-table .saved-when-col-resize,
+  .saved-tracks-table .saved-dist-col-resize,
+  .wp-modal-table .wp-name-col-resize,
+  .wp-modal-table .wp-details-col-resize{ display:none; }
 }
 .offline-areas-table th, .offline-areas-table td{
   padding:6px 8px;
@@ -1425,8 +1468,18 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   font:inherit; color:inherit; cursor:pointer;
 }
 .offline-areas-table .offa-sort-btn:hover{ color:var(--text); text-decoration:underline; }
-.offline-areas-table .offa-actions{ display:flex; flex-wrap:wrap; gap:6px; }
-.offline-areas-table .offa-actions .btn{ padding:4px 9px; font-size:.72rem; }
+.offline-areas-table td.offa-actions-cell{
+  vertical-align:middle;
+  white-space:nowrap;
+}
+.offline-areas-table .offa-actions{
+  display:inline-flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:6px;
+  max-width:100%;
+}
+.offline-areas-table .offa-actions .btn{ padding:4px 9px; font-size:.72rem; flex-shrink:0; }
 .offline-areas-table .offline-area-status{ display:inline-block; }
 .offline-areas-table .offa-selcell{ width:34px; }
 .offline-areas-table .offa-viscell{ width:44px; text-align:center; vertical-align:middle; }
@@ -3060,6 +3113,61 @@ select{cursor:pointer; min-width:70px}
   transform:translateY(0);
   box-shadow:0 4px 10px rgba(59,130,246,0.3);
 }
+
+/* Dark-mode refinement (safe block): neutral/secondary buttons only.
+ * Explicitly excludes Mappe Offline + Layers panel + map controls, and leaves
+ * .btn-primary / .btn-danger / .btn-danger-subtle unchanged. */
+html[data-theme="dark"] .btn:not(.btn-primary):not(.btn-danger):not(.btn-danger-subtle){
+  background:var(--btn-surface);
+  border-color:var(--btn-border);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.06), 0 6px 16px rgba(0,0,0,0.28);
+}
+html[data-theme="dark"] .btn:not(.btn-primary):not(.btn-danger):not(.btn-danger-subtle):hover{
+  background:var(--btn-hover-surface);
+  border-color:var(--btn-hover-border);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 10px 24px rgba(0,0,0,0.36);
+}
+html[data-theme="dark"] .btn:focus-visible{
+  outline:none;
+  box-shadow:var(--ring-focus), 0 6px 16px rgba(0,0,0,0.22);
+  border-color:color-mix(in srgb, var(--accent) 45%, var(--border-strong));
+}
+html[data-theme="dark"] .btn:disabled,
+html[data-theme="dark"] .btn[disabled]{
+  opacity:var(--btn-disabled-opacity);
+  cursor:not-allowed;
+  transform:none !important;
+  box-shadow:none !important;
+  border-color:var(--border-hairline);
+  background:var(--btn-disabled-surface);
+  filter:saturate(.92);
+}
+html[data-theme="dark"] .btn:disabled:hover,
+html[data-theme="dark"] .btn[disabled]:hover{
+  border-color:var(--border-hairline) !important;
+  background:var(--btn-disabled-surface) !important;
+  box-shadow:none !important;
+  transform:none !important;
+}
+
+/* Guardrails: do NOT alter Mappe Offline / Layers / map controls with the global .btn refinements. */
+html[data-theme="dark"] #offlineTilePanel .btn,
+html[data-theme="dark"] .offline-areas-toolbar .btn,
+html[data-theme="dark"] .offline-areas-table .btn,
+html[data-theme="dark"] #layersPanelBody .btn,
+html[data-theme="dark"] .tile-map .btn{
+  background:var(--panel2);
+  border-color:var(--border);
+  box-shadow:none;
+}
+html[data-theme="dark"] #offlineTilePanel .btn:hover,
+html[data-theme="dark"] .offline-areas-toolbar .btn:hover,
+html[data-theme="dark"] .offline-areas-table .btn:hover,
+html[data-theme="dark"] #layersPanelBody .btn:hover{
+  border-color:var(--border-glow);
+  background:var(--surface-glass-hover);
+  box-shadow:0 6px 16px rgba(0,0,0,0.18);
+}
 .btn-sm{padding:5px 11px; font-size:.82rem}
 .btn-icon{padding:6px 10px; font-size:.85rem}
 .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
@@ -3478,39 +3586,9 @@ body.mm-enlarged .sig-badge{display:none}
   padding:22px 26px; position:relative;
 }
 .modal h2{margin-bottom:10px; font-size:1.35rem}
+/* Posizionamento close modale About/Help/QR; stile chip → blocco unificato .app-modal-close sotto. */
 .modal .modal-close{
   position:absolute; top:12px; right:12px;
-  width:22px; height:22px; min-width:22px;
-  padding:0; margin:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.26);
-  cursor:pointer; line-height:1;
-  font-size:0;
-  color:transparent;
-  background:linear-gradient(180deg, #ff6b64, #e0453d);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
-  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
-}
-.modal .modal-close:hover,
-.modal .modal-close:focus-visible{
-  font-size:13px;
-  color:rgba(38,14,14,.94);
-  background:linear-gradient(180deg, #ff7f78, #f05850);
-  transform:scale(1.08);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
-}
-.modal .modal-close:focus-visible{
-  outline:2px solid color-mix(in srgb, var(--error) 55%, transparent);
-  outline-offset:2px;
-}
-html[data-theme="light"] .modal .modal-close{
-  background:linear-gradient(180deg, #ff908a, #f06e66);
-  border-color:rgba(0,0,0,.12);
-}
-html[data-theme="light"] .modal .modal-close:hover,
-html[data-theme="light"] .modal .modal-close:focus-visible{
-  color:rgba(55,18,18,.95);
 }
 /* QR modal: centered code + URL readout */
 .qr-modal{max-width:440px}
@@ -3586,40 +3664,7 @@ html[data-theme="light"] .modal .modal-close:focus-visible{
   margin:0; font-size:1.15rem; font-weight:700;
   display:flex; align-items:center; gap:8px;
 }
-.tools-drawer-head .drawer-close{
-  width:22px; height:22px; min-width:22px;
-  padding:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.26);
-  font-size:0;
-  line-height:1;
-  color:transparent;
-  cursor:pointer;
-  background:linear-gradient(180deg, #ff6b64, #e0453d);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
-  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
-}
-.tools-drawer-head .drawer-close:hover,
-.tools-drawer-head .drawer-close:focus-visible{
-  font-size:15px;
-  color:rgba(38,14,14,.94);
-  background:linear-gradient(180deg, #ff7f78, #f05850);
-  transform:scale(1.08);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
-}
-.tools-drawer-head .drawer-close:focus-visible{
-  outline:2px solid color-mix(in srgb, var(--error) 55%, transparent);
-  outline-offset:2px;
-}
-html[data-theme="light"] .tools-drawer-head .drawer-close{
-  background:linear-gradient(180deg, #ff908a, #f06e66);
-  border-color:rgba(0,0,0,.12);
-}
-html[data-theme="light"] .tools-drawer-head .drawer-close:hover,
-html[data-theme="light"] .tools-drawer-head .drawer-close:focus-visible{
-  color:rgba(55,18,18,.95);
-}
+/* Chip close: vedi .ui-panel-close sotto. */
 .tools-drawer-body{
   flex:1; min-height:0; overflow-y:auto; overflow-x:hidden;
   padding:12px 14px max(18px, env(safe-area-inset-bottom, 0));
@@ -4620,40 +4665,7 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   background:linear-gradient(180deg, var(--surface-glass-hover) 0%, var(--panel2) 100%);
 }
 .tab-drawer-title{ font-weight:700; letter-spacing:-.01em; font-size:1.05rem; }
-.tab-drawer-close{
-  appearance:none; cursor:pointer;
-  width:22px; height:22px; min-width:22px;
-  padding:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.26);
-  font-size:0;
-  line-height:1;
-  color:transparent;
-  background:linear-gradient(180deg, #ff6b64, #e0453d);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
-  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
-}
-.tab-drawer-close:hover,
-.tab-drawer-close:focus-visible{
-  font-size:13px;
-  color:rgba(38,14,14,.94);
-  background:linear-gradient(180deg, #ff7f78, #f05850);
-  transform:scale(1.08);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
-}
-.tab-drawer-close:focus-visible{
-  outline:2px solid color-mix(in srgb, var(--error) 60%, transparent);
-  outline-offset:2px;
-}
-html[data-theme="light"] .tab-drawer-close{
-  background:linear-gradient(180deg, #ff908a, #f06e66);
-  border-color:rgba(0,0,0,.12);
-}
-html[data-theme="light"] .tab-drawer-close:hover,
-html[data-theme="light"] .tab-drawer-close:focus-visible{
-  color:rgba(55,18,18,.95);
-}
+/* Chip close: vedi .ui-panel-close sotto. */
 .tab-drawer-body{
   flex:1 1 auto; overflow-y:auto; overflow-x:hidden;
   padding:12px 14px 20px;
@@ -4692,40 +4704,115 @@ dialog.app-modal::backdrop{
   background:linear-gradient(180deg, var(--surface-glass-hover) 0%, var(--panel2) 100%);
 }
 .app-modal-title{ margin:0; font-size:1.15rem; font-weight:700; }
-.app-modal-close{
-  appearance:none; cursor:pointer;
-  width:22px; height:22px; min-width:22px;
-  margin:0 4px 0 0;
+/* Family 1 — chiusura pannello/modal: chip glass neutro (× sempre visibile; non danger; focus = --ring-focus). */
+.app-modal-close,
+.modal .modal-close,
+.tools-drawer-head .drawer-close,
+.tab-drawer-close,
+.tile-map .tile-offline-float .toff-close{
+  appearance:none;
+  cursor:pointer;
+  box-sizing:border-box;
+  flex-shrink:0;
+  width:34px;
+  height:34px;
+  min-width:34px;
+  min-height:34px;
+  max-width:34px;
+  max-height:34px;
+  margin:0 2px 0 0;
   padding:0;
-  display:inline-flex; align-items:center; justify-content:center;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.26);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:var(--radius-control, 10px);
+  border:1px solid var(--border-strong);
+  background:color-mix(in srgb, var(--panel2) 92%, transparent);
+  color:transparent;
   font-size:0;
   line-height:1;
-  color:transparent;
-  background:linear-gradient(180deg, #ff6b64, #e0453d);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 1px 3px rgba(0,0,0,.28);
-  transition:transform .16s ease, box-shadow .16s ease, color .12s ease, font-size .12s ease, background .12s ease;
+  font-weight:600;
+  box-shadow:none;
+  background-image:none;
+  transition:background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
 }
 .app-modal-close:hover,
-.app-modal-close:focus-visible{
-  font-size:14px;
-  color:rgba(38,14,14,.94);
-  background:linear-gradient(180deg, #ff7f78, #f05850);
-  transform:scale(1.08);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 10px rgba(0,0,0,.22);
+.app-modal-close:focus-visible,
+.modal .modal-close:hover,
+.modal .modal-close:focus-visible,
+.tools-drawer-head .drawer-close:hover,
+.tools-drawer-head .drawer-close:focus-visible,
+.tab-drawer-close:hover,
+.tab-drawer-close:focus-visible,
+.tile-map .tile-offline-float .toff-close:hover,
+.tile-map .tile-offline-float .toff-close:focus-visible{
+  background:color-mix(in srgb, var(--surface-glass-hover) 55%, var(--panel2));
+  border-color:var(--border-strong);
+  transform:none;
 }
-.app-modal-close:focus-visible{
-  outline:2px solid color-mix(in srgb, var(--error) 65%, transparent);
-  outline-offset:2px;
+.app-modal-close::before,
+.modal .modal-close::before,
+.tools-drawer-head .drawer-close::before,
+.tab-drawer-close::before,
+.tile-map .tile-offline-float .toff-close::before{
+  content:"×";
+  display:block;
+  width:1em;
+  height:1em;
+  color:var(--muted);
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size:17px;
+  font-weight:600;
+  line-height:1;
+  text-align:center;
 }
-html[data-theme="light"] .app-modal-close{
-  background:linear-gradient(180deg, #ff908a, #f06e66);
-  border-color:rgba(0,0,0,.12);
+.app-modal-close:hover::before,
+.app-modal-close:focus-visible::before,
+.modal .modal-close:hover::before,
+.modal .modal-close:focus-visible::before,
+.tools-drawer-head .drawer-close:hover::before,
+.tools-drawer-head .drawer-close:focus-visible::before,
+.tab-drawer-close:hover::before,
+.tab-drawer-close:focus-visible::before,
+.tile-map .tile-offline-float .toff-close:hover::before,
+.tile-map .tile-offline-float .toff-close:focus-visible::before{
+  color:var(--text-primary);
 }
-html[data-theme="light"] .app-modal-close:hover,
-html[data-theme="light"] .app-modal-close:focus-visible{
-  color:rgba(55,18,18,.95);
+.app-modal-close:focus-visible,
+.modal .modal-close:focus-visible,
+.tools-drawer-head .drawer-close:focus-visible,
+.tab-drawer-close:focus-visible,
+.tile-map .tile-offline-float .toff-close:focus-visible{
+  outline:none;
+  box-shadow:var(--ring-focus);
+}
+html[data-theme="light"] .app-modal-close,
+html[data-theme="light"] .modal .modal-close,
+html[data-theme="light"] .tools-drawer-head .drawer-close,
+html[data-theme="light"] .tab-drawer-close,
+html[data-theme="light"] .tile-map .tile-offline-float .toff-close{
+  background:color-mix(in srgb, var(--surface-field, var(--panel)) 90%, var(--panel));
+  color:transparent;
+  border-color:var(--border-strong);
+}
+/* Mappe Offline: chiudi dialog Layers (#layersPanelClose) e chiudi float sulla mini-mappa.
+ * Contesto flex / UA su <button> poteva ridurre l’altezza effettiva: ripetiamo il box Family 1
+ * con specificità ID / button senza modificare il gruppo comune sopra. */
+#layersPanelClose.app-modal-close,
+.tile-map .tile-offline-float button.toff-close{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  min-height:34px;
+  max-width:34px;
+  max-height:34px;
+  padding:0;
+  box-sizing:border-box;
+  flex-shrink:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
 }
 .app-modal-body{
   padding:14px 18px 20px;
@@ -4797,8 +4884,7 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   background-clip:padding-box;
 }
 /* ---------- Convert modal — GIS shell (Phase 3 block 1) ----------
- * Scoped to #convertModal / #convertModalBody; close chip condiviso
- * con altri pannelli GIS (vedi regola .app-modal-close multi-sotto). */
+ * Scoped to #convertModal / #convertModalBody; pulsante chiusura = Family 1 sopra. */
 #convertModal.convert-modal{
   --gis-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   --gis-r-sm: 8px;
@@ -4821,72 +4907,6 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.28;
-}
-/* Close: discrete neutral — Converti + pannelli GIS principali (stesso chip). */
-#convertModal .app-modal-close,
-#trackModal .app-modal-close,
-#searchPanel .app-modal-close,
-#favoritesPanel .app-modal-close,
-#layersPanel .app-modal-close{
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: var(--radius-control, 10px);
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--panel2) 92%, transparent);
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1;
-  box-shadow: none;
-  background-image: none;
-  margin: 0 2px 0 0;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-}
-#convertModal .app-modal-close:hover,
-#convertModal .app-modal-close:focus-visible,
-#trackModal .app-modal-close:hover,
-#trackModal .app-modal-close:focus-visible,
-#searchPanel .app-modal-close:hover,
-#searchPanel .app-modal-close:focus-visible,
-#favoritesPanel .app-modal-close:hover,
-#favoritesPanel .app-modal-close:focus-visible,
-#layersPanel .app-modal-close:hover,
-#layersPanel .app-modal-close:focus-visible{
-  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
-  color: var(--text-primary);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-  transform: none;
-  font-size: 17px;
-  box-shadow: var(--ring-focus);
-}
-#convertModal .app-modal-close:focus-visible,
-#trackModal .app-modal-close:focus-visible,
-#searchPanel .app-modal-close:focus-visible,
-#favoritesPanel .app-modal-close:focus-visible,
-#layersPanel .app-modal-close:focus-visible{
-  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset: 2px;
-}
-html[data-theme="light"] #convertModal .app-modal-close,
-html[data-theme="light"] #trackModal .app-modal-close,
-html[data-theme="light"] #searchPanel .app-modal-close,
-html[data-theme="light"] #favoritesPanel .app-modal-close,
-html[data-theme="light"] #layersPanel .app-modal-close{
-  background: color-mix(in srgb, var(--surface-field, var(--panel)) 90%, var(--panel));
-  color: var(--muted);
-  border-color: var(--border-strong);
-}
-html[data-theme="light"] #convertModal .app-modal-close:hover,
-html[data-theme="light"] #convertModal .app-modal-close:focus-visible,
-html[data-theme="light"] #trackModal .app-modal-close:hover,
-html[data-theme="light"] #trackModal .app-modal-close:focus-visible,
-html[data-theme="light"] #searchPanel .app-modal-close:hover,
-html[data-theme="light"] #searchPanel .app-modal-close:focus-visible,
-html[data-theme="light"] #favoritesPanel .app-modal-close:hover,
-html[data-theme="light"] #favoritesPanel .app-modal-close:focus-visible,
-html[data-theme="light"] #layersPanel .app-modal-close:hover,
-html[data-theme="light"] #layersPanel .app-modal-close:focus-visible{
-  color: var(--text-primary);
 }
 #convertModal .app-modal-body{
   padding: var(--gis-space-4) var(--gis-space-5) var(--gis-space-5);
@@ -5084,6 +5104,62 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   filter: drop-shadow(0 6px 10px rgba(0,0,0,.28));
   z-index: 5000;
 }
+/* Family 1 close × vs tooltip [data-tip]: il globale usa ::before per la freccia del tooltip
+ * (specificità maggiore di .app-modal-close::before) e svuota/repositiona il pseudo-elemento.
+ * Qui si ripristina il glifo + geometria chip dopo gli scoped tweak Waypoint sopra. */
+#waypointModal .app-modal-close[data-tip]::before,
+#waypointModal .app-modal-close[data-tip]:hover::before,
+#waypointModal .app-modal-close[data-tip]:focus-visible::before,
+.app-modal-close[data-tip]::before,
+.app-modal-close[data-tip]:hover::before,
+.app-modal-close[data-tip]:focus-visible::before,
+.modal .modal-close[data-tip]::before,
+.modal .modal-close[data-tip]:hover::before,
+.modal .modal-close[data-tip]:focus-visible::before,
+.tools-drawer-head .drawer-close[data-tip]::before,
+.tools-drawer-head .drawer-close[data-tip]:hover::before,
+.tools-drawer-head .drawer-close[data-tip]:focus-visible::before,
+.tab-drawer-close[data-tip]::before,
+.tab-drawer-close[data-tip]:hover::before,
+.tab-drawer-close[data-tip]:focus-visible::before{
+  content:"×";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:static;
+  inset:auto;
+  bottom:auto;
+  left:auto;
+  transform:none;
+  border:none;
+  box-shadow:none;
+  filter:none;
+  width:17px;
+  height:17px;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  pointer-events:none;
+  z-index:auto;
+  color:var(--muted);
+  font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size:17px;
+  font-weight:600;
+  line-height:1;
+  text-align:center;
+}
+#waypointModal .app-modal-close[data-tip]:hover::before,
+#waypointModal .app-modal-close[data-tip]:focus-visible::before,
+.app-modal-close[data-tip]:hover::before,
+.app-modal-close[data-tip]:focus-visible::before,
+.modal .modal-close[data-tip]:hover::before,
+.modal .modal-close[data-tip]:focus-visible::before,
+.tools-drawer-head .drawer-close[data-tip]:hover::before,
+.tools-drawer-head .drawer-close[data-tip]:focus-visible::before,
+.tab-drawer-close[data-tip]:hover::before,
+.tab-drawer-close[data-tip]:focus-visible::before{
+  color:var(--text-primary);
+}
 #waypointModal .app-modal-head{
   padding: var(--wp-space-3) var(--wp-space-3) var(--wp-space-3) var(--wp-space-5);
   border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
@@ -5095,44 +5171,7 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   letter-spacing: -0.02em;
   line-height: 1.28;
 }
-/* Close: discrete neutral (same language as Convert). */
-#waypointModal .app-modal-close{
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: var(--wp-r-md);
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--panel2) 92%, transparent);
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1;
-  box-shadow: none;
-  background-image: none;
-  margin: 0 2px 0 0;
-  transition: background var(--wp-ease), border-color var(--wp-ease), color var(--wp-ease);
-}
-#waypointModal .app-modal-close:hover,
-#waypointModal .app-modal-close:focus-visible{
-  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
-  color: var(--text-primary);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-  transform: none;
-  font-size: 17px;
-  box-shadow: var(--ring-focus);
-}
-#waypointModal .app-modal-close:focus-visible{
-  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset: 2px;
-}
-html[data-theme="light"] #waypointModal .app-modal-close{
-  background: color-mix(in srgb, var(--surface-field, var(--panel)) 90%, var(--panel));
-  color: var(--muted);
-  border-color: var(--border-strong);
-}
-html[data-theme="light"] #waypointModal .app-modal-close:hover,
-html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
-  color: var(--text-primary);
-}
+/* Close: stesso chip globale .app-modal-close (Family 1). */
 
 #waypointModalPanel.waypoint-modal-panel{
   padding: var(--wp-space-4) var(--wp-space-5) var(--wp-space-5);
@@ -5404,26 +5443,6 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   letter-spacing: -0.02em;
   line-height: 1.28;
 }
-#waypointExportDialog .app-modal-close{
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: var(--radius-control, 10px);
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--panel2) 92%, transparent);
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1;
-  box-shadow: none;
-  background-image: none;
-  margin: 0 2px 0 0;
-}
-#waypointExportDialog .app-modal-close:hover,
-#waypointExportDialog .app-modal-close:focus-visible{
-  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
-  color: var(--text-primary);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-}
 .waypoint-export-dialog-body{
   padding: 16px 20px 20px;
   font-size: 0.94rem;
@@ -5483,26 +5502,6 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.28;
-}
-#waypointImportDialog .app-modal-close{
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: var(--radius-control, 10px);
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--panel2) 92%, transparent);
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1;
-  box-shadow: none;
-  background-image: none;
-  margin: 0 2px 0 0;
-}
-#waypointImportDialog .app-modal-close:hover,
-#waypointImportDialog .app-modal-close:focus-visible{
-  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
-  color: var(--text-primary);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 .waypoint-import-dialog-body{
   padding: 16px 20px 20px;
@@ -5566,26 +5565,6 @@ html[data-theme="light"] #waypointModal .app-modal-close:focus-visible{
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.28;
-}
-#trackExportDialog .app-modal-close{
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: var(--radius-control, 10px);
-  border: 1px solid var(--border-strong);
-  background: color-mix(in srgb, var(--panel2) 92%, transparent);
-  color: var(--muted);
-  font-size: 17px;
-  line-height: 1;
-  box-shadow: none;
-  background-image: none;
-  margin: 0 2px 0 0;
-}
-#trackExportDialog .app-modal-close:hover,
-#trackExportDialog .app-modal-close:focus-visible{
-  background: color-mix(in srgb, var(--accent-soft) 50%, var(--panel2));
-  color: var(--text-primary);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 .track-export-dialog-body{
   padding: 16px 20px 20px;
@@ -5735,14 +5714,21 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-modal-table{
   width:100%; border-collapse:collapse; font-size:.8rem;
   --wp-name-col:112px;
+  --wp-details-col:180px;
 }
 .wp-modal-table col.wp-col-name{ width:var(--wp-name-col); min-width:72px; }
+.wp-modal-table col.wp-col-details{ width:var(--wp-details-col); min-width:96px; }
 .wp-modal-table .wp-th-name{
   position:relative;
   padding-right:12px;
   min-width:100px;
 }
+.wp-modal-table .wp-th-details{
+  position:relative;
+  padding-right:12px;
+}
 .wp-modal-table .wp-th-name-lbl{ padding-right:2px; }
+.wp-modal-table .wp-th-details-lbl{ padding-right:2px; }
 .wp-modal-table th, .wp-modal-table td{ padding:6px 8px; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
 .wp-modal-table th{ position:sticky; top:0; background:var(--panel2); z-index:1; color:var(--muted); font-weight:600; }
 .wp-modal-table tr[data-wp-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
@@ -6081,12 +6067,35 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 .saved-tracks-table{
   width:100%; border-collapse:collapse; font-size:.82rem;
   --saved-name-col:140px;
+  --saved-when-col:100px;
+  --saved-dist-col:84px;
 }
 .saved-tracks-table col.saved-col-name{ width:var(--saved-name-col); min-width:72px; }
-.saved-tracks-table .saved-th-name{
+.saved-tracks-table col.saved-col-when{ width:var(--saved-when-col); min-width:60px; }
+.saved-tracks-table col.saved-col-dist{ width:var(--saved-dist-col); min-width:56px; }
+.saved-tracks-table col.saved-col-actions{ min-width:208px; width:auto; }
+.saved-tracks-table .saved-th-name,
+.saved-tracks-table .saved-th-when,
+.saved-tracks-table .saved-th-dist{
   position:relative;
   padding-right:12px;
   vertical-align:bottom;
+}
+.saved-tracks-table .saved-th-actions{
+  white-space:nowrap;
+}
+.saved-tracks-table .saved-actions-cell{
+  vertical-align:middle;
+}
+.saved-tracks-table .saved-row-actions{
+  display:flex;
+  align-items:center;
+  flex-wrap:nowrap;
+  gap:6px;
+  justify-content:flex-start;
+}
+.saved-tracks-table .saved-row-actions > .btn{
+  flex-shrink:0;
 }
 .saved-tracks-table th, .saved-tracks-table td{
   padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:middle;
@@ -6145,20 +6154,16 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   right:auto;
   transform:none;
 }
-/* Centra + ultima colonna (×): anchor right */
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:hover::after,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:focus-visible::after,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:hover::after,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:focus-visible::after{
+/* Azioni riga (Modifica · Centra · ×): tooltip ancorati a destra nel gruppo */
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .saved-row-actions [data-tip]:hover::after,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .saved-row-actions [data-tip]:focus-visible::after{
   left:auto;
   right:0;
   transform:translateX(0);
   animation:tipInDownSavedL .15s ease-out;
 }
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:hover::before,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table .btn-saved-fly[data-tip]:focus-visible::before,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:hover::before,
-#savedTracksMount.saved-tracks-wrap .saved-tracks-table td:last-child [data-tip]:focus-visible::before{
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .saved-row-actions [data-tip]:hover::before,
+#savedTracksMount.saved-tracks-wrap .saved-tracks-table .saved-row-actions [data-tip]:focus-visible::before{
   left:auto;
   right:10px;
   transform:none;
@@ -6206,6 +6211,96 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 }
 .saved-tracks-table .btn-danger-subtle[data-saved-del] .danger-x,
 .offline-areas-table .btn-danger-subtle[data-offline-del] .danger-x{ margin-right:0; }
+
+/* Row-delete X (single-row destructive): unify look across tables/lists.
+ * This is NOT a modal/panel close button (those use .modal-close/.drawer-close/.tab-drawer-close/.app-modal-close). */
+.saved-tracks-table .btn-danger-subtle[data-saved-del],
+.offline-areas-table .btn-danger-subtle[data-offline-del],
+#waypointModal button.btn.btn-sm[data-role="wp-del"],
+button.btn.btn-sm[data-role="tp-rm"],
+button.btn.btn-sm[data-role="mwp-rm"],
+button.btn.btn-sm.btn-danger[data-fav-del]{
+  min-width:2.25em;
+  padding-inline:6px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  font-weight:800;
+  background:rgba(0,0,0,.72);
+  border:1px solid color-mix(in srgb, #f87171 55%, transparent);
+  box-shadow:0 0 0 1px rgba(248,113,113,.12);
+  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.saved-tracks-table .btn-danger-subtle[data-saved-del] .danger-x,
+.offline-areas-table .btn-danger-subtle[data-offline-del] .danger-x{
+  margin-right:0;
+  color:#f87171;
+  font-weight:900;
+}
+.saved-tracks-table .btn-danger-subtle[data-saved-del]:hover,
+.saved-tracks-table .btn-danger-subtle[data-saved-del]:focus-visible,
+.offline-areas-table .btn-danger-subtle[data-offline-del]:hover,
+.offline-areas-table .btn-danger-subtle[data-offline-del]:focus-visible,
+#waypointModal button.btn.btn-sm[data-role="wp-del"]:hover,
+#waypointModal button.btn.btn-sm[data-role="wp-del"]:focus-visible,
+button.btn.btn-sm[data-role="tp-rm"]:hover,
+button.btn.btn-sm[data-role="tp-rm"]:focus-visible,
+button.btn.btn-sm[data-role="mwp-rm"]:hover,
+button.btn.btn-sm[data-role="mwp-rm"]:focus-visible,
+button.btn.btn-sm.btn-danger[data-fav-del]:hover,
+button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
+  color:#fecaca !important;
+  background:rgba(30,6,10,.92);
+  border-color:#fca5a5;
+  box-shadow:0 0 12px rgba(220,38,38,.35);
+  outline:none;
+}
+/* Mappe Offline: ✕ delete riga — copia effettiva di #waypointModal [data-role="wp-del"] + blocco row-delete (6217+)
+ * + .btn-sm: .offa-actions .btn non deve vincere (font/padding/radius/glass .btn). */
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del]{
+  box-sizing:border-box;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-size:.82rem;
+  line-height:1;
+  font-weight:800;
+  min-width:2.25em;
+  /* line-height:1 stringe il glifo vs Waypoint (nessun line-height esplicito); min-height ≈ 1.2em + padding verticale .btn-sm. */
+  min-height:calc(1.2em + 10px);
+  padding:5px 6px;
+  border-radius:10px;
+  color:#f87171 !important;
+  background:rgba(0,0,0,.72) !important;
+  border:1px solid color-mix(in srgb, #f87171 55%, transparent) !important;
+  box-shadow:0 0 0 1px rgba(248,113,113,.12);
+  transition:color .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  transform:none;
+}
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del] .danger-x{
+  margin-right:0;
+  color:inherit !important;
+  font-weight:900;
+  font-size:1em;
+  line-height:1;
+}
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del]:hover,
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del]:focus-visible{
+  color:#fecaca !important;
+  background:rgba(30,6,10,.92) !important;
+  border-color:#fca5a5 !important;
+  box-shadow:0 0 12px rgba(220,38,38,.35);
+  outline:none;
+  transform:none;
+}
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del]:hover .danger-x,
+.offline-areas-table .offa-actions .btn-danger-subtle[data-offline-del]:focus-visible .danger-x{
+  color:#fecaca !important;
+}
 .saved-tracks-table th .saved-tracks-sort-btn{
   font:inherit; font-weight:600; color:inherit; background:transparent; border:none; cursor:pointer;
   padding:2px 4px; margin:0; border-radius:6px; text-align:inherit; width:100%;
@@ -8067,6 +8162,7 @@ const I18N = {
     "track.colPts":"Pti",
     "track.colWhen":"Data",
     "track.colDist":"Distanza",
+    "track.savedColActions":"Azioni",
     "track.colGo":"Centra",
     "track.colDel":"✕",
     "track.delOne":"×",
@@ -9051,6 +9147,7 @@ const I18N = {
     "track.colPts":"Pts",
     "track.colWhen":"Date",
     "track.colDist":"Distance",
+    "track.savedColActions":"Actions",
     "track.colGo":"Center",
     "track.colDel":"✕",
     "track.delOne":"×",
@@ -10035,6 +10132,7 @@ const I18N = {
     "track.colPts":"Pts",
     "track.colWhen":"Date",
     "track.colDist":"Distance",
+    "track.savedColActions":"Actions",
     "track.colGo":"Centrer",
     "track.colDel":"✕",
     "track.delOne":"×",
@@ -11610,7 +11708,16 @@ function resetGisUiLayoutPanels(){
   }
   try {
     const list = document.getElementById("offlineAreasList");
-    if (list) delete list._offaNameColPx;
+    if (list){
+      delete list._offaNameColPx;
+      delete list._offaStatusColPx;
+      delete list._offaWhenColPx;
+      delete list._offaZoomColPx;
+      delete list._offaLayerColPx;
+      delete list._offaTilesColPx;
+      delete list._offaSpaceColPx;
+      delete list._offaActionsColPx;
+    }
     const stm = document.getElementById("savedTracksMount");
     if (stm) delete stm._savedTracksNameColPx;
     const wpl = document.getElementById("wp-list");
@@ -19413,7 +19520,10 @@ function saveNamedArea(name){
       setBadge("error", t("offcache.badbox"));
       return;
     }
+    state._offlineAreasLoadedId = String(mr.area.id);
     exitOfflineAreaEditMode();
+    if (state._bboxSelecting) endBboxSelection();
+    clearBboxSelection();
     const sel = document.getElementById("pcPreset");
     if (sel && mr.area) sel.value = "named:" + mr.area.id;
     setBadge("OK", t("offcache.areaUpdated"));
@@ -19477,12 +19587,15 @@ function saveNamedArea(name){
   if (sel) sel.value = "named:" + entry.id;
   const txt = document.getElementById("pcAreaName");
   if (txt) txt.value = "";
+  state._offlineAreasLoadedId = String(entry.id);
   state._offlineBboxEditorOpen = false;
-  syncPcBboxEditorSectionFromState();
+  if (state._bboxSelecting) endBboxSelection();
+  clearBboxSelection();
   setBadge("success", t("offcache.saveNamedOk").replace("{0}", clean));
   const _tm = document.querySelector("#miniMap .tile-map");
   if (_tm) drawCoverageOverlay(_tm);
   state._offlineUnsavedBboxDraft = false;
+  try { renderOfflineAreasList(); } catch(_){}
 }
 
 /** Delete a named area by id (with confirm). */
@@ -20273,7 +20386,11 @@ function savedTracksSortHeaderHtml(colKey, i18nKey, opts){
   if (opts.resizeHandle){
     const ra = (typeof t === "function") ? (t("track.colResizeAria") || "") : "";
     const raEsc = esc(ra || "");
-    resizeTail = `<span class="saved-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
+    const rk = opts.resizeHandle === true ? "name" : String(opts.resizeHandle);
+    const resizeClass = rk === "when" ? "saved-when-col-resize"
+      : rk === "dist" ? "saved-dist-col-resize"
+      : "saved-name-col-resize";
+    resizeTail = `<span class="${resizeClass}" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
   }
   return `<th${cls}${st}><button type="button" class="saved-tracks-sort-btn" data-saved-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="saved-tracks-sort-mark" aria-hidden="true">${mark}</span></button>${resizeTail}</th>`;
 }
@@ -20459,6 +20576,8 @@ function renderOfflineAreasList(){
   });
 
   const sortMark = (k) => (key === k ? (dir === "asc" ? " ▲" : " ▼") : "");
+  const offaRA = esc((typeof t === "function") ? (t("offcache.colResizeAria") || "") : "");
+  const offaRH = (slug) => `<span class="offa-${slug}-col-resize" role="separator" aria-orientation="vertical" aria-label="${offaRA}" title="${offaRA}"></span>`;
 
   const selectedSet = new Set(state._offlineAreasSelectedIds.map(String));
   const loadedId = String(state._offlineAreasLoadedId || "");
@@ -20469,24 +20588,24 @@ function renderOfflineAreasList(){
     <col style="width:34px" />
     <col style="width:44px" />
     <col class="offa-col-name" />
-    <col style="width:90px" />
-    <col style="width:120px" />
-    <col style="width:90px" />
-    <col style="width:110px" />
-    <col style="width:110px" />
-    <col style="width:110px" />
-    <col />
+    <col class="offa-col-status" />
+    <col class="offa-col-when" />
+    <col class="offa-col-zoom" />
+    <col class="offa-col-layer" />
+    <col class="offa-col-tiles" />
+    <col class="offa-col-space" />
+    <col class="offa-col-actions" />
   </colgroup><thead><tr>
     <th class="offa-selcell"><input type="checkbox" id="offaSelectAll" data-i18n-tip="offcache.sel.selectAll" data-tip="${esc(t("offcache.sel.selectAll"))}" data-i18n-aria="offcache.sel.selectAll"></th>
     <th class="offa-viscell"><button type="button" class="offa-sort-btn" data-offa-sort="vis" data-i18n-tip="offcache.sort.vis" data-tip="${esc(t("offcache.sort.vis"))}">${esc(t("offcache.list.colVis"))}${sortMark("vis")}</button></th>
-    <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button><span class="offa-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${esc(t("offcache.colResizeAria"))}" title="${esc(t("offcache.colResizeAria"))}"></span></th>
-    <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="status" data-i18n-tip="offcache.sort.status" data-tip="${esc(t("offcache.sort.status"))}">${esc(t("offcache.list.colStatus"))}${sortMark("status")}</button></th>
-    <th style="width:120px"><button type="button" class="offa-sort-btn" data-offa-sort="when" data-i18n-tip="offcache.sort.when" data-tip="${esc(t("offcache.sort.when"))}">${esc(t("offcache.list.colWhen"))}${sortMark("when")}</button></th>
-    <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="zoom" data-i18n-tip="offcache.sort.zoom" data-tip="${esc(t("offcache.sort.zoom"))}">${esc(t("offcache.list.colZoom"))}${sortMark("zoom")}</button></th>
-    <th style="width:110px"><button type="button" class="offa-sort-btn" data-offa-sort="layer" data-i18n-tip="offcache.sort.layer" data-tip="${esc(t("offcache.sort.layer"))}">${esc(t("offcache.list.colLayer"))}${sortMark("layer")}</button></th>
-    <th style="width:110px"><button type="button" class="offa-sort-btn" data-offa-sort="tiles" data-i18n-tip="offcache.sort.tiles" data-tip="${esc(t("offcache.sort.tiles"))}">${esc(t("offcache.list.colTiles"))}${sortMark("tiles")}</button></th>
-    <th style="width:110px"><button type="button" class="offa-sort-btn" data-offa-sort="space" data-i18n-tip="offcache.sort.space" data-tip="${esc(t("offcache.sort.space"))}">${esc(t("offcache.list.colSpace"))}${sortMark("space")}</button></th>
-    <th style="width:220px">${esc(t("offcache.list.colActions"))}</th>
+    <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button>${offaRH("name")}</th>
+    <th class="offa-th-status"><button type="button" class="offa-sort-btn" data-offa-sort="status" data-i18n-tip="offcache.sort.status" data-tip="${esc(t("offcache.sort.status"))}">${esc(t("offcache.list.colStatus"))}${sortMark("status")}</button>${offaRH("status")}</th>
+    <th class="offa-th-when"><button type="button" class="offa-sort-btn" data-offa-sort="when" data-i18n-tip="offcache.sort.when" data-tip="${esc(t("offcache.sort.when"))}">${esc(t("offcache.list.colWhen"))}${sortMark("when")}</button>${offaRH("when")}</th>
+    <th class="offa-th-zoom"><button type="button" class="offa-sort-btn" data-offa-sort="zoom" data-i18n-tip="offcache.sort.zoom" data-tip="${esc(t("offcache.sort.zoom"))}">${esc(t("offcache.list.colZoom"))}${sortMark("zoom")}</button>${offaRH("zoom")}</th>
+    <th class="offa-th-layer"><button type="button" class="offa-sort-btn" data-offa-sort="layer" data-i18n-tip="offcache.sort.layer" data-tip="${esc(t("offcache.sort.layer"))}">${esc(t("offcache.list.colLayer"))}${sortMark("layer")}</button>${offaRH("layer")}</th>
+    <th class="offa-th-tiles"><button type="button" class="offa-sort-btn" data-offa-sort="tiles" data-i18n-tip="offcache.sort.tiles" data-tip="${esc(t("offcache.sort.tiles"))}">${esc(t("offcache.list.colTiles"))}${sortMark("tiles")}</button>${offaRH("tiles")}</th>
+    <th class="offa-th-space"><button type="button" class="offa-sort-btn" data-offa-sort="space" data-i18n-tip="offcache.sort.space" data-tip="${esc(t("offcache.sort.space"))}">${esc(t("offcache.list.colSpace"))}${sortMark("space")}</button>${offaRH("space")}</th>
+    <th class="offa-th-actions">${esc(t("offcache.list.colActions"))}${offaRH("actions")}</th>
   </tr></thead><tbody>`;
 
   for (const a of rows){
@@ -20528,7 +20647,7 @@ function renderOfflineAreasList(){
       <td>${esc(layerLbl)}</td>
       <td>${esc(tilesTxt)}</td>
       <td>${esc(spaceTxt)}</td>
-      <td><div class="offa-actions">
+      <td class="offa-actions-cell"><div class="offa-actions">
         <button type="button" class="btn btn-sm" data-offline-load="${esc(a.id)}" data-i18n-tip="offcache.area.loadTip" data-tip="${esc(t("offcache.area.loadTip"))}">${esc(t("offcache.area.load"))}</button>
         <button type="button" class="btn btn-sm" data-offline-fit="${esc(a.id)}" data-i18n-tip="offcache.area.fitTip" data-tip="${esc(t("offcache.area.fitTip"))}">${esc(t("offcache.area.fit"))}</button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-offline-del="${esc(a.id)}" data-i18n-tip="tip.offlineAreaDeleteOne" data-i18n-aria="tip.offlineAreaDeleteOne" data-tip="${esc(t("tip.offlineAreaDeleteOne"))}" aria-label="${esc(t("tip.offlineAreaDeleteOne"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
@@ -20539,9 +20658,31 @@ function renderOfflineAreasList(){
   list.innerHTML = `<div class="offline-areas-list-scroll">${html}</div>`;
   try {
     const tbl = list.querySelector(".offline-areas-table");
-    if (tbl && Number.isFinite(list._offaNameColPx)){
-      const px = Math.max(72, Math.min(560, list._offaNameColPx));
-      tbl.style.setProperty("--offa-name-col", px + "px");
+    if (tbl){
+      if (Number.isFinite(list._offaNameColPx)){
+        tbl.style.setProperty("--offa-name-col", Math.max(72, Math.min(560, list._offaNameColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaStatusColPx)){
+        tbl.style.setProperty("--offa-status-col", Math.max(64, Math.min(320, list._offaStatusColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaWhenColPx)){
+        tbl.style.setProperty("--offa-when-col", Math.max(72, Math.min(420, list._offaWhenColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaZoomColPx)){
+        tbl.style.setProperty("--offa-zoom-col", Math.max(56, Math.min(240, list._offaZoomColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaLayerColPx)){
+        tbl.style.setProperty("--offa-layer-col", Math.max(72, Math.min(380, list._offaLayerColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaTilesColPx)){
+        tbl.style.setProperty("--offa-tiles-col", Math.max(72, Math.min(380, list._offaTilesColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaSpaceColPx)){
+        tbl.style.setProperty("--offa-space-col", Math.max(72, Math.min(380, list._offaSpaceColPx)) + "px");
+      }
+      if (Number.isFinite(list._offaActionsColPx)){
+        tbl.style.setProperty("--offa-actions-col", Math.max(200, Math.min(520, list._offaActionsColPx)) + "px");
+      }
     }
   } catch(_){}
   // Update select-all checkbox state (checked/indeterminate) and toolbar.
@@ -20560,11 +20701,40 @@ function renderOfflineAreasList(){
   ensureOfflineAreasTooltipPortal();
 }
 
-/** Desktop: ridimensiona solo la colonna Nome in Mappe Offline (sessione, senza localStorage). */
+/** Desktop: ridimensiona colonne tabella Aree offline (sessione su #offlineAreasList, senza localStorage). */
 function ensureOfflineAreasNameColResizeWired(){
   if (window._offaNameColResizeWired) return;
   window._offaNameColResizeWired = true;
   let drag = null;
+  function offaColMetaFromHandle(h, table){
+    const rectT = table.getBoundingClientRect();
+    const w = Math.max(200, rectT.width);
+    if (h.classList.contains("offa-name-col-resize")){
+      return { varName: "--offa-name-col", prop: "_offaNameColPx", td: 3, min: 72, max: Math.min(560, Math.max(120, Math.floor(w * 0.55))) };
+    }
+    if (h.classList.contains("offa-status-col-resize")){
+      return { varName: "--offa-status-col", prop: "_offaStatusColPx", td: 4, min: 64, max: Math.min(320, Math.max(100, Math.floor(w * 0.22))) };
+    }
+    if (h.classList.contains("offa-when-col-resize")){
+      return { varName: "--offa-when-col", prop: "_offaWhenColPx", td: 5, min: 72, max: Math.min(420, Math.max(120, Math.floor(w * 0.28))) };
+    }
+    if (h.classList.contains("offa-zoom-col-resize")){
+      return { varName: "--offa-zoom-col", prop: "_offaZoomColPx", td: 6, min: 56, max: Math.min(240, Math.max(80, Math.floor(w * 0.14))) };
+    }
+    if (h.classList.contains("offa-layer-col-resize")){
+      return { varName: "--offa-layer-col", prop: "_offaLayerColPx", td: 7, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
+    }
+    if (h.classList.contains("offa-tiles-col-resize")){
+      return { varName: "--offa-tiles-col", prop: "_offaTilesColPx", td: 8, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
+    }
+    if (h.classList.contains("offa-space-col-resize")){
+      return { varName: "--offa-space-col", prop: "_offaSpaceColPx", td: 9, min: 72, max: Math.min(380, Math.max(100, Math.floor(w * 0.24))) };
+    }
+    if (h.classList.contains("offa-actions-col-resize")){
+      return { varName: "--offa-actions-col", prop: "_offaActionsColPx", td: 10, min: 200, max: Math.min(520, Math.max(220, Math.floor(w * 0.42))) };
+    }
+    return null;
+  }
   function endDrag(){
     drag = null;
     try {
@@ -20576,27 +20746,28 @@ function ensureOfflineAreasNameColResizeWired(){
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const nw = Math.max(72, Math.min(drag.maxW, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty("--offa-name-col", nw + "px");
+    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty(drag.meta.varName, nw + "px");
     const list = document.getElementById("offlineAreasList");
-    if (list) list._offaNameColPx = nw;
+    if (list) list[drag.meta.prop] = nw;
   }
   document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".offa-name-col-resize");
+    const h = ev.target.closest && ev.target.closest(".offa-name-col-resize, .offa-status-col-resize, .offa-when-col-resize, .offa-zoom-col-resize, .offa-layer-col-resize, .offa-tiles-col-resize, .offa-space-col-resize, .offa-actions-col-resize");
     if (!h) return;
     if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
     const table = h.closest(".offline-areas-table");
     if (!table) return;
     const list = document.getElementById("offlineAreasList");
     if (!list || !list.contains(table)) return;
-    const cell = table.querySelector("tbody tr td:nth-child(3)");
-    const rectT = table.getBoundingClientRect();
-    const startW = cell ? cell.getBoundingClientRect().width : 160;
+    const meta = offaColMetaFromHandle(h, table);
+    if (!meta) return;
+    const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
+    const startW = cell ? cell.getBoundingClientRect().width : 120;
     drag = {
       table,
+      meta,
       startX: ev.clientX,
-      startW,
-      maxW: Math.max(120, Math.floor(rectT.width * 0.55))
+      startW
     };
     ev.preventDefault();
     document.addEventListener("pointermove", onMove);
@@ -20605,7 +20776,7 @@ function ensureOfflineAreasNameColResizeWired(){
   }, true);
 }
 
-/** Desktop: colonna Nome in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
+/** Desktop: colonne Nome / Data / Distanza in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
 function ensureSavedTracksNameColResizeWired(){
   if (window._savedTracksNameColResizeWired) return;
   window._savedTracksNameColResizeWired = true;
@@ -20621,28 +20792,52 @@ function ensureSavedTracksNameColResizeWired(){
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const maxW = Math.min(560, drag.maxW);
-    const nw = Math.max(72, Math.min(maxW, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty("--saved-name-col", nw + "px");
+    const maxW = drag.maxW;
+    const nw = Math.max(drag.minW, Math.min(maxW, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty(drag.varName, nw + "px");
     const mount = document.getElementById("savedTracksMount");
-    if (mount) mount._savedTracksNameColPx = nw;
+    if (!mount) return;
+    if (drag.kind === "name") mount._savedTracksNameColPx = nw;
+    else if (drag.kind === "when") mount._savedTracksWhenColPx = nw;
+    else if (drag.kind === "dist") mount._savedTracksDistColPx = nw;
   }
   document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".saved-name-col-resize");
+    const h = ev.target.closest && ev.target.closest(".saved-name-col-resize, .saved-when-col-resize, .saved-dist-col-resize");
     if (!h) return;
     if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
     const table = h.closest(".saved-tracks-table");
     if (!table) return;
     const mount = document.getElementById("savedTracksMount");
     if (!mount || !mount.contains(table)) return;
-    const cell = table.querySelector("tbody tr td:nth-child(3)");
     const rectT = table.getBoundingClientRect();
-    const startW = cell ? cell.getBoundingClientRect().width : 140;
+    let kind = "name";
+    let varName = "--saved-name-col";
+    let tdIdx = 3;
+    let minW = 72;
+    let cap = Math.max(120, Math.floor(rectT.width * 0.55));
+    if (h.classList.contains("saved-when-col-resize")){
+      kind = "when";
+      varName = "--saved-when-col";
+      tdIdx = 5;
+      minW = 60;
+      cap = Math.min(400, Math.max(100, Math.floor(rectT.width * 0.38)));
+    } else if (h.classList.contains("saved-dist-col-resize")){
+      kind = "dist";
+      varName = "--saved-dist-col";
+      tdIdx = 6;
+      minW = 56;
+      cap = Math.min(360, Math.max(80, Math.floor(rectT.width * 0.28)));
+    }
+    const cell = table.querySelector("tbody tr td:nth-child(" + tdIdx + ")");
+    const startW = cell ? cell.getBoundingClientRect().width : (kind === "name" ? 140 : kind === "when" ? 100 : 84);
     drag = {
       table,
+      kind,
+      varName,
       startX: ev.clientX,
       startW,
-      maxW: Math.max(120, Math.floor(rectT.width * 0.55))
+      minW,
+      maxW: cap
     };
     ev.preventDefault();
     document.addEventListener("pointermove", onMove);
@@ -20651,7 +20846,7 @@ function ensureSavedTracksNameColResizeWired(){
   }, true);
 }
 
-/** Desktop: colonna Nome nella lista waypoint modal (sessione su #wp-list). */
+/** Desktop: colonne Nome e Dettagli nella lista waypoint modal (sessione su #wp-list). */
 function ensureWpModalNameColResizeWired(){
   if (window._wpModalNameColResizeWired) return;
   window._wpModalNameColResizeWired = true;
@@ -20667,28 +20862,35 @@ function ensureWpModalNameColResizeWired(){
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const maxW = Math.min(520, drag.maxW);
-    const nw = Math.max(72, Math.min(maxW, Math.round(drag.startW + dx)));
-    drag.table.style.setProperty("--wp-name-col", nw + "px");
+    const maxW = Math.min(drag.capMax, drag.maxW);
+    const nw = Math.max(drag.minW, Math.min(maxW, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty(drag.varName, nw + "px");
     const wl = document.getElementById("wp-list");
-    if (wl) wl._wpNameColPx = nw;
+    if (!wl) return;
+    if (drag.kind === "details") wl._wpDetailsColPx = nw;
+    else wl._wpNameColPx = nw;
   }
   document.addEventListener("pointerdown", (ev) => {
-    const h = ev.target.closest && ev.target.closest(".wp-modal-table .wp-name-col-resize");
+    const h = ev.target.closest && ev.target.closest(".wp-modal-table .wp-name-col-resize, .wp-modal-table .wp-details-col-resize");
     if (!h) return;
     if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
     const table = h.closest(".wp-modal-table");
     if (!table) return;
     const wl = document.getElementById("wp-list");
     if (!wl || !wl.contains(table)) return;
-    const cell = table.querySelector("tbody tr td:nth-child(2)");
     const rectT = table.getBoundingClientRect();
-    const startW = cell ? cell.getBoundingClientRect().width : 112;
+    const isDetails = h.classList.contains("wp-details-col-resize");
+    const cell = table.querySelector("tbody tr td:nth-child(" + (isDetails ? 3 : 2) + ")");
+    const startW = cell ? cell.getBoundingClientRect().width : (isDetails ? 180 : 112);
     drag = {
       table,
+      kind: isDetails ? "details" : "name",
+      varName: isDetails ? "--wp-details-col" : "--wp-name-col",
       startX: ev.clientX,
       startW,
-      maxW: Math.max(120, Math.floor(rectT.width * 0.5))
+      minW: isDetails ? 96 : 72,
+      capMax: isDetails ? 520 : 520,
+      maxW: Math.max(isDetails ? 120 : 120, Math.floor(rectT.width * (isDetails ? 0.55 : 0.5)))
     };
     ev.preventDefault();
     document.addEventListener("pointermove", onMove);
@@ -21027,21 +21229,17 @@ function renderSavedTracksList(){
     <col style="width:44px" />
     <col class="saved-col-name" />
     <col style="width:52px" />
-    <col />
-    <col />
-    <col style="width:92px" />
-    <col style="width:72px" />
-    <col style="width:44px" />
+    <col class="saved-col-when" />
+    <col class="saved-col-dist" />
+    <col class="saved-col-actions" />
   </colgroup><thead><tr>
     <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"></th>
     ${savedTracksSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
     ${savedTracksSortHeaderHtml("name", "track.colName", { resizeHandle: true, thClass: "saved-th-name" })}
     ${savedTracksSortHeaderHtml("pts", "track.colPts", { thStyle: "width:52px" })}
-    ${savedTracksSortHeaderHtml("when", "track.colWhen", {})}
-    ${savedTracksSortHeaderHtml("dist", "track.colDist", {})}
-    <th style="width:92px">${esc(t("track.savedEdit") || "Modifica")}</th>
-    <th style="width:72px">${esc(t("track.colGo") || "Vai")}</th>
-    <th style="width:44px">${esc(t("track.colDel") || "✕")}</th>
+    ${savedTracksSortHeaderHtml("when", "track.colWhen", { resizeHandle: "when", thClass: "saved-th-when" })}
+    ${savedTracksSortHeaderHtml("dist", "track.colDist", { resizeHandle: "dist", thClass: "saved-th-dist" })}
+    <th class="saved-th-actions" style="min-width:208px;text-align:left">${esc(t("track.savedColActions") || "Azioni")}</th>
   </tr></thead><tbody>`;
   for (const st of rows){
     const d = savedTrackDistanceM(st);
@@ -21056,9 +21254,11 @@ function renderSavedTracksList(){
       <td>${st.points.length}</td>
       <td>${esc(formatSavedTrackWhen(savedTrackSortTs(st)))}</td>
       <td>${esc(distStr)}</td>
-      <td><button type="button" class="btn btn-sm" data-saved-edit="${esc(st.id)}" data-i18n="track.savedEdit" data-i18n-tip="tip.trackEditSaved" data-i18n-aria="tip.trackEditSaved">${esc(t("track.savedEdit") || "Modifica")}</button></td>
-      <td><button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}" data-i18n="track.flyBtn" data-i18n-tip="tip.trackSavedFly" data-i18n-aria="tip.trackSavedFly" data-tip="${tipFly}">${esc(t("track.flyBtn") || "Centra")}</button></td>
-      <td><button type="button" class="btn btn-sm btn-danger-subtle" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne" data-i18n-aria="tip.trackSavedDelOne"><span class="danger-x" aria-hidden="true">✕</span></button></td>
+      <td class="saved-actions-cell"><div class="saved-row-actions">
+        <button type="button" class="btn btn-sm" data-saved-edit="${esc(st.id)}" data-i18n="track.savedEdit" data-i18n-tip="tip.trackEditSaved" data-i18n-aria="tip.trackEditSaved">${esc(t("track.savedEdit") || "Modifica")}</button>
+        <button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}" data-i18n="track.flyBtn" data-i18n-tip="tip.trackSavedFly" data-i18n-aria="tip.trackSavedFly" data-tip="${tipFly}">${esc(t("track.flyBtn") || "Centra")}</button>
+        <button type="button" class="btn btn-sm btn-danger-subtle" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne" data-i18n-aria="tip.trackSavedDelOne"><span class="danger-x" aria-hidden="true">✕</span></button>
+      </div></td>
     </tr>`;
   }
   html += "</tbody></table>";
@@ -21068,6 +21268,14 @@ function renderSavedTracksList(){
     if (tbl && Number.isFinite(mount._savedTracksNameColPx)){
       const px = Math.max(72, Math.min(560, mount._savedTracksNameColPx));
       tbl.style.setProperty("--saved-name-col", px + "px");
+    }
+    if (tbl && Number.isFinite(mount._savedTracksWhenColPx)){
+      const px = Math.max(60, Math.min(400, mount._savedTracksWhenColPx));
+      tbl.style.setProperty("--saved-when-col", px + "px");
+    }
+    if (tbl && Number.isFinite(mount._savedTracksDistColPx)){
+      const px = Math.max(56, Math.min(360, mount._savedTracksDistColPx));
+      tbl.style.setProperty("--saved-dist-col", px + "px");
     }
   } catch(_){}
   ensureSavedTracksNameColResizeWired();
@@ -23812,7 +24020,7 @@ function renderTileMap(lat, lon, zoom){
     const offFloatHidden = !(size === "small" && !!state.offlineDownloadVisible);
     const offCloseLbl = esc(t("tip.mapOfflineFloatClose") || "Chiudi");
     html += `<div class="tile-offline-float" data-role="offline-float-wrap"${offFloatHidden ? " hidden" : ""}>`;
-    html += `<button type="button" class="toff-close" data-role="offline-float-close" aria-label="${offCloseLbl}">✕</button>`;
+    html += `<button type="button" class="toff-close" data-role="offline-float-close" aria-label="${offCloseLbl}">×</button>`;
     html += `</div>`;
   }
 
@@ -28537,12 +28745,13 @@ function _layersPanelLayoutOpts(){
   return {
     key: "layers",
     pad: 12,
-    minW: 480,
-    minH: 340,
-    defaultW: 720,
+    minW: 520,
+    minH: 400,
+    /** Vicino a Traccia (760) / Waypoint (720): più spazio per tabella Aree + toolbar. */
+    defaultW: 840,
     defaultH: null,
-    /** ~82–88% altezza utile quando layout non touched; cap alto così non limita i desktop. */
-    defaultHeightFraction: 0.85,
+    /** Default solo se `gPanelLayouts.layers` non è touched (vedi gisPanelApplyLayout). */
+    defaultHeightFraction: 0.88,
     defaultHeightCap: 2000,
     topbarReserve: 104,
     bodyId: "layersPanelBody",
@@ -29484,12 +29693,12 @@ function renderWpModalList(){
   let html = `<table class="wp-modal-table"><colgroup>
     <col style="width:40px" />
     <col class="wp-col-name" />
-    <col />
+    <col class="wp-col-details" />
     <col style="width:118px" />
   </colgroup><thead><tr>
     <th style="width:40px"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll"></th>
     <th class="wp-th-name"><span class="wp-th-name-lbl">${esc(t("waypointModal.listColName"))}</span><span class="wp-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
-    <th>${esc(t("waypointModal.listColDetails"))}</th>
+    <th class="wp-th-details"><span class="wp-th-details-lbl">${esc(t("waypointModal.listColDetails"))}</span><span class="wp-details-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
     <th style="width:118px;text-align:right">${esc(t("waypointModal.listColActions"))}</th>
   </tr></thead><tbody>`;
   html += pts.map(p => {
@@ -29519,6 +29728,10 @@ function renderWpModalList(){
     if (tbl && Number.isFinite(root._wpNameColPx)){
       const px = Math.max(72, Math.min(520, root._wpNameColPx));
       tbl.style.setProperty("--wp-name-col", px + "px");
+    }
+    if (tbl && Number.isFinite(root._wpDetailsColPx)){
+      const px = Math.max(96, Math.min(520, root._wpDetailsColPx));
+      tbl.style.setProperty("--wp-details-col", px + "px");
     }
   } catch(_){}
   ensureWpModalNameColResizeWired();

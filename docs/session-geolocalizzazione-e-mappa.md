@@ -2,7 +2,7 @@
 
 ## 🗓 Data
 
-2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo
+2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)*
 
 > File canonico di riferimento: **`coordinate_converter Claude.html`** (HTML standalone unico nel repo). Indice tecnico aggiornabile: **`docs/PROJECT_notes.md`**.
 
@@ -1938,4 +1938,152 @@ Allineamento UI/UX della sezione **Mappe Offline** dopo il flusso **Modifica / A
 
 - `git diff --check` su monolite: OK in sessione.
 - `node --check` su JS inline estratto: OK in sessione (range script aggiornato nel tempo).
+
+
+## Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net
+
+### Contesto
+
+Questa sezione **documenta solo backlog e proposte** emerse in chat (GOI GIS Tool / APP GIS; file canonico `coordinate_converter Claude.html`). **Non** descrive implementazioni già mergeate oltre a quanto esplicitamente richiamato nello **stato UI Mappe Offline** sotto. Serve a non perdere il filo quando le conversazioni diventano lunghe.
+
+**File toccati in questo blocco docs-only:** `docs/session-geolocalizzazione-e-mappa.md`, `docs/checkpoint.md`, `docs/PROJECT_notes.md`. **Non** sono stati modificati `coordinate_converter Claude.html`, `docs/roadmap.md`, né `.cursor/rules/*.mdc`.
+
+### Convenzione operativa: «Mettilo nel backlog»
+
+- **«Mettilo nel backlog»** significa: **registrare l’idea** in chat e, quando richiesto, **nei documenti di progetto** del repository (sessione / checkpoint / note), così resta tracciabile.
+- **Non** significa: creare issue GitHub o ticket esterni.
+- **Non** significa: modificare **`docs/roadmap.md`** o **`.cursor/rules/*.mdc`** senza una proposta dedicata e **approvazione esplicita dell’utente**.
+- **Non** significa: fare commit o push automatici (salvo trigger esplicito dell’utente, es. «Finito» come da rules progetto).
+
+**Roadmap e rules** si aggiornano solo dopo **proposta esplicita** e **approvazione dell’utente**.
+
+### Vincoli architetturali da rispettare nel backlog (promemoria)
+
+- Single-file HTML standalone; HTML / CSS / JS nello stesso file; **vanilla JS**; nessun framework; nessun TypeScript; nessun npm; nessun bundler; nessun ES modules; nessuna dipendenza runtime esterna oltre ai pattern già ammessi dall’app (tile / geocoding ecc. solo opt-in).
+- **Offline-first**; **OPSEC-aware**; nessuna rete automatica; geocoding / tile / WMS / WMTS solo opt-in e bloccabili da **OPSEC strict**.
+- **i18n** IT / EN / FR per ogni stringa UI futura.
+- Nessun **live tracking** GPS o `watchPosition` senza decisione esplicita dell’utente.
+- **`state.mapWaypoints[]`** resta fonte **canonica** dei waypoint; gli store GIS **additivi** non devono sostituire arbitrariamente le fonti canoniche.
+
+### 1. Stato appena validato — Mappe Offline UI
+
+Sintesi dello stato discusso/validato in sessione (dettaglio implementativo resta nel monolite e nei checkpoint precedenti su Mappe Offline):
+
+- **Resize colonne** tabella «Aree offline salvate»: OK.
+- **Pannello Mappe Offline** reso più grande / coerente con le altre modal operative: OK.
+- **Gruppo azioni riga** (`.offa-actions`) allineato; **X delete** per-riga (`[data-offline-del]` in `.offline-areas-table .offa-actions`) allineata al pattern **Waypoint** (`[data-role="wp-del"]`): OK percepito in sessione.
+- **Dialog a tre scelte** su eliminazione area: invariato.
+- **Logiche** download / cache / delta Mappe Offline: non toccate da questi interventi UI.
+- **Resize colonne / sessione**, **close button** modal/pannelli: non oggetto delle micro-patch sulla X.
+
+### 2. Prossimo blocco operativo consigliato
+
+- **`Impostazioni → Cancella tutti i dati locali`** (o equivalente nel menu impostazioni): funzione **critica** per sviluppo e OPSEC.
+- Deve cancellare in modo controllato **dati locali dell’app**: `localStorage` applicativo, **IndexedDB** (tile pack / cache geocoding ove presente), **waypoint**, **tracce**, **favoriti**, **cronologia**, **aree offline**, **preferenze/layout** UI (`coordconv_ui_v1`, `gPanelLayouts`, ecc.) — elenco da raffinare in fase di progettazione, ma l’intento è **reset completo dati on-device**.
+- Deve avere **conferma forte** (secondo step / digitazione / checkbox esplicite).
+- Resta **distinta** da **«Svuota tutta la cache tile»** (solo cache tile, già presente nel flusso Mappe Offline).
+
+### 3. Backlog — Tactical On-Map Tools
+
+Macro-backlog (idee, non implementazioni garantite):
+
+| Voce | Note |
+|------|------|
+| **Range Rings** | Candidato operativo futuro dopo piano tecnico. |
+| **Range Fans** | Idem. |
+| **Lasso Multi-Select** | Idem. |
+| **Range & Bearing persistente** | Richiede cautela: sensoristica / live GPS / `watchPosition` / sicurezza — **nessun live GPS** senza decisione esplicita. |
+| **Geofence** | Idem (geofencing può implicare tracking o automazioni sensibili). |
+| **Routes con ETA** | Estensione futura plausibile della sezione **Track** / pianificazione. |
+| **Bloodhound / intercept geometry** | Strumenti avanzati: solo con modello **manuale / advisory**; niente automazioni operative o «targeting» implicito. |
+| **Mappe Offline: selezione poligonale per download tile** | Backlog **importante** e **additivo** rispetto a bbox/viewport attuali. |
+
+**Nota trasversale:** niente **live GPS** / `watchPosition` senza decisione esplicita dell’utente; strumenti da progettare come **overlay / analisi manuale** e **advisory**, non automazioni tattiche opache.
+
+### 4. Backlog — Cartografia avanzata & Geo-analisi
+
+**A) Backlog operativo plausibile** (dopo pianificazione): KML **GroundOverlay**; **GRG** (Gridded Reference Graphic); **DEM locale** / import **HGT**; **cursor-on-elevation**; **elevation profile**; **viewshed 2D** da DEM locale; **WMS/WMTS** opt-in e OPSEC-aware.
+
+**B) Feasibility prima di implementazione:** **MBTiles** (es. `sql.js` / SQLite / WASM inline nel monolite — impatto size/audit); **GeoPackage**; **GeoTIFF** (es. `geotiff.js` vendored); DEM «downloader» online (conflitto potenziale con OPSEC); WMS/WMTS client complessi; **Web Worker inline** per viewshed pesante.
+
+**C) Backlog strategico non attivo:** **3D Map** / terrain mesh / stack tipo **MapLibre GL** — attualmente **fuori scope operativo** della roadmap corrente; rivalutabile solo con **modifica strategica approvata** (roadmap + rules).
+
+### 5. Backlog — Interoperabilità TAK / CoT / Mission Package
+
+**Priorità alta (direzione suggerita):**
+
+- **CoT XML** import/export **file-only**, **senza rete** — formato pivot ad alto ROI per interoperabilità offline con ecosistema TAK tramite **scambio file**.
+- **Mission Package** (ZIP + `MANIFEST.xml`) import/export **dopo** CoT, sempre in logica file-first.
+
+**Esplicitamente fuori scope fino a decisione strategica:** partecipazione TAK **live**, TAK Server, BFT live nel «Core» senza approvazione.
+
+### 6. Backlog — Report e template operativi
+
+Registrare come backlog: **9-Line CASEVAC**; **9-Line CAS**; **SALUTE**; **SALT**; **Drop Point**; eventuali altri report con classificazione / export coerenti con la funzione **print/report** già esistente nell’app.
+
+### 7. Backlog — Simbologia e attributi tattici
+
+- **Affiliation** colorata per waypoint/tracce: friend / hostile / neutral / unknown.
+- Subset **MIL-STD-2525** / **APP-6**.
+- Valutare **`milsymbol.js`** solo come **feasibility** (libreria inline/vendored: impatto **size** e **audit**).
+- Mantenere i **preset NATO** già presenti in app come base.
+
+### 8. Backlog — Sicurezza locale
+
+- **Cifratura locale opzionale** (Web Crypto).
+- Modalità **«mil»** o protezione dati locali: da valutare.
+- **Encryption-at-rest** completa: **feasibility**, non implementazione immediata obbligatoria.
+
+### 9. Strategia proposta — Core / Field / Net (solo proposta)
+
+Da intendere come **modello strategico da valutare**, **non** come roadmap già modificata.
+
+| Strato | Contenuto proposto |
+|--------|-------------------|
+| **GOI GIS Core** | Single-file HTML; offline-first; pianificazione; conversione coordinate; mappe offline; waypoint/tracce; **CoT file-only**; tactical tools; report; DEM locale. |
+| **GOI GIS Field** | Estensione futura **opzionale**: PWA eventuale; Web Serial / Web Bluetooth; GPS esterni; LRF; compass/device orientation; LoRa/Meshtastic eventuale. |
+| **GOI GIS Net** | Estensione futura **non-Core**: bridge locale; TAK Server; CoT live; BFT; GeoChat; WebSocket locale. |
+
+**Nota:** **Field** e **Net** non devono entrare nel **Core** senza decisione esplicita dell’utente.
+
+### 10. Proposte future da approvare dall’utente
+
+*(Solo elenco — **nessuna** modifica applicata a roadmap o rules in questo blocco.)*
+
+- **Roadmap (`docs/roadmap.md`):** valutare se documentare ufficialmente il modello **Core / Field / Net** e i confini tra strati.
+- **Rules (`.cursor/rules/*.mdc`):** chiarire che **backlog ≠** GitHub issue / commit automatico / modifica roadmap o rules senza approvazione.
+- **Rules:** esplicitare che **Field/Net** non entrano nel Core senza approvazione.
+- **Rules:** ribadire che **live GPS** / `watchPosition` non si reintroducono senza decisione esplicita.
+
+### Sintesi rischi / priorità
+
+- Sono **idee e backlog**: molte richiedono **feasibility** o **cambiamento roadmap/rules** prima di diventare operative nel monolite.
+- **3D** e **Net/Bridge/live** restano **strategici / non attivi** nel Core fino a nuova decisione.
+- **CoT XML file-only** resta il candidato **ad alto ROI** per interoperabilità **offline** e allineamento TAK via file.
+
+### File toccati (questo checkpoint documentale)
+
+- `docs/session-geolocalizzazione-e-mappa.md` (questa sezione)
+- `docs/checkpoint.md` (indice breve)
+- `docs/PROJECT_notes.md` (sintesi backlog)
+
+
+## Checkpoint 2026-04-28 — Chiusura sessione (Finito)
+
+### Contesto
+
+Chiusura sessione su richiesta utente **«Finito»** (workflow progetto): consolidamento in repository delle modifiche già presenti sul working tree e aggiornamento di questa cronaca + `docs/checkpoint.md`.
+
+### Cosa entra in commit (sintesi)
+
+1. **`coordinate_converter Claude.html`** — evoluzioni UI **Mappe Offline / Layers** e tabella **Aree offline salvate** (pannello più grande coerente con altre modal, scroll lista, colonne ridimensionabili, azioni riga); **X delete per-riga** (`[data-offline-del]` in `.offa-actions`) allineata visivamente al pattern **Waypoint** (`#waypointModal … [data-role="wp-del"]`) con stack effettivo (padding `5px 6px`, `min-width:2.25em`, colori/bordi con `!important` dove serve, `min-height:calc(1.2em + 10px)` per anti-compressione verticale). Logiche download/cache/delta, dialog tre scelte, `data-offline-del`, `#btnBboxPick`, `#btnPrecacheStart` non oggetto di refactor funzionale in questa chiusura.
+
+2. **`docs/`** — già registrati: **backlog strategico** (Tactical tools, cartografia, TAK/CoT, report, simbologia, sicurezza, proposta Core/Field/Net), **convenzione «mettilo nel backlog»**, sintesi in `docs/PROJECT_notes.md`.
+
+3. **Piano non committato:** il piano tecnico *Impostazioni → Cancella tutti i dati locali* (reset totale vs *Svuota cache tile*, dialog `CANCELLA`, `clearStore` + IDB + `reload`) resta **solo analisi/plan** in chat/Cursor Plan — **nessuna** implementazione in questo commit.
+
+### File toccati da questa append
+
+- `docs/session-geolocalizzazione-e-mappa.md` (questa sezione)
+- `docs/checkpoint.md` (riga «Ultimo cambio» aggiornata in coppia con `Finito`)
 

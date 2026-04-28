@@ -120,6 +120,24 @@ Da **`docs/session-geolocalizzazione-e-mappa.md`** (elenchi con checkbox):
 Da **`docs/checkpoint.md`**
 
 - Suggerimento operativo: aggiornare `checkpoint.md` a fine sessione o append in `session-geolocalizzazione-e-mappa.md` per checkpoint lunghi; trigger formale **«Checkpoint md»** in chat aggiorna **entrambi** i file (come da `00-project-core.mdc`).
+- **2026-04-28 — Convenzione backlog:** «mettilo nel backlog» = registrare in doc di progetto quando richiesto; **non** = issue GitHub, commit/push automatici, né modifica `roadmap`/`rules` senza approvazione esplicita. Sintesi in `docs/PROJECT_notes.md` §*Backlog strategico*; dettaglio in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-28 — Backlog strategico*.
+
+### Backlog strategico emerso / direzioni future (2026-04-28)
+
+Sintesi **non esaustiva** (il dettaglio è nella sessione lunga). Tutto quanto segue è **idea/backlog**, non feature già implementate salvo dove si dice esplicitamente «stato validato UI».
+
+| Area | Contenuto registrato |
+|------|----------------------|
+| **Prossimo blocco consigliato** | **Impostazioni → Cancella tutti i dati locali** (reset forte: localStorage app, IndexedDB, waypoint, tracce, favoriti, cronologia, aree offline, preferenze/layout) — distinto da *Svuota tutta la cache tile*. |
+| **Priorità alta** | **CoT XML** import/export **file-only**, senza rete; poi **Mission Package** ZIP + manifest. |
+| **Tactical on-map** | Range rings/fans, lasso, R&B persistente, geofence, routes+ETA, bloodhound, selezione poligonale tile offline — con vincoli OPSEC / niente live GPS senza decisione. |
+| **Cartografia / geo-analisi** | GroundOverlay, GRG, DEM/HGT, profilo quota, viewshed 2D, WMS/WMTS opt-in; feasibility per MBTiles, GeoPackage, GeoTIFF, worker; **3D** strategico non attivo. |
+| **Report** | 9-line CASEVAC/CAS, SALUTE, SALT, drop point, ecc. |
+| **Simbologia** | Affiliation friend/hostile/neutral/unknown; subset 2525/APP-6; valutazione `milsymbol.js` solo feasibility. |
+| **Sicurezza locale** | Web Crypto opzionale, modalità «mil», encryption-at-rest come feasibility. |
+| **Core / Field / Net** | **Solo proposta strategica** (Core = monolite offline-first + CoT file + tool + report + DEM locale; Field = sensori/PWA/serial; Net = bridge/live) — **non** decisione di roadmap; **Field/Net** non entrano nel Core senza approvazione. |
+
+**Modifiche a `docs/roadmap.md` o `.cursor/rules/*.mdc`:** solo dopo **proposta esplicita** e **ok utente** (in questa sessione docs sono state aggiunte solo *proposte future* in coda al checkpoint sessione).
 
 Da **sessione — limiti noti** (non sono TODO nel codice ma vincoli noti)
 
@@ -167,4 +185,4 @@ _(nessun item attualmente aperto su waypoint — vedi §9 "COSE FATTE")_
 
 ---
 
-*Ultimo allineamento contenuti: basato su snapshot repository alla data indicata in `docs/checkpoint.md` (**2026-04-23**) e su `wc -l` del file HTML.*
+*Ultimo allineamento contenuti: 2026-04-28 — snapshot da `docs/checkpoint.md`; righe monolite non aggiornate automaticamente (usare `wc -l` sul file HTML se serve precisione). Backlog strategico: vedi la sottosezione «Backlog strategico emerso / direzioni future» sopra e `docs/session-geolocalizzazione-e-mappa.md` (Checkpoint 2026-04-28 — Backlog strategico).*
