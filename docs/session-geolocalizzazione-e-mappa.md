@@ -1816,3 +1816,78 @@ Sessione su richiesta utente: **10 blocchi** UI/UX sul solo `coordinate_converte
 
 - Riepilogo sessione utente: `/tmp/17-goi-gis-riepilogo.md` (non versionato in repo).
 
+## Checkpoint 2026-04-28 — Post-pack 17 UI/UX controllata
+
+### Contesto
+
+Prosecuzione dal commit `72aed86` e dal riepilogo `/tmp/17-goi-gis-riepilogo.md`, su richiesta utente **MEGA-PATCH UI/UX controllata — pacchetto lungo post-17**. Ambito deliberatamente limitato al monolite `coordinate_converter Claude.html`; nessuna nuova dipendenza, nessun refactor architetturale, nessuna modifica a CRS/datum, geocoding remoto, OPSEC strict, IndexedDB/cache tile/download core, parser/builder export, `#btnBboxViewport`, `.danger-x` o logica core bbox.
+
+### Cosa è cambiato
+
+1. **Stabilizzazione patch 17**
+   - Verificati come presenti: `#btnBboxPick` nascosto, `.offline-area-tip-portal`, rename con conferma, resize colonna Nome Mappe Offline, X floating neutre, assenza di `padding-top: 46px` su `#layersPanelBody.app-modal-body`.
+   - Aggiunta piccola robustezza accessibilità/interaction: `#btnBboxPick[hidden]` con `pointer-events:none`; `hidden`, `aria-hidden="true"` e `tabindex="-1"` restano invariati.
+
+2. **Rename inline — tastiera e stile**
+   - Aggiunta `ensureGisInlineRenameKeyboardHooks()`:
+     - **Enter** su input rename esegue `blur()` e lascia al flusso `change` esistente la conferma/salvataggio.
+     - **Esc** ripristina il valore precedente (`dataset._prevOffaName`, `_prevSavedName`, `_prevWpName`, `_prevFavName`), fa `preventDefault()` / `stopPropagation()` e impedisce chiusure accidentali di pannelli GIS mentre l’utente annulla un rename.
+   - Uniformato lo stile dei rename input: `.offa-name-inp`, `.saved-name-inp`, `.wp-modal-table .wp-row-name-inp`, `.favorite-item .fav-name-inp`, mantenendo gli override locali già utili per Favoriti e Waypoint modal.
+
+3. **Resize colonna Nome — estensione controllata**
+   - Mappe Offline: clamp allineato a 72px minimi e ripristino sessione limitato (`72…560` px).
+   - Tracce salvate: `colgroup`, variabile CSS `--saved-name-col`, handle `.saved-name-col-resize`, helper `ensureSavedTracksNameColResizeWired()`; larghezza in sessione su `#savedTracksMount._savedTracksNameColPx`, nessun localStorage.
+   - Waypoint: `colgroup`, variabile CSS `--wp-name-col`, handle `.wp-name-col-resize`, helper `ensureWpModalNameColResizeWired()`; larghezza in sessione su `#wp-list._wpNameColPx`, nessun localStorage.
+   - Gli handle sono desktop-oriented e vengono nascosti su `(pointer:coarse)`; hanno `role="separator"`, `aria-orientation="vertical"` e aria-label localizzata.
+
+4. **Ripristino layout pannelli**
+   - Aggiunto nel menu impostazioni header il comando **Ripristina layout pannelli** (`#btnResetGisUiLayout`).
+   - Nuova funzione `resetGisUiLayoutPanels()`:
+     - chiede conferma;
+     - rimuove solo `coordconv_ui_v1`;
+     - resetta `gPanelLayouts` per `track`, `waypoint`, `convert`, `search`, `favorites`, `layers`;
+     - azzera le larghezze colonne Nome session-only;
+     - riapplica i layout ai pannelli aperti e re-renderizza liste offline/tracce/waypoint.
+   - Non cancella dati operativi: tracce, waypoint, favoriti, aree offline, tile cache, cronologia, impostazioni OPSEC o contenuto `coordconv_v2`.
+
+5. **i18n / a11y**
+   - Nuove chiavi IT/EN/FR:
+     - `settings.resetLayout`
+     - `settings.resetLayoutConfirm`
+     - `settings.resetLayoutTip`
+     - `offcache.colResizeAria`
+     - `track.colResizeAria`
+     - `waypoint.colResizeAria`
+   - Aggiunti aria-label sugli input nome tracce salvate dove mancava e sugli handle resize.
+
+### Blocchi saltati / backlog motivato
+
+1. **Colore/spessore traccia salvata** — saltato per rischio: l’overlay salvate usa ancora `savedTrackStrokeColor(id)`; rendere persistenti colore/spessore richiede toccare modello savedTracks, `saveStore`, editor e render overlay, quindi serve piano dedicato.
+2. **KMZ/KML naming profondo** — non modificato: helper import tracce (`spatialSanitizeImportedTrackLabel`, `spatialBaseNameNoExt`, `spatialDeriveImportedTrackPromptName`, `state._trackPromptName`) risultano coerenti; fallback basename KMZ richiede validazione più mirata del flusso interno.
+3. **Factory reset globale dati** — non implementato: un futuro reset dovrebbe distinguere nettamente layout/preferenze UI da dati operativi e non cancellare tile IndexedDB, OPSEC, tracce, waypoint, favoriti, aree offline o cronologia senza consenso esplicito e separato.
+
+### Inventario persistenza UI
+
+| Ambito | Persistenza |
+|--------|-------------|
+| Pannelli GIS (`track`, `waypoint`, `convert`, `search`, `favorites`, `layers`) | `coordconv_ui_v1` + `gPanelLayouts` (`left/top/w/h/touched`) |
+| Larghezze Nome offline / tracce / waypoint | Solo sessione su mount DOM (`_offaNameColPx`, `_savedTracksNameColPx`, `_wpNameColPx`) |
+| Ordinamento tracce salvate | `state._savedTracksSort` transient |
+| Tema, lingua, OPSEC, dati operativi | `coordconv_v2` |
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`
+- `docs/session-geolocalizzazione-e-mappa.md`
+
+### QA
+
+- `git diff --check -- "coordinate_converter Claude.html"`: OK.
+- JS inline estratto in `/tmp/gis-inline-check.js` + `node --check`: OK.
+- Da validare in browser: drag resize tracce/waypoint, Esc durante rename, reset layout con pannelli aperti, menu basemap su viewport stretto.
+
+### Riferimento operativo
+
+- Riepilogo sessione utente: `/tmp/18-goi-gis-riepilogo.md` (non versionato in repo).
+

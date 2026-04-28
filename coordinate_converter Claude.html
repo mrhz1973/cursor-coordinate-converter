@@ -1171,6 +1171,9 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 }
 .offcache-bbox-actions #btnBboxViewport .offcache-bbox-vp-svg{ display:block; }
 /* Icona «seleziona bbox»: rettangolo tratteggiato (stesso schema di #btnBboxViewport). */
+.offcache-bbox-actions #btnBboxPick[hidden]{
+  pointer-events:none;
+}
 .offcache-bbox-actions #btnBboxPick{
   display:inline-flex;
   align-items:center;
@@ -1190,13 +1193,15 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   font-size:.78rem;
   --offa-name-col:160px;
 }
-.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:80px; }
+.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:72px; }
 .offline-areas-table .offa-th-name{
   position:relative;
   padding-right:12px;
   vertical-align:bottom;
 }
-.offline-areas-table .offa-name-col-resize{
+.offline-areas-table .offa-name-col-resize,
+.saved-tracks-table .saved-name-col-resize,
+.wp-modal-table .wp-name-col-resize{
   position:absolute;
   top:0;
   right:0;
@@ -1208,11 +1213,15 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   touch-action:none;
   border-radius:4px;
 }
-.offline-areas-table .offa-name-col-resize:hover{
+.offline-areas-table .offa-name-col-resize:hover,
+.saved-tracks-table .saved-name-col-resize:hover,
+.wp-modal-table .wp-name-col-resize:hover{
   background:color-mix(in srgb, var(--accent) 22%, transparent);
 }
 @media (hover:none) and (pointer:coarse){
-  .offline-areas-table .offa-name-col-resize{ display:none; }
+  .offline-areas-table .offa-name-col-resize,
+  .saved-tracks-table .saved-name-col-resize,
+  .wp-modal-table .wp-name-col-resize{ display:none; }
 }
 .offline-areas-table th, .offline-areas-table td{
   padding:6px 8px;
@@ -1237,24 +1246,34 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   position:relative;
   z-index:4;
 }
-.offline-areas-table .offa-name-inp{
+/* GIS: campi rename inline coerenti (tracce / offline / waypoint / favoriti) */
+.offa-name-inp,
+.saved-tracks-table .saved-name-inp,
+.wp-modal-table .wp-row-name-inp,
+.favorite-item .fav-name-inp{
   width:100%;
   max-width:100%;
   box-sizing:border-box;
   font:inherit;
   font-weight:700;
   color:var(--text);
-  padding:4px 6px;
+  padding:4px 8px;
   border-radius:6px;
   border:1px solid var(--border);
   background:var(--panel);
+  min-width:0;
+}
+.offa-name-inp:focus,
+.saved-tracks-table .saved-name-inp:focus,
+.wp-modal-table .wp-row-name-inp:focus,
+.favorite-item .fav-name-inp:focus{
+  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset:1px;
+}
+.offline-areas-table .offa-name-inp{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-}
-.offline-areas-table .offa-name-inp:focus{
-  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset:1px;
 }
 /* Tooltip sotto i bottoni azione: evita copertura da thead sticky e da righe sopra. */
 .offline-areas-list .offa-actions [data-tip]:hover::after,
@@ -3881,22 +3900,8 @@ html[data-theme="light"] .tools-drawer-head .drawer-close:focus-visible{
   min-width:0;
 }
 .favorite-item .fav-name-inp{
-  width:100%;
-  max-width:100%;
-  box-sizing:border-box;
-  min-width:0;
-  font:inherit;
-  font-weight:700;
   font-size:.95rem;
-  color:var(--text);
-  padding:4px 8px;
   border-radius:8px;
-  border:1px solid var(--border);
-  background:var(--panel);
-}
-.favorite-item .fav-name-inp:focus{
-  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset:1px;
 }
 .favorite-item .fav-coords{
   color:var(--muted); font-size:.82rem;
@@ -5657,12 +5662,22 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-radio-inline{ display:inline-flex; align-items:center; gap:4px; cursor:pointer; }
 .wp-radio-inline input{ accent-color:var(--accent); }
 .wp-modal-table-wrap{ overflow:auto; max-height:min(36vh, 320px); margin-top:6px; border:1px solid var(--border); border-radius:10px; }
-.wp-modal-table{ width:100%; border-collapse:collapse; font-size:.8rem; }
+.wp-modal-table{
+  width:100%; border-collapse:collapse; font-size:.8rem;
+  --wp-name-col:112px;
+}
+.wp-modal-table col.wp-col-name{ width:var(--wp-name-col); min-width:72px; }
+.wp-modal-table .wp-th-name{
+  position:relative;
+  padding-right:12px;
+  min-width:100px;
+}
+.wp-modal-table .wp-th-name-lbl{ padding-right:2px; }
 .wp-modal-table th, .wp-modal-table td{ padding:6px 8px; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
 .wp-modal-table th{ position:sticky; top:0; background:var(--panel2); z-index:1; color:var(--muted); font-weight:600; }
 .wp-modal-table tr[data-wp-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
 .wp-modal-table tr[data-wp-row].is-editing td{ background:color-mix(in srgb, var(--accent) 8%, var(--panel)); }
-.wp-modal-table .wp-row-name-inp{ width:100%; max-width:140px; font:inherit; padding:3px 6px; border-radius:6px; border:1px solid var(--border); background:var(--panel); }
+.wp-modal-table .wp-row-name-inp{ max-width:100%; }
 .wpt-ctx-menu{
   position:fixed; z-index:20000; display:flex; flex-direction:column; gap:4px; padding:6px;
   background:var(--panel); border:1px solid var(--border); border-radius:10px;
@@ -5993,7 +6008,16 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   max-height:min(38vh, 320px);
   overflow:auto;
 }
-.saved-tracks-table{ width:100%; border-collapse:collapse; font-size:.82rem; }
+.saved-tracks-table{
+  width:100%; border-collapse:collapse; font-size:.82rem;
+  --saved-name-col:140px;
+}
+.saved-tracks-table col.saved-col-name{ width:var(--saved-name-col); min-width:72px; }
+.saved-tracks-table .saved-th-name{
+  position:relative;
+  padding-right:12px;
+  vertical-align:bottom;
+}
 .saved-tracks-table th, .saved-tracks-table td{
   padding:6px 8px; border-bottom:1px solid var(--border); vertical-align:middle;
 }
@@ -6093,8 +6117,7 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   background:color-mix(in srgb, var(--muted) 55%, var(--panel2) 45%);
 }
 .saved-tracks-table .saved-name-inp{
-  width:100%; max-width:160px; font:inherit; padding:4px 6px; border-radius:8px;
-  border:1px solid var(--border); background:var(--panel);
+  max-width:100%;
 }
 .saved-tracks-table .btn-saved-fly{ padding:3px 8px; font-size:.78rem; }
 .track-saved-toolbar{ margin-top:8px; }
@@ -6368,6 +6391,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                   </select>
                   <span class="hdr-chip-chev" aria-hidden="true">▾</span>
                 </label>
+              </div>
+              <div class="hdr-settings-row hdr-settings-row-resetlayout">
+                <button type="button" id="btnResetGisUiLayout" class="hdr-settings-help-btn"
+                        data-i18n-tip="settings.resetLayoutTip" data-i18n-aria="settings.resetLayout">
+                  <span class="hdr-settings-help-ico" aria-hidden="true">↺</span>
+                  <span data-i18n="settings.resetLayout">Ripristina layout pannelli</span>
+                </button>
               </div>
               <div class="hdr-settings-row hdr-settings-row-help">
                 <button id="btnHelp" class="hdr-settings-help-btn" type="button"
@@ -7690,6 +7720,9 @@ const I18N = {
     "settings.title":"Impostazioni",
     "settings.lang":"Lingua",
     "settings.theme":"Tema",
+    "settings.resetLayout":"Ripristina layout pannelli",
+    "settings.resetLayoutConfirm":"Ripristinare posizioni e dimensioni dei pannelli GIS e le larghezze colonne della sessione? Tracce, waypoint, favoriti, aree offline, tile e cronologia non vengono cancellati.",
+    "settings.resetLayoutTip":"Ripristina dimensioni/posizioni finestre (persistite) e larghezze colonne Nome (solo sessione)",
     "settings.themeAria":"Chiaro, scuro o automatico (orario locale)",
     "theme.optLight":"Chiaro",
     "theme.optDark":"Scuro",
@@ -7834,6 +7867,7 @@ const I18N = {
     "waypointModal.bulkDeletedOk":"Eliminati {0} waypoint.",
     "waypointModal.listColName":"Nome",
     "waypoint.renameConfirm":"Salvare il nuovo nome del waypoint?",
+    "waypoint.colResizeAria":"Ridimensiona colonna Nome",
     "waypointModal.listColDetails":"Dettagli",
     "waypointModal.listColActions":"Azioni",
     "waypointModal.editor.newTitle":"Nuovo waypoint",
@@ -7917,6 +7951,7 @@ const I18N = {
     "track.savedOk":"Traccia salvata: {0}",
     "track.savedEmpty":"Nessuna traccia salvata.",
     "track.renameConfirm":"Salvare il nuovo nome della traccia?",
+    "track.colResizeAria":"Ridimensiona colonna Nome",
     "track.deletedLastOk":"Ultima traccia salvata eliminata.",
     "track.deletedN":"Eliminate {0} tracce.",
     "track.confirmDeleteSavedOne":"Eliminare questa traccia salvata? L'operazione non si può annullare.",
@@ -8147,6 +8182,7 @@ const I18N = {
     "offcache.area.visAriaOn":"Visibile sulla mappa",
     "offcache.area.visAriaOff":"Nascosta dalla mappa",
     "offcache.list.colName":"Nome",
+    "offcache.colResizeAria":"Ridimensiona colonna Nome",
     "offcache.list.colStatus":"Stato",
     "offcache.list.colWhen":"Data",
     "offcache.list.colZoom":"Zoom",
@@ -8639,6 +8675,9 @@ const I18N = {
     "settings.title":"Settings",
     "settings.lang":"Language",
     "settings.theme":"Theme",
+    "settings.resetLayout":"Reset panel layout",
+    "settings.resetLayoutConfirm":"Restore GIS panel positions/sizes and session column widths? Tracks, waypoints, favorites, offline areas, tiles, and history will not be deleted.",
+    "settings.resetLayoutTip":"Restore window sizes/positions (persisted) and Name column widths (session only)",
     "settings.themeAria":"Light, dark, or automatic (local time)",
     "theme.optLight":"Light",
     "theme.optDark":"Dark",
@@ -8783,6 +8822,7 @@ const I18N = {
     "waypointModal.bulkDeletedOk":"Deleted {0} waypoints.",
     "waypointModal.listColName":"Name",
     "waypoint.renameConfirm":"Save the new waypoint name?",
+    "waypoint.colResizeAria":"Resize Name column",
     "waypointModal.listColDetails":"Details",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"New waypoint",
@@ -8866,6 +8906,7 @@ const I18N = {
     "track.savedOk":"Track saved: {0}",
     "track.savedEmpty":"No saved tracks yet.",
     "track.renameConfirm":"Save the new track name?",
+    "track.colResizeAria":"Resize Name column",
     "track.deletedLastOk":"Last saved track removed.",
     "track.deletedN":"Deleted {0} tracks.",
     "track.confirmDeleteSavedOne":"Delete this saved track? This cannot be undone.",
@@ -9095,6 +9136,7 @@ const I18N = {
     "offcache.area.visAriaOn":"Visible on the map",
     "offcache.area.visAriaOff":"Hidden from the map",
     "offcache.list.colName":"Name",
+    "offcache.colResizeAria":"Resize Name column",
     "offcache.list.colStatus":"Status",
     "offcache.list.colWhen":"Date",
     "offcache.list.colZoom":"Zoom",
@@ -9588,6 +9630,9 @@ const I18N = {
     "settings.title":"Paramètres",
     "settings.lang":"Langue",
     "settings.theme":"Thème",
+    "settings.resetLayout":"Réinitialiser la disposition des panneaux",
+    "settings.resetLayoutConfirm":"Rétablir positions/tailles des panneaux SIG et largeurs de colonnes de session ? Traces, waypoints, favoris, zones hors ligne, tuiles et historique ne seront pas supprimés.",
+    "settings.resetLayoutTip":"Rétablit tailles/positions des fenêtres (persistées) et largeurs colonne Nom (session)",
     "settings.themeAria":"Clair, sombre ou automatique (heure locale)",
     "theme.optLight":"Clair",
     "theme.optDark":"Sombre",
@@ -9732,6 +9777,7 @@ const I18N = {
     "waypointModal.bulkDeletedOk":"{0} waypoints supprimés.",
     "waypointModal.listColName":"Nom",
     "waypoint.renameConfirm":"Enregistrer le nouveau nom du waypoint ?",
+    "waypoint.colResizeAria":"Redimensionner la colonne Nom",
     "waypointModal.listColDetails":"Détails",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"Nouveau waypoint",
@@ -9815,6 +9861,7 @@ const I18N = {
     "track.savedOk":"Trace enregistrée : {0}",
     "track.savedEmpty":"Aucune trace enregistrée.",
     "track.renameConfirm":"Enregistrer le nouveau nom de la trace ?",
+    "track.colResizeAria":"Redimensionner la colonne Nom",
     "track.deletedLastOk":"Dernière trace enregistrée supprimée.",
     "track.deletedN":"{0} traces supprimées.",
     "track.confirmDeleteSavedOne":"Supprimer cette trace enregistrée ? Cette action est irréversible.",
@@ -10044,6 +10091,7 @@ const I18N = {
     "offcache.area.visAriaOn":"Visible sur la carte",
     "offcache.area.visAriaOff":"Masquée sur la carte",
     "offcache.list.colName":"Nom",
+    "offcache.colResizeAria":"Redimensionner la colonne Nom",
     "offcache.list.colStatus":"Statut",
     "offcache.list.colWhen":"Date",
     "offcache.list.colZoom":"Zoom",
@@ -11354,6 +11402,46 @@ function scheduleSaveUiState(delayMs){
     _uiSaveDebounceTimer = null;
     saveUiState();
   }, ms);
+}
+
+/** Ripristina solo layout UI (pannelli GIS + larghezze colonne Nome in sessione). Nessun dato operativo. */
+function resetGisUiLayoutPanels(){
+  const q = (typeof t === "function") ? (t("settings.resetLayoutConfirm") || "") : "";
+  if (typeof window.confirm === "function" && q && !window.confirm(q)) return;
+  try { localStorage.removeItem(UI_STORAGE_KEY); } catch(_){}
+  if (typeof gPanelLayouts === "object" && gPanelLayouts){
+    for (const k of UI_PANEL_KEYS){
+      try { delete gPanelLayouts[k]; } catch(_){}
+    }
+  }
+  try {
+    const list = document.getElementById("offlineAreasList");
+    if (list) delete list._offaNameColPx;
+    const stm = document.getElementById("savedTracksMount");
+    if (stm) delete stm._savedTracksNameColPx;
+    const wpl = document.getElementById("wp-list");
+    if (wpl) delete wpl._wpNameColPx;
+  } catch(_){}
+  const map = {
+    track: "trackModal",
+    waypoint: "waypointModal",
+    convert: "convertModal",
+    search: "searchPanel",
+    favorites: "favoritesPanel",
+    layers: "layersPanel"
+  };
+  for (const [k, id] of Object.entries(map)){
+    const el = document.getElementById(id);
+    if (!el || !el.open) continue;
+    try {
+      const opts = _uiPanelLayoutOptsForKey(k);
+      if (typeof gisPanelApplyLayout === "function") gisPanelApplyLayout(el, opts);
+    } catch(_){}
+  }
+  try { saveUiState(); } catch(_){}
+  try { renderOfflineAreasList(); } catch(_){}
+  try { renderSavedTracksList(); } catch(_){}
+  try { renderWpModalList(); } catch(_){}
 }
 
 function applyUiState(){
@@ -15190,6 +15278,16 @@ function bindHeaderSettingsMenu(){
     if (btn.contains(t) || menu.contains(t)) return;
     closeHeaderSettingsMenu();
   }, true);
+  const resetLay = document.getElementById("btnResetGisUiLayout");
+  if (resetLay && !resetLay._gisResetLayoutBound){
+    resetLay._gisResetLayoutBound = true;
+    resetLay.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      if (typeof resetGisUiLayoutPanels === "function") resetGisUiLayoutPanels();
+      closeHeaderSettingsMenu();
+    });
+  }
 }
 
 function openHelp(){
@@ -15204,6 +15302,7 @@ function isTypingInField(){
   return tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable;
 }
 function bindHotkeys(){
+  try { ensureGisInlineRenameKeyboardHooks(); } catch(_){}
   document.addEventListener("keydown", (ev) => {
     // Esc: priority to closing modal; otherwise blur/clear
     if (ev.key === "Escape"){
@@ -19401,9 +19500,18 @@ function savedTracksSortHeaderHtml(colKey, i18nKey, opts){
   const rawTip = (typeof t === "function") ? (t("tip.savedTracksSortCol") || "") : "";
   const tipPlain = rawTip ? String(rawTip).replace(/\{0\}/g, labelPlain) : labelPlain;
   const tipEsc = esc(tipPlain);
-  const cls = opts.visHead ? " class=\"saved-tracks-vis-head\"" : "";
+  const clsParts = [];
+  if (opts.visHead) clsParts.push("saved-tracks-vis-head");
+  if (opts.thClass) clsParts.push(String(opts.thClass));
+  const cls = clsParts.length ? ` class="${esc(clsParts.join(" "))}"` : "";
   const st = opts.thStyle ? ` style="${esc(opts.thStyle)}"` : "";
-  return `<th${cls}${st}><button type="button" class="saved-tracks-sort-btn" data-saved-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="saved-tracks-sort-mark" aria-hidden="true">${mark}</span></button></th>`;
+  let resizeTail = "";
+  if (opts.resizeHandle){
+    const ra = (typeof t === "function") ? (t("track.colResizeAria") || "") : "";
+    const raEsc = esc(ra || "");
+    resizeTail = `<span class="saved-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
+  }
+  return `<th${cls}${st}><button type="button" class="saved-tracks-sort-btn" data-saved-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="saved-tracks-sort-mark" aria-hidden="true">${mark}</span></button>${resizeTail}</th>`;
 }
 
 /** O2: localized status chip label for a saved offline named area. */
@@ -19593,7 +19701,7 @@ function renderOfflineAreasList(){
   </colgroup><thead><tr>
     <th class="offa-selcell"><input type="checkbox" id="offaSelectAll" data-i18n-tip="offcache.sel.selectAll" data-tip="${esc(t("offcache.sel.selectAll"))}" data-i18n-aria="offcache.sel.selectAll"></th>
     <th class="offa-viscell"><button type="button" class="offa-sort-btn" data-offa-sort="vis" data-i18n-tip="offcache.sort.vis" data-tip="${esc(t("offcache.sort.vis"))}">${esc(t("offcache.list.colVis"))}${sortMark("vis")}</button></th>
-    <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button><span class="offa-name-col-resize" aria-hidden="true"></span></th>
+    <th class="offa-th-name"><button type="button" class="offa-sort-btn" data-offa-sort="name" data-i18n-tip="offcache.sort.name" data-tip="${esc(t("offcache.sort.name"))}">${esc(t("offcache.list.colName"))}${sortMark("name")}</button><span class="offa-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${esc(t("offcache.colResizeAria"))}" title="${esc(t("offcache.colResizeAria"))}"></span></th>
     <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="status" data-i18n-tip="offcache.sort.status" data-tip="${esc(t("offcache.sort.status"))}">${esc(t("offcache.list.colStatus"))}${sortMark("status")}</button></th>
     <th style="width:120px"><button type="button" class="offa-sort-btn" data-offa-sort="when" data-i18n-tip="offcache.sort.when" data-tip="${esc(t("offcache.sort.when"))}">${esc(t("offcache.list.colWhen"))}${sortMark("when")}</button></th>
     <th style="width:90px"><button type="button" class="offa-sort-btn" data-offa-sort="zoom" data-i18n-tip="offcache.sort.zoom" data-tip="${esc(t("offcache.sort.zoom"))}">${esc(t("offcache.list.colZoom"))}${sortMark("zoom")}</button></th>
@@ -19647,7 +19755,8 @@ function renderOfflineAreasList(){
   try {
     const tbl = list.querySelector(".offline-areas-table");
     if (tbl && Number.isFinite(list._offaNameColPx)){
-      tbl.style.setProperty("--offa-name-col", list._offaNameColPx + "px");
+      const px = Math.max(72, Math.min(560, list._offaNameColPx));
+      tbl.style.setProperty("--offa-name-col", px + "px");
     }
   } catch(_){}
   // Update select-all checkbox state (checked/indeterminate) and toolbar.
@@ -19682,7 +19791,7 @@ function ensureOfflineAreasNameColResizeWired(){
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const nw = Math.max(80, Math.min(drag.maxW, Math.round(drag.startW + dx)));
+    const nw = Math.max(72, Math.min(drag.maxW, Math.round(drag.startW + dx)));
     drag.table.style.setProperty("--offa-name-col", nw + "px");
     const list = document.getElementById("offlineAreasList");
     if (list) list._offaNameColPx = nw;
@@ -19708,6 +19817,123 @@ function ensureOfflineAreasNameColResizeWired(){
     document.addEventListener("pointermove", onMove);
     document.addEventListener("pointerup", endDrag);
     document.addEventListener("pointercancel", endDrag);
+  }, true);
+}
+
+/** Desktop: colonna Nome in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
+function ensureSavedTracksNameColResizeWired(){
+  if (window._savedTracksNameColResizeWired) return;
+  window._savedTracksNameColResizeWired = true;
+  let drag = null;
+  function endDrag(){
+    drag = null;
+    try {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
+    } catch(_){}
+  }
+  function onMove(ev){
+    if (!drag) return;
+    const dx = ev.clientX - drag.startX;
+    const maxW = Math.min(560, drag.maxW);
+    const nw = Math.max(72, Math.min(maxW, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty("--saved-name-col", nw + "px");
+    const mount = document.getElementById("savedTracksMount");
+    if (mount) mount._savedTracksNameColPx = nw;
+  }
+  document.addEventListener("pointerdown", (ev) => {
+    const h = ev.target.closest && ev.target.closest(".saved-name-col-resize");
+    if (!h) return;
+    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
+    const table = h.closest(".saved-tracks-table");
+    if (!table) return;
+    const mount = document.getElementById("savedTracksMount");
+    if (!mount || !mount.contains(table)) return;
+    const cell = table.querySelector("tbody tr td:nth-child(3)");
+    const rectT = table.getBoundingClientRect();
+    const startW = cell ? cell.getBoundingClientRect().width : 140;
+    drag = {
+      table,
+      startX: ev.clientX,
+      startW,
+      maxW: Math.max(120, Math.floor(rectT.width * 0.55))
+    };
+    ev.preventDefault();
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+  }, true);
+}
+
+/** Desktop: colonna Nome nella lista waypoint modal (sessione su #wp-list). */
+function ensureWpModalNameColResizeWired(){
+  if (window._wpModalNameColResizeWired) return;
+  window._wpModalNameColResizeWired = true;
+  let drag = null;
+  function endDrag(){
+    drag = null;
+    try {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
+    } catch(_){}
+  }
+  function onMove(ev){
+    if (!drag) return;
+    const dx = ev.clientX - drag.startX;
+    const maxW = Math.min(520, drag.maxW);
+    const nw = Math.max(72, Math.min(maxW, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty("--wp-name-col", nw + "px");
+    const wl = document.getElementById("wp-list");
+    if (wl) wl._wpNameColPx = nw;
+  }
+  document.addEventListener("pointerdown", (ev) => {
+    const h = ev.target.closest && ev.target.closest(".wp-modal-table .wp-name-col-resize");
+    if (!h) return;
+    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
+    const table = h.closest(".wp-modal-table");
+    if (!table) return;
+    const wl = document.getElementById("wp-list");
+    if (!wl || !wl.contains(table)) return;
+    const cell = table.querySelector("tbody tr td:nth-child(2)");
+    const rectT = table.getBoundingClientRect();
+    const startW = cell ? cell.getBoundingClientRect().width : 112;
+    drag = {
+      table,
+      startX: ev.clientX,
+      startW,
+      maxW: Math.max(120, Math.floor(rectT.width * 0.5))
+    };
+    ev.preventDefault();
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+  }, true);
+}
+
+/** Enter conferma rename inline; Esc ripristina senza propagare a chiusura pannelli. */
+function ensureGisInlineRenameKeyboardHooks(){
+  if (window._gisInlineRenameKbWired) return;
+  window._gisInlineRenameKbWired = true;
+  const sel = "[data-offa-rename],[data-saved-rename],[data-wp-rename],[data-fav-rename]";
+  document.addEventListener("keydown", (ev) => {
+    const el = ev.target;
+    if (!el || !el.matches || !el.matches(sel)) return;
+    if (ev.key === "Enter"){
+      ev.preventDefault();
+      try { el.blur(); } catch(_){}
+      return;
+    }
+    if (ev.key !== "Escape") return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    let prev = el.dataset._prevOffaName;
+    if (prev === undefined) prev = el.dataset._prevSavedName;
+    if (prev === undefined) prev = el.dataset._prevWpName;
+    if (prev === undefined) prev = el.dataset._prevFavName;
+    if (prev != null) el.value = prev;
+    try { el.blur(); } catch(_){}
   }, true);
 }
 
@@ -20029,10 +20255,20 @@ function renderSavedTracksList(){
   }
   const tipFly = esc(t("tip.trackSavedFly") || "");
   const selSet = new Set((state._savedTracksSelectedIds || []).map(String));
-  let html = `<table class="saved-tracks-table"><thead><tr>
+  let html = `<table class="saved-tracks-table"><colgroup>
+    <col style="width:36px" />
+    <col style="width:44px" />
+    <col class="saved-col-name" />
+    <col style="width:52px" />
+    <col />
+    <col />
+    <col style="width:92px" />
+    <col style="width:72px" />
+    <col style="width:44px" />
+  </colgroup><thead><tr>
     <th style="width:36px"><input type="checkbox" id="savedTracksSelectAll" data-i18n-aria="tip.trackSelAllSaved"></th>
     ${savedTracksSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
-    ${savedTracksSortHeaderHtml("name", "track.colName", {})}
+    ${savedTracksSortHeaderHtml("name", "track.colName", { resizeHandle: true, thClass: "saved-th-name" })}
     ${savedTracksSortHeaderHtml("pts", "track.colPts", { thStyle: "width:52px" })}
     ${savedTracksSortHeaderHtml("when", "track.colWhen", {})}
     ${savedTracksSortHeaderHtml("dist", "track.colDist", {})}
@@ -20049,7 +20285,7 @@ function renderSavedTracksList(){
     html += `<tr data-saved-row data-id="${esc(st.id)}" class="${rowSel ? "is-selected" : ""}">
       <td><input type="checkbox" class="saved-sel-cb" data-saved-sel="${esc(st.id)}"${rowSel ? " checked" : ""}></td>
       <td class="saved-tracks-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${ariaVis}"></span></td>
-      <td data-tip="${esc(String(st.name != null ? st.name : "").slice(0, 200))}"><input type="text" class="saved-name-inp" data-saved-rename="${esc(st.id)}" value="${esc(st.name)}" maxlength="80"></td>
+      <td data-tip="${esc(String(st.name != null ? st.name : "").slice(0, 200))}"><input type="text" class="saved-name-inp" data-saved-rename="${esc(st.id)}" value="${esc(st.name)}" maxlength="80" aria-label="${esc(t("track.colName"))}"></td>
       <td>${st.points.length}</td>
       <td>${esc(formatSavedTrackWhen(savedTrackSortTs(st)))}</td>
       <td>${esc(distStr)}</td>
@@ -20060,6 +20296,14 @@ function renderSavedTracksList(){
   }
   html += "</tbody></table>";
   mount.innerHTML = `<div class="saved-tracks-scroll-inner">${html}</div>`;
+  try {
+    const tbl = mount.querySelector(".saved-tracks-table");
+    if (tbl && Number.isFinite(mount._savedTracksNameColPx)){
+      const px = Math.max(72, Math.min(560, mount._savedTracksNameColPx));
+      tbl.style.setProperty("--saved-name-col", px + "px");
+    }
+  } catch(_){}
+  ensureSavedTracksNameColResizeWired();
   try {
     const tipEdit = (typeof t === "function") ? (t("tip.trackEditSaved") || "") : "";
     if (tipEdit){
@@ -28335,9 +28579,15 @@ function renderWpModalList(){
   if (!pts.length){ root.innerHTML = ""; syncWpSelectAllState(root); return; }
   const draftId = state.waypointEditorDraft && state.waypointEditorDraft.id || "";
   const selAllTitle = esc(t("track.selAll") || "Tutte");
-  let html = `<table class="wp-modal-table"><thead><tr>
+  const wpResizeAria = esc(t("waypoint.colResizeAria"));
+  let html = `<table class="wp-modal-table"><colgroup>
+    <col style="width:40px" />
+    <col class="wp-col-name" />
+    <col />
+    <col style="width:118px" />
+  </colgroup><thead><tr>
     <th style="width:40px"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll"></th>
-    <th style="min-width:100px">${esc(t("waypointModal.listColName"))}</th>
+    <th class="wp-th-name"><span class="wp-th-name-lbl">${esc(t("waypointModal.listColName"))}</span><span class="wp-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
     <th>${esc(t("waypointModal.listColDetails"))}</th>
     <th style="width:118px;text-align:right">${esc(t("waypointModal.listColActions"))}</th>
   </tr></thead><tbody>`;
@@ -28363,6 +28613,14 @@ function renderWpModalList(){
   }).join("");
   html += "</tbody></table>";
   root.innerHTML = html;
+  try {
+    const tbl = root.querySelector(".wp-modal-table");
+    if (tbl && Number.isFinite(root._wpNameColPx)){
+      const px = Math.max(72, Math.min(520, root._wpNameColPx));
+      tbl.style.setProperty("--wp-name-col", px + "px");
+    }
+  } catch(_){}
+  ensureWpModalNameColResizeWired();
   syncWpSelectAllState(root);
   if (!root._wpModalListDelegated){
     root._wpModalListDelegated = true;
