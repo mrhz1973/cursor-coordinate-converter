@@ -140,3 +140,14 @@ Per **tabelle / liste operative** dentro modal, drawer o pannelli floating:
 - **Non** nascondere modifiche importanti dietro **click impliciti** su nome o icone ambigue: il rename inline resta ammissibile per il **solo** nome, ma **non** sostituisce «Modifica» quando esistono altre proprietà operative (centro, distanze, geometria, visibilità contestuale, ecc.).
 - Le azioni **distruttive** (es. «Elimina») richiedono sempre **conferma interna contestuale** al pannello (pulsanti Elimina danger + Annulla, messaggio che cita nome o conteggio), **senza** `alert` / `window.confirm` / `window.prompt` per il flusso ordinario.
 - Se l’oggetto è **geometrico / map-first**, la modalità modifica può includere **spostamento su mappa** (es. pick del nuovo centro, handle dedicato) purché l’ingresso in quella modalità sia **esplicito** (CTA dedicata), **annullabile** (Esc / Annulla / chiusura pannello coerente con il resto dello strumento) e non interferisca con altri tool di mappa senza feedback chiaro.
+
+### 7) Import / Export nei modal e pannelli operativi
+
+Ogni **modal** o **pannello operativo** che gestisce **collezioni** o **oggetti serializzabili** (traccia, anelli, waypoint, aree, ecc.) deve prevedere **comandi Import / Export coerenti e visibili** nello stesso contesto, salvo vincolo tecnico documentato o strumento puramente monoesito.
+
+- **Mai** nascondere import/export di dati operativi dietro *solo* azioni contestuali o menù globale, se l’utente lavora su quella collezione nel pannello.
+- **File-first e locale** per l’**import** (input file, drag dove già supportato, paste esplicito): **niente** rete, URL o fetch implicite salvo strumento esplicitamente online e allineato a **OPSEC** in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc).
+- Se servono **più formati** o più varianti d’esportazione, usare un **sotto-menu compatto** (`<details>`, `dialog` dedicato, o gruppo in toolbar) invece di file di pulsanti non ordinati in pagina.
+- Distinguere chiaramente: **export riga / oggetto singolo**, **export selezionati**, **export “tutti” o visibili**; etichette e **i18n** IT/EN/FR.
+- **GeoJSON** è il formato **preferito** per dati **GIS interni** (layer, anelli, geometrie native app) ove coerente; **GPX / KML / KMZ / CSV** dove il tipo dato o l’interoperabilità li giustificano già nel monolite.
+- Esito di import/export (ok, errore, parziale) tramite **notifiche interne** al pannello (cfr. §5), non `alert()` / `window.prompt()` / `window.confirm()` per flussi ordinari.

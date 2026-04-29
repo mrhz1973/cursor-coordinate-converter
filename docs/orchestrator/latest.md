@@ -4,7 +4,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Range Rings — Modifica set + conferma delete + sposta centro:** lista con **Modifica** (`data-rr-edit`); stato `_rrEditingSetId` / `_rrEditingMoveCenterMode`; pulsanti **Aggiorna set**, **Annulla modifica**, **Sposta centro sulla mappa** (pick-to-move, salva subito); **Punta e crea** / **Crea anelli** bloccati o disabilitati in edit; conferma eliminazione in `#rrOperativeNotices` (`#rrDeleteConfirm`); `rrExecutePendingDelete` → `renderRangeRingsPanel`; standard §6 in `10-html-architecture.mdc` (liste / Modifica / delete confirm). Inbox: `docs/orchestrator/inbox/2026-04-29_2930_riepilogo_range-rings-edit-delete-confirm.md`.
+2026-04-30 — **Range Rings — blocco operativo completo (centro + I/O + rename):** **Centro da** Favoriti / Waypoint (picker ricercabile `#rrSourcePickerDialog`, cap risultati, no select enorme) e **GeoJSON locale** (punto o picker multi); **Import/Esporta** in `<details#rrIoDetails>` (esporta visibili, tutti, import GeoJSON set); **rename** con `state._rrPendingRename` e `#rrRenameConfirm` (niente `window.confirm` in lista); **Esc** ordine: picker → rename → delete; `closeRangeRingsPanel` chiude picker/rename. Standard **§7** Import/Export in `10-html-architecture.mdc` + nota in `docs/PROJECT_notes.md`. Inbox: `docs/orchestrator/inbox/2026-04-30_riepilogo_range-rings-center-import-export-rename.md`. Commit HTML **fuori** dall’autosync memoria: descrivere diff nell’`inbox`.
 
 ## Ultimo intervento Cursor
 
@@ -12,18 +12,18 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (Range Rings UX + map handler)
+- `coordinate_converter Claude.html` (Range Rings: picker centro, I/O, rename, i18n, hotkey)
 - `.cursor/rules/10-html-architecture.mdc`, `.cursor/rules/00-project-core.mdc`
 - `docs/PROJECT_notes.md`
-- `docs/orchestrator/latest.md`, `inbox/2026-04-29_2930_riepilogo_range-rings-edit-delete-confirm.md`
+- `docs/orchestrator/latest.md`, `inbox/2026-04-30_riepilogo_range-rings-center-import-export-rename.md`
 
 **Non toccati (richiesta):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md`.
 
 ## Prossimo passo consigliato
 
-- QA manuale su floating panel + drawer; valutare 5F drag handle; rename inline senza `window.confirm`.
+- Committare il monolite separatamente; QA su floating + drawer; backlog **5F** (maniglia/drag centro).
 
 ## Dettagli (inbox)
 
-- Modifica RR + delete confirm: `docs/orchestrator/inbox/2026-04-29_2930_riepilogo_range-rings-edit-delete-confirm.md`
-- Delete confirm precedente: `2026-04-29_2805_riepilogo_range-rings-delete-confirm-interno.md`
+- Blocco centro + I/O + rename: `docs/orchestrator/inbox/2026-04-30_riepilogo_range-rings-center-import-export-rename.md`
+- Storico RR: `inbox/2026-04-29_2930_riepilogo_range-rings-edit-delete-confirm.md`, …
