@@ -4,34 +4,31 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Workflow orchestratore:** in Plan mode, per **piani importanti** senza scrittura file in repo, la risposta deve includere la sezione obbligatoria **`PROMPT DI SALVATAGGIO PIANO — DA USARE IN AGENT MODE`** (prompt Agent: `inbox/YYYY-MM-DD_HHMM_plan_<slug>.md` + `latest.md` + autosync commit/push memoria; **no** monolite, **no** doc ufficiali/`finito`). Dettaglio: `docs/orchestrator/inbox/2026-04-29_2230_riepilogo_workflow-plan-save-agent.md`.
+2026-04-29 — **Range Rings 5C (Cursor):** lista set come **tabella** (`#sec-rangerings`), indicatore vis., rename inline con Esc globale, **batch bar** (visibilità + export + delete multiplo), fly-to `flyToRangeRingSetById`. Dettaglio: `docs/orchestrator/inbox/2026-04-29_2345_riepilogo_range-rings-5C-lista-tabella-batch.md`. **Workflow Plan→Agent** invariato (regola 30 + README orchestratore).
 
 ## Ultimo intervento Cursor
 
-Regole workflow (`.cursor/rules/30-output-workflow.mdc`) + doc orchestratore (`README.md`, `chatgpt-checkpoint.md`, inbox workflow). Nessuna modifica al monolite; nessun **`finito`**.
+Monolite: implementazione **5C** solo (nessun 5D/5E/5F). Memoria orchestratore: questo aggiornamento + inbox 5C. **Nessun** `finito`; monolite **tipicamente fuori** dal commit autosync salvo richiesta esplicita.
 
 ## File modificati (sintesi)
 
-- `.cursor/rules/30-output-workflow.mdc`
-- `docs/orchestrator/README.md`, `chatgpt-checkpoint.md`, `latest.md`, `inbox/2026-04-29_2230_riepilogo_workflow-plan-save-agent.md`
+- `coordinate_converter Claude.html` (working tree / commit su richiesta utente)
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-04-29_2345_riepilogo_range-rings-5C-lista-tabella-batch.md`
 
-**Non toccati:** `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md`.
+**Non toccati:** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md` (salvo questo `latest`/inbox).
 
 ## Stato verifiche
 
-- QA: `git status --short`, `git diff --stat` (vedi inbox workflow).
-
-## Stato Git noto
-
-Autosync: commit **solo** `docs/orchestrator/**` e, se nello stesso intervento, `.cursor/rules/**` pertinente (senza monolite).
+- `git diff --check` monolite; `node --check` su JS estratto: ok (vedi inbox 5C).
 
 ## Prossimo passo consigliato
 
-1. Applicare la nuova sezione Plan → Agent nei prossimi piani importanti.
-2. Lavoro feature: es. Range Rings — piano tecnico già in `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md` (ordine 5C→5F).
+1. **5D** — label SVG nome sul centro (`renderRangeRingsOverlay`).
+2. QA browser: tabella, batch, rename, fly, export, delete singolo/multiplo.
+3. Commit monolite quando l’utente lo richiede.
 
 ## Dettagli (inbox)
 
-- **Workflow Plan→Agent:** `docs/orchestrator/inbox/2026-04-29_2230_riepilogo_workflow-plan-save-agent.md`
-- **Piano Range Rings 5C–5F:** `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md`
-- Altri inbox Range Rings: vedi elenco cronologico in commit precedenti se serve.
+- **5C:** `docs/orchestrator/inbox/2026-04-29_2345_riepilogo_range-rings-5C-lista-tabella-batch.md`
+- **Piano 5C–5F:** `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md`
+- **Workflow Plan save:** `docs/orchestrator/inbox/2026-04-29_2230_riepilogo_workflow-plan-save-agent.md`
