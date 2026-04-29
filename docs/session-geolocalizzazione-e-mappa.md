@@ -2156,3 +2156,31 @@ Chiusura sessione su richiesta utente **«Finito»** dopo QA browser su **modal 
 
 - Mappe offline, `performOfflineGlobalReset`, reset totale app, geocoding, OPSEC strict, GPS live, `watchPosition`, CoT live / Mission Package / backend — **non** oggetto di questa sessione.
 
+
+## Checkpoint 2026-04-29 — Track modal: dialog interni e toolbar (Finito)
+
+### Contesto
+
+Chiusura sessione su richiesta utente **«Finito»** dopo micro-patch sul **modal Traccia** (GIS) in `coordinate_converter Claude.html`: sostituzione di dialog nativi del browser con `<dialog class="app-modal">` coerenti, senza redesign globale e senza toccare Waypoint, CoT, mappe offline, reset locale, geocoding, OPSEC, GPS single-shot, Favoriti, Converti, Search.
+
+### Cosa è cambiato (tecnico)
+
+1. **Salvataggio nome traccia in archivio:** `trackPromptAndSaveCurrent()` non usa più `window.prompt`; flusso tramite **`#trackSaveNameDialog`** + `openTrackSaveNameDialog` / `closeTrackSaveNameDialog` / `trackSaveNameDialogCommit`; CTA allineate con classe **`.track-save-cta`** dove applicabile.
+
+2. **Chiusura Traccia con bozza non salvata:** **`#trackUnsavedCloseDialog`** (Salva / Scarta / Annulla, X = Annulla, Esc) in sostituzione del `window.confirm` in `closeTrackModal` e, per i percorsi che ancora usavano il confirm, in **`trackAbandonOrFinishDraftUi`**; callback `onDiscard` / `onAfterSave` per integrare chiusura panel o reset bozza; z-index dedicato (`.track-unsaved-close-dialog`).
+
+3. **Elimina traccia corrente:** **`#trackClearCurrentDialog`** (Elimina / Annulla) sostituisce il `window.confirm` in **`trackClear()`**; corpo operativo invariato in **`trackClearCurrentCommit()`**; i18n `track.clearDialog*`; z-index **`.track-clear-current-dialog`**.
+
+4. **Toolbar iniziale Traccia (solo UI):** **Nuova traccia** resa primary; **Aggiungi punto convertito** e **Annulla ultimo punto** resi meno dominanti; **Importa** / **Esporta** raggruppati con separatori; logica invariata.
+
+5. **Esc globale (document keydown):** chiusura ordinata di dialog Track (nome → clear current → unsaved) prima di altri pannelli, coerente con l’esistente.
+
+### File toccati (commit di chiusura)
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa sezione)
+
+### TODO / non toccato (confermato per questa sessione)
+
+- Altri `window.confirm` / `window.prompt` sparsi (es. eliminazione tracce salvate, map waypoint clear, favoriti, offline fallbacks) **non** sostituiti in blocco; Waypoint/CoT file-only oltre le rifiniture già in checkpoint separato; **nessun** tocco a logica mappe offline, reset totale, live GPS.
+

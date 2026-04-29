@@ -3934,6 +3934,37 @@ body.mm-enlarged .sig-badge{display:none}
   align-items:center;
 }
 .track-newtrack-prompt .tnp-actions .btn{ padding:5px 10px; font-size:.82rem; }
+#trackModalBody .track-save-cta.btn.btn-sm.btn-primary{
+  min-height: 40px;
+  padding-inline: var(--wp-space-4, 16px);
+  font-weight: 700;
+}
+#trackModalBody .track-toolbar .track-toolbar-sep{
+  margin-inline: 2px;
+  opacity: 0.7;
+}
+#trackModalBody .track-toolbar #btnTrackAddCurrent.btn.btn-sm:not(.btn-primary){
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+#trackModalBody .track-toolbar #btnTrackAddCurrent.btn.btn-sm:not(.btn-primary):hover,
+#trackModalBody .track-toolbar #btnTrackAddCurrent.btn.btn-sm:not(.btn-primary):focus-visible{
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 22%, transparent);
+}
+#trackModalBody .track-toolbar #btnTrackUndo.btn.btn-sm{
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--border-strong) 80%, transparent);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+#trackModalBody .track-toolbar #btnTrackUndo.btn.btn-sm:hover,
+#trackModalBody .track-toolbar #btnTrackUndo.btn.btn-sm:focus-visible{
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent-soft) 18%, transparent);
+}
 
 /* Track polyline overlay on the mini-map: a <svg> inside .tile-layer
  * with a polyline + numbered marker circles at each vertex. */
@@ -4710,6 +4741,12 @@ dialog.app-modal{
   max-height:min(92vh, 92dvh);
   overflow:hidden;
   box-shadow:0 24px 60px rgba(0,0,0,.55), var(--shadow-inset-card);
+}
+dialog.track-unsaved-close-dialog.app-modal{
+  z-index:30000;
+}
+dialog.track-clear-current-dialog.app-modal{
+  z-index:30001;
 }
 dialog.app-modal::backdrop{
   background:rgba(0,0,0,.55);
@@ -5527,18 +5564,32 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   line-height: 1.45;
 }
 .waypoint-export-dialog-desc{ margin: 0 0 12px; color: var(--muted); }
-.waypoint-export-cot-hint{
-  margin: 0 0 6px;
-  color: var(--text-primary);
-  font-size: 0.9rem;
+.waypoint-export-cot-hint,
+.wp-export-cot-combo .wp-export-cot-sub{
+  display: block;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
   font-weight: 600;
   line-height: 1.35;
+  text-align: left;
+  max-width: 100%;
 }
-.wp-export-cot-block{
+.wp-export-cot-combo{
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  align-items: stretch;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 5px;
+  min-height: 48px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+.wp-export-cot-combo .wp-export-cot-title{
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
 }
 .waypoint-export-dialog-empty{
   margin: 0 0 12px;
@@ -7125,18 +7176,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div class="section-body track-builder">
         <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.hint">Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/KMZ/GeoJSON. Esporta la traccia in qualsiasi formato.</p>
         <div class="track-toolbar">
-          <button type="button" id="btnTrackAddCurrent" class="btn btn-sm btn-primary" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
-          <button type="button" id="btnTrackFinish" class="btn btn-sm" data-i18n="track.finish" data-i18n-tip="tip.trackFinish" hidden>✅ Termina traccia</button>
-          <button type="button" id="btnTrackNew" class="btn btn-sm btn-track-new" data-i18n-tip="tip.trackNew">
+          <button type="button" id="btnTrackNew" class="btn btn-sm btn-primary btn-track-new" data-i18n-tip="tip.trackNew">
             <span class="track-new-plus" aria-hidden="true">+</span>
             <span data-i18n="track.new">Nuova traccia</span>
           </button>
+          <button type="button" id="btnTrackAddCurrent" class="btn btn-sm" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
+          <button type="button" id="btnTrackFinish" class="btn btn-sm" data-i18n="track.finish" data-i18n-tip="tip.trackFinish" hidden>✅ Termina traccia</button>
           <button type="button" id="btnTrackPaste" class="btn btn-sm" hidden aria-hidden="true" tabindex="-1" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
+          <span class="sep track-toolbar-sep" aria-hidden="true"></span>
           <button type="button" id="btnTrackImport" class="btn btn-sm" data-i18n="track.import" data-i18n-tip="tip.trackImport">Importa</button>
           <input type="file" id="trackFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt,application/gpx+xml,application/vnd.google-earth.kml+xml,application/json,application/zip">
           <button type="button" id="btnTrackExportOpenBtn" class="btn btn-sm"
                   data-i18n="track.exportOpen" data-i18n-tip="tip.trackExportOpen" data-i18n-aria="track.exportOpenAria">Esporta</button>
-          <span class="sep"></span>
+          <span class="sep track-toolbar-sep" aria-hidden="true"></span>
           <button type="button" id="btnTrackUndo" class="btn btn-sm" data-i18n="track.undo" data-i18n-tip="tip.trackUndo">↶ Annulla ultimo punto</button>
           <button type="button" id="btnTrackClear" class="btn btn-sm btn-danger-subtle" data-i18n-tip="tip.trackClear"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="track.clear">Elimina traccia corrente</span></button>
         </div>
@@ -7159,7 +7211,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div class="sub-section-title" data-i18n="track.savedTitle">Tracce salvate</div>
         <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.savedHint">Salva in archivio la traccia corrente. Nella tabella: la colonna «Vis.» è solo uno stato (visibile/nascosta sulla mappa); la visibilità si cambia con i pulsanti sopra la tabella; la prima colonna serve per selezionare le righe (batch ed export). «Centra» sposta la vista; puoi rinominare ed eliminare.</p>
         <div class="track-toolbar track-saved-toolbar">
-          <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
+          <button type="button" id="btnTrackSaveLibrary" class="btn btn-sm btn-primary track-save-cta" disabled data-i18n="track.saveLibrary" data-i18n-tip="tip.trackSaveLibrary">💾 Salva traccia in archivio…</button>
           <span id="savedTracksSelectionMeta" class="hint" style="margin-left:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
         </div>
         <div id="savedTracksBatchBar" class="saved-tracks-batch-bar" hidden>
@@ -7549,10 +7601,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kml" data-i18n="export.kml" data-i18n-tip="tip.waypointModal.exportKml">KML</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
-      <div class="wp-export-cot-block" id="waypointExportCotBlock">
-        <p id="waypointExportDialogCotHint" class="hint waypoint-export-cot-hint" role="status" aria-live="polite" hidden></p>
-        <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="cot" data-i18n="waypointModal.exportCot" data-i18n-tip="tip.waypointModal.exportCot" data-i18n-aria="waypointModal.exportCotAria">CoT XML</button>
-      </div>
+      <button type="button" class="btn btn-sm wp-export-fmt wp-export-cot-combo" id="waypointExportCotFormatBtn" data-wp-export-fmt="cot"
+        data-i18n-tip="tip.waypointModal.exportCot" data-i18n-aria="waypointModal.exportCotAria">
+        <span class="wp-export-cot-title" data-i18n="waypointModal.exportCot">CoT XML</span>
+        <span id="waypointExportDialogCotHint" class="waypoint-export-cot-hint wp-export-cot-sub" role="status" aria-live="polite" hidden></span>
+      </button>
     </div>
   </div>
 </dialog>
@@ -7625,6 +7678,56 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.trackExpCsv">CSV</button>
       <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="wkt" data-i18n="track.expWkt" data-i18n-tip="tip.trackExpWkt">WKT</button>
       <button type="button" class="btn btn-sm track-export-fmt" data-track-export-fmt="shapezip" data-i18n="track.expShpZip" data-i18n-tip="tip.trackExpShpZip">SHP (ZIP)</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="trackSaveNameDialog" class="app-modal track-save-name-dialog" aria-labelledby="trackSaveNameDialogTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="trackSaveNameDialogTitle" class="app-modal-title" data-i18n="track.saveDialogTitle">Salva traccia</h2>
+    <button type="button" class="app-modal-close" id="trackSaveNameDialogCloseX"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p id="trackSaveNameDialogBody" class="hint" data-i18n="track.saveNameDialogBody">Inserisci il nome da salvare in archivio.</p>
+    <label for="trackSaveNameDialogInput" class="sub" data-i18n="track.saveNameLabel">Nome traccia</label>
+    <input type="text" id="trackSaveNameDialogInput" maxlength="80"
+           data-i18n-ph="track.saveNameDialogPlaceholder" placeholder="Nome traccia">
+    <p id="trackSaveNameDialogErr" class="hint geo-warn" role="alert" hidden></p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="trackSaveNameDialogTitle">
+      <button type="button" class="btn btn-sm btn-primary track-save-cta" id="trackSaveNameDialogSaveBtn" data-i18n="track.saveDialogConfirm">Salva</button>
+      <button type="button" class="btn btn-sm" id="trackSaveNameDialogCancelBtn" data-i18n="track.newPromptCancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="trackUnsavedCloseDialog" class="app-modal track-unsaved-close-dialog" aria-labelledby="trackUnsavedCloseTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="trackUnsavedCloseTitle" class="app-modal-title" data-i18n="track.unsavedCloseTitle">Traccia non salvata</h2>
+    <button type="button" class="app-modal-close" id="trackUnsavedCloseCloseX"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p class="hint" id="trackUnsavedCloseBody" data-i18n="track.unsavedCloseBody">Hai una traccia non salvata. Vuoi salvarla prima di chiudere?</p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="trackUnsavedCloseTitle">
+      <button type="button" class="btn btn-sm btn-primary track-save-cta" id="trackUnsavedCloseSaveBtn" data-i18n="track.unsavedCloseSave">Salva</button>
+      <button type="button" class="btn btn-sm btn-danger-subtle" id="trackUnsavedCloseDiscardBtn" data-i18n="track.unsavedCloseDiscard">Scarta</button>
+      <button type="button" class="btn btn-sm" id="trackUnsavedCloseCancelBtn" data-i18n="track.unsavedCloseCancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="trackClearCurrentDialog" class="app-modal track-clear-current-dialog" aria-labelledby="trackClearCurrentTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="trackClearCurrentTitle" class="app-modal-title" data-i18n="track.clearDialogTitle">Elimina traccia corrente</h2>
+    <button type="button" class="app-modal-close" id="trackClearCurrentDialogCloseX"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p class="hint" data-i18n="track.clearDialogBody">Vuoi eliminare tutti i punti della traccia in modifica? L’operazione non può essere annullata.</p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="trackClearCurrentTitle">
+      <button type="button" class="btn btn-sm btn-danger" id="trackClearCurrentDialogDeleteBtn" data-i18n="track.clearDialogDelete">Elimina</button>
+      <button type="button" class="btn btn-sm" id="trackClearCurrentDialogCancelBtn" data-i18n="track.clearDialogCancel">Annulla</button>
     </div>
   </div>
 </dialog>
@@ -8142,6 +8245,10 @@ const I18N = {
     "track.statusCompletedUnsaved":"Completata, non salvata",
     "track.statusSaved":"Salvata",
     "track.saveDialogTitle":"Salva traccia",
+    "track.saveNameDialogBody":"Inserisci il nome da salvare in archivio.",
+    "track.saveNameDialogPlaceholder":"Nome traccia",
+    "track.saveDialogConfirm":"Salva",
+    "track.saveNameRequired":"Inserisci un nome traccia valido.",
     "track.saveNameLabel":"Nome traccia",
     "track.saveAutoName":"Traccia {0}",
     "track.continueEdit":"Continua modifica",
@@ -8150,6 +8257,11 @@ const I18N = {
     "tip.trackCloseTrack":"Puoi chiudere la creazione anche con doppio clic su un punto.",
     "track.closeLoseDraftConfirm":"Hai una traccia non salvata: chiudendo perderai la bozza. Continuare?",
     "track.closeLoseCompletedUnsavedConfirm":"Traccia completata ma non salvata in archivio: chiudendo perderai i dati. Continuare?",
+    "track.unsavedCloseTitle":"Traccia non salvata",
+    "track.unsavedCloseBody":"Hai una traccia non salvata. Vuoi salvarla prima di chiudere?",
+    "track.unsavedCloseSave":"Salva",
+    "track.unsavedCloseDiscard":"Scarta",
+    "track.unsavedCloseCancel":"Annulla",
     "track.draftDiscarded":"Bozza traccia eliminata.",
     "track.newTrackDiscardNotify":"Bozza eliminata: è stata creata una nuova traccia.",
     "track.savedEditMissing":"Traccia salvata non trovata (id mancante).",
@@ -8216,9 +8328,9 @@ const I18N = {
     "waypointModal.exportCot":"CoT XML",
     "waypointModal.exportCotAria":"Esporta waypoint in CoT XML (file .cot)",
     "waypointModal.exportCoTNoWaypoints":"Nessun waypoint da esportare (selezione vuota o nessun dato).",
-    "waypointModal.exportCotHintAll":"CoT XML: esporta tutti i {0} waypoint",
-    "waypointModal.exportCotHintSelectedOne":"CoT XML: esporta 1 waypoint selezionato",
-    "waypointModal.exportCotHintSelectedMany":"CoT XML: esporta {0} waypoint selezionati",
+    "waypointModal.exportCotHintAll":"Esporta tutti i {0} waypoint",
+    "waypointModal.exportCotHintSelectedOne":"Esporta 1 waypoint selezionato",
+    "waypointModal.exportCotHintSelectedMany":"Esporta {0} waypoint selezionati",
     "waypointModal.cotExportFileFallback":"waypoint",
     "waypointModal.importCoTDefaultName":"Importato",
     "waypointModal.importCoTParseErr":"CoT XML non valido o non leggibile.",
@@ -8329,6 +8441,10 @@ const I18N = {
     "track.import":"Importa",
     "track.clear":"Elimina traccia corrente",
     "track.clearConfirm":"Eliminare la traccia corrente (tutti i punti in modifica)?",
+    "track.clearDialogTitle":"Elimina traccia corrente",
+    "track.clearDialogBody":"Vuoi eliminare tutti i punti della traccia in modifica? L’operazione non può essere annullata.",
+    "track.clearDialogDelete":"Elimina",
+    "track.clearDialogCancel":"Annulla",
     "track.undo":"↶ Annulla ultimo punto",
     "track.undoEmpty":"Nessun punto da annullare.",
     "track.undoOk":"Ultimo punto annullato.",
@@ -9192,6 +9308,10 @@ const I18N = {
     "track.statusCompletedUnsaved":"Completed, not saved",
     "track.statusSaved":"Saved",
     "track.saveDialogTitle":"Save track",
+    "track.saveNameDialogBody":"Enter the name to save to the archive.",
+    "track.saveNameDialogPlaceholder":"Track name",
+    "track.saveDialogConfirm":"Save",
+    "track.saveNameRequired":"Enter a valid track name.",
     "track.saveNameLabel":"Track name",
     "track.saveAutoName":"Track {0}",
     "track.continueEdit":"Continue editing",
@@ -9200,6 +9320,11 @@ const I18N = {
     "tip.trackCloseTrack":"You can also close track creation by double-clicking a point.",
     "track.closeLoseDraftConfirm":"You have an unsaved track: closing will discard the draft. Continue?",
     "track.closeLoseCompletedUnsavedConfirm":"The track is completed but not saved to the archive: closing will lose the data. Continue?",
+    "track.unsavedCloseTitle":"Unsaved track",
+    "track.unsavedCloseBody":"You have an unsaved track. Do you want to save it before closing?",
+    "track.unsavedCloseSave":"Save",
+    "track.unsavedCloseDiscard":"Discard",
+    "track.unsavedCloseCancel":"Cancel",
     "track.draftDiscarded":"Track draft discarded.",
     "track.newTrackDiscardNotify":"Draft discarded: a new track was started.",
     "track.savedEditMissing":"Saved track not found (missing id).",
@@ -9266,9 +9391,9 @@ const I18N = {
     "waypointModal.exportCot":"CoT XML",
     "waypointModal.exportCotAria":"Export waypoints as CoT XML (.cot file)",
     "waypointModal.exportCoTNoWaypoints":"No waypoints to export (empty selection or no data).",
-    "waypointModal.exportCotHintAll":"CoT XML: exports all {0} waypoints",
-    "waypointModal.exportCotHintSelectedOne":"CoT XML: exports 1 selected waypoint",
-    "waypointModal.exportCotHintSelectedMany":"CoT XML: exports {0} selected waypoints",
+    "waypointModal.exportCotHintAll":"Export all {0} waypoints",
+    "waypointModal.exportCotHintSelectedOne":"Export 1 selected waypoint",
+    "waypointModal.exportCotHintSelectedMany":"Export {0} selected waypoints",
     "waypointModal.cotExportFileFallback":"waypoint",
     "waypointModal.importCoTDefaultName":"Imported",
     "waypointModal.importCoTParseErr":"Invalid or unreadable CoT XML.",
@@ -9379,6 +9504,10 @@ const I18N = {
     "track.import":"Import",
     "track.clear":"Delete current track",
     "track.clearConfirm":"Delete the current track (all points being edited)?",
+    "track.clearDialogTitle":"Delete current track",
+    "track.clearDialogBody":"Delete all points of the track you are editing? This cannot be undone.",
+    "track.clearDialogDelete":"Delete",
+    "track.clearDialogCancel":"Cancel",
     "track.undo":"↶ Undo last point",
     "track.undoEmpty":"No point to undo.",
     "track.undoOk":"Last point removed.",
@@ -10242,6 +10371,10 @@ const I18N = {
     "track.statusCompletedUnsaved":"Terminée, non enregistrée",
     "track.statusSaved":"Enregistrée",
     "track.saveDialogTitle":"Enregistrer la trace",
+    "track.saveNameDialogBody":"Saisissez le nom à enregistrer dans l’archive.",
+    "track.saveNameDialogPlaceholder":"Nom de la trace",
+    "track.saveDialogConfirm":"Enregistrer",
+    "track.saveNameRequired":"Saisissez un nom de trace valide.",
     "track.saveNameLabel":"Nom de la trace",
     "track.saveAutoName":"Trace {0}",
     "track.continueEdit":"Continuer la modification",
@@ -10250,6 +10383,11 @@ const I18N = {
     "tip.trackCloseTrack":"Vous pouvez aussi fermer la création par un double-clic sur un point.",
     "track.closeLoseDraftConfirm":"Vous avez une trace non enregistrée : en fermant, le brouillon sera perdu. Continuer ?",
     "track.closeLoseCompletedUnsavedConfirm":"Trace terminée mais non enregistrée dans l’archive : en fermant, les données seront perdues. Continuer ?",
+    "track.unsavedCloseTitle":"Trace non enregistrée",
+    "track.unsavedCloseBody":"Vous avez une trace non enregistrée. Voulez-vous l’enregistrer avant de fermer ?",
+    "track.unsavedCloseSave":"Enregistrer",
+    "track.unsavedCloseDiscard":"Ignorer",
+    "track.unsavedCloseCancel":"Annuler",
     "track.draftDiscarded":"Brouillon de trace supprimé.",
     "track.newTrackDiscardNotify":"Brouillon supprimé : une nouvelle trace a été démarrée.",
     "track.savedEditMissing":"Trace enregistrée introuvable (id manquant).",
@@ -10316,9 +10454,9 @@ const I18N = {
     "waypointModal.exportCot":"CoT XML",
     "waypointModal.exportCotAria":"Exporter les waypoints en CoT XML (fichier .cot)",
     "waypointModal.exportCoTNoWaypoints":"Aucun waypoint à exporter (sélection vide ou aucune donnée).",
-    "waypointModal.exportCotHintAll":"CoT XML : exporte les {0} waypoints",
-    "waypointModal.exportCotHintSelectedOne":"CoT XML : exporte 1 waypoint sélectionné",
-    "waypointModal.exportCotHintSelectedMany":"CoT XML : exporte {0} waypoints sélectionnés",
+    "waypointModal.exportCotHintAll":"Exporter les {0} waypoints",
+    "waypointModal.exportCotHintSelectedOne":"Exporter 1 waypoint sélectionné",
+    "waypointModal.exportCotHintSelectedMany":"Exporter {0} waypoints sélectionnés",
     "waypointModal.cotExportFileFallback":"waypoint",
     "waypointModal.importCoTDefaultName":"Importé",
     "waypointModal.importCoTParseErr":"CoT XML invalide ou illisible.",
@@ -10429,6 +10567,10 @@ const I18N = {
     "track.import":"Importer",
     "track.clear":"Supprimer la trace courante",
     "track.clearConfirm":"Supprimer la trace courante (tous les points en modification) ?",
+    "track.clearDialogTitle":"Supprimer la trace courante",
+    "track.clearDialogBody":"Supprimer tous les points de la trace en cours d’édition ? Cette opération est irréversible.",
+    "track.clearDialogDelete":"Supprimer",
+    "track.clearDialogCancel":"Annuler",
     "track.undo":"↶ Annuler le dernier point",
     "track.undoEmpty":"Aucun point à annuler.",
     "track.undoOk":"Dernier point annulé.",
@@ -22595,13 +22737,7 @@ function mapWaypointsClear(){
 function trackClear(){
   ensureTrackState();
   if (!state.track.points.length) return;
-  if (typeof window.confirm === "function" && !window.confirm(t("track.clearConfirm"))) return;
-  state.track.points = [];
-  state.track.closed = false;
-  const chk = document.getElementById("trackClosed");
-  if (chk) chk.checked = false;
-  saveStore();
-  renderTrackAll();
+  openTrackClearCurrentDialog();
 }
 
 /** Start a brand new track (does not touch savedTracks). */
@@ -22681,7 +22817,7 @@ function renderTrackNewTrackPrompt(){
     <div id="trackNewPromptSaveErr" class="hint geo-warn" role="alert" hidden
          style="margin:8px 0 0;font-weight:600;line-height:1.35;"></div>
     <div class="tnp-actions">
-      <button type="button" class="btn btn-sm btn-primary" data-role="tnp-save-new">${bSave}</button>
+      <button type="button" class="btn btn-sm btn-primary track-save-cta" data-role="tnp-save-new">${bSave}</button>
       <button type="button" class="btn btn-sm" data-role="tnp-discard-new">${bDiscard}</button>
       <button type="button" class="btn btn-sm" data-role="tnp-cancel">${bCancel}</button>
     </div>
@@ -22908,12 +23044,128 @@ function trackPromptAndSaveCurrent(opts){
     // Fallback: editing id is stale; continue with normal "new save" prompt.
   }
   const def = String(opts.defaultName || state._trackPromptName || trackMakeAutoName() || t("track.saveDefaultName") || "Traccia");
-  let nm;
-  try { nm = window.prompt(t("track.savePrompt") || "Nome traccia salvata:", def); } catch(_){ nm = null; }
-  if (nm === null) return false;
-  nm = String(nm || "").trim();
   const rid = state._trackEditingSavedId ? String(state._trackEditingSavedId) : "";
-  return saveCurrentTrackToLibrary(nm, rid ? { replaceSavedId: rid } : null);
+  openTrackSaveNameDialog({
+    defaultName: def,
+    saveLabel: rid ? (t("track.updateLibrary") || t("track.saveDialogConfirm") || "Salva") : (t("track.saveDialogConfirm") || "Salva")
+  }, (nm) => {
+    if (nm == null) return;
+    saveCurrentTrackToLibrary(String(nm), rid ? { replaceSavedId: rid } : null);
+  });
+}
+
+function closeTrackSaveNameDialog(){
+  const dlg = document.getElementById("trackSaveNameDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+function openTrackSaveNameDialog(opts, onDone){
+  opts = opts || {};
+  const dlg = document.getElementById("trackSaveNameDialog");
+  const inp = document.getElementById("trackSaveNameDialogInput");
+  const err = document.getElementById("trackSaveNameDialogErr");
+  const saveBtn = document.getElementById("trackSaveNameDialogSaveBtn");
+  if (!dlg || !inp) return;
+  dlg._onDone = (typeof onDone === "function") ? onDone : null;
+  dlg.dataset._openerId = "";
+  try {
+    const ae = document.activeElement;
+    if (ae && ae.id) dlg.dataset._openerId = String(ae.id);
+  } catch(_){}
+  if (err){ err.hidden = true; err.textContent = ""; }
+  inp.value = String(opts.defaultName || "").slice(0, 80);
+  if (saveBtn) saveBtn.textContent = String(opts.saveLabel || t("track.saveDialogConfirm") || "Salva");
+  try {
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+  } catch(_){ dlg.setAttribute("open", ""); }
+  try { setTimeout(() => { try { inp.focus(); inp.select(); } catch(_){ } }, 0); } catch(_){}
+}
+function trackSaveNameDialogCommit(){
+  const dlg = document.getElementById("trackSaveNameDialog");
+  const inp = document.getElementById("trackSaveNameDialogInput");
+  const err = document.getElementById("trackSaveNameDialogErr");
+  if (!dlg || !inp) return;
+  const nm = String(inp.value || "").trim().slice(0, 80);
+  if (!nm){
+    if (err){
+      err.textContent = t("track.saveNameRequired") || "";
+      err.hidden = false;
+    }
+    try { inp.focus(); } catch(_){}
+    return;
+  }
+  if (err){ err.hidden = true; err.textContent = ""; }
+  const cb = dlg._onDone;
+  dlg._onDone = null;
+  closeTrackSaveNameDialog();
+  try { if (typeof cb === "function") cb(nm); } catch(_){}
+}
+
+function closeTrackClearCurrentDialog(){
+  const dlg = document.getElementById("trackClearCurrentDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+function openTrackClearCurrentDialog(){
+  const dlg = document.getElementById("trackClearCurrentDialog");
+  if (!dlg) return false;
+  ensureTrackState();
+  if (!state.track.points.length) return false;
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(state.lang); } catch(_){}
+  }
+  try {
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+  } catch(_){ dlg.setAttribute("open", ""); }
+  try {
+    const cancel = document.getElementById("trackClearCurrentDialogCancelBtn");
+    if (cancel) cancel.focus();
+  } catch(_){}
+  return true;
+}
+/** Same body as legacy `trackClear()` after the old browser confirm `OK`. */
+function trackClearCurrentCommit(){
+  ensureTrackState();
+  if (!state.track.points.length) return;
+  state.track.points = [];
+  state.track.closed = false;
+  const chk = document.getElementById("trackClosed");
+  if (chk) chk.checked = false;
+  saveStore();
+  renderTrackAll();
+}
+
+function closeTrackUnsavedCloseDialog(){
+  const dlg = document.getElementById("trackUnsavedCloseDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+function openTrackUnsavedCloseDialog(opts){
+  opts = opts || {};
+  const dlg = document.getElementById("trackUnsavedCloseDialog");
+  if (!dlg) return false;
+  try {
+    dlg._onDiscard = (typeof opts.onDiscard === "function") ? opts.onDiscard : null;
+    dlg._onAfterSave = (typeof opts.onAfterSave === "function") ? opts.onAfterSave : null;
+  } catch(_){}
+  ensureTrackState();
+  const pts = state.track && Array.isArray(state.track.points) ? state.track.points : [];
+  const canSave = pts.length >= 2;
+  const bSave = document.getElementById("trackUnsavedCloseSaveBtn");
+  if (bSave){
+    bSave.disabled = !canSave;
+  }
+  try {
+    if (typeof dlg.showModal === "function") dlg.showModal();
+    else dlg.setAttribute("open", "");
+  } catch(_){ dlg.setAttribute("open", ""); }
+  try {
+    const first = canSave ? bSave : document.getElementById("trackUnsavedCloseCancelBtn");
+    if (first) first.focus();
+  } catch(_){}
+  return true;
 }
 
 function renderTrackCompletionPrompt(){
@@ -22943,7 +23195,7 @@ function renderTrackCompletionPrompt(){
         <input type="text" id="trackPromptName" maxlength="80" value="${def}">
       </label>
       <div class="tcp-actions">
-        <button type="button" class="btn btn-sm btn-primary" data-role="track-prompt-save" ${canSave ? "" : "hidden disabled"}>${save}</button>
+        <button type="button" class="btn btn-sm btn-primary track-save-cta" data-role="track-prompt-save" ${canSave ? "" : "hidden disabled"}>${save}</button>
         <button type="button" class="btn btn-sm" data-role="track-prompt-continue">${cont}</button>
       </div>
     </div>
@@ -23059,39 +23311,44 @@ function trackAbandonOrFinishDraftUi(opts){
   // If a completion/save prompt is open, closing means abandoning the draft unless user saves via the prompt.
   if (state._trackPromptOpen){
     const hadLibUnsaved = trackIsEditingSavedLibrary() && trackHasUnsavedDraft();
-    if (state._trackCompleted && n >= 2 && !state._trackSavedAt){
-      const msg = hadLibUnsaved
-        ? (t("track.closeLoseSavedEditConfirm") || "")
-        : (t("track.closeLoseCompletedUnsavedConfirm") || t("track.closeLoseDraftConfirm") || "");
-      const ok = (typeof window.confirm === "function")
-        ? window.confirm(msg)
-        : true;
-      if (!ok) return;
-    } else if (trackHasUnsavedDraft()){
-      const msg = hadLibUnsaved
-        ? (t("track.closeLoseSavedEditConfirm") || "")
-        : (t("track.closeLoseDraftConfirm") || "");
-      const ok = (typeof window.confirm === "function")
-        ? window.confirm(msg)
-        : true;
-      if (!ok) return;
+    if ((state._trackCompleted && n >= 2 && !state._trackSavedAt) || trackHasUnsavedDraft()){
+      openTrackUnsavedCloseDialog({
+        onDiscard: () => {
+          state._trackPromptOpen = false;
+          trackPickCancelDeferred();
+          trackResetCurrentOnly({ pickMode: false });
+          try { setBadge("info", t(hadLibUnsaved ? "track.editDiscardedNotify" : "track.draftDiscarded") || ""); } catch(_){}
+          try { if (typeof renderTrackAll === "function") renderTrackAll(); } catch(_){}
+        },
+        onAfterSave: () => {
+          state._trackPromptOpen = false;
+          trackPickCancelDeferred();
+          trackResetCurrentOnly({ pickMode: false });
+          try { setBadge("info", t(hadLibUnsaved ? "track.editDiscardedNotify" : "track.draftDiscarded") || ""); } catch(_){}
+          try { if (typeof renderTrackAll === "function") renderTrackAll(); } catch(_){}
+        }
+      });
+      return;
     }
     state._trackPromptOpen = false;
-    trackPickCancelDeferred();
-    trackResetCurrentOnly({ pickMode: false });
-    try { setBadge("info", t(hadLibUnsaved ? "track.editDiscardedNotify" : "track.draftDiscarded") || ""); } catch(_){}
-    try { if (typeof renderTrackAll === "function") renderTrackAll(); } catch(_){}
+    renderTrackCompletionPrompt();
+    renderTrackSummary();
     return;
   }
 
   // No prompt: if there's an in-progress draft, ask before discarding (unless empty).
   if (trackHasUnsavedDraft()){
-    const useSavedClose = trackIsEditingSavedLibrary() && trackHasUnsavedDraft();
-    const ok = (typeof window.confirm === "function")
-      ? window.confirm((useSavedClose ? t("track.closeLoseSavedEditConfirm") : t("track.closeLoseDraftConfirm")) || "")
-      : true;
-    if (!ok) return;
-    trackDiscardDraftWithNotify();
+    const hadLibUnsaved = trackIsEditingSavedLibrary() && trackHasUnsavedDraft();
+    openTrackUnsavedCloseDialog({
+      onDiscard: () => {
+        trackDiscardDraftWithNotify();
+        try { if (typeof renderTrackAll === "function") renderTrackAll(); } catch(_){}
+      },
+      onAfterSave: () => {
+        trackDiscardDraftWithNotify();
+        try { if (typeof renderTrackAll === "function") renderTrackAll(); } catch(_){}
+      }
+    });
     return;
   }
 
@@ -23312,7 +23569,7 @@ function renderTrackPointsList(){
       <div class="tps-head-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
         <span class="tps-title">${esc(title)}</span>
         <span class="tps-head-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button type="button" class="btn btn-sm btn-primary" data-role="track-save-current" ${canSave ? "" : "hidden disabled"}>${saveLbl}</button>
+          <button type="button" class="btn btn-sm btn-primary track-save-cta" data-role="track-save-current" ${canSave ? "" : "hidden disabled"}>${saveLbl}</button>
           <button type="button" class="btn btn-sm btn-track-points-toggle" data-role="track-points-toggle" aria-expanded="${expanded ? "true" : "false"}" data-i18n-tip="tip.trackPointsToggle">${esc(btnLabel)}</button>
         </span>
       </div>
@@ -27486,6 +27743,128 @@ function bindUI(){
     ev.preventDefault();
     if (typeof trackPromptAndSaveCurrent === "function") trackPromptAndSaveCurrent();
   });
+  const trkNameDlg = document.getElementById("trackSaveNameDialog");
+  const trkNameCloseX = document.getElementById("trackSaveNameDialogCloseX");
+  const trkNameCancel = document.getElementById("trackSaveNameDialogCancelBtn");
+  const trkNameSave = document.getElementById("trackSaveNameDialogSaveBtn");
+  const trkNameInput = document.getElementById("trackSaveNameDialogInput");
+  if (trkNameCloseX) trkNameCloseX.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackSaveNameDialog();
+  });
+  if (trkNameCancel) trkNameCancel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackSaveNameDialog();
+  });
+  if (trkNameSave) trkNameSave.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    trackSaveNameDialogCommit();
+  });
+  if (trkNameInput && !trkNameInput._trkNameBound){
+    trkNameInput._trkNameBound = true;
+    trkNameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter"){
+        ev.preventDefault();
+        trackSaveNameDialogCommit();
+      }
+    });
+    trkNameInput.addEventListener("input", () => {
+      const err = document.getElementById("trackSaveNameDialogErr");
+      if (err){ err.hidden = true; err.textContent = ""; }
+    });
+  }
+  if (trkNameDlg && !trkNameDlg._trkNameDlgBound){
+    trkNameDlg._trkNameDlgBound = true;
+    trkNameDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      closeTrackSaveNameDialog();
+    });
+    trkNameDlg.addEventListener("close", () => {
+      const openerId = String(trkNameDlg.dataset._openerId || "");
+      if (openerId){
+        const opener = document.getElementById(openerId);
+        if (opener && opener.focus){
+          try { opener.focus(); } catch(_){}
+        }
+      }
+      trkNameDlg.dataset._openerId = "";
+      trkNameDlg._onDone = null;
+    });
+  }
+  const trkUnsDlg = document.getElementById("trackUnsavedCloseDialog");
+  const trkUnsCloseX = document.getElementById("trackUnsavedCloseCloseX");
+  const trkUnsSave = document.getElementById("trackUnsavedCloseSaveBtn");
+  const trkUnsDiscard = document.getElementById("trackUnsavedCloseDiscardBtn");
+  const trkUnsCancel = document.getElementById("trackUnsavedCloseCancelBtn");
+  if (trkUnsCloseX) trkUnsCloseX.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackUnsavedCloseDialog();
+  });
+  if (trkUnsCancel) trkUnsCancel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackUnsavedCloseDialog();
+  });
+  if (trkUnsDiscard) trkUnsDiscard.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackUnsavedCloseDialog();
+    try {
+      const d = document.getElementById("trackUnsavedCloseDialog");
+      if (d && typeof d._onDiscard === "function") return d._onDiscard();
+    } catch(_){}
+    closeTrackModal({ force: true, discardDraft: true });
+  });
+  if (trkUnsSave) trkUnsSave.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ensureTrackState();
+    const pts = state.track && Array.isArray(state.track.points) ? state.track.points : [];
+    if (pts.length < 2){
+      notifyTrackSaveMinPointsBlocked();
+      return;
+    }
+    closeTrackUnsavedCloseDialog();
+    const def = String(state._trackPromptName || trackMakeAutoName() || t("track.saveDefaultName") || "Traccia");
+    openTrackSaveNameDialog({ defaultName: def, saveLabel: t("track.saveDialogConfirm") || "Salva" }, (nm) => {
+      if (nm == null) return;
+      const ok = saveCurrentTrackToLibrary(String(nm));
+      if (!ok) return;
+      try {
+        const d = document.getElementById("trackUnsavedCloseDialog");
+        if (d && typeof d._onAfterSave === "function") return d._onAfterSave();
+      } catch(_){}
+      closeTrackModal({ force: true });
+    });
+  });
+  if (trkUnsDlg && !trkUnsDlg._trkUnsBound){
+    trkUnsDlg._trkUnsBound = true;
+    trkUnsDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      closeTrackUnsavedCloseDialog();
+    });
+  }
+  const trkClrDlg = document.getElementById("trackClearCurrentDialog");
+  const trkClrCloseX = document.getElementById("trackClearCurrentDialogCloseX");
+  const trkClrCancel = document.getElementById("trackClearCurrentDialogCancelBtn");
+  const trkClrDelete = document.getElementById("trackClearCurrentDialogDeleteBtn");
+  if (trkClrCloseX) trkClrCloseX.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackClearCurrentDialog();
+  });
+  if (trkClrCancel) trkClrCancel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackClearCurrentDialog();
+  });
+  if (trkClrDelete) trkClrDelete.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    closeTrackClearCurrentDialog();
+    trackClearCurrentCommit();
+  });
+  if (trkClrDlg && !trkClrDlg._trkClrBound){
+    trkClrDlg._trkClrBound = true;
+    trkClrDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault();
+      closeTrackClearCurrentDialog();
+    });
+  }
   const btnTDelLastSv = document.getElementById("btnTrackDeleteLastSaved");
   if (btnTDelLastSv) btnTDelLastSv.addEventListener("click", (ev) => { ev.preventDefault(); deleteLastSavedTrack(); });
   const btnSelDel = document.getElementById("btnSavedTracksDeleteSelected");
@@ -28068,6 +28447,24 @@ function gisInit(){
     if (tx && tx.open){
       ev.preventDefault();
       if (typeof closeTrackExportDialog === "function") closeTrackExportDialog();
+      return;
+    }
+  const tsn = document.getElementById("trackSaveNameDialog");
+  if (tsn && tsn.open){
+    ev.preventDefault();
+    if (typeof closeTrackSaveNameDialog === "function") closeTrackSaveNameDialog();
+    return;
+  }
+  const tcc = document.getElementById("trackClearCurrentDialog");
+  if (tcc && tcc.open){
+    ev.preventDefault();
+    if (typeof closeTrackClearCurrentDialog === "function") closeTrackClearCurrentDialog();
+    return;
+  }
+    const tuc = document.getElementById("trackUnsavedCloseDialog");
+    if (tuc && tuc.open){
+      ev.preventDefault();
+      if (typeof closeTrackUnsavedCloseDialog === "function") closeTrackUnsavedCloseDialog();
       return;
     }
     if (state.convertOpen){ closeConvertModal(); return; }
@@ -29017,6 +29414,14 @@ function syncWaypointExportDialogUi(){
         msg = String((typeof t === "function" ? (t("waypointModal.exportCotHintSelectedMany") || "") : "") || "").replace("{0}", String(checkedCount));
       }
       cotHint.textContent = msg;
+    }
+  }
+  const cotBtn = document.getElementById("waypointExportCotFormatBtn");
+  if (cotBtn){
+    if (cotHint && !cotHint.hidden && String(cotHint.textContent || "").trim()){
+      cotBtn.setAttribute("aria-describedby", "waypointExportDialogCotHint");
+    } else {
+      cotBtn.removeAttribute("aria-describedby");
     }
   }
   document.querySelectorAll("#waypointExportDialogFormats .wp-export-fmt").forEach((b) => {
@@ -30208,12 +30613,13 @@ function closeTrackModal(opts){
     const until = Number(state._trackFilePickerGuardUntil || 0);
     if (until && Date.now() < until) return false;
     if (trackHasUnsavedDraft()){
-      const useSavedClose = trackIsEditingSavedLibrary() && trackHasUnsavedDraft();
-      const ok = (typeof window.confirm === "function")
-        ? window.confirm((useSavedClose ? t("track.closeLoseSavedEditConfirm") : t("track.closeLoseDraftConfirm")) || "")
-        : true;
-      if (!ok) return false;
-      trackDiscardDraftWithNotify();
+      // Replace browser confirm with internal dialog (Track-only, Phase 1).
+      // Do not discard draft here; the dialog decides.
+      openTrackUnsavedCloseDialog({
+        onDiscard: () => { closeTrackModal({ force: true, discardDraft: true }); },
+        onAfterSave: () => { closeTrackModal({ force: true }); }
+      });
+      return false;
     }
   } else if (opts.force && opts.discardDraft){
     if (trackHasUnsavedDraft()) trackDiscardDraftWithNotify();
