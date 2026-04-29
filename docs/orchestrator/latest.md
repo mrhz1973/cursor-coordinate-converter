@@ -4,11 +4,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Workflow autosync:** reso **obbligatorio** l’autosync orchestratore dopo **ogni** intervento operativo che cambia stato (`latest.md` + **un** `inbox/` per intervento + **commit e push selettivi**). Il commit autosync riguarda **solo** `docs/orchestrator/**` e, se modificati nello stesso intervento, `.cursor/rules/**` pertinenti al workflow memoria. **`coordinate_converter Claude.html` non entra** nel commit autosync salvo richiesta esplicita. **`finito`** resta chiusura ufficiale completa (checkpoint/session/git come da regole progetto), **separato** dall’autosync. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`.
+2026-04-29 — **Workflow memoria:** l’**autosync orchestratore resta obbligatorio lato Cursor** dopo ogni intervento operativo (`latest.md` + **un** `inbox/` + commit/push selettivi di `docs/orchestrator/**` e `.cursor/rules/**` workflow se toccati). **ChatGPT** invece **non** legge il repo in automatico: legge GitHub **solo** quando l’utente scrive **«aggiornati»** nella chat ChatGPT (n8n/automazioni: fuori da questa iterazione). Monolite **fuori** dal commit autosync salvo richiesta esplicita; **`finito`** resta chiusura ufficiale separata. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`.
 
 ## Ultimo intervento Cursor
 
-Solo documentazione/regole orchestratore: obbligo autosync, RIEPILOGO con campi esito autosync, chiarimenti README e `chatgpt-checkpoint.md`.
+Documentazione workflow: distinzione **Cursor = pubblicazione sempre** vs **ChatGPT = lettura manuale su «aggiornati»**; chiarimenti in regola 30, README e `chatgpt-checkpoint.md`.
 
 ## File modificati (sintesi)
 
@@ -16,23 +16,24 @@ Solo documentazione/regole orchestratore: obbligo autosync, RIEPILOGO con campi 
 - `docs/orchestrator/README.md`
 - `docs/orchestrator/chatgpt-checkpoint.md`
 - `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
+- `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
 
 **Non toccati:** `coordinate_converter Claude.html`, `docs/roadmap.md`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, script, npm, GitHub Actions, hook, n8n.
 
 ## Stato verifiche
 
-- Monolite non modificato da questo intervento (controllo percorso).
+- Monolite non modificato da questo intervento.
 
 ## Stato Git noto
 
-Verificare in Cursor con `git status --short` (eventuale monolite modificato da sessioni precedenti resta fuori dall’autosync di questo intervento).
+Verificare in Cursor con `git status --short`.
 
 ## Prossimo passo consigliato
 
-In ogni intervento operativo successivo: chiudere **sempre** con autosync orchestratore. Lavoro applicativo precedente (es. Range Rings 5A): smoke / commit monolite a cura utente; riepilogo feature: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
+Continuare lavoro applicativo/monolite secondo priorità utente; per allineare ChatGPT: **«aggiornati»** nella chat ChatGPT dopo che Cursor ha pubblicato la memoria.
 
 ## Dettagli
 
-- Workflow autosync: `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
+- Intervento workflow (Cursor vs ChatGPT): `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
+- Iterazione precedente (solo obbligo autosync): `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
 - Range Rings 5A (feature): `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`

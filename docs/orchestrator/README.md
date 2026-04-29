@@ -16,6 +16,8 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 **`finito`** resta la **chiusura ufficiale completa** di sessione (doc ufficiali, git/push finali, criteri di workspace come da regole progetto).
 
+**ChatGPT non si aggiorna da solo:** non legge GitHub in automatico. Per ora legge il repository **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT**. **Cursor** invece **pubblica sempre** la memoria orchestratore dopo ogni intervento operativo che cambia stato (autosync obbligatorio).
+
 ## Cosa **non** sostituisce
 
 - **Non sostituisce** `docs/roadmap.md` né elenca ogni vincolo architetturale (per quello: roadmap e [`.cursor/rules/`](../../.cursor/rules/)).
@@ -31,7 +33,7 @@ Convenzione nomi: `YYYY-MM-DD_HHMM_<type>_<slug>.md` (template in `docs/orchestr
 ## Comando **«aggiornati»** (due contesti)
 
 - **In Cursor:** richiesta esplicita per **verificare** e **completare** allineamento + commit/push selettivo se un passaggio dell’autosync obbligatorio è saltato. **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo l’autosync va eseguito **sempre** senza attendere «aggiornati».
-- **In ChatGPT (orchestratore):** con «aggiornati», leggere il repository (es. GitHub) partendo da `docs/orchestrator/latest.md`, poi `chatgpt-checkpoint.md`, ecc. Dettagli in [chatgpt-checkpoint.md](chatgpt-checkpoint.md).
+- **In ChatGPT (orchestratore):** «aggiornati» = **lettura manuale** del repository (es. GitHub) solo in quel momento, partendo da `docs/orchestrator/latest.md`, poi [chatgpt-checkpoint.md](chatgpt-checkpoint.md), ecc. **Nessuna** lettura automatica del repo da parte di ChatGPT finché non si introduce esplicitamente altro (fuori scope: n8n, webhook, …).
 
 I backup **`/tmp/...-goi-gis-riepilogo.md`** restano requisito locale oltre al repo, come in regola: non sostituiscono `inbox`/`latest` versionati.
 

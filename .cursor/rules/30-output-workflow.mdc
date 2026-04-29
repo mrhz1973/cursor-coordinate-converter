@@ -90,7 +90,7 @@ La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestrato
 
 ### Quando scatta (intervento operativo)
 
-**Intervento operativo** = risposta Cursor che **modifica lo stato operativo** rispetto a quanto l’orchestratore può ragionevolmente dedurre da Git (codice, regole di progetto, **o** stessa memoria `docs/orchestrator/**` che cambia lo stato atteso). **Non** include una conversazione puramente informativa senza modifiche ai file.
+**Intervento operativo** = risposta Cursor che **modifica lo stato operativo** (codice, regole di progetto, **o** memoria `docs/orchestrator/**` che cambia ciò che l’orchestratore deve assumere dopo la prossima lettura). **Non** include una conversazione puramente informativa senza modifiche ai file.
 
 **Intervento** = stesso “blocco” di lavoro sul prompt: possono confluire **più** micro-fix; **un solo** file `inbox` per intervento (o lo stesso file aggiornato per **quello** intervento), **mai** un file separato per ogni micro-fix.
 
@@ -108,13 +108,17 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti.
 
-### Comando **«aggiornati»** in **Cursor** (sessione)
+### Cursor vs ChatGPT (memoria e lettura repo)
 
-Richiesta esplicita per **verificare** e **completare** allineamento `latest.md` / `inbox/` e **commit/push selettivo** memoria se un passaggio dell’autosync obbligatorio è saltato o c’è dubbio. **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo la sequenza obbligatoria va eseguita **sempre**, **senza** attendere «aggiornati».
+- **Cursor:** l’**autosync orchestratore** è **automatico e obbligatorio** in chiusura di **ogni** intervento operativo che cambia stato (sequenza sopra). **Non** attendere un comando utente per aggiornare e **pubblicare** (`commit`/`push`) la memoria orchestratore.
+- **ChatGPT:** **non** legge il repository **automaticamente**. Per ora legge GitHub **solo** quando l’utente scrive manualmente **«aggiornati»** nella chat ChatGPT. Automazioni esterne (n8n, webhook, polling, ecc.) **non** fanno parte di queste regole e **non** sono introdotte da questa documentazione.
 
-### Comando **«aggiornati»** in **ChatGPT** (orchestratore)
+### Doppio significato di **«aggiornati»**
 
-Come in `docs/orchestrator/chatgpt-checkpoint.md`: lettura repo (es. GitHub) partendo da `docs/orchestrator/latest.md`, poi questo checkpoint, poi `docs/checkpoint.md` se serve, poi `inbox/` solo per dettaglio. **Non** richiedere riepiloghi `/tmp/...` se l’equivalente è già in `inbox/` o `latest.md`.
+1. **Scritto in Cursor:** richiesta esplicita a Cursor di **verificare** e, se serve, **completare** allineamento `latest.md` / `inbox/` e **commit/push selettivo** della memoria (recupero se l’autosync obbligatorio è fallito o è dubbio). **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo la sequenza obbligatoria va eseguita **sempre**, senza attendere «aggiornati».
+2. **Scritto in ChatGPT:** ordine all’orchestratore di **leggere** il repository (es. GitHub) partendo da `docs/orchestrator/latest.md`, poi `docs/orchestrator/chatgpt-checkpoint.md`, poi `docs/checkpoint.md` se serve, poi `inbox/` solo per dettaglio. È l’**unico** trigger normale previsto oggi per allineare ChatGPT: **manuale**, non automatico. Dettaglio: `docs/orchestrator/chatgpt-checkpoint.md`.
+
+**Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.
 
 ### Confronto con chiusura ufficiale: `finito`
 
@@ -123,4 +127,4 @@ Come in `docs/orchestrator/chatgpt-checkpoint.md`: lettura repo (es. GitHub) par
 
 ### Limiti (invariati)
 
-- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, n8n: solo testo e file markdown sotto percorso consentito.
+- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, **n8n** o altre automazioni che facciano leggere a ChatGPT il repo **senza** comando manuale «aggiornati»: solo testo e file markdown sotto percorso consentito; **Cursor** resta l’unico attore che **pubblica** sempre la memoria dopo l’intervento.
