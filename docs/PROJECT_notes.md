@@ -20,6 +20,10 @@ Fonti usate per questa stesura: `coordinate_converter Claude.html`, `docs/sessio
 | **Come aprirla** | Aprire il file `.html` nel browser (doppio click o *Open with*). Per **Geolocation API** serve contesto sicuro: **HTTPS** o **localhost** (`window.isSecureContext`); su `file://` o HTTP non sicuro la geo è disabilitata come da documentazione in `docs/session-geolocalizzazione-e-mappa.md`. Opzionale: server statico locale se preferisci non usare `file://`. |
 | **Workspace** | `Cursor.code-workspace` presente in root. **Non** c’è `package.json` in root (il progetto non è un monorepo Node per l’app). |
 
+### Standard UI/UX (modali, tabelle, preset, map-first) — 2026-04-29
+
+Vincoli operativi per **nuovi** modal, pannelli GIS, tabelle operative e strumenti map-first: tabelle con colonne ridimensionabili dove c’è testo/dati variabili, **preset** che precompilano (senza sostituire) input tecnici con i18n, gerarchia pulsanti (primary/danger/ghost), flusso **primario** mappa-centrato senza toccare OPSEC/offline/geo opt-in. Dettaglio autoritativo: [`.cursor/rules/10-html-architecture.mdc`](../.cursor/rules/10-html-architecture.mdc) sezione **GIS & tools UI/UX standards**; riferimento in [`.cursor/rules/00-project-core.mdc`](../.cursor/rules/00-project-core.mdc).
+
 ---
 
 ## 2. Mappa moduli logici (range di riga approssimativi)

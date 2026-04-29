@@ -70,3 +70,48 @@ alwaysApply: true
 - Persistence: `state.activeTab === "waypoints"` is still saved for the waypoint topbar pill; track is not a topbar tab — legacy saves with `activeTab === "track"` reopen the track modal once via `state._pendingTrackModal`. `state.waypointsModalOpen`, `state.trackModalOpen`, and editor/draft flags are transient (not persisted), same pattern as `state.convertOpen` / `state.toolsMenuOpen`.
 - The Waypoints modal reuses `state.mapWaypoints` and the same on-map pick flow (`state.waypointPickMode`, `state.trackWaypointDraft`) as before. Do not duplicate these arrays or add a second click handler on the map.
 - Saved track archive: `state.savedTracks[]` (cap 50, persisted) holds snapshots `{ id, name, savedAt, closed, visible, points }`; visible entries render under the draft overlay as read-only dashed lines.
+
+## GIS & tools UI/UX standards (vincolo operativo)
+
+**Scope:** ogni **nuovo** o **esteso in modo sostanziale** modal `<dialog>`, pannello GIS (drawer, floating, sezione in Strumenti), **tabella operativa** a più colonne, o strumento con interazione **map-first** — salvo deroga esplicita nel prompt o vincolo tecnico documentato.
+
+**Check (Cursor, prima di progettare o implementare la UI):** elenco sotto; deve essere considerato **attivamente** e non come suggerimento generico.
+
+### 1) Tabelle operative in modal / pannelli
+
+Quando la tabella mostra **più colonne** e dati **variabili** o testo potenzialmente lungo (nome, descrizione, centro, coordinate, stato, note, elenchi, ecc.):
+
+- Prevedere **ridimensionamento orizzontale delle colonne** interessate (drag su header o pattern già usato nel monolite, es. *saved tracks* / tabelle con handle), salvo **motivo tecnico esplicito** (es. tabella a una colonna, card-list senza griglia, vincolo mobile assoluto temporaneo).
+- Impostare **min-width** / `clamp` così che colonne e sticky header restino usabili.
+- **Non** rompere: sticky header, checkbox/selezione, **batch toolbar** sopra o sotto la tabella, **scroll** interno del corpo tabella, layout mobile / overflow.
+- Preferire persistenza **transiente** della larghezza in **sessione** o su `state` / nodo mount (come pattern esistenti), coerente con il resto del file. **Niente `localStorage` dedicato alle larghezze colonne** salvo **decisione esplicita** del team.
+- **Riutilizzare** classi, handler e convenzioni già presenti nel monolitico invece di introdurre un nuovo sistema ad ogni feature.
+
+Ogni **nuova** tabella operativa del tipo sopra va progettata partendo da questo standard.
+
+### 2) Input tecnici e valori ricorrenti
+
+Quando uno strumento espone input tecnici (distanze, elenchi numerici, opzioni di export, parametri di area, ecc.) con **valori o combinazioni frequenti**:
+
+- Offrire **preset rapidi** (pulsanti *chip* / *btn-sm* vicino al campo) che **compilano o suggeriscono** il valore nel relativo input.
+- L’utente deve **sempre** poter **modificare manualmente** l’input dopo un preset; il preset **non** sostituisce la casella editabile.
+- Preset **compatti**, non invasivi, visivamente associati al campo. Testo visibile dei preset: **i18n IT/EN/FR** (`data-i18n` o chiavi coerenti).
+- Evitare cambi a parser, schema `state` o regole di sanitize **oltre il minimo** necessario per precompilare.
+
+Esempi indicativi (non esaustivi): Range Rings (distanze), scelte export/import, pannello offline (zoom / area) quando opportuno.
+
+### 3) Strumenti map-first
+
+Per strumenti il cui senso operativo è **sulla mappa** (pick punto, aree, traccia, anelli, misura, ecc.):
+
+- Il percorso **primario** deve partire dalla **mappa** quando fattibile: CTA/azione principale **evidente** e orientata alla mappa.
+- Input manuale (coordinate, testo) resta **secondario** ma accessibile nello stesso flusso.
+- Rispettare invariati: **nessun** GPS all’avvio, **nessuna** `watchPosition`, nessuna rete/Geo **silenziosa** — come da §*Geolocation* / *Map + offline* in questo file e da [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc) (OPSEC, offline-first).
+
+### 4) Coerenza pulsanti in modal e pannelli
+
+- **Primary** (`.btn-primary` o un solo CTA visivamente dominante): solo per l’**azione primaria reale** del pannello (es. *Crea*, *Applica*, *Converti* nel proprio contesto se è davvero il passo unico atteso). Non «blu ovunque».
+- **Secondari**: azioni normali (`.btn` / stile secondario) per conferme non finali, navigazione interna, *Salva* secondario.
+- **Danger**: eliminazione, reset distruttivo, *clear* irreversibile (classi *danger* / *btn-danger-subtle* già usate).
+- **Ghost / subtle / link**: chiusure, *Annulla*, utility, opzioni leggere.
+- **Contenuto e azioni principali** in alto; **opzioni**, toggle avanzati, *danger zone* in **basso** o in sezioni secondarie, salvo pattern esistente strutturato diversamente.
