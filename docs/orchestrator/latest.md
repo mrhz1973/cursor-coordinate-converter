@@ -4,22 +4,24 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Range Rings — overlay distanze + guide radiali:** su ogni anello visibile, linee **0° / 90° / 270°** (`vincentyDirect` + stessa proiezione `tileMapLatLonToPx` dell’overlay) e **etichetta distanza** con `rrFormatDistanceLabel` (unità set). CSS `rr-distance-guide` / `rr-distance-label`. **5F** drag handle non implementato. Inbox: `docs/orchestrator/inbox/2026-04-30_riepilogo_range-rings-distance-labels-guides.md`. Commit monolite **fuori** da eventuale `chore` solo-orchestratore se separato.
+2026-04-30 — **Piano tecnico Misura (standardizzazione UX/UI):** audit stato nel monolite (`#sec-measure`, `renderMapMeasureOverlay`, stato/transiente vs settings persistiti, toolbar `tmeas-btn`, floating box solo non-GIS). Piano incrementale **M1–M6** (audit stato → UI drawer → notifiche interne → storico opzionale saltabile → export GeoJSON locale → polish overlay tema) in **`docs/orchestrator/inbox/2026-04-30_2345_plan_measure-tool-standardization.md`**. Nessuna modifica al file HTML in questo step.
 
 ## Ultimo intervento Cursor
 
-`coordinate_converter Claude.html`, `docs/orchestrator/**`. **Nessun** `finito`.
+Solo memoria orchestratore + piano Misura. **Nessun** `finito`.
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (`rrFormatDistanceLabel`, `renderRangeRingsOverlay`, CSS overlay RR)
+- `docs/orchestrator/latest.md`
+- `docs/orchestrator/inbox/2026-04-30_2345_plan_measure-tool-standardization.md`
 
-**Non toccati (richiesta):** checkpoint/session/roadmap.
+**Non toccati:** `coordinate_converter Claude.html`, checkpoint/session/roadmap.
 
 ## Prossimo passo consigliato
 
-- QA pan/zoom + edit/sposta centro; valutare micro-offset label se clutter.
+Esecuzione incrementale blocchi M1→M3→M6 (saltare M4 salvo requisito storico); decidere parità floating GIS vs solo drawer.
 
 ## Dettagli (inbox)
 
-- Distanze + guide: `docs/orchestrator/inbox/2026-04-30_riepilogo_range-rings-distance-labels-guides.md`
+- Piano Misura: `docs/orchestrator/inbox/2026-04-30_2345_plan_measure-tool-standardization.md`
+- RR precedenti: inbox datati 2026-04-30 / 29…
