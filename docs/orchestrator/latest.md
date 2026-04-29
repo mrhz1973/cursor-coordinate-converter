@@ -4,26 +4,24 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Standard UI/UX vincolanti (Cursor):** tabelle con colonne ridimensionabili dove appropriato, preset per input tecnici, flussi map-first, gerarchia pulsanti (primary/danger/ghost). Regole in `.cursor/rules/10-html-architecture.mdc` (*GIS & tools UI/UX standards*), richiamo in `00-project-core.mdc`. Nota in `docs/PROJECT_notes.md`. **Nessun** cambiamento al monolite in questo batch. Dettaglio: `docs/orchestrator/inbox/2026-04-29_2420_riepilogo_ui-ux-standard-tabelle-preset-mapfirst.md`.
+2026-04-29 — **Range Rings (monolite, non in commit selettico):** pass “UI standard” su `#sec-rangerings`: tabella con colonne ridimensionabili (stato su `#rrList`, pattern come tracce/Aree offline), 5 nuovi gruppi di preset distanze + i18n, layout map-first con “Punto sulla mappa” in evidenza (`rrPickMapBtn` primary, hint `rrMapFirstHint`, default centro `picked`). 5D label SVG invariata. **Non** implementati 5E/5F. Dettaglio: `docs/orchestrator/inbox/2026-04-29_2520_riepilogo_range-rings-ui-standard-pass.md`.
 
 ## Ultimo intervento Cursor
 
-Solo regole + `PROJECT_notes` + memoria orchestratore. **Nessun** `finito`.
+Modifica a `coordinate_converter Claude.html` + memoria orchestratore. **Nessun** `finito`. Monolite **non** incluso nel commit selettico orchestratore salvo richiesta esplicita.
 
 ## File modificati (sintesi)
 
-- `.cursor/rules/00-project-core.mdc`, `10-html-architecture.mdc`
-- `docs/PROJECT_notes.md`
-- `docs/orchestrator/latest.md`, `inbox/2026-04-29_2420_riepilogo_ui-ux-standard-tabelle-preset-mapfirst.md`
+- `coordinate_converter Claude.html` (locale: resize RR, HTML preset/map-first, i18n, `ensureRangeRingsTableColResizeWired`)
+- `docs/orchestrator/latest.md`, `inbox/2026-04-29_2520_riepilogo_range-rings-ui-standard-pass.md`
 
-**Non toccati:** monolite, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md`.
+**Non toccati (richiesta):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md`.
 
 ## Prossimo passo consigliato
 
-- Nuove UI GIS: check esplicito standard §10 *GIS & tools UI/UX standards* prima di implementare.
-- Range Rings: proseguire piano 5E/5F da inbox 2130 ove ancora valido.
+- 5E “Punta e crea” e 5F drag centro: piano esistente in `2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md` ove valido; verificare in browser che resize/preset/label 5D non siano regrediti.
 
 ## Dettagli (inbox)
 
-- **UI/UX standard:** `docs/orchestrator/inbox/2026-04-29_2420_riepilogo_ui-ux-standard-tabelle-preset-mapfirst.md`
-- **Range Rings recenti:** `2026-04-29_2405_riepilogo_range-rings-5D-label-svg.md`, `…2345_…5C…`, `…2130_plan_…5C-5F…`
+- `docs/orchestrator/inbox/2026-04-29_2520_riepilogo_range-rings-ui-standard-pass.md`
+- Standard UI/UX tabelle: `2026-04-29_2420_riepilogo_ui-ux-standard-tabelle-preset-mapfirst.md`
