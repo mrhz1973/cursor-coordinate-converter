@@ -17,7 +17,7 @@ Il riepilogo deve essere completo, ordinato e non eccessivamente breve.
 
 Includi quando applicabile:
 
-- allineamento `docs/orchestrator/latest.md` e deposito in `docs/orchestrator/inbox/` come da sezione *Orchestrator GitHub* (se l’intervento sposta lo stato del lavoro)
+- **Autosync orchestratore** (come da sezione *Autosync orchestratore (obbligatorio)*): eseguito **sì/no**; **file memoria** inclusi nel commit autosync; **hash** commit autosync se creato; **push** autosync riuscito / non riuscito (con messaggio se fallito); **conferma** che `coordinate_converter Claude.html` è **escluso** dal commit autosync (o motivo se incluso per richiesta esplicita); **motivo** se autosync non eseguito o incompleto
 - `git status --short`
 - `git diff --stat`
 - file modificati
@@ -28,7 +28,7 @@ Includi quando applicabile:
 - chiavi i18n aggiunte o modificate
 - cosa non è stato toccato
 - lint/check eseguiti
-- conferma che non è stato fatto commit
+- se l’intervento **non** richiedeva commit (es. sola consultazione), indicarlo esplicitamente; altrimenti presenza del commit autosync come sopra
 - limiti o backlog
 
 ## File copiabile
@@ -65,7 +65,7 @@ Vincoli (come per il riepilogo):
 
 - il file deve stare fuori dal repository
 - non aggiungere il file a Git
-- **in più** (memoria orchestrator): includi il piano in `docs/orchestrator/inbox/` — in genere nello **stesso** file di riepilogo dell’**intervento** corrente (sezione *Piano* o equivalente), **oppure** in un file `YYYY-MM-DD_HHMM_plan_<slug>.md` se l’intervento è **solo** piano o se separare migliora la lettura, senza obbligo di un file per ogni micro-aggiornamento, come da sotto-sezione *Dopo ogni intervento Cursor* di questa regola
+- **in più** (memoria orchestrator): includi il piano in `docs/orchestrator/inbox/` — in genere nello **stesso** file di riepilogo dell’**intervento** corrente (sezione *Piano* o equivalente), **oppure** in un file `YYYY-MM-DD_HHMM_plan_<slug>.md` se l’intervento è **solo** piano o se separare migliora la lettura, senza obbligo di un file per ogni micro-aggiornamento, come da sotto-sezione *Autosync orchestratore (obbligatorio)* di questa regola
 
 ## Messaggio finale
 
@@ -82,36 +82,44 @@ Esempio (piano):
 
 `File piano copiabile: /tmp/01-goi-gis-plan.md` (o `02-`, … secondo il primo nome libero)
 
-## Orchestrator GitHub (obbligo dopo ogni intervento Cursor)
+## Autosync orchestratore (obbligatorio)
 
-La cartella `docs/orchestrator/` è la **memoria** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
+La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
 
-**Motivazione:** ChatGPT deve conoscere **anche** micro-fix e micro-cambiamenti di stato **prima** di dare istruzioni successive; la memoria non è “opzionale per i soli task grandi”.
+**Motivazione:** ChatGPT deve conoscere **anche** micro-fix e micro-cambiamenti di stato **prima** delle istruzioni successive; la pubblicazione di quella memoria **non** è facoltativa né rinviabile a “quando si vuole”.
 
-### Dopo ogni intervento Cursor (obbligo)
+### Quando scatta (intervento operativo)
 
-**Intervento** = l’attività coerente che Cursor svolge in risposta al prompt (stesso “blocco” di lavoro): possono confluire **più** micro-fix nella stessa sessione; **non** implica in sé **un** file `inbox` per **ogni** riga o micro-fix.
+**Intervento operativo** = risposta Cursor che **modifica lo stato operativo** rispetto a quanto l’orchestratore può ragionevolmente dedurre da Git (codice, regole di progetto, **o** stessa memoria `docs/orchestrator/**` che cambia lo stato atteso). **Non** include una conversazione puramente informativa senza modifiche ai file.
 
-Dopo **ogni** intervento che **cambia**, anche minimamente, lo **stato del lavoro** rispetto a quanto noto a ChatGPT (patch, micro-fix, debug, plan documentato, ecc.):
+**Intervento** = stesso “blocco” di lavoro sul prompt: possono confluire **più** micro-fix; **un solo** file `inbox` per intervento (o lo stesso file aggiornato per **quello** intervento), **mai** un file separato per ogni micro-fix.
 
-1. **Aggiorna** `docs/orchestrator/latest.md` con **sintesi breve** dello **stato reale più recente** (dove siamo, prossimo passo, riferimenti essenziali). **Mai** log esteso. **Evita** duplicare in `latest.md` ciò che stai per mettere in dettaglio nell’`inbox` (solo elenco puntuale e rimandi, se basta).
-2. **Un file in `inbox` per l’intervento corrente** (o aggiornamento del file già aperto per **quello** intervento) con **riepilogo completo**: al suo interno elenca in modo **chiaro** **ogni** micro-modifica (sotto sezioni o elenco puntuale). **Obbligo di registrazione** per ogni micro-cambiamento; **non** obbligo di **un** file separato per **ogni** micro-cambiamento.
-3. Piano (**Plan**), eventuale **diagnosi/debug** e le micro-modifiche: **tutto** il dettaglio atteso sta nel **riepilogo** dell’intervento, con sezioni (es. *Piano*, *Debug*, *Micro-modifiche*) nello stesso file **salvo** che un file `..._plan_...` o `..._debug_...` **separato** renda la lettura più limpida — **non** per creare file in più senza necessità. **Niente** aggiunte di file non richieste dal lavoro.
-4. **Continua** a produrre `/tmp/NN-goi-gis-riepilogo.md` (e `/tmp/NN-goi-gis-plan.md` se applica) come **backup locale** fuori repo, come dalle sezioni precedenti.
-5. Se **non** si committa il **codice applicativo** (p.es. monolite), l’`inbox` **deve** comunque contenere una descrizione precisa dei fix e/o estratto sufficiente del diff (anche in elenco se più micro-fix), così l’orchestrazione su GitHub resta informativa.
+### Sequenza obbligatoria (autosync)
+
+Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’intervento (salvo **impedimento tecnico** documentato nel RIEPILOGO con motivo e recupero previsto):
+
+1. **Aggiorna** `docs/orchestrator/latest.md` — sintesi breve dello stato reale più recente (dove siamo, prossimo passo, rimandi). **Mai** log esteso; **non** duplicare l’`inbox`.
+2. **Crea o aggiorna** **un** file in `docs/orchestrator/inbox/` per l’intervento corrente: riepilogo completo, **ogni** micro-modifica registrata (elenchi/sezioni). Piano (**Plan**), debug e dettaglio stanno nello stesso file **salvo** che un `..._plan_...` / `..._debug_...` **separato** migliori nettamente la lettura — **non** proliferare file senza necessità.
+3. Esegui **`git commit`** e **`git push`** **selettivi** che includono **solo** la memoria orchestratore (`docs/orchestrator/**`) e, **se modificati nello stesso intervento**, i file `.cursor/rules/**` pertinenti al workflow orchestratore. **Non** omettere commit/push salvo errore git/rete: in tal caso il RIEPILOGO riporta esito e motivo.
+4. **`coordinate_converter Claude.html`:** **mai** incluso nel commit autosync **salvo** richiesta **esplicita** dell’utente. Se il monolite è cambiato ma resta fuori dal commit, l’`inbox` **deve** comunque descrivere il fix e/o un estratto sufficiente del diff.
+5. **`finito`:** **non** parte dell’autosync; **non** usarlo per chiudere al posto dell’autosync.
+6. **`docs/checkpoint.md`** e **`docs/session-geolocalizzazione-e-mappa.md`:** **non** aggiornarli nell’autosync **salvo** richiesta esplicita dell’utente o comando **`finito`** (quest’ultimo come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc)).
+7. **`docs/roadmap.md`:** **non** incluso nel commit autosync salvo l’intervento lo modifichi **e** l’utente richieda esplicitamente di versionarlo nello stesso commit (caso raro); in caso normale resta fuori dall’autosync memoria.
+
+8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti.
 
 ### Comando **«aggiornati»** in **Cursor** (sessione)
 
-Significa: **assicurati** che `latest.md` e `inbox/` siano allineati allo stato reale post-intervento, **e** (ove il flusso lo preveda) **prepara o esegui** `git commit` e `git push` **selettivi** sui **soli** file di memoria orchestrator (tipicamente `docs/orchestrator/**` e, se coinvolte, le regole `.cursor/` toccate dallo stesso lavoro) **necessari** a rendere **leggibile** a ChatGPT lo stato corrente **tramite** GitHub. **Non** includere `coordinate_converter Claude.html` in questi commit selettivi **salvo** **richiesta esplicita** dell’utente.
+Richiesta esplicita per **verificare** e **completare** allineamento `latest.md` / `inbox/` e **commit/push selettivo** memoria se un passaggio dell’autosync obbligatorio è saltato o c’è dubbio. **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo la sequenza obbligatoria va eseguita **sempre**, **senza** attendere «aggiornati».
 
 ### Comando **«aggiornati»** in **ChatGPT** (orchestratore)
 
-L’orchestratore, su richiesta **«aggiornati»**, **legge** il repository a partire da `docs/orchestrator/latest.md`, poi `docs/orchestrator/chatgpt-checkpoint.md`, poi `docs/checkpoint.md` se serve, quindi i file in `inbox/` **solo** se servono i dettagli. **Non** richiedere riepilogo da `/tmp/...` se l’equivalente **è già** in `inbox/` o in `latest.md`.
+Come in `docs/orchestrator/chatgpt-checkpoint.md`: lettura repo (es. GitHub) partendo da `docs/orchestrator/latest.md`, poi questo checkpoint, poi `docs/checkpoint.md` se serve, poi `inbox/` solo per dettaglio. **Non** richiedere riepiloghi `/tmp/...` se l’equivalente è già in `inbox/` o `latest.md`.
 
 ### Confronto con chiusura ufficiale: `finito`
 
-- **Memoria orchestrator** (inclusa la risposta operativa a **«aggiornati»** in Cursor) = tenere allineata la conoscenza di ChatGPT sullo **stato di lavoro** (anche mini-fix), **non** sostituisce la chiusura ufficiale.
-- Il comando operativo **`finito`** (sempre **minuscolo**, backtick) attiva la **chiusura ufficiale** di sessione: `docs/checkpoint.md`, log di sessione, operazioni `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc). **Non** confondere i due flussi.
+- **Autosync orchestratore** = pubblicazione **obbligatoria** della memoria operativa dopo ogni intervento che cambia stato; **non** è chiusura ufficiale di sessione.
+- **`finito`** (sempre **minuscolo**, backtick) = **chiusura ufficiale** completa: `docs/checkpoint.md`, log di sessione, `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc), workspace coerente con quella chiusura. **Non** confondere autosync e `finito`.
 
 ### Limiti (invariati)
 

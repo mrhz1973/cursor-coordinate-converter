@@ -4,39 +4,35 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 16:14 UTC — Range Rings **Blocco 5A**: aggiunto pulsante on-map per aprire Range Rings, selezione per riga (transiente) e “Esporta selezionati” (GeoJSON). QA: `node --check` su JS inline + `git diff --check` ok. Dettagli completi: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
-
-2026-04-29 (Cursor «aggiornati») — Commit/push **selettivo** solo `docs/orchestrator/**`: tracciata l’inbox 5A e riallineato questo `latest.md` (monolite **escluso**).
+2026-04-29 — **Workflow autosync:** reso **obbligatorio** l’autosync orchestratore dopo **ogni** intervento operativo che cambia stato (`latest.md` + **un** `inbox/` per intervento + **commit e push selettivi**). Il commit autosync riguarda **solo** `docs/orchestrator/**` e, se modificati nello stesso intervento, `.cursor/rules/**` pertinenti al workflow memoria. **`coordinate_converter Claude.html` non entra** nel commit autosync salvo richiesta esplicita. **`finito`** resta chiusura ufficiale completa (checkpoint/session/git come da regole progetto), **separato** dall’autosync. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`.
 
 ## Ultimo intervento Cursor
 
-Range Rings **5A** nel monolite: bottone on-map → apre pannello esistente; lista con selezione separata dalla visibilità; export GeoJSON dei selezionati; micro-riordino “Crea” vs preset; nuove stringhe i18n minime.
+Solo documentazione/regole orchestratore: obbligo autosync, RIEPILOGO con campi esito autosync, chiarimenti README e `chatgpt-checkpoint.md`.
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html`
+- `.cursor/rules/30-output-workflow.mdc`
+- `docs/orchestrator/README.md`
+- `docs/orchestrator/chatgpt-checkpoint.md`
 - `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md` (dettagli)
+- `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
 
-**Non toccati:** `docs/roadmap.md`, script, npm, GitHub Actions, hook, n8n.
+**Non toccati:** `coordinate_converter Claude.html`, `docs/roadmap.md`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, script, npm, GitHub Actions, hook, n8n.
 
 ## Stato verifiche
 
-- `node --check` su JS inline: ok.
-- `git diff --check -- "coordinate_converter Claude.html"`: ok.
+- Monolite non modificato da questo intervento (controllo percorso).
 
 ## Stato Git noto
 
-Memoria orchestratore pubblicata su GitHub; lo stato del monolite locale va verificato in Cursor con `git status --short` prima del prossimo intervento.
+Verificare in Cursor con `git status --short` (eventuale monolite modificato da sessioni precedenti resta fuori dall’autosync di questo intervento).
 
 ## Prossimo passo consigliato
 
-Memoria orchestratore (inbox + `latest.md`) su GitHub dopo l’ultimo «aggiornati». Prossimo passo: smoke test Range Rings **5A** sul monolite **locale** e commit/push del file HTML quando l’utente lo decide; sviluppo successivo (es. **5B**) resta nell’inbox, salvo priorità diverse.
-
-## Prompt successivo / decisione richiesta
-
-- Nessuna, salvo se si vuole includere il monolite in un commit separato lato utente.
+In ogni intervento operativo successivo: chiudere **sempre** con autosync orchestratore. Lavoro applicativo precedente (es. Range Rings 5A): smoke / commit monolite a cura utente; riepilogo feature: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
 
 ## Dettagli
 
-- Riepilogo completo: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
+- Workflow autosync: `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
+- Range Rings 5A (feature): `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`
