@@ -115,3 +115,18 @@ Per strumenti il cui senso operativo è **sulla mappa** (pick punto, aree, tracc
 - **Danger**: eliminazione, reset distruttivo, *clear* irreversibile (classi *danger* / *btn-danger-subtle* già usate).
 - **Ghost / subtle / link**: chiusure, *Annulla*, utility, opzioni leggere.
 - **Contenuto e azioni principali** in alto; **opzioni**, toggle avanzati, *danger zone* in **basso** o in sezioni secondarie, salvo pattern esistente strutturato diversamente.
+
+### 5) Notifiche interne (modal, pannelli, dialog operativi)
+
+Ogni **modal** `<dialog>`, **pannello** GIS (drawer, floating, sezione in Strumenti) o pannello **operativo** che richieda azioni contestuali sull’utente deve, **quando utile**, prevedere un’**area di feedback interna** al pannello stesso — **non** come sostituto unico del feedback globale dell’app, ma come **canale preferito** quando l’azione, l’errore o l’esito **riguarda quel pannello**.
+
+- **Niente** `alert()`, `window.prompt()` o `window.confirm()` per feedback ordinario o validazione. Messaggi vanno bene **solo** per eventi *realmente* globali, irreversibili, o ove vincolati dal browser/legacy; in caso contrario, preferire notifica in-pannel + eventuale conferma dedicata in UI.
+- **Niente** usare *solo* toast/banner app-wide se l’errore o l’esito atteso è **nel contesto** del pannello: l’utente deve poter collegare messaggio a controllo/area.
+- L’area di notifica interna deve essere:
+  - **non invasiva** (sotto o accanto a header/controlli, senza coprire la mappa a tutta pagina);
+  - **leggibile** (contrasto, riga singola o breve, multilinea se necessario);
+  - **accessibile**: `aria-live` appropriato (`polite` per la maggior parte, `assertive` solo se blocco o errore critico nel pannello), e dove serve `role="status"` o `role="region"` con etichetta localizzata;
+  - **i18n** IT/EN/FR su testi visibili;
+  - **stilisticamente coerente** con le classi del monolito (es. *error box*, *ok box*, *hint* / *geo-warn*, varianti esistenti).
+- Copre almeno, dove applicabile: errori di validazione; **successo** di un’azione nel pannello; stati **temporanei** (modalità mappa / pick / drag / attesa); **annullamento** o blocco (Esc, chiusura, conflitto con un altro tool).
+- Questo criterio vale come **default** per ogni **nuovo** o **esteso in modo sostanziale** dialog/pannello/strumento operativo, salvo deroga esplicita documentata o vincolo tecnico inattaccabile in vanilla.
