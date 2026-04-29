@@ -17,6 +17,7 @@ Il riepilogo deve essere completo, ordinato e non eccessivamente breve.
 
 Includi quando applicabile:
 
+- allineamento `docs/orchestrator/latest.md` e deposito in `docs/orchestrator/inbox/` come da sezione *Orchestrator GitHub* (se l’intervento sposta lo stato del lavoro)
 - `git status --short`
 - `git diff --stat`
 - file modificati
@@ -64,6 +65,7 @@ Vincoli (come per il riepilogo):
 
 - il file deve stare fuori dal repository
 - non aggiungere il file a Git
+- **in più** (memoria orchestrator): includi il piano in `docs/orchestrator/inbox/` — in genere nello **stesso** file di riepilogo dell’**intervento** corrente (sezione *Piano* o equivalente), **oppure** in un file `YYYY-MM-DD_HHMM_plan_<slug>.md` se l’intervento è **solo** piano o se separare migliora la lettura, senza obbligo di un file per ogni micro-aggiornamento, come da sotto-sezione *Dopo ogni intervento Cursor* di questa regola
 
 ## Messaggio finale
 
@@ -79,3 +81,38 @@ Esempio (riepilogo):
 Esempio (piano):
 
 `File piano copiabile: /tmp/01-goi-gis-plan.md` (o `02-`, … secondo il primo nome libero)
+
+## Orchestrator GitHub (obbligo dopo ogni intervento Cursor)
+
+La cartella `docs/orchestrator/` è la **memoria** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
+
+**Motivazione:** ChatGPT deve conoscere **anche** micro-fix e micro-cambiamenti di stato **prima** di dare istruzioni successive; la memoria non è “opzionale per i soli task grandi”.
+
+### Dopo ogni intervento Cursor (obbligo)
+
+**Intervento** = l’attività coerente che Cursor svolge in risposta al prompt (stesso “blocco” di lavoro): possono confluire **più** micro-fix nella stessa sessione; **non** implica in sé **un** file `inbox` per **ogni** riga o micro-fix.
+
+Dopo **ogni** intervento che **cambia**, anche minimamente, lo **stato del lavoro** rispetto a quanto noto a ChatGPT (patch, micro-fix, debug, plan documentato, ecc.):
+
+1. **Aggiorna** `docs/orchestrator/latest.md` con **sintesi breve** dello **stato reale più recente** (dove siamo, prossimo passo, riferimenti essenziali). **Mai** log esteso. **Evita** duplicare in `latest.md` ciò che stai per mettere in dettaglio nell’`inbox` (solo elenco puntuale e rimandi, se basta).
+2. **Un file in `inbox` per l’intervento corrente** (o aggiornamento del file già aperto per **quello** intervento) con **riepilogo completo**: al suo interno elenca in modo **chiaro** **ogni** micro-modifica (sotto sezioni o elenco puntuale). **Obbligo di registrazione** per ogni micro-cambiamento; **non** obbligo di **un** file separato per **ogni** micro-cambiamento.
+3. Piano (**Plan**), eventuale **diagnosi/debug** e le micro-modifiche: **tutto** il dettaglio atteso sta nel **riepilogo** dell’intervento, con sezioni (es. *Piano*, *Debug*, *Micro-modifiche*) nello stesso file **salvo** che un file `..._plan_...` o `..._debug_...` **separato** renda la lettura più limpida — **non** per creare file in più senza necessità. **Niente** aggiunte di file non richieste dal lavoro.
+4. **Continua** a produrre `/tmp/NN-goi-gis-riepilogo.md` (e `/tmp/NN-goi-gis-plan.md` se applica) come **backup locale** fuori repo, come dalle sezioni precedenti.
+5. Se **non** si committa il **codice applicativo** (p.es. monolite), l’`inbox` **deve** comunque contenere una descrizione precisa dei fix e/o estratto sufficiente del diff (anche in elenco se più micro-fix), così l’orchestrazione su GitHub resta informativa.
+
+### Comando **«aggiornati»** in **Cursor** (sessione)
+
+Significa: **assicurati** che `latest.md` e `inbox/` siano allineati allo stato reale post-intervento, **e** (ove il flusso lo preveda) **prepara o esegui** `git commit` e `git push` **selettivi** sui **soli** file di memoria orchestrator (tipicamente `docs/orchestrator/**` e, se coinvolte, le regole `.cursor/` toccate dallo stesso lavoro) **necessari** a rendere **leggibile** a ChatGPT lo stato corrente **tramite** GitHub. **Non** includere `coordinate_converter Claude.html` in questi commit selettivi **salvo** **richiesta esplicita** dell’utente.
+
+### Comando **«aggiornati»** in **ChatGPT** (orchestratore)
+
+L’orchestratore, su richiesta **«aggiornati»**, **legge** il repository a partire da `docs/orchestrator/latest.md`, poi `docs/orchestrator/chatgpt-checkpoint.md`, poi `docs/checkpoint.md` se serve, quindi i file in `inbox/` **solo** se servono i dettagli. **Non** richiedere riepilogo da `/tmp/...` se l’equivalente **è già** in `inbox/` o in `latest.md`.
+
+### Confronto con chiusura ufficiale: `finito`
+
+- **Memoria orchestrator** (inclusa la risposta operativa a **«aggiornati»** in Cursor) = tenere allineata la conoscenza di ChatGPT sullo **stato di lavoro** (anche mini-fix), **non** sostituisce la chiusura ufficiale.
+- Il comando operativo **`finito`** (sempre **minuscolo**, backtick) attiva la **chiusura ufficiale** di sessione: `docs/checkpoint.md`, log di sessione, operazioni `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc). **Non** confondere i due flussi.
+
+### Limiti (invariati)
+
+- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, n8n: solo testo e file markdown sotto percorso consentito.
