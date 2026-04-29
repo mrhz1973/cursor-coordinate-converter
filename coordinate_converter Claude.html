@@ -1265,6 +1265,11 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .saved-tracks-table .saved-name-col-resize,
 .saved-tracks-table .saved-when-col-resize,
 .saved-tracks-table .saved-dist-col-resize,
+#sec-rangerings .rr-table .rr-name-col-resize,
+#sec-rangerings .rr-table .rr-center-col-resize,
+#sec-rangerings .rr-table .rr-rings-col-resize,
+#sec-rangerings .rr-table .rr-when-col-resize,
+#sec-rangerings .rr-table .rr-actions-col-resize,
 .wp-modal-table .wp-name-col-resize,
 .wp-modal-table .wp-details-col-resize{
   position:absolute;
@@ -1289,6 +1294,11 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .saved-tracks-table .saved-name-col-resize:hover,
 .saved-tracks-table .saved-when-col-resize:hover,
 .saved-tracks-table .saved-dist-col-resize:hover,
+#sec-rangerings .rr-table .rr-name-col-resize:hover,
+#sec-rangerings .rr-table .rr-center-col-resize:hover,
+#sec-rangerings .rr-table .rr-rings-col-resize:hover,
+#sec-rangerings .rr-table .rr-when-col-resize:hover,
+#sec-rangerings .rr-table .rr-actions-col-resize:hover,
 .wp-modal-table .wp-name-col-resize:hover,
 .wp-modal-table .wp-details-col-resize:hover{
   background:color-mix(in srgb, var(--accent) 22%, transparent);
@@ -1305,6 +1315,11 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   .saved-tracks-table .saved-name-col-resize,
   .saved-tracks-table .saved-when-col-resize,
   .saved-tracks-table .saved-dist-col-resize,
+  #sec-rangerings .rr-table .rr-name-col-resize,
+  #sec-rangerings .rr-table .rr-center-col-resize,
+  #sec-rangerings .rr-table .rr-rings-col-resize,
+  #sec-rangerings .rr-table .rr-when-col-resize,
+  #sec-rangerings .rr-table .rr-actions-col-resize,
   .wp-modal-table .wp-name-col-resize,
   .wp-modal-table .wp-details-col-resize{ display:none; }
 }
@@ -2796,6 +2811,7 @@ body.mm-enlarged{overflow:hidden}
 .tile-map .tile-ctrls .tmeas-btn,
 .tile-map .tile-ctrls .ttrk-btn,
 .tile-map .tile-ctrls .twpt-btn,
+.tile-map .tile-ctrls .trr-btn,
 .tile-map .tile-ctrls .tundo-btn,
 .tile-map .tile-ctrls .tile-recenter,
 .tile-map .tile-ctrls .tile-pick{
@@ -3983,6 +3999,128 @@ body.mm-enlarged .sig-badge{display:none}
 .waypoints-overlay .wpt-handle{
   pointer-events:auto;
 }
+.range-rings-overlay{
+  position:absolute; inset:0;
+  pointer-events:none; z-index:2;
+}
+.range-rings-overlay .rr-label{
+  font: 11px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
+  fill: var(--text);
+  paint-order: stroke fill;
+  stroke: rgba(255, 255, 255, 0.88);
+  stroke-width: 2.25px;
+  pointer-events: none;
+}
+html[data-theme="dark"] .range-rings-overlay .rr-label{
+  stroke: rgba(0, 0, 0, 0.55);
+}
+#sec-rangerings .rr-batch-bar{ margin-top:8px; }
+#sec-rangerings .rr-map-first-hint{
+  margin-top:8px; padding:8px 10px; border-radius:8px; font-size:.85rem; line-height:1.35;
+  border:1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
+  background: color-mix(in srgb, var(--accent) 7%, var(--panel2));
+  color: var(--text);
+}
+#sec-rangerings .rr-operative-notices{
+  margin-top:8px; display:flex; flex-direction:column; gap:6px;
+  min-height:0;
+}
+#sec-rangerings .rr-operative-notices .error-box,
+#sec-rangerings .rr-operative-notices .ok-box{ margin:0; }
+#sec-rangerings .rr-notice-box.rr-notice-box--info{
+  font-size:.86rem; line-height:1.4; margin:0; padding:8px 10px; border-radius:8px;
+  border:1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
+  background: color-mix(in srgb, var(--accent) 5%, var(--panel2));
+  color: var(--text);
+}
+#sec-rangerings .rr-table-wrap{
+  margin-top:6px;
+  max-height:min(52vh, 520px);
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel2);
+}
+#sec-rangerings .rr-table{
+  width:100%;
+  table-layout:fixed;
+  border-collapse:collapse;
+  font-size:.88rem;
+  --rr-name-col: 120px;
+  --rr-center-col: 110px;
+  --rr-rings-col: 120px;
+  --rr-when-col: 100px;
+  --rr-actions-col: 220px;
+}
+#sec-rangerings .rr-table col.rr-col-sel{ width:36px; min-width:36px; }
+#sec-rangerings .rr-table col.rr-col-vis{ width:44px; min-width:44px; }
+#sec-rangerings .rr-table col.rr-col-name{ width: var(--rr-name-col); min-width: 72px; }
+#sec-rangerings .rr-table col.rr-col-center{ width: var(--rr-center-col); min-width: 72px; }
+#sec-rangerings .rr-table col.rr-col-rings{ width: var(--rr-rings-col); min-width: 80px; }
+#sec-rangerings .rr-table col.rr-col-when{ width: var(--rr-when-col); min-width: 72px; }
+#sec-rangerings .rr-table col.rr-col-actions{ width: var(--rr-actions-col); min-width: 200px; }
+#sec-rangerings .rr-table th,
+#sec-rangerings .rr-table td{
+  padding:6px 8px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+#sec-rangerings .rr-table th{
+  text-align:left;
+  color:var(--muted);
+  font-weight:600;
+  position:sticky;
+  top:0;
+  background:var(--panel2);
+  z-index:1;
+  white-space:nowrap;
+}
+#sec-rangerings .rr-table th.rr-th-rrz{ padding-right: 12px; }
+#sec-rangerings .rr-table tbody tr[data-rr-row]:hover{ background:color-mix(in srgb, var(--accent) 6%, var(--panel)); }
+#sec-rangerings .rr-table tbody tr[data-rr-row].is-selected{ background:color-mix(in srgb, var(--accent) 10%, var(--panel)); }
+#sec-rangerings .rr-table .rr-vis-cell{ text-align:center; width:44px; }
+#sec-rangerings .rr-table .rr-actions-cell{ min-width:200px; white-space:nowrap; }
+#sec-rangerings .rr-table .rr-row-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+#sec-rangerings .rr-table .rr-name-inp{
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font:inherit; padding:3px 6px; border-radius:6px;
+  border:1px solid var(--border); background:var(--panel);
+}
+#sec-rangerings .rr-table .rr-name-inp:focus{
+  outline:2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset:1px;
+}
+#sec-rangerings .rr-preset-chips .btn{ font-size: 0.8rem; }
+#sec-rangerings .rr-table .btn-rr-fly{ padding:3px 8px; font-size:.78rem; }
+#sec-rangerings .rr-table .btn-danger-subtle[data-rr-del]{
+  min-width:2.25em; padding-inline:6px;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+#sec-rangerings .rr-table .btn-danger-subtle[data-rr-del] .danger-x{ margin-right:0; }
+#sec-rangerings .rr-delete-confirm-box{
+  border:1px solid color-mix(in srgb, var(--danger) 40%, var(--border));
+  background: color-mix(in srgb, var(--danger) 6%, var(--panel));
+  border-radius:8px; padding:10px 12px; margin:10px 0 0;
+  box-sizing:border-box;
+  max-width: 100%;
+}
+#sec-rangerings .rr-delete-confirm-msg{
+  margin:0; font-size:0.9rem; line-height:1.4; color: var(--text);
+  font-weight: 600;
+}
+#sec-rangerings .rr-delete-confirm-actions{ margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+#sec-rangerings .rr-table td.sub{
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+#sec-rangerings .rr-table th:nth-child(1),
+#sec-rangerings .rr-table td:nth-child(1){ width:36px; min-width:36px; box-sizing:border-box; text-align:center; }
+#sec-rangerings .rr-table th:nth-child(2),
+#sec-rangerings .rr-table td:nth-child(2){ width:44px; min-width:44px; box-sizing:border-box; }
 .track-overlay svg{
   width:100%; height:100%; display:block;
   overflow:visible;
@@ -4259,6 +4397,10 @@ body.printing-report #printReport:not(:empty){
 .fav-pat{ max-width:120px; padding:6px 8px; border-radius:6px; border:1px solid var(--border); background:var(--panel2); color:var(--text); }
 .favorite-item .fav-notes{ width:100%; min-height:38px; resize:vertical; font-size:.82rem; margin-top:6px; padding:6px; border-radius:6px; border:1px solid var(--border); background:var(--bg); color:var(--text); }
 .tile-map.map-pick-mode{ cursor:crosshair; outline:2px dashed var(--accent); outline-offset:2px; }
+.tile-map.range-rings-pick-mode,
+.tile-map.range-rings-pick-mode .tile-layer,
+.tile-map.range-rings-pick-create-mode,
+.tile-map.range-rings-pick-create-mode .tile-layer{ cursor:crosshair; }
 /* #endregion CSS — TABLES FAVORITES PRINT AND MOBILE POLISH */
 /* #region CSS — PRINT */
 /* ================= PRINT ================= */
@@ -5838,6 +5980,27 @@ body.gis-mode dialog#favoritesPanel.favorites-panel{
   pointer-events:auto;
   z-index:25;
 }
+/* GIS: Range Rings floating (5A-bis/ter) — stessa famiglia Cerca/Favoriti. */
+body.gis-mode dialog#rangeRingsPanel.range-rings-panel{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:24;
+}
+/* Range Rings floating: hide the reparented <summary> so it doesn't look like
+ * a clickable blue link that toggles/closes the panel content. */
+#rangeRingsPanelBody #sec-rangerings{ margin:0; border:none; background:transparent; padding:0; }
+#rangeRingsPanelBody #sec-rangerings > summary{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+#rangeRingsPanelBody #sec-rangerings .section-body{ display:block !important; }
 body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-split{
   grid-template-columns: 1fr;
   grid-template-rows: auto;
@@ -6171,6 +6334,42 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #rangeRingsPanel: anchor angoli come Layers/Search (handle erano nel DOM ma senza posizionamento). */
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 .gis-panel-resize-handle:hover::after,
 #trackModal .track-resize-handle:hover::after{
   opacity:.92;
@@ -6188,10 +6387,11 @@ html[data-theme="light"] #trackModal .track-resize-handle{
 }
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
-#waypointModalHead, #convertModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
-#waypointModalHead.dragging, #convertModalHead.dragging{ cursor:grabbing; }
+#waypointModalHead, #convertModalHead, #rangeRingsPanelHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
+#waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging{ cursor:grabbing; }
 body:not(.gis-mode) #waypointModal .gis-panel-resize-handle,
-body:not(.gis-mode) #convertModal .gis-panel-resize-handle{ display:none !important; }
+body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
+body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle{ display:none !important; }
 body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   max-height:calc(min(50vh, 480px) - 58px);
 }
@@ -7171,6 +7371,101 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </details>
 
+    <details id="sec-rangerings" data-tab-key="rangerings">
+      <summary data-i18n="sec.rangerings">Range Rings</summary>
+      <div class="section-body">
+        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="rangeRings.hint"></p>
+        <div id="rrMapFirstHint" class="hint rr-map-first-hint" role="status" hidden data-i18n="rangeRings.mapFirstHint"></div>
+
+        <div class="actions" style="margin-top:10px; flex-wrap:wrap; align-items:center; gap:8px">
+          <button type="button" class="btn btn-sm btn-primary" id="rrPickMapBtn" data-i18n="rangeRings.pickMap" data-i18n-tip="rangeRings.pickMapTip"></button>
+          <button type="button" class="btn btn-sm" id="rrPickCreateBtn" data-i18n="rangeRings.pickCreate" data-i18n-tip="tip.rangeRingsPickCreate"></button>
+        </div>
+        <div id="rrPickMapStatus" class="sub" style="margin-top:4px; color:var(--muted); font-size:.85rem" aria-live="polite"></div>
+
+        <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+          <label class="field">
+            <span data-i18n="rangeRings.name">Nome</span>
+            <input type="text" id="rrName" maxlength="80" data-i18n-ph="rangeRings.namePh" placeholder="">
+          </label>
+          <label class="field">
+            <span data-i18n="rangeRings.centerMode">Centro</span>
+            <select id="rrCenterMode">
+              <option value="picked" data-i18n="rangeRings.center.mapPicked" selected>Punto sulla mappa</option>
+              <option value="current" data-i18n="rangeRings.center.current">Punto convertito</option>
+              <option value="waypoint" data-i18n="rangeRings.center.waypoint">Waypoint</option>
+              <option value="map" data-i18n="rangeRings.center.map">Centro mappa</option>
+            </select>
+          </label>
+          <label class="field" id="rrWaypointWrap" style="grid-column:1 / -1" hidden>
+            <span data-i18n="rangeRings.waypoint">Waypoint</span>
+            <select id="rrWaypointSelect"></select>
+          </label>
+        </div>
+
+        <div class="rr-dist-preset-block" style="margin-top:10px">
+          <div class="grid" style="grid-template-columns:1fr auto; gap:10px">
+            <label class="field">
+              <span data-i18n="rangeRings.distances">Distanze</span>
+              <input type="text" id="rrDistances" maxlength="120" autocomplete="off" spellcheck="false"
+                     data-i18n-ph="rangeRings.distancesPh" placeholder="">
+            </label>
+            <label class="field" style="min-width:120px">
+              <span data-i18n="rangeRings.unit">Unità</span>
+              <select id="rrUnit">
+                <option value="m">m</option>
+                <option value="km">km</option>
+                <option value="NM">NM</option>
+                <option value="mi">mi</option>
+              </select>
+            </label>
+          </div>
+          <div class="rr-preset-chips" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center">
+            <span class="export-group-label" data-i18n="rangeRings.presetsQuick">Preset distanze</span>
+            <button type="button" class="btn btn-sm" data-rr-preset="m" data-rr-values="100,250,500" data-i18n="rangeRings.presetM100" data-i18n-tip="tip.rangeRingsPresetM100">100/250/500 m</button>
+            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="1,2,5" data-i18n="rangeRings.presetKm125" data-i18n-tip="tip.rangeRingsPresetKm125">1/2/5 km</button>
+            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="1,5,10" data-i18n="rangeRings.presetKm1510" data-i18n-tip="tip.rangeRingsPresetKm1510">1/5/10 km</button>
+            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="5,10,25" data-i18n="rangeRings.presetKm51025" data-i18n-tip="tip.rangeRingsPresetKm51025">5/10/25 km</button>
+            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="10,25,50" data-i18n="rangeRings.presetKm102550" data-i18n-tip="tip.rangeRingsPresetKm102550">10/25/50 km</button>
+          </div>
+        </div>
+
+        <div class="rr-operative-notices" id="rrOperativeNotices" role="region" aria-live="polite" aria-relevant="additions text" data-i18n-aria="rangeRings.noticeRegionAria">
+          <div id="rrInfo" class="rr-notice-box rr-notice-box--info" role="status" hidden></div>
+          <div id="rrError" class="error-box" hidden></div>
+          <div id="rrOk" class="ok-box" hidden></div>
+        </div>
+
+        <div class="actions" style="margin-top:10px; align-items:center; flex-wrap:wrap">
+          <button type="button" class="btn btn-sm" id="rrCreateBtn" data-i18n="rangeRings.create">Crea anelli</button>
+        </div>
+
+        <hr class="sub-sep" style="margin:14px 0">
+        <div class="sub-section-title" data-i18n="rangeRings.listTitle">Set salvati</div>
+        <p class="hint" style="color:var(--muted); font-size:.85rem; margin-top:6px" data-i18n="rangeRings.listHint"></p>
+        <div id="rrBatchBar" class="saved-tracks-batch-bar rr-batch-bar" hidden>
+          <span id="rrSelectionMeta" class="hint" style="margin-right:auto;font-size:.85rem;color:var(--muted);white-space:nowrap;"></span>
+          <button type="button" id="btnRrShowSelected" class="btn btn-sm" disabled data-i18n="rangeRings.batchShowSelected" data-i18n-tip="tip.rangeRingsBatchShowSelected"></button>
+          <button type="button" id="btnRrHideSelected" class="btn btn-sm" disabled data-i18n="rangeRings.batchHideSelected" data-i18n-tip="tip.rangeRingsBatchHideSelected"></button>
+          <button type="button" id="btnRrShowOnlySelected" class="btn btn-sm" disabled data-i18n="rangeRings.batchShowOnlySelected" data-i18n-tip="tip.rangeRingsBatchShowOnlySelected"></button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="btnRrShowAll" class="btn btn-sm" disabled data-i18n="rangeRings.batchShowAll" data-i18n-tip="tip.rangeRingsBatchShowAll"></button>
+          <button type="button" id="btnRrHideAll" class="btn btn-sm" disabled data-i18n="rangeRings.batchHideAll" data-i18n-tip="tip.rangeRingsBatchHideAll"></button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="btnRrExportSelected" class="btn btn-sm" disabled data-i18n="rangeRings.batchExportSelected" data-i18n-tip="tip.rangeRingsBatchExportSelected"></button>
+          <button type="button" id="btnRrDeleteSelected" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.rangeRingsBatchDeleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="rangeRings.batchDeleteSelected">Elimina selezionati</span></button>
+        </div>
+        <div id="rrDeleteConfirm" class="rr-delete-confirm-box" role="region" hidden aria-atomic="true" aria-relevant="additions text" data-i18n-aria="rangeRings.deleteConfirmRegionAria" aria-live="assertive">
+          <p id="rrDeleteConfirmText" class="rr-delete-confirm-msg" role="status"></p>
+          <div class="rr-delete-confirm-actions">
+            <button type="button" id="rrDeleteConfirmDo" class="btn btn-sm btn-danger" data-i18n="rangeRings.deleteConfirmAction"></button>
+            <button type="button" id="rrDeleteConfirmCancel" class="btn btn-sm" data-i18n="rangeRings.deleteCancel"></button>
+          </div>
+        </div>
+        <div class="rr-table-wrap"><div id="rrList" aria-live="polite"></div></div>
+      </div>
+    </details>
+
     <details id="sec-track" data-tab-key="track">
       <summary data-i18n="sec.track">📍 Traccia a punti</summary>
       <div class="section-body track-builder">
@@ -7768,6 +8063,18 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
+<dialog id="rangeRingsPanel" class="app-modal range-rings-panel" aria-labelledby="rangeRingsPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="rangeRingsPanelHead">
+    <h2 id="rangeRingsPanelTitle" class="app-modal-title" data-i18n="sec.rangerings">Range Rings</h2>
+    <button type="button" class="app-modal-close" id="rangeRingsPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body" id="rangeRingsPanelBody"></div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
 <dialog id="offlineDraftWarnDialog" class="app-modal" aria-labelledby="offlineDraftWarnTitle" aria-modal="true">
   <div class="app-modal-head">
     <h2 id="offlineDraftWarnTitle" class="app-modal-title" data-i18n="offcache.draftWarnTitle">Area non salvata</h2>
@@ -7902,6 +8209,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <span class="tool-desc" data-i18n="tools.mag.desc">Conversione grid ↔ magnetico ↔ vero.</span>
         </span>
       </button>
+      <button type="button" class="tool-item tool-item--gis-grid-dup" data-tool-target-sec="sec.rangerings">
+        <span class="tool-ico">⭕</span>
+        <span class="tool-label">
+          <span data-i18n="tools.rangerings">Range Rings</span>
+          <span class="tool-desc" data-i18n="tools.rangerings.desc">Anelli di distanza geodetici sulla mappa.</span>
+        </span>
+      </button>
     </div>
 
     <div class="tools-group">
@@ -7949,6 +8263,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="tools-menu-btn" data-tool="mag">
           <span class="tmb-ico" aria-hidden="true">🧭</span>
           <span class="tmb-lbl" data-i18n="sec.mag">Declinazione</span>
+        </button>
+        <button type="button" class="tools-menu-btn" data-tool="rangerings">
+          <span class="tmb-ico" aria-hidden="true">⭕</span>
+          <span class="tmb-lbl" data-i18n="sec.rangerings">Anelli</span>
         </button>
       </div>
       <div class="tools-panel-wrap" id="toolsPanelWrap" aria-live="polite"
@@ -8840,6 +9158,22 @@ const I18N = {
     "tip.trackSavedFly":"Centra la mappa su questa traccia.",
     "tip.trackColVis":"Visibilità su mappa",
     "tip.trackSelAllSaved":"Seleziona tutte le tracce",
+    "tip.rangeRingsSelAll":"Seleziona o deseleziona tutti i set Range Rings.",
+    "tip.rangeRingsFly":"Adatta vista e zoom alla corona più esterna del set.",
+    "tip.rangeRingsDelOne":"Elimina questo set Range Rings.",
+    "tip.rangeRingsBatchShowSelected":"Rendi visibili su mappa i set selezionati.",
+    "tip.rangeRingsBatchHideSelected":"Nascondi dalla mappa i set selezionati.",
+    "tip.rangeRingsBatchShowOnlySelected":"Mostra su mappa solo i set selezionati; nascondi gli altri.",
+    "tip.rangeRingsBatchShowAll":"Mostra tutti i set sulla mappa.",
+    "tip.rangeRingsBatchHideAll":"Nascondi tutti i set dalla mappa.",
+    "tip.rangeRingsBatchDeleteSelected":"Elimina tutti i set selezionati in tabella.",
+    "tip.rangeRingsBatchExportSelected":"Esporta in GeoJSON i set selezionati.",
+    "tip.rangeRingsPresetM100":"Imposta 100, 250, 500 in metri; puoi modificare dopo.",
+    "tip.rangeRingsPresetKm125":"Imposta 1, 2, 5 in km; puoi modificare dopo.",
+    "tip.rangeRingsPresetKm1510":"Imposta 1, 5, 10 in km; puoi modificare dopo.",
+    "tip.rangeRingsPresetKm51025":"Imposta 5, 10, 25 in km; puoi modificare dopo.",
+    "tip.rangeRingsPresetKm102550":"Imposta 10, 25, 50 in km; puoi modificare dopo.",
+    "tip.rangeRingsPickCreate":"Clic: crea un set con nome e distanze già impostate; niente trascinamento o è pan.",
     "tip.trackBatchShowSelected":"Rendi visibili su mappa le tracce selezionate (colonna Vis.).",
     "tip.trackBatchHideSelected":"Nascondi su mappa le tracce selezionate.",
     "tip.trackBatchShowOnlySelected":"Mostra su mappa solo le tracce selezionate; nascondi tutte le altre.",
@@ -8854,6 +9188,86 @@ const I18N = {
     "sec.measure":"Misura — distanza e azimuth",
     "sec.history":"Cronologia sessione",
     "sec.notes":"Note sui formati",
+    "sec.rangerings":"Range Rings",
+    "tools.rangerings":"Range Rings",
+    "tools.rangerings.desc":"Anelli di distanza geodetici sulla mappa.",
+    "rangeRings.hint":"Crea anelli (distanze) intorno a un centro. In genere: imposta il centro con «Punto sulla mappa», poi inserisci le distanze (preset opzionali) e tocca «Crea anelli»; puoi anche usare punto convertito, waypoint o centro mappa.",
+    "rangeRings.mapFirstHint":"Primo passo consigliato: tocca «Punta sulla mappa» e imposta il centro sulla carta, quindi inserisci le distanze. In alternativa scegli sotto un altro tipo di centro.",
+    "rangeRings.name":"Nome",
+    "rangeRings.namePh":"Nome set (opzionale)",
+    "rangeRings.centerMode":"Centro",
+    "rangeRings.center.current":"Punto convertito",
+    "rangeRings.center.waypoint":"Waypoint",
+    "rangeRings.center.map":"Centro mappa",
+    "rangeRings.center.mapPicked":"Punto sulla mappa",
+    "rangeRings.pickMap":"Punta sulla mappa",
+    "rangeRings.pickMapTip":"Il prossimo clic sulla mappa imposta il centro (non crea ancora gli anelli).",
+    "rangeRings.pickMapActive":"Clicca sulla mappa per impostare il centro.",
+    "rangeRings.pickMapSet":"Centro scelto: {0}",
+    "rangeRings.pickCreate":"Punta e crea",
+    "rangeRings.pickCreateActive":"Clicca sulla mappa: verrà creato subito un set con le distanze sotto (non trascinare: è pan).",
+    "rangeRings.noticeRegionAria":"Messaggi, errori e stato per creazione anelli e scelta sulla mappa",
+    "rangeRings.notice.escClearedRings":"Modalità mappa per Range Rings annullata (Esc).",
+    "rangeRings.waypoint":"Waypoint",
+    "rangeRings.noWaypoints":"Nessun waypoint disponibile",
+    "rangeRings.distances":"Distanze",
+    "rangeRings.distancesPh":"Esempio: 1, 5, 10",
+    "rangeRings.unit":"Unità",
+    "rangeRings.presets":"Preset",
+    "rangeRings.presetsQuick":"Preset distanze",
+    "rangeRings.colResizeAria":"Ridimensiona colonna",
+    "rangeRings.presetM100":"100 / 250 / 500 m",
+    "rangeRings.presetKm125":"1 / 2 / 5 km",
+    "rangeRings.presetKm1510":"1 / 5 / 10 km",
+    "rangeRings.presetKm51025":"5 / 10 / 25 km",
+    "rangeRings.presetKm102550":"10 / 25 / 50 km",
+    "rangeRings.create":"Crea anelli",
+    "rangeRings.mapBtnTip":"Apri Range Rings",
+    "rangeRings.mapBtnShort":"Rings",
+    "rangeRings.select":"Seleziona",
+    "rangeRings.exportSelected":"Esporta selezionati",
+    "rangeRings.listTitle":"Set salvati",
+    "rangeRings.empty":"Nessun set Range Rings.",
+    "rangeRings.visible":"Visibile",
+    "rangeRings.delete":"Elimina",
+    "rangeRings.err.center":"Centro non valido o non disponibile.",
+    "rangeRings.err.mapCenterMissing":"Imposta il centro cliccando sulla mappa (modalità «Punto sulla mappa») oppure scegli un altro tipo di centro.",
+    "rangeRings.err.distances":"Distanze non valide.",
+    "rangeRings.err.noSelection":"Seleziona almeno un set da esportare.",
+    "rangeRings.defaultName":"Anelli",
+    "rangeRings.created":"Set Range Rings creato.",
+    "rangeRings.deleted":"Set Range Rings eliminato.",
+    "rangeRings.exportSet":"GeoJSON",
+    "rangeRings.exportVisible":"Esporta visibili",
+    "rangeRings.exportOk":"Export GeoJSON completato.",
+    "rangeRings.exportSelectedOk":"Export GeoJSON (selezionati) completato.",
+    "rangeRings.exportEmpty":"Nessun anello valido da esportare.",
+    "rangeRings.exportInvalid":"Set non valido per export.",
+    "rangeRings.listHint":"In tabella la colonna «Vis.» è solo indicatore; usa la barra azioni per visibilità ed export multiplo. «Centra» inquadra la corona più esterna del set.",
+    "rangeRings.selectionCount":"Selezione: {0} / {1}",
+    "rangeRings.colSel":"Sel.",
+    "rangeRings.colVis":"Vis.",
+    "rangeRings.colName":"Nome",
+    "rangeRings.colCenter":"Centro",
+    "rangeRings.colRings":"Anelli",
+    "rangeRings.colWhen":"Quando",
+    "rangeRings.colActions":"Azioni",
+    "rangeRings.flyBtn":"Centra",
+    "rangeRings.renameConfirm":"Salvare il nuovo nome del set?",
+    "rangeRings.batchShowSelected":"Mostra selezionati",
+    "rangeRings.batchHideSelected":"Nascondi selezionati",
+    "rangeRings.batchShowOnlySelected":"Mostra solo selezionati",
+    "rangeRings.batchShowAll":"Mostra tutti",
+    "rangeRings.batchHideAll":"Nascondi tutti",
+    "rangeRings.batchDeleteSelected":"Elimina selezionati",
+    "rangeRings.batchExportSelected":"Esporta selezionati",
+    "rangeRings.deleteSelectedConfirm":"Eliminare tutti i set Range Rings selezionati?",
+    "rangeRings.deletedMany":"Eliminati {0} set Range Rings.",
+    "rangeRings.deleteConfirmSingle":"Eliminare il set «{0}»?",
+    "rangeRings.deleteConfirmBatch":"Eliminare {0} set Range Rings selezionati?",
+    "rangeRings.deleteConfirmAction":"Elimina",
+    "rangeRings.deleteCancel":"Annulla",
+    "rangeRings.deleteConfirmRegionAria":"Conferma eliminazione set Range Rings",
     "batch.hint":"Incolla una coordinata per riga, in qualsiasi formato.",
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Converti lista","batch.csv":"Copia CSV","batch.empty":"Nessuna riga valida.",
@@ -9902,6 +10316,22 @@ const I18N = {
     "tip.trackSavedFly":"Center the map on this track.",
     "tip.trackColVis":"Visibility on map",
     "tip.trackSelAllSaved":"Select all tracks",
+    "tip.rangeRingsSelAll":"Select or clear all Range Rings sets.",
+    "tip.rangeRingsFly":"Fit view and zoom to the set’s outermost ring.",
+    "tip.rangeRingsDelOne":"Delete this Range Rings set.",
+    "tip.rangeRingsBatchShowSelected":"Show selected sets on the map.",
+    "tip.rangeRingsBatchHideSelected":"Hide selected sets from the map.",
+    "tip.rangeRingsBatchShowOnlySelected":"Show only selected sets on the map; hide the others.",
+    "tip.rangeRingsBatchShowAll":"Show all sets on the map.",
+    "tip.rangeRingsBatchHideAll":"Hide all sets from the map.",
+    "tip.rangeRingsBatchDeleteSelected":"Delete all selected sets in the table.",
+    "tip.rangeRingsBatchExportSelected":"Export selected sets as GeoJSON.",
+    "tip.rangeRingsPresetM100":"Fill 100, 250, 500 in meters; you can edit after.",
+    "tip.rangeRingsPresetKm125":"Fill 1, 2, 5 in km; you can edit after.",
+    "tip.rangeRingsPresetKm1510":"Fill 1, 5, 10 in km; you can edit after.",
+    "tip.rangeRingsPresetKm51025":"Fill 5, 10, 25 in km; you can edit after.",
+    "tip.rangeRingsPresetKm102550":"Fill 10, 25, 50 in km; you can edit after.",
+    "tip.rangeRingsPickCreate":"Click: create a set with the name and distances already set; if you drag, the map pans.",
     "tip.trackBatchShowSelected":"Show selected saved tracks on the map (Vis. column).",
     "tip.trackBatchHideSelected":"Hide selected saved tracks from the map.",
     "tip.trackBatchShowOnlySelected":"Show only selected saved tracks on the map; hide all others.",
@@ -9916,6 +10346,86 @@ const I18N = {
     "sec.measure":"Measure — distance and bearing",
     "sec.history":"Session history",
     "sec.notes":"Format notes",
+    "sec.rangerings":"Range Rings",
+    "tools.rangerings":"Range Rings",
+    "tools.rangerings.desc":"Geodesic distance rings on the map.",
+    "rangeRings.hint":"Create distance rings around a center. Typically: set the center with «Map-tapped point», enter distances (optional quick presets), then «Create rings»; you can also use the converted point, a waypoint, or the map center.",
+    "rangeRings.mapFirstHint":"Recommended first step: tap «Pick on map» to set the center on the map, then enter distances. Or choose another center type below.",
+    "rangeRings.name":"Name",
+    "rangeRings.namePh":"Set name (optional)",
+    "rangeRings.centerMode":"Center",
+    "rangeRings.center.current":"Converted point",
+    "rangeRings.center.waypoint":"Waypoint",
+    "rangeRings.center.map":"Map center",
+    "rangeRings.center.mapPicked":"Map-tapped point",
+    "rangeRings.pickMap":"Pick on map",
+    "rangeRings.pickMapTip":"The next map click sets the center (does not create rings yet).",
+    "rangeRings.pickMapActive":"Click the map to set the center.",
+    "rangeRings.pickMapSet":"Chosen center: {0}",
+    "rangeRings.pickCreate":"Pick & create",
+    "rangeRings.pickCreateActive":"Click the map: a set is created at once with the distances above (do not drag — that pans).",
+    "rangeRings.noticeRegionAria":"Messages, errors, and state for creating rings and map pick",
+    "rangeRings.notice.escClearedRings":"Range Rings map mode cancelled (Esc).",
+    "rangeRings.waypoint":"Waypoint",
+    "rangeRings.noWaypoints":"No waypoints available",
+    "rangeRings.distances":"Distances",
+    "rangeRings.distancesPh":"Example: 1, 5, 10",
+    "rangeRings.unit":"Unit",
+    "rangeRings.presets":"Presets",
+    "rangeRings.presetsQuick":"Distance presets",
+    "rangeRings.colResizeAria":"Resize column",
+    "rangeRings.presetM100":"100 / 250 / 500 m",
+    "rangeRings.presetKm125":"1 / 2 / 5 km",
+    "rangeRings.presetKm1510":"1 / 5 / 10 km",
+    "rangeRings.presetKm51025":"5 / 10 / 25 km",
+    "rangeRings.presetKm102550":"10 / 25 / 50 km",
+    "rangeRings.create":"Create rings",
+    "rangeRings.mapBtnTip":"Open Range Rings",
+    "rangeRings.mapBtnShort":"Rings",
+    "rangeRings.select":"Select",
+    "rangeRings.exportSelected":"Export selected",
+    "rangeRings.listTitle":"Saved sets",
+    "rangeRings.empty":"No Range Rings sets.",
+    "rangeRings.visible":"Visible",
+    "rangeRings.delete":"Delete",
+    "rangeRings.err.center":"Center is invalid or unavailable.",
+    "rangeRings.err.mapCenterMissing":"Set the center by clicking the map («Map-tapped point» mode) or choose another center type.",
+    "rangeRings.err.distances":"Invalid distances.",
+    "rangeRings.err.noSelection":"Select at least one set to export.",
+    "rangeRings.defaultName":"Rings",
+    "rangeRings.created":"Range Rings set created.",
+    "rangeRings.deleted":"Range Rings set deleted.",
+    "rangeRings.exportSet":"GeoJSON",
+    "rangeRings.exportVisible":"Export visible",
+    "rangeRings.exportOk":"GeoJSON export completed.",
+    "rangeRings.exportSelectedOk":"GeoJSON export (selected) completed.",
+    "rangeRings.exportEmpty":"No valid rings to export.",
+    "rangeRings.exportInvalid":"Invalid set for export.",
+    "rangeRings.listHint":"The «Vis.» column is an indicator only; use the toolbar for visibility and bulk export. «Center view» frames the outermost ring of the set.",
+    "rangeRings.selectionCount":"Selected: {0} / {1}",
+    "rangeRings.colSel":"Sel.",
+    "rangeRings.colVis":"Vis.",
+    "rangeRings.colName":"Name",
+    "rangeRings.colCenter":"Center",
+    "rangeRings.colRings":"Rings",
+    "rangeRings.colWhen":"When",
+    "rangeRings.colActions":"Actions",
+    "rangeRings.flyBtn":"Center view",
+    "rangeRings.renameConfirm":"Save the new set name?",
+    "rangeRings.batchShowSelected":"Show selected",
+    "rangeRings.batchHideSelected":"Hide selected",
+    "rangeRings.batchShowOnlySelected":"Show only selected",
+    "rangeRings.batchShowAll":"Show all",
+    "rangeRings.batchHideAll":"Hide all",
+    "rangeRings.batchDeleteSelected":"Delete selected",
+    "rangeRings.batchExportSelected":"Export selected",
+    "rangeRings.deleteSelectedConfirm":"Delete all selected Range Rings sets?",
+    "rangeRings.deletedMany":"Deleted {0} Range Rings sets.",
+    "rangeRings.deleteConfirmSingle":"Delete the set “{0}”?",
+    "rangeRings.deleteConfirmBatch":"Delete {0} selected Range Rings set(s)?",
+    "rangeRings.deleteConfirmAction":"Delete",
+    "rangeRings.deleteCancel":"Cancel",
+    "rangeRings.deleteConfirmRegionAria":"Confirm Range Rings set deletion",
     "batch.hint":"Paste one coordinate per line, any format.",
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Convert list","batch.csv":"Copy CSV","batch.empty":"No valid rows.",
@@ -10965,6 +11475,22 @@ const I18N = {
     "tip.trackSavedFly":"Centrer la carte sur cette trace.",
     "tip.trackColVis":"Visibilité sur la carte",
     "tip.trackSelAllSaved":"Tout sélectionner (traces)",
+    "tip.rangeRingsSelAll":"Sélectionner ou désélectionner tous les ensembles Range Rings.",
+    "tip.rangeRingsFly":"Adapter la vue et le zoom à l’anneau le plus extérieur de l’ensemble.",
+    "tip.rangeRingsDelOne":"Supprimer cet ensemble Range Rings.",
+    "tip.rangeRingsBatchShowSelected":"Afficher sur la carte les ensembles sélectionnés.",
+    "tip.rangeRingsBatchHideSelected":"Masquer sur la carte les ensembles sélectionnés.",
+    "tip.rangeRingsBatchShowOnlySelected":"Afficher sur la carte uniquement les ensembles sélectionnés ; masquer les autres.",
+    "tip.rangeRingsBatchShowAll":"Afficher tous les ensembles sur la carte.",
+    "tip.rangeRingsBatchHideAll":"Masquer tous les ensembles sur la carte.",
+    "tip.rangeRingsBatchDeleteSelected":"Supprimer tous les ensembles sélectionnés dans le tableau.",
+    "tip.rangeRingsBatchExportSelected":"Exporter les ensembles sélectionnés en GeoJSON.",
+    "tip.rangeRingsPresetM100":"Renseigne 100, 250, 500 en m ; modifiable ensuite.",
+    "tip.rangeRingsPresetKm125":"Renseigne 1, 2, 5 en km ; modifiable ensuite.",
+    "tip.rangeRingsPresetKm1510":"Renseigne 1, 5, 10 en km ; modifiable ensuite.",
+    "tip.rangeRingsPresetKm51025":"Renseigne 5, 10, 25 en km ; modifiable ensuite.",
+    "tip.rangeRingsPresetKm102550":"Renseigne 10, 25, 50 en km ; modifiable ensuite.",
+    "tip.rangeRingsPickCreate":"Clic : crée l’ensemble avec le nom et les distances déjà saisis ; le glissement déplace la carte.",
     "tip.trackBatchShowSelected":"Afficher sur la carte les traces sélectionnées (colonne affichage).",
     "tip.trackBatchHideSelected":"Masquer sur la carte les traces sélectionnées.",
     "tip.trackBatchShowOnlySelected":"Afficher sur la carte uniquement les traces sélectionnées ; masquer les autres.",
@@ -10979,6 +11505,86 @@ const I18N = {
     "sec.measure":"Mesure — distance et azimut",
     "sec.history":"Historique de session",
     "sec.notes":"Notes sur les formats",
+    "sec.rangerings":"Range Rings",
+    "tools.rangerings":"Range Rings",
+    "tools.rangerings.desc":"Anneaux de distance géodésiques sur la carte.",
+    "rangeRings.hint":"Créez des anneaux (distances) autour d’un centre. En général : définissez le centre avec «Point sur la carte», saisissez les distances (préréglages possibles) puis «Créer les anneaux»; vous pouvez aussi utiliser le point converti, un waypoint ou le centre de la carte.",
+    "rangeRings.mapFirstHint":"Étape recommandée : touchez «Choisir sur la carte» pour placer le centre, puis saisissez les distances. Sinon choisissez un autre type de centre ci-dessous.",
+    "rangeRings.name":"Nom",
+    "rangeRings.namePh":"Nom de l’ensemble (optionnel)",
+    "rangeRings.centerMode":"Centre",
+    "rangeRings.center.current":"Point converti",
+    "rangeRings.center.waypoint":"Waypoint",
+    "rangeRings.center.map":"Centre de la carte",
+    "rangeRings.center.mapPicked":"Point sur la carte",
+    "rangeRings.pickMap":"Choisir sur la carte",
+    "rangeRings.pickMapTip":"Le prochain clic sur la carte définit le centre (ne crée pas encore les anneaux).",
+    "rangeRings.pickMapActive":"Cliquez sur la carte pour définir le centre.",
+    "rangeRings.pickMapSet":"Centre choisi : {0}",
+    "rangeRings.pickCreate":"Pointer et créer",
+    "rangeRings.pickCreateActive":"Cliquez sur la carte : l’ensemble est créé avec les distances ci-dessus (ne pas glisser — c’est du panoramique).",
+    "rangeRings.noticeRegionAria":"Messages, erreurs et état pour la création d’anneaux et le pointage sur la carte",
+    "rangeRings.notice.escClearedRings":"Mode carte Range Rings annulé (Échap).",
+    "rangeRings.waypoint":"Waypoint",
+    "rangeRings.noWaypoints":"Aucun waypoint disponible",
+    "rangeRings.distances":"Distances",
+    "rangeRings.distancesPh":"Exemple : 1, 5, 10",
+    "rangeRings.unit":"Unité",
+    "rangeRings.presets":"Présets",
+    "rangeRings.presetsQuick":"Préréglages de distances",
+    "rangeRings.colResizeAria":"Redimensionner la colonne",
+    "rangeRings.presetM100":"100 / 250 / 500 m",
+    "rangeRings.presetKm125":"1 / 2 / 5 km",
+    "rangeRings.presetKm1510":"1 / 5 / 10 km",
+    "rangeRings.presetKm51025":"5 / 10 / 25 km",
+    "rangeRings.presetKm102550":"10 / 25 / 50 km",
+    "rangeRings.create":"Créer des anneaux",
+    "rangeRings.mapBtnTip":"Ouvrir Range Rings",
+    "rangeRings.mapBtnShort":"Rings",
+    "rangeRings.select":"Sélectionner",
+    "rangeRings.exportSelected":"Exporter sélectionnés",
+    "rangeRings.listTitle":"Ensembles enregistrés",
+    "rangeRings.empty":"Aucun ensemble Range Rings.",
+    "rangeRings.visible":"Visible",
+    "rangeRings.delete":"Supprimer",
+    "rangeRings.err.center":"Centre invalide ou indisponible.",
+    "rangeRings.err.mapCenterMissing":"Définissez le centre en cliquant sur la carte (mode «Point sur la carte») ou choisissez un autre type de centre.",
+    "rangeRings.err.distances":"Distances invalides.",
+    "rangeRings.err.noSelection":"Sélectionnez au moins un ensemble à exporter.",
+    "rangeRings.defaultName":"Anneaux",
+    "rangeRings.created":"Ensemble Range Rings créé.",
+    "rangeRings.deleted":"Ensemble Range Rings supprimé.",
+    "rangeRings.exportSet":"GeoJSON",
+    "rangeRings.exportVisible":"Exporter visibles",
+    "rangeRings.exportOk":"Export GeoJSON terminé.",
+    "rangeRings.exportSelectedOk":"Export GeoJSON (sélectionnés) terminé.",
+    "rangeRings.exportEmpty":"Aucun anneau valide à exporter.",
+    "rangeRings.exportInvalid":"Ensemble invalide pour l’export.",
+    "rangeRings.listHint":"La colonne « Vis. » est un indicateur ; utilisez la barre pour la visibilité et l’export multiple. « Centrer » cadrre l’anneau le plus extérieur.",
+    "rangeRings.selectionCount":"Sélection : {0} / {1}",
+    "rangeRings.colSel":"Sel.",
+    "rangeRings.colVis":"Vis.",
+    "rangeRings.colName":"Nom",
+    "rangeRings.colCenter":"Centre",
+    "rangeRings.colRings":"Anneaux",
+    "rangeRings.colWhen":"Quand",
+    "rangeRings.colActions":"Actions",
+    "rangeRings.flyBtn":"Centrer",
+    "rangeRings.renameConfirm":"Enregistrer le nouveau nom de l’ensemble ?",
+    "rangeRings.batchShowSelected":"Afficher la sélection",
+    "rangeRings.batchHideSelected":"Masquer la sélection",
+    "rangeRings.batchShowOnlySelected":"Afficher seulement la sélection",
+    "rangeRings.batchShowAll":"Tout afficher",
+    "rangeRings.batchHideAll":"Tout masquer",
+    "rangeRings.batchDeleteSelected":"Supprimer la sélection",
+    "rangeRings.batchExportSelected":"Exporter la sélection",
+    "rangeRings.deleteSelectedConfirm":"Supprimer tous les ensembles Range Rings sélectionnés ?",
+    "rangeRings.deletedMany":"{0} ensembles Range Rings supprimés.",
+    "rangeRings.deleteConfirmSingle":"Supprimer l’ensemble « {0} » ?",
+    "rangeRings.deleteConfirmBatch":"Supprimer {0} ensemble(s) Range Rings sélectionné(s) ?",
+    "rangeRings.deleteConfirmAction":"Supprimer",
+    "rangeRings.deleteCancel":"Annuler",
+    "rangeRings.deleteConfirmRegionAria":"Confirmer la suppression d’ensembles Range Rings",
     "batch.hint":"Collez une coordonnée par ligne, tout format.",
     "batch.ph":"5.259444, -4.043909\n33T 291952 4640699\n30NUL8431881439",
     "batch.convert":"Convertir la liste","batch.csv":"Copier CSV","batch.empty":"Aucune ligne valide.",
@@ -11512,6 +12118,17 @@ const state = {
   searchPanelOpen: false, // transient: floating Cerca panel visibility (GIS)
   favoritesPanelOpen: false, // transient: floating Favoriti panel visibility (GIS)
   layersPanelOpen: false, // transient: floating Mappa/Offline panel visibility (GIS)
+  rangeRingsPanelOpen: false, // transient: floating Range Rings panel (GIS 5A-bis; on-map button)
+  /** Transient: next map click sets Range Rings center (mode "picked"); not persisted. */
+  rangeRingsPickCenterMode: false,
+  /** Transient: next map click creates a Range Rings set (after pre-validating distances); not persisted. */
+  rangeRingsPickAndCreateMode: false,
+  /** Transient: show one-shot Esc notice in #rrInfo (Range Rings panel). */
+  _rrPanelEscNotice: false,
+  /** Transient: pending in-panel delete confirm { type: "single"|"batch", ids: string[] } — not persisted. */
+  _rrPendingDelete: null,
+  /** Transient: last map-picked center for Range Rings { lat, lon }; not persisted. */
+  _rangeRingsMapPickCenter: null,
   toolsMenuOpen: null,    // transient: active GIS tool tile in #toolsDrawer panel (or null)
   /** Persisted: show waypoint name on map — "always" | "tooltip". */
   waypointMapNameDisplay: "tooltip",
@@ -11531,7 +12148,9 @@ const state = {
   _savedTracksSort: { key: "when", dir: "desc" },
   /** Transient: editor draft inside the Waypoint manager.
    *  Shape: { id?, lat, lon, name, icon, color, notes }. */
-  waypointEditorDraft: null
+  waypointEditorDraft: null,
+  /** Range Rings (concentric geodesic circles) — cap 20 sets, persisted, no UI in Blocco 1. */
+  rangeRingSets: []
 };
 
 let _basemapMenuOutsideBound = false;
@@ -12027,6 +12646,7 @@ function loadStore(){
 function saveStore(){
   try {
     ensureGisState();
+    ensureRangeRingState();
     const payload = {
       settings: {
         persist: state.persist !== false,
@@ -12085,7 +12705,8 @@ function saveStore(){
       gisPolygons: gisSanitizeFeatureArray(state.gisPolygons, "polygon"),
       gisLayers: gisSanitizeLayerArray(state.gisLayers),
       lastBatchRows: state.lastBatchRows,
-      batchInputText: String(state.batchInputText || "")
+      batchInputText: String(state.batchInputText || ""),
+      rangeRingSets: (Array.isArray(state.rangeRingSets) ? state.rangeRingSets : []).slice(0, RANGE_RING_SETS_CAP)
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch(_){ /* quota exceeded or storage disabled → ignore silently */ }
@@ -13659,6 +14280,199 @@ function vincentyDirect(lat1, lon1, distance, bearing){
     lon: ((lon2 * RAD + 540) % 360) - 180,
     finalBearing: ((finalBearing * RAD) + 360) % 360
   };
+}
+
+/* --- Range Rings (concentric geodesic circles) — data + pure math, Blocco 1 (no UI) --- */
+/** Max persisted sets. */
+const RANGE_RING_SETS_CAP = 20;
+/** Max radii (distances) per set after sanitize. */
+const RANGE_RING_MAX_RADII = 15;
+/** Prudential cap for one ring radius in metres (~5000 km). Rejects pathological / overflow cases. */
+const RANGE_RING_MAX_RADIUS_M = 5000000;
+
+const RANGE_RING_UNITS = new Set(["m", "km", "NM", "mi"]);
+const RANGE_RING_LABEL_MODES = new Set(["off", "name", "cardinal", "all"]);
+
+function rangeRingUnitToMeters(value, unit){
+  const u = (unit == null) ? "m" : String(unit);
+  if (!Number.isFinite(value) || value <= 0) return null;
+  if (u === "m")   return value;
+  if (u === "km")  return value * 1000;
+  if (u === "NM")  return value * 1852;
+  if (u === "mi")  return value * 1609.344;
+  return null;
+}
+function rangeRingMetersToUnit(meters, unit){
+  if (!Number.isFinite(meters)) return NaN;
+  const u = (unit == null) ? "m" : String(unit);
+  if (u === "m")   return meters;
+  if (u === "km")  return meters / 1000;
+  if (u === "NM")  return meters / 1852;
+  if (u === "mi")  return meters / 1609.344;
+  return meters;
+}
+/** Parse a single numeric token: decimal point or a single European-style comma. */
+function _parseRangeRingNumberToken(tok){
+  const t = String(tok == null ? "" : tok).trim();
+  if (!t) return null;
+  const s2 = (t.split(",").length === 2) ? t.replace(",", ".") : t.replace(/,/g, "");
+  const v = parseFloat(s2);
+  if (!Number.isFinite(v) || v <= 0) return null;
+  return v;
+}
+/**
+ * Parse distance list into canonical metres. Accepts e.g. "1,5,10", "1;5;10", "1 5 10".
+ * "1,5" alone = one decimal 1.5; "1,5,10" = 1, 5, 10. Max 15 values.
+ * `unit` applies to parsed magnitudes.
+ */
+function parseRangeRingDistancesInput(str, unit){
+  if (unit == null) unit = "m";
+  const u = String(unit);
+  if (!RANGE_RING_UNITS.has(u)) return [];
+  const raw = String(str == null ? "" : str).replace(/;/g, ",").replace(/\r?\n/g, " ").trim();
+  if (!raw) return [];
+  const parts = (function(){
+    if (raw.indexOf(",") < 0){
+      return raw.split(/\s+/).map(x => x.trim()).filter(Boolean);
+    }
+    const segs = raw.split(",").map(s => s.trim());
+    if (segs.length === 2){
+      const a = segs[0], b = segs[1];
+      if (a && b && /^\d$|^\d\d$/.test(b) && !/^\d{3,},/.test(raw) && segs[0].indexOf(".") < 0)
+        return [a + "," + b];
+    }
+    return segs;
+  })();
+  const mlist = [];
+  for (const p of parts){
+    const num = _parseRangeRingNumberToken(p);
+    if (num == null) continue;
+    const m = rangeRingUnitToMeters(num, u);
+    if (m == null || !Number.isFinite(m) || m <= 0) continue;
+    mlist.push(m);
+    if (mlist.length >= RANGE_RING_MAX_RADII) break;
+  }
+  mlist.sort((a, b) => a - b);
+  const out = [];
+  for (const x of mlist){
+    if (x > RANGE_RING_MAX_RADIUS_M) continue;
+    if (out.length && Math.abs(x - out[out.length - 1]) < 1e-3) continue;
+    out.push(x);
+  }
+  return out;
+}
+/**
+ * @returns {Array<{lat: number, lon: number}>}  Closed: last point === first. Empty on invalid.
+ */
+function buildGeodesicCircleRing(lat, lon, radiusM, stepDeg){
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return [];
+  if (!Number.isFinite(radiusM) || radiusM <= 0 || radiusM > RANGE_RING_MAX_RADIUS_M) return [];
+  const step = Number.isFinite(stepDeg) && stepDeg > 0 && stepDeg <= 90 ? stepDeg : 5;
+  const pts = [];
+  for (let b = 0; b < 360; b += step){
+    const v = vincentyDirect(lat, lon, radiusM, b);
+    if (!v || !Number.isFinite(v.lat) || !Number.isFinite(v.lon)) return [];
+    pts.push({ lat: v.lat, lon: normalizeLon(v.lon) });
+  }
+  if (pts.length < 3) return [];
+  pts.push({ lat: pts[0].lat, lon: pts[0].lon });
+  return pts;
+}
+
+function sanitizeRangeRingSet(raw, fallbackIndex){
+  if (!raw || typeof raw !== "object") return null;
+  const i = (Number.isFinite(fallbackIndex) ? Math.max(0, Math.floor(fallbackIndex)) : 0) + 1;
+  let id = (typeof raw.id === "string" && raw.id.length) ? raw.id.slice(0, 64) : uidNamed();
+  let name = (typeof raw.name === "string") ? raw.name.trim().slice(0, 80) : "";
+  if (!name) name = "Ring " + i;
+  const la0 = Number(raw && raw.center && raw.center.lat);
+  const lo0 = Number(raw && raw.center && raw.center.lon);
+  if (!Number.isFinite(la0) || !Number.isFinite(lo0)) return null;
+  const la = Math.max(-90, Math.min(90, la0));
+  const lo = normalizeLon(lo0);
+  let unit = (typeof raw.unit === "string") ? raw.unit : "m";
+  if (!RANGE_RING_UNITS.has(unit)) unit = "m";
+  const distsIn = (Array.isArray(raw.distancesM) ? raw.distancesM : []);
+  const mlist = [];
+  for (const d of distsIn){
+    const n = Number(d);
+    if (!Number.isFinite(n) || n <= 0) continue;
+    const m = Math.min(n, RANGE_RING_MAX_RADIUS_M);
+    mlist.push(m);
+  }
+  mlist.sort((a, b) => a - b);
+  const distancesM = [];
+  for (const m of mlist){
+    if (m > RANGE_RING_MAX_RADIUS_M) continue;
+    if (distancesM.length && Math.abs(m - distancesM[distancesM.length - 1]) < 1e-3) continue;
+    distancesM.push(m);
+  }
+  if (distancesM.length > RANGE_RING_MAX_RADII) distancesM.splice(RANGE_RING_MAX_RADII);
+  let color;
+  try { color = typeof raw.color === "string" ? sanitizeTrackColor(raw.color) : sanitizeTrackColor(""); } catch(_){ color = "#16a34a"; }
+  let strokeW = Number(raw.strokeWidth);
+  if (!Number.isFinite(strokeW)) strokeW = 2;
+  strokeW = Math.max(1, Math.min(8, Math.round(strokeW)));
+  let opa = Number(raw.opacity);
+  if (!Number.isFinite(opa)) opa = 0.55;
+  opa = Math.max(0.1, Math.min(1, opa));
+  let labelMode = (typeof raw.labelMode === "string") ? raw.labelMode : "off";
+  if (!RANGE_RING_LABEL_MODES.has(labelMode)) labelMode = "off";
+  const vis = (raw.visible === false) ? false : true;
+  const cAt = Number(raw.createdAt);
+  const createdAt = Number.isFinite(cAt) && cAt > 0 ? cAt : Date.now();
+  return {
+    _v: 1,
+    id: id,
+    name: name,
+    center: { lat: la, lon: lo },
+    distancesM: distancesM,
+    unit: unit,
+    color: color,
+    strokeWidth: strokeW,
+    opacity: opa,
+    labelMode: labelMode,
+    visible: vis,
+    createdAt: createdAt
+  };
+}
+function sanitizeRangeRingSets(raw){
+  if (!Array.isArray(raw)) return [];
+  const out = [];
+  const seen = new Set();
+  for (let j = 0; j < raw.length && out.length < RANGE_RING_SETS_CAP; j++){
+    const s = sanitizeRangeRingSet(raw[j], j);
+    if (!s) continue;
+    if (seen.has(s.id)) s.id = uidNamed();
+    seen.add(s.id);
+    out.push(s);
+  }
+  return out;
+}
+function ensureRangeRingState(){
+  if (!Array.isArray(state.rangeRingSets)) state.rangeRingSets = [];
+  state.rangeRingSets = sanitizeRangeRingSets(state.rangeRingSets);
+}
+/**
+ * Build a default sanitized set (for future create-from-UI). `input` may omit fields.
+ * @returns {object|null} canonical set
+ */
+function createRangeRingSetDraft(input){
+  input = input || {};
+  return sanitizeRangeRingSet({
+    _v: 1,
+    id: input.id,
+    name: input.name,
+    center: input.center,
+    distancesM: input.distancesM,
+    unit: input.unit,
+    color: input.color,
+    strokeWidth: input.strokeWidth,
+    opacity: input.opacity,
+    labelMode: input.labelMode,
+    visible: input.visible,
+    createdAt: input.createdAt
+  }, 0);
 }
 
 /* Embedded at SECTION 14B (after vincentyDirect) — World Magnetic Model 2025 (geomagnetism logic)
@@ -16223,6 +17037,8 @@ async function prepareUiBeforeAppFullReset(){
   try {
     if (typeof closeLayersPanel === "function") await closeLayersPanel({ force: true });
   } catch(_){}
+  try { if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel(); } catch(_){}
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
 }
 
 async function performAppFullLocalReset(){
@@ -16326,6 +17142,20 @@ function bindHotkeys(){
         state.trackWaypointDraft = null;
         refreshTileMapForTrackUi();
         ev.preventDefault();
+        return;
+      }
+      if (state._rrPendingDelete){
+        try { rrClearPendingDelete(); } catch(_){}
+        try { renderRangeRingsPanel(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
+      if (state.rangeRingsPickCenterMode || state.rangeRingsPickAndCreateMode){
+        state._rrPanelEscNotice = true;
+        try { rangeRingsClearPickCenterMode(); } catch(_){}
+        ev.preventDefault();
+        try { refreshTileMapForTrackUi(); } catch(_){}
+        try { renderRangeRingsPanel(); } catch(_){}
         return;
       }
       // Exit track / waypoint map-add modes if active
@@ -21016,6 +21846,7 @@ function beginEditSavedTrackById(id){
   state._trackNewPromptPrevPick = null;
   state._trackPickLastClick = null;
   state.trackWaypointDraft = null;
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   state.track.pickMode = true;
   saveStore();
   if (document.body.classList.contains("gis-mode") && typeof openTrackModal === "function"){
@@ -21519,7 +22350,69 @@ function ensureOfflineAreasNameColResizeWired(){
   }, true);
 }
 
-/** Desktop: colonne Nome / Data / Distanza in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
+function ensureRangeRingsTableColResizeWired(){
+  if (window._rrTableColResizeWired) return;
+  window._rrTableColResizeWired = true;
+  let drag = null;
+  function endDrag(){
+    drag = null;
+    try {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
+    } catch(_){}
+  }
+  function rrColMetaFromHandle(h, table){
+    const rectT = table.getBoundingClientRect();
+    const w = Math.max(200, rectT.width);
+    if (h.classList.contains("rr-name-col-resize")){
+      return { varName: "--rr-name-col", prop: "_rrNameColPx", td: 3, min: 72, max: Math.min(420, Math.max(100, Math.floor(w * 0.45))) };
+    }
+    if (h.classList.contains("rr-center-col-resize")){
+      return { varName: "--rr-center-col", prop: "_rrCenterColPx", td: 4, min: 72, max: Math.min(300, Math.max(90, Math.floor(w * 0.30))) };
+    }
+    if (h.classList.contains("rr-rings-col-resize")){
+      return { varName: "--rr-rings-col", prop: "_rrRingsColPx", td: 5, min: 80, max: Math.min(360, Math.max(100, Math.floor(w * 0.32))) };
+    }
+    if (h.classList.contains("rr-when-col-resize")){
+      return { varName: "--rr-when-col", prop: "_rrWhenColPx", td: 6, min: 72, max: Math.min(320, Math.max(100, Math.floor(w * 0.24))) };
+    }
+    if (h.classList.contains("rr-actions-col-resize")){
+      return { varName: "--rr-actions-col", prop: "_rrActionsColPx", td: 7, min: 200, max: Math.min(480, Math.max(220, Math.floor(w * 0.40))) };
+    }
+    return null;
+  }
+  function onMove(ev){
+    if (!drag) return;
+    const dx = ev.clientX - drag.startX;
+    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty(drag.meta.varName, nw + "px");
+    const list = document.getElementById("rrList");
+    if (list) list[drag.meta.prop] = nw;
+  }
+  document.addEventListener("pointerdown", (ev) => {
+    const h = ev.target.closest && ev.target.closest(
+      ".rr-name-col-resize, .rr-center-col-resize, .rr-rings-col-resize, .rr-when-col-resize, .rr-actions-col-resize"
+    );
+    if (!h) return;
+    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
+    const table = h.closest(".rr-table");
+    if (!table) return;
+    const list = document.getElementById("rrList");
+    if (!list || !list.contains(table)) return;
+    const meta = rrColMetaFromHandle(h, table);
+    if (!meta) return;
+    const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
+    const startW = cell ? cell.getBoundingClientRect().width : 120;
+    drag = { table, meta, startX: ev.clientX, startW: startW };
+    ev.preventDefault();
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+  }, true);
+}
+
+/** Desktop: colonne Nome / Distanza in Tracce salvate (sessione su #savedTracksMount, no localStorage). */
 function ensureSavedTracksNameColResizeWired(){
   if (window._savedTracksNameColResizeWired) return;
   window._savedTracksNameColResizeWired = true;
@@ -21646,7 +22539,7 @@ function ensureWpModalNameColResizeWired(){
 function ensureGisInlineRenameKeyboardHooks(){
   if (window._gisInlineRenameKbWired) return;
   window._gisInlineRenameKbWired = true;
-  const sel = "[data-offa-rename],[data-saved-rename],[data-wp-rename],[data-fav-rename]";
+  const sel = "[data-offa-rename],[data-saved-rename],[data-wp-rename],[data-fav-rename],[data-rr-rename]";
   document.addEventListener("keydown", (ev) => {
     const el = ev.target;
     if (!el || !el.matches || !el.matches(sel)) return;
@@ -21662,6 +22555,7 @@ function ensureGisInlineRenameKeyboardHooks(){
     if (prev === undefined) prev = el.dataset._prevSavedName;
     if (prev === undefined) prev = el.dataset._prevWpName;
     if (prev === undefined) prev = el.dataset._prevFavName;
+    if (prev === undefined) prev = el.dataset._prevRrName;
     if (prev != null) el.value = prev;
     try { el.blur(); } catch(_){}
   }, true);
@@ -22214,6 +23108,104 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
 }
+
+/** True when overlay should draw the set name near the center (5D). */
+function rrLabelModeShowsName(s){
+  return !!(s && String(s.labelMode || "off") === "name");
+}
+/** Display string for SVG <text> (truncate). */
+function rrLabelText(s){
+  const raw = String(s && s.name != null ? s.name : "").trim();
+  const max = 40;
+  if (!raw) return "\u2014";
+  if (raw.length <= max) return raw;
+  return raw.slice(0, max - 1) + "\u2026";
+}
+
+/** Concentric range rings overlay + optional name label per set (5D). */
+function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  const old = tileMap.querySelector(".range-rings-overlay");
+  if (old) old.remove();
+  ensureRangeRingState();
+  const sets = (Array.isArray(state.rangeRingSets) ? state.rangeRingSets : []).filter(s => s && s.visible);
+  if (!sets.length) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+
+  const style = tileLayer.style.transform || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const z = state.mapZoom || zoom || 11;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
+
+  for (const s of sets){
+    const c = s.center;
+    if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
+    const color = (typeof s.color === "string") ? s.color : "#16a34a";
+    const sw = Number.isFinite(s.strokeWidth) ? s.strokeWidth : 2;
+    const op = Number.isFinite(s.opacity) ? s.opacity : 0.6;
+    const dists = Array.isArray(s.distancesM) ? s.distancesM : [];
+    for (const radiusM of dists){
+      const r = Number(radiusM);
+      if (!Number.isFinite(r) || r <= 0) continue;
+      const ring = buildGeodesicCircleRing(c.lat, c.lon, r, 5);
+      if (!ring || ring.length < 4) continue;
+      const coords = ring.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+      const ptStr = coords.map(p => (p.x - tx).toFixed(1) + "," + (p.y - ty).toFixed(1)).join(" ");
+      const pl = document.createElementNS(ns, "polyline");
+      pl.setAttribute("points", ptStr);
+      pl.setAttribute("fill", "none");
+      pl.setAttribute("stroke", color);
+      pl.setAttribute("stroke-width", String(sw));
+      pl.setAttribute("opacity", String(op));
+      pl.setAttribute("stroke-linejoin", "round");
+      pl.setAttribute("stroke-linecap", "round");
+      pl.style.pointerEvents = "none";
+      pl.dataset.rrSetId = String(s.id || "");
+      svg.appendChild(pl);
+    }
+  }
+
+  for (const s of sets){
+    if (!rrLabelModeShowsName(s)) continue;
+    const c = s.center;
+    if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
+    const px = tileMapLatLonToPx(root, c.lat, c.lon);
+    if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+    const lx = (px.x - tx) + 10;
+    const ly = (px.y - ty) - 6;
+    const text = document.createElementNS(ns, "text");
+    text.setAttribute("class", "rr-label");
+    text.setAttribute("x", lx.toFixed(1));
+    text.setAttribute("y", ly.toFixed(1));
+    text.setAttribute("text-anchor", "start");
+    text.setAttribute("dominant-baseline", "middle");
+    text.setAttribute("data-rr-set-id", String(s.id || ""));
+    text.textContent = rrLabelText(s);
+    svg.appendChild(text);
+  }
+
+  if (!svg.childNodes || !svg.childNodes.length) return;
+  const wrap = document.createElement("div");
+  wrap.className = "range-rings-overlay";
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
+}
 /* ========================= SECTION 18B: GIS DATA MODEL (Phase 1) =========================
  * Invisible foundation for future GIS layers/features. Waypoints and the legacy
  * track builder remain canonical; these helpers add GeoJSON-native tracks and
@@ -22662,6 +23654,7 @@ function trackAddPoint(lat, lon, name, meta){
         && !state._trackCompleted
         && !state._trackPromptOpen
         && pts.length >= 1){
+      try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
       state.track.pickMode = true;
     }
   } catch(_){}
@@ -22859,6 +23852,7 @@ function renderTrackNewTrackPrompt(){
 function resumeTrackEditing(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   // Exit the "completed" state without changing points or savedTracks.
   trackPickCancelDeferred();
   state._trackCompleted = false;
@@ -22978,6 +23972,8 @@ function trackSyncPickModeUi(){
     else tileMap.removeAttribute("data-track-hint");
     if (wpOn) tileMap.setAttribute("data-waypoint-hint", t("track.waypointPickHint"));
     else tileMap.removeAttribute("data-waypoint-hint");
+    tileMap.classList.toggle("range-rings-pick-mode", !!state.rangeRingsPickCenterMode);
+    tileMap.classList.toggle("range-rings-pick-create-mode", !!state.rangeRingsPickAndCreateMode);
   }
   const btnFin = document.getElementById("btnTrackFinish");
   if (btnFin){
@@ -23273,6 +24269,7 @@ function completeCurrentTrack(opts){
 function trackTogglePickMode(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   if (state._trackNewPromptOpen) return;
   // If the track was completed, "resume" should actually reopen editing.
   if (state._trackCompleted && !(state.track && state.track.pickMode)){
@@ -23292,6 +24289,7 @@ function trackTogglePickMode(){
 function trackToggleWaypointPickMode(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   state.waypointPickMode = !state.waypointPickMode;
   if (state.waypointPickMode){
     state.track.pickMode = false;
@@ -24135,6 +25133,7 @@ function renderTrackAll(){
     renderTrackOverlay(tileMap, lp.lat, lp.lon, z);
     renderSavedTracksOverlays(tileMap, lp.lat, lp.lon, z);
     renderMapWaypointsOverlay(tileMap, lp.lat, lp.lon, z);
+    renderRangeRingsOverlay(tileMap, lp.lat, lp.lon, z);
   }
   if (root) updateTrackMapFloatReadout(root);
   renderSavedTracksList();
@@ -24761,6 +25760,11 @@ function renderTileMap(lat, lon, zoom){
       const cls = on ? " active" : "";
       return `<button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${waypointMapIcoImg}</button>`;
     })()}
+    ${(() => {
+      const tip = esc((typeof t==="function" ? (t("rangeRings.mapBtnTip")||"") : "") || "Range Rings");
+      const lbl = esc((typeof t==="function" ? (t("rangeRings.mapBtnShort")||"") : "") || "Rings");
+      return `<button class="trr-btn" type="button" data-role="rangerings-open" data-tip="${tip}" aria-label="${tip}"><span class="tmb-ico" aria-hidden="true">◎</span><span class="tmb-label" aria-hidden="true">${lbl}</span></button>`;
+    })()}
   </div>`;
 
   // Floating measure box (ruler + protractor tool) — nascosto in GIS (pannello nel drawer a sinistra).
@@ -24894,8 +25898,7 @@ function renderTileMap(lat, lon, zoom){
   const initCoord = esc(fmtPrimary(lat, lon));
   const primFmt = esc(state.primary || "MGRS");
   const fmtBadge = `<span class="trp-fmt-lab" data-role="coord-fmt-label">${primFmt}</span>`;
-  /* Formato primario: chip nell'header / modale Converti — niente ⇄ sulla mappa. */
-  const cycleBtn = "";
+  const cycleBtn = `<button class="trp-action" type="button" data-role="coord-cycle" aria-label="${esc(buildCoordCycleTooltip())}">⇄</button>`;
   const pointKey  = esc(t("map.point"));
   const cursorKey = esc(t("map.cursor"));
   html += `<div class="tile-readout">
@@ -24949,6 +25952,21 @@ function renderTileMap(lat, lon, zoom){
       renderTileMap(lat, lon, zoom + d);
     });
   });
+
+  // Primary format cycle button (map readout)
+  root.querySelectorAll('[data-role="coord-cycle"]').forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      const before = state.primary || "MGRS";
+      state.primary = nextPrimaryFormat();
+      refreshCoordCycleMapUi();
+      const pEl = root.querySelector('.trp-point [data-role="point-coord"]');
+      const cEl = root.querySelector('.trp-cursor [data-role="cursor-coord"]');
+      if (pEl) pEl.textContent = fmtPrimary(lat, lon);
+      if (cEl) cEl.textContent = fmtPrimary(lat, lon);
+      try { syncHdrChipValue(document.getElementById("primarySelect")); } catch(_){}
+    });
+  });
   root.querySelectorAll(".ts-btn").forEach(b => {
     b.addEventListener("click", () => setMapSize(b.dataset.size));
   });
@@ -24978,7 +25996,11 @@ function renderTileMap(lat, lon, zoom){
   if (pickBtn){
     pickBtn.addEventListener("click", (ev) => {
       ev.stopPropagation();
-      state.mapPickMode = !state.mapPickMode;
+      const nextPick = !state.mapPickMode;
+      if (nextPick){
+        try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+      }
+      state.mapPickMode = nextPick;
       root.classList.toggle("map-pick-mode", !!state.mapPickMode);
       pickBtn.classList.toggle("is-active", !!state.mapPickMode);
       pickBtn.setAttribute("aria-pressed", state.mapPickMode ? "true" : "false");
@@ -25172,6 +26194,14 @@ function renderTileMap(lat, lon, zoom){
       else if (typeof openWaypointModal === "function") openWaypointModal();
     });
   }
+  const rrMapBtn = root.querySelector('[data-role="rangerings-open"]');
+  if (rrMapBtn){
+    rrMapBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      openRangeRingsToolFromMap();
+    });
+  }
   const mapUndoBtn = root.querySelector('[data-role="map-undo"]');
   if (mapUndoBtn){
     mapUndoBtn.addEventListener("click", (ev) => {
@@ -25213,6 +26243,7 @@ function renderTileMap(lat, lon, zoom){
       renderSavedTracksOverlays(tileMap, lat, lon, zoom);
       if (state.mapWaypoints && state.mapWaypoints.length)
         renderMapWaypointsOverlay(tileMap, lat, lon, zoom);
+      renderRangeRingsOverlay(tileMap, lat, lon, zoom);
     }
   }
 
@@ -25552,7 +26583,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tundo-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .trr-btn, .tundo-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -25594,6 +26625,25 @@ function attachPanHandlers(root, lat, lon, zoom){
       tileMap.classList.remove("dragging");
       const cx = (ev && ev.clientX != null) ? ev.clientX : (ev && ev.changedTouches && ev.changedTouches[0] ? ev.changedTouches[0].clientX : null);
       const cy = (ev && ev.clientY != null) ? ev.clientY : (ev && ev.changedTouches && ev.changedTouches[0] ? ev.changedTouches[0].clientY : null);
+      if (state.rangeRingsPickAndCreateMode && !drag.moved && cx != null && cy != null){
+        const zPick = state.mapZoom || zoom;
+        const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
+        if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
+          state._rangeRingsMapPickCenter = { lat: pick.lat, lon: pick.lon };
+          const modeEl = document.getElementById("rrCenterMode");
+          if (modeEl) modeEl.value = "picked";
+          state.rangeRingsPickAndCreateMode = false;
+          state.rangeRingsPickCenterMode = false;
+          try { trackSyncPickModeUi(); } catch(_){}
+          rrClearMsgs();
+          rrCreateFromUi();
+          try { renderRangeRingsPanel(); } catch(_){}
+          try { refreshTileMapForTrackUi(); } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
       // Track polyline map-add vs standalone waypoint map-add (mutually exclusive).
       const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
       if ((trackPickActive || state.waypointPickMode) && !drag.moved && cx != null && cy != null){
@@ -25672,6 +26722,21 @@ function attachPanHandlers(root, lat, lon, zoom){
           state.mapPickMode = false;
           root.classList.remove("map-pick-mode");
           renderResults(pick.lat, pick.lon, { type: "LatLon", raw: t("map.pickRaw") + " " + pick.lat.toFixed(5) + ", " + pick.lon.toFixed(5) });
+        }
+        return;
+      }
+      if (state.rangeRingsPickCenterMode && !drag.moved && cx != null && cy != null){
+        const zPick = state.mapZoom || zoom;
+        const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
+        if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
+          state._rangeRingsMapPickCenter = { lat: pick.lat, lon: pick.lon };
+          state.rangeRingsPickCenterMode = false;
+          try { trackSyncPickModeUi(); } catch(_){}
+          rrClearMsgs();
+          renderRangeRingsPanel();
+          try { refreshTileMapForTrackUi(); } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
         }
         return;
       }
@@ -27189,6 +28254,1032 @@ function renderNotes(){
     </ul>`;
 }
 
+/* ========================= SECTION 19C: RANGE RINGS (UI MIN) ========================= */
+function rrGetCurrentCenter(){
+  const r = state.lastResult;
+  if (r && Number.isFinite(r.lat) && Number.isFinite(r.lon)) return { lat: r.lat, lon: r.lon };
+  const p = state.lastPoint;
+  if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) return { lat: p.lat, lon: p.lon };
+  return null;
+}
+function rrGetMapCenter(){
+  const c = state.viewCenter;
+  if (c && Number.isFinite(c.lat) && Number.isFinite(c.lon)) return { lat: c.lat, lon: c.lon };
+  return null;
+}
+function rrCenterSummary(c){
+  if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) return "—";
+  return c.lat.toFixed(5) + ", " + c.lon.toFixed(5);
+}
+function rrClearMsgs(){
+  state._rrPanelEscNotice = false;
+  const e = document.getElementById("rrError");
+  const ok = document.getElementById("rrOk");
+  const inf = document.getElementById("rrInfo");
+  if (e){ e.hidden = true; e.textContent = ""; }
+  if (ok){ ok.hidden = true; ok.textContent = ""; }
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  try {
+    if (state._rrPendingDelete){
+      state._rrPendingDelete = null;
+      const dch = document.getElementById("rrDeleteConfirm");
+      if (dch) dch.hidden = true;
+    }
+  } catch(_){}
+}
+function rrShowError(key){
+  state._rrPanelEscNotice = false;
+  const e = document.getElementById("rrError");
+  const ok = document.getElementById("rrOk");
+  const inf = document.getElementById("rrInfo");
+  const dchE = document.getElementById("rrDeleteConfirm");
+  try {
+    if (state._rrPendingDelete){
+      state._rrPendingDelete = null;
+      if (dchE) dchE.hidden = true;
+    }
+  } catch(_){}
+  if (ok){ ok.hidden = true; ok.textContent = ""; }
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  if (!e) return;
+  e.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
+  e.hidden = false;
+}
+function rrShowOk(key){
+  state._rrPanelEscNotice = false;
+  const e = document.getElementById("rrError");
+  const ok = document.getElementById("rrOk");
+  const inf = document.getElementById("rrInfo");
+  const dchO = document.getElementById("rrDeleteConfirm");
+  try {
+    if (state._rrPendingDelete){
+      state._rrPendingDelete = null;
+      if (dchO) dchO.hidden = true;
+    }
+  } catch(_){}
+  if (e){ e.hidden = true; e.textContent = ""; }
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  if (!ok) return;
+  ok.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
+  ok.hidden = false;
+}
+/** Ricalcola #rrInfo (stato arm / avviso Esc) se non c’è errore o ok in evidenza. */
+function rrSyncRangeRingsOperativeInfo(){
+  const e = document.getElementById("rrError");
+  const ok = document.getElementById("rrOk");
+  const inf = document.getElementById("rrInfo");
+  if (!inf) return;
+  if (state._rrPendingDelete){
+    if (inf){ inf.hidden = true; inf.textContent = ""; }
+    return;
+  }
+  if (e && !e.hidden) return;
+  if (ok && !ok.hidden) return;
+  if (state._rrPanelEscNotice && typeof t === "function"){
+    inf.textContent = t("rangeRings.notice.escClearedRings") || "";
+    inf.hidden = !String(inf.textContent || "").trim();
+    return;
+  }
+  if (state.rangeRingsPickAndCreateMode && typeof t === "function"){
+    inf.textContent = t("rangeRings.pickCreateActive") || "";
+    inf.hidden = !String(inf.textContent || "").trim();
+    return;
+  }
+  if (state.rangeRingsPickCenterMode && typeof t === "function"){
+    inf.textContent = t("rangeRings.pickMapActive") || "";
+    inf.hidden = !String(inf.textContent || "").trim();
+    return;
+  }
+  inf.hidden = true;
+  inf.textContent = "";
+}
+
+function rrClearPendingDelete(){
+  try { state._rrPendingDelete = null; } catch(_){}
+  const dch = document.getElementById("rrDeleteConfirm");
+  if (dch) dch.hidden = true;
+}
+/** Mostra/aggiorna la conferma eliminazione in-pannello; azzera stato se id non più validi. */
+function rrRenderDeleteConfirmUI(){
+  const host = document.getElementById("rrDeleteConfirm");
+  const msg = document.getElementById("rrDeleteConfirmText");
+  if (!host) return;
+  const p0 = state._rrPendingDelete;
+  if (!p0 || (p0.type !== "single" && p0.type !== "batch") || !Array.isArray(p0.ids) || !p0.ids.length){
+    state._rrPendingDelete = null;
+    host.hidden = true;
+    if (msg) msg.textContent = "";
+    return;
+  }
+  ensureRangeRingState();
+  const valid = new Set((state.rangeRingSets || []).filter(x => x).map(x => String(x.id)));
+  const ids = p0.ids.map(String).filter(id => valid.has(id));
+  if (!ids.length){
+    state._rrPendingDelete = null;
+    host.hidden = true;
+    if (msg) msg.textContent = "";
+    return;
+  }
+  if (ids.length < p0.ids.length){
+    state._rrPendingDelete = { type: p0.type, ids: ids };
+  }
+  const p = state._rrPendingDelete;
+  if (!p) return;
+  if (p.type === "batch" && ids.length === 1){
+    state._rrPendingDelete = { type: "single", ids: [ids[0]] };
+  }
+  const p2 = state._rrPendingDelete;
+  if (!msg) return;
+  if (p2.type === "single"){
+    const s0 = (state.rangeRingSets || []).find(x => x && String(x.id) === String(p2.ids[0]));
+    const raw = s0 ? String(s0.name || "").trim() : "";
+    const name = raw || (p2.ids[0] && String(p2.ids[0]).length > 12 ? String(p2.ids[0]).slice(0, 12) + "…" : String(p2.ids[0] || "—"));
+    const tpl = (typeof t === "function" ? (t("rangeRings.deleteConfirmSingle") || "") : "") || "Delete {0}?";
+    msg.textContent = String(tpl).replace("{0}", name);
+  } else {
+    const tpl = (typeof t === "function" ? (t("rangeRings.deleteConfirmBatch") || "") : "") || "Delete {0}?";
+    msg.textContent = String(tpl).replace("{0}", String(p2.ids.length));
+  }
+  host.hidden = false;
+  const e0 = document.getElementById("rrError");
+  const ok0 = document.getElementById("rrOk");
+  const inf0 = document.getElementById("rrInfo");
+  if (e0){ e0.hidden = true; e0.textContent = ""; }
+  if (ok0){ ok0.hidden = true; ok0.textContent = ""; }
+  if (inf0){ inf0.hidden = true; inf0.textContent = ""; }
+  try {
+    if (state._rrPanelEscNotice) state._rrPanelEscNotice = false;
+  } catch(_){}
+  try {
+    setTimeout(() => {
+      const c = document.getElementById("rrDeleteConfirmCancel");
+      if (c && host && !host.hidden) c.focus();
+    }, 0);
+  } catch(_){}
+}
+function rrRequestDeleteSet(id){
+  ensureRangeRingState();
+  const sid = String(id || "");
+  if (!sid) return;
+  const s = (state.rangeRingSets || []).find(x => x && String(x.id) === sid);
+  if (!s) return;
+  rrClearMsgs();
+  state._rrPendingDelete = { type: "single", ids: [sid] };
+  try { renderRangeRingsPanel(); } catch(_){}
+}
+function rrRequestDeleteSelected(){
+  ensureRangeRingsSelectionState();
+  const raw = Array.from(state._rangeRingsSelectedIds || []).map(String).filter(Boolean);
+  if (!raw.length) return;
+  ensureRangeRingState();
+  const valid = new Set((state.rangeRingSets || []).filter(x => x).map(x => String(x.id)));
+  const okIds = raw.filter(i => valid.has(i));
+  if (!okIds.length) return;
+  rrClearMsgs();
+  state._rrPendingDelete = { type: "batch", ids: okIds };
+  try { renderRangeRingsPanel(); } catch(_){}
+}
+function rrExecutePendingDelete(){
+  const p0 = state._rrPendingDelete;
+  if (!p0 || !Array.isArray(p0.ids) || !p0.ids.length) return;
+  const ids0 = p0.ids.map(String);
+  state._rrPendingDelete = null;
+  const h = document.getElementById("rrDeleteConfirm");
+  if (h) h.hidden = true;
+  ensureRangeRingState();
+  const valid = new Set((state.rangeRingSets || []).filter(x => x).map(x => String(x.id)));
+  const filtered = ids0.filter(i => valid.has(i));
+  if (!filtered.length){
+    try { renderRangeRingsPanel(); } catch(_){}
+    return;
+  }
+  rrDeleteSetIds(filtered);
+}
+function ensureRangeRingsDeleteConfirmWired(){
+  const doBtn = document.getElementById("rrDeleteConfirmDo");
+  if (!doBtn || doBtn._rrDelConfWired) return;
+  doBtn._rrDelConfWired = true;
+  const caBtn = document.getElementById("rrDeleteConfirmCancel");
+  doBtn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    try { rrExecutePendingDelete(); } catch(_){}
+  });
+  if (caBtn){
+    caBtn._rrDelConfWired = true;
+    caBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      try { rrClearPendingDelete(); } catch(_){}
+      try { renderRangeRingsPanel(); } catch(_){}
+    });
+  }
+}
+
+function rangeRingSetToGeoJSON(set){
+  const s = sanitizeRangeRingSet(set, 0);
+  if (!s || !s.center) return { type: "FeatureCollection", features: [] };
+  const feats = [];
+  const c = s.center;
+  const dists = Array.isArray(s.distancesM) ? s.distancesM : [];
+  for (let i = 0; i < dists.length; i++){
+    const radiusM = Number(dists[i]);
+    if (!Number.isFinite(radiusM) || radiusM <= 0) continue;
+    const ring = buildGeodesicCircleRing(c.lat, c.lon, radiusM, 5);
+    if (!ring || ring.length < 4) continue;
+    const coords = ring.map(p => [normalizeLon(p.lon), p.lat]);
+    const a = coords[0], b = coords[coords.length - 1];
+    if (!a || !b || Math.abs(a[0] - b[0]) > 1e-9 || Math.abs(a[1] - b[1]) > 1e-9){
+      coords.push(a);
+    }
+    const disp = (function(){
+      const v = rangeRingMetersToUnit(radiusM, s.unit);
+      if (!Number.isFinite(v)) return String(radiusM) + " m";
+      const t0 = (v % 1) ? v.toFixed(2) : String(v);
+      return t0 + " " + String(s.unit || "m");
+    })();
+    feats.push({
+      type: "Feature",
+      properties: {
+        type: "range_ring",
+        app: "GOI GIS Tool",
+        setId: String(s.id || ""),
+        setName: String(s.name || ""),
+        ringIndex: i,
+        radiusM: radiusM,
+        radiusDisplay: disp,
+        unit: String(s.unit || "m"),
+        centerLat: c.lat,
+        centerLon: c.lon,
+        createdAt: s.createdAt
+      },
+      geometry: { type: "Polygon", coordinates: [coords] }
+    });
+  }
+  return { type: "FeatureCollection", features: feats };
+}
+function rangeRingSetsToGeoJSON(sets, opts){
+  opts = opts || {};
+  const visibleOnly = opts.visibleOnly !== false;
+  const src = Array.isArray(sets) ? sets : [];
+  const features = [];
+  for (const s of src){
+    if (!s || typeof s !== "object") continue;
+    if (visibleOnly && s.visible === false) continue;
+    const fc = rangeRingSetToGeoJSON(s);
+    if (fc && Array.isArray(fc.features)) features.push(...fc.features);
+  }
+  return { type: "FeatureCollection", features };
+}
+
+function exportRangeRingSetGeoJSON(id){
+  rrClearMsgs();
+  ensureRangeRingState();
+  const sid = String(id || "");
+  const s = (state.rangeRingSets || []).find(x => x && String(x.id) === sid);
+  if (!s){ rrShowError("rangeRings.exportInvalid"); return; }
+  const fc = rangeRingSetToGeoJSON(s);
+  const feats = fc && Array.isArray(fc.features) ? fc.features : [];
+  if (!feats.length){ rrShowError("rangeRings.exportEmpty"); return; }
+  const part = safeFilenamePart(s.name || "range_rings") || "range_rings";
+  downloadBlob(JSON.stringify(fc, null, 2), "range_rings_" + part + ".geojson", "application/geo+json;charset=utf-8");
+  rrShowOk("rangeRings.exportOk");
+}
+function exportRangeRingSetsGeoJSON(opts){
+  rrClearMsgs();
+  ensureRangeRingState();
+  const fc = rangeRingSetsToGeoJSON(state.rangeRingSets || [], opts || { visibleOnly: true });
+  const feats = fc && Array.isArray(fc.features) ? fc.features : [];
+  if (!feats.length){ rrShowError("rangeRings.exportEmpty"); return; }
+  const suff = (opts && opts.visibleOnly === false) ? "all" : "visible";
+  downloadBlob(JSON.stringify(fc, null, 2), "range_rings_" + suff + ".geojson", "application/geo+json;charset=utf-8");
+  rrShowOk("rangeRings.exportOk");
+}
+
+function ensureRangeRingsSelectionState(){
+  ensureRangeRingState();
+  if (!(state._rangeRingsSelectedIds instanceof Set)) state._rangeRingsSelectedIds = new Set();
+  const ids = new Set((state.rangeRingSets || []).map(s => (s && s.id != null) ? String(s.id) : "").filter(Boolean));
+  for (const sid of Array.from(state._rangeRingsSelectedIds)){
+    if (!ids.has(String(sid))) state._rangeRingsSelectedIds.delete(sid);
+  }
+}
+function rrSetSelected(id, selected){
+  ensureRangeRingsSelectionState();
+  const sid = String(id || "");
+  if (!sid) return;
+  if (selected) state._rangeRingsSelectedIds.add(sid);
+  else state._rangeRingsSelectedIds.delete(sid);
+}
+function rrIsSelected(id){
+  ensureRangeRingsSelectionState();
+  const sid = String(id || "");
+  return !!sid && state._rangeRingsSelectedIds.has(sid);
+}
+function exportSelectedRangeRingSetsGeoJSON(){
+  rrClearMsgs();
+  ensureRangeRingsSelectionState();
+  const ids = Array.from(state._rangeRingsSelectedIds || []);
+  if (!ids.length){ rrShowError("rangeRings.err.noSelection"); return; }
+  const picked = (state.rangeRingSets || []).filter(s => s && ids.includes(String(s.id || "")));
+  const fc = rangeRingSetsToGeoJSON(picked, { visibleOnly: false });
+  const feats = fc && Array.isArray(fc.features) ? fc.features : [];
+  if (!feats.length){ rrShowError("rangeRings.exportEmpty"); return; }
+  downloadBlob(JSON.stringify(fc, null, 2), "range_rings_selected.geojson", "application/geo+json;charset=utf-8");
+  rrShowOk("rangeRings.exportSelectedOk");
+}
+
+function rrMapVisible(s){
+  if (!s) return true;
+  return s.visible !== false;
+}
+function flyToRangeRingSetById(id){
+  ensureRangeRingState();
+  const s = (state.rangeRingSets || []).find(x => x && String(x.id) === String(id));
+  if (!s || !s.center) return;
+  const c = s.center;
+  if (!Number.isFinite(c.lat) || !Number.isFinite(c.lon)) return;
+  const dists = Array.isArray(s.distancesM) ? s.distancesM : [];
+  let maxM = 0;
+  for (const m of dists){
+    const mm = Number(m);
+    if (Number.isFinite(mm) && mm > maxM) maxM = mm;
+  }
+  const pts = [];
+  if (maxM > 0){
+    try {
+      const ring = buildGeodesicCircleRing(c.lat, c.lon, maxM, 8);
+      if (ring && ring.length){
+        for (const p of ring){
+          if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) pts.push({ lat: p.lat, lon: p.lon });
+        }
+      }
+    } catch(_){}
+  }
+  if (!pts.length) pts.push({ lat: c.lat, lon: c.lon });
+  flyMapToTrackPoints(pts);
+}
+function rrApplyVisibilityIds(ids, wantVisible){
+  ensureRangeRingState();
+  const set = new Set((ids || []).map(String).filter(Boolean));
+  if (!set.size) return;
+  let changed = false;
+  for (const s of state.rangeRingSets){
+    if (!s || !set.has(String(s.id))) continue;
+    const cur = rrMapVisible(s);
+    if (cur !== !!wantVisible){ s.visible = !!wantVisible; changed = true; }
+  }
+  if (!changed) return;
+  saveStore();
+  refreshRangeRingsAfterStateChange();
+}
+function rrApplyVisibilityOnlySelected(ids){
+  ensureRangeRingState();
+  const set = new Set((ids || []).map(String).filter(Boolean));
+  if (!set.size) return;
+  let changed = false;
+  for (const s of state.rangeRingSets){
+    if (!s) continue;
+    const want = set.has(String(s.id));
+    const cur = rrMapVisible(s);
+    if (cur !== want){ s.visible = want; changed = true; }
+  }
+  if (!changed) return;
+  saveStore();
+  refreshRangeRingsAfterStateChange();
+}
+function rrApplyVisibilityAll(wantVisible){
+  ensureRangeRingState();
+  const sets = state.rangeRingSets || [];
+  if (!sets.length) return;
+  for (const s of sets){ if (s) s.visible = !!wantVisible; }
+  saveStore();
+  refreshRangeRingsAfterStateChange();
+}
+function rrDeleteSetIds(ids){
+  const set = new Set((ids || []).map(String).filter(Boolean));
+  if (!set.size) return;
+  ensureRangeRingState();
+  state.rangeRingSets = (state.rangeRingSets || []).filter(x => x && !set.has(String(x.id)));
+  for (const id of set){ try { rrSetSelected(id, false); } catch(_){} }
+  ensureRangeRingState();
+  saveStore();
+  const n = set.size;
+  if (n > 1){
+    const ok = document.getElementById("rrOk");
+    const e = document.getElementById("rrError");
+    if (e){ e.hidden = true; e.textContent = ""; }
+    if (ok){
+      const tpl = (typeof t === "function" ? (t("rangeRings.deletedMany") || "") : "") || "";
+      ok.textContent = String(tpl).replace("{0}", String(n));
+      ok.hidden = false;
+    }
+  } else {
+    rrShowOk("rangeRings.deleted");
+  }
+  refreshRangeRingsAfterStateChange();
+}
+function syncRangeRingsSelectAllState(listRoot){
+  if (!listRoot) return;
+  const sa = listRoot.querySelector("#rrSelectAll");
+  if (!sa) return;
+  const cbs = [...listRoot.querySelectorAll(".rr-sel-cb[data-rr-sel]")];
+  const n = cbs.length;
+  const checked = cbs.filter(cb => cb.checked).length;
+  sa.checked = n > 0 && checked === n;
+  sa.indeterminate = checked > 0 && checked < n;
+}
+function syncRangeRingsBatchBar(){
+  ensureRangeRingState();
+  ensureRangeRingsSelectionState();
+  const batchBar = document.getElementById("rrBatchBar");
+  const meta = document.getElementById("rrSelectionMeta");
+  const sets = (state.rangeRingSets || []).filter(Boolean);
+  const total = sets.length;
+  const anyRow = total > 0;
+  const selIds = Array.from(state._rangeRingsSelectedIds || []).map(String).filter(Boolean);
+  const sel = selIds.length;
+  const selSet = new Set(selIds);
+  const selectedSets = sets.filter(s => selSet.has(String(s.id)));
+  if (batchBar) batchBar.hidden = !anyRow;
+  if (meta){
+    if (!anyRow) meta.textContent = "";
+    else {
+      const tpl = (typeof t === "function") ? (t("rangeRings.selectionCount") || "") : "";
+      meta.textContent = tpl
+        ? String(tpl).replace("{0}", String(sel)).replace("{1}", String(total))
+        : (String(sel) + " / " + String(total));
+    }
+  }
+  const btnShowSel = document.getElementById("btnRrShowSelected");
+  const btnHideSel = document.getElementById("btnRrHideSelected");
+  const btnOnlySel = document.getElementById("btnRrShowOnlySelected");
+  const btnShowAll = document.getElementById("btnRrShowAll");
+  const btnHideAll = document.getElementById("btnRrHideAll");
+  const btnDel = document.getElementById("btnRrDeleteSelected");
+  const btnExp = document.getElementById("btnRrExportSelected");
+  const showSelDis = selectedSets.length === 0 || selectedSets.every(s => rrMapVisible(s));
+  const hideSelDis = selectedSets.length === 0 || selectedSets.every(s => !rrMapVisible(s));
+  const onlySelDis = selectedSets.length === 0;
+  const showAllDis = !anyRow || sets.every(s => rrMapVisible(s));
+  const hideAllDis = !anyRow || sets.every(s => !rrMapVisible(s));
+  if (btnShowSel) btnShowSel.disabled = showSelDis;
+  if (btnHideSel) btnHideSel.disabled = hideSelDis;
+  if (btnOnlySel) btnOnlySel.disabled = onlySelDis;
+  if (btnShowAll) btnShowAll.disabled = showAllDis;
+  if (btnHideAll) btnHideAll.disabled = hideAllDis;
+  if (btnDel){
+    btnDel.hidden = !anyRow;
+    btnDel.disabled = sel === 0;
+  }
+  if (btnExp) btnExp.disabled = sel === 0;
+}
+function ensureRangeRingsBatchBarWired(){
+  const bb = document.getElementById("rrBatchBar");
+  if (!bb || bb._rrBatchWired) return;
+  bb._rrBatchWired = true;
+  const btnShowSel = document.getElementById("btnRrShowSelected");
+  const btnHideSel = document.getElementById("btnRrHideSelected");
+  const btnOnlySel = document.getElementById("btnRrShowOnlySelected");
+  const btnShowAll = document.getElementById("btnRrShowAll");
+  const btnHideAll = document.getElementById("btnRrHideAll");
+  const btnDel = document.getElementById("btnRrDeleteSelected");
+  const btnExp = document.getElementById("btnRrExportSelected");
+  if (btnShowSel) btnShowSel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ensureRangeRingsSelectionState();
+    rrApplyVisibilityIds(Array.from(state._rangeRingsSelectedIds || []), true);
+  });
+  if (btnHideSel) btnHideSel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ensureRangeRingsSelectionState();
+    rrApplyVisibilityIds(Array.from(state._rangeRingsSelectedIds || []), false);
+  });
+  if (btnOnlySel) btnOnlySel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ensureRangeRingsSelectionState();
+    rrApplyVisibilityOnlySelected(Array.from(state._rangeRingsSelectedIds || []));
+  });
+  if (btnShowAll) btnShowAll.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    rrApplyVisibilityAll(true);
+  });
+  if (btnHideAll) btnHideAll.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    rrApplyVisibilityAll(false);
+  });
+  if (btnDel) btnDel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    ensureRangeRingsSelectionState();
+    const ids = Array.from(state._rangeRingsSelectedIds || []).map(String).filter(Boolean);
+    if (!ids.length) return;
+    rrRequestDeleteSelected();
+  });
+  if (btnExp) btnExp.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    exportSelectedRangeRingSetsGeoJSON();
+  });
+}
+
+/** Clear Range Rings map-pick mode (and optional stored map center). Not persisted. */
+function rangeRingsClearPickCenterMode(opts){
+  opts = opts || {};
+  state.rangeRingsPickCenterMode = false;
+  state.rangeRingsPickAndCreateMode = false;
+  if (opts.clearMapCenter) state._rangeRingsMapPickCenter = null;
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap){
+      tileMap.classList.remove("range-rings-pick-mode");
+      tileMap.classList.remove("range-rings-pick-create-mode");
+    }
+  } catch(_){}
+}
+
+/** Arm next map click as Range Rings center; mutually exclusive with track/waypoint/map pick. */
+function rangeRingsEnterPickCenterMode(){
+  state.rangeRingsPickAndCreateMode = false;
+  try { trackExitPickMode(); } catch(_){}
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+    const pickBtn = root && root.querySelector(".tile-pick");
+    if (pickBtn){
+      pickBtn.classList.remove("is-active");
+      pickBtn.setAttribute("aria-pressed", "false");
+      const ar = (typeof t === "function") ? (t("map.pickStart") || "") : "";
+      pickBtn.setAttribute("aria-label", ar);
+      const lbl = pickBtn.querySelector(".tmb-label");
+      if (lbl && ar) lbl.textContent = ar;
+    }
+  } catch(_){}
+  state.rangeRingsPickCenterMode = true;
+  const modeSel = document.getElementById("rrCenterMode");
+  if (modeSel) modeSel.value = "picked";
+  try { trackSyncPickModeUi(); } catch(_){}
+  rrClearMsgs();
+  renderRangeRingsPanel();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+
+/**
+ * Pre-validate distances, then arm one map click to set center and create a set (5E).
+ * Mutually exclusive with pick-center, track, waypoint, map pick, measure.
+ */
+function rangeRingsEnterPickAndCreateMode(){
+  const distInp = document.getElementById("rrDistances");
+  const unitSel = document.getElementById("rrUnit");
+  const unit = String(unitSel ? unitSel.value : "m");
+  const distancesM = parseRangeRingDistancesInput(distInp ? distInp.value : "", unit);
+  if (!distancesM.length){
+    rrShowError("rangeRings.err.distances");
+    return;
+  }
+  try { trackExitPickMode(); } catch(_){}
+  state.mapMeasureMode = false;
+  state.mapMeasurePts = null;
+  state.mapPolyPts = null;
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+    const pickBtn = root && root.querySelector(".tile-pick");
+    if (pickBtn){
+      pickBtn.classList.remove("is-active");
+      pickBtn.setAttribute("aria-pressed", "false");
+      const ar = (typeof t === "function") ? (t("map.pickStart") || "") : "";
+      pickBtn.setAttribute("aria-label", ar);
+      const lbl = pickBtn.querySelector(".tmb-label");
+      if (lbl && ar) lbl.textContent = ar;
+    }
+  } catch(_){}
+  state.rangeRingsPickCenterMode = false;
+  state.rangeRingsPickAndCreateMode = true;
+  const modeSel = document.getElementById("rrCenterMode");
+  if (modeSel) modeSel.value = "picked";
+  try { trackSyncPickModeUi(); } catch(_){}
+  rrClearMsgs();
+  renderRangeRingsPanel();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try {
+    const r = document.getElementById("miniMap");
+    const lp = state.lastPoint || state.viewCenter;
+    const z = state.mapZoom || 11;
+    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+  } catch(_){}
+}
+
+function openRangeRingsToolFromMap(){
+  if (document.body.classList.contains("gis-mode")){
+    if (typeof openRangeRingsFloatingPanelGis === "function" && openRangeRingsFloatingPanelGis()) return;
+    try { if (typeof openToolsDrawer === "function") openToolsDrawer(); } catch(_){}
+    try { if (typeof activateToolPanel === "function") activateToolPanel("rangerings"); } catch(_){}
+    try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+    return;
+  }
+  try { if (typeof navigateToToolSection === "function") navigateToToolSection("sec-rangerings", "sec.rangerings"); } catch(_){}
+}
+
+function renderRangeRingsPanel(){
+  ensureRangeRingState();
+  const modeSel = document.getElementById("rrCenterMode");
+  const wpWrap = document.getElementById("rrWaypointWrap");
+  const wpSel = document.getElementById("rrWaypointSelect");
+  const pickBtn = document.getElementById("rrPickMapBtn");
+  const pickCreateBtn = document.getElementById("rrPickCreateBtn");
+  const pickSt = document.getElementById("rrPickMapStatus");
+  if (modeSel && wpWrap){
+    const mode = String(modeSel.value || "picked");
+    wpWrap.hidden = mode !== "waypoint";
+  }
+  if (pickBtn){
+    const on = !!state.rangeRingsPickCenterMode;
+    pickBtn.classList.toggle("is-active", on);
+    pickBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  }
+  if (pickCreateBtn){
+    const onC = !!state.rangeRingsPickAndCreateMode;
+    pickCreateBtn.classList.toggle("is-active", onC);
+    pickCreateBtn.setAttribute("aria-pressed", onC ? "true" : "false");
+  }
+  if (pickSt && typeof t === "function"){
+    if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode){
+      pickSt.textContent = "";
+    } else {
+      const mode = String(modeSel ? modeSel.value : "picked");
+      const p = state._rangeRingsMapPickCenter;
+      if (mode === "picked" && p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
+        const coord = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
+        const tpl = t("rangeRings.pickMapSet") || "{0}";
+        pickSt.textContent = String(tpl).replace("{0}", coord);
+      } else {
+        pickSt.textContent = "";
+      }
+    }
+  }
+  const mapFirst = document.getElementById("rrMapFirstHint");
+  if (mapFirst){
+    const mode = String(modeSel ? modeSel.value : "picked");
+    const p = state._rangeRingsMapPickCenter;
+    const hasPicked = p && Number.isFinite(p.lat) && Number.isFinite(p.lon);
+    const show = (mode === "picked" && !hasPicked && !state.rangeRingsPickCenterMode && !state.rangeRingsPickAndCreateMode);
+    mapFirst.hidden = !show;
+  }
+  if (wpSel){
+    ensureMapWaypointsState();
+    const wpts = Array.isArray(state.mapWaypoints) ? state.mapWaypoints : [];
+    let html = "";
+    for (const w of wpts){
+      if (!w || !Number.isFinite(w.lat) || !Number.isFinite(w.lon)) continue;
+      const nm = String(w.name || "").trim() || (w.lat.toFixed(5) + ", " + w.lon.toFixed(5));
+      html += `<option value="${esc(String(w.id || ""))}">${esc(nm.slice(0, 60))}</option>`;
+    }
+    wpSel.innerHTML = html || `<option value="" disabled selected>${esc((typeof t==="function" ? (t("rangeRings.noWaypoints")||"") : "") || "—")}</option>`;
+    try { wpSel.disabled = !html; } catch(_){}
+  }
+  try { rrRenderDeleteConfirmUI(); } catch(_){}
+  try { rrSyncRangeRingsOperativeInfo(); } catch(_){}
+  renderRangeRingsList();
+}
+
+function renderRangeRingsList(){
+  const root = document.getElementById("rrList");
+  if (!root) return;
+  ensureRangeRingState();
+  ensureRangeRingsSelectionState();
+  const sets = Array.isArray(state.rangeRingSets) ? state.rangeRingSets.filter(Boolean) : [];
+  if (!sets.length){
+    try { rrClearPendingDelete(); } catch(_){}
+    root.innerHTML = `<div class="sub" style="padding:10px;color:var(--muted); font-size:.9rem">${esc((typeof t==="function" ? (t("rangeRings.empty")||"") : "") || "—")}</div>`;
+    syncRangeRingsBatchBar();
+    return;
+  }
+  const tipFly = esc((typeof t === "function") ? (t("tip.rangeRingsFly") || "") : "");
+  const thSel = esc((typeof t === "function") ? (t("rangeRings.colSel") || "") : "");
+  const thVis = esc((typeof t === "function") ? (t("rangeRings.colVis") || "") : "");
+  const thName = esc((typeof t === "function") ? (t("rangeRings.colName") || "") : "");
+  const thCenter = esc((typeof t === "function") ? (t("rangeRings.colCenter") || "") : "");
+  const thRings = esc((typeof t === "function") ? (t("rangeRings.colRings") || "") : "");
+  const thWhen = esc((typeof t === "function") ? (t("rangeRings.colWhen") || "") : "");
+  const thAct = esc((typeof t === "function") ? (t("rangeRings.colActions") || "") : "");
+  const ariaNameLab = esc((typeof t === "function") ? (t("rangeRings.colName") || "") : "");
+  const colRa = esc((typeof t === "function") ? (t("rangeRings.colResizeAria") || "") : "");
+  const rrH = (slug) => (
+    `<span class="rr-${esc(slug)}-col-resize" role="separator" aria-orientation="vertical" aria-label="${colRa}" title="${colRa}"></span>`
+  );
+  let html = `<table class="rr-table"><colgroup>
+    <col class="rr-col-sel" style="width:36px" />
+    <col class="rr-col-vis" style="width:44px" />
+    <col class="rr-col-name" />
+    <col class="rr-col-center" />
+    <col class="rr-col-rings" />
+    <col class="rr-col-when" />
+    <col class="rr-col-actions" />
+  </colgroup><thead><tr>
+    <th class="rr-th-sel" title="${thSel}"><input type="checkbox" id="rrSelectAll" aria-label=""></th>
+    <th class="rr-th-vis rr-vis-head">${thVis}</th>
+    <th class="rr-th-name rr-th-rrz">${thName}${rrH("name")}</th>
+    <th class="rr-th-center rr-th-rrz">${thCenter}${rrH("center")}</th>
+    <th class="rr-th-rings rr-th-rrz">${thRings}${rrH("rings")}</th>
+    <th class="rr-th-when rr-th-rrz">${thWhen}${rrH("when")}</th>
+    <th class="rr-th-actions rr-actions-cell rr-th-rrz">${thAct}${rrH("actions")}</th>
+  </tr></thead><tbody>`;
+  for (const s of sets){
+    const sid = String(s.id || "");
+    const name = String(s.name || "").trim();
+    const vis = rrMapVisible(s);
+    const sel = rrIsSelected(sid);
+    const csum = rrCenterSummary(s.center);
+    const dsum = (Array.isArray(s.distancesM) ? s.distancesM : []).slice(0, 15).map(m => {
+      const v = rangeRingMetersToUnit(m, s.unit);
+      return Number.isFinite(v) ? (v % 1 ? v.toFixed(2) : String(v)) : "—";
+    }).join(", ");
+    const unit = String(s.unit || "m");
+    const whenStr = (Number.isFinite(s.createdAt) && s.createdAt > 0) ? formatSavedTrackWhen(s.createdAt) : "—";
+    const ariaVis = esc((typeof t === "function") ? (vis ? (t("track.savedVisOnMap") || "") : (t("track.savedVisHiddenFromMap") || "")) : "");
+    html += `<tr data-rr-row data-id="${esc(sid)}" class="${sel ? "is-selected" : ""}">
+      <td><input type="checkbox" class="rr-sel-cb" data-rr-sel="${esc(sid)}"${sel ? " checked" : ""}></td>
+      <td class="rr-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${ariaVis}"></span></td>
+      <td><input type="text" class="rr-name-inp" data-rr-rename="${esc(sid)}" value="${esc(name)}" maxlength="80" aria-label="${ariaNameLab}"></td>
+      <td class="sub">${esc(csum)}</td>
+      <td class="sub">${esc(dsum)} ${esc(unit)}</td>
+      <td class="sub">${esc(whenStr)}</td>
+      <td class="rr-actions-cell"><div class="rr-row-actions">
+        <button type="button" class="btn btn-sm btn-rr-fly" data-rr-fly="${esc(sid)}" data-i18n="rangeRings.flyBtn" data-i18n-tip="tip.rangeRingsFly" data-i18n-aria="tip.rangeRingsFly" data-tip="${tipFly}"></button>
+        <button type="button" class="btn btn-sm" data-rr-exp="${esc(sid)}" data-i18n="rangeRings.exportSet"></button>
+        <button type="button" class="btn btn-sm btn-danger-subtle" data-rr-del="${esc(sid)}" data-i18n-tip="tip.rangeRingsDelOne" data-i18n-aria="tip.rangeRingsDelOne"><span class="danger-x" aria-hidden="true">✕</span></button>
+      </div></td>
+    </tr>`;
+  }
+  html += "</tbody></table>";
+  root.innerHTML = html;
+  try {
+    const tbl = root.querySelector("table.rr-table");
+    if (tbl && sets.length){
+      const c = (v, lo, hi) => (Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : null);
+      const a = c(root._rrNameColPx, 72, 420); if (a != null) tbl.style.setProperty("--rr-name-col", a + "px");
+      const b = c(root._rrCenterColPx, 72, 300); if (b != null) tbl.style.setProperty("--rr-center-col", b + "px");
+      const c1 = c(root._rrRingsColPx, 80, 360); if (c1 != null) tbl.style.setProperty("--rr-rings-col", c1 + "px");
+      const d = c(root._rrWhenColPx, 72, 320); if (d != null) tbl.style.setProperty("--rr-when-col", d + "px");
+      const e = c(root._rrActionsColPx, 200, 480); if (e != null) tbl.style.setProperty("--rr-actions-col", e + "px");
+    }
+  } catch(_){ }
+  try { ensureRangeRingsTableColResizeWired(); } catch(_){ }
+  try {
+    const sa = root.querySelector("#rrSelectAll");
+    if (sa){
+      const a = (typeof t === "function") ? (t("tip.rangeRingsSelAll") || "") : "";
+      if (a) sa.setAttribute("aria-label", a);
+    }
+  } catch(_){}
+  try { if (typeof applyLanguage === "function") applyLanguage(state.lang || "it"); } catch(_){}
+  syncRangeRingsSelectAllState(root);
+  syncRangeRingsBatchBar();
+}
+
+function rrGetCenterFromUi(){
+  const modeSel = document.getElementById("rrCenterMode");
+  const mode = String(modeSel ? modeSel.value : "picked");
+  if (mode === "picked"){
+    const p = state._rangeRingsMapPickCenter;
+    if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)) return { lat: p.lat, lon: p.lon };
+    return null;
+  }
+  if (mode === "current") return rrGetCurrentCenter();
+  if (mode === "map") return rrGetMapCenter();
+  if (mode === "waypoint"){
+    const wpSel = document.getElementById("rrWaypointSelect");
+    const id = String(wpSel ? wpSel.value : "");
+    if (!id) return null;
+    ensureMapWaypointsState();
+    const w = (state.mapWaypoints || []).find(x => x && String(x.id) === id);
+    if (w && Number.isFinite(w.lat) && Number.isFinite(w.lon)) return { lat: w.lat, lon: w.lon };
+    return null;
+  }
+  return null;
+}
+
+function refreshRangeRingsAfterStateChange(){
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  const lp = state.lastPoint || state.viewCenter || { lat: 0, lon: 0 };
+  const z = state.mapZoom || 11;
+  if (tileMap){
+    try { renderRangeRingsOverlay(tileMap, lp.lat, lp.lon, z); } catch(_){}
+  } else if (root && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+    try { renderTileMap(lp.lat, lp.lon, z); } catch(_){}
+  }
+  renderRangeRingsList();
+}
+
+function rrCreateFromUi(){
+  rrClearMsgs();
+  ensureRangeRingState();
+  const modeSel = document.getElementById("rrCenterMode");
+  const mode = String(modeSel ? modeSel.value : "picked");
+  const c = rrGetCenterFromUi();
+  if (!c){
+    if (mode === "picked") rrShowError("rangeRings.err.mapCenterMissing");
+    else rrShowError("rangeRings.err.center");
+    return;
+  }
+  const distInp = document.getElementById("rrDistances");
+  const unitSel = document.getElementById("rrUnit");
+  const unit = String(unitSel ? unitSel.value : "m");
+  const distancesM = parseRangeRingDistancesInput(distInp ? distInp.value : "", unit);
+  if (!distancesM.length){ rrShowError("rangeRings.err.distances"); return; }
+  const nameInp = document.getElementById("rrName");
+  const rawName = String(nameInp ? nameInp.value : "").trim();
+  const base = (typeof t==="function" ? (t("rangeRings.defaultName")||"") : "") || "Rings";
+  const name = rawName || (base + " " + (state.rangeRingSets.length + 1));
+
+  const set = sanitizeRangeRingSet({
+    _v: 1,
+    id: uidNamed(),
+    name,
+    center: c,
+    distancesM,
+    unit,
+    color: (typeof sanitizeTrackColor === "function" ? sanitizeTrackColor("") : "#16a34a"),
+    strokeWidth: 2,
+    opacity: 0.55,
+    labelMode: "name",
+    visible: true,
+    createdAt: Date.now()
+  }, state.rangeRingSets.length);
+  if (!set){ rrShowError("rangeRings.err.center"); return; }
+  if (state.rangeRingSets.some(s => s && s.id === set.id)) set.id = uidNamed();
+  state.rangeRingSets.push(set);
+  if (state.rangeRingSets.length > RANGE_RING_SETS_CAP){
+    state.rangeRingSets.splice(0, state.rangeRingSets.length - RANGE_RING_SETS_CAP);
+  }
+  ensureRangeRingState();
+  saveStore();
+  rrShowOk("rangeRings.created");
+  refreshRangeRingsAfterStateChange();
+}
+
+function rrToggleVisible(id, visible){
+  ensureRangeRingState();
+  const sid = String(id || "");
+  const s = state.rangeRingSets.find(x => x && String(x.id) === sid);
+  if (!s) return;
+  s.visible = !!visible;
+  saveStore();
+  refreshRangeRingsAfterStateChange();
+}
+function bindRangeRingsUI(){
+  const sec = document.getElementById("sec-rangerings");
+  if (!sec || sec._rrBound) return;
+  sec._rrBound = true;
+  const modeSel = document.getElementById("rrCenterMode");
+  const wpWrap = document.getElementById("rrWaypointWrap");
+  if (modeSel){
+    modeSel.addEventListener("change", () => {
+      const v = String(modeSel.value || "picked");
+      if (wpWrap) wpWrap.hidden = v !== "waypoint";
+      if (v !== "picked"){
+        try { rangeRingsClearPickCenterMode({ clearMapCenter: true }); } catch(_){}
+      } else {
+        try { rangeRingsClearPickCenterMode({ clearMapCenter: false }); } catch(_){}
+      }
+      rrClearMsgs();
+      renderRangeRingsPanel();
+      try { trackSyncPickModeUi(); refreshTileMapForTrackUi(); } catch(_){}
+    });
+  }
+  const rrPickMapBtn = document.getElementById("rrPickMapBtn");
+  if (rrPickMapBtn){
+    rrPickMapBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      rangeRingsEnterPickCenterMode();
+    });
+  }
+  const rrPickCreateBtn = document.getElementById("rrPickCreateBtn");
+  if (rrPickCreateBtn){
+    rrPickCreateBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      rangeRingsEnterPickAndCreateMode();
+    });
+  }
+  const createBtn = document.getElementById("rrCreateBtn");
+  if (createBtn) createBtn.addEventListener("click", rrCreateFromUi);
+
+  sec.querySelectorAll("[data-rr-preset]").forEach(b => {
+    b.addEventListener("click", () => {
+      const vals = String(b.getAttribute("data-rr-values") || "");
+      const unit = String(b.getAttribute("data-rr-preset") || "km");
+      const di = document.getElementById("rrDistances");
+      const us = document.getElementById("rrUnit");
+      if (di) di.value = vals;
+      if (us) us.value = unit;
+      rrClearMsgs();
+    });
+  });
+
+  const list = document.getElementById("rrList");
+  if (list && !list._rrDelegated){
+    list._rrDelegated = true;
+    list.addEventListener("focusin", (ev) => {
+      const inp = ev.target;
+      if (!inp || !inp.matches || !inp.matches("[data-rr-rename]")) return;
+      const id = String(inp.getAttribute("data-rr-rename") || "");
+      ensureRangeRingState();
+      const s = (state.rangeRingSets || []).find(x => x && String(x.id) === id);
+      inp.dataset._prevRrName = s ? String(s.name || "") : "";
+    });
+    list.addEventListener("change", (ev) => {
+      const el = ev.target;
+      if (!el || !el.matches) return;
+      if (el.id === "rrSelectAll"){
+        ensureRangeRingsSelectionState();
+        const allCbs = [...list.querySelectorAll(".rr-sel-cb[data-rr-sel]")];
+        if (el.checked){
+          for (const cb of allCbs) rrSetSelected(cb.getAttribute("data-rr-sel"), true);
+        } else {
+          for (const cb of allCbs) rrSetSelected(cb.getAttribute("data-rr-sel"), false);
+        }
+        allCbs.forEach(cb => { cb.checked = el.checked; });
+        el.indeterminate = false;
+        list.querySelectorAll("tr[data-rr-row]").forEach((tr) => {
+          if (el.checked) tr.classList.add("is-selected");
+          else tr.classList.remove("is-selected");
+        });
+        syncRangeRingsBatchBar();
+        return;
+      }
+      if (el.matches(".rr-sel-cb[data-rr-sel]")){
+        ensureRangeRingsSelectionState();
+        const sid = String(el.getAttribute("data-rr-sel") || "");
+        rrSetSelected(sid, !!el.checked);
+        syncRangeRingsSelectAllState(list);
+        const tr = el.closest && el.closest("tr[data-rr-row]");
+        if (tr){
+          if (el.checked) tr.classList.add("is-selected");
+          else tr.classList.remove("is-selected");
+        }
+        syncRangeRingsBatchBar();
+        return;
+      }
+      if (el.matches("[data-rr-rename]")){
+        const id = el.getAttribute("data-rr-rename");
+        ensureRangeRingState();
+        const s = (state.rangeRingSets || []).find(x => x && String(x.id) === String(id));
+        if (s){
+          const nm = String(el.value || "").trim().slice(0, 80);
+          const prev = String(el.dataset._prevRrName != null ? el.dataset._prevRrName : s.name || "");
+          if (!nm){
+            el.value = prev;
+            return;
+          }
+          if (nm === String(prev || "").trim()){
+            el.dataset._prevRrName = nm;
+            return;
+          }
+          const q = (typeof t === "function" ? t("rangeRings.renameConfirm") : "") || "";
+          const ok = (typeof window.confirm !== "function") || window.confirm(q);
+          if (ok){
+            s.name = nm;
+            saveStore();
+            el.dataset._prevRrName = nm;
+            refreshRangeRingsAfterStateChange();
+          } else {
+            el.value = prev;
+          }
+        }
+      }
+    });
+    list.addEventListener("click", (ev) => {
+      const fly = ev.target.closest && ev.target.closest("[data-rr-fly]");
+      if (fly){
+        ev.preventDefault();
+        flyToRangeRingSetById(fly.getAttribute("data-rr-fly"));
+        return;
+      }
+      const exp = ev.target.closest && ev.target.closest("[data-rr-exp]");
+      if (exp){
+        ev.preventDefault();
+        exportRangeRingSetGeoJSON(exp.getAttribute("data-rr-exp"));
+        return;
+      }
+      const del = ev.target.closest && ev.target.closest("[data-rr-del]");
+      if (del){
+        ev.preventDefault();
+        rrRequestDeleteSet(del.getAttribute("data-rr-del"));
+      }
+    });
+  }
+  try { ensureRangeRingsBatchBarWired(); } catch(_){}
+  try { ensureRangeRingsDeleteConfirmWired(); } catch(_){}
+  sec.addEventListener("toggle", () => {
+    try {
+      if (sec.open) renderRangeRingsPanel();
+      else { try { rrClearPendingDelete(); } catch(_){} }
+    } catch(_){}
+  });
+  renderRangeRingsPanel();
+}
+
 /** Mirror the currently selected option of a chip-select into a data-value
  *  attribute so its visible "value badge" (rendered via ::after in CSS)
  *  stays in sync with the underlying <select>. */
@@ -27344,6 +29435,7 @@ function bindUI(){
   // Help modal
   document.getElementById("btnHelp").addEventListener("click", openHelp);
   document.getElementById("helpClose").addEventListener("click", closeHelp);
+  try { if (typeof bindRangeRingsUI === "function") bindRangeRingsUI(); } catch(_){}
   document.getElementById("helpOverlay").addEventListener("click", (ev) => {
     if (ev.target.id === "helpOverlay") closeHelp();
   });
@@ -27990,7 +30082,8 @@ const GIS_TOOL_SECTIONS = Object.freeze({
   notes:   "sec-notes",
   session: "sec-session",
   astro:   "sec-astro",
-  mag:     "sec-mag"
+  mag:     "sec-mag",
+  rangerings: "sec-rangerings"
 });
 const GIS_VALID_TOOLS = Object.freeze(Object.keys(GIS_TOOL_SECTIONS));
 
@@ -28190,6 +30283,15 @@ function gisInit(){
   if (lp){
     lp.addEventListener("cancel", (ev) => { ev.preventDefault(); handleLpClose(); });
     lp.addEventListener("click", (ev) => { if (ev.target === lp) handleLpClose(); });
+  }
+
+  const rrClose = document.getElementById("rangeRingsPanelClose");
+  const rrDlg = document.getElementById("rangeRingsPanel");
+  const handleRrClose = () => { if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel(); };
+  if (rrClose) rrClose.addEventListener("click", (ev) => { ev.preventDefault(); handleRrClose(); });
+  if (rrDlg){
+    rrDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handleRrClose(); });
+    rrDlg.addEventListener("click", (ev) => { if (ev.target === rrDlg) handleRrClose(); });
   }
 
   const tmClose = document.getElementById("trackModalClose");
@@ -28484,6 +30586,11 @@ function gisInit(){
       void closeLayersPanel();
       return;
     }
+    const rrd = document.getElementById("rangeRingsPanel");
+    if (state.rangeRingsPanelOpen || (rrd && rrd.open)){
+      if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
+      return;
+    }
     const wmd = document.getElementById("waypointModal");
     if (state.waypointsModalOpen || (wmd && wmd.open)){
       closeWaypointModal();
@@ -28633,6 +30740,10 @@ function gisInit(){
       if (state.layersPanelOpen && lp && lp.open && document.body.classList.contains("gis-mode")){
         try { clampLayersPanelRect(lp); gisPanelSyncBodySize(lp, _layersPanelLayoutOpts()); } catch(_){}
       }
+      const rrp = document.getElementById("rangeRingsPanel");
+      if (state.rangeRingsPanelOpen && rrp && rrp.open && document.body.classList.contains("gis-mode")){
+        try { clampRangeRingsPanelRect(rrp); gisPanelSyncBodySize(rrp, _rangeRingsPanelLayoutOpts()); } catch(_){}
+      }
     });
   }
 }
@@ -28681,7 +30792,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","rangeRingsPanel"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -29022,6 +31133,7 @@ function gisPanelAttachResize(root, opts){
 /** Activate a tab: move its section to the right-side drawer. */
 function activateTab(tabKey){
   if (!GIS_VALID_TABS.includes(tabKey)) return;
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
 
   const drawer = document.getElementById("tabDrawer");
   const body = document.getElementById("tabDrawerBody");
@@ -29286,6 +31398,7 @@ function closeToolsModal(){
 
 function openWaypointModal(opts){
   opts = opts || {};
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   const dlg = document.getElementById("waypointModal");
   const body = document.getElementById("waypointModalBody");
   if (!dlg || !body) return;
@@ -29931,6 +32044,24 @@ function _layersPanelLayoutOpts(){
     closeId: "layersPanelClose"
   };
 }
+/** Session layout opts for Range Rings floating panel (GIS 5A-bis/ter, on-map). */
+function _rangeRingsPanelLayoutOpts(){
+  return {
+    key: "rangeRings",
+    pad: 12,
+    minW: 380,
+    minH: 300,
+    defaultW: 500,
+    defaultH: null,
+    defaultHeightFraction: 0.58,
+    defaultHeightCap: 640,
+    topbarReserve: 104,
+    bodyMinH: 120,
+    bodyId: "rangeRingsPanelBody",
+    headId: "rangeRingsPanelHead",
+    closeId: "rangeRingsPanelClose"
+  };
+}
 function attachWaypointModalFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
   const opts = _waypointPanelLayoutOpts();
@@ -30194,6 +32325,106 @@ function wireLayersPanelFloatingGis(dlg){
   gisPanelApplyLayout(dlg, _layersPanelLayoutOpts());
   clampLayersPanelRect(dlg);
   gisPanelSyncBodySize(dlg, _layersPanelLayoutOpts());
+}
+
+function attachRangeRingsPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _rangeRingsPanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#rangeRingsPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+}
+function clampRangeRingsPanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _rangeRingsPanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireRangeRingsPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("rangeRingsPanelHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachRangeRingsPanelFloatingGis(dlg);
+  gisPanelAttachBringToFront(dlg, _rangeRingsPanelLayoutOpts());
+  gisPanelBringToFront(dlg, _rangeRingsPanelLayoutOpts());
+  gisPanelApplyLayout(dlg, _rangeRingsPanelLayoutOpts());
+  clampRangeRingsPanelRect(dlg);
+  gisPanelSyncBodySize(dlg, _rangeRingsPanelLayoutOpts());
+}
+
+/** GIS: floating Range Rings (non invasivo); riusa `#sec-rangerings`. */
+function openRangeRingsFloatingPanelGis(){
+  if (!document.body.classList.contains("gis-mode")) return false;
+  const dlg = document.getElementById("rangeRingsPanel");
+  const body = document.getElementById("rangeRingsPanelBody");
+  if (!dlg || !body) return false;
+  try { closeToolsModal(); } catch(_){}
+  try { closeToolsDrawer(); } catch(_){}
+  if (state.rangeRingsPanelOpen && dlg.open){
+    try { wireRangeRingsPanelFloatingGis(dlg); } catch(_){}
+    try {
+      requestAnimationFrame(() => {
+        try { clampRangeRingsPanelRect(dlg); gisPanelSyncBodySize(dlg, _rangeRingsPanelLayoutOpts()); } catch(_){}
+      });
+    } catch(_){}
+    try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+    return true;
+  }
+  state.rangeRingsPanelOpen = true;
+  gisMoveSectionTo("sec-rangerings", body);
+  const sec = document.getElementById("sec-rangerings");
+  if (sec && sec.tagName && String(sec.tagName).toLowerCase() === "details") sec.open = true;
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  wireRangeRingsPanelFloatingGis(dlg);
+  try {
+    requestAnimationFrame(() => {
+      try { clampRangeRingsPanelRect(dlg); gisPanelSyncBodySize(dlg, _rangeRingsPanelLayoutOpts()); } catch(_){}
+    });
+  } catch(_){}
+  try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+  return true;
+}
+function closeRangeRingsPanel(){
+  try { if (typeof rrClearPendingDelete === "function") rrClearPendingDelete(); } catch(_){}
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  const dlg = document.getElementById("rangeRingsPanel");
+  if (!state.rangeRingsPanelOpen && !(dlg && dlg.open)) return;
+  const body = document.getElementById("rangeRingsPanelBody");
+  const sec = document.getElementById("sec-rangerings");
+  if (sec && body && sec.parentNode === body){
+    try { gisRestoreSection("sec-rangerings"); } catch(_){}
+  }
+  state.rangeRingsPanelOpen = false;
+  if (dlg){
+    try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("rangeRingsPanelHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
 }
 
 function gisSetTopbarTabActive(tabKey, on){
@@ -30529,6 +32760,7 @@ function gisTryCloseTrackModalForContextSwitch(){
 
 function openTrackModal(){
   if (!document.body.classList.contains("gis-mode")) return;
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   const dlg = document.getElementById("trackModal");
   const body = document.getElementById("trackModalBody");
   if (!dlg || !body) return;
@@ -31169,6 +33401,7 @@ function closeWaypointEditor(){
 function startWaypointNewWaypointFlow(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   if (state._trackNewPromptOpen) return;
   state.track.pickMode = false;
   if (typeof trackPickCancelDeferred === "function") trackPickCancelDeferred();
@@ -31926,6 +34159,9 @@ function activateToolPanel(tool){
   const wrap = document.getElementById("toolsPanelWrap");
   if (!wrap) return;
   if (!gisTryCloseTrackModalForContextSwitch()) return;
+  try {
+    if (state.rangeRingsPanelOpen && typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
+  } catch(_){}
   if (state.toolsMenuOpen && state.toolsMenuOpen !== tool){
     gisRestoreSection(GIS_TOOL_SECTIONS[state.toolsMenuOpen]);
   }
@@ -31941,6 +34177,9 @@ function activateToolPanel(tool){
   document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => {
     b.classList.toggle("is-active", b.getAttribute("data-tool") === tool);
   });
+  if (tool === "rangerings"){
+    try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+  }
 }
 
 /** Sync drawer/modal titles after a language change. */
@@ -31956,6 +34195,11 @@ function gisRefreshI18n(){
     if (k) tmt.textContent = t(k);
   }
   if (state.trackModalOpen) syncTrackModalHeadI18n();
+  const rrt = document.getElementById("rangeRingsPanelTitle");
+  const rrd = document.getElementById("rangeRingsPanel");
+  if (rrt && rrd && (state.rangeRingsPanelOpen || rrd.open) && typeof t === "function"){
+    try { rrt.textContent = t("sec.rangerings") || rrt.textContent; } catch(_){}
+  }
 }
 
 /** Bridge to the existing `navigateToToolSection()` used by the legacy
@@ -31978,7 +34222,7 @@ function gisNavigateToolTarget(targetId, i18nKey){
     const byKey = {
       "sec.track":"track", "sec.measure":"measure", "sec.favorites":"favorites",
       "sec.history":"history", "sec.batch":"batch", "sec.notes":"notes",
-      "sec.session":"session", "sec.astro":"astro", "sec.mag":"mag"
+      "sec.session":"session", "sec.astro":"astro", "sec.mag":"mag", "sec.rangerings":"rangerings"
     }[i18nKey];
     if (byKey){
       if (GIS_VALID_TABS.includes(byKey)) tabKey = byKey;
@@ -32174,8 +34418,14 @@ function init(){
     if (Array.isArray(stored.gisLayers)) state.gisLayers = stored.gisLayers;
     if (stored.lastBatchRows) state.lastBatchRows = stored.lastBatchRows;
     if (typeof stored.batchInputText === "string") state.batchInputText = stored.batchInputText;
+    if (Array.isArray(stored.rangeRingSets)) {
+      state.rangeRingSets = sanitizeRangeRingSets(stored.rangeRingSets);
+    } else {
+      state.rangeRingSets = [];
+    }
   }
   ensureGisState();
+  ensureRangeRingState();
   state.mapLayer = sanitizeMapLayer(state.mapLayer);
 
   document.getElementById("languageSelect").value = initLang;
@@ -32312,6 +34562,14 @@ function runSelfCheck(){
     const vd = vincentyDirect(41.9028, 12.4964, v.distance, v.initialBearing);
     console.assert(Math.abs(vd.lat - 5.3600) < 1e-5 && Math.abs(vd.lon - (-4.0083)) < 1e-5,
       "Vincenty direct round-trip matches inverse");
+
+    console.assert(typeof parseRangeRingDistancesInput === "function" && typeof buildGeodesicCircleRing === "function", "Range rings: core helpers");
+    const prRr = parseRangeRingDistancesInput("1,5,10", "m");
+    console.assert(prRr.length === 3 && prRr[0] === 1 && prRr[1] === 5 && prRr[2] === 10, "Range rings: parse m list");
+    console.assert(rangeRingUnitToMeters(1, "km") === 1000 && rangeRingMetersToUnit(1852, "NM") === 1, "Range rings: unit m ↔ km/NM");
+    const ring0 = buildGeodesicCircleRing(0, 0, 1000, 90);
+    console.assert(ring0.length >= 5 && Math.abs(ring0[0].lat - ring0[ring0.length - 1].lat) < 1e-9 &&
+      Math.abs(ring0[0].lon - ring0[ring0.length - 1].lon) < 1e-6, "Range rings: geodesic ring closed (vincentyDirect)");
 
     // Export builders produce valid-looking output
     const gpx = buildGPX([{lat:41.9028, lon:12.4964, name:"Roma"}]);
