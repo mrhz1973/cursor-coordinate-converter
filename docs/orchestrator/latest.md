@@ -4,34 +4,38 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Range Rings floating title cleanup:** nascosto il `<summary>` (testo blu duplicato “Range Rings”) quando `#sec-rangerings` è reparentato dentro `#rangeRingsPanelBody` (floating panel). Dettaglio: `docs/orchestrator/inbox/2026-04-29_1826_riepilogo_range-rings-floating-title-cleanup.md`.
+2026-04-29 — **«aggiornati» (Cursor):** pubblicato in repo il **piano tecnico Range Rings 5C–5F** (lista avanzata, label SVG, «Punta e crea», drag centro con maniglia). Testo completo: `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md`. Ordine implementazione consigliato: **5C → 5D → 5E → 5F**; nessun consolidamento pick-mode globale prima di 5C.
 
 ## Ultimo intervento Cursor
 
-Monolite: Range Rings — micro-fix pannello floating (rimozione titolo duplicato cliccabile); memoria orchestratore aggiornata (solo `docs/orchestrator/**` in commit autosync).
+Memoria orchestratore: sync su comando «aggiornati» (`latest.md` + nuovo file inbox piano). Monolite **non** incluso nel commit.
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (working tree; **non** nel commit autosync)
 - `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1826_riepilogo_range-rings-floating-title-cleanup.md`
+- `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md` (nuovo)
+
+**Working tree noto:** `coordinate_converter Claude.html` può restare modificato localmente (Range Rings 5B + cleanup floating); **non** va nel commit autosync salvo richiesta esplicita.
 
 **Non toccati:** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/roadmap.md`, `.cursor/rules` (questo batch).
 
 ## Stato verifiche
 
-- `git diff --check` monolite; `node --check` su JS inline estratto: ok (vedi inbox per contesto).
+- Ultimo QA monolite documentato negli inbox precedenti (`git diff --check`, `node --check` su JS estratto).
 
 ## Stato Git noto
 
-Monolite modificato localmente; autosync memoria: commit **solo** `docs/orchestrator/**` (senza monolite).
+Autosync memoria: commit **solo** `docs/orchestrator/**` (senza monolite).
 
 ## Prossimo passo consigliato
 
-Test browser (desktop/touch) sul pannello floating (apertura/chiusura + pick + crea + export); commit monolite su richiesta utente.
+1. Implementare **Blocco 5C** (tabella RR tipo Saved Tracks/Offline) seguendo il piano inbox.
+2. Poi 5D, 5E, 5F in sequenza; dopo ogni blocco: QA + autosync orchestratore.
+3. Commit monolite su richiesta esplicita utente.
 
-## Dettagli
+## Dettagli (inbox)
 
+- **Piano 5C–5F:** `docs/orchestrator/inbox/2026-04-29_2130_plan_range-rings-next-ui-label-autocreate-drag.md`
 - cleanup titolo floating: `docs/orchestrator/inbox/2026-04-29_1826_riepilogo_range-rings-floating-title-cleanup.md`
 - 5B: `docs/orchestrator/inbox/2026-04-29_2045_riepilogo_range-rings-5B-pick-centro-mappa.md`
 - 5A-ter: `docs/orchestrator/inbox/2026-04-29_1935_riepilogo_range-rings-5A-ter-resize-floating.md`
