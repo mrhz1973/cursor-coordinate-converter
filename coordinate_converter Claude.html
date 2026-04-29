@@ -4112,6 +4112,23 @@ html[data-theme="dark"] .range-rings-overlay .rr-label{
   font-weight: 600;
 }
 #sec-rangerings .rr-delete-confirm-actions{ margin-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+#sec-rangerings .rr-rename-confirm-box{
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+}
+#sec-rangerings .rr-source-picker-list{
+  max-height: 260px; overflow: auto; margin-top: 8px;
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px;
+  background: var(--panel2);
+}
+#sec-rangerings .rr-source-picker-list .rr-pick-item{
+  display: block; width: 100%; text-align: left; margin: 2px 0; padding: 6px 8px;
+  border-radius: 6px; border: 1px solid transparent; background: transparent; font: inherit; cursor: pointer;
+}
+#sec-rangerings .rr-source-picker-list .rr-pick-item:hover{
+  background: var(--btn-hover-surface, color-mix(in srgb, var(--panel) 85%, var(--border) 15%));
+}
+#sec-rangerings .rr-io-details > summary{ cursor: pointer; }
 #sec-rangerings .rr-table td.sub{
   white-space: normal;
   word-break: break-word;
@@ -7395,15 +7412,28 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <select id="rrCenterMode">
               <option value="picked" data-i18n="rangeRings.center.mapPicked" selected>Punto sulla mappa</option>
               <option value="current" data-i18n="rangeRings.center.current">Punto convertito</option>
-              <option value="waypoint" data-i18n="rangeRings.center.waypoint">Waypoint</option>
               <option value="map" data-i18n="rangeRings.center.map">Centro mappa</option>
             </select>
           </label>
-          <label class="field" id="rrWaypointWrap" style="grid-column:1 / -1" hidden>
-            <span data-i18n="rangeRings.waypoint">Waypoint</span>
-            <select id="rrWaypointSelect"></select>
-          </label>
         </div>
+        <div class="rr-center-from-row" style="grid-column:1 / -1; display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:4px">
+          <span class="export-group-label" data-i18n="rangeRings.centerFromLabel">Centro da</span>
+          <button type="button" class="btn btn-sm" id="rrCenterFromFavBtn" data-i18n="rangeRings.centerFromFav" data-i18n-tip="tip.rangeRingsCenterFromFav"></button>
+          <button type="button" class="btn btn-sm" id="rrCenterFromWpBtn" data-i18n="rangeRings.centerFromWp" data-i18n-tip="tip.rangeRingsCenterFromWp"></button>
+          <button type="button" class="btn btn-sm" id="rrCenterFromGeoJsonBtn" data-i18n="rangeRings.centerFromGeoJson" data-i18n-tip="tip.rangeRingsCenterFromGeoJson"></button>
+          <input type="file" id="rrCenterGeoJsonFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
+        </div>
+
+        <details class="rr-io-details" id="rrIoDetails" style="margin-top:10px">
+          <summary class="sub-section-title" data-i18n="rangeRings.ioMenu">Importa / Esporta</summary>
+          <div class="rr-io-actions" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center">
+            <button type="button" class="btn btn-sm" id="rrExportAllVisibleBtn" data-i18n="rangeRings.exportAllVisible" data-i18n-tip="tip.rangeRingsExportAllVis"></button>
+            <button type="button" class="btn btn-sm" id="rrExportAllSetsBtn" data-i18n="rangeRings.exportAllSets" data-i18n-tip="tip.rangeRingsExportAll"></button>
+            <span class="sep" aria-hidden="true"></span>
+            <button type="button" class="btn btn-sm" id="rrImportSetsBtn" data-i18n="rangeRings.importSets" data-i18n-tip="tip.rangeRingsImportSets"></button>
+            <input type="file" id="rrImportSetsFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
+          </div>
+        </details>
 
         <div class="rr-dist-preset-block" style="margin-top:10px">
           <div class="grid" style="grid-template-columns:1fr auto; gap:10px">
@@ -7441,6 +7471,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <div class="rr-delete-confirm-actions">
               <button type="button" id="rrDeleteConfirmDo" class="btn btn-sm btn-danger" data-i18n="rangeRings.deleteConfirmAction"></button>
               <button type="button" id="rrDeleteConfirmCancel" class="btn btn-sm" data-i18n="rangeRings.deleteCancel"></button>
+            </div>
+          </div>
+          <div id="rrRenameConfirm" class="rr-delete-confirm-box rr-rename-confirm-box" role="region" hidden aria-atomic="true" data-i18n-aria="rangeRings.renameConfirmRegionAria" aria-live="assertive">
+            <p id="rrRenameConfirmText" class="rr-delete-confirm-msg" role="status"></p>
+            <div class="rr-delete-confirm-actions">
+              <button type="button" id="rrRenameConfirmDo" class="btn btn-sm btn-primary" data-i18n="rangeRings.renameConfirmAction"></button>
+              <button type="button" id="rrRenameConfirmCancel" class="btn btn-sm" data-i18n="rangeRings.renameCancelAction"></button>
             </div>
           </div>
         </div>
@@ -8078,6 +8115,21 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
+<dialog id="rrSourcePickerDialog" class="app-modal" aria-labelledby="rrSourcePickerTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="rrSourcePickerTitle" class="app-modal-title"></h2>
+    <button type="button" class="app-modal-close" id="rrSourcePickerClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <label class="field">
+      <span data-i18n="rangeRings.pickerSearch">Cerca</span>
+      <input type="search" id="rrSourcePickerSearch" class="rr-source-picker-search" autocomplete="off" />
+    </label>
+    <div id="rrSourcePickerList" class="rr-source-picker-list" role="listbox" aria-label=""></div>
+    <p id="rrSourcePickerHint" class="hint" style="margin-top:8px" data-i18n="rangeRings.pickerMaxHint" hidden></p>
+  </div>
 </dialog>
 
 <dialog id="offlineDraftWarnDialog" class="app-modal" aria-labelledby="offlineDraftWarnTitle" aria-modal="true">
@@ -9263,6 +9315,44 @@ const I18N = {
     "rangeRings.colWhen":"Quando",
     "rangeRings.colActions":"Azioni",
     "rangeRings.flyBtn":"Centra",
+    "rangeRings.centerFromLabel":"Centro da",
+    "rangeRings.centerFromFav":"Favorito",
+    "rangeRings.centerFromWp":"Waypoint",
+    "rangeRings.centerFromGeoJson":"GeoJSON (centro)",
+    "rangeRings.ioMenu":"Importa / esporta set",
+    "rangeRings.exportAllVisible":"Esporta visibili (tutti i set visibili)",
+    "rangeRings.exportAllSets":"Esporta tutti i set",
+    "rangeRings.importSets":"Importa set (GeoJSON)",
+    "rangeRings.pickerSearch":"Cerca per nome o coordinate",
+    "rangeRings.pickerMaxHint":"Mostrati al massimo {0} risultati; stringi la ricerca per affinare.",
+    "rangeRings.pickerTitleFav":"Scegli un Favorito come centro",
+    "rangeRings.pickerTitleWp":"Scegli un Waypoint come centro",
+    "rangeRings.pickerTitleGeo":"Scegli un punto dal GeoJSON",
+    "rangeRings.notice.pickerNoFav":"Nessun Favorito con coordinate valide.",
+    "rangeRings.notice.pickerNoWp":"Nessun Waypoint con coordinate valide.",
+    "rangeRings.notice.pickerNoResults":"Nessun punto valido per questa ricerca.",
+    "rangeRings.notice.pickerNoSearch":"Nessun risultato. Prova un altro testo o allarga la ricerca.",
+    "rangeRings.notice.centerFromFav":"Centro Range Rings impostato da Favorito.",
+    "rangeRings.notice.centerFromWp":"Centro Range Rings impostato da Waypoint.",
+    "rangeRings.notice.centerFromGeo":"Centro Range Rings impostato da GeoJSON.",
+    "rangeRings.notice.disarmedForCenter":"Punta / Punta e crea disattivati per impostare il centro da elenco o file.",
+    "rangeRings.notice.geoNoPoints":"Nessun punto (Point) valido nel file GeoJSON.",
+    "rangeRings.notice.importOk":"Import GeoJSON: set aggiunti o aggiornati.",
+    "rangeRings.notice.importNone":"Nessun set Range Rings valido nel file.",
+    "rangeRings.notice.renamedOk":"Nome set aggiornato.",
+    "rangeRings.renameConfirmText":"Rinominare in «{0}»? (prima: «{1}»)",
+    "rangeRings.renameConfirmAction":"Rinomina",
+    "rangeRings.renameCancelAction":"Annulla",
+    "rangeRings.renameConfirmRegionAria":"Conferma rinomina set Range Rings",
+    "rangeRings.err.closePendingFirst":"Chiudi o conferma l’altra operazione in corso (rinomina / eliminazione) prima di continuare.",
+    "rangeRings.err.geoJsonParse":"GeoJSON non valido o non leggibile.",
+    "rangeRings.err.geoJsonRead":"Lettura file non riuscita.",
+    "tip.rangeRingsCenterFromFav":"Apri l’elenco Favoriti e imposta il centro come per «Punto sulla mappa».",
+    "tip.rangeRingsCenterFromWp":"Apri l’elenco Waypoint e imposta il centro come per «Punto sulla mappa».",
+    "tip.rangeRingsCenterFromGeoJson":"Scegli un file GeoJSON locale con uno o più Point da usare come centro.",
+    "tip.rangeRingsExportAllVis":"Esporta in GeoJSON tutti i set attualmente visibili sulla mappa.",
+    "tip.rangeRingsExportAll":"Esporta in GeoJSON tutti i set salvati.",
+    "tip.rangeRingsImportSets":"Importa uno o più set da file GeoJSON (features con properties.type=range_ring).",
     "rangeRings.renameConfirm":"Salvare il nuovo nome del set?",
     "rangeRings.batchShowSelected":"Mostra selezionati",
     "rangeRings.batchHideSelected":"Nascondi selezionati",
@@ -10438,6 +10528,44 @@ const I18N = {
     "rangeRings.colWhen":"When",
     "rangeRings.colActions":"Actions",
     "rangeRings.flyBtn":"Center view",
+    "rangeRings.centerFromLabel":"Center from",
+    "rangeRings.centerFromFav":"Favorite",
+    "rangeRings.centerFromWp":"Waypoint",
+    "rangeRings.centerFromGeoJson":"GeoJSON (center)",
+    "rangeRings.ioMenu":"Import / export sets",
+    "rangeRings.exportAllVisible":"Export visible (all sets currently visible)",
+    "rangeRings.exportAllSets":"Export all sets",
+    "rangeRings.importSets":"Import sets (GeoJSON)",
+    "rangeRings.pickerSearch":"Search by name or coordinates",
+    "rangeRings.pickerMaxHint":"Showing at most {0} results; narrow your search to see more matches.",
+    "rangeRings.pickerTitleFav":"Choose a Favorite as center",
+    "rangeRings.pickerTitleWp":"Choose a Waypoint as center",
+    "rangeRings.pickerTitleGeo":"Choose a point from GeoJSON",
+    "rangeRings.notice.pickerNoFav":"No Favorite with valid coordinates.",
+    "rangeRings.notice.pickerNoWp":"No Waypoint with valid coordinates.",
+    "rangeRings.notice.pickerNoResults":"No valid point for this search.",
+    "rangeRings.notice.pickerNoSearch":"No results. Try different text or broaden the search.",
+    "rangeRings.notice.centerFromFav":"Range Rings center set from a Favorite.",
+    "rangeRings.notice.centerFromWp":"Range Rings center set from a Waypoint.",
+    "rangeRings.notice.centerFromGeo":"Range Rings center set from GeoJSON.",
+    "rangeRings.notice.disarmedForCenter":"Pick / Pick & create turned off to set the center from list or file.",
+    "rangeRings.notice.geoNoPoints":"No valid Point in the GeoJSON file.",
+    "rangeRings.notice.importOk":"GeoJSON import: sets added or updated.",
+    "rangeRings.notice.importNone":"No valid Range Rings set in the file.",
+    "rangeRings.notice.renamedOk":"Set name updated.",
+    "rangeRings.renameConfirmText":"Rename to “{0}”? (was: “{1}”)",
+    "rangeRings.renameConfirmAction":"Rename",
+    "rangeRings.renameCancelAction":"Cancel",
+    "rangeRings.renameConfirmRegionAria":"Confirm Range Rings set rename",
+    "rangeRings.err.closePendingFirst":"Close or complete the other action in progress (rename / delete) first.",
+    "rangeRings.err.geoJsonParse":"GeoJSON is invalid or could not be parsed.",
+    "rangeRings.err.geoJsonRead":"Could not read the file.",
+    "tip.rangeRingsCenterFromFav":"Open the Favorites list and set the center like a map-tapped point.",
+    "tip.rangeRingsCenterFromWp":"Open the Waypoint list and set the center like a map-tapped point.",
+    "tip.rangeRingsCenterFromGeoJson":"Choose a local GeoJSON file with one or more points for the center.",
+    "tip.rangeRingsExportAllVis":"Export all currently map-visible sets as GeoJSON.",
+    "tip.rangeRingsExportAll":"Export all saved sets as GeoJSON.",
+    "tip.rangeRingsImportSets":"Import one or more sets from GeoJSON (features with properties.type=range_ring).",
     "rangeRings.renameConfirm":"Save the new set name?",
     "rangeRings.batchShowSelected":"Show selected",
     "rangeRings.batchHideSelected":"Hide selected",
@@ -11614,6 +11742,44 @@ const I18N = {
     "rangeRings.colWhen":"Quand",
     "rangeRings.colActions":"Actions",
     "rangeRings.flyBtn":"Centrer",
+    "rangeRings.centerFromLabel":"Centre depuis",
+    "rangeRings.centerFromFav":"Favori",
+    "rangeRings.centerFromWp":"Waypoint",
+    "rangeRings.centerFromGeoJson":"GeoJSON (centre)",
+    "rangeRings.ioMenu":"Importer / exporter des ensembles",
+    "rangeRings.exportAllVisible":"Exporter visibles (tous les ensembles visibles)",
+    "rangeRings.exportAllSets":"Exporter tous les ensembles",
+    "rangeRings.importSets":"Importer des ensembles (GeoJSON)",
+    "rangeRings.pickerSearch":"Recherche par nom ou coordonnées",
+    "rangeRings.pickerMaxHint":"Au plus {0} résultats affinés ; précisez la recherche pour affiner.",
+    "rangeRings.pickerTitleFav":"Choisir un Favori comme centre",
+    "rangeRings.pickerTitleWp":"Choisir un Waypoint comme centre",
+    "rangeRings.pickerTitleGeo":"Choisir un point du GeoJSON",
+    "rangeRings.notice.pickerNoFav":"Aucun Favori avec des coordonnées valides.",
+    "rangeRings.notice.pickerNoWp":"Aucun Waypoint avec des coordonnées valides.",
+    "rangeRings.notice.pickerNoResults":"Aucun point valide pour cette recherche.",
+    "rangeRings.notice.pickerNoSearch":"Aucun résultat. Autre texte ou recherche plus large.",
+    "rangeRings.notice.centerFromFav":"Centre Range Rings pris depuis un Favori.",
+    "rangeRings.notice.centerFromWp":"Centre Range Rings pris depuis un Waypoint.",
+    "rangeRings.notice.centerFromGeo":"Centre Range Rings pris depuis le GeoJSON.",
+    "rangeRings.notice.disarmedForCenter":"Pointage / Pointer et créer désactivés pour centrer depuis la liste ou le fichier.",
+    "rangeRings.notice.geoNoPoints":"Aucun point (Point) valide dans le GeoJSON.",
+    "rangeRings.notice.importOk":"Import GeoJSON : ensembles ajoutés ou mis à jour.",
+    "rangeRings.notice.importNone":"Aucun ensemble Range Rings valide dans le fichier.",
+    "rangeRings.notice.renamedOk":"Nom d’ensemble mis à jour.",
+    "rangeRings.renameConfirmText":"Renommer en « {0} » ? (avant : « {1} »)",
+    "rangeRings.renameConfirmAction":"Renommer",
+    "rangeRings.renameCancelAction":"Annuler",
+    "rangeRings.renameConfirmRegionAria":"Confirmer le renommage d’un ensemble Range Rings",
+    "rangeRings.err.closePendingFirst":"Terminez l’autre opération (renommer / supprimer) avant de continuer.",
+    "rangeRings.err.geoJsonParse":"GeoJSON invalide ou illisible.",
+    "rangeRings.err.geoJsonRead":"Lecture du fichier impossible.",
+    "tip.rangeRingsCenterFromFav":"Ouvre la liste des Favoris et fixe le centre comme un point sur la carte.",
+    "tip.rangeRingsCenterFromWp":"Ouvre la liste des Waypoints et fixe le centre comme un point sur la carte.",
+    "tip.rangeRingsCenterFromGeoJson":"Choisir un fichier GeoJSON local avec un ou plusieurs points pour le centre.",
+    "tip.rangeRingsExportAllVis":"Exporter en GeoJSON tous les ensembles actuellement visibles sur la carte.",
+    "tip.rangeRingsExportAll":"Exporter en GeoJSON tous les ensembles enregistrés.",
+    "tip.rangeRingsImportSets":"Importer un ou plusieurs ensembles depuis GeoJSON (properties.type=range_ring).",
     "rangeRings.renameConfirm":"Enregistrer le nouveau nom de l’ensemble ?",
     "rangeRings.batchShowSelected":"Afficher la sélection",
     "rangeRings.batchHideSelected":"Masquer la sélection",
@@ -12183,6 +12349,12 @@ const state = {
   _rrPanelEscNotice: false,
   /** Transient: pending in-panel delete confirm { type: "single"|"batch", ids: string[] } — not persisted. */
   _rrPendingDelete: null,
+  /** Transient: in-panel rename { id, oldName, newName } — not persisted. */
+  _rrPendingRename: null,
+  /** Transient: rr source picker "fav" | "wp" | "gc" — not persisted. */
+  _rrSourcePickerKind: null,
+  /** Transient: candidate points { lat, lon, label }[] for centro da GeoJSON — not persisted. */
+  _rrGeoJsonCenterPoints: null,
   /** Transient: Range Rings — id set in modifica (non persistito). */
   _rrEditingSetId: null,
   /** Transient: Range Rings — prossimo clic mappa sposta il centro del set in editing (non persistito). */
@@ -17197,10 +17369,25 @@ function bindHotkeys(){
   try { ensureGisInlineRenameKeyboardHooks(); } catch(_){}
   document.addEventListener("keydown", (ev) => {
     // Esc: priority to closing modal; otherwise blur/clear
-    if (ev.key === "Escape"){
+      if (ev.key === "Escape"){
       if (state.trackWaypointDraft){
         state.trackWaypointDraft = null;
         refreshTileMapForTrackUi();
+        ev.preventDefault();
+        return;
+      }
+      try {
+        const rrSp = document.getElementById("rrSourcePickerDialog");
+        if (rrSp && rrSp.open && typeof rrCloseRrSourcePicker === "function"){
+          rrCloseRrSourcePicker();
+          ev.preventDefault();
+          try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+          return;
+        }
+      } catch(_){}
+      if (state._rrPendingRename){
+        try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
+        try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
         ev.preventDefault();
         return;
       }
@@ -22617,6 +22804,13 @@ function ensureGisInlineRenameKeyboardHooks(){
       return;
     }
     if (ev.key !== "Escape") return;
+    if (el.matches && el.matches("[data-rr-rename]") && state._rrPendingRename){
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
+      try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+      return;
+    }
     ev.preventDefault();
     ev.stopPropagation();
     let prev = el.dataset._prevOffaName;
@@ -28422,6 +28616,10 @@ function rrSyncRangeRingsOperativeInfo(){
   const ok = document.getElementById("rrOk");
   const inf = document.getElementById("rrInfo");
   if (!inf) return;
+  if (state._rrPendingRename){
+    if (inf){ inf.hidden = true; inf.textContent = ""; }
+    return;
+  }
   if (state._rrPendingDelete){
     if (inf){ inf.hidden = true; inf.textContent = ""; }
     return;
@@ -28491,8 +28689,6 @@ function rrResetRangeRingsFormToNew(){
   if (unitSel) unitSel.value = "m";
   if (modeSel) modeSel.value = "picked";
   state._rangeRingsMapPickCenter = null;
-  const wpWrap = document.getElementById("rrWaypointWrap");
-  if (wpWrap) wpWrap.hidden = true;
 }
 function rrLoadSetIntoForm(s){
   if (!s) return;
@@ -28510,8 +28706,6 @@ function rrLoadSetIntoForm(s){
   } else {
     state._rangeRingsMapPickCenter = null;
   }
-  const wpWrap = document.getElementById("rrWaypointWrap");
-  if (wpWrap) wpWrap.hidden = true;
 }
 function rrClearRangeRingsEditSession(){
   state._rrEditingSetId = null;
@@ -28527,6 +28721,7 @@ function rrBeginEditRangeRingSet(id){
   if (!s) return;
   rrClearMsgs();
   try { rrClearPendingDelete(); } catch(_){}
+  try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
   state._rrEditingMoveCenterMode = false;
   state.rangeRingsPickCenterMode = false;
   state.rangeRingsPickAndCreateMode = false;
@@ -28650,6 +28845,8 @@ function rrRenderDeleteConfirmUI(){
     const tpl = (typeof t === "function" ? (t("rangeRings.deleteConfirmBatch") || "") : "") || "Delete {0}?";
     msg.textContent = String(tpl).replace("{0}", String(p2.ids.length));
   }
+  const rnc = document.getElementById("rrRenameConfirm");
+  if (rnc) rnc.hidden = true;
   host.hidden = false;
   const e0 = document.getElementById("rrError");
   const ok0 = document.getElementById("rrOk");
@@ -28671,6 +28868,10 @@ function rrRequestDeleteSet(id){
   ensureRangeRingState();
   const sid = String(id || "");
   if (!sid) return;
+  if (state._rrPendingRename){
+    try { rrShowError("rangeRings.err.closePendingFirst"); } catch(_){}
+    return;
+  }
   const s = (state.rangeRingSets || []).find(x => x && String(x.id) === sid);
   if (!s) return;
   rrClearMsgs();
@@ -28685,6 +28886,10 @@ function rrRequestDeleteSelected(){
   const valid = new Set((state.rangeRingSets || []).filter(x => x).map(x => String(x.id)));
   const okIds = raw.filter(i => valid.has(i));
   if (!okIds.length) return;
+  if (state._rrPendingRename){
+    try { rrShowError("rangeRings.err.closePendingFirst"); } catch(_){}
+    return;
+  }
   rrClearMsgs();
   state._rrPendingDelete = { type: "batch", ids: okIds };
   try { renderRangeRingsPanel(); } catch(_){}
@@ -28836,6 +29041,422 @@ function exportSelectedRangeRingSetsGeoJSON(){
   if (!feats.length){ rrShowError("rangeRings.exportEmpty"); return; }
   downloadBlob(JSON.stringify(fc, null, 2), "range_rings_selected.geojson", "application/geo+json;charset=utf-8");
   rrShowOk("rangeRings.exportSelectedOk");
+}
+
+/* --- Range Rings: centro da Favoriti / Waypoint / GeoJSON, import set, rename interno --- */
+function extractGeoJsonPointsForCenter(gj){
+  const out = [];
+  function add(lat, lon, label){
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+    out.push({ lat, lon: normalizeLon(lon), label: String(label == null ? "" : label) });
+  }
+  function fromGeom(geom, props){
+    if (!geom || !geom.type) return;
+    const pstr = (props) => { const n = props && (props.name || props.title || props.setName); return n != null ? String(n) : ""; };
+    if (geom.type === "Point" && Array.isArray(geom.coordinates) && geom.coordinates.length >= 2){
+      add(geom.coordinates[1], geom.coordinates[0], pstr(props));
+    } else if (geom.type === "MultiPoint" && Array.isArray(geom.coordinates)){
+      for (const c of geom.coordinates){
+        if (c && c.length >= 2) add(c[1], c[0], pstr(props));
+      }
+    }
+  }
+  if (gj && gj.type === "FeatureCollection" && Array.isArray(gj.features)){
+    for (const f of gj.features) if (f && f.type === "Feature") fromGeom(f.geometry, f.properties);
+  } else if (gj && gj.type === "Feature") fromGeom(gj.geometry, gj.properties);
+  else if (gj && gj.type === "Point" && Array.isArray(gj.coordinates) && gj.coordinates.length >= 2){
+    add(gj.coordinates[1], gj.coordinates[0], "");
+  }
+  return out;
+}
+function importRangeRingsFromGeoJSONObj(obj){
+  if (!obj || typeof obj !== "object") return { ok: false, n: 0, err: "bad" };
+  const feats = [];
+  if (obj.type === "FeatureCollection" && Array.isArray(obj.features)){
+    for (const f of obj.features) if (f) feats.push(f);
+  } else if (obj.type === "Feature" && obj.geometry) feats.push(obj);
+  const bySet = new Map();
+  for (const f of feats){
+    if (!f || f.type !== "Feature") continue;
+    const p = f.properties || {};
+    if (String(p.type || "") !== "range_ring") continue;
+    const sidG = p.setId != null ? String(p.setId) : "";
+    if (!bySet.has(sidG)) bySet.set(sidG, []);
+    bySet.get(sidG).push(f);
+  }
+  if (!bySet.size) return { ok: false, n: 0, err: "empty" };
+  let added = 0;
+  for (const [, bundle] of bySet){
+    if (!Array.isArray(bundle) || !bundle.length) continue;
+    const p0 = (bundle[0] && bundle[0].properties) || {};
+    const lat = Number(p0.centerLat);
+    const lon = Number(p0.centerLon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const dists = [];
+    for (const f of bundle){
+      const p = f.properties || {};
+      const m = Number(p.radiusM);
+      if (Number.isFinite(m) && m > 0) dists.push(m);
+    }
+    dists.sort((a, b) => a - b);
+    if (!dists.length) continue;
+    const nm0 = String(p0.setName || "").trim();
+    const base = (typeof t === "function" ? (t("rangeRings.defaultName") || "") : "") || "Rings";
+    const name = nm0 || (base + " " + (1 + (state.rangeRingSets || []).length));
+    const set = sanitizeRangeRingSet({
+      _v: 1,
+      id: uidNamed(),
+      name,
+      center: { lat, lon: normalizeLon(lon) },
+      distancesM: dists,
+      unit: String(p0.unit || "m"),
+      color: (typeof sanitizeTrackColor === "function" ? sanitizeTrackColor(p0.color || "") : "#16a34a"),
+      strokeWidth: 2,
+      opacity: 0.55,
+      labelMode: "name",
+      visible: true,
+      createdAt: Number.isFinite(p0.createdAt) ? p0.createdAt : Date.now()
+    }, (state.rangeRingSets || []).length);
+    if (!set) continue;
+    state.rangeRingSets.push(set);
+    if (state.rangeRingSets.length > RANGE_RING_SETS_CAP){
+      state.rangeRingSets.splice(0, state.rangeRingSets.length - RANGE_RING_SETS_CAP);
+    }
+    added++;
+  }
+  if (!added) return { ok: false, n: 0, err: "noValid" };
+  ensureRangeRingState();
+  saveStore();
+  return { ok: true, n: added, err: null };
+}
+function rrRrSecondaryActionAllowed(){
+  if (state._rrPendingDelete){
+    try { rrShowError("rangeRings.err.closePendingFirst"); } catch(_){}
+    return false;
+  }
+  if (state._rrPendingRename){
+    try { rrShowError("rangeRings.err.closePendingFirst"); } catch(_){}
+    return false;
+  }
+  return true;
+}
+function rrDisarmRrPickModesForCenterAction(){
+  let d = false;
+  if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode){
+    try { rangeRingsClearPickCenterMode(); } catch(_){}
+    state._rrPanelEscNotice = false;
+    d = true;
+  }
+  if (state._rrEditingMoveCenterMode){
+    state._rrEditingMoveCenterMode = false;
+    d = true;
+  }
+  try { trackSyncPickModeUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  return d;
+}
+function rrCloseRrSourcePicker(){
+  const d = document.getElementById("rrSourcePickerDialog");
+  if (d && d.open) try { d.close(); } catch(_){}
+  state._rrSourcePickerKind = null;
+  state._rrGeoJsonCenterPoints = null;
+  const s = document.getElementById("rrSourcePickerSearch");
+  if (s) s.value = "";
+  const h = document.getElementById("rrSourcePickerHint");
+  if (h){ h.hidden = true; h.textContent = ""; }
+}
+function rrApplyCenterFromPicker(lat, lon, noticeKey){
+  state._rangeRingsMapPickCenter = { lat, lon: normalizeLon(lon) };
+  const modeEl = document.getElementById("rrCenterMode");
+  if (modeEl) modeEl.value = "picked";
+  const lp = state.lastPoint || state.viewCenter;
+  const z = state.mapZoom || 11;
+  try {
+    if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon) && state.lastPoint) renderTileMap(state.lastPoint.lat, state.lastPoint.lon, z);
+    else if (lp && Number.isFinite(lp.lat)) renderTileMap(lp.lat, lp.lon, z);
+  } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  if (typeof noticeKey === "string" && noticeKey) try { rrShowOk(noticeKey); } catch(_){}
+  try { renderRangeRingsPanel(); } catch(_){}
+}
+function rrIndexRrPickerFavorites(){
+  const out = [];
+  for (const f of (state.favorites || [])){
+    if (!f) continue;
+    const lat = Number(f.lat);
+    const lon = Number(f.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const nm = String(f.name != null ? f.name : "").trim() || (lat.toFixed(4) + ", " + lon.toFixed(4));
+    out.push({ kind: "fav", id: f.id, lat, lon, label: nm, search: (nm + " " + lat.toFixed(5) + " " + lon.toFixed(5)).toLowerCase() });
+  }
+  return out;
+}
+function rrIndexRrPickerWaypoints(){
+  const out = [];
+  ensureMapWaypointsState();
+  for (const w of (state.mapWaypoints || [])){
+    if (!w) continue;
+    const lat = Number(w.lat);
+    const lon = Number(w.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const nm = String(w.name != null ? w.name : "").trim() || (lat.toFixed(4) + ", " + lon.toFixed(4));
+    out.push({ kind: "wp", id: w.id, lat, lon, label: nm, search: (nm + " " + lat.toFixed(5) + " " + lon.toFixed(5)).toLowerCase() });
+  }
+  return out;
+}
+function rrFillRrSourcePickerList(qStr){
+  const list = document.getElementById("rrSourcePickerList");
+  if (!list) return;
+  const k = String(state._rrSourcePickerKind || "");
+  const q = String(qStr == null ? "" : qStr).trim().toLowerCase();
+  let src = [];
+  if (k === "fav") src = rrIndexRrPickerFavorites();
+  else if (k === "wp") src = rrIndexRrPickerWaypoints();
+  else if (k === "gc" && Array.isArray(state._rrGeoJsonCenterPoints)) src = state._rrGeoJsonCenterPoints.map((o, i) => ({
+    kind: "gc", id: "gc" + i, lat: o.lat, lon: o.lon, label: o.label || (o.lat.toFixed(4) + ", " + o.lon.toFixed(4)),
+    search: ((o.label || "") + " " + o.lat + " " + o.lon).toLowerCase()
+  }));
+  if (q) src = src.filter(x => (x.search || "").indexOf(q) >= 0);
+  const emptyNoData = (k === "fav" && !rrIndexRrPickerFavorites().length) || (k === "wp" && !rrIndexRrPickerWaypoints().length);
+  if (!src.length){
+    const emptyK = emptyNoData
+      ? (k === "fav" ? "rangeRings.notice.pickerNoFav" : (k === "wp" ? "rangeRings.notice.pickerNoWp" : "rangeRings.notice.pickerNoResults"))
+      : "rangeRings.notice.pickerNoSearch";
+    list.innerHTML = "<p class=\"hint\" style=\"padding:8px\">" + esc((typeof t === "function" ? (t(emptyK) || "") : "")) + "</p>";
+    return;
+  }
+  const maxN = 50;
+  const h0 = document.getElementById("rrSourcePickerHint");
+  if (src.length > maxN){
+    if (h0){
+      const tpl = (typeof t === "function" ? (t("rangeRings.pickerMaxHint") || "") : "") || "";
+      h0.textContent = String(tpl).replace("{0}", String(maxN));
+      h0.hidden = false;
+    }
+  } else if (h0) h0.hidden = true;
+  const slice = src.slice(0, maxN);
+  let h = "";
+  for (const it of slice){
+    h += "<button type=\"button\" class=\"rr-pick-item\" data-rr-pick-lat=\"" + String(it.lat) + "\" data-rr-pick-lon=\"" + String(it.lon) + "\">" +
+      esc(it.label) + " <span class=\"sub\" style=\"opacity:.8\">" + esc(it.lat.toFixed(5) + ", " + it.lon.toFixed(5)) + "</span></button>";
+  }
+  list.innerHTML = h;
+  list.querySelectorAll(".rr-pick-item").forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const l = parseFloatStrict(btn.getAttribute("data-rr-pick-lat") || "");
+      const n = parseFloatStrict(btn.getAttribute("data-rr-pick-lon") || "");
+      if (!Number.isFinite(l) || !Number.isFinite(n)) return;
+      const notKey = (state._rrSourcePickerKind === "fav") ? "rangeRings.notice.centerFromFav" : (state._rrSourcePickerKind === "wp" ? "rangeRings.notice.centerFromWp" : "rangeRings.notice.centerFromGeo");
+      rrCloseRrSourcePicker();
+      rrApplyCenterFromPicker(l, n, notKey);
+    });
+  });
+}
+function rrOpenRrSourcePicker(kind){
+  if (!rrRrSecondaryActionAllowed()) return;
+  try { rrClearPendingDelete(); } catch(_){}
+  const dArm = rrDisarmRrPickModesForCenterAction();
+  if (dArm) try { rrShowOk("rangeRings.notice.disarmedForCenter"); } catch(_){}
+  state._rrSourcePickerKind = kind;
+  if (kind === "fav" && !rrIndexRrPickerFavorites().length){
+    try { rrShowError("rangeRings.notice.pickerNoFav"); } catch(_){}
+    state._rrSourcePickerKind = null;
+    return;
+  }
+  if (kind === "wp" && !rrIndexRrPickerWaypoints().length){
+    try { rrShowError("rangeRings.notice.pickerNoWp"); } catch(_){}
+    state._rrSourcePickerKind = null;
+    return;
+  }
+  if (kind === "gc" && (!state._rrGeoJsonCenterPoints || !state._rrGeoJsonCenterPoints.length)){
+    try { rrShowError("rangeRings.notice.geoNoPoints"); } catch(_){}
+    state._rrSourcePickerKind = null;
+    return;
+  }
+  const dlg = document.getElementById("rrSourcePickerDialog");
+  const title = document.getElementById("rrSourcePickerTitle");
+  if (title){
+    const kT = (kind === "fav") ? "rangeRings.pickerTitleFav" : (kind === "wp" ? "rangeRings.pickerTitleWp" : "rangeRings.pickerTitleGeo");
+    title.textContent = (typeof t === "function" ? (t(kT) || "") : "") || "";
+  }
+  const s = document.getElementById("rrSourcePickerSearch");
+  if (s) s.value = "";
+  rrFillRrSourcePickerList("");
+  if (dlg && !dlg.open) try { if (typeof dlg.showModal === "function") dlg.showModal(); } catch(_){ }
+  setTimeout(() => { try { if (s) s.focus(); } catch(_){} }, 0);
+}
+function rrHandleRrCenterGeoJsonFile(f){
+  if (!f) return;
+  if (!rrRrSecondaryActionAllowed()) return;
+  const r = new FileReader();
+  r.onload = () => {
+    let gj;
+    try { gj = JSON.parse(String(r.result || "null")); } catch(_){
+      try { rrShowError("rangeRings.err.geoJsonParse"); } catch(_){}
+      return;
+    }
+    const pts = extractGeoJsonPointsForCenter(gj);
+    if (!pts.length){ try { rrShowError("rangeRings.notice.geoNoPoints"); } catch(_){} return; }
+    if (pts.length === 1){
+      rrDisarmRrPickModesForCenterAction();
+      rrApplyCenterFromPicker(pts[0].lat, pts[0].lon, "rangeRings.notice.centerFromGeo");
+      return;
+    }
+    const dArm2 = rrDisarmRrPickModesForCenterAction();
+    if (dArm2) try { rrShowOk("rangeRings.notice.disarmedForCenter"); } catch(_){}
+    state._rrGeoJsonCenterPoints = pts;
+    rrOpenRrSourcePicker("gc");
+  };
+  r.onerror = () => { try { rrShowError("rangeRings.err.geoJsonRead"); } catch(_){} };
+  r.readAsText(f);
+}
+function ensureRrSourcePickerWired(){
+  const d = document.getElementById("rrSourcePickerDialog");
+  if (!d || d._rrPickerWired) return;
+  d._rrPickerWired = true;
+  const c = document.getElementById("rrSourcePickerClose");
+  if (c) c.addEventListener("click", (ev) => { ev.preventDefault(); try { rrCloseRrSourcePicker(); } catch(_){} });
+  d.addEventListener("cancel", (ev) => { ev.preventDefault(); try { rrCloseRrSourcePicker(); } catch(_){} });
+  const s = document.getElementById("rrSourcePickerSearch");
+  if (s) s.addEventListener("input", () => { try { rrFillRrSourcePickerList(s.value); } catch(_){} });
+}
+function ensureRrRangeRingsIoWired(){
+  const a = document.getElementById("rrExportAllVisibleBtn");
+  if (a && !a._rrIoWired){
+    a._rrIoWired = true;
+    a.addEventListener("click", (ev) => { ev.preventDefault(); if (!rrRrSecondaryActionAllowed()) return; exportRangeRingSetsGeoJSON({ visibleOnly: true }); });
+  }
+  const b = document.getElementById("rrExportAllSetsBtn");
+  if (b && !b._rrIoWired){
+    b._rrIoWired = true;
+    b.addEventListener("click", (ev) => { ev.preventDefault(); if (!rrRrSecondaryActionAllowed()) return; exportRangeRingSetsGeoJSON({ visibleOnly: false }); });
+  }
+  const iBtn = document.getElementById("rrImportSetsBtn");
+  const fi = document.getElementById("rrImportSetsFile");
+  if (iBtn && fi && !iBtn._rrImportWired){
+    iBtn._rrImportWired = true;
+    iBtn.addEventListener("click", (ev) => { ev.preventDefault(); if (!rrRrSecondaryActionAllowed()) return; try { fi.value = ""; } catch(_){} fi.click(); });
+    fi.addEventListener("change", (ev) => {
+      const f = ev && ev.target && ev.target.files && ev.target.files[0];
+      if (!f) return;
+      if (!rrRrSecondaryActionAllowed()) return;
+      const r2 = new FileReader();
+      r2.onload = () => {
+        let o;
+        try { o = JSON.parse(String(r2.result || "null")); } catch(_){
+          try { rrShowError("rangeRings.err.geoJsonParse"); } catch(_){}
+          return;
+        }
+        const res = importRangeRingsFromGeoJSONObj(o);
+        if (res && res.ok) try { rrShowOk("rangeRings.notice.importOk"); } catch(_){ }
+        else try { rrShowError("rangeRings.notice.importNone"); } catch(_){ }
+        if (res && res.ok) try { refreshRangeRingsAfterStateChange(); } catch(_){ }
+      };
+      r2.onerror = () => { try { rrShowError("rangeRings.err.geoJsonRead"); } catch(_){} };
+      r2.readAsText(f);
+    });
+  }
+  const gBtn = document.getElementById("rrCenterFromGeoJsonBtn");
+  const gFi = document.getElementById("rrCenterGeoJsonFile");
+  if (gBtn && gFi && !gBtn._rrGcw){
+    gBtn._rrGcw = true;
+    gBtn.addEventListener("click", (ev) => { ev.preventDefault(); if (!rrRrSecondaryActionAllowed()) return; try { gFi.value = ""; } catch(_){} gFi.click(); });
+    gFi.addEventListener("change", (ev) => { const f2 = ev && ev.target && ev.target.files && ev.target.files[0]; if (f2) rrHandleRrCenterGeoJsonFile(f2); });
+  }
+  const fB = document.getElementById("rrCenterFromFavBtn");
+  if (fB && !fB._rrB){
+    fB._rrB = true;
+    fB.addEventListener("click", (ev) => { ev.preventDefault(); try { rrOpenRrSourcePicker("fav"); } catch(_){} });
+  }
+  const wB = document.getElementById("rrCenterFromWpBtn");
+  if (wB && !wB._rrB){
+    wB._rrB = true;
+    wB.addEventListener("click", (ev) => { ev.preventDefault(); try { rrOpenRrSourcePicker("wp"); } catch(_){} });
+  }
+}
+function rrRenderRenameConfirmUI(){
+  const host = document.getElementById("rrRenameConfirm");
+  const msg = document.getElementById("rrRenameConfirmText");
+  if (!host) return;
+  const p = state._rrPendingRename;
+  if (!p || !p.id || p.newName == null){
+    state._rrPendingRename = null;
+    host.hidden = true;
+    if (msg) msg.textContent = "";
+    return;
+  }
+  const t1 = (typeof t === "function" ? (t("rangeRings.renameConfirmText") || "") : "") || "";
+  const oldN = String(p.oldName == null ? "" : p.oldName);
+  const newN = String(p.newName == null ? "" : p.newName);
+  if (msg) msg.textContent = String(t1).replace("{0}", newN).replace("{1}", oldN);
+  const dch0 = document.getElementById("rrDeleteConfirm");
+  if (dch0) dch0.hidden = true;
+  host.hidden = false;
+  const e0 = document.getElementById("rrError");
+  const ok0 = document.getElementById("rrOk");
+  const inf0 = document.getElementById("rrInfo");
+  if (e0){ e0.hidden = true; e0.textContent = ""; }
+  if (ok0){ ok0.hidden = true; ok0.textContent = ""; }
+  if (inf0){ inf0.hidden = true; inf0.textContent = ""; }
+  setTimeout(() => { try { const c = document.getElementById("rrRenameConfirmCancel"); if (c) c.focus(); } catch(_){} }, 0);
+}
+function rrRequestRenameFromInput(id, oldName, newName){
+  if (!id) return;
+  try { rrCloseRrSourcePicker(); } catch(_){}
+  try { rrClearPendingDelete(); } catch(_){}
+  const on = String(oldName == null ? "" : oldName);
+  const nn = String(newName == null ? "" : newName).trim().slice(0, 80);
+  if (!nn || nn === on.trim()) return;
+  state._rrPendingRename = { id: String(id), oldName: on, newName: nn };
+  try { rrRenderRenameConfirmUI(); } catch(_){}
+}
+function rrCancelPendingRename(){
+  const p = state._rrPendingRename;
+  state._rrPendingRename = null;
+  const host = document.getElementById("rrRenameConfirm");
+  if (host) host.hidden = true;
+  if (p){
+    const list = document.getElementById("rrList");
+    const sid = String(p.id);
+    if (list){
+      const all = list.querySelectorAll && list.querySelectorAll("[data-rr-rename]");
+      const el = all && Array.prototype.find.call(all, (x) => x && String(x.getAttribute("data-rr-rename") || "") === sid);
+      if (el && el.matches && el.matches("[data-rr-rename]")){
+        el.dataset._rrReverting = "1";
+        el.value = p.oldName;
+        el.dataset._prevRrName = p.oldName;
+        el.dataset._rrReverting = "";
+      }
+    }
+  }
+  try { renderRangeRingsList(); } catch(_){ }
+}
+function rrExecutePendingRename(){
+  const p = state._rrPendingRename;
+  if (!p) return;
+  const sid = String(p.id);
+  const nn = String(p.newName || "").trim().slice(0, 80);
+  state._rrPendingRename = null;
+  const host = document.getElementById("rrRenameConfirm");
+  if (host) host.hidden = true;
+  if (!nn){ try { renderRangeRingsList(); } catch(_){} return; }
+  ensureRangeRingState();
+  const s2 = (state.rangeRingSets || []).find(x => x && String(x.id) === sid);
+  if (!s2){ try { renderRangeRingsList(); } catch(_){} return; }
+  s2.name = nn;
+  saveStore();
+  try { rrShowOk("rangeRings.notice.renamedOk"); } catch(_){}
+  try { refreshRangeRingsAfterStateChange(); } catch(_){}
+  try { renderRangeRingsList(); } catch(_){ }
+}
+function ensureRrRenameConfirmWired(){
+  const doBtn = document.getElementById("rrRenameConfirmDo");
+  if (!doBtn || doBtn._rrRw) return;
+  doBtn._rrRw = true;
+  doBtn.addEventListener("click", (ev) => { ev.preventDefault(); try { rrExecutePendingRename(); } catch(_){} });
+  const cBtn = document.getElementById("rrRenameConfirmCancel");
+  if (cBtn) cBtn.addEventListener("click", (ev) => { ev.preventDefault(); try { rrCancelPendingRename(); } catch(_){} });
 }
 
 function rrMapVisible(s){
@@ -29151,8 +29772,6 @@ function renderRangeRingsPanel(){
     }
   }
   const modeSel = document.getElementById("rrCenterMode");
-  const wpWrap = document.getElementById("rrWaypointWrap");
-  const wpSel = document.getElementById("rrWaypointSelect");
   const pickBtn = document.getElementById("rrPickMapBtn");
   const pickCreateBtn = document.getElementById("rrPickCreateBtn");
   const pickSt = document.getElementById("rrPickMapStatus");
@@ -29169,10 +29788,6 @@ function renderRangeRingsPanel(){
     createBtn.classList.toggle("btn-primary", false);
   }
   if (updBtn) updBtn.classList.toggle("btn-primary", editing);
-  if (modeSel && wpWrap){
-    const mode = String(modeSel.value || "picked");
-    wpWrap.hidden = mode !== "waypoint";
-  }
   if (pickBtn){
     const on = !!state.rangeRingsPickCenterMode;
     pickBtn.classList.toggle("is-active", on);
@@ -29208,18 +29823,10 @@ function renderRangeRingsPanel(){
     const show = (mode === "picked" && !hasPicked && !state.rangeRingsPickCenterMode && !state.rangeRingsPickAndCreateMode && !state._rrEditingSetId && !state._rrEditingMoveCenterMode);
     mapFirst.hidden = !show;
   }
-  if (wpSel){
-    ensureMapWaypointsState();
-    const wpts = Array.isArray(state.mapWaypoints) ? state.mapWaypoints : [];
-    let html = "";
-    for (const w of wpts){
-      if (!w || !Number.isFinite(w.lat) || !Number.isFinite(w.lon)) continue;
-      const nm = String(w.name || "").trim() || (w.lat.toFixed(5) + ", " + w.lon.toFixed(5));
-      html += `<option value="${esc(String(w.id || ""))}">${esc(nm.slice(0, 60))}</option>`;
-    }
-    wpSel.innerHTML = html || `<option value="" disabled selected>${esc((typeof t==="function" ? (t("rangeRings.noWaypoints")||"") : "") || "—")}</option>`;
-    try { wpSel.disabled = !html; } catch(_){}
-  }
+  try { ensureRrSourcePickerWired(); } catch(_){}
+  try { ensureRrRangeRingsIoWired(); } catch(_){}
+  try { ensureRrRenameConfirmWired(); } catch(_){}
+  try { rrRenderRenameConfirmUI(); } catch(_){}
   try { rrRenderDeleteConfirmUI(); } catch(_){}
   try { rrSyncRangeRingsOperativeInfo(); } catch(_){}
   renderRangeRingsList();
@@ -29233,6 +29840,8 @@ function renderRangeRingsList(){
   const sets = Array.isArray(state.rangeRingSets) ? state.rangeRingSets.filter(Boolean) : [];
   if (!sets.length){
     try { rrClearPendingDelete(); } catch(_){}
+    try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
+    try { if (typeof rrCloseRrSourcePicker === "function") rrCloseRrSourcePicker(); } catch(_){}
     try { if (typeof rrClearRangeRingsEditSession === "function") rrClearRangeRingsEditSession(); } catch(_){}
     root.innerHTML = `<div class="sub" style="padding:10px;color:var(--muted); font-size:.9rem">${esc((typeof t==="function" ? (t("rangeRings.empty")||"") : "") || "—")}</div>`;
     syncRangeRingsBatchBar();
@@ -29332,15 +29941,6 @@ function rrGetCenterFromUi(){
   }
   if (mode === "current") return rrGetCurrentCenter();
   if (mode === "map") return rrGetMapCenter();
-  if (mode === "waypoint"){
-    const wpSel = document.getElementById("rrWaypointSelect");
-    const id = String(wpSel ? wpSel.value : "");
-    if (!id) return null;
-    ensureMapWaypointsState();
-    const w = (state.mapWaypoints || []).find(x => x && String(x.id) === id);
-    if (w && Number.isFinite(w.lat) && Number.isFinite(w.lon)) return { lat: w.lat, lon: w.lon };
-    return null;
-  }
   return null;
 }
 
@@ -29422,11 +30022,9 @@ function bindRangeRingsUI(){
   if (!sec || sec._rrBound) return;
   sec._rrBound = true;
   const modeSel = document.getElementById("rrCenterMode");
-  const wpWrap = document.getElementById("rrWaypointWrap");
   if (modeSel){
     modeSel.addEventListener("change", () => {
       const v = String(modeSel.value || "picked");
-      if (wpWrap) wpWrap.hidden = v !== "waypoint";
       if (v !== "picked"){
         try { rangeRingsClearPickCenterMode({ clearMapCenter: true }); } catch(_){}
       } else {
@@ -29531,16 +30129,8 @@ function bindRangeRingsUI(){
             el.dataset._prevRrName = nm;
             return;
           }
-          const q = (typeof t === "function" ? t("rangeRings.renameConfirm") : "") || "";
-          const ok = (typeof window.confirm !== "function") || window.confirm(q);
-          if (ok){
-            s.name = nm;
-            saveStore();
-            el.dataset._prevRrName = nm;
-            refreshRangeRingsAfterStateChange();
-          } else {
-            el.value = prev;
-          }
+          if (el.dataset && el.dataset._rrReverting) return;
+          try { rrRequestRenameFromInput(String(id), prev, nm); } catch(_){}
         }
       }
     });
@@ -32711,6 +33301,8 @@ function openRangeRingsFloatingPanelGis(){
   return true;
 }
 function closeRangeRingsPanel(){
+  try { if (typeof rrCloseRrSourcePicker === "function") rrCloseRrSourcePicker(); } catch(_){}
+  try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
   try { if (typeof rrClearPendingDelete === "function") rrClearPendingDelete(); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   try { if (typeof rrClearRangeRingsEditSession === "function") rrClearRangeRingsEditSession(); } catch(_){}
