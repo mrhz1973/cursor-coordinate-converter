@@ -4,31 +4,34 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 (seconda nota) — chiarito: memoria obbligatoria **non** significa un file `inbox` per ogni micro-fix; **un** file (o stesso file) per **intervento** con elenco di tutte le micro-modifiche; `latest` resta breve, **senza** duplicazioni inutili con `inbox`. Regola 30, `README` e `chatgpt-checkpoint` aggiornati. **Nessun** edit a `coordinate_converter Claude.html` né a `docs/roadmap.md`.
+2026-04-29 16:14 UTC — Range Rings **Blocco 5A**: aggiunto pulsante on-map per aprire Range Rings, selezione per riga (transiente) e “Esporta selezionati” (GeoJSON). QA: `node --check` su JS inline + `git diff --check` ok. Dettagli completi: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
+
+2026-04-29 (Cursor «aggiornati») — Commit/push **selettivo** solo `docs/orchestrator/**`: tracciata l’inbox 5A e riallineato questo `latest.md` (monolite **escluso**).
 
 ## Ultimo intervento Cursor
 
-Micro-chiarimento su **un file inbox per intervento** (più micro-fix nello stesso intervento = un unico `inbox` o sezioni, non un file per micro-fix); allineati [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc) (sezione *Dopo ogni intervento* + vincolo *Piano operativo*), `README.md`, `chatgpt-checkpoint.md`, addendum sotto a `inbox/2026-04-29_1548_...`.
+Range Rings **5A** nel monolite: bottone on-map → apre pannello esistente; lista con selezione separata dalla visibilità; export GeoJSON dei selezionati; micro-riordino “Crea” vs preset; nuove stringhe i18n minime.
 
 ## File modificati (sintesi)
 
-- `.cursor/rules/30-output-workflow.mdc`
-- `docs/orchestrator/README.md`, `docs/orchestrator/chatgpt-checkpoint.md`, `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1548_riepilogo_workflow-vincolante.md` (addendum al micro-chiarimento)
+- `coordinate_converter Claude.html`
+- `docs/orchestrator/latest.md` (questo)
+- `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md` (dettagli)
 
-**Non toccati:** `coordinate_converter Claude.html`, `docs/roadmap.md`, script, npm, GitHub Actions, hook, n8n.
+**Non toccati:** `docs/roadmap.md`, script, npm, GitHub Actions, hook, n8n.
 
 ## Stato verifiche
 
-- Rilettura per typo e link relativi; coerenza con vincolo “non toccare monolite/roadmap”.
+- `node --check` su JS inline: ok.
+- `git diff --check -- "coordinate_converter Claude.html"`: ok.
 
 ## Stato Git noto
 
-*(lasciare a ciò che risulta da `git status` in sede. Questa memoria descrive il lavoro appena fatto.)*
+Memoria orchestratore pubblicata su GitHub; lo stato del monolite locale va verificato in Cursor con `git status --short` prima del prossimo intervento.
 
 ## Prossimo passo consigliato
 
-- Eseguire, se d’accordo, commit/push **selettico** (solo `docs/orchestrator/**` + `.cursor/rules/30-output-workflow.mdc`) o avviare in sessione Cursor il flusso **«aggiornati»** (allineare memoria e commit/push selettivo) per Git.
+Memoria orchestratore (inbox + `latest.md`) su GitHub dopo l’ultimo «aggiornati». Prossimo passo: smoke test Range Rings **5A** sul monolite **locale** e commit/push del file HTML quando l’utente lo decide; sviluppo successivo (es. **5B**) resta nell’inbox, salvo priorità diverse.
 
 ## Prompt successivo / decisione richiesta
 
@@ -36,4 +39,4 @@ Micro-chiarimento su **un file inbox per intervento** (più micro-fix nello stes
 
 ## Dettagli
 
-- Riepilogo completo: vedi `inbox` citato sopra. Checkpoint stabile: `docs/orchestrator/chatgpt-checkpoint.md`.
+- Riepilogo completo: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`.
