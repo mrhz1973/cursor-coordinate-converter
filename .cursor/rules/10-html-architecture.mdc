@@ -130,3 +130,13 @@ Ogni **modal** `<dialog>`, **pannello** GIS (drawer, floating, sezione in Strume
   - **stilisticamente coerente** con le classi del monolito (es. *error box*, *ok box*, *hint* / *geo-warn*, varianti esistenti).
 - Copre almeno, dove applicabile: errori di validazione; **successo** di un’azione nel pannello; stati **temporanei** (modalità mappa / pick / drag / attesa); **annullamento** o blocco (Esc, chiusura, conflitto con un altro tool).
 - Questo criterio vale come **default** per ogni **nuovo** o **esteso in modo sostanziale** dialog/pannello/strumento operativo, salvo deroga esplicita documentata o vincolo tecnico inattaccabile in vanilla.
+
+### 6) Liste operative nei modal: azione «Modifica» e conferme distruttive
+
+Per **tabelle / liste operative** dentro modal, drawer o pannelli floating:
+
+- Se un oggetto ha **proprietà editabili** (non solo etichetta), la riga deve offrire un’azione esplicita **«Modifica»** (o equivalente i18n), oltre ad eventuali azioni secondarie.
+- **«Modifica»** deve aprire un **editor contestuale** (stesso pannello in modalità modifica, sotto-pannello, o flusso dedicato) oppure portare il pannello in **modalità modifica** chiaramente segnalata (notifica interna, titolo/stato, pulsante primario di salvataggio quando atteso).
+- **Non** nascondere modifiche importanti dietro **click impliciti** su nome o icone ambigue: il rename inline resta ammissibile per il **solo** nome, ma **non** sostituisce «Modifica» quando esistono altre proprietà operative (centro, distanze, geometria, visibilità contestuale, ecc.).
+- Le azioni **distruttive** (es. «Elimina») richiedono sempre **conferma interna contestuale** al pannello (pulsanti Elimina danger + Annulla, messaggio che cita nome o conteggio), **senza** `alert` / `window.confirm` / `window.prompt` per il flusso ordinario.
+- Se l’oggetto è **geometrico / map-first**, la modalità modifica può includere **spostamento su mappa** (es. pick del nuovo centro, handle dedicato) purché l’ingresso in quella modalità sia **esplicito** (CTA dedicata), **annullabile** (Esc / Annulla / chiusura pannello coerente con il resto dello strumento) e non interferisca con altri tool di mappa senza feedback chiaro.
