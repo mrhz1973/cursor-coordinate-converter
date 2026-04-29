@@ -108,15 +108,16 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti.
 
-### Cursor vs ChatGPT (memoria e lettura repo)
+### Cursor vs ChatGPT (memoria: **nessun controllo incrociato**)
 
-- **Cursor:** l’**autosync orchestratore** è **automatico e obbligatorio** in chiusura di **ogni** intervento operativo che cambia stato (sequenza sopra). **Non** attendere un comando utente per aggiornare e **pubblicare** (`commit`/`push`) la memoria orchestratore.
-- **ChatGPT:** **non** legge il repository **automaticamente**. Per ora legge GitHub **solo** quando l’utente scrive manualmente **«aggiornati»** nella chat ChatGPT. Automazioni esterne (n8n, webhook, polling, ecc.) **non** fanno parte di queste regole e **non** sono introdotte da questa documentazione.
+- **Cursor** aggiorna e **pubblica** solo file e `git` nella sessione di lavoro. **Non** “controlla” ChatGPT, **non** esegue nulla **dentro** la chat ChatGPT e **non** deve presumere che ChatGPT legga il repository da solo.
+- **Cursor — autosync:** in chiusura di **ogni** intervento operativo che cambia stato, **sempre** la sequenza sopra (`latest.md`, `inbox`, `commit`/`push` selettivo memoria). **Non** attendere un comando utente per quella pubblicazione di default.
+- **ChatGPT:** **non** legge GitHub in automatico. Legge la memoria orchestratore **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT**. Automazioni esterne (n8n, webhook, polling, ecc.) **non** fanno parte di queste regole.
 
-### Doppio significato di **«aggiornati»**
+### Doppio significato di **«aggiornati»** (terminologia)
 
-1. **Scritto in Cursor:** richiesta esplicita a Cursor di **verificare** e, se serve, **completare** allineamento `latest.md` / `inbox/` e **commit/push selettivo** della memoria (recupero se l’autosync obbligatorio è fallito o è dubbio). **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo la sequenza obbligatoria va eseguita **sempre**, senza attendere «aggiornati».
-2. **Scritto in ChatGPT:** ordine all’orchestratore di **leggere** il repository (es. GitHub) partendo da `docs/orchestrator/latest.md`, poi `docs/orchestrator/chatgpt-checkpoint.md`, poi `docs/checkpoint.md` se serve, poi `inbox/` solo per dettaglio. È l’**unico** trigger normale previsto oggi per allineare ChatGPT: **manuale**, non automatico. Dettaglio: `docs/orchestrator/chatgpt-checkpoint.md`.
+1. **«aggiornati» in Cursor** = **pubblica la memoria orchestratore**: allinea `docs/orchestrator/latest.md` e `docs/orchestrator/inbox/<riepilogo intervento>.md` allo stato reale ed esegui **commit/push selettivo** della sola memoria orchestratore e dei file `.cursor/rules/**` pertinenti al workflow, se modificati nello stesso intervento. (Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento, che pubblica comunque **senza** attendere questo comando.)
+2. **«aggiornati» in ChatGPT** = **leggi la memoria orchestratore da GitHub** (o altro remoto usato dal team), nell’ordine definito in `docs/orchestrator/chatgpt-checkpoint.md` (ingresso tipico: `docs/orchestrator/latest.md`). È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo: **manuale**, non automatico.
 
 **Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.
 
@@ -127,4 +128,4 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 ### Limiti (invariati)
 
-- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, **n8n** o altre automazioni che facciano leggere a ChatGPT il repo **senza** comando manuale «aggiornati»: solo testo e file markdown sotto percorso consentito; **Cursor** resta l’unico attore che **pubblica** sempre la memoria dopo l’intervento.
+- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, **n8n** o altre automazioni che facciano leggere a ChatGPT il repo **senza** comando manuale «aggiornati» in ChatGPT: solo testo e file markdown sotto percorso consentito. **Cursor** **pubblica** la memoria orchestratore; **non** orchestra né sostituisce l’utente dentro ChatGPT.

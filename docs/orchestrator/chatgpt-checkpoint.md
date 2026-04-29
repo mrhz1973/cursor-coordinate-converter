@@ -2,20 +2,22 @@
 
 Riferimento stabile per **ChatGPT** in qualità di orchestratore sul progetto **APP GIS** (app single-file HTML, vanilla JavaScript, nessun build step). **Complementa** (non sostituisce) `docs/roadmap.md` e le regole sotto [`.cursor/rules/`](../../.cursor/rules/).
 
+**Cursor non controlla ChatGPT:** non esegue nulla dentro la chat ChatGPT e non deve aspettarsi che tu legga il repo da solo. La pubblicazione della memoria è responsabilità **Cursor** (file + git); la lettura è responsabilità **tu + utente** quando scrive **«aggiornati»** qui.
+
 ## Lettura repository: **solo su comando manuale**
 
-**ChatGPT non legge GitHub (o altro remoto) in automatico.** Per ora l’unico trigger previsto è: l’utente scrive **«aggiornati»** nella **chat ChatGPT**. Fino a quel momento la tua conoscenza dello stato può restare arretrata rispetto al repository, anche se **Cursor** ha già pubblicato la memoria orchestratore.
+**ChatGPT non legge GitHub (o altro remoto) in automatico.** L’unico trigger previsto oggi: l’utente scrive **«aggiornati»** nella **chat ChatGPT** → in quel momento **leggi la memoria orchestratore da GitHub** (flusso sotto). Fino ad allora la tua conoscenza può restare arretrata rispetto al repository, anche se **Cursor** ha già **pubblicato** la memoria.
 
 Automazioni future (n8n, webhook, polling, …) **non** sono parte di questo workflow finché non vengono introdotte esplicitamente nel progetto.
 
 ## Ruoli
 
 - **ChatGPT (orchestrazione):** priorità, ordine di lavoro; per allinearti allo stato **corrente** sul repo devi **leggere** la memoria quando l’utente chiede «aggiornati» (ordine sotto). **Non** assumere di essere aggiornato senza quella lettura.
-- **Cursor:** dopo **ogni intervento operativo** che cambia stato, esegue **sempre** l’**autosync orchestratore**: aggiorna `docs/orchestrator/latest.md`, crea/aggiorna **un** file in `docs/orchestrator/inbox/` per l’intervento, poi **commit e push selettivi** della sola memoria (e regole workflow se toccate nello stesso intervento), come in [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc). **Aspettativa:** dopo ogni intervento operativo Cursor conforme, su Git (es. GitHub) la memoria orchestratore risulta **già pubblicata**; se su «aggiornati» trovi `latest.md` incoerente con il lavoro dichiarato, è **anomalia** del flusso Cursor, non normalità.
+- **Cursor:** dopo **ogni intervento operativo** che cambia stato, esegue **sempre** l’**autosync orchestratore**: aggiorna `docs/orchestrator/latest.md`, crea/aggiorna **un** file in `docs/orchestrator/inbox/` per l’intervento, poi **commit e push selettivi** della sola memoria (e regole workflow se toccate nello stesso intervento), come in [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc). Su Git (es. GitHub) la memoria risulta così **pubblicata**; **non** implica che ChatGPT l’abbia già letta (nessuna lettura automatica). Se, **dopo** che l’utente ha chiesto «aggiornati» qui, `latest.md` risulta incoerente con il lavoro dichiarato, segnala **anomalia** lato pubblicazione Cursor, non normalità.
 
 ## Comando «aggiornati» — in ChatGPT (orchestratore)
 
-Se l’utente scrive **«aggiornati»** (o equivalente), **leggi** il repository (es. su GitHub) in questo **ordine**:
+Se l’utente scrive **«aggiornati»** (o equivalente) **in questa chat**, **leggi la memoria orchestratore da GitHub** (repository remoto usato dal team) in questo **ordine**:
 
 1. `docs/orchestrator/latest.md` (ingresso; sintetico);
 2. `docs/orchestrator/chatgpt-checkpoint.md` (questo file);
@@ -26,9 +28,9 @@ Se l’utente scrive **«aggiornati»** (o equivalente), **leggi** il repository
 
 **Non** chiedere al team un riepilogo da file locali `/tmp/...-goi-gis-riepilogo.md` se il contenuto che ti serve (o l’equivalente) **è già** in `inbox/` o riassunto in `latest.md`. I path sotto `/tmp` sono backup **solo** sulla macchina locale.
 
-## Comando «aggiornati» — in Cursor (sessione)
+## Comando «aggiornati» — in Cursor (sessione) *(riferimento per ChatGPT)*
 
-Verifica e, se necessario, **completa** allineamento `latest.md` / `inbox/` e **commit/push selettivo** della memoria. **Non** sostituisce l’autosync obbligatorio post-intervento. **Non** includere per default `coordinate_converter Claude.html` nel commit autosync salvo richiesta esplicita; se il codice non è nel commit, l’`inbox` deve contenere descrizione sufficiente del cambiamento.
+**In Cursor**, «aggiornati» significa **pubblicare la memoria orchestratore** (allinea `latest.md` / `inbox` e `commit`/`push` selettivo). **Non** sostituisce l’autosync obbligatorio di fine intervento. **Non** include per default `coordinate_converter Claude.html` nel commit autosync salvo richiesta esplicita. *(Questo paragrafo descrive il lavoro in Cursor; ChatGPT non lo esegue.)*
 
 ## Memoria `orchestrator` vs chiusura **`finito`**
 

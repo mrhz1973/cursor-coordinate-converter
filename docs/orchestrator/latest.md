@@ -4,11 +4,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Workflow memoria:** l’**autosync orchestratore resta obbligatorio lato Cursor** dopo ogni intervento operativo (`latest.md` + **un** `inbox/` + commit/push selettivi di `docs/orchestrator/**` e `.cursor/rules/**` workflow se toccati). **ChatGPT** invece **non** legge il repo in automatico: legge GitHub **solo** quando l’utente scrive **«aggiornati»** nella chat ChatGPT (n8n/automazioni: fuori da questa iterazione). Monolite **fuori** dal commit autosync salvo richiesta esplicita; **`finito`** resta chiusura ufficiale separata. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`.
+2026-04-29 — **Terminologia workflow:** chiarito che **Cursor non controlla ChatGPT** e non opera nella chat ChatGPT. **«aggiornati» in Cursor** = **pubblicare** la memoria orchestratore (`latest.md`, `inbox`, commit/push selettivo memoria + regole workflow pertinenti). **«aggiornati» in ChatGPT** = **leggere** la memoria da GitHub, solo su comando utente. **Cursor** pubblica sempre dopo intervento operativo; **ChatGPT** non legge da solo. **`finito`** resta chiusura ufficiale separata. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`.
 
 ## Ultimo intervento Cursor
 
-Documentazione workflow: distinzione **Cursor = pubblicazione sempre** vs **ChatGPT = lettura manuale su «aggiornati»**; chiarimenti in regola 30, README e `chatgpt-checkpoint.md`.
+Solo testi workflow: sezione *nessun controllo incrociato*, doppio significato «aggiornati» (pubblicare vs leggere), README e checkpoint allineati.
 
 ## File modificati (sintesi)
 
@@ -16,7 +16,7 @@ Documentazione workflow: distinzione **Cursor = pubblicazione sempre** vs **Chat
 - `docs/orchestrator/README.md`
 - `docs/orchestrator/chatgpt-checkpoint.md`
 - `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
+- `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`
 
 **Non toccati:** `coordinate_converter Claude.html`, `docs/roadmap.md`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, script, npm, GitHub Actions, hook, n8n.
 
@@ -26,14 +26,14 @@ Documentazione workflow: distinzione **Cursor = pubblicazione sempre** vs **Chat
 
 ## Stato Git noto
 
-Verificare in Cursor con `git status --short`.
+`git status --short` in Cursor.
 
 ## Prossimo passo consigliato
 
-Continuare lavoro applicativo/monolite secondo priorità utente; per allineare ChatGPT: **«aggiornati»** nella chat ChatGPT dopo che Cursor ha pubblicato la memoria.
+Autosync invariato a fine interventi operativi; in ChatGPT usare **«aggiornati»** solo quando serve **leggere** la memoria già **pubblicata** da Cursor.
 
 ## Dettagli
 
-- Intervento workflow (Cursor vs ChatGPT): `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
-- Iterazione precedente (solo obbligo autosync): `docs/orchestrator/inbox/2026-04-29_1715_riepilogo_workflow-autosync-obbligatorio.md`
-- Range Rings 5A (feature): `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`
+- Terminologia: `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`
+- Workflow precedente: `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
+- Range Rings 5A: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`

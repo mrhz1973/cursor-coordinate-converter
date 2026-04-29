@@ -1,10 +1,12 @@
 # Memoria operativa (orchestratore ChatGPT)
 
-Questa cartella è la **memoria operativa obbligatoria** per l’orchestratore **ChatGPT**, versionata nel repository: consente a ChatGPT di conoscere lo **stato del lavoro** (anche micro-modifiche) **prima** delle istruzioni successive. **Non** sostituisce roadmap, regole canoniche o documentazione ufficiale del progetto.
+Questa cartella è la **memoria operativa obbligatoria** per l’orchestratore **ChatGPT**, versionata nel repository: consente a ChatGPT di conoscere lo **stato del lavoro** (anche micro-modifiche) **dopo** che l’utente ha chiesto la lettura con **«aggiornati»** in ChatGPT. **Non** sostituisce roadmap, regole canoniche o documentazione ufficiale del progetto.
+
+**Cursor non “controlla” ChatGPT:** aggiorna e pubblica **solo** file e git in Cursor; **non** opera nella chat ChatGPT e **non** deve presumere che ChatGPT legga da solo.
 
 ## Obblighi dopo ogni intervento operativo Cursor
 
-Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, regole di progetto, o questa stessa memoria in modo che cambi ciò che ChatGPT deve assumere):
+Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, regole di progetto, o questa stessa memoria orchestratore):
 
 1. **Aggiornare** `docs/orchestrator/latest.md` (sintesi breve, sempre aggiornata).
 2. **Creare o aggiornare** **un** file riepilogo in `docs/orchestrator/inbox/` per **quell’intervento** (tutte le micro-modifiche nello stesso file; **non** un file per micro-fix), come in [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc).
@@ -16,7 +18,7 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 **`finito`** resta la **chiusura ufficiale completa** di sessione (doc ufficiali, git/push finali, criteri di workspace come da regole progetto).
 
-**ChatGPT non si aggiorna da solo:** non legge GitHub in automatico. Per ora legge il repository **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT**. **Cursor** invece **pubblica sempre** la memoria orchestratore dopo ogni intervento operativo che cambia stato (autosync obbligatorio).
+**ChatGPT non si aggiorna da solo:** non legge GitHub in automatico; legge la memoria orchestratore **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT** (= *leggere* da GitHub). **Cursor**, dopo ogni intervento operativo che cambia stato, **pubblica sempre** la memoria (`latest.md`, `inbox`, commit/push selettivo) **senza** interagire con ChatGPT (= *pubblicare*; il comando **«aggiornati»** in Cursor ha la stessa semantica di pubblicazione, vedi regola 30).
 
 ## Cosa **non** sostituisce
 
@@ -30,10 +32,10 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 Convenzione nomi: `YYYY-MM-DD_HHMM_<type>_<slug>.md` (template in `docs/orchestrator/templates/`). Niente file non richiesti dal lavoro.
 
-## Comando **«aggiornati»** (due contesti)
+## Comando **«aggiornati»** (due contesti — **pubblicare** vs **leggere**)
 
-- **In Cursor:** richiesta esplicita per **verificare** e **completare** allineamento + commit/push selettivo se un passaggio dell’autosync obbligatorio è saltato. **Non** sostituisce l’autosync post-intervento: dopo un intervento operativo l’autosync va eseguito **sempre** senza attendere «aggiornati».
-- **In ChatGPT (orchestratore):** «aggiornati» = **lettura manuale** del repository (es. GitHub) solo in quel momento, partendo da `docs/orchestrator/latest.md`, poi [chatgpt-checkpoint.md](chatgpt-checkpoint.md), ecc. **Nessuna** lettura automatica del repo da parte di ChatGPT finché non si introduce esplicitamente altro (fuori scope: n8n, webhook, …).
+- **«aggiornati» in Cursor:** **pubblica la memoria orchestratore** (allinea `latest.md` / `inbox` e `commit`/`push` selettivo della sola memoria + regole workflow pertinenti). **Non** sostituisce l’autosync obbligatorio di fine intervento, che pubblica comunque senza attendere il comando.
+- **«aggiornati» in ChatGPT:** **leggi la memoria orchestratore da GitHub** (ordine in [chatgpt-checkpoint.md](chatgpt-checkpoint.md); ingresso tipico `docs/orchestrator/latest.md`). **Nessuna** lettura automatica; n8n/webhook restano fuori scope finché non introdotti esplicitamente.
 
 I backup **`/tmp/...-goi-gis-riepilogo.md`** restano requisito locale oltre al repo, come in regola: non sostituiscono `inbox`/`latest` versionati.
 
