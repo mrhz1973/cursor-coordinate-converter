@@ -4,36 +4,33 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Terminologia workflow:** chiarito che **Cursor non controlla ChatGPT** e non opera nella chat ChatGPT. **«aggiornati» in Cursor** = **pubblicare** la memoria orchestratore (`latest.md`, `inbox`, commit/push selettivo memoria + regole workflow pertinenti). **«aggiornati» in ChatGPT** = **leggere** la memoria da GitHub, solo su comando utente. **Cursor** pubblica sempre dopo intervento operativo; **ChatGPT** non legge da solo. **`finito`** resta chiusura ufficiale separata. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`.
+2026-04-29 — **Range Rings 5A-bis:** il pulsante on-map **Rings** apre un **pannello floating GIS** (`#rangeRingsPanel`, riuso `#sec-rangerings`) invece del drawer Strumenti grande; fallback drawer solo se il dialog manca. Dettaglio: `docs/orchestrator/inbox/2026-04-29_1905_riepilogo_range-rings-5A-bis-floating.md`.
 
 ## Ultimo intervento Cursor
 
-Solo testi workflow: sezione *nessun controllo incrociato*, doppio significato «aggiornati» (pubblicare vs leggere), README e checkpoint allineati.
+Monolite: floating Range Rings on-map; `activateToolPanel` / Esc / resize / reset allineati.
 
 ## File modificati (sintesi)
 
-- `.cursor/rules/30-output-workflow.mdc`
-- `docs/orchestrator/README.md`
-- `docs/orchestrator/chatgpt-checkpoint.md`
+- `coordinate_converter Claude.html`
 - `docs/orchestrator/latest.md` (questo)
-- `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`
+- `docs/orchestrator/inbox/2026-04-29_1905_riepilogo_range-rings-5A-bis-floating.md`
 
-**Non toccati:** `coordinate_converter Claude.html`, `docs/roadmap.md`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, script, npm, GitHub Actions, hook, n8n.
+**Non toccati:** `docs/roadmap.md`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, workflow rules (solo se non in questo batch).
 
 ## Stato verifiche
 
-- Monolite non modificato da questo intervento.
+- `git diff --check` sul monolite; `node --check` primo script inline: ok.
 
 ## Stato Git noto
 
-`git status --short` in Cursor.
+`git status --short` in Cursor; monolite **non** incluso nell’autosync memoria.
 
 ## Prossimo passo consigliato
 
-Autosync invariato a fine interventi operativi; in ChatGPT usare **«aggiornati»** solo quando serve **leggere** la memoria già **pubblicata** da Cursor.
+Smoke test UI Range Rings (floating + Strumenti); eventuale commit monolite a parte.
 
 ## Dettagli
 
-- Terminologia: `docs/orchestrator/inbox/2026-04-29_1830_riepilogo_workflow-terminologia-aggiornati.md`
-- Workflow precedente: `docs/orchestrator/inbox/2026-04-29_1815_riepilogo_workflow-autosync-obbligatorio.md`
-- Range Rings 5A: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`
+- 5A-bis: `docs/orchestrator/inbox/2026-04-29_1905_riepilogo_range-rings-5A-bis-floating.md`
+- 5A feature: `docs/orchestrator/inbox/2026-04-29_1612_riepilogo_rangerings_5A.md`
