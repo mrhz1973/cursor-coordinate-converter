@@ -61,11 +61,37 @@ Il percorso **`/tmp/goi-gis-plan.md`** (senza prefisso numerico) **non** è il p
 
 Se non riesci a creare il file in `/tmp`, segnala chiaramente l’errore e riporta comunque il piano completo nel messaggio finale.
 
-Vincoli (come per il riepilogo):
+### Piano importante in Plan mode **senza** scrittura file in repo
 
-- il file deve stare fuori dal repository
-- non aggiungere il file a Git
-- **in più** (memoria orchestrator): includi il piano in `docs/orchestrator/inbox/` — in genere nello **stesso** file di riepilogo dell’**intervento** corrente (sezione *Piano* o equivalente), **oppure** in un file `YYYY-MM-DD_HHMM_plan_<slug>.md` se l’intervento è **solo** piano o se separare migliora la lettura, senza obbligo di un file per ogni micro-aggiornamento, come da sotto-sezione *Autosync orchestratore (obbligatorio)* di questa regola
+In Plan mode **non** è sempre possibile (o consentito) modificare il workspace. Un **piano importante** è ad esempio: roadmap tecnica multi-step, decisioni d’impatto, piano che deve essere condiviso con l’orchestratore **ChatGPT** dopo «aggiornati», o piano che l’utente ha chiesto esplicitamente di versionare in memoria.
+
+**Requisiti:**
+
+1. Il **piano completo** resta nel corpo della risposta Plan (come oggi).
+2. Se in quella fase **non** vengono creati o aggiornati file sotto `docs/orchestrator/**` (né altrove nel repo) per salvare il piano, la risposta **deve** terminare con una sezione obbligatoria dal titolo esatto:
+
+   **`PROMPT DI SALVATAGGIO PIANO — DA USARE IN AGENT MODE`**
+
+3. In quella sezione: un **unico blocco** (o più blocchi se serve separare istruzioni da contenuto) **pronto da copiare** che l’utente incolla in **Agent mode**. Il testo del prompt Agent deve istruire esplicitamente a:
+   - salvare il **piano completo** (identico a quanto prodotto in Plan) in `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_plan_<slug>.md` (timestamp e slug coerenti col contenuto);
+   - aggiornare `docs/orchestrator/latest.md` con sintesi breve + puntatore al file piano (**non** duplicare l’intero piano in `latest.md`);
+   - eseguire **commit e push selettivi** della sola memoria orchestratore (`docs/orchestrator/**`) e, **solo se modificati nello stesso intervento**, i file `.cursor/rules/**` pertinenti al workflow memoria/autosync;
+   - **non** includere `coordinate_converter Claude.html` nel commit;
+   - **non** aggiornare `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` o `docs/roadmap.md` salvo richiesta esplicita dell’utente;
+   - **non** eseguire il comando **`finito`** (chiusura ufficiale separata dall’autosync memoria).
+
+4. Il prompt Agent può incorporare il piano **inline** (copia-incolla del testo sotto le istruzioni) oppure dire di incollare il piano dalla chat; in ogni caso deve essere **operativo** senza passaggi manuali aggiuntivi non documentati.
+
+**Distinzione terminologia (invariata):** «aggiornati» in **Cursor** = pubblicare memoria orchestratore; «aggiornati» in **ChatGPT** = leggere la memoria dal remoto dopo pubblicazione. Cursor **non** controlla ChatGPT; senza file in `inbox/` versionati e pushati, ChatGPT **non** può vedere il piano con la sola lettura remota.
+
+**Un solo file inbox per intervento** (come in *Autosync orchestratore*): se lo stesso intervento Agent salva anche riepilogo e piano, confluire in **un** file `inbox` o un piano dedicato `..._plan_<slug>.md` **solo** se migliora la lettura — **non** un file separato per ogni micro-fix.
+
+Vincoli (come per il riepilogo) per il backup `/tmp`:
+
+- il file `/tmp/...-goi-gis-plan.md` deve stare fuori dal repository
+- non aggiungere quel file a Git
+
+**Memoria versionata (`docs/orchestrator/inbox/`):** quando Plan mode **può** scrivere file, includi il piano in `inbox/` — in genere nello **stesso** file di riepilogo dell’**intervento** corrente (sezione *Piano* o equivalente), **oppure** in un file `YYYY-MM-DD_HHMM_plan_<slug>.md` se l’intervento è **solo** piano o se separare migliora la lettura — come da sotto-sezione *Autosync orchestratore (obbligatorio)* di questa regola. Quando Plan mode **non** può scrivere file, il ponte verso la memoria versionata è la sezione **PROMPT DI SALVATAGGIO PIANO** sopra.
 
 ## Messaggio finale
 

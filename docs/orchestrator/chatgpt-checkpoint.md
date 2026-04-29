@@ -28,6 +28,16 @@ Se l’utente scrive **«aggiornati»** (o equivalente) **in questa chat**, **le
 
 **Non** chiedere al team un riepilogo da file locali `/tmp/...-goi-gis-riepilogo.md` se il contenuto che ti serve (o l’equivalente) **è già** in `inbox/` o riassunto in `latest.md`. I path sotto `/tmp` sono backup **solo** sulla macchina locale.
 
+### Piano prodotto in Cursor Plan mode ma non salvato in repo
+
+Se l’utente dice che **Cursor ha prodotto solo un piano** (Plan mode) **senza** che sia comparso un file corrispondente in `docs/orchestrator/inbox/` (e senza che sia stato fatto push della memoria):
+
+- Puoi chiedere di usare la sezione **`PROMPT DI SALVATAGGIO PIANO — DA USARE IN AGENT MODE`** dalla risposta Plan (se presente) e di incollarla in **Agent mode** in Cursor, così il piano viene scritto in `inbox/`, `latest.md` viene aggiornato e parte l’autosync memoria (vedi [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc) e [README orchestratore](README.md#plan-mode-e-salvataggio-piani)).
+
+**Piani importanti** devono finire in `docs/orchestrator/inbox/` (tipicamente `YYYY-MM-DD_HHMM_plan_<slug>.md`) perché la memoria orchestratore sia **pubblicata** sul remoto.
+
+**«aggiornati» in questa chat** legge solo ciò che è **stato pubblicato** sul repository remoto (dopo push). Se il piano **non** è su GitHub (o equivalente), **non** puoi leggerlo con «aggiornati»: non è un fallimento del comando, è assenza di artefatto versionato.
+
 ## Comando «aggiornati» — in Cursor (sessione) *(riferimento per ChatGPT)*
 
 **In Cursor**, «aggiornati» significa **pubblicare la memoria orchestratore** (allinea `latest.md` / `inbox` e `commit`/`push` selettivo). **Non** sostituisce l’autosync obbligatorio di fine intervento. **Non** include per default `coordinate_converter Claude.html` nel commit autosync salvo richiesta esplicita. *(Questo paragrafo descrive il lavoro in Cursor; ChatGPT non lo esegue.)*

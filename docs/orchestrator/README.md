@@ -20,6 +20,17 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 **ChatGPT non si aggiorna da solo:** non legge GitHub in automatico; legge la memoria orchestratore **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT** (= *leggere* da GitHub). **Cursor**, dopo ogni intervento operativo che cambia stato, **pubblica sempre** la memoria (`latest.md`, `inbox`, commit/push selettivo) **senza** interagire con ChatGPT (= *pubblicare*; il comando **«aggiornati»** in Cursor ha la stessa semantica di pubblicazione, vedi regola 30).
 
+## Plan mode e salvataggio piani
+
+In **Plan mode** Cursor può produrre un piano utile **senza** poter (o dover) modificare file nel repository: il piano resta allora **solo nella chat** Cursor finché non viene materializzato sotto `docs/orchestrator/`.
+
+Per i **piani importanti** (multi-step, decisioni d’impatto, da condividere con l’orchestratore dopo «aggiornati» in ChatGPT, o esplicitamente da versionare):
+
+- Se Plan mode **non** scrive file in `docs/orchestrator/**`, la risposta Plan deve includere in coda la sezione obbligatoria **`PROMPT DI SALVATAGGIO PIANO — DA USARE IN AGENT MODE`** con un prompt **già pronto** da copiare in **Agent mode** (vedi [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc)).
+- In **Agent mode**, quel prompt salva il piano in `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_plan_<slug>.md`, aggiorna `docs/orchestrator/latest.md` e esegue l’**autosync** (commit/push selettivo della sola memoria orchestratore; monolite e doc ufficiali fuori scope salvo richiesta esplicita; **`finito`** separato).
+
+Così i piani non si perdono tra chat Cursor e memoria che ChatGPT può leggere dopo pubblicazione e «aggiornati» in ChatGPT.
+
 ## Cosa **non** sostituisce
 
 - **Non sostituisce** `docs/roadmap.md` né elenca ogni vincolo architetturale (per quello: roadmap e [`.cursor/rules/`](../../.cursor/rules/)).
