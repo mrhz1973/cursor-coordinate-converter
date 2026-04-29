@@ -391,6 +391,25 @@ header::before{
   border:2px solid color-mix(in srgb, var(--accent) 55%, var(--border));
   display:inline-flex; align-items:center; justify-content:center;
 }
+.header-ctrls .hdr-settings-danger-zone{
+  margin-top:4px; padding-top:10px;
+  border-top:1px solid color-mix(in srgb, #dc2626 38%, var(--border));
+}
+.header-ctrls .hdr-settings-danger-zone .hdr-settings-danger-title{
+  margin:0 0 4px;
+  font-size:.72rem; font-weight:800; letter-spacing:.06em;
+  text-transform:uppercase; color:#dc2626;
+}
+.header-ctrls .hdr-settings-danger-zone .hdr-settings-danger-hint{
+  margin:0 0 8px;
+  font-size:.72rem; line-height:1.35; color:var(--muted);
+}
+.header-ctrls .hdr-settings-row-danger .btn{ width:100%; box-sizing:border-box; }
+#appFullResetConfirmInput{
+  width:100%; max-width:100%; box-sizing:border-box; margin-top:6px;
+  padding:8px 10px; border-radius:8px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text); font:inherit;
+}
 .header-ctrls .hdr-icon-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:56px; height:52px; padding:0;
@@ -4022,7 +4041,7 @@ body.mm-enlarged .sig-badge{display:none}
   color:var(--muted); font-size:.76rem; margin-top:2px;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.favorite-item .fav-actions{display:flex; gap:5px; flex-wrap:nowrap}
+.favorite-item .fav-actions{display:flex; gap:5px; flex-wrap:wrap; align-items:center}
 .favorite-item .fav-actions button{padding:4px 9px; font-size:.8rem}
 
 /* Persist toggle: clean checkbox with label inline */
@@ -5211,8 +5230,9 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   font-weight: 700;
 }
 
-/* Secondary cluster: pick, import, exports. */
-#waypointModalPanel #wpPickBtn,
+/* Secondary cluster: import, export, da convertito / favoriti. */
+#waypointModalPanel #wpFromConvertedBtn,
+#waypointModalPanel #wpFromFavoritesBtn,
 #waypointModalPanel #wpImportBtn,
 #waypointModalPanel #wpExportOpenBtn{
   background: color-mix(in srgb, var(--panel2) 88%, transparent);
@@ -5222,8 +5242,10 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   min-height: 36px;
   box-shadow: none;
 }
-#waypointModalPanel #wpPickBtn:hover,
-#waypointModalPanel #wpPickBtn:focus-visible,
+#waypointModalPanel #wpFromConvertedBtn:hover,
+#waypointModalPanel #wpFromConvertedBtn:focus-visible,
+#waypointModalPanel #wpFromFavoritesBtn:hover,
+#waypointModalPanel #wpFromFavoritesBtn:focus-visible,
 #waypointModalPanel #wpImportBtn:hover,
 #waypointModalPanel #wpImportBtn:focus-visible,
 #waypointModalPanel #wpExportOpenBtn:hover,
@@ -5231,33 +5253,15 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
   background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
 }
-#waypointModalPanel #wpPickBtn[aria-pressed="true"]{
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
-  background: color-mix(in srgb, var(--accent-soft) 42%, var(--panel2));
-  color: var(--text-primary);
+#waypointModalPanel #wpFromConvertedBtn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
-/* Destructive-soft: svuota tutto (conferma esistente). */
-#waypointModalPanel #wpClearBtn{
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--error, #ef4444) 42%, var(--border-strong));
-  color: color-mix(in srgb, var(--error, #f87171) 90%, var(--text-primary));
-  font-weight: 600;
-  min-height: 36px;
-}
-#waypointModalPanel #wpClearBtn:hover,
-#waypointModalPanel #wpClearBtn:focus-visible{
-  border-color: color-mix(in srgb, var(--error) 62%, var(--border));
-  background: color-mix(in srgb, var(--error) 12%, var(--panel2));
-  color: var(--text-primary);
-}
-
-/* Destructive-hard: elimina selezionati. */
-#waypointModalPanel #wpDeleteSelectedBtn.btn-danger{
+/* Batch delete selected (soft) + delete all (hard) live in .wp-list-actions. */
+#waypointModalPanel #wpDeleteSelectedBtn.btn-danger-subtle{
   min-height: 36px;
   font-weight: 700;
-  border: 1px solid color-mix(in srgb, var(--error) 55%, transparent);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--error) 15%, transparent);
 }
 
 #waypointModalPanel .wp-map-name-row{
@@ -5402,8 +5406,9 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 /* List actions: toolbar in fondo al blocco lista (#wp-listWrap). */
 #waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
-  justify-content:flex-end;
+  justify-content:space-between;
   align-items:center;
+  flex-wrap: wrap;
   gap: var(--wp-space-2);
   margin: 0;
   padding: var(--wp-space-2) var(--wp-space-3) var(--wp-space-3);
@@ -5414,9 +5419,82 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 #waypointModalPanel .wp-modal-table-wrap #wpDeleteSelectedBtn[hidden]{
   display: none !important;
 }
-
-/* Remove dangerous "clear all" from UI (keep node for JS binding safety). */
-#waypointModalPanel #wpClearBtn{ display:none !important; }
+#waypointModalPanel .wp-modal-table-wrap #wpDeleteAllBtn{
+  font-weight: 700;
+}
+#waypointModalPanel .wp-modal-table-wrap #wpDeleteAllBtn:disabled{
+  opacity: 0.45;
+}
+#waypointModalPanel .wp-modal-table col.wp-col-when{
+  width: var(--wp-when-col, 118px);
+  min-width: 72px;
+}
+#waypointModalPanel .wp-modal-table col.wp-col-actions{
+  min-width: 208px;
+  width: auto;
+}
+#waypointModalPanel .wp-modal-table .wp-th-actions,
+#waypointModalPanel .wp-modal-table .wp-actions-cell{
+  vertical-align: middle;
+}
+#waypointModalPanel .wp-modal-table .wp-when-cell{
+  font-size: 0.78rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#waypointModalPanel .wp-modal-table .wp-row__ico-hint{
+  display: inline;
+  font-size: 0.76rem;
+  color: color-mix(in srgb, var(--muted) 92%, var(--text-primary) 8%);
+}
+#waypointModalPanel .saved-row-actions.wp-row-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+#waypointModalPanel .saved-row-actions.wp-row-actions .btn{
+  padding: 4px 9px;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+#waypointModalPanel .wp-editor-new-hint{
+  margin: 0 0 10px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.waypoint-fav-picker-body .waypoint-fav-picker-list{
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  margin: 10px 0 12px;
+  padding: 8px;
+  border-radius: var(--radius-card, 10px);
+  border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
+  background: color-mix(in srgb, var(--panel2) 70%, var(--panel) 30%);
+}
+.waypoint-fav-picker-body .waypoint-fav-row{
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
+}
+.waypoint-fav-picker-body .waypoint-fav-row:last-child{ border-bottom: none; }
+.waypoint-fav-picker-body .waypoint-fav-meta{
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+.waypoint-fav-picker-actions{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 4px;
+}
 
 /* Waypoint export dialog (showModal; only Waypoint entrypoint in this phase). */
 #waypointExportDialog.waypoint-export-dialog{
@@ -5449,6 +5527,19 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   line-height: 1.45;
 }
 .waypoint-export-dialog-desc{ margin: 0 0 12px; color: var(--muted); }
+.waypoint-export-cot-hint{
+  margin: 0 0 6px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.wp-export-cot-block{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: stretch;
+}
 .waypoint-export-dialog-empty{
   margin: 0 0 12px;
   color: var(--muted);
@@ -6566,6 +6657,16 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                   <span data-i18n="settings.resetLayout">Ripristina layout pannelli</span>
                 </button>
               </div>
+              <div class="hdr-settings-danger-zone">
+                <p class="hdr-settings-danger-title" data-i18n="settings.fullReset.sectionTitle">Zona pericolosa</p>
+                <p class="hdr-settings-danger-hint" data-i18n="settings.fullReset.sectionHint">Solo dati locali del browser.</p>
+                <div class="hdr-settings-row hdr-settings-row-danger">
+                  <button type="button" id="btnOpenAppFullReset" class="btn btn-sm btn-danger-subtle"
+                          data-i18n="settings.fullReset.openBtn"
+                          data-i18n-tip="settings.fullReset.openTip"
+                          data-i18n-aria="settings.fullReset.openBtn">Cancella tutti i dati locali…</button>
+                </div>
+              </div>
               <div class="hdr-settings-row hdr-settings-row-help">
                 <button id="btnHelp" class="hdr-settings-help-btn" type="button"
                         data-i18n-tip="tip.help" data-i18n-aria="ctrl.help">
@@ -6842,6 +6943,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="results"><p style="color:var(--muted); font-size:.88rem" data-i18n="res.empty">Inserisci una coordinata e premi Converti.</p></div>
         <div id="gpsMetadata" class="gps-metadata" hidden></div>
         <div class="actions convert-cm-actions-row">
+          <button type="button" id="btnAddResultToWaypoint" class="btn btn-sm" disabled data-i18n="waypointModal.addFromConvertBtn" data-i18n-tip="tip.waypointModal.addFromConvertBtn">Aggiungi a waypoint</button>
           <button id="btnCopyAll" class="btn btn-sm" data-i18n="btn.copyAll" data-i18n-tip="tip.copyAll">Copia tutto</button>
           <button id="btnCopyLink" class="btn btn-sm" data-i18n="btn.copyLink" data-i18n-tip="tip.copyLink">Copia link</button>
           <button id="btnQr" class="btn btn-sm" data-i18n="btn.qr" data-i18n-tip="tip.qr">QR</button>
@@ -7079,19 +7181,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <p class="hint" data-i18n="waypointModal.hint">Crea, modifica e gestisci i waypoint sulla mappa. Ogni waypoint ha nome, coordinata, icona NATO, colore e note opzionali.</p>
         <div class="wp-toolbar">
           <button type="button" id="wpAddBtn" class="btn btn-sm btn-primary" data-i18n="waypointModal.new" data-i18n-tip="tip.waypointModal.new">Nuovo waypoint</button>
-          <button type="button" id="wpPickBtn" class="btn btn-sm" aria-pressed="false" data-i18n="waypointModal.pickOnMap" data-i18n-tip="tip.waypointModal.pickOnMap">Pick sulla mappa</button>
+          <button type="button" id="wpFromConvertedBtn" class="btn btn-sm" disabled data-i18n="waypointModal.fromConverted" data-i18n-tip="tip.waypointModal.fromConverted">Da punto convertito</button>
+          <button type="button" id="wpFromFavoritesBtn" class="btn btn-sm" data-i18n="waypointModal.fromFavorites" data-i18n-tip="tip.waypointModal.fromFavorites">Da favoriti</button>
           <span class="sep" aria-hidden="true"></span>
           <button type="button" id="wpImportBtn" class="btn btn-sm" data-i18n="waypointModal.importOpen" data-i18n-tip="tip.waypointModal.importOpen" data-i18n-aria="waypointModal.importOpenAria">Importa</button>
           <button type="button" id="wpExportOpenBtn" class="btn btn-sm" data-i18n="waypointModal.exportOpen" data-i18n-tip="tip.waypointModal.exportOpen" data-i18n-aria="waypointModal.exportOpenAria">Esporta</button>
-          <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
-          <span class="sep" aria-hidden="true"></span>
-          <button type="button" id="wpClearBtn" class="btn btn-sm" hidden data-i18n="waypointModal.clearAll" data-i18n-tip="tip.waypointModal.clearAll">Elimina tutto</button>
+          <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,.xml,.cot,application/geo+json,application/json,application/xml,text/xml">
         </div>
         <div id="waypointEditor" class="wp-editor" hidden aria-live="polite">
           <div class="wp-editor-head">
             <strong id="wpEditorTitle" data-i18n="waypointModal.editor.newTitle">Nuovo waypoint</strong>
             <button type="button" id="wpEditorCancel" class="btn btn-sm" data-i18n="waypointModal.editor.cancel">Annulla</button>
           </div>
+          <p id="wpEditorNewHint" class="hint wp-editor-new-hint" hidden data-i18n="waypointModal.editor.newFlowHint"></p>
           <div class="wp-editor-grid">
             <label class="wp-field">
               <span data-i18n="waypointModal.editor.name">Nome</span>
@@ -7134,7 +7236,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div class="wp-modal-table-wrap" id="wp-listWrap">
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
           <div class="wp-list-actions">
-            <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger" hidden data-i18n="waypointModal.deleteSelected" data-i18n-tip="tip.waypointModal.deleteSelected">Elimina selezionati</button>
+            <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.waypointModal.deleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="waypointModal.deleteSelected">Elimina selezionati</span></button>
+            <button type="button" id="wpDeleteAllBtn" class="btn btn-sm btn-danger" disabled data-i18n="waypointModal.deleteAllWaypoints" data-i18n-tip="tip.waypointModal.deleteAllWaypoints">Elimina tutti i waypoint</button>
           </div>
         </div>
         <div id="wp-count" class="wp-count wp-count-badge" aria-live="polite"></div>
@@ -7446,6 +7549,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kml" data-i18n="export.kml" data-i18n-tip="tip.waypointModal.exportKml">KML</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
+      <div class="wp-export-cot-block" id="waypointExportCotBlock">
+        <p id="waypointExportDialogCotHint" class="hint waypoint-export-cot-hint" role="status" aria-live="polite" hidden></p>
+        <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="cot" data-i18n="waypointModal.exportCot" data-i18n-tip="tip.waypointModal.exportCot" data-i18n-aria="waypointModal.exportCotAria">CoT XML</button>
+      </div>
     </div>
   </div>
 </dialog>
@@ -7467,6 +7574,36 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
     <p id="waypointImportDialogMsg" class="hint waypoint-import-dialog-msg" hidden></p>
+  </div>
+</dialog>
+
+<dialog id="waypointDeleteAllDialog" class="app-modal" aria-labelledby="waypointDeleteAllTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="waypointDeleteAllTitle" class="app-modal-title" data-i18n="waypointModal.deleteAllDialogTitle">Eliminare tutti i waypoint?</h2>
+    <button type="button" class="app-modal-close" id="waypointDeleteAllCloseX" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p data-i18n="waypointModal.deleteAllDialogBody">Verranno rimossi tutti i waypoint dalla mappa e dall’elenco. Non riguarda tracce, favoriti né altri dati.</p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="waypointDeleteAllTitle">
+      <button type="button" class="btn btn-sm btn-danger" id="waypointDeleteAllConfirmBtn" data-i18n="waypointModal.deleteAllDialogConfirm">Elimina tutti</button>
+      <button type="button" class="btn btn-sm" id="waypointDeleteAllCancelBtn" data-i18n="waypointModal.deleteAllDialogCancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="waypointFromFavoritesDialog" class="app-modal" aria-labelledby="waypointFromFavoritesTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="waypointFromFavoritesTitle" class="app-modal-title" data-i18n="waypointModal.favoritesPickerTitle">Waypoint da favoriti</h2>
+    <button type="button" class="app-modal-close" id="waypointFromFavoritesCloseX" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body waypoint-fav-picker-body">
+    <p class="hint" data-i18n="waypointModal.favoritesPickerHint">Seleziona uno o più favoriti da aggiungere come waypoint.</p>
+    <div id="waypointFavPickerList" class="waypoint-fav-picker-list" role="group" aria-live="polite"></div>
+    <p id="waypointFavPickerEmpty" class="hint" hidden role="status"></p>
+    <div class="waypoint-fav-picker-actions">
+      <button type="button" class="btn btn-sm btn-primary" id="waypointFavPickerAddBtn" disabled data-i18n="waypointModal.favoritesPickerAdd">Aggiungi selezionati</button>
+      <button type="button" class="btn btn-sm" id="waypointFromFavoritesCancelBtn" data-i18n="waypointModal.favoritesPickerCancel">Annulla</button>
+    </div>
   </div>
 </dialog>
 
@@ -7568,6 +7705,26 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="offline-draft-warn-actions" role="group" aria-labelledby="offlineGlobalClearTitle">
       <button type="button" class="btn btn-sm btn-danger" id="offlineGlobalClearConfirm" data-i18n="offcache.globalClear.confirm">Svuota tutto</button>
       <button type="button" class="btn btn-sm" id="offlineGlobalClearCancel" data-i18n="offcache.globalClear.cancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="appFullResetDialog" class="app-modal" aria-labelledby="appFullResetTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="appFullResetTitle" class="app-modal-title" data-i18n="settings.fullReset.title">Cancellare tutti i dati locali?</h2>
+    <button type="button" class="app-modal-close" id="appFullResetCloseX" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p data-i18n="settings.fullReset.body">Questa azione eliminerà definitivamente waypoint, tracce, favoriti, cronologia, aree offline, cache tile e preferenze salvate in questo browser. Non può essere annullata.</p>
+    <p class="sub" style="margin-top:8px; font-size:.86rem; color:var(--muted);" data-i18n="settings.fullReset.browserOnly">Solo dati locali del browser.</p>
+    <label id="appFullResetTypeLbl" for="appFullResetConfirmInput" class="sub-section-hint" style="display:block; margin-top:12px;" data-i18n="settings.fullReset.typePrompt">Per confermare, digita esattamente CANCELLA.</label>
+    <input type="text" id="appFullResetConfirmInput" autocomplete="off" spellcheck="false"
+           aria-labelledby="appFullResetTitle appFullResetTypeLbl">
+    <p id="appFullResetBusy" style="display:none; margin-top:10px; font-size:.88rem; color:var(--muted);"></p>
+    <p id="appFullResetError" class="error-box" style="display:none; margin-top:10px;"></p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="appFullResetTitle" style="margin-top:14px;">
+      <button type="button" class="btn btn-sm btn-danger" id="appFullResetConfirmBtn" disabled data-i18n="settings.fullReset.confirmBtn">Cancella tutti i dati</button>
+      <button type="button" class="btn btn-sm" id="appFullResetCancelBtn" data-i18n="settings.fullReset.cancelBtn">Annulla</button>
     </div>
   </div>
 </dialog>
@@ -7919,6 +8076,22 @@ const I18N = {
     "settings.resetLayout":"Ripristina layout pannelli",
     "settings.resetLayoutConfirm":"Ripristinare posizioni e dimensioni dei pannelli GIS e le larghezze colonne della sessione? Tracce, waypoint, favoriti, aree offline, tile e cronologia non vengono cancellati.",
     "settings.resetLayoutTip":"Ripristina dimensioni/posizioni finestre (persistite) e larghezze colonne Nome (solo sessione)",
+    "settings.fullReset.sectionTitle":"Zona pericolosa — dati locali",
+    "settings.fullReset.sectionHint":"Solo dati di questa app nel browser. Non invia nulla in rete.",
+    "settings.fullReset.openBtn":"Cancella tutti i dati locali…",
+    "settings.fullReset.openTip":"Apre la conferma per eliminare tutti i dati salvati dall’app in questo browser (localStorage + cache tile).",
+    "settings.fullReset.title":"Cancellare tutti i dati locali?",
+    "settings.fullReset.body":"Verranno eliminati in modo definitivo: waypoint, tracce (bozza e archivio), favoriti, cronologia conversioni, aree offline e relative tile, cache tile in IndexedDB, preferenze e layout pannelli, e altri dati persistiti da questa app nello stesso profilo browser. L’operazione non può essere annullata.",
+    "settings.fullReset.browserOnly":"Non invia nulla in rete: riguarda solo i dati locali di questo sito nel browser.",
+    "settings.fullReset.typePrompt":"Per confermare, digita esattamente la parola CANCELLA (tutto maiuscolo, come mostrato).",
+    "settings.fullReset.confirmBtn":"Cancella tutti i dati",
+    "settings.fullReset.cancelBtn":"Annulla",
+    "settings.fullReset.busy":"Cancellazione in corso…",
+    "settings.fullReset.reloadSoon":"Reset completato. Ricaricamento in corso…",
+    "settings.fullReset.errBadWord":"Conferma non valida: digita esattamente CANCELLA per abilitare la cancellazione.",
+    "settings.fullReset.errIdb":"Impossibile svuotare completamente la cache tile (IndexedDB). Riprova o rimuovi i dati del sito dalle impostazioni del browser.",
+    "settings.fullReset.errLs":"Errore durante la rimozione da localStorage. Riprova.",
+    "settings.fullReset.errGeneric":"Errore durante il reset locale. Puoi annullare e riprovare.",
     "settings.themeAria":"Chiaro, scuro o automatico (orario locale)",
     "theme.optLight":"Chiaro",
     "theme.optDark":"Scuro",
@@ -8024,10 +8197,10 @@ const I18N = {
     "waypointModal.importOpen":"Importa",
     "waypointModal.importOpenAria":"Apri la finestra di import waypoint",
     "waypointModal.importDialogTitle":"Importa waypoint",
-    "waypointModal.importDialogBody":"Seleziona o trascina un file GeoJSON/JSON con waypoint puntuali.",
+    "waypointModal.importDialogBody":"Seleziona o trascina un file GeoJSON/JSON o CoT XML (.xml, .cot) con waypoint puntuali.",
     "waypointModal.importDialogDrop":"Trascina qui il file",
     "waypointModal.importDialogBrowse":"Sfoglia…",
-    "waypointModal.importUnsupported":"Formato non supportato. Per ora importa solo GeoJSON o JSON.",
+    "waypointModal.importUnsupported":"Formato non supportato. Usa GeoJSON/JSON o CoT XML con elementi <event> e <point>.",
     "waypointModal.importTooMany":"Hai trascinato più file. Per ora viene usato solo il primo.",
     "waypointModal.importGeoJSON":"Importa GeoJSON",
     "waypointModal.exportGeoJSON":"Esporta GeoJSON",
@@ -8040,8 +8213,44 @@ const I18N = {
     "waypointModal.exportDialogTitle":"Esporta waypoint",
     "waypointModal.exportDialogBody":"Scegli un formato per esportare i waypoint salvati.",
     "waypointModal.exportDialogEmpty":"Nessun waypoint da esportare.",
+    "waypointModal.exportCot":"CoT XML",
+    "waypointModal.exportCotAria":"Esporta waypoint in CoT XML (file .cot)",
+    "waypointModal.exportCoTNoWaypoints":"Nessun waypoint da esportare (selezione vuota o nessun dato).",
+    "waypointModal.exportCotHintAll":"CoT XML: esporta tutti i {0} waypoint",
+    "waypointModal.exportCotHintSelectedOne":"CoT XML: esporta 1 waypoint selezionato",
+    "waypointModal.exportCotHintSelectedMany":"CoT XML: esporta {0} waypoint selezionati",
+    "waypointModal.cotExportFileFallback":"waypoint",
+    "waypointModal.importCoTDefaultName":"Importato",
+    "waypointModal.importCoTParseErr":"CoT XML non valido o non leggibile.",
+    "waypointModal.importCoTTooLarge":"File CoT troppo grande (limite locale).",
+    "waypointModal.importCoTNoEvents":"Nessun evento CoT con <point> valido trovato.",
+    "waypointModal.importCoTUnsupported":"Evento CoT senza coordinate valide (saltato).",
+    "waypointModal.importCoTResult":"Importati {0} waypoint, {1} duplicati, {2} scartati.",
+    "waypointModal.importCoTDuplicate":"Duplicato (uid CoT già presente).",
+    "waypointModal.importCoTDoctype":"File con DOCTYPE non supportato per sicurezza.",
     "waypointModal.clearAll":"Elimina tutto",
-    "waypointModal.empty":"Nessun waypoint. Aggiungi il primo con \"Nuovo\" o \"Pick sulla mappa\".",
+    "waypointModal.deleteAllWaypoints":"Elimina tutti i waypoint",
+    "waypointModal.deleteAllDialogTitle":"Eliminare tutti i waypoint?",
+    "waypointModal.deleteAllDialogBody":"Verranno rimossi tutti i waypoint dalla mappa e dall’elenco. Non riguarda tracce, favoriti né altri dati salvati.",
+    "waypointModal.deleteAllDialogConfirm":"Elimina tutti",
+    "waypointModal.deleteAllDialogCancel":"Annulla",
+    "waypointModal.deleteAllDone":"Tutti i waypoint sono stati eliminati.",
+    "waypointModal.fromConverted":"Da punto convertito",
+    "waypointModal.fromFavorites":"Da favoriti",
+    "waypointModal.fromConvertedNoPoint":"Nessun punto convertito disponibile. Converti una coordinata prima.",
+    "waypointModal.fromConvertedStale":"Il risultato convertito non è più disponibile. Esegui una nuova conversione.",
+    "waypointModal.addFromConvertBtn":"Aggiungi a waypoint",
+    "waypointModal.fromConvertedNameTpl":"Convertito {0}",
+    "waypointModal.fromConvertedDefaultShort":"WP",
+    "waypointModal.fromConvertedOk":"Waypoint aggiunto dal punto convertito.",
+    "waypointModal.fromConvertedDup":"Punto troppo vicino a un waypoint esistente (non aggiunto).",
+    "waypointModal.favoritesPickerTitle":"Aggiungi da favoriti",
+    "waypointModal.favoritesPickerHint":"Spunta uno o più favoriti e conferma. I waypoint troppo vicini a punti già presenti vengono saltati.",
+    "waypointModal.favoritesPickerEmpty":"Nessun favorito disponibile.",
+    "waypointModal.favoritesPickerAdd":"Aggiungi selezionati",
+    "waypointModal.favoritesPickerCancel":"Annulla",
+    "waypointModal.favoritesImportResult":"Aggiunti {0} waypoint, saltati {1} quasi-duplicati, {2} altri non importati.",
+    "waypointModal.empty":"Nessun waypoint. Usa «Nuovo waypoint» per crearne uno (coordinate manuali o clic sulla mappa).",
     "waypointModal.unnamed":"(senza nome)",
     "waypointModal.capWarn":"Il file contiene {0} waypoint, ma restano solo {1} slot (cap 200). Importare comunque i primi {1}?",
     "waypointModal.capFull":"Cap 200 waypoint raggiunto. Elimina qualcosa prima di importare.",
@@ -8065,6 +8274,8 @@ const I18N = {
     "waypoint.renameConfirm":"Salvare il nuovo nome del waypoint?",
     "waypoint.colResizeAria":"Ridimensiona colonna Nome",
     "waypointModal.listColDetails":"Dettagli",
+    "waypointModal.listColWhen":"Data",
+    "waypointModal.dateUnknown":"—",
     "waypointModal.listColActions":"Azioni",
     "waypointModal.editor.newTitle":"Nuovo waypoint",
     "waypointModal.editor.editTitle":"Modifica waypoint",
@@ -8081,15 +8292,21 @@ const I18N = {
     "waypointModal.savedOk":"Waypoint salvato.",
     "waypointModal.editor.cancel":"Annulla",
     "waypointModal.editor.delete":"Elimina",
-    "tip.waypointModal.new":"Crea un waypoint",
-    "tip.waypointModal.pickOnMap":"Attiva/disattiva la modalità pick sulla mappa per creare un waypoint cliccando.",
-    "tip.waypointModal.importOpen":"Importa waypoint da file GeoJSON o JSON.",
+    "waypointModal.editor.newFlowHint":"Inserisci le coordinate nel campo sotto oppure clicca sulla mappa per scegliere il punto. Premi Salva per confermare.",
+    "tip.waypointModal.new":"Apre il modulo nuovo waypoint e attiva il clic sulla mappa.",
+    "tip.waypointModal.fromConverted":"Aggiunge un waypoint dal risultato convertito attualmente mostrato (non dalla sola mappa).",
+    "tip.waypointModal.addFromConvertBtn":"Aggiunge alle Waypoint sulla mappa il punto del risultato convertito corrente.",
+    "tip.waypointModal.fromFavorites":"Apre l’elenco favoriti per creare waypoint dai punti salvati.",
+    "tip.waypointModal.pickOnMap":"(Deprecato) Usa «Nuovo waypoint» per lo stesso flusso.",
+    "tip.waypointModal.deleteAllWaypoints":"Elimina tutti i waypoint dopo conferma nella finestra dedicata.",
+    "tip.waypointModal.importOpen":"Importa waypoint da file GeoJSON, JSON o CoT XML.",
     "tip.waypointModal.importGeoJSON":"Importa solo i Point da un file GeoJSON (cap 200).",
     "tip.waypointModal.exportGeoJSON":"Esporta i waypoint come FeatureCollection GeoJSON (kind: waypoint).",
     "tip.waypointModal.exportGpx":"Esporta i waypoint in GPX (wpt), includendo le note come descrizione.",
     "tip.waypointModal.exportKml":"Esporta i waypoint in KML, includendo le note come descrizione.",
     "tip.waypointModal.exportKmz":"Esporta i waypoint in KMZ (ZIP con doc.kml).",
     "tip.waypointModal.exportCsv":"Esporta i waypoint in CSV (UTF-8 con BOM), includendo le note come descrizione.",
+    "tip.waypointModal.exportCot":"Esporta in CoT XML (file .cot), un evento CoT per waypoint; se selezioni righe nella lista, solo quelle, altrimenti tutti. Nessuna rete.",
     "tip.waypointModal.exportOpen":"Scegli il formato di esportazione dei waypoint.",
     "tip.waypointModal.clearAll":"Elimina tutti i waypoint (chiede conferma).",
     "tip.waypointModal.deleteSelected":"Elimina i waypoint selezionati con la checkbox nella lista.",
@@ -8661,6 +8878,10 @@ const I18N = {
     "fav.hint":"Salva i punti importanti con un nome per ritrovarli velocemente. Sono memorizzati solo nel tuo browser.",
     "fav.empty":"Nessun favorito. Salva il punto corrente con \"★ Aggiungi corrente\".",
     "fav.renameConfirm":"Salvare il nuovo nome del favorito?",
+    "fav.addWaypoint":"Waypoint",
+    "fav.addWaypointOk":"Waypoint aggiunto dal favorito.",
+    "fav.addWaypointDup":"Waypoint non aggiunto: esiste già un punto molto vicino.",
+    "fav.addWaypointMissing":"Favorito non disponibile.",
     "fav.add":"★ Aggiungi corrente",
     "fav.exportKml":"Esporta KML","fav.exportGeoJson":"Esporta GeoJSON","fav.clear":"Elimina tutti",
     "fav.namePrompt":"Nome del favorito:",
@@ -8682,6 +8903,7 @@ const I18N = {
     "tip.favClear":"Elimina tutti i favoriti salvati",
     "tip.favLoad":"Ricarica questo favorito nei risultati",
     "tip.favDelete":"Elimina questo favorito",
+    "tip.favAddWaypoint":"Aggiunge un waypoint alle coordinate di questo favorito",
     "print.report":"Report (stampa)…",
     "tip.printReport":"Stamap PDF/HTML: titolo, classificazione, favoriti, map-schema, orari solari",
     "print.titleLabel":"Titolo report",
@@ -8767,10 +8989,10 @@ const I18N = {
     "hist.noMatch":"Nessuna riga con questo filtro.",
     "persist.label":"Ricorda cronologia e favoriti tra le sessioni",
     "persist.title":"Dati locali",
-    "persist.desc":"Cronologia, favoriti e preferenze sono salvati solo nel tuo browser (localStorage). Non vengono mai inviati online.",
-    "persist.clearAll":"Cancella tutti i dati locali",
+    "persist.desc":"Waypoint, tracce, favoriti, cronologia, aree offline, tile in cache, preferenze e layout restano nel browser (localStorage / IndexedDB). Non vengono inviati online. Per eliminare tutto: pulsante sotto (stessa conferma che in Impostazioni).",
+    "persist.clearAll":"Cancella tutti i dati locali…",
     "persist.cleared":"✓ Dati locali cancellati.",
-    "tip.clearStore":"Rimuove cronologia, favoriti e preferenze salvate localmente",
+    "tip.clearStore":"Apre la conferma per cancellare tutti i dati dell’app in questo browser (inclusa la cache tile).",
     "route.title":"Rotta e area",
     "route.closed":"Chiudi poligono (perimetro e area)",
     "route.points":"Punti validi",
@@ -8904,6 +9126,22 @@ const I18N = {
     "settings.resetLayout":"Reset panel layout",
     "settings.resetLayoutConfirm":"Restore GIS panel positions/sizes and session column widths? Tracks, waypoints, favorites, offline areas, tiles, and history will not be deleted.",
     "settings.resetLayoutTip":"Restore window sizes/positions (persisted) and Name column widths (session only)",
+    "settings.fullReset.sectionTitle":"Danger zone — local data",
+    "settings.fullReset.sectionHint":"Only this app’s data in the browser. Nothing is sent over the network.",
+    "settings.fullReset.openBtn":"Delete all local data…",
+    "settings.fullReset.openTip":"Opens confirmation to erase all data saved by this app in this browser (localStorage + tile cache).",
+    "settings.fullReset.title":"Delete all local data?",
+    "settings.fullReset.body":"This will permanently remove: waypoints, tracks (draft and saved library), favorites, conversion history, offline areas and their tiles, the IndexedDB tile cache, preferences and panel layout, and other data persisted by this app in this browser profile. This cannot be undone.",
+    "settings.fullReset.browserOnly":"No network traffic: only this site’s local browser storage is affected.",
+    "settings.fullReset.typePrompt":"To confirm, type exactly the word CANCELLA (all caps, as shown).",
+    "settings.fullReset.confirmBtn":"Delete all data",
+    "settings.fullReset.cancelBtn":"Cancel",
+    "settings.fullReset.busy":"Deleting…",
+    "settings.fullReset.reloadSoon":"Reset complete. Reloading…",
+    "settings.fullReset.errBadWord":"Invalid confirmation: type exactly CANCELLA to enable deletion.",
+    "settings.fullReset.errIdb":"Could not fully clear the tile cache (IndexedDB). Try again or remove this site’s data in the browser settings.",
+    "settings.fullReset.errLs":"Error while removing localStorage entries. Try again.",
+    "settings.fullReset.errGeneric":"Local reset error. You can cancel and try again.",
     "settings.themeAria":"Light, dark, or automatic (local time)",
     "theme.optLight":"Light",
     "theme.optDark":"Dark",
@@ -9009,10 +9247,10 @@ const I18N = {
     "waypointModal.importOpen":"Import",
     "waypointModal.importOpenAria":"Open the waypoint import dialog",
     "waypointModal.importDialogTitle":"Import waypoints",
-    "waypointModal.importDialogBody":"Choose or drop a GeoJSON/JSON file containing point waypoints.",
+    "waypointModal.importDialogBody":"Choose or drop a GeoJSON/JSON file or CoT XML (.xml, .cot) with point waypoints.",
     "waypointModal.importDialogDrop":"Drop the file here",
     "waypointModal.importDialogBrowse":"Browse…",
-    "waypointModal.importUnsupported":"Unsupported format. For now, only GeoJSON or JSON can be imported.",
+    "waypointModal.importUnsupported":"Unsupported format. Use GeoJSON/JSON or CoT XML with <event> and <point> elements.",
     "waypointModal.importTooMany":"You dropped multiple files. For now, only the first one is used.",
     "waypointModal.importGeoJSON":"Import GeoJSON",
     "waypointModal.exportGeoJSON":"Export GeoJSON",
@@ -9025,8 +9263,44 @@ const I18N = {
     "waypointModal.exportDialogTitle":"Export waypoints",
     "waypointModal.exportDialogBody":"Choose a format to export the saved waypoints.",
     "waypointModal.exportDialogEmpty":"No waypoints to export.",
+    "waypointModal.exportCot":"CoT XML",
+    "waypointModal.exportCotAria":"Export waypoints as CoT XML (.cot file)",
+    "waypointModal.exportCoTNoWaypoints":"No waypoints to export (empty selection or no data).",
+    "waypointModal.exportCotHintAll":"CoT XML: exports all {0} waypoints",
+    "waypointModal.exportCotHintSelectedOne":"CoT XML: exports 1 selected waypoint",
+    "waypointModal.exportCotHintSelectedMany":"CoT XML: exports {0} selected waypoints",
+    "waypointModal.cotExportFileFallback":"waypoint",
+    "waypointModal.importCoTDefaultName":"Imported",
+    "waypointModal.importCoTParseErr":"Invalid or unreadable CoT XML.",
+    "waypointModal.importCoTTooLarge":"CoT file too large (local limit).",
+    "waypointModal.importCoTNoEvents":"No CoT events with a valid <point> found.",
+    "waypointModal.importCoTUnsupported":"CoT event without valid coordinates (skipped).",
+    "waypointModal.importCoTResult":"Imported {0} waypoints, {1} duplicates, {2} skipped.",
+    "waypointModal.importCoTDuplicate":"Duplicate (CoT uid already present).",
+    "waypointModal.importCoTDoctype":"Files with DOCTYPE are not supported for safety.",
     "waypointModal.clearAll":"Delete all",
-    "waypointModal.empty":"No waypoints yet. Add the first one via \"New\" or \"Pick on map\".",
+    "waypointModal.deleteAllWaypoints":"Delete all waypoints",
+    "waypointModal.deleteAllDialogTitle":"Delete all waypoints?",
+    "waypointModal.deleteAllDialogBody":"This removes every waypoint from the map and list. Tracks, favourites and other saved data are not affected.",
+    "waypointModal.deleteAllDialogConfirm":"Delete all",
+    "waypointModal.deleteAllDialogCancel":"Cancel",
+    "waypointModal.deleteAllDone":"All waypoints deleted.",
+    "waypointModal.fromConverted":"From converted point",
+    "waypointModal.fromFavorites":"From favourites",
+    "waypointModal.fromConvertedNoPoint":"No converted point available. Convert coordinates first.",
+    "waypointModal.fromConvertedStale":"The converted result is no longer available. Run a new conversion.",
+    "waypointModal.addFromConvertBtn":"Add to waypoints",
+    "waypointModal.fromConvertedNameTpl":"Converted {0}",
+    "waypointModal.fromConvertedDefaultShort":"WP",
+    "waypointModal.fromConvertedOk":"Waypoint added from converted point.",
+    "waypointModal.fromConvertedDup":"Too close to an existing waypoint (not added).",
+    "waypointModal.favoritesPickerTitle":"Add from favourites",
+    "waypointModal.favoritesPickerHint":"Tick one or more favourites and confirm. Near-duplicates already on the map are skipped.",
+    "waypointModal.favoritesPickerEmpty":"No favourites available.",
+    "waypointModal.favoritesPickerAdd":"Add selected",
+    "waypointModal.favoritesPickerCancel":"Cancel",
+    "waypointModal.favoritesImportResult":"Added {0} waypoints, skipped {1} near-duplicates, {2} others not imported.",
+    "waypointModal.empty":"No waypoints yet. Use “New waypoint” to create one (manual coordinates or map click).",
     "waypointModal.unnamed":"(unnamed)",
     "waypointModal.capWarn":"File has {0} waypoints but only {1} slots remain (cap 200). Import the first {1} anyway?",
     "waypointModal.capFull":"Cap of 200 waypoints reached. Delete some before importing.",
@@ -9050,6 +9324,8 @@ const I18N = {
     "waypoint.renameConfirm":"Save the new waypoint name?",
     "waypoint.colResizeAria":"Resize Name column",
     "waypointModal.listColDetails":"Details",
+    "waypointModal.listColWhen":"Date",
+    "waypointModal.dateUnknown":"—",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"New waypoint",
     "waypointModal.editor.editTitle":"Edit waypoint",
@@ -9066,15 +9342,21 @@ const I18N = {
     "waypointModal.savedOk":"Waypoint saved.",
     "waypointModal.editor.cancel":"Cancel",
     "waypointModal.editor.delete":"Delete",
-    "tip.waypointModal.new":"Create waypoint",
-    "tip.waypointModal.pickOnMap":"Toggle click-on-map mode to create a waypoint with a single click.",
-    "tip.waypointModal.importOpen":"Import waypoints from a GeoJSON or JSON file.",
+    "waypointModal.editor.newFlowHint":"Enter coordinates below or click the map to choose the point. Press Save to confirm.",
+    "tip.waypointModal.new":"Opens the new waypoint form and enables map clicking.",
+    "tip.waypointModal.fromConverted":"Adds a waypoint from the converted result currently shown (not from the map centre alone).",
+    "tip.waypointModal.addFromConvertBtn":"Adds the current converted point to map waypoints.",
+    "tip.waypointModal.fromFavorites":"Opens favourites to create waypoints from saved points.",
+    "tip.waypointModal.pickOnMap":"(Deprecated) Use “New waypoint” for the same flow.",
+    "tip.waypointModal.deleteAllWaypoints":"Deletes every waypoint after confirmation in the dialog.",
+    "tip.waypointModal.importOpen":"Import waypoints from a GeoJSON, JSON, or CoT XML file.",
     "tip.waypointModal.importGeoJSON":"Import only the Point features from a GeoJSON file (cap 200).",
     "tip.waypointModal.exportGeoJSON":"Export waypoints as a GeoJSON FeatureCollection (kind: waypoint).",
     "tip.waypointModal.exportGpx":"Export waypoints as GPX (wpt), including notes as the description.",
     "tip.waypointModal.exportKml":"Export waypoints as KML, including notes as the description.",
     "tip.waypointModal.exportKmz":"Export waypoints as KMZ (ZIP containing doc.kml).",
     "tip.waypointModal.exportCsv":"Export waypoints as CSV (UTF-8 with BOM), including notes as the description.",
+    "tip.waypointModal.exportCot":"Export as CoT XML (.cot), one CoT event per waypoint; if rows are selected in the list, only those; otherwise all. No network.",
     "tip.waypointModal.exportOpen":"Choose the waypoint export format.",
     "tip.waypointModal.clearAll":"Delete every waypoint (asks for confirmation).",
     "tip.waypointModal.deleteSelected":"Delete the waypoints checked in the list.",
@@ -9645,6 +9927,10 @@ const I18N = {
     "fav.hint":"Save important points with a name to retrieve them quickly. Stored only in your browser.",
     "fav.empty":"No favorites. Save the current point with \"★ Add current\".",
     "fav.renameConfirm":"Save the new favorite name?",
+    "fav.addWaypoint":"Waypoint",
+    "fav.addWaypointOk":"Waypoint added from favourite.",
+    "fav.addWaypointDup":"Waypoint not added: a point is already very close.",
+    "fav.addWaypointMissing":"Favourite not available.",
     "fav.add":"★ Add current",
     "fav.exportKml":"Export KML","fav.exportGeoJson":"Export GeoJSON","fav.clear":"Clear all",
     "fav.namePrompt":"Favorite name:",
@@ -9667,6 +9953,7 @@ const I18N = {
     "tip.favClear":"Remove all saved favorites",
     "tip.favLoad":"Reload this favorite into results",
     "tip.favDelete":"Delete this favorite",
+    "tip.favAddWaypoint":"Add a waypoint at this favourite’s coordinates",
     "print.report":"Print report…",
     "tip.printReport":"Print/PDF: title, classification, favorites, schematic map, sun times",
     "print.titleLabel":"Report title",
@@ -9752,10 +10039,10 @@ const I18N = {
     "hist.noMatch":"No history rows match.",
     "persist.label":"Remember history and favorites across sessions",
     "persist.title":"Local data",
-    "persist.desc":"History, favorites and preferences are stored only in your browser (localStorage). Never sent online.",
-    "persist.clearAll":"Clear all local data",
+    "persist.desc":"Waypoints, tracks, favorites, history, offline areas, cached tiles, preferences and layout stay in your browser (localStorage / IndexedDB). Never sent online. To wipe everything, use the button below (same confirmation as in Settings).",
+    "persist.clearAll":"Delete all local data…",
     "persist.cleared":"✓ Local data cleared.",
-    "tip.clearStore":"Remove saved history, favorites and preferences",
+    "tip.clearStore":"Opens confirmation to erase all app data in this browser (including the tile cache).",
     "route.title":"Route and area",
     "route.closed":"Close polygon (perimeter and area)",
     "route.points":"Valid points",
@@ -9889,6 +10176,22 @@ const I18N = {
     "settings.resetLayout":"Réinitialiser la disposition des panneaux",
     "settings.resetLayoutConfirm":"Rétablir positions/tailles des panneaux SIG et largeurs de colonnes de session ? Traces, waypoints, favoris, zones hors ligne, tuiles et historique ne seront pas supprimés.",
     "settings.resetLayoutTip":"Rétablit tailles/positions des fenêtres (persistées) et largeurs colonne Nom (session)",
+    "settings.fullReset.sectionTitle":"Zone sensible — données locales",
+    "settings.fullReset.sectionHint":"Uniquement les données de cette application dans le navigateur. Aucun envoi réseau.",
+    "settings.fullReset.openBtn":"Effacer toutes les données locales…",
+    "settings.fullReset.openTip":"Ouvre la confirmation pour supprimer toutes les données enregistrées par cette application dans ce navigateur (localStorage + cache tuiles).",
+    "settings.fullReset.title":"Effacer toutes les données locales ?",
+    "settings.fullReset.body":"Seront définitivement supprimés : waypoints, traces (brouillon et bibliothèque), favoris, historique des conversions, zones hors ligne et tuiles associées, cache tuiles IndexedDB, préférences et disposition des panneaux, et autres données persistées par cette application pour ce profil. Action irréversible.",
+    "settings.fullReset.browserOnly":"Aucun trafic réseau : seul l’espace de stockage local de ce site est concerné.",
+    "settings.fullReset.typePrompt":"Pour confirmer, saisissez exactement le mot CANCELLA (tout en majuscules, tel qu’affiché).",
+    "settings.fullReset.confirmBtn":"Tout effacer",
+    "settings.fullReset.cancelBtn":"Annuler",
+    "settings.fullReset.busy":"Suppression en cours…",
+    "settings.fullReset.reloadSoon":"Réinitialisation terminée. Rechargement…",
+    "settings.fullReset.errBadWord":"Confirmation invalide : saisissez exactement CANCELLA pour activer la suppression.",
+    "settings.fullReset.errIdb":"Impossible de vider entièrement le cache tuiles (IndexedDB). Réessayez ou supprimez les données du site dans les paramètres du navigateur.",
+    "settings.fullReset.errLs":"Erreur lors de la suppression dans localStorage. Réessayez.",
+    "settings.fullReset.errGeneric":"Erreur lors de la réinitialisation locale. Vous pouvez annuler et réessayer.",
     "settings.themeAria":"Clair, sombre ou automatique (heure locale)",
     "theme.optLight":"Clair",
     "theme.optDark":"Sombre",
@@ -9994,10 +10297,10 @@ const I18N = {
     "waypointModal.importOpen":"Importer",
     "waypointModal.importOpenAria":"Ouvrir la fenêtre d’import des waypoints",
     "waypointModal.importDialogTitle":"Importer des waypoints",
-    "waypointModal.importDialogBody":"Sélectionnez ou déposez un fichier GeoJSON/JSON contenant des waypoints ponctuels.",
+    "waypointModal.importDialogBody":"Sélectionnez ou déposez un fichier GeoJSON/JSON ou CoT XML (.xml, .cot) avec waypoints ponctuels.",
     "waypointModal.importDialogDrop":"Déposez le fichier ici",
     "waypointModal.importDialogBrowse":"Parcourir…",
-    "waypointModal.importUnsupported":"Format non pris en charge. Pour l’instant, seuls GeoJSON ou JSON peuvent être importés.",
+    "waypointModal.importUnsupported":"Format non pris en charge. Utilisez GeoJSON/JSON ou CoT XML avec des éléments <event> et <point>.",
     "waypointModal.importTooMany":"Vous avez déposé plusieurs fichiers. Pour l’instant, seul le premier est utilisé.",
     "waypointModal.importGeoJSON":"Importer GeoJSON",
     "waypointModal.exportGeoJSON":"Exporter GeoJSON",
@@ -10010,8 +10313,44 @@ const I18N = {
     "waypointModal.exportDialogTitle":"Exporter les waypoints",
     "waypointModal.exportDialogBody":"Choisissez un format pour exporter les waypoints enregistrés.",
     "waypointModal.exportDialogEmpty":"Aucun waypoint à exporter.",
+    "waypointModal.exportCot":"CoT XML",
+    "waypointModal.exportCotAria":"Exporter les waypoints en CoT XML (fichier .cot)",
+    "waypointModal.exportCoTNoWaypoints":"Aucun waypoint à exporter (sélection vide ou aucune donnée).",
+    "waypointModal.exportCotHintAll":"CoT XML : exporte les {0} waypoints",
+    "waypointModal.exportCotHintSelectedOne":"CoT XML : exporte 1 waypoint sélectionné",
+    "waypointModal.exportCotHintSelectedMany":"CoT XML : exporte {0} waypoints sélectionnés",
+    "waypointModal.cotExportFileFallback":"waypoint",
+    "waypointModal.importCoTDefaultName":"Importé",
+    "waypointModal.importCoTParseErr":"CoT XML invalide ou illisible.",
+    "waypointModal.importCoTTooLarge":"Fichier CoT trop volumineux (limite locale).",
+    "waypointModal.importCoTNoEvents":"Aucun événement CoT avec <point> valide trouvé.",
+    "waypointModal.importCoTUnsupported":"Événement CoT sans coordonnées valides (ignoré).",
+    "waypointModal.importCoTResult":"{0} waypoints importés, {1} doublons, {2} ignorés.",
+    "waypointModal.importCoTDuplicate":"Doublon (uid CoT déjà présent).",
+    "waypointModal.importCoTDoctype":"Les fichiers avec DOCTYPE ne sont pas pris en charge (sécurité).",
     "waypointModal.clearAll":"Tout supprimer",
-    "waypointModal.empty":"Aucun waypoint. Ajoutez le premier via « Nouveau » ou « Pointer sur la carte ».",
+    "waypointModal.deleteAllWaypoints":"Supprimer tous les waypoints",
+    "waypointModal.deleteAllDialogTitle":"Supprimer tous les waypoints ?",
+    "waypointModal.deleteAllDialogBody":"Tous les waypoints seront retirés de la carte et de la liste. Les traces, favoris et autres données ne sont pas concernés.",
+    "waypointModal.deleteAllDialogConfirm":"Tout supprimer",
+    "waypointModal.deleteAllDialogCancel":"Annuler",
+    "waypointModal.deleteAllDone":"Tous les waypoints ont été supprimés.",
+    "waypointModal.fromConverted":"Depuis le point converti",
+    "waypointModal.fromFavorites":"Depuis les favoris",
+    "waypointModal.fromConvertedNoPoint":"Aucun point converti disponible. Convertissez une coordonnée d’abord.",
+    "waypointModal.fromConvertedStale":"Le résultat converti n’est plus disponible. Effectuez une nouvelle conversion.",
+    "waypointModal.addFromConvertBtn":"Ajouter au waypoint",
+    "waypointModal.fromConvertedNameTpl":"Converti {0}",
+    "waypointModal.fromConvertedDefaultShort":"WP",
+    "waypointModal.fromConvertedOk":"Waypoint ajouté depuis le point converti.",
+    "waypointModal.fromConvertedDup":"Trop proche d’un waypoint existant (non ajouté).",
+    "waypointModal.favoritesPickerTitle":"Ajouter depuis les favoris",
+    "waypointModal.favoritesPickerHint":"Cochez un ou plusieurs favoris puis confirmez. Les quasi-doublons déjà sur la carte sont ignorés.",
+    "waypointModal.favoritesPickerEmpty":"Aucun favori disponible.",
+    "waypointModal.favoritesPickerAdd":"Ajouter la sélection",
+    "waypointModal.favoritesPickerCancel":"Annuler",
+    "waypointModal.favoritesImportResult":"Ajoutés {0} waypoints, ignorés {1} quasi-doublons, {2} autres non importés.",
+    "waypointModal.empty":"Aucun waypoint. Utilisez « Nouveau waypoint » (coordonnées ou clic sur la carte).",
     "waypointModal.unnamed":"(sans nom)",
     "waypointModal.capWarn":"Le fichier contient {0} waypoints mais seulement {1} emplacements restent (cap 200). Importer les {1} premiers ?",
     "waypointModal.capFull":"Plafond de 200 waypoints atteint. Supprimez-en avant d'importer.",
@@ -10035,6 +10374,8 @@ const I18N = {
     "waypoint.renameConfirm":"Enregistrer le nouveau nom du waypoint ?",
     "waypoint.colResizeAria":"Redimensionner la colonne Nom",
     "waypointModal.listColDetails":"Détails",
+    "waypointModal.listColWhen":"Date",
+    "waypointModal.dateUnknown":"—",
     "waypointModal.listColActions":"Actions",
     "waypointModal.editor.newTitle":"Nouveau waypoint",
     "waypointModal.editor.editTitle":"Modifier le waypoint",
@@ -10051,15 +10392,21 @@ const I18N = {
     "waypointModal.savedOk":"Waypoint enregistré.",
     "waypointModal.editor.cancel":"Annuler",
     "waypointModal.editor.delete":"Supprimer",
-    "tip.waypointModal.new":"Créer un waypoint",
-    "tip.waypointModal.pickOnMap":"Active/désactive le mode clic sur la carte pour créer un waypoint.",
-    "tip.waypointModal.importOpen":"Importer des waypoints depuis un fichier GeoJSON ou JSON.",
+    "waypointModal.editor.newFlowHint":"Saisissez les coordonnées ci-dessous ou cliquez sur la carte pour choisir le point. Validez avec Enregistrer.",
+    "tip.waypointModal.new":"Ouvre le formulaire nouveau waypoint et active le clic sur la carte.",
+    "tip.waypointModal.fromConverted":"Ajoute un waypoint à partir du résultat converti actuellement affiché (pas seulement la carte).",
+    "tip.waypointModal.addFromConvertBtn":"Ajoute le point converti actuel aux waypoints sur la carte.",
+    "tip.waypointModal.fromFavorites":"Ouvre les favoris pour créer des waypoints depuis des points enregistrés.",
+    "tip.waypointModal.pickOnMap":"(Obsolète) Utilisez « Nouveau waypoint » pour le même flux.",
+    "tip.waypointModal.deleteAllWaypoints":"Supprime tous les waypoints après confirmation dans la fenêtre.",
+    "tip.waypointModal.importOpen":"Importer des waypoints depuis un fichier GeoJSON, JSON ou CoT XML.",
     "tip.waypointModal.importGeoJSON":"Importe uniquement les géométries Point d'un fichier GeoJSON (plafond 200).",
     "tip.waypointModal.exportGeoJSON":"Exporte les waypoints en FeatureCollection GeoJSON (kind : waypoint).",
     "tip.waypointModal.exportGpx":"Exporte les waypoints en GPX (wpt), en incluant les notes comme description.",
     "tip.waypointModal.exportKml":"Exporte les waypoints en KML, en incluant les notes comme description.",
     "tip.waypointModal.exportKmz":"Exporte les waypoints en KMZ (ZIP contenant doc.kml).",
     "tip.waypointModal.exportCsv":"Exporte les waypoints en CSV (UTF-8 avec BOM), en incluant les notes comme description.",
+    "tip.waypointModal.exportCot":"Export CoT XML (.cot), un événement CoT par waypoint ; si des lignes sont cochées, seulement celles-ci ; sinon tous. Pas de réseau.",
     "tip.waypointModal.exportOpen":"Choisir le format d’export des waypoints.",
     "tip.waypointModal.clearAll":"Supprime tous les waypoints (confirmation demandée).",
     "tip.waypointModal.deleteSelected":"Supprime les waypoints cochés dans la liste.",
@@ -10630,6 +10977,10 @@ const I18N = {
     "fav.hint":"Enregistrez les points importants avec un nom pour les retrouver rapidement. Stockés uniquement dans votre navigateur.",
     "fav.empty":"Aucun favori. Enregistrez le point courant avec « ★ Ajouter ».",
     "fav.renameConfirm":"Enregistrer le nouveau nom du favori ?",
+    "fav.addWaypoint":"Waypoint",
+    "fav.addWaypointOk":"Waypoint ajouté depuis le favori.",
+    "fav.addWaypointDup":"Waypoint non ajouté : un point est déjà très proche.",
+    "fav.addWaypointMissing":"Favori indisponible.",
     "fav.add":"★ Ajouter le courant",
     "fav.exportKml":"Exporter KML","fav.exportGeoJson":"Exporter GeoJSON","fav.clear":"Tout supprimer",
     "fav.namePrompt":"Nom du favori :",
@@ -10652,6 +11003,7 @@ const I18N = {
     "tip.favClear":"Supprimer tous les favoris enregistrés",
     "tip.favLoad":"Recharger ce favori dans les résultats",
     "tip.favDelete":"Supprimer ce favori",
+    "tip.favAddWaypoint":"Ajoute un waypoint aux coordonnées de ce favori",
     "print.report":"Rapport (impression)…",
     "tip.printReport":"Impression/PDF : titre, classification, favoris, schéma, soleil",
     "print.titleLabel":"Titre du rapport",
@@ -10737,10 +11089,10 @@ const I18N = {
     "hist.noMatch":"Aucune ligne ne correspond.",
     "persist.label":"Mémoriser l'historique et les favoris entre les sessions",
     "persist.title":"Données locales",
-    "persist.desc":"Historique, favoris et préférences sont stockés uniquement dans votre navigateur (localStorage). Jamais envoyés en ligne.",
-    "persist.clearAll":"Effacer toutes les données locales",
+    "persist.desc":"Waypoints, traces, favoris, historique, zones hors ligne, tuiles en cache, préférences et disposition restent dans le navigateur (localStorage / IndexedDB). Jamais envoyés en ligne. Pour tout effacer : bouton ci-dessous (même confirmation que dans Paramètres).",
+    "persist.clearAll":"Effacer toutes les données locales…",
     "persist.cleared":"✓ Données locales effacées.",
-    "tip.clearStore":"Supprime historique, favoris et préférences enregistrées",
+    "tip.clearStore":"Ouvre la confirmation pour supprimer toutes les données de l’application dans ce navigateur (y compris le cache tuiles).",
     "route.title":"Trajet et surface",
     "route.closed":"Fermer le polygone (périmètre et surface)",
     "route.points":"Points valides",
@@ -11520,6 +11872,8 @@ function fmtMils(deg){ return Math.round(degToMils(deg)).toString(); }
 // reflects the current feature surface.
 const STORAGE_KEY = "coordconv_v2";
 const UI_STORAGE_KEY = "coordconv_ui_v1";
+/** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
+const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 function loadStore(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -14269,6 +14623,33 @@ function sanitizeExportBaseName(s){
   t = t.replace(/^\.+/, "").trim();
   return t || "export";
 }
+/** Local wall-clock HHMM for export basenames (pairs with exportPrefixedDownloadFilename date prefix). */
+function formatExportLocalHm(d){
+  const x = (d instanceof Date && Number.isFinite(d.getTime())) ? d : new Date();
+  const hh = String(x.getHours()).padStart(2, "0");
+  const mm = String(x.getMinutes()).padStart(2, "0");
+  return hh + mm;
+}
+/** Single logical filename segment (no path / extension); safe on disk. */
+function safeFilenamePart(s){
+  let t = sanitizeExportBaseName(String(s == null ? "" : s).trim());
+  t = t.replace(/\s+/g, "_");
+  if (t.length > 80) t = t.slice(0, 80);
+  return t || "";
+}
+/** CoT download leaf name before exportPrefixedDownloadFilename (YYYYMMDD_ + this). */
+function cotExportFilenameForWaypoints(waypoints){
+  const list = Array.isArray(waypoints) ? waypoints : [];
+  const n = list.length;
+  const hm = formatExportLocalHm(new Date());
+  if (n <= 0) return hm + "_waypoints_0.cot";
+  if (n === 1){
+    const rawNm = String((list[0] && list[0].name) || "").trim();
+    const part = safeFilenamePart(rawNm) || safeFilenamePart((typeof t === "function" ? (t("waypointModal.cotExportFileFallback") || "") : "") || "waypoint");
+    return hm + "_" + (part || "waypoint") + ".cot";
+  }
+  return hm + "_waypoints_" + n + ".cot";
+}
 /** Final download name: <YYYYMMDD>_<basename>.<ext> (e.g. 20260424_track-12-30.gpx). */
 function exportPrefixedDownloadFilename(filename){
   const raw = (String(filename == null ? "" : filename).trim() || "export");
@@ -15591,6 +15972,198 @@ function bindHeaderSettingsMenu(){
   }
 }
 
+let _appFullResetBindings = false;
+
+function resetAppFullResetDialogUi(){
+  const inp = document.getElementById("appFullResetConfirmInput");
+  const btn = document.getElementById("appFullResetConfirmBtn");
+  const err = document.getElementById("appFullResetError");
+  const busy = document.getElementById("appFullResetBusy");
+  const cancelBtn = document.getElementById("appFullResetCancelBtn");
+  const closeX = document.getElementById("appFullResetCloseX");
+  if (inp){ inp.value = ""; inp.disabled = false; }
+  if (btn) btn.disabled = true;
+  if (err){ err.style.display = "none"; err.textContent = ""; }
+  if (busy){ busy.style.display = "none"; busy.textContent = ""; }
+  [cancelBtn, closeX].forEach((el) => {
+    if (!el) return;
+    el.disabled = false;
+    el.style.pointerEvents = "";
+  });
+  syncAppFullResetConfirmEnabled();
+}
+
+function syncAppFullResetConfirmEnabled(){
+  const inp = document.getElementById("appFullResetConfirmInput");
+  const btn = document.getElementById("appFullResetConfirmBtn");
+  if (!inp || !btn) return;
+  const busy = document.getElementById("appFullResetBusy");
+  const isBusy = !!(busy && busy.style.display === "block");
+  btn.disabled = isBusy || (String(inp.value || "").trim() !== APP_FULL_RESET_CONFIRM_WORD);
+}
+
+function openAppFullResetDialog(){
+  const dlg = document.getElementById("appFullResetDialog");
+  if (!dlg) return;
+  resetAppFullResetDialogUi();
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  setTimeout(() => {
+    try {
+      const inp = document.getElementById("appFullResetConfirmInput");
+      if (inp) inp.focus();
+    } catch(_){}
+  }, 30);
+}
+
+function closeAppFullResetDialog(){
+  const busy = document.getElementById("appFullResetBusy");
+  if (busy && busy.style.display === "block") return;
+  const dlg = document.getElementById("appFullResetDialog");
+  if (!dlg) return;
+  resetAppFullResetDialogUi();
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+
+function setAppFullResetDialogBusy(on, msgKey){
+  const inp = document.getElementById("appFullResetConfirmInput");
+  const btn = document.getElementById("appFullResetConfirmBtn");
+  const busy = document.getElementById("appFullResetBusy");
+  const cancelBtn = document.getElementById("appFullResetCancelBtn");
+  const closeX = document.getElementById("appFullResetCloseX");
+  const err = document.getElementById("appFullResetError");
+  if (on){
+    if (inp) inp.disabled = true;
+    if (btn) btn.disabled = true;
+    if (cancelBtn) cancelBtn.disabled = true;
+    if (closeX){ closeX.disabled = true; closeX.style.pointerEvents = "none"; }
+    if (err){ err.style.display = "none"; err.textContent = ""; }
+    if (busy){
+      busy.style.display = "block";
+      busy.textContent = (typeof t === "function") ? (t(msgKey || "settings.fullReset.busy") || "") : "";
+    }
+  } else {
+    if (inp) inp.disabled = false;
+    if (cancelBtn) cancelBtn.disabled = false;
+    if (closeX){ closeX.disabled = false; closeX.style.pointerEvents = ""; }
+    if (busy){ busy.style.display = "none"; busy.textContent = ""; }
+  }
+  syncAppFullResetConfirmEnabled();
+}
+
+function showAppFullResetDialogError(msg){
+  const err = document.getElementById("appFullResetError");
+  const busy = document.getElementById("appFullResetBusy");
+  if (busy){ busy.style.display = "none"; busy.textContent = ""; }
+  if (err){
+    err.style.display = "block";
+    err.textContent = msg || "";
+  }
+  setAppFullResetDialogBusy(false);
+}
+
+/** Dismiss floating UI before a destructive wipe (no save). */
+async function prepareUiBeforeAppFullReset(){
+  try { closeHeaderSettingsMenu(); } catch(_){}
+  try { closeHelp(); } catch(_){}
+  try { closeQrModal(); } catch(_){}
+  try { closeConvertModal(); } catch(_){}
+  try { closeToolsModal(); } catch(_){}
+  try { closeToolsDrawer(); } catch(_){}
+  try { if (typeof closeSearchPanel === "function") closeSearchPanel(); } catch(_){}
+  try { if (typeof closeFavoritesPanel === "function") closeFavoritesPanel(); } catch(_){}
+  try { if (typeof closeWaypointModal === "function") closeWaypointModal(); } catch(_){}
+  try { if (typeof closeTrackModal === "function") closeTrackModal({ force: true, discardDraft: true }); } catch(_){}
+  try { if (typeof deactivateTab === "function") deactivateTab(); } catch(_){}
+  try {
+    if (typeof closeLayersPanel === "function") await closeLayersPanel({ force: true });
+  } catch(_){}
+}
+
+async function performAppFullLocalReset(){
+  const inp = document.getElementById("appFullResetConfirmInput");
+  const typed = inp ? String(inp.value || "").trim() : "";
+  if (typed !== APP_FULL_RESET_CONFIRM_WORD){
+    showAppFullResetDialogError((typeof t === "function") ? (t("settings.fullReset.errBadWord") || "") : "");
+    return;
+  }
+  setAppFullResetDialogBusy(true, "settings.fullReset.busy");
+  try {
+    if (typeof abortOfflinePrecacheRuns === "function") abortOfflinePrecacheRuns();
+    if (typeof waitUntilOfflinePrecacheIdle === "function"){
+      await waitUntilOfflinePrecacheIdle(6000);
+    }
+    await prepareUiBeforeAppFullReset();
+    try {
+      await idbClearAllTilesOrThrow();
+    } catch (idbErr){
+      showAppFullResetDialogError((typeof t === "function") ? (t("settings.fullReset.errIdb") || String(idbErr)) : String(idbErr));
+      return;
+    }
+    try {
+      if (typeof clearStore === "function") clearStore();
+      try { localStorage.removeItem("coordconv_v1"); } catch (e){ throw e; }
+      if (localStorage.getItem(STORAGE_KEY) !== null || localStorage.getItem(UI_STORAGE_KEY) !== null){
+        throw new Error("localStorage_clear_incomplete");
+      }
+    } catch (lsErr){
+      showAppFullResetDialogError((typeof t === "function") ? (t("settings.fullReset.errLs") || String(lsErr)) : String(lsErr));
+      return;
+    }
+    const doneMsg = (typeof t === "function") ? (t("settings.fullReset.reloadSoon") || "") : "";
+    const busy = document.getElementById("appFullResetBusy");
+    if (busy && doneMsg){
+      busy.style.display = "block";
+      busy.textContent = doneMsg;
+    }
+    location.reload();
+  } catch (e){
+    showAppFullResetDialogError((typeof t === "function") ? (t("settings.fullReset.errGeneric") || String(e)) : String(e));
+  }
+}
+
+function bindAppFullResetDialog(){
+  if (_appFullResetBindings) return;
+  const dlg = document.getElementById("appFullResetDialog");
+  if (!dlg) return;
+  _appFullResetBindings = true;
+  const wireOpen = (ev) => {
+    if (ev){ ev.preventDefault(); ev.stopPropagation(); }
+    try { closeHeaderSettingsMenu(); } catch(_){}
+    try { closeHelp(); } catch(_){}
+    openAppFullResetDialog();
+  };
+  const openBtn = document.getElementById("btnOpenAppFullReset");
+  const clearHelp = document.getElementById("btnClearStore");
+  if (openBtn) openBtn.addEventListener("click", wireOpen);
+  if (clearHelp) clearHelp.addEventListener("click", wireOpen);
+  const inp = document.getElementById("appFullResetConfirmInput");
+  const okBtn = document.getElementById("appFullResetConfirmBtn");
+  const cancelBtn = document.getElementById("appFullResetCancelBtn");
+  const closeX = document.getElementById("appFullResetCloseX");
+  if (inp){
+    inp.addEventListener("input", () => syncAppFullResetConfirmEnabled());
+    inp.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" && okBtn && !okBtn.disabled){
+        ev.preventDefault();
+        okBtn.click();
+      }
+    });
+  }
+  if (okBtn) okBtn.addEventListener("click", (ev) => { ev.preventDefault(); void performAppFullLocalReset(); });
+  if (cancelBtn) cancelBtn.addEventListener("click", (ev) => { ev.preventDefault(); closeAppFullResetDialog(); });
+  if (closeX) closeX.addEventListener("click", (ev) => { ev.preventDefault(); closeAppFullResetDialog(); });
+  dlg.addEventListener("cancel", (ev) => {
+    ev.preventDefault();
+    const busy = document.getElementById("appFullResetBusy");
+    if (busy && busy.style.display === "block") return;
+    closeAppFullResetDialog();
+  });
+}
+
 function openHelp(){
   try { closeHeaderSettingsMenu(); } catch(_){}
   document.getElementById("helpOverlay").classList.add("open");
@@ -15631,6 +16204,15 @@ function bindHotkeys(){
         ev.preventDefault();
         return;
       }
+      try {
+        const ard = document.getElementById("appFullResetDialog");
+        const arBusy = document.getElementById("appFullResetBusy");
+        if (ard && ard.open && !(arBusy && arBusy.style.display === "block") && typeof closeAppFullResetDialog === "function"){
+          closeAppFullResetDialog();
+          ev.preventDefault();
+          return;
+        }
+      } catch(_){}
       try {
         const hsm = document.getElementById("headerSettingsMenu");
         if (hsm && !hsm.hidden && typeof closeHeaderSettingsMenu === "function"){
@@ -16518,6 +17100,8 @@ function renderResults(lat, lon, meta, opts = {}){
 
   if (!skipHistory) pushHistory({ lat, lon, meta });
   renderGpsMetadata(meta);
+  try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+  try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
 }
 
 /** Ensure the locality row is wired up. It lives in the DOM already (inside
@@ -16795,6 +17379,8 @@ function renderMiniMap(lat, lon, resetView = true){
   // of reverting to the schematic SVG map. Users can still force the SVG
   // fallback via the layers menu if needed.
   renderTileMap(lat, lon, state.mapZoom || 11);
+  try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
+  try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
 }
 
 /** True if the browser is online AND the user hasn't forced offline mode. */
@@ -17836,6 +18422,21 @@ function idbClearAllTiles(){
     tx.onerror = () => rej(tx.error);
     tx.objectStore(TILE_IDB.store).clear();
   })).catch(() => {});
+}
+
+/** Same store wipe as `idbClearAllTiles` but errors propagate (full app reset UX). */
+function idbClearAllTilesOrThrow(){
+  return getTileDB().then(db => new Promise((res, rej) => {
+    const tx = db.transaction(TILE_IDB.store, "readwrite");
+    tx.oncomplete = () => res();
+    tx.onerror = () => rej(tx.error || new Error("idb_tx"));
+    tx.onabort = () => rej(tx.error || new Error("idb_abort"));
+    try {
+      tx.objectStore(TILE_IDB.store).clear();
+    } catch (e){
+      rej(e);
+    }
+  }));
 }
 
 /** Delete a set of tile keys in one transaction. Used to wipe only the
@@ -20880,7 +21481,7 @@ function ensureWpModalNameColResizeWired(){
     if (!wl || !wl.contains(table)) return;
     const rectT = table.getBoundingClientRect();
     const isDetails = h.classList.contains("wp-details-col-resize");
-    const cell = table.querySelector("tbody tr td:nth-child(" + (isDetails ? 3 : 2) + ")");
+    const cell = table.querySelector("tbody tr td:nth-child(" + (isDetails ? 5 : 3) + ")");
     const startW = cell ? cell.getBoundingClientRect().width : (isDetails ? 180 : 112);
     drag = {
       table,
@@ -21941,11 +22542,14 @@ function waypointAdd(lat, lon, name, meta){
   const pts = state.mapWaypoints;
   const last = pts[pts.length - 1];
   if (last && Math.abs(last.lat - lat) < 1e-5 && Math.abs(last.lon - lon) < 1e-5) return false;
+  const now = Date.now();
   pts.push({
     id: uidNamed(),
     lat, lon,
     name: (typeof name === "string" ? name : "").slice(0, 60),
-    meta: meta || null
+    meta: meta || null,
+    createdAt: now,
+    updatedAt: now
   });
   if (pts.length > 200) pts.splice(0, pts.length - 200);
   saveStore();
@@ -21974,6 +22578,7 @@ function waypointRename(id, name){
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
   p.name = String(name || "").trim().slice(0, 60);
+  p.updatedAt = Date.now();
   saveStore();
   renderMapWaypointsAll();
 }
@@ -22244,11 +22849,6 @@ function trackSyncPickModeUi(){
     const showFinish = !trackIsEditingSavedLibrary()
       && polyActive && state.track && Array.isArray(state.track.points) && state.track.points.length >= 1;
     btnFin.hidden = !showFinish;
-  }
-  const btnWpModal = document.getElementById("wpPickBtn");
-  if (btnWpModal){
-    btnWpModal.classList.toggle("btn-primary", wpOn);
-    btnWpModal.setAttribute("aria-pressed", wpOn ? "true" : "false");
   }
   const mapTgl = root && root.querySelector('[data-role="track-map-toggle"]');
   if (mapTgl){
@@ -25142,6 +25742,8 @@ function clearForm(){
   // Also clear permalink hash silently
   try { history.replaceState(null, "", location.pathname + location.search); } catch(_){}
   initMiniMapOnStartup();
+  try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+  try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
 }
 // #endregion JS — TRACK WAYPOINT GIS LAYERS AND TOOLS
 // #region JS — CLIPBOARD HISTORY FAVORITES BATCH
@@ -25361,9 +25963,42 @@ function loadFavorite(id){
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function favoriteAddAsWaypoint(favId){
+  ensureMapWaypointsState();
+  const f = state.favorites.find(x => String(x.id) === String(favId));
+  if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)){
+    try { setBadge("error", t("fav.addWaypointMissing") || ""); } catch(_){}
+    return;
+  }
+  if (waypointNearlyDuplicateLatLon(f.lat, f.lon)){
+    try { setBadge("info", t("fav.addWaypointDup")); } catch(_){}
+    return;
+  }
+  const nm = String(f.name || "").trim().slice(0, 60) || String(t("waypointModal.unnamed") || "WP").slice(0, 60);
+  const meta = { from: "favorite", icon: "hq", color: "#ca8a04" };
+  if (f.meta && f.meta.type) meta.srcFmt = String(f.meta.type).slice(0, 24);
+  const ok = waypointAdd(f.lat, normalizeLon(f.lon), nm, meta);
+  if (ok){
+    try { setBadge("success", t("fav.addWaypointOk")); } catch(_){}
+  } else {
+    try { setBadge("info", t("fav.addWaypointDup")); } catch(_){}
+  }
+}
+
 function renderFavorites(){
   const root = document.getElementById("favorites-list");
   if (!root) return;
+  if (!root._favWpDelegated){
+    root._favWpDelegated = true;
+    root.addEventListener("click", (ev) => {
+      const b = ev.target && ev.target.closest && ev.target.closest("[data-fav-waypoint]");
+      if (!b) return;
+      ev.preventDefault();
+      if (typeof favoriteAddAsWaypoint === "function"){
+        favoriteAddAsWaypoint(b.getAttribute("data-fav-waypoint"));
+      }
+    });
+  }
   if (!root._favRenameDelegated){
     root._favRenameDelegated = true;
     root.addEventListener("focusin", (ev) => {
@@ -25432,6 +26067,7 @@ function renderFavorites(){
         <div class="fav-meta">${when}</div>
       </div>
       <div class="fav-actions">
+        <button type="button" class="btn btn-sm" data-fav-waypoint="${esc(f.id)}" data-tip="${esc(t("tip.favAddWaypoint"))}">${esc(t("fav.addWaypoint"))}</button>
         <button class="btn btn-sm" data-fav-load="${f.id}" data-tip="${esc(t("tip.favLoad"))}">↻</button>
         <button class="btn btn-sm btn-danger" data-fav-del="${f.id}" data-tip="${esc(t("tip.favDelete"))}">×</button>
       </div>
@@ -26189,6 +26825,18 @@ function applyLanguage(lang){
   if (typeof syncTrackExportDialogUi === "function"){
     try { syncTrackExportDialogUi(); } catch(_){}
   }
+  if (typeof syncWaypointExportDialogUi === "function"){
+    try {
+      const wpx = document.getElementById("waypointExportDialog");
+      if (wpx && wpx.open) syncWaypointExportDialogUi();
+    } catch(_){}
+  }
+  if (typeof syncWaypointModalToolbarUi === "function"){
+    try { syncWaypointModalToolbarUi(); } catch(_){}
+  }
+  if (typeof syncConvertResultWaypointBtn === "function"){
+    try { syncConvertResultWaypointBtn(); } catch(_){}
+  }
   if (state.trackModalOpen){
     if (typeof renderTrackAll === "function"){
       try { renderTrackAll(); } catch(_){}
@@ -26385,10 +27033,17 @@ function bindUI(){
     });
   }
   bindHeaderSettingsMenu();
+  bindAppFullResetDialog();
   // Main buttons
   document.getElementById("btnConvert").addEventListener("click", doConvert);
   document.getElementById("btnClear").addEventListener("click", clearForm);
   document.getElementById("btnCopyAll").addEventListener("click", copyAll);
+  const btnAddResWp = document.getElementById("btnAddResultToWaypoint");
+  if (btnAddResWp){
+    btnAddResWp.addEventListener("click", () => {
+      if (typeof waypointAddFromConvertedPoint === "function") waypointAddFromConvertedPoint();
+    });
+  }
   document.getElementById("pasteDetect").addEventListener("click", doPasteDetect);
   const bMy = document.getElementById("btnMyLocation");
   if (bMy) bMy.addEventListener("click", () => requestCurrentLocation());
@@ -26427,16 +27082,7 @@ function bindUI(){
     });
   }
 
-  // Clear all local data (from Help modal)
-  document.getElementById("btnClearStore").addEventListener("click", () => {
-    clearStore();
-    state.history = [];
-    state.favorites = [];
-    renderHistory();
-    renderFavorites();
-    const s = document.getElementById("persistStatus");
-    if (s){ s.textContent = t("persist.cleared"); setTimeout(() => { s.textContent = ""; }, 2500); }
-  });
+  // Help modal: btnClearStore → full reset dialog (see bindAppFullResetDialog)
 
   // Help modal
   document.getElementById("btnHelp").addEventListener("click", openHelp);
@@ -27183,13 +27829,19 @@ function gisInit(){
   // in and out of the modal body. Each handler is idempotent.
   const wpAdd = document.getElementById("wpAddBtn");
   if (wpAdd) wpAdd.addEventListener("click", (ev) => {
-    ev.preventDefault(); openWaypointEditor();
-  });
-  const wpPick = document.getElementById("wpPickBtn");
-  if (wpPick) wpPick.addEventListener("click", (ev) => {
     ev.preventDefault();
-    // Reuse the existing shared toggle so state + on-map chrome stay in sync.
-    if (typeof trackToggleWaypointPickMode === "function") trackToggleWaypointPickMode();
+    if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow();
+    else openWaypointEditor();
+  });
+  const wpConv = document.getElementById("wpFromConvertedBtn");
+  if (wpConv) wpConv.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof waypointAddFromConvertedPoint === "function") waypointAddFromConvertedPoint();
+  });
+  const wpFav = document.getElementById("wpFromFavoritesBtn");
+  if (wpFav) wpFav.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openWaypointFromFavoritesDialog === "function") openWaypointFromFavoritesDialog();
   });
   const wpImp = document.getElementById("wpImportBtn");
   const wpImpFile = document.getElementById("wpImportFile");
@@ -27278,6 +27930,8 @@ function gisInit(){
         const k = b.getAttribute("data-wp-export-fmt");
         if (k === "geojson"){
           if (typeof waypointsExportGeoJSON === "function") waypointsExportGeoJSON();
+        } else if (k === "cot"){
+          if (typeof waypointsExportCotXml === "function") waypointsExportCotXml();
         } else if (k && typeof waypointsExport === "function"){
           waypointsExport(k);
         }
@@ -27285,10 +27939,53 @@ function gisInit(){
       });
     }
   }
-  const wpClr = document.getElementById("wpClearBtn");
-  if (wpClr) wpClr.addEventListener("click", (ev) => {
-    ev.preventDefault(); waypointsClearAll();
+  const wpDelAll = document.getElementById("wpDeleteAllBtn");
+  if (wpDelAll) wpDelAll.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof openWaypointDeleteAllDialog === "function") openWaypointDeleteAllDialog();
   });
+  const wpdAllDlg = document.getElementById("waypointDeleteAllDialog");
+  const wpdAllX = document.getElementById("waypointDeleteAllCloseX");
+  const wpdAllOk = document.getElementById("waypointDeleteAllConfirmBtn");
+  const wpdAllCancel = document.getElementById("waypointDeleteAllCancelBtn");
+  if (wpdAllX) wpdAllX.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof closeWaypointDeleteAllDialog === "function") closeWaypointDeleteAllDialog();
+  });
+  if (wpdAllCancel) wpdAllCancel.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof closeWaypointDeleteAllDialog === "function") closeWaypointDeleteAllDialog();
+  });
+  if (wpdAllOk) wpdAllOk.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof confirmWaypointDeleteAllExecute === "function") confirmWaypointDeleteAllExecute();
+  });
+  if (wpdAllDlg){
+    wpdAllDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault(); if (typeof closeWaypointDeleteAllDialog === "function") closeWaypointDeleteAllDialog();
+    });
+    wpdAllDlg.addEventListener("click", (ev) => {
+      if (ev.target === wpdAllDlg && typeof closeWaypointDeleteAllDialog === "function") closeWaypointDeleteAllDialog();
+    });
+  }
+  const wpFavDlg = document.getElementById("waypointFromFavoritesDialog");
+  const wpFavX = document.getElementById("waypointFromFavoritesCloseX");
+  const wpFavCancel = document.getElementById("waypointFromFavoritesCancelBtn");
+  const wpFavAdd = document.getElementById("waypointFavPickerAddBtn");
+  if (wpFavX) wpFavX.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
+  });
+  if (wpFavCancel) wpFavCancel.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
+  });
+  if (wpFavAdd) wpFavAdd.addEventListener("click", (ev) => {
+    ev.preventDefault(); if (typeof waypointImportSelectedFavoritesAsWaypoints === "function") waypointImportSelectedFavoritesAsWaypoints();
+  });
+  if (wpFavDlg){
+    wpFavDlg.addEventListener("cancel", (ev) => {
+      ev.preventDefault(); if (typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
+    });
+    wpFavDlg.addEventListener("click", (ev) => {
+      if (ev.target === wpFavDlg && typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
+    });
+  }
   const wpDelSel = document.getElementById("wpDeleteSelectedBtn");
   if (wpDelSel) wpDelSel.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -27353,6 +28050,18 @@ function gisInit(){
     if (wpx && wpx.open){
       ev.preventDefault();
       if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
+      return;
+    }
+    const wpd = document.getElementById("waypointDeleteAllDialog");
+    if (wpd && wpd.open){
+      ev.preventDefault();
+      if (typeof closeWaypointDeleteAllDialog === "function") closeWaypointDeleteAllDialog();
+      return;
+    }
+    const wpf = document.getElementById("waypointFromFavoritesDialog");
+    if (wpf && wpf.open){
+      ev.preventDefault();
+      if (typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
       return;
     }
     const tx = document.getElementById("trackExportDialog");
@@ -28172,7 +28881,7 @@ function closeToolsModal(){
 /* ========================= WAYPOINT MANAGER (modal) =========================
  *  Opens a dedicated <dialog id="waypointModal"> and reparents the
  *  sec-waypoints section into it. Single source of truth stays
- *  `state.mapWaypoints`; the modal toolbar (#wpPickBtn) and the map
+ *  `state.mapWaypoints`; the modal toolbar «Nuovo waypoint» and the map
  *  waypoint toggle share `state.waypointPickMode`. The inline editor
  *  reuses `autoDetect` for free-text coord input and `validateLatLon`
  *  for range checks.
@@ -28280,12 +28989,38 @@ function syncWaypointExportDialogUi(){
   ensureMapWaypointsState();
   const n = state.mapWaypoints.length;
   const has = n > 0;
+  let exportable = has;
+  let exportN = 0;
+  try {
+    exportN = getWaypointsForExportOrSelection().length;
+    exportable = exportN > 0;
+  } catch(_){ exportable = has; exportN = has ? n : 0; }
   const emptyEl = document.getElementById("waypointExportDialogEmpty");
   const descEl = document.getElementById("waypointExportDialogDesc");
+  const cotHint = document.getElementById("waypointExportDialogCotHint");
   if (emptyEl) emptyEl.hidden = has;
   if (descEl) descEl.hidden = !has;
+  if (cotHint){
+    if (!has || !exportN){
+      cotHint.hidden = true;
+      cotHint.textContent = "";
+    } else {
+      cotHint.hidden = false;
+      const root = document.getElementById("wp-list");
+      const checkedCount = root ? root.querySelectorAll(".wp-sel-cb[data-wp-sel]:checked").length : 0;
+      let msg = "";
+      if (!checkedCount){
+        msg = String((typeof t === "function" ? (t("waypointModal.exportCotHintAll") || "") : "") || "").replace("{0}", String(n));
+      } else if (checkedCount === 1){
+        msg = (typeof t === "function" ? (t("waypointModal.exportCotHintSelectedOne") || "") : "") || "";
+      } else {
+        msg = String((typeof t === "function" ? (t("waypointModal.exportCotHintSelectedMany") || "") : "") || "").replace("{0}", String(checkedCount));
+      }
+      cotHint.textContent = msg;
+    }
+  }
   document.querySelectorAll("#waypointExportDialogFormats .wp-export-fmt").forEach((b) => {
-    b.disabled = !has;
+    b.disabled = !exportable;
   });
 }
 
@@ -28294,13 +29029,14 @@ function openWaypointExportDialog(){
   if (!dlg) return;
   syncWaypointExportDialogUi();
   if (typeof applyLanguage === "function"){
-    try { applyLanguage(); } catch(_){}
+    try { applyLanguage(state.lang); } catch(_){}
   }
   if (typeof dlg.showModal === "function"){
     try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
   } else {
     dlg.setAttribute("open", "");
   }
+  try { syncWaypointExportDialogUi(); } catch(_){}
   try {
     const first = dlg.querySelector("#waypointExportDialogFormats .wp-export-fmt:not([disabled])");
     if (first) first.focus();
@@ -28332,40 +29068,71 @@ function showWaypointImportDialogMessage(kind, msg){
   if (kind === "success") el.classList.add("is-ok");
 }
 
-function isWaypointImportFileSupported(file){
-  if (!file) return false;
-  const n = String(file.name || "");
-  return /\.(geojson|json)$/i.test(n);
-}
-
 function handleWaypointImportFile(file){
   if (!file) return;
-  if (!isWaypointImportFileSupported(file)){
-    showWaypointImportDialogMessage("error", t("waypointModal.importUnsupported") || "Unsupported format.");
+  const name = String(file.name || "");
+  const onDone = (ok, msg) => {
+    if (ok){
+      showWaypointImportDialogMessage("success", msg || "");
+      try { closeWaypointImportDialog(); } catch(_){}
+    } else {
+      showWaypointImportDialogMessage("error", msg || "");
+    }
+  };
+  if (/\.(xml|cot)$/i.test(name)){
+    showWaypointImportDialogMessage("", "");
+    try {
+      waypointsImportCoTXml(file, { onDone });
+    } catch(err){
+      showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+    }
     return;
   }
-  showWaypointImportDialogMessage("", "");
-  try {
-    waypointsImportGeoJSON(file, {
-      onDone: (ok, msg) => {
-        if (ok){
-          showWaypointImportDialogMessage("success", msg || "");
-          try { closeWaypointImportDialog(); } catch(_){}
-        } else {
-          showWaypointImportDialogMessage("error", msg || "");
-        }
-      }
-    });
-  } catch(err){
-    showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+  if (/\.(geojson|json)$/i.test(name)){
+    showWaypointImportDialogMessage("", "");
+    try {
+      waypointsImportGeoJSON(file, { onDone });
+    } catch(err){
+      showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+    }
+    return;
   }
+  const reader = new FileReader();
+  reader.onerror = () => {
+    showWaypointImportDialogMessage("error", t("spatial.err.read") || "File read error.");
+  };
+  reader.onload = () => {
+    const text = String(reader.result || "");
+    if (/^\s*</.test(text) && /<event[\s>]/i.test(text)){
+      showWaypointImportDialogMessage("", "");
+      try {
+        waypointsImportCoTFromText(text, { onDone });
+      } catch(err){
+        showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+      }
+    } else if (/^\s*[\[{]/.test(text)){
+      showWaypointImportDialogMessage("", "");
+      try {
+        let fGeo = file;
+        if (typeof File !== "undefined"){
+          fGeo = new File([text], name || "import.geojson", { type: "application/geo+json" });
+        }
+        waypointsImportGeoJSON(fGeo, { onDone });
+      } catch(err){
+        showWaypointImportDialogMessage("error", t("err.importFailed") || "Import failed.");
+      }
+    } else {
+      showWaypointImportDialogMessage("error", t("waypointModal.importUnsupported") || "Unsupported format.");
+    }
+  };
+  reader.readAsText(file);
 }
 
 function openWaypointImportDialog(){
   const dlg = document.getElementById("waypointImportDialog");
   if (!dlg) return;
   if (typeof applyLanguage === "function"){
-    try { applyLanguage(); } catch(_){}
+    try { applyLanguage(state.lang); } catch(_){}
   }
   showWaypointImportDialogMessage("", "");
   if (typeof dlg.showModal === "function"){
@@ -29314,10 +30081,11 @@ async function handleOfflineAreaRowDelete(id){
   }
 }
 
-async function closeLayersPanel(){
+async function closeLayersPanel(opts){
+  opts = (opts && typeof opts === "object") ? opts : {};
   const dlg = document.getElementById("layersPanel");
   if (!state.layersPanelOpen && !(dlg && dlg.open)) return;
-  if (state._offlineUnsavedBboxDraft && state.bboxSelection){
+  if (!opts.force && state._offlineUnsavedBboxDraft && state.bboxSelection){
     const r = await showOfflineDraftWarnDialog();
     if (r === "cancel") return;
     if (r === "save"){
@@ -29360,12 +30128,18 @@ function openTrackModal(){
   const body = document.getElementById("trackModalBody");
   if (!dlg || !body) return;
   if (state.trackModalOpen && dlg.open){
+    try {
+      if (state.waypointsModalOpen && typeof closeWaypointModal === "function") closeWaypointModal();
+    } catch(_){}
     syncTrackModalHeadI18n();
     try { requestAnimationFrame(() => { applyTrackModalSavedSize(dlg); applyTrackModalSavedPosition(dlg); clampTrackModalRect(dlg); }); }
     catch(_){ applyTrackModalSavedSize(dlg); applyTrackModalSavedPosition(dlg); clampTrackModalRect(dlg); }
     if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
     return;
   }
+  try {
+    if (typeof closeWaypointModal === "function") closeWaypointModal();
+  } catch(_){}
   try { closeToolsDrawer(); } catch(_){}
   try { deactivateTab(); } catch(_){}
   gisMoveSectionTo("sec-track", body);
@@ -29507,7 +30281,7 @@ function openTrackExportDialog(){
   if (!dlg) return;
   syncTrackExportDialogUi();
   if (typeof applyLanguage === "function"){
-    try { applyLanguage(); } catch(_){}
+    try { applyLanguage(state.lang); } catch(_){}
   }
   if (typeof dlg.showModal === "function"){
     try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
@@ -29659,6 +30433,53 @@ function waypointIconHumanLabel(code){
   return String(code || "—");
 }
 
+/** Table column: last update time, else creation time, else localized em dash. */
+function formatWaypointTableWhen(p){
+  if (!p) return (typeof t === "function" ? (t("waypointModal.dateUnknown") || "—") : "—");
+  const ts = Number.isFinite(p.updatedAt) ? p.updatedAt : (Number.isFinite(p.createdAt) ? p.createdAt : NaN);
+  if (!Number.isFinite(ts)) return (typeof t === "function" ? (t("waypointModal.dateUnknown") || "—") : "—");
+  try {
+    const loc = state.lang === "en" ? "en-GB" : state.lang === "fr" ? "fr-FR" : "it-IT";
+    return new Date(ts).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" });
+  } catch(_){
+    return (typeof t === "function" ? (t("waypointModal.dateUnknown") || "—") : "—");
+  }
+}
+
+function waypointNearlyDuplicateLatLon(lat, lon){
+  ensureMapWaypointsState();
+  for (const w of state.mapWaypoints){
+    if (!w || !Number.isFinite(w.lat) || !Number.isFinite(w.lon)) continue;
+    if (Math.abs(w.lat - lat) < 1e-5 && Math.abs(w.lon - lon) < 1e-5) return true;
+  }
+  return false;
+}
+
+/** Current converted result suitable for “add waypoint” (not `state.lastPoint` / map center). */
+function getCurrentConvertedPointForWaypoint(){
+  const r = state.lastResult;
+  if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)) return null;
+  if (r.lat < -90 || r.lat > 90 || r.lon < -180 || r.lon > 180) return null;
+  return { lat: r.lat, lon: r.lon, meta: r.meta || null, when: r.when };
+}
+function hasCurrentConvertedPointForWaypoint(){
+  return !!getCurrentConvertedPointForWaypoint();
+}
+function syncConvertResultWaypointBtn(){
+  const b = document.getElementById("btnAddResultToWaypoint");
+  if (!b) return;
+  b.disabled = !hasCurrentConvertedPointForWaypoint();
+}
+
+function syncWaypointModalToolbarUi(){
+  const conv = document.getElementById("wpFromConvertedBtn");
+  const ok = hasCurrentConvertedPointForWaypoint();
+  if (conv) conv.disabled = !ok;
+  const delAll = document.getElementById("wpDeleteAllBtn");
+  ensureMapWaypointsState();
+  if (delAll) delAll.disabled = state.mapWaypoints.length === 0;
+}
+
 function syncWpSelectAllState(root){
   const sa = root && root.querySelector("#wpSelectAll");
   if (sa){
@@ -29686,39 +30507,62 @@ function renderWpModalList(){
   root.setAttribute("data-empty", t("waypointModal.empty"));
   const countEl = document.getElementById("wp-count");
   if (countEl) countEl.textContent = pts.length ? (pts.length + " / 200") : "";
-  if (!pts.length){ root.innerHTML = ""; syncWpSelectAllState(root); return; }
+  if (!pts.length){
+    root.innerHTML = "";
+    syncWpSelectAllState(root);
+    try {
+      const wpx = document.getElementById("waypointExportDialog");
+      if (wpx && wpx.open && typeof syncWaypointExportDialogUi === "function") syncWaypointExportDialogUi();
+    } catch(_){}
+    try { syncWaypointModalToolbarUi(); } catch(_){}
+    return;
+  }
   const draftId = state.waypointEditorDraft && state.waypointEditorDraft.id || "";
   const selAllTitle = esc(t("track.selAll") || "Tutte");
   const wpResizeAria = esc(t("waypoint.colResizeAria"));
+  const ariaVisOn = esc((typeof t === "function") ? (t("track.savedVisOnMap") || "") : "");
+  const tipEdit = esc(t("tip.trackEditSaved") || t("waypointModal.editor.edit") || "Edit");
+  const tipFly = esc(t("tip.trackSavedFly") || "");
+  const tipDelOne = esc(t("tip.mapWpRemove") || "");
+  const lblEdit = esc(t("track.savedEdit") || "Modifica");
+  const lblFly = esc(t("track.flyBtn") || "Centra");
   let html = `<table class="wp-modal-table"><colgroup>
-    <col style="width:40px" />
+    <col style="width:36px" />
+    <col style="width:44px" />
     <col class="wp-col-name" />
+    <col class="wp-col-when" />
     <col class="wp-col-details" />
-    <col style="width:118px" />
+    <col class="wp-col-actions" />
   </colgroup><thead><tr>
-    <th style="width:40px"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll"></th>
+    <th style="width:36px"><input type="checkbox" id="wpSelectAll" data-i18n-tip="track.selAll" data-tip="${selAllTitle}" data-i18n-aria="track.selAll"></th>
+    <th style="width:44px;text-align:center" class="wp-th-vis">${esc(t("track.colVis"))}</th>
     <th class="wp-th-name"><span class="wp-th-name-lbl">${esc(t("waypointModal.listColName"))}</span><span class="wp-name-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
+    <th class="wp-th-when">${esc(t("waypointModal.listColWhen"))}</th>
     <th class="wp-th-details"><span class="wp-th-details-lbl">${esc(t("waypointModal.listColDetails"))}</span><span class="wp-details-col-resize" role="separator" aria-orientation="vertical" aria-label="${wpResizeAria}" title="${wpResizeAria}"></span></th>
-    <th style="width:118px;text-align:right">${esc(t("waypointModal.listColActions"))}</th>
+    <th class="wp-th-actions">${esc(t("waypointModal.listColActions"))}</th>
   </tr></thead><tbody>`;
   html += pts.map(p => {
     const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
     let mgrs = "";
     try { mgrs = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
+    const icLab = waypointIconHumanLabel((p.meta && p.meta.icon) ? p.meta.icon : "hq");
     const rowCls = (p.id === draftId) ? " is-editing" : "";
     const nmVal = esc(p.name || "");
     const ph = esc(t("waypointModal.editor.namePh"));
     const nmTipRaw = (p.name && String(p.name).trim()) ? String(p.name).trim().slice(0, 60) : (coordStr + mgrs).slice(0, 120);
     const nmTip = esc(nmTipRaw);
+    const whenStr = esc(formatWaypointTableWhen(p));
     return `<tr data-wp-row data-id="${esc(p.id)}" class="${esc(rowCls.trim())}">
       <td><input type="checkbox" class="wp-sel-cb" data-wp-sel="${esc(p.id)}"></td>
-      <td data-tip="${nmTip}"><input type="text" class="wp-row-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}"></td>
-      <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)}</div></td>
-      <td style="text-align:right;white-space:nowrap">
-        <button type="button" class="btn btn-sm" data-role="wp-zoom" data-i18n-tip="waypointModal.zoomTo" data-tip="${esc(t("waypointModal.zoomTo"))}" data-i18n-aria="waypointModal.zoomTo">🎯</button>
-        <button type="button" class="btn btn-sm" data-role="wp-edit" data-i18n-tip="waypointModal.editor.edit" data-tip="${esc(t("waypointModal.editor.edit"))}" data-i18n-aria="waypointModal.editor.edit">✎</button>
-        <button type="button" class="btn btn-sm" data-role="wp-del" data-i18n-tip="tip.mapWpRemove" data-tip="${esc(t("tip.mapWpRemove"))}" data-i18n-aria="tip.mapWpRemove">✕</button>
-      </td>
+      <td class="wp-vis-cell"><span class="saved-track-vis-indicator is-visible" role="img" aria-label="${ariaVisOn}"></span></td>
+      <td data-tip="${nmTip}"><input type="text" class="wp-row-name-inp saved-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}" aria-label="${esc(t("waypointModal.listColName"))}"></td>
+      <td class="wp-when-cell">${whenStr}</td>
+      <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)}<span class="wp-row__ico-hint"> · ${esc(icLab)}</span></div></td>
+      <td class="wp-actions-cell"><div class="saved-row-actions wp-row-actions">
+        <button type="button" class="btn btn-sm" data-role="wp-edit" data-tip="${tipEdit}" aria-label="${tipEdit}">${lblEdit}</button>
+        <button type="button" class="btn btn-sm btn-saved-fly" data-role="wp-zoom" data-tip="${tipFly}" aria-label="${tipFly}">${lblFly}</button>
+        <button type="button" class="btn btn-sm btn-danger-subtle" data-role="wp-del" data-tip="${tipDelOne}" aria-label="${tipDelOne}"><span class="danger-x" aria-hidden="true">✕</span></button>
+      </div></td>
     </tr>`;
   }).join("");
   html += "</tbody></table>";
@@ -29736,6 +30580,11 @@ function renderWpModalList(){
   } catch(_){}
   ensureWpModalNameColResizeWired();
   syncWpSelectAllState(root);
+  try {
+    const wpx = document.getElementById("waypointExportDialog");
+    if (wpx && wpx.open && typeof syncWaypointExportDialogUi === "function") syncWaypointExportDialogUi();
+  } catch(_){}
+  try { syncWaypointModalToolbarUi(); } catch(_){}
   if (!root._wpModalListDelegated){
     root._wpModalListDelegated = true;
     root.addEventListener("focusin", (ev) => {
@@ -29753,10 +30602,18 @@ function renderWpModalList(){
         root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = !!el.checked; });
         el.indeterminate = false;
         syncWpSelectAllState(root);
+        try {
+          const wpx = document.getElementById("waypointExportDialog");
+          if (wpx && wpx.open && typeof syncWaypointExportDialogUi === "function") syncWaypointExportDialogUi();
+        } catch(_){}
         return;
       }
       if (el.matches("[data-wp-sel]")){
         syncWpSelectAllState(root);
+        try {
+          const wpx = document.getElementById("waypointExportDialog");
+          if (wpx && wpx.open && typeof syncWaypointExportDialogUi === "function") syncWaypointExportDialogUi();
+        } catch(_){}
         return;
       }
       if (el.matches("[data-wp-rename]")){
@@ -29819,6 +30676,11 @@ function openWaypointEditor(opts){
   ensureMapWaypointsState();
   const id = opts && opts.id;
   const fromDraft = !!(opts && opts.fromDraft);
+  if (id){
+    state.waypointPickMode = false;
+    if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+    if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+  }
   let d;
   if (id){
     const p = state.mapWaypoints.find(x => x.id === id);
@@ -29872,6 +30734,11 @@ function openWaypointEditor(opts){
   if (notesEl) notesEl.value = d.notes || "";
   if (delBtn) delBtn.hidden = !id;
 
+  const hint = document.getElementById("wpEditorNewHint");
+  if (hint){
+    hint.hidden = !!id;
+  }
+
   editor.hidden = false;
   renderWpModalList(); // refresh is-editing state
   if (nameEl) try { nameEl.focus(); } catch(_){}
@@ -29880,8 +30747,30 @@ function openWaypointEditor(opts){
 function closeWaypointEditor(){
   const editor = document.getElementById("waypointEditor");
   if (editor) editor.hidden = true;
+  const wasNew = !!(state.waypointEditorDraft && !state.waypointEditorDraft.id);
   state.waypointEditorDraft = null;
+  const hint = document.getElementById("wpEditorNewHint");
+  if (hint) hint.hidden = true;
+  if (wasNew && state.waypointPickMode){
+    state.waypointPickMode = false;
+    if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+    if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+  }
   renderWpModalList();
+}
+
+/** Nuovo waypoint: apri editor + attiva pick sulla mappa (non più pulsante separato). */
+function startWaypointNewWaypointFlow(){
+  ensureTrackState();
+  ensureMapWaypointsState();
+  if (state._trackNewPromptOpen) return;
+  state.track.pickMode = false;
+  if (typeof trackPickCancelDeferred === "function") trackPickCancelDeferred();
+  state.waypointPickMode = true;
+  state.trackWaypointDraft = null;
+  if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+  if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+  openWaypointEditor();
 }
 
 /** Parse the free-text coordinate input and update the draft on success.
@@ -29987,6 +30876,7 @@ function waypointUpdate(id, patch){
     };
     if (!p.meta.notes) delete p.meta.notes;
   }
+  p.updatedAt = Date.now();
   saveStore();
   renderMapWaypointsAll();
   return true;
@@ -30003,14 +30893,170 @@ function waypointDelete(id){
   renderMapWaypointsAll();
 }
 
-function waypointsClearAll(){
+/** Internal: clear every waypoint (used after in-modal confirmation). */
+function executeWaypointsClearAll(){
   ensureMapWaypointsState();
   if (!state.mapWaypoints.length) return;
-  if (typeof window.confirm === "function" && !window.confirm(t("waypointModal.clearConfirm"))) return;
   state.mapWaypoints = [];
   closeWaypointEditor();
   saveStore();
   renderMapWaypointsAll();
+}
+
+function openWaypointDeleteAllDialog(){
+  ensureMapWaypointsState();
+  if (!state.mapWaypoints.length) return;
+  const dlg = document.getElementById("waypointDeleteAllDialog");
+  if (!dlg) return;
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(state.lang); } catch(_){}
+  }
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    const b = document.getElementById("waypointDeleteAllCancelBtn");
+    if (b) b.focus();
+  } catch(_){}
+}
+
+function closeWaypointDeleteAllDialog(){
+  const dlg = document.getElementById("waypointDeleteAllDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+
+function confirmWaypointDeleteAllExecute(){
+  executeWaypointsClearAll();
+  closeWaypointDeleteAllDialog();
+  try { setBadge("info", t("waypointModal.deleteAllDone")); } catch(_){}
+}
+
+/** Legacy entry: opens internal confirmation dialog (no window.confirm). */
+function waypointsClearAll(){
+  openWaypointDeleteAllDialog();
+}
+
+function waypointAddFromConvertedPoint(){
+  ensureMapWaypointsState();
+  const pt = getCurrentConvertedPointForWaypoint();
+  if (!pt){
+    const msg = !state.lastResult
+      ? (typeof t === "function" ? (t("waypointModal.fromConvertedNoPoint") || "") : "")
+      : (typeof t === "function" ? (t("waypointModal.fromConvertedStale") || "") : "");
+    try { setBadge("error", msg || (t("waypointModal.fromConvertedNoPoint") || "")); } catch(_){}
+    return;
+  }
+  const lr = state.lastResult;
+  let name = "";
+  try {
+    const loc = state.lang === "en" ? "en-GB" : state.lang === "fr" ? "fr-FR" : "it-IT";
+    const ts = lr && Number.isFinite(lr.when)
+      ? new Date(lr.when).toLocaleString(loc, { dateStyle: "short", timeStyle: "medium" })
+      : new Date().toLocaleString(loc, { dateStyle: "short", timeStyle: "medium" });
+    name = String(t("waypointModal.fromConvertedNameTpl") || "").replace("{0}", ts).slice(0, 60);
+    if (!name.trim()) name = String(t("waypointModal.fromConvertedDefaultShort") || "WP").slice(0, 60);
+  } catch(_){
+    name = String(t("waypointModal.fromConvertedDefaultShort") || "WP").slice(0, 60);
+  }
+  const meta = { from: "converted-result", icon: "hq", color: "#2563eb" };
+  if (lr && lr.meta && lr.meta.type){
+    meta.srcFmt = String(lr.meta.type).slice(0, 24);
+  }
+  const ok = waypointAdd(pt.lat, pt.lon, name, meta);
+  if (ok){
+    try { setBadge("success", t("waypointModal.fromConvertedOk")); } catch(_){}
+  } else {
+    try { setBadge("info", t("waypointModal.fromConvertedDup")); } catch(_){}
+  }
+}
+
+function renderWaypointFavoritesPickerList(){
+  const mount = document.getElementById("waypointFavPickerList");
+  const empty = document.getElementById("waypointFavPickerEmpty");
+  const addBtn = document.getElementById("waypointFavPickerAddBtn");
+  if (!mount) return;
+  const favs = Array.isArray(state.favorites) ? state.favorites.slice() : [];
+  if (!favs.length){
+    mount.innerHTML = "";
+    if (empty){
+      empty.hidden = false;
+      empty.textContent = (typeof t === "function") ? (t("waypointModal.favoritesPickerEmpty") || "") : "";
+    }
+    if (addBtn) addBtn.disabled = true;
+    return;
+  }
+  if (empty) empty.hidden = true;
+  let html = "";
+  for (const f of favs){
+    if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)) continue;
+    const id = esc(f.id);
+    const nm = esc(String(f.name || "").slice(0, 120));
+    const coord = f.lat.toFixed(5) + ", " + f.lon.toFixed(5);
+    html += `<label class="waypoint-fav-row"><input type="checkbox" class="wp-fav-pick-cb" data-fav-id="${id}" />
+      <div class="waypoint-fav-meta"><strong>${nm}</strong><br><span class="sub">${esc(coord)}</span></div></label>`;
+  }
+  mount.innerHTML = html || `<p class="hint">${esc((typeof t === "function") ? (t("waypointModal.favoritesPickerEmpty") || "") : "")}</p>`;
+  if (addBtn) addBtn.disabled = !html;
+  mount.querySelectorAll(".wp-fav-pick-cb").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const any = !!mount.querySelector(".wp-fav-pick-cb:checked");
+      if (addBtn) addBtn.disabled = !any;
+    });
+  });
+}
+
+function openWaypointFromFavoritesDialog(){
+  const dlg = document.getElementById("waypointFromFavoritesDialog");
+  if (!dlg) return;
+  renderWaypointFavoritesPickerList();
+  if (typeof applyLanguage === "function"){
+    try { applyLanguage(state.lang); } catch(_){}
+  }
+  if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try {
+    const b = document.getElementById("waypointFavPickerAddBtn");
+    if (b && !b.disabled) b.focus();
+  } catch(_){}
+}
+
+function closeWaypointFromFavoritesDialog(){
+  const dlg = document.getElementById("waypointFromFavoritesDialog");
+  if (!dlg) return;
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+}
+
+function waypointImportSelectedFavoritesAsWaypoints(){
+  const mount = document.getElementById("waypointFavPickerList");
+  if (!mount) return;
+  const ids = [...mount.querySelectorAll(".wp-fav-pick-cb:checked")].map(cb => String(cb.getAttribute("data-fav-id") || "")).filter(Boolean);
+  if (!ids.length) return;
+  ensureMapWaypointsState();
+  let added = 0, skipped = 0, dup = 0;
+  const cap = 200;
+  for (const fid of ids){
+    if (state.mapWaypoints.length >= cap) break;
+    const f = state.favorites.find(x => String(x.id) === fid);
+    if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)){ skipped++; continue; }
+    if (waypointNearlyDuplicateLatLon(f.lat, f.lon)){ dup++; continue; }
+    const name = String(f.name || "").trim().slice(0, 60);
+    const meta = { from: "favorites-import", icon: "hq", color: "#2563eb" };
+    if (f.notes && String(f.notes).trim()) meta.notes = String(f.notes).slice(0, 500);
+    const ok = waypointAdd(f.lat, f.lon, name, meta);
+    if (ok) added++; else skipped++;
+  }
+  try {
+    const msg = String(t("waypointModal.favoritesImportResult"))
+      .replace("{0}", String(added)).replace("{1}", String(dup)).replace("{2}", String(skipped));
+    setBadge(added ? "success" : "info", msg);
+  } catch(_){}
+  closeWaypointFromFavoritesDialog();
 }
 
 /** Center the tile-map on the given waypoint. Uses `state.viewCenter`
@@ -30180,6 +31226,293 @@ function waypointsExport(kind){
   }
   setBadge("success", (t("waypointModal.exportedN") || "Exported {0} waypoints.").replace("{0}", String(points.length)));
 }
+
+// #region JS — COT XML WAYPOINT INTEROP (file-only, no network)
+var COT_WAYPOINT_BUNDLE_NS = "urn:gov:goi:cot-waypoints-export-v1";
+var COT_XML_MAX_BYTES = 2097152;
+var COT_MAX_EVENTS_SCAN = 500;
+var COT_STALE_MINUTES = 1440;
+var COT_DEFAULT_TYPE = "a-f-G-U-C";
+var COT_DEFAULT_HOW = "h-e";
+var COT_UNKNOWN_ELEV = "9999999";
+
+function sanitizeCotUid(s){
+  const u = String(s == null ? "" : s).trim().slice(0, 200);
+  if (!u) return "";
+  return /^[\w.:-]+$/.test(u) ? u : "";
+}
+
+/** Fingerprint for CoT file-import duplicate detection (uid + rounded lon/lat + label). */
+function cotImportStableFingerprint(lat, lon, name, uidSan, callsign){
+  const u = (uidSan && String(uidSan).trim()) ? String(uidSan).trim() : "";
+  const cs = String(callsign != null ? callsign : "").trim();
+  const nm = String(name != null ? name : "").trim();
+  const label = (cs || nm).toLowerCase().replace(/\s+/g, " ").trim().slice(0, 120);
+  const uidKey = u || "nouid";
+  return (uidKey + "|" + round(Number(lat), 7) + "|" + round(Number(lon), 7) + "|" + label).slice(0, 240);
+}
+
+function formatCotTime(d){
+  if (!(d instanceof Date) || !Number.isFinite(d.getTime())) return new Date().toISOString();
+  return d.toISOString();
+}
+
+function parseCotTime(str){
+  if (str == null || str === "") return null;
+  const ms = Date.parse(String(str));
+  if (!Number.isFinite(ms)) return null;
+  return new Date(ms);
+}
+
+function cotStaleFromStart(startDate, minutes){
+  const m = Number(minutes);
+  const add = Number.isFinite(m) && m > 0 ? m : COT_STALE_MINUTES;
+  const d = (startDate instanceof Date && Number.isFinite(startDate.getTime())) ? startDate : new Date();
+  return new Date(d.getTime() + add * 60000);
+}
+
+function cotTypeForWaypoint(wp){
+  if (wp && wp.meta && typeof wp.meta.cotType === "string" && wp.meta.cotType.trim()){
+    const t = wp.meta.cotType.trim().slice(0, 64);
+    if (/^[a-z0-9.:\/_-]+$/i.test(t)) return t;
+  }
+  return COT_DEFAULT_TYPE;
+}
+
+/** Waypoints to export: selected rows in #wp-list if any checked, else all. */
+function getWaypointsForExportOrSelection(){
+  ensureMapWaypointsState();
+  const root = document.getElementById("wp-list");
+  const checked = root ? [...root.querySelectorAll(".wp-sel-cb[data-wp-sel]:checked")] : [];
+  if (!checked.length) return state.mapWaypoints.slice();
+  const idSet = new Set(checked.map(cb => String(cb.getAttribute("data-wp-sel") || "")).filter(Boolean));
+  const picked = state.mapWaypoints.filter(w => idSet.has(String(w.id)));
+  if (picked.length) return picked;
+  return state.mapWaypoints.slice();
+}
+
+function waypointToCotEventXml(wp, opts){
+  opts = opts || {};
+  const now = (opts.timeOverride instanceof Date && Number.isFinite(opts.timeOverride.getTime())) ? opts.timeOverride : new Date();
+  const tStr = formatCotTime(now);
+  const staleStr = formatCotTime(cotStaleFromStart(now, COT_STALE_MINUTES));
+  const rawUid = wp && wp.meta && typeof wp.meta.cotUid === "string" ? wp.meta.cotUid.trim() : "";
+  const uidFinal = sanitizeCotUid(rawUid) || ("goi-wp-" + String(wp && wp.id != null ? wp.id : "").replace(/[^\w.-]/g, "_"));
+  const type = cotTypeForWaypoint(wp);
+  const how = (wp && wp.meta && typeof wp.meta.cotHow === "string" && sanitizeCotUid(wp.meta.cotHow.trim()).length <= 64)
+    ? wp.meta.cotHow.trim().slice(0, 64) : COT_DEFAULT_HOW;
+  const name = String((wp && wp.name) || "").trim();
+  const callsign = (name.slice(0, 250) || "WPT");
+  const remarks = (wp && wp.meta && typeof wp.meta.notes === "string") ? String(wp.meta.notes).trim() : "";
+  const lat = round(Number(wp && wp.lat), 7);
+  const lon = round(Number(wp && wp.lon), 7);
+  let xml = '<event version="2.0" uid="' + xmlEsc(uidFinal) + '" type="' + xmlEsc(type) + '" time="' + xmlEsc(tStr) + '" start="' + xmlEsc(tStr) + '" stale="' + xmlEsc(staleStr) + '" how="' + xmlEsc(how) + '">\n';
+  xml += '  <point lat="' + lat + '" lon="' + lon + '" hae="' + COT_UNKNOWN_ELEV + '" ce="' + COT_UNKNOWN_ELEV + '" le="' + COT_UNKNOWN_ELEV + '"/>\n';
+  xml += '  <detail>\n';
+  xml += '    <contact callsign="' + xmlEsc(callsign) + '"/>\n';
+  if (remarks) xml += '    <remarks>' + xmlEsc(remarks.slice(0, 500)) + '</remarks>\n';
+  xml += "  </detail>\n</event>";
+  return xml;
+}
+
+function buildCotXmlForWaypoints(waypoints, opts){
+  const list = Array.isArray(waypoints) ? waypoints : [];
+  const lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<goiCotWaypointBundle xmlns="' + COT_WAYPOINT_BUNDLE_NS + '" version="1">'
+  ];
+  for (const w of list){
+    lines.push(waypointToCotEventXml(w, opts));
+  }
+  lines.push("</goiCotWaypointBundle>");
+  return lines.join("\n");
+}
+
+function waypointsExportCotXml(){
+  ensureMapWaypointsState();
+  const list = getWaypointsForExportOrSelection();
+  if (!list.length){
+    setBadge("info", t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty"));
+    return;
+  }
+  const xml = buildCotXmlForWaypoints(list, {});
+  const fname = (typeof cotExportFilenameForWaypoints === "function")
+    ? cotExportFilenameForWaypoints(list)
+    : ("waypoints-" + new Date().toISOString().replace(/[^\w-]/g, "").slice(0, 24) + ".cot");
+  downloadBlob(xml, fname, "application/xml;charset=utf-8");
+  setBadge("success", (t("waypointModal.exportedN") || "").replace("{0}", String(list.length)));
+}
+
+function parseCotXmlToDocument(text){
+  const raw = String(text || "");
+  if (/<!DOCTYPE/i.test(raw)) throw new Error("DOCTYPE");
+  const doc = new DOMParser().parseFromString(raw, "application/xml");
+  const err = doc && doc.getElementsByTagName("parsererror")[0];
+  if (err && err.textContent && err.textContent.trim()) throw new Error("parse");
+  return doc;
+}
+
+function collectCotPointEvents(doc){
+  if (!doc) return [];
+  const out = [];
+  const coll = doc.getElementsByTagName("event");
+  const n = Math.min(coll.length, COT_MAX_EVENTS_SCAN);
+  for (let i = 0; i < n; i++) out.push(coll[i]);
+  return out;
+}
+
+function cotReadText(el){
+  if (!el) return "";
+  return String(el.textContent || "").trim();
+}
+
+function cotEventToWaypointPayload(eventEl){
+  if (!eventEl) return null;
+  const uidRaw = String(eventEl.getAttribute("uid") || "").trim();
+  const uidSan = sanitizeCotUid(uidRaw);
+  const type = String(eventEl.getAttribute("type") || "").trim().slice(0, 64);
+  const timeA = String(eventEl.getAttribute("time") || "").trim().slice(0, 64);
+  const staleA = String(eventEl.getAttribute("stale") || "").trim().slice(0, 64);
+  const howA = String(eventEl.getAttribute("how") || "").trim().slice(0, 64);
+  const pts = eventEl.getElementsByTagName("point");
+  const pt = pts && pts.length ? pts[0] : null;
+  if (!pt) return null;
+  const lat = Number(pt.getAttribute("lat"));
+  const lon = Number(pt.getAttribute("lon"));
+  if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+  let callsign = "";
+  let remarks = "";
+  const details = eventEl.getElementsByTagName("detail");
+  if (details && details.length){
+    const det = details[0];
+    const contacts = det.getElementsByTagName("contact");
+    if (contacts && contacts.length){
+      callsign = String(contacts[0].getAttribute("callsign") || "").trim();
+    }
+    const rems = det.getElementsByTagName("remarks");
+    if (rems && rems.length) remarks = cotReadText(rems[0]).slice(0, 500);
+  }
+  const name = (callsign.slice(0, 60) || remarks.slice(0, 60) || (typeof t === "function" ? (t("waypointModal.importCoTDefaultName") || "Imported") : "Imported")).slice(0, 60);
+  const meta = { from: "cot-import" };
+  if (uidSan) meta.cotUid = uidSan;
+  if (type) meta.cotType = type;
+  if (howA) meta.cotHow = howA.slice(0, 64);
+  if (timeA) meta.cotTime = timeA.slice(0, 64);
+  if (staleA) meta.cotStale = staleA.slice(0, 64);
+  if (remarks) meta.notes = remarks;
+  meta.cotImportFp = cotImportStableFingerprint(lat, lon, name, uidSan, callsign).slice(0, 240);
+  return { lat, lon, name, meta };
+}
+
+function importCotEventsAsWaypoints(xmlText, opts){
+  opts = opts || {};
+  let doc;
+  try {
+    doc = parseCotXmlToDocument(xmlText);
+  } catch (e){
+    const msg = (e && e.message === "DOCTYPE")
+      ? (t("waypointModal.importCoTDoctype") || t("waypointModal.importCoTParseErr"))
+      : (t("waypointModal.importCoTParseErr") || "Parse error");
+    return { added: 0, dup: 0, skipped: 0, err: msg };
+  }
+  const events = collectCotPointEvents(doc);
+  if (!events.length){
+    return { added: 0, dup: 0, skipped: 0, err: t("waypointModal.importCoTNoEvents") || "No events" };
+  }
+  ensureMapWaypointsState();
+  const existingUid = new Set();
+  const existingFp = new Set();
+  for (const w of state.mapWaypoints){
+    if (!w || !Number.isFinite(w.lat) || !Number.isFinite(w.lon)) continue;
+    const u = w.meta && typeof w.meta.cotUid === "string" ? sanitizeCotUid(w.meta.cotUid.trim()) : "";
+    if (u) existingUid.add(u);
+    const m = w.meta || {};
+    let fpSt = typeof m.cotImportFp === "string" ? m.cotImportFp.trim() : "";
+    if (!fpSt && (m.from === "cot-import" || u)){
+      fpSt = cotImportStableFingerprint(w.lat, w.lon, String(w.name || ""), u, String(w.name || "")).slice(0, 240);
+    }
+    if (fpSt) existingFp.add(fpSt.slice(0, 240));
+  }
+  const seenUidInFile = new Set();
+  const seenFpInFile = new Set();
+  let added = 0, dup = 0, skipped = 0;
+  for (const ev of events){
+    const pay = cotEventToWaypointPayload(ev);
+    if (!pay){ skipped++; continue; }
+    const u = pay.meta && pay.meta.cotUid ? pay.meta.cotUid : "";
+    const fp = pay.meta && typeof pay.meta.cotImportFp === "string" ? pay.meta.cotImportFp.trim().slice(0, 240) : "";
+    if (u && existingUid.has(u)){ dup++; continue; }
+    if (fp && existingFp.has(fp)){ dup++; continue; }
+    if (u && seenUidInFile.has(u)){ dup++; continue; }
+    if (fp && seenFpInFile.has(fp)){ dup++; continue; }
+    if (u) seenUidInFile.add(u);
+    if (fp) seenFpInFile.add(fp);
+    const remaining = 200 - state.mapWaypoints.length;
+    if (remaining <= 0) break;
+    const ok = waypointAdd(
+      Math.max(-90, Math.min(90, pay.lat)),
+      normalizeLon(pay.lon),
+      pay.name,
+      pay.meta
+    );
+    if (ok){
+      added++;
+      if (u) existingUid.add(u);
+      if (fp) existingFp.add(fp);
+    } else {
+      skipped++;
+    }
+  }
+  return { added, dup, skipped, err: "" };
+}
+
+function waypointsImportCoTFromText(text, opts){
+  opts = opts || {};
+  const done = (ok, msg) => {
+    if (opts && typeof opts.onDone === "function"){
+      try { opts.onDone(!!ok, msg); } catch(_){}
+    }
+  };
+  const raw = String(text || "");
+  if (raw.length > COT_XML_MAX_BYTES){
+    const msg = t("waypointModal.importCoTTooLarge") || "File too large";
+    setBadge("error", msg);
+    done(false, msg);
+    return;
+  }
+  const res = importCotEventsAsWaypoints(raw, opts);
+  if (res.err && !res.added){
+    setBadge("error", res.err);
+    done(false, res.err);
+    return;
+  }
+  const tpl = t("waypointModal.importCoTResult") || "Imported {0} ({1} dup, {2} skip).";
+  const msg = String(tpl).replace("{0}", String(res.added)).replace("{1}", String(res.dup)).replace("{2}", String(res.skipped));
+  setBadge(res.added ? "success" : "info", msg);
+  done(res.added > 0, msg);
+}
+
+function waypointsImportCoTXml(file, opts){
+  opts = opts || {};
+  const done = (ok, msg) => {
+    if (opts && typeof opts.onDone === "function"){
+      try { opts.onDone(!!ok, msg); } catch(_){}
+    }
+  };
+  if (!file) return;
+  ensureMapWaypointsState();
+  const reader = new FileReader();
+  reader.onerror = () => {
+    const msg = t("spatial.err.read") || "File read error";
+    setBadge("error", msg);
+    done(false, msg);
+  };
+  reader.onload = () => {
+    waypointsImportCoTFromText(String(reader.result || ""), opts);
+  };
+  reader.readAsText(file);
+}
+// #endregion JS — COT XML WAYPOINT INTEROP
 
 function activateToolPanel(tool){
   if (!document.body.classList.contains("gis-mode")) return;
@@ -30362,13 +31695,40 @@ function init(){
                 const n = p.meta.notes.slice(0, 500);
                 if (n) m.notes = n;
               }
+              if (typeof p.meta.cotUid === "string"){
+                const u = sanitizeCotUid(p.meta.cotUid);
+                if (u) m.cotUid = u;
+              }
+              if (typeof p.meta.cotType === "string"){
+                const ct = p.meta.cotType.trim().slice(0, 64);
+                if (/^[a-z0-9.:\/_-]+$/i.test(ct)) m.cotType = ct;
+              }
+              if (typeof p.meta.cotHow === "string"){
+                const ch = p.meta.cotHow.trim().slice(0, 64);
+                if (ch) m.cotHow = ch;
+              }
+              if (typeof p.meta.cotTime === "string"){
+                const ct = p.meta.cotTime.trim().slice(0, 64);
+                if (ct) m.cotTime = ct;
+              }
+              if (typeof p.meta.cotStale === "string"){
+                const cs = p.meta.cotStale.trim().slice(0, 64);
+                if (cs) m.cotStale = cs;
+              }
+              if (typeof p.meta.cotImportFp === "string"){
+                const cf = p.meta.cotImportFp.trim().slice(0, 240);
+                if (cf) m.cotImportFp = cf;
+              }
               meta = Object.keys(m).length ? m : null;
             }
+            const cAt = Number(p.createdAt), uAt = Number(p.updatedAt);
             return {
             id: String(p.id || uidNamed()),
             lat: p.lat, lon: p.lon,
             name: String(p.name || "").slice(0, 60),
-              meta
+              meta,
+              createdAt: Number.isFinite(cAt) ? cAt : undefined,
+              updatedAt: Number.isFinite(uAt) ? uAt : undefined
             };
         });
     } else {
@@ -30667,6 +32027,28 @@ function runSelfCheck(){
     console.assert(looksLikePlusCode("30NUL8431881439") === false, "OLC heuristic: MGRS not OLC");
     console.assert(looksLikePlusCode("33T 291952 4640699") === false, "OLC heuristic: UTM not OLC");
     console.assert(looksLikePlusCode("5.25, -4.04") === false, "OLC heuristic: decimal not OLC");
+
+    // CoT waypoint XML: export → parse → payload (no state/localStorage mutation).
+    (function(){
+      const wp = {
+        id: "selfcheck-wp-cot",
+        lat: 44.1027,
+        lon: 9.8236,
+        name: "SelfCoT",
+        meta: { notes: "n0", cotUid: "GOI-TEST-UID-1", cotType: COT_DEFAULT_TYPE }
+      };
+      const xml = buildCotXmlForWaypoints([wp], { timeOverride: new Date("2026-01-15T12:00:00.000Z") });
+      console.assert(/<goiCotWaypointBundle/.test(xml) && /<event version="2.0"/.test(xml), "CoT export bundle + event");
+      console.assert(xml.indexOf("GOI-TEST-UID-1") >= 0, "CoT export uid");
+      const doc = parseCotXmlToDocument(xml);
+      const evs = collectCotPointEvents(doc);
+      console.assert(evs.length === 1, "CoT parse event count: " + evs.length);
+      const pay = cotEventToWaypointPayload(evs[0]);
+      console.assert(pay && Math.abs(pay.lat - 44.1027) < 1e-6 && Math.abs(pay.lon - 9.8236) < 1e-6, "CoT roundtrip lat/lon");
+      console.assert(pay && String(pay.name).indexOf("SelfCoT") >= 0, "CoT callsign/name");
+      console.assert(pay && pay.meta && pay.meta.cotUid === "GOI-TEST-UID-1", "CoT uid in meta");
+      console.assert(pay && pay.meta && typeof pay.meta.cotImportFp === "string" && pay.meta.cotImportFp.length > 8, "CoT import fingerprint in meta");
+    })();
 
     // Italian datums — cross-verified against NTv2 grid-based pyproj reference.
     // Tolerance ~20 m for Gauss-Boaga (3-param Helmert limit) and <3 m for ED50.

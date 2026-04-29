@@ -2,7 +2,7 @@
 
 ## 🗓 Data
 
-2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)*
+2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)*
 
 > File canonico di riferimento: **`coordinate_converter Claude.html`** (HTML standalone unico nel repo). Indice tecnico aggiornabile: **`docs/PROJECT_notes.md`**.
 
@@ -2086,4 +2086,73 @@ Chiusura sessione su richiesta utente **«Finito»** (workflow progetto): consol
 
 - `docs/session-geolocalizzazione-e-mappa.md` (questa sezione)
 - `docs/checkpoint.md` (riga «Ultimo cambio» aggiornata in coppia con `Finito`)
+
+
+## Checkpoint 2026-04-28 — Reset totale dati locali implementato
+
+### 1. Obiettivo
+
+Offrire un **reset totale locale** dell’app, separato da **«Svuota tutta la cache tile»** (flusso `performOfflineGlobalReset()` invariato): cancellazione controllata di persistenza principale, chiave UI, eventuale legacy, cache tile in IndexedDB, poi ricaricamento pagina, **senza** reintrodurre rete o toccare altri siti.
+
+### 2. UI aggiunta in Impostazioni
+
+Nel menu **Impostazioni** (`#headerSettingsMenu`), dopo **Ripristina layout pannelli** e prima della riga Guida: blocco visivo **zona pericolosa / dati locali** con comando che apre solo un dialog (nessun wipe immediato).
+
+### 3. Dialog e parola `CANCELLA`
+
+Dialog dedicato **`#appFullResetDialog`** (`app-modal`): testo esplicito sui dati rimossi, nota «solo browser locale», campo dove digitare esattamente **`CANCELLA`** (stessa parola anche in EN/FR per la conferma), pulsante di conferma **danger** disabilitato finché l’input non coincide; Annulla, **×** e Esc coerenti con gli altri dialog (con blocco chiusura durante stato «cancellazione in corso» ove implementato).
+
+### 4. Perimetro dati cancellati
+
+`localStorage`: **`coordconv_v2`**, **`coordconv_ui_v1`**, rimozione opzionale/esplicita della chiave legacy **`coordconv_v1`**; stato applicativo persistito (waypoint, tracce, favoriti, cronologia, aree offline in metadata, preferenze, layout UI dove coperto dalle chiavi) viene azzerato al reload. **Nessuna** chiamata a **`saveStore()`** dopo il wipe e prima del reload.
+
+### 5. IndexedDB coinvolto
+
+Database **`CoordConvMapTiles`**, object store **`tiles`**: svuotamento tramite helper dedicato con propagazione errori (per mostrare messaggio i18n e **non** fare reload silenzioso se IndexedDB fallisce).
+
+### 6. Differenza da «Svuota tutta la cache tile»
+
+**«Svuota tutta la cache tile»** resta il flusso **solo tile / aree offline** legato a Mappe Offline (`performOfflineGlobalReset()` non modificato da questa feature). Il **reset totale** cancella **tutta** la persistenza app elencata sopra **più** lo store tile, quindi equivale a «fabbrica nuova» per questo sito nel browser.
+
+### 7. Test browser utente positivo
+
+Verifica manuale utente: **«funziona tutto»** (Impostazioni + Guida, conferma `CANCELLA`, assenza dati post-reload, nessuna regressione segnalata su cache tile globale).
+
+### 8. Prossimo blocco consigliato
+
+**CoT XML** import/export **file-only** (senza rete), come già indicato nel backlog interoperabilità TAK.
+
+### File toccati (solo documentazione, questo checkpoint)
+
+- `docs/session-geolocalizzazione-e-mappa.md` (questa sezione)
+- `docs/checkpoint.md` (indice «Ultimo cambio»)
+- `docs/PROJECT_notes.md` (sintesi stato/backlog)
+
+
+## Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)
+
+### Contesto
+
+Chiusura sessione su richiesta utente **«Finito»** dopo QA browser su **modal Waypoint** e interop **CoT XML file-only** (nessuna rete). Patch mirata sul monolite, senza refactor ampio.
+
+### Cosa è cambiato (tecnico)
+
+1. **Export CoT (dialog Waypoint):** testo hint `#waypointExportDialogCotHint` in blocco visibile sopra il pulsante CoT; `syncWaypointExportDialogUi()` distingue «tutti i *N* waypoint» (nessuna checkbox) da *K* righe selezionate; seconda sync dopo apertura dialog; i18n IT/EN/FR. Comportamento altri formati invariato.
+
+2. **Import CoT:** `cotImportStableFingerprint`, `meta.cotImportFp` persistito e whitelisting in `loadStore`; `importCotEventsAsWaypoints` deduplica su uid noto, fingerprint, e duplicati nello stesso file. Import singolo e GeoJSON non riscritti oltre l’indispensabile.
+
+3. **Favoriti picker (waypoint):** etichetta pulsante chiusura → **Annulla** (`waypointModal.favoritesPickerCancel`).
+
+4. **Punto convertito → waypoint:** eligibility da `state.lastResult` (helper `getCurrentConvertedPointForWaypoint` / `hasCurrentConvertedPointForWaypoint`); toolbar Waypoint e pulsante **Aggiungi a waypoint** nel modal Converti sincronizzati da `renderResults` / `clearForm` / `renderMiniMap` / `applyLanguage`.
+
+5. **Favoriti → Waypoint:** pulsante per favorito + `favoriteAddAsWaypoint` con controllo quasi-duplicato e feedback i18n.
+
+### File toccati
+
+- `coordinate_converter Claude.html` (implementazione)
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append; eventuali `docs/PROJECT_notes.md` se già presenti nel commit di chiusura)
+
+### TODO / non toccato
+
+- Mappe offline, `performOfflineGlobalReset`, reset totale app, geocoding, OPSEC strict, GPS live, `watchPosition`, CoT live / Mission Package / backend — **non** oggetto di questa sessione.
 
