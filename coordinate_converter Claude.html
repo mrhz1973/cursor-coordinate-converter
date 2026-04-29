@@ -4014,6 +4014,30 @@ body.mm-enlarged .sig-badge{display:none}
 html[data-theme="dark"] .range-rings-overlay .rr-label{
   stroke: rgba(0, 0, 0, 0.55);
 }
+.range-rings-overlay .rr-distance-guide{
+  pointer-events: none;
+  fill: none;
+  stroke-linecap: round;
+}
+.range-rings-overlay .rr-distance-guide--0{
+  stroke-dasharray: none;
+  opacity: 0.62;
+}
+.range-rings-overlay .rr-distance-guide--eq{
+  stroke-dasharray: 4 4;
+  opacity: 0.42;
+}
+.range-rings-overlay .rr-distance-label{
+  font: 10px/1.15 system-ui, -apple-system, "Segoe UI", sans-serif;
+  fill: var(--text);
+  paint-order: stroke fill;
+  stroke: rgba(255, 255, 255, 0.9);
+  stroke-width: 2px;
+  pointer-events: none;
+}
+html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
+  stroke: rgba(0, 0, 0, 0.58);
+}
 #sec-rangerings .rr-batch-bar{ margin-top:8px; }
 #sec-rangerings .rr-map-first-hint{
   margin-top:8px; padding:8px 10px; border-radius:8px; font-size:.85rem; line-height:1.35;
@@ -14543,6 +14567,40 @@ function rangeRingMetersToUnit(meters, unit){
   if (u === "mi")  return meters / 1609.344;
   return meters;
 }
+/** Etichetta distanza per overlay anelli (unità set; niente I/O persistito). */
+function rrFormatDistanceLabel(distanceM, unit){
+  const u = String(unit == null ? "m" : unit);
+  if (!RANGE_RING_UNITS.has(u)) return "";
+  const v = rangeRingMetersToUnit(distanceM, u);
+  if (!Number.isFinite(v) || v <= 0) return "";
+  let numStr = "";
+  if (u === "m"){
+    if (v >= 500) numStr = String(Math.round(v));
+    else if (v >= 50) numStr = String(Math.round(v));
+    else if (v >= 10) numStr = String(Math.round(v));
+    else numStr = (Math.abs(v - Math.round(v)) < 0.05) ? String(Math.round(v)) : String(Number(v.toFixed(1)));
+    return numStr + " m";
+  }
+  if (u === "km"){
+    if (v >= 100) numStr = String(Math.round(v));
+    else if (v >= 10) numStr = String(Number(v.toFixed(1)));
+    else numStr = String(Number(v.toFixed(2)));
+    return numStr + " km";
+  }
+  if (u === "NM"){
+    if (v >= 50) numStr = String(Math.round(v));
+    else if (v >= 10) numStr = String(Number(v.toFixed(1)));
+    else numStr = String(Number(v.toFixed(2)));
+    return numStr + " NM";
+  }
+  if (u === "mi"){
+    if (v >= 50) numStr = String(Math.round(v));
+    else if (v >= 10) numStr = String(Number(v.toFixed(1)));
+    else numStr = String(Number(v.toFixed(2)));
+    return numStr + " mi";
+  }
+  return String(Number(v.toFixed(2)));
+}
 /** Parse a single numeric token: decimal point or a single European-style comma. */
 function _parseRangeRingNumberToken(tok){
   const t = String(tok == null ? "" : tok).trim();
@@ -23440,6 +23498,65 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
       pl.style.pointerEvents = "none";
       pl.dataset.rrSetId = String(s.id || "");
       svg.appendChild(pl);
+    }
+  }
+
+  /* Guide radiali 0° / 90° / 270° + etichetta distanza per anello */
+  const RR_GUIDE_BEARINGS = [0, 90, 270];
+  for (const s of sets){
+    const c = s.center;
+    if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
+    const color = (typeof s.color === "string") ? s.color : "#16a34a";
+    const pxCenter = tileMapLatLonToPx(root, c.lat, c.lon);
+    if (!pxCenter || !Number.isFinite(pxCenter.x) || !Number.isFinite(pxCenter.y)) continue;
+    const cx = pxCenter.x - tx;
+    const cy = pxCenter.y - ty;
+    const unit = String(s.unit || "m");
+    const dists = Array.isArray(s.distancesM) ? s.distancesM : [];
+    for (const radiusM of dists){
+      const r = Number(radiusM);
+      if (!Number.isFinite(r) || r <= 0 || r > RANGE_RING_MAX_RADIUS_M) continue;
+      let pEnd0 = null;
+      for (const br of RR_GUIDE_BEARINGS){
+        const vd = vincentyDirect(c.lat, c.lon, r, br);
+        if (!vd || !Number.isFinite(vd.lat) || !Number.isFinite(vd.lon)) continue;
+        const pEnd = tileMapLatLonToPx(root, vd.lat, vd.lon);
+        if (!pEnd || !Number.isFinite(pEnd.x) || !Number.isFinite(pEnd.y)) continue;
+        const x2 = pEnd.x - tx;
+        const y2 = pEnd.y - ty;
+        if (br === 0) pEnd0 = { x: x2, y: y2 };
+        const ln = document.createElementNS(ns, "line");
+        ln.setAttribute("x1", cx.toFixed(2));
+        ln.setAttribute("y1", cy.toFixed(2));
+        ln.setAttribute("x2", x2.toFixed(2));
+        ln.setAttribute("y2", y2.toFixed(2));
+        ln.setAttribute("class", br === 0 ? "rr-distance-guide rr-distance-guide--0" : "rr-distance-guide rr-distance-guide--eq");
+        ln.setAttribute("stroke", color);
+        ln.setAttribute("stroke-width", "1.15");
+        ln.style.pointerEvents = "none";
+        ln.dataset.rrSetId = String(s.id || "");
+        svg.appendChild(ln);
+      }
+      const lbl = rrFormatDistanceLabel(r, unit);
+      if (lbl && pEnd0){
+        const vx = pEnd0.x - cx;
+        const vy = pEnd0.y - cy;
+        const len = Math.hypot(vx, vy);
+        const ux = len > 1e-6 ? vx / len : 1;
+        const uy = len > 1e-6 ? vy / len : 0;
+        const px = -uy, py = ux;
+        const ox = pEnd0.x + ux * 11 + px * 5;
+        const oy = pEnd0.y + uy * 11 + py * 5;
+        const tDist = document.createElementNS(ns, "text");
+        tDist.setAttribute("class", "rr-distance-label");
+        tDist.setAttribute("x", ox.toFixed(1));
+        tDist.setAttribute("y", oy.toFixed(1));
+        tDist.setAttribute("text-anchor", "middle");
+        tDist.setAttribute("dominant-baseline", "middle");
+        tDist.setAttribute("data-rr-set-id", String(s.id || ""));
+        tDist.textContent = lbl;
+        svg.appendChild(tDist);
+      }
     }
   }
 
