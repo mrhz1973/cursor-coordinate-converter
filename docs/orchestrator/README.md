@@ -41,6 +41,22 @@ Per **blocco completato** si intende, ad esempio:
 
 Se un lavoro è completato ma **non** è registrato in `latest.md` + `inbox/`, per ChatGPT va trattato come **non pubblicato**.
 
+## Riconciliazione codice ↔ memoria orchestratore (obbligatoria)
+
+Può accadere che un blocco sia già **implementato nel codice reale** (monolite o file pertinenti) ma **non** risulti in `docs/orchestrator/latest.md` + `docs/orchestrator/inbox/`. In quel caso:
+
+- **ChatGPT non deve** dedurre lo stato scansionando il monolite;
+- **Cursor deve** eseguire una verifica di riconciliazione e pubblicare l’esito (memoria orchestratore).
+
+**Esiti ammessi:**
+
+- `IMPLEMENTATO E NON PUBBLICATO`
+- `PARZIALE`
+- `NON IMPLEMENTATO`
+- `GIÀ PUBBLICATO`
+
+**Regola:** un blocco implementato nel codice ma non registrato in `latest.md` + `inbox/` è da considerare **non pubblicato all’orchestratore** finché Cursor non completa la riconciliazione e la pubblicazione memoria.
+
 ## Plan mode e salvataggio piani
 
 In **Plan mode** Cursor può produrre un piano utile **senza** poter (o dover) modificare file nel repository: il piano resta allora **solo nella chat** Cursor finché non viene materializzato sotto `docs/orchestrator/`.

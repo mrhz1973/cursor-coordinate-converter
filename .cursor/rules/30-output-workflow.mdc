@@ -149,6 +149,38 @@ Per **blocco completato** si intende (non esaustivo):
 - se il monolite è incluso o escluso dal commit (e perché);
 - se il working tree è pulito o no.
 
+### Regola: riconciliazione **codice reale ↔ memoria orchestratore**
+
+**Contesto:** può esistere disallineamento in cui un blocco risulta già implementato nel codice (monolite o file pertinenti) ma **non** compare in `docs/orchestrator/latest.md` + `docs/orchestrator/inbox/`. In quel caso **ChatGPT non deve dedurre lo stato dal monolite**: Cursor deve riconciliare e pubblicare l’esito.
+
+**Trigger:** quando l’utente o ChatGPT segnala “sembra fatto nel codice ma non risulta in `latest.md`”.
+
+**Procedura (Cursor):**
+
+1. **Non assumere** automaticamente che sia completato.
+2. **Verificare** nel monolite o nei file pertinenti la presenza degli elementi richiesti (checklist / evidenze).
+3. **Classificare** l’esito come uno dei seguenti:
+   - `IMPLEMENTATO E NON PUBBLICATO`
+   - `PARZIALE`
+   - `NON IMPLEMENTATO`
+   - `GIÀ PUBBLICATO`
+4. Se esito = **`IMPLEMENTATO E NON PUBBLICATO`**:
+   - aggiornare `docs/orchestrator/latest.md`;
+   - creare un file riepilogo in `docs/orchestrator/inbox/`;
+   - indicare esplicitamente che il codice/monolite **non è stato modificato** nello step (solo verificato);
+   - includere QA / stato repo (working tree pulito/non, diff/stat) e nota monolite incluso/escluso dal commit;
+   - commit/push selettivo della sola memoria orchestratore.
+5. Se esito = **`PARZIALE`**:
+   - **non** pubblicarlo come completato;
+   - registrare gap e, se richiesto, preparare un prompt di completamento o un piano micro-step.
+6. Se esito = **`NON IMPLEMENTATO`**:
+   - non aggiornare `latest.md` come completato;
+   - riportare che serve implementazione.
+7. Se esito = **`GIÀ PUBBLICATO`**:
+   - indicare il file `inbox` relativo e **non** duplicare riepiloghi inutilmente.
+
+**Nota per ChatGPT:** “un blocco implementato nel codice ma non registrato in `latest.md` + `inbox` è da considerare **non pubblicato** all’orchestratore”; ChatGPT non deve scansionare sistematicamente il monolite per ricostruire lavori non pubblicati.
+
 ### Sequenza obbligatoria (autosync)
 
 Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’intervento (salvo **impedimento tecnico** documentato nel RIEPILOGO con motivo e recupero previsto):

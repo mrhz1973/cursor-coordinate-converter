@@ -28,6 +28,16 @@ Un lavoro completato ma non registrato in:
 
 va considerato **non pubblicato all’orchestratore**. In quel caso, chiedi di eseguire la pubblicazione memoria lato Cursor (autosync / **`aggio`** / **«aggiornati»** in Cursor), poi ripeti la lettura qui.
 
+## Riconciliazione: codice reale ↔ memoria orchestratore
+
+Se emerge che “un blocco sembra già implementato nel codice” ma **non** compare in `docs/orchestrator/latest.md`, ChatGPT **non** deve ricostruire lo stato scansionando il monolite.
+
+Regola operativa:
+
+- chiedere a Cursor una **verifica di riconciliazione** (con evidenze) e la **pubblicazione dell’esito** in memoria orchestratore;
+- esiti attesi: `IMPLEMENTATO E NON PUBBLICATO` / `PARZIALE` / `NON IMPLEMENTATO` / `GIÀ PUBBLICATO`;
+- se `IMPLEMENTATO E NON PUBBLICATO`, Cursor deve pubblicare `latest.md` + `inbox/` (commit/push selettivo memoria), dichiarando che il monolite non è stato modificato in quello step.
+
 ## Comando **`aggio`** / **«aggiornati»** — in ChatGPT (orchestratore)
 
 Se l’utente scrive **`aggio`** o **«aggiornati»** (stesso significato) **in questa chat**, **leggi la memoria orchestratore da GitHub** (repository remoto usato dal team) in questo **ordine**:
