@@ -3379,6 +3379,25 @@ body:not(.gis-mode) #sec-measure .meas-gis-only{ display:none !important; }
 .meas-gis-only .meas-gis-actions .btn-danger-subtle{
   border-color: color-mix(in srgb, var(--error, #dc2626) 30%, var(--border));
 }
+.meas-gis-only .meas-gis-export{
+  margin:8px 0 0;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:var(--panel);
+  padding:8px 10px;
+}
+.meas-gis-only .meas-gis-export > summary{
+  cursor:pointer;
+  font-weight:800;
+  color:var(--muted);
+  font-size:.82rem;
+}
+.meas-gis-only .meas-gis-export-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
 #sec-measure .meas-operative-notices{
   margin:8px 0 10px; display:flex; flex-direction:column; gap:6px; min-height:0;
 }
@@ -7720,6 +7739,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <div class="meas-gis-actions">
             <button type="button" class="btn btn-sm btn-danger-subtle" data-role="gis-meas-clear" data-i18n="map.measureClear">Pulisci</button>
           </div>
+          <details class="meas-gis-export">
+            <summary data-i18n="measure.export.title">Export misura</summary>
+            <div class="meas-gis-export-actions">
+              <button type="button" class="btn btn-sm" data-role="gis-meas-export-geojson" data-i18n="measure.export.geojson">Esporta GeoJSON</button>
+              <button type="button" class="btn btn-sm" data-role="gis-meas-export-csv" data-i18n="measure.export.csv">Esporta CSV</button>
+            </div>
+          </details>
           <div class="meas-gis-direct-fields" data-role="gis-meas-direct-fields" hidden>
             <div class="meas-gis-direct-grid">
               <div class="field-group">
@@ -9684,6 +9710,12 @@ const I18N = {
     "measure.notice.escCleared":"Vertici misura azzerati (Esc).",
     "measure.err.invalidDirectInput":"Distanza o azimuth non validi (distanza > 0, azimuth 0–360°).",
     "measure.err.invalidMeasureInput":"Impossibile calcolare la destinazione con questi valori.",
+    "measure.export.title":"Export misura",
+    "measure.export.geojson":"Esporta GeoJSON",
+    "measure.export.csv":"Esporta CSV",
+    "measure.export.err.none":"Nessuna misura esportabile: aggiungi punti sulla mappa.",
+    "measure.export.ok.geojson":"Export GeoJSON completato.",
+    "measure.export.ok.csv":"Export CSV completato.",
     "tip.mapPrimaryCycle":"Cambia formato coordinate (pulsante o tasto destro)",
     "tip.mapPrimaryCycleTip":"Formato: {cur}. Clic su ⇄ o tasto destro sulla coordinata per passare a {next}.",
     "img.date.loading":"Imagery: … (Esri)",
@@ -10906,6 +10938,12 @@ const I18N = {
     "measure.notice.escCleared":"Measure vertices cleared (Esc).",
     "measure.err.invalidDirectInput":"Invalid distance or bearing (distance > 0, bearing 0–360°).",
     "measure.err.invalidMeasureInput":"Could not compute the destination from these values.",
+    "measure.export.title":"Measure export",
+    "measure.export.geojson":"Export GeoJSON",
+    "measure.export.csv":"Export CSV",
+    "measure.export.err.none":"No exportable measure: add points on the map.",
+    "measure.export.ok.geojson":"GeoJSON export complete.",
+    "measure.export.ok.csv":"CSV export complete.",
     "tip.mapPrimaryCycle":"Cycle coordinate format (button or right-click)",
     "tip.mapPrimaryCycleTip":"Format: {cur}. Click ⇄ or right-click the coordinate string for {next}.",
     "img.date.loading":"Imagery: … (Esri)",
@@ -12128,6 +12166,12 @@ const I18N = {
     "measure.notice.escCleared":"Sommets de mesure effacés (Échap).",
     "measure.err.invalidDirectInput":"Distance ou azimut invalide (distance > 0, azimut 0–360°).",
     "measure.err.invalidMeasureInput":"Impossible de calculer la destination avec ces valeurs.",
+    "measure.export.title":"Exporter mesure",
+    "measure.export.geojson":"Exporter GeoJSON",
+    "measure.export.csv":"Exporter CSV",
+    "measure.export.err.none":"Aucune mesure exportable : ajoutez des points sur la carte.",
+    "measure.export.ok.geojson":"Export GeoJSON terminé.",
+    "measure.export.ok.csv":"Export CSV terminé.",
     "tip.mapPrimaryCycle":"Changer le format des coordonnées (bouton ou clic droit)",
     "tip.mapPrimaryCycleTip":"Format : {cur}. Clic sur ⇄ ou clic droit sur la coordonnée pour passer à {next}.",
     "img.date.loading":"Imagery : … (Esri)",
@@ -12627,6 +12671,21 @@ function measSyncOperativeInfo(){
   inf.hidden = !String(inf.textContent || "").trim();
 }
 
+function gisSyncMeasureExportUi(){
+  const root = document.getElementById("sec-measure");
+  if (!root || !document.body.classList.contains("gis-mode")) return;
+  const bG = root.querySelector('[data-role="gis-meas-export-geojson"]');
+  const bC = root.querySelector('[data-role="gis-meas-export-csv"]');
+  if (!bG || !bC) return;
+  const k = state.mapMeasureKind || "line";
+  const pts = (k === "poly")
+    ? (Array.isArray(state.mapPolyPts) ? state.mapPolyPts : [])
+    : (Array.isArray(state.mapMeasurePts) ? state.mapMeasurePts : []);
+  const ok = (k === "poly") ? (pts.length >= 3) : (pts.length >= 2);
+  bG.disabled = !ok;
+  bC.disabled = !ok;
+}
+
 function gisExitMeasureTabPartial(){
   mapMeasureDocDragCleanup();
   try { measClearMsgs(); } catch(_){}
@@ -12707,6 +12766,106 @@ function applyGisDirectInputsToMap(){
   } catch(_){
     measShowError("measure.err.invalidMeasureInput");
   }
+}
+
+function getCurrentMeasureExportSnapshot(){
+  const kind = (state.mapMeasureKind || "line") === "poly" ? "poly" : "line";
+  const closed = kind === "poly" ? (state.mapPolyClosed !== false) : false;
+  const pts = kind === "poly"
+    ? (Array.isArray(state.mapPolyPts) ? state.mapPolyPts : [])
+    : (Array.isArray(state.mapMeasurePts) ? state.mapMeasurePts : []);
+  const ok = (kind === "poly") ? (pts.length >= 3) : (pts.length >= 2);
+  return {
+    ok,
+    kind,
+    closed,
+    unit: String(state.mapMeasureUnit || "m"),
+    pts: pts.map(p => ({ lat: Number(p.lat), lon: Number(p.lon) }))
+  };
+}
+
+function buildMeasureGeoJSONFeature(snap){
+  const s = snap || getCurrentMeasureExportSnapshot();
+  if (!s.ok) return null;
+  const coords = s.pts.map(p => [round(p.lon, 7), round(p.lat, 7)]);
+  let geom;
+  if (s.kind === "poly" && s.closed){
+    const ring = coords.slice();
+    if (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1])) ring.push(ring[0]);
+    geom = { type: "Polygon", coordinates: [ring] };
+  } else {
+    geom = { type: "LineString", coordinates: coords };
+  }
+  const props = {
+    tool: "measure",
+    kind: s.kind,
+    closed: !!s.closed,
+    unit: s.unit,
+    creator: "GOI GIS Tool",
+    createdAt: new Date().toISOString()
+  };
+  try {
+    if (s.kind === "line" && s.pts.length >= 2){
+      const inv = vincentyInverse(s.pts[0].lat, s.pts[0].lon, s.pts[1].lat, s.pts[1].lon);
+      props.distanceMeters = inv.distance;
+      props.initialBearing = inv.initialBearing;
+      props.finalBearing = inv.finalBearing;
+    } else if (s.kind === "poly"){
+      props.perimeterMeters = computePolylinePerimeterMeters(s.pts, !!s.closed);
+      if (s.closed) props.areaM2 = sphericalPolygonArea(s.pts);
+    }
+  } catch(_){}
+  return { type: "Feature", properties: props, geometry: geom };
+}
+
+function buildMeasureCsv(snap){
+  const s = snap || getCurrentMeasureExportSnapshot();
+  if (!s.ok) return null;
+  const rows = ["index,lat,lon,kind,closed"];
+  const closedTxt = s.kind === "poly" ? (s.closed ? "true" : "false") : "";
+  s.pts.forEach((p, i) => {
+    rows.push([
+      i + 1,
+      round(p.lat, 7),
+      round(p.lon, 7),
+      s.kind,
+      closedTxt
+    ].map(csvEsc).join(","));
+  });
+  if (s.kind === "poly" && s.closed && s.pts.length){
+    const p0 = s.pts[0];
+    rows.push([
+      s.pts.length + 1,
+      round(p0.lat, 7),
+      round(p0.lon, 7),
+      s.kind,
+      closedTxt
+    ].map(csvEsc).join(","));
+  }
+  return "\ufeff" + rows.join("\n");
+}
+
+function exportCurrentMeasure(kind){
+  const snap = getCurrentMeasureExportSnapshot();
+  if (!snap.ok){
+    measShowError("measure.export.err.none");
+    return false;
+  }
+  const hm = formatExportLocalHm(new Date());
+  const base = "goi-measure-" + snap.kind + "-" + hm;
+  if (kind === "geojson"){
+    const f = buildMeasureGeoJSONFeature(snap);
+    downloadBlob(JSON.stringify(f, null, 2), base + ".geojson", "application/geo+json;charset=utf-8");
+    measShowInfo("measure.export.ok.geojson");
+    return true;
+  }
+  if (kind === "csv"){
+    const csv = buildMeasureCsv(snap);
+    downloadBlob(csv, base + ".csv", "text/csv;charset=utf-8");
+    measShowInfo("measure.export.ok.csv");
+    return true;
+  }
+  return false;
 }
 
 function syncGisMeasureDrawerUnitFromState(){
@@ -15361,6 +15520,7 @@ function updateMeasureReadouts(root){
   } finally {
     try { syncGisDirectInputsFromMeasurePts(); } catch(_){}
     try { measSyncOperativeInfo(); } catch(_){}
+    try { gisSyncMeasureExportUi(); } catch(_){}
   }
 }
 
@@ -31814,6 +31974,18 @@ function gisInit(){
         updateMeasureReadouts(r);
       }
       try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+      return;
+    }
+    const eg = ev.target.closest && ev.target.closest('[data-role="gis-meas-export-geojson"]');
+    if (eg && eg.closest("#sec-measure")){
+      ev.preventDefault();
+      try { exportCurrentMeasure("geojson"); } catch(_){ try { measShowError("measure.err.invalidMeasureInput"); } catch(__){} }
+      return;
+    }
+    const ec = ev.target.closest && ev.target.closest('[data-role="gis-meas-export-csv"]');
+    if (ec && ec.closest("#sec-measure")){
+      ev.preventDefault();
+      try { exportCurrentMeasure("csv"); } catch(_){ try { measShowError("measure.err.invalidMeasureInput"); } catch(__){} }
       return;
     }
     const f = ev.target.closest && ev.target.closest("[data-gis-meas-flow]");
