@@ -2211,3 +2211,32 @@ Chiusura sessione su comando utente **`finito`** dopo implementazione incrementa
 - Misura: `9f5ec8c`, `a6e8c55`, `3175e47` (sequenza feature + fix + nota inbox).
 - Alias **aggio**: `f9768cb`.
 
+
+## Checkpoint 2026-04-30 — Range Rings loop + mappa tile hydrate + pulizia debug (Finito)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`** dopo fix verificati in GIS mode: mappa OSM che carica dopo hard refresh; **Range Rings** con lista vuota senza freeze; **rename inline** con conferma e **Annulla** coerente sulla tabella. Rimossa la strumentazione temporanea (**bf0d51**, **RR_DEBUG_PERF**, ingest localhost).
+
+### Monolite (`coordinate_converter Claude.html`)
+
+1. **RR — ricorsione infinita:** `rrCancelPendingRename()` chiama `renderRangeRingsList()` **solo** se esisteva un rename pendente (`p`); altrimenti il ramo lista vuota che invoca sempre `rrCancelPendingRename()` causava stack overflow.
+
+2. **Mappa — tile dopo re-render:** incremento **`_mapTileGen`** in `renderTileMap` e passaggio a **`hydrateMapTiles(..., tileGen, fetchSig)`**; controlli stale dopo ogni `await` (`mapRoot._mapTileGen !== tileGen`, `wrap.isConnected`); **`AbortController`** su `#miniMap` (`_miniMapTileHydrateAC`) con **`fetch(..., { signal })`** per non aggiornare tile DOM sostituito; **`syncOfflineDeltaViewportHints`** con `opts.tileGen` e **`Promise.all`** sui candidati IDB (non più sequenziale).
+
+3. **Pulizia:** rimossi `__dbgLog`, listener globali ingest-only, tutte le `fetch` verso `127.0.0.1:7268`, contatori `RR_DEBUG_PERF` e log correlati in init, boot, reset app, mini-map, RR panel, ResizeObserver, ecc.
+
+### Orchestratore (già pubblicato prima del `finito`)
+
+- **`ccb26bd`**: memoria `docs/orchestrator/latest.md` + inbox `2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md` (monolite escluso da quel commit, come da regole).
+
+### Non toccato
+
+- **`docs/roadmap.md`** in questa chiusura.
+- Nessun nuovo GPS, nessuna `watchPosition`, nessun fetch tile implicito oltre i fix sopra.
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html` (commit di chiusura sessione)
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+

@@ -8676,6 +8676,7 @@ const I18N = {
     "settings.fullReset.busy":"Cancellazione in corso…",
     "settings.fullReset.reloadSoon":"Reset completato. Ricaricamento in corso…",
     "settings.fullReset.errBadWord":"Conferma non valida: digita esattamente CANCELLA per abilitare la cancellazione.",
+    "settings.fullReset.errIdbTimeout":"Timeout durante la cancellazione della cache tile (IndexedDB). Puoi annullare e riprovare.",
     "settings.fullReset.errIdb":"Impossibile svuotare completamente la cache tile (IndexedDB). Riprova o rimuovi i dati del sito dalle impostazioni del browser.",
     "settings.fullReset.errLs":"Errore durante la rimozione da localStorage. Riprova.",
     "settings.fullReset.errGeneric":"Errore durante il reset locale. Puoi annullare e riprovare.",
@@ -9904,6 +9905,7 @@ const I18N = {
     "settings.fullReset.busy":"Deleting…",
     "settings.fullReset.reloadSoon":"Reset complete. Reloading…",
     "settings.fullReset.errBadWord":"Invalid confirmation: type exactly CANCELLA to enable deletion.",
+    "settings.fullReset.errIdbTimeout":"Timeout while clearing the tile cache (IndexedDB). You can cancel and try again.",
     "settings.fullReset.errIdb":"Could not fully clear the tile cache (IndexedDB). Try again or remove this site’s data in the browser settings.",
     "settings.fullReset.errLs":"Error while removing localStorage entries. Try again.",
     "settings.fullReset.errGeneric":"Local reset error. You can cancel and try again.",
@@ -11132,6 +11134,7 @@ const I18N = {
     "settings.fullReset.busy":"Suppression en cours…",
     "settings.fullReset.reloadSoon":"Réinitialisation terminée. Rechargement…",
     "settings.fullReset.errBadWord":"Confirmation invalide : saisissez exactement CANCELLA pour activer la suppression.",
+    "settings.fullReset.errIdbTimeout":"Délai dépassé lors de la suppression du cache tuiles (IndexedDB). Vous pouvez annuler et réessayer.",
     "settings.fullReset.errIdb":"Impossible de vider entièrement le cache tuiles (IndexedDB). Réessayez ou supprimez les données du site dans les paramètres du navigateur.",
     "settings.fullReset.errLs":"Erreur lors de la suppression dans localStorage. Réessayez.",
     "settings.fullReset.errGeneric":"Erreur lors de la réinitialisation locale. Vous pouvez annuler et réessayer.",
@@ -17629,6 +17632,22 @@ function showAppFullResetDialogError(msg){
   setAppFullResetDialogBusy(false);
 }
 
+function recoverAppFullResetDialogStuckOnBoot(){
+  const dlg = document.getElementById("appFullResetDialog");
+  if (!dlg) return;
+  const busy = document.getElementById("appFullResetBusy");
+  const err = document.getElementById("appFullResetError");
+  // If the browser restored a previously open/busy dialog state, force-reset it.
+  const wasOpen = !!(dlg.open || dlg.hasAttribute("open"));
+  const wasBusy = !!(busy && busy.style.display === "block");
+  if (!wasOpen && !wasBusy) return;
+  try { resetAppFullResetDialogUi(); } catch(_){}
+  // Hard-close even if busy was set.
+  try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  if (busy){ busy.style.display = "none"; busy.textContent = ""; }
+  if (err){ err.style.display = "none"; err.textContent = ""; }
+}
+
 /** Dismiss floating UI before a destructive wipe (no save). */
 async function prepareUiBeforeAppFullReset(){
   try { closeHeaderSettingsMenu(); } catch(_){}
@@ -17664,9 +17683,16 @@ async function performAppFullLocalReset(){
     }
     await prepareUiBeforeAppFullReset();
     try {
-      await idbClearAllTilesOrThrow();
+      const p = idbClearAllTilesOrThrow();
+      await Promise.race([
+        p,
+        new Promise((_, rej) => setTimeout(() => rej(new Error("idb_timeout")), 12000))
+      ]);
     } catch (idbErr){
-      showAppFullResetDialogError((typeof t === "function") ? (t("settings.fullReset.errIdb") || String(idbErr)) : String(idbErr));
+      const msg = (String(idbErr && idbErr.message || idbErr || "").includes("idb_timeout") && typeof t === "function")
+        ? (t("settings.fullReset.errIdbTimeout") || t("settings.fullReset.errIdb") || "")
+        : ((typeof t === "function") ? (t("settings.fullReset.errIdb") || String(idbErr)) : String(idbErr));
+      showAppFullResetDialogError(msg || String(idbErr));
       return;
     }
     try {
@@ -20323,8 +20349,12 @@ async function startPrecacheDownload(opts){
   return { aborted, done: completed, total, err: errs };
 }
 
-async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon){
+async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen, fetchSig){
   if (!mapRoot || !layer) return;
+  /* If renderTileMap() replaces #miniMap innerHTML while a prior hydrate is still
+   * in flight, load1() updates detached nodes and the live DOM stays all
+   * .tile-pending — looks like "no src" forever. tileGen must match mapRoot._mapTileGen. */
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen) return;
   const online  = isEffectivelyOnline();
   const hints   = state.tilePackHints !== false;
   const tm = mapRoot.querySelector(".tile-map");
@@ -20333,6 +20363,7 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon){
   }
   const wraps = [...mapRoot.querySelectorAll(".tile-wrap")];
   const load1 = async (wrap) => {
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
     const xw = +wrap.dataset.xw, y = +wrap.dataset.y, z = +wrap.dataset.z;
     const tkey  = wrap.dataset.tkey;
     const img   = wrap.querySelector("img.tile");
@@ -20344,6 +20375,7 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon){
     };
     try {
       const blob = await getTileBlobByKey(tkey);
+      if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
       if (blob){
         cleanBlobAttr();
         const u = URL.createObjectURL(blob);
@@ -20356,9 +20388,13 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon){
       }
       if (online && !state.forceOffline){
         const url = layer.url(z, xw, y);
-        const r   = await fetch(url, { mode: "cors" });
+        const fetchOpts = { mode: "cors" };
+        if (fetchSig) fetchOpts.signal = fetchSig;
+        const r   = await fetch(url, fetchOpts);
+        if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
         if (!r.ok) throw 0;
         const b  = await r.blob();
+        if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
         cleanBlobAttr();
         const u  = URL.createObjectURL(b);
         img.setAttribute("data-blob-url", u);
@@ -20369,14 +20405,21 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon){
         return;
       }
     } catch(_){}
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
     // Offline miss or error
     wrap.classList.add("tile-missing");
     wrap.classList.remove("tile-mission", "tile-network", "tile-pending");
     if (voidE) voidE.style.display = "flex";
   };
   await Promise.all(wraps.map(w => load1(w)));
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen){
+    return;
+  }
   if (typeof syncOfflineDeltaViewportHints === "function"){
-    try { await syncOfflineDeltaViewportHints(mapRoot); } catch(_){}
+    try { await syncOfflineDeltaViewportHints(mapRoot, { tileGen }); } catch(_){}
+  }
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen){
+    return;
   }
   monitorTileLoading(mapRoot, lat, lon);
 }
@@ -21401,6 +21444,8 @@ function clearOfflineDeltaTileHints(mapRoot){
 }
 
 async function syncOfflineDeltaViewportHints(mapRoot, opts){
+  opts = opts || {};
+  const tileGen = opts.tileGen;
   const root = mapRoot || document.getElementById("miniMap");
   if (!root) return;
   const tileMap = root.querySelector(".tile-map");
@@ -21430,13 +21475,14 @@ async function syncOfflineDeltaViewportHints(mapRoot, opts){
   const layerId = sanitizeMapLayer(area.layerId || state.mapLayer || "osm");
   const cap = Math.max(20, Math.min(160, (opts && Number.isFinite(opts.cap)) ? (opts.cap | 0) : 120));
   const wraps = [...root.querySelectorAll(".tile-wrap")];
-  let checked = 0;
 
   for (const wrap of wraps){
     wrap.classList.remove("tile-delta-missing", "tile-delta-cached");
   }
+
+  const candidates = [];
   for (const wrap of wraps){
-    if (checked >= cap) break;
+    if (candidates.length >= cap) break;
     const x = +wrap.dataset.xw, y = +wrap.dataset.y, zz = +wrap.dataset.z;
     if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(zz)) continue;
     if ((zz | 0) !== (z | 0)) continue;
@@ -21453,13 +21499,17 @@ async function syncOfflineDeltaViewportHints(mapRoot, opts){
       (Math.min(lonW, lonE) <= area.e);
     if (!intersects) continue;
 
-    checked++;
-    const key = makeTileKey(layerId, z, x, y);
+    candidates.push({ wrap, key: makeTileKey(layerId, z, x, y) });
+  }
+
+  await Promise.all(candidates.map(({ wrap, key }) => (async () => {
     let have = null;
     try { have = await getTileBlobByKey(key); } catch(_){ have = null; }
+    if (tileGen != null && root._mapTileGen !== tileGen) return;
+    if (!wrap.isConnected) return;
     if (have) wrap.classList.add("tile-delta-cached");
     else wrap.classList.add("tile-delta-missing");
-  }
+  })()));
 }
 
 /**
@@ -26943,7 +26993,15 @@ function renderTileMap(lat, lon, zoom){
   attachPanHandlers(root, lat, lon, zoom);
   attachCursorReadout(root, lat, lon, zoom);
   attachWheelZoom(root, lat, lon, zoom, layer);
-  void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon);
+  let __hydrateFetchSig = null;
+  if (typeof AbortController !== "undefined"){
+    try { if (root._miniMapTileHydrateAC) root._miniMapTileHydrateAC.abort(); } catch(_){}
+    root._miniMapTileHydrateAC = new AbortController();
+    __hydrateFetchSig = root._miniMapTileHydrateAC.signal;
+  }
+  root._mapTileGen = (root._mapTileGen | 0) + 1;
+  const __mapTileGen = root._mapTileGen;
+  void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
 
   // Offline coverage overlay: draw saved named areas + toggle the class
   // that tints cached tiles green via CSS. Runs on every render so the
@@ -28847,32 +28905,38 @@ function applyTheme(theme){
   applyThemePreference(theme, { save: true });
 }
 
-function applyLanguage(lang){
-  state.lang = lang;
-  document.documentElement.setAttribute("lang", lang);
+/** Apply data-i18n* only under `root` (use `document` for full-page scan). */
+function syncI18nInRoot(root, lang){
+  if (!root || typeof root.querySelectorAll !== "function") return;
   const dict = I18N[lang];
-  document.querySelectorAll("[data-i18n]").forEach(e => {
+  if (!dict) return;
+  root.querySelectorAll("[data-i18n]").forEach(e => {
     const k = e.getAttribute("data-i18n");
     if (dict[k] !== undefined) e.textContent = dict[k];
   });
-  // data-i18n-html: like data-i18n but the translation may contain HTML
-  // (e.g. <b>, <kbd>, <code>). Use with care: only for strings we author.
-  document.querySelectorAll("[data-i18n-html]").forEach(e => {
+  root.querySelectorAll("[data-i18n-html]").forEach(e => {
     const k = e.getAttribute("data-i18n-html");
-    if (dict[k] !== undefined) e.innerHTML = dict[k];
+    if (dict[k] === undefined) return;
+    try { e.innerHTML = dict[k]; } catch(_){}
   });
-  document.querySelectorAll("[data-i18n-ph]").forEach(e => {
+  root.querySelectorAll("[data-i18n-ph]").forEach(e => {
     const k = e.getAttribute("data-i18n-ph");
     if (dict[k] !== undefined) e.setAttribute("placeholder", dict[k]);
   });
-  document.querySelectorAll("[data-i18n-tip]").forEach(e => {
+  root.querySelectorAll("[data-i18n-tip]").forEach(e => {
     const k = e.getAttribute("data-i18n-tip");
     if (dict[k] !== undefined) e.setAttribute("data-tip", dict[k]);
   });
-  document.querySelectorAll("[data-i18n-aria]").forEach(e => {
+  root.querySelectorAll("[data-i18n-aria]").forEach(e => {
     const k = e.getAttribute("data-i18n-aria");
     if (dict[k] !== undefined) e.setAttribute("aria-label", dict[k]);
   });
+}
+
+function applyLanguage(lang){
+  state.lang = lang;
+  document.documentElement.setAttribute("lang", lang);
+  syncI18nInRoot(document, lang);
   renderNotes();
   renderHistory();
   renderFavorites();
@@ -29770,7 +29834,9 @@ function rrHandleRrCenterGeoJsonFile(f){
 }
 function ensureRrSourcePickerWired(){
   const d = document.getElementById("rrSourcePickerDialog");
-  if (!d || d._rrPickerWired) return;
+  if (!d || d._rrPickerWired){
+    return;
+  }
   d._rrPickerWired = true;
   const c = document.getElementById("rrSourcePickerClose");
   if (c) c.addEventListener("click", (ev) => { ev.preventDefault(); try { rrCloseRrSourcePicker(); } catch(_){} });
@@ -29887,7 +29953,12 @@ function rrCancelPendingRename(){
       }
     }
   }
-  try { renderRangeRingsList(); } catch(_){ }
+  // Only refresh the list when a rename was actually pending. Calling
+  // renderRangeRingsList() unconditionally caused infinite recursion: the
+  // empty-list branch always invokes rrCancelPendingRename().
+  if (p){
+    try { renderRangeRingsList(); } catch(_){}
+  }
 }
 function rrExecutePendingRename(){
   const p = state._rrPendingRename;
@@ -30383,7 +30454,8 @@ function renderRangeRingsList(){
       if (a) sa.setAttribute("aria-label", a);
     }
   } catch(_){}
-  try { if (typeof applyLanguage === "function") applyLanguage(state.lang || "it"); } catch(_){}
+  // Scoped i18n only: full applyLanguage() rescans the entire monolith DOM and can freeze the UI for seconds.
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(root, state.lang || "it"); } catch(_){}
   syncRangeRingsSelectAllState(root);
   syncRangeRingsBatchBar();
 }
@@ -35827,6 +35899,7 @@ function init(){
   state.primary = initPrimary;
 
   bindUI();
+  try { recoverAppFullResetDialogStuckOnBoot(); } catch(_){}
   installThemeVisibilityListenerOnce();
   bindDragDrop();
   bindHotkeys();
