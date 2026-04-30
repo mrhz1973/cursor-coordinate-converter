@@ -68,7 +68,7 @@ Se l’utente dice che **Cursor ha prodotto solo un piano** (Plan mode) **senza*
 ## Memoria `orchestrator` vs chiusura **`finito`**
 
 - **Autosync / memoria `docs/orchestrator/`:** obbligatoria **lato Cursor** dopo ogni intervento operativo che cambia stato; `latest` breve; `inbox` = dettaglio per intervento (una unità può elencare molte micro-modifiche). **Non** equivale a chiusura ufficiale sessione. **Non** implica che ChatGPT abbia già “visto” il repo: vedi sopra (lettura **solo** su **`aggio`** / **«aggiornati»**).
-- **`finito`:** comando operativo (sempre **minuscolo**, backtick) per **chiusura ufficiale** completa: `docs/checkpoint.md`, log di sessione, `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](../../.cursor/rules/00-project-core.mdc). **Separato** dall’autosync.
+- **`finito`:** comando operativo (sempre **minuscolo**, backtick) per **chiusura ufficiale** completa: `docs/checkpoint.md`, log di sessione, `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](../../.cursor/rules/00-project-core.mdc). **Separato** dall’autosync. **Dopo** il `git push` principale del `finito`, è obbligatoria una **riconciliazione orchestratore**: aggiornamento di **`docs/orchestrator/latest.md`**, creazione di **`docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md`**, commit e push dedicati — così **`aggio`** / **«aggiornati»** non leggono ancora «monolite non in autosync» quando il monolite è già stato incluso nella chiusura.
 
 ## Vincoli APP (reminder)
 

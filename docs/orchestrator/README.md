@@ -16,7 +16,7 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 **L’autosync orchestratore non equivale a `finito`:** non aggiorna `docs/checkpoint.md` né il log di sessione ufficiale salvo richiesta esplicita o comando **`finito`** (vedi [`.cursor/rules/00-project-core.mdc`](../../.cursor/rules/00-project-core.mdc)).
 
-**`finito`** resta la **chiusura ufficiale completa** di sessione (doc ufficiali, git/push finali, criteri di workspace come da regole progetto).
+**`finito`** resta la **chiusura ufficiale completa** di sessione (doc ufficiali, git/push finali, criteri di workspace come da regole progetto). **Dopo** quel push, le regole richiedono anche **aggiornamento memoria orchestratore** (`latest.md` + file `inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push) così **`aggio`** non resti obsoleto rispetto al monolite appena versionato.
 
 **ChatGPT non si aggiorna da solo:** non legge GitHub in automatico; legge la memoria orchestratore **solo** quando l’utente scrive **`aggio`** o **«aggiornati»** nella **chat ChatGPT** (= *leggere* da GitHub). **Cursor**, dopo ogni intervento operativo che cambia stato, **pubblica sempre** la memoria (`latest.md`, `inbox`, commit/push selettivo) **senza** interagire con ChatGPT (= *pubblicare*; **`aggio`** / **«aggiornati»** in Cursor ha la stessa semantica di pubblicazione, vedi regola 30).
 

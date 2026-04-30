@@ -37,14 +37,24 @@ Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase br
 1. **Checkpoint md** come da sezione precedente: aggiornare `docs/checkpoint.md` **e** appendere sezione datata in `docs/session-geolocalizzazione-e-mappa.md`.
 2. Nel terminale, dalla root del repo, in ordine:
    - `git add .`
-   - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`.
+   - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`. Se non c’è nulla da committare, **saltare** il `commit` ma eseguire comunque `git push` se ci sono commit locali non pubblicati; altrimenti documentare in step 3.
    - `git push`
-3. Confermare all’utente con: **hash commit** (short), **elenco file modificati** (da `git show --stat HEAD` o equivalente), **stato push** (successo / errore + messaggio testuale).
+3. **Riconciliazione memoria orchestratore (obbligatoria dopo `finito`):** evita che `docs/orchestrator/latest.md` resti su uno stato obsoleto (es. «monolite non in autosync») dopo che il monolite è stato incluso nel commit/push di chiusura. **Dopo** il tentativo di `git push` dello step 2 (esito qualsiasi, salvo blocco totale prima del commit):
+   - Aggiornare **`docs/orchestrator/latest.md`** in forma **breve**: data, chiusura sessione `finito`, **working tree pulito o no** (`git status --short` dopo gli step git), **se il monolite è nel commit appena pushato** (o nell’ultimo commit locale se push fallito), correzione esplicita se in precedenza la memoria diceva che il monolite era escluso dagli autosync ma **ora** risulta versionato nel ciclo `finito`, esito push step 2, puntatore al file inbox creato sotto.
+   - Creare **un** file in **`docs/orchestrator/inbox/`** con nome  
+     **`YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md`**  
+     usando timestamp locale coerente (stesso giorno della chiusura se possibile). Il contenuto deve includere almeno: **hash** del/dei commit coinvolti nella chiusura (ideale: commit step 2; se step 4 aggiunge solo orchestratore, indicare entrambi); **push** step 2 riuscito o meno (+ messaggio se fallito); **`git status --short`** finale dopo tutti gli step git; **`git diff --stat`** o nota «nessun diff» se albero pulito; **file principali** toccati in sessione / nel commit di chiusura; **se `coordinate_converter Claude.html` è incluso** nel commit di chiusura (step 2) o solo nei commit precedenti; **QA** eseguiti in sessione se noti; **prossimo passo** consigliato breve.
+   - Dal terminale: `git add docs/orchestrator/latest.md docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` (path reale), poi  
+     `git commit -m "docs: orchestratore — riconciliazione finito sessione"`  
+     e **`git push`**. Se questo push fallisce, riportarlo all’utente: la memoria locale è aggiornata ma ChatGPT non vede il remoto finché non si ripubblica.
+4. Confermare all’utente con: **hash commit** (short; se due commit consecutivi `finito` + orchestratore, indicarli entrambi o l’HEAD finale), **elenco file modificati** (da `git show --stat HEAD` e, se utile, commit precedente), **stato push** (successo / errore + messaggio testuale) **per ogni** push eseguito.
 
 Vincoli operativi:
-- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai due file doc dello step 1 e alle operazioni git dello step 2–3.
+- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai due file doc dello **step 1**, ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
+- **Non** usare lo step 3 per sostituire l’**autosync** di fine intervento: resta obbligatorio come da [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc); lo step 3 **chiude il gap** tra stato reale post-`finito` e ciò che ChatGPT legge con **`aggio`** / **«aggiornati»**.
 - Se lo step 1 fallisce (file non scrivibile, conflitto), **fermarsi**, riportare l’errore, non procedere con git.
-- Se lo step 2 fallisce (pre-commit hook rifiuta, push rejected, conflitto remoto), riportare l’errore testualmente e **non** tentare `--force`, `--amend`, né hard reset senza nuova istruzione esplicita.
+- Se lo step 2 fallisce (pre-commit hook rifiuta, push rejected, conflitto remoto), riportare l’errore testualmente e **non** tentare `--force`, `--amend`, né hard reset senza nuova istruzione esplicita; eseguire comunque lo **step 3** aggiornando `latest.md` e l’inbox con **esito parziale** (commit locale riuscito ma push fallito, ecc.) **salvo** impossibilità di scrivere i file.
+- Se lo step 4 fallisce, `latest.md` + inbox possono essere **solo locali**: riportare errore push e che ChatGPT non è allineato finché non si ripete push o `aggio` in Cursor.
 - Non modificare mai la git config. Non saltare hook (`--no-verify`).
 
 ## Response style
