@@ -3398,6 +3398,34 @@ body:not(.gis-mode) #sec-measure .meas-gis-only{ display:none !important; }
   flex-wrap:wrap;
   margin-top:8px;
 }
+
+/* Misura overlay: label leggibili su tile chiari/scuri + tema light/dark. */
+.tile-measure-overlay{
+  --mm-meas-lbl-bg: rgba(0,0,0,.74);
+  --mm-meas-lbl-bd: rgba(255,255,255,.26);
+  --mm-meas-lbl-fg: #f9fafb;
+  --mm-meas-lbl-halo: rgba(2,6,23,.92);
+}
+html[data-theme="light"] .tile-measure-overlay{
+  --mm-meas-lbl-bg: rgba(15,23,42,.78);
+  --mm-meas-lbl-bd: rgba(255,255,255,.28);
+  --mm-meas-lbl-fg: #f8fafc;
+  --mm-meas-lbl-halo: rgba(2,6,23,.92);
+}
+html[data-theme="dark"] .tile-measure-overlay{
+  --mm-meas-lbl-bg: rgba(2,6,23,.80);
+  --mm-meas-lbl-bd: rgba(255,255,255,.18);
+  --mm-meas-lbl-fg: #f9fafb;
+  --mm-meas-lbl-halo: rgba(0,0,0,.92);
+}
+.tile-measure-overlay .mm-label{
+  paint-order: stroke fill;
+  stroke: var(--mm-meas-lbl-halo);
+  stroke-width: 3.25px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}
 #sec-measure .meas-operative-notices{
   margin:8px 0 10px; display:flex; flex-direction:column; gap:6px; min-height:0;
 }
@@ -15719,6 +15747,7 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     const g = document.createElementNS(svg.namespaceURI, "g");
     g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angDeg.toFixed(2)})`);
     const text = document.createElementNS(svg.namespaceURI, "text");
+    text.setAttribute("class", "mm-label");
     text.setAttribute("x", "0");
     text.setAttribute("y", "0");
     text.setAttribute("text-anchor", "middle");
@@ -15726,13 +15755,13 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     text.setAttribute("font-family", "ui-monospace, Menlo, Consolas, monospace");
     text.setAttribute("font-size", "12");
     text.setAttribute("font-weight", "800");
-    text.setAttribute("fill", "#f9fafb");
+    text.setAttribute("fill", "var(--mm-meas-lbl-fg, #f9fafb)");
     text.textContent = txt;
     const rect = document.createElementNS(svg.namespaceURI, "rect");
     rect.setAttribute("class", "mm-lbl-bg");
     rect.setAttribute("rx", "8");
-    rect.setAttribute("fill", "rgba(0,0,0,.72)");
-    rect.setAttribute("stroke", "rgba(255,255,255,.28)");
+    rect.setAttribute("fill", "var(--mm-meas-lbl-bg, rgba(0,0,0,.72))");
+    rect.setAttribute("stroke", "var(--mm-meas-lbl-bd, rgba(255,255,255,.28))");
     rect.setAttribute("stroke-width", "1");
     rect.setAttribute("filter", "url(#mmLblShadow)");
     g.appendChild(rect);
