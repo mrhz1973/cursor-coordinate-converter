@@ -2,7 +2,7 @@
 
 ## 🗓 Data
 
-2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)*
+2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)* · **checkpoint 2026-04-29 (finito)** — vedi *Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)*
 
 > File canonico di riferimento: **`coordinate_converter Claude.html`** (HTML standalone unico nel repo). Indice tecnico aggiornabile: **`docs/PROJECT_notes.md`**.
 
@@ -2183,4 +2183,31 @@ Chiusura sessione su richiesta utente **«Finito»** dopo micro-patch sul **moda
 ### TODO / non toccato (confermato per questa sessione)
 
 - Altri `window.confirm` / `window.prompt` sparsi (es. eliminazione tracce salvate, map waypoint clear, favoriti, offline fallbacks) **non** sostituiti in blocco; Waypoint/CoT file-only oltre le rifiniture già in checkpoint separato; **nessun** tocco a logica mappe offline, reset totale, live GPS.
+
+
+## Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`** dopo implementazione incrementale **Misura GIS** (blocchi **M1** audit stato + **M3 leggero** notifiche interne) e aggiornamento documentazione workflow orchestratore con alias **`aggio`** per **«aggiornati»**.
+
+### Misura GIS — monolite (`coordinate_converter Claude.html`)
+
+1. **Stato (M1):** commenti su transient (`mapMeasureMode`, `mapMeasurePts`, `mapPolyPts`, ecc.) vs preferenze in **`saveStore.settings`** (`mapMeasureUnit`, `mapMeasureKind`, `mapPolyClosed`, **`gisMeasureFlow`**); **`sanitizeGisMeasureFlow`**; caricamento **`gisMeasureFlow`** da persistenza al boot; **`gisExitMeasureTabPartial`** non azzera più il flow (preferenza UX conservata); geometrie misura **mai** nel payload store.
+
+2. **Notifiche (M3 leggero):** **`#measOperativeNotices`** (`measClearMsgs`, `measShowInfo`, `measShowError`, `measSyncOperativeInfo`); chiavi i18n IT/EN/FR sotto **`measure.notice.*`** / **`measure.err.*`**; errori validazione **direct** in **`applyGisDirectInputsToMap`**; Esc globale (dopo Range Rings) azzera vertici misura GIS + messaggio **Esc**; **`measSyncOperativeInfo`** richiamata da **`updateMeasureReadouts`**, **`activateTab("measure")`**, cambio unità/flow/kind, **`gisRefreshI18n`**; rimossi **`saveStore`** non necessari su apply direct e contextmenu delete handle; commit **`fix(measure)`** per evitare doppia **`measSyncOperativeInfo`** che cancellava il messaggio Esc.
+
+### Orchestratore — solo documentazione
+
+- **`docs/orchestrator/chatgpt-checkpoint.md`**, **`docs/orchestrator/README.md`**, **`.cursor/rules/30-output-workflow.mdc`**: **`aggio`** documentato come alias breve di **«aggiornati»** (stesso significato: ChatGPT = leggere memoria da remoto; Cursor = pubblicare `latest`/`inbox` + commit/push selettivo). **`«aggiornati»`** resta valido.
+
+### Non toccato (perimetro dichiarato)
+
+- **`docs/roadmap.md`** non modificato in questi interventi orchestratore.
+- Mappe offline core, Track/Waypoint core oltre ciò già nelle sessioni precedenti, IndexedDB tile, reset totale, OPSEC, GPS — non oggetto dei blocchi Misura/orchestratore sopra.
+
+### File di riferimento commit
+
+- Misura: `9f5ec8c`, `a6e8c55`, `3175e47` (sequenza feature + fix + nota inbox).
+- Alias **aggio**: `f9768cb`.
 
