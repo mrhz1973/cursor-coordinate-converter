@@ -4,16 +4,17 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Riconciliazione pubblicata: Misura M1+M3 (GIS) — `IMPLEMENTATO E NON PUBBLICATO`:** blocco già presente nel monolite e verificato con evidenze (stato/persistenza `gisMeasureFlow`, notifiche interne `#measOperativeNotices`, Esc azzera vertici + messaggio, i18n IT/EN/FR). In questo step **nessuna modifica al monolite**: solo registrazione memoria orchestratore. Dettaglio in **`docs/orchestrator/inbox/2026-04-30_1259_riepilogo_measure-M1-M3-riconciliato.md`**.
+2026-04-30 — **Misura M2 (UI pannello GIS):** pannello `#sec-measure` riallineato agli standard UI/UX con intervento minimo: aggiunto blocco azioni “Pulisci” (stile danger-subtle) nel pannello GIS + micro CSS scoped + handler delegato per clear che azzera vertici e aggiorna overlay/readout/notices. Nessuna modifica a matematica, persistenza o overlay SVG. Dettaglio in **`docs/orchestrator/inbox/2026-04-30_1308_riepilogo_measure-M2-ui-panel-standard.md`**.
 
 ## Ultimo intervento Cursor
 
-Memoria orchestratore: riconciliazione e pubblicazione esito **Misura M1+M3** (classificazione `IMPLEMENTATO E NON PUBBLICATO`), senza modifiche al monolite né checkpoint ufficiali. **Nessun** `finito`.
+Implementazione monolite **Misura M2 (UI pannello GIS)** + pubblicazione memoria orchestratore (latest + inbox). **Nessun** `finito`.
 
 ## File modificati (sintesi)
 
+- `coordinate_converter Claude.html`
 - `docs/orchestrator/latest.md`
-- `docs/orchestrator/inbox/2026-04-30_1259_riepilogo_measure-M1-M3-riconciliato.md`
+- `docs/orchestrator/inbox/2026-04-30_1308_riepilogo_measure-M2-ui-panel-standard.md`
 
 ## Prossimo passo consigliato
 
@@ -21,4 +22,4 @@ Continuare sviluppo app / piani Misura o altro backlog; per ChatGPT: dopo push, 
 
 ## Dettagli (inbox)
 
-- Misura M1+M3 (riconciliato): `docs/orchestrator/inbox/2026-04-30_1259_riepilogo_measure-M1-M3-riconciliato.md`
+- Misura M2 UI panel: `docs/orchestrator/inbox/2026-04-30_1308_riepilogo_measure-M2-ui-panel-standard.md`
