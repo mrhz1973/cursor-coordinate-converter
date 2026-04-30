@@ -37,7 +37,7 @@ Chiavi aggiunte: `measure.noticeRegionAria`, `measure.notice.measureActive`, `me
 
 ## Rischi residui
 
-- Doppia chiamata `measSyncOperativeInfo` in alcuni percorsi (trascurabile).
+- Follow-up commit `fix(measure): evita doppia measSyncOperativeInfo dopo Esc`: `syncGisDirectInputsFromMeasurePts` non chiama più `measSyncOperativeInfo` (solo `measClearMsgs`); `mapMeasureDocDragUp` chiama `measSyncOperativeInfo` dopo sync perché non passa da `updateMeasureReadouts`.
 - Conflitti tra strumenti non annunciati in UI se non già previsti altrove (fuori scope).
 
 ## Prossimo passo consigliato
