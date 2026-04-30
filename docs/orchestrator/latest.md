@@ -4,17 +4,17 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Misura M6 (overlay polish leggibilità tema/tile):** migliorata leggibilità label overlay Misura con halo (stroke + `paint-order`) e colori via CSS vars scoped a `.tile-measure-overlay`, con override light/dark. Nessuna modifica a matematica, stato, export M5 o UI pannello. Dettaglio in **`docs/orchestrator/inbox/2026-04-30_1428_riepilogo_measure-M6-overlay-polish.md`**.
+2026-04-30 — **Bugfix critico reset dati locali (modal bloccato “Cancellazione in corso…”):** aggiunto recovery al boot che forza chiusura+reset UI del dialog `#appFullResetDialog` se il browser ripristina uno stato open/busy; aggiunto timeout (12s) su `idbClearAllTilesOrThrow()` per evitare blocchi infiniti e garantire errore interno + sblocco UI. Dettaglio in **`docs/orchestrator/inbox/2026-04-30_1637_riepilogo_bugfix-reset-local-data-modal-stuck.md`**.
 
 ## Ultimo intervento Cursor
 
-Implementazione monolite **Misura M6 (overlay polish)** + pubblicazione memoria orchestratore (latest + inbox). **Nessun** `finito`.
+Bugfix nel monolite per reset totale dati locali (modal stuck) + aggiornamento memoria orchestratore (latest + inbox). **Nessun** `finito`.
 
 ## File modificati (sintesi)
 
 - `coordinate_converter Claude.html`
 - `docs/orchestrator/latest.md`
-- `docs/orchestrator/inbox/2026-04-30_1428_riepilogo_measure-M6-overlay-polish.md`
+- `docs/orchestrator/inbox/2026-04-30_1637_riepilogo_bugfix-reset-local-data-modal-stuck.md`
 
 ## Prossimo passo consigliato
 
@@ -23,3 +23,4 @@ Continuare sviluppo app / piani Misura o altro backlog; per ChatGPT: dopo push, 
 ## Dettagli (inbox)
 
 - Misura M6 overlay polish: `docs/orchestrator/inbox/2026-04-30_1428_riepilogo_measure-M6-overlay-polish.md`
+- Bugfix reset dati locali (modal stuck): `docs/orchestrator/inbox/2026-04-30_1637_riepilogo_bugfix-reset-local-data-modal-stuck.md`
