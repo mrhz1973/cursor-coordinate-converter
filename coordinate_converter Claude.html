@@ -3372,6 +3372,23 @@ body:not(.gis-mode) #sec-measure .meas-gis-only{ display:none !important; }
   border:1px dashed var(--border); background:var(--panel2);
   font-family:ui-monospace,Menlo,monospace; font-size:.88rem; margin:8px 0;
 }
+#sec-measure .meas-operative-notices{
+  margin:8px 0 10px; display:flex; flex-direction:column; gap:6px; min-height:0;
+}
+#sec-measure .meas-notice-box{
+  font-size:.86rem; line-height:1.35; margin:0; padding:8px 10px; border-radius:8px;
+  border:1px solid var(--border); pointer-events:none;
+}
+#sec-measure .meas-notice-box--info{
+  background: color-mix(in srgb, var(--accent) 6%, var(--panel2));
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+}
+#sec-measure .meas-notice-box--error{
+  background: color-mix(in srgb, var(--error, #dc2626) 10%, var(--panel2));
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--error, #dc2626) 35%, var(--border));
+}
 table.batch-table{
   width:100%; border-collapse:collapse; font-size:.82rem;
   font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -7670,6 +7687,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <!-- GIS hub: misura solo su mappa + proietta con dist/az editabili (no textarea coordinate). -->
         <div class="meas-gis-only">
           <p class="sub-section-hint" data-i18n="meas.gisIntro"></p>
+          <div id="measOperativeNotices" class="meas-operative-notices" role="region" aria-live="polite" aria-relevant="additions text" data-i18n-aria="measure.noticeRegionAria">
+            <div id="measNoticeInfo" class="meas-notice-box meas-notice-box--info" role="status" hidden></div>
+            <div id="measNoticeErr" class="meas-notice-box meas-notice-box--error" role="alert" hidden></div>
+          </div>
           <div class="meas-gis-flow-tabs" role="tablist" aria-label="Modalità misura">
             <button type="button" class="mb-tab active" data-gis-meas-flow="inverse2" data-i18n="meas.gisFlow2">Due punti</button>
             <button type="button" class="mb-tab" data-gis-meas-flow="direct" data-i18n="meas.gisFlowProj">Proietta punto</button>
@@ -9645,6 +9666,14 @@ const I18N = {
     "map.measureExit":"Esci",
     "map.measureTabPoly":"Poligono / area sulla mappa",
     "map.measureTabLine":"Linea / distanza sulla mappa",
+    "measure.noticeRegionAria":"Avvisi operativi Misura",
+    "measure.notice.measureActive":"Misura attiva: clic sulla mappa per aggiungere punti.",
+    "measure.notice.lineMode":"Linea (due punti): aggiungi vertici sulla mappa.",
+    "measure.notice.polyMode":"Poligono: aggiungi vertici; area se il poligono è chiuso.",
+    "measure.notice.directMode":"Proietta: primo clic = partenza; poi distanza e azimuth (o trascina il punto finale).",
+    "measure.notice.escCleared":"Vertici misura azzerati (Esc).",
+    "measure.err.invalidDirectInput":"Distanza o azimuth non validi (distanza > 0, azimuth 0–360°).",
+    "measure.err.invalidMeasureInput":"Impossibile calcolare la destinazione con questi valori.",
     "tip.mapPrimaryCycle":"Cambia formato coordinate (pulsante o tasto destro)",
     "tip.mapPrimaryCycleTip":"Formato: {cur}. Clic su ⇄ o tasto destro sulla coordinata per passare a {next}.",
     "img.date.loading":"Imagery: … (Esri)",
@@ -10859,6 +10888,14 @@ const I18N = {
     "map.measureExit":"Exit",
     "map.measureTabPoly":"Polygon / area on map",
     "map.measureTabLine":"Line / distance on map",
+    "measure.noticeRegionAria":"Measure notices",
+    "measure.notice.measureActive":"Measure active: click the map to add points.",
+    "measure.notice.lineMode":"Line (two-point): add vertices on the map.",
+    "measure.notice.polyMode":"Polygon: add vertices; area when closed.",
+    "measure.notice.directMode":"Project: first click = start; then distance and bearing (or drag the end point).",
+    "measure.notice.escCleared":"Measure vertices cleared (Esc).",
+    "measure.err.invalidDirectInput":"Invalid distance or bearing (distance > 0, bearing 0–360°).",
+    "measure.err.invalidMeasureInput":"Could not compute the destination from these values.",
     "tip.mapPrimaryCycle":"Cycle coordinate format (button or right-click)",
     "tip.mapPrimaryCycleTip":"Format: {cur}. Click ⇄ or right-click the coordinate string for {next}.",
     "img.date.loading":"Imagery: … (Esri)",
@@ -12073,6 +12110,14 @@ const I18N = {
     "map.measureExit":"Quitter",
     "map.measureTabPoly":"Polygone / surface sur la carte",
     "map.measureTabLine":"Ligne / distance sur la carte",
+    "measure.noticeRegionAria":"Notifications Mesure",
+    "measure.notice.measureActive":"Mesure active : cliquez sur la carte pour ajouter des points.",
+    "measure.notice.lineMode":"Ligne (deux points) : ajoutez des sommets sur la carte.",
+    "measure.notice.polyMode":"Polygone : ajoutez des sommets ; surface si fermé.",
+    "measure.notice.directMode":"Projeter : premier clic = départ ; puis distance et azimut (ou glissez le point final).",
+    "measure.notice.escCleared":"Sommets de mesure effacés (Échap).",
+    "measure.err.invalidDirectInput":"Distance ou azimut invalide (distance > 0, azimut 0–360°).",
+    "measure.err.invalidMeasureInput":"Impossible de calculer la destination avec ces valeurs.",
     "tip.mapPrimaryCycle":"Changer le format des coordonnées (bouton ou clic droit)",
     "tip.mapPrimaryCycleTip":"Format : {cur}. Clic sur ⇄ ou clic droit sur la coordonnée pour passer à {next}.",
     "img.date.loading":"Imagery : … (Esri)",
@@ -12307,20 +12352,26 @@ const state = {
   // show missing-tile voids, not the live distinction.
   tilePackHints: true,
   mapPickMode: false,
-  mapMeasureMode: false,
-  mapMeasurePts: null, // transient: [{lat,lon},{lat,lon}]
-  mapCursorLL: null,   // transient: last cursor lat/lon in tile map
-  mapMeasureUnit: "m", // m | km | nm | mi | ft
-  mapMeasurePanelOpen: false,
+  /* --- Misura mappa (GIS + toolbar):
+   *   Transient: mapMeasureMode, mapMeasurePts, mapPolyPts, mapCursorLL, mapMeasurePanelOpen.
+   *   Preferenze persistite (saveStore.settings): mapMeasureUnit, mapMeasureKind, mapPolyClosed, gisMeasureFlow.
+   *   Campi classici (solo !gis-mode, textarea #meas-p1/#meas-p2): calcolo incolla, non toccano lo stato mappa GIS. --- */
+  mapMeasureMode: false, // transient: strumento armato (click mappa aggiunge vertici)
+  mapMeasurePts: null, // transient linea/direct: [{lat,lon},{lat,lon}] — mai persistito
+  mapCursorLL: null,   // transient: ultimo lat/lon cursore sulla tile map
+  mapMeasureUnit: "m", // preferenza persistita: m | km | nm | mi | ft
+  mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
+  /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
+  _measEscNoticePending: false,
   /** Basemap (osm/sat) dropdown on tile map — transient. */
   mapBasemapMenuOpen: false,
   /** Offline map download UI (pre-cache panel). Hidden until the map toolbar button is used. */
   offlineDownloadVisible: false,
-  mapMeasureKind: "line", // line | poly
-  /** GIS measure drawer: inverse2 = due punti su mappa; direct = origine mappa + dist/az editabili. */
+  mapMeasureKind: "line", // preferenza persistita: line | poly
+  /** Preferenza persistita (solo GIS): inverse2 = due punti mappa; direct = origine + dist/az + destinazione drag. */
   gisMeasureFlow: "inverse2",
-  mapPolyPts: null,       // transient: [{lat,lon},...]
-  mapPolyClosed: true,
+  mapPolyPts: null,       // transient poligono: [{lat,lon},...] — mai persistito
+  mapPolyClosed: true,    // preferenza persistita: poligono chiuso per area
   /** Pre-cache bounding-box selection drawn visually on the map.
    * { n, s, e, w } in degrees WGS84, or null if nothing drawn. */
   bboxSelection: null,
@@ -12505,13 +12556,74 @@ function gisMeasureIsDrawerContext(){
   return document.body.classList.contains("gis-mode") && state.activeTab === "measure";
 }
 
+/** Preferenza UX GIS solo valori ammessi (persistenza settings). */
+function sanitizeGisMeasureFlow(v){
+  const s = String(v || "");
+  return (s === "direct") ? "direct" : "inverse2";
+}
+
+function measClearMsgs(){
+  const err = document.getElementById("measNoticeErr");
+  const inf = document.getElementById("measNoticeInfo");
+  if (err){ err.hidden = true; err.textContent = ""; }
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+}
+function measShowError(key){
+  const err = document.getElementById("measNoticeErr");
+  const inf = document.getElementById("measNoticeInfo");
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  if (!err) return;
+  err.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
+  err.hidden = !String(err.textContent || "").trim();
+}
+function measShowInfo(key){
+  const err = document.getElementById("measNoticeErr");
+  const inf = document.getElementById("measNoticeInfo");
+  if (err){ err.hidden = true; err.textContent = ""; }
+  if (!inf) return;
+  inf.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
+  inf.hidden = !String(inf.textContent || "").trim();
+}
+/** Aggiorna hint stato Misura GIS (#measOperativeNotices); non sostituisce errori ancora visibili. */
+function measSyncOperativeInfo(){
+  if (!document.body.classList.contains("gis-mode") || state.activeTab !== "measure"){
+    measClearMsgs();
+    return;
+  }
+  const err = document.getElementById("measNoticeErr");
+  const inf = document.getElementById("measNoticeInfo");
+  if (!inf) return;
+  if (state._measEscNoticePending){
+    state._measEscNoticePending = false;
+    if (err){ err.hidden = true; err.textContent = ""; }
+    inf.textContent = (typeof t === "function" ? (t("measure.notice.escCleared") || "") : "") || "";
+    inf.hidden = !String(inf.textContent || "").trim();
+    return;
+  }
+  if (!state.mapMeasureMode){
+    inf.hidden = true;
+    inf.textContent = "";
+    return;
+  }
+  if (err && !err.hidden && String(err.textContent || "").trim()) return;
+  const flow = state.gisMeasureFlow || "inverse2";
+  const kind = state.mapMeasureKind || "line";
+  let key = "measure.notice.measureActive";
+  if (kind === "poly") key = "measure.notice.polyMode";
+  else if (flow === "direct") key = "measure.notice.directMode";
+  else key = "measure.notice.lineMode";
+  inf.textContent = (typeof t === "function" ? (t(key) || "") : "") || "";
+  inf.hidden = !String(inf.textContent || "").trim();
+}
+
 function gisExitMeasureTabPartial(){
   mapMeasureDocDragCleanup();
+  try { measClearMsgs(); } catch(_){}
   state.mapMeasureMode = false;
   state.mapMeasurePts = null;
   state.mapPolyPts = null;
   state.mapMeasurePanelOpen = false;
-  state.gisMeasureFlow = "inverse2";
+  /* gisMeasureFlow resta preferenza persistita — non resettare qui. */
 }
 
 function syncGisDirectFieldsVisibility(){
@@ -12548,6 +12660,7 @@ function syncGisDirectInputsFromMeasurePts(){
     distEl.value = String(Number.isFinite(dShow) ? (Math.abs(dShow) < 1 ? dShow.toFixed(6) : dShow.toFixed(4)) : "");
     brEl.value = String(inv.initialBearing.toFixed(4));
   } catch(_){}
+  try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
 }
 
 function applyGisDirectInputsToMap(){
@@ -12563,8 +12676,10 @@ function applyGisDirectInputsToMap(){
   const nn = (s) => String(s == null ? "" : s).replace(/,/g, ".").trim();
   const dist = parseFloat(nn(distEl.value));
   const br = parseFloat(nn(brEl.value));
-  if (!Number.isFinite(dist) || dist <= 0) return;
-  if (!Number.isFinite(br) || br < 0 || br > 360) return;
+  if (!Number.isFinite(dist) || dist <= 0 || !Number.isFinite(br) || br < 0 || br > 360){
+    measShowError("measure.err.invalidDirectInput");
+    return;
+  }
   const unit = uEl ? String(uEl.value || "km") : "km";
   const distM = unit === "km" ? dist * 1000 : unit === "NM" ? dist * 1852 : dist;
   try {
@@ -12577,8 +12692,10 @@ function applyGisDirectInputsToMap(){
       renderTileMap(lp.lat, lp.lon, z);
       updateMeasureReadouts(root);
     }
-    saveStore();
-  } catch(_){}
+    try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+  } catch(_){
+    measShowError("measure.err.invalidMeasureInput");
+  }
 }
 
 function syncGisMeasureDrawerUnitFromState(){
@@ -12919,6 +13036,7 @@ function saveStore(){
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
+        gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
         geocodeEnabled: state.geocodeEnabled !== false,
         geocodeReverseAuto: state.geocodeReverseAuto !== false,
         geocodeEndpoint: String(state.geocodeEndpoint || "").slice(0, 200),
@@ -15231,6 +15349,7 @@ function updateMeasureReadouts(root){
   set(`${dist} · ${az}`);
   } finally {
     try { syncGisDirectInputsFromMeasurePts(); } catch(_){}
+    try { measSyncOperativeInfo(); } catch(_){}
   }
 }
 
@@ -15571,7 +15690,6 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     ev.preventDefault();
     ev.stopPropagation();
     deleteMapMeasurePoint(String(h.dataset.kind || "line"), parseInt(h.dataset.idx, 10));
-    saveStore();
     renderMapMeasureOverlay(root, markerLat, markerLon, z);
     updateMeasureReadouts(root);
   });
@@ -17470,6 +17588,28 @@ function bindHotkeys(){
         try { refreshTileMapForTrackUi(); } catch(_){}
         try { renderRangeRingsPanel(); } catch(_){}
         return;
+      }
+      if (document.body.classList.contains("gis-mode") && state.activeTab === "measure" && state.mapMeasureMode){
+        const hadPts = (Array.isArray(state.mapMeasurePts) && state.mapMeasurePts.length > 0) ||
+          (Array.isArray(state.mapPolyPts) && state.mapPolyPts.length > 0);
+        if (hadPts){
+          state.mapMeasurePts = null;
+          state.mapPolyPts = null;
+          state._measEscNoticePending = true;
+          try {
+            const root = document.getElementById("miniMap");
+            const lp = state.lastPoint || state.viewCenter;
+            const z = state.mapZoom || 11;
+            if (root && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+              renderMapMeasureOverlay(root, lp.lat, lp.lon, z);
+              updateMeasureReadouts(root);
+            } else if (typeof refreshTileMapForTrackUi === "function"){
+              refreshTileMapForTrackUi();
+            }
+          } catch(_){}
+          ev.preventDefault();
+          return;
+        }
       }
       // Exit track / waypoint map-add modes if active
       if ((state.track && state.track.pickMode) || state.waypointPickMode){
@@ -31661,6 +31801,7 @@ function gisInit(){
       const z = state.mapZoom || 11;
       if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
       saveStore();
+      try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
       return;
     }
     const kbtn = ev.target.closest && ev.target.closest("[data-gis-meas-kind]");
@@ -31678,6 +31819,7 @@ function gisInit(){
       const z = state.mapZoom || 11;
       if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
       saveStore();
+      try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
     }
   });
   document.addEventListener("change", (ev) => {
@@ -31690,6 +31832,7 @@ function gisInit(){
       const lp = state.lastPoint || state.viewCenter;
       const z = state.mapZoom || 11;
       if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+      try { measSyncOperativeInfo(); } catch(_){}
     }
     if (t.matches && t.matches('[data-role="gis-meas-dir-unit"]')){
       applyGisDirectInputsToMap();
@@ -32194,15 +32337,16 @@ function activateTab(tabKey){
     syncGisDirectFieldsVisibility();
     syncGisMeasureKindTabs();
     syncGisMeasureDrawerUnitFromState();
-      trackSyncPickModeUi();
+    trackSyncPickModeUi();
     if (tabKey === "measure"){
       const r = document.getElementById("miniMap");
       const lp = state.lastPoint || state.viewCenter;
       const z = state.mapZoom || 11;
       if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+      try { measSyncOperativeInfo(); } catch(_){}
     }
-    } catch(_){}
-  }
+  } catch(_){}
+}
 
 /** Close the drawer for the currently active tab and return its content home. */
 function deactivateTab(){
@@ -35214,6 +35358,7 @@ function gisRefreshI18n(){
   if (rrt && rrd && (state.rangeRingsPanelOpen || rrd.open) && typeof t === "function"){
     try { rrt.textContent = t("sec.rangerings") || rrt.textContent; } catch(_){}
   }
+  if (state.activeTab === "measure"){ try { measSyncOperativeInfo(); } catch(_){} }
 }
 
 /** Bridge to the existing `navigateToToolSection()` used by the legacy
@@ -35290,6 +35435,9 @@ function init(){
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
+      if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
+        state.gisMeasureFlow = sanitizeGisMeasureFlow(stored.settings.gisMeasureFlow);
+      }
       if (stored.settings.compositeTab && typeof stored.settings.compositeTab === "object"){
         const ct = stored.settings.compositeTab;
         if (["DD","DDM","DMS"].includes(ct.LATLON)) state.compositeTab.LATLON = ct.LATLON;
