@@ -63,7 +63,7 @@ Se non riesci a creare il file in `/tmp`, segnala chiaramente l’errore e ripor
 
 ### Piano importante in Plan mode **senza** scrittura file in repo
 
-In Plan mode **non** è sempre possibile (o consentito) modificare il workspace. Un **piano importante** è ad esempio: roadmap tecnica multi-step, decisioni d’impatto, piano che deve essere condiviso con l’orchestratore **ChatGPT** dopo «aggiornati», o piano che l’utente ha chiesto esplicitamente di versionare in memoria.
+In Plan mode **non** è sempre possibile (o consentito) modificare il workspace. Un **piano importante** è ad esempio: roadmap tecnica multi-step, decisioni d’impatto, piano che deve essere condiviso con l’orchestratore **ChatGPT** dopo **`aggio`** / **«aggiornati»**, o piano che l’utente ha chiesto esplicitamente di versionare in memoria.
 
 **Requisiti:**
 
@@ -82,7 +82,7 @@ In Plan mode **non** è sempre possibile (o consentito) modificare il workspace.
 
 4. Il prompt Agent può incorporare il piano **inline** (copia-incolla del testo sotto le istruzioni) oppure dire di incollare il piano dalla chat; in ogni caso deve essere **operativo** senza passaggi manuali aggiuntivi non documentati.
 
-**Distinzione terminologia (invariata):** «aggiornati» in **Cursor** = pubblicare memoria orchestratore; «aggiornati» in **ChatGPT** = leggere la memoria dal remoto dopo pubblicazione. Cursor **non** controlla ChatGPT; senza file in `inbox/` versionati e pushati, ChatGPT **non** può vedere il piano con la sola lettura remota.
+**Distinzione terminologia (invariata):** **`aggio`** / **«aggiornati»** in **Cursor** = pubblicare memoria orchestratore; **`aggio`** / **«aggiornati»** in **ChatGPT** = leggere la memoria dal remoto dopo pubblicazione. Cursor **non** controlla ChatGPT; senza file in `inbox/` versionati e pushati, ChatGPT **non** può vedere il piano con la sola lettura remota.
 
 **Un solo file inbox per intervento** (come in *Autosync orchestratore*): se lo stesso intervento Agent salva anche riepilogo e piano, confluire in **un** file `inbox` o un piano dedicato `..._plan_<slug>.md` **solo** se migliora la lettura — **non** un file separato per ogni micro-fix.
 
@@ -138,12 +138,14 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 - **Cursor** aggiorna e **pubblica** solo file e `git` nella sessione di lavoro. **Non** “controlla” ChatGPT, **non** esegue nulla **dentro** la chat ChatGPT e **non** deve presumere che ChatGPT legga il repository da solo.
 - **Cursor — autosync:** in chiusura di **ogni** intervento operativo che cambia stato, **sempre** la sequenza sopra (`latest.md`, `inbox`, `commit`/`push` selettivo memoria). **Non** attendere un comando utente per quella pubblicazione di default.
-- **ChatGPT:** **non** legge GitHub in automatico. Legge la memoria orchestratore **solo** quando l’utente scrive **«aggiornati»** nella **chat ChatGPT**. Automazioni esterne (n8n, webhook, polling, ecc.) **non** fanno parte di queste regole.
+- **ChatGPT:** **non** legge GitHub in automatico. Legge la memoria orchestratore **solo** quando l’utente scrive **`aggio`** o **«aggiornati»** nella **chat ChatGPT**. Automazioni esterne (n8n, webhook, polling, ecc.) **non** fanno parte di queste regole.
 
-### Doppio significato di **«aggiornati»** (terminologia)
+### Doppio significato di **`aggio`** / **«aggiornati»** (terminologia)
 
-1. **«aggiornati» in Cursor** = **pubblica la memoria orchestratore**: allinea `docs/orchestrator/latest.md` e `docs/orchestrator/inbox/<riepilogo intervento>.md` allo stato reale ed esegui **commit/push selettivo** della sola memoria orchestratore e dei file `.cursor/rules/**` pertinenti al workflow, se modificati nello stesso intervento. (Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento, che pubblica comunque **senza** attendere questo comando.)
-2. **«aggiornati» in ChatGPT** = **leggi la memoria orchestratore da GitHub** (o altro remoto usato dal team), nell’ordine definito in `docs/orchestrator/chatgpt-checkpoint.md` (ingresso tipico: `docs/orchestrator/latest.md`). È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo: **manuale**, non automatico.
+**Alias:** **`aggio`** equivale a **«aggiornati»** (stesso significato in Cursor e in ChatGPT; vedi anche `docs/orchestrator/chatgpt-checkpoint.md`).
+
+1. **`aggio`** / **«aggiornati» in Cursor** = **pubblica la memoria orchestratore**: allinea `docs/orchestrator/latest.md` e `docs/orchestrator/inbox/<riepilogo intervento>.md` allo stato reale ed esegui **commit/push selettivo** della sola memoria orchestratore e dei file `.cursor/rules/**` pertinenti al workflow, se modificati nello stesso intervento. (Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento, che pubblica comunque **senza** attendere questo comando.)
+2. **`aggio`** / **«aggiornati» in ChatGPT** = **leggi la memoria orchestratore da GitHub** (o altro remoto usato dal team), nell’ordine definito in `docs/orchestrator/chatgpt-checkpoint.md` (ingresso tipico: `docs/orchestrator/latest.md`). È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo: **manuale**, non automatico.
 
 **Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.
 
@@ -154,4 +156,4 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 ### Limiti (invariati)
 
-- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, **n8n** o altre automazioni che facciano leggere a ChatGPT il repo **senza** comando manuale «aggiornati» in ChatGPT: solo testo e file markdown sotto percorso consentito. **Cursor** **pubblica** la memoria orchestratore; **non** orchestra né sostituisce l’utente dentro ChatGPT.
+- **Nessun** vincolo in questa sezione a introdurre script, `package.json`, GitHub Actions, hook, **n8n** o altre automazioni che facciano leggere a ChatGPT il repo **senza** comando manuale **`aggio`** / **«aggiornati»** in ChatGPT: solo testo e file markdown sotto percorso consentito. **Cursor** **pubblica** la memoria orchestratore; **non** orchestra né sostituisce l’utente dentro ChatGPT.
