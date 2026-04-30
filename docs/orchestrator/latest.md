@@ -4,11 +4,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **FIX Range Rings (loop infinito):** evidenza ingest: `renderRangeRingsList` (vuota) ↔ `rrCancelPendingRename` ↔ `renderRangeRingsList` perché `rrCancelPendingRename` chiamava sempre `renderRangeRingsList()` anche senza rename pendente. Corretto: refresh lista solo se `p` truthy. Dettaglio **`docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`**. Strumentazione **bf0d51-loop** ancora presente per verifica post-fix.
+2026-04-30 — **Mappa / hydrateMapTiles:** diagnosi — exit con `pending:45` e `imgsWithSrc:0` da **hydrate su DOM già sostituito** da un `renderTileMap` successivo; durata lunga anche da **`syncOfflineDeltaViewportHints` sequenziale** (molti `await getTileBlobByKey`). Fix monolite: generazione `#miniMap._mapTileGen` passata a `hydrateMapTiles`, skip se obsoleto, check dopo `await` in `load1`; delta hints in **parallelo** + `opts.tileGen`. Dettaglio **`docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`**. (RR: fix rename già in `1900_…`.)
 
 ## Ultimo intervento Cursor
 
-Fix loop RR (`rrCancelPendingRename`); memoria orchestratore aggiornata. **Nessun** `finito`. Il monolite **non** è nel commit autosync.
+Fix hydrate tile-gen + delta hints parallel + recap RR rename; memoria aggiornata. Monolite **non** in autosync.
 
 ## File modificati (sintesi)
 
@@ -16,10 +16,11 @@ Fix loop RR (`rrCancelPendingRename`); memoria orchestratore aggiornata. **Nessu
 - `docs/orchestrator/latest.md`
 - `docs/orchestrator/inbox/2026-04-30_1830_riepilogo_rr-loop-hypothesis-instrumentation.md`
 - `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
+- `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
 
 ## Prossimo passo consigliato
 
-Verifica post-fix: aprire RR con 0 set — niente storm `renderMiniMap` / `listCalls` in crescita; log ingest opzionale. Rimuovere regioni `bf0d51-loop` dopo conferma utente.
+Hard refresh: verificare tile visibili e log `hydrateMapTiles:exit` (`imgsWithSrcProp`, pochi `stale`). Poi RR se serve.
 
 ## Dettagli (inbox)
 
@@ -28,3 +29,4 @@ Verifica post-fix: aprire RR con 0 set — niente storm `renderMiniMap` / `listC
 - RR debug perf: `docs/orchestrator/inbox/2026-04-30_1745_riepilogo_rr-debug-perf-instrumentation.md`
 - RR loop ingest H1–H4: `docs/orchestrator/inbox/2026-04-30_1830_riepilogo_rr-loop-hypothesis-instrumentation.md`
 - RR fix loop rename-cancel: `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
+- Map hydrate stale-gen + delta parallel: `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
