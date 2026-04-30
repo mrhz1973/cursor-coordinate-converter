@@ -4,24 +4,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Mappa / hydrateMapTiles (follow-up):** log `bf0d51` mostra `hydrateMapTiles:stale` con **`durationMs` ~14s** (`tileGen` molto indietro vs `mapTileGen`) = hydrate superseded ancora legato ai **fetch** tile. Fix monolite: **`AbortController`** su `#miniMap` (`_miniMapTileHydrateAC`), abort prima di ogni nuovo `renderTileMap`, **`fetch(..., { signal })`** in `hydrateMapTiles`. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`**. (Stale-gen + delta parallel: `1930_…`.)
+2026-04-30 — **Pulizia strumentazione debug monolite (post-fix verificato):** rimossi `bf0d51` / `RR_DEBUG_PERF` / ingest localhost da `coordinate_converter Claude.html`; **mantenuti** fix `rrCancelPendingRename` (no re-render se nessun rename pendente), `_mapTileGen` + stale checks in `hydrateMapTiles`, `AbortController` su fetch tile, delta viewport parallelo. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`**.
 
 ## Ultimo intervento Cursor
 
-Abort fetch superseded per tile hydrate; memoria aggiornata. Monolite **non** in autosync.
+Rimozione strumentazione debug dal monolite dopo QA utente; pubblicazione memoria orchestratore. Monolite **non** in autosync.
 
 ## File modificati (sintesi)
 
 - `coordinate_converter Claude.html` (locale, non committato in autosync)
 - `docs/orchestrator/latest.md`
-- `docs/orchestrator/inbox/2026-04-30_1830_riepilogo_rr-loop-hypothesis-instrumentation.md`
-- `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
-- `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
-- `docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`
+- `docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`
 
 ## Prossimo passo consigliato
 
-Hard refresh + zoom rapido: verificare in log che gli `hydrateMapTiles:stale` durante rete online non restino bloccati multi-secondo; poi rimozione strumentazione `bf0d51` se tutto ok.
+Smoke manuale rapido (GIS: mappa, RR vuoto, rename Annulla) dopo deploy locale del file HTML; nessun ingest locale atteso.
 
 ## Dettagli (inbox)
 
@@ -32,3 +29,4 @@ Hard refresh + zoom rapido: verificare in log che gli `hydrateMapTiles:stale` du
 - RR fix loop rename-cancel: `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
 - Map hydrate stale-gen + delta parallel: `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
 - Tile hydrate abort superseded fetch: `docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`
+- Pulizia debug post-fix monolite: `docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`
