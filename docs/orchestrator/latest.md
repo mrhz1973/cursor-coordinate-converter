@@ -4,11 +4,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Mappa / hydrateMapTiles:** diagnosi — exit con `pending:45` e `imgsWithSrc:0` da **hydrate su DOM già sostituito** da un `renderTileMap` successivo; durata lunga anche da **`syncOfflineDeltaViewportHints` sequenziale** (molti `await getTileBlobByKey`). Fix monolite: generazione `#miniMap._mapTileGen` passata a `hydrateMapTiles`, skip se obsoleto, check dopo `await` in `load1`; delta hints in **parallelo** + `opts.tileGen`. Dettaglio **`docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`**. (RR: fix rename già in `1900_…`.)
+2026-04-30 — **Mappa / hydrateMapTiles (follow-up):** log `bf0d51` mostra `hydrateMapTiles:stale` con **`durationMs` ~14s** (`tileGen` molto indietro vs `mapTileGen`) = hydrate superseded ancora legato ai **fetch** tile. Fix monolite: **`AbortController`** su `#miniMap` (`_miniMapTileHydrateAC`), abort prima di ogni nuovo `renderTileMap`, **`fetch(..., { signal })`** in `hydrateMapTiles`. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`**. (Stale-gen + delta parallel: `1930_…`.)
 
 ## Ultimo intervento Cursor
 
-Fix hydrate tile-gen + delta hints parallel + recap RR rename; memoria aggiornata. Monolite **non** in autosync.
+Abort fetch superseded per tile hydrate; memoria aggiornata. Monolite **non** in autosync.
 
 ## File modificati (sintesi)
 
@@ -17,10 +17,11 @@ Fix hydrate tile-gen + delta hints parallel + recap RR rename; memoria aggiornat
 - `docs/orchestrator/inbox/2026-04-30_1830_riepilogo_rr-loop-hypothesis-instrumentation.md`
 - `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
 - `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
+- `docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`
 
 ## Prossimo passo consigliato
 
-Hard refresh: verificare tile visibili e log `hydrateMapTiles:exit` (`imgsWithSrcProp`, pochi `stale`). Poi RR se serve.
+Hard refresh + zoom rapido: verificare in log che gli `hydrateMapTiles:stale` durante rete online non restino bloccati multi-secondo; poi rimozione strumentazione `bf0d51` se tutto ok.
 
 ## Dettagli (inbox)
 
@@ -30,3 +31,4 @@ Hard refresh: verificare tile visibili e log `hydrateMapTiles:exit` (`imgsWithSr
 - RR loop ingest H1–H4: `docs/orchestrator/inbox/2026-04-30_1830_riepilogo_rr-loop-hypothesis-instrumentation.md`
 - RR fix loop rename-cancel: `docs/orchestrator/inbox/2026-04-30_1900_riepilogo_rr-infinite-loop-rename-cancel.md`
 - Map hydrate stale-gen + delta parallel: `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
+- Tile hydrate abort superseded fetch: `docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`
