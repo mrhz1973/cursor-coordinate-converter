@@ -3372,6 +3372,13 @@ body:not(.gis-mode) #sec-measure .meas-gis-only{ display:none !important; }
   border:1px dashed var(--border); background:var(--panel2);
   font-family:ui-monospace,Menlo,monospace; font-size:.88rem; margin:8px 0;
 }
+.meas-gis-only .meas-gis-actions{
+  display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+  margin:6px 0 2px;
+}
+.meas-gis-only .meas-gis-actions .btn-danger-subtle{
+  border-color: color-mix(in srgb, var(--error, #dc2626) 30%, var(--border));
+}
 #sec-measure .meas-operative-notices{
   margin:8px 0 10px; display:flex; flex-direction:column; gap:6px; min-height:0;
 }
@@ -7710,6 +7717,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </select>
           </div>
           <div data-role="gis-meas-drawer-out">—</div>
+          <div class="meas-gis-actions">
+            <button type="button" class="btn btn-sm btn-danger-subtle" data-role="gis-meas-clear" data-i18n="map.measureClear">Pulisci</button>
+          </div>
           <div class="meas-gis-direct-fields" data-role="gis-meas-direct-fields" hidden>
             <div class="meas-gis-direct-grid">
               <div class="field-group">
@@ -31788,6 +31798,24 @@ function gisInit(){
   // GIS misura: tab Due punti / Proietta + unità + campi diretti (delegati sul documento).
   document.addEventListener("click", (ev) => {
     if (!document.body.classList.contains("gis-mode")) return;
+    const c = ev.target.closest && ev.target.closest('[data-role="gis-meas-clear"]');
+    if (c && c.closest("#sec-measure")){
+      ev.preventDefault();
+      mapMeasureDocDragCleanup();
+      mapTrackDocDragCleanup();
+      mapWptDocDragCleanup();
+      if ((state.mapMeasureKind || "line") === "poly") state.mapPolyPts = null;
+      else state.mapMeasurePts = null;
+      const r = document.getElementById("miniMap");
+      const lp = state.lastPoint || state.viewCenter;
+      const z = state.mapZoom || 11;
+      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+        renderMapMeasureOverlay(r, lp.lat, lp.lon, z);
+        updateMeasureReadouts(r);
+      }
+      try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+      return;
+    }
     const f = ev.target.closest && ev.target.closest("[data-gis-meas-flow]");
     if (f && f.closest("#sec-measure")){
       ev.preventDefault();
