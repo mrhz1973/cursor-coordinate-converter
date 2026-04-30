@@ -4,21 +4,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Pulizia strumentazione debug monolite (post-fix verificato):** rimossi `bf0d51` / `RR_DEBUG_PERF` / ingest localhost da `coordinate_converter Claude.html`; **mantenuti** fix `rrCancelPendingRename` (no re-render se nessun rename pendente), `_mapTileGen` + stale checks in `hydrateMapTiles`, `AbortController` su fetch tile, delta viewport parallelo. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`**.
+2026-04-30 — **Workflow `finito`:** obbligatoria **riconciliazione orchestratore** dopo il push principale di chiusura sessione (`docs/orchestrator/latest.md` + `inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così **`aggio`** non resta su testi obsoleti tipo «monolite non in autosync» quando il monolite è già su `main`. Regole: **`.cursor/rules/00-project-core.mdc`**, **`.cursor/rules/30-output-workflow.mdc`**; doc team: **`docs/orchestrator/chatgpt-checkpoint.md`**, **`docs/orchestrator/README.md`**. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`**.
 
 ## Ultimo intervento Cursor
 
-Rimozione strumentazione debug dal monolite dopo QA utente; pubblicazione memoria orchestratore. Monolite **non** in autosync.
+Commit **`a2da326`**: estensione sequenza **`finito`** + allineamento README/chatgpt-checkpoint. **Repository:** allineato a `main` dopo push (verificare `git status` locale = pulito).
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (locale, non committato in autosync)
-- `docs/orchestrator/latest.md`
-- `docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`
+- `.cursor/rules/00-project-core.mdc`, `.cursor/rules/30-output-workflow.mdc`
+- `docs/orchestrator/chatgpt-checkpoint.md`, `docs/orchestrator/README.md`
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`
 
 ## Prossimo passo consigliato
 
-Smoke manuale rapido (GIS: mappa, RR vuoto, rename Annulla) dopo deploy locale del file HTML; nessun ingest locale atteso.
+Alla prossima sessione: applicare la nuova sequenza **`finito`** (step 3–4 orchestratore) in chiusura; smoke GIS se si tocca ancora il monolite.
 
 ## Dettagli (inbox)
 
@@ -30,3 +30,4 @@ Smoke manuale rapido (GIS: mappa, RR vuoto, rename Annulla) dopo deploy locale d
 - Map hydrate stale-gen + delta parallel: `docs/orchestrator/inbox/2026-04-30_1930_riepilogo_map-hydrate-stale-gen-delta-parallel.md`
 - Tile hydrate abort superseded fetch: `docs/orchestrator/inbox/2026-04-30_2005_riepilogo_tile-hydrate-abort-superseded-fetch.md`
 - Pulizia debug post-fix monolite: `docs/orchestrator/inbox/2026-04-30_2130_riepilogo_monolite-debug-cleanup-post-fix.md`
+- Workflow finito + orchestratore: `docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`
