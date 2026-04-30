@@ -12549,6 +12549,7 @@ function mapMeasureDocDragUp(ev){
   if (!ev || ev.pointerId !== mapMeasureDocDrag.pid) return;
   mapMeasureDocDragCleanup();
   syncGisDirectInputsFromMeasurePts();
+  try { measSyncOperativeInfo(); } catch(_){}
   if (ev.cancelable) ev.preventDefault();
 }
 
@@ -12660,7 +12661,7 @@ function syncGisDirectInputsFromMeasurePts(){
     distEl.value = String(Number.isFinite(dShow) ? (Math.abs(dShow) < 1 ? dShow.toFixed(6) : dShow.toFixed(4)) : "");
     brEl.value = String(inv.initialBearing.toFixed(4));
   } catch(_){}
-  try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+  try { measClearMsgs(); } catch(_){}
 }
 
 function applyGisDirectInputsToMap(){
