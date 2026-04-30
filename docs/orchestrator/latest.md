@@ -4,19 +4,19 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-29 — **Workflow orchestratore — alias `aggio`:** **`aggio`** è documentato come alias breve di **«aggiornati»** (stesso significato in ChatGPT e in Cursor: leggere vs pubblicare memoria come già definito). **«aggiornati»** resta valido e non è stato sostituito ovunque nella cronologia. Dettaglio in **`docs/orchestrator/inbox/2026-04-29_1800_riepilogo_alias-aggio-aggiornati.md`**.
+2026-04-30 — **Workflow orchestratore — pubblicazione memoria obbligatoria a “blocco completato”:** chiarito che un lavoro completato va considerato **pubblicato all’orchestratore** solo se registrato in `docs/orchestrator/latest.md` **+** un file `docs/orchestrator/inbox/` (con QA, file modificati, monolite incluso/escluso, working tree pulito/non). **ChatGPT non deve scansionare il monolite** per dedurre completamenti. **`aggio`** / **«aggiornati»** invariati (stesso significato). Dettaglio in **`docs/orchestrator/inbox/2026-04-30_1018_riepilogo_workflow-pubblicazione-memoria-obbligatoria.md`**.
 
 ## Ultimo intervento Cursor
 
-Documentazione solo: `chatgpt-checkpoint.md`, `README.md` orchestratore, regola **30-output-workflow**, senza modifiche al monolite né checkpoint ufficiali. **Nessun** `finito`.
+Documentazione solo: `chatgpt-checkpoint.md`, `README.md` orchestratore, regola **30-output-workflow**, `latest.md` + inbox dedicato, senza modifiche al monolite né checkpoint ufficiali. **Nessun** `finito`.
 
 ## File modificati (sintesi)
 
-- `docs/orchestrator/chatgpt-checkpoint.md`
-- `docs/orchestrator/README.md`
 - `.cursor/rules/30-output-workflow.mdc`
+- `docs/orchestrator/README.md`
+- `docs/orchestrator/chatgpt-checkpoint.md`
 - `docs/orchestrator/latest.md`
-- `docs/orchestrator/inbox/2026-04-29_1800_riepilogo_alias-aggio-aggiornati.md`
+- `docs/orchestrator/inbox/2026-04-30_1018_riepilogo_workflow-pubblicazione-memoria-obbligatoria.md`
 
 ## Prossimo passo consigliato
 
@@ -24,4 +24,4 @@ Continuare sviluppo app / piani Misura o altro backlog; per ChatGPT: dopo push, 
 
 ## Dettagli (inbox)
 
-- Alias workflow: `docs/orchestrator/inbox/2026-04-29_1800_riepilogo_alias-aggio-aggiornati.md`
+- Workflow pubblicazione memoria: `docs/orchestrator/inbox/2026-04-30_1018_riepilogo_workflow-pubblicazione-memoria-obbligatoria.md`

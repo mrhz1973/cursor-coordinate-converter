@@ -17,6 +17,17 @@ Automazioni future (n8n, webhook, polling, …) **non** sono parte di questo wor
 - **ChatGPT (orchestrazione):** priorità, ordine di lavoro; per allinearti allo stato **corrente** sul repo devi **leggere** la memoria quando l’utente chiede **`aggio`** / **«aggiornati»** (ordine sotto). **Non** assumere di essere aggiornato senza quella lettura.
 - **Cursor:** dopo **ogni intervento operativo** che cambia stato, esegue **sempre** l’**autosync orchestratore**: aggiorna `docs/orchestrator/latest.md`, crea/aggiorna **un** file in `docs/orchestrator/inbox/` per l’intervento, poi **commit e push selettivi** della sola memoria (e regole workflow se toccate nello stesso intervento), come in [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc). Su Git (es. GitHub) la memoria risulta così **pubblicata**; **non** implica che ChatGPT l’abbia già letta (nessuna lettura automatica). Se, **dopo** che l’utente ha chiesto **`aggio`** / **«aggiornati»** qui, `latest.md` risulta incoerente con il lavoro dichiarato, segnala **anomalia** lato pubblicazione Cursor, non normalità.
 
+## Regola chiave: “blocco completato” deve essere **pubblicato** in memoria
+
+ChatGPT **non deve** scansionare il monolite per dedurre che un blocco è completato.
+
+Un lavoro completato ma non registrato in:
+
+1. `docs/orchestrator/latest.md` **e**
+2. un file `docs/orchestrator/inbox/` dell’intervento
+
+va considerato **non pubblicato all’orchestratore**. In quel caso, chiedi di eseguire la pubblicazione memoria lato Cursor (autosync / **`aggio`** / **«aggiornati»** in Cursor), poi ripeti la lettura qui.
+
 ## Comando **`aggio`** / **«aggiornati»** — in ChatGPT (orchestratore)
 
 Se l’utente scrive **`aggio`** o **«aggiornati»** (stesso significato) **in questa chat**, **leggi la memoria orchestratore da GitHub** (repository remoto usato dal team) in questo **ordine**:

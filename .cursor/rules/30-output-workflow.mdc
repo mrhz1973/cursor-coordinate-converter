@@ -120,6 +120,35 @@ La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestrato
 
 **Intervento** = stesso “blocco” di lavoro sul prompt: possono confluire **più** micro-fix; **un solo** file `inbox` per intervento (o lo stesso file aggiornato per **quello** intervento), **mai** un file separato per ogni micro-fix.
 
+### Regola: pubblicazione memoria **obbligatoria** a “blocco completato”
+
+**Obiettivo:** quando l’utente scrive **`aggio`** / **«aggiornati»** in ChatGPT, la memoria orchestratore deve sempre mostrare chiaramente **l’ultimo lavoro completato** da Cursor (senza deduzione da monolite).
+
+Per **blocco completato** si intende (non esaustivo):
+
+- implementazione nel monolite;
+- piano operativo importante (Plan) che deve essere leggibile dall’orchestratore;
+- modifica di rules;
+- modifica documentale di workflow;
+- correzione bug completata;
+- QA concluso con esito riportabile.
+
+**Vincolo:** un lavoro **completato ma non registrato** in `docs/orchestrator/latest.md` **+** `docs/orchestrator/inbox/` va considerato **non pubblicato all’orchestratore**.
+
+**Nota per ChatGPT:** `aggio` / `aggiornati` in ChatGPT **legge** solo la memoria **già pubblicata**; ChatGPT **non** deve scansionare il monolite per dedurre se un blocco è completato.
+
+**Contenuto minimo che deve comparire in `latest.md` + inbox** (riassunto + dettaglio):
+
+- cosa è stato fatto;
+- file modificati;
+- funzioni/regioni toccate;
+- QA eseguito;
+- rischi residui;
+- prossimo passo consigliato;
+- se il monolite è stato modificato;
+- se il monolite è incluso o escluso dal commit (e perché);
+- se il working tree è pulito o no.
+
 ### Sequenza obbligatoria (autosync)
 
 Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’intervento (salvo **impedimento tecnico** documentato nel RIEPILOGO con motivo e recupero previsto):

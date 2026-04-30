@@ -20,6 +20,27 @@ Dopo **ogni** intervento Cursor che **modifica lo stato operativo** (codice, reg
 
 **ChatGPT non si aggiorna da solo:** non legge GitHub in automatico; legge la memoria orchestratore **solo** quando l’utente scrive **`aggio`** o **«aggiornati»** nella **chat ChatGPT** (= *leggere* da GitHub). **Cursor**, dopo ogni intervento operativo che cambia stato, **pubblica sempre** la memoria (`latest.md`, `inbox`, commit/push selettivo) **senza** interagire con ChatGPT (= *pubblicare*; **`aggio`** / **«aggiornati»** in Cursor ha la stessa semantica di pubblicazione, vedi regola 30).
 
+## Regola “blocco completato” → memoria pubblicata (obbligatoria)
+
+**Obiettivo:** quando l’utente scrive **`aggio`** / **«aggiornati»** in ChatGPT, ChatGPT deve poter capire l’ultimo lavoro completato **leggendo la memoria orchestratore** (senza dover scansionare il monolite).
+
+Per **blocco completato** si intende, ad esempio:
+
+- implementazione nel monolite;
+- piano operativo importante (Plan) da condividere con l’orchestratore;
+- modifica di rules;
+- modifica documentale di workflow;
+- correzione bug completata;
+- QA concluso con esito riportabile.
+
+**Regola:** un blocco è considerato “pubblicato all’orchestratore” **solo se** compare in:
+
+1. `docs/orchestrator/latest.md` (sintesi breve), **e**
+2. `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_<slug>.md` (dettaglio intervento),
+3. con commit/push selettivo della memoria.
+
+Se un lavoro è completato ma **non** è registrato in `latest.md` + `inbox/`, per ChatGPT va trattato come **non pubblicato**.
+
 ## Plan mode e salvataggio piani
 
 In **Plan mode** Cursor può produrre un piano utile **senza** poter (o dover) modificare file nel repository: il piano resta allora **solo nella chat** Cursor finché non viene materializzato sotto `docs/orchestrator/`.
