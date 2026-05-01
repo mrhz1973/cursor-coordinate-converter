@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 5 — piano Astro source picker + pannello floating GIS-first:** salvato in **`docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`** (piano completo: stato attuale Astro, sorgenti posizione, clone RR floating + `#rrSourcePickerDialog`, stato minimo `state.astro`, i18n, 6 step A–F, QA, rischi, raccomandazione, prompt Step A). **Nessuna implementazione**; **`coordinate_converter Claude.html` non modificato**. Primo step consigliato: **Step A — refactor minimo `runAstroUI`**. **Attesa conferma utente** prima del monolite (e conferma architettura floating vs inline prima di Step B). Commit memoria: **`docs: piano astro source picker floating panel`**.
+
 2026-05-01 — **`finito` sessione — Pass 4B SunCalc versionato:** commit **`51a9fc2`** `feat: Pass 4B — SunCalc vendored inline, fix Astro, checkpoint sessione` su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — script vendored SunCalc + `window.SunCalc` + fallback in **`runAstroUI`**; aggiornati **`docs/checkpoint.md`**, append **`docs/session-geolocalizzazione-e-mappa.md`**. Working tree **pulito** post-push. Riconciliazione orchestratore: **`2026-05-01_0310_riepilogo_finito-sessione.md`**. Precedenti su memoria: **`555f6c5`** (rule workflow), **`fc52438`** / **`b3cb726`** (inbox Pass4b fix mentre monolite era locale).
 
 2026-05-01 — **Pass 4B fix Astro post-split SunCalc (monolite locale):** in **`coordinate_converter Claude.html`** — `window.SunCalc = SunCalc` dopo l’IIFE vendored; **`runAstroUI`** usa fallback `typeof SunCalc !== "undefined" ? SunCalc : window.SunCalc` per le tre chiamate API. **Motivo:** binding globale `const` cross-`<script>` vs core `"use strict"` / risoluzione inconsistente; esplicitazione su `window` + uso locale in Astro. **Monolite non committato** qui. Memoria: commit **`docs: memoria Pass4b fix Astro SunCalc post-split`**. Inbox: **`docs/orchestrator/inbox/2026-05-01_0304_riepilogo_pass4b-suncalc-local-fix.md`**.
@@ -18,18 +20,19 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**`finito`** — chiusura sessione: monolite Pass 4B Step 1 + fix Astro **pushati** in **`51a9fc2`**; checkpoint/sessione aggiornati.
+**Pass 5 (solo piano)** — Astro/SunCalc: source picker + pannello floating; memoria orchestratore aggiornata; monolite **non** toccato.
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (commit `51a9fc2`); memoria orchestratore: `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0310_riepilogo_finito-sessione.md` (commit riconciliazione).
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md` (commit memoria corrente).
 
 ## Prossimo passo consigliato
 
-**QA browser** (Astro Calcola, self-check console); poi **Pass 4B Step 2** (WMM vendored) solo dopo conferma.
+Conferma utente su **Step A** (`state.astro` + `runAstroUI`); prima di **Step B** confermare **pannello floating dedicato** vs estensione inline di `#sec-astro`. In parallelo: **Pass 4B Step 2** (WMM vendored) resta sul backlog Tier 1 se prioritario.
 
 ## Dettagli (inbox)
 
+- **Pass 5 piano Astro source picker + floating:** `docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`
 - **`finito` sessione 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0310_riepilogo_finito-sessione.md`
 - **Pass4b Astro SunCalc fix (locale):** `docs/orchestrator/inbox/2026-05-01_0304_riepilogo_pass4b-suncalc-local-fix.md`
 - **Rule orchestratore / monolite locale:** `docs/orchestrator/inbox/2026-05-01_0253_riepilogo_rule-orchestrator-local-work.md`
