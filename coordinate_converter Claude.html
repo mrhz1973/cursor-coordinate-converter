@@ -35494,6 +35494,8 @@ function _waypointPanelLayoutOpts(){
     defaultHeightFraction: 0.8,
     defaultHeightCap: 740,
     topbarReserve: 108,
+    /** Pass 5 Step E.3: drag/resize clamp parziale (stile RR / Astro). */
+    partialMinVisible: 72,
     bodyId: "waypointModalBody",
     headId: "waypointModalHead",
     closeId: "waypointModalClose"
@@ -35548,6 +35550,8 @@ function _favoritesPanelLayoutOpts(){
     defaultHeightFraction: 0.78,
     defaultHeightCap: 940,
     topbarReserve: 100,
+    /** Pass 5 Step E.3: drag/resize clamp parziale (stile RR / Astro). */
+    partialMinVisible: 72,
     bodyId: "favoritesPanelBody",
     headId: "favoritesPanelHead",
     closeId: "favoritesPanelClose"
@@ -35622,7 +35626,7 @@ function clampWaypointModalRect(dlg){
   if (!dlg.style.left && !dlg.style.top) return;
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
-  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top }, opts);
@@ -35765,7 +35769,7 @@ function clampFavoritesPanelRect(dlg){
   if (!dlg.style.left && !dlg.style.top) return;
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
-  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
