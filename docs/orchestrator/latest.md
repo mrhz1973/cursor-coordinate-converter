@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 6 — piano standardizzazione liste modali GIS (solo documentazione):** salvato piano completo in **`docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`**. **Scope:** Preferiti/Waypoint, Mappe online/offline, Traccia; colonna **Azioni** compatta (stile Range Rings); rename UI IT **Favoriti → Preferiti** (`state.favorites` invariato). **Nessuna implementazione**; **`coordinate_converter Claude.html` non modificato**. **Prossimo passo consigliato:** Step **6A** (Preferiti + Waypoint). Commit memoria: **`docs: piano Pass 6 standardizzazione liste modali`**.
+
 2026-05-01 — **Pass 5 Step E.3 — Favoriti/Waypoint partial-offscreen (monolite solo locale):** in **`coordinate_converter Claude.html`** — `partialMinVisible: 72` su **`_favoritesPanelLayoutOpts`** / **`_waypointPanelLayoutOpts`**; **`clampFavoritesPanelRect`** / **`clampWaypointModalRect`** usano **`gisPanelClampRectPartialVisible`** (drag/resize già supportati da `opts` condivisi con RR). Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E3 partial offscreen local`**.
 
 2026-05-01 — **`finito` sessione — Pass 5 Step B→E.2 versionati:** commit **`7919d9d`** su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — Astro GIS Steps **B→E.2** (pannello floating, map pick, picker waypoint/favoriti, resize pickers, modal Favoriti/Waypoint + **Centra**); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Riconciliazione orchestratore: **`docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`** + commit **`0094dc7`** `docs: orchestratore — riconciliazione finito sessione` (push riuscito).
@@ -52,20 +54,22 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 Step E.3 — partial-offscreen Favoriti/Waypoint** — `partialMinVisible: 72` + **`gisPanelClampRectPartialVisible`** nei clamp; monolite **solo locale**; memoria orchestratore in commit dedicato.
+**Pass 6 — piano liste modali GIS** — pubblicazione solo **`docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`** + **`latest.md`**; monolite **non toccato**.
 
 ## File modificati (sintesi)
 
+- **Commit orchestratore Pass 6 (piano):** `docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`, `docs/orchestrator/latest.md` — **nessun** `coordinate_converter Claude.html`.
 - **Locale:** `coordinate_converter Claude.html` — **Step E.3** (non in commit memoria).
 - **Su `main` (commit `7919d9d`):** `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (Pass 5 B→E.2 `finito`).
 - **Memoria pre-`finito` (solo docs, già su remoto):** `56205de`, `6a47a9f`, `1b1653a` + inbox Step E / E.1 / E.2.
 
 ## Prossimo passo consigliato
 
-Smoke E.3 + Pass 5 su build locale o `main`; eventuale commit monolite; **`aggio`** in ChatGPT.
+Implementare **Pass 6 Step 6A** (Preferiti + Waypoint: UI IT Preferiti, tabella/list azioni compatte, icone) secondo piano in inbox; poi 6B/6C/6D. Smoke E.3 su build locale se monolite ancora modificato; **`aggio`** in ChatGPT dopo push memoria.
 
 ## Dettagli (inbox)
 
+- **Pass 6 piano liste modali GIS:** `docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`
 - **Pass 5 Step E.3 partial-offscreen (locale):** `docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`
 - **`finito` Pass 5 B→E.2:** `docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`
 - **Pass 5 Step E.2 center map + modal polish (locale):** `docs/orchestrator/inbox/2026-05-01_1338_riepilogo_pass5-stepE2-favorites-waypoints-center-map-local.md`
