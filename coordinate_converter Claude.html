@@ -9841,6 +9841,7 @@ const I18N = {
     "astro.date":"Data (calendario)",
     "astro.compute":"Calcola",
     "tip.astro":"Usa il punto attualmente convertito; data in UTC a mezzogiorno (sole)",
+    "astro.col.utcLmt":"UTC + LMT*",
     "astro.lmtFoot":"LMT semplice = UTC + (λ/15°) — per operazioni, verificare il fuso reale.",
     "astro.sunrise":"Sole: alba / tramonto",
     "astro.civil":"Civile (±6°)",
@@ -11079,6 +11080,7 @@ const I18N = {
     "astro.date":"Date",
     "astro.compute":"Compute",
     "tip.astro":"Uses the current result point; date at 12:00 UTC",
+    "astro.col.utcLmt":"UTC + LMT*",
     "astro.lmtFoot":"Simple LMT = UTC + (λ/15°) — for ops, verify the real time zone.",
     "astro.sunrise":"Sun: rise / set",
     "astro.civil":"Civil (±6°)",
@@ -12317,6 +12319,7 @@ const I18N = {
     "astro.date":"Date",
     "astro.compute":"Calculer",
     "tip.astro":"Point courant; date prise à 12:00 UTC",
+    "astro.col.utcLmt":"UTC + LMT*",
     "astro.lmtFoot":"LMT simplifié = UTC + (λ/15°) — vérifier le fuseau réel pour les opérations.",
     "astro.sunrise":"Soleil : lever / coucher",
     "astro.civil":"Civil (±6°)",
@@ -12604,6 +12607,20 @@ const state = {
   viewCenter: null,
   lastPoint: null,
   lastResult: null,
+  /** Pass 5: transient Astro/SunCalc source (not persisted in saveStore). */
+  astro: {
+    source: null,
+    lat: null,
+    lon: null,
+    label: "",
+    origin: "",
+    pickMode: false,
+    error: ""
+  },
+  /** Transient: floating Astro panel open (Step B+). */
+  astroPanelOpen: false,
+  /** Transient: map pick for Astro center (Step C+). */
+  astroPickCenterMode: false,
   history: [],
   favorites: [],
   // Remembers which tab of each composite card the user last selected
@@ -28430,25 +28447,36 @@ function buildScoutPrintSvg(lat, lon){
 }
 function runAstroUI(){
   const sc = (typeof SunCalc !== "undefined" ? SunCalc : window.SunCalc);
-  const r = state.lastResult;
   const out = document.getElementById("astro-result");
-  if (!r || !out) return;
+  if (!out) return;
   const din = document.getElementById("astroDate");
   if (!din || !din.value) return;
+  const sa = state.astro;
+  let lat, lon;
+  if (sa && Number.isFinite(sa.lat) && Number.isFinite(sa.lon)){
+    lat = sa.lat;
+    lon = sa.lon;
+  } else {
+    const r = state.lastResult;
+    if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)) return;
+    lat = r.lat;
+    lon = r.lon;
+  }
   const [y, mo, d] = din.value.split("-").map(Number);
   const day = new Date(Date.UTC(y, (mo || 1) - 1, d || 1, 12, 0, 0));
-  const st = sc.getTimes(day, r.lat, r.lon, 0);
-  const m = sc.getMoonTimes(new Date(Date.UTC(y, (mo || 1) - 1, d || 1, 0, 0, 0)), r.lat, r.lon, true);
+  const st = sc.getTimes(day, lat, lon, 0);
+  const m = sc.getMoonTimes(new Date(Date.UTC(y, (mo || 1) - 1, d || 1, 0, 0, 0)), lat, lon, true);
   const ill = sc.getMoonIllumination(day);
   const row = (label, a, b) => `<tr><th>${esc(label)}</th><td>${esc(a)}</td><td>${esc(b)}</td></tr>`;
-  const p = (x) => fmtTimeUTC(x) + " — " + lmtFromUtcDate(x, r.lon);
+  const p = (x) => fmtTimeUTC(x) + " — " + lmtFromUtcDate(x, lon);
   let moonR = t("astro.moonNA"), moonS = t("astro.moonNA");
   if (m.rise) moonR = p(m.rise);
   if (m.set) moonS = p(m.set);
   if (m.alwaysUp) moonR = t("astro.alwaysUp");
   if (m.alwaysDown) moonR = t("astro.alwaysDown");
+  const utcLmtHdr = t("astro.col.utcLmt");
   out.innerHTML = `<table class="batch-table" style="margin-top:8px; font-size:.88rem">
-   <thead><tr><th></th><th>UTC + LMT*</th><th>UTC + LMT*</th></tr></thead>
+   <thead><tr><th></th><th>${esc(utcLmtHdr)}</th><th>${esc(utcLmtHdr)}</th></tr></thead>
    <tbody>
    ${row(t("astro.sunrise"), p(st.sunrise), p(st.sunset))}
    ${row(t("astro.civil"), p(st.dawn), p(st.dusk))}

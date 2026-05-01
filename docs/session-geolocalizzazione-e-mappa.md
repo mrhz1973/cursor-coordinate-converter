@@ -2321,3 +2321,30 @@ Chiusura sessione su comando utente **`finito`** dopo: **Pass 4B Step 1** (split
 - `coordinate_converter Claude.html`
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
+
+## Checkpoint 2026-05-01 — Pass 5 Step A Astro state + convenzione prompt operativi (`finito`)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`**. Il working tree includeva già modifiche al monolite (**Pass 5 Step A**): stato transient Astro e adeguamento `runAstroUI`. In chat nella stessa sessione l’utente ha definito una **convenzione operativa** per i prompt successivi: ogni richiesta operativa deve già includere implementazione, verifiche automatiche obbligatorie, test browser se possibile, pubblicazione memoria orchestratore e RIEPILOGO con esito, senza un secondo prompt dedicato ai controlli di routine (eccezioni: output mancante/contraddittorio, test fallito, rischio reale prima di commit, dichiarazione esplicita di impossibilità di eseguire i controlli).
+
+### Monolite (`coordinate_converter Claude.html`)
+
+1. **`state.astro`**: oggetto transient (`source`, `lat`, `lon`, `label`, `origin`, `pickMode`, `error`) — commento esplicito: non persistito in `saveStore`.
+2. **`astroPanelOpen`**, **`astroPickCenterMode`**: boolean transient (preparazione Step B+ pannello floating / pick mappa).
+3. **`runAstroUI`**: early return se manca `#astro-result` o data input; risoluzione `lat`/`lon` da `state.astro` se numeri finiti, altrimenti da `state.lastResult` con validazione; uso stesso resolver SunCalc già in uso (`SunCalc` / `window.SunCalc`).
+4. **i18n:** chiave **`astro.col.utcLmt`** (IT/EN/FR) per intestazione tabella UTC+LMT.
+
+### Convenzione chat (non versionata in `.cursor/rules` in questo `finito`)
+
+- Prompt operativi: bundle **implementazione + QA automatica + test browser se possibile + autosync orchestratore + RIEPILOGO** salvo eccezioni elencate dall’utente.
+
+### Non toccato (confermato)
+
+- **`docs/roadmap.md`**, markup pannello Astro dedicato (Step B resta backlog se non già presente altrove).
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
