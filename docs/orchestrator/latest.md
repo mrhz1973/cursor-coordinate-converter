@@ -4,7 +4,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-05-01 — **Verifica Pass 5 Step A (solo lettura):** marker presenti nel monolite locale (`state.astro`, `runAstroUI`, `astro.col.utcLmt`); nessun `<script src>` / `type="module"`; **2** coppie `<script>`/`</script>`; `node --check` **OK** sui **due** blocchi estratti con regex **non greedy** (il metodo greedy del `README.md` fallisce con due blocchi inline — nota in inbox). **Test browser non eseguiti** (checklist manuale in inbox). Memoria: **`docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md`**. Monolite **non** nel commit.
+2026-05-01 — **`finito` sessione — Pass 5 Step A versionato:** commit **`35a722a`** su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — `state.astro` transient, `astroPanelOpen` / `astroPickCenterMode`, `runAstroUI` da astro o `lastResult`, i18n `astro.col.utcLmt`; **`docs/checkpoint.md`** + append **`docs/session-geolocalizzazione-e-mappa.md`**. In chat: convenzione **prompt operativi** (bundle implementazione + QA + test browser + orchestratore + RIEPILOGO) registrata in doc sessione, **non** in `.cursor/rules` in questo passo. Working tree **pulito** post-push. Riconciliazione orchestratore: **`docs/orchestrator/inbox/2026-05-01_0851_riepilogo_finito-sessione.md`** (+ commit dedicato step 4).
+
+2026-05-01 — **Verifica Pass 5 Step A (solo lettura):** marker presenti nel monolite locale (`state.astro`, `runAstroUI`, `astro.col.utcLmt`); nessun `<script src>` / `type="module"`; **2** coppie `<script>`/`</script>`; `node --check` **OK** sui **due** blocchi estratti con regex **non greedy** (il metodo greedy del `README.md` fallisce con due blocchi inline — nota in inbox). **Test browser non eseguiti** (checklist manuale in inbox). Memoria: **`docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md`**. Stato **superato** dal `finito` **`35a722a`** (monolite ora su remoto).
 
 2026-05-01 — **Pass 5 Step A (monolite locale):** in **`coordinate_converter Claude.html`** — introdotto **`state.astro`** transient + **`astroPanelOpen`** / **`astroPickCenterMode`**; **`runAstroUI`** legge `lat`/`lon` da `state.astro` se finiti, altrimenti da **`state.lastResult`**; intestazione tabella **`astro.col.utcLmt`** (IT/EN/FR). **Nessun** `#astroPanel`, markup Astro invariato, nessun picker. **Monolite non committato** nell’autosync memoria. Dettaglio: **`docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md`**. Prossimo: **Step B** (pannello floating dedicato).
 
@@ -24,16 +26,17 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Verifica Pass 5 Step A** — controlli automatici su monolite locale; esito in inbox verifica; monolite **non** committato.
+**`finito` sessione 2026-05-01** — monolite Pass 5 Step A + checkpoint sessione pushati (**`35a722a`**); riconciliazione orchestratore (questo aggiornamento + inbox `2026-05-01_0851_riepilogo_finito-sessione.md`).
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` — solo working tree (verifica).
-- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md` (commit memoria verifica).
+- `coordinate_converter Claude.html` — **versionato** in **`35a722a`** (Astro state Step A).
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` — stesso commit.
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0851_riepilogo_finito-sessione.md` — commit step 4 orchestratore.
 
 ## Prossimo passo consigliato
 
-**Test browser manuale** (conversione → Strumenti → Astro → Calcola). Poi **Step B** (`#astroPanel`). Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
+**Pass 5 Step B** (`#astroPanel` / floating GIS-first). Smoke browser: conversione → Strumenti → Astro → Calcola. Opzionale: codificare convenzione prompt in rules. Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
 
 ## Dettagli (inbox)
 
