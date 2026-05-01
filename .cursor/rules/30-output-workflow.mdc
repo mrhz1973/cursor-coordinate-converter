@@ -181,9 +181,39 @@ Per **blocco completato** si intende (non esaustivo):
 
 **Nota per ChatGPT:** “un blocco implementato nel codice ma non registrato in `latest.md` + `inbox` è da considerare **non pubblicato** all’orchestratore”; ChatGPT non deve scansionare sistematicamente il monolite per ricostruire lavori non pubblicati.
 
+### Principio: memoria sempre pubblicata (anche senza commit monolite)
+
+Un intervento operativo completato ma non pubblicato in `docs/orchestrator/latest.md` + `docs/orchestrator/inbox/` deve essere considerato **non visibile** a ChatGPT. Se l’intervento modifica il monolite ma il commit del monolite **non** è autorizzato, **pubblicare comunque** la memoria orchestratore con **commit selettivo**, **escludendo** il monolite.
+
+**Default dopo ogni intervento operativo** che cambia stato (stesse definizioni di *intervento operativo* e *blocco completato* di cui sopra):
+
+1. Aggiornare `docs/orchestrator/latest.md`.
+2. Creare o aggiornare **un** file `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_<slug>.md` con riepilogo completo dell’intervento.
+3. Eseguire **commit** e **push selettivi** della sola memoria (`docs/orchestrator/**`) e, se modificati nello stesso intervento, i file `.cursor/rules/**` pertinenti al workflow orchestratore — **senza** `git add .` nell’autosync memoria.
+
+**Monolite modificato in working tree ma non nel commit autosync:** **non** includerlo nel commit se non autorizzato (policy predefinita: monolite **mai** nell’autosync salvo richiesta esplicita dell’utente). Dichiarare esplicitamente nell’`inbox` e nel RIEPILOGO che il monolite è **solo locale** / **non committato** in questo push. L’`inbox` **deve** includere almeno:
+
+- file modificati solo localmente (es. `coordinate_converter Claude.html`);
+- natura della modifica (sintesi; non sostituisce il versionamento del file se resta fuori dal commit);
+- test / QA eseguiti;
+- stato `git status --short` pertinente;
+- motivo per cui il monolite **non** è incluso nel commit (policy default, istruzione utente, step in attesa di review, ecc.);
+- prossimo passo richiesto o consigliato: review, commit principale del monolite, `finito`, rollback, ecc.
+
+**Non equivocazione:** questa pubblicazione memoria **non** autorizza automaticamente il commit del monolite; resta il vincolo del punto 4 della sequenza sotto (monolite mai incluso salvo richiesta esplicita).
+
+### Eccezione — non pubblicare memoria orchestratore
+
+Saltare aggiornamento `latest.md`, creazione/aggiornamento `inbox` e commit/push della sola memoria **solo** se l’utente lo richiede **esplicitamente** per l’intervento corrente con una di queste formule (o equivalente inequivocabile):
+
+- «**non aggiornare orchestratore**»;
+- «**solo locale, non pubblicare memoria**».
+
+In tal caso il RIEPILOGO deve indicare **autosync non eseguito** e **citare** l’istruzione utente.
+
 ### Sequenza obbligatoria (autosync)
 
-Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’intervento (salvo **impedimento tecnico** documentato nel RIEPILOGO con motivo e recupero previsto):
+Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’intervento (**salvo** **Eccezione — non pubblicare memoria orchestratore** sopra, o **impedimento tecnico** documentato nel RIEPILOGO con motivo e recupero previsto):
 
 1. **Aggiorna** `docs/orchestrator/latest.md` — sintesi breve dello stato reale più recente (dove siamo, prossimo passo, rimandi). **Mai** log esteso; **non** duplicare l’`inbox`.
 2. **Crea o aggiorna** **un** file in `docs/orchestrator/inbox/` per l’intervento corrente: riepilogo completo, **ogni** micro-modifica registrata (elenchi/sezioni). Piano (**Plan**), debug e dettaglio stanno nello stesso file **salvo** che un `..._plan_...` / `..._debug_...` **separato** migliori nettamente la lettura — **non** proliferare file senza necessità.
