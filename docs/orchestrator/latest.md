@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 6 Step 6B (monolite solo locale):** in **`coordinate_converter Claude.html`** — **`#layersPanel`**: **`partialMinVisible: 72`** in **`_layersPanelLayoutOpts`**, **`clampLayersPanelRect`** → **`gisPanelClampRectPartialVisible`** (drag/resize già guidati da `opts`). **Lista aree offline:** azioni riga compatte (✎ / ⌖ / ✕) con **`data-offline-*`**, **`data-tip`**, i18n tip/aria; CSS colonna azioni più stretta; resize col min **112px**. **Non:** OPSEC, tile/cache/IndexedDB, download, semantica delete, 6C/6D, RR polish. **QA:** `node --check` OK (2 blocchi); nessun `<script src>` / `type="module"`. **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6B mappe offline local` (hash corto in RIEPILOGO Cursor / `git log -1` dopo push). Inbox **`2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`**. **`coordinate_converter Claude.html` escluso**.
+
 2026-05-01 — **Pass 6 Step 6A.2 (monolite solo locale):** in **`coordinate_converter Claude.html`** — tooltip Preferiti: rimosso **`overflow: hidden`** dalla tabella (clip `::after`), riga hover **`z-index`**, tooltip azioni **sotto** il bottone (**stesso schema** `.offline-areas-list .offa-actions`), **`#favoritesPanelBody.app-modal-body`** `overflow-x: visible !important`, leggibilità **`#favoritesPanel`** come Waypoint (`--tooltip-*`, `z-index` 5000). Conferme **`favInlineConfirmBar`** / **`#wpDeleteOneBar`** allineate allo skin **Range Rings** `rr-delete-confirm-*` via classi **`.gis-rr-confirm-skin`**, **`.gis-rr-confirm-msg`**, **`.gis-rr-confirm-actions`** + toggle **`fav-inline-confirm--rename`**. **Non:** formato coordinate, schema/store, 6B/6C. **QA:** `node --check` OK. **Test browser:** non eseguiti. **Commit memoria:** **`9b97bbc`** (`docs: memoria Pass 6 Step 6A.2 tooltip conferme local`; push riuscito). Inbox **`2026-05-01_1845_riepilogo_pass6-step6A2-tooltip-confirm-preferiti-waypoint-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **Pass 6 Step 6A.1 (monolite solo locale):** in **`coordinate_converter Claude.html`** — polish Preferiti + Waypoint post smoke: lista Preferiti più compatta (tabella, note inline); **`#favListCoordFmt`** + runtime **`favoritesListCoordDisplayMode`** (solo vista, non persistenza); conferme inline **`favInlineConfirmBar`** (rename/delete) + chiusura/Esc/pannello; Waypoint **`#wpDeleteOneBar`** + **`requestWaypointDelete`** / **`waypointDeleteExecute`** (no `window.confirm` singolo); **`renderWpModalList`**: ★ **`gis-wp-fav-on`** + **`aria-pressed`** se **`waypointCoordinateHasMatchingFavorite`**; sync stella dopo add/remove preferito; i18n **`fav.coordFmt.*`**, **`fav.inline*`**, **`waypointModal.deleteOne*`**, **`tip.favWaypointInFavorites`**. **Non:** 6B/6C, RR polish, schema/`localStorage`/`state.lastResult`. **QA:** `node --check` OK (due blocchi estratti); 2×`<script>`. **Test browser:** non eseguiti. **Commit memoria:** **`2295ae7`** (`docs: memoria Pass 6 Step 6A.1 preferiti waypoint polish local`; push riuscito). Inbox **`2026-05-01_1815_riepilogo_pass6-step6A1-preferiti-waypoint-polish-local.md`**. **`coordinate_converter Claude.html` escluso** dal commit memoria.
@@ -62,6 +64,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**Pass 6 Step 6B 2026-05-01** — Mappe online/offline: partial-offscreen **`#layersPanel`** + azioni tabella aree offline compatte (monolite **solo locale**): vedi **`docs/orchestrator/inbox/2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`**.
+
 **Pass 6 Step 6A.2 2026-05-01** — tooltip Preferiti + conferme allineate RR/Offline (monolite **solo locale**): vedi **`docs/orchestrator/inbox/2026-05-01_1845_riepilogo_pass6-step6A2-tooltip-confirm-preferiti-waypoint-local.md`**.
 
 **Pass 6 Step 6A.1 2026-05-01** — completamento wiring + i18n + QA (monolite **solo locale**, non in commit memoria): vedi **`docs/orchestrator/inbox/2026-05-01_1815_riepilogo_pass6-step6A1-preferiti-waypoint-polish-local.md`**.
@@ -79,10 +83,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke browser su **Pass 6 Step 6A.2** (tooltip tabella Preferiti, barre conferma, Esc; Waypoint/Tracce/Layers/RR/Astro). Poi **Pass 6 Step 6B** o commit/review monolite. **`aggio`** in ChatGPT dopo push memoria.
+Smoke browser su **Pass 6 Step 6B** (`#layersPanel` parziale fuori schermo; azioni ✎/⌖/✕ + tooltip portal). Poi **Pass 6 Step 6C** (Traccia) o commit/review monolite. **`aggio`** in ChatGPT dopo push memoria.
 
 ## Dettagli (inbox)
 
+- **Pass 6 Step 6B Mappe offline partial + azioni compatte (locale):** `docs/orchestrator/inbox/2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`
 - **Pass 6 Step 6A.2 tooltip + conferme (locale):** `docs/orchestrator/inbox/2026-05-01_1845_riepilogo_pass6-step6A2-tooltip-confirm-preferiti-waypoint-local.md`
 - **Pass 6 Step 6A.1 polish Preferiti/Waypoint (locale):** `docs/orchestrator/inbox/2026-05-01_1815_riepilogo_pass6-step6A1-preferiti-waypoint-polish-local.md`
 - **`finito` 2026-05-01 (riconciliazione):** `docs/orchestrator/inbox/2026-05-01_1716_riepilogo_finito-sessione.md`
