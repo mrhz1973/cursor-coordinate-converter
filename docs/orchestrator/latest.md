@@ -4,7 +4,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-05-01 — **`finito` sessione — Pass 5 Step B→E.2 versionati:** commit **`7919d9d`** su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — Astro GIS Steps **B→E.2** (pannello floating, map pick, picker waypoint/favoriti, resize pickers, modal Favoriti/Waypoint + **Centra**); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Riconciliazione orchestratore: **`docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`** + commit dedicato **`docs: orchestratore — riconciliazione finito sessione`** (hash in fondo a `latest` dopo push).
+2026-05-01 — **`finito` sessione — Pass 5 Step B→E.2 versionati:** commit **`7919d9d`** su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — Astro GIS Steps **B→E.2** (pannello floating, map pick, picker waypoint/favoriti, resize pickers, modal Favoriti/Waypoint + **Centra**); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Riconciliazione orchestratore: **`docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`** + commit **`0094dc7`** `docs: orchestratore — riconciliazione finito sessione` (push riuscito).
 
 2026-05-01 — **Pass 5 Step E.2 — Modal Favoriti/Waypoint (pre-`finito`, ora confluito in `7919d9d`):** summary duplicato nascosto; **Centra** (`gisMapCenterOnLatLon`); trasparenza GIS; memoria **`1b1653a`** senza monolite.
 
