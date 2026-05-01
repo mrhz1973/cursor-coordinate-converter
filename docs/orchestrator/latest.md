@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 5 Step E.3 — Favoriti/Waypoint partial-offscreen (monolite solo locale):** in **`coordinate_converter Claude.html`** — `partialMinVisible: 72` su **`_favoritesPanelLayoutOpts`** / **`_waypointPanelLayoutOpts`**; **`clampFavoritesPanelRect`** / **`clampWaypointModalRect`** usano **`gisPanelClampRectPartialVisible`** (drag/resize già supportati da `opts` condivisi con RR). Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E3 partial offscreen local`**.
+
 2026-05-01 — **`finito` sessione — Pass 5 Step B→E.2 versionati:** commit **`7919d9d`** su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — Astro GIS Steps **B→E.2** (pannello floating, map pick, picker waypoint/favoriti, resize pickers, modal Favoriti/Waypoint + **Centra**); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Riconciliazione orchestratore: **`docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`** + commit **`0094dc7`** `docs: orchestratore — riconciliazione finito sessione` (push riuscito).
 
 2026-05-01 — **Pass 5 Step E.2 — Modal Favoriti/Waypoint (pre-`finito`, ora confluito in `7919d9d`):** summary duplicato nascosto; **Centra** (`gisMapCenterOnLatLon`); trasparenza GIS; memoria **`1b1653a`** senza monolite.
@@ -50,19 +52,22 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**`finito` — Pass 5 B→E.2** — monolite e checkpoint ufficiali su **`main`** (`7919d9d`); memoria orchestratore allineata (non più «solo locale» per questo blocco).
+**Pass 5 Step E.3 — partial-offscreen Favoriti/Waypoint** — `partialMinVisible: 72` + **`gisPanelClampRectPartialVisible`** nei clamp; monolite **solo locale**; memoria orchestratore in commit dedicato.
 
 ## File modificati (sintesi)
 
-- **Su `main` (commit `7919d9d`):** `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`.
+- **Locale:** `coordinate_converter Claude.html` — **Step E.3** (non in commit memoria).
+- **Su `main` (commit `7919d9d`):** `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (Pass 5 B→E.2 `finito`).
 - **Memoria pre-`finito` (solo docs, già su remoto):** `56205de`, `6a47a9f`, `1b1653a` + inbox Step E / E.1 / E.2.
 
 ## Prossimo passo consigliato
 
-Smoke **Pass 5** completo su build da `main`; eventuale **Step F** o item roadmap; **`aggio`** in ChatGPT dopo lettura `latest` + inbox `1638`.
+Smoke E.3 + Pass 5 su build locale o `main`; eventuale commit monolite; **`aggio`** in ChatGPT.
 
 ## Dettagli (inbox)
 
+- **Pass 5 Step E.3 partial-offscreen (locale):** `docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`
+- **`finito` Pass 5 B→E.2:** `docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`
 - **Pass 5 Step E.2 center map + modal polish (locale):** `docs/orchestrator/inbox/2026-05-01_1338_riepilogo_pass5-stepE2-favorites-waypoints-center-map-local.md`
 - **Pass 5 Step E.1 polish + resize picker (locale):** `docs/orchestrator/inbox/2026-05-01_1320_riepilogo_pass5-stepE1-astro-pickers-resize-polish-local.md`
 - **Pass 5 Step E favorite chooser (locale):** `docs/orchestrator/inbox/2026-05-01_1300_riepilogo_pass5-stepE-astro-favorite-chooser-local.md`
