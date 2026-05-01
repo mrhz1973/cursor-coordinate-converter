@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 5 Step D — Astro waypoint chooser (monolite solo locale):** in **`coordinate_converter Claude.html`** — sorgente **`data-astro-src="waypoint"`**, dialog **`#astroWaypointPicker`** (ricerca, lista max 50, Usa → `state.astro` `waypoint` + `astroSyncPosUI` / `runAstroPanelUI`), Esc in **`bindHotkeys`** + GIS; **`astroIndexPickerWaypoints`** / fill / open / close / apply / **`ensureAstroWaypointPickerWired`** in **`gisInit`**. **Non implementati:** favorite, «Mostra sulla mappa», Step E. Test browser: **non eseguiti** (checklist in inbox). **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1149_riepilogo_pass5-stepD-astro-waypoint-chooser-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step D Astro waypoint local`**.
+
 2026-05-01 — **Fix bug Step C — Esc pick Astro + Range Rings non chiude Astro (monolite solo locale):** in **`coordinate_converter Claude.html`** — Esc in `bindHotkeys` per Astro pick usa `stopImmediatePropagation()` per non arrivare al listener “GIS modali”; `activateToolPanel()` non auto-chiude più Astro quando si cambia tool; `closeToolsModal()` non chiude più Astro (Range Rings può convivere). In pick RR disarmo Astro pick con `astroClearPickCenterMode("rr")`. Test browser: **non eseguiti** (checklist in inbox). **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`**. Commit memoria: **`docs: memoria fix Astro Esc e Range Rings local`**.
 
 2026-05-01 — **Pass 5 Step C — Astro map pick `mapPick` (monolite solo locale):** in **`coordinate_converter Claude.html`** — sorgente **Scegli sulla mappa** (`data-astro-src="mapPick"`), `astroEnterPickCenterMode` / `astroClearPickCenterMode` / `astroApplyPickedMapPoint`, ramo **`onUp`** prima di `mapPickMode` conversione, Esc + flag `_astroSkipNextGisPanelClose`, CSS **`astro-pick-mode`**, i18n Step C; disarm concorrenti (RR pick, track/waypoint pick, misura, map pick conversione). **Nessun** `lastResult` / cronologia / permalink / `renderResults` nel pick. **Non implementati:** waypoint/favorite, Mostra mappa, Step D/E. Test browser: **non eseguiti** (checklist in inbox). **`coordinate_converter Claude.html` non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1007_riepilogo_pass5-stepC-astro-map-pick-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step C Astro map pick local`**.
@@ -36,20 +38,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Fix bug Step C Astro (Esc + Range Rings)** — `#astroPanel` resta aperto su Esc durante pick; Range Rings non chiude più Astro; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
+**Pass 5 Step D — Astro waypoint chooser** — picker dedicato + sorgente waypoint; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
 
 ## File modificati (sintesi)
 
-- **Locale:** `coordinate_converter Claude.html` — Step B + resize + **Step C map pick** (non in commit memoria).
-- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`.
+- **Locale:** `coordinate_converter Claude.html` — Step B + C + fix + **Step D waypoint picker** (non in commit memoria).
+- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1149_riepilogo_pass5-stepD-astro-waypoint-chooser-local.md`.
 - Precedente inbox resize: **`2026-05-01_0946_...`**.
 
 ## Prossimo passo consigliato
 
-Smoke manuale bugfix Step C (Esc su pick + coesistenza RR/Astro); review monolite; eventuale Step D o **`finito`**.
+Smoke manuale Step D (picker + Usa + Esc); review monolite; eventuale Step E o **`finito`**.
 
 ## Dettagli (inbox)
 
+- **Pass 5 Step D waypoint chooser (locale):** `docs/orchestrator/inbox/2026-05-01_1149_riepilogo_pass5-stepD-astro-waypoint-chooser-local.md`
 - **Fix bug Step C (Esc + RR):** `docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`
 - **Pass 5 Step C map pick (locale):** `docs/orchestrator/inbox/2026-05-01_1007_riepilogo_pass5-stepC-astro-map-pick-local.md`
 - **Fix resize Astro:** `docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`
