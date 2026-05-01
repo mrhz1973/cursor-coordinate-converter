@@ -4,7 +4,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-05-01 — **Pass 5 — piano Astro source picker + pannello floating GIS-first:** salvato in **`docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`** (piano completo: stato attuale Astro, sorgenti posizione, clone RR floating + `#rrSourcePickerDialog`, stato minimo `state.astro`, i18n, 6 step A–F, QA, rischi, raccomandazione, prompt Step A). **Nessuna implementazione**; **`coordinate_converter Claude.html` non modificato**. Primo step consigliato: **Step A — refactor minimo `runAstroUI`**. **Attesa conferma utente** prima del monolite (e conferma architettura floating vs inline prima di Step B). Commit memoria: **`docs: piano astro source picker floating panel`**.
+2026-05-01 — **Pass 5 Step A (monolite locale):** in **`coordinate_converter Claude.html`** — introdotto **`state.astro`** transient + **`astroPanelOpen`** / **`astroPickCenterMode`**; **`runAstroUI`** legge `lat`/`lon` da `state.astro` se finiti, altrimenti da **`state.lastResult`**; intestazione tabella **`astro.col.utcLmt`** (IT/EN/FR). **Nessun** `#astroPanel`, markup Astro invariato, nessun picker. **Monolite non committato** nell’autosync memoria. Dettaglio: **`docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md`**. Prossimo: **Step B** (pannello floating dedicato).
+
+2026-05-01 — **Pass 5 — piano Astro source picker + pannello floating GIS-first:** salvato in **`docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`** (piano completo: stato attuale Astro, sorgenti posizione, clone RR floating + `#rrSourcePickerDialog`, stato minimo `state.astro`, i18n, 6 step A–F, QA, rischi, raccomandazione, prompt Step A). Commit memoria: **`docs: piano astro source picker floating panel`**.
 
 2026-05-01 — **`finito` sessione — Pass 4B SunCalc versionato:** commit **`51a9fc2`** `feat: Pass 4B — SunCalc vendored inline, fix Astro, checkpoint sessione` su **`main`** (push riuscito). **`coordinate_converter Claude.html` incluso** — script vendored SunCalc + `window.SunCalc` + fallback in **`runAstroUI`**; aggiornati **`docs/checkpoint.md`**, append **`docs/session-geolocalizzazione-e-mappa.md`**. Working tree **pulito** post-push. Riconciliazione orchestratore: **`2026-05-01_0310_riepilogo_finito-sessione.md`**. Precedenti su memoria: **`555f6c5`** (rule workflow), **`fc52438`** / **`b3cb726`** (inbox Pass4b fix mentre monolite era locale).
 
@@ -20,18 +22,20 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 (solo piano)** — Astro/SunCalc: source picker + pannello floating; memoria orchestratore aggiornata; monolite **non** toccato.
+**Pass 5 Step A** — `state.astro` + `runAstroUI` (fallback `lastResult`); i18n colonna tabella; monolite **modificato solo in working tree**, **non** nel commit orchestratore.
 
 ## File modificati (sintesi)
 
-- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md` (commit memoria corrente).
+- `coordinate_converter Claude.html` (locale, non in autosync commit).
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md` (commit memoria corrente).
 
 ## Prossimo passo consigliato
 
-Conferma utente su **Step A** (`state.astro` + `runAstroUI`); prima di **Step B** confermare **pannello floating dedicato** vs estensione inline di `#sec-astro`. In parallelo: **Pass 4B Step 2** (WMM vendored) resta sul backlog Tier 1 se prioritario.
+**Step B** — `#astroPanel` floating dedicato (non inline `#sec-astro`). **Step C** — disarmo esplicito `mapPickMode` e pick concorrenti. Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
 
 ## Dettagli (inbox)
 
+- **Pass 5 Step A implementato (monolite locale):** `docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md`
 - **Pass 5 piano Astro source picker + floating:** `docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`
 - **`finito` sessione 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0310_riepilogo_finito-sessione.md`
 - **Pass4b Astro SunCalc fix (locale):** `docs/orchestrator/inbox/2026-05-01_0304_riepilogo_pass4b-suncalc-local-fix.md`
