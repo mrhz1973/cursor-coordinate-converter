@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 5 Step E.2 — Modal Favoriti/Waypoint: summary duplicato, Centra, map-first (monolite solo locale):** in **`coordinate_converter Claude.html`** — `#favoritesPanelBody #sec-favorites > summary` nascosto (stesso schema Range Rings); **Centra** su righe favoriti (`data-fav-center` + `favoriteMapCenterTo`) e waypoint (riuso `waypointsZoomTo` → **`gisMapCenterOnLatLon`**: `viewCenter` + `renderTileMap`, **no** `lastPoint`/`lastResult`); badge **`map.noticeCenteredOnPoint`**; i18n **`common.center`**, **`tip.common.centerMapPoint`**; in GIS sfondo pannello leggermente **trasparente** (Favoriti body + waypoint panel) per percepire la mappa sotto. Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1338_riepilogo_pass5-stepE2-favorites-waypoints-center-map-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E2 center map local`**.
+
 2026-05-01 — **Pass 5 Step E.1 — Polish picker Astro Favoriti/Waypoint (monolite solo locale):** in **`coordinate_converter Claude.html`** — Meta favoriti senza ripetizione ridondante “Favoriti” (filtro display vs stringa ricerca); **`#astroWaypointPicker`** / **`#astroFavoritePicker`** ridimensionabili e trascinabili in GIS (handle + `gisPanelAttachResize`/`Drag`/`ApplyLayout`); dimensione/posizione in sessione via **`gPanelLayouts`** chiavi `astroWpPicker` / `astroFavPicker` (non in `UI_PANEL_KEYS` → niente nuovo localStorage); teardown stili alla chiusura; clamp su `resize` + `gisRefreshI18n`. Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1320_riepilogo_pass5-stepE1-astro-pickers-resize-polish-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E1 resize picker Astro local`**.
 
 2026-05-01 — **Pass 5 Step E — Astro favorite chooser (monolite solo locale):** in **`coordinate_converter Claude.html`** — sorgente **`data-astro-src="favorite"`**, dialog **`#astroFavoritePicker`** (ricerca, colonne opzionali MGRS/Quando/Località/Note/Meta, header ordinabili, max 50, **Usa** → `state.astro` `favorite` + `runAstroPanelUI`); transient `astroFavPickerCols` / `astroFavPickerSort` / menu; mutua esclusione con waypoint picker; Esc (`bindHotkeys` + GIS); `gisRefreshI18n` / `gisInit`. **Non:** mostra mappa, gestione favoriti in Astro, modifica `state.favorites` / `lastResult`. Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1300_riepilogo_pass5-stepE-astro-favorite-chooser-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E favorite chooser local`**.
@@ -46,20 +48,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 Step E.1 — Astro pickers polish + resize** — Meta favoriti filtrata; picker floating ridimensionabili; sessione `gPanelLayouts`; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
+**Pass 5 Step E.2 — Favoriti/Waypoint modal polish + Centra** — summary Favoriti nascosto nel floating panel; `gisMapCenterOnLatLon`; trasparenza leggera GIS; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
 
 ## File modificati (sintesi)
 
-- **Locale:** `coordinate_converter Claude.html` — fino a Step E + **Step E.1** (non in commit memoria).
-- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1320_riepilogo_pass5-stepE1-astro-pickers-resize-polish-local.md`.
-- Inbox Step E: **`2026-05-01_1300_...`**.
+- **Locale:** `coordinate_converter Claude.html` — fino a Step E + E.1 + **E.2** (non in commit memoria).
+- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1338_riepilogo_pass5-stepE2-favorites-waypoints-center-map-local.md`.
+- Inbox Step E.1: **`2026-05-01_1320_...`**; Step E: **`2026-05-01_1300_...`**.
 
 ## Prossimo passo consigliato
 
-Smoke manuale Step E.1 (Meta senza ripetizione blu, resize/riapertura, lingua); eventuale commit monolite; **`finito`** se serve chiusura ufficiale.
+Smoke manuale Step E.2 (Favoriti senza riga duplicata, Centra, mappa dietro il pannello); Astro picker + Range Rings; eventuale commit monolite.
 
 ## Dettagli (inbox)
 
+- **Pass 5 Step E.2 center map + modal polish (locale):** `docs/orchestrator/inbox/2026-05-01_1338_riepilogo_pass5-stepE2-favorites-waypoints-center-map-local.md`
 - **Pass 5 Step E.1 polish + resize picker (locale):** `docs/orchestrator/inbox/2026-05-01_1320_riepilogo_pass5-stepE1-astro-pickers-resize-polish-local.md`
 - **Pass 5 Step E favorite chooser (locale):** `docs/orchestrator/inbox/2026-05-01_1300_riepilogo_pass5-stepE-astro-favorite-chooser-local.md`
 - **Pass 5 Step D.2 colonne + sort (locale):** `docs/orchestrator/inbox/2026-05-01_1240_riepilogo_pass5-stepD2-astro-waypoint-columns-sort-local.md`
