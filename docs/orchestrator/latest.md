@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Fix resize `#astroPanel` (solo CSS, monolite locale):** causa: handle resize **senza regole di ancoraggio agli angoli** (a differenza di `#rangeRingsPanel` e altri pannelli floating); aggiunto blocco CSS speculare a RR. **JS invariato.** Test browser: checklist manuale. Memoria: **`docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`**. Commit: **`docs: memoria fix resize Astro panel local`**. **`coordinate_converter Claude.html` non committato.**
+
 2026-05-01 — **Pass 5 Step B — Astro floating `#astroPanel` (monolite solo locale):** in **`coordinate_converter Claude.html`** — dialog dedicato GIS, sorgenti **result** + **mapCenter** (`state.viewCenter`), `runAstroCore` / `runAstroPanelUI`, **`runAstroUI`** di nuovo solo su **`state.lastResult`** per **`#sec-astro`**; drag/resize/clamp parziale stile RR; Esc + `closeToolsModal`; i18n Step B. **Test browser non eseguiti** (checklist in inbox). **`coordinate_converter Claude.html` non committato** qui. Inbox: **`docs/orchestrator/inbox/2026-05-01_0932_riepilogo_pass5-stepB-astro-floating-panel-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step B Astro floating panel local`**.
 
 2026-05-01 — **Rule 30 — prompt operativi autosufficienti:** aggiornata **`.cursor/rules/30-output-workflow.mdc`** (sezione anti micro-pass di sola verifica: stesso intervento = implementazione + QA standard + test browser se possibile + autosync orchestratore + RIEPILOGO; eccezioni esplicite). **`coordinate_converter Claude.html` non modificato.** Memoria: **`docs/orchestrator/inbox/2026-05-01_0902_riepilogo_rule-operative-prompts-self-contained.md`**. Commit: **`docs: rendi autosufficienti i prompt operativi`** (hash in chat dopo push).
@@ -30,20 +32,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 Step B Astro floating** — monolite aggiornato **solo in working tree**; memoria orchestratore in commit dedicato (senza monolite).
+**Fix resize Astro panel** — CSS ancoraggio handle come Range Rings; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
 
 ## File modificati (sintesi)
 
-- **Locale:** `coordinate_converter Claude.html` — Step B (non in commit memoria).
-- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0932_riepilogo_pass5-stepB-astro-floating-panel-local.md`.
-- Precedente rule 30: commit **`e9163da`** (`docs: rendi autosufficienti i prompt operativi`).
+- **Locale:** `coordinate_converter Claude.html` — Step B + fix resize handle (non in commit memoria).
+- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`.
+- Precedente: inbox Step B **`2026-05-01_0932_...`**, commit memoria **`408defd`**.
 
 ## Prossimo passo consigliato
 
-Review + smoke browser (checklist inbox); poi commit monolite / **`finito`** se autorizzato. **Pass 5 Step C** (map pick) dopo OK Step B. Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
+Smoke manuale resize Astro + Range Rings; se OK **`finito`** o commit monolite. **Pass 5 Step C** dopo OK.
 
 ## Dettagli (inbox)
 
+- **Fix resize Astro:** `docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`
 - **Pass 5 Step B (locale):** `docs/orchestrator/inbox/2026-05-01_0932_riepilogo_pass5-stepB-astro-floating-panel-local.md`
 - **Rule prompt autosufficienti:** `docs/orchestrator/inbox/2026-05-01_0902_riepilogo_rule-operative-prompts-self-contained.md`
 - **Verifica Step A:** `docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md`
