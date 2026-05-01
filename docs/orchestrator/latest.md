@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Verifica Pass 5 Step A (solo lettura):** marker presenti nel monolite locale (`state.astro`, `runAstroUI`, `astro.col.utcLmt`); nessun `<script src>` / `type="module"`; **2** coppie `<script>`/`</script>`; `node --check` **OK** sui **due** blocchi estratti con regex **non greedy** (il metodo greedy del `README.md` fallisce con due blocchi inline — nota in inbox). **Test browser non eseguiti** (checklist manuale in inbox). Memoria: **`docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md`**. Monolite **non** nel commit.
+
 2026-05-01 — **Pass 5 Step A (monolite locale):** in **`coordinate_converter Claude.html`** — introdotto **`state.astro`** transient + **`astroPanelOpen`** / **`astroPickCenterMode`**; **`runAstroUI`** legge `lat`/`lon` da `state.astro` se finiti, altrimenti da **`state.lastResult`**; intestazione tabella **`astro.col.utcLmt`** (IT/EN/FR). **Nessun** `#astroPanel`, markup Astro invariato, nessun picker. **Monolite non committato** nell’autosync memoria. Dettaglio: **`docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md`**. Prossimo: **Step B** (pannello floating dedicato).
 
 2026-05-01 — **Pass 5 — piano Astro source picker + pannello floating GIS-first:** salvato in **`docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`** (piano completo: stato attuale Astro, sorgenti posizione, clone RR floating + `#rrSourcePickerDialog`, stato minimo `state.astro`, i18n, 6 step A–F, QA, rischi, raccomandazione, prompt Step A). Commit memoria: **`docs: piano astro source picker floating panel`**.
@@ -22,19 +24,20 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 Step A** — `state.astro` + `runAstroUI` (fallback `lastResult`); i18n colonna tabella; monolite **modificato solo in working tree**, **non** nel commit orchestratore.
+**Verifica Pass 5 Step A** — controlli automatici su monolite locale; esito in inbox verifica; monolite **non** committato.
 
 ## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (locale, non in autosync commit).
-- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md` (commit memoria corrente).
+- `coordinate_converter Claude.html` — solo working tree (verifica).
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md` (commit memoria verifica).
 
 ## Prossimo passo consigliato
 
-**Step B** — `#astroPanel` floating dedicato (non inline `#sec-astro`). **Step C** — disarmo esplicito `mapPickMode` e pick concorrenti. Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
+**Test browser manuale** (conversione → Strumenti → Astro → Calcola). Poi **Step B** (`#astroPanel`). Backlog: **Pass 4B Step 2** (WMM vendored) se prioritario.
 
 ## Dettagli (inbox)
 
+- **Verifica Step A:** `docs/orchestrator/inbox/2026-05-01_0930_verifica_pass5-stepA-astro.md`
 - **Pass 5 Step A implementato (monolite locale):** `docs/orchestrator/inbox/2026-05-01_0900_riepilogo_pass5-stepA-astro-state.md`
 - **Pass 5 piano Astro source picker + floating:** `docs/orchestrator/inbox/2026-05-01_0804_plan_astro-source-picker-floating-panel.md`
 - **`finito` sessione 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0310_riepilogo_finito-sessione.md`
