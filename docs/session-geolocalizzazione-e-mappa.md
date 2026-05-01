@@ -2263,13 +2263,13 @@ Chiusura sessione su comando utente **`finito`** dopo implementazione **Range Ri
 
 ### Orchestratore
 
-- Inbox implementazione: **`docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`**.
-- Dopo push principale **`finito`**: **`docs/orchestrator/latest.md`** + **`docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md`** (commit **`docs: orchestratore — riconciliazione finito sessione`**).
+- Inbox implementazione: **`docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`** (nel commit **`9bdf35d`**).
+- Riconciliazione post-**`finito`**: **`docs/orchestrator/latest.md`** + **`docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`** — commit **`1077266`** `docs: orchestratore — riconciliazione finito sessione` (su `main` dopo rebase; preceduto da **`0d0892e`** docs remoto).
 
 ### File toccati da questo `finito`
 
 - `coordinate_converter Claude.html`
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 - `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
-- `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md` (post-push riconciliazione)
+- `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`
 
