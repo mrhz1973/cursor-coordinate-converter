@@ -4,30 +4,29 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Favoriti da Waypoint Modal + Convertitore:** implementato in **`coordinate_converter Claude.html`** (working tree): `pushFavoriteEntrySilent`, pulsante `#btnAddResultToFavorites`, azione riga `★` nel modal waypoint, i18n IT/EN/FR. **Monolite non committato** in questo step; dettaglio **`docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md`**.
+2026-05-01 — **`finito` (seconda chiusura):** monolite **`coordinate_converter Claude.html`** su **`main`** in **`682caf0`** — **Favoriti** da Waypoint Modal (riga ★) + Convertitore (`#btnAddResultToFavorites`), checkpoint **`docs/checkpoint.md`** + append sessione. **Push principale:** OK. **Riconciliazione orchestratore:** commit dedicato `docs: orchestratore — riconciliazione finito sessione` → **`docs/orchestrator/latest.md`** + **`docs/orchestrator/inbox/2026-05-01_0120_riepilogo_finito-sessione.md`**. Working tree: pulito dopo entrambi i commit.
 
-2026-05-01 — **`finito`:** monolite **`coordinate_converter Claude.html`** su **`main`** in **`9bdf35d`** (Range Rings UI Blocco 1 + checkpoint sessione). **Riconciliazione orchestratore:** commit con messaggio **`docs: orchestratore — riconciliazione finito sessione`** (`docs/orchestrator/latest.md` + `inbox/2026-05-01_0020_riepilogo_finito-sessione.md`). Repository **pulito** dopo push; **`aggio`** allineato al monolite su `main`.
+2026-05-01 — **`finito` (precedente):** monolite su **`main`** in **`9bdf35d`** (Range Rings UI Blocco 1). Riconciliazione: **`docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`**.
 
-2026-04-30 — **Workflow `finito`:** obbligatoria **riconciliazione orchestratore** dopo il push principale di chiusura sessione (`docs/orchestrator/latest.md` + `inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato). Dettaglio **`docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`**.
+2026-04-30 — **Favoriti (pre-finito):** dettaglio implementazione **`docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md`** (commit memoria **`a0b48e3`**, monolite escluso fino a **`682caf0`**).
+
+2026-04-30 — **Workflow `finito`:** obbligatoria **riconciliazione orchestratore** dopo il push principale. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`**.
 
 ## Ultimo intervento Cursor
 
-**Memoria orchestratore** aggiornata per blocco **favorites-from-waypoint-converter** (2026-04-30). Il **monolite** con questa feature è **solo locale** finché non viene committato separatamente.
+**`682caf0`** — feature Favoriti waypoint/convertitore versionata; memoria orchestratore allineata con riconciliazione **`finito`**.
 
-## File modificati (sintesi ultimo blocco documentato)
+## File modificati (sintesi)
 
-- `coordinate_converter Claude.html` (locale, non in commit autosync corrente)
-- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md`
+- Ultimo push app: `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`
 
 ## Prossimo passo consigliato
 
-QA manuale favoriti (waypoint modal + convertitore); commit/push del monolite quando previsto dal team.
+QA browser favoriti; backlog prodotto se emerge.
 
 ## Dettagli (inbox)
 
-- **Favoriti waypoint + convertitore:** `docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md`
-- **Finito sessione 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`
-- **Riepilogo implementazione RR:** `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
-- **Piano RR:** `docs/orchestrator/inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`
-- Misura M6 overlay polish: `docs/orchestrator/inbox/2026-04-30_1428_riepilogo_measure-M6-overlay-polish.md`
-- Workflow finito + orchestratore (regole): `docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`
+- **Finito favoriti 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0120_riepilogo_finito-sessione.md`
+- **Finito RR 2026-05-01:** `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`
+- **Favoriti (riepilogo blocco):** `docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md`
+- **Riepilogo RR:** `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
