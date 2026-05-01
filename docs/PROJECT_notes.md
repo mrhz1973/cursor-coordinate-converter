@@ -14,11 +14,13 @@ Fonti usate per questa stesura: `coordinate_converter Claude.html`, `docs/sessio
 |------|------------------------|
 | **Nome / brand (pagina)** | Dal `<title>`: *GOI GIS Tool* (rename 2026-04-24, cleanup pre-GIS). Header e footer UI uniformati a "GOI GIS Tool". |
 | **File principale (app canonica)** | `coordinate_converter Claude.html` — applicazione **single-file** (HTML + CSS + JS inline). |
-| **Righe attuali** | **16317** righe (`wc -l` su questo file). |
+| **Righe attuali** | **37011** righe (`wc -l` e `awk 'END{print NR}'` su `coordinate_converter Claude.html`, concordi in Pass 1.5 — 2026-05-01). Aggiornamento PASS 1 numerico 2026-05-01; valore precedente in questo documento: **16317** (stale). |
 | **Dipendenze runtime** | **Nessun** `<script src="…">` esterno: un solo blocco `<script>` inline. In rete (solo con azione utente / contesto online): tile raster **Carto** (`*.basemaps.cartocdn.com`), geocoding **Nominatim** (default `nominatim.openstreetmap.org`; endpoint configurabile), link esterni mappa (Google Maps, OSM, ArcGIS Map Viewer / servizi Esri), e chiamate ausiliarie documentate in sessione (es. metadati immagine satellitare Esri). |
 | **Persistenza** | `localStorage` chiave **`coordconv_v2`** (bump 2026-04-24, cleanup pre-GIS; la chiave `coordconv_v1` resta in place ma non è più letta al boot); **`coordconv_ui_v1`** per layout pannelli GIS; **reset totale locale** (2026-04-28) rimuove v2, ui_v1 e opzionalmente la legacy **v1** oltre allo store tile IDB. **IndexedDB** per tile pack offline e cache geocoding. |
 | **Come aprirla** | Aprire il file `.html` nel browser (doppio click o *Open with*). Per **Geolocation API** serve contesto sicuro: **HTTPS** o **localhost** (`window.isSecureContext`); su `file://` o HTTP non sicuro la geo è disabilitata come da documentazione in `docs/session-geolocalizzazione-e-mappa.md`. Opzionale: server statico locale se preferisci non usare `file://`. |
 | **Workspace** | `Cursor.code-workspace` presente in root. **Non** c’è `package.json` in root (il progetto non è un monorepo Node per l’app). |
+
+**Nota dimensione file (`docs/roadmap.md` §4.8):** il monolite supera la **soft threshold ~22 000 righe** documentata in roadmap: ciò **richiede una valutazione** pianificata su scenari di distribuzione e tier di split; **non** implica split automatico né decisione Tier 1 in questo passaggio. Questo aggiornamento è solo **riallineamento numerico** della documentazione.
 
 ### Standard UI/UX (modali, tabelle, preset, map-first) — 2026-04-29
 
@@ -28,43 +30,119 @@ Vincoli operativi per **nuovi** modal, pannelli GIS, tabelle operative e strumen
 
 ---
 
-## 2. Mappa moduli logici (range di riga approssimativi)
+## 2. Mappa moduli logici (range di riga — PASS 1, 2026-05-01)
 
-Struttura fisica del monolite:
+Struttura fisica del monolite (validazione confini e comandi: sotto-sezione **Comandi usati per il calcolo dei range (Pass 1.5)**):
 
-| Blocco | Righe (circa) | Contenuto |
-|--------|-----------------|------------|
-| `<head>` + CSS | **1–2793** | Variabili tema chiaro/scuro, layout, componenti UI (header, mappa, risultati, drawer, modali, stampa, ecc.). |
-| Markup `<body>` | **2795–3776** | Header, `<main>` (input, schede Lat/Lon · UTM · MGRS, geocoding, risultati, mappa, `<details>` strumenti), drawer strumenti, help, QR, backdrop. |
-| JavaScript | **3777–16315** | Logica applicativa; chiusura `</script>` a riga 16315 ca. |
+| Blocco | Righe | Contenuto |
+|--------|--------|------------|
+| `<head>` + CSS (`<style>…</style>`) | **1–6969** | Meta, token tema, layout GIS/classico, modali, stampa, tooltip, ecc. |
+| Markup `<body>` (solo HTML prima di `<script>`) | **6970–8639** | Header, main, drawer, dialog (convert, waypoint, track, …), help, QR markup, input file nascosto `#globalFileInput`. |
+| Tag di delimitazione script | **8640**, **37009** | Riga **8640**: `<script>`; riga **37009**: `</script>`. |
+| JavaScript inline (corpo del tag) | **8641–37008** | `"use strict"` … `document.addEventListener("DOMContentLoaded", init);` |
+| Chiusura pagina | **37010–37011** | `</body>`, `</html>`. |
 
-Suddivisione **JavaScript** secondo i commenti `SECTION` nel file (anchor reali):
+Macro-regioni **`// #region JS`** / **`// #endregion JS`** (range inclusivi sulle righe dei commenti `#region`…`#endregion`; una sotto-regione è annidata — vedi riga COT):
 
-| Sezione (nome come nel file) | Da riga | A riga (indicativa) |
-|------------------------------|---------|---------------------|
-| SECTION 1: I18N | ~3785 | ~5621 |
-| SECTION 2: CONSTANTS | ~5622 | ~5662 |
-| SECTION 3: STATE | ~5663 | ~5747 |
-| Local storage (persistenza) | ~5748 | ~5822 |
-| SECTION 4: VALIDATORS | ~5823 | ~5845 |
-| SECTION 5–7: parser guidati / free text / UTM free | ~5846 | ~6072 |
-| SECTION 8: MGRS PARSER | ~6073 | ~6130 |
-| SECTION 9–10: UTM forward / inverse | ~6131 | ~6275 |
-| SECTION 11 / 11b / 11c: MGRS + datum italiani + datum extra | ~6276 | ~6809 |
-| SECTION 12–12b: FORMATTERS + Plus Code (OLC) | ~6810 | ~7035 |
-| SECTION 13: MAP LINKS | ~7036 | ~7052 |
-| SECTION 14–14B: Vincenty inverse/direct (+ haversine fallback, `routeDistance`, `sphericalPolygonArea`) | ~7053 | ~7197 |
-| WMM-2025 + SunCalc embedded (subito dopo `vincentyDirect`) | ~7198 | ~7562 |
-| Utility geodetiche / range polygon / misura mappa (funzioni collegate) | ~7563 | ~7975 |
-| SECTION 14C–14I: export/import, permalink, DnD, badge, auto-paste, help | ~7976 | ~8622 |
-| SECTION 14J–14L: misura UI, DTG, geocoding Nominatim + offline cities | ~8623 | ~9230 |
-| SECTION 15–16: auto-detect + rendering | ~9231 | ~11083 |
-| Tile IndexedDB, bbox, named areas, track, tools drawer | ~11084 | ~13884 |
-| SECTION 17–24: clipboard, history, favorites, batch, measure, live validation, convert, UI wiring | ~13885 | ~15409 |
-| SECTION 25: INIT (+ self-check) | ~15410 | ~15829 |
-| SECTION 26–27: QR encoder (ISO/IEC 18004) + UI modale QR | ~15830 | ~16314 |
+| `// #region JS …` | Da | A (`// #endregion JS …`) | Contenuto sintetico |
+|-------------------|-----|---------------------------|---------------------|
+| `JS — I18N` | 8642 | 12377 | `SECTION 1`, dizionari, `t()`, `applyLanguage`. |
+| `JS — CONSTANTS` | 12378 | 12419 | `SECTION 2`. |
+| `JS — STATE AND STORAGE` | 12420 | 13528 | `SECTION 3`, blocco **LOCAL STORAGE** (13249–…), `loadStore`/`saveStore`. |
+| `JS — VALIDATORS AND PARSERS` | 13529 | 18498 | `SECTION 4`–`15` (validator, parser, datum, Vincenty, export/import UI base, geocoding, auto-detect). |
+| `JS — TILE MAP INDEXEDDB OFFLINE CACHE AND BBOX` | 18499 | 22281 | `SECTION 16` rendering + tile offline, bbox, named areas (porzione iniziale). |
+| `JS — TRACK WAYPOINT GIS LAYERS AND TOOLS` | 22282 | 27942 | Track builder, waypoint, overlay mappa, misura on-map, range rings overlay, salvataggi correlati; include **`SECTION 18B`** (GIS Phase 1). |
+| `JS — CLIPBOARD HISTORY FAVORITES BATCH` | 27943 | 28822 | `SECTION 17`–`19`. |
+| `JS — MEASURE VALIDATION CONVERT AND PASTE` | 28823 | 29005 | `SECTION 20`–`22`. |
+| `JS — UI BINDINGS AND GIS HUB` | 29006 | 35954 | `SECTION 23`, **`SECTION 19C`** (Range Rings UI), **`SECTION 23B`** (GIS hub), binding globale, modali GIS. |
+| `JS — COT XML WAYPOINT INTEROP …` *(annidata nella regione UI)* | 35570 | 35855 | Export/import CoT XML waypoint, solo file. |
+| `JS — INIT AND SELF CHECK` | 35955 | 36521 | `SECTION 24` INIT, `SECTION 25` self-check. |
+| `JS — QR ENCODER AND MODAL` | 36522 | 37006 | `SECTION 26`–`27`, encoder QR + UI modale. |
 
-*Nota:* i confini tra “utility” e sezione successiva possono sovrapporsi di poche righe; usare `grep` su `SECTION` nel file per agganci precisi durante refactor.
+Suddivisione per commenti **`/* … SECTION … */`** nel JavaScript (inizio = riga del commento; **fine stimata** = ultima riga prima del marker `SECTION` successivo o prima di `// #endregion`, salvo dove indicato):
+
+| Marker nel file | Inizio | Fine stimata | Contenuto breve |
+|-----------------|--------|----------------|-----------------|
+| SECTION 1: I18N | 8648 | 12376 | Dizionari IT/EN/FR (ultima riga codice prima di `#endregion JS — I18N`). |
+| SECTION 2: CONSTANTS | 12379 | 12418 | Costanti numeriche / stringhe (prima di `#endregion … CONSTANTS`). |
+| SECTION 3: STATE | 12421 | 13248 | Oggetto `state`, helper stato (prima del blocco LOCAL STORAGE). |
+| LOCAL STORAGE (offline persistence) | 13249 | 13527 | Chiavi `coordconv_v2`, `coordconv_ui_v1`, `loadStore`/`saveStore` (dentro regione STATE; poi `#endregion` a riga 13528). |
+| SECTION 4: VALIDATORS | 13530 | 13552 | Validatori input. |
+| SECTION 5–7 (guided / free / UTM free) | 13553 | 13779 | Parser guidati, free text, UTM libero. |
+| SECTION 8: MGRS PARSER | 13780 | 13837 | MGRS. |
+| SECTION 9–10: UTM forward / inverse | 13838 | 13982 | UTM. |
+| SECTION 11 / 11b / 11c | 13983 | 14516 | MGRS forward/reverse, datum IT, datum extra. |
+| SECTION 12 / 12b | 14517 | 14742 | Formatter, Plus Code (OLC). |
+| SECTION 13: MAP LINKS | 14743 | 14762 | Link esterni mappa. |
+| SECTION 14 / 14B (+ blob WMM dopo `vincentyDirect`, riga ~15135) | 14763 | 15983 | Vincenty, diretta, Haversine, **WMM-2025** nel flusso 14B. |
+| SECTION 14C–14I | 15984 | 18001 | Export/import file, permalink, DnD, badge, auto-paste, help. |
+| SECTION 14J / 14L | 18002 | 18452 | Misura diretta UI, geocoding Nominatim + offline. |
+| SECTION 15: AUTO-DETECT | 18453 | 18497 | Auto-detect universale (ultima riga prima di `#endregion … VALIDATORS` / `#region … TILE`). |
+| SECTION 16: RENDERING | 18500 | 24025 | Schede risultati, mini-mappa, locality, ecc.; nel mezzo tile/IDB/bbox (stessa regione macro TILE). |
+| SECTION 18B: GIS DATA MODEL (Phase 1) | 24026 | 27943 | Store GeoJSON `gisTracks`/`gisPolygons`/`gisLayers`, helper CRUD (ordine file: dopo rendering esteso, prima clipboard). |
+| SECTION 17 / 18 / 19 | 27944 | 28822 | Clipboard, cronologia, batch. |
+| SECTION 20–22 | 28824 | 29005 | Misura form, live validation, `doConvert`. |
+| SECTION 23: UI WIRING | 29007 | 29236 | Binding pulsanti, paste, batch UI, ecc. |
+| SECTION 19C: RANGE RINGS | 29237 | 31658 | UI min range rings. |
+| SECTION 23B: GIS HUB | 31659 | 35954 | Tab drawer, convert modal, tool grid, floating panels (include codice dopo `#endregion COT`; ultima riga logica ~35953, poi `#endregion JS — UI BINDINGS…` a 35954). |
+| SECTION 24 / 25 | 35956 | 36520 | `init()`, self-check console. |
+| SECTION 26 / 27 | 36523 | 37005 | Encoder QR + modale. |
+
+*Nota PASS 1:* numerazione **SECTION** nel sorgente non è strettamente sequenziale (es. **18B** prima di **17–19** per posizione fisica). I confini **fine stimata** sono allineati ai marker successivi o ai `#endregion`; funzioni senza commento SECTION tra due marker possono far «toccare» due blocchi — per refactor usare `grep`/`rg` su `SECTION` e `// #region JS` sul file canonico.
+
+### Comandi usati per il calcolo dei range (Pass 1.5)
+
+Percorso file (esempi): `"coordinate_converter Claude.html"` dalla root del repo. Comandi eseguiti in verifica **2026-05-01** (Pass 1.5).
+
+**1. Conteggio righe totali (sanity incrociato)**
+
+| Controllo | Comando |
+|-----------|---------|
+| `wc -l` | `wc -l "coordinate_converter Claude.html"` |
+| `awk` | `awk 'END{print NR}' "coordinate_converter Claude.html"` |
+
+Esito atteso: stesso intero riportato in §1 (**37011**) e uguale a `wc` e `awk`.
+
+**2. Tabella «Struttura fisica» (confini chiave)**
+
+| Range documentato | Verifica inizio | Verifica fine |
+|-------------------|-----------------|---------------|
+| **1–6969** (`<head>` + CSS) | Inizio file riga **1** | `grep -n '^</head>$' "coordinate_converter Claude.html"` → **6969** |
+| **6970–8639** (markup `<body>` prima di script) | `grep -n '^<body>$' "coordinate_converter Claude.html"` → **6970** | Riga immediatamente prima di `<script>`: `grep -n '^<script>$' "coordinate_converter Claude.html"` → **8640**, quindi markup body **6970–8639** |
+| **8640** / **37009** (delimiter `<script>`…`</script>`) | `grep -n '^<script>$'` → **8640** | `grep -n '^</script>$'` → **37009** |
+| **8641–37008** (corpo JS) | Implicito: riga dopo `<script>` fino a riga prima di `</script>` | — |
+| **37010–37011** (`</body></html>`) | `grep -n '^</body>$'` → **37010** | `grep -n '^</html>$'` → **37011** |
+
+**Spot-check Pass 1.5:** i tre confini **fine CSS/inizio body** (6969/6970), **inizio JS** (`<script>` riga 8640), **chiusura `</script>`** (riga 37009) risultano allineati al monolite.
+
+**3. Tabella macro-regioni `// #region JS`**
+
+Comando unico per tutte le coppie inizio/fine:
+
+```bash
+grep -n '^// #region JS\|^// #endregion JS' "coordinate_converter Claude.html"
+```
+
+Ogni riga della tabella macro corrisponde a una coppia `#region` / `#endregion` con etichetta uguale (eccezione: regione **COT** annidata dentro **UI BINDINGS**, righe **35570–35855**, tra `#region UI …` **29006** e `#endregion UI …` **35954**).
+
+**4. Tabella marker `SECTION` / LOCAL STORAGE (fine approssimata)**
+
+Per l’**inizio** di ogni blocco (riga del commento `/* … SECTION … */` o `LOCAL STORAGE`):
+
+```bash
+grep -n 'SECTION [0-9]' "coordinate_converter Claude.html"
+grep -n 'LOCAL STORAGE (offline persistence)' "coordinate_converter Claude.html"
+```
+
+Per varianti di nome (`SECTION 11b`, `SECTION 14B`, `SECTION 18B`, `SECTION 19C`, `SECTION 23B`, ecc.) estendere con:
+
+```bash
+grep -n 'SECTION 1[1-9][a-zA-Z]*:\|SECTION [0-9][0-9][a-zA-Z]*:' "coordinate_converter Claude.html"
+```
+
+(le righe effettive sono nel sorgente; il pattern può richiedere aggiustamenti).
+
+La colonna **Fine stimata** della tabella SECTION è derivata dalla **riga immediatamente precedente** al marker SECTION/`#endregion` successivo documentato in Pass 1, non da un comando dedicato — vedi nota in coda alla tabella SECTION.
 
 ---
 
@@ -193,4 +271,4 @@ _(nessun item attualmente aperto su waypoint — vedi §9 "COSE FATTE")_
 
 ---
 
-*Ultimo allineamento contenuti: 2026-04-28 — reset totale locale documentato come implementato + test utente positivo; prossimo blocco operativo consigliato **CoT XML file-only** (backlog strategico / roadmap·rules invariati salvo approvazione esplicita). Righe monolite: usare `wc -l` su `coordinate_converter Claude.html` se serve precisione. Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-28 — Reset totale dati locali implementato*. Backlog strategico generale: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*.*
+*Ultimo allineamento contenuti: 2026-05-01 — PASS 1 numerico + **PASS 1.5** verifica: `wc -l` ≡ `awk END{print NR}` ≡ **37011**; §2 arricchita con tracciamento comandi e spot-check confini CSS/body/script; cronaca feature invariata in §3+. Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md`. Backlog strategico: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*. Dimensione file: roadmap §4.8 soft threshold ~22 000 righe.*
