@@ -4,7 +4,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-05-01 — **`finito` (seconda chiusura):** monolite **`coordinate_converter Claude.html`** su **`main`** in **`682caf0`** — **Favoriti** da Waypoint Modal (riga ★) + Convertitore (`#btnAddResultToFavorites`), checkpoint **`docs/checkpoint.md`** + append sessione. **Push principale:** OK. **Riconciliazione orchestratore:** commit dedicato `docs: orchestratore — riconciliazione finito sessione` → **`docs/orchestrator/latest.md`** + **`docs/orchestrator/inbox/2026-05-01_0120_riepilogo_finito-sessione.md`**. Working tree: pulito dopo entrambi i commit.
+2026-05-01 — **`finito` (seconda chiusura):** monolite su **`main`** in **`682caf0`** (`feat: favoriti da waypoint modal e convertitore`) — **Favoriti** da Waypoint Modal (riga ★) + Convertitore (`#btnAddResultToFavorites`), **`docs/checkpoint.md`** + append sessione. **Riconciliazione orchestratore:** **`62d8862`** `docs: orchestratore — riconciliazione finito sessione` (`latest.md` + **`inbox/2026-05-01_0120_riepilogo_finito-sessione.md`**). Push **`main`**: OK. Working tree: pulito.
 
 2026-05-01 — **`finito` (precedente):** monolite su **`main`** in **`9bdf35d`** (Range Rings UI Blocco 1). Riconciliazione: **`docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`**.
 
