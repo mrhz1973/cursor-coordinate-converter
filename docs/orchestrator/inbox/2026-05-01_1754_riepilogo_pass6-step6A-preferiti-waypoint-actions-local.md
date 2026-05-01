@@ -49,7 +49,7 @@
 
 ## Git / commit memoria
 
-- **Commit autosync (solo docs):** messaggio richiesto `docs: memoria Pass 6 Step 6A preferiti waypoint local` — file inclusi: `docs/orchestrator/latest.md`, questo **`inbox`**.  
+- **Commit autosync (solo docs):** **`818ab33`** — messaggio `docs: memoria Pass 6 Step 6A preferiti waypoint local` — file inclusi: `docs/orchestrator/latest.md`, questo **`inbox`**. **Push:** riuscito su `main`.  
 - **`coordinate_converter Claude.html` escluso** dal commit (policy + richiesta utente).
 
 ## Prossimo passo consigliato
