@@ -49,8 +49,12 @@
 
 ## Git / commit memoria
 
-- **Commit autosync (solo docs):** **`818ab33`** — messaggio `docs: memoria Pass 6 Step 6A preferiti waypoint local` — file inclusi: `docs/orchestrator/latest.md`, questo **`inbox`**. **Push:** riuscito su `main`.  
-- **`coordinate_converter Claude.html` escluso** dal commit (policy + richiesta utente).
+- **Commit memoria orchestratore (solo `docs/orchestrator/**`):**  
+  - **`818ab33`** — `docs: memoria Pass 6 Step 6A preferiti waypoint local` (`latest.md` + creazione inbox).  
+  - **`98dfa2b`** — `docs: inbox Step 6A — hash commit memoria 818ab33` (riga hash in questo file).  
+  - **`f4ad5c9`** — `docs: latest — hash commit memoria Step 6A (818ab33 + 98dfa2b)` (allineamento `latest.md` dopo follow-up inbox).  
+  **Push:** tutti riusciti su `main`.  
+- **`coordinate_converter Claude.html` escluso** da ogni commit memoria (policy + richiesta utente).
 
 ## Prossimo passo consigliato
 
