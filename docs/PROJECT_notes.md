@@ -16,7 +16,7 @@ Fonti usate per questa stesura: `coordinate_converter Claude.html`, `docs/sessio
 | **File principale (app canonica)** | `coordinate_converter Claude.html` — applicazione **single-file** (HTML + CSS + JS inline). |
 | **Righe attuali** | **37011** righe (`wc -l` e `awk 'END{print NR}'` su `coordinate_converter Claude.html`, concordi in Pass 1.5 — 2026-05-01). Aggiornamento PASS 1 numerico 2026-05-01; valore precedente in questo documento: **16317** (stale). |
 | **Dipendenze runtime** | **Nessun** `<script src="…">` esterno: un solo blocco `<script>` inline. In rete (solo con azione utente / contesto online): tile raster **Carto** (`*.basemaps.cartocdn.com`), geocoding **Nominatim** (default `nominatim.openstreetmap.org`; endpoint configurabile), link esterni mappa (Google Maps, OSM, ArcGIS Map Viewer / servizi Esri), e chiamate ausiliarie documentate in sessione (es. metadati immagine satellitare Esri). |
-| **Persistenza** | `localStorage` chiave **`coordconv_v2`** (bump 2026-04-24, cleanup pre-GIS; la chiave `coordconv_v1` resta in place ma non è più letta al boot); **`coordconv_ui_v1`** per layout pannelli GIS; **reset totale locale** (2026-04-28) rimuove v2, ui_v1 e opzionalmente la legacy **v1** oltre allo store tile IDB. **IndexedDB** per tile pack offline e cache geocoding. |
+| **Persistenza** | `localStorage` **`coordconv_v2`** (stato app), **`coordconv_ui_v1`** (layout pannelli); legacy **`coordconv_v1`** non letta al boot. **IndexedDB** `CoordConvMapTiles` / store **`tiles`**: tile offline + record geocoding/dataset (chiavi `geo:*`). Dettaglio tabellare: §**Persistenza, IndexedDB e cap array** (Pass 2). |
 | **Come aprirla** | Aprire il file `.html` nel browser (doppio click o *Open with*). Per **Geolocation API** serve contesto sicuro: **HTTPS** o **localhost** (`window.isSecureContext`); su `file://` o HTTP non sicuro la geo è disabilitata come da documentazione in `docs/session-geolocalizzazione-e-mappa.md`. Opzionale: server statico locale se preferisci non usare `file://`. |
 | **Workspace** | `Cursor.code-workspace` presente in root. **Non** c’è `package.json` in root (il progetto non è un monorepo Node per l’app). |
 
@@ -164,6 +164,61 @@ Riferimenti testuali UI (non necessariamente implementazione letterale dell’in
 
 ---
 
+## Persistenza, IndexedDB e cap array
+
+Audit meccanico **Pass 2** (2026-04-30) sul monolite `coordinate_converter Claude.html` — solo lettura (`rg` / `grep`). Il monolite **non** è stato modificato in questo passaggio. Dove un limite non emerge chiaramente dal codice è indicato **non rilevato con certezza**.
+
+### A. Chiavi di persistenza
+
+| Chiave / database / store | Tipo | Contenuto (sintesi) | Persistita | Reset totale locale la rimuove | Note operative |
+|---------------------------|------|---------------------|------------|-------------------------------|----------------|
+| **`coordconv_v2`** | `localStorage` (JSON) | Payload da `saveStore()`: `settings`, `history` (se `state.persist`), `favorites`, `namedAreas`, `track`, `mapWaypoints`, `savedTracks`, `gisTracks`, `gisPolygons`, `gisLayers`, `lastBatchRows`, `batchInputText`, `rangeRingSets` | Sì | Sì (`performAppFullLocalReset` → `clearStore` + verifica assenza chiavi) | Chiave principale stato applicativo |
+| **`coordconv_ui_v1`** | `localStorage` (JSON) | Layout floating (`captureUiState` / `sanitizeUiState`): pannelli track, waypoint, convert, search, favorites, layers | Sì | Sì (stesso reset totale); **`resetGisUiLayoutPanels`** rimuove solo questa chiave | Nessun dato di conversione / waypoints |
+| **`coordconv_v1`** | `localStorage` legacy | Formato pre-bump; **non** letto da `loadStore()` | Può essere ancora presente su profili vecchi | Sì (**solo** `performAppFullLocalReset`: `localStorage.removeItem("coordconv_v1")`) | Commento in-code: evita migrazione forma dati obsoleta |
+| **`CoordConvMapTiles`** (versione DB **1**) | IndexedDB | Database unico usato dal codice tile/geo | Sì | Sì (`idbClearAllTilesOrThrow` / `idbClearAllTiles` svuotano lo store) | `indexedDB.open(..., 1)` |
+| Store **`tiles`** (nel DB sopra) | Object store | Coppie chiave/valore: tile **`layerId:z/x/y`** (blob + content-type); **`geo:rev:lat,lon`** (payload reverse Nominatim); **`geo:dataset:cities`** (dataset città importato `{ data: [...] }`) | Sì | Sì (stesso `clear()` sullo store) | Geocoding forward: cache **in RAM** (`geocodeCache.fwd`), non questo store |
+| Cache geocoding (`geocodeCache.fwd` / `.rev`) | RAM (`Map`) | Risultati `/search` e `/reverse` in sessione; `.rev` anche da IDB all’uso | No | n/a | `GEOCODE_CACHE_MAX` **200** (`_cacheSetLimited`) |
+| **`sessionStorage`** | — | — | Non rilevato | — | Ricerca testuale senza occorrenze nel monolite |
+
+### B. Array e store applicativi (`state`)
+
+| Stato / array | Persistito o transitorio | Fonte canonica o additiva GIS | Cap / limite rilevato | Dove viene usato / note |
+|---------------|--------------------------|-------------------------------|------------------------|-------------------------|
+| **`state.mapWaypoints[]`** | Persistito | Canonico waypoints mappa | **200** (`saveStore` slice; `init` slice dopo sanitize) | Modal waypoint, export, `gisSyncLayerFeatureIds` |
+| **`state.savedTracks[]`** | Persistito | Archivio tracce salvate (snapshot), separato da GIS native | **50** (`SAVED_TRACKS_CAP`); punti per traccia **500** | Track modal, overlay tratteggiate |
+| **`state.gisTracks[]`** | Persistito | Additivo GIS (GeoJSON Feature linee) | **50** (`GIS_TRACK_CAP`, `gisSanitizeFeatureArray`) | Phase 1 |
+| **`state.gisPolygons[]`** | Persistito | Additivo GIS (GeoJSON Feature poligoni) | **50** (`GIS_POLYGON_CAP`) | Phase 1 |
+| **`state.gisLayers[]`** | Persistito | Additivo GIS (meta-layer + `featureIds`) | **20** (`GIS_LAYER_CAP`); fino a **500** id per layer in sanitize | `gisSanitizeLayerArray` preserva seed layers |
+| **`state.favorites[]`** | Persistito | Lista utente | **200** su aggiunta UI (`pushFavoriteEntrySilent`, `addCurrentAsFavorite`); **`saveStore` non applica slice** sul vettore | Possibile JSON con >200 voci finché non si modifica la lista (load non tronca il count) |
+| **`state.history[]`** | Persistito solo se `state.persist` | Cronologia conversioni | **10** (`pushHistory`; `init` `slice(0, 10)`) | UI cronologia |
+| **`state.rangeRingSets[]`** | Persistito | Anelli concentrici | **20** set (`RANGE_RING_SETS_CAP`); **15** raggi/set dopo sanitize (`RANGE_RING_MAX_RADII`); raggio max **5e6 m** | `sanitizeRangeRingSets` / `ensureRangeRingState` |
+| **`state.namedAreas[]`** | Persistito | Aree offline denominate | **30** (`sanitizeNamedAreas`; `saveStore` slice) | Precache / pannello offline |
+| **`state.track`** | Persistito | Draft legacy polyline/polygon | Punti **500**; migrazione `init` verso `mapWaypoints` fino al cap 200 | Track builder classico |
+| **`state.lastBatchRows`** / **`batchInputText`** | Persistito | Ultimo batch | Cap righe: **non rilevato con certezza** | Ripristino UI batch |
+| **`state.gisSelection`** | Transitorio | Selezione GIS | Nessun cap dedicato oltre uso corrente | Non in `saveStore` |
+| **`state.undoStack`** / **`redoStack`** | Transitorio | Undo GIS scaffolding | **100** (`GIS_ACTION_STACK_CAP`) | Non in `saveStore` |
+
+**Altri limiti operativi collegati:** `MAX_PRECACHE_TILES` **150000**; import CoT XML **`COT_XML_MAX_BYTES`** **2097152**.
+
+### C. Reset / wipe / sanitize
+
+| Funzione / flusso | Cosa cancella o sanitizza | Cosa **non** è nel suo scope | Rischio operativo | Note |
+|-------------------|---------------------------|------------------------------|-------------------|------|
+| **`saveStore()`** | Scrive `coordconv_v2` con clamp (`ensureGisState`, `ensureRangeRingState`, slice su molti campi) | IndexedDB; chiave legacy `coordconv_v1` | Quota LS → catch vuoto, salvataggio ignorato | `history` serializzato `[]` se `!persist` |
+| **`loadStore()`** | Lettura + `JSON.parse` da `coordconv_v2` | Non sanitizza (delegato a `init`) | JSON invalido → `null` | Non legge `coordconv_v1` |
+| **`init()` (ramo `stored`)** | Sanitize: `sanitizeNamedAreas`, waypoint `meta` whitelist, `ensureSavedTracksState`, `ensureGisState`, `sanitizeRangeRingSets`, ecc. | — | — | Dopo assegnazioni GIS → `ensureGisState()` |
+| **`clearStore()`** | Rimuove `coordconv_v2` e `coordconv_ui_v1` | IndexedDB | Se usato da solo, tile/geo restano in IDB | — |
+| **`performAppFullLocalReset()`** | `idbClearAllTilesOrThrow`; `clearStore()`; `coordconv_v1` remove; `location.reload()` | — | Timeout IDB 12s → errore UI, no reload | Conferma parola **`CANCELLA`** |
+| **`performOfflineGlobalReset()`** | `idbClearAllTiles()` (tile **e** record `geo:*`); `namedAreas` e stato UI offline; **`saveStore()`** | Non wipe LS globale (preferiti, GIS, ecc. restano salvo altri campi) | Perde cache reverse geo e dataset città in IDB | Distinto dal reset totale app |
+| **`resetGisUiLayoutPanels()`** | Solo `coordconv_ui_v1` + reset layout sessione | `coordconv_v2` | `window.confirm` | Solo layout |
+
+### Incertezza documentata (Pass 2)
+
+- **`lastBatchRows`:** costante numerica massima righe — **non rilevato con certezza**.
+- **Preferiti:** limite **200** sul percorso di aggiunta; assenza di slice in `saveStore` / load sul solo conteggio — vedi tabella B.
+
+---
+
 ## 4. Stato attuale delle feature principali
 
 Sintesi allineata a `.cursor/rules/20-domain-knowledge.mdc`, `99-known-state.mdc`, e alla cronaca in `docs/session-geolocalizzazione-e-mappa.md` (ultimi checkpoint **2026-04-24 — GIS-first layout pivot**):
@@ -271,4 +326,4 @@ _(nessun item attualmente aperto su waypoint — vedi §9 "COSE FATTE")_
 
 ---
 
-*Ultimo allineamento contenuti: 2026-05-01 — PASS 1 numerico + **PASS 1.5** verifica: `wc -l` ≡ `awk END{print NR}` ≡ **37011**; §2 arricchita con tracciamento comandi e spot-check confini CSS/body/script; cronaca feature invariata in §3+. Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md`. Backlog strategico: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*. Dimensione file: roadmap §4.8 soft threshold ~22 000 righe.*
+*Ultimo allineamento contenuti: 2026-04-30 — **PASS 2** persistenza / IndexedDB / cap array (sezione dedicata tra §3 e §4); monolite non modificato. Precedente: 2026-05-01 — PASS 1 + **PASS 1.5** (**37011** righe). Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md`. Backlog strategico: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*. Dimensione file: roadmap §4.8 soft threshold ~22 000 righe.*
