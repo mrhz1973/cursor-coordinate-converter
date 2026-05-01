@@ -108,6 +108,34 @@ Esempio (piano):
 
 `File piano copiabile: /tmp/01-goi-gis-plan.md` (o `02-`, … secondo il primo nome libero)
 
+## Prompt operativi autosufficienti (anti micro-pass di sola verifica)
+
+**Principio:** ogni **prompt operativo** (richiesta di implementazione o modifica sostanziale sul repo) deve essere **autosufficiente** per Cursor: nella **stessa** risposta/intervento devono confluire **implementazione**, **verifiche automatiche standard**, **test browser se possibile**, **aggiornamento memoria orchestratore** (come da sezione *Autosync orchestratore* ove applicabile) e **RIEPILOGO finale completo**. **Non** creare un **pass separato** dedicato **solo** a verifiche standard se quelle verifiche erano **già prevedibili** dal task operativo (es. dopo un’implementazione sul monolite, non delegare a un secondo giro ciò che poteva essere incluso nel primo).
+
+**Un pass separato di sola verifica è ammesso solo se** almeno una di queste condizioni è vera:
+
+- Cursor **non** ha eseguito i controlli richiesti nel prompt operativo o dichiara esplicitamente di **non** aver potuto eseguirli;
+- l’**output** è **mancante**, **contraddittorio** o **incompleto**;
+- un **test fallisce** o emerge un **errore** che richiede un secondo intervento;
+- emerge un **rischio concreto** prima del commit (sicurezza, regressione, integrità git, ecc.);
+- l’**utente** chiede **esplicitamente** una verifica o un audit separato;
+- il task è dichiaratamente **solo audit** / **solo verifica** (allora il “secondo pass” *è* il task).
+
+### Controlli standard quando si modifica il monolite
+
+Se un prompt operativo modifica **`coordinate_converter Claude.html`** (o altro HTML/JS inline del progetto), l’intervento deve **già** includere i controlli standard pertinenti, salvo impossibilità dichiarata:
+
+- `git status --short`;
+- `git diff --stat` (e, se utile, estratto mirato del diff);
+- verifica assenza di **`<script src>`** / **`type="module"`** non autorizzati quando si tocca la struttura HTML/JS del monolite;
+- **`node --check`** sul **JavaScript estratto** dagli script inline quando si modifica JS sostanziale (stesso metodo già usato nel repo per i blocchi inline; se l’estrazione fallisce, dichiararlo nel RIEPILOGO);
+- **test browser manuale** se **realisticamente eseguibile** nell’ambiente (es. server locale già attivo, percorso noto);
+- **memoria orchestratore** secondo la rule *Autosync orchestratore* (nessun micro-commit “solo verifica” al posto dell’autosync previsto per l’intervento operativo).
+
+Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichiararlo chiaramente** e indicare una **checklist manuale** minima per l’utente.
+
+**Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
