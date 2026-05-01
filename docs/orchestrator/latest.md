@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **`finito` sessione:** commit **`9a90fbc`** su **`main`** (push step 2 riuscito). **`coordinate_converter Claude.html` incluso** — **Pass 5 Step E.3** (`partialMinVisible: 72` su Waypoint/Favoriti; `clampWaypointModalRect` / `clampFavoritesPanelRect` → `gisPanelClampRectPartialVisible`); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Piano Pass 6 già in **`13a7a48`**. **Riconciliazione orchestratore:** inbox **`2026-05-01_1716_riepilogo_finito-sessione.md`** + commit **`docs: orchestratore — riconciliazione finito sessione`** (vedi hash in coda a questo blocco dopo push step 4).
+
 2026-05-01 — **Pass 6 — piano standardizzazione liste modali GIS (solo documentazione):** salvato piano completo in **`docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`**. **Scope:** Preferiti/Waypoint, Mappe online/offline, Traccia; colonna **Azioni** compatta (stile Range Rings); rename UI IT **Favoriti → Preferiti** (`state.favorites` invariato). **Nessuna implementazione**; **`coordinate_converter Claude.html` non modificato**. **Prossimo passo consigliato:** Step **6A** (Preferiti + Waypoint). Commit memoria: **`docs: piano Pass 6 standardizzazione liste modali`**.
 
 2026-05-01 — **Pass 5 Step E.3 — Favoriti/Waypoint partial-offscreen (monolite solo locale):** in **`coordinate_converter Claude.html`** — `partialMinVisible: 72` su **`_favoritesPanelLayoutOpts`** / **`_waypointPanelLayoutOpts`**; **`clampFavoritesPanelRect`** / **`clampWaypointModalRect`** usano **`gisPanelClampRectPartialVisible`** (drag/resize già supportati da `opts` condivisi con RR). Test browser: **non eseguiti**. **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step E3 partial offscreen local`**.
@@ -54,21 +56,22 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 6 — piano liste modali GIS** — pubblicazione solo **`docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`** + **`latest.md`**; monolite **non toccato**.
+**`finito` 2026-05-01** — monolite versionato con **E.3** (`9a90fbc`); memoria allineata con **`2026-05-01_1716_riepilogo_finito-sessione.md`**.
 
 ## File modificati (sintesi)
 
-- **Commit orchestratore Pass 6 (piano):** `docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`, `docs/orchestrator/latest.md` — **nessun** `coordinate_converter Claude.html`.
-- **Locale:** `coordinate_converter Claude.html` — **Step E.3** (non in commit memoria).
+- **Su `main` (commit `9a90fbc`, `finito`):** `coordinate_converter Claude.html` (E.3), `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`.
+- **Commit orchestratore Pass 6 (piano):** `docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`, `docs/orchestrator/latest.md` — precedente **`13a7a48`** senza monolite.
 - **Su `main` (commit `7919d9d`):** `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (Pass 5 B→E.2 `finito`).
 - **Memoria pre-`finito` (solo docs, già su remoto):** `56205de`, `6a47a9f`, `1b1653a` + inbox Step E / E.1 / E.2.
 
 ## Prossimo passo consigliato
 
-Implementare **Pass 6 Step 6A** (Preferiti + Waypoint: UI IT Preferiti, tabella/list azioni compatte, icone) secondo piano in inbox; poi 6B/6C/6D. Smoke E.3 su build locale se monolite ancora modificato; **`aggio`** in ChatGPT dopo push memoria.
+Implementare **Pass 6 Step 6A** dal piano in inbox; smoke **E.3** su Waypoint/Favoriti (drag parziale off-screen). **`aggio`** in ChatGPT dopo lettura `latest` + inbox `finito`.
 
 ## Dettagli (inbox)
 
+- **`finito` 2026-05-01 (riconciliazione):** `docs/orchestrator/inbox/2026-05-01_1716_riepilogo_finito-sessione.md`
 - **Pass 6 piano liste modali GIS:** `docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`
 - **Pass 5 Step E.3 partial-offscreen (locale):** `docs/orchestrator/inbox/2026-05-01_1652_riepilogo_pass5-stepE3-favorites-waypoints-partial-offscreen-local.md`
 - **`finito` Pass 5 B→E.2:** `docs/orchestrator/inbox/2026-05-01_1638_riepilogo_finito-sessione.md`
