@@ -1,7 +1,7 @@
 # Riepilogo — Pass 4B: fix runtime Astro dopo split SunCalc (monolite solo locale)
 
 **Timestamp:** 2026-05-01_0304  
-**Commit memoria (previsto):** messaggio `docs: memoria Pass4b fix Astro SunCalc post-split`
+**Commit memoria:** `fc52438` — messaggio `docs: memoria Pass4b fix Astro SunCalc post-split`
 
 ## Bug riscontrato
 
