@@ -53,9 +53,9 @@
 
 ## Commit memoria (solo docs)
 
-Dopo questo file: commit selettivo **`docs/orchestrator/latest.md`** + questo **`inbox`**, messaggio  
-`docs: memoria Pass 6 Step 6A.1 preferiti waypoint polish local`  
-— **senza** `coordinate_converter Claude.html`, **senza** `git add .`.
+- **`2295ae7`** — `docs: memoria Pass 6 Step 6A.1 preferiti waypoint polish local` (`latest.md` + questo inbox; push riuscito).  
+- **`b8fa14d`** — `docs: orchestratore — allinea latest con hash 6A.1` (correzione riga commit in **`latest.md`**; push riuscito).  
+**Senza** `coordinate_converter Claude.html`, **senza** `git add .`.
 
 ## Stato working tree atteso post-commit memoria
 
