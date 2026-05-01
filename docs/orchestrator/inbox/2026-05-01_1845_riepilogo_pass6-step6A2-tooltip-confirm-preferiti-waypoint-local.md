@@ -67,4 +67,5 @@
 
 ## Commit memoria
 
-Messaggio: `docs: memoria Pass 6 Step 6A.2 tooltip conferme local` — solo `docs/orchestrator/latest.md` + questo file inbox; **push** selettivo; monolite **escluso**.
+- **`9b97bbc`** — `docs: memoria Pass 6 Step 6A.2 tooltip conferme local` (push riuscito).  
+Monolite **escluso**; niente `git add .`.
