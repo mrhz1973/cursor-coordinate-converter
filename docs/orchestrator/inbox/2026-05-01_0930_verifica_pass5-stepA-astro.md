@@ -21,6 +21,6 @@
 
 **Non eseguiti** in questa sessione (nessun automazione headless configurata nel repo). Checklist manuale richiesta: conversione valida → Strumenti → Astro → Calcola → tabella sole/luna → console senza errori.
 
-## Commit
+## Commit / push
 
-- Solo memoria orchestratore (questo file + `latest.md`), **senza** monolite.
+- **`8371e42`** — `docs: orchestratore — verifica Pass5 Step A Astro` (solo `latest.md` + questo inbox). Push `main` riuscito. Monolite **non** incluso.
