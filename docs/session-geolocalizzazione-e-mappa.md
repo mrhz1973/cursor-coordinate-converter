@@ -2294,3 +2294,30 @@ Mappe Offline core, tile hydrate, `_mapTileGen`, AbortController tile, `syncOffl
 
 - `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
+
+## Checkpoint 2026-05-01 — Pass 4B SunCalc vendored split + fix Astro + rule orchestratore (Finito)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`** dopo: **Pass 4B Step 1** (split Tier 1 SunCalc in `<script>` vendored dedicato prima del core); **fix runtime** Astro (`window.SunCalc` + resolver in `runAstroUI`); aggiornamento **`.cursor/rules/30-output-workflow.mdc`** (memoria orchestratore obbligatoria anche con monolite solo locale); commit memoria intermedi su `main` (**`555f6c5`**, **`fc52438`**, **`b3cb726`**). Questo checkpoint consolida **monolite** + documentazione sessione/checkpoint ufficiale.
+
+### Monolite (`coordinate_converter Claude.html`)
+
+1. **Script vendored** (prima del core): header VENDORED + IIFE SunCalc invariata nel corpo matematico; **`window.SunCalc = SunCalc`** dopo `})();` (commento senza sottostringa `<script` letterale nei grep).
+2. **Core:** rimosso il blocco SunCalc duplicato; callsite stampa/self-check restano su **`SunCalc.*`** dove già presenti.
+3. **Astro UI:** **`runAstroUI`** — `const sc = (typeof SunCalc !== "undefined" ? SunCalc : window.SunCalc);` e **`sc.getTimes` / `sc.getMoonTimes` / `sc.getMoonIllumination`**.
+
+### Orchestratore (pre-finito, già su remoto)
+
+- Rule workflow: **`docs/orchestrator/inbox/2026-05-01_0253_riepilogo_rule-orchestrator-local-work.md`** + `latest` (commit **`555f6c5`**).
+- Fix Astro documentato: **`docs/orchestrator/inbox/2026-05-01_0304_riepilogo_pass4b-suncalc-local-fix.md`** (`fc52438`, micro **`b3cb726`**).
+
+### Non toccato (confermato in questa sessione per i blocchi Pass 4B)
+
+- WMM, OLC/Plus Code, QR (come da piano Pass 4A); **`docs/roadmap.md`** in questa chiusura.
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
