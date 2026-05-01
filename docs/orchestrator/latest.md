@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 6 Step 6C.4 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Menu traccia su mappa:** `showTrkSavedCtxMenu(..., { source: "map" })` nasconde **Centra**; tabella/long-press **`{ source: "list" }`** mantiene **Centra**. **Hover traccia mappa:** CSS evidenziazione + hint ritardato **`#savedTrackMapHoverHint`** + **`track.savedMapHoverHint`**. **Doppio click GIS:** **`gisMapOnDblClickCenter`** su **`#miniMap`** → **`viewCenter`** + **`saveStore`** + **`renderTileMap`** (guard su pick misura/RR/Astro/bbox/controlli). **GPS:** pulse solo **`.gis-map-gps-overlay`** (keyframes + anello **`gis-gps-pulse`**); pulsante **`#btnGisMapMyLocation`** **`.gis-gps-fix-active`** + **`aria-pressed`**; clear transient all’inizio di una nuova richiesta. **Marker generici:** sempre statici in GIS (6C.3). **Non:** minimizza modal, 6D, `finito`, commit monolite. **QA:** `node --check` OK (blocchi **9389–9515**, **9519–40310**). **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C4 track hover gps local`. Inbox **`2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`**. **`coordinate_converter Claude.html` escluso**.
+
 2026-05-01 — **Pass 6 Step 6C.3 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Niente lampeggio “live”:** rimosso anello GPS **`.gis-gps-pulse`**; in **GIS** pin **`.tile-marker::after`** statico (no **`mapMarkerPulse`**). **RMB su traccia in mappa:** **`renderSavedTracksOverlays`** con **`data-saved-map-hit`**, hit-test su geometria, **`contextmenu`** → **`showTrkSavedCtxMenu`** (causa precedente: **`pointer-events: none`** ovunque). **Delete tracce salvate:** **`#trackSavedDeleteBar`** (skin RR) + **`requestSavedTracksDelete`** / **`deleteSavedTracksByIds(..., { skipConfirm })`**; Esc / chiusura modal annullano. **Converti topbar:** rimosso **`app-topbar-btn-primary`** da **`#topbarConvertBtn`**. **Non:** minimizza modal, 6D, `finito`, commit monolite. **QA:** `node --check` OK (blocchi **9326–9452**, **9456–40120**). **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C3 track context local` (**`40bd194`**; inbox hash **`5e622bb`**). Inbox **`2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **Pass 6 Step 6C.2 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Hover tracce salvate:** riga evidenziata + hint ritardato (`track.savedRowCtxHint`, `data-saved-hint`). **F→I:** **`trackLinePointsForMapRender`** evita segmento spurio se ultimo punto duplica il primo ( **`renderTrackOverlay`** + **`renderSavedTracksOverlays`** ). **Doppio «Aggiorna traccia»:** nascosto **`track-save-current`** in head quando **`state._trackPromptOpen`**. **GPS mappa:** **`_gisMapGpsFixTransient`** + **`renderGisMapGpsOverlay`** (cerchio accuratezza + marker); badge **`geo.gpsMapAccuracyBadge`**; **nessun `saveStore`** nel click GPS mappa (6C.2). **QA:** `node --check` OK (blocco **9436–40016**). **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C2 traccia gps polish local`. Inbox **`2026-05-01_2224_riepilogo_pass6-step6C2-traccia-gps-polish-local.md`**. **`coordinate_converter Claude.html` escluso**.
@@ -72,6 +74,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**Pass 6 Step 6C.4 2026-05-01** — Menu traccia mappa senza Centra; hover hint; doppio click centra; pulse solo overlay GPS + pulsante attivo; monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`**.
+
 **Pass 6 Step 6C.3 2026-05-01** — GPS/marker statici in GIS; RMB su overlay tracce salvate; conferma delete interna al modal Traccia; Converti topbar non primario; monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`**.
 
 **Pass 6 Step 6C.2 2026-05-01** — Hover tracce salvate; fix rendering F→I (duplicato primo/ultimo); un solo Aggiorna con prompt aperto; overlay GPS marker+accuratezza; monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2224_riepilogo_pass6-step6C2-traccia-gps-polish-local.md`**.
@@ -99,10 +103,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke **Pass 6 Step 6C.3** (RMB mappa + tabella; barra delete interna + Esc; pin/GPS statici; Converti topbar). Poi **blocco separato** «**minimizza modal floating**» (pattern comune), **6D** QA cross-modali, o commit monolite. **`aggio`** dopo push memoria.
+Smoke **Pass 6 Step 6C.4** (menu mappa senza Centra; Centra da tabella; hover hint; doppio click centra; pulse GPS + pulsante verde; marker generici statici). Poi **minimizza modal**, **6D**, o commit monolite. **`aggio`** dopo push memoria.
 
 ## Dettagli (inbox)
 
+- **Pass 6 Step 6C.4 hover traccia + doppio click + GPS pulse (locale):** `docs/orchestrator/inbox/2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`
 - **Pass 6 Step 6C.3 context traccia + conferme + GPS + Converti (locale):** `docs/orchestrator/inbox/2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`
 - **Pass 6 Step 6C.2 polish Traccia + GPS (locale):** `docs/orchestrator/inbox/2026-05-01_2224_riepilogo_pass6-step6C2-traccia-gps-polish-local.md`
 - **Pass 6 Step 6C.1 debug Traccia/Waypoint + context + RR + GPS (locale):** `docs/orchestrator/inbox/2026-05-01_2150_riepilogo_pass6-step6C1-debug-traccia-waypoint-gps-rings-local.md`
