@@ -4227,6 +4227,102 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
   box-sizing:border-box;
   max-width: 100%;
 }
+/* Astro waypoint picker (Pass 5 Step D): lista compatta stile RR picker. */
+/* Pass 5 Step E: stesso layout per picker Favoriti (#astroFavoritePicker). */
+dialog#astroWaypointPicker.app-modal .astro-wp-picker-list,
+dialog#astroFavoritePicker.app-modal .astro-wp-picker-list{
+  max-height: 260px; overflow: auto; margin-top: 8px;
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px;
+  background: var(--panel2);
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-pick-row{
+  display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+  margin:4px 0; padding:6px 8px; border-radius:6px; border:1px solid transparent;
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-pick-row:hover{
+  background: var(--btn-hover-surface, color-mix(in srgb, var(--panel) 85%, var(--border) 15%));
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-pick-main{ flex:1; min-width:0; }
+dialog#astroWaypointPicker.app-modal .astro-wp-name{ font-weight:600; }
+dialog#astroWaypointPicker.app-modal .astro-wp-dot{
+  display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:middle;
+  border:1px solid var(--border);
+}
+/* Pass 5 Step D.1: righe picker waypoint più informative, note clampate. */
+dialog#astroWaypointPicker.app-modal .astro-wp-line1{
+  display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; min-width:0;
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-ico-hint{
+  font-size:.78rem; font-weight:500; color:var(--muted);
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-line2{
+  font-size:.8rem; margin-top:3px; line-height:1.35;
+  color:var(--text); opacity:.92; word-break:break-word;
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-notes{
+  font-size:.76rem; margin-top:4px; line-height:1.35;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+  overflow:hidden; word-break:break-word;
+}
+dialog#astroWaypointPicker.app-modal .astro-wp-notes-lbl{ margin-right:4px; }
+/* Pass 5 Step D.2: toolbar ricerca + colonne, tabella scrollabile, popover colonne. */
+dialog#astroWaypointPicker .astro-wp-search-row,
+dialog#astroFavoritePicker .astro-wp-search-row{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:flex-end; justify-content:space-between;
+  position:relative;
+}
+dialog#astroWaypointPicker .astro-wp-search-field,
+dialog#astroFavoritePicker .astro-wp-search-field{ flex:1; min-width:140px; }
+dialog#astroWaypointPicker .astro-wp-cols-popover,
+dialog#astroFavoritePicker .astro-wp-cols-popover{
+  position:absolute; right:0; top:100%; margin-top:4px; z-index:6;
+  min-width:220px; max-width:min(92vw, 300px);
+  padding:8px 10px; border-radius:8px; border:1px solid var(--border);
+  background:var(--panel); box-shadow:0 6px 20px rgba(0,0,0,.18);
+}
+dialog#astroWaypointPicker .astro-wp-cols-popover label,
+dialog#astroFavoritePicker .astro-wp-cols-popover label{
+  display:flex; align-items:center; gap:8px; margin:5px 0; font-size:.84rem; cursor:pointer;
+}
+dialog#astroWaypointPicker .astro-wp-table-wrap,
+dialog#astroFavoritePicker .astro-wp-table-wrap{
+  overflow-x:auto; max-width:100%; margin-top:6px; -webkit-overflow-scrolling:touch;
+}
+dialog#astroWaypointPicker table.astro-wp-table,
+dialog#astroFavoritePicker table.astro-wp-table{
+  width:100%; min-width:520px; border-collapse:collapse; font-size:.8rem;
+}
+dialog#astroWaypointPicker table.astro-wp-table th,
+dialog#astroFavoritePicker table.astro-wp-table th{
+  text-align:left; padding:6px 8px; border-bottom:1px solid var(--border);
+  white-space:nowrap; user-select:none; background:var(--panel2);
+  position:sticky; top:0; z-index:1;
+}
+dialog#astroWaypointPicker table.astro-wp-table th[data-astro-wp-sort]:hover,
+dialog#astroFavoritePicker table.astro-wp-table th[data-astro-fav-sort]:hover{
+  background:var(--btn-hover-surface, color-mix(in srgb, var(--panel) 88%, var(--border) 12%));
+}
+dialog#astroWaypointPicker table.astro-wp-table th.astro-wp-th-action,
+dialog#astroFavoritePicker table.astro-wp-table th.astro-wp-th-action{
+  cursor:default; text-align:right;
+}
+dialog#astroWaypointPicker table.astro-wp-table th.astro-wp-th-action:hover,
+dialog#astroFavoritePicker table.astro-wp-table th.astro-wp-th-action:hover{ background:var(--panel2); }
+dialog#astroWaypointPicker table.astro-wp-table td,
+dialog#astroFavoritePicker table.astro-wp-table td{
+  padding:5px 8px; border-bottom:1px solid var(--border); vertical-align:top;
+}
+dialog#astroWaypointPicker table.astro-wp-table .astro-wp-td-name,
+dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-name{ font-weight:600; max-width:11rem; }
+dialog#astroWaypointPicker table.astro-wp-table .astro-wp-td-mono,
+dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-mono{ font-family:ui-monospace, monospace; font-size:.78rem; }
+dialog#astroWaypointPicker table.astro-wp-table .astro-wp-clamp,
+dialog#astroFavoritePicker table.astro-wp-table .astro-wp-clamp{
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:break-word;
+  max-width:12rem;
+}
+dialog#astroWaypointPicker table.astro-wp-table .astro-wp-td-action,
+dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:right; white-space:nowrap; }
 #sec-rangerings .rr-delete-confirm-msg{
   margin:0; font-size:0.9rem; line-height:1.4; color: var(--text);
   font-weight: 600;
@@ -4540,6 +4636,8 @@ body.printing-report #printReport:not(:empty){
 .tile-map.range-rings-pick-create-mode .tile-layer,
 .tile-map.range-rings-edit-move-mode,
 .tile-map.range-rings-edit-move-mode .tile-layer{ cursor:crosshair; }
+.tile-map.astro-pick-mode,
+.tile-map.astro-pick-mode .tile-layer{ cursor:crosshair; }
 /* #endregion CSS — TABLES FAVORITES PRINT AND MOBILE POLISH */
 /* #region CSS — PRINT */
 /* ================= PRINT ================= */
@@ -6136,6 +6234,57 @@ body.gis-mode dialog#rangeRingsPanel.range-rings-panel{
   pointer-events:auto;
   z-index:24;
 }
+/* GIS: Astro floating (Pass 5 Step B) — stessa famiglia Range Rings. */
+body.gis-mode dialog#astroPanel.astro-panel{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:24;
+}
+/* Pass 5 Step E.1: picker Astro waypoint/favoriti — floating sopra il pannello Astro. */
+body.gis-mode dialog#astroWaypointPicker.app-modal.gis-panel-floating,
+body.gis-mode dialog#astroFavoritePicker.app-modal.gis-panel-floating{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 16px);
+  max-height:calc(100vh - 16px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:28;
+}
+.astro-panel .astro-pos-row{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px;
+  margin:10px 0 6px; font-size:.86rem;
+}
+.astro-panel .astro-pos-label{ font-weight:600; color:var(--text); }
+.astro-panel .astro-pos-value{ color:var(--text); word-break:break-all; }
+.astro-panel .astro-pos-origin{ font-size:.78rem; color:var(--muted); }
+.astro-panel .astro-src-row{
+  display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 4px;
+}
+.astro-panel .astro-src-row .btn.is-active{
+  box-shadow:0 0 0 2px var(--accent, #3b82f6);
+}
+.astro-panel .astro-notice{ margin-top:8px; font-size:.84rem; }
+.astro-panel #astro-result-floating{ margin-top:8px; min-height:1.2em; }
+@media (max-width:600px){
+  body.gis-mode dialog#astroPanel.astro-panel{
+    left:0 !important; right:0 !important; top:0 !important; bottom:auto !important;
+    width:100vw !important; max-width:100vw;
+    height:min(92vh, 720px) !important; max-height:92vh;
+    border-radius:0;
+  }
+  .astro-panel .astro-src-row{ gap:6px; }
+}
 /* Range Rings floating: hide the reparented <summary> so it doesn't look like
  * a clickable blue link that toggles/closes the panel content. */
 #rangeRingsPanelBody #sec-rangerings{ margin:0; border:none; background:transparent; padding:0; }
@@ -6144,6 +6293,20 @@ body.gis-mode dialog#rangeRingsPanel.range-rings-panel{
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 #rangeRingsPanelBody #sec-rangerings .section-body{ display:block !important; }
+/* Pass 5 Step E.2: Favoriti floating — nasconde <summary> duplicato sotto il titolo del modal (stesso schema Range Rings). */
+#favoritesPanelBody #sec-favorites{ margin:0; border:none; background:transparent; padding:0; }
+#favoritesPanelBody #sec-favorites > summary{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+#favoritesPanelBody #sec-favorites .section-body{ display:block !important; }
+/* GIS: corpi pannello leggermente trasparenti così la mappa sotto resta percepibile (map-first). */
+body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-body{
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+}
+body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-panel{
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+}
 body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-split{
   grid-template-columns: 1fr;
   grid-template-rows: auto;
@@ -6513,6 +6676,62 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #astroPanel + picker Astro (E.1): anchor angoli handle come Range Rings. */
+#astroPanel .gis-panel-resize-handle[data-handle="se"],
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="se"],
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#astroPanel .gis-panel-resize-handle[data-handle="nw"],
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="nw"],
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#astroPanel .gis-panel-resize-handle[data-handle="ne"],
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="ne"],
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#astroPanel .gis-panel-resize-handle[data-handle="sw"],
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="sw"],
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#astroPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#astroPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="ne"]:hover,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="ne"]:hover,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#astroPanel .gis-panel-resize-handle[data-handle="se"]::after,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="se"]::after,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#astroPanel .gis-panel-resize-handle[data-handle="nw"]::after,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="nw"]::after,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#astroPanel .gis-panel-resize-handle[data-handle="ne"]::after,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="ne"]::after,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#astroPanel .gis-panel-resize-handle[data-handle="sw"]::after,
+#astroWaypointPicker .gis-panel-resize-handle[data-handle="sw"]::after,
+#astroFavoritePicker .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 .gis-panel-resize-handle:hover::after,
 #trackModal .track-resize-handle:hover::after{
   opacity:.92;
@@ -6530,11 +6749,16 @@ html[data-theme="light"] #trackModal .track-resize-handle{
 }
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
-#waypointModalHead, #convertModalHead, #rangeRingsPanelHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
-#waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging{ cursor:grabbing; }
+#waypointModalHead, #convertModalHead, #rangeRingsPanelHead, #astroPanelHead,
+#astroWaypointPickerHead, #astroFavoritePickerHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
+#waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging, #astroPanelHead.dragging,
+#astroWaypointPickerHead.dragging, #astroFavoritePickerHead.dragging{ cursor:grabbing; }
 body:not(.gis-mode) #waypointModal .gis-panel-resize-handle,
 body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
-body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle{ display:none !important; }
+body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle,
+body:not(.gis-mode) #astroPanel .gis-panel-resize-handle,
+body:not(.gis-mode) #astroWaypointPicker .gis-panel-resize-handle,
+body:not(.gis-mode) #astroFavoritePicker .gis-panel-resize-handle{ display:none !important; }
 body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   max-height:calc(min(50vh, 480px) - 58px);
 }
@@ -8258,6 +8482,43 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
+<dialog id="astroPanel" class="app-modal astro-panel" aria-modal="false" aria-labelledby="astroPanelTitle">
+  <div class="app-modal-head" id="astroPanelHead">
+    <h2 id="astroPanelTitle" class="app-modal-title" data-i18n="sec.astro">Alba / tramonto / luna (locale)</h2>
+    <button type="button" class="app-modal-close" id="astroPanelClose" data-i18n-tip="tip.astro.close" data-i18n-aria="tip.astro.close">×</button>
+  </div>
+  <div class="app-modal-body" id="astroPanelBody">
+    <p class="sub-section-hint" data-i18n="astro.hint">Orari in UTC e in LMT semplice (UTC + longitudine/15°), senza rete.</p>
+    <div class="astro-pos-row">
+      <span class="astro-pos-label muted" data-i18n="astro.pos.label">Posizione</span>
+      <span id="astroPosValue" class="astro-pos-value mono"></span>
+      <span id="astroPosOrigin" class="astro-pos-origin sub"></span>
+    </div>
+    <div class="astro-src-row">
+      <button type="button" class="btn btn-sm" data-astro-src="result" data-i18n="astro.src.result" data-i18n-tip="tip.astro.src.result" data-i18n-aria="tip.astro.src.result">Risultato corrente</button>
+      <button type="button" class="btn btn-sm" data-astro-src="mapCenter" data-i18n="astro.src.mapCenter" data-i18n-tip="tip.astro.src.mapCenter" data-i18n-aria="tip.astro.src.mapCenter">Centro mappa</button>
+      <button type="button" class="btn btn-sm" data-astro-src="mapPick" data-i18n="astro.src.mapPick" data-i18n-tip="tip.astro.src.mapPick" data-i18n-aria="tip.astro.src.mapPick">Scegli sulla mappa</button>
+      <button type="button" class="btn btn-sm" data-astro-src="waypoint" data-i18n="astro.src.waypoint" data-i18n-tip="tip.astro.src.waypoint" data-i18n-aria="tip.astro.src.waypoint">Da waypoint…</button>
+      <button type="button" class="btn btn-sm" data-astro-src="favorite" data-i18n="astro.src.favorite" data-i18n-tip="tip.astro.src.favorite" data-i18n-aria="tip.astro.src.favorite">Da favorito…</button>
+      <button type="button" class="btn btn-sm btn-ghost" id="astroMapPickCancel" data-i18n="astro.src.mapPickCancel" data-i18n-tip="tip.astro.src.mapPickCancel" data-i18n-aria="tip.astro.src.mapPickCancel" hidden>Annulla scelta mappa</button>
+    </div>
+    <div class="field-group" style="margin-top:10px">
+      <label data-i18n="astro.date">Data (calendario)</label>
+      <input type="date" id="astroDate2">
+    </div>
+    <div id="astroInfo" class="hint astro-notice" role="status" aria-live="polite" hidden></div>
+    <div id="astroError" class="geo-warn astro-notice" role="alert" aria-live="assertive" hidden></div>
+    <div class="actions" style="margin-top:8px">
+      <button type="button" class="btn btn-primary" id="btnAstro2" data-i18n="astro.compute" data-i18n-tip="tip.astro.compute" data-i18n-aria="tip.astro.compute">Calcola</button>
+    </div>
+    <div id="astro-result-floating"></div>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
 <dialog id="rrSourcePickerDialog" class="app-modal" aria-labelledby="rrSourcePickerTitle" aria-modal="true">
   <div class="app-modal-head">
     <h2 id="rrSourcePickerTitle" class="app-modal-title"></h2>
@@ -8271,6 +8532,66 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div id="rrSourcePickerList" class="rr-source-picker-list" role="listbox" aria-label=""></div>
     <p id="rrSourcePickerHint" class="hint" style="margin-top:8px" data-i18n="rangeRings.pickerMaxHint" hidden></p>
   </div>
+</dialog>
+
+<dialog id="astroWaypointPicker" class="app-modal" aria-labelledby="astroWaypointPickerTitle" aria-modal="true">
+  <div class="app-modal-head" id="astroWaypointPickerHead">
+    <h2 id="astroWaypointPickerTitle" class="app-modal-title" data-i18n="astro.picker.title">Waypoint</h2>
+    <button type="button" class="app-modal-close" id="astroWaypointPickerClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body" id="astroWaypointPickerBody">
+    <div class="astro-wp-search-row">
+      <label class="field astro-wp-search-field">
+        <span data-i18n="astro.src.search">Cerca</span>
+        <input type="search" id="astroWaypointPickerSearch" class="rr-source-picker-search" autocomplete="off" data-i18n-tip="tip.astro.picker.search" data-i18n-aria="tip.astro.picker.search" />
+      </label>
+      <button type="button" class="btn btn-sm" id="astroWpColumnsBtn" data-i18n="astro.wp.columns" data-i18n-tip="astro.wp.columnsTip" data-i18n-aria="astro.wp.columnsTip">Colonne</button>
+      <div id="astroWpColumnsPopover" class="astro-wp-cols-popover" hidden role="region" aria-labelledby="astroWpColsPopTitle">
+        <div id="astroWpColsPopTitle" class="muted" style="font-size:.75rem;margin-bottom:4px" data-i18n="astro.wp.columns">Colonne</div>
+        <label><input type="checkbox" id="astroWpColMgrs" data-astro-wp-col-toggle="mgrs" checked /> <span data-i18n="astro.wp.col.mgrs">MGRS</span></label>
+        <label><input type="checkbox" id="astroWpColWhen" data-astro-wp-col-toggle="when" checked /> <span data-i18n="astro.wp.col.when">Quando</span></label>
+        <label><input type="checkbox" id="astroWpColIcon" data-astro-wp-col-toggle="icon" checked /> <span data-i18n="astro.wp.col.icon">Icona</span></label>
+        <label><input type="checkbox" id="astroWpColNotes" data-astro-wp-col-toggle="notes" checked /> <span data-i18n="astro.wp.col.notes">Note</span></label>
+        <label><input type="checkbox" id="astroWpColMeta" data-astro-wp-col-toggle="meta" checked /> <span data-i18n="astro.wp.col.meta">Meta</span></label>
+      </div>
+    </div>
+    <div id="astroWaypointPickerList" class="astro-wp-picker-list" role="region" aria-label=""></div>
+    <p id="astroWaypointPickerHint" class="hint" style="margin-top:8px" data-i18n="rangeRings.pickerMaxHint" hidden></p>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
+<dialog id="astroFavoritePicker" class="app-modal" aria-labelledby="astroFavoritePickerTitle" aria-modal="true">
+  <div class="app-modal-head" id="astroFavoritePickerHead">
+    <h2 id="astroFavoritePickerTitle" class="app-modal-title" data-i18n="astro.fav.picker.title">Scegli favorito</h2>
+    <button type="button" class="app-modal-close" id="astroFavoritePickerClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body" id="astroFavoritePickerBody">
+    <div class="astro-wp-search-row">
+      <label class="field astro-wp-search-field">
+        <span data-i18n="astro.src.search">Cerca</span>
+        <input type="search" id="astroFavoritePickerSearch" class="rr-source-picker-search" autocomplete="off" data-i18n-tip="tip.astro.picker.search" data-i18n-aria="tip.astro.picker.search" />
+      </label>
+      <button type="button" class="btn btn-sm" id="astroFavColumnsBtn" data-i18n="astro.fav.columns" data-i18n-tip="astro.fav.columnsTip" data-i18n-aria="astro.fav.columnsTip">Colonne</button>
+      <div id="astroFavColumnsPopover" class="astro-wp-cols-popover" hidden role="region" aria-labelledby="astroFavColsPopTitle">
+        <div id="astroFavColsPopTitle" class="muted" style="font-size:.75rem;margin-bottom:4px" data-i18n="astro.fav.columns">Colonne</div>
+        <label><input type="checkbox" id="astroFavColMgrs" data-astro-fav-col-toggle="mgrs" checked /> <span data-i18n="astro.fav.col.mgrs">MGRS</span></label>
+        <label><input type="checkbox" id="astroFavColWhen" data-astro-fav-col-toggle="when" checked /> <span data-i18n="astro.fav.col.when">Quando</span></label>
+        <label><input type="checkbox" id="astroFavColLocality" data-astro-fav-col-toggle="locality" checked /> <span data-i18n="astro.fav.col.locality">Località</span></label>
+        <label><input type="checkbox" id="astroFavColNotes" data-astro-fav-col-toggle="notes" checked /> <span data-i18n="astro.fav.col.notes">Note</span></label>
+        <label><input type="checkbox" id="astroFavColMeta" data-astro-fav-col-toggle="meta" checked /> <span data-i18n="astro.fav.col.meta">Meta</span></label>
+      </div>
+    </div>
+    <div id="astroFavoritePickerList" class="astro-wp-picker-list" role="region" aria-label=""></div>
+    <p id="astroFavoritePickerHint" class="hint" style="margin-top:8px" data-i18n="rangeRings.pickerMaxHint" hidden></p>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
 <dialog id="offlineDraftWarnDialog" class="app-modal" aria-labelledby="offlineDraftWarnTitle" aria-modal="true">
@@ -9136,6 +9457,9 @@ const I18N = {
     "track.colDel":"✕",
     "track.delOne":"×",
     "track.flyBtn":"Centra",
+    "common.center":"Centra",
+    "tip.common.centerMapPoint":"Centra la mappa su questo punto.",
+    "map.noticeCenteredOnPoint":"Mappa centrata.",
     "track.empty":"Nessun punto. Aggiungi il primo con uno dei pulsanti sopra.",
     "track.point":"Punto",
     "track.pointNamePh":"Nome punto (opz.)",
@@ -9842,6 +10166,72 @@ const I18N = {
     "astro.compute":"Calcola",
     "tip.astro":"Usa il punto attualmente convertito; data in UTC a mezzogiorno (sole)",
     "astro.col.utcLmt":"UTC + LMT*",
+    "astro.pos.label":"Posizione",
+    "astro.pos.none":"Nessuna posizione (né risultato né centro mappa). Converti un punto o sposta la mappa.",
+    "astro.src.result":"Risultato corrente",
+    "astro.src.mapCenter":"Centro mappa",
+    "astro.src.mapPick":"Scegli sulla mappa",
+    "astro.src.mapPickCancel":"Annulla scelta mappa",
+    "astro.src.waypoint":"Da waypoint…",
+    "astro.src.favorite":"Da favorito…",
+    "astro.fav.picker.title":"Scegli favorito",
+    "astro.fav.noFavoritesValid":"Nessun favorito con coordinate valide.",
+    "astro.fav.noPickerMatch":"Nessun favorito corrisponde alla ricerca.",
+    "astro.fav.columns":"Colonne",
+    "astro.fav.columnsTip":"Mostra o nascondi colonne opzionali nella tabella favoriti.",
+    "astro.fav.col.name":"Nome",
+    "astro.fav.col.coord":"Coordinate",
+    "astro.fav.col.mgrs":"MGRS",
+    "astro.fav.col.when":"Quando",
+    "astro.fav.col.locality":"Località",
+    "astro.fav.col.notes":"Note",
+    "astro.fav.col.meta":"Meta",
+    "astro.fav.col.action":"Azione",
+    "astro.fav.sortAsc":"Ordinamento crescente",
+    "astro.fav.sortDesc":"Ordinamento decrescente",
+    "astro.notice.posFromFavorite":"Posizione impostata dal favorito scelto.",
+    "astro.src.search":"Cerca",
+    "astro.src.use":"Usa",
+    "astro.src.noWaypointsValid":"Nessun waypoint con coordinate valide.",
+    "astro.src.noPickerMatch":"Nessun waypoint corrisponde alla ricerca.",
+    "astro.picker.title":"Scegli waypoint",
+    "astro.notice.posFromWaypoint":"Posizione impostata dal waypoint scelto.",
+    "astro.wp.created":"Creato",
+    "astro.wp.updated":"Aggiornato",
+    "astro.wp.notes":"Note",
+    "astro.wp.noNotes":"Nessuna nota",
+    "tip.astro.src.result":"Usa l’ultima coordinata convertita come posizione di calcolo.",
+    "tip.astro.src.mapCenter":"Usa il centro attuale della vista mappa.",
+    "tip.astro.src.mapPick":"Clicca sulla mappa per scegliere il punto di calcolo Astro.",
+    "tip.astro.src.mapPickCancel":"Esci dalla selezione sulla mappa.",
+    "tip.astro.src.waypoint":"Scegli una posizione dai waypoint salvati.",
+    "tip.astro.src.favorite":"Scegli una posizione dai favoriti salvati (solo coordinate valide).",
+    "tip.astro.src.useWaypoint":"Usa questo waypoint per il calcolo Astro.",
+    "tip.astro.src.useFavorite":"Usa questo favorito per il calcolo Astro.",
+    "tip.astro.fav.columns":"Scegli quali colonne opzionali mostrare nella tabella favoriti.",
+    "tip.astro.fav.sort":"Ordina per questa colonna; clic ripetuto inverte l’ordine.",
+    "tip.astro.compute":"Calcola sole, luna e orari per la posizione e la data selezionate.",
+    "tip.astro.close":"Chiudi il pannello Astro.",
+    "tip.astro.picker.search":"Filtra per nome, coordinate, date, note o altri dettagli elencati.",
+    "astro.wp.columns":"Colonne",
+    "astro.wp.columnsTip":"Mostra o nascondi colonne opzionali nella tabella.",
+    "astro.wp.col.name":"Nome",
+    "astro.wp.col.coord":"Coordinate",
+    "astro.wp.col.mgrs":"MGRS",
+    "astro.wp.col.when":"Quando",
+    "astro.wp.col.icon":"Icona",
+    "astro.wp.col.notes":"Note",
+    "astro.wp.col.meta":"Meta",
+    "astro.wp.col.action":"Azione",
+    "astro.wp.sortAsc":"Ordinamento crescente",
+    "astro.wp.sortDesc":"Ordinamento decrescente",
+    "tip.astro.wp.sort":"Ordina per questa colonna; clic ripetuto inverte l’ordine.",
+    "tip.astro.wp.columns":"Scegli quali colonne opzionali mostrare nella tabella waypoint.",
+    "astro.notice.pickActive":"Clicca sulla mappa per impostare la posizione Astro.",
+    "astro.notice.pickCancelled":"Scelta mappa annullata.",
+    "astro.notice.posSet":"Posizione impostata dal punto scelto sulla mappa.",
+    "astro.err.noPosition":"Posizione non valida: scegli Risultato corrente o Centro mappa.",
+    "astro.err.noDate":"Inserisci una data.",
     "astro.lmtFoot":"LMT semplice = UTC + (λ/15°) — per operazioni, verificare il fuso reale.",
     "astro.sunrise":"Sole: alba / tramonto",
     "astro.civil":"Civile (±6°)",
@@ -10375,6 +10765,9 @@ const I18N = {
     "track.colDel":"✕",
     "track.delOne":"×",
     "track.flyBtn":"Center",
+    "common.center":"Center",
+    "tip.common.centerMapPoint":"Center the map on this point.",
+    "map.noticeCenteredOnPoint":"Map centered.",
     "track.empty":"No points yet. Add the first one with a button above.",
     "track.point":"Point",
     "track.pointNamePh":"Point name (opt.)",
@@ -11081,6 +11474,72 @@ const I18N = {
     "astro.compute":"Compute",
     "tip.astro":"Uses the current result point; date at 12:00 UTC",
     "astro.col.utcLmt":"UTC + LMT*",
+    "astro.pos.label":"Position",
+    "astro.pos.none":"No position (no result or map center). Convert a point or move the map.",
+    "astro.src.result":"Current result",
+    "astro.src.mapCenter":"Map center",
+    "astro.src.mapPick":"Pick on map",
+    "astro.src.mapPickCancel":"Cancel map pick",
+    "astro.src.waypoint":"From waypoint…",
+    "astro.src.favorite":"From favorite…",
+    "astro.fav.picker.title":"Choose favorite",
+    "astro.fav.noFavoritesValid":"No favorites with valid coordinates.",
+    "astro.fav.noPickerMatch":"No favorites match the search.",
+    "astro.fav.columns":"Columns",
+    "astro.fav.columnsTip":"Show or hide optional columns in the favorites table.",
+    "astro.fav.col.name":"Name",
+    "astro.fav.col.coord":"Coordinates",
+    "astro.fav.col.mgrs":"MGRS",
+    "astro.fav.col.when":"When",
+    "astro.fav.col.locality":"Locality",
+    "astro.fav.col.notes":"Notes",
+    "astro.fav.col.meta":"Meta",
+    "astro.fav.col.action":"Action",
+    "astro.fav.sortAsc":"Ascending sort",
+    "astro.fav.sortDesc":"Descending sort",
+    "astro.notice.posFromFavorite":"Position set from the selected favorite.",
+    "astro.src.search":"Search",
+    "astro.src.use":"Use",
+    "astro.src.noWaypointsValid":"No waypoints with valid coordinates.",
+    "astro.src.noPickerMatch":"No waypoints match your search.",
+    "astro.picker.title":"Choose waypoint",
+    "astro.notice.posFromWaypoint":"Position set from the selected waypoint.",
+    "astro.wp.created":"Created",
+    "astro.wp.updated":"Updated",
+    "astro.wp.notes":"Notes",
+    "astro.wp.noNotes":"No notes",
+    "tip.astro.src.result":"Use the latest converted coordinates as the calculation position.",
+    "tip.astro.src.mapCenter":"Use the current map view center.",
+    "tip.astro.src.mapPick":"Click the map to pick the Astro calculation point.",
+    "tip.astro.src.mapPickCancel":"Leave map picking mode.",
+    "tip.astro.src.waypoint":"Pick a position from saved waypoints.",
+    "tip.astro.src.favorite":"Pick a position from saved favorites (valid coordinates only).",
+    "tip.astro.src.useWaypoint":"Use this waypoint for the Astro calculation.",
+    "tip.astro.src.useFavorite":"Use this favorite for the Astro calculation.",
+    "tip.astro.fav.columns":"Choose which optional columns to show in the favorites table.",
+    "tip.astro.fav.sort":"Sort by this column; click again to reverse order.",
+    "tip.astro.compute":"Compute sun, moon and times for the selected position and date.",
+    "tip.astro.close":"Close the Astro panel.",
+    "tip.astro.picker.search":"Filter by name, coordinates, dates, notes or other listed details.",
+    "astro.wp.columns":"Columns",
+    "astro.wp.columnsTip":"Show or hide optional columns in the table.",
+    "astro.wp.col.name":"Name",
+    "astro.wp.col.coord":"Coordinates",
+    "astro.wp.col.mgrs":"MGRS",
+    "astro.wp.col.when":"When",
+    "astro.wp.col.icon":"Icon",
+    "astro.wp.col.notes":"Notes",
+    "astro.wp.col.meta":"Meta",
+    "astro.wp.col.action":"Action",
+    "astro.wp.sortAsc":"Ascending sort",
+    "astro.wp.sortDesc":"Descending sort",
+    "tip.astro.wp.sort":"Sort by this column; click again to reverse order.",
+    "tip.astro.wp.columns":"Choose which optional columns to show in the waypoint table.",
+    "astro.notice.pickActive":"Click the map to set the Astro position.",
+    "astro.notice.pickCancelled":"Map pick cancelled.",
+    "astro.notice.posSet":"Position set from the map pick.",
+    "astro.err.noPosition":"Invalid position: choose Current result or Map center.",
+    "astro.err.noDate":"Enter a date.",
     "astro.lmtFoot":"Simple LMT = UTC + (λ/15°) — for ops, verify the real time zone.",
     "astro.sunrise":"Sun: rise / set",
     "astro.civil":"Civil (±6°)",
@@ -11614,6 +12073,9 @@ const I18N = {
     "track.colDel":"✕",
     "track.delOne":"×",
     "track.flyBtn":"Centrer",
+    "common.center":"Centrer",
+    "tip.common.centerMapPoint":"Centre la carte sur ce point.",
+    "map.noticeCenteredOnPoint":"Carte centrée.",
     "track.empty":"Aucun point. Ajoutez le premier avec un bouton ci-dessus.",
     "track.point":"Point",
     "track.pointNamePh":"Nom du point (opt.)",
@@ -12320,6 +12782,72 @@ const I18N = {
     "astro.compute":"Calculer",
     "tip.astro":"Point courant; date prise à 12:00 UTC",
     "astro.col.utcLmt":"UTC + LMT*",
+    "astro.pos.label":"Position",
+    "astro.pos.none":"Aucune position (ni résultat ni centre carte). Convertissez un point ou déplacez la carte.",
+    "astro.src.result":"Résultat courant",
+    "astro.src.mapCenter":"Centre carte",
+    "astro.src.mapPick":"Choisir sur la carte",
+    "astro.src.mapPickCancel":"Annuler le choix carte",
+    "astro.src.waypoint":"Depuis un waypoint…",
+    "astro.src.favorite":"Depuis un favori…",
+    "astro.fav.picker.title":"Choisir un favori",
+    "astro.fav.noFavoritesValid":"Aucun favori avec des coordonnées valides.",
+    "astro.fav.noPickerMatch":"Aucun favori ne correspond à la recherche.",
+    "astro.fav.columns":"Colonnes",
+    "astro.fav.columnsTip":"Afficher ou masquer les colonnes optionnelles du tableau des favoris.",
+    "astro.fav.col.name":"Nom",
+    "astro.fav.col.coord":"Coordonnées",
+    "astro.fav.col.mgrs":"MGRS",
+    "astro.fav.col.when":"Quand",
+    "astro.fav.col.locality":"Lieu",
+    "astro.fav.col.notes":"Notes",
+    "astro.fav.col.meta":"Méta",
+    "astro.fav.col.action":"Action",
+    "astro.fav.sortAsc":"Tri croissant",
+    "astro.fav.sortDesc":"Tri décroissant",
+    "astro.notice.posFromFavorite":"Position définie à partir du favori choisi.",
+    "astro.src.search":"Rechercher",
+    "astro.src.use":"Utiliser",
+    "astro.src.noWaypointsValid":"Aucun waypoint aux coordonnées valides.",
+    "astro.src.noPickerMatch":"Aucun waypoint ne correspond à la recherche.",
+    "astro.picker.title":"Choisir un waypoint",
+    "astro.notice.posFromWaypoint":"Position définie depuis le waypoint choisi.",
+    "astro.wp.created":"Créé",
+    "astro.wp.updated":"Mis à jour",
+    "astro.wp.notes":"Notes",
+    "astro.wp.noNotes":"Aucune note",
+    "tip.astro.src.result":"Utiliser la dernière coordonnée convertie comme position de calcul.",
+    "tip.astro.src.mapCenter":"Utiliser le centre actuel de la vue carte.",
+    "tip.astro.src.mapPick":"Cliquer sur la carte pour choisir le point de calcul Astro.",
+    "tip.astro.src.mapPickCancel":"Quitter la sélection sur la carte.",
+    "tip.astro.src.waypoint":"Choisir une position parmi les waypoints enregistrés.",
+    "tip.astro.src.favorite":"Choisir une position parmi les favoris enregistrés (coordonnées valides uniquement).",
+    "tip.astro.src.useWaypoint":"Utiliser ce waypoint pour le calcul Astro.",
+    "tip.astro.src.useFavorite":"Utiliser ce favori pour le calcul Astro.",
+    "tip.astro.fav.columns":"Choisir les colonnes optionnelles à afficher dans le tableau des favoris.",
+    "tip.astro.fav.sort":"Trier par cette colonne ; un second clic inverse l’ordre.",
+    "tip.astro.compute":"Calculer soleil, lune et horaires pour la position et la date sélectionnées.",
+    "tip.astro.close":"Fermer le panneau Astro.",
+    "tip.astro.picker.search":"Filtrer par nom, coordonnées, dates, notes ou autres détails affichés.",
+    "astro.wp.columns":"Colonnes",
+    "astro.wp.columnsTip":"Afficher ou masquer les colonnes optionnelles du tableau.",
+    "astro.wp.col.name":"Nom",
+    "astro.wp.col.coord":"Coordonnées",
+    "astro.wp.col.mgrs":"MGRS",
+    "astro.wp.col.when":"Quand",
+    "astro.wp.col.icon":"Icône",
+    "astro.wp.col.notes":"Notes",
+    "astro.wp.col.meta":"Méta",
+    "astro.wp.col.action":"Action",
+    "astro.wp.sortAsc":"Tri croissant",
+    "astro.wp.sortDesc":"Tri décroissant",
+    "tip.astro.wp.sort":"Trier par cette colonne ; recliquer inverse l’ordre.",
+    "tip.astro.wp.columns":"Choisir les colonnes optionnelles à afficher dans le tableau.",
+    "astro.notice.pickActive":"Cliquez sur la carte pour définir la position Astro.",
+    "astro.notice.pickCancelled":"Choix sur carte annulé.",
+    "astro.notice.posSet":"Position définie depuis le point choisi sur la carte.",
+    "astro.err.noPosition":"Position invalide : choisissez Résultat courant ou Centre carte.",
+    "astro.err.noDate":"Saisissez une date.",
     "astro.lmtFoot":"LMT simplifié = UTC + (λ/15°) — vérifier le fuseau réel pour les opérations.",
     "astro.sunrise":"Soleil : lever / coucher",
     "astro.civil":"Civil (±6°)",
@@ -12621,6 +13149,26 @@ const state = {
   astroPanelOpen: false,
   /** Transient: map pick for Astro center (Step C+). */
   astroPickCenterMode: false,
+  /** Transient: skip one GIS Esc close for #astroPanel after pick cancel (Esc / Annulla). */
+  _astroSkipNextGisPanelClose: false,
+  /** Transient: snapshot Astro position/source while mapPick is arming (restore on cancel). */
+  _astroPickSuspended: null,
+  /** Transient: Astro waypoint picker dialog open (Step D). */
+  astroWaypointPickerOpen: false,
+  /** Transient: Astro waypoint picker — menu colonne aperto (Pass D.2). */
+  astroWpPickerColsMenuOpen: false,
+  /** Transient: visibilità colonne opzionali { mgrs, when, icon, notes, meta } — non persistito. */
+  astroWpPickerCols: null,
+  /** Transient: ordinamento { key, dir } — non persistito. */
+  astroWpPickerSort: null,
+  /** Transient: Astro favorite picker dialog open (Pass 5 Step E). */
+  astroFavoritePickerOpen: false,
+  /** Transient: Astro favorite picker — menu colonne aperto. */
+  astroFavPickerColsMenuOpen: false,
+  /** Transient: visibilità colonne opzionali { mgrs, when, locality, notes, meta } — non persistito. */
+  astroFavPickerCols: null,
+  /** Transient: ordinamento favoriti { key, dir } — non persistito. */
+  astroFavPickerSort: null,
   history: [],
   favorites: [],
   // Remembers which tab of each composite card the user last selected
@@ -17861,6 +18409,48 @@ function bindHotkeys(){
           return;
         }
       } catch(_){}
+      try {
+        const awpDlg = document.getElementById("astroWaypointPicker");
+        if (awpDlg && awpDlg.open){
+          if (state.astroWpPickerColsMenuOpen){
+            try { if (typeof astroCloseWpColsPopover === "function") astroCloseWpColsPopover(); } catch(_){}
+            ev.preventDefault();
+            try { ev.stopImmediatePropagation(); } catch(_){
+              try { ev.stopPropagation(); } catch(__){}
+            }
+            return;
+          }
+          if (typeof astroCloseWaypointPicker === "function"){
+            astroCloseWaypointPicker();
+            ev.preventDefault();
+            try { ev.stopImmediatePropagation(); } catch(_){
+              try { ev.stopPropagation(); } catch(__){}
+            }
+            return;
+          }
+        }
+      } catch(_){}
+      try {
+        const afavDlg = document.getElementById("astroFavoritePicker");
+        if (afavDlg && afavDlg.open){
+          if (state.astroFavPickerColsMenuOpen){
+            try { if (typeof astroCloseFavColsPopover === "function") astroCloseFavColsPopover(); } catch(_){}
+            ev.preventDefault();
+            try { ev.stopImmediatePropagation(); } catch(_){
+              try { ev.stopPropagation(); } catch(__){}
+            }
+            return;
+          }
+          if (typeof astroCloseFavoritePicker === "function"){
+            astroCloseFavoritePicker();
+            ev.preventDefault();
+            try { ev.stopImmediatePropagation(); } catch(_){
+              try { ev.stopPropagation(); } catch(__){}
+            }
+            return;
+          }
+        }
+      } catch(_){}
       if (state._rrPendingRename){
         try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
         try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
@@ -17887,6 +18477,15 @@ function bindHotkeys(){
         ev.preventDefault();
         try { refreshTileMapForTrackUi(); } catch(_){}
         try { renderRangeRingsPanel(); } catch(_){}
+        return;
+      }
+      if (state.astroPickCenterMode){
+        try { astroClearPickCenterMode("esc"); } catch(_){}
+        ev.preventDefault();
+        // Ensure the same Esc does not also trigger the GIS modal-close handler.
+        try { ev.stopImmediatePropagation(); } catch(_){
+          try { ev.stopPropagation(); } catch(__){}
+        }
         return;
       }
       if (document.body.classList.contains("gis-mode") && state.activeTab === "measure" && state.mapMeasureMode){
@@ -17952,6 +18551,13 @@ function bindHotkeys(){
       const ov = document.getElementById("helpOverlay");
       if (ov && ov.classList.contains("open")){ closeHelp(); ev.preventDefault(); return; }
       if (isTypingInField()){ document.activeElement.blur(); return; }
+      if (document.body.classList.contains("gis-mode")){
+        const apdEsc = document.getElementById("astroPanel");
+        if (state.astroPanelOpen || (apdEsc && apdEsc.open)){
+          ev.preventDefault();
+          return;
+        }
+      }
       clearForm();
       return;
     }
@@ -24818,6 +25424,7 @@ function trackSyncPickModeUi(){
     tileMap.classList.toggle("range-rings-pick-mode", !!state.rangeRingsPickCenterMode);
     tileMap.classList.toggle("range-rings-pick-create-mode", !!state.rangeRingsPickAndCreateMode);
     tileMap.classList.toggle("range-rings-edit-move-mode", !!state._rrEditingMoveCenterMode);
+    tileMap.classList.toggle("astro-pick-mode", !!state.astroPickCenterMode);
   }
   const btnFin = document.getElementById("btnTrackFinish");
   if (btnFin){
@@ -27613,6 +28220,17 @@ function attachPanHandlers(root, lat, lon, zoom){
         }
         return;
       }
+      // Astro floating panel: map pick (before conversion mapPickMode so it does not call renderResults).
+      if (state.astroPickCenterMode && !drag.moved && cx != null && cy != null){
+        const zPickA = state.mapZoom || zoom;
+        const pickA = mapClientToLatLonMap(root, lat, lon, zPickA, cx, cy);
+        if (pickA && Number.isFinite(pickA.lat) && Number.isFinite(pickA.lon) && astroIsValidCoord(pickA.lat, pickA.lon)){
+          astroApplyPickedMapPoint(pickA.lat, pickA.lon);
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
       if (state.mapPickMode && !drag.moved && cx != null && cy != null){
         const zPick = state.mapZoom || zoom;
         const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
@@ -28313,6 +28931,13 @@ function renderFavorites(){
   if (!root._favWpDelegated){
     root._favWpDelegated = true;
     root.addEventListener("click", (ev) => {
+      const c = ev.target && ev.target.closest && ev.target.closest("[data-fav-center]");
+      if (c){
+        ev.preventDefault();
+        const id = c.getAttribute("data-fav-center");
+        if (id && typeof favoriteMapCenterTo === "function") favoriteMapCenterTo(id);
+        return;
+      }
       const b = ev.target && ev.target.closest && ev.target.closest("[data-fav-waypoint]");
       if (!b) return;
       ev.preventDefault();
@@ -28381,6 +29006,8 @@ function renderFavorites(){
     const notes = (f.notes != null ? String(f.notes) : "").slice(0, 500);
     const locTip = esc(String(f.locality || "").slice(0, 240));
     const locHtml = f.locality ? `<div class="fav-loc" data-tip="${locTip}">📍 ${esc(f.locality)}</div>` : "";
+    const tipCenter = esc(t("tip.common.centerMapPoint"));
+    const lblCenter = esc(t("common.center"));
     item.innerHTML = `
       <div class="fav-col-main">
         <input type="text" class="fav-name-inp" data-fav-rename="${esc(f.id)}" data-tip="${esc(String(f.name || "").slice(0, 200))}" value="${esc(f.name)}" maxlength="120" aria-label="${esc(t("print.thName") || "Nome")}">
@@ -28390,6 +29017,7 @@ function renderFavorites(){
       </div>
       <div class="fav-actions">
         <button type="button" class="btn btn-sm" data-fav-waypoint="${esc(f.id)}" data-tip="${esc(t("tip.favAddWaypoint"))}">${esc(t("fav.addWaypoint"))}</button>
+        <button type="button" class="btn btn-sm" data-fav-center="${esc(f.id)}" data-tip="${tipCenter}" aria-label="${tipCenter}">${lblCenter}</button>
         <button class="btn btn-sm" data-fav-load="${f.id}" data-tip="${esc(t("tip.favLoad"))}">↻</button>
         <button class="btn btn-sm btn-danger" data-fav-del="${f.id}" data-tip="${esc(t("tip.favDelete"))}">×</button>
       </div>
@@ -28445,24 +29073,1089 @@ function buildScoutPrintSvg(lat, lon){
     `</g><circle cx="${round(x,2)}" cy="${round(y,2)}" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/>` +
     `<text x="4" y="14" font-size="10" fill="#334155">WGS84</text></svg>`;
 }
-function runAstroUI(){
-  const sc = (typeof SunCalc !== "undefined" ? SunCalc : window.SunCalc);
-  const out = document.getElementById("astro-result");
-  if (!out) return;
-  const din = document.getElementById("astroDate");
-  if (!din || !din.value) return;
-  const sa = state.astro;
-  let lat, lon;
-  if (sa && Number.isFinite(sa.lat) && Number.isFinite(sa.lon)){
-    lat = sa.lat;
-    lon = sa.lon;
-  } else {
-    const r = state.lastResult;
-    if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)) return;
-    lat = r.lat;
-    lon = r.lon;
+function astroIsValidCoord(lat, lon){
+  try {
+    validateLatLon(lat, lon);
+    return true;
+  } catch(_){
+    return false;
   }
-  const [y, mo, d] = din.value.split("-").map(Number);
+}
+function astroSyncMapPickCancelBtn(){
+  const b = document.getElementById("astroMapPickCancel");
+  if (!b) return;
+  b.hidden = !state.astroPickCenterMode;
+}
+/** Exit Astro map-pick mode; no lastResult / history / permalink / renderResults. */
+function astroClearPickCenterMode(reason){
+  reason = reason || "";
+  const wasPicking = !!state.astroPickCenterMode;
+  state.astroPickCenterMode = false;
+  if (state.astro) state.astro.pickMode = false;
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap) tileMap.classList.remove("astro-pick-mode");
+  } catch(_){}
+  if (reason === "panelClose"){
+    state._astroPickSuspended = null;
+  } else if (wasPicking && (reason === "esc" || reason === "cancel")){
+    if (state._astroPickSuspended && state.astro){
+      const s = state._astroPickSuspended;
+      state.astro.source = s.source;
+      state.astro.lat = s.lat;
+      state.astro.lon = s.lon;
+      state.astro.label = s.label != null ? s.label : "";
+      state.astro.origin = s.origin != null ? s.origin : "";
+    }
+    state._astroPickSuspended = null;
+    state._astroSkipNextGisPanelClose = true;
+    try { astroShowInfo("astro.notice.pickCancelled"); } catch(_){}
+    try { astroSyncPosUI(); } catch(_){}
+  } else if (reason === "apply" || reason === "sourceChange" || reason === "rr"){
+    state._astroPickSuspended = null;
+  }
+  try { astroSyncMapPickCancelBtn(); } catch(_){}
+  try { trackSyncPickModeUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+/** Arm next map click for Astro position; disarms competing pick/measure/RR modes. */
+function astroEnterPickCenterMode(){
+  try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
+  try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
+  try { rangeRingsClearPickCenterMode(); } catch(_){}
+  try { trackExitPickMode(); } catch(_){}
+  state.mapMeasureMode = false;
+  state.mapMeasurePts = null;
+  state.mapPolyPts = null;
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+    const pickBtn = root && root.querySelector(".tile-pick");
+    if (pickBtn){
+      pickBtn.classList.remove("is-active");
+      pickBtn.setAttribute("aria-pressed", "false");
+      const ar = (typeof t === "function") ? (t("map.pickStart") || "") : "";
+      pickBtn.setAttribute("aria-label", ar);
+      const lbl = pickBtn.querySelector(".tmb-label");
+      if (lbl && ar) lbl.textContent = ar;
+    }
+  } catch(_){}
+  if (state.astro){
+    state._astroPickSuspended = {
+      source: state.astro.source,
+      lat: state.astro.lat,
+      lon: state.astro.lon,
+      label: state.astro.label || "",
+      origin: state.astro.origin || ""
+    };
+    state.astro.pickMode = true;
+    state.astro.source = "mapPick";
+  }
+  state.astroPickCenterMode = true;
+  astroClearNotices();
+  try { astroShowInfo("astro.notice.pickActive"); } catch(_){}
+  try { astroSyncMapPickCancelBtn(); } catch(_){}
+  try { astroUpdateSourceButtons(); } catch(_){}
+  try { trackSyncPickModeUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+function astroApplyPickedMapPoint(lat, lon){
+  if (!astroIsValidCoord(lat, lon)) return;
+  const nl = normalizeLon(lon);
+  state._astroPickSuspended = null;
+  const lbl = lat.toFixed(5) + ", " + nl.toFixed(5);
+  astroSetPosition("mapPick", lat, nl, lbl, "mapPick");
+  state.astroPickCenterMode = false;
+  if (state.astro) state.astro.pickMode = false;
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap) tileMap.classList.remove("astro-pick-mode");
+  } catch(_){}
+  try { astroSyncMapPickCancelBtn(); } catch(_){}
+  try { trackSyncPickModeUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  astroSyncPosUI();
+  astroClearNotices();
+  try { astroShowInfo("astro.notice.posSet"); } catch(_){}
+}
+function astroGetMapCenterPosition(){
+  const vc = state.viewCenter;
+  if (vc && astroIsValidCoord(vc.lat, vc.lon)) return { lat: vc.lat, lon: vc.lon };
+  return null;
+}
+function astroClearNotices(){
+  const inf = document.getElementById("astroInfo");
+  const err = document.getElementById("astroError");
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  if (err){ err.hidden = true; err.textContent = ""; }
+}
+function astroShowInfo(msgKeyOrText){
+  const inf = document.getElementById("astroInfo");
+  const err = document.getElementById("astroError");
+  if (err){ err.hidden = true; err.textContent = ""; }
+  if (!inf) return;
+  if (!msgKeyOrText){
+    inf.hidden = true;
+    inf.textContent = "";
+    return;
+  }
+  const txt = (typeof t === "function" && msgKeyOrText.indexOf(" ") < 0 && msgKeyOrText.indexOf(",") < 0)
+    ? (t(msgKeyOrText) || msgKeyOrText)
+    : String(msgKeyOrText);
+  inf.textContent = txt;
+  inf.hidden = !txt;
+}
+function astroShowError(msgKeyOrText){
+  const inf = document.getElementById("astroInfo");
+  const err = document.getElementById("astroError");
+  if (inf){ inf.hidden = true; inf.textContent = ""; }
+  if (!err) return;
+  const txt = (typeof t === "function")
+    ? (t(msgKeyOrText) || msgKeyOrText)
+    : String(msgKeyOrText);
+  err.textContent = txt;
+  err.hidden = !txt;
+}
+function astroUpdateSourceButtons(){
+  const cur = state.astro && state.astro.source;
+  const root = document.getElementById("astroPanelBody");
+  if (!root) return;
+  root.querySelectorAll("[data-astro-src]").forEach((b) => {
+    const k = b.getAttribute("data-astro-src");
+    b.classList.toggle("is-active", k === cur);
+  });
+}
+function astroSetPosition(kind, lat, lon, label, origin){
+  if (!state.astro) return;
+  state.astro.source = kind != null ? kind : null;
+  state.astro.lat = lat;
+  state.astro.lon = lon;
+  state.astro.label = label != null ? String(label) : "";
+  state.astro.origin = origin != null ? String(origin) : String(kind || "");
+}
+function astroSyncPosUI(){
+  const v = document.getElementById("astroPosValue");
+  const o = document.getElementById("astroPosOrigin");
+  if (!v || !o) return;
+  const sa = state.astro;
+  if (sa && astroIsValidCoord(sa.lat, sa.lon)){
+    v.textContent = sa.label || (sa.lat.toFixed(5) + ", " + sa.lon.toFixed(5));
+    if (sa.source === "result") o.textContent = typeof t === "function" ? (t("astro.src.result") || "") : "";
+    else if (sa.source === "mapCenter") o.textContent = typeof t === "function" ? (t("astro.src.mapCenter") || "") : "";
+    else if (sa.source === "mapPick") o.textContent = typeof t === "function" ? (t("astro.src.mapPick") || "") : "";
+    else if (sa.source === "waypoint") o.textContent = typeof t === "function" ? (t("astro.src.waypoint") || "") : "";
+    else if (sa.source === "favorite") o.textContent = typeof t === "function" ? (t("astro.src.favorite") || "") : "";
+    else o.textContent = "";
+  } else {
+    v.textContent = typeof t === "function" ? (t("astro.pos.none") || "—") : "—";
+    o.textContent = "";
+  }
+  astroUpdateSourceButtons();
+}
+/** Pass 5 Step D.2: stato UI picker waypoint (transient, non persistito). */
+function astroEnsureWpPickerUiState(){
+  if (!state.astroWpPickerCols || typeof state.astroWpPickerCols !== "object"){
+    state.astroWpPickerCols = { mgrs: true, when: true, icon: true, notes: true, meta: true };
+  }
+  const c = state.astroWpPickerCols;
+  ["mgrs", "when", "icon", "notes", "meta"].forEach((k) => {
+    if (typeof c[k] !== "boolean") c[k] = true;
+  });
+  if (!state.astroWpPickerSort || typeof state.astroWpPickerSort !== "object"){
+    state.astroWpPickerSort = { key: "name", dir: "asc" };
+  }
+  const sk = String(state.astroWpPickerSort.key || "");
+  if (!/^(name|coord|mgrs|when|icon|notes|meta)$/.test(sk)) state.astroWpPickerSort.key = "name";
+  if (state.astroWpPickerSort.dir !== "desc") state.astroWpPickerSort.dir = "asc";
+}
+function astroCloseWpColsPopover(){
+  state.astroWpPickerColsMenuOpen = false;
+  const p = document.getElementById("astroWpColumnsPopover");
+  if (p) p.hidden = true;
+}
+function astroToggleWpColsPopover(){
+  const p = document.getElementById("astroWpColumnsPopover");
+  if (!p) return;
+  astroEnsureWpPickerUiState();
+  state.astroWpPickerColsMenuOpen = !state.astroWpPickerColsMenuOpen;
+  p.hidden = !state.astroWpPickerColsMenuOpen;
+  try { astroSyncWpColCheckboxes(); } catch(_){}
+}
+function astroSyncWpColCheckboxes(){
+  astroEnsureWpPickerUiState();
+  const c = state.astroWpPickerCols;
+  const map = { mgrs: "astroWpColMgrs", when: "astroWpColWhen", icon: "astroWpColIcon", notes: "astroWpColNotes", meta: "astroWpColMeta" };
+  for (const k of Object.keys(map)){
+    const el = document.getElementById(map[k]);
+    if (el && el.type === "checkbox") el.checked = !!c[k];
+  }
+}
+function astroSortWpPickerRows(arr, key, dir){
+  const m = dir === "desc" ? -1 : 1;
+  const out = arr.slice();
+  const cmpId = (a, b) => String(a.id || "").localeCompare(String(b.id || ""));
+  out.sort((a, b) => {
+    let r = 0;
+    if (key === "name"){
+      r = String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" });
+    } else if (key === "coord"){
+      if (a.lat !== b.lat) r = a.lat < b.lat ? -1 : 1;
+      else if (a.lon !== b.lon) r = a.lon < b.lon ? -1 : 1;
+    } else if (key === "mgrs"){
+      r = String(a.mgrsStr || "").localeCompare(String(b.mgrsStr || ""));
+    } else if (key === "when"){
+      r = (Number(a.whenTs) || 0) - (Number(b.whenTs) || 0);
+    } else if (key === "icon"){
+      r = String(a.iconLab || "").localeCompare(String(b.iconLab || ""), undefined, { sensitivity: "base" });
+    } else if (key === "notes"){
+      r = String(a.notesFull || "").localeCompare(String(b.notesFull || ""), undefined, { sensitivity: "base" });
+    } else if (key === "meta"){
+      r = String(a.metaStr || "").localeCompare(String(b.metaStr || ""), undefined, { sensitivity: "base" });
+    }
+    if (r === 0) r = cmpId(a, b);
+    return r * m;
+  });
+  return out;
+}
+/** Pass 5 Step D / D.1 / D.2: indice waypoint (solo lettura); campi e stringa ricerca arricchiti. */
+function astroIndexPickerWaypoints(){
+  const out = [];
+  ensureMapWaypointsState();
+  for (const w of (state.mapWaypoints || [])){
+    if (!w) continue;
+    const lat = Number(w.lat);
+    const lon = Number(w.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const nl = normalizeLon(lon);
+    const nm = String(w.name != null ? w.name : "").trim() || (lat.toFixed(4) + ", " + nl.toFixed(4));
+    const sid = w.id != null ? String(w.id) : "";
+    const coordStr = lat.toFixed(5) + ", " + nl.toFixed(5);
+    let mgrsStr = "";
+    try { mgrsStr = String(latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
+    const whenStr = (typeof formatWaypointTableWhen === "function") ? String(formatWaypointTableWhen(w) || "").trim() : "";
+    const meta = w.meta && typeof w.meta === "object" ? w.meta : null;
+    let notesFull = "";
+    if (meta && typeof meta.notes === "string") notesFull = String(meta.notes).trim().slice(0, 500);
+    const notesDisplay = notesFull ? notesFull.slice(0, 96) : "";
+    const iconRaw = (meta && typeof meta.icon === "string") ? meta.icon : "";
+    const iconLab = iconRaw && typeof waypointIconHumanLabel === "function" ? String(waypointIconHumanLabel(iconRaw) || "").trim() : "";
+    const fromSrc = (meta && typeof meta.from === "string") ? String(meta.from).trim().slice(0, 120) : "";
+    const typSrc = (meta && typeof meta.type === "string") ? String(meta.type).trim().slice(0, 48) : "";
+    const rawSrc = (meta && typeof meta.raw === "string") ? String(meta.raw).trim().slice(0, 160) : "";
+    const locSrc = (meta && typeof meta.locality === "string") ? String(meta.locality).trim().slice(0, 120) : "";
+    const metaBits = [fromSrc, typSrc, locSrc].filter(Boolean);
+    const metaStr = metaBits.join(" · ").slice(0, 140);
+    let whenTs = 0;
+    if (Number.isFinite(w.updatedAt)) whenTs = w.updatedAt;
+    else if (Number.isFinite(w.createdAt)) whenTs = w.createdAt;
+    let isoC = "";
+    let isoU = "";
+    let detailTitle = "";
+    try {
+      if (Number.isFinite(w.createdAt)) isoC = new Date(w.createdAt).toISOString().slice(0, 16);
+      if (Number.isFinite(w.updatedAt)) isoU = new Date(w.updatedAt).toISOString().slice(0, 16);
+      const loc = state.lang === "en" ? "en-GB" : state.lang === "fr" ? "fr-FR" : "it-IT";
+      const bits = [];
+      if (Number.isFinite(w.createdAt)){
+        const lab = (typeof t === "function" ? (t("astro.wp.created") || "") : "") || "Creato";
+        bits.push(lab + " " + new Date(w.createdAt).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" }));
+      }
+      if (Number.isFinite(w.updatedAt)){
+        const lab = (typeof t === "function" ? (t("astro.wp.updated") || "") : "") || "Aggiornato";
+        bits.push(lab + " " + new Date(w.updatedAt).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" }));
+      }
+      detailTitle = bits.join(" · ");
+    } catch(_){}
+    const searchParts = [sid, nm, coordStr, lat.toFixed(5), nl.toFixed(5), mgrsStr, whenStr, detailTitle, notesFull, iconLab, iconRaw, fromSrc, typSrc, rawSrc, locSrc, metaStr, isoC, isoU];
+    const search = searchParts.filter(Boolean).join(" ").toLowerCase();
+    out.push({
+      id: sid, w, lat, lon: nl, label: nm, coordStr, mgrsStr, whenStr, whenTs, metaStr,
+      notesFull, notesDisplay, iconLab, detailTitle, search
+    });
+  }
+  return out;
+}
+function astroFillWaypointPicker(qStr){
+  const list = document.getElementById("astroWaypointPickerList");
+  if (!list) return;
+  astroEnsureWpPickerUiState();
+  const full = astroIndexPickerWaypoints();
+  const q = String(qStr == null ? "" : qStr).trim().toLowerCase();
+  let work = q ? full.filter(x => (x.search || "").indexOf(q) >= 0) : full.slice();
+  const sort = state.astroWpPickerSort;
+  work = astroSortWpPickerRows(work, sort.key, sort.dir);
+  const hintEl = document.getElementById("astroWaypointPickerHint");
+  if (!work.length){
+    const emptyK = !full.length ? "astro.src.noWaypointsValid" : "astro.src.noPickerMatch";
+    const msg = (typeof t === "function" ? (t(emptyK) || "") : "") || "";
+    list.innerHTML = "<p class=\"hint\" style=\"padding:8px\">" + esc(msg) + "</p>";
+    if (hintEl) hintEl.hidden = true;
+    return;
+  }
+  const maxN = 50;
+  const totalAfter = work.length;
+  if (totalAfter > maxN && hintEl){
+    const tpl = (typeof t === "function" ? (t("rangeRings.pickerMaxHint") || "") : "") || "";
+    hintEl.textContent = String(tpl).replace("{0}", String(maxN));
+    hintEl.hidden = false;
+  } else if (hintEl) hintEl.hidden = true;
+  const slice = work.slice(0, maxN);
+  const col = state.astroWpPickerCols;
+  const useLbl = (typeof t === "function" ? (t("astro.src.use") || "") : "") || "Usa";
+  const useTip = esc((typeof t === "function" ? (t("tip.astro.src.useWaypoint") || "") : "") || "");
+  const sortTip = esc((typeof t === "function" ? (t("tip.astro.wp.sort") || "") : "") || "");
+  const thLbl = (k) => esc((typeof t === "function" ? (t("astro.wp.col." + k) || "") : "") || k);
+  const sortInd = (k) => {
+    if (sort.key !== k) return "";
+    return sort.dir === "desc" ? " \u25BC" : " \u25B2";
+  };
+  const ariaSortVal = (k) => {
+    if (sort.key !== k) return "none";
+    return sort.dir === "desc" ? "descending" : "ascending";
+  };
+  const thSort = (k) =>
+    "<th scope=\"col\" data-astro-wp-sort=\"" + k + "\" class=\"astro-wp-th-sort\" title=\"" + sortTip + "\" aria-sort=\"" + ariaSortVal(k) + "\">" +
+    thLbl(k) + esc(sortInd(k)) + "</th>";
+  let thead = "<tr>";
+  thead += thSort("name") + thSort("coord");
+  if (col.mgrs) thead += thSort("mgrs");
+  if (col.when) thead += thSort("when");
+  if (col.icon) thead += thSort("icon");
+  if (col.notes) thead += thSort("notes");
+  if (col.meta) thead += thSort("meta");
+  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + "</th></tr>";
+  let tbody = "";
+  for (const it of slice){
+    let dotHtml = "";
+    try {
+      const meta = it.w && it.w.meta;
+      if (meta && typeof meta.color === "string"){
+        const c0 = sanitizeTrackColor(meta.color);
+        if (c0) dotHtml = "<span class=\"astro-wp-dot\" style=\"background-color:" + esc(c0) + "\"></span>";
+      }
+    } catch(_){}
+    const idAttr = esc(it.id);
+    const nameCell = "<div class=\"astro-wp-clamp\">" + dotHtml + "<span>" + esc(it.label) + "</span></div>";
+    const whenTit = esc(String(it.detailTitle || it.whenStr || "").trim() || it.coordStr);
+    const notesShown = it.notesFull
+      ? esc(it.notesDisplay + (it.notesFull.length > it.notesDisplay.length ? "…" : ""))
+      : esc((typeof t === "function" ? (t("astro.wp.noNotes") || "") : "") || "—");
+    const notesTit = it.notesFull ? esc(it.notesFull.length > 220 ? it.notesFull.slice(0, 220) + "…" : it.notesFull) : "";
+    let tr = "<tr>";
+    tr += "<td class=\"astro-wp-td-name\">" + nameCell + "</td>";
+    tr += "<td class=\"astro-wp-td-mono\">" + esc(it.coordStr) + "</td>";
+    if (col.mgrs) tr += "<td class=\"astro-wp-td-mono astro-wp-clamp\">" + esc(it.mgrsStr || "") + "</td>";
+    if (col.when) tr += "<td title=\"" + whenTit + "\">" + esc(it.whenStr || "") + "</td>";
+    if (col.icon) tr += "<td class=\"astro-wp-clamp\">" + esc(it.iconLab || "") + "</td>";
+    if (col.notes) tr += "<td class=\"astro-wp-clamp\" title=\"" + notesTit + "\">" + notesShown + "</td>";
+    if (col.meta) tr += "<td class=\"astro-wp-clamp\">" + esc(it.metaStr || "") + "</td>";
+    tr += "<td class=\"astro-wp-td-action\"><button type=\"button\" class=\"btn btn-sm\" data-astro-wp-use=\"" + idAttr + "\" data-tip=\"" + useTip + "\" aria-label=\"" + useTip + "\">" + esc(useLbl) + "</button></td>";
+    tr += "</tr>";
+    tbody += tr;
+  }
+  list.innerHTML = "<div class=\"astro-wp-table-wrap\"><table class=\"astro-wp-table\"><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table></div>";
+}
+function astroCloseWaypointPicker(){
+  try { if (typeof astroCloseWpColsPopover === "function") astroCloseWpColsPopover(); } catch(_){}
+  const dlg = document.getElementById("astroWaypointPicker");
+  state.astroWaypointPickerOpen = false;
+  if (dlg){
+    try { astroTeardownAstroPickerFloatingUi(dlg); } catch(_){}
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  }
+}
+function astroOpenWaypointPicker(){
+  const dlg = document.getElementById("astroWaypointPicker");
+  if (!dlg) return;
+  try { if (typeof astroCloseWpColsPopover === "function") astroCloseWpColsPopover(); } catch(_){}
+  try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
+  try { ensureAstroWaypointPickerWired(); } catch(_){}
+  try {
+    if (state.astroPickCenterMode && typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("cancel");
+  } catch(_){}
+  astroClearNotices();
+  const s = document.getElementById("astroWaypointPickerSearch");
+  if (s) s.value = "";
+  const list = document.getElementById("astroWaypointPickerList");
+  if (list && typeof t === "function"){
+    const lab = t("astro.picker.title") || "";
+    try { list.setAttribute("aria-label", lab); } catch(_){}
+  }
+  try { if (!dlg.open && typeof dlg.showModal === "function") dlg.showModal(); } catch(_){
+    try { dlg.show(); } catch(__){}
+  }
+  state.astroWaypointPickerOpen = true;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(dlg, state.lang); } catch(_){}
+  try { astroEnsureWpPickerUiState(); astroSyncWpColCheckboxes(); } catch(_){}
+  try { astroFillWaypointPicker(""); } catch(_){}
+  try {
+    if (document.body.classList.contains("gis-mode") && typeof wireAstroWaypointPickerFloatingGis === "function"){
+      wireAstroWaypointPickerFloatingGis(dlg);
+    }
+  } catch(_){}
+  try {
+    requestAnimationFrame(() => {
+      try {
+        if (document.body.classList.contains("gis-mode") && dlg && dlg.open){
+          if (typeof clampAstroWaypointPickerRect === "function") clampAstroWaypointPickerRect(dlg);
+          if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, _astroWaypointPickerLayoutOpts());
+        }
+      } catch(_){}
+    });
+  } catch(_){}
+  setTimeout(() => { try { if (s) s.focus(); } catch(_){} }, 0);
+}
+function astroApplyWaypointFromPicker(id){
+  const sid = id != null ? String(id) : "";
+  if (!sid || !state.astro) return;
+  const w = (state.mapWaypoints || []).find(x => x && String(x.id) === sid);
+  if (!w) return;
+  const lat = Number(w.lat);
+  const lon = Number(w.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  const nl = normalizeLon(lon);
+  const nm = String(w.name != null ? w.name : "").trim();
+  const lbl = nm || (lat.toFixed(5) + ", " + nl.toFixed(5));
+  astroClearNotices();
+  astroSetPosition("waypoint", lat, nl, lbl, "waypoint");
+  astroCloseWaypointPicker();
+  astroSyncPosUI();
+  try { astroShowInfo("astro.notice.posFromWaypoint"); } catch(_){}
+}
+function ensureAstroWaypointPickerWired(){
+  const dlg = document.getElementById("astroWaypointPicker");
+  if (!dlg || dlg._astroWpPickerWired) return;
+  dlg._astroWpPickerWired = true;
+  const x = document.getElementById("astroWaypointPickerClose");
+  if (x) x.addEventListener("click", (ev) => { ev.preventDefault(); try { astroCloseWaypointPicker(); } catch(_){} });
+  dlg.addEventListener("cancel", (ev) => { ev.preventDefault(); try { astroCloseWaypointPicker(); } catch(_){} });
+  dlg.addEventListener("click", (ev) => {
+    if (ev.target === dlg){
+      try { astroCloseWaypointPicker(); } catch(_){}
+      return;
+    }
+    if (state.astroWpPickerColsMenuOpen){
+      const pop = document.getElementById("astroWpColumnsPopover");
+      const btn = document.getElementById("astroWpColumnsBtn");
+      if (pop && btn && !pop.contains(ev.target) && !btn.contains(ev.target)){
+        try { astroCloseWpColsPopover(); } catch(_){}
+      }
+    }
+  });
+  const cbtn = document.getElementById("astroWpColumnsBtn");
+  if (cbtn && !cbtn._astroWpColsBtnBound){
+    cbtn._astroWpColsBtnBound = true;
+    cbtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { astroToggleWpColsPopover(); } catch(_){}
+    });
+  }
+  const pop = document.getElementById("astroWpColumnsPopover");
+  if (pop && !pop._astroWpColsPopBound){
+    pop._astroWpColsPopBound = true;
+    pop.addEventListener("change", (ev) => {
+      const tg = ev.target;
+      if (!tg || !tg.matches || !tg.matches("[data-astro-wp-col-toggle]")) return;
+      const k = tg.getAttribute("data-astro-wp-col-toggle");
+      astroEnsureWpPickerUiState();
+      if (!k || !state.astroWpPickerCols) return;
+      state.astroWpPickerCols[k] = !!tg.checked;
+      const sInp = document.getElementById("astroWaypointPickerSearch");
+      try { astroFillWaypointPicker(sInp ? sInp.value : ""); } catch(_){}
+    });
+    pop.addEventListener("click", (ev) => { ev.stopPropagation(); });
+  }
+  const s = document.getElementById("astroWaypointPickerSearch");
+  if (s) s.addEventListener("input", () => { try { astroFillWaypointPicker(s.value); } catch(_){} });
+  const list = document.getElementById("astroWaypointPickerList");
+  if (list && !list._astroWpListClickBound){
+    list._astroWpListClickBound = true;
+    list.addEventListener("click", (ev) => {
+      const th = ev.target && ev.target.closest && ev.target.closest("[data-astro-wp-sort]");
+      if (th && list.contains(th)){
+        ev.preventDefault();
+        const k = th.getAttribute("data-astro-wp-sort");
+        if (!k) return;
+        astroEnsureWpPickerUiState();
+        const srt = state.astroWpPickerSort;
+        if (srt.key === k) srt.dir = srt.dir === "asc" ? "desc" : "asc";
+        else { srt.key = k; srt.dir = "asc"; }
+        const sInp = document.getElementById("astroWaypointPickerSearch");
+        try { astroFillWaypointPicker(sInp ? sInp.value : ""); } catch(_){}
+        return;
+      }
+      const b = ev.target && ev.target.closest && ev.target.closest("[data-astro-wp-use]");
+      if (!b || !list.contains(b)) return;
+      ev.preventDefault();
+      const wid = b.getAttribute("data-astro-wp-use");
+      try { astroApplyWaypointFromPicker(wid); } catch(_){}
+    });
+  }
+}
+/** Pass 5 Step E: stato UI picker favoriti Astro (transient, non persistito). */
+function astroEnsureFavPickerUiState(){
+  if (!state.astroFavPickerCols || typeof state.astroFavPickerCols !== "object"){
+    state.astroFavPickerCols = { mgrs: true, when: true, locality: true, notes: true, meta: true };
+  }
+  const c = state.astroFavPickerCols;
+  ["mgrs", "when", "locality", "notes", "meta"].forEach((k) => {
+    if (typeof c[k] !== "boolean") c[k] = true;
+  });
+  if (!state.astroFavPickerSort || typeof state.astroFavPickerSort !== "object"){
+    state.astroFavPickerSort = { key: "name", dir: "asc" };
+  }
+  const sk = String(state.astroFavPickerSort.key || "");
+  if (!/^(name|coord|mgrs|when|locality|notes|meta)$/.test(sk)) state.astroFavPickerSort.key = "name";
+  if (state.astroFavPickerSort.dir !== "desc") state.astroFavPickerSort.dir = "asc";
+}
+function astroCloseFavColsPopover(){
+  state.astroFavPickerColsMenuOpen = false;
+  const p = document.getElementById("astroFavColumnsPopover");
+  if (p) p.hidden = true;
+}
+function astroToggleFavColsPopover(){
+  const p = document.getElementById("astroFavColumnsPopover");
+  if (!p) return;
+  astroEnsureFavPickerUiState();
+  state.astroFavPickerColsMenuOpen = !state.astroFavPickerColsMenuOpen;
+  p.hidden = !state.astroFavPickerColsMenuOpen;
+  try { astroSyncFavColCheckboxes(); } catch(_){}
+}
+function astroSyncFavColCheckboxes(){
+  astroEnsureFavPickerUiState();
+  const c = state.astroFavPickerCols;
+  const map = { mgrs: "astroFavColMgrs", when: "astroFavColWhen", locality: "astroFavColLocality", notes: "astroFavColNotes", meta: "astroFavColMeta" };
+  for (const k of Object.keys(map)){
+    const el = document.getElementById(map[k]);
+    if (el && el.type === "checkbox") el.checked = !!c[k];
+  }
+}
+function astroSortFavPickerRows(arr, key, dir){
+  const m = dir === "desc" ? -1 : 1;
+  const out = arr.slice();
+  const cmpId = (a, b) => String(a.id || "").localeCompare(String(b.id || ""));
+  out.sort((a, b) => {
+    let r = 0;
+    if (key === "name"){
+      r = String(a.label || "").localeCompare(String(b.label || ""), undefined, { sensitivity: "base" });
+    } else if (key === "coord"){
+      if (a.lat !== b.lat) r = a.lat < b.lat ? -1 : 1;
+      else if (a.lon !== b.lon) r = a.lon < b.lon ? -1 : 1;
+    } else if (key === "mgrs"){
+      r = String(a.mgrsStr || "").localeCompare(String(b.mgrsStr || ""));
+    } else if (key === "when"){
+      r = (Number(a.whenTs) || 0) - (Number(b.whenTs) || 0);
+    } else if (key === "locality"){
+      r = String(a.localityFull || "").localeCompare(String(b.localityFull || ""), undefined, { sensitivity: "base" });
+    } else if (key === "notes"){
+      r = String(a.notesFull || "").localeCompare(String(b.notesFull || ""), undefined, { sensitivity: "base" });
+    } else if (key === "meta"){
+      r = String(a.metaStr || "").localeCompare(String(b.metaStr || ""), undefined, { sensitivity: "base" });
+    }
+    if (r === 0) r = cmpId(a, b);
+    return r * m;
+  });
+  return out;
+}
+/** Pass 5 Step E.1: etichette meta ridondanti (es. “Favoriti” ripetuto da tabs/sec) non in colonna Meta — restano in stringa ricerca. */
+function astroFavNormalizeMetaLabel(s){
+  return String(s == null ? "" : s).trim().toLowerCase().replace(/^[★*\s]+/g, "").replace(/\s+/g, " ");
+}
+function astroFavIsNoiseMetaLabel(s){
+  const n = astroFavNormalizeMetaLabel(s);
+  if (!n || n.length > 120) return false;
+  if (n === "tabs.favorites" || n === "sec.favorites") return true;
+  const noise = [];
+  try {
+    if (typeof t === "function"){
+      noise.push(astroFavNormalizeMetaLabel(t("tabs.favorites")));
+      noise.push(astroFavNormalizeMetaLabel(t("sec.favorites")));
+      noise.push(astroFavNormalizeMetaLabel(t("fav.addFromResult")));
+    }
+  } catch(_){}
+  ["favoriti","favorites","favoris","favourite","favori","favs","sec.favorites","tabs.favorites",
+    "favorite","from favorite","da favorito","depuis un favori"].forEach((x) => { noise.push(astroFavNormalizeMetaLabel(x)); });
+  const uniq = new Set(noise.filter(Boolean));
+  if (uniq.has(n)) return true;
+  for (const x of uniq){
+    if (x && n === x) return true;
+  }
+  return false;
+}
+/** Solo favoriti con lat/lon numerici finiti (stesso criterio di rrIndexRrPickerFavorites / loadFavorite). */
+function astroIndexPickerFavorites(){
+  const out = [];
+  for (const f of (state.favorites || [])){
+    if (!f) continue;
+    const lat = Number(f.lat);
+    const lon = Number(f.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const nl = normalizeLon(lon);
+    const sid = f.id != null ? String(f.id) : "";
+    const nm = String(f.name != null ? f.name : "").trim() || (lat.toFixed(4) + ", " + nl.toFixed(4));
+    const coordStr = lat.toFixed(5) + ", " + nl.toFixed(5);
+    let mgrsStr = "";
+    try { mgrsStr = String(latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
+    const notesFull = String(f.notes != null ? f.notes : "").trim().slice(0, 500);
+    const notesDisplay = notesFull ? notesFull.slice(0, 96) : "";
+    const localityFull = String(f.locality != null ? f.locality : "").trim().slice(0, 200);
+    const meta = f.meta && typeof f.meta === "object" ? f.meta : null;
+    const typSrc = (meta && typeof meta.type === "string") ? String(meta.type).trim().slice(0, 48) : "";
+    const rawSrc = (meta && typeof meta.raw === "string") ? String(meta.raw).trim().slice(0, 160) : "";
+    const fromSrc = (meta && typeof meta.from === "string") ? String(meta.from).trim().slice(0, 80) : "";
+    const metaBitsSearch = [typSrc, rawSrc, fromSrc].filter(Boolean);
+    const metaStrSearch = metaBitsSearch.join(" · ").slice(0, 200);
+    const dispBits = [];
+    if (typSrc && !astroFavIsNoiseMetaLabel(typSrc)) dispBits.push(typSrc);
+    if (rawSrc && !astroFavIsNoiseMetaLabel(rawSrc) && rawSrc !== typSrc) dispBits.push(rawSrc);
+    if (fromSrc && !astroFavIsNoiseMetaLabel(fromSrc) && fromSrc !== typSrc && fromSrc !== rawSrc) dispBits.push(fromSrc);
+    const metaStr = dispBits.join(" · ").slice(0, 140);
+    let whenTs = 0;
+    if (Number.isFinite(f.updatedAt)) whenTs = f.updatedAt;
+    else if (Number.isFinite(f.createdAt)) whenTs = f.createdAt;
+    let whenStr = "";
+    let detailTitle = "";
+    let isoC = "";
+    let isoU = "";
+    try {
+      const loc = state.lang === "en" ? "en-GB" : state.lang === "fr" ? "fr-FR" : "it-IT";
+      if (Number.isFinite(f.createdAt)){
+        isoC = new Date(f.createdAt).toISOString().slice(0, 16);
+        const lab = (typeof t === "function" ? (t("astro.wp.created") || "") : "") || "Creato";
+        detailTitle = (detailTitle ? detailTitle + " · " : "") + lab + " " + new Date(f.createdAt).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" });
+      }
+      if (Number.isFinite(f.updatedAt)){
+        isoU = new Date(f.updatedAt).toISOString().slice(0, 16);
+        const lab = (typeof t === "function" ? (t("astro.wp.updated") || "") : "") || "Aggiornato";
+        detailTitle = (detailTitle ? detailTitle + " · " : "") + lab + " " + new Date(f.updatedAt).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" });
+      }
+      whenStr = whenTs ? new Date(whenTs).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" }) : "";
+    } catch(_){}
+    const searchParts = [sid, nm, coordStr, lat.toFixed(5), nl.toFixed(5), mgrsStr, whenStr, detailTitle, notesFull, localityFull, metaStrSearch, typSrc, rawSrc, fromSrc, isoC, isoU];
+    const search = searchParts.filter(Boolean).join(" ").toLowerCase();
+    out.push({
+      id: sid, f, lat, lon: nl, label: nm, coordStr, mgrsStr, whenStr, whenTs, localityFull,
+      metaStr, notesFull, notesDisplay, detailTitle, search
+    });
+  }
+  return out;
+}
+function astroFillFavoritePicker(qStr){
+  const list = document.getElementById("astroFavoritePickerList");
+  if (!list) return;
+  astroEnsureFavPickerUiState();
+  const full = astroIndexPickerFavorites();
+  const q = String(qStr == null ? "" : qStr).trim().toLowerCase();
+  let work = q ? full.filter(x => (x.search || "").indexOf(q) >= 0) : full.slice();
+  const sort = state.astroFavPickerSort;
+  work = astroSortFavPickerRows(work, sort.key, sort.dir);
+  const hintEl = document.getElementById("astroFavoritePickerHint");
+  if (!work.length){
+    const emptyK = !full.length ? "astro.fav.noFavoritesValid" : "astro.fav.noPickerMatch";
+    const msg = (typeof t === "function" ? (t(emptyK) || "") : "") || "";
+    list.innerHTML = "<p class=\"hint\" style=\"padding:8px\">" + esc(msg) + "</p>";
+    if (hintEl) hintEl.hidden = true;
+    return;
+  }
+  const maxN = 50;
+  const totalAfter = work.length;
+  if (totalAfter > maxN && hintEl){
+    const tpl = (typeof t === "function" ? (t("rangeRings.pickerMaxHint") || "") : "") || "";
+    hintEl.textContent = String(tpl).replace("{0}", String(maxN));
+    hintEl.hidden = false;
+  } else if (hintEl) hintEl.hidden = true;
+  const slice = work.slice(0, maxN);
+  const col = state.astroFavPickerCols;
+  const useLbl = (typeof t === "function" ? (t("astro.src.use") || "") : "") || "Usa";
+  const useTip = esc((typeof t === "function" ? (t("tip.astro.src.useFavorite") || "") : "") || "");
+  const sortTip = esc((typeof t === "function" ? (t("tip.astro.fav.sort") || "") : "") || "");
+  const thLbl = (k) => esc((typeof t === "function" ? (t("astro.fav.col." + k) || "") : "") || k);
+  const sortInd = (k) => {
+    if (sort.key !== k) return "";
+    return sort.dir === "desc" ? " \u25BC" : " \u25B2";
+  };
+  const ariaSortVal = (k) => {
+    if (sort.key !== k) return "none";
+    return sort.dir === "desc" ? "descending" : "ascending";
+  };
+  const thSort = (k) =>
+    "<th scope=\"col\" data-astro-fav-sort=\"" + k + "\" class=\"astro-wp-th-sort\" title=\"" + sortTip + "\" aria-sort=\"" + ariaSortVal(k) + "\">" +
+    thLbl(k) + esc(sortInd(k)) + "</th>";
+  let thead = "<tr>";
+  thead += thSort("name") + thSort("coord");
+  if (col.mgrs) thead += thSort("mgrs");
+  if (col.when) thead += thSort("when");
+  if (col.locality) thead += thSort("locality");
+  if (col.notes) thead += thSort("notes");
+  if (col.meta) thead += thSort("meta");
+  thead += "<th scope=\"col\" class=\"astro-wp-th-action\">" + thLbl("action") + "</th></tr>";
+  let tbody = "";
+  const dash = esc("\u2014");
+  for (const it of slice){
+    const idAttr = esc(it.id);
+    const nameCell = "<div class=\"astro-wp-clamp\"><span>" + esc(it.label) + "</span></div>";
+    const whenTit = esc(String(it.detailTitle || it.whenStr || "").trim() || it.coordStr);
+    const notesShown = it.notesFull
+      ? esc(it.notesDisplay + (it.notesFull.length > it.notesDisplay.length ? "\u2026" : ""))
+      : esc((typeof t === "function" ? (t("astro.wp.noNotes") || "") : "") || "\u2014");
+    const notesTit = it.notesFull ? esc(it.notesFull.length > 220 ? it.notesFull.slice(0, 220) + "\u2026" : it.notesFull) : "";
+    const locShown = it.localityFull ? esc(it.localityFull.length > 120 ? it.localityFull.slice(0, 120) + "\u2026" : it.localityFull) : "";
+    const locTit = it.localityFull ? esc(it.localityFull.length > 200 ? it.localityFull.slice(0, 200) + "\u2026" : it.localityFull) : "";
+    let tr = "<tr>";
+    tr += "<td class=\"astro-wp-td-name\">" + nameCell + "</td>";
+    tr += "<td class=\"astro-wp-td-mono\">" + esc(it.coordStr) + "</td>";
+    if (col.mgrs) tr += "<td class=\"astro-wp-td-mono astro-wp-clamp\">" + esc(it.mgrsStr || "") + "</td>";
+    if (col.when) tr += "<td title=\"" + whenTit + "\">" + esc(it.whenStr || "") + "</td>";
+    if (col.locality) tr += "<td class=\"astro-wp-clamp\" title=\"" + locTit + "\">" + (it.localityFull ? locShown : dash) + "</td>";
+    if (col.notes) tr += "<td class=\"astro-wp-clamp\" title=\"" + notesTit + "\">" + notesShown + "</td>";
+    if (col.meta) tr += "<td class=\"astro-wp-clamp\">" + esc(it.metaStr || "") + "</td>";
+    tr += "<td class=\"astro-wp-td-action\"><button type=\"button\" class=\"btn btn-sm\" data-astro-fav-use=\"" + idAttr + "\" data-tip=\"" + useTip + "\" aria-label=\"" + useTip + "\">" + esc(useLbl) + "</button></td>";
+    tr += "</tr>";
+    tbody += tr;
+  }
+  list.innerHTML = "<div class=\"astro-wp-table-wrap\"><table class=\"astro-wp-table\"><thead>" + thead + "</thead><tbody>" + tbody + "</tbody></table></div>";
+}
+function astroCloseFavoritePicker(){
+  try { if (typeof astroCloseFavColsPopover === "function") astroCloseFavColsPopover(); } catch(_){}
+  const dlg = document.getElementById("astroFavoritePicker");
+  state.astroFavoritePickerOpen = false;
+  if (dlg){
+    try { astroTeardownAstroPickerFloatingUi(dlg); } catch(_){}
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  }
+}
+function astroOpenFavoritePicker(){
+  const dlg = document.getElementById("astroFavoritePicker");
+  if (!dlg) return;
+  try { if (typeof astroCloseFavColsPopover === "function") astroCloseFavColsPopover(); } catch(_){}
+  try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
+  try { ensureAstroFavoritePickerWired(); } catch(_){}
+  try {
+    if (state.astroPickCenterMode && typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("cancel");
+  } catch(_){}
+  astroClearNotices();
+  const s = document.getElementById("astroFavoritePickerSearch");
+  if (s) s.value = "";
+  const list = document.getElementById("astroFavoritePickerList");
+  if (list && typeof t === "function"){
+    const lab = t("astro.fav.picker.title") || "";
+    try { list.setAttribute("aria-label", lab); } catch(_){}
+  }
+  try { if (!dlg.open && typeof dlg.showModal === "function") dlg.showModal(); } catch(_){
+    try { dlg.show(); } catch(__){}
+  }
+  state.astroFavoritePickerOpen = true;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(dlg, state.lang); } catch(_){}
+  try { astroEnsureFavPickerUiState(); astroSyncFavColCheckboxes(); } catch(_){}
+  try { astroFillFavoritePicker(""); } catch(_){}
+  try {
+    if (document.body.classList.contains("gis-mode") && typeof wireAstroFavoritePickerFloatingGis === "function"){
+      wireAstroFavoritePickerFloatingGis(dlg);
+    }
+  } catch(_){}
+  try {
+    requestAnimationFrame(() => {
+      try {
+        if (document.body.classList.contains("gis-mode") && dlg && dlg.open){
+          if (typeof clampAstroFavoritePickerRect === "function") clampAstroFavoritePickerRect(dlg);
+          if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, _astroFavoritePickerLayoutOpts());
+        }
+      } catch(_){}
+    });
+  } catch(_){}
+  setTimeout(() => { try { if (s) s.focus(); } catch(_){} }, 0);
+}
+function astroApplyFavoriteFromPicker(id){
+  const sid = id != null ? String(id) : "";
+  if (!sid || !state.astro) return;
+  const f = (state.favorites || []).find(x => x && String(x.id) === sid);
+  if (!f) return;
+  const lat = Number(f.lat);
+  const lon = Number(f.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  const nl = normalizeLon(lon);
+  const nm = String(f.name != null ? f.name : "").trim();
+  const lbl = nm || (lat.toFixed(5) + ", " + nl.toFixed(5));
+  astroClearNotices();
+  astroSetPosition("favorite", lat, nl, lbl, "favorite");
+  astroCloseFavoritePicker();
+  astroSyncPosUI();
+  try { astroShowInfo("astro.notice.posFromFavorite"); } catch(_){}
+}
+function ensureAstroFavoritePickerWired(){
+  const dlg = document.getElementById("astroFavoritePicker");
+  if (!dlg || dlg._astroFavPickerWired) return;
+  dlg._astroFavPickerWired = true;
+  const x = document.getElementById("astroFavoritePickerClose");
+  if (x) x.addEventListener("click", (ev) => { ev.preventDefault(); try { astroCloseFavoritePicker(); } catch(_){} });
+  dlg.addEventListener("cancel", (ev) => { ev.preventDefault(); try { astroCloseFavoritePicker(); } catch(_){} });
+  dlg.addEventListener("click", (ev) => {
+    if (ev.target === dlg){
+      try { astroCloseFavoritePicker(); } catch(_){}
+      return;
+    }
+    if (state.astroFavPickerColsMenuOpen){
+      const pop = document.getElementById("astroFavColumnsPopover");
+      const btn = document.getElementById("astroFavColumnsBtn");
+      if (pop && btn && !pop.contains(ev.target) && !btn.contains(ev.target)){
+        try { astroCloseFavColsPopover(); } catch(_){}
+      }
+    }
+  });
+  const cbtn = document.getElementById("astroFavColumnsBtn");
+  if (cbtn && !cbtn._astroFavColsBtnBound){
+    cbtn._astroFavColsBtnBound = true;
+    cbtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { astroToggleFavColsPopover(); } catch(_){}
+    });
+  }
+  const pop = document.getElementById("astroFavColumnsPopover");
+  if (pop && !pop._astroFavColsPopBound){
+    pop._astroFavColsPopBound = true;
+    pop.addEventListener("change", (ev) => {
+      const tg = ev.target;
+      if (!tg || !tg.matches || !tg.matches("[data-astro-fav-col-toggle]")) return;
+      const k = tg.getAttribute("data-astro-fav-col-toggle");
+      astroEnsureFavPickerUiState();
+      if (!k || !state.astroFavPickerCols) return;
+      state.astroFavPickerCols[k] = !!tg.checked;
+      const sInp = document.getElementById("astroFavoritePickerSearch");
+      try { astroFillFavoritePicker(sInp ? sInp.value : ""); } catch(_){}
+    });
+    pop.addEventListener("click", (ev) => { ev.stopPropagation(); });
+  }
+  const s = document.getElementById("astroFavoritePickerSearch");
+  if (s) s.addEventListener("input", () => { try { astroFillFavoritePicker(s.value); } catch(_){} });
+  const list = document.getElementById("astroFavoritePickerList");
+  if (list && !list._astroFavListClickBound){
+    list._astroFavListClickBound = true;
+    list.addEventListener("click", (ev) => {
+      const th = ev.target && ev.target.closest && ev.target.closest("[data-astro-fav-sort]");
+      if (th && list.contains(th)){
+        ev.preventDefault();
+        const k = th.getAttribute("data-astro-fav-sort");
+        if (!k) return;
+        astroEnsureFavPickerUiState();
+        const srt = state.astroFavPickerSort;
+        if (srt.key === k) srt.dir = srt.dir === "asc" ? "desc" : "asc";
+        else { srt.key = k; srt.dir = "asc"; }
+        const sInp = document.getElementById("astroFavoritePickerSearch");
+        try { astroFillFavoritePicker(sInp ? sInp.value : ""); } catch(_){}
+        return;
+      }
+      const b = ev.target && ev.target.closest && ev.target.closest("[data-astro-fav-use]");
+      if (!b || !list.contains(b)) return;
+      ev.preventDefault();
+      const fid = b.getAttribute("data-astro-fav-use");
+      try { astroApplyFavoriteFromPicker(fid); } catch(_){}
+    });
+  }
+}
+/** Pass 5 Step E.1: layout sessione in `gPanelLayouts` (chiavi non in UI_PANEL_KEYS → niente localStorage). */
+function _astroWaypointPickerLayoutOpts(){
+  return {
+    key: "astroWpPicker",
+    pad: 10,
+    minW: 400,
+    minH: 240,
+    defaultW: 520,
+    defaultH: null,
+    defaultHeightFraction: 0.5,
+    defaultHeightCap: 520,
+    topbarReserve: 100,
+    bodyMinH: 100,
+    partialMinVisible: 64,
+    bodyId: "astroWaypointPickerBody",
+    headId: "astroWaypointPickerHead",
+    closeId: "astroWaypointPickerClose"
+  };
+}
+function _astroFavoritePickerLayoutOpts(){
+  return {
+    key: "astroFavPicker",
+    pad: 10,
+    minW: 400,
+    minH: 240,
+    defaultW: 520,
+    defaultH: null,
+    defaultHeightFraction: 0.5,
+    defaultHeightCap: 520,
+    topbarReserve: 100,
+    bodyMinH: 100,
+    partialMinVisible: 64,
+    bodyId: "astroFavoritePickerBody",
+    headId: "astroFavoritePickerHead",
+    closeId: "astroFavoritePickerClose"
+  };
+}
+function astroTeardownAstroPickerFloatingUi(dlg){
+  if (!dlg) return;
+  dlg.classList.remove("gis-panel-floating");
+  try {
+    ["left","top","right","bottom","width","height","margin","transform","maxWidth","maxHeight"].forEach((p) => {
+      try { dlg.style[p] = ""; } catch(_){}
+    });
+  } catch(_){}
+  try {
+    const id = dlg.id || "";
+    const hid = (id === "astroWaypointPicker")
+      ? document.getElementById("astroWaypointPickerHead")
+      : (id === "astroFavoritePicker") ? document.getElementById("astroFavoritePickerHead") : null;
+    if (hid) hid.classList.remove("gis-panel-drag-head");
+  } catch(_){}
+}
+function attachAstroWaypointPickerFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroWaypointPickerLayoutOpts();
+  if (!dlg._gisPanelDragInstalled){
+    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+      threshold: 4,
+      draggingClass: "dragging",
+      ignoreSelector: "#astroWaypointPickerClose,#astroWpColumnsBtn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"],[data-astro-wp-sort],[data-astro-wp-use]"
+    }));
+  }
+  if (!dlg._gisPanelResizeInstalled){
+    const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+    gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+  }
+}
+function attachAstroFavoritePickerFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroFavoritePickerLayoutOpts();
+  if (!dlg._gisPanelDragInstalled){
+    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+      threshold: 4,
+      draggingClass: "dragging",
+      ignoreSelector: "#astroFavoritePickerClose,#astroFavColumnsBtn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"],[data-astro-fav-sort],[data-astro-fav-use]"
+    }));
+  }
+  if (!dlg._gisPanelResizeInstalled){
+    const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+    gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+  }
+}
+function clampAstroWaypointPickerRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroWaypointPickerLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function clampAstroFavoritePickerRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroFavoritePickerLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireAstroWaypointPickerFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  attachAstroWaypointPickerFloatingGis(dlg);
+  const opts = _astroWaypointPickerLayoutOpts();
+  gisPanelAttachBringToFront(dlg, opts);
+  gisPanelBringToFront(dlg, opts);
+  gisPanelApplyLayout(dlg, opts);
+  try { clampAstroWaypointPickerRect(dlg); } catch(_){}
+  gisPanelSyncBodySize(dlg, opts);
+}
+function wireAstroFavoritePickerFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  attachAstroFavoritePickerFloatingGis(dlg);
+  const opts = _astroFavoritePickerLayoutOpts();
+  gisPanelAttachBringToFront(dlg, opts);
+  gisPanelBringToFront(dlg, opts);
+  gisPanelApplyLayout(dlg, opts);
+  try { clampAstroFavoritePickerRect(dlg); } catch(_){}
+  gisPanelSyncBodySize(dlg, opts);
+}
+function astroSetSource(kind){
+  try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
+  try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
+  if (state.astroPickCenterMode){
+    try { astroClearPickCenterMode("sourceChange"); } catch(_){}
+  }
+  astroClearNotices();
+  if (kind === "result"){
+    const r = state.lastResult;
+    if (!r || !astroIsValidCoord(r.lat, r.lon)){
+      astroShowError("astro.err.noPosition");
+      return;
+    }
+    const lbl = r.lat.toFixed(5) + ", " + r.lon.toFixed(5);
+    astroSetPosition("result", r.lat, r.lon, lbl, "result");
+  } else if (kind === "mapCenter"){
+    const c = astroGetMapCenterPosition();
+    if (!c){
+      astroShowError("astro.err.noPosition");
+      return;
+    }
+    const lbl = c.lat.toFixed(5) + ", " + c.lon.toFixed(5);
+    astroSetPosition("mapCenter", c.lat, c.lon, lbl, "mapCenter");
+  } else return;
+  astroSyncPosUI();
+}
+function astroInitDefaultSource(){
+  astroClearNotices();
+  const r = state.lastResult;
+  if (r && astroIsValidCoord(r.lat, r.lon)){
+    const lbl = r.lat.toFixed(5) + ", " + r.lon.toFixed(5);
+    astroSetPosition("result", r.lat, r.lon, lbl, "result");
+  } else {
+    const c = astroGetMapCenterPosition();
+    if (c){
+      const lbl = c.lat.toFixed(5) + ", " + c.lon.toFixed(5);
+      astroSetPosition("mapCenter", c.lat, c.lon, lbl, "mapCenter");
+    } else {
+      state.astro.source = null;
+      state.astro.lat = null;
+      state.astro.lon = null;
+      state.astro.label = "";
+      state.astro.origin = "";
+      astroShowInfo("astro.pos.none");
+    }
+  }
+  astroSyncPosUI();
+}
+function runAstroCore(lat, lon, dateValStr, outEl){
+  const sc = (typeof SunCalc !== "undefined" ? SunCalc : window.SunCalc);
+  if (!outEl || !sc || typeof sc.getTimes !== "function") return false;
+  if (!dateValStr || !String(dateValStr).trim()) return false;
+  if (!astroIsValidCoord(lat, lon)) return false;
+  const [y, mo, d] = String(dateValStr).split("-").map(Number);
   const day = new Date(Date.UTC(y, (mo || 1) - 1, d || 1, 12, 0, 0));
   const st = sc.getTimes(day, lat, lon, 0);
   const m = sc.getMoonTimes(new Date(Date.UTC(y, (mo || 1) - 1, d || 1, 0, 0, 0)), lat, lon, true);
@@ -28475,7 +30168,7 @@ function runAstroUI(){
   if (m.alwaysUp) moonR = t("astro.alwaysUp");
   if (m.alwaysDown) moonR = t("astro.alwaysDown");
   const utcLmtHdr = t("astro.col.utcLmt");
-  out.innerHTML = `<table class="batch-table" style="margin-top:8px; font-size:.88rem">
+  outEl.innerHTML = `<table class="batch-table" style="margin-top:8px; font-size:.88rem">
    <thead><tr><th></th><th>${esc(utcLmtHdr)}</th><th>${esc(utcLmtHdr)}</th></tr></thead>
    <tbody>
    ${row(t("astro.sunrise"), p(st.sunrise), p(st.sunset))}
@@ -28486,6 +30179,37 @@ function runAstroUI(){
    <tr><th>${esc(t("astro.moonS"))}</th><td colspan="2">${esc(moonS)}</td></tr>
    <tr><th>${esc(t("astro.moonPh"))}</th><td colspan="2">${esc(String(round(ill.fraction * 100, 1)) + "%")}</td></tr>
    </tbody></table><p class="sub-section-hint" style="margin-top:6px">*LMT: ${esc(t("astro.lmtFoot"))}</p>`;
+  return true;
+}
+/** Legacy `#sec-astro`: sempre coordinate da `state.lastResult` (non usa `state.astro`). */
+function runAstroUI(){
+  const out = document.getElementById("astro-result");
+  if (!out) return;
+  const din = document.getElementById("astroDate");
+  if (!din || !din.value) return;
+  const r = state.lastResult;
+  if (!r || !astroIsValidCoord(r.lat, r.lon)) return;
+  runAstroCore(r.lat, r.lon, din.value, out);
+}
+function runAstroPanelUI(){
+  const out = document.getElementById("astro-result-floating");
+  const din = document.getElementById("astroDate2");
+  astroClearNotices();
+  if (!out){ astroShowError("astro.err.noPosition"); return; }
+  if (!din || !din.value){
+    astroShowError("astro.err.noDate");
+    return;
+  }
+  if (!state.astro || !astroIsValidCoord(state.astro.lat, state.astro.lon)){
+    astroShowError("astro.err.noPosition");
+    out.innerHTML = "";
+    return;
+  }
+  const ok = runAstroCore(state.astro.lat, state.astro.lon, din.value, out);
+  if (!ok){
+    astroShowError("astro.err.noPosition");
+    out.innerHTML = "";
+  }
 }
 function runMagUI(){
   const r = state.lastResult;
@@ -30421,6 +32145,7 @@ function rangeRingsClearPickCenterMode(opts){
 function rangeRingsEnterPickCenterMode(){
   state._rrEditingMoveCenterMode = false;
   state.rangeRingsPickAndCreateMode = false;
+  try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("rr"); } catch(_){}
   try { trackExitPickMode(); } catch(_){}
   try {
     state.mapPickMode = false;
@@ -30450,6 +32175,7 @@ function rangeRingsEnterPickCenterMode(){
  * Mutually exclusive with pick-center, track, waypoint, map pick, measure.
  */
 function rangeRingsEnterPickAndCreateMode(){
+  try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("rr"); } catch(_){}
   if (state._rrEditingSetId){
     rrShowError("rangeRings.err.pickCreateBlockedEdit");
     return;
@@ -31944,6 +33670,46 @@ function gisInit(){
     rrDlg.addEventListener("click", (ev) => { if (ev.target === rrDlg) handleRrClose(); });
   }
 
+  const apClose = document.getElementById("astroPanelClose");
+  const apDlg = document.getElementById("astroPanel");
+  const handleApClose = () => { if (typeof closeAstroPanel === "function") closeAstroPanel(); };
+  if (apClose) apClose.addEventListener("click", (ev) => { ev.preventDefault(); handleApClose(); });
+  if (apDlg){
+    apDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handleApClose(); });
+    apDlg.addEventListener("click", (ev) => { if (ev.target === apDlg) handleApClose(); });
+  }
+  const apBody = document.getElementById("astroPanelBody");
+  if (apBody){
+    apBody.addEventListener("click", (ev) => {
+      const b = ev.target && ev.target.closest && ev.target.closest("[data-astro-src]");
+      if (!b || !apBody.contains(b)) return;
+      ev.preventDefault();
+      const k = b.getAttribute("data-astro-src");
+      if (k === "result" || k === "mapCenter") astroSetSource(k);
+      else if (k === "mapPick"){
+        if (typeof astroEnterPickCenterMode === "function") astroEnterPickCenterMode();
+      } else if (k === "waypoint"){
+        if (typeof astroOpenWaypointPicker === "function") astroOpenWaypointPicker();
+      } else if (k === "favorite"){
+        if (typeof astroOpenFavoritePicker === "function") astroOpenFavoritePicker();
+      }
+    });
+  }
+  const apPickCancel = document.getElementById("astroMapPickCancel");
+  if (apPickCancel){
+    apPickCancel.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("cancel");
+    });
+  }
+  const btnAstro2 = document.getElementById("btnAstro2");
+  if (btnAstro2) btnAstro2.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (typeof runAstroPanelUI === "function") runAstroPanelUI();
+  });
+  try { ensureAstroWaypointPickerWired(); } catch(_){}
+  try { ensureAstroFavoritePickerWired(); } catch(_){}
+
   const tmClose = document.getElementById("trackModalClose");
   const tm = document.getElementById("trackModal");
   const handleTrackModalClose = () => { closeTrackModal(); };
@@ -32195,6 +33961,26 @@ function gisInit(){
       if (typeof closeWaypointFromFavoritesDialog === "function") closeWaypointFromFavoritesDialog();
       return;
     }
+    const awpGis = document.getElementById("astroWaypointPicker");
+    if (awpGis && awpGis.open){
+      ev.preventDefault();
+      if (state.astroWpPickerColsMenuOpen){
+        if (typeof astroCloseWpColsPopover === "function") astroCloseWpColsPopover();
+        return;
+      }
+      if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker();
+      return;
+    }
+    const afavGis = document.getElementById("astroFavoritePicker");
+    if (afavGis && afavGis.open){
+      ev.preventDefault();
+      if (state.astroFavPickerColsMenuOpen){
+        if (typeof astroCloseFavColsPopover === "function") astroCloseFavColsPopover();
+        return;
+      }
+      if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker();
+      return;
+    }
     const tx = document.getElementById("trackExportDialog");
     if (tx && tx.open){
       ev.preventDefault();
@@ -32234,6 +34020,17 @@ function gisInit(){
     const lpd = document.getElementById("layersPanel");
     if (state.layersPanelOpen || (lpd && lpd.open)){
       void closeLayersPanel();
+      return;
+    }
+    const apd = document.getElementById("astroPanel");
+    if (state.astroPanelOpen || (apd && apd.open)){
+      if (state._astroSkipNextGisPanelClose){
+        state._astroSkipNextGisPanelClose = false;
+        ev.preventDefault();
+        return;
+      }
+      if (typeof closeAstroPanel === "function") closeAstroPanel();
+      ev.preventDefault();
       return;
     }
     const rrd = document.getElementById("rangeRingsPanel");
@@ -32427,6 +34224,18 @@ function gisInit(){
       if (state.rangeRingsPanelOpen && rrp && rrp.open && document.body.classList.contains("gis-mode")){
         try { clampRangeRingsPanelRect(rrp); gisPanelSyncBodySize(rrp, _rangeRingsPanelLayoutOpts()); } catch(_){}
       }
+      const ap = document.getElementById("astroPanel");
+      if (state.astroPanelOpen && ap && ap.open && document.body.classList.contains("gis-mode")){
+        try { clampAstroPanelRect(ap); gisPanelSyncBodySize(ap, _astroPanelLayoutOpts()); } catch(_){}
+      }
+      const awpR = document.getElementById("astroWaypointPicker");
+      if (state.astroWaypointPickerOpen && awpR && awpR.open && document.body.classList.contains("gis-mode")){
+        try { clampAstroWaypointPickerRect(awpR); gisPanelSyncBodySize(awpR, _astroWaypointPickerLayoutOpts()); } catch(_){}
+      }
+      const afR = document.getElementById("astroFavoritePicker");
+      if (state.astroFavoritePickerOpen && afR && afR.open && document.body.classList.contains("gis-mode")){
+        try { clampAstroFavoritePickerRect(afR); gisPanelSyncBodySize(afR, _astroFavoritePickerLayoutOpts()); } catch(_){}
+      }
     });
   }
 }
@@ -32475,7 +34284,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","rangeRingsPanel"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","rangeRingsPanel","astroPanel","astroWaypointPicker","astroFavoritePicker"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -34154,6 +35963,133 @@ function closeRangeRingsPanel(){
   try { trackSyncPickModeUi(); } catch(_){}
 }
 
+/** GIS: layout opts per pannello Astro floating (Pass 5 Step B). */
+function _astroPanelLayoutOpts(){
+  return {
+    key: "astro",
+    pad: 12,
+    minW: 360,
+    minH: 240,
+    defaultW: 480,
+    defaultH: null,
+    defaultHeightFraction: 0.52,
+    defaultHeightCap: 560,
+    topbarReserve: 104,
+    bodyMinH: 120,
+    partialMinVisible: 72,
+    bodyId: "astroPanelBody",
+    headId: "astroPanelHead",
+    closeId: "astroPanelClose"
+  };
+}
+function attachAstroPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroPanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#astroPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+}
+function clampAstroPanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _astroPanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireAstroPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("astroPanelHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachAstroPanelFloatingGis(dlg);
+  gisPanelAttachBringToFront(dlg, _astroPanelLayoutOpts());
+  gisPanelBringToFront(dlg, _astroPanelLayoutOpts());
+  gisPanelApplyLayout(dlg, _astroPanelLayoutOpts());
+  clampAstroPanelRect(dlg);
+  gisPanelSyncBodySize(dlg, _astroPanelLayoutOpts());
+}
+/** GIS: pannello Astro dedicato (non reparenta `#sec-astro`). */
+function openAstroFloatingPanelGis(){
+  if (!document.body.classList.contains("gis-mode")) return false;
+  const dlg = document.getElementById("astroPanel");
+  if (!dlg) return false;
+  if (state.astroPanelOpen && dlg.open){
+    try { wireAstroPanelFloatingGis(dlg); } catch(_){}
+    try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(dlg, state.lang); } catch(_){}
+    try {
+      requestAnimationFrame(() => {
+        try { clampAstroPanelRect(dlg); gisPanelSyncBodySize(dlg, _astroPanelLayoutOpts()); } catch(_){}
+      });
+    } catch(_){}
+    try { astroSyncPosUI(); } catch(_){}
+    return true;
+  }
+  try { closeToolsModal(); } catch(_){}
+  try { closeToolsDrawer(); } catch(_){}
+  state.astroPanelOpen = true;
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  const d0 = document.getElementById("astroDate");
+  const d2 = document.getElementById("astroDate2");
+  if (d2){
+    if (d0 && d0.value) d2.value = d0.value;
+    else {
+      try { d2.value = new Date().toISOString().slice(0, 10); } catch(_){}
+    }
+  }
+  try { astroInitDefaultSource(); } catch(_){}
+  wireAstroPanelFloatingGis(dlg);
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(dlg, state.lang); } catch(_){}
+  try {
+    requestAnimationFrame(() => {
+      try { clampAstroPanelRect(dlg); gisPanelSyncBodySize(dlg, _astroPanelLayoutOpts()); } catch(_){}
+    });
+  } catch(_){}
+  return true;
+}
+function closeAstroPanelCore(){
+  const dlg = document.getElementById("astroPanel");
+  if (!state.astroPanelOpen && !(dlg && dlg.open)) return;
+  try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("panelClose"); } catch(_){}
+  try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
+  try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
+  state.astroPanelOpen = false;
+  if (dlg){
+    try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("astroPanelHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
+}
+function closeAstroPanel(){
+  closeAstroPanelCore();
+  if (state.toolsMenuOpen === "astro"){
+    state.toolsMenuOpen = null;
+    document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => { b.classList.remove("is-active"); });
+  }
+}
+
 function gisSetTopbarTabActive(tabKey, on){
   const btn = document.querySelector(`#appTopbar .app-tab[data-tab="${tabKey}"]`);
   if (!btn) return;
@@ -34889,11 +36825,11 @@ function renderWpModalList(){
   const wpResizeAria = esc(t("waypoint.colResizeAria"));
   const ariaVisOn = esc((typeof t === "function") ? (t("track.savedVisOnMap") || "") : "");
   const tipEdit = esc(t("tip.trackEditSaved") || t("waypointModal.editor.edit") || "Edit");
-  const tipFly = esc(t("tip.trackSavedFly") || "");
+  const tipFly = esc(t("tip.common.centerMapPoint") || t("tip.trackSavedFly") || "");
   const tipDelOne = esc(t("tip.mapWpRemove") || "");
   const tipFavRow = esc(t("tip.favAddWaypointRow") || "");
   const lblEdit = esc(t("track.savedEdit") || "Modifica");
-  const lblFly = esc(t("track.flyBtn") || "Centra");
+  const lblFly = esc(t("common.center") || t("track.flyBtn") || "Centra");
   let html = `<table class="wp-modal-table"><colgroup>
     <col style="width:36px" />
     <col style="width:44px" />
@@ -35437,22 +37373,50 @@ function waypointImportSelectedFavoritesAsWaypoints(){
   closeWaypointFromFavoritesDialog();
 }
 
-/** Center the tile-map on the given waypoint. Uses `state.viewCenter`
- *  + the existing mini-map renderer; does not touch the map zoom. */
+/** Center the hub tile map on lat/lon without touching `lastResult` or `lastPoint`
+ *  (uses `renderTileMap` + `viewCenter` only). */
+function gisMapCenterOnLatLon(lat, lon, opts){
+  opts = opts || {};
+  try {
+    validateLatLon(lat, lon);
+  } catch(_){
+    return false;
+  }
+  const latC = Math.max(-85.05, Math.min(85.05, lat));
+  const lonC = normalizeLon(lon);
+  let z = state.mapZoom || 11;
+  if (!opts.skipZoomBump && z < 12){
+    z = 14;
+    state.mapZoom = z;
+  }
+  state.viewCenter = { lat: latC, lon: lonC };
+  const root = document.getElementById("miniMap");
+  if (!root || typeof renderTileMap !== "function") return false;
+  try {
+    renderTileMap(latC, lonC, z);
+    return true;
+  } catch(_){
+    return false;
+  }
+}
+
+/** Center the tile-map on the given waypoint. */
 function waypointsZoomTo(id){
   ensureMapWaypointsState();
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
-  try {
-    state.viewCenter = { lat: p.lat, lon: p.lon };
-    const z = state.mapZoom || 13;
-    const root = document.getElementById("miniMap");
-    if (root && root.querySelector(".tile-map") && typeof renderTileMap === "function"){
-      renderTileMap(p.lat, p.lon, z);
-    } else if (typeof renderMiniMap === "function"){
-      renderMiniMap(p.lat, p.lon, false);
-    }
-  } catch(_){}
+  if (gisMapCenterOnLatLon(p.lat, p.lon)){
+    try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
+  }
+}
+
+/** Center the map on a saved favorite (modal principale). */
+function favoriteMapCenterTo(id){
+  const fav = state.favorites.find(x => x.id === id);
+  if (!fav || !Number.isFinite(fav.lat) || !Number.isFinite(fav.lon)) return;
+  if (gisMapCenterOnLatLon(fav.lat, fav.lon)){
+    try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
+  }
 }
 
 /* ---- GeoJSON import / export (waypoints only) ---- */
@@ -35902,13 +37866,27 @@ function activateToolPanel(tool){
     if (state.rangeRingsPanelOpen && typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
   } catch(_){}
   if (state.toolsMenuOpen && state.toolsMenuOpen !== tool){
-    gisRestoreSection(GIS_TOOL_SECTIONS[state.toolsMenuOpen]);
+    const prev = state.toolsMenuOpen;
+    // Astro is a floating GIS panel: keep it open when switching tools.
+    gisRestoreSection(GIS_TOOL_SECTIONS[prev]);
   }
   // Toggle off if same tile clicked twice
   if (state.toolsMenuOpen === tool){
-    gisRestoreSection(GIS_TOOL_SECTIONS[tool]);
+    if (tool === "astro"){
+      try { if (typeof closeAstroPanel === "function") closeAstroPanel(); } catch(_){}
+    } else {
+      gisRestoreSection(GIS_TOOL_SECTIONS[tool]);
+    }
     state.toolsMenuOpen = null;
     document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => b.classList.remove("is-active"));
+    return;
+  }
+  if (tool === "astro"){
+    try { if (typeof openAstroFloatingPanelGis === "function") openAstroFloatingPanelGis(); } catch(_){}
+    state.toolsMenuOpen = tool;
+    document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => {
+      b.classList.toggle("is-active", b.getAttribute("data-tool") === tool);
+    });
     return;
   }
   gisMoveSectionTo(GIS_TOOL_SECTIONS[tool], wrap);
@@ -35938,6 +37916,30 @@ function gisRefreshI18n(){
   const rrd = document.getElementById("rangeRingsPanel");
   if (rrt && rrd && (state.rangeRingsPanelOpen || rrd.open) && typeof t === "function"){
     try { rrt.textContent = t("sec.rangerings") || rrt.textContent; } catch(_){}
+  }
+  const apt = document.getElementById("astroPanelTitle");
+  const apDlg = document.getElementById("astroPanel");
+  if (apt && apDlg && (state.astroPanelOpen || apDlg.open) && typeof t === "function"){
+    try { apt.textContent = t("sec.astro") || apt.textContent; } catch(_){}
+  }
+  if (apDlg && (state.astroPanelOpen || apDlg.open) && typeof syncI18nInRoot === "function"){
+    try { syncI18nInRoot(apDlg, state.lang); } catch(_){}
+  }
+  const awpDlg = document.getElementById("astroWaypointPicker");
+  if (awpDlg && awpDlg.open && typeof syncI18nInRoot === "function"){
+    try { syncI18nInRoot(awpDlg, state.lang); } catch(_){}
+    try { astroFillWaypointPicker((document.getElementById("astroWaypointPickerSearch") || {}).value || ""); } catch(_){}
+  }
+  if (awpDlg && awpDlg.open && document.body.classList.contains("gis-mode")){
+    try { clampAstroWaypointPickerRect(awpDlg); gisPanelSyncBodySize(awpDlg, _astroWaypointPickerLayoutOpts()); } catch(_){}
+  }
+  const afavDlg = document.getElementById("astroFavoritePicker");
+  if (afavDlg && afavDlg.open && typeof syncI18nInRoot === "function"){
+    try { syncI18nInRoot(afavDlg, state.lang); } catch(_){}
+    try { astroFillFavoritePicker((document.getElementById("astroFavoritePickerSearch") || {}).value || ""); } catch(_){}
+  }
+  if (afavDlg && afavDlg.open && document.body.classList.contains("gis-mode")){
+    try { clampAstroFavoritePickerRect(afavDlg); gisPanelSyncBodySize(afavDlg, _astroFavoritePickerLayoutOpts()); } catch(_){}
   }
   if (state.activeTab === "measure"){ try { measSyncOperativeInfo(); } catch(_){} }
 }

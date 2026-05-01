@@ -2322,6 +2322,31 @@ Chiusura sessione su comando utente **`finito`** dopo: **Pass 4B Step 1** (split
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
 
+## Checkpoint 2026-05-01 — Pass 5 Step B→E.2 Astro GIS (pannello, pickers, modali) (`finito`)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`**. Il monolite consolidava **Pass 5** dopo lo Step A già chiuso: **B** pannello Astro floating; **C** map-pick e fix Esc/Range Rings; **D–D.2** picker waypoint Astro; **E–E.1** picker favoriti Astro + resize; **E.2** polish modal Favoriti/Waypoint (summary duplicato, **Centra** mappa, trasparenza GIS). Memoria orchestratore già pubblicata in commit separati (**`56205de`**, **`6a47a9f`**, **`1b1653a`**) senza monolite fino a questo **`finito`**.
+
+### Monolite (`coordinate_converter Claude.html`) — sintesi
+
+1. **Step B — `#astroPanel`:** dialog GIS non modale, drag/resize, clamp, sorgenti **result** / **mapCenter**, `runAstroPanelUI` / wiring Esc e `gisRefreshI18n`.
+2. **Step C — `mapPick`:** `astroEnterPickCenterMode` / `astroClearPickCenterMode` / `astroApplyPickedMapPoint`; conflitti disarmati con altri tool; Esc in `bindHotkeys` non chiude Astro quando si chiude solo RR pick.
+3. **Step D / D.1 / D.2 — `#astroWaypointPicker`:** tabella ricercabile, colonne opzionali, sort, tooltip/i18n, max 50, **Usa** → `state.astro` waypoint.
+4. **Step E / E.1 — `#astroFavoritePicker` + pickers:** stesso pattern; Meta favoriti senza rumore ripetuto; resize/drag sessione `gPanelLayouts` (`astroWpPicker`, `astroFavPicker`); teardown floating coerente.
+5. **Step E.2 — modal principali:** CSS summary **Favoriti** nel `#favoritesPanel` (schema Range Rings); **`gisMapCenterOnLatLon`** + **`favoriteMapCenterTo`** / **`waypointsZoomTo`** con badge **`map.noticeCenteredOnPoint`**; pannelli body/panel leggermente trasparenti in GIS.
+
+### Non toccato (confermato in questa chiusura)
+
+- **`docs/roadmap.md`**.
+- Vincoli sessione E.2 rispettati: nessun `lastResult` / cronologia / permalink / nuovo `localStorage` per questi passi.
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
+
 ## Checkpoint 2026-05-01 — Pass 5 Step A Astro state + convenzione prompt operativi (`finito`)
 
 ### Contesto
