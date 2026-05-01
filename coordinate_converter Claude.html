@@ -5722,6 +5722,10 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 }
 
 /* List actions: toolbar in fondo al blocco lista (#wp-listWrap). */
+#waypointModalPanel .wp-list-fav-feedback{
+  margin:0 0 6px;
+  min-height:1em;
+}
 #waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
   justify-content:space-between;
@@ -7334,6 +7338,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="gpsMetadata" class="gps-metadata" hidden></div>
         <div class="actions convert-cm-actions-row">
           <button type="button" id="btnAddResultToWaypoint" class="btn btn-sm" disabled data-i18n="waypointModal.addFromConvertBtn" data-i18n-tip="tip.waypointModal.addFromConvertBtn">Aggiungi a waypoint</button>
+          <button type="button" id="btnAddResultToFavorites" class="btn btn-sm" disabled data-i18n="fav.addFromResult" data-i18n-tip="tip.favAddFromResult" data-i18n-aria="tip.favAddFromResult">Aggiungi ai Favoriti</button>
           <button id="btnCopyAll" class="btn btn-sm" data-i18n="btn.copyAll" data-i18n-tip="tip.copyAll">Copia tutto</button>
           <button id="btnCopyLink" class="btn btn-sm" data-i18n="btn.copyLink" data-i18n-tip="tip.copyLink">Copia link</button>
           <button id="btnQr" class="btn btn-sm" data-i18n="btn.qr" data-i18n-tip="tip.qr">QR</button>
@@ -7744,6 +7749,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
         </div>
         <div class="wp-modal-table-wrap" id="wp-listWrap">
+          <div id="wpListFavFeedback" class="wp-feedback wp-list-fav-feedback" aria-live="polite"></div>
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
           <div class="wp-list-actions">
             <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.waypointModal.deleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="waypointModal.deleteSelected">Elimina selezionati</span></button>
@@ -9658,6 +9664,11 @@ const I18N = {
     "fav.confirmClear":"Eliminare tutti i favoriti? L'operazione è irreversibile.",
     "fav.confirmDeleteOne":"Eliminare questo favorito? L'operazione non si può annullare.",
     "fav.saved":"Favorito salvato.",
+    "fav.addFromResult":"Aggiungi ai Favoriti",
+    "fav.convertedPointName":"Punto convertito",
+    "fav.savedFromWaypoint":"Waypoint aggiunto ai Favoriti.",
+    "fav.savedFromConverter":"Risultato aggiunto ai Favoriti.",
+    "fav.noValidPoint":"Nessun punto valido da salvare.",
     "fav.search":"Cerca favoriti","fav.searchPh":"nome, note, MGRS…",
     "fav.naming":"Convenzione nome [ES]-[CAT]-[num]","fav.namingHint":"Esempio: FL26-FOB-001 (numero sequenziale per prefisso+categoria).",
     "fav.namingEx":"FL26","fav.namingCat":"FOB",
@@ -9667,6 +9678,8 @@ const I18N = {
     "fav.exportGpx":"Esporta GPX",
     "tip.favGpx":"Scarica tutti i favoriti come GPX (con note in &lt;desc&gt;)",
     "tip.favAdd":"Salva il risultato corrente tra i favoriti",
+    "tip.favAddFromResult":"Aggiungi il risultato della conversione corrente ai Favoriti (senza richiedere nome)",
+    "tip.favAddWaypointRow":"Aggiungi questo waypoint ai Favoriti",
     "tip.favKml":"Scarica tutti i favoriti come file KML (Google Earth)",
     "tip.favGeoJson":"Scarica tutti i favoriti come file GeoJSON (GIS)",
     "tip.favClear":"Elimina tutti i favoriti salvati",
@@ -10888,6 +10901,11 @@ const I18N = {
     "fav.confirmClear":"Remove all favorites? This cannot be undone.",
     "fav.confirmDeleteOne":"Delete this favorite? This cannot be undone.",
     "fav.saved":"Favorite saved.",
+    "fav.addFromResult":"Add to favorites",
+    "fav.convertedPointName":"Converted point",
+    "fav.savedFromWaypoint":"Waypoint added to favorites.",
+    "fav.savedFromConverter":"Conversion result added to favorites.",
+    "fav.noValidPoint":"No valid point to save.",
     "fav.search":"Search favorites","fav.searchPh":"name, notes, MGRS…",
     "fav.naming":"Name pattern [EX]-[CAT]-[num]",
     "fav.namingHint":"Example: FL26-FOB-001 (sequential per prefix + category).",
@@ -10898,6 +10916,8 @@ const I18N = {
     "fav.exportGpx":"Export GPX",
     "tip.favGpx":"Download all favorites as GPX (notes in &lt;desc&gt;)",
     "tip.favAdd":"Save the current result to favorites",
+    "tip.favAddFromResult":"Add the current conversion result to favorites (no name prompt)",
+    "tip.favAddWaypointRow":"Add this waypoint to favorites",
     "tip.favKml":"Download all favorites as KML (Google Earth)",
     "tip.favGeoJson":"Download all favorites as GeoJSON (GIS)",
     "tip.favClear":"Remove all saved favorites",
@@ -12119,6 +12139,11 @@ const I18N = {
     "fav.confirmClear":"Supprimer tous les favoris ? Irréversible.",
     "fav.confirmDeleteOne":"Supprimer ce favori ? Cette action est irréversible.",
     "fav.saved":"Favori enregistré.",
+    "fav.addFromResult":"Ajouter aux favoris",
+    "fav.convertedPointName":"Point converti",
+    "fav.savedFromWaypoint":"Waypoint ajouté aux favoris.",
+    "fav.savedFromConverter":"Résultat de conversion ajouté aux favoris.",
+    "fav.noValidPoint":"Aucun point valide à enregistrer.",
     "fav.search":"Rechercher","fav.searchPh":"nom, note, MGRS…",
     "fav.naming":"Convention [ES]-[CAT]-[num]",
     "fav.namingHint":"Ex. : FL26-FOB-001 (numéro séquentiel par préfixe + catégorie).",
@@ -12129,6 +12154,8 @@ const I18N = {
     "fav.exportGpx":"Exporter GPX",
     "tip.favGpx":"Télécharger en GPX (notes dans &lt;desc&gt;)",
     "tip.favAdd":"Enregistrer le résultat courant dans les favoris",
+    "tip.favAddFromResult":"Ajouter le résultat de conversion courant aux favoris (sans demande de nom)",
+    "tip.favAddWaypointRow":"Ajouter ce waypoint aux favoris",
     "tip.favKml":"Télécharger tous les favoris en KML (Google Earth)",
     "tip.favGeoJson":"Télécharger tous les favoris en GeoJSON (SIG)",
     "tip.favClear":"Supprimer tous les favoris enregistrés",
@@ -28064,6 +28091,108 @@ function nextFavPatternId(ex, cat){
   }
   return String(max + 1).padStart(3, "0");
 }
+/** Append one favorite without browser prompts (pattern checkbox still honored). */
+function pushFavoriteEntrySilent(lat, lon, opts){
+  opts = opts || {};
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return false;
+  const loc = opts.localityObj && Math.abs(opts.localityObj.lat - lat) < 1e-4 && Math.abs(opts.localityObj.lon - lon) < 1e-4
+    ? opts.localityObj : null;
+  const shortLocality = loc ? favNameFromLocality(loc) : "";
+  let name = "";
+  const patChk = document.getElementById("favNamePattern");
+  if (patChk && patChk.checked) {
+    const ex = (document.getElementById("favExTag") && document.getElementById("favExTag").value || state.favExTag || "FL26")
+      .trim().toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12) || "X";
+    const cat = (document.getElementById("favCatTag") && document.getElementById("favCatTag").value || state.favCatTag || "PT")
+      .trim().toUpperCase().replace(/[^A-Z0-9-]/g, "").replace(/-+/g, "").slice(0, 8) || "PT";
+    state.favExTag = ex; state.favCatTag = cat;
+    const idn = nextFavPatternId(ex, cat);
+    name = ex + "-" + cat + "-" + idn;
+  } else {
+    const pref = String(opts.preferredName || "").trim();
+    if (pref) name = pref;
+    else if (shortLocality) name = shortLocality + " (" + lat.toFixed(4) + ", " + lon.toFixed(4) + ")";
+    else name = t("fav.defaultName") + " " + lat.toFixed(4) + ", " + lon.toFixed(4);
+  }
+  name = name.slice(0, 200);
+  if (!name) return false;
+  const notes = String(opts.notes || "").trim().slice(0, 500);
+  const createdAt = Date.now();
+  state.favorites.unshift({
+    id: uid(),
+    name,
+    notes: notes || "",
+    lat, lon,
+    createdAt,
+    locality: loc ? (loc.display_name || "") : "",
+    meta: opts.meta != null ? opts.meta : null
+  });
+  if (state.favorites.length > 200) state.favorites.length = 200;
+  renderFavorites();
+  saveStore();
+  return true;
+}
+function flashPasteStatusLine(msg, kind){
+  const st = document.getElementById("pasteStatus");
+  if (!st || msg == null || msg === "") return;
+  st.textContent = msg;
+  st.className = kind === "err" ? "err" : kind === "ok" ? "ok" : "";
+  const prev = msg;
+  setTimeout(() => {
+    if (st.textContent === prev){ st.textContent = ""; st.className = ""; }
+  }, 2000);
+}
+function showWpModalListFavFeedback(kind, msg){
+  const el = document.getElementById("wpListFavFeedback");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.classList.remove("is-ok", "is-err");
+  if (kind === "ok") el.classList.add("is-ok");
+  else if (kind === "err") el.classList.add("is-err");
+  try { clearTimeout(el._wpFavFbTm); } catch(_){}
+  if (msg) el._wpFavFbTm = setTimeout(() => {
+    el.textContent = "";
+    el.classList.remove("is-ok", "is-err");
+  }, 2500);
+}
+function addConvertedResultToFavoritesSilent(){
+  const r = state.lastResult;
+  if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)){
+    flashPasteStatusLine(t("fav.noValidPoint"), "err");
+    return;
+  }
+  const loc = state.lastLocality && Math.abs(state.lastLocality.lat - r.lat) < 1e-4 && Math.abs(state.lastLocality.lon - r.lon) < 1e-4
+    ? state.lastLocality : null;
+  const shortLocality = loc ? favNameFromLocality(loc) : "";
+  const preferredName = shortLocality
+    ? (shortLocality + " (" + r.lat.toFixed(4) + ", " + r.lon.toFixed(4) + ")")
+    : (t("fav.convertedPointName") + " (" + r.lat.toFixed(4) + ", " + r.lon.toFixed(4) + ")");
+  const ok = pushFavoriteEntrySilent(r.lat, r.lon, {
+    preferredName,
+    notes: "",
+    meta: r.meta || null,
+    localityObj: loc
+  });
+  if (ok) flashPasteStatusLine(t("fav.savedFromConverter"), "ok");
+}
+function favoriteAddFromWaypointRowId(wpId){
+  ensureMapWaypointsState();
+  const p = state.mapWaypoints.find(x => x.id === wpId);
+  if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)){
+    showWpModalListFavFeedback("err", t("fav.noValidPoint"));
+    return;
+  }
+  const nm = String(p.name || "").trim();
+  const notes = (p.meta && typeof p.meta.notes === "string") ? p.meta.notes : "";
+  const preferredName = nm || (t("fav.defaultName") + " (" + p.lat.toFixed(4) + ", " + p.lon.toFixed(4) + ")");
+  const ok = pushFavoriteEntrySilent(p.lat, p.lon, {
+    preferredName,
+    notes,
+    meta: p.meta || null
+  });
+  if (ok) showWpModalListFavFeedback("ok", t("fav.savedFromWaypoint"));
+}
 function addCurrentAsFavorite(){
   const r = state.lastResult;
   if (!r){ showError(t("err.noResult")); return; }
@@ -30867,6 +30996,12 @@ function bindUI(){
   if (btnAddResWp){
     btnAddResWp.addEventListener("click", () => {
       if (typeof waypointAddFromConvertedPoint === "function") waypointAddFromConvertedPoint();
+    });
+  }
+  const btnAddResFav = document.getElementById("btnAddResultToFavorites");
+  if (btnAddResFav){
+    btnAddResFav.addEventListener("click", () => {
+      if (typeof addConvertedResultToFavoritesSilent === "function") addConvertedResultToFavoritesSilent();
     });
   }
   document.getElementById("pasteDetect").addEventListener("click", doPasteDetect);
@@ -34658,9 +34793,11 @@ function hasCurrentConvertedPointForWaypoint(){
   return !!getCurrentConvertedPointForWaypoint();
 }
 function syncConvertResultWaypointBtn(){
+  const ok = hasCurrentConvertedPointForWaypoint();
   const b = document.getElementById("btnAddResultToWaypoint");
-  if (!b) return;
-  b.disabled = !hasCurrentConvertedPointForWaypoint();
+  if (b) b.disabled = !ok;
+  const bf = document.getElementById("btnAddResultToFavorites");
+  if (bf) bf.disabled = !ok;
 }
 
 function syncWaypointModalToolbarUi(){
@@ -34716,6 +34853,7 @@ function renderWpModalList(){
   const tipEdit = esc(t("tip.trackEditSaved") || t("waypointModal.editor.edit") || "Edit");
   const tipFly = esc(t("tip.trackSavedFly") || "");
   const tipDelOne = esc(t("tip.mapWpRemove") || "");
+  const tipFavRow = esc(t("tip.favAddWaypointRow") || "");
   const lblEdit = esc(t("track.savedEdit") || "Modifica");
   const lblFly = esc(t("track.flyBtn") || "Centra");
   let html = `<table class="wp-modal-table"><colgroup>
@@ -34753,6 +34891,7 @@ function renderWpModalList(){
       <td class="wp-actions-cell"><div class="saved-row-actions wp-row-actions">
         <button type="button" class="btn btn-sm" data-role="wp-edit" data-tip="${tipEdit}" aria-label="${tipEdit}">${lblEdit}</button>
         <button type="button" class="btn btn-sm btn-saved-fly" data-role="wp-zoom" data-tip="${tipFly}" aria-label="${tipFly}">${lblFly}</button>
+        <button type="button" class="btn btn-sm" data-role="wp-fav" data-tip="${tipFavRow}" aria-label="${tipFavRow}">★</button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-role="wp-del" data-tip="${tipDelOne}" aria-label="${tipDelOne}"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div></td>
     </tr>`;
@@ -34854,6 +34993,14 @@ function renderWpModalList(){
         ev.preventDefault();
         const tr = zm.closest("[data-wp-row]");
         if (tr && tr.dataset.id) waypointsZoomTo(tr.dataset.id);
+        return;
+      }
+      const fv = ev.target.closest && ev.target.closest('[data-role="wp-fav"]');
+      if (fv){
+        ev.preventDefault();
+        const tr = fv.closest("[data-wp-row]");
+        if (tr && tr.dataset.id) favoriteAddFromWaypointRowId(tr.dataset.id);
+        return;
       }
     });
   }

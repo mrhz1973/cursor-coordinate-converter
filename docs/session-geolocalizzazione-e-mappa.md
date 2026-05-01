@@ -2273,3 +2273,24 @@ Chiusura sessione su comando utente **`finito`** dopo implementazione **Range Ri
 - `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
 - `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md`
 
+
+## Checkpoint 2026-05-01 — Favoriti waypoint + convertitore (Finito)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`** dopo implementazione del blocco **salvataggio Favoriti** da **Waypoint Modal** (azione per riga) e da **Convertitore** (risultato corrente), riusando **`state.favorites`** e le convenzioni già presenti (nessun secondo store). Documentazione orchestratore sul blocco: `docs/orchestrator/inbox/2026-04-30_1200_riepilogo_favorites-from-waypoint-converter.md` (commit **`a0b48e3`**, monolite escluso fino a questa chiusura).
+
+### Monolite (`coordinate_converter Claude.html`)
+
+1. **`pushFavoriteEntrySilent`**, **`flashPasteStatusLine`**, **`showWpModalListFavFeedback`**, **`addConvertedResultToFavoritesSilent`**, **`favoriteAddFromWaypointRowId`** — salvataggio senza `alert`/`prompt`/`confirm` su questi flussi; località convertitore solo se **`state.lastLocality`** già coerente con **`state.lastResult`** (nessuna rete aggiuntiva).
+2. **UI:** `#btnAddResultToFavorites`, `#wpListFavFeedback`, pulsante **`★`** `data-role="wp-fav"` in **`renderWpModalList`**.
+3. **i18n IT/EN/FR:** `fav.addFromResult`, `fav.convertedPointName`, `fav.savedFromWaypoint`, `fav.savedFromConverter`, `fav.noValidPoint`, `tip.favAddFromResult`, `tip.favAddWaypointRow`.
+
+### Non toccato (confermato)
+
+Mappe Offline core, tile hydrate, `_mapTileGen`, AbortController tile, `syncOfflineDeltaViewportHints`, IndexedDB tile, OPSEC, GPS, Range Rings, Track, Misura, `docs/roadmap.md`. **`addCurrentAsFavorite`** (flusso con `prompt`) invariata.
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`, `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
