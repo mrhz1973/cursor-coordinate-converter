@@ -68,4 +68,5 @@
 ## Commit memoria
 
 - **`9b97bbc`** — `docs: memoria Pass 6 Step 6A.2 tooltip conferme local` (push riuscito).  
+- **`7e9d3bd`** — `docs: orchestratore — hash 6A.2 in latest` (push riuscito).  
 Monolite **escluso**; niente `git add .`.
