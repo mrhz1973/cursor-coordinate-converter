@@ -1597,6 +1597,7 @@ html[data-theme="dark"] .offline-area-status--error{ color:#f08080; }
 .tile-map.bbox-selecting .ttrk-btn,
 .tile-map.bbox-selecting .twpt-btn,
 .tile-map.bbox-selecting .tundo-btn,
+.tile-map.bbox-selecting .trr-btn,
 .tile-map.bbox-selecting .tile-measure-box,
 .tile-map.bbox-selecting .tile-track-float,
 .tile-map.bbox-selecting .tile-waypoint-editor,
@@ -2186,6 +2187,26 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
 .tile-map .twpt-btn.active{
   background:#e0f2fe;
   box-shadow:0 0 0 2px rgba(37,99,235,.4), 0 1px 3px rgba(0,0,0,.28);
+}
+
+/* Range Rings — pulsante mappa: solo icona, dimensioni coerenti con Misura / Traccia / Waypoint. */
+.tile-map .trr-btn{
+  width:26px; height:26px; border:none;
+  background:rgba(255,255,255,.92); color:#047857;
+  cursor:pointer; border-radius:6px; line-height:1;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+}
+.tile-map .trr-btn .trr-ico{
+  font-size:1.45rem;
+  line-height:1;
+  display:block;
+}
+.tile-map .trr-btn:hover{ background:#ecfdf5; color:#065f46 }
+.tile-map .trr-btn.active{
+  background:#059669; color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
 
 /* Ricentra sul punto / «Nuovo punto» (pick): colonna `.tile-ctrls`, come misura e waypoint. */
@@ -4176,6 +4197,10 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
 #sec-rangerings .rr-table .rr-vis-cell{ text-align:center; width:44px; }
 #sec-rangerings .rr-table .rr-actions-cell{ min-width:260px; white-space:nowrap; }
 #sec-rangerings .rr-table .rr-row-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+#sec-rangerings .rr-table .btn-rr-edit,
+#sec-rangerings .rr-table .btn-rr-fly{
+  min-width:30px; padding:3px 8px; font-size:1rem; line-height:1;
+}
 #sec-rangerings .rr-table .rr-name-inp{
   width: 100%;
   max-width: 100%;
@@ -7492,8 +7517,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="rrMapFirstHint" class="hint rr-map-first-hint" role="status" hidden data-i18n="rangeRings.mapFirstHint"></div>
 
         <div class="actions" style="margin-top:10px; flex-wrap:wrap; align-items:center; gap:8px">
-          <button type="button" class="btn btn-sm btn-primary" id="rrPickMapBtn" data-i18n="rangeRings.pickMap" data-i18n-tip="rangeRings.pickMapTip"></button>
-          <button type="button" class="btn btn-sm" id="rrPickCreateBtn" data-i18n="rangeRings.pickCreate" data-i18n-tip="tip.rangeRingsPickCreate"></button>
+          <button type="button" class="btn btn-sm btn-primary" id="rrPickMapBtn" hidden data-i18n="rangeRings.pickMap" data-i18n-tip="rangeRings.pickMapTip"></button>
+          <button type="button" class="btn btn-sm btn-primary" id="rrPickCreateBtn" data-i18n="rangeRings.pickCreate" data-i18n-tip="tip.rangeRingsPickCreate"></button>
         </div>
         <div id="rrPickMapStatus" class="sub" style="margin-top:4px; color:var(--muted); font-size:.85rem" aria-live="polite"></div>
 
@@ -7535,13 +7560,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <label class="field">
               <span data-i18n="rangeRings.distances">Distanze</span>
               <input type="text" id="rrDistances" maxlength="120" autocomplete="off" spellcheck="false"
+                     value="1, 5, 10"
                      data-i18n-ph="rangeRings.distancesPh" placeholder="">
             </label>
             <label class="field" style="min-width:120px">
               <span data-i18n="rangeRings.unit">Unità</span>
               <select id="rrUnit">
                 <option value="m">m</option>
-                <option value="km">km</option>
+                <option value="km" selected>km</option>
                 <option value="NM">NM</option>
                 <option value="mi">mi</option>
               </select>
@@ -7581,7 +7607,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" class="btn btn-sm btn-primary" id="rrUpdateSetBtn" hidden data-i18n="rangeRings.updateSet" data-i18n-tip="tip.rangeRingsUpdateSet"></button>
           <button type="button" class="btn btn-sm" id="rrCancelEditBtn" hidden data-i18n="rangeRings.cancelEdit" data-i18n-tip="tip.rangeRingsCancelEdit"></button>
           <button type="button" class="btn btn-sm" id="rrMoveCenterOnMapBtn" hidden data-i18n="rangeRings.editMoveCenter" data-i18n-tip="tip.rangeRingsMoveCenter"></button>
-          <button type="button" class="btn btn-sm" id="rrCreateBtn" data-i18n="rangeRings.create" data-i18n-tip="tip.rangeRingsCreateNew"></button>
+          <button type="button" class="btn btn-sm" id="rrCreateBtn" hidden data-i18n="rangeRings.create" data-i18n-tip="tip.rangeRingsCreateNew"></button>
         </div>
 
         <hr class="sub-sep" style="margin:14px 0">
@@ -8375,13 +8401,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <span class="tool-desc" data-i18n="tools.mag.desc">Conversione grid ↔ magnetico ↔ vero.</span>
         </span>
       </button>
-      <button type="button" class="tool-item tool-item--gis-grid-dup" data-tool-target-sec="sec.rangerings">
-        <span class="tool-ico">⭕</span>
-        <span class="tool-label">
-          <span data-i18n="tools.rangerings">Range Rings</span>
-          <span class="tool-desc" data-i18n="tools.rangerings.desc">Anelli di distanza geodetici sulla mappa.</span>
-        </span>
-      </button>
     </div>
 
     <div class="tools-group">
@@ -8429,10 +8448,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="tools-menu-btn" data-tool="mag">
           <span class="tmb-ico" aria-hidden="true">🧭</span>
           <span class="tmb-lbl" data-i18n="sec.mag">Declinazione</span>
-        </button>
-        <button type="button" class="tools-menu-btn" data-tool="rangerings">
-          <span class="tmb-ico" aria-hidden="true">⭕</span>
-          <span class="tmb-lbl" data-i18n="sec.rangerings">Anelli</span>
         </button>
       </div>
       <div class="tools-panel-wrap" id="toolsPanelWrap" aria-live="polite"
@@ -9342,6 +9357,7 @@ const I18N = {
     "tip.rangeRingsPresetKm102550":"Imposta 10, 25, 50 in km; puoi modificare dopo.",
     "tip.rangeRingsPickCreate":"Clic: crea un set con nome e distanze già impostate; niente trascinamento o è pan.",
     "tip.rangeRingsEdit":"Carica il set nei controlli e attiva la modalità modifica.",
+    "tip.rangeRingsEditIcon":"Modifica set",
     "tip.rangeRingsUpdateSet":"Salva nome, centro e distanze sul set attuale.",
     "tip.rangeRingsCancelEdit":"Esci dalla modifica senza salvare (il set resta com’era).",
     "tip.rangeRingsMoveCenter":"Un clic sulla mappa aggiorna il centro del set in modifica.",
@@ -9422,7 +9438,7 @@ const I18N = {
     "rangeRings.colName":"Nome",
     "rangeRings.colCenter":"Centro",
     "rangeRings.colRings":"Anelli",
-    "rangeRings.colWhen":"Quando",
+    "rangeRings.colWhen":"Data",
     "rangeRings.colActions":"Azioni",
     "rangeRings.flyBtn":"Centra",
     "rangeRings.centerFromLabel":"Centro da",
@@ -9450,6 +9466,7 @@ const I18N = {
     "rangeRings.notice.importOk":"Import GeoJSON: set aggiunti o aggiornati.",
     "rangeRings.notice.importNone":"Nessun set Range Rings valido nel file.",
     "rangeRings.notice.renamedOk":"Nome set aggiornato.",
+    "rangeRings.notice.renamePending":"Conferma il nuovo nome qui sotto.",
     "rangeRings.renameConfirmText":"Rinominare in «{0}»? (prima: «{1}»)",
     "rangeRings.renameConfirmAction":"Rinomina",
     "rangeRings.renameCancelAction":"Annulla",
@@ -10570,6 +10587,7 @@ const I18N = {
     "tip.rangeRingsPresetKm102550":"Fill 10, 25, 50 in km; you can edit after.",
     "tip.rangeRingsPickCreate":"Click: create a set with the name and distances already set; if you drag, the map pans.",
     "tip.rangeRingsEdit":"Load the set into the controls and enable edit mode.",
+    "tip.rangeRingsEditIcon":"Edit set",
     "tip.rangeRingsUpdateSet":"Save name, center, and distances to the current set.",
     "tip.rangeRingsCancelEdit":"Leave edit mode without saving further changes (the set stays as saved).",
     "tip.rangeRingsMoveCenter":"One map click updates the center of the set you are editing.",
@@ -10650,7 +10668,7 @@ const I18N = {
     "rangeRings.colName":"Name",
     "rangeRings.colCenter":"Center",
     "rangeRings.colRings":"Rings",
-    "rangeRings.colWhen":"When",
+    "rangeRings.colWhen":"Date",
     "rangeRings.colActions":"Actions",
     "rangeRings.flyBtn":"Center view",
     "rangeRings.centerFromLabel":"Center from",
@@ -10678,6 +10696,7 @@ const I18N = {
     "rangeRings.notice.importOk":"GeoJSON import: sets added or updated.",
     "rangeRings.notice.importNone":"No valid Range Rings set in the file.",
     "rangeRings.notice.renamedOk":"Set name updated.",
+    "rangeRings.notice.renamePending":"Confirm the new name below.",
     "rangeRings.renameConfirmText":"Rename to “{0}”? (was: “{1}”)",
     "rangeRings.renameConfirmAction":"Rename",
     "rangeRings.renameCancelAction":"Cancel",
@@ -11799,6 +11818,7 @@ const I18N = {
     "tip.rangeRingsPresetKm102550":"Renseigne 10, 25, 50 en km ; modifiable ensuite.",
     "tip.rangeRingsPickCreate":"Clic : crée l’ensemble avec le nom et les distances déjà saisis ; le glissement déplace la carte.",
     "tip.rangeRingsEdit":"Charge l’ensemble dans les contrôles et active le mode modification.",
+    "tip.rangeRingsEditIcon":"Modifier l’ensemble",
     "tip.rangeRingsUpdateSet":"Enregistre le nom, le centre et les distances sur l’ensemble en cours.",
     "tip.rangeRingsCancelEdit":"Quitte la modification sans enregistrer (l’ensemble reste tel qu’enregistré).",
     "tip.rangeRingsMoveCenter":"Un clic sur la carte met à jour le centre de l’ensemble en modification.",
@@ -11879,7 +11899,7 @@ const I18N = {
     "rangeRings.colName":"Nom",
     "rangeRings.colCenter":"Centre",
     "rangeRings.colRings":"Anneaux",
-    "rangeRings.colWhen":"Quand",
+    "rangeRings.colWhen":"Date",
     "rangeRings.colActions":"Actions",
     "rangeRings.flyBtn":"Centrer",
     "rangeRings.centerFromLabel":"Centre depuis",
@@ -11907,6 +11927,7 @@ const I18N = {
     "rangeRings.notice.importOk":"Import GeoJSON : ensembles ajoutés ou mis à jour.",
     "rangeRings.notice.importNone":"Aucun ensemble Range Rings valide dans le fichier.",
     "rangeRings.notice.renamedOk":"Nom d’ensemble mis à jour.",
+    "rangeRings.notice.renamePending":"Confirmez le nouveau nom ci-dessous.",
     "rangeRings.renameConfirmText":"Renommer en « {0} » ? (avant : « {1} »)",
     "rangeRings.renameConfirmAction":"Renommer",
     "rangeRings.renameCancelAction":"Annuler",
@@ -24772,6 +24793,17 @@ function trackSyncPickModeUi(){
     wpTgl.setAttribute("aria-label", tipWp);
     wpTgl.removeAttribute("title");
   }
+  const rrTgl = root && root.querySelector('[data-role="rangerings-open"]');
+  if (rrTgl){
+    const dlgRr = document.getElementById("rangeRingsPanel");
+    const rrOn = !!(state.rangeRingsPanelOpen && dlgRr && dlgRr.open);
+    rrTgl.classList.toggle("active", rrOn);
+    rrTgl.setAttribute("aria-pressed", rrOn ? "true" : "false");
+    const tipRr = (typeof t === "function" ? (t("rangeRings.mapBtnTip") || "") : "") || "Range Rings";
+    rrTgl.setAttribute("data-tip", tipRr);
+    rrTgl.setAttribute("aria-label", tipRr);
+    rrTgl.removeAttribute("title");
+  }
 }
 
 function trackPointDisplayLabel(i, total){
@@ -26532,8 +26564,10 @@ function renderTileMap(lat, lon, zoom){
     })()}
     ${(() => {
       const tip = esc((typeof t==="function" ? (t("rangeRings.mapBtnTip")||"") : "") || "Range Rings");
-      const lbl = esc((typeof t==="function" ? (t("rangeRings.mapBtnShort")||"") : "") || "Rings");
-      return `<button class="trr-btn" type="button" data-role="rangerings-open" data-tip="${tip}" aria-label="${tip}"><span class="tmb-ico" aria-hidden="true">◎</span><span class="tmb-label" aria-hidden="true">${lbl}</span></button>`;
+      const dlgRr = document.getElementById("rangeRingsPanel");
+      const rrOpen = !!(state.rangeRingsPanelOpen && dlgRr && dlgRr.open);
+      const cls = rrOpen ? "trr-btn active" : "trr-btn";
+      return `<button class="${cls}" type="button" data-role="rangerings-open" data-tip="${tip}" aria-label="${tip}" aria-pressed="${rrOpen ? "true" : "false"}"><span class="trr-ico" aria-hidden="true">◎</span></button>`;
     })()}
   </div>`;
 
@@ -26969,7 +27003,16 @@ function renderTileMap(lat, lon, zoom){
     rrMapBtn.addEventListener("click", (ev) => {
       ev.stopPropagation();
       if (ev.cancelable) ev.preventDefault();
-      openRangeRingsToolFromMap();
+      /* Pattern: pulsante tool sulla mappa = toggle open/close (solo Range Rings). */
+      gisToolButtonToggle({
+        isOpen(){
+          const d = document.getElementById("rangeRingsPanel");
+          return !!(state.rangeRingsPanelOpen && d && d.open);
+        },
+        open(){ openRangeRingsToolFromMap(); },
+        close(){ try { closeRangeRingsPanel(); } catch(_){} }
+      });
+      try { trackSyncPickModeUi(); } catch(_){}
     });
   }
   const mapUndoBtn = root.querySelector('[data-role="map-undo"]');
@@ -29138,7 +29181,10 @@ function rrSyncRangeRingsOperativeInfo(){
   const inf = document.getElementById("rrInfo");
   if (!inf) return;
   if (state._rrPendingRename){
-    if (inf){ inf.hidden = true; inf.textContent = ""; }
+    if (inf && typeof t === "function"){
+      inf.textContent = t("rangeRings.notice.renamePending") || "";
+      inf.hidden = !String(inf.textContent || "").trim();
+    }
     return;
   }
   if (state._rrPendingDelete){
@@ -29921,7 +29967,10 @@ function rrRenderRenameConfirmUI(){
   const inf0 = document.getElementById("rrInfo");
   if (e0){ e0.hidden = true; e0.textContent = ""; }
   if (ok0){ ok0.hidden = true; ok0.textContent = ""; }
-  if (inf0){ inf0.hidden = true; inf0.textContent = ""; }
+  if (inf0 && typeof t === "function"){
+    inf0.textContent = t("rangeRings.notice.renamePending") || "";
+    inf0.hidden = !String(inf0.textContent || "").trim();
+  }
   setTimeout(() => { try { const c = document.getElementById("rrRenameConfirmCancel"); if (c) c.focus(); } catch(_){} }, 0);
 }
 function rrRequestRenameFromInput(id, oldName, newName){
@@ -30280,6 +30329,16 @@ function rangeRingsEnterPickAndCreateMode(){
   } catch(_){}
 }
 
+/** Riutilizzabile: pulsante tool diretto sulla mappa = toggle open/close senza side-effect sugli altri tool. */
+function gisToolButtonToggle(spec){
+  if (!spec) return;
+  try {
+    const open = !!(spec.isOpen && spec.isOpen());
+    if (open){ if (spec.close) spec.close(); }
+    else if (spec.open) spec.open();
+  } catch(_){}
+}
+
 function openRangeRingsToolFromMap(){
   if (document.body.classList.contains("gis-mode")){
     if (typeof openRangeRingsFloatingPanelGis === "function" && openRangeRingsFloatingPanelGis()) return;
@@ -30317,16 +30376,18 @@ function renderRangeRingsPanel(){
   }
   if (updBtn) updBtn.classList.toggle("btn-primary", editing);
   if (pickBtn){
+    pickBtn.hidden = true;
     const on = !!state.rangeRingsPickCenterMode;
     pickBtn.classList.toggle("is-active", on);
     pickBtn.setAttribute("aria-pressed", on ? "true" : "false");
-    pickBtn.classList.toggle("btn-primary", !editing);
+    pickBtn.classList.toggle("btn-primary", false);
   }
   if (pickCreateBtn){
     const onC = !!state.rangeRingsPickAndCreateMode;
     pickCreateBtn.classList.toggle("is-active", onC);
     pickCreateBtn.setAttribute("aria-pressed", onC ? "true" : "false");
     pickCreateBtn.disabled = !!state._rrEditingSetId;
+    pickCreateBtn.classList.toggle("btn-primary", !editing);
   }
   if (pickSt && typeof t === "function"){
     if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode){
@@ -30426,10 +30487,9 @@ function renderRangeRingsList(){
       <td class="sub">${esc(dsum)} ${esc(unit)}</td>
       <td class="sub">${esc(whenStr)}</td>
       <td class="rr-actions-cell"><div class="rr-row-actions">
-        <button type="button" class="btn btn-sm" data-rr-edit="${esc(sid)}" data-i18n="rangeRings.editRow" data-i18n-tip="tip.rangeRingsEdit" data-i18n-aria="tip.rangeRingsEdit"></button>
-        <button type="button" class="btn btn-sm btn-rr-fly" data-rr-fly="${esc(sid)}" data-i18n="rangeRings.flyBtn" data-i18n-tip="tip.rangeRingsFly" data-i18n-aria="tip.rangeRingsFly" data-tip="${tipFly}"></button>
-        <button type="button" class="btn btn-sm" data-rr-exp="${esc(sid)}" data-i18n="rangeRings.exportSet"></button>
-        <button type="button" class="btn btn-sm btn-danger-subtle" data-rr-del="${esc(sid)}" data-i18n="rangeRings.delete" data-i18n-tip="tip.rangeRingsDelOne" data-i18n-aria="tip.rangeRingsDelOne"><span class="danger-x" aria-hidden="true">✕</span></button>
+        <button type="button" class="btn btn-sm btn-rr-edit" data-rr-edit="${esc(sid)}" data-i18n-tip="tip.rangeRingsEditIcon" data-i18n-aria="tip.rangeRingsEditIcon"><span aria-hidden="true">✎</span></button>
+        <button type="button" class="btn btn-sm btn-rr-fly" data-rr-fly="${esc(sid)}" data-i18n-tip="tip.rangeRingsFly" data-i18n-aria="tip.rangeRingsFly" data-tip="${tipFly}"><span aria-hidden="true">⌖</span></button>
+        <button type="button" class="btn btn-sm btn-danger-subtle" data-rr-del="${esc(sid)}" data-i18n-tip="tip.rangeRingsDelOne" data-i18n-aria="tip.rangeRingsDelOne"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div></td>
     </tr>`;
   }
@@ -30674,12 +30734,6 @@ function bindRangeRingsUI(){
       if (fly){
         ev.preventDefault();
         flyToRangeRingSetById(fly.getAttribute("data-rr-fly"));
-        return;
-      }
-      const exp = ev.target.closest && ev.target.closest("[data-rr-exp]");
-      if (exp){
-        ev.preventDefault();
-        exportRangeRingSetGeoJSON(exp.getAttribute("data-rr-exp"));
         return;
       }
       const del = ev.target.closest && ev.target.closest("[data-rr-del]");
@@ -32349,6 +32403,28 @@ function gisPanelClampRect(rect, opts){
   const top  = Math.max(pad, Math.min(vh - h - pad, top0));
   return { left, top, w, h };
 }
+/** Solo Range Rings: consente offset parziale fuori viewport mantenendo una striscia visibile (header recuperabile). */
+function gisPanelClampRectPartialVisible(rect, opts){
+  opts = opts || {};
+  const mv = Number.isFinite(opts.partialMinVisible) ? opts.partialMinVisible : 72;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
+  const minW = Number.isFinite(opts.minW) ? opts.minW : GIS_PANEL_DEFAULTS.minW;
+  const minH = Number.isFinite(opts.minH) ? opts.minH : GIS_PANEL_DEFAULTS.minH;
+  const maxW = Number.isFinite(opts.maxW) ? opts.maxW : Math.max(minW, vw - pad * 2);
+  const maxH = Number.isFinite(opts.maxH) ? opts.maxH : Math.max(minH, vh - pad * 2);
+  const w = Math.max(minW, Math.min(maxW, rect && Number.isFinite(rect.w) ? rect.w : minW));
+  const h = Math.max(minH, Math.min(maxH, rect && Number.isFinite(rect.h) ? rect.h : minH));
+  const left0 = rect && Number.isFinite(rect.left) ? rect.left : pad;
+  const top0  = rect && Number.isFinite(rect.top)  ? rect.top  : pad;
+  const minLeft = -Math.max(0, w - mv);
+  const maxLeft = vw - mv;
+  const minTop = 0;
+  const maxTop = vh - mv;
+  const left = Math.max(minLeft, Math.min(maxLeft, left0));
+  const top = Math.max(minTop, Math.min(maxTop, top0));
+  return { left, top, w, h };
+}
 function gisPanelDefaultRect(root, opts){
   opts = opts || {};
   const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
@@ -32447,8 +32523,18 @@ function gisPanelAttachDrag(root, opts){
     const vw = window.innerWidth, vh = window.innerHeight;
     let L = down.startL + (ev.clientX - down.sx);
     let T = down.startT + (ev.clientY - down.sy);
-    L = Math.max(pad, Math.min(vw - w - pad, L));
-    T = Math.max(pad, Math.min(vh - h - pad, T));
+    if (Number.isFinite(opts.partialMinVisible)){
+      const mv = opts.partialMinVisible;
+      const minLeft = -Math.max(0, w - mv);
+      const maxLeft = vw - mv;
+      const minTop = 0;
+      const maxTop = vh - mv;
+      L = Math.max(minLeft, Math.min(maxLeft, L));
+      T = Math.max(minTop, Math.min(maxTop, T));
+    } else {
+      L = Math.max(pad, Math.min(vw - w - pad, L));
+      T = Math.max(pad, Math.min(vh - h - pad, T));
+    }
     root.style.left = L + "px";
     root.style.top = T + "px";
     gisPanelSetLayout(key, { left: L, top: T, touched: true }, opts);
@@ -32543,7 +32629,10 @@ function gisPanelAttachResize(root, opts){
       root.style.bottom = "auto";
       root.style.transform = "none";
     }
-    const rect = gisPanelClampRect({ left: L, top: T, w, h }, { pad, minW, minH, maxW, maxH });
+    const clampOpts = Object.assign({}, opts, { pad, minW, minH, maxW, maxH });
+    const rect = Number.isFinite(opts.partialMinVisible)
+      ? gisPanelClampRectPartialVisible({ left: L, top: T, w, h }, clampOpts)
+      : gisPanelClampRect({ left: L, top: T, w, h }, clampOpts);
     root.style.left = rect.left + "px";
     root.style.top = rect.top + "px";
     root.style.width = rect.w + "px";
@@ -33514,6 +33603,8 @@ function _rangeRingsPanelLayoutOpts(){
     defaultHeightCap: 640,
     topbarReserve: 104,
     bodyMinH: 120,
+    /** Drag/resize RR: strip visibile minima (px); altri pannelli restano su clamp pieno. */
+    partialMinVisible: 72,
     bodyId: "rangeRingsPanelBody",
     headId: "rangeRingsPanelHead",
     closeId: "rangeRingsPanelClose"
@@ -33803,7 +33894,7 @@ function clampRangeRingsPanelRect(dlg){
   if (!dlg.style.left && !dlg.style.top) return;
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
-  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -33846,6 +33937,7 @@ function openRangeRingsFloatingPanelGis(){
       });
     } catch(_){}
     try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+    try { trackSyncPickModeUi(); } catch(_){}
     return true;
   }
   state.rangeRingsPanelOpen = true;
@@ -33861,6 +33953,7 @@ function openRangeRingsFloatingPanelGis(){
     });
   } catch(_){}
   try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
+  try { trackSyncPickModeUi(); } catch(_){}
   return true;
 }
 function closeRangeRingsPanel(){
@@ -33885,6 +33978,7 @@ function closeRangeRingsPanel(){
     } catch(_){}
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
+  try { trackSyncPickModeUi(); } catch(_){}
 }
 
 function gisSetTopbarTabActive(tabKey, on){

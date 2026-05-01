@@ -4,26 +4,26 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-04-30 — **Piano RR UI Blocco 1** pubblicato in **`docs/orchestrator/inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`** (solo documentazione; **monolite non modificato**). Implementazione ancora da fare in Agent mode.
+2026-05-01 — **Range Rings Blocco 1 UI/UX:** implementato in **`coordinate_converter Claude.html`** (working tree). Dettaglio **`docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`**. **Nessun commit/push** su questo blocco (pubblicazione rimandata a **`finito`** o richiesta esplicita). Piano orig.: **`docs/orchestrator/inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`**.
 
 2026-04-30 — **Workflow `finito`:** obbligatoria **riconciliazione orchestratore** dopo il push principale di chiusura sessione (`docs/orchestrator/latest.md` + `inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così **`aggio`** non resta su testi obsoleti tipo «monolite non in autosync» quando il monolite è già su `main`. Regole: **`.cursor/rules/00-project-core.mdc`**, **`.cursor/rules/30-output-workflow.mdc`**; doc team: **`docs/orchestrator/chatgpt-checkpoint.md`**, **`docs/orchestrator/README.md`**. Dettaglio **`docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`**.
 
 ## Ultimo intervento Cursor
 
-Commit **`a2da326`**: estensione sequenza **`finito`** + allineamento README/chatgpt-checkpoint. **Repository:** allineato a `main` dopo push (verificare `git status` locale = pulito).
+Implementazione **RR UI Blocco 1** (monolite + memoria orchestratore in working tree). **Nessun commit** su questo blocco. Ultimo commit remoto noto: **`204d0e4`** (piano RR); verificare `git log -1`.
 
 ## File modificati (sintesi)
 
-- `.cursor/rules/00-project-core.mdc`, `.cursor/rules/30-output-workflow.mdc`
-- `docs/orchestrator/chatgpt-checkpoint.md`, `docs/orchestrator/README.md`
-- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-04-30_2245_riepilogo_workflow-finito-orchestrator-reconcile.md`
+- `coordinate_converter Claude.html`
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
 
 ## Prossimo passo consigliato
 
-Eseguire in Cursor Agent il piano **Range Rings Blocco 1 UI/UX** (`inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`), poi autosync riepilogo implementazione. In parallelo: applicare **`finito`** (step 3–4 orchestratore) quando si chiude una sessione che versiona il monolite.
+QA manuale GIS; pubblicare con **`finito`** o commit esplicito (monolite + `docs/orchestrator/**`) per allineare **`aggio`** su GitHub.
 
 ## Dettagli (inbox)
 
+- **Riepilogo** RR UI Blocco 1 (implementazione): `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
 - **Piano** RR UI Blocco 1 (standardizzazione): `docs/orchestrator/inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`
 - Misura M6 overlay polish: `docs/orchestrator/inbox/2026-04-30_1428_riepilogo_measure-M6-overlay-polish.md`
 - Bugfix reset dati locali (modal stuck): `docs/orchestrator/inbox/2026-04-30_1637_riepilogo_bugfix-reset-local-data-modal-stuck.md`

@@ -2240,3 +2240,36 @@ Chiusura sessione su comando utente **`finito`** dopo fix verificati in GIS mode
 - `coordinate_converter Claude.html` (commit di chiusura sessione)
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
+
+## Checkpoint 2026-05-01 — Range Rings UI Blocco 1 + orchestratore (Finito)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`** dopo implementazione **Range Rings Blocco 1** (standardizzazione UI allineata al piano `docs/orchestrator/inbox/2026-04-30_2345_plan_range-rings-ui-standardization.md`) con correzioni operative: **nessun clamp globale** su tutti i pannelli GIS (solo RR); **nessun redesign** Import/Export oltre rimozione azione GeoJSON da riga; pubblicazione codice e doc con **`finito`** + **riconciliazione orchestratore** dedicata.
+
+### Monolite (`coordinate_converter Claude.html`)
+
+1. **Mappa:** bottone **`[data-role="rangerings-open"]`** — solo icona ◎ (`.trr-btn` / `.trr-ico`), stato **`.active`** / **`aria-pressed`**; click **toggle** tramite **`gisToolButtonToggle`** + **`trackSyncPickModeUi`** / aggiornamenti in **`openRangeRingsFloatingPanelGis`** / **`closeRangeRingsPanel`**.
+2. **Strumenti:** rimossi tile RR dalla griglia «Altri strumenti» e voce tool-item Info punto; **`GIS_TOOL_SECTIONS.rangerings`** mantenuto per **`activateToolPanel`** / **`gisNavigateToolTarget`**.
+3. **Creazione RR:** **`#rrPickMapBtn`** / **`#rrCreateBtn`** nascosti; **`#rrPickCreateBtn`** primary; default **`#rrDistances`** `1, 5, 10` e unità **km** selezionata.
+4. **Lista:** **`rangeRings.colWhen`** → Data / Date / Date; rimosso **`data-rr-exp`** e handler; pulsanti riga compatti (**✎** / **⌖** / **✕**) con i18n tooltip (**`tip.rangeRingsEditIcon`**).
+5. **Pannello RR:** **`gisPanelClampRectPartialVisible`** + **`partialMinVisible: 72`** solo dove **`opts.partialMinVisible`** è definito (**drag**, **resize**, **`clampRangeRingsPanelRect`**); **`gisPanelClampRect`** core **invariato**.
+6. **Rename:** **`#rrInfo`** con **`rangeRings.notice.renamePending`** durante conferma (**`rrRenderRenameConfirmUI`**, **`rrSyncRangeRingsOperativeInfo`**).
+
+### Non toccato (confermato)
+
+- **`hydrateMapTiles`**, **`_mapTileGen`**, **`AbortController`**, **`syncOfflineDeltaViewportHints`**, cache IndexedDB tile core, Mappe Offline core, Misura, Track core, Waypoint core, reset totale, OPSEC, GPS, geocoding.
+- Fix **`rrCancelPendingRename`** (guard `if (p)`): **inalterato**.
+
+### Orchestratore
+
+- Inbox implementazione: **`docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`**.
+- Dopo push principale **`finito`**: **`docs/orchestrator/latest.md`** + **`docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md`** (commit **`docs: orchestratore — riconciliazione finito sessione`**).
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+- `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_0015_riepilogo_range-rings-ui-standardization.md`
+- `docs/orchestrator/inbox/2026-05-01_0020_riepilogo_finito-sessione.md` (post-push riconciliazione)
+
