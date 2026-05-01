@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Fix bug Step C — Esc pick Astro + Range Rings non chiude Astro (monolite solo locale):** in **`coordinate_converter Claude.html`** — Esc in `bindHotkeys` per Astro pick usa `stopImmediatePropagation()` per non arrivare al listener “GIS modali”; `activateToolPanel()` non auto-chiude più Astro quando si cambia tool; `closeToolsModal()` non chiude più Astro (Range Rings può convivere). In pick RR disarmo Astro pick con `astroClearPickCenterMode("rr")`. Test browser: **non eseguiti** (checklist in inbox). **Monolite non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`**. Commit memoria: **`docs: memoria fix Astro Esc e Range Rings local`**.
+
 2026-05-01 — **Pass 5 Step C — Astro map pick `mapPick` (monolite solo locale):** in **`coordinate_converter Claude.html`** — sorgente **Scegli sulla mappa** (`data-astro-src="mapPick"`), `astroEnterPickCenterMode` / `astroClearPickCenterMode` / `astroApplyPickedMapPoint`, ramo **`onUp`** prima di `mapPickMode` conversione, Esc + flag `_astroSkipNextGisPanelClose`, CSS **`astro-pick-mode`**, i18n Step C; disarm concorrenti (RR pick, track/waypoint pick, misura, map pick conversione). **Nessun** `lastResult` / cronologia / permalink / `renderResults` nel pick. **Non implementati:** waypoint/favorite, Mostra mappa, Step D/E. Test browser: **non eseguiti** (checklist in inbox). **`coordinate_converter Claude.html` non committato.** Inbox: **`docs/orchestrator/inbox/2026-05-01_1007_riepilogo_pass5-stepC-astro-map-pick-local.md`**. Commit memoria: **`docs: memoria Pass 5 Step C Astro map pick local`**.
 
 2026-05-01 — **Fix resize `#astroPanel` (solo CSS, monolite locale):** causa: handle resize **senza regole di ancoraggio agli angoli** (a differenza di `#rangeRingsPanel` e altri pannelli floating); aggiunto blocco CSS speculare a RR. **JS invariato.** Test browser: checklist manuale. Memoria: **`docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`**. Commit: **`docs: memoria fix resize Astro panel local`**. **`coordinate_converter Claude.html` non committato.**
@@ -34,20 +36,21 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
-**Pass 5 Step C Astro map pick** — `mapPick` nel floating panel, integrazione mappa + Esc; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
+**Fix bug Step C Astro (Esc + Range Rings)** — `#astroPanel` resta aperto su Esc durante pick; Range Rings non chiude più Astro; monolite **solo locale**; memoria orchestratore in commit dedicato (senza monolite).
 
 ## File modificati (sintesi)
 
 - **Locale:** `coordinate_converter Claude.html` — Step B + resize + **Step C map pick** (non in commit memoria).
-- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1007_riepilogo_pass5-stepC-astro-map-pick-local.md`.
+- **Versionato (commit memoria):** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`.
 - Precedente inbox resize: **`2026-05-01_0946_...`**.
 
 ## Prossimo passo consigliato
 
-Smoke manuale Step C (pick, Esc doppio, result/mapCenter, RR); review monolite; eventuale Step D o **`finito`**.
+Smoke manuale bugfix Step C (Esc su pick + coesistenza RR/Astro); review monolite; eventuale Step D o **`finito`**.
 
 ## Dettagli (inbox)
 
+- **Fix bug Step C (Esc + RR):** `docs/orchestrator/inbox/2026-05-01_1038_riepilogo_pass5-stepC-astro-esc-rr-fix-local.md`
 - **Pass 5 Step C map pick (locale):** `docs/orchestrator/inbox/2026-05-01_1007_riepilogo_pass5-stepC-astro-map-pick-local.md`
 - **Fix resize Astro:** `docs/orchestrator/inbox/2026-05-01_0946_riepilogo_pass5-stepB-astro-resize-fix-local.md`
 - **Pass 5 Step B (locale):** `docs/orchestrator/inbox/2026-05-01_0932_riepilogo_pass5-stepB-astro-floating-panel-local.md`
