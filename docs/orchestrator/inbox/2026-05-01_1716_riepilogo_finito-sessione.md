@@ -31,9 +31,20 @@
 - Test browser in sessione: **non eseguiti** (solo chiusura documentale + patch monolite E.3).
 - `node --check` sul monolite: **non rieseguito** in questo `finito` (diff minimo 8 righe).
 
-## `git status --short` (dopo push step 2, prima riconciliazione orchestratore)
+## `git status --short` (fine intervento, dopo push step 4)
 
-Vedi stato reale dopo creazione `inbox` + `latest.md` (tipicamente solo `docs/orchestrator/**` modificati fino al secondo commit).
+```
+(clean — working tree pulito)
+```
+
+Verificato su repo post-`git push` del commit **`b4fd873`**.
+
+## Riconciliazione orchestratore (step 4)
+
+- **Hash:** `b4fd873`
+- **Messaggio:** `docs: orchestratore — riconciliazione finito sessione`
+- **File:** `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/2026-05-01_1716_riepilogo_finito-sessione.md`
+- **Push:** riuscito.
 
 ## Prossimo passo consigliato
 
