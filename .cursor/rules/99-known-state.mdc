@@ -17,7 +17,7 @@ Use this rule only when a task risks regressions or needs full context alignment
 - Geolocation is single-shot only (`getCurrentPosition`); continuous `watchPosition` tracking has been removed in the pre-GIS cleanup — do not reintroduce it casually.
 - When offline, prefer IndexedDB cached tiles + placeholders; do not add auto-online fallbacks.
 - Named areas may be legacy (missing `z0/z1`) and must keep working.
-- OPSEC strict mode (`state.opsecStrict`) must block external geocoding fetches.
+- OPSEC strict mode (`state.opsecStrict`) must block **online geocoding** (Nominatim) fetches; do not assume every other network touchpoint is gated by this flag until explicitly implemented — preserve the **no silent network** principle from `00-project-core.mdc`.
 - i18n:
   - `data-i18n` → `textContent` default
   - `data-i18n-html` → `innerHTML` only for explicit rich-text help strings

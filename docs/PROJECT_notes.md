@@ -219,18 +219,65 @@ Audit meccanico **Pass 2** (2026-04-30) sul monolite `coordinate_converter Claud
 
 ---
 
+## OPSEC strict — definizione operativa (Pass 3)
+
+Consolidamento documentale **solo testo** (monolite non modificato in questo passaggio).
+
+### Principio operativo (da preservare nei progetti futuri)
+
+- Con **OPSEC strict** attivo, il geocoding **online** (forward/reverse verso endpoint stile Nominatim) non deve essere eseguito; l’utente non deve ricevere fetch esterne «di servizio» senza azione consapevole.
+- Non introdurre **chiamate di rete silenziose**: ogni contatto esterno deve essere legato a una scelta UI esplicita o a un flusso offline-first coerente con OPSEC.
+- **Tile basemap:** distinguere (a) tile del layer basemap **selezionato consapevolmente** dall’utente, (b) tile già in **IndexedDB**, (c) fetch verso layer **non** richiesti o impliciti. Lettura **file locali** e **IndexedDB** non sono fetch HTTP esterne nel senso OPSEC di questo documento.
+
+### Stato implementativo attuale (verifica codice, Pass 3)
+
+- Il gate principale oggi è su **geocoding**: `geocodingAllowed()` restituisce `false` se `state.opsecStrict` è vero (blocco forward/reverse Nominatim e UI geocoding disabilitata visivamente).
+- Nel monolite compare anche il commento di stato su `opsecStrict` che parla di disabilitare «tutte» le chiamate esterne — **non** tutto quel perimetro è cablato allo stesso modo del geocoding (es. caricamento tile online del basemap attivo non è filtrato solo da `opsecStrict` nel tratto ispezionato per Pass 3).
+
+### Principio vs implementazione
+
+- **Implementazione attuale:** enforcement primario sul **geocoding online**.
+- **Principio da raffinare in futuri interventi** (senza Pass 3 nel codice): estendere coerenza OPSEC ad altri fetch solo dove richiesto da decisione esplicita, evitando sempre reti silenziose.
+
+---
+
+## Valutazione roadmap §4.8 — dimensione monolite (Pass 3)
+
+Testo **consolidato** qui; autorità normativa resta in **`docs/roadmap.md`** §4.8 e §3 (questo blocco non modifica la roadmap).
+
+| Voce | Valore / nota |
+|------|----------------|
+| **Righe monolite attuali** | **37011** (allineamento Pass 1 / 1.5) |
+| **Soglia roadmap §4.8** | ~**22 000** righe → **valutazione**, non split automatico |
+| **Scenari attuali** | **(a)** air-gapped / classified; **(b)** condivisione informale peer-to-peer (file singolo) |
+| **Tier 2** (file `.js` separati via `<script src>`) | Escluso senza **decisione strategica** — rompe lo scenario **(b)** e indebolisce **(a)** (audit artefatto singolo) |
+| **Tier 1** (più `<script>` nello **stesso** `.html`) | Compatibile con **(a)+(b)**; **non implementato** in Pass 3 |
+
+**Criterio operativo proposto** (per pianificazione futura, non policy roadmap):
+
+- Monolite **≤ 30 000** righe → monitoraggio.
+- **30 000 < righe ≤ 40 000** → valutare / pianificare **Tier 1** per blocchi **vendored self-contained**.
+- Monolite **> 40 000** righe → **stop feature work** significativo fino a rivalutazione dimensione / split.
+
+**Conclusione per stato attuale (37 011 righe):** serve **piano dedicato** per valutare **Tier 1 vendored split**. Candidati naturali da analizzare in quel piano (non decisione Pass 3): blob **WMM-2025**, subset **SunCalc**, encoder **QR** (`SECTION 26`), **Plus Code / OLC** (`SECTION 12b`), o altri blocchi chiaramente isolabili.
+
+---
+
 ## 4. Stato attuale delle feature principali
 
 Sintesi allineata a `.cursor/rules/20-domain-knowledge.mdc`, `99-known-state.mdc`, e alla cronaca in `docs/session-geolocalizzazione-e-mappa.md` (ultimi checkpoint **2026-04-24 — GIS-first layout pivot**):
+
+Le voci sotto descrivono ciò che è **attivo nel monolite corrente**, salvo dove è esplicitamente marcato **REMOVED** o rimando alla cronaca in §9.
 
 - **Layout GIS-first (default):** `body.gis-mode` attivo al boot; topbar (`#appTopbar`) con tab bar (Traccia, Waypoint, Misura, Favoriti, Geocoding, Cronologia, Mappa/Offline) + CTA **Converti** (apre `<dialog id="convertModal">`) + kebab **Altri strumenti** (`<dialog id="toolsModal">` con Batch/Note/Sessione/Astro/Mag). Mappa full-viewport in `#gisMapMount`. Dettaglio meccanica reparenting / CSS override / invarianti in `docs/session-geolocalizzazione-e-mappa.md` → *Checkpoint 2026-04-24*.
 
 - **Conversioni / formati:** DD, DDM, DMS, UTM, MGRS, Plus Codes; datum italiani (Gauss-Boaga / ROMA40, ED50) e **datum aggiuntivi** (NAD27, NAD83, OSGB36, CH1903, SK42); auto-detect esteso (es. BNG, SK42 Gauss–Krüger) come da sessione.
 - **Input:** paste universale, schede manuali, drag&drop GPX/KML/GeoJSON, batch.
 - **Output / import-export:** GPX, KML, GeoJSON, CSV (track); toggle export per metadati datum extra ove previsto. `creator` = "GOI GIS Tool" in tutti i formati.
-- **Geocoding:** forward/reverse Nominatim, modalità **OPSEC strict**, fallback offline, rate limit e circuit breaker — dettaglio in sessione.
-- **Mappa:** centro fallback **La Spezia**; niente GPS silenzioso all’avvio; geolocation **solo single-shot** (`btnMyLocation` → `getCurrentPosition`; il live tracking via `watchPosition` è stato rimosso nel cleanup pre-GIS 2026-04-24); tile offline da IDB; overlay copertura; bbox e named areas con zoom range; pannello offline dockabile/draggable in half/full.
-- **Strumenti:** drawer navigazione (`Ctrl+K` documentato in sessione), measure (Vincenty + poligono/area), astro (SunCalc), magnetico (WMM), track builder, waypoint manager (tab-as-modal), favoriti, sessione import/export. **Rimossi** nel cleanup pre-GIS 2026-04-24: Radius/LOS tool (`sec-range`), DTG NATO (tab + card + parser), Live Tracking.
+- **Geocoding:** forward/reverse Nominatim quando consentito; **`state.opsecStrict`** blocca il geocoding online (dettaglio operativo: sezione **OPSEC strict — definizione operativa** sopra); fallback offline, rate limit e circuit breaker — cronaca in sessione.
+- **Mappa:** centro fallback **La Spezia**; niente GPS silenzioso all’avvio; geolocation **solo single-shot** (`btnMyLocation` → `getCurrentPosition`). **`REMOVED 2026-04-24`:** tracking continuo via `watchPosition` (Live Tracking). Tile offline da IDB; overlay copertura; bbox e named areas con zoom range; pannello offline dockabile/draggable in half/full.
+- **Strumenti (attivi):** drawer navigazione (`Ctrl+K` documentato in sessione), measure (Vincenty + poligono/area), astro (SunCalc), magnetico (WMM), track builder, waypoint manager (tab-as-modal), favoriti, sessione import/export, Range Rings (GIS), layout classico nascosto ma ripristinabile via drawer/modal (non è una «home pre-GIS» separata come app legacy).
+- **`REMOVED 2026-04-24` / storico — non nel monolite corrente:** **Radius/LOS** (`sec-range`, vecchio tool «range» non confondere con **Range Rings** attuali); **DTG NATO** (tab, card, parser, export collegati); **Live Tracking** (`watchPosition`, pipeline dedicata). Dettaglio implementativo e piano: §9 → voce cleanup pre-phase 2026-04-24.
 - **i18n:** IT / EN / FR con `data-i18n` e `data-i18n-html` per help ricco.
 - **Diagnostica:** blocco self-check in `SECTION 25` (assert su range, SunCalc, ecc.).
 
@@ -256,6 +303,10 @@ Da **`docs/session-geolocalizzazione-e-mappa.md`** (elenchi con checkbox):
 - Focus mode opzionale (nascondere sezioni tool in home).
 - Test ciclo completo mobile (GPS + pick + track + export + offline).
 
+**Backlog UI/UX (registrato Pass 3 — non implementato, nessuna modifica monolite)**
+
+- Uniformare in futuro i **pannelli/modal GIS floating** al comportamento **Range Rings**: consentire spostamento **parziale** oltre il bordo mappa/viewport con **porzione minima sempre recuperabile**. Riferimento tecnico nel monolite: `gisPanelClampRectPartialVisible` e opzione `partialMinVisible` (es. **72** px in uso per Range Rings). Non è parte dello scope Pass 3.
+
 Da **`docs/checkpoint.md`**
 
 - Suggerimento operativo: aggiornare `checkpoint.md` a fine sessione o append in `session-geolocalizzazione-e-mappa.md` per checkpoint lunghi; trigger formale **«Checkpoint md»** in chat aggiorna **entrambi** i file (come da `00-project-core.mdc`).
@@ -280,7 +331,7 @@ Sintesi **non esaustiva** (il dettaglio è nella sessione lunga). Tutto quanto s
 
 Da **sessione — limiti noti** (non sono TODO nel codice ma vincoli noti)
 
-- `file://` / HTTP non sicuro vs Geolocation; `watchPosition` + `maximumAge: 0` e impatto batteria; `navigator.permissions` non implementato; heading/speed spesso nulli a fermo.
+- `file://` / HTTP non sicuro vs Geolocation; note sessione su `watchPosition` / batteria sono **contesto storico generico** — nel monolite corrente il **live tracking** via `watchPosition` è **`REMOVED 2026-04-24`**; resta `getCurrentPosition` single-shot; `navigator.permissions` non implementato; heading/speed spesso nulli a fermo.
 
 ---
 
@@ -303,8 +354,8 @@ Concetti e norme ricorrenti in **rules** + **docs** + stringhe/tecnologie citate
 - **WGS84** come datum di lavoro per l’output principale; ellissoide usato in Vincenty e costanti nel sorgente.
 - **Sistemi di riferimento / griglie:** UTM, **MGRS** (derivazione da UTM in testo di help), **Plus Codes (Open Location Code)**.
 - **Datum nazionali / storici:** ROMA40, ED50, Gauss-Boaga; **datum extra** NAD27/NAD83/OSGB36/CH1903/SK42 (rules + sessione).
-- **DTG NATO:** gruppo data-ora `DDHHMMZMMMYY`, lettere fuso (tabella `DTG_TZ`), esclusione **`J`**, memorizzazione Zulu in cronologia/export — vedi `20-domain-knowledge.mdc` e sezione DTG in sessione.
-- **OPSEC / privacy:** nessuna chiamata di rete silenziosa; `state.opsecStrict` blocca fetch esterni; disclaimer Nominatim; paste non-coordinate con `confirm()` prima della ricerca online.
+- **DTG NATO:** *riferimento dottrinale / storico nel materiale del repo e sessione* — **`REMOVED 2026-04-24`** dal monolite (nessun parser/UI DTG nell’app corrente). Utile come contesto NATO; non è feature attiva. Traccia in `20-domain-knowledge.mdc` / sessione se ancora presente come testo di dominio.
+- **OPSEC / privacy:** nessuna chiamata di rete silenziosa; **`state.opsecStrict`** blocca il **geocoding online** (implementazione attuale); principio più ampio e distinzione tile → sezione **OPSEC strict — definizione operativa** (Pass 3). Disclaimer Nominatim; paste non-coordinate con `confirm()` prima della ricerca online.
 - **Modello magnetico:** **WMM-2025** (coefficienti e finestra temporale nel blob `WMM2025_COF` / hint IUGG in i18n).
 - **Astronomia:** SunCalc (subset) + riferimento testuale a **Meeus** nell’hint astro.
 - **Geodesia:** **Vincenty** diretto/inverso; commento normativo ISO per **QR** in `SECTION 26`.
@@ -326,4 +377,4 @@ _(nessun item attualmente aperto su waypoint — vedi §9 "COSE FATTE")_
 
 ---
 
-*Ultimo allineamento contenuti: 2026-04-30 — **PASS 2** persistenza / IndexedDB / cap array (sezione dedicata tra §3 e §4); monolite non modificato. Precedente: 2026-05-01 — PASS 1 + **PASS 1.5** (**37011** righe). Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md`. Backlog strategico: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*. Dimensione file: roadmap §4.8 soft threshold ~22 000 righe.*
+*Ultimo allineamento contenuti: 2026-05-01 — **PASS 3** feature storiche/rimosse (marcature §4 e §7), **OPSEC strict** operativo, valutazione **roadmap §4.8** e backlog UI floating-panels; monolite non modificato; `docs/roadmap.md` non modificata. Precedenti: PASS 2 (persistenza/cap), PASS 1 / 1.5 (**37011** righe). Cronaca estesa: `docs/session-geolocalizzazione-e-mappa.md`. Backlog strategico: stesso file → *Checkpoint 2026-04-28 — Backlog strategico*. Soglia soft dimensione file (~22 000 righe, solo valutazione): sempre autoritativa in `docs/roadmap.md` §4.8.*
