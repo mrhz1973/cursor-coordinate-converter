@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 6 Step 6C.1 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Bug Traccia→Waypoint:** rimossa **`closeWaypointModal()`** da **`openTrackModal`** (coesistenza floating). **Menu contestuale tracce salvate:** **`ensureTrkSavedCtxMenu` / `showTrkSavedCtxMenu` / `hideTrkSavedCtxMenu`**, mount **`ensureSavedTracksCtxMountWired`** da **`renderSavedTracksList`** (tasto destro; long-press solo touch/pen); azioni **Apri / Modifica / Centra / Elimina** su handler esistenti; delete via **`deleteSavedTracksByIds`** + **`window.confirm`**. **Range Rings:** icona mappa con **+2 anelli interni** (SVG). **GPS mappa:** **`btnGisMapMyLocation`** + **`requestGisMapCurrentLocation`** (`getCurrentPosition` only; no **`lastResult`** / cronologia). **QA:** `node --check` OK; 2×`<script>`. **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C1 debug traccia local` (hash dopo push). Inbox **`2026-05-01_2150_riepilogo_pass6-step6C1-debug-traccia-waypoint-gps-rings-local.md`**. **`coordinate_converter Claude.html` escluso**.
+
 2026-05-01 — **Pass 6 Step 6C (monolite solo locale):** in **`coordinate_converter Claude.html`** — **`#trackModal`**: **`partialMinVisible: 72`** in **`_trackPanelLayoutOpts`**, **`clampTrackModalRect`** + **`applyTrackModalSavedPosition`** → **`gisPanelClampRectPartialVisible`** (drag/resize già via **`gisPanelAttachDrag`/`Resize`**). **Tracce salvate:** **`renderSavedTracksList`** azioni ✎/⌖/✕, stessi **`data-saved-*`**; tooltip fly allineato. **Punti draft:** **`renderTrackPointsList`** rimozione compatto **`btn-danger-subtle`** + **`data-role="tp-rm"`** invariato. **Non:** live GPS, schema/store tracce, localStorage, export/import, 6D, RR polish. **QA:** `node --check` OK; 2×`<script>`. **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C traccia local` (hash in RIEPILOGO / `git log -1`). Inbox **`2026-05-01_2008_riepilogo_pass6-step6C-traccia-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **Pass 6 Step 6B (monolite solo locale):** in **`coordinate_converter Claude.html`** — **`#layersPanel`**: **`partialMinVisible: 72`** in **`_layersPanelLayoutOpts`**, **`clampLayersPanelRect`** → **`gisPanelClampRectPartialVisible`** (drag/resize già guidati da `opts`). **Lista aree offline:** azioni riga compatte (✎ / ⌖ / ✕) con **`data-offline-*`**, **`data-tip`**, i18n tip/aria; CSS colonna azioni più stretta; resize col min **112px**. **Non:** OPSEC, tile/cache/IndexedDB, download, semantica delete, 6C/6D, RR polish. **QA:** `node --check` OK (2 blocchi); nessun `<script src>` / `type="module"`. **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6B mappe offline local` (hash corto in RIEPILOGO Cursor / `git log -1` dopo push). Inbox **`2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`**. **`coordinate_converter Claude.html` escluso**.
@@ -66,6 +68,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**Pass 6 Step 6C.1 2026-05-01** — Traccia non chiude più Waypoint; menu contestuale tracce salvate; icona RR +2 anelli; GPS mappa (`getCurrentPosition`); monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2150_riepilogo_pass6-step6C1-debug-traccia-waypoint-gps-rings-local.md`**.
+
 **Pass 6 Step 6C 2026-05-01** — Traccia: partial-offscreen **`#trackModal`** + azioni compatte tracce salvate / rimozione punto (monolite **solo locale**): vedi **`docs/orchestrator/inbox/2026-05-01_2008_riepilogo_pass6-step6C-traccia-local.md`**.
 
 **Pass 6 Step 6B 2026-05-01** — Mappe online/offline: partial-offscreen **`#layersPanel`** + azioni tabella aree offline compatte (monolite **solo locale**): vedi **`docs/orchestrator/inbox/2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`**.
@@ -87,10 +91,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke browser su **Pass 6 Step 6C** (`#trackModal` parziale fuori schermo; tracce salvate ✎/⌖/✕; rimozione punto draft). Poi **Pass 6 Step 6D** (QA globale) o commit/review monolite. **`aggio`** in ChatGPT dopo push memoria.
+Smoke browser **Pass 6 Step 6C.1** (Waypoint+Traccia insieme; tasto destro / long-press touch su riga traccia salvata; conferma delete; icona RR; GPS solo al click). Poi **Pass 6 Step 6D** (QA globale) o commit/review monolite. **`aggio`** in ChatGPT dopo push memoria.
 
 ## Dettagli (inbox)
 
+- **Pass 6 Step 6C.1 debug Traccia/Waypoint + context + RR + GPS (locale):** `docs/orchestrator/inbox/2026-05-01_2150_riepilogo_pass6-step6C1-debug-traccia-waypoint-gps-rings-local.md`
 - **Pass 6 Step 6C Traccia partial + azioni compatte (locale):** `docs/orchestrator/inbox/2026-05-01_2008_riepilogo_pass6-step6C-traccia-local.md`
 - **Pass 6 Step 6B Mappe offline partial + azioni compatte (locale):** `docs/orchestrator/inbox/2026-05-01_1910_riepilogo_pass6-step6B-mappe-online-offline-local.md`
 - **Pass 6 Step 6A.2 tooltip + conferme (locale):** `docs/orchestrator/inbox/2026-05-01_1845_riepilogo_pass6-step6A2-tooltip-confirm-preferiti-waypoint-local.md`
