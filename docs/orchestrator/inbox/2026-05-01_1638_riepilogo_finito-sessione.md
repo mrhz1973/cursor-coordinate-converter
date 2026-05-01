@@ -37,6 +37,8 @@ Commit documentali **senza monolite:** `56205de` (Step E), `6a47a9f` (E.1), `1b1
 
 - **Prima:** `latest.md` e inbox E.x dicevano ancora «monolite non committato» per Pass 5 post–Step A.
 - **Dopo `7919d9d`:** il monolite **è** nel commit di chiusura sessione; ChatGPT con **`aggio`** deve assumere **Pass 5 B→E.2** allineati a `main`.
+- **Commit memoria step 4:** **`0094dc7`** `docs: orchestratore — riconciliazione finito sessione` (inbox `1638` + `latest.md`).
+- **Micro-fix:** **`49eee9c`** — `latest.md` aggiornato con hash **`0094dc7`** esplicito nella riga «Ultimo aggiornamento».
 
 ## QA automatici (non rieseguiti in questo passo `finito`)
 
