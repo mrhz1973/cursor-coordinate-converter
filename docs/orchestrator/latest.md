@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **Pass 6 Step 6A (monolite solo locale):** in **`coordinate_converter Claude.html`** — UI IT **Favoriti → Preferiti** (etichette utente; `state.favorites` / API `favorite*` / id DOM invariati); **`renderFavorites`** → tabella compatta con colonna **Azioni** (icone ✎ ⌖ ★ ↻ ✕, tooltip/ARIA `data-i18n-*`, `syncI18nInRoot`); **`renderWpModalList`** → azioni compatte a icona con **`data-role`** invariati; nuove chiavi **`fav.listColCoord`**, **`fav.listColActions`**, **`tip.favEdit`**, **`tip.favLoadConverter`**. **Non:** Step 6B/6C/6D; nessuna modifica persistenza / `lastResult` per Centra. **QA:** `node --check` OK sui due script inline; nessun `<script src>` / `type="module"`. **Test browser:** non eseguiti (checklist in inbox). **Commit memoria:** vedi inbox **`2026-05-01_1754_riepilogo_pass6-step6A-preferiti-waypoint-actions-local.md`** — **`coordinate_converter Claude.html` escluso** dal commit orchestratore.
+
 2026-05-01 — **`finito` sessione:** commit **`9a90fbc`** su **`main`** (push step 2 riuscito). **`coordinate_converter Claude.html` incluso** — **Pass 5 Step E.3** (`partialMinVisible: 72` su Waypoint/Favoriti; `clampWaypointModalRect` / `clampFavoritesPanelRect` → `gisPanelClampRectPartialVisible`); aggiornati **`docs/checkpoint.md`** e append **`docs/session-geolocalizzazione-e-mappa.md`**. Piano Pass 6 già in **`13a7a48`**. **Riconciliazione orchestratore:** inbox **`2026-05-01_1716_riepilogo_finito-sessione.md`** + commit **`b4fd873`** `docs: orchestratore — riconciliazione finito sessione` (push riuscito).
 
 2026-05-01 — **Pass 6 — piano standardizzazione liste modali GIS (solo documentazione):** salvato piano completo in **`docs/orchestrator/inbox/2026-05-01_1709_plan_pass6-modal-actions-standardization.md`**. **Scope:** Preferiti/Waypoint, Mappe online/offline, Traccia; colonna **Azioni** compatta (stile Range Rings); rename UI IT **Favoriti → Preferiti** (`state.favorites` invariato). **Nessuna implementazione**; **`coordinate_converter Claude.html` non modificato**. **Prossimo passo consigliato:** Step **6A** (Preferiti + Waypoint). Commit memoria: **`docs: piano Pass 6 standardizzazione liste modali`**.
@@ -56,6 +58,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**Pass 6 Step 6A 2026-05-01** — implementazione **solo monolite** (non in commit memoria): vedi **`docs/orchestrator/inbox/2026-05-01_1754_riepilogo_pass6-step6A-preferiti-waypoint-actions-local.md`**.
+
 **`finito` 2026-05-01** — monolite versionato con **E.3** (`9a90fbc`); memoria allineata con **`2026-05-01_1716_riepilogo_finito-sessione.md`**.
 
 ## File modificati (sintesi)
@@ -67,7 +71,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Implementare **Pass 6 Step 6A** dal piano in inbox; smoke **E.3** su Waypoint/Favoriti (drag parziale off-screen). **`aggio`** in ChatGPT dopo lettura `latest` + inbox `finito`.
+Smoke browser su **Pass 6 Step 6A** (Preferiti tabellare + Waypoint icone; IT/EN/FR; Astro picker; Range Rings; clamp E.3). Poi **Pass 6 Step 6B** (Mappe online/offline) o commit/review monolite. **`aggio`** in ChatGPT dopo push memoria.
 
 ## Dettagli (inbox)
 
