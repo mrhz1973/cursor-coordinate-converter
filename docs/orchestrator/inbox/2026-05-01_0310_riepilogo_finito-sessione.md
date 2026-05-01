@@ -38,6 +38,12 @@ Nessun diff (albero pulito).
 - Commit/push principale eseguiti da terminale; hook non bypassati.
 - **Test browser:** non eseguiti in questa sessione Cursor (smoke Astro consigliato post-deploy).
 
+## Commit riconciliazione orchestratore (step 4 regola `finito`)
+
+- **Hash:** `33c0b67`
+- **Messaggio:** `docs: orchestratore — riconciliazione finito sessione`
+- **Push:** riuscito (`51a9fc2..33c0b67  main -> main`)
+
 ## Prossimo passo consigliato
 
 - **Pass 4B** — Step 2 piano Tier 1 (**WMM-2025** vendored split) solo dopo QA Step 1 SunCalc in browser e conferma utente.
