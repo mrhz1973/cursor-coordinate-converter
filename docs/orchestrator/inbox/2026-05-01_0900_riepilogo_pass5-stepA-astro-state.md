@@ -39,7 +39,8 @@
 - **Step B:** pannello floating `#astroPanel` (architettura confermata: dedicato, non estensione inline `#sec-astro`).
 - **Step C:** disarmo esplicito `mapPickMode` e altri pick concorrenti.
 
-## Git (atteso post-commit memoria)
+## Git (post-commit memoria)
 
-- Commit autosync: **solo** `docs/orchestrator/latest.md` + questo inbox (nessun `git add .`; monolite escluso).
+- Commit autosync: **`c12bb93`** — messaggio `docs: orchestratore — Pass5 Step A astro state (riepilogo)`; solo `docs/orchestrator/latest.md` + questo file (nessun `git add .`; monolite escluso).
+- **Push:** riuscito verso `origin/main`.
 - `coordinate_converter Claude.html`: modificato in working tree, **non** incluso nel commit orchestratore.
