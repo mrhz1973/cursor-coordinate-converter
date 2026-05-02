@@ -32,7 +32,7 @@
 
 ## Commit memoria
 
-Messaggio: **`docs: memoria Pass 6 Step 6E3b rings measure local`** — monolite **escluso**.
+Messaggio: **`docs: memoria Pass 6 Step 6E3b rings measure local`** — monolite **escluso**. Hash push: **`da4cb09`**.
 
 ## Backlog consigliato
 
