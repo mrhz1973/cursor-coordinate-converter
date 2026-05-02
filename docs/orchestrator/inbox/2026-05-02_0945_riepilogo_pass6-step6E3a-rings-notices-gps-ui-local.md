@@ -39,4 +39,4 @@ Hub undo/redo/cronologia vicino Strumenti; `finito`; commit monolite; `git add .
 ## Commit memoria
 
 - **Monolite**: **NON incluso** nel commit orchestratore (solo locale fino a decisione team).
-- **Messaggio commit previsto**: `docs: memoria Pass 6 Step 6E3a rings notices gps ui local`
+- **Commit pushato**: **`6c313c9`** — messaggio `docs: memoria Pass 6 Step 6E3a rings notices gps ui local`
