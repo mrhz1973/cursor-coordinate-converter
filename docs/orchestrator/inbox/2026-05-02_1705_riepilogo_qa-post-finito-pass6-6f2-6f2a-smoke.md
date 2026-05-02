@@ -41,5 +41,5 @@
 ## Commit memoria
 
 Messaggio: `docs: memoria QA post-finito Pass6 6F2 smoke local`  
-**Hash:** *(dopo `git commit` / `git push` selettivo)*  
+**Hash:** `c5fb0dc` — push **riuscito** su `main`  
 **Monolite:** **non** incluso nel commit memoria.
