@@ -80,6 +80,7 @@ Micro-step dopo smoke **6E.1**: dock minimizzati più visibile + animazioni legg
 ## Commit memoria (questo intervento)
 
 - Messaggio: **`docs: memoria Pass 6 Step 6E1a post smoke fixes local`**
+- Hash: **`bf86288`** (push `main` riuscito).
 - **Solo** `docs/orchestrator/latest.md` + questo file inbox.
 - **`coordinate_converter Claude.html` escluso.**
 
