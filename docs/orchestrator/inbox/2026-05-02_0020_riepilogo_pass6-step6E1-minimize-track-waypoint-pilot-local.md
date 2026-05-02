@@ -74,3 +74,8 @@ Waypoint/Traccia: **skip** chiusura se `gisPanelIsMinimized` (non interferisce c
 ## Prossimo passo
 
 Smoke manuale checklist utente; poi **6E.2** o **6D** o **`finito`** / commit monolite quando autorizzato.
+
+## Commit memoria
+
+- **`59e6158`** — `docs: memoria Pass 6 Step 6E1 minimize track waypoint pilot local`
+- Push: **riuscito**
