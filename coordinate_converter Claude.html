@@ -1636,7 +1636,6 @@ html[data-theme="dark"] .offline-area-status--error{ color:#f08080; }
 .tile-map.bbox-selecting .ttrk-btn,
 .tile-map.bbox-selecting .twpt-btn,
 .tile-map.bbox-selecting .tgps-btn,
-.tile-map.bbox-selecting .tundo-btn,
 .tile-map.bbox-selecting .trr-btn,
 .tile-map.bbox-selecting .tile-measure-box,
 .tile-map.bbox-selecting .tile-track-float,
@@ -2147,7 +2146,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   text-transform:uppercase;
 }
 .tile-map .tg-btn:hover{background:rgba(15,23,42,0.72); border-color:rgba(255,255,255,.18)}
-.tile-map .tg-btn.active{background:#f59e0b; color:#1f2937; border-color:transparent}
+/* Default MGRS/grid toggle (dark stack fallback): active blu tool — eccezione GPS fix resta verde sotto .tgps-btn.gis-gps-fix-active */
+.tile-map .tg-btn.active{background:#2563eb; color:#fff; border-color:transparent}
 
 /* Offline coverage toggle — sotto il pulsante griglia MGRS. Icona SVG (strati) come gli
  * altri controlli; attivo = verde come overlay copertura cache + aree. */
@@ -2214,7 +2214,7 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 }
 .tile-map .ttrk-btn:hover{ background:#eef2ff; color:#3730a3 }
 .tile-map .ttrk-btn.active{
-  background:#4f46e5; color:#fff;
+  background:#2563eb; color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
 
@@ -2236,14 +2236,14 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 }
 .tile-map .twpt-btn:hover{ background:#eff6ff }
 .tile-map .twpt-btn.active{
-  background:#e0f2fe;
-  box-shadow:0 0 0 2px rgba(37,99,235,.4), 0 1px 3px rgba(0,0,0,.28);
+  background:#2563eb; color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
 
 /* Range Rings — pulsante mappa: solo icona, dimensioni coerenti con Misura / Traccia / Waypoint. */
 .tile-map .trr-btn{
   width:26px; height:26px; border:none;
-  background:rgba(255,255,255,.92); color:#047857;
+  background:rgba(255,255,255,.92); color:#1e3a5f;
   cursor:pointer; border-radius:6px; line-height:1;
   box-shadow:0 1px 3px rgba(0,0,0,.3);
   display:flex; align-items:center; justify-content:center;
@@ -2260,9 +2260,9 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   height:20px;
   display:block;
 }
-.tile-map .trr-btn:hover{ background:#ecfdf5; color:#065f46 }
+.tile-map .trr-btn:hover{ background:#eff6ff; color:#1d4ed8 }
 .tile-map .trr-btn.active{
-  background:#059669; color:#fff;
+  background:#2563eb; color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
 /* GIS: GPS posizione attuale sulla mappa (solo click; getCurrentPosition). */
@@ -2277,15 +2277,31 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .tile-map .tgps-btn:disabled{ opacity:.45; cursor:not-allowed; }
 .tile-map .tgps-btn .tgps-ico{ font-size:1.18rem; line-height:1; display:block; }
 .tile-map .tgps-btn:hover:not(:disabled){ background:#e0f2fe; color:#075985; }
-.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled){
-  background:#15803d;
+/* Fix acquisito: colore per qualità (soglie = badge tooltip: ≤10m buono, ≤30m medio, altrimenti scarso; senza accuracy → unknown). */
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-good{
+  background:#16a34a;
   color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.42), 0 2px 8px rgba(22,163,74,.38);
 }
-.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled):hover{
-  background:#166534;
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-good:hover{ background:#15803d; color:#fff; }
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-medium{
+  background:#ea580c;
   color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.4), 0 2px 8px rgba(234,88,12,.4);
 }
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-medium:hover{ background:#c2410c; color:#fff; }
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-poor{
+  background:#dc2626;
+  color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.38), 0 2px 8px rgba(220,38,38,.42);
+}
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-poor:hover{ background:#b91c1c; color:#fff; }
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-unknown{
+  background:#d97706;
+  color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.38), 0 2px 8px rgba(217,119,6,.4);
+}
+.tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-unknown:hover{ background:#b45309; color:#fff; }
 
 /* Ricentra sul punto / «Nuovo punto» (pick): colonna `.tile-ctrls`, come misura e waypoint. */
 .tile-map .tile-ctrls .tile-recenter,
@@ -2331,24 +2347,6 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
   animation:pickPulse 1.4s ease-in-out infinite;
-}
-
-/* Undo ultimo vertice (misura o traccia in modalità click-mappa) */
-.tile-map .tundo-btn{
-  width:26px; height:26px; border:none;
-  background:rgba(255,255,255,.92); color:#374151;
-  cursor:pointer; border-radius:6px; line-height:1;
-  box-shadow:0 1px 3px rgba(0,0,0,.3);
-  display:flex; align-items:center; justify-content:center;
-  padding:0;
-}
-.tile-map .tundo-btn .tundo-ico{
-  width:30px; height:30px; display:block; object-fit:contain;
-  pointer-events:none;
-}
-.tile-map .tundo-btn:hover:not(:disabled){ background:#f3f4f6 }
-.tile-map .tundo-btn:disabled{
-  opacity:.42; cursor:not-allowed;
 }
 
 /* MGRS / UTM grid SVG drawn inside .tile-layer. Padded ±128 px so the
@@ -2749,8 +2747,6 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .mini-map.mm-full .tile-map .tmeas-btn .tmeas-ico-img{ width:42px; height:42px }
 .mini-map.mm-full .tile-map .ttrk-btn .ttrk-ico{ width:39px; height:39px }
 .mini-map.mm-full .tile-map .twpt-btn .twpt-ico-img{ width:28px; height:28px }
-.mini-map.mm-half .tile-map .tundo-btn .tundo-ico{ width:33px; height:33px }
-.mini-map.mm-full .tile-map .tundo-btn .tundo-ico{ width:39px; height:39px }
 .mini-map.mm-half .tile-map .tile-ctrls .ts-btn,
 .mini-map.mm-half .tile-map .tile-ctrls .tz-btn{
   width:100%;
@@ -2912,7 +2908,6 @@ body.mm-enlarged{overflow:hidden}
 .tile-map .tile-ctrls .twpt-btn,
 .tile-map .tile-ctrls .tgps-btn,
 .tile-map .tile-ctrls .trr-btn,
-.tile-map .tile-ctrls .tundo-btn,
 .tile-map .tile-ctrls .tile-recenter,
 .tile-map .tile-ctrls .tile-pick{
   width:var(--ctrlW);
@@ -2926,6 +2921,24 @@ body.mm-enlarged{overflow:hidden}
   width:var(--ctrlW);
   min-height:var(--ctrlW);
   box-sizing:border-box;
+  /* Pass 6 Step 6E.3: stesso fondo chiaro degli altri tool in colonna (non il vetro scuro del .tg-btn globale). */
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  color: #1e3a5f;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
+}
+.tile-map .tile-ctrls .tg-btn:hover{
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: rgba(37,99,235,.35);
+}
+.tile-map .tile-ctrls .tg-btn.active{
+  background: #2563eb;
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
 .tile-map .tile-ctrls .tile-measure-group{
   width:var(--ctrlW);
@@ -2940,24 +2953,61 @@ body.mm-enlarged{overflow:hidden}
 /* Colonna destra: size + zoom riempiono `--ctrlW` così i pulsanti sotto (#/MGRS, copertura, misura) allineano ai bordi. */
 .tile-map .tile-ctrls .tile-size{
   align-items:stretch;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
 }
 .tile-map .tile-ctrls .tile-size .ts-btn{
   width:100%;
   box-sizing:border-box;
+  color: #1e3a5f;
+}
+.tile-map .tile-ctrls .tile-size .ts-btn:hover{
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 .tile-map .tile-ctrls .tile-zoom{
   display:flex;
   flex-direction:column;
   align-items:stretch;
   box-sizing:border-box;
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
 }
 .tile-map .tile-ctrls .tile-zoom .tz-btn{
   width:100%;
   box-sizing:border-box;
+  color: #1e3a5f;
+}
+.tile-map .tile-ctrls .tile-zoom .tz-btn:hover{
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 .tile-map .tile-ctrls .tz-level{
   align-self:stretch;
   text-align:center;
+  color: #334155;
+  border-top: 1px solid rgba(15,23,42,.12);
+}
+/* Layers nella colonna controlli: coerenza con zoom/MGRS (menu dropdown resta .tlayer-menu). */
+.tile-map .tile-ctrls .tile-layers .tlayer-btn{
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(15,23,42,.14);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.28);
+}
+.tile-map .tile-ctrls .tile-layers .tlayer-btn:hover{
+  background: #eff6ff;
+  border-color: rgba(37,99,235,.35);
+}
+.tile-map .tile-ctrls .tile-layers .tlayer-btn[aria-expanded="true"]{
+  box-shadow: 0 0 0 2px rgba(37,99,235,.4), 0 1px 3px rgba(0,0,0,.28);
 }
 .tile-map .ts-btn{
   width:26px; height:26px; border:none; background:transparent;
@@ -3459,10 +3509,47 @@ details[open] summary::before{transform:rotate(90deg)}
 body.gis-mode #sec-measure .meas-classic-only{ display:none !important; }
 body.gis-mode #sec-measure .meas-gis-only{ display:block !important; }
 body:not(.gis-mode) #sec-measure .meas-gis-only{ display:none !important; }
-.meas-gis-only .meas-gis-flow-tabs,
-.meas-gis-only .meas-gis-kind-tabs{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 10px; }
-.meas-gis-only .meas-gis-flow-tabs .mb-tab,
-.meas-gis-only .meas-gis-kind-tabs .mb-tab{ min-height:36px; padding:0 12px; }
+/* Pass 6E.3b: Misura GIS — intro e tab allineati agli altri pannelli (notice slate + active blu). */
+body.gis-mode #sec-measure .meas-gis-only > .sub-section-hint{
+  margin:0 0 10px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
+  color: var(--text);
+  font-size:.86rem;
+  line-height:1.45;
+}
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-flow-tabs .mb-tab,
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-kind-tabs .mb-tab{
+  min-height:36px;
+  padding:0 12px;
+  appearance:none;
+  cursor:pointer;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel2);
+  color:var(--text);
+  font-size:.84rem;
+  font-weight:600;
+}
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-flow-tabs .mb-tab:hover,
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-kind-tabs .mb-tab:hover{
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, var(--panel2));
+  color: var(--text);
+}
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-flow-tabs .mb-tab.active,
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-kind-tabs .mb-tab.active{
+  background:#2563eb;
+  color:#fff;
+  border-color:transparent;
+  box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 1px 3px rgba(0,0,0,.22);
+}
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-flow-tabs,
+body.gis-mode #sec-measure .meas-gis-only .meas-gis-kind-tabs{
+  display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 10px;
+}
 .meas-gis-only .meas-gis-direct-grid{
   display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0;
 }
@@ -3534,9 +3621,9 @@ html[data-theme="dark"] .tile-measure-overlay{
   border:1px solid var(--border); pointer-events:none;
 }
 #sec-measure .meas-notice-box--info{
-  background: color-mix(in srgb, var(--accent) 6%, var(--panel2));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
   color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 28%, var(--border));
+  border-color: var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
 }
 #sec-measure .meas-notice-box--error{
   background: color-mix(in srgb, var(--error, #dc2626) 10%, var(--panel2));
@@ -4217,12 +4304,33 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
   stroke: rgba(0, 0, 0, 0.58);
 }
 #sec-rangerings .rr-batch-bar{ margin-top:8px; }
-#sec-rangerings .rr-map-first-hint{
-  margin-top:8px; padding:8px 10px; border-radius:8px; font-size:.85rem; line-height:1.35;
-  border:1px solid color-mix(in srgb, var(--accent) 32%, var(--border));
-  background: color-mix(in srgb, var(--accent) 7%, var(--panel2));
+/* Range Rings: intro unica (6E.3b) — sostituisce due box hint + map-first affiancati. */
+#sec-rangerings .rr-intro-bar{
+  margin:0 0 10px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
+  color: var(--text);
+  box-sizing:border-box;
+}
+#sec-rangerings .rr-intro-lead{
+  margin:0;
+  font-size:.86rem;
+  line-height:1.45;
   color: var(--text);
 }
+#sec-rangerings .rr-intro-map-first{
+  margin:8px 0 0;
+  padding:0;
+  font-size:.84rem;
+  line-height:1.4;
+  color: var(--muted);
+  font-weight:600;
+  border:none;
+  background:transparent;
+}
+#sec-rangerings .rr-intro-map-first[hidden]{ display:none !important; }
 #sec-rangerings .rr-operative-notices{
   margin-top:8px; display:flex; flex-direction:column; gap:6px;
   min-height:0;
@@ -4231,8 +4339,8 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
 #sec-rangerings .rr-operative-notices .ok-box{ margin:0; }
 #sec-rangerings .rr-notice-box.rr-notice-box--info{
   font-size:.86rem; line-height:1.4; margin:0; padding:8px 10px; border-radius:8px;
-  border:1px solid color-mix(in srgb, var(--accent) 28%, var(--border));
-  background: color-mix(in srgb, var(--accent) 5%, var(--panel2));
+  border:1px solid var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
   color: var(--text);
 }
 #sec-rangerings .rr-table-wrap{
@@ -4425,8 +4533,18 @@ dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:
   max-width:100%;
 }
 .gis-rr-confirm-skin.fav-inline-confirm--rename{
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+  border-color: var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
+}
+/* Avvisi non distruttivi (es. chiusura con modifiche non salvate): warning resta warning. */
+.gis-rr-warn-skin{
+  border:1px solid color-mix(in srgb, #d97706 42%, var(--border));
+  background: color-mix(in srgb, #d97706 11%, var(--panel));
+  border-radius:8px;
+  padding:10px 12px;
+  margin:10px 0 0;
+  box-sizing:border-box;
+  max-width:100%;
 }
 .gis-rr-confirm-msg{
   margin:0;
@@ -4444,8 +4562,8 @@ dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:
   justify-content:flex-end;
 }
 #sec-rangerings .rr-rename-confirm-box{
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  background: color-mix(in srgb, var(--accent) 6%, var(--panel));
+  border-color: var(--gis-modal-notice-border, color-mix(in srgb, #64748b 38%, var(--border)));
+  background: var(--gis-modal-notice-bg, color-mix(in srgb, #64748b 13%, var(--panel2)));
 }
 #sec-rangerings .rr-source-picker-list{
   max-height: 260px; overflow: auto; margin-top: 8px;
@@ -4459,7 +4577,28 @@ dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:
 #sec-rangerings .rr-source-picker-list .rr-pick-item:hover{
   background: var(--btn-hover-surface, color-mix(in srgb, var(--panel) 85%, var(--border) 15%));
 }
-#sec-rangerings .rr-io-details > summary{ cursor: pointer; }
+/* Importa/esporta set: card neutra come altri modal (niente alone blu accent). */
+#sec-rangerings .rr-io-details{
+  margin-top:10px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--panel2);
+  padding:0 10px 10px;
+  box-sizing:border-box;
+}
+#sec-rangerings .rr-io-details > summary{
+  cursor:pointer;
+  list-style:none;
+  margin:0 -10px 8px;
+  padding:10px 10px 8px;
+  font-size:1.05rem;
+  font-weight:700;
+  color:var(--text);
+  border-bottom:1px solid var(--border);
+  border-radius:10px 10px 0 0;
+}
+#sec-rangerings .rr-io-details > summary::-webkit-details-marker{ display:none; }
+#sec-rangerings .rr-io-details .rr-io-actions{ margin-top:0; }
 #sec-rangerings .rr-table td.sub{
   white-space: normal;
   word-break: break-word;
@@ -5272,6 +5411,10 @@ body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn{
   position:relative;
   z-index:2;
   pointer-events:auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:0;
 }
 body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
   width:26px;
@@ -5279,6 +5422,7 @@ body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
   max-width:100%;
   max-height:100%;
   object-fit:contain;
+  display:block;
 }
 /* GIS: basemap menu is positioned via JS (fixed + clamp). Keep it neutral here. */
 body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-layers{
@@ -5562,13 +5706,22 @@ html[data-theme="light"] .app-modal-min-btn::before{
 dialog.app-modal.gis-panel-minimized{
   display:none !important;
 }
+/* Palette notice interne modal (slate/neutral): distinta dal blu tool-active; temi chiaro/scuro. */
+html{
+  --gis-modal-notice-bg: color-mix(in srgb, #64748b 13%, var(--panel2));
+  --gis-modal-notice-border: color-mix(in srgb, #64748b 38%, var(--border));
+}
+html[data-theme="light"]{
+  --gis-modal-notice-bg: color-mix(in srgb, #64748b 9%, var(--panel2));
+  --gis-modal-notice-border: color-mix(in srgb, #64748b 30%, var(--border));
+}
 .gis-modal-minimize-notice{
   margin:0;
   padding:8px 18px;
   font-size:.86rem;
-  border-bottom:1px solid var(--border);
-  background:color-mix(in srgb, var(--panel2) 94%, transparent);
-  color:var(--muted);
+  border-bottom:1px solid var(--gis-modal-notice-border);
+  background:var(--gis-modal-notice-bg);
+  color:var(--text);
 }
 .gis-modal-minimize-notice[hidden]{ display:none !important; }
 .gis-minimized-dock{
@@ -5868,6 +6021,15 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
 #convertModalBody #results .mono{
   font-family: var(--gis-font-mono);
 }
+/* 6F.1a: primary waypoint/fav row sits under the results heading so it stays
+ * visible without scrolling past the tall #results grid inside the Convert panel. */
+#convertModalBody .results-col .convert-cm-primary-actions{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--gis-space-2);
+  margin: var(--gis-space-2) 0 var(--gis-space-3);
+}
 #convertModalBody .results-col .convert-cm-actions-row{
   display: flex;
   flex-wrap: wrap;
@@ -5875,6 +6037,7 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   gap: var(--gis-space-2);
   margin-top: var(--gis-space-3);
 }
+#convertModalBody .results-col .convert-cm-primary-actions > .btn.btn-sm:not(.btn-primary),
 #convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary){
   background: color-mix(in srgb, var(--panel2) 88%, transparent);
   border: 1px solid var(--border);
@@ -5882,11 +6045,21 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
   font-weight: 600;
   box-shadow: none;
 }
+#convertModalBody .results-col .convert-cm-primary-actions > .btn.btn-sm:not(.btn-primary):hover,
+#convertModalBody .results-col .convert-cm-primary-actions > .btn.btn-sm:not(.btn-primary):focus-visible,
 #convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary):hover,
 #convertModalBody .results-col .convert-cm-actions-row > .btn.btn-sm:not(.btn-primary):focus-visible{
   border-color: color-mix(in srgb, var(--accent) 50%, var(--border));
   background: color-mix(in srgb, var(--accent-soft) 32%, var(--panel2));
 }
+#convertModalBody #convertWaypointFeedback{
+  margin: 0 0 var(--gis-space-3);
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+#convertModalBody #convertWaypointFeedback.is-ok{ color: color-mix(in srgb, var(--ok, #16a34a) 92%, var(--text-primary)); }
+#convertModalBody #convertWaypointFeedback.is-err{ color: color-mix(in srgb, var(--error, #dc2626) 88%, var(--text-primary)); }
+#convertModalBody #convertWaypointFeedback.is-info{ color: var(--muted); }
 #convertModalBody .results-col .convert-cm-footer-options{
   display: flex;
   justify-content: flex-end;
@@ -6838,6 +7011,13 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 #trackModalBody > #sec-track .section-body{ display:block !important; }
+/* Misura floating (Pass 6 6E.3c): stesso pattern di sec-track nel track modal. */
+#measurePanelBody > #sec-measure{ margin:0; border:none; background:transparent; padding:0; }
+#measurePanelBody > #sec-measure > summary{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+#measurePanelBody > #sec-measure .section-body{ display:block !important; }
 #trackModalBody .track-points-section{
   margin:8px 0 10px;
   border:1px solid color-mix(in srgb, var(--border) 88%, transparent);
@@ -7104,6 +7284,42 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #measurePanel (Pass 6 6E.3d): anchor angoli come Range Rings — handle nel DOM ma senza posizionamento erano inutilizzabili. */
+#measurePanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#measurePanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#measurePanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#measurePanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#measurePanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#measurePanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#measurePanel .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#measurePanel .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#measurePanel .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#measurePanel .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 /* #astroPanel + picker Astro (E.1): anchor angoli handle come Range Rings. */
 #astroPanel .gis-panel-resize-handle[data-handle="se"],
 #astroWaypointPicker .gis-panel-resize-handle[data-handle="se"],
@@ -7177,13 +7393,14 @@ html[data-theme="light"] #trackModal .track-resize-handle{
 }
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
-#waypointModalHead, #convertModalHead, #rangeRingsPanelHead, #astroPanelHead,
+#waypointModalHead, #convertModalHead, #rangeRingsPanelHead, #measurePanelHead, #astroPanelHead,
 #astroWaypointPickerHead, #astroFavoritePickerHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
-#waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging, #astroPanelHead.dragging,
+#waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging, #measurePanelHead.dragging, #astroPanelHead.dragging,
 #astroWaypointPickerHead.dragging, #astroFavoritePickerHead.dragging{ cursor:grabbing; }
 body:not(.gis-mode) #waypointModal .gis-panel-resize-handle,
 body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
 body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle,
+body:not(.gis-mode) #measurePanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroWaypointPicker .gis-panel-resize-handle,
 body:not(.gis-mode) #astroFavoritePicker .gis-panel-resize-handle{ display:none !important; }
@@ -7599,24 +7816,45 @@ button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
   overflow:visible;
 }
 .gis-map-gps-overlay .gis-gps-accuracy{
-  fill:rgba(37,99,235,0.12);
-  stroke:rgba(37,99,235,0.55);
+  fill:rgba(100,116,139,0.12);
+  stroke:rgba(100,116,139,0.5);
   stroke-width:1.65;
   animation:gisGpsAccPulse 2.8s ease-in-out infinite;
 }
 .gis-map-gps-overlay .gis-gps-core{
-  fill:#2563eb;
+  fill:#d97706;
   stroke:#ffffff;
   stroke-width:2.2;
   animation:gisGpsCorePulse 2.2s ease-in-out infinite;
 }
 .gis-map-gps-overlay .gis-gps-pulse{
   fill:none;
-  stroke:#38bdf8;
+  stroke:#94a3b8;
   stroke-width:1.35;
   opacity:.55;
   animation:gisGpsRingPulse 2s ease-in-out infinite;
 }
+/* Qualità segnale (stesse soglie del tooltip): buono=verde, medio=arancione, scarso=rosso, unknown=arancio scuro. */
+.gis-map-gps-overlay.gis-gps-map-q-good .gis-gps-accuracy{
+  fill:rgba(34,197,94,0.12); stroke:rgba(34,197,94,0.55);
+}
+.gis-map-gps-overlay.gis-gps-map-q-good .gis-gps-core{ fill:#22c55e; }
+.gis-map-gps-overlay.gis-gps-map-q-good .gis-gps-pulse{ stroke:#4ade80; opacity:.5; }
+.gis-map-gps-overlay.gis-gps-map-q-medium .gis-gps-accuracy{
+  fill:rgba(249,115,22,0.12); stroke:rgba(249,115,22,0.55);
+}
+.gis-map-gps-overlay.gis-gps-map-q-medium .gis-gps-core{ fill:#f97316; }
+.gis-map-gps-overlay.gis-gps-map-q-medium .gis-gps-pulse{ stroke:#fb923c; opacity:.52; }
+.gis-map-gps-overlay.gis-gps-map-q-poor .gis-gps-accuracy{
+  fill:rgba(239,68,68,0.12); stroke:rgba(239,68,68,0.55);
+}
+.gis-map-gps-overlay.gis-gps-map-q-poor .gis-gps-core{ fill:#ef4444; }
+.gis-map-gps-overlay.gis-gps-map-q-poor .gis-gps-pulse{ stroke:#f87171; opacity:.52; }
+.gis-map-gps-overlay.gis-gps-map-q-unknown .gis-gps-accuracy{
+  fill:rgba(217,119,6,0.14); stroke:rgba(217,119,6,0.55);
+}
+.gis-map-gps-overlay.gis-gps-map-q-unknown .gis-gps-core{ fill:#d97706; }
+.gis-map-gps-overlay.gis-gps-map-q-unknown .gis-gps-pulse{ stroke:#fbbf24; opacity:.5; }
 @keyframes gisGpsCorePulse{
   0%,100%{ opacity:1; }
   50%{ opacity:.78; }
@@ -8128,11 +8366,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </div>
           </div>
         </div>
+        <!-- 6F.1a: Waypoint + Preferiti subito sotto l’intestazione Risultati (prima della griglia #results alta) così restano visibili nel Converti GIS senza scroll infinito. -->
+        <div class="actions convert-cm-primary-actions">
+          <button type="button" id="btnAddResultToWaypoint" class="btn btn-sm" disabled data-i18n="convert.addWaypoint">Aggiungi waypoint</button>
+          <button type="button" id="btnAddResultToFavorites" class="btn btn-sm" disabled data-i18n="fav.addFromResult" data-i18n-tip="tip.favAddFromResult" data-i18n-aria="tip.favAddFromResult">Aggiungi ai Preferiti</button>
+        </div>
+        <p id="convertWaypointFeedback" class="hint convert-wp-feedback" role="status" aria-live="polite" hidden></p>
         <div id="results"><p style="color:var(--muted); font-size:.88rem" data-i18n="res.empty">Inserisci una coordinata e premi Converti.</p></div>
         <div id="gpsMetadata" class="gps-metadata" hidden></div>
         <div class="actions convert-cm-actions-row">
-          <button type="button" id="btnAddResultToWaypoint" class="btn btn-sm" disabled data-i18n="waypointModal.addFromConvertBtn" data-i18n-tip="tip.waypointModal.addFromConvertBtn">Aggiungi a waypoint</button>
-          <button type="button" id="btnAddResultToFavorites" class="btn btn-sm" disabled data-i18n="fav.addFromResult" data-i18n-tip="tip.favAddFromResult" data-i18n-aria="tip.favAddFromResult">Aggiungi ai Preferiti</button>
           <button id="btnCopyAll" class="btn btn-sm" data-i18n="btn.copyAll" data-i18n-tip="tip.copyAll">Copia tutto</button>
           <button id="btnCopyLink" class="btn btn-sm" data-i18n="btn.copyLink" data-i18n-tip="tip.copyLink">Copia link</button>
           <button id="btnQr" class="btn btn-sm" data-i18n="btn.qr" data-i18n-tip="tip.qr">QR</button>
@@ -8312,8 +8554,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <details id="sec-rangerings" data-tab-key="rangerings">
       <summary data-i18n="sec.rangerings">Range Rings</summary>
       <div class="section-body">
-        <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="rangeRings.hint"></p>
-        <div id="rrMapFirstHint" class="hint rr-map-first-hint" role="status" hidden data-i18n="rangeRings.mapFirstHint"></div>
+        <!-- Pass 6E.3b: un’unica barra introduttiva fissa (notice slate); la riga map-first è opzionale nello stesso box. -->
+        <div id="rrIntroBar" class="rr-intro-bar" role="region" aria-labelledby="rrIntroLead">
+          <p id="rrIntroLead" class="rr-intro-lead" data-i18n="rangeRings.hint"></p>
+          <p id="rrMapFirstHint" class="rr-intro-map-first" hidden role="status" data-i18n="rangeRings.mapFirstHint"></p>
+        </div>
 
         <div class="actions" style="margin-top:10px; flex-wrap:wrap; align-items:center; gap:8px">
           <button type="button" class="btn btn-sm btn-primary" id="rrPickMapBtn" hidden data-i18n="rangeRings.pickMap" data-i18n-tip="rangeRings.pickMapTip"></button>
@@ -8343,8 +8588,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <input type="file" id="rrCenterGeoJsonFile" class="file-input-hidden" accept=".geojson,.json,application/geo+json,application/json">
         </div>
 
-        <details class="rr-io-details" id="rrIoDetails" style="margin-top:10px">
-          <summary class="sub-section-title" data-i18n="rangeRings.ioMenu">Importa / Esporta</summary>
+        <details class="rr-io-details" id="rrIoDetails">
+          <summary data-i18n="rangeRings.ioMenu">Importa / Esporta</summary>
           <div class="rr-io-actions" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; align-items:center">
             <button type="button" class="btn btn-sm" id="rrExportAllVisibleBtn" data-i18n="rangeRings.exportAllVisible" data-i18n-tip="tip.rangeRingsExportAllVis"></button>
             <button type="button" class="btn btn-sm" id="rrExportAllSetsBtn" data-i18n="rangeRings.exportAllSets" data-i18n-tip="tip.rangeRingsExportAll"></button>
@@ -8556,6 +8801,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <div class="wp-inline-confirm__actions gis-rr-confirm-actions">
               <button type="button" id="wpDeleteOneConfirm" class="btn btn-sm btn-danger" data-i18n="waypointModal.deleteOneConfirmBtn">Elimina</button>
               <button type="button" id="wpDeleteOneCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
+            </div>
+          </div>
+          <!-- 6F.1: remove linked favorite only (waypoint stays); coords match uses first state.favorites[] hit = most recent (unshift). -->
+          <div id="wpRemoveFavBar" class="wp-inline-confirm gis-rr-confirm-skin" role="region" aria-labelledby="wpRemoveFavTitle" aria-live="polite" hidden>
+            <div id="wpRemoveFavTitle" class="wp-inline-confirm__msg gis-rr-confirm-msg" style="font-weight:600;margin-bottom:0.35em" data-i18n="waypointModal.removeFavoriteConfirmTitle">Rimuovere dai Preferiti?</div>
+            <div id="wpRemoveFavMsg" class="wp-inline-confirm__msg gis-rr-confirm-msg" data-i18n="waypointModal.removeFavoriteConfirmMsg">Il waypoint resterà nell’elenco, ma il Preferito collegato verrà rimosso.</div>
+            <div class="wp-inline-confirm__actions gis-rr-confirm-actions">
+              <button type="button" id="wpRemoveFavConfirm" class="btn btn-sm btn-danger" data-i18n="waypointModal.removeFavoriteConfirm">Rimuovi dai Preferiti</button>
+              <button type="button" id="wpRemoveFavCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
             </div>
           </div>
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
@@ -8876,7 +9130,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
   </div>
   <p id="waypointModalMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
-  <div id="waypointModalUnsavedCloseBar" class="wp-inline-confirm gis-rr-confirm-skin" role="region" aria-labelledby="waypointModalUnsavedCloseTitle" aria-live="polite" hidden>
+  <div id="waypointModalUnsavedCloseBar" class="wp-inline-confirm gis-rr-warn-skin" role="region" aria-labelledby="waypointModalUnsavedCloseTitle" aria-live="polite" hidden>
     <div class="wp-inline-confirm__msg gis-rr-confirm-msg">
       <strong id="waypointModalUnsavedCloseTitle" data-i18n="waypointModal.unsavedCloseTitle"></strong>
       <span class="hint" style="display:block;margin-top:6px" data-i18n="waypointModal.unsavedCloseMsg"></span>
@@ -9085,6 +9339,23 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <p id="layersPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="layersPanelBody"></div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
+<dialog id="measurePanel" class="app-modal measure-panel" aria-labelledby="measurePanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="measurePanelHead">
+    <h2 id="measurePanelTitle" class="app-modal-title" data-i18n="sec.measure">Misura</h2>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="measurepanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="measurePanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    </div>
+  </div>
+  <p id="measurePanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
+  <div class="app-modal-body" id="measurePanelBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
@@ -9905,7 +10176,8 @@ const I18N = {
     "favoritesPanel.minimizeBlockedSubdialog":"Termina rinomina o conferma sui preferiti prima di minimizzare.",
     "layersPanel.minimizeBlockedSubdialog":"Chiudi il dialogo di avviso sulla bozza offline prima di minimizzare.",
     "astroPanel.minimizeBlockedSubdialog":"Chiudi il selettore waypoint o preferito prima di minimizzare.",
-    "rangeRingsPanel.minimizeBlockedSubdialog":"Chiudi selettore sorgente, conferma eliminazione o barra azioni batch prima di minimizzare.",
+    "rangeRingsPanel.minimizeBlockedSubdialog":"Chiudi selettore sorgente o conferma eliminazione prima di minimizzare.",
+    "measurePanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "waypointModal.unsavedCloseTitle":"Waypoint non confermato",
     "waypointModal.unsavedCloseMsg":"Stai inserendo o modificando un waypoint. Chiudere ora scarta le modifiche non salvate e annulla il pick sulla mappa.",
     "waypointModal.unsavedCloseCancel":"Continua modifica",
@@ -9980,6 +10252,10 @@ const I18N = {
     "waypointModal.deleteConfirm":"Eliminare questo waypoint?",
     "waypointModal.deleteOneMsg":"Eliminare il waypoint «{0}»?",
     "waypointModal.deleteOneConfirmBtn":"Elimina",
+    "waypointModal.removeFavoriteConfirmTitle":"Rimuovere dai Preferiti?",
+    "waypointModal.removeFavoriteConfirmMsg":"Il waypoint resterà nell’elenco, ma il Preferito collegato verrà rimosso.",
+    "waypointModal.removeFavoriteConfirm":"Rimuovi dai Preferiti",
+    "waypointModal.favoriteRemoved":"Preferito rimosso",
     "waypointModal.zoomTo":"Centra mappa sul waypoint",
     "waypointModal.deleteSelected":"Elimina selezionati",
     "waypointModal.mapNameLabel":"Nome sulla mappa",
@@ -10449,6 +10725,7 @@ const I18N = {
     "gis.minimized.layers":"Mappe offline",
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Range Rings",
+    "gis.minimized.measure":"Misura",
     "tip.panelResize":"Ridimensiona pannello",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
@@ -10782,6 +11059,9 @@ const I18N = {
     "fav.confirmDeleteOne":"Eliminare questo preferito? L'operazione non si può annullare.",
     "fav.saved":"Preferito salvato.",
     "fav.addFromResult":"Aggiungi ai Preferiti",
+    "convert.addWaypoint":"Aggiungi waypoint",
+    "convert.addWaypointDisabled":"Converti prima un punto valido",
+    "convert.waypointAdded":"Waypoint aggiunto",
     "fav.convertedPointName":"Punto convertito",
     "fav.savedFromWaypoint":"Waypoint aggiunto ai Preferiti.",
     "fav.savedFromConverter":"Risultato aggiunto ai Preferiti.",
@@ -11267,7 +11547,8 @@ const I18N = {
     "favoritesPanel.minimizeBlockedSubdialog":"Finish rename or confirmation on favorites before minimizing.",
     "layersPanel.minimizeBlockedSubdialog":"Close the offline draft warning dialog before minimizing.",
     "astroPanel.minimizeBlockedSubdialog":"Close the waypoint or favorite picker before minimizing.",
-    "rangeRingsPanel.minimizeBlockedSubdialog":"Close the source picker, delete confirmation, or batch bar before minimizing.",
+    "rangeRingsPanel.minimizeBlockedSubdialog":"Close the source picker or delete confirmation before minimizing.",
+    "measurePanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
     "waypointModal.unsavedCloseTitle":"Unsaved waypoint",
     "waypointModal.unsavedCloseMsg":"You are adding or editing a waypoint. Closing now discards unsaved changes and cancels map pick.",
     "waypointModal.unsavedCloseCancel":"Keep editing",
@@ -11342,6 +11623,10 @@ const I18N = {
     "waypointModal.deleteConfirm":"Delete this waypoint?",
     "waypointModal.deleteOneMsg":"Delete waypoint “{0}”?",
     "waypointModal.deleteOneConfirmBtn":"Delete",
+    "waypointModal.removeFavoriteConfirmTitle":"Remove from favorites?",
+    "waypointModal.removeFavoriteConfirmMsg":"The waypoint stays in the list, but the linked favorite will be removed.",
+    "waypointModal.removeFavoriteConfirm":"Remove from favorites",
+    "waypointModal.favoriteRemoved":"Favorite removed",
     "waypointModal.zoomTo":"Center the map on this waypoint",
     "waypointModal.deleteSelected":"Delete selected",
     "waypointModal.mapNameLabel":"Name on map",
@@ -11810,6 +12095,7 @@ const I18N = {
     "gis.minimized.layers":"Offline maps",
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Range Rings",
+    "gis.minimized.measure":"Measure",
     "tip.panelResize":"Resize panel",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
@@ -12143,6 +12429,9 @@ const I18N = {
     "fav.confirmDeleteOne":"Delete this favorite? This cannot be undone.",
     "fav.saved":"Favorite saved.",
     "fav.addFromResult":"Add to favorites",
+    "convert.addWaypoint":"Add waypoint",
+    "convert.addWaypointDisabled":"Convert a valid point first",
+    "convert.waypointAdded":"Waypoint added",
     "fav.convertedPointName":"Converted point",
     "fav.savedFromWaypoint":"Waypoint added to favorites.",
     "fav.savedFromConverter":"Conversion result added to favorites.",
@@ -12629,7 +12918,8 @@ const I18N = {
     "favoritesPanel.minimizeBlockedSubdialog":"Terminez le renommage ou la confirmation sur les favoris avant de réduire.",
     "layersPanel.minimizeBlockedSubdialog":"Fermez la boîte d’avertissement sur le brouillon hors ligne avant de réduire.",
     "astroPanel.minimizeBlockedSubdialog":"Fermez le sélecteur de waypoint ou de favori avant de réduire.",
-    "rangeRingsPanel.minimizeBlockedSubdialog":"Fermez le sélecteur de source, la confirmation de suppression ou la barre d’actions groupées avant de réduire.",
+    "rangeRingsPanel.minimizeBlockedSubdialog":"Fermez le sélecteur de source ou la confirmation de suppression avant de réduire.",
+    "measurePanel.minimizeBlockedSubdialog":"Terminez ou fermez les boîtes de dialogue ouvertes avant de réduire.",
     "waypointModal.unsavedCloseTitle":"Waypoint non confirmé",
     "waypointModal.unsavedCloseMsg":"Vous ajoutez ou modifiez un waypoint. Fermer maintenant annule les changements non enregistrés et le pointage sur la carte.",
     "waypointModal.unsavedCloseCancel":"Continuer l’édition",
@@ -12704,6 +12994,10 @@ const I18N = {
     "waypointModal.deleteConfirm":"Supprimer ce waypoint ?",
     "waypointModal.deleteOneMsg":"Supprimer le waypoint « {0} » ?",
     "waypointModal.deleteOneConfirmBtn":"Supprimer",
+    "waypointModal.removeFavoriteConfirmTitle":"Retirer des favoris ?",
+    "waypointModal.removeFavoriteConfirmMsg":"Le waypoint reste dans la liste, mais le favori associé sera supprimé.",
+    "waypointModal.removeFavoriteConfirm":"Retirer des favoris",
+    "waypointModal.favoriteRemoved":"Favori retiré",
     "waypointModal.zoomTo":"Centrer la carte sur ce waypoint",
     "waypointModal.deleteSelected":"Supprimer la sélection",
     "waypointModal.mapNameLabel":"Nom sur la carte",
@@ -13172,6 +13466,7 @@ const I18N = {
     "gis.minimized.layers":"Cartes hors ligne",
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Anneaux",
+    "gis.minimized.measure":"Mesure",
     "tip.panelResize":"Redimensionner le panneau",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
@@ -13505,6 +13800,9 @@ const I18N = {
     "fav.confirmDeleteOne":"Supprimer ce favori ? Cette action est irréversible.",
     "fav.saved":"Favori enregistré.",
     "fav.addFromResult":"Ajouter aux favoris",
+    "convert.addWaypoint":"Ajouter un waypoint",
+    "convert.addWaypointDisabled":"Convertissez d’abord un point valide",
+    "convert.waypointAdded":"Waypoint ajouté",
     "fav.convertedPointName":"Point converti",
     "fav.savedFromWaypoint":"Waypoint ajouté aux favoris.",
     "fav.savedFromConverter":"Résultat de conversion ajouté aux favoris.",
@@ -14042,6 +14340,8 @@ const state = {
   favoritesPanelOpen: false, // transient: floating Favoriti panel visibility (GIS)
   layersPanelOpen: false, // transient: floating Mappa/Offline panel visibility (GIS)
   rangeRingsPanelOpen: false, // transient: floating Range Rings panel (GIS 5A-bis; on-map button)
+  /** Transient: floating Misura panel (Pass 6 6E.3c); not persisted. */
+  measurePanelOpen: false,
   /** Transient: next map click sets Range Rings center (mode "picked"); not persisted. */
   rangeRingsPickCenterMode: false,
   /** Transient: next map click creates a Range Rings set (after pre-validating distances); not persisted. */
@@ -14179,8 +14479,12 @@ function mapMeasureDocDragUp(ev){
   if (ev.cancelable) ev.preventDefault();
 }
 
+/** True quando Misura GIS è nel pannello floating aperto (non minimizzato). */
 function gisMeasureIsDrawerContext(){
-  return document.body.classList.contains("gis-mode") && state.activeTab === "measure";
+  if (!document.body.classList.contains("gis-mode")) return false;
+  const d = document.getElementById("measurePanel");
+  return !!(state.measurePanelOpen && d && d.open
+    && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel")));
 }
 
 /** Preferenza UX GIS solo valori ammessi (persistenza settings). */
@@ -14213,7 +14517,7 @@ function measShowInfo(key){
 }
 /** Aggiorna hint stato Misura GIS (#measOperativeNotices); non sostituisce errori ancora visibili. */
 function measSyncOperativeInfo(){
-  if (!document.body.classList.contains("gis-mode") || state.activeTab !== "measure"){
+  if (!gisMeasureIsDrawerContext()){
     measClearMsgs();
     return;
   }
@@ -19086,6 +19390,7 @@ async function prepareUiBeforeAppFullReset(){
   } catch(_){}
   try { if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel(); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  try { if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis(); } catch(_){}
 }
 
 async function performAppFullLocalReset(){
@@ -19294,7 +19599,7 @@ function bindHotkeys(){
         }
         return;
       }
-      if (document.body.classList.contains("gis-mode") && state.activeTab === "measure" && state.mapMeasureMode){
+      if (document.body.classList.contains("gis-mode") && gisMeasureIsDrawerContext() && state.mapMeasureMode){
         const hadPts = (Array.isArray(state.mapMeasurePts) && state.mapMeasurePts.length > 0) ||
           (Array.isArray(state.mapPolyPts) && state.mapPolyPts.length > 0);
         if (hadPts){
@@ -19315,6 +19620,12 @@ function bindHotkeys(){
           ev.preventDefault();
           return;
         }
+        /* Misura floating usa dialog.show(): Esc non emette «cancel»; chiudi qui come gli altri floating. */
+        try {
+          if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis();
+        } catch(_){}
+        ev.preventDefault();
+        return;
       }
       // Exit track / waypoint map-add modes if active
       if ((state.track && state.track.pickMode) || state.waypointPickMode){
@@ -20446,13 +20757,25 @@ function formatGisMapGpsTipFromTransient(fx){
   return (base && s) ? (base + " — " + s) : (s || base);
 }
 
+/** Soglie allineate a `formatGisMapGpsInfoBadgeExtra` / `geo.gpsQuality*`: ≤10m good, ≤30m medium, altrimenti poor; senza accuracy valida → unknown. */
+function gisGpsAccToQualityTier(accM){
+  const v = (accM != null && Number.isFinite(Number(accM)) && Number(accM) > 0 && Number(accM) < 5e6) ? Number(accM) : null;
+  if (v == null) return "unknown";
+  if (v <= 10) return "good";
+  if (v <= 30) return "medium";
+  return "poor";
+}
+
 /** Pulsante mappa GIS: stato «fix acquisito» (aria-pressed + classe), solo se non disabilitato da barriere. */
 function syncGisMapGpsButtonFromTransient(){
   const btn = document.getElementById("btnGisMapMyLocation");
   if (!btn) return;
   const has = !!(_gisMapGpsFixTransient && Number.isFinite(_gisMapGpsFixTransient.lat) && Number.isFinite(_gisMapGpsFixTransient.lon));
   const on = has && !btn.disabled;
+  const QGPS = ["gis-gps-q-unknown", "gis-gps-q-good", "gis-gps-q-medium", "gis-gps-q-poor"];
+  for (const c of QGPS) try { btn.classList.remove(c); } catch(_){}
   btn.classList.toggle("gis-gps-fix-active", on);
+  if (on) try { btn.classList.add("gis-gps-q-" + gisGpsAccToQualityTier(_gisMapGpsFixTransient && _gisMapGpsFixTransient.accM)); } catch(_){}
   try { btn.setAttribute("aria-pressed", on ? "true" : "false"); } catch(_){}
   let tip = "";
   try { tip = (typeof t === "function" && t("tip.myLocation")) ? String(t("tip.myLocation")) : ""; } catch(_){ tip = ""; }
@@ -20792,6 +21115,7 @@ function renderMiniMap(lat, lon, resetView = true){
   renderTileMap(lat, lon, state.mapZoom || 11);
   try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
 }
 
 /** True if the browser is online AND the user hasn't forced offline mode. */
@@ -25743,8 +26067,9 @@ function renderGisMapGpsOverlay(tileMap, markerLat, markerLon, zoom){
   dot.setAttribute("cy", cy.toFixed(2));
   dot.setAttribute("r", "7");
   svg.appendChild(dot);
+  const qTier = gisGpsAccToQualityTier(fix.accM);
   const wr = document.createElement("div");
-  wr.className = "gis-map-gps-overlay";
+  wr.className = "gis-map-gps-overlay gis-gps-map-q-" + qTier;
   wr.appendChild(svg);
   tileLayer.appendChild(wr);
 }
@@ -26717,6 +27042,24 @@ function trackSyncPickModeUi(){
     rrTgl.setAttribute("aria-label", tipRr);
     rrTgl.removeAttribute("title");
   }
+  /* Misura (mappa): stessa logica di renderTileMap — altrimenti dopo chiusura floating il toggle resta active senza re-render. */
+  const measTgl = root && root.querySelector('[data-role="measure-box-toggle"]');
+  if (measTgl){
+    const on = !!state.mapMeasureMode;
+    const open = !!state.mapMeasurePanelOpen;
+    const gisM = document.body.classList.contains("gis-mode") &&
+      (typeof gisMeasureIsDrawerContext === "function" && gisMeasureIsDrawerContext());
+    const measOn = !!(on || open || gisM);
+    measTgl.classList.toggle("active", measOn);
+    measTgl.setAttribute("aria-pressed", measOn ? "true" : "false");
+    const tipM = (typeof t === "function" ? (t("tip.mapMeasureBox") || "") : "") || "";
+    if (String(tipM || "").trim()){
+      const tipEsc = (typeof esc === "function" ? esc(tipM) : String(tipM));
+      measTgl.setAttribute("data-tip", tipEsc);
+      measTgl.setAttribute("aria-label", tipEsc);
+      measTgl.removeAttribute("title");
+    }
+  }
 }
 
 function trackPointDisplayLabel(i, total){
@@ -27137,6 +27480,7 @@ function refreshTileMapForTrackUi(){
   const lp = state.lastPoint;
   if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
     renderMiniMap(lp.lat, lp.lon, false);
+    try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
     return;
   }
   const vc = state.viewCenter;
@@ -27144,6 +27488,7 @@ function refreshTileMapForTrackUi(){
   const r = document.getElementById("miniMap");
   if (r && r.querySelector(".tile-map") && vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon))
     renderTileMap(vc.lat, vc.lon, z);
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
 }
 
 function trackCancelWaypointMapEditor(){
@@ -28469,7 +28814,7 @@ function renderTileMap(lat, lon, zoom){
     ${(() => {
       const on = !!state.mapMeasureMode;
       const open = !!state.mapMeasurePanelOpen;
-      const gisM = _gisHub && state.activeTab === "measure";
+      const gisM = _gisHub && gisMeasureIsDrawerContext();
       const tip = esc(t("tip.mapMeasureBox") || "Strumenti di misura (distanza/azimut, poligono/area)");
       const cls = (on || open || gisM) ? " active" : "";
       const pressed = (on || open || gisM) ? "true" : "false";
@@ -28482,13 +28827,6 @@ function renderTileMap(lat, lon, zoom){
       const tip = esc(t("tip.trackMapBuild"));
       const cls = on ? " active" : "";
       return `<button class="ttrk-btn${cls}" type="button" data-role="track-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${trackMapIcoSvg}</button>`;
-    })()}
-    ${(() => {
-      const can = mapUndoAvailable();
-      const tip = esc(t("tip.mapUndo"));
-      const dis = can ? "" : " disabled";
-      const img = "<img class=\"tundo-ico\" src=\"assets/map-undo.png\" width=\"20\" height=\"20\" alt=\"\" decoding=\"async\">";
-      return `<button class="tundo-btn" type="button" data-role="map-undo"${dis} data-tip="${tip}" aria-label="${tip}">${img}</button>`;
     })()}
     ${(() => {
       ensureTrackState();
@@ -28513,7 +28851,7 @@ function renderTileMap(lat, lon, zoom){
     })()}
   </div>`;
 
-  // Floating measure box (ruler + protractor tool) — nascosto in GIS (pannello nel drawer a sinistra).
+  // Floating measure box (ruler + protractor tool) — nascosto in GIS (pannello Misura floating #measurePanel).
   if (state.mapMeasurePanelOpen && !_gisHub){
     const k = state.mapMeasureKind || "line";
     const u = state.mapMeasureUnit || "m";
@@ -28781,8 +29119,7 @@ function renderTileMap(lat, lon, zoom){
     measToggle.addEventListener("click", (ev) => {
       ev.stopPropagation();
       if (document.body.classList.contains("gis-mode")){
-        if (state.activeTab === "measure") deactivateTab();
-        else activateTab("measure");
+        if (typeof toggleMeasureFloatingPanelGis === "function") toggleMeasureFloatingPanelGis();
         return;
       }
       const next = !state.mapMeasurePanelOpen;
@@ -28964,14 +29301,6 @@ function renderTileMap(lat, lon, zoom){
       if (ev.cancelable) ev.preventDefault();
       if (gisGpsBtn.disabled) return;
       try { requestGisMapCurrentLocation(); } catch(_){}
-    });
-  }
-  const mapUndoBtn = root.querySelector('[data-role="map-undo"]');
-  if (mapUndoBtn){
-    mapUndoBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (!mapUndoAvailable()) return;
-      if (mapUndoLastAction(lat, lon, zoom)) renderTileMap(lat, lon, zoom);
     });
   }
   root.classList.toggle("map-pick-mode", !!state.mapPickMode);
@@ -29355,7 +29684,7 @@ function gisMapOnDblClickCenter(ev){
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap || !tileMap.contains(ev.target)) return;
-  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tundo-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
   if (ev.target.closest(UI_SEL)) return;
   const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
   if (trackPickActive || state.waypointPickMode || state.mapPickMode || state.astroPickCenterMode) return;
@@ -29388,7 +29717,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tundo-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -29591,7 +29920,7 @@ function attachPanHandlers(root, lat, lon, zoom){
             a.push({ lat: pick.lat, lon: pick.lon });
             state.mapPolyPts = a;
           } else {
-            const gisFlow = (document.body.classList.contains("gis-mode") && state.activeTab === "measure")
+            const gisFlow = (document.body.classList.contains("gis-mode") && gisMeasureIsDrawerContext())
               ? (state.gisMeasureFlow || "inverse2") : "inverse2";
             const pts = Array.isArray(state.mapMeasurePts) ? state.mapMeasurePts.slice() : [];
             if (gisFlow === "direct"){
@@ -30217,6 +30546,8 @@ let favoritesListCoordDisplayMode = "dd";
 let favoritesPendingInline = null;
 /** Transient: single-waypoint delete confirmation in #wpDeleteOneBar. */
 let waypointPendingDeleteId = null;
+/** 6F.1: transient favorite id pending removal from waypoint list star (not waypoint delete). */
+let waypointPendingRemoveFavId = null;
 
 const FAV_LIST_COORD_MODES = ["dd", "signed", "ddm", "dms", "mgrs5"];
 
@@ -30274,6 +30605,17 @@ function waypointCoordinateHasMatchingFavorite(lat, lon){
     if (Math.abs(f.lat - lat) < 1e-5 && Math.abs(f.lon - lon) < 1e-5) return true;
   }
   return false;
+}
+
+/** 6F.1: first `state.favorites` entry at (lat,lon) — index 0 is newest because favorites use unshift. */
+function findFirstFavoriteIdAtLatLon(lat, lon){
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  const arr = Array.isArray(state.favorites) ? state.favorites : [];
+  for (const f of arr){
+    if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)) continue;
+    if (Math.abs(f.lat - lat) < 1e-5 && Math.abs(f.lon - lon) < 1e-5) return f.id;
+  }
+  return null;
 }
 
 function favHideInlineConfirmBar(){
@@ -34275,6 +34617,7 @@ function bindUI(){
   try { favWireInlineConfirmOnce(); } catch(_){}
   try { favWireCoordFmtSelectOnce(); } catch(_){}
   try { wpWireDeleteOneBarOnce(); } catch(_){}
+  try { wpWireRemoveFavBarOnce(); } catch(_){}
 
   // Persist toggle
   document.getElementById("persistToggle").addEventListener("change", (e) => {
@@ -34941,8 +35284,8 @@ const GIS_TAB_SECTIONS = Object.freeze({
   history:   "sec-history",
   layers:    "offlineTilePanel"
 });
-/** Topbar tabs only — waypoint e traccia aprono modal dedicati (non drawer). */
-const GIS_VALID_TABS = Object.freeze(Object.keys(GIS_TAB_SECTIONS).filter(k => k !== "waypoints" && k !== "track"));
+/** Topbar tabs only — waypoint, traccia e misura: pannelli floating dedicati (non drawer). */
+const GIS_VALID_TABS = Object.freeze(Object.keys(GIS_TAB_SECTIONS).filter(k => k !== "waypoints" && k !== "track" && k !== "measure"));
 
 /** Allowed tool keys for the GIS inline panel inside #toolsDrawer. */
 const GIS_TOOL_SECTIONS = Object.freeze({
@@ -35072,6 +35415,10 @@ function gisInit(){
       }
       if (document.body.classList.contains("gis-mode") && tab === "layers"){
         toggleLayersPanel();
+        return;
+      }
+      if (document.body.classList.contains("gis-mode") && tab === "measure"){
+        toggleMeasureFloatingPanelGis();
         return;
       }
       if (state.activeTab === tab) deactivateTab();
@@ -35250,6 +35597,22 @@ function gisInit(){
     astMin.addEventListener("click", (ev) => {
       ev.preventDefault();
       if (typeof gisMinimizePanel === "function") gisMinimizePanel("astroPanel", "gis.minimized.astro");
+    });
+  }
+  const measDlg = document.getElementById("measurePanel");
+  const measClose = document.getElementById("measurePanelClose");
+  const handleMeasClose = () => { if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis(); };
+  if (measClose) measClose.addEventListener("click", (ev) => { ev.preventDefault(); handleMeasClose(); });
+  if (measDlg){
+    measDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handleMeasClose(); });
+    measDlg.addEventListener("click", (ev) => { if (ev.target === measDlg) handleMeasClose(); });
+  }
+  const measMin = document.querySelector('[data-role="measurepanel-minimize"]');
+  if (measMin && !measMin._gisMeasMinBtnBound){
+    measMin._gisMeasMinBtnBound = true;
+    measMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("measurePanel", "gis.minimized.measure");
     });
   }
 
@@ -35584,12 +35947,24 @@ function gisInit(){
       if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
       return;
     }
+    const mpd = document.getElementById("measurePanel");
+    if (state.measurePanelOpen || (mpd && mpd.open)){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel")) return;
+      if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis();
+      return;
+    }
     const wmd = document.getElementById("waypointModal");
     if ((state.waypointsModalOpen || (wmd && wmd.open)) && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("waypointModal"))){
       const wpDelBar = document.getElementById("wpDeleteOneBar");
       if (wpDelBar && !wpDelBar.hidden){
         ev.preventDefault();
         wpHideDeleteOneBar();
+        return;
+      }
+      const wpRmFavBar = document.getElementById("wpRemoveFavBar");
+      if (wpRmFavBar && !wpRmFavBar.hidden){
+        ev.preventDefault();
+        try { if (typeof wpHideRemoveFavBar === "function") wpHideRemoveFavBar(); } catch(_){}
         return;
       }
       const wpUnsBar = document.getElementById("waypointModalUnsavedCloseBar");
@@ -35797,6 +36172,10 @@ function gisInit(){
       if (state.rangeRingsPanelOpen && rrp && rrp.open && document.body.classList.contains("gis-mode")){
         try { clampRangeRingsPanelRect(rrp); gisPanelSyncBodySize(rrp, _rangeRingsPanelLayoutOpts()); } catch(_){}
       }
+      const mp = document.getElementById("measurePanel");
+      if (state.measurePanelOpen && mp && mp.open && document.body.classList.contains("gis-mode")){
+        try { clampMeasurePanelRect(mp); gisPanelSyncBodySize(mp, _measurePanelLayoutOpts()); } catch(_){}
+      }
       const ap = document.getElementById("astroPanel");
       if (state.astroPanelOpen && ap && ap.open && document.body.classList.contains("gis-mode")){
         try { clampAstroPanelRect(ap); gisPanelSyncBodySize(ap, _astroPanelLayoutOpts()); } catch(_){}
@@ -35859,7 +36238,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","rangeRingsPanel","astroPanel","astroWaypointPicker","astroFavoritePicker"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","astroWaypointPicker","astroFavoritePicker"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -35924,8 +36303,7 @@ function gisRangeRingsMinimizeBlocked(){
   if (pick && pick.open) return true;
   const del = document.getElementById("rrDeleteConfirm");
   if (del && !del.hidden) return true;
-  const batch = document.getElementById("rrBatchBar");
-  if (batch && !batch.hidden) return true;
+  /* #rrBatchBar is shown whenever any RR set exists (syncRangeRingsBatchBar: hidden = !anyRow), not an ephemeral “dialog” — do not block minimize on it. */
   return false;
 }
 const GIS_MIN_BLOCKED_MAP = {
@@ -35934,7 +36312,8 @@ const GIS_MIN_BLOCKED_MAP = {
   favoritesPanel: { nid: "favoritesPanelMinimizeNotice", key: "favoritesPanel.minimizeBlockedSubdialog" },
   layersPanel: { nid: "layersPanelMinimizeNotice", key: "layersPanel.minimizeBlockedSubdialog" },
   astroPanel: { nid: "astroPanelMinimizeNotice", key: "astroPanel.minimizeBlockedSubdialog" },
-  rangeRingsPanel: { nid: "rangeRingsPanelMinimizeNotice", key: "rangeRingsPanel.minimizeBlockedSubdialog" }
+  rangeRingsPanel: { nid: "rangeRingsPanelMinimizeNotice", key: "rangeRingsPanel.minimizeBlockedSubdialog" },
+  measurePanel: { nid: "measurePanelMinimizeNotice", key: "measurePanel.minimizeBlockedSubdialog" }
 };
 const GIS_MIN_FOCUS_MAP = {
   trackModal: { headId: "trackModalHead", minSel: '[data-role="trackmodal-minimize"]' },
@@ -35942,7 +36321,8 @@ const GIS_MIN_FOCUS_MAP = {
   favoritesPanel: { headId: "favoritesPanelHead", minSel: '[data-role="favoritespanel-minimize"]' },
   layersPanel: { headId: "layersPanelHead", minSel: '[data-role="layerspanel-minimize"]' },
   astroPanel: { headId: "astroPanelHead", minSel: '[data-role="astropanel-minimize"]' },
-  rangeRingsPanel: { headId: "rangeRingsPanelHead", minSel: '[data-role="rangeringpanel-minimize"]' }
+  rangeRingsPanel: { headId: "rangeRingsPanelHead", minSel: '[data-role="rangeringpanel-minimize"]' },
+  measurePanel: { headId: "measurePanelHead", minSel: '[data-role="measurepanel-minimize"]' }
 };
 function gisFlashMinimizeBlockedNotice(panelId){
   const cfg = GIS_MIN_BLOCKED_MAP[panelId];
@@ -36051,6 +36431,8 @@ function gisMinimizePanel(panelId, labelKey){
       gisFlashMinimizeBlockedNotice("rangeRingsPanel");
       return;
     }
+  } else if (panelId === "measurePanel"){
+    /* Misura: nessun sub-dialog modale; export è <details> locale — minimizzazione consentita. */
   } else {
     return;
   }
@@ -36133,6 +36515,12 @@ function gisRestoreMinimizedPanel(panelId){
       gisPanelBringToFront(dlg, o);
       gisPanelApplyLayout(dlg, o);
       clampRangeRingsPanelRect(dlg);
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "measurePanel"){
+      const o = _measurePanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      gisPanelApplyLayout(dlg, o);
+      clampMeasurePanelRect(dlg);
       gisPanelSyncBodySize(dlg, o);
     }
   } catch(_){}
@@ -36503,9 +36891,6 @@ function activateTab(tabKey){
 
   // If another tab is active, restore its section first
   if (state.activeTab && state.activeTab !== tabKey){
-    if (state.activeTab === "measure"){
-      gisExitMeasureTabPartial();
-    }
     const prevId = GIS_TAB_SECTIONS[state.activeTab];
     gisRestoreSection(prevId);
   }
@@ -36514,17 +36899,21 @@ function activateTab(tabKey){
   gisMoveSectionTo(sectionId, body);
   state.activeTab = tabKey;
 
-  if (tabKey === "measure"){
-    state.mapMeasureMode = true;
-    state.mapMeasurePanelOpen = false;
-  }
-
   // Visual states
   document.querySelectorAll("#appTopbar .app-tab").forEach(b => {
     const on = b.getAttribute("data-tab") === tabKey;
     b.classList.toggle("is-active", on);
     b.setAttribute("aria-selected", on ? "true" : "false");
   });
+  /* Misura è floating: ripristina pill se il pannello resta aperto mentre il drawer cambia tab. */
+  try {
+    const mpR = document.getElementById("measurePanel");
+    if (state.measurePanelOpen || (mpR && mpR.open)){
+      if (!(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel"))){
+        gisSetTopbarTabActive("measure", true);
+      }
+    }
+  } catch(_){}
 
   if (title){
     const k = GIS_TAB_TITLE_KEY[tabKey];
@@ -36535,7 +36924,7 @@ function activateTab(tabKey){
   // Force reflow so transform transition runs from the hidden state.
   // eslint-disable-next-line no-unused-expressions
   drawer.offsetHeight;
-  drawer.classList.toggle("tab-drawer--gis-left", tabKey === "measure");
+  drawer.classList.remove("tab-drawer--gis-left");
   drawer.classList.add("is-open");
 
   saveStore();
@@ -36544,13 +36933,6 @@ function activateTab(tabKey){
     syncGisMeasureKindTabs();
     syncGisMeasureDrawerUnitFromState();
     trackSyncPickModeUi();
-    if (tabKey === "measure"){
-      const r = document.getElementById("miniMap");
-      const lp = state.lastPoint || state.viewCenter;
-      const z = state.mapZoom || 11;
-      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
-      try { measSyncOperativeInfo(); } catch(_){}
-    }
   } catch(_){}
 }
 
@@ -36559,9 +36941,6 @@ function deactivateTab(){
   const drawer = document.getElementById("tabDrawer");
   if (!state.activeTab) return;
   const wasTab = state.activeTab;
-  if (wasTab === "measure"){
-    gisExitMeasureTabPartial();
-  }
   const sectionId = GIS_TAB_SECTIONS[wasTab];
   gisRestoreSection(sectionId);
   state.activeTab = null;
@@ -36577,10 +36956,17 @@ function deactivateTab(){
     setTimeout(() => { if (!state.activeTab) drawer.hidden = true; }, 240);
   }
   saveStore();
+  try {
+    const mpR = document.getElementById("measurePanel");
+    if (state.measurePanelOpen || (mpR && mpR.open)){
+      if (!(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel"))){
+        gisSetTopbarTabActive("measure", true);
+      }
+    }
+  } catch(_){}
   /* Refresh mappa solo se serviva overlay misura — evita Esc→draw globale dopo drawer. */
   try {
     trackSyncPickModeUi();
-    if (wasTab === "measure") refreshTileMapForTrackUi();
   } catch(_){}
 }
 
@@ -36696,6 +37082,9 @@ function openConvertModal(){
     try { requestAnimationFrame(() => positionConvertModalNearTopbar(dlg)); }
     catch(_){ positionConvertModalNearTopbar(dlg); }
   }
+  // 6F.1: sync add-waypoint enabled state when opening with an existing valid `state.lastResult`.
+  try { clearConvertWaypointFeedback(); } catch(_){}
+  try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
 }
 
 function closeConvertModal(){
@@ -36730,6 +37119,7 @@ function closeConvertModal(){
     }
   }
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  try { clearConvertWaypointFeedback(); } catch(_){}
   state.convertOpen = false;
   try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
   try {
@@ -36783,6 +37173,8 @@ function waypointModalShowUnsavedCloseBar(){
 function waypointModalUnsavedCloseRisk(){
   const delBar = document.getElementById("wpDeleteOneBar");
   if (delBar && !delBar.hidden) return true;
+  const rmFavBar = document.getElementById("wpRemoveFavBar");
+  if (rmFavBar && !rmFavBar.hidden) return true;
   const wmDlg = document.getElementById("waypointModal");
   const modalOpen = !!(state.waypointsModalOpen || (wmDlg && wmDlg.open));
   if (state.waypointPickMode && modalOpen) return true;
@@ -36958,6 +37350,7 @@ function closeWaypointModal(){
   try { waypointModalHideUnsavedCloseBar(); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("waypointModal"); } catch(_){}
   try { wpHideDeleteOneBar(); } catch(_){}
+  try { if (typeof wpHideRemoveFavBar === "function") wpHideRemoveFavBar(); } catch(_){}
   const wpi = document.getElementById("waypointImportDialog");
   if (wpi && wpi.open){
     try { if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog(); }
@@ -38105,6 +38498,167 @@ function closeRangeRingsPanel(){
   try { trackSyncPickModeUi(); } catch(_){}
 }
 
+/** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
+function _measurePanelLayoutOpts(){
+  return {
+    key: "measurePanel",
+    pad: 12,
+    minW: 360,
+    minH: 280,
+    defaultW: 440,
+    defaultH: null,
+    defaultHeightFraction: 0.52,
+    defaultHeightCap: 560,
+    topbarReserve: 104,
+    bodyMinH: 120,
+    partialMinVisible: 72,
+    bodyId: "measurePanelBody",
+    headId: "measurePanelHead",
+    closeId: "measurePanelClose"
+  };
+}
+function attachMeasurePanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _measurePanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#measurePanelClose,[data-role=\"measurepanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+}
+function clampMeasurePanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _measurePanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireMeasurePanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("measurePanelHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachMeasurePanelFloatingGis(dlg);
+  gisPanelAttachBringToFront(dlg, _measurePanelLayoutOpts());
+  gisPanelBringToFront(dlg, _measurePanelLayoutOpts());
+  gisPanelApplyLayout(dlg, _measurePanelLayoutOpts());
+  clampMeasurePanelRect(dlg);
+  gisPanelSyncBodySize(dlg, _measurePanelLayoutOpts());
+}
+
+/** GIS: Misura come pannello floating (stesso pattern Range Rings). */
+function openMeasureFloatingPanelGis(){
+  if (!document.body.classList.contains("gis-mode")) return false;
+  const dlg = document.getElementById("measurePanel");
+  const body = document.getElementById("measurePanelBody");
+  if (!dlg || !body) return false;
+  try { closeToolsModal(); } catch(_){}
+  try { closeToolsDrawer(); } catch(_){}
+  if (state.measurePanelOpen && dlg.open){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("measurePanel")){
+      try { gisRestoreMinimizedPanel("measurePanel"); } catch(_){}
+      try { wireMeasurePanelFloatingGis(dlg); } catch(_){}
+      try {
+        requestAnimationFrame(() => {
+          try { clampMeasurePanelRect(dlg); gisPanelSyncBodySize(dlg, _measurePanelLayoutOpts()); } catch(_){}
+        });
+      } catch(_){}
+      gisSetTopbarTabActive("measure", true);
+      try { syncGisDirectFieldsVisibility(); syncGisMeasureKindTabs(); syncGisMeasureDrawerUnitFromState(); } catch(_){}
+      try { measSyncOperativeInfo(); } catch(_){}
+      try { trackSyncPickModeUi(); } catch(_){}
+      return true;
+    }
+    try { wireMeasurePanelFloatingGis(dlg); } catch(_){}
+    try {
+      requestAnimationFrame(() => {
+        try { clampMeasurePanelRect(dlg); gisPanelSyncBodySize(dlg, _measurePanelLayoutOpts()); } catch(_){}
+      });
+    } catch(_){}
+    gisSetTopbarTabActive("measure", true);
+    try { syncGisDirectFieldsVisibility(); syncGisMeasureKindTabs(); syncGisMeasureDrawerUnitFromState(); } catch(_){}
+    try { measSyncOperativeInfo(); } catch(_){}
+    try { trackSyncPickModeUi(); } catch(_){}
+    return true;
+  }
+  state.measurePanelOpen = true;
+  state.mapMeasureMode = true;
+  state.mapMeasurePanelOpen = false;
+  gisMoveSectionTo("sec-measure", body);
+  const sec = document.getElementById("sec-measure");
+  if (sec && sec.tagName && String(sec.tagName).toLowerCase() === "details") sec.open = true;
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  wireMeasurePanelFloatingGis(dlg);
+  try {
+    requestAnimationFrame(() => {
+      try { clampMeasurePanelRect(dlg); gisPanelSyncBodySize(dlg, _measurePanelLayoutOpts()); } catch(_){}
+    });
+  } catch(_){}
+  gisSetTopbarTabActive("measure", true);
+  try {
+    syncGisDirectFieldsVisibility();
+    syncGisMeasureKindTabs();
+    syncGisMeasureDrawerUnitFromState();
+    const r = document.getElementById("miniMap");
+    const lp = state.lastPoint || state.viewCenter;
+    const z = state.mapZoom || 11;
+    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+    measSyncOperativeInfo();
+  } catch(_){}
+  try { trackSyncPickModeUi(); } catch(_){}
+  return true;
+}
+
+function closeMeasureFloatingPanelGis(){
+  const dlg = document.getElementById("measurePanel");
+  if (!state.measurePanelOpen && !(dlg && dlg.open)) return;
+  gisExitMeasureTabPartial();
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("measurePanel"); } catch(_){}
+  const body = document.getElementById("measurePanelBody");
+  const sec = document.getElementById("sec-measure");
+  if (sec && body && sec.parentNode === body){
+    try { gisRestoreSection("sec-measure"); } catch(_){}
+  }
+  state.measurePanelOpen = false;
+  if (dlg){
+    try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("measurePanelHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
+  gisSetTopbarTabActive("measure", false);
+  try { trackSyncPickModeUi(); } catch(_){}
+}
+
+function toggleMeasureFloatingPanelGis(){
+  const dlg = document.getElementById("measurePanel");
+  if (state.measurePanelOpen || (dlg && dlg.open)){
+    closeMeasureFloatingPanelGis();
+  } else {
+    openMeasureFloatingPanelGis();
+  }
+}
+
 /** GIS: layout opts per pannello Astro floating (Pass 5 Step B). */
 function _astroPanelLayoutOpts(){
   return {
@@ -38960,10 +39514,52 @@ function getCurrentConvertedPointForWaypoint(){
 function hasCurrentConvertedPointForWaypoint(){
   return !!getCurrentConvertedPointForWaypoint();
 }
+
+/** 6F.1: clear in-panel Convert → waypoint feedback (no state.lastResult writes). */
+function clearConvertWaypointFeedback(){
+  const el = document.getElementById("convertWaypointFeedback");
+  if (!el) return;
+  el.hidden = true;
+  el.textContent = "";
+  el.classList.remove("is-ok", "is-err", "is-info");
+}
+
+/** 6F.1: Convert panel feedback when `state.convertOpen`; otherwise global badge. */
+function setConvertWaypointFeedback(kind, msg){
+  const text = (msg != null && String(msg).trim()) ? String(msg).trim() : "";
+  if (!text) return;
+  if (state.convertOpen){
+    const el = document.getElementById("convertWaypointFeedback");
+    if (el){
+      el.hidden = false;
+      el.textContent = text;
+      el.classList.remove("is-ok", "is-err", "is-info");
+      if (kind === "ok") el.classList.add("is-ok");
+      else if (kind === "err") el.classList.add("is-err");
+      else el.classList.add("is-info");
+      return;
+    }
+  }
+  try {
+    const b = kind === "err" ? "error" : kind === "ok" ? "success" : "info";
+    setBadge(b, text);
+  } catch(_){}
+}
+
 function syncConvertResultWaypointBtn(){
   const ok = hasCurrentConvertedPointForWaypoint();
   const b = document.getElementById("btnAddResultToWaypoint");
-  if (b) b.disabled = !ok;
+  if (b){
+    b.disabled = !ok;
+    try {
+      if (!ok){
+        const tip = (typeof t === "function" ? t("convert.addWaypointDisabled") : "") || "";
+        b.setAttribute("title", tip);
+      } else {
+        b.removeAttribute("title");
+      }
+    } catch(_){}
+  }
   const bf = document.getElementById("btnAddResultToFavorites");
   if (bf) bf.disabled = !ok;
 }
@@ -39166,7 +39762,15 @@ function renderWpModalList(){
       if (fv){
         ev.preventDefault();
         const tr = fv.closest("[data-wp-row]");
-        if (tr && tr.dataset.id) favoriteAddFromWaypointRowId(tr.dataset.id);
+        if (!tr || !tr.dataset.id) return;
+        const wpId = tr.dataset.id;
+        ensureMapWaypointsState();
+        const p = state.mapWaypoints.find(x => x.id === wpId);
+        if (p && waypointCoordinateHasMatchingFavorite(p.lat, p.lon)){
+          if (typeof wpShowRemoveFavConfirmBar === "function") wpShowRemoveFavConfirmBar(wpId);
+        } else {
+          favoriteAddFromWaypointRowId(wpId);
+        }
         return;
       }
     });
@@ -39395,6 +39999,12 @@ function wpHideDeleteOneBar(){
   waypointPendingDeleteId = null;
 }
 
+function wpHideRemoveFavBar(){
+  const bar = document.getElementById("wpRemoveFavBar");
+  if (bar) bar.hidden = true;
+  waypointPendingRemoveFavId = null;
+}
+
 function wpWireDeleteOneBarOnce(){
   const bar = document.getElementById("wpDeleteOneBar");
   const okBtn = document.getElementById("wpDeleteOneConfirm");
@@ -39409,10 +40019,26 @@ function wpWireDeleteOneBarOnce(){
   cancelBtn.addEventListener("click", () => wpHideDeleteOneBar());
 }
 
+function wpWireRemoveFavBarOnce(){
+  const bar = document.getElementById("wpRemoveFavBar");
+  const okBtn = document.getElementById("wpRemoveFavConfirm");
+  const cancelBtn = document.getElementById("wpRemoveFavCancel");
+  if (!bar || !okBtn || !cancelBtn || bar._wpRmFavWired) return;
+  bar._wpRmFavWired = true;
+  okBtn.addEventListener("click", () => {
+    const fid = waypointPendingRemoveFavId;
+    wpHideRemoveFavBar();
+    if (fid) removeFavoriteExecute(fid);
+    try { showWpModalListFavFeedback("ok", t("waypointModal.favoriteRemoved")); } catch(_){}
+  });
+  cancelBtn.addEventListener("click", () => wpHideRemoveFavBar());
+}
+
 function wpShowDeleteOneConfirmBar(id){
   ensureMapWaypointsState();
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
+  try { wpHideRemoveFavBar(); } catch(_){}
   wpWireDeleteOneBarOnce();
   waypointPendingDeleteId = id;
   const bar = document.getElementById("wpDeleteOneBar");
@@ -39424,6 +40050,23 @@ function wpShowDeleteOneConfirmBar(id){
   bar.hidden = false;
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
   try { document.getElementById("wpDeleteOneConfirm")?.focus(); } catch(_){}
+}
+
+/** 6F.1: confirm removing one linked favorite (newest matching `state.favorites[]` entry at waypoint coords). */
+function wpShowRemoveFavConfirmBar(wpId){
+  ensureMapWaypointsState();
+  const p = state.mapWaypoints.find(x => x.id === wpId);
+  if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) return;
+  const favId = findFirstFavoriteIdAtLatLon(p.lat, p.lon);
+  if (!favId) return;
+  try { wpHideDeleteOneBar(); } catch(_){}
+  wpWireRemoveFavBarOnce();
+  waypointPendingRemoveFavId = favId;
+  const bar = document.getElementById("wpRemoveFavBar");
+  if (!bar) return;
+  bar.hidden = false;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
+  try { document.getElementById("wpRemoveFavConfirm")?.focus(); } catch(_){}
 }
 
 /** Delete one waypoint after in-modal confirmation (`wpShowDeleteOneConfirmBar`). */
@@ -39494,7 +40137,7 @@ function waypointAddFromConvertedPoint(){
     const msg = !state.lastResult
       ? (typeof t === "function" ? (t("waypointModal.fromConvertedNoPoint") || "") : "")
       : (typeof t === "function" ? (t("waypointModal.fromConvertedStale") || "") : "");
-    try { setBadge("error", msg || (t("waypointModal.fromConvertedNoPoint") || "")); } catch(_){}
+    try { setConvertWaypointFeedback("err", msg || (t("waypointModal.fromConvertedNoPoint") || "")); } catch(_){}
     return;
   }
   const lr = state.lastResult;
@@ -39515,9 +40158,9 @@ function waypointAddFromConvertedPoint(){
   }
   const ok = waypointAdd(pt.lat, pt.lon, name, meta);
   if (ok){
-    try { setBadge("success", t("waypointModal.fromConvertedOk")); } catch(_){}
+    try { setConvertWaypointFeedback("ok", t("convert.waypointAdded")); } catch(_){}
   } else {
-    try { setBadge("info", t("waypointModal.fromConvertedDup")); } catch(_){}
+    try { setConvertWaypointFeedback("info", t("waypointModal.fromConvertedDup")); } catch(_){}
   }
 }
 
@@ -40095,7 +40738,7 @@ function activateToolPanel(tool){
   if (!GIS_VALID_TOOLS.includes(tool)) return;
   const wrap = document.getElementById("toolsPanelWrap");
   if (!wrap) return;
-  /* Astro è floating dedicato: convive con Traccia (come Waypoint). Altri tool nel drawer mantengono il gate legacy. */
+  /* Astro è floating dedicato: convive con Traccia. Altri tool nel drawer mantengono il gate legacy. */
   if (tool !== "astro" && !gisTryCloseTrackModalForContextSwitch()) return;
   try {
     if (state.rangeRingsPanelOpen && typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
@@ -40152,6 +40795,14 @@ function gisRefreshI18n(){
   if (rrt && rrd && (state.rangeRingsPanelOpen || rrd.open) && typeof t === "function"){
     try { rrt.textContent = t("sec.rangerings") || rrt.textContent; } catch(_){}
   }
+  const mmt = document.getElementById("measurePanelTitle");
+  const mmd = document.getElementById("measurePanel");
+  if (mmt && mmd && (state.measurePanelOpen || mmd.open) && typeof t === "function"){
+    try { mmt.textContent = t("sec.measure") || mmt.textContent; } catch(_){}
+  }
+  if (mmd && (state.measurePanelOpen || mmd.open) && typeof syncI18nInRoot === "function"){
+    try { syncI18nInRoot(mmd, state.lang); } catch(_){}
+  }
   const apt = document.getElementById("astroPanelTitle");
   const apDlg = document.getElementById("astroPanel");
   if (apt && apDlg && (state.astroPanelOpen || apDlg.open) && typeof t === "function"){
@@ -40176,7 +40827,7 @@ function gisRefreshI18n(){
   if (afavDlg && afavDlg.open && document.body.classList.contains("gis-mode")){
     try { clampAstroFavoritePickerRect(afavDlg); gisPanelSyncBodySize(afavDlg, _astroFavoritePickerLayoutOpts()); } catch(_){}
   }
-  if (state.activeTab === "measure"){ try { measSyncOperativeInfo(); } catch(_){} }
+  if (gisMeasureIsDrawerContext()){ try { measSyncOperativeInfo(); } catch(_){} }
   try { if (typeof gisRenderMinimizedDock === "function") gisRenderMinimizedDock(); } catch(_){}
 }
 
@@ -40215,6 +40866,10 @@ function gisNavigateToolTarget(targetId, i18nKey){
     }
     if (tabKey === "track"){
       openTrackModal();
+      return true;
+    }
+    if (tabKey === "measure"){
+      if (typeof openMeasureFloatingPanelGis === "function") openMeasureFloatingPanelGis();
       return true;
     }
     activateTab(tabKey);
