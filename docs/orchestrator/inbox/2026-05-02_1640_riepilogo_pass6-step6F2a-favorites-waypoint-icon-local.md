@@ -31,5 +31,5 @@
 ## Commit memoria
 
 Messaggio: `docs: memoria Pass 6 Step 6F2a favorites waypoint icon local`  
-**Hash:** `d568252` — push **riuscito** su `main`.  
+**Hash:** `d568252` (memoria + `latest`) + `1cc1ec9` (riga hash in inbox) — push **riuscito** su `main`.  
 **Monolite escluso** dal commit.
