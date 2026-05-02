@@ -28,6 +28,12 @@
 
 - Pre-`finito` su monolite (sessione Cursor): script **2/2**, `node --check` sui due blocchi inline, assenza `<script src>` / `type="module"`; test browser **non eseguiti** dall’agente.
 
+## Commit riconciliazione orchestratore (step 4)
+
+- **`0b960f1`** — `docs: orchestratore — riconciliazione finito sessione` (inbox + `latest.md` iniziale).
+- **`ee39e17`** — `docs: orchestratore — latest hash riconciliazione 0b960f1` (dettaglio hash in `latest.md`).
+- **Push:** entrambi riusciti.
+
 ## Prossimo passo consigliato
 
 - Smoke manuale Converti GIS (waypoint visibile, add, feedback; stella preferiti + conferma rimozione) su build da `main`.
