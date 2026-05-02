@@ -44,5 +44,7 @@ Gli inbox **`2026-05-01_2355_riepilogo_pass6-step6C4-...`** e voci collegate in 
 
 ## 8. Commit memoria (questo file)
 
-- Messaggio previsto: `docs: orchestratore — aggio sync stato 6E1 pending monolite locale`
+- Messaggio: `docs: orchestratore — aggio sync stato 6E1 pending monolite locale`
+- Hash: **`fe9f509`**
+- Push: **riuscito** (`main` → remoto)
 - File inclusi: `docs/orchestrator/latest.md`, questo inbox.
