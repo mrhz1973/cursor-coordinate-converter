@@ -38,6 +38,6 @@
 
 ## Commit memoria
 
-Messaggio: `docs: memoria Pass 6 Step 6F1a convert waypoint button local`  
-File: `docs/orchestrator/latest.md`, questo inbox.  
+**Hash:** `8078b9f` — messaggio: `docs: memoria Pass 6 Step 6F1a convert waypoint button local`  
+File: `docs/orchestrator/latest.md`, questo inbox. **Push:** `main` aggiornato.  
 **Esclusi:** monolite, `/tmp/goi-gis-before-6F1a.html`.
