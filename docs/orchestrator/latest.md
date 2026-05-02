@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-01 — **`aggio` sync stato reale:** **`git status --short`** → solo **`coordinate_converter Claude.html`** modificato. Verifica marker **Pass 6 Step 6E.1** (minimizza Traccia/Waypoint): **assenti nel monolite** → pilot **non implementato**; prossimo passo = implementazione 6E.1 o smoke/commit monolite quando autorizzato. **Nessuna** modifica codice in questo sync. **Commit memoria:** `docs: orchestratore — aggio sync stato 6E1 pending monolite locale` (hash dopo push). Inbox **`2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`**. **`coordinate_converter Claude.html` escluso**.
+
 2026-05-01 — **Pass 6 Step 6C.4 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Menu traccia su mappa:** `showTrkSavedCtxMenu(..., { source: "map" })` nasconde **Centra**; tabella/long-press **`{ source: "list" }`** mantiene **Centra**. **Hover traccia mappa:** CSS evidenziazione + hint ritardato **`#savedTrackMapHoverHint`** + **`track.savedMapHoverHint`**. **Doppio click GIS:** **`gisMapOnDblClickCenter`** su **`#miniMap`** → **`viewCenter`** + **`saveStore`** + **`renderTileMap`** (guard su pick misura/RR/Astro/bbox/controlli). **GPS:** pulse solo **`.gis-map-gps-overlay`** (keyframes + anello **`gis-gps-pulse`**); pulsante **`#btnGisMapMyLocation`** **`.gis-gps-fix-active`** + **`aria-pressed`**; clear transient all’inizio di una nuova richiesta. **Marker generici:** sempre statici in GIS (6C.3). **Non:** minimizza modal, 6D, `finito`, commit monolite. **QA:** `node --check` OK (blocchi **9389–9515**, **9519–40310**). **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C4 track hover gps local` (**`f6242d6`**). Inbox **`2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **Pass 6 Step 6C.3 (monolite solo locale):** in **`coordinate_converter Claude.html`** — **Niente lampeggio “live”:** rimosso anello GPS **`.gis-gps-pulse`**; in **GIS** pin **`.tile-marker::after`** statico (no **`mapMarkerPulse`**). **RMB su traccia in mappa:** **`renderSavedTracksOverlays`** con **`data-saved-map-hit`**, hit-test su geometria, **`contextmenu`** → **`showTrkSavedCtxMenu`** (causa precedente: **`pointer-events: none`** ovunque). **Delete tracce salvate:** **`#trackSavedDeleteBar`** (skin RR) + **`requestSavedTracksDelete`** / **`deleteSavedTracksByIds(..., { skipConfirm })`**; Esc / chiusura modal annullano. **Converti topbar:** rimosso **`app-topbar-btn-primary`** da **`#topbarConvertBtn`**. **Non:** minimizza modal, 6D, `finito`, commit monolite. **QA:** `node --check` OK (blocchi **9326–9452**, **9456–40120**). **Test browser:** non eseguiti. **Commit memoria:** `docs: memoria Pass 6 Step 6C3 track context local` (**`40bd194`**; inbox hash **`5e622bb`**). Inbox **`2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`**. **`coordinate_converter Claude.html` escluso**.
@@ -74,6 +76,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**`aggio` 2026-05-01** — Riconciliazione orchestratore: monolite solo locale; **6E.1 non nel codice** (marker assenti). Inbox **`docs/orchestrator/inbox/2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`**.
+
 **Pass 6 Step 6C.4 2026-05-01** — Menu traccia mappa senza Centra; hover hint; doppio click centra; pulse solo overlay GPS + pulsante attivo; monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`**.
 
 **Pass 6 Step 6C.3 2026-05-01** — GPS/marker statici in GIS; RMB su overlay tracce salvate; conferma delete interna al modal Traccia; Converti topbar non primario; monolite **solo locale**: vedi **`docs/orchestrator/inbox/2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`**.
@@ -103,10 +107,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke **Pass 6 Step 6C.4** (menu mappa senza Centra; Centra da tabella; hover hint; doppio click centra; pulse GPS + pulsante verde; marker generici statici). Poi **minimizza modal**, **6D**, o commit monolite. **`aggio`** dopo push memoria.
+Implementare **Pass 6 Step 6E.1** (pilot minimizza **solo** `#trackModal` + `#waypointModal`, dock, Esc guard, niente 6E.2/6D) — il codice non contiene ancora i marker del pilot. In parallelo: smoke **6C.4** se serve, poi **`finito`** / commit monolite quando autorizzato.
 
 ## Dettagli (inbox)
 
+- **`aggio` sync — 6E.1 non implementato, monolite locale:** `docs/orchestrator/inbox/2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`
 - **Pass 6 Step 6C.4 hover traccia + doppio click + GPS pulse (locale):** `docs/orchestrator/inbox/2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`
 - **Pass 6 Step 6C.3 context traccia + conferme + GPS + Converti (locale):** `docs/orchestrator/inbox/2026-05-01_2310_riepilogo_pass6-step6C3-track-context-confirm-gps-convert-local.md`
 - **Pass 6 Step 6C.2 polish Traccia + GPS (locale):** `docs/orchestrator/inbox/2026-05-01_2224_riepilogo_pass6-step6C2-traccia-gps-polish-local.md`
