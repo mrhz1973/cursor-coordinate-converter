@@ -6,10 +6,11 @@
 - **Messaggio:** `chore: finito sessione — Pass 6 Step 6E.2 minimizza pannelli GIS, checkpoint`
 - **Push (step 2):** **riuscito** (`main` → remoto).
 
-## Commit orchestratore (step 4 — dopo questo file)
+## Commit orchestratore (step 4)
 
-- Previsto messaggio: `docs: orchestratore — riconciliazione finito sessione`
-- Hash: vedi `git log -1` dopo il commit step 4.
+- **Hash:** **`bf07b2d`**
+- **Messaggio:** `docs: orchestratore — riconciliazione finito sessione`
+- **Push:** **riuscito** (`c392f1a..bf07b2d`).
 
 ## File nel commit `c392f1a` (`git show --stat`)
 
@@ -24,15 +25,15 @@
 ## Push
 
 - **Step 2:** riuscito (`bf639da..c392f1a`).
-- **Step 4:** da verificare dopo `git push` orchestratore.
+- **Step 4:** riuscito (`c392f1a..bf07b2d`).
 
-## `git status --short` (atteso post step 2)
+## `git status --short` (finale)
 
-- Pulito finché non si aggiungono i file orchestratore per step 4.
+- **Pulito** dopo entrambi i push.
 
-## `git diff --stat` (post step 2)
+## `git diff --stat` (finale)
 
-- Nessun diff se working tree pulito.
+- Nessun diff (working tree allineato a **`bf07b2d`**).
 
 ## QA
 
