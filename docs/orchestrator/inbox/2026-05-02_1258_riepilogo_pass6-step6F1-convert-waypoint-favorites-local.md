@@ -67,4 +67,4 @@
 - **Esclusi:** `coordinate_converter Claude.html`, `/tmp/goi-gis-before-6F1.html`.
 - **Messaggio commit:** `docs: memoria Pass 6 Step 6F1 convert waypoint favorites local`
 
-**Commit memoria:** `ca15e20` — messaggio `docs: memoria Pass 6 Step 6F1 convert waypoint favorites local`. **Push:** `main` aggiornato (solo `docs/orchestrator/**`).
+**Commit memoria (6F1):** `ca15e20` — messaggio `docs: memoria Pass 6 Step 6F1 convert waypoint favorites local`. **Follow-up hash in `latest`/inbox:** `77434e8`. **Push:** `main` aggiornato (solo `docs/orchestrator/**`).
