@@ -4,6 +4,8 @@
 **Scope:** solo `coordinate_converter Claude.html` (monolite **non committato** in questo step).  
 **Non fatto:** 6E.2, minimizza altri pannelli, chip trascinabili, minimizza tutto, hotkey, `finito`, commit monolite.
 
+**Commit memoria (solo orchestratore):** `1daf3b4` — `docs: memoria Pass 6 Step 6E1b dock gps polish local` (push riuscito).
+
 ## Checklist richiesta
 
 | Voce | Esito |
