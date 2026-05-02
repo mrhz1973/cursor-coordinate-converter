@@ -27,7 +27,7 @@
 
 ## Commit memoria
 
-`docs: memoria Pass 6 Step 6E1c dock convert partial local` — hash **`8f7bf34`**.
+`docs: memoria Pass 6 Step 6E1c dock convert partial local` — hash **`3e3cbf3`**.
 
 ## Backlog
 
