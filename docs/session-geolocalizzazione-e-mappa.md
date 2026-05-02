@@ -2,7 +2,7 @@
 
 ## 🗓 Data
 
-2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)* · **checkpoint 2026-04-29 (finito)** — vedi *Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)* · **checkpoint 2026-05-01 (`finito`)** — vedi *Checkpoint 2026-05-01 — Pass 5 Step E.3 monolite + Pass 6 piano orchestratore (`finito`)* in fondo
+2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)* · **checkpoint 2026-04-29 (finito)** — vedi *Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)* · **checkpoint 2026-05-01 (`finito`)** — vedi *Checkpoint 2026-05-01 — Pass 5 Step E.3 monolite + Pass 6 piano orchestratore (`finito`)* in fondo · **checkpoint 2026-05-02 (`finito`)** — vedi *Checkpoint 2026-05-02 — Pass 6 batch monolite fino a 6E.1d (`finito`)* in fondo
 
 > File canonico di riferimento: **`coordinate_converter Claude.html`** (HTML standalone unico nel repo). Indice tecnico aggiornabile: **`docs/PROJECT_notes.md`**.
 
@@ -2395,6 +2395,36 @@ Chiusura sessione su comando utente **`finito`**. Il working tree conteneva anco
 
 - **`docs/roadmap.md`**, `.cursor/rules` in questo `finito` (step principale).
 - Nessuna implementazione Pass 6 sul monolite.
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
+
+## Checkpoint 2026-05-02 — Pass 6 batch monolite fino a 6E.1d (`finito`)
+
+### Contesto
+
+Chiusura sessione su comando utente **`finito`**. Il monolite era avanzato in locale rispetto all’ultimo **`finito`** che lo aveva versionato (**Pass 5 Step E.3**, commit **`9a90fbc`**): accumulo **Pass 6** documentato progressivamente in **`docs/orchestrator/inbox/`** (commit memoria selettivi senza monolite fino a **6E.1d**). Questa chiusura **committa e pubblica** il file **`coordinate_converter Claude.html`** con l’intero batch fino a **Step 6E.1d**.
+
+### Sintesi monolite (`coordinate_converter Claude.html`)
+
+- **6A / 6A.1 / 6A.2:** Preferiti e Waypoint — azioni tabella compatte, tooltip/conferme, partial-offscreen modali; rename UI **Preferiti** (etichetta utente).
+- **6B:** `#layersPanel` partial-offscreen, azioni aree offline compatte.
+- **6C–6C.4:** `#trackModal` partial-offscreen; contestuale tracce salvate; GPS mappa (one-shot); hover/doppio click; pulse overlay.
+- **6E.1:** minimizza pilot **Traccia** / **Waypoint**, dock `#gisMinimizedDock`, blocco sub-dialog, i18n minimizza.
+- **6E.1a–6E.1c:** smoke (Esc senza recentro mappa, guard chiusura Waypoint, allineamento GPS/`lastPoint`), polish dock/animazioni/GPS, **Converti** partial-offscreen e offset dock.
+- **6E.1d:** apertura Astro / drawer Strumenti **non** chiude più Traccia (`openToolsDrawer`, `activateToolPanel` eccezione `astro`).
+
+### Non incluso in questo `finito`
+
+- **Pass 6 Step 6E.2** (minimizza `#favoritesPanel`, `#layersPanel`, `#astroPanel`, `#rangeRingsPanel` + polish pulsante Waypoint mappa): **solo piano**, nessuna implementazione nel commit.
+
+### Documentazione
+
+- Aggiornati **`docs/checkpoint.md`** e questa append.
+- **`docs/roadmap.md` non modificato.**
 
 ### File toccati da questo `finito`
 
