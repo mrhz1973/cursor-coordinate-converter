@@ -2,7 +2,7 @@
 
 ## 🗓 Data
 
-2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)* · **checkpoint 2026-04-29 (finito)** — vedi *Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)* · **checkpoint 2026-05-01 (`finito`)** — vedi *Checkpoint 2026-05-01 — Pass 5 Step E.3 monolite + Pass 6 piano orchestratore (`finito`)* in fondo · **checkpoint 2026-05-02 (`finito`)** — vedi *Checkpoint 2026-05-02 — Pass 6 batch monolite fino a 6E.1d (`finito`)* in fondo
+2026-04-21 (prima stesura) · **aggiornato 2026-04-22** (bbox selection, tools drawer, track builder, offline render, UI polish, mini-guida, overlay copertura offline, pannello offline dockable/floating, delete from map, label smart-corner, **DTG NATO Date-Time Group**, **Geocoding Nominatim + reverse + fallback offline**, header toolbar, pill Località, toggle copertura offline on-map, fix tooltip z-index, auto-open pannello offline per map size) · **checkpoint 2026-04-22 (sera)** — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-23** — Cursor Project Rules (`.cursor/rules/`) + `docs/checkpoint.md` — vedi sezione *Checkpoint* in fondo · **checkpoint 2026-04-28 (backlog strategico)** — vedi *Checkpoint 2026-04-28 — Backlog strategico: Tactical Tools, Cartografia avanzata, Core/Field/Net* in fondo · **checkpoint 2026-04-28 (Finito)** — vedi *Checkpoint 2026-04-28 — Chiusura sessione (Finito)* · **checkpoint 2026-04-28 (reset locale)** — vedi *Checkpoint 2026-04-28 — Reset totale dati locali implementato* · **checkpoint 2026-04-29 (Finito)** — vedi *Checkpoint 2026-04-29 — Waypoint modal + CoT XML rifinitura (Finito)* · **checkpoint 2026-04-29 (finito)** — vedi *Checkpoint 2026-04-29 — Misura M1+M3 + alias aggio orchestratore (finito)* · **checkpoint 2026-05-01 (`finito`)** — vedi *Checkpoint 2026-05-01 — Pass 5 Step E.3 monolite + Pass 6 piano orchestratore (`finito`)* in fondo · **checkpoint 2026-05-02 (`finito`)** — vedi *Checkpoint 2026-05-02 — Pass 6 batch monolite fino a 6E.1d (`finito`)* in fondo · **checkpoint 2026-05-02 (`finito`, 6E.2)** — vedi *Checkpoint 2026-05-02 — Pass 6 Step 6E.2 minimizza quattro pannelli (`finito`)* in fondo
 
 > File canonico di riferimento: **`coordinate_converter Claude.html`** (HTML standalone unico nel repo). Indice tecnico aggiornabile: **`docs/PROJECT_notes.md`**.
 
@@ -2420,6 +2420,34 @@ Chiusura sessione su comando utente **`finito`**. Il monolite era avanzato in lo
 ### Non incluso in questo `finito`
 
 - **Pass 6 Step 6E.2** (minimizza `#favoritesPanel`, `#layersPanel`, `#astroPanel`, `#rangeRingsPanel` + polish pulsante Waypoint mappa): **solo piano**, nessuna implementazione nel commit.
+
+### Documentazione
+
+- Aggiornati **`docs/checkpoint.md`** e questa append.
+- **`docs/roadmap.md` non modificato.**
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
+
+## Checkpoint 2026-05-02 — Pass 6 Step 6E.2 minimizza quattro pannelli (`finito`)
+
+### Contesto
+
+Seconda chiusura **`finito`** nella stessa giornata: dopo il commit **`af69673`** (batch Pass 6 fino a **6E.1d**), il monolite aveva ancora in working tree l’implementazione **Pass 6 Step 6E.2** (già descritta in memoria orchestratore **`2026-05-01_1830_riepilogo_pass6-step6E2-minimize-panels-guards-local.md`**). Questa chiusura **committa e pubblica** **`coordinate_converter Claude.html`** con **6E.2**.
+
+### Sintesi monolite (`coordinate_converter Claude.html`)
+
+1. Minimizza **Preferiti**, **Mappe offline**, **Astro**, **Range Rings**: pulsante `−`, notice interna, chip dock (`gis.minimized.*`).
+2. **Guard:** `#favInlineConfirmBar` visibile; `#offlineDraftWarnDialog` aperto; picker Astro aperti; RR: `#rrSourcePickerDialog` / `#rrDeleteConfirm` / `#rrBatchBar` — blocco minimizza con messaggio i18n dedicato, **senza** chiudere automaticamente tali UI.
+3. **Esc:** se il pannello è **`gis-panel-minimized`**, non si esegue la chiusura del floating (coerenza con Traccia/Waypoint).
+4. **Waypoint mappa:** stato toolbar allineato a `#waypointModal.open` in GIS; **`trackSyncPickModeUi`** dopo minimizza/restore.
+
+### Non toccato (per vincolo di implementazione)
+
+GPS core, Converti, OPSEC, tile/cache, geocoding, IndexedDB, schema dati, `localStorage`, `state.lastResult`.
 
 ### Documentazione
 
