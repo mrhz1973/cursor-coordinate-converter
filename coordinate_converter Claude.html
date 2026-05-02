@@ -8837,6 +8837,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <button type="button" id="wpRemoveFavCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
             </div>
           </div>
+          <!-- 6F.3: bulk delete selected waypoints (in-modal confirm; no window.confirm). -->
+          <div id="wpDeleteSelectedBar" class="wp-inline-confirm gis-rr-confirm-skin" role="region" aria-labelledby="wpDeleteSelectedTitle" aria-live="polite" hidden>
+            <div id="wpDeleteSelectedTitle" class="wp-inline-confirm__msg gis-rr-confirm-msg" style="font-weight:600;margin-bottom:0.35em" data-i18n="waypointModal.deleteSelectedConfirmTitle">Eliminare waypoint selezionati?</div>
+            <div id="wpDeleteSelectedMsg" class="wp-inline-confirm__msg gis-rr-confirm-msg"></div>
+            <div class="wp-inline-confirm__actions gis-rr-confirm-actions">
+              <button type="button" id="wpDeleteSelectedConfirm" class="btn btn-sm btn-danger" data-i18n="waypointModal.deleteSelectedConfirm">Elimina selezionati</button>
+              <button type="button" id="wpDeleteSelectedCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
+            </div>
+          </div>
           <!-- 6F.2: batch add favorites from multi-selected rows (Set survives renderWpModalList). -->
           <div id="wpBatchFavRow" class="wp-wp-batch-fav-row" role="region">
             <span id="wpBatchSelCount" class="wp-batch-sel-count" aria-live="polite"></span>
@@ -10298,6 +10307,10 @@ const I18N = {
     "waypointModal.batchFavoritesAdded":"Preferiti aggiunti: {added}",
     "waypointModal.batchFavoritesAddedSkipped":"Preferiti aggiunti: {added}. Già presenti: {skipped}.",
     "waypointModal.batchFavoritesAllSkipped":"I waypoint selezionati sono già nei Preferiti",
+    "waypointModal.deleteSelectedConfirmTitle":"Eliminare waypoint selezionati?",
+    "waypointModal.deleteSelectedConfirmMsg":"Verranno eliminati {count} waypoint dalla lista.",
+    "waypointModal.deleteSelectedConfirm":"Elimina selezionati",
+    "waypointModal.deleteSelectedDone":"Waypoint eliminati: {count}",
     "waypointModal.zoomTo":"Centra mappa sul waypoint",
     "waypointModal.deleteSelected":"Elimina selezionati",
     "waypointModal.mapNameLabel":"Nome sulla mappa",
@@ -11677,6 +11690,10 @@ const I18N = {
     "waypointModal.batchFavoritesAdded":"Favorites added: {added}",
     "waypointModal.batchFavoritesAddedSkipped":"Favorites added: {added}. Already present: {skipped}.",
     "waypointModal.batchFavoritesAllSkipped":"The selected waypoints are already in Favorites",
+    "waypointModal.deleteSelectedConfirmTitle":"Delete selected waypoints?",
+    "waypointModal.deleteSelectedConfirmMsg":"{count} waypoints will be deleted from the list.",
+    "waypointModal.deleteSelectedConfirm":"Delete selected",
+    "waypointModal.deleteSelectedDone":"Waypoints deleted: {count}",
     "waypointModal.zoomTo":"Center the map on this waypoint",
     "waypointModal.deleteSelected":"Delete selected",
     "waypointModal.mapNameLabel":"Name on map",
@@ -13056,6 +13073,10 @@ const I18N = {
     "waypointModal.batchFavoritesAdded":"Favoris ajoutés : {added}",
     "waypointModal.batchFavoritesAddedSkipped":"Favoris ajoutés : {added}. Déjà présents : {skipped}.",
     "waypointModal.batchFavoritesAllSkipped":"Les waypoints sélectionnés sont déjà dans les Favoris",
+    "waypointModal.deleteSelectedConfirmTitle":"Supprimer les waypoints sélectionnés ?",
+    "waypointModal.deleteSelectedConfirmMsg":"{count} waypoints seront supprimés de la liste.",
+    "waypointModal.deleteSelectedConfirm":"Supprimer la sélection",
+    "waypointModal.deleteSelectedDone":"Waypoints supprimés : {count}",
     "waypointModal.zoomTo":"Centrer la carte sur ce waypoint",
     "waypointModal.deleteSelected":"Supprimer la sélection",
     "waypointModal.mapNameLabel":"Nom sur la carte",
@@ -30610,6 +30631,8 @@ let favoritesPendingInline = null;
 let waypointPendingDeleteId = null;
 /** 6F.1: transient favorite id pending removal from waypoint list star (not waypoint delete). */
 let waypointPendingRemoveFavId = null;
+/** 6F.3: transient ids pending bulk delete from modal list (in-bar confirm). */
+let waypointPendingDeleteSelectedIds = null;
 /** 6F.2: transient waypoint row ids selected in modal list (not persisted; survives renderWpModalList). */
 const waypointModalSelectedRowIds = new Set();
 
@@ -30658,6 +30681,7 @@ function wpModalApplySelectionCheckboxes(root){
 
 /** 6F.2: add multiple selected waypoints to favorites; one saveStore at end. */
 function waypointModalAddSelectedRowsToFavorites(){
+  try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
   ensureMapWaypointsState();
   wpModalPruneWaypointSelection();
   const ordered = state.mapWaypoints.filter(p => p && waypointModalSelectedRowIds.has(p.id));
@@ -35956,6 +35980,7 @@ function gisInit(){
     wpBatchClr._wp6f2Wired = true;
     wpBatchClr.addEventListener("click", (ev) => {
       ev.preventDefault();
+      try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
       try { waypointModalSelectedRowIds.clear(); } catch(_){}
       try { if (typeof renderWpModalList === "function") renderWpModalList(); } catch(_){}
     });
@@ -35965,6 +35990,7 @@ function gisInit(){
     wpBatchAll._wp6f2Wired = true;
     wpBatchAll.addEventListener("click", (ev) => {
       ev.preventDefault();
+      try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
       ensureMapWaypointsState();
       waypointModalSelectedRowIds.clear();
       state.mapWaypoints.forEach(p => { if (p && p.id) waypointModalSelectedRowIds.add(p.id); });
@@ -36143,6 +36169,12 @@ function gisInit(){
     }
     const wmd = document.getElementById("waypointModal");
     if ((state.waypointsModalOpen || (wmd && wmd.open)) && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("waypointModal"))){
+      const wpDelSelBar = document.getElementById("wpDeleteSelectedBar");
+      if (wpDelSelBar && !wpDelSelBar.hidden){
+        ev.preventDefault();
+        try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
+        return;
+      }
       const wpDelBar = document.getElementById("wpDeleteOneBar");
       if (wpDelBar && !wpDelBar.hidden){
         ev.preventDefault();
@@ -37359,6 +37391,8 @@ function waypointModalShowUnsavedCloseBar(){
 }
 
 function waypointModalUnsavedCloseRisk(){
+  const delSelBar = document.getElementById("wpDeleteSelectedBar");
+  if (delSelBar && !delSelBar.hidden) return true;
   const delBar = document.getElementById("wpDeleteOneBar");
   if (delBar && !delBar.hidden) return true;
   const rmFavBar = document.getElementById("wpRemoveFavBar");
@@ -37540,6 +37574,7 @@ function closeWaypointModal(){
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("waypointModal"); } catch(_){}
   try { wpHideDeleteOneBar(); } catch(_){}
   try { if (typeof wpHideRemoveFavBar === "function") wpHideRemoveFavBar(); } catch(_){}
+  try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
   const wpi = document.getElementById("waypointImportDialog");
   if (wpi && wpi.open){
     try { if (typeof closeWaypointImportDialog === "function") closeWaypointImportDialog(); }
@@ -37988,25 +38023,43 @@ function ensureSavedTracksCtxMountWired(mount){
 
 function waypointsDeleteSelectedBulk(){
   hideWptMapContextMenu();
-  const root = document.getElementById("wp-list");
-  if (!root) return;
-  const ids = [...root.querySelectorAll("[data-wp-sel]:checked")].map(cb => cb.getAttribute("data-wp-sel")).filter(Boolean);
-  if (!ids.length){
-    setBadge("info", t("waypointModal.noBulkSelection") || "Seleziona waypoint.");
+  ensureMapWaypointsState();
+  wpModalPruneWaypointSelection();
+  const idArr = state.mapWaypoints.filter(p => p && waypointModalSelectedRowIds.has(p.id)).map(p => p.id);
+  if (!idArr.length){
+    showWpModalListFavFeedback("err", t("waypointModal.noSelection"));
     return;
   }
-  const msg = (t("waypointModal.bulkDeleteConfirm") || "Eliminare {0} waypoint?").replace("{0}", String(ids.length));
-  if (typeof window.confirm === "function" && !window.confirm(msg)) return;
+  try { wpWireDeleteSelectedBarOnce(); } catch(_){}
+  wpShowDeleteSelectedConfirmBar(idArr);
+}
+
+/** 6F.3: after in-bar confirm — delete pending selected ids, sync Set/list/map/store, internal feedback. */
+function waypointsDeleteSelectedExecute(){
+  const ids = waypointPendingDeleteSelectedIds;
+  wpHideDeleteSelectedBar();
+  if (!ids || !ids.length) return;
   ensureMapWaypointsState();
-  const set = new Set(ids.map(String));
+  const set = new Set();
+  for (const wid of ids){
+    const s = String(wid || "");
+    if (!s) continue;
+    if (state.mapWaypoints.some(x => x.id === s)) set.add(s);
+  }
+  if (!set.size){
+    showWpModalListFavFeedback("err", t("waypointModal.noSelection"));
+    return;
+  }
   try {
-    ids.forEach((wid) => { if (wid) waypointModalSelectedRowIds.delete(String(wid)); });
+    set.forEach((wid) => { waypointModalSelectedRowIds.delete(wid); });
   } catch(_){}
   state.mapWaypoints = state.mapWaypoints.filter(x => !set.has(x.id));
   if (state.waypointEditorDraft && state.waypointEditorDraft.id && set.has(state.waypointEditorDraft.id)) closeWaypointEditor();
+  const n = set.size;
   saveStore();
   renderMapWaypointsAll();
-  setBadge("success", (t("waypointModal.bulkDeletedOk") || "Eliminati {0} waypoint.").replace("{0}", String(ids.length)));
+  const tpl = (typeof t === "function" ? t("waypointModal.deleteSelectedDone") : "") || "";
+  showWpModalListFavFeedback("ok", String(tpl).replace(/\{count\}/g, String(n)));
 }
 
 /* ========================= TRACK MANAGER (modal, GIS) =========================
@@ -40218,6 +40271,46 @@ function wpHideRemoveFavBar(){
   waypointPendingRemoveFavId = null;
 }
 
+function wpHideDeleteSelectedBar(){
+  const bar = document.getElementById("wpDeleteSelectedBar");
+  if (bar) bar.hidden = true;
+  waypointPendingDeleteSelectedIds = null;
+}
+
+function wpWireDeleteSelectedBarOnce(){
+  const bar = document.getElementById("wpDeleteSelectedBar");
+  const okBtn = document.getElementById("wpDeleteSelectedConfirm");
+  const cancelBtn = document.getElementById("wpDeleteSelectedCancel");
+  if (!bar || !okBtn || !cancelBtn || bar._wpDelSelWired) return;
+  bar._wpDelSelWired = true;
+  okBtn.addEventListener("click", () => { waypointsDeleteSelectedExecute(); });
+  cancelBtn.addEventListener("click", () => wpHideDeleteSelectedBar());
+}
+
+/** 6F.3: show in-modal bulk-delete confirm (mutually exclusive with single-delete / remove-fav bars). */
+function wpShowDeleteSelectedConfirmBar(idArr){
+  ensureMapWaypointsState();
+  const valid = (idArr || []).filter(id => id && state.mapWaypoints.some(x => x.id === id));
+  if (!valid.length){
+    showWpModalListFavFeedback("err", t("waypointModal.noSelection"));
+    return;
+  }
+  try { wpClearListFavFeedbackQuiet(); } catch(_){}
+  try { wpHideDeleteOneBar(); } catch(_){}
+  try { wpHideRemoveFavBar(); } catch(_){}
+  wpWireDeleteSelectedBarOnce();
+  waypointPendingDeleteSelectedIds = valid.slice();
+  const bar = document.getElementById("wpDeleteSelectedBar");
+  const msg = document.getElementById("wpDeleteSelectedMsg");
+  if (!bar || !msg) return;
+  const cnt = valid.length;
+  bar.hidden = false;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
+  const tpl = (typeof t === "function" ? t("waypointModal.deleteSelectedConfirmMsg") : "") || "";
+  msg.textContent = String(tpl).replace(/\{count\}/g, String(cnt));
+  try { document.getElementById("wpDeleteSelectedConfirm")?.focus(); } catch(_){}
+}
+
 function wpWireDeleteOneBarOnce(){
   const bar = document.getElementById("wpDeleteOneBar");
   const okBtn = document.getElementById("wpDeleteOneConfirm");
@@ -40252,6 +40345,7 @@ function wpShowDeleteOneConfirmBar(id){
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
   try { wpClearListFavFeedbackQuiet(); } catch(_){}
+  try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
   try { wpHideRemoveFavBar(); } catch(_){}
   wpWireDeleteOneBarOnce();
   waypointPendingDeleteId = id;
@@ -40274,6 +40368,7 @@ function wpShowRemoveFavConfirmBar(wpId){
   const favId = findFirstFavoriteIdAtLatLon(p.lat, p.lon);
   if (!favId) return;
   try { wpClearListFavFeedbackQuiet(); } catch(_){}
+  try { if (typeof wpHideDeleteSelectedBar === "function") wpHideDeleteSelectedBar(); } catch(_){}
   try { wpHideDeleteOneBar(); } catch(_){}
   wpWireRemoveFavBarOnce();
   waypointPendingRemoveFavId = favId;

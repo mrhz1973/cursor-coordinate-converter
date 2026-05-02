@@ -2512,3 +2512,30 @@ Logica core Preferiti/waypoint oltre alle estensioni sopra; Converti, GPS, Misur
 - `coordinate_converter Claude.html`
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
+
+## Checkpoint 2026-05-02 — Pass 6 Step 6F.3 Waypoint delete selezionati conferma interna (`finito`)
+
+### Contesto
+
+Chiusura ufficiale **`finito`** dopo lavoro locale su **Pass 6 Step 6F.3**: sostituzione del **`window.confirm`** nel flusso **Elimina selezionati** con barra di conferma interna nel modal Waypoint (**`#wpDeleteSelectedBar`**), allineata a **`#wpDeleteOneBar`** / **`#wpRemoveFavBar`**. La memoria orchestratore per 6F.3 era già stata pubblicata su `main` (**`6ec3f99`** + micro **`8082d1a`** su `latest.md`); il monolite restava **solo in working tree** fino a questo **`finito`**, che **allinea il repository** con **`coordinate_converter Claude.html`**.
+
+### Sintesi monolite (`coordinate_converter Claude.html`)
+
+1. **`waypointsDeleteSelectedBulk`:** usa **`waypointModalSelectedRowIds`** ∩ **`state.mapWaypoints`** (dopo **`wpModalPruneWaypointSelection`**); vuoto → **`showWpModalListFavFeedback("err", waypointModal.noSelection)`**; altrimenti apre la barra conferma.
+2. **`waypointsDeleteSelectedExecute`:** elimina solo id ancora presenti, pulisce **`waypointModalSelectedRowIds`**, **`saveStore`**, **`renderMapWaypointsAll`**, feedback **`waypointModal.deleteSelectedDone`** con **`{count}`**.
+3. **UX:** mutua esclusione delle tre barre; Esc prioritario sulla barra bulk; batch Preferiti / deseleziona / seleziona tutti chiudono la barra bulk per evitare messaggi obsoleti.
+
+### Non toccato (per scope)
+
+Schema dati, **`state.savedTracks`**, **`state.lastResult`**, nuove chiavi `localStorage`, Preferiti oltre coesistenza (delete waypoint non rimuove preferiti), Converti, GPS, Misura, Range Rings, Traccia, OPSEC, tile/IndexedDB/geocoding, SunCalc/WMM/OLC/QR.
+
+### Documentazione
+
+- Aggiornati **`docs/checkpoint.md`** e questa append.
+- **`docs/roadmap.md` non modificato.**
+
+### File toccati da questo `finito`
+
+- `coordinate_converter Claude.html`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
