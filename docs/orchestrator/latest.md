@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-02 — **Pass 6 Step 6E.1a (post-smoke correttivi, monolite solo locale):** Dock **`#gisMinimizedDock`** più visibile (centrata sotto topbar, chip più grandi, contrasto); animazioni leggere minimizza/ripristina (**`gis-dock-pulse`**, **`gis-dock-chip-enter`**, **`gis-panel-restore-flash`**) + **`prefers-reduced-motion`**. **Waypoint:** barra conferma chiusura **`#waypointModalUnsavedCloseBar`** (skin RR-like), **`requestWaypointModalClose`** / **`waypointModalUnsavedCloseRisk`** — **no** `window.confirm`; i18n **`waypointModal.unsavedClose*`** IT/EN/FR. **Esc:** fix **`bindHotkeys`** — in **`gis-mode`** non si chiama più **`clearForm()`** (evita **`initMiniMapOnStartup`** → La Spezia). **GPS mappa:** **`state.lastPoint`** allineato al fix in **`requestGisMapCurrentLocation`** (coerenza con **`refreshTileMapForTrackUi`**). Import/Export waypoint **invariati**. **Non:** 6E.2, 6D, `finito`, commit monolite. **QA:** 2×`<script>`; `node --check` OK blocchi **9552–9678**, **9682–40837**; test browser **non eseguiti**. **Commit memoria:** `docs: memoria Pass 6 Step 6E1a post smoke fixes local` (hash dopo push). Inbox **`2026-05-02_0101_riepilogo_pass6-step6E1a-post-smoke-fixes-local.md`**. **`coordinate_converter Claude.html` escluso**.
+
 2026-05-02 — **Pass 6 Step 6E.1 (pilot minimizza Traccia + Waypoint, monolite solo locale):** Pattern **`gis-panel-minimized`** + dock **`#gisMinimizedDock`** (alto-destra sotto topbar); helper **`gisMinimizePanel` / `gisRestoreMinimizedPanel`**; **no** `dialog.close()` sul minimizza; Esc ignora pannelli minimizzati; **blocco simmetrico** con notice se sub-dialog aperti (Waypoint: Import/Export; Traccia: Export / Save name / Clear current / Unsaved close); i18n **`tip.panelMinimize`**, **`tip.panelRestore`**, **`gis.minimizedDock`**, **`gis.minimized.*`**, **`waypointModal.minimizeBlockedSubdialog`**, **`trackModal.minimizeBlockedSubdialog`**. **Non:** 6E.2, 6D, `finito`, commit monolite. **QA:** `node --check` OK (blocchi **9502–9628**, **9632–40627**); test browser **non eseguiti** qui. **Commit memoria:** `docs: memoria Pass 6 Step 6E1 minimize track waypoint pilot local` (**`59e6158`**). Inbox **`2026-05-02_0020_riepilogo_pass6-step6E1-minimize-track-waypoint-pilot-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **`aggio` sync stato reale:** **`git status --short`** → solo **`coordinate_converter Claude.html`** modificato. Verifica marker **Pass 6 Step 6E.1** (minimizza Traccia/Waypoint): **assenti nel monolite** → pilot **non implementato**; prossimo passo = implementazione 6E.1 o smoke/commit monolite quando autorizzato. **Nessuna** modifica codice in questo sync. **Commit memoria:** `docs: orchestratore — aggio sync stato 6E1 pending monolite locale` (**`fe9f509`**). Inbox **`2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`**. **`coordinate_converter Claude.html` escluso**.
@@ -78,6 +80,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**Pass 6 Step 6E.1a 2026-05-02** — Post-smoke: dock/animazioni; Waypoint close guard; fix Esc→La Spezia; GPS **`lastPoint`**; monolite **solo locale**: **`docs/orchestrator/inbox/2026-05-02_0101_riepilogo_pass6-step6E1a-post-smoke-fixes-local.md`**.
+
 **Pass 6 Step 6E.1 2026-05-02** — Pilot minimizza **`#trackModal`** + **`#waypointModal`** (dock, Esc, sub-dialog block + notice). Monolite **solo locale**: **`docs/orchestrator/inbox/2026-05-02_0020_riepilogo_pass6-step6E1-minimize-track-waypoint-pilot-local.md`**.
 
 **`aggio` 2026-05-01** — Riconciliazione orchestratore: monolite solo locale; stato precedente prima dell’implementazione 6E.1. Inbox **`docs/orchestrator/inbox/2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`**.
@@ -111,10 +115,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Checklist **test browser** per **6E.1** (sub-dialog block Import/Export/Save name/Export/Clear/Unsaved + minimizza normale + Esc + dock). Poi **6E.2** (estensione ad altri pannelli) solo dopo esito positivo; oppure **6D** / **`finito`** / commit monolite quando autorizzato.
+Checklist **test browser** per **6E.1a** (dock/animazioni, guard Waypoint, Esc senza recentro, GPS centrato, sub-dialog ancora bloccati). Poi **6E.2** (estensione minimizza) o commit monolite quando autorizzato.
 
 ## Dettagli (inbox)
 
+- **Pass 6 Step 6E.1a post-smoke fixes (locale):** `docs/orchestrator/inbox/2026-05-02_0101_riepilogo_pass6-step6E1a-post-smoke-fixes-local.md`
 - **Pass 6 Step 6E.1 minimize Track/Waypoint pilot (locale):** `docs/orchestrator/inbox/2026-05-02_0020_riepilogo_pass6-step6E1-minimize-track-waypoint-pilot-local.md`
 - **`aggio` sync — stato pre-6E.1:** `docs/orchestrator/inbox/2026-05-01_2345_riepilogo_aggio-sync-pass6-6E1-stato-reale-monolite-local.md`
 - **Pass 6 Step 6C.4 hover traccia + doppio click + GPS pulse (locale):** `docs/orchestrator/inbox/2026-05-01_2355_riepilogo_pass6-step6C4-track-hover-dblclick-gps-local.md`
