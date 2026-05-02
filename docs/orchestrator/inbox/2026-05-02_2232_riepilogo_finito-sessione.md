@@ -20,6 +20,7 @@ Comando utente **`finito`** dopo implementazione **Pass 6 Step 6F.3** (delete wa
 ## Step 4 — Riconciliazione orchestratore (questo commit)
 
 - **Messaggio:** `docs: orchestratore — riconciliazione finito sessione`
+- **Hash (short):** `6bb6302`
 - **File:** `docs/orchestrator/latest.md`, questo file `docs/orchestrator/inbox/2026-05-02_2232_riepilogo_finito-sessione.md`
 - **Scopo:** allineare memoria ChatGPT (`aggio`): monolite **non** più «solo locale / escluso autosync» per 6F.3; puntatore a checkpoint sessione ufficiale.
 
