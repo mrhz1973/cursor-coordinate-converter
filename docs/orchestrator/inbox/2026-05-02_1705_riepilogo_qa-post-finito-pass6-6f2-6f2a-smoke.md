@@ -41,5 +41,5 @@
 ## Commit memoria
 
 Messaggio: `docs: memoria QA post-finito Pass6 6F2 smoke local`  
-**Hash:** `c5fb0dc` — push **riuscito** su `main`  
+**Hash:** `c5fb0dc` (memoria + `latest`) + `4162ea2` (riga hash in inbox) — push **riuscito** su `main`  
 **Monolite:** **non** incluso nel commit memoria.
