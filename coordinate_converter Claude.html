@@ -6425,6 +6425,31 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   margin:0 0 6px;
   min-height:1em;
 }
+/* 6F.2: compact batch row above waypoint table (favorites from selection). */
+#waypointModalPanel .wp-wp-batch-fav-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:space-between;
+  gap: var(--wp-space-2);
+  margin: 0 0 8px;
+  padding: var(--wp-space-2) var(--wp-space-3);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+  border-radius: var(--wp-r-md);
+  background: color-mix(in srgb, var(--panel2) 40%, transparent);
+}
+#waypointModalPanel .wp-wp-batch-fav-row .wp-batch-sel-count{
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 7em;
+}
+#waypointModalPanel .wp-wp-batch-fav-row .wp-batch-fav-actions{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap: var(--wp-space-2);
+}
 #waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
   justify-content:space-between;
@@ -8812,6 +8837,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <button type="button" id="wpRemoveFavCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
             </div>
           </div>
+          <!-- 6F.2: batch add favorites from multi-selected rows (Set survives renderWpModalList). -->
+          <div id="wpBatchFavRow" class="wp-wp-batch-fav-row" role="region">
+            <span id="wpBatchSelCount" class="wp-batch-sel-count" aria-live="polite"></span>
+            <div class="wp-batch-fav-actions">
+              <button type="button" id="wpBatchSelectAllBtn" class="btn btn-sm" data-i18n="waypointModal.selectAll">Seleziona tutti</button>
+              <button type="button" id="wpBatchClearSelBtn" class="btn btn-sm" data-i18n="waypointModal.clearSelection" disabled>Deseleziona</button>
+              <button type="button" id="wpBatchAddFavoritesBtn" class="btn btn-sm" data-i18n="waypointModal.addSelectedFavorites" disabled>Aggiungi selezionati ai Preferiti</button>
+            </div>
+          </div>
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
           <div class="wp-list-actions">
             <button type="button" id="wpDeleteSelectedBtn" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.waypointModal.deleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="waypointModal.deleteSelected">Elimina selezionati</span></button>
@@ -10256,6 +10290,14 @@ const I18N = {
     "waypointModal.removeFavoriteConfirmMsg":"Il waypoint resterà nell’elenco, ma il Preferito collegato verrà rimosso.",
     "waypointModal.removeFavoriteConfirm":"Rimuovi dai Preferiti",
     "waypointModal.favoriteRemoved":"Preferito rimosso",
+    "waypointModal.selectionCount":"{count} selezionati",
+    "waypointModal.selectAll":"Seleziona tutti",
+    "waypointModal.clearSelection":"Deseleziona",
+    "waypointModal.addSelectedFavorites":"Aggiungi selezionati ai Preferiti",
+    "waypointModal.noSelection":"Nessun waypoint selezionato",
+    "waypointModal.batchFavoritesAdded":"Preferiti aggiunti: {added}",
+    "waypointModal.batchFavoritesAddedSkipped":"Preferiti aggiunti: {added}. Già presenti: {skipped}.",
+    "waypointModal.batchFavoritesAllSkipped":"I waypoint selezionati sono già nei Preferiti",
     "waypointModal.zoomTo":"Centra mappa sul waypoint",
     "waypointModal.deleteSelected":"Elimina selezionati",
     "waypointModal.mapNameLabel":"Nome sulla mappa",
@@ -11627,6 +11669,14 @@ const I18N = {
     "waypointModal.removeFavoriteConfirmMsg":"The waypoint stays in the list, but the linked favorite will be removed.",
     "waypointModal.removeFavoriteConfirm":"Remove from favorites",
     "waypointModal.favoriteRemoved":"Favorite removed",
+    "waypointModal.selectionCount":"{count} selected",
+    "waypointModal.selectAll":"Select all",
+    "waypointModal.clearSelection":"Clear selection",
+    "waypointModal.addSelectedFavorites":"Add selected to Favorites",
+    "waypointModal.noSelection":"No waypoint selected",
+    "waypointModal.batchFavoritesAdded":"Favorites added: {added}",
+    "waypointModal.batchFavoritesAddedSkipped":"Favorites added: {added}. Already present: {skipped}.",
+    "waypointModal.batchFavoritesAllSkipped":"The selected waypoints are already in Favorites",
     "waypointModal.zoomTo":"Center the map on this waypoint",
     "waypointModal.deleteSelected":"Delete selected",
     "waypointModal.mapNameLabel":"Name on map",
@@ -12998,6 +13048,14 @@ const I18N = {
     "waypointModal.removeFavoriteConfirmMsg":"Le waypoint reste dans la liste, mais le favori associé sera supprimé.",
     "waypointModal.removeFavoriteConfirm":"Retirer des favoris",
     "waypointModal.favoriteRemoved":"Favori retiré",
+    "waypointModal.selectionCount":"{count} sélectionnés",
+    "waypointModal.selectAll":"Tout sélectionner",
+    "waypointModal.clearSelection":"Désélectionner",
+    "waypointModal.addSelectedFavorites":"Ajouter la sélection aux Favoris",
+    "waypointModal.noSelection":"Aucun waypoint sélectionné",
+    "waypointModal.batchFavoritesAdded":"Favoris ajoutés : {added}",
+    "waypointModal.batchFavoritesAddedSkipped":"Favoris ajoutés : {added}. Déjà présents : {skipped}.",
+    "waypointModal.batchFavoritesAllSkipped":"Les waypoints sélectionnés sont déjà dans les Favoris",
     "waypointModal.zoomTo":"Centrer la carte sur ce waypoint",
     "waypointModal.deleteSelected":"Supprimer la sélection",
     "waypointModal.mapNameLabel":"Nom sur la carte",
@@ -30426,8 +30484,12 @@ function pushFavoriteEntrySilent(lat, lon, opts){
     meta: opts.meta != null ? opts.meta : null
   });
   if (state.favorites.length > 200) state.favorites.length = 200;
-  renderFavorites();
-  saveStore();
+  if (opts.deferPersist){
+    /* 6F.2: caller runs renderFavorites + saveStore once after batch inserts. */
+  } else {
+    renderFavorites();
+    saveStore();
+  }
   return true;
 }
 function flashPasteStatusLine(msg, kind){
@@ -30548,6 +30610,104 @@ let favoritesPendingInline = null;
 let waypointPendingDeleteId = null;
 /** 6F.1: transient favorite id pending removal from waypoint list star (not waypoint delete). */
 let waypointPendingRemoveFavId = null;
+/** 6F.2: transient waypoint row ids selected in modal list (not persisted; survives renderWpModalList). */
+const waypointModalSelectedRowIds = new Set();
+
+function wpModalPruneWaypointSelection(){
+  ensureMapWaypointsState();
+  const idOk = new Set(state.mapWaypoints.map(p => p.id));
+  for (const id of [...waypointModalSelectedRowIds]){
+    if (!idOk.has(id)) waypointModalSelectedRowIds.delete(id);
+  }
+}
+
+function wpClearListFavFeedbackQuiet(){
+  const el = document.getElementById("wpListFavFeedback");
+  if (!el) return;
+  try { clearTimeout(el._wpFavFbTm); } catch(_){}
+  el.textContent = "";
+  el.classList.remove("is-ok", "is-err");
+}
+
+function syncWpModalBatchFavUi(){
+  wpModalPruneWaypointSelection();
+  const n = waypointModalSelectedRowIds.size;
+  const cnt = document.getElementById("wpBatchSelCount");
+  if (cnt){
+    const tpl = (typeof t === "function" ? t("waypointModal.selectionCount") : "{count}") || "{count}";
+    cnt.textContent = String(tpl).replace(/\{count\}/g, String(n));
+  }
+  const addB = document.getElementById("wpBatchAddFavoritesBtn");
+  if (addB) addB.disabled = n === 0;
+  const clrB = document.getElementById("wpBatchClearSelBtn");
+  if (clrB) clrB.disabled = n === 0;
+  const allB = document.getElementById("wpBatchSelectAllBtn");
+  if (allB){
+    ensureMapWaypointsState();
+    allB.disabled = !state.mapWaypoints.length;
+  }
+}
+
+function wpModalApplySelectionCheckboxes(root){
+  if (!root) return;
+  root.querySelectorAll(".wp-sel-cb[data-wp-sel]").forEach(cb => {
+    const wid = cb.getAttribute("data-wp-sel");
+    if (wid) cb.checked = waypointModalSelectedRowIds.has(wid);
+  });
+}
+
+/** 6F.2: add multiple selected waypoints to favorites; one saveStore at end. */
+function waypointModalAddSelectedRowsToFavorites(){
+  ensureMapWaypointsState();
+  wpModalPruneWaypointSelection();
+  const ordered = state.mapWaypoints.filter(p => p && waypointModalSelectedRowIds.has(p.id));
+  if (!ordered.length){
+    showWpModalListFavFeedback("err", t("waypointModal.noSelection"));
+    return;
+  }
+  let added = 0;
+  let skipped = 0;
+  const addedWpIds = [];
+  for (const p of ordered){
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)){
+      continue;
+    }
+    if (waypointCoordinateHasMatchingFavorite(p.lat, p.lon)){
+      skipped++;
+      continue;
+    }
+    const nm = String(p.name || "").trim();
+    const notes = (p.meta && typeof p.meta.notes === "string") ? p.meta.notes : "";
+    const preferredName = nm || (t("fav.defaultName") + " (" + p.lat.toFixed(4) + ", " + p.lon.toFixed(4) + ")");
+    const ok = pushFavoriteEntrySilent(p.lat, p.lon, {
+      preferredName,
+      notes,
+      meta: p.meta || null,
+      deferPersist: true
+    });
+    if (ok){
+      added++;
+      addedWpIds.push(p.id);
+    }
+  }
+  if (added){
+    renderFavorites();
+    saveStore();
+  }
+  for (const id of addedWpIds) waypointModalSelectedRowIds.delete(id);
+  if (added && skipped){
+    const tpl = t("waypointModal.batchFavoritesAddedSkipped");
+    showWpModalListFavFeedback("ok", String(tpl).replace(/\{added\}/g, String(added)).replace(/\{skipped\}/g, String(skipped)));
+  } else if (added){
+    const tpl = t("waypointModal.batchFavoritesAdded");
+    showWpModalListFavFeedback("ok", String(tpl).replace(/\{added\}/g, String(added)));
+  } else if (skipped){
+    showWpModalListFavFeedback("ok", t("waypointModal.batchFavoritesAllSkipped"));
+  } else {
+    showWpModalListFavFeedback("err", t("waypointModal.noSelection"));
+  }
+  try { if (typeof renderWpModalList === "function") renderWpModalList(); } catch(_){}
+}
 
 const FAV_LIST_COORD_MODES = ["dd", "signed", "ddm", "dms", "mgrs5"];
 
@@ -30843,7 +31003,7 @@ function renderFavorites(){
       <td class="fav-actions-cell"><div class="fav-row-actions">
         <button type="button" class="btn btn-sm" data-fav-focus-name="${fid}" data-i18n-tip="tip.favEdit" data-i18n-aria="tip.favEdit"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm" data-fav-center="${fid}" data-i18n-tip="tip.common.centerMapPoint" data-i18n-aria="tip.common.centerMapPoint"><span aria-hidden="true">⌖</span></button>
-        <button type="button" class="btn btn-sm" data-fav-waypoint="${fid}" data-i18n-tip="tip.favAddWaypoint" data-i18n-aria="tip.favAddWaypoint"><span aria-hidden="true">★</span></button>
+        <button type="button" class="btn btn-sm" data-fav-waypoint="${fid}" data-i18n-tip="tip.favAddWaypoint" data-i18n-aria="tip.favAddWaypoint"><span aria-hidden="true">📍</span></button>
         <button type="button" class="btn btn-sm" data-fav-load="${fid}" data-i18n-tip="tip.favLoadConverter" data-i18n-aria="tip.favLoadConverter"><span aria-hidden="true">↻</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-fav-del="${fid}" data-i18n-tip="tip.favDelete" data-i18n-aria="tip.favDelete"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div></td>
@@ -35783,6 +35943,34 @@ function gisInit(){
     ev.preventDefault();
     if (typeof waypointsDeleteSelectedBulk === "function") waypointsDeleteSelectedBulk();
   });
+  const wpBatchAdd = document.getElementById("wpBatchAddFavoritesBtn");
+  if (wpBatchAdd && !wpBatchAdd._wp6f2Wired){
+    wpBatchAdd._wp6f2Wired = true;
+    wpBatchAdd.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof waypointModalAddSelectedRowsToFavorites === "function") waypointModalAddSelectedRowsToFavorites();
+    });
+  }
+  const wpBatchClr = document.getElementById("wpBatchClearSelBtn");
+  if (wpBatchClr && !wpBatchClr._wp6f2Wired){
+    wpBatchClr._wp6f2Wired = true;
+    wpBatchClr.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      try { waypointModalSelectedRowIds.clear(); } catch(_){}
+      try { if (typeof renderWpModalList === "function") renderWpModalList(); } catch(_){}
+    });
+  }
+  const wpBatchAll = document.getElementById("wpBatchSelectAllBtn");
+  if (wpBatchAll && !wpBatchAll._wp6f2Wired){
+    wpBatchAll._wp6f2Wired = true;
+    wpBatchAll.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ensureMapWaypointsState();
+      waypointModalSelectedRowIds.clear();
+      state.mapWaypoints.forEach(p => { if (p && p.id) waypointModalSelectedRowIds.add(p.id); });
+      try { if (typeof renderWpModalList === "function") renderWpModalList(); } catch(_){}
+    });
+  }
   const onWpMapNameDispChange = () => {
     const a = document.getElementById("wpMapNameAlways");
     const v = (a && a.checked) ? "always" : "tooltip";
@@ -37347,6 +37535,7 @@ function openWaypointModal(opts){
 function closeWaypointModal(){
   const dlg = document.getElementById("waypointModal");
   if (!state.waypointsModalOpen && !(dlg && dlg.open)) return;
+  try { waypointModalSelectedRowIds.clear(); } catch(_){}
   try { waypointModalHideUnsavedCloseBar(); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("waypointModal"); } catch(_){}
   try { wpHideDeleteOneBar(); } catch(_){}
@@ -37810,6 +37999,9 @@ function waypointsDeleteSelectedBulk(){
   if (typeof window.confirm === "function" && !window.confirm(msg)) return;
   ensureMapWaypointsState();
   const set = new Set(ids.map(String));
+  try {
+    ids.forEach((wid) => { if (wid) waypointModalSelectedRowIds.delete(String(wid)); });
+  } catch(_){}
   state.mapWaypoints = state.mapWaypoints.filter(x => !set.has(x.id));
   if (state.waypointEditorDraft && state.waypointEditorDraft.id && set.has(state.waypointEditorDraft.id)) closeWaypointEditor();
   saveStore();
@@ -39588,6 +39780,7 @@ function syncWpSelectAllState(root){
     const anySel = root && root.querySelector(".wp-sel-cb[data-wp-sel]:checked");
     delBtn.hidden = !anySel;
   }
+  try { syncWpModalBatchFavUi(); } catch(_){}
 }
 
 /** Render the waypoint list inside `#wp-list`. Kept in sync by
@@ -39596,6 +39789,7 @@ function renderWpModalList(){
   const root = document.getElementById("wp-list");
   if (!root) return;
   ensureMapWaypointsState();
+  wpModalPruneWaypointSelection();
   const pts = state.mapWaypoints;
   root.setAttribute("data-empty", t("waypointModal.empty"));
   const countEl = document.getElementById("wp-count");
@@ -39660,6 +39854,7 @@ function renderWpModalList(){
   }).join("");
   html += "</tbody></table>";
   root.innerHTML = html;
+  wpModalApplySelectionCheckboxes(root);
   try {
     const tbl = root.querySelector(".wp-modal-table");
     if (tbl && Number.isFinite(root._wpNameColPx)){
@@ -39673,6 +39868,10 @@ function renderWpModalList(){
   } catch(_){}
   ensureWpModalNameColResizeWired();
   syncWpSelectAllState(root);
+  try {
+    const batchRow = document.getElementById("wpBatchFavRow");
+    if (batchRow && typeof syncI18nInRoot === "function") syncI18nInRoot(batchRow, state.lang || "it");
+  } catch(_){}
   try {
     const wpx = document.getElementById("waypointExportDialog");
     if (wpx && wpx.open && typeof syncWaypointExportDialogUi === "function") syncWaypointExportDialogUi();
@@ -39693,7 +39892,16 @@ function renderWpModalList(){
       const el = ev.target;
       if (!el || !el.matches) return;
       if (el.id === "wpSelectAll"){
-        root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = !!el.checked; });
+        const on = !!el.checked;
+        root.querySelectorAll(".wp-sel-cb").forEach(cb => { cb.checked = on; });
+        if (on){
+          root.querySelectorAll(".wp-sel-cb[data-wp-sel]").forEach(cb => {
+            const wid = cb.getAttribute("data-wp-sel");
+            if (wid) waypointModalSelectedRowIds.add(wid);
+          });
+        } else {
+          waypointModalSelectedRowIds.clear();
+        }
         el.indeterminate = false;
         syncWpSelectAllState(root);
         try {
@@ -39703,6 +39911,11 @@ function renderWpModalList(){
         return;
       }
       if (el.matches("[data-wp-sel]")){
+        const wid = el.getAttribute("data-wp-sel");
+        if (wid){
+          if (el.checked) waypointModalSelectedRowIds.add(wid);
+          else waypointModalSelectedRowIds.delete(wid);
+        }
         syncWpSelectAllState(root);
         try {
           const wpx = document.getElementById("waypointExportDialog");
@@ -40038,6 +40251,7 @@ function wpShowDeleteOneConfirmBar(id){
   ensureMapWaypointsState();
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
+  try { wpClearListFavFeedbackQuiet(); } catch(_){}
   try { wpHideRemoveFavBar(); } catch(_){}
   wpWireDeleteOneBarOnce();
   waypointPendingDeleteId = id;
@@ -40059,6 +40273,7 @@ function wpShowRemoveFavConfirmBar(wpId){
   if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) return;
   const favId = findFirstFavoriteIdAtLatLon(p.lat, p.lon);
   if (!favId) return;
+  try { wpClearListFavFeedbackQuiet(); } catch(_){}
   try { wpHideDeleteOneBar(); } catch(_){}
   wpWireRemoveFavBarOnce();
   waypointPendingRemoveFavId = favId;
@@ -40074,6 +40289,7 @@ function waypointDeleteExecute(id){
   ensureMapWaypointsState();
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
+  try { waypointModalSelectedRowIds.delete(id); } catch(_){}
   state.mapWaypoints = state.mapWaypoints.filter(x => x.id !== id);
   if (state.waypointEditorDraft && state.waypointEditorDraft.id === id) closeWaypointEditor();
   saveStore();
@@ -40088,6 +40304,7 @@ function requestWaypointDelete(id){
 function executeWaypointsClearAll(){
   ensureMapWaypointsState();
   if (!state.mapWaypoints.length) return;
+  try { waypointModalSelectedRowIds.clear(); } catch(_){}
   state.mapWaypoints = [];
   closeWaypointEditor();
   saveStore();
