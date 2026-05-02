@@ -40,4 +40,4 @@
 - `docs/orchestrator/latest.md` (sintesi)
 - Questo `inbox`
 
-**Commit memoria:** (compilare dopo `git commit` / `git push` selettivo).
+**Commit memoria:** `4a3c6dd` (`docs: memoria QA post-finito Pass6 6F1 light`) — push **riuscito** su `main`.
