@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-02 — **`finito` sessione:** monolite **`coordinate_converter Claude.html`** versionato su `main` con batch **Pass 6 fino a 6E.1d** (commit **`af69673`**); checkpoint **`docs/checkpoint.md`** + append **`docs/session-geolocalizzazione-e-mappa.md`**. **6E.2** non implementato (solo piano). Riconciliazione: inbox **`2026-05-02_0237_riepilogo_finito-sessione.md`** + commit orchestratore dedicato.
+
 2026-05-01 — **Pass 6 Step 6E.1d (coesistenza Astro + Traccia, monolite solo locale):** **`openToolsDrawer`**: rimosso gate **`gisTryCloseTrackModalForContextSwitch`** all’apertura Strumenti (Traccia non si chiude solo aprendo il drawer). **`activateToolPanel(tool)`**: stesso gate **solo** se **`tool !== "astro"`** (Astro floating convive con Traccia). **GPS / Converti / dock minimizzati / Esc non toccati** da questo delta. **QA:** 2×`<script>`; `node --check` OK **9578–9704**, **9708–41063**; diff baseline filtrato senza token GPS/Converti/dock/favorites/layers; **test browser non eseguiti**. **Commit memoria:** `docs: memoria Pass 6 Step 6E1d astro track coexist local` (**`e0786da`**). Inbox **`2026-05-01_2125_riepilogo_pass6-step6E1d-astro-track-coexist-local.md`**. **`coordinate_converter Claude.html` escluso**.
 
 2026-05-01 — **Pass 6 Step 6E.1c (dock offset reale + Converti partial-offscreen, monolite solo locale):** Dock **`#gisMinimizedDock`**: **`--gis-minimized-dock-offset`** (78px / 88px stretto) + **`safe-area-inset-top`** — risolve **`--gis-topbar-h:0`** in GIS che collocava la dock a ~8px; **`z-index:22`** sotto Converti/modali operativi. **Converti** **`#convertModal`**: **`partialMinVisible:72`** in **`_convertPanelLayoutOpts()`**; **`gisPanelClampRectPartialVisible`** in **`positionConvertModalNearTopbar`**, **`clampConvertModalRect`**, **`applyConvertModalGisDefaultSize`**, **`applyConvertModalGisLayout`**. **GPS/Esc non toccati.** **QA:** 2×`<script>`; `node --check` OK **9578–9704**, **9708–41062**; test browser **non eseguiti**. **Commit memoria:** `docs: memoria Pass 6 Step 6E1c dock convert partial local` (**`3e3cbf3`**). Inbox **`2026-05-01_2015_riepilogo_pass6-step6E1c-dock-convert-partial-local.md`**. **`coordinate_converter Claude.html` escluso**.
@@ -86,6 +88,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo intervento Cursor
 
+**`finito` 2026-05-02** — Pass 6 batch monolite su `main` (**`af69673`**); memoria **`docs/orchestrator/inbox/2026-05-02_0237_riepilogo_finito-sessione.md`**.
+
 **Pass 6 Step 6E.1d 2026-05-01** — Astro + Traccia convivono: `openToolsDrawer` senza chiusura Traccia; `activateToolPanel` salta gate per **`astro`**. Monolite **solo locale**: **`docs/orchestrator/inbox/2026-05-01_2125_riepilogo_pass6-step6E1d-astro-track-coexist-local.md`**.
 
 **Pass 6 Step 6E.1a 2026-05-02** — Post-smoke: dock/animazioni; Waypoint close guard; fix Esc→La Spezia; GPS **`lastPoint`**; monolite **solo locale**: **`docs/orchestrator/inbox/2026-05-02_0101_riepilogo_pass6-step6E1a-post-smoke-fixes-local.md`**.
@@ -123,10 +127,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke **6E.1d** (Traccia+Astro insieme, ordine inverso, RR+Waypoint, Traccia minimizzata+Astro). Poi checklist **6E.1a/6E.1c** se non già fatte; **6E.2** o commit monolite quando autorizzato.
+Smoke regressione post-`finito` su **Pass 6** (tracce, waypoint, preferiti, mappe offline, minimizza, Astro/RR, GPS, Esc, Converti). Poi **Pass 6 Step 6E.2** se confermato.
 
 ## Dettagli (inbox)
 
+- **`finito` 2026-05-02 — Pass 6 batch monolite fino a 6E.1d:** `docs/orchestrator/inbox/2026-05-02_0237_riepilogo_finito-sessione.md`
 - **Pass 6 Step 6E.1d Astro + Traccia coexist (locale):** `docs/orchestrator/inbox/2026-05-01_2125_riepilogo_pass6-step6E1d-astro-track-coexist-local.md`
 - **Pass 6 Step 6E.1a post-smoke fixes (locale):** `docs/orchestrator/inbox/2026-05-02_0101_riepilogo_pass6-step6E1a-post-smoke-fixes-local.md`
 - **Pass 6 Step 6E.1 minimize Track/Waypoint pilot (locale):** `docs/orchestrator/inbox/2026-05-02_0020_riepilogo_pass6-step6E1-minimize-track-waypoint-pilot-local.md`
