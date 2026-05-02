@@ -28,6 +28,8 @@ Vuoto (working tree pulito).
 - Commit `6c25d14`: **+225 / −4** righe sul monolite (cumulativo 6F.2+6F.2a rispetto a `HEAD^`); checkpoint/session come sopra.
 - Verifiche standard già eseguite in sessione su monolite: 2×`<script>`, `node --check` blocchi, ecc.
 
-## Questo file (step 3 orchestratore)
+## Commit riconciliazione orchestratore (step 3)
 
-Creato con **`docs: orchestratore — riconciliazione finito sessione`** (commit dedicato subito dopo questo contenuto).
+Messaggio: `docs: orchestratore — riconciliazione finito sessione`  
+**Hash:** `c5eb587` — push **riuscito** su `main`  
+**File:** `docs/orchestrator/latest.md`, questo inbox.
