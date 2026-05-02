@@ -47,5 +47,5 @@
 ## Commit memoria orchestratore
 
 Messaggio: `docs: memoria Pass 6 Step 6F2 waypoint multiselect local`  
-**Hash:** `7d99bdd` — push **riuscito** su `main`.  
+**Hash:** `7d99bdd` (memoria + `latest`) + `dbeaec3` (riga hash in inbox) — push **riuscito** su `main`.  
 **Monolite escluso** dal commit/push memoria (policy + richiesta utente).
