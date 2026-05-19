@@ -6932,6 +6932,10 @@ body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-body{
 }
 body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-panel{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
+  /* Let the body (sized by gisPanelSyncBodySize) be the sole scroll container;
+     removing panel's own scroll avoids nested double-scrollbar UX. */
+  overflow: visible;
+  max-height: none;
 }
 body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-split{
   grid-template-columns: 1fr;
@@ -36932,13 +36936,14 @@ function gisPanelSyncBodySize(root, opts){
   if (!root) return;
   const body = opts.bodyEl || (opts.bodyId ? document.getElementById(opts.bodyId) : null) || root.querySelector(".app-modal-body");
   if (!body) return;
-  const head = opts.headEl || root.querySelector(".app-modal-head");
-  const hh = head ? Math.max(0, head.getBoundingClientRect().height) : 58;
   const br = root.getBoundingClientRect();
+  const bodyBr = body.getBoundingClientRect();
   const h = Math.max(0, br.height || root.offsetHeight || 0);
+  /* Measure from body's actual top offset so warning bars / minimize notices above
+     the body are automatically accounted for — not just the head element. */
+  const topOffset = Math.max(0, bodyBr.top - br.top);
   const minBody = Number.isFinite(opts.bodyMinH) ? opts.bodyMinH : GIS_PANEL_DEFAULTS.bodyMinH;
-  /* Subtract a tiny slack so 1–2px rounding doesn't force a scrollbar. */
-  const mh = Math.max(minBody, (h - hh - 3));
+  const mh = Math.max(minBody, (h - topOffset - 3));
   body.style.maxHeight = mh + "px";
   try {
     body.style.overflowY = "auto";
@@ -37418,6 +37423,11 @@ function closeToolsModal(){
 function waypointModalHideUnsavedCloseBar(){
   const bar = document.getElementById("waypointModalUnsavedCloseBar");
   if (bar) bar.hidden = true;
+  try {
+    const dlg = document.getElementById("waypointModal");
+    if (dlg && dlg.open && document.body.classList.contains("gis-mode"))
+      requestAnimationFrame(() => { try { gisPanelSyncBodySize(dlg, _waypointPanelLayoutOpts()); } catch(_){} });
+  } catch(_){}
 }
 
 function waypointModalShowUnsavedCloseBar(){
@@ -37426,6 +37436,11 @@ function waypointModalShowUnsavedCloseBar(){
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
   bar.hidden = false;
   try { document.getElementById("waypointModalUnsavedCloseCancelBtn")?.focus(); } catch(_){}
+  try {
+    const dlg = document.getElementById("waypointModal");
+    if (dlg && dlg.open && document.body.classList.contains("gis-mode"))
+      requestAnimationFrame(() => { try { gisPanelSyncBodySize(dlg, _waypointPanelLayoutOpts()); } catch(_){} });
+  } catch(_){}
 }
 
 function waypointModalUnsavedCloseRisk(){
