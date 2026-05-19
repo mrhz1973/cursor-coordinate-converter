@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-19 — **Piano Tier 1 — prossimo blocco feature (docs-only):** analisi tre candidati (A: CoT XML import/export T1.2; B: compound polygon T1.1; C: layer cartografici esterni PCN/Geoportale). **Raccomandazione: A — CoT XML import/export waypoint (T1.2)** — scope bounded, offline-first, nessun gate, chiude gap T1.2 interop matrix. B rinviato (scope ampio, pianificare come multi-step pass dopo CoT). C rinviato (research-gated: CORS, licensing, OPSEC, endpoint availability). Piano completo in inbox **`2026-05-19_1300_next-tier1-plan.md`**. Prompt CODE CoT XML incluso nel piano (copy-paste ready).
+
 2026-05-19 — **Browser QA PASS GIS — waypoint panel bottom actions reachable:** commit testato **`ede1ec4`**; utente ha confermato **PASS GIS**: fondo lista raggiungibile ✓, azioni finali visibili ✓, pulsante «Elimina tutti» raggiungibile ✓. «PERFETTO FUNZIONA». Inbox **`2026-05-19_1430_browser-pass-waypoint-panel-bottom-actions.md`**.
 
 2026-05-19 — **fix: waypoint panel bottom actions reachable (layout bug):** 3 patch (1 CSS, 2 JS). **Root cause**: (1) `.waypoint-modal-panel` aveva `overflow:auto; max-height:min(88vh,860px)` → doppio scroll container nidificato con il body; (2) `gisPanelSyncBodySize` calcolava `maxHeight = dialog_height - head_height - 3`, ignorando `#waypointModalUnsavedCloseBar` (~80 px) tra head e body → quando la barra era visibile il body traboccava il dialogo e il fondo veniva tagliato; (3) show/hide della barra non ricalcolava il maxHeight. **Fix CSS**: aggiunto `overflow:visible; max-height:none` alla regola GIS-scoped di `.waypoint-modal-panel`. **Fix JS**: `gisPanelSyncBodySize` usa ora `bodyBr.top - rootBr.top` come `topOffset` (misura tutto ciò che sta sopra il body, qualunque elemento sia visibile). **Fix JS**: `waypointModalShow/HideUnsavedCloseBar` ricalcolano il body in rAF dopo il cambio visibilità. **Delete-all**: `#wpDeleteAllBtn` **esisteva già** — era solo irraggiungibile; ora accessibile. **Static:** 2×`<script>`, nessun `src`/`module`, `node --check` NOT EXECUTED. **Browser QA pending**. Inbox **`2026-05-19_1400_fix-waypoint-panel-bottom-actions.md`**.
@@ -179,7 +181,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Prossimo passo consigliato
 
-Smoke regressione post-`finito` su **Pass 6** (tracce, waypoint, preferiti, mappe offline, minimizza, Astro/RR, GPS, Esc, Converti). Poi **Pass 6 Step 6E.2** se confermato.
+**CoT XML import/export waypoint (T1.2)** — primo blocco Tier 1. Piano in **`docs/orchestrator/inbox/2026-05-19_1300_next-tier1-plan.md`** con prompt CODE copy-paste ready. Nessun gate: avviabile immediatamente.
 
 ## Dettagli (inbox)
 
