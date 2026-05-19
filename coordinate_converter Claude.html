@@ -29766,7 +29766,21 @@ function gisMapOnDblClickCenter(ev){
   const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
   if (ev.target.closest(UI_SEL)) return;
   const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
-  if (trackPickActive || state.waypointPickMode || state.mapPickMode || state.astroPickCenterMode) return;
+  if (trackPickActive || state.mapPickMode || state.astroPickCenterMode) return;
+  if (state.waypointPickMode){
+    if (ev.cancelable) ev.preventDefault();
+    try {
+      const d = state.waypointEditorDraft;
+      if (d && Number.isFinite(d.lat) && Number.isFinite(d.lon)){
+        const nm = document.getElementById("wpFieldName");
+        if (nm && !String(nm.value || "").trim() && typeof t === "function")
+          nm.value = t("track.waypointDefaultName") || "Waypoint";
+        if (typeof commitWaypointEditor === "function") commitWaypointEditor();
+        if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow();
+      }
+    } catch(_){}
+    return;
+  }
   if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode || state._rrEditingMoveCenterMode) return;
   if (state._bboxSelecting) return;
   if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
@@ -37563,6 +37577,9 @@ function openWaypointModal(opts){
         catch(_){}
       });
     } catch(_){}
+  }
+  if (isGis){
+    try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
   }
 }
 
