@@ -26096,6 +26096,70 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wrap);
 }
 
+/** Overlay SVG per state.gisPolygons[] — Pass A T1.1. */
+function renderGisPolygonsOverlay(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  const old = tileMap.querySelector(".gis-polygons-overlay");
+  if (old) old.remove();
+  if (!Array.isArray(state.gisPolygons) || !state.gisPolygons.length) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+  const style = tileLayer.style.transform || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:4";
+  let any = false;
+  for (const f of state.gisPolygons){
+    if (!f || !f.geometry || f.geometry.type !== "Polygon") continue;
+    const props = f.properties || {};
+    if (props.visible === false) continue;
+    const ring = (Array.isArray(f.geometry.coordinates) && Array.isArray(f.geometry.coordinates[0]))
+      ? f.geometry.coordinates[0] : [];
+    if (ring.length < 3) continue;
+    const pxPts = [];
+    for (const c of ring){
+      if (!Array.isArray(c) || c.length < 2) continue;
+      const px = tileMapLatLonToPx(root, c[1], c[0]); // GeoJSON: [lon, lat]
+      if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+      pxPts.push({ x: px.x - tx, y: px.y - ty });
+    }
+    if (pxPts.length < 3) continue;
+    const last = pxPts[pxPts.length - 1], first = pxPts[0];
+    if (Math.abs(last.x - first.x) < 0.5 && Math.abs(last.y - first.y) < 0.5) pxPts.pop();
+    if (pxPts.length < 3) continue;
+    const ptStr = pxPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+    const color = (typeof props.color === "string" && props.color) ? props.color : "#ca8a04";
+    const poly = document.createElementNS(ns, "polygon");
+    poly.setAttribute("points", ptStr);
+    poly.setAttribute("fill", color);
+    poly.setAttribute("fill-opacity", "0.18");
+    poly.setAttribute("stroke", color);
+    poly.setAttribute("stroke-width", "1.5");
+    poly.setAttribute("stroke-linejoin", "round");
+    poly.style.pointerEvents = "none";
+    svg.appendChild(poly);
+    any = true;
+  }
+  if (!any) return;
+  const wrap = document.createElement("div");
+  wrap.className = "gis-polygons-overlay";
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
+}
+
 /** Overlay GPS da pulsante mappa GIS (solo runtime `_gisMapGpsFixTransient`). */
 function renderGisMapGpsOverlay(tileMap, markerLat, markerLon, zoom){
   if (!tileMap) return;
@@ -28292,6 +28356,7 @@ function renderTrackAll(){
     renderSavedTracksOverlays(tileMap, lp.lat, lp.lon, z);
     renderMapWaypointsOverlay(tileMap, lp.lat, lp.lon, z);
     renderRangeRingsOverlay(tileMap, lp.lat, lp.lon, z);
+    try { renderGisPolygonsOverlay(tileMap, lp.lat, lp.lon, z); } catch(_){}
   }
   if (root) updateTrackMapFloatReadout(root);
   renderSavedTracksList();
@@ -29432,6 +29497,7 @@ function renderTileMap(lat, lon, zoom){
       if (state.mapWaypoints && state.mapWaypoints.length)
         renderMapWaypointsOverlay(tileMap, lat, lon, zoom);
       renderRangeRingsOverlay(tileMap, lat, lon, zoom);
+      try { renderGisPolygonsOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
     }
   }
