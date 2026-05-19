@@ -3,28 +3,53 @@
 ## Method source
 
 - Method repository: `mrhz1973/dev-method`
-- Method tag: `v0.1.0`
+- Method tag: `v0.1.1`
 
 Pinned references:
 
 | Document | Link |
 |---|---|
-| README | [dev-method/README.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md) |
-| LLMS | [dev-method/LLMS.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/LLMS.md) |
-| Principles | [core/00-principles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/00-principles.md) |
-| Roles | [core/01-roles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/01-roles.md) |
-| Session protocol | [core/02-session-protocol.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/02-session-protocol.md) |
-| Autonomy levels | [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/03-autonomy-levels.md) |
-| Branch safety | [core/04-branch-safety.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/04-branch-safety.md) |
-| Definition of Done | [core/05-definition-of-done.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/05-definition-of-done.md) |
-| Gates and decision packets | [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/06-gates-and-decision-packets.md) |
-| Project import adapter | [adapters/project-import.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/adapters/project-import.md) |
-| Single-file HTML adapter | [adapters/single-file-html.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/adapters/single-file-html.md) |
-| GIS Tool example | [examples/gis-tool.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/examples/gis-tool.md) |
-| Implementer prompt | [prompts/implementer-standard.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/prompts/implementer-standard.md) |
-| Overlay template | [templates/project-method-overlay.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/templates/project-method-overlay.md) |
+| README | [dev-method/README.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/README.md) |
+| LLMS | [dev-method/LLMS.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/LLMS.md) |
+| Principles | [core/00-principles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/00-principles.md) |
+| Roles | [core/01-roles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/01-roles.md) |
+| Session protocol | [core/02-session-protocol.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/02-session-protocol.md) |
+| Autonomy levels | [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/03-autonomy-levels.md) |
+| Branch safety | [core/04-branch-safety.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/04-branch-safety.md) |
+| Definition of Done | [core/05-definition-of-done.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/05-definition-of-done.md) |
+| Gates and decision packets | [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/06-gates-and-decision-packets.md) |
+| Project import adapter | [adapters/project-import.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/adapters/project-import.md) |
+| Single-file HTML adapter | [adapters/single-file-html.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/adapters/single-file-html.md) |
+| GIS Tool example | [examples/gis-tool.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/examples/gis-tool.md) |
+| Implementer prompt | [prompts/implementer-standard.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/prompts/implementer-standard.md) |
+| Overlay template | [templates/project-method-overlay.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/templates/project-method-overlay.md) |
 
-All links are pinned to `v0.1.0`. Never follow `main`.
+All links are pinned to `v0.1.1`. Never follow `main`.
+
+### Why v0.1.1 for GIS Tool
+
+GIS Tool is the first pilot and adopts `v0.1.1` because it codifies policies that emerged from this pilot:
+
+- **Large single-file / token-efficiency policy** — operate on `coordinate_converter Claude.html` with marker searches, narrow ranges, targeted diffs, and small scoped patches; avoid full-file reads/rewrites.
+- **Session/repo guard** — every implementer session must validate repo root, remote, and branch before acting, and refuse out-of-scope paths.
+- **Idea intake during use** — capture incidental product/process ideas into orchestrator inbox without derailing the current task.
+- **Context compaction / debug reconstruction** — keep `latest.md` short, push detail into dated inbox entries, and make state reconstructable from docs + git log.
+- **Prompt/template integration** — implementer prompts and overlay template carry these policies by default.
+
+---
+
+## Local operating note — large-file / token-efficiency
+
+When touching `coordinate_converter Claude.html` (the monolith), agents must follow the large-file/token-efficiency policy from `v0.1.1`:
+
+- use **marker searches** (Grep) to locate the relevant function, id, or comment marker before reading;
+- read **narrow ranges** (offset + limit), not the whole file;
+- produce **targeted diffs** (`Edit` with minimal `old_string`/`new_string`), not rewrites;
+- run **extracted syntax checks** on the changed blocks when feasible (`node --check` on isolated `<script>` extracts), not on the full document;
+- keep patches **small and scoped** to one concern per commit;
+- **no full-file read or rewrite** unless clearly justified and called out in the inbox report.
+
+This rule applies in addition to the dev-method core; it is not a substitute for it.
 
 ---
 
@@ -50,7 +75,7 @@ Development is:
 - Irreversible or high-risk actions (deploy, destructive deletion, credential handling, external API setup, production mutations) remain gated and require explicit human confirmation.
 - The posture may be upgraded toward Level 3 as confidence in tooling and workflow grows.
 
-See: [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/03-autonomy-levels.md)
+See: [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/03-autonomy-levels.md)
 
 ---
 
@@ -65,7 +90,7 @@ See: [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0
 | Human gate channel | Telegram | Future optional |
 | Control plane | n8n | Future optional |
 
-See: [core/01-roles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/01-roles.md)
+See: [core/01-roles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/01-roles.md)
 
 ---
 
@@ -75,7 +100,7 @@ See: [core/01-roles.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/
 
 Applied. This file (`docs/METHOD.md`) is the project-specific method overlay produced by this adapter.
 
-See: [adapters/project-import.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/adapters/project-import.md)
+See: [adapters/project-import.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/adapters/project-import.md)
 
 ### single-file HTML adapter
 
@@ -85,7 +110,7 @@ Applied. The project deliverable is a single HTML file. This adapter governs:
 - patches scoped and verified inline;
 - syntax check after each edit before commit.
 
-See: [adapters/single-file-html.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/adapters/single-file-html.md)
+See: [adapters/single-file-html.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/adapters/single-file-html.md)
 
 ### Apps Script adapter
 
@@ -119,7 +144,7 @@ The following actions require explicit human confirmation regardless of autonomy
 - production-impacting runtime mutations;
 - force-push or history rewrite on `main`.
 
-See: [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/06-gates-and-decision-packets.md)
+See: [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/06-gates-and-decision-packets.md)
 
 ---
 
@@ -130,7 +155,7 @@ See: [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-met
 - No long-lived unstable branches without a declared reason.
 - No force-push to `main`.
 
-See: [core/04-branch-safety.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/04-branch-safety.md)
+See: [core/04-branch-safety.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/04-branch-safety.md)
 
 ---
 
@@ -145,7 +170,7 @@ A session or task is done when:
 5. A visible version marker or checkpoint entry exists for milestone tests when applicable.
 6. Workspace status is declared clean (`git status --short` = empty).
 
-See: [core/05-definition-of-done.md](https://github.com/mrhz1973/dev-method/blob/v0.1.0/core/05-definition-of-done.md)
+See: [core/05-definition-of-done.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/05-definition-of-done.md)
 
 ---
 

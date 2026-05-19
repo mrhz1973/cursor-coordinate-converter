@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-19 — **dev-method overlay aggiornato a `v0.1.1`:** `docs/METHOD.md` ora pinna **`v0.1.1`** (era `v0.1.0`); tutti i link `/blob/v0.1.0/` → `/blob/v0.1.1/`; aggiunti due paragrafi locali — (a) motivazione adozione `v0.1.1` (large single-file/token-efficiency, session/repo guard, idea intake, context compaction/debug reconstruction, prompt/template integration), (b) nota operativa locale sul monolite (marker search, narrow range, targeted diff, extracted syntax check, small scoped patch, no full-file read/rewrite). **Nessuna modifica runtime / monolite / deploy / tag.** Inbox **`2026-05-19_1335_update-dev-method-v0.1.1.md`**.
+
 2026-05-19 — **Browser QA PASS GIS — waypoint double-click save (reliable, re-test):** commit testato **`f2e4ea8`**; utente ha confermato **PASS GIS** su tutta la checklist: apertura pannello Waypoint → pick mode automatico ✓, doppio click → waypoint salvato ✓, app pronta per waypoint successivo ✓, **secondo doppio click → aggiunge altro waypoint ✓**. Nessuna regressione segnalata. Inbox **`2026-05-19_1335_browser-pass-waypoint-double-click-save-reliable.md`**.
 
 2026-05-19 — **Browser QA PASS GIS — waypoint double-click save:** commit **`f2e4ea8`**; utente ha confermato: apertura pannello Waypoint → pick mode automatico ✓, doppio click → waypoint salvato ✓, app pronta per waypoint successivo ✓. Nessuna regressione segnalata. Inbox **`2026-05-19_1330_browser-pass-waypoint-double-click-save.md`**.
