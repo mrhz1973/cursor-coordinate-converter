@@ -2347,8 +2347,13 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-row:last-child{ border-bottom:none; }
 .polygon-panel .poly-swatch{ width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.12); }
 .polygon-panel .poly-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.92rem; }
-.polygon-panel .poly-vis-btn{ background:none; border:none; cursor:pointer; font-size:1.1rem; padding:2px 4px; opacity:.7; }
-.polygon-panel .poly-vis-btn:hover{ opacity:1; }
+.polygon-panel .poly-actions{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.polygon-panel .poly-act-btn{ padding:2px 6px; font-size:.78rem; line-height:1.2; min-height:0; }
+.polygon-panel .poly-vis-btn{ min-width:1.6rem; }
+.polygon-panel .poly-rename-bar{ margin:0 0 8px; padding:8px; border-radius:6px; background:var(--gis-modal-notice-bg,rgba(241,245,249,.95)); border:1px solid rgba(100,116,139,.25); }
+.polygon-panel .poly-rename-bar .poly-rename-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.polygon-panel .poly-rename-bar input{ flex:1; min-width:120px; font-size:.88rem; padding:4px 8px; }
+.polygon-panel .poly-delete-bar{ margin:0 0 8px; }
 .polygon-panel .poly-empty{ text-align:center; padding:18px 8px; color:#666; font-size:.9rem; }
 
 /* Ricentra sul punto / «Nuovo punto» (pick): colonna `.tile-ctrls`, come misura e waypoint. */
@@ -9486,6 +9491,21 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <p id="polygonPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="polygonPanelBody">
+    <div id="polygonPanelRenameBar" class="poly-rename-bar" role="region" aria-live="polite" hidden>
+      <div class="poly-rename-row">
+        <label for="polygonPanelRenameInput" class="hint" data-i18n="gis.polygonPanel.renameLabel">Nome</label>
+        <input type="text" id="polygonPanelRenameInput" maxlength="80" autocomplete="off" />
+        <button type="button" id="polygonPanelRenameSave" class="btn btn-sm btn-primary" data-i18n="gis.polygonPanel.renameSave">Salva</button>
+        <button type="button" id="polygonPanelRenameCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
+      </div>
+    </div>
+    <div id="polygonPanelDeleteBar" class="poly-delete-bar wp-inline-confirm gis-rr-confirm-skin" role="region" aria-live="polite" hidden>
+      <div id="polygonPanelDeleteMsg" class="wp-inline-confirm__msg gis-rr-confirm-msg"></div>
+      <div class="wp-inline-confirm__actions gis-rr-confirm-actions">
+        <button type="button" id="polygonPanelDeleteConfirm" class="btn btn-sm btn-danger" data-i18n="gis.polygonPanel.deleteConfirmBtn">Elimina</button>
+        <button type="button" id="polygonPanelDeleteCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
+      </div>
+    </div>
     <div id="polygonPanelList"></div>
     <div class="polygon-panel-footer">
       <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
@@ -10881,6 +10901,19 @@ const I18N = {
     "gis.polygonPanel.exportOk":"Poligoni esportati.",
     "tip.polygonPanel.exportGeoJson":"Scarica tutti i poligoni come FeatureCollection GeoJSON.",
     "tip.polygonPanel.exportKml":"Scarica tutti i poligoni come file KML 2.2.",
+    "gis.polygonPanel.rename":"Rinomina",
+    "gis.polygonPanel.renameLabel":"Nome poligono",
+    "gis.polygonPanel.renameSave":"Salva nome",
+    "gis.polygonPanel.renameOk":"Nome aggiornato.",
+    "gis.polygonPanel.delete":"Elimina",
+    "gis.polygonPanel.deleteMsg":"Eliminare il poligono «{0}»?",
+    "gis.polygonPanel.deleteConfirmBtn":"Elimina",
+    "gis.polygonPanel.deletedOk":"Poligono eliminato.",
+    "gis.polygonPanel.hidden":"Nascosto",
+    "gis.polygonPanel.visible":"Visibile",
+    "tip.polygonPanel.rename":"Rinomina il poligono selezionato.",
+    "tip.polygonPanel.delete":"Elimina il poligono selezionato.",
+    "tip.polygonPanel.visibility":"Mostra o nascondi il poligono sulla mappa.",
     "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
     "tip.toolsDrawerClose":"Chiudi strumenti",
@@ -12276,6 +12309,19 @@ const I18N = {
     "gis.polygonPanel.exportOk":"Polygons exported.",
     "tip.polygonPanel.exportGeoJson":"Download all polygons as a GeoJSON FeatureCollection.",
     "tip.polygonPanel.exportKml":"Download all polygons as a KML 2.2 file.",
+    "gis.polygonPanel.rename":"Rename",
+    "gis.polygonPanel.renameLabel":"Polygon name",
+    "gis.polygonPanel.renameSave":"Save name",
+    "gis.polygonPanel.renameOk":"Name updated.",
+    "gis.polygonPanel.delete":"Delete",
+    "gis.polygonPanel.deleteMsg":"Delete polygon «{0}»?",
+    "gis.polygonPanel.deleteConfirmBtn":"Delete",
+    "gis.polygonPanel.deletedOk":"Polygon deleted.",
+    "gis.polygonPanel.hidden":"Hidden",
+    "gis.polygonPanel.visible":"Visible",
+    "tip.polygonPanel.rename":"Rename the selected polygon.",
+    "tip.polygonPanel.delete":"Delete the selected polygon.",
+    "tip.polygonPanel.visibility":"Show or hide the polygon on the map.",
     "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
     "tip.toolsDrawerClose":"Close tools",
@@ -13672,6 +13718,19 @@ const I18N = {
     "gis.polygonPanel.exportOk":"Polygones exportés.",
     "tip.polygonPanel.exportGeoJson":"Télécharger tous les polygones en FeatureCollection GeoJSON.",
     "tip.polygonPanel.exportKml":"Télécharger tous les polygones en fichier KML 2.2.",
+    "gis.polygonPanel.rename":"Renommer",
+    "gis.polygonPanel.renameLabel":"Nom du polygone",
+    "gis.polygonPanel.renameSave":"Enregistrer",
+    "gis.polygonPanel.renameOk":"Nom mis à jour.",
+    "gis.polygonPanel.delete":"Supprimer",
+    "gis.polygonPanel.deleteMsg":"Supprimer le polygone « {0} » ?",
+    "gis.polygonPanel.deleteConfirmBtn":"Supprimer",
+    "gis.polygonPanel.deletedOk":"Polygone supprimé.",
+    "gis.polygonPanel.hidden":"Masqué",
+    "gis.polygonPanel.visible":"Visible",
+    "tip.polygonPanel.rename":"Renommer le polygone sélectionné.",
+    "tip.polygonPanel.delete":"Supprimer le polygone sélectionné.",
+    "tip.polygonPanel.visibility":"Afficher ou masquer le polygone sur la carte.",
     "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
     "tip.toolsDrawerClose":"Fermer les outils",
@@ -39086,6 +39145,7 @@ function openPolygonPanel(){
   if (h) h.classList.add("gis-panel-drag-head");
   /* layout: position / size persistence */
   try { attachPolygonPanelFloatingGis(dlg); } catch(_){}
+  try { ensurePolygonPanelListWired(); polygonWirePanelBarsOnce(); } catch(_){}
   renderPolygonPanelList();
   try { renderAllMaps(); } catch(_){}
 }
@@ -39094,6 +39154,7 @@ function closePolygonPanel(){
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
+  try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
   state.polygonPanelOpen = false;
   if (dlg){
     dlg.classList.remove("gis-panel-floating");
@@ -39367,6 +39428,133 @@ function polygonExportKml(){
     setBadge("success", msg);
   } catch(_){}
 }
+function polygonHideDeleteBar(){
+  state._polyPendingDeleteId = null;
+  const bar = document.getElementById("polygonPanelDeleteBar");
+  const msg = document.getElementById("polygonPanelDeleteMsg");
+  if (bar) bar.hidden = true;
+  if (msg) msg.textContent = "";
+}
+function polygonHideRenameBar(){
+  state._polyPendingRenameId = null;
+  const bar = document.getElementById("polygonPanelRenameBar");
+  const inp = document.getElementById("polygonPanelRenameInput");
+  if (bar) bar.hidden = true;
+  if (inp) inp.value = "";
+}
+function polygonShowDeleteConfirm(id){
+  ensureGisState();
+  const f = gisFeatureGet(id);
+  if (!f) return;
+  polygonHideRenameBar();
+  polygonWirePanelBarsOnce();
+  state._polyPendingDeleteId = id;
+  const bar = document.getElementById("polygonPanelDeleteBar");
+  const msg = document.getElementById("polygonPanelDeleteMsg");
+  if (!bar || !msg) return;
+  const nm = String((f.properties && f.properties.name) || "").trim().slice(0, 80) || "—";
+  const tpl = (typeof t === "function" ? t("gis.polygonPanel.deleteMsg") : "") || "";
+  msg.textContent = tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, nm) : ((tpl ? tpl + " " : "") + nm);
+  bar.hidden = false;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
+  try { document.getElementById("polygonPanelDeleteConfirm")?.focus(); } catch(_){}
+}
+function polygonDeleteExecute(id){
+  if (!id) return;
+  const removed = gisFeatureDelete(id, { recordUndo: false });
+  if (!removed) return;
+  polygonHideDeleteBar();
+  polygonHideRenameBar();
+  renderPolygonPanelList();
+  try { renderAllMaps(); } catch(_){}
+  try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.deletedOk") : "") || "Poligono eliminato."); } catch(_){}
+}
+function polygonShowRenameBar(id){
+  ensureGisState();
+  const f = gisFeatureGet(id);
+  if (!f) return;
+  polygonHideDeleteBar();
+  polygonWirePanelBarsOnce();
+  state._polyPendingRenameId = id;
+  const bar = document.getElementById("polygonPanelRenameBar");
+  const inp = document.getElementById("polygonPanelRenameInput");
+  if (!bar || !inp) return;
+  inp.value = String((f.properties && f.properties.name) || "").slice(0, 80);
+  bar.hidden = false;
+  try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
+  try { inp.focus(); inp.select(); } catch(_){}
+}
+function polygonRenameExecute(id, newName){
+  const nm = String(newName == null ? "" : newName).trim().slice(0, 80);
+  if (!nm || !id) return;
+  const updated = gisFeatureUpdate(id, { properties: { name: nm } }, { recordUndo: false });
+  if (!updated) return;
+  polygonHideRenameBar();
+  renderPolygonPanelList();
+  try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.renameOk") : "") || "Nome aggiornato."); } catch(_){}
+}
+function polygonToggleVisibility(id){
+  ensureGisState();
+  const f = gisFeatureGet(id);
+  if (!f) return;
+  const vis = f.properties && f.properties.visible !== false;
+  gisFeatureUpdate(id, { properties: { visible: !vis } }, { recordUndo: false });
+  renderPolygonPanelList();
+  try { renderAllMaps(); } catch(_){}
+}
+function polygonWirePanelBarsOnce(){
+  if (state._polyPanelBarsWired) return;
+  state._polyPanelBarsWired = true;
+  const dOk = document.getElementById("polygonPanelDeleteConfirm");
+  const dCancel = document.getElementById("polygonPanelDeleteCancel");
+  const rSave = document.getElementById("polygonPanelRenameSave");
+  const rCancel = document.getElementById("polygonPanelRenameCancel");
+  const rInp = document.getElementById("polygonPanelRenameInput");
+  if (dOk) dOk.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const id = state._polyPendingDeleteId;
+    if (id) polygonDeleteExecute(id);
+  });
+  if (dCancel) dCancel.addEventListener("click", (ev) => { ev.preventDefault(); polygonHideDeleteBar(); });
+  if (rSave) rSave.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const id = state._polyPendingRenameId;
+    const inp = document.getElementById("polygonPanelRenameInput");
+    if (id && inp) polygonRenameExecute(id, inp.value);
+  });
+  if (rCancel) rCancel.addEventListener("click", (ev) => { ev.preventDefault(); polygonHideRenameBar(); });
+  if (rInp) rInp.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter"){ ev.preventDefault(); const id = state._polyPendingRenameId; if (id) polygonRenameExecute(id, rInp.value); }
+    else if (ev.key === "Escape"){ ev.preventDefault(); polygonHideRenameBar(); }
+  });
+}
+function ensurePolygonPanelListWired(){
+  const body = document.getElementById("polygonPanelBody");
+  if (!body || body._polyListWired) return;
+  body._polyListWired = true;
+  body.addEventListener("click", (ev) => {
+    const ren = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-rename"]');
+    const del = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-delete"]');
+    const vis = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-toggle-vis"]');
+    if (ren){
+      ev.preventDefault();
+      const id = ren.getAttribute("data-poly-id");
+      if (id) polygonShowRenameBar(id);
+      return;
+    }
+    if (del){
+      ev.preventDefault();
+      const id = del.getAttribute("data-poly-id");
+      if (id) polygonShowDeleteConfirm(id);
+      return;
+    }
+    if (vis){
+      ev.preventDefault();
+      const id = vis.getAttribute("data-poly-id");
+      if (id) polygonToggleVisibility(id);
+    }
+  });
+}
 function renderPolygonPanelList(){
   const cont = document.getElementById("polygonPanelList");
   if (!cont) return;
@@ -39380,7 +39568,12 @@ function renderPolygonPanelList(){
       const nm = esc(props.name || `Polygon ${i + 1}`);
       const vis = props.visible !== false;
       const eyeIco = vis ? "👁" : "👁‍🗨";
-      return `<div class="poly-row" data-poly-idx="${i}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name">${nm}</span><button class="poly-vis-btn" type="button" data-role="poly-toggle-vis" data-idx="${i}" aria-label="Toggle">${eyeIco}</button></div>`;
+      const pid = esc(String(f.id || ""));
+      const renLbl = esc((typeof t === "function" ? t("gis.polygonPanel.rename") : "") || "Rinomina");
+      const delLbl = esc((typeof t === "function" ? t("gis.polygonPanel.delete") : "") || "Elimina");
+      const visTip = esc((typeof t === "function" ? t("tip.polygonPanel.visibility") : "") || "");
+      const visLbl = esc((typeof t === "function" ? t(vis ? "gis.polygonPanel.visible" : "gis.polygonPanel.hidden") : "") || "");
+      return `<div class="poly-row" data-poly-id="${pid}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name" title="${nm}">${nm}</span><div class="poly-actions"><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}">${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" title="${delLbl}">${delLbl}</button></div></div>`;
     }).join("");
   }
   /* "Nuovo poligono" button state: enabled when NOT drawing */
