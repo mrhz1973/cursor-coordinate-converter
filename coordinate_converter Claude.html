@@ -9496,6 +9496,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               onclick="polygonFinishDraw()">Chiudi poligono</button>
       <button type="button" class="btn btn-sm btn-outline" id="polygonPanelCancelBtn" hidden
               onclick="polygonCancelDraw()">Annulla</button>
+      <button type="button" class="btn btn-sm" id="polygonPanelExportGeoJsonBtn"
+              onclick="polygonExportGeoJson()" disabled
+              data-i18n="gis.polygonPanel.exportGeoJson" data-i18n-tip="tip.polygonPanel.exportGeoJson">Esporta GeoJSON</button>
+      <button type="button" class="btn btn-sm" id="polygonPanelExportKmlBtn"
+              onclick="polygonExportKml()" disabled
+              data-i18n="gis.polygonPanel.exportKml" data-i18n-tip="tip.polygonPanel.exportKml">Esporta KML</button>
     </div>
   </div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
@@ -10870,6 +10876,11 @@ const I18N = {
     "gis.polygonPanel.empty":"Nessun poligono",
     "gis.polygonPanel.countLabel":"Poligoni",
     "gis.polygonPanel.visibleTip":"Visibilità",
+    "gis.polygonPanel.exportGeoJson":"Esporta GeoJSON",
+    "gis.polygonPanel.exportKml":"Esporta KML",
+    "gis.polygonPanel.exportOk":"Poligoni esportati.",
+    "tip.polygonPanel.exportGeoJson":"Scarica tutti i poligoni come FeatureCollection GeoJSON.",
+    "tip.polygonPanel.exportKml":"Scarica tutti i poligoni come file KML 2.2.",
     "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
     "tip.toolsDrawerClose":"Chiudi strumenti",
@@ -12260,6 +12271,11 @@ const I18N = {
     "gis.polygonPanel.empty":"No polygons",
     "gis.polygonPanel.countLabel":"Polygons",
     "gis.polygonPanel.visibleTip":"Visibility",
+    "gis.polygonPanel.exportGeoJson":"Export GeoJSON",
+    "gis.polygonPanel.exportKml":"Export KML",
+    "gis.polygonPanel.exportOk":"Polygons exported.",
+    "tip.polygonPanel.exportGeoJson":"Download all polygons as a GeoJSON FeatureCollection.",
+    "tip.polygonPanel.exportKml":"Download all polygons as a KML 2.2 file.",
     "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
     "tip.toolsDrawerClose":"Close tools",
@@ -13651,6 +13667,11 @@ const I18N = {
     "gis.polygonPanel.empty":"Aucun polygone",
     "gis.polygonPanel.countLabel":"Polygones",
     "gis.polygonPanel.visibleTip":"Visibilité",
+    "gis.polygonPanel.exportGeoJson":"Exporter GeoJSON",
+    "gis.polygonPanel.exportKml":"Exporter KML",
+    "gis.polygonPanel.exportOk":"Polygones exportés.",
+    "tip.polygonPanel.exportGeoJson":"Télécharger tous les polygones en FeatureCollection GeoJSON.",
+    "tip.polygonPanel.exportKml":"Télécharger tous les polygones en fichier KML 2.2.",
     "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
     "tip.toolsDrawerClose":"Fermer les outils",
@@ -39216,6 +39237,136 @@ function attachPolygonPanelFloatingGis(dlg){
   gisPanelApplyLayout(dlg, opts);
   try { gisPanelAttachBringToFront(dlg, opts); } catch(_){}
 }
+/* ───── Polygon export (Pass D T1.1) ───── */
+function polygonXmlEscape(s){
+  return xmlEsc(s);
+}
+function polygonKmlColor(cssHex, alphaHex){
+  let r = 0x66, g = 0x66, b = 0xff;
+  const h = String(cssHex == null ? "" : cssHex).trim();
+  const m6 = h.match(/^#([0-9a-f]{6})$/i);
+  const m3 = h.match(/^#([0-9a-f]{3})$/i);
+  if (m6){
+    r = parseInt(m6[1].slice(0, 2), 16);
+    g = parseInt(m6[1].slice(2, 4), 16);
+    b = parseInt(m6[1].slice(4, 6), 16);
+  } else if (m3){
+    r = parseInt(m3[1][0] + m3[1][0], 16);
+    g = parseInt(m3[1][1] + m3[1][1], 16);
+    b = parseInt(m3[1][2] + m3[1][2], 16);
+  }
+  const aRaw = String(alphaHex == null ? "ff" : alphaHex).replace(/[^0-9a-f]/gi, "").slice(0, 2);
+  const a = (aRaw.length === 2) ? aRaw : "ff";
+  const pad = (n) => n.toString(16).padStart(2, "0");
+  return (a + pad(b) + pad(g) + pad(r)).toLowerCase();
+}
+function polygonRingToKmlCoords(ring){
+  if (!Array.isArray(ring) || ring.length < 3) return "";
+  const pts = [];
+  for (const c of ring){
+    if (!Array.isArray(c) || c.length < 2) continue;
+    const lon = round(Number(c[0]), 7);
+    const lat = round(Number(c[1]), 7);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    const alt = (c.length > 2 && Number.isFinite(Number(c[2]))) ? round(Number(c[2]), 2) : 0;
+    pts.push(lon + "," + lat + "," + alt);
+  }
+  if (pts.length < 3) return "";
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+  if (first && last && (round(first[0], 7) !== round(last[0], 7) || round(first[1], 7) !== round(last[1], 7))){
+    const lon = round(Number(first[0]), 7);
+    const lat = round(Number(first[1]), 7);
+    const alt = (first.length > 2 && Number.isFinite(Number(first[2]))) ? round(Number(first[2]), 2) : 0;
+    pts.push(lon + "," + lat + "," + alt);
+  }
+  return pts.join(" ");
+}
+function polygonBuildGeoJson(){
+  ensureGisState();
+  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  const features = [];
+  for (const f of polys){
+    if (!f || f.type !== "Feature" || !f.geometry || f.geometry.type !== "Polygon") continue;
+    const props = f.properties || {};
+    const outProps = {};
+    if (props.name != null) outProps.name = props.name;
+    if (props.color != null) outProps.color = props.color;
+    if (props.visible != null) outProps.visible = props.visible;
+    if (props.created_at != null) outProps.created_at = props.created_at;
+    if (props.kind != null) outProps.kind = props.kind;
+    const geom = gisClonePlain(f.geometry);
+    if (!geom || !geom.coordinates) continue;
+    features.push({ type: "Feature", geometry: geom, properties: outProps });
+  }
+  return { type: "FeatureCollection", features };
+}
+function polygonExportGeoJson(){
+  ensureGisState();
+  const fc = polygonBuildGeoJson();
+  const n = fc.features ? fc.features.length : 0;
+  if (!n){
+    try { setBadge("info", (typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono"); } catch(_){}
+    return;
+  }
+  const stamp = new Date().toISOString().replace(/[^\w-]/g, "").slice(0, 24);
+  downloadBlob(JSON.stringify(fc, null, 2), "polygons-" + stamp + ".geojson", "application/geo+json;charset=utf-8");
+  try {
+    const msg = (typeof t === "function" ? t("gis.polygonPanel.exportOk") : "") || ("Esportati " + n + " poligoni.");
+    setBadge("success", msg);
+  } catch(_){}
+}
+function polygonBuildKml(){
+  ensureGisState();
+  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  let s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+  s += "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n<Document>\n";
+  s += "  <name>" + polygonXmlEscape("GOI GIS Tool — Polygons") + "</name>\n";
+  let idx = 0;
+  for (const f of polys){
+    if (!f || !f.geometry || f.geometry.type !== "Polygon") continue;
+    const ring = (Array.isArray(f.geometry.coordinates) && Array.isArray(f.geometry.coordinates[0]))
+      ? f.geometry.coordinates[0] : [];
+    const coordStr = polygonRingToKmlCoords(ring);
+    if (!coordStr) continue;
+    const props = f.properties || {};
+    const name = props.name || ("Polygon " + (idx + 1));
+    const color = (typeof props.color === "string" && props.color) ? props.color : "#ca8a04";
+    const styleId = "polyStyle" + idx;
+    const lineColor = polygonKmlColor(color, "ff");
+    const fillColor = polygonKmlColor(color, "66");
+    s += "  <Style id=\"" + styleId + "\"><LineStyle><color>" + lineColor + "</color><width>2</width></LineStyle>";
+    s += "<PolyStyle><color>" + fillColor + "</color></PolyStyle></Style>\n";
+    s += "  <Placemark>\n";
+    s += "    <name>" + polygonXmlEscape(name) + "</name>\n";
+    s += "    <styleUrl>#" + styleId + "</styleUrl>\n";
+    s += "    <Polygon><outerBoundaryIs><LinearRing><coordinates>" + coordStr + "</coordinates></LinearRing></outerBoundaryIs></Polygon>\n";
+    s += "  </Placemark>\n";
+    idx++;
+  }
+  s += "</Document>\n</kml>\n";
+  return s;
+}
+function polygonExportKml(){
+  ensureGisState();
+  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  if (!polys.length){
+    try { setBadge("info", (typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono"); } catch(_){}
+    return;
+  }
+  const kml = polygonBuildKml();
+  if (!/<Placemark>/.test(kml)){
+    try { setBadge("info", (typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono"); } catch(_){}
+    return;
+  }
+  const stamp = new Date().toISOString().replace(/[^\w-]/g, "").slice(0, 24);
+  downloadBlob(kml, "polygons-" + stamp + ".kml", "application/vnd.google-earth.kml+xml;charset=utf-8");
+  try {
+    const n = (kml.match(/<Placemark>/g) || []).length;
+    const msg = (typeof t === "function" ? t("gis.polygonPanel.exportOk") : "") || ("Esportati " + n + " poligoni.");
+    setBadge("success", msg);
+  } catch(_){}
+}
 function renderPolygonPanelList(){
   const cont = document.getElementById("polygonPanelList");
   if (!cont) return;
@@ -39241,6 +39392,11 @@ function renderPolygonPanelList(){
   const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
   if (finBtn) finBtn.hidden = !(state.polygonDrawMode && dv >= 3);
   if (canBtn) canBtn.hidden = !state.polygonDrawMode;
+  const geoBtn = document.getElementById("polygonPanelExportGeoJsonBtn");
+  const kmlBtn = document.getElementById("polygonPanelExportKmlBtn");
+  const canExport = polys.length > 0;
+  if (geoBtn) geoBtn.disabled = !canExport;
+  if (kmlBtn) kmlBtn.disabled = !canExport;
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
