@@ -39793,11 +39793,18 @@ function openTrackModal(){
   if (typeof renderSavedTracksList === "function") renderSavedTracksList();
   try {
     ensureTrackState();
-    // Auto-enable map-click insertion only when actively drafting/editing a track.
+    ensureMapWaypointsState();
+    // Auto-arm track drawing on open (like Waypoint auto-pick) unless blocked.
     if (!state._trackNewPromptOpen){
-      const n = (state.track && Array.isArray(state.track.points)) ? state.track.points.length : 0;
-      const editingSaved = !!state._trackEditingSavedId;
-      state.track.pickMode = (!state._trackCompleted && (n > 0 || editingSaved));
+      const blocked = !!(state._trackCompleted
+        || state.waypointPickMode
+        || state.astroPickCenterMode
+        || state.rangeRingsPickCenterMode
+        || state.rangeRingsPickAndCreateMode
+        || state._rrEditingMoveCenterMode
+        || state.mapMeasureMode);
+      state.track.pickMode = !blocked;
+      if (state.track.pickMode) state.waypointPickMode = false;
     }
   } catch(_){}
   if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
