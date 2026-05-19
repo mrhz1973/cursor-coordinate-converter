@@ -28968,7 +28968,7 @@ function renderTileMap(lat, lon, zoom){
   // Floating track builder: total length + units (same unit list as measure).
   {
     const draft = state.trackWaypointDraft;
-    const showWp = draft && Number.isFinite(draft.lat) && Number.isFinite(draft.lon);
+    const showWp = draft && Number.isFinite(draft.lat) && Number.isFinite(draft.lon) && !state.waypointsModalOpen;
     ensureTrackState();
     /* GIS + pannello Traccia aperto: niente tile-track-float (evita doppio pannello con #trackModal). */
     const showTf = !showWp && !!state.track.pickMode
@@ -29907,10 +29907,10 @@ function attachPanHandlers(root, lat, lon, zoom){
                 color: "#2563eb",
                 notes: ""
               };
-              state.trackWaypointDraft = null;
               if (typeof openWaypointEditor === "function"){
                 openWaypointEditor({ fromDraft: true });
               }
+              if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
               return;
             }
             renderTileMap(lat, lon, zPick);
@@ -40127,6 +40127,7 @@ function closeWaypointEditor(){
   state.waypointEditorDraft = null;
   const hint = document.getElementById("wpEditorNewHint");
   if (hint) hint.hidden = true;
+  state.trackWaypointDraft = null;
   if (wasNew && state.waypointPickMode){
     state.waypointPickMode = false;
     if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
