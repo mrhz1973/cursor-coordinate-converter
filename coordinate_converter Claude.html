@@ -9488,9 +9488,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-modal-body" id="polygonPanelBody">
     <div id="polygonPanelList"></div>
     <div class="polygon-panel-footer">
-      <button type="button" class="btn btn-sm" id="polygonPanelNewBtn" disabled
+      <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
+              onclick="polygonStartDraw()"
               data-i18n="gis.polygonPanel.newPolygon" data-i18n-tip="gis.polygonPanel.newPolygonDisabled"
               data-i18n-aria="gis.polygonPanel.newPolygonDisabled">Nuovo poligono</button>
+      <button type="button" class="btn btn-sm btn-success" id="polygonPanelFinishBtn" hidden
+              onclick="polygonFinishDraw()">Chiudi poligono</button>
+      <button type="button" class="btn btn-sm btn-outline" id="polygonPanelCancelBtn" hidden
+              onclick="polygonCancelDraw()">Annulla</button>
     </div>
   </div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
@@ -19683,6 +19688,11 @@ function bindHotkeys(){
         ev.preventDefault();
         return;
       }
+      if (state.polygonDrawMode){
+        try { polygonCancelDraw(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       try {
         const tcm = document.getElementById("trkSavedCtxMenu");
         if (tcm && !tcm.hidden){
@@ -29631,6 +29641,7 @@ function renderTileMap(lat, lon, zoom){
         renderMapWaypointsOverlay(tileMap, lat, lon, zoom);
       renderRangeRingsOverlay(tileMap, lat, lon, zoom);
       try { renderGisPolygonsOverlay(tileMap, lat, lon, zoom); } catch(_){}
+      try { renderPolygonDraftOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
     }
   }
@@ -30093,6 +30104,28 @@ function attachPanHandlers(root, lat, lon, zoom){
           rrCreateFromUi();
           try { renderRangeRingsPanel(); } catch(_){}
           try { refreshTileMapForTrackUi(); } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
+      // Polygon draw mode: add vertex on click, finish on double-click.
+      if (state.polygonDrawMode && !drag.moved && cx != null && cy != null){
+        const zPick = state.mapZoom || zoom;
+        const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
+        if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
+          const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+          const prev = state._polygonDraftLastClick;
+          const isDbl = !!(prev && (now - prev.ts) < 400 && Math.hypot(cx - prev.x, cy - prev.y) < 12);
+          if (isDbl && Array.isArray(state._polygonDraftVertices) && state._polygonDraftVertices.length >= 3){
+            polygonFinishDraw();
+          } else {
+            if (!Array.isArray(state._polygonDraftVertices)) state._polygonDraftVertices = [];
+            state._polygonDraftVertices.push([normalizeLon(pick.lon), pick.lat]);
+            state._polygonDraftLastClick = { ts: now, x: cx, y: cy };
+            renderPolygonPanelList();
+            refreshTileMapForTrackUi();
+          }
           if (ev.cancelable) ev.preventDefault();
           try { ev.stopPropagation(); } catch(_){}
         }
@@ -39038,6 +39071,7 @@ function openPolygonPanel(){
 function closePolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
+  if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
   state.polygonPanelOpen = false;
   if (dlg){
@@ -39047,6 +39081,118 @@ function closePolygonPanel(){
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
   try { renderAllMaps(); } catch(_){}
+}
+/* ───── Polygon draw mode (Pass C T1.1) ───── */
+function polygonStartDraw(){
+  if (state.polygonDrawMode) return;
+  ensureGisState();
+  state.polygonDrawMode = true;
+  state._polygonDraftVertices = [];
+  state._polygonDraftLastClick = null;
+  // Disable conflicting pick modes
+  try { ensureTrackState(); } catch(_){}
+  try { ensureMapWaypointsState(); } catch(_){}
+  if (state.track && state.track.pickMode){ state.track.pickMode = false; try { trackPickCancelDeferred(); } catch(_){} }
+  state.waypointPickMode = false;
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  state.astroPickCenterMode = false;
+  trackSyncPickModeUi();
+  refreshTileMapForTrackUi();
+  renderPolygonPanelList();
+}
+function polygonCancelDraw(){
+  if (!state.polygonDrawMode) return;
+  state.polygonDrawMode = false;
+  state._polygonDraftVertices = [];
+  state._polygonDraftLastClick = null;
+  trackSyncPickModeUi();
+  refreshTileMapForTrackUi();
+  renderPolygonPanelList();
+}
+function polygonFinishDraw(){
+  if (!state.polygonDrawMode) return;
+  const verts = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices : [];
+  if (verts.length < 3){ polygonCancelDraw(); return; }
+  ensureGisState();
+  // Build closed ring [lon,lat] (GeoJSON order)
+  const ring = verts.map(v => [v[0], v[1]]);
+  // Auto-close if not already closed
+  const f = ring[0], l = ring[ring.length - 1];
+  if (f[0] !== l[0] || f[1] !== l[1]) ring.push([f[0], f[1]]);
+  const autoName = (typeof t === "function" ? t("gis.polygonPanel.defaultName") : "") || "Poligono " + ((state.gisPolygons || []).length + 1);
+  const feature = {
+    type: "Feature",
+    geometry: { type: "Polygon", coordinates: [ring] },
+    properties: { name: autoName, color: "#ca8a04", visible: true, kind: "polygon", created_at: new Date().toISOString() }
+  };
+  const added = gisFeatureAdd("polygon", feature);
+  state.polygonDrawMode = false;
+  state._polygonDraftVertices = [];
+  state._polygonDraftLastClick = null;
+  trackSyncPickModeUi();
+  refreshTileMapForTrackUi();
+  renderPolygonPanelList();
+  if (added) try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.savedOk") : "") || "Poligono salvato."); } catch(_){}
+}
+function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  const old = tileMap.querySelector(".gis-polygon-draft-overlay");
+  if (old) old.remove();
+  if (!state.polygonDrawMode || !Array.isArray(state._polygonDraftVertices) || state._polygonDraftVertices.length < 1) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+  const style = tileLayer.style.transform || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("class", "gis-polygon-draft-overlay");
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:5";
+  const pxPts = [];
+  for (const v of state._polygonDraftVertices){
+    const px = tileMapLatLonToPx(root, v[1], v[0]); // v = [lon,lat] internally we store [lon,lat]
+    if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+    pxPts.push({ x: px.x - tx, y: px.y - ty });
+  }
+  if (!pxPts.length) return;
+  // Draw polygon outline (dashed) + closing line to first vertex
+  if (pxPts.length >= 2){
+    const allPts = pxPts.slice();
+    allPts.push(allPts[0]); // close
+    const ptStr = allPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+    const poly = document.createElementNS(ns, "polygon");
+    poly.setAttribute("points", pxPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" "));
+    poly.setAttribute("fill", "#ca8a04");
+    poly.setAttribute("fill-opacity", "0.08");
+    poly.setAttribute("stroke", "#ca8a04");
+    poly.setAttribute("stroke-width", "2");
+    poly.setAttribute("stroke-dasharray", "6 4");
+    poly.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(poly);
+  }
+  // Vertex markers
+  for (const p of pxPts){
+    const c = document.createElementNS(ns, "circle");
+    c.setAttribute("cx", p.x.toFixed(1));
+    c.setAttribute("cy", p.y.toFixed(1));
+    c.setAttribute("r", "4");
+    c.setAttribute("fill", "#ca8a04");
+    c.setAttribute("stroke", "#fff");
+    c.setAttribute("stroke-width", "1.5");
+    svg.appendChild(c);
+  }
+  tileMap.appendChild(svg);
 }
 function _polygonPanelLayoutOpts(){
   return {
@@ -39073,21 +39219,28 @@ function attachPolygonPanelFloatingGis(dlg){
 function renderPolygonPanelList(){
   const cont = document.getElementById("polygonPanelList");
   if (!cont) return;
-  const polys = state.polygons || [];
+  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
   if (polys.length === 0){
     cont.innerHTML = `<div class="poly-empty">${esc((typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono")}</div>`;
   } else {
-    cont.innerHTML = polys.map((p, i) => {
-      const col = p.color || "#2563eb";
-      const nm = esc(p.name || `Polygon ${i + 1}`);
-      const vis = p.visible !== false;
+    cont.innerHTML = polys.map((f, i) => {
+      const props = f.properties || {};
+      const col = props.color || "#ca8a04";
+      const nm = esc(props.name || `Polygon ${i + 1}`);
+      const vis = props.visible !== false;
       const eyeIco = vis ? "👁" : "👁‍🗨";
       return `<div class="poly-row" data-poly-idx="${i}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name">${nm}</span><button class="poly-vis-btn" type="button" data-role="poly-toggle-vis" data-idx="${i}" aria-label="Toggle">${eyeIco}</button></div>`;
     }).join("");
   }
-  /* "Nuovo poligono" button state */
+  /* "Nuovo poligono" button state: enabled when NOT drawing */
   const newBtn = document.getElementById("polygonPanelNewBtn");
-  if (newBtn) newBtn.disabled = !state.polygonDrawMode;
+  if (newBtn) newBtn.disabled = !!state.polygonDrawMode;
+  /* Show/hide finish/cancel buttons during draw */
+  const finBtn = document.getElementById("polygonPanelFinishBtn");
+  const canBtn = document.getElementById("polygonPanelCancelBtn");
+  const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
+  if (finBtn) finBtn.hidden = !(state.polygonDrawMode && dv >= 3);
+  if (canBtn) canBtn.hidden = !state.polygonDrawMode;
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
@@ -39798,6 +39951,7 @@ function openTrackModal(){
     if (!state._trackNewPromptOpen){
       const blocked = !!(state._trackCompleted
         || state.waypointPickMode
+        || state.polygonDrawMode
         || state.astroPickCenterMode
         || state.rangeRingsPickCenterMode
         || state.rangeRingsPickAndCreateMode
