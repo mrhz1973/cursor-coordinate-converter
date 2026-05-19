@@ -1637,6 +1637,7 @@ html[data-theme="dark"] .offline-area-status--error{ color:#f08080; }
 .tile-map.bbox-selecting .twpt-btn,
 .tile-map.bbox-selecting .tgps-btn,
 .tile-map.bbox-selecting .trr-btn,
+.tile-map.bbox-selecting .tpoly-btn,
 .tile-map.bbox-selecting .tile-measure-box,
 .tile-map.bbox-selecting .tile-track-float,
 .tile-map.bbox-selecting .tile-waypoint-editor,
@@ -2265,6 +2266,27 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   background:#2563eb; color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
+/* Polygon panel — map button: icon style like Range Rings. */
+.tile-map .tpoly-btn{
+  width:26px; height:26px; border:none;
+  background:rgba(255,255,255,.92); color:#1e3a5f;
+  cursor:pointer; border-radius:6px; line-height:1;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+}
+.tile-map .tpoly-btn .tpoly-ico{
+  line-height:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.tile-map .tpoly-btn .tpoly-ico svg{
+  width:20px; height:20px; display:block;
+}
+.tile-map .tpoly-btn:hover{ background:#eff6ff; color:#1d4ed8 }
+.tile-map .tpoly-btn.active{
+  background:#2563eb; color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
+}
 /* GIS: GPS posizione attuale sulla mappa (solo click; getCurrentPosition). */
 .tile-map .tgps-btn{
   width:26px; height:26px; border:none;
@@ -2302,6 +2324,32 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   box-shadow:0 0 0 2px rgba(255,255,255,.38), 0 2px 8px rgba(217,119,6,.4);
 }
 .tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-unknown:hover{ background:#b45309; color:#fff; }
+
+/* Polygon panel — pulsante mappa: coerente con RR/Waypoint/Track toolbar buttons. */
+.tile-map .tpoly-btn{
+  width:26px; height:26px; border:none;
+  background:rgba(255,255,255,.92); color:#1e3a5f;
+  cursor:pointer; border-radius:6px; line-height:1;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+}
+.tile-map .tpoly-btn .tpoly-ico{ line-height:0; display:flex; align-items:center; justify-content:center; }
+.tile-map .tpoly-btn .tpoly-ico svg{ width:20px; height:20px; display:block; }
+.tile-map .tpoly-btn:hover{ background:#eff6ff; color:#1d4ed8; }
+.tile-map .tpoly-btn.active{
+  background:#2563eb; color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
+}
+/* Polygon panel styling */
+.polygon-panel .polygon-panel-footer{ padding:8px 0 4px; text-align:center; }
+.polygon-panel .poly-row{ display:flex; align-items:center; gap:8px; padding:5px 4px; border-bottom:1px solid rgba(128,128,128,.15); }
+.polygon-panel .poly-row:last-child{ border-bottom:none; }
+.polygon-panel .poly-swatch{ width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.12); }
+.polygon-panel .poly-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.92rem; }
+.polygon-panel .poly-vis-btn{ background:none; border:none; cursor:pointer; font-size:1.1rem; padding:2px 4px; opacity:.7; }
+.polygon-panel .poly-vis-btn:hover{ opacity:1; }
+.polygon-panel .poly-empty{ text-align:center; padding:18px 8px; color:#666; font-size:.9rem; }
 
 /* Ricentra sul punto / «Nuovo punto» (pick): colonna `.tile-ctrls`, come misura e waypoint. */
 .tile-map .tile-ctrls .tile-recenter,
@@ -2908,6 +2956,7 @@ body.mm-enlarged{overflow:hidden}
 .tile-map .tile-ctrls .twpt-btn,
 .tile-map .tile-ctrls .tgps-btn,
 .tile-map .tile-ctrls .trr-btn,
+.tile-map .tile-ctrls .tpoly-btn,
 .tile-map .tile-ctrls .tile-recenter,
 .tile-map .tile-ctrls .tile-pick{
   width:var(--ctrlW);
@@ -9426,6 +9475,30 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
+<dialog id="polygonPanel" class="app-modal polygon-panel" aria-labelledby="polygonPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="polygonPanelHead">
+    <h2 id="polygonPanelTitle" class="app-modal-title" data-i18n="gis.polygonPanel.title">Poligoni</h2>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="polygonpanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="polygonPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    </div>
+  </div>
+  <p id="polygonPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
+  <div class="app-modal-body" id="polygonPanelBody">
+    <div id="polygonPanelList"></div>
+    <div class="polygon-panel-footer">
+      <button type="button" class="btn btn-sm" id="polygonPanelNewBtn" disabled
+              data-i18n="gis.polygonPanel.newPolygon" data-i18n-tip="gis.polygonPanel.newPolygonDisabled"
+              data-i18n-aria="gis.polygonPanel.newPolygonDisabled">Nuovo poligono</button>
+    </div>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
+
 <dialog id="astroPanel" class="app-modal astro-panel" aria-modal="false" aria-labelledby="astroPanelTitle">
   <div class="app-modal-head" id="astroPanelHead">
     <h2 id="astroPanelTitle" class="app-modal-title" data-i18n="sec.astro">Alba / tramonto / luna (locale)</h2>
@@ -10785,6 +10858,14 @@ const I18N = {
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Misura",
+    "gis.minimized.polygon":"Poligoni",
+    "gis.polygonPanel.title":"Poligoni",
+    "gis.polygonPanel.newPolygon":"Nuovo poligono",
+    "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
+    "gis.polygonPanel.empty":"Nessun poligono",
+    "gis.polygonPanel.countLabel":"Poligoni",
+    "gis.polygonPanel.visibleTip":"Visibilità",
+    "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
@@ -12167,6 +12248,14 @@ const I18N = {
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Measure",
+    "gis.minimized.polygon":"Polygons",
+    "gis.polygonPanel.title":"Polygons",
+    "gis.polygonPanel.newPolygon":"New polygon",
+    "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
+    "gis.polygonPanel.empty":"No polygons",
+    "gis.polygonPanel.countLabel":"Polygons",
+    "gis.polygonPanel.visibleTip":"Visibility",
+    "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
@@ -13550,6 +13639,14 @@ const I18N = {
     "gis.minimized.astro":"Astro",
     "gis.minimized.rings":"Anneaux",
     "gis.minimized.measure":"Mesure",
+    "gis.minimized.polygon":"Polygones",
+    "gis.polygonPanel.title":"Polygones",
+    "gis.polygonPanel.newPolygon":"Nouveau polygone",
+    "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
+    "gis.polygonPanel.empty":"Aucun polygone",
+    "gis.polygonPanel.countLabel":"Polygones",
+    "gis.polygonPanel.visibleTip":"Visibilité",
+    "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
@@ -27189,6 +27286,18 @@ function trackSyncPickModeUi(){
     rrTgl.setAttribute("aria-label", tipRr);
     rrTgl.removeAttribute("title");
   }
+  /* Polygon panel toggle sync */
+  const polyTgl = root && root.querySelector('[data-role="polygon-open"]');
+  if (polyTgl){
+    const dlgPoly = document.getElementById("polygonPanel");
+    const polyOn = !!(state.polygonPanelOpen && dlgPoly && dlgPoly.open);
+    polyTgl.classList.toggle("active", polyOn);
+    polyTgl.setAttribute("aria-pressed", polyOn ? "true" : "false");
+    const tipPoly = (typeof t === "function" ? (t("tip.polygonPanel") || "") : "") || "Polygons";
+    polyTgl.setAttribute("data-tip", tipPoly);
+    polyTgl.setAttribute("aria-label", tipPoly);
+    polyTgl.removeAttribute("title");
+  }
   /* Misura (mappa): stessa logica di renderTileMap — altrimenti dopo chiusura floating il toggle resta active senza re-render. */
   const measTgl = root && root.querySelector('[data-role="measure-box-toggle"]');
   if (measTgl){
@@ -28994,6 +29103,15 @@ function renderTileMap(lat, lon, zoom){
     })()}
     ${(() => {
       if (!_gisHub) return "";
+      const tipPoly = esc((typeof t==="function" ? (t("tip.polygonPanel")||"") : "") || "Polygons");
+      const dlgPoly = document.getElementById("polygonPanel");
+      const polyOpen = !!(state.polygonPanelOpen && dlgPoly && dlgPoly.open);
+      const clsPoly = polyOpen ? "tpoly-btn active" : "tpoly-btn";
+      const polySvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>`;
+      return `<button class="${clsPoly}" type="button" data-role="polygon-open" data-tip="${tipPoly}" aria-label="${tipPoly}" aria-pressed="${polyOpen ? "true" : "false"}"><span class="tpoly-ico" aria-hidden="true">${polySvg}</span></button>`;
+    })()}
+    ${(() => {
+      if (!_gisHub) return "";
       const tipG = esc((typeof t === "function" ? (t("tip.myLocation") || "") : "") || "GPS");
       return `<button class="tgps-btn" type="button" id="btnGisMapMyLocation" data-role="gis-map-mylocation" data-tip="${tipG}" aria-label="${tipG}" aria-pressed="false" disabled><span class="tgps-ico" aria-hidden="true">📍</span></button>`;
     })()}
@@ -29442,6 +29560,21 @@ function renderTileMap(lat, lon, zoom){
       try { trackSyncPickModeUi(); } catch(_){}
     });
   }
+  const polyMapBtn = root.querySelector('[data-role="polygon-open"]');
+  if (polyMapBtn){
+    polyMapBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      gisToolButtonToggle({
+        isOpen(){
+          const d = document.getElementById("polygonPanel");
+          return !!(state.polygonPanelOpen && d && d.open);
+        },
+        open(){ openPolygonPanel(); },
+        close(){ closePolygonPanel(); }
+      });
+    });
+  }
   const gisGpsBtn = root.querySelector('[data-role="gis-map-mylocation"]');
   if (gisGpsBtn){
     gisGpsBtn.addEventListener("click", (ev) => {
@@ -29833,7 +29966,7 @@ function gisMapOnDblClickCenter(ev){
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap || !tileMap.contains(ev.target)) return;
-  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
   if (ev.target.closest(UI_SEL)) return;
   const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
   if (trackPickActive || state.mapPickMode || state.astroPickCenterMode) return;
@@ -29880,7 +30013,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -35800,6 +35933,15 @@ function gisInit(){
     rrDlg.addEventListener("click", (ev) => { if (ev.target === rrDlg) handleRrClose(); });
   }
 
+  const polyClose = document.getElementById("polygonPanelClose");
+  const polyDlg = document.getElementById("polygonPanel");
+  const handlePolyClose = () => { if (typeof closePolygonPanel === "function") closePolygonPanel(); };
+  if (polyClose) polyClose.addEventListener("click", (ev) => { ev.preventDefault(); handlePolyClose(); });
+  if (polyDlg){
+    polyDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handlePolyClose(); });
+    polyDlg.addEventListener("click", (ev) => { if (ev.target === polyDlg) handlePolyClose(); });
+  }
+
   const apClose = document.getElementById("astroPanelClose");
   const apDlg = document.getElementById("astroPanel");
   const handleApClose = () => { if (typeof closeAstroPanel === "function") closeAstroPanel(); };
@@ -38877,6 +39019,75 @@ function closeRangeRingsPanel(){
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
   try { trackSyncPickModeUi(); } catch(_){}
+}
+
+/* ───── Polygon panel open / close (floating) ───── */
+function openPolygonPanel(){
+  const dlg = document.getElementById("polygonPanel");
+  if (!dlg) return;
+  state.polygonPanelOpen = true;
+  if (!dlg.open) dlg.show();
+  dlg.classList.add("gis-panel-floating");
+  const h = document.getElementById("polygonPanelHead");
+  if (h) h.classList.add("gis-panel-drag-head");
+  /* layout: position / size persistence */
+  try { attachPolygonPanelFloatingGis(dlg); } catch(_){}
+  renderPolygonPanelList();
+  try { renderAllMaps(); } catch(_){}
+}
+function closePolygonPanel(){
+  const dlg = document.getElementById("polygonPanel");
+  if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
+  state.polygonPanelOpen = false;
+  if (dlg){
+    dlg.classList.remove("gis-panel-floating");
+    const h = document.getElementById("polygonPanelHead");
+    if (h) h.classList.remove("gis-panel-drag-head");
+    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
+  try { renderAllMaps(); } catch(_){}
+}
+function _polygonPanelLayoutOpts(){
+  return {
+    key: "polygonPanel",
+    defaultWidth: 300,
+    defaultHeight: 260,
+    minWidth: 200,
+    minHeight: 140
+  };
+}
+function attachPolygonPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _polygonPanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#polygonPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  if (handles.length) gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+  gisPanelApplyLayout(dlg, opts);
+  try { gisPanelAttachBringToFront(dlg, opts); } catch(_){}
+}
+function renderPolygonPanelList(){
+  const cont = document.getElementById("polygonPanelList");
+  if (!cont) return;
+  const polys = state.polygons || [];
+  if (polys.length === 0){
+    cont.innerHTML = `<div class="poly-empty">${esc((typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono")}</div>`;
+  } else {
+    cont.innerHTML = polys.map((p, i) => {
+      const col = p.color || "#2563eb";
+      const nm = esc(p.name || `Polygon ${i + 1}`);
+      const vis = p.visible !== false;
+      const eyeIco = vis ? "👁" : "👁‍🗨";
+      return `<div class="poly-row" data-poly-idx="${i}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name">${nm}</span><button class="poly-vis-btn" type="button" data-role="poly-toggle-vis" data-idx="${i}" aria-label="Toggle">${eyeIco}</button></div>`;
+    }).join("");
+  }
+  /* "Nuovo poligono" button state */
+  const newBtn = document.getElementById("polygonPanelNewBtn");
+  if (newBtn) newBtn.disabled = !state.polygonDrawMode;
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
