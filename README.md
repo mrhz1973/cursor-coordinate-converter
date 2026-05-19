@@ -143,6 +143,12 @@ Geolocation must remain user-initiated.
 Strict OPSEC mode must block sensitive network calls.
 Offline maps and cached tiles are handled locally through browser storage.
 Online map tiles and geocoding should be treated as externally visible network activity.
+Development method
+
+This project imports [dev-method v0.1.0](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md).
+
+The project-specific overlay is at [`docs/METHOD.md`](docs/METHOD.md).
+
 License
 
 License not specified yet.
