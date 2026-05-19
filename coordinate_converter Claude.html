@@ -29902,6 +29902,30 @@ function attachPanHandlers(root, lat, lon, zoom){
         const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
         if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
           if (state.waypointPickMode){
+            // Second click within 400 ms → commit the pending draft.
+            // Cannot rely on the browser dblclick event here: renderTileMap() replaces
+            // .tile-map inner HTML on each onUp, so ev.target is detached by the time
+            // dblclick fires and tileMap.contains(ev.target) returns false.
+            const _wpNow = Date.now();
+            if (state._waypointLastPickMs && (_wpNow - state._waypointLastPickMs) < 400){
+              state._waypointLastPickMs = 0;
+              const _wd = state.waypointEditorDraft;
+              if (_wd && Number.isFinite(_wd.lat) && Number.isFinite(_wd.lon)){
+                if (typeof commitWaypointEditor === "function") commitWaypointEditor();
+              } else {
+                const _wt = state.trackWaypointDraft;
+                const _wlat = (_wt && Number.isFinite(_wt.lat)) ? _wt.lat : pick.lat;
+                const _wlon = (_wt && Number.isFinite(_wt.lon)) ? _wt.lon : pick.lon;
+                const _wnm = (typeof t === "function" ? (t("track.waypointDefaultName") || "Waypoint") : "Waypoint");
+                if (typeof waypointAdd === "function") waypointAdd(_wlat, normalizeLon(_wlon), _wnm, { from: "waypoint-map-pick", icon: "hq", color: "#2563eb" });
+                state.trackWaypointDraft = null;
+              }
+              if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow();
+              if (ev.cancelable) ev.preventDefault();
+              try { ev.stopPropagation(); } catch(_){}
+              return;
+            }
+            state._waypointLastPickMs = _wpNow;
             state.trackWaypointDraft = {
               lat: pick.lat,
               lon: pick.lon,
