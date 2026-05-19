@@ -36069,6 +36069,20 @@ function gisInit(){
   if (wpCoord) wpCoord.addEventListener("input", (ev) => {
     onEditorCoordInput(ev.target.value);
   });
+  const wpName = document.getElementById("wpFieldName");
+  if (wpName && !wpName._wpNameEnterBound) {
+    wpName._wpNameEnterBound = true;
+    wpName.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter") return;
+      ev.preventDefault();
+      if (!state.waypointEditorDraft) return;
+      const wasNew = !state.waypointEditorDraft.id;
+      commitWaypointEditor();
+      if (wasNew && !state.waypointEditorDraft) {
+        if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow();
+      }
+    });
+  }
   document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(btn => {
     btn.addEventListener("click", (ev) => {
       ev.preventDefault();
