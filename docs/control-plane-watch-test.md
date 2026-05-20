@@ -18,3 +18,13 @@ Latest test:
 - Expected Telegram 2: handoff result Prompt ready yes/no
 - Runtime touched by this commit: no
 - App code touched: no
+
+## Automatic handoff IF-fix retest
+
+- Date: 2026-05-21
+- Repo: mrhz1973/cursor-coordinate-converter
+- Purpose: verify automatic handoff after IF input fix
+- Expected Telegram 1: commit notification
+- Expected Telegram 2: handoff result Prompt ready yes/no
+- Runtime touched by this commit: no
+- App code touched: no
