@@ -93,3 +93,14 @@ Latest test:
 - Expected Telegram 3: attached latest-gis-handoff.md
 - Runtime touched by this commit: no
 - App code touched: no
+
+## Telegram handoff final retest with safe text and file attachment
+
+- Date: 2026-05-21
+- Repo: mrhz1973/cursor-coordinate-converter
+- Purpose: verify workflow 02F sends safe short Telegram handoff text plus attached latest-gis-handoff.md
+- Expected Telegram 1: commit notification
+- Expected Telegram 2: safe handoff text without Markdown/entities parse error
+- Expected Telegram 3: attached latest-gis-handoff.md
+- Runtime touched by this commit: no
+- App code touched: no
