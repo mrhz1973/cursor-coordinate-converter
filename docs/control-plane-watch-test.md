@@ -28,3 +28,13 @@ Latest test:
 - Expected Telegram 2: handoff result Prompt ready yes/no
 - Runtime touched by this commit: no
 - App code touched: no
+
+## Handoff Telegram prompt preview retest
+
+- Date: 2026-05-21
+- Repo: mrhz1973/cursor-coordinate-converter
+- Purpose: verify enriched Telegram handoff message with generated prompt preview
+- Expected Telegram 1: commit notification
+- Expected Telegram 2: handoff result with Prompt ready, Next action, and Generated prompt preview
+- Runtime touched by this commit: no
+- App code touched: no
