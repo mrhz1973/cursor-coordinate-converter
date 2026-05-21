@@ -71,3 +71,14 @@ Latest test:
 - Expected Telegram 3: attached latest-gis-handoff.md
 - Runtime touched by this commit: no
 - App code touched: no
+
+## Telegram handoff file attachment final retest with split fix
+
+- Date: 2026-05-21
+- Repo: mrhz1973/cursor-coordinate-converter
+- Purpose: verify workflow 02D sends correct handoff preview plus attached latest-gis-handoff.md
+- Expected Telegram 1: commit notification
+- Expected Telegram 2: handoff preview with Prompt ready and NOT undefined
+- Expected Telegram 3: attached latest-gis-handoff.md
+- Runtime touched by this commit: no
+- App code touched: no
