@@ -60,3 +60,14 @@ Latest test:
 - Expected Telegram 3: attached latest-gis-handoff.md
 - Runtime touched by this commit: no
 - App code touched: no
+
+## Telegram handoff file attachment retest with n8n-files path
+
+- Date: 2026-05-21
+- Repo: mrhz1973/cursor-coordinate-converter
+- Purpose: verify Telegram handoff file attachment from workflow 02C using /home/node/.n8n-files
+- Expected Telegram 1: commit notification
+- Expected Telegram 2: handoff preview
+- Expected Telegram 3: attached latest-gis-handoff.md
+- Runtime touched by this commit: no
+- App code touched: no
