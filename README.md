@@ -17,7 +17,7 @@ Verified in the current monolith and `docs/PROJECT_notes.md`:
 - **Universal paste:** auto-detect from clipboard text; manual tabs; drag-and-drop **GPX**, **KML**, and **GeoJSON** for geometry import.
 - **Export (where implemented):** GPX, KML, GeoJSON, CSV for tracks and related data (see `docs/roadmap.md` interoperability matrix for platform targets).
 - **Map view export:** the current map view can be exported as a **JPG/JPEG** image via the `Export JPG` (🖼) button in the header — useful for sharing a snapshot or printing a simple map image. Filename pattern: `gis-map-export-YYYYMMDD-HHMMSS.jpg`.
-- **Offline area JPG export:** in the **Offline maps** panel, select a bbox (on map or N/S/E/W fields), choose a **single zoom** (`Zoom export JPG`), then **Export offline JPG** to build a static mosaic from cached or live tiles. Filename pattern: `offline-map-z{zoom}-YYYYMMDD-HHMMSS.jpg`. Not a multi-zoom navigable map.
+- **Offline maps panel** separates **Download offline maps** (cache tiles to IndexedDB for z min–z max) from **Export offline JPG** (single-zoom static JPEG mosaic). Shared **layer** selector applies to both. Saved areas list includes a per-row **Download** (`Scarica`) button; export uses cached tiles when available, then network if allowed. Optional **export file name**; default `offline-map-z{zoom}-YYYYMMDD-HHMMSS.jpg`. If a layer has no tiles at the chosen zoom, pick a lower zoom (e.g. OpenTopoMap max z17).
 - **GeoTIFF**, raster georeferencing, and advanced print layout are **not** yet implemented.
 
 Quick usage example

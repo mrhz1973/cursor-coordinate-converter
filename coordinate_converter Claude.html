@@ -1221,6 +1221,30 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   pointer-events:none;
 }
 .offcache-bbox-actions #btnBboxPick .offcache-bbox-pick-svg{ display:block; }
+.offcache-section{
+  margin-top:12px;
+  padding-top:10px;
+  border-top:1px solid color-mix(in srgb, var(--text) 14%, transparent);
+}
+.offcache-section-title{
+  margin:0 0 8px;
+  font-size:.84rem;
+  font-weight:600;
+  color:var(--text);
+}
+.offcache-export-zoom-warn{
+  font-size:.78rem;
+  color:#b45309;
+  margin:2px 0 6px;
+  line-height:1.35;
+}
+.offcache-export-zoom-warn[hidden]{ display:none !important; }
+.offcache-layer-shared-note{
+  font-size:.74rem;
+  color:var(--muted);
+  margin:0 0 6px;
+  line-height:1.35;
+}
 .offline-areas-table{
   width:100%;
   border-collapse:collapse;
@@ -1232,7 +1256,7 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   --offa-layer-col:110px;
   --offa-tiles-col:110px;
   --offa-space-col:110px;
-  --offa-actions-col:132px;
+  --offa-actions-col:200px;
 }
 .offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:72px; }
 .offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:64px; }
@@ -1241,7 +1265,7 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:72px; }
 .offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:72px; }
 .offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:72px; }
-.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:112px; }
+.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:160px; }
 .offline-areas-table .offa-th-name,
 .offline-areas-table .offa-th-status,
 .offline-areas-table .offa-th-when,
@@ -8534,12 +8558,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <span id="pcBboxFeedbackSecondary" class="offcache-bbox-fb-secondary"></span>
           </div>
           <div class="offcache-row">
-            <label class="offcache-lbl" data-i18n="offcache.zmin">z min</label>
-            <input type="number" id="pcZ0" min="2" max="19" value="6" class="offcache-z">
-            <label class="offcache-lbl" data-i18n="offcache.zmax">z max</label>
-            <input type="number" id="pcZ1" min="2" max="19" value="12" class="offcache-z">
-          </div>
-          <div class="offcache-row">
             <label class="offcache-lbl" data-i18n="offcache.layer">Strato</label>
             <select id="pcLayer" class="offcache-select">
               <option value="osm">Cartografia (CARTO)</option>
@@ -8547,23 +8565,43 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <option value="sat">Satellite (Esri)</option>
             </select>
           </div>
-          <div class="offcache-est" id="pcEstimate" aria-live="polite"></div>
-          <div class="offcache-row offcache-export-jpg-row">
-            <label class="offcache-lbl" for="pcExportZ" data-i18n="offcache.exportZoom">Zoom export JPG</label>
-            <input type="number" id="pcExportZ" min="2" max="19" value="8" class="offcache-z" aria-describedby="pcExportJpgHint">
-          </div>
-          <p class="offcache-blurb offcache-export-jpg-hint" id="pcExportJpgHint" data-i18n="offcache.exportJpgHint">Esporta l&apos;area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).</p>
-          <div class="offcache-actions offcache-export-jpg-actions">
-            <button type="button" class="btn btn-sm" id="btnOfflineExportJpg" data-i18n="offcache.exportJpg" data-i18n-tip="tip.offlineExportJpg">Esporta JPG offline</button>
-          </div>
-          </div>
-          <div class="offcache-named">
-            <input type="text" id="pcAreaName" maxlength="40" data-i18n-ph="offcache.areaNamePh" placeholder="Nome area (es. AO FLINTLOCK)">
-            <button type="button" class="btn btn-sm" id="btnSaveNamedArea" data-i18n="offcache.saveNamed" data-i18n-tip="tip.saveNamed">💾 Salva</button>
-          </div>
-          <div class="offcache-actions">
-            <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica area corrente</button>
-            <button type="button" class="btn btn-sm" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Interrompi</button>
+          <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
+          <section class="offcache-section offcache-section--download" aria-labelledby="offcacheSectionDownloadTitle">
+            <h4 id="offcacheSectionDownloadTitle" class="offcache-section-title" data-i18n="offcache.sectionDownload">Download mappe offline</h4>
+            <p class="offcache-blurb" data-i18n="offcache.sectionDownloadBlurb">Scarica e memorizza le tile in IndexedDB per l&apos;area selezionata (intervallo di zoom).</p>
+            <div class="offcache-row">
+              <label class="offcache-lbl" data-i18n="offcache.zmin">z min</label>
+              <input type="number" id="pcZ0" min="2" max="19" value="6" class="offcache-z">
+              <label class="offcache-lbl" data-i18n="offcache.zmax">z max</label>
+              <input type="number" id="pcZ1" min="2" max="19" value="12" class="offcache-z">
+            </div>
+            <div class="offcache-est" id="pcEstimate" aria-live="polite"></div>
+            <div class="offcache-named">
+              <input type="text" id="pcAreaName" maxlength="40" data-i18n-ph="offcache.areaNamePh" placeholder="Nome area (es. AO FLINTLOCK)">
+              <button type="button" class="btn btn-sm" id="btnSaveNamedArea" data-i18n="offcache.saveNamed" data-i18n-tip="tip.saveNamed">💾 Salva</button>
+            </div>
+            <div class="offcache-actions">
+              <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica area corrente</button>
+              <button type="button" class="btn btn-sm" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Interrompi</button>
+            </div>
+          </section>
+          <section class="offcache-section offcache-section--export" aria-labelledby="offcacheSectionExportTitle">
+            <h4 id="offcacheSectionExportTitle" class="offcache-section-title" data-i18n="offcache.sectionExportJpg">Export JPG offline</h4>
+            <p class="offcache-blurb" data-i18n="offcache.sectionExportJpgBlurb">Genera un&apos;immagine JPEG statica dell&apos;area a un solo livello di zoom (non salva tile in cache).</p>
+            <div class="offcache-row offcache-export-jpg-row">
+              <label class="offcache-lbl" for="pcExportZ" data-i18n="offcache.exportZoom">Zoom export JPG</label>
+              <input type="number" id="pcExportZ" min="2" max="19" value="8" class="offcache-z" aria-describedby="pcExportJpgHint pcExportZoomWarn">
+            </div>
+            <p id="pcExportZoomWarn" class="offcache-export-zoom-warn" hidden aria-live="polite"></p>
+            <div class="offcache-row">
+              <label class="offcache-lbl" for="pcExportJpgName" data-i18n="offcache.exportFileName">Nome file export</label>
+              <input type="text" id="pcExportJpgName" maxlength="80" class="offcache-select" data-i18n-ph="offcache.exportFileNamePh" placeholder="opzionale, es. AO-FLINTLOCK">
+            </div>
+            <p class="offcache-blurb offcache-export-jpg-hint" id="pcExportJpgHint" data-i18n="offcache.exportJpgHint">Esporta l&apos;area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom). Usa le tile già in cache se disponibili.</p>
+            <div class="offcache-actions offcache-export-jpg-actions">
+              <button type="button" class="btn btn-sm" id="btnOfflineExportJpg" data-i18n="offcache.exportJpg" data-i18n-tip="tip.offlineExportJpg">Esporta JPG offline</button>
+            </div>
+          </section>
           </div>
           <div class="offcache-bar" id="pcBar" hidden>
             <progress id="pcProgress" max="100" value="0"></progress>
@@ -11198,6 +11236,20 @@ const I18N = {
     "export.offlineJpg.ok":"Export JPG offline completato.",
     "export.offlineJpg.fail":"Export JPG offline non riuscito.",
     "export.offlineJpg.tainted":"Impossibile esportare: canvas bloccato (CORS). Usa tile già in cache offline.",
+    "export.offlineJpg.zoomTooHigh":"Questo layer non ha tile disponibili a questo livello di zoom. Scegli uno zoom più basso (max z{0}).",
+    "export.offlineJpg.tilesUnavailable":"Tile non disponibili o non caricabili per questo layer/zoom. Prova uno zoom più basso o un altro layer.",
+    "export.offlineJpg.offlineMissing":"Modalità solo tile scaricate: {0} tile non presenti in cache offline.",
+    "export.offlineJpg.sources":"{0} da cache, {1} da rete ({2})",
+    "offcache.sectionDownload":"Download mappe offline",
+    "offcache.sectionDownloadBlurb":"Scarica e memorizza le tile in IndexedDB per l'area selezionata (intervallo z min–z max).",
+    "offcache.sectionExportJpg":"Export JPG offline",
+    "offcache.sectionExportJpgBlurb":"Genera un'immagine JPEG statica a un solo zoom (non salva tile in cache).",
+    "offcache.layerSharedNote":"Lo strato scelto vale per il download offline e per l'export JPG.",
+    "offcache.exportFileName":"Nome file export",
+    "offcache.exportFileNamePh":"opzionale, es. AO-FLINTLOCK",
+    "offcache.area.download":"Scarica",
+    "offcache.area.downloadTip":"Scarica in cache le tile di questa area (layer e zoom dell'area salvata)",
+    "offcache.area.alreadyDownloaded":"Già scaricata — le tile sono in cache; l'export JPG userà i dati offline se disponibili.",
     "meas.inverse":"Distanza e azimuth tra due punti",
     "meas.gisIntro":"Solo mappa: scegli i punti sulla cartina. Distanza e azimuth si aggiornano trascinando; in «Proietta» puoi digitare distanza/azimuth per spostare il punto finale.",
     "meas.gisFlow2":"Due punti",
@@ -12626,6 +12678,20 @@ const I18N = {
     "export.offlineJpg.ok":"Offline JPG export completed.",
     "export.offlineJpg.fail":"Offline JPG export failed.",
     "export.offlineJpg.tainted":"Cannot export: canvas tainted (CORS). Use tiles already cached offline.",
+    "export.offlineJpg.zoomTooHigh":"This layer has no tiles at this zoom level. Choose a lower zoom (max z{0}).",
+    "export.offlineJpg.tilesUnavailable":"Tiles unavailable or could not be loaded for this layer/zoom. Try a lower zoom or another layer.",
+    "export.offlineJpg.offlineMissing":"Offline-only mode: {0} tiles not in the local cache.",
+    "export.offlineJpg.sources":"{0} from cache, {1} from network ({2})",
+    "offcache.sectionDownload":"Download offline maps",
+    "offcache.sectionDownloadBlurb":"Download and store tiles in IndexedDB for the selected area (z min–z max range).",
+    "offcache.sectionExportJpg":"Export offline JPG",
+    "offcache.sectionExportJpgBlurb":"Generate a static JPEG image at a single zoom level (does not save tiles to cache).",
+    "offcache.layerSharedNote":"The selected layer applies to offline download and JPG export.",
+    "offcache.exportFileName":"Export file name",
+    "offcache.exportFileNamePh":"optional, e.g. AO-FLINTLOCK",
+    "offcache.area.download":"Download",
+    "offcache.area.downloadTip":"Cache tiles for this area (saved area layer and zoom range)",
+    "offcache.area.alreadyDownloaded":"Already downloaded — tiles are cached; JPG export will use offline data when available.",
     "meas.inverse":"Distance and bearing between two points",
     "meas.gisIntro":"Map only: pick points on the chart. Distance and bearing update while dragging; in “Project” you can type distance/bearing to move the end point.",
     "meas.gisFlow2":"Two points",
@@ -14055,6 +14121,20 @@ const I18N = {
     "export.offlineJpg.ok":"Export JPG hors ligne terminé.",
     "export.offlineJpg.fail":"Échec de l'export JPG hors ligne.",
     "export.offlineJpg.tainted":"Export impossible : canvas bloqué (CORS). Utilisez des tuiles déjà en cache hors ligne.",
+    "export.offlineJpg.zoomTooHigh":"Ce layer n'a pas de tuiles à ce niveau de zoom. Choisissez un zoom plus bas (max z{0}).",
+    "export.offlineJpg.tilesUnavailable":"Tuiles indisponibles ou non chargeables pour ce layer/zoom. Essayez un zoom plus bas ou un autre layer.",
+    "export.offlineJpg.offlineMissing":"Mode tuiles locales uniquement : {0} tuiles absentes du cache hors ligne.",
+    "export.offlineJpg.sources":"{0} depuis le cache, {1} depuis le réseau ({2})",
+    "offcache.sectionDownload":"Téléchargement cartes hors ligne",
+    "offcache.sectionDownloadBlurb":"Télécharge et stocke les tuiles dans IndexedDB pour la zone sélectionnée (plage z min–z max).",
+    "offcache.sectionExportJpg":"Export JPG hors ligne",
+    "offcache.sectionExportJpgBlurb":"Génère une image JPEG statique à un seul zoom (n'enregistre pas les tuiles en cache).",
+    "offcache.layerSharedNote":"Le layer choisi s'applique au téléchargement hors ligne et à l'export JPG.",
+    "offcache.exportFileName":"Nom du fichier export",
+    "offcache.exportFileNamePh":"optionnel, ex. AO-FLINTLOCK",
+    "offcache.area.download":"Télécharger",
+    "offcache.area.downloadTip":"Mettre en cache les tuiles de cette zone (layer et zoom de la zone enregistrée)",
+    "offcache.area.alreadyDownloaded":"Déjà téléchargée — tuiles en cache ; l'export JPG utilisera les données hors ligne si disponibles.",
     "meas.inverse":"Distance et azimut entre deux points",
     "meas.gisIntro":"Carte uniquement : choisissez les points sur la carte. Distance et azimut se mettent à jour au déplacement ; dans « Projeter » vous pouvez saisir distance/azimut pour déplacer le point final.",
     "meas.gisFlow2":"Deux points",
@@ -18435,6 +18515,10 @@ function getOfflineExportBbox(){
   return null;
 }
 
+function offlineLayerMaxZoom(layer){
+  return (layer && Number.isFinite(layer.maxZoom)) ? (layer.maxZoom | 0) : 19;
+}
+
 function readOfflineExportZoom(layer){
   const pi = (v) => parseInt(String(v == null ? "" : v).replace(",", "."), 10);
   let z = pi(document.getElementById("pcExportZ")?.value);
@@ -18446,8 +18530,41 @@ function readOfflineExportZoom(layer){
     else if (Number.isFinite(z1)) z = z1;
   }
   if (!Number.isFinite(z)) return null;
-  const maxZ = (layer && layer.maxZoom != null) ? layer.maxZoom : 19;
+  const maxZ = offlineLayerMaxZoom(layer);
   return Math.max(2, Math.min(maxZ, z));
+}
+
+function validateExportZoomForLayer(z, layer){
+  if (!Number.isFinite(z)) return "export.offlineJpg.badZoom";
+  const maxZ = offlineLayerMaxZoom(layer);
+  if (z > maxZ) return "export.offlineJpg.zoomTooHigh";
+  return null;
+}
+
+function updateOfflineExportZoomFeedback(){
+  const el = document.getElementById("pcExportZoomWarn");
+  if (!el) return;
+  const layerId = getCurrentOfflineLayerId();
+  const layer = TILE_LAYERS[layerId] || TILE_LAYERS.osm;
+  const zRaw = parseInt(String(document.getElementById("pcExportZ")?.value || "").replace(",", "."), 10);
+  const maxZ = offlineLayerMaxZoom(layer);
+  if (Number.isFinite(zRaw) && zRaw > maxZ){
+    el.hidden = false;
+    el.textContent = String(t("export.offlineJpg.zoomTooHigh")).replace("{0}", String(maxZ));
+    return;
+  }
+  el.hidden = true;
+  el.textContent = "";
+}
+
+function buildOfflineJpgExportDownloadName(z){
+  const custom = String(document.getElementById("pcExportJpgName")?.value || "").trim();
+  if (custom){
+    let base = sanitizeExportBaseName(custom.replace(/\.jpe?g$/i, ""));
+    if (!base) base = "offline-map-export";
+    return exportPrefixedDownloadFilename(base + ".jpg");
+  }
+  return exportPrefixedDownloadFilename(`offline-map-z${z}-${formatJpgExportTimestamp(new Date())}.jpg`);
 }
 
 function computeOfflineJpgGrid(n, s, e, w, z){
@@ -18503,24 +18620,35 @@ function drawOfflineExportTilePlaceholder(ctx, dx, dy, size){
 async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
   const key = makeTileKey(layerId, z, x, y);
   let blob = null;
-  try { blob = await getTileBlobByKey(key); } catch(_){}
+  let source = null;
+  let http404 = false;
+  try {
+    blob = await getTileBlobByKey(key);
+    if (blob) source = "cache";
+  } catch(_){}
   if (!blob && isEffectivelyOnline() && !state.forceOffline){
     try {
       const url = layer.url(z, x, y);
       const r = await fetch(url, { mode: "cors" });
-      if (r.ok) blob = await r.blob();
-    } catch(_){}
+      if (r.status === 404){ http404 = true; return { img: null, source: null, http404: true }; }
+      if (!r.ok) return { img: null, source: null, http404: false };
+      blob = await r.blob();
+      source = "network";
+    } catch(_){
+      return { img: null, source: null, http404: false };
+    }
   }
-  if (!blob) return null;
+  if (!blob) return { img: null, source: null, http404 };
   let objUrl = "";
   try {
     objUrl = URL.createObjectURL(blob);
-    return await new Promise((resolve) => {
+    const img = await new Promise((resolve) => {
       const im = new Image();
       im.onload = () => resolve(im);
       im.onerror = () => resolve(null);
       im.src = objUrl;
     });
+    return { img, source, http404: false };
   } finally {
     if (objUrl){ try { URL.revokeObjectURL(objUrl); } catch(_){} }
   }
@@ -18543,8 +18671,12 @@ async function exportOfflineAreaAsJpg(){
   const layerId = getCurrentOfflineLayerId();
   const layer = TILE_LAYERS[layerId] || TILE_LAYERS.osm;
   const z = readOfflineExportZoom(layer);
-  if (z == null){
-    try { showError(t("export.offlineJpg.badZoom")); } catch(_){}
+  const zoomErr = validateExportZoomForLayer(z, layer);
+  if (zoomErr){
+    try { showError(t(zoomErr).replace("{0}", String(offlineLayerMaxZoom(layer)))); } catch(_){}
+    const st0 = document.getElementById("pcStatus");
+    if (st0) st0.textContent = t(zoomErr).replace("{0}", String(offlineLayerMaxZoom(layer)));
+    updateOfflineExportZoomFeedback();
     return;
   }
   const grid = computeOfflineJpgGrid(bbox.n, bbox.s, bbox.e, bbox.w, z);
@@ -18569,14 +18701,22 @@ async function exportOfflineAreaAsJpg(){
   ctx.fillRect(0, 0, grid.widthPx, grid.heightPx);
   let done = 0;
   let missing = 0;
+  let fromCache = 0;
+  let fromNetwork = 0;
+  let http404 = 0;
   const prog = document.getElementById("pcProgress");
   const st = document.getElementById("pcStatus");
+  const layerLbl = offlineNamedAreaLayerLabel(layerId);
   try {
     for (const T of grid.tiles){
       const dx = (T.x - grid.xMin) * 256;
       const dy = (T.y - grid.yMin) * 256;
-      const im = await loadTileImageForOfflineExport(layerId, T.z, T.x, T.y, layer);
+      const loaded = await loadTileImageForOfflineExport(layerId, T.z, T.x, T.y, layer);
+      const im = loaded && loaded.img;
+      if (loaded && loaded.http404) http404++;
       if (im) {
+        if (loaded.source === "cache") fromCache++;
+        else if (loaded.source === "network") fromNetwork++;
         try { ctx.drawImage(im, dx, dy, 256, 256); } catch(_){ missing++; drawOfflineExportTilePlaceholder(ctx, dx, dy, 256); }
       } else {
         missing++;
@@ -18587,22 +18727,43 @@ async function exportOfflineAreaAsJpg(){
       if (st) st.textContent = String(t("export.offlineJpg.progress")).replace("{0}", String(done)).replace("{1}", String(grid.tileCount));
       if (done % 8 === 0) await new Promise((r) => setTimeout(r, 0));
     }
+    if (missing > 0){
+      if (http404 >= missing && http404 > 0){
+        const zm = t("export.offlineJpg.zoomTooHigh").replace("{0}", String(offlineLayerMaxZoom(layer)));
+        if (st) st.textContent = zm;
+        try { showError(zm); } catch(_){}
+      } else if (state.forceOffline || !isEffectivelyOnline()){
+        const om = String(t("export.offlineJpg.offlineMissing")).replace("{0}", String(missing));
+        if (st) st.textContent = om;
+        try { showError(om); } catch(_){}
+      } else {
+        const tm = String(t("export.offlineJpg.tilesUnavailable"));
+        if (st) st.textContent = tm;
+        try { showError(tm); } catch(_){}
+      }
+    }
     const blob = await new Promise((resolve, reject) => {
       try {
         canvas.toBlob((b) => b ? resolve(b) : reject(new Error("toBlob null")), "image/jpeg", 0.92);
       } catch(err){ reject(err); }
     });
-    const fname = `offline-map-z${z}-${formatJpgExportTimestamp(new Date())}.jpg`;
+    const dlName = buildOfflineJpgExportDownloadName(z);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = exportPrefixedDownloadFilename(fname);
+    a.download = dlName;
     document.body.appendChild(a);
     a.click();
     setTimeout(() => { try { document.body.removeChild(a); } catch(_){} URL.revokeObjectURL(url); }, 100);
-    const okMsg = missing > 0
+    let okMsg = missing > 0
       ? String(t("export.offlineJpg.partial")).replace("{0}", String(missing))
       : t("export.offlineJpg.ok");
+    if (fromCache > 0 || fromNetwork > 0){
+      okMsg += " · " + String(t("export.offlineJpg.sources"))
+        .replace("{0}", String(fromCache))
+        .replace("{1}", String(fromNetwork))
+        .replace("{2}", layerLbl);
+    }
     if (st) st.textContent = okMsg;
     try { clearError(); } catch(_){}
   } catch(err){
@@ -24501,6 +24662,30 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
   }
 }
 
+/** Download/cache tiles for one saved offline area (row action). */
+async function precacheOfflineNamedAreaById(areaId){
+  const id = String(areaId || "");
+  if (!id) return;
+  if (isOfflinePrecacheBusy() || _offlineJpgExportBusy){
+    const st = document.getElementById("pcStatus");
+    if (st) st.textContent = t("export.offlineJpg.precacheBusy");
+    return;
+  }
+  const area = (state.namedAreas || []).find(x => x && String(x.id) === id);
+  if (!area) return;
+  if (String(area.status || "").toLowerCase() === "complete"){
+    const st = document.getElementById("pcStatus");
+    if (st) st.textContent = t("offcache.area.alreadyDownloaded");
+    return;
+  }
+  if (!namedAreaToPrecacheParams(area)){
+    const st = document.getElementById("pcStatus");
+    if (st) st.textContent = t("offcache.badbox");
+    return;
+  }
+  await runOfflineAreasPrecacheQueue([id], { useProgressBar: true });
+}
+
 /** B6: sequential precache for table selection (subset). */
 async function startOfflineAreasBatchPrecache(){
   if (!window.indexedDB) return;
@@ -25741,6 +25926,12 @@ function renderOfflineAreasList(){
       ? (visOverlayOff ? t("offcache.area.visAriaOnNoOverlay") : t("offcache.area.visAriaOn"))
       : t("offcache.area.visAriaOff"));
     const loadedChip = loaded ? ` <span class="offa-loaded-chip" aria-hidden="true">${esc(t("offcache.area.loadedChip") || "Caricata")}</span>` : "";
+    const busy = typeof isOfflinePrecacheBusy === "function" && isOfflinePrecacheBusy();
+    const dlDisabled = busy || stClass === "complete";
+    const dlTip = stClass === "complete"
+      ? esc(t("offcache.area.alreadyDownloaded"))
+      : esc(t("offcache.area.downloadTip"));
+    const dlLbl = esc(t("offcache.area.download"));
 
     html += `<tr data-offa-row data-id="${esc(a.id)}" class="${sel ? "is-selected" : ""}${loaded ? " is-loaded" : ""}${rowComplete}">
       <td><input type="checkbox" data-offa-sel="${esc(a.id)}" data-i18n-tip="offcache.row.selTip" data-tip="${esc(t("offcache.row.selTip"))}" data-i18n-aria="offcache.row.selTip" ${sel ? "checked" : ""}></td>
@@ -25753,6 +25944,7 @@ function renderOfflineAreasList(){
       <td>${esc(tilesTxt)}</td>
       <td>${esc(spaceTxt)}</td>
       <td class="offa-actions-cell"><div class="offa-actions">
+        <button type="button" class="btn btn-sm btn-primary" data-offline-download="${esc(a.id)}" data-tip="${dlTip}" aria-label="${dlTip}" ${dlDisabled ? "disabled" : ""}>${dlLbl}</button>
         <button type="button" class="btn btn-sm" data-offline-load="${esc(a.id)}" data-i18n-tip="offcache.area.loadTip" data-i18n-aria="offcache.area.loadTip" data-tip="${esc(t("offcache.area.loadTip"))}" aria-label="${esc(t("offcache.area.loadTip"))}"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm" data-offline-fit="${esc(a.id)}" data-i18n-tip="offcache.area.fitTip" data-i18n-aria="offcache.area.fitTip" data-tip="${esc(t("offcache.area.fitTip"))}" aria-label="${esc(t("offcache.area.fitTip"))}"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-offline-del="${esc(a.id)}" data-i18n-tip="tip.offlineAreaDeleteOne" data-i18n-aria="tip.offlineAreaDeleteOne" data-tip="${esc(t("tip.offlineAreaDeleteOne"))}" aria-label="${esc(t("tip.offlineAreaDeleteOne"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
@@ -26348,6 +26540,12 @@ function ensureOfflineAreasListDelegation(){
       return;
     }
 
+    const dlBtn = ev.target.closest && ev.target.closest("[data-offline-download]");
+    if (dlBtn){
+      ev.preventDefault();
+      void precacheOfflineNamedAreaById(dlBtn.getAttribute("data-offline-download"));
+      return;
+    }
     const loadBtn = ev.target.closest && ev.target.closest("[data-offline-load]");
     if (loadBtn){
       ev.preventDefault();
@@ -35817,13 +36015,20 @@ function bindUI(){
   const btnOffJpg = document.getElementById("btnOfflineExportJpg");
   if (btnOffJpg) btnOffJpg.addEventListener("click", () => { try { void exportOfflineAreaAsJpg(); } catch(_){} });
   const pcExportZ = document.getElementById("pcExportZ");
-  if (pcExportZ) pcExportZ.addEventListener("input", () => { pcExportZ.dataset.userTouched = "1"; });
+  if (pcExportZ){
+    pcExportZ.addEventListener("input", () => {
+      pcExportZ.dataset.userTouched = "1";
+      try { updateOfflineExportZoomFeedback(); } catch(_){}
+    });
+  }
   const pcZ0Sync = document.getElementById("pcZ0");
   if (pcZ0Sync && pcExportZ){
     pcZ0Sync.addEventListener("input", () => {
       if (!pcExportZ.dataset.userTouched) pcExportZ.value = pcZ0Sync.value;
+      try { updateOfflineExportZoomFeedback(); } catch(_){}
     });
   }
+  try { updateOfflineExportZoomFeedback(); } catch(_){}
   const btnPstop = document.getElementById("btnPrecacheStop");
   if (btnPstop) btnPstop.addEventListener("click", () => { if (_precacheAbort) _precacheAbort.abort(); });
   const btnPclr = document.getElementById("btnPrecacheClear");
@@ -35835,7 +36040,10 @@ function bindUI(){
   const pcl = document.getElementById("pcLayer");
   if (pcl){
     pcl.value = sanitizeMapLayer(state.mapLayer || "osm");
-    pcl.addEventListener("change", () => { updatePrecacheEstimate(); });
+    pcl.addEventListener("change", () => {
+      updatePrecacheEstimate();
+      try { updateOfflineExportZoomFeedback(); } catch(_){}
+    });
   }
   if (typeof syncOfflineSaveButtonLabel === "function") syncOfflineSaveButtonLabel();
 
