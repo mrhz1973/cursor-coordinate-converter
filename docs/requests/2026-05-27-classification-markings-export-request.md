@@ -38,3 +38,13 @@ Preferred first step:
 This commit should trigger workflow 42.
 Codex CLI should inspect the request and classify risk.
 Cursor should be used for implementation only if Codex recommends a small safe implementation.
+
+## Result
+
+- **Status:** implemented
+- **Export type touched:** GeoJSON `FeatureCollection.metadata` (all centralized builders)
+- **Default marking:** `classification: "UNCLASSIFIED"` (non-sensitive default only)
+- **Files changed:**
+  - `coordinate_converter Claude.html` — helper `exportGeoJsonMetadata()`; applied in `buildGeoJSON`, `buildGeoJSONRoute`, `spatialBuildFeatureCollectionFromAppState`, `gisAllAsFeatureCollection`, `savedTrackToFeatureCollection`, waypoint modal GeoJSON export
+  - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`
+- **Limitations:** GPX/KML/CSV exports unchanged; no UI, no user preference, no CUI/SECRET handling; `metadata` on FeatureCollection is an app convention (not strict RFC 7946); print/PDF classification flow not extended in this pass

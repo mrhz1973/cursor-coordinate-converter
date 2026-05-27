@@ -17972,6 +17972,18 @@ function kmlExtendedData(p){
   if (!items.length) return "";
   return `    <ExtendedData>\n${items.join("\n")}\n    </ExtendedData>\n`;
 }
+/** Default GeoJSON export metadata (T1.6 minimal step; non-sensitive marking only). */
+function exportGeoJsonMetadata(extra){
+  const meta = {
+    generated: new Date().toISOString(),
+    creator: "GOI GIS Tool",
+    classification: "UNCLASSIFIED"
+  };
+  if (extra && typeof extra === "object"){
+    for (const k of Object.keys(extra)) meta[k] = extra[k];
+  }
+  return meta;
+}
 function buildGPX(points){
   const nowDate = new Date();
   const now     = nowDate.toISOString();
@@ -18012,10 +18024,7 @@ function buildGeoJSON(points){
   }));
   return JSON.stringify({
     type: "FeatureCollection",
-    metadata: {
-      generated: nowDate.toISOString(),
-      creator: "GOI GIS Tool"
-    },
+    metadata: exportGeoJsonMetadata({ generated: nowDate.toISOString() }),
     features
   }, null, 2);
 }
@@ -18156,12 +18165,7 @@ function buildGeoJSONRoute(points, closed, routeName){
   }
   return JSON.stringify({
     type: "FeatureCollection",
-    metadata: {
-      generated: new Date().toISOString(),
-      creator: "GOI GIS Tool",
-      routeName: routeName || null,
-      closed: !!closed
-    },
+    metadata: exportGeoJsonMetadata({ routeName: routeName || null, closed: !!closed }),
     features
   }, null, 2);
 }
@@ -19063,10 +19067,7 @@ function spatialBuildFeatureCollectionFromAppState(){
   }
   return {
     type: "FeatureCollection",
-    metadata: {
-      generated: new Date().toISOString(),
-      creator: "GOI GIS Tool"
-    },
+    metadata: exportGeoJsonMetadata(),
     features
   };
 }
@@ -26978,11 +26979,7 @@ function gisAllAsFeatureCollection(opts){
   }
   return {
     type: "FeatureCollection",
-    metadata: {
-      generated: new Date().toISOString(),
-      creator: "GOI GIS Tool",
-      model: "gis-phase-1-hybrid"
-    },
+    metadata: exportGeoJsonMetadata({ model: "gis-phase-1-hybrid" }),
     features
   };
 }
@@ -28655,7 +28652,7 @@ function savedTrackToFeatureCollection(st){
   }
   return {
     type: "FeatureCollection",
-    metadata: { generated: new Date().toISOString(), creator: "GOI GIS Tool" },
+    metadata: exportGeoJsonMetadata(),
     features: [{ type: "Feature", properties: { name: nm, kind: st.closed ? "polygon" : "linestring", savedTrackId: st.id }, geometry: geom }]
   };
 }
@@ -41576,11 +41573,7 @@ function waypointsExportGeoJSON(){
   const generated = new Date().toISOString();
   const fc = {
     type: "FeatureCollection",
-    metadata: {
-      generated,
-      creator: "GOI GIS Tool",
-      kind: "waypoints"
-    },
+    metadata: exportGeoJsonMetadata({ generated, kind: "waypoints" }),
     features
   };
   const fname = "waypoints-" + generated.replace(/[^\w-]/g, "").slice(0, 24) + ".geojson";

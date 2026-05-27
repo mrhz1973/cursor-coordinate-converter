@@ -2539,3 +2539,31 @@ Schema dati, **`state.savedTracks`**, **`state.lastResult`**, nuove chiavi `loca
 - `coordinate_converter Claude.html`
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 
+
+## Checkpoint 2026-05-27 — T1.6 minimal GeoJSON export classification marking
+
+### Contesto
+
+Implementazione minima su richiesta `docs/requests/2026-05-27-classification-markings-export-request.md` (workflow 42 trigger `f51785a`). Primo passo verso **T1.6 Classification markings on exports** senza sistema completo.
+
+### Sintesi monolite
+
+1. **`exportGeoJsonMetadata(extra)`** — metadata export GeoJSON con `creator`, `generated`, **`classification: "UNCLASSIFIED"`** (default non sensibile).
+2. Applicato a: **`buildGeoJSON`**, **`buildGeoJSONRoute`**, **`spatialBuildFeatureCollectionFromAppState`**, **`gisAllAsFeatureCollection`**, **`savedTrackToFeatureCollection`**, export GeoJSON modal waypoint.
+3. **Non toccato:** GPX, KML, KMZ, CSV, UI, `localStorage`, rete, import, OPSEC, geocoding, tile cache.
+
+### Limitazioni
+
+Nessuna preferenza utente; nessun handling CUI/SECRET; GPX/KML/CSV e print report non estesi in questo passo.
+
+### Verifica
+
+- `node --check` sul blocco `<script>` principale del monolite: OK.
+- Browser QA: **NOT EXECUTED**.
+
+### File toccati
+
+- `coordinate_converter Claude.html`
+- `docs/requests/2026-05-27-classification-markings-export-request.md`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
