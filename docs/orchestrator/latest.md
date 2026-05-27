@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-27 — **Hosting / deploy runbook (docs + script):** persistita procedura Firebase Hosting + VPS staging. Commit **`a614405`** — `docs: add GIS hosting deploy runbook and helper script`; push riuscito. File: `docs/hosting/firebase-vps-deploy.md`, `scripts/deploy-hosting.ps1`, `README.md` (sezione Hosting). Firebase: https://gistoolmarty-33cf8.web.app (`gistoolmarty-33cf8`); VPS staging: http://217.160.71.145/gis/. **Nessun deploy reale** eseguito; monolite **non** modificato. Inbox **`2026-05-27_1048_hosting-deploy-runbook-script.md`**.
+
 2026-05-27 — **Browser PASS T1.6 minimal GeoJSON classification marking:** waypoint export GeoJSON contiene `metadata.classification = UNCLASSIFIED`. Commit testato **`c59d2de`**. Nessun codice modificato in questa sessione.
 
 2026-05-20 — **T1.3 gate decision packet (PCN/Geoportale OGC):** docs-only. Gate 1 endpoint **PASS**; gate 2 CORS **FAIL** (`file://`); gate 3 licenza **FAIL** offline-first/ortofoto; gate 4 OPSEC **FAIL** default; gate 5 tile engine **FAIL** (motore XYZ, no WMS). **Raccomandazione: remain deferred** — nessun CODE T1.3. GIS resta **frozen** pending Automation MVP. Inbox **`2026-05-20_0130_t1-3-pcn-geoportale-ogc-gate-decision.md`**. Nessun codice modificato.
