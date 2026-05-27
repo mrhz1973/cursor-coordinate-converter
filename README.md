@@ -2,12 +2,41 @@
 
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
-The application is distributed as a **single standalone HTML file**:
+The application is distributed as a **single standalone HTML file** (`coordinate_converter Claude.html`):
 
 No build step is required. Open the file directly in a browser, or serve it locally when browser security rules require localhost for features such as geolocation.
 
+In GIS-first mode (default), the map fills the screen; use **Convert** in the top bar to open the coordinate converter, paste or type a position, and read the formatted results. Track, waypoint, offline map, and measurement tools live in the same file (see project notes for scope).
+
+Supported coordinate formats
+
+Verified in the current monolith and `docs/PROJECT_notes.md`:
+
+- **Primary grids / notations:** decimal degrees (DD), DDM, DMS, UTM, MGRS, Plus Codes (Open Location Code).
+- **Additional datums / national grids:** Gauss-Boaga / ROMA40, ED50; also NAD27, NAD83, OSGB36, CH1903, SK42 (as documented in project notes).
+- **Universal paste:** auto-detect from clipboard text; manual tabs; drag-and-drop **GPX**, **KML**, and **GeoJSON** for geometry import.
+- **Export (where implemented):** GPX, KML, GeoJSON, CSV for tracks and related data (see `docs/roadmap.md` interoperability matrix for platform targets).
+
+Quick usage example
+
+1. Open `coordinate_converter Claude.html` in a modern browser (or via localhost — see *How to run*).
+2. Click **Convert** in the top bar (GIS mode).
+3. Paste a coordinate string, for example decimal degrees: `44.1024, 9.8236` (or an MGRS / UTM string the app recognizes).
+4. Review the result cards (DD, DMS, MGRS, UTM, etc.) and optional map link-outs.
+
+No install, account, or API key is required for conversion. Geolocation and online geocoding are **user-initiated** and may be limited on `file://` or when OPSEC strict mode is on.
+
+Not yet supported (from current docs)
+
+Do not assume these are available today; they are listed in `docs/roadmap.md` as planned or out of scope:
+
+- **CoT XML** import/export (T1.2 — planned).
+- **Shapefile**, **GeoTIFF** (T3.x — planned).
+- Dedicated **drone mission** exports (Litchi CSV, DJI WPML, MAVLink `.plan`, etc. — Tier 2).
+- **KMZ** export marked as pending in the interoperability matrix; GPX/KML/GeoJSON/CSV are the primary interchange formats today.
+
 Main features
-Coordinate conversion between DD, DDM, DMS, UTM, MGRS and other supported formats.
+Coordinate conversion between DD, DDM, DMS, UTM, MGRS, Plus Codes, and the additional datums noted above.
 GIS-first layout with a full-screen map and floating operational panels.
 Track builder for creating, saving, editing and exporting tracks.
 Waypoint manager with map placement, editing, import and export workflows.
@@ -45,6 +74,7 @@ Repository structure
 │   ├── session-geolocalizzazione-e-mappa.md # Long session log / feature history
 │   ├── PROJECT_notes.md                   # Technical project notes
 │   ├── roadmap.md                         # Strategic roadmap and architecture constraints
+│   ├── requests/                          # Small documentation change requests
 │   └── cursor-workflow.md                 # Cursor workflow companion
 └── .cursor/
     └── rules/                             # Cursor project rules
