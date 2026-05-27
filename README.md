@@ -102,6 +102,25 @@ http://localhost:8000/coordinate_converter%20Claude.html
 Stop the server with:
 
 Ctrl + C
+
+Hosting / Deploy
+
+The app can be published to **Firebase Hosting** and a **VPS staging** demo environment. Full procedures are documented in [`docs/hosting/firebase-vps-deploy.md`](docs/hosting/firebase-vps-deploy.md).
+
+| Environment | URL |
+|-------------|-----|
+| Firebase Hosting | https://gistoolmarty-33cf8.web.app |
+| VPS staging | http://217.160.71.145/gis/ |
+
+Minimal helper (from repository root):
+
+```powershell
+.\scripts\deploy-hosting.ps1
+.\scripts\deploy-hosting.ps1 -DeployFirebase
+```
+
+The first command only copies `coordinate_converter Claude.html` to the local Firebase `public/index.html`. The second also runs `firebase deploy --only hosting`. Firebase setup (Node.js, Firebase CLI, `firebase login`, `firebase init hosting`) is **already done** on the work PC — do not repeat init/login unless there is a real need.
+
 Architecture principles
 
 This project intentionally avoids a conventional web-app toolchain.
