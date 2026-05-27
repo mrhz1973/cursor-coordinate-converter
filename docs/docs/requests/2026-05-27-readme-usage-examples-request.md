@@ -32,3 +32,4 @@ Ask the implementer to inspect the repository and update the most appropriate do
 This commit should trigger workflow 42.
 Codex CLI should classify it as low risk and decide whether Cursor should update documentation.
 Cursor should be used only if it can make a small useful documentation improvement.
+
