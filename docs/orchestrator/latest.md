@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-05-27 — **Browser PASS T1.6 minimal GeoJSON classification marking:** waypoint export GeoJSON contiene `metadata.classification = UNCLASSIFIED`. Commit testato **`c59d2de`**. Nessun codice modificato in questa sessione.
+
 2026-05-20 — **T1.3 gate decision packet (PCN/Geoportale OGC):** docs-only. Gate 1 endpoint **PASS**; gate 2 CORS **FAIL** (`file://`); gate 3 licenza **FAIL** offline-first/ortofoto; gate 4 OPSEC **FAIL** default; gate 5 tile engine **FAIL** (motore XYZ, no WMS). **Raccomandazione: remain deferred** — nessun CODE T1.3. GIS resta **frozen** pending Automation MVP. Inbox **`2026-05-20_0130_t1-3-pcn-geoportale-ogc-gate-decision.md`**. Nessun codice modificato.
 
 2026-05-20 — **GIS FROZEN pending Automation MVP:** nessuna nuova feature GIS finché Automation MVP non è chiuso. T1.1 polygon flow chiuso (Pass A/B/C/D/E). Commit di riferimento **`81f3bc5`** — `docs: record browser PASS polygon polish`. **Prossimo workstream:** Automation MVP / control-plane (fuori da questo repo).

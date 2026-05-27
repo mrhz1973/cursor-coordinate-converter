@@ -48,3 +48,13 @@ Cursor should be used for implementation only if Codex recommends a small safe i
   - `coordinate_converter Claude.html` — helper `exportGeoJsonMetadata()`; applied in `buildGeoJSON`, `buildGeoJSONRoute`, `spatialBuildFeatureCollectionFromAppState`, `gisAllAsFeatureCollection`, `savedTrackToFeatureCollection`, waypoint modal GeoJSON export
   - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`
 - **Limitations:** GPX/KML/CSV exports unchanged; no UI, no user preference, no CUI/SECRET handling; `metadata` on FeatureCollection is an app convention (not strict RFC 7946); print/PDF classification flow not extended in this pass
+
+## Browser QA
+
+- **Browser QA:** PASS
+- **Date:** 2026-05-27
+- **Commit tested:** `c59d2de` (`feat: add minimal export classification marking`)
+- **Export type tested:** waypoint GeoJSON (modal waypoint export)
+- **Observed metadata:** `classification: "UNCLASSIFIED"`, `kind: "waypoints"`; also `creator: "GOI GIS Tool"`, `generated` ISO timestamp
+- **Evidence (metadata excerpt):** `"classification": "UNCLASSIFIED", "kind": "waypoints"`
+- **Notes:** file exported correctly; no errors reported; other export formats not re-tested in this QA pass

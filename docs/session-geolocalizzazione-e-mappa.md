@@ -2559,11 +2559,40 @@ Nessuna preferenza utente; nessun handling CUI/SECRET; GPX/KML/CSV e print repor
 ### Verifica
 
 - `node --check` sul blocco `<script>` principale del monolite: OK.
-- Browser QA: **NOT EXECUTED**.
+- Browser QA: **NOT EXECUTED** (superseded by browser PASS checkpoint below).
 
 ### File toccati
 
 - `coordinate_converter Claude.html`
 - `docs/requests/2026-05-27-classification-markings-export-request.md`
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+
+
+## Checkpoint 2026-05-27 — Browser PASS T1.6 GeoJSON classification marking
+
+### Contesto
+
+Browser QA manuale post-implementazione **`c59d2de`** (`feat: add minimal export classification marking`). Nessun codice modificato in questa sessione.
+
+### Test
+
+- Creato/esportato waypoint → GeoJSON dal modal waypoint.
+- File scaricato correttamente; nessun errore evidente.
+
+### Metadata osservato
+
+- `metadata.classification`: **`UNCLASSIFIED`**
+- `metadata.kind`: **`waypoints`**
+- `metadata.creator`: `GOI GIS Tool`
+- `metadata.generated`: ISO timestamp (es. `2026-05-27T00:26:30.435Z`)
+
+### Esito
+
+**PASS**
+
+### File toccati (questa sessione)
+
+- `docs/requests/2026-05-27-classification-markings-export-request.md`
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
+- `docs/orchestrator/latest.md`
 
