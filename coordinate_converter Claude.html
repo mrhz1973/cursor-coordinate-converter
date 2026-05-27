@@ -8190,6 +8190,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 data-i18n-tip="tip.print" aria-label="Print">
           <span class="hdr-icon-glyph hdr-print-glyph" aria-hidden="true">⎙</span>
         </button>
+        <button id="btnExportJpg" class="hdr-icon-btn hdr-icon-btn-export-jpg" type="button"
+                data-i18n-tip="tip.exportMapJpg" aria-label="Export JPG">
+          <span class="hdr-icon-glyph hdr-export-jpg-glyph" aria-hidden="true">🖼</span>
+        </button>
         <button id="btnTools" class="hdr-icon-btn hdr-icon-btn-tools" type="button"
                 data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools" aria-label="Tools">
           <span class="hdr-icon-glyph" aria-hidden="true">🧰</span>
@@ -11166,6 +11170,11 @@ const I18N = {
     "tip.exportCsv":"Scarica il punto come CSV",
     "tip.help":"Mostra scorciatoie da tastiera (?)",
     "tip.print":"Stampa o salva i risultati come PDF (P)",
+    "tip.exportMapJpg":"Esporta la vista corrente della mappa come immagine JPG",
+    "export.jpg.noMap":"Mappa non disponibile per l'esportazione JPG.",
+    "export.jpg.ok":"Esportazione JPG completata.",
+    "export.jpg.tainted":"Impossibile esportare JPG: alcuni tile della mappa bloccano il canvas (limite CORS). Riprova dopo aver scaricato i tile in offline.",
+    "export.jpg.fail":"Esportazione JPG non riuscita.",
     "meas.inverse":"Distanza e azimuth tra due punti",
     "meas.gisIntro":"Solo mappa: scegli i punti sulla cartina. Distanza e azimuth si aggiornano trascinando; in «Proietta» puoi digitare distanza/azimuth per spostare il punto finale.",
     "meas.gisFlow2":"Due punti",
@@ -12574,6 +12583,11 @@ const I18N = {
     "tip.exportCsv":"Download the point as CSV",
     "tip.help":"Show keyboard shortcuts (?)",
     "tip.print":"Print or save results as PDF (P)",
+    "tip.exportMapJpg":"Export the current map view as a JPG image",
+    "export.jpg.noMap":"Map not available for JPG export.",
+    "export.jpg.ok":"JPG export completed.",
+    "export.jpg.tainted":"Cannot export JPG: some map tiles taint the canvas (CORS limit). Try again after caching tiles offline.",
+    "export.jpg.fail":"JPG export failed.",
     "meas.inverse":"Distance and bearing between two points",
     "meas.gisIntro":"Map only: pick points on the chart. Distance and bearing update while dragging; in “Project” you can type distance/bearing to move the end point.",
     "meas.gisFlow2":"Two points",
@@ -13983,6 +13997,11 @@ const I18N = {
     "tip.exportCsv":"Télécharger le point en CSV",
     "tip.help":"Afficher les raccourcis clavier (?)",
     "tip.print":"Imprimer ou enregistrer en PDF (P)",
+    "tip.exportMapJpg":"Exporter la vue actuelle de la carte en image JPG",
+    "export.jpg.noMap":"Carte non disponible pour l'export JPG.",
+    "export.jpg.ok":"Export JPG terminé.",
+    "export.jpg.tainted":"Impossible d'exporter en JPG : certaines tuiles bloquent le canvas (limite CORS). Réessayez après avoir mis les tuiles en cache hors ligne.",
+    "export.jpg.fail":"Échec de l'export JPG.",
     "meas.inverse":"Distance et azimut entre deux points",
     "meas.gisIntro":"Carte uniquement : choisissez les points sur la carte. Distance et azimut se mettent à jour au déplacement ; dans « Projeter » vous pouvez saisir distance/azimut pour déplacer le point final.",
     "meas.gisFlow2":"Deux points",
@@ -18232,6 +18251,123 @@ function downloadBlob(content, filename, mime){
   a.href = url; a.download = exportPrefixedDownloadFilename(filename);
   document.body.appendChild(a); a.click();
   setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+/* ----------------------------------------------------------------------
+ * JPG export of the current map view (best-effort, browser-only).
+ *
+ * Rationale: users want a simple "save current map as image / print"
+ * capability. GeoTIFF / georeferencing / advanced print layout are out
+ * of scope for this iteration.
+ *
+ * Strategy: rasterize the live #miniMap > .tile-map viewport onto a
+ * 2D canvas. Tile <img> elements use blob: URLs (set by hydrateMapTiles
+ * from same-origin Blobs obtained via fetch+CORS or IndexedDB), which
+ * are safe to draw without tainting the canvas. SVG overlays (MGRS grid
+ * and inline marker pin) are serialized and rasterised through an
+ * intermediate <img> so we can drawImage() them onto the same canvas.
+ *
+ * If the canvas ends up tainted (e.g. a non-blob <img> from a server
+ * without proper CORS slipped in), toBlob() throws SecurityError; we
+ * surface a clear i18n message and abort cleanly without breaking
+ * existing UI.
+ * --------------------------------------------------------------------*/
+function formatJpgExportTimestamp(d){
+  const dt = d instanceof Date ? d : new Date();
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}-${pad(dt.getHours())}${pad(dt.getMinutes())}${pad(dt.getSeconds())}`;
+}
+
+async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh){
+  if (!svgEl || dw <= 0 || dh <= 0) return false;
+  let url = "";
+  try {
+    const clone = svgEl.cloneNode(true);
+    if (!clone.getAttribute("xmlns")) clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    if (!clone.getAttribute("xmlns:xlink")) clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+    if (clone.tagName && clone.tagName.toLowerCase() === "svg"){
+      if (!clone.getAttribute("width"))  clone.setAttribute("width",  String(Math.max(1, Math.round(dw))));
+      if (!clone.getAttribute("height")) clone.setAttribute("height", String(Math.max(1, Math.round(dh))));
+    }
+    const txt = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob([txt], { type: "image/svg+xml;charset=utf-8" });
+    url = URL.createObjectURL(blob);
+    await new Promise((resolve) => {
+      const im = new Image();
+      im.onload  = () => { try { ctx.drawImage(im, dx, dy, dw, dh); } catch(_){} resolve(); };
+      im.onerror = () => resolve();
+      im.src = url;
+    });
+    return true;
+  } catch(_){
+    return false;
+  } finally {
+    if (url){ try { URL.revokeObjectURL(url); } catch(_){} }
+  }
+}
+
+async function exportMapAsJpg(){
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!tileMap){
+    try { showError(t("export.jpg.noMap")); } catch(_){ /* showError unavailable on some early errors */ }
+    return;
+  }
+  const mapRect = tileMap.getBoundingClientRect();
+  const W = Math.max(1, Math.round(mapRect.width));
+  const H = Math.max(1, Math.round(mapRect.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  if (!ctx){ try { showError(t("export.jpg.fail")); } catch(_){} return; }
+
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, W, H);
+
+  const tileImgs = [...tileMap.querySelectorAll("img.tile")].filter(im => im.complete && im.naturalWidth > 0 && im.src);
+  for (const im of tileImgs){
+    const r = im.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    const x = r.left - mapRect.left;
+    const y = r.top  - mapRect.top;
+    try { ctx.drawImage(im, x, y, r.width, r.height); } catch(_){}
+  }
+
+  const gridSvg = tileMap.querySelector(".tile-grid");
+  if (gridSvg){
+    const r = gridSvg.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0){
+      await rasterizeSvgOntoCanvas(gridSvg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
+    }
+  }
+
+  const markerSvgs = [...tileMap.querySelectorAll(".tile-marker svg")];
+  for (const svg of markerSvgs){
+    const host = svg.closest(".tile-marker") || svg;
+    const r = host.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) continue;
+    await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
+  }
+
+  try {
+    const blob = await new Promise((resolve, reject) => {
+      try {
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error("toBlob returned null")), "image/jpeg", 0.92);
+      } catch(err){ reject(err); }
+    });
+    const fname = `gis-map-export-${formatJpgExportTimestamp(new Date())}.jpg`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = exportPrefixedDownloadFilename(fname);
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { try { document.body.removeChild(a); } catch(_){} URL.revokeObjectURL(url); }, 100);
+    try { clearError(); } catch(_){}
+  } catch(err){
+    const msg = String(err && (err.message || err) || "");
+    const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
+    try { showError(tainted ? t("export.jpg.tainted") : t("export.jpg.fail")); } catch(_){}
+  }
 }
 function buildSinglePointFromResult(){
   const r = state.lastResult;
@@ -35199,6 +35335,8 @@ function bindUI(){
   }
   // Print (⎙): schermata risultati. Report missione: vedi "Report (stampa)" nei favoriti.
   document.getElementById("btnPrint").addEventListener("click", () => { document.body.classList.remove("printing-report"); window.print(); });
+  const btnExportJpgEl = document.getElementById("btnExportJpg");
+  if (btnExportJpgEl) btnExportJpgEl.addEventListener("click", () => { try { exportMapAsJpg(); } catch(_){} });
 
   const btnPr = document.getElementById("btnPrintReport");
   if (btnPr) btnPr.addEventListener("click", () => openPrintReport());
