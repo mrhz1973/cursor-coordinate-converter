@@ -21992,6 +21992,16 @@ function normalizeLon(lon){
  *   Note the /{z}/{y}/{x} coordinate order (Esri convention).
  *
  * Both use Web Mercator @ 256 px tiles. Retina (@2x) skipped for size. */
+const NAV_PROXY_PORT = 5000;
+function getNavProxyHost(){
+  try {
+    const h = (typeof location !== "undefined" && location.hostname)
+      ? String(location.hostname).trim() : "";
+    if (h) return h;
+  } catch(_){}
+  return "localhost";
+}
+
 const TILE_LAYERS = {
   osm: {
     url:    (z, x, y) => {
@@ -22014,12 +22024,12 @@ const TILE_LAYERS = {
     attrib: 'Imagery © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics',
     maxZoom: 19
   },
-  /* Navionics nautical charts via the local Python proxy (Planet-Clone project,
-   * proxy.py on port 5000). The proxy handles Garmin token auth + CORS; the
-   * browser only ever talks to localhost. Online use requires the proxy
-   * running; previously-downloaded offline tiles keep working without it. */
+  /* Navionics nautical charts via the Python proxy (Planet-Clone project,
+   * proxy.py on port 5000). Host follows the page hostname (localhost or
+   * tailnet VPS); file:// falls back to localhost. Online use requires the
+   * proxy running; previously-downloaded offline tiles keep working without it. */
   nav: {
-    url:    (z, x, y) => `http://localhost:5000/tiles/${z}/${x}/${y}.png`,
+    url:    (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/tiles/${z}/${x}/${y}.png`,
     attrib: 'Carte nautiche © <a href="https://www.navionics.com/" target="_blank" rel="noopener">Navionics</a> (Garmin) — proxy locale',
     maxZoom: 18
   }
