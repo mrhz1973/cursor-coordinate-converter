@@ -240,6 +240,7 @@ The app is designed to keep user data local by default.
 No GPS request should happen silently at startup.
 Geolocation must remain user-initiated.
 Strict OPSEC mode must block sensitive network calls.
+Today, OPSEC strict disables geocoding (Nominatim) only; it does **not** block map tile fetches for basemaps, Navionics, or OpenSeaMap seamarks.
 Offline maps and cached tiles are handled locally through browser storage.
 Online map tiles and geocoding should be treated as externally visible network activity.
 Navionics tiles (via tailnet proxy) and OpenSeaMap seamarks also contact external tile servers when online.

@@ -2643,3 +2643,49 @@ Sessione operativa post-pivot «solo tailnet privata» (commit monolite **`44b12
 - `coordinate_converter Claude.html` (solo i18n, commit **`fb4dcb0`**)
 - `docs/orchestrator/latest.md` + inbox (commit autosync separato)
 
+
+## Checkpoint 2026-06-13 — Blocco 5 / 5A — Audit OPSEC read-only e registrazione documentale
+
+### Contesto
+
+Blocco 5: audit OPSEC **read-only** completato sullo stato post-deploy tailnet (GIS + proxy Planet-Clone `5e57c7f`, systemd, ACL grant). Nessuna patch, nessun commit, nessun push nel blocco 5 originario. Blocco 5A: registrazione esiti in docs + autosync orchestratore (questa append).
+
+### Verdetti audit (stato attuale, non decisione futura)
+
+1. **`opsecStrict` oggi copre geocoding/Nominatim** (`geocodingAllowed()`), non i tile mappa.
+2. **Basemap `osm`/`topo`/`sat`:** fetch se online e non forced-offline; **non** gated da strict.
+3. **Navionics monolite:** usa `/tiles/` via proxy tailnet (`getNavProxyHost():5000`); **non** gated da strict.
+4. **Seamarks/OpenSeaMap:** fetch **diretto browser** a `tiles.openseamap.org` quando overlay attivo; **non** gated da strict; **spento** in forced-offline.
+5. **Tracking host** (`#netStatus` / `refreshHostsContactedUI` / `_nominatim.hostsContacted`): sostanzialmente Nominatim; **non** registra proxy Navionics, OpenSeaMap, basemap.
+6. **Porte raw tailnet `5000`/`8000`:** rischio da **MITIGARE** (accettabile solo come stato temporaneo se tailnet = boundary forte).
+7. **Proxy Navionics `:5000`:** accessibile ai nodi tailnet autorizzati; **open-proxy** tailnet (no auth app, no rate-limit) — **MITIGARE**.
+8. **`/sonar/` SonarChart:** aumenta superficie lato proxy; monolite GIS **non** lo consuma ancora — **ACCETTABILE A BREVE**.
+9. **Forced-offline/cache:** comportamento coerente (nav da IDB; seamarks off) — **ACCETTABILE A BREVE**.
+10. **B2** (`tailscale serve` + rebind loopback + URL relative): da **pianificare** come blocco separato — **NON ESEGUIRE SUBITO** (design URL/routing/rollback, attenzione `--set-path`).
+11. **Reboot-test systemd:** ancora rinviato — **ACCETTABILE A BREVE** se pianificato in finestra concordata.
+
+### Decisione pendente (non scelta in questo blocco)
+
+Semantica futura di **`opsecStrict`:** mantenere solo geocoding (stato attuale documentato in i18n settings) **oppure** estendere a blocco/avviso di tutte le chiamate esterne (basemap, Navionics, seamarks). **Nessuna scelta approvata.**
+
+### Classificazione rischi registrata
+
+- **MITIGARE:** porte raw 5000/8000; open proxy tailnet; Navionics/seamarks sotto strict senza gate; tracking host incompleto.
+- **ACCETTABILE A BREVE:** SonarChart lato proxy non integrata nel monolite; forced-offline/cache; reboot-test rinviato.
+- **NON ESEGUIRE SUBITO:** migrazione B2 senza blocco design dedicato.
+
+### Backlog candidati (non approvati come piano)
+
+- **A** — Gate/avviso `opsecStrict` per Navionics + seamarks (dopo decisione semantica).
+- **B** — Estensione tracking host a proxy, seamarks, basemap.
+- **C** — Piano B2: `tailscale serve` + loopback + URL relative (`--set-path` / prefisso path).
+- Documentazione accettazione rischio porte raw / open proxy tailnet.
+- Integrazione SonarChart nel monolite (overlay separato, pattern seamarks, toggle, i18n IT/EN/FR).
+- Reboot-test in finestra concordata.
+- Pass 5 Astro congelato.
+
+### File toccati (Blocco 5A)
+
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append), `README.md` (precisazione minima OPSEC strict)
+- `docs/orchestrator/latest.md` + inbox (commit autosync separato)
+
