@@ -8563,6 +8563,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <option value="osm">Cartografia (CARTO)</option>
               <option value="topo">Topografica (OpenTopoMap)</option>
               <option value="sat">Satellite (Esri)</option>
+              <option value="nav">Nautica Navionics (proxy locale)</option>
             </select>
           </div>
           <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
@@ -10719,6 +10720,7 @@ const I18N = {
     "map.layerMap":"Mappa",
     "map.layerTopo":"Topografica",
     "map.layerSat":"Satellite",
+    "map.layerNav":"Navionics",
     "map.layerDark":"Scura",
     "map.layerSea":"Nautica",
     "map.layerBathy":"Batimetria",
@@ -10729,6 +10731,7 @@ const I18N = {
     "tip.layerMap":"Cartografia (OpenStreetMap)",
     "tip.layerTopo":"Topografica (OpenTopoMap)",
     "tip.layerSat":"Vista satellitare (Esri)",
+    "tip.layerNav":"Carta nautica Navionics — richiede il proxy locale (porta 5000)",
     "tip.layerDark":"Mappa scura (CARTO Dark Matter)",
     "tip.layerSea":"Mappa nautica (Esri Ocean Basemap)",
     "tip.layerBathy":"Batimetria (EMODnet) — solo online",
@@ -10902,6 +10905,7 @@ const I18N = {
     "offcache.area.layerOsm":"Cartografia",
     "offcache.area.layerTopo":"Topografica",
     "offcache.area.layerSat":"Satellite",
+    "offcache.area.layerNav":"Navionics",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Eliminare l'area \"{0}\"?",
     "offcache.viewportUsed":"Viewport corrente usato come area.",
@@ -12162,6 +12166,7 @@ const I18N = {
     "map.layerMap":"Map",
     "map.layerTopo":"Topographic",
     "map.layerSat":"Satellite",
+    "map.layerNav":"Navionics",
     "map.layerDark":"Dark",
     "map.layerSea":"Nautical",
     "map.layerBathy":"Bathymetry",
@@ -12172,6 +12177,7 @@ const I18N = {
     "tip.layerMap":"Cartography (OpenStreetMap)",
     "tip.layerTopo":"Topographic (OpenTopoMap)",
     "tip.layerSat":"Satellite imagery (Esri)",
+    "tip.layerNav":"Navionics nautical chart — requires the local proxy (port 5000)",
     "tip.layerDark":"Dark basemap (CARTO Dark Matter)",
     "tip.layerSea":"Nautical basemap (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymetry (EMODnet) — online-only",
@@ -12344,6 +12350,7 @@ const I18N = {
     "offcache.area.layerOsm":"Street map",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
+    "offcache.area.layerNav":"Navionics",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Delete the area \"{0}\"?",
     "offcache.viewportUsed":"Current viewport used as area.",
@@ -13605,6 +13612,7 @@ const I18N = {
     "map.layerMap":"Carte",
     "map.layerTopo":"Topographique",
     "map.layerSat":"Satellite",
+    "map.layerNav":"Navionics",
     "map.layerDark":"Sombre",
     "map.layerSea":"Nautique",
     "map.layerBathy":"Bathymétrie",
@@ -13615,6 +13623,7 @@ const I18N = {
     "tip.layerMap":"Cartographie (OpenStreetMap)",
     "tip.layerTopo":"Topographique (OpenTopoMap)",
     "tip.layerSat":"Imagerie satellite (Esri)",
+    "tip.layerNav":"Carte nautique Navionics — nécessite le proxy local (port 5000)",
     "tip.layerDark":"Fond sombre (CARTO Dark Matter)",
     "tip.layerSea":"Fond nautique (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymétrie (EMODnet) — en ligne uniquement",
@@ -13787,6 +13796,7 @@ const I18N = {
     "offcache.area.layerOsm":"Carte",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
+    "offcache.area.layerNav":"Navionics",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Supprimer la zone \"{0}\" ?",
     "offcache.viewportUsed":"Vue actuelle utilisée comme zone.",
@@ -14613,6 +14623,7 @@ const state = {
   mapLayer: "osm",
   mapSize: "small",
   showGrid: false,       // MGRS grid overlay toggle
+  showSeamarks: false,   // OpenSeaMap seamark overlay (online-only)
   showCoverage: true,    // Offline coverage overlay (cached tiles + named areas)
   // Geocoding (Nominatim) — all opt-outable from settings.
   geocodeEnabled: true,  // Master switch for all Nominatim calls.
@@ -15495,6 +15506,7 @@ function saveStore(){
         mapLayer: state.mapLayer || "osm",
         mapSize: state.mapSize || "small",
         showGrid: !!state.showGrid,
+        showSeamarks: !!state.showSeamarks,
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
@@ -22001,10 +22013,28 @@ const TILE_LAYERS = {
     url:    (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
     attrib: 'Imagery © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics',
     maxZoom: 19
+  },
+  /* Navionics nautical charts via the local Python proxy (Planet-Clone project,
+   * proxy.py on port 5000). The proxy handles Garmin token auth + CORS; the
+   * browser only ever talks to localhost. Online use requires the proxy
+   * running; previously-downloaded offline tiles keep working without it. */
+  nav: {
+    url:    (z, x, y) => `http://localhost:5000/tiles/${z}/${x}/${y}.png`,
+    attrib: 'Carte nautiche © <a href="https://www.navionics.com/" target="_blank" rel="noopener">Navionics</a> (Garmin) — proxy locale',
+    maxZoom: 18
   }
 };
 
-const MAP_BASE_LAYER_IDS = Object.freeze(["osm", "topo", "sat"]);
+/* OpenSeaMap "seamark" overlay (buoys, lights, beacons). Transparent PNGs
+ * rendered on top of whatever basemap is active. Online-only: tiles are not
+ * precached (sparse coverage, mostly empty tiles). No useful data below z9. */
+const SEAMARK_OVERLAY = {
+  url: (z, x, y) => `https://tiles.openseamap.org/seamark/${z}/${x}/${y}.png`,
+  minZoom: 9,
+  maxZoom: 18
+};
+
+const MAP_BASE_LAYER_IDS = Object.freeze(["osm", "topo", "sat", "nav"]);
 function sanitizeMapLayer(id){
   const k = String(id || "").toLowerCase();
   return MAP_BASE_LAYER_IDS.includes(k) ? k : "osm";
@@ -25701,6 +25731,7 @@ function offlineNamedAreaLayerLabel(layerId){
   if (lid === "osm") return t("offcache.area.layerOsm");
   if (lid === "topo") return t("offcache.area.layerTopo");
   if (lid === "sat") return t("offcache.area.layerSat");
+  if (lid === "nav") return t("offcache.area.layerNav");
   return t("offcache.area.layerAny");
 }
 
@@ -29588,6 +29619,10 @@ function renderTileMap(lat, lon, zoom){
   // here so we can translate it as a single group during a drag gesture.
   html += `<div class="tile-layer">`;
   const mapLayerId = state.mapLayer || "osm";
+  // OpenSeaMap seamark overlay: online-only transparent tiles on top of the
+  // basemap. Hidden when offline-forced or below the useful zoom range.
+  const seamarksOn = !!state.showSeamarks && !state.forceOffline
+    && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
@@ -29601,6 +29636,9 @@ function renderTileMap(lat, lon, zoom){
       html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${zoom}" style="left:${left}px;top:${top}px">`;
       html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
       html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
+      if (seamarksOn){
+        html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
+      }
       html += `</div>`;
     }
   }
@@ -29683,12 +29721,18 @@ function renderTileMap(lat, lon, zoom){
     const lblMap = esc(t("map.layerMap"));
     const lblTopo = esc(t("map.layerTopo"));
     const lblSat = esc(t("map.layerSat"));
+    const lblNav = esc(t("map.layerNav"));
     const tipOsm = esc(t("tip.layerMap"));
     const tipTopo = esc(t("tip.layerTopo"));
     const tipSat = esc(t("tip.layerSat"));
+    const tipNav = esc(t("tip.layerNav"));
+    const lblSeam = esc(t("map.overlaySeamarks"));
+    const tipSeam = esc(t("tip.overlaySeamarks"));
+    const seamAct = state.showSeamarks ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
+    const navAct = state.mapLayer === "nav" ? " is-active" : "";
     basemapLayersHtml = `<div class="tile-layers" data-role="basemap-layers-root">
     <button class="tlayer-btn" type="button" data-role="basemap-menu-toggle" data-tip="${tipPick}" aria-label="${tipPick}"
       aria-haspopup="true" aria-expanded="${bmOpen ? "true" : "false"}">
@@ -29703,6 +29747,12 @@ function renderTileMap(lat, lon, zoom){
       </button>
       <button type="button" class="tlayer-item${satAct}" data-layer="sat" role="menuitem" data-tip="${tipSat}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "sat" ? "✓" : ""}</span><span>${lblSat}</span>
+      </button>
+      <button type="button" class="tlayer-item${navAct}" data-layer="nav" role="menuitem" data-tip="${tipNav}">
+        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "nav" ? "✓" : ""}</span><span>${lblNav}</span>
+      </button>
+      <button type="button" class="tlayer-item${seamAct}" data-overlay="seamarks" role="menuitemcheckbox" aria-checked="${state.showSeamarks ? "true" : "false"}" data-tip="${tipSeam}">
+        <span class="tlayer-check" aria-hidden="true">${state.showSeamarks ? "✓" : ""}</span><span>${lblSeam}</span>
       </button>
     </div>
   </div>`;
@@ -30007,6 +30057,14 @@ function renderTileMap(lat, lon, zoom){
     b.addEventListener("click", (ev) => {
       ev.stopPropagation();
       setMapLayer(b.dataset.layer);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="seamarks"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.showSeamarks = !state.showSeamarks;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
     });
   });
   const recenterBtn = root.querySelector(".tile-recenter");
@@ -33256,6 +33314,7 @@ function importSessionObject(data){
     if (Number.isFinite(s.mapZoom)) state.mapZoom = s.mapZoom;
     if (MAP_BASE_LAYER_IDS.includes(String(s.mapLayer || "").toLowerCase())) state.mapLayer = sanitizeMapLayer(s.mapLayer);
     if (typeof s.showGrid === "boolean") state.showGrid = s.showGrid;
+    if (typeof s.showSeamarks === "boolean") state.showSeamarks = s.showSeamarks;
     if (typeof s.showCoverage === "boolean") state.showCoverage = s.showCoverage;
     if (typeof s.geocodeEnabled === "boolean") state.geocodeEnabled = s.geocodeEnabled;
     if (typeof s.geocodeReverseAuto === "boolean") state.geocodeReverseAuto = s.geocodeReverseAuto;
@@ -42679,6 +42738,7 @@ function init(){
         state.mapLayer = sanitizeMapLayer(stored.settings.mapLayer);
       }
       if (typeof stored.settings.showGrid === "boolean") state.showGrid = stored.settings.showGrid;
+      if (typeof stored.settings.showSeamarks === "boolean") state.showSeamarks = stored.settings.showSeamarks;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
