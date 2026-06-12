@@ -18639,14 +18639,19 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
     if (blob) source = "cache";
   } catch(_){}
   if (!blob && isEffectivelyOnline() && !state.forceOffline){
+    const url = layer.url(z, x, y);
+    const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
+    let netRecorded = false;
     try {
-      const url = layer.url(z, x, y);
       const r = await fetch(url, { mode: "cors" });
-      if (r.status === 404){ http404 = true; return { img: null, source: null, http404: true }; }
-      if (!r.ok) return { img: null, source: null, http404: false };
+      if (r.status === 404){ recordNetEvent(url, nKind, false); netRecorded = true; http404 = true; return { img: null, source: null, http404: true }; }
+      if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; return { img: null, source: null, http404: false }; }
       blob = await r.blob();
       source = "network";
+      recordNetEvent(url, nKind, true);
+      netRecorded = true;
     } catch(_){
+      if (!netRecorded) recordNetEvent(url, nKind, false);
       return { img: null, source: null, http404: false };
     }
   }
@@ -22805,15 +22810,17 @@ async function fetchEsriWorldImageryDate(lat, lon, zoom){
   const to = setTimeout(() => _imageryDateCtl.abort(), 6000);
   try {
     const r = await fetch(url, { mode:"cors", signal: _imageryDateCtl.signal });
-    if (!r.ok) { imageryDateCache.set(key, null); return null; }
+    if (!r.ok) { recordNetEvent(url, "api", false); imageryDateCache.set(key, null); return null; }
     const j = await r.json();
     const res = Array.isArray(j && j.results) ? j.results : [];
     const first = res[0];
     const d = pickEsriDateAttr(first && first.attributes);
     const out = d ? fmtISODateUTC(d) : null;
+    recordNetEvent(url, "api", true);
     imageryDateCache.set(key, out);
     return out;
   } catch(_){
+    recordNetEvent(url, "api", false);
     imageryDateCache.set(key, null);
     return null;
   } finally {
@@ -22861,14 +22868,16 @@ async function fetchElevation(lat, lon){
   const to  = setTimeout(() => ctl.abort(), 6000);
   try {
     const r = await fetch(url, { signal: ctl.signal, mode: "cors" });
-    if (!r.ok) return null;
+    if (!r.ok) { recordNetEvent(url, "api", false); return null; }
     const j = await r.json();
     const arr = j && j.elevation;
     const elev = Array.isArray(arr) ? arr[0] : (typeof arr === "number" ? arr : null);
-    if (typeof elev !== "number" || !Number.isFinite(elev)) return null;
+    if (typeof elev !== "number" || !Number.isFinite(elev)) { recordNetEvent(url, "api", false); return null; }
+    recordNetEvent(url, "api", true);
     elevCache.set(key, elev);
     return elev;
   } catch(_){
+    recordNetEvent(url, "api", false);
     return null;
   } finally {
     clearTimeout(to);
@@ -23249,17 +23258,69 @@ async function performOfflineGlobalReset(){
   setBadge("success", t("offcache.globalClear.done"));
 }
 
+/** Session-only OPSEC network event log (never persisted — see saveStore). */
+function ensureNetEventsStore(){
+  try {
+    if (!(state._netEvents instanceof Map)) state._netEvents = new Map();
+  } catch(_){}
+}
+
+function _normalizeNetHost(urlOrHost){
+  try {
+    const s = String(urlOrHost || "").trim();
+    if (!s) return "";
+    let hostPort = "";
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(s)){
+      const u = new URL(s);
+      hostPort = u.hostname + (u.port ? ":" + u.port : "");
+    } else if (s.startsWith("//")){
+      const u = new URL("https:" + s);
+      hostPort = u.hostname + (u.port ? ":" + u.port : "");
+    } else {
+      hostPort = s.split("/")[0].split("?")[0].split("#")[0];
+    }
+    return String(hostPort || "").trim();
+  } catch(_){ return ""; }
+}
+
+function recordNetEvent(urlOrHost, kind, ok){
+  try {
+    const host = _normalizeNetHost(urlOrHost);
+    if (!host) return;
+    ensureNetEventsStore();
+    const k = String(kind || "tile");
+    const prev = state._netEvents.get(host);
+    state._netEvents.set(host, {
+      count: prev ? prev.count + 1 : 1,
+      lastAt: Date.now(),
+      kind: k,
+      ok: !!ok
+    });
+  } catch(e){
+    try { if (console && console.warn) console.warn("[netEvents]", e); } catch(_){}
+  }
+}
+
 async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
   const key  = makeTileKey(layerId, z, x, y);
   const have = await getTileBlobByKey(key);
   if (have) return { skipped: true };
   const url  = layer.url(z, x, y);
-  const r = await fetch(url, { mode: "cors", signal });
-  if (!r.ok) throw new Error("http");
-  const buf  = await r.arrayBuffer();
-  const ct   = r.headers.get("content-type") || "image/png";
-  await idbPut(key, { b: buf, ct });
-  return { skipped: false };
+  const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
+  let netRecorded = false;
+  try {
+    const r = await fetch(url, { mode: "cors", signal });
+    if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; throw new Error("http"); }
+    const buf  = await r.arrayBuffer();
+    const ct   = r.headers.get("content-type") || "image/png";
+    await idbPut(key, { b: buf, ct });
+    recordNetEvent(url, nKind, true);
+    netRecorded = true;
+    return { skipped: false };
+  } catch(e){
+    if (!netRecorded) recordNetEvent(url, nKind, false);
+    throw e;
+  }
 }
 
 /**
@@ -23334,21 +23395,30 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
       }
       if (online && !state.forceOffline){
         const url = layer.url(z, xw, y);
+        const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
         const fetchOpts = { mode: "cors" };
         if (fetchSig) fetchOpts.signal = fetchSig;
-        const r   = await fetch(url, fetchOpts);
-        if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
-        if (!r.ok) throw 0;
-        const b  = await r.blob();
-        if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
-        cleanBlobAttr();
-        const u  = URL.createObjectURL(b);
-        img.setAttribute("data-blob-url", u);
-        img.src = u;
-        wrap.classList.remove("tile-missing", "tile-mission", "tile-pending");
-        wrap.classList.add("tile-network");
-        if (voidE) voidE.style.display = "none";
-        return;
+        let netRecorded = false;
+        try {
+          const r   = await fetch(url, fetchOpts);
+          if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
+          if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; throw 0; }
+          const b  = await r.blob();
+          if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
+          cleanBlobAttr();
+          const u  = URL.createObjectURL(b);
+          img.setAttribute("data-blob-url", u);
+          img.src = u;
+          wrap.classList.remove("tile-missing", "tile-mission", "tile-pending");
+          wrap.classList.add("tile-network");
+          if (voidE) voidE.style.display = "none";
+          recordNetEvent(url, nKind, true);
+          netRecorded = true;
+          return;
+        } catch(_netErr){
+          if (!netRecorded) recordNetEvent(url, nKind, false);
+          throw _netErr;
+        }
       }
     } catch(_){}
     if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !wrap.isConnected)) return;
@@ -29633,6 +29703,7 @@ function renderTileMap(lat, lon, zoom){
   // basemap. Hidden when offline-forced or below the useful zoom range.
   const seamarksOn = !!state.showSeamarks && !state.forceOffline
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
+  if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
