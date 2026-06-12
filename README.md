@@ -46,25 +46,14 @@ Waypoint manager with map placement, editing, import and export workflows.
 Offline map workflow with saved areas, tile cache support and coverage visualization.
 Measurement tools for distance, azimuth, polygons and area workflows.
 Geocoding support with OPSEC-aware controls and offline fallback behavior where available.
-Map basemaps: CARTO street map, OpenTopoMap, Esri satellite — plus optional **Navionics** nautical charts (local proxy) and **OpenSeaMap** seamark overlay (buoys, lights).
+Map basemaps: CARTO street map, OpenTopoMap, Esri satellite — plus optional **Navionics** nautical charts (tailnet proxy) and **OpenSeaMap** seamark overlay (buoys, lights).
 Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
-Latest documented checkpoint: 2026-06-12.
+Latest documented checkpoint: 2026-06-13.
 
-Recent work stabilized the Track workflow after a Cursor crash recovery session:
-
-saved-track editing workflow;
-single canonical Save/Update action in the Points header;
-Aggiorna traccia without re-prompting for the saved track name;
-safer close/reset behavior;
-hidden duplicate archive save button;
-clearer Elimina traccia corrente action;
-visible + badge on Nuova traccia;
-point list collapsed by default;
-no duplicate saved-track overlay while editing;
-preservation of point IDs during load/save.
+Recent work deployed the GOI GIS Tool and Navionics proxy on a VPS over Tailscale (systemd, ACL grant, smoke test PASS), consolidated Planet-Clone SonarChart on the proxy (`/sonar/`, not yet wired in the GIS monolite), and updated i18n labels from «local proxy» to «tailnet proxy».
 
 See:
 
@@ -107,54 +96,62 @@ Stop the server with:
 
 Ctrl + C
 
-Option 3 — Navionics nautical charts (local proxy)
+Option 3 — Navionics nautical charts (tailnet proxy on VPS)
 
-The **Navionics** basemap does not load tiles directly from the browser. Navionics/Garmin require authentication and block cross-origin requests (CORS). The app instead reads tiles from a small **Python proxy** on your machine, served by the companion project [**Planet-Clone**](https://github.com/mrhz1973/Planet-Clone).
+The **Navionics** basemap does not load tiles directly from the browser. Navionics/Garmin require authentication and block cross-origin requests (CORS). The app reads tiles from a small **Python proxy** ([**Planet-Clone**](https://github.com/mrhz1973/Planet-Clone)), hosted on the VPS and reachable only over the **Tailscale tailnet**.
 
 ```
-Browser (this app)  →  http://localhost:5000/tiles/{z}/{x}/{y}.png
+Browser (tailnet client)  →  http://100.114.7.53:8000/coordinate_converter%20Claude.html
+         ↓
+    Navionics layer nav  →  http://100.114.7.53:5000/tiles/{z}/{x}/{y}.png
                               ↓
-                       proxy.py (Planet-Clone)
+                       proxy.py (Planet-Clone, systemd)
                               ↓
                        Garmin / Navionics tile servers
 ```
 
-**One-time setup** (on each computer where you use Navionics):
+**Operational access (tailnet only — not public):**
 
-```bash
-git clone https://github.com/mrhz1973/Planet-Clone.git
-cd Planet-Clone
-python -m pip install -r requirements.txt
+| Service | URL |
+|---------|-----|
+| GIS app | `http://100.114.7.53:8000/coordinate_converter%20Claude.html` |
+| Navionics proxy | `http://100.114.7.53:5000` |
+| Health check | `http://100.114.7.53:5000/status` → JSON with `tokens_ok: true` |
+
+**VPS layout** (under `/root/local-files/handoff-runtime/`):
+
+- GIS monolite: `cursor-coordinate-converter`
+- Navionics proxy: `Planet-Clone`
+
+**Runtime:** `goi-gis-app.service` (port 8000) and `goi-nav-proxy.service` (port 5000) bind to the Tailscale IPv4 resolved at startup (`tailscale ip -4 | head -n1`); `ExecStartPre` waits for Tailscale; `Restart=on-failure`. Reboot-test deferred (VPS shared with n8n).
+
+**Tailscale ACL:** a manual additive grant was applied in the Tailscale admin console on **2026-06-13**:
+
+```json
+{ "src": ["autogroup:member"], "dst": ["100.114.7.53/32"], "ip": ["tcp:8000", "tcp:5000"] }
 ```
 
-On Windows, use `python` instead of `python3` if needed.
+Without this grant, tailnet clients could not reach the VPS on ports 8000/5000 (root cause diagnosed 2026-06-13: restrictive ACL, not host firewall). An SSH tunnel was used briefly for smoke tests only; it is **not** the final architecture.
 
-**Each session** (two terminals — Navionics only works while the proxy is running):
+In the map **Layers** menu (stack icon), choose **Navionics**. The monolite derives the proxy host from `location.hostname` (commit `44b127c`), so the same page served from the VPS tailnet IP uses the co-located proxy automatically.
 
-```bash
-# Terminal 1 — Planet-Clone repo
-cd Planet-Clone
-python proxy.py
-# → listens on http://localhost:5000
+**Planet-Clone endpoints** (proxy commit **`5e57c7f`**):
 
-# Terminal 2 — this repo
-cd cursor-coordinate-converter
-python -m http.server 8000
-```
+| Endpoint | Role |
+|----------|------|
+| `/tiles/{z}/{x}/{y}.png` | Seachart / Navionics base (layer 0) — **used today by the GIS monolite** |
+| `/sonar/{z}/{x}/{y}.png` | SonarChart overlay (layer 1, `transparent=true`) — **available from the proxy, not yet integrated in the GIS app** |
+| `/status` | Token health; exposes both under `charts.seachart` and `charts.sonarchart` |
 
-Then open:
-
-http://localhost:8000/coordinate_converter%20Claude.html
-
-In the map **Layers** menu (stack icon), choose **Navionics**. Cached offline areas downloaded with layer `nav` keep working without the proxy; new tiles need the proxy online.
-
-**Health check:** http://localhost:5000/status — should return JSON with `tokens_ok: true`.
+Future work: integrate SonarChart in the GIS monolite as an independent overlay (pattern similar to OpenSeaMap seamarks, with its own toggle and i18n IT/EN/FR).
 
 **OpenSeaMap seamarks** (same Layers menu, separate toggle): transparent overlay for buoys, lights, and seamarks from `tiles.openseamap.org`. Works over any basemap (including Navionics). **Online only** — no proxy required; useful zoom is z9 and above. Disabled automatically in forced-offline mode.
 
-**Local use only:** the Navionics proxy binds to `localhost`. Deployed copies on Firebase Hosting or VPS **cannot** reach your local proxy; Navionics is intended for field/local workflows, not the public demo URLs below.
+**Local development** (optional): you can still run Planet-Clone and this repo on `localhost:5000` / `localhost:8000` for offline development; the operational field setup is the tailnet VPS model above.
 
-**OPSEC:** even with a local proxy, tile requests still reach Garmin/Navionics servers. Treat Navionics use as external network activity (relevant in strict OPSEC mode).
+**Not for public URLs:** Firebase Hosting and the public VPS staging path do **not** expose Navionics; the tailnet deployment is private by design.
+
+**OPSEC:** Navionics tile requests reach Garmin/Navionics servers. Raw tailnet ports 5000/8000 and SonarChart exposure on the proxy are flagged for a dedicated OPSEC audit (Blocco 5).
 
 Hosting / Deploy
 
@@ -245,7 +242,7 @@ Geolocation must remain user-initiated.
 Strict OPSEC mode must block sensitive network calls.
 Offline maps and cached tiles are handled locally through browser storage.
 Online map tiles and geocoding should be treated as externally visible network activity.
-Navionics tiles (via local proxy) and OpenSeaMap seamarks also contact external tile servers when online.
+Navionics tiles (via tailnet proxy) and OpenSeaMap seamarks also contact external tile servers when online.
 Development method
 
 This project imports [dev-method v0.1.0](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md).

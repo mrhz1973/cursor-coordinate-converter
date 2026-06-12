@@ -1,9 +1,11 @@
 # Checkpoint progetto — GOI GIS Tool
 
-**Data snapshot:** 2026-05-27
+**Data snapshot:** 2026-06-13
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-05-27 — **Browser PASS — T1.6 minimal GeoJSON export classification marking.** Commit testato **`c59d2de`**. Test manuale: waypoint export GeoJSON; `metadata.classification = "UNCLASSIFIED"`, `metadata.kind = "waypoints"`. Nessun codice modificato in questa sessione (solo docs).
+**Ultimo cambio:** 2026-06-13 — **Blocco 4 documentale + pivot i18n «proxy tailnet»:** deploy VPS tailnet stabilizzato (systemd `goi-nav-proxy.service` + `goi-gis-app.service`); causa-radice timeout Windows → **ACL Tailscale restrittiva** (non firewall host); grant additivo applicato manualmente in admin console il 2026-06-13 `{ "src": ["autogroup:member"], "dst": ["100.114.7.53/32"], "ip": ["tcp:8000", "tcp:5000"] }`; smoke test diretto da browser tailnet PASS (app, Navionics `/tiles/`, seamarks); tunnel SSH usato solo come workaround temporaneo, poi dismesso; Planet-Clone **`5e57c7f`** deployato su VPS con SonarChart proxy `/sonar/` (layer 1, overlay) — **endpoint disponibile dal proxy, non ancora integrato nel monolite GIS** (l'app usa solo `/tiles/`); patch i18n IT/EN/FR «proxy locale» → «proxy tailnet»; reboot-test rinviato (VPS condiviso con n8n). **Prossimo blocco:** audit OPSEC (porte raw tailnet 5000/8000, SonarChart lato proxy, valutazione B2 `tailscale serve` + rebind loopback + URL relative). Commit i18n in **`fb4dcb0`**; docs operative in commit dedicato.
+
+**Ultimo cambio (precedente):** 2026-05-27 — **Browser PASS — T1.6 minimal GeoJSON export classification marking.** Commit testato **`c59d2de`**. Test manuale: waypoint export GeoJSON; `metadata.classification = "UNCLASSIFIED"`, `metadata.kind = "waypoints"`. Nessun codice modificato in questa sessione (solo docs).
 
 **Ultimo cambio (precedente):** 2026-05-27 — **T1.6 minimal export classification (GeoJSON):** helper `exportGeoJsonMetadata()` adds default `classification: "UNCLASSIFIED"` to all GeoJSON FeatureCollection `metadata` builders (`buildGeoJSON`, `buildGeoJSONRoute`, `spatialBuildFeatureCollectionFromAppState`, `gisAllAsFeatureCollection`, `savedTrackToFeatureCollection`, waypoint modal GeoJSON). No UI, no storage, no GPX/KML/CSV change. Trigger: `docs/requests/2026-05-27-classification-markings-export-request.md`. **`docs/roadmap.md` non modificato.** Browser QA: NOT EXECUTED (superseded by browser PASS entry above).
 

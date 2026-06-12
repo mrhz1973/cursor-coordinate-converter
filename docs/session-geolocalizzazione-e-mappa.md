@@ -2596,3 +2596,50 @@ Browser QA manuale post-implementazione **`c59d2de`** (`feat: add minimal export
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append)
 - `docs/orchestrator/latest.md`
 
+
+## Checkpoint 2026-06-12/2026-06-13 — Deploy VPS tailnet, ACL, systemd, SonarChart proxy, documentazione
+
+### Contesto
+
+Sessione operativa post-pivot «solo tailnet privata» (commit monolite **`44b127c`**, orchestratore **`f4a3040`**). Obiettivo: GOI GIS Tool + proxy Navionics Planet-Clone raggiungibili da client tailnet, runtime stabile su VPS condiviso con n8n, consolidamento SonarChart lato proxy, chiusura documentale Blocco 4.
+
+### Narrazione tecnica (ordine cronologico)
+
+1. **Deploy VPS** — clone/runtime sotto `/root/local-files/handoff-runtime/`: app GIS in `cursor-coordinate-converter`, proxy Navionics in `Planet-Clone`.
+2. **Planet-Clone come proxy Navionics** — `proxy.py` con auto-refresh token Garmin, endpoint `/tiles/` (Seachart, layer 0).
+3. **Verifica iniziale tmux** — app GIS (`python -m http.server` :8000) e proxy (`flask` :5000) avviati manualmente su IP tailnet VPS (`100.114.7.53`).
+4. **Timeout da Windows** — client tailnet non raggiungeva porte 22/5000/8000 nonostante `tailscale ping` OK.
+5. **Diagnosi causa-radice** — ACL Tailscale restrittiva (grant esistente solo VPS → Ryzen `tcp:443`); firewall host (`ufw`/`iptables`/`nftables`) aperto su `tailscale0`; blocco a livello tailnet policy, non host.
+6. **Workaround tunnel SSH** — `ssh -L` usato temporaneamente per smoke test; dismesso dopo fix ACL.
+7. **Grant ACL additivo** — applicato manualmente in admin console Tailscale il **2026-06-13**: `{ "src": ["autogroup:member"], "dst": ["100.114.7.53/32"], "ip": ["tcp:8000", "tcp:5000"] }`; grant VPS → Ryzen `tcp:443` e regola SSH `check` preservati.
+8. **Smoke test diretto PASS** — browser su tailnet: app GIS OK, layer Navionics OK, overlay OpenSeaMap seamarks OK; nessun tunnel.
+9. **Sostituzione tmux con systemd** — unit `goi-gis-app.service` e `goi-nav-proxy.service`: bind a IP tailnet runtime (`tailscale ip -4 | head -n1`), `ExecStartPre` attende IPv4 Tailscale, `After=tailscaled.service network-online.target`, `Restart=on-failure`.
+10. **Restart test PASS** — restart delle due unit verificato; reboot-test **non** eseguito (VPS condiviso con n8n, rinviato a finestra concordata).
+11. **Riallineamento repo GIS locale** — fast-forward a **`f4a3040`** (`docs: orchestratore — Navionics proxy host tailnet privata`); commit rilevanti catena: **`b3bacf2`** (Navionics + OpenSeaMap), **`9c5427c`** (README setup), **`44b127c`** (host proxy da page host).
+12. **SonarChart Planet-Clone** — commit **`5e57c7f`**: endpoint `/sonar/{z}/{x}/{y}.png` (layer 1, `transparent=true`), `/tiles/` invariato (Seachart), `/status` con `charts.seachart` + `charts.sonarchart`.
+13. **Deploy VPS Planet-Clone aggiornato** — `git pull --ff-only` su `/root/local-files/handoff-runtime/Planet-Clone` → HEAD **`5e57c7f`**.
+14. **Restart solo `goi-nav-proxy.service`** — `goi-gis-app.service` non toccato.
+15. **Verifica `/status`** — `tokens_ok: true`, entrambi gli endpoint sotto `charts`.
+16. **Verifica tile SonarChart** — `/sonar/13/2247/3668.png` HTTP 200, `image/png`, 256×256 RGBA, ~1073 byte; contenuto **diverso** da `/tiles/13/2247/3668.png` (coerente con overlay trasparente vs base opaca).
+17. **Precisazione architetturale** — SonarChart disponibile **solo** lato proxy Planet-Clone (e viewer Cesium di Planet-Clone); il **monolite GIS non consuma ancora `/sonar/`** e usa solo `/tiles/` per Navionics.
+18. **Pivot lessicale/i18n** — label UI da «proxy locale» a «proxy tailnet» (IT/EN/FR); commit **`fb4dcb0`**.
+19. **Prossimi blocchi** — autosync memoria orchestratore; appendice control-plane ACL; **Blocco 5 audit OPSEC** (porte raw 5000/8000, SonarChart proxy, B2 `tailscale serve` + rebind loopback + URL relative); reboot-test; integrazione futura SonarChart nel monolite (pattern seamarks, toggle indipendente, i18n); Pass 5 Astro congelato in attesa verdetto.
+
+### Accesso operativo
+
+- Solo tailnet; URL GIS: `http://100.114.7.53:8000/coordinate_converter%20Claude.html`
+- Proxy Navionics: `http://100.114.7.53:5000`
+
+### Backlog registrato
+
+- Audit OPSEC porte raw tailnet + SonarChart lato proxy + valutazione B2
+- Reboot-test systemd in finestra concordata
+- Integrazione SonarChart nel monolite GIS (overlay indipendente, non implementata in questo blocco)
+- Pass 5 Astro congelato
+
+### File toccati (Blocco 4 documentale)
+
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append), `README.md`
+- `coordinate_converter Claude.html` (solo i18n, commit **`fb4dcb0`**)
+- `docs/orchestrator/latest.md` + inbox (commit autosync separato)
+
