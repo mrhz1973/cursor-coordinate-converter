@@ -46,11 +46,12 @@ Waypoint manager with map placement, editing, import and export workflows.
 Offline map workflow with saved areas, tile cache support and coverage visualization.
 Measurement tools for distance, azimuth, polygons and area workflows.
 Geocoding support with OPSEC-aware controls and offline fallback behavior where available.
+Map basemaps: CARTO street map, OpenTopoMap, Esri satellite — plus optional **Navionics** nautical charts (local proxy) and **OpenSeaMap** seamark overlay (buoys, lights).
 Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
-Latest documented checkpoint: 2026-04-27.
+Latest documented checkpoint: 2026-06-12.
 
 Recent work stabilized the Track workflow after a Cursor crash recovery session:
 
@@ -105,6 +106,55 @@ http://localhost:8000/coordinate_converter%20Claude.html
 Stop the server with:
 
 Ctrl + C
+
+Option 3 — Navionics nautical charts (local proxy)
+
+The **Navionics** basemap does not load tiles directly from the browser. Navionics/Garmin require authentication and block cross-origin requests (CORS). The app instead reads tiles from a small **Python proxy** on your machine, served by the companion project [**Planet-Clone**](https://github.com/mrhz1973/Planet-Clone).
+
+```
+Browser (this app)  →  http://localhost:5000/tiles/{z}/{x}/{y}.png
+                              ↓
+                       proxy.py (Planet-Clone)
+                              ↓
+                       Garmin / Navionics tile servers
+```
+
+**One-time setup** (on each computer where you use Navionics):
+
+```bash
+git clone https://github.com/mrhz1973/Planet-Clone.git
+cd Planet-Clone
+python -m pip install -r requirements.txt
+```
+
+On Windows, use `python` instead of `python3` if needed.
+
+**Each session** (two terminals — Navionics only works while the proxy is running):
+
+```bash
+# Terminal 1 — Planet-Clone repo
+cd Planet-Clone
+python proxy.py
+# → listens on http://localhost:5000
+
+# Terminal 2 — this repo
+cd cursor-coordinate-converter
+python -m http.server 8000
+```
+
+Then open:
+
+http://localhost:8000/coordinate_converter%20Claude.html
+
+In the map **Layers** menu (stack icon), choose **Navionics**. Cached offline areas downloaded with layer `nav` keep working without the proxy; new tiles need the proxy online.
+
+**Health check:** http://localhost:5000/status — should return JSON with `tokens_ok: true`.
+
+**OpenSeaMap seamarks** (same Layers menu, separate toggle): transparent overlay for buoys, lights, and seamarks from `tiles.openseamap.org`. Works over any basemap (including Navionics). **Online only** — no proxy required; useful zoom is z9 and above. Disabled automatically in forced-offline mode.
+
+**Local use only:** the Navionics proxy binds to `localhost`. Deployed copies on Firebase Hosting or VPS **cannot** reach your local proxy; Navionics is intended for field/local workflows, not the public demo URLs below.
+
+**OPSEC:** even with a local proxy, tile requests still reach Garmin/Navionics servers. Treat Navionics use as external network activity (relevant in strict OPSEC mode).
 
 Hosting / Deploy
 
@@ -195,6 +245,7 @@ Geolocation must remain user-initiated.
 Strict OPSEC mode must block sensitive network calls.
 Offline maps and cached tiles are handled locally through browser storage.
 Online map tiles and geocoding should be treated as externally visible network activity.
+Navionics tiles (via local proxy) and OpenSeaMap seamarks also contact external tile servers when online.
 Development method
 
 This project imports [dev-method v0.1.0](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md).
