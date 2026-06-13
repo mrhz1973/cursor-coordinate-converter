@@ -9,8 +9,7 @@
 | Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) |
 | Read-set operativo | README.md + docs/OPERATING_MEMORY.md + WU corrente |
 | Stato OPSEC | PASS — vedi [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) |
-| Unità corrente | WU-0002 — memory standardization |
-| Ultimo allineamento noto | GitHub e VPS in pari a `4d52e8c` |
+| Unità corrente | WU-0002 — memory standardization (CLOSED/PASS) |
 
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
@@ -63,11 +62,11 @@ Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
-Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) (2026-06-14). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM in progress (WU-0002, Fase 2a).
+Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM **completed** (WU-0002, Fasi 1–5 PASS). Read-set: README + OPERATING_MEMORY + WU corrente. Rules flipped Fase 3; autosync finale Fase 4. Monolite **not** touched in memory migration.
 
 Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, Planet-Clone SonarChart on proxy `/sonar/` (not yet in GIS monolite).
 
-Historical logs (`docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`) remain for audit until legacy deprecation (Fase 2b/3); they are **not** the current read-set.
+Legacy/historical (not current read-set): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
 Repository structure
 .
 ├── coordinate_converter Claude.html       # Main standalone app
@@ -241,10 +240,10 @@ Offline maps use browser storage (IndexedDB). Online tiles and geocoding are ext
 | --- | --- |
 | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti corrente |
 | [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) | Semantica OPSEC implementativa |
-| [`docs/work-units/WU-0002-memory-standardization.md`](docs/work-units/WU-0002-memory-standardization.md) | Migrazione memoria wiki-LLM |
+| [`docs/work-units/WU-0002-memory-standardization.md`](docs/work-units/WU-0002-memory-standardization.md) | Migrazione memoria wiki-LLM (chiusa) |
 | [`docs/roadmap.md`](docs/roadmap.md) | Roadmap strategica, non memoria corrente |
 
-`docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` and `docs/orchestrator/chatgpt-checkpoint.md` will be marked legacy/historical in Fase 2b/3 — not current-state sources.
+`docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` and `docs/orchestrator/chatgpt-checkpoint.md` are **legacy/historical** — not current-state sources.
 
 Development method
 

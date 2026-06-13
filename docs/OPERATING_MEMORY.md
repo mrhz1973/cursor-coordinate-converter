@@ -31,7 +31,7 @@
 
 ## 3. Read-set operativo
 
-**Read-set corrente (attivo da Fase 3):** gli agenti devono leggere:
+**Read-set corrente:** gli agenti devono leggere:
 
 1. `README.md`
 2. `docs/OPERATING_MEMORY.md`
@@ -84,8 +84,8 @@
 ## 7. Stato corrente
 
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
-2. **PREPARED** — Standardizzazione memoria wiki-LLM (Fase 3 flip attivo). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
-3. **PENDING** — Prossimo blocco GIS monolite da decidere.
+2. **PASS** — Standardizzazione memoria wiki-LLM completata (Fasi 1–5). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
+3. **PENDING** — Prossimo blocco GIS monolite da decidere (nuova WU o blocco operativo separato).
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
@@ -102,4 +102,17 @@
 | WU | Stato | Scopo |
 | --- | --- | --- |
 | WU-0001 | PASS | OPSEC strict cycle |
-| WU-0002 | PREPARED | Memory standardization |
+| WU-0002 | PASS | Memory standardization (CLOSED) |
+
+---
+
+## Pattern nomi inbox orchestratore
+
+- **Pattern ufficiale:** `AAAA-MM-GG_HHMM_<tipo>_<slug>.md`
+- **Tipi comuni:** `plan`, `riepilogo`, `handoff`, `qa`
+- **Regole pratiche:**
+  - non usare doppio underscore;
+  - includere sempre `HHMM`;
+  - includere sempre il segmento `<tipo>`;
+  - usare slug descrittivo in kebab-case.
+- **Esempio valido:** `2026-06-14_0102_riepilogo_memory-standardization-final-autosync.md`
