@@ -85,11 +85,10 @@
 
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
 2. **PASS** — Standardizzazione memoria wiki-LLM completata (Fasi 1–5). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
-3. **PENDING** — Prossimo blocco GIS monolite da decidere (nuova WU o blocco operativo separato).
+3. **OPEN** — SonarChart overlay nel monolite. Dettaglio: [`docs/work-units/WU-0003-sonarchart-overlay.md`](work-units/WU-0003-sonarchart-overlay.md)
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
-- Integrazione futura `/sonar/` SonarChart nel monolite
 - UX GIS / mappe offline / import-export / waypoint / tracce / poligoni
 - OPSEC, cache/tile/geocoding lato app
 
@@ -103,6 +102,7 @@
 | --- | --- | --- |
 | WU-0001 | PASS | OPSEC strict cycle |
 | WU-0002 | PASS | Memory standardization (CLOSED) |
+| WU-0003 | OPEN | SonarChart overlay |
 
 ---
 
