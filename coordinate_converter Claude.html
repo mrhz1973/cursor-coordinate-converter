@@ -11636,6 +11636,11 @@ const I18N = {
     "net.hostsNetwork":"Rete:",
     "net.hostFailed":"tentato, non riuscito",
     "net.noneContacted":"Nessun host contattato",
+    "opsec.strict.tilesBlocked":"OPSEC strict è attivo: i tile internet sono bloccati. Usa aree offline/cache o disattiva strict.",
+    "opsec.strict.navProxyWarn":"OPSEC strict è attivo. Navionics passa sulla tailnet cifrata fino al tuo VPS, poi il VPS contatta Garmin/Navionics su internet pubblico usando il suo IP. La classificazione tailnet si basa sull'hostname della pagina e non è una garanzia tecnica assoluta.",
+    "opsec.strict.navProxyConfirm":"Consenti Navionics via proxy tailnet per questa sessione?",
+    "opsec.strict.seamarksBlocked":"OPSEC strict è attivo: OpenSeaMap seamarks è bloccato perché contatta direttamente un host internet dal browser.",
+    "opsec.strict.activateWarn":"OPSEC strict graduato: geocoding e host internet pubblici vengono bloccati; il proxy tailnet richiede consenso per-sessione.",
     "help.guide.geo.title":"Geocoding (indirizzo ↔ coordinate)",
     "help.guide.geo.fwd":"Card <b>Cerca indirizzo</b>: digita un luogo, scegli tra i risultati, il punto viene caricato e convertito. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> apre il campo.",
     "help.guide.geo.rev":"Dopo ogni conversione compare una riga <b>📍 Località</b> (reverse geocoding). Pulsante <kbd>🔄</kbd> per forzare una nuova query.",
@@ -13085,6 +13090,11 @@ const I18N = {
     "net.hostsNetwork":"Network:",
     "net.hostFailed":"attempted, failed",
     "net.noneContacted":"No hosts contacted",
+    "opsec.strict.tilesBlocked":"OPSEC strict is enabled: internet map tiles are blocked. Use offline/cache areas or disable strict.",
+    "opsec.strict.navProxyWarn":"OPSEC strict is enabled. Navionics uses the encrypted tailnet path to your VPS, then the VPS contacts Garmin/Navionics over the public internet using its own IP. The tailnet classification is based on the page hostname and is not an absolute technical guarantee.",
+    "opsec.strict.navProxyConfirm":"Allow Navionics through the tailnet proxy for this session?",
+    "opsec.strict.seamarksBlocked":"OPSEC strict is enabled: OpenSeaMap seamarks are blocked because they contact an internet host directly from the browser.",
+    "opsec.strict.activateWarn":"Graduated OPSEC strict: geocoding and public internet hosts are blocked; the tailnet proxy requires per-session consent.",
     "help.guide.geo.title":"Geocoding (address ↔ coordinates)",
     "help.guide.geo.fwd":"The <b>Address search</b> card: type a place, pick a result, the point is loaded and converted. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> focuses the field.",
     "help.guide.geo.rev":"After each conversion a <b>📍 Locality</b> row appears (reverse geocoding). Use the <kbd>🔄</kbd> button to force a new lookup.",
@@ -14534,6 +14544,11 @@ const I18N = {
     "net.hostsNetwork":"Réseau :",
     "net.hostFailed":"tenté, échoué",
     "net.noneContacted":"Aucun hôte contacté",
+    "opsec.strict.tilesBlocked":"OPSEC strict est actif : les tuiles internet sont bloquées. Utilisez les zones hors ligne/le cache ou désactivez strict.",
+    "opsec.strict.navProxyWarn":"OPSEC strict est actif. Navionics passe par la tailnet chiffrée jusqu'à votre VPS, puis le VPS contacte Garmin/Navionics sur internet public avec sa propre IP. La classification tailnet repose sur le nom d'hôte de la page et n'est pas une garantie technique absolue.",
+    "opsec.strict.navProxyConfirm":"Autoriser Navionics via le proxy tailnet pour cette session ?",
+    "opsec.strict.seamarksBlocked":"OPSEC strict est actif : OpenSeaMap seamarks est bloqué car il contacte directement un hôte internet depuis le navigateur.",
+    "opsec.strict.activateWarn":"OPSEC strict gradué : le géocodage et les hôtes internet publics sont bloqués ; le proxy tailnet nécessite un consentement par session.",
     "help.guide.geo.title":"Géocodage (adresse ↔ coordonnées)",
     "help.guide.geo.fwd":"Carte <b>Rechercher une adresse</b> : saisissez un lieu, choisissez un résultat, le point est chargé et converti. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> ouvre le champ.",
     "help.guide.geo.rev":"Après chaque conversion, une ligne <b>📍 Localité</b> apparaît (géocodage inverse). Bouton <kbd>🔄</kbd> pour forcer une nouvelle requête.",
@@ -14639,7 +14654,7 @@ const state = {
   geocodeReverseAuto: true, // Auto-populate "📍 Località" after each conversion.
   geocodeEndpoint: "",   // Custom Nominatim base URL (empty = public server).
   geocodeBatchLoc: false,// "Add Locality column" toggle in batch mode.
-  opsecStrict: false,    // Reserved: when true, disables all external calls.
+  opsecStrict: false,    // Graduated OPSEC: blocks direct internet calls; tailnet-proxy fetches need per-session consent.
   // Persisted. Controls whether the "Altri formati" block (Plus Code +
   // Italian datums) is expanded under the results. Default collapsed — the
   // great majority of users only work with MGRS and Lat/Lon.
@@ -18648,6 +18663,11 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
     if (blob) source = "cache";
   } catch(_){}
   if (!blob && isEffectivelyOnline() && !state.forceOffline){
+    let mayFetch = tileFetchAllowed(layerId);
+    if (!mayFetch && state.opsecStrict && tileLayerExternalKind(layerId) === "tailnet-proxy"){
+      mayFetch = await ensureNavProxyConsent();
+    }
+    if (mayFetch){
     const url = layer.url(z, x, y);
     const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
     let netRecorded = false;
@@ -18662,6 +18682,7 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
     } catch(_){
       if (!netRecorded) recordNetEvent(url, nKind, false);
       return { img: null, source: null, http404: false };
+    }
     }
   }
   if (!blob) return { img: null, source: null, http404 };
@@ -18713,12 +18734,27 @@ async function exportOfflineAreaAsJpg(){
     if (st) st.textContent = t(sizeErr);
     return;
   }
+  if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
+    if (typeof window.confirm !== "function" || !window.confirm(t("opsec.strict.activateWarn"))){
+      const st0 = document.getElementById("pcStatus");
+      if (st0) st0.textContent = t("opsec.strict.tilesBlocked");
+      return;
+    }
+    _exportJpgStrictOpConfirmed = true;
+    if (tileLayerExternalKind(layerId) === "tailnet-proxy"){
+      if (!await ensureNavProxyConsent()){
+        _exportJpgStrictOpConfirmed = false;
+        return;
+      }
+    }
+  }
   setOfflineJpgExportUiBusy(true, t("export.offlineJpg.progress").replace("{0}", "0").replace("{1}", String(grid.tileCount)));
   const canvas = document.createElement("canvas");
   canvas.width = grid.widthPx;
   canvas.height = grid.heightPx;
   const ctx = canvas.getContext("2d");
   if (!ctx){
+    _exportJpgStrictOpConfirmed = false;
     setOfflineJpgExportUiBusy(false, "");
     try { showError(t("export.offlineJpg.fail")); } catch(_){}
     return;
@@ -18799,6 +18835,7 @@ async function exportOfflineAreaAsJpg(){
     if (st) st.textContent = t(errKey);
     try { showError(t(errKey)); } catch(_){}
   } finally {
+    _exportJpgStrictOpConfirmed = false;
     setOfflineJpgExportUiBusy(false, null);
     const bar = document.getElementById("pcBar");
     if (bar) bar.hidden = true;
@@ -22053,6 +22090,7 @@ function getNavProxyHost(){
 
 const TILE_LAYERS = {
   osm: {
+    external: "internet",
     url:    (z, x, y) => {
       const sub = ["a","b","c","d"][Math.abs(x + y) % 4];
       return `https://${sub}.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}.png`;
@@ -22061,6 +22099,7 @@ const TILE_LAYERS = {
     maxZoom: 19
   },
   topo: {
+    external: "internet",
     url:    (z, x, y) => {
       const sub = ["a","b","c"][Math.abs(x + y) % 3];
       return `https://${sub}.tile.opentopomap.org/${z}/${x}/${y}.png`;
@@ -22069,6 +22108,7 @@ const TILE_LAYERS = {
     maxZoom: 17
   },
   sat: {
+    external: "internet",
     url:    (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
     attrib: 'Imagery © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics',
     maxZoom: 19
@@ -22078,6 +22118,7 @@ const TILE_LAYERS = {
    * tailnet VPS); file:// falls back to localhost. Online use requires the
    * proxy running; previously-downloaded offline tiles keep working without it. */
   nav: {
+    external: "tailnet-proxy",
     url:    (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/tiles/${z}/${x}/${y}.png`,
     attrib: 'Carte nautiche © <a href="https://www.navionics.com/" target="_blank" rel="noopener">Navionics</a> (Garmin) — proxy tailnet',
     maxZoom: 18
@@ -22088,10 +22129,53 @@ const TILE_LAYERS = {
  * rendered on top of whatever basemap is active. Online-only: tiles are not
  * precached (sparse coverage, mostly empty tiles). No useful data below z9. */
 const SEAMARK_OVERLAY = {
+  external: "internet",
   url: (z, x, y) => `https://tiles.openseamap.org/seamark/${z}/${x}/${y}.png`,
   minZoom: 9,
   maxZoom: 18
 };
+
+let _navProxyConsentPending = null;
+let _precacheStrictOpConfirmed = false;
+let _exportJpgStrictOpConfirmed = false;
+
+function tileLayerExternalKind(layerId){
+  const layer = TILE_LAYERS[layerId];
+  if (layer && layer.external) return layer.external;
+  return (String(layerId || "") === "nav") ? "tailnet-proxy" : "internet";
+}
+
+/** True when a network tile fetch is allowed under graduated OPSEC strict. Cache hits are checked separately. */
+function tileFetchAllowed(layerId){
+  if (state.forceOffline) return false;
+  if (!state.opsecStrict) return true;
+  if (_precacheStrictOpConfirmed || _exportJpgStrictOpConfirmed) return true;
+  const ext = tileLayerExternalKind(layerId);
+  if (ext === "internet") return false;
+  if (ext === "tailnet-proxy") return !!state._navProxyConsentGranted;
+  return true;
+}
+
+function internetApiFetchAllowed(){
+  if (state.forceOffline) return false;
+  if (state.opsecStrict) return false;
+  return true;
+}
+
+async function ensureNavProxyConsent(){
+  if (!state.opsecStrict) return true;
+  if (state.forceOffline) return false;
+  if (state._navProxyConsentGranted) return true;
+  if (_navProxyConsentPending) return _navProxyConsentPending;
+  _navProxyConsentPending = Promise.resolve().then(() => {
+    const msg = (t("opsec.strict.navProxyWarn") || "") + "\n\n" + (t("opsec.strict.navProxyConfirm") || "");
+    const ok = (typeof window.confirm === "function") ? window.confirm(msg) : false;
+    if (ok) state._navProxyConsentGranted = true;
+    _navProxyConsentPending = null;
+    return !!ok;
+  });
+  return _navProxyConsentPending;
+}
 
 const MAP_BASE_LAYER_IDS = Object.freeze(["osm", "topo", "sat", "nav"]);
 function sanitizeMapLayer(id){
@@ -22277,10 +22361,27 @@ function bindGeocodeSettings(){
   }
   if (opC){
     opC.checked = !!state.opsecStrict;
+    if (!state._opsecMapRefreshHooked){
+      state._opsecMapRefreshHooked = true;
+      state._onOpsecChange = state._onOpsecChange || [];
+      state._onOpsecChange.push(function opsecStrictMapRefresh(){
+        try {
+          if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+        } catch(_){}
+      });
+    }
     opC.addEventListener("change", () => {
-      state.opsecStrict = !!opC.checked;
+      const enabling = !!opC.checked;
+      state.opsecStrict = enabling;
+      state._navProxyConsentGranted = false;
       saveStore();
       reflectCardState();
+      if (enabling){
+        try { showError(t("opsec.strict.activateWarn")); } catch(_){}
+        if (state.showSeamarks){
+          try { setBadge("info", t("opsec.strict.seamarksBlocked")); } catch(_){}
+        }
+      }
       (state._onOpsecChange || []).forEach(fn => { try { fn(); } catch(_){} });
     });
   }
@@ -22832,6 +22933,7 @@ function pickEsriDateAttr(attrs){
 async function fetchEsriWorldImageryDate(lat, lon, zoom){
   const key = `${lat.toFixed(4)},${lon.toFixed(4)}:z${zoom}`;
   if (imageryDateCache.has(key)) return imageryDateCache.get(key);
+  if (!internetApiFetchAllowed()){ imageryDateCache.set(key, null); return null; }
 
   const base = "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/identify";
   const delta = 0.02; // mapExtent hint for identify; not strict
@@ -22907,6 +23009,7 @@ function updateEsriImageryDate(root, lat, lon, zoom){
 async function fetchElevation(lat, lon){
   const key = `${lat.toFixed(4)},${lon.toFixed(4)}`;
   if (elevCache.has(key)) return elevCache.get(key);
+  if (!internetApiFetchAllowed()) return null;
   const url = `https://api.open-meteo.com/v1/elevation?latitude=${lat.toFixed(6)}&longitude=${lon.toFixed(6)}`;
   const ctl = new AbortController();
   const to  = setTimeout(() => ctl.abort(), 6000);
@@ -23349,6 +23452,11 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
   const key  = makeTileKey(layerId, z, x, y);
   const have = await getTileBlobByKey(key);
   if (have) return { skipped: true };
+  let mayFetch = tileFetchAllowed(layerId);
+  if (!mayFetch && state.opsecStrict && tileLayerExternalKind(layerId) === "tailnet-proxy"){
+    mayFetch = await ensureNavProxyConsent();
+  }
+  if (!mayFetch) throw new Error("opsec-blocked");
   const url  = layer.url(z, x, y);
   const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
   let netRecorded = false;
@@ -23376,10 +23484,27 @@ async function startPrecacheDownload(opts){
   const tiles = collectBboxTiles(n, s, e, w, z0, z1);
   const total = tiles.length;
   if (total > MAX_PRECACHE_TILES) throw new Error("tooMany");
+  _precacheStrictOpConfirmed = false;
+  if (state.opsecStrict){
+    if (state.forceOffline){
+      return { aborted: true, done: 0, total, err: 0 };
+    }
+    if (typeof window.confirm === "function" && !window.confirm(t("opsec.strict.activateWarn"))){
+      return { aborted: true, done: 0, total, err: 0, userCancelled: true };
+    }
+    _precacheStrictOpConfirmed = true;
+    if (tileLayerExternalKind(layerId) === "tailnet-proxy"){
+      if (!await ensureNavProxyConsent()){
+        _precacheStrictOpConfirmed = false;
+        return { aborted: true, done: 0, total, err: 0, userCancelled: true };
+      }
+    }
+  }
   const ac = new AbortController();
   _precacheAbort = ac;
   const conc   = 6;
   let nextIdx = 0, completed = 0, errs = 0;
+  try {
   const work = async () => {
     while (!ac.signal.aborted){
       const j = nextIdx++;
@@ -23398,6 +23523,9 @@ async function startPrecacheDownload(opts){
   const aborted = ac.signal.aborted;
   _precacheAbort = null;
   return { aborted, done: completed, total, err: errs };
+  } finally {
+    _precacheStrictOpConfirmed = false;
+  }
 }
 
 async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen, fetchSig){
@@ -23438,6 +23566,11 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
         return;
       }
       if (online && !state.forceOffline){
+        let mayFetch = tileFetchAllowed(layerId);
+        if (!mayFetch && state.opsecStrict && tileLayerExternalKind(layerId) === "tailnet-proxy"){
+          mayFetch = await ensureNavProxyConsent();
+        }
+        if (mayFetch){
         const url = layer.url(z, xw, y);
         const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
         const fetchOpts = { mode: "cors" };
@@ -23462,6 +23595,7 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
         } catch(_netErr){
           if (!netRecorded) recordNetEvent(url, nKind, false);
           throw _netErr;
+        }
         }
       }
     } catch(_){}
@@ -29745,7 +29879,7 @@ function renderTileMap(lat, lon, zoom){
   const mapLayerId = state.mapLayer || "osm";
   // OpenSeaMap seamark overlay: online-only transparent tiles on top of the
   // basemap. Hidden when offline-forced or below the useful zoom range.
-  const seamarksOn = !!state.showSeamarks && !state.forceOffline
+  const seamarksOn = !!state.showSeamarks && !state.forceOffline && !state.opsecStrict
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
   for (let x = txMin; x <= txMax; x++){
