@@ -4,6 +4,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-13 — **OPSEC Step 4 QA finale + chiusura ciclo ✅:** QA statico Steps 1–3; fix minimi (`set.opsec.strict` i18n, badge toggle); docs `checkpoint`/`session`/`README` con semantica strict graduata definitiva; ciclo OPSEC chiuso. **Backlog:** infra porte/proxy/B2/reboot-test; `/sonar/` monolite. **Deploy:** `git pull` manuale VPS post-push. Inbox **`2026-06-13_0237_riepilogo_opsec-step4-qa.md`**.
+
 2026-06-13 — **OPSEC Step 3 gate strict graduato ✅:** classificazione `external: internet|tailnet-proxy` su tile/seamarks; helper `tileFetchAllowed` / `internetApiFetchAllowed` / `ensureNavProxyConsent`; consenso Navionics transiente `state._navProxyConsentGranted` (non persistito); gate in `hydrateMapTiles`, precache/export offline, Esri/Open-Meteo; seamarks blocco secco sotto strict; toggle strict + `_onOpsecChange` re-render; i18n `opsec.strict.*` IT/EN/FR. **Prossimo:** Step 4 QA/i18n rifinitura. Inbox **`2026-06-13_0226_riepilogo_opsec-step3-gate.md`**.
 
 2026-06-13 — **OPSEC Step 2 net status UI / tooltip / i18n ✅:** `#netStatus` tooltip mostra sezione **Rete:** con host fusi in presentazione da `_nominatim.hostsContacted` + `state._netEvents` (store separati); contatore `(count)` da `_netEvents`; suffisso `net.hostFailed` se `ok=false`; `net.noneContacted` se vuoto; riga **Cache** omessa (nessun contatore cache-hit globale preesistente); nessun gate/consenso/warning/`opsec.strict.*`; tracking Step 1 invariato; nessun timer/polling. **Prossimo:** Step 3 gate strict graduato; Step 4 QA. Inbox **`2026-06-13_0213_riepilogo_opsec-step2-netstatus-ui.md`**.
