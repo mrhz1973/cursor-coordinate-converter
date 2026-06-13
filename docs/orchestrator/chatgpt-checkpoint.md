@@ -1,3 +1,8 @@
+> **LEGACY / PROTOCOLLO ORCHESTRATORE STORICO.**  
+> Il protocollo operativo corrente del GIS vive in [`docs/OPERATING_MEMORY.md`](../OPERATING_MEMORY.md).  
+> Dopo il flip rules di Fase 3, il flusso `aggio` / `aggio gis` deve puntare a `docs/OPERATING_MEMORY.md` e alla WU corrente, non a questo file come fonte primaria.  
+> Questo file resta conservato per compatibilità storica.
+
 # Checkpoint operativo per ChatGPT orchestratore
 
 Riferimento stabile per **ChatGPT** in qualità di orchestratore sul progetto **APP GIS** (app single-file HTML, vanilla JavaScript, nessun build step). **Complementa** (non sostituisce) `docs/roadmap.md` e le regole sotto [`.cursor/rules/`](../../.cursor/rules/).

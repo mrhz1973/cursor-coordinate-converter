@@ -1,3 +1,8 @@
+> **LEGACY / STORICO.**  
+> La memoria operativa corrente del GIS è [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md).  
+> Dopo il flip rules di Fase 3, gli agenti devono leggere `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente, non questo file come current-state.  
+> Questo file resta conservato per continuità storica e audit. Non cancellare contenuto.
+
 # Checkpoint progetto — GOI GIS Tool
 
 **Data snapshot:** 2026-06-13

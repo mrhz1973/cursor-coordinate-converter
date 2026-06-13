@@ -1,3 +1,8 @@
+> **STORICO LUNGO.**  
+> Per lo stato operativo corrente del GIS leggere `README.md`, [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) e la WU corrente in [`docs/work-units/`](work-units/).  
+> Dopo il flip rules di Fase 3, questo file non deve più essere aggiornato o letto come memoria corrente.  
+> Resta disponibile solo per audit, ricostruzione storica e consultazione mirata.
+
 # 📌 Coordinate converter — mini-mappa, GPS, bbox on-map, tools drawer & offline-first
 
 ## 🗓 Data

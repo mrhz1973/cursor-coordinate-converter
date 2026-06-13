@@ -1,3 +1,8 @@
+> **AUTOSYNC NON AUTORITATIVO.**  
+> Questo file resta un riepilogo autosync, ma non è la memoria corrente del GIS.  
+> Dopo il flip rules di Fase 3, per lo stato corrente leggere `README.md`, [`docs/OPERATING_MEMORY.md`](../OPERATING_MEMORY.md) e la WU corrente.  
+> Non usare questo file come current-state primario.
+
 # Stato operativo (sintetico)
 
 Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **Mantenerlo corto**.
