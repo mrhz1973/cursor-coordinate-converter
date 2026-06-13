@@ -1,5 +1,17 @@
 # GOI GIS Tool
 
+## Snapshot operativo corrente
+
+| Campo | Stato |
+| --- | --- |
+| File operativo | `coordinate_converter Claude.html` |
+| Architettura | HTML standalone, vanilla JS, no framework/npm/bundler |
+| Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) |
+| Read-set operativo | README.md + docs/OPERATING_MEMORY.md + WU corrente |
+| Stato OPSEC | PASS — vedi [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) |
+| Unità corrente | WU-0002 — memory standardization |
+| Ultimo allineamento noto | GitHub e VPS in pari a `4d52e8c` |
+
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
 The application is distributed as a **single standalone HTML file** (`coordinate_converter Claude.html`):
@@ -51,14 +63,11 @@ Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
-Latest documented checkpoint: 2026-06-13.
+Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) (2026-06-14). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM in progress (WU-0002, Fase 2a).
 
-Recent work deployed the GOI GIS Tool and Navionics proxy on a VPS over Tailscale (systemd, ACL grant, smoke test PASS), consolidated Planet-Clone SonarChart on the proxy (`/sonar/`, not yet wired in the GIS monolite), and updated i18n labels from «local proxy» to «tailnet proxy».
+Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, Planet-Clone SonarChart on proxy `/sonar/` (not yet in GIS monolite).
 
-See:
-
-docs/checkpoint.md
-docs/session-geolocalizzazione-e-mappa.md
+Historical logs (`docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`) remain for audit until legacy deprecation (Fase 2b/3); they are **not** the current read-set.
 Repository structure
 .
 ├── coordinate_converter Claude.html       # Main standalone app
@@ -218,46 +227,25 @@ print(out_path)
 PY
 
 node --check "$JS_TMP"
-Documentation workflow
-
-The short project state is kept in:
-
-docs/checkpoint.md
-
-The long project history and detailed session checkpoints are kept in:
-
-docs/session-geolocalizzazione-e-mappa.md
-
-When closing a Cursor work session with the project workflow, the expected outcome is:
-
-update docs/checkpoint.md;
-append/update docs/session-geolocalizzazione-e-mappa.md;
-commit changes;
-push to GitHub;
-verify a clean workspace.
 Security / OPSEC notes
-The app is designed to keep user data local by default.
-No GPS request should happen silently at startup.
-Geolocation must remain user-initiated (single-shot only; no live `watchPosition`).
 
-**Graduated OPSEC strict** (`opsecStrict`, persisted in settings):
+The app keeps user data local by default. No GPS at startup; geolocation is user-initiated (single-shot only; no live `watchPosition`).
 
-- **Forced-offline** (`forceOffline`) blocks all network fetches, including Navionics tailnet proxy, even if Navionics consent was granted.
-- **Cached tiles** (IndexedDB) always load under strict; cache hits are not recorded in the transient host tracker (`state._netEvents`).
-- **Internet basemap tiles** (`osm`, `topo`, `sat`): on cache miss under strict, no network fetch (placeholder shown).
-- **Navionics** (tailnet proxy on port 5000): under strict, requires per-session consent via internal dialog; consent is transient (`state._navProxyConsentGranted`, never persisted or exported); reset when toggling strict.
-- **OpenSeaMap seamarks**: hard-blocked under strict (no consent path).
-- **Esri imagery identify** and **Open-Meteo elevation**: blocked under strict (in-memory cache hits still allowed).
-- **Geocoding (Nominatim)**: blocked under strict (unchanged).
-- **Offline area download / JPG export** under strict: allowed after one explicit internal confirm per operation.
-- **Strict OFF** restores normal behavior without page reload.
-- Future **SonarChart `/sonar/`** (not yet in the monolith): planned as `tailnet-proxy`, inheriting Navionics consent when integrated.
+**Graduated OPSEC strict** is implemented on the monolite — full semantics, helpers, and commit history: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md).
 
-Host tracking: tooltip on `#netStatus` merges Nominatim hosts and transient `_netEvents` (presentation only; host list not persisted).
+Offline maps use browser storage (IndexedDB). Online tiles and geocoding are externally visible when not blocked by strict or forced-offline.
 
-Offline maps and cached tiles are handled locally through browser storage.
-Online map tiles and geocoding are externally visible network activity when not blocked by strict or forced-offline.
-Navionics tiles reach Garmin/Navionics via the VPS tailnet proxy. Infrastructure risks (raw tailnet ports 5000/8000, open proxy) remain in backlog — see `docs/checkpoint.md`.
+## Documentazione operativa
+
+| Documento | Ruolo |
+| --- | --- |
+| [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti corrente |
+| [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) | Semantica OPSEC implementativa |
+| [`docs/work-units/WU-0002-memory-standardization.md`](docs/work-units/WU-0002-memory-standardization.md) | Migrazione memoria wiki-LLM |
+| [`docs/roadmap.md`](docs/roadmap.md) | Roadmap strategica, non memoria corrente |
+
+`docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` and `docs/orchestrator/chatgpt-checkpoint.md` will be marked legacy/historical in Fase 2b/3 — not current-state sources.
+
 Development method
 
 This project imports [dev-method v0.1.0](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md).
