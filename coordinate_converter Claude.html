@@ -9742,6 +9742,20 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
 </dialog>
 
+<dialog id="opsecStrictConfirmDialog" class="app-modal" aria-labelledby="opsecStrictConfirmTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="opsecStrictConfirmTitle" class="app-modal-title"></h2>
+    <button type="button" class="app-modal-close" data-close-opsec-strict-confirm data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p id="opsecStrictConfirmBody" class="gis-rr-confirm-msg"></p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="opsecStrictConfirmTitle">
+      <button type="button" class="btn btn-sm btn-primary" id="opsecStrictConfirmOk" data-i18n="fav.inlineOk">Conferma</button>
+      <button type="button" class="btn btn-sm" id="opsecStrictConfirmCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
 <dialog id="appFullResetDialog" class="app-modal" aria-labelledby="appFullResetTitle" aria-modal="true">
   <div class="app-modal-head">
     <h2 id="appFullResetTitle" class="app-modal-title" data-i18n="settings.fullReset.title">Cancellare tutti i dati locali?</h2>
@@ -18735,7 +18749,11 @@ async function exportOfflineAreaAsJpg(){
     return;
   }
   if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
-    if (typeof window.confirm !== "function" || !window.confirm(t("opsec.strict.activateWarn"))){
+    const ok = await showOpsecStrictConfirmDialog(
+      t("offcache.sectionExportJpg") || "",
+      t("opsec.strict.tilesBlocked") || ""
+    );
+    if (!ok){
       const st0 = document.getElementById("pcStatus");
       if (st0) st0.textContent = t("opsec.strict.tilesBlocked");
       return;
@@ -22167,9 +22185,10 @@ async function ensureNavProxyConsent(){
   if (state.forceOffline) return false;
   if (state._navProxyConsentGranted) return true;
   if (_navProxyConsentPending) return _navProxyConsentPending;
-  _navProxyConsentPending = Promise.resolve().then(() => {
-    const msg = (t("opsec.strict.navProxyWarn") || "") + "\n\n" + (t("opsec.strict.navProxyConfirm") || "");
-    const ok = (typeof window.confirm === "function") ? window.confirm(msg) : false;
+  _navProxyConsentPending = showOpsecStrictConfirmDialog(
+    t("opsec.strict.navProxyConfirm") || "",
+    t("opsec.strict.navProxyWarn") || ""
+  ).then((ok) => {
     if (ok) state._navProxyConsentGranted = true;
     _navProxyConsentPending = null;
     return !!ok;
@@ -22377,7 +22396,7 @@ function bindGeocodeSettings(){
       saveStore();
       reflectCardState();
       if (enabling){
-        try { showError(t("opsec.strict.activateWarn")); } catch(_){}
+        try { setBadge("info", t("opsec.strict.activateWarn")); } catch(_){}
         if (state.showSeamarks){
           try { setBadge("info", t("opsec.strict.seamarksBlocked")); } catch(_){}
         }
@@ -23489,7 +23508,11 @@ async function startPrecacheDownload(opts){
     if (state.forceOffline){
       return { aborted: true, done: 0, total, err: 0 };
     }
-    if (typeof window.confirm === "function" && !window.confirm(t("opsec.strict.activateWarn"))){
+    const ok = await showOpsecStrictConfirmDialog(
+      t("offcache.start") || t("offcache.sectionDownload") || "",
+      t("opsec.strict.tilesBlocked") || ""
+    );
+    if (!ok){
       return { aborted: true, done: 0, total, err: 0, userCancelled: true };
     }
     _precacheStrictOpConfirmed = true;
@@ -41109,6 +41132,58 @@ function showOfflineGlobalClearDialog(){
     _offlineGlobalClearResolve = resolve;
     try { d.showModal(); } catch(_){
       _offlineGlobalClearResolve = null;
+      resolve(false);
+    }
+  });
+}
+
+let _opsecStrictConfirmResolve = null;
+function ensureOpsecStrictConfirmDialogWired(){
+  const d = document.getElementById("opsecStrictConfirmDialog");
+  if (!d || d._opsecStrictConfirmWired) return;
+  d._opsecStrictConfirmWired = true;
+  const done = (ok) => {
+    if (!_opsecStrictConfirmResolve) return;
+    const r = _opsecStrictConfirmResolve;
+    _opsecStrictConfirmResolve = null;
+    try { d.close(); } catch(_){}
+    r(!!ok);
+  };
+  d.addEventListener("cancel", (ev) => { ev.preventDefault(); done(false); });
+  d.querySelector("[data-close-opsec-strict-confirm]")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done(false);
+  });
+  document.getElementById("opsecStrictConfirmOk")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done(true);
+  });
+  document.getElementById("opsecStrictConfirmCancel")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done(false);
+  });
+}
+
+/** Promise → true if user confirmed an OPSEC strict action (nav proxy, offline download, …). */
+function showOpsecStrictConfirmDialog(title, body){
+  ensureOpsecStrictConfirmDialogWired();
+  const d = document.getElementById("opsecStrictConfirmDialog");
+  const titleEl = document.getElementById("opsecStrictConfirmTitle");
+  const bodyEl = document.getElementById("opsecStrictConfirmBody");
+  if (titleEl) titleEl.textContent = String(title || "");
+  if (bodyEl) bodyEl.textContent = String(body || "");
+  return new Promise((resolve) => {
+    if (!d || typeof d.showModal !== "function"){
+      resolve(false);
+      return;
+    }
+    _opsecStrictConfirmResolve = resolve;
+    try {
+      d.showModal();
+      try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(d, state.lang || "it"); } catch(_){}
+      try { document.getElementById("opsecStrictConfirmOk")?.focus(); } catch(_){}
+    } catch(_){
+      _opsecStrictConfirmResolve = null;
       resolve(false);
     }
   });
