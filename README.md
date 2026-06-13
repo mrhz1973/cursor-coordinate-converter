@@ -151,7 +151,7 @@ Future work: integrate SonarChart in the GIS monolite as an independent overlay 
 
 **Not for public URLs:** Firebase Hosting and the public VPS staging path do **not** expose Navionics; the tailnet deployment is private by design.
 
-**OPSEC:** Navionics tile requests reach Garmin/Navionics servers. Raw tailnet ports 5000/8000 and SonarChart exposure on the proxy are flagged for a dedicated OPSEC audit (Blocco 5).
+**OPSEC:** Navionics tile requests reach Garmin/Navionics servers via the tailnet proxy. Graduated OPSEC strict (Steps 1–4, 2026-06-13) gates internet tiles, seamarks, Esri/Open-Meteo, and Navionics consent — see *Security / OPSEC notes* below. Raw tailnet ports 5000/8000 and open proxy remain infrastructure backlog items.
 
 Hosting / Deploy
 
@@ -238,12 +238,26 @@ verify a clean workspace.
 Security / OPSEC notes
 The app is designed to keep user data local by default.
 No GPS request should happen silently at startup.
-Geolocation must remain user-initiated.
-Strict OPSEC mode must block sensitive network calls.
-Today, OPSEC strict disables geocoding (Nominatim) only; it does **not** block map tile fetches for basemaps, Navionics, or OpenSeaMap seamarks.
+Geolocation must remain user-initiated (single-shot only; no live `watchPosition`).
+
+**Graduated OPSEC strict** (`opsecStrict`, persisted in settings):
+
+- **Forced-offline** (`forceOffline`) blocks all network fetches, including Navionics tailnet proxy, even if Navionics consent was granted.
+- **Cached tiles** (IndexedDB) always load under strict; cache hits are not recorded in the transient host tracker (`state._netEvents`).
+- **Internet basemap tiles** (`osm`, `topo`, `sat`): on cache miss under strict, no network fetch (placeholder shown).
+- **Navionics** (tailnet proxy on port 5000): under strict, requires per-session consent via internal dialog; consent is transient (`state._navProxyConsentGranted`, never persisted or exported); reset when toggling strict.
+- **OpenSeaMap seamarks**: hard-blocked under strict (no consent path).
+- **Esri imagery identify** and **Open-Meteo elevation**: blocked under strict (in-memory cache hits still allowed).
+- **Geocoding (Nominatim)**: blocked under strict (unchanged).
+- **Offline area download / JPG export** under strict: allowed after one explicit internal confirm per operation.
+- **Strict OFF** restores normal behavior without page reload.
+- Future **SonarChart `/sonar/`** (not yet in the monolith): planned as `tailnet-proxy`, inheriting Navionics consent when integrated.
+
+Host tracking: tooltip on `#netStatus` merges Nominatim hosts and transient `_netEvents` (presentation only; host list not persisted).
+
 Offline maps and cached tiles are handled locally through browser storage.
-Online map tiles and geocoding should be treated as externally visible network activity.
-Navionics tiles (via tailnet proxy) and OpenSeaMap seamarks also contact external tile servers when online.
+Online map tiles and geocoding are externally visible network activity when not blocked by strict or forced-offline.
+Navionics tiles reach Garmin/Navionics via the VPS tailnet proxy. Infrastructure risks (raw tailnet ports 5000/8000, open proxy) remain in backlog — see `docs/checkpoint.md`.
 Development method
 
 This project imports [dev-method v0.1.0](https://github.com/mrhz1973/dev-method/blob/v0.1.0/README.md).

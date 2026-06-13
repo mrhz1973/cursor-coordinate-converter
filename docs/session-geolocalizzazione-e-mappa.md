@@ -2689,3 +2689,43 @@ Semantica futura di **`opsecStrict`:** mantenere solo geocoding (stato attuale d
 - `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` (questa append), `README.md` (precisazione minima OPSEC strict)
 - `docs/orchestrator/latest.md` + inbox (commit autosync separato)
 
+
+## Checkpoint 2026-06-13 — OPSEC Step 4 QA e chiusura ciclo strict graduato
+
+### Contesto
+
+Ciclo OPSEC Steps 1–4 completato nel monolite (`8885e10` → `83d65ef`). Step 4 = QA finale mirato + chiusura documentale. VPS pull e smoke test Step 3 superati (pre-Step 4).
+
+### QA eseguito (statico + revisione codice)
+
+| Area | Esito |
+|---|---|
+| i18n `opsec.strict.*` IT/EN/FR (5 chiavi) | OK — presenti e coerenti |
+| Dialog interni (`#opsecStrictConfirmDialog`) | OK — Navionics, precache, export JPG; nessun `window.confirm` sui flussi OPSEC Step 3 |
+| `activateWarn` | OK — solo toggle strict ON (`setBadge`); non su fetch/render/download |
+| Gate graduato | OK — `forceOffline`, cache hit, internet block, Navionics consenso `_`, seamarks secchi, Esri/Open-Meteo |
+| Tracking Step 1–2 | OK — `_netEvents` transiente; fusione tooltip; nessuna riga Cache inventata |
+| `/sonar/` | Non integrato (backlog) |
+
+### Fix codice Step 4 (minimi)
+
+1. **`set.opsec.strict` IT/EN/FR** — label impostazioni allineata a strict graduato (prima descriveva solo geocoding).
+2. **Toggle strict** — rimosso secondo `setBadge(seamarksBlocked)` sovrapposto ad `activateWarn` (seamarks già bloccati al re-render).
+
+Nessun'altra regressione rilevata; nessun refactor.
+
+### Semantica definitiva documentata
+
+Vedi `docs/checkpoint.md` (entry 2026-06-13 Step 4) e README *Security / OPSEC notes*.
+
+### Backlog infra (non chiuso in Step 4)
+
+- Porte raw tailnet 5000/8000; open proxy Navionics; B2 `tailscale serve` + loopback; reboot-test systemd; integrazione SonarChart `/sonar/` nel monolite (tailnet-proxy + consenso Navionics).
+
+### Commit Step 4
+
+- Fix codice (se presente) + docs operative + autosync orchestrator (inbox Step 4 QA).
+
+### Deploy post-push
+
+Dopo push: `git pull --ff-only` manuale sul VPS (`/root/local-files/handoff-runtime/cursor-coordinate-converter`).
