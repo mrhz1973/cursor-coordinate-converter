@@ -31,13 +31,13 @@
 
 ## 3. Read-set operativo
 
-Per lavorare sul GIS gli agenti devono leggere:
+**Read-set corrente (attivo da Fase 3):** gli agenti devono leggere:
 
 1. `README.md`
 2. `docs/OPERATING_MEMORY.md`
 3. WU corrente in `docs/work-units/`
 
-**Fase 2a (stato attuale):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` e `docs/orchestrator/chatgpt-checkpoint.md` **non sono stati ancora declassati** — saranno marcati legacy/storico/autosync in Fase 2b/3. In Fase 2a non modificarli.
+**Legacy (non memoria corrente):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` e `docs/orchestrator/chatgpt-checkpoint.md` restano storico/legacy/autosync — consultabili per audit, **non** come current-state primario.
 
 ---
 
@@ -67,26 +67,24 @@ Per lavorare sul GIS gli agenti devono leggere:
 
 - Sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti**: entrambi aggiornano la memoria operativa del repo GIS.
 - Sul **control-plane** si usa **`aggio control`**.
-- **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto. Documentare questa ambiguità la rende gestibile.
+- **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto.
 - Read-set invariato: `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
 
-**Dopo il flip operativo (Fase 3),** `aggio` / `aggio gis` aggiorneranno:
+**Flusso `aggio` / `aggio gis` (attivo da Fase 3):** aggiorna, quando necessario:
 
 - `OPERATING_MEMORY` solo se cambia lo stato corrente;
 - WU corrente;
 - README snapshot solo se cambia lo snapshot;
 - eventuale autosync/inbox se il workflow lo richiede.
 
-Non deve puntare a `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria dopo il flip.
-
-**Fase 2a:** alias e semantica documentati qui; flip rules **non** attivo — resta Fase 3.
+**Non** puntare a `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria.
 
 ---
 
 ## 7. Stato corrente
 
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
-2. **PREPARED** — Standardizzazione memoria wiki-LLM (Fase 2a modello creato). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
+2. **PREPARED** — Standardizzazione memoria wiki-LLM (Fase 3 flip attivo). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
 3. **PENDING** — Prossimo blocco GIS monolite da decidere.
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**

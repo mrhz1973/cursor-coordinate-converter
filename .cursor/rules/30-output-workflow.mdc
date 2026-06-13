@@ -248,7 +248,7 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 3. Esegui **`git commit`** e **`git push`** **selettivi** che includono **solo** la memoria orchestratore (`docs/orchestrator/**`) e, **se modificati nello stesso intervento**, i file `.cursor/rules/**` pertinenti al workflow orchestratore. **Non** omettere commit/push salvo errore git/rete: in tal caso il RIEPILOGO riporta esito e motivo.
 4. **`coordinate_converter Claude.html`:** **mai** incluso nel commit autosync **salvo** richiesta **esplicita** dell’utente. Se il monolite è cambiato ma resta fuori dal commit, l’`inbox` **deve** comunque descrivere il fix e/o un estratto sufficiente del diff.
 5. **`finito`:** **non** parte dell’autosync; **non** usarlo per chiudere al posto dell’autosync.
-6. **`docs/checkpoint.md`** e **`docs/session-geolocalizzazione-e-mappa.md`:** **non** aggiornarli nell’autosync **salvo** richiesta esplicita dell’utente o comando **`finito`** (quest’ultimo come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc)).
+6. **`docs/checkpoint.md`** e **`docs/session-geolocalizzazione-e-mappa.md`:** **legacy/storico** — **non** aggiornarli nell’autosync né come memoria corrente primaria. Il comando **`finito`** chiude tramite `docs/OPERATING_MEMORY.md` + WU corrente + README snapshot se necessario + `git` (come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc)); **non** scrive più checkpoint/session come primari.
 7. **`docs/roadmap.md`:** **non** incluso nel commit autosync salvo l’intervento lo modifichi **e** l’utente richieda esplicitamente di versionarlo nello stesso commit (caso raro); in caso normale resta fuori dall’autosync memoria.
 
 8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti.
@@ -261,17 +261,23 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 ### Doppio significato di **`aggio`** / **«aggiornati»** (terminologia)
 
-**Alias:** **`aggio`** equivale a **«aggiornati»** (stesso significato in Cursor e in ChatGPT; vedi anche `docs/orchestrator/chatgpt-checkpoint.md`).
+**Scoped alias (repo GIS):** sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti** — entrambi aggiornano/leggono la memoria operativa del repo GIS. Sul **control-plane** si usa **`aggio control`**. **Trade-off:** `aggio` secco non identifica il repo; la responsabilità di lanciarlo nel contesto/chat corretto è dell’operatore.
 
-1. **`aggio`** / **«aggiornati» in Cursor** = **pubblica la memoria orchestratore**: allinea `docs/orchestrator/latest.md` e `docs/orchestrator/inbox/<riepilogo intervento>.md` allo stato reale ed esegui **commit/push selettivo** della sola memoria orchestratore e dei file `.cursor/rules/**` pertinenti al workflow, se modificati nello stesso intervento. (Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento, che pubblica comunque **senza** attendere questo comando.)
-2. **`aggio`** / **«aggiornati» in ChatGPT** = **leggi la memoria orchestratore da GitHub** (o altro remoto usato dal team), nell’ordine definito in `docs/orchestrator/chatgpt-checkpoint.md` (ingresso tipico: `docs/orchestrator/latest.md`). È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo: **manuale**, non automatico.
+**Read-set operativo GIS (wiki-LLM):** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente in `docs/work-units/`. `docs/orchestrator/chatgpt-checkpoint.md` resta **legacy** — non fonte primaria.
+
+1. **`aggio`** / **`aggio gis`** / **«aggiornati» in Cursor** (repo GIS) = **pubblica/aggiorna memoria operativa GIS**: allinea `docs/OPERATING_MEMORY.md` (se cambia stato), WU corrente, snapshot `README.md` (se cambia), ed eventuale autosync/inbox (`docs/orchestrator/**`) se il workflow lo richiede; **commit/push** coerenti con il modello lean. Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento quando applicabile.
+2. **`aggio`** / **`aggio gis`** / **«aggiornati» in ChatGPT** (repo GIS) = **leggi memoria operativa GIS da GitHub**, in ordine:
+   - `README.md`;
+   - `docs/OPERATING_MEMORY.md`;
+   - WU corrente in `docs/work-units/`.
+   **Non** usare `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria. È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo GIS: **manuale**, non automatico.
 
 **Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.
 
 ### Confronto con chiusura ufficiale: `finito`
 
 - **Autosync orchestratore** = pubblicazione **obbligatoria** della memoria operativa dopo ogni intervento che cambia stato; **non** è chiusura ufficiale di sessione.
-- **`finito`** (sempre **minuscolo**, backtick) = **chiusura ufficiale** completa: `docs/checkpoint.md`, log di sessione, `git` e criteri di chiusura come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc), workspace coerente con quella chiusura. **Dopo** il `git commit`/`git push` principale del `finito`, è obbligatoria la **riconciliazione orchestratore** (`docs/orchestrator/latest.md` + `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così **`aggio`** in ChatGPT non resta su testi tipo «monolite non in autosync» quando il monolite è già stato versionato nella chiusura. **Non** confondere autosync e `finito`.
+- **`finito`** (sempre **minuscolo**, backtick) = **chiusura ufficiale** secondo modello lean: `docs/OPERATING_MEMORY.md`, WU corrente, README snapshot se necessario, `git add` / commit / push secondo workflow, eventuale autosync/inbox se previsto — come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc). `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md` restano **legacy/storico**, non memoria corrente primaria. **Dopo** il `git commit`/`git push` principale del `finito`, è obbligatoria la **riconciliazione orchestratore** (`docs/orchestrator/latest.md` + `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così la memoria pubblicata resta coerente con il monolite versionato. **Non** confondere autosync e `finito`.
 
 ### Limiti (invariati)
 

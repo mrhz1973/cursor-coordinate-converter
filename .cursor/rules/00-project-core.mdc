@@ -27,14 +27,26 @@ Linee guida **operative** (tabelle con colonne ridimensionabili, preset vicino a
 - Do not modify any non-rule files unless the user explicitly asks for it. If the user only asked about rules, limit edits to `.cursor/rules/` only.
 
 ## Documentation checkpoints (trigger confermato dall’utente)
-Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), nella **stessa risposta** aggiornare **entrambi** i file (salvo diversa richiesta esplicita tipo «solo session» o «solo checkpoint.md»):
-- `docs/session-geolocalizzazione-e-mappa.md` — append in fondo di una sezione `## Checkpoint YYYY-MM-DD — …` **datata** (cronaca autoritativa: cosa è cambiato, perché, eventuali TODO).
-- `docs/checkpoint.md` — aggiorna lo **snapshot breve** (data, puntatori ai file canonici, tabella `.cursor/rules/` se cambia, invarianti se cambiano).
+Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), nella **stessa risposta** aggiornare la **memoria operativa corrente** del GIS secondo il modello wiki-LLM lean:
+
+- **`docs/OPERATING_MEMORY.md`** — solo se cambia lo stato corrente;
+- **WU corrente** in `docs/work-units/`;
+- **`README.md`** — sezione snapshot operativo, solo se cambia lo snapshot;
+- eventuale **autosync/inbox** (`docs/orchestrator/**`) solo se il workflow lo richiede.
+
+**Read-set operativo:** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
+
+**Legacy (non memoria corrente primaria):** `docs/checkpoint.md` (legacy/storico) e `docs/session-geolocalizzazione-e-mappa.md` (storico lungo) — **non** aggiornarli come memoria corrente; restano conservati per audit.
 
 ## Session close trigger («Finito»)
 Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase breve tipo «ok finito», «per oggi finito»), eseguire in sequenza **senza chiedere conferma intermedia**:
 
-1. **Checkpoint md** come da sezione precedente: aggiornare `docs/checkpoint.md` **e** appendere sezione datata in `docs/session-geolocalizzazione-e-mappa.md`.
+1. **Memoria lean (wiki-LLM):** verificare e aggiornare secondo modello lean:
+   - **WU corrente** in `docs/work-units/`;
+   - **`docs/OPERATING_MEMORY.md`** solo se cambia lo stato corrente;
+   - **`README.md`** snapshot operativo solo se necessario;
+   - eventuale **autosync/inbox** se previsto dal workflow.
+   **Non** scrivere `docs/checkpoint.md` né `docs/session-geolocalizzazione-e-mappa.md` come azione primaria di memoria corrente (restano legacy/storico). **Read-set operativo:** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
 2. Nel terminale, dalla root del repo, in ordine:
    - `git add .`
    - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`. Se non c’è nulla da committare, **saltare** il `commit` ma eseguire comunque `git push` se ci sono commit locali non pubblicati; altrimenti documentare in step 3.
@@ -50,7 +62,7 @@ Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase br
 4. Confermare all’utente con: **hash commit** (short; se due commit consecutivi `finito` + orchestratore, indicarli entrambi o l’HEAD finale), **elenco file modificati** (da `git show --stat HEAD` e, se utile, commit precedente), **stato push** (successo / errore + messaggio testuale) **per ogni** push eseguito.
 
 Vincoli operativi:
-- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai due file doc dello **step 1**, ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
+- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai file doc dello **step 1** (`docs/OPERATING_MEMORY.md`, WU corrente in `docs/work-units/`, `README.md` snapshot se toccato), ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
 - **Non** usare lo step 3 per sostituire l’**autosync** di fine intervento: resta obbligatorio come da [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc); lo step 3 **chiude il gap** tra stato reale post-`finito` e ciò che ChatGPT legge con **`aggio`** / **«aggiornati»**.
 - Se lo step 1 fallisce (file non scrivibile, conflitto), **fermarsi**, riportare l’errore, non procedere con git.
 - Se lo step 2 fallisce (pre-commit hook rifiuta, push rejected, conflitto remoto), riportare l’errore testualmente e **non** tentare `--force`, `--amend`, né hard reset senza nuova istruzione esplicita; eseguire comunque lo **step 3** aggiornando `latest.md` e l’inbox con **esito parziale** (commit locale riuscito ma push fallito, ecc.) **salvo** impossibilità di scrivere i file.
