@@ -11633,6 +11633,9 @@ const I18N = {
     "loc.unavailable":"—",
     "loc.refreshTip":"Forza una nuova ricerca reverse (ignora la cache)",
     "net.hostsContacted":"Domini contattati in questa sessione",
+    "net.hostsNetwork":"Rete:",
+    "net.hostFailed":"tentato, non riuscito",
+    "net.noneContacted":"Nessun host contattato",
     "help.guide.geo.title":"Geocoding (indirizzo ↔ coordinate)",
     "help.guide.geo.fwd":"Card <b>Cerca indirizzo</b>: digita un luogo, scegli tra i risultati, il punto viene caricato e convertito. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> apre il campo.",
     "help.guide.geo.rev":"Dopo ogni conversione compare una riga <b>📍 Località</b> (reverse geocoding). Pulsante <kbd>🔄</kbd> per forzare una nuova query.",
@@ -13079,6 +13082,9 @@ const I18N = {
     "loc.unavailable":"—",
     "loc.refreshTip":"Force a fresh reverse lookup (ignore cache)",
     "net.hostsContacted":"Hosts contacted this session",
+    "net.hostsNetwork":"Network:",
+    "net.hostFailed":"attempted, failed",
+    "net.noneContacted":"No hosts contacted",
     "help.guide.geo.title":"Geocoding (address ↔ coordinates)",
     "help.guide.geo.fwd":"The <b>Address search</b> card: type a place, pick a result, the point is loaded and converted. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> focuses the field.",
     "help.guide.geo.rev":"After each conversion a <b>📍 Locality</b> row appears (reverse geocoding). Use the <kbd>🔄</kbd> button to force a new lookup.",
@@ -14525,6 +14531,9 @@ const I18N = {
     "loc.unavailable":"—",
     "loc.refreshTip":"Forcer une nouvelle recherche inverse (ignore le cache)",
     "net.hostsContacted":"Hôtes contactés dans cette session",
+    "net.hostsNetwork":"Réseau :",
+    "net.hostFailed":"tenté, échoué",
+    "net.noneContacted":"Aucun hôte contacté",
     "help.guide.geo.title":"Géocodage (adresse ↔ coordonnées)",
     "help.guide.geo.fwd":"Carte <b>Rechercher une adresse</b> : saisissez un lieu, choisissez un résultat, le point est chargé et converti. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> ouvre le champ.",
     "help.guide.geo.rev":"Après chaque conversion, une ligne <b>📍 Localité</b> apparaît (géocodage inverse). Bouton <kbd>🔄</kbd> pour forcer une nouvelle requête.",
@@ -21039,14 +21048,49 @@ function showGeocodeBannerTemp(seconds){
   }, seconds * 1000);
 }
 
+/** Merge Nominatim + transient net-event hosts for tooltip display only. */
+function _mergedNetworkHostsForDisplay(){
+  const merged = new Map();
+  try {
+    for (const h of _nominatim.hostsContacted){
+      const host = String(h || "").trim();
+      if (host) merged.set(host, null);
+    }
+  } catch(_){}
+  try {
+    ensureNetEventsStore();
+    if (state._netEvents instanceof Map){
+      for (const [host, rec] of state._netEvents){
+        const h = String(host || "").trim();
+        if (h && rec && typeof rec === "object") merged.set(h, rec);
+      }
+    }
+  } catch(_){}
+  return merged;
+}
+
 /** Refresh the net-status tooltip with the list of hosts we've hit this session. */
 function refreshHostsContactedUI(){
   const el = document.getElementById("netStatus");
   if (!el) return;
   const base = t("tip.netStatus") || "";
-  const hosts = Array.from(_nominatim.hostsContacted);
-  if (!hosts.length){ el.setAttribute("data-tip", base); return; }
-  el.setAttribute("data-tip", base + "\n" + (t("net.hostsContacted") || "Domini contattati") + ": " + hosts.join(", "));
+  const networkLabel = t("net.hostsNetwork") || "Rete:";
+  const merged = _mergedNetworkHostsForDisplay();
+  if (!merged.size){
+    el.setAttribute("data-tip", base + "\n" + networkLabel + " " + (t("net.noneContacted") || "Nessun host contattato"));
+    return;
+  }
+  const failedSuffix = t("net.hostFailed") || "tentato, non riuscito";
+  const parts = Array.from(merged.keys()).sort().map((host) => {
+    const rec = merged.get(host);
+    if (rec && Number.isFinite(rec.count)){
+      let s = host + " (" + rec.count + ")";
+      if (rec.ok === false) s += ", " + failedSuffix;
+      return s;
+    }
+    return host;
+  });
+  el.setAttribute("data-tip", base + "\n" + networkLabel + " " + parts.join(", "));
 }
 
 /* ========================= SECTION 15: UNIVERSAL AUTO-DETECT ========================= */
