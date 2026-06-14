@@ -108,6 +108,33 @@ Esempio (piano):
 
 `File piano copiabile: /tmp/01-goi-gis-plan.md` (o `02-`, … secondo il primo nome libero)
 
+### STATO FRESCO DA CURSOR (obbligatorio)
+
+Dopo ogni **push** o **chiusura blocco** (in coda al RIEPILOGO o al messaggio finale), riporta **sempre** questo blocco sintetico e copiabile — utile per aprire una nuova chat senza dipendere da RAW GitHub potenzialmente in cache. Eseguire prima `git fetch origin`.
+
+```text
+STATO FRESCO DA CURSOR
+origin/main HEAD:
+ultimo commit:
+ultimi 10 commit:
+working tree:
+ultimo blocco PASS:
+prossimo candidato:
+note operative:
+```
+
+**Compilazione:**
+
+- **origin/main HEAD:** hash e subject dell’HEAD remoto dopo `git fetch origin`.
+- **ultimo commit:** hash e subject dell’ultimo commit rilevante creato nel blocco corrente, oppure «nessun nuovo commit» se non applicabile.
+- **ultimi 10 commit:** output sintetico di `git log origin/main --oneline -10`.
+- **working tree:** output sintetico di `git status -sb`.
+- **ultimo blocco PASS:** ultimo blocco completato e verificato, se noto dal riepilogo.
+- **prossimo candidato:** prossimo blocco proposto, se noto; altrimenti «da scegliere».
+- **note operative:** solo note utili, massimo 1–3 righe.
+
+Non sostituisce README / OPERATING_MEMORY §7 / roadmap WU-0005→0009; fornisce solo freschezza Git verificata da Cursor.
+
 ## Prompt operativi autosufficienti (anti micro-pass di sola verifica)
 
 **Principio:** ogni **prompt operativo** (richiesta di implementazione o modifica sostanziale sul repo) deve essere **autosufficiente** per Cursor: nella **stessa** risposta/intervento devono confluire **implementazione**, **verifiche automatiche standard**, **test browser se possibile**, **aggiornamento memoria orchestratore** (come da sezione *Autosync orchestratore* ove applicabile) e **RIEPILOGO finale completo**. **Non** creare un **pass separato** dedicato **solo** a verifiche standard se quelle verifiche erano **già prevedibili** dal task operativo (es. dopo un’implementazione sul monolite, non delegare a un secondo giro ciò che poteva essere incluso nel primo).
