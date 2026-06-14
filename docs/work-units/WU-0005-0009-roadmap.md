@@ -656,11 +656,11 @@ Vincoli:
 
 #### 8c — Famiglia Esri
 
-**Stato:** prerequisito motore **8c-A PASS** (tileScheme/y-order); layer Esri aggiuntivi restano candidati (**8c-B**).
+**Stato:** **8c-A PASS** (`cddc565`); **8c-B PASS** runtime (monolite). Ocean Reference / EOX restano fuori scope.
 
 ##### 8c-A — tileScheme / y-order (prerequisito motore)
 
-**Stato:** PASS runtime (monolite).
+**Stato:** PASS runtime (`cddc565`).
 
 Esito:
 
@@ -671,21 +671,35 @@ Esito:
 - `makeTileKey` e chiavi cache invariate; gate OPSEC/offline invariati;
 - nessun nuovo layer Esri; nessuna modifica UI Layers.
 
-##### 8c-B — layer Esri aggiuntivi (candidato)
+##### 8c-B — layer Esri catalogo
 
-Layer candidati:
+**Stato:** PASS runtime (monolite).
 
-- Esri World Hillshade.
-- Esri World Shaded Relief.
-- Esri World Imagery.
-- Esri World Topo.
-- Esri World Street.
-- Esri Ocean Base / Ocean Reference.
+Esito:
+
+- aggiunti 5 layer: `esriTopo`, `esriStreet`, `esriHillshade`, `esriRelief`, `esriOceanBase`;
+- `urlBase` + `tileScheme: "zyx"`, `external: "internet"`, `cacheable: false` (no bulk offline);
+- menu Layers: topo/strade/hillshade/relief in Topografica; Ocean Base in Nautica; `sat` in Satellitare invariato;
+- i18n IT/EN/FR; endpoint ArcGIS REST verificati HTTP 200;
+- **non** aggiunti: World Imagery (già `sat`), Ocean Reference, EOX, proxy.
+
+maxZoom conservativi: Hillshade 15, Shaded Relief 13, Ocean Base 16, Topo/Street 19.
+
+##### 8c-B backlog (escluso da 8c-B)
+
+Layer non implementati in questo blocco:
+
+- Esri World Hillshade — **PASS** (`esriHillshade`).
+- Esri World Shaded Relief — **PASS** (`esriRelief`).
+- Esri World Imagery — già `sat`.
+- Esri World Topo — **PASS** (`esriTopo`).
+- Esri World Street — **PASS** (`esriStreet`).
+- Esri Ocean Base — **PASS** (`esriOceanBase`); Ocean Reference escluso (overlay/reference).
 
 Prerequisito tecnico:
 
 - ~~supporto per y-order `{z}/{y}/{x}` tramite flag per-layer, ad esempio `tileScheme`~~ — **8c-A PASS**;
-- il supporto `tileScheme` va implementato e testato PRIMA di aggiungere i layer Esri — **soddisfatto da 8c-A**; prossimo passo: **8c-B** (nuovi layer catalogo + UI se richiesto).
+- il supporto `tileScheme` va implementato e testato PRIMA di aggiungere i layer Esri — **soddisfatto da 8c-A**; **8c-B PASS** (catalogo layer + UI).
 
 Motivo:
 
@@ -1088,7 +1102,7 @@ Test:
 20. ~~**WU-0008 B7** — QA (`cf6d796`).~~
 21. ~~**WU-0008 8b** — CyclOSM + OSM standard (`dad28b4`).~~
 22. ~~**WU-0008 8c-A** — tileScheme / y-order (prerequisito motore).~~
-23. **WU-0008 8c-B** — famiglia Esri (layer catalogo).
+23. ~~**WU-0008 8c-B** — famiglia Esri (layer catalogo).~~
 24. **WU-0008 8d** — EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
@@ -1109,8 +1123,8 @@ Test:
 | WU-0006 Poligoni | nessuna | diagnosi autonoma, ma blocca UX poligoni |
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
-| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a (`cf6d796`), **PASS** 8b (`dad28b4`); 8c/8d candidati |
-| WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **8c-A PASS**; prossimo **8c-B** layer catalogo |
+| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B; **8d** candidato |
+| WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
 | WU-0008 8d EOX | WU-0008 8c o supporto WMTS/y-order | satellite alternativo online-only |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
