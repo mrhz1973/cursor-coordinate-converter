@@ -10896,6 +10896,7 @@ const I18N = {
     "map.layerBathy":"Batimetria",
     "map.overlaySeamarks":"Seamarks (boe/fari)",
     "map.overlaySonarChart":"SonarChart",
+    "map.overlayMgrs":"Grigliato MGRS",
     "map.sizeSmall":"Dimensione piccola",
     "map.sizeHalf":"Metà schermo",
     "map.sizeFull":"Schermo intero",
@@ -10907,6 +10908,7 @@ const I18N = {
     "tip.layerSea":"Mappa nautica (Esri Ocean Basemap)",
     "tip.layerBathy":"Batimetria (EMODnet) — solo online",
     "tip.overlaySeamarks":"Overlay nautico OpenSeaMap (boe, fari, segnalamenti). Solo online.",
+    "tip.overlayMgrs":"Griglia MGRS/UTM sulla mappa. Overlay locale, nessuna rete.",
     "tip.overlaySonarChart":"Overlay batimetrico Navionics SonarChart — richiede il proxy tailnet (porta 5000)",
     "tip.basemapPicker":"Tipo di mappa: cartografia o satellite",
     "tip.recenter":"Torna al punto convertito (ricentra la mappa)",
@@ -12360,6 +12362,7 @@ const I18N = {
     "map.layerBathy":"Bathymetry",
     "map.overlaySeamarks":"Seamarks (buoys/lights)",
     "map.overlaySonarChart":"SonarChart",
+    "map.overlayMgrs":"MGRS grid",
     "map.sizeSmall":"Small size",
     "map.sizeHalf":"Half screen",
     "map.sizeFull":"Full screen",
@@ -12371,6 +12374,7 @@ const I18N = {
     "tip.layerSea":"Nautical basemap (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymetry (EMODnet) — online-only",
     "tip.overlaySeamarks":"OpenSeaMap nautical overlay (buoys, lights, seamarks). Online-only.",
+    "tip.overlayMgrs":"MGRS/UTM grid on the map. Local overlay, no network.",
     "tip.overlaySonarChart":"Navionics SonarChart bathymetry overlay — requires the tailnet proxy (port 5000)",
     "tip.basemapPicker":"Basemap: map or satellite",
     "tip.recenter":"Back to the converted point (recenter the map)",
@@ -13824,6 +13828,7 @@ const I18N = {
     "map.layerBathy":"Bathymétrie",
     "map.overlaySeamarks":"Seamarks (bouées/feux)",
     "map.overlaySonarChart":"SonarChart",
+    "map.overlayMgrs":"Grille MGRS",
     "map.sizeSmall":"Petite taille",
     "map.sizeHalf":"Demi-écran",
     "map.sizeFull":"Plein écran",
@@ -13835,6 +13840,7 @@ const I18N = {
     "tip.layerSea":"Fond nautique (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymétrie (EMODnet) — en ligne uniquement",
     "tip.overlaySeamarks":"Overlay nautique OpenSeaMap (bouées, feux, amers). En ligne uniquement.",
+    "tip.overlayMgrs":"Grille MGRS/UTM sur la carte. Overlay local, sans réseau.",
     "tip.overlaySonarChart":"Overlay bathymétrique Navionics SonarChart — nécessite le proxy tailnet (port 5000)",
     "tip.basemapPicker":"Fond de carte : carte ou satellite",
     "tip.recenter":"Revenir au point converti (recentrer la carte)",
@@ -30504,8 +30510,11 @@ function renderTileMap(lat, lon, zoom){
     const tipSeam = esc(t("tip.overlaySeamarks"));
     const lblSonar = esc(t("map.overlaySonarChart"));
     const tipSonar = esc(t("tip.overlaySonarChart"));
+    const lblMgrs = esc(t("map.overlayMgrs"));
+    const tipMgrs = esc(t("tip.overlayMgrs"));
     const seamAct = state.showSeamarks ? " is-active" : "";
     const sonarAct = state.showSonarChart ? " is-active" : "";
+    const mgrsAct = state.showGrid ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
@@ -30528,6 +30537,10 @@ function renderTileMap(lat, lon, zoom){
       <button type="button" class="tlayer-item${navAct}" data-layer="nav" role="menuitem" data-tip="${tipNav}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "nav" ? "✓" : ""}</span><span>${lblNav}</span>
       </button>
+      ${_gisHub ? `<div class="tlayer-sep" aria-hidden="true"></div>
+      <button type="button" class="tlayer-item${mgrsAct}" data-overlay="mgrs" role="menuitemcheckbox" aria-checked="${state.showGrid ? "true" : "false"}" data-tip="${tipMgrs}">
+        <span class="tlayer-check" aria-hidden="true">${state.showGrid ? "✓" : ""}</span><span>${lblMgrs}</span>
+      </button>` : ""}
       <button type="button" class="tlayer-item${sonarAct}" data-overlay="sonarchart" role="menuitemcheckbox" aria-checked="${state.showSonarChart ? "true" : "false"}" data-tip="${tipSonar}">
         <span class="tlayer-check" aria-hidden="true">${state.showSonarChart ? "✓" : ""}</span><span>${lblSonar}</span>
       </button>
@@ -30565,7 +30578,7 @@ function renderTileMap(lat, lon, zoom){
       s += `<button class="tile-pick${pickActiveCls}" type="button" data-map-pick="1" data-tip="${esc(t("map.pickTip"))}" aria-label="${esc(pickAr)}" aria-pressed="${state.mapPickMode ? "true" : "false"}"><span class="tmb-ico" aria-hidden="true">🎯</span><span class="tmb-label" aria-hidden="true">${esc(pickAr)}</span></button>`;
       return s;
     })()}
-    <button class="tg-btn ${state.showGrid ? "active" : ""}" type="button" data-tip="${esc(t("tip.toggleGrid"))}" aria-label="${esc(t("tip.toggleGrid"))}" aria-pressed="${state.showGrid ? "true" : "false"}"><span class="tg-btn-grid" aria-hidden="true">#</span><span class="tg-btn-mgrs">MGRS</span></button>
+    ${_gisHub ? "" : `<button class="tg-btn ${state.showGrid ? "active" : ""}" type="button" data-tip="${esc(t("tip.toggleGrid"))}" aria-label="${esc(t("tip.toggleGrid"))}" aria-pressed="${state.showGrid ? "true" : "false"}"><span class="tg-btn-grid" aria-hidden="true">#</span><span class="tg-btn-mgrs">MGRS</span></button>`}
     ${(() => {
       if (_gisHub) return "";
       const covOn = state.showCoverage !== false;
@@ -30886,6 +30899,14 @@ function renderTileMap(lat, lon, zoom){
     b.addEventListener("click", (ev) => {
       ev.stopPropagation();
       state.showSeamarks = !state.showSeamarks;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="mgrs"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.showGrid = !state.showGrid;
       saveStore();
       renderTileMap(lat, lon, zoom);
     });
