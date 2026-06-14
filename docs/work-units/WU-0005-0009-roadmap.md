@@ -43,8 +43,7 @@ Ordine operativo consigliato:
 2. **WU-0006 — Diagnosi e decisione poligoni**  
    Va fatta prima di spostare “Poligoni” dentro “Tracce”, perché non ha senso riorganizzare in UI una funzione rotta senza sapere se sarà corretta, degradata o rimossa.
 
-3. **WU-0007 — UX toolbar laterale e razionalizzazione strumenti**  
-   Include sia interventi cosmetici sia spostamenti funzionali. Va fatta dopo la diagnosi poligoni e prima dei basemap multipli.
+3. **WU-0007 — UX toolbar laterale e razionalizzazione strumenti** — **PASS** (B1–B8, `fa12567`..`e4c2be3`). Completata prima dei basemap multipli; flyout Tracce/Waypoint e MGRS in Layers.
 
 4. **WU-0008 — Basemap XYZ aperti nel monolite**  
    Solo layer pubblici/XYZ aperti: OSM-HOT, CARTO Voyager, OpenTopoMap.
@@ -275,17 +274,29 @@ Ridurre ingombro e disordine della toolbar laterale, correggere allineamenti e r
 - B1-B3 sono prevalentemente **cosmetici / Cursor diretto**, salvo impatto JS.
 - B4-B8 sono **sensibili / layering UI + state wiring — pipeline.**
 
-### Stato parziale post-fix toolbar
+### Stato finale WU-0007 — Toolbar GIS
 
-- B1 — Pulsanti più piccoli: PASS con `e4c2be3 fix(gis): reduce map toolbar button size`.
-- B2 — Layers disallineato: PASS con `e4c2be3`; test visivo OK.
-- Restano da pianificare/implementare B3+:
-  - GPS icona → scritta con colore qualità;
-  - distanza → righello;
-  - waypoint espandibile a 3 azioni;
-  - poligoni dentro tracce;
-  - MGRS dentro Layers;
-  - Range & Bearing dentro tracce.
+**Stato:** PASS.
+
+- B1 — Pulsanti più piccoli: PASS (`e4c2be3`).
+- B2 — Layers allineato: PASS (`e4c2be3`).
+- B3 — GPS label + colore qualità: PASS (`c051ee1`).
+- B4 — Distanza → righello: PASS (`54d8586`).
+- B5 — Waypoint / Posiziona punto / Torna al punto in gruppo espandibile: PASS (`7a02a7e`).
+- B6 — Poligoni dentro Tracce: PASS (`e8395e9`).
+- B7 — MGRS dentro Layers: PASS (`74d3f32`).
+- B8 — Range & Bearing dentro Tracce: PASS (`fa12567`).
+
+Esito:
+
+- Toolbar GIS più compatta.
+- Pulsanti principali più leggibili.
+- Accessi secondari raggruppati in flyout coerenti (Tracce, Waypoint).
+- Poligoni e Range & Bearing accessibili da Tracce senza fusione dei dati.
+- MGRS accessibile da Layers come overlay locale.
+- Nessuna modifica intenzionale a modelli dati waypoint/tracce/poligoni.
+- Nessun GPS silenzioso o live tracking introdotto.
+- Validazione operativa per blocco durante implementazione; blocco formale B9 (QA integrata unica) non eseguito separatamente.
 
 ## Blocchi
 
@@ -331,6 +342,8 @@ Decisione da bloccare:
 
 ### B3 — GPS icona → scritta con colore qualità segnale
 
+**Stato:** PASS (`c051ee1`).
+
 Trasformare GPS da icona a scritta, con colore che rappresenta qualità segnale.
 
 Classificazione: **sensibile medio / pipeline leggera**, perché non è solo CSS: serve capire dove vive lo stato qualità GPS e non introdurre live tracking.
@@ -349,6 +362,8 @@ Decisioni da bloccare:
 
 ### B4 — Distanza → righello
 
+**Stato:** PASS (`54d8586`).
+
 Convertire lo strumento distanza in icona/strumento righello.
 
 Classificazione: **cosmetico se solo icona/testo; pipeline se cambia handler o pannello**.
@@ -362,6 +377,8 @@ Decisioni da bloccare:
 - non fondere ancora con range/bearing.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
+
+**Stato:** PASS (`7a02a7e`).
 
 Raggruppare:
 
@@ -391,6 +408,8 @@ Decisioni da bloccare:
 
 ### B6 — Poligoni dentro Tracce
 
+**Stato:** PASS (`e8395e9`).
+
 Spostare o assorbire la voce Poligoni dentro Tracce.
 
 Classificazione: **sensibile / pipeline**.
@@ -408,6 +427,8 @@ Decisioni da bloccare:
 - evitare refactor ampio.
 
 ### B7 — MGRS dentro Layers come overlay
+
+**Stato:** PASS (`74d3f32`).
 
 Spostare MGRS in Layers come overlay.
 
@@ -429,6 +450,8 @@ Decisioni da bloccare:
 - i18n.
 
 ### B8 — Range & Bearing dentro Tracce
+
+**Stato:** PASS (`fa12567`).
 
 Spostare Range & Bearing dentro Tracce.
 
@@ -751,18 +774,18 @@ Test:
 2. **WU-0006 B0-B2** — diagnosi poligoni e decisione.
 3. **WU-0006 B3A/B3B-B4** — fix o rimozione.
 
-## Fase 2 — Toolbar e strumenti
+## Fase 2 — Toolbar e strumenti — **WU-0007 PASS**
 
-4. **WU-0007 B0** — inventario UI.
-5. **WU-0007 B1** — pulsanti più piccoli.
-6. **WU-0007 B2** — Layers allineato.
-7. **WU-0007 B3** — GPS scritta/colore qualità.
-8. **WU-0007 B4** — distanza/righello.
-9. **WU-0007 B5** — gruppo Waypoint espandibile.
-10. **WU-0007 B6** — poligoni dentro Tracce o rimozione UI, secondo WU-0006.
-11. **WU-0007 B7** — MGRS dentro Layers.
-12. **WU-0007 B8** — Range & Bearing dentro Tracce.
-13. **WU-0007 B9** — QA integrata.
+4. ~~**WU-0007 B0** — inventario UI.~~
+5. ~~**WU-0007 B1** — pulsanti più piccoli (`e4c2be3`).~~
+6. ~~**WU-0007 B2** — Layers allineato (`e4c2be3`).~~
+7. ~~**WU-0007 B3** — GPS scritta/colore qualità (`c051ee1`).~~
+8. ~~**WU-0007 B4** — distanza/righello (`54d8586`).~~
+9. ~~**WU-0007 B5** — gruppo Waypoint espandibile (`7a02a7e`).~~
+10. ~~**WU-0007 B6** — poligoni dentro Tracce (`e8395e9`).~~
+11. ~~**WU-0007 B7** — MGRS dentro Layers (`74d3f32`).~~
+12. ~~**WU-0007 B8** — Range & Bearing dentro Tracce (`fa12567`).~~
+13. **WU-0007 B9** — QA integrata toolbar (non formalizzata; validazione operativa per blocco).
 
 ## Fase 3 — Basemap aperti
 
@@ -808,9 +831,9 @@ Decidere se la governance resta solo documentale o deve modificare anche testi U
 
 Definire il sintomo minimo del bug poligoni. Anche una frase basta, per esempio: “clicco poligoni e non succede nulla” oppure “disegna ma non calcola area”.
 
-## Prima di WU-0007
+## Prima di WU-0007 — **risolto**
 
-Decidere se la toolbar deve rimanere una barra verticale semplice o diventare una mini-toolbar con gruppi espandibili. Il gruppo Waypoint a 3 azioni introduce già una logica espandibile: conviene stabilire un pattern riusabile.
+Pattern adottato: mini-toolbar verticale con gruppi espandibili (flyout Tracce e Waypoint); MGRS spostato nel menu Layers. Vedi stato finale WU-0007 sopra.
 
 ## Prima di WU-0008
 

@@ -159,7 +159,7 @@ catena, a passi fissi, NON iterativa:
 
 - Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
 - **Poligoni:** fix base PASS (`72a194e`) + UX leggera PASS (`f7260d9`) — auto-arm draw mode all’apertura pannello, cancellazione con `✕` in lista, pannello minimizzato durante il disegno e ripristino dopo finish/cancel. Restano backlog pesanti/separati: editing vertici, drag del poligono intero, standardizzazione modal trasversale. Dettaglio: `docs/work-units/WU-0005-0009-roadmap.md`.
-- **UX toolbar laterale:** B1/B2 PASS (`e4c2be3`) — pulsanti più piccoli e Layers allineato. Restano candidati: `GPS` icona → scritta con colore qualità, distanza → righello, `Waypoint` + `posiziona punto` + `torna al punto` in pulsante espandibile a 3, `Poligoni` dentro `Tracce`, `MGRS` dentro `Layers` come overlay, `Range & Bearing` dentro `Tracce`.
+- **UX toolbar laterale:** WU-0007 PASS — B1/B2 pulsanti più piccoli + Layers allineato (`e4c2be3`), B3 GPS label + colore qualità PASS (`c051ee1`), B4 distanza → righello PASS (`54d8586`), B5 waypoint/posiziona/torna in gruppo espandibile PASS (`7a02a7e`), B6 poligoni dentro Tracce (`e8395e9`), B7 MGRS dentro Layers PASS (`74d3f32`), B8 Range & Bearing dentro Tracce (`fa12567`). Restano fuori da WU-0007 eventuali standardizzazioni modal trasversali o refactor futuri non ancora pianificati.
 - **Basemap multipli:**
   - XYZ aperti nel solo monolite: OSM-HOT, CARTO Voyager, OpenTopoMap;
   - poi Google/Bing tramite proxy Planet-Clone;
