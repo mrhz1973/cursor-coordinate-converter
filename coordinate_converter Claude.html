@@ -3074,6 +3074,17 @@ body.mm-enlarged{overflow:hidden}
   height:1px; margin:4px 0;
   background:var(--border);
 }
+.tile-map .tlayer-section-title{
+  padding:6px 12px 3px;
+  font-size:.68rem; font-weight:800;
+  letter-spacing:.04em; text-transform:uppercase;
+  color:var(--muted);
+  pointer-events:none; user-select:none;
+}
+.tile-map .tlayer-section + .tlayer-section .tlayer-section-title{
+  border-top:1px solid var(--border);
+  margin-top:2px; padding-top:7px;
+}
 .tile-map .tlayer-menu[hidden]{ display:none !important }
 .tile-map .tlayer-item{
   display:flex; align-items:center; gap:8px;
@@ -10919,18 +10930,21 @@ const I18N = {
     "res.mapLinks":"Apri in mappa:",
     "res.miniMap":"Mini-mappa",
     "map.layerMap":"CARTO Voyager",
-    "map.layerOsmHot":"OSM HOT",
-    "map.layerOsmStandard":"OpenStreetMap",
-    "map.layerCyclosm":"CyclOSM",
-    "map.layerTopo":"Topografica",
-    "map.layerSat":"Satellite",
+    "map.layerOsmHot":"OSM HOT (OpenStreetMap)",
+    "map.layerOsmStandard":"OpenStreetMap (OSMF)",
+    "map.layerCyclosm":"CyclOSM (OpenStreetMap)",
+    "map.layerTopo":"Topografica (OpenTopoMap)",
+    "map.layerSat":"Satellite (Esri)",
     "map.layerNav":"Navionics",
     "map.layerDark":"Scura",
     "map.layerSea":"Nautica",
     "map.layerBathy":"Batimetria",
     "map.overlaySeamarks":"Seamarks (boe/fari)",
-    "map.overlaySonarChart":"SonarChart",
+    "map.overlaySonarChart":"Navionics SonarChart",
     "map.overlayMgrs":"Grigliato MGRS",
+    "map.layersSectionTopographic":"Topografica",
+    "map.layersSectionSatellite":"Satellitare",
+    "map.layersSectionNautical":"Nautica",
     "map.sizeSmall":"Dimensione piccola",
     "map.sizeHalf":"Metà schermo",
     "map.sizeFull":"Schermo intero",
@@ -12398,18 +12412,21 @@ const I18N = {
     "res.mapLinks":"Open in map:",
     "res.miniMap":"Mini-map",
     "map.layerMap":"CARTO Voyager",
-    "map.layerOsmHot":"OSM HOT",
-    "map.layerOsmStandard":"OpenStreetMap",
-    "map.layerCyclosm":"CyclOSM",
-    "map.layerTopo":"Topographic",
-    "map.layerSat":"Satellite",
+    "map.layerOsmHot":"OSM HOT (OpenStreetMap)",
+    "map.layerOsmStandard":"OpenStreetMap (OSMF)",
+    "map.layerCyclosm":"CyclOSM (OpenStreetMap)",
+    "map.layerTopo":"Topographic (OpenTopoMap)",
+    "map.layerSat":"Satellite (Esri)",
     "map.layerNav":"Navionics",
     "map.layerDark":"Dark",
     "map.layerSea":"Nautical",
     "map.layerBathy":"Bathymetry",
     "map.overlaySeamarks":"Seamarks (buoys/lights)",
-    "map.overlaySonarChart":"SonarChart",
+    "map.overlaySonarChart":"Navionics SonarChart",
     "map.overlayMgrs":"MGRS grid",
+    "map.layersSectionTopographic":"Topographic",
+    "map.layersSectionSatellite":"Satellite",
+    "map.layersSectionNautical":"Nautical",
     "map.sizeSmall":"Small size",
     "map.sizeHalf":"Half screen",
     "map.sizeFull":"Full screen",
@@ -13877,18 +13894,21 @@ const I18N = {
     "res.mapLinks":"Ouvrir sur une carte :",
     "res.miniMap":"Mini-carte",
     "map.layerMap":"CARTO Voyager",
-    "map.layerOsmHot":"OSM HOT",
-    "map.layerOsmStandard":"OpenStreetMap",
-    "map.layerCyclosm":"CyclOSM",
-    "map.layerTopo":"Topographique",
-    "map.layerSat":"Satellite",
+    "map.layerOsmHot":"OSM HOT (OpenStreetMap)",
+    "map.layerOsmStandard":"OpenStreetMap (OSMF)",
+    "map.layerCyclosm":"CyclOSM (OpenStreetMap)",
+    "map.layerTopo":"Topographique (OpenTopoMap)",
+    "map.layerSat":"Satellite (Esri)",
     "map.layerNav":"Navionics",
     "map.layerDark":"Sombre",
     "map.layerSea":"Nautique",
     "map.layerBathy":"Bathymétrie",
     "map.overlaySeamarks":"Seamarks (bouées/feux)",
-    "map.overlaySonarChart":"SonarChart",
+    "map.overlaySonarChart":"Navionics SonarChart",
     "map.overlayMgrs":"Grille MGRS",
+    "map.layersSectionTopographic":"Topographique",
+    "map.layersSectionSatellite":"Satellite",
+    "map.layersSectionNautical":"Nautique",
     "map.sizeSmall":"Petite taille",
     "map.sizeHalf":"Demi-écran",
     "map.sizeFull":"Plein écran",
@@ -30761,43 +30781,36 @@ function renderTileMap(lat, lon, zoom){
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
     const navAct = state.mapLayer === "nav" ? " is-active" : "";
+    const lblSecTopo = esc(t("map.layersSectionTopographic"));
+    const lblSecSat = esc(t("map.layersSectionSatellite"));
+    const lblSecNaut = esc(t("map.layersSectionNautical"));
+    const tlayerBasemapBtn = (layerId, act, tip, lbl, on) =>
+      `<button type="button" class="tlayer-item${act}" data-layer="${layerId}" role="menuitem" data-tip="${tip}">`
+      + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
+    const tlayerOverlayBtn = (overlay, act, tip, lbl, on) =>
+      `<button type="button" class="tlayer-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}">`
+      + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
+    const tlayerSection = (title, inner) =>
+      `<div class="tlayer-section" role="group" aria-label="${title}"><div class="tlayer-section-title" aria-hidden="true">${title}</div>${inner}</div>`;
+    const topoItems = tlayerBasemapBtn("osmHot", osmHotAct, tipOsmHot, lblOsmHot, state.mapLayer === "osmHot")
+      + tlayerBasemapBtn("osmStandard", osmStandardAct, tipOsmStandard, lblOsmStandard, state.mapLayer === "osmStandard")
+      + tlayerBasemapBtn("cyclosm", cyclosmAct, tipCyclosm, lblCyclosm, state.mapLayer === "cyclosm")
+      + tlayerBasemapBtn("osm", osmAct, tipOsm, lblMap, state.mapLayer === "osm")
+      + tlayerBasemapBtn("topo", topoAct, tipTopo, lblTopo, state.mapLayer === "topo")
+      + (_gisHub ? tlayerOverlayBtn("mgrs", mgrsAct, tipMgrs, lblMgrs, !!state.showGrid) : "");
+    const satItems = tlayerBasemapBtn("sat", satAct, tipSat, lblSat, state.mapLayer === "sat");
+    const nautItems = tlayerBasemapBtn("nav", navAct, tipNav, lblNav, state.mapLayer === "nav")
+      + tlayerOverlayBtn("sonarchart", sonarAct, tipSonar, lblSonar, !!state.showSonarChart)
+      + tlayerOverlayBtn("seamarks", seamAct, tipSeam, lblSeam, !!state.showSeamarks);
     basemapLayersHtml = `<div class="tile-layers" data-role="basemap-layers-root">
     <button class="tlayer-btn" type="button" data-role="basemap-menu-toggle" data-tip="${tipPick}" aria-label="${tipPick}"
       aria-haspopup="true" aria-expanded="${bmOpen ? "true" : "false"}">
       <img class="tlayer-ico" src="assets/layers.svg" width="20" height="20" alt="" decoding="async">
     </button>
     <div class="tlayer-menu" data-role="basemap-menu" role="menu"${bmOpen ? "" : " hidden"}>
-      <button type="button" class="tlayer-item${osmHotAct}" data-layer="osmHot" role="menuitem" data-tip="${tipOsmHot}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osmHot" ? "✓" : ""}</span><span>${lblOsmHot}</span>
-      </button>
-      <button type="button" class="tlayer-item${osmStandardAct}" data-layer="osmStandard" role="menuitem" data-tip="${tipOsmStandard}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osmStandard" ? "✓" : ""}</span><span>${lblOsmStandard}</span>
-      </button>
-      <button type="button" class="tlayer-item${cyclosmAct}" data-layer="cyclosm" role="menuitem" data-tip="${tipCyclosm}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "cyclosm" ? "✓" : ""}</span><span>${lblCyclosm}</span>
-      </button>
-      <button type="button" class="tlayer-item${osmAct}" data-layer="osm" role="menuitem" data-tip="${tipOsm}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osm" ? "✓" : ""}</span><span>${lblMap}</span>
-      </button>
-      <button type="button" class="tlayer-item${topoAct}" data-layer="topo" role="menuitem" data-tip="${tipTopo}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "topo" ? "✓" : ""}</span><span>${lblTopo}</span>
-      </button>
-      <button type="button" class="tlayer-item${satAct}" data-layer="sat" role="menuitem" data-tip="${tipSat}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "sat" ? "✓" : ""}</span><span>${lblSat}</span>
-      </button>
-      <button type="button" class="tlayer-item${navAct}" data-layer="nav" role="menuitem" data-tip="${tipNav}">
-        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "nav" ? "✓" : ""}</span><span>${lblNav}</span>
-      </button>
-      ${_gisHub ? `<div class="tlayer-sep" aria-hidden="true"></div>
-      <button type="button" class="tlayer-item${mgrsAct}" data-overlay="mgrs" role="menuitemcheckbox" aria-checked="${state.showGrid ? "true" : "false"}" data-tip="${tipMgrs}">
-        <span class="tlayer-check" aria-hidden="true">${state.showGrid ? "✓" : ""}</span><span>${lblMgrs}</span>
-      </button>` : ""}
-      <button type="button" class="tlayer-item${sonarAct}" data-overlay="sonarchart" role="menuitemcheckbox" aria-checked="${state.showSonarChart ? "true" : "false"}" data-tip="${tipSonar}">
-        <span class="tlayer-check" aria-hidden="true">${state.showSonarChart ? "✓" : ""}</span><span>${lblSonar}</span>
-      </button>
-      <button type="button" class="tlayer-item${seamAct}" data-overlay="seamarks" role="menuitemcheckbox" aria-checked="${state.showSeamarks ? "true" : "false"}" data-tip="${tipSeam}">
-        <span class="tlayer-check" aria-hidden="true">${state.showSeamarks ? "✓" : ""}</span><span>${lblSeam}</span>
-      </button>
+      ${tlayerSection(lblSecTopo, topoItems)}
+      ${tlayerSection(lblSecSat, satItems)}
+      ${tlayerSection(lblSecNaut, nautItems)}
     </div>
   </div>`;
   }
