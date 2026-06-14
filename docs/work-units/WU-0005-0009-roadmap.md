@@ -45,8 +45,7 @@ Ordine operativo consigliato:
 
 3. **WU-0007 — UX toolbar laterale e razionalizzazione strumenti** — **PASS** (B1–B8, `fa12567`..`e4c2be3`). Completata prima dei basemap multipli; flyout Tracce/Waypoint e MGRS in Layers.
 
-4. **WU-0008 — Basemap XYZ aperti nel monolite**  
-   Solo layer pubblici/XYZ aperti: OSM-HOT, CARTO Voyager, OpenTopoMap.
+4. **WU-0008 — Basemap XYZ aperti nel monolite** — **PASS** (`cf6d796`). OSM HOT aggiunto; CARTO Voyager e OpenTopoMap normalizzati nel catalogo esistente; gate tile/cache/export invariati.
 
 5. **WU-0009 — Google/Bing via proxy Planet-Clone, lavoro a due teste**  
    Parte sensibile: coinvolge proxy, fetch, gate OPSEC, consenso e separazione tra GIS e Planet-Clone.
@@ -95,10 +94,10 @@ Mappa gate esistenti (read-only monolite):
 | Geocoding/reverse | `geocodingAllowed()`, `nominatimQuery`, `reverseGeocode` (~21120) | Nominatim forward/reverse; disabilitato se `opsecStrict`; richiede `geocodeEnabled` + online effettivo | Sì | Fallback dataset città offline su errore |
 | Tracking eventi rete | `recordNetEvent`, `state._netEvents` (~23855) | Tracciamento host/eventi rete transiente (sessione) | Sì | Diagnostica, non gate |
 | MGRS | `state.showGrid`, `buildMgrsGridSVG` (~23095) | Overlay SVG locale sulla mappa | Sì | Nessuna fetch internet |
-| Basemap | `TILE_LAYERS`, `state.mapLayer` (~22470) | Provider tile osm/topo/sat/nav (`external`: internet o tailnet-proxy) | Sì | Governato da `tileFetchAllowed`; id `osm` usa URL CARTO Voyager |
+| Basemap | `TILE_LAYERS`, `state.mapLayer` (~22470) | Provider tile `osmHot`/osm/topo/sat/nav (`external`: internet o tailnet-proxy) | Sì | Governato da `tileFetchAllowed`; id `osm` = CARTO Voyager; `osmHot` = OSM HOT (`cf6d796`) |
 | Seamarks/OpenSeaMap | `SEAMARK_OVERLAY`, `state.showSeamarks` (~22510, ~30539) | Overlay marino online-only; render `<img src>` solo se `showSeamarks && !forceOffline && !opsecStrict` | Sì | Non passa da `tileFetchAllowed` ma gate render impedisce fetch sotto OPSEC/forced-offline |
 | SonarChart overlay | `SONARCHART_OVERLAY`, `sonarChartFetchAllowed()` (~22517) | Overlay tailnet-proxy; gate via `tileFetchAllowed("sonarchart")` | Sì | Toggle Layers; consenso Navionics riusato sotto OPSEC strict |
-| Proxy/layer futuri | WU-0008/WU-0009 | Basemap XYZ aperti e Google/Bing via proxy | Da governare | Stessi gate: OPSEC strict, `forceOffline`, consenso, cache |
+| Proxy/layer futuri | WU-0009 | Google/Bing via proxy Planet-Clone | Da governare | WU-0008 XYZ aperti PASS; stessi gate: OPSEC strict, `forceOffline`, consenso, cache |
 
 Esito:
 
@@ -551,6 +550,22 @@ La WU deve mantenere il modello radio basemap: una base sempre attiva, nessuno s
 
 Motivo: tocca catalogo layer, fetch tile, offline mode, OPSEC strict, UI Layers e forse cache/offline maps.
 
+### Stato finale WU-0008 — Basemap XYZ aperti
+
+**Stato:** PASS runtime (`cf6d796`).
+
+- OSM HOT aggiunto (`osmHot` in `TILE_LAYERS`, `external: "internet"`, `maxZoom: 19`).
+- CARTO Voyager normalizzato (id legacy `osm`, label UI, `maxZoom: 20`).
+- OpenTopoMap (`topo`) già presente — mantenuto senza duplicazione (`maxZoom: 17`).
+- Fix `resolveCatalogLayerId` per attivazione case-insensitive `osmHot`.
+- UI Layers, selettore offline cache, i18n IT/EN/FR, cache/export JPG via schema esistente.
+
+Esito:
+
+- Patch runtime unica su `coordinate_converter Claude.html` (+58/−22).
+- Test manuale OK (selezione layer, gate forced-offline/OPSEC, resto toolbar invariato).
+- WU-0009 Google/Bing proxy resta filone separato.
+
 ## Blocchi
 
 ### B0 — Docs WU e matrice layer
@@ -828,15 +843,15 @@ Test:
 12. ~~**WU-0007 B8** — Range & Bearing dentro Tracce (`fa12567`).~~
 13. **WU-0007 B9** — QA integrata toolbar (non formalizzata; validazione operativa per blocco).
 
-## Fase 3 — Basemap aperti
+## Fase 3 — Basemap aperti — **WU-0008 PASS**
 
-14. **WU-0008 B0-B1** — matrice e diagnosi layer.
-15. **WU-0008 B2** — OSM-HOT.
-16. **WU-0008 B3** — CARTO Voyager.
-17. **WU-0008 B4** — OpenTopoMap: verifica/normalizzazione, non duplicazione.
-18. **WU-0008 B5** — UI Layers.
-19. **WU-0008 B6** — Offline maps/export JPG.
-20. **WU-0008 B7** — QA.
+14. ~~**WU-0008 B0-B1** — matrice e diagnosi layer.~~
+15. ~~**WU-0008 B2** — OSM-HOT (`cf6d796`).~~
+16. ~~**WU-0008 B3** — CARTO Voyager (`cf6d796`).~~
+17. ~~**WU-0008 B4** — OpenTopoMap: verifica/normalizzazione, non duplicazione (`cf6d796`).~~
+18. ~~**WU-0008 B5** — UI Layers (`cf6d796`).~~
+19. ~~**WU-0008 B6** — Offline maps/export JPG (`cf6d796`).~~
+20. ~~**WU-0008 B7** — QA (`cf6d796`).~~
 
 ## Fase 4 — Proxy Google/Bing
 
@@ -856,7 +871,7 @@ Test:
 | WU-0006 Poligoni | nessuna | diagnosi autonoma, ma blocca UX poligoni |
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
-| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | layer nuovi dopo governance e toolbar stabile |
+| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** (`cf6d796`) |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
 | WU-0009B GIS Google/Bing | WU-0005, WU-0008, WU-0009A | GIS integra solo proxy già pronto e regole OPSEC già chiare |
 
@@ -876,14 +891,9 @@ Definire il sintomo minimo del bug poligoni. Anche una frase basta, per esempio:
 
 Pattern adottato: mini-toolbar verticale con gruppi espandibili (flyout Tracce e Waypoint); MGRS spostato nel menu Layers. Vedi stato finale WU-0007 sopra.
 
-## Prima di WU-0008
+## Prima di WU-0008 — **risolto**
 
-Decidere la politica dei nuovi basemap aperti:
-
-- entrano anche in download offline?
-- entrano anche in export JPG?
-- default basemap resta quello attuale?
-- attribution sempre visibile?
+Politica adottata: nuovi basemap XYZ entrano in Layers, download offline e export JPG via catalogo `TILE_LAYERS`/`OFFLINE_LAYER_IDS` esistente; default basemap resta `osm` (CARTO Voyager); attribution per-layer invariata; gate `tileFetchAllowed`/`forceOffline`/`opsecStrict` invariati. Vedi stato finale WU-0008 (`cf6d796`).
 
 ## Prima di WU-0009
 
