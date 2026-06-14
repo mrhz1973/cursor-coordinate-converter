@@ -53,6 +53,45 @@
 - Modifiche runtime: commit separati — codice / docs operative / autosync.
 - Blocchi docs-only: non toccare il monolite.
 
+### Pipeline prompt Cursor (revisione incrociata a passi fissi)
+
+Per ogni blocco operativo, il prompt Cursor passa UNA volta per questa
+catena, a passi fissi, NON iterativa:
+
+1. GPT redige il prompt Cursor (bozza).
+2. Claude critica → produce prompt di correzione.
+3. GPT critica → ripropone il prompt.
+4. Claude revisione finale → critica + proposta definitiva.
+5. GPT consegna il prompt a Cursor.
+
+**Regole:**
+
+- Catena CHIUSA a questi 5 passi: due passaggi Claude, due GPT, poi
+  Cursor. Nessun giro extra di andata-e-ritorno.
+- Il prompt che arriva a Cursor contiene TUTTO ciò che deve fare nel
+  blocco. Cursor esegue in un colpo solo: niente esecuzioni a tentativi,
+  salvo errore bloccante da riportare.
+- Critica = sostanza: scope, fetch, consenso, OPSEC, regressioni,
+  storage/cache, container UI, stato repo e rischi di diff; non stile.
+- L'operatore arbitra solo se Claude e GPT restano in disaccordo dopo
+  il passo 4.
+
+**Chiusura blocco (dopo l'esecuzione Cursor):**
+
+- Verifica esito: diff, controlli automatici pertinenti e gate OPSEC
+  mirato se il blocco tocca rete, tile, proxy, cache, storage o fetch.
+- Commit e autosync chiusi nello stesso intervento operativo, ma con
+  commit separati e selettivi:
+  - commit codice/runtime se il monolite o altri file operativi sono
+    stati modificati;
+  - commit docs operative se WU, OPERATING_MEMORY o README cambiano
+    stato/snapshot;
+  - commit autosync memoria orchestratore per latest.md + inbox/.
+- Aggiornare WU, OPERATING_MEMORY e README snapshot solo se cambia
+  davvero lo stato operativo o lo snapshot.
+- Nessun blocco operativo è chiuso finché non risulta pubblicato
+  l'autosync orchestratore pertinente.
+
 ---
 
 ## 5. Modalità Cursor consigliata
