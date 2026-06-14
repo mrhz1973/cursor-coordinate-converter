@@ -1116,6 +1116,7 @@ Test:
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
 | WU-0009B GIS Google/Bing | WU-0005, WU-0008, WU-0009A | GIS integra solo proxy già pronto e regole OPSEC già chiare |
+| Mappe offline UX | nessuna | candidato: cache IndexedDB vs export file, etichette, azioni riga, feedback job |
 
 ---
 

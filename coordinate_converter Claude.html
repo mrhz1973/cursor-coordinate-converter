@@ -11482,7 +11482,7 @@ const I18N = {
     "offcache.exportFileNamePh":"opzionale, es. AO-FLINTLOCK",
     "offcache.area.download":"Scarica",
     "offcache.area.downloadTip":"Scarica in cache le tile di questa area (layer e zoom dell'area salvata)",
-    "offcache.area.alreadyDownloaded":"Già scaricata — le tile sono in cache; l'export JPG userà i dati offline se disponibili.",
+    "offcache.area.alreadyDownloaded":"Già in cache del browser (IndexedDB) — non compare in Download del PC. Per un file JPEG usa «Esporta JPG offline» sotto.",
     "meas.inverse":"Distanza e azimuth tra due punti",
     "meas.gisIntro":"Solo mappa: scegli i punti sulla cartina. Distanza e azimuth si aggiornano trascinando; in «Proietta» puoi digitare distanza/azimuth per spostare il punto finale.",
     "meas.gisFlow2":"Due punti",
@@ -12963,7 +12963,7 @@ const I18N = {
     "offcache.exportFileNamePh":"optional, e.g. AO-FLINTLOCK",
     "offcache.area.download":"Download",
     "offcache.area.downloadTip":"Cache tiles for this area (saved area layer and zoom range)",
-    "offcache.area.alreadyDownloaded":"Already downloaded — tiles are cached; JPG export will use offline data when available.",
+    "offcache.area.alreadyDownloaded":"Already in browser cache (IndexedDB) — not saved to your PC Downloads folder. For a JPEG file use «Export offline JPG» below.",
     "meas.inverse":"Distance and bearing between two points",
     "meas.gisIntro":"Map only: pick points on the chart. Distance and bearing update while dragging; in “Project” you can type distance/bearing to move the end point.",
     "meas.gisFlow2":"Two points",
@@ -14445,7 +14445,7 @@ const I18N = {
     "offcache.exportFileNamePh":"optionnel, ex. AO-FLINTLOCK",
     "offcache.area.download":"Télécharger",
     "offcache.area.downloadTip":"Mettre en cache les tuiles de cette zone (layer et zoom de la zone enregistrée)",
-    "offcache.area.alreadyDownloaded":"Déjà téléchargée — tuiles en cache ; l'export JPG utilisera les données hors ligne si disponibles.",
+    "offcache.area.alreadyDownloaded":"Déjà en cache navigateur (IndexedDB) — pas dans Téléchargements du PC. Pour un fichier JPEG : « Exporter JPG hors ligne » ci-dessous.",
     "meas.inverse":"Distance et azimut entre deux points",
     "meas.gisIntro":"Carte uniquement : choisissez les points sur la carte. Distance et azimut se mettent à jour au déplacement ; dans « Projeter » vous pouvez saisir distance/azimut pour déplacer le point final.",
     "meas.gisFlow2":"Deux points",
@@ -25706,11 +25706,22 @@ async function startOfflineAreasBatchPrecache(){
   if (!sel.length) return;
 
   const queue = [];
+  let skippedComplete = 0;
   for (const id of sel){
     const ar = (state.namedAreas || []).find(x => x && String(x.id) === id);
-    if (ar && namedAreaToPrecacheParams(ar)) queue.push(id);
+    if (!ar || !namedAreaToPrecacheParams(ar)) continue;
+    if (String(ar.status || "").toLowerCase() === "complete"){
+      skippedComplete++;
+      continue;
+    }
+    queue.push(id);
   }
+  const st = document.getElementById("pcStatus");
   if (!queue.length){
+    if (skippedComplete > 0 && st) st.textContent = t("offcache.area.alreadyDownloaded");
+    try {
+      if (skippedComplete > 0) setBadge("info", t("offcache.area.alreadyDownloaded"));
+    } catch(_){}
     updateOfflineAreasToolbarUI();
     return;
   }
