@@ -105,6 +105,16 @@ catena, a passi fissi, NON iterativa:
 - I prompt per Cursor li scrive sempre GPT.
 - Se Claude sta per produrre testo destinato a Cursor, deve fermarsi e passare la sostanza a GPT, non il prompt.
 
+### Comandi all'operatore — uno alla volta
+
+- I comandi che l'operatore esegue a mano — PowerShell, git, shell, terminale — vanno dati **uno alla volta**: un singolo comando, si attende l'output, poi il successivo.
+- Non dare mai blocchi di più comandi in sequenza da copiare insieme quando l'esecuzione è manuale.
+- Motivo: l'operatore li esegue manualmente; sequenze multiple causano errori pratici, per esempio copia parziale, cartella sbagliata o comando saltato.
+- Prima di comandi git/percorso, indicare sempre la cartella corretta:
+  `C:\Users\mrhz\Documents\AI\GitHub\cursor-coordinate-converter`
+- **Eccezione:** i prompt per Cursor Agent restano **completi**. Cursor esegue il blocco intero; non spezzettare i prompt-task di Cursor.
+- La regola “uno alla volta” vale solo per i comandi eseguiti a mano dall'operatore, non per i prompt-task destinati a Cursor.
+
 ---
 
 ## 5. Modalità Cursor consigliata
