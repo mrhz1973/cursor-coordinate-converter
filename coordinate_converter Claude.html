@@ -19075,7 +19075,7 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
       mayFetch = await ensureNavProxyConsent();
     }
     if (mayFetch){
-    const url = layer.url(z, x, y);
+    const url = buildTileUrl(layer, z, x, y);
     const nKind = offlineTileNetworkKind(layerId);
     let netRecorded = false;
     try {
@@ -22524,7 +22524,11 @@ function normalizeLon(lon){
  * Satellite: Esri World Imagery (free tier, no key, CORS enabled).
  *   Note the /{z}/{y}/{x} coordinate order (Esri convention).
  *
- * Both use Web Mercator @ 256 px tiles. Retina (@2x) skipped for size. */
+ * Both use Web Mercator @ 256 px tiles. Retina (@2x) skipped for size.
+ *
+ * tileScheme per-layer (WU-0008 8c-A): default "xyz" → URL {z}/{x}/{y};
+ * "zyx" or "esri" → {z}/{y}/{x} (ArcGIS REST). Layers with subdomain sharding
+ * keep a custom url function; urlBase + tileScheme for simple REST templates. */
 const NAV_PROXY_PORT = 5000;
 function getNavProxyHost(){
   try {
@@ -22533,6 +22537,27 @@ function getNavProxyHost(){
     if (h) return h;
   } catch(_){}
   return "localhost";
+}
+
+function normalizeTileScheme(scheme){
+  const s = String(scheme || "xyz").trim().toLowerCase();
+  if (s === "esri" || s === "zyx") return "zyx";
+  return "xyz";
+}
+
+function formatTilePath(z, x, y, tileScheme){
+  return normalizeTileScheme(tileScheme) === "zyx"
+    ? `${z}/${y}/${x}` : `${z}/${x}/${y}`;
+}
+
+function buildTileUrl(layer, z, x, y){
+  if (!layer) return "";
+  if (typeof layer.url === "function") return layer.url(z, x, y);
+  if (layer.urlBase != null && String(layer.urlBase) !== ""){
+    const suffix = layer.urlSuffix != null ? String(layer.urlSuffix) : "";
+    return String(layer.urlBase) + formatTilePath(z, x, y, layer.tileScheme) + suffix;
+  }
+  return "";
 }
 
 const TILE_LAYERS = {
@@ -22581,7 +22606,8 @@ const TILE_LAYERS = {
   },
   sat: {
     external: "internet",
-    url:    (z, x, y) => `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
+    tileScheme: "zyx",
+    urlBase: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/",
     attrib: 'Imagery © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics',
     maxZoom: 19
   },
@@ -23977,7 +24003,7 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
     mayFetch = await ensureNavProxyConsent();
   }
   if (!mayFetch) throw new Error("opsec-blocked");
-  const url  = layer.url(z, x, y);
+  const url  = buildTileUrl(layer, z, x, y);
   const nKind = offlineTileNetworkKind(layerId);
   let netRecorded = false;
   try {
@@ -24148,7 +24174,7 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
           mayFetch = await ensureNavProxyConsent();
         }
         if (mayFetch){
-        const url = layer.url(z, xw, y);
+        const url = buildTileUrl(layer, z, xw, y);
         const nKind = offlineTileNetworkKind(layerId);
         const fetchOpts = { mode: "cors" };
         if (fetchSig) fetchOpts.signal = fetchSig;
@@ -24234,7 +24260,7 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
           mayFetch = await ensureNavProxyConsent();
         }
         if (mayFetch){
-          const url = layer.url(z, xw, y);
+          const url = buildTileUrl(layer, z, xw, y);
           const nKind = offlineTileNetworkKind(layerId);
           const fetchOpts = { mode: "cors" };
           if (fetchSig) fetchOpts.signal = fetchSig;

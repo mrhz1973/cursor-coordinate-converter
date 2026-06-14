@@ -656,7 +656,22 @@ Vincoli:
 
 #### 8c — Famiglia Esri
 
-**Stato:** candidato runtime successivo, richiede prerequisito motore tile.
+**Stato:** prerequisito motore **8c-A PASS** (tileScheme/y-order); layer Esri aggiuntivi restano candidati (**8c-B**).
+
+##### 8c-A — tileScheme / y-order (prerequisito motore)
+
+**Stato:** PASS runtime (monolite).
+
+Esito:
+
+- helper `normalizeTileScheme`, `formatTilePath`, `buildTileUrl`;
+- `tileScheme` default `xyz` → URL `{z}/{x}/{y}`; `zyx` / `esri` → `{z}/{y}/{x}`;
+- layer `sat` (Esri World Imagery già esistente) migrato a `urlBase` + `tileScheme: "zyx"` — stesso URL effettivo;
+- call site centralizzati: `loadTileImageForOfflineExport`, `fetchAndStoreTile`, `hydrateMapTiles`, `hydrateSonarChartTiles`;
+- `makeTileKey` e chiavi cache invariate; gate OPSEC/offline invariati;
+- nessun nuovo layer Esri; nessuna modifica UI Layers.
+
+##### 8c-B — layer Esri aggiuntivi (candidato)
 
 Layer candidati:
 
@@ -669,8 +684,8 @@ Layer candidati:
 
 Prerequisito tecnico:
 
-- supporto per y-order `{z}/{y}/{x}` tramite flag per-layer, ad esempio `tileScheme`;
-- il supporto `tileScheme` va implementato e testato PRIMA di aggiungere i layer Esri.
+- ~~supporto per y-order `{z}/{y}/{x}` tramite flag per-layer, ad esempio `tileScheme`~~ — **8c-A PASS**;
+- il supporto `tileScheme` va implementato e testato PRIMA di aggiungere i layer Esri — **soddisfatto da 8c-A**; prossimo passo: **8c-B** (nuovi layer catalogo + UI se richiesto).
 
 Motivo:
 
@@ -1072,16 +1087,17 @@ Test:
 19. ~~**WU-0008 B6** — Offline maps/export JPG (`cf6d796`).~~
 20. ~~**WU-0008 B7** — QA (`cf6d796`).~~
 21. ~~**WU-0008 8b** — CyclOSM + OSM standard (`dad28b4`).~~
-22. **WU-0008 8c** — famiglia Esri (prereq `tileScheme` / y-order).
-23. **WU-0008 8d** — EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
+22. ~~**WU-0008 8c-A** — tileScheme / y-order (prerequisito motore).~~
+23. **WU-0008 8c-B** — famiglia Esri (layer catalogo).
+24. **WU-0008 8d** — EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
-24. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
-25. **WU-0009B B0-B2** — predisposizione GIS.
-26. **WU-0009B B3** — Google via proxy.
-27. **WU-0009B B4** — Bing via proxy.
-28. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
+25. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
+26. **WU-0009B B0-B2** — predisposizione GIS.
+27. **WU-0009B B3** — Google via proxy.
+28. **WU-0009B B4** — Bing via proxy.
+29. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
 
 ---
 
@@ -1094,7 +1110,7 @@ Test:
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a (`cf6d796`), **PASS** 8b (`dad28b4`); 8c/8d candidati |
-| WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | motore tile y-order prima dei layer |
+| WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **8c-A PASS**; prossimo **8c-B** layer catalogo |
 | WU-0008 8d EOX | WU-0008 8c o supporto WMTS/y-order | satellite alternativo online-only |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
