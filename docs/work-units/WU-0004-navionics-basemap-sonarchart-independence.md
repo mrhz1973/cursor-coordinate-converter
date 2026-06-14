@@ -41,13 +41,27 @@ da rimuovere o rilassare in questa WU.
 
 ## Sequenza blocchi proposta
 
-| Blocco | Contenuto |
-| --- | --- |
-| **B0** | Docs-only: apertura WU-0004 (questo file + snapshot memoria) |
-| **B1** | Rimuovere mutua esclusione `43d9ece`; verificare coesistenza `nav` + SonarChart |
-| **B2** | Toggle «mostra basemap» (o equivalente) + wiring render/hydrate |
-| **B3** | i18n IT/EN/FR + QA manuale (locale + VPS tailnet) |
-| **B4** | Chiusura WU + autosync |
+| Blocco | Contenuto | Stato |
+| --- | --- | --- |
+| **B0** | Docs-only: apertura WU-0004 (questo file + snapshot memoria) | PASS |
+| **B1** | Rimuovere mutua esclusione `43d9ece`; verificare coesistenza `nav` + SonarChart | PASS |
+| **B2** | Toggle «mostra basemap» (o equivalente) + wiring render/hydrate | pending |
+| **B3** | i18n IT/EN/FR + QA manuale (locale + VPS tailnet) | pending |
+| **B4** | Chiusura WU + autosync | pending |
+
+**WU-0004 resta OPEN** — B2/B3 (e B4 chiusura) ancora da fare.
+
+---
+
+## Stato esecuzione B1 (2026-06-14)
+
+- Commit runtime: `0cd3c8c` — `feat(gis): remove Navionics/SonarChart mutual exclusion (WU-0004 B1)`.
+- Mutua esclusione rimossa in `setMapLayer()`, handler toggle SonarChart, seed init `_lastBaseLayerNonNav`.
+- `_lastBaseLayerNonNav` rimosso (zero lettori reali).
+- Persistenza invariata; reload conserva combo `nav` + SonarChart attivi.
+- Test manuale locale: PASS.
+- B2/B3 non implementati in B1.
+- Rischio noto: doppio-fetch by-design con basemap Navionics + SonarChart overlay entrambi attivi.
 
 ---
 
@@ -62,8 +76,8 @@ da rimuovere o rilassare in questa WU.
 
 ---
 
-## Riferimenti codice (stato attuale)
+## Riferimenti codice (post-B1)
 
-- Mutua esclusione basemap: `setMapLayer()` (~L22731–22737)
-- Mutua esclusione SonarChart toggle: handler `.tlayer-item[data-overlay="sonarchart"]` (~L30622–30627)
-- Seed fallback: `loadStore` / `_lastBaseLayerNonNav` (~L43517)
+- ~~Mutua esclusione basemap: `setMapLayer()`~~ — rimossa in B1
+- ~~Mutua esclusione SonarChart toggle~~ — rimossa in B1
+- ~~`_lastBaseLayerNonNav`~~ — rimosso in B1

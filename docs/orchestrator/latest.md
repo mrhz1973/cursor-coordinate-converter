@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-14 — WU-0004 B1: rimossa mutua esclusione Navionics/SonarChart (commit runtime). _lastBaseLayerNonNav rimosso (zero lettori). Persistenza invariata, reload conserva combo nav+SonarChart. Test locale PASS. Prossimo: B2 toggle mostra/nascondi basemap.
+
 2026-06-14 — WU-0004 OPEN: toggle basemap/SonarChart indipendenti (follow-up
 WU-0003). Rilassa mutua esclusione 43d9ece; obiettivo nascondere basemap sotto
 SonarChart (tile RGBA). GIS layout fix 2dbb4fe (colonna controlli). Read-set
