@@ -69,3 +69,15 @@ Dettagli tecnici:
 - Nessuna nuova dipendenza runtime.
 - Architettura monolite vanilla invariata.
 - Nessuna regressione prevista su Navionics base, OpenSeaMap seamarks, waypoint, tracce, poligoni.
+
+---
+
+## Stato esecuzione (2026-06-14)
+
+- SonarChart base (toggle indipendente, layer, i18n IT/EN/FR): commit a6c7741.
+- Offline download + cached rendering: commit 6c0c18e.
+- WU runtime (cache-on-browse, mutua esclusione Navionics/SonarChart,
+  contatore cache sessione, minimizzazione pannello Mappe offline): commit 43d9ece.
+- Test manuale LOCALE: PASS (esclusione, contatore, minimizzazione/ripristino).
+- PENDENTE per chiusura: verifica tile `/sonar/` su VPS tailnet con proxy attivo
+  (punti rete/consenso BLOCKED-ENV in locale; da confermare in positivo dopo deploy VPS).
