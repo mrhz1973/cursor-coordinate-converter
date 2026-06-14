@@ -45,7 +45,7 @@ Ordine operativo consigliato:
 
 3. **WU-0007 — UX toolbar laterale e razionalizzazione strumenti** — **PASS** (B1–B8, `fa12567`..`e4c2be3`). Completata prima dei basemap multipli; flyout Tracce/Waypoint e MGRS in Layers.
 
-4. **WU-0008 — Basemap XYZ aperti nel monolite** — **PASS** (`cf6d796`). OSM HOT aggiunto; CARTO Voyager e OpenTopoMap normalizzati nel catalogo esistente; gate tile/cache/export invariati.
+4. **WU-0008 — Basemap XYZ aperti nel monolite** — **PASS** 8a (`cf6d796`), **PASS** 8b (`dad28b4`); espansione 8c/8d in roadmap a blocchi (vedi Piano espansione sotto).
 
 5. **WU-0009 — Google/Bing via proxy Planet-Clone, lavoro a due teste**  
    Parte sensibile: coinvolge proxy, fetch, gate OPSEC, consenso e separazione tra GIS e Planet-Clone.
@@ -589,6 +589,193 @@ Fuori scope:
 - modifiche a OPSEC/gate runtime;
 - cancellazione cache/tile esistenti.
 
+Espansione successiva: vedi **Piano espansione basemap WU-0008** (8b landed; 8c/8d candidati).
+
+### Piano espansione basemap WU-0008
+
+**Stato:** roadmap operativa a blocchi.
+
+#### 8a — Basemap XYZ aperti iniziali
+
+**Stato:** landed / PASS runtime (`cf6d796`).
+
+Scope:
+
+- OSM HOT.
+- CARTO Voyager.
+- OpenTopoMap:
+  - già presente;
+  - normalizzato;
+  - non duplicato.
+
+Note:
+
+- XYZ puro `{z}/{x}/{y}`.
+- Nessun y-flip.
+- Layer internet governati dai gate esistenti:
+  - `tileFetchAllowed(layerId)`;
+  - `state.forceOffline`;
+  - `state.opsecStrict`.
+
+#### 8b — CyclOSM + OSM standard
+
+**Stato:** landed / PASS runtime (`dad28b4`).
+
+Scope:
+
+- CyclOSM:
+  - XYZ puro;
+  - cacheabile come gli altri basemap internet, seguendo il pattern OpenTopoMap;
+  - evitare indicazioni che incoraggino bulk aggressivo.
+- OpenStreetMap standard:
+  - XYZ puro;
+  - host singolo `tile.openstreetmap.org`;
+  - niente subdomain `a/b/c.tile.openstreetmap.org`;
+  - **ONLINE-ONLY** per download/bulk offline;
+  - non va offerto per bulk cache/offline, in coerenza con policy OSMF;
+  - esclusione via `cacheable: false` sul layer (pattern già presente nel monolite).
+
+Vincoli:
+
+- Nessun secondo catalogo.
+- Nessun refactor motore tile.
+- `maxZoom` per layer:
+  - CyclOSM: circa 20;
+  - OSM standard: circa 19.
+- Se lo schema layer supporta `maxZoom`/`minZoom`, popolarli.
+- Se lo schema non li supporta, non inventare schema: segnalare e usare default esistente.
+
+#### 8c — Famiglia Esri
+
+**Stato:** candidato runtime successivo, richiede prerequisito motore tile.
+
+Layer candidati:
+
+- Esri World Hillshade.
+- Esri World Shaded Relief.
+- Esri World Imagery.
+- Esri World Topo.
+- Esri World Street.
+- Esri Ocean Base / Ocean Reference.
+
+Prerequisito tecnico:
+
+- supporto per y-order `{z}/{y}/{x}` tramite flag per-layer, ad esempio `tileScheme`;
+- il supporto `tileScheme` va implementato e testato PRIMA di aggiungere i layer Esri.
+
+Motivo:
+
+- è una modifica al motore tile, quindi deve essere blocco isolato con test dedicati;
+- una volta introdotto il flag per-layer, i layer Esri diventano economici perché condividono schema simile.
+
+Vincoli:
+
+- non rompere i layer XYZ `{z}/{x}/{y}`;
+- non alterare cache/offline/export senza test;
+- rispettare `tileFetchAllowed(layerId)`, `state.forceOffline`, `state.opsecStrict`.
+
+#### 8d — EOX Sentinel-2 cloudless
+
+**Stato:** candidato lungo WU-0008, dopo supporto WMTS/y-order.
+
+Scope:
+
+- EOX Sentinel-2 cloudless.
+- Satellite alternativo non-US per ridondanza/cross-check.
+
+Vincoli:
+
+- ONLINE-ONLY.
+- WMTS / y-order.
+- Rate-limited.
+- Niente bulk cache.
+- Utile come layer satellite alternativo, non come sorgente bulk offline.
+
+Note:
+
+- richiede prima supporto tecnico compatibile nel loader;
+- non va mischiato ai layer XYZ puri.
+
+### Tier B — workstream proxy separato
+
+**Stato:** separato dal monolite GIS.
+
+Repo/contesto:
+
+- lavoro da svolgere nel repo/progetto Planet-Clone/proxy;
+- il monolite `coordinate_converter Claude.html` deve vedere solo endpoint proxy stabili, come già avviene per Navionics-like;
+- token, chiavi, refresh, 401, CORS e provider-specific handling devono stare lato proxy.
+
+Provider legittimi con chiavi ufficiali server-side:
+
+- Thunderforest;
+- Mapbox;
+- MapTiler.
+
+Regola:
+
+- chiavi gratuite ufficiali tenute server-side;
+- quote rispettate;
+- accesso tramite proxy;
+- integrazione GIS solo dopo endpoint proxy stabile.
+
+Google/Bing:
+
+- nessun tile keyless ufficiale per uso libero equivalente;
+- il metodo non ufficiale si basa su scraping di endpoint interni;
+- scraping, proxy e cache sono categoria diversa e più rischiosa lato ToS;
+- decisione separata del privato, non da confondere con provider ufficiali server-side.
+
+Non è WU runtime pronta nel monolite: resta workstream separato (collegato a WU-0009, non a WU-0008).
+
+### Tier 3 — 3D terreno, candidato lungo periodo
+
+**Stato:** candidato; non WU pronta.
+
+Target in-scope:
+
+- 3D del terreno;
+- drappeggio dei basemap 2D esistenti su un DEM aperto/keyless;
+- possibili sorgenti:
+  - terrain-RGB/Terrarium su AWS Open Data;
+  - Copernicus DEM 30m;
+- offline-cacheabile;
+- compatibile con OPSEC;
+- utile per:
+  - lettura terreno;
+  - line-of-sight;
+  - intervisibilità;
+  - valutazione tattica del rilievo.
+
+Decisione architetturale a monte:
+
+- decidere prima se il 3D vive:
+  - dentro il monolite;
+  - oppure come companion app/modalità separata che condivide dati.
+- Motori candidati:
+  - MapLibre GL JS, circa 1 MB ma comunque framework di fatto;
+  - CesiumJS, più pesante.
+- Dato il vincolo single-file vanilla, la strada più probabile è companion app/modalità separata, non un semplice tab dentro `coordinate_converter Claude.html`.
+
+Out of scope:
+
+- fotorealismo stile Google Earth;
+- Google Photorealistic 3D Tiles.
+
+Motivo dell'esclusione:
+
+- richiede API key e billing;
+- non è keyless;
+- non è offline-first;
+- i termini non sono compatibili con cache/prefetch/uso offline;
+- non è compatibile con image analysis, object detection o geodata extraction in un contesto intel;
+- un proxy può nascondere la firma tecnica, ma non rende l'uso lecito o compatibile con OPSEC/offline-first.
+
+Prossimo passo:
+
+- decisione di scope: companion app vs interno;
+- non implementazione runtime.
+
 ## Blocchi
 
 ### B0 — Docs WU e matrice layer
@@ -875,14 +1062,17 @@ Test:
 18. ~~**WU-0008 B5** — UI Layers (`cf6d796`).~~
 19. ~~**WU-0008 B6** — Offline maps/export JPG (`cf6d796`).~~
 20. ~~**WU-0008 B7** — QA (`cf6d796`).~~
+21. ~~**WU-0008 8b** — CyclOSM + OSM standard (`dad28b4`).~~
+22. **WU-0008 8c** — famiglia Esri (prereq `tileScheme` / y-order).
+23. **WU-0008 8d** — EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
-## Fase 4 — Proxy Google/Bing
+## Fase 4 — Proxy Google/Bing / Tier B
 
-21. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
-22. **WU-0009B B0-B2** — predisposizione GIS.
-23. **WU-0009B B3** — Google via proxy.
-24. **WU-0009B B4** — Bing via proxy.
-25. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
+24. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
+25. **WU-0009B B0-B2** — predisposizione GIS.
+26. **WU-0009B B3** — Google via proxy.
+27. **WU-0009B B4** — Bing via proxy.
+28. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
 
 ---
 
@@ -894,7 +1084,11 @@ Test:
 | WU-0006 Poligoni | nessuna | diagnosi autonoma, ma blocca UX poligoni |
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
-| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** (`cf6d796`) |
+| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a (`cf6d796`), **PASS** 8b (`dad28b4`); 8c/8d candidati |
+| WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | motore tile y-order prima dei layer |
+| WU-0008 8d EOX | WU-0008 8c o supporto WMTS/y-order | satellite alternativo online-only |
+| Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
+| Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
 | WU-0009B GIS Google/Bing | WU-0005, WU-0008, WU-0009A | GIS integra solo proxy già pronto e regole OPSEC già chiare |
 
