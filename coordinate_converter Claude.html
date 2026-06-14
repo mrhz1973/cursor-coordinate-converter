@@ -2325,8 +2325,17 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   padding:0;
 }
 .tile-map .tgps-btn:disabled{ opacity:.45; cursor:not-allowed; }
-.tile-map .tgps-btn .tgps-ico{ font-size:1.18rem; line-height:1; display:block; }
-.tile-map .tgps-btn:hover:not(:disabled){ background:#e0f2fe; color:#075985; }
+.tile-map .tgps-btn .tgps-label{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-size:.62rem; font-weight:800; letter-spacing:.03em; line-height:1;
+  text-transform:uppercase; display:block; pointer-events:none;
+}
+.tile-map .tgps-btn.gis-gps-idle:not(:disabled){
+  background:rgba(255,255,255,.92); color:#64748b;
+}
+.tile-map .tgps-btn.gis-gps-idle:not(:disabled):hover{ background:#f1f5f9; color:#475569; }
+.tile-map .tgps-btn.geo-acquiring:not(:disabled){ opacity:.72; }
+.tile-map .tgps-btn:hover:not(:disabled):not(.gis-gps-fix-active):not(.gis-gps-idle){ background:#e0f2fe; color:#075985; }
 /* Fix acquisito: colore per qualità (soglie = badge tooltip: ≤10m buono, ≤30m medio, altrimenti scarso; senza accuracy → unknown). */
 .tile-map .tgps-btn.gis-gps-fix-active:not(:disabled).gis-gps-q-good{
   background:#16a34a;
@@ -21764,16 +21773,20 @@ function gisGpsAccToQualityTier(accM){
 function syncGisMapGpsButtonFromTransient(){
   const btn = document.getElementById("btnGisMapMyLocation");
   if (!btn) return;
+  const acquiring = btn.classList.contains("geo-acquiring");
   const has = !!(_gisMapGpsFixTransient && Number.isFinite(_gisMapGpsFixTransient.lat) && Number.isFinite(_gisMapGpsFixTransient.lon));
   const on = has && !btn.disabled;
   const QGPS = ["gis-gps-q-unknown", "gis-gps-q-good", "gis-gps-q-medium", "gis-gps-q-poor"];
   for (const c of QGPS) try { btn.classList.remove(c); } catch(_){}
   btn.classList.toggle("gis-gps-fix-active", on);
   if (on) try { btn.classList.add("gis-gps-q-" + gisGpsAccToQualityTier(_gisMapGpsFixTransient && _gisMapGpsFixTransient.accM)); } catch(_){}
+  btn.classList.toggle("gis-gps-idle", !on && !btn.disabled && !acquiring);
   try { btn.setAttribute("aria-pressed", on ? "true" : "false"); } catch(_){}
   let tip = "";
   try { tip = (typeof t === "function" && t("tip.myLocation")) ? String(t("tip.myLocation")) : ""; } catch(_){ tip = ""; }
-  if (has){
+  if (acquiring){
+    try { tip = (typeof t === "function" && t("geo.acquiring")) ? String(t("geo.acquiring")) : tip; } catch(_){}
+  } else if (has){
     try { tip = formatGisMapGpsTipFromTransient(_gisMapGpsFixTransient) || tip; } catch(_){}
   }
   try {
@@ -22005,17 +22018,11 @@ function requestGisMapCurrentLocation(){
   } catch(_){}
   try { syncGisMapGpsButtonFromTransient(); } catch(_){}
   const my = document.getElementById("btnGisMapMyLocation");
-  const ico = my && my.querySelector(".tgps-ico");
   if (my) my.classList.add("geo-acquiring");
-  if (ico) ico.textContent = "⏳";
   refreshGeolocationBarriers();
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       if (my) my.classList.remove("geo-acquiring");
-      if (ico){
-        ico.textContent = "✓";
-        setTimeout(() => { if (ico) ico.textContent = "📍"; }, 850);
-      }
       const lat = pos.coords.latitude, lon = pos.coords.longitude;
       const c = pos.coords;
       if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180){
@@ -22054,10 +22061,6 @@ function requestGisMapCurrentLocation(){
     },
     (err) => {
       if (my) my.classList.remove("geo-acquiring");
-      if (ico){
-        ico.textContent = "⚠";
-        setTimeout(() => { if (ico) ico.textContent = "📍"; }, 1200);
-      }
       handleGeolocationError(err);
       refreshGeolocationBarriers();
     },
@@ -30410,7 +30413,7 @@ function renderTileMap(lat, lon, zoom){
     ${(() => {
       if (!_gisHub) return "";
       const tipG = esc((typeof t === "function" ? (t("tip.myLocation") || "") : "") || "GPS");
-      return `<button class="tgps-btn" type="button" id="btnGisMapMyLocation" data-role="gis-map-mylocation" data-tip="${tipG}" aria-label="${tipG}" aria-pressed="false" disabled><span class="tgps-ico" aria-hidden="true">📍</span></button>`;
+      return `<button class="tgps-btn gis-gps-idle" type="button" id="btnGisMapMyLocation" data-role="gis-map-mylocation" data-tip="${tipG}" aria-label="${tipG}" aria-pressed="false" disabled><span class="tgps-label" aria-hidden="true">GPS</span></button>`;
     })()}
   </div>`;
 
