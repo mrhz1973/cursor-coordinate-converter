@@ -81,14 +81,14 @@ Waypoint manager with map placement, editing, import and export workflows.
 Offline map workflow with saved areas, tile cache support and coverage visualization.
 Measurement tools for distance, azimuth, polygons and area workflows.
 Geocoding support with OPSEC-aware controls and offline fallback behavior where available.
-Map basemaps: CARTO street map, OpenTopoMap, Esri satellite — plus optional **Navionics** nautical charts (tailnet proxy) and **OpenSeaMap** seamark overlay (buoys, lights).
+Map basemaps: **OSM HOT**, **OpenStreetMap** standard (online-only, no bulk offline), **CyclOSM**, **CARTO Voyager**, **OpenTopoMap**, **Esri** satellite, **Navionics** nautical charts (tailnet proxy), **SonarChart** overlay (tailnet proxy, default off), and **OpenSeaMap** seamark overlay — each layer follows the monolite gates (forced-offline, OPSEC strict, cache/offline where applicable).
 Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
 Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) (§7 = stato vivo). Piano/backlog: [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM **completed** (WU-0002, Fasi 1–5 PASS).
 
-Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, Planet-Clone SonarChart on proxy `/sonar/` (not yet in GIS monolite).
+Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, SonarChart overlay integrated in the GIS monolite (tailnet proxy `/sonar/`, default off, independent from Navionics base).
 
 Legacy/historical (not current read-set): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
 Repository structure
@@ -172,10 +172,10 @@ In the map **Layers** menu (stack icon), choose **Navionics**. The monolite deri
 | Endpoint | Role |
 |----------|------|
 | `/tiles/{z}/{x}/{y}.png` | Seachart / Navionics base (layer 0) — **used today by the GIS monolite** |
-| `/sonar/{z}/{x}/{y}.png` | SonarChart overlay (layer 1, `transparent=true`) — **available from the proxy, not yet integrated in the GIS app** |
+| `/sonar/{z}/{x}/{y}.png` | SonarChart overlay (layer 1, `transparent=true`) — **integrated in the GIS monolite** (Layers menu toggle; default off; separate from Navionics base) |
 | `/status` | Token health; exposes both under `charts.seachart` and `charts.sonarchart` |
 
-Future work: integrate SonarChart in the GIS monolite as an independent overlay (pattern similar to OpenSeaMap seamarks, with its own toggle and i18n IT/EN/FR).
+**SonarChart in the GIS monolite:** independent overlay toggle in the **Layers** menu (Nautical section). Uses the same tailnet proxy host/port as Navionics; default **off**; gated by forced-offline, OPSEC strict, and Navionics/tailnet consent where applicable — not a separate open WU.
 
 **OpenSeaMap seamarks** (same Layers menu, separate toggle): transparent overlay for buoys, lights, and seamarks from `tiles.openseamap.org`. Works over any basemap (including Navionics). **Online only** — no proxy required; useful zoom is z9 and above. Disabled automatically in forced-offline mode.
 

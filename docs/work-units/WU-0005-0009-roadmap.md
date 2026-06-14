@@ -1,11 +1,11 @@
 # WU-0005 → WU-0009 — Piano backlog GIS monolite
 
-**Stato:** PLANNED  
+**Stato:** ACTIVE / PARTIALLY EXECUTED — piano vivo con blocchi completati e candidati futuri  
 **Repo:** `mrhz1973/cursor-coordinate-converter`  
 **Ambito:** GOI GIS Tool / GIS monolite  
 **File operativo:** `coordinate_converter Claude.html`  
 **Fonte backlog:** `docs/OPERATING_MEMORY.md` §7  
-**Nota:** questo documento pianifica il backlog. Non apre ancora una WU runtime e non autorizza modifiche al monolite.
+**Nota:** questo documento è piano/backlog/workstream. Non apre automaticamente una WU runtime; alcuni blocchi sono **PASS**, altri restano candidati. Stato operativo vivo: OM §7.
 
 ---
 
@@ -550,15 +550,19 @@ La WU deve mantenere il modello radio basemap: una base sempre attiva, nessuno s
 
 Motivo: tocca catalogo layer, fetch tile, offline mode, OPSEC strict, UI Layers e forse cache/offline maps.
 
-### Stato finale WU-0008 — Basemap XYZ aperti
+### Stato WU-0008 8a/8b — Basemap aperti: PASS runtime
 
-**Stato:** PASS runtime.
+**Stato:** PASS runtime (8a + 8b). **8c/8d** restano candidati — vedi Piano espansione sotto.
 
-Commit:
+Commit 8a:
 
 - `cf6d796 feat(gis): add OSM HOT and normalize open XYZ basemaps (WU-0008)`
 
-Esito:
+Commit 8b:
+
+- `dad28b4 feat(gis): add CyclOSM and OSM standard basemaps (WU-0008 8b)`
+
+Esito 8a:
 
 - OSM HOT aggiunto come basemap XYZ aperto.
 - CARTO Voyager normalizzato con label e `maxZoom: 20`.
@@ -567,7 +571,12 @@ Esito:
 - Modificato solo `coordinate_converter Claude.html`.
 - Nessuna modifica a docs/README nel commit runtime.
 
-Gate e governance:
+Esito 8b:
+
+- CyclOSM aggiunto (cache/offline come altri basemap internet).
+- OpenStreetMap standard aggiunto (online-only, `cacheable: false`).
+
+Gate e governance (8a/8b):
 
 - I layer aperti restano classificati/gateati come basemap internet secondo lo schema del monolite.
 - Devono passare dal flusso esistente `tileFetchAllowed(layerId)`.
@@ -589,7 +598,7 @@ Fuori scope:
 - modifiche a OPSEC/gate runtime;
 - cancellazione cache/tile esistenti.
 
-Espansione successiva: vedi **Piano espansione basemap WU-0008** (8b landed; 8c/8d candidati).
+Espansione successiva: vedi **Piano espansione basemap WU-0008** — **8c** (Esri, prereq `tileScheme`/y-order) e **8d** (EOX Sentinel-2 cloudless, online-only) candidati.
 
 ### Piano espansione basemap WU-0008
 
