@@ -9,6 +9,12 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-14 — SonarChart overlay (WU-0003) — implementazione + PASS locale:
+base a6c7741, offline 6c0c18e, WU runtime 43d9ece. Test manuale locale PASS.
+Pendente: tile /sonar/ su VPS con proxy. Governance: pipeline prompt Cursor +
+regola 'pubblicato = pushato e verificato' in OPERATING_MEMORY §4 (0612481, cb32c4f).
+Read-set autorevole invariato.
+
 2026-06-14 — **Memory standardization wiki-LLM — Fase 4 autosync finale ✅:** migrazione memoria completata (Fasi 1–4 PASS). **Read-set operativo corrente (non questo file):** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente in `docs/work-units/`. Commit migrazione: `4d52e8c`, `61d7223`, `fd36cbe`, `5680886`. Monolite **non** toccato nella migrazione memoria. Legacy/storico/autosync: `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md`. **`aggio`** ≡ **`aggio gis`** (repo GIS); **`aggio control`** (control-plane). `chatgpt-checkpoint.md` non fonte primaria. Inbox **`2026-06-14_0102_riepilogo_memory-standardization-final-autosync.md`**. **Prossimo:** Fase 5 — verifica nuova chat/agente con read-set lean.
 
 2026-06-13 — **OPSEC Step 4 QA finale + chiusura ciclo ✅:** QA statico Steps 1–3; fix minimi (`set.opsec.strict` i18n, badge toggle); docs `checkpoint`/`session`/`README` con semantica strict graduata definitiva; ciclo OPSEC chiuso. **Backlog:** infra porte/proxy/B2/reboot-test; `/sonar/` monolite. **Deploy:** `git pull` manuale VPS post-push. Inbox **`2026-06-13_0237_riepilogo_opsec-step4-qa.md`**.
