@@ -145,7 +145,37 @@ catena, a passi fissi, NON iterativa:
 - UX GIS / mappe offline / import-export / waypoint / tracce / poligoni
 - OPSEC, cache/tile/geocoding lato app
 
+**Backlog esplicito (prossimi candidati, non WU aperte):**
+
+- **Bug** — `poligoni non funziona`: prima diagnosi read-only, poi decisione fix/rimozione.
+- **UX toolbar laterale:**
+  - pulsanti più piccoli (coprono la barra cache al cambio zoom);
+  - `Layers` disallineato → riallineare;
+  - `GPS`: icona → scritta; colore = qualità segnale;
+  - distanza → icona/strumento righello;
+  - `Waypoint` + `posiziona punto` + `torna al punto` in un pulsante espandibile a 3, azione principale = nuovo waypoint;
+  - `Poligoni` dentro `Tracce`;
+  - `MGRS` dentro `Layers` come overlay;
+  - `Range & Bearing` dentro `Tracce`.
+- **Basemap multipli:**
+  - XYZ aperti nel solo monolite: OSM-HOT, CARTO Voyager, OpenTopoMap;
+  - poi Google/Bing tramite proxy Planet-Clone;
+  - Path B scrape keyless deciso dal privato;
+  - lavoro futuro a due teste: proxy + monolite.
+- **Governance:**
+  - scrivere regola `GIS online di default`;
+  - `forced-offline` = interruttore volontario dell’operatore, **non** vincolo predefinito.
+
 **Escluso da questa OM:** porte raw tailnet, open proxy, B2/Tailscale Serve, reboot-test systemd, ACL/firewall, n8n, control-plane, Planet-Clone operativo.
+
+---
+
+## 7b. Workspace operativo unico
+
+- Lavorare **solo** in `GitHub\cursor-coordinate-converter`, allineato a `origin/main`.
+- **NON** usare `Tools\CesiumTest` per il GIS Tool.
+- `Tools\CesiumTest` è il clone di Planet-Clone / proxy Navionics: progetto diverso.
+- Se un task coinvolge Planet-Clone o proxy Navionics, dichiararlo esplicitamente come lavoro **separato** dal GIS monolite.
 
 ---
 
