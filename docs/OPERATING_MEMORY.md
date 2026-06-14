@@ -98,6 +98,13 @@ catena, a passi fissi, NON iterativa:
   immediata non è prova: il CDN può servire contenuto cachato per
   alcuni minuti.
 
+### Ruolo Claude (consigliere) — limiti
+
+- Claude NON scrive prompt per Cursor. Mai. Nemmeno comandi git, nemmeno "una riga".
+- Claude lavora solo a monte (imposta i task per GPT) e a valle (legge gli esiti su origin e dà verdetti/critiche).
+- I prompt per Cursor li scrive sempre GPT.
+- Se Claude sta per produrre testo destinato a Cursor, deve fermarsi e passare la sostanza a GPT, non il prompt.
+
 ---
 
 ## 5. Modalità Cursor consigliata

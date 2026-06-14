@@ -1971,6 +1971,8 @@ html[data-theme="light"] .mini-map{background:#eef3f9}
    * below so 2-axis panning works. */
   touch-action:pan-y;
 }
+/* WU-0004 B2: dedicated dark backdrop when basemap tiles are hidden (CSS only, not a tile layer). */
+.tile-map.basemap-hidden{ background-color:#0a0a0f }
 /* Sidebar mini-map: never inherit a fixed pixel height from older renders;
  * the square is driven purely by width + aspect-ratio (see renderTileMap). */
 .tile-map.size-small{ height:auto; max-width:100% }
@@ -10754,6 +10756,7 @@ const I18N = {
     "map.layerBathy":"Batimetria",
     "map.overlaySeamarks":"Seamarks (boe/fari)",
     "map.overlaySonarChart":"SonarChart",
+    "map.basemapVisible":"Basemap visibile",
     "map.sizeSmall":"Dimensione piccola",
     "map.sizeHalf":"Metà schermo",
     "map.sizeFull":"Schermo intero",
@@ -10766,6 +10769,7 @@ const I18N = {
     "tip.layerBathy":"Batimetria (EMODnet) — solo online",
     "tip.overlaySeamarks":"Overlay nautico OpenSeaMap (boe, fari, segnalamenti). Solo online.",
     "tip.overlaySonarChart":"Overlay batimetrico Navionics SonarChart — richiede il proxy tailnet (porta 5000)",
+    "tip.basemapVisible":"Mostra o nasconde i tile della basemap (il layer radio resta selezionato)",
     "tip.basemapPicker":"Tipo di mappa: cartografia o satellite",
     "tip.recenter":"Torna al punto convertito (ricentra la mappa)",
     "tip.recenterShort":"Torna sul punto",
@@ -12212,6 +12216,7 @@ const I18N = {
     "map.layerBathy":"Bathymetry",
     "map.overlaySeamarks":"Seamarks (buoys/lights)",
     "map.overlaySonarChart":"SonarChart",
+    "map.basemapVisible":"Basemap visible",
     "map.sizeSmall":"Small size",
     "map.sizeHalf":"Half screen",
     "map.sizeFull":"Full screen",
@@ -12224,6 +12229,7 @@ const I18N = {
     "tip.layerBathy":"Bathymetry (EMODnet) — online-only",
     "tip.overlaySeamarks":"OpenSeaMap nautical overlay (buoys, lights, seamarks). Online-only.",
     "tip.overlaySonarChart":"Navionics SonarChart bathymetry overlay — requires the tailnet proxy (port 5000)",
+    "tip.basemapVisible":"Show or hide basemap tiles (layer radio selection unchanged)",
     "tip.basemapPicker":"Basemap: map or satellite",
     "tip.recenter":"Back to the converted point (recenter the map)",
     "tip.recenterShort":"Back to point",
@@ -13670,6 +13676,7 @@ const I18N = {
     "map.layerBathy":"Bathymétrie",
     "map.overlaySeamarks":"Seamarks (bouées/feux)",
     "map.overlaySonarChart":"SonarChart",
+    "map.basemapVisible":"Fond de carte visible",
     "map.sizeSmall":"Petite taille",
     "map.sizeHalf":"Demi-écran",
     "map.sizeFull":"Plein écran",
@@ -13682,6 +13689,7 @@ const I18N = {
     "tip.layerBathy":"Bathymétrie (EMODnet) — en ligne uniquement",
     "tip.overlaySeamarks":"Overlay nautique OpenSeaMap (bouées, feux, amers). En ligne uniquement.",
     "tip.overlaySonarChart":"Overlay bathymétrique Navionics SonarChart — nécessite le proxy tailnet (port 5000)",
+    "tip.basemapVisible":"Afficher ou masquer les tuiles de fond (sélection du layer inchangée)",
     "tip.basemapPicker":"Fond de carte : carte ou satellite",
     "tip.recenter":"Revenir au point converti (recentrer la carte)",
     "tip.recenterShort":"Revenir au point",
@@ -14689,6 +14697,7 @@ const state = {
   showGrid: false,       // MGRS grid overlay toggle
   showSeamarks: false,   // OpenSeaMap seamark overlay (online-only)
   showSonarChart: false, // Navionics SonarChart transparent overlay (tailnet-proxy; default off)
+  basemapHidden: false,  // WU-0004 B2: hide basemap tiles; mapLayer radio unchanged
   showCoverage: true,    // Offline coverage overlay (cached tiles + named areas)
   // Geocoding (Nominatim) — all opt-outable from settings.
   geocodeEnabled: true,  // Master switch for all Nominatim calls.
@@ -15573,6 +15582,7 @@ function saveStore(){
         showGrid: !!state.showGrid,
         showSeamarks: !!state.showSeamarks,
         showSonarChart: !!state.showSonarChart,
+        basemapHidden: !!state.basemapHidden,
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
@@ -18533,7 +18543,7 @@ async function exportMapAsJpg(){
   const ctx = canvas.getContext("2d");
   if (!ctx){ try { showError(t("export.jpg.fail")); } catch(_){} return; }
 
-  ctx.fillStyle = "#ffffff";
+  ctx.fillStyle = tileMap.classList.contains("basemap-hidden") ? "#0a0a0f" : "#ffffff";
   ctx.fillRect(0, 0, W, H);
 
   const tileImgs = [...tileMap.querySelectorAll("img.tile")].filter(im => im.complete && im.naturalWidth > 0 && im.src);
@@ -30132,7 +30142,8 @@ function renderTileMap(lat, lon, zoom){
   // keeps the viewport truly square after the W fix above.
   const mapBoxStyle = size === "small" ? "" : `height:${H}px`;
   const hintCls = (state.tilePackHints !== false) ? " tile-hints-on" : "";
-  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
+  const basemapHiddenCls = state.basemapHidden ? " basemap-hidden" : "";
+  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}${basemapHiddenCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
 
   // Panning layer: everything geo-anchored (tiles + marker + grid) lives
   // here so we can translate it as a single group during a drag gesture.
@@ -30144,6 +30155,7 @@ function renderTileMap(lat, lon, zoom){
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
   const sonarChartOn = sonarChartOverlayVisible(zoom);
+  const basemapVisible = !state.basemapHidden;
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
@@ -30151,12 +30163,16 @@ function renderTileMap(lat, lon, zoom){
       const left = x * 256 - originX;
       const top  = y * 256 - originY;
       const tkey = makeTileKey(mapLayerId, zoom, xw, y);
+      const needWrap = basemapVisible || sonarChartOn || seamarksOn;
+      if (!needWrap) continue;
       // B2: <img> has no initial src; hydrateMapTiles fills from IndexedDB
       // (mission pack) or fetches the network, or shows the hatched "?"
       // placeholder when nothing is available offline.
       html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${zoom}" style="left:${left}px;top:${top}px">`;
-      html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
-      html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
+      if (basemapVisible){
+        html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
+        html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
+      }
       if (sonarChartOn){
         html += `<img class="tile tile-sonarchart" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
       }
@@ -30254,8 +30270,11 @@ function renderTileMap(lat, lon, zoom){
     const tipSeam = esc(t("tip.overlaySeamarks"));
     const lblSonar = esc(t("map.overlaySonarChart"));
     const tipSonar = esc(t("tip.overlaySonarChart"));
+    const lblBasemapVis = esc(t("map.basemapVisible"));
+    const tipBasemapVis = esc(t("tip.basemapVisible"));
     const seamAct = state.showSeamarks ? " is-active" : "";
     const sonarAct = state.showSonarChart ? " is-active" : "";
+    const basemapVisAct = !state.basemapHidden ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
@@ -30277,6 +30296,9 @@ function renderTileMap(lat, lon, zoom){
       </button>
       <button type="button" class="tlayer-item${navAct}" data-layer="nav" role="menuitem" data-tip="${tipNav}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "nav" ? "✓" : ""}</span><span>${lblNav}</span>
+      </button>
+      <button type="button" class="tlayer-item${basemapVisAct}" data-overlay="basemap-visible" role="menuitemcheckbox" aria-checked="${!state.basemapHidden ? "true" : "false"}" data-tip="${tipBasemapVis}">
+        <span class="tlayer-check" aria-hidden="true">${!state.basemapHidden ? "✓" : ""}</span><span>${lblBasemapVis}</span>
       </button>
       <button type="button" class="tlayer-item${sonarAct}" data-overlay="sonarchart" role="menuitemcheckbox" aria-checked="${state.showSonarChart ? "true" : "false"}" data-tip="${tipSonar}">
         <span class="tlayer-check" aria-hidden="true">${state.showSonarChart ? "✓" : ""}</span><span>${lblSonar}</span>
@@ -30600,6 +30622,14 @@ function renderTileMap(lat, lon, zoom){
       renderTileMap(lat, lon, zoom);
     });
   });
+  root.querySelectorAll('.tlayer-item[data-overlay="basemap-visible"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.basemapHidden = !state.basemapHidden;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
   root.querySelectorAll('.tlayer-item[data-overlay="sonarchart"]').forEach(b => {
     b.addEventListener("click", async (ev) => {
       ev.stopPropagation();
@@ -30892,7 +30922,9 @@ function renderTileMap(lat, lon, zoom){
   }
   root._mapTileGen = (root._mapTileGen | 0) + 1;
   const __mapTileGen = root._mapTileGen;
-  void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
+  if (!state.basemapHidden){
+    void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
+  }
   void hydrateSonarChartTiles(root, __mapTileGen, __hydrateFetchSig);
 
   // Offline coverage overlay: draw saved named areas + toggle the class
@@ -43343,6 +43375,7 @@ function init(){
       if (typeof stored.settings.showGrid === "boolean") state.showGrid = stored.settings.showGrid;
       if (typeof stored.settings.showSeamarks === "boolean") state.showSeamarks = stored.settings.showSeamarks;
       if (typeof stored.settings.showSonarChart === "boolean") state.showSonarChart = stored.settings.showSonarChart;
+      if (typeof stored.settings.basemapHidden === "boolean") state.basemapHidden = stored.settings.basemapHidden;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
