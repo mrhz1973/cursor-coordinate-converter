@@ -8567,6 +8567,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <option value="topo">Topografica (OpenTopoMap)</option>
               <option value="sat">Satellite (Esri)</option>
               <option value="nav">Nautica Navionics (proxy tailnet)</option>
+              <option value="sonarchart">SonarChart Navionics (proxy tailnet)</option>
             </select>
           </div>
           <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
@@ -10925,6 +10926,7 @@ const I18N = {
     "offcache.area.layerTopo":"Topografica",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
+    "offcache.area.layerSonar":"SonarChart",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Eliminare l'area \"{0}\"?",
     "offcache.viewportUsed":"Viewport corrente usato come area.",
@@ -12380,6 +12382,7 @@ const I18N = {
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
+    "offcache.area.layerSonar":"SonarChart",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Delete the area \"{0}\"?",
     "offcache.viewportUsed":"Current viewport used as area.",
@@ -13836,6 +13839,7 @@ const I18N = {
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
+    "offcache.area.layerSonar":"SonarChart",
     "offcache.area.layerAny":"—",
     "offcache.deleteConfirm":"Supprimer la zone \"{0}\" ?",
     "offcache.viewportUsed":"Vue actuelle utilisée comme zone.",
@@ -18606,7 +18610,7 @@ function updateOfflineExportZoomFeedback(){
   const el = document.getElementById("pcExportZoomWarn");
   if (!el) return;
   const layerId = getCurrentOfflineLayerId();
-  const layer = TILE_LAYERS[layerId] || TILE_LAYERS.osm;
+  const layer = getOfflineTileLayer(layerId);
   const zRaw = parseInt(String(document.getElementById("pcExportZ")?.value || "").replace(",", "."), 10);
   const maxZ = offlineLayerMaxZoom(layer);
   if (Number.isFinite(zRaw) && zRaw > maxZ){
@@ -18694,7 +18698,7 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
     }
     if (mayFetch){
     const url = layer.url(z, x, y);
-    const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
+    const nKind = offlineTileNetworkKind(layerId);
     let netRecorded = false;
     try {
       const r = await fetch(url, { mode: "cors" });
@@ -18741,7 +18745,7 @@ async function exportOfflineAreaAsJpg(){
     return;
   }
   const layerId = getCurrentOfflineLayerId();
-  const layer = TILE_LAYERS[layerId] || TILE_LAYERS.osm;
+  const layer = getOfflineTileLayer(layerId);
   const z = readOfflineExportZoom(layer);
   const zoomErr = validateExportZoomForLayer(z, layer);
   if (zoomErr){
@@ -22184,7 +22188,7 @@ function tileLayerExternalKind(layerId){
   if (id === "sonarchart" && SONARCHART_OVERLAY && SONARCHART_OVERLAY.external){
     return SONARCHART_OVERLAY.external;
   }
-  const layer = TILE_LAYERS[layerId];
+  const layer = getOfflineTileLayer(layerId);
   if (layer && layer.external) return layer.external;
   return (id === "nav") ? "tailnet-proxy" : "internet";
 }
@@ -22197,6 +22201,13 @@ function tileFetchAllowed(layerId){
   const ext = tileLayerExternalKind(layerId);
   if (ext === "internet") return false;
   if (ext === "tailnet-proxy") return !!state._navProxyConsentGranted;
+  return true;
+}
+
+function sonarChartOverlayVisible(zoom){
+  if (!state.showSonarChart) return false;
+  const z = Number(zoom);
+  if (Number.isFinite(SONARCHART_OVERLAY.maxZoom) && z > SONARCHART_OVERLAY.maxZoom) return false;
   return true;
 }
 
@@ -22231,9 +22242,23 @@ async function ensureNavProxyConsent(){
 }
 
 const MAP_BASE_LAYER_IDS = Object.freeze(["osm", "topo", "sat", "nav"]);
+const OFFLINE_LAYER_IDS = Object.freeze([...MAP_BASE_LAYER_IDS, "sonarchart"]);
 function sanitizeMapLayer(id){
   const k = String(id || "").toLowerCase();
   return MAP_BASE_LAYER_IDS.includes(k) ? k : "osm";
+}
+function sanitizeOfflineLayerId(id){
+  const k = String(id || "").toLowerCase();
+  return OFFLINE_LAYER_IDS.includes(k) ? k : "osm";
+}
+function getOfflineTileLayer(layerId){
+  const id = sanitizeOfflineLayerId(layerId);
+  if (id === "sonarchart") return SONARCHART_OVERLAY;
+  return TILE_LAYERS[id] || TILE_LAYERS.osm;
+}
+function offlineTileNetworkKind(layerId){
+  const id = String(layerId || "");
+  return (id === "nav" || id === "sonarchart") ? "proxy" : "tile";
 }
 
 /** Change the map size ("small" | "half" | "full") and re-render. */
@@ -23269,14 +23294,15 @@ async function deleteNamedAreaTiles(area){
   Object.keys(TILE_LAYERS).forEach(layerId => {
     tiles.forEach(t => keys.push(makeTileKey(layerId, t.z, t.x, t.y)));
   });
+  tiles.forEach(t => keys.push(makeTileKey("sonarchart", t.z, t.x, t.y)));
   return idbDeleteKeys(keys);
 }
 
 /** Keys used when wiping tiles for one saved area: prefer stored `layerId`; if unknown, all basemap layers (legacy). */
 function layerIdsForNamedAreaTileOps(area){
-  const lid = area && area.layerId && TILE_LAYERS[area.layerId] ? String(area.layerId) : null;
-  if (lid) return [lid];
-  return Object.keys(TILE_LAYERS);
+  const stored = _sanitizeStoredLayerId(area && area.layerId);
+  if (stored) return [stored];
+  return OFFLINE_LAYER_IDS.slice();
 }
 
 /** All IndexedDB tile keys that belong to a named area’s bbox × zoom (per layer policy above). */
@@ -23508,7 +23534,7 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
   }
   if (!mayFetch) throw new Error("opsec-blocked");
   const url  = layer.url(z, x, y);
-  const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
+  const nKind = offlineTileNetworkKind(layerId);
   let netRecorded = false;
   try {
     const r = await fetch(url, { mode: "cors", signal });
@@ -23530,7 +23556,7 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
  */
 async function startPrecacheDownload(opts){
   const { n, s, e, w, z0, z1, layerId, onProgress } = opts;
-  const layer = TILE_LAYERS[layerId] || TILE_LAYERS.osm;
+  const layer = getOfflineTileLayer(layerId);
   const tiles = collectBboxTiles(n, s, e, w, z0, z1);
   const total = tiles.length;
   if (total > MAX_PRECACHE_TILES) throw new Error("tooMany");
@@ -23626,7 +23652,7 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
         }
         if (mayFetch){
         const url = layer.url(z, xw, y);
-        const nKind = (String(layerId) === "nav") ? "proxy" : "tile";
+        const nKind = offlineTileNetworkKind(layerId);
         const fetchOpts = { mode: "cors" };
         if (fetchSig) fetchOpts.signal = fetchSig;
         let netRecorded = false;
@@ -23672,12 +23698,81 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
   monitorTileLoading(mapRoot, lat, lon);
 }
 
+/** SonarChart overlay tiles: IndexedDB first, then network when allowed (online overlay toggle). */
+async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
+  if (!mapRoot || !state.showSonarChart) return;
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen) return;
+  const layer = SONARCHART_OVERLAY;
+  const layerId = "sonarchart";
+  const imgs = [...mapRoot.querySelectorAll("img.tile-sonarchart")];
+  const online = isEffectivelyOnline();
+  const load1 = async (img) => {
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+    const wrap = img.closest(".tile-wrap");
+    if (!wrap) return;
+    const xw = +wrap.dataset.xw, y = +wrap.dataset.y, z = +wrap.dataset.z;
+    if (!Number.isFinite(xw) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+    if (!sonarChartOverlayVisible(z)) { img.style.display = "none"; return; }
+    const tkey = makeTileKey(layerId, z, xw, y);
+    const cleanBlobAttr = () => {
+      const u = img.getAttribute("data-blob-url");
+      if (u){ try { URL.revokeObjectURL(u); } catch(_){} img.removeAttribute("data-blob-url"); }
+    };
+    try {
+      const blob = await getTileBlobByKey(tkey);
+      if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+      if (blob){
+        cleanBlobAttr();
+        const u = URL.createObjectURL(blob);
+        img.setAttribute("data-blob-url", u);
+        img.src = u;
+        img.style.display = "";
+        return;
+      }
+      if (online && !state.forceOffline){
+        let mayFetch = tileFetchAllowed(layerId);
+        if (!mayFetch && state.opsecStrict && tileLayerExternalKind(layerId) === "tailnet-proxy"){
+          mayFetch = await ensureNavProxyConsent();
+        }
+        if (mayFetch){
+          const url = layer.url(z, xw, y);
+          const nKind = offlineTileNetworkKind(layerId);
+          const fetchOpts = { mode: "cors" };
+          if (fetchSig) fetchOpts.signal = fetchSig;
+          let netRecorded = false;
+          try {
+            const r = await fetch(url, fetchOpts);
+            if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+            if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; throw 0; }
+            const b = await r.blob();
+            if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+            cleanBlobAttr();
+            const u = URL.createObjectURL(b);
+            img.setAttribute("data-blob-url", u);
+            img.src = u;
+            img.style.display = "";
+            recordNetEvent(url, nKind, true);
+            netRecorded = true;
+            return;
+          } catch(_netErr){
+            if (!netRecorded) recordNetEvent(url, nKind, false);
+            throw _netErr;
+          }
+        }
+      }
+    } catch(_){}
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+    img.style.display = "none";
+  };
+  await Promise.all(imgs.map(i => load1(i)));
+}
+
 function updatePrecacheEstimate(){
   const el = document.getElementById("pcEstimate");
   if (!el) return;
   const btnS = document.getElementById("btnPrecacheStart");
-  const layerId = sanitizeMapLayer(document.getElementById("pcLayer")?.value || "osm");
-  const layer = TILE_LAYERS[layerId];
+  const layerId = sanitizeOfflineLayerId(document.getElementById("pcLayer")?.value || "osm");
+  const layer = getOfflineTileLayer(layerId);
   if (layer && layer.cacheable === false){
     el.textContent = t("offcache.onlineOnly");
     if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton();
@@ -23715,7 +23810,7 @@ function onPrecacheStart(){
     return;
   }
   const layerId = getCurrentOfflineLayerId();
-  const layer = TILE_LAYERS[layerId];
+  const layer = getOfflineTileLayer(layerId);
   if (layer && layer.cacheable === false){
     const st = document.getElementById("pcStatus");
     if (st) st.textContent = t("offcache.onlineOnly");
@@ -24463,12 +24558,13 @@ const OFFLINE_AREA_STATUS_VALUES = Object.freeze(["unknown", "partial", "complet
 const OFFLINE_AREA_BBOX_MATCH_TOL = 1e-4;
 
 function getCurrentOfflineLayerId(){
-  return sanitizeMapLayer(document.getElementById("pcLayer")?.value || "osm");
+  return sanitizeOfflineLayerId(document.getElementById("pcLayer")?.value || "osm");
 }
 
 function _sanitizeStoredLayerId(id){
   if (id == null || id === "") return null;
   const k = String(id).toLowerCase();
+  if (k === "sonarchart") return "sonarchart";
   return MAP_BASE_LAYER_IDS.includes(k) ? k : null;
 }
 
@@ -24605,7 +24701,7 @@ function mergeOfflineNamedAreaFromPrecacheForm(editingId, nameOverride){
   if (!b || ![z0, z1].every(Number.isFinite) || z0 > z1) return { err: "badbox" };
   if (!clean) return { err: "name" };
 
-  const lidCur = sanitizeMapLayer((cur.layerId != null && cur.layerId !== "") ? String(cur.layerId) : "osm");
+  const lidCur = sanitizeOfflineLayerId((cur.layerId != null && cur.layerId !== "") ? String(cur.layerId) : "osm");
   const geomChanged =
     !_namedAreaMatchesPrecacheBBox(cur, b.n, b.s, b.e, b.w)
     || (Number.isFinite(cur.z0) ? (cur.z0 | 0) : -99999) !== (z0 | 0)
@@ -24733,7 +24829,7 @@ async function syncOfflineDeltaViewportHints(mapRoot, opts){
     return;
   }
 
-  const layerId = sanitizeMapLayer(area.layerId || state.mapLayer || "osm");
+  const layerId = sanitizeOfflineLayerId(area.layerId || state.mapLayer || "osm");
   const cap = Math.max(20, Math.min(160, (opts && Number.isFinite(opts.cap)) ? (opts.cap | 0) : 120));
   const wraps = [...root.querySelectorAll(".tile-wrap")];
 
@@ -24827,7 +24923,7 @@ function applyPrecacheMetadataToNamedAreaById(areaId, info){
   const n = Number(cur.n), s = Number(cur.s), e = Number(cur.e), w = Number(cur.w);
   const z0 = Number.isFinite(cur.z0) ? (cur.z0 | 0) : NaN;
   const z1 = Number.isFinite(cur.z1) ? (cur.z1 | 0) : NaN;
-  const layerId = sanitizeMapLayer((cur.layerId != null && cur.layerId !== "") ? String(cur.layerId) : "osm");
+  const layerId = sanitizeOfflineLayerId((cur.layerId != null && cur.layerId !== "") ? String(cur.layerId) : "osm");
   if (![n, s, e, w, z0, z1].every(Number.isFinite) || !layerId) return;
   let tot = NaN;
   try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return; }
@@ -24869,8 +24965,8 @@ function namedAreaToPrecacheParams(a){
   const z0 = Number.isFinite(a.z0) ? (a.z0 | 0) : NaN;
   const z1 = Number.isFinite(a.z1) ? (a.z1 | 0) : NaN;
   if (![n, s, e, w, z0, z1].every(Number.isFinite) || n <= s || w > e || z0 > z1 || z0 < 2 || z1 > 19) return null;
-  const layerId = sanitizeMapLayer((a.layerId != null && a.layerId !== "") ? String(a.layerId) : "osm");
-  const layer = TILE_LAYERS[layerId];
+  const layerId = sanitizeOfflineLayerId((a.layerId != null && a.layerId !== "") ? String(a.layerId) : "osm");
+  const layer = getOfflineTileLayer(layerId);
   if (layer && layer.cacheable === false) return null;
   let tot;
   try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return null; }
@@ -24913,7 +25009,7 @@ function syncOfflinePrecacheMainButton(){
   if (!btnS) return;
   if (isOfflinePrecacheBusy()){ btnS.disabled = true; return; }
   const layerId = getCurrentOfflineLayerId();
-  const layer = TILE_LAYERS[layerId];
+  const layer = getOfflineTileLayer(layerId);
   if (layer && layer.cacheable === false){ btnS.disabled = true; return; }
   const tmp = buildTempNamedAreaFromDomForPrecacheCheck();
   btnS.disabled = !tmp || !namedAreaToPrecacheParams(tmp);
@@ -26044,6 +26140,7 @@ function offlineNamedAreaLayerLabel(layerId){
   if (lid === "topo") return t("offcache.area.layerTopo");
   if (lid === "sat") return t("offcache.area.layerSat");
   if (lid === "nav") return t("offcache.area.layerNav");
+  if (lid === "sonarchart") return t("offcache.area.layerSonar");
   return t("offcache.area.layerAny");
 }
 
@@ -26116,8 +26213,8 @@ function loadNamedAreaIntoPrecacheFieldsById(id){
   if (g("pcAreaName")) g("pcAreaName").value = String(a.name || "");
   if (Number.isFinite(a.z0) && g("pcZ0")) g("pcZ0").value = a.z0;
   if (Number.isFinite(a.z1) && g("pcZ1")) g("pcZ1").value = a.z1;
-  if (a.layerId && MAP_BASE_LAYER_IDS.includes(String(a.layerId).toLowerCase()) && g("pcLayer")){
-    g("pcLayer").value = sanitizeMapLayer(a.layerId);
+  if (a.layerId && _sanitizeStoredLayerId(a.layerId) && g("pcLayer")){
+    g("pcLayer").value = sanitizeOfflineLayerId(a.layerId);
   }
   const sel = document.getElementById("pcPreset");
   if (sel) sel.value = "named:" + a.id;
@@ -29936,8 +30033,7 @@ function renderTileMap(lat, lon, zoom){
   const seamarksOn = !!state.showSeamarks && !state.forceOffline && !state.opsecStrict
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
-  const sonarChartOn = sonarChartFetchAllowed() && zoom <= SONARCHART_OVERLAY.maxZoom;
-  if (sonarChartOn) recordNetEvent(`http://${getNavProxyHost()}:${NAV_PROXY_PORT}/`, "proxy", false);
+  const sonarChartOn = sonarChartOverlayVisible(zoom);
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
@@ -29952,7 +30048,7 @@ function renderTileMap(lat, lon, zoom){
       html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
       html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
       if (sonarChartOn){
-        html += `<img class="tile tile-sonarchart" alt="" src="${esc(SONARCHART_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
+        html += `<img class="tile tile-sonarchart" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
       }
       if (seamarksOn){
         html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
@@ -30684,6 +30780,7 @@ function renderTileMap(lat, lon, zoom){
   root._mapTileGen = (root._mapTileGen | 0) + 1;
   const __mapTileGen = root._mapTileGen;
   void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
+  void hydrateSonarChartTiles(root, __mapTileGen, __hydrateFetchSig);
 
   // Offline coverage overlay: draw saved named areas + toggle the class
   // that tints cached tiles green via CSS. Runs on every render so the
