@@ -552,19 +552,42 @@ Motivo: tocca catalogo layer, fetch tile, offline mode, OPSEC strict, UI Layers 
 
 ### Stato finale WU-0008 — Basemap XYZ aperti
 
-**Stato:** PASS runtime (`cf6d796`).
+**Stato:** PASS runtime.
 
-- OSM HOT aggiunto (`osmHot` in `TILE_LAYERS`, `external: "internet"`, `maxZoom: 19`).
-- CARTO Voyager normalizzato (id legacy `osm`, label UI, `maxZoom: 20`).
-- OpenTopoMap (`topo`) già presente — mantenuto senza duplicazione (`maxZoom: 17`).
-- Fix `resolveCatalogLayerId` per attivazione case-insensitive `osmHot`.
-- UI Layers, selettore offline cache, i18n IT/EN/FR, cache/export JPG via schema esistente.
+Commit:
+
+- `cf6d796 feat(gis): add OSM HOT and normalize open XYZ basemaps (WU-0008)`
 
 Esito:
 
-- Patch runtime unica su `coordinate_converter Claude.html` (+58/−22).
-- Test manuale OK (selezione layer, gate forced-offline/OPSEC, resto toolbar invariato).
-- WU-0009 Google/Bing proxy resta filone separato.
+- OSM HOT aggiunto come basemap XYZ aperto.
+- CARTO Voyager normalizzato con label e `maxZoom: 20`.
+- OpenTopoMap già presente: mantenuto/normalizzato senza duplicazione.
+- `resolveCatalogLayerId` aggiornato per attivazione `osmHot`.
+- Modificato solo `coordinate_converter Claude.html`.
+- Nessuna modifica a docs/README nel commit runtime.
+
+Gate e governance:
+
+- I layer aperti restano classificati/gateati come basemap internet secondo lo schema del monolite.
+- Devono passare dal flusso esistente `tileFetchAllowed(layerId)`.
+- `state.forceOffline` resta interruttore volontario dell'operatore.
+- `state.opsecStrict` resta gate superiore.
+- Cache/offline maps ed export mappa devono continuare a usare il flusso esistente e i limiti `maxZoom` del layer.
+
+Validazione operativa riportata:
+
+- test a schermo eseguito;
+- commit e push completati;
+- branch `main...origin/main` pulito/allineato.
+
+Fuori scope:
+
+- WU-0009 Google/Bing proxy;
+- proxy Planet-Clone;
+- modifiche a geocoding;
+- modifiche a OPSEC/gate runtime;
+- cancellazione cache/tile esistenti.
 
 ## Blocchi
 
