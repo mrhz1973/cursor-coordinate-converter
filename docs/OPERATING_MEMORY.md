@@ -165,9 +165,7 @@ catena, a passi fissi, NON iterativa:
   - poi Google/Bing tramite proxy Planet-Clone;
   - Path B scrape keyless deciso dal privato;
   - lavoro futuro a due teste: proxy + monolite.
-- **Governance:**
-  - scrivere regola `GIS online di default`;
-  - `forced-offline` = interruttore volontario dell’operatore, **non** vincolo predefinito.
+- **Governance online/offline:** WU-0005 B0/B1 documentata — regola: GIS online di default; `state.forceOffline` è interruttore volontario dell’operatore; `state.opsecStrict` resta gate superiore per chiamate di rete sensibili. Mappati i gate esistenti nel monolite: `isEffectivelyOnline()`, `tileFetchAllowed(layerId)`, `internetApiFetchAllowed()`, consenso proxy/Navionics-like (`ensureNavProxyConsent()`, `_navProxyConsentGranted`), geocoding (`geocodingAllowed()`, Nominatim/`reverseGeocode`), tile/layer fetch (`hydrateMapTiles`, `fetchAndStoreTile`), cache/offline maps, seamarks/SonarChart, tracking rete (`recordNetEvent`, `_netEvents`). Eventuali ambiguità UI/copy vanno trattate in micro-patch B2 separata.
 
 **Escluso da questa OM:** porte raw tailnet, open proxy, B2/Tailscale Serve, reboot-test systemd, ACL/firewall, n8n, control-plane, Planet-Clone operativo.
 

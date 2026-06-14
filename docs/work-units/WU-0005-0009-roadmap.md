@@ -57,7 +57,7 @@ Ordine operativo consigliato:
 
 ## Scopo
 
-Scrivere e bloccare la regola operativa: il GIS è **online di default**, mentre `forced-offline` è un interruttore volontario dell’operatore, non un vincolo predefinito.
+Scrivere e bloccare la regola operativa: il GIS è **online di default**, mentre `state.forceOffline` è un interruttore volontario dell’operatore, non un vincolo predefinito.
 
 Questo non deve indebolire OPSEC strict: OPSEC strict resta un gate superiore per chiamate sensibili, tile, geocoding, proxy e fetch.
 
@@ -69,23 +69,64 @@ Motivo: anche se può iniziare come docs-only, la regola influenza successivamen
 
 ## Blocchi
 
+### Stato WU-0005 — B0/B1 governance online/offline
+
+**Stato:** B0/B1 documentati.
+
+Decisione:
+
+- Il GIS è online di default (`state.forceOffline` default `false`; `isEffectivelyOnline()` = `navigator.onLine && !state.forceOffline`).
+- `state.forceOffline` / offline-only è un interruttore volontario dell’operatore (checkbox pannello offline, persistito).
+- `state.opsecStrict` resta gate superiore e deve bloccare chiamate di rete sensibili quando attivo.
+- Tile online, geocoding, layer esterni e proxy devono rispettare OPSEC strict, `state.forceOffline` e cache/offline mode dove previsto; consenso esplicito per tailnet-proxy sotto OPSEC strict.
+- Nessun nuovo comportamento runtime introdotto da questo blocco.
+
+Mappa gate esistenti (read-only monolite):
+
+| Area | Variabile/funzione/punto | Ruolo | Coerenza con governance | Note |
+| --- | --- | --- | --- | --- |
+| Online effettivo | `isEffectivelyOnline()` (~22416) | Combina `navigator.onLine` con `!state.forceOffline` | Sì | Comportamento online di default se browser online e operatore non forza offline |
+| Forced offline | `state.forceOffline` (default `false`, ~14882) | Interruttore volontario operatore; UI `#chkForceOffline` / toggle offline panel; persistito | Sì | Blocca fetch rete indipendentemente da `navigator.onLine` |
+| OPSEC strict | `state.opsecStrict` (default `false`, ~14895) | Gate superiore; toggle UI resetta `_navProxyConsentGranted` | Sì | Quando attivo: niente fetch internet diretto; tailnet-proxy solo con consenso |
+| Tile/layer fetch | `tileFetchAllowed(layerId)` (~22543) | Gate tile/layer: `forceOffline`→no; sotto OPSEC strict internet→no, tailnet-proxy→solo se `_navProxyConsentGranted` | Sì | Eccezioni batch precache/export JPG confermati via flag transiente |
+| API internet | `internetApiFetchAllowed()` (~22568) | Gate API internet (Esri imagery identify, Open-Meteo elevation) | Sì | `forceOffline` o `opsecStrict` → false |
+| Proxy/Navionics-like | `ensureNavProxyConsent()`, `_navProxyConsentGranted` (~22574) | Dialogo consenso per-sessione sotto OPSEC strict per layer `tailnet-proxy` (nav, sonarchart) | Sì | Non richiesto se `opsecStrict` disattivo; consenso non persistito |
+| Tile hydrate/cache | `hydrateMapTiles`, `fetchAndStoreTile` (~23873, ~24010) | IndexedDB/cache first; fetch rete solo se online, `!forceOffline`, `tileFetchAllowed` (+ consenso proxy se serve) | Sì | Cache-on-browse; precache offline chiede conferma OPSEC strict |
+| Geocoding/reverse | `geocodingAllowed()`, `nominatimQuery`, `reverseGeocode` (~21120) | Nominatim forward/reverse; disabilitato se `opsecStrict`; richiede `geocodeEnabled` + online effettivo | Sì | Fallback dataset città offline su errore |
+| Tracking eventi rete | `recordNetEvent`, `state._netEvents` (~23855) | Tracciamento host/eventi rete transiente (sessione) | Sì | Diagnostica, non gate |
+| MGRS | `state.showGrid`, `buildMgrsGridSVG` (~23095) | Overlay SVG locale sulla mappa | Sì | Nessuna fetch internet |
+| Basemap | `TILE_LAYERS`, `state.mapLayer` (~22470) | Provider tile osm/topo/sat/nav (`external`: internet o tailnet-proxy) | Sì | Governato da `tileFetchAllowed`; id `osm` usa URL CARTO Voyager |
+| Seamarks/OpenSeaMap | `SEAMARK_OVERLAY`, `state.showSeamarks` (~22510, ~30539) | Overlay marino online-only; render `<img src>` solo se `showSeamarks && !forceOffline && !opsecStrict` | Sì | Non passa da `tileFetchAllowed` ma gate render impedisce fetch sotto OPSEC/forced-offline |
+| SonarChart overlay | `SONARCHART_OVERLAY`, `sonarChartFetchAllowed()` (~22517) | Overlay tailnet-proxy; gate via `tileFetchAllowed("sonarchart")` | Sì | Toggle Layers; consenso Navionics riusato sotto OPSEC strict |
+| Proxy/layer futuri | WU-0008/WU-0009 | Basemap XYZ aperti e Google/Bing via proxy | Da governare | Stessi gate: OPSEC strict, `forceOffline`, consenso, cache |
+
+Esito:
+
+- Governance chiarita prima di WU-0008/WU-0009.
+- Nessuna modifica runtime.
+- Ambiguità rilevate: docs storici usano talvolta `forced-offline` mentre il codice usa `state.forceOffline`; copy UI generale non auditata oltre checkbox offline — B2 opzionale.
+
 ### B0 — Docs di decisione
+
+**Stato:** PASS (documentato in blocco B0/B1 sopra).
 
 Aggiornare la memoria operativa e, se serve, creare WU-0005 con stato OPEN.
 
 La decisione deve dire chiaramente:
 
-- online è il comportamento normale quando l’operatore non ha attivato forced-offline;
-- forced-offline blocca la rete perché è una scelta volontaria;
+- online è il comportamento normale quando l’operatore non ha attivato `state.forceOffline`;
+- `state.forceOffline` blocca la rete perché è una scelta volontaria;
 - OPSEC strict resta più forte di “online default”;
 - nessun GPS silenzioso e nessun live tracking implicito;
 - tile/geocoding/proxy restano opt-in dove già previsto.
 
 ### B1 — Mappatura semantica esistente
 
+**Stato:** PASS (tabella gate in blocco B0/B1 sopra).
+
 Analisi read-only nel monolite:
 
-- dove viene letto `state.forcedOffline` o equivalente;
+- dove viene letto `state.forceOffline`;
 - dove vengono applicati i gate OPSEC;
 - dove si distinguono tile online, cache offline, geocoding, Esri, Open-Meteo, seamarks, Navionics/proxy;
 - se ci sono testi UI ambigui che fanno sembrare l’app “offline di default”.
@@ -104,7 +145,7 @@ Aggiornare WU, `OPERATING_MEMORY.md`, README snapshot se cambia davvero lo stato
 
 ## Decisioni da bloccare prima di iniziare
 
-- Nome definitivo della regola: consigliato `GIS online di default; forced-offline volontario`.
+- Nome definitivo della regola: consigliato `GIS online di default; state.forceOffline volontario`.
 - Chiarire che non equivale a “rete sempre permessa”: OPSEC strict e consenso layer restano superiori.
 - Chiarire se la WU deve essere solo documentale o anche UI-copy.
 
