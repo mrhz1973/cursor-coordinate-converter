@@ -2380,6 +2380,7 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   justify-content:center;
 }
 .tile-map .ttrk-menu-ico svg{ width:16px; height:16px; display:block; }
+.tile-map .ttrk-menu-ico .trr-ico-menu{ width:16px; height:16px; }
 .tile-map .twpt-menu-label,
 .tile-map .ttrk-menu-label{ flex:1; min-width:0; }
 
@@ -10817,8 +10818,10 @@ const I18N = {
     "tip.trackAddCurrent":"Aggiunge alla traccia il punto attualmente convertito nella card risultati.",
     "tip.trackPickMap":"Attiva la modalità click-on-map: ogni click sulla mini-mappa aggiunge un punto.",
     "tip.trackMapBuild":"Traccia: ogni clic sulla mappa aggiunge un vertice senza nome (polyline aperta). Ripremi per uscire.",
-    "tip.trackToolbarExpand":"Altre azioni traccia (poligoni)",
+    "tip.trackToolbarExpand":"Altre azioni traccia (poligoni, Range & Bearing)",
     "tip.trackToolbarPolygons":"Apri poligoni",
+    "toolbar.trackRangeBearing":"Range & Bearing",
+    "tip.trackToolbarRangeBearing":"Apri Range & Bearing",
     "tip.waypointMapBuild":"Apri o chiudi pannello waypoint",
     "tip.waypointToolbarMain":"Nuovo waypoint",
     "tip.waypointToolbarExpand":"Altre azioni waypoint (posiziona / torna al punto)",
@@ -12285,8 +12288,10 @@ const I18N = {
     "tip.trackAddCurrent":"Adds to the track the point currently displayed in the results card.",
     "tip.trackPickMap":"Enable click-on-map mode: every click on the mini-map adds a point.",
     "tip.trackMapBuild":"Track: each map click adds an unnamed vertex (open polyline). Click again to exit.",
-    "tip.trackToolbarExpand":"More track actions (polygons)",
+    "tip.trackToolbarExpand":"More track actions (polygons, Range & Bearing)",
     "tip.trackToolbarPolygons":"Open polygons",
+    "toolbar.trackRangeBearing":"Range & Bearing",
+    "tip.trackToolbarRangeBearing":"Open Range & Bearing",
     "tip.waypointMapBuild":"Open or close waypoint panel",
     "tip.waypointToolbarMain":"New waypoint",
     "tip.waypointToolbarExpand":"More waypoint actions (place point / back to point)",
@@ -13753,8 +13758,10 @@ const I18N = {
     "tip.trackAddCurrent":"Ajoute à la trace le point actuellement affiché dans la carte des résultats.",
     "tip.trackPickMap":"Active le mode clic-carte : chaque clic sur la mini-carte ajoute un point.",
     "tip.trackMapBuild":"Trace : chaque clic sur la carte ajoute un sommet sans nom (polyligne ouverte). Recliquer pour quitter.",
-    "tip.trackToolbarExpand":"Autres actions trace (polygones)",
+    "tip.trackToolbarExpand":"Autres actions trace (polygones, distance & relèvement)",
     "tip.trackToolbarPolygons":"Ouvrir les polygones",
+    "toolbar.trackRangeBearing":"Distance & relèvement",
+    "tip.trackToolbarRangeBearing":"Ouvrir Distance & relèvement",
     "tip.waypointMapBuild":"Ouvrir ou fermer le panneau waypoint",
     "tip.waypointToolbarMain":"Nouveau waypoint",
     "tip.waypointToolbarExpand":"Autres actions waypoint (placer / revenir au point)",
@@ -28812,8 +28819,10 @@ function trackSyncPickModeUi(){
     const trackPanel = gisHub && !!state.trackModalOpen;
     const dlgPolySync = document.getElementById("polygonPanel");
     const polyPanelOn = gisHub && !!(state.polygonPanelOpen && dlgPolySync && dlgPolySync.open);
-    mapTgl.classList.toggle("active", polyOn || trackPanel || polyPanelOn);
-    mapTgl.setAttribute("aria-pressed", (polyOn || trackPanel || polyPanelOn) ? "true" : "false");
+    const dlgRrSync = document.getElementById("rangeRingsPanel");
+    const rrPanelOn = gisHub && !!(state.rangeRingsPanelOpen && dlgRrSync && dlgRrSync.open);
+    mapTgl.classList.toggle("active", polyOn || trackPanel || polyPanelOn || rrPanelOn);
+    mapTgl.setAttribute("aria-pressed", (polyOn || trackPanel || polyPanelOn || rrPanelOn) ? "true" : "false");
     const tipStr = t("tip.trackMapBuild");
     mapTgl.setAttribute("data-tip", tipStr);
     mapTgl.setAttribute("aria-label", tipStr);
@@ -28840,6 +28849,19 @@ function trackSyncPickModeUi(){
     trkPolyMenu.setAttribute("aria-label", polyTip);
     const polyLblEl = trkPolyMenu.querySelector(".ttrk-menu-label");
     if (polyLblEl) polyLblEl.textContent = polyLbl;
+  }
+  const trkRrMenu = root && root.querySelector('[data-role="track-map-rangerings"]');
+  if (trkRrMenu){
+    const dlgRr = document.getElementById("rangeRingsPanel");
+    const rrOnPanel = !!(state.rangeRingsPanelOpen && dlgRr && dlgRr.open);
+    trkRrMenu.classList.toggle("is-active", rrOnPanel);
+    trkRrMenu.setAttribute("aria-pressed", rrOnPanel ? "true" : "false");
+    const rrLbl = (typeof t === "function" ? (t("toolbar.trackRangeBearing") || "") : "") || "Range & Bearing";
+    const rrTip = (typeof t === "function" ? (t("tip.trackToolbarRangeBearing") || rrLbl) : "") || rrLbl;
+    trkRrMenu.setAttribute("data-tip", rrTip);
+    trkRrMenu.setAttribute("aria-label", rrTip);
+    const rrLblEl = trkRrMenu.querySelector(".ttrk-menu-label");
+    if (rrLblEl) rrLblEl.textContent = rrLbl;
   }
   const wpTgl = root && root.querySelector('[data-role="waypoint-map-toggle"]');
   if (wpTgl){
@@ -30730,7 +30752,9 @@ function renderTileMap(lat, lon, zoom){
       const trackPanelOn = _gisHub && !!state.trackModalOpen;
       const dlgPolyTrk = document.getElementById("polygonPanel");
       const polyPanelOn = _gisHub && !!(state.polygonPanelOpen && dlgPolyTrk && dlgPolyTrk.open);
-      const on = !!(state.track.pickMode || trackPanelOn || polyPanelOn);
+      const dlgRrTrk = document.getElementById("rangeRingsPanel");
+      const rrPanelOn = _gisHub && !!(state.rangeRingsPanelOpen && dlgRrTrk && dlgRrTrk.open);
+      const on = !!(state.track.pickMode || trackPanelOn || polyPanelOn || rrPanelOn);
       const cls = on ? " active" : "";
       if (!_gisHub){
         return `<button class="ttrk-btn${cls}" type="button" data-role="track-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${trackMapIcoSvg}</button>`;
@@ -30741,6 +30765,10 @@ function renderTileMap(lat, lon, zoom){
       const polyTip = esc((typeof t === "function" ? (t("tip.trackToolbarPolygons") || t("tip.polygonPanel") || "") : "") || "Apri poligoni");
       const polyActiveCls = polyPanelOn ? " is-active" : "";
       const polyMenuSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/></svg>`;
+      const rrLbl = esc((typeof t === "function" ? (t("toolbar.trackRangeBearing") || "") : "") || "Range & Bearing");
+      const rrTip = esc((typeof t === "function" ? (t("tip.trackToolbarRangeBearing") || t("toolbar.trackRangeBearing") || "") : "") || "Apri Range & Bearing");
+      const rrActiveCls = rrPanelOn ? " is-active" : "";
+      const rrMenuSvg = rangeRingsMapBtnSvg.replace('class="trr-ico-svg"', 'class="trr-ico-svg trr-ico-menu"');
       return `<div class="ttrk-group" data-role="track-toolbar-group">
         <div class="ttrk-row">
           <button class="ttrk-btn${cls}" type="button" data-role="track-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${trackMapIcoSvg}</button>
@@ -30748,6 +30776,7 @@ function renderTileMap(lat, lon, zoom){
         </div>
         <div class="ttrk-menu" data-role="track-map-menu" role="menu"${trkMenuOpen ? "" : " hidden"}>
           <button type="button" class="ttrk-menu-item${polyActiveCls}" role="menuitem" data-role="track-map-polygons" data-tip="${polyTip}" aria-label="${polyTip}" aria-pressed="${polyPanelOn ? "true" : "false"}"><span class="ttrk-menu-ico" aria-hidden="true">${polyMenuSvg}</span><span class="ttrk-menu-label">${polyLbl}</span></button>
+          <button type="button" class="ttrk-menu-item${rrActiveCls}" role="menuitem" data-role="track-map-rangerings" data-tip="${rrTip}" aria-label="${rrTip}" aria-pressed="${rrPanelOn ? "true" : "false"}"><span class="ttrk-menu-ico" aria-hidden="true">${rrMenuSvg}</span><span class="ttrk-menu-label">${rrLbl}</span></button>
         </div>
       </div>`;
     })()}
@@ -30784,6 +30813,7 @@ function renderTileMap(lat, lon, zoom){
       </div>`;
     })()}
     ${(() => {
+      if (_gisHub) return "";
       const tip = esc((typeof t==="function" ? (t("rangeRings.mapBtnTip")||"") : "") || "Range Rings");
       const dlgRr = document.getElementById("rangeRingsPanel");
       const rrOpen = !!(state.rangeRingsPanelOpen && dlgRr && dlgRr.open);
@@ -31306,6 +31336,23 @@ function renderTileMap(lat, lon, zoom){
         open(){ openPolygonPanel(); },
         close(){ closePolygonPanel(); }
       });
+    });
+  }
+  const trackRrMenu = root.querySelector('[data-role="track-map-rangerings"]');
+  if (trackRrMenu){
+    trackRrMenu.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      state.mapTrackToolbarMenuOpen = false;
+      gisToolButtonToggle({
+        isOpen(){
+          const d = document.getElementById("rangeRingsPanel");
+          return !!(state.rangeRingsPanelOpen && d && d.open);
+        },
+        open(){ openRangeRingsToolFromMap(); },
+        close(){ try { closeRangeRingsPanel(); } catch(_){} }
+      });
+      try { trackSyncPickModeUi(); } catch(_){}
     });
   }
   const waypointMapTgl = root.querySelector('[data-role="waypoint-map-toggle"]');
