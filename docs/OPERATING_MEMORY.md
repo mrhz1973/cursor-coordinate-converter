@@ -159,6 +159,7 @@ catena, a passi fissi, NON iterativa:
 
 - Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
 - **Bug** — `poligoni non funziona`: prima diagnosi read-only, poi decisione fix/rimozione.
+- **UX poligoni + modal standard:** post fix base `72a194e`; auto-arm draw mode nel modal poligoni, cancellazione con `X` in lista, editing vertici/drag poligono come lavori pesanti, modal minimizzata durante disegno, standardizzazione finestre flottanti/resize laterale. Dettaglio: vedi `docs/work-units/WU-0005-0009-roadmap.md`.
 - **UX toolbar laterale:**
   - pulsanti più piccoli (coprono la barra cache al cambio zoom);
   - `Layers` disallineato → riallineare;

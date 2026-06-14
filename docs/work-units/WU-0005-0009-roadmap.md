@@ -192,6 +192,33 @@ Verifiche:
 - `node --check` su JS estratto;
 - aggiornamento WU/docs/autosync.
 
+### Estensione backlog — UX poligoni + modal standard
+
+**Stato:** backlog post fix base.  
+**Prerequisito:** fix base poligoni pubblicato (`72a194e`), doppio-click chiude il poligono senza ricentrare la mappa.
+
+Obiettivo:
+migliorare l'esperienza d'uso dei poligoni e standardizzare il comportamento delle finestre flottanti/modali.
+
+Voci:
+- Modal poligoni con draw mode già armato all'apertura, seguendo il pattern delle tracce.
+- Cancellazione poligono con `X` nella lista, come nelle tracce.
+- **[PESANTE]** Vertici modificabili: selezionare e trascinare un vertice sulla mappa.
+- **[PESANTE]** Spostamento del poligono intero tramite trascinamento su mappa.
+- Modal poligoni minimizzata durante il disegno, seguendo il pattern pannello offline / bbox.
+- Standardizzazione modal trasversale: comportamento uniforme per tutte le finestre flottanti.
+- Resize laterale dai lati, non solo dagli angoli.
+
+Note operative:
+- Editing geometrie, vertici e drag poligono sono lavori non banali.
+- La logica deve restare coerente con tracce e waypoint.
+- Non introdurre refactor ampi senza WU dedicata.
+- La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX.
+- Valutare se separare in due blocchi futuri:
+  - UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata;
+  - UX geometrie pesante: editing vertici e drag poligono;
+  - standardizzazione modal trasversale: resize laterale e comportamento uniforme.
+
 ## Decisioni da bloccare prima di iniziare
 
 - Cosa significa esattamente “non funziona”: non si apre, non disegna, non salva, non esporta, non calcola area.
