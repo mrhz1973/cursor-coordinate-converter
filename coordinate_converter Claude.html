@@ -2566,6 +2566,9 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .tile-map .trp-measure .trp-key{ background:#a78bfa; color:#0f172a }
 .tile-map .trp-measure{ display:none }
 .tile-map.measure-on .trp-measure{ display:inline-flex }
+/* Cache-on-browse session counter (SAS.Planet-style readout). */
+.tile-map .trp-cache{ color:#16a34a; font-weight:600; font-variant-numeric:tabular-nums }
+.tile-map .trp-cache[hidden]{ display:none }
 
 .tile-map .tile-measure-row{
   display:flex; flex-direction:column;
@@ -11522,6 +11525,7 @@ const I18N = {
     "map.pickTip":"Posiziona un punto sulla mappa",
     "map.pickRaw":"Mappa (clic)",
     "map.measure":"Misura",
+    "map.cacheSession":"Cache sessione: +{0} tile",
     "map.measurePick2":"Seleziona 2° punto…",
     "map.polyPick":"Aggiungi punti…",
     "map.unit":"Unità",
@@ -12979,6 +12983,7 @@ const I18N = {
     "map.pickTip":"Place a point on the map",
     "map.pickRaw":"Map (click)",
     "map.measure":"Measure",
+    "map.cacheSession":"Session cache: +{0} tiles",
     "map.measurePick2":"Pick 2nd point…",
     "map.polyPick":"Add points…",
     "map.unit":"Unit",
@@ -14436,6 +14441,7 @@ const I18N = {
     "map.pickTip":"Placer un point sur la carte",
     "map.pickRaw":"Carte (clic)",
     "map.measure":"Mesure",
+    "map.cacheSession":"Cache session : +{0} tuiles",
     "map.measurePick2":"Choisir le 2e point…",
     "map.polyPick":"Ajouter des points…",
     "map.unit":"Unité",
@@ -22711,10 +22717,17 @@ function currentViewBbox(){
   } catch(_){ return null; }
 }
 
-/** Switch basemap (osm | topo | sat) and re-render. */
+/** Switch basemap (osm | topo | sat | nav) and re-render. */
 function setMapLayer(layer){
   layer = sanitizeMapLayer(layer);
   state.mapBasemapMenuOpen = false;
+  // Navionics mutual exclusion: remember the last non-Navionics basemap so the
+  // SonarChart toggle can fall back to it, and never keep Seachart + SonarChart on together.
+  if (layer !== "nav"){
+    state._lastBaseLayerNonNav = layer;
+  } else {
+    state.showSonarChart = false;
+  }
   state.mapLayer = layer;
   const pcl = document.getElementById("pcLayer");
   if (pcl) pcl.value = layer;
@@ -23608,6 +23621,59 @@ async function startPrecacheDownload(opts){
   }
 }
 
+/* ============== CACHE-ON-BROWSE (session tile caching) ==============
+ * When a tile is fetched from the network purely for display, persist the
+ * very same blob in IndexedDB so revisiting that area loads from cache.
+ * No extra network requests are made; OPSEC/forced-offline gating is enforced
+ * upstream (we only ever reach the network branch when a fetch is allowed). */
+function ensureTileCacheSession(){
+  if (!state._tileCacheSession || typeof state._tileCacheSession !== "object"){
+    state._tileCacheSession = { added: 0, bytes: 0 };
+  }
+  return state._tileCacheSession;
+}
+
+let _tileCacheCounterRaf = 0;
+function scheduleTileCacheCounterUpdate(){
+  if (_tileCacheCounterRaf) return;
+  const raf = (typeof requestAnimationFrame === "function")
+    ? requestAnimationFrame : (cb) => setTimeout(cb, 16);
+  _tileCacheCounterRaf = raf(() => { _tileCacheCounterRaf = 0; updateTileCacheCounterUi(); });
+}
+
+function updateTileCacheCounterUi(){
+  const el = document.querySelector('#miniMap [data-role="tile-cache-counter"]');
+  if (!el) return;
+  const s = ensureTileCacheSession();
+  if (!s.added){ el.hidden = true; el.textContent = ""; return; }
+  const mb = s.bytes / (1024 * 1024);
+  const mbTxt = mb >= 0.1 ? (" \u00b7 " + (mb < 10 ? mb.toFixed(1) : String(Math.round(mb))) + " MB") : "";
+  el.hidden = false;
+  el.textContent = String(t("map.cacheSession") || "Cache: +{0}").replace("{0}", String(s.added)) + mbTxt;
+}
+
+/** Persist a display-fetched tile blob into IndexedDB (fail-soft, dedup, session counter). */
+async function cacheTileFromDisplay(tkey, blob){
+  if (!tkey || !blob || !window.indexedDB) return;
+  if (!(state._tileCachePending instanceof Set)) state._tileCachePending = new Set();
+  if (!(state._tileCacheSeen instanceof Set)) state._tileCacheSeen = new Set();
+  if (state._tileCachePending.has(tkey)) return;   // a put for this key is already in flight
+  state._tileCachePending.add(tkey);
+  try {
+    const buf = await blob.arrayBuffer();
+    const ct = blob.type || "image/png";
+    await idbPut(tkey, { b: buf, ct });
+    if (!state._tileCacheSeen.has(tkey)){
+      state._tileCacheSeen.add(tkey);
+      const s = ensureTileCacheSession();
+      s.added += 1;
+      s.bytes += (buf && buf.byteLength) ? buf.byteLength : 0;
+      scheduleTileCacheCounterUpdate();
+    }
+  } catch(_){ /* fail-soft: IndexedDB/quota errors must never break rendering */ }
+  finally { state._tileCachePending.delete(tkey); }
+}
+
 async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen, fetchSig){
   if (!mapRoot || !layer) return;
   /* If renderTileMap() replaces #miniMap innerHTML while a prior hydrate is still
@@ -23671,6 +23737,8 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
           if (voidE) voidE.style.display = "none";
           recordNetEvent(url, nKind, true);
           netRecorded = true;
+          // Cache-on-browse: persist the just-fetched tile (basemap layer).
+          void cacheTileFromDisplay(tkey, b);
           return;
         } catch(_netErr){
           if (!netRecorded) recordNetEvent(url, nKind, false);
@@ -23753,6 +23821,8 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
             img.style.display = "";
             recordNetEvent(url, nKind, true);
             netRecorded = true;
+            // Cache-on-browse: persist the just-fetched SonarChart overlay tile.
+            void cacheTileFromDisplay(tkey, b);
             return;
           } catch(_netErr){
             if (!netRecorded) recordNetEvent(url, nKind, false);
@@ -24329,6 +24399,7 @@ async function startBboxSelection(){
   state._bboxSelecting = true;
   state._offlineBboxEditorOpen = true;
   tileMap.classList.add("bbox-selecting");
+  offlinePanelMinimizeForBbox();
   syncPcBboxEditorSectionFromState();
 
   // Inject banner
@@ -24369,10 +24440,49 @@ function endBboxSelection(){
   const tip = document.querySelector(".bbox-live-tip");
   if (tip) tip.remove();
   state._bboxSelecting = false;
+  offlinePanelRestoreAfterBbox();
   syncPcBboxEditorSectionFromState();
 }
 
 function cancelBboxSelection(){ endBboxSelection(); }
+
+/* While drawing the bbox the offline panel would cover the map, so minimize it
+ * (GIS Layers dialog) or temporarily hide the floating panel, then restore it
+ * when the selection completes or is cancelled (endBboxSelection). */
+function offlinePanelMinimizeForBbox(){
+  state._bboxOfflineRestore = null;
+  if (document.body.classList.contains("gis-mode")){
+    const dlg = document.getElementById("layersPanel");
+    if (dlg && dlg.open
+        && typeof gisPanelIsMinimized === "function" && !gisPanelIsMinimized("layersPanel")
+        && typeof gisMinimizePanel === "function"){
+      gisMinimizePanel("layersPanel", "gis.minimized.layers");
+      if (gisPanelIsMinimized("layersPanel")){
+        state._bboxOfflineRestore = { kind: "layersPanel" };
+        return;
+      }
+    }
+  }
+  if (state.offlineDownloadVisible){
+    state._bboxOfflineRestore = { kind: "float" };
+    state.offlineDownloadVisible = false;
+    const tm = document.querySelector("#miniMap .tile-map");
+    if (typeof syncOfflinePanelMapFloat === "function"){ try { syncOfflinePanelMapFloat(tm); } catch(_){} }
+  }
+}
+
+function offlinePanelRestoreAfterBbox(){
+  const r = state._bboxOfflineRestore;
+  state._bboxOfflineRestore = null;
+  if (!r) return;
+  if (r.kind === "layersPanel"){
+    if (typeof gisRestoreMinimizedPanel === "function"){ try { gisRestoreMinimizedPanel("layersPanel"); } catch(_){} }
+  } else if (r.kind === "float"){
+    state.offlineDownloadVisible = true;
+    const tm = document.querySelector("#miniMap .tile-map");
+    if (typeof syncOfflinePanelMapFloat === "function"){ try { syncOfflinePanelMapFloat(tm); } catch(_){} }
+  }
+}
 
 /** Install mousedown/move/up (+ touch equivalents) handlers that draw the
  *  draft rectangle and, on release, commit the selection to state. */
@@ -30397,6 +30507,7 @@ function renderTileMap(lat, lon, zoom){
   const pointKey  = esc(t("map.point"));
   const cursorKey = esc(t("map.cursor"));
   html += `<div class="tile-readout">
+    <div class="trp trp-cache" data-role="tile-cache-counter" aria-live="polite" hidden></div>
     <div class="trp trp-measure" aria-live="polite">
       <span class="trp-key">${esc(t("map.measure") || "MISURA")}</span>
       <span class="trp-coord" data-role="measure-out">—</span>
@@ -30422,6 +30533,8 @@ function renderTileMap(lat, lon, zoom){
   html += `</div>`;
   ensureOfflineMountOutsideMiniMap(root);
   root.innerHTML = html;
+  // Reflect the running session tile-cache counter on the freshly rendered map.
+  try { updateTileCacheCounterUi(); } catch(_){}
   // GIS: if basemap menu is open, position it left + clamped (fixed) dopo layout stabile.
   if (document.body.classList.contains("gis-mode") && state.mapBasemapMenuOpen){
     try {
@@ -30498,6 +30611,12 @@ function renderTileMap(lat, lon, zoom){
           renderTileMap(lat, lon, zoom);
           return;
         }
+      }
+      // Navionics mutual exclusion: SonarChart cannot sit on top of the Seachart
+      // basemap. Switch the basemap back to the last non-Navionics one (or osm).
+      // pcLayer (offline download selector) is intentionally left untouched.
+      if (next && state.mapLayer === "nav"){
+        state.mapLayer = sanitizeMapLayer(state._lastBaseLayerNonNav || "osm");
       }
       state.showSonarChart = next;
       saveStore();
@@ -43387,6 +43506,8 @@ function init(){
   ensureGisState();
   ensureRangeRingState();
   state.mapLayer = sanitizeMapLayer(state.mapLayer);
+  // Seed the Navionics-exclusion fallback from the restored basemap.
+  if (state.mapLayer !== "nav") state._lastBaseLayerNonNav = state.mapLayer;
 
   document.getElementById("languageSelect").value = initLang;
   document.getElementById("primarySelect").value  = initPrimary;
