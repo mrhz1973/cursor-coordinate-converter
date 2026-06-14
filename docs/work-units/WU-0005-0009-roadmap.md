@@ -135,13 +135,27 @@ Motivo: tocca strumenti di misura, stato mappa, UI, possibili export e integrazi
 - Fix base pubblicato: `72a194e fix(gis): guard polygon draw mode against map dblclick recenter`.
 - Esito test manuale: PASS — doppio-click chiude il poligono e la mappa non si ricentra più.
 - Il bug grezzo “poligoni non funziona” è risolto per il caso base verificato.
-- Restano fuori dal fix base:
-  - auto-arm draw mode all’apertura modal;
-  - cancellazione con `X` nella lista;
-  - modal minimizzata durante disegno;
+- Restano fuori dal fix base (prima dell’UX leggera): editing vertici, drag del poligono intero, standardizzazione modal.
+
+### Stato parziale post-UX leggera
+
+- UX poligoni leggera pubblicata: `f7260d9 feat(gis): improve polygon panel workflow`.
+- Esito test manuale: PASS.
+- Implementato:
+  - auto-arm draw mode all’apertura pannello poligoni;
+  - cancellazione poligono con `✕` nella lista;
+  - pannello poligoni minimizzato durante il disegno e ripristinato dopo finish/cancel.
+- Verifiche manuali PASS:
+  - auto-arm;
+  - minimizzazione;
+  - ripristino;
+  - cancellazione con `✕`;
+  - tracce;
+  - waypoint.
+- Restano fuori dal blocco leggero:
   - editing vertici;
   - drag del poligono intero;
-  - standardizzazione modal.
+  - standardizzazione modal trasversale.
 - Editing vertici e drag poligono restano lavori pesanti da WU/blocco dedicato.
 
 ## Blocchi
@@ -208,18 +222,18 @@ Verifiche:
 
 ### Estensione backlog — UX poligoni + modal standard
 
-**Stato:** backlog post fix base.  
+**Stato:** UX leggera PASS (`f7260d9`); restano voci pesanti/trasversali.  
 **Prerequisito:** fix base poligoni pubblicato (`72a194e`), doppio-click chiude il poligono senza ricentrare la mappa.
 
 Obiettivo:
 migliorare l'esperienza d'uso dei poligoni e standardizzare il comportamento delle finestre flottanti/modali.
 
 Voci:
-- Modal poligoni con draw mode già armato all'apertura, seguendo il pattern delle tracce.
-- Cancellazione poligono con `X` nella lista, come nelle tracce.
+- ~~Modal poligoni con draw mode già armato all'apertura~~ — PASS (`f7260d9`).
+- ~~Cancellazione poligono con `X` nella lista~~ — PASS (`f7260d9`).
 - **[PESANTE]** Vertici modificabili: selezionare e trascinare un vertice sulla mappa.
 - **[PESANTE]** Spostamento del poligono intero tramite trascinamento su mappa.
-- Modal poligoni minimizzata durante il disegno, seguendo il pattern pannello offline / bbox.
+- ~~Modal poligoni minimizzata durante il disegno~~ — PASS (`f7260d9`).
 - Standardizzazione modal trasversale: comportamento uniforme per tutte le finestre flottanti.
 - Resize laterale dai lati, non solo dagli angoli.
 
@@ -228,8 +242,8 @@ Note operative:
 - La logica deve restare coerente con tracce e waypoint.
 - Non introdurre refactor ampi senza WU dedicata.
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX.
-- Valutare se separare in due blocchi futuri:
-  - UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata;
+- Blocchi futuri:
+  - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
   - UX geometrie pesante: editing vertici e drag poligono;
   - standardizzazione modal trasversale: resize laterale e comportamento uniforme.
 

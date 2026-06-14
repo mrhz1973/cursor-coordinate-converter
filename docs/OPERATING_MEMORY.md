@@ -158,7 +158,7 @@ catena, a passi fissi, NON iterativa:
 **Backlog esplicito (prossimi candidati, non WU aperte):**
 
 - Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
-- **Poligoni:** fix base PASS (`72a194e`) — doppio-click chiude il poligono senza ricentrare la mappa. Resta backlog UX poligoni + modal standard: auto-arm draw mode, `X` in lista, modal minimizzata durante disegno; editing vertici/drag poligono = lavoro pesante separato. Dettaglio: `docs/work-units/WU-0005-0009-roadmap.md`.
+- **Poligoni:** fix base PASS (`72a194e`) + UX leggera PASS (`f7260d9`) — auto-arm draw mode all’apertura pannello, cancellazione con `✕` in lista, pannello minimizzato durante il disegno e ripristino dopo finish/cancel. Restano backlog pesanti/separati: editing vertici, drag del poligono intero, standardizzazione modal trasversale. Dettaglio: `docs/work-units/WU-0005-0009-roadmap.md`.
 - **UX toolbar laterale:** B1/B2 PASS (`e4c2be3`) — pulsanti più piccoli e Layers allineato. Restano candidati: `GPS` icona → scritta con colore qualità, distanza → righello, `Waypoint` + `posiziona punto` + `torna al punto` in pulsante espandibile a 3, `Poligoni` dentro `Tracce`, `MGRS` dentro `Layers` come overlay, `Range & Bearing` dentro `Tracce`.
 - **Basemap multipli:**
   - XYZ aperti nel solo monolite: OSM-HOT, CARTO Voyager, OpenTopoMap;
