@@ -1818,6 +1818,9 @@ html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
   opacity:.95;
   mix-blend-mode:screen;
 }
+.tile-wrap .tile.tile-sonarchart{
+  z-index:3;
+}
 /* B2: mission pack tile (from IndexedDB) — no chrome; looks “solid”. */
 .tile-wrap.tile-mission .tile{ z-index:2 }
 /* Offline coverage overlay: when enabled, cached (mission) tiles get a
@@ -10739,6 +10742,7 @@ const I18N = {
     "map.layerSea":"Nautica",
     "map.layerBathy":"Batimetria",
     "map.overlaySeamarks":"Seamarks (boe/fari)",
+    "map.overlaySonarChart":"SonarChart",
     "map.sizeSmall":"Dimensione piccola",
     "map.sizeHalf":"Metà schermo",
     "map.sizeFull":"Schermo intero",
@@ -10750,6 +10754,7 @@ const I18N = {
     "tip.layerSea":"Mappa nautica (Esri Ocean Basemap)",
     "tip.layerBathy":"Batimetria (EMODnet) — solo online",
     "tip.overlaySeamarks":"Overlay nautico OpenSeaMap (boe, fari, segnalamenti). Solo online.",
+    "tip.overlaySonarChart":"Overlay batimetrico Navionics SonarChart — richiede il proxy tailnet (porta 5000)",
     "tip.basemapPicker":"Tipo di mappa: cartografia o satellite",
     "tip.recenter":"Torna al punto convertito (ricentra la mappa)",
     "tip.recenterShort":"Torna sul punto",
@@ -12193,6 +12198,7 @@ const I18N = {
     "map.layerSea":"Nautical",
     "map.layerBathy":"Bathymetry",
     "map.overlaySeamarks":"Seamarks (buoys/lights)",
+    "map.overlaySonarChart":"SonarChart",
     "map.sizeSmall":"Small size",
     "map.sizeHalf":"Half screen",
     "map.sizeFull":"Full screen",
@@ -12204,6 +12210,7 @@ const I18N = {
     "tip.layerSea":"Nautical basemap (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymetry (EMODnet) — online-only",
     "tip.overlaySeamarks":"OpenSeaMap nautical overlay (buoys, lights, seamarks). Online-only.",
+    "tip.overlaySonarChart":"Navionics SonarChart bathymetry overlay — requires the tailnet proxy (port 5000)",
     "tip.basemapPicker":"Basemap: map or satellite",
     "tip.recenter":"Back to the converted point (recenter the map)",
     "tip.recenterShort":"Back to point",
@@ -13647,6 +13654,7 @@ const I18N = {
     "map.layerSea":"Nautique",
     "map.layerBathy":"Bathymétrie",
     "map.overlaySeamarks":"Seamarks (bouées/feux)",
+    "map.overlaySonarChart":"SonarChart",
     "map.sizeSmall":"Petite taille",
     "map.sizeHalf":"Demi-écran",
     "map.sizeFull":"Plein écran",
@@ -13658,6 +13666,7 @@ const I18N = {
     "tip.layerSea":"Fond nautique (Esri Ocean Basemap)",
     "tip.layerBathy":"Bathymétrie (EMODnet) — en ligne uniquement",
     "tip.overlaySeamarks":"Overlay nautique OpenSeaMap (bouées, feux, amers). En ligne uniquement.",
+    "tip.overlaySonarChart":"Overlay bathymétrique Navionics SonarChart — nécessite le proxy tailnet (port 5000)",
     "tip.basemapPicker":"Fond de carte : carte ou satellite",
     "tip.recenter":"Revenir au point converti (recentrer la carte)",
     "tip.recenterShort":"Revenir au point",
@@ -14662,6 +14671,7 @@ const state = {
   mapSize: "small",
   showGrid: false,       // MGRS grid overlay toggle
   showSeamarks: false,   // OpenSeaMap seamark overlay (online-only)
+  showSonarChart: false, // Navionics SonarChart transparent overlay (tailnet-proxy; default off)
   showCoverage: true,    // Offline coverage overlay (cached tiles + named areas)
   // Geocoding (Nominatim) — all opt-outable from settings.
   geocodeEnabled: true,  // Master switch for all Nominatim calls.
@@ -15545,6 +15555,7 @@ function saveStore(){
         mapSize: state.mapSize || "small",
         showGrid: !!state.showGrid,
         showSeamarks: !!state.showSeamarks,
+        showSonarChart: !!state.showSonarChart,
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
@@ -22153,14 +22164,29 @@ const SEAMARK_OVERLAY = {
   maxZoom: 18
 };
 
+/* SonarChart: Planet-Clone layer 1 transparent overlay via tailnet proxy
+ * (same host/port and Navionics consent as the Navionics basemap). */
+const SONARCHART_OVERLAY = {
+  id: "sonarchart",
+  external: "tailnet-proxy",
+  transparent: true,
+  defaultOn: false,
+  url: (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/sonar/${z}/${x}/${y}.png`,
+  maxZoom: 18
+};
+
 let _navProxyConsentPending = null;
 let _precacheStrictOpConfirmed = false;
 let _exportJpgStrictOpConfirmed = false;
 
 function tileLayerExternalKind(layerId){
+  const id = String(layerId || "");
+  if (id === "sonarchart" && SONARCHART_OVERLAY && SONARCHART_OVERLAY.external){
+    return SONARCHART_OVERLAY.external;
+  }
   const layer = TILE_LAYERS[layerId];
   if (layer && layer.external) return layer.external;
-  return (String(layerId || "") === "nav") ? "tailnet-proxy" : "internet";
+  return (id === "nav") ? "tailnet-proxy" : "internet";
 }
 
 /** True when a network tile fetch is allowed under graduated OPSEC strict. Cache hits are checked separately. */
@@ -22172,6 +22198,14 @@ function tileFetchAllowed(layerId){
   if (ext === "internet") return false;
   if (ext === "tailnet-proxy") return !!state._navProxyConsentGranted;
   return true;
+}
+
+/** SonarChart overlay gate: no prompt here; UI click reuses Navionics consent. */
+function sonarChartFetchAllowed(){
+  if (!state.showSonarChart) return false;
+  if (state.forceOffline) return false;
+  /* If proxy /status is later cached by the app, this gate may also require charts.sonarchart — no /status fetch here. */
+  return tileFetchAllowed("sonarchart");
 }
 
 function internetApiFetchAllowed(){
@@ -29902,6 +29936,8 @@ function renderTileMap(lat, lon, zoom){
   const seamarksOn = !!state.showSeamarks && !state.forceOffline && !state.opsecStrict
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
+  const sonarChartOn = sonarChartFetchAllowed() && zoom <= SONARCHART_OVERLAY.maxZoom;
+  if (sonarChartOn) recordNetEvent(`http://${getNavProxyHost()}:${NAV_PROXY_PORT}/`, "proxy", false);
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
@@ -29915,6 +29951,9 @@ function renderTileMap(lat, lon, zoom){
       html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${zoom}" style="left:${left}px;top:${top}px">`;
       html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
       html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
+      if (sonarChartOn){
+        html += `<img class="tile tile-sonarchart" alt="" src="${esc(SONARCHART_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
+      }
       if (seamarksOn){
         html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
       }
@@ -30007,7 +30046,10 @@ function renderTileMap(lat, lon, zoom){
     const tipNav = esc(t("tip.layerNav"));
     const lblSeam = esc(t("map.overlaySeamarks"));
     const tipSeam = esc(t("tip.overlaySeamarks"));
+    const lblSonar = esc(t("map.overlaySonarChart"));
+    const tipSonar = esc(t("tip.overlaySonarChart"));
     const seamAct = state.showSeamarks ? " is-active" : "";
+    const sonarAct = state.showSonarChart ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
@@ -30029,6 +30071,9 @@ function renderTileMap(lat, lon, zoom){
       </button>
       <button type="button" class="tlayer-item${navAct}" data-layer="nav" role="menuitem" data-tip="${tipNav}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "nav" ? "✓" : ""}</span><span>${lblNav}</span>
+      </button>
+      <button type="button" class="tlayer-item${sonarAct}" data-overlay="sonarchart" role="menuitemcheckbox" aria-checked="${state.showSonarChart ? "true" : "false"}" data-tip="${tipSonar}">
+        <span class="tlayer-check" aria-hidden="true">${state.showSonarChart ? "✓" : ""}</span><span>${lblSonar}</span>
       </button>
       <button type="button" class="tlayer-item${seamAct}" data-overlay="seamarks" role="menuitemcheckbox" aria-checked="${state.showSeamarks ? "true" : "false"}" data-tip="${tipSeam}">
         <span class="tlayer-check" aria-hidden="true">${state.showSeamarks ? "✓" : ""}</span><span>${lblSeam}</span>
@@ -30342,6 +30387,23 @@ function renderTileMap(lat, lon, zoom){
     b.addEventListener("click", (ev) => {
       ev.stopPropagation();
       state.showSeamarks = !state.showSeamarks;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="sonarchart"]').forEach(b => {
+    b.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      const next = !state.showSonarChart;
+      if (next && state.opsecStrict && !state.forceOffline && tileLayerExternalKind("sonarchart") === "tailnet-proxy"){
+        const ok = await ensureNavProxyConsent();
+        if (!ok){
+          state.showSonarChart = false;
+          renderTileMap(lat, lon, zoom);
+          return;
+        }
+      }
+      state.showSonarChart = next;
       saveStore();
       renderTileMap(lat, lon, zoom);
     });
@@ -43070,6 +43132,7 @@ function init(){
       }
       if (typeof stored.settings.showGrid === "boolean") state.showGrid = stored.settings.showGrid;
       if (typeof stored.settings.showSeamarks === "boolean") state.showSeamarks = stored.settings.showSeamarks;
+      if (typeof stored.settings.showSonarChart === "boolean") state.showSonarChart = stored.settings.showSonarChart;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
