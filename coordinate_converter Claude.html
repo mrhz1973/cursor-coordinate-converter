@@ -8735,6 +8735,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <label class="offcache-lbl" data-i18n="offcache.layer">Strato</label>
             <select id="pcLayer" class="offcache-select">
               <option value="osmHot">OSM HOT</option>
+              <option value="osmStandard">OpenStreetMap</option>
+              <option value="cyclosm">CyclOSM</option>
               <option value="osm">CARTO Voyager</option>
               <option value="topo">Topografica (OpenTopoMap)</option>
               <option value="sat">Satellite (Esri)</option>
@@ -10918,6 +10920,8 @@ const I18N = {
     "res.miniMap":"Mini-mappa",
     "map.layerMap":"CARTO Voyager",
     "map.layerOsmHot":"OSM HOT",
+    "map.layerOsmStandard":"OpenStreetMap",
+    "map.layerCyclosm":"CyclOSM",
     "map.layerTopo":"Topografica",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -10932,6 +10936,8 @@ const I18N = {
     "map.sizeFull":"Schermo intero",
     "tip.layerMap":"CARTO Voyager (OpenStreetMap-derived basemap)",
     "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
+    "tip.layerOsmStandard":"OpenStreetMap standard (tile.openstreetmap.org) — solo online, no download offline",
+    "tip.layerCyclosm":"CyclOSM (cicloturismo / OpenStreetMap)",
     "tip.layerTopo":"Topografica (OpenTopoMap)",
     "tip.layerSat":"Vista satellitare (Esri)",
     "tip.layerNav":"Carta nautica Navionics — richiede il proxy tailnet (porta 5000)",
@@ -11108,6 +11114,8 @@ const I18N = {
     "offcache.row.selTip":"Seleziona riga per azioni batch",
     "offcache.row.visTip":"Mostra o nascondi l’area sulla mappa",
     "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsmStandard":"OpenStreetMap",
+    "offcache.area.layerCyclosm":"CyclOSM",
     "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topografica",
     "offcache.area.layerSat":"Satellite",
@@ -12391,6 +12399,8 @@ const I18N = {
     "res.miniMap":"Mini-map",
     "map.layerMap":"CARTO Voyager",
     "map.layerOsmHot":"OSM HOT",
+    "map.layerOsmStandard":"OpenStreetMap",
+    "map.layerCyclosm":"CyclOSM",
     "map.layerTopo":"Topographic",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -12405,6 +12415,8 @@ const I18N = {
     "map.sizeFull":"Full screen",
     "tip.layerMap":"CARTO Voyager (OpenStreetMap-derived basemap)",
     "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
+    "tip.layerOsmStandard":"Standard OpenStreetMap (tile.openstreetmap.org) — online-only, no offline download",
+    "tip.layerCyclosm":"CyclOSM (cycling / OpenStreetMap)",
     "tip.layerTopo":"Topographic (OpenTopoMap)",
     "tip.layerSat":"Satellite imagery (Esri)",
     "tip.layerNav":"Navionics nautical chart — requires the tailnet proxy (port 5000)",
@@ -12580,6 +12592,8 @@ const I18N = {
     "offcache.row.selTip":"Select row for batch actions",
     "offcache.row.visTip":"Show or hide this area on the map",
     "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsmStandard":"OpenStreetMap",
+    "offcache.area.layerCyclosm":"CyclOSM",
     "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
@@ -13864,6 +13878,8 @@ const I18N = {
     "res.miniMap":"Mini-carte",
     "map.layerMap":"CARTO Voyager",
     "map.layerOsmHot":"OSM HOT",
+    "map.layerOsmStandard":"OpenStreetMap",
+    "map.layerCyclosm":"CyclOSM",
     "map.layerTopo":"Topographique",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -13878,6 +13894,8 @@ const I18N = {
     "map.sizeFull":"Plein écran",
     "tip.layerMap":"CARTO Voyager (fond OpenStreetMap)",
     "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
+    "tip.layerOsmStandard":"OpenStreetMap standard (tile.openstreetmap.org) — en ligne uniquement, pas de téléchargement hors ligne",
+    "tip.layerCyclosm":"CyclOSM (cyclisme / OpenStreetMap)",
     "tip.layerTopo":"Topographique (OpenTopoMap)",
     "tip.layerSat":"Imagerie satellite (Esri)",
     "tip.layerNav":"Carte nautique Navionics — nécessite le proxy tailnet (port 5000)",
@@ -14053,6 +14071,8 @@ const I18N = {
     "offcache.row.selTip":"Sélectionner la ligne (actions groupées)",
     "offcache.row.visTip":"Afficher ou masquer la zone sur la carte",
     "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsmStandard":"OpenStreetMap",
+    "offcache.area.layerCyclosm":"CyclOSM",
     "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
@@ -19084,6 +19104,12 @@ async function exportOfflineAreaAsJpg(){
   }
   const layerId = getCurrentOfflineLayerId();
   const layer = getOfflineTileLayer(layerId);
+  if (layer && layer.cacheable === false){
+    try { showError(t("offcache.onlineOnly")); } catch(_){}
+    const st = document.getElementById("pcStatus");
+    if (st) st.textContent = t("offcache.onlineOnly");
+    return;
+  }
   const z = readOfflineExportZoom(layer);
   const zoomErr = validateExportZoomForLayer(z, layer);
   if (zoomErr){
@@ -22466,6 +22492,12 @@ function normalizeLon(lon){
  * OSM HOT (id `osmHot`): Humanitarian OpenStreetMap tiles from
  *   tile.openstreetmap.fr. Subdomain sharding (a-c).
  *
+ * OpenStreetMap standard (id `osmStandard`): tile.openstreetmap.org
+ *   single host, no subdomains. Online-only for bulk offline/download
+ *   (`cacheable: false` per OSMF tile usage policy).
+ *
+ * CyclOSM (id `cyclosm`): cyclosm.openstreetmap.fr. Subdomain sharding (a-c).
+ *
  * Topographic (id `topo`): OpenTopoMap. Subdomain sharding (a-c).
  *   maxZoom 17 — tiles above that zoom are not published.
  *
@@ -22492,6 +22524,22 @@ const TILE_LAYERS = {
     },
     attrib: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors · <a href="https://www.hotosm.org/" target="_blank" rel="noopener">Humanitarian OpenStreetMap Team</a>',
     maxZoom: 19
+  },
+  osmStandard: {
+    external: "internet",
+    cacheable: false,
+    url:    (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
+    attrib: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  },
+  cyclosm: {
+    external: "internet",
+    url:    (z, x, y) => {
+      const sub = ["a","b","c"][Math.abs(x + y) % 3];
+      return `https://${sub}.tile-cyclosm.openstreetmap.fr/cyclosm/${z}/${x}/${y}.png`;
+    },
+    attrib: '© <a href="https://www.cyclosm.org" target="_blank" rel="noopener">CyclOSM</a> · map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
+    maxZoom: 20
   },
   osm: {
     external: "internet",
@@ -22612,7 +22660,7 @@ async function ensureNavProxyConsent(){
   return _navProxyConsentPending;
 }
 
-const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osm", "topo", "sat", "nav"]);
+const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "osm", "topo", "sat", "nav"]);
 const OFFLINE_LAYER_IDS = Object.freeze([...MAP_BASE_LAYER_IDS, "sonarchart"]);
 function resolveCatalogLayerId(id, allowedIds){
   const raw = String(id || "").trim();
@@ -25478,11 +25526,18 @@ function buildTempNamedAreaFromDomForPrecacheCheck(){
 
 function syncOfflinePrecacheMainButton(){
   const btnS = document.getElementById("btnPrecacheStart");
-  if (!btnS) return;
-  if (isOfflinePrecacheBusy()){ btnS.disabled = true; return; }
+  const btnJ = document.getElementById("btnOfflineExportJpg");
+  if (!btnS && !btnJ) return;
+  if (isOfflinePrecacheBusy()){
+    if (btnS) btnS.disabled = true;
+    return;
+  }
   const layerId = getCurrentOfflineLayerId();
   const layer = getOfflineTileLayer(layerId);
-  if (layer && layer.cacheable === false){ btnS.disabled = true; return; }
+  const onlineOnly = !!(layer && layer.cacheable === false);
+  if (btnJ) btnJ.disabled = onlineOnly || !!_offlineJpgExportBusy;
+  if (btnS && onlineOnly){ btnS.disabled = true; return; }
+  if (!btnS) return;
   const tmp = buildTempNamedAreaFromDomForPrecacheCheck();
   btnS.disabled = !tmp || !namedAreaToPrecacheParams(tmp);
 }
@@ -26608,7 +26663,9 @@ function offlineAreaStatusLabel(status){
 /** O2: short basemap label for list cards (metadata `layerId`). */
 function offlineNamedAreaLayerLabel(layerId){
   const lid = layerId == null ? "" : String(layerId).toLowerCase();
-  if (lid === "osmHot") return t("offcache.area.layerOsmHot");
+  if (lid === "osmhot") return t("offcache.area.layerOsmHot");
+  if (lid === "osmstandard") return t("offcache.area.layerOsmStandard");
+  if (lid === "cyclosm") return t("offcache.area.layerCyclosm");
   if (lid === "osm") return t("offcache.area.layerOsm");
   if (lid === "topo") return t("offcache.area.layerTopo");
   if (lid === "sat") return t("offcache.area.layerSat");
@@ -30676,11 +30733,15 @@ function renderTileMap(lat, lon, zoom){
     const tipPick = esc(t("tip.basemapPicker"));
     const lblMap = esc(t("map.layerMap"));
     const lblOsmHot = esc(t("map.layerOsmHot"));
+    const lblOsmStandard = esc(t("map.layerOsmStandard"));
+    const lblCyclosm = esc(t("map.layerCyclosm"));
     const lblTopo = esc(t("map.layerTopo"));
     const lblSat = esc(t("map.layerSat"));
     const lblNav = esc(t("map.layerNav"));
     const tipOsm = esc(t("tip.layerMap"));
     const tipOsmHot = esc(t("tip.layerOsmHot"));
+    const tipOsmStandard = esc(t("tip.layerOsmStandard"));
+    const tipCyclosm = esc(t("tip.layerCyclosm"));
     const tipTopo = esc(t("tip.layerTopo"));
     const tipSat = esc(t("tip.layerSat"));
     const tipNav = esc(t("tip.layerNav"));
@@ -30694,6 +30755,8 @@ function renderTileMap(lat, lon, zoom){
     const sonarAct = state.showSonarChart ? " is-active" : "";
     const mgrsAct = state.showGrid ? " is-active" : "";
     const osmHotAct = state.mapLayer === "osmHot" ? " is-active" : "";
+    const osmStandardAct = state.mapLayer === "osmStandard" ? " is-active" : "";
+    const cyclosmAct = state.mapLayer === "cyclosm" ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
@@ -30706,6 +30769,12 @@ function renderTileMap(lat, lon, zoom){
     <div class="tlayer-menu" data-role="basemap-menu" role="menu"${bmOpen ? "" : " hidden"}>
       <button type="button" class="tlayer-item${osmHotAct}" data-layer="osmHot" role="menuitem" data-tip="${tipOsmHot}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osmHot" ? "✓" : ""}</span><span>${lblOsmHot}</span>
+      </button>
+      <button type="button" class="tlayer-item${osmStandardAct}" data-layer="osmStandard" role="menuitem" data-tip="${tipOsmStandard}">
+        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osmStandard" ? "✓" : ""}</span><span>${lblOsmStandard}</span>
+      </button>
+      <button type="button" class="tlayer-item${cyclosmAct}" data-layer="cyclosm" role="menuitem" data-tip="${tipCyclosm}">
+        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "cyclosm" ? "✓" : ""}</span><span>${lblCyclosm}</span>
       </button>
       <button type="button" class="tlayer-item${osmAct}" data-layer="osm" role="menuitem" data-tip="${tipOsm}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osm" ? "✓" : ""}</span><span>${lblMap}</span>
