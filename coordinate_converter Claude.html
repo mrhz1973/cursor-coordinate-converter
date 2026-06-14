@@ -22728,13 +22728,6 @@ function currentViewBbox(){
 function setMapLayer(layer){
   layer = sanitizeMapLayer(layer);
   state.mapBasemapMenuOpen = false;
-  // Navionics mutual exclusion: remember the last non-Navionics basemap so the
-  // SonarChart toggle can fall back to it, and never keep Seachart + SonarChart on together.
-  if (layer !== "nav"){
-    state._lastBaseLayerNonNav = layer;
-  } else {
-    state.showSonarChart = false;
-  }
   state.mapLayer = layer;
   const pcl = document.getElementById("pcLayer");
   if (pcl) pcl.value = layer;
@@ -30618,12 +30611,6 @@ function renderTileMap(lat, lon, zoom){
           renderTileMap(lat, lon, zoom);
           return;
         }
-      }
-      // Navionics mutual exclusion: SonarChart cannot sit on top of the Seachart
-      // basemap. Switch the basemap back to the last non-Navionics one (or osm).
-      // pcLayer (offline download selector) is intentionally left untouched.
-      if (next && state.mapLayer === "nav"){
-        state.mapLayer = sanitizeMapLayer(state._lastBaseLayerNonNav || "osm");
       }
       state.showSonarChart = next;
       saveStore();
@@ -43513,8 +43500,6 @@ function init(){
   ensureGisState();
   ensureRangeRingState();
   state.mapLayer = sanitizeMapLayer(state.mapLayer);
-  // Seed the Navionics-exclusion fallback from the restored basemap.
-  if (state.mapLayer !== "nav") state._lastBaseLayerNonNav = state.mapLayer;
 
   document.getElementById("languageSelect").value = initLang;
   document.getElementById("primarySelect").value  = initPrimary;
