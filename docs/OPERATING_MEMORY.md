@@ -157,6 +157,7 @@ catena, a passi fissi, NON iterativa:
 
 **Backlog esplicito (prossimi candidati, non WU aperte):**
 
+- Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
 - **Bug** — `poligoni non funziona`: prima diagnosi read-only, poi decisione fix/rimozione.
 - **UX toolbar laterale:**
   - pulsanti più piccoli (coprono la barra cache al cambio zoom);
