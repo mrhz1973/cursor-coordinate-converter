@@ -1659,6 +1659,7 @@ html[data-theme="dark"] .offline-area-status--error{ color:#f08080; }
 .tile-map.bbox-selecting .tmeas-btn,
 .tile-map.bbox-selecting .ttrk-btn,
 .tile-map.bbox-selecting .twpt-btn,
+.tile-map.bbox-selecting .twpt-group,
 .tile-map.bbox-selecting .tgps-btn,
 .tile-map.bbox-selecting .trr-btn,
 .tile-map.bbox-selecting .tpoly-btn,
@@ -2268,6 +2269,99 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   background:#2563eb; color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
+/* GIS: waypoint toolbar — pulsante principale + menu espandibile (pick / ricentra). */
+.tile-map .twpt-group{
+  position:relative;
+  width:var(--ctrlW);
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+}
+.tile-map .twpt-row{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  min-height:var(--ctrlW);
+  border-radius:6px;
+  overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.tile-map .twpt-row .twpt-btn{
+  width:100%;
+  min-height:calc(var(--ctrlW) - 12px);
+  height:auto;
+  flex:1;
+  border-radius:6px 6px 0 0;
+  box-shadow:none;
+}
+.tile-map .twpt-exp{
+  width:100%;
+  height:12px;
+  min-height:12px;
+  padding:0;
+  border:none;
+  border-top:1px solid rgba(15,23,42,.1);
+  background:rgba(255,255,255,.92);
+  color:#64748b;
+  cursor:pointer;
+  font-size:.58rem;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.tile-map .twpt-exp:hover{ background:#eff6ff; color:#1d4ed8; }
+.tile-map .twpt-exp[aria-expanded="true"]{
+  background:#dbeafe;
+  color:#1d4ed8;
+}
+.tile-map .twpt-menu{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  min-width:11.5em;
+  background:color-mix(in srgb, var(--panel) 92%, var(--surface-page) 8%);
+  border:1px solid var(--border);
+  border-radius:var(--radius-control);
+  box-shadow:var(--shadow-lg), var(--shadow-inset-card);
+  backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
+  padding:4px 0;
+  z-index:25;
+}
+.tile-map .twpt-menu[hidden]{ display:none !important; }
+.tile-map .twpt-menu-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  margin:0;
+  padding:8px 12px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  text-align:left;
+  font-size:.82rem;
+  font-weight:600;
+  color:var(--text);
+  font-family:inherit;
+}
+.tile-map .twpt-menu-item:hover{ background:var(--panel2); }
+.tile-map .twpt-menu-item.is-active{
+  background:#2563eb;
+  color:#fff;
+}
+.tile-map .twpt-menu-item:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+.tile-map .twpt-menu-ico{
+  width:1.1em;
+  flex-shrink:0;
+  text-align:center;
+  line-height:1;
+}
+.tile-map .twpt-menu-label{ flex:1; min-width:0; }
 
 /* Range Rings — pulsante mappa: solo icona, dimensioni coerenti con Misura / Traccia / Waypoint. */
 .tile-map .trr-btn{
@@ -3002,6 +3096,7 @@ body.mm-enlarged{overflow:hidden}
 .tile-map .tile-ctrls .tmeas-btn,
 .tile-map .tile-ctrls .ttrk-btn,
 .tile-map .tile-ctrls .twpt-btn,
+.tile-map .tile-ctrls .twpt-group,
 .tile-map .tile-ctrls .tgps-btn,
 .tile-map .tile-ctrls .trr-btn,
 .tile-map .tile-ctrls .tpoly-btn,
@@ -5534,6 +5629,12 @@ body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
   object-fit:contain;
   display:block;
 }
+body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-group{
+  width:100%;
+  align-self:stretch;
+  overflow:visible;
+}
+body.gis-mode #gisMapMount .tile-map .twpt-menu{ z-index:80; }
 /* GIS: basemap menu is positioned via JS (fixed + clamp). Keep it neutral here. */
 body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-layers{
   position:static;
@@ -10694,6 +10795,10 @@ const I18N = {
     "tip.trackPickMap":"Attiva la modalità click-on-map: ogni click sulla mini-mappa aggiunge un punto.",
     "tip.trackMapBuild":"Traccia: ogni clic sulla mappa aggiunge un vertice senza nome (polyline aperta). Ripremi per uscire.",
     "tip.waypointMapBuild":"Apri o chiudi pannello waypoint",
+    "tip.waypointToolbarMain":"Nuovo waypoint",
+    "tip.waypointToolbarExpand":"Altre azioni waypoint (posiziona / torna al punto)",
+    "tip.waypointToolbarPick":"Posiziona un punto sulla mappa",
+    "tip.waypointToolbarRecenter":"Torna al punto convertito (ricentra la mappa)",
     "tip.mapUndo":"Annulla ultimo punto (misura sulla mappa o traccia in modalità clic)",
     "tip.trackPaste":"Apre un box per incollare una lista di coordinate da aggiungere in blocco.",
     "tip.trackImport":"Importa tracce da GPX, KML, KMZ, GeoJSON, CSV, WKT o SHP se supportati.",
@@ -12154,6 +12259,10 @@ const I18N = {
     "tip.trackPickMap":"Enable click-on-map mode: every click on the mini-map adds a point.",
     "tip.trackMapBuild":"Track: each map click adds an unnamed vertex (open polyline). Click again to exit.",
     "tip.waypointMapBuild":"Open or close waypoint panel",
+    "tip.waypointToolbarMain":"New waypoint",
+    "tip.waypointToolbarExpand":"More waypoint actions (place point / back to point)",
+    "tip.waypointToolbarPick":"Place a point on the map",
+    "tip.waypointToolbarRecenter":"Back to the converted point (recenter the map)",
     "tip.mapUndo":"Undo last point (on-map measure or track while click-to-add is on)",
     "tip.trackPaste":"Opens a box to paste a list of coordinates to be added at once.",
     "tip.trackImport":"Import tracks from GPX, KML, KMZ, GeoJSON, CSV, WKT or SHP when supported.",
@@ -13614,6 +13723,10 @@ const I18N = {
     "tip.trackPickMap":"Active le mode clic-carte : chaque clic sur la mini-carte ajoute un point.",
     "tip.trackMapBuild":"Trace : chaque clic sur la carte ajoute un sommet sans nom (polyligne ouverte). Recliquer pour quitter.",
     "tip.waypointMapBuild":"Ouvrir ou fermer le panneau waypoint",
+    "tip.waypointToolbarMain":"Nouveau waypoint",
+    "tip.waypointToolbarExpand":"Autres actions waypoint (placer / revenir au point)",
+    "tip.waypointToolbarPick":"Placer un point sur la carte",
+    "tip.waypointToolbarRecenter":"Revenir au point converti (recentrer la carte)",
     "tip.mapUndo":"Annuler le dernier point (mesure sur la carte ou trace en mode clic)",
     "tip.trackPaste":"Ouvre une boîte pour coller une liste de coordonnées à ajouter en bloc.",
     "tip.trackImport":"Importer des traces depuis GPX, KML, KMZ, GeoJSON, CSV, WKT ou SHP si pris en charge.",
@@ -14824,6 +14937,8 @@ const state = {
   _measEscNoticePending: false,
   /** Basemap (osm/sat) dropdown on tile map — transient. */
   mapBasemapMenuOpen: false,
+  /** GIS waypoint toolbar: menu secondario pick/ricentra — transient. */
+  mapWaypointToolbarMenuOpen: false,
   /** Offline map download UI (pre-cache panel). Hidden until the map toolbar button is used. */
   offlineDownloadVisible: false,
   mapMeasureKind: "line", // preferenza persistita: line | poly
@@ -14979,6 +15094,63 @@ function positionBasemapMenuGis(miniMapRoot){
       if (!document.body.classList.contains("gis-mode")) return;
       if (!state.mapBasemapMenuOpen) return;
       state.mapBasemapMenuOpen = false;
+      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+    }, true);
+  }
+}
+
+let _waypointToolbarMenuOutsideBound = false;
+function waypointToolbarMenuOutsideClose(ev){
+  if (!state.mapWaypointToolbarMenuOpen) return;
+  if (ev.target.closest && ev.target.closest('[data-role="waypoint-toolbar-group"]')) return;
+  state.mapWaypointToolbarMenuOpen = false;
+  if (document.body.classList.contains("gis-mode")){
+    try {
+      const lp = state.lastPoint || state.viewCenter;
+      const z = state.mapZoom || 11;
+      if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+    } catch(_){}
+  }
+}
+
+let _waypointToolbarMenuGisResizeBound = false;
+function positionWaypointToolbarMenuGis(miniMapRoot){
+  if (!miniMapRoot || !document.body.classList.contains("gis-mode")) return;
+  if (!state.mapWaypointToolbarMenuOpen) return;
+  const btn = miniMapRoot.querySelector && miniMapRoot.querySelector('[data-role="waypoint-map-menu-toggle"]');
+  const menu = miniMapRoot.querySelector && miniMapRoot.querySelector('[data-role="waypoint-map-menu"]');
+  if (!btn || !menu || menu.hidden) return;
+  try { btn.blur(); } catch(_){}
+  menu.style.position = "fixed";
+  menu.style.left = "0px";
+  menu.style.top = "0px";
+  menu.style.right = "auto";
+  menu.style.bottom = "auto";
+  menu.style.transform = "none";
+  menu.style.marginTop = "0";
+  menu.style.maxWidth = "min(340px, calc(100vw - 16px))";
+  menu.style.maxHeight = "calc(100vh - 16px)";
+  menu.style.overflowX = "hidden";
+  menu.style.overflowY = "auto";
+  try { void menu.offsetWidth; } catch(_){}
+  const pad = 8;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const br = btn.getBoundingClientRect();
+  const mr = menu.getBoundingClientRect();
+  let left = Math.floor(br.left - mr.width - pad);
+  let top = Math.floor(br.top);
+  if (left < pad) left = pad;
+  if (left + mr.width > vw - pad) left = Math.max(pad, Math.floor(vw - pad - mr.width));
+  if (top < pad) top = pad;
+  if (top + mr.height > vh - pad) top = Math.max(pad, Math.floor(vh - pad - mr.height));
+  menu.style.left = left + "px";
+  menu.style.top = top + "px";
+  if (!_waypointToolbarMenuGisResizeBound){
+    _waypointToolbarMenuGisResizeBound = true;
+    window.addEventListener("resize", () => {
+      if (!document.body.classList.contains("gis-mode")) return;
+      if (!state.mapWaypointToolbarMenuOpen) return;
+      state.mapWaypointToolbarMenuOpen = false;
       if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     }, true);
   }
@@ -20618,6 +20790,18 @@ function bindHotkeys(){
           } catch(_){}
         } else if (state.lastPoint){
           renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+        }
+        ev.preventDefault();
+        return;
+      }
+      if (state.mapWaypointToolbarMenuOpen){
+        state.mapWaypointToolbarMenuOpen = false;
+        if (document.body.classList.contains("gis-mode")){
+          try {
+            const lp = state.lastPoint || state.viewCenter;
+            const z = state.mapZoom || 11;
+            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
+          } catch(_){}
         }
         ev.preventDefault();
         return;
@@ -28531,10 +28715,33 @@ function trackSyncPickModeUi(){
   if (wpTgl){
     wpTgl.classList.toggle("active", wpTbarOn);
     wpTgl.setAttribute("aria-pressed", wpTbarOn ? "true" : "false");
-    const tipWp = t("tip.waypointMapBuild");
+    const tipWp = document.body.classList.contains("gis-mode")
+      ? ((typeof t === "function" && t("tip.waypointToolbarMain")) ? t("tip.waypointToolbarMain") : t("tip.waypointMapBuild"))
+      : t("tip.waypointMapBuild");
     wpTgl.setAttribute("data-tip", tipWp);
     wpTgl.setAttribute("aria-label", tipWp);
     wpTgl.removeAttribute("title");
+  }
+  const wpExpTgl = root && root.querySelector('[data-role="waypoint-map-menu-toggle"]');
+  if (wpExpTgl){
+    const wpMenuOn = !!state.mapWaypointToolbarMenuOpen;
+    wpExpTgl.setAttribute("aria-expanded", wpMenuOn ? "true" : "false");
+    const tipExp = (typeof t === "function" ? (t("tip.waypointToolbarExpand") || "") : "") || "Altre azioni waypoint";
+    wpExpTgl.setAttribute("data-tip", tipExp);
+    wpExpTgl.setAttribute("aria-label", tipExp);
+    wpExpTgl.removeAttribute("title");
+  }
+  const wpPickMenu = root && root.querySelector('[data-role="waypoint-map-pick"]');
+  if (wpPickMenu){
+    const pickOn = !!state.mapPickMode;
+    wpPickMenu.classList.toggle("is-active", pickOn);
+    wpPickMenu.setAttribute("aria-pressed", pickOn ? "true" : "false");
+    const pickAr = pickOn ? t("map.pickActive") : t("map.pickStart");
+    const pickTip = (typeof t === "function" ? (t("tip.waypointToolbarPick") || t("map.pickTip") || "") : "") || pickAr;
+    wpPickMenu.setAttribute("data-tip", pickTip);
+    wpPickMenu.setAttribute("aria-label", pickAr);
+    const pickLbl = wpPickMenu.querySelector(".twpt-menu-label");
+    if (pickLbl) pickLbl.textContent = pickAr;
   }
   const rrTgl = root && root.querySelector('[data-role="rangerings-open"]');
   if (rrTgl){
@@ -30279,6 +30486,7 @@ function renderTileMap(lat, lon, zoom){
     + "</svg>";
 
   const _gisHub = document.body.classList.contains("gis-mode");
+  const vcOffPxToolbar = Math.hypot(mtx - vtx, mty - vty) * 256;
   // Basemap picker (Layer): top-left in classic sidebar; first item in right stack on GIS hub map.
   let basemapLayersHtml = "";
   {
@@ -30346,7 +30554,8 @@ function renderTileMap(lat, lon, zoom){
       <span class="tz-level">z${zoom}</span>
     </div>
     ${(() => {
-      const vcOffPx = Math.hypot(mtx - vtx, mty - vty) * 256;
+      if (_gisHub) return "";
+      const vcOffPx = vcOffPxToolbar;
       let s = "";
       if (vcOffPx > 40){
         s += `<button class="tile-recenter" type="button" data-tip="${esc(t("tip.recenter"))}" aria-label="${esc(t("tip.recenter"))}"><span class="tmb-ico" aria-hidden="true">📍</span><span class="tmb-label" aria-hidden="true">${esc(t("tip.recenterShort"))}</span></button>`;
@@ -30390,9 +30599,32 @@ function renderTileMap(lat, lon, zoom){
       ensureMapWaypointsState();
       const wpDlg0 = document.getElementById("waypointModal");
       const on = !!(state.waypointPickMode || state.waypointsModalOpen || (_gisHub && wpDlg0 && wpDlg0.open));
-      const tip = esc(t("tip.waypointMapBuild"));
+      const tipMain = esc((typeof t === "function" ? (t("tip.waypointToolbarMain") || t("tip.waypointMapBuild") || "") : "") || "Nuovo waypoint");
+      const tip = _gisHub ? tipMain : esc(t("tip.waypointMapBuild"));
       const cls = on ? " active" : "";
-      return `<button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${waypointMapIcoImg}</button>`;
+      if (!_gisHub){
+        return `<button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${waypointMapIcoImg}</button>`;
+      }
+      const wpMenuOpen = !!state.mapWaypointToolbarMenuOpen;
+      const tipExp = esc((typeof t === "function" ? (t("tip.waypointToolbarExpand") || "") : "") || "Altre azioni waypoint");
+      const pickActiveCls = state.mapPickMode ? " is-active" : "";
+      const pickAr = state.mapPickMode ? t("map.pickActive") : t("map.pickStart");
+      const pickTip = esc((typeof t === "function" ? (t("tip.waypointToolbarPick") || t("map.pickTip") || "") : "") || pickAr);
+      const recTip = esc((typeof t === "function" ? (t("tip.waypointToolbarRecenter") || t("tip.recenter") || "") : "") || "Torna al punto");
+      const recLbl = esc(t("tip.recenterShort") || "Torna sul punto");
+      const recItem = (vcOffPxToolbar > 40)
+        ? `<button type="button" class="twpt-menu-item" role="menuitem" data-role="waypoint-map-recenter" data-tip="${recTip}" aria-label="${recTip}"><span class="twpt-menu-ico" aria-hidden="true">📍</span><span class="twpt-menu-label">${recLbl}</span></button>`
+        : "";
+      return `<div class="twpt-group" data-role="waypoint-toolbar-group">
+        <div class="twpt-row">
+          <button class="twpt-btn${cls}" type="button" data-role="waypoint-map-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${on ? "true" : "false"}">${waypointMapIcoImg}</button>
+          <button class="twpt-exp" type="button" data-role="waypoint-map-menu-toggle" data-tip="${tipExp}" aria-label="${tipExp}" aria-expanded="${wpMenuOpen ? "true" : "false"}" aria-haspopup="menu"><span aria-hidden="true">▾</span></button>
+        </div>
+        <div class="twpt-menu" data-role="waypoint-map-menu" role="menu"${wpMenuOpen ? "" : " hidden"}>
+          <button type="button" class="twpt-menu-item${pickActiveCls}" role="menuitem" data-role="waypoint-map-pick" data-tip="${pickTip}" aria-label="${esc(pickAr)}" aria-pressed="${state.mapPickMode ? "true" : "false"}"><span class="twpt-menu-ico" aria-hidden="true">🎯</span><span class="twpt-menu-label">${esc(pickAr)}</span></button>
+          ${recItem}
+        </div>
+      </div>`;
     })()}
     ${(() => {
       const tip = esc((typeof t==="function" ? (t("rangeRings.mapBtnTip")||"") : "") || "Range Rings");
@@ -30592,6 +30824,17 @@ function renderTileMap(lat, lon, zoom){
       try { positionBasemapMenuGis(root); } catch(__){}
     }
   }
+  if (document.body.classList.contains("gis-mode") && state.mapWaypointToolbarMenuOpen){
+    try {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          try { positionWaypointToolbarMenuGis(root); } catch(_){}
+        });
+      });
+    } catch(_){
+      try { positionWaypointToolbarMenuGis(root); } catch(__){}
+    }
+  }
 
   // Kick off (or resolve from cache) the elevation for the waypoint row.
   updatePointElev(root, lat, lon);
@@ -30627,7 +30870,9 @@ function renderTileMap(lat, lon, zoom){
   if (bmToggle){
     bmToggle.addEventListener("click", (ev) => {
       ev.stopPropagation();
-      state.mapBasemapMenuOpen = !state.mapBasemapMenuOpen;
+      const next = !state.mapBasemapMenuOpen;
+      if (next) state.mapWaypointToolbarMenuOpen = false;
+      state.mapBasemapMenuOpen = next;
       renderTileMap(lat, lon, zoom);
     });
   }
@@ -30866,9 +31111,61 @@ function renderTileMap(lat, lon, zoom){
   if (waypointMapTgl){
     waypointMapTgl.addEventListener("click", (ev) => {
       ev.stopPropagation();
+      const isGisWp = document.body.classList.contains("gis-mode");
+      if (isGisWp){
+        state.mapWaypointToolbarMenuOpen = false;
+        const dlg = document.getElementById("waypointModal");
+        if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("waypointModal")){
+          try { gisRestoreMinimizedPanel("waypointModal"); } catch(_){}
+          try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
+          try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+          return;
+        }
+        if (state.waypointsModalOpen || (dlg && dlg.open)){
+          try { if (typeof startWaypointNewWaypointFlow === "function") startWaypointNewWaypointFlow(); } catch(_){}
+        } else if (typeof openWaypointModal === "function") {
+          openWaypointModal();
+        }
+        return;
+      }
       const dlg = document.getElementById("waypointModal");
       if (state.waypointsModalOpen || (dlg && dlg.open)) closeWaypointModal();
       else if (typeof openWaypointModal === "function") openWaypointModal();
+    });
+  }
+  const waypointMenuTgl = root.querySelector('[data-role="waypoint-map-menu-toggle"]');
+  if (waypointMenuTgl){
+    waypointMenuTgl.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      const next = !state.mapWaypointToolbarMenuOpen;
+      if (next) state.mapBasemapMenuOpen = false;
+      state.mapWaypointToolbarMenuOpen = next;
+      renderTileMap(lat, lon, zoom);
+    });
+  }
+  const waypointPickMenu = root.querySelector('[data-role="waypoint-map-pick"]');
+  if (waypointPickMenu){
+    waypointPickMenu.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.mapWaypointToolbarMenuOpen = false;
+      const nextPick = !state.mapPickMode;
+      if (nextPick){
+        try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+      }
+      state.mapPickMode = nextPick;
+      root.classList.toggle("map-pick-mode", !!state.mapPickMode);
+      renderTileMap(lat, lon, zoom);
+    });
+  }
+  const waypointRecenterMenu = root.querySelector('[data-role="waypoint-map-recenter"]');
+  if (waypointRecenterMenu){
+    waypointRecenterMenu.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.mapWaypointToolbarMenuOpen = false;
+      state.viewCenter = { lat, lon };
+      saveStore();
+      renderTileMap(lat, lon, zoom);
     });
   }
   const rrMapBtn = root.querySelector('[data-role="rangerings-open"]');
@@ -31296,7 +31593,7 @@ function gisMapOnDblClickCenter(ev){
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap || !tileMap.contains(ev.target)) return;
-  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
   if (ev.target.closest(UI_SEL)) return;
   const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
   if (trackPickActive || state.mapPickMode || state.astroPickCenterMode) return;
@@ -31344,7 +31641,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -37054,6 +37351,10 @@ function bindUI(){
   if (!_basemapMenuOutsideBound){
     _basemapMenuOutsideBound = true;
     document.addEventListener("mousedown", basemapMenuOutsideClose, true);
+  }
+  if (!_waypointToolbarMenuOutsideBound){
+    _waypointToolbarMenuOutsideBound = true;
+    document.addEventListener("mousedown", waypointToolbarMenuOutsideClose, true);
   }
 }
 /* ========================= SECTION 23B: GIS HUB =========================
