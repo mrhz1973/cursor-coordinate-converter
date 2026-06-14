@@ -91,6 +91,12 @@ catena, a passi fissi, NON iterativa:
   davvero lo stato operativo o lo snapshot.
 - Nessun blocco operativo è chiuso finché non risulta pubblicato
   l'autosync orchestratore pertinente.
+- "Pubblicato" significa pushato su `origin` e verificato sul remoto,
+  non solo committato in locale.
+- Verifica del push: `git log origin/main` dopo `git fetch`, oppure
+  lettura del file su GitHub a prova di cache. Una sola lettura raw
+  immediata non è prova: il CDN può servire contenuto cachato per
+  alcuni minuti.
 
 ---
 
