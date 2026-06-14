@@ -9,6 +9,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-14 — SonarChart overlay (WU-0003) CLOSED: test end-to-end su VPS
+PASS (tile /sonar/ 200, overlay reso, proxy attivo). Tile /sonar/ trasparenti
+(RGBA). Follow-up separato: toggle basemap/SonarChart indipendenti (ex D2).
+Read-set autorevole invariato.
+
 2026-06-14 — SonarChart overlay (WU-0003) — implementazione + PASS locale:
 base a6c7741, offline 6c0c18e, WU runtime 43d9ece. Test manuale locale PASS.
 Pendente: tile /sonar/ su VPS con proxy. Governance: pipeline prompt Cursor +
