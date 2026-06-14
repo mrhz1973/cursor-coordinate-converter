@@ -177,6 +177,17 @@ Per **blocco completato** si intende (non esaustivo):
 - se il monolite è incluso o escluso dal commit (e perché);
 - se il working tree è pulito o no.
 
+### Regola: autosync differito (blocchi con revisione preventiva)
+
+- Se un prompt operativo dice esplicitamente di NON committare / NON autosync
+  (perché l'esito va rivisto prima del commit), l'autosync NON è annullato:
+  è SOSPESO e diventa obbligatorio al commit successivo, una volta dato l'ok.
+- "Blocco completato" (che fa scattare l'autosync obbligatorio) significa
+  blocco committato dopo validazione, non semplice esecuzione locale.
+- Quindi: esecuzione in attesa di revisione → riepilogo in chat, nessun
+  autosync. Commit del blocco (post-ok) → autosync obbligatorio nello stesso
+  intervento (latest.md + inbox + push), come da regola sopra.
+
 ### Regola: riconciliazione **codice reale ↔ memoria orchestratore**
 
 **Contesto:** può esistere disallineamento in cui un blocco risulta già implementato nel codice (monolite o file pertinenti) ma **non** compare in `docs/orchestrator/latest.md` + `docs/orchestrator/inbox/`. In quel caso **ChatGPT non deve dedurre lo stato dal monolite**: Cursor deve riconciliare e pubblicare l’esito.
