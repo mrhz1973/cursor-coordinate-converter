@@ -1,16 +1,14 @@
 # WU-0004 — Toggle basemap / SonarChart indipendenti
 
-**Stato:** OPEN
+**Stato:** CLOSED
 
 **Scopo:** ripristinare l’indipendenza tra basemap Navionics Seachart e overlay
 SonarChart nel monolite `coordinate_converter Claude.html`, come da decisione D2
-originale in WU-0003, e consentire di **nascondere la basemap** sotto SonarChart
-(la trasparenza reale dei tile `/sonar/` fa vedere la basemap sotto — l’operatore
-deve poterla spegnere visivamente).
+originale in WU-0003. **Decisione finale:** i radio basemap mantengono sempre una
+base attiva; nessuno stato «basemap nascosta» nel monolite.
 
 **Predecessore:** WU-0003 CLOSED (`a6c7741`, `6c0c18e`, `43d9ece`). La mutua
-esclusione Navionics/SonarChart introdotta in `43d9ece` è un workaround temporaneo
-da rimuovere o rilassare in questa WU.
+esclusione Navionics/SonarChart introdotta in `43d9ece` è stata rimossa in B1.
 
 ---
 
@@ -21,35 +19,36 @@ da rimuovere o rilassare in questa WU.
 | D2 WU-0003 | «Basemap: toggle indipendente; nessun cambio automatico di basemap» |
 | Runtime `43d9ece` | Mutua esclusione: basemap `nav` spegne SonarChart; accendere SonarChart su `nav` ripristina l’ultima basemap non-Navionics |
 | Tile SonarChart | PNG RGBA con alpha reale — basemap visibile sotto per design |
-| Esigenza operatore | Poter usare SonarChart con basemap Navionics **o** nascondere la basemap e vedere solo SonarChart (+ seamarks / UI) |
+| Decisione operativa (chiusura) | Radio basemap sempre attivi; nessun toggle «mostra/nascondi basemap» |
 
 ---
 
-## Decisioni da ratificare (prima dell’implementazione)
+## Decisioni ratificate
 
-| Ambito | Proposta |
+| Ambito | Esito |
 | --- | --- |
-| Mutua esclusione | **Rimuovere** la logica in `setMapLayer()` e nel toggle SonarChart che forza basemap/SonarChart mutualmente esclusivi |
-| Nascondere basemap | Nuovo stato/toggle (es. «mostra basemap») o equivalente minimo: quando off, i tile basemap non vengono renderizzati ma SonarChart (e overlay ammessi) restano attivi |
-| Default | Basemap visibile (comportamento attuale per chi non usa il toggle) |
+| Mutua esclusione | **Rimossa** in B1 (`0cd3c8c`) — basemap `nav` e SonarChart possono coesistere |
+| Nascondere basemap (B2) | **Rimosso per decisione** — toggle/stato «basemap visibile/nascosto» non necessario; correttivo `5201ff8` |
+| Default | Una basemap radio sempre selezionata (comportamento attuale) |
 | Consenso / OPSEC | Invariato — riuso consenso Navionics; fail-closed; forced-offline prevale |
-| Persistenza | Valutare se il toggle «mostra basemap» va in `saveStore` (coerenza con `showSonarChart` / `showSeamarks`) |
-| i18n | IT/EN/FR obbligatorio per etichetta/tip del nuovo controllo |
+| i18n toggle basemap (B3) | **Decaduto con B2** |
 | Architettura | Monolite vanilla; nessuna dipendenza nuova |
 
 ---
 
-## Sequenza blocchi proposta
+## Sequenza blocchi
 
 | Blocco | Contenuto | Stato |
 | --- | --- | --- |
 | **B0** | Docs-only: apertura WU-0004 (questo file + snapshot memoria) | PASS |
 | **B1** | Rimuovere mutua esclusione `43d9ece`; verificare coesistenza `nav` + SonarChart | PASS |
-| **B2** | Toggle «mostra basemap» (o equivalente) + wiring render/hydrate | pending |
-| **B3** | i18n IT/EN/FR + QA manuale (locale + VPS tailnet) | pending |
-| **B4** | Chiusura WU + autosync | pending |
+| **B2** | Toggle «mostra basemap» (o equivalente) + wiring render/hydrate | RIMOSSO PER DECISIONE |
+| **B3** | i18n IT/EN/FR + QA manuale (locale + VPS tailnet) | DECADUTO CON B2 |
+| **B4** | Chiusura WU + autosync | CHIUSURA WU ESEGUITA |
 
-**WU-0004 resta OPEN** — B2/B3 (e B4 chiusura) ancora da fare.
+**WU-0004 CLOSED** — B1 PASS; B2 rimosso per decisione operativa (radio basemap
+sempre attivi, stato nascosto non necessario, correttivo `5201ff8`); B3 decaduto
+con B2; chiusura documentale completata.
 
 ---
 
@@ -60,24 +59,41 @@ da rimuovere o rilassare in questa WU.
 - `_lastBaseLayerNonNav` rimosso (zero lettori reali).
 - Persistenza invariata; reload conserva combo `nav` + SonarChart attivi.
 - Test manuale locale: PASS.
-- B2/B3 non implementati in B1.
 - Rischio noto: doppio-fetch by-design con basemap Navionics + SonarChart overlay entrambi attivi.
 
 ---
 
-## Acceptance criteria per chiusura WU
+## Chiusura WU-0004
 
-- Basemap Navionics (`nav`) e SonarChart possono essere **entrambi attivi** senza cambio automatico di layer.
-- L’operatore può **nascondere la basemap** mentre SonarChart (e altri overlay consentiti) restano visibili.
-- Nessuna regressione su OPSEC/consenso Navionics, forced-offline, cache-on-browse, seamarks, offline download.
-- i18n IT/EN/FR per il nuovo controllo.
-- Test manuale PASS su locale e VPS tailnet (proxy attivo).
-- Architettura monolite vanilla invariata; nessuna nuova dipendenza runtime.
+**Data:** 2026-06-14
+
+| Commit | Ruolo |
+| --- | --- |
+| `0cd3c8c` | Rimozione mutua esclusione Navionics/SonarChart (B1 PASS) |
+| `5201ff8` | Rimozione B2 e artefatti basemap hidden dal monolite |
+
+**Decisione:** nessuno stato «basemap nascosta»; i radio basemap mantengono sempre
+una base attiva; artefatti `basemapHidden`, `basemap-hidden`, `basemapVisible`
+assenti dal monolite. WU chiusa.
+
+**Prossimo workstream:** da definire.
 
 ---
 
-## Riferimenti codice (post-B1)
+## Acceptance criteria (stato finale)
+
+- Basemap Navionics (`nav`) e SonarChart possono essere **entrambi attivi** senza cambio automatico di layer. ✅
+- I radio basemap mantengono **sempre una basemap attiva**; nessun toggle/stato «nascondi basemap». ✅ (decisione operativa)
+- Nessuna regressione su OPSEC/consenso Navionics, forced-offline, cache-on-browse, seamarks, offline download. ✅
+- Artefatti B2 (`basemapHidden`, `basemap-hidden`, `basemapVisible`) **assenti** dal monolite. ✅
+- Test manuale B1 PASS su locale. ✅
+- Architettura monolite vanilla invariata; nessuna nuova dipendenza runtime. ✅
+
+---
+
+## Riferimenti codice (post-chiusura)
 
 - ~~Mutua esclusione basemap: `setMapLayer()`~~ — rimossa in B1
 - ~~Mutua esclusione SonarChart toggle~~ — rimossa in B1
 - ~~`_lastBaseLayerNonNav`~~ — rimosso in B1
+- ~~Toggle basemap hidden (B2)~~ — rimosso per decisione (`5201ff8`)

@@ -138,7 +138,7 @@ catena, a passi fissi, NON iterativa:
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
 2. **PASS** — Standardizzazione memoria wiki-LLM completata (Fasi 1–5). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
 3. **CLOSED** — SonarChart overlay nel monolite. Dettaglio: [`docs/work-units/WU-0003-sonarchart-overlay.md`](work-units/WU-0003-sonarchart-overlay.md)
-4. **OPEN** — Toggle basemap/SonarChart indipendenti (follow-up WU-0003). Dettaglio: [`docs/work-units/WU-0004-navionics-basemap-sonarchart-independence.md`](work-units/WU-0004-navionics-basemap-sonarchart-independence.md)
+4. **CLOSED** — Basemap / SonarChart indipendenti. Dettaglio: [`docs/work-units/WU-0004-navionics-basemap-sonarchart-independence.md`](work-units/WU-0004-navionics-basemap-sonarchart-independence.md). B1 PASS (`0cd3c8c`); B2 rimosso per decisione (`5201ff8`); B3 decaduto con B2. Prossimo workstream: da definire.
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
@@ -156,7 +156,7 @@ catena, a passi fissi, NON iterativa:
 | WU-0001 | PASS | OPSEC strict cycle |
 | WU-0002 | PASS | Memory standardization (CLOSED) |
 | WU-0003 | CLOSED | SonarChart overlay |
-| WU-0004 | OPEN | Basemap / SonarChart indipendenti |
+| WU-0004 | CLOSED | Basemap / SonarChart indipendenti; B2 rimosso per decisione |
 
 ---
 

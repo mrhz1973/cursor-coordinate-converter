@@ -9,7 +9,7 @@
 | Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) |
 | Read-set operativo | README.md + docs/OPERATING_MEMORY.md + WU corrente |
 | Stato OPSEC | PASS — vedi [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) |
-| Unità corrente | WU-0004 — OPEN · toggle basemap/SonarChart indipendenti |
+| Unità corrente | WU-0004 — CLOSED · prossimo workstream da definire |
 
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
