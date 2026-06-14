@@ -2376,6 +2376,7 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.92rem; }
 .polygon-panel .poly-actions{ display:flex; align-items:center; gap:4px; flex-shrink:0; }
 .polygon-panel .poly-act-btn{ padding:2px 6px; font-size:.78rem; line-height:1.2; min-height:0; }
+.polygon-panel .poly-actions .btn-danger-subtle[data-role="poly-delete"] .danger-x{ margin-right:0; }
 .polygon-panel .poly-vis-btn{ min-width:1.6rem; }
 .polygon-panel .poly-rename-bar{ margin:0 0 8px; padding:8px; border-radius:6px; background:var(--gis-modal-notice-bg,rgba(241,245,249,.95)); border:1px solid rgba(100,116,139,.25); }
 .polygon-panel .poly-rename-bar .poly-rename-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -10611,6 +10612,7 @@ const I18N = {
     "track.expShpZip":"SHP (ZIP)",
     "track.exportDialogTitle":"Esporta traccia",
     "trackModal.minimizeBlockedSubdialog":"Chiudi prima il dialogo aperto sulla traccia per minimizzare.",
+    "polygonPanel.minimizeBlockedSubdialog":"Chiudi prima rinominazione o conferma eliminazione per minimizzare.",
     "track.exportSelectSavedFirst":"Seleziona una o più tracce salvate nell’archivio (spunta nella tabella) per esportare.",
     "track.exportNeedTwoPoints":"Una o più tracce selezionate non hanno abbastanza punti per l’export (servono almeno 2 punti).",
     "track.exportDialogBody":"Esporta le tracce selezionate nell’archivio ({0}). Se ne selezioni più di una, verrà generato un file .zip con un file per traccia.",
@@ -12069,6 +12071,7 @@ const I18N = {
     "track.expShpZip":"SHP (ZIP)",
     "track.exportDialogTitle":"Export track",
     "trackModal.minimizeBlockedSubdialog":"Close the open track dialog first to minimize.",
+    "polygonPanel.minimizeBlockedSubdialog":"Close rename or delete confirmation first to minimize.",
     "track.exportSelectSavedFirst":"Select one or more saved tracks in the archive (checkboxes in the table) to export.",
     "track.exportNeedTwoPoints":"One or more selected tracks do not have enough points to export (need at least 2 points).",
     "track.exportDialogBody":"Export the selected tracks from the archive ({0}). If you select more than one, a .zip file will be generated with one file per track.",
@@ -13527,6 +13530,7 @@ const I18N = {
     "track.expShpZip":"SHP (ZIP)",
     "track.exportDialogTitle":"Exporter la trace",
     "trackModal.minimizeBlockedSubdialog":"Fermez d’abord la boîte de dialogue ouverte sur la trace pour réduire.",
+    "polygonPanel.minimizeBlockedSubdialog":"Fermez d’abord le renommage ou la confirmation de suppression pour réduire.",
     "track.exportSelectSavedFirst":"Sélectionnez une ou plusieurs traces enregistrées dans l’archive (cases dans le tableau) pour exporter.",
     "track.exportNeedTwoPoints":"Une ou plusieurs traces sélectionnées n’ont pas assez de points pour l’export (il faut au moins 2 points).",
     "track.exportDialogBody":"Exporter les traces sélectionnées dans l’archive ({0}). Si vous en sélectionnez plusieurs, un fichier .zip sera généré avec un fichier par trace.",
@@ -37295,6 +37299,14 @@ function gisInit(){
     polyDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handlePolyClose(); });
     polyDlg.addEventListener("click", (ev) => { if (ev.target === polyDlg) handlePolyClose(); });
   }
+  const polyMin = document.querySelector('[data-role="polygonpanel-minimize"]');
+  if (polyMin && !polyMin._gisPolyMinBtnBound){
+    polyMin._gisPolyMinBtnBound = true;
+    polyMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("polygonPanel", "gis.minimized.polygon");
+    });
+  }
 
   const apClose = document.getElementById("astroPanelClose");
   const apDlg = document.getElementById("astroPanel");
@@ -38144,6 +38156,13 @@ function gisRangeRingsMinimizeBlocked(){
   /* #rrBatchBar is shown whenever any RR set exists (syncRangeRingsBatchBar: hidden = !anyRow), not an ephemeral “dialog” — do not block minimize on it. */
   return false;
 }
+function gisPolygonMinimizeBlocked(){
+  const rename = document.getElementById("polygonPanelRenameBar");
+  if (rename && !rename.hidden) return true;
+  const del = document.getElementById("polygonPanelDeleteBar");
+  if (del && !del.hidden) return true;
+  return false;
+}
 const GIS_MIN_BLOCKED_MAP = {
   trackModal: { nid: "trackModalMinimizeNotice", key: "trackModal.minimizeBlockedSubdialog" },
   waypointModal: { nid: "waypointModalMinimizeNotice", key: "waypointModal.minimizeBlockedSubdialog" },
@@ -38151,7 +38170,8 @@ const GIS_MIN_BLOCKED_MAP = {
   layersPanel: { nid: "layersPanelMinimizeNotice", key: "layersPanel.minimizeBlockedSubdialog" },
   astroPanel: { nid: "astroPanelMinimizeNotice", key: "astroPanel.minimizeBlockedSubdialog" },
   rangeRingsPanel: { nid: "rangeRingsPanelMinimizeNotice", key: "rangeRingsPanel.minimizeBlockedSubdialog" },
-  measurePanel: { nid: "measurePanelMinimizeNotice", key: "measurePanel.minimizeBlockedSubdialog" }
+  measurePanel: { nid: "measurePanelMinimizeNotice", key: "measurePanel.minimizeBlockedSubdialog" },
+  polygonPanel: { nid: "polygonPanelMinimizeNotice", key: "polygonPanel.minimizeBlockedSubdialog" }
 };
 const GIS_MIN_FOCUS_MAP = {
   trackModal: { headId: "trackModalHead", minSel: '[data-role="trackmodal-minimize"]' },
@@ -38160,7 +38180,8 @@ const GIS_MIN_FOCUS_MAP = {
   layersPanel: { headId: "layersPanelHead", minSel: '[data-role="layerspanel-minimize"]' },
   astroPanel: { headId: "astroPanelHead", minSel: '[data-role="astropanel-minimize"]' },
   rangeRingsPanel: { headId: "rangeRingsPanelHead", minSel: '[data-role="rangeringpanel-minimize"]' },
-  measurePanel: { headId: "measurePanelHead", minSel: '[data-role="measurepanel-minimize"]' }
+  measurePanel: { headId: "measurePanelHead", minSel: '[data-role="measurepanel-minimize"]' },
+  polygonPanel: { headId: "polygonPanelHead", minSel: '[data-role="polygonpanel-minimize"]' }
 };
 function gisFlashMinimizeBlockedNotice(panelId){
   const cfg = GIS_MIN_BLOCKED_MAP[panelId];
@@ -38234,7 +38255,8 @@ function gisClearPanelMinimizeUi(panelId){
   }
   gisRemoveFromMinimizedDock(panelId);
 }
-function gisMinimizePanel(panelId, labelKey){
+function gisMinimizePanel(panelId, labelKey, opts){
+  opts = opts && typeof opts === "object" ? opts : {};
   if (!document.body.classList.contains("gis-mode")) return;
   const dlg = document.getElementById(panelId);
   if (!dlg || !dlg.open) return;
@@ -38271,6 +38293,11 @@ function gisMinimizePanel(panelId, labelKey){
     }
   } else if (panelId === "measurePanel"){
     /* Misura: nessun sub-dialog modale; export è <details> locale — minimizzazione consentita. */
+  } else if (panelId === "polygonPanel"){
+    if (!opts.skipBlockCheck && gisPolygonMinimizeBlocked()){
+      gisFlashMinimizeBlockedNotice("polygonPanel");
+      return;
+    }
   } else {
     return;
   }
@@ -38359,6 +38386,11 @@ function gisRestoreMinimizedPanel(panelId){
       gisPanelBringToFront(dlg, o);
       gisPanelApplyLayout(dlg, o);
       clampMeasurePanelRect(dlg);
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "polygonPanel"){
+      const o = _polygonPanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      gisPanelApplyLayout(dlg, o);
       gisPanelSyncBodySize(dlg, o);
     }
   } catch(_){}
@@ -40376,9 +40408,39 @@ function closeRangeRingsPanel(){
 }
 
 /* ───── Polygon panel open / close (floating) ───── */
+function polygonDrawMinimizeIfOpen(){
+  const dlg = document.getElementById("polygonPanel");
+  if (!dlg || !dlg.open || !state.polygonPanelOpen) return;
+  if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")) return;
+  try {
+    if (typeof gisMinimizePanel === "function"){
+      gisMinimizePanel("polygonPanel", "gis.minimized.polygon", { skipBlockCheck: true });
+      state._polygonDrawAutoMinimized = true;
+    }
+  } catch(_){}
+}
+function polygonDrawRestoreIfAutoMinimized(){
+  if (!state._polygonDrawAutoMinimized) return;
+  state._polygonDrawAutoMinimized = false;
+  const dlg = document.getElementById("polygonPanel");
+  if (!dlg || !dlg.open) return;
+  try {
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")){
+      if (typeof gisRestoreMinimizedPanel === "function") gisRestoreMinimizedPanel("polygonPanel");
+    }
+  } catch(_){}
+}
 function openPolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
   if (!dlg) return;
+  if (state.polygonPanelOpen && dlg.open){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")){
+      try { gisRestoreMinimizedPanel("polygonPanel"); } catch(_){}
+    }
+    try { renderPolygonPanelList(); } catch(_){}
+    try { renderAllMaps(); } catch(_){}
+    return;
+  }
   state.polygonPanelOpen = true;
   if (!dlg.open) dlg.show();
   dlg.classList.add("gis-panel-floating");
@@ -40388,12 +40450,26 @@ function openPolygonPanel(){
   try { attachPolygonPanelFloatingGis(dlg); } catch(_){}
   try { ensurePolygonPanelListWired(); polygonWirePanelBarsOnce(); } catch(_){}
   renderPolygonPanelList();
+  try {
+    ensureGisState();
+    if (!state.polygonDrawMode){
+      const blocked = !!(state.track && state.track.pickMode
+        || state.waypointPickMode
+        || state.astroPickCenterMode
+        || state.rangeRingsPickCenterMode
+        || state.rangeRingsPickAndCreateMode
+        || state._rrEditingMoveCenterMode
+        || state.mapMeasureMode);
+      if (!blocked) polygonStartDraw();
+    }
+  } catch(_){}
   try { renderAllMaps(); } catch(_){}
 }
 function closePolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
+  state._polygonDrawAutoMinimized = false;
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
   try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
   state.polygonPanelOpen = false;
@@ -40422,6 +40498,7 @@ function polygonStartDraw(){
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
+  polygonDrawMinimizeIfOpen();
 }
 function polygonCancelDraw(){
   if (!state.polygonDrawMode) return;
@@ -40431,6 +40508,7 @@ function polygonCancelDraw(){
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
+  polygonDrawRestoreIfAutoMinimized();
 }
 function polygonFinishDraw(){
   if (!state.polygonDrawMode) return;
@@ -40455,6 +40533,7 @@ function polygonFinishDraw(){
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
+  polygonDrawRestoreIfAutoMinimized();
   if (added) try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.savedOk") : "") || "Poligono salvato."); } catch(_){}
 }
 function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
@@ -40532,7 +40611,7 @@ function attachPolygonPanelFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#polygonPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+    ignoreSelector: "#polygonPanelClose,[data-role=\"polygonpanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   if (handles.length) gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
@@ -40811,10 +40890,10 @@ function renderPolygonPanelList(){
       const eyeIco = vis ? "👁" : "👁‍🗨";
       const pid = esc(String(f.id || ""));
       const renLbl = esc((typeof t === "function" ? t("gis.polygonPanel.rename") : "") || "Rinomina");
-      const delLbl = esc((typeof t === "function" ? t("gis.polygonPanel.delete") : "") || "Elimina");
       const visTip = esc((typeof t === "function" ? t("tip.polygonPanel.visibility") : "") || "");
       const visLbl = esc((typeof t === "function" ? t(vis ? "gis.polygonPanel.visible" : "gis.polygonPanel.hidden") : "") || "");
-      return `<div class="poly-row" data-poly-id="${pid}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name" title="${nm}">${nm}</span><div class="poly-actions"><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}">${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" title="${delLbl}">${delLbl}</button></div></div>`;
+      const delTip = esc((typeof t === "function" ? t("tip.polygonPanel.delete") : "") || "");
+      return `<div class="poly-row" data-poly-id="${pid}"><span class="poly-swatch" style="background:${col}"></span><span class="poly-name" title="${nm}">${nm}</span><div class="poly-actions"><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}">${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" data-i18n-tip="tip.polygonPanel.delete" data-i18n-aria="tip.polygonPanel.delete" title="${delTip}"><span class="danger-x" aria-hidden="true">✕</span></button></div></div>`;
     }).join("");
   }
   /* "Nuovo poligono" button state: enabled when NOT drawing */
