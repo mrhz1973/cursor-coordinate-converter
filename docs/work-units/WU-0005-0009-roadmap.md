@@ -130,6 +130,20 @@ Solo dopo la diagnosi si decide fix o rimozione.
 
 Motivo: tocca strumenti di misura, stato mappa, UI, possibili export e integrazione con Tracce.
 
+### Stato parziale post-fix base
+
+- Fix base pubblicato: `72a194e fix(gis): guard polygon draw mode against map dblclick recenter`.
+- Esito test manuale: PASS — doppio-click chiude il poligono e la mappa non si ricentra più.
+- Il bug grezzo “poligoni non funziona” è risolto per il caso base verificato.
+- Restano fuori dal fix base:
+  - auto-arm draw mode all’apertura modal;
+  - cancellazione con `X` nella lista;
+  - modal minimizzata durante disegno;
+  - editing vertici;
+  - drag del poligono intero;
+  - standardizzazione modal.
+- Editing vertici e drag poligono restano lavori pesanti da WU/blocco dedicato.
+
 ## Blocchi
 
 ### B0 — Docs WU e perimetro diagnosi
@@ -247,6 +261,18 @@ Ridurre ingombro e disordine della toolbar laterale, correggere allineamenti e r
 - B1-B3 sono prevalentemente **cosmetici / Cursor diretto**, salvo impatto JS.
 - B4-B8 sono **sensibili / layering UI + state wiring — pipeline.**
 
+### Stato parziale post-fix toolbar
+
+- B1 — Pulsanti più piccoli: PASS con `e4c2be3 fix(gis): reduce map toolbar button size`.
+- B2 — Layers disallineato: PASS con `e4c2be3`; test visivo OK.
+- Restano da pianificare/implementare B3+:
+  - GPS icona → scritta con colore qualità;
+  - distanza → righello;
+  - waypoint espandibile a 3 azioni;
+  - poligoni dentro tracce;
+  - MGRS dentro Layers;
+  - Range & Bearing dentro tracce.
+
 ## Blocchi
 
 ### B0 — Docs WU e inventario UI
@@ -261,6 +287,8 @@ Aprire WU-0007. Prima analisi read-only:
 
 ### B1 — Pulsanti più piccoli
 
+**Stato:** PASS (`e4c2be3`).
+
 Obiettivo: ridurre dimensione o padding dei pulsanti laterali che coprono la barra cache al cambio zoom.
 
 Classificazione: **cosmetico / Cursor diretto**, se limitato a CSS.
@@ -273,6 +301,8 @@ Decisione da bloccare:
 - nessun cambio di posizione generale mappa/pannelli.
 
 ### B2 — Layers disallineato
+
+**Stato:** PASS (`e4c2be3`).
 
 Correggere allineamento visivo del pulsante Layers.
 

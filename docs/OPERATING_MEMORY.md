@@ -158,17 +158,8 @@ catena, a passi fissi, NON iterativa:
 **Backlog esplicito (prossimi candidati, non WU aperte):**
 
 - Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
-- **Bug** — `poligoni non funziona`: prima diagnosi read-only, poi decisione fix/rimozione.
-- **UX poligoni + modal standard:** post fix base `72a194e`; auto-arm draw mode nel modal poligoni, cancellazione con `X` in lista, editing vertici/drag poligono come lavori pesanti, modal minimizzata durante disegno, standardizzazione finestre flottanti/resize laterale. Dettaglio: vedi `docs/work-units/WU-0005-0009-roadmap.md`.
-- **UX toolbar laterale:**
-  - pulsanti più piccoli (coprono la barra cache al cambio zoom);
-  - `Layers` disallineato → riallineare;
-  - `GPS`: icona → scritta; colore = qualità segnale;
-  - distanza → icona/strumento righello;
-  - `Waypoint` + `posiziona punto` + `torna al punto` in un pulsante espandibile a 3, azione principale = nuovo waypoint;
-  - `Poligoni` dentro `Tracce`;
-  - `MGRS` dentro `Layers` come overlay;
-  - `Range & Bearing` dentro `Tracce`.
+- **Poligoni:** fix base PASS (`72a194e`) — doppio-click chiude il poligono senza ricentrare la mappa. Resta backlog UX poligoni + modal standard: auto-arm draw mode, `X` in lista, modal minimizzata durante disegno; editing vertici/drag poligono = lavoro pesante separato. Dettaglio: `docs/work-units/WU-0005-0009-roadmap.md`.
+- **UX toolbar laterale:** B1/B2 PASS (`e4c2be3`) — pulsanti più piccoli e Layers allineato. Restano candidati: `GPS` icona → scritta con colore qualità, distanza → righello, `Waypoint` + `posiziona punto` + `torna al punto` in pulsante espandibile a 3, `Poligoni` dentro `Tracce`, `MGRS` dentro `Layers` come overlay, `Range & Bearing` dentro `Tracce`.
 - **Basemap multipli:**
   - XYZ aperti nel solo monolite: OSM-HOT, CARTO Voyager, OpenTopoMap;
   - poi Google/Bing tramite proxy Planet-Clone;
