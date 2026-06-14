@@ -1,7 +1,7 @@
 # GIS Tool — OPERATING_MEMORY
 
 > Gli agenti devono leggere questo file prima di modificare il GIS Tool.  
-> Read-set operativo target: `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.  
+> Read-set operativo: `README.md` (bootloader) → `docs/OPERATING_MEMORY.md` (§7 stato vivo) → `docs/work-units/WU-0005-0009-roadmap.md` (piano/backlog).  
 > Questo file riguarda il **GIS monolite**, non il control-plane e non Planet-Clone.
 
 ---
@@ -31,19 +31,23 @@
 
 ## 3. Read-set operativo
 
-**Read-set corrente:** gli agenti devono leggere:
+**Read-set corrente (wiki-LLM lean):** gli agenti devono leggere, in ordine:
 
-1. `README.md`
-2. `docs/OPERATING_MEMORY.md`
-3. WU corrente in `docs/work-units/`
+1. `README.md` — bootloader e regole di lettura; **non** stato operativo vivo.
+2. `docs/OPERATING_MEMORY.md` — stato operativo vivo, soprattutto **§7**.
+3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
 
-**Legacy (non memoria corrente):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md` e `docs/orchestrator/chatgpt-checkpoint.md` restano storico/legacy/autosync — consultabili per audit, **non** come current-state primario.
+**Precedenza:** se README, OPERATING_MEMORY e roadmap confliggono, segnalare il conflitto e usare il documento più specifico e più recente.
+
+**Legacy (non memoria corrente):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md` e WU chiuse (WU-0001→0004 salvo richiamo esplicito dalla roadmap viva) — consultabili per audit, **non** come current-state primario.
+
+**Verifica remoto / cache RAW:** dopo un push, `raw.githubusercontent.com` può servire contenuto cache per alcuni minuti. Per verifiche immediate usare `git fetch && git log origin/main`, oppure URL RAW con query cache-bust, oppure attendere propagazione. Non considerare una singola lettura RAW immediata come prova negativa definitiva se `git log origin/main` mostra il commit atteso.
 
 ---
 
 ## 4. Protocollo orchestratore minimo
 
-- ChatGPT e Cursor usano lo stesso read-set target: README + OPERATING_MEMORY + WU corrente.
+- ChatGPT e Cursor usano lo stesso read-set target: README (bootloader) → OPERATING_MEMORY §7 → WU-0005-0009-roadmap.
 - Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
 - Procedere per blocchi piccoli.
 - Non toccare aree non correlate.
@@ -84,11 +88,10 @@ catena, a passi fissi, NON iterativa:
   commit separati e selettivi:
   - commit codice/runtime se il monolite o altri file operativi sono
     stati modificati;
-  - commit docs operative se WU, OPERATING_MEMORY o README cambiano
-    stato/snapshot;
+  - commit docs operative se OPERATING_MEMORY §7 o roadmap cambiano stato/piano;
+  - commit README **solo** se cambia read-set/boot procedure (non a ogni blocco runtime);
   - commit autosync memoria orchestratore per latest.md + inbox/.
-- Aggiornare WU, OPERATING_MEMORY e README snapshot solo se cambia
-  davvero lo stato operativo o lo snapshot.
+- Aggiornare OPERATING_MEMORY §7 quando cambia lo stato operativo; roadmap quando cambia piano/backlog; README solo se cambia boot/read-set.
 - Nessun blocco operativo è chiuso finché non risulta pubblicato
   l'autosync orchestratore pertinente.
 - "Pubblicato" significa pushato su `origin` e verificato sul remoto,
@@ -153,13 +156,13 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 - Sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti**: entrambi aggiornano la memoria operativa del repo GIS.
 - Sul **control-plane** si usa **`aggio control`**.
 - **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto.
-- Read-set invariato: `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
+- Read-set: `README.md` → `docs/OPERATING_MEMORY.md` §7 → `docs/work-units/WU-0005-0009-roadmap.md`.
 
-**Flusso `aggio` / `aggio gis` (attivo da Fase 3):** aggiorna, quando necessario:
+**Flusso `aggio` / `aggio gis` (attivo da Fase 3):** legge/aggiorna, quando necessario:
 
-- `OPERATING_MEMORY` solo se cambia lo stato corrente;
-- WU corrente;
-- README snapshot solo se cambia lo snapshot;
+- `README.md` solo se cambia read-set, boot procedure o regole di precedenza;
+- `docs/OPERATING_MEMORY.md` §7 quando cambia lo stato operativo;
+- `docs/work-units/WU-0005-0009-roadmap.md` quando cambia piano/backlog/workstream;
 - eventuale autosync/inbox se il workflow lo richiede.
 
 **Non** puntare a `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria.
@@ -171,7 +174,7 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
 2. **PASS** — Standardizzazione memoria wiki-LLM completata (Fasi 1–5). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
 3. **CLOSED** — SonarChart overlay nel monolite. Dettaglio: [`docs/work-units/WU-0003-sonarchart-overlay.md`](work-units/WU-0003-sonarchart-overlay.md)
-4. **CLOSED** — Basemap / SonarChart indipendenti. Dettaglio: [`docs/work-units/WU-0004-navionics-basemap-sonarchart-independence.md`](work-units/WU-0004-navionics-basemap-sonarchart-independence.md). B1 PASS (`0cd3c8c`); B2 rimosso per decisione (`5201ff8`); B3 decaduto con B2. Prossimo workstream: da definire.
+4. **CLOSED** — Basemap / SonarChart indipendenti. Dettaglio: [`docs/work-units/WU-0004-navionics-basemap-sonarchart-independence.md`](work-units/WU-0004-navionics-basemap-sonarchart-independence.md). B1 PASS (`0cd3c8c`); B2 rimosso per decisione (`5201ff8`); B3 decaduto con B2. Piano/backlog attivo: [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md).
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
