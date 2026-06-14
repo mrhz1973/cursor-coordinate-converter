@@ -115,6 +115,29 @@ catena, a passi fissi, NON iterativa:
 - **Eccezione:** i prompt per Cursor Agent restano **completi**. Cursor esegue il blocco intero; non spezzettare i prompt-task di Cursor.
 - La regola “uno alla volta” vale solo per i comandi eseguiti a mano dall'operatore, non per i prompt-task destinati a Cursor.
 
+### Formato prompt Cursor e blocchi sostanza — copiabili in un colpo solo
+
+Quando ChatGPT prepara un prompt destinato a Cursor, il prompt deve essere un unico blocco contiguo, dentro un fence di codice, con delimitatori espliciti:
+
+````text
+=== INIZIO PROMPT CURSOR ===
+...
+=== FINE PROMPT CURSOR ===
+````
+
+Tutto ciò che Cursor deve eseguire deve stare dentro il blocco delimitato. Niente che l'operatore non deve incollare in Cursor deve stare dentro il blocco.
+
+Le meta-istruzioni per l'operatore devono restare fuori dal blocco, sopra o sotto. Esempi:
+- modalità Cursor consigliata;
+- AI consigliata;
+- documenti da allegare;
+- cosa riportare dopo l'esecuzione;
+- note operative rivolte all'utente.
+
+L'operatore deve poter selezionare l'intero blocco e incollarlo in Cursor senza tagliare parti utili e senza includere testo estraneo.
+
+Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, delimitato, copiabile, senza testo estraneo dentro il blocco.
+
 ---
 
 ## 5. Modalità Cursor consigliata
@@ -157,6 +180,7 @@ catena, a passi fissi, NON iterativa:
 
 **Backlog esplicito (prossimi candidati, non WU aperte):**
 
+- **Default operativo runtime-first:** per i prossimi blocchi, implementare direttamente nel monolite `coordinate_converter Claude.html` e saltare i blocchi docs-only, salvo lavori davvero delicati. Restano giustificati blocchi docs/governance minimi per OPSEC, rete/tile/proxy, cache/storage, migrazioni dati o cambi architetturali. Obiettivo pratico: ridurre overhead documentale e procedere per patch runtime piccole, testate a schermo, poi commit/push.
 - Piano dettagliato WU-0005→0009: vedi docs/work-units/WU-0005-0009-roadmap.md.
 - **Poligoni:** fix base PASS (`72a194e`) + UX leggera PASS (`f7260d9`) — auto-arm draw mode all’apertura pannello, cancellazione con `✕` in lista, pannello minimizzato durante il disegno e ripristino dopo finish/cancel. Restano backlog pesanti/separati: editing vertici, drag del poligono intero, standardizzazione modal trasversale. Dettaglio: `docs/work-units/WU-0005-0009-roadmap.md`.
 - **UX toolbar laterale:** WU-0007 PASS — B1/B2 pulsanti più piccoli + Layers allineato (`e4c2be3`), B3 GPS label + colore qualità PASS (`c051ee1`), B4 distanza → righello PASS (`54d8586`), B5 waypoint/posiziona/torna in gruppo espandibile PASS (`7a02a7e`), B6 poligoni dentro Tracce (`e8395e9`), B7 MGRS dentro Layers PASS (`74d3f32`), B8 Range & Bearing dentro Tracce (`fa12567`). Restano fuori da WU-0007 eventuali standardizzazioni modal trasversali o refactor futuri non ancora pianificati.
