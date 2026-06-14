@@ -2213,7 +2213,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   padding:0;
 }
 .tile-map .tmeas-btn .tmeas-ico,
-.tile-map .tmeas-btn .tmeas-ico-img{
+.tile-map .tmeas-btn .tmeas-ico-img,
+.tile-map .tmeas-btn svg.tmeas-ico{
   width:30px; height:30px;
   display:block;
   flex-shrink:0;
@@ -2819,7 +2820,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .mini-map.mm-full .tile-map .tile-scale{font-size:.95rem; padding:6px 12px 7px}
 .mini-map.mm-half .tile-map .tmeas-btn{ min-height:40px }
 .mini-map.mm-half .tile-map .tmeas-btn .tmeas-ico,
-.mini-map.mm-half .tile-map .tmeas-btn .tmeas-ico-img{ width:36px; height:36px }
+.mini-map.mm-half .tile-map .tmeas-btn .tmeas-ico-img,
+.mini-map.mm-half .tile-map .tmeas-btn svg.tmeas-ico{ width:36px; height:36px }
 .mini-map.mm-half .tile-map .ttrk-btn .ttrk-ico{ width:33px; height:33px }
 .mini-map.mm-half .tile-map .twpt-btn .twpt-ico-img{ width:24px; height:24px }
 .mini-map.mm-half .tile-map .tile-ctrls .tile-recenter,
@@ -2828,7 +2830,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .mini-map.mm-full .tile-map .tile-ctrls .tile-recenter,
 .mini-map.mm-full .tile-map .tile-ctrls .tile-pick{ min-height:48px }
 .mini-map.mm-full .tile-map .tmeas-btn .tmeas-ico,
-.mini-map.mm-full .tile-map .tmeas-btn .tmeas-ico-img{ width:42px; height:42px }
+.mini-map.mm-full .tile-map .tmeas-btn .tmeas-ico-img,
+.mini-map.mm-full .tile-map .tmeas-btn svg.tmeas-ico{ width:42px; height:42px }
 .mini-map.mm-full .tile-map .ttrk-btn .ttrk-ico{ width:39px; height:39px }
 .mini-map.mm-full .tile-map .twpt-btn .twpt-ico-img{ width:28px; height:28px }
 .mini-map.mm-half .tile-map .tile-ctrls .ts-btn,
@@ -11564,6 +11567,7 @@ const I18N = {
     "tip.mapMeasure":"Misura distanza + azimuth: clicca 2 punti sulla mappa",
     "tip.mapMeasureCancel":"Annulla misura",
     "tip.mapMeasureBox":"Strumenti di misura (distanza/azimut, poligono/area)",
+    "tip.mapMeasureRuler":"Righello — misura distanza e azimuth sulla mappa",
     "tip.mapOfflineFloat":"Apri o chiudi «Download mappe Offline» (pannello trascinabile in mini-mappa)",
     "tip.mapOfflineFloatClose":"Chiudi «Download mappe Offline»",
     "map.measureHint":"Nuovo punto: un clic sulla mappa aggiunge un vertice. Trascina i pallini numerati per spostarli. Per eliminare un vertice: tasto destro sul pallino (su Mac: Ctrl-clic). Passa il mouse sul pallino per il suggerimento.",
@@ -13023,6 +13027,7 @@ const I18N = {
     "tip.mapMeasure":"Measure distance + bearing: click 2 points on the map",
     "tip.mapMeasureCancel":"Cancel measure",
     "tip.mapMeasureBox":"Measure tools (distance/bearing, polygon/area)",
+    "tip.mapMeasureRuler":"Ruler — measure distance and bearing on the map",
     "tip.mapOfflineFloat":"Open or close offline map download (draggable on small map)",
     "tip.mapOfflineFloatClose":"Close offline map download",
     "map.measureHint":"New point: a map click adds a vertex. Drag the numbered handles to move them. To remove a vertex: right-click the handle (Mac: Ctrl-click). Hover a handle for the tooltip.",
@@ -14482,6 +14487,7 @@ const I18N = {
     "tip.mapMeasure":"Mesurer distance + azimut : cliquez 2 points sur la carte",
     "tip.mapMeasureCancel":"Annuler la mesure",
     "tip.mapMeasureBox":"Outils de mesure (distance/azimut, polygone/surface)",
+    "tip.mapMeasureRuler":"Règle — mesurer distance et azimut sur la carte",
     "tip.mapOfflineFloat":"Ouvrir ou fermer le téléchargement de cartes hors ligne (déplaçable en mini-carte)",
     "tip.mapOfflineFloatClose":"Fermer le téléchargement de cartes hors ligne",
     "map.measureHint":"Nouveau point : un clic sur la carte ajoute un sommet. Glissez les pastilles numérotées pour les déplacer. Supprimer : clic droit sur une pastille (Mac : Ctrl-clic). Survolez une pastille pour l’info-bulle.",
@@ -28560,7 +28566,8 @@ function trackSyncPickModeUi(){
     const measOn = !!(on || open || gisM);
     measTgl.classList.toggle("active", measOn);
     measTgl.setAttribute("aria-pressed", measOn ? "true" : "false");
-    const tipM = (typeof t === "function" ? (t("tip.mapMeasureBox") || "") : "") || "";
+    const tipKey = document.body.classList.contains("gis-mode") ? "tip.mapMeasureRuler" : "tip.mapMeasureBox";
+    const tipM = (typeof t === "function" ? (t(tipKey) || t("tip.mapMeasureBox") || "") : "") || "";
     if (String(tipM || "").trim()){
       const tipEsc = (typeof esc === "function" ? esc(tipM) : String(tipM));
       measTgl.setAttribute("data-tip", tipEsc);
@@ -30262,6 +30269,11 @@ function renderTileMap(lat, lon, zoom){
     + "<circle cx=\"12\" cy=\"12\" r=\"1.85\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.15\"/>"
     + "<circle cx=\"12\" cy=\"12\" r=\"0.85\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1\"/>"
     + "</svg>";
+  /* Righello — icona pulsante misura distanza (toolbar GIS). */
+  const measureRulerMapBtnSvg = "<svg class=\"tmeas-ico\" viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" aria-hidden=\"true\" focusable=\"false\">"
+    + "<rect x=\"3\" y=\"8\" width=\"18\" height=\"7\" rx=\"1.25\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>"
+    + "<path d=\"M6.5 8v2.5M9.5 8v4M12.5 8v2.5M15.5 8v4M18.5 8v2.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.55\" stroke-linecap=\"round\"/>"
+    + "</svg>";
 
   const _gisHub = document.body.classList.contains("gis-mode");
   // Basemap picker (Layer): top-left in classic sidebar; first item in right stack on GIS hub map.
@@ -30354,10 +30366,13 @@ function renderTileMap(lat, lon, zoom){
       const on = !!state.mapMeasureMode;
       const open = !!state.mapMeasurePanelOpen;
       const gisM = _gisHub && gisMeasureIsDrawerContext();
-      const tip = esc(t("tip.mapMeasureBox") || "Strumenti di misura (distanza/azimut, poligono/area)");
+      const tipKey = _gisHub ? "tip.mapMeasureRuler" : "tip.mapMeasureBox";
+      const tip = esc((typeof t === "function" ? (t(tipKey) || t("tip.mapMeasureBox") || "") : "") || (_gisHub ? "Righello" : "Strumenti di misura"));
       const cls = (on || open || gisM) ? " active" : "";
       const pressed = (on || open || gisM) ? "true" : "false";
-      const ico = "<img class=\"tmeas-ico-img\" src=\"assets/measure-distance.svg\" width=\"22\" height=\"22\" alt=\"\" decoding=\"async\">";
+      const ico = _gisHub
+        ? measureRulerMapBtnSvg
+        : "<img class=\"tmeas-ico-img\" src=\"assets/measure-distance.svg\" width=\"22\" height=\"22\" alt=\"\" decoding=\"async\">";
       return `<button class="tmeas-btn${cls}" type="button" data-role="measure-box-toggle" data-tip="${tip}" aria-label="${tip}" aria-pressed="${pressed}">${ico}</button>`;
     })()}
     ${(() => {
