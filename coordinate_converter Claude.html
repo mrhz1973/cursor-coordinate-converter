@@ -5453,12 +5453,15 @@ body.gis-mode #gisMapMount > #miniMap.mini-map{
   overflow:visible;
 }
 
-/* Map controls (right column): clear sticky header + integrated topbar row. */
+/* Map controls (right column): clear the integrated header row only.
+ * --gis-topbar-h is 0 in GIS mode (action bar lives inside the header), so the
+ * old 124px left dead space at the top and pushed the bottom tools onto the
+ * coordinate readout. Raised the column to reclaim that space. */
 body.gis-mode{
-  --gis-map-ctrl-top:124px;
+  --gis-map-ctrl-top:80px;
 }
 @media (max-width:720px){
-  body.gis-mode{ --gis-map-ctrl-top:144px; }
+  body.gis-mode{ --gis-map-ctrl-top:108px; }
 }
 body.gis-mode #gisMapMount .tile-map .tile-ctrls{
   top:max(12px, calc(env(safe-area-inset-top, 0px) + var(--gis-map-ctrl-top)));
@@ -5472,13 +5475,17 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
 body.gis-mode #gisMapMount .tile-map .tile-readout{
   z-index:5;
 }
-/* GIS: basemap (Layer) lives in the right stack, first — flow layout, full button width. */
+/* GIS: basemap (Layer) lives in the right stack, first — flow layout, full button width.
+ * Override the base inline-flex / flex-start so it matches the other column
+ * controls (full --ctrlW width, centered) and the Layers button aligns with them. */
 body.gis-mode #gisMapMount .tile-map .tile-layers{
   position:static !important;
   left:auto !important;
   top:auto !important;
+  display:flex;
   width:var(--ctrlW, 56px);
   align-items:stretch;
+  justify-content:center;
   margin:0;
   flex-shrink:0;
   overflow:visible;
