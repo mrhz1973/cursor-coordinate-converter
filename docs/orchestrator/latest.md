@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-14 — **WU-0004 CLOSED:** chiusura documentale completata. B1 PASS (`0cd3c8c` — mutua esclusione Navionics/SonarChart rimossa). B2 toggle basemap hidden **rimosso per decisione** (`5201ff8` — artefatti `basemapHidden`/`basemap-hidden`/`basemapVisible` assenti dal monolite). B3 **decaduto con B2**. Radio basemap sempre attivi; nessuno stato nascosto. Read-set autorevole: README + OPERATING_MEMORY + WU. **Prossimo workstream:** da definire. Inbox **`2026-06-14_1830_riepilogo_wu-0004-closed.md`**.
+
 2026-06-14 — WU-0004 B1: rimossa mutua esclusione Navionics/SonarChart (commit runtime). _lastBaseLayerNonNav rimosso (zero lettori). Persistenza invariata, reload conserva combo nav+SonarChart. Test locale PASS. Prossimo: B2 toggle mostra/nascondi basemap.
 
 2026-06-14 — WU-0004 OPEN: toggle basemap/SonarChart indipendenti (follow-up
