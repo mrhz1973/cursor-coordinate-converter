@@ -136,6 +136,15 @@ Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichi
 
 **Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
 
+## README / OPERATING_MEMORY / roadmap sync
+
+- `README.md` è bootloader quasi statico: aggiornarlo solo quando cambia il read-set, la procedura di boot AI, i puntatori ai documenti vivi o le regole di precedenza.
+- Non aggiornare `README.md` a ogni commit runtime solo per indicare ultimo blocco, hash o prossima micro-patch.
+- Lo stato operativo vivo va aggiornato in `docs/OPERATING_MEMORY.md`, soprattutto §7.
+- Il piano/backlog/workstream va aggiornato in `docs/work-units/WU-0005-0009-roadmap.md`.
+- Evitare duplicazioni tra README, OPERATING_MEMORY e roadmap.
+- Se durante il riepilogo finale emerge che il README punta a una WU vecchia o a uno stato stale, correggere il README prima del commit finale.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
@@ -274,13 +283,13 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 **Scoped alias (repo GIS):** sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti** — entrambi aggiornano/leggono la memoria operativa del repo GIS. Sul **control-plane** si usa **`aggio control`**. **Trade-off:** `aggio` secco non identifica il repo; la responsabilità di lanciarlo nel contesto/chat corretto è dell’operatore.
 
-**Read-set operativo GIS (wiki-LLM):** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente in `docs/work-units/`. `docs/orchestrator/chatgpt-checkpoint.md` resta **legacy** — non fonte primaria.
+**Read-set operativo GIS (wiki-LLM):** `README.md` (bootloader) → `docs/OPERATING_MEMORY.md` (§7 stato vivo) → `docs/work-units/WU-0005-0009-roadmap.md` (piano/backlog). `docs/orchestrator/chatgpt-checkpoint.md` resta **legacy** — non fonte primaria.
 
-1. **`aggio`** / **`aggio gis`** / **«aggiornati» in Cursor** (repo GIS) = **pubblica/aggiorna memoria operativa GIS**: allinea `docs/OPERATING_MEMORY.md` (se cambia stato), WU corrente, snapshot `README.md` (se cambia), ed eventuale autosync/inbox (`docs/orchestrator/**`) se il workflow lo richiede; **commit/push** coerenti con il modello lean. Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento quando applicabile.
+1. **`aggio`** / **`aggio gis`** / **«aggiornati» in Cursor** (repo GIS) = **pubblica/aggiorna memoria operativa GIS**: allinea `docs/OPERATING_MEMORY.md` §7 (se cambia stato), `docs/work-units/WU-0005-0009-roadmap.md` (se cambia piano/backlog), `README.md` **solo** se cambia read-set/boot (non a ogni commit runtime); ed eventuale autosync/inbox (`docs/orchestrator/**`) se il workflow lo richiede; **commit/push** coerenti con il modello lean. Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento quando applicabile.
 2. **`aggio`** / **`aggio gis`** / **«aggiornati» in ChatGPT** (repo GIS) = **leggi memoria operativa GIS da GitHub**, in ordine:
    - `README.md`;
-   - `docs/OPERATING_MEMORY.md`;
-   - WU corrente in `docs/work-units/`.
+   - `docs/OPERATING_MEMORY.md` (§7);
+   - `docs/work-units/WU-0005-0009-roadmap.md`.
    **Non** usare `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria. È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo GIS: **manuale**, non automatico.
 
 **Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.

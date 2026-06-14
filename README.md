@@ -1,15 +1,39 @@
 # GOI GIS Tool
 
-## Snapshot operativo corrente
+## Snapshot (bootloader)
 
 | Campo | Stato |
 | --- | --- |
 | File operativo | `coordinate_converter Claude.html` |
 | Architettura | HTML standalone, vanilla JS, no framework/npm/bundler |
-| Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) |
-| Read-set operativo | README.md + docs/OPERATING_MEMORY.md + WU corrente |
-| Stato OPSEC | PASS — vedi [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) |
-| Unità corrente | WU-0004 — CLOSED · prossimo workstream da definire |
+| Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) — stato vivo in **§7** |
+| Piano / backlog WU | [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md) |
+
+## AI boot / stato operativo
+
+Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte completa dello stato operativo.
+
+Read-set corrente, in ordine:
+
+1. `README.md` — bootloader e regole di lettura.
+2. `docs/OPERATING_MEMORY.md` — stato operativo vivo, soprattutto §7.
+3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
+4. `coordinate_converter Claude.html` — file operativo principale, da leggere solo quando serve codice/runtime.
+
+Regola di precedenza:
+
+- `README.md` definisce cosa leggere, non la WU corrente.
+- Lo stato operativo vivo sta in `docs/OPERATING_MEMORY.md` §7.
+- Il piano/backlog sta in `docs/work-units/WU-0005-0009-roadmap.md`.
+- Se README, OPERATING_MEMORY e roadmap confliggono, segnalare il conflitto e usare come fonte operativa il documento più specifico e più recente.
+
+Legacy da non usare come stato corrente primario:
+
+- `checkpoint.md`
+- `session-*.md`
+- `latest.md`
+- `chatgpt-checkpoint.md`
+- vecchie WU chiuse, salvo richiamo esplicito dalla roadmap viva
 
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
@@ -62,7 +86,7 @@ Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 Current project status
 
-Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM **completed** (WU-0002, Fasi 1–5 PASS). Read-set: README + OPERATING_MEMORY + WU corrente. Rules flipped Fase 3; autosync finale Fase 4. Monolite **not** touched in memory migration.
+Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) (§7 = stato vivo). Piano/backlog: [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM **completed** (WU-0002, Fasi 1–5 PASS).
 
 Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, Planet-Clone SonarChart on proxy `/sonar/` (not yet in GIS monolite).
 
@@ -238,7 +262,8 @@ Offline maps use browser storage (IndexedDB). Online tiles and geocoding are ext
 
 | Documento | Ruolo |
 | --- | --- |
-| [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti corrente |
+| [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti corrente (§7 = stato vivo) |
+| [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md) | Piano, backlog e workstream WU-0005→0009 |
 | [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) | Semantica OPSEC implementativa |
 | [`docs/work-units/WU-0002-memory-standardization.md`](docs/work-units/WU-0002-memory-standardization.md) | Migrazione memoria wiki-LLM (chiusa) |
 | [`docs/roadmap.md`](docs/roadmap.md) | Roadmap strategica, non memoria corrente |
