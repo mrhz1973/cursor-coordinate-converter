@@ -1,6 +1,6 @@
 # WU-0003 — SonarChart overlay
 
-**Stato:** OPEN
+**Stato:** CLOSED
 
 **Scopo:** integrare nel monolite `coordinate_converter Claude.html` l’overlay **SonarChart** come overlay trasparente indipendente.
 
@@ -81,3 +81,16 @@ Dettagli tecnici:
 - Test manuale LOCALE: PASS (esclusione, contatore, minimizzazione/ripristino).
 - PENDENTE per chiusura: verifica tile `/sonar/` su VPS tailnet con proxy attivo
   (punti rete/consenso BLOCKED-ENV in locale; da confermare in positivo dopo deploy VPS).
+
+## Chiusura (2026-06-14)
+
+- Test end-to-end su VPS tailnet (proxy Planet-Clone attivo, tokens_ok,
+  /status espone charts.sonarchart): PASS.
+- SonarChart compare nel menu Layers; i tile /sonar/{z}/{x}/{y}.png
+  renderizzano sopra la basemap; Network conferma richieste a /sonar/
+  (NON /tiles/) con HTTP 200.
+- Finding: i tile /sonar/ sono PNG RGBA con trasparenza reale (alpha
+  usato, verificato per ispezione tile). Sotto SonarChart traspare la
+  basemap, per design.
+- WU-0003 CLOSED: scopo raggiunto (overlay nel monolite, toggle, gating
+  OPSEC/consenso nav, cache, tile verificati end-to-end).

@@ -130,12 +130,15 @@ catena, a passi fissi, NON iterativa:
 
 1. **PASS** — OPSEC strict cycle chiuso. Dettaglio: [`docs/work-units/WU-0001-opsec-strict-cycle.md`](work-units/WU-0001-opsec-strict-cycle.md)
 2. **PASS** — Standardizzazione memoria wiki-LLM completata (Fasi 1–5). Dettaglio: [`docs/work-units/WU-0002-memory-standardization.md`](work-units/WU-0002-memory-standardization.md)
-3. **OPEN** — SonarChart overlay nel monolite. Dettaglio: [`docs/work-units/WU-0003-sonarchart-overlay.md`](work-units/WU-0003-sonarchart-overlay.md)
+3. **CLOSED** — SonarChart overlay nel monolite. Dettaglio: [`docs/work-units/WU-0003-sonarchart-overlay.md`](work-units/WU-0003-sonarchart-overlay.md)
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
 - UX GIS / mappe offline / import-export / waypoint / tracce / poligoni
 - OPSEC, cache/tile/geocoding lato app
+- Toggle basemap/SonarChart indipendenti: poter nascondere la
+  basemap sotto SonarChart (rilassa la mutua esclusione
+  Navionics/SonarChart; coerente con la decisione D2 originale).
 
 **Escluso da questa OM:** porte raw tailnet, open proxy, B2/Tailscale Serve, reboot-test systemd, ACL/firewall, n8n, control-plane, Planet-Clone operativo.
 
@@ -147,7 +150,7 @@ catena, a passi fissi, NON iterativa:
 | --- | --- | --- |
 | WU-0001 | PASS | OPSEC strict cycle |
 | WU-0002 | PASS | Memory standardization (CLOSED) |
-| WU-0003 | OPEN | SonarChart overlay |
+| WU-0003 | CLOSED | SonarChart overlay |
 
 ---
 
