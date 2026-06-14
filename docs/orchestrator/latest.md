@@ -9,6 +9,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-14 — WU-0004 OPEN: toggle basemap/SonarChart indipendenti (follow-up
+WU-0003). Rilassa mutua esclusione 43d9ece; obiettivo nascondere basemap sotto
+SonarChart (tile RGBA). GIS layout fix 2dbb4fe (colonna controlli). Read-set
+autorevole invariato.
+
 2026-06-14 — SonarChart overlay (WU-0003) CLOSED: test end-to-end su VPS
 PASS (tile /sonar/ 200, overlay reso, proxy attivo). Tile /sonar/ trasparenti
 (RGBA). Follow-up separato: toggle basemap/SonarChart indipendenti (ex D2).
