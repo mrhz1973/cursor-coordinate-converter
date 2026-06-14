@@ -5458,15 +5458,17 @@ body.gis-mode #gisMapMount > #miniMap.mini-map{
  * old 124px left dead space at the top and pushed the bottom tools onto the
  * coordinate readout. Raised the column to reclaim that space. */
 body.gis-mode{
-  --gis-map-ctrl-top:80px;
+  --gis-map-ctrl-top:98px;
 }
 @media (max-width:720px){
-  body.gis-mode{ --gis-map-ctrl-top:108px; }
+  body.gis-mode{ --gis-map-ctrl-top:118px; }
 }
 body.gis-mode #gisMapMount .tile-map .tile-ctrls{
   top:max(12px, calc(env(safe-area-inset-top, 0px) + var(--gis-map-ctrl-top)));
   right:10px;
-  gap:8px;
+  --ctrlW:42px;
+  gap:5px;
+  padding-top:2px;
   /* Sopra marker/readout e lontano dall'header: Layers è il primo controllo della colonna. */
   z-index:60;
   isolation:isolate;
@@ -5483,7 +5485,8 @@ body.gis-mode #gisMapMount .tile-map .tile-layers{
   left:auto !important;
   top:auto !important;
   display:flex;
-  width:var(--ctrlW, 56px);
+  width:100%;
+  align-self:stretch;
   align-items:stretch;
   justify-content:center;
   margin:0;
@@ -5491,11 +5494,14 @@ body.gis-mode #gisMapMount .tile-map .tile-layers{
   overflow:visible;
   z-index:2;
   pointer-events:auto;
+  box-sizing:border-box;
 }
 body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn{
   width:100%;
-  min-width:var(--ctrlW, 56px);
-  min-height:var(--ctrlW, 56px);
+  min-width:0;
+  height:var(--ctrlW);
+  min-height:var(--ctrlW);
+  max-height:var(--ctrlW);
   box-sizing:border-box;
   flex-shrink:0;
   overflow:visible;
@@ -5508,8 +5514,8 @@ body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn{
   line-height:0;
 }
 body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
-  width:26px;
-  height:26px;
+  width:22px;
+  height:22px;
   max-width:100%;
   max-height:100%;
   object-fit:contain;
@@ -5538,6 +5544,23 @@ body.gis-mode #gisMapMount .tile-map .tile-layers [data-tip]:focus-visible::befo
   bottom:50%; top:auto; transform:translateY(50%);
   border:5px solid transparent; border-left-color:var(--tooltip-bg);
   border-top-color:transparent;
+}
+/* mm-full: neutralizza posizionamento legacy Layers (top-left) e dimensioni 46px. */
+body.gis-mode #gisMapMount .mini-map.mm-full .tile-map .tile-ctrls{
+  top:max(12px, calc(env(safe-area-inset-top, 0px) + var(--gis-map-ctrl-top)));
+  right:10px;
+  gap:5px;
+}
+body.gis-mode #gisMapMount .mini-map.mm-full .tile-map .tile-layers{
+  position:static !important;
+  top:auto !important;
+  left:auto !important;
+}
+body.gis-mode #gisMapMount .mini-map.mm-full .tile-map .tile-layers .tlayer-btn{
+  width:100%;
+  height:var(--ctrlW);
+  min-height:var(--ctrlW);
+  border-radius:6px;
 }
 
 /* Scale bar must not cover imagery/attribution labels on the bottom edge. */
