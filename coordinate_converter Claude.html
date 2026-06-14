@@ -8734,7 +8734,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <div class="offcache-row">
             <label class="offcache-lbl" data-i18n="offcache.layer">Strato</label>
             <select id="pcLayer" class="offcache-select">
-              <option value="osm">Cartografia (CARTO)</option>
+              <option value="osmHot">OSM HOT</option>
+              <option value="osm">CARTO Voyager</option>
               <option value="topo">Topografica (OpenTopoMap)</option>
               <option value="sat">Satellite (Esri)</option>
               <option value="nav">Nautica Navionics (proxy tailnet)</option>
@@ -10915,7 +10916,8 @@ const I18N = {
     "res.outOfRange":"Fuori range UTM/MGRS (valido da 80°S a 84°N).",
     "res.mapLinks":"Apri in mappa:",
     "res.miniMap":"Mini-mappa",
-    "map.layerMap":"Mappa",
+    "map.layerMap":"CARTO Voyager",
+    "map.layerOsmHot":"OSM HOT",
     "map.layerTopo":"Topografica",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -10928,7 +10930,8 @@ const I18N = {
     "map.sizeSmall":"Dimensione piccola",
     "map.sizeHalf":"Metà schermo",
     "map.sizeFull":"Schermo intero",
-    "tip.layerMap":"Cartografia (OpenStreetMap)",
+    "tip.layerMap":"CARTO Voyager (OpenStreetMap-derived basemap)",
+    "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
     "tip.layerTopo":"Topografica (OpenTopoMap)",
     "tip.layerSat":"Vista satellitare (Esri)",
     "tip.layerNav":"Carta nautica Navionics — richiede il proxy tailnet (porta 5000)",
@@ -11104,7 +11107,8 @@ const I18N = {
     "offcache.sort.space":"Ordina per spazio stimato",
     "offcache.row.selTip":"Seleziona riga per azioni batch",
     "offcache.row.visTip":"Mostra o nascondi l’area sulla mappa",
-    "offcache.area.layerOsm":"Cartografia",
+    "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topografica",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
@@ -12385,7 +12389,8 @@ const I18N = {
     "res.outOfRange":"Out of UTM/MGRS range (valid 80°S to 84°N).",
     "res.mapLinks":"Open in map:",
     "res.miniMap":"Mini-map",
-    "map.layerMap":"Map",
+    "map.layerMap":"CARTO Voyager",
+    "map.layerOsmHot":"OSM HOT",
     "map.layerTopo":"Topographic",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -12398,7 +12403,8 @@ const I18N = {
     "map.sizeSmall":"Small size",
     "map.sizeHalf":"Half screen",
     "map.sizeFull":"Full screen",
-    "tip.layerMap":"Cartography (OpenStreetMap)",
+    "tip.layerMap":"CARTO Voyager (OpenStreetMap-derived basemap)",
+    "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
     "tip.layerTopo":"Topographic (OpenTopoMap)",
     "tip.layerSat":"Satellite imagery (Esri)",
     "tip.layerNav":"Navionics nautical chart — requires the tailnet proxy (port 5000)",
@@ -12573,7 +12579,8 @@ const I18N = {
     "offcache.sort.space":"Sort by estimated size",
     "offcache.row.selTip":"Select row for batch actions",
     "offcache.row.visTip":"Show or hide this area on the map",
-    "offcache.area.layerOsm":"Street map",
+    "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
@@ -13855,7 +13862,8 @@ const I18N = {
     "res.outOfRange":"Hors limites UTM/MGRS (valide 80°S à 84°N).",
     "res.mapLinks":"Ouvrir sur une carte :",
     "res.miniMap":"Mini-carte",
-    "map.layerMap":"Carte",
+    "map.layerMap":"CARTO Voyager",
+    "map.layerOsmHot":"OSM HOT",
     "map.layerTopo":"Topographique",
     "map.layerSat":"Satellite",
     "map.layerNav":"Navionics",
@@ -13868,7 +13876,8 @@ const I18N = {
     "map.sizeSmall":"Petite taille",
     "map.sizeHalf":"Demi-écran",
     "map.sizeFull":"Plein écran",
-    "tip.layerMap":"Cartographie (OpenStreetMap)",
+    "tip.layerMap":"CARTO Voyager (fond OpenStreetMap)",
+    "tip.layerOsmHot":"OSM Humanitarian (OpenStreetMap HOT)",
     "tip.layerTopo":"Topographique (OpenTopoMap)",
     "tip.layerSat":"Imagerie satellite (Esri)",
     "tip.layerNav":"Carte nautique Navionics — nécessite le proxy tailnet (port 5000)",
@@ -14043,7 +14052,8 @@ const I18N = {
     "offcache.sort.space":"Trier par taille estimée",
     "offcache.row.selTip":"Sélectionner la ligne (actions groupées)",
     "offcache.row.visTip":"Afficher ou masquer la zone sur la carte",
-    "offcache.area.layerOsm":"Carte",
+    "offcache.area.layerOsmHot":"OSM HOT",
+    "offcache.area.layerOsm":"CARTO Voyager",
     "offcache.area.layerTopo":"Topo",
     "offcache.area.layerSat":"Satellite",
     "offcache.area.layerNav":"Navionics",
@@ -22444,7 +22454,7 @@ function normalizeLon(lon){
  */
 /* Tile layer definitions.
  *
- * Cartography: CARTO Voyager (OSM-derived basemap served by CARTO's
+ * Cartography (id `osm`): CARTO Voyager (OSM-derived basemap served by CARTO's
  *   public CDN). We *don't* use tile.openstreetmap.org directly because
  *   OSM's volunteer tile servers now enforce a Referer/User-Agent policy
  *   and return 403 "Access blocked" to requests that don't send an
@@ -22452,6 +22462,12 @@ function normalizeLon(lon){
  *   origins without an HTTP referrer. CARTO's CDN doesn't require that
  *   and is explicitly allowed for end-user apps at light volume.
  *   Subdomain sharding (a-d) parallelizes downloads in the browser.
+ *
+ * OSM HOT (id `osmHot`): Humanitarian OpenStreetMap tiles from
+ *   tile.openstreetmap.fr. Subdomain sharding (a-c).
+ *
+ * Topographic (id `topo`): OpenTopoMap. Subdomain sharding (a-c).
+ *   maxZoom 17 — tiles above that zoom are not published.
  *
  * Satellite: Esri World Imagery (free tier, no key, CORS enabled).
  *   Note the /{z}/{y}/{x} coordinate order (Esri convention).
@@ -22468,6 +22484,15 @@ function getNavProxyHost(){
 }
 
 const TILE_LAYERS = {
+  osmHot: {
+    external: "internet",
+    url:    (z, x, y) => {
+      const sub = ["a","b","c"][Math.abs(x + y) % 3];
+      return `https://${sub}.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png`;
+    },
+    attrib: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors · <a href="https://www.hotosm.org/" target="_blank" rel="noopener">Humanitarian OpenStreetMap Team</a>',
+    maxZoom: 19
+  },
   osm: {
     external: "internet",
     url:    (z, x, y) => {
@@ -22475,7 +22500,7 @@ const TILE_LAYERS = {
       return `https://${sub}.basemaps.cartocdn.com/rastertiles/voyager/${z}/${x}/${y}.png`;
     },
     attrib: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · © <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>',
-    maxZoom: 19
+    maxZoom: 20
   },
   topo: {
     external: "internet",
@@ -22587,15 +22612,20 @@ async function ensureNavProxyConsent(){
   return _navProxyConsentPending;
 }
 
-const MAP_BASE_LAYER_IDS = Object.freeze(["osm", "topo", "sat", "nav"]);
+const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osm", "topo", "sat", "nav"]);
 const OFFLINE_LAYER_IDS = Object.freeze([...MAP_BASE_LAYER_IDS, "sonarchart"]);
+function resolveCatalogLayerId(id, allowedIds){
+  const raw = String(id || "").trim();
+  if (!raw) return null;
+  if (allowedIds.includes(raw)) return raw;
+  const low = raw.toLowerCase();
+  return allowedIds.find(lid => String(lid).toLowerCase() === low) || null;
+}
 function sanitizeMapLayer(id){
-  const k = String(id || "").toLowerCase();
-  return MAP_BASE_LAYER_IDS.includes(k) ? k : "osm";
+  return resolveCatalogLayerId(id, MAP_BASE_LAYER_IDS) || "osm";
 }
 function sanitizeOfflineLayerId(id){
-  const k = String(id || "").toLowerCase();
-  return OFFLINE_LAYER_IDS.includes(k) ? k : "osm";
+  return resolveCatalogLayerId(id, OFFLINE_LAYER_IDS) || "osm";
 }
 function getOfflineTileLayer(layerId){
   const id = sanitizeOfflineLayerId(layerId);
@@ -25006,9 +25036,8 @@ function getCurrentOfflineLayerId(){
 
 function _sanitizeStoredLayerId(id){
   if (id == null || id === "") return null;
-  const k = String(id).toLowerCase();
-  if (k === "sonarchart") return "sonarchart";
-  return MAP_BASE_LAYER_IDS.includes(k) ? k : null;
+  if (String(id).toLowerCase() === "sonarchart") return "sonarchart";
+  return resolveCatalogLayerId(id, MAP_BASE_LAYER_IDS);
 }
 
 function _clampNamedAreaZoom(v){
@@ -26579,6 +26608,7 @@ function offlineAreaStatusLabel(status){
 /** O2: short basemap label for list cards (metadata `layerId`). */
 function offlineNamedAreaLayerLabel(layerId){
   const lid = layerId == null ? "" : String(layerId).toLowerCase();
+  if (lid === "osmHot") return t("offcache.area.layerOsmHot");
   if (lid === "osm") return t("offcache.area.layerOsm");
   if (lid === "topo") return t("offcache.area.layerTopo");
   if (lid === "sat") return t("offcache.area.layerSat");
@@ -30645,10 +30675,12 @@ function renderTileMap(lat, lon, zoom){
     const bmOpen = !!state.mapBasemapMenuOpen;
     const tipPick = esc(t("tip.basemapPicker"));
     const lblMap = esc(t("map.layerMap"));
+    const lblOsmHot = esc(t("map.layerOsmHot"));
     const lblTopo = esc(t("map.layerTopo"));
     const lblSat = esc(t("map.layerSat"));
     const lblNav = esc(t("map.layerNav"));
     const tipOsm = esc(t("tip.layerMap"));
+    const tipOsmHot = esc(t("tip.layerOsmHot"));
     const tipTopo = esc(t("tip.layerTopo"));
     const tipSat = esc(t("tip.layerSat"));
     const tipNav = esc(t("tip.layerNav"));
@@ -30661,6 +30693,7 @@ function renderTileMap(lat, lon, zoom){
     const seamAct = state.showSeamarks ? " is-active" : "";
     const sonarAct = state.showSonarChart ? " is-active" : "";
     const mgrsAct = state.showGrid ? " is-active" : "";
+    const osmHotAct = state.mapLayer === "osmHot" ? " is-active" : "";
     const osmAct = state.mapLayer === "osm" ? " is-active" : "";
     const topoAct = state.mapLayer === "topo" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
@@ -30671,6 +30704,9 @@ function renderTileMap(lat, lon, zoom){
       <img class="tlayer-ico" src="assets/layers.svg" width="20" height="20" alt="" decoding="async">
     </button>
     <div class="tlayer-menu" data-role="basemap-menu" role="menu"${bmOpen ? "" : " hidden"}>
+      <button type="button" class="tlayer-item${osmHotAct}" data-layer="osmHot" role="menuitem" data-tip="${tipOsmHot}">
+        <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osmHot" ? "✓" : ""}</span><span>${lblOsmHot}</span>
+      </button>
       <button type="button" class="tlayer-item${osmAct}" data-layer="osm" role="menuitem" data-tip="${tipOsm}">
         <span class="tlayer-check" aria-hidden="true">${state.mapLayer === "osm" ? "✓" : ""}</span><span>${lblMap}</span>
       </button>
@@ -34457,7 +34493,7 @@ function importSessionObject(data){
     if (typeof s.batchClosed === "boolean") state.batchClosed = s.batchClosed;
     if (typeof s.forceOffline === "boolean") state.forceOffline = s.forceOffline;
     if (Number.isFinite(s.mapZoom)) state.mapZoom = s.mapZoom;
-    if (MAP_BASE_LAYER_IDS.includes(String(s.mapLayer || "").toLowerCase())) state.mapLayer = sanitizeMapLayer(s.mapLayer);
+    if (resolveCatalogLayerId(s.mapLayer, MAP_BASE_LAYER_IDS)) state.mapLayer = sanitizeMapLayer(s.mapLayer);
     if (typeof s.showGrid === "boolean") state.showGrid = s.showGrid;
     if (typeof s.showSeamarks === "boolean") state.showSeamarks = s.showSeamarks;
     if (typeof s.showCoverage === "boolean") state.showCoverage = s.showCoverage;
@@ -44014,7 +44050,7 @@ function init(){
       if (typeof stored.settings.batchClosed === "boolean") state.batchClosed = stored.settings.batchClosed;
       if (typeof stored.settings.forceOffline === "boolean") state.forceOffline = stored.settings.forceOffline;
       if (Number.isFinite(stored.settings.mapZoom)) state.mapZoom = Math.max(2, Math.min(18, Math.round(stored.settings.mapZoom)));
-      if (MAP_BASE_LAYER_IDS.includes(String(stored.settings.mapLayer || "").toLowerCase())){
+      if (resolveCatalogLayerId(stored.settings.mapLayer, MAP_BASE_LAYER_IDS)){
         state.mapLayer = sanitizeMapLayer(stored.settings.mapLayer);
       }
       if (typeof stored.settings.showGrid === "boolean") state.showGrid = stored.settings.showGrid;
