@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B0 browse-cache guard:** monolite incluso nel commit **`23db6b4`** (`parseTileKeyLayerId` + guard fail-open in `cacheTileFromDisplay`; `cacheable:false` autoritativo al pan/zoom). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1120_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B** layer EOX Sentinel-2 cloudless.
+
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8c-B Esri catalogo:** monolite incluso nel commit `043b769` (5 layer Esri, online-only, Layers + i18n). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_0135_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 8d EOX Sentinel-2 cloudless.
 
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8c-A tileScheme:** monolite incluso nel commit `cddc565` (`feat(gis): add tileScheme y-order support`). Helper `buildTileUrl` + `sat` su `urlBase`/`tileScheme: zyx`; OM §7 e roadmap aggiornati. Push step 2 **OK**. Working tree pulito post-orchestratore (verificare dopo commit step 4). Inbox **`2026-06-15_0114_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 8c-B (layer Esri catalogo) o WU-0008 8d EOX.
