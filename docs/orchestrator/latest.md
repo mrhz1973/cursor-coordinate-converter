@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-16 — **Chiusura sessione `finito` — metodo Fase C remote-hash PASS:** commit **`c691b8b`** — `.cursor/rules/30-output-workflow.mdc` (Remote hash, `git ls-remote` autorità finale), `OPERATING_MEMORY` §4, `WU-0005-0009-roadmap` Fase C. **Non** LAST_CURSOR_REPORT / Fase D. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_0017_riepilogo_finito-sessione.md`**. **Prossimo:** Fase D o WU-0009 Tier B.
+
 2026-06-16 — **Chiusura sessione `finito` — metodo Blocco B session-and-repo-guard:** commit **`f2099c4`** — `.cursor/rules/30-output-workflow.mdc` (Session / repo guard), `OPERATING_MEMORY` §4, `WU-0005-0009-roadmap` Blocco B; checkpoint/session. Pre-volo fail-closed; **non** remote-hash/QA evidence/LAST_CURSOR_REPORT. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_0003_riepilogo_finito-sessione.md`**. **Prossimo:** metodo Fasi C–F o WU-0009 Tier B.
 
 2026-06-15 — **Chiusura sessione `finito` — metodo Blocco 0 freeze control-plane:** commit **`52f4858`** — solo docs (`WU-0005-0009-roadmap` § Backlog metodo): SHA frozen **`df046f68867cdffcd350592a2781b53ce21ca8c0`**; Fasi C–F da SHA; Nota Blocco B session-guard pragmatico. **Monolite / OM / rules non inclusi.** Push step 2 **OK**. Inbox **`2026-06-15_2342_riepilogo_finito-sessione.md`**. **Prossimo:** Blocco B (dopo review `.cursor/rules/`).
