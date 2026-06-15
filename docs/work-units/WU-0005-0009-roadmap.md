@@ -714,7 +714,7 @@ Vincoli:
 
 #### 8d — EOX Sentinel-2 cloudless
 
-**Stato:** candidato WU-0008; prerequisito **8d-B0 PASS** (browse-cache guard); **8d-B1-B** + debito `OFFLINE_LAYER_IDS` prima del layer.
+**Stato:** candidato WU-0008; **8d-B0 PASS**; **8d-B1 PASS**; **pre-check 8d-B PASS** (read-only, HEAD `9f98c5d`); layer EOX pronto per prompt runtime parcheggiato (gate licenza/hosting).
 
 ##### 8d-B0 — browse-cache guard `cacheable:false` (prerequisito EOX)
 
@@ -783,7 +783,26 @@ Esito:
 
 ##### 8d-B — layer EOX (candidato)
 
-**Stato:** candidato (prerequisiti `OFFLINE_LAYER_IDS` + B1-B2 soddisfatti).
+**Stato:** candidato runtime — **pre-check prerequisiti PASS** (read-only, HEAD `9f98c5d`); EOX può procedere **senza rifare** pre-check. Prompt runtime EOX **parcheggiato**; gate bloccanti licenza/hosting restano nel prompt stesso.
+
+###### Pre-check read-only prerequisiti EOX — PASS a HEAD `9f98c5d`
+
+**PRE-CHECK 1 — `OFFLINE_LAYER_IDS` derivato / offline eligibility:** PASS.
+
+- Set offline-eligible effettivo: `osmHot`, `cyclosm`, `osm` (CARTO Voyager), `topo` (OpenTopoMap), `sat`, `nav`, `sonarchart`.
+- Esclusi perché `cacheable:false`: `osmStandard`, `esriTopo`, `esriStreet`, `esriHillshade`, `esriRelief`, `esriOceanBase`.
+- Nota: `sat` resta offline-eligible per design corrente (Esri World Imagery, non marcato `cacheable:false`).
+- Gate verificati: precache, export offline JPG, browse-cache IndexedDB, stats/contatori escludono i `cacheable:false`.
+
+**PRE-CHECK 2 — fallback 18 / fit-area / offline-area:** PASS.
+
+- `clampBasemapFitZoom` legge `TILE_LAYERS[id].maxZoom`; fallback 18 ammesso solo se `maxZoom` non numerico.
+- Percorsi fit-area/offline-area rilevanti usano `clampBasemapFitZoom` (`flyMapToTrackPoints`, `flyMiniMapToOfflineNamedAreaById`).
+- Residui opzionali/non bloccanti: GPS `requestGisMapCurrentLocation` (~22487), `loadStore` mapZoom (~44519); entrambi fuori fit-area; coperti dal clamp globale `renderTileMap` (~30940).
+
+**Esito pre-check:** prerequisiti EOX soddisfatti a HEAD `9f98c5d`; **non serve rifare** pre-check prima del blocco runtime.
+
+**Vincoli bloccanti nel prompt EOX runtime (parcheggiato):** licenza/hosting; CC BY-NC-SA / non-commerciale; esclusione deploy pubblici (Firebase web.app, VPS staging `/gis/`, altri deploy pubblici); online-only; `cacheable:false`; no bulk/offline; `maxZoom` numerico conservativo (≤18; Sentinel-2 10 m nativo).
 
 Scope:
 
@@ -802,6 +821,36 @@ Note:
 
 - richiede prima supporto tecnico compatibile nel loader;
 - non va mischiato ai layer XYZ puri.
+
+### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
+
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009).
+
+**Fonte primaria da adottare:** control-plane vivo (ultimo `main` verificato 2026-06-14 — **riverificare `origin/main` prima del diff di adozione**). `dev-method` resta generalizzazione/tag indietro, non fonte viva primaria per i pattern operativi sotto.
+
+**File canonici / riferimenti da adottare nel repo GIS:**
+
+1. **control-plane:** `docs/runtime/LAST_CURSOR_REPORT.md` — rolling report post-push; due commit (task + report); `PENDING_SELF_REFERENCE` + backfill in HISTORY; niente commit finalize-hash; split `result_cursor` / `result_runtime`.
+2. **control-plane:** `PROJECT_VISION.md` §7.1 — guardia hash remoto; PASS richiede `git ls-remote origin main`; raw GitHub può essere stale (cache/CDN); vince hash remoto.
+3. **control-plane:** `PROJECT_VISION.md` §8.1 — output verbatim; regola no-finalize-hash.
+4. **dev-method:** `patterns/session-and-repo-guard.md` — header SESSION/REPO GUARD; nota pre-volo; `git status` a inizio sessione; se workspace sporco, sospettare clone/stash/cartella errata; presente in dev-method **v0.1.1**.
+5. **dev-method:** `adapters/single-file-html.md` — bibbia monolite; 13 sezioni; version marker; large-file token policy; presente in dev-method **v0.1.0 / v0.1.1**.
+
+**Metodo di adozione:**
+
+- pin tag `dev-method` per le forme generiche;
+- copiare le forme operative da **control-plane vivo**;
+- pattern chiave LAST_CURSOR_REPORT / remote-hash **non** sono nei tag dev-method → copiare forma operativa da control-plane, non spostare il pin dev-method.
+
+**Tensione aperta (da risolvere prima dell’adozione piena):**
+
+- memoria GIS: «`aggio` ≡ aggiornati gis»;
+- session-guard dev-method: «`aggio` = tutti i repo attivi».
+
+**Idea aperta, non decisa:**
+
+- Claude Code come reviewer nell’automazione.
+- Paletti: reviewer separato dall’implementer; valutare prima se basta checklist nell’orchestratore; decisione di costo gated; rispettare control-plane §7.5 no-API-default.
 
 ### Tier B — workstream proxy separato
 
@@ -1177,15 +1226,16 @@ Test:
 26. ~~**WU-0008 8d-B1-B1** — badge «No offline» + pannello neutro + `OFFLINE_LAYER_IDS`.~~
 27. ~~**WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).~~
 28. ~~**WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).~~
-29. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
+29. ~~**WU-0008 8d-B pre-check** — prerequisiti EOX read-only PASS (HEAD `9f98c5d`).~~
+30. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; prompt runtime parcheggiato).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
-30. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
-31. **WU-0009B B0-B2** — predisposizione GIS.
-32. **WU-0009B B3** — Google via proxy.
-33. **WU-0009B B4** — Bing via proxy.
-34. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
+31. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
+32. **WU-0009B B0-B2** — predisposizione GIS.
+33. **WU-0009B B3** — Google via proxy.
+34. **WU-0009B B4** — Bing via proxy.
+35. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
 
 ---
 
@@ -1200,7 +1250,7 @@ Test:
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
 | WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A/B1/B2 |
-| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1-B1 | **PASS** prerequisiti; layer **8d-B** candidato |
+| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** prerequisiti + pre-check; layer **8d-B** candidato (prompt parcheggiato) |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |

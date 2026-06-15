@@ -2734,3 +2734,39 @@ Vedi `docs/checkpoint.md` (entry 2026-06-13 Step 4) e README *Security / OPSEC n
 ### Deploy post-push
 
 Dopo push: `git pull --ff-only` manuale sul VPS (`/root/local-files/handoff-runtime/cursor-coordinate-converter`).
+
+## Checkpoint 2026-06-15 — WU-0008 8d-B pre-check EOX + backlog metodo (Finito)
+
+### Contesto
+
+Chiusura sessione **`finito`** — intervento **solo docs** dopo completamento runtime **8d-B1-B3** (`89f53ff`, finito precedente stesso giorno). Obiettivo: registrare formalmente il **pre-check read-only** prerequisiti layer EOX Sentinel-2 cloudless e aprire il **backlog metodo** post-catena 8d.
+
+### Cosa è stato fatto
+
+1. **`docs/work-units/WU-0005-0009-roadmap.md`**
+   - §8d-B: stato aggiornato (8d-B0 + 8d-B1 + **pre-check PASS** a HEAD `9f98c5d`).
+   - Sottosezione **Pre-check read-only prerequisiti EOX — PASS a HEAD `9f98c5d`** con PRE-CHECK 1 (`OFFLINE_LAYER_IDS`, set eligible vs `cacheable:false`) e PRE-CHECK 2 (`clampBasemapFitZoom`, fit-area, residui GPS/loadStore non bloccanti).
+   - Vincoli bloccanti prompt EOX runtime (licenza, CC BY-NC-SA, no deploy pubblico, online-only, `cacheable:false`, maxZoom conservativo).
+   - Nuova sezione **Backlog metodo — Adozione metodo / handoff discipline** (fonti control-plane + dev-method; metodo adozione; tensione `aggio`; idea reviewer Claude non decisa).
+   - Sequenza: item 29 pre-check ~~done~~; item 30 EOX runtime; Fase 4 rinumerata 31–35; tabella dipendenze 8d aggiornata.
+
+2. **`docs/OPERATING_MEMORY.md` §7**
+   - Bullet **WU-0008 8d-B EOX** pre-check PASS + prompt parcheggiato.
+   - Bullet **Backlog metodo** con puntatore roadmap.
+
+3. **Micro-fix heading:** titolo pre-check senza data narrativa (solo SHA `9f98c5d`).
+
+### Non toccato
+
+- `coordinate_converter Claude.html` — nessuna modifica.
+- `docs/roadmap.md`, `.cursor/rules/**`, checkpoint ufficiali pre-`finito` (aggiornati da questo trigger).
+
+### QA
+
+- Solo documentazione; nessun `node --check` richiesto (monolite invariato).
+- Pre-check eseguito read-only su HEAD `9f98c5d` in sessione Cursor (OFFLINE_LAYER_IDS + clampBasemapFitZoom).
+
+### Prossimo passo consigliato
+
+- **WU-0008 8d-B** — layer EOX runtime quando gate licenza/hosting risolti (prompt parcheggiato).
+- **Backlog metodo** — adozione pattern control-plane quando team decide risoluzione tensione `aggio`.
