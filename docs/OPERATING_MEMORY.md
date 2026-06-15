@@ -59,7 +59,7 @@
 - **Session / repo guard:** prima di patch non read-only, verificare repo root, branch e `git status --short`; se workspace atteso pulito risulta sporco all’avvio o repo/cartella non coerenti, fermarsi e riportare lo stato. Cursor non decide autonomamente se procedere; la decisione spetta alla review.
 - **Remote hash / PASS tecnico:** dopo push, il PASS remoto richiede output verbatim coerente di `HEAD`, tracking locale `origin/main` e `git ls-remote origin main`; l’autorità finale è `git ls-remote`, mentre RAW GitHub è secondario/best-effort e può essere stale. Se `origin/main` locale diverge da `ls-remote`, non è PASS. Se gli output mancano o sono ambigui, prima prompt Cursor verify-only; shell manuale utente solo fallback finale. Distinto da PASS operatore / QA runtime.
 - **QA evidence / PASS operatore:** il PASS operatore è distinto dal PASS tecnico remoto e richiede attestazione esplicita nel flusso da utente/operatore o orchestratore. Cursor non può inferirlo da PASS tecnico, diff pulito o `node --check`. In assenza di attestazione, default fail-closed: QA operatore non eseguita/non attestata. Se la QA è attestata, RIEPILOGO e docs devono registrarne provenienza, esiti concreti, ambiente essenziale e limiti.
-- **LAST_CURSOR_REPORT (Fase F1):** solo spec/template; fino a Fase F2 PASS non è fonte viva primaria né obbligatorio; anche dopo attivazione, OM §7 e roadmap restano primari — report rolling post-push dentro autosync esistente, nessun terzo commit/finalize-hash.
+- **LAST_CURSOR_REPORT (Fase F3):** da Fase F3 `docs/runtime/LAST_CURSOR_REPORT.md` è **obbligatorio** post-push per task reale GIS-only; non per read-only/plan/review diff senza commit; evidenza rolling post-push, non fonte viva primaria — OM §7 e roadmap restano primari; mapping: commit principale = task, autosync = report, nessun terzo commit/finalize-hash.
 
 ### Pipeline prompt Cursor (revisione incrociata a passi fissi)
 
@@ -160,6 +160,7 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 - Sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti**: entrambi aggiornano la memoria operativa del repo GIS.
 - Sul **control-plane** si usa **`aggio control`**.
 - **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto.
+- **`aggio` scoped GIS-only:** in questo repo `aggio`/`aggio gis` non significano «tutti i repo» (semantica dev-method storica); coerente con control-plane scoped `aggio control`.
 - Read-set: `README.md` → `docs/OPERATING_MEMORY.md` §7 → `docs/work-units/WU-0005-0009-roadmap.md`.
 
 **Flusso `aggio` / `aggio gis` (attivo da Fase 3):** legge/aggiorna, quando necessario:

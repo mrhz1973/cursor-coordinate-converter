@@ -855,13 +855,15 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`); **Fase F3 PASS** (`PENDING_SELF_REFERENCE`).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
+**Gerarchia fonti metodo:** control-plane @ SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` = unico riferimento vivo/avanzato congelato; **dev-method** = STORIA/legacy, non fonte viva; re-sync esplicito richiesto per adottare uno SHA control-plane successivo.
+
 **Nota Blocco B:** `session-and-repo-guard` è un **adattamento pragmatico GIS** (non copia letterale dallo SHA frozen). Il freeze vincola le forme operative dove la forma esatta conta: remote-hash PASS, QA evidence, legacy governance e LAST_CURSOR_REPORT.
 
-`dev-method` resta generalizzazione/tag indietro, non fonte viva primaria per i pattern operativi sotto.
+`dev-method` resta generalizzazione/tag indietro, **STORIA/legacy**, non fonte viva primaria per i pattern operativi sotto.
 
 #### Blocco 0 — freeze fonte control-plane
 
@@ -920,6 +922,15 @@ Note:
 - **Mapping:** `real_task_commit` = SHA commit principale F2 (non autosync); nessun terzo commit; no finalize-hash; `pass_tecnico_remoto`/`result_cursor` ↔ Fase C; `pass_operatore`/`result_runtime` ↔ Fase D (non inferibile; non-attestato in collaudo docs-only).
 - **Non sostituisce:** OM §7, roadmap, `latest`/`inbox` come fonti vive primarie.
 
+#### Fase F3 — attivazione obbligo LAST_CURSOR_REPORT (GIS-only)
+
+- **Esito:** PASS (pending review diff).
+- **Obbligo:** post-push task reale GIS-only; fail-closed soft se report/output git mancanti; non per read-only/plan/review diff senza commit.
+- **Scope:** GIS-only — `aggio`/`aggio gis` = memoria GIS; `aggio control` = control-plane; nessuna semantica «tutti i repo» nel riferimento vivo.
+- **Mapping:** commit principale = task; autosync = report + `LAST_CURSOR_REPORT.md`; `real_task_commit` = principale; nessun terzo commit/finalize-hash; LATEST rolling → precedente in HISTORY; `pass_tecnico_remoto`/`result_cursor` ↔ Fase C; `pass_operatore`/`result_runtime` ↔ Fase D.
+- **Non sostituisce:** OM §7, roadmap, `latest`/`inbox`; **non** modifica `finito`; **non** patch runtime in F3; **non** introduce `LAST_HANDOFF_VERIFY`; cross-repo rinviato ad allineamento control-plane dedicato.
+- **File:** `.cursor/rules/30-output-workflow.mdc`; `docs/OPERATING_MEMORY.md` §4 (§6 riga scoped); roadmap (questa sottosezione).
+
 **File canonici / riferimenti da adottare nel repo GIS:**
 
 1. **control-plane:** `docs/runtime/LAST_CURSOR_REPORT.md` — rolling report post-push; due commit (task + report); `PENDING_SELF_REFERENCE` + backfill in HISTORY; niente commit finalize-hash; split `result_cursor` / `result_runtime`.
@@ -930,14 +941,16 @@ Note:
 
 **Metodo di adozione:**
 
-- pin tag `dev-method` per le forme generiche;
+- pin tag `dev-method` per le forme generiche (STORIA/legacy, non fonte viva operativa);
 - copiare/adattare forme operative dal **SHA frozen** (`df046f68867cdffcd350592a2781b53ce21ca8c0`); re-sync esplicito per SHA successivo;
 - pattern chiave LAST_CURSOR_REPORT / remote-hash **non** sono nei tag dev-method → copiare forma operativa da control-plane, non spostare il pin dev-method.
 
-**Tensione aperta (da risolvere prima dell’adozione piena):**
+**Tensione `aggio` scope — RISOLTA (Fase F3):**
 
-- memoria GIS: «`aggio` ≡ aggiornati gis»;
-- session-guard dev-method: «`aggio` = tutti i repo attivi».
+- **`aggio` scoped per-target:** control-plane vivo usa **`aggio control`**; GIS usa **`aggio`** / **`aggio gis`**.
+- Nessuna semantica «tutti i repo» nel riferimento vivo control-plane @ SHA frozen.
+- Il polo «tutti i repo attivi» proviene da **dev-method storico**, non fonte viva metodo.
+- Estensione cross-repo / `LAST_HANDOFF_VERIFY` rinviata a eventuale allineamento control-plane dedicato (fuori scope F3).
 
 **Idea aperta, non decisa:**
 

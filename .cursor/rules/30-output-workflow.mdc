@@ -232,22 +232,45 @@ Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti 
 
 Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
-## LAST_CURSOR_REPORT — Fase F1 / spec preparatoria
+## LAST_CURSOR_REPORT — Fase F1–F3 (spec → collaudo → obbligo GIS-only)
 
-**Cronologia:** Blocco B e Fasi C/D/E **non** introducono `LAST_CURSOR_REPORT` nel rispettivo perimetro. **Fase F1** introduce solo **spec + template** (`docs/runtime/LAST_CURSOR_REPORT.template.md`); **non** è ancora attivo/obbligatorio. Uso obbligatorio rinviato a **Fase F2** (collaudo su commit docs innocuo; nessuna patch runtime prima del collaudo).
+**Cronologia:** Blocco B e Fasi C/D/E **non** introducono `LAST_CURSOR_REPORT` nel rispettivo perimetro. **Fase F1** = spec + template; **Fase F2** = collaudo docs innocuo (`real_task_commit` validato). **Da Fase F3:** `docs/runtime/LAST_CURSOR_REPORT.md` è **ATTIVO** e **obbligatorio** post-push per task reale GIS-only (vedi sotto).
 
-**Non sostituisce** (fonte viva primaria resta invariata): `docs/OPERATING_MEMORY.md` §7, `docs/work-units/WU-0005-0009-roadmap.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/**`, PASS tecnico remoto (Fase C), PASS operatore (Fase D).
+**Non sostituisce** (fonte viva primaria resta invariata): `docs/OPERATING_MEMORY.md` §7, `docs/work-units/WU-0005-0009-roadmap.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/**`, checkpoint/session, PASS tecnico remoto (Fase C), PASS operatore (Fase D).
 
-**Mapping GIS** (adattamento da control-plane frozen; nessuna automazione):
+### Obbligo (Fase F3)
 
-- `real_task_commit` = commit principale del task;
-- report vivo (Fase F2+) destinato a viaggiare nell’**autosync orchestratore** esistente — **nessun** terzo commit; commit principale + autosync = modello concettuale «task + report»;
-- **nessun** commit finalize-hash dedicato;
-- campi auto-referenziali = `PENDING_SELF_REFERENCE` finché non verificabili; backfill in sezione **HISTORY** del report quando possibile;
-- `pass_tecnico_remoto` / `result_cursor` ↔ Fase C; `pass_operatore` / `result_runtime` ↔ Fase D;
-- `git ls-remote origin main` resta **autorità finale** per PASS tecnico remoto.
+- Dopo ogni push di **task reale** su `origin/main`, aggiornare `LAST_CURSOR_REPORT.md` nell’**autosync/report** esistente.
+- **Task reale:** chiusura `finito` o equivalente che pusha contenuto sostanziale (runtime, feature, fix, governance/regole, blocco metodo). **Esclusi:** read-only, plan, review diff senza commit, diagnosi senza commit; micro-fix docs **puramente cosmetici** (opzionali). Blocchi metodo sostanziali restano task reali.
 
-**Non** modifica la sequenza **`finito`** operativa in Fase F1. Vedi template in `docs/runtime/LAST_CURSOR_REPORT.template.md`.
+### Fail-closed soft
+
+- Senza report aggiornato **e** output git verbatim richiesti, la chiusura **non** è «PASS metodo completo».
+- **PASS metodo completo** = PASS tecnico remoto (Fase C) + PASS operatore dove applicabile (Fase D) + `LAST_CURSOR_REPORT.md` aggiornato.
+- Regola canonica control-plane: **SUCCESS senza output git richiesto NON è PASS.** L’assenza del report non invalida il commit tecnico già pushato, ma va segnalata come **mancanza-metodo** da recuperare.
+
+### Scope GIS-only (`aggio`)
+
+- **`aggio`** / **`aggio gis`** = memoria operativa **repo GIS** (questo repo).
+- **`aggio control`** = control-plane (repo separato).
+- Il riferimento vivo control-plane @ SHA frozen **non** definisce «`aggio` = tutti i repo»; quella semantica è **dev-method storico/legacy**, non fonte viva metodo.
+
+### Mapping commit (invariato da F1/F2)
+
+- Commit principale = task; autosync/report = report; `real_task_commit` = SHA commit **principale**, non autosync.
+- Report dentro autosync esistente — **nessun** terzo commit; **nessun** commit finalize-hash.
+- `PENDING_SELF_REFERENCE` + backfill in **HISTORY** quando verificabile; non inventare hash; non commit dedicati solo per backfill.
+- Prima di sovrascrivere **LATEST**, spostare l’entry precedente in **HISTORY** (backfill campi `PENDING_SELF_REFERENCE` verificabili).
+- `pass_tecnico_remoto` / `result_cursor` ↔ Fase C; `git ls-remote origin main` = autorità finale.
+- `pass_operatore` / `result_runtime` ↔ Fase D; non inferire PASS operatore da PASS tecnico.
+
+### Chiusura task reale (regola operativa; **non** modifica comando `finito`)
+
+1. Commit principale → push.
+2. Autosync/report con `latest`/`inbox` + aggiornamento `LAST_CURSOR_REPORT.md` → push.
+3. Verifica PASS tecnico remoto (output verbatim).
+
+Template: `docs/runtime/LAST_CURSOR_REPORT.template.md`. **Non** modifica la sequenza **`finito`** in Fase F3.
 
 ## Autosync orchestratore (obbligatorio)
 
@@ -375,7 +398,7 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 6. **`docs/checkpoint.md`** e **`docs/session-geolocalizzazione-e-mappa.md`:** **legacy/storico** — **non** aggiornarli nell’autosync né usarli come memoria corrente primaria. Il **`finito`** può continuare ad appendere checkpoint/session come storico/audit (come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc)), senza renderli fonte viva. Se confliggono con `docs/OPERATING_MEMORY.md` §7 o `docs/work-units/WU-0005-0009-roadmap.md`, segnalare il conflitto nel RIEPILOGO e dare precedenza ai documenti vivi più specifici/recenti; **non** riscrivere log storici già pushati salvo richiesta esplicita — preferire nota nei documenti vivi o nel riepilogo corrente.
 7. **`docs/roadmap.md`:** **non** incluso nel commit autosync salvo l’intervento lo modifichi **e** l’utente richieda esplicitamente di versionarlo nello stesso commit (caso raro); in caso normale resta fuori dall’autosync memoria.
 
-8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti. **Fase F1:** spec/template `LAST_CURSOR_REPORT` preparato; report vivo non obbligatorio fino a Fase F2.
+8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti. **Fase F3:** `LAST_CURSOR_REPORT.md` obbligatorio post-push task reale (dentro autosync/report).
 
 ### Cursor vs ChatGPT (memoria: **nessun controllo incrociato**)
 
