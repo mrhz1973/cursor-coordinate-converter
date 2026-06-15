@@ -23785,6 +23785,14 @@ function makeTileKey(layerId, z, x, y){
   return layerId + ":" + z + "/" + x + "/" + y;
 }
 
+/** Layer id prefix from a makeTileKey() storage key; null if not parseable. */
+function parseTileKeyLayerId(tkey){
+  if (!tkey || typeof tkey !== "string") return null;
+  const i = tkey.indexOf(":");
+  if (i <= 0) return null;
+  return tkey.slice(0, i);
+}
+
 function idbGet(key){
   return getTileDB().then(db => new Promise((res, rej) => {
     const tx = db.transaction(TILE_IDB.store, "readonly");
@@ -24202,6 +24210,11 @@ function updateTileCacheCounterUi(){
 /** Persist a display-fetched tile blob into IndexedDB (fail-soft, dedup, session counter). */
 async function cacheTileFromDisplay(tkey, blob){
   if (!tkey || !blob || !window.indexedDB) return;
+  const layerId = parseTileKeyLayerId(tkey);
+  if (layerId){
+    const layer = TILE_LAYERS[layerId];
+    if (layer && layer.cacheable === false) return;
+  }
   if (!(state._tileCachePending instanceof Set)) state._tileCachePending = new Set();
   if (!(state._tileCacheSeen instanceof Set)) state._tileCacheSeen = new Set();
   if (state._tileCachePending.has(tkey)) return;   // a put for this key is already in flight

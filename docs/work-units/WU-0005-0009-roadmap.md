@@ -714,7 +714,27 @@ Vincoli:
 
 #### 8d — EOX Sentinel-2 cloudless
 
-**Stato:** candidato lungo WU-0008, dopo supporto WMTS/y-order.
+**Stato:** candidato WU-0008; prerequisito **8d-B0 PASS** (browse-cache guard).
+
+##### 8d-B0 — browse-cache guard `cacheable:false` (prerequisito EOX)
+
+**Stato:** PASS runtime (monolite, sessione `finito` 2026-06-15).
+
+Implementato:
+
+- helper `parseTileKeyLayerId(tkey)` accanto a `makeTileKey`;
+- guard generale fail-open in **`cacheTileFromDisplay`** (sink unico, non nei chiamanti);
+- blocca persistenza IndexedDB browse-cache se `TILE_LAYERS[layerId].cacheable === false`;
+- layerId dalla chiave tile (`tkey`), non `state.mapLayer`;
+- layer ignoto/non in `TILE_LAYERS` → fail-open (comportamento cache invariato);
+- copre osmStandard, Esri 8c-B, futuri online-only (EOX);
+- precache/bulk/export mosaic guard preesistenti invariati; rendering online invariato.
+
+QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
+
+##### 8d-B — layer EOX (candidato prossimo blocco)
+
+**Stato:** candidato dopo 8d-B0.
 
 Scope:
 
@@ -1103,15 +1123,16 @@ Test:
 21. ~~**WU-0008 8b** — CyclOSM + OSM standard (`dad28b4`).~~
 22. ~~**WU-0008 8c-A** — tileScheme / y-order (prerequisito motore).~~
 23. ~~**WU-0008 8c-B** — famiglia Esri (layer catalogo).~~
-24. **WU-0008 8d** — EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
+24. ~~**WU-0008 8d-B0** — browse-cache guard `cacheable:false` (prerequisito EOX).~~
+25. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
-25. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
-26. **WU-0009B B0-B2** — predisposizione GIS.
-27. **WU-0009B B3** — Google via proxy.
-28. **WU-0009B B4** — Bing via proxy.
-29. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
+26. **WU-0009A B0-B4** — proxy readiness in Planet-Clone, separato.
+27. **WU-0009B B0-B2** — predisposizione GIS.
+28. **WU-0009B B3** — Google via proxy.
+29. **WU-0009B B4** — Bing via proxy.
+30. **WU-0009B B5-B6** — UI + QA OPSEC/offline/proxy.
 
 ---
 
@@ -1123,9 +1144,9 @@ Test:
 | WU-0006 Poligoni | nessuna | diagnosi autonoma, ma blocca UX poligoni |
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
-| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B; **8d** candidato |
+| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
-| WU-0008 8d EOX | WU-0008 8c o supporto WMTS/y-order | satellite alternativo online-only |
+| WU-0008 8d EOX | WU-0008 8d-B0 | **PASS** 8d-B0; layer **8d-B** candidato |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
