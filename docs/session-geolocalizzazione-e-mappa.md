@@ -2861,3 +2861,23 @@ Chiusura **`finito`** — **Blocco B** workstream «Backlog metodo»: guardia mi
 ### Prossimo passo
 
 - Blocchi C–F metodo (forme da SHA frozen `df046f6…`) o WU-0009 Tier B.
+
+## Checkpoint 2026-06-16 — Metodo Fase C remote-hash-pass-verification (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — **Fase C** workstream «Backlog metodo»: PASS tecnico remoto post-push basato su output git verbatim e gerarchia `git ls-remote` > `origin/main` locale > RAW GitHub.
+
+### Cosa è stato fatto
+
+1. **`.cursor/rules/30-output-workflow.mdc`** — sezione Remote hash / PASS tecnico remoto.
+2. **`docs/OPERATING_MEMORY.md` §4** — bullet Remote hash.
+3. **`docs/work-units/WU-0005-0009-roadmap.md`** — Fase C implementata.
+
+### Non toccato
+
+- Monolite; LAST_CURSOR_REPORT; two-commit; Fase D/E/F; QA evidence operatore.
+
+### Prossimo passo
+
+- Fase D (QA evidence) o WU-0009 Tier B.

@@ -172,6 +172,40 @@ Se il repo root non è quello atteso, se il branch non è `main`, oppure se un b
 
 Per task **read-only**, riportare comunque eventuali anomalie di repo, branch o workspace.
 
+## Remote hash / PASS tecnico remoto
+
+Dopo ogni chiusura che crea e pusha commit su `origin/main`, il RIEPILOGO finale deve includere **output testuale verbatim** (non solo tabelle o riassunti), almeno di:
+
+```bash
+git log --oneline -5
+git status --short
+git rev-parse HEAD
+git rev-parse origin/main
+git branch --show-current
+git show --stat HEAD
+git ls-remote origin main
+```
+
+**Gerarchia di autorità:**
+
+1. `git ls-remote origin main` — autorità **finale** (interroga il server remoto).
+2. `git rev-parse origin/main` — ref di tracking **locale**; valido per PASS solo se combacia con lo SHA di `git ls-remote origin main`.
+3. RAW GitHub / `raw.githubusercontent.com` — **secondario**, best-effort; può essere stale (cache/CDN). Se diverge da `git ls-remote`, **vince** `git ls-remote`. Un PASS confermato da `ls-remote` non va declassato perché RAW è ancora stale.
+
+**PASS tecnico remoto** vale solo se:
+
+- `git rev-parse HEAD` = `git rev-parse origin/main`;
+- `git rev-parse origin/main` = hash di `refs/heads/main` restituito da `git ls-remote origin main`;
+- `git branch --show-current` = `main`;
+- `git status --short` è vuoto;
+- il report mostra output verbatim sufficienti a verificarlo.
+
+Se `HEAD` = `origin/main` ma `origin/main` **non** combacia con `git ls-remote origin main` → **non** è PASS (tracking locale stale).
+
+Se gli output post-push mancano, sono incompleti o ambigui: **non** chiedere subito shell manuale all’utente — preparare prima un prompt Cursor **verify-only** (senza modifiche file). Shell manuale utente = fallback finale.
+
+Questa regola riguarda **solo** il PASS tecnico remoto. **Non** sostituisce PASS operatore, browser QA o validazione runtime. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.

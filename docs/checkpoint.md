@@ -8,7 +8,9 @@
 **Data snapshot:** 2026-06-16
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Blocco B session-and-repo-guard:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Session / repo guard — pre-volo fail-closed, Cursor non decide autonomamente); **`docs/OPERATING_MEMORY.md` §4** (bullet); **`docs/work-units/WU-0005-0009-roadmap.md`** § Blocco B. Adattamento pragmatico GIS, **non** remote-hash/QA evidence/LAST_CURSOR_REPORT. **Monolite non modificato.** **`docs/roadmap.md` non modificato.**
+**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Fase C remote-hash PASS tecnico:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Remote hash — output git verbatim post-push, `git ls-remote origin main` autorità finale, RAW GitHub secondario); **`docs/OPERATING_MEMORY.md` §4**; **`docs/work-units/WU-0005-0009-roadmap.md`** § Fase C. Fonte adattata da control-plane SHA frozen **`df046f6…`**. **Non** LAST_CURSOR_REPORT / two-commit / Fase D. **Monolite non modificato.**
+
+**Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Blocco B session-and-repo-guard:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Session / repo guard — pre-volo fail-closed, Cursor non decide autonomamente); **`docs/OPERATING_MEMORY.md` §4** (bullet); **`docs/work-units/WU-0005-0009-roadmap.md`** § Blocco B. Adattamento pragmatico GIS, **non** remote-hash/QA evidence/LAST_CURSOR_REPORT. **Monolite non modificato.** **`docs/roadmap.md` non modificato.**
 
 **Ultimo cambio (precedente):** 2026-06-15 — **Chiusura sessione (`finito`) — metodo Blocco 0 freeze control-plane:** solo **`docs/work-units/WU-0005-0009-roadmap.md`** § Backlog metodo — SHA frozen **`df046f68867cdffcd350592a2781b53ce21ca8c0`** (`mrhz1973/control-plane` `main`, `git ls-remote`); Fasi C–F da SHA frozen; **Nota Blocco B:** `session-and-repo-guard` adattamento pragmatico GIS. **Monolite / OM / `.cursor/rules/` non modificati.** **`docs/roadmap.md` non modificato.**
 
