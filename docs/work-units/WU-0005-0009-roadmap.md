@@ -783,7 +783,7 @@ Esito:
 
 ##### 8d-B — layer EOX (candidato)
 
-**Stato:** **PASS runtime** (pending review) — layer `eoxS2Cloudless` implementato nel monolite; pre-check prerequisiti PASS (HEAD `9f98c5d`).
+**Stato:** **PASS** runtime + **Browser QA operatore PASS** (`2ca47b6`) — layer `eoxS2Cloudless` implementato nel monolite; pre-check prerequisiti PASS (HEAD `9f98c5d`).
 
 ###### Implementazione runtime (WU-0008 8d-B)
 
@@ -802,9 +802,19 @@ Esito:
 | UI | Sezione Satellitare Layers — voce EOX solo se `eoxLayerAllowedOnCurrentHost()` (difesa in profondità) |
 | `sanitizeMapLayer` | fallback a `osm` se EOX persistito su host non ammesso |
 | Endpoint live | HTTP 200 + `image/jpeg` + `access-control-allow-origin: *` (curl 2026-06-15) |
-| Test | `node --check` JS inline OK; browser QA operatore pending review |
+| Test | `node --check` JS inline OK; **Browser QA operatore PASS** |
 
 **Deploy pubblico:** anche se il monolite viene copiato su Firebase/VPS pubblico via `scripts/deploy-hosting.ps1`, EOX **non fetcha** e **non compare** in UI su host non allowlisted (gate runtime, non blocklist deploy).
+
+###### Browser QA operatore — PASS (post-`2ca47b6`)
+
+- **localhost:** EOX visibile in Layers → Satellitare e tile caricano.
+- **tailnet `100.110.35.23`:** EOX visibile e tile caricano.
+- **forced-offline ON:** nessun fetch EOX.
+- **OPSEC strict ON:** nessun fetch EOX.
+- **Mappe offline / bulk:** EOX non scaricabile (online-only).
+- **host non allowlisted `192.168.1.108`:** EOX non visibile in UI.
+- **`192.168.1.108` + EOX forzato manualmente:** nessun fetch tile EOX.
 
 ###### Pre-check read-only prerequisiti EOX — PASS a HEAD `9f98c5d`
 
@@ -1248,7 +1258,7 @@ Test:
 27. ~~**WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).~~
 28. ~~**WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).~~
 29. ~~**WU-0008 8d-B pre-check** — prerequisiti EOX read-only PASS (HEAD `9f98c5d`).~~
-30. ~~**WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; pending review).~~
+30. ~~**WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; browser QA PASS).~~
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
@@ -1271,7 +1281,7 @@ Test:
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
 | WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A/B1/B2 |
-| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** runtime 8d-B (pending review) |
+| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** runtime + browser QA 8d-B |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |

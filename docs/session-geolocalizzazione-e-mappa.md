@@ -2801,3 +2801,24 @@ Chiusura sessione **`finito`** — implementazione runtime layer EOX dopo pre-ch
 
 - Browser QA operatore su localhost/tailnet IP.
 - Backlog metodo / prossimo candidato WU da roadmap (Tier B proxy WU-0009).
+
+## Checkpoint 2026-06-15 — Docs QA EOX browser PASS post-runtime (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — micro-fix **docs-only** dopo runtime EOX già pushato (`2ca47b6`). Obiettivo: allineare stato vivo (OM §7 + roadmap §8d-B) con **Browser QA operatore PASS** eseguita dall’operatore.
+
+### Cosa è stato fatto
+
+1. **`docs/OPERATING_MEMORY.md` §7`** — bullet EOX: Browser QA operatore PASS + sintesi esiti.
+2. **`docs/work-units/WU-0005-0009-roadmap.md` §8d-B** — stato, tabella Test, sottosezione QA con 7 bullet (localhost, tailnet `100.110.35.23`, forced-offline, OPSEC strict, offline bulk, `192.168.1.108` UI/fetch).
+
+### Non toccato
+
+- `coordinate_converter Claude.html`
+- `docs/orchestrator/inbox/2026-06-15_1928_riepilogo_finito-sessione.md` (artefatto storico)
+- `docs/orchestrator/latest.md` (aggiornato solo in riconciliazione post-`finito` step 4)
+
+### Prossimo passo
+
+- Backlog metodo o WU-0009 Tier B proxy.
