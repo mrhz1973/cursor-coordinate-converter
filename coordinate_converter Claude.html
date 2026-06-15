@@ -1121,6 +1121,7 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   font-size:.78rem; color:var(--muted); margin:6px 0;
   font-family:ui-monospace,monospace;
 }
+.offcache-layer-cache-stat.is-loading{ font-style:italic; opacity:.85 }
 .offcache-actions{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0}
 .offcache-hintchk{display:flex; align-items:center; gap:6px; font-size:.78rem; color:var(--muted); margin:6px 0; cursor:pointer}
 .offcache-hintchk input{accent-color:var(--accent)}
@@ -8784,6 +8785,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </select>
           </div>
           <p id="pcOfflineNeutral" class="offcache-neutral-msg" hidden aria-live="polite" role="status"></p>
+          <p id="pcLayerCacheStat" class="offcache-est offcache-layer-cache-stat" hidden aria-live="polite" role="status"></p>
           <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
           <section class="offcache-section offcache-section--download" aria-labelledby="offcacheSectionDownloadTitle">
             <h4 id="offcacheSectionDownloadTitle" class="offcache-section-title" data-i18n="offcache.sectionDownload">Download mappe offline</h4>
@@ -11035,6 +11037,9 @@ const I18N = {
     "offcache.onlineOnly":"Questo strato è solo online e non può essere scaricato offline.",
     "offcache.estimate":"Tile stimate",
     "offcache.mb":"MB indicativi",
+    "offcache.layerCacheLoading":"Calcolo cache layer…",
+    "offcache.layerCacheStats":"Cache layer: {0} tile · {1} MB",
+    "offcache.layerCacheStatsZero":"Cache layer: 0 tile · 0 MB",
     "offcache.start":"Scarica area corrente",
     "offcache.stop":"Interrompi",
     "offcache.clear":"Svuota tutta la cache tile",
@@ -12533,6 +12538,9 @@ const I18N = {
     "offcache.onlineOnly":"This layer is online-only and cannot be downloaded for offline use.",
     "offcache.estimate":"Estimated tiles",
     "offcache.mb":"Approx. MB",
+    "offcache.layerCacheLoading":"Calculating layer cache…",
+    "offcache.layerCacheStats":"Layer cache: {0} tiles · {1} MB",
+    "offcache.layerCacheStatsZero":"Layer cache: 0 tiles · 0 MB",
     "offcache.start":"Download current area",
     "offcache.stop":"Stop",
     "offcache.clear":"Clear entire tile cache",
@@ -14031,6 +14039,9 @@ const I18N = {
     "offcache.onlineOnly":"Cette couche est uniquement en ligne et ne peut pas être téléchargée hors ligne.",
     "offcache.estimate":"Tuiles est.",
     "offcache.mb":"Mo approx.",
+    "offcache.layerCacheLoading":"Calcul du cache de la couche…",
+    "offcache.layerCacheStats":"Cache de la couche : {0} tuiles · {1} Mo",
+    "offcache.layerCacheStatsZero":"Cache de la couche : 0 tuile · 0 Mo",
     "offcache.start":"Télécharger la zone courante",
     "offcache.stop":"Arrêter",
     "offcache.clear":"Vider tout le cache des tuiles",
@@ -22884,11 +22895,19 @@ function syncOfflineLayerSelect(){
     || OFFLINE_LAYER_IDS[0]
     || "osm";
   pcl.value = next;
+  try { updateOfflineLayerCacheStats(); } catch(_){}
 }
 /** Neutral download/export UI when the selected offline layer is online-only. */
 function syncOfflinePanelNeutralState(layerId){
   const id = layerId != null ? String(layerId) : getCurrentOfflineLayerId();
   const onlineOnly = isLayerOfflineUnavailable(id);
+  const cacheStat = document.getElementById("pcLayerCacheStat");
+  if (cacheStat && onlineOnly){
+    _layerCacheStatsGen++;
+    cacheStat.hidden = true;
+    cacheStat.textContent = "";
+    cacheStat.classList.remove("is-loading");
+  }
   const neutral = document.getElementById("pcOfflineNeutral");
   if (neutral){
     if (onlineOnly){
@@ -23887,6 +23906,81 @@ function parseTileKeyLayerId(tkey){
   return tkey.slice(0, i);
 }
 
+let _layerCacheStatsGen = 0;
+
+/** Scan IndexedDB tiles store for one layer prefix (O(n) on-demand only). */
+async function getLayerTileCacheStats(layerId){
+  const id = String(layerId || "").trim();
+  if (!id) return { tiles: 0, bytes: 0 };
+  if (!window.indexedDB) return { tiles: 0, bytes: 0, unavailable: true };
+  const prefix = id + ":";
+  try {
+    const db = await getTileDB();
+    return await new Promise((res, rej) => {
+      let tiles = 0, bytes = 0;
+      const tx = db.transaction(TILE_IDB.store, "readonly");
+      const req = tx.objectStore(TILE_IDB.store).openCursor();
+      req.onsuccess = (ev) => {
+        const cursor = ev.target.result;
+        if (!cursor){
+          res({ tiles, bytes });
+          return;
+        }
+        const key = cursor.key;
+        if (typeof key === "string" && key.startsWith(prefix)){
+          tiles++;
+          const val = cursor.value;
+          const buf = val && val.b;
+          if (buf && typeof buf.byteLength === "number" && Number.isFinite(buf.byteLength)){
+            bytes += buf.byteLength;
+          }
+        }
+        cursor.continue();
+      };
+      req.onerror = () => rej(req.error);
+      tx.onerror = () => rej(tx.error);
+    });
+  } catch(_){
+    return { tiles: 0, bytes: 0, error: true };
+  }
+}
+
+function formatLayerCacheMb(bytes){
+  const mb = Number(bytes) / (1024 * 1024);
+  if (!Number.isFinite(mb) || mb <= 0) return "0";
+  const loc = (state.lang === "fr") ? "fr-FR" : (state.lang === "it") ? "it-IT" : "en-US";
+  if (mb < 0.05) return "0";
+  return mb.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+/** Refresh per-layer IndexedDB cache stats for #pcLayer (on-demand only). */
+async function updateOfflineLayerCacheStats(){
+  const el = document.getElementById("pcLayerCacheStat");
+  if (!el) return;
+  const layerId = sanitizeOfflineLayerId(document.getElementById("pcLayer")?.value || "osm");
+  if (isLayerOfflineUnavailable(layerId)){
+    el.hidden = true;
+    el.textContent = "";
+    el.classList.remove("is-loading");
+    return;
+  }
+  const gen = ++_layerCacheStatsGen;
+  el.hidden = false;
+  el.classList.add("is-loading");
+  el.textContent = t("offcache.layerCacheLoading");
+  const stats = await getLayerTileCacheStats(layerId);
+  if (gen !== _layerCacheStatsGen) return;
+  el.classList.remove("is-loading");
+  if (!stats.tiles){
+    el.textContent = t("offcache.layerCacheStatsZero");
+    return;
+  }
+  const mbStr = formatLayerCacheMb(stats.bytes);
+  el.textContent = t("offcache.layerCacheStats")
+    .replace("{0}", String(stats.tiles))
+    .replace("{1}", mbStr);
+}
+
 function idbGet(key){
   return getTileDB().then(db => new Promise((res, rej) => {
     const tx = db.transaction(TILE_IDB.store, "readonly");
@@ -24140,6 +24234,7 @@ async function performOfflineGlobalReset(){
   updatePrecacheEstimate();
   updateOfflineAreasToolbarUI();
   syncOfflinePrecacheMainButton();
+  try { updateOfflineLayerCacheStats(); } catch(_){}
   setBadge("success", t("offcache.globalClear.done"));
 }
 
@@ -24685,12 +24780,14 @@ function onPrecacheStart(){
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
+    try { updateOfflineLayerCacheStats(); } catch(_){}
   }).catch(() => {
     if (st) st.textContent = t("offcache.err");
     if (btnS) btnS.disabled = false;
     if (btnP) btnP.hidden = true;
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
+    try { updateOfflineLayerCacheStats(); } catch(_){}
   });
   updateOfflineAreasToolbarUI();
 }
@@ -25673,6 +25770,7 @@ function applyPrecacheMetadataToNamedArea(meta, info){
   state.namedAreas[idx] = normalizeOfflineArea(merged);
   saveStore();
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
+  try { updateOfflineLayerCacheStats(); } catch(_){}
 }
 
 /**
@@ -25722,6 +25820,7 @@ function applyPrecacheMetadataToNamedAreaById(areaId, info){
   state.namedAreas[idx] = normalizeOfflineArea(merged);
   saveStore();
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
+  try { updateOfflineLayerCacheStats(); } catch(_){}
 }
 
 function namedAreaToPrecacheParams(a){
@@ -25867,6 +25966,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+    try { updateOfflineLayerCacheStats(); } catch(_){}
   }
 }
 
@@ -31664,6 +31764,7 @@ function renderTileMap(lat, lon, zoom){
         const pcl = document.getElementById("pcLayer");
         if (pcl) syncOfflineLayerSelect();
         try { updatePrecacheEstimate(); } catch(_){}
+        try { updateOfflineLayerCacheStats(); } catch(_){}
       }
       renderTileMap(lat, lon, zoom);
     });
@@ -35421,6 +35522,7 @@ function applyLanguage(lang){
   }
   if (typeof syncOfflineLayerSelect === "function") syncOfflineLayerSelect();
   if (typeof updatePrecacheEstimate === "function") updatePrecacheEstimate();
+  if (typeof updateOfflineLayerCacheStats === "function") updateOfflineLayerCacheStats();
   if (typeof updateOfflineBboxAreaFeedback === "function") updateOfflineBboxAreaFeedback();
   if (typeof refreshGeolocationBarriers === "function") refreshGeolocationBarriers();
   refreshCoordCycleMapUi();
@@ -37560,6 +37662,11 @@ function bindUI(){
   // (half or full). In small-map mode the drag handler is a no-op.
   const otpEl = document.getElementById("offlineTilePanel");
   if (otpEl) makeOfflinePanelDraggable(otpEl);
+  if (otpEl){
+    otpEl.addEventListener("toggle", () => {
+      if (otpEl.open) try { updateOfflineLayerCacheStats(); } catch(_){}
+    });
+  }
 
   // Geocoding card: forward search + autocomplete dropdown + OPSEC banner.
   bindGeocode();
@@ -37630,6 +37737,7 @@ function bindUI(){
     pcl.addEventListener("change", () => {
       updatePrecacheEstimate();
       try { updateOfflineExportZoomFeedback(); } catch(_){}
+      try { updateOfflineLayerCacheStats(); } catch(_){}
     });
   }
   if (typeof syncOfflineSaveButtonLabel === "function") syncOfflineSaveButtonLabel();
@@ -37706,6 +37814,7 @@ function bindUI(){
   updateBboxClearButton();
   updateOfflineBboxAreaFeedback();
   updatePrecacheEstimate();
+  try { updateOfflineLayerCacheStats(); } catch(_){}
   try { syncPcBboxEditorSectionFromState(); } catch(_){}
 
   // ---- Tools drawer ----
@@ -42292,6 +42401,7 @@ function openLayersPanel(){
       gisSetTopbarTabActive("layers", true);
       try { trackSyncPickModeUi(); } catch(_){}
       if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
+      try { updateOfflineLayerCacheStats(); } catch(_){}
       return;
     }
   }
@@ -42312,6 +42422,7 @@ function openLayersPanel(){
   gisSetTopbarTabActive("layers", true);
   try { trackSyncPickModeUi(); } catch(_){}
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
+  try { updateOfflineLayerCacheStats(); } catch(_){}
 }
 let _offlineDraftResolve = null;
 function ensureOfflineDraftWarnDialogWired(){

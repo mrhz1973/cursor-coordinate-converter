@@ -734,7 +734,7 @@ QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
 
 ##### 8d-B1 — offline UX / cache per-layer / maxZoom
 
-**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS** runtime; **8d-B1-B2** candidato.
+**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS**; **8d-B1-B2 PASS** runtime; **8d-B** / **8d-B1-B3** candidati.
 
 ###### 8d-B1-A — diagnosi read-only
 
@@ -742,26 +742,28 @@ QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
 
 ###### 8d-B1-B1 — badge + pannello neutro
 
+**Stato:** PASS runtime (`29ebf3a`).
+
+###### 8d-B1-B2 — stats cache per-layer
+
 **Stato:** PASS runtime (monolite, `finito` 2026-06-15).
 
 Esito:
 
-- `isLayerOfflineUnavailable(layerId)` — predicato unico da `TILE_LAYERS[id].cacheable === false`.
-- Badge Layers «no offline» (i18n IT/EN `no offline`, FR `pas hors ligne`).
-- `OFFLINE_LAYER_IDS` derivato da filtro catalogo (debito 1 **risolto**); `#pcLayer` popolato dinamicamente.
-- Pannello offline neutro; contatore sessione cache nascosto su basemap online-only; layer attivo menu verde chiaro.
-- QA operatore: badge OK; contatore non verde su Esri; `node --check` OK.
+- `getLayerTileCacheStats(layerId)` — cursor store `tiles`, filtro `layerId + ":"`, somma `b.byteLength`.
+- UI `#pcLayerCacheStat` nel pannello offline; i18n IT/EN/FR; loading/zero/stats.
+- Scan O(n) **solo on-demand** (apertura pannello, cambio `#pcLayer`, post-precache, clear cache); anti-race `_layerCacheStatsGen`.
+- Guard `isLayerOfflineUnavailable`; nessun hook pan/zoom/timer.
+- `node --check` OK.
 
-###### 8d-B1-B2 — stats cache per-layer (candidato prossimo micro-blocco)
-
-- Scan IDB O(n) on-demand; evitare pan/zoom/timer frequente.
+###### 8d-B1-B3 — zoom-guard fit-area (candidato)
 
 ###### 8d-B1 follow-up / EOX prerequisites (debiti)
 
 **Debito 1 — `OFFLINE_LAYER_IDS` manuale vs `cacheable` — ~~prerequisito EOX~~ RISOLTO in 8d-B1-B1**
 
 - ~~`OFFLINE_LAYER_IDS` oggi include layer derivati manualmente~~ → ora derivato da `!isLayerOfflineUnavailable(id)` su `MAP_BASE_LAYER_IDS` + `sonarchart`.
-- EOX può procedere dopo eventuale B1-B2 stats; lista offline non più manuale.
+- EOX può procedere; lista offline non più manuale; stats per-layer **PASS** (B1-B2).
 
 **Debito 2 — fit-area `Math.min(18,z)` hardcoded (priorità media, blocco zoom-guard separato)**
 
@@ -772,7 +774,7 @@ Esito:
 
 ##### 8d-B — layer EOX (candidato)
 
-**Stato:** candidato dopo **8d-B1-B1** (prerequisito `OFFLINE_LAYER_IDS` soddisfatto).
+**Stato:** candidato (prerequisiti `OFFLINE_LAYER_IDS` + B1-B2 soddisfatti).
 
 Scope:
 
@@ -1164,7 +1166,7 @@ Test:
 24. ~~**WU-0008 8d-B0** — browse-cache guard `cacheable:false` (prerequisito EOX).~~
 25. ~~**WU-0008 8d-B1-A** — diagnosi offline UX / cache per-layer / maxZoom.~~
 26. ~~**WU-0008 8d-B1-B1** — badge «No offline» + pannello neutro + `OFFLINE_LAYER_IDS`.~~
-27. **WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).
+27. ~~**WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).~~
 28. **WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).
 29. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
@@ -1188,7 +1190,7 @@ Test:
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
-| WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A + **PASS** 8d-B1-B1; **8d-B1-B2** candidato |
+| WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A/B1/B2 |
 | WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1-B1 | **PASS** prerequisiti; layer **8d-B** candidato |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
