@@ -855,9 +855,20 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS** (freeze SHA control-plane, pending review diff).
 
-**Fonte primaria da adottare:** control-plane vivo (ultimo `main` verificato 2026-06-14 — **riverificare `origin/main` prima del diff di adozione**). `dev-method` resta generalizzazione/tag indietro, non fonte viva primaria per i pattern operativi sotto.
+**Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
+
+**Nota Blocco B:** `session-and-repo-guard` sarà adottato come adattamento pragmatico GIS, non come copia letterale dallo SHA frozen. Il freeze vincola le forme operative dove la forma esatta conta: remote-hash PASS, QA evidence, legacy governance e LAST_CURSOR_REPORT.
+
+`dev-method` resta generalizzazione/tag indietro, non fonte viva primaria per i pattern operativi sotto.
+
+#### Blocco 0 — freeze fonte control-plane
+
+- **Esito:** PASS (docs-only; SHA frozen).
+- **Comando:** `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`
+- **SHA:** `df046f68867cdffcd350592a2781b53ce21ca8c0`
+- **Scope:** solo annotazione roadmap; **non** Blocco B / `.cursor/rules/`.
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 
@@ -870,7 +881,7 @@ Note:
 **Metodo di adozione:**
 
 - pin tag `dev-method` per le forme generiche;
-- copiare le forme operative da **control-plane vivo**;
+- copiare/adattare forme operative dal **SHA frozen** (`df046f68867cdffcd350592a2781b53ce21ca8c0`); re-sync esplicito per SHA successivo;
 - pattern chiave LAST_CURSOR_REPORT / remote-hash **non** sono nei tag dev-method → copiare forma operativa da control-plane, non spostare il pin dev-method.
 
 **Tensione aperta (da risolvere prima dell’adozione piena):**

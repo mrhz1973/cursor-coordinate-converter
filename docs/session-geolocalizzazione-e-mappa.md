@@ -2822,3 +2822,22 @@ Chiusura **`finito`** — micro-fix **docs-only** dopo runtime EOX già pushato 
 ### Prossimo passo
 
 - Backlog metodo o WU-0009 Tier B proxy.
+
+## Checkpoint 2026-06-15 — Metodo Blocco 0 freeze control-plane (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — **Blocco 0** workstream «Backlog metodo — Adozione metodo / handoff discipline»: freeze SHA remoto control-plane per fasi C–F successive.
+
+### Cosa è stato fatto
+
+1. **`git ls-remote`** → SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (`mrhz1973/control-plane` `main`).
+2. **`docs/work-units/WU-0005-0009-roadmap.md`** § Backlog metodo: fonte frozen, Nota Blocco B (session-guard pragmatico), sottosezione Blocco 0, bullet metodo di adozione.
+
+### Non toccato
+
+- `coordinate_converter Claude.html`, `docs/OPERATING_MEMORY.md`, `.cursor/rules/**`, runtime GIS.
+
+### Prossimo passo
+
+- Review → **Blocco B** `session-and-repo-guard` (adattamento pragmatico, non copia letterale SHA frozen).
