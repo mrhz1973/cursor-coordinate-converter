@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-16 — **Collaudo Fase F2 — LAST_CURSOR_REPORT su commit docs innocuo:** commit principale **`47b0016`** — roadmap F2; commit autosync/report con primo **`docs/runtime/LAST_CURSOR_REPORT.md`** vivo (`real_task_commit=47b0016`). PASS tecnico remoto OK post-push principale. PASS operatore non-attestato (docs-only). **Monolite non incluso.** Inbox **`2026-06-16_0125_riepilogo_finito-sessione.md`**. **Prossimo:** uso operativo LAST_CURSOR_REPORT su task reali o WU-0009 Tier B.
+
 2026-06-16 — **Chiusura Fase F1 — metodo LAST_CURSOR_REPORT spec + template:** commit principale **`5c59346`** — `.cursor/rules/30-output-workflow.mdc` (spec F1), `OPERATING_MEMORY` §4, `docs/runtime/LAST_CURSOR_REPORT.template.md`, roadmap F1 PASS. **Non** report vivo; **non** Fase F2. **Monolite non incluso.** Push principale **OK**. Backfill hash in commit autosync. Inbox **`2026-06-16_0119_riepilogo_finito-sessione.md`**. **Prossimo:** Fase F2 (collaudo docs) o WU-0009 Tier B.
 
 2026-06-16 — **Chiusura sessione `finito` — metodo Fase E legacy checkpoint/session governance:** commit **`41411ec`** — `.cursor/rules/30-output-workflow.mdc` (append storico/audit, precedenza OM §7/roadmap, no rewrite log pushati), `OPERATING_MEMORY` §3, `WU-0005-0009-roadmap` Fase E. Correzione pragmatica GIS; **non** copia letterale control-plane frozen. **Non** LAST_CURSOR_REPORT / Fase F. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_0049_riepilogo_finito-sessione.md`**. **Prossimo:** Fase F o WU-0009 Tier B.
