@@ -3095,12 +3095,35 @@ body.mm-enlarged{overflow:hidden}
 }
 .tile-map .tlayer-item:hover{ background:var(--panel2) }
 .tile-map .tlayer-item.is-active{
-  background:rgba(59,130,246,.12); color:#1e40af;
+  background:rgba(34,197,94,.14); color:#15803d;
+}
+html[data-theme="dark"] .tile-map .tlayer-item.is-active{
+  background:rgba(52,211,153,.2); color:#6ee7b7;
 }
 .tile-map .tlayer-item .tlayer-check{
   width:1em; flex-shrink:0; text-align:center; font-weight:900; opacity:.35;
 }
-.tile-map .tlayer-item.is-active .tlayer-check{ opacity:1; color:var(--accent, #2563eb) }
+.tile-map .tlayer-item.is-active .tlayer-check{ opacity:1; color:#16a34a }
+html[data-theme="dark"] .tile-map .tlayer-item.is-active .tlayer-check{ color:#4ade80 }
+.tile-map .tlayer-item .tlayer-item-label{ flex:1; min-width:0 }
+.tile-map .tlayer-badge-no-offline{
+  margin-left:auto; flex-shrink:0;
+  font-size:.68rem; font-weight:700; letter-spacing:.01em;
+  color:var(--muted, #64748b); white-space:nowrap;
+}
+.offcache-neutral-msg{
+  margin:.35rem 0 .15rem; padding:.45rem .55rem;
+  font-size:.82rem; font-weight:600; line-height:1.35;
+  color:var(--muted, #64748b); background:var(--panel2, #f1f5f9);
+  border-radius:6px; border:1px solid var(--border, #e2e8f0);
+}
+.offcache-section--online-only{
+  opacity:.62;
+}
+.offcache-section--online-only input,
+.offcache-section--online-only button{
+  pointer-events:none;
+}
 
 /* Stacked size + zoom controls (top-right). */
 .tile-map .tile-ctrls{
@@ -8760,6 +8783,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <option value="sonarchart">SonarChart Navionics (proxy tailnet)</option>
             </select>
           </div>
+          <p id="pcOfflineNeutral" class="offcache-neutral-msg" hidden aria-live="polite" role="status"></p>
           <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
           <section class="offcache-section offcache-section--download" aria-labelledby="offcacheSectionDownloadTitle">
             <h4 id="offcacheSectionDownloadTitle" class="offcache-section-title" data-i18n="offcache.sectionDownload">Download mappe offline</h4>
@@ -10945,6 +10969,7 @@ const I18N = {
     "map.layerEsriRelief":"Esri Rilievo",
     "map.layerSat":"Satellite (Esri)",
     "map.layerEsriOceanBase":"Esri Oceanica",
+    "map.layerNoOfflineBadge":"no offline",
     "map.layerNav":"Navionics",
     "map.layerDark":"Scura",
     "map.layerSea":"Nautica",
@@ -12442,6 +12467,7 @@ const I18N = {
     "map.layerEsriRelief":"Esri Relief",
     "map.layerSat":"Satellite (Esri)",
     "map.layerEsriOceanBase":"Esri Ocean",
+    "map.layerNoOfflineBadge":"no offline",
     "map.layerNav":"Navionics",
     "map.layerDark":"Dark",
     "map.layerSea":"Nautical",
@@ -13939,6 +13965,7 @@ const I18N = {
     "map.layerEsriRelief":"Esri Relief",
     "map.layerSat":"Satellite (Esri)",
     "map.layerEsriOceanBase":"Esri Océan",
+    "map.layerNoOfflineBadge":"pas hors ligne",
     "map.layerNav":"Navionics",
     "map.layerDark":"Sombre",
     "map.layerSea":"Nautique",
@@ -19173,8 +19200,7 @@ async function exportOfflineAreaAsJpg(){
     return;
   }
   const layerId = getCurrentOfflineLayerId();
-  const layer = getOfflineTileLayer(layerId);
-  if (layer && layer.cacheable === false){
+  if (isLayerOfflineUnavailable(layerId)){
     try { showError(t("offcache.onlineOnly")); } catch(_){}
     const st = document.getElementById("pcStatus");
     if (st) st.textContent = t("offcache.onlineOnly");
@@ -22797,7 +22823,23 @@ async function ensureNavProxyConsent(){
 }
 
 const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "osm", "topo", "esriTopo", "esriStreet", "esriHillshade", "esriRelief", "sat", "esriOceanBase", "nav"]);
-const OFFLINE_LAYER_IDS = Object.freeze([...MAP_BASE_LAYER_IDS, "sonarchart"]);
+
+/** Catalog-driven: layer is online-only (no offline download / browse-cache persist). */
+function isLayerOfflineUnavailable(layerId){
+  const id = String(layerId || "").trim();
+  if (!id) return false;
+  if (id === "sonarchart"){
+    const layer = SONARCHART_OVERLAY;
+    return !!(layer && layer.cacheable === false);
+  }
+  const layer = TILE_LAYERS[id];
+  return !!(layer && layer.cacheable === false);
+}
+
+const OFFLINE_LAYER_IDS = Object.freeze([
+  ...MAP_BASE_LAYER_IDS.filter(id => !isLayerOfflineUnavailable(id)),
+  ...(isLayerOfflineUnavailable("sonarchart") ? [] : ["sonarchart"])
+]);
 function resolveCatalogLayerId(id, allowedIds){
   const raw = String(id || "").trim();
   if (!raw) return null;
@@ -22815,6 +22857,57 @@ function getOfflineTileLayer(layerId){
   const id = sanitizeOfflineLayerId(layerId);
   if (id === "sonarchart") return SONARCHART_OVERLAY;
   return TILE_LAYERS[id] || TILE_LAYERS.osm;
+}
+function offlineLayerSelectLabel(layerId){
+  const keyMap = {
+    osmHot: "map.layerOsmHot",
+    cyclosm: "map.layerCyclosm",
+    osm: "map.layerMap",
+    topo: "map.layerTopo",
+    sat: "map.layerSat",
+    nav: "map.layerNav",
+    sonarchart: "map.overlaySonarChart"
+  };
+  const k = keyMap[layerId];
+  return k ? t(k) : String(layerId || "");
+}
+/** Rebuild #pcLayer from OFFLINE_LAYER_IDS (offline/precache-eligible only). */
+function syncOfflineLayerSelect(){
+  const pcl = document.getElementById("pcLayer");
+  if (!pcl) return;
+  const prev = pcl.value;
+  pcl.innerHTML = OFFLINE_LAYER_IDS.map(id =>
+    `<option value="${esc(id)}">${esc(offlineLayerSelectLabel(id))}</option>`
+  ).join("");
+  const next = resolveCatalogLayerId(prev, OFFLINE_LAYER_IDS)
+    || resolveCatalogLayerId(state.mapLayer, OFFLINE_LAYER_IDS)
+    || OFFLINE_LAYER_IDS[0]
+    || "osm";
+  pcl.value = next;
+}
+/** Neutral download/export UI when the selected offline layer is online-only. */
+function syncOfflinePanelNeutralState(layerId){
+  const id = layerId != null ? String(layerId) : getCurrentOfflineLayerId();
+  const onlineOnly = isLayerOfflineUnavailable(id);
+  const neutral = document.getElementById("pcOfflineNeutral");
+  if (neutral){
+    if (onlineOnly){
+      neutral.hidden = false;
+      neutral.textContent = t("map.layerNoOfflineBadge") + " — " + t("offcache.onlineOnly");
+      neutral.title = t("offcache.onlineOnly");
+    } else {
+      neutral.hidden = true;
+      neutral.textContent = "";
+      neutral.removeAttribute("title");
+    }
+  }
+  const dlSec = document.querySelector(".offcache-section--download");
+  const exSec = document.querySelector(".offcache-section--export");
+  [dlSec, exSec].forEach(el => {
+    if (!el) return;
+    el.classList.toggle("offcache-section--online-only", onlineOnly);
+    el.setAttribute("aria-disabled", onlineOnly ? "true" : "false");
+  });
 }
 function offlineTileNetworkKind(layerId){
   const id = String(layerId || "");
@@ -23277,9 +23370,10 @@ function setMapLayer(layer){
   state.mapBasemapMenuOpen = false;
   state.mapLayer = layer;
   const pcl = document.getElementById("pcLayer");
-  if (pcl) pcl.value = layer;
+  if (pcl && OFFLINE_LAYER_IDS.includes(layer)) pcl.value = layer;
   saveStore();
   if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+  else try { updateTileCacheCounterUi(); } catch(_){}
 }
 
 /**
@@ -24199,6 +24293,12 @@ function scheduleTileCacheCounterUpdate(){
 function updateTileCacheCounterUi(){
   const el = document.querySelector('#miniMap [data-role="tile-cache-counter"]');
   if (!el) return;
+  const activeLayer = sanitizeMapLayer(state.mapLayer || "osm");
+  if (isLayerOfflineUnavailable(activeLayer)){
+    el.hidden = true;
+    el.textContent = "";
+    return;
+  }
   const s = ensureTileCacheSession();
   if (!s.added){ el.hidden = true; el.textContent = ""; return; }
   const mb = s.bytes / (1024 * 1024);
@@ -24211,10 +24311,7 @@ function updateTileCacheCounterUi(){
 async function cacheTileFromDisplay(tkey, blob){
   if (!tkey || !blob || !window.indexedDB) return;
   const layerId = parseTileKeyLayerId(tkey);
-  if (layerId){
-    const layer = TILE_LAYERS[layerId];
-    if (layer && layer.cacheable === false) return;
-  }
+  if (layerId && isLayerOfflineUnavailable(layerId)) return;
   if (!(state._tileCachePending instanceof Set)) state._tileCachePending = new Set();
   if (!(state._tileCacheSeen instanceof Set)) state._tileCacheSeen = new Set();
   if (state._tileCachePending.has(tkey)) return;   // a put for this key is already in flight
@@ -24400,14 +24497,14 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
 function updatePrecacheEstimate(){
   const el = document.getElementById("pcEstimate");
   if (!el) return;
-  const btnS = document.getElementById("btnPrecacheStart");
   const layerId = sanitizeOfflineLayerId(document.getElementById("pcLayer")?.value || "osm");
-  const layer = getOfflineTileLayer(layerId);
-  if (layer && layer.cacheable === false){
-    el.textContent = t("offcache.onlineOnly");
+  if (isLayerOfflineUnavailable(layerId)){
+    el.textContent = "";
+    syncOfflinePanelNeutralState(layerId);
     if (typeof syncOfflinePrecacheMainButton === "function") syncOfflinePrecacheMainButton();
     return;
   }
+  syncOfflinePanelNeutralState(layerId);
   // Accept both "41.18" and "41,18" — Italian/French browsers type-number
   // fields accept a comma; plain parseFloat("41,18") silently truncates
   // to 41 and breaks the badbox check (n===s → empty selection).
@@ -24440,8 +24537,7 @@ function onPrecacheStart(){
     return;
   }
   const layerId = getCurrentOfflineLayerId();
-  const layer = getOfflineTileLayer(layerId);
-  if (layer && layer.cacheable === false){
+  if (isLayerOfflineUnavailable(layerId)){
     const st = document.getElementById("pcStatus");
     if (st) st.textContent = t("offcache.onlineOnly");
     setBadge("error", t("offcache.onlineOnly"));
@@ -25635,8 +25731,7 @@ function namedAreaToPrecacheParams(a){
   const z1 = Number.isFinite(a.z1) ? (a.z1 | 0) : NaN;
   if (![n, s, e, w, z0, z1].every(Number.isFinite) || n <= s || w > e || z0 > z1 || z0 < 2 || z1 > 19) return null;
   const layerId = sanitizeOfflineLayerId((a.layerId != null && a.layerId !== "") ? String(a.layerId) : "osm");
-  const layer = getOfflineTileLayer(layerId);
-  if (layer && layer.cacheable === false) return null;
+  if (isLayerOfflineUnavailable(layerId)) return null;
   let tot;
   try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return null; }
   if (!Number.isFinite(tot) || tot <= 0 || tot > MAX_PRECACHE_TILES) return null;
@@ -25682,8 +25777,7 @@ function syncOfflinePrecacheMainButton(){
     return;
   }
   const layerId = getCurrentOfflineLayerId();
-  const layer = getOfflineTileLayer(layerId);
-  const onlineOnly = !!(layer && layer.cacheable === false);
+  const onlineOnly = isLayerOfflineUnavailable(layerId);
   if (btnJ) btnJ.disabled = onlineOnly || !!_offlineJpgExportBusy;
   if (btnS && onlineOnly){ btnS.disabled = true; return; }
   if (!btnS) return;
@@ -30944,9 +31038,14 @@ function renderTileMap(lat, lon, zoom){
     const lblSecTopo = esc(t("map.layersSectionTopographic"));
     const lblSecSat = esc(t("map.layersSectionSatellite"));
     const lblSecNaut = esc(t("map.layersSectionNautical"));
-    const tlayerBasemapBtn = (layerId, act, tip, lbl, on) =>
-      `<button type="button" class="tlayer-item${act}" data-layer="${layerId}" role="menuitem" data-tip="${tip}">`
-      + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
+    const tlayerBasemapBtn = (layerId, act, tip, lbl, on) => {
+      const noOff = isLayerOfflineUnavailable(layerId);
+      const badge = noOff
+        ? `<span class="tlayer-badge-no-offline" title="${esc(t("offcache.onlineOnly"))}">${esc(t("map.layerNoOfflineBadge"))}</span>`
+        : "";
+      return `<button type="button" class="tlayer-item${act}" data-layer="${layerId}" role="menuitem" data-tip="${tip}">`
+        + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span class="tlayer-item-label">${lbl}</span>${badge}</button>`;
+    };
     const tlayerOverlayBtn = (overlay, act, tip, lbl, on) =>
       `<button type="button" class="tlayer-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}">`
       + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
@@ -31563,7 +31662,7 @@ function renderTileMap(lat, lon, zoom){
       saveStore();
         // Default pre-cache layer when opening the panel: nautical.
         const pcl = document.getElementById("pcLayer");
-        if (pcl) pcl.value = sanitizeMapLayer(state.mapLayer || "osm");
+        if (pcl) syncOfflineLayerSelect();
         try { updatePrecacheEstimate(); } catch(_){}
       }
       renderTileMap(lat, lon, zoom);
@@ -35320,6 +35419,7 @@ function applyLanguage(lang){
     const r = state.lastResult;
     renderResults(r.lat, r.lon, r.meta, { skipHistory: true });
   }
+  if (typeof syncOfflineLayerSelect === "function") syncOfflineLayerSelect();
   if (typeof updatePrecacheEstimate === "function") updatePrecacheEstimate();
   if (typeof updateOfflineBboxAreaFeedback === "function") updateOfflineBboxAreaFeedback();
   if (typeof refreshGeolocationBarriers === "function") refreshGeolocationBarriers();
@@ -37526,7 +37626,7 @@ function bindUI(){
   });
   const pcl = document.getElementById("pcLayer");
   if (pcl){
-    pcl.value = sanitizeMapLayer(state.mapLayer || "osm");
+    syncOfflineLayerSelect();
     pcl.addEventListener("change", () => {
       updatePrecacheEstimate();
       try { updateOfflineExportZoomFeedback(); } catch(_){}

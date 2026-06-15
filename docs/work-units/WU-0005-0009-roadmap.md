@@ -734,44 +734,34 @@ QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
 
 ##### 8d-B1 — offline UX / cache per-layer / maxZoom
 
-**Stato:** **8d-B1-A PASS** (diagnosi read-only); **8d-B1-B** candidato runtime.
+**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS** runtime; **8d-B1-B2** candidato.
 
 ###### 8d-B1-A — diagnosi read-only
 
-**Stato:** PASS (nessuna patch).
+**Stato:** PASS (nessuna patch runtime).
 
-Esito sintesi:
+###### 8d-B1-B1 — badge + pannello neutro
 
-- IndexedDB: `CoordConvMapTiles` / store `tiles` unico; chiavi `layerId:z/x/y`; nessun indice layerId; stats per-layer = O(n) cursor on-demand (Caso B1, accettabile su apertura pannello / cambio `#pcLayer`).
-- Badge «No offline»: fattibile da `TILE_LAYERS[id].cacheable === false` in `tlayerBasemapBtn`.
-- Pannello offline: stato neutro consigliato per `cacheable:false`; Esri/osmStandard ancora selezionabili in `#pcLayer` / `OFFLINE_LAYER_IDS`.
-- maxZoom basemap già clampato in render e controlli UI; overlay non bloccano zoom globale; gap messaggio overlay e fit-area hardcoded (vedi debito zoom-guard).
+**Stato:** PASS runtime (monolite, `finito` 2026-06-15).
 
-###### 8d-B1-B1 — badge + pannello neutro (candidato prossimo blocco runtime)
+Esito:
 
-**Stato:** candidato dopo 8d-B1-A.
+- `isLayerOfflineUnavailable(layerId)` — predicato unico da `TILE_LAYERS[id].cacheable === false`.
+- Badge Layers «no offline» (i18n IT/EN `no offline`, FR `pas hors ligne`).
+- `OFFLINE_LAYER_IDS` derivato da filtro catalogo (debito 1 **risolto**); `#pcLayer` popolato dinamicamente.
+- Pannello offline neutro; contatore sessione cache nascosto su basemap online-only; layer attivo menu verde chiaro.
+- QA operatore: badge OK; contatore non verde su Esri; `node --check` OK.
 
-Scope:
-
-- Badge Layers «No offline» da `cacheable:false` (catalogo-driven, non lista hardcoded).
-- Rafforzare stato neutro pannello offline per layer online-only (messaggio `offcache.onlineOnly`, controlli download/export disabilitati).
-- Idealmente accorpare fix debito `OFFLINE_LAYER_IDS` (prerequisito EOX, sotto).
-
-**i18n badge (B1-B1):** IT `no offline` · EN `no offline` · FR badge compatto `pas hors ligne` · FR tooltip/messaggio lungo `non disponible hors ligne` — **non** usare «sans hors-ligne».
-
-###### 8d-B1-B2 — stats cache per-layer (candidato secondo micro-blocco)
+###### 8d-B1-B2 — stats cache per-layer (candidato prossimo micro-blocco)
 
 - Scan IDB O(n) on-demand; evitare pan/zoom/timer frequente.
 
 ###### 8d-B1 follow-up / EOX prerequisites (debiti)
 
-**Debito 1 — `OFFLINE_LAYER_IDS` manuale vs `cacheable` (priorità alta, prerequisito EOX)**
+**Debito 1 — `OFFLINE_LAYER_IDS` manuale vs `cacheable` — ~~prerequisito EOX~~ RISOLTO in 8d-B1-B1**
 
-- `OFFLINE_LAYER_IDS` oggi include layer derivati manualmente (`MAP_BASE_LAYER_IDS` + `sonarchart`).
-- La lista può contraddire `TILE_LAYERS[id].cacheable === false` (Esri 8c-B, osmStandard).
-- Rischio concreto: aggiungendo EOX, se la lista resta manuale il layer può entrare per errore nei flussi offline/precache — in tensione con 8d-B0 dove `cacheable:false` è autoritativo nel browse-cache path.
-- Fix futuro: derivare layer offline/precache-eligible da `TILE_LAYERS[id].cacheable !== false`, oppure rendere `OFFLINE_LAYER_IDS` coerente con quel predicato.
-- **Decidere/fixare prima di 8d-B (EOX).** Idealmente in **8d-B1-B1** o subito dopo.
+- ~~`OFFLINE_LAYER_IDS` oggi include layer derivati manualmente~~ → ora derivato da `!isLayerOfflineUnavailable(id)` su `MAP_BASE_LAYER_IDS` + `sonarchart`.
+- EOX può procedere dopo eventuale B1-B2 stats; lista offline non più manuale.
 
 **Debito 2 — fit-area `Math.min(18,z)` hardcoded (priorità media, blocco zoom-guard separato)**
 
@@ -780,9 +770,9 @@ Scope:
 - Non peggiora specificamente con EOX; risolvere in futuro blocco zoom-guard dedicato.
 - Fix: usare maxZoom del basemap/layer corrente; per overlay non bloccare zoom globale — no-render o hint se fuori range.
 
-##### 8d-B — layer EOX (candidato dopo 8d-B1-B + prerequisiti)
+##### 8d-B — layer EOX (candidato)
 
-**Stato:** candidato dopo **8d-B1-B** e fix debito `OFFLINE_LAYER_IDS` (prerequisito EOX).
+**Stato:** candidato dopo **8d-B1-B1** (prerequisito `OFFLINE_LAYER_IDS` soddisfatto).
 
 Scope:
 
@@ -1173,10 +1163,10 @@ Test:
 23. ~~**WU-0008 8c-B** — famiglia Esri (layer catalogo).~~
 24. ~~**WU-0008 8d-B0** — browse-cache guard `cacheable:false` (prerequisito EOX).~~
 25. ~~**WU-0008 8d-B1-A** — diagnosi offline UX / cache per-layer / maxZoom.~~
-26. **WU-0008 8d-B1-B1** — badge «No offline» + pannello neutro (+ debito `OFFLINE_LAYER_IDS` se possibile).
+26. ~~**WU-0008 8d-B1-B1** — badge «No offline» + pannello neutro + `OFFLINE_LAYER_IDS`.~~
 27. **WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).
 28. **WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).
-29. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; dopo prerequisiti).
+29. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
@@ -1198,8 +1188,8 @@ Test:
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
-| WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A; **8d-B1-B1** candidato |
-| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1-B, debito `OFFLINE_LAYER_IDS` | **PASS** 8d-B0; layer **8d-B** dopo prerequisiti |
+| WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A + **PASS** 8d-B1-B1; **8d-B1-B2** candidato |
+| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1-B1 | **PASS** prerequisiti; layer **8d-B** candidato |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
