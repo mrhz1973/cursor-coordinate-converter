@@ -232,6 +232,23 @@ Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti 
 
 Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
+## LAST_CURSOR_REPORT — Fase F1 / spec preparatoria
+
+**Cronologia:** Blocco B e Fasi C/D/E **non** introducono `LAST_CURSOR_REPORT` nel rispettivo perimetro. **Fase F1** introduce solo **spec + template** (`docs/runtime/LAST_CURSOR_REPORT.template.md`); **non** è ancora attivo/obbligatorio. Uso obbligatorio rinviato a **Fase F2** (collaudo su commit docs innocuo; nessuna patch runtime prima del collaudo).
+
+**Non sostituisce** (fonte viva primaria resta invariata): `docs/OPERATING_MEMORY.md` §7, `docs/work-units/WU-0005-0009-roadmap.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/inbox/**`, PASS tecnico remoto (Fase C), PASS operatore (Fase D).
+
+**Mapping GIS** (adattamento da control-plane frozen; nessuna automazione):
+
+- `real_task_commit` = commit principale del task;
+- report vivo (Fase F2+) destinato a viaggiare nell’**autosync orchestratore** esistente — **nessun** terzo commit; commit principale + autosync = modello concettuale «task + report»;
+- **nessun** commit finalize-hash dedicato;
+- campi auto-referenziali = `PENDING_SELF_REFERENCE` finché non verificabili; backfill in sezione **HISTORY** del report quando possibile;
+- `pass_tecnico_remoto` / `result_cursor` ↔ Fase C; `pass_operatore` / `result_runtime` ↔ Fase D;
+- `git ls-remote origin main` resta **autorità finale** per PASS tecnico remoto.
+
+**Non** modifica la sequenza **`finito`** operativa in Fase F1. Vedi template in `docs/runtime/LAST_CURSOR_REPORT.template.md`.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.
@@ -358,7 +375,7 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 6. **`docs/checkpoint.md`** e **`docs/session-geolocalizzazione-e-mappa.md`:** **legacy/storico** — **non** aggiornarli nell’autosync né usarli come memoria corrente primaria. Il **`finito`** può continuare ad appendere checkpoint/session come storico/audit (come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc)), senza renderli fonte viva. Se confliggono con `docs/OPERATING_MEMORY.md` §7 o `docs/work-units/WU-0005-0009-roadmap.md`, segnalare il conflitto nel RIEPILOGO e dare precedenza ai documenti vivi più specifici/recenti; **non** riscrivere log storici già pushati salvo richiesta esplicita — preferire nota nei documenti vivi o nel riepilogo corrente.
 7. **`docs/roadmap.md`:** **non** incluso nel commit autosync salvo l’intervento lo modifichi **e** l’utente richieda esplicitamente di versionarlo nello stesso commit (caso raro); in caso normale resta fuori dall’autosync memoria.
 
-8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti.
+8. **Backup locale:** continua a produrre `/tmp/NN-goi-gis-riepilogo.md` (e piano se applica) come da sezioni precedenti. **Fase F1:** spec/template `LAST_CURSOR_REPORT` preparato; report vivo non obbligatorio fino a Fase F2.
 
 ### Cursor vs ChatGPT (memoria: **nessun controllo incrociato**)
 

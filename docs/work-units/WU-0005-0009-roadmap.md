@@ -855,7 +855,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`PENDING_SELF_REFERENCE`).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
@@ -903,6 +903,15 @@ Note:
 - **Delta:** checkpoint/session possono restare append storico/audit nel **`finito`**; non sono fonte viva primaria; conflitti con OM §7 / roadmap → segnalare, precedenza documenti vivi; **non** riscrivere log storici già pushati salvo richiesta esplicita.
 - **File:** `.cursor/rules/30-output-workflow.mdc` (precisazioni autosync/`finito`); `docs/OPERATING_MEMORY.md` §3; roadmap (questa sottosezione).
 - **Non introduce:** `LAST_CURSOR_REPORT`, two-commit; **non** modifica meccanismo **`finito`**; **non** Fase F.
+
+#### Fase F1 — LAST_CURSOR_REPORT spec + template
+
+- **Esito:** PASS.
+- **Cronologia:** Blocco B e Fasi C/D/E **non** introducevano `LAST_CURSOR_REPORT` nel rispettivo scope; Fase F1 introduce **solo** spec + `docs/runtime/LAST_CURSOR_REPORT.template.md` — **non** report vivo, **non** uso obbligatorio.
+- **Fase F2 (futura):** collaudo su commit docs innocuo; nessuna patch runtime prima del collaudo.
+- **Mapping GIS:** commit principale + autosync orchestratore = modello concettuale task + report; nessun terzo commit; no commit finalize-hash; `PENDING_SELF_REFERENCE` + backfill HISTORY; `pass_tecnico_remoto`/`result_cursor` ↔ Fase C; `pass_operatore`/`result_runtime` ↔ Fase D.
+- **Non sostituisce:** OM §7, roadmap, `latest`/`inbox`; **non** modifica `finito` in Fase F1.
+- **File:** `.cursor/rules/30-output-workflow.mdc` (sezione F1); `docs/OPERATING_MEMORY.md` §4; `docs/runtime/LAST_CURSOR_REPORT.template.md`; roadmap (questa sottosezione).
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 
