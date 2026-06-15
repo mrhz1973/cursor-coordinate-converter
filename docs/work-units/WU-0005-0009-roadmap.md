@@ -855,7 +855,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`); **Fase F3 PASS** (`PENDING_SELF_REFERENCE`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`); **Fase F3 PASS** (`d69b100`).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
