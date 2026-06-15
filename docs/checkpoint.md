@@ -8,7 +8,9 @@
 **Data snapshot:** 2026-06-16
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Fase C remote-hash PASS tecnico:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Remote hash — output git verbatim post-push, `git ls-remote origin main` autorità finale, RAW GitHub secondario); **`docs/OPERATING_MEMORY.md` §4**; **`docs/work-units/WU-0005-0009-roadmap.md`** § Fase C. Fonte adattata da control-plane SHA frozen **`df046f6…`**. **Non** LAST_CURSOR_REPORT / two-commit / Fase D. **Monolite non modificato.**
+**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Fase D QA evidence / PASS operatore:** **`.cursor/rules/30-output-workflow.mdc`** (sezione QA evidence — attestazione esplicita, fail-closed, distinto da PASS tecnico remoto); **`docs/OPERATING_MEMORY.md` §4**; **`docs/work-units/WU-0005-0009-roadmap.md`** § Fase D. Fonte principio control-plane SHA frozen **`df046f6…`**. **Non** LAST_CURSOR_REPORT / two-commit / Fase E/F; **`finito`** invariato. **Monolite non modificato.**
+
+**Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Fase C remote-hash PASS tecnico:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Remote hash — output git verbatim post-push, `git ls-remote origin main` autorità finale, RAW GitHub secondario); **`docs/OPERATING_MEMORY.md` §4**; **`docs/work-units/WU-0005-0009-roadmap.md`** § Fase C. Fonte adattata da control-plane SHA frozen **`df046f6…`**. **Non** LAST_CURSOR_REPORT / two-commit / Fase D. **Monolite non modificato.**
 
 **Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Blocco B session-and-repo-guard:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Session / repo guard — pre-volo fail-closed, Cursor non decide autonomamente); **`docs/OPERATING_MEMORY.md` §4** (bullet); **`docs/work-units/WU-0005-0009-roadmap.md`** § Blocco B. Adattamento pragmatico GIS, **non** remote-hash/QA evidence/LAST_CURSOR_REPORT. **Monolite non modificato.** **`docs/roadmap.md` non modificato.**
 

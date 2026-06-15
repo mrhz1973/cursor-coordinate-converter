@@ -206,6 +206,32 @@ Se gli output post-push mancano, sono incompleti o ambigui: **non** chiedere sub
 
 Questa regola riguarda **solo** il PASS tecnico remoto. **Non** sostituisce PASS operatore, browser QA o validazione runtime. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
+## QA evidence / PASS operatore
+
+PASS tecnico remoto e PASS operatore sono **prove diverse**:
+
+- **PASS tecnico remoto** — commit/push verificati tramite hash e `git ls-remote`;
+- **PASS operatore** — comportamento runtime verificato da una persona o da prova runtime **esplicitamente attestata** nel flusso.
+
+**Regola di attestazione:**
+
+- PASS operatore registrabile **solo** con attestazione esplicita nel flusso: utente/operatore, oppure orchestratore che riporta tale attestazione.
+- Cursor **non** può scrivere «QA operatore PASS» di propria iniziativa: non ha occhi su runtime/browser.
+- Cursor può attestare solo prove tecniche realmente eseguite (es. `node --check`, git/hash, lint, verifiche automatiche).
+- PASS operatore **non** è inferibile da PASS tecnico remoto, `node --check`, diff pulito o commit pushato.
+
+**Default fail-closed:**
+
+- Senza attestazione esplicita → «QA operatore non eseguita» o «QA operatore non attestata», **non** PASS.
+- Non trasformare QA non attestata in PASS.
+- Non trasformare QA attestata in «non eseguita»: se l’attestazione esiste nel flusso, registrarla correttamente.
+
+Se utente/orchestratore attesta QA manuale o runtime, RIEPILOGO e aggiornamenti docs devono registrare: **provenienza** (utente/operatore/orchestratore/test automatico); **data/contesto** blocco; **ambiente** essenziale se rilevante (localhost, file://, IP LAN, tailnet, browser, offline/OPSEC); **azione** verificata; **risultato** osservato; **limiti** o casi non testati.
+
+Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti concreti, non formulazioni vaghe («sembra OK»).
+
+Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.

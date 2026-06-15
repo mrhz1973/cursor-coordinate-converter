@@ -2881,3 +2881,23 @@ Chiusura **`finito`** — **Fase C** workstream «Backlog metodo»: PASS tecnico
 ### Prossimo passo
 
 - Fase D (QA evidence) o WU-0009 Tier B.
+
+## Checkpoint 2026-06-16 — Metodo Fase D QA evidence / PASS operatore (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — **Fase D** workstream «Backlog metodo»: regola PASS operatore / QA evidence distinta da PASS tecnico remoto (Fase C); attestazione esplicita nel flusso; default fail-closed; previene falsi negativi/positivi (pattern EOX).
+
+### Cosa è stato fatto
+
+1. **`.cursor/rules/30-output-workflow.mdc`** — sezione **QA evidence / PASS operatore** (dopo Remote hash).
+2. **`docs/OPERATING_MEMORY.md` §4** — bullet QA evidence / PASS operatore.
+3. **`docs/work-units/WU-0005-0009-roadmap.md`** — Stato + sottosezione Fase D.
+
+### Non toccato
+
+- Monolite; LAST_CURSOR_REPORT; two-commit; Fase E/F; procedura **`finito`**; runtime GIS.
+
+### Prossimo passo
+
+- Fase E (legacy checkpoint/session governance) o WU-0009 Tier B.

@@ -58,6 +58,7 @@
 - Blocchi docs-only: non toccare il monolite.
 - **Session / repo guard:** prima di patch non read-only, verificare repo root, branch e `git status --short`; se workspace atteso pulito risulta sporco all’avvio o repo/cartella non coerenti, fermarsi e riportare lo stato. Cursor non decide autonomamente se procedere; la decisione spetta alla review.
 - **Remote hash / PASS tecnico:** dopo push, il PASS remoto richiede output verbatim coerente di `HEAD`, tracking locale `origin/main` e `git ls-remote origin main`; l’autorità finale è `git ls-remote`, mentre RAW GitHub è secondario/best-effort e può essere stale. Se `origin/main` locale diverge da `ls-remote`, non è PASS. Se gli output mancano o sono ambigui, prima prompt Cursor verify-only; shell manuale utente solo fallback finale. Distinto da PASS operatore / QA runtime.
+- **QA evidence / PASS operatore:** il PASS operatore è distinto dal PASS tecnico remoto e richiede attestazione esplicita nel flusso da utente/operatore o orchestratore. Cursor non può inferirlo da PASS tecnico, diff pulito o `node --check`. In assenza di attestazione, default fail-closed: QA operatore non eseguita/non attestata. Se la QA è attestata, RIEPILOGO e docs devono registrarne provenienza, esiti concreti, ambiente essenziale e limiti.
 
 ### Pipeline prompt Cursor (revisione incrociata a passi fissi)
 

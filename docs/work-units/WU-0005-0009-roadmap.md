@@ -855,7 +855,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C implementata** (pending review diff).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (chiusura `finito` 2026-06-16).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
@@ -885,6 +885,16 @@ Note:
 - **Autorità:** `git ls-remote origin main` (finale); `git rev-parse origin/main` (tracking locale, deve combaciare con `ls-remote`); RAW GitHub secondario/best-effort (può essere stale).
 - **File:** `.cursor/rules/30-output-workflow.mdc` (sezione Remote hash); `docs/OPERATING_MEMORY.md` §4; roadmap (questa sottosezione).
 - **Non introduce:** `LAST_CURSOR_REPORT`, two-commit convention, Fase D/E/F.
+
+#### Fase D — QA evidence / PASS operatore
+
+- **Esito:** PASS (chiusura `finito` 2026-06-16).
+- **Tipo:** PASS **operatore/runtime** — distinto da Fase C (PASS tecnico remoto hash/`ls-remote`).
+- **Fonte:** principio control-plane SHA frozen `df046f68867cdffcd350592a2781b53ce21ca8c0` — output runtime esplicitamente attestato dall’utente; test non deterministici ≠ evidenza PASS.
+- **Regola:** PASS operatore solo con attestazione esplicita nel flusso; Cursor **non** inferisce da PASS tecnico; default fail-closed = QA non eseguita/non attestata.
+- **Anti-pattern (es. EOX):** evita QA attestata registrata come «non eseguita» e QA non attestata registrata come PASS.
+- **File:** `.cursor/rules/30-output-workflow.mdc` (sezione QA evidence); `docs/OPERATING_MEMORY.md` §4; roadmap (questa sottosezione).
+- **Non introduce:** `LAST_CURSOR_REPORT`, two-commit; **non** modifica `finito`; **non** Fase E/F.
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 
