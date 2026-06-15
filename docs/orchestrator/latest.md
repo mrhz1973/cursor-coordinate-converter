@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-15 — **WU-0008 8d-B1-B3 — integrazione semantica fallback 18:** task zoom-guard consolidato in inbox **`2026-06-15_1308_task_8d-B1-B3_zoom-guard-fallback18.md`**. Regola: fallback 18 ≠ fix layer; PASS solo se fit-area/offline-area con layer target usano `TILE_LAYERS[layerId].maxZoom`. Audit pre-patch: 3 occorrenze in scope (`flyMapToTrackPoints`×2, `flyMiniMapToOfflineNamedAreaById`) risolvibili via `state.mapLayer`; GPS/boot fuori scope. **Monolite non modificato.** **Prossimo:** esecuzione patch B1-B3.
+
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-B2 stats per-layer:** monolite incluso nel commit **`a0da9d1`** (`getLayerTileCacheStats`, `#pcLayerCacheStat`, scan IDB on-demand). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1300_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B** EOX oppure **8d-B1-B3** zoom-guard.
 
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-B1 offline UX:** monolite incluso nel commit **`29ebf3a`** (`isLayerOfflineUnavailable`, badge «no offline», `OFFLINE_LAYER_IDS` catalog-driven, pannello neutro, contatore cache nascosto su online-only, layer attivo verde). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1230_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B1-B2** stats per-layer oppure **8d-B** EOX.
