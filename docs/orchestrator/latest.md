@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-15 — **Chiusura sessione `finito` — docs QA EOX browser PASS:** commit **`b8e38df`** — solo docs vive (`OPERATING_MEMORY` §7, `WU-0005-0009-roadmap` §8d-B): Browser QA operatore **PASS** (localhost/tailnet `100.110.35.23`; deny `192.168.1.108`; forced-offline/OPSEC/no bulk OK). Runtime EOX resta **`2ca47b6`**. **Monolite non incluso.** Inbox storico `2026-06-15_1928` **non riscritto**. Push step 2 **OK**. Inbox **`2026-06-15_1937_riepilogo_finito-sessione.md`**. **Prossimo:** backlog metodo o WU-0009 Tier B.
+
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B EOX Sentinel-2 cloudless:** monolite incluso nel commit **`2ca47b6`** — layer `eoxS2Cloudless` online-only (`cacheable:false`, `maxZoom:18`); gate fetch fail-closed allowlist (`isPrivateEoxHostAllowed` in `tileFetchAllowed`); UI Layers Satellitare host-privato; review read-only allowlist PASS; `node --check` OK. OM §7 + roadmap §8d-B + checkpoint/session. Push step 2 **OK**. Inbox **`2026-06-15_1928_riepilogo_finito-sessione.md`**. **Browser QA operatore pending.** **Prossimo:** backlog metodo o WU-0009 Tier B.
 
 2026-06-15 — **Chiusura sessione `finito` — docs EOX pre-check + backlog metodo:** commit **`92d89fd`** — solo docs (`OPERATING_MEMORY` §7, `WU-0005-0009-roadmap` §8d-B pre-check PASS a HEAD `9f98c5d`, sezione Backlog metodo, checkpoint/session). **Monolite non incluso** (HEAD runtime resta **`89f53ff`**). Push step 2 **OK**. Inbox **`2026-06-15_1834_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B** EOX runtime (prompt parcheggiato; gate licenza/hosting) oppure backlog metodo.
