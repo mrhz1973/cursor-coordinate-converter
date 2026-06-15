@@ -855,7 +855,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (chiusura `finito` 2026-06-16).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
@@ -895,6 +895,14 @@ Note:
 - **Anti-pattern (es. EOX):** evita QA attestata registrata come «non eseguita» e QA non attestata registrata come PASS.
 - **File:** `.cursor/rules/30-output-workflow.mdc` (sezione QA evidence); `docs/OPERATING_MEMORY.md` §4; roadmap (questa sottosezione).
 - **Non introduce:** `LAST_CURSOR_REPORT`, two-commit; **non** modifica `finito`; **non** Fase E/F.
+
+#### Fase E — legacy checkpoint/session governance
+
+- **Esito:** PASS (chiusura `finito` 2026-06-16).
+- **Tipo:** correzione **pragmatica GIS** — precedenza documentale; **non** copia letterale da control-plane SHA frozen.
+- **Delta:** checkpoint/session possono restare append storico/audit nel **`finito`**; non sono fonte viva primaria; conflitti con OM §7 / roadmap → segnalare, precedenza documenti vivi; **non** riscrivere log storici già pushati salvo richiesta esplicita.
+- **File:** `.cursor/rules/30-output-workflow.mdc` (precisazioni autosync/`finito`); `docs/OPERATING_MEMORY.md` §3; roadmap (questa sottosezione).
+- **Non introduce:** `LAST_CURSOR_REPORT`, two-commit; **non** modifica meccanismo **`finito`**; **non** Fase F.
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 
