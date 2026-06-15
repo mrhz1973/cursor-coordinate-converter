@@ -56,6 +56,7 @@
 - Nessun live tracking GPS senza decisione esplicita.
 - Modifiche runtime: commit separati — codice / docs operative / autosync.
 - Blocchi docs-only: non toccare il monolite.
+- **Session / repo guard:** prima di patch non read-only, verificare repo root, branch e `git status --short`; se workspace atteso pulito risulta sporco all’avvio o repo/cartella non coerenti, fermarsi e riportare lo stato. Cursor non decide autonomamente se procedere; la decisione spetta alla review.
 
 ### Pipeline prompt Cursor (revisione incrociata a passi fissi)
 

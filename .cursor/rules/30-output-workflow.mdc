@@ -160,6 +160,18 @@ Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichi
 - Evitare duplicazioni tra README, OPERATING_MEMORY e roadmap.
 - Se durante il riepilogo finale emerge che il README punta a una WU vecchia o a uno stato stale, correggere il README prima del commit finale.
 
+## Session / repo guard
+
+Prima di qualunque patch **non read-only**, Cursor deve verificare e riportare nel RIEPILOGO o nel blocco di validazione:
+
+- repo root: `git rev-parse --show-toplevel`;
+- branch: `git branch --show-current`;
+- workspace iniziale: `git status --short`.
+
+Se il repo root non è quello atteso, se il branch non è `main`, oppure se un blocco parte da workspace atteso pulito e `git status --short` **non** è vuoto all’inizio, Cursor deve **fermarsi** e riportare lo stato. Cursor **non** deve valutare autonomamente se lo sporco iniziale è accettabile: la decisione se procedere spetta alla review operatore/orchestratore.
+
+Per task **read-only**, riportare comunque eventuali anomalie di repo, branch o workspace.
+
 ## Autosync orchestratore (obbligatorio)
 
 La cartella `docs/orchestrator/` è la **memoria operativa** per l’orchestratore **ChatGPT** (non sostituisce `docs/roadmap.md` né i checkpoint ufficiali). Qui **non** si introducono automazioni, hook, script, job CI o n8n: solo documentazione e convenzioni.

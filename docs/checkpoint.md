@@ -5,10 +5,12 @@
 
 # Checkpoint progetto — GOI GIS Tool
 
-**Data snapshot:** 2026-06-15
+**Data snapshot:** 2026-06-16
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-15 — **Chiusura sessione (`finito`) — metodo Blocco 0 freeze control-plane:** solo **`docs/work-units/WU-0005-0009-roadmap.md`** § Backlog metodo — SHA frozen **`df046f68867cdffcd350592a2781b53ce21ca8c0`** (`mrhz1973/control-plane` `main`, `git ls-remote`); Fasi C–F da SHA frozen; **Nota Blocco B:** `session-and-repo-guard` adattamento pragmatico GIS. **Monolite / OM / `.cursor/rules/` non modificati.** **`docs/roadmap.md` non modificato.**
+**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — metodo Blocco B session-and-repo-guard:** **`.cursor/rules/30-output-workflow.mdc`** (sezione Session / repo guard — pre-volo fail-closed, Cursor non decide autonomamente); **`docs/OPERATING_MEMORY.md` §4** (bullet); **`docs/work-units/WU-0005-0009-roadmap.md`** § Blocco B. Adattamento pragmatico GIS, **non** remote-hash/QA evidence/LAST_CURSOR_REPORT. **Monolite non modificato.** **`docs/roadmap.md` non modificato.**
+
+**Ultimo cambio (precedente):** 2026-06-15 — **Chiusura sessione (`finito`) — metodo Blocco 0 freeze control-plane:** solo **`docs/work-units/WU-0005-0009-roadmap.md`** § Backlog metodo — SHA frozen **`df046f68867cdffcd350592a2781b53ce21ca8c0`** (`mrhz1973/control-plane` `main`, `git ls-remote`); Fasi C–F da SHA frozen; **Nota Blocco B:** `session-and-repo-guard` adattamento pragmatico GIS. **Monolite / OM / `.cursor/rules/` non modificati.** **`docs/roadmap.md` non modificato.**
 
 **Ultimo cambio (precedente):** 2026-06-15 — **Chiusura sessione (`finito`) — docs QA EOX post-runtime:** solo documentazione viva. **Browser QA operatore PASS** registrata in **`docs/OPERATING_MEMORY.md` §7** e **`docs/work-units/WU-0005-0009-roadmap.md` §8d-B** (localhost/tailnet `100.110.35.23` OK; `192.168.1.108` nascosto/no fetch; forced-offline/OPSEC strict/no offline bulk OK). Runtime EOX già su **`2ca47b6`**. **Monolite non modificato.** Inbox orchestratore **`2026-06-15_1928`** non riscritto (artefatto storico). **`docs/roadmap.md` non modificato.**
 

@@ -855,11 +855,11 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS** (freeze SHA control-plane, pending review diff).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B implementato** (pending review diff).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
-**Nota Blocco B:** `session-and-repo-guard` sarà adottato come adattamento pragmatico GIS, non come copia letterale dallo SHA frozen. Il freeze vincola le forme operative dove la forma esatta conta: remote-hash PASS, QA evidence, legacy governance e LAST_CURSOR_REPORT.
+**Nota Blocco B:** `session-and-repo-guard` è un **adattamento pragmatico GIS** (non copia letterale dallo SHA frozen). Il freeze vincola le forme operative dove la forma esatta conta: remote-hash PASS, QA evidence, legacy governance e LAST_CURSOR_REPORT.
 
 `dev-method` resta generalizzazione/tag indietro, non fonte viva primaria per i pattern operativi sotto.
 
@@ -869,6 +869,13 @@ Note:
 - **Comando:** `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`
 - **SHA:** `df046f68867cdffcd350592a2781b53ce21ca8c0`
 - **Scope:** solo annotazione roadmap; **non** Blocco B / `.cursor/rules/`.
+
+#### Blocco B — session-and-repo-guard (adattamento pragmatico GIS)
+
+- **Esito:** implementato (pending review diff).
+- **Scope:** pre-volo repo/sessione fail-closed sul giudizio; **non** remote-hash, QA evidence, legacy governance, LAST_CURSOR_REPORT, two-commit.
+- **File:** `.cursor/rules/30-output-workflow.mdc` (sezione Session / repo guard); `docs/OPERATING_MEMORY.md` §4 (bullet); roadmap (questa sottosezione).
+- **Regola:** prima di patch non read-only → `git rev-parse --show-toplevel`, `git branch --show-current`, `git status --short`; repo/cartella/branch non attesi o workspace atteso pulito sporco all’avvio → STOP e riporto; Cursor **non** decide autonomamente se procedere.
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 

@@ -2841,3 +2841,23 @@ Chiusura **`finito`** — **Blocco 0** workstream «Backlog metodo — Adozione 
 ### Prossimo passo
 
 - Review → **Blocco B** `session-and-repo-guard` (adattamento pragmatico, non copia letterale SHA frozen).
+
+## Checkpoint 2026-06-16 — Metodo Blocco B session-and-repo-guard (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — **Blocco B** workstream «Backlog metodo»: guardia minima pre-volo repo/sessione (adattamento pragmatico GIS).
+
+### Cosa è stato fatto
+
+1. **`.cursor/rules/30-output-workflow.mdc`** — sezione Session / repo guard (`git rev-parse`, branch, `git status --short`; STOP se anomalie; Cursor non decide autonomamente).
+2. **`docs/OPERATING_MEMORY.md` §4** — bullet Session / repo guard.
+3. **`docs/work-units/WU-0005-0009-roadmap.md`** — Blocco B implementato (pending review → chiuso con questo `finito`).
+
+### Non toccato
+
+- `coordinate_converter Claude.html`; remote-hash, QA evidence, legacy governance, LAST_CURSOR_REPORT; blocchi C–F.
+
+### Prossimo passo
+
+- Blocchi C–F metodo (forme da SHA frozen `df046f6…`) o WU-0009 Tier B.
