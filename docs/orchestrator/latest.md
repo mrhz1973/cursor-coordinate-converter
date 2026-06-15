@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-A docs:** commit **`4f6ec4f`** — roadmap debiti offline UX (`OFFLINE_LAYER_IDS` vs `cacheable`, fit-area z18) + OM §7 (8d-B1-A PASS, prossimo **8d-B1-B1**). **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-15_1157_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B1-B1** badge + pannello neutro.
+
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B0 browse-cache guard:** monolite incluso nel commit **`23db6b4`** (`parseTileKeyLayerId` + guard fail-open in `cacheTileFromDisplay`; `cacheable:false` autoritativo al pan/zoom). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1120_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B** layer EOX Sentinel-2 cloudless.
 
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8c-B Esri catalogo:** monolite incluso nel commit `043b769` (5 layer Esri, online-only, Layers + i18n). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_0135_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 8d EOX Sentinel-2 cloudless.
