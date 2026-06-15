@@ -10970,6 +10970,7 @@ const I18N = {
     "map.layerEsriHillshade":"Esri Ombreggiatura",
     "map.layerEsriRelief":"Esri Rilievo",
     "map.layerSat":"Satellite (Esri)",
+    "map.layerEoxS2Cloudless":"EOX Sentinel-2 cloudless",
     "map.layerEsriOceanBase":"Esri Oceanica",
     "map.layerNoOfflineBadge":"no offline",
     "map.layerNav":"Navionics",
@@ -10995,6 +10996,7 @@ const I18N = {
     "tip.layerEsriHillshade":"Esri World Hillshade",
     "tip.layerEsriRelief":"Esri World Shaded Relief",
     "tip.layerSat":"Vista satellitare (Esri)",
+    "tip.layerEoxS2Cloudless":"Sentinel-2 cloudless 2024 (EOX, CC BY-NC-SA, solo host privato)",
     "tip.layerEsriOceanBase":"Esri World Ocean Base",
     "tip.layerNav":"Carta nautica Navionics — richiede il proxy tailnet (porta 5000)",
     "tip.layerDark":"Mappa scura (CARTO Dark Matter)",
@@ -12471,6 +12473,7 @@ const I18N = {
     "map.layerEsriHillshade":"Esri Hillshade",
     "map.layerEsriRelief":"Esri Relief",
     "map.layerSat":"Satellite (Esri)",
+    "map.layerEoxS2Cloudless":"EOX Sentinel-2 cloudless",
     "map.layerEsriOceanBase":"Esri Ocean",
     "map.layerNoOfflineBadge":"no offline",
     "map.layerNav":"Navionics",
@@ -12496,6 +12499,7 @@ const I18N = {
     "tip.layerEsriHillshade":"Esri World Hillshade",
     "tip.layerEsriRelief":"Esri World Shaded Relief",
     "tip.layerSat":"Satellite imagery (Esri)",
+    "tip.layerEoxS2Cloudless":"Sentinel-2 cloudless 2024 (EOX, CC BY-NC-SA, private host only)",
     "tip.layerEsriOceanBase":"Esri World Ocean Base",
     "tip.layerNav":"Navionics nautical chart — requires the tailnet proxy (port 5000)",
     "tip.layerDark":"Dark basemap (CARTO Dark Matter)",
@@ -13972,6 +13976,7 @@ const I18N = {
     "map.layerEsriHillshade":"Esri Ombrage",
     "map.layerEsriRelief":"Esri Relief",
     "map.layerSat":"Satellite (Esri)",
+    "map.layerEoxS2Cloudless":"EOX Sentinel-2 cloudless",
     "map.layerEsriOceanBase":"Esri Océan",
     "map.layerNoOfflineBadge":"pas hors ligne",
     "map.layerNav":"Navionics",
@@ -13997,6 +14002,7 @@ const I18N = {
     "tip.layerEsriHillshade":"Esri World Hillshade",
     "tip.layerEsriRelief":"Esri World Shaded Relief",
     "tip.layerSat":"Imagerie satellite (Esri)",
+    "tip.layerEoxS2Cloudless":"Sentinel-2 cloudless 2024 (EOX, CC BY-NC-SA, hôte privé uniquement)",
     "tip.layerEsriOceanBase":"Esri World Ocean Base",
     "tip.layerNav":"Carte nautique Navionics — nécessite le proxy tailnet (port 5000)",
     "tip.layerDark":"Fond sombre (CARTO Dark Matter)",
@@ -22626,6 +22632,33 @@ function getNavProxyHost(){
   return "localhost";
 }
 
+/** WU-0008 8d-B: fail-closed allowlist for EOX Sentinel-2 (CC BY-NC-SA / non-commercial). */
+function isPrivateEoxHostAllowed(){
+  try {
+    if (typeof location === "undefined") return false;
+    const raw = location.hostname;
+    if (raw == null) return false;
+    const h = String(raw).trim().toLowerCase();
+    if (!h) return false; /* file:// and empty hostname → DENY */
+    if (h === "localhost" || h.endsWith(".localhost")) return true;
+    if (h === "[::1]" || h === "::1") return true;
+    const m = h.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
+    if (m){
+      const o = [+m[1], +m[2], +m[3], +m[4]];
+      if (o.some(n => !Number.isFinite(n) || n < 0 || n > 255)) return false;
+      if (o[0] === 127) return true; /* 127.0.0.0/8 loopback */
+      if (o[0] === 100 && o[1] >= 64 && o[1] <= 127) return true; /* 100.64.0.0/10 tailnet */
+      return false;
+    }
+    return false; /* unknown/public hostname → DENY (allowlist, not blocklist) */
+  } catch(_){
+    return false;
+  }
+}
+function eoxLayerAllowedOnCurrentHost(){
+  return isPrivateEoxHostAllowed();
+}
+
 function normalizeTileScheme(scheme){
   const s = String(scheme || "xyz").trim().toLowerCase();
   if (s === "esri" || s === "zyx") return "zyx";
@@ -22697,6 +22730,17 @@ const TILE_LAYERS = {
     urlBase: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/",
     attrib: 'Imagery © <a href="https://www.esri.com/" target="_blank" rel="noopener">Esri</a>, Maxar, Earthstar Geographics',
     maxZoom: 19
+  },
+  /* EOX Sentinel-2 cloudless 2024 — CC BY-NC-SA / non-commercial; online-only;
+   * fetch gated by eoxLayerAllowedOnCurrentHost() in tileFetchAllowed (fail-closed allowlist). */
+  eoxS2Cloudless: {
+    external: "internet",
+    cacheable: false,
+    tileScheme: "zyx",
+    urlBase: "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/GoogleMapsCompatible/",
+    urlSuffix: ".jpg",
+    attrib: 'Sentinel-2 cloudless · <a href="https://s2maps.eu" target="_blank" rel="noopener">s2maps.eu</a> by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2024)',
+    maxZoom: 18
   },
   esriTopo: {
     external: "internet",
@@ -22787,6 +22831,8 @@ function tileLayerExternalKind(layerId){
 
 /** True when a network tile fetch is allowed under graduated OPSEC strict. Cache hits are checked separately. */
 function tileFetchAllowed(layerId){
+  const id = String(layerId || "");
+  if (id === "eoxS2Cloudless" && !eoxLayerAllowedOnCurrentHost()) return false;
   if (state.forceOffline) return false;
   if (!state.opsecStrict) return true;
   if (_precacheStrictOpConfirmed || _exportJpgStrictOpConfirmed) return true;
@@ -22833,7 +22879,7 @@ async function ensureNavProxyConsent(){
   return _navProxyConsentPending;
 }
 
-const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "osm", "topo", "esriTopo", "esriStreet", "esriHillshade", "esriRelief", "sat", "esriOceanBase", "nav"]);
+const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "osm", "topo", "esriTopo", "esriStreet", "esriHillshade", "esriRelief", "sat", "eoxS2Cloudless", "esriOceanBase", "nav"]);
 
 /** Catalog-driven: layer is online-only (no offline download / browse-cache persist). */
 function isLayerOfflineUnavailable(layerId){
@@ -22859,7 +22905,9 @@ function resolveCatalogLayerId(id, allowedIds){
   return allowedIds.find(lid => String(lid).toLowerCase() === low) || null;
 }
 function sanitizeMapLayer(id){
-  return resolveCatalogLayerId(id, MAP_BASE_LAYER_IDS) || "osm";
+  const resolved = resolveCatalogLayerId(id, MAP_BASE_LAYER_IDS) || "osm";
+  if (resolved === "eoxS2Cloudless" && !eoxLayerAllowedOnCurrentHost()) return "osm";
+  return resolved;
 }
 /** WU-0008 8d-B1-B3: fit-area zoom clamp to displayed basemap maxZoom (fallback 18 if missing). */
 function clampBasemapFitZoom(z){
@@ -31109,6 +31157,7 @@ function renderTileMap(lat, lon, zoom){
     const lblEsriHillshade = esc(t("map.layerEsriHillshade"));
     const lblEsriRelief = esc(t("map.layerEsriRelief"));
     const lblSat = esc(t("map.layerSat"));
+    const lblEoxS2 = esc(t("map.layerEoxS2Cloudless"));
     const lblEsriOceanBase = esc(t("map.layerEsriOceanBase"));
     const lblNav = esc(t("map.layerNav"));
     const tipOsm = esc(t("tip.layerMap"));
@@ -31121,6 +31170,7 @@ function renderTileMap(lat, lon, zoom){
     const tipEsriHillshade = esc(t("tip.layerEsriHillshade"));
     const tipEsriRelief = esc(t("tip.layerEsriRelief"));
     const tipSat = esc(t("tip.layerSat"));
+    const tipEoxS2 = esc(t("tip.layerEoxS2Cloudless"));
     const tipEsriOceanBase = esc(t("tip.layerEsriOceanBase"));
     const tipNav = esc(t("tip.layerNav"));
     const lblSeam = esc(t("map.overlaySeamarks"));
@@ -31142,6 +31192,7 @@ function renderTileMap(lat, lon, zoom){
     const esriHillshadeAct = state.mapLayer === "esriHillshade" ? " is-active" : "";
     const esriReliefAct = state.mapLayer === "esriRelief" ? " is-active" : "";
     const satAct = state.mapLayer === "sat" ? " is-active" : "";
+    const eoxS2Act = state.mapLayer === "eoxS2Cloudless" ? " is-active" : "";
     const esriOceanBaseAct = state.mapLayer === "esriOceanBase" ? " is-active" : "";
     const navAct = state.mapLayer === "nav" ? " is-active" : "";
     const lblSecTopo = esc(t("map.layersSectionTopographic"));
@@ -31170,7 +31221,10 @@ function renderTileMap(lat, lon, zoom){
       + tlayerBasemapBtn("esriHillshade", esriHillshadeAct, tipEsriHillshade, lblEsriHillshade, state.mapLayer === "esriHillshade")
       + tlayerBasemapBtn("esriRelief", esriReliefAct, tipEsriRelief, lblEsriRelief, state.mapLayer === "esriRelief")
       + (_gisHub ? tlayerOverlayBtn("mgrs", mgrsAct, tipMgrs, lblMgrs, !!state.showGrid) : "");
-    const satItems = tlayerBasemapBtn("sat", satAct, tipSat, lblSat, state.mapLayer === "sat");
+    const satItems = tlayerBasemapBtn("sat", satAct, tipSat, lblSat, state.mapLayer === "sat")
+      + (eoxLayerAllowedOnCurrentHost()
+        ? tlayerBasemapBtn("eoxS2Cloudless", eoxS2Act, tipEoxS2, lblEoxS2, state.mapLayer === "eoxS2Cloudless")
+        : "");
     const nautItems = tlayerBasemapBtn("esriOceanBase", esriOceanBaseAct, tipEsriOceanBase, lblEsriOceanBase, state.mapLayer === "esriOceanBase")
       + tlayerBasemapBtn("nav", navAct, tipNav, lblNav, state.mapLayer === "nav")
       + tlayerOverlayBtn("sonarchart", sonarAct, tipSonar, lblSonar, !!state.showSonarChart)

@@ -2770,3 +2770,34 @@ Chiusura sessione **`finito`** — intervento **solo docs** dopo completamento r
 
 - **WU-0008 8d-B** — layer EOX runtime quando gate licenza/hosting risolti (prompt parcheggiato).
 - **Backlog metodo** — adozione pattern control-plane quando team decide risoluzione tensione `aggio`.
+
+## Checkpoint 2026-06-15 — WU-0008 8d-B EOX Sentinel-2 cloudless runtime (Finito)
+
+### Contesto
+
+Chiusura sessione **`finito`** — implementazione runtime layer EOX dopo pre-check PASS e review read-only del gating allowlist.
+
+### Cosa è stato fatto (monolite)
+
+1. **Layer `eoxS2Cloudless`** in `TILE_LAYERS`: endpoint EOX 2024, `cacheable:false`, `maxZoom:18`, attribution CC BY-NC-SA.
+2. **Gate host fail-closed allowlist:** `isPrivateEoxHostAllowed()` — `localhost` / `*.localhost`, `127.0.0.0/8` (primo ottetto 127), `100.64.0.0/10` (100 + secondo ottetto 64–127), `::1`; hostname vuoto/`file://`/pubblico → DENY.
+3. **Gate fetch autoritativo:** `tileFetchAllowed` nega EOX se host non allowlisted (prima di forceOffline/OPSEC).
+4. **UI:** voce Layers → Satellitare solo se `eoxLayerAllowedOnCurrentHost()`; `sanitizeMapLayer` ripulisce persistenza EOX su host non ammesso.
+5. **i18n** IT/EN/FR: `map.layerEoxS2Cloudless`, `tip.layerEoxS2Cloudless`.
+
+### Docs
+
+- `docs/OPERATING_MEMORY.md` §7 — WU-0008 8d-B PASS runtime.
+- `docs/work-units/WU-0005-0009-roadmap.md` §8d-B — tabella implementazione; item 30 sequenza barrato.
+
+### QA
+
+- Endpoint EOX: HTTP 200 + JPEG + CORS (curl).
+- `node --check` JS inline: OK.
+- Review read-only allowlist (confini/range): PASS.
+- Browser QA operatore: **non eseguita** in sessione — checklist manuale consigliata (localhost vs host pubblico, forced-offline, OPSEC strict, IndexedDB).
+
+### Prossimo passo consigliato
+
+- Browser QA operatore su localhost/tailnet IP.
+- Backlog metodo / prossimo candidato WU da roadmap (Tier B proxy WU-0009).

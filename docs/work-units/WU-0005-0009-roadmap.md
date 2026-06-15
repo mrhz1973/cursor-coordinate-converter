@@ -783,7 +783,28 @@ Esito:
 
 ##### 8d-B — layer EOX (candidato)
 
-**Stato:** candidato runtime — **pre-check prerequisiti PASS** (read-only, HEAD `9f98c5d`); EOX può procedere **senza rifare** pre-check. Prompt runtime EOX **parcheggiato**; gate bloccanti licenza/hosting restano nel prompt stesso.
+**Stato:** **PASS runtime** (pending review) — layer `eoxS2Cloudless` implementato nel monolite; pre-check prerequisiti PASS (HEAD `9f98c5d`).
+
+###### Implementazione runtime (WU-0008 8d-B)
+
+| Aspetto | Valore |
+|---|---|
+| Layer id | `eoxS2Cloudless` |
+| Endpoint | `https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless-2024_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg` |
+| Schema tile | `urlBase` + `tileScheme: "zyx"` + `urlSuffix: ".jpg"` (motore 8c-A esistente) |
+| `external` | `internet` |
+| `cacheable` | `false` (online-only; escluso da `OFFLINE_LAYER_IDS`, precache, export JPG, browse-cache IDB) |
+| `maxZoom` | `18` (conservativo; fit-area via `clampBasemapFitZoom`) |
+| Licenza | CC BY-NC-SA 4.0 / uso non-commerciale |
+| Attribution | Sentinel-2 cloudless — s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2024) |
+| Gate host | **Fail-closed allowlist** — `isPrivateEoxHostAllowed()` / `eoxLayerAllowedOnCurrentHost()`: `localhost`, `127.0.0.0/8`, `100.64.0.0/10`, `::1`; hostname vuoto/`file://` → DENY; host pubblico/sconosciuto → DENY |
+| Gate fetch autoritativo | `tileFetchAllowed(layerId)` — nega `eoxS2Cloudless` se host non allowlisted (prima di forceOffline/OPSEC) |
+| UI | Sezione Satellitare Layers — voce EOX solo se `eoxLayerAllowedOnCurrentHost()` (difesa in profondità) |
+| `sanitizeMapLayer` | fallback a `osm` se EOX persistito su host non ammesso |
+| Endpoint live | HTTP 200 + `image/jpeg` + `access-control-allow-origin: *` (curl 2026-06-15) |
+| Test | `node --check` JS inline OK; browser QA operatore pending review |
+
+**Deploy pubblico:** anche se il monolite viene copiato su Firebase/VPS pubblico via `scripts/deploy-hosting.ps1`, EOX **non fetcha** e **non compare** in UI su host non allowlisted (gate runtime, non blocklist deploy).
 
 ###### Pre-check read-only prerequisiti EOX — PASS a HEAD `9f98c5d`
 
@@ -1227,7 +1248,7 @@ Test:
 27. ~~**WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).~~
 28. ~~**WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).~~
 29. ~~**WU-0008 8d-B pre-check** — prerequisiti EOX read-only PASS (HEAD `9f98c5d`).~~
-30. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; prompt runtime parcheggiato).
+30. ~~**WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only; pending review).~~
 
 ## Fase 4 — Proxy Google/Bing / Tier B
 
@@ -1250,7 +1271,7 @@ Test:
 | WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
 | WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A/B1/B2 |
-| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** prerequisiti + pre-check; layer **8d-B** candidato (prompt parcheggiato) |
+| WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** runtime 8d-B (pending review) |
 | Tier B proxy (Thunderforest/Mapbox/MapTiler/Google/Bing) | Planet-Clone/proxy separato | non monolite; chiavi e ToS lato proxy |
 | Tier 3 3D terreno | decisione scope companion vs monolite | candidato lungo periodo, non WU pronta |
 | WU-0009A Proxy | decisione privata Path B | lavoro extra-monolite, sensibile |
