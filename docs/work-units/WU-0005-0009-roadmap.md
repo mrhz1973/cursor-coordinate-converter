@@ -855,7 +855,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`PENDING_SELF_REFERENCE`).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
@@ -912,6 +912,13 @@ Note:
 - **Mapping GIS:** commit principale + autosync orchestratore = modello concettuale task + report; nessun terzo commit; no commit finalize-hash; `PENDING_SELF_REFERENCE` + backfill HISTORY; `pass_tecnico_remoto`/`result_cursor` ↔ Fase C; `pass_operatore`/`result_runtime` ↔ Fase D.
 - **Non sostituisce:** OM §7, roadmap, `latest`/`inbox`; **non** modifica `finito` in Fase F1.
 - **File:** `.cursor/rules/30-output-workflow.mdc` (sezione F1); `docs/OPERATING_MEMORY.md` §4; `docs/runtime/LAST_CURSOR_REPORT.template.md`; roadmap (questa sottosezione).
+
+#### Fase F2 — collaudo LAST_CURSOR_REPORT su commit docs innocuo
+
+- **Esito:** PASS (collaudo docs innocuo; report vivo in commit autosync).
+- **Scope:** nessuna patch runtime; commit principale = task docs innocuo; commit autosync = report + primo `docs/runtime/LAST_CURSOR_REPORT.md` vivo.
+- **Mapping:** `real_task_commit` = SHA commit principale F2 (non autosync); nessun terzo commit; no finalize-hash; `pass_tecnico_remoto`/`result_cursor` ↔ Fase C; `pass_operatore`/`result_runtime` ↔ Fase D (non inferibile; non-attestato in collaudo docs-only).
+- **Non sostituisce:** OM §7, roadmap, `latest`/`inbox` come fonti vive primarie.
 
 **File canonici / riferimenti da adottare nel repo GIS:**
 
