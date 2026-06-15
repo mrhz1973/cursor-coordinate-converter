@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-B2 stats per-layer:** monolite incluso nel commit **`a0da9d1`** (`getLayerTileCacheStats`, `#pcLayerCacheStat`, scan IDB on-demand). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1300_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B** EOX oppure **8d-B1-B3** zoom-guard.
+
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-B1 offline UX:** monolite incluso nel commit **`29ebf3a`** (`isLayerOfflineUnavailable`, badge «no offline», `OFFLINE_LAYER_IDS` catalog-driven, pannello neutro, contatore cache nascosto su online-only, layer attivo verde). OM §7 e roadmap aggiornati. Push step 2 **OK**. Inbox **`2026-06-15_1230_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B1-B2** stats per-layer oppure **8d-B** EOX.
 
 2026-06-15 — **Chiusura sessione `finito` — WU-0008 8d-B1-A docs:** commit **`4f6ec4f`** — roadmap debiti offline UX (`OFFLINE_LAYER_IDS` vs `cacheable`, fit-area z18) + OM §7 (8d-B1-A PASS, prossimo **8d-B1-B1**). **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-15_1157_riepilogo_finito-sessione.md`**. **Prossimo candidato:** WU-0008 **8d-B1-B1** badge + pannello neutro.
