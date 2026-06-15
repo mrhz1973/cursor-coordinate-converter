@@ -734,7 +734,7 @@ QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
 
 ##### 8d-B1 — offline UX / cache per-layer / maxZoom
 
-**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS**; **8d-B1-B2 PASS** runtime; **8d-B** / **8d-B1-B3** candidati.
+**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS**; **8d-B1-B2 PASS**; **8d-B1-B3 PASS** runtime; **8d-B** candidato.
 
 ###### 8d-B1-A — diagnosi read-only
 
@@ -756,7 +756,17 @@ Esito:
 - Guard `isLayerOfflineUnavailable`; nessun hook pan/zoom/timer.
 - `node --check` OK.
 
-###### 8d-B1-B3 — zoom-guard fit-area (candidato)
+###### 8d-B1-B3 — zoom-guard fit-area
+
+**Stato:** PASS runtime (monolite, `finito` 2026-06-15).
+
+Esito:
+
+- `clampBasemapFitZoom(z)` — layerId via `sanitizeMapLayer(state.mapLayer)`; maxZoom da `TILE_LAYERS[layerId]`.
+- Applicato a `flyMapToTrackPoints` (1 pt + bbox multi) e `flyMiniMapToOfflineNamedAreaById`.
+- Fallback 18 solo se `maxZoom` non numerico (compat); overlay non toccati.
+- GPS recenter e restore boot `mapZoom` fuori scope (compat legacy).
+- `node --check` OK.
 
 ###### 8d-B1 follow-up / EOX prerequisites (debiti)
 
@@ -765,12 +775,11 @@ Esito:
 - ~~`OFFLINE_LAYER_IDS` oggi include layer derivati manualmente~~ → ora derivato da `!isLayerOfflineUnavailable(id)` su `MAP_BASE_LAYER_IDS` + `sonarchart`.
 - EOX può procedere; lista offline non più manuale; stats per-layer **PASS** (B1-B2).
 
-**Debito 2 — fit-area `Math.min(18,z)` hardcoded (priorità media, blocco zoom-guard separato)**
+**Debito 2 — fit-area `Math.min(18,z)` hardcoded — ~~blocco zoom-guard~~ RISOLTO in 8d-B1-B3**
 
-- Helper fit-area ~26392, 26420, 26888 ignorano `layer.maxZoom`.
-- Bug latente: es. `esriRelief` maxZoom 13 → fit-area può richiedere z18 → blank/404 o richieste inutili.
-- Non peggiora specificamente con EOX; risolvere in futuro blocco zoom-guard dedicato.
-- Fix: usare maxZoom del basemap/layer corrente; per overlay non bloccare zoom globale — no-render o hint se fuori range.
+- ~~Helper fit-area ignorano `layer.maxZoom`~~ → `clampBasemapFitZoom` su fit traccia e area offline; basemap da `state.mapLayer`.
+- es. `esriRelief` maxZoom 13: fit-area non supera z13.
+- Overlay non clampano zoom globale basemap (invariato).
 
 ##### 8d-B — layer EOX (candidato)
 
@@ -1167,7 +1176,7 @@ Test:
 25. ~~**WU-0008 8d-B1-A** — diagnosi offline UX / cache per-layer / maxZoom.~~
 26. ~~**WU-0008 8d-B1-B1** — badge «No offline» + pannello neutro + `OFFLINE_LAYER_IDS`.~~
 27. ~~**WU-0008 8d-B1-B2** — stats cache per-layer (IDB O(n) on-demand).~~
-28. **WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).
+28. ~~**WU-0008 8d-B1-B3** — zoom-guard: fit-area maxZoom layer (debito `Math.min(18,z)`).~~
 29. **WU-0008 8d-B** — layer EOX Sentinel-2 cloudless (WMTS/y-order; online-only).
 
 ## Fase 4 — Proxy Google/Bing / Tier B
