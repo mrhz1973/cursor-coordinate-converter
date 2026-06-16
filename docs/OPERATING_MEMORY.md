@@ -202,8 +202,8 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 - **Backlog metodo / adozione metodo (post-catena 8d):** catena **PASS** fino a **Fase F3** — Blocco 0/B + Fasi C–E + **F1** (spec + template), **F2** (collaudo report vivo), **F3** (obbligo `LAST_CURSOR_REPORT` GIS-only). Non WU tecnica runtime; dettaglio hash e cronologia: roadmap §Backlog metodo. `LAST_CURSOR_REPORT` obbligatorio post-push per task reale GIS-only; **non** per read-only, plan, review diff senza commit o micro-fix docs-only dove esplicitamente escluso — evidenza rolling post-push, **non** fonte viva primaria; **OM §7 e roadmap restano primari** (cfr. §4).
 - **Governance online/offline:** WU-0005 B0/B1 documentata — regola: GIS online di default; `state.forceOffline` è interruttore volontario dell’operatore; `state.opsecStrict` resta gate superiore per chiamate di rete sensibili. Mappati i gate esistenti nel monolite: `isEffectivelyOnline()`, `tileFetchAllowed(layerId)`, `internetApiFetchAllowed()`, consenso proxy/Navionics-like (`ensureNavProxyConsent()`, `_navProxyConsentGranted`), geocoding (`geocodingAllowed()`, Nominatim/`reverseGeocode`), tile/layer fetch (`hydrateMapTiles`, `fetchAndStoreTile`), cache/offline maps, seamarks/SonarChart, tracking rete (`recordNetEvent`, `_netEvents`). Eventuali ambiguità UI/copy vanno trattate in micro-patch B2 separata.
 - **Mappe offline UX (backlog):** micro-fix «Scarica selezionate» su aree COMPLETATA + copy IndexedDB vs file PC (`345d712`). Revisione UX futura: etichette cache vs export JPG, azione export da riga area, feedback fine job — candidato non-WU.
-- **WU-0009B Google Satellite (`gsat`):** PASS runtime parziale (`013b8cb`) — layer `gsat` via proxy tailnet `/gsat/{z}/{x}/{y}.jpg`, consenso OPSEC split Google vs Navionics, picker Satellitare, i18n IT/EN/FR, offline-eligible; `node --check` OK. Browser QA operatore: da confermare. Bing e resto WU-0009B ancora candidati.
-- **Infra VPS runtime (docs):** `docs/INFRA_VPS.md` (`e390fc7`) — fonte unica deploy/host tailnet condiviso (proxy + GIS app + n8n); **non** read-set primario; consulto operativo deploy/smoke. Planet-Clone stub rimandato a repo separato.
+- **WU-0009B Google Satellite (`gsat`):** **PASS end-to-end** — backend Planet-Clone `a7359e7` (`/gsat/`), frontend GIS `013b8cb`, autosync `ef953fc`, deploy VPS verificato (`/status` OK, tile `200 image/jpeg`); consenso OPSEC split, offline-eligible lato browser. Runtime: [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](runtime/VPS_DEPLOY_RUNTIME.md). Bing e resto WU-0009B ancora candidati.
+- **Infra VPS runtime (docs):** `docs/INFRA_VPS.md` (`e390fc7`) — inventario host/deploy; complementare a `docs/runtime/VPS_DEPLOY_RUNTIME.md`. Planet-Clone stub rimandato a repo separato.
 
 **Escluso da questa OM:** porte raw tailnet, open proxy, B2/Tailscale Serve, reboot-test systemd, ACL/firewall, n8n, control-plane, Planet-Clone operativo.
 
@@ -215,6 +215,7 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 - **NON** usare `Tools\CesiumTest` per il GIS Tool.
 - `Tools\CesiumTest` è il clone di Planet-Clone / proxy Navionics: progetto diverso.
 - Se un task coinvolge Planet-Clone o proxy Navionics, dichiararlo esplicitamente come lavoro **separato** dal GIS monolite.
+- **Runtime/deploy VPS GOI** (post WU-0009 `gsat`): supporto operativo in [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](runtime/VPS_DEPLOY_RUNTIME.md) — Planet-Clone runtime separato dal GIS; proxy `goi-nav-proxy.service` su tailnet `100.114.7.53:5000`; dettagli deploy/smoke/cache/boot in quel documento. Inventario host esteso: [`docs/INFRA_VPS.md`](INFRA_VPS.md). §7 resta stato vivo; il doc runtime non lo sostituisce.
 
 ---
 

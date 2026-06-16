@@ -3016,3 +3016,23 @@ Chiusura **`finito`** — documentazione runtime/deploy del VPS GOI centralizzat
 
 - Commit rimando stub in Planet-Clone (`docs/INFRA_VPS.md` variante B) se non già pushato; browser QA gsat; allineare entrambi i repo al deploy VPS.
 
+## Checkpoint 2026-06-16 — docs runtime/deploy VPS post WU-0009 gsat (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — documentazione OPSEC-aware runtime/deploy VPS dopo chiusura end-to-end WU-0009 Google Satellite (`gsat`). Solo docs; nessuna modifica runtime.
+
+### Cosa è stato fatto
+
+1. **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** (+200) — architettura GIS/Planet-Clone/VPS, servizi (`goi-nav-proxy`, GIS `:8000`, n8n), route `/gsat`, deploy/smoke verificati, cache pass-through, boot/reboot, OPSEC (placeholder SSH/IP), punti aperti.
+2. **`docs/OPERATING_MEMORY.md`** — §7 bullet `gsat` PASS end-to-end; §7b puntatore al doc runtime.
+3. **`docs/work-units/WU-0005-0009-roadmap.md`** — blockquote deploy WU-0009; B3 `gsat` end-to-end.
+
+### Non toccato
+
+- Monolite, README, `proxy.py`, rules, `LAST_CURSOR_REPORT`, orchestrator (in commit principale oltre checkpoint)
+
+### Prossimo passo
+
+- Browser QA operatore `gsat` sotto OPSEC strict; censire avvio GIS `:8000`; Bing WU-0009B B4.
+

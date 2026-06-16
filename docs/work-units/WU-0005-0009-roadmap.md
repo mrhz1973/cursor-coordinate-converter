@@ -1136,6 +1136,8 @@ Test:
 
 # WU-0009 — Google/Bing via proxy Planet-Clone, lavoro a due teste
 
+> **Deploy WU-0009 Google Satellite (`gsat`) — PASS end-to-end (2026-06-16):** backend Planet-Clone `a7359e7` (`/gsat/`, `/status`); frontend GIS `013b8cb` / autosync `ef953fc`; VPS tailnet smoke OK (`static_fallback_configured:true`, tile `200 image/jpeg`); documentazione runtime [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Bing e varianti Google restano backlog WU-0009B.
+
 ## Scopo
 
 Integrare Google/Bing attraverso proxy Planet-Clone, con Path B scrape keyless deciso da privato.
@@ -1252,7 +1254,7 @@ Aggiungere proprietà layer, ad esempio:
 
 ### B3 — Google basemap via proxy
 
-**Stato parziale:** layer **`gsat`** (Google Satellite) PASS runtime GIS (`013b8cb`) — proxy tailnet `/gsat/`, consenso OPSEC split, picker Satellitare, offline-eligible. Restano eventuali varianti Google, Bing (B4), polish UI (B5) e QA.
+**Stato:** layer **`gsat`** (Google Satellite) **PASS end-to-end** — backend `a7359e7`, frontend `013b8cb`, deploy VPS verificato, runtime doc [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Restano eventuali **altre varianti Google**, Bing (B4), polish UI (B5) e browser QA operatore OPSEC.
 
 Un provider alla volta.
 
