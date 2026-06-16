@@ -2923,3 +2923,21 @@ Chiusura **`finito`** — micro-fix documentale post-Fase F3: correzione incongr
 ### Prossimo passo
 
 - **WU-0009A B0-B4** (proxy Planet-Clone) o **Mappe offline UX**; allineamento OM §7 backlog metodo.
+
+## Checkpoint 2026-06-16 — OM §7 Backlog metodo F1–F3 (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — micro-patch docs-only separata: allineamento stato vivo OM §7 al Backlog metodo già PASS in roadmap (F1–F3).
+
+### Cosa è stato fatto
+
+1. **`docs/OPERATING_MEMORY.md` §7** — bullet «Backlog metodo: candidato» → catena **PASS** fino a **Fase F3** (Blocco 0/B, Fasi C–E, F1/F2/F3); regole sintetiche `LAST_CURSOR_REPORT` (obbligo task reale GIS-only; esclusioni read-only/plan/review diff; evidenza rolling, non fonte primaria; cfr. §4).
+
+### Non toccato
+
+- `coordinate_converter Claude.html`, `README.md`, `docs/work-units/WU-0005-0009-roadmap.md`, `LAST_CURSOR_REPORT`, orchestrator (in commit finito), `.cursor/rules/**`.
+
+### Prossimo passo
+
+- **WU-0009A B0-B4** o **Mappe offline UX**.
