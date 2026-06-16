@@ -1252,6 +1252,8 @@ Aggiungere proprietà layer, ad esempio:
 
 ### B3 — Google basemap via proxy
 
+**Stato parziale:** layer **`gsat`** (Google Satellite) PASS runtime GIS (`013b8cb`) — proxy tailnet `/gsat/`, consenso OPSEC split, picker Satellitare, offline-eligible. Restano eventuali varianti Google, Bing (B4), polish UI (B5) e QA.
+
 Un provider alla volta.
 
 Decisioni da bloccare:
