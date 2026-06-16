@@ -9,9 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-05-20 — **Chiusura sessione `finito` — WU-0009A layer `gsat` (Google Satellite):** commit **`013b8cb`** — monolite: layer **`gsat`** via proxy tailnet (`/gsat/{z}/{x}/{y}.jpg`), consenso OPSEC **split** Google vs Navionics, picker Satellitare, i18n IT/EN/FR, offline-eligible; checkpoint/session aggiornati. **`coordinate_converter Claude.html` incluso.** Push step 2 **OK**. Browser QA **non eseguiti**. Inbox **`2026-05-20_1200_riepilogo_finito-sessione.md`**. **Prossimo:** browser QA gsat; proseguire WU-0009A.
+2026-06-16 — **Chiusura sessione `finito` — docs `INFRA_VPS.md` (fonte unica VPS):** commit docs **`e390fc7`** (+137 righe INFRA_VPS); commit finito **`18d22ec`** (checkpoint/session). Host condiviso, deploy Proxy+GIS, rischi drift/Firebase TODO. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_2125_riepilogo_finito-sessione.md`**. **Prossimo:** rimando Planet-Clone push; browser QA gsat.
 
-2026-06-16 — **Chiusura sessione `finito` — OM §7 Backlog metodo F1–F3:** commit **`d5ff2fe`** — `OPERATING_MEMORY` §7 allineato (catena PASS F1–F3, LAST_CURSOR_REPORT sintesi). **Monolite non incluso.** Push **OK**. Inbox **`2026-06-16_0219_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009A B0-B4 o Mappe offline UX.
+2026-05-20 — **Chiusura sessione `finito` — WU-0009A layer `gsat` (Google Satellite):** commit **`d5ff2fe`** — `OPERATING_MEMORY` §7 allineato (catena PASS F1–F3, LAST_CURSOR_REPORT sintesi). **Monolite non incluso.** Push **OK**. Inbox **`2026-06-16_0219_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009A B0-B4 o Mappe offline UX.
 
 2026-06-16 — **Chiusura sessione `finito` — roadmap freschezza WU-0008 / Prima WU consigliata:** commit **`ae407ff`** — solo docs: `WU-0005-0009-roadmap` (WU-0008 PASS end-to-end, prossimo WU-0009A), `checkpoint.md`, session append. **Monolite non incluso.** OM §7 non toccato (bullet backlog metodo da sanare). Push **OK**. Inbox **`2026-06-16_0217_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009A B0-B4 o Mappe offline UX.
 
