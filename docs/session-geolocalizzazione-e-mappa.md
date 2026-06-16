@@ -2995,3 +2995,24 @@ Chiusura **`finito`** — implementazione layer **`gsat`** nel monolite GIS (Pla
 
 - Browser QA operatore su gsat; proseguire WU-0009A o smoke tailnet `/gsat/`.
 
+## Checkpoint 2026-06-16 — docs INFRA_VPS.md fonte unica VPS (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — documentazione runtime/deploy del VPS GOI centralizzata nel repo GIS per evitare drift con Planet-Clone. Dati rilevati live 2026-06-16.
+
+### Cosa è stato fatto
+
+1. **`docs/INFRA_VPS.md`** (+137 righe) — commit **`e390fc7`** già su `main`:
+   - Host tailnet `100.114.7.53`, servizi `goi-nav-proxy` (@ `a7359e7`), `goi-gis-app` (@ `ef953fc`), n8n Docker
+   - Carico a riposo, procedure deploy (Proxy / GIS / apt+reboot), note rischi (host condiviso, drift 33 commit, boot-egress, `/gsat` non gated lato proxy, TODO Firebase)
+   - Nessuna credenziale nel doc
+
+### Non toccato
+
+- Monolite, `proxy.py`, README, OM, roadmap, rules
+
+### Prossimo passo
+
+- Commit rimando stub in Planet-Clone (`docs/INFRA_VPS.md` variante B) se non già pushato; browser QA gsat; allineare entrambi i repo al deploy VPS.
+
