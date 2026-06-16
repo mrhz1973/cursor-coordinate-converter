@@ -8,7 +8,9 @@
 **Data snapshot:** 2026-06-16
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — Browser QA operatore `gsat` OPSEC strict (docs):** attestazione PASS operatore TEST 1–8 (2026-06-16, GIS `100.114.7.53:8000`, proxy `:5000`); **`docs/OPERATING_MEMORY.md`** §7; **`docs/work-units/WU-0005-0009-roadmap.md`** WU-0009B B3 + evidenza QA; **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** §9.4/§10. Consenso Google ≠ Navionics; Annulla fail-closed. **Monolite / README / proxy.py non modificati.** Riconciliazione orchestratore post-push.
+**Ultimo cambio:** 2026-06-17 — **Chiusura sessione (`finito`) — OM §7 chiusura ammissibilità provider WU-0009:** solo **`docs/OPERATING_MEMORY.md`** §7 — bullet «provider basemap esterni (Navionics, Google, Bing)»: decisione operatore **PROCEDERE**; licenze/ToS fuori scope lavoro tecnico; rischi tecnici restano segnalabili. **Monolite / README / roadmap / proxy non modificati.** Riconciliazione orchestratore post-push.
+
+**Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — Browser QA operatore `gsat` OPSEC strict (docs):** attestazione PASS operatore TEST 1–8 (2026-06-16, GIS `100.114.7.53:8000`, proxy `:5000`); **`docs/OPERATING_MEMORY.md`** §7; **`docs/work-units/WU-0005-0009-roadmap.md`** WU-0009B B3 + evidenza QA; **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** §9.4/§10. Consenso Google ≠ Navionics; Annulla fail-closed. **Monolite / README / proxy.py non modificati.** Riconciliazione orchestratore post-push.
 
 **Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — docs censimento GIS `:8000` / `goi-gis-app.service`:** censimento read-only VPS (systemd, unit `/etc/systemd/system/goi-gis-app.service`, bind dinamico Tailscale, smoke `200 text/html`); **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** §3.2/§7/§9 — punto aperto avvio `:8000` **chiuso**; **`docs/INFRA_VPS.md`** §2 allineamento minimo. **Monolite / README / proxy.py / OM / roadmap non modificati.** Riconciliazione orchestratore post-push.
 

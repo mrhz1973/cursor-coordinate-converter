@@ -3077,3 +3077,21 @@ Chiusura **`finito`** — registrazione documentale del Browser QA operatore PAS
 
 - Bing WU-0009B B4; reboot-test VPS formale; polish UI B5.
 
+## Checkpoint 2026-06-17 — OM chiusura ammissibilità provider WU-0009 (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — micro-patch docs-only: nota operativa approvata su ammissibilità provider basemap esterni (Navionics, Google, Bing) in **`docs/OPERATING_MEMORY.md`** §7.
+
+### Cosa è stato fatto
+
+1. **`docs/OPERATING_MEMORY.md`** §7 — nuovo bullet WU-0009: valutazione ammissibilità chiusa dall'operatore (**PROCEDERE**); licenze/ToS fuori scope gate tecnici; lavoro Bing B4+ sul piano tecnico; rischi tecnici (versione, egress, OPSEC, cache, cross-repo) restano segnalabili.
+
+### Non toccato
+
+- Monolite, README, `proxy.py`, roadmap, rules, orchestrator (commit principale), runtime docs, `LAST_CURSOR_REPORT`
+
+### Prossimo passo
+
+- WU-0009B B4 Bing (Planet-Clone + monolite); reboot-test VPS formale.
+
