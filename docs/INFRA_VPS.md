@@ -44,11 +44,14 @@ Dati rilevati **live** il **2026-06-16**. Host **condiviso** con altri servizi (
 
 | Voce | Dettaglio |
 |------|-----------|
+| Unit | `goi-gis-app.service` |
+| Unit file | `/etc/systemd/system/goi-gis-app.service` |
 | Ruolo | Serve il file canonico `coordinate_converter Claude.html` |
 | Repo / WorkingDir | `/root/local-files/handoff-runtime/cursor-coordinate-converter` |
-| Meccanismo | `http.server`, bind `100.114.7.53:8000` (tailnet) |
+| Meccanismo | `python3 -m http.server 8000 --bind "$TS_IP"` con `TS_IP` da `tailscale ip -4`; `ExecStartPre` attende Tailscale IPv4 fino a 45 s |
+| Bind osservato | `100.114.7.53:8000` (tailnet) |
 | RAM (indicativa) | ~20 MiB |
-| systemd | `enabled` |
+| systemd | `enabled`, `active (running)` @ censimento 2026-06-16; `WantedBy=multi-user.target`; `Restart=on-failure`, `RestartSec=5` |
 | Repo @ deploy | `ef953fc` (allineato 2026-06-16; **prima** era `c848ce8`, **33 commit indietro**, senza layer `gsat`) |
 | Egress | **Nessuno** — solo file statici |
 

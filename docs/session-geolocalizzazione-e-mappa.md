@@ -3036,3 +3036,23 @@ Chiusura **`finito`** — documentazione OPSEC-aware runtime/deploy VPS dopo chi
 
 - Browser QA operatore `gsat` sotto OPSEC strict; censire avvio GIS `:8000`; Bing WU-0009B B4.
 
+## Checkpoint 2026-06-16 — docs censimento GIS :8000 goi-gis-app.service (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — documentazione post-censimento read-only del GIS static server `:8000` sul VPS GOI. Solo docs; nessuna modifica runtime, servizi o deploy.
+
+### Cosa è stato fatto
+
+1. **Censimento read-only VPS (turno precedente):** `:8000` gestito da **`goi-gis-app.service`** — `enabled`, `active (running)`, unit file `/etc/systemd/system/goi-gis-app.service`, `ExecStartPre` attesa Tailscale 45s, bind dinamico `tailscale ip -4`, smoke curl `200 text/html`; nessun crontab/nohup/Docker alternativo.
+2. **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** — §3.2 dettaglio unit e processo; §7 boot/restart GIS static; §9.1 punto aperto **chiuso** (resta reboot-test formale host condiviso); §5 deploy senza caveat «da censire».
+3. **`docs/INFRA_VPS.md`** — §2 allineamento minimo (unit file, bind dinamico, `active`).
+
+### Non toccato
+
+- Monolite, README, `proxy.py`, OM, roadmap, rules, orchestrator (commit principale), `LAST_CURSOR_REPORT`
+
+### Prossimo passo
+
+- Reboot-test formale coordinato (host condiviso n8n); browser QA operatore `gsat` OPSEC strict; Bing WU-0009B B4.
+

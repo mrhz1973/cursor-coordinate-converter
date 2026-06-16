@@ -46,15 +46,35 @@ Navionics e SonarChart restano su route `/tiles` e `/sonar` con consenso Navioni
 
 ### 3.2 Server statico GIS (`:8000`)
 
+**Censimento read-only 2026-06-16:** avvio **systemd** canonico via `goi-gis-app.service` (punto aperto §9.1 **chiuso**).
+
 | Voce | Valore |
 |------|--------|
+| Unit canonica | `goi-gis-app.service` |
+| Unit file | `/etc/systemd/system/goi-gis-app.service` |
+| Stato @ censimento | `enabled`, `active (running)` |
+| Hostname VPS | `ubuntu` |
 | URL osservato | `http://100.114.7.53:8000/coordinate_converter%20Claude.html` |
-| Bind | `100.114.7.53:8000` (**tailnet-only**) |
-| Repo runtime | `/root/local-files/handoff-runtime/cursor-coordinate-converter` |
+| Bind | `100.114.7.53:8000` (**tailnet-only**; IP da `tailscale ip -4`) |
+| Processo @ censimento | `python3 -m http.server 8000 --bind 100.114.7.53` (PID `2066`, utente `root`, PPID `1` → systemd) |
+| WorkingDirectory | `/root/local-files/handoff-runtime/cursor-coordinate-converter` |
 | Commit GIS @ deploy verificato | `ef953fc` (allineato 2026-06-16; include layer `gsat`) |
+| Smoke curl | `200 text/html` |
 | Egress | **Nessuno** — solo file statici |
 
-**Nota:** unità systemd `goi-gis-app.service` citata in [`docs/INFRA_VPS.md`](../INFRA_VPS.md); **metodo di avvio completo da censire** (vedi §9 punti aperti).
+**Comportamento unit (`/etc/systemd/system/goi-gis-app.service`):**
+
+| Direttiva | Valore |
+|-----------|--------|
+| `After` | `tailscaled.service`, `network-online.target` |
+| `WorkingDirectory` | `/root/local-files/handoff-runtime/cursor-coordinate-converter` |
+| `ExecStartPre` | Attesa fino a **45 s** per Tailscale IPv4 |
+| `ExecStart` | `TS_IP=$(tailscale ip -4 \| head -n1)` → `exec python3 -m http.server 8000 --bind "$TS_IP"` |
+| `Restart` | `on-failure` |
+| `RestartSec` | `5` |
+| `WantedBy` | `multi-user.target` |
+
+**Evidenze negative @ censimento:** nessuna unit alternativa rilevante; nessun crontab; nessun nohup/tmux/screen; nessun Docker su `:8000`.
 
 ### 3.3 n8n (Docker, non GIS)
 
@@ -129,7 +149,7 @@ Deploy GIS (sintesi — dettaglio in [`docs/INFRA_VPS.md`](../INFRA_VPS.md)):
 ```bash
 cd /root/local-files/handoff-runtime/cursor-coordinate-converter
 git status -s && git pull origin main && git rev-parse HEAD
-systemctl restart goi-gis-app    # se unit censita/attiva
+systemctl restart goi-gis-app
 curl -s "http://100.114.7.53:8000/coordinate_converter%20Claude.html" | grep -c gsat
 # atteso: > 0
 ```
@@ -154,9 +174,10 @@ Il proxy **non** sostituisce la persistenza offline del monolite.
 
 | Evento | Comportamento verificato |
 |--------|---------------------------|
-| Boot | `goi-nav-proxy.service` **enabled** → risale al boot |
+| Boot | `goi-nav-proxy.service` e `goi-gis-app.service` **enabled** → risalgono al boot (`goi-gis-app` attende Tailscale via `ExecStartPre`, poi bind dinamico su IPv4 tailnet) |
 | Restart proxy | Discovery versione Google (`maps.googleapis.com`); fallback `GSAT_STATIC_VERSION=1012` |
-| Reboot VPS | Proxy e n8n risalgono (~1 min downtime); servizi verificati boot-resilient post-reboot |
+| Restart GIS static | `systemctl restart goi-gis-app` — `Restart=on-failure`, `RestartSec=5` |
+| Reboot VPS | Proxy, GIS static e n8n risalgono (~1 min downtime); servizi verificati boot-resilient post-reboot |
 | Update sistema | Eseguito; kernel **6.8.0-124** (2026-06-16); proxy e n8n OK dopo reboot |
 
 **Policy operativa:** eseguire `apt update && apt upgrade` e reboot **solo per kernel** come blocco controllato; post-reboot smoke:
@@ -182,7 +203,7 @@ curl -s http://100.114.7.53:5000/status | head -c 200
 
 ## 9. Punti aperti
 
-1. **Censire metodo di avvio** del server statico GIS `:8000` (systemd `goi-gis-app.service` vs altro) e documentare unit file definitivo.
+1. **Risolto (2026-06-16):** `:8000` è gestito da **`goi-gis-app.service`** (systemd, unit file `/etc/systemd/system/goi-gis-app.service`, bind dinamico Tailscale, smoke `200 text/html`). Resta eventuale **reboot-test formale** coordinato per host condiviso (n8n + GIS + proxy).
 2. **Healthcheck / rate-limit / logging** proxy — blocchi successivi (non WU-0009 chiusura).
 3. **Bing** e altre varianti Google — workstream separato (WU-0009B B4+); **non** aprire in questo documento.
 4. **Browser QA operatore** su `gsat` sotto OPSEC strict — da attestare in OM §7 quando eseguito.
