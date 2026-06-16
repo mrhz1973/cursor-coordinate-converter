@@ -2941,3 +2941,57 @@ Chiusura **`finito`** — micro-patch docs-only separata: allineamento stato viv
 ### Prossimo passo
 
 - **WU-0009A B0-B4** o **Mappe offline UX**.
+
+## Checkpoint 2026-05-20 — WU-0009A layer gsat Google Satellite (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — implementazione layer **`gsat`** nel monolite GIS (Planet-Clone proxy `/gsat/` già su backend, fuori scope commit). Piano approvato con correzione call-site hydrate SonarChart: **`ensureProxyConsent(layerId)`** (non `"sonarchart"` fisso).
+
+### Cosa è stato fatto
+
+1. **`coordinate_converter Claude.html`** (+74/−10):
+   - **`TILE_LAYERS.gsat`**: `tailnet-proxy`, URL `/gsat/{z}/{x}/{y}.jpg` via proxy tailnet, attrib Google, `maxZoom:20`, offline-eligible.
+   - **`MAP_BASE_LAYER_IDS`**: `"gsat"` dopo `"sat"`.
+   - **Consenso OPSEC split**: `_gsatConsentGranted` / `ensureGsatConsent` indipendente da Navionics; `tileFetchAllowed` per provider; reset strict azzera entrambi.
+   - **UI**: bottone gsat in picker Satellitare; i18n IT/EN/FR completi.
+
+### QA
+
+- `node --check` OK (2× script inline). Browser QA: **non eseguiti**.
+
+### Prossimo passo
+
+- Browser QA gsat; proseguire WU-0009A.
+
+
+## Checkpoint 2026-05-20 — WU-0009A layer gsat Google Satellite (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — implementazione layer **`gsat`** nel monolite GIS (Planet-Clone proxy `/gsat/` già su backend, fuori scope commit). Piano approvato con correzione call-site hydrate SonarChart: **`ensureProxyConsent(layerId)`** (non `"sonarchart"` fisso).
+
+### Cosa è stato fatto
+
+1. **`coordinate_converter Claude.html`** (+74/−10):
+   - **`TILE_LAYERS.gsat`**: `tailnet-proxy`, URL `http://${getNavProxyHost()}:5000/gsat/{z}/{x}/{y}.jpg`, attrib Google, `maxZoom:20`, cacheable default (precache/offline OK).
+   - **`MAP_BASE_LAYER_IDS`**: `"gsat"` dopo `"sat"`.
+   - **`offlineTileNetworkKind`**: ramo `proxy` include `gsat`.
+   - **Consenso OPSEC Opzione B**: `_gsatConsentPending`, `state._gsatConsentGranted`, `tileLayerProxyProvider` (gsat→google, nav/sonarchart→navionics), `ensureGsatConsent`, `ensureProxyConsent`; `tileFetchAllowed` split provider; `ensureNavProxyConsent` corpo invariato; reset strict azzera entrambi i consensi.
+   - **Call-site**: 6× `ensureProxyConsent(layerId)`; 1× `ensureProxyConsent("sonarchart")` al toggle overlay SonarChart.
+   - **UI**: bottone `gsat` in sezione Satellitare del picker basemap (tra `sat` e `eoxS2Cloudless`).
+   - **i18n IT/EN/FR**: `map.layerGsat`, `tip.layerGsat`, `offcache.area.layerGsat`, `opsec.strict.gsatConfirm`, `opsec.strict.gsatWarn`.
+
+### QA
+
+- `git diff --check` OK; `node --check` su JS inline (2 blocchi) OK.
+- Test browser: **non eseguiti** — checklist: gsat strict off/on, consensi indipendenti Google vs Navionics, forceOffline cache-only.
+
+### Non toccato
+
+- `proxy.py`, README, OM, roadmap, rules (nel commit principale oltre checkpoint/session).
+
+### Prossimo passo
+
+- Browser QA operatore su gsat; proseguire WU-0009A o smoke tailnet `/gsat/`.
+

@@ -5,10 +5,12 @@
 
 # Checkpoint progetto — GOI GIS Tool
 
-**Data snapshot:** 2026-06-16
+**Data snapshot:** 2026-05-20
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-16 — **Chiusura sessione (`finito`) — OM §7 Backlog metodo F1–F3:** solo **`docs/OPERATING_MEMORY.md` §7** — bullet Backlog metodo/adozione metodo da «candidato» a catena **PASS** fino a Fase F3 (F1 spec+template, F2 collaudo report vivo, F3 obbligo LAST_CURSOR_REPORT GIS-only); primacy OM §7/roadmap vs report rolling (rimando §4). **Monolite / README / roadmap / LAST_CURSOR_REPORT / orchestrator non modificati** in questo `finito`. **`docs/roadmap.md` non modificato.**
+**Ultimo cambio:** 2026-05-20 — **Chiusura sessione (`finito`) — WU-0009A layer `gsat` (Google Satellite via proxy tailnet):** monolite — layer **`gsat`** in `TILE_LAYERS` (`external: tailnet-proxy`, URL `/gsat/{z}/{x}/{y}.jpg`, `maxZoom:20`, offline-eligible); **`MAP_BASE_LAYER_IDS`** dopo `sat`; consenso OPSEC **split** (`state._gsatConsentGranted` / `ensureGsatConsent` vs Navionics invariato); `tileLayerProxyProvider`, `ensureProxyConsent`, `tileFetchAllowed` ramificato; UI picker Satellitare (bottone tra `sat` e `eoxS2Cloudless`); i18n IT/EN/FR (`map.layerGsat`, `tip.layerGsat`, `offcache.area.layerGsat`, `opsec.strict.gsatConfirm`/`gsatWarn` con Google/maps.googleapis.com/khms); reset strict azzera entrambi i consensi; 6 call-site `ensureProxyConsent(layerId)` + 1 `"sonarchart"` al toggle overlay. **`node --check`** OK (2× script inline). **`docs/roadmap.md` non modificato.** Riconciliazione orchestratore post-push.
+
+**Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — OM §7 Backlog metodo F1–F3:** solo **`docs/OPERATING_MEMORY.md` §7** — bullet Backlog metodo/adozione metodo da «candidato» a catena **PASS** fino a Fase F3 (F1 spec+template, F2 collaudo report vivo, F3 obbligo LAST_CURSOR_REPORT GIS-only); primacy OM §7/roadmap vs report rolling (rimando §4). **Monolite / README / roadmap / LAST_CURSOR_REPORT / orchestrator non modificati** in questo `finito`. **`docs/roadmap.md` non modificato.**
 
 **Ultimo cambio (precedente):** 2026-06-16 — **Chiusura sessione (`finito`) — roadmap WU-0005-0009 freschezza storica:** solo **`docs/work-units/WU-0005-0009-roadmap.md`** — allineamento WU-0008 (PASS end-to-end 8a–8d-B + EOX + browser QA), matrice dipendenze, **# Prima WU consigliata** (prossimo **WU-0009A B0-B4**; WU-0005/0006 parziali; alternativa Mappe offline UX). **Ordine operativo dettagliato** (pos. 30) invariato. **`docs/OPERATING_MEMORY.md` §7 non modificato** (bullet «Backlog metodo: candidato» ancora indietro vs §4 — sanare in passaggio successivo). **Monolite / README / orchestrator / LAST_CURSOR_REPORT non modificati** in questo `finito`. **`docs/roadmap.md` non modificato.**
 
@@ -150,7 +152,7 @@ Struttura attuale (efficienza token: core sempre attivo, HTML auto-attached, dom
 - Nessun GPS silenzioso all’avvio; contesto sicuro per Geolocation.
 - Geolocation **solo single-shot** (`getCurrentPosition` via `btnMyLocation`); il live tracking via `watchPosition` è stato rimosso nel cleanup pre-GIS e non va reintrodotto senza decisione esplicita.
 - Offline: tile da IDB + placeholder; niente fallback “online forzato” che violi scelta utente/OPSEC.
-- Geocoding: `opsecStrict` blocca Nominatim; strict graduato blocca anche tile internet su cache miss, seamarks, Esri/Open-Meteo; Navionics proxy richiede consenso per-sessione (`_navProxyConsentGranted`, non persistito); `forceOffline` prevale su tutto.
+- Geocoding: `opsecStrict` blocca Nominatim; strict graduato blocca anche tile internet su cache miss, seamarks, Esri/Open-Meteo; Navionics proxy richiede consenso per-sessione (`_navProxyConsentGranted`, non persistito); **Google Satellite (`gsat`)** richiede consenso per-sessione separato (`_gsatConsentGranted`, non persistito); consensi indipendenti; `forceOffline` prevale su tutto.
 - i18n: `data-i18n` sicuro (`textContent`); `data-i18n-html` solo dove esplicitamente previsto.
 - Persistenza: sanitizzare/clampare al load tutto ciò che arriva da `localStorage`.
 - GIS Phase 1: `mapWaypoints[]` resta canonico per waypoint; `gisTracks[]`/`gisPolygons[]`/`gisLayers[]` sono store GeoJSON-native additivi e persistiti; `gisSelection`/`undoStack`/`redoStack` restano transient.
