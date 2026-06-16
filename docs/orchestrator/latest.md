@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-16 — **Chiusura sessione `finito` — OM gsat + INFRA_VPS:** commit **`e60b210`** (OM §7 + roadmap WU-0009B B3); orchestratore **`81c1325`**. **Monolite non incluso.** Push **OK**. Inbox **`2026-06-16_2128_riepilogo_finito-sessione.md`**. **Prossimo:** browser QA gsat; WU-0009B Bing.
+
 2026-06-16 — **Chiusura sessione `finito` — docs `INFRA_VPS.md` (fonte unica VPS):** commit docs **`e390fc7`** (+137 righe INFRA_VPS); commit finito **`18d22ec`** (checkpoint/session). Host condiviso, deploy Proxy+GIS, rischi drift/Firebase TODO. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_2125_riepilogo_finito-sessione.md`**. **Prossimo:** rimando Planet-Clone push; browser QA gsat.
 
 2026-05-20 — **Chiusura sessione `finito` — WU-0009A layer `gsat` (Google Satellite):** commit **`d5ff2fe`** — `OPERATING_MEMORY` §7 allineato (catena PASS F1–F3, LAST_CURSOR_REPORT sintesi). **Monolite non incluso.** Push **OK**. Inbox **`2026-06-16_0219_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009A B0-B4 o Mappe offline UX.
