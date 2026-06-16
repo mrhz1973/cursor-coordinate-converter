@@ -1136,7 +1136,7 @@ Test:
 
 # WU-0009 — Google/Bing via proxy Planet-Clone, lavoro a due teste
 
-> **Deploy WU-0009 Google Satellite (`gsat`) — PASS end-to-end (2026-06-16):** backend Planet-Clone `a7359e7` (`/gsat/`, `/status`); frontend GIS `013b8cb` / autosync `ef953fc`; VPS tailnet smoke OK (`static_fallback_configured:true`, tile `200 image/jpeg`); documentazione runtime [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Bing e varianti Google restano backlog WU-0009B.
+> **Deploy WU-0009 Google Satellite (`gsat`) — PASS end-to-end (2026-06-16):** backend Planet-Clone `a7359e7` (`/gsat/`, `/status`); frontend GIS `013b8cb` / autosync `ef953fc`; VPS tailnet smoke OK (`static_fallback_configured:true`, tile `200 image/jpeg`); **Browser QA operatore PASS** (OPSEC strict, GIS `:8000`, proxy `:5000`, TEST 1–8); documentazione runtime [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Bing e varianti Google restano backlog WU-0009B.
 
 ## Scopo
 
@@ -1254,7 +1254,15 @@ Aggiungere proprietà layer, ad esempio:
 
 ### B3 — Google basemap via proxy
 
-**Stato:** layer **`gsat`** (Google Satellite) **PASS end-to-end** — backend `a7359e7`, frontend `013b8cb`, deploy VPS verificato, runtime doc [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Restano eventuali **altre varianti Google**, Bing (B4), polish UI (B5) e browser QA operatore OPSEC.
+**Stato:** layer **`gsat`** (Google Satellite) **PASS end-to-end** + **Browser QA operatore PASS (OPSEC strict, 2026-06-16)** — backend `a7359e7`, frontend `013b8cb`, deploy VPS verificato, runtime doc [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](../runtime/VPS_DEPLOY_RUNTIME.md). Consenso Google separato da Navionics; Annulla fail-closed; tile visibili dopo consenso. **Backlog:** altre varianti Google, Bing (B4), polish UI (B5), reboot-test VPS formale.
+
+###### Browser QA operatore `gsat` — PASS (2026-06-16, VPS tailnet)
+
+- **Ambiente:** browser operatore via Tailscale; GIS `http://100.114.7.53:8000/coordinate_converter%20Claude.html`; proxy `http://100.114.7.53:5000`; DevTools Console + UI.
+- **TEST 1–8:** PASS attestati dall'operatore (non inferiti da Cursor).
+- **Strict OFF:** `setMapLayer('gsat')` — tile Google visibili; nessun errore console rosso.
+- **Strict ON:** dialog Google dedicato (`maps.googleapis.com`, `khms/mt.google.com`; solo Google Satellite, non Navionics/SonarChart); consenso Google **non** abilita Navionics; consenso Navionics **non** abilita Google; **Annulla** → `tileFetchAllowed('gsat')` false, placeholder grigio/`?` su area non-cache.
+- **Nota metodo:** dialog su area non-cache (es. Tokyo z19) se layer già `gsat`/cache — coerente con `hydrateMapTiles` async.
 
 Un provider alla volta.
 

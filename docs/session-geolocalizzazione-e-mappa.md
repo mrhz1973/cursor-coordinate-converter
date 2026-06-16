@@ -3056,3 +3056,24 @@ Chiusura **`finito`** — documentazione post-censimento read-only del GIS stati
 
 - Reboot-test formale coordinato (host condiviso n8n); browser QA operatore `gsat` OPSEC strict; Bing WU-0009B B4.
 
+## Checkpoint 2026-06-16 — Browser QA operatore gsat OPSEC strict (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — registrazione documentale del Browser QA operatore PASS del layer `gsat` Google Satellite sotto OPSEC strict. Solo docs; QA eseguito manualmente dall'operatore (non inferito da Cursor).
+
+### Cosa è stato fatto
+
+1. **Browser QA operatore (2026-06-16):** GIS `http://100.114.7.53:8000/coordinate_converter%20Claude.html`, proxy `:5000`, layer `gsat`; TEST 1–8 PASS — consenso Google separato da Navionics/SonarChart; Annulla fail-closed; tile visibili post-consenso; placeholder su area non-cache senza consenso.
+2. **`docs/OPERATING_MEMORY.md`** §7 — bullet WU-0009B aggiornato con PASS operatore OPSEC strict.
+3. **`docs/work-units/WU-0005-0009-roadmap.md`** — blockquote WU-0009, B3 stato + sottosezione evidenza QA.
+4. **`docs/runtime/VPS_DEPLOY_RUNTIME.md`** — §9.4 chiuso; §10 riga Browser QA PASS.
+
+### Non toccato
+
+- Monolite, README, `proxy.py`, rules, orchestrator (commit principale), `LAST_CURSOR_REPORT`, `INFRA_VPS.md`
+
+### Prossimo passo
+
+- Bing WU-0009B B4; reboot-test VPS formale; polish UI B5.
+

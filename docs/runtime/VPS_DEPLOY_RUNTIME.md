@@ -206,7 +206,7 @@ curl -s http://100.114.7.53:5000/status | head -c 200
 1. **Risolto (2026-06-16):** `:8000` è gestito da **`goi-gis-app.service`** (systemd, unit file `/etc/systemd/system/goi-gis-app.service`, bind dinamico Tailscale, smoke `200 text/html`). Resta eventuale **reboot-test formale** coordinato per host condiviso (n8n + GIS + proxy).
 2. **Healthcheck / rate-limit / logging** proxy — blocchi successivi (non WU-0009 chiusura).
 3. **Bing** e altre varianti Google — workstream separato (WU-0009B B4+); **non** aprire in questo documento.
-4. **Browser QA operatore** su `gsat` sotto OPSEC strict — da attestare in OM §7 quando eseguito.
+4. **Risolto (2026-06-16):** Browser QA operatore **`gsat` OPSEC strict PASS** — GIS `:8000`, proxy `:5000`, TEST 1–8; attestazione in OM §7 e roadmap WU-0009B B3.
 
 ---
 
@@ -218,4 +218,5 @@ curl -s http://100.114.7.53:5000/status | head -c 200
 | Frontend GIS `gsat` | PASS runtime | `013b8cb` |
 | Autosync memoria | PASS | `ef953fc` |
 | Deploy VPS smoke | PASS | `/status` OK; tile `200 image/jpeg` |
+| Browser QA `gsat` OPSEC strict | PASS operatore (2026-06-16) | GIS `100.114.7.53:8000`; consenso Google ≠ Navionics; Annulla fail-closed |
 | Documentazione runtime | Questo file + [`docs/INFRA_VPS.md`](../INFRA_VPS.md) |
