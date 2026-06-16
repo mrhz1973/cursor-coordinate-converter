@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-16 — **Chiusura sessione `finito` — roadmap freschezza WU-0008 / Prima WU consigliata:** commit **`ae407ff`** — solo docs: `WU-0005-0009-roadmap` (WU-0008 PASS end-to-end, prossimo WU-0009A), `checkpoint.md`, session append. **Monolite non incluso.** OM §7 non toccato (bullet backlog metodo da sanare). Push **OK**. Inbox **`2026-06-16_0217_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009A B0-B4 o Mappe offline UX.
+
 2026-06-16 — **Chiusura Fase F3 — obbligo LAST_CURSOR_REPORT GIS-only:** commit principale **`d69b100`** — rules F3 obbligo post-push, OM §4/§6 scoped `aggio`, roadmap F3 + tensione risolta; autosync/report con `LAST_CURSOR_REPORT.md` aggiornato (F2→HISTORY, backfill `ec60d47`). **Monolite non incluso.** Push principale **OK**. Inbox **`2026-06-16_0151_riepilogo_finito-sessione.md`**. **Prossimo:** task reali con report obbligatorio o WU-0009 Tier B.
 
 2026-06-16 — **Collaudo Fase F2 — LAST_CURSOR_REPORT su commit docs innocuo:** commit principale **`47b0016`** — roadmap F2; commit autosync/report con primo **`docs/runtime/LAST_CURSOR_REPORT.md`** vivo (`real_task_commit=47b0016`). PASS tecnico remoto OK post-push principale. PASS operatore non-attestato (docs-only). **Monolite non incluso.** Inbox **`2026-06-16_0125_riepilogo_finito-sessione.md`**. **Prossimo:** uso operativo LAST_CURSOR_REPORT su task reali o WU-0009 Tier B.
