@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-17 — **Chiusura sessione `finito` — OM §7 ammissibilità provider WU-0009:** commit **`47c0594`** — bullet «provider basemap esterni»: decisione **PROCEDERE**; licenze fuori scope gate tecnici. Solo OM + checkpoint/session. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-17_0051_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009B B4 Bing.
+
 2026-06-16 — **Chiusura sessione `finito` — Browser QA operatore `gsat` OPSEC strict (docs):** commit **`89e4fa0`** — OM §7, roadmap WU-0009B B3, `VPS_DEPLOY_RUNTIME` §9.4/§10, checkpoint/session. TEST 1–8 PASS operatore (GIS `:8000`, proxy `:5000`). **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_2350_riepilogo_finito-sessione.md`**. **Prossimo:** Bing WU-0009B B4; reboot-test VPS formale.
 
 2026-06-16 — **Chiusura sessione `finito` — docs censimento GIS `:8000` / `goi-gis-app.service`:** commit **`2943ae5`** — `VPS_DEPLOY_RUNTIME.md` (§3.2/§7/§9 punto avvio chiuso), `INFRA_VPS.md` §2, checkpoint/session. Censimento read-only: systemd canonico, smoke `200 text/html`. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_2318_riepilogo_finito-sessione.md`**. **Prossimo:** reboot-test formale; browser QA gsat; Bing WU-0009B B4.
