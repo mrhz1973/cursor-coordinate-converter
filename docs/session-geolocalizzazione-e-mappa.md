@@ -2901,3 +2901,25 @@ Chiusura **`finito`** — **Fase D** workstream «Backlog metodo»: regola PASS 
 ### Prossimo passo
 
 - Fase E (legacy checkpoint/session governance) o WU-0009 Tier B.
+
+## Checkpoint 2026-06-16 — Roadmap WU-0005-0009 freschezza storica (Finito)
+
+### Contesto
+
+Chiusura **`finito`** — micro-fix documentale post-Fase F3: correzione incongruenze stale nella roadmap (WU-0008 ancora «candidato», **Prima WU consigliata** ancora su WU-0005).
+
+### Cosa è stato fatto
+
+1. **`docs/work-units/WU-0005-0009-roadmap.md`** — WU-0008 stato PASS end-to-end (8a–8d-B, EOX, browser QA); Piano espansione §8d allineato; matrice dipendenze; **# Prima WU consigliata** → WU-0007/0008 PASS, WU-0005 governance B0/B1 non chiusa, WU-0006 fix+UX PASS con backlog, prossimo **WU-0009A B0-B4**, alternativa **Mappe offline UX**.
+
+### Non toccato
+
+- `coordinate_converter Claude.html`, `README.md`, `docs/OPERATING_MEMORY.md`, orchestrator, `LAST_CURSOR_REPORT`, template, `.cursor/rules/**`, ordine operativo dettagliato (pos. 30 EOX).
+
+### Nota OM §7
+
+- Bullet §7 «Backlog metodo: candidato» resta indietro rispetto a OM §4 (F1–F3 PASS) e roadmap §Backlog metodo — **da sanare** in patch successiva o `aggio gis`.
+
+### Prossimo passo
+
+- **WU-0009A B0-B4** (proxy Planet-Clone) o **Mappe offline UX**; allineamento OM §7 backlog metodo.

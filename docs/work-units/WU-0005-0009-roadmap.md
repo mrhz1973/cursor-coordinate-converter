@@ -45,7 +45,7 @@ Ordine operativo consigliato:
 
 3. **WU-0007 — UX toolbar laterale e razionalizzazione strumenti** — **PASS** (B1–B8, `fa12567`..`e4c2be3`). Completata prima dei basemap multipli; flyout Tracce/Waypoint e MGRS in Layers.
 
-4. **WU-0008 — Basemap XYZ aperti nel monolite** — **PASS** 8a (`cf6d796`), **PASS** 8b (`dad28b4`); espansione 8c/8d in roadmap a blocchi (vedi Piano espansione sotto).
+4. **WU-0008 — Basemap XYZ aperti nel monolite** — **PASS** end-to-end (8a–8d-B, incluso EOX Sentinel-2 cloudless; browser QA PASS). Vedi Piano espansione e ordine operativo dettagliato.
 
 5. **WU-0009 — Google/Bing via proxy Planet-Clone, lavoro a due teste**  
    Parte sensibile: coinvolge proxy, fetch, gate OPSEC, consenso e separazione tra GIS e Planet-Clone.
@@ -550,9 +550,9 @@ La WU deve mantenere il modello radio basemap: una base sempre attiva, nessuno s
 
 Motivo: tocca catalogo layer, fetch tile, offline mode, OPSEC strict, UI Layers e forse cache/offline maps.
 
-### Stato WU-0008 8a/8b — Basemap aperti: PASS runtime
+### Stato WU-0008 — Basemap aperti: PASS end-to-end
 
-**Stato:** PASS runtime (8a + 8b). **8c/8d** restano candidati — vedi Piano espansione sotto.
+**Stato:** PASS runtime end-to-end per **8a**, **8b**, **8c-A**, **8c-B**, **8d-B0**, **8d-B1**, **8d-B**; EOX Sentinel-2 cloudless incluso; browser QA PASS. Vedi Piano espansione e ordine operativo dettagliato (pos. 30).
 
 Commit 8a:
 
@@ -598,7 +598,7 @@ Fuori scope:
 - modifiche a OPSEC/gate runtime;
 - cancellazione cache/tile esistenti.
 
-Espansione successiva: vedi **Piano espansione basemap WU-0008** — **8c** (Esri, prereq `tileScheme`/y-order) e **8d** (EOX Sentinel-2 cloudless, online-only) candidati.
+Espansione completata: vedi **Piano espansione basemap WU-0008** — **8c** (Esri, prereq `tileScheme`/y-order) e **8d** (EOX Sentinel-2 cloudless) **PASS**.
 
 ### Piano espansione basemap WU-0008
 
@@ -714,7 +714,7 @@ Vincoli:
 
 #### 8d — EOX Sentinel-2 cloudless
 
-**Stato:** candidato WU-0008; **8d-B0 PASS**; **8d-B1 PASS**; **pre-check 8d-B PASS** (read-only, HEAD `9f98c5d`); layer EOX pronto per prompt runtime parcheggiato (gate licenza/hosting).
+**Stato:** **PASS** end-to-end — **8d-B0 PASS**, **8d-B1 PASS** (A/B1/B2/B3), **8d-B PASS** runtime + browser QA operatore (`2ca47b6`); layer `eoxS2Cloudless` incluso.
 
 ##### 8d-B0 — browse-cache guard `cacheable:false` (prerequisito EOX)
 
@@ -734,7 +734,7 @@ QA: `node --check` OK; browser QA IndexedDB before/after consigliato operatore.
 
 ##### 8d-B1 — offline UX / cache per-layer / maxZoom
 
-**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS**; **8d-B1-B2 PASS**; **8d-B1-B3 PASS** runtime; **8d-B** candidato.
+**Stato:** **8d-B1-A PASS** (diagnosi); **8d-B1-B1 PASS**; **8d-B1-B2 PASS**; **8d-B1-B3 PASS** runtime; **8d-B PASS**.
 
 ###### 8d-B1-A — diagnosi read-only
 
@@ -781,7 +781,7 @@ Esito:
 - es. `esriRelief` maxZoom 13: fit-area non supera z13.
 - Overlay non clampano zoom globale basemap (invariato).
 
-##### 8d-B — layer EOX (candidato)
+##### 8d-B — layer EOX
 
 **Stato:** **PASS** runtime + **Browser QA operatore PASS** (`2ca47b6`) — layer `eoxS2Cloudless` implementato nel monolite; pre-check prerequisiti PASS (HEAD `9f98c5d`).
 
@@ -1352,7 +1352,7 @@ Test:
 | WU-0006 Poligoni | nessuna | diagnosi autonoma, ma blocca UX poligoni |
 | WU-0007 B6 Poligoni dentro Tracce | WU-0006 | non si sposta una feature rotta senza decisione |
 | WU-0007 B7 MGRS in Layers | WU-0005, WU-0007 B2 | overlay/layer deve rispettare semantica online/offline e Layers stabile |
-| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** 8a/8b/8c-A/8c-B/8d-B0; **8d-B** candidato |
+| WU-0008 Basemap XYZ | WU-0005, preferibile WU-0007 | **PASS** end-to-end (8a–8d-B incluso EOX; browser QA PASS) |
 | WU-0008 8c Esri | WU-0008 8a/8b, prereq `tileScheme` | **PASS** 8c-A + 8c-B |
 | WU-0008 8d-B1 offline UX | WU-0008 8d-B0 | **PASS** 8d-B1-A/B1/B2 |
 | WU-0008 8d EOX | WU-0008 8d-B0, 8d-B1, pre-check 8d-B | **PASS** runtime + browser QA 8d-B |
@@ -1397,8 +1397,15 @@ Decidere fuori dal repo GIS:
 
 # Prima WU consigliata
 
-Partire da **WU-0005 — Governance “GIS online di default”**.
+**WU-0007** e **WU-0008** sono **PASS** (toolbar/UX e basemap aperti end-to-end, incluso EOX Sentinel-2 cloudless con browser QA PASS).
 
-Motivo pratico: è piccola, chiarisce il comportamento generale e riduce il rischio che i blocchi successivi su Layers, basemap e proxy vengano implementati con una semantica ambigua.
+**WU-0005** ha governance documentata (B0/B1 PASS) ma **non è chiusa** — B2 UI-copy opzionale e B3 chiusura WU restano aperti.
 
-Subito dopo: **WU-0006 — diagnosi poligoni**, perché condiziona la riorganizzazione toolbar.
+**WU-0006** ha fix base + UX leggera **PASS**; resta backlog residuo (editing vertici, drag poligono, standardizzazione modal trasversale).
+
+**Prossimo candidato operativo** coerente con la roadmap:
+
+- **WU-0009A B0-B4 — proxy readiness in Planet-Clone**, separato/sensibile;
+- **WU-0009B** dipende da **WU-0009A** completata e verificata.
+
+**Alternativa leggera non-proxy:** **Mappe offline UX** (matrice dipendenze), se si decide di evitare temporaneamente il blocco sensibile proxy/Google/Bing.
