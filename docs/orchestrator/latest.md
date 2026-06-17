@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-18 — **Chiusura sessione `finito` — WU-0009B B5.1:** commit **`d88824f`** (checkpoint + session append). Lavoro sessione già su main: runtime **`150d6ac`** (monolite OPSEC label/help), docs **`8475ff7`**, autosync **`1289e54`**, report **`b3e4d6a`**. **Working tree pulito.** **Monolite versionato** in `150d6ac`. Browser QA B5.1 non attestata. Inbox **`2026-06-18_0105_riepilogo_finito-sessione.md`**. **Prossimo:** deploy GIS + QA B5.1; B5.x hint Layers; B6 QA.
+
 2026-06-17 — **WU-0009B B5.1 OPSEC strict / proxy UX polish (runtime):** commit runtime **`150d6ac`** — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; i18n IT/EN/FR; **nessun secondo toggle**; gate OPSEC invariati; hint Layers Satellitare **differito** (rebuild dinamico). Docs **`8475ff7`** (OM §7 + roadmap). **`LAST_CURSOR_REPORT`** LATEST `150d6ac`. **Monolite incluso** nel commit runtime. **Browser QA B5.1:** non attestata. Inbox **`2026-06-17_2345_riepilogo_b51-opsec-proxy-ux-polish.md`**. **Prossimo:** B5.x hint Layers statico opzionale; B6 QA.
 
 2026-06-17 — **WU-0009B B4.4 Browser QA OPSEC strict `bsat` PASS operatore (docs-only):** commit attestation **`eb809fc`** — 7/7 step; GIS deploy **`fe6b289`** tailnet `:8000`; proxy **`1e8944d`**; **`LAST_CURSOR_REPORT`** LATEST `8d4deab` aggiornata IN LOCO (`pass_operatore: attestato`). **B4.3A annullato** (`#setOpsecStrict` già esiste). **Monolite non modificato.** Inbox **`2026-06-17_2300_riepilogo_bsat-b44-browser-qa-pass.md`**. **Catena B4 Bing `bsat` chiusa.** **Prossimo:** B5 polish UI / reboot-test VPS.
