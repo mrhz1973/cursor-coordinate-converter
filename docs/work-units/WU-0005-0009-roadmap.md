@@ -1287,7 +1287,11 @@ Stesso schema di B3.
 - messaggi per proxy non disponibile;
 - i18n.
 
+**B5.1 polish discoverability OPSEC strict (2026-06-17):** PASS tecnico statico — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; nessun secondo toggle; gate OPSEC invariati; hint Layers Satellitare differito (rebuild dinamico menu).
+
 ### B6 — QA OPSEC/proxy/offline
+
+**Stato:** QA visuale post-B5.1 pending se non attestata operatore.
 
 Test:
 
