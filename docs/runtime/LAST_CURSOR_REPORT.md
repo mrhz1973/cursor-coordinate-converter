@@ -9,16 +9,17 @@
 * report_generated_at: 2026-06-17T23:45:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* local_HEAD: *(post-push autosync — vedi OUTPUT VERBATIM in RIEPILOGO B5.1)*
-* local_origin_main: *(post-push)*
-* ls_remote_origin_main: *(post-push)*
-* working_tree_status: pulito (atteso post-push)
-* pass_tecnico_remoto: PASS *(atteso post-push B5.1)*
+* local_HEAD: `1289e5494adb32ca3755cab8d288e9a8e9290cbc`
+* local_origin_main: `1289e5494adb32ca3755cab8d288e9a8e9290cbc`
+* ls_remote_origin_main: `1289e5494adb32ca3755cab8d288e9a8e9290cbc`
+* working_tree_status: pulito (post-push B5.1)
+* pass_tecnico_remoto: PASS *(push B5.1 `1289e54`)*
 * result_cursor: B5.1 OPSEC strict UX polish — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; CSS `.geo-opsec-help`; i18n IT/EN/FR; node --check OK; static checks PASS (toggle unico, gate/listener invariati, `_bingConsentGranted` reset presente); hint Layers Satellitare **differito** (rebuild dinamico `basemapLayersHtml`); `tip.layerGsat`/`tip.layerBsat` invariati
 * pass_operatore: non-attestato
 * result_runtime: Browser QA visuale B5.1 non eseguita — checklist manuale post-deploy in inbox
 * qa_attestation_source: —
 * docs_commit: `8475ff7` (OM §7 + roadmap B5.1)
+* autosync_commit: `1289e54`
 * notes: Nessun secondo toggle OPSEC; logica `tileFetchAllowed`/`ensureProxyConsent`/route proxy invariata. Step 3 hint Layers differito consapevolmente.
 * pending_self_reference: **risolto** — report autosync B5.1 referenzia `real_task_commit=150d6ac`
 
@@ -26,7 +27,34 @@
 
 ## OUTPUT VERBATIM
 
-*(Output git post-push registrato nel RIEPILOGO B5.1 e inbox orchestratore.)*
+```text
+git log --oneline -5
+1289e54 docs: orchestratore + LAST_CURSOR_REPORT — B5.1 OPSEC proxy UX polish
+8475ff7 docs: OM §7 — B5.1 OPSEC proxy UX polish PASS tecnico
+150d6ac feat(gis): improve OPSEC strict proxy discoverability (WU-0009B B5.1)
+80e8c64 docs: orchestratore — B4.4 bsat Browser QA PASS
+eb809fc docs: record B4.4 bsat Browser QA PASS operatore
+
+git status --short
+(vuoto)
+
+git rev-parse HEAD
+1289e5494adb32ca3755cab8d288e9a8e9290cbc
+
+git rev-parse origin/main
+1289e5494adb32ca3755cab8d288e9a8e9290cbc
+
+git branch --show-current
+main
+
+git show --stat HEAD
+ docs/orchestrator/inbox/2026-06-17_2345_riepilogo_b51-opsec-proxy-ux-polish.md | 66 +++
+ docs/orchestrator/latest.md | 2 +
+ docs/runtime/LAST_CURSOR_REPORT.md | 55 +++---
+
+git ls-remote origin main
+1289e5494adb32ca3755cab8d288e9a8e9290cbc	refs/heads/main
+```
 
 ## HISTORY
 
