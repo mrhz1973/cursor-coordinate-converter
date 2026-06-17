@@ -4,74 +4,51 @@
 
 ## LATEST
 
-* real_task_commit: `d69b100`
-* real_task_subject: Fase F3 attivazione obbligo LAST_CURSOR_REPORT GIS-only
-* report_generated_at: 2026-06-16T01:51:30+02:00
+* real_task_commit: `8d4deab`
+* real_task_subject: feat: add Bing Satellite basemap bsat via tailnet proxy (WU-0009B B4.2)
+* report_generated_at: 2026-06-17T07:00:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* local_HEAD: `d69b100d8efefede0e4d82b318348a0386172f7c`
-* local_origin_main: `d69b100d8efefede0e4d82b318348a0386172f7c`
-* ls_remote_origin_main: `d69b100d8efefede0e4d82b318348a0386172f7c`
-* working_tree_status: pulito (pre-commit autosync/report F3)
-* pass_tecnico_remoto: PASS
-* result_cursor: HEAD = origin/main = ls-remote post-push commit principale F3; branch main
+* local_HEAD: *(autosync commit — vedi OUTPUT VERBATIM post-push)*
+* local_origin_main: *(post-push)*
+* ls_remote_origin_main: *(post-push)*
+* working_tree_status: pulito (post-push atteso)
+* pass_tecnico_remoto: *(post-push)*
+* result_cursor: B4.2 bsat frontend — 25/25 controlli statici PASS; node --check OK; monolite + gate OPSEC consenso bing
 * pass_operatore: non-attestato
-* result_runtime: non eseguito / non applicabile (F3 docs/governance)
+* result_runtime: Browser QA OPSEC strict **pending B4.4**; static-only in B4.2
 * qa_attestation_source: non attestata
-* notes: Fase F3 — obbligo LAST_CURSOR_REPORT attivo GIS-only; tensione aggio scope risolta; fail-closed soft; nessuna patch runtime
-* pending_self_reference: commit autosync/report F3 che include questo file = PENDING_SELF_REFERENCE (SHA autosync non va in real_task_commit; backfill in HISTORY al report successivo; nessun terzo commit finalize-hash)
+* notes: Proxy Planet-Clone deploy 1e8944d (audit); cache-first sotto OPSEC strict senza consenso — tile IndexedDB servite localmente, no fetch proxy su hit cache
+* pending_self_reference: commit autosync/report che include questo file = PENDING_SELF_REFERENCE
 
 <!-- pass_* = esito sintetico: PASS / FAIL / non-attestato. result_* = descrizione o evidenza sintetica. -->
 
 ## OUTPUT VERBATIM
 
-```text
-git log --oneline -5
-d69b100 docs: activate LAST_CURSOR_REPORT requirement for method Fase F3
-ec60d47 docs: orchestratore — riconciliazione Fase F2 LAST_CURSOR_REPORT
-47b0016 docs: validate LAST_CURSOR_REPORT flow for method Fase F2
-93bcf25 docs: orchestratore — riconciliazione Fase F1 LAST_CURSOR_REPORT
-5c59346 docs: add LAST_CURSOR_REPORT spec and template for method Fase F1
-
-git status --short
-(vuoto)
-
-git rev-parse HEAD
-d69b100d8efefede0e4d82b318348a0386172f7c
-
-git rev-parse origin/main
-d69b100d8efefede0e4d82b318348a0386172f7c
-
-git branch --show-current
-main
-
-git show --stat HEAD
-commit d69b100d8efefede0e4d82b318348a0386172f7c
- .cursor/rules/30-output-workflow.mdc    | 47 ++++++++++++++++++++++++---------
- docs/OPERATING_MEMORY.md                |  3 ++-
- docs/work-units/WU-0005-0009-roadmap.md | 25 +++++++++++++-----
- 3 files changed, 56 insertions(+), 19 deletions(-)
-
-git ls-remote origin main
-d69b100d8efefede0e4d82b318348a0386172f7c	refs/heads/main
-```
+*(compilato post-push nello stesso intervento — vedi RIEPILOGO chat o rigenerare con git log/status/ls-remote)*
 
 ## HISTORY
+
+### Fase F3 attivazione — archiviato
+
+* real_task_commit: `d69b100`
+* real_task_subject: Fase F3 attivazione obbligo LAST_CURSOR_REPORT GIS-only
+* report_generated_at: 2026-06-16T01:51:30+02:00
+* pass_tecnico_remoto: PASS
+* pass_operatore: non-attestato
+* result_runtime: non eseguito / non applicabile (F3 docs/governance)
+* pending_self_reference: risolto indirettamente — entry sostituita da B4.2 LATEST
 
 ### Fase F2 — collaudo LAST_CURSOR_REPORT (archiviato da F3)
 
 * real_task_commit: `47b0016`
-* report_autosync_commit: `ec60d47` *(backfill F3 — risolve pending_self_reference F2)*
+* report_autosync_commit: `ec60d47`
 * real_task_subject: Fase F2 collaudo LAST_CURSOR_REPORT su commit docs innocuo
 * report_generated_at: 2026-06-16T01:25:30+02:00
 * pass_tecnico_remoto: PASS
 * pass_operatore: non-attestato
 * result_runtime: non eseguito / non applicabile (F2 docs-only)
 * pending_self_reference: **risolto** — autosync/report F2 = `ec60d47`
-
-<!--
-Fase F1 spec/template: commit principale 5c59346, autosync 93bcf25 — non duplicata; backfill futuro se necessario.
--->
 
 ## LIMITI
 
