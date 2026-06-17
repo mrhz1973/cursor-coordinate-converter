@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-17 — **Micro-nota OM §7 Bing `bsat` B4.1A-VPS smoke PASS (docs-only):** commit principale **`fba3c19`** — bullet WU-0009B B4: contratto naming GIS (`bsat`, `/bsat/`, consenso `bing`), quadkey canonico, smoke VPS `BING_STATIC_VERSION=15568` (audit trail, non config viva), prossimo B4.1B Planet-Clone. **Monolite non incluso.** **`LAST_CURSOR_REPORT` escluso** (micro-fix docs-only). Inbox **`2026-06-17_0125_riepilogo_bing-bsat-b41a-vps-om.md`**. **Prossimo:** B4.1B route `/bsat/` in Planet-Clone.
+
 2026-06-17 — **Chiusura sessione `finito` — OM §7 ammissibilità provider WU-0009:** commit **`47c0594`** — bullet «provider basemap esterni»: decisione **PROCEDERE**; licenze fuori scope gate tecnici. Solo OM + checkpoint/session. **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-17_0051_riepilogo_finito-sessione.md`**. **Prossimo:** WU-0009B B4 Bing.
 
 2026-06-16 — **Chiusura sessione `finito` — Browser QA operatore `gsat` OPSEC strict (docs):** commit **`89e4fa0`** — OM §7, roadmap WU-0009B B3, `VPS_DEPLOY_RUNTIME` §9.4/§10, checkpoint/session. TEST 1–8 PASS operatore (GIS `:8000`, proxy `:5000`). **Monolite non incluso.** Push step 2 **OK**. Inbox **`2026-06-16_2350_riepilogo_finito-sessione.md`**. **Prossimo:** Bing WU-0009B B4; reboot-test VPS formale.
