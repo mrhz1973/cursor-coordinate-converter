@@ -1278,7 +1278,7 @@ Decisioni da bloccare:
 
 Stesso schema di B3.
 
-**Stato (2026-06-17):** proxy Planet-Clone **`1e8944d`** — route `/bsat/`, deploy VPS B4.1C PASS. **B4.2 frontend GIS `bsat`:** PASS tecnico statico (monolite: catalogo, gate OPSEC, consenso Bing separato, UI Layers, offline-eligible). **Browser QA OPSEC strict: pending B4.4.**
+**Stato (2026-06-17):** proxy Planet-Clone **`1e8944d`** — route `/bsat/`, deploy VPS B4.1C PASS. **B4.2 frontend GIS `bsat`:** PASS tecnico statico (runtime **`8d4deab`**). **Deploy frontend GIS VPS `fe6b289`:** PASS (HTTP smoke `:8000`). **B4.4 Browser QA OPSEC strict:** **PASS operatore** (7/7 step). **B4.3A annullato** — `#setOpsecStrict` già esistente; non serve nuovo toggle. **Backlog UX:** discoverability OPSEC strict (toggle sotto geocoding). **Catena B4 Bing `bsat`:** chiusa end-to-end.
 
 ### B5 — UI Layers
 
