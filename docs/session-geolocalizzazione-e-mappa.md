@@ -3095,3 +3095,30 @@ Chiusura **`finito`** — micro-patch docs-only: nota operativa approvata su amm
 
 - WU-0009B B4 Bing (Planet-Clone + monolite); reboot-test VPS formale.
 
+## Checkpoint 2026-06-18 — WU-0009B B5.1 OPSEC strict UX polish (Finito)
+
+### Contesto
+
+Chiusura **`finito`** dopo blocco **WU-0009B B5.1** — polish discoverability OPSEC strict e messaggi proxy nel monolite GIS. Logica OPSEC invariata; nessun secondo toggle `#setOpsecStrict`.
+
+### Cosa è stato fatto (già pushati prima del `finito`)
+
+1. **Runtime `150d6ac`:** label i18n `set.opsec.strict` ampliata IT/EN/FR; nuova help-line `set.opsec.strictHelp` + CSS `.geo-opsec-help` sotto toggle in Guida → Geocoding → Impostazioni geocoding.
+2. **Docs `8475ff7`:** OM §7 + roadmap B5.1 PASS tecnico; B6 QA pending.
+3. **Autosync `1289e54` + report `b3e4d6a`:** orchestratore + `LAST_CURSOR_REPORT` LATEST `150d6ac`.
+4. **Step 3 hint Layers Satellitare:** differito (menu basemap rebuild dinamico).
+
+### Non toccato
+
+- Gate `tileFetchAllowed`, `ensureProxyConsent`, route proxy, listener OPSEC
+- Planet-Clone, VPS, deploy
+- `tip.layerGsat` / `tip.layerBsat` (già chiari)
+
+### QA
+
+- Browser QA visuale B5.1: **non attestata** (checklist post-deploy in inbox B5.1)
+
+### Prossimo passo
+
+- Deploy frontend GIS con `150d6ac`; QA visuale B5.1 opzionale; B5.x hint Layers statico; B6 QA OPSEC/proxy/offline.
+
