@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-17 — **WU-0009B B4.4 Browser QA OPSEC strict `bsat` PASS operatore (docs-only):** commit attestation **`eb809fc`** — 7/7 step; GIS deploy **`fe6b289`** tailnet `:8000`; proxy **`1e8944d`**; **`LAST_CURSOR_REPORT`** LATEST `8d4deab` aggiornata IN LOCO (`pass_operatore: attestato`). **B4.3A annullato** (`#setOpsecStrict` già esiste). **Monolite non modificato.** Inbox **`2026-06-17_2300_riepilogo_bsat-b44-browser-qa-pass.md`**. **Catena B4 Bing `bsat` chiusa.** **Prossimo:** B5 polish UI / reboot-test VPS.
+
 2026-06-17 — **WU-0009B B4.2 frontend GIS `bsat` (runtime):** commit principale **`8d4deab`** — layer Bing Satellite mirror `gsat` (catalogo, gate OPSEC consenso `bing`, UI Layers, offline-eligible); docs **`bd40f2b`** (OM §7 + roadmap); **`LAST_CURSOR_REPORT`** aggiornato. **Monolite incluso** nel commit runtime. **Browser QA OPSEC strict: pending B4.4.** Inbox **`2026-06-17_0700_riepilogo_bsat-b42-frontend.md`**. **Prossimo:** B4.4 Browser QA.
 
 2026-06-17 — **Micro-nota OM §7 Bing `bsat` B4.1A-VPS smoke PASS (docs-only):** commit principale **`fba3c19`** — bullet WU-0009B B4: contratto naming GIS (`bsat`, `/bsat/`, consenso `bing`), quadkey canonico, smoke VPS `BING_STATIC_VERSION=15568` (audit trail, non config viva), prossimo B4.1B Planet-Clone. **Monolite non incluso.** **`LAST_CURSOR_REPORT` escluso** (micro-fix docs-only). Inbox **`2026-06-17_0125_riepilogo_bing-bsat-b41a-vps-om.md`**. **Prossimo:** B4.1B route `/bsat/` in Planet-Clone.

@@ -28,7 +28,7 @@
   * Step 5 — Conferma consenso Bing, `bsat` carica: PASS
   * Step 6 — forced-offline cache-only / no fetch proxy: PASS
   * Step 7 — non-regressione gsat / Navionics / SonarChart: PASS
-* qa_attestation_docs_commit: *(commit docs-only B4.4 — vedi OUTPUT VERBATIM post-push)*
+* qa_attestation_docs_commit: `eb809fc`
 * notes: Proxy Planet-Clone deploy 1e8944d; cache-first sotto OPSEC strict senza consenso — tile IndexedDB servite localmente, no fetch proxy su hit cache. B4.3A annullato: `#setOpsecStrict` già presente. B4.4 = attestation a posteriori su stesso `real_task_commit`, non nuovo task runtime.
 * pending_self_reference: **risolto** — report autosync B4.2 = `fe6b289`; attestation B4.4 aggiorna IN LOCO questa LATEST
 
