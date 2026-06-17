@@ -4,41 +4,44 @@
 
 ## LATEST
 
-* real_task_commit: `8d4deab`
-* real_task_subject: feat: add Bing Satellite basemap bsat via tailnet proxy (WU-0009B B4.2)
-* report_generated_at: 2026-06-17T07:00:00+02:00
-* report_updated_at: 2026-06-17T23:00:00+02:00 *(B4.4 attestation docs-only — stessa LATEST, no duplicato)*
+* real_task_commit: `150d6ac`
+* real_task_subject: feat(gis): improve OPSEC strict proxy discoverability (WU-0009B B5.1)
+* report_generated_at: 2026-06-17T23:45:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* local_HEAD: `fe6b2894a9d0d12e04d4bd30bfac0552c130b111` *(pre-B4.4 docs; vedi attestation commit sotto)*
-* local_origin_main: `fe6b2894a9d0d12e04d4bd30bfac0552c130b111`
-* ls_remote_origin_main: `fe6b2894a9d0d12e04d4bd30bfac0552c130b111`
-* working_tree_status: pulito (post-push B4.2)
-* pass_tecnico_remoto: PASS *(B4.2 push `fe6b289`)*
-* result_cursor: B4.2 bsat frontend — 25/25 controlli statici PASS; node --check OK; monolite + gate OPSEC consenso bing
-* pass_operatore: **attestato**
-* result_runtime: **Browser QA OPSEC strict PASS (7/7 step)** — B4.4
-* qa_attestation_source: **operatore, browser manuale tailnet :8000**
-* qa_environment: GIS deploy **`fe6b289`**; URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=fe6b289`; proxy `/bsat/` Planet-Clone **`1e8944d`**
-* qa_evidence_summary:
-  * Step 1 — Bing Satellite visibile in Layers Satellitare: PASS
-  * Step 2 — OPSEC strict OFF + online, `bsat` carica: PASS
-  * Step 3 — OPSEC strict ON, dialog Bing dedicato (titolo Bing Satellite; `www.bing.com`; `*.ssl.ak.tiles.virtualearth.net`; consenso isolato Bing): PASS — operatore attesta dialog Bing dedicato e isolato
-  * Step 4 — Annulla fail-closed: PASS
-  * Step 5 — Conferma consenso Bing, `bsat` carica: PASS
-  * Step 6 — forced-offline cache-only / no fetch proxy: PASS
-  * Step 7 — non-regressione gsat / Navionics / SonarChart: PASS
-* qa_attestation_docs_commit: `eb809fc`
-* notes: Proxy Planet-Clone deploy 1e8944d; cache-first sotto OPSEC strict senza consenso — tile IndexedDB servite localmente, no fetch proxy su hit cache. B4.3A annullato: `#setOpsecStrict` già presente. B4.4 = attestation a posteriori su stesso `real_task_commit`, non nuovo task runtime.
-* pending_self_reference: **risolto** — report autosync B4.2 = `fe6b289`; attestation B4.4 aggiorna IN LOCO questa LATEST
+* local_HEAD: *(post-push autosync — vedi OUTPUT VERBATIM in RIEPILOGO B5.1)*
+* local_origin_main: *(post-push)*
+* ls_remote_origin_main: *(post-push)*
+* working_tree_status: pulito (atteso post-push)
+* pass_tecnico_remoto: PASS *(atteso post-push B5.1)*
+* result_cursor: B5.1 OPSEC strict UX polish — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; CSS `.geo-opsec-help`; i18n IT/EN/FR; node --check OK; static checks PASS (toggle unico, gate/listener invariati, `_bingConsentGranted` reset presente); hint Layers Satellitare **differito** (rebuild dinamico `basemapLayersHtml`); `tip.layerGsat`/`tip.layerBsat` invariati
+* pass_operatore: non-attestato
+* result_runtime: Browser QA visuale B5.1 non eseguita — checklist manuale post-deploy in inbox
+* qa_attestation_source: —
+* docs_commit: `8475ff7` (OM §7 + roadmap B5.1)
+* notes: Nessun secondo toggle OPSEC; logica `tileFetchAllowed`/`ensureProxyConsent`/route proxy invariata. Step 3 hint Layers differito consapevolmente.
+* pending_self_reference: **risolto** — report autosync B5.1 referenzia `real_task_commit=150d6ac`
 
 <!-- pass_* = esito sintetico: PASS / FAIL / non-attestato. result_* = descrizione o evidenza sintetica. -->
 
 ## OUTPUT VERBATIM
 
-*(aggiornato da blocco B4.4 docs-only post-push — vedi commit attestation in RIEPILOGO)*
+*(Output git post-push registrato nel RIEPILOGO B5.1 e inbox orchestratore.)*
 
 ## HISTORY
+
+### WU-0009B B4.2 bsat frontend + B4.4 attestation (archiviato da B5.1 LATEST)
+
+* real_task_commit: `8d4deab`
+* real_task_subject: feat: add Bing Satellite basemap bsat via tailnet proxy (WU-0009B B4.2)
+* report_generated_at: 2026-06-17T07:00:00+02:00
+* report_updated_at: 2026-06-17T23:00:00+02:00 *(B4.4 attestation docs-only — stessa entry, no duplicato LATEST)*
+* pass_tecnico_remoto: PASS *(B4.2 push `fe6b289`)*
+* pass_operatore: **attestato**
+* result_runtime: **Browser QA OPSEC strict PASS (7/7 step)** — B4.4
+* qa_attestation_docs_commit: `eb809fc`
+* notes: Proxy Planet-Clone deploy 1e8944d; B4.3A annullato. Catena B4 Bing `bsat` chiusa end-to-end.
+* pending_self_reference: risolto — autosync B4.2 = `fe6b289`; attestation B4.4 = `80e8c64`
 
 ### Fase F3 attivazione — archiviato
 
