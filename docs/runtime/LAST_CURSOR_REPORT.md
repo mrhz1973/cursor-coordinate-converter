@@ -9,19 +9,46 @@
 * report_generated_at: 2026-06-18T01:30:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* pass_tecnico_remoto: PASS *(post-push B5.2)*
+* local_HEAD: `66338d51fc1e8adb25dceee01729bc31c067730e`
+* local_origin_main: `66338d51fc1e8adb25dceee01729bc31c067730e`
+* ls_remote_origin_main: `66338d51fc1e8adb25dceee01729bc31c067730e`
+* working_tree_status: pulito (post-push B5.2)
+* pass_tecnico_remoto: PASS *(push B5.2 `66338d5`)*
 * result_cursor: B5.2 mobile viewport containment — meta `viewport-fit=cover`; CSS mobile-only `@media (max-width:768px)` (+480px, landscape): header/topbar wrap, tile-ctrls scroll+compact, modal/drawer/help max-size, OPSEC dialog sticky Conferma/Annulla; node --check OK; nessuna modifica JS OPSEC/GIS
 * pass_operatore: non-attestato
 * result_runtime: Browser QA mobile iPhone B5.2 pending — checklist in inbox
-* docs_commit: *(post-commit)*
+* docs_commit: `8856f31`
+* autosync_commit: `66338d5`
 * notes: Regole CSS base desktop fuori `@media` invariate; solo meta viewport + blocco B5.2 additive.
-* pending_self_reference: *(post-push autosync)*
+* pending_self_reference: **risolto** — autosync B5.2 referenzia `real_task_commit=32418de`
 
 <!-- pass_* = esito sintetico: PASS / FAIL / non-attestato. result_* = descrizione o evidenza sintetica. -->
 
 ## OUTPUT VERBATIM
 
-*(Aggiornato post-push nel commit autosync B5.2.)*
+```text
+git log --oneline -5
+66338d5 docs: orchestratore + LAST_CURSOR_REPORT — B5.2 mobile viewport
+8856f31 docs: OM §7 — B5.2 mobile viewport PASS tecnico
+32418de feat(gis): contain mobile viewport for iPhone layout (B5.2)
+37789c6 docs: orchestratore — riconciliazione finito sessione
+d88824f docs: chiusura sessione finito — WU-0009B B5.1 OPSEC UX polish
+
+git status --short
+(vuoto)
+
+git rev-parse HEAD
+66338d51fc1e8adb25dceee01729bc31c067730e
+
+git rev-parse origin/main
+66338d51fc1e8adb25dceee01729bc31c067730e
+
+git branch --show-current
+main
+
+git ls-remote origin main
+66338d51fc1e8adb25dceee01729bc31c067730e	refs/heads/main
+```
 
 ## HISTORY
 
