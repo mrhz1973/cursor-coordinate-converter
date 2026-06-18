@@ -1287,7 +1287,9 @@ Stesso schema di B3.
 - messaggi per proxy non disponibile;
 - i18n.
 
-**B5.1 polish discoverability OPSEC strict (2026-06-17):** PASS tecnico statico — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; nessun secondo toggle; gate OPSEC invariati; hint Layers Satellitare differito (rebuild dinamico menu).
+**B5.1 polish discoverability OPSEC strict (2026-06-17):** PASS tecnico statico — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; nessun secondo toggle; gate OPSEC invariati; hint Layers Satellitare differito (rebuild dinamico menu). Browser QA visuale B5.1: PASS operatore.
+
+**B5.2 mobile viewport containment iPhone (2026-06-18):** PASS tecnico statico — meta `viewport-fit=cover`; blocco CSS `@media (max-width:768px)` additive (toolbar laterale scroll, header/topbar wrap, modal/drawer/help containment, dialog OPSEC sticky actions); nessuna logica GIS/OPSEC/JS modificata. Browser QA mobile: pending operatore.
 
 ### B6 — QA OPSEC/proxy/offline
 
