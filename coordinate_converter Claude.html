@@ -9273,6 +9273,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 <option value="dotted" data-i18n="rangeRings.lineDotted">Puntinata</option>
               </select>
             </label>
+            <label class="field rr-label-bg-toggle" style="display:flex;align-items:center;gap:8px;margin-top:2px">
+              <input type="checkbox" id="rrLabelBgEnabled" checked>
+              <span data-i18n="rangeRings.labelBgEnabled">Sfondo label</span>
+            </label>
+            <label class="field">
+              <span data-i18n="rangeRings.labelBgColor">Colore sfondo label</span>
+              <input type="color" id="rrLabelBgColor" value="#ffffff">
+            </label>
           </div>
         </div>
 
@@ -11657,6 +11665,8 @@ const I18N = {
     "rangeRings.lineDashLarge":"Tratteggiata grande",
     "rangeRings.lineDashSmall":"Tratteggiata piccola",
     "rangeRings.lineDotted":"Puntinata",
+    "rangeRings.labelBgEnabled":"Sfondo label",
+    "rangeRings.labelBgColor":"Colore sfondo label",
     "rangeRings.colResizeAria":"Ridimensiona colonna",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -13184,6 +13194,8 @@ const I18N = {
     "rangeRings.lineDashLarge":"Large dashed",
     "rangeRings.lineDashSmall":"Small dashed",
     "rangeRings.lineDotted":"Dotted",
+    "rangeRings.labelBgEnabled":"Label background",
+    "rangeRings.labelBgColor":"Label background color",
     "rangeRings.colResizeAria":"Resize column",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -14712,6 +14724,8 @@ const I18N = {
     "rangeRings.lineDashLarge":"Tirets longs",
     "rangeRings.lineDashSmall":"Tirets courts",
     "rangeRings.lineDotted":"Pointillée",
+    "rangeRings.labelBgEnabled":"Fond des libellés",
+    "rangeRings.labelBgColor":"Couleur du fond des libellés",
     "rangeRings.colResizeAria":"Redimensionner la colonne",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -18062,8 +18076,54 @@ const RR_DEFAULT_RING_STYLE = {
   ringColor: "#16a34a",
   ringWidth: 2,
   ringLineStyle: "solid",
-  labelColor: "#1e293b"
+  labelColor: "#1e293b",
+  labelBgEnabled: true,
+  labelBgColor: "#ffffff"
 };
+/** Bearing for distance labels — offset from radial guides at 0° / 90° / 270°. */
+const RR_LABEL_BEARING_DEG = 45;
+function rrEstimateDistanceLabelBox(text){
+  const t = String(text || "");
+  const padX = 5;
+  const padY = 3;
+  const fs = 10;
+  const w = Math.max(28, t.length * 6.2 + padX * 2);
+  const h = fs + padY * 2;
+  return { w, h };
+}
+function rrAppendDistanceLabelSvg(ns, svg, s, lbl, ox, oy){
+  const box = rrEstimateDistanceLabelBox(lbl);
+  const g = document.createElementNS(ns, "g");
+  g.setAttribute("class", "rr-distance-label-group");
+  g.setAttribute("data-rr-set-id", String(s.id || ""));
+  const bgOn = s.labelBgEnabled === true;
+  if (bgOn){
+    const rect = document.createElementNS(ns, "rect");
+    rect.setAttribute("class", "rr-distance-label-bg");
+    rect.setAttribute("x", (ox - box.w / 2).toFixed(1));
+    rect.setAttribute("y", (oy - box.h / 2).toFixed(1));
+    rect.setAttribute("width", box.w.toFixed(1));
+    rect.setAttribute("height", box.h.toFixed(1));
+    rect.setAttribute("rx", "3");
+    rect.setAttribute("ry", "3");
+    rect.setAttribute("fill", s.labelBgColor || "#ffffff");
+    rect.setAttribute("fill-opacity", "0.9");
+    rect.setAttribute("stroke", "rgba(15, 23, 42, 0.18)");
+    rect.setAttribute("stroke-width", "0.75");
+    g.appendChild(rect);
+  }
+  const tDist = document.createElementNS(ns, "text");
+  tDist.setAttribute("class", "rr-distance-label");
+  tDist.setAttribute("x", ox.toFixed(1));
+  tDist.setAttribute("y", oy.toFixed(1));
+  tDist.setAttribute("text-anchor", "middle");
+  tDist.setAttribute("dominant-baseline", "middle");
+  if (s.labelColor) tDist.setAttribute("fill", s.labelColor);
+  if (bgOn) tDist.setAttribute("stroke", "none");
+  tDist.textContent = lbl;
+  g.appendChild(tDist);
+  svg.appendChild(g);
+}
 function rrSanitizeLineStyle(v){
   const s = String(v == null ? "" : v);
   return RR_LINE_STYLES.has(s) ? s : "solid";
@@ -18244,6 +18304,15 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
       if (lc) labelColor = lc;
     } catch(_){}
   }
+  const labelBgEnabled = (typeof raw.labelBgEnabled === "boolean") ? raw.labelBgEnabled : false;
+  let labelBgColor = "#ffffff";
+  if (labelBgEnabled){
+    try {
+      labelBgColor = sanitizeTrackColor(
+        (typeof raw.labelBgColor === "string" && raw.labelBgColor.trim()) ? raw.labelBgColor.trim() : "#ffffff"
+      );
+    } catch(_){ labelBgColor = "#ffffff"; }
+  }
   const vis = (raw.visible === false) ? false : true;
   const cAt = Number(raw.createdAt);
   const createdAt = Number.isFinite(cAt) && cAt > 0 ? cAt : Date.now();
@@ -18263,6 +18332,10 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
     createdAt: createdAt
   };
   if (labelColor) out.labelColor = labelColor;
+  if (labelBgEnabled){
+    out.labelBgEnabled = true;
+    out.labelBgColor = labelBgColor;
+  }
   return out;
 }
 function sanitizeRangeRingSets(raw){
@@ -18301,6 +18374,8 @@ function createRangeRingSetDraft(input){
     labelMode: input.labelMode,
     lineStyle: input.lineStyle,
     labelColor: input.labelColor,
+    labelBgEnabled: input.labelBgEnabled,
+    labelBgColor: input.labelBgColor,
     visible: input.visible,
     createdAt: input.createdAt
   }, 0);
@@ -29162,7 +29237,6 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
     for (const radiusM of dists){
       const r = Number(radiusM);
       if (!Number.isFinite(r) || r <= 0 || r > RANGE_RING_MAX_RADIUS_M) continue;
-      let pEnd0 = null;
       for (const br of RR_GUIDE_BEARINGS){
         const vd = vincentyDirect(c.lat, c.lon, r, br);
         if (!vd || !Number.isFinite(vd.lat) || !Number.isFinite(vd.lon)) continue;
@@ -29170,7 +29244,6 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
         if (!pEnd || !Number.isFinite(pEnd.x) || !Number.isFinite(pEnd.y)) continue;
         const x2 = pEnd.x - tx;
         const y2 = pEnd.y - ty;
-        if (br === 0) pEnd0 = { x: x2, y: y2 };
         const ln = document.createElementNS(ns, "line");
         ln.setAttribute("x1", cx.toFixed(2));
         ln.setAttribute("y1", cy.toFixed(2));
@@ -29184,25 +29257,23 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
         svg.appendChild(ln);
       }
       const lbl = rrFormatDistanceLabel(r, unit);
-      if (lbl && pEnd0){
-        const vx = pEnd0.x - cx;
-        const vy = pEnd0.y - cy;
-        const len = Math.hypot(vx, vy);
-        const ux = len > 1e-6 ? vx / len : 1;
-        const uy = len > 1e-6 ? vy / len : 0;
-        const px = -uy, py = ux;
-        const ox = pEnd0.x + ux * 11 + px * 5;
-        const oy = pEnd0.y + uy * 11 + py * 5;
-        const tDist = document.createElementNS(ns, "text");
-        tDist.setAttribute("class", "rr-distance-label");
-        tDist.setAttribute("x", ox.toFixed(1));
-        tDist.setAttribute("y", oy.toFixed(1));
-        tDist.setAttribute("text-anchor", "middle");
-        tDist.setAttribute("dominant-baseline", "middle");
-        tDist.setAttribute("data-rr-set-id", String(s.id || ""));
-        if (s.labelColor) tDist.setAttribute("fill", s.labelColor);
-        tDist.textContent = lbl;
-        svg.appendChild(tDist);
+      if (lbl){
+        const vdLbl = vincentyDirect(c.lat, c.lon, r, RR_LABEL_BEARING_DEG);
+        if (vdLbl && Number.isFinite(vdLbl.lat) && Number.isFinite(vdLbl.lon)){
+          const pLbl = tileMapLatLonToPx(root, vdLbl.lat, vdLbl.lon);
+          if (pLbl && Number.isFinite(pLbl.x) && Number.isFinite(pLbl.y)){
+            const lx = pLbl.x - tx;
+            const ly = pLbl.y - ty;
+            const vx = lx - cx;
+            const vy = ly - cy;
+            const len = Math.hypot(vx, vy);
+            const ux = len > 1e-6 ? vx / len : 1;
+            const uy = len > 1e-6 ? vy / len : 0;
+            const ox = lx + ux * 10;
+            const oy = ly + uy * 10;
+            rrAppendDistanceLabelSvg(ns, svg, s, lbl, ox, oy);
+          }
+        }
       }
     }
   }
@@ -36571,7 +36642,9 @@ function rrLoadSetIntoForm(s){
       ringColor: s.color,
       ringWidth: s.strokeWidth,
       ringLineStyle: s.lineStyle,
-      labelColor: s.labelColor || RR_DEFAULT_RING_STYLE.labelColor
+      labelColor: s.labelColor || RR_DEFAULT_RING_STYLE.labelColor,
+      labelBgEnabled: s.labelBgEnabled === true,
+      labelBgColor: s.labelBgColor || RR_DEFAULT_RING_STYLE.labelBgColor
     });
   } catch(_){}
   const c = s.center;
@@ -36653,6 +36726,8 @@ function rrSaveEditedRangeRingSetFromUi(){
     strokeWidth: st.ringWidth,
     lineStyle: st.ringLineStyle,
     labelColor: st.labelColor,
+    labelBgEnabled: st.labelBgEnabled,
+    labelBgColor: st.labelBgColor,
     opacity: s.opacity,
     labelMode: s.labelMode,
     visible: s.visible,
@@ -37895,6 +37970,8 @@ function rrCreateFromUi(){
     strokeWidth: st.ringWidth,
     lineStyle: st.ringLineStyle,
     labelColor: st.labelColor,
+    labelBgEnabled: st.labelBgEnabled,
+    labelBgColor: st.labelBgColor,
     opacity: 0.55,
     labelMode: "name",
     visible: true,
@@ -37933,19 +38010,30 @@ function ensureRangeRingsStyleState(){
       ringColor: RR_DEFAULT_RING_STYLE.ringColor,
       ringWidth: RR_DEFAULT_RING_STYLE.ringWidth,
       ringLineStyle: RR_DEFAULT_RING_STYLE.ringLineStyle,
-      labelColor: RR_DEFAULT_RING_STYLE.labelColor
+      labelColor: RR_DEFAULT_RING_STYLE.labelColor,
+      labelBgEnabled: RR_DEFAULT_RING_STYLE.labelBgEnabled,
+      labelBgColor: RR_DEFAULT_RING_STYLE.labelBgColor
     };
   }
+}
+function rrSyncLabelBgColorControlState(){
+  const bgEn = document.getElementById("rrLabelBgEnabled");
+  const bgCol = document.getElementById("rrLabelBgColor");
+  if (bgCol && bgEn) bgCol.disabled = !bgEn.checked;
 }
 function rrReadStyleFromForm(){
   const ringColorEl = document.getElementById("rrRingColor");
   const labelColorEl = document.getElementById("rrLabelColor");
   const widthEl = document.getElementById("rrRingWidth");
   const lineEl = document.getElementById("rrRingLineStyle");
+  const bgEnEl = document.getElementById("rrLabelBgEnabled");
+  const bgColEl = document.getElementById("rrLabelBgColor");
   let ringColor = RR_DEFAULT_RING_STYLE.ringColor;
   let labelColor = RR_DEFAULT_RING_STYLE.labelColor;
   let ringWidth = RR_DEFAULT_RING_STYLE.ringWidth;
   let ringLineStyle = RR_DEFAULT_RING_STYLE.ringLineStyle;
+  let labelBgEnabled = RR_DEFAULT_RING_STYLE.labelBgEnabled;
+  let labelBgColor = RR_DEFAULT_RING_STYLE.labelBgColor;
   try {
     if (ringColorEl && ringColorEl.value) ringColor = sanitizeTrackColor(ringColorEl.value);
   } catch(_){}
@@ -37957,7 +38045,11 @@ function rrReadStyleFromForm(){
     if (Number.isFinite(w)) ringWidth = Math.max(1, Math.min(8, w));
   }
   ringLineStyle = rrSanitizeLineStyle(lineEl ? lineEl.value : "");
-  return { ringColor, ringWidth, ringLineStyle, labelColor };
+  if (bgEnEl) labelBgEnabled = !!bgEnEl.checked;
+  try {
+    if (bgColEl && bgColEl.value) labelBgColor = sanitizeTrackColor(bgColEl.value);
+  } catch(_){}
+  return { ringColor, ringWidth, ringLineStyle, labelColor, labelBgEnabled, labelBgColor };
 }
 function rrApplyStyleToForm(st){
   st = st || RR_DEFAULT_RING_STYLE;
@@ -37965,14 +38057,21 @@ function rrApplyStyleToForm(st){
   const labelColorEl = document.getElementById("rrLabelColor");
   const widthEl = document.getElementById("rrRingWidth");
   const lineEl = document.getElementById("rrRingLineStyle");
+  const bgEnEl = document.getElementById("rrLabelBgEnabled");
+  const bgColEl = document.getElementById("rrLabelBgColor");
   const rc = st.ringColor || st.color || RR_DEFAULT_RING_STYLE.ringColor;
   const lc = st.labelColor || RR_DEFAULT_RING_STYLE.labelColor;
   const rw = (st.ringWidth != null) ? st.ringWidth : ((st.strokeWidth != null) ? st.strokeWidth : RR_DEFAULT_RING_STYLE.ringWidth);
   const ls = rrSanitizeLineStyle(st.ringLineStyle != null ? st.ringLineStyle : st.lineStyle);
+  const lbe = (st.labelBgEnabled != null) ? !!st.labelBgEnabled : RR_DEFAULT_RING_STYLE.labelBgEnabled;
+  const lbc = st.labelBgColor || RR_DEFAULT_RING_STYLE.labelBgColor;
   if (ringColorEl) ringColorEl.value = rc;
   if (labelColorEl) labelColorEl.value = lc;
   if (widthEl) widthEl.value = String(rw);
   if (lineEl) lineEl.value = ls;
+  if (bgEnEl) bgEnEl.checked = lbe;
+  if (bgColEl) bgColEl.value = lbc;
+  try { rrSyncLabelBgColorControlState(); } catch(_){}
   rrSyncRangeRingsStyleFromForm();
 }
 function rrSyncRangeRingsStyleFromForm(){
@@ -37982,15 +38081,23 @@ function rrSyncRangeRingsStyleFromForm(){
   state.rangeRingsStyle.ringWidth = st.ringWidth;
   state.rangeRingsStyle.ringLineStyle = st.ringLineStyle;
   state.rangeRingsStyle.labelColor = st.labelColor;
+  state.rangeRingsStyle.labelBgEnabled = st.labelBgEnabled;
+  state.rangeRingsStyle.labelBgColor = st.labelBgColor;
+  try { rrSyncLabelBgColorControlState(); } catch(_){}
 }
 function rrWireRangeRingsStyleControls(){
-  const ids = ["rrRingColor", "rrLabelColor", "rrRingWidth", "rrRingLineStyle"];
+  const ids = ["rrRingColor", "rrLabelColor", "rrRingWidth", "rrRingLineStyle", "rrLabelBgColor"];
   for (const id of ids){
     const el = document.getElementById(id);
     if (!el || el._rrStyleWired) continue;
     el._rrStyleWired = true;
     el.addEventListener("input", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
     el.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
+  }
+  const bgEn = document.getElementById("rrLabelBgEnabled");
+  if (bgEn && !bgEn._rrStyleWired){
+    bgEn._rrStyleWired = true;
+    bgEn.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
   }
 }
 function rrFormatPresetChipLabel(values, unit){
