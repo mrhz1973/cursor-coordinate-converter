@@ -2633,6 +2633,13 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   padding-left:6px; border-left:1px solid rgba(0,0,0,.2);
 }
 
+.jpg-export-dialog-body .jpg-export-scale-opt{
+  display:flex; align-items:center; gap:8px; margin:10px 0 14px; font-size:.9rem;
+}
+.jpg-export-dialog-actions{
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
+}
+
 
 /* =====================================================================
  * BOTTOM-RIGHT READOUT STACK
@@ -9781,6 +9788,26 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
+<!-- JPG export options (B5.4): optional scale on canvas before toBlob. -->
+<dialog id="jpgExportDialog" class="app-modal jpg-export-dialog" aria-labelledby="jpgExportDialogTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="jpgExportDialogTitle" class="app-modal-title" data-i18n="export.jpg.dialogTitle">Esporta mappa JPG</h2>
+    <button type="button" class="app-modal-close" id="jpgExportDialogClose"
+            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body jpg-export-dialog-body">
+    <p class="hint" data-i18n="export.jpg.dialogBody">Esporta la vista corrente della mappa come immagine JPEG.</p>
+    <label class="jpg-export-scale-opt">
+      <input type="checkbox" id="jpgExportIncludeScale">
+      <span data-i18n="export.jpg.includeScale">Includi scala</span>
+    </label>
+    <div class="jpg-export-dialog-actions">
+      <button type="button" class="btn" id="jpgExportDialogCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
+      <button type="button" class="btn btn-primary" id="jpgExportDialogConfirm" data-i18n="export.jpg.confirm">Esporta JPG</button>
+    </div>
+  </div>
+</dialog>
+
 <!-- Waypoint-only export format picker (pattern Export dialog — step 1). -->
 <dialog id="waypointExportDialog" class="app-modal waypoint-export-dialog" aria-labelledby="waypointExportDialogTitle" aria-modal="true">
   <div class="app-modal-head">
@@ -11770,6 +11797,10 @@ const I18N = {
     "export.jpg.ok":"Esportazione JPG completata.",
     "export.jpg.tainted":"Impossibile esportare JPG: alcuni tile della mappa bloccano il canvas (limite CORS). Riprova dopo aver scaricato i tile in offline.",
     "export.jpg.fail":"Esportazione JPG non riuscita.",
+    "export.jpg.dialogTitle":"Esporta mappa JPG",
+    "export.jpg.dialogBody":"Esporta la vista corrente della mappa come immagine JPEG.",
+    "export.jpg.includeScale":"Includi scala",
+    "export.jpg.confirm":"Esporta JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
     "offcache.exportJpg":"Esporta JPG offline",
@@ -13284,6 +13315,10 @@ const I18N = {
     "export.jpg.ok":"JPG export completed.",
     "export.jpg.tainted":"Cannot export JPG: some map tiles taint the canvas (CORS limit). Try again after caching tiles offline.",
     "export.jpg.fail":"JPG export failed.",
+    "export.jpg.dialogTitle":"Export map JPG",
+    "export.jpg.dialogBody":"Export the current map view as a JPEG image.",
+    "export.jpg.includeScale":"Include scale",
+    "export.jpg.confirm":"Export JPG",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
     "offcache.exportJpg":"Export offline JPG",
@@ -14799,6 +14834,10 @@ const I18N = {
     "export.jpg.ok":"Export JPG terminé.",
     "export.jpg.tainted":"Impossible d'exporter en JPG : certaines tuiles bloquent le canvas (limite CORS). Réessayez après avoir mis les tuiles en cache hors ligne.",
     "export.jpg.fail":"Échec de l'export JPG.",
+    "export.jpg.dialogTitle":"Exporter la carte en JPG",
+    "export.jpg.dialogBody":"Exporter la vue actuelle de la carte en image JPEG.",
+    "export.jpg.includeScale":"Inclure l'échelle",
+    "export.jpg.confirm":"Exporter JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
     "offcache.exportJpg":"Exporter JPG hors ligne",
@@ -19271,7 +19310,9 @@ async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh){
   }
 }
 
-async function exportMapAsJpg(){
+async function exportMapAsJpg(opts){
+  opts = opts || {};
+  const includeScale = !!opts.includeScale;
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (!tileMap){
@@ -19315,6 +19356,17 @@ async function exportMapAsJpg(){
     await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
   }
 
+  if (includeScale){
+    try {
+      const zoom = state.mapZoom || 11;
+      const vc = state.viewCenter || state.lastPoint;
+      const lat = (vc && Number.isFinite(vc.lat)) ? vc.lat : 44.1028;
+      const size = state.mapSize || "small";
+      const model = computeMapScaleModel(zoom, lat, size, W);
+      drawJpgExportScale(ctx, W, H, model);
+    } catch(_){}
+  }
+
   try {
     const blob = await new Promise((resolve, reject) => {
       try {
@@ -19333,6 +19385,25 @@ async function exportMapAsJpg(){
     const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
     try { showError(tainted ? t("export.jpg.tainted") : t("export.jpg.fail")); } catch(_){}
   }
+}
+
+let _jpgExportIncludeScale = false;
+
+function closeJpgExportDialog(){
+  const dlg = document.getElementById("jpgExportDialog");
+  if (!dlg) return;
+  try { dlg.close(); } catch(_){ dlg.removeAttribute("open"); }
+}
+
+function openJpgExportDialog(){
+  const dlg = document.getElementById("jpgExportDialog");
+  if (!dlg){
+    exportMapAsJpg({ includeScale: false });
+    return;
+  }
+  const cb = document.getElementById("jpgExportIncludeScale");
+  if (cb) cb.checked = !!_jpgExportIncludeScale;
+  try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
 /* ----------------------------------------------------------------------
@@ -24039,6 +24110,106 @@ function formatScaleKmCenter(meters){
   return (Math.round(km * 100) / 100).toFixed(2);
 }
 
+/** Shared scale model for UI legend and JPG export (B5.3b / B5.4). */
+function computeMapScaleModel(zoom, lat, size, mapW){
+  const mpp = 156543.03392 * Math.cos(lat * DEG) / Math.pow(2, zoom);
+  const desiredPx = (size === "half" || size === "full") ? 540 : 270;
+  const cap = (typeof mapW === "number" && mapW > 0) ? Math.floor(mapW * 0.42) : desiredPx;
+  const targetPx = Math.max(160, Math.min(desiredPx, cap));
+  const targetM = mpp * targetPx;
+  const candidates = [1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,
+                      50000,100000,200000,500000,1000000,2000000,5000000];
+  let pickM = candidates[0];
+  for (const c of candidates) if (c <= targetM) pickM = c;
+  const pickPx = pickM / mpp;
+  const nmCandidates = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
+  let pickNm = nmCandidates[0];
+  const targetNm = targetM / 1852;
+  for (const c of nmCandidates) if (c <= targetNm) pickNm = c;
+  const pickPxNm = (pickNm * 1852) / mpp;
+  const ratio = mpp / 0.00028;
+  const ratioLabel = (ratio >= 1_000_000)
+    ? "1:" + (Math.round(ratio/1e6 * 10)/10) + "M"
+    : (ratio >= 10_000)
+      ? "1:" + Math.round(ratio/1000) + "k"
+      : "1:" + Math.round(ratio);
+  return {
+    pickM, pickPx, pickNm, pickPxNm, mpp, ratioLabel,
+    metricLabel: formatScaleMetricDisplay(pickM, "km"),
+    metricMidLabel: formatScaleKmCenter(pickM / 2) + " km",
+    nmLabel: formatScaleNmLabel(pickNm),
+    nmMidLabel: formatScaleNmLabel(pickNm / 2)
+  };
+}
+
+function drawJpgExportScaleBar(ctx, x, y, width, height, tickCount){
+  if (!ctx || width <= 0 || height <= 0) return;
+  ctx.fillStyle = "#111";
+  ctx.fillRect(x, y, width, height);
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 1;
+  const step = width / tickCount;
+  for (let i = 1; i < tickCount; i++){
+    const tx = x + i * step;
+    ctx.beginPath();
+    ctx.moveTo(Math.round(tx) + 0.5, y);
+    ctx.lineTo(Math.round(tx) + 0.5, y + height);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = "#111";
+  ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+}
+
+/** Draw optional scale legend on JPG export canvas (B5.4) — canvas 2D only. */
+function drawJpgExportScale(ctx, canvasW, canvasH, model){
+  if (!ctx || !model || canvasW <= 0 || canvasH <= 0) return;
+  const pad = Math.max(6, Math.round(Math.min(canvasW, canvasH) * 0.012));
+  const fontSize = Math.max(9, Math.min(12, Math.round(canvasW * 0.022)));
+  const barH = Math.max(3, Math.round(fontSize * 0.38));
+  const lineGap = Math.max(3, Math.round(fontSize * 0.32));
+  const maxBarW = Math.max(40, Math.min(model.pickPx, canvasW * 0.36));
+  const maxBarWNm = Math.max(40, Math.min(model.pickPxNm, canvasW * 0.36));
+  const showNm = canvasW >= 180 && canvasH >= 90;
+  ctx.save();
+  ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
+  ctx.textBaseline = "alphabetic";
+  const metricW = ctx.measureText(model.metricLabel).width;
+  const ratioFs = Math.max(8, fontSize - 1);
+  ctx.font = "600 " + ratioFs + "px ui-monospace,monospace";
+  const ratioW = ctx.measureText(model.ratioLabel).width;
+  let boxW = pad * 2 + Math.max(metricW, maxBarW, ratioW);
+  let boxH = pad * 2 + fontSize + lineGap + barH + lineGap + ratioFs;
+  if (showNm){
+    ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
+    boxW = Math.max(boxW, pad * 2 + Math.max(ctx.measureText(model.nmLabel).width, maxBarWNm));
+    boxH += lineGap + fontSize + lineGap + barH;
+  }
+  const boxX = pad;
+  const boxY = canvasH - pad - boxH;
+  ctx.fillStyle = "rgba(255,255,255,0.88)";
+  ctx.fillRect(boxX, boxY, boxW, boxH);
+  ctx.strokeStyle = "rgba(0,0,0,0.22)";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(boxX + 0.5, boxY + 0.5, boxW - 1, boxH - 1);
+  let cy = boxY + pad + fontSize;
+  ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
+  ctx.fillStyle = "#111";
+  ctx.fillText(model.metricLabel, boxX + pad, cy);
+  cy += lineGap;
+  drawJpgExportScaleBar(ctx, boxX + pad, cy, maxBarW, barH, 10);
+  cy += barH + lineGap;
+  if (showNm){
+    ctx.fillText(model.nmLabel, boxX + pad, cy);
+    cy += lineGap;
+    drawJpgExportScaleBar(ctx, boxX + pad, cy, maxBarWNm, barH, 10);
+    cy += barH + lineGap;
+  }
+  ctx.font = "600 " + ratioFs + "px ui-monospace,monospace";
+  ctx.fillStyle = "rgba(0,0,0,0.78)";
+  ctx.fillText(model.ratioLabel, boxX + pad, cy);
+  ctx.restore();
+}
+
 /**
  * Build the scale legend HTML (B5.3a): metric km + mi secondary; 10-tick bars; Nm bar; 1:N ratio.
  * Shows both a metric scale bar (e.g. "500 m") AND the cartographic ratio
@@ -24047,65 +24218,32 @@ function formatScaleKmCenter(meters){
  * web mapping libraries (Leaflet, OpenLayers) when rendering 1:N scales.
  */
 function buildScaleBar(zoom, lat, size, mapW){
-  // Meters per pixel at this zoom and latitude (Web Mercator scale factor).
-  const mpp = 156543.03392 * Math.cos(lat * DEG) / Math.pow(2, zoom);
-  // Small map hides the scale completely; half/full get a longer scale for readability.
-  const desiredPx = (size === "half" || size === "full") ? 540 : 270;
-  // Keep the bar inside the viewport: cap by a fraction of the map width.
-  const cap = (typeof mapW === "number" && mapW > 0) ? Math.floor(mapW * 0.42) : desiredPx;
-  const targetPx = Math.max(160, Math.min(desiredPx, cap));
-  const targetM  = mpp * targetPx;
-  // Snap to 1, 2, 5 × 10^n meters.
-  const candidates = [1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,
-                      50000,100000,200000,500000,1000000,2000000,5000000];
-  let pickM = candidates[0];
-  for (const c of candidates) if (c <= targetM) pickM = c;
-  const pickPx = pickM / mpp;
-  const stepPx = (pickPx / 10).toFixed(2);
-  const metricLabel = formatScaleMetricDisplay(pickM, "km");
-  const metricMidLabel = formatScaleKmCenter(pickM / 2) + " km";
-
-  // Nautical: snap to nice Nm values; same targetM cap logic.
-  const nmCandidates = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
-  let pickNm = nmCandidates[0];
-  const targetNm = targetM / 1852;
-  for (const c of nmCandidates) if (c <= targetNm) pickNm = c;
-  const pickPxNm = (pickNm * 1852) / mpp;
-  const stepPxNm = (pickPxNm / 10).toFixed(2);
-  const nmLabel = formatScaleNmLabel(pickNm);
-  const nmMidLabel = formatScaleNmLabel(pickNm / 2);
-
-  // Cartographic ratio: meters-per-pixel ÷ meters-per-screen-pixel.
-  // 0.00028 m/px ≈ 96 DPI reference used across GIS tooling.
-  const ratio = mpp / 0.00028;
-  const ratioLabel = (ratio >= 1_000_000)
-    ? "1:" + (Math.round(ratio/1e6 * 10)/10) + "M"
-    : (ratio >= 10_000)
-      ? "1:" + Math.round(ratio/1000) + "k"
-      : "1:" + Math.round(ratio);
+  const m = computeMapScaleModel(zoom, lat, size, mapW);
+  const stepPx = (m.pickPx / 10).toFixed(2);
+  const stepPxNm = (m.pickPxNm / 10).toFixed(2);
 
   return `<div class="tile-scale" aria-hidden="true">
     <div class="tile-scale-row tile-scale-row-metric">
       <div class="tile-scale-bar-row">
         <div class="tile-scale-bar-wrap">
-          <div class="tile-scale-bar" style="width:${pickPx.toFixed(1)}px;--scale-step:${stepPx}px"></div>
-          <span class="tile-scale-mid-label">${metricMidLabel}</span>
+          <div class="tile-scale-bar" style="width:${m.pickPx.toFixed(1)}px;--scale-step:${stepPx}px"></div>
+          <span class="tile-scale-mid-label">${m.metricMidLabel}</span>
         </div>
       </div>
       <div class="tile-scale-labels">
-        <span class="tile-scale-label tile-scale-label-metric">${metricLabel}</span>
-        <span class="tile-scale-ratio">${ratioLabel}</span>
+        <span class="tile-scale-label tile-scale-label-metric">${m.metricLabel}</span>
+        <span class="tile-scale-ratio">${m.ratioLabel}</span>
       </div>
     </div>
     <div class="tile-scale-row tile-scale-row-naut">
       <div class="tile-scale-bar-row">
         <div class="tile-scale-bar-wrap">
-          <div class="tile-scale-bar tile-scale-bar-naut" style="width:${pickPxNm.toFixed(1)}px;--scale-step:${stepPxNm}px"></div>
-          <span class="tile-scale-mid-label">${nmMidLabel}</span>
+          <div class="tile-scale-bar tile-scale-bar-naut" style="width:${m.pickPxNm.toFixed(1)}px;--scale-step:${stepPxNm}px"></div>
+          <span class="tile-scale-mid-label">${m.nmMidLabel}</span>
         </div>
       </div>
       <div class="tile-scale-labels">
-        <span class="tile-scale-label tile-scale-label-naut">${nmLabel}</span>
+        <span class="tile-scale-label tile-scale-label-naut">${m.nmLabel}</span>
       </div>
     </div>
   </div>`;
@@ -37985,7 +38123,26 @@ function bindUI(){
   // Print (⎙): schermata risultati. Report missione: vedi "Report (stampa)" nei favoriti.
   document.getElementById("btnPrint").addEventListener("click", () => { document.body.classList.remove("printing-report"); window.print(); });
   const btnExportJpgEl = document.getElementById("btnExportJpg");
-  if (btnExportJpgEl) btnExportJpgEl.addEventListener("click", () => { try { exportMapAsJpg(); } catch(_){} });
+  if (btnExportJpgEl) btnExportJpgEl.addEventListener("click", () => { try { openJpgExportDialog(); } catch(_){} });
+  const jpgExportDlg = document.getElementById("jpgExportDialog");
+  const jpgExportClose = document.getElementById("jpgExportDialogClose");
+  const jpgExportCancel = document.getElementById("jpgExportDialogCancel");
+  const jpgExportConfirm = document.getElementById("jpgExportDialogConfirm");
+  const jpgExportScaleCb = document.getElementById("jpgExportIncludeScale");
+  if (jpgExportScaleCb) jpgExportScaleCb.addEventListener("change", () => {
+    _jpgExportIncludeScale = !!jpgExportScaleCb.checked;
+  });
+  if (jpgExportClose) jpgExportClose.addEventListener("click", closeJpgExportDialog);
+  if (jpgExportCancel) jpgExportCancel.addEventListener("click", closeJpgExportDialog);
+  if (jpgExportDlg) jpgExportDlg.addEventListener("click", (ev) => {
+    if (ev.target && ev.target.id === "jpgExportDialog") closeJpgExportDialog();
+  });
+  if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
+    const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
+    _jpgExportIncludeScale = includeScale;
+    closeJpgExportDialog();
+    exportMapAsJpg({ includeScale }).catch(() => {});
+  });
 
   const btnPr = document.getElementById("btnPrintReport");
   if (btnPr) btnPr.addEventListener("click", () => openPrintReport());
