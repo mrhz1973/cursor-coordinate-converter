@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-19 — **WU-0009B B6.1 fix Range Rings creazione manuale (runtime):** commit **`cc86daf`** — `#rrCreateBtn` visibile quando centro risolvibile; primary unico; default `NM` + reset `1, 5, 10`; parser/overlay invariati. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_1200_riepilogo_b61-range-rings-create-fix.md`**. **Prossimo:** QA B6.1 post-deploy.
+
 2026-06-19 — **WU-0009B B5.4d ratio sx / tabella dx export JPG (runtime):** commit runtime **`ed3f948`** — layout due colonne; ratio centrata verticalmente a sinistra; tabella metrica/Nm a destra. Docs **`ea57923`**. Autosync **`dce8e3a`**. Inbox **`2026-06-19_1700_riepilogo_b54d-jpg-scale-two-column.md`**. **QA export operatore:** pending.
 
 2026-06-19 — **WU-0009B B5.4c ratio 1:N export JPG (runtime):** commit runtime **`f70b35d`** — ratio sempre presente/leggibile; Nm declassabile; box bianco opaco preservato. Docs **`7dee25d`**. Autosync **`0f9837a`**. Inbox **`2026-06-19_1630_riepilogo_b54c-jpg-scale-ratio.md`**. **QA export operatore:** pending.
