@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B5.4 export JPEG scala opzionale (runtime):** commit runtime **`4d40fae`** — dialog `#jpgExportDialog`; checkbox «Includi scala»; `drawJpgExportScale` canvas 2D; export base preservato. Docs **`0e92b8c`**. Autosync **`7e2d8fd`**. **Monolite versionato** runtime. **QA export operatore:** pending. Inbox **`2026-06-19_1509_riepilogo_b54-jpg-scale-export.md`**. **Prossimo:** QA export operatore; B6.
+2026-06-19 — **WU-0009B B5.4a box scala JPG bianco pieno (runtime):** commit runtime **`5500c26`** — `drawJpgExportScale` sfondo opaco `#ffffff`; nessun cambio calcoli/export base. Docs **`TBD_DOCS`**. Inbox **`2026-06-19_1515_riepilogo_b54a-jpg-scale-box-opaque.md`**. **QA export operatore:** pending.
+
+2026-06-19 — **WU-0009B B5.4 export JPEG scala opzionale (runtime):** commit runtime **`4d40fae`**. **QA export operatore:** pending. Inbox **`2026-06-19_1509_riepilogo_b54-jpg-scale-export.md`**.
 
 2026-06-19 — **WU-0009B B5.x QA visuale bundlata PASS operatore (docs-only):** deploy VPS **`fec53ca`** PASS; **QA visuale bundlata B5.1+B5.2+B5.3b PASS operatore**. Runtime ultimo **`ad7d977`**. Inbox **`2026-06-19_qa-visuale-b5x-pass-operatore.md`**. **Prossimo:** B5.4; B6.
 
