@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B6.3b Range Rings edit style parity (runtime):** commit **`50b0a86`** — `rrApplySanitizedRangeRingSet` fix merge edit; load/save parità stile B6.3/B6.3a. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2300_riepilogo_b63b-range-rings-edit-style-parity.md`**.
+2026-06-19 — **WU-0009B B6.3c center map on Range Rings edit (runtime):** commit **`20d2141`** — `rrFocusRangeRingSetOnMap` su click Modifica; fit anello esterno via `vincentyDirect` + euristica zoom esistente; fallback `gisMapCenterOnLatLon`. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2345_riepilogo_b63c-range-rings-edit-center-map.md`**.
+
+2026-06-19 — **WU-0009B B6.3b Range Rings edit style parity (runtime):** commit **`50b0a86`** — `rrApplySanitizedRangeRingSet` fix merge edit; load/save parità stile B6.3/B6.3a. **Monolite incluso.** **QA operatore:** PASS. Inbox **`2026-06-19_2300_riepilogo_b63b-range-rings-edit-style-parity.md`**.
 
 2026-06-19 — **WU-0009B B6.3a label readability:** commit **`22f19f1`**. **QA operatore:** PASS.
 
