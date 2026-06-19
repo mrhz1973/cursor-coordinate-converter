@@ -1299,11 +1299,11 @@ Stesso schema di B3.
 
 **QA visuale bundlata B5.1+B5.2+B5.3b (2026-06-19):** **PASS operatore** — attestazione operatore post-deploy; non AI.
 
-**B5.4 candidato backlog:** export JPEG con scala opzionale disegnata su canvas 2D (`fillRect`/`stroke`/`fillText`, riuso pick/format scala; nessun `foreignObject`; nessuna rasterizzazione HTML `.tile-scale`).
+**B5.4 export JPEG con scala opzionale (2026-06-19):** PASS tecnico statico — dialog `#jpgExportDialog` con checkbox «Includi scala» (default off); `drawJpgExportScale` su canvas 2D prima di `toBlob("image/jpeg")`; riuso `computeMapScaleModel`; nessun `foreignObject`; export base preservato. Browser QA export operatore: pending.
+
+**Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 PASS tecnico; QA export operatore pending.
 
 ### B6 — QA OPSEC/proxy/offline
-
-**Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 resta backlog.
 
 Test:
 
