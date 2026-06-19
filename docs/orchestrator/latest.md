@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.4a-2 Range Rings panel full-height + build label:** commit **`656dd13`** — `_rangeRingsPanelLayoutOpts` (fraction 0.92, cap 100000, topbarReserve 104); altezza default da `fromReserve` + bottom-anchor; build label `B6.4a-2` (`APP_BUILD_ID`, title/footer/About); OM §7 + roadmap + checkpoint. **Monolite incluso.** **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS `:8000`. Inbox **`2026-06-20_0020_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS + QA operatore B6.4a-2.
+
 2026-06-19 — **WU-0009B B6.4 Range Rings radial line controls (runtime):** commit **`d0a4a0a`** — toggle/count/color/width/line style spokes; `rrGetSpokeBearings` (default 3 → 0/90/270); label bearing dinamico anti-overlap; spokes al raggio max (non più per-anello). **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2400_riepilogo_b64-range-rings-radial-spokes.md`**.
 
 2026-06-19 — **WU-0009B B6.3c center map on Range Rings edit (runtime):** commit **`20d2141`**. **QA operatore:** PASS.

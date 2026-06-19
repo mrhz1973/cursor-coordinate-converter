@@ -2,48 +2,34 @@
 
 ## LATEST
 
-* real_task_commit: `d0a4a0a`
-* real_task_subject: feat(gis): add Range Rings radial line controls (B6.4)
-* report_generated_at: 2026-06-20T00:00:00+02:00
+* real_task_commit: `656dd13`
+* real_task_subject: feat(gis): Range Rings panel full-height default + build label (B6.4a-2)
+* report_generated_at: 2026-06-20T00:20:00+02:00
 * branch: main
-* pass_tecnico_remoto: PASS
-* result_cursor: B6.4 — configurable radial spokes (toggle/count/color/width/line style); rrGetSpokeBearings default 3 preserves 0/90/270; dynamic label bearing; spokes to max radius; node --check OK
+* remote_hash_authority: PENDING_SELF_REFERENCE
+* local_HEAD: PENDING_SELF_REFERENCE
+* local_origin_main: PENDING_SELF_REFERENCE
+* ls_remote_origin_main: PENDING_SELF_REFERENCE
+* working_tree_status: PENDING_SELF_REFERENCE
+* pass_tecnico_remoto: PENDING_SELF_REFERENCE
+* result_cursor: B6.4a-2 — _rangeRingsPanelLayoutOpts full-height (0.92/100000/104 fromReserve); APP_BUILD_ID B6.4a-2 title/footer/About; node --check OK
 * pass_operatore: non-attestato
-* docs_commit: `9b65565`
-* autosync_commit: `9b65565`
+* result_runtime: QA operatore deferred post-deploy VPS :8000 (mappe tailscale non affidabili in locale)
+* qa_attestation_source: —
+* notes: Monolite in commit principale 656dd13; docs OM/roadmap/checkpoint stesso commit
+* pending_self_reference: autosync commit step 4
+* docs_commit: `656dd13`
+* autosync_commit: PENDING_SELF_REFERENCE
 
 ## OUTPUT VERBATIM
 
 ```text
-git log --oneline -5
-9b65565 docs: orchestratore + LAST_CURSOR_REPORT — B6.4 radial spokes
-d0a4a0a feat(gis): add Range Rings radial line controls (B6.4)
-d1a73db docs: LAST_CURSOR_REPORT — backfill autosync hash B6.3c
-9a86966 docs: orchestratore + LAST_CURSOR_REPORT — B6.3c edit center map
-20d2141 fix(gis): center map on Range Rings edit (B6.3c)
-
-git status --short
-(vuoto post-backfill)
-
-git rev-parse HEAD
-9b65565415156add066aa65dbdf502cc402ef073
-
-git rev-parse origin/main
-9b65565415156add066aa65dbdf502cc402ef073
-
-git branch --show-current
-main
-
-git ls-remote origin main
-9b65565415156add066aa65dbdf502cc402ef073	refs/heads/main
-
-git show --stat d0a4a0a
- coordinate_converter Claude.html | 255 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 229 insertions(+), 26 deletions(-)
+(pending post-push step 4 — backfill after orchestrator commit)
 ```
 
 ## HISTORY
 
+* B6.4 `d0a4a0a` — PASS tecnico remoto; QA operatore non-attestato; autosync `9b65565`
 * B6.3c `20d2141` — PASS operatore
 * B6.3b `50b0a86` — PASS operatore
 * B6.3a `22f19f1` — PASS operatore
