@@ -4695,7 +4695,8 @@ html[data-theme="dark"] .range-rings-overlay .rr-distance-label{
   outline-offset:1px;
 }
 #sec-rangerings .rr-preset-chips .btn{ font-size: 0.8rem; }
-#sec-rangerings .rr-style-block input[type="color"]{
+#sec-rangerings .rr-style-block input[type="color"],
+#sec-rangerings .rr-spokes-block input[type="color"]{
   width:100%; min-height:32px; padding:2px; cursor:pointer;
 }
 #sec-rangerings .rr-table .btn-rr-fly{ padding:3px 8px; font-size:.78rem; }
@@ -9284,6 +9285,48 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
         </div>
 
+        <div class="rr-spokes-block" style="margin-top:10px">
+          <div class="sub-section-title" data-i18n="rangeRings.spokesTitle">Linee radiali</div>
+          <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-top:8px">
+            <label class="field rr-spokes-toggle" style="display:flex;align-items:center;gap:8px;margin-top:2px">
+              <input type="checkbox" id="rrSpokesEnabled" checked>
+              <span data-i18n="rangeRings.spokesEnabled">Mostra linee radiali</span>
+            </label>
+            <label class="field">
+              <span data-i18n="rangeRings.spokeCount">Numero linee</span>
+              <select id="rrSpokeCount">
+                <option value="2">2</option>
+                <option value="3" selected>3</option>
+                <option value="4">4</option>
+                <option value="8">8</option>
+                <option value="16">16</option>
+              </select>
+            </label>
+            <label class="field">
+              <span data-i18n="rangeRings.spokeColor">Colore linee</span>
+              <input type="color" id="rrSpokeColor" value="#16a34a">
+            </label>
+            <label class="field">
+              <span data-i18n="rangeRings.spokeWidth">Spessore linee</span>
+              <select id="rrSpokeWidth">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </label>
+            <label class="field">
+              <span data-i18n="rangeRings.spokeLineStyle">Tipo linea radiale</span>
+              <select id="rrSpokeLineStyle">
+                <option value="solid" data-i18n="rangeRings.lineSolid">Continua</option>
+                <option value="dashLarge" data-i18n="rangeRings.lineDashLarge">Tratteggiata grande</option>
+                <option value="dashSmall" data-i18n="rangeRings.lineDashSmall">Tratteggiata piccola</option>
+                <option value="dotted" data-i18n="rangeRings.lineDotted">Puntinata</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
         <div class="rr-operative-notices" id="rrOperativeNotices" role="region" aria-live="polite" aria-relevant="additions text" data-i18n-aria="rangeRings.noticeRegionAria">
           <div id="rrInfo" class="rr-notice-box rr-notice-box--info" role="status" hidden></div>
           <div id="rrError" class="error-box" hidden></div>
@@ -11667,6 +11710,12 @@ const I18N = {
     "rangeRings.lineDotted":"Puntinata",
     "rangeRings.labelBgEnabled":"Sfondo label",
     "rangeRings.labelBgColor":"Colore sfondo label",
+    "rangeRings.spokesTitle":"Linee radiali",
+    "rangeRings.spokesEnabled":"Mostra linee radiali",
+    "rangeRings.spokeCount":"Numero linee",
+    "rangeRings.spokeColor":"Colore linee",
+    "rangeRings.spokeWidth":"Spessore linee",
+    "rangeRings.spokeLineStyle":"Tipo linea radiale",
     "rangeRings.colResizeAria":"Ridimensiona colonna",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -13196,6 +13245,12 @@ const I18N = {
     "rangeRings.lineDotted":"Dotted",
     "rangeRings.labelBgEnabled":"Label background",
     "rangeRings.labelBgColor":"Label background color",
+    "rangeRings.spokesTitle":"Radial lines",
+    "rangeRings.spokesEnabled":"Show radial lines",
+    "rangeRings.spokeCount":"Line count",
+    "rangeRings.spokeColor":"Line color",
+    "rangeRings.spokeWidth":"Line width",
+    "rangeRings.spokeLineStyle":"Radial line style",
     "rangeRings.colResizeAria":"Resize column",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -14726,6 +14781,12 @@ const I18N = {
     "rangeRings.lineDotted":"Pointillée",
     "rangeRings.labelBgEnabled":"Fond des libellés",
     "rangeRings.labelBgColor":"Couleur du fond des libellés",
+    "rangeRings.spokesTitle":"Lignes radiales",
+    "rangeRings.spokesEnabled":"Afficher les lignes radiales",
+    "rangeRings.spokeCount":"Nombre de lignes",
+    "rangeRings.spokeColor":"Couleur des lignes",
+    "rangeRings.spokeWidth":"Épaisseur des lignes",
+    "rangeRings.spokeLineStyle":"Style de ligne radiale",
     "rangeRings.colResizeAria":"Redimensionner la colonne",
     "rangeRings.presetM100":"100 / 250 / 500 m",
     "rangeRings.presetKm125":"1 / 2 / 5 km",
@@ -18078,10 +18139,49 @@ const RR_DEFAULT_RING_STYLE = {
   ringLineStyle: "solid",
   labelColor: "#1e293b",
   labelBgEnabled: true,
-  labelBgColor: "#ffffff"
+  labelBgColor: "#ffffff",
+  spokesEnabled: true,
+  spokeCount: 3,
+  spokeColor: "#16a34a",
+  spokeWidth: 1,
+  spokeLineStyle: "solid"
 };
-/** Bearing for distance labels — offset from radial guides at 0° / 90° / 270°. */
+const RR_SPOKE_COUNTS = new Set([2, 3, 4, 8, 16]);
+const RR_DEFAULT_SPOKE_STYLE = {
+  spokesEnabled: true,
+  spokeCount: 3,
+  spokeColor: "#16a34a",
+  spokeWidth: 1,
+  spokeLineStyle: "solid"
+};
+/** Legacy label offset when spokes off or count=3 (B6.3a). */
 const RR_LABEL_BEARING_DEG = 45;
+function rrSanitizeSpokeCount(v){
+  const n = Math.round(Number(v));
+  return RR_SPOKE_COUNTS.has(n) ? n : 3;
+}
+function rrGetSpokeBearings(count){
+  const c = rrSanitizeSpokeCount(count);
+  if (c === 3) return [0, 90, 270];
+  const out = [];
+  for (let i = 0; i < c; i++) out.push(i * (360 / c));
+  return out;
+}
+function rrGetSetMaxRadiusM(set){
+  const dists = set && Array.isArray(set.distancesM) ? set.distancesM : [];
+  let maxR = 0;
+  for (let i = 0; i < dists.length; i++){
+    const n = Number(dists[i]);
+    if (Number.isFinite(n) && n > maxR) maxR = n;
+  }
+  return maxR;
+}
+function rrGetDistanceLabelBearingDeg(set){
+  if (!set || set.spokesEnabled === false) return RR_LABEL_BEARING_DEG;
+  const cnt = rrSanitizeSpokeCount(set.spokeCount != null ? set.spokeCount : 3);
+  if (cnt === 3) return RR_LABEL_BEARING_DEG;
+  return 360 / (cnt * 2);
+}
 function rrEstimateDistanceLabelBox(text){
   const t = String(text || "");
   const padX = 5;
@@ -18336,6 +18436,22 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
     out.labelBgEnabled = true;
     out.labelBgColor = labelBgColor;
   }
+  const spokesEnabled = (typeof raw.spokesEnabled === "boolean") ? raw.spokesEnabled : true;
+  out.spokesEnabled = spokesEnabled;
+  if (spokesEnabled){
+    out.spokeCount = rrSanitizeSpokeCount(raw.spokeCount);
+    let spokeColor = "#16a34a";
+    try {
+      spokeColor = sanitizeTrackColor(
+        (typeof raw.spokeColor === "string" && raw.spokeColor.trim()) ? raw.spokeColor.trim() : "#16a34a"
+      );
+    } catch(_){ spokeColor = "#16a34a"; }
+    out.spokeColor = spokeColor;
+    let swSpoke = Number(raw.spokeWidth);
+    if (!Number.isFinite(swSpoke)) swSpoke = 1;
+    out.spokeWidth = Math.max(1, Math.min(4, Math.round(swSpoke)));
+    out.spokeLineStyle = rrSanitizeLineStyle(raw.spokeLineStyle);
+  }
   return out;
 }
 /** Merge sanitized set onto live object; drop optional style keys absent from sanitized (edit parity). */
@@ -18347,16 +18463,29 @@ function rrApplySanitizedRangeRingSet(target, sanitized){
     delete target.labelBgEnabled;
     delete target.labelBgColor;
   }
+  if (sanitized.spokesEnabled === false){
+    target.spokesEnabled = false;
+    delete target.spokeCount;
+    delete target.spokeColor;
+    delete target.spokeWidth;
+    delete target.spokeLineStyle;
+  }
 }
 function rrStylePayloadFromSet(s){
   if (!s) return Object.assign({}, RR_DEFAULT_RING_STYLE);
+  const spokesOn = s.spokesEnabled !== false;
   return {
     ringColor: s.color,
     ringWidth: s.strokeWidth,
     ringLineStyle: s.lineStyle,
     labelColor: (typeof s.labelColor === "string" && s.labelColor) ? s.labelColor : RR_DEFAULT_RING_STYLE.labelColor,
     labelBgEnabled: s.labelBgEnabled === true,
-    labelBgColor: (typeof s.labelBgColor === "string" && s.labelBgColor) ? s.labelBgColor : RR_DEFAULT_RING_STYLE.labelBgColor
+    labelBgColor: (typeof s.labelBgColor === "string" && s.labelBgColor) ? s.labelBgColor : RR_DEFAULT_RING_STYLE.labelBgColor,
+    spokesEnabled: spokesOn,
+    spokeCount: spokesOn ? rrSanitizeSpokeCount(s.spokeCount != null ? s.spokeCount : RR_DEFAULT_SPOKE_STYLE.spokeCount) : RR_DEFAULT_SPOKE_STYLE.spokeCount,
+    spokeColor: (typeof s.spokeColor === "string" && s.spokeColor) ? s.spokeColor : RR_DEFAULT_SPOKE_STYLE.spokeColor,
+    spokeWidth: spokesOn && Number.isFinite(s.spokeWidth) ? Math.max(1, Math.min(4, Math.round(s.spokeWidth))) : RR_DEFAULT_SPOKE_STYLE.spokeWidth,
+    spokeLineStyle: rrSanitizeLineStyle(spokesOn ? s.spokeLineStyle : RR_DEFAULT_SPOKE_STYLE.spokeLineStyle)
   };
 }
 function sanitizeRangeRingSets(raw){
@@ -18397,6 +18526,11 @@ function createRangeRingSetDraft(input){
     labelColor: input.labelColor,
     labelBgEnabled: input.labelBgEnabled,
     labelBgColor: input.labelBgColor,
+    spokesEnabled: input.spokesEnabled,
+    spokeCount: input.spokeCount,
+    spokeColor: input.spokeColor,
+    spokeWidth: input.spokeWidth,
+    spokeLineStyle: input.spokeLineStyle,
     visible: input.visible,
     createdAt: input.createdAt
   }, 0);
@@ -29243,23 +29377,25 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
     }
   }
 
-  /* Guide radiali 0° / 90° / 270° + etichetta distanza per anello */
-  const RR_GUIDE_BEARINGS = [0, 90, 270];
+  /* Linee radiali configurabili (B6.4) + etichette distanza per anello */
   for (const s of sets){
     const c = s.center;
     if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
-    const color = (typeof s.color === "string") ? s.color : "#16a34a";
     const pxCenter = tileMapLatLonToPx(root, c.lat, c.lon);
     if (!pxCenter || !Number.isFinite(pxCenter.x) || !Number.isFinite(pxCenter.y)) continue;
     const cx = pxCenter.x - tx;
     const cy = pxCenter.y - ty;
     const unit = String(s.unit || "m");
     const dists = Array.isArray(s.distancesM) ? s.distancesM : [];
-    for (const radiusM of dists){
-      const r = Number(radiusM);
-      if (!Number.isFinite(r) || r <= 0 || r > RANGE_RING_MAX_RADIUS_M) continue;
-      for (const br of RR_GUIDE_BEARINGS){
-        const vd = vincentyDirect(c.lat, c.lon, r, br);
+    const maxR = rrGetSetMaxRadiusM(s);
+    if (s.spokesEnabled !== false && maxR > 0){
+      const spokeColor = (typeof s.spokeColor === "string" && s.spokeColor) ? s.spokeColor : ((typeof s.color === "string") ? s.color : "#16a34a");
+      const swSpoke = Number.isFinite(s.spokeWidth) ? Math.max(1, Math.min(4, Math.round(s.spokeWidth))) : 1;
+      const spokeDash = rrLineStyleToDashArray(s.spokeLineStyle || "solid", swSpoke);
+      const bearings = rrGetSpokeBearings(s.spokeCount != null ? s.spokeCount : 3);
+      for (let bi = 0; bi < bearings.length; bi++){
+        const br = bearings[bi];
+        const vd = vincentyDirect(c.lat, c.lon, maxR, br);
         if (!vd || !Number.isFinite(vd.lat) || !Number.isFinite(vd.lon)) continue;
         const pEnd = tileMapLatLonToPx(root, vd.lat, vd.lon);
         if (!pEnd || !Number.isFinite(pEnd.x) || !Number.isFinite(pEnd.y)) continue;
@@ -29270,16 +29406,24 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
         ln.setAttribute("y1", cy.toFixed(2));
         ln.setAttribute("x2", x2.toFixed(2));
         ln.setAttribute("y2", y2.toFixed(2));
-        ln.setAttribute("class", br === 0 ? "rr-distance-guide rr-distance-guide--0" : "rr-distance-guide rr-distance-guide--eq");
-        ln.setAttribute("stroke", color);
-        ln.setAttribute("stroke-width", "1.15");
+        ln.setAttribute("class", "rr-distance-guide");
+        ln.setAttribute("stroke", spokeColor);
+        ln.setAttribute("stroke-width", String(swSpoke));
+        ln.setAttribute("opacity", "0.55");
+        if (spokeDash) ln.setAttribute("stroke-dasharray", spokeDash);
+        ln.setAttribute("stroke-linecap", "round");
         ln.style.pointerEvents = "none";
         ln.dataset.rrSetId = String(s.id || "");
         svg.appendChild(ln);
       }
+    }
+    const lblBearing = rrGetDistanceLabelBearingDeg(s);
+    for (const radiusM of dists){
+      const r = Number(radiusM);
+      if (!Number.isFinite(r) || r <= 0 || r > RANGE_RING_MAX_RADIUS_M) continue;
       const lbl = rrFormatDistanceLabel(r, unit);
       if (lbl){
-        const vdLbl = vincentyDirect(c.lat, c.lon, r, RR_LABEL_BEARING_DEG);
+        const vdLbl = vincentyDirect(c.lat, c.lon, r, lblBearing);
         if (vdLbl && Number.isFinite(vdLbl.lat) && Number.isFinite(vdLbl.lon)){
           const pLbl = tileMapLatLonToPx(root, vdLbl.lat, vdLbl.lon);
           if (pLbl && Number.isFinite(pLbl.x) && Number.isFinite(pLbl.y)){
@@ -36798,6 +36942,11 @@ function rrSaveEditedRangeRingSetFromUi(){
     labelColor: st.labelColor,
     labelBgEnabled: st.labelBgEnabled,
     labelBgColor: st.labelBgColor,
+    spokesEnabled: st.spokesEnabled,
+    spokeCount: st.spokeCount,
+    spokeColor: st.spokeColor,
+    spokeWidth: st.spokeWidth,
+    spokeLineStyle: st.spokeLineStyle,
     opacity: s.opacity,
     labelMode: s.labelMode,
     visible: s.visible,
@@ -38042,6 +38191,11 @@ function rrCreateFromUi(){
     labelColor: st.labelColor,
     labelBgEnabled: st.labelBgEnabled,
     labelBgColor: st.labelBgColor,
+    spokesEnabled: st.spokesEnabled,
+    spokeCount: st.spokeCount,
+    spokeColor: st.spokeColor,
+    spokeWidth: st.spokeWidth,
+    spokeLineStyle: st.spokeLineStyle,
     opacity: 0.55,
     labelMode: "name",
     visible: true,
@@ -38076,20 +38230,22 @@ const RR_UNIT_PRESET_VALUES = {
 };
 function ensureRangeRingsStyleState(){
   if (!state.rangeRingsStyle || typeof state.rangeRingsStyle !== "object"){
-    state.rangeRingsStyle = {
-      ringColor: RR_DEFAULT_RING_STYLE.ringColor,
-      ringWidth: RR_DEFAULT_RING_STYLE.ringWidth,
-      ringLineStyle: RR_DEFAULT_RING_STYLE.ringLineStyle,
-      labelColor: RR_DEFAULT_RING_STYLE.labelColor,
-      labelBgEnabled: RR_DEFAULT_RING_STYLE.labelBgEnabled,
-      labelBgColor: RR_DEFAULT_RING_STYLE.labelBgColor
-    };
+    state.rangeRingsStyle = Object.assign({}, RR_DEFAULT_RING_STYLE);
   }
 }
 function rrSyncLabelBgColorControlState(){
   const bgEn = document.getElementById("rrLabelBgEnabled");
   const bgCol = document.getElementById("rrLabelBgColor");
   if (bgCol && bgEn) bgCol.disabled = !bgEn.checked;
+}
+function rrSyncSpokesControlState(){
+  const en = document.getElementById("rrSpokesEnabled");
+  const disabled = en ? !en.checked : false;
+  const ids = ["rrSpokeCount", "rrSpokeColor", "rrSpokeWidth", "rrSpokeLineStyle"];
+  for (const id of ids){
+    const el = document.getElementById(id);
+    if (el) el.disabled = disabled;
+  }
 }
 function rrReadStyleFromForm(){
   const ringColorEl = document.getElementById("rrRingColor");
@@ -38098,12 +38254,22 @@ function rrReadStyleFromForm(){
   const lineEl = document.getElementById("rrRingLineStyle");
   const bgEnEl = document.getElementById("rrLabelBgEnabled");
   const bgColEl = document.getElementById("rrLabelBgColor");
+  const spokesEnEl = document.getElementById("rrSpokesEnabled");
+  const spokeCountEl = document.getElementById("rrSpokeCount");
+  const spokeColorEl = document.getElementById("rrSpokeColor");
+  const spokeWidthEl = document.getElementById("rrSpokeWidth");
+  const spokeLineEl = document.getElementById("rrSpokeLineStyle");
   let ringColor = RR_DEFAULT_RING_STYLE.ringColor;
   let labelColor = RR_DEFAULT_RING_STYLE.labelColor;
   let ringWidth = RR_DEFAULT_RING_STYLE.ringWidth;
   let ringLineStyle = RR_DEFAULT_RING_STYLE.ringLineStyle;
   let labelBgEnabled = RR_DEFAULT_RING_STYLE.labelBgEnabled;
   let labelBgColor = RR_DEFAULT_RING_STYLE.labelBgColor;
+  let spokesEnabled = RR_DEFAULT_RING_STYLE.spokesEnabled;
+  let spokeCount = RR_DEFAULT_RING_STYLE.spokeCount;
+  let spokeColor = RR_DEFAULT_RING_STYLE.spokeColor;
+  let spokeWidth = RR_DEFAULT_RING_STYLE.spokeWidth;
+  let spokeLineStyle = RR_DEFAULT_RING_STYLE.spokeLineStyle;
   try {
     if (ringColorEl && ringColorEl.value) ringColor = sanitizeTrackColor(ringColorEl.value);
   } catch(_){}
@@ -38119,7 +38285,17 @@ function rrReadStyleFromForm(){
   try {
     if (bgColEl && bgColEl.value) labelBgColor = sanitizeTrackColor(bgColEl.value);
   } catch(_){}
-  return { ringColor, ringWidth, ringLineStyle, labelColor, labelBgEnabled, labelBgColor };
+  if (spokesEnEl) spokesEnabled = !!spokesEnEl.checked;
+  spokeCount = rrSanitizeSpokeCount(spokeCountEl ? spokeCountEl.value : spokeCount);
+  try {
+    if (spokeColorEl && spokeColorEl.value) spokeColor = sanitizeTrackColor(spokeColorEl.value);
+  } catch(_){}
+  if (spokeWidthEl){
+    const sw = Math.round(Number(spokeWidthEl.value));
+    if (Number.isFinite(sw)) spokeWidth = Math.max(1, Math.min(4, sw));
+  }
+  spokeLineStyle = rrSanitizeLineStyle(spokeLineEl ? spokeLineEl.value : "");
+  return { ringColor, ringWidth, ringLineStyle, labelColor, labelBgEnabled, labelBgColor, spokesEnabled, spokeCount, spokeColor, spokeWidth, spokeLineStyle };
 }
 function rrApplyStyleToForm(st){
   st = st || RR_DEFAULT_RING_STYLE;
@@ -38129,19 +38305,35 @@ function rrApplyStyleToForm(st){
   const lineEl = document.getElementById("rrRingLineStyle");
   const bgEnEl = document.getElementById("rrLabelBgEnabled");
   const bgColEl = document.getElementById("rrLabelBgColor");
+  const spokesEnEl = document.getElementById("rrSpokesEnabled");
+  const spokeCountEl = document.getElementById("rrSpokeCount");
+  const spokeColorEl = document.getElementById("rrSpokeColor");
+  const spokeWidthEl = document.getElementById("rrSpokeWidth");
+  const spokeLineEl = document.getElementById("rrSpokeLineStyle");
   const rc = st.ringColor || st.color || RR_DEFAULT_RING_STYLE.ringColor;
   const lc = st.labelColor || RR_DEFAULT_RING_STYLE.labelColor;
   const rw = (st.ringWidth != null) ? st.ringWidth : ((st.strokeWidth != null) ? st.strokeWidth : RR_DEFAULT_RING_STYLE.ringWidth);
   const ls = rrSanitizeLineStyle(st.ringLineStyle != null ? st.ringLineStyle : st.lineStyle);
   const lbe = (st.labelBgEnabled != null) ? !!st.labelBgEnabled : RR_DEFAULT_RING_STYLE.labelBgEnabled;
   const lbc = st.labelBgColor || RR_DEFAULT_RING_STYLE.labelBgColor;
+  const spEn = (st.spokesEnabled != null) ? !!st.spokesEnabled : RR_DEFAULT_RING_STYLE.spokesEnabled;
+  const spCnt = rrSanitizeSpokeCount(st.spokeCount != null ? st.spokeCount : RR_DEFAULT_RING_STYLE.spokeCount);
+  const spCol = st.spokeColor || RR_DEFAULT_RING_STYLE.spokeColor;
+  const spW = (st.spokeWidth != null) ? Math.max(1, Math.min(4, Math.round(Number(st.spokeWidth)))) : RR_DEFAULT_RING_STYLE.spokeWidth;
+  const spLs = rrSanitizeLineStyle(st.spokeLineStyle != null ? st.spokeLineStyle : RR_DEFAULT_RING_STYLE.spokeLineStyle);
   if (ringColorEl) ringColorEl.value = rc;
   if (labelColorEl) labelColorEl.value = lc;
   if (widthEl) widthEl.value = String(rw);
   if (lineEl) lineEl.value = ls;
   if (bgEnEl) bgEnEl.checked = lbe;
   if (bgColEl) bgColEl.value = lbc;
+  if (spokesEnEl) spokesEnEl.checked = spEn;
+  if (spokeCountEl) spokeCountEl.value = String(spCnt);
+  if (spokeColorEl) spokeColorEl.value = spCol;
+  if (spokeWidthEl) spokeWidthEl.value = String(spW);
+  if (spokeLineEl) spokeLineEl.value = spLs;
   try { rrSyncLabelBgColorControlState(); } catch(_){}
+  try { rrSyncSpokesControlState(); } catch(_){}
   rrSyncRangeRingsStyleFromForm();
 }
 function rrSyncRangeRingsStyleFromForm(){
@@ -38153,10 +38345,16 @@ function rrSyncRangeRingsStyleFromForm(){
   state.rangeRingsStyle.labelColor = st.labelColor;
   state.rangeRingsStyle.labelBgEnabled = st.labelBgEnabled;
   state.rangeRingsStyle.labelBgColor = st.labelBgColor;
+  state.rangeRingsStyle.spokesEnabled = st.spokesEnabled;
+  state.rangeRingsStyle.spokeCount = st.spokeCount;
+  state.rangeRingsStyle.spokeColor = st.spokeColor;
+  state.rangeRingsStyle.spokeWidth = st.spokeWidth;
+  state.rangeRingsStyle.spokeLineStyle = st.spokeLineStyle;
   try { rrSyncLabelBgColorControlState(); } catch(_){}
+  try { rrSyncSpokesControlState(); } catch(_){}
 }
 function rrWireRangeRingsStyleControls(){
-  const ids = ["rrRingColor", "rrLabelColor", "rrRingWidth", "rrRingLineStyle", "rrLabelBgColor"];
+  const ids = ["rrRingColor", "rrLabelColor", "rrRingWidth", "rrRingLineStyle", "rrLabelBgColor", "rrSpokeCount", "rrSpokeColor", "rrSpokeWidth", "rrSpokeLineStyle"];
   for (const id of ids){
     const el = document.getElementById(id);
     if (!el || el._rrStyleWired) continue;
@@ -38168,6 +38366,11 @@ function rrWireRangeRingsStyleControls(){
   if (bgEn && !bgEn._rrStyleWired){
     bgEn._rrStyleWired = true;
     bgEn.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
+  }
+  const spokesEn = document.getElementById("rrSpokesEnabled");
+  if (spokesEn && !spokesEn._rrStyleWired){
+    spokesEn._rrStyleWired = true;
+    spokesEn.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
   }
 }
 function rrFormatPresetChipLabel(values, unit){
