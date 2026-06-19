@@ -2581,30 +2581,54 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 }
 .tile-map .tile-bl-row > *{pointer-events:auto}
 
-/* Scale bar: metric bar on top, numeric label + cartographic 1:N ratio
- * side-by-side beneath. Anchored bottom-left (inside .tile-bottom-left). */
+/* Scale legend (B5.3): metric bar + m/km toggle + mi secondary; nautical Nm bar; 1:N ratio. */
 .tile-map .tile-scale{
-  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  display:flex; flex-direction:column; align-items:flex-start; gap:3px;
   padding:4px 8px 5px; border-radius:4px;
   background:rgba(255,255,255,.85); color:#111;
   font-family:ui-monospace,monospace; font-size:.7rem; font-weight:700;
   box-shadow:0 1px 3px rgba(0,0,0,.25);
-  line-height:1;
+  line-height:1.15;
+  max-width:100%;
+}
+.tile-map .tile-scale-row{
+  display:flex; flex-direction:column; align-items:flex-start; gap:2px;
+  max-width:100%;
+}
+.tile-map .tile-scale-bar-row{
+  display:flex; align-items:center; gap:4px; max-width:100%;
 }
 .tile-map .tile-scale-bar{
-  height:4px; min-width:20px;
+  height:4px; min-width:20px; flex:0 1 auto;
   background:#111; border:1px solid #fff; box-sizing:content-box;
   box-shadow:0 0 0 1px #111;
-  margin-bottom:2px;
 }
+.tile-map .tile-scale-row-metric .tile-scale-bar{ margin-bottom:0; }
+.tile-map .tile-scale-bar-naut{ opacity:.88; }
 .tile-map .tile-scale-labels{
-  display:flex; align-items:baseline; gap:8px;
+  display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 8px;
+  max-width:100%;
 }
-.tile-map .tile-scale-label{font-size:.7rem}
+.tile-map .tile-scale-label{font-size:.7rem; word-break:break-word}
 .tile-map .tile-scale-ratio{
   font-size:.62rem; font-weight:600; opacity:.75;
   padding-left:6px; border-left:1px solid rgba(0,0,0,.2);
 }
+.tile-map .tile-scale .tile-scale-unit-btn{
+  pointer-events:auto;
+  border:none;
+  background:rgba(0,0,0,.08);
+  color:#111;
+  border-radius:4px;
+  padding:1px 5px;
+  font-weight:800;
+  font-size:.65rem;
+  cursor:pointer;
+  line-height:1.2;
+  flex:0 0 auto;
+}
+.tile-map .tile-scale .tile-scale-unit-btn:hover{ background:rgba(0,0,0,.14); }
+.tile-map .tile-scale .tile-scale-unit-btn:active{ transform:scale(.96); }
 
 
 /* =====================================================================
@@ -8413,6 +8437,21 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     bottom:max(10px, env(safe-area-inset-bottom, 0px));
     max-width:min(58vw, 240px);
   }
+  body.gis-mode #gisMapMount .tile-map .tile-bottom-left{
+    left:max(6px, env(safe-area-inset-left, 0px));
+    bottom:max(10px, env(safe-area-inset-bottom, 0px));
+    max-width:min(42vw, calc(100vw - min(58vw, 240px) - 56px));
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-scale{
+    font-size:.62rem;
+    padding:3px 6px 4px;
+    max-width:100%;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-scale .tile-scale-unit-btn{
+    min-width:28px;
+    min-height:28px;
+    padding:2px 6px;
+  }
   .tab-drawer{
     max-height:calc(100dvh - env(safe-area-inset-top, 0px));
     padding-bottom:env(safe-area-inset-bottom, 0px);
@@ -12040,6 +12079,9 @@ const I18N = {
     "measure.export.ok.csv":"Export CSV completato.",
     "tip.mapPrimaryCycle":"Cambia formato coordinate (pulsante o tasto destro)",
     "tip.mapPrimaryCycleTip":"Formato: {cur}. Clic su ⇄ o tasto destro sulla coordinata per passare a {next}.",
+    "tip.scaleUnitCycle":"Cambia unità scala metrica (m ↔ km)",
+    "tip.scaleUnitCycleTip":"Unità: {cur}. Clic su ⇄ per passare a {next}.",
+    "map.scaleLegend":"Legenda scala mappa",
     "img.date.loading":"Imagery: … (Esri)",
     "img.date.na":"Imagery: data non disponibile",
     "img.date.fmt":"Imagery: {0} (Esri)",
@@ -13554,6 +13596,9 @@ const I18N = {
     "measure.export.ok.csv":"CSV export complete.",
     "tip.mapPrimaryCycle":"Cycle coordinate format (button or right-click)",
     "tip.mapPrimaryCycleTip":"Format: {cur}. Click ⇄ or right-click the coordinate string for {next}.",
+    "tip.scaleUnitCycle":"Cycle map scale metric unit (m ↔ km)",
+    "tip.scaleUnitCycleTip":"Unit: {cur}. Click ⇄ to switch to {next}.",
+    "map.scaleLegend":"Map scale legend",
     "img.date.loading":"Imagery: … (Esri)",
     "img.date.na":"Imagery: date unavailable",
     "img.date.fmt":"Imagery: {0} (Esri)",
@@ -15068,6 +15113,9 @@ const I18N = {
     "measure.export.ok.csv":"Export CSV terminé.",
     "tip.mapPrimaryCycle":"Changer le format des coordonnées (bouton ou clic droit)",
     "tip.mapPrimaryCycleTip":"Format : {cur}. Clic sur ⇄ ou clic droit sur la coordonnée pour passer à {next}.",
+    "tip.scaleUnitCycle":"Changer l'unité métrique de l'échelle (m ↔ km)",
+    "tip.scaleUnitCycleTip":"Unité : {cur}. Clic sur ⇄ pour passer à {next}.",
+    "map.scaleLegend":"Légende d'échelle cartographique",
     "img.date.loading":"Imagery : … (Esri)",
     "img.date.na":"Imagery : date indisponible",
     "img.date.fmt":"Imagery : {0} (Esri)",
@@ -15288,6 +15336,8 @@ const state = {
   geocodeEndpoint: "",   // Custom Nominatim base URL (empty = public server).
   geocodeBatchLoc: false,// "Add Locality column" toggle in batch mode.
   opsecStrict: false,    // Graduated OPSEC: blocks direct internet calls; tailnet-proxy fetches need per-session consent.
+  /** B5.3: transient map scale metric unit (session-only; not persisted). */
+  scaleUnit: "km",
   // Persisted. Controls whether the "Altri formati" block (Plus Code +
   // Italian datums) is expanded under the results. Default collapsed — the
   // great majority of users only work with MGRS and Lat/Lon.
@@ -23960,8 +24010,42 @@ function buildMgrsGridSVG(W, H, originX, originY, zoom, centerLat, centerLon){
   return svg;
 }
 
+function formatScaleDistanceMi(meters){
+  const mi = meters / 1609.344;
+  if (mi >= 10) return (Math.round(mi * 10) / 10).toFixed(1);
+  if (mi >= 1) return (Math.round(mi * 10) / 10).toFixed(1);
+  return (Math.round(mi * 100) / 100).toFixed(2);
+}
+function formatScaleMetricDisplay(meters, unit){
+  const miStr = formatScaleDistanceMi(meters);
+  if (unit === "m"){
+    const m = Math.round(meters);
+    const mStr = (m >= 1000) ? m.toLocaleString() : String(m);
+    return mStr + " m · " + miStr + " mi";
+  }
+  const km = meters / 1000;
+  let kmStr;
+  if (km >= 100) kmStr = String(Math.round(km));
+  else if (km >= 10) kmStr = (Math.round(km * 10) / 10).toFixed(1);
+  else if (km >= 1) kmStr = (Math.round(km * 10) / 10).toFixed(1);
+  else kmStr = (Math.round(km * 100) / 100).toFixed(2);
+  return kmStr + " km · " + miStr + " mi";
+}
+function formatScaleNmLabel(nm){
+  if (nm >= 100) return Math.round(nm) + " Nm";
+  if (nm >= 10) return (Math.round(nm * 10) / 10).toFixed(1) + " Nm";
+  if (nm >= 1) return (Math.round(nm * 10) / 10).toFixed(1) + " Nm";
+  return (Math.round(nm * 100) / 100).toFixed(2) + " Nm";
+}
+function buildScaleUnitCycleTooltip(){
+  const cur = (state.scaleUnit === "m") ? "m" : "km";
+  const next = (cur === "m") ? "km" : "m";
+  const s = t("tip.scaleUnitCycleTip");
+  return String(s).replace(/\{cur\}/g, cur).replace(/\{next\}/g, next);
+}
+
 /**
- * Build the scale bar HTML (positioned bottom-left of the tile map).
+ * Build the scale legend HTML (B5.3): metric bar + m/km toggle, mi secondary, Nm bar, 1:N ratio.
  * Shows both a metric scale bar (e.g. "500 m") AND the cartographic ratio
  * (e.g. "1:25k"). The ratio is computed assuming a standard 96-DPI display,
  * i.e. ~0.28 mm per screen pixel — this is the same convention used by most
@@ -23982,7 +24066,18 @@ function buildScaleBar(zoom, lat, size, mapW){
   let pickM = candidates[0];
   for (const c of candidates) if (c <= targetM) pickM = c;
   const pickPx = pickM / mpp;
-  const label  = (pickM >= 1000) ? (pickM/1000) + " km" : pickM + " m";
+  const unit = (state.scaleUnit === "m") ? "m" : "km";
+  const metricLabel = formatScaleMetricDisplay(pickM, unit);
+  const cycleTip = buildScaleUnitCycleTooltip();
+  const scaleAria = esc(t("map.scaleLegend") || "Map scale");
+
+  // Nautical: snap to nice Nm values; same targetM cap logic.
+  const nmCandidates = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
+  let pickNm = nmCandidates[0];
+  const targetNm = targetM / 1852;
+  for (const c of nmCandidates) if (c <= targetNm) pickNm = c;
+  const pickPxNm = (pickNm * 1852) / mpp;
+  const nmLabel = formatScaleNmLabel(pickNm);
 
   // Cartographic ratio: meters-per-pixel ÷ meters-per-screen-pixel.
   // 0.00028 m/px ≈ 96 DPI reference used across GIS tooling.
@@ -23993,9 +24088,23 @@ function buildScaleBar(zoom, lat, size, mapW){
       ? "1:" + Math.round(ratio/1000) + "k"
       : "1:" + Math.round(ratio);
 
-  return `<div class="tile-scale" aria-hidden="true">
-    <div class="tile-scale-bar" style="width:${pickPx.toFixed(1)}px"></div>
-    <div class="tile-scale-labels"><span class="tile-scale-label">${label}</span><span class="tile-scale-ratio">${ratioLabel}</span></div>
+  return `<div class="tile-scale" role="group" aria-label="${scaleAria}">
+    <div class="tile-scale-row tile-scale-row-metric">
+      <div class="tile-scale-bar-row">
+        <div class="tile-scale-bar" style="width:${pickPx.toFixed(1)}px" aria-hidden="true"></div>
+        <button class="trp-action tile-scale-unit-btn" type="button" data-role="scale-unit-cycle" aria-label="${esc(cycleTip)}" title="${esc(cycleTip)}">⇄</button>
+      </div>
+      <div class="tile-scale-labels">
+        <span class="tile-scale-label tile-scale-label-metric" data-role="scale-metric-label" data-meters="${pickM}">${metricLabel}</span>
+        <span class="tile-scale-ratio" aria-hidden="true">${ratioLabel}</span>
+      </div>
+    </div>
+    <div class="tile-scale-row tile-scale-row-naut">
+      <div class="tile-scale-bar tile-scale-bar-naut" style="width:${pickPxNm.toFixed(1)}px" aria-hidden="true"></div>
+      <div class="tile-scale-labels">
+        <span class="tile-scale-label tile-scale-label-naut" aria-hidden="true">${nmLabel}</span>
+      </div>
+    </div>
   </div>`;
 }
 
@@ -31928,6 +32037,20 @@ function renderTileMap(lat, lon, zoom){
       if (pEl) pEl.textContent = fmtPrimary(lat, lon);
       if (cEl) cEl.textContent = fmtPrimary(lat, lon);
       try { syncHdrChipValue(document.getElementById("primarySelect")); } catch(_){}
+    });
+  });
+  root.querySelectorAll('[data-role="scale-unit-cycle"]').forEach(btn => {
+    btn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.scaleUnit = (state.scaleUnit === "km") ? "m" : "km";
+      const lbl = root.querySelector('[data-role="scale-metric-label"]');
+      if (lbl){
+        const meters = parseFloat(lbl.getAttribute("data-meters") || "");
+        if (Number.isFinite(meters)) lbl.textContent = formatScaleMetricDisplay(meters, state.scaleUnit);
+      }
+      const tip = buildScaleUnitCycleTooltip();
+      btn.setAttribute("aria-label", tip);
+      btn.setAttribute("title", tip);
     });
   });
   root.querySelectorAll(".ts-btn").forEach(b => {
