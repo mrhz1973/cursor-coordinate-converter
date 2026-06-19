@@ -8,11 +8,15 @@
 | Step | Hash | Subject |
 |------|------|---------|
 | Principale (step 2) | **`9aa1619`** | `docs(memory): register B6.4a-2 PASS operatore post-deploy VPS` |
-| Orchestratore (step 4) | *(pending)* | `docs: orchestratore — riconciliazione finito sessione` |
+| Orchestratore (step 4) | **`c7db8b4`** | `docs: orchestratore — riconciliazione finito sessione` |
 
 ## Push step 2
 
 **OK** — `7dd1a41..9aa1619  main -> main`
+
+## Push step 4
+
+**OK** — `9aa1619..c7db8b4  main -> main`
 
 ## Contesto blocco B6.4a-2
 
