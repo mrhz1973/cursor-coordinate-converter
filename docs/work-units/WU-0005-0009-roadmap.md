@@ -1289,19 +1289,21 @@ Stesso schema di B3.
 
 **B5.1 polish discoverability OPSEC strict (2026-06-17):** PASS tecnico statico — label `set.opsec.strict` + help-line `set.opsec.strictHelp` sotto `#setOpsecStrict`; nessun secondo toggle; gate OPSEC invariati; hint Layers Satellitare differito (rebuild dinamico menu). Browser QA visuale B5.1: PASS operatore.
 
-**B5.2 mobile viewport containment iPhone (2026-06-18):** PASS tecnico statico — meta `viewport-fit=cover`; blocco CSS `@media (max-width:768px)` additive (toolbar laterale scroll, header/topbar wrap, modal/drawer/help containment, dialog OPSEC sticky actions); nessuna logica GIS/OPSEC/JS modificata. Browser QA mobile: pending operatore.
+**B5.2 mobile viewport containment iPhone (2026-06-18):** PASS tecnico statico — meta `viewport-fit=cover`; blocco CSS `@media (max-width:768px)` additive (toolbar laterale scroll, header/topbar wrap, modal/drawer/help containment, dialog OPSEC sticky actions); nessuna logica GIS/OPSEC/JS modificata. Browser QA mobile: **PASS operatore** (bundle B5.1+B5.2+B5.3b, 2026-06-19).
 
-**B5.3 legenda scala multi-unità (2026-06-18):** PASS tecnico statico — `buildScaleBar` esteso: barra metrica (snap 1-2-5, px invariati), toggle m/km in-place (`data-meters`, no re-render), mi secondario, barra Nm, ratio 1:N; CSS/a11y/mobile containment locale; nessuna modifica OPSEC/tile/proxy. Browser QA visuale: pending operatore (bundle B5.1+B5.2+B5.3).
+**B5.3 legenda scala multi-unità (2026-06-18):** PASS tecnico statico — `buildScaleBar` esteso (toggle m/km, poi rimosso in B5.3a); mi secondario, barra Nm, ratio 1:N. Superseded in QA visuale da B5.3b.
 
-**B5.3a scala senza toggle + barre graduate (2026-06-19):** PASS tecnico statico — rimosso toggle m/km e handler; scala metrica sempre km + mi; barre metrica/Nm con 10 tacche CSS (`--scale-step`, `repeating-linear-gradient`); label centrale al 50% (nascosta mobile); legenda `aria-hidden`; `exportMapAsJpg()` non modificato. Browser QA visuale: pending operatore.
+**B5.3a scala senza toggle + barre graduate (2026-06-19):** PASS tecnico statico — barre 10 tacche CSS; label centrale. **Superata da B5.3b** per layout label.
 
-**B5.3b fix overlap label scala metrica (2026-06-19):** PASS tecnico statico — label centrale metrica non più `position:absolute` (flow sotto barra); gap/padding box `.tile-scale` leggermente aumentati; nessun cambio calcolo/snap; containment mobile B5.2 preservato. Browser QA visuale: pending operatore.
+**B5.3b fix overlap label scala metrica (2026-06-19):** PASS tecnico statico — mid-label in flow; spacing box `.tile-scale`. Browser QA visuale: **PASS operatore** (bundle B5.1+B5.2+B5.3b, deploy VPS `fec53ca`).
+
+**QA visuale bundlata B5.1+B5.2+B5.3b (2026-06-19):** **PASS operatore** — attestazione operatore post-deploy; non AI.
 
 **B5.4 candidato backlog:** export JPEG con scala opzionale disegnata su canvas 2D (`fillRect`/`stroke`/`fillText`, riuso pick/format scala; nessun `foreignObject`; nessuna rasterizzazione HTML `.tile-scale`).
 
 ### B6 — QA OPSEC/proxy/offline
 
-**Stato:** QA visuale post-B5.1 pending se non attestata operatore.
+**Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 resta backlog.
 
 Test:
 
