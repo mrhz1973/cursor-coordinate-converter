@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B6.2 Range Rings pick-first UX (runtime):** commit **`d38c253`** — rimosso `#rrCreateBtn` (revert B6.1); `Punta e crea` unico primary; minimize dock su pick via `gisMinimizePanel`; preset distanze unit-aware; default `1, 5, 10` + `NM` invariati; parser/overlay invariati. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_1800_riepilogo_b62-range-rings-pick-first.md`**. **Prossimo:** browser QA B6.2.
+2026-06-19 — **WU-0009B B6.3 Range Rings style controls (runtime):** commit **`d69cacd`** — UI stile (colore/spessore/tipo linea/label); `lineStyle` + `labelColor` su set; SVG dash + fill label; hint aggiornato; B6.2 invariato. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2100_riepilogo_b63-range-rings-style-controls.md`**. **Prossimo:** browser QA B6.3.
+
+2026-06-19 — **WU-0009B B6.2 Range Rings pick-first UX (runtime):** commit **`d38c253`** — rimosso `#rrCreateBtn`; minimize dock; preset unit-aware. Inbox **`2026-06-19_1800_riepilogo_b62-range-rings-pick-first.md`**. **QA operatore:** PASS (flusso Punta e crea).
 
 2026-06-19 — **WU-0009B B6.1 fix Range Rings creazione manuale (runtime):** commit **`cc86daf`** — `#rrCreateBtn` visibile quando centro risolvibile; primary unico; default `NM` + reset `1, 5, 10`; parser/overlay invariati. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_1200_riepilogo_b61-range-rings-create-fix.md`**. **Prossimo:** QA B6.1 post-deploy.
 
