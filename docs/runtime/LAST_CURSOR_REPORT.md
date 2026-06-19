@@ -4,51 +4,61 @@
 
 ## LATEST
 
-* real_task_commit: `cc86daf`
-* real_task_subject: fix(gis): show Range Rings create button when center ready (B6.1)
-* report_generated_at: 2026-06-19T12:00:00+02:00
+* real_task_commit: `d38c253`
+* real_task_subject: feat: B6.2 Range Rings pick-first UX — minimize on Punta e crea
+* report_generated_at: 2026-06-19T20:10:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* local_HEAD: `dadbb866393e8528d4718c110d06e51605fe25f3`
-* local_origin_main: `dadbb866393e8528d4718c110d06e51605fe25f3`
-* ls_remote_origin_main: `dadbb866393e8528d4718c110d06e51605fe25f3`
-* working_tree_status: pulito (post-push B6.1)
-* pass_tecnico_remoto: PASS *(push B6.1 `dadbb86`)*
-* result_cursor: B6.1 Range Rings — `#rrCreateBtn.hidden` da `centerResolvable`; primary unico vs Punta e crea; default unità NM + reset distanze `1, 5, 10`; `rrApplyCenterFromPicker` già re-render; parser/overlay invariati; node --check OK
+* local_HEAD: `d38c253261b1de8cc159ee860ff081f447b2d646`
+* local_origin_main: `d38c253261b1de8cc159ee860ff081f447b2d646`
+* ls_remote_origin_main: `d38c253261b1de8cc159ee860ff081f447b2d646`
+* working_tree_status: pulito post-autosync (atteso)
+* pass_tecnico_remoto: PASS *(runtime push `d38c253`)*
+* result_cursor: B6.2 Range Rings pick-first — rimosso `#rrCreateBtn`; `Punta e crea` unico primary; `gisMinimizePanel` su pick; preset unit-aware (`RR_UNIT_PRESET_VALUES`); default `1, 5, 10` NM; parser/overlay invariati; node --check OK
 * pass_operatore: non-attestato
-* result_runtime: Browser QA Range Rings B6.1 pending
-* docs_commit: `0bae6f3`
-* autosync_commit: `dadbb86`
-* notes: Fix chirurgico UI, non feature nuova. OPSEC/proxy/tile/export JPG non toccati.
-* pending_self_reference: **risolto** — autosync B6.1 referenzia `real_task_commit=cc86daf`
+* result_runtime: Browser QA Range Rings B6.2 pending
+* docs_commit: *(autosync commit — vedi OUTPUT VERBATIM post-push)*
+* autosync_commit: *(autosync commit — vedi OUTPUT VERBATIM post-push)*
+* notes: Patch su feature esistente, non nuova architettura. OPSEC/proxy/tile/export JPG/buildScaleBar/state.mapWaypoints non toccati.
+* pending_self_reference: autosync commit da aggiornare post-push selettivo memoria
 
 ## OUTPUT VERBATIM
 
 ```text
 git log --oneline -5
+d38c253 feat: B6.2 Range Rings pick-first UX — minimize on Punta e crea
+128d285 docs: LAST_CURSOR_REPORT post-push verbatim B6.1
 dadbb86 docs: orchestratore + LAST_CURSOR_REPORT — B6.1 Range Rings create fix
 0bae6f3 docs: OM §7 — B6.1 Range Rings create fix PASS tecnico
 cc86daf fix(gis): show Range Rings create button when center ready (B6.1)
-a089a65 docs: hash commit B5.4d in latest e LAST_CURSOR_REPORT
-dce8e3a docs: orchestratore + LAST_CURSOR_REPORT — B5.4d JPG scale two-column
 
 git status --short
-(vuoto)
+(vuoto post-runtime; docs pending autosync)
 
 git rev-parse HEAD
-dadbb866393e8528d4718c110d06e51605fe25f3
+d38c253261b1de8cc159ee860ff081f447b2d646
 
 git rev-parse origin/main
-dadbb866393e8528d4718c110d06e51605fe25f3
+d38c253261b1de8cc159ee860ff081f447b2d646
 
 git branch --show-current
 main
 
+git show --stat HEAD
+ coordinate_converter Claude.html | 66 ++++++++++++++++++++++++++--------------
+ 1 file changed, 44 insertions(+), 22 deletions(-)
+
 git ls-remote origin main
-dadbb866393e8528d4718c110d06e51605fe25f3	refs/heads/main
+d38c253261b1de8cc159ee860ff081f447b2d646	refs/heads/main
 ```
 
 ## HISTORY
+
+### WU-0009B B6.1 Range Rings create fix
+
+* real_task_commit: `cc86daf`
+* autosync_commit: `dadbb86`
+* pass_operatore: non-attestato
 
 ### WU-0009B B5.x / mobile / scala / JPG export (archiviato)
 
@@ -58,9 +68,3 @@ dadbb866393e8528d4718c110d06e51605fe25f3	refs/heads/main
 ### WU-0009B B5.1 OPSEC UX polish
 
 * real_task_commit: `150d6ac`
-* pass_tecnico_remoto: PASS
-
-## LIMITI
-
-* Non sostituisce OM §7 / roadmap / latest / inbox.
-* Non certifica PASS operatore senza attestazione esplicita.
