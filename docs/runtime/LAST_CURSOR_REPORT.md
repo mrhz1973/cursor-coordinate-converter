@@ -4,23 +4,23 @@
 
 ## LATEST
 
-* real_task_commit: `32418de`
-* real_task_subject: feat(gis): contain mobile viewport for iPhone layout (B5.2)
-* report_generated_at: 2026-06-18T01:30:00+02:00
+* real_task_commit: `c5b305e`
+* real_task_subject: feat(gis): add multi-unit map scale legend (B5.3)
+* report_generated_at: 2026-06-19T11:27:00+02:00
 * branch: main
 * remote_hash_authority: git ls-remote origin main
-* local_HEAD: `66338d51fc1e8adb25dceee01729bc31c067730e`
-* local_origin_main: `66338d51fc1e8adb25dceee01729bc31c067730e`
-* ls_remote_origin_main: `66338d51fc1e8adb25dceee01729bc31c067730e`
-* working_tree_status: pulito (post-push B5.2)
-* pass_tecnico_remoto: PASS *(push B5.2 `66338d5`)*
-* result_cursor: B5.2 mobile viewport containment — meta `viewport-fit=cover`; CSS mobile-only `@media (max-width:768px)` (+480px, landscape): header/topbar wrap, tile-ctrls scroll+compact, modal/drawer/help max-size, OPSEC dialog sticky Conferma/Annulla; node --check OK; nessuna modifica JS OPSEC/GIS
+* local_HEAD: `145e505`
+* local_origin_main: `145e505` *(post-push atteso)*
+* ls_remote_origin_main: `145e505` *(post-push atteso)*
+* working_tree_status: pulito (post-push B5.3)
+* pass_tecnico_remoto: PASS *(post-push B5.3)*
+* result_cursor: B5.3 legenda scala multi-unità — `buildScaleBar` metrica (barra px invariata, toggle m/km in-place via `data-meters`, mi secondario), riga Nm, ratio 1:N; `state.scaleUnit` session-only default `km`; a11y toggle fuori `aria-hidden`; CSS mobile containment scala/readout; node --check OK; nessuna modifica OPSEC/tile/proxy/waypoint
 * pass_operatore: non-attestato
-* result_runtime: Browser QA mobile iPhone B5.2 pending — checklist in inbox
-* docs_commit: `8856f31`
-* autosync_commit: `66338d5`
-* notes: Regole CSS base desktop fuori `@media` invariate; solo meta viewport + blocco B5.2 additive.
-* pending_self_reference: **risolto** — autosync B5.2 referenzia `real_task_commit=32418de`
+* result_runtime: Browser QA visuale B5.1+B5.2+B5.3 pending — checklist in inbox
+* docs_commit: `005fe4d`
+* autosync_commit: `145e505`
+* notes: Handler toggle non chiama `renderTileMap`; QA visuale bundlata consigliata.
+* pending_self_reference: **risolto** — autosync B5.3 referenzia `real_task_commit=c5b305e`
 
 <!-- pass_* = esito sintetico: PASS / FAIL / non-attestato. result_* = descrizione o evidenza sintetica. -->
 
@@ -28,31 +28,36 @@
 
 ```text
 git log --oneline -5
-66338d5 docs: orchestratore + LAST_CURSOR_REPORT — B5.2 mobile viewport
-8856f31 docs: OM §7 — B5.2 mobile viewport PASS tecnico
-32418de feat(gis): contain mobile viewport for iPhone layout (B5.2)
-37789c6 docs: orchestratore — riconciliazione finito sessione
-d88824f docs: chiusura sessione finito — WU-0009B B5.1 OPSEC UX polish
+(post-push — vedi RIEPILOGO chat)
 
 git status --short
-(vuoto)
+(vuoto atteso)
 
 git rev-parse HEAD
-66338d51fc1e8adb25dceee01729bc31c067730e
+(post-push)
 
 git rev-parse origin/main
-66338d51fc1e8adb25dceee01729bc31c067730e
+(post-push)
 
 git branch --show-current
 main
 
 git ls-remote origin main
-66338d51fc1e8adb25dceee01729bc31c067730e	refs/heads/main
+(post-push)
 ```
 
 ## HISTORY
 
-### WU-0009B B5.1 OPSEC strict UX polish (archiviato da B5.2 LATEST)
+### WU-0009B B5.2 mobile viewport containment (archiviato da B5.3 LATEST)
+
+* real_task_commit: `32418de`
+* real_task_subject: feat(gis): contain mobile viewport for iPhone layout (B5.2)
+* pass_tecnico_remoto: PASS
+* pass_operatore: non-attestato
+* autosync_commit: `66338d5`
+* notes: meta viewport-fit=cover; CSS mobile-only additive.
+
+### WU-0009B B5.1 OPSEC strict UX polish (archiviato)
 
 * real_task_commit: `150d6ac`
 * real_task_subject: feat(gis): improve OPSEC strict proxy discoverability (WU-0009B B5.1)
@@ -78,10 +83,3 @@ git ls-remote origin main
 * real_task_commit: `47b0016`
 * report_autosync_commit: `ec60d47`
 * pending_self_reference: **risolto**
-
-## LIMITI
-
-* Non sostituisce OM §7 / roadmap / latest / inbox.
-* Non certifica PASS operatore senza attestazione esplicita.
-* Non usa RAW GitHub come autorità finale.
-* Non richiede commit finalize-hash.

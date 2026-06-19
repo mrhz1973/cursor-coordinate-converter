@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-19 — **WU-0009B B5.3 legenda scala multi-unità (runtime):** commit runtime **`c5b305e`** — `buildScaleBar` multi-unità (metrica m/km toggle in-place, mi secondario, Nm, ratio 1:N); `state.scaleUnit` session-only; a11y toggle fuori `aria-hidden`; CSS mobile containment. Docs **`005fe4d`**. Autosync **`145e505`**. **Monolite versionato** runtime. **Browser QA visuale:** non attestata (bundle B5.1+B5.2+B5.3). Inbox **`2026-06-19_1127_riepilogo_b53-scale-legend.md`**. **Prossimo:** QA visuale operatore; B6.
+
 2026-06-18 — **WU-0009B B5.2 mobile viewport iPhone (runtime):** commit **`32418de`** — meta `viewport-fit=cover`; CSS mobile-only (toolbar scroll, header wrap, modal/drawer/help containment, OPSEC dialog sticky actions); **nessuna logica GIS/OPSEC/JS**. Docs **`8856f31`**. **`LAST_CURSOR_REPORT`** LATEST `32418de`. **Monolite incluso** runtime. **Browser QA mobile:** non attestata. Inbox **`2026-06-18_0130_riepilogo_b52-mobile-viewport.md`**. **Prossimo:** QA iPhone operatore; B6.
 
 2026-06-18 — **Chiusura sessione `finito` — WU-0009B B5.1:** commit **`d88824f`** (checkpoint + session append). Lavoro sessione già su main: runtime **`150d6ac`** (monolite OPSEC label/help), docs **`8475ff7`**, autosync **`1289e54`**, report **`b3e4d6a`**. **Working tree pulito.** **Monolite versionato** in `150d6ac`. Browser QA B5.1 non attestata. Inbox **`2026-06-18_0105_riepilogo_finito-sessione.md`**. **Prossimo:** deploy GIS + QA B5.1; B5.x hint Layers; B6 QA.
