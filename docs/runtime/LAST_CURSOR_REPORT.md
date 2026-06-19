@@ -7,8 +7,8 @@
 * pass_tecnico_remoto: PASS *(post-push atteso)*
 * result_cursor: B5.4d — layout export a due colonne: ratio 1:N sx (centrata verticalmente), tabella km·mi/barre/Nm dx; box bianco opaco preservato; calcoli/export base invariati; `toBlob("image/jpeg", 0.92)` preservato
 * pass_operatore: non-attestato
-* docs_commit: `TBD_DOCS`
-* autosync_commit: `TBD_AUTOSYNC`
+* docs_commit: `ea57923`
+* autosync_commit: `dce8e3a`
 
 ## HISTORY
 
