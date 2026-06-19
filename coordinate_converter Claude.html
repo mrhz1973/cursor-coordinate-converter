@@ -9229,8 +9229,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <span data-i18n="rangeRings.unit">Unità</span>
               <select id="rrUnit">
                 <option value="m">m</option>
-                <option value="km" selected>km</option>
-                <option value="NM">NM</option>
+                <option value="km">km</option>
+                <option value="NM" selected>NM</option>
                 <option value="mi">mi</option>
               </select>
             </label>
@@ -36457,8 +36457,8 @@ function rrResetRangeRingsFormToNew(){
   const unitSel = document.getElementById("rrUnit");
   const modeSel = document.getElementById("rrCenterMode");
   if (nameInp) nameInp.value = "";
-  if (distInp) distInp.value = "";
-  if (unitSel) unitSel.value = "m";
+  if (distInp) distInp.value = "1, 5, 10";
+  if (unitSel) unitSel.value = "NM";
   if (modeSel) modeSel.value = "picked";
   state._rangeRingsMapPickCenter = null;
 }
@@ -37574,12 +37574,16 @@ function renderRangeRingsPanel(){
   const cancelEdBtn = document.getElementById("rrCancelEditBtn");
   const moveCtrBtn = document.getElementById("rrMoveCenterOnMapBtn");
   const editing = !!state._rrEditingSetId;
+  const centerResolvable = !!rrGetCenterFromUi();
+  const mode = String(modeSel ? modeSel.value : "picked");
+  const inMapPickFlow = !!state.rangeRingsPickCenterMode || !!state.rangeRingsPickAndCreateMode;
   if (updBtn) updBtn.hidden = !editing;
   if (cancelEdBtn) cancelEdBtn.hidden = !editing;
   if (moveCtrBtn) moveCtrBtn.hidden = !editing;
   if (createBtn){
+    createBtn.hidden = editing || !centerResolvable;
     createBtn.disabled = editing;
-    createBtn.classList.toggle("btn-primary", false);
+    createBtn.classList.toggle("btn-primary", !editing && centerResolvable && !inMapPickFlow);
   }
   if (updBtn) updBtn.classList.toggle("btn-primary", editing);
   if (pickBtn){
@@ -37594,7 +37598,7 @@ function renderRangeRingsPanel(){
     pickCreateBtn.classList.toggle("is-active", onC);
     pickCreateBtn.setAttribute("aria-pressed", onC ? "true" : "false");
     pickCreateBtn.disabled = !!state._rrEditingSetId;
-    pickCreateBtn.classList.toggle("btn-primary", !editing);
+    pickCreateBtn.classList.toggle("btn-primary", !editing && (inMapPickFlow || (mode === "picked" && !centerResolvable)));
   }
   if (pickSt && typeof t === "function"){
     if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode){
