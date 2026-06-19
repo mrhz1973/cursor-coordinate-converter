@@ -1317,7 +1317,7 @@ Stesso schema di B3.
 
 **B6.4a-2 Range Rings panel full-height (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`656dd13`**; HEAD/deploy **`7dd1a41`**; attestazione «tutto perfetto».
 
-**B6.5 Range Rings center drag (2026-06-20):** PASS tecnico statico — handle centro trascinabile in modalità edit «Sposta centro sulla mappa»; `mapRrCenterDocDrag`; live redraw; persistence `set.center`; build label **`B6.5`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
+**B6.5 Range Rings center drag (2026-06-20):** PASS tecnico statico — runtime **`f943675`**; handle centro trascinabile in modalità edit «Sposta centro sulla mappa»; `mapRrCenterDocDrag`; live redraw; persistence `set.center`; build label **`B6.5`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
 
 **Prossimo candidato Range Rings:** backlog post-B6.5 (es. restore pannello post-create se richiesto).
 
