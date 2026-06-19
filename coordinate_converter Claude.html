@@ -24160,50 +24160,51 @@ function drawJpgExportScaleBar(ctx, x, y, width, height, tickCount){
   ctx.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
 }
 
-/** Draw optional scale legend on JPG export canvas (B5.4) — canvas 2D only. */
+/** Draw optional scale legend on JPG export canvas (B5.4 / B5.4b) — canvas 2D only. */
 function drawJpgExportScale(ctx, canvasW, canvasH, model){
   if (!ctx || !model || canvasW <= 0 || canvasH <= 0) return;
-  const pad = Math.max(6, Math.round(Math.min(canvasW, canvasH) * 0.012));
-  const fontSize = Math.max(9, Math.min(12, Math.round(canvasW * 0.022)));
-  const barH = Math.max(3, Math.round(fontSize * 0.38));
-  const lineGap = Math.max(3, Math.round(fontSize * 0.32));
+  const pad = Math.max(8, Math.round(Math.min(canvasW, canvasH) * 0.016));
+  const fontSize = Math.max(11, Math.min(14, Math.round(canvasW * 0.028)));
+  const ratioFs = Math.max(10, fontSize - 1);
+  const barH = Math.max(5, Math.round(fontSize * 0.45));
+  const gapAfterText = Math.max(4, Math.round(fontSize * 0.35));
+  const gapAfterBar = Math.max(5, Math.round(fontSize * 0.42));
   const maxBarW = Math.max(40, Math.min(model.pickPx, canvasW * 0.36));
   const maxBarWNm = Math.max(40, Math.min(model.pickPxNm, canvasW * 0.36));
-  const showNm = canvasW >= 180 && canvasH >= 90;
+  const compactBoxH = pad * 2 + fontSize + gapAfterText + barH + gapAfterBar + ratioFs;
+  const fullBoxH = compactBoxH + fontSize + gapAfterText + barH + gapAfterBar;
+  const showNm = canvasW >= 180 && canvasH >= fullBoxH + pad;
+  const boxH = showNm ? fullBoxH : compactBoxH;
   ctx.save();
+  ctx.textBaseline = "top";
   ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
-  ctx.textBaseline = "alphabetic";
   const metricW = ctx.measureText(model.metricLabel).width;
-  const ratioFs = Math.max(8, fontSize - 1);
   ctx.font = "600 " + ratioFs + "px ui-monospace,monospace";
   const ratioW = ctx.measureText(model.ratioLabel).width;
   let boxW = pad * 2 + Math.max(metricW, maxBarW, ratioW);
-  let boxH = pad * 2 + fontSize + lineGap + barH + lineGap + ratioFs;
   if (showNm){
     ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
     boxW = Math.max(boxW, pad * 2 + Math.max(ctx.measureText(model.nmLabel).width, maxBarWNm));
-    boxH += lineGap + fontSize + lineGap + barH;
   }
   const boxX = pad;
-  const boxY = canvasH - pad - boxH;
+  const boxY = Math.max(pad, canvasH - pad - boxH);
   ctx.fillStyle = "#ffffff";
   ctx.fillRect(boxX, boxY, boxW, boxH);
   ctx.strokeStyle = "#333333";
   ctx.lineWidth = 1;
   ctx.strokeRect(boxX + 0.5, boxY + 0.5, boxW - 1, boxH - 1);
-  let cy = boxY + pad + fontSize;
+  let cy = boxY + pad;
   ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
   ctx.fillStyle = "#111111";
   ctx.fillText(model.metricLabel, boxX + pad, cy);
-  cy += lineGap;
+  cy += fontSize + gapAfterText;
   drawJpgExportScaleBar(ctx, boxX + pad, cy, maxBarW, barH, 10);
-  cy += barH + lineGap;
+  cy += barH + gapAfterBar;
   if (showNm){
-    ctx.fillStyle = "#111111";
     ctx.fillText(model.nmLabel, boxX + pad, cy);
-    cy += lineGap;
+    cy += fontSize + gapAfterText;
     drawJpgExportScaleBar(ctx, boxX + pad, cy, maxBarWNm, barH, 10);
-    cy += barH + lineGap;
+    cy += barH + gapAfterBar;
   }
   ctx.font = "600 " + ratioFs + "px ui-monospace,monospace";
   ctx.fillStyle = "#222222";
