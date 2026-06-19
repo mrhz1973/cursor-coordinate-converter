@@ -1293,6 +1293,10 @@ Stesso schema di B3.
 
 **B5.3 legenda scala multi-unità (2026-06-18):** PASS tecnico statico — `buildScaleBar` esteso: barra metrica (snap 1-2-5, px invariati), toggle m/km in-place (`data-meters`, no re-render), mi secondario, barra Nm, ratio 1:N; CSS/a11y/mobile containment locale; nessuna modifica OPSEC/tile/proxy. Browser QA visuale: pending operatore (bundle B5.1+B5.2+B5.3).
 
+**B5.3a scala senza toggle + barre graduate (2026-06-19):** PASS tecnico statico — rimosso toggle m/km e handler; scala metrica sempre km + mi; barre metrica/Nm con 10 tacche CSS (`--scale-step`, `repeating-linear-gradient`); label centrale al 50% (nascosta mobile); legenda `aria-hidden`; `exportMapAsJpg()` non modificato. Browser QA visuale: pending operatore.
+
+**B5.4 candidato backlog:** export JPEG con scala opzionale disegnata su canvas 2D (`fillRect`/`stroke`/`fillText`, riuso pick/format scala; nessun `foreignObject`; nessuna rasterizzazione HTML `.tile-scale`).
+
 ### B6 — QA OPSEC/proxy/offline
 
 **Stato:** QA visuale post-B5.1 pending se non attestata operatore.
