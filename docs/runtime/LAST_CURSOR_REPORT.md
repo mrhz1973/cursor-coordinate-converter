@@ -4,23 +4,16 @@
 
 ## LATEST
 
-* real_task_commit: `caa2fc9`
-* real_task_subject: feat(gis): remove scale m/km toggle; add graduated scale bars (B5.3a)
-* report_generated_at: 2026-06-19T13:05:00+02:00
+* real_task_commit: `ad7d977`
+* real_task_subject: fix(gis): resolve metric scale label overlap (B5.3b)
+* report_generated_at: 2026-06-19T14:26:00+02:00
 * branch: main
-* remote_hash_authority: git ls-remote origin main
-* local_HEAD: `0497213`
-* local_origin_main: `0497213`
-* ls_remote_origin_main: `0497213`
-* working_tree_status: pulito (post-push B5.3a atteso)
-* pass_tecnico_remoto: PASS *(post-push B5.3a atteso)*
-* result_cursor: B5.3a — rimosso toggle m/km; scala sempre km + mi + Nm + ratio; barre 10 tacche CSS (`repeating-linear-gradient`, `--scale-step`); label centrale al 50% (nascosta mobile); legenda `aria-hidden`; `exportMapAsJpg()` non toccato; node --check OK; nessuna modifica OPSEC/tile/proxy/waypoint
+* pass_tecnico_remoto: PASS *(post-push atteso)*
+* result_cursor: B5.3b — fix overlap label centrale metrica vs caption km·mi; mid-label in document flow; spacing box `.tile-scale` aumentato; nessun cambio calcolo/snap; toggle assente; tacche/ Nm/ ratio invariati; `exportMapAsJpg()` non toccato; node --check OK
 * pass_operatore: non-attestato
-* result_runtime: Browser QA visuale B5.1+B5.2+B5.3/B5.3a pending — checklist in inbox
-* docs_commit: `d0dd05f`
-* autosync_commit: `0497213`
-* notes: Backlog B5.4 annotato (export JPEG scala canvas 2D). Helper `formatScaleMetricDisplay`/`formatScaleDistanceMi` mantenuti.
-* pending_self_reference: **risolto** — autosync referenzia `real_task_commit=caa2fc9`
+* docs_commit: `0ba95f2`
+* autosync_commit: `4cb122c`
+* pending_self_reference: risolto — `real_task_commit=ad7d977`
 
 ## OUTPUT VERBATIM
 
@@ -30,20 +23,12 @@
 
 ## HISTORY
 
-### WU-0009B B5.3 legenda scala multi-unità (archiviato da B5.3a LATEST)
+### WU-0009B B5.3a (archiviato da B5.3b LATEST)
+
+* real_task_commit: `caa2fc9`
+* autosync_commit: `989609e`
+* pass_operatore: non-attestato
+
+### WU-0009B B5.3 (archiviato)
 
 * real_task_commit: `c5b305e`
-* pass_tecnico_remoto: PASS
-* pass_operatore: non-attestato
-* autosync_commit: `cfa59fe`
-* notes: Toggle m/km in-place (sostituito da B5.3a).
-
-### WU-0009B B5.2 mobile viewport containment (archiviato)
-
-* real_task_commit: `32418de`
-* pass_operatore: non-attestato
-
-### WU-0009B B5.1 OPSEC strict UX polish (archiviato)
-
-* real_task_commit: `150d6ac`
-* pass_operatore: non-attestato

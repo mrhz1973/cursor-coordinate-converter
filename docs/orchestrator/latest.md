@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-19 — **WU-0009B B5.3b fix overlap label scala metrica (runtime):** commit runtime **`ad7d977`** — mid-label metrica in flow (non absolute); spacing box scala aumentato; nessun cambio calcolo; `exportMapAsJpg()` non toccato. Docs **`0ba95f2`**. Autosync **`4cb122c`**. **Monolite versionato** runtime. **Browser QA visuale:** non attestata. Inbox **`2026-06-19_1426_riepilogo_b53b-scale-label-overlap.md`**. **Prossimo:** QA visuale operatore; B6.
+
 2026-06-19 — **WU-0009B B5.3a scala senza toggle + barre graduate (runtime):** commit runtime **`caa2fc9`** — rimosso toggle m/km; scala sempre km + mi + Nm + ratio; 10 tacche CSS; label centrale (nascosta mobile); `exportMapAsJpg()` non toccato. Docs **`d0dd05f`**. Autosync **`0497213`**. **Monolite versionato** runtime. **Browser QA visuale:** non attestata (bundle B5.1+B5.2+B5.3/B5.3a). Inbox **`2026-06-19_1305_riepilogo_b53a-scale-graduated.md`**. **Backlog:** B5.4 export JPEG scala canvas. **Prossimo:** QA visuale operatore; B6.
 
 2026-06-19 — **WU-0009B B5.3 legenda scala multi-unità (runtime):** commit runtime **`c5b305e`** — `buildScaleBar` multi-unità (metrica m/km toggle in-place, mi secondario, Nm, ratio 1:N); `state.scaleUnit` session-only; a11y toggle fuori `aria-hidden`; CSS mobile containment. Docs **`005fe4d`**. Autosync **`145e505`**. **Monolite versionato** runtime. **Browser QA visuale:** non attestata (bundle B5.1+B5.2+B5.3). Inbox **`2026-06-19_1127_riepilogo_b53-scale-legend.md`**. **Prossimo:** QA visuale operatore; B6.
