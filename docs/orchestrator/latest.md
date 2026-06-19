@@ -9,9 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B6.3a Range Rings label readability (runtime):** commit **`22f19f1`** — badge sfondo label SVG; posizionamento 45° vs guide radiali; controlli `labelBgEnabled`/`labelBgColor`; B6.2/B6.3 invariati. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2200_riepilogo_b63a-range-rings-label-readability.md`**. **Prossimo:** browser QA B6.3a.
+2026-06-19 — **WU-0009B B6.3b Range Rings edit style parity (runtime):** commit **`50b0a86`** — `rrApplySanitizedRangeRingSet` fix merge edit; load/save parità stile B6.3/B6.3a. **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2300_riepilogo_b63b-range-rings-edit-style-parity.md`**.
 
-2026-06-19 — **WU-0009B B6.3 Range Rings style controls (runtime):** commit **`d69cacd`**. **QA operatore:** PASS. Inbox **`2026-06-19_2100_riepilogo_b63-range-rings-style-controls.md`**.
+2026-06-19 — **WU-0009B B6.3a label readability:** commit **`22f19f1`**. **QA operatore:** PASS.
 
 2026-06-19 — **WU-0009B B6.2 Range Rings pick-first UX (runtime):** commit **`d38c253`** — rimosso `#rrCreateBtn`; minimize dock; preset unit-aware. Inbox **`2026-06-19_1800_riepilogo_b62-range-rings-pick-first.md`**. **QA operatore:** PASS (flusso Punta e crea).
 
