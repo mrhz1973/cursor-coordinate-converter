@@ -9237,11 +9237,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="rr-preset-chips" style="margin-top:8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center">
             <span class="export-group-label" data-i18n="rangeRings.presetsQuick">Preset distanze</span>
-            <button type="button" class="btn btn-sm" data-rr-preset="m" data-rr-values="100,250,500" data-i18n="rangeRings.presetM100" data-i18n-tip="tip.rangeRingsPresetM100">100/250/500 m</button>
-            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="1,2,5" data-i18n="rangeRings.presetKm125" data-i18n-tip="tip.rangeRingsPresetKm125">1/2/5 km</button>
-            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="1,5,10" data-i18n="rangeRings.presetKm1510" data-i18n-tip="tip.rangeRingsPresetKm1510">1/5/10 km</button>
-            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="5,10,25" data-i18n="rangeRings.presetKm51025" data-i18n-tip="tip.rangeRingsPresetKm51025">5/10/25 km</button>
-            <button type="button" class="btn btn-sm" data-rr-preset="km" data-rr-values="10,25,50" data-i18n="rangeRings.presetKm102550" data-i18n-tip="tip.rangeRingsPresetKm102550">10/25/50 km</button>
+            <span id="rrPresetChipsRow" style="display:contents"></span>
           </div>
         </div>
 
@@ -9269,7 +9265,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" class="btn btn-sm btn-primary" id="rrUpdateSetBtn" hidden data-i18n="rangeRings.updateSet" data-i18n-tip="tip.rangeRingsUpdateSet"></button>
           <button type="button" class="btn btn-sm" id="rrCancelEditBtn" hidden data-i18n="rangeRings.cancelEdit" data-i18n-tip="tip.rangeRingsCancelEdit"></button>
           <button type="button" class="btn btn-sm" id="rrMoveCenterOnMapBtn" hidden data-i18n="rangeRings.editMoveCenter" data-i18n-tip="tip.rangeRingsMoveCenter"></button>
-          <button type="button" class="btn btn-sm" id="rrCreateBtn" hidden data-i18n="rangeRings.create" data-i18n-tip="tip.rangeRingsCreateNew"></button>
         </div>
 
         <hr class="sub-sep" style="margin:14px 0">
@@ -36461,6 +36456,7 @@ function rrResetRangeRingsFormToNew(){
   if (unitSel) unitSel.value = "NM";
   if (modeSel) modeSel.value = "picked";
   state._rangeRingsMapPickCenter = null;
+  try { rrRenderUnitPresetChips(); } catch(_){}
 }
 function rrLoadSetIntoForm(s){
   if (!s) return;
@@ -37522,6 +37518,9 @@ function rangeRingsEnterPickAndCreateMode(){
   } catch(_){}
   state.rangeRingsPickCenterMode = false;
   state.rangeRingsPickAndCreateMode = true;
+  if (typeof gisMinimizePanel === "function") {
+    gisMinimizePanel("rangeRingsPanel", "gis.minimized.rings");
+  }
   const modeSel = document.getElementById("rrCenterMode");
   if (modeSel) modeSel.value = "picked";
   try { trackSyncPickModeUi(); } catch(_){}
@@ -37569,22 +37568,15 @@ function renderRangeRingsPanel(){
   const pickBtn = document.getElementById("rrPickMapBtn");
   const pickCreateBtn = document.getElementById("rrPickCreateBtn");
   const pickSt = document.getElementById("rrPickMapStatus");
-  const createBtn = document.getElementById("rrCreateBtn");
   const updBtn = document.getElementById("rrUpdateSetBtn");
   const cancelEdBtn = document.getElementById("rrCancelEditBtn");
   const moveCtrBtn = document.getElementById("rrMoveCenterOnMapBtn");
   const editing = !!state._rrEditingSetId;
-  const centerResolvable = !!rrGetCenterFromUi();
   const mode = String(modeSel ? modeSel.value : "picked");
   const inMapPickFlow = !!state.rangeRingsPickCenterMode || !!state.rangeRingsPickAndCreateMode;
   if (updBtn) updBtn.hidden = !editing;
   if (cancelEdBtn) cancelEdBtn.hidden = !editing;
   if (moveCtrBtn) moveCtrBtn.hidden = !editing;
-  if (createBtn){
-    createBtn.hidden = editing || !centerResolvable;
-    createBtn.disabled = editing;
-    createBtn.classList.toggle("btn-primary", !editing && centerResolvable && !inMapPickFlow);
-  }
   if (updBtn) updBtn.classList.toggle("btn-primary", editing);
   if (pickBtn){
     pickBtn.hidden = true;
@@ -37598,7 +37590,7 @@ function renderRangeRingsPanel(){
     pickCreateBtn.classList.toggle("is-active", onC);
     pickCreateBtn.setAttribute("aria-pressed", onC ? "true" : "false");
     pickCreateBtn.disabled = !!state._rrEditingSetId;
-    pickCreateBtn.classList.toggle("btn-primary", !editing && (inMapPickFlow || (mode === "picked" && !centerResolvable)));
+    pickCreateBtn.classList.toggle("btn-primary", !editing);
   }
   if (pickSt && typeof t === "function"){
     if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode){
@@ -37817,6 +37809,29 @@ function rrToggleVisible(id, visible){
   saveStore();
   refreshRangeRingsAfterStateChange();
 }
+const RR_UNIT_PRESET_VALUES = {
+  NM: ["5,10,15", "10,25,50", "5,10,15,20,30"],
+  km: ["1,2,5", "1,5,10", "5,10,25", "10,25,50"],
+  m: ["50,100,200", "100,250,500", "250,500,1000"],
+  mi: ["1,2,5", "1,5,10", "5,10,25", "10,25,50"]
+};
+function rrFormatPresetChipLabel(values, unit){
+  const parts = String(values || "").split(",").map(s => s.trim()).filter(Boolean);
+  return parts.join("/") + " " + String(unit || "");
+}
+function rrRenderUnitPresetChips(){
+  const row = document.getElementById("rrPresetChipsRow");
+  const unitSel = document.getElementById("rrUnit");
+  if (!row || !unitSel) return;
+  const unit = String(unitSel.value || "NM");
+  const presets = RR_UNIT_PRESET_VALUES[unit] || RR_UNIT_PRESET_VALUES.km || [];
+  row.innerHTML = presets.map((vals) => {
+    const lbl = rrFormatPresetChipLabel(vals, unit);
+    const escLbl = (typeof esc === "function") ? esc(lbl) : lbl;
+    const escVals = (typeof esc === "function") ? esc(vals) : vals;
+    return `<button type="button" class="btn btn-sm" data-rr-values="${escVals}" title="${escLbl}">${escLbl}</button>`;
+  }).join("");
+}
 function bindRangeRingsUI(){
   const sec = document.getElementById("sec-rangerings");
   if (!sec || sec._rrBound) return;
@@ -37849,8 +37864,6 @@ function bindRangeRingsUI(){
       rangeRingsEnterPickAndCreateMode();
     });
   }
-  const createBtn = document.getElementById("rrCreateBtn");
-  if (createBtn) createBtn.addEventListener("click", rrCreateFromUi);
   const updBtn0 = document.getElementById("rrUpdateSetBtn");
   if (updBtn0) updBtn0.addEventListener("click", (ev) => { ev.preventDefault(); try { rrSaveEditedRangeRingSetFromUi(); } catch(_){} });
   const cancelEd0 = document.getElementById("rrCancelEditBtn");
@@ -37858,17 +37871,26 @@ function bindRangeRingsUI(){
   const moveCtr0 = document.getElementById("rrMoveCenterOnMapBtn");
   if (moveCtr0) moveCtr0.addEventListener("click", (ev) => { ev.preventDefault(); try { rrEnterRangeRingEditMoveCenterMode(); } catch(_){} });
 
-  sec.querySelectorAll("[data-rr-preset]").forEach(b => {
-    b.addEventListener("click", () => {
+  const presetRow = document.getElementById("rrPresetChipsRow");
+  if (presetRow && !presetRow._rrPresetDelegated){
+    presetRow._rrPresetDelegated = true;
+    presetRow.addEventListener("click", (ev) => {
+      const b = ev.target && ev.target.closest ? ev.target.closest("[data-rr-values]") : null;
+      if (!b || !presetRow.contains(b)) return;
       const vals = String(b.getAttribute("data-rr-values") || "");
-      const unit = String(b.getAttribute("data-rr-preset") || "km");
       const di = document.getElementById("rrDistances");
-      const us = document.getElementById("rrUnit");
       if (di) di.value = vals;
-      if (us) us.value = unit;
       rrClearMsgs();
     });
-  });
+  }
+  const unitSel0 = document.getElementById("rrUnit");
+  if (unitSel0 && !unitSel0._rrUnitPresetWired){
+    unitSel0._rrUnitPresetWired = true;
+    unitSel0.addEventListener("change", () => {
+      try { rrRenderUnitPresetChips(); } catch(_){}
+    });
+  }
+  try { rrRenderUnitPresetChips(); } catch(_){}
 
   const list = document.getElementById("rrList");
   if (list && !list._rrDelegated){
