@@ -9,7 +9,7 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B5.4a box scala JPG bianco pieno (runtime):** commit runtime **`5500c26`** — `drawJpgExportScale` sfondo opaco `#ffffff`; nessun cambio calcoli/export base. Docs **`TBD_DOCS`**. Inbox **`2026-06-19_1515_riepilogo_b54a-jpg-scale-box-opaque.md`**. **QA export operatore:** pending.
+2026-06-19 — **WU-0009B B5.4a box scala JPG bianco pieno (runtime):** commit runtime **`5500c26`** — `drawJpgExportScale` sfondo opaco `#ffffff`; nessun cambio calcoli/export base. Docs **`4346517`**. Autosync **`e94c82e`**. Inbox **`2026-06-19_1515_riepilogo_b54a-jpg-scale-box-opaque.md`**. **QA export operatore:** pending.
 
 2026-06-19 — **WU-0009B B5.4 export JPEG scala opzionale (runtime):** commit runtime **`4d40fae`**. **QA export operatore:** pending. Inbox **`2026-06-19_1509_riepilogo_b54-jpg-scale-export.md`**.
 
