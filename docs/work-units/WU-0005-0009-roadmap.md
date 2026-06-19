@@ -1315,7 +1315,9 @@ Stesso schema di B3.
 
 **B6.4 radial/bearing spokes (2026-06-19):** PASS tecnico statico — runtime **`d0a4a0a`**; deploy VPS byte-match **`2f7ee52`**; toggle linee radiali; count `{2,3,4,8,16}`; default **`spokeCount=3`** preserva bearing legacy **`0/90/270`**; colore/spessore/tipo linea radiale; comportamento legacy: guide per ogni anello → spokes dal centro al **raggio massimo**; retrocompat in `sanitizeRangeRingSet` (set vecchi → `spokesEnabled=true`, count default `3`). **Browser QA operatore: pending/bundlata** (UX B6.4a).
 
-**B6.4a — prossimo candidato:** restore pannello dopo create + apertura full-height — **non implementato**.
+**B6.4a-2 Range Rings panel full-height (2026-06-20):** PASS tecnico statico — `_rangeRingsPanelLayoutOpts` (`defaultHeightFraction` 0.92, `defaultHeightCap` 100000, `topbarReserve` 104); altezza default da `fromReserve`; bottom-anchor invariato; build label `B6.4a-2` (`APP_BUILD_ID`, title/footer/About); `node --check` OK. **Browser QA operatore:** pending post-deploy VPS `:8000`.
+
+**Prossimo candidato Range Rings:** backlog post-B6.4a (es. B6.5 drag centro) — dopo QA operatore B6.4a-2.
 
 ### B6 — QA OPSEC/proxy/offline
 

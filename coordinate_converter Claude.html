@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GIS Tool/Converter by Marty</title>
+<title>GIS Tool/Converter · B6.4a-2</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -10387,7 +10387,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span>v1.0</span>
+    <span id="appBuildFooter">B6.4a-2</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -10627,10 +10627,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code>1.0</code>
+            <code id="appBuildAbout">B6.4a-2</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
+          <div class="about-line muted" id="appBuildAboutDetail">Range Rings panel full-height/restore</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -16472,6 +16473,21 @@ const STORAGE_KEY = "coordconv_v2";
 const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
+/** Visible runtime build label — update before each runtime `finito`. */
+const APP_BUILD_ID = "B6.4a-2";
+const APP_BUILD_DETAIL = "Range Rings panel full-height/restore";
+const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
+function applyAppBuildLabel(){
+  try {
+    document.title = "GIS Tool/Converter · " + APP_BUILD_ID;
+    const foot = document.getElementById("appBuildFooter");
+    if (foot) foot.textContent = APP_BUILD_ID;
+    const about = document.getElementById("appBuildAbout");
+    if (about) about.textContent = APP_BUILD_ID;
+    const det = document.getElementById("appBuildAboutDetail");
+    if (det) det.textContent = APP_BUILD_DETAIL;
+  } catch(_){}
+}
 function loadStore(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -42349,8 +42365,9 @@ function _rangeRingsPanelLayoutOpts(){
     minH: 300,
     defaultW: 500,
     defaultH: null,
-    defaultHeightFraction: 0.58,
-    defaultHeightCap: 640,
+    /** B6.4a-2: altezza da fromReserve (vh − topbarReserve − pad); cap alto → bottom-anchor posiziona top sotto topbar. */
+    defaultHeightFraction: 0.92,
+    defaultHeightCap: 100000,
     topbarReserve: 104,
     bodyMinH: 120,
     /** Drag/resize RR: strip visibile minima (px); altri pannelli restano su clamp pieno. */
@@ -45769,6 +45786,7 @@ function gisNavigateToolTarget(targetId, i18nKey){
 // #region JS — INIT AND SELF CHECK
 /* ========================= SECTION 24: INIT ========================= */
 function init(){
+  try { applyAppBuildLabel(); } catch(_){}
   // Default language: navigator
   const nav = (navigator.language || "it").toLowerCase().slice(0,2);
   const defaultLang = ["it","en","fr"].includes(nav) ? nav : "it";
