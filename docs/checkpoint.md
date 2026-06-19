@@ -8,7 +8,9 @@
 **Data snapshot:** 2026-06-20
 **File canonico app:** `coordinate_converter Claude.html` (HTML single-file)
 
-**Ultimo cambio:** 2026-06-20 — **Chiusura sessione (`finito`) — WU-0009B B6.4a-2 Range Rings panel full-height + build label:** monolite — `_rangeRingsPanelLayoutOpts` (fraction 0.92, cap 100000, topbarReserve 104); altezza default da `fromReserve` + bottom-anchor; build label `B6.4a-2` (`APP_BUILD_ID`, title/footer/About); **`node --check`** OK. Docs OM §7 + roadmap. **Browser QA operatore:** pending post-deploy VPS `:8000`. Riconciliazione orchestratore post-push.
+**Ultimo cambio:** 2026-06-20 — **Chiusura sessione (`finito`) — OM §7 PASS operatore B6.4a-2 post-deploy VPS:** attestazione operatore «tutto perfetto»; deploy GIS-only HEAD **`7dd1a41`**; runtime **`656dd13`**; smoke **`200`**, Content-Length **`2142705`**; build label **`B6.4a-2`** servita. **`docs/OPERATING_MEMORY.md`** §7 + **`docs/work-units/WU-0005-0009-roadmap.md`**. **Monolite non modificato** (già deployato). Riconciliazione orchestratore post-push.
+
+**Ultimo cambio (precedente):** 2026-06-20 — **Chiusura sessione (`finito`) — WU-0009B B6.4a-2 Range Rings panel full-height + build label:** monolite — `_rangeRingsPanelLayoutOpts` (fraction 0.92, cap 100000, topbarReserve 104); altezza default da `fromReserve` + bottom-anchor; build label `B6.4a-2` (`APP_BUILD_ID`, title/footer/About); **`node --check`** OK. Docs OM §7 + roadmap. **Browser QA operatore:** pending post-deploy VPS `:8000`. Riconciliazione orchestratore post-push.
 
 **Ultimo cambio (precedente):** 2026-06-18 — **Chiusura sessione (`finito`) — WU-0009B B5.1 OPSEC strict / proxy UX polish:** runtime **`150d6ac`** — label `set.opsec.strict` + help-line `set.opsec.strictHelp`; docs **`8475ff7`** (OM §7 + roadmap); autosync **`1289e54`** + report backfill **`b3e4d6a`**. Nessun secondo toggle; gate OPSEC invariati; hint Layers differito. **Monolite versionato** in commit runtime. Browser QA B5.1 non attestata. Riconciliazione orchestratore post-push.
 
