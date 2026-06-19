@@ -7,8 +7,8 @@
 * pass_tecnico_remoto: PASS *(post-push atteso)*
 * result_cursor: B5.4c — ratio 1:N sempre renderizzata e leggibile nel JPG export; riga dedicata con gapBeforeRatio; Nm omessa prima della ratio se canvas stretto; box bianco opaco preservato; calcoli/export base invariati; `toBlob("image/jpeg", 0.92)` preservato
 * pass_operatore: non-attestato
-* docs_commit: `TBD_DOCS`
-* autosync_commit: `TBD_AUTOSYNC`
+* docs_commit: `7dee25d`
+* autosync_commit: `f3e6dde`
 
 ## HISTORY
 
