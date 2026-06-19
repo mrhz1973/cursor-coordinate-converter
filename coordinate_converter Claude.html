@@ -18338,6 +18338,27 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
   }
   return out;
 }
+/** Merge sanitized set onto live object; drop optional style keys absent from sanitized (edit parity). */
+function rrApplySanitizedRangeRingSet(target, sanitized){
+  if (!target || !sanitized) return;
+  Object.assign(target, sanitized);
+  if (!sanitized.labelColor) delete target.labelColor;
+  if (!sanitized.labelBgEnabled){
+    delete target.labelBgEnabled;
+    delete target.labelBgColor;
+  }
+}
+function rrStylePayloadFromSet(s){
+  if (!s) return Object.assign({}, RR_DEFAULT_RING_STYLE);
+  return {
+    ringColor: s.color,
+    ringWidth: s.strokeWidth,
+    ringLineStyle: s.lineStyle,
+    labelColor: (typeof s.labelColor === "string" && s.labelColor) ? s.labelColor : RR_DEFAULT_RING_STYLE.labelColor,
+    labelBgEnabled: s.labelBgEnabled === true,
+    labelBgColor: (typeof s.labelBgColor === "string" && s.labelBgColor) ? s.labelBgColor : RR_DEFAULT_RING_STYLE.labelBgColor
+  };
+}
 function sanitizeRangeRingSets(raw){
   if (!Array.isArray(raw)) return [];
   const out = [];
@@ -36637,16 +36658,8 @@ function rrLoadSetIntoForm(s){
   if (distInp) distInp.value = rrFormatDistancesForInput(s.distancesM, s.unit);
   if (unitSel) unitSel.value = String(s.unit || "m");
   if (modeSel) modeSel.value = "picked";
-  try {
-    rrApplyStyleToForm({
-      ringColor: s.color,
-      ringWidth: s.strokeWidth,
-      ringLineStyle: s.lineStyle,
-      labelColor: s.labelColor || RR_DEFAULT_RING_STYLE.labelColor,
-      labelBgEnabled: s.labelBgEnabled === true,
-      labelBgColor: s.labelBgColor || RR_DEFAULT_RING_STYLE.labelBgColor
-    });
-  } catch(_){}
+  try { rrRenderUnitPresetChips(); } catch(_){}
+  try { rrApplyStyleToForm(rrStylePayloadFromSet(s)); } catch(_){}
   const c = s.center;
   if (c && Number.isFinite(c.lat) && Number.isFinite(c.lon)){
     state._rangeRingsMapPickCenter = { lat: c.lat, lon: c.lon };
@@ -36676,6 +36689,7 @@ function rrBeginEditRangeRingSet(id){
   try { refreshTileMapForTrackUi(); } catch(_){}
   state._rrEditingSetId = sid;
   rrLoadSetIntoForm(s);
+  try { rrSyncLabelBgColorControlState(); } catch(_){}
   renderRangeRingsPanel();
 }
 function rrCancelEditRangeRing(){
@@ -36735,7 +36749,7 @@ function rrSaveEditedRangeRingSetFromUi(){
   }, 0);
   if (!merged){ rrShowError("rangeRings.err.center"); return; }
   merged.id = String(s.id);
-  Object.assign(s, merged);
+  rrApplySanitizedRangeRingSet(s, merged);
   ensureRangeRingState();
   saveStore();
   state._rrEditingSetId = null;
