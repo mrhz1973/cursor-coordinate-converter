@@ -36673,6 +36673,61 @@ function rrClearRangeRingsEditSession(){
   rrResetRangeRingsFormToNew();
   try { refreshTileMapForTrackUi(); } catch(_){}
 }
+/** B6.3c: pan/zoom map to show a Range Ring set when entering edit (UX only; does not mutate set). */
+function rrFocusRangeRingSetOnMap(set){
+  if (!set || !set.center) return;
+  const lat0 = Number(set.center.lat);
+  const lon0 = Number(set.center.lon);
+  if (!Number.isFinite(lat0) || !Number.isFinite(lon0)) return;
+  const lat = Math.max(-85.05, Math.min(85.05, lat0));
+  const lon = normalizeLon(lon0);
+  const root = document.getElementById("miniMap");
+  if (!root || typeof renderTileMap !== "function") return;
+  const dists = Array.isArray(set.distancesM) ? set.distancesM : [];
+  let maxR = 0;
+  for (let i = 0; i < dists.length; i++){
+    const n = Number(dists[i]);
+    if (Number.isFinite(n) && n > maxR) maxR = n;
+  }
+  if (maxR > 0 && typeof vincentyDirect === "function"){
+    let minLat = lat, maxLat = lat, minLon = lon, maxLon = lon;
+    let ok = true;
+    for (let b = 0; b < 360; b += 90){
+      const v = vincentyDirect(lat, lon, maxR, b);
+      if (!v || !Number.isFinite(v.lat) || !Number.isFinite(v.lon)){ ok = false; break; }
+      minLat = Math.min(minLat, v.lat);
+      maxLat = Math.max(maxLat, v.lat);
+      const vlon = normalizeLon(v.lon);
+      minLon = Math.min(minLon, vlon);
+      maxLon = Math.max(maxLon, vlon);
+    }
+    if (ok && maxLat >= minLat){
+      const clat = (minLat + maxLat) / 2;
+      const clon = (minLon + maxLon) / 2;
+      const latSpan = Math.abs(maxLat - minLat) || 1e-6;
+      const lonSpan = Math.abs(maxLon - minLon) || 1e-6;
+      const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
+      let z = 16;
+      if (span > 2) z = 8;
+      else if (span > 0.8) z = 9;
+      else if (span > 0.35) z = 10;
+      else if (span > 0.15) z = 11;
+      else if (span > 0.06) z = 12;
+      else if (span > 0.025) z = 13;
+      else if (span > 0.012) z = 14;
+      else if (span > 0.006) z = 15;
+      state.viewCenter = { lat: clat, lon: clon };
+      state.mapZoom = clampBasemapFitZoom(z);
+      try { renderTileMap(clat, clon, state.mapZoom); } catch(_){}
+      return;
+    }
+  }
+  if (typeof gisMapCenterOnLatLon === "function"){
+    try { gisMapCenterOnLatLon(lat, lon); return; } catch(_){}
+  }
+  state.viewCenter = { lat, lon };
+  try { renderTileMap(lat, lon, state.mapZoom || 11); } catch(_){}
+}
 function rrBeginEditRangeRingSet(id){
   ensureRangeRingState();
   const sid = String(id || "");
@@ -36690,6 +36745,7 @@ function rrBeginEditRangeRingSet(id){
   state._rrEditingSetId = sid;
   rrLoadSetIntoForm(s);
   try { rrSyncLabelBgColorControlState(); } catch(_){}
+  try { rrFocusRangeRingSetOnMap(s); } catch(_){}
   renderRangeRingsPanel();
 }
 function rrCancelEditRangeRing(){
