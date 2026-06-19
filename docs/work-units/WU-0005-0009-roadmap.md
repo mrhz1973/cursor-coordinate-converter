@@ -1291,6 +1291,8 @@ Stesso schema di B3.
 
 **B5.2 mobile viewport containment iPhone (2026-06-18):** PASS tecnico statico — meta `viewport-fit=cover`; blocco CSS `@media (max-width:768px)` additive (toolbar laterale scroll, header/topbar wrap, modal/drawer/help containment, dialog OPSEC sticky actions); nessuna logica GIS/OPSEC/JS modificata. Browser QA mobile: pending operatore.
 
+**B5.3 legenda scala multi-unità (2026-06-18):** PASS tecnico statico — `buildScaleBar` esteso: barra metrica (snap 1-2-5, px invariati), toggle m/km in-place (`data-meters`, no re-render), mi secondario, barra Nm, ratio 1:N; CSS/a11y/mobile containment locale; nessuna modifica OPSEC/tile/proxy. Browser QA visuale: pending operatore (bundle B5.1+B5.2+B5.3).
+
 ### B6 — QA OPSEC/proxy/offline
 
 **Stato:** QA visuale post-B5.1 pending se non attestata operatore.
