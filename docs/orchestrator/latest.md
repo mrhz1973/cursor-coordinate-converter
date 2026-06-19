@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.4a-2 Range Rings panel full-height + build label:** commit **`656dd13`** — `_rangeRingsPanelLayoutOpts` (fraction 0.92, cap 100000, topbarReserve 104); altezza default da `fromReserve` + bottom-anchor; build label `B6.4a-2` (`APP_BUILD_ID`, title/footer/About); OM §7 + roadmap + checkpoint. **Monolite incluso.** **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS `:8000`. Inbox **`2026-06-20_0020_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS + QA operatore B6.4a-2.
+2026-06-20 — **Chiusura sessione `finito` — B6.4a-2 PASS operatore post-deploy VPS:** commit **`9aa1619`** — OM §7 + roadmap + checkpoint; attestazione operatore «tutto perfetto»; deploy GIS-only HEAD **`7dd1a41`** già su VPS; runtime **`656dd13`**; smoke **`200`**, Content-Length **`2142705`**; build label **`B6.4a-2`** servita. **Monolite non modificato** (già deployato). Inbox **`2026-06-20_0034_riepilogo_finito-sessione.md`**. **Prossimo:** backlog Range Rings (es. B6.5 drag centro).
+
+2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.4a-2 Range Rings panel full-height + build label:** commit **`656dd13`** — `_rangeRingsPanelLayoutOpts` (fraction 0.92, cap 100000, topbarReserve 104); build label `B6.4a-2`. **Monolite incluso.** Deploy VPS + **QA operatore PASS** (registrato in **`9aa1619`**). Inbox **`2026-06-20_0020_riepilogo_finito-sessione.md`**.
 
 2026-06-19 — **WU-0009B B6.4 Range Rings radial line controls (runtime):** commit **`d0a4a0a`** — toggle/count/color/width/line style spokes; `rrGetSpokeBearings` (default 3 → 0/90/270); label bearing dinamico anti-overlap; spokes al raggio max (non più per-anello). **Monolite incluso.** **QA operatore:** pending. Inbox **`2026-06-19_2400_riepilogo_b64-range-rings-radial-spokes.md`**.
 
