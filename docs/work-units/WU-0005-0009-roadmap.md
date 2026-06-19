@@ -1299,7 +1299,7 @@ Stesso schema di B3.
 
 **QA visuale bundlata B5.1+B5.2+B5.3b (2026-06-19):** **PASS operatore** — attestazione operatore post-deploy; non AI.
 
-**B5.4 export JPEG con scala opzionale (2026-06-19):** PASS tecnico statico — dialog `#jpgExportDialog` con checkbox «Includi scala» (default off); `drawJpgExportScale` su canvas 2D prima di `toBlob("image/jpeg")`; riuso `computeMapScaleModel`; nessun `foreignObject`; export base preservato. **B5.4a (2026-06-19):** PASS tecnico — box scala JPG bianco pieno/opaco, contrasto testo/barre; nessun cambio calcoli. Browser QA export operatore: pending.
+**B5.4 export JPEG con scala opzionale (2026-06-19):** PASS tecnico statico — dialog `#jpgExportDialog` con checkbox «Includi scala» (default off); `drawJpgExportScale` su canvas 2D prima di `toBlob("image/jpeg")`; riuso `computeMapScaleModel`; nessun `foreignObject`; export base preservato. **B5.4a (2026-06-19):** PASS tecnico — box scala JPG bianco pieno/opaco, contrasto testo/barre; nessun cambio calcoli. **B5.4b (2026-06-19):** PASS tecnico — leggibilità scala JPG export (layout canvas: `textBaseline top`, gap/font/barH/boxH; Nm degradato se canvas basso); box bianco opaco preservato. Browser QA export operatore: pending.
 
 **Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 PASS tecnico; QA export operatore pending.
 
