@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GIS Tool/Converter · B6.5</title>
+<title>GIS Tool/Converter · B6.5B-1</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -4562,6 +4562,14 @@ body.mm-enlarged .sig-badge{display:none}
 .range-rings-overlay{
   position:absolute; inset:0;
   pointer-events:none; z-index:2;
+}
+/* B6.5B-1: durante lo spostamento del centro Range Rings alza l'overlay sopra
+   il pin centrale (z-index 8/9) e gli overlay waypoint/track (4/5) così l'handle
+   di trascinamento è visibile e afferrabile. Confinato al move-center:
+   l'overlay base resta z-index 2. Le linee restano pointer-events:none, quindi
+   non intercetta il pan né il drag waypoint/track (solo l'handle è interattivo). */
+.range-rings-overlay.rr-move-center-active{
+  z-index:12;
 }
 .range-rings-overlay .rr-label{
   font: 11px/1.2 system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -10395,7 +10403,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.5</span>
+    <span id="appBuildFooter">B6.5B-1</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -10635,11 +10643,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.5</code>
+            <code id="appBuildAbout">B6.5B-1</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">Range Rings center drag</div>
+          <div class="about-line muted" id="appBuildAboutDetail">Range Rings center handle visibility</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -16536,8 +16544,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.5";
-const APP_BUILD_DETAIL = "Range Rings center drag";
+const APP_BUILD_ID = "B6.5B-1";
+const APP_BUILD_DETAIL = "Range Rings center handle visibility";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29541,6 +29549,7 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
     svg.appendChild(text);
   }
 
+  let rrHandleRendered = false;
   if (state._rrEditingMoveCenterMode && state._rrEditingSetId){
     const editId = String(state._rrEditingSetId);
     const sEd = sets.find(x => x && String(x.id) === editId);
@@ -29549,7 +29558,7 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
       if (pxH && Number.isFinite(pxH.x) && Number.isFinite(pxH.y)){
         const hx = pxH.x - tx;
         const hy = pxH.y - ty;
-        const handleColor = (typeof sEd.color === "string") ? sEd.color : "#16a34a";
+        const accent = (typeof sEd.color === "string") ? sEd.color : "#16a34a";
         const g = document.createElementNS(ns, "g");
         g.setAttribute("class", "rr-center-handle");
         g.dataset.setId = editId;
@@ -29559,24 +29568,66 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
         const ttl = document.createElementNS(ns, "title");
         ttl.textContent = hintDrag || "Drag center";
         g.appendChild(ttl);
+        /* Area di presa ampia e trasparente (afferrabile anche con dito). */
         const hit = document.createElementNS(ns, "circle");
         hit.setAttribute("cx", hx.toFixed(1));
         hit.setAttribute("cy", hy.toFixed(1));
-        hit.setAttribute("r", "16");
+        hit.setAttribute("r", "20");
         hit.setAttribute("fill", "transparent");
         hit.setAttribute("pointer-events", "all");
+        g.appendChild(hit);
+        /* Alone bianco: garantisce contrasto su mare/cerchi/imagery. */
+        const halo = document.createElementNS(ns, "circle");
+        halo.setAttribute("class", "rr-center-handle-halo");
+        halo.setAttribute("cx", hx.toFixed(1));
+        halo.setAttribute("cy", hy.toFixed(1));
+        halo.setAttribute("r", "11");
+        halo.setAttribute("fill", "#ffffff");
+        halo.setAttribute("fill-opacity", "0.9");
+        halo.setAttribute("stroke", "#0f172a");
+        halo.setAttribute("stroke-width", "1");
+        halo.setAttribute("stroke-opacity", "0.35");
+        halo.setAttribute("pointer-events", "none");
+        g.appendChild(halo);
+        /* Anello esterno target ad alto contrasto (scuro). */
+        const ring = document.createElementNS(ns, "circle");
+        ring.setAttribute("class", "rr-center-handle-ring");
+        ring.setAttribute("cx", hx.toFixed(1));
+        ring.setAttribute("cy", hy.toFixed(1));
+        ring.setAttribute("r", "10");
+        ring.setAttribute("fill", "none");
+        ring.setAttribute("stroke", "#0f172a");
+        ring.setAttribute("stroke-width", "2.2");
+        ring.setAttribute("pointer-events", "none");
+        g.appendChild(ring);
+        /* Crosshair N/E/S/W scuro entro il disco bianco. */
+        const ticks = [[0,-1],[0,1],[-1,0],[1,0]];
+        for (let ti = 0; ti < ticks.length; ti++){
+          const ux = ticks[ti][0], uy = ticks[ti][1];
+          const ln = document.createElementNS(ns, "line");
+          ln.setAttribute("x1", (hx + ux * 3).toFixed(1));
+          ln.setAttribute("y1", (hy + uy * 3).toFixed(1));
+          ln.setAttribute("x2", (hx + ux * 8.5).toFixed(1));
+          ln.setAttribute("y2", (hy + uy * 8.5).toFixed(1));
+          ln.setAttribute("stroke", "#0f172a");
+          ln.setAttribute("stroke-width", "1.8");
+          ln.setAttribute("stroke-linecap", "round");
+          ln.setAttribute("pointer-events", "none");
+          g.appendChild(ln);
+        }
+        /* Dot centrale: colore del set come accento, con bordo scuro. */
         const dot = document.createElementNS(ns, "circle");
         dot.setAttribute("class", "rr-center-handle-dot");
         dot.setAttribute("cx", hx.toFixed(1));
         dot.setAttribute("cy", hy.toFixed(1));
-        dot.setAttribute("r", "6");
-        dot.setAttribute("fill", handleColor);
-        dot.setAttribute("stroke", "#ffffff");
-        dot.setAttribute("stroke-width", "2");
+        dot.setAttribute("r", "3");
+        dot.setAttribute("fill", accent);
+        dot.setAttribute("stroke", "#0f172a");
+        dot.setAttribute("stroke-width", "1");
         dot.setAttribute("pointer-events", "none");
-        g.appendChild(hit);
         g.appendChild(dot);
         svg.appendChild(g);
+        rrHandleRendered = true;
       }
     }
   }
@@ -29609,6 +29660,7 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
   });
   const wrap = document.createElement("div");
   wrap.className = "range-rings-overlay";
+  if (rrHandleRendered) wrap.classList.add("rr-move-center-active");
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
 }

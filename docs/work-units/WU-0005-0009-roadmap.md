@@ -1317,9 +1317,11 @@ Stesso schema di B3.
 
 **B6.4a-2 Range Rings panel full-height (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`656dd13`**; HEAD/deploy **`7dd1a41`**; attestazione «tutto perfetto».
 
-**B6.5 Range Rings center drag (2026-06-20):** PASS tecnico statico — runtime **`f943675`**; handle centro trascinabile in modalità edit «Sposta centro sulla mappa»; `mapRrCenterDocDrag`; live redraw; persistence `set.center`; build label **`B6.5`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
+**B6.5 Range Rings center drag (2026-06-20):** runtime **`f943675`**; deploy VPS **`2cfd553`**; handle centro trascinabile in modalità edit «Sposta centro sulla mappa»; `mapRrCenterDocDrag`; live redraw; persistence `set.center`; build label **`B6.5`**. **Browser QA operatore: FAIL** — handle non visibile/afferrabile (overlay z-index 2 sotto pin centrale z-index 8; dot piccolo/poco contrastato). → **B6.5B-1**.
 
-**Prossimo candidato Range Rings:** backlog post-B6.5 (es. restore pannello post-create se richiesto).
+**B6.5B-1 Range Rings center handle visibility (2026-06-20):** PASS tecnico statico — runtime nel **commit di chiusura `finito`** (hash in orchestrator/inbox + `LAST_CURSOR_REPORT`). Diagnosi: `renderRangeRingsOverlay` disegnava l'handle (ultimo nell'SVG) ma il wrap `.range-rings-overlay` (z-index 2) stava sotto pin `tile-marker` (8/9), waypoints (5), track (4). Fix: (1) CSS confinato `.range-rings-overlay.rr-move-center-active{z-index:12}` attivo solo in move-center (linee `pointer-events:none`, nessun hijack pan/drag); (2) handle **target/crosshair** alto contrasto (hit r=20, alone bianco r=11, anello scuro, crosshair, dot accento col set + bordo scuro); (3) modifier al wrap solo se `rrHandleRendered`. UX invariata (drag solo edit/move-center, click-to-place valido, no toggle, no schema). Build label **`B6.5B-1`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
+
+**Prossimo candidato Range Rings:** deploy VPS B6.5B-1 + QA operatore; poi backlog post-B6.5 (es. restore pannello post-create se richiesto).
 
 ### B6 — QA OPSEC/proxy/offline
 
