@@ -1303,6 +1303,8 @@ Stesso schema di B3.
 
 **Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 PASS tecnico; QA export operatore pending.
 
+**B6.1 fix creazione Range Rings manuali (2026-06-19):** PASS tecnico statico — `#rrCreateBtn` visibile quando centro risolvibile (`rrGetCenterFromUi`); un solo primary (Crea anelli vs Punta e crea); default unità `NM` + reset distanze `1, 5, 10`; parser/rendering invariati. Browser QA operatore: pending.
+
 ### B6 — QA OPSEC/proxy/offline
 
 Test:
