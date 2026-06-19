@@ -17,10 +17,10 @@
 * result_cursor: B6.2 Range Rings pick-first — rimosso `#rrCreateBtn`; `Punta e crea` unico primary; `gisMinimizePanel` su pick; preset unit-aware (`RR_UNIT_PRESET_VALUES`); default `1, 5, 10` NM; parser/overlay invariati; node --check OK
 * pass_operatore: non-attestato
 * result_runtime: Browser QA Range Rings B6.2 pending
-* docs_commit: *(autosync commit — vedi OUTPUT VERBATIM post-push)*
-* autosync_commit: *(autosync commit — vedi OUTPUT VERBATIM post-push)*
+* docs_commit: `2c9210a`
+* autosync_commit: `2c9210a`
 * notes: Patch su feature esistente, non nuova architettura. OPSEC/proxy/tile/export JPG/buildScaleBar/state.mapWaypoints non toccati.
-* pending_self_reference: autosync commit da aggiornare post-push selettivo memoria
+* pending_self_reference: **risolto** — autosync referenzia `real_task_commit=d38c253`
 
 ## OUTPUT VERBATIM
 
