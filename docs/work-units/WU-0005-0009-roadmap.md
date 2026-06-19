@@ -1295,6 +1295,8 @@ Stesso schema di B3.
 
 **B5.3a scala senza toggle + barre graduate (2026-06-19):** PASS tecnico statico — rimosso toggle m/km e handler; scala metrica sempre km + mi; barre metrica/Nm con 10 tacche CSS (`--scale-step`, `repeating-linear-gradient`); label centrale al 50% (nascosta mobile); legenda `aria-hidden`; `exportMapAsJpg()` non modificato. Browser QA visuale: pending operatore.
 
+**B5.3b fix overlap label scala metrica (2026-06-19):** PASS tecnico statico — label centrale metrica non più `position:absolute` (flow sotto barra); gap/padding box `.tile-scale` leggermente aumentati; nessun cambio calcolo/snap; containment mobile B5.2 preservato. Browser QA visuale: pending operatore.
+
 **B5.4 candidato backlog:** export JPEG con scala opzionale disegnata su canvas 2D (`fillRect`/`stroke`/`fillText`, riuso pick/format scala; nessun `foreignObject`; nessuna rasterizzazione HTML `.tile-scale`).
 
 ### B6 — QA OPSEC/proxy/offline
