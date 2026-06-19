@@ -1,6 +1,6 @@
 # B6.3b — Range Rings edit style parity (runtime)
 
-**Commit runtime:** `*(post-push)*  
+**Commit runtime:** `50b0a86`  
 **Tipo:** micro-patch edit parity su B6.3/B6.3a
 
 ## Problema
