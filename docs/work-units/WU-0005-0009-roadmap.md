@@ -1315,9 +1315,11 @@ Stesso schema di B3.
 
 **B6.4 radial/bearing spokes (2026-06-19):** PASS tecnico statico — runtime **`d0a4a0a`**; deploy VPS byte-match **`2f7ee52`**; toggle linee radiali; count `{2,3,4,8,16}`; default **`spokeCount=3`** preserva bearing legacy **`0/90/270`**; colore/spessore/tipo linea radiale; comportamento legacy: guide per ogni anello → spokes dal centro al **raggio massimo**; retrocompat in `sanitizeRangeRingSet` (set vecchi → `spokesEnabled=true`, count default `3`). **Browser QA operatore: pending/bundlata** (UX B6.4a).
 
-**B6.4a-2 Range Rings panel full-height (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`656dd13`**; HEAD/deploy **`7dd1a41`**; deploy GIS-only (`goi-gis-app` active; Planet-Clone/proxy non toccato); smoke **`200 text/html`**, Content-Length **`2142705`**; build label **`B6.4a-2`** servita; QA `:8000/coordinate_converter%20Claude.html?v=656dd13`; `_rangeRingsPanelLayoutOpts` (0.92/100000/104); **`node --check`** OK. **Attestazione operatore:** «tutto perfetto» (2026-06-20).
+**B6.4a-2 Range Rings panel full-height (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`656dd13`**; HEAD/deploy **`7dd1a41`**; attestazione «tutto perfetto».
 
-**Prossimo candidato Range Rings:** backlog post-B6.4a-2 (es. B6.5 drag centro, restore pannello post-create se richiesto).
+**B6.5 Range Rings center drag (2026-06-20):** PASS tecnico statico — handle centro trascinabile in modalità edit «Sposta centro sulla mappa»; `mapRrCenterDocDrag`; live redraw; persistence `set.center`; build label **`B6.5`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
+
+**Prossimo candidato Range Rings:** backlog post-B6.5 (es. restore pannello post-create se richiesto).
 
 ### B6 — QA OPSEC/proxy/offline
 

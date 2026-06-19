@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GIS Tool/Converter · B6.4a-2</title>
+<title>GIS Tool/Converter · B6.5</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -4550,6 +4550,14 @@ body.mm-enlarged .sig-badge{display:none}
 }
 .waypoints-overlay .wpt-handle{
   pointer-events:auto;
+}
+.range-rings-overlay .rr-center-handle{
+  pointer-events:auto;
+  touch-action:none;
+  cursor:grab;
+}
+.range-rings-overlay .rr-center-handle:active{
+  cursor:grabbing;
 }
 .range-rings-overlay{
   position:absolute; inset:0;
@@ -10387,7 +10395,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.4a-2</span>
+    <span id="appBuildFooter">B6.5</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -10627,11 +10635,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.4a-2</code>
+            <code id="appBuildAbout">B6.5</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">Range Rings panel full-height/restore</div>
+          <div class="about-line muted" id="appBuildAboutDetail">Range Rings center drag</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -11658,6 +11666,7 @@ const I18N = {
     "tip.rangeRingsUpdateSet":"Salva nome, centro e distanze sul set attuale.",
     "tip.rangeRingsCancelEdit":"Esci dalla modifica senza salvare (il set resta com’era).",
     "tip.rangeRingsMoveCenter":"Un clic sulla mappa aggiorna il centro del set in modifica.",
+    "tip.rangeRingsCenterDrag":"Trascina il pallino per spostare il centro del set in modifica.",
     "tip.rangeRingsCreateNew":"Crea un nuovo set con i valori nei campi sopra.",
     "tip.trackBatchShowSelected":"Rendi visibili su mappa le tracce selezionate (colonna Vis.).",
     "tip.trackBatchHideSelected":"Nascondi su mappa le tracce selezionate.",
@@ -13193,6 +13202,7 @@ const I18N = {
     "tip.rangeRingsUpdateSet":"Save name, center, and distances to the current set.",
     "tip.rangeRingsCancelEdit":"Leave edit mode without saving further changes (the set stays as saved).",
     "tip.rangeRingsMoveCenter":"One map click updates the center of the set you are editing.",
+    "tip.rangeRingsCenterDrag":"Drag the handle to move this set’s center.",
     "tip.rangeRingsCreateNew":"Create a new set using the values in the fields above.",
     "tip.trackBatchShowSelected":"Show selected saved tracks on the map (Vis. column).",
     "tip.trackBatchHideSelected":"Hide selected saved tracks from the map.",
@@ -14729,6 +14739,7 @@ const I18N = {
     "tip.rangeRingsUpdateSet":"Enregistre le nom, le centre et les distances sur l’ensemble en cours.",
     "tip.rangeRingsCancelEdit":"Quitte la modification sans enregistrer (l’ensemble reste tel qu’enregistré).",
     "tip.rangeRingsMoveCenter":"Un clic sur la carte met à jour le centre de l’ensemble en modification.",
+    "tip.rangeRingsCenterDrag":"Faites glisser la poignée pour déplacer le centre de l’ensemble.",
     "tip.rangeRingsCreateNew":"Crée un nouvel ensemble avec les valeurs des champs ci-dessus.",
     "tip.trackBatchShowSelected":"Afficher sur la carte les traces sélectionnées (colonne affichage).",
     "tip.trackBatchHideSelected":"Masquer sur la carte les traces sélectionnées.",
@@ -16228,6 +16239,57 @@ function mapWptDocDragUp(ev){
   if (ev.cancelable) ev.preventDefault();
 }
 
+/** Drag Range Rings center handle during edit move-center mode (B6.5). */
+let mapRrCenterDocDrag = null;
+function mapRrCenterDocDragCleanup(){
+  if (!mapRrCenterDocDrag) return;
+  document.removeEventListener("pointermove", mapRrCenterDocDragMove, true);
+  document.removeEventListener("pointerup", mapRrCenterDocDragUp, true);
+  document.removeEventListener("pointercancel", mapRrCenterDocDragUp, true);
+  mapRrCenterDocDrag = null;
+}
+function rrApplyDraggedCenterToSet(setId, lat, lon){
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  const la = Math.max(-90, Math.min(90, lat));
+  const lo = normalizeLon(lon);
+  const sid = String(setId || "");
+  const tgt = (state.rangeRingSets || []).find(x => x && String(x.id) === sid);
+  if (!tgt) return null;
+  if (!tgt.center) tgt.center = { lat: la, lon: lo };
+  else { tgt.center.lat = la; tgt.center.lon = lo; }
+  state._rangeRingsMapPickCenter = { lat: la, lon: lo };
+  const modeEl = document.getElementById("rrCenterMode");
+  if (modeEl) modeEl.value = "picked";
+  return tgt.center;
+}
+function mapRrCenterDocDragMove(ev){
+  const d = mapRrCenterDocDrag;
+  if (!d || ev.pointerId !== d.pid) return;
+  const ll = mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
+  if (ll && Number.isFinite(ll.lat) && Number.isFinite(ll.lon)){
+    rrApplyDraggedCenterToSet(d.setId, ll.lat, ll.lon);
+    if (d.tileMap) renderRangeRingsOverlay(d.tileMap, d.markerLat, d.markerLon, d.z);
+  }
+  if (ev.cancelable) ev.preventDefault();
+}
+function mapRrCenterDocDragUp(ev){
+  if (!mapRrCenterDocDrag) return;
+  if (!ev || ev.pointerId !== mapRrCenterDocDrag.pid) return;
+  const d = mapRrCenterDocDrag;
+  mapRrCenterDocDragCleanup();
+  const tgt = (state.rangeRingSets || []).find(x => x && String(x.id) === String(d.setId));
+  if (tgt && tgt.center){
+    tgt.center.lat = Math.max(-90, Math.min(90, Number(tgt.center.lat)));
+    tgt.center.lon = normalizeLon(Number(tgt.center.lon));
+    state._rangeRingsMapPickCenter = { lat: tgt.center.lat, lon: tgt.center.lon };
+    const modeEl = document.getElementById("rrCenterMode");
+    if (modeEl) modeEl.value = "picked";
+  }
+  saveStore();
+  try { refreshRangeRingsAfterStateChange(); } catch(_){}
+  if (ev.cancelable) ev.preventDefault();
+}
+
 function updateTrackMapFloatReadout(root){
   if (!root) return;
   const out = root.querySelector('[data-role="track-float-out"]');
@@ -16474,8 +16536,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.4a-2";
-const APP_BUILD_DETAIL = "Range Rings panel full-height/restore";
+const APP_BUILD_ID = "B6.5";
+const APP_BUILD_DETAIL = "Range Rings center drag";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -21666,6 +21728,7 @@ function bindHotkeys(){
         return;
       }
       if (state._rrEditingMoveCenterMode){
+        try { mapRrCenterDocDragCleanup(); } catch(_){}
         state._rrEditingMoveCenterMode = false;
         try { refreshTileMapForTrackUi(); } catch(_){}
         try { rrShowOk("rangeRings.editMoveCenterEsc"); } catch(_){}
@@ -29478,7 +29541,72 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
     svg.appendChild(text);
   }
 
+  if (state._rrEditingMoveCenterMode && state._rrEditingSetId){
+    const editId = String(state._rrEditingSetId);
+    const sEd = sets.find(x => x && String(x.id) === editId);
+    if (sEd && sEd.center && Number.isFinite(sEd.center.lat) && Number.isFinite(sEd.center.lon)){
+      const pxH = tileMapLatLonToPx(root, sEd.center.lat, sEd.center.lon);
+      if (pxH && Number.isFinite(pxH.x) && Number.isFinite(pxH.y)){
+        const hx = pxH.x - tx;
+        const hy = pxH.y - ty;
+        const handleColor = (typeof sEd.color === "string") ? sEd.color : "#16a34a";
+        const g = document.createElementNS(ns, "g");
+        g.setAttribute("class", "rr-center-handle");
+        g.dataset.setId = editId;
+        g.style.cursor = "grab";
+        g.style.pointerEvents = "auto";
+        const hintDrag = (typeof t === "function") ? (t("tip.rangeRingsCenterDrag") || "") : "";
+        const ttl = document.createElementNS(ns, "title");
+        ttl.textContent = hintDrag || "Drag center";
+        g.appendChild(ttl);
+        const hit = document.createElementNS(ns, "circle");
+        hit.setAttribute("cx", hx.toFixed(1));
+        hit.setAttribute("cy", hy.toFixed(1));
+        hit.setAttribute("r", "16");
+        hit.setAttribute("fill", "transparent");
+        hit.setAttribute("pointer-events", "all");
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("class", "rr-center-handle-dot");
+        dot.setAttribute("cx", hx.toFixed(1));
+        dot.setAttribute("cy", hy.toFixed(1));
+        dot.setAttribute("r", "6");
+        dot.setAttribute("fill", handleColor);
+        dot.setAttribute("stroke", "#ffffff");
+        dot.setAttribute("stroke-width", "2");
+        dot.setAttribute("pointer-events", "none");
+        g.appendChild(hit);
+        g.appendChild(dot);
+        svg.appendChild(g);
+      }
+    }
+  }
+
   if (!svg.childNodes || !svg.childNodes.length) return;
+  const mLa = Number.isFinite(markerLat) ? markerLat : 0;
+  const mLo = Number.isFinite(markerLon) ? markerLon : 0;
+  svg.addEventListener("pointerdown", (ev) => {
+    const h = ev.target && ev.target.closest && ev.target.closest(".rr-center-handle");
+    if (!h) return;
+    ev.stopPropagation();
+    if (ev.cancelable) ev.preventDefault();
+    mapMeasureDocDragCleanup();
+    mapTrackDocDragCleanup();
+    mapWptDocDragCleanup();
+    mapRrCenterDocDragCleanup();
+    mapRrCenterDocDrag = {
+      pid: ev.pointerId,
+      setId: String(h.dataset.setId || state._rrEditingSetId || ""),
+      root,
+      tileMap,
+      markerLat: mLa,
+      markerLon: mLo,
+      z
+    };
+    document.addEventListener("pointermove", mapRrCenterDocDragMove, true);
+    document.addEventListener("pointerup", mapRrCenterDocDragUp, true);
+    document.addEventListener("pointercancel", mapRrCenterDocDragUp, true);
+    try { h.style.cursor = "grabbing"; } catch(_){}
+  });
   const wrap = document.createElement("div");
   wrap.className = "range-rings-overlay";
   wrap.appendChild(svg);
@@ -31275,6 +31403,7 @@ function renderTrackOverlay(tileMap, markerLat, markerLon, zoom){
     mapMeasureDocDragCleanup();
     mapWptDocDragCleanup();
     mapTrackDocDragCleanup();
+    mapRrCenterDocDragCleanup();
     mapTrackDocDrag = {
       pid: ev.pointerId,
       id: String(h.dataset.id || ""),
@@ -31430,8 +31559,9 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
     ev.stopPropagation();
     if (ev.cancelable) ev.preventDefault();
     mapMeasureDocDragCleanup();
-    mapTrackDocDragCleanup();
     mapWptDocDragCleanup();
+    mapTrackDocDragCleanup();
+    mapRrCenterDocDragCleanup();
     mapWptDocDrag = {
       pid: ev.pointerId,
       id: String(h.dataset.id || ""),
@@ -33343,7 +33473,7 @@ function gisMapOnDblClickCenter(ev){
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap || !tileMap.contains(ev.target)) return;
-  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const UI_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle";
   if (ev.target.closest(UI_SEL)) return;
   const trackPickActive = (typeof trackMapPickEditingActive === "function") ? !!trackMapPickEditingActive() : !!(state.track && state.track.pickMode);
   if (trackPickActive || state.mapPickMode || state.astroPickCenterMode) return;
@@ -33391,7 +33521,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -36828,6 +36958,7 @@ function rrLoadSetIntoForm(s){
   }
 }
 function rrClearRangeRingsEditSession(){
+  try { mapRrCenterDocDragCleanup(); } catch(_){}
   state._rrEditingSetId = null;
   state._rrEditingMoveCenterMode = false;
   rrResetRangeRingsFormToNew();
@@ -36982,6 +37113,7 @@ function rrSaveEditedRangeRingSetFromUi(){
 }
 function rrEnterRangeRingEditMoveCenterMode(){
   if (!state._rrEditingSetId) return;
+  try { mapRrCenterDocDragCleanup(); } catch(_){}
   rrClearMsgs();
   try { rrClearPendingDelete(); } catch(_){}
   state.rangeRingsPickCenterMode = false;
@@ -37335,6 +37467,7 @@ function rrDisarmRrPickModesForCenterAction(){
     d = true;
   }
   if (state._rrEditingMoveCenterMode){
+    try { mapRrCenterDocDragCleanup(); } catch(_){}
     state._rrEditingMoveCenterMode = false;
     d = true;
   }
@@ -37855,6 +37988,7 @@ function ensureRangeRingsBatchBarWired(){
 /** Clear Range Rings map-pick mode (and optional stored map center). Not persisted. */
 function rangeRingsClearPickCenterMode(opts){
   opts = opts || {};
+  try { mapRrCenterDocDragCleanup(); } catch(_){}
   state.rangeRingsPickCenterMode = false;
   state.rangeRingsPickAndCreateMode = false;
   state._rrEditingMoveCenterMode = false;
