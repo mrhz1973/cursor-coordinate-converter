@@ -8,11 +8,15 @@
 | Step | Hash | Subject |
 |------|------|---------|
 | Principale (step 2) | **`656dd13`** | `feat(gis): Range Rings panel full-height default + build label (B6.4a-2)` |
-| Orchestratore (step 4) | *(pending this file)* | `docs: orchestratore — riconciliazione finito sessione` |
+| Orchestratore (step 4) | **`cd5e560`** | `docs: orchestratore — riconciliazione finito sessione` |
 
 ## Push step 2
 
 **OK** — `153227d..656dd13  main -> main`
+
+## Push step 4
+
+**OK** — `656dd13..cd5e560  main -> main`
 
 ## Cosa è stato fatto
 
