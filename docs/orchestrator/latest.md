@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-19 — **WU-0009B B5.4c ratio 1:N export JPG (runtime):** commit runtime **`f70b35d`** — `drawJpgExportScale` ratio sempre presente/leggibile; Nm declassabile; box bianco opaco preservato. Docs **`7dee25d`**. Autosync **`f3e6dde`**. Inbox **`2026-06-19_1630_riepilogo_b54c-jpg-scale-ratio.md`**. **QA export operatore:** pending.
+2026-06-19 — **WU-0009B B5.4d ratio sx / tabella dx export JPG (runtime):** commit runtime **`ed3f948`** — layout due colonne; ratio centrata verticalmente a sinistra; tabella metrica/Nm a destra. Docs **`TBD_DOCS`**. Inbox **`2026-06-19_1700_riepilogo_b54d-jpg-scale-two-column.md`**. **QA export operatore:** pending.
+
+2026-06-19 — **WU-0009B B5.4c ratio 1:N export JPG (runtime):** commit runtime **`f70b35d`** — ratio sempre presente/leggibile; Nm declassabile; box bianco opaco preservato. Docs **`7dee25d`**. Autosync **`0f9837a`**. Inbox **`2026-06-19_1630_riepilogo_b54c-jpg-scale-ratio.md`**. **QA export operatore:** pending.
 
 2026-06-19 — **WU-0009B B5.4b leggibilità scala JPG export (runtime):** commit runtime **`bd1c9e4`** — `drawJpgExportScale` layout canvas (`textBaseline top`, gap/font/barH/boxH); overlap testo/barre risolto; box bianco opaco preservato; calcoli/export base invariati. Docs **`91c6f72`**. Autosync **`648dd5b`**. Inbox **`2026-06-19_1600_riepilogo_b54b-jpg-scale-readability.md`**. **QA export operatore:** pending.
 
