@@ -1305,6 +1305,18 @@ Stesso schema di B3.
 
 **B6.1 fix creazione Range Rings manuali (2026-06-19):** PASS tecnico statico — `#rrCreateBtn` visibile quando centro risolvibile (`rrGetCenterFromUi`); un solo primary (Crea anelli vs Punta e crea); default unità `NM` + reset distanze `1, 5, 10`; parser/rendering invariati. Browser QA operatore: pending.
 
+**B6.2 Range Rings pick-first UX (2026-06-19):** PASS tecnico statico — runtime **`d38c253`**; `Crea anelli` rimosso; **`Punta e crea`** unico primary; pannello minimizzato al pick (`gisMinimizePanel`/dock); default `NM` + distanze `1, 5, 10`; preset chips unit-aware.
+
+**B6.3/B6.3a stili Range Rings (2026-06-19):** PASS tecnico — runtime **`d69cacd`** (stile cerchi/label) e **`22f19f1`** (badge sfondo label + offset label dalle guide legacy); colore/spessore/tipo linea cerchi; colore label distanza; sfondo label.
+
+**B6.3b edit style parity (2026-06-19):** PASS tecnico statico — runtime **`50b0a86`**; modifica da lista carica/salva tutti gli stili Range Rings.
+
+**B6.3c center map on edit (2026-06-19):** PASS tecnico statico — runtime **`20d2141`**; click **`Modifica`** centra/fit mappa sul set (`rrFocusRangeRingSetOnMap`).
+
+**B6.4 radial/bearing spokes (2026-06-19):** PASS tecnico statico — runtime **`d0a4a0a`**; deploy VPS byte-match **`2f7ee52`**; toggle linee radiali; count `{2,3,4,8,16}`; default **`spokeCount=3`** preserva bearing legacy **`0/90/270`**; colore/spessore/tipo linea radiale; comportamento legacy: guide per ogni anello → spokes dal centro al **raggio massimo**; retrocompat in `sanitizeRangeRingSet` (set vecchi → `spokesEnabled=true`, count default `3`). **Browser QA operatore: pending/bundlata** (UX B6.4a).
+
+**B6.4a — prossimo candidato:** restore pannello dopo create + apertura full-height — **non implementato**.
+
 ### B6 — QA OPSEC/proxy/offline
 
 Test:
