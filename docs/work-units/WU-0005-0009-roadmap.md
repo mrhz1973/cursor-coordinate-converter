@@ -1299,9 +1299,13 @@ Stesso schema di B3.
 
 **QA visuale bundlata B5.1+B5.2+B5.3b (2026-06-19):** **PASS operatore** — attestazione operatore post-deploy; non AI.
 
-**B5.4 export JPEG con scala opzionale (2026-06-19):** PASS tecnico statico — dialog `#jpgExportDialog` con checkbox «Includi scala» (default off); `drawJpgExportScale` su canvas 2D prima di `toBlob("image/jpeg")`; riuso `computeMapScaleModel`; nessun `foreignObject`; export base preservato. **B5.4a (2026-06-19):** PASS tecnico — box scala JPG bianco pieno/opaco, contrasto testo/barre; nessun cambio calcoli. **B5.4b (2026-06-19):** PASS tecnico — leggibilità scala JPG export (layout canvas: `textBaseline top`, gap/font/barH/boxH; Nm degradato se canvas basso); box bianco opaco preservato. **B5.4c (2026-06-19):** PASS tecnico — ratio 1:N sempre presente e leggibile nel JPG export; Nm declassabile prima della ratio; box bianco opaco preservato. **B5.4d (2026-06-19):** PASS tecnico — ratio 1:N in blocco separato a sinistra (centrata verticalmente); tabella metrica/Nm a destra; box bianco opaco preservato. Browser QA export operatore: pending.
+**B5.4 export JPEG con scala opzionale (2026-06-19):** PASS tecnico statico — dialog `#jpgExportDialog` con checkbox «Includi scala» (default off); `drawJpgExportScale` su canvas 2D prima di `toBlob("image/jpeg")`; riuso `computeMapScaleModel`; nessun `foreignObject`; export base preservato. **B5.4a (2026-06-19):** PASS tecnico — box scala JPG bianco pieno/opaco, contrasto testo/barre; nessun cambio calcoli. **B5.4b (2026-06-19):** PASS tecnico — leggibilità scala JPG export (layout canvas: `textBaseline top`, gap/font/barH/boxH; Nm degradato se canvas basso); box bianco opaco preservato. **B5.4c (2026-06-19):** PASS tecnico — ratio 1:N sempre presente e leggibile nel JPG export; Nm declassabile prima della ratio; box bianco opaco preservato. **B5.4d (2026-06-19):** PASS tecnico — ratio 1:N in blocco separato a sinistra (centrata verticalmente); tabella metrica/Nm a destra; box bianco opaco preservato. **QA operatore PASS (2026-06-20) — output JPG scaricato** (runtime `97406ab`, deploy `63084dd`, QA `?v=97406ab&force=b66b`); PASS limitato al JPG verificato.
 
-**Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 PASS tecnico; QA export operatore pending.
+**Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 **PASS tecnico + PASS operatore export JPG** (B5.4d, 2026-06-20).
+
+**B5.4e scala in-app vs export JPG (backlog):** scala in-app non allineata al layout export; obiettivo: coerenza con `drawJpgExportScale`; non FAIL B5.4d.
+
+**B5.5A export JPG avanzato — piano/diagnosi (backlog):** selezione overlay; tab punto/coordinate sì, tooltip cursore no; risoluzione 2×/3× prima; zoom geografico dopo diagnosi (tile/cache/OPSEC/proxy).
 
 **B6.1 fix creazione Range Rings manuali (2026-06-19):** PASS tecnico statico — `#rrCreateBtn` visibile quando centro risolvibile (`rrGetCenterFromUi`); un solo primary (Crea anelli vs Punta e crea); default unità `NM` + reset distanze `1, 5, 10`; parser/rendering invariati. **QA operatore N/A — SUPERATO da B6.2** (B6.2 ha rimosso «Crea anelli»).
 
