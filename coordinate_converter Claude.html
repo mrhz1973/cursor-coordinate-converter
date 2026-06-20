@@ -16552,8 +16552,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B5.5B";
-const APP_BUILD_DETAIL = "JPG export map overlays";
+const APP_BUILD_ID = "B5.5B-1";
+const APP_BUILD_DETAIL = "JPG export overlay style fidelity";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19695,11 +19695,44 @@ function formatJpgExportTimestamp(d){
   return `${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}-${pad(dt.getHours())}${pad(dt.getMinutes())}${pad(dt.getSeconds())}`;
 }
 
-async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh){
+async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh, inlineStyles = false){
   if (!svgEl || dw <= 0 || dh <= 0) return false;
   let url = "";
   try {
     const clone = svgEl.cloneNode(true);
+    if (inlineStyles){
+      const STYLE_INLINE_SELECTOR = "path,polyline,polygon,line,circle,rect,ellipse,text,tspan";
+      const STYLE_INLINE_PROPS = [
+        "fill",
+        "fill-opacity",
+        "stroke",
+        "stroke-opacity",
+        "stroke-width",
+        "stroke-dasharray",
+        "stroke-dashoffset",
+        "stroke-linecap",
+        "stroke-linejoin",
+        "opacity",
+        "font-family",
+        "font-size",
+        "font-weight",
+        "font-style",
+        "letter-spacing",
+        "text-anchor",
+        "dominant-baseline",
+        "paint-order"
+      ];
+      const liveEls = svgEl.querySelectorAll(STYLE_INLINE_SELECTOR);
+      const cloneEls = clone.querySelectorAll(STYLE_INLINE_SELECTOR);
+      const n = Math.min(liveEls.length, cloneEls.length);
+      for (let i = 0; i < n; i++){
+        const cs = window.getComputedStyle(liveEls[i]);
+        for (const prop of STYLE_INLINE_PROPS){
+          const value = cs.getPropertyValue(prop);
+          if (value) cloneEls[i].style.setProperty(prop, value);
+        }
+      }
+    }
     if (!clone.getAttribute("xmlns")) clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     if (!clone.getAttribute("xmlns:xlink")) clone.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
     if (clone.tagName && clone.tagName.toLowerCase() === "svg"){
@@ -19773,7 +19806,7 @@ async function exportMapAsJpg(opts){
       for (const svg of [...tileMap.querySelectorAll(sel)]){
         const r = svg.getBoundingClientRect();
         if (r.width <= 0 || r.height <= 0) continue;
-        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
+        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, true);
       }
     }
   }
