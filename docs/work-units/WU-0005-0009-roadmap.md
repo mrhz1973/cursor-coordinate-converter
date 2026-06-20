@@ -1307,6 +1307,8 @@ Stesso schema di B3.
 
 **B5.4f etichette graduate scala valore per-tacca (backlog):** valore per-tacca tondo (`pickM`/`pickNm` = 1/2/5 × 10ⁿ); opz. mid-label; solo km/Nm (non mi); parità `buildScaleBar` + `drawJpgExportScale`; B5.4d PASS → nuova ri-QA export; **PLAN-FIRST**.
 
+**B5.5E export JPG supersampling 1×/2×/3× (2026-06-21):** PASS tecnico statico — build **`B5.5E`**; radio 1×/2×/3×; `exportMapAsJpg({ scale })`; canvas supersampling + `rasterizeSvgOntoCanvas` `rasterScale`; cap 8192; tile interpolate only; B5.5Z fuori scope. **`node --check`** OK. **QA operatore post-deploy: pending.**
+
 **B5.5B-1 export JPG overlay style fidelity (2026-06-21):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`6524183`**; deploy **`30849de`**; smoke **`200`**, byte-match **`2154397`**; build **`B5.5B-1`**; QA `:8000?v=6524183`; label/overlay fedeli; no fill nero; overlay ON/OFF; cursore escluso; scala OK; B6.6C OK; «tutto ok».
 
 **B5.5B export JPG overlay mappa base (2026-06-20):** PASS tecnico + deploy VPS **`4b75e22`** byte-match **`2153290`**; runtime **`e6b28db`**; build **`B5.5B`**. **QA operatore FAIL parziale** (label/traccia nero pieno) → B5.5B-1.
