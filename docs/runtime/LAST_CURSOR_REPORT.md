@@ -2,49 +2,29 @@
 
 ## LATEST
 
-* real_task_commit: `16c7388`
-* real_task_subject: docs(memory): register B6.6B PASS operatore post-deploy VPS
-* report_generated_at: 2026-06-20T02:31:00+02:00
+* real_task_commit: `a2fc583`
+* real_task_subject: docs(memory): formalize VPS deploy step + close B6.4/B6.1 QA status
+* report_generated_at: 2026-06-20T02:47:00+02:00
 * branch: main
-* remote_hash_authority: `067bfa3`
-* local_HEAD: `067bfa3`
-* local_origin_main: `067bfa3`
-* ls_remote_origin_main: `067bfa3411504247219f363413641c454fe39a90`
-* working_tree_status: clean
-* pass_tecnico_remoto: PASS
-* result_cursor: B6.6B PASS operatore registrato; runtime 97406ab; deploy 63084dd; catena end-to-end chiusa
-* pass_operatore: attestato
-* result_runtime: PASS — handle in Modifica, drag live, click-to-place su move-center, regressioni OK
-* qa_attestation_source: operatore (cache force=b66b)
-* notes: Docs-only task 16c7388; monolite in 97406ab
-* docs_commit: `16c7388`
-* autosync_commit: `067bfa3`
+* remote_hash_authority: pending post-orchestratore push
+* local_HEAD: `a2fc583`
+* local_origin_main: `a2fc583`
+* ls_remote_origin_main: pending post-orchestratore push
+* working_tree_status: dirty (orchestratore pending)
+* pass_tecnico_remoto: PASS (post push step 2)
+* result_cursor: OM §4 sequenza deploy VPS formalizzata; B6.4 QA coperta B6.6B; B6.1 N/A superato B6.2; B5.4d pending invariato
+* pass_operatore: non eseguita (docs-only)
+* result_runtime: N/A — nessun deploy/runtime in sessione
+* qa_attestation_source: n/a
+* notes: Docs-only; monolite non toccato; runtime corrente resta 97406ab / deploy 63084dd
+* docs_commit: `a2fc583`
+* autosync_commit: pending
 * runtime_ref: `97406ab`; deploy_ref: `63084dd`
 
 ## OUTPUT VERBATIM
 
 ```text
-git log --oneline -5
-067bfa3 docs: orchestratore — riconciliazione finito sessione (B6.6B PASS operatore)
-16c7388 docs(memory): register B6.6B PASS operatore post-deploy VPS
-d59cc5d docs: LAST_CURSOR_REPORT — backfill finito B6.6B deploy VPS
-8f2eacd docs: orchestratore — riconciliazione finito sessione (B6.6B deploy VPS)
-09e5d9e docs(memory): register B6.6B deploy VPS post-finito
-
-git status --short
-(clean)
-
-git rev-parse HEAD
-067bfa3411504247219f363413641c454fe39a90
-
-git rev-parse origin/main
-067bfa3411504247219f363413641c454fe39a90
-
-git branch --show-current
-main
-
-git ls-remote origin main
-067bfa3411504247219f363413641c454fe39a90	refs/heads/main
+(pending post-orchestratore push)
 ```
 
 ## HISTORY

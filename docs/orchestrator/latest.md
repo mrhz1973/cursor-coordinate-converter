@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-20 — **Chiusura sessione `finito` — OM deploy VPS + chiusura QA B6.4/B6.1 (docs):** commit **`a2fc583`** — OM §4 sequenza blocco runtime GIS (implement → push → deploy VPS → QA operatore → OM §7); nota push≠app aggiornata; B6.4 QA **COPERTA da regressione B6.6B**; B6.1 QA **N/A SUPERATO da B6.2**; B5.4d export QA **pending invariato**. **Monolite non incluso.** Inbox **`2026-06-20_0246_riepilogo_finito-sessione.md`**. **Prossimo:** B5.4d export QA operatore; backlog Range Rings post-B6.6B.
+
 2026-06-20 — **Chiusura sessione `finito` — B6.6B PASS operatore post-deploy VPS (docs):** commit **`16c7388`** — OM §7 + WU-0009B: **PASS operatore** B6.6B Range Rings edit-mode center handle; runtime **`97406ab`**; deploy **`63084dd`**; smoke **`200`**, Content-Length **`2152189`**; build **`B6.6B`**; QA `:8000/coordinate_converter%20Claude.html?v=97406ab` (`&force=b66b` cache); handle in Modifica senza move-center; drag/click-to-place/pan OK; B6.3/B6.4/B6.4a-2/B6.5B-1 OK. **Monolite non incluso** (docs-only). Inbox **`2026-06-20_0230_riepilogo_finito-sessione.md`**. **Prossimo:** backlog Range Rings post-B6.6B.
 
 2026-06-20 — **Chiusura sessione `finito` — B6.6B deploy VPS (docs):** commit **`09e5d9e`**. Inbox **`2026-06-20_0220_riepilogo_finito-sessione.md`**.
