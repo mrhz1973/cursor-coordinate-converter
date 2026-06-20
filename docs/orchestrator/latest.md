@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-21 — **Chiusura sessione `finito` — B5.5E JPG supersampling 1×/2×/3× (runtime):** commit **`252ae5a`** — build **`B5.5E`**; radio risoluzione 1×/2×/3×; `exportMapAsJpg({ scale })`; canvas supersampling + `rasterizeSvgOntoCanvas` `rasterScale`; cap 8192; overlay `inlineStyles` preservato; **`node --check`** OK. **Monolite incluso.** **QA operatore post-deploy: pending.** Inbox **`2026-06-21_0148_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only + QA `?v=252ae5a`; candidati B5.5C / B5.5D / B5.4f.
+
 2026-06-21 — **Chiusura sessione `finito` — B5.5B-1 PASS operatore post-deploy VPS (docs):** commit **`617ba96`** — OM §7 + WU: **PASS operatore** B5.5B-1 overlay style fidelity; runtime **`6524183`**; deploy **`30849de`**; smoke **`200`**, Content-Length/wc **`2154397`** byte-match **PASS**; build **`B5.5B-1`**; QA `:8000?v=6524183`; label/overlay fedeli; no fill nero; overlay ON/OFF; cursore escluso; scala OK; B6.6C OK; «tutto ok». **Monolite non incluso.** Inbox **`2026-06-21_0112_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5C o B5.4f plan.
 
 2026-06-21 — **Chiusura sessione `finito` — B5.5B-1 JPG overlay style fidelity (runtime):** commit **`6524183`** — build **`B5.5B-1`**; `rasterizeSvgOntoCanvas` + `inlineStyles` opt-in overlay; computed style live→clone; fix QA FAIL parziale B5.5B (fill nero/label). **`node --check`** OK. **Monolite incluso.** **QA operatore post-deploy: pending** (re-deploy). Inbox **`2026-06-21_0106_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only + QA `?v=6524183`.
