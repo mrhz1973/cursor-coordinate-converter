@@ -1303,7 +1303,7 @@ Stesso schema di B3.
 
 **Stato:** QA visuale bundlata B5.1+B5.2+B5.3b **PASS operatore** (2026-06-19). B5.4 **PASS tecnico + PASS operatore export JPG** (B5.4d, 2026-06-20).
 
-**B5.4eB scala in-app allineata a export JPG (2026-06-20):** PASS tecnico statico — runtime **`0edf503`**; build **`B5.4eB`**; `buildScaleBar` due colonne; CSS opaco; export canvas invariato; **`node --check`** OK. **QA operatore pending** post-deploy VPS.
+**B5.4eB scala in-app allineata a export JPG (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`0edf503`**; HEAD/deploy **`f904279`**; smoke **`200`**, Content-Length **`2151652`**; build **`B5.4eB`**; QA `:8000/coordinate_converter%20Claude.html?v=0edf503`; export B5.4d invariato; Range Rings B6.6B OK; attestazione «tutto a posto».
 
 **B5.5A export JPG avanzato — piano/diagnosi (backlog):** selezione overlay; tab punto/coordinate sì, tooltip cursore no; risoluzione 2×/3× prima; zoom geografico dopo diagnosi (tile/cache/OPSEC/proxy).
 
