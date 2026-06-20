@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.6B Range Rings edit-mode center handle affordance (runtime):** commit **`97406ab`** (`1fe4a61..97406ab`, push OK) — handle `g.rr-center-handle` visibile per tutta Modifica (`_rrEditingSetId`, non solo `_rrEditingMoveCenterMode`); target/crosshair B6.5B-1 on-center + glifo muovi; drag-only; click-to-place invariato su move-center; build **`B6.6B`**. **Monolite INCLUSO** in `97406ab`. **`node --check`** OK. Working tree pulito. **Browser QA operatore:** pending post-deploy VPS `:8000`. Inbox **`2026-06-20_0210_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only B6.6B + QA operatore.
+2026-06-20 — **Chiusura sessione `finito` — B6.6B deploy VPS + memoria (docs):** commit **`09e5d9e`** — OM §7 + WU: deploy GIS-only B6.6B completato; VPS HEAD **`63084dd`** (pull `e694c0f→63084dd`); runtime **`97406ab`**; smoke **`200`**, Content-Length **`2152189`**; build **`B6.6B`** servita; QA `:8000/coordinate_converter%20Claude.html?v=97406ab`. **Monolite non incluso** (docs-only). **Browser QA operatore:** pending. Inbox **`2026-06-20_0220_riepilogo_finito-sessione.md`**. **Prossimo:** QA operatore B6.6B.
+
+2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.6B runtime (97406ab) + report (63084dd):** handle in Modifica; build **`B6.6B`**. Inbox **`2026-06-20_0210_riepilogo_finito-sessione.md`**.
 
 2026-06-20 — **Chiusura sessione `finito` — B6.5B-1 PASS operatore post-deploy VPS (docs):** commit **`3bb9ed6`** — OM §7 + WU-0009B: **PASS operatore** B6.5B-1; runtime **`3963c76`**; deploy **`e694c0f`**. Inbox **`2026-06-20_0205_riepilogo_finito-sessione.md`**.
 

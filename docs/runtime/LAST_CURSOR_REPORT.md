@@ -2,52 +2,32 @@
 
 ## LATEST
 
-* real_task_commit: `97406ab`
-* real_task_subject: feat(gis): Range Rings edit-mode center handle affordance (B6.6B)
-* report_generated_at: 2026-06-20T02:12:00+02:00
+* real_task_commit: `09e5d9e`
+* real_task_subject: docs(memory): register B6.6B deploy VPS post-finito
+* report_generated_at: 2026-06-20T02:20:00+02:00
 * branch: main
-* remote_hash_authority: `7b6703b`
-* local_HEAD: `7b6703b`
-* local_origin_main: `7b6703b`
-* ls_remote_origin_main: `7b6703bea71321db7c670698fd58eadacd85fa33`
+* remote_hash_authority: PENDING_SELF_REFERENCE
+* local_HEAD: PENDING_SELF_REFERENCE
+* local_origin_main: PENDING_SELF_REFERENCE
+* ls_remote_origin_main: PENDING_SELF_REFERENCE
 * working_tree_status: clean
 * pass_tecnico_remoto: PASS
-* result_cursor: B6.6B — handle visibile in Modifica (_rrEditingSetId); drag-only; click-to-place su move-center; build B6.6B; node --check OK
+* result_cursor: B6.6B deploy VPS registrato OM/WU; VPS HEAD 63084dd; runtime 97406ab; smoke 200; build B6.6B
 * pass_operatore: non-attestato
-* result_runtime: QA operatore pending post-deploy VPS :8000
+* result_runtime: QA operatore B6.6B pending
 * qa_attestation_source: —
-* notes: Monolite in 97406ab; glifo muovi cardinali; rr-move-center-active invariato
-* docs_commit: `97406ab`
-* autosync_commit: `7b6703b`
+* notes: Docs-only; monolite in 97406ab già su VPS
+* docs_commit: `09e5d9e`
+* autosync_commit: PENDING_SELF_REFERENCE
+* runtime_ref: `97406ab`; deploy_vps_ref: `63084dd`
 
 ## OUTPUT VERBATIM
 
 ```text
-git log --oneline -5
-7b6703b docs: orchestratore — riconciliazione finito sessione (B6.6B)
-97406ab feat(gis): Range Rings edit-mode center handle affordance (B6.6B)
-1fe4a61 docs: LAST_CURSOR_REPORT — backfill finito B6.5B-1 PASS operatore
-9efabb2 docs: orchestratore — riconciliazione finito sessione (B6.5B-1 PASS operatore)
-3bb9ed6 docs(memory): register B6.5B-1 PASS operatore post-deploy VPS
-
-git status --short
-(clean)
-
-git rev-parse HEAD
-7b6703bea71321db7c670698fd58eadacd85fa33
-
-git rev-parse origin/main
-7b6703bea71321db7c670698fd58eadacd85fa33
-
-git branch --show-current
-main
-
-git ls-remote origin main
-7b6703bea71321db7c670698fd58eadacd85fa33	refs/heads/main
+(pending post-push step 3)
 ```
 
 ## HISTORY
 
-* B6.6B finito runtime `97406ab`; orchestratore `7b6703b`
-* B6.5B-1 PASS operatore docs `3bb9ed6`; runtime `3963c76`; deploy `e694c0f`
-* B6.5 center drag `f943675`; QA FAIL → B6.5B-1
+* B6.6B runtime `97406ab`; deploy VPS `63084dd`; finito report `63084dd`
+* B6.5B-1 PASS operatore `3bb9ed6`
