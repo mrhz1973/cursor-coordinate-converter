@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-20 — **Chiusura sessione `finito` — B5.4eB scala in-app allineata a export JPG (runtime):** commit **`0edf503`** — `buildScaleBar` layout due colonne; CSS `.tile-scale` opaco; export canvas invariato; build **`B5.4eB`**; **`node --check`** OK. **Monolite incluso.** QA operatore **pending** post-deploy VPS. Inbox **`2026-06-20_1100_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS + QA B5.4eB; B5.5A piano export avanzato.
+2026-06-20 — **Chiusura sessione `finito` — B5.4eB PASS operatore post-deploy VPS (docs):** commit **`30e1e9b`** — OM §7 + WU: **PASS operatore** B5.4eB scala in-app; runtime **`0edf503`**; deploy **`f904279`**; smoke **`200`**, Content-Length **`2151652`**; build **`B5.4eB`**; QA `:8000?v=0edf503`; export B5.4d OK; Range Rings B6.6B OK; attestazione «tutto a posto». **Monolite non incluso.** Inbox **`2026-06-20_1200_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5A piano export avanzato; backlog Range Rings post-B6.6B.
+
+2026-06-20 — **Chiusura sessione `finito` — B5.4eB scala in-app allineata a export JPG (runtime):** commit **`0edf503`**. Deploy VPS **`f904279`** (GIS-only). Inbox **`2026-06-20_1100_riepilogo_finito-sessione.md`**.
 
 2026-06-20 — **Chiusura sessione `finito` — B5.4d export JPG PASS operatore + backlog B5.4e/B5.5A (docs):** commit **`d385742`**. Inbox **`2026-06-20_0310_riepilogo_finito-sessione.md`**.
 
