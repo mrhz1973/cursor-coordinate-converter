@@ -1329,7 +1329,7 @@ Stesso schema di B3.
 
 **B6.6B Range Rings edit-mode center handle affordance (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`97406ab`**; HEAD/deploy **`63084dd`**; deploy GIS-only; smoke **`200`**, Content-Length **`2152189`**; build **`B6.6B`** servita; QA `:8000/coordinate_converter%20Claude.html?v=97406ab` (`&force=b66b` per cache browser). Handle in Modifica senza move-center; drag live; click-to-place su move-center OK; B6.3/B6.4/B6.4a-2/B6.5B-1 OK. **`node --check`** OK.
 
-**B6.6C Range Rings panel restore ingrandito dopo create (backlog):** post «Punta e crea» + click mappa → pannello visibile/ingrandito auto; hook: `openRangeRingsFloatingPanelGis()` dopo `rrCreateFromUi()` nel handler create (~L33663); completa B6.4a pick-and-create.
+**B6.6C Range Rings panel restore after create (2026-06-20):** PASS tecnico — runtime **`41f180b`**; build **`B6.6C`**; `openRangeRingsFloatingPanelGis()` dopo `rrCreateFromUi()` nel handler pick-and-create (~L33658); restore anche su errore validazione; **`node --check`** OK; **QA operatore post-deploy: pending**.
 
 ### B6 — QA OPSEC/proxy/offline
 
