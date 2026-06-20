@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-20 — **Chiusura sessione `finito` — B6.6C PASS operatore post-deploy VPS (docs):** commit **`3c2b7c5`** — OM §7 + WU: **PASS operatore** B6.6C panel restore; runtime **`41f180b`**; HEAD/deploy VPS **`69fa6cf`**; smoke **`200`**, Content-Length/wc -c **`2151776`** byte-match **PASS**; build **`B6.6C`**; QA `:8000?v=41f180b`; pick-and-create + distanze vuote OK; B6.6B/export/scala OK; attestazione «tutto ok». **Monolite non incluso.** Inbox **`2026-06-20_2117_riepilogo_finito-sessione.md`**. **Prossimo:** B5.4f plan / B5.5A.
+
 2026-06-20 — **Chiusura sessione `finito` — B6.6C Range Rings panel restore after create (runtime):** commit runtime **`41f180b`** — `openRangeRingsFloatingPanelGis()` dopo `rrCreateFromUi()` nel pick-and-create; build **`B6.6C`**; docs **`91c6784`**. **Monolite incluso** in `41f180b`. **QA operatore post-deploy: pending.** Inbox **`2026-06-20_2106_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only + QA operatore `?v=41f180b`; candidati B5.4f plan / B5.5A.
 
 2026-06-20 — **Chiusura sessione `finito` — OM §4/§7 verifica-a-valle + anti-reflow (docs):** commit **`92a1626`** — §4 passo 6 *published = verified* (ls-remote, SHA-pinned, blob SHA, Content-Length VPS); §7 nota anti-reflow mega-bullet WU-0009B B4→B5.x→B6.1. **Monolite non incluso.** Inbox **`2026-06-20_2040_riepilogo_finito-sessione.md`**. **Prossimo:** B6.6C runtime o B5.4f plan; runtime deployato B5.4eB `0edf503` invariato.
