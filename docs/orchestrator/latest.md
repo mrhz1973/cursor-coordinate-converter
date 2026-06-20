@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-20 — **Chiusura sessione `finito` — B6.5B-1 PASS operatore post-deploy VPS (docs):** commit **`3bb9ed6`** — OM §7 + WU-0009B: **PASS operatore** B6.5B-1 Range Rings center handle visibility; runtime **`3963c76`**; deploy VPS **`e694c0f`** (già deployato); smoke **`200`**, Content-Length **`2151292`**; build **`B6.5B-1`**; QA `:8000/coordinate_converter%20Claude.html?v=3963c76`; handle visibile/afferrabile, drag live, click-to-place/pan OK; B6.3/B6.4/B6.4a-2 OK; nota UX drag solo in move-center accettata. **Monolite non incluso** (docs-only). Inbox **`2026-06-20_0205_riepilogo_finito-sessione.md`**. **Prossimo:** backlog Range Rings post-B6.5B-1.
+2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.6B Range Rings edit-mode center handle affordance (runtime):** commit **`97406ab`** (`1fe4a61..97406ab`, push OK) — handle `g.rr-center-handle` visibile per tutta Modifica (`_rrEditingSetId`, non solo `_rrEditingMoveCenterMode`); target/crosshair B6.5B-1 on-center + glifo muovi; drag-only; click-to-place invariato su move-center; build **`B6.6B`**. **Monolite INCLUSO** in `97406ab`. **`node --check`** OK. Working tree pulito. **Browser QA operatore:** pending post-deploy VPS `:8000`. Inbox **`2026-06-20_0210_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only B6.6B + QA operatore.
+
+2026-06-20 — **Chiusura sessione `finito` — B6.5B-1 PASS operatore post-deploy VPS (docs):** commit **`3bb9ed6`** — OM §7 + WU-0009B: **PASS operatore** B6.5B-1; runtime **`3963c76`**; deploy **`e694c0f`**. Inbox **`2026-06-20_0205_riepilogo_finito-sessione.md`**.
 
 2026-06-20 — **Chiusura sessione `finito` — WU-0009B B6.5B-1 Range Rings center handle visibility (runtime):** commit **`3963c76`** — fix QA FAIL B6.5; build **`B6.5B-1`**. Deploy VPS **`e694c0f`**. **QA operatore PASS** registrato in **`3bb9ed6`**. Inbox **`2026-06-20_0126_riepilogo_finito-sessione.md`**.
 
