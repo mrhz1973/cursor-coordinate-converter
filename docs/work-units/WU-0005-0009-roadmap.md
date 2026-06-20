@@ -1305,6 +1305,8 @@ Stesso schema di B3.
 
 **B5.4eB scala in-app allineata a export JPG (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`0edf503`**; HEAD/deploy **`f904279`**; smoke **`200`**, Content-Length **`2151652`**; build **`B5.4eB`**; QA `:8000/coordinate_converter%20Claude.html?v=0edf503`; export B5.4d invariato; Range Rings B6.6B OK; attestazione «tutto a posto».
 
+**B5.4f etichette graduate scala valore per-tacca (backlog):** valore per-tacca tondo (`pickM`/`pickNm` = 1/2/5 × 10ⁿ); opz. mid-label; solo km/Nm (non mi); parità `buildScaleBar` + `drawJpgExportScale`; B5.4d PASS → nuova ri-QA export; **PLAN-FIRST**.
+
 **B5.5A export JPG avanzato — piano/diagnosi (backlog):** selezione overlay; tab punto/coordinate sì, tooltip cursore no; risoluzione 2×/3× prima; zoom geografico dopo diagnosi (tile/cache/OPSEC/proxy).
 
 **B6.1 fix creazione Range Rings manuali (2026-06-19):** PASS tecnico statico — `#rrCreateBtn` visibile quando centro risolvibile (`rrGetCenterFromUi`); un solo primary (Crea anelli vs Punta e crea); default unità `NM` + reset distanze `1, 5, 10`; parser/rendering invariati. **QA operatore N/A — SUPERATO da B6.2** (B6.2 ha rimosso «Crea anelli»).
@@ -1327,7 +1329,7 @@ Stesso schema di B3.
 
 **B6.6B Range Rings edit-mode center handle affordance (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`97406ab`**; HEAD/deploy **`63084dd`**; deploy GIS-only; smoke **`200`**, Content-Length **`2152189`**; build **`B6.6B`** servita; QA `:8000/coordinate_converter%20Claude.html?v=97406ab` (`&force=b66b` per cache browser). Handle in Modifica senza move-center; drag live; click-to-place su move-center OK; B6.3/B6.4/B6.4a-2/B6.5B-1 OK. **`node --check`** OK.
 
-**Prossimo candidato Range Rings:** backlog post-B6.6B (es. restore pannello post-create se richiesto).
+**B6.6C Range Rings panel restore ingrandito dopo create (backlog):** post «Punta e crea» + click mappa → pannello visibile/ingrandito auto; hook: `openRangeRingsFloatingPanelGis()` dopo `rrCreateFromUi()` nel handler create (~L33663); completa B6.4a pick-and-create.
 
 ### B6 — QA OPSEC/proxy/offline
 
