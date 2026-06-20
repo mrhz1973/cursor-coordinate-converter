@@ -17,7 +17,7 @@
 * result_runtime: n/a — docs-only; runtime invariato B6.6C `41f180b`
 * qa_attestation_source: n/a (docs-only)
 * docs_commit: `a9cb078`
-* autosync_commit: PENDING_SELF_REFERENCE
+* autosync_commit: `ba342604dacbf0b365005cf07a723c500561fef3`
 * runtime_ref: `41f180b`
 * deploy_ref: `69fa6cf`
 
@@ -54,7 +54,7 @@ a9cb0782496766e26b5a6b11e22cf5e181a19f1d	refs/heads/main
 
 ## HISTORY
 
-* a9cb078 — B5.5A-1 PASS piano/diagnosi export JPG avanzato (docs-only); orchestratore PENDING_SELF_REFERENCE; runtime resta 41f180b
+* a9cb078 — B5.5A-1 PASS piano/diagnosi export JPG avanzato (docs-only); orchestratore ba34260; runtime resta 41f180b
 * be4a0c6 — backfill report finito B6.6C PASS operatore (orchestratore sessione prec.)
 * 3c2b7c5 — B6.6C PASS operatore docs; orchestratore a0cb1ab; runtime 41f180b; deploy 69fa6cf
 * 41f180b — B6.6C runtime panel restore
