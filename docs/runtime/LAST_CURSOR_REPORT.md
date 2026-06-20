@@ -2,59 +2,60 @@
 
 ## LATEST
 
-* real_task_commit: `a9cb078`
-* real_task_subject: docs(memory): register B5.5A-1 PASS piano/diagnosi export JPG avanzato
-* report_generated_at: 2026-06-20T21:43:00+02:00
+* real_task_commit: `e6b28db`
+* real_task_subject: feat(export): B5.5B JPG export map overlays dialog and SVG capture
+* report_generated_at: 2026-06-21T00:37:00+02:00
 * branch: main
-* remote_hash_authority: `0a550e9`
-* local_HEAD: `0a550e9`
-* local_origin_main: `0a550e9`
-* ls_remote_origin_main: `0a550e96b3c49e4c4ff27596938bb1a1e236f09a`
-* working_tree_status: clean
+* remote_hash_authority: `e6b28db`
+* local_HEAD: `e6b28db`
+* local_origin_main: `e6b28db`
+* ls_remote_origin_main: `e6b28db3575e720f19dc36f223b30836a1e16bdf`
+* working_tree_status: clean (post step 2; autosync orchestratore in commit successivo)
 * pass_tecnico_remoto: PASS
-* result_cursor: B5.5A-1 piano/diagnosi registrato; autosync self-reference backfill risolto (ba34260)
-* pass_operatore: n/a (docs-only — nessuna modifica runtime)
-* result_runtime: n/a — docs-only; runtime invariato B6.6C `41f180b`
-* qa_attestation_source: n/a (docs-only)
-* docs_commit: `a9cb078`
-* autosync_commit: `ba342604dacbf0b365005cf07a723c500561fef3`
-* runtime_ref: `41f180b`
-* deploy_ref: `69fa6cf`
+* result_cursor: B5.5B JPG export overlay base implementato; build B5.5B; includeOverlays default true; 4 overlay SVG WYSIWYG
+* pass_operatore: pending (QA post-deploy VPS)
+* result_runtime: n/a finché non deployato — runtime locale e6b28db; VPS ancora B6.6C 41f180b
+* qa_attestation_source: n/a — QA operatore post-deploy pending
+* docs_commit: `e6b28db` (monolite+docs stesso commit)
+* autosync_commit: PENDING_SELF_REFERENCE
+* runtime_ref: `e6b28db`
+* deploy_ref: `69fa6cf` (VPS precedente B6.6C; non aggiornato in questo blocco)
 
 ## OUTPUT VERBATIM
 
 ```text
 git log --oneline -5
+e6b28db feat(export): B5.5B JPG export map overlays dialog and SVG capture
+69ec3cb docs: orchestratore — riconciliazione finito sessione backfill B5.5A-1
 0a550e9 docs: LAST_CURSOR_REPORT — backfill finito B5.5A-1 autosync self-reference
 ba34260 docs: orchestratore — riconciliazione finito sessione B5.5A-1
 a9cb078 docs(memory): register B5.5A-1 PASS piano/diagnosi export JPG avanzato
-be4a0c6 docs: LAST_CURSOR_REPORT — backfill finito B6.6C PASS operatore
-a0cb1ab docs: orchestratore — riconciliazione finito sessione
 
 git status --short
 (clean)
 
 git rev-parse HEAD
-0a550e96b3c49e4c4ff27596938bb1a1e236f09a
+e6b28db3575e720f19dc36f223b30836a1e16bdf
 
 git rev-parse origin/main
-0a550e96b3c49e4c4ff27596938bb1a1e236f09a
+e6b28db3575e720f19dc36f223b30836a1e16bdf
 
 git branch --show-current
 main
 
 git show --stat HEAD
- docs/runtime/LAST_CURSOR_REPORT.md | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ coordinate_converter Claude.html        | 41 +++++++++++++++++++++++++++++----
+ docs/OPERATING_MEMORY.md                |  1 +
+ docs/work-units/WU-0005-0009-roadmap.md |  2 ++
+ 3 files changed, 40 insertions(+), 4 deletions(-)
 
 git ls-remote origin main
-0a550e96b3c49e4c4ff27596938bb1a1e236f09a	refs/heads/main
+e6b28db3575e720f19dc36f223b30836a1e16bdf	refs/heads/main
 ```
 
 ## HISTORY
 
-* a9cb078 — B5.5A-1 PASS piano/diagnosi export JPG avanzato (docs-only); orchestratore ba34260; runtime resta 41f180b
-* be4a0c6 — backfill report finito B6.6C PASS operatore
-* 3c2b7c5 — B6.6C PASS operatore docs; orchestratore a0cb1ab; runtime 41f180b; deploy 69fa6cf
+* e6b28db — B5.5B JPG export overlays; orchestratore PENDING_SELF_REFERENCE; deploy VPS pending
+* a9cb078 — B5.5A-1 PASS piano/diagnosi; orchestratore ba34260
 * 41f180b — B6.6C runtime panel restore
-* 92a1626 — OM §4/§7 verifica-a-valle
+* 3c2b7c5 — B6.6C PASS operatore docs
