@@ -1321,7 +1321,9 @@ Stesso schema di B3.
 
 **B6.5B-1 Range Rings center handle visibility (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`3963c76`**; HEAD/deploy **`e694c0f`**; deploy GIS-only (Planet-Clone/proxy **non toccato**); smoke **`200`**, Content-Length **`2151292`**; build label **`B6.5B-1`** servita; QA tailnet `:8000/coordinate_converter%20Claude.html?v=3963c76`; fix z-index `.rr-move-center-active{z-index:12}` + handle target/crosshair; handle visibile/afferrabile; drag live; click-to-place/pan OK; B6.3/B6.4/B6.4a-2 non regressi. **Nota UX accettata:** drag solo dopo «Sposta centro sulla mappa». **`node --check`** OK.
 
-**Prossimo candidato Range Rings:** backlog post-B6.5B-1 (es. restore pannello post-create se richiesto).
+**B6.6B Range Rings edit-mode center handle affordance (2026-06-20):** PASS tecnico statico — runtime nel **commit di chiusura `finito`**. Gate handle in `renderRangeRingsOverlay` su `_rrEditingSetId` (handle visibile per tutta Modifica, non solo move-center); target/crosshair B6.5B-1 on-center + glifo muovi; drag-only (`mapRrCenterDocDrag*` invariato); click-to-place resta su `_rrEditingMoveCenterMode`; nessun schema nuovo. Build label **`B6.6B`**; **`node --check`** OK. **Browser QA operatore:** pending post-deploy VPS.
+
+**Prossimo candidato Range Rings:** deploy VPS B6.6B + QA operatore; poi backlog post-B6.6B (es. restore pannello post-create se richiesto).
 
 ### B6 — QA OPSEC/proxy/offline
 

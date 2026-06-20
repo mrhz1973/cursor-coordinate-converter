@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GIS Tool/Converter · B6.5B-1</title>
+<title>GIS Tool/Converter · B6.6B</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -4563,11 +4563,9 @@ body.mm-enlarged .sig-badge{display:none}
   position:absolute; inset:0;
   pointer-events:none; z-index:2;
 }
-/* B6.5B-1: durante lo spostamento del centro Range Rings alza l'overlay sopra
-   il pin centrale (z-index 8/9) e gli overlay waypoint/track (4/5) così l'handle
-   di trascinamento è visibile e afferrabile. Confinato al move-center:
-   l'overlay base resta z-index 2. Le linee restano pointer-events:none, quindi
-   non intercetta il pan né il drag waypoint/track (solo l'handle è interattivo). */
+/* B6.5B-1 / B6.6B: quando l'handle centro è visibile (edit o move-center) alza
+   l'overlay sopra pin (z-index 8/9) e waypoint/track (4/5). Confinato: overlay
+   base resta z-index 2; linee pointer-events:none — solo l'handle è interattivo. */
 .range-rings-overlay.rr-move-center-active{
   z-index:12;
 }
@@ -10403,7 +10401,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.5B-1</span>
+    <span id="appBuildFooter">B6.6B</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -10643,11 +10641,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.5B-1</code>
+            <code id="appBuildAbout">B6.6B</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">Range Rings center handle visibility</div>
+          <div class="about-line muted" id="appBuildAboutDetail">Range Rings edit-mode center handle</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -16544,8 +16542,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.5B-1";
-const APP_BUILD_DETAIL = "Range Rings center handle visibility";
+const APP_BUILD_ID = "B6.6B";
+const APP_BUILD_DETAIL = "Range Rings edit-mode center handle";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29550,7 +29548,9 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
   }
 
   let rrHandleRendered = false;
-  if (state._rrEditingMoveCenterMode && state._rrEditingSetId){
+  /* B6.6B: handle on-center visibile per tutta la sessione Modifica (drag-only);
+     click-to-place resta gated su _rrEditingMoveCenterMode (B6.5B-1). */
+  if (state._rrEditingSetId){
     const editId = String(state._rrEditingSetId);
     const sEd = sets.find(x => x && String(x.id) === editId);
     if (sEd && sEd.center && Number.isFinite(sEd.center.lat) && Number.isFinite(sEd.center.lon)){
@@ -29614,6 +29614,20 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
           ln.setAttribute("stroke-linecap", "round");
           ln.setAttribute("pointer-events", "none");
           g.appendChild(ln);
+        }
+        /* Glifo "muovi": 4 punte cardinali fuori l'anello (discoverability drag). */
+        const arrDirs = [[0,-1,"M0,-2.2 L-2.2,1.8 L2.2,1.8 Z"],[1,0,"M2.2,0 L-1.8,-2.2 L-1.8,2.2 Z"],[0,1,"M0,2.2 L-2.2,-1.8 L2.2,-1.8 Z"],[-1,0,"M-2.2,0 L1.8,-2.2 L1.8,2.2 Z"]];
+        for (let ai = 0; ai < arrDirs.length; ai++){
+          const ux = arrDirs[ai][0], uy = arrDirs[ai][1], dLocal = arrDirs[ai][2];
+          const arr = document.createElementNS(ns, "path");
+          arr.setAttribute("class", "rr-center-handle-move-glyph");
+          arr.setAttribute("d", dLocal);
+          arr.setAttribute("transform", "translate(" + (hx + ux * 12.5).toFixed(1) + "," + (hy + uy * 12.5).toFixed(1) + ")");
+          arr.setAttribute("fill", "#0f172a");
+          arr.setAttribute("stroke", "#ffffff");
+          arr.setAttribute("stroke-width", "0.6");
+          arr.setAttribute("pointer-events", "none");
+          g.appendChild(arr);
         }
         /* Dot centrale: colore del set come accento, con bordo scuro. */
         const dot = document.createElementNS(ns, "circle");
