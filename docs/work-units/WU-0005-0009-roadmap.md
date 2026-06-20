@@ -1327,6 +1327,8 @@ Stesso schema di B3.
 
 ### B6 — QA OPSEC/proxy/offline
 
+**Stato (2026-06-20):** **PASS operatore** post-catena Range Rings B6.1→B6.6B — runtime **`97406ab`**, deploy **`63084dd`**, build **`B6.6B`**; QA tailnet `:8000/coordinate_converter%20Claude.html?v=97406ab&force=b66b`; attestazione operatore «tutto ok» (dettaglio OM §7).
+
 Test:
 
 - online default consente se non forced-offline e non OPSEC strict;
