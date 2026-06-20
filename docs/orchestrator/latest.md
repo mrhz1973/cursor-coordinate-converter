@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-20 — **Chiusura sessione `finito` — B6.6C Range Rings panel restore after create (runtime):** commit runtime **`41f180b`** — `openRangeRingsFloatingPanelGis()` dopo `rrCreateFromUi()` nel pick-and-create; build **`B6.6C`**; docs **`91c6784`**. **Monolite incluso** in `41f180b`. **QA operatore post-deploy: pending.** Inbox **`2026-06-20_2106_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS GIS-only + QA operatore `?v=41f180b`; candidati B5.4f plan / B5.5A.
+
 2026-06-20 — **Chiusura sessione `finito` — OM §4/§7 verifica-a-valle + anti-reflow (docs):** commit **`92a1626`** — §4 passo 6 *published = verified* (ls-remote, SHA-pinned, blob SHA, Content-Length VPS); §7 nota anti-reflow mega-bullet WU-0009B B4→B5.x→B6.1. **Monolite non incluso.** Inbox **`2026-06-20_2040_riepilogo_finito-sessione.md`**. **Prossimo:** B6.6C runtime o B5.4f plan; runtime deployato B5.4eB `0edf503` invariato.
 
 2026-06-20 — **Chiusura sessione `finito` — OM §4 condotta + backlog B6.6C/B5.4f (docs):** commit **`d1c9791`** — §4 passi 4–5: *modalità deploy* (Cursor SSH `ionos-n8n`, prompt unico) + *condotta QA* (visiva operatore, no sostituto AI); backlog **B5.4f** (etichette scala per-tacca, PLAN-FIRST) e **B6.6C** (Range Rings panel restore post-create). **Monolite non incluso.** Inbox **`2026-06-20_2031_riepilogo_finito-sessione.md`**. **Prossimo:** B6.6C runtime o B5.4f plan; B5.5A piano export avanzato.
