@@ -2581,30 +2581,39 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 }
 .tile-map .tile-bl-row > *{pointer-events:auto}
 
-/* Scale legend (B5.3/B5.3a/B5.3b): metric km + mi secondary; nautical Nm; 10-tick bars; 1:N ratio. */
+/* Scale legend (B5.4eB): two-column layout aligned to JPG export — ratio sx, table dx. */
 .tile-map .tile-scale{
-  display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+  display:flex; flex-direction:row; align-items:stretch; gap:0;
   padding:5px 8px 6px; border-radius:4px;
-  background:rgba(255,255,255,.85); color:#111;
-  font-family:ui-monospace,monospace; font-size:.7rem; font-weight:700;
+  background:#ffffff; color:#111111;
+  font-family:ui-monospace,monospace; font-size:.7rem; font-weight:600;
+  border:1px solid #333333;
   box-shadow:0 1px 3px rgba(0,0,0,.25);
   line-height:1.2;
   max-width:100%;
+  box-sizing:border-box;
 }
-.tile-map .tile-scale-row{
-  display:flex; flex-direction:column; align-items:flex-start; gap:3px;
-  max-width:100%;
+.tile-map .tile-scale-ratio-col{
+  display:flex; align-items:center; justify-content:center;
+  flex:0 0 auto; padding-right:8px; margin-right:8px;
+  border-right:1px solid rgba(0,0,0,.2);
+  min-width:2.4em;
 }
-.tile-map .tile-scale-row-metric{ gap:4px; }
-.tile-map .tile-scale-bar-row{
-  display:flex; align-items:flex-start; gap:0; max-width:100%;
+.tile-map .tile-scale-ratio-main{
+  font-size:1.08em; font-weight:700; white-space:nowrap;
+  line-height:1.1;
 }
-.tile-map .tile-scale-bar-wrap{
-  display:inline-flex; flex-direction:column; align-items:center;
-  gap:2px; max-width:100%;
+.tile-map .tile-scale-table-col{
+  display:flex; flex-direction:column; align-items:flex-start;
+  justify-content:center; gap:4px; min-width:0; flex:1 1 auto;
+}
+.tile-map .tile-scale-table-row{
+  display:flex; flex-direction:column; align-items:flex-start;
+  gap:3px; max-width:100%;
 }
 .tile-map .tile-scale-bar{
-  height:4px; min-width:20px; flex:0 1 auto; align-self:stretch;
+  height:4px; min-width:20px; max-width:100%;
+  flex:0 0 auto; align-self:flex-start;
   box-sizing:border-box; border:1px solid #fff;
   box-shadow:0 0 0 1px #111;
   background-color:#111;
@@ -2616,21 +2625,12 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
     #fff var(--scale-step, 8px)
   );
 }
-.tile-map .tile-scale-mid-label{
-  font-size:.58rem; font-weight:600; opacity:.72; white-space:nowrap;
-  line-height:1.15; pointer-events:none; text-align:center;
-  min-height:0.75rem;
-}
-.tile-map .tile-scale-row-metric .tile-scale-bar{ margin-bottom:0; }
 .tile-map .tile-scale-bar-naut{ opacity:.88; }
-.tile-map .tile-scale-labels{
-  display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 8px;
-  max-width:100%;
+.tile-map .tile-scale-label{
+  font-size:1em; font-weight:600; word-break:break-word; line-height:1.2;
 }
-.tile-map .tile-scale-label{font-size:.7rem; word-break:break-word; line-height:1.2;}
-.tile-map .tile-scale-ratio{
-  font-size:.62rem; font-weight:600; opacity:.75;
-  padding-left:6px; border-left:1px solid rgba(0,0,0,.2);
+@media (max-width:520px){
+  .tile-map .tile-scale-table-naut{ display:none; }
 }
 
 .jpg-export-dialog-body .jpg-export-scale-opt{
@@ -8475,7 +8475,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     padding:4px 6px 5px;
     max-width:100%;
   }
-  body.gis-mode #gisMapMount .tile-map .tile-scale-mid-label{
+  body.gis-mode #gisMapMount .tile-map .tile-scale-ratio-col{
+    padding-right:6px; margin-right:6px;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-scale-table-naut{
     display:none;
   }
   .tab-drawer{
@@ -16542,8 +16545,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6B";
-const APP_BUILD_DETAIL = "Range Rings edit-mode center handle";
+const APP_BUILD_ID = "B5.4eB";
+const APP_BUILD_DETAIL = "In-app scale layout aligned to JPG export";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24641,11 +24644,9 @@ function drawJpgExportScale(ctx, canvasW, canvasH, model){
 }
 
 /**
- * Build the scale legend HTML (B5.3a): metric km + mi secondary; 10-tick bars; Nm bar; 1:N ratio.
- * Shows both a metric scale bar (e.g. "500 m") AND the cartographic ratio
- * (e.g. "1:25k"). The ratio is computed assuming a standard 96-DPI display,
- * i.e. ~0.28 mm per screen pixel — this is the same convention used by most
- * web mapping libraries (Leaflet, OpenLayers) when rendering 1:N scales.
+ * Build the scale legend HTML (B5.4eB): two-column layout aligned to JPG export.
+ * Ratio 1:N left (large, vertically centered); metric + Nm table right.
+ * Shares computeMapScaleModel with drawJpgExportScale (canvas export unchanged).
  */
 function buildScaleBar(zoom, lat, size, mapW){
   const m = computeMapScaleModel(zoom, lat, size, mapW);
@@ -24653,27 +24654,17 @@ function buildScaleBar(zoom, lat, size, mapW){
   const stepPxNm = (m.pickPxNm / 10).toFixed(2);
 
   return `<div class="tile-scale" aria-hidden="true">
-    <div class="tile-scale-row tile-scale-row-metric">
-      <div class="tile-scale-bar-row">
-        <div class="tile-scale-bar-wrap">
-          <div class="tile-scale-bar" style="width:${m.pickPx.toFixed(1)}px;--scale-step:${stepPx}px"></div>
-          <span class="tile-scale-mid-label">${m.metricMidLabel}</span>
-        </div>
-      </div>
-      <div class="tile-scale-labels">
-        <span class="tile-scale-label tile-scale-label-metric">${m.metricLabel}</span>
-        <span class="tile-scale-ratio">${m.ratioLabel}</span>
-      </div>
+    <div class="tile-scale-ratio-col">
+      <span class="tile-scale-ratio-main">${m.ratioLabel}</span>
     </div>
-    <div class="tile-scale-row tile-scale-row-naut">
-      <div class="tile-scale-bar-row">
-        <div class="tile-scale-bar-wrap">
-          <div class="tile-scale-bar tile-scale-bar-naut" style="width:${m.pickPxNm.toFixed(1)}px;--scale-step:${stepPxNm}px"></div>
-          <span class="tile-scale-mid-label">${m.nmMidLabel}</span>
-        </div>
+    <div class="tile-scale-table-col">
+      <div class="tile-scale-table-row tile-scale-table-metric">
+        <span class="tile-scale-label tile-scale-label-metric">${m.metricLabel}</span>
+        <div class="tile-scale-bar" style="width:${m.pickPx.toFixed(1)}px;--scale-step:${stepPx}px"></div>
       </div>
-      <div class="tile-scale-labels">
+      <div class="tile-scale-table-row tile-scale-table-naut">
         <span class="tile-scale-label tile-scale-label-naut">${m.nmLabel}</span>
+        <div class="tile-scale-bar tile-scale-bar-naut" style="width:${m.pickPxNm.toFixed(1)}px;--scale-step:${stepPxNm}px"></div>
       </div>
     </div>
   </div>`;
