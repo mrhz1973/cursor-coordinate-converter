@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-20 — **Chiusura sessione `finito` — OM §4 condotta + backlog B6.6C/B5.4f (docs):** commit **`d1c9791`** — §4 passi 4–5: *modalità deploy* (Cursor SSH `ionos-n8n`, prompt unico) + *condotta QA* (visiva operatore, no sostituto AI); backlog **B5.4f** (etichette scala per-tacca, PLAN-FIRST) e **B6.6C** (Range Rings panel restore post-create). **Monolite non incluso.** Inbox **`2026-06-20_2031_riepilogo_finito-sessione.md`**. **Prossimo:** B6.6C runtime o B5.4f plan; B5.5A piano export avanzato.
+
 2026-06-20 — **Chiusura sessione `finito` — B5.4eB PASS operatore post-deploy VPS (docs):** commit **`30e1e9b`** — OM §7 + WU: **PASS operatore** B5.4eB scala in-app; runtime **`0edf503`**; deploy **`f904279`**; smoke **`200`**, Content-Length **`2151652`**; build **`B5.4eB`**; QA `:8000?v=0edf503`; export B5.4d OK; Range Rings B6.6B OK; attestazione «tutto a posto». **Monolite non incluso.** Inbox **`2026-06-20_1200_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5A piano export avanzato; backlog Range Rings post-B6.6B.
 
 2026-06-20 — **Chiusura sessione `finito` — B5.4eB scala in-app allineata a export JPG (runtime):** commit **`0edf503`**. Deploy VPS **`f904279`** (GIS-only). Inbox **`2026-06-20_1100_riepilogo_finito-sessione.md`**.
