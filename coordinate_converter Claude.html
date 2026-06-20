@@ -9899,6 +9899,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="checkbox" id="jpgExportIncludeScale">
       <span data-i18n="export.jpg.includeScale">Includi scala</span>
     </label>
+    <label class="jpg-export-scale-opt">
+      <input type="checkbox" id="jpgExportIncludeOverlays">
+      <span data-i18n="export.jpg.includeOverlays">Includi overlay mappa</span>
+    </label>
     <div class="jpg-export-dialog-actions">
       <button type="button" class="btn" id="jpgExportDialogCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
       <button type="button" class="btn btn-primary" id="jpgExportDialogConfirm" data-i18n="export.jpg.confirm">Esporta JPG</button>
@@ -11917,6 +11921,7 @@ const I18N = {
     "export.jpg.dialogTitle":"Esporta mappa JPG",
     "export.jpg.dialogBody":"Esporta la vista corrente della mappa come immagine JPEG.",
     "export.jpg.includeScale":"Includi scala",
+    "export.jpg.includeOverlays":"Includi overlay mappa",
     "export.jpg.confirm":"Esporta JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
@@ -13453,6 +13458,7 @@ const I18N = {
     "export.jpg.dialogTitle":"Export map JPG",
     "export.jpg.dialogBody":"Export the current map view as a JPEG image.",
     "export.jpg.includeScale":"Include scale",
+    "export.jpg.includeOverlays":"Include map overlays",
     "export.jpg.confirm":"Export JPG",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
@@ -14990,6 +14996,7 @@ const I18N = {
     "export.jpg.dialogTitle":"Exporter la carte en JPG",
     "export.jpg.dialogBody":"Exporter la vue actuelle de la carte en image JPEG.",
     "export.jpg.includeScale":"Inclure l'échelle",
+    "export.jpg.includeOverlays":"Inclure les superpositions de carte",
     "export.jpg.confirm":"Exporter JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
@@ -16545,8 +16552,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6C";
-const APP_BUILD_DETAIL = "Range Rings panel restore after create";
+const APP_BUILD_ID = "B5.5B";
+const APP_BUILD_DETAIL = "JPG export map overlays";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19719,6 +19726,7 @@ async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh){
 async function exportMapAsJpg(opts){
   opts = opts || {};
   const includeScale = !!opts.includeScale;
+  const includeOverlays = !!opts.includeOverlays;
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (!tileMap){
@@ -19751,6 +19759,22 @@ async function exportMapAsJpg(opts){
     const r = gridSvg.getBoundingClientRect();
     if (r.width > 0 && r.height > 0){
       await rasterizeSvgOntoCanvas(gridSvg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
+    }
+  }
+
+  if (includeOverlays){
+    const overlaySelectors = [
+      ".range-rings-overlay svg",
+      ".saved-tracks-overlay svg",
+      ".gis-polygons-overlay svg",
+      ".waypoints-overlay svg"
+    ];
+    for (const sel of overlaySelectors){
+      for (const svg of [...tileMap.querySelectorAll(sel)]){
+        const r = svg.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) continue;
+        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height);
+      }
     }
   }
 
@@ -19794,6 +19818,7 @@ async function exportMapAsJpg(opts){
 }
 
 let _jpgExportIncludeScale = false;
+let _jpgExportIncludeOverlays = true;
 
 function closeJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
@@ -19804,11 +19829,13 @@ function closeJpgExportDialog(){
 function openJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
   if (!dlg){
-    exportMapAsJpg({ includeScale: false });
+    exportMapAsJpg({ includeScale: false, includeOverlays: true });
     return;
   }
   const cb = document.getElementById("jpgExportIncludeScale");
   if (cb) cb.checked = !!_jpgExportIncludeScale;
+  const cbOv = document.getElementById("jpgExportIncludeOverlays");
+  if (cbOv) cbOv.checked = !!_jpgExportIncludeOverlays;
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
@@ -38951,8 +38978,12 @@ function bindUI(){
   const jpgExportCancel = document.getElementById("jpgExportDialogCancel");
   const jpgExportConfirm = document.getElementById("jpgExportDialogConfirm");
   const jpgExportScaleCb = document.getElementById("jpgExportIncludeScale");
+  const jpgExportOverlaysCb = document.getElementById("jpgExportIncludeOverlays");
   if (jpgExportScaleCb) jpgExportScaleCb.addEventListener("change", () => {
     _jpgExportIncludeScale = !!jpgExportScaleCb.checked;
+  });
+  if (jpgExportOverlaysCb) jpgExportOverlaysCb.addEventListener("change", () => {
+    _jpgExportIncludeOverlays = !!jpgExportOverlaysCb.checked;
   });
   if (jpgExportClose) jpgExportClose.addEventListener("click", closeJpgExportDialog);
   if (jpgExportCancel) jpgExportCancel.addEventListener("click", closeJpgExportDialog);
@@ -38961,9 +38992,11 @@ function bindUI(){
   });
   if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
     const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
+    const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
     _jpgExportIncludeScale = includeScale;
+    _jpgExportIncludeOverlays = includeOverlays;
     closeJpgExportDialog();
-    exportMapAsJpg({ includeScale }).catch(() => {});
+    exportMapAsJpg({ includeScale, includeOverlays }).catch(() => {});
   });
 
   const btnPr = document.getElementById("btnPrintReport");
