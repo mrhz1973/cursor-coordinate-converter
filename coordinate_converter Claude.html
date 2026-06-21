@@ -2650,6 +2650,17 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .jpg-export-overlay-subopts select{
   width:100%; max-width:100%; font-size:inherit; box-sizing:border-box;
 }
+.jpg-export-quick-section{
+  display:flex; flex-direction:column; gap:8px; margin:0 0 14px; padding:10px 12px;
+  border:1px solid var(--border); border-radius:var(--radius-control);
+  background:color-mix(in srgb, var(--panel2) 55%, transparent);
+}
+.jpg-export-quick-row{
+  display:flex; flex-direction:column; gap:4px; margin:0; font-size:.88rem;
+}
+.jpg-export-quick-row .jpg-export-quick-value{
+  font-weight:600; word-break:break-word;
+}
 .jpg-export-dialog-actions{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
@@ -9909,6 +9920,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <div class="app-modal-body jpg-export-dialog-body">
     <p class="hint" data-i18n="export.jpg.dialogBody">Esporta la vista corrente della mappa come immagine JPEG.</p>
+    <div id="jpgExportQuickSection" class="jpg-export-quick-section" role="group">
+      <p class="hint" data-i18n="export.jpg.quickAreaHint">L'area esportata corrisponde alla vista mappa attuale (nessuna selezione manuale).</p>
+      <div class="jpg-export-quick-row">
+        <span data-i18n="export.jpg.quickLayer">Layer</span>
+        <span id="jpgExportQuickLayer" class="jpg-export-quick-value">—</span>
+      </div>
+      <label class="jpg-export-quick-row">
+        <span data-i18n="export.jpg.quickZoom">Zoom export</span>
+        <select id="jpgExportQuickZoom"></select>
+      </label>
+    </div>
     <label class="jpg-export-scale-opt">
       <input type="checkbox" id="jpgExportIncludeScale">
       <span data-i18n="export.jpg.includeScale">Includi scala</span>
@@ -11987,6 +12009,14 @@ const I18N = {
     "export.jpg.fail":"Esportazione JPG non riuscita.",
     "export.jpg.dialogTitle":"Esporta mappa JPG",
     "export.jpg.dialogBody":"Esporta la vista corrente della mappa come immagine JPEG.",
+    "export.jpg.quickSection":"Area e zoom export",
+    "export.jpg.quickAreaHint":"L'area esportata corrisponde alla vista mappa attuale (nessuna selezione manuale).",
+    "export.jpg.quickLayer":"Layer",
+    "export.jpg.quickZoom":"Zoom export",
+    "export.jpg.quickSnapshotFail":"Impossibile fotografare la vista corrente per l'export.",
+    "export.jpg.quickNoZoomLevels":"Nessun livello di zoom esportabile per l'area attuale.",
+    "export.jpg.quickAntimeridian":"La vista attraversa l'antimeridiano: restringi la mappa o sposta il centro.",
+    "export.jpg.quickProgress":"Export tile {0}/{1}…",
     "export.jpg.includeScale":"Includi scala",
     "export.jpg.includeOverlays":"Includi overlay mappa",
     "export.jpg.overlayTracks":"Tracce",
@@ -13548,6 +13578,14 @@ const I18N = {
     "export.jpg.fail":"JPG export failed.",
     "export.jpg.dialogTitle":"Export map JPG",
     "export.jpg.dialogBody":"Export the current map view as a JPEG image.",
+    "export.jpg.quickSection":"Export area and zoom",
+    "export.jpg.quickAreaHint":"The exported area matches the current map view (no manual selection).",
+    "export.jpg.quickLayer":"Layer",
+    "export.jpg.quickZoom":"Export zoom",
+    "export.jpg.quickSnapshotFail":"Cannot snapshot the current view for export.",
+    "export.jpg.quickNoZoomLevels":"No exportable zoom levels for the current area.",
+    "export.jpg.quickAntimeridian":"The view crosses the antimeridian: narrow the map or recenter.",
+    "export.jpg.quickProgress":"Exporting tiles {0}/{1}…",
     "export.jpg.includeScale":"Include scale",
     "export.jpg.includeOverlays":"Include map overlays",
     "export.jpg.overlayTracks":"Tracks",
@@ -15110,6 +15148,14 @@ const I18N = {
     "export.jpg.fail":"Échec de l'export JPG.",
     "export.jpg.dialogTitle":"Exporter la carte en JPG",
     "export.jpg.dialogBody":"Exporter la vue actuelle de la carte en image JPEG.",
+    "export.jpg.quickSection":"Zone et zoom d'export",
+    "export.jpg.quickAreaHint":"La zone exportée correspond à la vue carte actuelle (sans sélection manuelle).",
+    "export.jpg.quickLayer":"Couche",
+    "export.jpg.quickZoom":"Zoom d'export",
+    "export.jpg.quickSnapshotFail":"Impossible de capturer la vue actuelle pour l'export.",
+    "export.jpg.quickNoZoomLevels":"Aucun niveau de zoom exportable pour la zone actuelle.",
+    "export.jpg.quickAntimeridian":"La vue traverse l'antiméridien : réduisez la carte ou recentrez.",
+    "export.jpg.quickProgress":"Export tuiles {0}/{1}…",
     "export.jpg.includeScale":"Inclure l'échelle",
     "export.jpg.includeOverlays":"Inclure les superpositions de carte",
     "export.jpg.overlayTracks":"Traces",
@@ -19909,6 +19955,68 @@ async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh, inlineStyles =
   }
 }
 
+async function rasterizeJpgExportOverlaysOntoCanvas(ctx, opts){
+  opts = opts || {};
+  const tileMap = opts.tileMap;
+  const mapRect = opts.mapRect;
+  if (!ctx || !tileMap || !mapRect || mapRect.width <= 0 || mapRect.height <= 0) return;
+  const posScale = Number(opts.posScale) || 1;
+  const rasterScale = Math.max(1, Number(opts.rasterScale) || 1);
+  const mapPos = (r) => ({
+    x: (r.left - mapRect.left) * posScale,
+    y: (r.top - mapRect.top) * posScale,
+    w: r.width * posScale,
+    h: r.height * posScale
+  });
+
+  if (opts.includeGrid !== false){
+    const gridSvg = tileMap.querySelector(".tile-grid");
+    if (gridSvg){
+      const r = gridSvg.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0){
+        const p = mapPos(r);
+        await rasterizeSvgOntoCanvas(gridSvg, ctx, p.x, p.y, p.w, p.h, false, rasterScale);
+      }
+    }
+  }
+
+  if (opts.includeOverlays){
+    const overlayGranular = jpgExportNormalizeOverlayGranular(opts.overlays);
+    const overlayCategories = [
+      { selector: ".range-rings-overlay svg", key: "rangeRings" },
+      { selector: ".saved-tracks-overlay svg", key: "tracks" },
+      { selector: ".gis-polygons-overlay svg", key: "polygons" },
+      { selector: ".waypoints-overlay svg", key: "waypoints", labelsKey: "waypointLabels" }
+    ];
+    for (const cat of overlayCategories){
+      if (!overlayGranular[cat.key]) continue;
+      for (const svg of [...tileMap.querySelectorAll(cat.selector)]){
+        const r = svg.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) continue;
+        let cloneMutator = null;
+        if (cat.labelsKey && !overlayGranular[cat.labelsKey]){
+          cloneMutator = (clone) => {
+            clone.querySelectorAll(".wpt-map-label").forEach((el) => { el.remove(); });
+          };
+        }
+        const p = mapPos(r);
+        await rasterizeSvgOntoCanvas(svg, ctx, p.x, p.y, p.w, p.h, true, rasterScale, cloneMutator);
+      }
+    }
+  }
+
+  if (opts.includeMarkers !== false){
+    const markerSvgs = [...tileMap.querySelectorAll(".tile-marker svg")];
+    for (const svg of markerSvgs){
+      const host = svg.closest(".tile-marker") || svg;
+      const r = host.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) continue;
+      const p = mapPos(r);
+      await rasterizeSvgOntoCanvas(svg, ctx, p.x, p.y, p.w, p.h, false, rasterScale);
+    }
+  }
+}
+
 async function exportMapAsJpg(opts){
   opts = opts || {};
   const includeScale = !!opts.includeScale;
@@ -19956,45 +20064,16 @@ async function exportMapAsJpg(opts){
     try { ctx.drawImage(im, x, y, r.width, r.height); } catch(_){}
   }
 
-  const gridSvg = tileMap.querySelector(".tile-grid");
-  if (gridSvg){
-    const r = gridSvg.getBoundingClientRect();
-    if (r.width > 0 && r.height > 0){
-      await rasterizeSvgOntoCanvas(gridSvg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, false, S);
-    }
-  }
-
-  if (includeOverlays){
-    const overlayGranular = jpgExportNormalizeOverlayGranular(opts.overlays || _jpgExportOverlayGranular);
-    const overlayCategories = [
-      { selector: ".range-rings-overlay svg", key: "rangeRings" },
-      { selector: ".saved-tracks-overlay svg", key: "tracks" },
-      { selector: ".gis-polygons-overlay svg", key: "polygons" },
-      { selector: ".waypoints-overlay svg", key: "waypoints", labelsKey: "waypointLabels" }
-    ];
-    for (const cat of overlayCategories){
-      if (!overlayGranular[cat.key]) continue;
-      for (const svg of [...tileMap.querySelectorAll(cat.selector)]){
-        const r = svg.getBoundingClientRect();
-        if (r.width <= 0 || r.height <= 0) continue;
-        let cloneMutator = null;
-        if (cat.labelsKey && !overlayGranular[cat.labelsKey]){
-          cloneMutator = (clone) => {
-            clone.querySelectorAll(".wpt-map-label").forEach((el) => { el.remove(); });
-          };
-        }
-        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, true, S, cloneMutator);
-      }
-    }
-  }
-
-  const markerSvgs = [...tileMap.querySelectorAll(".tile-marker svg")];
-  for (const svg of markerSvgs){
-    const host = svg.closest(".tile-marker") || svg;
-    const r = host.getBoundingClientRect();
-    if (r.width <= 0 || r.height <= 0) continue;
-    await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, false, S);
-  }
+  await rasterizeJpgExportOverlaysOntoCanvas(ctx, {
+    tileMap,
+    mapRect,
+    posScale: 1,
+    rasterScale: S,
+    includeGrid: true,
+    includeOverlays,
+    overlays: opts.overlays || _jpgExportOverlayGranular,
+    includeMarkers: true
+  });
 
   if (includeScale){
     try {
@@ -20054,6 +20133,8 @@ let _jpgExportCoords = {
   waypointId: null,
   format: "primary"
 };
+let _jpgQuickExportSnapshot = null;
+let _jpgQuickExportBusy = false;
 const JPG_EXPORT_COORDS_MGRS_PRECISION = 5;
 
 function jpgExportIsValidLatLon(lat, lon){
@@ -20248,6 +20329,93 @@ function jpgExportClearDialogMsg(){
   jpgExportShowDialogMsg("");
 }
 
+function jpgExportQuickSnapshotErrorKey(reason){
+  if (reason === "antimeridian") return "export.jpg.quickAntimeridian";
+  if (reason === "no_map") return "export.jpg.noMap";
+  return "export.jpg.quickSnapshotFail";
+}
+
+function jpgExportSetConfirmEnabled(enabled){
+  const btn = document.getElementById("jpgExportDialogConfirm");
+  if (btn) btn.disabled = !enabled;
+}
+
+function jpgExportPopulateQuickZoomSelect(levels, defaultZoom){
+  const sel = document.getElementById("jpgExportQuickZoom");
+  if (!sel) return;
+  sel.innerHTML = "";
+  for (const z of (levels || [])){
+    const opt = document.createElement("option");
+    opt.value = String(z);
+    opt.textContent = String(z);
+    if (z === defaultZoom) opt.selected = true;
+    sel.appendChild(opt);
+  }
+}
+
+function jpgExportReadQuickZoom(){
+  const el = document.getElementById("jpgExportQuickZoom");
+  if (!el || el.disabled || !el.value) return null;
+  const z = parseInt(el.value, 10);
+  return Number.isFinite(z) ? z : null;
+}
+
+function jpgExportSetDialogBusy(busy){
+  _jpgQuickExportBusy = !!busy;
+  const canConfirm = !busy && _jpgQuickExportSnapshot && _jpgQuickExportSnapshot.ok;
+  jpgExportSetConfirmEnabled(canConfirm);
+  const disableIds = ["jpgExportDialogCancel", "jpgExportDialogClose", "jpgExportQuickZoom",
+    "jpgExportIncludeScale", "jpgExportIncludeOverlays", "jpgExportIncludeCoords",
+    "jpgExportCoordsSource", "jpgExportCoordsWaypoint", "jpgExportCoordsFormat",
+    "jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels",
+    "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+  for (const id of disableIds){
+    const el = document.getElementById(id);
+    if (el) el.disabled = !!busy;
+  }
+  if (!busy) jpgExportSyncOverlaySubUi();
+  if (!busy) jpgExportSyncCoordsSubUi();
+}
+
+function jpgExportApplyQuickSnapshotToDialog(){
+  _jpgQuickExportSnapshot = null;
+  const layerEl = document.getElementById("jpgExportQuickLayer");
+  const zoomSel = document.getElementById("jpgExportQuickZoom");
+  const snap = getQuickExportViewportSnapshot();
+  if (!snap || !snap.ok){
+    if (layerEl) layerEl.textContent = "—";
+    jpgExportPopulateQuickZoomSelect([], null);
+    if (zoomSel) zoomSel.disabled = true;
+    jpgExportShowDialogMsg(t(jpgExportQuickSnapshotErrorKey(snap && snap.reason)));
+    jpgExportSetConfirmEnabled(false);
+    return;
+  }
+  _jpgQuickExportSnapshot = snap;
+  const layer = getOfflineTileLayer(snap.layerId);
+  if (isLayerOfflineUnavailable(snap.layerId)){
+    if (layerEl) layerEl.textContent = offlineNamedAreaLayerLabel(snap.layerId);
+    jpgExportPopulateQuickZoomSelect([], snap.zoom);
+    if (zoomSel) zoomSel.disabled = true;
+    jpgExportShowDialogMsg(t("offcache.onlineOnly"));
+    jpgExportSetConfirmEnabled(false);
+    return;
+  }
+  const zinfo = computeQuickExportZoomLevels(snap.bbox, snap.zoom, layer);
+  if (layerEl) layerEl.textContent = offlineNamedAreaLayerLabel(snap.layerId);
+  if (!zinfo.levels.length || !zinfo.currentExportable){
+    jpgExportPopulateQuickZoomSelect([], snap.zoom);
+    if (zoomSel) zoomSel.disabled = true;
+    const errKey = (zinfo.reason && t(zinfo.reason) !== zinfo.reason) ? zinfo.reason : "export.jpg.quickNoZoomLevels";
+    jpgExportShowDialogMsg(t(errKey));
+    jpgExportSetConfirmEnabled(false);
+    return;
+  }
+  jpgExportPopulateQuickZoomSelect(zinfo.levels, snap.zoom);
+  if (zoomSel) zoomSel.disabled = false;
+  jpgExportClearDialogMsg();
+  jpgExportSetConfirmEnabled(true);
+}
+
 function jpgExportNormalizeOverlayGranular(src){
   src = src || {};
   return {
@@ -20303,6 +20471,7 @@ function jpgExportSyncOverlaySubUi(){
 }
 
 function closeJpgExportDialog(){
+  if (_jpgQuickExportBusy) return;
   const dlg = document.getElementById("jpgExportDialog");
   if (!dlg) return;
   try { dlg.close(); } catch(_){ dlg.removeAttribute("open"); }
@@ -20328,7 +20497,7 @@ function openJpgExportDialog(){
   jpgExportApplyOverlayGranularToUi(_jpgExportOverlayGranular);
   jpgExportPopulateWaypointSelect();
   jpgExportApplyCoordsToUi(_jpgExportCoords);
-  jpgExportClearDialogMsg();
+  jpgExportApplyQuickSnapshotToDialog();
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
@@ -20538,6 +20707,173 @@ function computeQuickExportZoomLevels(bbox, currentZoom, layer){
   };
 }
 
+/** Shared OPSEC/proxy consent gate for offline + quick geographic JPG export (B5.5Z-3). */
+async function confirmOfflineJpgTileExportConsent(layerId){
+  if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
+    const ok = await showOpsecStrictConfirmDialog(
+      t("offcache.sectionExportJpg") || "",
+      t("opsec.strict.tilesBlocked") || ""
+    );
+    if (!ok) return { ok: false, reason: "opsec" };
+    _exportJpgStrictOpConfirmed = true;
+    if (tileLayerExternalKind(layerId) === "tailnet-proxy"){
+      if (!await ensureProxyConsent(layerId)){
+        _exportJpgStrictOpConfirmed = false;
+        return { ok: false, reason: "proxy" };
+      }
+    }
+  }
+  return { ok: true };
+}
+
+function validateQuickExportCropSize(w, h){
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w < 1 || h < 1) return "export.offlineJpg.noTiles";
+  if (w > OFFLINE_JPG_EXPORT_MAX_CANVAS_PX || h > OFFLINE_JPG_EXPORT_MAX_CANVAS_PX) return "export.offlineJpg.tooLarge";
+  if (w * h > OFFLINE_JPG_EXPORT_MAX_PIXELS) return "export.offlineJpg.tooLarge";
+  return null;
+}
+
+async function exportQuickViewportAsJpg(options){
+  options = options || {};
+  if (_jpgQuickExportBusy) return;
+  const snap = _jpgQuickExportSnapshot;
+  if (!snap || !snap.ok){
+    jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
+    jpgExportSetConfirmEnabled(false);
+    return;
+  }
+  const z = jpgExportReadQuickZoom();
+  if (z == null){
+    jpgExportShowDialogMsg(t("export.jpg.quickNoZoomLevels"));
+    return;
+  }
+  const layerId = snap.layerId;
+  const layer = getOfflineTileLayer(layerId);
+  if (isLayerOfflineUnavailable(layerId)){
+    jpgExportShowDialogMsg(t("offcache.onlineOnly"));
+    return;
+  }
+  const zoomErr = validateExportZoomForLayer(z, layer);
+  if (zoomErr){
+    jpgExportShowDialogMsg(t(zoomErr).replace("{0}", String(offlineLayerMaxZoom(layer))));
+    return;
+  }
+  const bbox = snap.bbox;
+  const grid = computeOfflineJpgGrid(bbox.n, bbox.s, bbox.e, bbox.w, z);
+  const sizeErr = validateOfflineJpgExportSize(grid);
+  if (sizeErr){
+    jpgExportShowDialogMsg(t(sizeErr));
+    return;
+  }
+  const sx = (lonToTileX(bbox.w, z) - grid.xMin) * 256;
+  const sy = (latToTileY(bbox.n, z) - grid.yMin) * 256;
+  const sw = (lonToTileX(bbox.e, z) - lonToTileX(bbox.w, z)) * 256;
+  const sh = (latToTileY(bbox.s, z) - latToTileY(bbox.n, z)) * 256;
+  const finalW = Math.max(1, Math.round(sw));
+  const finalH = Math.max(1, Math.round(sh));
+  const cropErr = validateQuickExportCropSize(finalW, finalH);
+  if (cropErr){
+    jpgExportShowDialogMsg(t(cropErr));
+    return;
+  }
+  const consent = await confirmOfflineJpgTileExportConsent(layerId);
+  if (!consent.ok){
+    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"));
+    return;
+  }
+  const includeScale = !!options.includeScale;
+  const includeOverlays = !!options.includeOverlays;
+  const overlayGranular = jpgExportNormalizeOverlayGranular(options.overlays || _jpgExportOverlayGranular);
+  const coordsModel = options.coordsModel || null;
+  jpgExportSetDialogBusy(true);
+  jpgExportShowDialogMsg(String(t("export.jpg.quickProgress")).replace("{0}", "0").replace("{1}", String(grid.tileCount)));
+  try {
+    const mosaic = await renderGeographicJpgMosaic({
+      grid, layerId, layer,
+      onProgress: ({ done, tileCount }) => {
+        jpgExportShowDialogMsg(String(t("export.jpg.quickProgress")).replace("{0}", String(done)).replace("{1}", String(tileCount)));
+      }
+    });
+    if (!mosaic || !mosaic.ctx) throw new Error("quickJpg mosaic render failed");
+    const finalCanvas = document.createElement("canvas");
+    finalCanvas.width = finalW;
+    finalCanvas.height = finalH;
+    const fctx = finalCanvas.getContext("2d");
+    if (!fctx) throw new Error("quickJpg canvas ctx failed");
+    fctx.drawImage(mosaic.canvas, sx, sy, sw, sh, 0, 0, finalW, finalH);
+    const overlayScale = finalW / snap.widthPx;
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    const mapRect = tileMap && tileMap.getBoundingClientRect();
+    if (tileMap && mapRect && mapRect.width > 0){
+      await rasterizeJpgExportOverlaysOntoCanvas(fctx, {
+        tileMap,
+        mapRect,
+        posScale: overlayScale,
+        rasterScale: Math.max(1, overlayScale),
+        includeGrid: false,
+        includeOverlays,
+        overlays: overlayGranular,
+        includeMarkers: true
+      });
+    }
+    if (includeScale){
+      try {
+        const lat = (bbox.n + bbox.s) / 2;
+        const model = computeMapScaleModel(z, lat, state.mapSize || "small", finalW);
+        drawJpgExportScale(fctx, finalW, finalH, model);
+      } catch(_){}
+    }
+    if (coordsModel){
+      try { drawJpgExportCoords(fctx, finalW, finalH, coordsModel); } catch(_){}
+    }
+    const missing = mosaic.missing;
+    const http404 = mosaic.http404;
+    if (missing > 0){
+      if (http404 >= missing && http404 > 0){
+        jpgExportShowDialogMsg(t("export.offlineJpg.zoomTooHigh").replace("{0}", String(offlineLayerMaxZoom(layer))));
+      } else if (state.forceOffline || !isEffectivelyOnline()){
+        jpgExportShowDialogMsg(String(t("export.offlineJpg.offlineMissing")).replace("{0}", String(missing)));
+      } else {
+        jpgExportShowDialogMsg(String(t("export.offlineJpg.tilesUnavailable")));
+      }
+    }
+    const blob = await new Promise((resolve, reject) => {
+      try {
+        finalCanvas.toBlob((b) => b ? resolve(b) : reject(new Error("toBlob null")), "image/jpeg", 0.92);
+      } catch(err){ reject(err); }
+    });
+    const fname = exportPrefixedDownloadFilename(`gis-map-z${z}-${formatJpgExportTimestamp(new Date())}.jpg`);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fname;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { try { document.body.removeChild(a); } catch(_){} URL.revokeObjectURL(url); }, 100);
+    let okMsg = missing > 0
+      ? String(t("export.offlineJpg.partial")).replace("{0}", String(missing))
+      : t("export.jpg.ok");
+    const layerLbl = offlineNamedAreaLayerLabel(layerId);
+    if (mosaic.fromCache > 0 || mosaic.fromNetwork > 0){
+      okMsg += " · " + String(t("export.offlineJpg.sources"))
+        .replace("{0}", String(mosaic.fromCache))
+        .replace("{1}", String(mosaic.fromNetwork))
+        .replace("{2}", layerLbl);
+    }
+    jpgExportShowDialogMsg(okMsg);
+    try { clearError(); } catch(_){}
+  } catch(err){
+    const msg = String(err && (err.message || err) || "");
+    const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
+    jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.fail"));
+    try { showError(t(tainted ? "export.jpg.tainted" : "export.jpg.fail")); } catch(_){}
+  } finally {
+    _exportJpgStrictOpConfirmed = false;
+    jpgExportSetDialogBusy(false);
+  }
+}
+
 function setOfflineJpgExportUiBusy(busy, statusText){
   _offlineJpgExportBusy = !!busy;
   const btn = document.getElementById("btnOfflineExportJpg");
@@ -20690,23 +21026,13 @@ async function exportOfflineAreaAsJpg(){
     if (st) st.textContent = t(sizeErr);
     return;
   }
-  if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
-    const ok = await showOpsecStrictConfirmDialog(
-      t("offcache.sectionExportJpg") || "",
-      t("opsec.strict.tilesBlocked") || ""
-    );
-    if (!ok){
+  const consent = await confirmOfflineJpgTileExportConsent(layerId);
+  if (!consent.ok){
+    if (consent.reason === "opsec"){
       const st0 = document.getElementById("pcStatus");
       if (st0) st0.textContent = t("opsec.strict.tilesBlocked");
-      return;
     }
-    _exportJpgStrictOpConfirmed = true;
-    if (tileLayerExternalKind(layerId) === "tailnet-proxy"){
-      if (!await ensureProxyConsent(layerId)){
-        _exportJpgStrictOpConfirmed = false;
-        return;
-      }
-    }
+    return;
   }
   setOfflineJpgExportUiBusy(true, t("export.offlineJpg.progress").replace("{0}", "0").replace("{1}", String(grid.tileCount)));
   const prog = document.getElementById("pcProgress");
@@ -39723,7 +40049,11 @@ function bindUI(){
   if (jpgExportDlg) jpgExportDlg.addEventListener("click", (ev) => {
     if (ev.target && ev.target.id === "jpgExportDialog") closeJpgExportDialog();
   });
+  if (jpgExportDlg) jpgExportDlg.addEventListener("cancel", (ev) => {
+    if (_jpgQuickExportBusy){ ev.preventDefault(); return; }
+  });
   if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
+    if (_jpgQuickExportBusy) return;
     const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
     const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
     const coordsCfg = jpgExportReadCoordsFromUi();
@@ -39731,22 +40061,26 @@ function bindUI(){
     _jpgExportIncludeOverlays = includeOverlays;
     _jpgExportCoords = coordsCfg;
     if (includeOverlays) _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
+    let coordsModel = null;
     if (coordsCfg.enabled){
       const resolved = jpgExportResolveCoordsModel(coordsCfg);
       if (!resolved || !resolved.ok){
         jpgExportShowDialogMsg(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable"));
         return;
       }
+      coordsModel = resolved;
     }
-    jpgExportClearDialogMsg();
-    closeJpgExportDialog();
-    exportMapAsJpg({
+    if (!_jpgQuickExportSnapshot || !_jpgQuickExportSnapshot.ok){
+      jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
+      jpgExportSetConfirmEnabled(false);
+      return;
+    }
+    void exportQuickViewportAsJpg({
       includeScale,
       includeOverlays,
       overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
-      coords: coordsCfg,
-      scale: JPG_EXPORT_REQUESTED_SCALE
-    }).catch(() => {});
+      coordsModel
+    });
   });
 
   const btnPr = document.getElementById("btnPrintReport");

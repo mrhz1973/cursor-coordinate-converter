@@ -1315,7 +1315,9 @@ Stesso schema di B3.
 
 **B5.5Z-1 quick export — snapshot viewport e zoom dinamico (2026-06-21):** PASS tecnico statico — `getQuickExportViewportSnapshot()` + `computeQuickExportZoomLevels()`; infrastruttura read-only; antimeridiano fail-closed (pixel mondiale + `w > e`); limiti esistenti offline-export; nessun call site; nessun cambiamento UI/runtime; **`node --check`** OK; deploy/QA **non eseguiti**. **B5.5Z non completato.**
 
-**B5.5Z-2A offline-export — core mosaico geografico (2026-06-21):** PASS tecnico statico — `renderGeographicJpgMosaic(options)`; `exportOfflineAreaAsJpg()` delega senza modifica intenzionale comportamento; nessun collegamento pulsante quick; **`node --check`** OK; deploy/QA Mappe Offline **pending**. **B5.5Z non completato.** **Prossimo candidato (post-QA):** **B5.5Z-2B** — motore geografico condiviso e caller quick, ancora senza overlay.
+**B5.5Z-2A offline-export — core mosaico geografico (2026-06-21):** PASS tecnico statico — `renderGeographicJpgMosaic(options)`; `exportOfflineAreaAsJpg()` delega; nessun collegamento pulsante quick; **`node --check`** OK; deploy/QA Mappe Offline post-refactor **pending**. **B5.5Z non completato.**
+
+**B5.5Z-3 export JPG rapido pulsante superiore (2026-06-22):** PASS tecnico statico + review diff PASS — export geografico dal pulsante JPG; area automatica = viewport all'apertura; layer = `state.mapLayer`; zoom corrente→max esportabile; overlay/scala/coordinate; Mappe Offline invariato; **`node --check`** OK; deploy/QA operatore VPS **pending**. **B5.5Z non chiuso end-to-end.** **Prossimo candidato:** deploy VPS + QA operatore quick export e regressione Mappe Offline.
 
 **B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico remoto + deploy VPS + **PASS operatore** — runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; selettore rimosso; qualità richiesta sempre **3×** (`JPG_EXPORT_REQUESTED_SCALE`); downgrade automatico interno cap 8192 preservato; tile raster interpolate = atteso; QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore». **Catena B5.5E chiusa.**
 
