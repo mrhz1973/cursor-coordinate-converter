@@ -26,16 +26,17 @@
 
 ## Git step 2
 
-- **Push:** da verificare post-esecuzione (`4da28f5..bc66dff`)
+- **Push:** OK (`4da28f5..bc66dff`)
 
 ## QA operatore
 
-**PASS** — attestazione esplicita operatore «tutto pass»; registrata in OM §7 e WU.
+**PASS** — attestazione esplicita operatore «tutto pass» (2026-06-21); registrata in OM §7 e WU.
 
 ## Commit orchestratore (step 3)
 
-- Da creare — `docs: orchestratore — riconciliazione finito sessione B5.5C PASS operatore`
-- **LAST_CURSOR_REPORT:** `current_report_container = PENDING_SELF_REFERENCE`; `real_task_commit = bc66dff`
+- **`d24246e`** — `docs: orchestratore — riconciliazione finito sessione B5.5C PASS operatore`
+- **Push step 3:** OK (`bc66dff..d24246e`)
+- **HEAD finale:** `d24246e`
 
 ## Limiti
 
