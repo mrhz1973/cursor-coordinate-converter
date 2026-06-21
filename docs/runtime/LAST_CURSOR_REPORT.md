@@ -2,58 +2,53 @@
 
 ## LATEST
 
-* real_task_commit: `25555c2`
-* real_task_subject: fix(export): B5.5E-2 JPG export fixed maximum quality 3x without selector
-* report_generated_at: 2026-06-21T09:17:00+02:00
+* real_task_commit: `af0d19d`
+* real_task_subject: docs: codifica Handoff & Close Discipline (OM §4 + QA-CHECKLIST + README read-set)
+* report_generated_at: 2026-06-21T10:43:00+02:00
 * branch: main
-* remote_hash_authority: `fd6145b`
-* local_HEAD: `fd6145b`
-* local_origin_main: `fd6145b`
-* ls_remote_origin_main: `fd6145bee1229c3c52f13f46dada61440dc912c2`
-* working_tree_status: clean (post step 2; autosync orchestratore in commit successivo)
+* remote_hash_authority: `ed58302`
+* local_HEAD: `ed58302`
+* local_origin_main: `ed58302`
+* ls_remote_origin_main: `ed583027e5e92459436775ad4563f2b1b5f1cbbf`
+* working_tree_status: clean
 * pass_tecnico_remoto: PASS
-* result_cursor: B5.5E-2 fixed 3x; selettore rimosso; deploy byte-match 2155320
-* pass_operatore: PASS
-* result_runtime: QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore»; catena B5.5E chiusa
-* qa_attestation_source: operatore (2026-06-21)
-* docs_commit: `fd6145b` (PASS operatore registration)
-* autosync_commit: `cfaf8e2`
-* runtime_ref: `25555c2`
-* deploy_ref: `2d505af` (VPS HEAD post-deploy B5.5E-2)
+* result_cursor: Handoff & Close Discipline codificata; OM §4 Regole A–F; QA-CHECKLIST read-set; review Claude downstream PASS
+* pass_operatore: N/A
+* result_runtime: QA operatore visiva N/A — blocco docs-only, nessuna modifica runtime
+* qa_attestation_source: N/A (docs/governance)
+* docs_commit: `af0d19d`
+* autosync_commit: `ed58302`
+* runtime_ref: invariato (`25555c2` — ultimo runtime B5.5E-2)
+* deploy_ref: N/A — blocco docs-only
+* notes: Deploy VPS N/A; `.cursor/rules/**` non toccato; follow-up mirror rules separato
 
 ## OUTPUT VERBATIM
 
 ```text
-git log --oneline -5
-fd6145b docs(memory): register B5.5E-2 PASS operatore post-deploy VPS
-2d505af docs: LAST_CURSOR_REPORT backfill autosync B5.5E-2
-f84422b docs: orchestratore — riconciliazione finito sessione B5.5E-2
-25555c2 fix(export): B5.5E-2 JPG export fixed maximum quality 3x without selector
-0cc28d5 docs: LAST_CURSOR_REPORT backfill autosync B5.5E-1
+git log --oneline -3
+ed58302 docs: orchestratore + LAST_CURSOR_REPORT (Handoff & Close Discipline)
+af0d19d docs: codifica Handoff & Close Discipline (OM §4 + QA-CHECKLIST + README read-set)
+8d7c4d8 docs(memory): register B5.5E-2 PASS operatore post-deploy VPS
 
 git status --short
 (clean)
 
 git rev-parse HEAD
-fd6145bee1229c3c52f13f46dada61440dc912c2
+ed583027e5e92459436775ad4563f2b1b5f1cbbf
 
 git rev-parse origin/main
-fd6145bee1229c3c52f13f46dada61440dc912c2
+ed583027e5e92459436775ad4563f2b1b5f1cbbf
 
 git branch --show-current
 main
 
-git show --stat HEAD
- docs/OPERATING_MEMORY.md                | 2 +-
- docs/work-units/WU-0005-0009-roadmap.md | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
 git ls-remote origin main
-fd6145bee1229c3c52f13f46dada61440dc912c2	refs/heads/main
+ed583027e5e92459436775ad4563f2b1b5f1cbbf	refs/heads/main
 ```
 
 ## HISTORY
 
+* fd6145b — B5.5E-2 PASS operatore registration; runtime 25555c2; deploy 2d505af; QA PASS operatore
 * 25555c2 — B5.5E-2 runtime; deploy VPS byte-match 2155320
 * 1cbd4d1 — B5.5E-1 default 3x
 * 6524183 — B5.5B-1 overlay style fidelity PASS operatore

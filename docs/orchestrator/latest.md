@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-21 — **Handoff & Close Discipline codificata (docs/governance):** commit task **`af0d19d`** — OM §4 aggiornato con Regole A–F (finito condizionale, review tiered, report a un destinatario, QA checklist unica, artefatti fenced, seed handoff); nuovo **`docs/QA-CHECKLIST.md`**; README read-set aggiornato (QA-CHECKLIST voce 4, monolite voce 5). Review Claude downstream **PASS**. Blocco **docs-only** — nessun runtime, deploy o QA visiva. **Monolite non incluso.** Inbox **`2026-06-21_1043_handoff-close-discipline.md`**. **Follow-up separato (non aperto):** valutare allineamento `.cursor/rules/**` come mirror di OM §4.
+
 2026-06-21 — **Chiusura sessione `finito` — B5.5E-2 PASS operatore post-deploy VPS (docs):** commit **`fd6145b`** — OM §7 + WU: **PASS operatore** B5.5E-2 export JPG qualità fissa 3×; runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; QA `:8000?v=25555c2`; catena B5.5E **chiusa**; attestazione «QA B5.5E-2 PASS operatore». **Monolite non incluso.** Inbox **`2026-06-21_0917_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5C selezione granulare per-overlay.
 
 2026-06-21 — **Chiusura sessione `finito` — B5.5E-2 JPG export qualità fissa 3× senza selettore (runtime):** commit **`25555c2`** — build **`B5.5E-2`**; rimosso selettore UI 1×/2×/3×; `JPG_EXPORT_REQUESTED_SCALE = 3`; cap 8192/downgrade fail-safe invariati; overlay B5.5B-1 invariato; **`node --check`** OK. **Monolite incluso.** **QA operatore post-deploy: pending** → **PASS** in `fd6145b`. Inbox **`2026-06-21_0831_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5C / B5.5D / B5.4f.
