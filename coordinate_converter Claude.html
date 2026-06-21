@@ -20610,6 +20610,47 @@ async function loadTileImageForOfflineExport(layerId, z, x, y, layer){
   }
 }
 
+async function renderGeographicJpgMosaic(options){
+  options = options || {};
+  const grid = options.grid;
+  const layerId = options.layerId;
+  const layer = options.layer;
+  const onProgress = (typeof options.onProgress === "function") ? options.onProgress : null;
+  if (!grid || !Array.isArray(grid.tiles) ||
+      !Number.isFinite(grid.widthPx) || !Number.isFinite(grid.heightPx)){
+    return null;
+  }
+  const canvas = document.createElement("canvas");
+  canvas.width = grid.widthPx;
+  canvas.height = grid.heightPx;
+  const ctx = canvas.getContext("2d");
+  if (!ctx){
+    return { canvas, ctx: null, grid, done: 0, missing: 0, fromCache: 0, fromNetwork: 0, http404: 0 };
+  }
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, grid.widthPx, grid.heightPx);
+  let done = 0, missing = 0, fromCache = 0, fromNetwork = 0, http404 = 0;
+  for (const T of grid.tiles){
+    const dx = (T.x - grid.xMin) * 256;
+    const dy = (T.y - grid.yMin) * 256;
+    const loaded = await loadTileImageForOfflineExport(layerId, T.z, T.x, T.y, layer);
+    const im = loaded && loaded.img;
+    if (loaded && loaded.http404) http404++;
+    if (im) {
+      if (loaded.source === "cache") fromCache++;
+      else if (loaded.source === "network") fromNetwork++;
+      try { ctx.drawImage(im, dx, dy, 256, 256); } catch(_){ missing++; drawOfflineExportTilePlaceholder(ctx, dx, dy, 256); }
+    } else {
+      missing++;
+      drawOfflineExportTilePlaceholder(ctx, dx, dy, 256);
+    }
+    done++;
+    if (onProgress) onProgress({ done, tileCount: grid.tileCount, missing, fromCache, fromNetwork, http404 });
+    if (done % 8 === 0) await new Promise((r) => setTimeout(r, 0));
+  }
+  return { canvas, ctx, grid, done, missing, fromCache, fromNetwork, http404 };
+}
+
 async function exportOfflineAreaAsJpg(){
   if (_offlineJpgExportBusy) return;
   if (isOfflinePrecacheBusy()){
@@ -20668,46 +20709,24 @@ async function exportOfflineAreaAsJpg(){
     }
   }
   setOfflineJpgExportUiBusy(true, t("export.offlineJpg.progress").replace("{0}", "0").replace("{1}", String(grid.tileCount)));
-  const canvas = document.createElement("canvas");
-  canvas.width = grid.widthPx;
-  canvas.height = grid.heightPx;
-  const ctx = canvas.getContext("2d");
-  if (!ctx){
-    _exportJpgStrictOpConfirmed = false;
-    setOfflineJpgExportUiBusy(false, "");
-    try { showError(t("export.offlineJpg.fail")); } catch(_){}
-    return;
-  }
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(0, 0, grid.widthPx, grid.heightPx);
-  let done = 0;
-  let missing = 0;
-  let fromCache = 0;
-  let fromNetwork = 0;
-  let http404 = 0;
   const prog = document.getElementById("pcProgress");
   const st = document.getElementById("pcStatus");
   const layerLbl = offlineNamedAreaLayerLabel(layerId);
   try {
-    for (const T of grid.tiles){
-      const dx = (T.x - grid.xMin) * 256;
-      const dy = (T.y - grid.yMin) * 256;
-      const loaded = await loadTileImageForOfflineExport(layerId, T.z, T.x, T.y, layer);
-      const im = loaded && loaded.img;
-      if (loaded && loaded.http404) http404++;
-      if (im) {
-        if (loaded.source === "cache") fromCache++;
-        else if (loaded.source === "network") fromNetwork++;
-        try { ctx.drawImage(im, dx, dy, 256, 256); } catch(_){ missing++; drawOfflineExportTilePlaceholder(ctx, dx, dy, 256); }
-      } else {
-        missing++;
-        drawOfflineExportTilePlaceholder(ctx, dx, dy, 256);
+    const mosaic = await renderGeographicJpgMosaic({
+      grid, layerId, layer,
+      onProgress: ({ done, tileCount }) => {
+        if (prog) prog.value = Math.round((done / tileCount) * 100);
+        if (st) st.textContent = String(t("export.offlineJpg.progress")).replace("{0}", String(done)).replace("{1}", String(tileCount));
       }
-      done++;
-      if (prog) prog.value = Math.round((done / grid.tileCount) * 100);
-      if (st) st.textContent = String(t("export.offlineJpg.progress")).replace("{0}", String(done)).replace("{1}", String(grid.tileCount));
-      if (done % 8 === 0) await new Promise((r) => setTimeout(r, 0));
-    }
+    });
+    if (!mosaic || !mosaic.ctx) throw new Error("offlineJpg mosaic render failed");
+    const canvas = mosaic.canvas;
+    const done = mosaic.done;
+    const missing = mosaic.missing;
+    const fromCache = mosaic.fromCache;
+    const fromNetwork = mosaic.fromNetwork;
+    const http404 = mosaic.http404;
     if (missing > 0){
       if (http404 >= missing && http404 > 0){
         const zm = t("export.offlineJpg.zoomTooHigh").replace("{0}", String(offlineLayerMaxZoom(layer)));
