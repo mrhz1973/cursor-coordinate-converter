@@ -1323,7 +1323,7 @@ Stesso schema di B3.
 
 **B5.5Z export JPG rapido zoom reale — catena FIX0→1→2A→3→DELTA-A1 (2026-06-22):** **CLOSED / PASS end-to-end.** Backlog opzionale: overlay geografici su segmenti oltre-cap.
 
-**B5.5Z-BUILD label runtime visibile (2026-06-22):** PASS tecnico statico — `APP_BUILD_ID` **`B5.5D` → `B5.5Z`**; footer/about/detail allineati; solo identificativo (5 righe); nessun cambiamento funzionale; `node --check` OK; deploy VPS + smoke label **pending**.
+**B5.5Z-BUILD label runtime visibile (2026-06-22):** PASS tecnico statico + deploy VPS + smoke etichetta + **PASS operatore** — runtime **`3fa6212`**; HEAD/deploy **`053ac18`**; `APP_BUILD_ID` **`B5.5D` → `B5.5Z`**; footer/About **`B5.5Z`**; detail *Quick geographic JPG export and segmented high-zoom tiles*; solo identificativo (5 righe); smoke **`200`**, byte **`2228096`**, SHA-256 match; proxy/Planet-Clone non toccati; app avviata normalmente; attestazione «QA B5.5Z-BUILD PASS operatore». **B5.5Z-BUILD CLOSED / PASS end-to-end.**
 
 **B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico remoto + deploy VPS + **PASS operatore** — runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; selettore rimosso; qualità richiesta sempre **3×** (`JPG_EXPORT_REQUESTED_SCALE`); downgrade automatico interno cap 8192 preservato; tile raster interpolate = atteso; QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore». **Catena B5.5E chiusa.**
 
@@ -1493,7 +1493,6 @@ Decidere fuori dal repo GIS:
 
 **Prossimo candidato operativo** coerente con la roadmap:
 
-- **Deploy VPS GIS-only + smoke label build `B5.5Z`** — post-commit runtime B5.5Z-BUILD;
 - **B5.5Z backlog opzionale:** overlay geografici su segmenti oltre-cap (non bloccante);
 - **WU-0009A B0-B4 — proxy readiness in Planet-Clone**, separato/sensibile;
 - **Mappe offline UX** (matrice dipendenze), alternativa leggera non-proxy.
