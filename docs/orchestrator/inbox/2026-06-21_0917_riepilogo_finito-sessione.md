@@ -31,4 +31,5 @@
 
 ## Commit orchestratore (step 3)
 
-_Pending — aggiornato dopo autosync._
+- **`cfaf8e2`** — `docs: orchestratore — riconciliazione finito sessione B5.5E-2 PASS operatore`
+- **Push step 3:** OK

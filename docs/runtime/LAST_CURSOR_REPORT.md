@@ -17,7 +17,7 @@
 * result_runtime: QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore»; catena B5.5E chiusa
 * qa_attestation_source: operatore (2026-06-21)
 * docs_commit: `fd6145b` (PASS operatore registration)
-* autosync_commit: PENDING_SELF_REFERENCE
+* autosync_commit: `cfaf8e2`
 * runtime_ref: `25555c2`
 * deploy_ref: `2d505af` (VPS HEAD post-deploy B5.5E-2)
 
