@@ -1307,7 +1307,9 @@ Stesso schema di B3.
 
 **B5.4f etichette graduate scala valore per-tacca (backlog):** valore per-tacca tondo (`pickM`/`pickNm` = 1/2/5 × 10ⁿ); opz. mid-label; solo km/Nm (non mi); parità `buildScaleBar` + `drawJpgExportScale`; B5.4d PASS → nuova ri-QA export; **PLAN-FIRST**.
 
-**B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico remoto + deploy VPS + **PASS operatore** — runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; selettore rimosso; qualità richiesta sempre **3×** (`JPG_EXPORT_REQUESTED_SCALE`); downgrade automatico interno cap 8192 preservato; tile raster interpolate = atteso; QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore». **Catena B5.5E chiusa.** **Prossimo candidato:** **B5.5C** — selezione granulare per-overlay + label waypoint.
+**B5.5C export JPG selezione granulare overlay + label waypoint (2026-06-21):** PASS tecnico remoto — runtime **`5a10a48`**; build **`B5.5C`**; master overlay + 5 categorie granulari transienti (default ON = parità B5.5B-1); label waypoint indipendenti da marker; filtro clone SVG; qualità 3×/cap 8192 invariati; nessuna rete/cache/proxy. **`node --check`** OK. **QA operatore post-deploy: pending.** **Prossimo candidato:** **B5.5D** tab coordinate (dopo QA B5.5C); deploy VPS GIS-only blocco separato.
+
+**B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico remoto + deploy VPS + **PASS operatore** — runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; selettore rimosso; qualità richiesta sempre **3×** (`JPG_EXPORT_REQUESTED_SCALE`); downgrade automatico interno cap 8192 preservato; tile raster interpolate = atteso; QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore». **Catena B5.5E chiusa.** **Prossimo candidato:** ~~B5.5C~~ **completato** → **B5.5D** dopo QA.
 
 **B5.5E-1 export JPG default qualità 3× (2026-06-21):** PASS tecnico + QA parziale (radio 3×) — build **`B5.5E-1`** → superato da **B5.5E-2** (selettore rimosso).
 
