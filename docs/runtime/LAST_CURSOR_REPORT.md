@@ -2,59 +2,59 @@
 
 ## LATEST
 
-* real_task_commit: `1cbd4d1`
-* real_task_subject: fix(export): B5.5E-1 JPG export default maximum quality 3x
-* report_generated_at: 2026-06-21T08:25:00+02:00
+* real_task_commit: `25555c2`
+* real_task_subject: fix(export): B5.5E-2 JPG export fixed maximum quality 3x without selector
+* report_generated_at: 2026-06-21T08:31:00+02:00
 * branch: main
-* remote_hash_authority: `1cbd4d1`
-* local_HEAD: `1cbd4d1`
-* local_origin_main: `1cbd4d1`
-* ls_remote_origin_main: `1cbd4d1199ea7c2015420f87d847c52369cb1a1d`
+* remote_hash_authority: `25555c2`
+* local_HEAD: `25555c2`
+* local_origin_main: `25555c2`
+* ls_remote_origin_main: `25555c27e02a2f01e7a0c429c17e8616ac3dc05b`
 * working_tree_status: clean (post step 2; autosync orchestratore in commit successivo)
 * pass_tecnico_remoto: PASS
-* result_cursor: B5.5E-1 default _jpgExportScale=3; build B5.5E-1; selettore 1x/2x/3x invariato
+* result_cursor: B5.5E-2 fixed scale 3x; selettore rimosso; JPG_EXPORT_REQUESTED_SCALE=3; cap 8192 preserved
 * pass_operatore: pending (post-deploy VPS)
-* result_runtime: n/a finché non deployato — runtime locale 1cbd4d1
+* result_runtime: n/a finché non deployato — runtime locale 25555c2; VPS ancora B5.5E-1 @ 0cc28d5
 * qa_attestation_source: n/a
-* docs_commit: `1cbd4d1` (monolite+docs stesso commit)
-* autosync_commit: `d110835`
-* runtime_ref: `1cbd4d1`
-* deploy_ref: pending (VPS ancora da aggiornare a B5.5E-1)
+* docs_commit: `25555c2` (monolite+docs stesso commit)
+* autosync_commit: PENDING_SELF_REFERENCE
+* runtime_ref: `25555c2`
+* deploy_ref: pending (VPS B5.5E-1; B5.5E-2 deploy pending)
 
 ## OUTPUT VERBATIM
 
 ```text
 git log --oneline -5
+25555c2 fix(export): B5.5E-2 JPG export fixed maximum quality 3x without selector
+0cc28d5 docs: LAST_CURSOR_REPORT backfill autosync B5.5E-1
+d110835 docs: orchestratore — riconciliazione finito sessione B5.5E-1
 1cbd4d1 fix(export): B5.5E-1 JPG export default maximum quality 3x
 93b56c1 docs: orchestratore — riconciliazione finito sessione B5.5E
-252ae5a feat(export): B5.5E JPG export supersampling 1x/2x/3x
-ff017af docs: orchestratore — riconciliazione finito sessione B5.5B-1 PASS operatore
-617ba96 docs(memory): register B5.5B-1 PASS operatore post-deploy VPS
 
 git status --short
 (clean)
 
 git rev-parse HEAD
-1cbd4d1199ea7c2015420f87d847c52369cb1a1d
+25555c27e02a2f01e7a0c429c17e8616ac3dc05b
 
 git rev-parse origin/main
-1cbd4d1199ea7c2015420f87d847c52369cb1a1d
+25555c27e02a2f01e7a0c429c17e8616ac3dc05b
 
 git branch --show-current
 main
 
 git show --stat HEAD
- coordinate_converter Claude.html        | 6 +++---
- docs/OPERATING_MEMORY.md                | 3 ++-
- docs/work-units/WU-0005-0009-roadmap.md | 4 +++-
- 3 files changed, 8 insertions(+), 5 deletions(-)
+ coordinate_converter Claude.html        | 67 +++------------------------------
+ docs/OPERATING_MEMORY.md                |  3 +-
+ docs/work-units/WU-0005-0009-roadmap.md |  4 +-
+ 3 files changed, 10 insertions(+), 64 deletions(-)
 
 git ls-remote origin main
-1cbd4d1199ea7c2015420f87d847c52369cb1a1d	refs/heads/main
+25555c27e02a2f01e7a0c429c17e8616ac3dc05b	refs/heads/main
 ```
 
 ## HISTORY
 
-* 252ae5a — B5.5E JPG supersampling; orchestratore 93b56c1; deploy pending at time of B5.5E-1
+* 1cbd4d1 — B5.5E-1 default 3x; deploy VPS byte-match 2158230; QA parziale radio 3x
+* 252ae5a — B5.5E JPG supersampling
 * 6524183 — B5.5B-1 overlay style fidelity PASS operatore
-* e6b28db — B5.5B JPG export overlays
