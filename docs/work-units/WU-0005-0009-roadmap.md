@@ -1321,7 +1321,9 @@ Stesso schema di B3.
 
 **B5.5Z-DELTA-A1 export alto-zoom segmentato tile-only (2026-06-22):** PASS tecnico statico + review byte-level PASS + fix memoria deterministico PASS + **PASS operatore post-deploy VPS** — runtime **`1099655`**; HEAD/deploy **`e15e772`**; deploy GIS-only; `goi-gis-app` **active** su `100.114.7.53:8000`; proxy/Planet-Clone **non toccati**; smoke **`200`**, byte-match **`2228069`**; SHA-256 **`263ef4603a6ea1053f696631787901dc5b48145b0363b1d464c10e0832bab386**; QA `:8000?v=1099655`; select zoom fino a `layer.maxZoom`; entro-cap B5.5Z-3 invariato; oltre-cap segmenti tile-only sequenziali; stima tile/immagini/egress; soglia alta + hard-stop; download sequenziale; cleanup deterministico; Mappe Offline **PASS**; attestazione «QA B5.5Z-DELTA-A1 PASS operatore». **B5.5Z-DELTA-A1 CLOSED / PASS end-to-end.**
 
-**B5.5Z export JPG rapido zoom reale — catena FIX0→1→2A→3→DELTA-A1 (2026-06-22):** **CLOSED / PASS end-to-end.** **`APP_BUILD_ID` ancora `B5.5D`.** Backlog opzionale: overlay geografici su segmenti oltre-cap. **Prossimo candidato:** decisione e aggiornamento `APP_BUILD_ID`.
+**B5.5Z export JPG rapido zoom reale — catena FIX0→1→2A→3→DELTA-A1 (2026-06-22):** **CLOSED / PASS end-to-end.** Backlog opzionale: overlay geografici su segmenti oltre-cap.
+
+**B5.5Z-BUILD label runtime visibile (2026-06-22):** PASS tecnico statico — `APP_BUILD_ID` **`B5.5D` → `B5.5Z`**; footer/about/detail allineati; solo identificativo (5 righe); nessun cambiamento funzionale; `node --check` OK; deploy VPS + smoke label **pending**.
 
 **B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico remoto + deploy VPS + **PASS operatore** — runtime **`25555c2`**; HEAD/deploy **`2d505af`**; smoke **`200`**, byte-match **`2155320`**; build **`B5.5E-2`**; selettore rimosso; qualità richiesta sempre **3×** (`JPG_EXPORT_REQUESTED_SCALE`); downgrade automatico interno cap 8192 preservato; tile raster interpolate = atteso; QA `:8000?v=25555c2`; attestazione «QA B5.5E-2 PASS operatore». **Catena B5.5E chiusa.**
 
@@ -1491,7 +1493,7 @@ Decidere fuori dal repo GIS:
 
 **Prossimo candidato operativo** coerente con la roadmap:
 
-- **Decisione e aggiornamento `APP_BUILD_ID`** — label build ancora ferma a **`B5.5D`** nonostante catena B5.5Z chiusa; blocco separato docs/runtime;
+- **Deploy VPS GIS-only + smoke label build `B5.5Z`** — post-commit runtime B5.5Z-BUILD;
 - **B5.5Z backlog opzionale:** overlay geografici su segmenti oltre-cap (non bloccante);
 - **WU-0009A B0-B4 — proxy readiness in Planet-Clone**, separato/sensibile;
 - **Mappe offline UX** (matrice dipendenze), alternativa leggera non-proxy.
