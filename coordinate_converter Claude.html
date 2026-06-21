@@ -2664,6 +2664,25 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .jpg-export-dialog-actions{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
+.jpg-export-quick-estimate{
+  margin-top:4px; padding-top:8px; border-top:1px dashed var(--border);
+}
+.jpg-export-quick-estimate-body{
+  white-space:pre-line; margin:0 0 6px; font-size:.82rem;
+}
+.jpg-export-quick-seg-nooverlay{
+  margin:-6px 0 10px; font-size:.82rem; font-style:italic;
+}
+.jpg-export-quick-seg-progress{
+  margin:0 0 12px; padding:10px 12px;
+  border:1px solid var(--border); border-radius:var(--radius-control);
+  background:color-mix(in srgb, var(--panel2) 40%, transparent);
+}
+.jpg-export-quick-high-confirm{
+  margin:0 0 12px; padding:10px 12px;
+  border:1px solid color-mix(in srgb, var(--warn) 45%, var(--border));
+  border-radius:var(--radius-control);
+}
 
 
 /* =====================================================================
@@ -9930,6 +9949,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span data-i18n="export.jpg.quickZoom">Zoom export</span>
         <select id="jpgExportQuickZoom"></select>
       </label>
+      <div id="jpgExportQuickEstimate" class="jpg-export-quick-estimate" hidden>
+        <p id="jpgExportQuickEstimateBody" class="hint jpg-export-quick-estimate-body"></p>
+        <p id="jpgExportQuickSegWarn" class="hint geo-warn" hidden data-i18n="export.jpg.quickSegWarn">Export segmentato: più immagini numerate da riassemblare.</p>
+      </div>
+    </div>
+    <p id="jpgExportQuickSegNoOverlay" class="hint jpg-export-quick-seg-nooverlay" hidden data-i18n="export.jpg.quickSegNoOverlay">Non disponibili nell'export segmentato solo tile.</p>
+    <div id="jpgExportQuickSegProgress" class="jpg-export-quick-seg-progress" hidden role="status" aria-live="polite">
+      <p id="jpgExportQuickSegProgressText" class="hint"></p>
+      <button type="button" class="btn btn-primary" id="jpgExportQuickSegDownload" hidden data-i18n="export.jpg.quickSegDownloadContinue">Scarica segmento e continua</button>
+    </div>
+    <div id="jpgExportQuickHighConfirm" class="jpg-export-quick-high-confirm" hidden role="region" aria-labelledby="jpgExportQuickHighConfirmBody">
+      <p id="jpgExportQuickHighConfirmBody" class="hint geo-warn"></p>
+      <button type="button" class="btn btn-danger-subtle" id="jpgExportQuickHighConfirmOk" data-i18n="export.jpg.quickEgressHighConfirm">Conferma export ad alto volume</button>
     </div>
     <label class="jpg-export-scale-opt">
       <input type="checkbox" id="jpgExportIncludeScale">
@@ -12044,6 +12076,23 @@ const I18N = {
     "export.jpg.coordsSourceUnavailable":"Sorgente coordinate non disponibile.",
     "export.jpg.coordsWaypointUnavailable":"Waypoint non disponibile o non più valido.",
     "export.jpg.coordsFormatUnavailable":"Formato coordinate non disponibile per questo punto.",
+    "export.jpg.quickEstVirtualDims":"Dimensioni virtuali totali: {0} × {1} px",
+    "export.jpg.quickEstTileCount":"Tile sorgente totali: {0}",
+    "export.jpg.quickEstImageCount":"Immagini finali: {0}",
+    "export.jpg.quickEstNetOnline":"fino a {0} richieste tile di rete",
+    "export.jpg.quickEstNetForceOffline":"0 richieste di rete — solo cache",
+    "export.jpg.quickSegWarn":"Export segmentato: più immagini numerate da riassemblare.",
+    "export.jpg.quickSegNoOverlay":"Non disponibili nell'export segmentato solo tile.",
+    "export.jpg.quickEgressHardStop":"Export bloccato: {0} tile e {1} immagini superano i limiti massimi ({2} tile / {3} immagini). Riduci zoom o area.",
+    "export.jpg.quickEgressHighBody":"Export ad alto volume: {0} tile, {1} immagini, fino a {2} richieste tile di rete. Conferma per procedere.",
+    "export.jpg.quickEgressHighConfirm":"Conferma export ad alto volume",
+    "export.jpg.quickSegDownloadContinue":"Scarica segmento e continua",
+    "export.jpg.quickSegTileProgress":"Segmento {0}/{1} (r{2}c{3}) · tile {4}/{5} · totale {6}/{7}",
+    "export.jpg.quickSegAwaitDownload":"Segmento {0}/{1} (r{2}c{3}) pronto — scarica per continuare.",
+    "export.jpg.quickSegComplete":"Export segmentato completato ({0} immagini).",
+    "export.jpg.quickSegCancelled":"Export segmentato annullato.",
+    "export.jpg.quickSegFail":"Export segmentato non riuscito.",
+    "export.jpg.quickSegPartial":"Segmento salvato; {0} tile mancanti nel segmento.",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
     "offcache.exportJpg":"Esporta JPG offline",
@@ -13613,6 +13662,23 @@ const I18N = {
     "export.jpg.coordsSourceUnavailable":"Coordinate source unavailable.",
     "export.jpg.coordsWaypointUnavailable":"Waypoint unavailable or no longer valid.",
     "export.jpg.coordsFormatUnavailable":"Coordinate format unavailable for this point.",
+    "export.jpg.quickEstVirtualDims":"Total virtual size: {0} × {1} px",
+    "export.jpg.quickEstTileCount":"Total source tiles: {0}",
+    "export.jpg.quickEstImageCount":"Final images: {0}",
+    "export.jpg.quickEstNetOnline":"up to {0} tile network requests",
+    "export.jpg.quickEstNetForceOffline":"0 network requests — cache only",
+    "export.jpg.quickSegWarn":"Segmented export: multiple numbered images to reassemble.",
+    "export.jpg.quickSegNoOverlay":"Not available in tile-only segmented export.",
+    "export.jpg.quickEgressHardStop":"Export blocked: {0} tiles and {1} images exceed maximum limits ({2} tiles / {3} images). Lower zoom or area.",
+    "export.jpg.quickEgressHighBody":"High-volume export: {0} tiles, {1} images, up to {2} tile network requests. Confirm to proceed.",
+    "export.jpg.quickEgressHighConfirm":"Confirm high-volume export",
+    "export.jpg.quickSegDownloadContinue":"Download segment and continue",
+    "export.jpg.quickSegTileProgress":"Segment {0}/{1} (r{2}c{3}) · tiles {4}/{5} · total {6}/{7}",
+    "export.jpg.quickSegAwaitDownload":"Segment {0}/{1} (r{2}c{3}) ready — download to continue.",
+    "export.jpg.quickSegComplete":"Segmented export completed ({0} images).",
+    "export.jpg.quickSegCancelled":"Segmented export cancelled.",
+    "export.jpg.quickSegFail":"Segmented export failed.",
+    "export.jpg.quickSegPartial":"Segment saved; {0} tiles missing in segment.",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
     "offcache.exportJpg":"Export offline JPG",
@@ -15183,6 +15249,23 @@ const I18N = {
     "export.jpg.coordsSourceUnavailable":"Source de coordonnées indisponible.",
     "export.jpg.coordsWaypointUnavailable":"Point de repère indisponible ou plus valide.",
     "export.jpg.coordsFormatUnavailable":"Format de coordonnées indisponible pour ce point.",
+    "export.jpg.quickEstVirtualDims":"Dimensions virtuelles totales : {0} × {1} px",
+    "export.jpg.quickEstTileCount":"Tuiles source totales : {0}",
+    "export.jpg.quickEstImageCount":"Images finales : {0}",
+    "export.jpg.quickEstNetOnline":"jusqu'à {0} requêtes tuiles réseau",
+    "export.jpg.quickEstNetForceOffline":"0 requête réseau — cache uniquement",
+    "export.jpg.quickSegWarn":"Export segmenté : plusieurs images numérotées à réassembler.",
+    "export.jpg.quickSegNoOverlay":"Non disponibles dans l'export segmenté tuiles seules.",
+    "export.jpg.quickEgressHardStop":"Export bloqué : {0} tuiles et {1} images dépassent les limites ({2} tuiles / {3} images). Baissez le zoom ou la zone.",
+    "export.jpg.quickEgressHighBody":"Export à haut volume : {0} tuiles, {1} images, jusqu'à {2} requêtes tuiles réseau. Confirmez pour continuer.",
+    "export.jpg.quickEgressHighConfirm":"Confirmer l'export à haut volume",
+    "export.jpg.quickSegDownloadContinue":"Télécharger le segment et continuer",
+    "export.jpg.quickSegTileProgress":"Segment {0}/{1} (r{2}c{3}) · tuiles {4}/{5} · total {6}/{7}",
+    "export.jpg.quickSegAwaitDownload":"Segment {0}/{1} (r{2}c{3}) prêt — téléchargez pour continuer.",
+    "export.jpg.quickSegComplete":"Export segmenté terminé ({0} images).",
+    "export.jpg.quickSegCancelled":"Export segmenté annulé.",
+    "export.jpg.quickSegFail":"Échec de l'export segmenté.",
+    "export.jpg.quickSegPartial":"Segment enregistré ; {0} tuiles manquantes dans le segment.",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
     "offcache.exportJpg":"Exporter JPG hors ligne",
@@ -20135,6 +20218,16 @@ let _jpgExportCoords = {
 };
 let _jpgQuickExportSnapshot = null;
 let _jpgQuickExportBusy = false;
+let _jpgQuickSegmentJob = null;
+let _jpgQuickExportSegMode = false;
+let _jpgQuickExportToggleBackup = null;
+let _jpgQuickExportPendingOptions = null;
+const QUICK_EXPORT_SEG_MAX_SIDE = 32;
+const QUICK_EXPORT_SEG_MAX_TILES_AREA = 512;
+const QUICK_EXPORT_EGRESS_TILE_NORMAL = 5760;
+const QUICK_EXPORT_EGRESS_IMAGE_NORMAL = 10;
+const QUICK_EXPORT_EGRESS_TILE_HARD = 23040;
+const QUICK_EXPORT_EGRESS_IMAGE_HARD = 64;
 const JPG_EXPORT_COORDS_MGRS_PRECISION = 5;
 
 function jpgExportIsValidLatLon(lat, lon){
@@ -20360,6 +20453,171 @@ function jpgExportReadQuickZoom(){
   return Number.isFinite(z) ? z : null;
 }
 
+function jpgExportHideHighEgressConfirm(){
+  const wrap = document.getElementById("jpgExportQuickHighConfirm");
+  if (wrap) wrap.hidden = true;
+  _jpgQuickExportPendingOptions = null;
+}
+
+function jpgExportShowHighEgressConfirm(jobPlan, pendingOptions){
+  const wrap = document.getElementById("jpgExportQuickHighConfirm");
+  const body = document.getElementById("jpgExportQuickHighConfirmBody");
+  if (!wrap || !body || !jobPlan || !jobPlan.plan) return;
+  _jpgQuickExportPendingOptions = pendingOptions || null;
+  const netReq = (state.forceOffline || !isEffectivelyOnline()) ? 0 : jobPlan.maxNetRequests;
+  body.textContent = String(t("export.jpg.quickEgressHighBody"))
+    .replace("{0}", String(jobPlan.plan.tileCount))
+    .replace("{1}", String(jobPlan.plan.imageCount))
+    .replace("{2}", String(netReq));
+  wrap.hidden = false;
+}
+
+function jpgExportShowSegProgressUi(show){
+  const wrap = document.getElementById("jpgExportQuickSegProgress");
+  const dlBtn = document.getElementById("jpgExportQuickSegDownload");
+  if (wrap) wrap.hidden = !show;
+  if (!show && dlBtn) dlBtn.hidden = true;
+}
+
+function jpgExportShowSegDownloadButton(show){
+  const dlBtn = document.getElementById("jpgExportQuickSegDownload");
+  if (dlBtn) dlBtn.hidden = !show;
+}
+
+function jpgExportUpdateSegProgressText(text){
+  const el = document.getElementById("jpgExportQuickSegProgressText");
+  if (el) el.textContent = text || "";
+}
+
+function jpgExportFormatQuickEstimate(jobPlan){
+  if (!jobPlan || !jobPlan.ok || !jobPlan.plan) return "";
+  const p = jobPlan.plan;
+  const lines = [
+    String(t("export.jpg.quickEstVirtualDims")).replace("{0}", String(p.virtualWidthPx)).replace("{1}", String(p.virtualHeightPx)),
+    String(t("export.jpg.quickEstTileCount")).replace("{0}", String(p.tileCount)),
+    String(t("export.jpg.quickEstImageCount")).replace("{0}", String(p.imageCount)),
+    (state.forceOffline || !isEffectivelyOnline())
+      ? t("export.jpg.quickEstNetForceOffline")
+      : String(t("export.jpg.quickEstNetOnline")).replace("{0}", String(jobPlan.maxNetRequests))
+  ];
+  return lines.join("\n");
+}
+
+function jpgExportSetSegmentedUiMode(isSegmented){
+  const noOv = document.getElementById("jpgExportQuickSegNoOverlay");
+  const scaleIds = ["jpgExportIncludeScale", "jpgExportIncludeOverlays", "jpgExportIncludeCoords",
+    "jpgExportCoordsSource", "jpgExportCoordsWaypoint", "jpgExportCoordsFormat",
+    "jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels",
+    "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+  if (isSegmented && !_jpgQuickExportSegMode){
+    _jpgQuickExportToggleBackup = {
+      includeScale: !!(document.getElementById("jpgExportIncludeScale") && document.getElementById("jpgExportIncludeScale").checked),
+      includeOverlays: !!(document.getElementById("jpgExportIncludeOverlays") && document.getElementById("jpgExportIncludeOverlays").checked),
+      coords: jpgExportReadCoordsFromUi(),
+      overlays: jpgExportReadOverlayGranularFromUi()
+    };
+    for (const id of scaleIds){
+      const el = document.getElementById(id);
+      if (el) el.disabled = true;
+    }
+    if (noOv) noOv.hidden = false;
+    _jpgQuickExportSegMode = true;
+    jpgExportSyncOverlaySubUi();
+    jpgExportSyncCoordsSubUi();
+    return;
+  }
+  if (!isSegmented && _jpgQuickExportSegMode){
+    const bak = _jpgQuickExportToggleBackup;
+    if (bak){
+      const sc = document.getElementById("jpgExportIncludeScale");
+      const ov = document.getElementById("jpgExportIncludeOverlays");
+      if (sc) sc.checked = !!bak.includeScale;
+      if (ov) ov.checked = !!bak.includeOverlays;
+      jpgExportApplyOverlayGranularToUi(bak.overlays);
+      jpgExportApplyCoordsToUi(bak.coords);
+      _jpgQuickExportToggleBackup = null;
+    }
+    _jpgQuickExportSegMode = false;
+    if (noOv) noOv.hidden = true;
+    if (!_jpgQuickExportBusy){
+      for (const id of scaleIds){
+        const el = document.getElementById(id);
+        if (el) el.disabled = false;
+      }
+      jpgExportSyncOverlaySubUi();
+      jpgExportSyncCoordsSubUi();
+    }
+  }
+}
+
+function jpgExportUpdateQuickEstimate(){
+  const estWrap = document.getElementById("jpgExportQuickEstimate");
+  const estBody = document.getElementById("jpgExportQuickEstimateBody");
+  const segWarn = document.getElementById("jpgExportQuickSegWarn");
+  const snap = _jpgQuickExportSnapshot;
+  const z = jpgExportReadQuickZoom();
+  if (!estWrap || !estBody || !snap || !snap.ok || z == null){
+    if (estWrap) estWrap.hidden = true;
+    if (segWarn) segWarn.hidden = true;
+    jpgExportSetSegmentedUiMode(false);
+    return;
+  }
+  const jobPlan = buildQuickExportJobPlan(snap.bbox, z);
+  if (!jobPlan.ok){
+    estWrap.hidden = true;
+    if (segWarn) segWarn.hidden = true;
+    jpgExportSetSegmentedUiMode(false);
+    return;
+  }
+  estBody.textContent = jpgExportFormatQuickEstimate(jobPlan);
+  estWrap.hidden = false;
+  if (segWarn) segWarn.hidden = !jobPlan.plan.segmented;
+  jpgExportSetSegmentedUiMode(!!jobPlan.plan.segmented);
+  if (jobPlan.egressLevel === "hard"){
+    jpgExportShowDialogMsg(String(t("export.jpg.quickEgressHardStop"))
+      .replace("{0}", String(jobPlan.plan.tileCount))
+      .replace("{1}", String(jobPlan.plan.imageCount))
+      .replace("{2}", String(QUICK_EXPORT_EGRESS_TILE_HARD))
+      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)));
+    jpgExportSetConfirmEnabled(false);
+  } else {
+    if (!_jpgQuickExportBusy) jpgExportClearDialogMsg();
+    if (!_jpgQuickExportBusy) jpgExportSetConfirmEnabled(true);
+  }
+}
+
+function jpgQuickSegmentJobFreePending(job){
+  job = job || _jpgQuickSegmentJob;
+  if (!job) return;
+  if (job.pendingCanvas){
+    try { job.pendingCanvas.width = 0; job.pendingCanvas.height = 0; } catch(_){}
+    job.pendingCanvas = null;
+  }
+  job.pendingBlob = null;
+  job.pendingFilename = null;
+}
+
+function jpgExportCancelSegmentJob(){
+  const job = _jpgQuickSegmentJob;
+  if (!job) return;
+  job.cancelled = true;
+  jpgQuickSegmentJobFreePending(job);
+  _jpgQuickSegmentJob = null;
+  _exportJpgStrictOpConfirmed = false;
+  jpgExportShowSegProgressUi(false);
+  jpgExportShowSegDownloadButton(false);
+  jpgExportSetDialogBusy(false);
+  jpgExportShowDialogMsg(t("export.jpg.quickSegCancelled"));
+}
+
+function jpgExportCancelActiveJobOrClose(){
+  if (_jpgQuickSegmentJob || _jpgQuickExportBusy){
+    if (_jpgQuickSegmentJob) jpgExportCancelSegmentJob();
+    return;
+  }
+  closeJpgExportDialog();
+}
+
 function jpgExportSetDialogBusy(busy){
   _jpgQuickExportBusy = !!busy;
   const canConfirm = !busy && _jpgQuickExportSnapshot && _jpgQuickExportSnapshot.ok;
@@ -20368,13 +20626,18 @@ function jpgExportSetDialogBusy(busy){
     "jpgExportIncludeScale", "jpgExportIncludeOverlays", "jpgExportIncludeCoords",
     "jpgExportCoordsSource", "jpgExportCoordsWaypoint", "jpgExportCoordsFormat",
     "jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels",
-    "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+    "jpgExportOvPolygons", "jpgExportOvRangeRings", "jpgExportQuickHighConfirmOk"];
   for (const id of disableIds){
     const el = document.getElementById(id);
     if (el) el.disabled = !!busy;
   }
-  if (!busy) jpgExportSyncOverlaySubUi();
-  if (!busy) jpgExportSyncCoordsSubUi();
+  const cancelBtn = document.getElementById("jpgExportDialogCancel");
+  if (cancelBtn) cancelBtn.disabled = false;
+  if (!busy){
+    jpgExportUpdateQuickEstimate();
+  } else if (_jpgQuickExportSegMode){
+    jpgExportSetSegmentedUiMode(true);
+  }
 }
 
 function jpgExportApplyQuickSnapshotToDialog(){
@@ -20400,7 +20663,7 @@ function jpgExportApplyQuickSnapshotToDialog(){
     jpgExportSetConfirmEnabled(false);
     return;
   }
-  const zinfo = computeQuickExportZoomLevels(snap.bbox, snap.zoom, layer);
+  const zinfo = computeQuickExportZoomLevelsAll(snap.bbox, snap.zoom, layer);
   if (layerEl) layerEl.textContent = offlineNamedAreaLayerLabel(snap.layerId);
   if (!zinfo.levels.length || !zinfo.currentExportable){
     jpgExportPopulateQuickZoomSelect([], snap.zoom);
@@ -20408,12 +20671,16 @@ function jpgExportApplyQuickSnapshotToDialog(){
     const errKey = (zinfo.reason && t(zinfo.reason) !== zinfo.reason) ? zinfo.reason : "export.jpg.quickNoZoomLevels";
     jpgExportShowDialogMsg(t(errKey));
     jpgExportSetConfirmEnabled(false);
+    jpgExportUpdateQuickEstimate();
     return;
   }
   jpgExportPopulateQuickZoomSelect(zinfo.levels, snap.zoom);
   if (zoomSel) zoomSel.disabled = false;
+  jpgExportHideHighEgressConfirm();
+  jpgExportShowSegProgressUi(false);
   jpgExportClearDialogMsg();
   jpgExportSetConfirmEnabled(true);
+  jpgExportUpdateQuickEstimate();
 }
 
 function jpgExportNormalizeOverlayGranular(src){
@@ -20471,7 +20738,11 @@ function jpgExportSyncOverlaySubUi(){
 }
 
 function closeJpgExportDialog(){
-  if (_jpgQuickExportBusy) return;
+  if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
+  _jpgQuickExportSegMode = false;
+  _jpgQuickExportToggleBackup = null;
+  jpgExportHideHighEgressConfirm();
+  jpgExportShowSegProgressUi(false);
   const dlg = document.getElementById("jpgExportDialog");
   if (!dlg) return;
   try { dlg.close(); } catch(_){ dlg.removeAttribute("open"); }
@@ -20591,6 +20862,167 @@ function validateOfflineJpgExportSize(grid){
   return null;
 }
 
+function computeQuickExportBboxCrop(grid, bbox, zoom){
+  const sx = (lonToTileX(bbox.w, zoom) - grid.xMin) * 256;
+  const sy = (latToTileY(bbox.n, zoom) - grid.yMin) * 256;
+  const sw = (lonToTileX(bbox.e, zoom) - lonToTileX(bbox.w, zoom)) * 256;
+  const sh = (latToTileY(bbox.s, zoom) - latToTileY(bbox.n, zoom)) * 256;
+  const finalW = Math.max(1, Math.round(sw));
+  const finalH = Math.max(1, Math.round(sh));
+  return { sx, sy, sw, sh, finalW, finalH };
+}
+
+function buildQuickExportSubGrid(parentGrid, xStart, yStart, xEnd, yEnd){
+  const tiles = parentGrid.tiles.filter((T) => T.x >= xStart && T.x <= xEnd && T.y >= yStart && T.y <= yEnd);
+  const cols = xEnd - xStart + 1;
+  const rows = yEnd - yStart + 1;
+  return {
+    tiles,
+    xMin: xStart,
+    yMin: yStart,
+    xMax: xEnd,
+    yMax: yEnd,
+    cols,
+    rows,
+    widthPx: cols * 256,
+    heightPx: rows * 256,
+    tileCount: tiles.length,
+    cap: parentGrid.cap
+  };
+}
+
+function computeQuickExportSegmentCrop(fullGrid, sc, sr, best, fullCrop){
+  const tileOffsetX = sc * best.segCols * 256;
+  const tileOffsetY = sr * best.segRows * 256;
+  const xStart = fullGrid.xMin + sc * best.segCols;
+  const yStart = fullGrid.yMin + sr * best.segRows;
+  const xEnd = Math.min(fullGrid.xMax, xStart + best.segCols - 1);
+  const yEnd = Math.min(fullGrid.yMax, yStart + best.segRows - 1);
+  const segTileW = (xEnd - xStart + 1) * 256;
+  const segTileH = (yEnd - yStart + 1) * 256;
+  const sx0 = fullCrop.sx;
+  const sy0 = fullCrop.sy;
+  const sw0 = fullCrop.sw;
+  const sh0 = fullCrop.sh;
+  const cropX = Math.max(0, sx0 - tileOffsetX);
+  const cropY = Math.max(0, sy0 - tileOffsetY);
+  const cropRight = Math.min(segTileW, sx0 + sw0 - tileOffsetX);
+  const cropBottom = Math.min(segTileH, sy0 + sh0 - tileOffsetY);
+  const finalW = Math.max(1, Math.round(cropRight - cropX));
+  const finalH = Math.max(1, Math.round(cropBottom - cropY));
+  return { sx: cropX, sy: cropY, sw: cropRight - cropX, sh: cropBottom - cropY, finalW, finalH };
+}
+
+/** Segment plan for quick export: tile-aligned sub-grids, bbox crop on outer edges (B5.5Z-DELTA-A1). */
+function computeQuickExportSegmentPlan(grid, bbox, zoom){
+  if (!grid || !grid.cols || !grid.rows || !grid.tileCount || !bbox) return null;
+  const cols = grid.cols;
+  const rows = grid.rows;
+  const fullCrop = computeQuickExportBboxCrop(grid, bbox, zoom);
+  const sizeErr = validateOfflineJpgExportSize(grid);
+  if (!sizeErr){
+    return {
+      segmented: false,
+      segCols: cols,
+      segRows: rows,
+      imageCount: 1,
+      tileCount: grid.tileCount,
+      virtualWidthPx: fullCrop.finalW,
+      virtualHeightPx: fullCrop.finalH,
+      imgCols: 1,
+      imgRows: 1,
+      segments: [{
+        index: 1,
+        row: 1,
+        col: 1,
+        gridRow: 0,
+        gridCol: 0,
+        subGrid: grid,
+        crop: fullCrop
+      }]
+    };
+  }
+  let best = null;
+  for (let segCols = 1; segCols <= Math.min(QUICK_EXPORT_SEG_MAX_SIDE, cols); segCols++){
+    for (let segRows = 1; segRows <= Math.min(QUICK_EXPORT_SEG_MAX_SIDE, rows); segRows++){
+      if (segCols * segRows > QUICK_EXPORT_SEG_MAX_TILES_AREA) continue;
+      const imgCols = Math.ceil(cols / segCols);
+      const imgRows = Math.ceil(rows / segRows);
+      const imageCount = imgCols * imgRows;
+      const candidate = { segCols, segRows, imgCols, imgRows, imageCount };
+      if (!best || candidate.imageCount < best.imageCount ||
+          (candidate.imageCount === best.imageCount && segCols * segRows < best.segCols * best.segRows)){
+        best = candidate;
+      }
+    }
+  }
+  if (!best) return null;
+  const segments = [];
+  let idx = 0;
+  for (let sr = 0; sr < best.imgRows; sr++){
+    for (let sc = 0; sc < best.imgCols; sc++){
+      const xStart = grid.xMin + sc * best.segCols;
+      const yStart = grid.yMin + sr * best.segRows;
+      const xEnd = Math.min(grid.xMax, xStart + best.segCols - 1);
+      const yEnd = Math.min(grid.yMax, yStart + best.segRows - 1);
+      const subGrid = buildQuickExportSubGrid(grid, xStart, yStart, xEnd, yEnd);
+      const segCrop = computeQuickExportSegmentCrop(grid, sc, sr, best, fullCrop);
+      idx++;
+      segments.push({
+        index: idx,
+        row: sr + 1,
+        col: sc + 1,
+        gridRow: sr,
+        gridCol: sc,
+        subGrid,
+        crop: segCrop
+      });
+    }
+  }
+  return {
+    segmented: true,
+    segCols: best.segCols,
+    segRows: best.segRows,
+    imageCount: segments.length,
+    tileCount: grid.tileCount,
+    virtualWidthPx: fullCrop.finalW,
+    virtualHeightPx: fullCrop.finalH,
+    imgCols: best.imgCols,
+    imgRows: best.imgRows,
+    segments
+  };
+}
+
+function classifyQuickExportEgress(tileCount, imageCount){
+  if (tileCount > QUICK_EXPORT_EGRESS_TILE_HARD || imageCount > QUICK_EXPORT_EGRESS_IMAGE_HARD) return "hard";
+  if (tileCount > QUICK_EXPORT_EGRESS_TILE_NORMAL || imageCount > QUICK_EXPORT_EGRESS_IMAGE_NORMAL) return "high";
+  return "normal";
+}
+
+function buildQuickExportJobPlan(bbox, zoom){
+  if (!bbox || !Number.isFinite(zoom)) return { ok: false, reason: "invalid_input" };
+  let grid;
+  try {
+    grid = computeOfflineJpgGrid(bbox.n, bbox.s, bbox.e, bbox.w, zoom);
+  } catch(_){
+    return { ok: false, reason: "grid_error" };
+  }
+  if (!grid || !grid.tileCount) return { ok: false, reason: "export.offlineJpg.noTiles" };
+  const plan = computeQuickExportSegmentPlan(grid, bbox, zoom);
+  if (!plan) return { ok: false, reason: "export.offlineJpg.tooLarge" };
+  const egressLevel = classifyQuickExportEgress(plan.tileCount, plan.imageCount);
+  const maxNetRequests = plan.tileCount;
+  return { ok: true, grid, plan, egressLevel, maxNetRequests };
+}
+
+function quickExportSegmentFilename(base, z, row, col, totalRows, totalCols){
+  const padR = Math.max(1, String(totalRows).length);
+  const padC = Math.max(1, String(totalCols).length);
+  const r = String(row).padStart(padR, "0");
+  const c = String(col).padStart(padC, "0");
+  return exportPrefixedDownloadFilename(`${base}_z${z}_r${r}c${c}.jpg`);
+}
+
 /** Read-only snapshot of the visible map viewport for quick JPG export (B5.5Z). No state/DOM mutation, no fetch. */
 function getQuickExportViewportSnapshot(){
   const root = document.getElementById("miniMap");
@@ -20648,6 +21080,48 @@ function getQuickExportViewportSnapshot(){
     layerId,
     widthPx,
     heightPx
+  };
+}
+
+/** Pure helper: all integer zoom levels from currentZoom up to layer max (B5.5Z-DELTA-A1). */
+function computeQuickExportZoomLevelsAll(bbox, currentZoom, layer){
+  const fail = (reason) => ({
+    levels: [],
+    currentExportable: false,
+    maxZoom: null,
+    reason: reason || "invalid_input"
+  });
+
+  if (!bbox || typeof bbox !== "object") return fail("invalid_bbox");
+  const n = bbox.n, s = bbox.s, e = bbox.e, w = bbox.w;
+  if (![n, s, e, w].every(Number.isFinite)) return fail("invalid_bbox");
+  if (!(n > s && e > w)) return fail("invalid_bbox");
+
+  if (!Number.isFinite(currentZoom)) return fail("invalid_zoom");
+  const zStart = currentZoom | 0;
+  if (zStart !== currentZoom || zStart < 2) return fail("invalid_zoom");
+
+  if (!layer || typeof layer !== "object") return fail("invalid_layer");
+
+  const maxLayerZ = offlineLayerMaxZoom(layer);
+  const levels = [];
+  for (let z = zStart; z <= maxLayerZ; z++) levels.push(z);
+
+  let currentExportable = false;
+  try {
+    const grid0 = computeOfflineJpgGrid(n, s, e, w, zStart);
+    currentExportable = !!(grid0 && grid0.tileCount);
+  } catch(_){}
+
+  if (!levels.length){
+    return fail("export.offlineJpg.noTiles");
+  }
+
+  return {
+    levels: levels.slice(),
+    currentExportable,
+    maxZoom: maxLayerZ,
+    reason: currentExportable ? "" : "export.offlineJpg.noTiles"
   };
 }
 
@@ -20733,9 +21207,181 @@ function validateQuickExportCropSize(w, h){
   return null;
 }
 
+async function exportQuickViewportSegmentedJob(ctx){
+  if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
+  const jobPlan = ctx.plan;
+  const layerId = ctx.layerId;
+  const consent = await confirmOfflineJpgTileExportConsent(layerId);
+  if (!consent.ok){
+    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"));
+    return;
+  }
+  jpgExportHideHighEgressConfirm();
+  _jpgQuickSegmentJob = {
+    cancelled: false,
+    segmentIndex: 0,
+    jobPlan,
+    snap: ctx.snap,
+    z: ctx.z,
+    layerId,
+    layer: ctx.layer,
+    baseName: `gis-map-${formatJpgExportTimestamp(new Date())}`,
+    fromCacheTotal: 0,
+    fromNetworkTotal: 0
+  };
+  jpgExportSetDialogBusy(true);
+  jpgExportShowSegProgressUi(true);
+  jpgExportClearDialogMsg();
+  await jpgQuickSegmentJobRenderNext();
+}
+
+function jpgQuickSegmentJobUpdateProgress(job, seg, segDone, segTotal){
+  const segs = job.jobPlan.plan.segments;
+  const segIdx = job.segmentIndex + 1;
+  const tilesBefore = segs.slice(0, job.segmentIndex).reduce((n, s) => n + s.subGrid.tileCount, 0);
+  const globalDone = tilesBefore + (segDone || 0);
+  const globalTotal = job.jobPlan.plan.tileCount;
+  jpgExportUpdateSegProgressText(String(t("export.jpg.quickSegTileProgress"))
+    .replace("{0}", String(segIdx))
+    .replace("{1}", String(segs.length))
+    .replace("{2}", String(seg.row))
+    .replace("{3}", String(seg.col))
+    .replace("{4}", String(segDone || 0))
+    .replace("{5}", String(segTotal || seg.subGrid.tileCount))
+    .replace("{6}", String(globalDone))
+    .replace("{7}", String(globalTotal)));
+}
+
+async function jpgQuickSegmentJobRenderNext(){
+  const job = _jpgQuickSegmentJob;
+  if (!job || job.cancelled) return;
+  const segs = job.jobPlan.plan.segments;
+  if (job.segmentIndex >= segs.length){
+    jpgQuickSegmentJobComplete();
+    return;
+  }
+  const seg = segs[job.segmentIndex];
+  jpgExportShowSegDownloadButton(false);
+  jpgQuickSegmentJobUpdateProgress(job, seg, 0, seg.subGrid.tileCount);
+  let mosaicCanvas = null;
+  let finalCanvas = null;
+  let finalTransferred = false;
+  try {
+    const mosaic = await renderGeographicJpgMosaic({
+      grid: seg.subGrid,
+      layerId: job.layerId,
+      layer: job.layer,
+      onProgress: ({ done, tileCount }) => {
+        if (job.cancelled) return;
+        jpgQuickSegmentJobUpdateProgress(job, seg, done, tileCount);
+      }
+    });
+    mosaicCanvas = (mosaic && mosaic.canvas) || null;
+    if (job.cancelled) return;
+    if (!mosaic || !mosaic.ctx) throw new Error("quickJpg segment mosaic failed");
+    const crop = seg.crop;
+    const cropErr = validateQuickExportCropSize(crop.finalW, crop.finalH);
+    if (cropErr) throw new Error(cropErr);
+    finalCanvas = document.createElement("canvas");
+    finalCanvas.width = crop.finalW;
+    finalCanvas.height = crop.finalH;
+    const fctx = finalCanvas.getContext("2d");
+    if (!fctx) throw new Error("quickJpg segment canvas ctx failed");
+    fctx.drawImage(mosaicCanvas, crop.sx, crop.sy, crop.sw, crop.sh, 0, 0, crop.finalW, crop.finalH);
+    if (mosaicCanvas){ try { mosaicCanvas.width = 0; mosaicCanvas.height = 0; } catch(_){} mosaicCanvas = null; }
+    const blob = await new Promise((resolve, reject) => {
+      try {
+        finalCanvas.toBlob((b) => b ? resolve(b) : reject(new Error("toBlob null")), "image/jpeg", 0.92);
+      } catch(err){ reject(err); }
+    });
+    if (job.cancelled) return;
+    job.pendingCanvas = finalCanvas;
+    finalTransferred = true;
+    job.pendingBlob = blob;
+    job.pendingFilename = quickExportSegmentFilename(
+      job.baseName, job.z, seg.row, seg.col, job.jobPlan.plan.imgRows, job.jobPlan.plan.imgCols
+    );
+    job.lastMissing = mosaic.missing || 0;
+    job.fromCacheTotal += mosaic.fromCache || 0;
+    job.fromNetworkTotal += mosaic.fromNetwork || 0;
+    jpgExportUpdateSegProgressText(String(t("export.jpg.quickSegAwaitDownload"))
+      .replace("{0}", String(job.segmentIndex + 1))
+      .replace("{1}", String(segs.length))
+      .replace("{2}", String(seg.row))
+      .replace("{3}", String(seg.col)));
+    jpgExportShowSegDownloadButton(true);
+  } catch(err){
+    jpgQuickSegmentJobFail(err);
+  } finally {
+    if (mosaicCanvas){ try { mosaicCanvas.width = 0; mosaicCanvas.height = 0; } catch(_){} mosaicCanvas = null; }
+    if (finalCanvas && !finalTransferred){ try { finalCanvas.width = 0; finalCanvas.height = 0; } catch(_){} finalCanvas = null; }
+  }
+}
+
+function jpgQuickSegmentJobOnDownloadClick(){
+  const job = _jpgQuickSegmentJob;
+  if (!job || !job.pendingBlob || job.cancelled) return;
+  const url = URL.createObjectURL(job.pendingBlob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = job.pendingFilename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    try { document.body.removeChild(a); } catch(_){}
+    URL.revokeObjectURL(url);
+  }, 100);
+  if (job.lastMissing > 0){
+    jpgExportShowDialogMsg(String(t("export.jpg.quickSegPartial")).replace("{0}", String(job.lastMissing)));
+  }
+  jpgQuickSegmentJobFreePending(job);
+  job.segmentIndex++;
+  if (job.segmentIndex >= job.jobPlan.plan.segments.length){
+    jpgQuickSegmentJobComplete();
+    return;
+  }
+  void jpgQuickSegmentJobRenderNext();
+}
+
+function jpgQuickSegmentJobComplete(){
+  const job = _jpgQuickSegmentJob;
+  if (!job) return;
+  const n = job.jobPlan.plan.imageCount;
+  jpgQuickSegmentJobFreePending(job);
+  _jpgQuickSegmentJob = null;
+  jpgExportShowSegProgressUi(false);
+  jpgExportShowSegDownloadButton(false);
+  _exportJpgStrictOpConfirmed = false;
+  jpgExportSetDialogBusy(false);
+  let okMsg = String(t("export.jpg.quickSegComplete")).replace("{0}", String(n));
+  const layerLbl = offlineNamedAreaLayerLabel(job.layerId);
+  if (job.fromCacheTotal > 0 || job.fromNetworkTotal > 0){
+    okMsg += " · " + String(t("export.offlineJpg.sources"))
+      .replace("{0}", String(job.fromCacheTotal))
+      .replace("{1}", String(job.fromNetworkTotal))
+      .replace("{2}", layerLbl);
+  }
+  jpgExportShowDialogMsg(okMsg);
+  try { clearError(); } catch(_){}
+}
+
+function jpgQuickSegmentJobFail(err){
+  const job = _jpgQuickSegmentJob;
+  jpgQuickSegmentJobFreePending(job);
+  _jpgQuickSegmentJob = null;
+  jpgExportShowSegProgressUi(false);
+  jpgExportShowSegDownloadButton(false);
+  _exportJpgStrictOpConfirmed = false;
+  jpgExportSetDialogBusy(false);
+  const msg = String(err && (err.message || err) || "");
+  const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
+  jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.quickSegFail"));
+  try { showError(t(tainted ? "export.jpg.tainted" : "export.jpg.quickSegFail")); } catch(_){}
+}
+
 async function exportQuickViewportAsJpg(options){
   options = options || {};
-  if (_jpgQuickExportBusy) return;
+  if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
   const snap = _jpgQuickExportSnapshot;
   if (!snap || !snap.ok){
     jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
@@ -20759,12 +21405,27 @@ async function exportQuickViewportAsJpg(options){
     return;
   }
   const bbox = snap.bbox;
-  const grid = computeOfflineJpgGrid(bbox.n, bbox.s, bbox.e, bbox.w, z);
-  const sizeErr = validateOfflineJpgExportSize(grid);
-  if (sizeErr){
-    jpgExportShowDialogMsg(t(sizeErr));
+  const jobPlan = buildQuickExportJobPlan(bbox, z);
+  if (!jobPlan.ok){
+    jpgExportShowDialogMsg(t(jobPlan.reason || "export.offlineJpg.noTiles"));
     return;
   }
+  if (jobPlan.egressLevel === "hard"){
+    jpgExportShowDialogMsg(String(t("export.jpg.quickEgressHardStop"))
+      .replace("{0}", String(jobPlan.plan.tileCount))
+      .replace("{1}", String(jobPlan.plan.imageCount))
+      .replace("{2}", String(QUICK_EXPORT_EGRESS_TILE_HARD))
+      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)));
+    return;
+  }
+  if (jobPlan.plan.segmented){
+    if (jobPlan.egressLevel === "high" && !options.highEgressConfirmed){
+      jpgExportShowHighEgressConfirm(jobPlan, options);
+      return;
+    }
+    return exportQuickViewportSegmentedJob({ plan: jobPlan, snap, z, layerId, layer });
+  }
+  const grid = jobPlan.grid;
   const sx = (lonToTileX(bbox.w, z) - grid.xMin) * 256;
   const sy = (latToTileY(bbox.n, z) - grid.yMin) * 256;
   const sw = (lonToTileX(bbox.e, z) - lonToTileX(bbox.w, z)) * 256;
@@ -20781,6 +21442,7 @@ async function exportQuickViewportAsJpg(options){
     if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"));
     return;
   }
+  jpgExportHideHighEgressConfirm();
   const includeScale = !!options.includeScale;
   const includeOverlays = !!options.includeOverlays;
   const overlayGranular = jpgExportNormalizeOverlayGranular(options.overlays || _jpgExportOverlayGranular);
@@ -40044,25 +40706,52 @@ function bindUI(){
       jpgExportSyncOverlaySubUi();
     });
   }
-  if (jpgExportClose) jpgExportClose.addEventListener("click", closeJpgExportDialog);
-  if (jpgExportCancel) jpgExportCancel.addEventListener("click", closeJpgExportDialog);
+  const jpgExportQuickZoom = document.getElementById("jpgExportQuickZoom");
+  if (jpgExportQuickZoom) jpgExportQuickZoom.addEventListener("change", () => {
+    if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
+    jpgExportHideHighEgressConfirm();
+    jpgExportUpdateQuickEstimate();
+  });
+  const jpgExportQuickSegDownload = document.getElementById("jpgExportQuickSegDownload");
+  if (jpgExportQuickSegDownload) jpgExportQuickSegDownload.addEventListener("click", () => {
+    jpgQuickSegmentJobOnDownloadClick();
+  });
+  const jpgExportQuickHighConfirmOk = document.getElementById("jpgExportQuickHighConfirmOk");
+  if (jpgExportQuickHighConfirmOk) jpgExportQuickHighConfirmOk.addEventListener("click", () => {
+    if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
+    const pending = _jpgQuickExportPendingOptions;
+    if (!pending) return;
+    jpgExportHideHighEgressConfirm();
+    void exportQuickViewportAsJpg(Object.assign({}, pending, { highEgressConfirmed: true }));
+  });
+  if (jpgExportClose) jpgExportClose.addEventListener("click", jpgExportCancelActiveJobOrClose);
+  if (jpgExportCancel) jpgExportCancel.addEventListener("click", jpgExportCancelActiveJobOrClose);
   if (jpgExportDlg) jpgExportDlg.addEventListener("click", (ev) => {
-    if (ev.target && ev.target.id === "jpgExportDialog") closeJpgExportDialog();
+    if (ev.target && ev.target.id === "jpgExportDialog") jpgExportCancelActiveJobOrClose();
   });
   if (jpgExportDlg) jpgExportDlg.addEventListener("cancel", (ev) => {
-    if (_jpgQuickExportBusy){ ev.preventDefault(); return; }
+    if (_jpgQuickExportBusy || _jpgQuickSegmentJob){ ev.preventDefault(); return; }
   });
   if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
-    if (_jpgQuickExportBusy) return;
+    if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
+    const zSel = jpgExportReadQuickZoom();
+    const snapOk = _jpgQuickExportSnapshot && _jpgQuickExportSnapshot.ok;
+    let segExport = false;
+    if (snapOk && zSel != null){
+      const jp = buildQuickExportJobPlan(_jpgQuickExportSnapshot.bbox, zSel);
+      segExport = !!(jp.ok && jp.plan.segmented);
+    }
     const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
     const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
     const coordsCfg = jpgExportReadCoordsFromUi();
-    _jpgExportIncludeScale = includeScale;
-    _jpgExportIncludeOverlays = includeOverlays;
-    _jpgExportCoords = coordsCfg;
-    if (includeOverlays) _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
+    if (!segExport){
+      _jpgExportIncludeScale = includeScale;
+      _jpgExportIncludeOverlays = includeOverlays;
+      _jpgExportCoords = coordsCfg;
+      if (includeOverlays) _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
+    }
     let coordsModel = null;
-    if (coordsCfg.enabled){
+    if (!segExport && coordsCfg.enabled){
       const resolved = jpgExportResolveCoordsModel(coordsCfg);
       if (!resolved || !resolved.ok){
         jpgExportShowDialogMsg(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable"));
@@ -40070,16 +40759,16 @@ function bindUI(){
       }
       coordsModel = resolved;
     }
-    if (!_jpgQuickExportSnapshot || !_jpgQuickExportSnapshot.ok){
+    if (!snapOk){
       jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
       jpgExportSetConfirmEnabled(false);
       return;
     }
     void exportQuickViewportAsJpg({
-      includeScale,
-      includeOverlays,
-      overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
-      coordsModel
+      includeScale: segExport ? false : includeScale,
+      includeOverlays: segExport ? false : includeOverlays,
+      overlays: segExport ? jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular) : jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
+      coordsModel: segExport ? null : coordsModel
     });
   });
 
