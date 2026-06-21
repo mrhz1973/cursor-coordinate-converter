@@ -20422,6 +20422,122 @@ function validateOfflineJpgExportSize(grid){
   return null;
 }
 
+/** Read-only snapshot of the visible map viewport for quick JPG export (B5.5Z). No state/DOM mutation, no fetch. */
+function getQuickExportViewportSnapshot(){
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!tileMap) return { ok: false, reason: "no_map" };
+  const mapRect = tileMap.getBoundingClientRect();
+  const widthPx = Math.max(0, Math.round(mapRect.width));
+  const heightPx = Math.max(0, Math.round(mapRect.height));
+  if (widthPx < 1 || heightPx < 1) return { ok: false, reason: "invalid_size" };
+
+  const zoomRaw = state.mapZoom;
+  if (!Number.isFinite(zoomRaw)) return { ok: false, reason: "invalid_zoom" };
+  const zoom = zoomRaw | 0;
+  if (zoom !== zoomRaw || zoom < 2) return { ok: false, reason: "invalid_zoom" };
+
+  const layerId = sanitizeMapLayer(state.mapLayer);
+  if (!layerId || !TILE_LAYERS[layerId]) return { ok: false, reason: "invalid_layer" };
+
+  const vc = state.viewCenter || state.lastPoint;
+  if (!vc || !Number.isFinite(vc.lat) || !Number.isFinite(vc.lon)) return { ok: false, reason: "invalid_center" };
+
+  const vLat = Math.max(-85.05, Math.min(85.05, vc.lat));
+  const vLon = normalizeLon(vc.lon);
+  if (!Number.isFinite(vLat) || !Number.isFinite(vLon)) return { ok: false, reason: "invalid_center" };
+
+  const vtx = lonToTileX(vLon, zoom);
+  const vty = latToTileY(vLat, zoom);
+  const ctrPx = vtx * 256;
+  const ctrPy = vty * 256;
+  const originX = ctrPx - widthPx / 2;
+  const originY = ctrPy - heightPx / 2;
+
+  const worldPx = Math.pow(2, zoom) * 256;
+  const endX = originX + widthPx;
+  if (!Number.isFinite(worldPx) || worldPx <= 0) {
+    return { ok: false, reason: "invalid_bbox" };
+  }
+  if (originX < 0 || endX > worldPx) {
+    return { ok: false, reason: "antimeridian" };
+  }
+
+  const w = tileX2Lon(originX / 256, zoom);
+  const e = tileX2Lon((originX + widthPx) / 256, zoom);
+  const n = tileY2Lat(originY / 256, zoom);
+  const s = tileY2Lat((originY + heightPx) / 256, zoom);
+
+  if (![n, s, e, w].every(Number.isFinite)) return { ok: false, reason: "invalid_bbox" };
+  if (w > e) return { ok: false, reason: "antimeridian" };
+  if (!(n > s)) return { ok: false, reason: "invalid_bbox" };
+
+  return {
+    ok: true,
+    bbox: { n, s, e, w },
+    zoom,
+    layerId,
+    widthPx,
+    heightPx
+  };
+}
+
+/** Pure helper: exportable integer zoom levels from currentZoom up to layer/offline limits (B5.5Z). */
+function computeQuickExportZoomLevels(bbox, currentZoom, layer){
+  const fail = (reason) => ({
+    levels: [],
+    currentExportable: false,
+    maxZoom: null,
+    reason: reason || "invalid_input"
+  });
+
+  if (!bbox || typeof bbox !== "object") return fail("invalid_bbox");
+  const n = bbox.n, s = bbox.s, e = bbox.e, w = bbox.w;
+  if (![n, s, e, w].every(Number.isFinite)) return fail("invalid_bbox");
+  if (!(n > s && e > w)) return fail("invalid_bbox");
+
+  if (!Number.isFinite(currentZoom)) return fail("invalid_zoom");
+  const zStart = currentZoom | 0;
+  if (zStart !== currentZoom || zStart < 2) return fail("invalid_zoom");
+
+  if (!layer || typeof layer !== "object") return fail("invalid_layer");
+
+  const maxLayerZ = offlineLayerMaxZoom(layer);
+  const levels = [];
+  let lastReason = "";
+
+  for (let z = zStart; z <= maxLayerZ; z++){
+    try {
+      const grid = computeOfflineJpgGrid(n, s, e, w, z);
+      const sizeErr = validateOfflineJpgExportSize(grid);
+      if (sizeErr){
+        lastReason = sizeErr;
+        break;
+      }
+      levels.push(z);
+    } catch(_){
+      lastReason = "grid_error";
+      break;
+    }
+  }
+
+  if (!levels.length){
+    return {
+      levels: [],
+      currentExportable: false,
+      maxZoom: null,
+      reason: lastReason || "export.offlineJpg.noTiles"
+    };
+  }
+
+  return {
+    levels: levels.slice(),
+    currentExportable: true,
+    maxZoom: levels[levels.length - 1],
+    reason: ""
+  };
+}
+
 function setOfflineJpgExportUiBusy(busy, statusText){
   _offlineJpgExportBusy = !!busy;
   const btn = document.getElementById("btnOfflineExportJpg");
