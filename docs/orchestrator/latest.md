@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — B5.5Z-BUILD PASS operatore end-to-end (docs):** commit task **`eeb923a`** — registra deploy VPS GIS-only runtime **`3fa6212`** @ HEAD deploy **`053ac18`**; smoke **`200`**, byte **`2228096`**, SHA-256 match; footer/About **`B5.5Z`**; detail corretto; app avviata normalmente; attestazione «QA B5.5Z-BUILD PASS operatore»; **B5.5Z-BUILD CLOSED / PASS end-to-end**; build visibile allineata a B5.5Z. **Monolite non incluso.** Inbox **`2026-06-22_0145_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — B5.5Z-BUILD label runtime visibile (runtime + docs):** commit task **`3fa6212`** — `APP_BUILD_ID` **`B5.5D` → `B5.5Z`**; footer/about/detail allineati; modifica identificativa (5 righe monolite); nessun cambiamento funzionale; **`node --check`** OK; deploy VPS + smoke label **pending**. **Monolite incluso.** Inbox **`2026-06-22_0135_riepilogo_finito-sessione.md`**. **Prossimo:** deploy GIS-only + smoke build `B5.5Z`.
 
 2026-06-22 — **Chiusura sessione `finito` — B5.5Z-DELTA-A1 + B5.5Z PASS operatore end-to-end (docs):** commit task **`4047f4f`** — registra deploy VPS GIS-only runtime **`1099655`** @ HEAD deploy **`e15e772`**; smoke **`200`**, byte-match **`2228069`**, SHA-256 match; QA operatore attestata «QA B5.5Z-DELTA-A1 PASS operatore»; **B5.5Z-DELTA-A1 CLOSED / PASS end-to-end**; **B5.5Z CLOSED / PASS end-to-end**; **`APP_BUILD_ID` ancora `B5.5D`**; overlay segmenti oltre-cap = backlog opzionale. **Monolite non incluso.** Inbox **`2026-06-22_0130_riepilogo_finito-sessione.md`**. **Prossimo:** decisione/aggiornamento `APP_BUILD_ID`.
