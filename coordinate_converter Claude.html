@@ -2636,6 +2636,14 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .jpg-export-dialog-body .jpg-export-scale-opt{
   display:flex; align-items:center; gap:8px; margin:10px 0 14px; font-size:.9rem;
 }
+.jpg-export-overlay-subopts{
+  display:flex; flex-direction:column; gap:6px; margin:-4px 0 12px 1.25rem; font-size:.85rem;
+}
+.jpg-export-overlay-subopts.is-disabled{ opacity:.55; }
+.jpg-export-overlay-subopts label{
+  display:flex; align-items:center; gap:8px; margin:0;
+}
+.jpg-export-overlay-subopts input:disabled{ cursor:not-allowed; }
 .jpg-export-dialog-actions{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
@@ -9903,6 +9911,28 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="checkbox" id="jpgExportIncludeOverlays">
       <span data-i18n="export.jpg.includeOverlays">Includi overlay mappa</span>
     </label>
+    <div id="jpgExportOverlaySubOpts" class="jpg-export-overlay-subopts" role="group" aria-labelledby="jpgExportIncludeOverlays">
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvTracks">
+        <span data-i18n="export.jpg.overlayTracks">Tracce</span>
+      </label>
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvWaypoints">
+        <span data-i18n="export.jpg.overlayWaypoints">Waypoint</span>
+      </label>
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvWaypointLabels">
+        <span data-i18n="export.jpg.overlayWaypointLabels">Etichette waypoint</span>
+      </label>
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvPolygons">
+        <span data-i18n="export.jpg.overlayPolygons">Poligoni / aree</span>
+      </label>
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvRangeRings">
+        <span data-i18n="export.jpg.overlayRangeRings">Range Rings</span>
+      </label>
+    </div>
     <div class="jpg-export-dialog-actions">
       <button type="button" class="btn" id="jpgExportDialogCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
       <button type="button" class="btn btn-primary" id="jpgExportDialogConfirm" data-i18n="export.jpg.confirm">Esporta JPG</button>
@@ -11922,6 +11952,11 @@ const I18N = {
     "export.jpg.dialogBody":"Esporta la vista corrente della mappa come immagine JPEG.",
     "export.jpg.includeScale":"Includi scala",
     "export.jpg.includeOverlays":"Includi overlay mappa",
+    "export.jpg.overlayTracks":"Tracce",
+    "export.jpg.overlayWaypoints":"Waypoint",
+    "export.jpg.overlayWaypointLabels":"Etichette waypoint",
+    "export.jpg.overlayPolygons":"Poligoni / aree",
+    "export.jpg.overlayRangeRings":"Range Rings",
     "export.jpg.confirm":"Esporta JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
@@ -13459,6 +13494,11 @@ const I18N = {
     "export.jpg.dialogBody":"Export the current map view as a JPEG image.",
     "export.jpg.includeScale":"Include scale",
     "export.jpg.includeOverlays":"Include map overlays",
+    "export.jpg.overlayTracks":"Tracks",
+    "export.jpg.overlayWaypoints":"Waypoints",
+    "export.jpg.overlayWaypointLabels":"Waypoint labels",
+    "export.jpg.overlayPolygons":"Polygons / areas",
+    "export.jpg.overlayRangeRings":"Range Rings",
     "export.jpg.confirm":"Export JPG",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
@@ -14997,6 +15037,11 @@ const I18N = {
     "export.jpg.dialogBody":"Exporter la vue actuelle de la carte en image JPEG.",
     "export.jpg.includeScale":"Inclure l'échelle",
     "export.jpg.includeOverlays":"Inclure les superpositions de carte",
+    "export.jpg.overlayTracks":"Traces",
+    "export.jpg.overlayWaypoints":"Points de repère",
+    "export.jpg.overlayWaypointLabels":"Étiquettes des points",
+    "export.jpg.overlayPolygons":"Polygones / zones",
+    "export.jpg.overlayRangeRings":"Cercles de portée",
     "export.jpg.confirm":"Exporter JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
@@ -16552,8 +16597,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B5.5E-2";
-const APP_BUILD_DETAIL = "JPG export fixed maximum quality 3x";
+const APP_BUILD_ID = "B5.5C";
+const APP_BUILD_DETAIL = "JPG export granular overlay selection and waypoint labels";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19695,11 +19740,14 @@ function formatJpgExportTimestamp(d){
   return `${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}-${pad(dt.getHours())}${pad(dt.getMinutes())}${pad(dt.getSeconds())}`;
 }
 
-async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh, inlineStyles = false, rasterScale = 1){
+async function rasterizeSvgOntoCanvas(svgEl, ctx, dx, dy, dw, dh, inlineStyles = false, rasterScale = 1, cloneMutator = null){
   if (!svgEl || dw <= 0 || dh <= 0) return false;
   let url = "";
   try {
     const clone = svgEl.cloneNode(true);
+    if (typeof cloneMutator === "function"){
+      try { cloneMutator(clone); } catch(_){}
+    }
     if (inlineStyles){
       const STYLE_INLINE_SELECTOR = "path,polyline,polygon,line,circle,rect,ellipse,text,tspan";
       const STYLE_INLINE_PROPS = [
@@ -19813,17 +19861,25 @@ async function exportMapAsJpg(opts){
   }
 
   if (includeOverlays){
-    const overlaySelectors = [
-      ".range-rings-overlay svg",
-      ".saved-tracks-overlay svg",
-      ".gis-polygons-overlay svg",
-      ".waypoints-overlay svg"
+    const overlayGranular = jpgExportNormalizeOverlayGranular(opts.overlays || _jpgExportOverlayGranular);
+    const overlayCategories = [
+      { selector: ".range-rings-overlay svg", key: "rangeRings" },
+      { selector: ".saved-tracks-overlay svg", key: "tracks" },
+      { selector: ".gis-polygons-overlay svg", key: "polygons" },
+      { selector: ".waypoints-overlay svg", key: "waypoints", labelsKey: "waypointLabels" }
     ];
-    for (const sel of overlaySelectors){
-      for (const svg of [...tileMap.querySelectorAll(sel)]){
+    for (const cat of overlayCategories){
+      if (!overlayGranular[cat.key]) continue;
+      for (const svg of [...tileMap.querySelectorAll(cat.selector)]){
         const r = svg.getBoundingClientRect();
         if (r.width <= 0 || r.height <= 0) continue;
-        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, true, S);
+        let cloneMutator = null;
+        if (cat.labelsKey && !overlayGranular[cat.labelsKey]){
+          cloneMutator = (clone) => {
+            clone.querySelectorAll(".wpt-map-label").forEach((el) => { el.remove(); });
+          };
+        }
+        await rasterizeSvgOntoCanvas(svg, ctx, r.left - mapRect.left, r.top - mapRect.top, r.width, r.height, true, S, cloneMutator);
       }
     }
   }
@@ -19870,6 +19926,74 @@ async function exportMapAsJpg(opts){
 let _jpgExportIncludeScale = false;
 let _jpgExportIncludeOverlays = true;
 const JPG_EXPORT_REQUESTED_SCALE = 3;
+const JPG_EXPORT_OVERLAY_DEFAULTS = Object.freeze({
+  tracks: true,
+  waypoints: true,
+  waypointLabels: true,
+  polygons: true,
+  rangeRings: true
+});
+let _jpgExportOverlayGranular = {
+  tracks: true,
+  waypoints: true,
+  waypointLabels: true,
+  polygons: true,
+  rangeRings: true
+};
+
+function jpgExportNormalizeOverlayGranular(src){
+  src = src || {};
+  return {
+    tracks: src.tracks !== false,
+    waypoints: src.waypoints !== false,
+    waypointLabels: src.waypointLabels !== false,
+    polygons: src.polygons !== false,
+    rangeRings: src.rangeRings !== false
+  };
+}
+
+function jpgExportReadOverlayGranularFromUi(){
+  const byId = (id) => document.getElementById(id);
+  return jpgExportNormalizeOverlayGranular({
+    tracks: byId("jpgExportOvTracks") ? byId("jpgExportOvTracks").checked : true,
+    waypoints: byId("jpgExportOvWaypoints") ? byId("jpgExportOvWaypoints").checked : true,
+    waypointLabels: byId("jpgExportOvWaypointLabels") ? byId("jpgExportOvWaypointLabels").checked : true,
+    polygons: byId("jpgExportOvPolygons") ? byId("jpgExportOvPolygons").checked : true,
+    rangeRings: byId("jpgExportOvRangeRings") ? byId("jpgExportOvRangeRings").checked : true
+  });
+}
+
+function jpgExportApplyOverlayGranularToUi(gran){
+  gran = jpgExportNormalizeOverlayGranular(gran);
+  const map = {
+    jpgExportOvTracks: "tracks",
+    jpgExportOvWaypoints: "waypoints",
+    jpgExportOvWaypointLabels: "waypointLabels",
+    jpgExportOvPolygons: "polygons",
+    jpgExportOvRangeRings: "rangeRings"
+  };
+  for (const id of Object.keys(map)){
+    const el = document.getElementById(id);
+    if (el) el.checked = !!gran[map[id]];
+  }
+  jpgExportSyncOverlaySubUi();
+}
+
+function jpgExportSyncOverlaySubUi(){
+  const master = document.getElementById("jpgExportIncludeOverlays");
+  const masterOn = !!(master && master.checked);
+  const subWrap = document.getElementById("jpgExportOverlaySubOpts");
+  if (subWrap) subWrap.classList.toggle("is-disabled", !masterOn);
+  const subIds = ["jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels", "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+  const wptEl = document.getElementById("jpgExportOvWaypoints");
+  const wptOn = masterOn && !!(wptEl && wptEl.checked);
+  for (const id of subIds){
+    const el = document.getElementById(id);
+    if (!el) continue;
+    if (id === "jpgExportOvWaypointLabels") el.disabled = !masterOn || !wptOn;
+    else el.disabled = !masterOn;
+  }
+}
 
 function closeJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
@@ -19880,13 +20004,19 @@ function closeJpgExportDialog(){
 function openJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
   if (!dlg){
-    exportMapAsJpg({ includeScale: false, includeOverlays: true, scale: JPG_EXPORT_REQUESTED_SCALE });
+    exportMapAsJpg({
+      includeScale: false,
+      includeOverlays: true,
+      overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
+      scale: JPG_EXPORT_REQUESTED_SCALE
+    });
     return;
   }
   const cb = document.getElementById("jpgExportIncludeScale");
   if (cb) cb.checked = !!_jpgExportIncludeScale;
   const cbOv = document.getElementById("jpgExportIncludeOverlays");
   if (cbOv) cbOv.checked = !!_jpgExportIncludeOverlays;
+  jpgExportApplyOverlayGranularToUi(_jpgExportOverlayGranular);
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
@@ -31662,6 +31792,7 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
     const color = sanitizeTrackColor(meta.color);
 
     const vis = document.createElementNS(ns, "g");
+    vis.setAttribute("class", "wpt-map-marker");
     vis.setAttribute("pointer-events", "none");
     vis.setAttribute("transform", `translate(${cx.toFixed(1)},${cy.toFixed(1)})`);
     appendTrackNatoSymbolSvg(ns, vis, iconRaw, color, 0.86);
@@ -39030,12 +39161,22 @@ function bindUI(){
   const jpgExportConfirm = document.getElementById("jpgExportDialogConfirm");
   const jpgExportScaleCb = document.getElementById("jpgExportIncludeScale");
   const jpgExportOverlaysCb = document.getElementById("jpgExportIncludeOverlays");
+  const jpgExportOvIds = ["jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels", "jpgExportOvPolygons", "jpgExportOvRangeRings"];
   if (jpgExportScaleCb) jpgExportScaleCb.addEventListener("change", () => {
     _jpgExportIncludeScale = !!jpgExportScaleCb.checked;
   });
   if (jpgExportOverlaysCb) jpgExportOverlaysCb.addEventListener("change", () => {
     _jpgExportIncludeOverlays = !!jpgExportOverlaysCb.checked;
+    jpgExportSyncOverlaySubUi();
   });
+  for (const id of jpgExportOvIds){
+    const el = document.getElementById(id);
+    if (!el) continue;
+    el.addEventListener("change", () => {
+      _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
+      jpgExportSyncOverlaySubUi();
+    });
+  }
   if (jpgExportClose) jpgExportClose.addEventListener("click", closeJpgExportDialog);
   if (jpgExportCancel) jpgExportCancel.addEventListener("click", closeJpgExportDialog);
   if (jpgExportDlg) jpgExportDlg.addEventListener("click", (ev) => {
@@ -39046,8 +39187,14 @@ function bindUI(){
     const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
     _jpgExportIncludeScale = includeScale;
     _jpgExportIncludeOverlays = includeOverlays;
+    if (includeOverlays) _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
     closeJpgExportDialog();
-    exportMapAsJpg({ includeScale, includeOverlays, scale: JPG_EXPORT_REQUESTED_SCALE }).catch(() => {});
+    exportMapAsJpg({
+      includeScale,
+      includeOverlays,
+      overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
+      scale: JPG_EXPORT_REQUESTED_SCALE
+    }).catch(() => {});
   });
 
   const btnPr = document.getElementById("btnPrintReport");
