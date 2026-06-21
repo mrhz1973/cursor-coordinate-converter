@@ -8,6 +8,7 @@
 | Architettura | HTML standalone, vanilla JS, no framework/npm/bundler |
 | Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) — stato vivo in **§7** |
 | Piano / backlog WU | [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md) |
+| QA / handoff | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) + [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) §4 — Handoff & Close Discipline |
 
 ## AI boot / stato operativo
 
@@ -16,15 +17,18 @@ Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte compl
 Read-set corrente, in ordine:
 
 1. `README.md` — bootloader e regole di lettura.
-2. `docs/OPERATING_MEMORY.md` — stato operativo vivo, soprattutto §7.
+2. `docs/OPERATING_MEMORY.md` — protocollo operativo §4 e stato vivo §7.
 3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
-4. `coordinate_converter Claude.html` — file operativo principale, da leggere solo quando serve codice/runtime.
+4. `docs/QA-CHECKLIST.md` — procedura/template della checklist QA unica.
+5. `coordinate_converter Claude.html` — file operativo principale, da leggere solo quando serve codice/runtime.
 
 Regola di precedenza:
 
 - `README.md` definisce cosa leggere, non la WU corrente.
 - Lo stato operativo vivo sta in `docs/OPERATING_MEMORY.md` §7.
 - Il piano/backlog sta in `docs/work-units/WU-0005-0009-roadmap.md`.
+- `docs/QA-CHECKLIST.md` fa parte del read-set ma è una procedura/template, non lo stato vivo; lo stato operativo corrente resta `docs/OPERATING_MEMORY.md` §7.
+- `docs/OPERATING_MEMORY.md` **§4 — Handoff & Close Discipline** governa handoff, review tiered, disciplina `finito`, checklist QA unica e minimizzazione del copia-incolla.
 - Se README, OPERATING_MEMORY e roadmap confliggono, segnalare il conflitto e usare come fonte operativa il documento più specifico e più recente.
 
 Legacy da non usare come stato corrente primario:

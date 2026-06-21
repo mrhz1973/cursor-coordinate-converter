@@ -51,7 +51,7 @@
 - Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
 - Procedere per blocchi piccoli.
 - Non toccare aree non correlate.
-- Non usare `finito` salvo richiesta esplicita del workflow.
+- `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei blocchi già approvati è normalmente incluso nel prompt in forma **condizionale**, mentre resta separato e manuale per i blocchi delicati e gli altri casi elencati (vedi *Handoff & Close Discipline*, Regola A).
 - Nessun GPS silenzioso.
 - Nessun live tracking GPS senza decisione esplicita.
 - Modifiche runtime: commit separati — codice / docs operative / autosync.
@@ -61,30 +61,36 @@
 - **QA evidence / PASS operatore:** il PASS operatore è distinto dal PASS tecnico remoto e richiede attestazione esplicita nel flusso da utente/operatore o orchestratore. Cursor non può inferirlo da PASS tecnico, diff pulito o `node --check`. In assenza di attestazione, default fail-closed: QA operatore non eseguita/non attestata. Se la QA è attestata, RIEPILOGO e docs devono registrarne provenienza, esiti concreti, ambiente essenziale e limiti.
 - **LAST_CURSOR_REPORT (Fase F3):** da Fase F3 `docs/runtime/LAST_CURSOR_REPORT.md` è **obbligatorio** post-push per task reale GIS-only; non per read-only/plan/review diff senza commit; evidenza rolling post-push, non fonte viva primaria — OM §7 e roadmap restano primari; mapping: commit principale = task, autosync = report, nessun terzo commit/finalize-hash.
 
-### Pipeline prompt Cursor (revisione incrociata a passi fissi)
+### Handoff & Close Discipline — minimizzazione copia-incolla
 
-Per ogni blocco operativo, il prompt Cursor passa UNA volta per questa
-catena, a passi fissi, NON iterativa:
+Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla manuale tra Cursor, GPT e Claude. Sostituisce integralmente ogni precedente catena fissa di revisione tra GPT, Claude e Cursor.
 
-1. GPT redige il prompt Cursor (bozza).
-2. Claude critica → produce prompt di correzione.
-3. GPT critica → ripropone il prompt.
-4. Claude revisione finale → critica + proposta definitiva.
-5. GPT consegna il prompt a Cursor.
+**Regola A — `finito` condizionale nel prompt.** Ogni prompt Cursor relativo a un blocco **già approvato** include normalmente in coda la clausola:
 
-**Regole:**
+> Se tutti i controlli statici risultano PASS e il diff resta nello scope dichiarato, esegui il workflow `finito`. Se un controllo fallisce o il diff esce dallo scope, NON eseguire `finito`: fermati e riporta il problema.
 
-- Catena CHIUSA a questi 5 passi: due passaggi Claude, due GPT, poi
-  Cursor. Nessun giro extra di andata-e-ritorno.
-- Il prompt che arriva a Cursor contiene TUTTO ciò che deve fare nel
-  blocco. Cursor esegue in un colpo solo: niente esecuzioni a tentativi,
-  salvo errore bloccante da riportare.
-- Critica = sostanza: scope, fetch, consenso, OPSEC, regressioni,
-  storage/cache, container UI, stato repo e rischi di diff; non stile.
-- L'operatore arbitra solo se Claude e GPT restano in disaccordo dopo
-  il passo 4.
+Il workflow `finito` resta **separato e manuale** per: diagnosi; attività read-only; OPSEC; rete; tile; proxy; cache; storage; migrazioni dati; modifiche architetturali; modifiche sostanziali al metodo; diff rischiosi che richiedono review prima della pubblicazione; QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore.
 
-**Chiusura blocco (dopo l'esecuzione Cursor):**
+**Regola B — Review tiered.** La review graduata sostituisce integralmente la disciplina precedente.
+
+- **Blocchi di routine** (UI localizzata; copy/i18n; documentazione o governance non sensibile; fix piccoli già progettati; modifiche circoscritte del monolite senza rete/cache/storage): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → finito condizionale`. Nessun passaggio Claude obbligatorio; review del diff in Cursor/GPT; report mantenuto nel normale flusso Cursor/GPT.
+- **Blocchi delicati** (OPSEC; rete; tile; proxy; cache; storage; migrazioni dati; architettura; modifiche sostanziali al metodo; diff rischiosi; diff multi-area; sospetto di staleness/freshness; divergenze tra HEAD, origin/main e `ls-remote`; scope non chiaramente localizzato): Claude **upstream** (sostanza, rischi, gate, vincoli) → GPT redige il prompt Cursor → Cursor implementa e si ferma secondo il tier → Claude **downstream** verifica diff ed esito prima della pubblicazione.
+
+In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor resta responsabilità di GPT; la review del diff segue lo stesso tier (routine → Cursor/GPT; delicato → Claude downstream obbligatorio).
+
+**Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato a **Claude**; blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, Claude e Cursor salvo escalation reale.
+
+**Regola D — QA checklist unica.** La QA operatore è fornita come **un'unica** checklist completa, numerata o strutturata, copiabile, **già compilata** con i dati noti, e **restituita una sola volta** dall'operatore. Non usare come modalità ordinaria: domande QA singole successive; round multipli PASS/FAIL; checklist frammentate. Fonte canonica: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). Il workflow `finito` emette nel report una checklist già compilata con: block ID; runtime SHA reale; build attesa; URL VPS QA; controlli specifici del blocco; regressioni pertinenti; limiti dell'attestazione. Formato URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<short-sha-runtime-reale>` (short SHA del commit **runtime** reale; mai docs/autosync; mai etichette `*-local` sul VPS). Cursor prepara la checklist ma **non** attesta la QA visiva; l'operatore compila inline, marca PASS o FAIL, e restituisce l'intera checklist una sola volta.
+
+**Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza Claude → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
+
+**Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in un fenced code block:
+
+> `HEAD verificato (ls-remote) @ <timestamp> = <full-sha-post-finito> · frontiera = <block-id> (<data>)`
+
+con anche un pointer sintetico al read-set del README. `git ls-remote origin main` è **autorità finale**; RAW main, blob/main e snapshot connector sono secondari e possono essere stale; il blob SHA di un singolo file **non** prova HEAD. Il lettore successivo legge il read-set pinnato allo SHA del seed; mismatch tra frontiera dichiarata e frontiera letta → **STOP fail-closed**. Un handoff prodotto da un attore non capace di verificare `ls-remote` è provvisorio e non azionabile. Le procedure complete vivono nel repository e non vanno reincollate integralmente tra chat; il seed post-push usa il **nuovo** SHA verificato sul remoto, mai automaticamente lo SHA iniziale del task.
+
+### Chiusura blocco (dopo l'esecuzione Cursor)
 
 - Verifica esito: diff, controlli automatici pertinenti e gate OPSEC
   mirato se il blocco tocca rete, tile, proxy, cache, storage o fetch.
@@ -119,7 +125,7 @@ catena, a passi fissi, NON iterativa:
 5. **QA operatore** sull'app deployata — **condotta QA:**
    - visiva, nel browser; include: caricare l'app; guardare layout/overlay; scaricare/aprire il JPG; cliccare i dialog; provare finestra stretta;
    - la esegue l'**operatore**; Cursor **non** sostituisce la QA visiva (non apre l'app per attestare, non carica tile come operatore, non scarica immagini al posto del giudizio operatore); l'advisor AI non raggiunge il VPS e non inventa esiti — instradare la QA operatore su Cursor è errore noto;
-   - l'orchestratore fornisce checklist numerata; su richiesta guida passo-passo, una voce alla volta, operatore risponde PASS/FAIL;
+   - l'orchestratore fornisce **un'unica** checklist numerata o strutturata, completa e **già compilata** (vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) e *Handoff & Close Discipline*, Regola D); l'operatore la compila inline e la restituisce **una sola volta** con PASS/FAIL; niente domande singole successive, round multipli o checklist frammentate come modalità ordinaria;
    - tailnet `:8000`; cache-buster con hash runtime reale: `?v=<hash runtime>`; **non** usare etichette `*-local` per QA su VPS;
    - attestazione onesta: PASS copre solo ciò che l'operatore ha guardato; sotto-check non eseguiti = limite dichiarato; esito mai inventato da AI;
 6. **registrazione in OM §7:** hash runtime, HEAD deploy, smoke, link QA, esito PASS/FAIL operatore — **verifica pubblicazione / published = verified:**
