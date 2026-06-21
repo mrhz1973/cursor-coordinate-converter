@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-21 — **Chiusura sessione `finito` — B5.5D-1 JPG export coordinate box (runtime):** commit task **`5551622`** — build **`B5.5D`**; sezione «Includi coordinate» in `#jpgExportDialog`; OPSEC checkbox OFF ad ogni apertura; sorgenti centro/ultimo punto/waypoint (`wp.id`); formati primary/DD/DDM/DMS/UTM/MGRS/DD+MGRS; snapshot pre-await; box canvas top-left; indipendente overlay/scala; **`node --check`** OK. **Monolite incluso.** **QA operatore post-deploy: pending.** Inbox **`2026-06-21_1600_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5D-2 deploy VPS + QA `?v=5551622`.
+
 2026-06-21 — **Chiusura sessione `finito` — F3 anti-terzo-commit esteso (metodo):** commit task **`e92484a`** — estensione F3 a `inbox/**`+`latest.md`; allineamento `finito` step 3 in `00-project-core.mdc`; mirror OM §4. **Monolite non incluso.** Working tree pre-autosync pulito. Push task OK. Inbox **`2026-06-21_1430_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5D (non aperto); dogfooding F3 via chiusura a due commit.
 
 2026-06-21 — **Chiusura sessione `finito` — B5.5C PASS operatore post-deploy VPS (docs):** commit **`bc66dff`** — OM §7 + WU: **PASS operatore** B5.5C export JPG granular overlay; runtime **`5a10a48`**; HEAD/deploy **`4da28f5`**; smoke **`200`**, byte-match **`2161529`**; build **`B5.5C`**; QA `:8000?v=5a10a48`; attestazione «tutto pass»; **B5.5C chiuso end-to-end**. **Monolite non incluso.** Inbox **`2026-06-21_1120_riepilogo_finito-sessione.md`**. **Prossimo:** **B5.5D** tab coordinate su canvas export JPG (non ancora aperto).
