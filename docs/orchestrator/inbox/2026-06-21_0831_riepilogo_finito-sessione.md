@@ -47,4 +47,5 @@ Deploy VPS GIS-only + QA `?v=25555c2`.
 
 ## Commit orchestratore (step 3)
 
-_Pending — aggiornato dopo commit autosync._
+- **`f84422b`** — `docs: orchestratore — riconciliazione finito sessione B5.5E-2`
+- **Push step 3:** OK

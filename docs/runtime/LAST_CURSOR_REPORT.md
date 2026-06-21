@@ -17,7 +17,7 @@
 * result_runtime: n/a finché non deployato — runtime locale 25555c2; VPS ancora B5.5E-1 @ 0cc28d5
 * qa_attestation_source: n/a
 * docs_commit: `25555c2` (monolite+docs stesso commit)
-* autosync_commit: PENDING_SELF_REFERENCE
+* autosync_commit: `f84422b`
 * runtime_ref: `25555c2`
 * deploy_ref: pending (VPS B5.5E-1; B5.5E-2 deploy pending)
 
