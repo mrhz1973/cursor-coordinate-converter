@@ -2644,6 +2644,12 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   display:flex; align-items:center; gap:8px; margin:0;
 }
 .jpg-export-overlay-subopts input:disabled{ cursor:not-allowed; }
+.jpg-export-overlay-subopts .jpg-export-coords-row{
+  display:flex; flex-direction:column; gap:4px; margin:0;
+}
+.jpg-export-overlay-subopts select{
+  width:100%; max-width:100%; font-size:inherit; box-sizing:border-box;
+}
 .jpg-export-dialog-actions{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
@@ -9933,6 +9939,37 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span data-i18n="export.jpg.overlayRangeRings">Range Rings</span>
       </label>
     </div>
+    <label class="jpg-export-scale-opt">
+      <input type="checkbox" id="jpgExportIncludeCoords">
+      <span data-i18n="export.jpg.includeCoords">Includi coordinate</span>
+    </label>
+    <div id="jpgExportCoordsSubOpts" class="jpg-export-overlay-subopts" role="group" aria-labelledby="jpgExportIncludeCoords">
+      <label class="jpg-export-coords-row">
+        <span data-i18n="export.jpg.coordsSource">Sorgente</span>
+        <select id="jpgExportCoordsSource">
+          <option value="viewCenter" data-i18n="export.jpg.coordsSourceViewCenter">Centro mappa</option>
+          <option value="lastPoint" data-i18n="export.jpg.coordsSourceLastPoint">Ultimo punto</option>
+          <option value="waypoint" data-i18n="export.jpg.coordsSourceWaypoint">Waypoint</option>
+        </select>
+      </label>
+      <label class="jpg-export-coords-row">
+        <span data-i18n="export.jpg.coordsSelectWaypoint">Seleziona waypoint</span>
+        <select id="jpgExportCoordsWaypoint"></select>
+      </label>
+      <label class="jpg-export-coords-row">
+        <span data-i18n="export.jpg.coordsFormat">Formato</span>
+        <select id="jpgExportCoordsFormat">
+          <option value="primary" data-i18n="export.jpg.coordsFormatPrimary">Formato principale</option>
+          <option value="dd" data-i18n="export.jpg.coordsFormatDd">DD</option>
+          <option value="ddm" data-i18n="export.jpg.coordsFormatDdm">DDM</option>
+          <option value="dms" data-i18n="export.jpg.coordsFormatDms">DMS</option>
+          <option value="utm" data-i18n="export.jpg.coordsFormatUtm">UTM</option>
+          <option value="mgrs" data-i18n="export.jpg.coordsFormatMgrs">MGRS</option>
+          <option value="dd_mgrs" data-i18n="export.jpg.coordsFormatDdMgrs">DD + MGRS</option>
+        </select>
+      </label>
+    </div>
+    <p id="jpgExportDialogMsg" class="hint geo-warn" role="alert" aria-live="polite" hidden></p>
     <div class="jpg-export-dialog-actions">
       <button type="button" class="btn" id="jpgExportDialogCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
       <button type="button" class="btn btn-primary" id="jpgExportDialogConfirm" data-i18n="export.jpg.confirm">Esporta JPG</button>
@@ -11958,6 +11995,25 @@ const I18N = {
     "export.jpg.overlayPolygons":"Poligoni / aree",
     "export.jpg.overlayRangeRings":"Range Rings",
     "export.jpg.confirm":"Esporta JPG",
+    "export.jpg.includeCoords":"Includi coordinate",
+    "export.jpg.coordsSource":"Sorgente",
+    "export.jpg.coordsSourceViewCenter":"Centro mappa",
+    "export.jpg.coordsSourceLastPoint":"Ultimo punto",
+    "export.jpg.coordsSourceWaypoint":"Waypoint",
+    "export.jpg.coordsSelectWaypoint":"Seleziona waypoint",
+    "export.jpg.coordsNoWaypoints":"Nessun waypoint disponibile",
+    "export.jpg.coordsWaypointFallback":"Waypoint",
+    "export.jpg.coordsFormat":"Formato",
+    "export.jpg.coordsFormatPrimary":"Formato principale",
+    "export.jpg.coordsFormatDd":"DD",
+    "export.jpg.coordsFormatDdm":"DDM",
+    "export.jpg.coordsFormatDms":"DMS",
+    "export.jpg.coordsFormatUtm":"UTM",
+    "export.jpg.coordsFormatMgrs":"MGRS",
+    "export.jpg.coordsFormatDdMgrs":"DD + MGRS",
+    "export.jpg.coordsSourceUnavailable":"Sorgente coordinate non disponibile.",
+    "export.jpg.coordsWaypointUnavailable":"Waypoint non disponibile o non più valido.",
+    "export.jpg.coordsFormatUnavailable":"Formato coordinate non disponibile per questo punto.",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
     "offcache.exportJpg":"Esporta JPG offline",
@@ -13500,6 +13556,25 @@ const I18N = {
     "export.jpg.overlayPolygons":"Polygons / areas",
     "export.jpg.overlayRangeRings":"Range Rings",
     "export.jpg.confirm":"Export JPG",
+    "export.jpg.includeCoords":"Include coordinates",
+    "export.jpg.coordsSource":"Source",
+    "export.jpg.coordsSourceViewCenter":"Map center",
+    "export.jpg.coordsSourceLastPoint":"Last point",
+    "export.jpg.coordsSourceWaypoint":"Waypoint",
+    "export.jpg.coordsSelectWaypoint":"Select waypoint",
+    "export.jpg.coordsNoWaypoints":"No waypoints available",
+    "export.jpg.coordsWaypointFallback":"Waypoint",
+    "export.jpg.coordsFormat":"Format",
+    "export.jpg.coordsFormatPrimary":"Primary format",
+    "export.jpg.coordsFormatDd":"DD",
+    "export.jpg.coordsFormatDdm":"DDM",
+    "export.jpg.coordsFormatDms":"DMS",
+    "export.jpg.coordsFormatUtm":"UTM",
+    "export.jpg.coordsFormatMgrs":"MGRS",
+    "export.jpg.coordsFormatDdMgrs":"DD + MGRS",
+    "export.jpg.coordsSourceUnavailable":"Coordinate source unavailable.",
+    "export.jpg.coordsWaypointUnavailable":"Waypoint unavailable or no longer valid.",
+    "export.jpg.coordsFormatUnavailable":"Coordinate format unavailable for this point.",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
     "offcache.exportJpg":"Export offline JPG",
@@ -15043,6 +15118,25 @@ const I18N = {
     "export.jpg.overlayPolygons":"Polygones / zones",
     "export.jpg.overlayRangeRings":"Cercles de portée",
     "export.jpg.confirm":"Exporter JPG",
+    "export.jpg.includeCoords":"Inclure les coordonnées",
+    "export.jpg.coordsSource":"Source",
+    "export.jpg.coordsSourceViewCenter":"Centre carte",
+    "export.jpg.coordsSourceLastPoint":"Dernier point",
+    "export.jpg.coordsSourceWaypoint":"Point de repère",
+    "export.jpg.coordsSelectWaypoint":"Sélectionner un point",
+    "export.jpg.coordsNoWaypoints":"Aucun point de repère disponible",
+    "export.jpg.coordsWaypointFallback":"Point de repère",
+    "export.jpg.coordsFormat":"Format",
+    "export.jpg.coordsFormatPrimary":"Format principal",
+    "export.jpg.coordsFormatDd":"DD",
+    "export.jpg.coordsFormatDdm":"DDM",
+    "export.jpg.coordsFormatDms":"DMS",
+    "export.jpg.coordsFormatUtm":"UTM",
+    "export.jpg.coordsFormatMgrs":"MGRS",
+    "export.jpg.coordsFormatDdMgrs":"DD + MGRS",
+    "export.jpg.coordsSourceUnavailable":"Source de coordonnées indisponible.",
+    "export.jpg.coordsWaypointUnavailable":"Point de repère indisponible ou plus valide.",
+    "export.jpg.coordsFormatUnavailable":"Format de coordonnées indisponible pour ce point.",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
     "offcache.exportJpg":"Exporter JPG hors ligne",
@@ -16597,8 +16691,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B5.5C";
-const APP_BUILD_DETAIL = "JPG export granular overlay selection and waypoint labels";
+const APP_BUILD_ID = "B5.5D";
+const APP_BUILD_DETAIL = "JPG export coordinate box for map point and waypoint";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19819,6 +19913,16 @@ async function exportMapAsJpg(opts){
   opts = opts || {};
   const includeScale = !!opts.includeScale;
   const includeOverlays = !!opts.includeOverlays;
+  const coordsCfg = jpgExportNormalizeCoords(opts.coords || _jpgExportCoords);
+  let coordsModel = null;
+  if (coordsCfg.enabled){
+    const resolved = jpgExportResolveCoordsModel(coordsCfg);
+    if (!resolved || !resolved.ok){
+      try { showError(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable")); } catch(_){}
+      return;
+    }
+    coordsModel = resolved;
+  }
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
   if (!tileMap){
@@ -19903,6 +20007,10 @@ async function exportMapAsJpg(opts){
     } catch(_){}
   }
 
+  if (coordsModel){
+    try { drawJpgExportCoords(ctx, W, H, coordsModel); } catch(_){}
+  }
+
   try {
     const blob = await new Promise((resolve, reject) => {
       try {
@@ -19940,6 +20048,205 @@ let _jpgExportOverlayGranular = {
   polygons: true,
   rangeRings: true
 };
+let _jpgExportCoords = {
+  enabled: false,
+  source: "viewCenter",
+  waypointId: null,
+  format: "primary"
+};
+const JPG_EXPORT_COORDS_MGRS_PRECISION = 5;
+
+function jpgExportIsValidLatLon(lat, lon){
+  return Number.isFinite(lat) && Number.isFinite(lon) &&
+    lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+}
+
+function jpgExportNormalizeCoords(src){
+  src = src || {};
+  const source = (src.source === "lastPoint" || src.source === "waypoint") ? src.source : "viewCenter";
+  const formatAllowed = ["primary", "dd", "ddm", "dms", "utm", "mgrs", "dd_mgrs"];
+  const format = formatAllowed.includes(src.format) ? src.format : "primary";
+  return {
+    enabled: !!src.enabled,
+    source,
+    waypointId: src.waypointId || null,
+    format
+  };
+}
+
+function jpgExportFormatCoordLines(lat, lon, format){
+  try {
+    if (format === "primary"){
+      return { ok: true, lines: [fmtPrimary(lat, lon)] };
+    }
+    if (format === "dd"){
+      return { ok: true, lines: [fmtDD(lat, lon).cardinal] };
+    }
+    if (format === "ddm"){
+      return { ok: true, lines: [fmtDDM(lat, lon)] };
+    }
+    if (format === "dms"){
+      return { ok: true, lines: [fmtDMS(lat, lon)] };
+    }
+    if (format === "utm"){
+      return { ok: true, lines: [fmtUTM(latLonToUTM(lat, lon))] };
+    }
+    if (format === "mgrs"){
+      return { ok: true, lines: [latLonToMGRS(lat, lon, JPG_EXPORT_COORDS_MGRS_PRECISION)] };
+    }
+    if (format === "dd_mgrs"){
+      const ddLine = fmtDD(lat, lon).cardinal;
+      let mgrsLine = "MGRS: N/D";
+      try { mgrsLine = latLonToMGRS(lat, lon, JPG_EXPORT_COORDS_MGRS_PRECISION); } catch(_){}
+      return { ok: true, lines: [ddLine, mgrsLine] };
+    }
+  } catch(_){
+    if (format === "utm" || format === "mgrs"){
+      return { ok: false, errorKey: "export.jpg.coordsFormatUnavailable" };
+    }
+  }
+  return { ok: false, errorKey: "export.jpg.coordsFormatUnavailable" };
+}
+
+function jpgExportResolveCoordsModel(coordsCfg){
+  coordsCfg = jpgExportNormalizeCoords(coordsCfg);
+  if (!coordsCfg.enabled) return null;
+  let lat, lon, title;
+  if (coordsCfg.source === "viewCenter"){
+    const vc = state.viewCenter;
+    if (!vc || !jpgExportIsValidLatLon(vc.lat, vc.lon)){
+      return { ok: false, errorKey: "export.jpg.coordsSourceUnavailable" };
+    }
+    lat = vc.lat;
+    lon = vc.lon;
+    title = t("export.jpg.coordsSourceViewCenter");
+  } else if (coordsCfg.source === "lastPoint"){
+    const lp = state.lastPoint;
+    if (!lp || !jpgExportIsValidLatLon(lp.lat, lp.lon)){
+      return { ok: false, errorKey: "export.jpg.coordsSourceUnavailable" };
+    }
+    lat = lp.lat;
+    lon = lp.lon;
+    title = t("export.jpg.coordsSourceLastPoint");
+  } else if (coordsCfg.source === "waypoint"){
+    const wpId = coordsCfg.waypointId;
+    if (!wpId){
+      return { ok: false, errorKey: "export.jpg.coordsWaypointUnavailable" };
+    }
+    const wp = (state.mapWaypoints || []).find((w) => w && w.id === wpId);
+    if (!wp || !jpgExportIsValidLatLon(wp.lat, wp.lon)){
+      return { ok: false, errorKey: "export.jpg.coordsWaypointUnavailable" };
+    }
+    lat = wp.lat;
+    lon = wp.lon;
+    const nm = wp.name && String(wp.name).trim();
+    title = nm || t("export.jpg.coordsWaypointFallback");
+  } else {
+    return { ok: false, errorKey: "export.jpg.coordsSourceUnavailable" };
+  }
+  const fmtResult = jpgExportFormatCoordLines(lat, lon, coordsCfg.format);
+  if (!fmtResult || !fmtResult.ok){
+    return { ok: false, errorKey: (fmtResult && fmtResult.errorKey) || "export.jpg.coordsFormatUnavailable" };
+  }
+  return {
+    ok: true,
+    source: coordsCfg.source,
+    title,
+    lat,
+    lon,
+    format: coordsCfg.format,
+    lines: fmtResult.lines.slice()
+  };
+}
+
+function jpgExportReadCoordsFromUi(){
+  const byId = (id) => document.getElementById(id);
+  const master = byId("jpgExportIncludeCoords");
+  const srcEl = byId("jpgExportCoordsSource");
+  const wptEl = byId("jpgExportCoordsWaypoint");
+  const fmtEl = byId("jpgExportCoordsFormat");
+  return jpgExportNormalizeCoords({
+    enabled: master ? !!master.checked : false,
+    source: srcEl ? srcEl.value : "viewCenter",
+    waypointId: (wptEl && wptEl.value) ? wptEl.value : null,
+    format: fmtEl ? fmtEl.value : "primary"
+  });
+}
+
+function jpgExportApplyCoordsToUi(cfg){
+  cfg = jpgExportNormalizeCoords(cfg);
+  const master = document.getElementById("jpgExportIncludeCoords");
+  if (master) master.checked = !!cfg.enabled;
+  const srcEl = document.getElementById("jpgExportCoordsSource");
+  if (srcEl) srcEl.value = cfg.source;
+  const fmtEl = document.getElementById("jpgExportCoordsFormat");
+  if (fmtEl) fmtEl.value = cfg.format;
+  const wptEl = document.getElementById("jpgExportCoordsWaypoint");
+  if (wptEl && cfg.waypointId){
+    const has = [...wptEl.options].some((o) => o.value === cfg.waypointId);
+    if (has) wptEl.value = cfg.waypointId;
+  }
+  jpgExportSyncCoordsSubUi();
+}
+
+function jpgExportPopulateWaypointSelect(){
+  const sel = document.getElementById("jpgExportCoordsWaypoint");
+  if (!sel) return;
+  const prev = sel.value || _jpgExportCoords.waypointId || "";
+  const wpts = Array.isArray(state.mapWaypoints) ? state.mapWaypoints : [];
+  sel.innerHTML = "";
+  if (!wpts.length){
+    const opt = document.createElement("option");
+    opt.value = "";
+    opt.textContent = t("export.jpg.coordsNoWaypoints");
+    opt.disabled = true;
+    opt.selected = true;
+    sel.appendChild(opt);
+    sel.disabled = true;
+    return;
+  }
+  for (const wp of wpts){
+    if (!wp || !wp.id) continue;
+    const opt = document.createElement("option");
+    opt.value = wp.id;
+    const nm = wp.name && String(wp.name).trim();
+    opt.textContent = nm || t("export.jpg.coordsWaypointFallback");
+    sel.appendChild(opt);
+  }
+  if (prev && [...sel.options].some((o) => o.value === prev)) sel.value = prev;
+  else if (_jpgExportCoords.waypointId && [...sel.options].some((o) => o.value === _jpgExportCoords.waypointId)){
+    sel.value = _jpgExportCoords.waypointId;
+  } else if (sel.options.length) sel.selectedIndex = 0;
+}
+
+function jpgExportSyncCoordsSubUi(){
+  const master = document.getElementById("jpgExportIncludeCoords");
+  const masterOn = !!(master && master.checked);
+  const subWrap = document.getElementById("jpgExportCoordsSubOpts");
+  if (subWrap) subWrap.classList.toggle("is-disabled", !masterOn);
+  const srcEl = document.getElementById("jpgExportCoordsSource");
+  const wptEl = document.getElementById("jpgExportCoordsWaypoint");
+  const fmtEl = document.getElementById("jpgExportCoordsFormat");
+  const srcVal = srcEl ? srcEl.value : "viewCenter";
+  const wptOn = masterOn && srcVal === "waypoint";
+  if (srcEl) srcEl.disabled = !masterOn;
+  if (fmtEl) fmtEl.disabled = !masterOn;
+  if (wptEl){
+    const wpts = Array.isArray(state.mapWaypoints) ? state.mapWaypoints : [];
+    wptEl.disabled = !masterOn || !wptOn || !wpts.length;
+  }
+}
+
+function jpgExportShowDialogMsg(msg){
+  const el = document.getElementById("jpgExportDialogMsg");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.hidden = !msg;
+}
+
+function jpgExportClearDialogMsg(){
+  jpgExportShowDialogMsg("");
+}
 
 function jpgExportNormalizeOverlayGranular(src){
   src = src || {};
@@ -20008,15 +20315,20 @@ function openJpgExportDialog(){
       includeScale: false,
       includeOverlays: true,
       overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
+      coords: jpgExportNormalizeCoords(_jpgExportCoords),
       scale: JPG_EXPORT_REQUESTED_SCALE
     });
     return;
   }
+  _jpgExportCoords.enabled = false;
   const cb = document.getElementById("jpgExportIncludeScale");
   if (cb) cb.checked = !!_jpgExportIncludeScale;
   const cbOv = document.getElementById("jpgExportIncludeOverlays");
   if (cbOv) cbOv.checked = !!_jpgExportIncludeOverlays;
   jpgExportApplyOverlayGranularToUi(_jpgExportOverlayGranular);
+  jpgExportPopulateWaypointSelect();
+  jpgExportApplyCoordsToUi(_jpgExportCoords);
+  jpgExportClearDialogMsg();
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
@@ -24847,6 +25159,76 @@ function drawJpgExportScale(ctx, canvasW, canvasH, model){
     ctx.fillText(model.nmLabel, tableX, cy);
     cy += fontSize + gapAfterText;
     drawJpgExportScaleBar(ctx, tableX, cy, maxBarWNm, barH, 10);
+  }
+  ctx.restore();
+}
+
+/** Draw optional coordinate box on JPG export canvas (B5.5D) — top-left, after scale. */
+function drawJpgExportCoords(ctx, canvasW, canvasH, model){
+  if (!ctx || !model || !model.ok || canvasW <= 0 || canvasH <= 0) return;
+  const lines = Array.isArray(model.lines) ? model.lines.filter((x) => x != null && String(x).length) : [];
+  if (!lines.length) return;
+  const pad = Math.max(8, Math.round(Math.min(canvasW, canvasH) * 0.016));
+  let fontSize = Math.max(11, Math.min(14, Math.round(canvasW * 0.028)));
+  const minFont = 9;
+  const lineGap = Math.max(3, Math.round(fontSize * 0.3));
+  const maxBoxW = Math.max(80, canvasW - pad * 2);
+  const maxBoxH = Math.max(pad * 2 + fontSize, canvasH - pad * 2);
+  let title = String(model.title || "").trim();
+  ctx.save();
+  ctx.textBaseline = "top";
+  let titleLine = title;
+  let bodyLines = lines.slice();
+  const measureBlock = (fs, ttl, bodies) => {
+    ctx.font = "700 " + fs + "px ui-monospace,monospace";
+    const tw = ctx.measureText(ttl).width;
+    ctx.font = "600 " + fs + "px ui-monospace,monospace";
+    let bw = 0;
+    for (const ln of bodies) bw = Math.max(bw, ctx.measureText(String(ln)).width);
+    const innerW = Math.max(tw, bw);
+    const innerH = fs + (bodies.length ? lineGap + bodies.length * (fs + lineGap) - lineGap : 0);
+    return { innerW, innerH, boxW: pad * 2 + innerW, boxH: pad * 2 + innerH };
+  };
+  const abbreviateTitle = (fs, ttl, maxInnerW) => {
+    ctx.font = "700 " + fs + "px ui-monospace,monospace";
+    if (ctx.measureText(ttl).width <= maxInnerW) return ttl;
+    const ell = "…";
+    let s = ttl;
+    while (s.length > 1 && ctx.measureText(s + ell).width > maxInnerW){
+      s = s.slice(0, -1);
+    }
+    return s + ell;
+  };
+  let block = measureBlock(fontSize, titleLine, bodyLines);
+  while ((block.boxW > maxBoxW || block.boxH > maxBoxH) && fontSize > minFont){
+    fontSize -= 1;
+    block = measureBlock(fontSize, titleLine, bodyLines);
+  }
+  titleLine = abbreviateTitle(fontSize, titleLine, maxBoxW - pad * 2);
+  block = measureBlock(fontSize, titleLine, bodyLines);
+  if (block.boxW > maxBoxW){
+    titleLine = abbreviateTitle(fontSize, titleLine, maxBoxW - pad * 2);
+    block = measureBlock(fontSize, titleLine, bodyLines);
+  }
+  const boxW = Math.min(block.boxW, maxBoxW);
+  const boxH = Math.min(block.boxH, maxBoxH);
+  const boxX = pad;
+  const boxY = pad;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(boxX, boxY, boxW, boxH);
+  ctx.strokeStyle = "#333333";
+  ctx.lineWidth = 1;
+  ctx.strokeRect(boxX + 0.5, boxY + 0.5, boxW - 1, boxH - 1);
+  let cy = boxY + pad;
+  const textX = boxX + pad;
+  ctx.font = "700 " + fontSize + "px ui-monospace,monospace";
+  ctx.fillStyle = "#111111";
+  ctx.fillText(titleLine, textX, cy);
+  cy += fontSize + lineGap;
+  ctx.font = "600 " + fontSize + "px ui-monospace,monospace";
+  for (const ln of bodyLines){
+    ctx.fillText(String(ln), textX, cy);
+    cy += fontSize + lineGap;
   }
   ctx.restore();
 }
@@ -39161,6 +39543,10 @@ function bindUI(){
   const jpgExportConfirm = document.getElementById("jpgExportDialogConfirm");
   const jpgExportScaleCb = document.getElementById("jpgExportIncludeScale");
   const jpgExportOverlaysCb = document.getElementById("jpgExportIncludeOverlays");
+  const jpgExportCoordsCb = document.getElementById("jpgExportIncludeCoords");
+  const jpgExportCoordsSource = document.getElementById("jpgExportCoordsSource");
+  const jpgExportCoordsWaypoint = document.getElementById("jpgExportCoordsWaypoint");
+  const jpgExportCoordsFormat = document.getElementById("jpgExportCoordsFormat");
   const jpgExportOvIds = ["jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels", "jpgExportOvPolygons", "jpgExportOvRangeRings"];
   if (jpgExportScaleCb) jpgExportScaleCb.addEventListener("change", () => {
     _jpgExportIncludeScale = !!jpgExportScaleCb.checked;
@@ -39168,6 +39554,25 @@ function bindUI(){
   if (jpgExportOverlaysCb) jpgExportOverlaysCb.addEventListener("change", () => {
     _jpgExportIncludeOverlays = !!jpgExportOverlaysCb.checked;
     jpgExportSyncOverlaySubUi();
+  });
+  if (jpgExportCoordsCb) jpgExportCoordsCb.addEventListener("change", () => {
+    _jpgExportCoords = jpgExportReadCoordsFromUi();
+    _jpgExportCoords.enabled = !!jpgExportCoordsCb.checked;
+    jpgExportSyncCoordsSubUi();
+    jpgExportClearDialogMsg();
+  });
+  if (jpgExportCoordsSource) jpgExportCoordsSource.addEventListener("change", () => {
+    _jpgExportCoords = jpgExportReadCoordsFromUi();
+    jpgExportSyncCoordsSubUi();
+    jpgExportClearDialogMsg();
+  });
+  if (jpgExportCoordsWaypoint) jpgExportCoordsWaypoint.addEventListener("change", () => {
+    _jpgExportCoords = jpgExportReadCoordsFromUi();
+    jpgExportClearDialogMsg();
+  });
+  if (jpgExportCoordsFormat) jpgExportCoordsFormat.addEventListener("change", () => {
+    _jpgExportCoords = jpgExportReadCoordsFromUi();
+    jpgExportClearDialogMsg();
   });
   for (const id of jpgExportOvIds){
     const el = document.getElementById(id);
@@ -39185,14 +39590,25 @@ function bindUI(){
   if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
     const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
     const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
+    const coordsCfg = jpgExportReadCoordsFromUi();
     _jpgExportIncludeScale = includeScale;
     _jpgExportIncludeOverlays = includeOverlays;
+    _jpgExportCoords = coordsCfg;
     if (includeOverlays) _jpgExportOverlayGranular = jpgExportReadOverlayGranularFromUi();
+    if (coordsCfg.enabled){
+      const resolved = jpgExportResolveCoordsModel(coordsCfg);
+      if (!resolved || !resolved.ok){
+        jpgExportShowDialogMsg(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable"));
+        return;
+      }
+    }
+    jpgExportClearDialogMsg();
     closeJpgExportDialog();
     exportMapAsJpg({
       includeScale,
       includeOverlays,
       overlays: jpgExportNormalizeOverlayGranular(_jpgExportOverlayGranular),
+      coords: coordsCfg,
       scale: JPG_EXPORT_REQUESTED_SCALE
     }).catch(() => {});
   });
