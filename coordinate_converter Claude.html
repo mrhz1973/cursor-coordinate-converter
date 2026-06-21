@@ -2636,15 +2636,6 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .jpg-export-dialog-body .jpg-export-scale-opt{
   display:flex; align-items:center; gap:8px; margin:10px 0 14px; font-size:.9rem;
 }
-.jpg-export-dialog-body .jpg-export-resolution-opt{
-  margin:0 0 14px; font-size:.9rem;
-}
-.jpg-export-dialog-body .jpg-export-resolution-opt .jpg-export-resolution-radios{
-  display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;
-}
-.jpg-export-dialog-body .jpg-export-resolution-opt .jpg-export-resolution-radios label{
-  display:flex; align-items:center; gap:6px; cursor:pointer;
-}
 .jpg-export-dialog-actions{
   display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end;
 }
@@ -9912,15 +9903,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="checkbox" id="jpgExportIncludeOverlays">
       <span data-i18n="export.jpg.includeOverlays">Includi overlay mappa</span>
     </label>
-    <div class="jpg-export-resolution-opt">
-      <span data-i18n="export.jpg.resolution">Risoluzione immagine</span>
-      <p class="hint" data-i18n="export.jpg.resolutionHelp">Maggiore nitidezza per griglia, overlay e scala. I tile restano alla risoluzione sorgente.</p>
-      <div class="jpg-export-resolution-radios" role="radiogroup" aria-label="Risoluzione export JPG">
-        <label><input type="radio" name="jpgExportResolution" value="1" id="jpgExportResolution1"> <span data-i18n="export.jpg.resolution1x">1×</span></label>
-        <label><input type="radio" name="jpgExportResolution" value="2" id="jpgExportResolution2"> <span data-i18n="export.jpg.resolution2x">2×</span></label>
-        <label><input type="radio" name="jpgExportResolution" value="3" id="jpgExportResolution3"> <span data-i18n="export.jpg.resolution3x">3×</span></label>
-      </div>
-    </div>
     <div class="jpg-export-dialog-actions">
       <button type="button" class="btn" id="jpgExportDialogCancel" data-i18n="track.unsavedCloseCancel">Annulla</button>
       <button type="button" class="btn btn-primary" id="jpgExportDialogConfirm" data-i18n="export.jpg.confirm">Esporta JPG</button>
@@ -11940,11 +11922,6 @@ const I18N = {
     "export.jpg.dialogBody":"Esporta la vista corrente della mappa come immagine JPEG.",
     "export.jpg.includeScale":"Includi scala",
     "export.jpg.includeOverlays":"Includi overlay mappa",
-    "export.jpg.resolution":"Risoluzione immagine",
-    "export.jpg.resolutionHelp":"Maggiore nitidezza per griglia, overlay e scala. I tile restano alla risoluzione sorgente.",
-    "export.jpg.resolution1x":"1×",
-    "export.jpg.resolution2x":"2×",
-    "export.jpg.resolution3x":"3×",
     "export.jpg.confirm":"Esporta JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Esporta l'area selezionata a un solo livello di zoom come immagine JPEG (non multi-zoom).",
@@ -13482,11 +13459,6 @@ const I18N = {
     "export.jpg.dialogBody":"Export the current map view as a JPEG image.",
     "export.jpg.includeScale":"Include scale",
     "export.jpg.includeOverlays":"Include map overlays",
-    "export.jpg.resolution":"Image resolution",
-    "export.jpg.resolutionHelp":"Sharper grid, overlays and scale. Map tiles stay at source resolution (interpolated only).",
-    "export.jpg.resolution1x":"1×",
-    "export.jpg.resolution2x":"2×",
-    "export.jpg.resolution3x":"3×",
     "export.jpg.confirm":"Export JPG",
     "offcache.exportZoom":"JPG export zoom",
     "offcache.exportJpgHint":"Export the selected offline area at a single zoom level as a JPEG image (not multi-zoom).",
@@ -15025,11 +14997,6 @@ const I18N = {
     "export.jpg.dialogBody":"Exporter la vue actuelle de la carte en image JPEG.",
     "export.jpg.includeScale":"Inclure l'échelle",
     "export.jpg.includeOverlays":"Inclure les superpositions de carte",
-    "export.jpg.resolution":"Résolution de l'image",
-    "export.jpg.resolutionHelp":"Grille, superpositions et échelle plus nettes. Les tuiles restent à la résolution source (interpolation seule).",
-    "export.jpg.resolution1x":"1×",
-    "export.jpg.resolution2x":"2×",
-    "export.jpg.resolution3x":"3×",
     "export.jpg.confirm":"Exporter JPG",
     "offcache.exportZoom":"Zoom export JPG",
     "offcache.exportJpgHint":"Exporter la zone hors ligne sélectionnée à un seul niveau de zoom en JPEG (pas multi-zoom).",
@@ -16585,8 +16552,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B5.5E-1";
-const APP_BUILD_DETAIL = "JPG export default maximum quality 3x";
+const APP_BUILD_ID = "B5.5E-2";
+const APP_BUILD_DETAIL = "JPG export fixed maximum quality 3x";
 const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19902,23 +19869,7 @@ async function exportMapAsJpg(opts){
 
 let _jpgExportIncludeScale = false;
 let _jpgExportIncludeOverlays = true;
-let _jpgExportScale = 3;
-
-function jpgExportNormalizeScale(v){
-  const n = Math.round(Number(v) || 1);
-  return (n === 2 || n === 3) ? n : 1;
-}
-
-function jpgExportReadScaleChoice(){
-  const rad = document.querySelector('input[name="jpgExportResolution"]:checked');
-  return jpgExportNormalizeScale(rad ? rad.value : _jpgExportScale);
-}
-
-function jpgExportSetScaleChoice(s){
-  const v = jpgExportNormalizeScale(s);
-  const el = document.getElementById("jpgExportResolution" + v);
-  if (el) el.checked = true;
-}
+const JPG_EXPORT_REQUESTED_SCALE = 3;
 
 function closeJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
@@ -19929,14 +19880,13 @@ function closeJpgExportDialog(){
 function openJpgExportDialog(){
   const dlg = document.getElementById("jpgExportDialog");
   if (!dlg){
-    exportMapAsJpg({ includeScale: false, includeOverlays: true, scale: 1 });
+    exportMapAsJpg({ includeScale: false, includeOverlays: true, scale: JPG_EXPORT_REQUESTED_SCALE });
     return;
   }
   const cb = document.getElementById("jpgExportIncludeScale");
   if (cb) cb.checked = !!_jpgExportIncludeScale;
   const cbOv = document.getElementById("jpgExportIncludeOverlays");
   if (cbOv) cbOv.checked = !!_jpgExportIncludeOverlays;
-  jpgExportSetScaleChoice(_jpgExportScale);
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
 }
 
@@ -39086,11 +39036,6 @@ function bindUI(){
   if (jpgExportOverlaysCb) jpgExportOverlaysCb.addEventListener("change", () => {
     _jpgExportIncludeOverlays = !!jpgExportOverlaysCb.checked;
   });
-  document.querySelectorAll('input[name="jpgExportResolution"]').forEach((rad) => {
-    rad.addEventListener("change", () => {
-      if (rad.checked) _jpgExportScale = jpgExportNormalizeScale(rad.value);
-    });
-  });
   if (jpgExportClose) jpgExportClose.addEventListener("click", closeJpgExportDialog);
   if (jpgExportCancel) jpgExportCancel.addEventListener("click", closeJpgExportDialog);
   if (jpgExportDlg) jpgExportDlg.addEventListener("click", (ev) => {
@@ -39099,12 +39044,10 @@ function bindUI(){
   if (jpgExportConfirm) jpgExportConfirm.addEventListener("click", () => {
     const includeScale = !!(jpgExportScaleCb && jpgExportScaleCb.checked);
     const includeOverlays = !!(jpgExportOverlaysCb && jpgExportOverlaysCb.checked);
-    const scale = jpgExportReadScaleChoice();
     _jpgExportIncludeScale = includeScale;
     _jpgExportIncludeOverlays = includeOverlays;
-    _jpgExportScale = scale;
     closeJpgExportDialog();
-    exportMapAsJpg({ includeScale, includeOverlays, scale }).catch(() => {});
+    exportMapAsJpg({ includeScale, includeOverlays, scale: JPG_EXPORT_REQUESTED_SCALE }).catch(() => {});
   });
 
   const btnPr = document.getElementById("btnPrintReport");

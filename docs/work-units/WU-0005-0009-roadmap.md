@@ -1307,7 +1307,9 @@ Stesso schema di B3.
 
 **B5.4f etichette graduate scala valore per-tacca (backlog):** valore per-tacca tondo (`pickM`/`pickNm` = 1/2/5 × 10ⁿ); opz. mid-label; solo km/Nm (non mi); parità `buildScaleBar` + `drawJpgExportScale`; B5.4d PASS → nuova ri-QA export; **PLAN-FIRST**.
 
-**B5.5E-1 export JPG default qualità 3× (2026-06-21):** PASS tecnico statico — build **`B5.5E-1`**; `_jpgExportScale = 3` default sessione; selettore 1×/2×/3× invariato; cap 8192/downgrade fail-safe invariati; B5.5B-1 overlay fidelity invariato. **`node --check`** OK. **QA operatore post-deploy: pending.**
+**B5.5E-2 export JPG qualità fissa 3× senza selettore (2026-06-21):** PASS tecnico statico — build **`B5.5E-2`**; rimosso selettore 1×/2×/3×; `JPG_EXPORT_REQUESTED_SCALE = 3`; cap 8192/downgrade fail-safe invariati. **`node --check`** OK. **QA operatore post-deploy: pending.**
+
+**B5.5E-1 export JPG default qualità 3× (2026-06-21):** PASS tecnico + QA parziale (radio 3×) — build **`B5.5E-1`** → superato da **B5.5E-2** (selettore rimosso).
 
 **B5.5E export JPG supersampling 1×/2×/3× (2026-06-21):** PASS tecnico statico — build **`B5.5E`**; radio 1×/2×/3×; `exportMapAsJpg({ scale })`; canvas supersampling + `rasterizeSvgOntoCanvas` `rasterScale`; cap 8192; tile interpolate only; B5.5Z fuori scope. **`node --check`** OK. **QA operatore post-deploy: pending** (default 3× → B5.5E-1).
 
