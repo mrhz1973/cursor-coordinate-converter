@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-21 — **Chiusura sessione `finito` — F3 anti-terzo-commit esteso (metodo):** commit task **`e92484a`** — estensione F3 a `inbox/**`+`latest.md`; allineamento `finito` step 3 in `00-project-core.mdc`; mirror OM §4. **Monolite non incluso.** Working tree pre-autosync pulito. Push task OK. Inbox **`2026-06-21_1430_riepilogo_finito-sessione.md`**. **Prossimo:** B5.5D (non aperto); dogfooding F3 via chiusura a due commit.
+
 2026-06-21 — **Chiusura sessione `finito` — B5.5C PASS operatore post-deploy VPS (docs):** commit **`bc66dff`** — OM §7 + WU: **PASS operatore** B5.5C export JPG granular overlay; runtime **`5a10a48`**; HEAD/deploy **`4da28f5`**; smoke **`200`**, byte-match **`2161529`**; build **`B5.5C`**; QA `:8000?v=5a10a48`; attestazione «tutto pass»; **B5.5C chiuso end-to-end**. **Monolite non incluso.** Inbox **`2026-06-21_1120_riepilogo_finito-sessione.md`**. **Prossimo:** **B5.5D** tab coordinate su canvas export JPG (non ancora aperto).
 
 2026-06-21 — **B5.5C export JPG selezione granulare overlay (runtime):** commit task **`5a10a48`** — build **`B5.5C`**; master overlay + 5 categorie granulari transienti; label waypoint indipendenti da marker; qualità 3× invariata; nessuna rete/cache/proxy. **Monolite incluso.** **QA operatore post-deploy: pending** → **PASS** in `bc66dff`. Inbox **`2026-06-21_1107_b55c-granular-overlay-export.md`**. **Prossimo:** deploy VPS GIS-only + QA `?v=5a10a48`; candidato **B5.5D** dopo QA.
