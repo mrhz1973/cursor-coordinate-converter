@@ -264,6 +264,56 @@ Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la proc
 - `pass_tecnico_remoto` / `result_cursor` ↔ Fase C; `git ls-remote origin main` = autorità finale.
 - `pass_operatore` / `result_runtime` ↔ Fase D; non inferire PASS operatore da PASS tecnico.
 
+### Anchor stabile (`real_task_commit`)
+
+- `real_task_commit` è **obbligatorio** e identifica il commit **task principale** del blocco.
+- **Non** sostituirlo con: commit autosync/report; HEAD finale della sessione; blob SHA del file report.
+- Resta l’ancora stabile del report anche quando il container autosync/report cambia.
+
+### Container corrente (`PENDING_SELF_REFERENCE`)
+
+- Lo SHA del commit che **contiene** il report corrente deve restare **`PENDING_SELF_REFERENCE`** durante la generazione e nel commit pubblicato.
+- Il campo **`current_report_container`** (o equivalente nel template) va **realmente usato** — non solo documentato.
+- **Non** sostituire `PENDING_SELF_REFERENCE` nel commit corrente per inseguire il proprio SHA.
+- Inserire nel report lo SHA del commit che lo contiene è una **self-reference non stabilizzabile**: ogni tentativo genera un nuovo SHA.
+
+### Verifica esterna del HEAD finale
+
+- Il report **non** è autorità del proprio HEAD finale post-push.
+- Dopo il push del commit autosync/report, la verifica conclusiva avviene **esternamente** tramite: `git rev-parse HEAD`; `git rev-parse origin/main`; `git ls-remote origin main`; seed handoff (Regola F, OM §4).
+- Il PASS remoto del container corrente appartiene al **report Cursor esterno** e al seed — **non** a campi self-referentiali nel file.
+- **Non** presentare `PENDING_SELF_REFERENCE` come PASS remoto; **non** inventare remote-hash prima del push.
+
+### Anti-ricorsione (divieti espliciti)
+
+- **Vietato** amend del commit autosync/report per inserire il proprio SHA.
+- **Vietato** terzo commit dedicato al finalize-hash.
+- **Vietato** loop di amend o backfill del container corrente nella stessa sessione.
+- **Vietato** dichiarare PASS remoto basato su SHA self-referential nel file.
+- **Vietato** usare blob SHA del file report come prova di HEAD remoto.
+
+### Backfill HISTORY (container precedenti)
+
+- Un commit container **precedente** può essere registrato in **HISTORY** soltanto in un report **successivo**, quando è già pubblicato e verificabile dall’esterno.
+- Il backfill: **non** modifica retroattivamente il commit precedente; **non** chiude lo SHA del container corrente; **non** crea commit dedicato; registra il precedente container come fatto storico.
+
+### Output verbatim interno al report
+
+Il blocco `OUTPUT VERBATIM` in `LAST_CURSOR_REPORT.md` **può** contenere:
+
+- output relativo al commit task (`real_task_commit`);
+- remote HEAD verificato **dopo** il push del task e **prima** del commit report;
+- stato iniziale verificato di un follow-up;
+- container precedenti già esterni e verificabili.
+
+**Non può** contenere come fatto già verificato:
+
+- lo SHA del commit report corrente non ancora creato;
+- il futuro HEAD post-push del report;
+- output ricostruito, previsto o derivato da amend.
+
+Per il HEAD finale post-push del container corrente usare **`EXTERNAL_ONLY`** (o equivalente) e attestarlo nel report Cursor esterno + seed Regola F.
+
 ### Chiusura task reale (regola operativa; **non** modifica comando `finito`)
 
 1. Commit principale → push.
