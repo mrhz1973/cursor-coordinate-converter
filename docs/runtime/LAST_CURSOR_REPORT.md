@@ -2,60 +2,60 @@
 
 ## LATEST
 
-* real_task_commit: `1099655c24ba7eff621610f9abe63e84882774af`
-* real_task_subject: feat: B5.5Z-DELTA-A1 segmented tile-only quick JPG export at high zoom
-* report_generated_at: 2026-06-22T00:55:00+02:00
+* real_task_commit: `4047f4f10a17545855c549ecc2e60aae9ba359c2`
+* real_task_subject: docs: chiudi B5.5Z-DELTA-A1 e B5.5Z end-to-end — PASS operatore VPS
+* report_generated_at: 2026-06-22T01:30:00+02:00
 * branch: main
-* remote_head_after_task_push: `1099655c24ba7eff621610f9abe63e84882774af` (verificato post push commit task B5.5Z-DELTA-A1)
-* previous_report_container: `af336a2d5c7d978c50229c682c3216ce5e958c18` (container autosync B5.5Z-3 finito — esterno/verificabile)
+* remote_head_after_task_push: `4047f4f10a17545855c549ecc2e60aae9ba359c2` (verificato post push commit task docs-only)
+* previous_report_container: `e15e772de20fc80aa1acc85e80e9934e84d1eaa1` (container autosync B5.5Z-DELTA-A1 runtime finito — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: clean (pre-autosync — vedi OUTPUT VERBATIM)
 * pass_tecnico_remoto: non attestato nel file per container corrente — verifica esterna post-push
-* result_cursor: B5.5Z-DELTA-A1 — full zoom to maxZoom; segmented tile-only oltre-cap; B5.5Z-3 entro-cap invariato; egress/stima; deterministic canvas/blob cleanup; review byte-level PASS; monolite incluso nel task
-* pass_operatore: non attestato — deploy/QA operatore VPS pending
-* result_runtime: export segmentato implementato; QA browser non eseguita in Cursor
-* qa_attestation_source: n/a
-* notes: B5.5Z-DELTA-A1 e B5.5Z non chiusi end-to-end; deploy runtime 1099655 pending; PENDING_SELF_REFERENCE per design F3
+* result_cursor: docs-only — registra chiusura B5.5Z-DELTA-A1 e B5.5Z end-to-end; deploy VPS runtime 1099655 @ e15e772; smoke byte/hash-match; monolite assente dal commit task
+* pass_operatore: PASS — attestazione operatore «QA B5.5Z-DELTA-A1 PASS operatore» (2026-06-22)
+* result_runtime: quick export entro-cap + oltre-cap segmentato + regressione Mappe Offline verificati dall'operatore su VPS tailnet
+* qa_attestation_source: operatore (flusso prompt)
+* notes: APP_BUILD_ID resta B5.5D; overlay segmenti oltre-cap backlog opzionale; PENDING_SELF_REFERENCE per design F3
 
 ## OUTPUT VERBATIM
 
 ```text
-# Stato verificato PRIMA del commit container corrente (pre-autosync B5.5Z-DELTA-A1 finito)
+# Stato verificato PRIMA del commit container corrente (pre-autosync finito B5.5Z PASS operatore)
 
 git log --oneline -5
+4047f4f docs: chiudi B5.5Z-DELTA-A1 e B5.5Z end-to-end — PASS operatore VPS
+e15e772 docs: orchestratore — riconciliazione finito sessione B5.5Z-DELTA-A1
 1099655 feat: B5.5Z-DELTA-A1 segmented tile-only quick JPG export at high zoom
 af336a2 docs: orchestratore — riconciliazione finito sessione B5.5Z-3
 d1b2905 feat: B5.5Z-3 quick geographic JPG export from top button
-53ce323 docs: orchestratore — riconciliazione finito sessione B5.5Z-2A
-06c0b3b refactor: B5.5Z-2A extract geographic JPG mosaic core
 
 git status --short
 (vuoto)
 
 git rev-parse HEAD
-1099655c24ba7eff621610f9abe63e84882774af
+4047f4f10a17545855c549ecc2e60aae9ba359c2
 
 git rev-parse origin/main
-1099655c24ba7eff621610f9abe63e84882774af
+4047f4f10a17545855c549ecc2e60aae9ba359c2
 
 git branch --show-current
 main
 
 git ls-remote origin main
-1099655c24ba7eff621610f9abe63e84882774af	refs/heads/main
+4047f4f10a17545855c549ecc2e60aae9ba359c2	refs/heads/main
 
-git push (task)
-af336a2..1099655 main -> main
+git push (task docs)
+e15e772..4047f4f main -> main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY** — verificare post-push con `git ls-remote origin main` e seed Regola F nel report Cursor esterno.
 
 ## HISTORY
 
-* af336a2 — B5.5Z-3 finito autosync; container verificabile (backfill da report precedente PENDING_SELF_REFERENCE)
-* d1b2905 — B5.5Z-3 task commit
-* 53ce323 — B5.5Z-2A finito autosync; container verificabile
+* e15e772 — B5.5Z-DELTA-A1 runtime finito autosync; container verificabile (backfill da report precedente)
+* af336a2 — B5.5Z-3 finito autosync; container verificabile
+* 1099655 — B5.5Z-DELTA-A1 task commit (runtime monolite)
 
 ## LIMITI
 
