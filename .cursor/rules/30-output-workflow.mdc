@@ -257,8 +257,9 @@ Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la proc
 
 ### Mapping commit (invariato da F1/F2)
 
+- **Ambito esteso (artefatti autosync correnti):** la disciplina F3 di questa sezione (container corrente, HEAD finale esterno, anti-ricorsione, anti-terzo-commit, backfill differito) si applica a **tutti** gli artefatti inclusi nel commit autosync/report corrente — `docs/runtime/LAST_CURSOR_REPORT.md` (**caso strutturato principale**), `docs/orchestrator/inbox/**`, `docs/orchestrator/latest.md` e ogni altro artefatto orchestratore nello stesso commit — **non** soltanto a `LAST_CURSOR_REPORT.md`.
 - Commit principale = task; autosync/report = report; `real_task_commit` = SHA commit **principale**, non autosync.
-- Report dentro autosync esistente — **nessun** terzo commit; **nessun** commit finalize-hash.
+- Report e artefatti orchestratore dentro l’autosync esistente — **nessun** terzo commit; **nessun** commit finalize-hash; **nessun** commit «completa inbox» o «finalize autosync».
 - `PENDING_SELF_REFERENCE` + backfill in **HISTORY** quando verificabile; non inventare hash; non commit dedicati solo per backfill.
 - Prima di sovrascrivere **LATEST**, spostare l’entry precedente in **HISTORY** (backfill campi `PENDING_SELF_REFERENCE` verificabili).
 - `pass_tecnico_remoto` / `result_cursor` ↔ Fase C; `git ls-remote origin main` = autorità finale.
@@ -276,12 +277,16 @@ Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la proc
 - Il campo **`current_report_container`** (o equivalente nel template) va **realmente usato** — non solo documentato.
 - **Non** sostituire `PENDING_SELF_REFERENCE` nel commit corrente per inseguire il proprio SHA.
 - Inserire nel report lo SHA del commit che lo contiene è una **self-reference non stabilizzabile**: ogni tentativo genera un nuovo SHA.
+- **Stesso vincolo per `docs/orchestrator/inbox/**` e `docs/orchestrator/latest.md`** quando sono nel commit autosync corrente: **non** devono autorare lo SHA del proprio commit autosync, l’esito del suo push né l’HEAD finale post-push.
+- **Omissione preferita per inbox/latest:** per questi artefatti **preferire l’omissione completa** dei campi post-push del corrente autosync. **Non** autorare righe come «commit autosync da creare», «push autosync da verificare», «HEAD finale da compilare» né altri placeholder destinati a essere completati nella **stessa** sessione.
+- **Sentinella terminale solo se strutturalmente indispensabile:** dove un campo strutturale è realmente necessario è ammessa **solo** una sentinella terminale (`PENDING_SELF_REFERENCE`, `EXTERNAL_ONLY`). La sentinella è **definitiva** per quel commit e **non** va aggiornata nella stessa sessione.
 
 ### Verifica esterna del HEAD finale
 
-- Il report **non** è autorità del proprio HEAD finale post-push.
+- Né il report né gli altri artefatti autosync correnti (`inbox/**`, `latest.md`) sono autorità del proprio HEAD finale post-push.
 - Dopo il push del commit autosync/report, la verifica conclusiva avviene **esternamente** tramite: `git rev-parse HEAD`; `git rev-parse origin/main`; `git ls-remote origin main`; seed handoff (Regola F, OM §4).
-- Il PASS remoto del container corrente appartiene al **report Cursor esterno** e al seed — **non** a campi self-referentiali nel file.
+- Il PASS remoto del container corrente appartiene al **report Cursor esterno** e al seed — **non** a campi self-referentiali in nessuno degli artefatti autosync correnti.
+- **Sono `EXTERNAL_ONLY`** e non vanno autorati come fatti completabili negli artefatti del corrente autosync: lo SHA del commit autosync corrente; l’esito del suo push; l’HEAD finale post-push; l’output `git ls-remote origin main` riferito al container autosync corrente.
 - **Non** presentare `PENDING_SELF_REFERENCE` come PASS remoto; **non** inventare remote-hash prima del push.
 
 ### Anti-ricorsione (divieti espliciti)
@@ -291,34 +296,43 @@ Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la proc
 - **Vietato** loop di amend o backfill del container corrente nella stessa sessione.
 - **Vietato** dichiarare PASS remoto basato su SHA self-referential nel file.
 - **Vietato** usare blob SHA del file report come prova di HEAD remoto.
+- **Vietato qualsiasi commit successivo** il cui unico scopo sia: inserire lo SHA del commit autosync corrente; registrare il push del corrente autosync; registrare il nuovo HEAD finale; completare in `inbox/**` o `latest.md` campi lasciati «da creare» o «da verificare». Sono inclusi i commit «completa inbox» e «finalize autosync».
+- **Divieto alla radice (prima dell’autosync):** è vietato **autorare** campi intenzionalmente incompleti quando il loro completamento richiederebbe amend, terzo commit, commit «completa inbox», commit «finalize autosync» o un ulteriore aggiornamento in-sessione. Il divieto agisce **prima** della creazione dell’autosync, non si limita a vietare il successivo commit correttivo: i campi post-push del corrente autosync vanno **omessi** o ridotti a sentinella terminale già al momento della scrittura.
 
 ### Backfill HISTORY (container precedenti)
 
-- Un commit container **precedente** può essere registrato in **HISTORY** soltanto in un report **successivo**, quando è già pubblicato e verificabile dall’esterno.
-- Il backfill: **non** modifica retroattivamente il commit precedente; **non** chiude lo SHA del container corrente; **non** crea commit dedicato; registra il precedente container come fatto storico.
+- Un commit container **precedente** può essere registrato in **HISTORY** (del report o, come riferimento storico, di `inbox`/`latest`) soltanto in un intervento **successivo**, quando è già pubblicato e verificabile dall’esterno.
+- Il backfill: **non** modifica retroattivamente il commit precedente; **non** chiude lo SHA del container corrente; **non** crea commit dedicato; **mai** backfill del container corrente nella stessa sessione; registra il precedente container come fatto storico.
 
 ### Output verbatim interno al report
 
-Il blocco `OUTPUT VERBATIM` in `LAST_CURSOR_REPORT.md` **può** contenere:
+Il blocco `OUTPUT VERBATIM` in `LAST_CURSOR_REPORT.md` — e, per analogia, ogni narrazione di fatti git in `inbox/**` e `latest.md` del commit autosync corrente — **può** contenere:
 
 - output relativo al commit task (`real_task_commit`);
-- remote HEAD verificato **dopo** il push del task e **prima** del commit report;
+- remote HEAD verificato **dopo** il push del task e **prima** del commit report/autosync;
 - stato iniziale verificato di un follow-up;
 - container precedenti già esterni e verificabili.
 
 **Non può** contenere come fatto già verificato:
 
-- lo SHA del commit report corrente non ancora creato;
-- il futuro HEAD post-push del report;
+- lo SHA del commit report/autosync corrente non ancora creato;
+- il futuro HEAD post-push del report/autosync;
+- l’esito del push del corrente autosync;
 - output ricostruito, previsto o derivato da amend.
 
-Per il HEAD finale post-push del container corrente usare **`EXTERNAL_ONLY`** (o equivalente) e attestarlo nel report Cursor esterno + seed Regola F.
+Per il HEAD finale post-push del container corrente usare **`EXTERNAL_ONLY`** (o equivalente) e attestarlo nel report Cursor esterno + seed Regola F. I fatti post-push del corrente autosync **non** sono completabili negli artefatti che quel commit contiene.
 
 ### Chiusura task reale (regola operativa; **non** modifica comando `finito`)
 
 1. Commit principale → push.
 2. Autosync/report con `latest`/`inbox` + aggiornamento `LAST_CURSOR_REPORT.md` → push.
-3. Verifica PASS tecnico remoto (output verbatim).
+3. Verifica PASS tecnico remoto (output verbatim), **esterna** al commit autosync.
+
+**Nessun terzo commit.** La chiusura di un task reale produce esattamente **due** commit (task + autosync/report).
+
+**Published = immutable.** Dopo il push del commit autosync, gli artefatti in esso contenuti (`LAST_CURSOR_REPORT.md`, `inbox/**`, `latest.md`) sono **immutabili per l’intervento corrente**: la verifica remota avviene **esternamente**; nessuna riscrittura o completamento in-sessione; eventuali riferimenti al container diventano registrabili **solo** in un intervento futuro come storia precedente.
+
+**Criterio di accettazione (dogfooding).** Un fix di questa disciplina è PASS solo se la chiusura che lo collauda produce esattamente **due** commit e il suo `inbox` **non** contiene: lo SHA del proprio commit autosync; «push autosync da verificare»; un HEAD finale interno; campi che richiederebbero un terzo commit. L’`inbox` **può** contenere il commit task (noto prima dell’autosync); per i fatti del corrente autosync usa **omissione** o sentinella terminale. Se il workflow tenta un terzo commit «completa inbox» → fix **FAIL**, STOP, **non** dichiarare PASS metodo.
 
 Template: `docs/runtime/LAST_CURSOR_REPORT.template.md`. **Non** modifica la sequenza **`finito`** in Fase F3.
 
