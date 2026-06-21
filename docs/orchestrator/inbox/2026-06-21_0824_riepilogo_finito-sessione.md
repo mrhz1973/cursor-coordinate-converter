@@ -51,4 +51,5 @@ Deploy VPS GIS-only (`git pull --ff-only` + `systemctl restart goi-gis-app`) + Q
 
 ## Commit orchestratore (step 3)
 
-_Pending — verrà aggiornato dopo commit autosync._
+- **`d110835`** — `docs: orchestratore — riconciliazione finito sessione B5.5E-1`
+- **Push step 3:** OK

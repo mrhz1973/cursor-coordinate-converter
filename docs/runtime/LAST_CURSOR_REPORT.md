@@ -17,7 +17,7 @@
 * result_runtime: n/a finché non deployato — runtime locale 1cbd4d1
 * qa_attestation_source: n/a
 * docs_commit: `1cbd4d1` (monolite+docs stesso commit)
-* autosync_commit: PENDING_SELF_REFERENCE
+* autosync_commit: `d110835`
 * runtime_ref: `1cbd4d1`
 * deploy_ref: pending (VPS ancora da aggiornare a B5.5E-1)
 
