@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — B5.5Z-3 export JPG rapido pulsante superiore (runtime + docs):** commit task **`d1b2905`** — `exportQuickViewportAsJpg()`; snapshot viewport all'apertura; layer=`state.mapLayer`; zoom corrente→max; overlay/scala/coordinate; consenso condiviso; Mappe Offline invariato; review diff PASS; **`node --check`** OK; deploy/QA operatore VPS **pending**; **B5.5Z non chiuso end-to-end**. **Monolite incluso.** Inbox **`2026-06-22_1200_riepilogo_finito-sessione.md`**. **Prossimo:** deploy VPS runtime `d1b2905` + QA operatore.
+
 2026-06-21 — **Chiusura sessione `finito` — B5.5Z-2A core mosaico geografico (runtime + docs):** commit task **`06c0b3b`** — `renderGeographicJpgMosaic(options)`; `exportOfflineAreaAsJpg()` delega senza modifica intenzionale comportamento; nessun collegamento pulsante quick; **`node --check`** OK; PASS statico; deploy/QA Mappe Offline **pending**; **B5.5Z non completato**. **Monolite incluso.** Inbox **`2026-06-21_2315_riepilogo_finito-sessione.md`**. **Prossimo (post-QA):** **B5.5Z-2B** motore geografico condiviso e caller quick, ancora senza overlay.
 
 2026-06-21 — **Chiusura sessione `finito` — B5.5Z-1 snapshot viewport e zoom dinamico (runtime + docs):** commit task **`019b2f8`** — `getQuickExportViewportSnapshot()` + `computeQuickExportZoomLevels()`; antimeridiano fail-closed; nessun call site; nessun cambiamento UI/runtime; **`node --check`** OK; PASS statico; **B5.5Z non completato**. **Monolite incluso.** Inbox **`2026-06-21_2200_riepilogo_finito-sessione.md`**. **Prossimo:** **B5.5Z-2** estrazione motore geografico condiviso, Mappe Offline invariato.
