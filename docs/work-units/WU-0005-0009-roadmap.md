@@ -301,17 +301,15 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-EDIT-B2 fondazione (sotto);
+  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-EDIT-B3 UI edit (sotto);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
-**Stato:** **micro-fix pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
+**Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.
 
-**Runtime base:** `9bd2e4c` — fondazione `_polyEdit` + 4 helper (no UI).
-
-**Micro-fix single-source:** rimossi controlli `length < 3` duplicati in `polygonEnterEdit`/`polygonSaveEdit`; validità minima e cap vertici delegati esclusivamente a `gisSanitizeFeature`/`gisSanitizeGeometry` via `gisFeatureUpdate`; comportamento B2 invariato.
+**Micro-fix single-source:** rimossi controlli `length < 3` duplicati in `polygonEnterEdit`/`polygonSaveEdit`; validità minima e cap vertici delegati esclusivamente a `gisSanitizeFeature`/`gisSanitizeGeometry` via `gisFeatureUpdate`.
 
 **Implementazione (monolite):**
 
@@ -323,13 +321,30 @@ Note operative:
 
 **Invariati:** creazione/cancel/delete/rename/lista/render saved/draft; Mappe Offline; altri strumenti mappa; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Fuori scope B2:** pulsante Modifica, overlay edit, handle, drag vertici/intero, dirty-confirm, Esc/chiusura sicura, i18n, CSS.
+**Fuori scope B2:** pulsante Modifica, overlay edit, handle, drag vertici/intero, dirty-confirm, Esc/chiusura sicura, i18n, CSS — **B3+**.
 
-**Review byte Claude:** pending (gate spostato post-push, pre-deploy/QA).
+### WU-0006 POLY-EDIT-B3 — Modifica + overlay + barra Salva/Annulla (no drag)
 
-**Deploy / QA operatore:** non eseguiti; non richiesti per B2.
+**Stato:** **runtime implementato e pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
 
-**Prossimo:** POLY-EDIT-B3 — azione Modifica + overlay vertici + barra Salva/Annulla.
+**Implementazione (monolite):**
+
+- Pulsante **Modifica** per riga in `renderPolygonPanelList` (`data-role="poly-edit"`);
+- Barra in-pannello `#polygonPanelEditBar` — titolo edit, hint vertici, Salva (primary), Annulla (secondary), errore salvataggio;
+- `renderPolygonEditBar()`, `polygonRefreshEditUi()`, handler Salva/Annulla/enter;
+- `renderPolygonEditOverlay()` — SVG da `state._polyEdit.working`; vertici visibili, **non trascinabili** (B3);
+- Esclusione poligono in edit da `renderGisPolygonsOverlay()`;
+- Salva clean → `polygonCancelEdit()`; Salva dirty → `polygonSaveEdit()`;
+- Rename/delete disabilitati durante edit; blocco edit se disegno attivo;
+- i18n IT/EN/FR (`gis.polygonPanel.edit*`, `tip.polygonPanel.edit`).
+
+**Invariati:** contratto helper B2; nessun drag; nessun dirty-confirm; nessun listener pointer document-level; **`APP_BUILD_ID` `B5.5Z`**.
+
+**Review byte Claude:** pending (gate post-push, pre-deploy/QA).
+
+**Deploy / QA operatore:** non eseguiti; non richiesti per B3.
+
+**Prossimo:** POLY-EDIT-B4 — dirty-confirm / uscita sicura (Esc, chiusura pannello, cambio strumento); poi B5 drag vertici.
 
 ## Decisioni da bloccare prima di iniziare
 
