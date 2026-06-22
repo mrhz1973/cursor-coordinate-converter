@@ -2,57 +2,57 @@
 
 ## LATEST
 
-* real_task_commit: `43850ced8578cafb01a9794e580ec24c0add0907`
-* real_task_subject: docs: chiudi WU-0007 T1-FLOAT end-to-end — PASS operatore VPS
-* report_generated_at: 2026-06-22T22:05:00+02:00
+* real_task_commit: `9bd2e4c4fb0486659af8c755deeda299924a4e45`
+* real_task_subject: feat: WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente
+* report_generated_at: 2026-06-23T00:01:00+02:00
 * branch: main
-* remote_head_after_task_push: `43850ce`
-* previous_report_container: `89952396e90b9f93fd11fa46b4602f048fb8ec02` (T1-FLOAT runtime finito autosync — esterno/verificabile)
+* remote_head_after_task_push: `9bd2e4c`
+* previous_report_container: `612675c97c33c920613a8d6c0ea4bd5593cbd07b` (T1-FLOAT PASS operatore finito autosync — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: clean (pre-autosync)
 * pass_tecnico_remoto: non attestato nel file per container corrente — verifica esterna post-push
-* result_cursor: T1-FLOAT chiusura docs — PASS operatore attestato; runtime e92e301; deploy 8995239
-* pass_operatore: PASS — attestazione «QA WU-0007 T1-FLOAT PASS operatore» (2026-06-22)
-* result_runtime: float trackDisplayUnit; picker km/NM/mi; Measure indipendente; modal coerente
-* qa_attestation_source: operatore (flusso prompt)
-* notes: T1-FLOAT CLOSED end-to-end; T1 originale CLOSED invariato; monolite assente dal commit task docs
+* result_cursor: POLY-EDIT-B2 runtime — _polyEdit + 4 helper; node --check OK; monolite incluso
+* pass_operatore: non richiesto / non attestato (B2 fondazione logica, no UI)
+* result_runtime: review byte Claude pending; nessun deploy
+* qa_attestation_source: —
+* notes: POLY-EDIT-B2 non CLOSED end-to-end; prossimo B3 UI Modifica
 
 ## OUTPUT VERBATIM
 
 ```text
-# Stato verificato PRIMA del commit container corrente (pre-autosync finito T1-FLOAT PASS operatore)
+# Stato verificato PRIMA del commit container corrente (pre-autosync finito POLY-EDIT-B2)
 
 git log --oneline -5
+9bd2e4c feat: WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente
+612675c docs: orchestratore — riconciliazione finito sessione T1-FLOAT PASS operatore
 43850ce docs: chiudi WU-0007 T1-FLOAT end-to-end — PASS operatore VPS
 8995239 docs: orchestratore — riconciliazione finito sessione T1-FLOAT
 e92e301 feat: WU-0007 T1-FLOAT — float Traccia allineato a trackDisplayUnit
-37b3625 docs: orchestratore — riconciliazione finito sessione B6.7b PASS operatore
-2b0f961 docs: chiudi WU-0007 B6.7b end-to-end — PASS operatore VPS
 
 git status --short
 (vuoto)
 
 git rev-parse HEAD
-43850ce
+9bd2e4c
 
 git rev-parse origin/main
-43850ce
+9bd2e4c
 
 git branch --show-current
 main
 
-git push (task docs)
-8995239..43850ce main -> main
+git push (task)
+612675c..9bd2e4c main -> main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY** — verificare post-push con `git ls-remote origin main` e seed Regola F nel report Cursor esterno.
 
 ## HISTORY
 
-* 8995239 — T1-FLOAT runtime finito autosync; container verificabile
-* e92e301 — T1-FLOAT task commit (monolite)
-* 37b3625 — B6.7b PASS operatore docs finito autosync
+* 612675c — T1-FLOAT PASS operatore finito autosync; container verificabile
+* 43850ce — T1-FLOAT docs PASS operatore task
+* 8995239 — T1-FLOAT runtime finito autosync
 
 ## LIMITI
 

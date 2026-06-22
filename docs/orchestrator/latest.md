@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-23 — **Chiusura sessione `finito` — WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente (runtime + docs):** commit task **`9bd2e4c`** — `_polyEdit` + helper enter/cancel/save/isEditing; singola `gisFeatureUpdate` in-place; nessuna UI; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte Claude pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0001_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 T1-FLOAT PASS operatore end-to-end (docs):** commit task **`43850ce`** — attestazione **«QA WU-0007 T1-FLOAT PASS operatore»**; runtime **`e92e301`**; deploy HEAD **`8995239`**; deploy tecnico GIS-only **PASS**; smoke **`200`**, **`2243669`** byte, SHA-256 match; build **`B5.5Z`**; **T1-FLOAT CLOSED / PASS end-to-end**; T1 originale invariato CLOSED; nessun fix aperto T1-FLOAT. **Monolite non incluso.** Inbox **`2026-06-22_2205_riepilogo_finito-sessione.md`**.
 
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 T1-FLOAT float Traccia allineato a `trackDisplayUnit` (runtime + docs):** commit task **`e92e301`** — float esterno usa `formatTrackDistance` + `trackDisplayUnit` (`km`/`NM`/`mi`); decoupled da `mapMeasureUnit` e side-effect Misura; **`APP_BUILD_ID` `B5.5Z` invariato**; **QA operatore T1-FLOAT pending**; deploy VPS non eseguito. **Monolite incluso.** Inbox **`2026-06-22_2110_riepilogo_finito-sessione.md`**.
