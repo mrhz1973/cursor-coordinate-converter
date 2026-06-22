@@ -466,7 +466,7 @@ Decisioni da bloccare:
 
 **Deploy:** HEAD **`d533e8b`** — smoke tecnico HTTP 200; Content-Length/byte **2 235 808**; SHA-256 file VPS = body HTTP **`d8bc2b49e6bf1a90402c189995b53d630277fb7d8fd96b0dff1787fc218775f2**; marker T1 presenti; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Non in scope T1:** float mappa esterno (`updateTrackMapFloatReadout`), statistiche velocità media/massima misurate, geometria/import/export/storage tracce.
+**Non in scope T1 (originale):** float mappa esterno — esteso da **T1-FLOAT** (sotto); statistiche velocità media/massima misurate, geometria/import/export/storage tracce.
 
 **QA operatore PASS** (attestazione «QA WU-0007 T1 PASS operatore»): selettore `km`/`NM`/`mi` verificato; summary, segmenti, leg chiusura e archivio aggiornati; label ETA coerenti in `km/h`/`kn`/`mph`; tempo ETA invariato al cambio unità; persistenza al reload; funzionamento traccia regolare; UI `NM` corretta; nessuna regressione operativa pertinente.
 
@@ -480,6 +480,24 @@ Decisioni da bloccare:
 6. Nessuna dipendenza da velocità GPS misurata o timestamp, salvo decisione futura esplicita.
 7. Valori attuali **4 km/h** (cammino) e **60 km/h** (auto) restano invariati fino a implementazione dedicata.
 8. Distinto da statistiche **misurate** (velocità media/massima da timestamp GPX): fuori scope T1 e non parte di questo backlog come implementato.
+
+### WU-0007 T1-FLOAT — Float Traccia coerente con `trackDisplayUnit`
+
+**Stato:** **runtime implementato** — **QA operatore pending**; **non** CLOSED end-to-end.
+
+**Scope:** allineare il float mappa esterno (`.tile-track-float`, `[data-role="track-float-out"]`) all’unità distanza del modal Traccia (`trackDisplayUnit`), senza toccare Misura né il modal.
+
+**Implementazione (monolite):**
+
+- `updateTrackMapFloatReadout()` — `formatTrackDistance` + `normalizeTrackDisplayUnit(state.trackDisplayUnit)`.
+- Markup float in `renderTileMap()` — picker `[data-role="track-float-unit"]` con sole opzioni `km`, `nm` (label `NM`), `mi`.
+- Listener float — scrive `state.trackDisplayUnit`, `saveStore()`, `updateTrackMapFloatReadout(root)`; **rimossi** write su `mapMeasureUnit` e side-effect Misura (`renderMapMeasureOverlay`, `updateMeasureReadouts`, `renderTrackOverlay`).
+
+**Invariati:** modal Traccia (`wireTrackDisplayUnitOnce`, `renderTrackSummary`, archivio), listener `measure-unit` / `gis-meas-unit`, geometria/import/export, ETA, i18n aggiuntivo, CSS, `APP_BUILD_ID` **`B5.5Z`**.
+
+**Fuori scope T1-FLOAT:** velocità nel float; statistiche velocità misurate; deploy VPS (da eseguire prima di QA operatore).
+
+**QA operatore:** non attestata — checklist minima: con traccia attiva, cambio unità nel float aggiorna distanza coerente con modal; persistenza dopo reload; Misura resta su unità propria; nessuna regressione traccia/misura evidente.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 

@@ -16618,14 +16618,14 @@ function updateTrackMapFloatReadout(root){
   if (!out) return;
   ensureTrackState();
   const pts = state.track.points;
-  const u = state.mapMeasureUnit || "m";
+  const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   if (pts.length < 2){
     out.textContent = "—";
     return;
   }
   let distM = 0;
   try { distM = routeDistance(pts, !!state.track.closed); } catch(_){}
-  out.textContent = formatMapMeasureDistance(distM, u);
+  out.textContent = formatTrackDistance(distM, u);
 }
 
 function trackUpdatePointLatLon(id, lat, lon){
@@ -34616,7 +34616,7 @@ function renderTileMap(lat, lon, zoom){
     </div>`;
   }
 
-  // Floating track builder: total length + units (same unit list as measure).
+  // Floating track builder: total length + track display units (T1: km/NM/mi).
   {
     const draft = state.trackWaypointDraft;
     const showWp = draft && Number.isFinite(draft.lat) && Number.isFinite(draft.lon) && !state.waypointsModalOpen;
@@ -34625,14 +34625,14 @@ function renderTileMap(lat, lon, zoom){
     const showTf = !showWp && !!state.track.pickMode
       && !(_gisHub && state.trackModalOpen);
     if (showTf){
-      const u = state.mapMeasureUnit || "m";
+      const tdu = normalizeTrackDisplayUnit(state.trackDisplayUnit);
       const ttl = esc(t("track.mapFloatTitle") || "Track");
       const hintTf = esc(t("track.mapFloatHint") || "");
       const distLbl = esc(t("track.mapFloatDist") || "Total length");
       const pts = state.track.points;
       let out0 = "—";
       if (pts.length >= 2){
-        try { out0 = formatMapMeasureDistance(routeDistance(pts, !!state.track.closed), u); } catch(_){}
+        try { out0 = formatTrackDistance(routeDistance(pts, !!state.track.closed), tdu); } catch(_){}
       }
       const _fc = esc(t("tip.floatingClose"));
       html += `<div class="tile-track-float" data-role="track-float-box" aria-label="${ttl}">
@@ -34642,11 +34642,9 @@ function renderTileMap(lat, lon, zoom){
         <div class="mb-row">
           <label>${esc(t("map.unit") || "Unità")}</label>
           <select data-role="track-float-unit">
-            <option value="m"  ${u==="m"?"selected":""}>m</option>
-            <option value="km" ${u==="km"?"selected":""}>km</option>
-            <option value="nm" ${u==="nm"?"selected":""}>NM</option>
-            <option value="mi" ${u==="mi"?"selected":""}>mi</option>
-            <option value="ft" ${u==="ft"?"selected":""}>ft</option>
+            <option value="km" ${tdu==="km"?"selected":""}>km</option>
+            <option value="nm" ${tdu==="nm"?"selected":""}>NM</option>
+            <option value="mi" ${tdu==="mi"?"selected":""}>mi</option>
           </select>
         </div>
         <div class="mb-row"><label style="opacity:.95">${hintTf}</label></div>
@@ -34967,13 +34965,9 @@ function renderTileMap(lat, lon, zoom){
   const tfUnit = root.querySelector('[data-role="track-float-unit"]');
   if (tfUnit){
     tfUnit.addEventListener("change", (ev) => {
-      state.mapMeasureUnit = String(ev.target.value || "m");
+      state.trackDisplayUnit = normalizeTrackDisplayUnit(ev.target && ev.target.value);
       saveStore();
       updateTrackMapFloatReadout(root);
-      const tileMap = root.querySelector(".tile-map");
-      if (tileMap) renderTrackOverlay(tileMap, lat, lon, zoom);
-      renderMapMeasureOverlay(root, lat, lon, zoom);
-      updateMeasureReadouts(root);
     });
   }
   updateTrackMapFloatReadout(root);
