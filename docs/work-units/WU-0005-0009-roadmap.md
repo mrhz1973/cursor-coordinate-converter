@@ -460,13 +460,26 @@ Decisioni da bloccare:
 
 ### WU-0007 T1 — Unità distanza/velocità modal Traccia
 
-**Stato:** implementato runtime; **QA operatore pending**.
+**Stato:** **CLOSED / PASS end-to-end**.
 
-**Scope:** solo visualizzazione nella modal Traccia (`#sec-track` / `#trackModal`); persistenza `settings.trackDisplayUnit` (`km` | `nm` | `mi`, default `km`); helper `formatTrackDistance` / `formatTrackSpeed`; archivio tracce disaccoppiato da `mapMeasureUnit`; etichette ETA con velocità di riferimento dinamica; normalizzazione UI `NM` in stringhe visibili (Misura, scala, helper distanza misura).
+**Runtime:** `002624e` — selettore persistente `trackDisplayUnit` (`km` | `nm` | `mi`, default `km`); helper `formatTrackDistance` / `formatTrackSpeed`; archivio tracce disaccoppiato da `mapMeasureUnit`; etichette ETA con velocità di riferimento dinamica; normalizzazione UI `NM` in stringhe visibili (Misura, scala, helper distanza misura).
 
-**Non in scope T1:** float mappa esterno (`updateTrackMapFloatReadout`), statistiche velocità media/massima, geometria/import/export/storage tracce, `APP_BUILD_ID`.
+**Deploy:** HEAD **`d533e8b`** — smoke tecnico HTTP 200; Content-Length/byte **2 235 808**; SHA-256 file VPS = body HTTP **`d8bc2b49e6bf1a90402c189995b53d630277fb7d8fd96b0dff1787fc218775f2**; marker T1 presenti; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Criteri QA operatore (pending):** select `km`/`NM`/`mi`; aggiornamento immediato summary/segmenti/archivio/ETA label; tempo ETA invariato al cambio unità; persistenza al reload; nessuna regressione traccia/import/export.
+**Non in scope T1:** float mappa esterno (`updateTrackMapFloatReadout`), statistiche velocità media/massima misurate, geometria/import/export/storage tracce.
+
+**QA operatore PASS** (attestazione «QA WU-0007 T1 PASS operatore»): selettore `km`/`NM`/`mi` verificato; summary, segmenti, leg chiusura e archivio aggiornati; label ETA coerenti in `km/h`/`kn`/`mph`; tempo ETA invariato al cambio unità; persistenza al reload; funzionamento traccia regolare; UI `NM` corretta; nessuna regressione operativa pertinente.
+
+**Backlog futuro — velocità di pianificazione ETA configurabile** (non implementato; nessuna WU runtime aperta):
+
+1. Possibilità futura di modificare la **velocità generale** usata per il calcolo ETA (pianificazione, non misura).
+2. Possibilità futura di assegnare una **velocità specifica a ogni singola tratta/segmento**.
+3. Velocità canonica fisica (es. m/s o km/h interni) **indipendente** dall’unità di visualizzazione `trackDisplayUnit`.
+4. Visualizzazione automatica coerente con `trackDisplayUnit`: `km/h`, `kn`, `mph`.
+5. Fallback per tratta: velocità specifica del segmento se presente, altrimenti velocità generale della traccia.
+6. Nessuna dipendenza da velocità GPS misurata o timestamp, salvo decisione futura esplicita.
+7. Valori attuali **4 km/h** (cammino) e **60 km/h** (auto) restano invariati fino a implementazione dedicata.
+8. Distinto da statistiche **misurate** (velocità media/massima da timestamp GPX): fuori scope T1 e non parte di questo backlog come implementato.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
