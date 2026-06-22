@@ -301,9 +301,33 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa (modello sopra);
+  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-EDIT-B2 fondazione (sotto);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
+
+### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
+
+**Stato:** **runtime implementato e pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
+
+**Scope:** stato `_polyEdit` + helper enter/cancel/save/isEditing; nessuna UI visibile.
+
+**Implementazione (monolite):**
+
+- `state._polyEdit: null` — transient, escluso da allowlist `saveStore()`;
+- `polygonIsEditing()` — interrogazione read-only;
+- `polygonEnterEdit(id)` — `original` (geometria chiusa clone), `working` (ring aperto, de-dup finale `gisSameCoord`); idempotente stesso id; rifiuto id diverso;
+- `polygonCancelEdit()` — scarta `_polyEdit`, canonico invariato;
+- `polygonSaveEdit()` — singola `gisFeatureUpdate(id,{geometry})` senza opts; undo/persistenza delegati; clear edit solo su successo.
+
+**Invariati:** creazione/cancel/delete/rename/lista/render saved/draft; Mappe Offline; altri strumenti mappa; **`APP_BUILD_ID` `B5.5Z`**.
+
+**Fuori scope B2:** pulsante Modifica, overlay edit, handle, drag vertici/intero, dirty-confirm, Esc/chiusura sicura, i18n, CSS.
+
+**Review byte Claude:** pending (gate spostato post-push, pre-deploy/QA).
+
+**Deploy / QA operatore:** non eseguiti; non richiesti per B2.
+
+**Prossimo:** POLY-EDIT-B3 — azione Modifica + overlay vertici + barra Salva/Annulla.
 
 ## Decisioni da bloccare prima di iniziare
 

@@ -15952,6 +15952,8 @@ const state = {
   /** Phase 1 GIS stores: additive GeoJSON-native tracks/polygons/layers. */
   gisTracks: [],
   gisPolygons: [],
+  /** Transient: in-place polygon geometry edit (POLY-EDIT-B2; not persisted). */
+  _polyEdit: null,
   gisLayers: [],
   /** Transient GIS selection + undo scaffolding (not persisted in Phase 1). */
   gisSelection: [],
@@ -45206,6 +45208,68 @@ function closePolygonPanel(){
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
   try { renderAllMaps(); } catch(_){}
+}
+/* ───── Polygon edit state (POLY-EDIT-B2) ───── */
+function polygonIsEditing(){
+  const ed = state._polyEdit;
+  if (!ed || typeof ed !== "object") return false;
+  const id = ed.id ? String(ed.id).trim() : "";
+  if (!id) return false;
+  return Array.isArray(ed.working);
+}
+function polygonEnterEdit(id){
+  ensureGisState();
+  const sid = String(id == null ? "" : id).trim();
+  if (!sid) return false;
+  if (polygonIsEditing()){
+    if (String(state._polyEdit.id) === sid) return true;
+    return false;
+  }
+  const feature = gisFeatureGet(sid);
+  if (!feature || !feature.geometry || feature.geometry.type !== "Polygon") return false;
+  const rings = feature.geometry.coordinates;
+  if (!Array.isArray(rings) || !Array.isArray(rings[0])) return false;
+  const ring = rings[0];
+  const original = gisClonePlain(feature.geometry);
+  if (!original || original.type !== "Polygon" || !Array.isArray(original.coordinates) || !Array.isArray(original.coordinates[0])) return false;
+  const working = gisClonePlain(ring);
+  if (!Array.isArray(working) || working.length < 3) return false;
+  if (
+    working.length > 1 &&
+    gisSameCoord(working[0], working[working.length - 1])
+  ) {
+    working.pop();
+  }
+  if (working.length < 3) return false;
+  state._polyEdit = {
+    id: sid,
+    original: original,
+    working: working,
+    dirty: false,
+    dragIdx: null
+  };
+  return true;
+}
+function polygonCancelEdit(){
+  if (!polygonIsEditing()) return false;
+  state._polyEdit = null;
+  return true;
+}
+function polygonSaveEdit(){
+  if (!polygonIsEditing()) return null;
+  const ed = state._polyEdit;
+  const id = String(ed.id || "").trim();
+  const workingClone = gisClonePlain(ed.working);
+  if (!id || !Array.isArray(workingClone) || workingClone.length < 3) return null;
+  const updated = gisFeatureUpdate(id, {
+    geometry: {
+      type: "Polygon",
+      coordinates: [workingClone]
+    }
+  });
+  if (!updated) return null;
+  state._polyEdit = null;
+  return updated;
 }
 /* ───── Polygon draw mode (Pass C T1.1) ───── */
 function polygonStartDraw(){
