@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-23 — **Chiusura sessione `finito` — WU-0006 POLY-EDIT-B3 UI Modifica overlay edit barra Salva/Annulla (runtime + docs):** commit task **`77ad65e`** — pulsante Modifica in lista; barra `#polygonPanelEditBar` Salva/Annulla; `renderPolygonEditOverlay()` vertici visibili non interattivi; esclusione poligono in edit dal saved renderer; Salva clean via cancel; i18n IT/EN/FR; **POLY-EDIT-B2 review byte PASS**; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte B3 pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0032_riepilogo_finito-sessione.md`**.
+
 2026-06-23 — **Chiusura sessione `finito` — WU-0006 POLY-EDIT-B2 micro-fix validazione single-source (runtime + docs):** commit task **`0e23b42`** — rimossi controlli `length < 3` duplicati in `polygonEnterEdit`/`polygonSaveEdit`; validità/cap delegati a `gisSanitizeGeometry` via `gisFeatureUpdate`; comportamento B2 invariato; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte Claude pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0030_riepilogo_finito-sessione.md`**.
 
 2026-06-23 — **Chiusura sessione `finito` — WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente (runtime + docs):** commit task **`9bd2e4c`** — `_polyEdit` + helper enter/cancel/save/isEditing; singola `gisFeatureUpdate` in-place; nessuna UI; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte Claude pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0001_riepilogo_finito-sessione.md`**.
