@@ -483,7 +483,9 @@ Decisioni da bloccare:
 
 ### WU-0007 T1-FLOAT — Float Traccia coerente con `trackDisplayUnit`
 
-**Stato:** **runtime implementato** — **QA operatore pending**; **non** CLOSED end-to-end.
+**Stato:** **CLOSED / PASS end-to-end**.
+
+**Runtime:** `e92e301` — float mappa esterno allineato a `trackDisplayUnit` (`km` | `nm` | `mi`).
 
 **Scope:** allineare il float mappa esterno (`.tile-track-float`, `[data-role="track-float-out"]`) all’unità distanza del modal Traccia (`trackDisplayUnit`), senza toccare Misura né il modal.
 
@@ -495,9 +497,15 @@ Decisioni da bloccare:
 
 **Invariati:** modal Traccia (`wireTrackDisplayUnitOnce`, `renderTrackSummary`, archivio), listener `measure-unit` / `gis-meas-unit`, geometria/import/export, ETA, i18n aggiuntivo, CSS, `APP_BUILD_ID` **`B5.5Z`**.
 
-**Fuori scope T1-FLOAT:** velocità nel float; statistiche velocità misurate; deploy VPS (da eseguire prima di QA operatore).
+**Deploy:** HEAD **`8995239`** — deploy GIS-only **PASS**; VPS allineata; blob Git monolite **`7c5350e0a1888317a0fc717e01f6c085ba579091`**; smoke HTTP **200**; byte file VPS = Content-Length = body HTTP **2 243 669**; SHA-256 file VPS = body HTTP **`2e4afcea5160f584fe11f8487854218941120dd6a55878cdeda5e2268e3dd362**; `goi-gis-app.service` riavviato (PID post-restart **324062**); ascolto **100.114.7.53:8000**; proxy invariato (PID **47062**); Planet-Clone, Docker e n8n non toccati; URL QA `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e92e301`; **`APP_BUILD_ID` `B5.5Z`**.
 
-**QA operatore:** non attestata — checklist minima: con traccia attiva, cambio unità nel float aggiorna distanza coerente con modal; persistenza dopo reload; Misura resta su unità propria; nessuna regressione traccia/misura evidente.
+**Fuori scope T1-FLOAT:** velocità nel float; statistiche velocità misurate.
+
+**QA operatore PASS** (attestazione «**QA WU-0007 T1-FLOAT PASS operatore**»):
+
+1. picker float `km`/`NM`/`mi` — readout distanza aggiornato immediatamente;
+2. Measure box — unità indipendente, non cambia con il float;
+3. modal Traccia riaperta — selettore coerente con unità impostata nel float.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
