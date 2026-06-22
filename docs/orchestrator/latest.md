@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — WU-0007 B6.7a Range Rings showTitle + Stili comprimibile (runtime + docs):** commit task **`b2d828f`** — `showTitle` per-ring con fallback legacy `labelMode`; checkbox `#rrShowTitle`; `#rrStyleDetails` (`<details>` chiuso); `rrSetShowsTitle`; titolo mappa indipendente da etichette distanza; import/export GeoJSON invariati; **`APP_BUILD_ID` `B5.5Z` invariato**; **B6.7b** ultimo stile **backlog**; **QA operatore pending**. **Monolite incluso.** Inbox **`2026-06-22_1828_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 T1 PASS operatore end-to-end (docs):** commit task **`a716ae7`** — registra attestazione «QA WU-0007 T1 PASS operatore»; runtime **`002624e`**; deploy HEAD **`d533e8b`**; smoke HTTP 200, byte **2 235 808**, SHA-256 match; **`APP_BUILD_ID` `B5.5Z`**; unità distanza/velocità modal Traccia **CLOSED**; backlog futuro velocità pianificazione ETA configurabile registrato; nessun fix aperto T1. **Monolite non incluso.** Inbox **`2026-06-22_1405_riepilogo_finito-sessione.md`**.
 
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 T1 unità distanza/velocità modal Traccia (runtime + docs):** commit task **`002624e`** — selettore persistente `trackDisplayUnit` (`km`|`nm`|`mi`, default `km`); helper `formatTrackDistance`/`formatTrackSpeed`; archivio disaccoppiato da `mapMeasureUnit`; ETA label velocità dinamica, tempo invariato; normalizzazione UI `NM`; `node --check` OK; **`APP_BUILD_ID` `B5.5Z` invariato**; QA operatore **pending**. **Monolite incluso.** Inbox **`2026-06-22_1331_riepilogo_finito-sessione.md`**.
