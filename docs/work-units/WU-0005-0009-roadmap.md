@@ -441,7 +441,9 @@ Decisioni da bloccare:
 
 **WU-0007 B4X1 — implementato runtime** (`debd5b4`); **QA operatore: FAIL** — pill/background non sempre allineato al testo definitivo; offset troppo aggressivo su segmenti quasi nulli.
 
-**WU-0007 B4X2 — implementato runtime** (`d4b73bb`); **QA operatore: pending**.
+**WU-0007 B4X2 — implementato runtime** (`d4b73bb`); **QA operatore: PASS**; deploy HEAD **`f5854c3`**; smoke tecnico HTTP 200, byte-match e SHA-256 match; **`APP_BUILD_ID` `B5.5Z`**.
+
+**Measurement label collision avoidance — CLOSED / PASS end-to-end** (B4X2 operatore). Nessun fix aperto su questo tema.
 
 **Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso**.
 
@@ -454,7 +456,7 @@ Decisioni da bloccare:
 - guard `g.isConnected` nel callback;
 - tuning offset: `MM_LINE_LBL_CLEAR_GAP` **3** (era ~5); `MM_MEAS_HANDLE_CLR` **18** (era 22); `MM_LINE_LBL_SHORT_GAIN` **0.20** (era 0.42); `MM_LINE_LBL_MAX_OFF` **84** (era 150); base **14** invariata.
 
-**QA operatore B4X2 (pending):** pill racchiude tutto il testo; segmento lungo leggermente più vicino; segmento quasi nullo senza offset eccessivo; linea/marker/freccia visibili; drag/zoom/Esc invariati.
+**QA operatore B4X2 PASS** (attestazione «QA WU-0007 B4X2 PASS operatore»): pill racchiude il testo; segmento lungo correttamente posizionato; segmento quasi nullo senza offset eccessivo; linea, marker S/E e freccia visibili; zoom, drag, Esc e Clear verificati; app utilizzabile.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
