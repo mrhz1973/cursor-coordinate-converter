@@ -1424,7 +1424,9 @@ Stesso schema di B3.
 
 **B6.6C Range Rings panel restore after create (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`41f180b`**; HEAD/deploy **`69fa6cf`**; deploy GIS-only; smoke **`200`**, Content-Length/wc -c **`2151776`** byte-match **PASS**; build **`B6.6C`**; QA `:8000/coordinate_converter%20Claude.html?v=41f180b`; pannello restore post pick-and-create OK; errore distanze vuote visibile; B6.6B/export/scala OK; attestazione «tutto ok».
 
-**WU-0007 B6.7a Range Rings titolo opzionale + Stili comprimibile (2026-06-22):** implementato — `showTitle` per-ring con fallback legacy `labelMode`; checkbox `#rrShowTitle`; sezione `#rrStyleDetails` (`<details>` default chiuso); render `rrSetShowsTitle`; titolo mappa indipendente da etichette distanza; `labelMode` invariato; import/export GeoJSON invariati; **`APP_BUILD_ID`** invariato; **B6.7b** ultimo stile persistente **backlog**; **QA operatore pending**.
+**WU-0007 B6.7a Range Rings titolo opzionale + Stili comprimibile (2026-06-22):** **CLOSED / PASS end-to-end** — runtime **`b2d828f`**; deploy HEAD **`d3122e4`**; deploy tecnico GIS-only **PASS**; smoke **`200`**, **`2237896`** byte, SHA-256 match; build **`B5.5Z`**; QA `:8000/coordinate_converter%20Claude.html?v=b2d828f`; attestazione **«QA WU-0007 B6.7a PASS operatore»** — `showTitle` per-ring, fallback legacy `labelMode`, `#rrStyleDetails` (`<details>`), titolo indipendente da etichette distanza; proxy/Planet-Clone/n8n/Docker non toccati; **nessun fix aperto B6.7a**.
+
+**WU-0007 B6.7b Range Rings memoria ultimo stile persistente:** **backlog** — non implementato; nessuna WU runtime aperta; `rangeRingsLastStyle` assente.
 
 ### B6 — QA OPSEC/proxy/offline
 
