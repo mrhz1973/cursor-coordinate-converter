@@ -437,7 +437,7 @@ Decisioni da bloccare:
 
 ### Estensione backlog — Measurement label collision avoidance (Distanza/Righello)
 
-**WU-0007 B4X1 — implementato runtime**; **QA browser operatore: pending**. **WU-0007 B4** (`54d8586`) resta **PASS** invariato.
+**WU-0007 B4X1 — implementato runtime** (`debd5b4`); **QA browser operatore: pending**. **WU-0007 B4** (`54d8586`) resta **PASS** invariato.
 
 **Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso** dal nuovo offset.
 
