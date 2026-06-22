@@ -458,6 +458,16 @@ Decisioni da bloccare:
 
 **QA operatore B4X2 PASS** (attestazione «QA WU-0007 B4X2 PASS operatore»): pill racchiude il testo; segmento lungo correttamente posizionato; segmento quasi nullo senza offset eccessivo; linea, marker S/E e freccia visibili; zoom, drag, Esc e Clear verificati; app utilizzabile.
 
+### WU-0007 T1 — Unità distanza/velocità modal Traccia
+
+**Stato:** implementato runtime; **QA operatore pending**.
+
+**Scope:** solo visualizzazione nella modal Traccia (`#sec-track` / `#trackModal`); persistenza `settings.trackDisplayUnit` (`km` | `nm` | `mi`, default `km`); helper `formatTrackDistance` / `formatTrackSpeed`; archivio tracce disaccoppiato da `mapMeasureUnit`; etichette ETA con velocità di riferimento dinamica; normalizzazione UI `NM` in stringhe visibili (Misura, scala, helper distanza misura).
+
+**Non in scope T1:** float mappa esterno (`updateTrackMapFloatReadout`), statistiche velocità media/massima, geometria/import/export/storage tracce, `APP_BUILD_ID`.
+
+**Criteri QA operatore (pending):** select `km`/`NM`/`mi`; aggiornamento immediato summary/segmenti/archivio/ETA label; tempo ETA invariato al cambio unità; persistenza al reload; nessuna regressione traccia/import/export.
+
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
 **Stato:** PASS (`7a02a7e`).

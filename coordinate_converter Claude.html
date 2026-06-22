@@ -4546,6 +4546,12 @@ body.mm-enlarged .sig-badge{display:none}
   align-items:center;
 }
 .track-newtrack-prompt .tnp-actions .btn{ padding:5px 10px; font-size:.82rem; }
+.track-unit-row{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin:10px 0 6px; font-size:.9rem;
+}
+.track-unit-row label{ margin:0; white-space:nowrap; }
+.track-unit-row select{ min-width:4.5rem; }
 #trackModalBody .track-save-cta.btn.btn-sm.btn-primary{
   min-height: 40px;
   padding-inline: var(--wp-space-4, 16px);
@@ -9475,6 +9481,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <div id="track-points-head" class="track-points-section-head" hidden></div>
         <div id="track-points" class="track-points-list" data-empty="—"></div>
         </div>
+        <div class="track-unit-row field-group">
+          <label for="trackDisplayUnit" data-i18n="track.unitLabel">Unità</label>
+          <select id="trackDisplayUnit" data-role="track-display-unit" data-i18n-aria="track.unitAria">
+            <option value="km">km</option>
+            <option value="nm">NM</option>
+            <option value="mi">mi</option>
+          </select>
+        </div>
         <div id="track-summary"></div>
         <hr class="sub-sep" style="margin:14px 0">
         <div class="sub-section-title" data-i18n="track.savedTitle">Tracce salvate</div>
@@ -9630,7 +9644,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <select data-role="gis-meas-unit">
               <option value="m">m</option>
               <option value="km" selected>km</option>
-              <option value="nm">nm</option>
+              <option value="nm">NM</option>
               <option value="mi">mi</option>
               <option value="ft">ft</option>
             </select>
@@ -11357,8 +11371,10 @@ const I18N = {
     "track.points":"Punti",
     "track.distance":"Distanza totale",
     "track.area":"Area",
-    "track.etaWalk":"A piedi (4 km/h)",
-    "track.etaCar":"Auto (60 km/h)",
+    "track.unitLabel":"Unità",
+    "track.unitAria":"Unità di visualizzazione distanza e velocità nella traccia",
+    "track.etaWalk":"A piedi ({0})",
+    "track.etaCar":"Auto ({0})",
     "track.noExport":"Aggiungi almeno 2 punti per esportare.",
     "track.importedN":"Importati {0} punti nella traccia.",
     "track.addedOk":"Punto aggiunto alla traccia.",
@@ -12944,8 +12960,10 @@ const I18N = {
     "track.points":"Points",
     "track.distance":"Total distance",
     "track.area":"Area",
-    "track.etaWalk":"On foot (4 km/h)",
-    "track.etaCar":"Car (60 km/h)",
+    "track.unitLabel":"Units",
+    "track.unitAria":"Display unit for track distance and speed references",
+    "track.etaWalk":"On foot ({0})",
+    "track.etaCar":"Car ({0})",
     "track.noExport":"Add at least 2 points to export.",
     "track.importedN":"Imported {0} points into the track.",
     "track.addedOk":"Point added to the track.",
@@ -14531,8 +14549,10 @@ const I18N = {
     "track.points":"Points",
     "track.distance":"Distance totale",
     "track.area":"Aire",
-    "track.etaWalk":"À pied (4 km/h)",
-    "track.etaCar":"Voiture (60 km/h)",
+    "track.unitLabel":"Unités",
+    "track.unitAria":"Unité d’affichage pour la distance et les vitesses de référence de la trace",
+    "track.etaWalk":"À pied ({0})",
+    "track.etaCar":"Voiture ({0})",
     "track.noExport":"Ajoutez au moins 2 points pour exporter.",
     "track.importedN":"{0} points importés dans la trace.",
     "track.addedOk":"Point ajouté à la trace.",
@@ -15880,6 +15900,7 @@ const state = {
   mapMeasurePts: null, // transient linea/direct: [{lat,lon},{lat,lon}] — mai persistito
   mapCursorLL: null,   // transient: ultimo lat/lon cursore sulla tile map
   mapMeasureUnit: "m", // preferenza persistita: m | km | nm | mi | ft
+  trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | nm | mi
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
   /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
   _measEscNoticePending: false,
@@ -16862,6 +16883,7 @@ function saveStore(){
         showSonarChart: !!state.showSonarChart,
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
+        trackDisplayUnit: normalizeTrackDisplayUnit(state.trackDisplayUnit),
         mapMeasureKind: (state.mapMeasureKind === "poly") ? "poly" : "line",
         mapPolyClosed: state.mapPolyClosed !== false,
         gisMeasureFlow: sanitizeGisMeasureFlow(state.gisMeasureFlow),
@@ -19688,7 +19710,7 @@ function formatMapMeasureDistance(meters, unit){
   }
   if (u === "nm"){
     const v = m / 1852;
-    return (v < 10 ? v.toFixed(3) : v < 100 ? v.toFixed(2) : v.toFixed(1)) + " nm";
+    return (v < 10 ? v.toFixed(3) : v < 100 ? v.toFixed(2) : v.toFixed(1)) + " NM";
   }
   if (u === "mi"){
     const v = m / 1609.344;
@@ -26233,10 +26255,10 @@ function formatScaleMetricDisplay(meters, unit){
   return kmStr + " km · " + miStr + " mi";
 }
 function formatScaleNmLabel(nm){
-  if (nm >= 100) return Math.round(nm) + " Nm";
-  if (nm >= 10) return (Math.round(nm * 10) / 10).toFixed(1) + " Nm";
-  if (nm >= 1) return (Math.round(nm * 10) / 10).toFixed(1) + " Nm";
-  return (Math.round(nm * 100) / 100).toFixed(2) + " Nm";
+  if (nm >= 100) return Math.round(nm) + " NM";
+  if (nm >= 10) return (Math.round(nm * 10) / 10).toFixed(1) + " NM";
+  if (nm >= 1) return (Math.round(nm * 10) / 10).toFixed(1) + " NM";
+  return (Math.round(nm * 100) / 100).toFixed(2) + " NM";
 }
 function formatScaleKmCenter(meters){
   const km = meters / 1000;
@@ -30771,7 +30793,7 @@ function renderSavedTracksList(){
   try { ensureSavedTracksCtxMountWired(mount); } catch(_){}
   ensureSavedTracksState();
   const rows = sortSavedTracksForRender(state.savedTracks);
-  const u = state.mapMeasureUnit || "km";
+  const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   if (!rows.length){
     mount.innerHTML = `<div class="saved-tracks-empty" data-i18n="track.savedEmpty">${esc(t("track.savedEmpty") || "Nessuna traccia salvata.")}</div>`;
     if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
@@ -30799,7 +30821,7 @@ function renderSavedTracksList(){
   </tr></thead><tbody>`;
   for (const st of rows){
     const d = savedTrackDistanceM(st);
-    const distStr = d != null ? formatMapMeasureDistance(d, u) : "—";
+    const distStr = d != null ? formatTrackDistance(d, u) : "—";
     const vis = (typeof savedTrackMapVisible === "function") ? savedTrackMapVisible(st) : (st.visible !== false);
     const rowSel = selSet.has(String(st.id));
     const ariaVis = esc((typeof t === "function") ? (vis ? (t("track.savedVisOnMap") || "") : (t("track.savedVisHiddenFromMap") || "")) : "");
@@ -32835,11 +32857,94 @@ function trackExitPickMode(){
   refreshTileMapForTrackUi();
 }
 
-/** Format a metric distance as "X m" or "Y.YY km". */
+/** Format a metric distance as "X m" or "Y.YY km" (legacy; prefer formatTrackDistance for track UI). */
 function fmtDistMetric(meters){
   if (!Number.isFinite(meters)) return "—";
   if (meters < 1000) return Math.round(meters) + " m";
   return (meters / 1000).toFixed(meters < 10000 ? 2 : 1) + " km";
+}
+
+const TRACK_DISPLAY_UNITS = new Set(["km", "nm", "mi"]);
+function normalizeTrackDisplayUnit(value){
+  const u = String(value == null ? "" : value).toLowerCase();
+  return TRACK_DISPLAY_UNITS.has(u) ? u : "km";
+}
+
+/** Display-only distance for track modal/archive; canonical input is metres. */
+function formatTrackDistance(meters, unit){
+  const m = Number(meters);
+  if (!Number.isFinite(m)) return "—";
+  const u = normalizeTrackDisplayUnit(unit);
+  let v;
+  let suffix;
+  if (u === "km"){
+    v = m / 1000;
+    suffix = " km";
+  } else if (u === "nm"){
+    v = m / 1852;
+    suffix = " NM";
+  } else {
+    v = m / 1609.344;
+    suffix = " mi";
+  }
+  if (v > 0 && v < 0.001) return v.toFixed(4) + suffix;
+  const num = (v < 10 ? v.toFixed(3) : v < 100 ? v.toFixed(2) : v.toFixed(1));
+  return num + suffix;
+}
+
+const TRACK_ETA_SPEED_KMH_WALK = 4;
+const TRACK_ETA_SPEED_KMH_CAR = 60;
+function trackRefSpeedMps(kind){
+  const kmh = (kind === "car") ? TRACK_ETA_SPEED_KMH_CAR : TRACK_ETA_SPEED_KMH_WALK;
+  return kmh / 3.6;
+}
+
+/** Display-only speed for track ETA labels; canonical input is m/s. */
+function formatTrackSpeed(mps, unit){
+  const v = Number(mps);
+  if (!Number.isFinite(v) || v < 0) return "—";
+  const u = normalizeTrackDisplayUnit(unit);
+  if (u === "km"){
+    const kmh = v * 3.6;
+    const num = (kmh < 10 ? kmh.toFixed(1) : String(Math.round(kmh)));
+    return num + " km/h";
+  }
+  if (u === "nm"){
+    const kn = v * 1.943844492;
+    const num = (kn < 10 ? kn.toFixed(1) : kn < 100 ? kn.toFixed(1) : String(Math.round(kn)));
+    return num + " kn";
+  }
+  const mph = v * 2.236936292;
+  const num = (mph < 10 ? mph.toFixed(1) : String(Math.round(mph)));
+  return num + " mph";
+}
+
+function trackEtaLabelFormatted(kind){
+  const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
+  const speedStr = formatTrackSpeed(trackRefSpeedMps(kind), u);
+  const key = (kind === "car") ? "track.etaCar" : "track.etaWalk";
+  const tpl = t(key) || "";
+  if (tpl.indexOf("{0}") >= 0) return String(tpl).replace("{0}", speedStr);
+  return tpl;
+}
+
+function syncTrackDisplayUnitSelect(){
+  const sel = document.getElementById("trackDisplayUnit");
+  if (!sel) return;
+  const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
+  try { sel.value = u; } catch(_){}
+}
+
+function wireTrackDisplayUnitOnce(){
+  const sel = document.getElementById("trackDisplayUnit");
+  if (!sel || sel._trackDisplayUnitBound) return;
+  sel._trackDisplayUnitBound = true;
+  sel.addEventListener("change", (ev) => {
+    state.trackDisplayUnit = normalizeTrackDisplayUnit(ev.target && ev.target.value);
+    saveStore();
+    syncTrackDisplayUnitSelect();
+    renderTrackAll();
+  });
 }
 
 /** Format an ETA duration (seconds) as "H h M min" or "M min". */
@@ -32913,6 +33018,7 @@ function renderTrackPointsList(){
   }
   const expanded = trackPointsListEffectiveExpanded();
   const n = pts.length;
+  const tdu = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   const title = String(t("track.pointsCount") || "Punti ({0})").replace("{0}", String(n));
   const tipTog = t("tip.trackPointsToggle") || "";
   const btnLabel = expanded ? (t("track.pointsHide") || "Nascondi punti") : (t("track.pointsShow") || "Mostra punti");
@@ -32988,7 +33094,7 @@ function renderTrackPointsList(){
     if (i > 0){
       const lg = legs[i-1];
       if (lg && Number.isFinite(lg.dist)){
-        legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${fmtDistMetric(lg.dist)} · ${lg.brg.toFixed(1)}°</span>`;
+        legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(lg.dist, tdu)} · ${lg.brg.toFixed(1)}°</span>`;
       }
     }
     const idxLbl = trackPointDisplayLabel(i, pts.length);
@@ -33012,7 +33118,7 @@ function renderTrackPointsList(){
     closingRow = `<div class="track-point-row" style="opacity:.7;background:var(--panel2)">
       <span class="tp-idx">↻</span><span class="tp-grip">·</span>
       <div class="tp-data">
-        <span class="tp-leg">${esc(t("track.leg"))} ${esc(t("track.closed"))}: ${fmtDistMetric(closingLeg.dist)} · ${closingLeg.brg.toFixed(1)}°</span>
+        <span class="tp-leg">${esc(t("track.leg"))} ${esc(t("track.closed"))}: ${formatTrackDistance(closingLeg.dist, tdu)} · ${closingLeg.brg.toFixed(1)}°</span>
       </div>
       <div class="tp-actions"></div>
     </div>`;
@@ -33070,6 +33176,9 @@ function renderTrackSummary(){
   try { distM = routeDistance(pts, !!state.track.closed); } catch(_){}
   const walkEta = distM / (4 * 1000 / 3600);   // 4 km/h
   const carEta  = distM / (60 * 1000 / 3600);  // 60 km/h
+  const tdu = normalizeTrackDisplayUnit(state.trackDisplayUnit);
+  const walkLbl = trackEtaLabelFormatted("walk");
+  const carLbl = trackEtaLabelFormatted("car");
   let areaHtml = "";
   if (state.track.closed && pts.length >= 3){
     try {
@@ -33088,16 +33197,16 @@ function renderTrackSummary(){
       </div>
       <div class="ts-cell">
         <span class="ts-label">${esc(t("track.distance"))}</span>
-        <span class="ts-value">${fmtDistMetric(distM)}</span>
+        <span class="ts-value">${formatTrackDistance(distM, tdu)}</span>
       </div>
       ${statusHtml}
       ${areaHtml}
       <div class="ts-cell">
-        <span class="ts-label">${esc(t("track.etaWalk"))}</span>
+        <span class="ts-label">${esc(walkLbl)}</span>
         <span class="ts-value">${fmtEta(walkEta)}</span>
       </div>
       <div class="ts-cell">
-        <span class="ts-label">${esc(t("track.etaCar"))}</span>
+        <span class="ts-label">${esc(carLbl)}</span>
         <span class="ts-value">${fmtEta(carEta)}</span>
       </div>
     </div>
@@ -33507,6 +33616,7 @@ function renderMapWaypointsAll(){
 
 /** Re-render list + summary + map overlay together. */
 function renderTrackAll(){
+  syncTrackDisplayUnitSelect();
   renderTrackPointsList();
   renderTrackSummary();
   renderTrackNewTrackPrompt();
@@ -34333,7 +34443,7 @@ function renderTileMap(lat, lon, zoom){
         <select data-role="measure-unit">
           <option value="m"  ${u==="m"?"selected":""}>m</option>
           <option value="km" ${u==="km"?"selected":""}>km</option>
-          <option value="nm" ${u==="nm"?"selected":""}>nm</option>
+          <option value="nm" ${u==="nm"?"selected":""}>NM</option>
           <option value="mi" ${u==="mi"?"selected":""}>mi</option>
           <option value="ft" ${u==="ft"?"selected":""}>ft</option>
         </select>
@@ -34375,7 +34485,7 @@ function renderTileMap(lat, lon, zoom){
           <select data-role="track-float-unit">
             <option value="m"  ${u==="m"?"selected":""}>m</option>
             <option value="km" ${u==="km"?"selected":""}>km</option>
-            <option value="nm" ${u==="nm"?"selected":""}>nm</option>
+            <option value="nm" ${u==="nm"?"selected":""}>NM</option>
             <option value="mi" ${u==="mi"?"selected":""}>mi</option>
             <option value="ft" ${u==="ft"?"selected":""}>ft</option>
           </select>
@@ -41218,6 +41328,7 @@ function bindUI(){
   });
 
   // ---- Track builder ----
+  wireTrackDisplayUnitOnce();
   const btnTAdd = document.getElementById("btnTrackAddCurrent");
   if (btnTAdd) btnTAdd.addEventListener("click", (ev) => { ev.preventDefault(); trackAddCurrent(); });
   const btnTFinish = document.getElementById("btnTrackFinish");
@@ -47895,6 +48006,7 @@ function init(){
       if (typeof stored.settings.showSeamarks === "boolean") state.showSeamarks = stored.settings.showSeamarks;
       if (typeof stored.settings.showSonarChart === "boolean") state.showSonarChart = stored.settings.showSonarChart;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
+      if (typeof stored.settings.trackDisplayUnit === "string") state.trackDisplayUnit = normalizeTrackDisplayUnit(stored.settings.trackDisplayUnit);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
       if (typeof stored.settings.mapPolyClosed === "boolean") state.mapPolyClosed = stored.settings.mapPolyClosed;
       if (stored.settings.gisMeasureFlow === "direct" || stored.settings.gisMeasureFlow === "inverse2"){
