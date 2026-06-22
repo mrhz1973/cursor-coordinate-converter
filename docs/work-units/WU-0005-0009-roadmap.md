@@ -1424,6 +1424,8 @@ Stesso schema di B3.
 
 **B6.6C Range Rings panel restore after create (2026-06-20):** PASS tecnico + **PASS operatore post-deploy VPS** — runtime **`41f180b`**; HEAD/deploy **`69fa6cf`**; deploy GIS-only; smoke **`200`**, Content-Length/wc -c **`2151776`** byte-match **PASS**; build **`B6.6C`**; QA `:8000/coordinate_converter%20Claude.html?v=41f180b`; pannello restore post pick-and-create OK; errore distanze vuote visibile; B6.6B/export/scala OK; attestazione «tutto ok».
 
+**WU-0007 B6.7a Range Rings titolo opzionale + Stili comprimibile (2026-06-22):** implementato — `showTitle` per-ring con fallback legacy `labelMode`; checkbox `#rrShowTitle`; sezione `#rrStyleDetails` (`<details>` default chiuso); render `rrSetShowsTitle`; titolo mappa indipendente da etichette distanza; `labelMode` invariato; import/export GeoJSON invariati; **`APP_BUILD_ID`** invariato; **B6.7b** ultimo stile persistente **backlog**; **QA operatore pending**.
+
 ### B6 — QA OPSEC/proxy/offline
 
 **Stato (2026-06-20):** **PASS operatore** post-catena Range Rings B6.1→B6.6B — runtime **`97406ab`**, deploy **`63084dd`**, build **`B6.6B`**; QA tailnet `:8000/coordinate_converter%20Claude.html?v=97406ab&force=b66b`; attestazione operatore «tutto ok» (dettaglio OM §7).

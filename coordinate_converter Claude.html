@@ -4954,6 +4954,8 @@ dialog#astroFavoritePicker table.astro-wp-table .astro-wp-td-action{ text-align:
 }
 #sec-rangerings .rr-io-details > summary::-webkit-details-marker{ display:none; }
 #sec-rangerings .rr-io-details .rr-io-actions{ margin-top:0; }
+#sec-rangerings .rr-style-details .rr-style-block{ margin-top:0; }
+#sec-rangerings .rr-style-details .rr-spokes-block{ margin-top:10px; }
 #sec-rangerings .rr-table td.sub{
   white-space: normal;
   word-break: break-word;
@@ -9312,7 +9314,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
         </div>
 
-        <div class="rr-style-block" style="margin-top:10px">
+        <details class="rr-io-details rr-style-details" id="rrStyleDetails">
+          <summary data-i18n="rangeRings.stylesSection">Stili</summary>
+        <div class="rr-style-block">
           <div class="sub-section-title" data-i18n="rangeRings.styleTitle">Stile anelli</div>
           <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-top:8px">
             <label class="field">
@@ -9349,10 +9353,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <span data-i18n="rangeRings.labelBgColor">Colore sfondo label</span>
               <input type="color" id="rrLabelBgColor" value="#ffffff">
             </label>
+            <label class="field rr-show-title-toggle" style="display:flex;align-items:center;gap:8px;margin-top:2px">
+              <input type="checkbox" id="rrShowTitle" checked>
+              <span data-i18n="rangeRings.showTitle">Mostra titolo</span>
+            </label>
           </div>
         </div>
 
-        <div class="rr-spokes-block" style="margin-top:10px">
+        <div class="rr-spokes-block">
           <div class="sub-section-title" data-i18n="rangeRings.spokesTitle">Linee radiali</div>
           <div class="grid" style="grid-template-columns:1fr 1fr; gap:10px; margin-top:8px">
             <label class="field rr-spokes-toggle" style="display:flex;align-items:center;gap:8px;margin-top:2px">
@@ -9393,6 +9401,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </label>
           </div>
         </div>
+        </details>
 
         <div class="rr-operative-notices" id="rrOperativeNotices" role="region" aria-live="polite" aria-relevant="additions text" data-i18n-aria="rangeRings.noticeRegionAria">
           <div id="rrInfo" class="rr-notice-box rr-notice-box--info" role="status" hidden></div>
@@ -11860,6 +11869,8 @@ const I18N = {
     "rangeRings.presets":"Preset",
     "rangeRings.presetsQuick":"Preset distanze",
     "rangeRings.styleTitle":"Stile anelli",
+    "rangeRings.stylesSection":"Stili",
+    "rangeRings.showTitle":"Mostra titolo",
     "rangeRings.ringColor":"Colore cerchi",
     "rangeRings.ringWidth":"Spessore linea",
     "rangeRings.lineStyle":"Tipo linea",
@@ -13448,6 +13459,8 @@ const I18N = {
     "rangeRings.presets":"Presets",
     "rangeRings.presetsQuick":"Distance presets",
     "rangeRings.styleTitle":"Ring style",
+    "rangeRings.stylesSection":"Styles",
+    "rangeRings.showTitle":"Show title",
     "rangeRings.ringColor":"Ring color",
     "rangeRings.ringWidth":"Line width",
     "rangeRings.lineStyle":"Line style",
@@ -15037,6 +15050,8 @@ const I18N = {
     "rangeRings.presets":"Présets",
     "rangeRings.presetsQuick":"Préréglages de distances",
     "rangeRings.styleTitle":"Style des anneaux",
+    "rangeRings.stylesSection":"Styles",
+    "rangeRings.showTitle":"Afficher le titre",
     "rangeRings.ringColor":"Couleur des anneaux",
     "rangeRings.ringWidth":"Épaisseur de ligne",
     "rangeRings.lineStyle":"Type de ligne",
@@ -18524,6 +18539,7 @@ const RR_DEFAULT_RING_STYLE = {
   labelColor: "#1e293b",
   labelBgEnabled: true,
   labelBgColor: "#ffffff",
+  showTitle: true,
   spokesEnabled: true,
   spokeCount: 3,
   spokeColor: "#16a34a",
@@ -18800,6 +18816,9 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
   const vis = (raw.visible === false) ? false : true;
   const cAt = Number(raw.createdAt);
   const createdAt = Number.isFinite(cAt) && cAt > 0 ? cAt : Date.now();
+  let showTitle;
+  if (typeof raw.showTitle === "boolean") showTitle = raw.showTitle;
+  else showTitle = (labelMode === "name");
   const out = {
     _v: 1,
     id: id,
@@ -18811,6 +18830,7 @@ function sanitizeRangeRingSet(raw, fallbackIndex){
     strokeWidth: strokeW,
     opacity: opa,
     labelMode: labelMode,
+    showTitle: showTitle,
     lineStyle: lineStyle,
     visible: vis,
     createdAt: createdAt
@@ -18865,6 +18885,7 @@ function rrStylePayloadFromSet(s){
     labelColor: (typeof s.labelColor === "string" && s.labelColor) ? s.labelColor : RR_DEFAULT_RING_STYLE.labelColor,
     labelBgEnabled: s.labelBgEnabled === true,
     labelBgColor: (typeof s.labelBgColor === "string" && s.labelBgColor) ? s.labelBgColor : RR_DEFAULT_RING_STYLE.labelBgColor,
+    showTitle: (typeof s.showTitle === "boolean") ? s.showTitle : (String(s.labelMode || "off") === "name"),
     spokesEnabled: spokesOn,
     spokeCount: spokesOn ? rrSanitizeSpokeCount(s.spokeCount != null ? s.spokeCount : RR_DEFAULT_SPOKE_STYLE.spokeCount) : RR_DEFAULT_SPOKE_STYLE.spokeCount,
     spokeColor: (typeof s.spokeColor === "string" && s.spokeColor) ? s.spokeColor : RR_DEFAULT_SPOKE_STYLE.spokeColor,
@@ -18915,6 +18936,7 @@ function createRangeRingSetDraft(input){
     spokeColor: input.spokeColor,
     spokeWidth: input.spokeWidth,
     spokeLineStyle: input.spokeLineStyle,
+    showTitle: input.showTitle,
     visible: input.visible,
     createdAt: input.createdAt
   }, 0);
@@ -31200,9 +31222,15 @@ function renderGisMapGpsOverlay(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wr);
 }
 
-/** True when overlay should draw the set name near the center (5D). */
+/** True when overlay should draw the set name near the center (B6.7a: showTitle + legacy labelMode). */
+function rrSetShowsTitle(s){
+  if (!s) return false;
+  if (typeof s.showTitle === "boolean") return s.showTitle;
+  return String(s.labelMode || "off") === "name";
+}
+/** @deprecated alias — use rrSetShowsTitle */
 function rrLabelModeShowsName(s){
-  return !!(s && String(s.labelMode || "off") === "name");
+  return rrSetShowsTitle(s);
 }
 /** Display string for SVG <text> (truncate). */
 function rrLabelText(s){
@@ -31341,7 +31369,7 @@ function renderRangeRingsOverlay(tileMap, markerLat, markerLon, zoom){
   }
 
   for (const s of sets){
-    if (!rrLabelModeShowsName(s)) continue;
+    if (!rrSetShowsTitle(s)) continue;
     const c = s.center;
     if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
     const px = tileMapLatLonToPx(root, c.lat, c.lon);
@@ -39064,6 +39092,7 @@ function rrSaveEditedRangeRingSetFromUi(){
     spokeColor: st.spokeColor,
     spokeWidth: st.spokeWidth,
     spokeLineStyle: st.spokeLineStyle,
+    showTitle: st.showTitle,
     opacity: s.opacity,
     labelMode: s.labelMode,
     visible: s.visible,
@@ -40316,6 +40345,7 @@ function rrCreateFromUi(){
     spokeColor: st.spokeColor,
     spokeWidth: st.spokeWidth,
     spokeLineStyle: st.spokeLineStyle,
+    showTitle: st.showTitle,
     opacity: 0.55,
     labelMode: "name",
     visible: true,
@@ -40379,6 +40409,7 @@ function rrReadStyleFromForm(){
   const spokeColorEl = document.getElementById("rrSpokeColor");
   const spokeWidthEl = document.getElementById("rrSpokeWidth");
   const spokeLineEl = document.getElementById("rrSpokeLineStyle");
+  const showTitleEl = document.getElementById("rrShowTitle");
   let ringColor = RR_DEFAULT_RING_STYLE.ringColor;
   let labelColor = RR_DEFAULT_RING_STYLE.labelColor;
   let ringWidth = RR_DEFAULT_RING_STYLE.ringWidth;
@@ -40390,6 +40421,7 @@ function rrReadStyleFromForm(){
   let spokeColor = RR_DEFAULT_RING_STYLE.spokeColor;
   let spokeWidth = RR_DEFAULT_RING_STYLE.spokeWidth;
   let spokeLineStyle = RR_DEFAULT_RING_STYLE.spokeLineStyle;
+  let showTitle = RR_DEFAULT_RING_STYLE.showTitle !== false;
   try {
     if (ringColorEl && ringColorEl.value) ringColor = sanitizeTrackColor(ringColorEl.value);
   } catch(_){}
@@ -40415,7 +40447,8 @@ function rrReadStyleFromForm(){
     if (Number.isFinite(sw)) spokeWidth = Math.max(1, Math.min(4, sw));
   }
   spokeLineStyle = rrSanitizeLineStyle(spokeLineEl ? spokeLineEl.value : "");
-  return { ringColor, ringWidth, ringLineStyle, labelColor, labelBgEnabled, labelBgColor, spokesEnabled, spokeCount, spokeColor, spokeWidth, spokeLineStyle };
+  if (showTitleEl) showTitle = !!showTitleEl.checked;
+  return { ringColor, ringWidth, ringLineStyle, labelColor, labelBgEnabled, labelBgColor, showTitle, spokesEnabled, spokeCount, spokeColor, spokeWidth, spokeLineStyle };
 }
 function rrApplyStyleToForm(st){
   st = st || RR_DEFAULT_RING_STYLE;
@@ -40430,6 +40463,7 @@ function rrApplyStyleToForm(st){
   const spokeColorEl = document.getElementById("rrSpokeColor");
   const spokeWidthEl = document.getElementById("rrSpokeWidth");
   const spokeLineEl = document.getElementById("rrSpokeLineStyle");
+  const showTitleEl = document.getElementById("rrShowTitle");
   const rc = st.ringColor || st.color || RR_DEFAULT_RING_STYLE.ringColor;
   const lc = st.labelColor || RR_DEFAULT_RING_STYLE.labelColor;
   const rw = (st.ringWidth != null) ? st.ringWidth : ((st.strokeWidth != null) ? st.strokeWidth : RR_DEFAULT_RING_STYLE.ringWidth);
@@ -40441,6 +40475,7 @@ function rrApplyStyleToForm(st){
   const spCol = st.spokeColor || RR_DEFAULT_RING_STYLE.spokeColor;
   const spW = (st.spokeWidth != null) ? Math.max(1, Math.min(4, Math.round(Number(st.spokeWidth)))) : RR_DEFAULT_RING_STYLE.spokeWidth;
   const spLs = rrSanitizeLineStyle(st.spokeLineStyle != null ? st.spokeLineStyle : RR_DEFAULT_RING_STYLE.spokeLineStyle);
+  const stTitle = (st.showTitle != null) ? !!st.showTitle : RR_DEFAULT_RING_STYLE.showTitle !== false;
   if (ringColorEl) ringColorEl.value = rc;
   if (labelColorEl) labelColorEl.value = lc;
   if (widthEl) widthEl.value = String(rw);
@@ -40452,6 +40487,7 @@ function rrApplyStyleToForm(st){
   if (spokeColorEl) spokeColorEl.value = spCol;
   if (spokeWidthEl) spokeWidthEl.value = String(spW);
   if (spokeLineEl) spokeLineEl.value = spLs;
+  if (showTitleEl) showTitleEl.checked = stTitle;
   try { rrSyncLabelBgColorControlState(); } catch(_){}
   try { rrSyncSpokesControlState(); } catch(_){}
   rrSyncRangeRingsStyleFromForm();
@@ -40465,6 +40501,7 @@ function rrSyncRangeRingsStyleFromForm(){
   state.rangeRingsStyle.labelColor = st.labelColor;
   state.rangeRingsStyle.labelBgEnabled = st.labelBgEnabled;
   state.rangeRingsStyle.labelBgColor = st.labelBgColor;
+  state.rangeRingsStyle.showTitle = st.showTitle;
   state.rangeRingsStyle.spokesEnabled = st.spokesEnabled;
   state.rangeRingsStyle.spokeCount = st.spokeCount;
   state.rangeRingsStyle.spokeColor = st.spokeColor;
@@ -40491,6 +40528,11 @@ function rrWireRangeRingsStyleControls(){
   if (spokesEn && !spokesEn._rrStyleWired){
     spokesEn._rrStyleWired = true;
     spokesEn.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
+  }
+  const showTitleEn = document.getElementById("rrShowTitle");
+  if (showTitleEn && !showTitleEn._rrStyleWired){
+    showTitleEn._rrStyleWired = true;
+    showTitleEn.addEventListener("change", () => { try { rrSyncRangeRingsStyleFromForm(); } catch(_){} });
   }
 }
 function rrFormatPresetChipLabel(values, unit){
