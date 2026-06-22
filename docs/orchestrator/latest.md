@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — WU-0007 B6.7b Range Rings memoria ultimo stile persistente:** commit task **`0ba6cdc`** — `settings.rangeRingsLastStyle` in `coordconv_v2`; `sanitizeRangeRingsLastStyle`; nuovo ring da ultimo stile confermato; persistenza solo create/save riusciti; cancel/import invariati; ring esistenti invariati; `opacity`+`showTitle`; **`APP_BUILD_ID` `B5.5Z` invariato**; **B6.7a** resta CLOSED/PASS (`b2d828f`); **QA operatore B6.7b pending**. **Monolite incluso.** Inbox **`2026-06-22_1910_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 B6.7a PASS operatore end-to-end (docs):** commit task **`0f9d3e7`** — registra attestazione **«QA WU-0007 B6.7a PASS operatore»**; runtime **`b2d828f`**; deploy HEAD **`d3122e4`**; deploy tecnico GIS-only **PASS**; smoke **`200`**, **`2237896`** byte, SHA-256 match; build **`B5.5Z`**; **B6.7a CLOSED / PASS end-to-end**; **B6.7b** backlog; nessun fix aperto B6.7a. **Monolite non incluso.** Inbox **`2026-06-22_1835_riepilogo_finito-sessione.md`**.
 
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 B6.7a Range Rings showTitle + Stili comprimibile (runtime + docs):** commit task **`b2d828f`** — `showTitle` per-ring con fallback legacy `labelMode`; checkbox `#rrShowTitle`; `#rrStyleDetails` (`<details>` chiuso); `rrSetShowsTitle`; titolo mappa indipendente da etichette distanza; import/export GeoJSON invariati; **`APP_BUILD_ID` `B5.5Z` invariato**; **B6.7b** ultimo stile **backlog**; **QA operatore pending**. **Monolite incluso.** Inbox **`2026-06-22_1828_riepilogo_finito-sessione.md`**.
