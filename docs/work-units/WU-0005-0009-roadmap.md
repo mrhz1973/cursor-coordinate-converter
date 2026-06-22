@@ -307,9 +307,11 @@ Note operative:
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
-**Stato:** **runtime implementato e pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
+**Stato:** **micro-fix pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
 
-**Scope:** stato `_polyEdit` + helper enter/cancel/save/isEditing; nessuna UI visibile.
+**Runtime base:** `9bd2e4c` — fondazione `_polyEdit` + 4 helper (no UI).
+
+**Micro-fix single-source:** rimossi controlli `length < 3` duplicati in `polygonEnterEdit`/`polygonSaveEdit`; validità minima e cap vertici delegati esclusivamente a `gisSanitizeFeature`/`gisSanitizeGeometry` via `gisFeatureUpdate`; comportamento B2 invariato.
 
 **Implementazione (monolite):**
 

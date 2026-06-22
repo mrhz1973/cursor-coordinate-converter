@@ -45233,14 +45233,13 @@ function polygonEnterEdit(id){
   const original = gisClonePlain(feature.geometry);
   if (!original || original.type !== "Polygon" || !Array.isArray(original.coordinates) || !Array.isArray(original.coordinates[0])) return false;
   const working = gisClonePlain(ring);
-  if (!Array.isArray(working) || working.length < 3) return false;
+  if (!Array.isArray(working)) return false;
   if (
     working.length > 1 &&
     gisSameCoord(working[0], working[working.length - 1])
   ) {
     working.pop();
   }
-  if (working.length < 3) return false;
   state._polyEdit = {
     id: sid,
     original: original,
@@ -45260,7 +45259,7 @@ function polygonSaveEdit(){
   const ed = state._polyEdit;
   const id = String(ed.id || "").trim();
   const workingClone = gisClonePlain(ed.working);
-  if (!id || !Array.isArray(workingClone) || workingClone.length < 3) return null;
+  if (!id || !Array.isArray(workingClone)) return null;
   const updated = gisFeatureUpdate(id, {
     geometry: {
       type: "Polygon",
