@@ -147,7 +147,7 @@ Se un prompt operativo modifica **`coordinate_converter Claude.html`** (o altro 
 - **test browser manuale** se **realisticamente eseguibile** nell’ambiente (es. server locale già attivo, percorso noto);
 - **memoria orchestratore** secondo la rule *Autosync orchestratore* (nessun micro-commit “solo verifica” al posto dell’autosync previsto per l’intervento operativo).
 
-Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichiararlo chiaramente** e indicare una **checklist manuale** minima per l’utente.
+Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichiararlo chiaramente** e preparare per default una **QA operatore minima narrativa** (non una checklist lunga con caselle) secondo [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) e *Handoff & Close Discipline* Regola D in [`docs/OPERATING_MEMORY.md`](../docs/OPERATING_MEMORY.md) §4.
 
 **Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
 
@@ -231,6 +231,23 @@ Se utente/orchestratore attesta QA manuale o runtime, RIEPILOGO e aggiornamenti 
 Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti concreti, non formulazioni vaghe («sembra OK»).
 
 Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
+
+## QA operatore minima (default)
+
+Quando la **QA browser operatore** resta **pending** dopo un blocco di routine (micro-fix UI, patch runtime localizzata, correzione circoscritta), Cursor prepara per **default** una **QA minima narrativa** — non una checklist lunga con caselle `[ ]`, tabelle o sette categorie obbligatorie.
+
+**Struttura obbligatoria (un unico fenced code block):**
+
+1. `Il deploy tecnico di <BLOCK-ID> è PASS:` + elenco breve fatti tecnici già verificati (deploy, runtime SHA, servizio, HTTP 200, byte/hash match se applicabili, scope non toccato, repo pulito).
+2. `Ora serve solo la QA operatore minima, senza Cursor.` (o formulazione equivalente).
+3. `Apri:` + URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha>` (SHA **runtime** reale; mai docs/autosync).
+4. `Poi:` — pochi passaggi concreti nell'app.
+5. `verifica che:` — soli esiti specifici del blocco e regressioni pertinenti.
+6. `Riportami:` `QA <BLOCK-ID> PASS operatore` oppure messaggio esatto dell'errore e punto di occorrenza.
+
+**Vincoli:** una sola emissione; una sola risposta operatore; Cursor **non** attesta QA visiva; senza risposta esplicita → QA pending (fail-closed); niente audit generale; niente campi data/browser/risoluzione salvo necessità reale.
+
+**Checklist estesa** (caselle, NUCLEO STANDING, categorie strutturate): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — vedi [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md).
 
 ## LAST_CURSOR_REPORT — Fase F1–F3 (spec → collaudo → obbligo GIS-only)
 
