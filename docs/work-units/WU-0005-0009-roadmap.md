@@ -441,7 +441,7 @@ Decisioni da bloccare:
 
 **WU-0007 B4X1 — implementato runtime** (`debd5b4`); **QA operatore: FAIL** — pill/background non sempre allineato al testo definitivo; offset troppo aggressivo su segmenti quasi nulli.
 
-**WU-0007 B4X2 — implementato runtime** (SHA da commit `finito`); **QA operatore: pending**.
+**WU-0007 B4X2 — implementato runtime** (`d4b73bb`); **QA operatore: pending**.
 
 **Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso**.
 

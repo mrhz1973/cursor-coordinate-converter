@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — WU-0007 B4X2 sync pill + tuning offset (runtime + docs):** commit task **`d4b73bb`** — `layoutPill()` unifica rect/offset; tuning offset segmenti cortissimi; B4X1 QA operatore FAIL registrato; `node --check` OK; **`APP_BUILD_ID` `B5.5Z`** invariato; QA B4X2 **pending** (`?v=d4b73bb`). **Monolite incluso.** Inbox **`2026-06-22_1226_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — convenzione QA operatore minima narrativa (docs/metodo):** commit task **`7dc30b9`** — formato predefinito QA minima narrativa per blocchi di routine; checklist estesa declassata a eccezione (OPSEC/rete/cache/architettura/alto rischio); aggiornati `docs/QA-CHECKLIST.md`, OM §4 Regola D, `.cursor/rules/30-output-workflow.mdc`. **Monolite non incluso.** Inbox **`2026-06-22_1212_riepilogo_finito-sessione.md`**. **Prossimo:** applicare nuovo formato QA ai prossimi blocchi runtime.
 
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 B4X1 measurement label collision avoidance (runtime + docs):** commit task **`debd5b4`** — offset normale dinamico etichetta segmento misura in `renderMapMeasureOverlay` (`mmLineLabelNormalOffset` + misura pill SVG); segmenti corti in pixel allontanano pill da linea/marker/freccia; `node --check` OK; **`APP_BUILD_ID` invariato (`B5.5Z`)**; QA browser operatore **pending** (`?v=debd5b4`). **Monolite incluso.** Inbox **`2026-06-22_1131_riepilogo_finito-sessione.md`**. **Prossimo:** QA operatore B4X1 a schermo.
