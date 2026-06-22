@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-22 — **Chiusura sessione `finito` — WU-0007 T1 unità distanza/velocità modal Traccia (runtime + docs):** commit task **`002624e`** — selettore persistente `trackDisplayUnit` (`km`|`nm`|`mi`, default `km`); helper `formatTrackDistance`/`formatTrackSpeed`; archivio disaccoppiato da `mapMeasureUnit`; ETA label velocità dinamica, tempo invariato; normalizzazione UI `NM`; `node --check` OK; **`APP_BUILD_ID` `B5.5Z` invariato**; QA operatore **pending**. **Monolite incluso.** Inbox **`2026-06-22_1331_riepilogo_finito-sessione.md`**.
+
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 B4X2 PASS operatore end-to-end (docs):** commit task **`767caf5`** — registra attestazione «QA WU-0007 B4X2 PASS operatore»; runtime **`d4b73bb`**; deploy HEAD **`f5854c3`**; smoke HTTP/byte/SHA PASS; **`APP_BUILD_ID` `B5.5Z`**; measurement label collision avoidance **CLOSED**; B4X1 FAIL storico invariato; B4 **`54d8586`** invariato. **Monolite non incluso.** Inbox **`2026-06-22_1244_riepilogo_finito-sessione.md`**.
 
 2026-06-22 — **Chiusura sessione `finito` — WU-0007 B4X2 sync pill + tuning offset (runtime + docs):** commit task **`d4b73bb`** — `layoutPill()` unifica rect/offset; tuning offset segmenti cortissimi; B4X1 QA operatore FAIL registrato; `node --check` OK; **`APP_BUILD_ID` `B5.5Z`** invariato; QA B4X2 **pending** (`?v=d4b73bb`). **Monolite incluso.** Inbox **`2026-06-22_1226_riepilogo_finito-sessione.md`**.
