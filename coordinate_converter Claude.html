@@ -19335,6 +19335,60 @@ function mapUndoLastAction(lat, lon, zoom){
   return false;
 }
 
+/** WU-0007 B4X1: pill size estimate for measure line labels (screen px). */
+const MM_LBL_PAD_X = 16, MM_LBL_PAD_Y = 11;
+const MM_LINE_LBL_BASE_OFF = 14;
+const MM_MEAS_HANDLE_CLR = 22;
+
+function mmEstimateLabelPillSize(txt){
+  const s = String(txt || "");
+  let tlen = 0;
+  try {
+    const probe = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    probe.setAttribute("font-family", "ui-monospace, Menlo, Consolas, monospace");
+    probe.setAttribute("font-size", "12");
+    probe.setAttribute("font-weight", "800");
+    probe.textContent = s;
+    if (typeof probe.getComputedTextLength === "function") tlen = probe.getComputedTextLength();
+  } catch(_){}
+  const coreW = Math.max(Number(tlen) || 0, s.length * 7.15, 24);
+  const coreH = 14;
+  if (!Number.isFinite(coreW) || !Number.isFinite(coreH)) return { rw: 56, rh: 36 };
+  return { rw: coreW + MM_LBL_PAD_X * 2, rh: coreH + MM_LBL_PAD_Y * 2 };
+}
+
+function mmMeasurePillDimsFromTextEl(textEl, txtFallback){
+  let bb = { width: 0, height: 0 };
+  try { if (textEl) bb = textEl.getBBox(); } catch(_){}
+  let tlen = 0;
+  try {
+    if (textEl && typeof textEl.getComputedTextLength === "function") tlen = textEl.getComputedTextLength();
+  } catch(_){}
+  const fb = String(txtFallback || "");
+  const coreW = Math.max(bb.width || 0, tlen || 0, fb.length * 7.15, 24);
+  const coreH = Math.max(bb.height || 0, 14);
+  if (!Number.isFinite(coreW) || !Number.isFinite(coreH)) return mmEstimateLabelPillSize(fb);
+  return { rw: coreW + MM_LBL_PAD_X * 2, rh: coreH + MM_LBL_PAD_Y * 2 };
+}
+
+/** Normal offset (px) so a rotated line-segment label clears line, handles and arrow. */
+function mmLineLabelNormalOffset(segLenPx, rw, rh){
+  const seg = Number.isFinite(segLenPx) ? Math.max(0, segLenPx) : 0;
+  const w = Number.isFinite(rw) ? Math.max(0, rw) : 56;
+  const h = Number.isFinite(rh) ? Math.max(0, rh) : 36;
+  const stroke = 3.5;
+  const pad = 5;
+  let off = MM_LINE_LBL_BASE_OFF;
+  off = Math.max(off, h * 0.5 + stroke * 0.5 + pad);
+  if (seg < w + MM_MEAS_HANDLE_CLR){
+    const bump = (w + MM_MEAS_HANDLE_CLR - seg) * 0.42;
+    off = Math.max(off, MM_LINE_LBL_BASE_OFF + bump);
+  }
+  off = Math.max(off, 12);
+  if (!Number.isFinite(off)) return MM_LINE_LBL_BASE_OFF;
+  return Math.min(off, 150);
+}
+
 function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
   const tileMap = root && root.querySelector(".tile-map");
   const layer = root && root.querySelector(".tile-layer");
@@ -19439,9 +19493,13 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     svg.appendChild(g);
   };
 
-  const addLabel = (x, y, txt, angDeg) => {
+  const addLabel = (x, y, txt, angDeg, opts) => {
     const g = document.createElementNS(svg.namespaceURI, "g");
-    g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${angDeg.toFixed(2)})`);
+    const setPos = (px, py) => {
+      if (!Number.isFinite(px) || !Number.isFinite(py)) return;
+      g.setAttribute("transform", `translate(${px.toFixed(1)} ${py.toFixed(1)}) rotate(${Number(angDeg).toFixed(2)})`);
+    };
+    setPos(x, y);
     const text = document.createElementNS(svg.namespaceURI, "text");
     text.setAttribute("class", "mm-label");
     text.setAttribute("x", "0");
@@ -19464,7 +19522,6 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     g.appendChild(text);
     svg.appendChild(g);
 
-    const padX = 16, padY = 11;
     const syncBg = () => {
       let bb = { x: 0, y: 0, width: 0, height: 0 };
       try { bb = text.getBBox(); } catch(_){}
@@ -19475,15 +19532,33 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
       /* getBBox() sul testo spesso sottostima la larghezza: usiamo anche getComputedTextLength. */
       const coreW = Math.max(bb.width || 0, tlen || 0, 24);
       const coreH = Math.max(bb.height || 0, 14);
-      const rw = coreW + padX * 2;
-      const rh = coreH + padY * 2;
+      const rw = coreW + MM_LBL_PAD_X * 2;
+      const rh = coreH + MM_LBL_PAD_Y * 2;
       rect.setAttribute("x", (-rw / 2).toFixed(2));
       rect.setAttribute("y", (-rh / 2).toFixed(2));
       rect.setAttribute("width", rw.toFixed(2));
       rect.setAttribute("height", rh.toFixed(2));
+      return { rw, rh };
+    };
+    const refineLine = opts && opts.lineSegLen != null && Number.isFinite(opts.anchorMx) && Number.isFinite(opts.anchorMy)
+      && Number.isFinite(opts.nx) && Number.isFinite(opts.ny);
+    const applyLineOffset = (dims) => {
+      if (!refineLine) return;
+      const off = mmLineLabelNormalOffset(opts.lineSegLen, dims.rw, dims.rh);
+      setPos(opts.anchorMx + opts.nx * off, opts.anchorMy + opts.ny * off);
     };
     syncBg();
-    requestAnimationFrame(syncBg);
+    if (refineLine){
+      requestAnimationFrame(() => {
+        try {
+          applyLineOffset(mmMeasurePillDimsFromTextEl(text, txt));
+        } catch(_){
+          applyLineOffset(mmEstimateLabelPillSize(txt));
+        }
+      });
+    } else {
+      requestAnimationFrame(syncBg);
+    }
   };
 
   if (kind === "poly"){
@@ -19551,12 +19626,22 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
       const mx = (p1.x + p2.x) / 2;
       const my = (p1.y + p2.y) / 2;
       const dx = p2.x - p1.x, dy = p2.y - p1.y;
-      const len = Math.hypot(dx, dy) || 1;
-      const nx = -dy/len, ny = dx/len;
-      const ox = mx + nx * 14, oy = my + ny * 14;
-      let ang = Math.atan2(dy, dx) * RAD;
+      const len = Math.hypot(dx, dy);
+      const segLenPx = Number.isFinite(len) && len > 0 ? len : 0;
+      const nx = segLenPx > 0 ? -dy / segLenPx : 0;
+      const ny = segLenPx > 0 ? dx / segLenPx : -1;
+      let ang = segLenPx > 0 ? Math.atan2(dy, dx) * RAD : 0;
       if (ang > 90 || ang < -90) ang += 180;
-      addLabel(ox, oy, `${fmtDist} · ${az}`, ang);
+      const labelTxt = `${fmtDist} · ${az}`;
+      const est = mmEstimateLabelPillSize(labelTxt);
+      const off0 = mmLineLabelNormalOffset(segLenPx, est.rw, est.rh);
+      addLabel(mx + nx * off0, my + ny * off0, labelTxt, ang, {
+        lineSegLen: segLenPx,
+        anchorMx: mx,
+        anchorMy: my,
+        nx,
+        ny
+      });
     }
   }
 

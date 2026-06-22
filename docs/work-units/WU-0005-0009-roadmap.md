@@ -437,24 +437,27 @@ Decisioni da bloccare:
 
 ### Estensione backlog — Measurement label collision avoidance (Distanza/Righello)
 
-**Stato:** backlog futuro — **non implementato**, **non PASS**, **nessuna WU aperta**; **non** riaprire o alterare lo stato PASS di WU-0007 B4 (`54d8586`).
+**WU-0007 B4X1 — implementato runtime**; **QA browser operatore: pending**. **WU-0007 B4** (`54d8586`) resta **PASS** invariato.
 
-**Contesto monolite (read-only):** overlay misura in `renderMapMeasureOverlay()` (~L19338+); etichette segmento linea in `.tile-measure-overlay` / `.mm-label` (~L3939+, ~L19547–19559): label a metà segmento con offset fisso 14px lungo normale e rotazione allineata alla linea.
+**Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso** dal nuovo offset.
 
-**Problema operatore:** su segmenti graficamente corti (lunghezza in pixel, dipende da zoom), l'etichetta centrata e ruotata copre il segmento, i marker terminali (S/E) e la freccia di direzione.
+**Implementazione B4X1:**
+- helper `mmEstimateLabelPillSize`, `mmMeasurePillDimsFromTextEl`, `mmLineLabelNormalOffset` (screen px);
+- stima iniziale pill + raffinamento `requestAnimationFrame` via `getBBox()` / `getComputedTextLength()` + padding `MM_LBL_PAD_X/Y`;
+- offset normale base **14px** quando `segLenPx >= rw + handle clearance`;
+- segmento corto: `segLenPx < rw + 22` → bump proporzionale `(w + 22 - seg) * 0.42`; min clearance `rh/2 + stroke + pad`; cap **150px**;
+- fallback conservativo se misura SVG non valida (`mmEstimateLabelPillSize` da lunghezza testo);
+- nessun leader, nessuna collisione inter-segmento, nessuno stato persistente;
+- ricalcolo naturale a ogni render overlay (zoom/pan/drag/resize).
 
-**Comportamento desiderato (futuro):**
-- misurare o stimare la lunghezza del segmento nello spazio schermo (pixel);
-- confrontarla con le **dimensioni reali renderizzate** dell'etichetta (bbox da `getBBox` / `getComputedTextLength` + padding), non con il numero di caratteri;
-- mantenere il posizionamento corrente quando lo spazio è sufficiente;
-- quando il segmento è troppo corto, spostare l'etichetta lungo la **normale/perpendicolare** al segmento (incremento offset fino a clearance);
-- mantenere sempre leggibili linea, estremi e freccia;
-- ricalcolare su zoom, viewport, resize e cambio geometria (drag handle);
-- **evitare** offset basati su distanza geografica fissa;
-- leader/collegamento visivo opzionale solo se necessario per associare etichetta a segmento;
-- leggibilità etichetta in qualunque orientamento (flip testo se angolo >90° / <-90°, già parzialmente presente).
+**Problema risolto (atteso):** su segmenti corti in pixel l'etichetta non copre più linea, marker S/E e freccia.
 
-**Collocazione implementativa futura:** estensione dello strumento Distanza/Righello (area B4 / `#measurePanel` / `#sec-measure`), micro-blocco dedicato dopo priorità operative correnti.
+**Checklist QA operatore (pending):**
+1. Segmento lungo: etichetta ≈ posizione precedente (offset ~14px).
+2. Segmento corto (zoom alto o punti vicini): pill spostato perpendicolarmente, linea/marker/freccia visibili.
+3. Cambio zoom: offset si aggiorna.
+4. Drag handle S/E: nessuna regressione; undo/clear/Esc invariati.
+5. Misura poligono (riepilogo centroide): invariata.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
