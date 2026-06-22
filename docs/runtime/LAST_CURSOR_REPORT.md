@@ -2,54 +2,59 @@
 
 ## LATEST
 
-* real_task_commit: `77ad65ee7e9cb067700692d62776809a9108db7c`
-* real_task_subject: feat: WU-0006 POLY-EDIT-B3 UI Modifica overlay edit barra Salva/Annulla
-* report_generated_at: 2026-06-23T00:32:00+02:00
+* real_task_commit: `7a668d7b0fe745e1b86fa99af8ae9bdeef6e7e86`
+* real_task_subject: feat: POLY-PARITY-P1 scheda info live + nome salvabile poligono edit
+* report_generated_at: 2026-06-23T01:47:00+02:00
 * branch: main
-* remote_head_after_task_push: `77ad65e`
-* previous_report_container: `2a842fc6b9dee2b143d2dff5e609d9bd7ac80aa7` (POLY-EDIT-B2 micro-fix finito autosync — esterno/verificabile)
+* remote_head_after_task_push: `7a668d7`
+* previous_report_container: `82e32d3c235b5abc3dfe147674a7244d1e554bd4` (POLY-EDIT-B3 finito autosync — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: clean (pre-autosync)
 * pass_tecnico_remoto: non attestato nel file per container corrente — verifica esterna post-push
-* result_cursor: POLY-EDIT-B3 UI Modifica + overlay edit + barra Salva/Annulla; node --check OK; monolite incluso; nessun drag
-* pass_operatore: non richiesto / non attestato
-* result_runtime: review byte B3 pending; nessun deploy; B3 non CLOSED end-to-end
+* result_cursor: POLY-PARITY-P1 scheda info live + nome salvabile; node --check OK; monolite incluso; nessun drag; nessun deploy
+* pass_operatore: non attestato — QA operatore P1 pending
+* result_runtime: review byte P1 pending; B3 QA operatore FAIL storico; non CLOSED end-to-end
 * qa_attestation_source: —
-* notes: B2 review byte PASS; prossimo B4 dirty-confirm o B5 drag vertici
+* notes: POLY-PARITY-DIAG completata; prossimo P2 drag vertici; APP_BUILD_ID B5.5Z invariato
 
 ## OUTPUT VERBATIM
 
 ```text
-# Stato verificato PRIMA del commit container corrente (pre-autosync finito POLY-EDIT-B3)
+# Stato verificato PRIMA del commit container corrente (pre-autosync finito POLY-PARITY-P1)
 
 git log --oneline -5
+7a668d7 feat: POLY-PARITY-P1 scheda info live + nome salvabile poligono edit
+82e32d3 docs: orchestratore — riconciliazione finito sessione POLY-EDIT-B3
 77ad65e feat: WU-0006 POLY-EDIT-B3 UI Modifica overlay edit barra Salva/Annulla
 2a842fc docs: orchestratore — riconciliazione finito sessione POLY-EDIT-B2 micro-fix
 0e23b42 fix: POLY-EDIT-B2 delega validita minima al sanitizer GIS
-c321e1c docs: orchestratore — riconciliazione finito sessione POLY-EDIT-B2
-9bd2e4c feat: WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente
 
 git status --short
 (vuoto)
 
 git rev-parse HEAD
-77ad65e
+7a668d7
 
 git rev-parse origin/main
-77ad65e
+7a668d7
 
 git branch --show-current
 main
 
 git push (task)
-2a842fc..77ad65e main -> main
+82e32d3..7a668d7 main -> main
+
+git ls-remote origin main
+7a668d7b0fe745e1b86fa99af8ae9bdeef6e7e86 refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY** — verificare post-push con `git ls-remote origin main` e seed Regola F nel report Cursor esterno.
 
 ## HISTORY
 
+* 82e32d3 — POLY-EDIT-B3 finito autosync; container verificabile
+* 77ad65e — POLY-EDIT-B3 task commit (monolite UI Modifica)
 * 2a842fc — POLY-EDIT-B2 micro-fix finito autosync; container verificabile
 * 0e23b42 — POLY-EDIT-B2 micro-fix task commit (monolite)
 * c321e1c — POLY-EDIT-B2 fondazione finito autosync; container verificabile
