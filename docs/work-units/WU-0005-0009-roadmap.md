@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-EDIT-B3 UI edit (sotto);
+  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-PARITY-P1 scheda info live (sotto);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -325,26 +325,34 @@ Note operative:
 
 ### WU-0006 POLY-EDIT-B3 — Modifica + overlay + barra Salva/Annulla (no drag)
 
-**Stato:** **runtime implementato e pushato** — **review byte Claude pending**; **nessun deploy**; **non** CLOSED / PASS end-to-end.
+**Stato:** **review byte PASS**; **QA operatore FAIL** (editor insufficiente vs Tracce); **nessun deploy**; **non** CLOSED end-to-end.
+
+**Runtime:** `77ad65e`.
+
+**QA operatore FAIL (causa):** assenza info live, nome non integrato in edit, vertici non trascinabili, assenza parità funzionale con Poligono Tracce.
+
+**Implementazione (monolite):** vedi commit `77ad65e` — Modifica in lista, overlay edit, barra Salva/Annulla, vertici visibili non interattivi.
+
+### POLY-PARITY-P1 — Scheda informazioni live + nome salvabile
+
+**Stato:** **runtime implementato e pushato** — **review byte pending**; **nessun deploy**; **QA operatore pending**; **non** CLOSED end-to-end.
 
 **Implementazione (monolite):**
 
-- Pulsante **Modifica** per riga in `renderPolygonPanelList` (`data-role="poly-edit"`);
-- Barra in-pannello `#polygonPanelEditBar` — titolo edit, hint vertici, Salva (primary), Annulla (secondary), errore salvataggio;
-- `renderPolygonEditBar()`, `polygonRefreshEditUi()`, handler Salva/Annulla/enter;
-- `renderPolygonEditOverlay()` — SVG da `state._polyEdit.working`; vertici visibili, **non trascinabili** (B3);
-- Esclusione poligono in edit da `renderGisPolygonsOverlay()`;
-- Salva clean → `polygonCancelEdit()`; Salva dirty → `polygonSaveEdit()`;
-- Rename/delete disabilitati durante edit; blocco edit se disegno attivo;
-- i18n IT/EN/FR (`gis.polygonPanel.edit*`, `tip.polygonPanel.edit`).
+- `#polygonPanelEditBar` — titolo, input nome transiente, riepilogo (vertici/area/perimetro/unità), dettaglio lati+bearing (`<details>` scroll), Salva/Annulla, errore;
+- `_polyEdit` esteso: `name`, `originalName`, `nameDirty`, `geometryDirty` (false in P1), `dirty` composito;
+- Helper: `gisRingToLatLonPts`, `polygonRecomputeEditDirty`, `renderPolygonEditInfo`, `polygonNormalizeEditName`;
+- Calcoli da `working` via `sphericalPolygonArea`, `computePolylinePerimeterMeters`, `vincentyInverse`, `formatMapMeasureDistance`, `fmtAreaPlain`;
+- Unità: `state.mapMeasureUnit` (formatter Misura);
+- Salva dirty: **una** `gisFeatureUpdate(id,{geometry,properties})` con proprietà canoniche clonate + `name` transiente;
+- Salva clean: `polygonCancelEdit()` senza CRUD;
+- **Nessun** drag, resize, metadata data, modifica sanitizer.
 
-**Invariati:** contratto helper B2; nessun drag; nessun dirty-confirm; nessun listener pointer document-level; **`APP_BUILD_ID` `B5.5Z`**.
+**Invariati:** overlay edit non interattivo; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Review byte Claude:** pending (gate post-push, pre-deploy/QA).
+**Prossimo:** POLY-PARITY-P2 — drag vertici.
 
-**Deploy / QA operatore:** non eseguiti; non richiesti per B3.
-
-**Prossimo:** POLY-EDIT-B4 — dirty-confirm / uscita sicura (Esc, chiusura pannello, cambio strumento); poi B5 drag vertici.
+**Backlog parità (post-P1):** P3 cancellazione vertice, P4 traslazione, P5 creazione, P6 ✕ intero poligono, P7 metadata data, P8 resize modal (P8-A).
 
 ## Decisioni da bloccare prima di iniziare
 
