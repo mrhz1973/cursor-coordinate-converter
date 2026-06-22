@@ -261,7 +261,7 @@ Verifiche:
 
 ### Estensione backlog — UX poligoni + modal standard
 
-**Stato:** UX leggera PASS (`f7260d9`); restano voci pesanti/trasversali.  
+**Stato:** UX leggera PASS (`f7260d9`); restano voci pesanti/trasversali — **non implementate**, **non PASS**, **nessuna WU runtime aperta**.
 **Prerequisito:** fix base poligoni pubblicato (`72a194e`), doppio-click chiude il poligono senza ricentrare la mappa.
 
 Obiettivo:
@@ -270,21 +270,40 @@ migliorare l'esperienza d'uso dei poligoni e standardizzare il comportamento del
 Voci:
 - ~~Modal poligoni con draw mode già armato all'apertura~~ — PASS (`f7260d9`).
 - ~~Cancellazione poligono con `X` nella lista~~ — PASS (`f7260d9`).
-- **[PESANTE]** Vertici modificabili: selezionare e trascinare un vertice sulla mappa.
-- **[PESANTE]** Spostamento del poligono intero tramite trascinamento su mappa.
 - ~~Modal poligoni minimizzata durante il disegno~~ — PASS (`f7260d9`).
-- Standardizzazione modal trasversale: comportamento uniforme per tutte le finestre flottanti.
-- Resize laterale dai lati, non solo dagli angoli.
+- **[PESANTE — backlog]** Modifica poligoni sulla mappa (parità UX Mappe Offline, in-place):
+  - nell'elenco poligoni salvati (`#polygonPanelList`) almeno azioni **Modifica** (matita) ed **Elimina**;
+  - **Modifica** apre il poligono esistente in modalità edit sulla mappa: geometria evidenziata, handle sui vertici visibili e trascinabili, poligono intero spostabile per drag;
+  - azioni esplicite **Salva** e **Annulla** nel pannello;
+  - **Salva** aggiorna in-place lo stesso oggetto in `state.gisPolygons[]` (identità, nome, metadati conservati; nessuna copia);
+  - **Annulla** ripristina integralmente la geometria originale;
+  - stato **dirty** esplicito durante la modifica;
+  - chiusura pannello o cambio strumento con modifiche non salvate: comportamento sicuro (conferma o annulla; nessuna perdita silenziosa);
+  - **riferimento UX/tecnico:** modal Mappe Offline (`#offlineTilePanel`, `offcache.editingAreaTitle` / `offcache.editingAreaHint`, overlay bbox con handle) per ingresso in modifica, visualizzazione su mappa e handle — **senza** riutilizzare o sostituire lo storage tile offline (`IndexedDB` / aree nominate);
+  - **vincoli:** non alterare `state.mapWaypoints[]`; non fondere arbitrariamente modelli tracce/waypoint/poligoni;
+  - evidenza operatore: lista con matita, geometria su mappa, handle vertici, modifica diretta a schermo.
+- **[PESANTE — backlog]** Vertici modificabili e spostamento poligono intero — coperti dal flusso edit sopra; eventuale split in micro-blocchi in implementazione futura.
+- **[TRASVERSALE — backlog]** Standardizzazione modal trasversale — altezza verticale utile tipo Range & Bearing:
+  - tutti i modal e pannelli operativi GIS devono aprirsi occupando l'**intera altezza utile** della viewport (margini e safe-area superiori/inferiori dell'app; **non** necessariamente larghezza full-screen);
+  - header, titolo, chiusura e azioni primarie sempre raggiungibili; contenuto eccedente con scroll **interno** al corpo del modal;
+  - coerenza desktop, finestre strette, touch/mobile;
+  - compatibile con minimizzazione, ripristino e modalità disegno/modifica sulla mappa;
+  - `#polygonPanel` può minimizzarsi durante disegno/modifica quando necessario; apertura normale = standard verticale;
+  - **riferimento tecnico esistente:** `#measurePanel` / `#sec-measure` (Range & Bearing via `openMeasureFloatingPanelGis`, `_measurePanelLayoutOpts` ~L45278); pattern full-height già su Range Rings B6.4a-2 (`_rangeRingsPanelLayoutOpts`, `defaultHeightFraction: 0.92`);
+  - implementazione futura a **blocchi piccoli**, verifica modal per modal; **nessuna** riscrittura CSS/HTML/JS generale in questo step documentale;
+  - **perimetro:** modal/pannelli operativi app; **esclude** dialoghi nativi browser (`alert`, `confirm`, `prompt`).
+- Resize laterale dai lati, non solo dagli angoli (backlog correlato).
 
 Note operative:
 - Editing geometrie, vertici e drag poligono sono lavori non banali.
 - La logica deve restare coerente con tracce e waypoint.
 - Non introdurre refactor ampi senza WU dedicata.
-- La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX.
+- La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: editing vertici e drag poligono;
-  - standardizzazione modal trasversale: resize laterale e comportamento uniforme.
+  - UX geometrie pesante: modifica in-place su mappa (modello sopra);
+  - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
+  - resize laterale pannelli flottanti.
 
 ## Decisioni da bloccare prima di iniziare
 
@@ -415,6 +434,27 @@ Decisioni da bloccare:
 - usare simbolo testuale semplice o icona già esistente;
 - mantenere identico handler distanza;
 - non fondere ancora con range/bearing.
+
+### Estensione backlog — Measurement label collision avoidance (Distanza/Righello)
+
+**Stato:** backlog futuro — **non implementato**, **non PASS**, **nessuna WU aperta**; **non** riaprire o alterare lo stato PASS di WU-0007 B4 (`54d8586`).
+
+**Contesto monolite (read-only):** overlay misura in `renderMapMeasureOverlay()` (~L19338+); etichette segmento linea in `.tile-measure-overlay` / `.mm-label` (~L3939+, ~L19547–19559): label a metà segmento con offset fisso 14px lungo normale e rotazione allineata alla linea.
+
+**Problema operatore:** su segmenti graficamente corti (lunghezza in pixel, dipende da zoom), l'etichetta centrata e ruotata copre il segmento, i marker terminali (S/E) e la freccia di direzione.
+
+**Comportamento desiderato (futuro):**
+- misurare o stimare la lunghezza del segmento nello spazio schermo (pixel);
+- confrontarla con le **dimensioni reali renderizzate** dell'etichetta (bbox da `getBBox` / `getComputedTextLength` + padding), non con il numero di caratteri;
+- mantenere il posizionamento corrente quando lo spazio è sufficiente;
+- quando il segmento è troppo corto, spostare l'etichetta lungo la **normale/perpendicolare** al segmento (incremento offset fino a clearance);
+- mantenere sempre leggibili linea, estremi e freccia;
+- ricalcolare su zoom, viewport, resize e cambio geometria (drag handle);
+- **evitare** offset basati su distanza geografica fissa;
+- leader/collegamento visivo opzionale solo se necessario per associare etichetta a segmento;
+- leggibilità etichetta in qualunque orientamento (flip testo se angolo >90° / <-90°, già parzialmente presente).
+
+**Collocazione implementativa futura:** estensione dello strumento Distanza/Righello (area B4 / `#measurePanel` / `#sec-measure`), micro-blocco dedicato dopo priorità operative correnti.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
@@ -1489,7 +1529,7 @@ Decidere fuori dal repo GIS:
 
 **WU-0005** ha governance documentata (B0/B1 PASS) ma **non è chiusa** — B2 UI-copy opzionale e B3 chiusura WU restano aperti.
 
-**WU-0006** ha fix base + UX leggera **PASS**; resta backlog residuo (editing vertici, drag poligono, standardizzazione modal trasversale).
+**WU-0006** ha fix base + UX leggera **PASS**; resta backlog residuo documentato (modifica poligoni in-place con parità UX Mappe Offline; standardizzazione modal trasversale con altezza utile tipo Range & Bearing; resize laterale).
 
 **Prossimo candidato operativo** coerente con la roadmap:
 
