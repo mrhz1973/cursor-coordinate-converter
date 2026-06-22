@@ -19335,10 +19335,13 @@ function mapUndoLastAction(lat, lon, zoom){
   return false;
 }
 
-/** WU-0007 B4X1: pill size estimate for measure line labels (screen px). */
+/** WU-0007 B4X1/B4X2: pill size estimate for measure line labels (screen px). */
 const MM_LBL_PAD_X = 16, MM_LBL_PAD_Y = 11;
 const MM_LINE_LBL_BASE_OFF = 14;
-const MM_MEAS_HANDLE_CLR = 22;
+const MM_MEAS_HANDLE_CLR = 18;
+const MM_LINE_LBL_CLEAR_GAP = 3;
+const MM_LINE_LBL_SHORT_GAIN = 0.20;
+const MM_LINE_LBL_MAX_OFF = 84;
 
 function mmEstimateLabelPillSize(txt){
   const s = String(txt || "");
@@ -19377,16 +19380,16 @@ function mmLineLabelNormalOffset(segLenPx, rw, rh){
   const w = Number.isFinite(rw) ? Math.max(0, rw) : 56;
   const h = Number.isFinite(rh) ? Math.max(0, rh) : 36;
   const stroke = 3.5;
-  const pad = 5;
+  const gap = MM_LINE_LBL_CLEAR_GAP;
   let off = MM_LINE_LBL_BASE_OFF;
-  off = Math.max(off, h * 0.5 + stroke * 0.5 + pad);
+  off = Math.max(off, h * 0.5 + stroke * 0.5 + gap);
   if (seg < w + MM_MEAS_HANDLE_CLR){
-    const bump = (w + MM_MEAS_HANDLE_CLR - seg) * 0.42;
+    const bump = (w + MM_MEAS_HANDLE_CLR - seg) * MM_LINE_LBL_SHORT_GAIN;
     off = Math.max(off, MM_LINE_LBL_BASE_OFF + bump);
   }
   off = Math.max(off, 12);
   if (!Number.isFinite(off)) return MM_LINE_LBL_BASE_OFF;
-  return Math.min(off, 150);
+  return Math.min(off, MM_LINE_LBL_MAX_OFF);
 }
 
 function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
@@ -19522,18 +19525,18 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     g.appendChild(text);
     svg.appendChild(g);
 
-    const syncBg = () => {
-      let bb = { x: 0, y: 0, width: 0, height: 0 };
-      try { bb = text.getBBox(); } catch(_){}
-      let tlen = 0;
+    const layoutPill = () => {
+      if (!g.isConnected) return null;
+      let dims;
       try {
-        if (typeof text.getComputedTextLength === "function") tlen = text.getComputedTextLength();
-      } catch(_){}
-      /* getBBox() sul testo spesso sottostima la larghezza: usiamo anche getComputedTextLength. */
-      const coreW = Math.max(bb.width || 0, tlen || 0, 24);
-      const coreH = Math.max(bb.height || 0, 14);
-      const rw = coreW + MM_LBL_PAD_X * 2;
-      const rh = coreH + MM_LBL_PAD_Y * 2;
+        dims = mmMeasurePillDimsFromTextEl(text, txt);
+        if (!Number.isFinite(dims.rw) || !Number.isFinite(dims.rh) || dims.rw <= 0 || dims.rh <= 0) {
+          dims = mmEstimateLabelPillSize(txt);
+        }
+      } catch(_){
+        dims = mmEstimateLabelPillSize(txt);
+      }
+      const rw = dims.rw, rh = dims.rh;
       rect.setAttribute("x", (-rw / 2).toFixed(2));
       rect.setAttribute("y", (-rh / 2).toFixed(2));
       rect.setAttribute("width", rw.toFixed(2));
@@ -19543,21 +19546,18 @@ function renderMapMeasureOverlay(root, markerLat, markerLon, zoom){
     const refineLine = opts && opts.lineSegLen != null && Number.isFinite(opts.anchorMx) && Number.isFinite(opts.anchorMy)
       && Number.isFinite(opts.nx) && Number.isFinite(opts.ny);
     const applyLineOffset = (dims) => {
-      if (!refineLine) return;
+      if (!refineLine || !dims) return;
       const off = mmLineLabelNormalOffset(opts.lineSegLen, dims.rw, dims.rh);
       setPos(opts.anchorMx + opts.nx * off, opts.anchorMy + opts.ny * off);
     };
-    syncBg();
+    layoutPill();
     if (refineLine){
       requestAnimationFrame(() => {
-        try {
-          applyLineOffset(mmMeasurePillDimsFromTextEl(text, txt));
-        } catch(_){
-          applyLineOffset(mmEstimateLabelPillSize(txt));
-        }
+        const dims = layoutPill();
+        applyLineOffset(dims);
       });
     } else {
-      requestAnimationFrame(syncBg);
+      requestAnimationFrame(layoutPill);
     }
   };
 

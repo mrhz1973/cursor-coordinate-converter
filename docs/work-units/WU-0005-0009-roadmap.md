@@ -437,27 +437,24 @@ Decisioni da bloccare:
 
 ### Estensione backlog — Measurement label collision avoidance (Distanza/Righello)
 
-**WU-0007 B4X1 — implementato runtime** (`debd5b4`); **QA browser operatore: pending**. **WU-0007 B4** (`54d8586`) resta **PASS** invariato.
+**WU-0007 B4** (`54d8586`) resta **PASS** invariato.
 
-**Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso** dal nuovo offset.
+**WU-0007 B4X1 — implementato runtime** (`debd5b4`); **QA operatore: FAIL** — pill/background non sempre allineato al testo definitivo; offset troppo aggressivo su segmenti quasi nulli.
 
-**Implementazione B4X1:**
-- helper `mmEstimateLabelPillSize`, `mmMeasurePillDimsFromTextEl`, `mmLineLabelNormalOffset` (screen px);
-- stima iniziale pill + raffinamento `requestAnimationFrame` via `getBBox()` / `getComputedTextLength()` + padding `MM_LBL_PAD_X/Y`;
-- offset normale base **14px** quando `segLenPx >= rw + handle clearance`;
-- segmento corto: `segLenPx < rw + 22` → bump proporzionale `(w + 22 - seg) * 0.42`; min clearance `rh/2 + stroke + pad`; cap **150px**;
-- fallback conservativo se misura SVG non valida (`mmEstimateLabelPillSize` da lunghezza testo);
-- nessun leader, nessuna collisione inter-segmento, nessuno stato persistente;
-- ricalcolo naturale a ogni render overlay (zoom/pan/drag/resize).
+**WU-0007 B4X2 — implementato runtime** (SHA da commit `finito`); **QA operatore: pending**.
 
-**Problema risolto (atteso):** su segmenti corti in pixel l'etichetta non copre più linea, marker S/E e freccia.
+**Contesto monolite:** overlay misura `renderMapMeasureOverlay()`; etichette segmento linea `.tile-measure-overlay` / `.mm-label`; riepilogo poligono (centroide) **escluso**.
 
-**Checklist QA operatore (pending):**
-1. Segmento lungo: etichetta ≈ posizione precedente (offset ~14px).
-2. Segmento corto (zoom alto o punti vicini): pill spostato perpendicolarmente, linea/marker/freccia visibili.
-3. Cambio zoom: offset si aggiorna.
-4. Drag handle S/E: nessuna regressione; undo/clear/Esc invariati.
-5. Misura poligono (riepilogo centroide): invariata.
+**Implementazione B4X1** (`debd5b4`):
+- helper `mmEstimateLabelPillSize`, `mmMeasurePillDimsFromTextEl`, `mmLineLabelNormalOffset`;
+- offset normale dinamico su segmenti corti in pixel.
+
+**Fix B4X2:**
+- `layoutPill()` — unica fonte `{ rw, rh }` per rect e offset; `requestAnimationFrame` aggiorna background **prima** del posizionamento finale;
+- guard `g.isConnected` nel callback;
+- tuning offset: `MM_LINE_LBL_CLEAR_GAP` **3** (era ~5); `MM_MEAS_HANDLE_CLR` **18** (era 22); `MM_LINE_LBL_SHORT_GAIN` **0.20** (era 0.42); `MM_LINE_LBL_MAX_OFF` **84** (era 150); base **14** invariata.
+
+**QA operatore B4X2 (pending):** pill racchiude tutto il testo; segmento lungo leggermente più vicino; segmento quasi nullo senza offset eccessivo; linea/marker/freccia visibili; drag/zoom/Esc invariati.
 
 ### B5 — Pulsante espandibile Waypoint a 3 azioni
 
