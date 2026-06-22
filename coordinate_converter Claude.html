@@ -15998,6 +15998,8 @@ const state = {
   _rrEditingMoveCenterMode: false,
   /** Transient: last map-picked center for Range Rings { lat, lon }; not persisted. */
   _rangeRingsMapPickCenter: null,
+  /** Persisted via saveStore.settings.rangeRingsLastStyle — ultimo stile confermato per nuovi ring. */
+  rangeRingsLastStyle: null,
   toolsMenuOpen: null,    // transient: active GIS tool tile in #toolsDrawer panel (or null)
   /** Persisted: show waypoint name on map — "always" | "tooltip". */
   waypointMapNameDisplay: "tooltip",
@@ -16919,7 +16921,10 @@ function saveStore(){
         reportClass: String(state.reportClass || "").slice(0, 80),
         gisMode: state.gisMode !== false,
         activeTab: GIS_VALID_TABS.includes(state.activeTab) ? state.activeTab : null,
-        waypointMapNameDisplay: (state.waypointMapNameDisplay === "always") ? "always" : "tooltip"
+        waypointMapNameDisplay: (state.waypointMapNameDisplay === "always") ? "always" : "tooltip",
+        rangeRingsLastStyle: (state.rangeRingsLastStyle && typeof state.rangeRingsLastStyle === "object")
+          ? sanitizeRangeRingsLastStyle(state.rangeRingsLastStyle)
+          : null
       },
       history: state.persist ? state.history : [],
       favorites: state.favorites || [],
@@ -18886,12 +18891,138 @@ function rrStylePayloadFromSet(s){
     labelBgEnabled: s.labelBgEnabled === true,
     labelBgColor: (typeof s.labelBgColor === "string" && s.labelBgColor) ? s.labelBgColor : RR_DEFAULT_RING_STYLE.labelBgColor,
     showTitle: (typeof s.showTitle === "boolean") ? s.showTitle : (String(s.labelMode || "off") === "name"),
+    opacity: Number.isFinite(Number(s.opacity)) ? Number(s.opacity) : 0.55,
     spokesEnabled: spokesOn,
     spokeCount: spokesOn ? rrSanitizeSpokeCount(s.spokeCount != null ? s.spokeCount : RR_DEFAULT_SPOKE_STYLE.spokeCount) : RR_DEFAULT_SPOKE_STYLE.spokeCount,
     spokeColor: (typeof s.spokeColor === "string" && s.spokeColor) ? s.spokeColor : RR_DEFAULT_SPOKE_STYLE.spokeColor,
     spokeWidth: spokesOn && Number.isFinite(s.spokeWidth) ? Math.max(1, Math.min(4, Math.round(s.spokeWidth))) : RR_DEFAULT_SPOKE_STYLE.spokeWidth,
     spokeLineStyle: rrSanitizeLineStyle(spokesOn ? s.spokeLineStyle : RR_DEFAULT_SPOKE_STYLE.spokeLineStyle)
   };
+}
+function rrDefaultRangeRingsLastStyle(){
+  return {
+    color: RR_DEFAULT_RING_STYLE.ringColor,
+    strokeWidth: RR_DEFAULT_RING_STYLE.ringWidth,
+    opacity: 0.55,
+    lineStyle: RR_DEFAULT_RING_STYLE.ringLineStyle,
+    labelColor: RR_DEFAULT_RING_STYLE.labelColor,
+    labelBgEnabled: RR_DEFAULT_RING_STYLE.labelBgEnabled,
+    labelBgColor: RR_DEFAULT_RING_STYLE.labelBgColor,
+    showTitle: RR_DEFAULT_RING_STYLE.showTitle !== false,
+    spokesEnabled: RR_DEFAULT_RING_STYLE.spokesEnabled,
+    spokeCount: RR_DEFAULT_RING_STYLE.spokeCount,
+    spokeColor: RR_DEFAULT_RING_STYLE.spokeColor,
+    spokeWidth: RR_DEFAULT_RING_STYLE.spokeWidth,
+    spokeLineStyle: RR_DEFAULT_RING_STYLE.spokeLineStyle
+  };
+}
+function sanitizeRangeRingsLastStyle(raw){
+  const def = rrDefaultRangeRingsLastStyle();
+  if (!raw || typeof raw !== "object") return Object.assign({}, def);
+  let color = def.color;
+  try {
+    const c0 = (typeof raw.color === "string" && raw.color) ? raw.color : ((typeof raw.ringColor === "string" && raw.ringColor) ? raw.ringColor : "");
+    if (c0) color = sanitizeTrackColor(c0);
+  } catch(_){}
+  let strokeW = Number(raw.strokeWidth != null ? raw.strokeWidth : raw.ringWidth);
+  if (!Number.isFinite(strokeW)) strokeW = def.strokeWidth;
+  strokeW = Math.max(1, Math.min(8, Math.round(strokeW)));
+  let opa = Number(raw.opacity);
+  if (!Number.isFinite(opa)) opa = def.opacity;
+  opa = Math.max(0.1, Math.min(1, opa));
+  const lineStyle = rrSanitizeLineStyle(raw.lineStyle != null ? raw.lineStyle : raw.ringLineStyle);
+  let labelColor = def.labelColor;
+  try {
+    if (typeof raw.labelColor === "string" && raw.labelColor.trim()) labelColor = sanitizeTrackColor(raw.labelColor.trim());
+  } catch(_){}
+  const labelBgEnabled = (typeof raw.labelBgEnabled === "boolean") ? raw.labelBgEnabled : def.labelBgEnabled;
+  let labelBgColor = def.labelBgColor;
+  if (labelBgEnabled){
+    try {
+      labelBgColor = sanitizeTrackColor(
+        (typeof raw.labelBgColor === "string" && raw.labelBgColor.trim()) ? raw.labelBgColor.trim() : def.labelBgColor
+      );
+    } catch(_){}
+  }
+  let showTitle;
+  if (typeof raw.showTitle === "boolean") showTitle = raw.showTitle;
+  else showTitle = def.showTitle;
+  const spokesEnabled = (typeof raw.spokesEnabled === "boolean") ? raw.spokesEnabled : def.spokesEnabled;
+  const out = {
+    color: color,
+    strokeWidth: strokeW,
+    opacity: opa,
+    lineStyle: lineStyle,
+    labelColor: labelColor,
+    labelBgEnabled: labelBgEnabled,
+    labelBgColor: labelBgColor,
+    showTitle: showTitle,
+    spokesEnabled: spokesEnabled
+  };
+  if (spokesEnabled){
+    out.spokeCount = rrSanitizeSpokeCount(raw.spokeCount);
+    try {
+      out.spokeColor = sanitizeTrackColor(
+        (typeof raw.spokeColor === "string" && raw.spokeColor.trim()) ? raw.spokeColor.trim() : def.spokeColor
+      );
+    } catch(_){ out.spokeColor = def.spokeColor; }
+    let swSpoke = Number(raw.spokeWidth);
+    if (!Number.isFinite(swSpoke)) swSpoke = def.spokeWidth;
+    out.spokeWidth = Math.max(1, Math.min(4, Math.round(swSpoke)));
+    out.spokeLineStyle = rrSanitizeLineStyle(raw.spokeLineStyle);
+  }
+  return out;
+}
+function ensureRangeRingsLastStyleState(){
+  if (state.rangeRingsLastStyle && typeof state.rangeRingsLastStyle === "object"){
+    state.rangeRingsLastStyle = sanitizeRangeRingsLastStyle(state.rangeRingsLastStyle);
+  }
+}
+function rrExtractLastStyleFromSet(set){
+  if (!set) return sanitizeRangeRingsLastStyle(null);
+  return sanitizeRangeRingsLastStyle({
+    color: set.color,
+    strokeWidth: set.strokeWidth,
+    opacity: set.opacity,
+    lineStyle: set.lineStyle,
+    labelColor: set.labelColor,
+    labelBgEnabled: set.labelBgEnabled,
+    labelBgColor: set.labelBgColor,
+    showTitle: set.showTitle,
+    spokesEnabled: set.spokesEnabled,
+    spokeCount: set.spokeCount,
+    spokeColor: set.spokeColor,
+    spokeWidth: set.spokeWidth,
+    spokeLineStyle: set.spokeLineStyle
+  });
+}
+function rrPersistRangeRingsLastStyleFromSet(set){
+  state.rangeRingsLastStyle = rrExtractLastStyleFromSet(set);
+}
+function rrLastStyleToFormPayload(last){
+  last = sanitizeRangeRingsLastStyle(last);
+  const spokesOn = last.spokesEnabled !== false;
+  return {
+    ringColor: last.color,
+    ringWidth: last.strokeWidth,
+    ringLineStyle: last.lineStyle,
+    labelColor: last.labelColor,
+    labelBgEnabled: last.labelBgEnabled === true,
+    labelBgColor: last.labelBgColor,
+    showTitle: last.showTitle !== false,
+    opacity: last.opacity,
+    spokesEnabled: spokesOn,
+    spokeCount: spokesOn ? rrSanitizeSpokeCount(last.spokeCount) : RR_DEFAULT_SPOKE_STYLE.spokeCount,
+    spokeColor: spokesOn ? (last.spokeColor || RR_DEFAULT_SPOKE_STYLE.spokeColor) : RR_DEFAULT_SPOKE_STYLE.spokeColor,
+    spokeWidth: spokesOn ? last.spokeWidth : RR_DEFAULT_SPOKE_STYLE.spokeWidth,
+    spokeLineStyle: rrSanitizeLineStyle(spokesOn ? last.spokeLineStyle : RR_DEFAULT_SPOKE_STYLE.spokeLineStyle)
+  };
+}
+function rrGetPreferredNewRingFormStyle(){
+  if (state.rangeRingsLastStyle && typeof state.rangeRingsLastStyle === "object"){
+    return rrLastStyleToFormPayload(state.rangeRingsLastStyle);
+  }
+  return rrLastStyleToFormPayload(null);
 }
 function sanitizeRangeRingSets(raw){
   if (!Array.isArray(raw)) return [];
@@ -38934,7 +39065,7 @@ function rrResetRangeRingsFormToNew(){
   if (modeSel) modeSel.value = "picked";
   state._rangeRingsMapPickCenter = null;
   try { rrRenderUnitPresetChips(); } catch(_){}
-  try { ensureRangeRingsStyleState(); rrApplyStyleToForm(RR_DEFAULT_RING_STYLE); } catch(_){}
+  try { ensureRangeRingsStyleState(); rrApplyStyleToForm(rrGetPreferredNewRingFormStyle()); } catch(_){}
 }
 function rrLoadSetIntoForm(s){
   if (!s) return;
@@ -39102,6 +39233,7 @@ function rrSaveEditedRangeRingSetFromUi(){
   merged.id = String(s.id);
   rrApplySanitizedRangeRingSet(s, merged);
   ensureRangeRingState();
+  rrPersistRangeRingsLastStyleFromSet(s);
   saveStore();
   state._rrEditingSetId = null;
   state._rrEditingMoveCenterMode = false;
@@ -40326,6 +40458,7 @@ function rrCreateFromUi(){
   const base = (typeof t==="function" ? (t("rangeRings.defaultName")||"") : "") || "Rings";
   const name = rawName || (base + " " + (state.rangeRingSets.length + 1));
   const st = rrReadStyleFromForm();
+  const preferred = rrGetPreferredNewRingFormStyle();
 
   const set = sanitizeRangeRingSet({
     _v: 1,
@@ -40346,7 +40479,7 @@ function rrCreateFromUi(){
     spokeWidth: st.spokeWidth,
     spokeLineStyle: st.spokeLineStyle,
     showTitle: st.showTitle,
-    opacity: 0.55,
+    opacity: Number.isFinite(Number(preferred.opacity)) ? Number(preferred.opacity) : 0.55,
     labelMode: "name",
     visible: true,
     createdAt: Date.now()
@@ -40358,6 +40491,7 @@ function rrCreateFromUi(){
     state.rangeRingSets.splice(0, state.rangeRingSets.length - RANGE_RING_SETS_CAP);
   }
   ensureRangeRingState();
+  rrPersistRangeRingsLastStyleFromSet(set);
   saveStore();
   rrShowOk("rangeRings.created");
   refreshRangeRingsAfterStateChange();
@@ -40611,7 +40745,7 @@ function bindRangeRingsUI(){
     });
   }
   try { rrRenderUnitPresetChips(); } catch(_){}
-  try { ensureRangeRingsStyleState(); rrApplyStyleToForm(RR_DEFAULT_RING_STYLE); } catch(_){}
+  try { ensureRangeRingsStyleState(); rrApplyStyleToForm(rrGetPreferredNewRingFormStyle()); } catch(_){}
   try { rrWireRangeRingsStyleControls(); } catch(_){}
 
   const list = document.getElementById("rrList");
@@ -48078,6 +48212,9 @@ function init(){
       if (stored.settings.waypointMapNameDisplay === "always" || stored.settings.waypointMapNameDisplay === "tooltip"){
         state.waypointMapNameDisplay = stored.settings.waypointMapNameDisplay;
       }
+      if (stored.settings.rangeRingsLastStyle && typeof stored.settings.rangeRingsLastStyle === "object"){
+        state.rangeRingsLastStyle = sanitizeRangeRingsLastStyle(stored.settings.rangeRingsLastStyle);
+      }
       if (typeof stored.settings.activeTab === "string" && stored.settings.activeTab === "track" && state.gisMode !== false){
         state._pendingTrackModal = true;
       }
@@ -48204,6 +48341,7 @@ function init(){
   }
   ensureGisState();
   ensureRangeRingState();
+  ensureRangeRingsLastStyleState();
   state.mapLayer = sanitizeMapLayer(state.mapLayer);
 
   document.getElementById("languageSelect").value = initLang;

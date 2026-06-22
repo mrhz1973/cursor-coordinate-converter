@@ -1426,7 +1426,7 @@ Stesso schema di B3.
 
 **WU-0007 B6.7a Range Rings titolo opzionale + Stili comprimibile (2026-06-22):** **CLOSED / PASS end-to-end** — runtime **`b2d828f`**; deploy HEAD **`d3122e4`**; deploy tecnico GIS-only **PASS**; smoke **`200`**, **`2237896`** byte, SHA-256 match; build **`B5.5Z`**; QA `:8000/coordinate_converter%20Claude.html?v=b2d828f`; attestazione **«QA WU-0007 B6.7a PASS operatore»** — `showTitle` per-ring, fallback legacy `labelMode`, `#rrStyleDetails` (`<details>`), titolo indipendente da etichette distanza; proxy/Planet-Clone/n8n/Docker non toccati; **nessun fix aperto B6.7a**.
 
-**WU-0007 B6.7b Range Rings memoria ultimo stile persistente:** **backlog** — non implementato; nessuna WU runtime aperta; `rangeRingsLastStyle` assente.
+**WU-0007 B6.7b Range Rings memoria ultimo stile persistente (2026-06-22):** **implementato runtime** — `settings.rangeRingsLastStyle` in `coordconv_v2`; `sanitizeRangeRingsLastStyle`; `rrGetPreferredNewRingFormStyle()` / `rrResetRangeRingsFormToNew()`; persistenza solo su create/save riusciti; cancel/import non alterano preferenza; ring esistenti invariati; `opacity` + `showTitle` inclusi; export stile GeoJSON limite preesistente invariato; **`APP_BUILD_ID` `B5.5Z` invariato**; **QA operatore pending**. B6.7a resta **CLOSED / PASS end-to-end** (`b2d828f`).
 
 ### B6 — QA OPSEC/proxy/offline
 
