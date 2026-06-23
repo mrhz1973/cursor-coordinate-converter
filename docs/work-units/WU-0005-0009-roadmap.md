@@ -335,7 +335,7 @@ Note operative:
 
 ### POLY-PARITY-P1 — Scheda informazioni live + nome salvabile
 
-**Stato:** **runtime implementato e pushato** — **review byte pending**; **nessun deploy**; **QA operatore pending**; **non** CLOSED end-to-end.
+**Stato:** **runtime `7a668d7`** — **review byte Claude PASS**; **QA operatore FAIL**; **nessun deploy**; **non** CLOSED end-to-end.
 
 **Implementazione (monolite):**
 
@@ -348,11 +348,25 @@ Note operative:
 - Salva clean: `polygonCancelEdit()` senza CRUD;
 - **Nessun** drag, resize, metadata data, modifica sanitizer.
 
+**Review byte:** `polygonSaveEdit` — una sola `gisFeatureUpdate`; proprietà canoniche preservate; nessun timestamp; sanitizer invariato; contratto transiente B2 intatto.
+
 **Invariati:** overlay edit non interattivo; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Prossimo:** POLY-PARITY-P2 — drag vertici.
+**QA operatore P1 — PASS parziali:** Annulla non modifica il canonico; Salva aggiorna il nome; nome salvato persiste dopo reload.
 
-**Backlog parità (post-P1):** P3 cancellazione vertice, P4 traslazione, P5 creazione, P6 ✕ intero poligono, P7 metadata data, P8 resize modal (P8-A).
+**QA operatore P1 — FAIL (UI/i18n; storage canonico intatto):**
+
+1. Chiave grezza `gis.polygonPanel.defaultName` in titolo/input/lista — chiave mancante IT/EN/FR.
+2. Formattazione unità incoerente (`4.335k m`; riga `Unità: m` scollegata da area km²/perimetro km) — fix: `state.mapMeasureUnit` + formatter Misura per etichetta e valori.
+3. `#polygonPanelEditErr` mostrata vuota come fascia rossa.
+4. Testo tecnico «trascinamento nel blocco successivo» esposto all’utente.
+5. Riapertura **Modifica** bloccata dopo Salva finché **Esc**.
+
+**Chiarimento:** geometrie visibili ma assenti dalla lista Poligoni erano poligoni **Tracce**, non `state.gisPolygons` — non bug P1; separazione GIS/Tracce da mantenere.
+
+**Prossimo:** POLY-PARITY-P1-FIX — UI/i18n.
+
+**Backlog parità (post-P1-FIX, non avviati):** P2 drag vertici; P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P7 metadata data; P8 resize modal (P8-A).
 
 ## Decisioni da bloccare prima di iniziare
 
