@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P1 scheda informazioni live + nome salvabile (runtime + docs):** commit task **`7a668d7`** — barra edit con input nome transiente, riepilogo vertici/area/perimetro/unità, dettaglio lati+bearing da `_polyEdit.working`; nome+geometria in una sola `gisFeatureUpdate`; unità `state.mapMeasureUnit`; **POLY-EDIT-B3 review byte PASS + QA operatore FAIL** (insufficiente vs Tracce); **POLY-PARITY-DIAG** completata; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte P1 pending**; **QA operatore P1 pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0147_riepilogo_finito-sessione.md`**.
+2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P1 riconciliazione docs QA FAIL (docs-only):** commit task **`9638399`** — allinea OM §7 e roadmap WU-0006: runtime **`7a668d7`**, review byte Claude **PASS**, **QA operatore P1 FAIL**, nessun deploy, non CLOSED end-to-end; prossimo **POLY-PARITY-P1-FIX**; chiarimento poligoni Tracce vs `state.gisPolygons`. **Monolite non incluso.** Inbox **`2026-06-23_1415_riepilogo_finito-sessione.md`**.
+
+2026-06-23 — **Handoff POLY-PARITY-P1 QA FAIL operatore (docs):** commit **`427b944`** — registra attestazione QA FAIL e frontiera P1-FIX; runtime **`7a668d7`**. **Monolite non incluso.** Inbox **`2026-06-23_qa-fail-poly-parity-p1-handoff.md`**.
 
 2026-06-23 — **Chiusura sessione `finito` — WU-0006 POLY-EDIT-B3 UI Modifica overlay edit barra Salva/Annulla (runtime + docs):** commit task **`77ad65e`** — pulsante Modifica in lista; barra `#polygonPanelEditBar` Salva/Annulla; `renderPolygonEditOverlay()` vertici visibili non interattivi; esclusione poligono in edit dal saved renderer; Salva clean via cancel; i18n IT/EN/FR; **POLY-EDIT-B2 review byte PASS**; **`APP_BUILD_ID` `B5.5Z` invariato**; **review byte B3 pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_0032_riepilogo_finito-sessione.md`**.
 
