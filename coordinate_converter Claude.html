@@ -45791,10 +45791,46 @@ function renderPolygonEditBar(){
   try { renderPolygonEditInfo(); } catch(_){}
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
 }
+/** Deferred tile-map refresh for polygon edit overlay (POLY-UX-STABILITY-A1). */
+let mapPolyEditOverlayRefreshRaf = null;
+let mapPolyEditOverlayRefreshGen = 0;
+function polygonScheduleEditOverlayRefresh(){
+  if (!polygonIsEditing()) return;
+  const editId = String(state._polyEdit.id || "").trim();
+  if (!editId) return;
+  const gen = ++mapPolyEditOverlayRefreshGen;
+  if (mapPolyEditOverlayRefreshRaf){
+    cancelAnimationFrame(mapPolyEditOverlayRefreshRaf);
+    mapPolyEditOverlayRefreshRaf = null;
+  }
+  mapPolyEditOverlayRefreshRaf = requestAnimationFrame(() => {
+    mapPolyEditOverlayRefreshRaf = null;
+    if (gen !== mapPolyEditOverlayRefreshGen) return;
+    if (!polygonIsEditing()) return;
+    if (String(state._polyEdit.id || "").trim() !== editId) return;
+    const dlg = document.getElementById("polygonPanel");
+    if (!dlg || !dlg.open || !state.polygonPanelOpen) return;
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")) return;
+    const vc = state.viewCenter;
+    const lp = state.lastPoint;
+    let lat, lon;
+    if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
+      lat = vc.lat;
+      lon = vc.lon;
+    } else if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+      lat = lp.lat;
+      lon = lp.lon;
+    } else return;
+    const z = state.mapZoom || 11;
+    const root = document.getElementById("miniMap");
+    if (!root || !root.querySelector(".tile-map")) return;
+    renderTileMap(lat, lon, z);
+  });
+}
 function polygonRefreshEditUi(){
   try { renderPolygonEditBar(); } catch(_){}
   try { renderPolygonPanelList(); } catch(_){}
-  try { renderAllMaps(); } catch(_){}
+  try { polygonScheduleEditOverlayRefresh(); } catch(_){}
 }
 function polygonEditSaveHandler(){
   if (!polygonIsEditing()) return;
