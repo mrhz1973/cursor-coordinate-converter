@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa (modello sopra) — **in corso:** POLY-PARITY-P1 scheda info live (sotto);
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **prossimo hop:** POLY-PARITY-P7 metadata/data (sotto);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -372,28 +372,30 @@ Note operative:
 
 **Invariati:** `polygonSaveEdit` una sola `gisFeatureUpdate`; **`APP_BUILD_ID` `B5.5Z`**.
 
-### POLY-PARITY-P2 — Drag vertici in modalità Modifica
+### POLY-PARITY-P2 — Drag vertici in modalità Modifica (+ P2-FIX)
 
-**Stato:** **runtime `e22e40b` pushato**; **review byte Claude `e22e40b`: FIX REQUIRED**; **QA operatore pending**; **nessun deploy**; **non** CLOSED end-to-end.
+**Stato:** **CLOSED / PASS end-to-end**
 
-**Review FIX REQUIRED (cause):**
+**Catena:**
 
-1. Handle poligono assenti da `CTRL_SEL` → pan mappa concorrente su touch;
-2. `setPointerCapture` nel `pointerdown` handle senza `releasePointerCapture` simmetrico.
+| Step | Commit / esito |
+|------|----------------|
+| Runtime P2 | **`e22e40b`** — drag vertici; live `working`/info; dirty geometrico; nessun CRUD durante drag; Salva → una `gisFeatureUpdate` |
+| Review Claude P2 | **FIX REQUIRED** — (1) handle assenti da `CTRL_SEL`; (2) `setPointerCapture` senza release simmetrico |
+| Runtime P2-FIX | **`f35e4d9`** — `.poly-edit-handle`/`.poly-edit-handle-hit` in `CTRL_SEL`; rimossa capture pointerdown poligono |
+| Review Claude P2-FIX | **PASS** — GO DEPLOY P2-FIX |
+| Deploy VPS GIS-only | **PASS tecnico** — runtime `f35e4d9` su `:8000`; byte **2274553**; SHA **`96082c09…80701`**; warning test-harness non bloccante |
+| QA operatore | **PASS** — «QA WU-0006 POLY-PARITY-P2 PASS operatore» |
 
-**Implementazione P2 (monolite `e22e40b`):** pattern `mapPolyEditDocDrag*`; handle interattivi; live `working`; nessun CRUD durante drag; Salva → una `gisFeatureUpdate`.
+**Nessun fix / deploy / QA pendente su P2 o P2-FIX.**
 
-### POLY-PARITY-P2-FIX — Pan suppression + rimozione pointer capture
+### POLY-PARITY-P7 — Metadata/data poligono (regola legacy-safe)
 
-**Stato:** **runtime implementato e pushato**; **review byte Claude pending**; **QA operatore P2 pending**; **nessun deploy**; **non** CLOSED end-to-end.
+**Stato:** **prossimo hop concordato** — **non implementato**; **non aperto** come runtime.
 
-**Fix (monolite):**
+**Scope previsto (non iniziato):** `created_at`/`updated_at` legacy-safe; sanitizer preserva-o-ometti; nessun default `now` inventato; export coerente.
 
-- `CTRL_SEL` in `attachPanHandlers`: aggiunta `.poly-edit-handle, .poly-edit-handle-hit` (additivo; classi esistenti invariate);
-- Rimossa `setPointerCapture(ev.pointerId)` dal `pointerdown` handle poligono;
-- **Invariati:** `mapPolyEditDocDragMove`, `mapPolyEditDocDragUp`, `mapPolyEditDocDragCleanup`, `polygonSaveEdit` (una `gisFeatureUpdate`); **`APP_BUILD_ID` `B5.5Z`**.
-
-**Prossimo:** review byte Claude commit P2-FIX; QA operatore P2; poi P3.
+**Backlog parità (non avviati, salvo decisione operativa):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
 
 ## Decisioni da bloccare prima di iniziare
 
