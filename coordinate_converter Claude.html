@@ -2515,6 +2515,7 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-edit-bar .poly-edit-title{ margin:0 0 4px; font-size:.88rem; font-weight:600; }
 .polygon-panel .poly-edit-bar .poly-edit-hint{ margin:0 0 6px; font-size:.78rem; opacity:.9; }
 .polygon-panel .poly-edit-bar .poly-edit-err{ margin:0 0 6px; font-size:.82rem; }
+.polygon-panel .poly-edit-bar .poly-edit-err[hidden]{ display:none !important; margin:0; padding:0; border:none; background:transparent; }
 .polygon-panel .poly-edit-bar .poly-edit-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row label{ font-size:.82rem; min-width:3.5rem; }
@@ -10341,7 +10342,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <summary data-i18n="gis.polygonPanel.editLegs">Lati</summary>
         <div id="polygonPanelEditLegs" class="poly-edit-legs"></div>
       </details>
-      <p class="hint poly-edit-hint" data-i18n="gis.polygonPanel.editVerticesHint">Vertici visibili; trascinamento nel blocco successivo.</p>
+      <p class="hint poly-edit-hint" data-i18n="gis.polygonPanel.editVerticesHint">I vertici sono evidenziati sulla mappa.</p>
       <p id="polygonPanelEditErr" class="geo-warn poly-edit-err" role="alert" hidden></p>
       <div class="poly-edit-actions">
         <button type="button" id="polygonPanelEditSave" class="btn btn-sm btn-primary" data-role="poly-edit-save" data-i18n="gis.polygonPanel.editSave">Salva</button>
@@ -11809,6 +11810,7 @@ const I18N = {
     "gis.polygonPanel.title":"Poligoni",
     "gis.polygonPanel.newPolygon":"Nuovo poligono",
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
+    "gis.polygonPanel.defaultName":"Poligono",
     "gis.polygonPanel.empty":"Nessun poligono",
     "gis.polygonPanel.countLabel":"Poligoni",
     "gis.polygonPanel.visibleTip":"Visibilità",
@@ -11834,7 +11836,7 @@ const I18N = {
     "gis.polygonPanel.editCancel":"Annulla",
     "gis.polygonPanel.editSaveFailed":"Salvataggio non riuscito.",
     "gis.polygonPanel.editDrawBlock":"Termina o annulla il disegno in corso prima di modificare un poligono salvato.",
-    "gis.polygonPanel.editVerticesHint":"Vertici visibili; trascinamento nel blocco successivo.",
+    "gis.polygonPanel.editVerticesHint":"I vertici sono evidenziati sulla mappa.",
     "gis.polygonPanel.editName":"Nome",
     "gis.polygonPanel.editVertices":"Vertici",
     "gis.polygonPanel.editArea":"Area",
@@ -13419,6 +13421,7 @@ const I18N = {
     "gis.polygonPanel.title":"Polygons",
     "gis.polygonPanel.newPolygon":"New polygon",
     "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
+    "gis.polygonPanel.defaultName":"Polygon",
     "gis.polygonPanel.empty":"No polygons",
     "gis.polygonPanel.countLabel":"Polygons",
     "gis.polygonPanel.visibleTip":"Visibility",
@@ -13444,7 +13447,7 @@ const I18N = {
     "gis.polygonPanel.editCancel":"Cancel",
     "gis.polygonPanel.editSaveFailed":"Save failed.",
     "gis.polygonPanel.editDrawBlock":"Finish or cancel the current drawing before editing a saved polygon.",
-    "gis.polygonPanel.editVerticesHint":"Vertices visible; drag in the next block.",
+    "gis.polygonPanel.editVerticesHint":"Vertices are highlighted on the map.",
     "gis.polygonPanel.editName":"Name",
     "gis.polygonPanel.editVertices":"Vertices",
     "gis.polygonPanel.editArea":"Area",
@@ -15030,6 +15033,7 @@ const I18N = {
     "gis.polygonPanel.title":"Polygones",
     "gis.polygonPanel.newPolygon":"Nouveau polygone",
     "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
+    "gis.polygonPanel.defaultName":"Polygone",
     "gis.polygonPanel.empty":"Aucun polygone",
     "gis.polygonPanel.countLabel":"Polygones",
     "gis.polygonPanel.visibleTip":"Visibilité",
@@ -15055,7 +15059,7 @@ const I18N = {
     "gis.polygonPanel.editCancel":"Annuler",
     "gis.polygonPanel.editSaveFailed":"Échec de l'enregistrement.",
     "gis.polygonPanel.editDrawBlock":"Terminez ou annulez le dessin en cours avant de modifier un polygone enregistré.",
-    "gis.polygonPanel.editVerticesHint":"Sommets visibles ; glisser-déposer au bloc suivant.",
+    "gis.polygonPanel.editVerticesHint":"Les sommets sont mis en évidence sur la carte.",
     "gis.polygonPanel.editName":"Nom",
     "gis.polygonPanel.editVertices":"Sommets",
     "gis.polygonPanel.editArea":"Surface",
@@ -45457,6 +45461,37 @@ function polygonCancelEdit(){
 function polygonNormalizeEditName(raw){
   return String(raw == null ? "" : raw).trim().slice(0, 80);
 }
+const POLYGON_DEFAULT_NAME_KEY = "gis.polygonPanel.defaultName";
+function polygonIsLegacyDefaultNameKey(raw){
+  return polygonNormalizeEditName(raw) === POLYGON_DEFAULT_NAME_KEY;
+}
+function polygonDisplayName(raw){
+  const s = polygonNormalizeEditName(raw);
+  if (!s) return "";
+  if (polygonIsLegacyDefaultNameKey(s)){
+    return polygonNormalizeEditName((typeof t === "function" ? t("gis.polygonPanel.defaultName") : "") || "Poligono");
+  }
+  return s;
+}
+function polygonEditNamesEquivalent(a, b){
+  const ca = polygonNormalizeEditName(a);
+  const cb = polygonNormalizeEditName(b);
+  if (ca === cb) return true;
+  if (polygonIsLegacyDefaultNameKey(ca) && polygonEditNamesEquivalent(polygonDisplayName(ca), cb)) return true;
+  if (polygonIsLegacyDefaultNameKey(cb) && polygonEditNamesEquivalent(ca, polygonDisplayName(cb))) return true;
+  return false;
+}
+function polygonEditFormatDistance(meters){
+  const unit = String(state.mapMeasureUnit || "m").toLowerCase();
+  const m = Number(meters);
+  if (unit === "m" && Number.isFinite(m) && m >= 1000) return formatMapMeasureDistance(m, "km");
+  return formatMapMeasureDistance(meters, unit);
+}
+function polygonDisarmEmptyDrawIfSafe(){
+  if (!state.polygonDrawMode) return;
+  const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
+  if (dv === 0) polygonCancelDraw();
+}
 function gisRingToLatLonPts(ring){
   const pts = [];
   if (!Array.isArray(ring)) return pts;
@@ -45473,7 +45508,7 @@ function polygonRecomputeEditDirty(){
   if (!polygonIsEditing()) return;
   const ed = state._polyEdit;
   const cur = polygonNormalizeEditName(ed.name);
-  ed.nameDirty = cur !== polygonNormalizeEditName(ed.originalName);
+  ed.nameDirty = !polygonEditNamesEquivalent(cur, ed.originalName);
   ed.dirty = !!(ed.nameDirty || ed.geometryDirty);
 }
 function polygonEditSyncTitle(){
@@ -45483,7 +45518,7 @@ function polygonEditSyncTitle(){
     title.textContent = "";
     return;
   }
-  const nm = polygonNormalizeEditName(state._polyEdit.name) || "—";
+  const nm = polygonDisplayName(state._polyEdit.name) || "—";
   const tpl = (typeof t === "function" ? t("gis.polygonPanel.editingTitle") : "") || "";
   title.textContent = tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, nm) : ((tpl ? tpl + " " : "") + nm);
 }
@@ -45501,13 +45536,11 @@ function renderPolygonEditInfo(){
   const legsEl = document.getElementById("polygonPanelEditLegs");
   if (!sumEl || !legsEl || !polygonIsEditing()) return;
   const ed = state._polyEdit;
-  const unit = String(state.mapMeasureUnit || "m");
   const pts = gisRingToLatLonPts(ed.working);
   const n = pts.length;
   const lblVertices = (typeof t === "function" ? t("gis.polygonPanel.editVertices") : "") || "Vertici";
   const lblArea = (typeof t === "function" ? t("gis.polygonPanel.editArea") : "") || "Area";
   const lblPerim = (typeof t === "function" ? t("gis.polygonPanel.editPerimeter") : "") || "Perimetro";
-  const lblUnit = (typeof t === "function" ? t("gis.polygonPanel.editUnit") : "") || "Unità";
   const lblClose = (typeof t === "function" ? t("gis.polygonPanel.editClosingLeg") : "") || "chiusura";
   const lblNoData = (typeof t === "function" ? t("gis.polygonPanel.editNoData") : "") || "—";
   let areaTxt = lblNoData;
@@ -45519,10 +45552,9 @@ function renderPolygonEditInfo(){
     } catch(_){}
     try {
       const perM = computePolylinePerimeterMeters(pts, true);
-      perimTxt = formatMapMeasureDistance(perM, unit);
+      perimTxt = polygonEditFormatDistance(perM);
     } catch(_){}
   }
-  const unitDisplay = unit === "nm" ? "NM" : unit;
   sumEl.textContent = "";
   const addRow = (label, value) => {
     const row = document.createElement("div");
@@ -45540,7 +45572,6 @@ function renderPolygonEditInfo(){
   addRow(lblVertices, String(n));
   addRow(lblArea, areaTxt);
   addRow(lblPerim, perimTxt);
-  addRow(lblUnit, unitDisplay);
   legsEl.textContent = "";
   if (n < 2){
     const p = document.createElement("p");
@@ -45555,7 +45586,7 @@ function renderPolygonEditInfo(){
     let distTxt = lblNoData, brgTxt = lblNoData;
     try {
       const inv = vincentyInverse(a.lat, a.lon, b.lat, b.lon);
-      distTxt = formatMapMeasureDistance(inv.distance, unit);
+      distTxt = polygonEditFormatDistance(inv.distance);
       brgTxt = Number.isFinite(inv.initialBearing) ? inv.initialBearing.toFixed(1) + "°" : lblNoData;
     } catch(_){}
     const isClose = j === 0 && i === n - 1;
@@ -45594,7 +45625,7 @@ function renderPolygonEditBar(){
   }
   bar.hidden = false;
   if (nameInp && document.activeElement !== nameInp){
-    nameInp.value = String(state._polyEdit.name == null ? "" : state._polyEdit.name);
+    nameInp.value = polygonDisplayName(state._polyEdit.name);
   }
   polygonEditSyncTitle();
   try { renderPolygonEditInfo(); } catch(_){}
@@ -45627,6 +45658,7 @@ function polygonEditSaveHandler(){
     polygonCancelEdit();
   }
   try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  polygonDisarmEmptyDrawIfSafe();
   polygonRefreshEditUi();
 }
 function polygonEditCancelHandler(){
@@ -45634,15 +45666,20 @@ function polygonEditCancelHandler(){
   polygonCancelEdit();
   polygonHideEditBarErr();
   try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  polygonDisarmEmptyDrawIfSafe();
   polygonRefreshEditUi();
 }
 function polygonEditEnterFromList(id){
   if (!id) return;
   if (state.polygonDrawMode){
-    try {
-      setBadge("info", (typeof t === "function" ? t("gis.polygonPanel.editDrawBlock") : "") || "Termina o annulla il disegno in corso.");
-    } catch(_){}
-    return;
+    const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
+    if (dv > 0){
+      try {
+        setBadge("info", (typeof t === "function" ? t("gis.polygonPanel.editDrawBlock") : "") || "Termina o annulla il disegno in corso.");
+      } catch(_){}
+      return;
+    }
+    polygonCancelDraw();
   }
   if (polygonIsEditing() && String(state._polyEdit.id) === String(id)) return;
   if (!polygonEnterEdit(id)) return;
@@ -45963,7 +46000,7 @@ function polygonShowDeleteConfirm(id){
   const bar = document.getElementById("polygonPanelDeleteBar");
   const msg = document.getElementById("polygonPanelDeleteMsg");
   if (!bar || !msg) return;
-  const nm = String((f.properties && f.properties.name) || "").trim().slice(0, 80) || "—";
+  const nm = polygonDisplayName((f.properties && f.properties.name) || "") || "—";
   const tpl = (typeof t === "function" ? t("gis.polygonPanel.deleteMsg") : "") || "";
   msg.textContent = tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, nm) : ((tpl ? tpl + " " : "") + nm);
   bar.hidden = false;
@@ -45990,7 +46027,7 @@ function polygonShowRenameBar(id){
   const bar = document.getElementById("polygonPanelRenameBar");
   const inp = document.getElementById("polygonPanelRenameInput");
   if (!bar || !inp) return;
-  inp.value = String((f.properties && f.properties.name) || "").slice(0, 80);
+  inp.value = polygonDisplayName((f.properties && f.properties.name) || "");
   bar.hidden = false;
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
   try { inp.focus(); inp.select(); } catch(_){}
@@ -46095,7 +46132,7 @@ function renderPolygonPanelList(){
     cont.innerHTML = polys.map((f, i) => {
       const props = f.properties || {};
       const col = props.color || "#ca8a04";
-      const nm = esc(props.name || `Polygon ${i + 1}`);
+      const nm = esc(polygonDisplayName(props.name) || `Polygon ${i + 1}`);
       const vis = props.visible !== false;
       const eyeIco = vis ? "👁" : "👁‍🗨";
       const pid = esc(String(f.id || ""));
