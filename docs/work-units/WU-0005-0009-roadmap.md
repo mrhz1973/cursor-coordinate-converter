@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **prossimo hop:** POLY-PARITY-P7 metadata/data (sotto);
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7-B1** runtime pushato (review Claude pending); **P7-B2** UI date — prossimo;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -391,9 +391,17 @@ Note operative:
 
 ### POLY-PARITY-P7 — Metadata/data poligono (regola legacy-safe)
 
-**Stato:** **prossimo hop concordato** — **non implementato**; **non aperto** come runtime.
+**Stato:** **P7-B1 runtime implementato e pushato** — **review byte Claude P7-B1 pending**; **nessun deploy**; **P7-B2 UI non implementato**.
 
-**Scope previsto (non iniziato):** `created_at`/`updated_at` legacy-safe; sanitizer preserva-o-ometti; nessun default `now` inventato; export coerente.
+| Sotto-blocco | Stato |
+|--------------|-------|
+| P7-A diagnosi read-only | **completata** |
+| P7-B1 contratto dati legacy-safe | **runtime pushato** — review byte Claude pending |
+| P7-B2 UI date Creato/Aggiornato | **non implementato** |
+
+**P7-B1 (runtime):** sanitizer poligoni preserva-o-ometti (`created_at`/`updated_at` indipendenti; predicato ISO); Tracce invariate; creazione `polygonFinishDraw` con `created_at === updated_at`; bump `updated_at` su Salva dirty e rinomina; nessuna migrazione; legacy senza `created_at` + modifica reale → solo `updated_at`; export GeoJSON `updated_at` se valido; nessuna UI.
+
+**Gate:** commit/push → review byte Claude P7-B1 → deploy solo dopo PASS Claude.
 
 **Backlog parità (non avviati, salvo decisione operativa):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
 

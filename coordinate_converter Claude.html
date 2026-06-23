@@ -32055,8 +32055,15 @@ function gisSanitizeProperties(raw, kind){
   out.visible = gisClampBool(src.visible, true);
   out.locked = gisClampBool(src.locked, false);
   out.kind = kind;
-  out.created_at = (typeof src.created_at === "string" && src.created_at) ? src.created_at.slice(0, 40) : new Date().toISOString();
-  out.updated_at = (typeof src.updated_at === "string" && src.updated_at) ? src.updated_at.slice(0, 40) : out.created_at;
+  if (kind === "polygon"){
+    const ca = src.created_at;
+    if (typeof ca === "string" && ca && !Number.isNaN(Date.parse(ca))) out.created_at = ca.slice(0, 40);
+    const ua = src.updated_at;
+    if (typeof ua === "string" && ua && !Number.isNaN(Date.parse(ua))) out.updated_at = ua.slice(0, 40);
+  } else {
+    out.created_at = (typeof src.created_at === "string" && src.created_at) ? src.created_at.slice(0, 40) : new Date().toISOString();
+    out.updated_at = (typeof src.updated_at === "string" && src.updated_at) ? src.updated_at.slice(0, 40) : out.created_at;
+  }
   return out;
 }
 
@@ -45854,6 +45861,7 @@ function polygonSaveEdit(){
   const feature = gisFeatureGet(id);
   const preserved = gisClonePlain((feature && feature.properties) || {});
   preserved.name = nm;
+  preserved.updated_at = new Date().toISOString();
   const updated = gisFeatureUpdate(id, {
     geometry: {
       type: "Polygon",
@@ -45905,10 +45913,11 @@ function polygonFinishDraw(){
   const f = ring[0], l = ring[ring.length - 1];
   if (f[0] !== l[0] || f[1] !== l[1]) ring.push([f[0], f[1]]);
   const autoName = (typeof t === "function" ? t("gis.polygonPanel.defaultName") : "") || "Poligono " + ((state.gisPolygons || []).length + 1);
+  const nowIso = new Date().toISOString();
   const feature = {
     type: "Feature",
     geometry: { type: "Polygon", coordinates: [ring] },
-    properties: { name: autoName, color: "#ca8a04", visible: true, kind: "polygon", created_at: new Date().toISOString() }
+    properties: { name: autoName, color: "#ca8a04", visible: true, kind: "polygon", created_at: nowIso, updated_at: nowIso }
   };
   const added = gisFeatureAdd("polygon", feature);
   state.polygonDrawMode = false;
@@ -46059,6 +46068,8 @@ function polygonBuildGeoJson(){
     if (props.color != null) outProps.color = props.color;
     if (props.visible != null) outProps.visible = props.visible;
     if (props.created_at != null) outProps.created_at = props.created_at;
+    const ua = props.updated_at;
+    if (typeof ua === "string" && ua && !Number.isNaN(Date.parse(ua))) outProps.updated_at = ua;
     if (props.kind != null) outProps.kind = props.kind;
     const geom = gisClonePlain(f.geometry);
     if (!geom || !geom.coordinates) continue;
@@ -46191,7 +46202,7 @@ function polygonShowRenameBar(id){
 function polygonRenameExecute(id, newName){
   const nm = String(newName == null ? "" : newName).trim().slice(0, 80);
   if (!nm || !id) return;
-  const updated = gisFeatureUpdate(id, { properties: { name: nm } }, { recordUndo: false });
+  const updated = gisFeatureUpdate(id, { properties: { name: nm, updated_at: new Date().toISOString() } }, { recordUndo: false });
   if (!updated) return;
   polygonHideRenameBar();
   renderPolygonPanelList();
