@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; P7-B1 **CLOSED**; **A1** handle ingresso Modifica pushato (QA pending); **A2** pannello/minimize — prossimo; **P7-B2** UI date — backlog;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; P7-B1 **CLOSED**; **A1** handle ingresso Modifica **CLOSED**; **A2** pannello/minimize — prossimo; **P7-B2** UI date — backlog;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -404,10 +404,10 @@ Note operative:
 | Sotto-blocco | Stato |
 |--------------|-------|
 | A-DIAG diagnosi read-only | **completata** — `renderAllMaps` indefinita; auto-minimize ≠ close |
-| A1 handle ingresso Modifica | **runtime pushato** — `polygonScheduleEditOverlayRefresh`; QA operatore **pending** |
+| A1 handle ingresso Modifica | **CLOSED / PASS end-to-end** — runtime `af87259` |
 | A2 pannello scompare al tap mappa | **non implementato** — backlog |
 
-**A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; RAF + token → `renderTileMap` → `renderPolygonEditOverlay`. **A2:** fuori scope A1.
+**A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS (blob `57df10c8…`, byte **2276652**, SHA match); **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2:** non implementato — backlog.
 
 **Backlog parità (non avviati, salvo decisione operativa):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
 
