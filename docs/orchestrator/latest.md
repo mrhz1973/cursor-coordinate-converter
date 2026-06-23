@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P2 drag vertici poligono GIS in edit (runtime + docs):** commit task **`e22e40b`** — pattern `mapPolyEditDocDrag*` document-level; handle interattivi overlay; live update `_polyEdit.working` + info panel; `polygonRecomputeGeometryDirty`; nessun CRUD durante drag; P1-FIX registrato **QA operatore PASS**; **`APP_BUILD_ID` `B5.5Z` invariato**; **`node --check` OK**; **QA operatore P2 pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso.** Inbox **`2026-06-23_1130_riepilogo_finito-sessione.md`**.
+
 2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P1-FIX correzioni UI/i18n (runtime + docs):** commit task **`d30a3a8`** — fix cinque FAIL QA P1 (i18n `defaultName`, formatter distanze Misura, barra errore vuota, hint utente, sblocco Modifica con draw auto-arm vuoto); runtime base P1 **`7a668d7`**; **`APP_BUILD_ID` `B5.5Z` invariato**; **`node --check` OK**; **QA operatore P1-FIX pending**; **nessun deploy**; **non** CLOSED end-to-end. **Monolite incluso** nel commit `finito`. Inbox **`2026-06-23_1059_riepilogo_finito-sessione.md`**.
 
 2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P1 riconciliazione docs QA FAIL (docs-only):** commit task **`9638399`** — allinea OM §7 e roadmap WU-0006: runtime **`7a668d7`**, review byte Claude **PASS**, **QA operatore P1 FAIL**, nessun deploy, non CLOSED end-to-end; prossimo **POLY-PARITY-P1-FIX**; chiarimento poligoni Tracce vs `state.gisPolygons`. **Monolite non incluso.** Inbox **`2026-06-23_1415_riepilogo_finito-sessione.md`**.
