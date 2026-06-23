@@ -374,24 +374,26 @@ Note operative:
 
 ### POLY-PARITY-P2 — Drag vertici in modalità Modifica
 
-**Stato:** **runtime implementato e pushato**; **QA operatore pending**; **nessun deploy**; **non** CLOSED end-to-end.
+**Stato:** **runtime `e22e40b` pushato**; **review byte Claude `e22e40b`: FIX REQUIRED**; **QA operatore pending**; **nessun deploy**; **non** CLOSED end-to-end.
 
-**Implementazione (monolite):**
+**Review FIX REQUIRED (cause):**
 
-- Pattern `mapPolyEditDocDrag` / `mapPolyEditDocDragCleanup` / `mapPolyEditDocDragMove` / `mapPolyEditDocDragUp` — listener document-level `capture: true` (come Tracce/Misura);
-- Handle interattivi SVG in `renderPolygonEditOverlay` (`grab`/`grabbing`, hit r=18, `touch-action:none`);
-- `polygonApplyDraggedVertex` → solo `state._polyEdit.working[idx]` in `[lon,lat]`;
-- `mapClientToLatLonMap` + clamp `lat`/`normalizeLon`;
-- `polygonRecomputeGeometryDirty` / `polygonOpenRingsEquivalent` / `polygonOriginalOpenRing` con `gisSameCoord`;
-- Live: overlay + `renderPolygonEditInfo` (rAF throttle su move);
-- Cleanup su up/cancel/Salva/Annulla/`closePolygonPanel`/`polygonEnterEdit`;
-- **Nessun** `saveStore` o `gisFeatureUpdate` durante drag.
+1. Handle poligono assenti da `CTRL_SEL` → pan mappa concorrente su touch;
+2. `setPointerCapture` nel `pointerdown` handle senza `releasePointerCapture` simmetrico.
 
-**Invariati:** Salva dirty → una `gisFeatureUpdate`; sanitizer/timestamp/import/export; separazione GIS/Tracce; **`APP_BUILD_ID` `B5.5Z`**.
+**Implementazione P2 (monolite `e22e40b`):** pattern `mapPolyEditDocDrag*`; handle interattivi; live `working`; nessun CRUD durante drag; Salva → una `gisFeatureUpdate`.
 
-**Prossimo:** QA operatore P2; poi P3 cancellazione vertice.
+### POLY-PARITY-P2-FIX — Pan suppression + rimozione pointer capture
 
-**Backlog parità (post-P2 QA, non avviati):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P7 metadata data; P8 resize modal (P8-A).
+**Stato:** **runtime implementato e pushato**; **review byte Claude pending**; **QA operatore P2 pending**; **nessun deploy**; **non** CLOSED end-to-end.
+
+**Fix (monolite):**
+
+- `CTRL_SEL` in `attachPanHandlers`: aggiunta `.poly-edit-handle, .poly-edit-handle-hit` (additivo; classi esistenti invariate);
+- Rimossa `setPointerCapture(ev.pointerId)` dal `pointerdown` handle poligono;
+- **Invariati:** `mapPolyEditDocDragMove`, `mapPolyEditDocDragUp`, `mapPolyEditDocDragCleanup`, `polygonSaveEdit` (una `gisFeatureUpdate`); **`APP_BUILD_ID` `B5.5Z`**.
+
+**Prossimo:** review byte Claude commit P2-FIX; QA operatore P2; poi P3.
 
 ## Decisioni da bloccare prima di iniziare
 
