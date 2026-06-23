@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A1 CLOSED / PASS end-to-end (docs-only):** commit task **`67d9248`** — A1 **CLOSED / PASS end-to-end**; runtime **`af87259`**; review Claude PASS (deviazione `renderTileMap` diretto ratificata); deploy VPS GIS-only PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»); P7-B1 invariato CLOSED; **A2 non implementato**; 5 `renderAllMaps` residue; **monolite non incluso**. Inbox **`2026-06-24_0035_riepilogo_finito-sessione.md`**.
+
 2026-06-23 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A1 handle vertici ingresso Modifica (runtime + docs):** commit task **`af87259`** — `polygonScheduleEditOverlayRefresh` RAF+token; rimossa `renderAllMaps` da `polygonRefreshEditUi`; `renderTileMap`→`renderPolygonEditOverlay`; P7-B1 sanato CLOSED/PASS (`57c6d39`); A2 non toccato; 5 occorrenze `renderAllMaps` residue; **`APP_BUILD_ID` `B5.5Z` invariato**; **`node --check` OK**; **QA operatore A1 pending**. **Monolite incluso.** Inbox **`2026-06-23_2200_riepilogo_finito-sessione.md`**.
 
 2026-06-23 — **Chiusura sessione `finito` — POLY-PARITY-P7-B1 contratto metadata/data poligono legacy-safe (runtime + docs):** commit task **`57c6d39`** — sanitizer poligoni preserva-o-ometti; Tracce invariate; creazione `created_at === updated_at`; bump `updated_at` su Salva dirty e rinomina; export GeoJSON `updated_at` valido; nessuna migrazione; nessuna UI P7-B2; **`APP_BUILD_ID` `B5.5Z` invariato**; **`node --check` OK**; **review byte Claude P7-B1 pending**; **nessun deploy**. **Monolite incluso.** Inbox **`2026-06-23_2102_riepilogo_finito-sessione.md`**.
