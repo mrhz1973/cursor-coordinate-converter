@@ -366,21 +366,32 @@ Note operative:
 
 ### POLY-PARITY-P1-FIX — Correzioni UI/i18n QA P1
 
+**Stato:** **CLOSED / PASS end-to-end** (scope P1-FIX) — runtime **`d30a3a8`**; deploy tecnico GIS-only PASS; **QA operatore P1-FIX PASS**.
+
+**Fix (monolite):** i18n `defaultName`; formatter distanze; barra errore; hint utente; sblocco Modifica con draw auto-arm vuoto.
+
+**Invariati:** `polygonSaveEdit` una sola `gisFeatureUpdate`; **`APP_BUILD_ID` `B5.5Z`**.
+
+### POLY-PARITY-P2 — Drag vertici in modalità Modifica
+
 **Stato:** **runtime implementato e pushato**; **QA operatore pending**; **nessun deploy**; **non** CLOSED end-to-end.
 
-**Fix (monolite):**
+**Implementazione (monolite):**
 
-1. `gis.polygonPanel.defaultName` IT/EN/FR; `polygonDisplayName` + fallback legacy key senza migrazione bulk; `polygonEditNamesEquivalent` per dirty clean.
-2. `polygonEditFormatDistance` riusa `formatMapMeasureDistance` + `state.mapMeasureUnit` (no `k m`; km se unità `m` e distanza ≥1000 m); area `fmtAreaPlain`; rimossa riga `Unità` fuorviante.
-3. `#polygonPanelEditErr[hidden]` — CSS `display:none !important`.
-4. Hint vertici neutro utente (no «blocco successivo»).
-5. `polygonEditEnterFromList` + `polygonDisarmEmptyDrawIfSafe` — Modifica al primo click con draw auto-arm vuoto; draft con punti → `editDrawBlock` invariato.
+- Pattern `mapPolyEditDocDrag` / `mapPolyEditDocDragCleanup` / `mapPolyEditDocDragMove` / `mapPolyEditDocDragUp` — listener document-level `capture: true` (come Tracce/Misura);
+- Handle interattivi SVG in `renderPolygonEditOverlay` (`grab`/`grabbing`, hit r=18, `touch-action:none`);
+- `polygonApplyDraggedVertex` → solo `state._polyEdit.working[idx]` in `[lon,lat]`;
+- `mapClientToLatLonMap` + clamp `lat`/`normalizeLon`;
+- `polygonRecomputeGeometryDirty` / `polygonOpenRingsEquivalent` / `polygonOriginalOpenRing` con `gisSameCoord`;
+- Live: overlay + `renderPolygonEditInfo` (rAF throttle su move);
+- Cleanup su up/cancel/Salva/Annulla/`closePolygonPanel`/`polygonEnterEdit`;
+- **Nessun** `saveStore` o `gisFeatureUpdate` durante drag.
 
-**Invariati:** `polygonSaveEdit` una sola `gisFeatureUpdate`; sanitizer/timestamp/import/export; **`APP_BUILD_ID` `B5.5Z`**.
+**Invariati:** Salva dirty → una `gisFeatureUpdate`; sanitizer/timestamp/import/export; separazione GIS/Tracce; **`APP_BUILD_ID` `B5.5Z`**.
 
-**Prossimo:** QA operatore P1-FIX; poi backlog P2+.
+**Prossimo:** QA operatore P2; poi P3 cancellazione vertice.
 
-**Backlog parità (post-P1-FIX QA, non avviati):** P2 drag vertici; P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P7 metadata data; P8 resize modal (P8-A).
+**Backlog parità (post-P2 QA, non avviati):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P7 metadata data; P8 resize modal (P8-A).
 
 ## Decisioni da bloccare prima di iniziare
 
