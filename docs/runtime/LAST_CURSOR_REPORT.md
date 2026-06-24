@@ -2,63 +2,64 @@
 
 ## LATEST
 
-* real_task_commit: `67d92480054ac86caf28945c034a4c4180fbf246`
-* real_task_subject: docs: close POLY-UX-STABILITY-A1 end-to-end
-* report_generated_at: 2026-06-24T00:35:00+02:00
+* real_task_commit: `fc382476ecc79c980cbf339682a730d35ecf7131`
+* real_task_subject: feat(gis): delete polygon vertices during edit
+* report_generated_at: 2026-06-24T14:05:00+02:00
 * branch: main
-* remote_head_after_task_push: `67d9248`
-* previous_report_container: `0e756d24e74998f85884ab7e3b6f9b4bf9dd6a3c` (A1 runtime finito autosync — esterno/verificabile)
+* remote_head_after_task_push: `fc38247`
+* previous_report_container: `75f93611c6e6efa8ced6fce4b7cfe36fa6509c71` (A1 CLOSED finito autosync — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: clean (pre-autosync)
+* working_tree_status: clean (pre-autosync, docs OM/roadmap staged for finito memoria)
 * pass_tecnico_remoto: non attestato nel file per container corrente — verifica esterna post-push
-* result_cursor: A1 CLOSED/PASS end-to-end in OM §7 e roadmap; deviazione renderTileMap diretto ratificata; deploy VPS PASS registrato; QA operatore PASS registrata
-* pass_operatore: PASS — attestazione «QA POLY-UX-STABILITY-A1 PASS operatore» (operatore, sessione A1)
-* result_runtime: POLY-UX-STABILITY-A1 CLOSED / PASS end-to-end; runtime af87259; monolite non modificato in questo blocco
-* qa_attestation_source: operatore — sessione POLY-UX-STABILITY-A1
-* notes: docs-only blocco; A2 non implementato; P7-B1 invariato CLOSED; 5 renderAllMaps residue; APP_BUILD_ID B5.5Z invariato
+* result_cursor: P3 polygonDeleteEditVertex; pulsante ✕ righe lati; gate min 3 vertici; working-copy-only; P2/P7/A2 invariati; node --check PASS
+* pass_operatore: non attestato — QA operatore P3 pending
+* result_runtime: POLY-PARITY-P3 runtime fc38247 pushato; deploy VPS pending; QA operatore pending
+* qa_attestation_source: n/a
+* notes: APP_BUILD_ID B5.5Z invariato; polygonSaveEdit/polygonCancelEdit invariati; HUD backlog non avviato
 
 ## OUTPUT VERBATIM
 
 ```text
-# Stato verificato PRIMA del commit container corrente (pre-autosync finito A1 CLOSED)
+# Stato verificato PRIMA del commit container corrente (pre-autosync finito P3)
 
 git log --oneline -5
-67d9248 docs: close POLY-UX-STABILITY-A1 end-to-end
-0e756d2 docs: orchestratore — riconciliazione finito sessione POLY-UX-STABILITY-A1
-af87259 feat: POLY-UX-STABILITY-A1 handle vertici visibili ingresso Modifica
-e533520 docs: orchestratore — riconciliazione finito sessione POLY-PARITY-P7-B1
-57c6d39 feat: POLY-PARITY-P7-B1 contratto metadata poligono legacy-safe
+fc38247 feat(gis): delete polygon vertices during edit
+52c7a96 docs: orchestratore — riconciliazione finito sessione
+871e815 docs: close POLY-PARITY-P7-B2 end-to-end
+2dbbed3 docs: orchestratore — riconciliazione finito sessione
+cb6a430 docs: finito — POLY-PARITY-P7-B2 runtime published
 
 git status --short
-(vuoto)
+ M docs/OPERATING_MEMORY.md
+ M docs/work-units/WU-0005-0009-roadmap.md
 
 git rev-parse HEAD
-67d92480054ac86caf28945c034a4c4180fbf246
+fc382476ecc79c980cbf339682a730d35ecf7131
 
 git rev-parse origin/main
-67d92480054ac86caf28945c034a4c4180fbf246
+fc382476ecc79c980cbf339682a730d35ecf7131
 
 git branch --show-current
 main
 
 git push (task)
-0e756d2..67d9248 main -> main
+52c7a96..fc38247 main -> main
 
 git ls-remote origin refs/heads/main
-67d92480054ac86caf28945c034a4c4180fbf246	refs/heads/main
+fc382476ecc79c980cbf339682a730d35ecf7131	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY** — verificare post-push con `git ls-remote origin main` e seed Regola F nel report Cursor esterno.
 
 ## HISTORY
 
-* 0e756d2 — A1 runtime finito autosync; container verificabile
-* af87259 — A1 task commit (monolite handle ingresso Modifica)
-* e533520 — P7-B1 finito autosync; container verificabile
+* 75f9361 — A1 CLOSED finito autosync; container verificabile
+* 67d9248 — A1 CLOSED docs task
+* af87259 — A1 runtime handle ingresso Modifica
 
 ## LIMITI
 
-* Blocco docs-only — nessun deploy in questo commit task
-* A2 pannello/minimize non implementato
-* 5 renderAllMaps residue fuori scope A1
+* Deploy VPS P3 non eseguito in questo blocco
+* QA operatore P3 non attestata
+* P4 traslazione non implementato

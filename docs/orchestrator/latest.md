@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P3 cancellazione vertice in Modifica (runtime + docs):** commit task **`fc38247`** — `polygonDeleteEditVertex`; pulsante ✕ su righe lati; gate min 3 vertici; working-copy-only; P2/P7/A2 invariati; **`node --check` OK**; **deploy VPS pending**; **QA operatore P3 pending**; **`APP_BUILD_ID` `B5.5Z` invariato**; monolite incluso. Inbox **`2026-06-24_1405_riepilogo_finito-sessione.md`**.
+
 2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P7-B2 CLOSED / PASS end-to-end (docs-only):** runtime **`47bb3f6`** deploy VPS PASS + QA operatore PASS; catena P7 completata; P7-B1 invariato; commit **`871e815`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1355_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P7-B2 UI date Creato/Aggiornato (runtime + docs):** runtime **`47bb3f6`** — `polygonFormatPropertyTimestamp` + righe in `renderPolygonEditInfo`; contratto P7-B1 invariato; **`node --check` OK**; deploy/QA **pending**; monolite in commit runtime. Inbox **`2026-06-24_1341_riepilogo_finito-sessione.md`**.
