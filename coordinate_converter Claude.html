@@ -2526,11 +2526,12 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-edit-info-value{ font-weight:500; }
 .polygon-panel .poly-edit-legs-wrap{ margin:0 0 8px; font-size:.82rem; }
 .polygon-panel .poly-edit-legs{ max-height:140px; overflow:auto; margin-top:4px; }
-.polygon-panel .poly-edit-leg-row{ display:grid; grid-template-columns:minmax(0,1fr) auto auto; gap:8px; padding:2px 0; border-bottom:1px solid rgba(128,128,128,.12); }
+.polygon-panel .poly-edit-leg-row{ display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:6px; padding:2px 0; border-bottom:1px solid rgba(128,128,128,.12); align-items:center; }
 .polygon-panel .poly-edit-leg-row:last-child{ border-bottom:none; }
 .polygon-panel .poly-edit-leg-seg{ font-size:.78rem; }
 .polygon-panel .poly-edit-leg-dist{ white-space:nowrap; }
 .polygon-panel .poly-edit-leg-brg{ white-space:nowrap; min-width:3.5rem; text-align:right; }
+.polygon-panel .poly-edit-leg-del.btn.btn-sm.btn-danger-subtle{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
 .polygon-panel .poly-row.is-editing{ background:rgba(202,138,4,.12); border-radius:4px; }
 .polygon-panel .poly-row.is-editing .poly-name{ font-weight:600; }
 .poly-edit-overlay .poly-edit-shape{ stroke-width:2.5; }
@@ -11852,6 +11853,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Aggiornato",
     "gis.polygonPanel.dateUnavailable":"Data non disponibile",
     "gis.polygonPanel.editNameInvalid":"Nome non valido.",
+    "gis.polygonPanel.editDeleteVertex":"Elimina vertice {0}",
+    "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
     "tip.polygonPanel.rename":"Rinomina il poligono selezionato.",
     "tip.polygonPanel.delete":"Elimina il poligono selezionato.",
@@ -13466,6 +13469,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Updated",
     "gis.polygonPanel.dateUnavailable":"Date unavailable",
     "gis.polygonPanel.editNameInvalid":"Invalid name.",
+    "gis.polygonPanel.editDeleteVertex":"Delete vertex {0}",
+    "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
     "tip.polygonPanel.rename":"Rename the selected polygon.",
     "tip.polygonPanel.delete":"Delete the selected polygon.",
@@ -15081,6 +15086,8 @@ const I18N = {
     "gis.polygonPanel.editUpdated":"Mis à jour",
     "gis.polygonPanel.dateUnavailable":"Date indisponible",
     "gis.polygonPanel.editNameInvalid":"Nom non valide.",
+    "gis.polygonPanel.editDeleteVertex":"Supprimer le sommet {0}",
+    "gis.polygonPanel.editMinVertices":"Un polygone doit avoir au moins 3 sommets.",
     "tip.polygonPanel.edit":"Modifier la géométrie du polygone sur la carte.",
     "tip.polygonPanel.rename":"Renommer le polygone sélectionné.",
     "tip.polygonPanel.delete":"Supprimer le polygone sélectionné.",
@@ -45814,15 +45821,64 @@ function renderPolygonEditInfo(){
     const brg = document.createElement("span");
     brg.className = "poly-edit-leg-brg mono";
     brg.textContent = brgTxt;
+    const delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "btn btn-sm btn-danger-subtle poly-edit-leg-del";
+    delBtn.textContent = "✕";
+    const vtxNum = i + 1;
+    const delLbl = polygonEditVertexDeleteLabel(vtxNum);
+    delBtn.title = delLbl;
+    delBtn.setAttribute("aria-label", delLbl);
+    if (n <= 3) delBtn.disabled = true;
+    delBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      polygonDeleteEditVertex(i);
+    });
     row.appendChild(seg);
     row.appendChild(dist);
     row.appendChild(brg);
+    row.appendChild(delBtn);
     legsEl.appendChild(row);
   }
 }
 function polygonHideEditBarErr(){
   const err = document.getElementById("polygonPanelEditErr");
   if (err){ err.textContent = ""; err.hidden = true; }
+}
+function polygonShowEditBarErr(msg){
+  const err = document.getElementById("polygonPanelEditErr");
+  if (!err) return;
+  if (msg){
+    err.textContent = String(msg);
+    err.hidden = false;
+  } else {
+    err.textContent = "";
+    err.hidden = true;
+  }
+}
+function polygonEditVertexDeleteLabel(vertexNum){
+  const n = Number(vertexNum);
+  const num = Number.isFinite(n) ? String(n) : "";
+  const tpl = (typeof t === "function" ? t("gis.polygonPanel.editDeleteVertex") : "") || "Elimina vertice {0}";
+  return tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, num) : ((tpl ? tpl + " " : "") + num);
+}
+function polygonDeleteEditVertex(index){
+  if (!polygonIsEditing()) return false;
+  const ed = state._polyEdit;
+  if (!Array.isArray(ed.working)) return false;
+  const i = Number(index);
+  if (!Number.isFinite(i) || i < 0 || i >= ed.working.length) return false;
+  if (ed.working.length <= 3){
+    polygonShowEditBarErr((typeof t === "function" ? t("gis.polygonPanel.editMinVertices") : "") || "Un poligono deve avere almeno 3 vertici.");
+    return false;
+  }
+  mapPolyEditDocDragCleanup();
+  ed.working.splice(i, 1);
+  polygonRecomputeEditDirty();
+  polygonHideEditBarErr();
+  polygonRefreshEditUi();
+  return true;
 }
 function renderPolygonEditBar(){
   const bar = document.getElementById("polygonPanelEditBar");
