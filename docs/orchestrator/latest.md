@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B3 CLOSED / PASS end-to-end (docs-only):** runtime **`87cbe64`** deploy VPS PASS + QA operatore PASS; catena A2 completata; A2-B1/A2-B2-FIX invariati; commit **`b9eb65c`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1254_riepilogo_finito-sessione.md`**.
+2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P7-B2 UI date Creato/Aggiornato (runtime + docs):** runtime **`47bb3f6`** — `polygonFormatPropertyTimestamp` + righe in `renderPolygonEditInfo`; contratto P7-B1 invariato; **`node --check` OK**; deploy/QA **pending**; monolite in commit runtime. Inbox **`2026-06-24_1341_riepilogo_finito-sessione.md`**.
+
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B3 CLOSED / PASS end-to-end (docs-only):** runtime **`87cbe64`** deploy VPS PASS + QA operatore PASS; catena A2 completata; commit **`b9eb65c`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1254_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B3 apertura senza auto-arm (runtime + docs):** runtime **`87cbe64`** — rimosso auto-`polygonStartDraw()` da `openPolygonPanel()`; disegno esplicito `#polygonPanelNewBtn`; A2-B1/A2-B2-FIX invariati; **`node --check` OK**; deploy/QA **pending**; monolite in commit runtime. Inbox **`2026-06-24_1227_riepilogo_finito-sessione.md`**.
 
