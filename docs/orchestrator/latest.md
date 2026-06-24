@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P3-ADD inserimento vertice su lato (runtime + docs):** commit task **`5df925f`** — `polygonInsertEditVertex` + midpoint Vincenty; pulsante `+` su righe lati; cap 500; working-copy-only; P2/P3/P7/A1/A2 invariati; **`node --check` OK**; deploy/QA **pending**; monolite incluso. Inbox **`2026-06-24_2355_riepilogo_finito-sessione.md`**.
+2026-06-25 — **POLY-PARITY-P3-ADD CLOSED / PASS end-to-end (docs-only):** runtime **`5df925f`** @ HEAD documentale **`75229c9`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P3-ADD PASS operatore»); commit chiusura **`3751b4a`**; monolite non toccato. Inbox **`2026-06-25_0115_riepilogo_finito-sessione.md`**.
+
+2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P3-ADD inserimento vertice su lato (runtime + docs):** commit task **`5df925f`** — `polygonInsertEditVertex` + midpoint Vincenty; pulsante `+` su righe lati; cap 500; working-copy-only; P2/P3/P7/A1/A2 invariati; **`node --check` OK**; deploy/QA **pending**; monolite incluso. Inbox **`2026-06-25_0006_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **POLY-PARITY-P3 CLOSED / PASS end-to-end (docs-only):** runtime **`6083abe`** (monolite) @ HEAD documentale **`671cf30`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P3-FIX PASS operatore»); catena P3 `fc38247` + P3-FIX; monolite non toccato.
 
