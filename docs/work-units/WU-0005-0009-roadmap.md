@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** runtime `fc38247` deploy PASS, QA PARTIAL FAIL (Annulla redraw); **P3-FIX** `6083abe` pushato (QA pending); **P4** traslazione — backlog;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P4** traslazione — backlog;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -481,11 +481,11 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** CLOSED/PASS end-to-end (`db2f6ea`, deploy+QA PASS). **A2-B2:** rollback logico PASS; QA PARTIAL FAIL storico; runtime `cb9f92f`; superseded da A2-B2-FIX. **A2-B2-FIX:** redraw sincrono post-close edit; runtime **`70ed7b3`**; deploy+QA PASS. **A2-B3:** apertura senza auto-arm; disegno esplicito `#polygonPanelNewBtn`; runtime **`87cbe64`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B3 PASS operatore»). **Catena A2 completata end-to-end.**
 
-**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **P3** `fc38247` deploy PASS, QA PARTIAL FAIL; **P3-FIX** `6083abe` pushato (QA pending); P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
+**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
 
 ### POLY-PARITY-P3 — Cancellazione vertice in Modifica
 
-**Stato:** **runtime `fc38247`** deploy VPS PASS; **QA operatore PARTIAL FAIL** (solo redraw post-Annulla); **P3-FIX `6083abe`** pushato — deploy/QA pending.
+**Stato:** **CLOSED / PASS end-to-end** — runtime **`fc38247`** + **P3-FIX `6083abe`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P3-FIX PASS operatore»).
 
 **Implementazione (monolite):**
 
@@ -495,7 +495,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 - dirty via `polygonRecomputeEditDirty`; refresh UI + overlay A1;
 - nessun CRUD/`saveStore` fino a Salva; `polygonSaveEdit` invariato.
 
-**P3-FIX (`6083abe`):** `polygonInvalidateEditOverlayRefresh` + `polygonSyncRenderMapAfterEditEnd` in `polygonEditCancelHandler`; dedup redraw in `closePolygonPanel` (pattern A2-B2-FIX).
+**P3-FIX (`6083abe`):** `polygonInvalidateEditOverlayRefresh` + `polygonSyncRenderMapAfterEditEnd` in `polygonEditCancelHandler`; dedup redraw in `closePolygonPanel` (pattern A2-B2-FIX). Deploy VPS PASS (byte **2281832**, SHA **`46d265c6…`**). QA: Annulla → ripristino immediato senza pan; Salva e chiusura pannello OK.
 
 **Invariati:** P2 drag; P7 metadata/UI date; A1/A2; lista principale; **`APP_BUILD_ID` `B5.5Z`**.
 
