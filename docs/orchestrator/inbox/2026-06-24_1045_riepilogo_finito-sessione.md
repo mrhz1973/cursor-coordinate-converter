@@ -8,7 +8,7 @@
 | Step | Hash | Subject |
 |------|------|---------|
 | Runtime | `db2f6ea` | `fix(gis): restore minimized polygon panel from toolbar` |
-| Docs `finito` | *(post-push)* | `docs: POLY-UX-STABILITY-A2-B1 toggle restore-first` |
+| Docs `finito` | `5a867a6` | `docs: POLY-UX-STABILITY-A2-B1 toggle restore-first` |
 
 ## Push
 
