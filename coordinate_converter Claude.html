@@ -45520,7 +45520,8 @@ function openPolygonPanel(){
 function closePolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
-  if (polygonIsEditing()){ try { polygonEditCancelHandler(); } catch(_){} }
+  const wasEditing = polygonIsEditing();
+  if (wasEditing){ try { polygonEditCancelHandler(); } catch(_){} }
   try { mapPolyEditDocDragCleanup(); } catch(_){}
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
   state._polygonDrawAutoMinimized = false;
@@ -45532,6 +45533,29 @@ function closePolygonPanel(){
     const h = document.getElementById("polygonPanelHead");
     if (h) h.classList.remove("gis-panel-drag-head");
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+  }
+  if (wasEditing){
+    try {
+      if (mapPolyEditOverlayRefreshRaf){
+        cancelAnimationFrame(mapPolyEditOverlayRefreshRaf);
+        mapPolyEditOverlayRefreshRaf = null;
+      }
+      const vc = state.viewCenter;
+      const lp = state.lastPoint;
+      let lat, lon;
+      if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
+        lat = vc.lat;
+        lon = vc.lon;
+      } else if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+        lat = lp.lat;
+        lon = lp.lon;
+      }
+      if (lat != null && lon != null){
+        const z = state.mapZoom || 11;
+        const root = document.getElementById("miniMap");
+        if (root && root.querySelector(".tile-map")) renderTileMap(lat, lon, z);
+      }
+    } catch(_){}
   }
   try { renderAllMaps(); } catch(_){}
 }
