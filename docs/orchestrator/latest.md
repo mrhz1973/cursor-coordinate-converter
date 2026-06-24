@@ -9,9 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B1 (runtime + docs):** commit runtime **`db2f6ea`** — toggle restore-first pannello minimizzato; **`node --check` OK**; deploy VPS **pending**; QA **pending**; A2-B2/B3 backlog; A1 CLOSED invariato. Inbox **`2026-06-24_1045_riepilogo_finito-sessione.md`**.
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B2 close edit-safe (runtime + docs):** commit runtime **`cb9f92f`** — `closePolygonPanel` → `polygonEditCancelHandler` se edit; A2-B1 **CLOSED/PASS** (`db2f6ea`, deploy VPS PASS, QA PASS); A2-B2 deploy/QA **pending**; A2-B3 backlog; **`node --check` OK**; monolite in commit runtime. Inbox **`2026-06-24_1200_riepilogo_finito-sessione.md`**.
 
-2026-06-24 — **POLY-UX-STABILITY-A2-B1 toggle restore-first pannello Poligoni (runtime + docs):** commit runtime **`db2f6ea`** — `isOpen()` toggle esclude minimized; minimizzato → `openPolygonPanel()` restore-first; **`node --check` OK**; **`APP_BUILD_ID` `B5.5Z` invariato**; deploy VPS **pending**; QA operatore **pending**; A2-B2/B2-B3 non implementati; A1 CLOSED invariato. **Monolite incluso.** Inbox **`2026-06-24_1043_riepilogo_poly-ux-stability-a2-b1.md`**.
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B1 (runtime + docs):** commit runtime **`db2f6ea`** — toggle restore-first pannello minimizzato; **`node --check` OK**; deploy VPS **pending**; QA **pending**; A2-B2/B3 backlog; A1 CLOSED invariato. Inbox **`2026-06-24_1045_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A1 CLOSED / PASS end-to-end (docs-only):** commit task **`67d9248`** — A1 **CLOSED / PASS end-to-end**; runtime **`af87259`**; review Claude PASS (deviazione `renderTileMap` diretto ratificata); deploy VPS GIS-only PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»); P7-B1 invariato CLOSED; **A2 non implementato**; 5 `renderAllMaps` residue; **monolite non incluso**. Inbox **`2026-06-24_0035_riepilogo_finito-sessione.md`**.
 

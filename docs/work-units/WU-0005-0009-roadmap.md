@@ -405,9 +405,9 @@ Note operative:
 |--------------|-------|
 | A-DIAG diagnosi read-only | **completata** — `renderAllMaps` indefinita; auto-minimize ≠ close |
 | A1 handle ingresso Modifica | **CLOSED / PASS end-to-end** — runtime `af87259` |
-| A2 pannello scompare al tap mappa | **parziale** — **A2-B1** runtime `db2f6ea` (toggle restore-first); deploy VPS pending; QA pending; **A2-B2**/**A2-B3** backlog |
+| A2 pannello scompare al tap mappa | **parziale** — **A2-B1** CLOSED/PASS (`db2f6ea`); **A2-B2** runtime `cb9f92f` (close edit-safe); deploy/QA B2 pending; **A2-B3** backlog |
 
-**A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS (blob `57df10c8…`, byte **2276652**, SHA match); **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** toggle Poligoni `isOpen()` esclude minimized → `openPolygonPanel()` restore-first; runtime **`db2f6ea`**; **`node --check` OK**; deploy/QA pending. **A2-B2** edit-safe close e **A2-B3** auto-arm: non implementati.
+**A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS (blob `57df10c8…`, byte **2276652**, SHA match); **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** toggle restore-first; runtime **`db2f6ea`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B1 PASS operatore»). **A2-B2:** `closePolygonPanel` → `polygonEditCancelHandler` se edit attivo; runtime **`cb9f92f`**; deploy/QA pending. **A2-B3** auto-arm: non implementato.
 
 **Backlog parità (non avviati, salvo decisione operativa):** P3 cancellazione vertice; P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
 
