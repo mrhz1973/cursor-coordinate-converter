@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B2-FIX CLOSED / PASS end-to-end (docs-only):** A2-B2-FIX **`70ed7b3`** deploy VPS PASS + QA operatore PASS; A2-B2 storico PARTIAL FAIL superseded; A2-B1 CLOSED invariato; A2-B3 backlog; commit **`bf87cb6`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1214_riepilogo_finito-sessione.md`**.
+
 2026-06-24 — **Chiusura sessione `finito` — backlog candidato HUD (docs-only):** aggiunta voce «Personalizzazione HUD a schermo» in `WU-0005-0009-roadmap.md` (HUD-VIS + HUD-MOVE separati; non WU; dopo residui Poligoni); commit **`38ec7c5`**; OM §7 invariato; WU-0007 PASS invariata; monolite non toccato. Inbox **`2026-06-24_1204_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B2-FIX redraw post-close edit (runtime + docs):** commit runtime **`70ed7b3`**; A2-B2 QA PARTIAL FAIL (overlay stale); fix redraw `renderTileMap` viewCenter→lastPoint; deploy/QA FIX pending; A2-B1 CLOSED invariato. Inbox **`2026-06-24_1300_riepilogo_finito-sessione.md`**.
