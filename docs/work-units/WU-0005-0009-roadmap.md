@@ -305,6 +305,78 @@ Note operative:
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
+### Backlog candidato — Personalizzazione HUD a schermo (visibilità + riposizionamento)
+
+**Stato:** backlog candidato, **non avviato**, **non bloccante**. Docs-only finché non viene aperto un blocco runtime specifico. **Non** è una WU aperta; **non** modifica OM §7.
+
+**Ambito:** GIS monolite, livello UI/overlay sopra la mappa.
+
+**Idea operatore:** permettere di scegliere quali elementi HUD mostrare a schermo e, in un secondo tempo, riposizionarli tramite una modalità esplicita di modifica layout.
+
+**Riferimenti UX (stato invariato):**
+- **WU-0007** — razionalizzazione toolbar e gruppi pulsanti (**PASS**; non riaperta; questo backlog **non** è prosecuzione automatica di WU-0007);
+- backlog **standardizzazione modal/pannelli flottanti** (sezione sopra, `[TRASVERSALE — backlog]`);
+- **B5.2** mobile viewport containment — riferimento per clamp/fallback/reset nel viewport.
+
+**Priorità e coda:** priorità backlog; **non bloccante**; **dopo** i residui Poligoni (A2-B2-FIX deploy/QA, A2-B3, P7-B2, ecc.) e **dopo** gli altri candidati già in coda; apertura futura solo mediante **blocchi runtime separati** (nessuna implementazione autorizzata da questa voce).
+
+L'implementazione futura deve restare **due blocchi distinti** — **non** accorpati in un unico intervento.
+
+#### HUD-VIS — Visibilità elementi HUD
+
+Blocco più semplice: **solo** show/hide degli overlay HUD.
+
+**Scope candidato:**
+- toggle show/hide per la **scala** (`buildScaleBar`, `.tile-scale`);
+- toggle show/hide per il readout **PUNTO/CURSORE** (`.tile-readout`);
+- toggle show/hide per **gruppi** di pulsanti toolbar/header (perimetro da definire al blocco);
+- comando **Mostra tutto** (reset visibilità), sempre disponibile.
+
+**Persistenza (contratto dati futuro — schema non definitivo in questo step):**
+- preferenze in store `coordconv_v2`;
+- sanitizer dedicato;
+- pattern di riferimento: `settings.rangeRingsLastStyle` / `sanitizeRangeRingsLastStyle`;
+- la parte schema, hydration, sanitizer e persistenza costituisce un **CONTRATTO DATI**;
+- quando HUD-VIS verrà aperto come blocco runtime, la costruzione del contratto dati richiederà **hop/review Claude**.
+
+**Distinzione obbligatoria:**
+- **HUD-VIS** stabilisce cosa è visibile durante l'uso live;
+- asse **distinto** da **B5.5C** (cosa includere nell'immagine JPG esportata);
+- un modello condiviso schermo → export è **sinergia futura opzionale**, non requisito iniziale di HUD-VIS.
+
+#### HUD-MOVE — Riposizionamento in modalità modifica layout
+
+Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione esplicita — **non** inglobato automaticamente in HUD-VIS.
+
+**Scope candidato:**
+- rendere trascinabili gli elementi HUD;
+- memorizzare posizione personalizzata sullo schermo;
+- blocco layout successivo;
+- comando **Reset layout**, sempre disponibile.
+
+**Nota tecnica obbligatoria:**
+- scala e readout PUNTO/CURSORE sono oggi **overlay fissi** — non pannelli flottanti;
+- **non** coperti dal sistema drag/resize dei pannelli esistenti;
+- riferimenti tecnici pannelli: `drag-head`, `gisPanelAttachResize`, `attachPolygonPanelFloatingGis`;
+- il riposizionamento richiederà riuso/adattamento **controllato** di quel sistema **oppure** un layer di layout HUD dedicato;
+- **non** descrivere HUD-MOVE come semplice riuso automatico del drag dei modal.
+
+**Persistenza:** posizioni nello stesso store/sanitizer previsti per HUD-VIS; anche questa parte è **contratto dati** (schema non deciso in docs-only).
+
+**Modalità modifica layout:**
+- modo operativo **distinto** dall'uso normale;
+- mentre attiva: sospendere/intercettare gesture mappa incompatibili (pan, tap, pinch, drag handle edit, minimize/restore pannelli);
+- pattern concettuali: `mapMeasureMode`, `rangeRingsPickCenterMode`, altri pickMode transitori;
+- **nessun** live tracking GPS o comportamento implicito.
+
+**Responsive e containment:**
+- posizioni desktop possono uscire dal viewport su mobile;
+- in futuro: clamp ai bordi, fallback sicuro, reset, eventuale normalizzazione per viewport;
+- riferimento: containment **B5.2**;
+- nessun elemento HUD irraggiungibile fuori schermo.
+
+**Ordine:** HUD-VIS prima (o parallelo solo per decisione esplicita); HUD-MOVE separato; nessun nome definitivo `state.*` / `settings.*` in questa voce.
+
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
 **Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.
