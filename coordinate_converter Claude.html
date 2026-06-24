@@ -2539,6 +2539,13 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .poly-edit-overlay .poly-edit-shape{ stroke-width:2.5; }
 .poly-edit-overlay .poly-edit-handle{ cursor:grab; touch-action:none; }
 .poly-edit-overlay .poly-edit-handle.is-grabbing{ cursor:grabbing; }
+.poly-edit-overlay.is-move-mode .poly-edit-shape{ pointer-events:auto; cursor:grab; touch-action:none; }
+.poly-edit-overlay.is-move-mode.is-grabbing .poly-edit-shape{ cursor:grabbing; }
+.poly-edit-overlay.is-move-mode .poly-edit-handle,
+.poly-edit-overlay.is-move-mode .poly-edit-handle-hit{ pointer-events:none !important; }
+.polygon-panel .poly-edit-bar .poly-edit-move-hint{ margin:0 0 6px; font-size:.78rem; opacity:.9; }
+.polygon-panel .poly-edit-bar .poly-edit-move-hint[hidden]{ display:none !important; margin:0; padding:0; }
+.polygon-panel .poly-edit-bar .poly-edit-move-toggle[aria-pressed="true"]{ font-weight:600; }
 .polygon-panel .poly-delete-bar{ margin:0 0 8px; }
 .polygon-panel .poly-empty{ text-align:center; padding:18px 8px; color:#666; font-size:.9rem; }
 
@@ -10347,6 +10354,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="polygonPanelEditLegs" class="poly-edit-legs"></div>
       </details>
       <p class="hint poly-edit-hint" data-i18n="gis.polygonPanel.editVerticesHint">Trascina i vertici sulla mappa per modificare la forma.</p>
+      <button type="button" id="polygonPanelEditMove" class="btn btn-sm btn-ghost poly-edit-move-toggle" data-role="poly-edit-move" data-i18n="gis.polygonPanel.editMovePolygon" aria-pressed="false">Sposta poligono</button>
+      <p id="polygonPanelEditMoveHint" class="hint poly-edit-move-hint" data-i18n="gis.polygonPanel.editMoveHint" hidden>Trascina il poligono sulla mappa</p>
       <p id="polygonPanelEditErr" class="geo-warn poly-edit-err" role="alert" hidden></p>
       <div class="poly-edit-actions">
         <button type="button" id="polygonPanelEditSave" class="btn btn-sm btn-primary" data-role="poly-edit-save" data-i18n="gis.polygonPanel.editSave">Salva</button>
@@ -11860,6 +11869,8 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Numero massimo di vertici raggiunto.",
     "gis.polygonPanel.editInsertVertexInvalid":"Impossibile aggiungere un vertice su questo lato.",
     "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
+    "gis.polygonPanel.editMovePolygon":"Sposta poligono",
+    "gis.polygonPanel.editMoveHint":"Trascina il poligono sulla mappa",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
     "tip.polygonPanel.rename":"Rinomina il poligono selezionato.",
     "tip.polygonPanel.delete":"Elimina il poligono selezionato.",
@@ -13479,6 +13490,8 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Maximum number of vertices reached.",
     "gis.polygonPanel.editInsertVertexInvalid":"A vertex cannot be added on this side.",
     "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
+    "gis.polygonPanel.editMovePolygon":"Move polygon",
+    "gis.polygonPanel.editMoveHint":"Drag the polygon on the map",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
     "tip.polygonPanel.rename":"Rename the selected polygon.",
     "tip.polygonPanel.delete":"Delete the selected polygon.",
@@ -15099,6 +15112,8 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Nombre maximal de sommets atteint.",
     "gis.polygonPanel.editInsertVertexInvalid":"Impossible d’ajouter un sommet sur ce côté.",
     "gis.polygonPanel.editMinVertices":"Un polygone doit avoir au moins 3 sommets.",
+    "gis.polygonPanel.editMovePolygon":"Déplacer le polygone",
+    "gis.polygonPanel.editMoveHint":"Faites glisser le polygone sur la carte",
     "tip.polygonPanel.edit":"Modifier la géométrie du polygone sur la carte.",
     "tip.polygonPanel.rename":"Renommer le polygone sélectionné.",
     "tip.polygonPanel.delete":"Supprimer le polygone sélectionné.",
@@ -16801,6 +16816,116 @@ function mapPolyEditDocDragUp(ev){
     try { renderPolygonEditInfo(); } catch(_){}
   }
   if (ev.cancelable) ev.preventDefault();
+}
+
+/** Move entire polygon during edit (POLY-PARITY-P4-B1; separate pipeline from P2). */
+let mapPolyMoveDocDrag = null;
+let mapPolyMoveDocDragRaf = null;
+const POLY_MOVE_ZERO_PX = 0.01;
+
+function polyMoveWorldWidthPx(zoom){
+  const z = Number.isFinite(zoom) ? zoom : (state.mapZoom || 11);
+  return 256 * Math.pow(2, z);
+}
+function polyMoveShortestDeltaX(dx, worldW){
+  if (!Number.isFinite(dx) || worldW <= 0) return 0;
+  let d = dx;
+  if (d > worldW / 2) d -= worldW;
+  if (d < -worldW / 2) d += worldW;
+  return d;
+}
+function polygonBuildMoveSnapshotPx(root, snapshotGeo){
+  const out = [];
+  if (!Array.isArray(snapshotGeo)) return null;
+  for (const c of snapshotGeo){
+    if (!Array.isArray(c) || c.length < 2) return null;
+    const px = tileMapLatLonToPx(root, c[1], c[0]);
+    if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) return null;
+    out.push({ x: px.x, y: px.y });
+  }
+  return out.length === snapshotGeo.length ? out : null;
+}
+function polygonApplyMoveFromSnapshots(root, snapshotGeo, snapshotPx, dxTotal, dyTotal){
+  if (!Array.isArray(snapshotGeo) || !Array.isArray(snapshotPx)) return null;
+  if (snapshotGeo.length !== snapshotPx.length || snapshotGeo.length < 2) return null;
+  const ring = [];
+  for (let i = 0; i < snapshotGeo.length; i++){
+    const sp = snapshotPx[i];
+    const mx = sp.x + dxTotal;
+    const my = sp.y + dyTotal;
+    const ll = tileMapPxToLatLon(root, mx, my);
+    if (!ll || !Number.isFinite(ll.lat) || !Number.isFinite(ll.lon)) return null;
+    if (Math.abs(ll.lat) > 85.05) return null;
+    ring.push([round(normalizeLon(ll.lon), 7), round(ll.lat, 7)]);
+  }
+  return ring;
+}
+function mapPolyMoveDocDragCleanup(){
+  if (mapPolyMoveDocDragRaf){
+    cancelAnimationFrame(mapPolyMoveDocDragRaf);
+    mapPolyMoveDocDragRaf = null;
+  }
+  if (mapPolyMoveDocDrag){
+    document.removeEventListener("pointermove", mapPolyMoveDocDragMove, true);
+    document.removeEventListener("pointerup", mapPolyMoveDocDragUp, true);
+    document.removeEventListener("pointercancel", mapPolyMoveDocDragUp, true);
+    mapPolyMoveDocDrag = null;
+  }
+  try {
+    const ov = document.getElementById("polygonEditOverlay");
+    if (ov) ov.classList.remove("is-grabbing");
+  } catch(_){}
+}
+function mapPolyMoveDocDragMove(ev){
+  const d = mapPolyMoveDocDrag;
+  if (!d || ev.pointerId !== d.pid) return;
+  if (!polygonIsEditing() || !state._polyEdit || !state._polyEdit.moveMode){
+    mapPolyMoveDocDragCleanup();
+    return;
+  }
+  let dx = polyMoveShortestDeltaX(ev.clientX - d.anchorClientX, d.worldW);
+  const dy = ev.clientY - d.anchorClientY;
+  if (Math.abs(dx) < POLY_MOVE_ZERO_PX && Math.abs(dy) < POLY_MOVE_ZERO_PX){
+    const exact = gisClonePlain(d.snapshotGeo);
+    if (exact) state._polyEdit.working = exact;
+  } else {
+    const ring = polygonApplyMoveFromSnapshots(d.root, d.snapshotGeo, d.snapshotPx, dx, dy);
+    if (!ring) return;
+    state._polyEdit.working = ring;
+  }
+  if (mapPolyMoveDocDragRaf) cancelAnimationFrame(mapPolyMoveDocDragRaf);
+  mapPolyMoveDocDragRaf = requestAnimationFrame(() => {
+    mapPolyMoveDocDragRaf = null;
+    const dd = mapPolyMoveDocDrag;
+    if (!dd || !polygonIsEditing()) return;
+    if (dd.tileMap) renderPolygonEditOverlay(dd.tileMap, dd.markerLat, dd.markerLon, dd.z);
+    try { renderPolygonEditInfo(); } catch(_){}
+    polygonRecomputeGeometryDirty();
+    polygonRecomputeEditDirty();
+  });
+  if (ev.cancelable) ev.preventDefault();
+}
+function mapPolyMoveDocDragUp(ev){
+  if (!mapPolyMoveDocDrag) return;
+  if (!ev || ev.pointerId !== mapPolyMoveDocDrag.pid) return;
+  const d = mapPolyMoveDocDrag;
+  mapPolyMoveDocDragCleanup();
+  if (polygonIsEditing()){
+    polygonRecomputeGeometryDirty();
+    polygonRecomputeEditDirty();
+    if (d.tileMap) renderPolygonEditOverlay(d.tileMap, d.markerLat, d.markerLon, d.z);
+    try { renderPolygonEditInfo(); } catch(_){}
+  }
+  if (ev.cancelable) ev.preventDefault();
+}
+function polygonToggleMoveMode(){
+  if (!polygonIsEditing()) return;
+  mapPolyMoveDocDragCleanup();
+  mapPolyEditDocDragCleanup();
+  const ed = state._polyEdit;
+  ed.moveMode = !ed.moveMode;
+  try { renderPolygonEditBar(); } catch(_){}
+  try { polygonRefreshEditUi(); } catch(_){}
 }
 
 function updateTrackMapFloatReadout(root){
@@ -31527,6 +31652,8 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     pxPts.push({ x: px.x - tx, y: px.y - ty });
   }
   if (pxPts.length < 2) return;
+  const moveMode = !!ed.moveMode;
+  if (moveMode) svg.style.pointerEvents = "auto";
   const drawPts = pxPts.slice();
   if (drawPts.length >= 3){
     const last = drawPts[drawPts.length - 1], first = drawPts[0];
@@ -31542,7 +31669,8 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     poly.setAttribute("stroke", color);
     poly.setAttribute("stroke-width", "2.5");
     poly.setAttribute("stroke-linejoin", "round");
-    poly.style.pointerEvents = "none";
+    poly.style.pointerEvents = moveMode ? "auto" : "none";
+    if (moveMode) poly.style.cursor = "grab";
     svg.appendChild(poly);
   } else if (drawPts.length === 2){
     const line = document.createElementNS(ns, "polyline");
@@ -31551,7 +31679,8 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     line.setAttribute("fill", "none");
     line.setAttribute("stroke", color);
     line.setAttribute("stroke-width", "2.5");
-    line.style.pointerEvents = "none";
+    line.style.pointerEvents = moveMode ? "auto" : "none";
+    if (moveMode) line.style.cursor = "grab";
     svg.appendChild(line);
   }
   const dragIdx = (ed.dragIdx != null && Number.isFinite(Number(ed.dragIdx))) ? Number(ed.dragIdx) : -1;
@@ -31562,7 +31691,7 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     g.setAttribute("class", "poly-edit-handle" + (i === dragIdx ? " is-grabbing" : ""));
     g.setAttribute("data-index", String(i));
     g.style.cursor = (i === dragIdx) ? "grabbing" : "grab";
-    g.style.pointerEvents = "auto";
+    g.style.pointerEvents = moveMode ? "none" : "auto";
     g.style.touchAction = "none";
     if (handleHint) g.setAttribute("aria-label", handleHint);
 
@@ -31572,7 +31701,7 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     hit.setAttribute("cy", p.y.toFixed(1));
     hit.setAttribute("r", "18");
     hit.setAttribute("fill", "transparent");
-    hit.setAttribute("pointer-events", "all");
+    hit.setAttribute("pointer-events", moveMode ? "none" : "all");
 
     const vis = document.createElementNS(ns, "circle");
     vis.setAttribute("cx", p.x.toFixed(1));
@@ -31595,20 +31724,68 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
 
   svg.addEventListener("pointerdown", (ev) => {
     if (!polygonIsEditing()) return;
+    if (ev.button !== 0) return;
+    const wed = state._polyEdit;
+    if (!wed) return;
+    if (wed.moveMode){
+      const handleEl = ev.target && ev.target.closest && ev.target.closest(".poly-edit-handle");
+      if (handleEl) return;
+      const shapeEl = ev.target && ev.target.closest && ev.target.closest(".poly-edit-shape");
+      if (!shapeEl) return;
+      if (mapPolyMoveDocDrag || mapPolyEditDocDrag) return;
+      if (!Array.isArray(wed.working) || wed.working.length < 2) return;
+      const snapshotGeo = gisClonePlain(wed.working);
+      const snapshotPx = polygonBuildMoveSnapshotPx(root, snapshotGeo);
+      const anchorGeo = mapClientToLatLonMap(root, markerLa, markerLo, z, ev.clientX, ev.clientY);
+      const anchorPx = anchorGeo ? tileMapLatLonToPx(root, anchorGeo.lat, anchorGeo.lon) : null;
+      if (!snapshotGeo || !snapshotPx || !anchorGeo || !anchorPx) return;
+      if (!Number.isFinite(anchorGeo.lat) || !Number.isFinite(anchorGeo.lon)) return;
+      if (!Number.isFinite(anchorPx.x) || !Number.isFinite(anchorPx.y)) return;
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      mapMeasureDocDragCleanup();
+      mapTrackDocDragCleanup();
+      mapWptDocDragCleanup();
+      mapRrCenterDocDragCleanup();
+      mapPolyEditDocDragCleanup();
+      mapPolyMoveDocDragCleanup();
+      mapPolyMoveDocDrag = {
+        pid: ev.pointerId,
+        root,
+        tileMap,
+        markerLat: markerLa,
+        markerLon: markerLo,
+        z,
+        snapshotGeo,
+        snapshotPx,
+        anchorGeo,
+        anchorPx,
+        anchorClientX: ev.clientX,
+        anchorClientY: ev.clientY,
+        worldW: polyMoveWorldWidthPx(z)
+      };
+      try {
+        const ov = document.getElementById("polygonEditOverlay");
+        if (ov) ov.classList.add("is-grabbing");
+      } catch(_){}
+      document.addEventListener("pointermove", mapPolyMoveDocDragMove, true);
+      document.addEventListener("pointerup", mapPolyMoveDocDragUp, true);
+      document.addEventListener("pointercancel", mapPolyMoveDocDragUp, true);
+      return;
+    }
     const h = ev.target && ev.target.closest && ev.target.closest(".poly-edit-handle");
     if (!h) return;
-    if (ev.button !== 0) return;
-    if (mapPolyEditDocDrag) return;
+    if (mapPolyMoveDocDrag) return;
     const idx = parseInt(h.getAttribute("data-index"), 10);
     if (!Number.isFinite(idx) || idx < 0) return;
-    const wed = state._polyEdit;
-    if (!wed || !Array.isArray(wed.working) || idx >= wed.working.length) return;
+    if (!Array.isArray(wed.working) || idx >= wed.working.length) return;
     ev.stopPropagation();
     if (ev.cancelable) ev.preventDefault();
     mapMeasureDocDragCleanup();
     mapTrackDocDragCleanup();
     mapWptDocDragCleanup();
     mapRrCenterDocDragCleanup();
+    mapPolyMoveDocDragCleanup();
     wed.dragIdx = idx;
     mapPolyEditDocDrag = {
       pid: ev.pointerId,
@@ -31626,7 +31803,7 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
   });
 
   const wrap = document.createElement("div");
-  wrap.className = "poly-edit-overlay";
+  wrap.className = "poly-edit-overlay" + (moveMode ? " is-move-mode" : "");
   wrap.id = "polygonEditOverlay";
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
@@ -45536,6 +45713,7 @@ function closePolygonPanel(){
   if (!state.polygonPanelOpen && !(dlg && dlg.open)) return;
   const wasEditing = polygonIsEditing();
   if (wasEditing){ try { polygonEditCancelHandler(); } catch(_){} }
+  try { mapPolyMoveDocDragCleanup(); } catch(_){}
   try { mapPolyEditDocDragCleanup(); } catch(_){}
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
   state._polygonDrawAutoMinimized = false;
@@ -45560,6 +45738,7 @@ function polygonIsEditing(){
 }
 function polygonEnterEdit(id){
   ensureGisState();
+  mapPolyMoveDocDragCleanup();
   mapPolyEditDocDragCleanup();
   const sid = String(id == null ? "" : id).trim();
   if (!sid) return false;
@@ -45591,7 +45770,8 @@ function polygonEnterEdit(id){
     nameDirty: false,
     geometryDirty: false,
     dirty: false,
-    dragIdx: null
+    dragIdx: null,
+    moveMode: false
   };
   return true;
 }
@@ -45951,6 +46131,13 @@ function renderPolygonEditBar(){
   }
   polygonEditSyncTitle();
   try { renderPolygonEditInfo(); } catch(_){}
+  const moveBtn = document.getElementById("polygonPanelEditMove");
+  const moveHint = document.getElementById("polygonPanelEditMoveHint");
+  if (moveBtn){
+    const mm = !!state._polyEdit.moveMode;
+    moveBtn.setAttribute("aria-pressed", mm ? "true" : "false");
+  }
+  if (moveHint) moveHint.hidden = !state._polyEdit.moveMode;
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
 }
 /** Deferred tile-map refresh for polygon edit overlay (POLY-UX-STABILITY-A1). */
@@ -46023,6 +46210,7 @@ function polygonRefreshEditUi(){
 }
 function polygonEditSaveHandler(){
   if (!polygonIsEditing()) return;
+  mapPolyMoveDocDragCleanup();
   mapPolyEditDocDragCleanup();
   polygonHideEditBarErr();
   if (state._polyEdit.dirty){
@@ -46049,6 +46237,7 @@ function polygonEditSaveHandler(){
 }
 function polygonEditCancelHandler(){
   if (!polygonIsEditing()) return;
+  mapPolyMoveDocDragCleanup();
   mapPolyEditDocDragCleanup();
   polygonInvalidateEditOverlayRefresh();
   polygonCancelEdit();
@@ -46077,6 +46266,7 @@ function polygonEditEnterFromList(id){
   polygonRefreshEditUi();
 }
 function polygonSaveEdit(){
+  mapPolyMoveDocDragCleanup();
   mapPolyEditDocDragCleanup();
   if (!polygonIsEditing()) return null;
   const ed = state._polyEdit;
@@ -46474,6 +46664,8 @@ function polygonWirePanelBarsOnce(){
   const eName = document.getElementById("polygonPanelEditName");
   if (eSave) eSave.addEventListener("click", (ev) => { ev.preventDefault(); polygonEditSaveHandler(); });
   if (eCancel) eCancel.addEventListener("click", (ev) => { ev.preventDefault(); polygonEditCancelHandler(); });
+  const eMove = document.getElementById("polygonPanelEditMove");
+  if (eMove) eMove.addEventListener("click", (ev) => { ev.preventDefault(); polygonToggleMoveMode(); });
   if (eName && !eName._polyEditNameWired){
     eName._polyEditNameWired = true;
     eName.addEventListener("input", () => { polygonEditNameInputHandler(); });
