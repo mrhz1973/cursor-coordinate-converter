@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; P7-B1 **CLOSED**; **A1** handle ingresso Modifica **CLOSED**; **A2** pannello/minimize — prossimo; **P7-B2** UI date — backlog;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; P7-B1 **CLOSED**; **A1** handle ingresso Modifica **CLOSED**; **A2** pannello/drawing **CLOSED**; **P7-B2** UI date — runtime pubblicato / deploy e QA pending;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -463,13 +463,13 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### POLY-PARITY-P7 — Metadata/data poligono (regola legacy-safe)
 
-**Stato:** **P7-B1 CLOSED / PASS end-to-end** — runtime **`57c6d39`**; review byte Claude PASS; deploy VPS PASS; QA operatore PASS. **P7-B2 UI non implementato.**
+**Stato:** **P7-B1 CLOSED / PASS end-to-end** — runtime **`57c6d39`**; review byte Claude PASS; deploy VPS PASS; QA operatore PASS. **P7-B2 UI runtime pubblicato** — deploy/QA pending.
 
 | Sotto-blocco | Stato |
 |--------------|-------|
 | P7-A diagnosi read-only | **completata** |
 | P7-B1 contratto dati legacy-safe | **CLOSED / PASS end-to-end** — runtime `57c6d39` |
-| P7-B2 UI date Creato/Aggiornato | **non implementato** |
+| P7-B2 UI date Creato/Aggiornato | **runtime pubblicato** — `47bb3f6`; deploy/QA pending |
 
 ### POLY-UX-STABILITY — Handle / pannello Poligoni
 
