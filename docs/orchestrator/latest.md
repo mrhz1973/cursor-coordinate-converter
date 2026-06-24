@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P3-ADD inserimento vertice su lato (runtime + docs):** commit task **`5df925f`** — `polygonInsertEditVertex` + midpoint Vincenty; pulsante `+` su righe lati; cap 500; working-copy-only; P2/P3/P7/A1/A2 invariati; **`node --check` OK**; deploy/QA **pending**; monolite incluso. Inbox **`2026-06-24_2355_riepilogo_finito-sessione.md`**.
+
 2026-06-24 — **POLY-PARITY-P3 CLOSED / PASS end-to-end (docs-only):** runtime **`6083abe`** (monolite) @ HEAD documentale **`671cf30`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P3-FIX PASS operatore»); catena P3 `fc38247` + P3-FIX; monolite non toccato.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-PARITY-P3-FIX redraw post-Annulla (runtime + docs):** commit task **`6083abe`** — `polygonSyncRenderMapAfterEditEnd` in `polygonEditCancelHandler`; invalidate RAF A1; dedup `closePolygonPanel`; P3 QA PARTIAL FAIL Annulla; **`node --check` OK**; deploy/QA **pending**; monolite incluso. Inbox **`2026-06-24_1915_riepilogo_finito-sessione.md`**.
