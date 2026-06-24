@@ -2531,6 +2531,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-edit-leg-seg{ font-size:.78rem; }
 .polygon-panel .poly-edit-leg-dist{ white-space:nowrap; }
 .polygon-panel .poly-edit-leg-brg{ white-space:nowrap; min-width:3.5rem; text-align:right; }
+.polygon-panel .poly-edit-leg-actions{ display:flex; gap:4px; align-items:center; flex-shrink:0; }
+.polygon-panel .poly-edit-leg-add.btn.btn-sm.btn-ghost{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
 .polygon-panel .poly-edit-leg-del.btn.btn-sm.btn-danger-subtle{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
 .polygon-panel .poly-row.is-editing{ background:rgba(202,138,4,.12); border-radius:4px; }
 .polygon-panel .poly-row.is-editing .poly-name{ font-weight:600; }
@@ -11854,6 +11856,9 @@ const I18N = {
     "gis.polygonPanel.dateUnavailable":"Data non disponibile",
     "gis.polygonPanel.editNameInvalid":"Nome non valido.",
     "gis.polygonPanel.editDeleteVertex":"Elimina vertice {0}",
+    "gis.polygonPanel.editInsertVertex":"Aggiungi vertice sul lato {0}",
+    "gis.polygonPanel.editMaxVertices":"Numero massimo di vertici raggiunto.",
+    "gis.polygonPanel.editInsertVertexInvalid":"Impossibile aggiungere un vertice su questo lato.",
     "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
     "tip.polygonPanel.rename":"Rinomina il poligono selezionato.",
@@ -13470,6 +13475,9 @@ const I18N = {
     "gis.polygonPanel.dateUnavailable":"Date unavailable",
     "gis.polygonPanel.editNameInvalid":"Invalid name.",
     "gis.polygonPanel.editDeleteVertex":"Delete vertex {0}",
+    "gis.polygonPanel.editInsertVertex":"Add vertex on side {0}",
+    "gis.polygonPanel.editMaxVertices":"Maximum number of vertices reached.",
+    "gis.polygonPanel.editInsertVertexInvalid":"A vertex cannot be added on this side.",
     "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
     "tip.polygonPanel.rename":"Rename the selected polygon.",
@@ -15087,6 +15095,9 @@ const I18N = {
     "gis.polygonPanel.dateUnavailable":"Date indisponible",
     "gis.polygonPanel.editNameInvalid":"Nom non valide.",
     "gis.polygonPanel.editDeleteVertex":"Supprimer le sommet {0}",
+    "gis.polygonPanel.editInsertVertex":"Ajouter un sommet sur le côté {0}",
+    "gis.polygonPanel.editMaxVertices":"Nombre maximal de sommets atteint.",
+    "gis.polygonPanel.editInsertVertexInvalid":"Impossible d’ajouter un sommet sur ce côté.",
     "gis.polygonPanel.editMinVertices":"Un polygone doit avoir au moins 3 sommets.",
     "tip.polygonPanel.edit":"Modifier la géométrie du polygone sur la carte.",
     "tip.polygonPanel.rename":"Renommer le polygone sélectionné.",
@@ -45798,6 +45809,22 @@ function renderPolygonEditInfo(){
     const brg = document.createElement("span");
     brg.className = "poly-edit-leg-brg mono";
     brg.textContent = brgTxt;
+    const actions = document.createElement("span");
+    actions.className = "poly-edit-leg-actions";
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.className = "btn btn-sm btn-ghost poly-edit-leg-add";
+    addBtn.textContent = "+";
+    const sideNum = i + 1;
+    const addLbl = polygonEditVertexInsertLabel(sideNum);
+    addBtn.title = addLbl;
+    addBtn.setAttribute("aria-label", addLbl);
+    if (n >= POLYGON_RING_VERT_CAP) addBtn.disabled = true;
+    addBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      polygonInsertEditVertex(i);
+    });
     const delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "btn btn-sm btn-danger-subtle poly-edit-leg-del";
@@ -45812,10 +45839,12 @@ function renderPolygonEditInfo(){
       ev.stopPropagation();
       polygonDeleteEditVertex(i);
     });
+    actions.appendChild(addBtn);
+    actions.appendChild(delBtn);
     row.appendChild(seg);
     row.appendChild(dist);
     row.appendChild(brg);
-    row.appendChild(delBtn);
+    row.appendChild(actions);
     legsEl.appendChild(row);
   }
 }
@@ -45839,6 +45868,55 @@ function polygonEditVertexDeleteLabel(vertexNum){
   const num = Number.isFinite(n) ? String(n) : "";
   const tpl = (typeof t === "function" ? t("gis.polygonPanel.editDeleteVertex") : "") || "Elimina vertice {0}";
   return tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, num) : ((tpl ? tpl + " " : "") + num);
+}
+/** Max open-ring vertices (matches gisSanitizeGeometry rawRing.slice(0, 500)). */
+const POLYGON_RING_VERT_CAP = 500;
+function polygonEditVertexInsertLabel(sideNum){
+  const n = Number(sideNum);
+  const num = Number.isFinite(n) ? String(n) : "";
+  const tpl = (typeof t === "function" ? t("gis.polygonPanel.editInsertVertex") : "") || "Aggiungi vertice sul lato {0}";
+  return tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, num) : ((tpl ? tpl + " " : "") + num);
+}
+/** Geodesic midpoint [lon, lat] between two ring coords; pure, no state (POLY-PARITY-P3-ADD). */
+function polygonGeodesicMidpointLonLat(a, b){
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length < 2 || b.length < 2) return null;
+  const lon1 = Number(a[0]), lat1 = Number(a[1]);
+  const lon2 = Number(b[0]), lat2 = Number(b[1]);
+  if (!Number.isFinite(lon1) || !Number.isFinite(lat1) || !Number.isFinite(lon2) || !Number.isFinite(lat2)) return null;
+  if (Math.abs(lat1) > 90 || Math.abs(lat2) > 90) return null;
+  let inv;
+  try { inv = vincentyInverse(lat1, lon1, lat2, lon2); } catch(_){ return null; }
+  if (!inv || !Number.isFinite(inv.distance) || inv.distance <= 0) return null;
+  const half = inv.distance / 2;
+  if (!Number.isFinite(half) || half <= 0) return null;
+  let dest;
+  try { dest = vincentyDirect(lat1, lon1, half, inv.initialBearing); } catch(_){ return null; }
+  if (!dest || !Number.isFinite(dest.lat) || !Number.isFinite(dest.lon)) return null;
+  return [round(normalizeLon(dest.lon), 7), round(dest.lat, 7)];
+}
+function polygonInsertEditVertex(index){
+  if (!polygonIsEditing()) return false;
+  const ed = state._polyEdit;
+  if (!Array.isArray(ed.working) || ed.working.length < 3) return false;
+  const n = ed.working.length;
+  const i = Number(index);
+  if (!Number.isFinite(i) || i < 0 || i >= n) return false;
+  if (n >= POLYGON_RING_VERT_CAP){
+    polygonShowEditBarErr((typeof t === "function" ? t("gis.polygonPanel.editMaxVertices") : "") || "Numero massimo di vertici raggiunto.");
+    return false;
+  }
+  const j = (i + 1) % n;
+  const mid = polygonGeodesicMidpointLonLat(ed.working[i], ed.working[j]);
+  if (!mid){
+    polygonShowEditBarErr((typeof t === "function" ? t("gis.polygonPanel.editInsertVertexInvalid") : "") || "Impossibile aggiungere un vertice su questo lato.");
+    return false;
+  }
+  mapPolyEditDocDragCleanup();
+  ed.working.splice(i + 1, 0, mid);
+  polygonRecomputeEditDirty();
+  polygonHideEditBarErr();
+  polygonRefreshEditUi();
+  return true;
 }
 function polygonDeleteEditVertex(index){
   if (!polygonIsEditing()) return false;
