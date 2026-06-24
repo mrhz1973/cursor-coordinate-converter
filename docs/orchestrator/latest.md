@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B3 CLOSED / PASS end-to-end (docs-only):** runtime **`87cbe64`** deploy VPS PASS + QA operatore PASS; catena A2 completata; A2-B1/A2-B2-FIX invariati; commit **`b9eb65c`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1254_riepilogo_finito-sessione.md`**.
+
 2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B3 apertura senza auto-arm (runtime + docs):** runtime **`87cbe64`** — rimosso auto-`polygonStartDraw()` da `openPolygonPanel()`; disegno esplicito `#polygonPanelNewBtn`; A2-B1/A2-B2-FIX invariati; **`node --check` OK**; deploy/QA **pending**; monolite in commit runtime. Inbox **`2026-06-24_1227_riepilogo_finito-sessione.md`**.
 
 2026-06-24 — **Chiusura sessione `finito` — POLY-UX-STABILITY-A2-B2-FIX CLOSED / PASS end-to-end (docs-only):** A2-B2-FIX **`70ed7b3`** deploy VPS PASS + QA operatore PASS; A2-B2 storico PARTIAL FAIL superseded; A2-B1 CLOSED invariato; A2-B3 backlog; commit **`bf87cb6`** (OM §7 + roadmap); monolite non toccato. Inbox **`2026-06-24_1214_riepilogo_finito-sessione.md`**.
