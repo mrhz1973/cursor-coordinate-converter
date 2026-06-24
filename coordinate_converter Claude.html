@@ -35400,7 +35400,9 @@ function renderTileMap(lat, lon, zoom){
       gisToolButtonToggle({
         isOpen(){
           const d = document.getElementById("polygonPanel");
-          return !!(state.polygonPanelOpen && d && d.open);
+          if (!state.polygonPanelOpen || !d || !d.open) return false;
+          if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")) return false;
+          return true;
         },
         open(){ openPolygonPanel(); },
         close(){ closePolygonPanel(); }
@@ -35513,7 +35515,9 @@ function renderTileMap(lat, lon, zoom){
       gisToolButtonToggle({
         isOpen(){
           const d = document.getElementById("polygonPanel");
-          return !!(state.polygonPanelOpen && d && d.open);
+          if (!state.polygonPanelOpen || !d || !d.open) return false;
+          if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")) return false;
+          return true;
         },
         open(){ openPolygonPanel(); },
         close(){ closePolygonPanel(); }
