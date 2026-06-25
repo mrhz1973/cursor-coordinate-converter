@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-25 — **Handoff repository — POLY-PARITY-P5-B1-FIX review pending (docs-only):** runtime HEAD **`59f2bd1`** (blob `c289f655…`); catena P5-B1 `8bc7804` review NO-GO → P5-B1-FIX; review Claude FIX **pending**; deploy/QA **pending**; P5 **non CLOSED**; P5-B2 **non avviato**; monolite non toccato nel commit docs **`1a3aceb`**. Inbox **`2026-06-25_0244_riepilogo_finito-sessione.md`**.
+
 2026-06-25 — **POLY-PARITY-P4-B1 CLOSED / PASS end-to-end (docs-only):** runtime **`505e7d0`**; review byte Claude **PASS**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P4-B1 PASS operatore»); commit chiusura **`ca88b76`**; finding multi-touch P2 **non bloccante** (backlog tecnico separato); monolite non toccato. Inbox **`2026-06-25_0205_riepilogo_finito-sessione.md`**.
 
 2026-06-25 — **POLY-PARITY-P3-ADD CLOSED / PASS end-to-end (docs-only):** runtime **`5df925f`** @ HEAD documentale **`75229c9`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P3-ADD PASS operatore»); commit chiusura **`3751b4a`**; monolite non toccato. Inbox **`2026-06-25_0115_riepilogo_finito-sessione.md`**.
