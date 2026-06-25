@@ -10390,6 +10390,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               data-i18n-aria="gis.polygonPanel.newPolygonDisabled">Nuovo poligono</button>
       <button type="button" class="btn btn-sm btn-success" id="polygonPanelFinishBtn" hidden
               onclick="polygonFinishDraw()">Chiudi poligono</button>
+      <button type="button" class="btn btn-sm" id="polygonPanelRemoveLastBtn" hidden
+              data-i18n="gis.polygonPanel.removeLastPoint"
+              data-i18n-tip="gis.polygonPanel.removeLastPoint"
+              data-i18n-aria="gis.polygonPanel.removeLastPoint">Rimuovi ultimo punto</button>
       <button type="button" class="btn btn-sm btn-outline" id="polygonPanelCancelBtn" hidden
               onclick="polygonCancelDraw()">Annulla</button>
       <button type="button" class="btn btn-sm" id="polygonPanelExportGeoJsonBtn"
@@ -11892,6 +11896,7 @@ const I18N = {
     "gis.polygonPanel.drawInvalidGeometry":"Geometria non valida. Correggi il disegno e riprova.",
     "gis.polygonPanel.drawNameLabel":"Nome",
     "gis.polygonPanel.drawNamePlaceholder":"Nome automatico se vuoto",
+    "gis.polygonPanel.removeLastPoint":"Rimuovi ultimo punto",
     "gis.polygonPanel.editMovePolygon":"Sposta poligono",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Sposta",
     "gis.polygonPanel.editMovePolygonActive":"■ Termina spostamento",
@@ -13518,6 +13523,7 @@ const I18N = {
     "gis.polygonPanel.drawInvalidGeometry":"Invalid geometry. Correct the drawing and try again.",
     "gis.polygonPanel.drawNameLabel":"Name",
     "gis.polygonPanel.drawNamePlaceholder":"Automatic name if empty",
+    "gis.polygonPanel.removeLastPoint":"Remove last point",
     "gis.polygonPanel.editMovePolygon":"Move polygon",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Move",
     "gis.polygonPanel.editMovePolygonActive":"■ Stop moving",
@@ -39365,6 +39371,7 @@ function applyLanguage(lang){
   if (state.polygonDrawMode){
     try { polygonSyncDraftNameUi(); } catch(_){}
     try { renderPolygonDraftInfo(); } catch(_){}
+    try { polygonSyncRemoveLastPointUi(); } catch(_){}
   }
   if (typeof syncTrackExportDialogUi === "function"){
     try { syncTrackExportDialogUi(); } catch(_){}
@@ -46449,6 +46456,24 @@ function renderPolygonDraftInfo(){
   addRow(lblArea, areaTxt);
   addRow(lblPerim, perimTxt);
 }
+function polygonSyncRemoveLastPointUi(){
+  const btn = document.getElementById("polygonPanelRemoveLastBtn");
+  if (!btn) return;
+  const drawing = !!state.polygonDrawMode;
+  btn.hidden = !drawing;
+  if (!drawing) return;
+  const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
+  btn.disabled = dv === 0;
+}
+function polygonRemoveLastDraftPoint(){
+  if (!state.polygonDrawMode) return;
+  const verts = state._polygonDraftVertices;
+  if (!Array.isArray(verts) || verts.length === 0) return;
+  verts.pop();
+  state._polygonDraftLastClick = null;
+  refreshTileMapForTrackUi();
+  renderPolygonPanelList();
+}
 function polygonStartDraw(){
   if (state.polygonDrawMode) return;
   ensureGisState();
@@ -46848,6 +46873,11 @@ function polygonWirePanelBarsOnce(){
     draftInp._polyDraftNameWired = true;
     draftInp.addEventListener("input", () => { state._polygonDraftName = draftInp.value; });
   }
+  const remBtn = document.getElementById("polygonPanelRemoveLastBtn");
+  if (remBtn && !remBtn._polyRemoveLastWired){
+    remBtn._polyRemoveLastWired = true;
+    remBtn.addEventListener("click", (ev) => { ev.preventDefault(); polygonRemoveLastDraftPoint(); });
+  }
 }
 function ensurePolygonPanelListWired(){
   const body = document.getElementById("polygonPanelBody");
@@ -46929,6 +46959,7 @@ function renderPolygonPanelList(){
   const dv = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices.length : 0;
   if (finBtn) finBtn.hidden = !(state.polygonDrawMode && dv >= 3);
   if (canBtn) canBtn.hidden = !state.polygonDrawMode;
+  polygonSyncRemoveLastPointUi();
   const geoBtn = document.getElementById("polygonPanelExportGeoJsonBtn");
   const kmlBtn = document.getElementById("polygonPanelExportKmlBtn");
   const canExport = polys.length > 0;
