@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-UNITS CLOSED / PASS end-to-end (docs-only):** catena runtime **`8c266ae`** + **`8be2845`** + **`11838a1`**; blob **`10f5f1e…`**; deploy GIS-only **PASS tecnico** (HEAD VPS **`26f73f7`**, byte **2314390**, SHA-256 **`9b9aca0c…`**, cmp PASS); **QA operatore PASS** («**QA P-UNITS PASS operatore**»); Review Claude **NON RICHIESTA**; commit chiusura **`b4be4d5`**; monolite non toccato; **P-VERTEX-MODAL** prossimo candidato; **P-STYLE** review-gated; batch P5 separato non chiuso. Inbox **`2026-06-26_0044_riepilogo_finito-sessione.md`**.
+
 2026-06-26 — **P-UNITS-RB-PARITY runtime (deploy/QA pending):** lunghezza Poligoni auto/m/km/NM/mi/ft via `formatMapMeasureDistance`; commit **`11838a1`**, blob **`10f5f1e…`**; P-UNITS-FIX preservato; VPS ancora su **`d51d210…`**; **non CLOSED**; inbox **`2026-06-26_0034_p-units-rb-parity.md`**.
 
 2026-06-26 — **P-UNITS-FIX runtime (deploy/QA pending):** rimosso accoppiamento `polygonSyncLengthUnitToMeasure`; unità Poligoni indipendenti da Misura GIS; commit fix **`8be2845`**, blob **`d51d210…`**; P-UNITS base **`8c266ae`**; **non CLOSED**; inbox **`2026-06-26_0021_p-units-fix.md`**.
