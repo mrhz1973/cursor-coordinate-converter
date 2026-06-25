@@ -10533,7 +10533,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div id="polygonPanelUnitsLabel" class="poly-units-heading hint" data-i18n="gis.polygonPanel.unitsHeading">Unità di misura</div>
       <div class="poly-units-row">
         <label for="polygonPanelLengthUnit" data-i18n="gis.polygonPanel.unitsLength">Lunghezza</label>
-        <select id="polygonPanelLengthUnit" aria-labelledby="polygonPanelUnitsLabel polygonPanelLengthUnit">
+        <select id="polygonPanelLengthUnit">
           <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
           <option value="m" data-i18n="gis.polygonPanel.unitsMetres">Metri</option>
           <option value="km" data-i18n="gis.polygonPanel.unitsKilometres">Chilometri</option>
@@ -10541,7 +10541,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
       <div class="poly-units-row">
         <label for="polygonPanelAreaUnit" data-i18n="gis.polygonPanel.unitsArea">Area</label>
-        <select id="polygonPanelAreaUnit" aria-labelledby="polygonPanelUnitsLabel polygonPanelAreaUnit">
+        <select id="polygonPanelAreaUnit">
           <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
           <option value="m2" data-i18n="gis.polygonPanel.unitsSquareMetres">Metri quadrati</option>
           <option value="ha" data-i18n="gis.polygonPanel.unitsHectares">Ettari</option>
@@ -46127,27 +46127,7 @@ function polygonSyncUnitsUi(){
   if (lenSel && lenSel.value !== lu) lenSel.value = lu;
   if (areaSel && areaSel.value !== au) areaSel.value = au;
 }
-function polygonSyncLengthUnitToMeasure(){
-  const u = sanitizePolygonLengthUnit(state.polygonMetricLengthUnit);
-  if (u === "m" || u === "km") state.mapMeasureUnit = u;
-  try {
-    document.querySelectorAll('[data-role="gis-meas-unit"], [data-role="measure-unit"]').forEach((sel) => {
-      if (sel && state.mapMeasureUnit) sel.value = state.mapMeasureUnit;
-    });
-  } catch(_){}
-  try {
-    const r = document.getElementById("miniMap");
-    const lp = state.lastPoint || state.viewCenter;
-    const z = state.mapZoom || 11;
-    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
-      renderMapMeasureOverlay(r, lp.lat, lp.lon, z);
-      updateMeasureReadouts(r);
-    }
-    measSyncOperativeInfo();
-  } catch(_){}
-}
 function polygonApplyUnitsChange(){
-  polygonSyncLengthUnitToMeasure();
   try { renderPolygonDraftInfo(); } catch(_){}
   try { renderPolygonEditInfo(); } catch(_){}
 }
