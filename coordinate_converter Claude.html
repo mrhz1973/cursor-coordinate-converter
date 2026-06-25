@@ -2498,8 +2498,85 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
   background:#2563eb; color:#fff;
   box-shadow:0 0 0 2px rgba(255,255,255,.45), 0 1px 3px rgba(0,0,0,.3);
 }
+/* Polygon panel — layout allineato ai modal GIS flottanti (Range & Bearing family). */
+body.gis-mode dialog#polygonPanel.polygon-panel{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:24;
+  display:flex;
+  flex-direction:column;
+}
+body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
+  background:color-mix(in srgb, var(--panel) 88%, transparent);
+}
+.polygon-panel #polygonPanelBody.app-modal-body{
+  display:flex;
+  flex-direction:column;
+  flex:1 1 auto;
+  min-height:0;
+  overflow:hidden !important;
+  padding:0;
+}
+.polygon-panel .polygon-panel-scroll{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  padding:12px 14px 10px;
+  -webkit-overflow-scrolling:touch;
+}
+.polygon-panel .polygon-panel-footer,
+.polygon-panel .app-modal-foot.polygon-panel-footer{
+  flex:0 0 auto;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  justify-content:flex-end;
+  margin:0;
+  padding:10px 14px 12px;
+  border-top:1px solid var(--border);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--panel2) 72%, transparent) 0%, var(--panel) 100%);
+}
+.polygon-panel #polygonPanelBody:has(#polygonPanelEditBar:not([hidden])) #polygonPanelNewBtn.btn-primary,
+.polygon-panel #polygonPanelBody:has(#polygonPanelRenameBar:not([hidden])) #polygonPanelNewBtn.btn-primary,
+.polygon-panel #polygonPanelBody:has(#polygonPanelDeleteBar:not([hidden])) #polygonPanelNewBtn.btn-primary{
+  background:var(--panel2);
+  color:var(--text);
+  border:1px solid var(--border);
+  box-shadow:none;
+  filter:none;
+}
+.polygon-panel #polygonPanelBody:has(#polygonPanelEditBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before,
+.polygon-panel #polygonPanelBody:has(#polygonPanelRenameBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before,
+.polygon-panel #polygonPanelBody:has(#polygonPanelDeleteBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before{
+  display:none;
+}
+@media (max-width:600px){
+  body.gis-mode dialog#polygonPanel.polygon-panel{
+    max-width:calc(100vw - 12px);
+  }
+  .polygon-panel .polygon-panel-footer,
+  .polygon-panel .app-modal-foot.polygon-panel-footer{
+    justify-content:stretch;
+    gap:6px;
+    padding:8px 10px 10px;
+  }
+  .polygon-panel .polygon-panel-footer .btn,
+  .polygon-panel .app-modal-foot.polygon-panel-footer .btn{
+    flex:1 1 calc(50% - 4px);
+    min-width:0;
+    justify-content:center;
+  }
+}
 /* Polygon panel styling */
-.polygon-panel .polygon-panel-footer{ padding:8px 0 4px; text-align:center; }
 .polygon-panel .poly-row{ display:flex; align-items:center; gap:8px; padding:5px 4px; border-bottom:1px solid rgba(128,128,128,.15); }
 .polygon-panel .poly-row:last-child{ border-bottom:none; }
 .polygon-panel .poly-swatch{ width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.12); }
@@ -7788,6 +7865,42 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #polygonPanel (P-UI-UNIFORM): anchor angoli come Range Rings / Misura. */
+#polygonPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#polygonPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#polygonPanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#polygonPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#polygonPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#polygonPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#polygonPanel .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#polygonPanel .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#polygonPanel .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#polygonPanel .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 /* #astroPanel + picker Astro (E.1): anchor angoli handle come Range Rings. */
 #astroPanel .gis-panel-resize-handle[data-handle="se"],
 #astroWaypointPicker .gis-panel-resize-handle[data-handle="se"],
@@ -7869,6 +7982,7 @@ body:not(.gis-mode) #waypointModal .gis-panel-resize-handle,
 body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
 body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #measurePanel .gis-panel-resize-handle,
+body:not(.gis-mode) #polygonPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroWaypointPicker .gis-panel-resize-handle,
 body:not(.gis-mode) #astroFavoritePicker .gis-panel-resize-handle{ display:none !important; }
@@ -10336,6 +10450,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <p id="polygonPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="polygonPanelBody">
+    <div class="polygon-panel-scroll">
     <div id="polygonPanelRenameBar" class="poly-rename-bar" role="region" aria-live="polite" hidden>
       <div class="poly-rename-row">
         <label for="polygonPanelRenameInput" class="hint" data-i18n="gis.polygonPanel.renameLabel">Nome</label>
@@ -10383,18 +10498,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <div id="polygonPanelDraftInfo" class="poly-draft-info" role="status" aria-live="polite" hidden></div>
     <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
-    <div class="polygon-panel-footer">
-      <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
+    </div>
+    <div class="app-modal-foot polygon-panel-footer" role="group">
+      <button type="button" class="btn btn-sm btn-primary" id="polygonPanelNewBtn"
               onclick="polygonStartDraw()"
               data-i18n="gis.polygonPanel.newPolygon" data-i18n-tip="gis.polygonPanel.newPolygonDisabled"
               data-i18n-aria="gis.polygonPanel.newPolygonDisabled">Nuovo poligono</button>
-      <button type="button" class="btn btn-sm btn-success" id="polygonPanelFinishBtn" hidden
+      <button type="button" class="btn btn-sm btn-primary" id="polygonPanelFinishBtn" hidden
               onclick="polygonFinishDraw()">Chiudi poligono</button>
       <button type="button" class="btn btn-sm" id="polygonPanelRemoveLastBtn" hidden
               data-i18n="gis.polygonPanel.removeLastPoint"
               data-i18n-tip="gis.polygonPanel.removeLastPoint"
               data-i18n-aria="gis.polygonPanel.removeLastPoint">Rimuovi ultimo punto</button>
-      <button type="button" class="btn btn-sm btn-outline" id="polygonPanelCancelBtn" hidden
+      <button type="button" class="btn btn-sm" id="polygonPanelCancelBtn" hidden
               onclick="polygonCancelDraw()">Annulla</button>
       <button type="button" class="btn btn-sm" id="polygonPanelExportGeoJsonBtn"
               onclick="polygonExportGeoJson()" disabled
