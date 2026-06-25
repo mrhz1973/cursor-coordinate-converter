@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-25 — **POLY-PARITY-P5-B2-D CLOSED / PASS end-to-end (docs-only):** runtime **`c2c4836`**; review Claude **NON RICHIESTA**; deploy VPS **PASS tecnico**; **QA operatore PASS** («QA POLY-PARITY-P5-B2-D PASS operatore»); commit chiusura **`4c7816f`**; limitazione cambio unità non verificata in QA; **P5 complessivo non CLOSED** — **P5-B2-E non avviato**; prossimo candidato P5-B2-E rimuovi ultimo punto; monolite non toccato. Inbox **`2026-06-25_1230_riepilogo_finito-sessione.md`**.
+
 2026-06-25 — **POLY-PARITY-P5-B2-C CLOSED / PASS end-to-end (docs-only):** runtime **`d893775`**; review Claude **NON RICHIESTA**; deploy VPS **PASS tecnico**; **QA operatore PASS** («QA POLY-PARITY-P5-B2-C PASS operatore»); commit chiusura **`854fe04`**; **P5 complessivo non CLOSED** — **P5-B2-D non avviato**; prossimo candidato P5-B2-D metriche live durante drawing; monolite non toccato nel commit docs (già su `d893775`). Inbox **`2026-06-25_1205_riepilogo_finito-sessione.md`**.
 
 2026-06-25 — **POLY-PARITY-P5-B2-B CLOSED / PASS end-to-end (docs-only):** runtime **`b68c774`**; review Claude **NON RICHIESTA**; deploy VPS **PASS tecnico**; **QA operatore PASS** («QA POLY-PARITY-P5-B2-B PASS operatore»); commit chiusura **`f66d54b`**; governance i18n IT/EN + FR legacy congelato registrata; **P5 complessivo non CLOSED** — **P5-B2-C non avviato**; prossimo candidato P5-B2-C nome editabile durante drawing; monolite non toccato. Inbox **`2026-06-25_1130_riepilogo_finito-sessione.md`**.
