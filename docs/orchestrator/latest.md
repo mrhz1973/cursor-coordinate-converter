@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-UNITS-FIX runtime (deploy/QA pending):** rimosso accoppiamento `polygonSyncLengthUnitToMeasure`; unità Poligoni indipendenti da Misura GIS; commit fix **`8be2845`**, blob **`d51d210…`**; P-UNITS base **`8c266ae`**; **non CLOSED**; inbox **`2026-06-26_0021_p-units-fix.md`**.
+
 2026-06-26 — **P-UNITS runtime pubblicato (deploy/QA pending):** unità metriche poligoni (auto/m/km + auto/m²/ha/km²) in `#polygonPanelUnits`; commit runtime **`8c266ae`**, docs **`f071d87`**; stato session-only; Misura GIS sync parziale; R&B escluso; **non CLOSED**; **P-VERTEX-MODAL** prossimo candidato; P-STYLE non iniziato; batch P5 non chiuso. Inbox **`2026-06-26_0010_p-units.md`**.
 
 2026-06-25 — **P-UI-UNIFORM CLOSED / PASS end-to-end (docs-only):** runtime **`e0e9578`**, blob **`edd4b973…`**, deploy GIS-only **PASS tecnico** (HEAD VPS **`eb7edba`**); **QA operatore PASS** («**QA P-UI-UNIFORM PASS operatore**»); Review Claude **NON RICHIESTA**; commit chiusura **`69f5b68`**; monolite non toccato; **P-UNITS** prossimo candidato (non avviato); P-VERTEX-MODAL/P-STYLE non iniziati; batch P5 separato non chiuso. Inbox **`2026-06-25_2353_riepilogo_finito-sessione.md`**.
