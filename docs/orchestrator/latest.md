@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-25 — **DOCS-QA-POLYGON-REJECT-TRIGGER (docs-only):** sezione QA «Come innescare il rifiuto canonico del poligono» in `docs/QA-CHECKLIST.md`; commit **`18f3bfa`**; monolite non toccato. Inbox **`2026-06-25_2015_docs-qa-polygon-reject-trigger.md`**.
+
 2026-06-25 — **POLY-PARITY-P5-B2-F runtime pubblicato (deploy/QA pending):** runtime **`739bf49`** — `polygonHideDrawErr()` dopo aggiunta vertice e dopo `.pop()` in `polygonRemoveLastDraftPoint()`; review Claude **NON RICHIESTA**; deploy/QA **pending**; **non CLOSED**; monolite in commit runtime. Inbox **`2026-06-25_1310_riepilogo_finito-sessione.md`**.
 
 2026-06-25 — **POLY-PARITY-P5-B2-E CLOSED / PASS end-to-end (docs-only):** runtime **`aea7434`**; review Claude **NON RICHIESTA**; deploy VPS **PASS tecnico**; **QA operatore PASS** («QA POLY-PARITY-P5-B2-E PASS operatore»); commit chiusura **`d20d653`**; singola `.pop()` + `_polygonDraftLastClick` null; errore non nascosto; limitazione cambio unità non verificata; **P5 complessivo non CLOSED** — **P5-B2-F non avviato**; prossimo candidato P5-B2-F pulizia errore stale; monolite non toccato. Inbox **`2026-06-25_1245_riepilogo_finito-sessione.md`**.
