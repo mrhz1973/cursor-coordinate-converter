@@ -10356,7 +10356,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="polygonPanelEditLegs" class="poly-edit-legs"></div>
       </details>
       <p class="hint poly-edit-hint" data-i18n="gis.polygonPanel.editVerticesHint">Trascina i vertici sulla mappa per modificare la forma.</p>
-      <button type="button" id="polygonPanelEditMove" class="btn btn-sm btn-ghost poly-edit-move-toggle" data-role="poly-edit-move" data-i18n="gis.polygonPanel.editMovePolygon" aria-pressed="false">Sposta poligono</button>
+      <button type="button" id="polygonPanelEditMove" class="btn btn-sm btn-ghost poly-edit-move-toggle" data-role="poly-edit-move" data-i18n="gis.polygonPanel.editMovePolygonIdle" data-i18n-tip="gis.polygonPanel.editMovePolygonIdle" data-i18n-aria="gis.polygonPanel.editMovePolygonIdle" aria-pressed="false">↔ Sposta</button>
       <p id="polygonPanelEditMoveHint" class="hint poly-edit-move-hint" data-i18n="gis.polygonPanel.editMoveHint" hidden>Trascina il poligono sulla mappa</p>
       <p id="polygonPanelEditErr" class="geo-warn poly-edit-err" role="alert" hidden></p>
       <div class="poly-edit-actions">
@@ -11874,6 +11874,8 @@ const I18N = {
     "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
     "gis.polygonPanel.drawInvalidGeometry":"Geometria non valida. Correggi il disegno e riprova.",
     "gis.polygonPanel.editMovePolygon":"Sposta poligono",
+    "gis.polygonPanel.editMovePolygonIdle":"↔ Sposta",
+    "gis.polygonPanel.editMovePolygonActive":"■ Termina spostamento",
     "gis.polygonPanel.editMoveHint":"Trascina il poligono sulla mappa",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
     "tip.polygonPanel.rename":"Rinomina il poligono selezionato.",
@@ -13496,6 +13498,8 @@ const I18N = {
     "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
     "gis.polygonPanel.drawInvalidGeometry":"Invalid geometry. Correct the drawing and try again.",
     "gis.polygonPanel.editMovePolygon":"Move polygon",
+    "gis.polygonPanel.editMovePolygonIdle":"↔ Move",
+    "gis.polygonPanel.editMovePolygonActive":"■ Stop moving",
     "gis.polygonPanel.editMoveHint":"Drag the polygon on the map",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
     "tip.polygonPanel.rename":"Rename the selected polygon.",
@@ -15119,6 +15123,8 @@ const I18N = {
     "gis.polygonPanel.editMinVertices":"Un polygone doit avoir au moins 3 sommets.",
     "gis.polygonPanel.drawInvalidGeometry":"Géométrie non valide. Corrigez le dessin et réessayez.",
     "gis.polygonPanel.editMovePolygon":"Déplacer le polygone",
+    "gis.polygonPanel.editMovePolygonIdle":"↔ Déplacer",
+    "gis.polygonPanel.editMovePolygonActive":"■ Terminer le déplacement",
     "gis.polygonPanel.editMoveHint":"Faites glisser le polygone sur la carte",
     "tip.polygonPanel.edit":"Modifier la géométrie du polygone sur la carte.",
     "tip.polygonPanel.rename":"Renommer le polygone sélectionné.",
@@ -39332,6 +39338,9 @@ function applyLanguage(lang){
   refreshCoordCycleMapUi();
   trackSyncPickModeUi();
   if (typeof gisRefreshI18n === "function") gisRefreshI18n();
+  if (typeof polygonIsEditing === "function" && polygonIsEditing()){
+    try { renderPolygonEditBar(); } catch(_){}
+  }
   if (typeof syncTrackExportDialogUi === "function"){
     try { syncTrackExportDialogUi(); } catch(_){}
   }
@@ -46156,10 +46165,22 @@ function renderPolygonEditBar(){
   const moveHint = document.getElementById("polygonPanelEditMoveHint");
   if (moveBtn){
     const mm = !!state._polyEdit.moveMode;
+    const moveKey = mm ? "gis.polygonPanel.editMovePolygonActive" : "gis.polygonPanel.editMovePolygonIdle";
     moveBtn.setAttribute("aria-pressed", mm ? "true" : "false");
+    moveBtn.setAttribute("data-i18n", moveKey);
+    moveBtn.setAttribute("data-i18n-tip", moveKey);
+    moveBtn.setAttribute("data-i18n-aria", moveKey);
   }
   if (moveHint) moveHint.hidden = !state._polyEdit.moveMode;
   try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(bar, state.lang || "it"); } catch(_){}
+  if (moveBtn){
+    const mm = !!state._polyEdit.moveMode;
+    const moveKey = mm ? "gis.polygonPanel.editMovePolygonActive" : "gis.polygonPanel.editMovePolygonIdle";
+    const moveLbl = (typeof t === "function" ? t(moveKey) : "") || (mm ? "■ Termina spostamento" : "↔ Sposta");
+    moveBtn.textContent = moveLbl;
+    moveBtn.setAttribute("title", moveLbl);
+    moveBtn.setAttribute("aria-label", moveLbl);
+  }
 }
 /** Deferred tile-map refresh for polygon edit overlay (POLY-UX-STABILITY-A1). */
 let mapPolyEditOverlayRefreshRaf = null;
