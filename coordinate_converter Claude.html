@@ -2602,6 +2602,37 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 .polygon-panel .poly-draft-name-row input{ flex:1; min-width:120px; font-size:.88rem; padding:4px 8px; }
 .polygon-panel .poly-draft-info{ margin:0 0 6px; font-size:.82rem; }
 .polygon-panel .poly-draft-info[hidden]{ display:none !important; }
+.polygon-panel .poly-units-group{
+  margin-top:10px;
+  padding-top:10px;
+  border-top:1px solid rgba(128,128,128,.15);
+}
+.polygon-panel .poly-units-heading{
+  margin:0 0 6px;
+  font-size:.78rem;
+  font-weight:600;
+  opacity:.85;
+}
+.polygon-panel .poly-units-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 10px;
+  margin-bottom:6px;
+}
+.polygon-panel .poly-units-row:last-child{ margin-bottom:0; }
+.polygon-panel .poly-units-row label{
+  flex:0 0 auto;
+  min-width:4.5rem;
+  font-size:.82rem;
+}
+.polygon-panel .poly-units-row select{
+  flex:1 1 8rem;
+  min-width:0;
+  max-width:100%;
+  font-size:.82rem;
+  padding:3px 6px;
+}
 .polygon-panel .poly-edit-bar .poly-edit-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row label{ font-size:.82rem; min-width:3.5rem; }
@@ -10498,6 +10529,26 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <div id="polygonPanelDraftInfo" class="poly-draft-info" role="status" aria-live="polite" hidden></div>
     <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
+    <div id="polygonPanelUnits" class="poly-units-group" role="group" aria-labelledby="polygonPanelUnitsLabel">
+      <div id="polygonPanelUnitsLabel" class="poly-units-heading hint" data-i18n="gis.polygonPanel.unitsHeading">Unità di misura</div>
+      <div class="poly-units-row">
+        <label for="polygonPanelLengthUnit" data-i18n="gis.polygonPanel.unitsLength">Lunghezza</label>
+        <select id="polygonPanelLengthUnit" aria-labelledby="polygonPanelUnitsLabel polygonPanelLengthUnit">
+          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
+          <option value="m" data-i18n="gis.polygonPanel.unitsMetres">Metri</option>
+          <option value="km" data-i18n="gis.polygonPanel.unitsKilometres">Chilometri</option>
+        </select>
+      </div>
+      <div class="poly-units-row">
+        <label for="polygonPanelAreaUnit" data-i18n="gis.polygonPanel.unitsArea">Area</label>
+        <select id="polygonPanelAreaUnit" aria-labelledby="polygonPanelUnitsLabel polygonPanelAreaUnit">
+          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
+          <option value="m2" data-i18n="gis.polygonPanel.unitsSquareMetres">Metri quadrati</option>
+          <option value="ha" data-i18n="gis.polygonPanel.unitsHectares">Ettari</option>
+          <option value="km2" data-i18n="gis.polygonPanel.unitsSquareKilometres">Chilometri quadrati</option>
+        </select>
+      </div>
+    </div>
     </div>
     <div class="app-modal-foot polygon-panel-footer" role="group">
       <button type="button" class="btn btn-sm btn-primary" id="polygonPanelNewBtn"
@@ -12013,6 +12064,15 @@ const I18N = {
     "gis.polygonPanel.drawNameLabel":"Nome",
     "gis.polygonPanel.drawNamePlaceholder":"Nome automatico se vuoto",
     "gis.polygonPanel.removeLastPoint":"Rimuovi ultimo punto",
+    "gis.polygonPanel.unitsHeading":"Unità di misura",
+    "gis.polygonPanel.unitsLength":"Lunghezza",
+    "gis.polygonPanel.unitsArea":"Area",
+    "gis.polygonPanel.unitsAuto":"Automatico",
+    "gis.polygonPanel.unitsMetres":"Metri",
+    "gis.polygonPanel.unitsKilometres":"Chilometri",
+    "gis.polygonPanel.unitsSquareMetres":"Metri quadrati",
+    "gis.polygonPanel.unitsHectares":"Ettari",
+    "gis.polygonPanel.unitsSquareKilometres":"Chilometri quadrati",
     "gis.polygonPanel.editMovePolygon":"Sposta poligono",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Sposta",
     "gis.polygonPanel.editMovePolygonActive":"■ Termina spostamento",
@@ -13640,6 +13700,15 @@ const I18N = {
     "gis.polygonPanel.drawNameLabel":"Name",
     "gis.polygonPanel.drawNamePlaceholder":"Automatic name if empty",
     "gis.polygonPanel.removeLastPoint":"Remove last point",
+    "gis.polygonPanel.unitsHeading":"Measurement units",
+    "gis.polygonPanel.unitsLength":"Length",
+    "gis.polygonPanel.unitsArea":"Area",
+    "gis.polygonPanel.unitsAuto":"Automatic",
+    "gis.polygonPanel.unitsMetres":"Metres",
+    "gis.polygonPanel.unitsKilometres":"Kilometres",
+    "gis.polygonPanel.unitsSquareMetres":"Square metres",
+    "gis.polygonPanel.unitsHectares":"Hectares",
+    "gis.polygonPanel.unitsSquareKilometres":"Square kilometres",
     "gis.polygonPanel.editMovePolygon":"Move polygon",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Move",
     "gis.polygonPanel.editMovePolygonActive":"■ Stop moving",
@@ -16218,6 +16287,9 @@ const state = {
   mapMeasurePts: null, // transient linea/direct: [{lat,lon},{lat,lon}] — mai persistito
   mapCursorLL: null,   // transient: ultimo lat/lon cursore sulla tile map
   mapMeasureUnit: "m", // preferenza persistita: m | km | nm | mi | ft
+  /** Transient session-only (P-UNITS): polygon metric display units — not persisted. */
+  polygonMetricLengthUnit: "auto", // auto | m | km
+  polygonMetricAreaUnit: "auto", // auto | m2 | ha | km2
   trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | nm | mi
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
   /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
@@ -39148,10 +39220,24 @@ function fmtArea(km2, m2, ha){
   return `${Math.round(m2).toLocaleString()} m²`;
 }
 /** Same logic as fmtArea but plain text (SVG `<text>` / `textContent` cannot render HTML). */
-function fmtAreaPlain(km2, m2, ha){
-  if (km2 >= 1) return `${km2.toFixed(4)} km² (${ha.toFixed(2)} ha)`;
-  if (ha >= 1) return `${ha.toFixed(2)} ha (${Math.round(m2).toLocaleString()} m²)`;
-  return `${Math.round(m2).toLocaleString()} m²`;
+function fmtAreaPlain(km2, m2, ha, areaUnitOpt){
+  const m2n = Number(m2);
+  if (!Number.isFinite(m2n)) return "—";
+  const unit = areaUnitOpt != null ? sanitizePolygonAreaUnit(areaUnitOpt) : "auto";
+  if (unit === "m2") return Math.round(m2n).toLocaleString() + " m²";
+  if (unit === "ha"){
+    const haVal = m2n / 1e4;
+    return (haVal < 10 ? haVal.toFixed(2) : haVal.toFixed(1)) + " ha";
+  }
+  if (unit === "km2"){
+    const km2Val = m2n / 1e6;
+    return km2Val.toFixed(4) + " km²";
+  }
+  const km2v = Number(km2);
+  const hav = Number(ha);
+  if (km2v >= 1) return `${km2v.toFixed(4)} km² (${hav.toFixed(2)} ha)`;
+  if (hav >= 1) return `${hav.toFixed(2)} ha (${Math.round(m2n).toLocaleString()} m²)`;
+  return `${Math.round(m2n).toLocaleString()} m²`;
 }
 function batchCsv(){
   const root = document.getElementById("batch-results");
@@ -46002,11 +46088,89 @@ function polygonBuildNextDefaultName(){
   }
   return candidate;
 }
-function polygonEditFormatDistance(meters){
-  const unit = String(state.mapMeasureUnit || "m").toLowerCase();
+function sanitizePolygonLengthUnit(u){
+  const v = String(u == null ? "auto" : u).toLowerCase();
+  if (v === "m" || v === "km") return v;
+  return "auto";
+}
+function sanitizePolygonAreaUnit(u){
+  const v = String(u == null ? "auto" : u).toLowerCase();
+  if (v === "m2" || v === "ha" || v === "km2") return v;
+  return "auto";
+}
+function formatDistanceMetersForUnit(meters, unit){
   const m = Number(meters);
-  if (unit === "m" && Number.isFinite(m) && m >= 1000) return formatMapMeasureDistance(m, "km");
-  return formatMapMeasureDistance(meters, unit);
+  if (!Number.isFinite(m)) return "—";
+  const u = sanitizePolygonLengthUnit(unit);
+  if (u === "auto"){
+    if (m >= 1000) return formatMapMeasureDistance(m, "km");
+    return formatMapMeasureDistance(m, "m");
+  }
+  if (u === "km") return formatMapMeasureDistance(m, "km");
+  return formatMapMeasureDistance(m, "m");
+}
+function formatPolygonDistanceMeters(meters){
+  return formatDistanceMetersForUnit(meters, state.polygonMetricLengthUnit);
+}
+function fmtPolygonAreaPlain(m2){
+  const m2n = Number(m2);
+  return fmtAreaPlain(m2n / 1e6, m2n, m2n / 1e4, state.polygonMetricAreaUnit);
+}
+function polygonEditFormatDistance(meters){
+  return formatPolygonDistanceMeters(meters);
+}
+function polygonSyncUnitsUi(){
+  const lenSel = document.getElementById("polygonPanelLengthUnit");
+  const areaSel = document.getElementById("polygonPanelAreaUnit");
+  const lu = sanitizePolygonLengthUnit(state.polygonMetricLengthUnit);
+  const au = sanitizePolygonAreaUnit(state.polygonMetricAreaUnit);
+  if (lenSel && lenSel.value !== lu) lenSel.value = lu;
+  if (areaSel && areaSel.value !== au) areaSel.value = au;
+}
+function polygonSyncLengthUnitToMeasure(){
+  const u = sanitizePolygonLengthUnit(state.polygonMetricLengthUnit);
+  if (u === "m" || u === "km") state.mapMeasureUnit = u;
+  try {
+    document.querySelectorAll('[data-role="gis-meas-unit"], [data-role="measure-unit"]').forEach((sel) => {
+      if (sel && state.mapMeasureUnit) sel.value = state.mapMeasureUnit;
+    });
+  } catch(_){}
+  try {
+    const r = document.getElementById("miniMap");
+    const lp = state.lastPoint || state.viewCenter;
+    const z = state.mapZoom || 11;
+    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+      renderMapMeasureOverlay(r, lp.lat, lp.lon, z);
+      updateMeasureReadouts(r);
+    }
+    measSyncOperativeInfo();
+  } catch(_){}
+}
+function polygonApplyUnitsChange(){
+  polygonSyncLengthUnitToMeasure();
+  try { renderPolygonDraftInfo(); } catch(_){}
+  try { renderPolygonEditInfo(); } catch(_){}
+}
+function polygonWireUnitsOnce(){
+  const lenSel = document.getElementById("polygonPanelLengthUnit");
+  const areaSel = document.getElementById("polygonPanelAreaUnit");
+  if (lenSel && !lenSel._polyUnitsWired){
+    lenSel._polyUnitsWired = true;
+    lenSel.addEventListener("change", () => {
+      state.polygonMetricLengthUnit = sanitizePolygonLengthUnit(lenSel.value);
+      polygonSyncUnitsUi();
+      polygonApplyUnitsChange();
+    });
+  }
+  if (areaSel && !areaSel._polyUnitsWired){
+    areaSel._polyUnitsWired = true;
+    areaSel.addEventListener("change", () => {
+      state.polygonMetricAreaUnit = sanitizePolygonAreaUnit(areaSel.value);
+      polygonSyncUnitsUi();
+      polygonApplyUnitsChange();
+    });
+  }
+  polygonSyncUnitsUi();
 }
 function polygonFormatPropertyTimestamp(raw){
   const fallback = (typeof t === "function" ? t("gis.polygonPanel.dateUnavailable") : "") || "Data non disponibile";
@@ -46121,7 +46285,7 @@ function renderPolygonEditInfo(){
   if (n >= 3){
     try {
       const areaM2 = sphericalPolygonArea(pts);
-      areaTxt = fmtAreaPlain(areaM2 / 1e6, areaM2, areaM2 / 1e4);
+      areaTxt = fmtPolygonAreaPlain(areaM2);
     } catch(_){}
     try {
       const perM = computePolylinePerimeterMeters(pts, true);
@@ -46543,7 +46707,7 @@ function renderPolygonDraftInfo(){
   if (n >= 3 && pts.length >= 3){
     try {
       const areaM2 = sphericalPolygonArea(pts);
-      areaTxt = fmtAreaPlain(areaM2 / 1e6, areaM2, areaM2 / 1e4);
+      areaTxt = fmtPolygonAreaPlain(areaM2);
     } catch(_){}
     try {
       const perM = computePolylinePerimeterMeters(pts, true);
@@ -46996,6 +47160,7 @@ function polygonWirePanelBarsOnce(){
     remBtn._polyRemoveLastWired = true;
     remBtn.addEventListener("click", (ev) => { ev.preventDefault(); polygonRemoveLastDraftPoint(); });
   }
+  try { polygonWireUnitsOnce(); } catch(_){}
 }
 function ensurePolygonPanelListWired(){
   const body = document.getElementById("polygonPanelBody");
@@ -47084,6 +47249,7 @@ function renderPolygonPanelList(){
   if (geoBtn) geoBtn.disabled = !canExport;
   if (kmlBtn) kmlBtn.disabled = !canExport;
   polygonSyncDraftNameUi();
+  try { polygonSyncUnitsUi(); } catch(_){}
   try { renderPolygonDraftInfo(); } catch(_){}
 }
 
