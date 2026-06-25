@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4** traslazione — backlog;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -481,7 +481,31 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** CLOSED/PASS end-to-end (`db2f6ea`, deploy+QA PASS). **A2-B2:** rollback logico PASS; QA PARTIAL FAIL storico; runtime `cb9f92f`; superseded da A2-B2-FIX. **A2-B2-FIX:** redraw sincrono post-close edit; runtime **`70ed7b3`**; deploy+QA PASS. **A2-B3:** apertura senza auto-arm; disegno esplicito `#polygonPanelNewBtn`; runtime **`87cbe64`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B3 PASS operatore»). **Catena A2 completata end-to-end.**
 
-**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); P4 traslazione; P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A).
+**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
+
+### POLY-PARITY-P4-B1 — Traslazione intero poligono in Modifica
+
+**Stato:** **CLOSED / PASS end-to-end** — runtime **`505e7d0`**; review byte Claude **PASS**; deploy VPS PASS; **QA operatore PASS** («QA POLY-PARITY-P4-B1 PASS operatore»).
+
+**Implementazione (monolite):**
+
+- toggle «Sposta poligono» ghost/subtle con `aria-pressed`; hint i18n IT/EN/FR;
+- `_polyEdit.moveMode` transiente (default false; persiste post-pointerup fino a toggle o fine edit);
+- pipeline dedicata `mapPolyMoveDocDrag*` separata da P2;
+- `snapshotGeo`/`snapshotPx` immutabili al pointerdown; offset totale pointer-based; proiezione `tileMapLatLonToPx`/`tileMapPxToLatLon`;
+- zero-salto; world wrap breve; frame invalidi fail-closed;
+- fill interattivo solo in move mode; handle P2 visibili ma non interattivi; mutua esclusione P4/P2;
+- working-copy-only; una `gisFeatureUpdate` su Salva; cleanup simmetrico.
+
+**Review byte Claude:** PASS — GO DEPLOY. Contratti snapshot/offset totale, mutua esclusione, working-copy-only, una update su Salva verificati.
+
+**Finding non bloccante (backlog tecnico separato):** ramo pointerdown P2 — assenza guardia `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return`; secondo pointer touch su altro handle durante drag P2 può sostituire il primo; non raggiungibile mouse singolo; nessuna corruzione geometria/persistenza; **non** impedisce chiusura P4-B1.
+
+**Deploy VPS PASS:** runtime servito **`505e7d0`**, blob **`7dbe96ef5b68d670d647556a8883039a054d9ad4`**, byte **2294595**, SHA **`2ae34929…`**, cmp PASS, HTTP **200**, `goi-gis-app` active/enabled.
+
+**QA:** toggle/hint; traslazione intero poligono; vertici invariati; move mode persistente; pan fuori fill; P2 post-toggle; Annulla/X/Salva; P3 insert/delete + drag; IT/EN/FR.
+
+**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD non avviati.**
 
 ### POLY-PARITY-P3-ADD — Inserimento vertice su un lato in Modifica
 
