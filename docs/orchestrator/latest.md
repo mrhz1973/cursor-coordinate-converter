@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-UNITS-RB-PARITY runtime (deploy/QA pending):** lunghezza Poligoni auto/m/km/NM/mi/ft via `formatMapMeasureDistance`; commit **`11838a1`**, blob **`10f5f1e…`**; P-UNITS-FIX preservato; VPS ancora su **`d51d210…`**; **non CLOSED**; inbox **`2026-06-26_0034_p-units-rb-parity.md`**.
+
 2026-06-26 — **P-UNITS-FIX runtime (deploy/QA pending):** rimosso accoppiamento `polygonSyncLengthUnitToMeasure`; unità Poligoni indipendenti da Misura GIS; commit fix **`8be2845`**, blob **`d51d210…`**; P-UNITS base **`8c266ae`**; **non CLOSED**; inbox **`2026-06-26_0021_p-units-fix.md`**.
 
 2026-06-26 — **P-UNITS runtime pubblicato (deploy/QA pending):** unità metriche poligoni (auto/m/km + auto/m²/ha/km²) in `#polygonPanelUnits`; commit runtime **`8c266ae`**, docs **`f071d87`**; stato session-only; Misura GIS sync parziale; R&B escluso; **non CLOSED**; **P-VERTEX-MODAL** prossimo candidato; P-STYLE non iniziato; batch P5 non chiuso. Inbox **`2026-06-26_0010_p-units.md`**.
