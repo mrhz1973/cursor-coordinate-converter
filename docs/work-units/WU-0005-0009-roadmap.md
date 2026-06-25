@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1/P5-B1-FIX** finalizzazione sicura creazione **CLOSED** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); **P5-B2-A** toggle spostamento **CLOSED** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-B** nome automatico F2 **CLOSED** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** nome editabile durante drawing **CLOSED** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-D** metriche live drawing **CLOSED** (`c2c4836`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-E** rimuovi ultimo punto **CLOSED** (`aea7434`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-F** non avviato; **P5 complessivo non CLOSED**;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1/P5-B1-FIX** finalizzazione sicura creazione **CLOSED** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); **P5-B2-A** toggle spostamento **CLOSED** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-B** nome automatico F2 **CLOSED** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** nome editabile durante drawing **CLOSED** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-D** metriche live drawing **CLOSED** (`c2c4836`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-E** rimuovi ultimo punto **CLOSED** (`aea7434`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-F** pulizia errore stale **runtime pubblicato** (`739bf49`, review Claude NON RICHIESTA, deploy/QA pending, non CLOSED); **P5 complessivo non CLOSED**;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -481,7 +481,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** CLOSED/PASS end-to-end (`db2f6ea`, deploy+QA PASS). **A2-B2:** rollback logico PASS; QA PARTIAL FAIL storico; runtime `cb9f92f`; superseded da A2-B2-FIX. **A2-B2-FIX:** redraw sincrono post-close edit; runtime **`70ed7b3`**; deploy+QA PASS. **A2-B3:** apertura senza auto-arm; disegno esplicito `#polygonPanelNewBtn`; runtime **`87cbe64`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B3 PASS operatore»). **Catena A2 completata end-to-end.**
 
-**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); ~~P5-B1/P5-B1-FIX finalizzazione sicura creazione~~ — **CLOSED / PASS end-to-end** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); ~~P5-B2-A toggle spostamento~~ — **CLOSED / PASS end-to-end** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-B nome automatico F2~~ — **CLOSED / PASS end-to-end** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-C nome editabile durante drawing~~ — **CLOSED / PASS end-to-end** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-D metriche live drawing~~ — **CLOSED / PASS end-to-end** (`c2c4836`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-E rimuovi ultimo punto~~ — **CLOSED / PASS end-to-end** (`aea7434`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-F** errore stale + resto backlog drawing — **non avviato**; **P5 complessivo non CLOSED**; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
+**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); ~~P5-B1/P5-B1-FIX finalizzazione sicura creazione~~ — **CLOSED / PASS end-to-end** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); ~~P5-B2-A toggle spostamento~~ — **CLOSED / PASS end-to-end** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-B nome automatico F2~~ — **CLOSED / PASS end-to-end** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-C nome editabile durante drawing~~ — **CLOSED / PASS end-to-end** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-D metriche live drawing~~ — **CLOSED / PASS end-to-end** (`c2c4836`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-E rimuovi ultimo punto~~ — **CLOSED / PASS end-to-end** (`aea7434`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-F** pulizia errore stale — **runtime pubblicato** (`739bf49`, deploy/QA pending, non CLOSED); resto backlog drawing — **non avviato**; **P5 complessivo non CLOSED**; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
 
 ### POLY-PARITY-P4-B1 — Traslazione intero poligono in Modifica
 
@@ -505,7 +505,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **QA:** toggle/hint; traslazione intero poligono; vertici invariati; move mode persistente; pan fuori fill; P2 post-toggle; Annulla/X/Salva; P3 insert/delete + drag; IT/EN/FR.
 
-**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD:** P5-B1/P5-B1-FIX **CLOSED**; P5-B2-A **CLOSED**; P5-B2-B **CLOSED**; P5-B2-C **CLOSED**; P5-B2-D **CLOSED**; P5-B2-E **CLOSED**; P5-B2-F non avviato; P5 complessivo non CLOSED.
+**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD:** P5-B1/P5-B1-FIX **CLOSED**; P5-B2-A…E **CLOSED**; P5-B2-F runtime pubblicato (deploy/QA pending); P5 complessivo non CLOSED.
 
 ### Governance i18n (decisione 2026-06-25)
 
@@ -522,7 +522,7 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 
 ### POLY-PARITY-P5 — Creazione poligono (Opzione A)
 
-**Stato:** **P5-B1/P5-B1-FIX CLOSED / PASS end-to-end** — runtime **`59f2bd1`**; **P5-B2-A CLOSED / PASS end-to-end** — runtime **`5cc2e1b`**; **P5-B2-B CLOSED / PASS end-to-end** — runtime **`b68c774`**; **P5-B2-C CLOSED / PASS end-to-end** — runtime **`d893775`**; **P5-B2-D CLOSED / PASS end-to-end** — runtime **`c2c4836`**; **P5-B2-E CLOSED / PASS end-to-end** — runtime **`aea7434`**. **P5 complessivo non CLOSED** — **P5-B2-F non avviato**.
+**Stato:** **P5-B1/P5-B1-FIX CLOSED / PASS end-to-end** — runtime **`59f2bd1`**; **P5-B2-A…E CLOSED / PASS end-to-end** — runtime fino a **`aea7434`**; **P5-B2-F runtime pubblicato** — **`739bf49`** (review Claude NON RICHIESTA; deploy/QA **pending**; **non CLOSED**). **P5 complessivo non CLOSED**.
 
 | Sotto-blocco | Stato |
 |--------------|-------|
@@ -534,7 +534,8 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 | P5-B2-C nome editabile durante drawing | **CLOSED / PASS** — runtime **`d893775`** |
 | P5-B2-D metriche live durante drawing | **CLOSED / PASS** — runtime **`c2c4836`** |
 | P5-B2-E rimuovi ultimo punto | **CLOSED / PASS** — runtime **`aea7434`** |
-| P5-B2-F…G resto backlog drawing | **non avviato** (prossimo: **P5-B2-F** errore stale) |
+| P5-B2-F pulizia errore stale draft | runtime **`739bf49`** — review Claude **NON RICHIESTA**; deploy/QA **pending** |
+| P5-B2-G resto backlog drawing | **non avviato** |
 
 **Percorso canonico (invariato):** `polygonFinishDraw` → una sola `gisFeatureAdd("polygon", feature)` → `gisSanitizeFeature` → `gisSanitizeGeometry` → persistenza CRUD interna; sanitizer unico backstop; P7 `created_at === updated_at` alla creazione.
 
@@ -588,12 +589,17 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 
 **Deploy VPS PASS (P5-B2-E):** pull FF `c2c4836`→`aea7434`, HEAD VPS **`aea7434`**, blob **`8d17497a556a9be9ab8fa30c27120083e3f2ad06`**, byte **2304409**, SHA **`6bd47463…`**, cmp PASS, HTTP **200**, singola `.pop()` confermata.
 
-**QA operatore PASS (P5-B2-E):** «**QA POLY-PARITY-P5-B2-E PASS operatore**» — pulsante solo in drawing; disabled/enabled; rimozione ultimo vertice; overlay/metriche; nome preservato; errore non nascosto; P5-B2-A/B/C/D senza regressioni. **Limitazione unità:** non verificata (invariata).
+**QA operatore PASS (P5-B2-E):** «**QA POLY-PARITY-P5-B2-E PASS operatore**» — pulsante solo in drawing; disabled/enabled; rimozione ultimo vertice; overlay/metriche; nome preservato; errore non nascosto (storico pre-P5-B2-F); P5-B2-A/B/C/D senza regressioni. **Limitazione unità:** non verificata (invariata).
+
+**P5-B2-F (`739bf49`, blob `ba8a7f0…`):** `polygonHideDrawErr()` dopo push vertice valido (handler polygon draw in `attachPanHandlers`) e dopo `.pop()` riuscita in `polygonRemoveLastDraftPoint()`; helper esistente; no-op non nascondono errore; `polygonFinishDraw` e ramo `!added` byte-invariati; nessuna i18n/HTML/CSS; sanitizer/create-path/CRUD invariati; diff +2.
+
+**Review Claude P5-B2-F:** **NON RICHIESTA** — stato transiente; sanitizer/create-path/CRUD invariati; nessun nuovo campo persistito.
+
+**Deploy VPS:** **NON ESEGUITO.** **QA operatore:** **NON ESEGUITA.** **P5-B2-F non CLOSED end-to-end.**
 
 **Backlog P5-B2 residuo (non avviato):**
 
 1. `verts.length < 3` → `polygonCancelDraw()` preesistente;
-2. **P5-B2-F** pulizia errore stale su modifica draft (aggiunta/rimozione vertice; i18n solo IT/EN se serve; Review Claude NO);
 
 **Invariati:** P1–P4/P7/A1/A2 CLOSED; P2/P3/P3-ADD/P4 pipeline; sanitizer; storage; import/export; **`APP_BUILD_ID` `B5.5Z`**.
 
