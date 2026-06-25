@@ -2523,6 +2523,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-draft-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-draft-name-row label{ font-size:.82rem; min-width:3.5rem; }
 .polygon-panel .poly-draft-name-row input{ flex:1; min-width:120px; font-size:.88rem; padding:4px 8px; }
+.polygon-panel .poly-draft-info{ margin:0 0 6px; font-size:.82rem; }
+.polygon-panel .poly-draft-info[hidden]{ display:none !important; }
 .polygon-panel .poly-edit-bar .poly-edit-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row label{ font-size:.82rem; min-width:3.5rem; }
@@ -10379,6 +10381,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                placeholder="Nome automatico se vuoto" />
       </div>
     </div>
+    <div id="polygonPanelDraftInfo" class="poly-draft-info" role="status" aria-live="polite" hidden></div>
     <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
     <div class="polygon-panel-footer">
       <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
@@ -39361,6 +39364,7 @@ function applyLanguage(lang){
   }
   if (state.polygonDrawMode){
     try { polygonSyncDraftNameUi(); } catch(_){}
+    try { renderPolygonDraftInfo(); } catch(_){}
   }
   if (typeof syncTrackExportDialogUi === "function"){
     try { syncTrackExportDialogUi(); } catch(_){}
@@ -43247,6 +43251,7 @@ function gisInit(){
       const z = state.mapZoom || 11;
       if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
       try { measSyncOperativeInfo(); } catch(_){}
+      if (state.polygonDrawMode){ try { renderPolygonDraftInfo(); } catch(_){} }
     }
     if (t.matches && t.matches('[data-role="gis-meas-dir-unit"]')){
       applyGisDirectInputsToMap();
@@ -46396,6 +46401,54 @@ function polygonSyncDraftNameUi(){
   const stored = state._polygonDraftName == null ? "" : String(state._polygonDraftName);
   if (document.activeElement !== inp && inp.value !== stored) inp.value = stored;
 }
+function renderPolygonDraftInfo(){
+  const wrap = document.getElementById("polygonPanelDraftInfo");
+  if (!wrap) return;
+  const drawing = !!state.polygonDrawMode;
+  wrap.hidden = !drawing;
+  if (!drawing) return;
+  const verts = Array.isArray(state._polygonDraftVertices) ? state._polygonDraftVertices : [];
+  const n = verts.length;
+  const pts = gisRingToLatLonPts(verts);
+  const lblVertices = (typeof t === "function" ? t("gis.polygonPanel.editVertices") : "") || "Vertici";
+  const lblArea = (typeof t === "function" ? t("gis.polygonPanel.editArea") : "") || "Area";
+  const lblPerim = (typeof t === "function" ? t("gis.polygonPanel.editPerimeter") : "") || "Perimetro";
+  const lblNoData = (typeof t === "function" ? t("gis.polygonPanel.editNoData") : "") || "—";
+  let areaTxt = lblNoData;
+  let perimTxt = lblNoData;
+  if (n >= 3 && pts.length >= 3){
+    try {
+      const areaM2 = sphericalPolygonArea(pts);
+      areaTxt = fmtAreaPlain(areaM2 / 1e6, areaM2, areaM2 / 1e4);
+    } catch(_){}
+    try {
+      const perM = computePolylinePerimeterMeters(pts, true);
+      perimTxt = polygonEditFormatDistance(perM);
+    } catch(_){}
+  } else if (n === 2 && pts.length >= 2){
+    try {
+      const perM = computePolylinePerimeterMeters(pts, false);
+      perimTxt = polygonEditFormatDistance(perM);
+    } catch(_){}
+  }
+  wrap.textContent = "";
+  const addRow = (label, value) => {
+    const row = document.createElement("div");
+    row.className = "poly-edit-info-row";
+    const l = document.createElement("span");
+    l.className = "poly-edit-info-label";
+    l.textContent = label + ":";
+    const v = document.createElement("span");
+    v.className = "poly-edit-info-value";
+    v.textContent = value;
+    row.appendChild(l);
+    row.appendChild(v);
+    wrap.appendChild(row);
+  };
+  addRow(lblVertices, String(n));
+  addRow(lblArea, areaTxt);
+  addRow(lblPerim, perimTxt);
+}
 function polygonStartDraw(){
   if (state.polygonDrawMode) return;
   ensureGisState();
@@ -46882,6 +46935,7 @@ function renderPolygonPanelList(){
   if (geoBtn) geoBtn.disabled = !canExport;
   if (kmlBtn) kmlBtn.disabled = !canExport;
   polygonSyncDraftNameUi();
+  try { renderPolygonDraftInfo(); } catch(_){}
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
