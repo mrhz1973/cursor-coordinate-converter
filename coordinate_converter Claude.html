@@ -45820,6 +45820,38 @@ function polygonEditNamesEquivalent(a, b){
   if (polygonIsLegacyDefaultNameKey(cb) && polygonEditNamesEquivalent(ca, polygonDisplayName(cb))) return true;
   return false;
 }
+function polygonParseAutoNameSuffix(rawName, base){
+  const n = polygonNormalizeEditName(rawName);
+  const b = polygonNormalizeEditName(base);
+  if (!n || !b || n === b) return null;
+  const prefix = b + " ";
+  if (!n.startsWith(prefix) || n.length <= prefix.length) return null;
+  const rest = n.slice(prefix.length);
+  if (!/^[1-9]\d*$/.test(rest)) return null;
+  const num = parseInt(rest, 10);
+  return Number.isFinite(num) && num > 0 ? num : null;
+}
+function polygonBuildNextDefaultName(){
+  const base = polygonNormalizeEditName((typeof t === "function" ? t(POLYGON_DEFAULT_NAME_KEY) : "") || "Poligono");
+  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  const existing = new Set();
+  let maxSuffix = 0;
+  for (const f of polys){
+    const raw = f && f.properties && f.properties.name;
+    if (raw == null || raw === "") continue;
+    const norm = polygonNormalizeEditName(raw);
+    existing.add(norm);
+    const suffix = polygonParseAutoNameSuffix(raw, base);
+    if (suffix !== null && suffix > maxSuffix) maxSuffix = suffix;
+  }
+  let next = maxSuffix + 1;
+  let candidate = base + " " + next;
+  while (existing.has(polygonNormalizeEditName(candidate))){
+    next++;
+    candidate = base + " " + next;
+  }
+  return candidate;
+}
 function polygonEditFormatDistance(meters){
   const unit = String(state.mapMeasureUnit || "m").toLowerCase();
   const m = Number(meters);
@@ -46373,7 +46405,7 @@ function polygonFinishDraw(){
   // Auto-close if not already closed
   const f = ring[0], l = ring[ring.length - 1];
   if (f[0] !== l[0] || f[1] !== l[1]) ring.push([f[0], f[1]]);
-  const autoName = (typeof t === "function" ? t("gis.polygonPanel.defaultName") : "") || "Poligono " + ((state.gisPolygons || []).length + 1);
+  const autoName = polygonBuildNextDefaultName();
   const nowIso = new Date().toISOString();
   const feature = {
     type: "Feature",
