@@ -36310,6 +36310,7 @@ function attachPanHandlers(root, lat, lon, zoom){
           } else {
             if (!Array.isArray(state._polygonDraftVertices)) state._polygonDraftVertices = [];
             state._polygonDraftVertices.push([normalizeLon(pick.lon), pick.lat]);
+            polygonHideDrawErr();
             state._polygonDraftLastClick = { ts: now, x: cx, y: cy };
             renderPolygonPanelList();
             refreshTileMapForTrackUi();
@@ -46470,6 +46471,7 @@ function polygonRemoveLastDraftPoint(){
   const verts = state._polygonDraftVertices;
   if (!Array.isArray(verts) || verts.length === 0) return;
   verts.pop();
+  polygonHideDrawErr();
   state._polygonDraftLastClick = null;
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
