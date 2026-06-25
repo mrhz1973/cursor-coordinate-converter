@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-25 — **P-UI-UNIFORM runtime pubblicato (deploy/QA pending):** layout HTML/CSS `#polygonPanel` allineato ai modal GIS flottanti; commit runtime **`e0e9578`**; JS invariato; **non CLOSED**; P-UNITS/P-VERTEX-MODAL/P-STYLE non iniziati. Inbox **`2026-06-25_2115_p-ui-uniform.md`**.
+
 2026-06-25 — **DOCS-QA-POLYGON-REJECT-TRIGGER (docs-only):** sezione QA «Come innescare il rifiuto canonico del poligono» in `docs/QA-CHECKLIST.md`; commit **`18f3bfa`**; monolite non toccato. Inbox **`2026-06-25_2015_docs-qa-polygon-reject-trigger.md`**.
 
 2026-06-25 — **POLY-PARITY-P5-B2-F runtime pubblicato (deploy/QA pending):** runtime **`739bf49`** — `polygonHideDrawErr()` dopo aggiunta vertice e dopo `.pop()` in `polygonRemoveLastDraftPoint()`; review Claude **NON RICHIESTA**; deploy/QA **pending**; **non CLOSED**; monolite in commit runtime. Inbox **`2026-06-25_1310_riepilogo_finito-sessione.md`**.
