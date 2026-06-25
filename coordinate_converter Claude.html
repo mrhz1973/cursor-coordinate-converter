@@ -10535,8 +10535,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <label for="polygonPanelLengthUnit" data-i18n="gis.polygonPanel.unitsLength">Lunghezza</label>
         <select id="polygonPanelLengthUnit">
           <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
-          <option value="m" data-i18n="gis.polygonPanel.unitsMetres">Metri</option>
-          <option value="km" data-i18n="gis.polygonPanel.unitsKilometres">Chilometri</option>
+          <option value="m">m</option>
+          <option value="km">km</option>
+          <option value="nm">NM</option>
+          <option value="mi">mi</option>
+          <option value="ft">ft</option>
         </select>
       </div>
       <div class="poly-units-row">
@@ -16288,7 +16291,7 @@ const state = {
   mapCursorLL: null,   // transient: ultimo lat/lon cursore sulla tile map
   mapMeasureUnit: "m", // preferenza persistita: m | km | nm | mi | ft
   /** Transient session-only (P-UNITS): polygon metric display units — not persisted. */
-  polygonMetricLengthUnit: "auto", // auto | m | km
+  polygonMetricLengthUnit: "auto", // session-only: auto | m | km | nm | mi | ft
   polygonMetricAreaUnit: "auto", // auto | m2 | ha | km2
   trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | nm | mi
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
@@ -46090,7 +46093,7 @@ function polygonBuildNextDefaultName(){
 }
 function sanitizePolygonLengthUnit(u){
   const v = String(u == null ? "auto" : u).toLowerCase();
-  if (v === "m" || v === "km") return v;
+  if (v === "m" || v === "km" || v === "nm" || v === "mi" || v === "ft") return v;
   return "auto";
 }
 function sanitizePolygonAreaUnit(u){
@@ -46106,8 +46109,7 @@ function formatDistanceMetersForUnit(meters, unit){
     if (m >= 1000) return formatMapMeasureDistance(m, "km");
     return formatMapMeasureDistance(m, "m");
   }
-  if (u === "km") return formatMapMeasureDistance(m, "km");
-  return formatMapMeasureDistance(m, "m");
+  return formatMapMeasureDistance(m, u);
 }
 function formatPolygonDistanceMeters(meters){
   return formatDistanceMetersForUnit(meters, state.polygonMetricLengthUnit);
