@@ -2518,6 +2518,11 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-edit-bar .poly-edit-err[hidden]{ display:none !important; margin:0; padding:0; border:none; background:transparent; }
 .polygon-panel .poly-draw-err{ margin:0 0 6px; font-size:.82rem; text-align:center; }
 .polygon-panel .poly-draw-err[hidden]{ display:none !important; margin:0; padding:0; border:none; background:transparent; }
+.polygon-panel .poly-draft-name-wrap{ margin:0 0 6px; }
+.polygon-panel .poly-draft-name-wrap[hidden]{ display:none !important; }
+.polygon-panel .poly-draft-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.polygon-panel .poly-draft-name-row label{ font-size:.82rem; min-width:3.5rem; }
+.polygon-panel .poly-draft-name-row input{ flex:1; min-width:120px; font-size:.88rem; padding:4px 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row label{ font-size:.82rem; min-width:3.5rem; }
@@ -10365,6 +10370,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
     <div id="polygonPanelList"></div>
+    <div id="polygonPanelDraftNameWrap" class="poly-draft-name-wrap" hidden>
+      <div class="poly-draft-name-row">
+        <label for="polygonPanelDraftName" id="polygonPanelDraftNameLabel" class="hint" data-i18n="gis.polygonPanel.drawNameLabel">Nome</label>
+        <input type="text" id="polygonPanelDraftName" maxlength="80" autocomplete="off" spellcheck="false"
+               data-i18n-ph="gis.polygonPanel.drawNamePlaceholder"
+               data-i18n-aria="gis.polygonPanel.drawNameLabel"
+               placeholder="Nome automatico se vuoto" />
+      </div>
+    </div>
     <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
     <div class="polygon-panel-footer">
       <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
@@ -11873,6 +11887,8 @@ const I18N = {
     "gis.polygonPanel.editInsertVertexInvalid":"Impossibile aggiungere un vertice su questo lato.",
     "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
     "gis.polygonPanel.drawInvalidGeometry":"Geometria non valida. Correggi il disegno e riprova.",
+    "gis.polygonPanel.drawNameLabel":"Nome",
+    "gis.polygonPanel.drawNamePlaceholder":"Nome automatico se vuoto",
     "gis.polygonPanel.editMovePolygon":"Sposta poligono",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Sposta",
     "gis.polygonPanel.editMovePolygonActive":"■ Termina spostamento",
@@ -13497,6 +13513,8 @@ const I18N = {
     "gis.polygonPanel.editInsertVertexInvalid":"A vertex cannot be added on this side.",
     "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
     "gis.polygonPanel.drawInvalidGeometry":"Invalid geometry. Correct the drawing and try again.",
+    "gis.polygonPanel.drawNameLabel":"Name",
+    "gis.polygonPanel.drawNamePlaceholder":"Automatic name if empty",
     "gis.polygonPanel.editMovePolygon":"Move polygon",
     "gis.polygonPanel.editMovePolygonIdle":"↔ Move",
     "gis.polygonPanel.editMovePolygonActive":"■ Stop moving",
@@ -39341,6 +39359,9 @@ function applyLanguage(lang){
   if (typeof polygonIsEditing === "function" && polygonIsEditing()){
     try { renderPolygonEditBar(); } catch(_){}
   }
+  if (state.polygonDrawMode){
+    try { polygonSyncDraftNameUi(); } catch(_){}
+  }
   if (typeof syncTrackExportDialogUi === "function"){
     try { syncTrackExportDialogUi(); } catch(_){}
   }
@@ -46365,6 +46386,16 @@ function polygonSaveEdit(){
   return updated;
 }
 /* ───── Polygon draw mode (Pass C T1.1) ───── */
+function polygonSyncDraftNameUi(){
+  const wrap = document.getElementById("polygonPanelDraftNameWrap");
+  const inp = document.getElementById("polygonPanelDraftName");
+  const drawing = !!state.polygonDrawMode;
+  if (wrap) wrap.hidden = !drawing;
+  if (!inp) return;
+  inp.disabled = !drawing;
+  const stored = state._polygonDraftName == null ? "" : String(state._polygonDraftName);
+  if (document.activeElement !== inp && inp.value !== stored) inp.value = stored;
+}
 function polygonStartDraw(){
   if (state.polygonDrawMode) return;
   ensureGisState();
@@ -46372,6 +46403,7 @@ function polygonStartDraw(){
   state.polygonDrawMode = true;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
+  state._polygonDraftName = "";
   // Disable conflicting pick modes
   try { ensureTrackState(); } catch(_){}
   try { ensureMapWaypointsState(); } catch(_){}
@@ -46390,6 +46422,7 @@ function polygonCancelDraw(){
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
+  state._polygonDraftName = "";
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
@@ -46405,12 +46438,13 @@ function polygonFinishDraw(){
   // Auto-close if not already closed
   const f = ring[0], l = ring[ring.length - 1];
   if (f[0] !== l[0] || f[1] !== l[1]) ring.push([f[0], f[1]]);
-  const autoName = polygonBuildNextDefaultName();
+  const draftNorm = polygonNormalizeEditName(state._polygonDraftName);
+  const finalName = draftNorm || polygonBuildNextDefaultName();
   const nowIso = new Date().toISOString();
   const feature = {
     type: "Feature",
     geometry: { type: "Polygon", coordinates: [ring] },
-    properties: { name: autoName, color: "#ca8a04", visible: true, kind: "polygon", created_at: nowIso, updated_at: nowIso }
+    properties: { name: finalName, color: "#ca8a04", visible: true, kind: "polygon", created_at: nowIso, updated_at: nowIso }
   };
   polygonHideDrawErr();
   const added = gisFeatureAdd("polygon", feature);
@@ -46425,6 +46459,7 @@ function polygonFinishDraw(){
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
+  state._polygonDraftName = "";
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
@@ -46755,6 +46790,11 @@ function polygonWirePanelBarsOnce(){
     eName._polyEditNameWired = true;
     eName.addEventListener("input", () => { polygonEditNameInputHandler(); });
   }
+  const draftInp = document.getElementById("polygonPanelDraftName");
+  if (draftInp && !draftInp._polyDraftNameWired){
+    draftInp._polyDraftNameWired = true;
+    draftInp.addEventListener("input", () => { state._polygonDraftName = draftInp.value; });
+  }
 }
 function ensurePolygonPanelListWired(){
   const body = document.getElementById("polygonPanelBody");
@@ -46841,6 +46881,7 @@ function renderPolygonPanelList(){
   const canExport = polys.length > 0;
   if (geoBtn) geoBtn.disabled = !canExport;
   if (kmlBtn) kmlBtn.disabled = !canExport;
+  polygonSyncDraftNameUi();
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
