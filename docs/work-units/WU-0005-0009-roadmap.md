@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1/P5-B1-FIX** finalizzazione sicura creazione **CLOSED** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); **P5-B2-A** toggle spostamento **CLOSED** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-B** nome automatico F2 **CLOSED** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** non avviato; **P5 complessivo non CLOSED**;
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1/P5-B1-FIX** finalizzazione sicura creazione **CLOSED** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); **P5-B2-A** toggle spostamento **CLOSED** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-B** nome automatico F2 **CLOSED** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** nome editabile durante drawing **CLOSED** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-D** non avviato; **P5 complessivo non CLOSED**;
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -481,7 +481,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** CLOSED/PASS end-to-end (`db2f6ea`, deploy+QA PASS). **A2-B2:** rollback logico PASS; QA PARTIAL FAIL storico; runtime `cb9f92f`; superseded da A2-B2-FIX. **A2-B2-FIX:** redraw sincrono post-close edit; runtime **`70ed7b3`**; deploy+QA PASS. **A2-B3:** apertura senza auto-arm; disegno esplicito `#polygonPanelNewBtn`; runtime **`87cbe64`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B3 PASS operatore»). **Catena A2 completata end-to-end.**
 
-**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); ~~P5-B1/P5-B1-FIX finalizzazione sicura creazione~~ — **CLOSED / PASS end-to-end** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); ~~P5-B2-A toggle spostamento~~ — **CLOSED / PASS end-to-end** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-B nome automatico F2~~ — **CLOSED / PASS end-to-end** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** nome editabile durante drawing + resto backlog drawing — **non avviato**; **P5 complessivo non CLOSED**; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
+**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); ~~P5-B1/P5-B1-FIX finalizzazione sicura creazione~~ — **CLOSED / PASS end-to-end** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); ~~P5-B2-A toggle spostamento~~ — **CLOSED / PASS end-to-end** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-B nome automatico F2~~ — **CLOSED / PASS end-to-end** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); ~~P5-B2-C nome editabile durante drawing~~ — **CLOSED / PASS end-to-end** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-D** metriche live drawing + resto backlog drawing — **non avviato**; **P5 complessivo non CLOSED**; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
 
 ### POLY-PARITY-P4-B1 — Traslazione intero poligono in Modifica
 
@@ -505,7 +505,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **QA:** toggle/hint; traslazione intero poligono; vertici invariati; move mode persistente; pan fuori fill; P2 post-toggle; Annulla/X/Salva; P3 insert/delete + drag; IT/EN/FR.
 
-**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD:** P5-B1/P5-B1-FIX **CLOSED**; P5-B2-A **CLOSED**; P5-B2-B **CLOSED**; P5-B2-C non avviato; P5 complessivo non CLOSED.
+**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD:** P5-B1/P5-B1-FIX **CLOSED**; P5-B2-A **CLOSED**; P5-B2-B **CLOSED**; P5-B2-C **CLOSED**; P5-B2-D non avviato; P5 complessivo non CLOSED.
 
 ### Governance i18n (decisione 2026-06-25)
 
@@ -522,7 +522,7 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 
 ### POLY-PARITY-P5 — Creazione poligono (Opzione A)
 
-**Stato:** **P5-B1/P5-B1-FIX CLOSED / PASS end-to-end** — runtime **`59f2bd1`**; **P5-B2-A CLOSED / PASS end-to-end** — runtime **`5cc2e1b`**; **P5-B2-B CLOSED / PASS end-to-end** — runtime **`b68c774`**. **P5 complessivo non CLOSED** — **P5-B2-C non avviato**.
+**Stato:** **P5-B1/P5-B1-FIX CLOSED / PASS end-to-end** — runtime **`59f2bd1`**; **P5-B2-A CLOSED / PASS end-to-end** — runtime **`5cc2e1b`**; **P5-B2-B CLOSED / PASS end-to-end** — runtime **`b68c774`**; **P5-B2-C CLOSED / PASS end-to-end** — runtime **`d893775`**. **P5 complessivo non CLOSED** — **P5-B2-D non avviato**.
 
 | Sotto-blocco | Stato |
 |--------------|-------|
@@ -531,7 +531,8 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 | P5-B1-FIX visibilità errore su rifiuto | **CLOSED / PASS** — runtime **`59f2bd1`** |
 | P5-B2-A toggle etichetta spostamento | **CLOSED / PASS** — runtime **`5cc2e1b`** |
 | P5-B2-B nome automatico F2 | **CLOSED / PASS** — runtime **`b68c774`** |
-| P5-B2-C…G resto backlog drawing | **non avviato** (prossimo: **P5-B2-C** nome editabile durante drawing) |
+| P5-B2-C nome editabile durante drawing | **CLOSED / PASS** — runtime **`d893775`** |
+| P5-B2-D…G resto backlog drawing | **non avviato** (prossimo: **P5-B2-D** metriche live) |
 
 **Percorso canonico (invariato):** `polygonFinishDraw` → una sola `gisFeatureAdd("polygon", feature)` → `gisSanitizeFeature` → `gisSanitizeGeometry` → persistenza CRUD interna; sanitizer unico backstop; P7 `created_at === updated_at` alla creazione.
 
@@ -563,13 +564,20 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 
 **QA operatore PASS (P5-B2-B):** «**QA POLY-PARITY-P5-B2-B PASS operatore**» — nomi progressivi non duplicati; buco post-cancellazione senza collisione; sequenze per base localizzata; nomi invariati al cambio lingua; persistenza dopo reload; P5-B2-A e creazione/modifica senza regressioni.
 
+**P5-B2-C (`d893775`, blob `cc759b8…`):** `#polygonPanelDraftNameWrap` + `state._polygonDraftName` transiente; `polygonSyncDraftNameUi()`; chiavi IT/EN `drawNameLabel`/`drawNamePlaceholder` (nessuna FR); `draftNorm || polygonBuildNextDefaultName()`; reset solo start/cancel/successo; ramo `!added` senza reset nome/vertici (P5-B1); `properties.name` unico campo persistito; create-path e sanitizer invariati.
+
+**Review Claude P5-B2-C:** **NON RICHIESTA** — stato transiente; sanitizer/create-path/CRUD invariati; nessun nuovo campo persistito.
+
+**Deploy VPS PASS (P5-B2-C):** pull FF `b68c774`→`d893775`, HEAD VPS **`d893775`**, blob **`cc759b80f2cd691bd386066bf34429a36e82b451`**, byte **2300677**, SHA **`d5138ab6…`**, cmp PASS, HTTP **200**, controllo draft presente; ramo `!added` senza reset nome.
+
+**QA operatore PASS (P5-B2-C):** «**QA POLY-PARITY-P5-B2-C PASS operatore**» — campo Nome solo in drawing; nome manuale/vuoto/spazi; reset start/Annulla/successo; cambio IT↔EN; nessuna FR nuova; P5-B2-A/B invariati; reload; nessuna regressione creazione/modifica.
+
 **Backlog P5-B2 residuo (non avviato):**
 
 1. `verts.length < 3` → `polygonCancelDraw()` preesistente;
 2. errore drawing stale riapertura pannello;
-3. **P5-B2-C** nome editabile durante disegno (stato transiente; i18n nuovo controllo solo IT/EN; Review Claude NO salvo sanitizer);
-4. info live (vertici, area, perimetro);
-5. rimozione ultimo punto.
+3. **P5-B2-D** metriche live durante drawing (vertici/area/perimetro read-only; helper geometrici esistenti; i18n solo IT/EN; Review Claude NO);
+4. rimozione ultimo punto.
 
 **Invariati:** P1–P4/P7/A1/A2 CLOSED; P2/P3/P3-ADD/P4 pipeline; sanitizer; storage; import/export; **`APP_BUILD_ID` `B5.5Z`**.
 
