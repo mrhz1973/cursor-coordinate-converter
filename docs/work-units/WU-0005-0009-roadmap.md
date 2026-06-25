@@ -301,7 +301,7 @@ Note operative:
 - La standardizzazione modal è trasversale e si lega alla WU-0007 toolbar/UX (senza riaprire WU-0007 PASS).
 - Blocchi futuri:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
-  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS);
+  - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1** finalizzazione sicura creazione runtime **`8bc7804`** (review Claude **FIX REQUIRED** — errore invisibile pannello minimizzato); **P5-B1-FIX** runtime **`59f2bd1`** (review Claude **PENDING**; deploy/QA **pending**; **P5 non CLOSED**);
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -481,7 +481,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **A1:** rimossa `renderAllMaps()` da `polygonRefreshEditUi`; `polygonScheduleEditOverlayRefresh` (RAF+token+guardie) → `renderTileMap` diretto (deviazione ratificata vs `refreshTileMapForTrackUi` — precedenza `viewCenter`→`lastPoint`); review Claude PASS; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A1 PASS operatore»). **A2-B1:** CLOSED/PASS end-to-end (`db2f6ea`, deploy+QA PASS). **A2-B2:** rollback logico PASS; QA PARTIAL FAIL storico; runtime `cb9f92f`; superseded da A2-B2-FIX. **A2-B2-FIX:** redraw sincrono post-close edit; runtime **`70ed7b3`**; deploy+QA PASS. **A2-B3:** apertura senza auto-arm; disegno esplicito `#polygonPanelNewBtn`; runtime **`87cbe64`**; deploy VPS PASS; **QA operatore PASS** («QA POLY-UX-STABILITY-A2-B3 PASS operatore»). **Catena A2 completata end-to-end.**
 
-**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); P5 creazione; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato.
+**Backlog parità (non avviati, salvo decisione operativa):** ~~P3 cancellazione vertice~~ — **CLOSED / PASS end-to-end** (`fc38247` + P3-FIX `6083abe`); ~~P3-ADD inserimento vertice su lato~~ — **CLOSED / PASS end-to-end** (`5df925f`); ~~P4 traslazione intero poligono~~ — **CLOSED / PASS end-to-end** (`505e7d0`, P4-B1); **P5 creazione** — analisi read-only completata; Opzione A approvata; **P5-B1** runtime `8bc7804` (review FIX REQUIRED); **P5-B1-FIX** runtime `59f2bd1` (review **PENDING**; deploy/QA pending; **P5 non CLOSED**); **P5-B2** non avviato; P6 ✕ intero poligono; P8 resize modal (P8-A). **Backlog tecnico non urgente (non bloccante):** guardia multi-touch P2 equivalente a `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return` — finding review P4-B1, micro-fix futuro separato; errore drawing stale riapertura pannello — differito P5-B2.
 
 ### POLY-PARITY-P4-B1 — Traslazione intero poligono in Modifica
 
@@ -505,7 +505,34 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **QA:** toggle/hint; traslazione intero poligono; vertici invariati; move mode persistente; pan fuori fill; P2 post-toggle; Annulla/X/Salva; P3 insert/delete + drag; IT/EN/FR.
 
-**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD non avviati.**
+**Invariati:** P2 core byte-invariato; P3/P3-ADD; P7; A1/A2; **`APP_BUILD_ID` `B5.5Z`**. **P5/P6/P8/HUD:** P5-B1/P5-B1-FIX runtime pubblicati; review FIX pending; P5 non CLOSED; P5-B2 non avviato.
+
+### POLY-PARITY-P5 — Creazione poligono (Opzione A)
+
+**Stato:** **non CLOSED** — analisi read-only completata; Opzione A approvata; **P5-B1** + **P5-B1-FIX** runtime pubblicati; review Claude FIX **PENDING**; deploy/QA **pending**; **P5-B2 non avviato**.
+
+| Sotto-blocco | Stato |
+|--------------|-------|
+| P5 analisi read-only | **completata** — Opzione A (info + controllo base) |
+| P5-B1 finalizzazione sicura + recupero draft | runtime **`8bc7804`** — review Claude **NO-GO / FIX REQUIRED** (errore invisibile con pannello auto-minimizzato) |
+| P5-B1-FIX visibilità errore su rifiuto | runtime **`59f2bd1`** — review Claude **PENDING** |
+| P5-B2 info live + nome draft + controlli drawing | **non avviato** (dopo P5 CLOSED) |
+
+**Percorso canonico (invariato):** `polygonFinishDraw` → una sola `gisFeatureAdd("polygon", feature)` → `gisSanitizeFeature` → `gisSanitizeGeometry` → persistenza CRUD interna; sanitizer unico backstop; P7 `created_at === updated_at` alla creazione.
+
+**P5-B1 (`8bc7804`, blob `820d4d7…`):** su rifiuto sanitizer preserva draft e `polygonDrawMode`; `#polygonPanelDrawErr` + i18n IT/EN/FR; retry/Annulla; nessuna feature fantasma; una sola `gisFeatureAdd`; nessuna `gisFeatureUpdate`; nessun `saveStore` diretto.
+
+**Review Claude P5-B1:** NO-GO — drawing auto-minimizza pannello; finish normale = doppio tap mappa; su rifiuto errore scritto nel body minimizzato (non visibile); draft recuperabile ma contratto feedback visibile non soddisfatto.
+
+**P5-B1-FIX (`59f2bd1`, blob `c289f655…`, diff +1):** nel ramo `if (!added)` di `polygonFinishDraw`: `polygonDrawRestoreIfAutoMinimized()` prima di `polygonShowDrawErr(...)`; ordine: add → `!added` → restore pannello → errore → sync UI → return senza clear; ramo successo invariato; solo `polygonFinishDraw` modificata.
+
+**Raw review:** `https://raw.githubusercontent.com/mrhz1973/cursor-coordinate-converter/59f2bd19dff04dadfd53dbc0a4f54925472aa880/coordinate_converter%20Claude.html`
+
+**Gate:** review Claude P5-B1-FIX **PENDING** → se PASS: deploy GIS-only + QA operatore + chiusura P5-B1; se FAIL: nuovo FIX separato, no deploy runtime non approvato; **P5-B2** solo dopo P5-B1 CLOSED.
+
+**Finding differiti:** F2 nome automatico duplicato → P5-B2; errore drawing stale riapertura pannello → P5-B2.
+
+**Invariati:** P1–P4/P7/A1/A2 CLOSED; P2/P3/P3-ADD/P4 pipeline; sanitizer; storage; import/export; **`APP_BUILD_ID` `B5.5Z`**.
 
 ### POLY-PARITY-P3-ADD — Inserimento vertice su un lato in Modifica
 
