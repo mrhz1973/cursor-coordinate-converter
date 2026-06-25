@@ -68,6 +68,46 @@ QA <BLOCK-ID> PASS operatore
 oppure il messaggio esatto dell'errore e il punto in cui si verifica.
 ```
 
+## Come innescare il rifiuto canonico del poligono per la QA
+
+Nota operativa per **innescare volontariamente** il rifiuto in creazione poligono durante la QA. Non descrive un uso comune dell'app: serve a verificare i contratti **P5-B1**, **P5-B1-FIX**, **P5-B2-F** e blocchi futuri sullo stesso percorso (`polygonFinishDraw` → `gisFeatureAdd` → sanitizer).
+
+### Condizione del rifiuto
+
+Il messaggio **«Geometria non valida»** con **draft preservato** compare solo quando, dopo la de-duplicazione del ring, restano **meno di tre vertici distinti**. In quel caso `gisSanitizeGeometry` rifiuta la geometria e `gisFeatureAdd` non persiste alcun poligono.
+
+### Vertici distinti e soglia `gisSameCoord`
+
+Il confronto usa la soglia di **`gisSameCoord`**: **1e-7 gradi** su latitudine e longitudine (ordine di grandezza **circa un centimetro** a terra).
+
+Due vertici più vicini di tale soglia sono considerati **coincidenti** e contano come **un solo** vertice dopo la de-duplicazione dei punti consecutivi e della chiusura del ring.
+
+### Conseguenza pratica per la QA
+
+- **Non basta** mettere punti «vicini»: servono vertici che il sanitizer consideri **distinti**.
+- A **zoom 14**, un pixel rappresenta indicativamente **circa 9–10 metri**; due tap/click in posizioni anche solo leggermente diverse sono normalmente distanti metri e quindi **vertici distinti** → il poligono può risultare **valido** e il messaggio **non** compare.
+- Per innescare il rifiuto serve lo **stesso identico punto**, non un punto semplicemente vicino.
+- **Aumentare lo zoom** non rende affidabile il test: per questa procedura ripetere il click sullo **stesso identico pixel/coordinata**.
+
+### Procedura operativa con il mouse
+
+Usare il **mouse** (il dito su touch non è sufficientemente affidabile per sovrapporre due vertici):
+
+1. Avviare un nuovo poligono e cliccare il **primo** punto.
+2. **Senza muovere** il mouse, cliccare di nuovo sullo **stesso identico pixel** (secondo vertice sovrapposto).
+3. Cliccare un **terzo** punto in un'altra posizione.
+4. Eseguire il **doppio clic** previsto dall'app per chiudere il poligono.
+5. I due vertici sovrapposti vengono fusi dalla de-duplicazione → restano **meno di tre** vertici distinti.
+6. Deve comparire il messaggio rosso **«Geometria non valida»**; il **disegno** resta **aperto** e il **draft** **preservato** (vertici, nome draft se presente, possibilità di correggere e riprovare o Annulla).
+
+### Ambito futuro
+
+Riutilizzare questa procedura per la QA di qualunque blocco futuro che tocchi:
+
+- il **rifiuto** della creazione poligono;
+- la **visualizzazione** del messaggio di geometria non valida;
+- la **preservazione** o **modifica** del draft dopo il rifiuto.
+
 ## Formato eccezionale — checklist estesa
 
 Usare la **checklist estesa** (con caselle e categorie strutturate) **solo** quando serve copertura più ampia, ad esempio:
