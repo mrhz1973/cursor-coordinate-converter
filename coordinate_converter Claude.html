@@ -2516,6 +2516,8 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 .polygon-panel .poly-edit-bar .poly-edit-hint{ margin:0 0 6px; font-size:.78rem; opacity:.9; }
 .polygon-panel .poly-edit-bar .poly-edit-err{ margin:0 0 6px; font-size:.82rem; }
 .polygon-panel .poly-edit-bar .poly-edit-err[hidden]{ display:none !important; margin:0; padding:0; border:none; background:transparent; }
+.polygon-panel .poly-draw-err{ margin:0 0 6px; font-size:.82rem; text-align:center; }
+.polygon-panel .poly-draw-err[hidden]{ display:none !important; margin:0; padding:0; border:none; background:transparent; }
 .polygon-panel .poly-edit-bar .poly-edit-actions{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 8px; }
 .polygon-panel .poly-edit-bar .poly-edit-name-row label{ font-size:.82rem; min-width:3.5rem; }
@@ -10363,6 +10365,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
     <div id="polygonPanelList"></div>
+    <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
     <div class="polygon-panel-footer">
       <button type="button" class="btn btn-sm" id="polygonPanelNewBtn"
               onclick="polygonStartDraw()"
@@ -11869,6 +11872,7 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Numero massimo di vertici raggiunto.",
     "gis.polygonPanel.editInsertVertexInvalid":"Impossibile aggiungere un vertice su questo lato.",
     "gis.polygonPanel.editMinVertices":"Un poligono deve avere almeno 3 vertici.",
+    "gis.polygonPanel.drawInvalidGeometry":"Geometria non valida. Correggi il disegno e riprova.",
     "gis.polygonPanel.editMovePolygon":"Sposta poligono",
     "gis.polygonPanel.editMoveHint":"Trascina il poligono sulla mappa",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
@@ -13490,6 +13494,7 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Maximum number of vertices reached.",
     "gis.polygonPanel.editInsertVertexInvalid":"A vertex cannot be added on this side.",
     "gis.polygonPanel.editMinVertices":"A polygon must have at least 3 vertices.",
+    "gis.polygonPanel.drawInvalidGeometry":"Invalid geometry. Correct the drawing and try again.",
     "gis.polygonPanel.editMovePolygon":"Move polygon",
     "gis.polygonPanel.editMoveHint":"Drag the polygon on the map",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
@@ -15112,6 +15117,7 @@ const I18N = {
     "gis.polygonPanel.editMaxVertices":"Nombre maximal de sommets atteint.",
     "gis.polygonPanel.editInsertVertexInvalid":"Impossible d’ajouter un sommet sur ce côté.",
     "gis.polygonPanel.editMinVertices":"Un polygone doit avoir au moins 3 sommets.",
+    "gis.polygonPanel.drawInvalidGeometry":"Géométrie non valide. Corrigez le dessin et réessayez.",
     "gis.polygonPanel.editMovePolygon":"Déplacer le polygone",
     "gis.polygonPanel.editMoveHint":"Faites glisser le polygone sur la carte",
     "tip.polygonPanel.edit":"Modifier la géométrie du polygone sur la carte.",
@@ -46043,6 +46049,21 @@ function polygonShowEditBarErr(msg){
     err.hidden = true;
   }
 }
+function polygonHideDrawErr(){
+  const err = document.getElementById("polygonPanelDrawErr");
+  if (err){ err.textContent = ""; err.hidden = true; }
+}
+function polygonShowDrawErr(msg){
+  const err = document.getElementById("polygonPanelDrawErr");
+  if (!err) return;
+  if (msg){
+    err.textContent = String(msg);
+    err.hidden = false;
+  } else {
+    err.textContent = "";
+    err.hidden = true;
+  }
+}
 function polygonEditVertexDeleteLabel(vertexNum){
   const n = Number(vertexNum);
   const num = Number.isFinite(n) ? String(n) : "";
@@ -46294,6 +46315,7 @@ function polygonSaveEdit(){
 function polygonStartDraw(){
   if (state.polygonDrawMode) return;
   ensureGisState();
+  polygonHideDrawErr();
   state.polygonDrawMode = true;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
@@ -46311,6 +46333,7 @@ function polygonStartDraw(){
 }
 function polygonCancelDraw(){
   if (!state.polygonDrawMode) return;
+  polygonHideDrawErr();
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
@@ -46336,7 +46359,15 @@ function polygonFinishDraw(){
     geometry: { type: "Polygon", coordinates: [ring] },
     properties: { name: autoName, color: "#ca8a04", visible: true, kind: "polygon", created_at: nowIso, updated_at: nowIso }
   };
+  polygonHideDrawErr();
   const added = gisFeatureAdd("polygon", feature);
+  if (!added){
+    polygonShowDrawErr((typeof t === "function" ? t("gis.polygonPanel.drawInvalidGeometry") : "") || "Geometria non valida. Correggi il disegno e riprova.");
+    trackSyncPickModeUi();
+    refreshTileMapForTrackUi();
+    renderPolygonPanelList();
+    return;
+  }
   state.polygonDrawMode = false;
   state._polygonDraftVertices = [];
   state._polygonDraftLastClick = null;
@@ -46344,7 +46375,7 @@ function polygonFinishDraw(){
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
   polygonDrawRestoreIfAutoMinimized();
-  if (added) try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.savedOk") : "") || "Poligono salvato."); } catch(_){}
+  try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.savedOk") : "") || "Poligono salvato."); } catch(_){}
 }
 function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
   if (!tileMap) return;
