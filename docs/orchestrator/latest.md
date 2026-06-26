@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-VERTEX-MODAL-FIX redeploy (QA FAIL lista Lati su a4fa8e7, re-test pending):** fix runtime **`5f8f73d`** (`vtxNum` scope in `renderPolygonEditInfo`); QA FAIL «lista Lati vuota» su `a4fa8e7`; redeploy **PASS tecnico**; review byte `a4fa8e7` PASS retroattiva; **non CLOSED**; inbox **`2026-06-26_0905_riepilogo_finito-sessione.md`**.
+
 2026-06-26 — **P-VERTEX-MODAL runtime pubblicato (deploy PASS, QA pending):** runtime **`a4fa8e7`**, blob **`37b0edb…`**, deploy GIS-only **PASS tecnico** (byte **2325545**, SHA **`d75c03cf…`**, cmp PASS); **QA operatore pending**; Review Claude **NON RICHIESTA**; commit docs **`e5ed837`**; **non CLOSED end-to-end**; **P-STYLE** review-gated non avviato; batch P5 non chiuso. Inbox **`2026-06-26_0852_riepilogo_finito-sessione.md`**.
 
 2026-06-26 — **P-UNITS CLOSED / PASS end-to-end (docs-only):** catena runtime **`8c266ae`** + **`8be2845`** + **`11838a1`**; blob **`10f5f1e…`**; deploy GIS-only **PASS tecnico** (HEAD VPS **`26f73f7`**, byte **2314390**, SHA-256 **`9b9aca0c…`**, cmp PASS); **QA operatore PASS** («**QA P-UNITS PASS operatore**»); Review Claude **NON RICHIESTA**; commit chiusura **`b4be4d5`**; monolite non toccato; **P-VERTEX-MODAL** prossimo candidato; **P-STYLE** review-gated; batch P5 separato non chiuso. Inbox **`2026-06-26_0044_riepilogo_finito-sessione.md`**.
