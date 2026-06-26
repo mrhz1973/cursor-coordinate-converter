@@ -31863,11 +31863,11 @@ function polygonResolveStyleProps(props, mode){
     if (/^#[0-9a-fA-F]{6}$/.test(fc)) fillColor = sanitizeTrackColor(fc);
   }
   let fillOpacity = defFillOpacity;
-  if (Number.isFinite(Number(p.fillOpacity))) fillOpacity = Math.max(0, Math.min(1, Number(p.fillOpacity)));
+  if (typeof p.fillOpacity === "number" && Number.isFinite(p.fillOpacity)) fillOpacity = Math.max(0, Math.min(1, p.fillOpacity));
   let lineWidth = defLineWidth;
-  if (Number.isFinite(Number(p.lineWidth))) lineWidth = Math.max(1, Math.min(8, Number(p.lineWidth)));
+  if (typeof p.lineWidth === "number" && Number.isFinite(p.lineWidth)) lineWidth = Math.max(1, Math.min(8, p.lineWidth));
   let lineOpacity = 1;
-  if (Number.isFinite(Number(p.lineOpacity))) lineOpacity = Math.max(0, Math.min(1, Number(p.lineOpacity)));
+  if (typeof p.lineOpacity === "number" && Number.isFinite(p.lineOpacity)) lineOpacity = Math.max(0, Math.min(1, p.lineOpacity));
   return { strokeColor, fillColor, fillOpacity, lineWidth, lineOpacity };
 }
 
@@ -32602,9 +32602,9 @@ function gisSanitizeProperties(raw, kind){
       const fc = src.fillColor.trim();
       if (/^#[0-9a-fA-F]{6}$/.test(fc)) out.fillColor = sanitizeTrackColor(fc);
     }
-    if (Number.isFinite(Number(src.fillOpacity))) out.fillOpacity = Math.max(0, Math.min(1, Number(src.fillOpacity)));
-    if (Number.isFinite(Number(src.lineWidth))) out.lineWidth = Math.max(1, Math.min(8, Number(src.lineWidth)));
-    if (Number.isFinite(Number(src.lineOpacity))) out.lineOpacity = Math.max(0, Math.min(1, Number(src.lineOpacity)));
+    if (typeof src.fillOpacity === "number" && Number.isFinite(src.fillOpacity)) out.fillOpacity = Math.max(0, Math.min(1, src.fillOpacity));
+    if (typeof src.lineWidth === "number" && Number.isFinite(src.lineWidth)) out.lineWidth = Math.max(1, Math.min(8, src.lineWidth));
+    if (typeof src.lineOpacity === "number" && Number.isFinite(src.lineOpacity)) out.lineOpacity = Math.max(0, Math.min(1, src.lineOpacity));
   } else {
     out.created_at = (typeof src.created_at === "string" && src.created_at) ? src.created_at.slice(0, 40) : new Date().toISOString();
     out.updated_at = (typeof src.updated_at === "string" && src.updated_at) ? src.updated_at.slice(0, 40) : out.created_at;
