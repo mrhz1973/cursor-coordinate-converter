@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-VERTEX-MODAL CLOSED / PASS end-to-end (docs-only):** catena runtime **`a4fa8e7`** (review byte Claude retroattiva **PASS**) + **`5f8f73d`** (lista Lati) + **`5449cb9`** (FIX2 RAMO A CSS-only, review **non richiesta**); sequenza QA FAIL→fix→PASS; attestazione «**QA P-VERTEX-MODAL PASS operatore**»; runtime VPS invariato **`5449cb9`**; monolite non toccato; **P-STYLE** prossimo candidato; batch P5 non modificato; inbox **`2026-06-26_1400_riepilogo_finito-sessione.md`**.
+
 2026-06-26 — **P-VERTEX-MODAL-FIX2 CLOSED runtime (QA re-test pending):** fix CSS **`5449cb9`** — `dialog#polygonPanel:not([open]){ display:none }` perché `display:flex` P-UI-UNIFORM sovrascriveva stato nativo; probe operatore su `5f8f73d`: click `×`/`−` OK ma pannello visibile con `panelOpen=false`; **RAMO A** (solo CSS, zero JS); deploy GIS-only **PASS tecnico**; blob **`acafd519…`**; **non CLOSED end-to-end**; inbox **`2026-06-26_1200_riepilogo_finito-sessione.md`**.
 
 2026-06-26 — **P-VERTEX-MODAL-FIX redeploy (QA FAIL lista Lati su a4fa8e7, re-test pending):** fix runtime **`5f8f73d`** (`vtxNum` scope in `renderPolygonEditInfo`); QA FAIL «lista Lati vuota» su `a4fa8e7`; redeploy **PASS tecnico**; review byte `a4fa8e7` PASS retroattiva; **non CLOSED**; inbox **`2026-06-26_0905_riepilogo_finito-sessione.md`**.
