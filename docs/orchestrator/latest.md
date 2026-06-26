@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-26 — **P-VERTEX-MODAL-FIX2 CLOSED runtime (QA re-test pending):** fix CSS **`5449cb9`** — `dialog#polygonPanel:not([open]){ display:none }` perché `display:flex` P-UI-UNIFORM sovrascriveva stato nativo; probe operatore su `5f8f73d`: click `×`/`−` OK ma pannello visibile con `panelOpen=false`; **RAMO A** (solo CSS, zero JS); deploy GIS-only **PASS tecnico**; blob **`acafd519…`**; **non CLOSED end-to-end**; inbox **`2026-06-26_1200_riepilogo_finito-sessione.md`**.
+
 2026-06-26 — **P-VERTEX-MODAL-FIX redeploy (QA FAIL lista Lati su a4fa8e7, re-test pending):** fix runtime **`5f8f73d`** (`vtxNum` scope in `renderPolygonEditInfo`); QA FAIL «lista Lati vuota» su `a4fa8e7`; redeploy **PASS tecnico**; review byte `a4fa8e7` PASS retroattiva; **non CLOSED**; inbox **`2026-06-26_0905_riepilogo_finito-sessione.md`**.
 
 2026-06-26 — **P-VERTEX-MODAL runtime pubblicato (deploy PASS, QA pending):** runtime **`a4fa8e7`**, blob **`37b0edb…`**, deploy GIS-only **PASS tecnico** (byte **2325545**, SHA **`d75c03cf…`**, cmp PASS); **QA operatore pending**; Review Claude **NON RICHIESTA**; commit docs **`e5ed837`**; **non CLOSED end-to-end**; **P-STYLE** review-gated non avviato; batch P5 non chiuso. Inbox **`2026-06-26_0852_riepilogo_finito-sessione.md`**.
