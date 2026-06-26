@@ -185,6 +185,40 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## P-VERTEX-MODAL — modifica numerica coordinate vertice (QA operatore pending)
+
+**Runtime:** `a4fa8e7` — deploy GIS-only **PASS tecnico**; **non CLOSED end-to-end** finché manca attestazione operatore.
+
+**URL QA:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=a4fa8e7
+```
+
+**Checklist operatore minima:**
+
+1. Aprire un poligono in **Modifica**.
+2. Click su handle vertice **senza trascinare** → si apre il modal coordinate.
+3. Verificare che il **drag P2** (trascinamento reale) continui a funzionare.
+4. Aprire il modal dal pulsante **⌖ Modifica coord.** sulla riga del lato corrispondente al vertice.
+5. Modificare Lat con punto decimale e Lon con virgola decimale → **Salva** → vertice/overlay/lati/area/perimetro aggiornati.
+6. Riprovare con lat fuori `[-90, 90]` o lon fuori `[-180, 180]` → errore nel modal, geometria invariata.
+7. **Annulla** modal → nessuna mutazione.
+8. Modificare un vertice, verificare dirty; ripristinare coordinate originali → dirty coerente con logica esistente.
+9. **Annulla** generale Modifica → geometria canonica ripristinata.
+10. **Salva** generale → persistenza dopo riapertura.
+11. **P4** spostamento poligono invariato.
+12. Inserimento **P3-ADD** e cancellazione **P3** invariati.
+13. Cambio **IT/EN** label modal.
+14. **FR** non modificato.
+15. Nessuna regressione su drawing / Modifica / unità P-UNITS.
+
+**Attestazione richiesta:**
+
+```
+QA P-VERTEX-MODAL PASS operatore
+```
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
