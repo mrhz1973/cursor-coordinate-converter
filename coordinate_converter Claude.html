@@ -31850,6 +31850,27 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wrap);
 }
 
+/** P-STYLE-A+B — risoluzione stile poligono (saved|edit); fallback per contesto; nessun side effect. */
+function polygonResolveStyleProps(props, mode){
+  const p = (props && typeof props === "object") ? props : {};
+  const strokeColor = (typeof p.color === "string" && p.color) ? p.color : "#ca8a04";
+  const isEdit = mode === "edit";
+  const defFillOpacity = isEdit ? 0.28 : 0.18;
+  const defLineWidth = isEdit ? 2.5 : 1.5;
+  let fillColor = strokeColor;
+  if (typeof p.fillColor === "string"){
+    const fc = p.fillColor.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(fc)) fillColor = sanitizeTrackColor(fc);
+  }
+  let fillOpacity = defFillOpacity;
+  if (Number.isFinite(Number(p.fillOpacity))) fillOpacity = Math.max(0, Math.min(1, Number(p.fillOpacity)));
+  let lineWidth = defLineWidth;
+  if (Number.isFinite(Number(p.lineWidth))) lineWidth = Math.max(1, Math.min(8, Number(p.lineWidth)));
+  let lineOpacity = 1;
+  if (Number.isFinite(Number(p.lineOpacity))) lineOpacity = Math.max(0, Math.min(1, Number(p.lineOpacity)));
+  return { strokeColor, fillColor, fillOpacity, lineWidth, lineOpacity };
+}
+
 /** Overlay SVG per state.gisPolygons[] — Pass A T1.1. */
 function renderGisPolygonsOverlay(tileMap, markerLat, markerLon, zoom){
   if (!tileMap) return;
@@ -31897,13 +31918,14 @@ function renderGisPolygonsOverlay(tileMap, markerLat, markerLon, zoom){
     if (Math.abs(last.x - first.x) < 0.5 && Math.abs(last.y - first.y) < 0.5) pxPts.pop();
     if (pxPts.length < 3) continue;
     const ptStr = pxPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
-    const color = (typeof props.color === "string" && props.color) ? props.color : "#ca8a04";
+    const sty = polygonResolveStyleProps(props, "saved");
     const poly = document.createElementNS(ns, "polygon");
     poly.setAttribute("points", ptStr);
-    poly.setAttribute("fill", color);
-    poly.setAttribute("fill-opacity", "0.18");
-    poly.setAttribute("stroke", color);
-    poly.setAttribute("stroke-width", "1.5");
+    poly.setAttribute("fill", sty.fillColor);
+    poly.setAttribute("fill-opacity", String(sty.fillOpacity));
+    poly.setAttribute("stroke", sty.strokeColor);
+    poly.setAttribute("stroke-width", String(sty.lineWidth));
+    poly.setAttribute("stroke-opacity", String(sty.lineOpacity));
     poly.setAttribute("stroke-linejoin", "round");
     poly.style.pointerEvents = "none";
     svg.appendChild(poly);
@@ -31944,12 +31966,13 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
   svg.setAttribute("height", String(H));
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
   svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:6";
-  let color = "#ca8a04";
+  let editProps = {};
   try {
     const f = gisFeatureGet(String(ed.id));
-    const props = f && f.properties ? f.properties : {};
-    if (typeof props.color === "string" && props.color) color = props.color;
+    editProps = (f && f.properties) ? f.properties : {};
   } catch(_){}
+  const sty = polygonResolveStyleProps(editProps, "edit");
+  const color = sty.strokeColor;
   const pxPts = [];
   for (const c of working){
     if (!Array.isArray(c) || c.length < 2) continue;
@@ -31970,10 +31993,11 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     const poly = document.createElementNS(ns, "polygon");
     poly.setAttribute("points", ptStr);
     poly.setAttribute("class", "poly-edit-shape");
-    poly.setAttribute("fill", color);
-    poly.setAttribute("fill-opacity", "0.28");
-    poly.setAttribute("stroke", color);
-    poly.setAttribute("stroke-width", "2.5");
+    poly.setAttribute("fill", sty.fillColor);
+    poly.setAttribute("fill-opacity", String(sty.fillOpacity));
+    poly.setAttribute("stroke", sty.strokeColor);
+    poly.setAttribute("stroke-width", String(sty.lineWidth));
+    poly.setAttribute("stroke-opacity", String(sty.lineOpacity));
     poly.setAttribute("stroke-linejoin", "round");
     poly.style.pointerEvents = moveMode ? "auto" : "none";
     if (moveMode) poly.style.cursor = "grab";
@@ -31983,8 +32007,9 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     line.setAttribute("points", drawPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" "));
     line.setAttribute("class", "poly-edit-shape");
     line.setAttribute("fill", "none");
-    line.setAttribute("stroke", color);
-    line.setAttribute("stroke-width", "2.5");
+    line.setAttribute("stroke", sty.strokeColor);
+    line.setAttribute("stroke-width", String(sty.lineWidth));
+    line.setAttribute("stroke-opacity", String(sty.lineOpacity));
     line.style.pointerEvents = moveMode ? "auto" : "none";
     if (moveMode) line.style.cursor = "grab";
     svg.appendChild(line);
@@ -32573,6 +32598,13 @@ function gisSanitizeProperties(raw, kind){
     if (typeof ca === "string" && ca && !Number.isNaN(Date.parse(ca))) out.created_at = ca.slice(0, 40);
     const ua = src.updated_at;
     if (typeof ua === "string" && ua && !Number.isNaN(Date.parse(ua))) out.updated_at = ua.slice(0, 40);
+    if (typeof src.fillColor === "string"){
+      const fc = src.fillColor.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(fc)) out.fillColor = sanitizeTrackColor(fc);
+    }
+    if (Number.isFinite(Number(src.fillOpacity))) out.fillOpacity = Math.max(0, Math.min(1, Number(src.fillOpacity)));
+    if (Number.isFinite(Number(src.lineWidth))) out.lineWidth = Math.max(1, Math.min(8, Number(src.lineWidth)));
+    if (Number.isFinite(Number(src.lineOpacity))) out.lineOpacity = Math.max(0, Math.min(1, Number(src.lineOpacity)));
   } else {
     out.created_at = (typeof src.created_at === "string" && src.created_at) ? src.created_at.slice(0, 40) : new Date().toISOString();
     out.updated_at = (typeof src.updated_at === "string" && src.updated_at) ? src.updated_at.slice(0, 40) : out.created_at;
