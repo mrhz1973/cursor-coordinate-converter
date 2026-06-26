@@ -185,49 +185,42 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
-## P-VERTEX-MODAL — modifica numerica coordinate vertice (QA re-test pending)
+## P-VERTEX-MODAL — modifica numerica coordinate vertice — CLOSED / PASS end-to-end
 
-**Runtime autorevole:** `5449cb9` (include fix P-VERTEX-MODAL-FIX2 CSS `:not([open])` su `#polygonPanel`) — deploy GIS-only **PASS tecnico**; **non CLOSED end-to-end**.
+**Runtime autorevole:** `5449cb9` (catena `a4fa8e7` + `5f8f73d` + `5449cb9`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
 
-**Storico QA:** runtime `a4fa8e7` → **FAIL** («lista Lati vuota» — `ReferenceError: vtxNum is not defined` in `renderPolygonEditInfo`); runtime `5f8f73d` → **FAIL** (controlli header `×`/`−` — pannello visibile con `panelOpen=false`; causa CSS `display:flex` su dialog chiuso).
+**Catena runtime:**
 
-**URL QA:**
+| Commit | Ruolo |
+|--------|--------|
+| `a4fa8e7` | Runtime principale — modal coordinate vertice; pipeline P2 click-vs-drag; **review byte Claude retroattiva = PASS** |
+| `5f8f73d` | Fix lista «Lati» — scope `vtxNum`; nessuna nuova review Claude |
+| `5449cb9` | FIX2 visibilità pannello — **RAMO A** CSS-only (`:not([open]){ display:none }`); review Claude **non richiesta** |
+
+**Sequenza QA registrata:**
+
+```text
+QA FAIL operatore — lista Lati vuota (a4fa8e7)
+→ fix 5f8f73d
+QA FAIL operatore — controlli header ×/− non affidabili (5f8f73d)
+→ fix CSS 5449cb9
+→ deploy GIS-only PASS tecnico
+→ QA P-VERTEX-MODAL PASS operatore
+```
+
+**Attestazione finale (operatore):**
+
+```
+QA P-VERTEX-MODAL PASS operatore
+```
+
+**URL runtime:**
 
 ```
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5449cb9
 ```
 
-**Checklist operatore minima (iniziare da qui — controlli header post-FIX2):**
-
-1. Aprire **Poligoni** dal chip.
-2. Premere **`×`**: il pannello deve **scomparire**.
-3. Riaprire dal chip; premere **`×`** di nuovo.
-4. Riaprire; premere **`−`**: il pannello deve **minimizzarsi**; ripristinare dal chip.
-5. Ripetere **`−`** almeno **tre** volte (apri → minimizza → ripristina).
-6. Aprire e chiudere il **modal coordinate** vertice; riprovare **`−`** e **`×`**.
-
-**Poi verificare lista Lati (fix `5f8f73d`):**
-
-7. Aprire un poligono in **Modifica** ed espandere **Lati**.
-8. Verificare che la lista **non** sia vuota (triangolo → **3 righe**).
-9. Ogni riga mostra segmento, distanza, direzione e pulsanti **`⌖`**, **`+`**, **`✕`**.
-10. Console browser **senza errori** in apertura Modifica / espansione Lati.
-
-**Poi riprendere la QA P-VERTEX-MODAL completa:**
-
-11. Click su handle vertice **senza trascinare** → modal coordinate.
-12. Verificare che il **drag P2** continui a funzionare.
-13. Aprire il modal dal pulsante **⌖** sulla riga del vertice.
-14. Modificare Lat (punto) e Lon (virgola) → **Salva** → overlay/lati/area/perimetro aggiornati.
-15. Valori fuori range → errore nel modal, geometria invariata.
-16. **Annulla** modal; dirty reversibile; **Annulla**/**Salva** generale.
-17. **P4**, **P3-ADD**, **P3** invariati; **IT/EN**; **FR** non modificato.
-
-**Attestazione richiesta:**
-
-```
-QA P-VERTEX-MODAL PASS operatore
-```
+**Checklist eseguita (storico):** controlli header `×`/`−`; lista Lati popolata; modal coordinate; drag P2; Salva/Annulla; P3/P3-ADD/P4 invariati; IT/EN; FR non modificato.
 
 ## Istruzioni per il workflow `finito`
 
