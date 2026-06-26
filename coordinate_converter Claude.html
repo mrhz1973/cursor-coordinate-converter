@@ -47166,6 +47166,41 @@ function polygonKmlColor(cssHex, alphaHex){
   const pad = (n) => n.toString(16).padStart(2, "0");
   return (a + pad(b) + pad(g) + pad(r)).toLowerCase();
 }
+function polygonKmlColorFromOpacity(cssHex, opacity){
+  const clamped = Math.max(0, Math.min(1, Number(opacity)));
+  const alphaByte = Math.round(clamped * 255);
+  const alphaHex = alphaByte.toString(16).padStart(2, "0");
+  return polygonKmlColor(cssHex, alphaHex);
+}
+function polygonExportFillColorValid(v){
+  return typeof v === "string" && /^#[0-9a-fA-F]{6}$/.test(String(v).trim());
+}
+function polygonExportStyleFieldPresent(props){
+  if (!props) return false;
+  if (polygonExportFillColorValid(props.fillColor)) return true;
+  if (typeof props.fillOpacity === "number" && Number.isFinite(props.fillOpacity)) return true;
+  if (typeof props.lineWidth === "number" && Number.isFinite(props.lineWidth)) return true;
+  if (typeof props.lineOpacity === "number" && Number.isFinite(props.lineOpacity)) return true;
+  return false;
+}
+function polygonKmlStyleExtendedData(props){
+  if (!props) return "";
+  const items = [];
+  if (polygonExportFillColorValid(props.fillColor)){
+    items.push("      <Data name=\"fillColor\"><value>" + polygonXmlEscape(String(props.fillColor).trim()) + "</value></Data>");
+  }
+  if (typeof props.fillOpacity === "number" && Number.isFinite(props.fillOpacity)){
+    items.push("      <Data name=\"fillOpacity\"><value>" + polygonXmlEscape(String(props.fillOpacity)) + "</value></Data>");
+  }
+  if (typeof props.lineWidth === "number" && Number.isFinite(props.lineWidth)){
+    items.push("      <Data name=\"lineWidth\"><value>" + polygonXmlEscape(String(props.lineWidth)) + "</value></Data>");
+  }
+  if (typeof props.lineOpacity === "number" && Number.isFinite(props.lineOpacity)){
+    items.push("      <Data name=\"lineOpacity\"><value>" + polygonXmlEscape(String(props.lineOpacity)) + "</value></Data>");
+  }
+  if (!items.length) return "";
+  return "    <ExtendedData>\n" + items.join("\n") + "\n    </ExtendedData>\n";
+}
 function polygonRingToKmlCoords(ring){
   if (!Array.isArray(ring) || ring.length < 3) return "";
   const pts = [];
@@ -47203,6 +47238,10 @@ function polygonBuildGeoJson(){
     const ua = props.updated_at;
     if (typeof ua === "string" && ua && !Number.isNaN(Date.parse(ua))) outProps.updated_at = ua;
     if (props.kind != null) outProps.kind = props.kind;
+    if (polygonExportFillColorValid(props.fillColor)) outProps.fillColor = String(props.fillColor).trim();
+    if (typeof props.fillOpacity === "number" && Number.isFinite(props.fillOpacity)) outProps.fillOpacity = props.fillOpacity;
+    if (typeof props.lineWidth === "number" && Number.isFinite(props.lineWidth)) outProps.lineWidth = props.lineWidth;
+    if (typeof props.lineOpacity === "number" && Number.isFinite(props.lineOpacity)) outProps.lineOpacity = props.lineOpacity;
     const geom = gisClonePlain(f.geometry);
     if (!geom || !geom.coordinates) continue;
     features.push({ type: "Feature", geometry: geom, properties: outProps });
@@ -47241,12 +47280,28 @@ function polygonBuildKml(){
     const name = props.name || ("Polygon " + (idx + 1));
     const color = (typeof props.color === "string" && props.color) ? props.color : "#ca8a04";
     const styleId = "polyStyle" + idx;
-    const lineColor = polygonKmlColor(color, "ff");
-    const fillColor = polygonKmlColor(color, "66");
-    s += "  <Style id=\"" + styleId + "\"><LineStyle><color>" + lineColor + "</color><width>2</width></LineStyle>";
-    s += "<PolyStyle><color>" + fillColor + "</color></PolyStyle></Style>\n";
+    const hasPStyle = polygonExportStyleFieldPresent(props);
+    if (hasPStyle){
+      const lineOpacityVal = (typeof props.lineOpacity === "number" && Number.isFinite(props.lineOpacity)) ? props.lineOpacity : 1;
+      const lineWidthVal = (typeof props.lineWidth === "number" && Number.isFinite(props.lineWidth)) ? props.lineWidth : 1.5;
+      const fillOpacityVal = (typeof props.fillOpacity === "number" && Number.isFinite(props.fillOpacity)) ? props.fillOpacity : 0.18;
+      const fillCss = polygonExportFillColorValid(props.fillColor) ? String(props.fillColor).trim() : color;
+      const lineKmlColor = polygonKmlColorFromOpacity(color, lineOpacityVal);
+      const fillKmlColor = polygonKmlColorFromOpacity(fillCss, fillOpacityVal);
+      s += "  <Style id=\"" + styleId + "\"><LineStyle><color>" + lineKmlColor + "</color><width>" + lineWidthVal + "</width></LineStyle>";
+      s += "<PolyStyle><color>" + fillKmlColor + "</color><fill>1</fill><outline>1</outline></PolyStyle></Style>\n";
+    } else {
+      const lineColor = polygonKmlColor(color, "ff");
+      const fillColor = polygonKmlColor(color, "66");
+      s += "  <Style id=\"" + styleId + "\"><LineStyle><color>" + lineColor + "</color><width>2</width></LineStyle>";
+      s += "<PolyStyle><color>" + fillColor + "</color></PolyStyle></Style>\n";
+    }
     s += "  <Placemark>\n";
     s += "    <name>" + polygonXmlEscape(name) + "</name>\n";
+    if (hasPStyle){
+      const extData = polygonKmlStyleExtendedData(props);
+      if (extData) s += extData;
+    }
     s += "    <styleUrl>#" + styleId + "</styleUrl>\n";
     s += "    <Polygon><outerBoundaryIs><LinearRing><coordinates>" + coordStr + "</coordinates></LinearRing></outerBoundaryIs></Polygon>\n";
     s += "  </Placemark>\n";
