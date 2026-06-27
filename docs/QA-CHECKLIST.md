@@ -306,6 +306,48 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=28cc2d2
 
 **Backlog UX next (non FAIL):** colonne ridimensionabili manualmente; rinomina inline cella Nome — candidato **P-POLYGON-LIST-UX-NEXT**, backlog separato.
 
+## APP-BUILD-NUM-B1 — build number monotono runtime — CLOSED / PASS tecnico end-to-end
+
+**Runtime autorevole live:** `bd588a8` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS tecnico end-to-end** (chiusura docs-only post-deploy).
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `bd588a89a6bf0674351b384c607ab7ef73952ab2` |
+| Blob monolite | `afddf87a6f05929b540f768a0193872057fe24cb` |
+| `APP_BUILD_NUM` | `1` (costante numerica monotona, non persistita) |
+| Display | `B5.5Z · build 1` (title / `#appBuildFooter` / `#appBuildAbout`) |
+| `APP_BUILD_DETAIL` | intatto — *Quick geographic JPG export and segmented high-zoom tiles* |
+
+**Review byte Claude:** PASS — GO DEPLOY GIS-only.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = bd588a89a6bf0674351b384c607ab7ef73952ab2
+VPS blob = afddf87a6f05929b540f768a0193872057fe24cb
+pull = FF 28cc2d2..bd588a8
+goi-gis-app.service = active / enabled
+HTTP 200
+byte repo = 2365479
+byte servito = 2365479
+SHA-256 = 23907b809bb47ed52befe36058b6e8a1f01148d40ec54104a71dc019da3b0614 (match)
+CMP_PASS = sì
+```
+
+**Verifica runtime minima (tecnica, non QA funzionale estesa):**
+
+- `APP_BUILD_NUM = 1` presente nel body servito
+- Footer / About = `B5.5Z · build 1`
+- `#appBuildAboutDetail` / `APP_BUILD_DETAIL` intatto
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=bd588a8
+```
+
+**Nota metodo:** al prossimo blocco runtime, fold cleanup span statici `#appBuildFooter`/`#appBuildAbout` (solo `B5.5Z` o vuoto; `applyAppBuildLabel` unica fonte ` · build N`). **`APP_BUILD_ID` `B5.5Z` invariato.**
+
 ## P-STYLE — stile poligoni (schema, export, editor) — CLOSED / PASS end-to-end
 
 **Runtime autorevole:** `0a51379` (catena A+B `95c100d` + D `efca0bf` + C `0a51379`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
