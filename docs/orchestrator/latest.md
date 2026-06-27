@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-27 — **P-STYLE CLOSED / PASS end-to-end (docs-only):** commit task **`898be8c`** — chiusura memoria dopo attestazione «**QA P-STYLE PASS operatore**»; catena **`95c100d`** (A+B, review Claude PASS) + **`efca0bf`** (D, review Claude PASS) + **`0a51379`** (C, gate orchestratore PASS, review Claude non richiesta); deploy GIS-only **`0a51379`** PASS tecnico già registrato; monolite invariato **`8d13e41…`**; blocco README **`c409819`** aveva correttamente P-STYLE pending; batch P5 / P5-B2-F **non chiusi**; inbox **`2026-06-27_1148_riepilogo_finito-sessione.md`**.
+
 2026-06-27 — **README bootloader rules (docs-only):** commit **`c409819`** — tre regole AI front-loaded in README (ls-remote/read-set, finito-in-prompt, Agent+Auto); monolite invariato **`8d13e41…`**; **P-STYLE** deploy **`0a51379`** PASS tecnico, QA operatore **pending** (non chiuso qui); inbox **`2026-06-27_1200_riepilogo_readme-bootloader-finito.md`**.
 
 2026-06-26 — **P-VERTEX-MODAL CLOSED / PASS end-to-end (docs-only):** catena runtime **`a4fa8e7`** (review byte Claude retroattiva **PASS**) + **`5f8f73d`** (lista Lati) + **`5449cb9`** (FIX2 RAMO A CSS-only, review **non richiesta**); sequenza QA FAIL→fix→PASS; attestazione «**QA P-VERTEX-MODAL PASS operatore**»; runtime VPS invariato **`5449cb9`**; monolite non toccato; **P-STYLE** prossimo candidato; batch P5 non modificato; inbox **`2026-06-26_1400_riepilogo_finito-sessione.md`**.
