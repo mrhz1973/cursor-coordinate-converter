@@ -7850,7 +7850,7 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
 body.gis-mode dialog#searchPanel.search-panel > .app-modal-body{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
 }
-/* MODAL-STD-B2-FIX1: Preferiti — hide when closed; lista scrollabile dopo resize. */
+/* MODAL-STD-B2-FIX1: Preferiti — hide when closed. */
 body.gis-mode dialog#favoritesPanel.favorites-panel{
   display:flex;
   flex-direction:column;
@@ -7858,34 +7858,14 @@ body.gis-mode dialog#favoritesPanel.favorites-panel{
 body.gis-mode dialog#favoritesPanel.favorites-panel:not([open]){
   display:none;
 }
+/* MODAL-STD-B2-FIX2: scroll intero body (schema Search B1; gisPanelSyncBodySize → max-height + overflow-y). */
+body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-head,
+body.gis-mode dialog#favoritesPanel.favorites-panel > .gis-modal-minimize-notice{
+  flex:0 0 auto;
+}
 #favoritesPanelBody.app-modal-body{
   flex:1 1 auto;
   min-height:0;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden !important;
-}
-#favoritesPanelBody #sec-favorites{
-  flex:1 1 auto;
-  min-height:0;
-  display:flex;
-  flex-direction:column;
-}
-#favoritesPanelBody #sec-favorites .section-body{
-  flex:1 1 auto;
-  min-height:0;
-  display:flex !important;
-  flex-direction:column;
-  overflow:hidden;
-}
-#favoritesPanelBody #sec-favorites .section-body > :not(#favorites-list){
-  flex:0 0 auto;
-}
-#favoritesPanelBody #favorites-list{
-  flex:1 1 auto;
-  min-height:0;
-  overflow:auto;
-  -webkit-overflow-scrolling:touch;
 }
 #favoritesPanelBody #favorites-list .favorites-table-wrap{
   overflow-x:auto;
@@ -18146,7 +18126,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 12;
+const APP_BUILD_NUM = 13;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -46843,15 +46823,7 @@ function wireSearchPanelFloatingGis(dlg){
 }
 function syncFavoritesPanelBodyLayout(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
-  const opts = _favoritesPanelLayoutOpts();
-  gisPanelSyncBodySize(dlg, opts);
-  const body = document.getElementById("favoritesPanelBody");
-  if (body){
-    try {
-      body.style.overflowY = "hidden";
-      body.style.overflowX = "hidden";
-    } catch(_){}
-  }
+  gisPanelSyncBodySize(dlg, _favoritesPanelLayoutOpts());
 }
 function wireFavoritesPanelFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
