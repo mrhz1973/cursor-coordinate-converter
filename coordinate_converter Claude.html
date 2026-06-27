@@ -4563,6 +4563,7 @@ body.mm-enlarged .sig-badge{display:none}
 }
 
 /* ================= MODAL (help / shortcuts) ================= */
+/* TODO cleanup-legacy-modals-build5: legacy Help/QR modal styles after dialog migration */
 .modal-overlay{
   position:fixed; inset:0; background:rgba(0,0,0,.55);
   display:none; align-items:center; justify-content:center;
@@ -4586,6 +4587,26 @@ body.mm-enlarged .sig-badge{display:none}
 .modal .modal-close{
   position:absolute; top:12px; right:12px;
 }
+/* Help / QR — modern <dialog> content modals */
+dialog.help-modal.app-modal{
+  max-width:min(560px, 96vw);
+  width:min(560px, 96vw);
+}
+dialog.qr-modal.app-modal{
+  max-width:min(440px, 96vw);
+  width:min(440px, 96vw);
+}
+dialog.help-modal.app-modal[open],
+dialog.qr-modal.app-modal[open]{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+dialog.help-modal.app-modal .app-modal-body,
+dialog.qr-modal.app-modal .app-modal-body{
+  flex:1 1 auto;
+  min-height:0;
+}
 /* QR modal: centered code + URL readout */
 .qr-modal{max-width:440px}
 .qr-svg-wrap{
@@ -4606,11 +4627,16 @@ body.mm-enlarged .sig-badge{display:none}
   font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem;
   color:var(--text); text-align:center;
 }
-.modal p{color:var(--muted); font-size:.9rem}
-.modal table{width:100%; border-collapse:collapse; margin-top:10px}
-.modal table td{padding:8px 4px; border-bottom:1px solid var(--border); font-size:.93rem; vertical-align:top}
-.modal table td:first-child{width:40%}
-.modal kbd{
+.modal p,
+dialog.help-modal.app-modal .app-modal-body p{color:var(--muted); font-size:.9rem}
+.modal table,
+dialog.help-modal.app-modal .app-modal-body table{width:100%; border-collapse:collapse; margin-top:10px}
+.modal table td,
+dialog.help-modal.app-modal .app-modal-body table td{padding:8px 4px; border-bottom:1px solid var(--border); font-size:.93rem; vertical-align:top}
+.modal table td:first-child,
+dialog.help-modal.app-modal .app-modal-body table td:first-child{width:40%}
+.modal kbd,
+dialog.help-modal.app-modal .app-modal-body kbd{
   display:inline-block; padding:2px 8px; border-radius:5px;
   border:1px solid var(--border-strong); background:var(--panel2);
   font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem; font-weight:600;
@@ -5787,6 +5813,7 @@ body.printing-report #printReport:not(:empty){
   body:not(.printing-report) .input-col, body:not(.printing-report) details,
   body:not(.printing-report) footer, body:not(.printing-report) .actions,
   body:not(.printing-report) .header-ctrls, body:not(.printing-report) .modal-overlay,
+  body:not(.printing-report) #helpOverlay, body:not(.printing-report) #qrModal,
   body:not(.printing-report) .sig-badge, body:not(.printing-report) #printReport:empty{ display:none !important; }
   body:not(.printing-report) .grid{ grid-template-columns:1fr; }
   body:not(.printing-report) .results-col, body:not(.printing-report) .maps-col{
@@ -9008,6 +9035,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     min-height:44px;
     justify-content:center;
   }
+  /* TODO cleanup-legacy-modals-build5: legacy Help/QR modal mobile styles after dialog migration */
   .modal-overlay{
     padding:max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
     align-items:flex-end;
@@ -9019,6 +9047,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     overflow-y:auto;
     -webkit-overflow-scrolling:touch;
     padding:18px 16px max(16px, env(safe-area-inset-bottom, 0px));
+  }
+  dialog.help-modal.app-modal,
+  dialog.qr-modal.app-modal{
+    width:calc(100vw - 16px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+    max-width:calc(100vw - 16px - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
   }
   .tools-drawer{
     padding-top:env(safe-area-inset-top, 0px);
@@ -11203,10 +11236,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 </aside>
 
 <!-- ============ HELP MODAL (keyboard shortcuts) ============ -->
-<div class="modal-overlay" id="helpOverlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
-  <div class="modal">
-    <button class="modal-close" id="helpClose" aria-label="Close">×</button>
-    <h2 id="helpTitle" data-i18n="help.title">Guida rapida & scorciatoie</h2>
+<dialog id="helpOverlay" class="app-modal help-modal" aria-labelledby="helpTitle">
+  <div class="app-modal-head">
+    <h2 id="helpTitle" class="app-modal-title" data-i18n="help.title">Guida rapida & scorciatoie</h2>
+    <button type="button" class="app-modal-close" id="helpClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
     <p data-i18n="help.intro">Una panoramica veloce delle funzioni principali. In fondo trovi tutte le scorciatoie da tastiera.</p>
 
     <div class="mg-section-title" data-i18n="help.guide.title">Mini-guida</div>
@@ -11347,7 +11382,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- ============ FLOATING AUTHOR MONOGRAM (bottom-right, always visible) ============ -->
 <button id="sigBadge" class="sig-badge" type="button"
@@ -11359,10 +11394,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <div id="mapBackdrop" class="mini-map-backdrop" aria-hidden="true"></div>
 
 <!-- ============ QR MODAL (share coordinate via scannable code) ============ -->
-<div class="modal-overlay" id="qrModal" role="dialog" aria-modal="true" aria-labelledby="qrTitle">
-  <div class="modal qr-modal">
-    <button class="modal-close" id="qrClose" aria-label="Close">×</button>
-    <h2 id="qrTitle" data-i18n="qr.title">QR — Condividi coordinata</h2>
+<dialog id="qrModal" class="app-modal qr-modal" aria-labelledby="qrTitle">
+  <div class="app-modal-head">
+    <h2 id="qrTitle" class="app-modal-title" data-i18n="qr.title">QR — Condividi coordinata</h2>
+    <button type="button" class="app-modal-close" id="qrClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
     <p class="sub-section-hint" data-i18n="qr.desc">Inquadra questo codice con lo smartphone per aprire il punto direttamente in Google Maps / Apple Maps.</p>
     <div id="qrSvg" class="qr-svg-wrap"></div>
     <div class="qr-url-row">
@@ -11373,7 +11410,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button id="btnQrDownload" class="btn btn-sm btn-primary" data-i18n="qr.download" data-i18n-tip="tip.qrDownload">Scarica PNG</button>
     </div>
   </div>
-</div>
+</dialog>
 
 <!-- Hidden file input for drag&drop fallback -->
 <input type="file" id="globalFileInput" class="file-input-hidden" accept=".gpx,.kml,.kmz,.geojson,.json,.csv,.txt,.shp,.wkt">
@@ -17779,7 +17816,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 4;
+const APP_BUILD_NUM = 5;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24465,9 +24502,23 @@ function bindAppFullResetDialog(){
 
 function openHelp(){
   try { closeHeaderSettingsMenu(); } catch(_){}
-  document.getElementById("helpOverlay").classList.add("open");
+  const dlg = document.getElementById("helpOverlay");
+  if (!dlg) return;
+  const isGis = document.body.classList.contains("gis-mode");
+  if (isGis && typeof dlg.show === "function"){
+    try { dlg.show(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else if (typeof dlg.showModal === "function"){
+    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
+  } else {
+    dlg.setAttribute("open", "");
+  }
+  try { dlg.setAttribute("aria-modal", isGis ? "false" : "true"); } catch(_){}
 }
-function closeHelp(){ document.getElementById("helpOverlay").classList.remove("open"); }
+function closeHelp(){
+  const dlg = document.getElementById("helpOverlay");
+  if (!dlg) return;
+  try { dlg.close(); } catch(_){ dlg.removeAttribute("open"); }
+}
 function isTypingInField(){
   const el = document.activeElement;
   if (!el) return false;
@@ -24692,9 +24743,9 @@ function bindHotkeys(){
         }
       }
       const qr = document.getElementById("qrModal");
-      if (qr && qr.classList.contains("open")){ closeQrModal(); ev.preventDefault(); return; }
+      if (qr && qr.open){ closeQrModal(); ev.preventDefault(); return; }
       const ov = document.getElementById("helpOverlay");
-      if (ov && ov.classList.contains("open")){ closeHelp(); ev.preventDefault(); return; }
+      if (ov && ov.open){ closeHelp(); ev.preventDefault(); return; }
       if (isTypingInField()){ document.activeElement.blur(); return; }
       /* GIS hub: Esc è gestito dal listener dedicato (drawer/modali/picker).
        * Non chiamare clearForm() qui: resetterebbe lastResult, permalink e
@@ -42199,9 +42250,6 @@ function bindUI(){
   document.getElementById("btnHelp").addEventListener("click", openHelp);
   document.getElementById("helpClose").addEventListener("click", closeHelp);
   try { if (typeof bindRangeRingsUI === "function") bindRangeRingsUI(); } catch(_){}
-  document.getElementById("helpOverlay").addEventListener("click", (ev) => {
-    if (ev.target.id === "helpOverlay") closeHelp();
-  });
 
   // Floating author badge → opens Help modal and scrolls to the About section
   const sigBadge = document.getElementById("sigBadge");
@@ -42378,9 +42426,6 @@ function bindUI(){
   // QR modal wiring
   document.getElementById("btnQr").addEventListener("click", openQrModal);
   document.getElementById("qrClose").addEventListener("click", closeQrModal);
-  document.getElementById("qrModal").addEventListener("click", (ev) => {
-    if (ev.target && ev.target.id === "qrModal") closeQrModal();
-  });
   document.getElementById("btnQrDownload").addEventListener("click", qrDownloadPng);
   document.getElementById("btnQrCopy").addEventListener("click", (ev) => qrCopyUrl(ev.currentTarget));
   document.getElementById("btnExportGpx").addEventListener("click", () => exportSingle("gpx"));
@@ -52310,11 +52355,21 @@ function openQrModal(){
   }
   urlEl.textContent = url;
   urlEl.dataset.url = url;
-  modal.classList.add("open");
+  if (!modal) return;
+  const isGis = document.body.classList.contains("gis-mode");
+  if (isGis && typeof modal.show === "function"){
+    try { modal.show(); } catch(_){ modal.setAttribute("open", ""); }
+  } else if (typeof modal.showModal === "function"){
+    try { modal.showModal(); } catch(_){ modal.setAttribute("open", ""); }
+  } else {
+    modal.setAttribute("open", "");
+  }
+  try { modal.setAttribute("aria-modal", isGis ? "false" : "true"); } catch(_){}
 }
 function closeQrModal(){
   const modal = document.getElementById("qrModal");
-  if (modal) modal.classList.remove("open");
+  if (!modal) return;
+  try { modal.close(); } catch(_){ modal.removeAttribute("open"); }
 }
 function qrDownloadPng(){
   const svgEl = document.querySelector("#qrSvg svg");
