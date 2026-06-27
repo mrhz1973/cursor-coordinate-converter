@@ -2672,6 +2672,16 @@ dialog.polygon-vertex-coord-dialog .app-modal-body input[type="text"]{
   margin-top:0.2em;
   box-sizing:border-box;
 }
+dialog.polygon-vertex-coord-dialog .poly-vertex-coord-format-sel{
+  width:100%;
+  margin-top:0.2em;
+  margin-bottom:0.35em;
+  box-sizing:border-box;
+}
+dialog.polygon-vertex-coord-dialog .poly-vertex-coord-dd-wrap[hidden],
+dialog.polygon-vertex-coord-dialog .poly-vertex-coord-combined-wrap[hidden]{
+  display:none;
+}
 dialog.polygon-vertex-coord-dialog .poly-vertex-coord-actions{
   display:flex;
   gap:0.5em;
@@ -10640,12 +10650,22 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <div class="app-modal-body">
     <p id="polygonVertexCoordDialogVertexLbl" class="hint poly-vertex-coord-vtx" role="status"></p>
-    <label for="polygonVertexCoordLat" data-i18n="gis.polygonPanel.vertexModalLat">Latitudine</label>
-    <input type="text" id="polygonVertexCoordLat" inputmode="decimal" autocomplete="off" spellcheck="false"
-           data-i18n-aria="gis.polygonPanel.vertexModalLat">
-    <label for="polygonVertexCoordLon" data-i18n="gis.polygonPanel.vertexModalLon">Longitudine</label>
-    <input type="text" id="polygonVertexCoordLon" inputmode="decimal" autocomplete="off" spellcheck="false"
-           data-i18n-aria="gis.polygonPanel.vertexModalLon">
+    <label for="polygonVertexCoordFormatSel" data-i18n="gis.polygonPanel.vertexModalFormat">Formato coordinate</label>
+    <select id="polygonVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
+            data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
+    <div id="polygonVertexCoordDdWrap" class="poly-vertex-coord-dd-wrap">
+      <label for="polygonVertexCoordLat" data-i18n="gis.polygonPanel.vertexModalLat">Latitudine</label>
+      <input type="text" id="polygonVertexCoordLat" inputmode="decimal" autocomplete="off" spellcheck="false"
+             data-i18n-aria="gis.polygonPanel.vertexModalLat">
+      <label for="polygonVertexCoordLon" data-i18n="gis.polygonPanel.vertexModalLon">Longitudine</label>
+      <input type="text" id="polygonVertexCoordLon" inputmode="decimal" autocomplete="off" spellcheck="false"
+             data-i18n-aria="gis.polygonPanel.vertexModalLon">
+    </div>
+    <div id="polygonVertexCoordCombinedWrap" class="poly-vertex-coord-combined-wrap" hidden>
+      <label for="polygonVertexCoordCombined" data-i18n="gis.polygonPanel.vertexModalCombined">Coordinate</label>
+      <input type="text" id="polygonVertexCoordCombined" autocomplete="off" spellcheck="false"
+             data-i18n-aria="gis.polygonPanel.vertexModalCombined">
+    </div>
     <p id="polygonVertexCoordDialogErr" class="geo-warn poly-vertex-coord-err" role="alert" aria-live="assertive" hidden></p>
     <div class="poly-vertex-coord-actions" role="group" aria-labelledby="polygonVertexCoordDialogTitle">
       <button type="button" class="btn btn-sm btn-primary" id="polygonVertexCoordDialogSave" data-i18n="gis.polygonPanel.editSave">Salva</button>
@@ -12164,7 +12184,16 @@ const I18N = {
     "gis.polygonPanel.vertexModalLat":"Latitudine",
     "gis.polygonPanel.vertexModalLon":"Longitudine",
     "gis.polygonPanel.vertexModalEditBtn":"Modifica coord.",
+    "gis.polygonPanel.vertexModalFormat":"Formato coordinate",
+    "gis.polygonPanel.vertexModalFormatDd":"Decimale lat/lon",
+    "gis.polygonPanel.vertexModalFormatSigned":"Decimale con segno",
+    "gis.polygonPanel.vertexModalFormatDdm":"DDM",
+    "gis.polygonPanel.vertexModalFormatDms":"DMS",
+    "gis.polygonPanel.vertexModalFormatUtm":"UTM",
+    "gis.polygonPanel.vertexModalFormatMgrs":"MGRS",
+    "gis.polygonPanel.vertexModalCombined":"Coordinate",
     "gis.polygonPanel.vertexModalCoordInvalid":"Coordinate non valide.",
+    "gis.polygonPanel.vertexModalUtmRange":"Coordinate fuori intervallo UTM (−80° … 84° lat).",
     "gis.polygonPanel.vertexModalLatRange":"Latitudine fuori intervallo (−90 … 90).",
     "gis.polygonPanel.vertexModalLonRange":"Longitudine fuori intervallo (−180 … 180).",
     "tip.polygonPanel.edit":"Modifica la geometria del poligono sulla mappa.",
@@ -13813,7 +13842,16 @@ const I18N = {
     "gis.polygonPanel.vertexModalLat":"Latitude",
     "gis.polygonPanel.vertexModalLon":"Longitude",
     "gis.polygonPanel.vertexModalEditBtn":"Edit coords",
+    "gis.polygonPanel.vertexModalFormat":"Coordinate format",
+    "gis.polygonPanel.vertexModalFormatDd":"Decimal lat/lon",
+    "gis.polygonPanel.vertexModalFormatSigned":"Signed decimal",
+    "gis.polygonPanel.vertexModalFormatDdm":"DDM",
+    "gis.polygonPanel.vertexModalFormatDms":"DMS",
+    "gis.polygonPanel.vertexModalFormatUtm":"UTM",
+    "gis.polygonPanel.vertexModalFormatMgrs":"MGRS",
+    "gis.polygonPanel.vertexModalCombined":"Coordinates",
     "gis.polygonPanel.vertexModalCoordInvalid":"Invalid coordinates.",
+    "gis.polygonPanel.vertexModalUtmRange":"Coordinates out of UTM range (−80° … 84° lat).",
     "gis.polygonPanel.vertexModalLatRange":"Latitude out of range (−90 … 90).",
     "gis.polygonPanel.vertexModalLonRange":"Longitude out of range (−180 … 180).",
     "tip.polygonPanel.edit":"Edit polygon geometry on the map.",
@@ -17097,6 +17135,11 @@ let mapPolyEditDocDrag = null;
 let mapPolyEditDocDragRaf = null;
 /** Transient index for P-VERTEX-MODAL (not persisted). */
 let polygonVertexCoordModalIdx = null;
+/** Transient coordinate format for vertex modal (P-VERTEX-FORMAT; session-only, not persisted). */
+let polygonVertexCoordFormat = "dd";
+/** Transient canonical lon/lat while vertex modal is open (not persisted). */
+let polygonVertexCoordModalCanon = null;
+const POLY_VERTEX_COORD_FORMATS = ["dd", "signed", "ddm", "dms", "utm", "mgrs"];
 const POLY_EDIT_DRAG_CLICK_THRESH_PX = 5;
 function mapPolyEditDocDragCleanup(){
   if (mapPolyEditDocDragRaf){
@@ -46711,6 +46754,164 @@ function polygonParseDecimalCoordInput(raw){
   if (!Number.isFinite(n)) return { ok: false };
   return { ok: true, value: n };
 }
+function polygonVertexCoordFormatI18nKey(fmt){
+  const map = {
+    dd: "gis.polygonPanel.vertexModalFormatDd",
+    signed: "gis.polygonPanel.vertexModalFormatSigned",
+    ddm: "gis.polygonPanel.vertexModalFormatDdm",
+    dms: "gis.polygonPanel.vertexModalFormatDms",
+    utm: "gis.polygonPanel.vertexModalFormatUtm",
+    mgrs: "gis.polygonPanel.vertexModalFormatMgrs"
+  };
+  return map[fmt] || map.dd;
+}
+function polygonPopulateVertexCoordFormatSel(){
+  const sel = document.getElementById("polygonVertexCoordFormatSel");
+  if (!sel) return;
+  const cur = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
+  sel.innerHTML = "";
+  for (const fmt of POLY_VERTEX_COORD_FORMATS){
+    const opt = document.createElement("option");
+    opt.value = fmt;
+    const key = polygonVertexCoordFormatI18nKey(fmt);
+    opt.textContent = (typeof t === "function" ? t(key) : "") || fmt;
+    sel.appendChild(opt);
+  }
+  sel.value = cur;
+}
+function polygonFormatVertexCoordDisplay(lon, lat, fmt){
+  const out = { ddLat: "", ddLon: "", combined: "", utmUnavailable: false };
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return out;
+  const f = fmt || "dd";
+  if (f === "dd"){
+    out.ddLat = String(lat);
+    out.ddLon = String(lon);
+    return out;
+  }
+  try {
+    if (f === "signed") out.combined = fmtDD(lat, lon).signed;
+    else if (f === "ddm") out.combined = fmtDDM(lat, lon);
+    else if (f === "dms") out.combined = fmtDMS(lat, lon);
+    else if (f === "utm"){
+      const u = latLonToUTM(lat, lon);
+      out.combined = fmtUTM(u);
+    } else if (f === "mgrs") out.combined = latLonToMGRS(lat, lon, 5);
+  } catch(_){
+    if (f === "utm") out.utmUnavailable = true;
+    out.combined = "";
+  }
+  out.ddLat = String(lat);
+  out.ddLon = String(lon);
+  return out;
+}
+function polygonParseVertexCoordByFormat(fmt, ddLatStr, ddLonStr, combinedStr){
+  const f = fmt || "dd";
+  try {
+    if (f === "dd"){
+      const latP = polygonParseDecimalCoordInput(ddLatStr);
+      if (!latP.ok) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      const lonP = polygonParseDecimalCoordInput(ddLonStr);
+      if (!lonP.ok) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      if (latP.value < -90 || latP.value > 90) return { ok: false, key: "gis.polygonPanel.vertexModalLatRange" };
+      if (lonP.value < -180 || lonP.value > 180) return { ok: false, key: "gis.polygonPanel.vertexModalLonRange" };
+      const sanitized = gisSanitizeCoordinate([lonP.value, latP.value]);
+      if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+    }
+    const s = String(combinedStr == null ? "" : combinedStr).trim();
+    if (!s) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+    if (f === "signed"){
+      const parts = s.split(",");
+      if (parts.length < 2) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      const latP = polygonParseDecimalCoordInput(parts[0]);
+      const lonP = polygonParseDecimalCoordInput(parts[1]);
+      if (!latP.ok || !lonP.ok) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      if (latP.value < -90 || latP.value > 90) return { ok: false, key: "gis.polygonPanel.vertexModalLatRange" };
+      if (lonP.value < -180 || lonP.value > 180) return { ok: false, key: "gis.polygonPanel.vertexModalLonRange" };
+      const sanitized = gisSanitizeCoordinate([lonP.value, latP.value]);
+      if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+    }
+    if (f === "ddm" || f === "dms"){
+      const ll = parseFreeTextLatLon(s);
+      validateLatLon(ll.lat, ll.lon);
+      const sanitized = gisSanitizeCoordinate([ll.lon, ll.lat]);
+      if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+    }
+    if (f === "utm"){
+      const u = parseUTMFree(s);
+      if (!u) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      const ll = utmToLatLon(u.zone, u.hemisphere, u.easting, u.northing);
+      validateLatLon(ll.lat, ll.lon);
+      const sanitized = gisSanitizeCoordinate([ll.lon, ll.lat]);
+      if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+    }
+    if (f === "mgrs"){
+      const ll = mgrsToLatLonExt(s);
+      validateLatLon(ll.lat, ll.lon);
+      const sanitized = gisSanitizeCoordinate([ll.lon, ll.lat]);
+      if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+      return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+    }
+  } catch (e){
+    if (e && (e.key === "err.outRange" || e.i18nKey === "err.outRange")) return { ok: false, key: "gis.polygonPanel.vertexModalUtmRange" };
+    return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+  }
+  return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
+}
+function polygonSyncVertexCoordModalUiFromCanon(){
+  const c = polygonVertexCoordModalCanon;
+  if (!c || !Number.isFinite(c.lon) || !Number.isFinite(c.lat)) return;
+  const fmt = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
+  const disp = polygonFormatVertexCoordDisplay(c.lon, c.lat, fmt);
+  const ddWrap = document.getElementById("polygonVertexCoordDdWrap");
+  const combWrap = document.getElementById("polygonVertexCoordCombinedWrap");
+  const latInp = document.getElementById("polygonVertexCoordLat");
+  const lonInp = document.getElementById("polygonVertexCoordLon");
+  const combInp = document.getElementById("polygonVertexCoordCombined");
+  const isDd = fmt === "dd";
+  if (ddWrap) ddWrap.hidden = !isDd;
+  if (combWrap) combWrap.hidden = isDd;
+  if (isDd){
+    if (latInp) latInp.value = disp.ddLat;
+    if (lonInp) lonInp.value = disp.ddLon;
+  } else if (combInp){
+    combInp.value = disp.combined;
+  }
+  if (disp.utmUnavailable && fmt === "utm"){
+    polygonShowVertexCoordModalErr("gis.polygonPanel.vertexModalUtmRange");
+  }
+}
+function polygonVertexCoordModalTryUpdateCanonFromInputs(fmtOverride){
+  const fmt = fmtOverride || polygonVertexCoordFormat || "dd";
+  const latInp = document.getElementById("polygonVertexCoordLat");
+  const lonInp = document.getElementById("polygonVertexCoordLon");
+  const combInp = document.getElementById("polygonVertexCoordCombined");
+  const v = polygonParseVertexCoordByFormat(fmt,
+    latInp ? latInp.value : "",
+    lonInp ? lonInp.value : "",
+    combInp ? combInp.value : "");
+  if (v.ok) polygonVertexCoordModalCanon = { lon: v.lon, lat: v.lat };
+  return v;
+}
+function polygonOnVertexCoordFormatChange(){
+  const sel = document.getElementById("polygonVertexCoordFormatSel");
+  const prevFmt = polygonVertexCoordFormat || "dd";
+  polygonVertexCoordModalTryUpdateCanonFromInputs(prevFmt);
+  polygonVertexCoordFormat = (sel && sel.value) ? sel.value : "dd";
+  if (POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) === -1) polygonVertexCoordFormat = "dd";
+  polygonHideVertexCoordModalErr();
+  polygonSyncVertexCoordModalUiFromCanon();
+  const fmt = polygonVertexCoordFormat;
+  const combInp = document.getElementById("polygonVertexCoordCombined");
+  const latInp = document.getElementById("polygonVertexCoordLat");
+  try {
+    if (fmt === "dd" && latInp) latInp.focus();
+    else if (combInp) combInp.focus();
+  } catch(_){}
+}
 function polygonHideVertexCoordModalErr(){
   const err = document.getElementById("polygonVertexCoordDialogErr");
   if (err){ err.textContent = ""; err.hidden = true; }
@@ -46722,19 +46923,12 @@ function polygonShowVertexCoordModalErr(msgKey){
   err.textContent = msg;
   err.hidden = false;
 }
-function polygonValidateVertexCoordModalInputs(latStr, lonStr){
-  const latP = polygonParseDecimalCoordInput(latStr);
-  if (!latP.ok) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
-  const lonP = polygonParseDecimalCoordInput(lonStr);
-  if (!lonP.ok) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
-  if (latP.value < -90 || latP.value > 90) return { ok: false, key: "gis.polygonPanel.vertexModalLatRange" };
-  if (lonP.value < -180 || lonP.value > 180) return { ok: false, key: "gis.polygonPanel.vertexModalLonRange" };
-  const sanitized = gisSanitizeCoordinate([lonP.value, latP.value]);
-  if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
-  return { ok: true, lon: sanitized[0], lat: sanitized[1] };
+function polygonValidateVertexCoordModalInputs(latStr, lonStr, combinedStr, fmt){
+  return polygonParseVertexCoordByFormat(fmt || polygonVertexCoordFormat || "dd", latStr, lonStr, combinedStr);
 }
 function polygonCloseVertexCoordModal(){
   polygonVertexCoordModalIdx = null;
+  polygonVertexCoordModalCanon = null;
   const dlg = document.getElementById("polygonVertexCoordDialog");
   if (!dlg) return;
   try {
@@ -46756,18 +46950,28 @@ function polygonOpenVertexCoordModal(vertexIndex){
   if (!Array.isArray(c) || c.length < 2) return false;
   const latInp = document.getElementById("polygonVertexCoordLat");
   const lonInp = document.getElementById("polygonVertexCoordLon");
+  const combInp = document.getElementById("polygonVertexCoordCombined");
   const vtxLbl = document.getElementById("polygonVertexCoordDialogVertexLbl");
   if (!latInp || !lonInp) return false;
   polygonVertexCoordModalIdx = i;
-  latInp.value = Number.isFinite(Number(c[1])) ? String(c[1]) : "";
-  lonInp.value = Number.isFinite(Number(c[0])) ? String(c[0]) : "";
+  const lon0 = Number(c[0]), lat0 = Number(c[1]);
+  polygonVertexCoordModalCanon = { lon: lon0, lat: lat0 };
+  try { polygonPopulateVertexCoordFormatSel(); } catch(_){}
+  const fmtSel = document.getElementById("polygonVertexCoordFormatSel");
+  if (fmtSel) fmtSel.value = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
+  polygonSyncVertexCoordModalUiFromCanon();
   if (vtxLbl){
     const tpl = (typeof t === "function" ? t("gis.polygonPanel.vertexModalVertex") : "") || "Vertice {0}";
     vtxLbl.textContent = tpl.indexOf("{0}") !== -1 ? tpl.replace(/\{0\}/g, String(i + 1)) : ((tpl ? tpl + " " : "") + (i + 1));
   }
   polygonHideVertexCoordModalErr();
   try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
-  try { latInp.focus(); latInp.select(); } catch(_){}
+  try {
+    const fmt = polygonVertexCoordFormat || "dd";
+    if (fmt === "dd"){ latInp.focus(); latInp.select(); }
+    else if (combInp){ combInp.focus(); combInp.select(); }
+    else { latInp.focus(); latInp.select(); }
+  } catch(_){}
   return true;
 }
 function polygonApplyVertexCoordModal(){
@@ -46779,8 +46983,13 @@ function polygonApplyVertexCoordModal(){
   if (!Number.isFinite(idx) || idx < 0 || !Array.isArray(ed.working) || idx >= ed.working.length) return false;
   const latInp = document.getElementById("polygonVertexCoordLat");
   const lonInp = document.getElementById("polygonVertexCoordLon");
+  const combInp = document.getElementById("polygonVertexCoordCombined");
   if (!latInp || !lonInp) return false;
-  const v = polygonValidateVertexCoordModalInputs(latInp.value, lonInp.value);
+  const v = polygonValidateVertexCoordModalInputs(
+    latInp.value,
+    lonInp.value,
+    combInp ? combInp.value : "",
+    polygonVertexCoordFormat);
   if (!v.ok){
     polygonShowVertexCoordModalErr(v.key || "gis.polygonPanel.vertexModalCoordInvalid");
     return false;
@@ -46801,12 +47010,17 @@ function polygonWireVertexCoordModalOnce(){
   const closeX = document.getElementById("polygonVertexCoordDialogCloseX");
   const latInp = document.getElementById("polygonVertexCoordLat");
   const lonInp = document.getElementById("polygonVertexCoordLon");
+  const combInp = document.getElementById("polygonVertexCoordCombined");
+  const fmtSel = document.getElementById("polygonVertexCoordFormatSel");
+  try { polygonPopulateVertexCoordFormatSel(); } catch(_){}
+  if (fmtSel) fmtSel.addEventListener("change", () => { polygonOnVertexCoordFormatChange(); });
   if (saveBtn) saveBtn.addEventListener("click", (ev) => { ev.preventDefault(); polygonApplyVertexCoordModal(); });
   const cancelFn = (ev) => { if (ev) ev.preventDefault(); polygonCloseVertexCoordModal(); };
   if (cancelBtn) cancelBtn.addEventListener("click", cancelFn);
   if (closeX) closeX.addEventListener("click", cancelFn);
   dlg.addEventListener("close", () => {
     polygonVertexCoordModalIdx = null;
+    polygonVertexCoordModalCanon = null;
     polygonHideVertexCoordModalErr();
   });
   dlg.addEventListener("cancel", (ev) => { ev.preventDefault(); polygonCloseVertexCoordModal(); });
@@ -46816,6 +47030,7 @@ function polygonWireVertexCoordModalOnce(){
   };
   if (latInp) latInp.addEventListener("keydown", onEnter);
   if (lonInp) lonInp.addEventListener("keydown", onEnter);
+  if (combInp) combInp.addEventListener("keydown", onEnter);
 }
 /** Geodesic midpoint [lon, lat] between two ring coords; pure, no state (POLY-PARITY-P3-ADD). */
 function polygonGeodesicMidpointLonLat(a, b){
