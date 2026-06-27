@@ -222,6 +222,41 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5449cb9
 
 **Checklist eseguita (storico):** controlli header `×`/`−`; lista Lati popolata; modal coordinate; drag P2; Salva/Annulla; P3/P3-ADD/P4 invariati; IT/EN; FR non modificato.
 
+## P-VERTEX-FORMAT — selettore formato coordinate vertice — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `6ef714a` (catena base `b9db963` + UX2 `6ef714a`) — deploy GIS-only **PASS tecnico** (base + UX2); **CLOSED / PASS end-to-end**.
+
+**Catena runtime:**
+
+| Commit | Ruolo | Blob monolite |
+|--------|--------|----------------|
+| `b9db963` | Base — selettore formato in `#polygonVertexCoordDialog`; formati dd/signed/ddm/dms/utm/mgrs; `polygonVertexCoordModalCanon`; Salva-only; canonico `[lon, lat]` | `0cae293bb3b91fd3ed549531e477649f4b37a769` |
+| `6ef714a` | UX2 — mirror `#polygonPanelVertexCoordFormatSel` in `#polygonPanelUnits`; sync bidirezionale `polygonVertexCoordFormat` | `ed62117316c4e6ad04fc67f1f484c46a3f5aa76b` |
+
+**Deploy registrato:**
+
+| Fase | Runtime VPS | Esito tecnico |
+|------|-------------|---------------|
+| Base | `b9db963` | GIS-only PASS — HTTP 200, byte/SHA match, CMP_PASS, `goi-gis-app` active/enabled |
+| UX2 | `6ef714a` | GIS-only PASS — byte **2352764**, SHA-256 **`7f879905…`**, CMP_PASS, HTTP 200; altri servizi non toccati |
+
+**Attestazioni QA (operatore):**
+
+```text
+QA P-VERTEX-FORMAT PASS operatore
+QA P-VERTEX-FORMAT-UX2 PASS operatore
+```
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=6ef714a
+```
+
+**Checklist UX2 (storico):** selettore in Unità di misura; sync pannello↔modal; riformattazione con modal aperto senza salvataggio automatico; nessuna mutazione geometria con modal chiuso; Salva/Annulla; Lati/Unità/Stile/drag/Sposta/salvataggio poligono senza regressioni.
+
+**Note:** formato transiente/sessione; nessun nuovo store persistente; **`APP_BUILD_ID` `B5.5Z` invariato** (non bumpato). Review Claude **non richiesta** in chiusura docs (zero delta runtime).
+
 ## P-STYLE — stile poligoni (schema, export, editor) — CLOSED / PASS end-to-end
 
 **Runtime autorevole:** `0a51379` (catena A+B `95c100d` + D `efca0bf` + C `0a51379`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
