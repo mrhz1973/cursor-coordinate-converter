@@ -5789,6 +5789,8 @@ body.printing-report #printReport:not(:empty){
 .tile-map.range-rings-edit-move-mode .tile-layer{ cursor:crosshair; }
 .tile-map.astro-pick-mode,
 .tile-map.astro-pick-mode .tile-layer{ cursor:crosshair; }
+.tile-map.convert-pick-mode,
+.tile-map.convert-pick-mode .tile-layer{ cursor:crosshair; }
 /* #endregion CSS — TABLES FAVORITES PRINT AND MOBILE POLISH */
 /* #region CSS — PRINT */
 /* ================= PRINT ================= */
@@ -6854,6 +6856,56 @@ html[data-theme="light"] #trackModalBody .track-points-list::-webkit-scrollbar-t
 #convertModalBody #convertWaypointFeedback.is-ok{ color: color-mix(in srgb, var(--ok, #16a34a) 92%, var(--text-primary)); }
 #convertModalBody #convertWaypointFeedback.is-err{ color: color-mix(in srgb, var(--error, #dc2626) 88%, var(--text-primary)); }
 #convertModalBody #convertWaypointFeedback.is-info{ color: var(--muted); }
+/* CONVERT-SOURCE-PICKER: compact source row in manual input / Convert modal. */
+.convert-source-block{
+  margin:0 0 12px;
+  padding:10px 12px;
+  border:1px solid color-mix(in srgb, var(--border, rgba(148,163,184,.35)) 80%, transparent);
+  border-radius:var(--radius-card, 10px);
+  background:color-mix(in srgb, var(--surface-2, #1e293b) 90%, transparent);
+}
+.convert-source-title{
+  display:block;
+  font-size:.82rem;
+  font-weight:600;
+  margin:0 0 8px;
+  color:var(--text-primary);
+}
+.convert-source-grid{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.convert-source-item label{
+  display:block;
+  font-size:.75rem;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.convert-source-ctrl{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.convert-source-select{
+  flex:1 1 140px;
+  min-width:0;
+  max-width:100%;
+}
+.convert-source-map-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+.convert-source-feedback{
+  margin:8px 0 0;
+  font-size:.78rem;
+}
+.convert-source-feedback.is-ok{ color:color-mix(in srgb, var(--ok, #16a34a) 92%, var(--text-primary)); }
+.convert-source-feedback.is-err{ color:color-mix(in srgb, var(--error, #dc2626) 88%, var(--text-primary)); }
+.convert-source-feedback.is-info{ color:var(--muted); }
 #convertModalBody .results-col .convert-cm-footer-options{
   display: flex;
   justify-content: flex-end;
@@ -9416,6 +9468,38 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span class="mid-hint" data-i18n="input.hintShort">Inserisci campo per campo invece di incollare</span>
       </summary>
     <p class="input-hint" data-i18n="input.hint">Usa queste schede se preferisci inserire i campi uno per uno invece di incollare.</p>
+    <div class="convert-source-block" id="convertSourceBlock">
+      <span class="convert-source-title" data-i18n="convert.source.title">Sorgente coordinate</span>
+      <div class="convert-source-grid">
+        <div class="convert-source-item">
+          <label for="convertSrcWpSelect"><span data-i18n="convert.source.waypoint">Waypoint</span></label>
+          <div class="convert-source-ctrl">
+            <select id="convertSrcWpSelect" class="convert-source-select" aria-label="Waypoint">
+              <option value="" data-i18n="convert.source.empty">— nessuno —</option>
+            </select>
+            <button type="button" id="convertSrcWpApply" class="btn btn-sm" disabled data-i18n="convert.source.use">Usa</button>
+          </div>
+        </div>
+        <div class="convert-source-item">
+          <label for="convertSrcFavSelect"><span data-i18n="convert.source.favorite">Preferito</span></label>
+          <div class="convert-source-ctrl">
+            <select id="convertSrcFavSelect" class="convert-source-select" aria-label="Preferito">
+              <option value="" data-i18n="convert.source.empty">— nessuno —</option>
+            </select>
+            <button type="button" id="convertSrcFavApply" class="btn btn-sm" disabled data-i18n="convert.source.use">Usa</button>
+          </div>
+        </div>
+        <div class="convert-source-item">
+          <span class="convert-source-title" style="margin:0;font-size:.75rem;font-weight:500;color:var(--muted)" data-i18n="convert.source.mapGroup">Mappa</span>
+          <div class="convert-source-map-row">
+            <button type="button" id="convertSrcMapPick" class="btn btn-sm" data-i18n="convert.source.mapPick" data-i18n-tip="tip.convert.source.mapPick">Punto mappa</button>
+            <button type="button" id="convertSrcMapPickCancel" class="btn btn-sm btn-ghost" hidden data-i18n="convert.source.mapPickCancel">Annulla</button>
+            <button type="button" id="convertSrcMapCenter" class="btn btn-sm" data-i18n="convert.source.mapCenter" data-i18n-tip="tip.convert.source.mapCenter">Centro mappa</button>
+          </div>
+        </div>
+      </div>
+      <p id="convertSourceFeedback" class="hint convert-source-feedback" role="status" aria-live="polite" hidden></p>
+    </div>
     <div class="tabs" role="tablist">
       <button class="tab active" data-tab="latlon" data-i18n="tab.latlon">Lat/Lon</button>
       <button class="tab" data-tab="utm" data-i18n="tab.utm">UTM</button>
@@ -13030,6 +13114,22 @@ const I18N = {
     "convert.addWaypoint":"Aggiungi waypoint",
     "convert.addWaypointDisabled":"Converti prima un punto valido",
     "convert.waypointAdded":"Waypoint aggiunto",
+    "convert.source.title":"Sorgente coordinate",
+    "convert.source.waypoint":"Waypoint",
+    "convert.source.favorite":"Preferito",
+    "convert.source.empty":"— nessuno —",
+    "convert.source.use":"Usa",
+    "convert.source.mapGroup":"Mappa",
+    "convert.source.mapPick":"Punto mappa",
+    "convert.source.mapPickCancel":"Annulla",
+    "convert.source.mapCenter":"Centro mappa",
+    "convert.source.mapUnavailable":"Mappa non disponibile",
+    "convert.source.pickActive":"Clicca sulla mappa per scegliere il punto.",
+    "convert.source.pickCancelled":"Scelta mappa annullata.",
+    "convert.source.loaded":"Coordinate caricate.",
+    "convert.source.noMapCenter":"Centro mappa non disponibile.",
+    "tip.convert.source.mapPick":"Un clic sulla mappa carica le coordinate nel convertitore (one-shot).",
+    "tip.convert.source.mapCenter":"Usa il centro della vista mappa corrente.",
     "fav.convertedPointName":"Punto convertito",
     "fav.savedFromWaypoint":"Waypoint aggiunto ai Preferiti.",
     "fav.savedFromConverter":"Risultato aggiunto ai Preferiti.",
@@ -14693,6 +14793,22 @@ const I18N = {
     "convert.addWaypoint":"Add waypoint",
     "convert.addWaypointDisabled":"Convert a valid point first",
     "convert.waypointAdded":"Waypoint added",
+    "convert.source.title":"Coordinate source",
+    "convert.source.waypoint":"Waypoint",
+    "convert.source.favorite":"Favorite",
+    "convert.source.empty":"— none —",
+    "convert.source.use":"Use",
+    "convert.source.mapGroup":"Map",
+    "convert.source.mapPick":"Map point",
+    "convert.source.mapPickCancel":"Cancel",
+    "convert.source.mapCenter":"Map center",
+    "convert.source.mapUnavailable":"Map not available",
+    "convert.source.pickActive":"Click the map to choose a point.",
+    "convert.source.pickCancelled":"Map pick cancelled.",
+    "convert.source.loaded":"Coordinates loaded.",
+    "convert.source.noMapCenter":"Map center not available.",
+    "tip.convert.source.mapPick":"One map click loads coordinates into the converter.",
+    "tip.convert.source.mapCenter":"Use the current map view center.",
     "fav.convertedPointName":"Converted point",
     "fav.savedFromWaypoint":"Waypoint added to favorites.",
     "fav.savedFromConverter":"Conversion result added to favorites.",
@@ -16881,6 +16997,8 @@ const state = {
   gisMode: true,          // when true, the new GIS layout is active on startup
   activeTab: null,        // currently active tab key (track/measure/favorites/...)
   convertOpen: false,     // transient: Convert modal visibility
+  /** Transient: map one-shot pick for Convert coordinate source (CONVERT-SOURCE-PICKER). */
+  convertSourcePickMode: false,
   searchPanelOpen: false, // transient: floating Cerca panel visibility (GIS)
   favoritesPanelOpen: false, // transient: floating Favoriti panel visibility (GIS)
   layersPanelOpen: false, // transient: floating Mappa/Offline panel visibility (GIS)
@@ -17960,7 +18078,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 7;
+const APP_BUILD_NUM = 8;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24810,6 +24928,14 @@ function bindHotkeys(){
         ev.preventDefault();
         try { refreshTileMapForTrackUi(); } catch(_){}
         try { renderRangeRingsPanel(); } catch(_){}
+        return;
+      }
+      if (state.convertSourcePickMode){
+        try { convertClearSourcePickMode("esc"); } catch(_){}
+        ev.preventDefault();
+        try { ev.stopImmediatePropagation(); } catch(_){
+          try { ev.stopPropagation(); } catch(__){}
+        }
         return;
       }
       if (state.astroPickCenterMode){
@@ -33817,6 +33943,7 @@ function trackSyncPickModeUi(){
     tileMap.classList.toggle("range-rings-pick-create-mode", !!state.rangeRingsPickAndCreateMode);
     tileMap.classList.toggle("range-rings-edit-move-mode", !!state._rrEditingMoveCenterMode);
     tileMap.classList.toggle("astro-pick-mode", !!state.astroPickCenterMode);
+    tileMap.classList.toggle("convert-pick-mode", !!state.convertSourcePickMode);
   }
   const btnFin = document.getElementById("btnTrackFinish");
   if (btnFin){
@@ -37262,6 +37389,16 @@ function attachPanHandlers(root, lat, lon, zoom){
         }
         return;
       }
+      if (state.convertSourcePickMode && !drag.moved && cx != null && cy != null){
+        const zPickC = state.mapZoom || zoom;
+        const pickC = mapClientToLatLonMap(root, lat, lon, zPickC, cx, cy);
+        if (pickC && Number.isFinite(pickC.lat) && Number.isFinite(pickC.lon)){
+          try { validateLatLon(pickC.lat, pickC.lon); convertApplyPickedMapPoint(pickC.lat, pickC.lon); } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
       if (state.mapPickMode && !drag.moved && cx != null && cy != null){
         const zPick = state.mapZoom || zoom;
         const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
@@ -38433,6 +38570,7 @@ function astroClearPickCenterMode(reason){
 }
 /** Arm next map click for Astro position; disarms competing pick/measure/RR modes. */
 function astroEnterPickCenterMode(){
+  try { if (typeof convertClearSourcePickMode === "function") convertClearSourcePickMode("sourceChange"); } catch(_){}
   try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
   try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
   try { rangeRingsClearPickCenterMode(); } catch(_){}
@@ -39955,6 +40093,200 @@ const vLonDeg = (v) => { const n = parseFloatStrict(v); if (!Number.isFinite(n) 
 const vMin    = (v) => { const n = parseFloatStrict(v); if (!Number.isFinite(n) || n < 0 || n >= 60) throw 0; };
 const vSec    = (v) => { const n = parseFloatStrict(v); if (!Number.isFinite(n) || n < 0 || n >= 60) throw 0; };
 const vZone   = (v) => { const n = parseFloatStrict(v); if (!Number.isInteger(n) || n < 1 || n > 60) throw 0; };
+
+/* ========================= SECTION 21b: CONVERT SOURCE PICKER ========================= */
+function convertMapSourceAvailable(){
+  try {
+    const root = document.getElementById("miniMap");
+    if (!root) return false;
+    const tileMap = root.querySelector(".tile-map");
+    return !!(tileMap || root.querySelector("canvas") || root.childElementCount > 0);
+  } catch(_){
+    return false;
+  }
+}
+function convertShowSourceFeedback(msg, kind){
+  const el = document.getElementById("convertSourceFeedback");
+  if (!el) return;
+  const s = String(msg == null ? "" : msg).trim();
+  if (!s){ el.hidden = true; el.textContent = ""; el.className = "hint convert-source-feedback"; return; }
+  el.hidden = false;
+  el.textContent = s;
+  el.className = "hint convert-source-feedback" + (kind === "ok" ? " is-ok" : (kind === "err" ? " is-err" : " is-info"));
+}
+function convertActivateManualDDTab(){
+  try {
+    const det = document.getElementById("manualInputDetails");
+    if (det && !det.open) det.open = true;
+  } catch(_){}
+  try {
+    const tab = document.querySelector("#manualInputSection .tab[data-tab=\"latlon\"]");
+    if (tab && !tab.classList.contains("active")) tab.click();
+  } catch(_){}
+  try {
+    const sub = document.querySelector("#manualInputSection .subtab[data-sub=\"dd\"]");
+    if (sub && !sub.classList.contains("active")) sub.click();
+  } catch(_){}
+}
+function convertPopulateManualDD(lat, lon){
+  const alat = Math.abs(Number(lat));
+  const nl = normalizeLon(Number(lon));
+  const alon = Math.abs(nl);
+  const latIn = document.getElementById("dd-lat");
+  const lonIn = document.getElementById("dd-lon");
+  const latH = document.getElementById("dd-lat-hem");
+  const lonH = document.getElementById("dd-lon-hem");
+  if (latIn) latIn.value = String(round(alat, 6));
+  if (lonIn) lonIn.value = String(round(alon, 6));
+  if (latH) latH.value = Number(lat) >= 0 ? "N" : "S";
+  if (lonH) lonH.value = nl >= 0 ? "E" : "W";
+}
+function convertSyncMapSourceUi(){
+  const ok = convertMapSourceAvailable();
+  const pick = document.getElementById("convertSrcMapPick");
+  const center = document.getElementById("convertSrcMapCenter");
+  const cancel = document.getElementById("convertSrcMapPickCancel");
+  if (pick){
+    pick.disabled = !ok || !!state.convertSourcePickMode;
+    pick.title = ok ? "" : ((typeof t === "function" ? (t("convert.source.mapUnavailable") || "") : "") || "");
+  }
+  if (center){
+    center.disabled = !ok;
+    center.title = ok ? "" : ((typeof t === "function" ? (t("convert.source.mapUnavailable") || "") : "") || "");
+  }
+  if (cancel) cancel.hidden = !state.convertSourcePickMode;
+}
+function convertRefreshSourceSelects(){
+  const wpSel = document.getElementById("convertSrcWpSelect");
+  const favSel = document.getElementById("convertSrcFavSelect");
+  const wpBtn = document.getElementById("convertSrcWpApply");
+  const favBtn = document.getElementById("convertSrcFavApply");
+  if (!wpSel || !favSel) return;
+  const emptyLbl = (typeof t === "function" ? (t("convert.source.empty") || "") : "") || "—";
+  const wps = (typeof rrIndexRrPickerWaypoints === "function") ? rrIndexRrPickerWaypoints() : [];
+  const favs = (typeof rrIndexRrPickerFavorites === "function") ? rrIndexRrPickerFavorites() : [];
+  let h = "<option value=\"\">" + esc(emptyLbl) + "</option>";
+  for (const w of wps){
+    h += "<option value=\"" + esc(String(w.id)) + "\">" + esc(w.label) + "</option>";
+  }
+  wpSel.innerHTML = h;
+  wpSel.disabled = wps.length === 0;
+  if (wpBtn) wpBtn.disabled = wps.length === 0;
+  h = "<option value=\"\">" + esc(emptyLbl) + "</option>";
+  for (const f of favs){
+    h += "<option value=\"" + esc(String(f.id)) + "\">" + esc(f.label) + "</option>";
+  }
+  favSel.innerHTML = h;
+  favSel.disabled = favs.length === 0;
+  if (favBtn) favBtn.disabled = favs.length === 0;
+}
+function convertApplyLatLonFromSource(lat, lon){
+  try {
+    validateLatLon(lat, lon);
+  } catch(e){
+    convertShowSourceFeedback(typeof translateError === "function" ? translateError(e) : String(e), "err");
+    return;
+  }
+  convertClearSourcePickMode("apply");
+  convertActivateManualDDTab();
+  convertPopulateManualDD(lat, lon);
+  clearError();
+  try { doConvert(); } catch(e){
+    convertShowSourceFeedback(typeof translateError === "function" ? translateError(e) : String(e), "err");
+    return;
+  }
+  convertShowSourceFeedback((typeof t === "function" ? (t("convert.source.loaded") || "") : "") || "", "ok");
+  try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+}
+function convertDisarmOtherPickModesForSource(){
+  try { if (state.astroPickCenterMode && typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("convertSource"); } catch(_){}
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  try { if (typeof trackExitPickMode === "function") trackExitPickMode(); } catch(_){}
+  state.mapMeasureMode = false;
+  state.mapMeasurePts = null;
+  state.mapPolyPts = null;
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+    const pickBtn = root && root.querySelector(".tile-pick");
+    if (pickBtn){
+      pickBtn.classList.remove("is-active");
+      pickBtn.setAttribute("aria-pressed", "false");
+    }
+  } catch(_){}
+}
+function convertClearSourcePickMode(reason){
+  const was = !!state.convertSourcePickMode;
+  state.convertSourcePickMode = false;
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap) tileMap.classList.remove("convert-pick-mode");
+  } catch(_){}
+  convertSyncMapSourceUi();
+  if (was && (reason === "esc" || reason === "cancel")){
+    convertShowSourceFeedback((typeof t === "function" ? (t("convert.source.pickCancelled") || "") : "") || "", "info");
+  }
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+}
+function convertEnterSourcePickMode(){
+  if (!convertMapSourceAvailable()){
+    convertShowSourceFeedback((typeof t === "function" ? (t("convert.source.mapUnavailable") || "") : "") || "", "err");
+    return;
+  }
+  convertDisarmOtherPickModesForSource();
+  state.convertSourcePickMode = true;
+  convertShowSourceFeedback((typeof t === "function" ? (t("convert.source.pickActive") || "") : "") || "", "info");
+  convertSyncMapSourceUi();
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+}
+function convertApplyPickedMapPoint(lat, lon){
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+  convertApplyLatLonFromSource(lat, normalizeLon(lon));
+}
+function convertApplyMapCenterSource(){
+  const vc = state.viewCenter || state.lastPoint;
+  if (!vc || !Number.isFinite(vc.lat) || !Number.isFinite(vc.lon)){
+    convertShowSourceFeedback((typeof t === "function" ? (t("convert.source.noMapCenter") || "") : "") || "", "err");
+    return;
+  }
+  convertApplyLatLonFromSource(vc.lat, vc.lon);
+}
+function convertApplyWaypointSource(){
+  const sel = document.getElementById("convertSrcWpSelect");
+  if (!sel || !sel.value) return;
+  ensureMapWaypointsState();
+  const w = (state.mapWaypoints || []).find(x => String(x.id) === String(sel.value));
+  if (!w || !Number.isFinite(Number(w.lat)) || !Number.isFinite(Number(w.lon))) return;
+  convertApplyLatLonFromSource(Number(w.lat), Number(w.lon));
+}
+function convertApplyFavoriteSource(){
+  const sel = document.getElementById("convertSrcFavSelect");
+  if (!sel || !sel.value) return;
+  const f = (state.favorites || []).find(x => String(x.id) === String(sel.value));
+  if (!f || !Number.isFinite(Number(f.lat)) || !Number.isFinite(Number(f.lon))) return;
+  convertApplyLatLonFromSource(Number(f.lat), Number(f.lon));
+}
+function ensureConvertSourcePickerWired(){
+  const block = document.getElementById("convertSourceBlock");
+  if (!block || block._convertSourceWired) return;
+  block._convertSourceWired = true;
+  const wpBtn = document.getElementById("convertSrcWpApply");
+  const favBtn = document.getElementById("convertSrcFavApply");
+  const pickBtn = document.getElementById("convertSrcMapPick");
+  const cancelBtn = document.getElementById("convertSrcMapPickCancel");
+  const centerBtn = document.getElementById("convertSrcMapCenter");
+  if (wpBtn) wpBtn.addEventListener("click", (ev) => { ev.preventDefault(); convertApplyWaypointSource(); });
+  if (favBtn) favBtn.addEventListener("click", (ev) => { ev.preventDefault(); convertApplyFavoriteSource(); });
+  if (pickBtn) pickBtn.addEventListener("click", (ev) => { ev.preventDefault(); convertEnterSourcePickMode(); });
+  if (cancelBtn) cancelBtn.addEventListener("click", (ev) => { ev.preventDefault(); convertClearSourcePickMode("cancel"); });
+  if (centerBtn) centerBtn.addEventListener("click", (ev) => { ev.preventDefault(); convertApplyMapCenterSource(); });
+  try { convertRefreshSourceSelects(); } catch(_){}
+  try { convertSyncMapSourceUi(); } catch(_){}
+}
 
 /* ========================= SECTION 22: MAIN CONVERT ========================= */
 function doConvert(){
@@ -42371,6 +42703,7 @@ function bindUI(){
   bindAppFullResetDialog();
   // Main buttons
   document.getElementById("btnConvert").addEventListener("click", doConvert);
+  try { ensureConvertSourcePickerWired(); } catch(_){}
   document.getElementById("btnClear").addEventListener("click", clearForm);
   document.getElementById("btnCopyAll").addEventListener("click", copyAll);
   const btnAddResWp = document.getElementById("btnAddResultToWaypoint");
@@ -45129,6 +45462,8 @@ function openConvertModal(){
   // 6F.1: sync add-waypoint enabled state when opening with an existing valid `state.lastResult`.
   try { clearConvertWaypointFeedback(); } catch(_){}
   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+  try { convertRefreshSourceSelects(); } catch(_){}
+  try { convertSyncMapSourceUi(); } catch(_){}
 }
 
 function closeConvertModal(){
@@ -45164,6 +45499,7 @@ function closeConvertModal(){
   }
   try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   try { clearConvertWaypointFeedback(); } catch(_){}
+  try { convertClearSourcePickMode("panelClose"); } catch(_){}
   state.convertOpen = false;
   try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
   try {
