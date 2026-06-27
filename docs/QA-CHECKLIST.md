@@ -222,6 +222,49 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5449cb9
 
 **Checklist eseguita (storico):** controlli header `×`/`−`; lista Lati popolata; modal coordinate; drag P2; Salva/Annulla; P3/P3-ADD/P4 invariati; IT/EN; FR non modificato.
 
+## P-STYLE — stile poligoni (schema, export, editor) — CLOSED / PASS end-to-end
+
+**Runtime autorevole:** `0a51379` (catena A+B `95c100d` + D `efca0bf` + C `0a51379`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Catena runtime:**
+
+| Commit | Ruolo | Blob (se applicabile) |
+|--------|--------|------------------------|
+| `95c100d` | P-STYLE-A+B — sanitizer/rendering stile poligoni | `4a8463b1c6d71cde60d7bfe24a48049e6e3121ef` |
+| `efca0bf` | P-STYLE-D — export GeoJSON/KML con stile | `ac8a7c30d3530ab3e92bd80e81a811449e935788` |
+| `0a51379` | P-STYLE-C — UI editor stile working-copy | `8d13e41a36fe7cc0605dc8f315eff551725340ed` |
+
+**Review / gate:**
+
+- A+B e D: **review byte Claude PASS**
+- C: **gate orchestratore PASS** — solo UI/working-copy; nessun sanitizer/export/import/create-path/`saveStore` diretto; nessun nuovo campo persistito; FR congelato; **review Claude NON RICHIESTA**
+
+**Deploy P-STYLE-E (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS: 0a51379
+byte: 2340941 = 2340941
+SHA-256: a822533215ebe5c48ea33ee4fe0fc9397c2f1d237de8a92a87535299a93fc937
+CMP_PASS
+HTTP 200
+goi-gis-app.service active/enabled
+Planet-Clone / Navionics proxy / Docker / n8n / Tailscale firewall: non toccati
+```
+
+**Attestazione finale (operatore):**
+
+```
+QA P-STYLE PASS operatore
+```
+
+**Nota storica:** al blocco README bootloader (`c409819`) P-STYLE era correttamente **pending** (deploy PASS tecnico, QA operatore pending); chiusura end-to-end registrata in commit docs successivo dopo questa attestazione.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
+```
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
