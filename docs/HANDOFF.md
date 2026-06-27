@@ -110,25 +110,42 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `dac8a8d` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **P-POLYGON-LIST-UX-NEXT-A** — CLOSED / PASS end-to-end |
-| Runtime live VPS | `68928909a91cb2f828b968ce774e7f12e42666a9` |
-| Blob monolite | `30358cd3aafa9879d76400e23ce103ff5372b081` |
-| `APP_BUILD_NUM` | `2` |
-| Display runtime | `B5.5Z · build 2` |
+| HEAD remoto (verificato) | `e8e8ff1` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UI-MODAL-PARITY-HELP-QR-FIX1** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `e8e8ff13030496ccf31e6b4bcb8fc57772a60cac` |
+| Blob monolite | `6eee6872d47dd8a0ed4e04c34dd990e661ced153` |
+| `APP_BUILD_NUM` | `6` |
+| Display runtime | `B5.5Z · build 6` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| P-POLYGON-LIST-ENRICHMENT | **CLOSED / PASS end-to-end** |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=6892890` |
+| UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5→FIX1 build 6) |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e8e8ff1` |
 
 **Prossimo ordine operativo:**
 
-1. **P-POLYGON-LIST-UX-NEXT-B** — colonne tabella Poligoni ridimensionabili (larghezze transiente/sessione)
+1. **UI-MODAL-PARITY-HELP-QR-FIX2** — QR ridimensionabile (backlog non bloccante)
+2. **CONVERT-SOURCE-PICKER** — sorgenti waypoint/preferito/punto mappa nel Convertitore
+3. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
 
 ---
 
 ## Backlog / note immediate
 
-### UX-NEXT-B — colonne ridimensionabili
+### UI-MODAL-PARITY-HELP-QR-FIX2 — QR resizable
+
+- QR si apre correttamente (FIX1 PASS) ma non è ridimensionabile
+- Allineare UX a Help floating senza rompere Converti
+
+### CONVERT-SOURCE-PICKER
+
+- Waypoint / preferito / punto mappa corrente come sorgente Convertitore
+- Blocco separato, GIS-first
+
+### P-POLYGON-LIST-UX-NEXT-B-FIX2 — Vis indicator
+
+- Colonna Vis.: pallino verde se visibile, spento/grigio se nascosto
+- Micro-fix UX; non blocca chiusura Help/QR
+
+### UX-NEXT-B — colonne ridimensionabili (runtime landed)
 
 - Larghezze **sessione / transienti** su `state` o nodo mount
 - **Non** persistite in localStorage dedicato (salvo decisione esplicita futura)

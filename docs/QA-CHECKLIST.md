@@ -304,7 +304,62 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=28cc2d2
 
 **Checklist FIX2 (storico):** scroll tabella H+V; unità di misura e selettore P-VERTEX-FORMAT in cima; lista in fondo; sorting FIX1; stacking FIX1; nome con `title` completo; nessuna regressione evidente su Modifica/salvataggio/export.
 
-**Backlog UX next (non FAIL):** **UX-NEXT-A CLOSED** — vedi sezione dedicata sotto; **UX-NEXT-B** colonne ridimensionabili — prossimo candidato operativo.
+**Backlog UX next (non FAIL):** **UX-NEXT-A CLOSED** — vedi sezione dedicata sotto; **UX-NEXT-B** runtime landed (build 4, docs closure separata); **UI-MODAL-PARITY-HELP-QR CLOSED** — vedi sezioni dedicate sotto.
+
+## UI-MODAL-PARITY-HELP-QR — migrazione Help/QR a dialog (build 5) — CLOSED / QA operatore FAIL (storico)
+
+**Runtime:** `dcea02f` — blob `cf23cc9ca4392fc489c8ccf4a7cda11b67f7f673` — **`APP_BUILD_NUM = 5`**.
+
+**Contenuto:** migrazione `#helpOverlay` / `#qrModal` a `<dialog class="app-modal">`; pattern GIS `show()` / non-GIS `showModal()`.
+
+**Deploy GIS-only:** PASS tecnico (runtime VPS `dcea02f`).
+
+**QA operatore:** **FAIL (storico)** — Help GIS tagliata/non floating/senza minimizza; QR da Converti non si apre.
+
+**Superseded by:** **UI-MODAL-PARITY-HELP-QR-FIX1** (build 6).
+
+## UI-MODAL-PARITY-HELP-QR-FIX1 — Help floating + QR ripristinato (build 6) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `e8e8ff1` — blob `6eee6872d47dd8a0ed4e04c34dd990e661ced153` — **`APP_BUILD_NUM = 6`** — display **`B5.5Z · build 6`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `e8e8ff13030496ccf31e6b4bcb8fc57772a60cac` |
+| Subject | `fix(ui): restore GIS help and QR dialog behavior` |
+| Review | **GPT sostitutiva PASS** (Claude indisponibile — non review byte Claude ordinaria) |
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = e8e8ff13030496ccf31e6b4bcb8fc57772a60cac
+VPS blob = 6eee6872d47dd8a0ed4e04c34dd990e661ced153
+HTTP 200
+byte repo/servito = 2404202 / 2404202
+SHA-256 = 3fe2ac2e39c2a92cc8b282eede1e937036440f7cc4acfb672003eb0290899775 (match)
+CMP_PASS = yes
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore
+```
+
+**Checklist QA verificata:** Help GIS floating; non tagliata; drag/resize; `−` minimizza; ripristino Help; `×` chiude; scroll body; QR da Converti si apre; QR sopra Converti; fuori GIS dialog nativo; ESC/`×`; footer/about **`B5.5Z · build 6`**; regressioni principali non bloccanti.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e8e8ff1
+```
+
+**Backlog non bloccante (non FAIL):**
+
+1. **UI-MODAL-PARITY-HELP-QR-FIX2** — QR ridimensionabile/coerente con Help
+2. **CONVERT-SOURCE-PICKER** — waypoint/preferito/punto mappa nel Convertitore
+3. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
 
 ## P-POLYGON-LIST-UX-NEXT-A — rinomina inline cella Nome + build 2 — CLOSED / PASS end-to-end
 
