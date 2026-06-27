@@ -393,7 +393,64 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-**Prossimo candidato operativo:** **MODAL-STD-FAVORITES-B1** (standardizzazione layout/altezza/scroll Preferiti) oppure **MODAL-STD-POLYGON-ESC-B1** (ESC `#polygonPanel`); vedi audit MODAL-STANDARDIZATION e roadmap.
+**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (micro-blocchi standardizzazione modal, resize laterale, HUD, dead code cleanup).
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
+
+## MODAL-STD-B2 — Preferiti layout/scroll + Poligoni ESC (build 11 → FIX2 build 13) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `266b116` — blob `0f4d275ea86b5b78690421405ffa5909add5783e` — **`APP_BUILD_NUM = 13`** — display **`B5.5Z · build 13`**.
+
+**Catena runtime:**
+
+| Blocco | Commit | Build | Subject |
+|--------|--------|-------|---------|
+| B2 | `06ed2a09d5e621112877f9389c8ed839d9ae1f65` | 11 | `fix(ui): standardize favorites layout and polygon escape handling` |
+| FIX1 | `f53e2d8ff8881434ff49104fb79e42202ad28e27` | 12 | `fix(ui): repair favorites panel close and scroll` |
+| FIX2 | `266b1161a6f8d6f95fbc012687d0b0b377538484` | 13 | `fix(ui): restore favorites panel inner scroll` |
+
+**Review:** **NON RICHIESTA** (micro-blocchi layout/ESC Ramo B).
+
+**Scope:** `#favoritesPanel` layout/scroll/close/ESC; ESC `#polygonPanel` con precedenza interna; nessun tocco dati/store/import-export preferiti; OPSEC/rete/tile/cache/geocoding invariati.
+
+**Deploy GIS-only FIX2 (PASS tecnico):**
+
+```text
+VPS HEAD = 266b1161a6f8d6f95fbc012687d0b0b377538484
+VPS blob = 0f4d275ea86b5b78690421405ffa5909add5783e
+HTTP 200
+byte repo/servito = 2427039 / 2427039
+SHA-256 = c8b39050e456511ea64ea4eaf60df88784ede46b0f490cf77efd587f9a227dc3 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA finale (operatore):**
+
+```text
+QA MODAL-STD-B2-FIX2 PASS operatore
+```
+
+**Checklist QA verificata (FIX2, include regressioni FIX1/B2):**
+
+- Preferiti ridimensionato molto in basso: scrollbar sul body, contenuti (lista + azioni) raggiungibili
+- Header/×/− visibili e accessibili
+- × chiude completo (nessun guscio vuoto)
+- ESC chiude completo; confirm bar inline annullata prima se aperta
+- Riapertura contenuto integro
+- Poligoni ESC ancora OK (vertex modal, barre, inline rename, modifica, close panel)
+- Footer/about **`B5.5Z · build 13`**
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=266b116
+```
+
+**Storico QA parziale (risolto da FIX1/FIX2):**
+
+- B2 build 11: Poligoni ESC PASS; Preferiti FAIL (scroll, ESC, × guscio)
+- FIX1 build 12: ×/ESC/riapertura PASS; scroll FAIL residuo
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 
@@ -435,7 +492,7 @@ QA MODAL-STD-SEARCH-B1 PASS operatore
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=33c95ad
 ```
 
-**Prossimo candidato operativo:** **MODAL-STD-FAVORITES-B1** (candidato audit).
+**Prossimo candidato operativo:** superseded — **MODAL-STD-B2** ora **CLOSED** (`266b116`, build 13); vedi sezione MODAL-STD-B2 sopra.
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 
