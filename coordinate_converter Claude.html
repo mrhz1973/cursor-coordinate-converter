@@ -7850,6 +7850,44 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
 body.gis-mode dialog#searchPanel.search-panel > .app-modal-body{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
 }
+/* MODAL-STD-B2: Preferiti floating — flex column + scroll lista interna (famiglia Search B1). */
+body.gis-mode dialog#favoritesPanel.favorites-panel{
+  display:flex;
+  flex-direction:column;
+}
+#favoritesPanelBody.app-modal-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:hidden !important;
+  display:flex;
+  flex-direction:column;
+}
+#favoritesPanelBody #sec-favorites{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+}
+#favoritesPanelBody #sec-favorites .section-body{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex !important;
+  flex-direction:column;
+}
+#favoritesPanelBody #favorites-list{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+#favoritesPanelBody #favorites-list .favorites-table-wrap{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-x:auto;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
 /* GIS: corpi pannello leggermente trasparenti così la mappa sotto resta percepibile (map-first). */
 body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-body{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
@@ -18104,7 +18142,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 10;
+const APP_BUILD_NUM = 11;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -44368,6 +44406,41 @@ function gisInit(){
       closeTrackModal();
       return;
     }
+    /* MODAL-STD-B2: Poligoni — ESC con precedenza barre/modali interne (draw via bindHotkeys). */
+    const ppd = document.getElementById("polygonPanel");
+    if ((state.polygonPanelOpen || (ppd && ppd.open)) && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel"))){
+      const pvcDlg = document.getElementById("polygonVertexCoordDialog");
+      if (pvcDlg && pvcDlg.open){
+        ev.preventDefault();
+        try { polygonCloseVertexCoordModal(); } catch(_){}
+        return;
+      }
+      const polyDelBar = document.getElementById("polygonPanelDeleteBar");
+      if (polyDelBar && !polyDelBar.hidden){
+        ev.preventDefault();
+        try { polygonHideDeleteBar(); } catch(_){}
+        return;
+      }
+      const polyRenBar = document.getElementById("polygonPanelRenameBar");
+      if (polyRenBar && !polyRenBar.hidden){
+        ev.preventDefault();
+        try { polygonHideRenameBar(); } catch(_){}
+        return;
+      }
+      if (state._polygonPanelInlineRenameId){
+        ev.preventDefault();
+        try { polygonCancelInlineRename(); } catch(_){}
+        return;
+      }
+      if (typeof polygonIsEditing === "function" && polygonIsEditing()){
+        ev.preventDefault();
+        try { polygonEditCancelHandler(); } catch(_){}
+        return;
+      }
+      ev.preventDefault();
+      if (typeof closePolygonPanel === "function") closePolygonPanel();
+      return;
+    }
     if (state.activeTab){ deactivateTab(); return; }
   }, false);
 
@@ -46503,12 +46576,13 @@ function _favoritesPanelLayoutOpts(){
     minH: 260,
     defaultW: 560,
     defaultH: null,
-    /* ~75–82vh: previous cap 640px capped almost all desktops too short. */
+    /* MODAL-STD-B2: ~75–82vh come Search B1 / Layers. */
     defaultHeightFraction: 0.78,
     defaultHeightCap: 940,
     topbarReserve: 100,
     /** Pass 5 Step E.3: drag/resize clamp parziale (stile RR / Astro). */
     partialMinVisible: 72,
+    bodyMinH: 120,
     bodyId: "favoritesPanelBody",
     headId: "favoritesPanelHead",
     closeId: "favoritesPanelClose"
