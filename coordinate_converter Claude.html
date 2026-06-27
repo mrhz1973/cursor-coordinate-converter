@@ -10614,6 +10614,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <option value="km2" data-i18n="gis.polygonPanel.unitsSquareKilometres">Chilometri quadrati</option>
         </select>
       </div>
+      <div class="poly-units-row">
+        <label for="polygonPanelVertexCoordFormatSel" data-i18n="gis.polygonPanel.vertexModalFormat">Formato coordinate</label>
+        <select id="polygonPanelVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
+                data-role="poly-vertex-coord-format"
+                data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
+      </div>
     </div>
     </div>
     <div class="app-modal-foot polygon-panel-footer" role="group">
@@ -10652,6 +10658,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <p id="polygonVertexCoordDialogVertexLbl" class="hint poly-vertex-coord-vtx" role="status"></p>
     <label for="polygonVertexCoordFormatSel" data-i18n="gis.polygonPanel.vertexModalFormat">Formato coordinate</label>
     <select id="polygonVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
+            data-role="poly-vertex-coord-format"
             data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
     <div id="polygonVertexCoordDdWrap" class="poly-vertex-coord-dd-wrap">
       <label for="polygonVertexCoordLat" data-i18n="gis.polygonPanel.vertexModalLat">Latitudine</label>
@@ -46459,6 +46466,7 @@ function polygonWireUnitsOnce(){
     });
   }
   polygonSyncUnitsUi();
+  polygonWireVertexCoordFormatOnce();
 }
 function polygonFormatPropertyTimestamp(raw){
   const fallback = (typeof t === "function" ? t("gis.polygonPanel.dateUnavailable") : "") || "Data non disponibile";
@@ -46765,19 +46773,37 @@ function polygonVertexCoordFormatI18nKey(fmt){
   };
   return map[fmt] || map.dd;
 }
-function polygonPopulateVertexCoordFormatSel(){
-  const sel = document.getElementById("polygonVertexCoordFormatSel");
-  if (!sel) return;
+function polygonGetVertexCoordFormatSelects(){
+  return Array.from(document.querySelectorAll('select[data-role="poly-vertex-coord-format"]'));
+}
+function polygonSyncVertexCoordFormatSelectValues(excludeEl){
   const cur = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
-  sel.innerHTML = "";
-  for (const fmt of POLY_VERTEX_COORD_FORMATS){
-    const opt = document.createElement("option");
-    opt.value = fmt;
-    const key = polygonVertexCoordFormatI18nKey(fmt);
-    opt.textContent = (typeof t === "function" ? t(key) : "") || fmt;
-    sel.appendChild(opt);
-  }
-  sel.value = cur;
+  polygonGetVertexCoordFormatSelects().forEach(sel => {
+    if (sel === excludeEl) return;
+    if (sel.value !== cur) sel.value = cur;
+  });
+}
+function polygonPopulateVertexCoordFormatSel(){
+  const cur = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
+  polygonGetVertexCoordFormatSelects().forEach(sel => {
+    sel.innerHTML = "";
+    for (const fmt of POLY_VERTEX_COORD_FORMATS){
+      const opt = document.createElement("option");
+      opt.value = fmt;
+      const key = polygonVertexCoordFormatI18nKey(fmt);
+      opt.textContent = (typeof t === "function" ? t(key) : "") || fmt;
+      sel.appendChild(opt);
+    }
+    sel.value = cur;
+  });
+}
+function polygonWireVertexCoordFormatOnce(){
+  try { polygonPopulateVertexCoordFormatSel(); } catch(_){}
+  polygonGetVertexCoordFormatSelects().forEach(sel => {
+    if (sel._polyVertexCoordFmtWired) return;
+    sel._polyVertexCoordFmtWired = true;
+    sel.addEventListener("change", () => { polygonOnVertexCoordFormatChange(sel); });
+  });
 }
 function polygonFormatVertexCoordDisplay(lon, lat, fmt){
   const out = { ddLat: "", ddLon: "", combined: "", utmUnavailable: false };
@@ -46896,12 +46922,15 @@ function polygonVertexCoordModalTryUpdateCanonFromInputs(fmtOverride){
   if (v.ok) polygonVertexCoordModalCanon = { lon: v.lon, lat: v.lat };
   return v;
 }
-function polygonOnVertexCoordFormatChange(){
-  const sel = document.getElementById("polygonVertexCoordFormatSel");
+function polygonOnVertexCoordFormatChange(fromSel){
   const prevFmt = polygonVertexCoordFormat || "dd";
-  polygonVertexCoordModalTryUpdateCanonFromInputs(prevFmt);
-  polygonVertexCoordFormat = (sel && sel.value) ? sel.value : "dd";
+  const src = fromSel || document.getElementById("polygonVertexCoordFormatSel");
+  polygonVertexCoordFormat = (src && src.value) ? src.value : "dd";
   if (POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) === -1) polygonVertexCoordFormat = "dd";
+  polygonSyncVertexCoordFormatSelectValues(fromSel || null);
+  const dlg = document.getElementById("polygonVertexCoordDialog");
+  if (!dlg || !dlg.open || !polygonVertexCoordModalCanon) return;
+  polygonVertexCoordModalTryUpdateCanonFromInputs(prevFmt);
   polygonHideVertexCoordModalErr();
   polygonSyncVertexCoordModalUiFromCanon();
   const fmt = polygonVertexCoordFormat;
@@ -46957,8 +46986,7 @@ function polygonOpenVertexCoordModal(vertexIndex){
   const lon0 = Number(c[0]), lat0 = Number(c[1]);
   polygonVertexCoordModalCanon = { lon: lon0, lat: lat0 };
   try { polygonPopulateVertexCoordFormatSel(); } catch(_){}
-  const fmtSel = document.getElementById("polygonVertexCoordFormatSel");
-  if (fmtSel) fmtSel.value = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
+  polygonSyncVertexCoordFormatSelectValues();
   polygonSyncVertexCoordModalUiFromCanon();
   if (vtxLbl){
     const tpl = (typeof t === "function" ? t("gis.polygonPanel.vertexModalVertex") : "") || "Vertice {0}";
@@ -47011,9 +47039,7 @@ function polygonWireVertexCoordModalOnce(){
   const latInp = document.getElementById("polygonVertexCoordLat");
   const lonInp = document.getElementById("polygonVertexCoordLon");
   const combInp = document.getElementById("polygonVertexCoordCombined");
-  const fmtSel = document.getElementById("polygonVertexCoordFormatSel");
-  try { polygonPopulateVertexCoordFormatSel(); } catch(_){}
-  if (fmtSel) fmtSel.addEventListener("change", () => { polygonOnVertexCoordFormatChange(); });
+  polygonWireVertexCoordFormatOnce();
   if (saveBtn) saveBtn.addEventListener("click", (ev) => { ev.preventDefault(); polygonApplyVertexCoordModal(); });
   const cancelFn = (ev) => { if (ev) ev.preventDefault(); polygonCloseVertexCoordModal(); };
   if (cancelBtn) cancelBtn.addEventListener("click", cancelFn);
