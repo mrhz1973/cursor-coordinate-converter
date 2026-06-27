@@ -110,7 +110,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `68928909a91cb2f828b968ce774e7f12e42666a9` (runtime); aggiornare dopo chiusura docs `finito` |
+| HEAD remoto (verificato) | `dac8a8d` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **P-POLYGON-LIST-UX-NEXT-A** — CLOSED / PASS end-to-end |
 | Runtime live VPS | `68928909a91cb2f828b968ce774e7f12e42666a9` |
 | Blob monolite | `30358cd3aafa9879d76400e23ce103ff5372b081` |

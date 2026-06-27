@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-27 — **P-POLYGON-LIST-UX-NEXT-A CLOSED / PASS end-to-end (docs-only):** commit task **`dac8a8d`** — runtime **`6892890`**; blob **`30358cd3…`**; rinomina inline via **`polygonRenameExecute`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); monolite invariato in chiusura docs; runtime VPS live **`6892890`**; prossimo: **UX-NEXT-B** colonne ridimensionabili; inbox **`2026-06-27_1700_riepilogo_finito-sessione.md`**.
+
 2026-06-27 — **docs/HANDOFF.md method A CLOSED / PASS docs-only:** commit task **`2fdb58c`** — creato [`docs/HANDOFF.md`](../HANDOFF.md) handoff canonico breve; puntatore README read-set; method A completato; monolite invariato **`afddf87a…`**; runtime VPS **`bd588a8`**; prossimo: **UX-NEXT-A** → **UX-NEXT-B**; inbox **`2026-06-27_1600_riepilogo_finito-sessione.md`**.
 
 2026-06-27 — **APP-BUILD-NUM-B1 CLOSED / PASS tecnico end-to-end (docs-only):** commit task **`c41f3c1`** — runtime **`bd588a8`**; blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico**; verifica display minima **PASS**; **nessuna QA operatore estesa**; monolite invariato in chiusura docs; runtime VPS live **`bd588a8`**; nota cleanup span build al prossimo runtime; prossimo: **`docs/HANDOFF.md` method A** → UX-NEXT-A → UX-NEXT-B; **`APP_BUILD_ID` `B5.5Z` invariato**; inbox **`2026-06-27_1530_riepilogo_finito-sessione.md`**.
