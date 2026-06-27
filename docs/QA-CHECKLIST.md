@@ -257,6 +257,55 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=6ef714a
 
 **Note:** formato transiente/sessione; nessun nuovo store persistente; **`APP_BUILD_ID` `B5.5Z` invariato** (non bumpato). Review Claude **non richiesta** in chiusura docs (zero delta runtime).
 
+## P-POLYGON-LIST-ENRICHMENT — lista Poligoni arricchita — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `28cc2d2` (catena base `0409ad4` + FIX1 `d65410f` + FIX2 `28cc2d2`) — deploy GIS-only **PASS tecnico** su tutte le fasi runtime; **CLOSED / PASS end-to-end** (chiusura docs-only post-FIX2).
+
+**Catena runtime:**
+
+| Commit | Ruolo | Blob monolite |
+|--------|--------|----------------|
+| `0409ad4` | Base — metadati lista (vertici, area, perimetro, timestamp); azioni Mostra/Centra/Rinomina/Elimina | `70f790e0448b2bed436c790e6f69928722720c3b` |
+| `d65410f` | FIX1 — tabella ordinabile; sort transiente; stacking `gisPanelBringToFront` | `701fc3ed063d1faa786918491478f7820acad16c` |
+| `28cc2d2` | FIX2 — scroll orizzontale/verticale; unità in cima; lista in fondo | `f3c979170c89b879bae2bd3aa0fc927330a8959c` |
+
+**Review / gate:**
+
+- FIX1: **review byte Claude PASS con osservazioni**
+- FIX2: regressione statica/harness su `5449cb9` **PASS**; `git diff --check` OK; `node --check` OK; harness **17/17 PASS**
+
+**Deploy FIX2 registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = 28cc2d293b72b22ea1018a397c9e3d846b694481
+blob = f3c979170c89b879bae2bd3aa0fc927330a8959c
+goi-gis-app.service active / enabled
+HTTP 200
+byte repo = 2365251
+byte servito = 2365251
+SHA-256 = 58a53e20eed0567dccb5ce0e36212e5ffc137fda919012c45ed839d134eb14da (match)
+CMP_PASS = sì
+Planet-Clone, Navionics proxy, Docker, n8n, Tailscale/firewall non toccati
+```
+
+**Attestazioni QA (operatore):**
+
+```text
+QA P-POLYGON-LIST-ENRICHMENT PASS operatore
+QA P-POLYGON-LIST-ENRICHMENT-FIX1 PASS operatore
+QA P-POLYGON-LIST-ENRICHMENT-FIX2 PASS operatore
+```
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=28cc2d2
+```
+
+**Checklist FIX2 (storico):** scroll tabella H+V; unità di misura e selettore P-VERTEX-FORMAT in cima; lista in fondo; sorting FIX1; stacking FIX1; nome con `title` completo; nessuna regressione evidente su Modifica/salvataggio/export.
+
+**Backlog UX next (non FAIL):** colonne ridimensionabili manualmente; rinomina inline cella Nome — candidato **P-POLYGON-LIST-UX-NEXT**, backlog separato.
+
 ## P-STYLE — stile poligoni (schema, export, editor) — CLOSED / PASS end-to-end
 
 **Runtime autorevole:** `0a51379` (catena A+B `95c100d` + D `efca0bf` + C `0a51379`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
