@@ -7707,6 +7707,32 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .app-modal-body{
   overflow-y:auto;
   overflow-x:hidden;
 }
+/* GIS QR (build 7 FIX2): body flex — QR centrato, url/azioni non tagliate al resize. */
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .app-modal-body{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .app-modal-body > .sub-section-hint,
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-url-row,
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .app-modal-body > .actions{
+  flex:0 0 auto;
+  width:100%;
+  max-width:100%;
+}
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap{
+  flex:1 1 auto;
+  min-height:min(240px, 42vh);
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
+}
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
+  max-width:min(100%, 320px);
+  max-height:min(100%, 320px);
+  width:auto;
+  height:auto;
+}
 .astro-panel .astro-pos-row{
   display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px;
   margin:10px 0 6px; font-size:.86rem;
@@ -8205,6 +8231,42 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #qrModal (build 7 FIX2): resize handles come Help/Misura. */
+#qrModal .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#qrModal .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#qrModal .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#qrModal .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#qrModal .gis-panel-resize-handle[data-handle="ne"]:hover,
+#qrModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#qrModal .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#qrModal .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#qrModal .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#qrModal .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 /* #polygonPanel (P-UI-UNIFORM): anchor angoli come Range Rings / Misura. */
 #polygonPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
 #polygonPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
@@ -8325,6 +8387,7 @@ body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
 body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #measurePanel .gis-panel-resize-handle,
 body:not(.gis-mode) #helpOverlay .gis-panel-resize-handle,
+body:not(.gis-mode) #qrModal .gis-panel-resize-handle,
 body:not(.gis-mode) #polygonPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroWaypointPicker .gis-panel-resize-handle,
@@ -11484,6 +11547,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button id="btnQrDownload" class="btn btn-sm btn-primary" data-i18n="qr.download" data-i18n-tip="tip.qrDownload">Scarica PNG</button>
     </div>
   </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
 <!-- Hidden file input for drag&drop fallback -->
@@ -17893,7 +17960,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 6;
+const APP_BUILD_NUM = 7;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -46434,18 +46501,20 @@ function wireHelpPanelFloatingGis(dlg){
   gisPanelSyncBodySize(dlg, opts);
 }
 
-/** Session layout opts for QR floating panel (build 6 FIX1). */
+/** Session layout opts for QR floating panel (build 6 FIX1; build 7 FIX2 resize). */
 function _qrModalLayoutOpts(){
   return {
     key: "qrModal",
     pad: 12,
-    minW: 320,
-    minH: 360,
+    minW: 300,
+    minH: 320,
     defaultW: 440,
-    defaultH: 480,
+    defaultH: null,
+    defaultHeightFraction: 0.62,
+    defaultHeightCap: 560,
     topbarReserve: 80,
     partialMinVisible: 64,
-    bodyMinH: 200,
+    bodyMinH: 140,
     headId: "qrModalHead",
     closeId: "qrClose"
   };
@@ -46458,10 +46527,10 @@ function positionQrModalCenteredGis(dlg, opts){
   const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
   const vw = window.innerWidth, vh = window.innerHeight;
   const w = Math.min(Number.isFinite(opts.defaultW) ? opts.defaultW : 440, vw - pad * 2);
-  const h = Math.min(Number.isFinite(opts.defaultH) ? opts.defaultH : 480, vh - pad * 2);
+  const h = gisPanelDefaultHeightPx(opts);
   const left = Math.max(pad, (vw - w) / 2);
   const top = Math.max(pad, (vh - h) / 2);
-  const rect = gisPanelClampRect({ left, top, w, h }, opts);
+  const rect = gisPanelClampRectPartialVisible({ left, top, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -46471,13 +46540,13 @@ function positionQrModalCenteredGis(dlg, opts){
 function attachQrModalFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
   const opts = _qrModalLayoutOpts();
-  if (!dlg._gisPanelDragInstalled){
-    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
-      threshold: 4,
-      draggingClass: "dragging",
-      ignoreSelector: "#qrClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
-    }));
-  }
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#qrClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
 }
 function clampQrModalRect(dlg){
   if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
@@ -46487,7 +46556,7 @@ function clampQrModalRect(dlg){
   if (!dlg.style.left && !dlg.style.top) return;
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
-  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
