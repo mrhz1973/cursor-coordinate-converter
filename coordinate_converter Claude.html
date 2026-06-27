@@ -2527,13 +2527,28 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   overflow:hidden !important;
   padding:0;
 }
-.polygon-panel .polygon-panel-scroll{
+.polygon-panel .polygon-panel-main{
   flex:1 1 auto;
   min-height:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+.polygon-panel .polygon-panel-upper{
+  flex:0 0 auto;
+  max-height:min(42vh, 280px);
   overflow-x:hidden;
   overflow-y:auto;
-  padding:12px 14px 10px;
+  padding:12px 14px 8px;
   -webkit-overflow-scrolling:touch;
+}
+.polygon-panel .polygon-panel-upper .poly-units-group{
+  margin-top:0;
+  padding-top:0;
+  border-top:none;
+  margin-bottom:8px;
+  padding-bottom:8px;
+  border-bottom:1px solid rgba(128,128,128,.15);
 }
 .polygon-panel .polygon-panel-footer,
 .polygon-panel .app-modal-foot.polygon-panel-footer{
@@ -2582,24 +2597,31 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 /* Polygon panel — lista tabellare (allineata a saved-tracks / offline). */
 #polygonPanelList.poly-list-wrap{
   flex:1 1 auto;
-  min-height:0;
+  min-height:96px;
+  margin-top:auto;
   overflow:auto;
   -webkit-overflow-scrolling:touch;
+  border-top:1px solid var(--border);
+  background:color-mix(in srgb, var(--panel) 92%, var(--surface-page) 8%);
 }
-.polygon-panel .poly-list-scroll-inner{ min-width:0; }
+.polygon-panel .poly-list-scroll-inner{
+  min-width:0;
+  display:block;
+}
 .polygon-panel .poly-list-table{
-  width:100%;
+  width:max-content;
+  min-width:720px;
   border-collapse:collapse;
   font-size:.82rem;
-  table-layout:fixed;
+  table-layout:auto;
 }
+.polygon-panel .poly-list-table col.poly-col-name{ min-width:140px; }
+.polygon-panel .poly-list-table col.poly-col-actions{ min-width:128px; }
 .polygon-panel .poly-list-table th,
 .polygon-panel .poly-list-table td{
   padding:5px 6px;
   border-bottom:1px solid var(--border);
   vertical-align:middle;
-  overflow:hidden;
-  text-overflow:ellipsis;
   white-space:nowrap;
 }
 .polygon-panel .poly-list-table th{
@@ -2645,9 +2667,17 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   border:1px solid rgba(0,0,0,.12);
   vertical-align:middle;
 }
-.polygon-panel .poly-list-name{ display:block; overflow:hidden; text-overflow:ellipsis; }
+.polygon-panel .poly-list-name{
+  display:block;
+  min-width:120px;
+  max-width:none;
+}
 .polygon-panel .poly-list-num{ font-variant-numeric:tabular-nums; }
-.polygon-panel .poly-list-actions-cell{ text-align:left; white-space:normal; }
+.polygon-panel .poly-list-actions-cell{
+  text-align:left;
+  white-space:nowrap;
+  min-width:120px;
+}
 .polygon-panel .poly-list-actions-cell .poly-row-actions{
   display:flex;
   align-items:center;
@@ -10593,7 +10623,37 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <p id="polygonPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="polygonPanelBody">
-    <div class="polygon-panel-scroll">
+    <div class="polygon-panel-main">
+    <div class="polygon-panel-upper">
+    <div id="polygonPanelUnits" class="poly-units-group" role="group" aria-labelledby="polygonPanelUnitsLabel">
+      <div id="polygonPanelUnitsLabel" class="poly-units-heading hint" data-i18n="gis.polygonPanel.unitsHeading">Unità di misura</div>
+      <div class="poly-units-row">
+        <label for="polygonPanelLengthUnit" data-i18n="gis.polygonPanel.unitsLength">Lunghezza</label>
+        <select id="polygonPanelLengthUnit">
+          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
+          <option value="m">m</option>
+          <option value="km">km</option>
+          <option value="nm">NM</option>
+          <option value="mi">mi</option>
+          <option value="ft">ft</option>
+        </select>
+      </div>
+      <div class="poly-units-row">
+        <label for="polygonPanelAreaUnit" data-i18n="gis.polygonPanel.unitsArea">Area</label>
+        <select id="polygonPanelAreaUnit">
+          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
+          <option value="m2" data-i18n="gis.polygonPanel.unitsSquareMetres">Metri quadrati</option>
+          <option value="ha" data-i18n="gis.polygonPanel.unitsHectares">Ettari</option>
+          <option value="km2" data-i18n="gis.polygonPanel.unitsSquareKilometres">Chilometri quadrati</option>
+        </select>
+      </div>
+      <div class="poly-units-row">
+        <label for="polygonPanelVertexCoordFormatSel" data-i18n="gis.polygonPanel.vertexModalFormat">Formato coordinate</label>
+        <select id="polygonPanelVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
+                data-role="poly-vertex-coord-format"
+                data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
+      </div>
+    </div>
     <div id="polygonPanelRenameBar" class="poly-rename-bar" role="region" aria-live="polite" hidden>
       <div class="poly-rename-row">
         <label for="polygonPanelRenameInput" class="hint" data-i18n="gis.polygonPanel.renameLabel">Nome</label>
@@ -10653,7 +10713,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" id="polygonPanelEditCancel" class="btn btn-sm" data-role="poly-edit-cancel" data-i18n="gis.polygonPanel.editCancel">Annulla</button>
       </div>
     </div>
-    <div id="polygonPanelList" class="poly-list-wrap"></div>
     <div id="polygonPanelDraftNameWrap" class="poly-draft-name-wrap" hidden>
       <div class="poly-draft-name-row">
         <label for="polygonPanelDraftName" id="polygonPanelDraftNameLabel" class="hint" data-i18n="gis.polygonPanel.drawNameLabel">Nome</label>
@@ -10665,35 +10724,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <div id="polygonPanelDraftInfo" class="poly-draft-info" role="status" aria-live="polite" hidden></div>
     <p id="polygonPanelDrawErr" class="geo-warn poly-draw-err" role="alert" hidden></p>
-    <div id="polygonPanelUnits" class="poly-units-group" role="group" aria-labelledby="polygonPanelUnitsLabel">
-      <div id="polygonPanelUnitsLabel" class="poly-units-heading hint" data-i18n="gis.polygonPanel.unitsHeading">Unità di misura</div>
-      <div class="poly-units-row">
-        <label for="polygonPanelLengthUnit" data-i18n="gis.polygonPanel.unitsLength">Lunghezza</label>
-        <select id="polygonPanelLengthUnit">
-          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
-          <option value="m">m</option>
-          <option value="km">km</option>
-          <option value="nm">NM</option>
-          <option value="mi">mi</option>
-          <option value="ft">ft</option>
-        </select>
-      </div>
-      <div class="poly-units-row">
-        <label for="polygonPanelAreaUnit" data-i18n="gis.polygonPanel.unitsArea">Area</label>
-        <select id="polygonPanelAreaUnit">
-          <option value="auto" data-i18n="gis.polygonPanel.unitsAuto">Automatico</option>
-          <option value="m2" data-i18n="gis.polygonPanel.unitsSquareMetres">Metri quadrati</option>
-          <option value="ha" data-i18n="gis.polygonPanel.unitsHectares">Ettari</option>
-          <option value="km2" data-i18n="gis.polygonPanel.unitsSquareKilometres">Chilometri quadrati</option>
-        </select>
-      </div>
-      <div class="poly-units-row">
-        <label for="polygonPanelVertexCoordFormatSel" data-i18n="gis.polygonPanel.vertexModalFormat">Formato coordinate</label>
-        <select id="polygonPanelVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
-                data-role="poly-vertex-coord-format"
-                data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
-      </div>
     </div>
+    <div id="polygonPanelList" class="poly-list-wrap"></div>
     </div>
     <div class="app-modal-foot polygon-panel-footer" role="group">
       <button type="button" class="btn btn-sm btn-primary" id="polygonPanelNewBtn"
@@ -48153,13 +48185,13 @@ function renderPolygonPanelList(){
     const ariaVisOff = esc((typeof t === "function") ? (t("gis.polygonPanel.hidden") || "") : "");
     let html = `<div class="poly-list-scroll-inner"><table class="poly-list-table"><colgroup>
       <col style="width:44px" />
-      <col />
+      <col class="poly-col-name" />
       <col style="width:52px" />
       <col style="width:72px" />
       <col style="width:72px" />
       <col style="width:44px" />
       <col style="width:88px" />
-      <col style="min-width:120px" />
+      <col class="poly-col-actions" />
     </colgroup><thead><tr>
       ${polygonPanelListSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
       ${polygonPanelListSortHeaderHtml("name", "track.colName", { thClass: "poly-list-th-name" })}
@@ -48198,7 +48230,7 @@ function renderPolygonPanelList(){
       const eyeIco = vis ? "👁" : "👁‍🗨";
       html += `<tr data-poly-row data-poly-id="${pid}" class="${rowCls}">
         <td class="poly-list-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${vis ? ariaVisOn : ariaVisOff}"></span></td>
-        <td class="poly-list-name" data-tip="${nm}">${nm || "—"}</td>
+        <td class="poly-list-name" data-tip="${nm}" title="${nm}">${nm || "—"}</td>
         <td class="poly-list-num">${esc(vtxCell)}</td>
         <td class="poly-list-num">${areaCell}</td>
         <td class="poly-list-num">${perimCell}</td>
