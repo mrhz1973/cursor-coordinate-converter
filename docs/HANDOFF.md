@@ -110,29 +110,23 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `14605e9` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UI-MODAL-PARITY-HELP-QR-FIX2** — CLOSED / PASS end-to-end |
-| Runtime live VPS | `14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4` |
-| Blob monolite | `0886b6bb4ab4b2cd13e060b1c6f34eafe6953259` |
-| `APP_BUILD_NUM` | `7` |
-| Display runtime | `B5.5Z · build 7` |
+| HEAD remoto (verificato) | `b294140` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **CONVERT-SOURCE-PICKER** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `b294140c6464c28634c775018c4bd80853041491` |
+| Blob monolite | `6feba1c9e0b192c1655ba052314e7d8cae87df98` |
+| `APP_BUILD_NUM` | `8` |
+| Display runtime | `B5.5Z · build 8` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5 → FIX1 build 6 → FIX2 build 7) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b294140` |
 
 **Prossimo ordine operativo:**
 
-1. **CONVERT-SOURCE-PICKER** — sorgenti waypoint/preferito/punto mappa nel Convertitore
-2. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+1. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
 
 ---
 
 ## Backlog / note immediate
-
-### CONVERT-SOURCE-PICKER
-
-- Waypoint / preferito / punto mappa corrente come sorgente Convertitore
-- Blocco separato, GIS-first
 
 ### P-POLYGON-LIST-UX-NEXT-B-FIX2 — Vis indicator
 

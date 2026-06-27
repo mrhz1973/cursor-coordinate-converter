@@ -393,8 +393,47 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-1. **CONVERT-SOURCE-PICKER** — waypoint/preferito/punto mappa nel Convertitore
-2. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+1. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
+
+## CONVERT-SOURCE-PICKER — sorgente coordinate Convertitore (build 8) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `b294140` — blob `6feba1c9e0b192c1655ba052314e7d8cae87df98` — **`APP_BUILD_NUM = 8`** — display **`B5.5Z · build 8`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `b294140c6464c28634c775018c4bd80853041491` |
+| Subject | `feat(convert): add waypoint favorite and map source picker` |
+| Review | **GPT sostitutiva PASS** (Claude non disponibile — non review byte Claude ordinaria) |
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = b294140c6464c28634c775018c4bd80853041491
+VPS blob = 6feba1c9e0b192c1655ba052314e7d8cae87df98
+HTTP 200
+byte repo/servito = 2423291 / 2423291
+SHA-256 = 1a954ca989e436bb1dadb319d7fc84701ed760a845d3127d6d963f4b1ae6b4ab (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA CONVERT-SOURCE-PICKER PASS operatore
+```
+
+**Checklist QA verificata:** input manuale Convertitore OK; waypoint → Usa → output aggiornato; preferito → Usa → output aggiornato; punto mappa one-shot → output aggiornato; Annulla/ESC disattivano picker; centro mappa → output aggiornato; QR da Converti funziona; mappa interattiva; Help/QR build 7 non regressi; footer/about **`B5.5Z · build 8`**.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b294140
+```
+
+**Prossimo candidato operativo:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 
