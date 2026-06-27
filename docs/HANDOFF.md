@@ -110,19 +110,19 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `b7b98c2` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **P-POLYGON-LIST-UX-NEXT-B-FIX2** — CLOSED / PASS end-to-end |
-| Runtime live VPS | `b7b98c205d93001f2b0121330bbde43a4737725b` |
-| Blob monolite | `dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b` |
-| `APP_BUILD_NUM` | `9` |
-| Display runtime | `B5.5Z · build 9` |
+| HEAD remoto (verificato) | `33c95ad` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MODAL-STD-SEARCH-B1** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `33c95ad7cecbb7fa75e82f0e8ba9015ed9457193` |
+| Blob monolite | `d048ee2ff92bf956b31a74aa8ecde21ae49a4540` |
+| `APP_BUILD_NUM` | `10` |
+| Display runtime | `B5.5Z · build 10` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5 → FIX1 build 6 → FIX2 build 7) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b7b98c2` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=33c95ad` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — nessun candidato obbligatorio già deciso (vedi WU-0005-0009: standardizzazione modal, resize laterale pannelli, Personalizzazione HUD, dead code cleanup, ecc.).
+**MODAL-STD-FAVORITES-B1** (standardizzazione pannello Preferiti) — candidato primario da audit; alternativa **MODAL-STD-POLYGON-ESC-B1**; vedi WU-0005-0009 roadmap.
 
 ---
 

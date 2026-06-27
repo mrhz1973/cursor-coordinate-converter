@@ -393,7 +393,49 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-**Da scegliere da roadmap/backlog** — nessun candidato obbligatorio già deciso.
+**Prossimo candidato operativo:** **MODAL-STD-FAVORITES-B1** (standardizzazione layout/altezza/scroll Preferiti) oppure **MODAL-STD-POLYGON-ESC-B1** (ESC `#polygonPanel`); vedi audit MODAL-STANDARDIZATION e roadmap.
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
+
+## MODAL-STD-SEARCH-B1 — standardizzazione pannello Cerca (build 10) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `33c95ad` — blob `d048ee2ff92bf956b31a74aa8ecde21ae49a4540` — **`APP_BUILD_NUM = 10`** — display **`B5.5Z · build 10`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `33c95ad7cecbb7fa75e82f0e8ba9015ed9457193` |
+| Subject | `fix(ui): improve search panel viewport layout` |
+| Review | **NON RICHIESTA** (micro-blocco layout Ramo B) |
+
+**Scope:** `#searchPanel` — `_searchPanelLayoutOpts` (`defaultHeightFraction` 0.78, cap 940, `partialMinVisible` 72, `bodyMinH` 120); `clampSearchPanelRect` parziale; CSS body scroll + summary `#geocodeCard` nascosto; geocoding/rete/OPSEC/altri modal invariati.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 33c95ad7cecbb7fa75e82f0e8ba9015ed9457193
+VPS blob = d048ee2ff92bf956b31a74aa8ecde21ae49a4540
+HTTP 200
+byte repo/servito = 2424747 / 2424747
+SHA-256 = fd6203f61e7f1b7fe14936664e20d280d0e32276988c769fe582178dd593b731 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA MODAL-STD-SEARCH-B1 PASS operatore
+```
+
+**Checklist QA verificata:** tab Cerca pannello più alto (~75–80% viewport); ricerca risultati multipli scroll interno body; header/× fissi; resize angoli OK; input/risultati usabili; drag header OK; mappa interattiva; ESC e × chiudono; nessun summary duplicato; footer/about **`B5.5Z · build 10`**; nessuna regressione Help/QR/Converti/Poligoni.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=33c95ad
+```
+
+**Prossimo candidato operativo:** **MODAL-STD-FAVORITES-B1** (candidato audit).
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 

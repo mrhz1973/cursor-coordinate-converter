@@ -292,6 +292,8 @@ Voci:
   - **riferimento tecnico esistente:** `#measurePanel` / `#sec-measure` (Range & Bearing via `openMeasureFloatingPanelGis`, `_measurePanelLayoutOpts` ~L45278); pattern full-height già su Range Rings B6.4a-2 (`_rangeRingsPanelLayoutOpts`, `defaultHeightFraction: 0.92`);
   - implementazione futura a **blocchi piccoli**, verifica modal per modal; **nessuna** riscrittura CSS/HTML/JS generale in questo step documentale;
   - **perimetro:** modal/pannelli operativi app; **esclude** dialoghi nativi browser (`alert`, `confirm`, `prompt`).
+  - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` / tab Cerca (`33c95ad`, build 10, QA PASS).
+  - **Prossimi candidati audit:** MODAL-STD-FAVORITES-B1; MODAL-STD-POLYGON-ESC-B1.
 - Resize laterale dai lati, non solo dagli angoli (backlog correlato).
 
 Note operative:
@@ -306,12 +308,13 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog**. Catena **UI-MODAL-PARITY-HELP-QR** **CLOSED**. **CONVERT-SOURCE-PICKER** **CLOSED** (`b294140`, build 8). **P-POLYGON-LIST-UX-NEXT-B-FIX2** **CLOSED** (`b7b98c2`, build 9).
+  - **Prossimo ordine operativo:** **MODAL-STD-FAVORITES-B1** (candidato audit primario) oppure **MODAL-STD-POLYGON-ESC-B1**. Catena **UI-MODAL-PARITY-HELP-QR** **CLOSED**. **CONVERT-SOURCE-PICKER** **CLOSED** (`b294140`, build 8). **P-POLYGON-LIST-UX-NEXT-B-FIX2** **CLOSED** (`b7b98c2`, build 9). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10) — primo step standardizzazione modal.
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
   - **CONVERT-SOURCE-PICKER build 8 — CLOSED / PASS end-to-end:** runtime **`b294140`**, blob **`6feba1c9…`**, sorgente coordinate Convertitore, review **GPT sostitutiva PASS**, deploy GIS-only PASS (byte **2423291**, SHA **`1a954ca9…`**, CMP_PASS), **QA operatore PASS** («**QA CONVERT-SOURCE-PICKER PASS operatore**»); display **`B5.5Z · build 8`**; superseded per runtime live da **P-POLYGON-LIST-UX-NEXT-B-FIX2** (`b7b98c2`).
-  - **P-POLYGON-LIST-UX-NEXT-B-FIX2 build 9 — CLOSED / PASS end-to-end:** runtime **`b7b98c2`**, blob **`dc8067d9…`**, indicatore Vis. poligoni (pallino verde/grigio, `.poly-vis-indicator`, `polygonMapVisible`), review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423809**, SHA **`87746763…`**, CMP_PASS), **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-B-FIX2 PASS operatore**»); runtime VPS live **`b7b98c2`**, display **`B5.5Z · build 9`**.
+  - **P-POLYGON-LIST-UX-NEXT-B-FIX2 build 9 — CLOSED / PASS end-to-end:** runtime **`b7b98c2`**, blob **`dc8067d9…`**, indicatore Vis. poligoni (pallino verde/grigio, `.poly-vis-indicator`, `polygonMapVisible`), review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423809**, SHA **`87746763…`**, CMP_PASS), **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-B-FIX2 PASS operatore**»); display **`B5.5Z · build 9`**; superseded per runtime live da **MODAL-STD-SEARCH-B1** (`33c95ad`).
+  - **MODAL-STD-SEARCH-B1 build 10 — CLOSED / PASS end-to-end:** runtime **`33c95ad`**, blob **`d048ee2…`**, standardizzazione `#searchPanel` (altezza utile 0.78 fraction, scroll body, clamp parziale, CSS geocode summary nascosto), review **NON RICHIESTA**, deploy GIS-only PASS (byte **2424747**, SHA **`fd6203f6…`**, CMP_PASS), **QA operatore PASS** («**QA MODAL-STD-SEARCH-B1 PASS operatore**»); runtime VPS live **`33c95ad`**, display **`B5.5Z · build 10`**; primo micro-blocco rollout standardizzazione modal trasversale.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -1507,9 +1510,35 @@ goi-gis-app.service = active / enabled
 
 **QA operatore:** PASS — «**QA CONVERT-SOURCE-PICKER PASS operatore**».
 
-**Runtime autorevole live VPS:** superseded da **P-POLYGON-LIST-UX-NEXT-B-FIX2** (`b7b98c2`).
+**Runtime autorevole live VPS:** superseded da **MODAL-STD-SEARCH-B1** (`33c95ad`).
 
-**Prossimo candidato:** **da scegliere da roadmap/backlog**.
+#### MODAL-STD-SEARCH-B1 — standardizzazione pannello Cerca (build 10)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-28).
+
+**Runtime:** `33c95ad7cecbb7fa75e82f0e8ba9015ed9457193` — blob `d048ee2ff92bf956b31a74aa8ecde21ae49a4540`.
+
+**Scopo:** primo micro-blocco standardizzazione modal — `#searchPanel` altezza utile viewport (`defaultHeightFraction` 0.78), scroll interno body, `gisPanelClampRectPartialVisible`, summary `#geocodeCard` nascosto nel floating; geocoding/rete/OPSEC/altri modal invariati; **`APP_BUILD_NUM = 10`**; display **`B5.5Z · build 10`**.
+
+**Review:** **NON RICHIESTA** (layout Ramo B).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 33c95ad7cecbb7fa75e82f0e8ba9015ed9457193
+VPS blob = d048ee2ff92bf956b31a74aa8ecde21ae49a4540
+HTTP 200
+byte repo/servito = 2424747 / 2424747
+SHA-256 = fd6203f61e7f1b7fe14936664e20d280d0e32276988c769fe582178dd593b731 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**QA operatore:** PASS — «**QA MODAL-STD-SEARCH-B1 PASS operatore**».
+
+**Runtime autorevole live VPS:** `33c95ad`.
+
+**Prossimo candidato:** **MODAL-STD-FAVORITES-B1**.
 
 #### P-POLYGON-LIST-UX-NEXT-B-FIX2 — indicatore Vis. poligoni (build 9)
 
