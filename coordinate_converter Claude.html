@@ -2672,6 +2672,14 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   min-width:120px;
   max-width:none;
 }
+.polygon-panel .poly-list-name-editing{ padding:2px 4px; }
+.polygon-panel .poly-inline-rename-input{
+  width:100%;
+  min-width:100px;
+  font-size:inherit;
+  padding:2px 4px;
+  box-sizing:border-box;
+}
 .polygon-panel .poly-list-num{ font-variant-numeric:tabular-nums; }
 .polygon-panel .poly-list-actions-cell{
   text-align:left;
@@ -11007,7 +11015,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B5.5Z · build 1</span>
+    <span id="appBuildFooter">B5.5Z</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -11247,7 +11255,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B5.5Z · build 1</code>
+            <code id="appBuildAbout">B5.5Z</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -17689,7 +17697,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 1;
+const APP_BUILD_NUM = 2;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -47394,6 +47402,7 @@ function polygonEditEnterFromList(id){
     polygonCancelDraw();
   }
   if (polygonIsEditing() && String(state._polyEdit.id) === String(id)) return;
+  state._polygonPanelInlineRenameId = null;
   if (!polygonEnterEdit(id)) return;
   try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
   polygonHideEditBarErr();
@@ -47871,11 +47880,33 @@ function polygonHideRenameBar(){
   if (bar) bar.hidden = true;
   if (inp) inp.value = "";
 }
+function polygonCancelInlineRename(){
+  if (!state._polygonPanelInlineRenameId) return;
+  state._polygonPanelInlineRenameId = null;
+  renderPolygonPanelList();
+}
+function polygonStartInlineRename(id){
+  ensureGisState();
+  const sid = String(id || "").trim();
+  if (!sid || !gisFeatureGet(sid)) return;
+  if (polygonIsEditing()) return;
+  polygonHideDeleteBar();
+  polygonHideRenameBar();
+  state._polygonPanelInlineRenameId = sid;
+  renderPolygonPanelList();
+}
+function polygonCommitInlineRename(id, inputValue){
+  const sid = String(id || "").trim();
+  if (!sid || String(state._polygonPanelInlineRenameId || "") !== sid) return;
+  state._polygonPanelInlineRenameId = null;
+  polygonRenameExecute(sid, inputValue);
+}
 function polygonShowDeleteConfirm(id){
   ensureGisState();
   const f = gisFeatureGet(id);
   if (!f) return;
   polygonHideRenameBar();
+  state._polygonPanelInlineRenameId = null;
   polygonWirePanelBarsOnce();
   state._polyPendingDeleteId = id;
   const bar = document.getElementById("polygonPanelDeleteBar");
@@ -47919,6 +47950,7 @@ function polygonRenameExecute(id, newName){
   const updated = gisFeatureUpdate(id, { properties: { name: nm, updated_at: new Date().toISOString() } }, { recordUndo: false });
   if (!updated) return;
   polygonHideRenameBar();
+  state._polygonPanelInlineRenameId = null;
   renderPolygonPanelList();
   try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.renameOk") : "") || "Nome aggiornato."); } catch(_){}
 }
@@ -48122,6 +48154,10 @@ function ensurePolygonPanelListWired(){
   if (!body || body._polyListWired) return;
   body._polyListWired = true;
   body.addEventListener("click", (ev) => {
+    if (ev.target && ev.target.closest && ev.target.closest('[data-role="poly-inline-rename-input"]')){
+      ev.stopPropagation();
+      return;
+    }
     const sortBtn = ev.target && ev.target.closest && ev.target.closest("[data-poly-sort]");
     if (sortBtn){
       ev.preventDefault();
@@ -48150,7 +48186,8 @@ function ensurePolygonPanelListWired(){
       ev.preventDefault();
       if (ren.disabled || polygonIsEditing()) return;
       const id = ren.getAttribute("data-poly-id");
-      if (id) polygonShowRenameBar(id);
+      if (id && String(state._polygonPanelInlineRenameId || "") === String(id)) return;
+      if (id) polygonStartInlineRename(id);
       return;
     }
     if (del){
@@ -48166,6 +48203,26 @@ function ensurePolygonPanelListWired(){
       if (id) polygonToggleVisibility(id);
     }
   });
+  body.addEventListener("keydown", (ev) => {
+    const inp = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-inline-rename-input"]');
+    if (!inp) return;
+    ev.stopPropagation();
+    const id = inp.getAttribute("data-poly-id");
+    if (ev.key === "Enter"){ ev.preventDefault(); polygonCommitInlineRename(id, inp.value); }
+    else if (ev.key === "Escape"){ ev.preventDefault(); polygonCancelInlineRename(); }
+  });
+  body.addEventListener("focusout", (ev) => {
+    if (!state._polygonPanelInlineRenameId) return;
+    const inp = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-inline-rename-input"]');
+    if (!inp) return;
+    const id = String(state._polygonPanelInlineRenameId);
+    setTimeout(() => {
+      if (String(state._polygonPanelInlineRenameId || "") !== id) return;
+      const ae = document.activeElement;
+      if (ae && ae.closest && (ae.closest('[data-role="poly-inline-rename-input"]') || ae.closest('[data-role="poly-rename"]'))) return;
+      polygonCancelInlineRename();
+    }, 0);
+  });
 }
 function renderPolygonPanelList(){
   const cont = document.getElementById("polygonPanelList");
@@ -48177,6 +48234,8 @@ function renderPolygonPanelList(){
   } else {
     const editingActive = polygonIsEditing();
     const editingId = editingActive ? String(state._polyEdit.id) : "";
+    const inlineRenId = state._polygonPanelInlineRenameId ? String(state._polygonPanelInlineRenameId) : "";
+    const inlineRenActive = !!inlineRenId;
     const editLbl = esc((typeof t === "function" ? t("gis.polygonPanel.edit") : "") || "Modifica");
     const editingLbl = esc((typeof t === "function" ? t("gis.polygonPanel.editing") : "") || "In modifica");
     const editTip = esc((typeof t === "function" ? t("tip.polygonPanel.edit") : "") || "");
@@ -48211,6 +48270,7 @@ function renderPolygonPanelList(){
       const swatchBg = esc(sty.fillColor || sty.strokeColor || "#ca8a04");
       const swatchBorder = esc(sty.strokeColor || "#ca8a04");
       const nm = esc(polygonDisplayName(props.name) || "");
+      const nmRaw = polygonDisplayName(props.name) || "";
       const metrics = polygonFeatureListMetrics(f);
       const vis = props.visible !== false;
       const fid = String(f.id || "");
@@ -48221,6 +48281,7 @@ function renderPolygonPanelList(){
       const editDisabledAttr = (editDisabled || isEditingRow) ? " disabled" : "";
       const editAria = isEditingRow ? ' aria-current="true" aria-pressed="true"' : "";
       const mutDisabled = editingActive ? " disabled" : "";
+      const renInlineDisabled = (editingActive || (inlineRenActive && inlineRenId !== fid)) ? " disabled" : "";
       const rowCls = isEditingRow ? "is-editing" : "";
       const whenStr = esc(polygonFormatPropertyTimestamp(props.updated_at || props.created_at));
       const areaCell = metrics.areaTxt ? esc(metrics.areaTxt) : "—";
@@ -48231,19 +48292,29 @@ function renderPolygonPanelList(){
         : "";
       const visLbl = esc((typeof t === "function" ? t(vis ? "gis.polygonPanel.visible" : "gis.polygonPanel.hidden") : "") || "");
       const eyeIco = vis ? "👁" : "👁‍🗨";
+      const isInlineRenaming = inlineRenId === fid;
+      const nameCell = isInlineRenaming
+        ? `<td class="poly-list-name poly-list-name-editing"><input type="text" class="poly-inline-rename-input" data-role="poly-inline-rename-input" data-poly-id="${pid}" value="${esc(nmRaw)}" maxlength="80" autocomplete="off" aria-label="${renLbl}" /></td>`
+        : `<td class="poly-list-name" data-tip="${nm}" title="${nm}">${nm || "—"}</td>`;
       html += `<tr data-poly-row data-poly-id="${pid}" class="${rowCls}">
         <td class="poly-list-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${vis ? ariaVisOn : ariaVisOff}"></span></td>
-        <td class="poly-list-name" data-tip="${nm}" title="${nm}">${nm || "—"}</td>
+        ${nameCell}
         <td class="poly-list-num">${esc(vtxCell)}</td>
         <td class="poly-list-num">${areaCell}</td>
         <td class="poly-list-num">${perimCell}</td>
         <td class="poly-list-style-cell"><span class="poly-swatch" style="background:${swatchBg};border-color:${swatchBorder}" title="${swatchBorder}"></span></td>
         <td class="poly-list-when">${whenStr}</td>
-        <td class="poly-list-actions-cell"><div class="poly-row-actions">${showBtn}<button type="button" class="poly-act-btn btn btn-sm" data-role="poly-edit" data-poly-id="${pid}" title="${editTip}" aria-label="${editTip}"${editDisabledAttr}${editAria}><span aria-hidden="true">✎</span></button><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}" aria-label="${renLbl}"${mutDisabled}>${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" data-i18n-tip="tip.polygonPanel.delete" data-i18n-aria="tip.polygonPanel.delete" title="${delTip}" aria-label="${delTip}"${mutDisabled}><span class="danger-x" aria-hidden="true">✕</span></button></div></td>
+        <td class="poly-list-actions-cell"><div class="poly-row-actions">${showBtn}<button type="button" class="poly-act-btn btn btn-sm" data-role="poly-edit" data-poly-id="${pid}" title="${editTip}" aria-label="${editTip}"${editDisabledAttr}${editAria}><span aria-hidden="true">✎</span></button><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}" aria-label="${renLbl}"${mutDisabled}${renInlineDisabled}>${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" data-i18n-tip="tip.polygonPanel.delete" data-i18n-aria="tip.polygonPanel.delete" title="${delTip}" aria-label="${delTip}"${mutDisabled}><span class="danger-x" aria-hidden="true">✕</span></button></div></td>
       </tr>`;
     }
     html += "</tbody></table></div>";
     cont.innerHTML = html;
+    if (inlineRenId){
+      try {
+        const inp = cont.querySelector('[data-role="poly-inline-rename-input"][data-poly-id="' + inlineRenId.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"]');
+        if (inp){ inp.focus(); inp.select(); }
+      } catch(_){}
+    }
   }
   /* "Nuovo poligono" button state: enabled when NOT drawing */
   const newBtn = document.getElementById("polygonPanelNewBtn");
