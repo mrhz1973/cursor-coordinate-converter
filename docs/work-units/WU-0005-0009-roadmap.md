@@ -303,14 +303,15 @@ Note operative:
   - ~~UX poligoni leggera: auto-arm, `X` in lista, modal minimizzata~~ — PASS (`f7260d9`);
   - UX geometrie pesante: modifica in-place su mappa — P1/P1-FIX/P2 **CLOSED**; **P7** metadata/data **CLOSED** (B1 `57c6d39` + B2 `47bb3f6`); **A1**/**A2** **CLOSED**; **P3** cancellazione vertice **CLOSED** (`fc38247` + P3-FIX `6083abe`, deploy+QA PASS); **P3-ADD** inserimento vertice su lato **CLOSED** (`5df925f`, deploy+QA PASS); **P4-B1** traslazione intero poligono **CLOSED** (`505e7d0`, deploy+QA PASS); **P5-B1/P5-B1-FIX** finalizzazione sicura creazione **CLOSED** (`8bc7804` + `59f2bd1`, review Claude PASS, deploy+QA PASS); **P5-B2-A** toggle spostamento **CLOSED** (`5cc2e1b`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-B** nome automatico F2 **CLOSED** (`b68c774`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-C** nome editabile durante drawing **CLOSED** (`d893775`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-D** metriche live drawing **CLOSED** (`c2c4836`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-E** rimuovi ultimo punto **CLOSED** (`aea7434`, review Claude NON RICHIESTA, deploy+QA PASS); **P5-B2-F** pulizia errore stale **CLOSED** (`739bf49`, review Claude NON RICHIESTA, deploy indiretto P-STYLE-E/`0a51379`, QA PASS); **P5-B2-G** ramo `verts<3`→`polygonCancelDraw` **covered** (preesistente, UI ordinaria); **P5 complessivo CLOSED / PASS end-to-end**;
   - **BATCH FEATURE POLIGONI (quasi completo — backlog UX residuo):** (1) **P-UI-UNIFORM** **CLOSED / PASS end-to-end** — runtime **`e0e9578`**, blob **`edd4b973…`**, deploy+QA PASS («**QA P-UI-UNIFORM PASS operatore**»); Review Claude **NON RICHIESTA**; (2) **P-UNITS** (**`8c266ae`** + **`8be2845`** + **`11838a1`**) **CLOSED / PASS end-to-end** — blob **`10f5f1e…`**, deploy GIS-only **PASS tecnico** (HEAD VPS **`26f73f7`**, byte **2314390**, SHA-256 **`9b9aca0c…`**, cmp PASS); **QA operatore PASS** («**QA P-UNITS PASS operatore**»); lunghezza auto/m/km/NM/mi/ft; area auto/m²/ha/km²; session-only; isolamento Misura GIS/R&B; Review Claude **NON RICHIESTA**; (3) **P-VERTEX-MODAL** **CLOSED / PASS end-to-end** — runtime principale **`a4fa8e7`** (review byte Claude retroattiva **PASS**) + fix lista Lati **`5f8f73d`** (nessuna nuova review) + fix visibilità pannello **`5449cb9`** (P-VERTEX-MODAL-FIX2 — **RAMO A** CSS-only, review Claude **non richiesta** correttamente); causa radice header `×`/`−`: `display:flex` incondizionato su dialog senza `[open]`; sequenza QA: FAIL lista Lati → fix `5f8f73d`; FAIL header `×`/`−` → fix CSS `5449cb9` → deploy PASS → **QA PASS** («**QA P-VERTEX-MODAL PASS operatore**»); blob finale **`acafd519…`**; deploy GIS-only **PASS tecnico**; (4) **P-STYLE** **CLOSED / PASS end-to-end** — catena **`95c100d`** (A+B, review byte Claude **PASS**, blob **`4a8463b1…`**) + **`efca0bf`** (D, review byte Claude **PASS**, blob **`ac8a7c30…`**) + **`0a51379`** (C, gate orchestratore **PASS**, review Claude **NON RICHIESTA** — solo UI/working-copy; nessun sanitizer/export/import/create-path/`saveStore` diretto; nessun nuovo campo persistito; FR congelato); monolite blob **`8d13e41a…`**; deploy GIS-only **PASS tecnico** (HEAD VPS **`0a51379`**, byte **2340941**, SHA-256 **`a8225332…`**, cmp PASS, HTTP **200**, `goi-gis-app` active/enabled); **QA operatore PASS** («**QA P-STYLE PASS operatore**»); chiusura docs-only dopo blocco README **`c409819`** (che registrava P-STYLE pending); **P5 CLOSED / PASS end-to-end** (docs-only separato post-P-STYLE); (5) **P-VERTEX-FORMAT** **CLOSED / PASS end-to-end** — runtime base **`b9db963`** (selettore formato in modal vertice; formati dd/signed/ddm/dms/utm/mgrs; working copy `polygonVertexCoordModalCanon`; Salva-only; canonico `[lon, lat]`; blob **`0cae293…`**) + UX2 **`6ef714a`** (mirror `#polygonPanelVertexCoordFormatSel` in `#polygonPanelUnits`; `data-role="poly-vertex-coord-format"`; `polygonVertexCoordFormat` sessione; sync bidirezionale; blob live **`ed621173…`**); deploy base+UX2 GIS-only **PASS tecnico**; **QA PASS** («**QA P-VERTEX-FORMAT PASS operatore**» + «**QA P-VERTEX-FORMAT-UX2 PASS operatore**»); runtime live VPS **`6ef714a`**; Review Claude **NON RICHIESTA** in chiusura docs; **`APP_BUILD_ID` `B5.5Z` invariato**; (6) **P-POLYGON-LIST-ENRICHMENT** **CLOSED / PASS end-to-end** — base **`0409ad4`** (blob **`70f790e0…`**, deploy+QA PASS) + FIX1 **`d65410f`** (tabella ordinabile + stacking modal; review byte Claude **PASS con osservazioni**; blob **`701fc3ed…`**, deploy+QA PASS) + FIX2 **`28cc2d2`** (scroll tabella + layout unità/lista; blob **`f3c97917…`**, deploy GIS-only **PASS tecnico** byte **2365251** SHA **`58a53e20…`**, CMP_PASS; **QA PASS** «**QA P-POLYGON-LIST-ENRICHMENT-FIX2 PASS operatore**»); runtime live VPS **`28cc2d2`**; chiusura docs-only post-FIX2; backlog UX next separato **P-POLYGON-LIST-UX-NEXT** (colonne ridimensionabili; rinomina inline Nome) — desiderata futura, **non FAIL**; micro-fix multi-touch P2 pending;
-  - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed, FIX2 Vis pending):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata non in questo blocco; **(B-FIX2) indicatore Vis.** — backlog micro-fix (pallino verde/grigio).
+  - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni). Catena **UI-MODAL-PARITY-HELP-QR** (build 5 → FIX1 → FIX2) **CLOSED / PASS end-to-end**. **CONVERT-SOURCE-PICKER** **CLOSED / PASS end-to-end** (runtime **`b294140`**, build 8).
+  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog**. Catena **UI-MODAL-PARITY-HELP-QR** **CLOSED**. **CONVERT-SOURCE-PICKER** **CLOSED** (`b294140`, build 8). **P-POLYGON-LIST-UX-NEXT-B-FIX2** **CLOSED** (`b7b98c2`, build 9).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
-  - **CONVERT-SOURCE-PICKER build 8 — CLOSED / PASS end-to-end:** runtime **`b294140`**, blob **`6feba1c9…`**, sorgente coordinate Convertitore (waypoint/preferito/punto mappa/centro mappa), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2423291**, SHA **`1a954ca9…`**, CMP_PASS), **QA operatore PASS** («**QA CONVERT-SOURCE-PICKER PASS operatore**»); runtime VPS live **`b294140`**, display **`B5.5Z · build 8`**.
+  - **CONVERT-SOURCE-PICKER build 8 — CLOSED / PASS end-to-end:** runtime **`b294140`**, blob **`6feba1c9…`**, sorgente coordinate Convertitore, review **GPT sostitutiva PASS**, deploy GIS-only PASS (byte **2423291**, SHA **`1a954ca9…`**, CMP_PASS), **QA operatore PASS** («**QA CONVERT-SOURCE-PICKER PASS operatore**»); display **`B5.5Z · build 8`**; superseded per runtime live da **P-POLYGON-LIST-UX-NEXT-B-FIX2** (`b7b98c2`).
+  - **P-POLYGON-LIST-UX-NEXT-B-FIX2 build 9 — CLOSED / PASS end-to-end:** runtime **`b7b98c2`**, blob **`dc8067d9…`**, indicatore Vis. poligoni (pallino verde/grigio, `.poly-vis-indicator`, `polygonMapVisible`), review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423809**, SHA **`87746763…`**, CMP_PASS), **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-B-FIX2 PASS operatore**»); runtime VPS live **`b7b98c2`**, display **`B5.5Z · build 9`**.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -1410,7 +1411,7 @@ Note:
 
 **Nota cleanup:** implementato in **UX-NEXT-A** (`6892890`) — span statici footer/about → solo `B5.5Z`; `applyAppBuildLabel` unica fonte ` · build N`.
 
-**Prossimo ordine operativo candidato:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+**Prossimo ordine operativo candidato:** **da scegliere da roadmap/backlog**.
 
 #### UI-MODAL-PARITY-HELP-QR — migrazione Help/QR a dialog (build 5)
 
@@ -1506,9 +1507,37 @@ goi-gis-app.service = active / enabled
 
 **QA operatore:** PASS — «**QA CONVERT-SOURCE-PICKER PASS operatore**».
 
-**Runtime autorevole live VPS:** `b294140`.
+**Runtime autorevole live VPS:** superseded da **P-POLYGON-LIST-UX-NEXT-B-FIX2** (`b7b98c2`).
 
-**Prossimo candidato:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+**Prossimo candidato:** **da scegliere da roadmap/backlog**.
+
+#### P-POLYGON-LIST-UX-NEXT-B-FIX2 — indicatore Vis. poligoni (build 9)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-27).
+
+**Runtime:** `b7b98c205d93001f2b0121330bbde43a4737725b` — blob `dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b`.
+
+**Scopo:** colonna **Vis.** tabella Poligoni — indicatore non interattivo (pallino verde visibile, grigio/spento nascosto); CSS `.poly-vis-indicator`; stato via `polygonMapVisible(f)`; i18n `gis.polygonPanel.visible`/`hidden`; toolbar batch show/hide invariata; **`APP_BUILD_NUM = 9`**; display **`B5.5Z · build 9`**.
+
+**Review:** **NON RICHIESTA** (micro-fix UX Ramo B).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = b7b98c205d93001f2b0121330bbde43a4737725b
+VPS blob = dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b
+HTTP 200
+byte repo/servito = 2423809 / 2423809
+SHA-256 = 87746763adf80441c9c952a0572972cffa199dc62dcdb66cc5f9326a9b77b844 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**QA operatore:** PASS — «**QA P-POLYGON-LIST-UX-NEXT-B-FIX2 PASS operatore**».
+
+**Runtime autorevole live VPS:** `b7b98c2`.
+
+**Prossimo candidato:** **da scegliere da roadmap/backlog**.
 
 #### P-POLYGON-LIST-UX-NEXT-A — rinomina inline cella Nome + build bump 2
 
@@ -1526,7 +1555,7 @@ goi-gis-app.service = active / enabled
 
 **Nota backlog:** `polygonShowRenameBar` non più chiamata dalla lista — possibile dead code cleanup futuro.
 
-**Prossimo candidato:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+**Prossimo candidato (storico):** **P-POLYGON-LIST-UX-NEXT-B-FIX2** — ora **CLOSED**.
 
 #### docs/HANDOFF.md method A — handoff canonico repo
 

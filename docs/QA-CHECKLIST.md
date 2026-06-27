@@ -393,7 +393,47 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-1. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+**Da scegliere da roadmap/backlog** — nessun candidato obbligatorio già deciso.
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
+
+## P-POLYGON-LIST-UX-NEXT-B-FIX2 — indicatore Vis. poligoni (build 9) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `b7b98c2` — blob `dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b` — **`APP_BUILD_NUM = 9`** — display **`B5.5Z · build 9`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `b7b98c205d93001f2b0121330bbde43a4737725b` |
+| Subject | `fix(gis): add polygon visibility indicator` |
+| Review | **NON RICHIESTA** (micro-fix UX Ramo B) |
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = b7b98c205d93001f2b0121330bbde43a4737725b
+VPS blob = dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b
+HTTP 200
+byte repo/servito = 2423809 / 2423809
+SHA-256 = 87746763adf80441c9c952a0572972cffa199dc62dcdb66cc5f9326a9b77b844 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA P-POLYGON-LIST-UX-NEXT-B-FIX2 PASS operatore
+```
+
+**Checklist QA verificata:** pallino verde visibile / grigio nascosto; Mostra/Nascondi selezionate/tutte aggiornano indicatori; colonna Vis. non cliccabile; checkbox/toolbar/rename/resize invariati; footer/about **`B5.5Z · build 9`**.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b7b98c2
+```
+
+**Prossimo candidato operativo:** **da scegliere da roadmap/backlog**.
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 
@@ -433,7 +473,7 @@ QA CONVERT-SOURCE-PICKER PASS operatore
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b294140
 ```
 
-**Prossimo candidato operativo:** **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (superseded: P-POLYGON-LIST-UX-NEXT-B-FIX2 ora **CLOSED**).
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 

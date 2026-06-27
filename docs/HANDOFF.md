@@ -110,28 +110,23 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `b294140` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **CONVERT-SOURCE-PICKER** — CLOSED / PASS end-to-end |
-| Runtime live VPS | `b294140c6464c28634c775018c4bd80853041491` |
-| Blob monolite | `6feba1c9e0b192c1655ba052314e7d8cae87df98` |
-| `APP_BUILD_NUM` | `8` |
-| Display runtime | `B5.5Z · build 8` |
+| HEAD remoto (verificato) | `b7b98c2` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **P-POLYGON-LIST-UX-NEXT-B-FIX2** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `b7b98c205d93001f2b0121330bbde43a4737725b` |
+| Blob monolite | `dc8067d960a0ae0901f4a6f59d7ee19fb0e9586b` |
+| `APP_BUILD_NUM` | `9` |
+| Display runtime | `B5.5Z · build 9` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5 → FIX1 build 6 → FIX2 build 7) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b294140` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=b7b98c2` |
 
 **Prossimo ordine operativo:**
 
-1. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+**Da scegliere da roadmap/backlog** — nessun candidato obbligatorio già deciso (vedi WU-0005-0009: standardizzazione modal, resize laterale pannelli, Personalizzazione HUD, dead code cleanup, ecc.).
 
 ---
 
 ## Backlog / note immediate
-
-### P-POLYGON-LIST-UX-NEXT-B-FIX2 — Vis indicator
-
-- Colonna Vis.: pallino verde se visibile, spento/grigio se nascosto
-- Micro-fix UX; non blocca chiusura Help/QR
 
 ### UX-NEXT-B — colonne ridimensionabili (runtime landed)
 
