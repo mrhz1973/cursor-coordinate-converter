@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-06-27 — **P-STYLE CLOSED / PASS end-to-end (docs-only):** commit task **`898be8c`** — chiusura memoria dopo attestazione «**QA P-STYLE PASS operatore**»; catena **`95c100d`** (A+B, review Claude PASS) + **`efca0bf`** (D, review Claude PASS) + **`0a51379`** (C, gate orchestratore PASS, review Claude non richiesta); deploy GIS-only **`0a51379`** PASS tecnico già registrato; monolite invariato **`8d13e41…`**; blocco README **`c409819`** aveva correttamente P-STYLE pending; batch P5 / P5-B2-F **non chiusi**; inbox **`2026-06-27_1148_riepilogo_finito-sessione.md`**.
+2026-06-27 — **P5-B2-F + P5 CLOSED / PASS end-to-end (docs-only):** commit task **`d2aeaa0`** — correzione nota stale «Deploy VPS NON ESEGUITO»; runtime **`739bf49`** già live in monolite **`8d13e41…`**; deploy indiretto P-STYLE-E/`0a51379`; **QA operatore PASS** («**QA POLY-PARITY-P5-B2-F PASS operatore**»); **P5-B2-G covered**; **P5 complessivo CLOSED**; micro-fix multi-touch P2 **NON landed** (backlog separato); monolite invariato; inbox **`2026-06-27_1202_riepilogo_finito-sessione.md`**.
+
+2026-06-27 — **P-STYLE CLOSED / PASS end-to-end (docs-only):** commit task **`898be8c`** — chiusura memoria dopo attestazione «**QA P-STYLE PASS operatore**»; catena **`95c100d`** (A+B, review Claude PASS) + **`efca0bf`** (D, review Claude PASS) + **`0a51379`** (C, gate orchestratore PASS, review Claude non richiesta); deploy GIS-only **`0a51379`** PASS tecnico già registrato; monolite invariato **`8d13e41…`**; blocco README **`c409819`** aveva correttamente P-STYLE pending; inbox **`2026-06-27_1148_riepilogo_finito-sessione.md`**.
 
 2026-06-27 — **README bootloader rules (docs-only):** commit **`c409819`** — tre regole AI front-loaded in README (ls-remote/read-set, finito-in-prompt, Agent+Auto); monolite invariato **`8d13e41…`**; **P-STYLE** deploy **`0a51379`** PASS tecnico, QA operatore **pending** (non chiuso qui); inbox **`2026-06-27_1200_riepilogo_readme-bootloader-finito.md`**.
 
