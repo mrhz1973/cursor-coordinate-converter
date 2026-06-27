@@ -14,6 +14,16 @@
 
 Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte completa dello stato operativo.
 
+---
+**Agente AI — prima di rispondere (vale per GPT, Claude, Cursor):**
+
+1. Esegui `git ls-remote origin refs/heads/main` (autorità finale su HEAD) e leggi il read-set **pinnato a quella HEAD**. Lo stato è il read-set, **non** la memoria o la narrazione dell'agente: se una cosa non è qui o in OM §7, non è stato — è ciò che `finito` deve scrivere.
+2. `finito` è un workflow **interno a Cursor**: nei blocchi già approvati va **in coda al prompt in forma condizionale** (OM §4 Regola A), **mai** chiesto all'operatore come passo manuale separato. Consegna all'operatore **un solo blocco incollabile**; niente babysitting passo-passo (OM §4 Regola E).
+3. Cursor write+commit = **sempre Agent+Auto** (Plan solo per diagnosi pura read-only).
+
+Dettaglio completo: `docs/OPERATING_MEMORY.md` §4 — Handoff & Close Discipline.
+---
+
 Read-set corrente, in ordine:
 
 1. `README.md` — bootloader e regole di lettura.
