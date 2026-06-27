@@ -7850,17 +7850,20 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
 body.gis-mode dialog#searchPanel.search-panel > .app-modal-body{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
 }
-/* MODAL-STD-B2: Preferiti floating — flex column + scroll lista interna (famiglia Search B1). */
+/* MODAL-STD-B2-FIX1: Preferiti — hide when closed; lista scrollabile dopo resize. */
 body.gis-mode dialog#favoritesPanel.favorites-panel{
   display:flex;
   flex-direction:column;
 }
+body.gis-mode dialog#favoritesPanel.favorites-panel:not([open]){
+  display:none;
+}
 #favoritesPanelBody.app-modal-body{
   flex:1 1 auto;
   min-height:0;
-  overflow:hidden !important;
   display:flex;
   flex-direction:column;
+  overflow:hidden !important;
 }
 #favoritesPanelBody #sec-favorites{
   flex:1 1 auto;
@@ -7873,20 +7876,21 @@ body.gis-mode dialog#favoritesPanel.favorites-panel{
   min-height:0;
   display:flex !important;
   flex-direction:column;
+  overflow:hidden;
+}
+#favoritesPanelBody #sec-favorites .section-body > :not(#favorites-list){
+  flex:0 0 auto;
 }
 #favoritesPanelBody #favorites-list{
   flex:1 1 auto;
   min-height:0;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
 }
 #favoritesPanelBody #favorites-list .favorites-table-wrap{
-  flex:1 1 auto;
-  min-height:0;
   overflow-x:auto;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
+  overflow-y:visible;
+  max-width:100%;
 }
 /* GIS: corpi pannello leggermente trasparenti così la mappa sotto resta percepibile (map-first). */
 body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-body{
@@ -18142,7 +18146,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 11;
+const APP_BUILD_NUM = 12;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -44322,7 +44326,7 @@ function gisInit(){
     }
     const fpd = document.getElementById("favoritesPanel");
     if (state.favoritesPanelOpen || (fpd && fpd.open)){
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("favoritesPanel")) return;
+      ev.preventDefault();
       closeFavoritesPanel();
       return;
     }
@@ -44607,7 +44611,7 @@ function gisInit(){
       }
       const fp = document.getElementById("favoritesPanel");
       if (state.favoritesPanelOpen && fp && fp.open && document.body.classList.contains("gis-mode")){
-        try { clampFavoritesPanelRect(fp); gisPanelSyncBodySize(fp, _favoritesPanelLayoutOpts()); } catch(_){}
+        try { clampFavoritesPanelRect(fp); syncFavoritesPanelBodyLayout(fp); } catch(_){}
       }
       const lp = document.getElementById("layersPanel");
       if (state.layersPanelOpen && lp && lp.open && document.body.classList.contains("gis-mode")){
@@ -46837,6 +46841,18 @@ function wireSearchPanelFloatingGis(dlg){
   clampSearchPanelRect(dlg);
   gisPanelSyncBodySize(dlg, _searchPanelLayoutOpts());
 }
+function syncFavoritesPanelBodyLayout(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _favoritesPanelLayoutOpts();
+  gisPanelSyncBodySize(dlg, opts);
+  const body = document.getElementById("favoritesPanelBody");
+  if (body){
+    try {
+      body.style.overflowY = "hidden";
+      body.style.overflowX = "hidden";
+    } catch(_){}
+  }
+}
 function wireFavoritesPanelFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
   dlg.classList.add("gis-panel-floating");
@@ -46854,7 +46870,7 @@ function wireFavoritesPanelFloatingGis(dlg){
   gisPanelBringToFront(dlg, _favoritesPanelLayoutOpts());
   gisPanelApplyLayout(dlg, _favoritesPanelLayoutOpts());
   clampFavoritesPanelRect(dlg);
-  gisPanelSyncBodySize(dlg, _favoritesPanelLayoutOpts());
+  syncFavoritesPanelBodyLayout(dlg);
 }
 
 /** Session layout opts for Help floating panel (build 6 FIX1). */
@@ -50012,6 +50028,10 @@ function openFavoritesPanel(){
   }
   if (state.activeTab === "favorites") deactivateTab();
   state.favoritesPanelOpen = true;
+  try {
+    const sec = document.getElementById("sec-favorites");
+    if (sec) sec.open = true;
+  } catch(_){}
   gisMoveSectionTo("sec-favorites", body);
   try { dlg.show(); } catch(_){ dlg.setAttribute("open",""); }
   try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
@@ -50040,7 +50060,8 @@ function closeFavoritesPanel(){
       const h = document.getElementById("favoritesPanelHead");
       if (h) h.classList.remove("gis-panel-drag-head");
     } catch(_){}
-    try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
+    try { if (dlg.open) dlg.close(); } catch(_){}
+    try { dlg.removeAttribute("open"); } catch(_){}
   }
   gisSetTopbarTabActive("favorites", false);
 }
