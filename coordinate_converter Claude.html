@@ -2579,16 +2579,89 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
     justify-content:center;
   }
 }
-/* Polygon panel styling */
-.polygon-panel .poly-row{ display:flex; align-items:flex-start; gap:8px; padding:5px 4px; border-bottom:1px solid rgba(128,128,128,.15); }
-.polygon-panel .poly-row:last-child{ border-bottom:none; }
-.polygon-panel .poly-swatch{ width:14px; height:14px; border-radius:3px; flex-shrink:0; border:1px solid rgba(0,0,0,.12); margin-top:2px; }
-.polygon-panel .poly-row-main{ flex:1; min-width:0; }
-.polygon-panel .poly-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.92rem; display:block; }
-.polygon-panel .poly-meta{ font-size:.75rem; line-height:1.35; margin-top:2px; opacity:.88; white-space:normal; }
-.polygon-panel .poly-actions{ display:flex; align-items:center; gap:4px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; max-width:52%; }
-.polygon-panel .poly-act-btn{ padding:2px 6px; font-size:.78rem; line-height:1.2; min-height:0; }
-.polygon-panel .poly-actions .btn-danger-subtle[data-role="poly-delete"] .danger-x{ margin-right:0; }
+/* Polygon panel — lista tabellare (allineata a saved-tracks / offline). */
+#polygonPanelList.poly-list-wrap{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.polygon-panel .poly-list-scroll-inner{ min-width:0; }
+.polygon-panel .poly-list-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.82rem;
+  table-layout:fixed;
+}
+.polygon-panel .poly-list-table th,
+.polygon-panel .poly-list-table td{
+  padding:5px 6px;
+  border-bottom:1px solid var(--border);
+  vertical-align:middle;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.polygon-panel .poly-list-table th{
+  text-align:left;
+  color:var(--muted);
+  font-weight:600;
+  position:sticky;
+  top:0;
+  background:var(--panel2);
+  z-index:1;
+}
+.polygon-panel .poly-list-table .poly-list-sort-btn{
+  background:transparent;
+  border:none;
+  padding:0;
+  margin:0;
+  font:inherit;
+  color:inherit;
+  cursor:pointer;
+  text-align:inherit;
+}
+.polygon-panel .poly-list-table .poly-list-sort-btn:hover{
+  color:var(--text);
+  text-decoration:underline;
+}
+.polygon-panel .poly-list-table .poly-list-sort-mark{ margin-left:2px; font-size:.72em; opacity:.85; }
+.polygon-panel .poly-list-table tr[data-poly-row]:hover{
+  background:color-mix(in srgb, var(--accent) 6%, var(--panel));
+}
+.polygon-panel .poly-list-table tr[data-poly-row].is-editing{
+  background:rgba(202,138,4,.12);
+}
+.polygon-panel .poly-list-table tr[data-poly-row].is-editing .poly-list-name{
+  font-weight:600;
+}
+.polygon-panel .poly-list-table .poly-list-vis-cell{ text-align:center; }
+.polygon-panel .poly-list-table .poly-list-style-cell{ text-align:center; }
+.polygon-panel .poly-swatch{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:3px;
+  border:1px solid rgba(0,0,0,.12);
+  vertical-align:middle;
+}
+.polygon-panel .poly-list-name{ display:block; overflow:hidden; text-overflow:ellipsis; }
+.polygon-panel .poly-list-num{ font-variant-numeric:tabular-nums; }
+.polygon-panel .poly-list-actions-cell{ text-align:left; white-space:normal; }
+.polygon-panel .poly-list-actions-cell .poly-row-actions{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.polygon-panel .poly-list-actions-cell .poly-act-btn{
+  padding:2px 6px;
+  font-size:.78rem;
+  line-height:1.2;
+  min-height:0;
+}
+.polygon-panel .poly-list-actions-cell .btn-danger-subtle[data-role="poly-delete"] .danger-x{ margin-right:0; }
 .polygon-panel .poly-vis-btn{ min-width:1.6rem; }
 .polygon-panel .poly-rename-bar{ margin:0 0 8px; padding:8px; border-radius:6px; background:var(--gis-modal-notice-bg,rgba(241,245,249,.95)); border:1px solid rgba(100,116,139,.25); }
 .polygon-panel .poly-rename-bar .poly-rename-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -2692,8 +2765,6 @@ dialog.polygon-vertex-coord-dialog .poly-vertex-coord-actions{
 }
 .polygon-panel .poly-edit-leg-add.btn.btn-sm.btn-ghost{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
 .polygon-panel .poly-edit-leg-del.btn.btn-sm.btn-danger-subtle{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
-.polygon-panel .poly-row.is-editing{ background:rgba(202,138,4,.12); border-radius:4px; }
-.polygon-panel .poly-row.is-editing .poly-name{ font-weight:600; }
 .poly-edit-overlay .poly-edit-shape{ stroke-width:2.5; }
 .poly-edit-overlay .poly-edit-handle{ cursor:grab; touch-action:none; }
 .poly-edit-overlay .poly-edit-handle.is-grabbing{ cursor:grabbing; }
@@ -10582,7 +10653,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" id="polygonPanelEditCancel" class="btn btn-sm" data-role="poly-edit-cancel" data-i18n="gis.polygonPanel.editCancel">Annulla</button>
       </div>
     </div>
-    <div id="polygonPanelList"></div>
+    <div id="polygonPanelList" class="poly-list-wrap"></div>
     <div id="polygonPanelDraftNameWrap" class="poly-draft-name-wrap" hidden>
       <div class="poly-draft-name-row">
         <label for="polygonPanelDraftName" id="polygonPanelDraftNameLabel" class="hint" data-i18n="gis.polygonPanel.drawNameLabel">Nome</label>
@@ -12140,6 +12211,8 @@ const I18N = {
     "gis.polygonPanel.hidden":"Nascosto",
     "gis.polygonPanel.visible":"Visibile",
     "gis.polygonPanel.listShow":"Mostra",
+    "gis.polygonPanel.colWhen":"Data",
+    "tip.polygonPanelListSortCol":"Ordina per {0}. Secondo clic inverte l’ordine.",
     "gis.polygonPanel.edit":"Modifica",
     "gis.polygonPanel.editing":"In modifica",
     "gis.polygonPanel.editingTitle":"Modifica poligono: {0}",
@@ -13800,6 +13873,8 @@ const I18N = {
     "gis.polygonPanel.hidden":"Hidden",
     "gis.polygonPanel.visible":"Visible",
     "gis.polygonPanel.listShow":"Show",
+    "gis.polygonPanel.colWhen":"Date",
+    "tip.polygonPanelListSortCol":"Sort by {0}. Click again to reverse.",
     "gis.polygonPanel.edit":"Edit",
     "gis.polygonPanel.editing":"Editing",
     "gis.polygonPanel.editingTitle":"Edit polygon: {0}",
@@ -43807,7 +43882,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","astroWaypointPicker","astroFavoritePicker"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","astroWaypointPicker","astroFavoritePicker"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -46168,6 +46243,7 @@ function openPolygonPanel(){
   if (h) h.classList.add("gis-panel-drag-head");
   /* layout: position / size persistence */
   try { attachPolygonPanelFloatingGis(dlg); } catch(_){}
+  try { gisPanelBringToFront(dlg, _polygonPanelLayoutOpts()); } catch(_){}
   try { ensurePolygonPanelListWired(); polygonWirePanelBarsOnce(); } catch(_){}
   renderPolygonPanelList();
   try { renderPolygonEditBar(); } catch(_){}
@@ -47879,7 +47955,7 @@ function polygonFeatureOpenRingCoords(f){
   return ring;
 }
 function polygonFeatureListMetrics(f){
-  const out = { vertexCount: 0, areaTxt: null, perimTxt: null, pts: null };
+  const out = { vertexCount: 0, areaM2: null, areaTxt: null, perimeterM: null, perimTxt: null, pts: null };
   const ring = polygonFeatureOpenRingCoords(f);
   if (!ring) return out;
   out.vertexCount = ring.length;
@@ -47888,14 +47964,103 @@ function polygonFeatureListMetrics(f){
   if (pts.length >= 3){
     try {
       const areaM2 = sphericalPolygonArea(pts);
+      out.areaM2 = Number.isFinite(areaM2) ? areaM2 : null;
       out.areaTxt = fmtPolygonAreaPlain(areaM2);
     } catch(_){}
     try {
       const perM = computePolylinePerimeterMeters(pts, true);
+      out.perimeterM = Number.isFinite(perM) ? perM : null;
       out.perimTxt = polygonEditFormatDistance(perM);
     } catch(_){}
   }
   return out;
+}
+const POLYGON_PANEL_LIST_SORT_KEYS = new Set(["vis", "name", "vtx", "area", "perim", "when"]);
+function ensurePolygonPanelListSortState(){
+  const KEYS = POLYGON_PANEL_LIST_SORT_KEYS;
+  let s = state._polygonPanelListSort;
+  if (!s || typeof s !== "object"){
+    state._polygonPanelListSort = { key: "name", dir: "asc" };
+    return;
+  }
+  const key = KEYS.has(String(s.key)) ? String(s.key) : "name";
+  const dir = (s.dir === "asc" || s.dir === "desc") ? s.dir : polygonPanelListSortDefaultDir(key);
+  state._polygonPanelListSort = { key, dir };
+}
+function polygonPanelListSortDefaultDir(key){
+  if (key === "name") return "asc";
+  if (key === "when") return "desc";
+  return "desc";
+}
+function polygonFeatureSortTs(props){
+  if (!props) return 0;
+  const u = props.updated_at;
+  if (typeof u === "string" && u && !Number.isNaN(Date.parse(u))) return Date.parse(u);
+  const c = props.created_at;
+  if (typeof c === "string" && c && !Number.isNaN(Date.parse(c))) return Date.parse(c);
+  return 0;
+}
+function getPolygonPanelListSortValue(f, key){
+  if (!f) return null;
+  const props = f.properties || {};
+  const m = polygonFeatureListMetrics(f);
+  switch (key){
+    case "vis": return props.visible !== false ? 1 : 0;
+    case "name": return String(polygonDisplayName(props.name) || "").toLowerCase();
+    case "vtx": return m.vertexCount || 0;
+    case "area": return Number.isFinite(m.areaM2) ? m.areaM2 : -1;
+    case "perim": return Number.isFinite(m.perimeterM) ? m.perimeterM : -1;
+    case "when": return polygonFeatureSortTs(props);
+    default: return 0;
+  }
+}
+function polygonPanelListSortCompare(a, b, key, dir){
+  const mul = dir === "asc" ? 1 : -1;
+  const va = getPolygonPanelListSortValue(a, key);
+  const vb = getPolygonPanelListSortValue(b, key);
+  if (typeof va === "string" && typeof vb === "string"){
+    const c = va.localeCompare(vb, undefined, { sensitivity: "base" });
+    if (c !== 0) return c * mul;
+  } else {
+    const na = Number(va), nb = Number(vb);
+    if (na < nb) return -1 * mul;
+    if (na > nb) return 1 * mul;
+  }
+  return String(a.id || "").localeCompare(String(b.id || ""));
+}
+function sortPolygonsForPanelList(polys){
+  ensurePolygonPanelListSortState();
+  const { key, dir } = state._polygonPanelListSort;
+  const arr = (polys || []).slice();
+  arr.sort((a, b) => polygonPanelListSortCompare(a, b, key, dir));
+  return arr;
+}
+function applyPolygonPanelListSortHeaderClick(key){
+  const k = String(key || "");
+  if (!POLYGON_PANEL_LIST_SORT_KEYS.has(k)) return;
+  ensurePolygonPanelListSortState();
+  const cur = state._polygonPanelListSort;
+  if (cur.key === k) state._polygonPanelListSort = { key: k, dir: cur.dir === "asc" ? "desc" : "asc" };
+  else state._polygonPanelListSort = { key: k, dir: polygonPanelListSortDefaultDir(k) };
+  renderPolygonPanelList();
+}
+function polygonPanelListSortHeaderHtml(colKey, i18nKey, opts){
+  opts = opts || {};
+  ensurePolygonPanelListSortState();
+  const labelPlain = (typeof t === "function") ? (t(i18nKey) || colKey) : colKey;
+  const label = esc(labelPlain);
+  const { key, dir } = state._polygonPanelListSort;
+  const active = key === colKey;
+  const mark = active ? (dir === "desc" ? "▼" : "▲") : "";
+  const rawTip = (typeof t === "function") ? (t("tip.polygonPanelListSortCol") || "") : "";
+  const tipPlain = rawTip ? String(rawTip).replace(/\{0\}/g, labelPlain) : labelPlain;
+  const tipEsc = esc(tipPlain);
+  const clsParts = [];
+  if (opts.thClass) clsParts.push(String(opts.thClass));
+  if (opts.visHead) clsParts.push("poly-list-vis-head");
+  const cls = clsParts.length ? ` class="${esc(clsParts.join(" "))}"` : "";
+  const st = opts.thStyle ? ` style="${esc(opts.thStyle)}"` : "";
+  return `<th${cls}${st}><button type="button" class="poly-list-sort-btn" data-poly-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="poly-list-sort-mark" aria-hidden="true">${mark}</span></button></th>`;
 }
 function polygonListRowMetaText(f){
   const m = polygonFeatureListMetrics(f);
@@ -47922,6 +48087,12 @@ function ensurePolygonPanelListWired(){
   if (!body || body._polyListWired) return;
   body._polyListWired = true;
   body.addEventListener("click", (ev) => {
+    const sortBtn = ev.target && ev.target.closest && ev.target.closest("[data-poly-sort]");
+    if (sortBtn){
+      ev.preventDefault();
+      applyPolygonPanelListSortHeaderClick(sortBtn.getAttribute("data-poly-sort"));
+      return;
+    }
     const show = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-show"]');
     const edit = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-edit"]');
     const ren = ev.target && ev.target.closest && ev.target.closest('[data-role="poly-rename"]');
@@ -47964,46 +48135,80 @@ function ensurePolygonPanelListWired(){
 function renderPolygonPanelList(){
   const cont = document.getElementById("polygonPanelList");
   if (!cont) return;
-  const polys = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  const polysRaw = Array.isArray(state.gisPolygons) ? state.gisPolygons : [];
+  const polys = sortPolygonsForPanelList(polysRaw);
   if (polys.length === 0){
     cont.innerHTML = `<div class="poly-empty">${esc((typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono")}</div>`;
   } else {
-    cont.innerHTML = polys.map((f, i) => {
+    const editingActive = polygonIsEditing();
+    const editingId = editingActive ? String(state._polyEdit.id) : "";
+    const editLbl = esc((typeof t === "function" ? t("gis.polygonPanel.edit") : "") || "Modifica");
+    const editingLbl = esc((typeof t === "function" ? t("gis.polygonPanel.editing") : "") || "In modifica");
+    const editTip = esc((typeof t === "function" ? t("tip.polygonPanel.edit") : "") || "");
+    const renLbl = esc((typeof t === "function" ? t("gis.polygonPanel.rename") : "") || "Rinomina");
+    const showTip = esc((typeof t === "function" ? t("tip.polygonPanel.listShow") : "") || "");
+    const visTip = esc((typeof t === "function" ? t("tip.polygonPanel.visibility") : "") || "");
+    const delTip = esc((typeof t === "function" ? t("tip.polygonPanel.delete") : "") || "");
+    const ariaVisOn = esc((typeof t === "function") ? (t("gis.polygonPanel.visible") || "") : "");
+    const ariaVisOff = esc((typeof t === "function") ? (t("gis.polygonPanel.hidden") || "") : "");
+    let html = `<div class="poly-list-scroll-inner"><table class="poly-list-table"><colgroup>
+      <col style="width:44px" />
+      <col />
+      <col style="width:52px" />
+      <col style="width:72px" />
+      <col style="width:72px" />
+      <col style="width:44px" />
+      <col style="width:88px" />
+      <col style="min-width:120px" />
+    </colgroup><thead><tr>
+      ${polygonPanelListSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
+      ${polygonPanelListSortHeaderHtml("name", "track.colName", { thClass: "poly-list-th-name" })}
+      ${polygonPanelListSortHeaderHtml("vtx", "gis.polygonPanel.editVertices", { thStyle: "width:52px" })}
+      ${polygonPanelListSortHeaderHtml("area", "gis.polygonPanel.editArea", { thStyle: "width:72px" })}
+      ${polygonPanelListSortHeaderHtml("perim", "gis.polygonPanel.editPerimeter", { thStyle: "width:72px" })}
+      <th class="poly-list-th-style" style="width:44px;text-align:center">${esc((typeof t === "function" ? t("gis.polygonPanel.editStyle") : "") || "Stile")}</th>
+      ${polygonPanelListSortHeaderHtml("when", "gis.polygonPanel.colWhen", { thStyle: "width:88px" })}
+      <th class="poly-list-th-actions" style="min-width:120px;text-align:left">${esc((typeof t === "function" ? t("track.savedColActions") : "") || "Azioni")}</th>
+    </tr></thead><tbody>`;
+    for (const f of polys){
       const props = f.properties || {};
       const sty = polygonResolveStyleProps(props, "saved");
       const swatchBg = esc(sty.fillColor || sty.strokeColor || "#ca8a04");
       const swatchBorder = esc(sty.strokeColor || "#ca8a04");
-      const nm = esc(polygonDisplayName(props.name) || `Polygon ${i + 1}`);
-      const metaTxt = esc(polygonListRowMetaText(f));
+      const nm = esc(polygonDisplayName(props.name) || "");
       const metrics = polygonFeatureListMetrics(f);
       const vis = props.visible !== false;
-      const eyeIco = vis ? "👁" : "👁‍🗨";
-      const pid = esc(String(f.id || ""));
       const fid = String(f.id || "");
-      const editingActive = polygonIsEditing();
-      const editingId = editingActive ? String(state._polyEdit.id) : "";
+      const pid = esc(fid);
       const isEditingRow = editingActive && fid === editingId;
-      const editLbl = esc((typeof t === "function" ? t("gis.polygonPanel.edit") : "") || "Modifica");
-      const editingLbl = esc((typeof t === "function" ? t("gis.polygonPanel.editing") : "") || "In modifica");
-      const editTip = esc((typeof t === "function" ? t("tip.polygonPanel.edit") : "") || "");
       const editBtnLabel = isEditingRow ? editingLbl : editLbl;
       const editDisabled = editingActive && !isEditingRow;
       const editDisabledAttr = (editDisabled || isEditingRow) ? " disabled" : "";
       const editAria = isEditingRow ? ' aria-current="true" aria-pressed="true"' : "";
       const mutDisabled = editingActive ? " disabled" : "";
-      const rowCls = isEditingRow ? "poly-row is-editing" : "poly-row";
-      const renLbl = esc((typeof t === "function" ? t("gis.polygonPanel.rename") : "") || "Rinomina");
-      const showLbl = esc((typeof t === "function" ? t("gis.polygonPanel.listShow") : "") || "Mostra");
-      const showTip = esc((typeof t === "function" ? t("tip.polygonPanel.listShow") : "") || "");
+      const rowCls = isEditingRow ? "is-editing" : "";
+      const whenStr = esc(polygonFormatPropertyTimestamp(props.updated_at || props.created_at));
+      const areaCell = metrics.areaTxt ? esc(metrics.areaTxt) : "—";
+      const perimCell = metrics.perimTxt ? esc(metrics.perimTxt) : "—";
+      const vtxCell = metrics.vertexCount > 0 ? String(metrics.vertexCount) : "—";
       const showBtn = metrics.vertexCount > 0
-        ? `<button type="button" class="poly-act-btn btn btn-sm poly-show-btn" data-role="poly-show" data-poly-id="${pid}" title="${showTip}">${showLbl}</button>`
+        ? `<button type="button" class="poly-act-btn btn btn-sm btn-saved-fly" data-role="poly-show" data-poly-id="${pid}" data-tip="${showTip}" title="${showTip}" aria-label="${showTip}"><span aria-hidden="true">⌖</span></button>`
         : "";
-      const visTip = esc((typeof t === "function" ? t("tip.polygonPanel.visibility") : "") || "");
       const visLbl = esc((typeof t === "function" ? t(vis ? "gis.polygonPanel.visible" : "gis.polygonPanel.hidden") : "") || "");
-      const delTip = esc((typeof t === "function" ? t("tip.polygonPanel.delete") : "") || "");
-      const metaHtml = metaTxt ? `<div class="poly-meta hint">${metaTxt}</div>` : "";
-      return `<div class="${rowCls}" data-poly-id="${pid}"><span class="poly-swatch" style="background:${swatchBg};border-color:${swatchBorder}" title="${swatchBorder}"></span><div class="poly-row-main"><span class="poly-name" title="${nm}">${nm}</span>${metaHtml}</div><div class="poly-actions">${showBtn}<button type="button" class="poly-act-btn btn btn-sm" data-role="poly-edit" data-poly-id="${pid}" title="${editTip}"${editDisabledAttr}${editAria}>${editBtnLabel}</button><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}"${mutDisabled}>${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" data-i18n-tip="tip.polygonPanel.delete" data-i18n-aria="tip.polygonPanel.delete" title="${delTip}"${mutDisabled}><span class="danger-x" aria-hidden="true">✕</span></button></div></div>`;
-    }).join("");
+      const eyeIco = vis ? "👁" : "👁‍🗨";
+      html += `<tr data-poly-row data-poly-id="${pid}" class="${rowCls}">
+        <td class="poly-list-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${vis ? ariaVisOn : ariaVisOff}"></span></td>
+        <td class="poly-list-name" data-tip="${nm}">${nm || "—"}</td>
+        <td class="poly-list-num">${esc(vtxCell)}</td>
+        <td class="poly-list-num">${areaCell}</td>
+        <td class="poly-list-num">${perimCell}</td>
+        <td class="poly-list-style-cell"><span class="poly-swatch" style="background:${swatchBg};border-color:${swatchBorder}" title="${swatchBorder}"></span></td>
+        <td class="poly-list-when">${whenStr}</td>
+        <td class="poly-list-actions-cell"><div class="poly-row-actions">${showBtn}<button type="button" class="poly-act-btn btn btn-sm" data-role="poly-edit" data-poly-id="${pid}" title="${editTip}" aria-label="${editTip}"${editDisabledAttr}${editAria}><span aria-hidden="true">✎</span></button><button type="button" class="poly-act-btn btn btn-sm" data-role="poly-rename" data-poly-id="${pid}" title="${renLbl}" aria-label="${renLbl}"${mutDisabled}>${renLbl}</button><button type="button" class="poly-act-btn btn btn-sm poly-vis-btn" data-role="poly-toggle-vis" data-poly-id="${pid}" title="${visTip}" aria-label="${visLbl}">${eyeIco}</button><button type="button" class="poly-act-btn btn btn-sm btn-danger-subtle" data-role="poly-delete" data-poly-id="${pid}" data-i18n-tip="tip.polygonPanel.delete" data-i18n-aria="tip.polygonPanel.delete" title="${delTip}" aria-label="${delTip}"${mutDisabled}><span class="danger-x" aria-hidden="true">✕</span></button></div></td>
+      </tr>`;
+    }
+    html += "</tbody></table></div>";
+    cont.innerHTML = html;
   }
   /* "Nuovo poligono" button state: enabled when NOT drawing */
   const newBtn = document.getElementById("polygonPanelNewBtn");
