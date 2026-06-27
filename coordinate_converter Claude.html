@@ -7681,6 +7681,32 @@ body.gis-mode dialog#astroFavoritePicker.app-modal.gis-panel-floating{
   pointer-events:auto;
   z-index:28;
 }
+/* GIS: Help + QR — floating content modals (build 6 FIX1). */
+body.gis-mode dialog#helpOverlay.help-modal.gis-panel-floating,
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:28;
+}
+body.gis-mode dialog#helpOverlay.help-modal.gis-panel-floating[open],
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating[open]{
+  display:flex;
+  flex-direction:column;
+}
+body.gis-mode dialog#helpOverlay.help-modal.gis-panel-floating .app-modal-body,
+body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .app-modal-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
 .astro-panel .astro-pos-row{
   display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 10px;
   margin:10px 0 6px; font-size:.86rem;
@@ -8143,6 +8169,42 @@ dialog.track-modal.app-modal{
   border-bottom:1.5px solid var(--gis-grip-stroke);
   border-bottom-left-radius:var(--radius-card, 12px);
 }
+/* #helpOverlay (build 6 FIX1): resize handles come Misura/Favoriti. */
+#helpOverlay .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#helpOverlay .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#helpOverlay .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#helpOverlay .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#helpOverlay .gis-panel-resize-handle[data-handle="ne"]:hover,
+#helpOverlay .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#helpOverlay .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#helpOverlay .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#helpOverlay .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#helpOverlay .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
 /* #polygonPanel (P-UI-UNIFORM): anchor angoli come Range Rings / Misura. */
 #polygonPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
 #polygonPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
@@ -8253,13 +8315,16 @@ html[data-theme="light"] #trackModal .track-resize-handle{
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
 #waypointModalHead, #convertModalHead, #rangeRingsPanelHead, #measurePanelHead, #astroPanelHead,
+#helpOverlayHead, #qrModalHead,
 #astroWaypointPickerHead, #astroFavoritePickerHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #waypointModalHead.dragging, #convertModalHead.dragging, #rangeRingsPanelHead.dragging, #measurePanelHead.dragging, #astroPanelHead.dragging,
+#helpOverlayHead.dragging, #qrModalHead.dragging,
 #astroWaypointPickerHead.dragging, #astroFavoritePickerHead.dragging{ cursor:grabbing; }
 body:not(.gis-mode) #waypointModal .gis-panel-resize-handle,
 body:not(.gis-mode) #convertModal .gis-panel-resize-handle,
 body:not(.gis-mode) #rangeRingsPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #measurePanel .gis-panel-resize-handle,
+body:not(.gis-mode) #helpOverlay .gis-panel-resize-handle,
 body:not(.gis-mode) #polygonPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroPanel .gis-panel-resize-handle,
 body:not(.gis-mode) #astroWaypointPicker .gis-panel-resize-handle,
@@ -11236,11 +11301,16 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 </aside>
 
 <!-- ============ HELP MODAL (keyboard shortcuts) ============ -->
-<dialog id="helpOverlay" class="app-modal help-modal" aria-labelledby="helpTitle">
-  <div class="app-modal-head">
+<dialog id="helpOverlay" class="app-modal help-modal" aria-labelledby="helpTitle" aria-modal="false">
+  <div class="app-modal-head" id="helpOverlayHead">
     <h2 id="helpTitle" class="app-modal-title" data-i18n="help.title">Guida rapida & scorciatoie</h2>
-    <button type="button" class="app-modal-close" id="helpClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="helppanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="helpClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    </div>
   </div>
+  <p id="helpOverlayMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body">
     <p data-i18n="help.intro">Una panoramica veloce delle funzioni principali. In fondo trovi tutte le scorciatoie da tastiera.</p>
 
@@ -11382,6 +11452,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
   </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
 </dialog>
 
 <!-- ============ FLOATING AUTHOR MONOGRAM (bottom-right, always visible) ============ -->
@@ -11394,8 +11468,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <div id="mapBackdrop" class="mini-map-backdrop" aria-hidden="true"></div>
 
 <!-- ============ QR MODAL (share coordinate via scannable code) ============ -->
-<dialog id="qrModal" class="app-modal qr-modal" aria-labelledby="qrTitle">
-  <div class="app-modal-head">
+<dialog id="qrModal" class="app-modal qr-modal" aria-labelledby="qrTitle" aria-modal="false">
+  <div class="app-modal-head" id="qrModalHead">
     <h2 id="qrTitle" class="app-modal-title" data-i18n="qr.title">QR — Condividi coordinata</h2>
     <button type="button" class="app-modal-close" id="qrClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
   </div>
@@ -12347,6 +12421,7 @@ const I18N = {
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Misura",
     "gis.minimized.polygon":"Poligoni",
+    "gis.minimized.help":"Guida",
     "gis.polygonPanel.title":"Poligoni",
     "gis.polygonPanel.newPolygon":"Nuovo poligono",
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
@@ -14009,6 +14084,7 @@ const I18N = {
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Measure",
     "gis.minimized.polygon":"Polygons",
+    "gis.minimized.help":"Help",
     "gis.polygonPanel.title":"Polygons",
     "gis.polygonPanel.newPolygon":"New polygon",
     "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
@@ -15672,6 +15748,7 @@ const I18N = {
     "gis.minimized.rings":"Anneaux",
     "gis.minimized.measure":"Mesure",
     "gis.minimized.polygon":"Polygones",
+    "gis.minimized.help":"Aide",
     "gis.polygonPanel.title":"Polygones",
     "gis.polygonPanel.newPolygon":"Nouveau polygone",
     "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
@@ -17816,7 +17893,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 5;
+const APP_BUILD_NUM = 6;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24500,23 +24577,62 @@ function bindAppFullResetDialog(){
   });
 }
 
+function openContextAwareAppDialog(dlg, opts){
+  if (!dlg) return;
+  opts = opts && typeof opts === "object" ? opts : {};
+  const isGis = document.body.classList.contains("gis-mode");
+  if (!dlg.open){
+    if (isGis && typeof dlg.show === "function"){
+      try { dlg.show(); } catch(_){ dlg.setAttribute("open", ""); }
+    } else {
+      let opened = false;
+      if (typeof dlg.showModal === "function"){
+        try { dlg.showModal(); opened = true; } catch(_){}
+      }
+      if (!opened){
+        try { dlg.show(); } catch(_){ dlg.setAttribute("open", ""); }
+      }
+    }
+  }
+  try {
+    const isModal = !isGis && typeof dlg.matches === "function" && dlg.matches(":modal");
+    dlg.setAttribute("aria-modal", isModal ? "true" : "false");
+  } catch(_){
+    try { dlg.setAttribute("aria-modal", isGis ? "false" : "true"); } catch(__){}
+  }
+  if (isGis && typeof opts.wireGis === "function"){
+    const run = () => { try { opts.wireGis(dlg); } catch(_){} };
+    try { requestAnimationFrame(run); } catch(_){ run(); }
+  }
+}
+
 function openHelp(){
   try { closeHeaderSettingsMenu(); } catch(_){}
   const dlg = document.getElementById("helpOverlay");
   if (!dlg) return;
   const isGis = document.body.classList.contains("gis-mode");
-  if (isGis && typeof dlg.show === "function"){
-    try { dlg.show(); } catch(_){ dlg.setAttribute("open", ""); }
-  } else if (typeof dlg.showModal === "function"){
-    try { dlg.showModal(); } catch(_){ dlg.setAttribute("open", ""); }
-  } else {
-    dlg.setAttribute("open", "");
+  if (isGis && dlg.open && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("helpOverlay")){
+    try { gisRestoreMinimizedPanel("helpOverlay"); } catch(_){}
+    try { wireHelpPanelFloatingGis(dlg); } catch(_){}
+    return;
   }
-  try { dlg.setAttribute("aria-modal", isGis ? "false" : "true"); } catch(_){}
+  openContextAwareAppDialog(dlg, { wireGis: isGis ? wireHelpPanelFloatingGis : null });
 }
 function closeHelp(){
   const dlg = document.getElementById("helpOverlay");
   if (!dlg) return;
+  try {
+    if (document.body.classList.contains("gis-mode") && typeof gisClearPanelMinimizeUi === "function"){
+      gisClearPanelMinimizeUi("helpOverlay");
+    }
+  } catch(_){}
+  if (document.body.classList.contains("gis-mode")){
+    try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("helpOverlayHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+  }
   try { dlg.close(); } catch(_){ dlg.removeAttribute("open"); }
 }
 function isTypingInField(){
@@ -42249,6 +42365,18 @@ function bindUI(){
   // Help modal
   document.getElementById("btnHelp").addEventListener("click", openHelp);
   document.getElementById("helpClose").addEventListener("click", closeHelp);
+  const helpDlg = document.getElementById("helpOverlay");
+  if (helpDlg){
+    helpDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); closeHelp(); });
+  }
+  const helpMin = document.querySelector('[data-role="helppanel-minimize"]');
+  if (helpMin && !helpMin._gisHelpMinBtnBound){
+    helpMin._gisHelpMinBtnBound = true;
+    helpMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("helpOverlay", "gis.minimized.help");
+    });
+  }
   try { if (typeof bindRangeRingsUI === "function") bindRangeRingsUI(); } catch(_){}
 
   // Floating author badge → opens Help modal and scrolls to the About section
@@ -42426,6 +42554,10 @@ function bindUI(){
   // QR modal wiring
   document.getElementById("btnQr").addEventListener("click", openQrModal);
   document.getElementById("qrClose").addEventListener("click", closeQrModal);
+  const qrDlg = document.getElementById("qrModal");
+  if (qrDlg){
+    qrDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); closeQrModal(); });
+  }
   document.getElementById("btnQrDownload").addEventListener("click", qrDownloadPng);
   document.getElementById("btnQrCopy").addEventListener("click", (ev) => qrCopyUrl(ev.currentTarget));
   document.getElementById("btnExportGpx").addEventListener("click", () => exportSingle("gpx"));
@@ -44052,7 +44184,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","astroWaypointPicker","astroFavoritePicker"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -44145,7 +44277,8 @@ const GIS_MIN_FOCUS_MAP = {
   astroPanel: { headId: "astroPanelHead", minSel: '[data-role="astropanel-minimize"]' },
   rangeRingsPanel: { headId: "rangeRingsPanelHead", minSel: '[data-role="rangeringpanel-minimize"]' },
   measurePanel: { headId: "measurePanelHead", minSel: '[data-role="measurepanel-minimize"]' },
-  polygonPanel: { headId: "polygonPanelHead", minSel: '[data-role="polygonpanel-minimize"]' }
+  polygonPanel: { headId: "polygonPanelHead", minSel: '[data-role="polygonpanel-minimize"]' },
+  helpOverlay: { headId: "helpOverlayHead", minSel: '[data-role="helppanel-minimize"]' }
 };
 function gisFlashMinimizeBlockedNotice(panelId){
   const cfg = GIS_MIN_BLOCKED_MAP[panelId];
@@ -44262,6 +44395,8 @@ function gisMinimizePanel(panelId, labelKey, opts){
       gisFlashMinimizeBlockedNotice("polygonPanel");
       return;
     }
+  } else if (panelId === "helpOverlay"){
+    /* Help: nessun sub-dialog modale bloccante. */
   } else {
     return;
   }
@@ -44355,6 +44490,13 @@ function gisRestoreMinimizedPanel(panelId){
       const o = _polygonPanelLayoutOpts();
       gisPanelBringToFront(dlg, o);
       gisPanelApplyLayout(dlg, o);
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "helpOverlay"){
+      const o = _helpPanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      gisPanelApplyLayout(dlg, o);
+      positionHelpPanelDefaultGis(dlg, o);
+      clampHelpPanelRect(dlg);
       gisPanelSyncBodySize(dlg, o);
     }
   } catch(_){}
@@ -46205,6 +46347,172 @@ function wireFavoritesPanelFloatingGis(dlg){
   gisPanelApplyLayout(dlg, _favoritesPanelLayoutOpts());
   clampFavoritesPanelRect(dlg);
   gisPanelSyncBodySize(dlg, _favoritesPanelLayoutOpts());
+}
+
+/** Session layout opts for Help floating panel (build 6 FIX1). */
+function _helpPanelLayoutOpts(){
+  return {
+    key: "helpOverlay",
+    pad: 12,
+    minW: 360,
+    minH: 280,
+    defaultW: 560,
+    defaultH: null,
+    defaultHeightFraction: 0.78,
+    defaultHeightCap: 900,
+    topbarReserve: 100,
+    partialMinVisible: 72,
+    bodyMinH: 120,
+    bodyId: null,
+    headId: "helpOverlayHead",
+    closeId: "helpClose"
+  };
+}
+function positionHelpPanelDefaultGis(dlg, opts){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  opts = opts || _helpPanelLayoutOpts();
+  const cur = gisPanelGetLayout(opts.key, opts);
+  if (cur && cur.touched) return;
+  const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const w = Math.min(Number.isFinite(opts.defaultW) ? opts.defaultW : 560, vw - pad * 2);
+  const h = gisPanelDefaultHeightPx(opts);
+  const left = Math.max(pad, (vw - w) / 2);
+  const top = Math.max(pad + (Number.isFinite(opts.topbarReserve) ? opts.topbarReserve : 100), pad + 8);
+  const rect = gisPanelClampRectPartialVisible({ left, top, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function attachHelpPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _helpPanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#helpClose,[data-role=\"helppanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"],kbd"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+}
+function clampHelpPanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _helpPanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireHelpPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("helpOverlayHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachHelpPanelFloatingGis(dlg);
+  const opts = _helpPanelLayoutOpts();
+  gisPanelAttachBringToFront(dlg, opts);
+  gisPanelBringToFront(dlg, opts);
+  gisPanelApplyLayout(dlg, opts);
+  positionHelpPanelDefaultGis(dlg, opts);
+  clampHelpPanelRect(dlg);
+  gisPanelSyncBodySize(dlg, opts);
+}
+
+/** Session layout opts for QR floating panel (build 6 FIX1). */
+function _qrModalLayoutOpts(){
+  return {
+    key: "qrModal",
+    pad: 12,
+    minW: 320,
+    minH: 360,
+    defaultW: 440,
+    defaultH: 480,
+    topbarReserve: 80,
+    partialMinVisible: 64,
+    bodyMinH: 200,
+    headId: "qrModalHead",
+    closeId: "qrClose"
+  };
+}
+function positionQrModalCenteredGis(dlg, opts){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  opts = opts || _qrModalLayoutOpts();
+  const cur = gisPanelGetLayout(opts.key, opts);
+  if (cur && cur.touched && Number.isFinite(cur.left) && Number.isFinite(cur.top)) return;
+  const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const w = Math.min(Number.isFinite(opts.defaultW) ? opts.defaultW : 440, vw - pad * 2);
+  const h = Math.min(Number.isFinite(opts.defaultH) ? opts.defaultH : 480, vh - pad * 2);
+  const left = Math.max(pad, (vw - w) / 2);
+  const top = Math.max(pad, (vh - h) / 2);
+  const rect = gisPanelClampRect({ left, top, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function attachQrModalFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _qrModalLayoutOpts();
+  if (!dlg._gisPanelDragInstalled){
+    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+      threshold: 4,
+      draggingClass: "dragging",
+      ignoreSelector: "#qrClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    }));
+  }
+}
+function clampQrModalRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _qrModalLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireQrModalFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("qrModalHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachQrModalFloatingGis(dlg);
+  const opts = _qrModalLayoutOpts();
+  gisPanelAttachBringToFront(dlg, opts);
+  gisPanelBringToFront(dlg, opts);
+  positionQrModalCenteredGis(dlg, opts);
+  clampQrModalRect(dlg);
+  gisPanelSyncBodySize(dlg, opts);
 }
 
 function attachLayersPanelFloatingGis(dlg){
@@ -52357,18 +52665,18 @@ function openQrModal(){
   urlEl.dataset.url = url;
   if (!modal) return;
   const isGis = document.body.classList.contains("gis-mode");
-  if (isGis && typeof modal.show === "function"){
-    try { modal.show(); } catch(_){ modal.setAttribute("open", ""); }
-  } else if (typeof modal.showModal === "function"){
-    try { modal.showModal(); } catch(_){ modal.setAttribute("open", ""); }
-  } else {
-    modal.setAttribute("open", "");
-  }
-  try { modal.setAttribute("aria-modal", isGis ? "false" : "true"); } catch(_){}
+  openContextAwareAppDialog(modal, { wireGis: isGis ? wireQrModalFloatingGis : null });
 }
 function closeQrModal(){
   const modal = document.getElementById("qrModal");
   if (!modal) return;
+  if (document.body.classList.contains("gis-mode")){
+    try { modal.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("qrModalHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+  }
   try { modal.close(); } catch(_){ modal.removeAttribute("open"); }
 }
 function qrDownloadPng(){
