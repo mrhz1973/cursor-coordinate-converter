@@ -304,7 +304,55 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=28cc2d2
 
 **Checklist FIX2 (storico):** scroll tabella H+V; unità di misura e selettore P-VERTEX-FORMAT in cima; lista in fondo; sorting FIX1; stacking FIX1; nome con `title` completo; nessuna regressione evidente su Modifica/salvataggio/export.
 
-**Backlog UX next (non FAIL):** colonne ridimensionabili manualmente; rinomina inline cella Nome — candidato **P-POLYGON-LIST-UX-NEXT**, backlog separato.
+**Backlog UX next (non FAIL):** **UX-NEXT-A CLOSED** — vedi sezione dedicata sotto; **UX-NEXT-B** colonne ridimensionabili — prossimo candidato operativo.
+
+## P-POLYGON-LIST-UX-NEXT-A — rinomina inline cella Nome + build 2 — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `6892890` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end** (chiusura docs-only post-deploy+QA).
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `68928909a91cb2f828b968ce774e7f12e42666a9` |
+| Blob monolite | `30358cd3aafa9879d76400e23ce103ff5372b081` |
+| Feature | Rinomina inline cella **Nome** tabella Poligoni |
+| Path dati | `polygonCommitInlineRename` → **`polygonRenameExecute(id, value)`** |
+| Vincoli dati | Nessuna scrittura diretta `properties.name`; nessun `gisFeatureUpdate`/`saveStore` diretto nel path inline |
+| `APP_BUILD_NUM` | `2` |
+| Display | `B5.5Z · build 2` via `applyAppBuildLabel()` |
+| Cleanup build | `#appBuildFooter` / `#appBuildAbout` statici → solo `B5.5Z` |
+| `APP_BUILD_DETAIL` | intatto — *Quick geographic JPG export and segmented high-zoom tiles* |
+
+**Review byte Claude:** PASS — GO DEPLOY GIS-only.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 68928909a91cb2f828b968ce774e7f12e42666a9
+VPS blob = 30358cd3aafa9879d76400e23ce103ff5372b081
+goi-gis-app.service = active / enabled
+HTTP 200
+byte repo = 2368796
+byte servito = 2368796
+SHA-256 = 96f9468ed8ea6d1e39acd8186af0ffbe295747ac684848131ff4da9dfb7c893e (match)
+CMP_PASS = sì
+Planet-Clone, Navionics proxy, Docker, n8n, Tailscale/firewall non toccati
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA P-POLYGON-LIST-UX-NEXT-A PASS operatore
+```
+
+**Checklist QA verificata:** Enter conferma; Esc annulla; blur annulla; nome lungo; click input non triggera sort/azioni; rename altre righe disabilitato durante editing; sort durante editing non rompe; footer/about `B5.5Z · build 2`; regressione pannello `−`/`×`/minimize/modal vertice OK.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=6892890
+```
+
+**Nota backlog (non implementare):** `polygonShowRenameBar` non più chiamata dalla lista — possibile dead code cleanup futuro. **`APP_BUILD_ID` `B5.5Z` invariato.**
 
 ## APP-BUILD-NUM-B1 — build number monotono runtime — CLOSED / PASS tecnico end-to-end
 

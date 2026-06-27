@@ -110,42 +110,32 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `7975c5c7aae138c7616c4cd0b1f7b32fe4f94c2f` |
-| Ultimo blocco chiuso | **APP-BUILD-NUM-B1** — CLOSED / PASS tecnico end-to-end |
-| Runtime live VPS | `bd588a89a6bf0674351b384c607ab7ef73952ab2` |
-| Blob monolite | `afddf87a6f05929b540f768a0193872057fe24cb` |
-| `APP_BUILD_NUM` | `1` |
-| Display runtime | `B5.5Z · build 1` |
+| HEAD remoto (verificato) | `68928909a91cb2f828b968ce774e7f12e42666a9` (runtime); aggiornare dopo chiusura docs `finito` |
+| Ultimo blocco chiuso | **P-POLYGON-LIST-UX-NEXT-A** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `68928909a91cb2f828b968ce774e7f12e42666a9` |
+| Blob monolite | `30358cd3aafa9879d76400e23ce103ff5372b081` |
+| `APP_BUILD_NUM` | `2` |
+| Display runtime | `B5.5Z · build 2` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | P-POLYGON-LIST-ENRICHMENT | **CLOSED / PASS end-to-end** |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=bd588a8` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=6892890` |
 
 **Prossimo ordine operativo:**
 
-1. **P-POLYGON-LIST-UX-NEXT-A** — rinomina inline cella Nome
-2. **P-POLYGON-LIST-UX-NEXT-B** — colonne tabella ridimensionabili
+1. **P-POLYGON-LIST-UX-NEXT-B** — colonne tabella Poligoni ridimensionabili (larghezze transiente/sessione)
 
 ---
 
 ## Backlog / note immediate
 
-### Cleanup build display (prossimo blocco runtime)
-
-Foldare nel **prossimo** incremento `APP_BUILD_NUM` (non blocco separato obbligatorio):
-
-- `#appBuildFooter` e `#appBuildAbout` oggi hard-codano `B5.5Z · build 1`
-- Riportarli a solo `B5.5Z` o vuoto
-- `applyAppBuildLabel()` = **unica fonte** della composizione ` · build N`
-
-### UX-NEXT-A — rinomina inline
-
-- Rinomina inline sulla cella Nome deve chiamare **`polygonRenameExecute(id, value)`**
-- **Mai** scrivere `properties.name` diretto
-
 ### UX-NEXT-B — colonne ridimensionabili
 
 - Larghezze **sessione / transienti** su `state` o nodo mount
 - **Non** persistite in localStorage dedicato (salvo decisione esplicita futura)
+
+### Dead code candidato (non implementare ora)
+
+- `polygonShowRenameBar` non più chiamata dalla lista Poligoni; cleanup futuro solo se nessun altro path la usa
 
 ---
 
