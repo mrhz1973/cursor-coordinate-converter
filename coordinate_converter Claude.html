@@ -2646,6 +2646,15 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 .polygon-panel .poly-edit-info-value{ font-weight:500; }
 .polygon-panel .poly-edit-legs-wrap{ margin:0 0 8px; font-size:.82rem; }
 .polygon-panel .poly-edit-legs{ max-height:140px; overflow:auto; margin-top:4px; }
+.polygon-panel .poly-edit-style-wrap{ margin:0 0 8px; font-size:.82rem; }
+.polygon-panel .poly-edit-style-body{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+.polygon-panel .poly-edit-style-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 8px; align-items:center; }
+.polygon-panel .poly-edit-style-row label{ font-size:.82rem; }
+.polygon-panel .poly-edit-style-row input[type="color"]{ width:2.5rem; height:1.75rem; padding:0; border:1px solid rgba(100,116,139,.35); border-radius:4px; cursor:pointer; justify-self:end; }
+.polygon-panel .poly-edit-style-slider-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto; gap:6px 8px; align-items:center; }
+.polygon-panel .poly-edit-style-slider-row label{ font-size:.82rem; grid-column:1 / -1; }
+.polygon-panel .poly-edit-style-slider-row input[type="range"]{ width:100%; min-width:0; }
+.polygon-panel .poly-edit-style-val{ font-size:.78rem; font-variant-numeric:tabular-nums; min-width:2.5rem; text-align:right; opacity:.9; }
 .polygon-panel .poly-edit-leg-row{ display:grid; grid-template-columns:minmax(0,1fr) auto auto auto; gap:6px; padding:2px 0; border-bottom:1px solid rgba(128,128,128,.12); align-items:center; }
 .polygon-panel .poly-edit-leg-row:last-child{ border-bottom:none; }
 .polygon-panel .poly-edit-leg-seg{ font-size:.78rem; }
@@ -10528,6 +10537,30 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <summary data-i18n="gis.polygonPanel.editLegs">Lati</summary>
         <div id="polygonPanelEditLegs" class="poly-edit-legs"></div>
       </details>
+      <details id="polygonPanelEditStyleWrap" class="poly-edit-style-wrap">
+        <summary data-i18n="gis.polygonPanel.editStyle">Stile</summary>
+        <div class="poly-edit-style-body">
+          <div class="poly-edit-style-row">
+            <label for="polygonPanelEditFillColor" data-i18n="gis.polygonPanel.editStyleFill">Riempimento</label>
+            <input type="color" id="polygonPanelEditFillColor" data-role="poly-edit-fill-color" value="#ca8a04">
+          </div>
+          <div class="poly-edit-style-slider-row">
+            <label for="polygonPanelEditFillOpacity" data-i18n="gis.polygonPanel.editStyleFillOpacity">Opacità riempimento</label>
+            <input type="range" id="polygonPanelEditFillOpacity" data-role="poly-edit-fill-opacity" min="0" max="100" step="1" value="28">
+            <output id="polygonPanelEditFillOpacityVal" class="poly-edit-style-val" for="polygonPanelEditFillOpacity">0.28</output>
+          </div>
+          <div class="poly-edit-style-slider-row">
+            <label for="polygonPanelEditLineWidth" data-i18n="gis.polygonPanel.editStyleLineWidth">Spessore bordo</label>
+            <input type="range" id="polygonPanelEditLineWidth" data-role="poly-edit-line-width" min="10" max="80" step="1" value="25">
+            <output id="polygonPanelEditLineWidthVal" class="poly-edit-style-val" for="polygonPanelEditLineWidth">2.5</output>
+          </div>
+          <div class="poly-edit-style-slider-row">
+            <label for="polygonPanelEditLineOpacity" data-i18n="gis.polygonPanel.editStyleLineOpacity">Opacità bordo</label>
+            <input type="range" id="polygonPanelEditLineOpacity" data-role="poly-edit-line-opacity" min="0" max="100" step="1" value="100">
+            <output id="polygonPanelEditLineOpacityVal" class="poly-edit-style-val" for="polygonPanelEditLineOpacity">1</output>
+          </div>
+        </div>
+      </details>
       <p class="hint poly-edit-hint" data-i18n="gis.polygonPanel.editVerticesHint">Trascina i vertici sulla mappa per modificare la forma.</p>
       <button type="button" id="polygonPanelEditMove" class="btn btn-sm btn-ghost poly-edit-move-toggle" data-role="poly-edit-move" data-i18n="gis.polygonPanel.editMovePolygonIdle" data-i18n-tip="gis.polygonPanel.editMovePolygonIdle" data-i18n-aria="gis.polygonPanel.editMovePolygonIdle" aria-pressed="false">↔ Sposta</button>
       <p id="polygonPanelEditMoveHint" class="hint poly-edit-move-hint" data-i18n="gis.polygonPanel.editMoveHint" hidden>Trascina il poligono sulla mappa</p>
@@ -12091,6 +12124,11 @@ const I18N = {
     "gis.polygonPanel.editPerimeter":"Perimetro",
     "gis.polygonPanel.editUnit":"Unità",
     "gis.polygonPanel.editLegs":"Lati",
+    "gis.polygonPanel.editStyle":"Stile",
+    "gis.polygonPanel.editStyleFill":"Riempimento",
+    "gis.polygonPanel.editStyleFillOpacity":"Opacità riempimento",
+    "gis.polygonPanel.editStyleLineWidth":"Spessore bordo",
+    "gis.polygonPanel.editStyleLineOpacity":"Opacità bordo",
     "gis.polygonPanel.editClosingLeg":"chiusura",
     "gis.polygonPanel.editDistance":"Distanza",
     "gis.polygonPanel.editBearing":"Azimut",
@@ -13735,6 +13773,11 @@ const I18N = {
     "gis.polygonPanel.editPerimeter":"Perimeter",
     "gis.polygonPanel.editUnit":"Unit",
     "gis.polygonPanel.editLegs":"Sides",
+    "gis.polygonPanel.editStyle":"Style",
+    "gis.polygonPanel.editStyleFill":"Fill",
+    "gis.polygonPanel.editStyleFillOpacity":"Fill opacity",
+    "gis.polygonPanel.editStyleLineWidth":"Border width",
+    "gis.polygonPanel.editStyleLineOpacity":"Border opacity",
     "gis.polygonPanel.editClosingLeg":"closing",
     "gis.polygonPanel.editDistance":"Distance",
     "gis.polygonPanel.editBearing":"Bearing",
@@ -31971,6 +32014,7 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
     const f = gisFeatureGet(String(ed.id));
     editProps = (f && f.properties) ? f.properties : {};
   } catch(_){}
+  editProps = polygonEditStylePreviewProps(ed);
   const sty = polygonResolveStyleProps(editProps, "edit");
   const color = sty.strokeColor;
   const pxPts = [];
@@ -46135,6 +46179,9 @@ function polygonEnterEdit(id){
     originalName: polygonNormalizeEditName((feature.properties && feature.properties.name) || ""),
     nameDirty: false,
     geometryDirty: false,
+    styleOriginal: gisClonePlain(polygonEditCloneStyleExplicit((feature.properties && typeof feature.properties === "object") ? feature.properties : {})),
+    styleWorking: gisClonePlain(polygonEditCloneStyleExplicit((feature.properties && typeof feature.properties === "object") ? feature.properties : {})),
+    styleDirty: false,
     dirty: false,
     dragIdx: null,
     moveMode: false
@@ -46148,6 +46195,110 @@ function polygonCancelEdit(){
   return true;
 }
 /* ───── Polygon edit UI (POLY-EDIT-B3 / POLY-PARITY-P1) ───── */
+function polygonEditCloneStyleExplicit(props){
+  const out = {};
+  const p = (props && typeof props === "object") ? props : {};
+  if (typeof p.fillColor === "string"){
+    const fc = p.fillColor.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(fc)) out.fillColor = fc;
+  }
+  if (typeof p.fillOpacity === "number" && Number.isFinite(p.fillOpacity)) out.fillOpacity = p.fillOpacity;
+  if (typeof p.lineWidth === "number" && Number.isFinite(p.lineWidth)) out.lineWidth = p.lineWidth;
+  if (typeof p.lineOpacity === "number" && Number.isFinite(p.lineOpacity)) out.lineOpacity = p.lineOpacity;
+  return out;
+}
+function polygonEditStylePreviewProps(ed){
+  let base = {};
+  try {
+    const f = gisFeatureGet(String(ed.id));
+    base = (f && f.properties && typeof f.properties === "object") ? gisClonePlain(f.properties) : {};
+  } catch(_){}
+  const sw = (ed && ed.styleWorking && typeof ed.styleWorking === "object") ? ed.styleWorking : {};
+  if (typeof sw.fillColor === "string"){
+    const fc = sw.fillColor.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(fc)) base.fillColor = fc;
+  }
+  if (typeof sw.fillOpacity === "number" && Number.isFinite(sw.fillOpacity)) base.fillOpacity = sw.fillOpacity;
+  if (typeof sw.lineWidth === "number" && Number.isFinite(sw.lineWidth)) base.lineWidth = sw.lineWidth;
+  if (typeof sw.lineOpacity === "number" && Number.isFinite(sw.lineOpacity)) base.lineOpacity = sw.lineOpacity;
+  return base;
+}
+function polygonEditStyleSetField(field, rawValue){
+  if (!polygonIsEditing()) return;
+  const ed = state._polyEdit;
+  if (!ed.styleWorking || typeof ed.styleWorking !== "object") ed.styleWorking = {};
+  if (field === "fillColor"){
+    const v = String(rawValue == null ? "" : rawValue).trim();
+    if (!/^#[0-9a-fA-F]{6}$/.test(v)) return;
+    ed.styleWorking.fillColor = v;
+  } else if (field === "fillOpacity"){
+    const n = Number(rawValue);
+    if (!Number.isFinite(n)) return;
+    ed.styleWorking.fillOpacity = Math.max(0, Math.min(1, n));
+  } else if (field === "lineWidth"){
+    const n = Number(rawValue);
+    if (!Number.isFinite(n)) return;
+    ed.styleWorking.lineWidth = Math.max(1, Math.min(8, n));
+  } else if (field === "lineOpacity"){
+    const n = Number(rawValue);
+    if (!Number.isFinite(n)) return;
+    ed.styleWorking.lineOpacity = Math.max(0, Math.min(1, n));
+  } else return;
+  ed.styleDirty = true;
+  polygonRecomputeEditDirty();
+  polygonEditStyleSyncUi();
+  try { polygonScheduleEditOverlayRefresh(); } catch(_){}
+}
+function polygonEditStyleSyncUi(){
+  if (!polygonIsEditing()) return;
+  const ed = state._polyEdit;
+  const sty = polygonResolveStyleProps(polygonEditStylePreviewProps(ed), "edit");
+  const fillColorInp = document.getElementById("polygonPanelEditFillColor");
+  const fillOpInp = document.getElementById("polygonPanelEditFillOpacity");
+  const fillOpVal = document.getElementById("polygonPanelEditFillOpacityVal");
+  const lineWInp = document.getElementById("polygonPanelEditLineWidth");
+  const lineWVal = document.getElementById("polygonPanelEditLineWidthVal");
+  const lineOpInp = document.getElementById("polygonPanelEditLineOpacity");
+  const lineOpVal = document.getElementById("polygonPanelEditLineOpacityVal");
+  if (fillColorInp && document.activeElement !== fillColorInp) fillColorInp.value = sty.fillColor;
+  const fo = sty.fillOpacity;
+  if (fillOpInp && document.activeElement !== fillOpInp) fillOpInp.value = String(Math.round(fo * 100));
+  if (fillOpVal) fillOpVal.textContent = String(fo);
+  const lw = sty.lineWidth;
+  if (lineWInp && document.activeElement !== lineWInp) lineWInp.value = String(Math.round(lw * 10));
+  if (lineWVal) lineWVal.textContent = String(lw);
+  const lo = sty.lineOpacity;
+  if (lineOpInp && document.activeElement !== lineOpInp) lineOpInp.value = String(Math.round(lo * 100));
+  if (lineOpVal) lineOpVal.textContent = String(lo);
+}
+function polygonWireEditStyleOnce(){
+  const fillColorInp = document.getElementById("polygonPanelEditFillColor");
+  if (fillColorInp && !fillColorInp._polyEditStyleWired){
+    fillColorInp._polyEditStyleWired = true;
+    fillColorInp.addEventListener("input", () => { polygonEditStyleSetField("fillColor", fillColorInp.value); });
+  }
+  const fillOpInp = document.getElementById("polygonPanelEditFillOpacity");
+  if (fillOpInp && !fillOpInp._polyEditStyleWired){
+    fillOpInp._polyEditStyleWired = true;
+    fillOpInp.addEventListener("input", () => {
+      polygonEditStyleSetField("fillOpacity", Number(fillOpInp.value) / 100);
+    });
+  }
+  const lineWInp = document.getElementById("polygonPanelEditLineWidth");
+  if (lineWInp && !lineWInp._polyEditStyleWired){
+    lineWInp._polyEditStyleWired = true;
+    lineWInp.addEventListener("input", () => {
+      polygonEditStyleSetField("lineWidth", Number(lineWInp.value) / 10);
+    });
+  }
+  const lineOpInp = document.getElementById("polygonPanelEditLineOpacity");
+  if (lineOpInp && !lineOpInp._polyEditStyleWired){
+    lineOpInp._polyEditStyleWired = true;
+    lineOpInp.addEventListener("input", () => {
+      polygonEditStyleSetField("lineOpacity", Number(lineOpInp.value) / 100);
+    });
+  }
+}
 function polygonNormalizeEditName(raw){
   return String(raw == null ? "" : raw).trim().slice(0, 80);
 }
@@ -46338,7 +46489,7 @@ function polygonRecomputeEditDirty(){
   polygonRecomputeGeometryDirty();
   const cur = polygonNormalizeEditName(ed.name);
   ed.nameDirty = !polygonEditNamesEquivalent(cur, ed.originalName);
-  ed.dirty = !!(ed.nameDirty || ed.geometryDirty);
+  ed.dirty = !!(ed.nameDirty || ed.geometryDirty || ed.styleDirty);
 }
 function polygonEditSyncTitle(){
   const title = document.getElementById("polygonPanelEditTitle");
@@ -46740,6 +46891,7 @@ function renderPolygonEditBar(){
   }
   polygonEditSyncTitle();
   try { renderPolygonEditInfo(); } catch(_){}
+  try { polygonEditStyleSyncUi(); } catch(_){}
   const moveBtn = document.getElementById("polygonPanelEditMove");
   const moveHint = document.getElementById("polygonPanelEditMoveHint");
   if (moveBtn){
@@ -46902,6 +47054,22 @@ function polygonSaveEdit(){
   const preserved = gisClonePlain((feature && feature.properties) || {});
   preserved.name = nm;
   preserved.updated_at = new Date().toISOString();
+  if (ed.styleDirty && ed.styleWorking && typeof ed.styleWorking === "object"){
+    const sw = ed.styleWorking;
+    if (typeof sw.fillColor === "string"){
+      const fc = sw.fillColor.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(fc)) preserved.fillColor = fc;
+    }
+    if (typeof sw.fillOpacity === "number" && Number.isFinite(sw.fillOpacity)){
+      preserved.fillOpacity = Math.max(0, Math.min(1, sw.fillOpacity));
+    }
+    if (typeof sw.lineWidth === "number" && Number.isFinite(sw.lineWidth)){
+      preserved.lineWidth = Math.max(1, Math.min(8, sw.lineWidth));
+    }
+    if (typeof sw.lineOpacity === "number" && Number.isFinite(sw.lineOpacity)){
+      preserved.lineOpacity = Math.max(0, Math.min(1, sw.lineOpacity));
+    }
+  }
   const updated = gisFeatureUpdate(id, {
     geometry: {
       type: "Polygon",
@@ -47452,6 +47620,7 @@ function polygonWirePanelBarsOnce(){
   }
   try { polygonWireUnitsOnce(); } catch(_){}
   try { polygonWireVertexCoordModalOnce(); } catch(_){}
+  try { polygonWireEditStyleOnce(); } catch(_){}
 }
 function ensurePolygonPanelListWired(){
   const body = document.getElementById("polygonPanelBody");
