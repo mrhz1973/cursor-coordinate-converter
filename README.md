@@ -20,6 +20,7 @@ Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte compl
 1. Esegui `git ls-remote origin refs/heads/main` (autorità finale su HEAD) e leggi il read-set **pinnato a quella HEAD**. Lo stato è il read-set, **non** la memoria o la narrazione dell'agente: se una cosa non è qui o in OM §7, non è stato — è ciò che `finito` deve scrivere.
 2. `finito` è un workflow **interno a Cursor**: nei blocchi già approvati va **in coda al prompt in forma condizionale** (OM §4 Regola A), **mai** chiesto all'operatore come passo manuale separato. Consegna all'operatore **un solo blocco incollabile**; niente babysitting passo-passo (OM §4 Regola E).
 3. Cursor write+commit = **sempre Agent+Auto** (Plan solo per diagnosi pura read-only).
+4. **Bundling di default (METHOD-BUNDLING-DEFAULT):** il default operativo è **un bundle** — raggruppare il lavoro routine in **un blocco / un commit / una QA** (target ≥5 item; 5–10+ è normale). **Non** proporre separazione per ogni micro-modifica routine. Gate (review, deploy, QA) **solo a livello bundle**. Le **categorie delicate** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog −/×) restano in **bundle propri** — mai mischiate nel mega-bundle routine. Dettaglio: OM §4 Regola G.
 
 Dettaglio completo: `docs/OPERATING_MEMORY.md` §4 — Handoff & Close Discipline.
 ---

@@ -49,7 +49,7 @@
 
 - ChatGPT e Cursor usano lo stesso read-set target: README (bootloader) → OPERATING_MEMORY §7 → WU-0005-0009-roadmap.
 - Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
-- Procedere per blocchi piccoli.
+- Procedere per **bundle** coerenti (default METHOD-BUNDLING-DEFAULT); non frammentare il lavoro routine in micro-blocchi separati salvo categorie delicate (OM §4 Regola G).
 - Non toccare aree non correlate.
 - `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei blocchi già approvati è normalmente incluso nel prompt in forma **condizionale**, mentre resta separato e manuale per i blocchi delicati e gli altri casi elencati (vedi *Handoff & Close Discipline*, Regola A).
 - Nessun GPS silenzioso.
@@ -71,12 +71,29 @@ Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla man
 
 Il workflow `finito` resta **separato e manuale** per: diagnosi; attività read-only; OPSEC; rete; tile; proxy; cache; storage; migrazioni dati; modifiche architetturali; modifiche sostanziali al metodo; diff rischiosi che richiedono review prima della pubblicazione; QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore.
 
-**Regola B — Review tiered.** La review graduata sostituisce integralmente la disciplina precedente.
+**Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**.
 
-- **Blocchi di routine** (UI localizzata; copy/i18n; documentazione o governance non sensibile; fix piccoli già progettati; modifiche circoscritte del monolite senza rete/cache/storage): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → finito condizionale`. Nessun passaggio Claude obbligatorio; review del diff in Cursor/GPT; report mantenuto nel normale flusso Cursor/GPT.
-- **Blocchi delicati** (OPSEC; rete; tile; proxy; cache; storage; migrazioni dati; architettura; modifiche sostanziali al metodo; diff rischiosi; diff multi-area; sospetto di staleness/freshness; divergenze tra HEAD, origin/main e `ls-remote`; scope non chiaramente localizzato): Claude **upstream** (sostanza, rischi, gate, vincoli) → GPT redige il prompt Cursor → Cursor implementa e si ferma secondo il tier → Claude **downstream** verifica diff ed esito prima della pubblicazione.
+- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → QA bundle → finito condizionale`. **Nessun hop Claude in nessun caso** — vai sempre, zero attese. Review del diff in Cursor/GPT; report nel flusso Cursor/GPT.
+- **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine): Claude **upstream** (sostanza, rischi, gate) → GPT redige prompt → Cursor implementa → Claude **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy, se Claude **disponibile**.
+- **Bundle DELICATO, Claude NON disponibile** (limite token / attesa inaccettabile): il deploy **non** si blocca. Procedere con **review sostitutiva GPT** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + review byte Claude **post-hoc** come backstop (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «review sostitutiva GPT», **mai** «Claude», e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
 
-In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor resta responsabilità di GPT; la review del diff segue lo stesso tier (routine → Cursor/GPT; delicato → Claude downstream obbligatorio).
+In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor resta responsabilità di GPT.
+
+**Regola G — Bundling di default (METHOD-BUNDLING-DEFAULT).** Sostituisce ogni default precedente di separazione per-blocco/micro-blocco.
+
+1. **Default operativo = BUNDLE:** raggruppare il lavoro in **un** blocco / **un** commit / **una** QA. Target **≥5 item** per bundle; 5–10+ è normale; nessun limite superiore rigido se il bundle resta coerente. **Un solo gate per bundle:** una review, un deploy, una QA — mai per singolo item. L'operatore **accetta** esplicitamente rollback/debug più grezzo sui bundle routine; **non** sollevare obiezioni di granularità sul routine. Scopo: ridurre cerimonia per-microblocco, aumentare velocità operatore.
+
+2. **Mega-bundle ROUTINE** (libero, 5–10+ item): CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca le categorie delicate sotto.
+
+3. **Categorie delicate** — isolate in bundle proprio (mai mischiate nel routine; possono stare insieme tra loro): sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog (area −/×). Motivo: non è fissazione di granularità — è velocità operatore. Un bug delicato sepolto in un mega-bundle blocca l'**intero** bundle dal deploy (più lento, non più veloce). Isolare le delicate è l'unica granularità che fa risparmiare tempo.
+
+4. **Precedenza:** questa regola sostituisce ogni default precedente di separazione per-blocco. Separare resta consigliato **solo** per le categorie delicate elencate. Per routine UI/CSS/HTML/i18n/cosmetica/JS basso rischio, default = **bundling**.
+
+**Checklist sostitutiva GPT obbligatoria** (da `raw@FULL_SHA`, bundle delicato, Claude non disponibile):
+
+- **Lifecycle modale/dialog (−/×):** apertura context-aware per **ogni** dialog toccato `[if(isGis)dlg.show();else dlg.showModal();` + `aria-modal=isGis?"false":"true"`]; close per-dialog con id specifici, **nessun** `querySelectorAll` globale; markup close = `.app-modal-close` esistente (`type="button"`, glifo via `::before`, niente SVG/formmethod); CSS legacy non rimossa se condivisa; QA: ogni modale in GIS (mappa/pannelli interattivi, niente inert, −/×/minimize/modal vertice ok) + fuori GIS (backdrop).
+- **Sanitizer/whitelist, nuovo campo persistito, nuovo create-path, storage:** estensione whitelist scoped (quali kind); nessun type-check allentato (`typeof x==="number"&&isFinite`, mai coercion lasca); il dato passa **sempre** dal sanitizer esistente, nessuna scrittura diretta; regressione round-trip **obbligatoria** save→reload→export→import su Tracce **e** poligoni. Bug **silenti** (non visibili in QA, corrompono dati/export) → categoria più rischiosa da sostituire: se grosso/dubbio preferire attesa Claude; se piccolo e checklist pulita, procedere.
+- **Rete/tile/proxy/OPSEC:** nessun endpoint/chiamata esterna nuova; offline ancora funzionante. OPSEC = massima cautela, preferire attesa se non banale.
 
 **Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato a **Claude**; blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, Claude e Cursor salvo escalation reale.
 

@@ -123,6 +123,16 @@ note operative:
 
 **Compilazione:** **origin/main HEAD** = hash e subject remoto; **working tree** = `git status -sb`; **ultimo blocco PASS** / **prossimo candidato** = dal riepilogo (candidato «da scegliere» se ignoto); **note operative** = max 1–3 righe utili.
 
+## Bundling di default (METHOD-BUNDLING-DEFAULT)
+
+Cursor applica il **bundle di default**; **non** propone separazione per ogni micro-modifica routine.
+
+- **Default = un bundle / un commit / una QA** (target ≥5 item; 5–10+ normale). Gate solo a livello bundle.
+- **Mega-bundle ROUTINE:** CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS basso rischio fuori categorie delicate → **nessun hop Claude**, deploy diretto, QA bundle unica.
+- **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog −/×): bundle **separato**; review Claude da `raw@FULL_SHA` prima deploy se disponibile; altrimenti review sostitutiva GPT con checklist per-categoria obbligatoria (OM §4 Regola G) + QA + Claude post-hoc.
+- **Non** frammentare lavoro routine in micro-blocchi con review/deploy/QA per item. **Non** sollevare obiezioni di granularità sul routine.
+- Separare resta valido **solo** per categorie delicate (motivo: bug delicato in mega-bundle blocca tutto il deploy).
+
 ## Prompt operativi autosufficienti (anti micro-pass di sola verifica)
 
 **Principio:** ogni **prompt operativo** (richiesta di implementazione o modifica sostanziale sul repo) deve essere **autosufficiente** per Cursor: nella **stessa** risposta/intervento devono confluire **implementazione**, **verifiche automatiche standard**, **test browser se possibile**, **aggiornamento memoria orchestratore** (come da sezione *Autosync orchestratore* ove applicabile) e **RIEPILOGO finale completo**. **Non** creare un **pass separato** dedicato **solo** a verifiche standard se quelle verifiche erano **già prevedibili** dal task operativo (es. dopo un’implementazione sul monolite, non delegare a un secondo giro ciò che poteva essere incluso nel primo).

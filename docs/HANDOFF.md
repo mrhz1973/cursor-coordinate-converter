@@ -57,21 +57,26 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 - Prompt Cursor: **pulito e unico**; indicazioni operatore **fuori** dal prompt.
 - **`finito`** = workflow interno a Cursor (non passo manuale operatore).
 - Nei blocchi già approvati: `finito` **condizionale in coda** al prompt quando applicabile.
-- Blocchi delicati o **Ramo B** pre-review: **stop** prima del deploy / prima del `finito` se previsto dal gate.
+- **Bundling di default (METHOD-BUNDLING-DEFAULT):** un bundle / un commit / una QA (≥5 item routine); gate solo a livello bundle; non frammentare micro-modifiche routine. Dettaglio: OM §4 Regola G.
 
 ---
 
-## Gate Ramo A / B
+## Gate bundle (sostituisce separazione per-microblocco come default)
 
-| Ramo | Criterio | Flusso |
+| Tipo bundle | Contenuto tipico | Review / deploy |
 | --- | --- | --- |
-| **A** | Solo HTML / CSS / attributi, **zero JS** | Deploy diretto GIS-only + QA se richiesta |
-| **B** | Qualsiasi JS | Commit/push → **STOP** → review byte Claude → deploy |
-| **Dubbio** | — | Trattare come **Ramo B** |
+| **ROUTINE** | CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS basso rischio | **Nessun hop Claude** — deploy + QA bundle |
+| **DELICATO** | sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, create-path, lifecycle modale/dialog −/× | Claude `raw@FULL_SHA` pre-deploy se disponibile; altrimenti review sostitutiva GPT (checklist obbligatoria) + QA + Claude post-hoc |
 
-**Review Claude obbligatoria** per: sanitizer/whitelist, create-path, nuovo campo persistito, OPSEC, rete/tile/proxy, cache/storage, architettura.
+**Ramo A / B** (legacy per singolo diff): restano utili come etichette tecniche dentro un bundle, non come obbligo di un commit per item.
 
-**Review Claude consigliata/obbligatoria** (secondo gate) per: lifecycle pannelli/dialog, drag P2/P4.
+| Ramo | Criterio | Nota bundle |
+| --- | --- | --- |
+| **A** | Solo HTML / CSS / attributi, **zero JS** | Tipico mega-bundle ROUTINE |
+| **B** | Qualsiasi JS | ROUTINE se basso rischio; DELICATO se tocca categorie sopra |
+| **Dubbio** | — | Trattare come **DELICATO** |
+
+**Review Claude obbligatoria (bundle DELICATO):** sanitizer/whitelist, create-path, nuovo campo persistito, OPSEC, rete/tile/proxy, cache/storage, architettura, lifecycle pannelli/dialog −/×.
 
 ---
 
@@ -110,8 +115,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `709079c` — aggiornare con `git ls-remote` prima di ogni sessione |
+| HEAD remoto (verificato) | `3f84122` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **BUNDLE-BACKLOG-B3** — CLOSED / PASS end-to-end |
+| Metodo vivo | **METHOD-BUNDLING-DEFAULT** — bundle-first (OM §4 Regola G) |
 | Runtime live VPS | `709079c989cc34b695e9cff3abf239ced77670dd` |
 | Blob monolite | `da27be4363e878f97f1f1b8d4dbc9df34f9c7ed3` |
 | `APP_BUILD_NUM` | `14` |
