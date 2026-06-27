@@ -110,30 +110,24 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `e8e8ff1` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UI-MODAL-PARITY-HELP-QR-FIX1** — CLOSED / PASS end-to-end |
-| Runtime live VPS | `e8e8ff13030496ccf31e6b4bcb8fc57772a60cac` |
-| Blob monolite | `6eee6872d47dd8a0ed4e04c34dd990e661ced153` |
-| `APP_BUILD_NUM` | `6` |
-| Display runtime | `B5.5Z · build 6` |
+| HEAD remoto (verificato) | `14605e9` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UI-MODAL-PARITY-HELP-QR-FIX2** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4` |
+| Blob monolite | `0886b6bb4ab4b2cd13e060b1c6f34eafe6953259` |
+| `APP_BUILD_NUM` | `7` |
+| Display runtime | `B5.5Z · build 7` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5→FIX1 build 6) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e8e8ff1` |
+| UI-MODAL-PARITY-HELP-QR | **CLOSED / PASS end-to-end** (build 5 → FIX1 build 6 → FIX2 build 7) |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9` |
 
 **Prossimo ordine operativo:**
 
-1. **UI-MODAL-PARITY-HELP-QR-FIX2** — QR ridimensionabile (backlog non bloccante)
-2. **CONVERT-SOURCE-PICKER** — sorgenti waypoint/preferito/punto mappa nel Convertitore
-3. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+1. **CONVERT-SOURCE-PICKER** — sorgenti waypoint/preferito/punto mappa nel Convertitore
+2. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
 
 ---
 
 ## Backlog / note immediate
-
-### UI-MODAL-PARITY-HELP-QR-FIX2 — QR resizable
-
-- QR si apre correttamente (FIX1 PASS) ma non è ridimensionabile
-- Allineare UX a Help floating senza rompere Converti
 
 ### CONVERT-SOURCE-PICKER
 

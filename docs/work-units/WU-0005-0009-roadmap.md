@@ -306,9 +306,10 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed, FIX2 Vis pending):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata non in questo blocco; **(B-FIX2) indicatore Vis.** — backlog micro-fix (pallino verde/grigio).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **UI-MODAL-PARITY-HELP-QR-FIX2** (QR resizable) → **CONVERT-SOURCE-PICKER** → **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+  - **Prossimo ordine operativo:** **CONVERT-SOURCE-PICKER** → **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni). Catena **UI-MODAL-PARITY-HELP-QR** (build 5 → FIX1 → FIX2) **CLOSED / PASS end-to-end**.
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
-  - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); runtime VPS live **`e8e8ff1`**, display **`B5.5Z · build 6`**.
+  - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
+  - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); runtime VPS live **`14605e9`**, display **`B5.5Z · build 7`**.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -1408,7 +1409,7 @@ Note:
 
 **Nota cleanup:** implementato in **UX-NEXT-A** (`6892890`) — span statici footer/about → solo `B5.5Z`; `applyAppBuildLabel` unica fonte ` · build N`.
 
-**Prossimo ordine operativo candidato:** **UI-MODAL-PARITY-HELP-QR-FIX2** (QR resizable) → **CONVERT-SOURCE-PICKER** → **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
+**Prossimo ordine operativo candidato:** **CONVERT-SOURCE-PICKER** → **P-POLYGON-LIST-UX-NEXT-B-FIX2** (Vis. poligoni).
 
 #### UI-MODAL-PARITY-HELP-QR — migrazione Help/QR a dialog (build 5)
 
@@ -1448,9 +1449,37 @@ goi-gis-app.service = active / enabled
 
 **QA operatore:** PASS — «**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**».
 
-**Backlog non bloccante:** FIX2 QR resizable; CONVERT-SOURCE-PICKER; P-POLYGON-LIST-UX-NEXT-B-FIX2 Vis.
+**Backlog non bloccante:** CONVERT-SOURCE-PICKER; P-POLYGON-LIST-UX-NEXT-B-FIX2 Vis.
 
-**Prossimo candidato:** **UI-MODAL-PARITY-HELP-QR-FIX2**.
+**Prossimo candidato:** **CONVERT-SOURCE-PICKER**.
+
+#### UI-MODAL-PARITY-HELP-QR-FIX2 — QR ridimensionabile (build 7)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-27).
+
+**Runtime:** `14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4` — blob `0886b6bb4ab4b2cd13e060b1c6f34eafe6953259`.
+
+**Scopo:** QR modal ridimensionabile in GIS mode (handle angoli, pattern Help FIX1); drag header; layout body flex; resize transiente; flusso Converti/QR generation invariati; **`APP_BUILD_NUM = 7`**; display **`B5.5Z · build 7`**.
+
+**Review:** **GPT sostitutiva PASS** (Claude non disponibile — **non** review byte Claude ordinaria).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4
+VPS blob = 0886b6bb4ab4b2cd13e060b1c6f34eafe6953259
+HTTP 200
+byte repo/servito = 2407357 / 2407357
+SHA-256 = 1447722424f5d8c180b4b89fb2c5dff7fb6d1e9b173d542f5b30484990e832b5 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**QA operatore:** PASS — «**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**».
+
+**Runtime autorevole live VPS:** `14605e9`. **Catena UI-MODAL-PARITY-HELP-QR (build 5 → FIX1 → FIX2) CLOSED / PASS end-to-end**.
+
+**Prossimo candidato:** **CONVERT-SOURCE-PICKER**.
 
 #### P-POLYGON-LIST-UX-NEXT-A — rinomina inline cella Nome + build bump 2
 
@@ -1468,7 +1497,7 @@ goi-gis-app.service = active / enabled
 
 **Nota backlog:** `polygonShowRenameBar` non più chiamata dalla lista — possibile dead code cleanup futuro.
 
-**Prossimo candidato:** **UI-MODAL-PARITY-HELP-QR-FIX2** — QR ridimensionabile (catena Help/QR **CLOSED**).
+**Prossimo candidato:** **CONVERT-SOURCE-PICKER**.
 
 #### docs/HANDOFF.md method A — handoff canonico repo
 

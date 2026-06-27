@@ -353,11 +353,48 @@ QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e8e8ff1
 ```
 
-**Backlog non bloccante (non FAIL):**
+**`APP_BUILD_ID` `B5.5Z` invariato.**
 
-1. **UI-MODAL-PARITY-HELP-QR-FIX2** — QR ridimensionabile/coerente con Help
-2. **CONVERT-SOURCE-PICKER** — waypoint/preferito/punto mappa nel Convertitore
-3. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
+## UI-MODAL-PARITY-HELP-QR-FIX2 — QR ridimensionabile (build 7) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `14605e9` — blob `0886b6bb4ab4b2cd13e060b1c6f34eafe6953259` — **`APP_BUILD_NUM = 7`** — display **`B5.5Z · build 7`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4` |
+| Subject | `fix(ui): make QR dialog resizable` |
+| Review | **GPT sostitutiva PASS** (Claude non disponibile — non review byte Claude ordinaria) |
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 14605e9d4dcdce738d5759a4c24ecc38dbb7e7e4
+VPS blob = 0886b6bb4ab4b2cd13e060b1c6f34eafe6953259
+HTTP 200
+byte repo/servito = 2407357 / 2407357
+SHA-256 = 1447722424f5d8c180b4b89fb2c5dff7fb6d1e9b173d542f5b30484990e832b5 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore
+```
+
+**Checklist QA verificata:** GIS → Converti → QR si apre; QR sopra Converti; drag header OK; resize angoli OK; SVG/URL/copia/download OK; mappa interattiva; Help non regressa; footer/about **`B5.5Z · build 7`**.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
+```
+
+**Backlog operativo (non FAIL):**
+
+1. **CONVERT-SOURCE-PICKER** — waypoint/preferito/punto mappa nel Convertitore
+2. **P-POLYGON-LIST-UX-NEXT-B-FIX2** — indicatore Vis. poligoni (pallino verde/grigio)
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 
