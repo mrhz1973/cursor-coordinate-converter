@@ -265,6 +265,34 @@ QA P-STYLE PASS operatore
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
 ```
 
+## POLY-PARITY-P5-B2-F — pulizia errore stale draft — CLOSED / PASS end-to-end
+
+**Runtime commit:** `739bf49` — già incluso nel monolite live **`8d13e41a36fe7cc0605dc8f315eff551725340ed`**.
+
+**Fix:** `polygonHideDrawErr()` dopo push vertice valido (handler polygon draw) e dopo `.pop()` riuscita in `polygonRemoveLastDraftPoint()`.
+
+**Deploy:** già coperto indirettamente da deploy P-STYLE-E — VPS runtime **`0a51379`**; **nessun nuovo deploy** in blocco docs-only chiusura. Nota storica «Deploy VPS NON ESEGUITO» in OM era **stale**.
+
+**Review Claude:** **NON RICHIESTA** (zero delta runtime in questo blocco).
+
+**Attestazione finale (operatore):**
+
+```
+QA POLY-PARITY-P5-B2-F PASS operatore
+```
+
+**P5-B2-G (covered):** ramo `verts.length < 3` → `polygonCancelDraw()` preesistente; irraggiungibile da UI ordinaria.
+
+**P5 complessivo:** **CLOSED / PASS end-to-end** (B1…B2-G covered).
+
+**Backlog separato (NON landed, non bloccante):** micro-fix multi-touch P2 — `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return`; futuro blocco runtime Ramo B.
+
+**URL runtime (monolite live su VPS):**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
+```
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
