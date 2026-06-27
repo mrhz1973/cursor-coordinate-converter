@@ -2727,7 +2727,20 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 .polygon-panel .poly-list-table tr[data-poly-row].is-editing .poly-list-name{
   font-weight:600;
 }
-.polygon-panel .poly-list-table .poly-list-vis-cell{ text-align:center; }
+.polygon-panel .poly-list-table .poly-list-vis-cell{ text-align:center; vertical-align:middle; }
+.polygon-panel .poly-list-table .poly-vis-indicator{
+  display:inline-block;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  flex-shrink:0;
+  pointer-events:none;
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--border) 80%, transparent);
+}
+.polygon-panel .poly-list-table .poly-vis-indicator.is-visible{ background:#16a34a; }
+.polygon-panel .poly-list-table .poly-vis-indicator.is-hidden{
+  background:color-mix(in srgb, var(--muted) 55%, var(--panel2) 45%);
+}
 .polygon-panel .poly-list-table .poly-list-style-cell{ text-align:center; }
 .polygon-panel .poly-swatch{
   display:inline-block;
@@ -18078,7 +18091,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 8;
+const APP_BUILD_NUM = 9;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -49469,7 +49482,7 @@ function renderPolygonPanelList(){
       const nm = esc(polygonDisplayName(props.name) || "");
       const nmRaw = polygonDisplayName(props.name) || "";
       const metrics = polygonFeatureListMetrics(f);
-      const vis = props.visible !== false;
+      const vis = polygonMapVisible(f);
       const fid = String(f.id || "");
       const pid = esc(fid);
       const rowSel = selSet.has(fid);
@@ -49493,7 +49506,7 @@ function renderPolygonPanelList(){
         : `<td class="poly-list-name" data-tip="${nm}" title="${nm}">${nm || "—"}</td>`;
       html += `<tr data-poly-row data-poly-id="${pid}" class="${rowCls}">
         <td><input type="checkbox" class="poly-sel-cb" data-poly-sel="${pid}"${rowSel ? " checked" : ""}></td>
-        <td class="poly-list-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${vis ? ariaVisOn : ariaVisOff}"></span></td>
+        <td class="poly-list-vis-cell"><span class="poly-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${vis ? ariaVisOn : ariaVisOff}" title="${vis ? ariaVisOn : ariaVisOff}"></span></td>
         ${nameCell}
         <td class="poly-list-num">${esc(vtxCell)}</td>
         <td class="poly-list-num">${areaCell}</td>
