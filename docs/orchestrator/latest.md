@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-27 — **P-VERTEX-FORMAT CLOSED / PASS end-to-end (docs-only):** commit task **`830ba6e`** — catena runtime **`b9db963`** (base) + **`6ef714a`** (UX2); blob live **`ed621173…`**; deploy base+UX2 GIS-only **PASS tecnico**; **QA operatore PASS** («**QA P-VERTEX-FORMAT PASS operatore**» + «**QA P-VERTEX-FORMAT-UX2 PASS operatore**»); runtime VPS live **`6ef714a`**; Review Claude **NON RICHIESTA** (zero delta runtime); **`APP_BUILD_ID` `B5.5Z` invariato**; monolite invariato; backlog: **P-POLYGON-LIST-ENRICHMENT**, micro-fix P2 pending; inbox **`2026-06-27_1248_riepilogo_finito-sessione.md`**.
+
 2026-06-27 — **P5-B2-F + P5 CLOSED / PASS end-to-end (docs-only):** commit task **`d2aeaa0`** — correzione nota stale «Deploy VPS NON ESEGUITO»; runtime **`739bf49`** già live in monolite **`8d13e41…`**; deploy indiretto P-STYLE-E/`0a51379`; **QA operatore PASS** («**QA POLY-PARITY-P5-B2-F PASS operatore**»); **P5-B2-G covered**; **P5 complessivo CLOSED**; micro-fix multi-touch P2 **NON landed** (backlog separato); monolite invariato; inbox **`2026-06-27_1202_riepilogo_finito-sessione.md`**.
 
 2026-06-27 — **P-STYLE CLOSED / PASS end-to-end (docs-only):** commit task **`898be8c`** — chiusura memoria dopo attestazione «**QA P-STYLE PASS operatore**»; catena **`95c100d`** (A+B, review Claude PASS) + **`efca0bf`** (D, review Claude PASS) + **`0a51379`** (C, gate orchestratore PASS, review Claude non richiesta); deploy GIS-only **`0a51379`** PASS tecnico già registrato; monolite invariato **`8d13e41…`**; blocco README **`c409819`** aveva correttamente P-STYLE pending; inbox **`2026-06-27_1148_riepilogo_finito-sessione.md`**.
