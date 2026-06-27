@@ -393,7 +393,51 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (micro-blocchi standardizzazione modal, resize laterale, HUD, dead code cleanup).
+**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (resize laterale pannelli pilota, HUD-VIS design, CSS `.modal-overlay` Ramo A, audit `renderAllMaps`).
+
+**`APP_BUILD_ID` `B5.5Z` invariato.**
+
+## BUNDLE-BACKLOG-B3 — audit backlog bundle + micro-fix sicuri (build 14) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `709079c` — blob `da27be4363e878f97f1f1b8d4dbc9df34f9c7ed3` — **`APP_BUILD_NUM = 14`** — display **`B5.5Z · build 14`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `709079c989cc34b695e9cff3abf239ced77670dd` |
+| Subject | `chore(ui): apply safe backlog micro-fixes` |
+| Review | **NON RICHIESTA** (micro-fix mirati Ramo B) |
+
+**Patch implementate:** rimossa `polygonShowRenameBar()` (dead certo); guard P2 multi-touch su vertex drag in `renderPolygonEditOverlay`.
+
+**Audit non implementato:** `polygonHideRenameBar`/barra rename; CSS `.modal-overlay`; `renderAllMaps` undefined; resize laterale; HUD-VIS.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 709079c989cc34b695e9cff3abf239ced77670dd
+VPS blob = da27be4363e878f97f1f1b8d4dbc9df34f9c7ed3
+HTTP 200
+byte repo/servito = 2426501 / 2426501
+SHA-256 = ca0d74a61395d02fc3a3281a29851721c4425e24e5073b68fe5d3d3ba95a0902 (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA BUNDLE-BACKLOG-B3 PASS operatore
+```
+
+**Checklist QA verificata:** Poligoni Modifica drag vertice invariato; secondo pointer/touch non sostituisce drag attivo; rename inline Nome OK; lista Poligoni non regressa; footer/about **`B5.5Z · build 14`**.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=709079c
+```
+
+**Prossimi candidati (non obbligatori):** resize laterale pilota; HUD-VIS/HUD-LAYOUT design; CSS `.modal-overlay` Ramo A; audit `renderAllMaps`.
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 

@@ -110,19 +110,20 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `266b116` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MODAL-STD-B2** (B2 + FIX1 + FIX2) — CLOSED / PASS end-to-end |
-| Runtime live VPS | `266b1161a6f8d6f95fbc012687d0b0b377538484` |
-| Blob monolite | `0f4d275ea86b5b78690421405ffa5909add5783e` |
-| `APP_BUILD_NUM` | `13` |
-| Display runtime | `B5.5Z · build 13` |
+| HEAD remoto (verificato) | `709079c` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **BUNDLE-BACKLOG-B3** — CLOSED / PASS end-to-end |
+| Runtime live VPS | `709079c989cc34b695e9cff3abf239ced77670dd` |
+| Blob monolite | `da27be4363e878f97f1f1b8d4dbc9df34f9c7ed3` |
+| `APP_BUILD_NUM` | `14` |
+| Display runtime | `B5.5Z · build 14` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| MODAL-STD-B2 | **CLOSED / PASS end-to-end** (build 11→13; QA finale FIX2 PASS) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=266b116` |
+| BUNDLE-BACKLOG-B3 | **CLOSED / PASS end-to-end** (build 14; audit bundle + 2 micro-fix) |
+| MODAL-STD-B2 | **CLOSED / PASS end-to-end** (build 11→13) |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=709079c` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — micro-blocchi standardizzazione modal, resize laterale pannelli, Personalizzazione HUD, dead code cleanup, micro-fix multi-touch P2 (nessun obbligo fisso).
+**Da scegliere da roadmap/backlog** — resize laterale pannelli (pilota), HUD-VIS/HUD-LAYOUT (design), CSS `.modal-overlay` Ramo A, audit `renderAllMaps` (nessun obbligo fisso).
 
 ---
 
