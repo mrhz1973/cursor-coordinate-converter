@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-27 — **docs/HANDOFF.md method A CLOSED / PASS docs-only:** commit task **`2fdb58c`** — creato [`docs/HANDOFF.md`](../HANDOFF.md) handoff canonico breve; puntatore README read-set; method A completato; monolite invariato **`afddf87a…`**; runtime VPS **`bd588a8`**; prossimo: **UX-NEXT-A** → **UX-NEXT-B**; inbox **`2026-06-27_1600_riepilogo_finito-sessione.md`**.
+
 2026-06-27 — **APP-BUILD-NUM-B1 CLOSED / PASS tecnico end-to-end (docs-only):** commit task **`c41f3c1`** — runtime **`bd588a8`**; blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico**; verifica display minima **PASS**; **nessuna QA operatore estesa**; monolite invariato in chiusura docs; runtime VPS live **`bd588a8`**; nota cleanup span build al prossimo runtime; prossimo: **`docs/HANDOFF.md` method A** → UX-NEXT-A → UX-NEXT-B; **`APP_BUILD_ID` `B5.5Z` invariato**; inbox **`2026-06-27_1530_riepilogo_finito-sessione.md`**.
 
 2026-06-27 — **P-POLYGON-LIST-ENRICHMENT CLOSED / PASS end-to-end (docs-only):** commit task **`a88b538`** — catena runtime **`0409ad4`** (base) + **`d65410f`** (FIX1, review byte Claude **PASS con osservazioni**) + **`28cc2d2`** (FIX2); blob live **`f3c97917…`**; runtime VPS live **`28cc2d2`**; deploy base+FIX1+FIX2 GIS-only **PASS tecnico**; **QA operatore PASS** (base + FIX1 + FIX2); monolite invariato in chiusura docs; backlog UX next **P-POLYGON-LIST-UX-NEXT** (colonne ridimensionabili; rinomina inline Nome) — non FAIL; **`APP_BUILD_ID` `B5.5Z` invariato**; inbox **`2026-06-27_1500_riepilogo_finito-sessione.md`**.
