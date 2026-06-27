@@ -214,6 +214,7 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
+- **README bootloader rules front-load (2026-06-27, docs-only):** commit **`c409819`** — tre regole AI in cerca (`git ls-remote`/read-set pinnato; `finito` condizionale in coda prompt; Cursor write+commit = Agent+Auto); dettaglio OM §4 Handoff & Close Discipline; monolite invariato blob **`8d13e41a36fe7cc0605dc8f315eff551725340ed`**; indipendente da chiusura P-STYLE (deploy **`0a51379`** PASS tecnico, QA operatore pending).
 - UX GIS / mappe offline / import-export / waypoint / tracce / poligoni
 - OPSEC, cache/tile/geocoding lato app
 
