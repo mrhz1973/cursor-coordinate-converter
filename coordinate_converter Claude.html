@@ -7837,6 +7837,19 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
 #favoritesPanelBody #sec-favorites .section-body{ display:block !important; }
+/* MODAL-STD-SEARCH-B1: Cerca floating — summary duplicato nascosto + scroll body (famiglia Favoriti). */
+#searchPanelBody #geocodeCard.geocode-card{ margin:0; border:none; background:transparent; padding:0; }
+#searchPanelBody #geocodeCard.geocode-card > summary{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+#searchPanelBody #geocodeCard.geocode-card .geo-body{ display:block !important; }
+#searchPanelBody.app-modal-body{
+  overflow-x:visible !important;
+}
+body.gis-mode dialog#searchPanel.search-panel > .app-modal-body{
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+}
 /* GIS: corpi pannello leggermente trasparenti così la mappa sotto resta percepibile (map-first). */
 body.gis-mode dialog#favoritesPanel.favorites-panel > .app-modal-body{
   background: color-mix(in srgb, var(--panel) 88%, transparent);
@@ -18091,7 +18104,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 9;
+const APP_BUILD_NUM = 10;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -46470,9 +46483,12 @@ function _searchPanelLayoutOpts(){
     minH: 220,
     defaultW: 520,
     defaultH: null,
-    defaultHeightFraction: 0.58,
-    defaultHeightCap: 520,
-    topbarReserve: 108,
+    /* MODAL-STD-SEARCH-B1: ~75–82vh come Favoriti/Layers (era 0.58 / cap 520). */
+    defaultHeightFraction: 0.78,
+    defaultHeightCap: 940,
+    topbarReserve: 100,
+    partialMinVisible: 72,
+    bodyMinH: 120,
     bodyId: "searchPanelBody",
     headId: "searchPanelHead",
     closeId: "searchPanelClose"
@@ -46704,7 +46720,9 @@ function clampSearchPanelRect(dlg){
   if (!dlg.style.left && !dlg.style.top) return;
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
-  const rect = gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const rect = Number.isFinite(opts.partialMinVisible)
+    ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
+    : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
