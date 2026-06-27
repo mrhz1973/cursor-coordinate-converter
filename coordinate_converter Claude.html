@@ -1294,6 +1294,14 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .saved-tracks-table .saved-name-col-resize,
 .saved-tracks-table .saved-when-col-resize,
 .saved-tracks-table .saved-dist-col-resize,
+.polygon-panel .poly-list-table .poly-vis-col-resize,
+.polygon-panel .poly-list-table .poly-name-col-resize,
+.polygon-panel .poly-list-table .poly-vtx-col-resize,
+.polygon-panel .poly-list-table .poly-area-col-resize,
+.polygon-panel .poly-list-table .poly-perim-col-resize,
+.polygon-panel .poly-list-table .poly-style-col-resize,
+.polygon-panel .poly-list-table .poly-when-col-resize,
+.polygon-panel .poly-list-table .poly-actions-col-resize,
 #sec-rangerings .rr-table .rr-name-col-resize,
 #sec-rangerings .rr-table .rr-center-col-resize,
 #sec-rangerings .rr-table .rr-rings-col-resize,
@@ -1323,6 +1331,14 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .saved-tracks-table .saved-name-col-resize:hover,
 .saved-tracks-table .saved-when-col-resize:hover,
 .saved-tracks-table .saved-dist-col-resize:hover,
+.polygon-panel .poly-list-table .poly-vis-col-resize:hover,
+.polygon-panel .poly-list-table .poly-name-col-resize:hover,
+.polygon-panel .poly-list-table .poly-vtx-col-resize:hover,
+.polygon-panel .poly-list-table .poly-area-col-resize:hover,
+.polygon-panel .poly-list-table .poly-perim-col-resize:hover,
+.polygon-panel .poly-list-table .poly-style-col-resize:hover,
+.polygon-panel .poly-list-table .poly-when-col-resize:hover,
+.polygon-panel .poly-list-table .poly-actions-col-resize:hover,
 #sec-rangerings .rr-table .rr-name-col-resize:hover,
 #sec-rangerings .rr-table .rr-center-col-resize:hover,
 #sec-rangerings .rr-table .rr-rings-col-resize:hover,
@@ -1344,6 +1360,14 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   .saved-tracks-table .saved-name-col-resize,
   .saved-tracks-table .saved-when-col-resize,
   .saved-tracks-table .saved-dist-col-resize,
+  .polygon-panel .poly-list-table .poly-vis-col-resize,
+  .polygon-panel .poly-list-table .poly-name-col-resize,
+  .polygon-panel .poly-list-table .poly-vtx-col-resize,
+  .polygon-panel .poly-list-table .poly-area-col-resize,
+  .polygon-panel .poly-list-table .poly-perim-col-resize,
+  .polygon-panel .poly-list-table .poly-style-col-resize,
+  .polygon-panel .poly-list-table .poly-when-col-resize,
+  .polygon-panel .poly-list-table .poly-actions-col-resize,
   #sec-rangerings .rr-table .rr-name-col-resize,
   #sec-rangerings .rr-table .rr-center-col-resize,
   #sec-rangerings .rr-table .rr-rings-col-resize,
@@ -2613,10 +2637,29 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   min-width:720px;
   border-collapse:collapse;
   font-size:.82rem;
-  table-layout:auto;
+  table-layout:fixed;
+  --poly-vis-col:44px;
+  --poly-name-col:140px;
+  --poly-vtx-col:52px;
+  --poly-area-col:72px;
+  --poly-perim-col:72px;
+  --poly-style-col:44px;
+  --poly-when-col:88px;
+  --poly-actions-col:128px;
 }
-.polygon-panel .poly-list-table col.poly-col-name{ min-width:140px; }
-.polygon-panel .poly-list-table col.poly-col-actions{ min-width:128px; }
+.polygon-panel .poly-list-table col.poly-col-vis{ width:var(--poly-vis-col); min-width:36px; }
+.polygon-panel .poly-list-table col.poly-col-name{ width:var(--poly-name-col); min-width:72px; }
+.polygon-panel .poly-list-table col.poly-col-vtx{ width:var(--poly-vtx-col); min-width:44px; }
+.polygon-panel .poly-list-table col.poly-col-area{ width:var(--poly-area-col); min-width:56px; }
+.polygon-panel .poly-list-table col.poly-col-perim{ width:var(--poly-perim-col); min-width:56px; }
+.polygon-panel .poly-list-table col.poly-col-style{ width:var(--poly-style-col); min-width:36px; }
+.polygon-panel .poly-list-table col.poly-col-when{ width:var(--poly-when-col); min-width:64px; }
+.polygon-panel .poly-list-table col.poly-col-actions{ width:var(--poly-actions-col); min-width:112px; }
+.polygon-panel .poly-list-table .poly-list-th-resize{
+  position:relative;
+  padding-right:12px;
+  vertical-align:bottom;
+}
 .polygon-panel .poly-list-table th,
 .polygon-panel .poly-list-table td{
   padding:5px 6px;
@@ -17697,7 +17740,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 2;
+const APP_BUILD_NUM = 3;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -48125,9 +48168,15 @@ function polygonPanelListSortHeaderHtml(colKey, i18nKey, opts){
   const clsParts = [];
   if (opts.thClass) clsParts.push(String(opts.thClass));
   if (opts.visHead) clsParts.push("poly-list-vis-head");
+  if (opts.resizeHandle) clsParts.push("poly-list-th-resize");
   const cls = clsParts.length ? ` class="${esc(clsParts.join(" "))}"` : "";
   const st = opts.thStyle ? ` style="${esc(opts.thStyle)}"` : "";
-  return `<th${cls}${st}><button type="button" class="poly-list-sort-btn" data-poly-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="poly-list-sort-mark" aria-hidden="true">${mark}</span></button></th>`;
+  let resizeTail = "";
+  if (opts.resizeHandle){
+    const rk = opts.resizeHandle === true ? colKey : String(opts.resizeHandle);
+    resizeTail = polygonListColResizeSpan(rk);
+  }
+  return `<th${cls}${st}><button type="button" class="poly-list-sort-btn" data-poly-sort="${esc(colKey)}" aria-label="${tipEsc}" title="${tipEsc}">${label}<span class="poly-list-sort-mark" aria-hidden="true">${mark}</span></button>${resizeTail}</th>`;
 }
 function polygonListRowMetaText(f){
   const m = polygonFeatureListMetrics(f);
@@ -48148,6 +48197,121 @@ function polygonShowOnMapFromList(id){
   const m = polygonFeatureListMetrics(f);
   if (!m.pts || !m.pts.length) return;
   try { flyMapToTrackPoints(m.pts); } catch(_){}
+}
+function polygonListColResizeSpan(handleKey){
+  const ra = (typeof t === "function") ? (t("track.colResizeAria") || "") : "";
+  const raEsc = esc(ra || "");
+  const k = String(handleKey || "name");
+  const cls = k === "vis" ? "poly-vis-col-resize"
+    : k === "vtx" ? "poly-vtx-col-resize"
+    : k === "area" ? "poly-area-col-resize"
+    : k === "perim" ? "poly-perim-col-resize"
+    : k === "style" ? "poly-style-col-resize"
+    : k === "when" ? "poly-when-col-resize"
+    : k === "actions" ? "poly-actions-col-resize"
+    : "poly-name-col-resize";
+  return `<span class="${cls}" role="separator" aria-orientation="vertical" aria-label="${raEsc}" title="${raEsc}"></span>`;
+}
+function polygonApplyPolyListColumnWidths(cont, tbl){
+  if (!cont || !tbl) return;
+  const pairs = [
+    ["--poly-vis-col", "_polyVisColPx", 36, 80],
+    ["--poly-name-col", "_polyNameColPx", 72, 560],
+    ["--poly-vtx-col", "_polyVtxColPx", 44, 120],
+    ["--poly-area-col", "_polyAreaColPx", 56, 200],
+    ["--poly-perim-col", "_polyPerimColPx", 56, 200],
+    ["--poly-style-col", "_polyStyleColPx", 36, 88],
+    ["--poly-when-col", "_polyWhenColPx", 64, 320],
+    ["--poly-actions-col", "_polyActionsColPx", 112, 480]
+  ];
+  for (let i = 0; i < pairs.length; i++){
+    const v = cont[pairs[i][1]];
+    if (Number.isFinite(v)){
+      const px = Math.max(pairs[i][2], Math.min(pairs[i][3], v));
+      tbl.style.setProperty(pairs[i][0], px + "px");
+    }
+  }
+}
+function polygonPanelListPlainHeaderHtml(label, opts){
+  opts = opts || {};
+  const labelEsc = esc(label);
+  const clsParts = ["poly-list-th-resize"];
+  if (opts.thClass) clsParts.push(String(opts.thClass));
+  const cls = ` class="${esc(clsParts.join(" "))}"`;
+  const st = opts.thStyle ? ` style="${esc(opts.thStyle)}"` : "";
+  const resizeTail = opts.resizeHandle ? polygonListColResizeSpan(opts.resizeHandle) : "";
+  return `<th${cls}${st}>${labelEsc}${resizeTail}</th>`;
+}
+/** Desktop: colonne tabella Poligoni (sessione su #polygonPanelList, no localStorage). */
+function ensurePolygonPanelListColResizeWired(){
+  if (window._polyListColResizeWired) return;
+  window._polyListColResizeWired = true;
+  const SEL = ".poly-vis-col-resize, .poly-name-col-resize, .poly-vtx-col-resize, .poly-area-col-resize, .poly-perim-col-resize, .poly-style-col-resize, .poly-when-col-resize, .poly-actions-col-resize";
+  let drag = null;
+  function endDrag(){
+    drag = null;
+    try {
+      document.removeEventListener("pointermove", onMove);
+      document.removeEventListener("pointerup", endDrag);
+      document.removeEventListener("pointercancel", endDrag);
+    } catch(_){}
+  }
+  function polyColMetaFromHandle(h, table){
+    const rectT = table.getBoundingClientRect();
+    const w = Math.max(200, rectT.width);
+    if (h.classList.contains("poly-vis-col-resize")){
+      return { varName: "--poly-vis-col", prop: "_polyVisColPx", td: 1, min: 36, max: Math.min(80, Math.max(44, Math.floor(w * 0.08))) };
+    }
+    if (h.classList.contains("poly-name-col-resize")){
+      return { varName: "--poly-name-col", prop: "_polyNameColPx", td: 2, min: 72, max: Math.min(560, Math.max(120, Math.floor(w * 0.55))) };
+    }
+    if (h.classList.contains("poly-vtx-col-resize")){
+      return { varName: "--poly-vtx-col", prop: "_polyVtxColPx", td: 3, min: 44, max: Math.min(120, Math.max(52, Math.floor(w * 0.14))) };
+    }
+    if (h.classList.contains("poly-area-col-resize")){
+      return { varName: "--poly-area-col", prop: "_polyAreaColPx", td: 4, min: 56, max: Math.min(200, Math.max(72, Math.floor(w * 0.18))) };
+    }
+    if (h.classList.contains("poly-perim-col-resize")){
+      return { varName: "--poly-perim-col", prop: "_polyPerimColPx", td: 5, min: 56, max: Math.min(200, Math.max(72, Math.floor(w * 0.18))) };
+    }
+    if (h.classList.contains("poly-style-col-resize")){
+      return { varName: "--poly-style-col", prop: "_polyStyleColPx", td: 6, min: 36, max: Math.min(88, Math.max(44, Math.floor(w * 0.10))) };
+    }
+    if (h.classList.contains("poly-when-col-resize")){
+      return { varName: "--poly-when-col", prop: "_polyWhenColPx", td: 7, min: 64, max: Math.min(320, Math.max(88, Math.floor(w * 0.28))) };
+    }
+    if (h.classList.contains("poly-actions-col-resize")){
+      return { varName: "--poly-actions-col", prop: "_polyActionsColPx", td: 8, min: 112, max: Math.min(480, Math.max(128, Math.floor(w * 0.40))) };
+    }
+    return null;
+  }
+  function onMove(ev){
+    if (!drag) return;
+    const dx = ev.clientX - drag.startX;
+    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
+    drag.table.style.setProperty(drag.meta.varName, nw + "px");
+    const cont = document.getElementById("polygonPanelList");
+    if (cont) cont[drag.meta.prop] = nw;
+  }
+  document.addEventListener("pointerdown", (ev) => {
+    const h = ev.target.closest && ev.target.closest(SEL);
+    if (!h) return;
+    if (window.matchMedia && window.matchMedia("(pointer:coarse)").matches) return;
+    const table = h.closest(".poly-list-table");
+    if (!table) return;
+    const cont = document.getElementById("polygonPanelList");
+    if (!cont || !cont.contains(table)) return;
+    const meta = polyColMetaFromHandle(h, table);
+    if (!meta) return;
+    const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
+    const startW = cell ? cell.getBoundingClientRect().width : meta.min;
+    drag = { table, meta, startX: ev.clientX, startW };
+    ev.preventDefault();
+    ev.stopPropagation();
+    document.addEventListener("pointermove", onMove);
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+  }, true);
 }
 function ensurePolygonPanelListWired(){
   const body = document.getElementById("polygonPanelBody");
@@ -48246,23 +48410,23 @@ function renderPolygonPanelList(){
     const ariaVisOn = esc((typeof t === "function") ? (t("gis.polygonPanel.visible") || "") : "");
     const ariaVisOff = esc((typeof t === "function") ? (t("gis.polygonPanel.hidden") || "") : "");
     let html = `<div class="poly-list-scroll-inner"><table class="poly-list-table"><colgroup>
-      <col style="width:44px" />
+      <col class="poly-col-vis" />
       <col class="poly-col-name" />
-      <col style="width:52px" />
-      <col style="width:72px" />
-      <col style="width:72px" />
-      <col style="width:44px" />
-      <col style="width:88px" />
+      <col class="poly-col-vtx" />
+      <col class="poly-col-area" />
+      <col class="poly-col-perim" />
+      <col class="poly-col-style" />
+      <col class="poly-col-when" />
       <col class="poly-col-actions" />
     </colgroup><thead><tr>
-      ${polygonPanelListSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "width:44px;text-align:center" })}
-      ${polygonPanelListSortHeaderHtml("name", "track.colName", { thClass: "poly-list-th-name" })}
-      ${polygonPanelListSortHeaderHtml("vtx", "gis.polygonPanel.editVertices", { thStyle: "width:52px" })}
-      ${polygonPanelListSortHeaderHtml("area", "gis.polygonPanel.editArea", { thStyle: "width:72px" })}
-      ${polygonPanelListSortHeaderHtml("perim", "gis.polygonPanel.editPerimeter", { thStyle: "width:72px" })}
-      <th class="poly-list-th-style" style="width:44px;text-align:center">${esc((typeof t === "function" ? t("gis.polygonPanel.editStyle") : "") || "Stile")}</th>
-      ${polygonPanelListSortHeaderHtml("when", "gis.polygonPanel.colWhen", { thStyle: "width:88px" })}
-      <th class="poly-list-th-actions" style="min-width:120px;text-align:left">${esc((typeof t === "function" ? t("track.savedColActions") : "") || "Azioni")}</th>
+      ${polygonPanelListSortHeaderHtml("vis", "track.colVis", { visHead: true, thStyle: "text-align:center", resizeHandle: "vis" })}
+      ${polygonPanelListSortHeaderHtml("name", "track.colName", { thClass: "poly-list-th-name", resizeHandle: true })}
+      ${polygonPanelListSortHeaderHtml("vtx", "gis.polygonPanel.editVertices", { resizeHandle: "vtx" })}
+      ${polygonPanelListSortHeaderHtml("area", "gis.polygonPanel.editArea", { resizeHandle: "area" })}
+      ${polygonPanelListSortHeaderHtml("perim", "gis.polygonPanel.editPerimeter", { resizeHandle: "perim" })}
+      ${polygonPanelListPlainHeaderHtml((typeof t === "function" ? t("gis.polygonPanel.editStyle") : "") || "Stile", { thClass: "poly-list-th-style", thStyle: "text-align:center", resizeHandle: "style" })}
+      ${polygonPanelListSortHeaderHtml("when", "gis.polygonPanel.colWhen", { resizeHandle: "when" })}
+      ${polygonPanelListPlainHeaderHtml((typeof t === "function" ? t("track.savedColActions") : "") || "Azioni", { thClass: "poly-list-th-actions", thStyle: "text-align:left", resizeHandle: "actions" })}
     </tr></thead><tbody>`;
     for (const f of polys){
       const props = f.properties || {};
@@ -48309,6 +48473,11 @@ function renderPolygonPanelList(){
     }
     html += "</tbody></table></div>";
     cont.innerHTML = html;
+    try {
+      const tbl = cont.querySelector(".poly-list-table");
+      if (tbl) polygonApplyPolyListColumnWidths(cont, tbl);
+    } catch(_){}
+    ensurePolygonPanelListColResizeWired();
     if (inlineRenId){
       try {
         const inp = cont.querySelector('[data-role="poly-inline-rename-input"][data-poly-id="' + inlineRenId.replace(/\\/g, "\\\\").replace(/"/g, "\\\"") + '"]');
