@@ -11007,7 +11007,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B5.5Z</span>
+    <span id="appBuildFooter">B5.5Z · build 1</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -11247,7 +11247,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B5.5Z</code>
+            <code id="appBuildAbout">B5.5Z · build 1</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -17688,14 +17688,17 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
-const APP_BUILD_LABEL = APP_BUILD_ID + " — " + APP_BUILD_DETAIL;
+/** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
+const APP_BUILD_NUM = 1;
+const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
-    document.title = "GIS Tool/Converter · " + APP_BUILD_ID;
+    const buildDisp = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
+    document.title = "GIS Tool/Converter · " + buildDisp;
     const foot = document.getElementById("appBuildFooter");
-    if (foot) foot.textContent = APP_BUILD_ID;
+    if (foot) foot.textContent = buildDisp;
     const about = document.getElementById("appBuildAbout");
-    if (about) about.textContent = APP_BUILD_ID;
+    if (about) about.textContent = buildDisp;
     const det = document.getElementById("appBuildAboutDetail");
     if (det) det.textContent = APP_BUILD_DETAIL;
   } catch(_){}
