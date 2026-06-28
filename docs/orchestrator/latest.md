@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-D CLOSED / PASS end-to-end:** catena runtime **`ec86b62`** (build 19, HUD/resize polish) → **`5fec693`** (D-FIX1 build 20, wheel debounce, **QA FAIL**) → **`19700b6`** (D-FIX2 build 21, wheel wire-once+idle+cooldown, **QA PASS**); deploy GIS-only PASS (byte **2446515**, SHA **`7019c56e…`**, CMP_PASS); attestazione «**QA UX-NEXT-RUNTIME-BUNDLE-D-FIX2 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`19700b6`**; prossimo: titolo `<title>`; inbox **`2026-06-28_2350_riepilogo_finito-sessione.md`**.
+
 2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-C CLOSED / PASS end-to-end:** commit task runtime **`8f56566`** — resize e/w Range Rings/Misura/Help/Waypoints + affordance resize + HUD polish/reset/i18n; build 18; deploy GIS-only PASS (byte **2440464**, SHA **`8ae47bdf…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-C PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`8f56566`**; prossimo: titolo `<title>` / polish audit; inbox **`2026-06-28_1130_riepilogo_finito-sessione.md`**.
 
 2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-B CLOSED / PASS end-to-end:** commit task runtime **`584135e`** — resize e/w Poligoni/Tracce/Offline/Cerca + HUD angolo/compatto/dati; build 17; deploy GIS-only PASS (byte **2434043**, SHA **`c303e69a…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-B PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`584135e`**; prossimo: resize pannelli residui; inbox **`2026-06-28_1105_riepilogo_finito-sessione.md`**.

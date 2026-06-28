@@ -2,31 +2,31 @@
 
 ## LATEST
 
-* real_task_commit: `8f56566557ef0ae9c5b740beed57eeaae630d784`
-* real_task_subject: feat(gis): extend residual panel resize and HUD polish
-* report_generated_at: 2026-06-28T11:30:00+02:00
+* real_task_commit: `19700b6a2cec925ec2bca16cd6127c46b7d84202`
+* real_task_subject: fix(gis): wheel zoom one step per detent
+* report_generated_at: 2026-06-28T23:50:00+02:00
 * branch: main
-* remote_head_after_task_push: `8f56566557ef0ae9c5b740beed57eeaae630d784`
-* previous_report_container: `8d1f78cef395733821f9d2568895cde05b3255f6` (orchestratore riconciliazione finito BUNDLE-B — esterno/verificabile)
+* remote_head_after_task_push: `19700b6a2cec925ec2bca16cd6127c46b7d84202`
+* previous_report_container: `6246a4200eec3233e6d878379be84a09bb8efbf2` (orchestratore riconciliazione post-BUNDLE-C — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: orchestrator/report staged pre-autosync
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: UX-NEXT-RUNTIME-BUNDLE-C CLOSED; resize 4 pannelli residui + HUD polish/reset; finito docs post-QA PASS auto
+* result_cursor: UX-NEXT-RUNTIME-BUNDLE-D CLOSED; catena ec86b62→5fec693 FIX1 FAIL→19700b6 FIX2 PASS; finito docs post-QA PASS auto
 * pass_operatore: PASS
-* result_runtime: QA UX-NEXT-RUNTIME-BUNDLE-C — resize/HUD/pannelli OK; VPS 8f56566 build 18
-* qa_attestation_source: operatore — «QA UX-NEXT-RUNTIME-BUNDLE-C PASS operatore»
-* notes: bundle ROUTINE 9 item; Review Claude NON RICHIESTA; byte 2440464; SHA file 8ae47bdf…; CMP_PASS deploy
+* result_runtime: QA UX-NEXT-RUNTIME-BUNDLE-D-FIX2 — wheel 1 livello/scatto; HUD/resize/pan OK; VPS 19700b6 build 21
+* qa_attestation_source: operatore — «QA UX-NEXT-RUNTIME-BUNDLE-D-FIX2 PASS operatore»
+* notes: bundle ROUTINE; Review Claude NON RICHIESTA; byte 2446515; SHA file 7019c56e…; CMP_PASS deploy
 
 ## OUTPUT VERBATIM
 
 ```text
 git log --oneline -5
-8f56566 feat(gis): extend residual panel resize and HUD polish
-8d1f78c docs: orchestratore — riconciliazione finito sessione
-1e06464 docs: finito — UX-NEXT-RUNTIME-BUNDLE-B session close
-584135e feat(gis): expand panel resize and HUD controls
-a971e5e docs: orchestratore — riconciliazione finito sessione
+19700b6 fix(gis): wheel zoom one step per detent
+5fec693 fix(gis): limit wheel zoom to one step per burst
+ec86b62 feat(gis): polish HUD and panel resize UX
+6246a42 docs: orchestratore — riconciliazione finito sessione
+bcc3b00 docs: finito — UX-NEXT-RUNTIME-BUNDLE-C session close
 
 git status --short
  M docs/OPERATING_MEMORY.md
@@ -34,33 +34,34 @@ git status --short
  M docs/work-units/WU-0005-0009-roadmap.md
  M docs/orchestrator/latest.md
  M docs/runtime/LAST_CURSOR_REPORT.md
-?? docs/orchestrator/inbox/2026-06-28_1130_riepilogo_finito-sessione.md
+?? docs/orchestrator/inbox/2026-06-28_2350_riepilogo_finito-sessione.md
 
 git rev-parse HEAD
-8f56566557ef0ae9c5b740beed57eeaae630d784
+19700b6a2cec925ec2bca16cd6127c46b7d84202
 
 git rev-parse origin/main
-8f56566557ef0ae9c5b740beed57eeaae630d784
+19700b6a2cec925ec2bca16cd6127c46b7d84202
 
 git branch --show-current
 main
 
 git ls-remote origin main
-8f56566557ef0ae9c5b740beed57eeaae630d784	refs/heads/main
+19700b6a2cec925ec2bca16cd6127c46b7d84202	refs/heads/main
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-44a9ce09be9a977d304b41c152f35451d4110f8d
+65b7293ab229b2a37cb3f1ec03666f565900c73e
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
-* 8d1f78c — UX-NEXT-RUNTIME-BUNDLE-B finito orchestratore (real_task 584135e; container 8d1f78c)
-* 1e06464 — UX-NEXT-RUNTIME-BUNDLE-B finito sessione (real_task 584135e)
-* a971e5e — UX-NEXT-RUNTIME-BUNDLE-A finito orchestratore (real_task 61bcda5; container a971e5e)
+* 6246a42 — UX-NEXT-RUNTIME-BUNDLE-C finito orchestratore (real_task 8f56566; container 6246a42 — verificare SHA esterno)
+* bcc3b00 — UX-NEXT-RUNTIME-BUNDLE-C finito sessione (real_task 8f56566)
+* 8f56566 — LAST_CURSOR_REPORT LATEST precedente (BUNDLE-C)
 
 ## LIMITI
 
 * Titolo statico `<title>` resta `B6.6B` — backlog opzionale
-* Runtime autorevole live VPS: 8f56566 (build 18)
+* D-FIX1 (`5fec693`) documentato QA FAIL — non ripetere debounce 50 ms senza cooldown
+* Runtime autorevole live VPS: 19700b6 (build 21)
