@@ -3012,6 +3012,61 @@ dialog.polygon-vertex-coord-dialog .poly-vertex-coord-actions{
 @media (max-width:520px){
   .tile-map .tile-scale-table-naut{ display:none; }
 }
+/* UX-NEXT-RUNTIME-BUNDLE-E — scale bar vs HUD/toolbar, focus zoom/toolbar */
+.tile-map .tile-bottom-left{ isolation:isolate; }
+body.gis-mode #gisMapMount .tile-map .tile-scale{
+  box-shadow:0 1px 4px rgba(0,0,0,.28);
+  pointer-events:none;
+}
+.tile-map .tile-scale > *{ pointer-events:auto; }
+.tile-map .tz-btn:focus-visible,
+.tile-map .ts-btn:focus-visible,
+.tile-map .tcov-btn:focus-visible,
+.tile-map .tmeas-btn:focus-visible,
+.tile-map .ttrk-btn:focus-visible,
+.tile-map .ttrk-exp:focus-visible,
+.tile-map .twpt-btn:focus-visible,
+.tile-map .twpt-exp:focus-visible,
+.tile-map .tgps-btn:focus-visible,
+.tile-map .trr-btn:focus-visible,
+.tile-map .tg-btn:focus-visible,
+.tile-map .tile-recenter:focus-visible,
+.tile-map .tile-pick:focus-visible,
+.tile-map .tlayer-btn:focus-visible,
+.tile-map .tlayer-item:focus-visible{
+  outline:2px solid var(--ring-focus, #2563eb);
+  outline-offset:2px;
+}
+.tile-map .tile-zoom .tz-level{
+  font-variant-numeric:tabular-nums;
+  cursor:default;
+  user-select:none;
+}
+.panel-empty-state{
+  padding:14px 10px; text-align:center; line-height:1.45;
+  border-radius:10px;
+  background:color-mix(in srgb, var(--panel2) 90%, transparent);
+  border:1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+}
+.panel-empty-main{ margin:0 0 6px; color:var(--text-primary); font-size:.9rem; font-weight:600; }
+.panel-empty-hint{ margin:0; color:var(--muted); font-size:.82rem; }
+.gis-panel-microhelp{
+  margin:0 0 10px; padding:8px 10px; font-size:.82rem; line-height:1.45;
+  color:var(--muted);
+  background:color-mix(in srgb, var(--accent) 6%, var(--panel));
+  border-radius:8px;
+  border-left:3px solid color-mix(in srgb, var(--accent) 42%, transparent);
+}
+body.gis-mode dialog.app-modal.gis-panel-floating .app-modal-body:not(#layersPanelBody):not(#favoritesPanelBody){
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+.app-modal-title{
+  min-width:0; flex:1 1 auto;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.gis-panel-resize-handle[data-handle="e"],
+.gis-panel-resize-handle[data-handle="w"]{ cursor:ew-resize; }
 
 .jpg-export-dialog-body .jpg-export-scale-opt{
   display:flex; align-items:center; gap:8px; margin:10px 0 14px; font-size:.9rem;
@@ -6445,7 +6500,7 @@ dialog.app-modal::backdrop{
   padding:12px 12px 12px 18px; border-bottom:1px solid var(--border);
   background:linear-gradient(180deg, var(--surface-glass-hover) 0%, var(--panel2) 100%);
 }
-.app-modal-title{ margin:0; font-size:1.15rem; font-weight:700; }
+.app-modal-title{ margin:0; font-size:1.15rem; font-weight:700; min-width:0; }
 /* Family 1 — chiusura pannello/modal: chip glass neutro (× sempre visibile; non danger; focus = --ring-focus). */
 .app-modal-close,
 .tools-drawer-head .drawer-close,
@@ -7307,12 +7362,7 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   position: relative;
   z-index: 0;
 }
-/* #wp-list ha sia .wp-list:empty::before che .track-points-list:empty::after → doppio messaggio. */
-#waypointModalPanel #wp-list.track-points-list:empty::after{
-  content: none !important;
-  display: none !important;
-  padding: 0 !important;
-}
+/* #wp-list empty: messaggio principale (::before) + hint (::after) — vedi .wp-list:empty */
 #waypointModalPanel #wp-list [data-tip]{
   z-index: 1;
 }
@@ -8032,8 +8082,24 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-editor-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
 .wp-list{ margin-top:6px; }
 .wp-list:empty::before{
-  content:attr(data-empty); color:var(--muted); font-size:.88rem;
-  display:block; padding:10px 4px;
+  content:attr(data-empty); color:var(--text-primary); font-size:.9rem; font-weight:600;
+  display:block; padding:14px 10px 4px; text-align:center; line-height:1.45;
+}
+.wp-list:empty::after{
+  content:attr(data-empty-hint); color:var(--muted); font-size:.82rem;
+  display:block; padding:0 10px 14px; text-align:center; line-height:1.45;
+  border-radius:0 0 10px 10px;
+  margin:0 4px 6px;
+  background:color-mix(in srgb, var(--panel2) 90%, transparent);
+  border:1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  border-top:none;
+}
+.wp-list:empty::before{
+  border:1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  border-bottom:none;
+  border-radius:10px 10px 0 0;
+  margin:6px 4px 0;
+  background:color-mix(in srgb, var(--panel2) 90%, transparent);
 }
 .wp-row{
   display:flex; align-items:center; gap:10px; padding:8px 10px;
@@ -9396,6 +9462,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   body.gis-mode #gisMapMount .tile-map .tile-scale-table-naut{
     display:none;
   }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tz-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tlayer-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn{
+    min-width:36px;
+    min-height:36px;
+  }
   .tab-drawer{
     max-height:calc(100dvh - env(safe-area-inset-top, 0px));
     padding-bottom:env(safe-area-inset-bottom, 0px);
@@ -9950,6 +10024,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <details class="offline-tile-panel" id="offlineTilePanel">
           <summary data-i18n="offcache.summary">Download mappe Offline</summary>
           <p class="offcache-blurb" data-i18n="offcache.blurb">Scarica tile in anticipo (IndexedDB); apri il pannello dal pulsante sulla mappa.</p>
+          <p class="gis-panel-microhelp" data-i18n="layers.panelHint"></p>
           <select id="pcPreset" class="offcache-preset-hidden" aria-hidden="true" tabindex="-1">
             <option value="custom" data-i18n="offcache.presetCustom">Personalizzata</option>
             <option value="civ" data-i18n="offcache.presetCiv">Côte d'Ivoire (stima)</option>
@@ -10012,6 +10087,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <p id="pcOfflineNeutral" class="offcache-neutral-msg" hidden aria-live="polite" role="status"></p>
           <p id="pcLayerCacheStat" class="offcache-est offcache-layer-cache-stat" hidden aria-live="polite" role="status"></p>
           <p class="offcache-layer-shared-note" data-i18n="offcache.layerSharedNote">Lo strato scelto vale per il download offline e per l&apos;export JPG.</p>
+          <p class="gis-panel-microhelp offcache-basemap-note" data-i18n="offcache.panelBasemapNote"></p>
           <section class="offcache-section offcache-section--download" aria-labelledby="offcacheSectionDownloadTitle">
             <h4 id="offcacheSectionDownloadTitle" class="offcache-section-title" data-i18n="offcache.sectionDownload">Download mappe offline</h4>
             <p class="offcache-blurb" data-i18n="offcache.sectionDownloadBlurb">Scarica e memorizza le tile in IndexedDB per l&apos;area selezionata (intervallo di zoom).</p>
@@ -10524,6 +10600,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <!-- GIS hub: misura solo su mappa + proietta con dist/az editabili (no textarea coordinate). -->
         <div class="meas-gis-only">
           <p class="sub-section-hint" data-i18n="meas.gisIntro"></p>
+          <p class="gis-panel-microhelp meas-panel-microhelp" data-i18n="measure.panelHint"></p>
           <div id="measOperativeNotices" class="meas-operative-notices" role="region" aria-live="polite" aria-relevant="additions text" data-i18n-aria="measure.noticeRegionAria">
             <div id="measNoticeInfo" class="meas-notice-box meas-notice-box--info" role="status" hidden></div>
             <div id="measNoticeErr" class="meas-notice-box meas-notice-box--error" role="alert" hidden></div>
@@ -11094,8 +11171,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <dialog id="searchPanel" class="app-modal search-panel" aria-labelledby="searchPanelTitle" aria-modal="false">
   <div class="app-modal-head" id="searchPanelHead">
     <h2 id="searchPanelTitle" class="app-modal-title" data-i18n="tabs.geocoding">Cerca</h2>
-    <button type="button" class="app-modal-close" id="searchPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    <button type="button" class="app-modal-close" id="searchPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
   </div>
+  <p class="gis-panel-microhelp search-panel-microhelp" data-i18n="search.panelHint"></p>
   <div class="app-modal-body" id="searchPanelBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
@@ -11111,7 +11189,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="app-modal-head-actions">
       <button type="button" data-role="favoritespanel-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-      <button type="button" class="app-modal-close" id="favoritesPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+      <button type="button" class="app-modal-close" id="favoritesPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
   <p id="favoritesPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
@@ -11130,7 +11208,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="app-modal-head-actions">
       <button type="button" data-role="layerspanel-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-      <button type="button" class="app-modal-close" id="layersPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+      <button type="button" class="app-modal-close" id="layersPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
   <p id="layersPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
@@ -11149,7 +11227,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="app-modal-head-actions">
       <button type="button" data-role="measurepanel-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-      <button type="button" class="app-modal-close" id="measurePanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+      <button type="button" class="app-modal-close" id="measurePanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
   <p id="measurePanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
@@ -11168,7 +11246,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="app-modal-head-actions">
       <button type="button" data-role="rangeringpanel-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-      <button type="button" class="app-modal-close" id="rangeRingsPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+      <button type="button" class="app-modal-close" id="rangeRingsPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
   <p id="rangeRingsPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
@@ -11187,7 +11265,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="app-modal-head-actions">
       <button type="button" data-role="polygonpanel-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-      <button type="button" class="app-modal-close" id="polygonPanelClose" data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+      <button type="button" class="app-modal-close" id="polygonPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
   <p id="polygonPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
@@ -12261,6 +12339,7 @@ const I18N = {
     "waypointModal.favoritesPickerCancel":"Annulla",
     "waypointModal.favoritesImportResult":"Aggiunti {0} waypoint, saltati {1} quasi-duplicati, {2} altri non importati.",
     "waypointModal.empty":"Nessun waypoint. Usa «Nuovo waypoint» per crearne uno (coordinate manuali o clic sulla mappa).",
+    "waypointModal.emptyHint":"Il pick 🎯 nel menu waypoint consente di scegliere un punto sulla carta.",
     "waypointModal.unnamed":"(senza nome)",
     "waypointModal.capWarn":"Il file contiene {0} waypoint, ma restano solo {1} slot (cap 200). Importare comunque i primi {1}?",
     "waypointModal.capFull":"Cap 200 waypoint raggiunto. Elimina qualcosa prima di importare.",
@@ -12398,6 +12477,7 @@ const I18N = {
     "track.saveMinTwoPoints":"La traccia deve contenere almeno 2 punti per essere salvata.",
     "track.savedOk":"Traccia salvata: {0}",
     "track.savedEmpty":"Nessuna traccia salvata.",
+    "track.savedEmptyHint":"Disegna punti sul builder traccia e salva dall'archivio in basso.",
     "track.renameConfirm":"Salvare il nuovo nome della traccia?",
     "track.colResizeAria":"Ridimensiona colonna Nome",
     "track.deletedLastOk":"Ultima traccia salvata eliminata.",
@@ -12691,6 +12771,9 @@ const I18N = {
     "offcache.namedAreasLabel":"Aree salvate",
     "offcache.list.title":"Aree offline salvate",
     "offcache.list.empty":"Nessuna area offline salvata. Seleziona un'area e salvala.",
+    "offcache.list.emptyHint":"Definisci bbox (mappa o viewport) e premi Salva — nessun download automatico.",
+    "offcache.panelBasemapNote":"Il menu strati in alto a destra sulla mappa cambia solo la vista live; qui gestisci download e aree salvate.",
+    "layers.panelHint":"Strato mappa live (toolbar) ≠ aree offline qui sotto. Copertura verde = tile già in cache.",
     "offcache.renameConfirm":"Salvare il nuovo nome dell’area offline?",
     "offcache.list.colVis":"Vis.",
     "offcache.area.visAriaOn":"Visibile sulla mappa",
@@ -12805,6 +12888,7 @@ const I18N = {
     "tip.offlineFitOne":"Centra mappa sull’area selezionata",
     "tip.offlinePrecacheSel":"Scarica in sequenza le tile offline per le aree selezionate (una alla volta).",
     "tip.modalClose":"Chiudi pannello",
+    "tip.modalClosePanelEsc":"Chiudi pannello (Esc)",
     "tip.panelMinimize":"Minimizza",
     "tip.panelRestore":"Ripristina",
     "gis.minimizedDock":"Pannelli minimizzati",
@@ -12822,6 +12906,7 @@ const I18N = {
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
     "gis.polygonPanel.defaultName":"Poligono",
     "gis.polygonPanel.empty":"Nessun poligono",
+    "gis.polygonPanel.emptyHint":"Crea un poligono sulla mappa o importa GeoJSON dal pannello.",
     "gis.polygonPanel.countLabel":"Poligoni",
     "gis.polygonPanel.visibleTip":"Visibilità",
     "gis.polygonPanel.exportGeoJson":"Esporta GeoJSON",
@@ -12923,6 +13008,7 @@ const I18N = {
     "gis.hud.compact":"Comprimi HUD",
     "gis.hud.expand":"Espandi HUD",
     "gis.hud.center":"Centro",
+    "gis.hud.centerFmt":"lat, lon in gradi decimali",
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Ripristina HUD",
     "gis.hud.toolbar":"Controlli HUD",
@@ -12933,6 +13019,8 @@ const I18N = {
     "tip.floatingClose":"Chiudi",
     "tip.zoomIn":"Zoom avanti",
     "tip.zoomOut":"Zoom indietro",
+    "tip.zoomControls":"Controlli zoom mappa",
+    "tip.zoomLevel":"Livello zoom corrente",
     "tip.tileMarker":"Coordinate punto",
     "tip.tileMarkerDraft":"Bozza punto",
     "tip.waypointSwatch":"Colore waypoint",
@@ -12984,6 +13072,7 @@ const I18N = {
     "tools.rangerings.desc":"Anelli di distanza geodetici sulla mappa.",
     "rangeRings.hint":"Crea anelli (distanze) intorno a un centro. Inserisci distanze e stile (preset opzionali), poi usa «Punta e crea» e clicca sulla mappa; puoi anche usare punto convertito, waypoint o centro mappa.",
     "rangeRings.mapFirstHint":"Primo passo consigliato: tocca «Punta sulla mappa» e imposta il centro sulla carta, quindi inserisci le distanze. In alternativa scegli sotto un altro tipo di centro.",
+    "rangeRings.emptyHint":"Nessun set. Usa «Punta sulla mappa» per il centro, poi aggiungi le distanze.",
     "rangeRings.name":"Nome",
     "rangeRings.namePh":"Nome set (opzionale)",
     "rangeRings.centerMode":"Centro",
@@ -13289,6 +13378,7 @@ const I18N = {
     "offcache.area.alreadyDownloaded":"Già in cache del browser (IndexedDB) — non compare in Download del PC. Per un file JPEG usa «Esporta JPG offline» sotto.",
     "meas.inverse":"Distanza e azimuth tra due punti",
     "meas.gisIntro":"Solo mappa: scegli i punti sulla cartina. Distanza e azimuth si aggiornano trascinando; in «Proietta» puoi digitare distanza/azimuth per spostare il punto finale.",
+    "measure.panelHint":"Clic sulla mappa per i vertici; Esc annulla. In Proietta inserisci distanza e azimuth numerici.",
     "meas.gisFlow2":"Due punti",
     "meas.gisFlowProj":"Proietta punto",
     "meas.gisDirectHint":"Primo clic sulla mappa = partenza (verde). Modifica distanza/azimuth oppure trascina il punto rosso.",
@@ -13356,6 +13446,8 @@ const I18N = {
     "sec.favorites":"★ Preferiti",
     "fav.hint":"Salva i punti importanti con un nome per ritrovarli velocemente. Sono memorizzati solo nel tuo browser.",
     "fav.empty":"Nessun preferito. Salva il punto corrente con \"★ Aggiungi corrente\".",
+    "fav.emptyHint":"Puoi anche aggiungere da waypoint o dopo una conversione.",
+    "search.panelHint":"La ricerca online parte solo con Cerca (Nominatim). Per coordinate usa Converti o il pick sulla mappa.",
     "fav.renameConfirm":"Salvare il nuovo nome del preferito?",
     "fav.addWaypoint":"Waypoint",
     "fav.addWaypointOk":"Waypoint aggiunto dal preferito.",
@@ -13955,6 +14047,7 @@ const I18N = {
     "waypointModal.favoritesPickerCancel":"Cancel",
     "waypointModal.favoritesImportResult":"Added {0} waypoints, skipped {1} near-duplicates, {2} others not imported.",
     "waypointModal.empty":"No waypoints yet. Use “New waypoint” to create one (manual coordinates or map click).",
+    "waypointModal.emptyHint":"Use pick 🎯 in the waypoint menu to choose a point on the map.",
     "waypointModal.unnamed":"(unnamed)",
     "waypointModal.capWarn":"File has {0} waypoints but only {1} slots remain (cap 200). Import the first {1} anyway?",
     "waypointModal.capFull":"Cap of 200 waypoints reached. Delete some before importing.",
@@ -14092,6 +14185,7 @@ const I18N = {
     "track.saveMinTwoPoints":"The track must contain at least 2 points before it can be saved.",
     "track.savedOk":"Track saved: {0}",
     "track.savedEmpty":"No saved tracks yet.",
+    "track.savedEmptyHint":"Draw points in the track builder and save from the archive below.",
     "track.renameConfirm":"Save the new track name?",
     "track.colResizeAria":"Resize Name column",
     "track.deletedLastOk":"Last saved track removed.",
@@ -14384,6 +14478,9 @@ const I18N = {
     "offcache.namedAreasLabel":"Saved areas",
     "offcache.list.title":"Saved offline areas",
     "offcache.list.empty":"No saved offline areas. Select an area and save it.",
+    "offcache.list.emptyHint":"Define a bbox (map or viewport) and press Save — no automatic download.",
+    "offcache.panelBasemapNote":"The layer menu on the map toolbar changes only the live view; here you manage downloads and saved areas.",
+    "layers.panelHint":"Live map layer (toolbar) ≠ offline areas below. Green coverage = tiles already cached.",
     "offcache.renameConfirm":"Save the new offline area name?",
     "offcache.list.colVis":"Vis.",
     "offcache.area.visAriaOn":"Visible on the map",
@@ -14498,6 +14595,7 @@ const I18N = {
     "tip.offlineFitOne":"Center map on selected area",
     "tip.offlinePrecacheSel":"Download offline tiles for the selected areas sequentially (one area at a time).",
     "tip.modalClose":"Close panel",
+    "tip.modalClosePanelEsc":"Close panel (Esc)",
     "tip.panelMinimize":"Minimize",
     "tip.panelRestore":"Restore",
     "gis.minimizedDock":"Minimized panels",
@@ -14515,6 +14613,7 @@ const I18N = {
     "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
     "gis.polygonPanel.defaultName":"Polygon",
     "gis.polygonPanel.empty":"No polygons",
+    "gis.polygonPanel.emptyHint":"Create a polygon on the map or import GeoJSON from the panel.",
     "gis.polygonPanel.countLabel":"Polygons",
     "gis.polygonPanel.visibleTip":"Visibility",
     "gis.polygonPanel.exportGeoJson":"Export GeoJSON",
@@ -14616,6 +14715,7 @@ const I18N = {
     "gis.hud.compact":"Collapse HUD",
     "gis.hud.expand":"Expand HUD",
     "gis.hud.center":"Center",
+    "gis.hud.centerFmt":"lat, lon in decimal degrees",
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Reset HUD",
     "gis.hud.toolbar":"HUD controls",
@@ -14626,6 +14726,8 @@ const I18N = {
     "tip.floatingClose":"Close",
     "tip.zoomIn":"Zoom in",
     "tip.zoomOut":"Zoom out",
+    "tip.zoomControls":"Map zoom controls",
+    "tip.zoomLevel":"Current zoom level",
     "tip.tileMarker":"Point coordinates",
     "tip.tileMarkerDraft":"Draft point",
     "tip.waypointSwatch":"Waypoint color",
@@ -14677,6 +14779,7 @@ const I18N = {
     "tools.rangerings.desc":"Geodesic distance rings on the map.",
     "rangeRings.hint":"Create distance rings around a center. Enter distances and style (optional presets), then use «Point and create» and tap the map; you can also use the converted point, a waypoint, or the map center.",
     "rangeRings.mapFirstHint":"Recommended first step: tap «Pick on map» to set the center on the map, then enter distances. Or choose another center type below.",
+    "rangeRings.emptyHint":"No sets yet. Use «Pick on map» for the center, then add distances.",
     "rangeRings.name":"Name",
     "rangeRings.namePh":"Set name (optional)",
     "rangeRings.centerMode":"Center",
@@ -14982,6 +15085,7 @@ const I18N = {
     "offcache.area.alreadyDownloaded":"Already in browser cache (IndexedDB) — not saved to your PC Downloads folder. For a JPEG file use «Export offline JPG» below.",
     "meas.inverse":"Distance and bearing between two points",
     "meas.gisIntro":"Map only: pick points on the chart. Distance and bearing update while dragging; in “Project” you can type distance/bearing to move the end point.",
+    "measure.panelHint":"Click the map for vertices; Esc cancels. In Project, enter numeric distance and bearing.",
     "meas.gisFlow2":"Two points",
     "meas.gisFlowProj":"Project point",
     "meas.gisDirectHint":"First map click = start (green). Edit distance/bearing or drag the red end point.",
@@ -15049,6 +15153,8 @@ const I18N = {
     "sec.favorites":"★ Favorites",
     "fav.hint":"Save important points with a name to retrieve them quickly. Stored only in your browser.",
     "fav.empty":"No favorites. Save the current point with \"★ Add current\".",
+    "fav.emptyHint":"You can also add from waypoints or after a conversion.",
+    "search.panelHint":"Online search runs only when you press Search (Nominatim). For coordinates use Convert or map pick.",
     "fav.renameConfirm":"Save the new favorite name?",
     "fav.addWaypoint":"Waypoint",
     "fav.addWaypointOk":"Waypoint added from favourite.",
@@ -15649,6 +15755,7 @@ const I18N = {
     "waypointModal.favoritesPickerCancel":"Annuler",
     "waypointModal.favoritesImportResult":"Ajoutés {0} waypoints, ignorés {1} quasi-doublons, {2} autres non importés.",
     "waypointModal.empty":"Aucun waypoint. Utilisez « Nouveau waypoint » (coordonnées ou clic sur la carte).",
+    "waypointModal.emptyHint":"Le pick 🎯 dans le menu waypoint permet de choisir un point sur la carte.",
     "waypointModal.unnamed":"(sans nom)",
     "waypointModal.capWarn":"Le fichier contient {0} waypoints mais seulement {1} emplacements restent (cap 200). Importer les {1} premiers ?",
     "waypointModal.capFull":"Plafond de 200 waypoints atteint. Supprimez-en avant d'importer.",
@@ -15786,6 +15893,7 @@ const I18N = {
     "track.saveMinTwoPoints":"La trace doit contenir au moins 2 points pour être enregistrée.",
     "track.savedOk":"Trace enregistrée : {0}",
     "track.savedEmpty":"Aucune trace enregistrée.",
+    "track.savedEmptyHint":"Tracez des points dans le builder et enregistrez depuis l'archive ci-dessous.",
     "track.renameConfirm":"Enregistrer le nouveau nom de la trace ?",
     "track.colResizeAria":"Redimensionner la colonne Nom",
     "track.deletedLastOk":"Dernière trace enregistrée supprimée.",
@@ -16078,6 +16186,9 @@ const I18N = {
     "offcache.namedAreasLabel":"Zones enregistrées",
     "offcache.list.title":"Zones hors ligne enregistrées",
     "offcache.list.empty":"Aucune zone hors ligne enregistrée. Sélectionnez une zone et enregistrez-la.",
+    "offcache.list.emptyHint":"Définissez une bbox (carte ou viewport) et appuyez sur Enregistrer — pas de téléchargement automatique.",
+    "offcache.panelBasemapNote":"Le menu des couches sur la carte change seulement la vue live ; ici vous gérez téléchargements et zones enregistrées.",
+    "layers.panelHint":"Couche carte live (barre d'outils) ≠ zones hors ligne ci-dessous. Couverture verte = tuiles déjà en cache.",
     "offcache.renameConfirm":"Enregistrer le nouveau nom de la zone hors ligne ?",
     "offcache.list.colVis":"Vis.",
     "offcache.area.visAriaOn":"Visible sur la carte",
@@ -16192,6 +16303,7 @@ const I18N = {
     "tip.offlineFitOne":"Centrer la carte sur la zone sélectionnée",
     "tip.offlinePrecacheSel":"Télécharger hors ligne les tuiles des zones sélectionnées l’une après l’autre.",
     "tip.modalClose":"Fermer le panneau",
+    "tip.modalClosePanelEsc":"Fermer le panneau (Échap)",
     "tip.panelMinimize":"Réduire",
     "tip.panelRestore":"Restaurer",
     "gis.minimizedDock":"Panneaux réduits",
@@ -16209,6 +16321,7 @@ const I18N = {
     "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
     "gis.polygonPanel.defaultName":"Polygone",
     "gis.polygonPanel.empty":"Aucun polygone",
+    "gis.polygonPanel.emptyHint":"Créez un polygone sur la carte ou importez du GeoJSON depuis le panneau.",
     "gis.polygonPanel.countLabel":"Polygones",
     "gis.polygonPanel.visibleTip":"Visibilité",
     "gis.polygonPanel.exportGeoJson":"Exporter GeoJSON",
@@ -16272,6 +16385,7 @@ const I18N = {
     "gis.hud.compact":"Réduire HUD",
     "gis.hud.expand":"Développer HUD",
     "gis.hud.center":"Centre",
+    "gis.hud.centerFmt":"lat, lon en degrés décimaux",
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Réinitialiser HUD",
     "gis.hud.toolbar":"Contrôles HUD",
@@ -16282,6 +16396,8 @@ const I18N = {
     "tip.floatingClose":"Fermer",
     "tip.zoomIn":"Zoom avant",
     "tip.zoomOut":"Zoom arrière",
+    "tip.zoomControls":"Contrôles de zoom carte",
+    "tip.zoomLevel":"Niveau de zoom actuel",
     "tip.tileMarker":"Coordonnées du point",
     "tip.tileMarkerDraft":"Point brouillon",
     "tip.waypointSwatch":"Couleur du waypoint",
@@ -16333,6 +16449,7 @@ const I18N = {
     "tools.rangerings.desc":"Anneaux de distance géodésiques sur la carte.",
     "rangeRings.hint":"Créez des anneaux (distances) autour d’un centre. Saisissez les distances et le style (préréglages possibles), puis utilisez «Pointer et créer» et cliquez sur la carte ; vous pouvez aussi utiliser le point converti, un waypoint ou le centre de la carte.",
     "rangeRings.mapFirstHint":"Étape recommandée : touchez «Choisir sur la carte» pour placer le centre, puis saisissez les distances. Sinon choisissez un autre type de centre ci-dessous.",
+    "rangeRings.emptyHint":"Aucun ensemble. Utilisez «Choisir sur la carte» pour le centre, puis ajoutez les distances.",
     "rangeRings.name":"Nom",
     "rangeRings.namePh":"Nom de l’ensemble (optionnel)",
     "rangeRings.centerMode":"Centre",
@@ -16638,6 +16755,7 @@ const I18N = {
     "offcache.area.alreadyDownloaded":"Déjà en cache navigateur (IndexedDB) — pas dans Téléchargements du PC. Pour un fichier JPEG : « Exporter JPG hors ligne » ci-dessous.",
     "meas.inverse":"Distance et azimut entre deux points",
     "meas.gisIntro":"Carte uniquement : choisissez les points sur la carte. Distance et azimut se mettent à jour au déplacement ; dans « Projeter » vous pouvez saisir distance/azimut pour déplacer le point final.",
+    "measure.panelHint":"Clic sur la carte pour les sommets ; Échap annule. Dans Projeter, saisissez distance et azimut numériques.",
     "meas.gisFlow2":"Deux points",
     "meas.gisFlowProj":"Projeter un point",
     "meas.gisDirectHint":"Premier clic = départ (vert). Modifiez distance/azimut ou faites glisser le point rouge.",
@@ -16705,6 +16823,8 @@ const I18N = {
     "sec.favorites":"★ Favoris",
     "fav.hint":"Enregistrez les points importants avec un nom pour les retrouver rapidement. Stockés uniquement dans votre navigateur.",
     "fav.empty":"Aucun favori. Enregistrez le point courant avec « ★ Ajouter ».",
+    "fav.emptyHint":"Vous pouvez aussi ajouter depuis les waypoints ou après une conversion.",
+    "search.panelHint":"La recherche en ligne ne part qu'avec Rechercher (Nominatim). Pour les coordonnées utilisez Convertir ou le pick sur la carte.",
     "fav.renameConfirm":"Enregistrer le nouveau nom du favori ?",
     "fav.addWaypoint":"Waypoint",
     "fav.addWaypointOk":"Waypoint ajouté depuis le favori.",
@@ -18364,7 +18484,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 21;
+const APP_BUILD_NUM = 22;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -31727,7 +31847,7 @@ function renderOfflineAreasList(){
   const existing = new Set(areas.map(a => String(a && a.id)));
   state._offlineAreasSelectedIds = state._offlineAreasSelectedIds.filter(id => existing.has(String(id)));
   if (!areas.length){
-    list.innerHTML = `<div class="offline-areas-empty" data-i18n="offcache.list.empty">${esc(t("offcache.list.empty"))}</div>`;
+    list.innerHTML = `<div class="panel-empty-state offline-areas-empty" role="status"><p class="panel-empty-main">${esc(t("offcache.list.empty"))}</p><p class="panel-empty-hint">${esc(t("offcache.list.emptyHint"))}</p></div>`;
     ensureOfflineAreasListDelegation();
     ensureOfflineAreasTooltipPortal();
     // Toolbar sync
@@ -32515,7 +32635,7 @@ function renderSavedTracksList(){
   const rows = sortSavedTracksForRender(state.savedTracks);
   const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   if (!rows.length){
-    mount.innerHTML = `<div class="saved-tracks-empty" data-i18n="track.savedEmpty">${esc(t("track.savedEmpty") || "Nessuna traccia salvata.")}</div>`;
+    mount.innerHTML = `<div class="panel-empty-state saved-tracks-empty" role="status"><p class="panel-empty-main">${esc(t("track.savedEmpty") || "Nessuna traccia salvata.")}</p><p class="panel-empty-hint">${esc(t("track.savedEmptyHint") || "")}</p></div>`;
     if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
     return;
   }
@@ -36222,11 +36342,11 @@ function renderTileMap(lat, lon, zoom){
       const badge = noOff
         ? `<span class="tlayer-badge-no-offline" title="${esc(t("offcache.onlineOnly"))}">${esc(t("map.layerNoOfflineBadge"))}</span>`
         : "";
-      return `<button type="button" class="tlayer-item${act}" data-layer="${layerId}" role="menuitem" data-tip="${tip}">`
+      return `<button type="button" class="tlayer-item${act}" data-layer="${layerId}" role="menuitem" data-tip="${tip}" aria-label="${tip}">`
         + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span class="tlayer-item-label">${lbl}</span>${badge}</button>`;
     };
     const tlayerOverlayBtn = (overlay, act, tip, lbl, on) =>
-      `<button type="button" class="tlayer-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}">`
+      `<button type="button" class="tlayer-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}" aria-label="${tip}">`
       + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
     const tlayerSection = (title, inner) =>
       `<div class="tlayer-section" role="group" aria-label="${title}"><div class="tlayer-section-title" aria-hidden="true">${title}</div>${inner}</div>`;
@@ -36273,11 +36393,15 @@ function renderTileMap(lat, lon, zoom){
       <button class="ts-btn ${size === "half"  ? "active" : ""}" type="button" data-size="half"  aria-label="${esc(t("map.sizeHalf"))}"  data-tip="${esc(t("map.sizeHalf"))}">◧</button>
       <button class="ts-btn ${size === "full"  ? "active" : ""}" type="button" data-size="full"  aria-label="${esc(t("map.sizeFull"))}"  data-tip="${esc(t("map.sizeFull"))}">⛶</button>
     </div>`}
-    <div class="tile-zoom">
+    ${(() => {
+      const zoomGrpLbl = esc((typeof t === "function" ? t("tip.zoomControls") : "") || "Zoom");
+      const zoomLvlTip = esc((typeof t === "function" ? t("tip.zoomLevel") : "") || "Zoom") + " z" + zoom;
+      return `<div class="tile-zoom" role="group" aria-label="${zoomGrpLbl}">
       <button class="tz-btn" type="button" data-zdelta="1"  data-tip="${esc(t("tip.zoomIn"))}" aria-label="${esc(t("tip.zoomIn"))}" ${zoom >= layer.maxZoom ? "disabled" : ""}>+</button>
       <button class="tz-btn" type="button" data-zdelta="-1" data-tip="${esc(t("tip.zoomOut"))}" aria-label="${esc(t("tip.zoomOut"))}" ${zoom <= 2 ? "disabled" : ""}>−</button>
-      <span class="tz-level">z${zoom}</span>
-    </div>
+      <span class="tz-level" title="${zoomLvlTip}" aria-label="${zoomLvlTip}">z${zoom}</span>
+    </div>`;
+    })()}
     ${(() => {
       if (_gisHub) return "";
       const vcOffPx = vcOffPxToolbar;
@@ -38725,7 +38849,7 @@ function renderFavorites(){
     return blob.indexOf(flt) !== -1;
   });
   if (!state.favorites.length){
-    root.innerHTML = `<p style="color:var(--muted); font-size:.88rem">${t("fav.empty")}</p>`;
+    root.innerHTML = `<div class="panel-empty-state" role="status"><p class="panel-empty-main">${esc(t("fav.empty"))}</p><p class="panel-empty-hint">${esc(t("fav.emptyHint"))}</p></div>`;
     return;
   }
   if (!list.length){
@@ -42365,7 +42489,7 @@ function renderRangeRingsList(){
     try { if (typeof rrCancelPendingRename === "function") rrCancelPendingRename(); } catch(_){}
     try { if (typeof rrCloseRrSourcePicker === "function") rrCloseRrSourcePicker(); } catch(_){}
     try { if (typeof rrClearRangeRingsEditSession === "function") rrClearRangeRingsEditSession(); } catch(_){}
-    root.innerHTML = `<div class="sub" style="padding:10px;color:var(--muted); font-size:.9rem">${esc((typeof t==="function" ? (t("rangeRings.empty")||"") : "") || "—")}</div>`;
+    root.innerHTML = `<div class="panel-empty-state" role="status"><p class="panel-empty-main">${esc((typeof t==="function" ? (t("rangeRings.empty")||"") : "") || "—")}</p><p class="panel-empty-hint">${esc((typeof t==="function" ? (t("rangeRings.emptyHint")||"") : "") || "")}</p></div>`;
     syncRangeRingsBatchBar();
     return;
   }
@@ -44075,7 +44199,8 @@ function updateGisMapHud(zoomOverride){
       const ck = (typeof t === "function" ? t("gis.hud.center") : "") || "Center";
       const centerFull = vc.lat.toFixed(5) + ", " + vc.lon.toFixed(5);
       const centerCompact = formatHudCenterCompact(vc.lat, vc.lon);
-      const centerTip = ck + " " + centerFull;
+      const centerFmt = (typeof t === "function" ? t("gis.hud.centerFmt") : "") || "DD";
+      const centerTip = ck + ": " + centerFull + " (" + centerFmt + ")";
       chips.push(`<span class="gis-map-hud-chip" data-hud="center" data-hud-tip="${esc(centerTip)}">${esc(ck)} ${esc(centerCompact)}</span>`);
     }
     if (state.showSeamarks){
@@ -44092,8 +44217,8 @@ function updateGisMapHud(zoomOverride){
       chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="opsec" data-hud-tip="${esc(opLbl)}">🔒 ${esc(opLbl)}</span>`);
     }
     const buildKey = (typeof t === "function" ? t("gis.hud.build") : "") || "Build";
-    const buildDisp = APP_BUILD_ID + " · " + APP_BUILD_NUM;
-    const buildTip = buildKey + " " + buildDisp;
+    const buildDisp = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
+    const buildTip = buildKey + " " + APP_BUILD_LABEL;
     chips.push(`<span class="gis-map-hud-chip is-muted" data-hud="build" data-hud-tip="${esc(buildTip)}">${esc(buildDisp)}</span>`);
   }
   chipsWrap.innerHTML = chips.join("");
@@ -49965,7 +50090,7 @@ function renderPolygonPanelList(){
   const polys = sortPolygonsForPanelList(polysRaw);
   const selSet = new Set((state._polygonPanelSelectedIds || []).map(String));
   if (polys.length === 0){
-    cont.innerHTML = `<div class="poly-empty">${esc((typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono")}</div>`;
+    cont.innerHTML = `<div class="panel-empty-state poly-empty" role="status"><p class="panel-empty-main">${esc((typeof t === "function" ? t("gis.polygonPanel.empty") : "") || "Nessun poligono")}</p><p class="panel-empty-hint">${esc((typeof t === "function" ? t("gis.polygonPanel.emptyHint") : "") || "")}</p></div>`;
     syncPolygonPanelSelectionActions();
   } else {
     const editingActive = polygonIsEditing();
@@ -51249,6 +51374,7 @@ function renderWpModalList(){
   wpModalPruneWaypointSelection();
   const pts = state.mapWaypoints;
   root.setAttribute("data-empty", t("waypointModal.empty"));
+  root.setAttribute("data-empty-hint", t("waypointModal.emptyHint"));
   const countEl = document.getElementById("wp-count");
   if (countEl) countEl.textContent = pts.length ? (pts.length + " / 200") : "";
   if (!pts.length){
