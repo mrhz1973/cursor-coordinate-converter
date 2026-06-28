@@ -9288,6 +9288,35 @@ body.gis-mode .tools-drawer .tools-panel-wrap{
 /* In GIS i duplicati in lista sono nascosti: stesso strumento si apre dalla griglia sotto. */
 body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
+/* MAJOR-1: runtime diagnostics panel (read-only, Strumenti drawer) */
+.diagnostics-panel-body .diag-section{ margin-top:0.75rem; }
+.diagnostics-panel-body .diag-section-title{
+  font-weight:600; font-size:.88rem; margin-bottom:.35rem; color:var(--text);
+}
+.diag-dl{
+  display:grid; grid-template-columns:minmax(7rem, auto) 1fr;
+  gap:.2rem .65rem; font-size:.82rem; margin:0;
+}
+.diag-dl dt{ color:var(--muted); margin:0; }
+.diag-dl dd{ margin:0; word-break:break-word; }
+.diag-table-wrap{
+  overflow:auto; max-height:11rem;
+  border:1px solid var(--border); border-radius:6px; margin-top:.25rem;
+}
+.diag-table{ width:100%; border-collapse:collapse; font-size:.78rem; }
+.diag-table th,.diag-table td{
+  padding:.28rem .45rem; border-bottom:1px solid var(--border); text-align:left;
+}
+.diag-table th{
+  position:sticky; top:0; background:var(--surface, var(--bg));
+  font-weight:600; color:var(--muted);
+}
+.diag-warnings-list{ margin:.25rem 0 0; padding-left:1.1rem; font-size:.82rem; }
+.diag-warn-item{ margin:.15rem 0; }
+.diag-warn-item.is-warn{ color:var(--warn, #c9a227); }
+.diag-warn-item.is-info{ color:var(--muted); }
+.diag-status{ margin:.35rem 0 .5rem; min-height:1.2em; }
+
 /* Mobile: drawer becomes full-width bottom sheet */
 @media (max-width:620px){
   .tab-drawer{
@@ -10790,6 +10819,68 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </details>
 
+    <details id="sec-diagnostics" data-tab-key="diagnostics">
+      <summary data-i18n="sec.diagnostics">Diagnostica runtime</summary>
+      <div class="section-body diagnostics-panel-body">
+        <p class="hint diagnostics-hint" style="color:var(--muted); font-size:.85rem" data-i18n="diag.hint">Lettura locale di build, storage, cache tile e rete (sessione). Nessun dato operativo completo né invio esterno.</p>
+        <div class="actions diagnostics-actions" style="flex-wrap:wrap; gap:6px">
+          <button type="button" class="btn btn-sm btn-primary" id="btnDiagRefresh" data-i18n="diag.refresh">Aggiorna</button>
+          <button type="button" class="btn btn-sm" id="btnDiagExport" data-i18n="diag.export">Esporta report JSON…</button>
+        </div>
+        <div id="diagStatus" class="diag-status hint" role="status" aria-live="polite"></div>
+        <div id="diagWarnings" class="diag-section" role="region" aria-labelledby="diagWarningsTitle">
+          <div class="diag-section-title" id="diagWarningsTitle" data-i18n="diag.section.warnings">Avvisi</div>
+          <ul id="diagWarningsList" class="diag-warnings-list"></ul>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.build">Build / runtime</div>
+          <dl id="diagBuild" class="diag-dl"></dl>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.ops">Modalità operative</div>
+          <dl id="diagOps" class="diag-dl"></dl>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.browserStorage">Storage browser</div>
+          <dl id="diagBrowserStorage" class="diag-dl"></dl>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.mainStore">Store principale</div>
+          <dl id="diagMainStore" class="diag-dl"></dl>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.tiles">Cache tile (IndexedDB)</div>
+          <dl id="diagTiles" class="diag-dl"></dl>
+          <div id="diagTilesByLayerWrap" class="diag-table-wrap" hidden>
+            <table class="diag-table" id="diagTilesByLayer">
+              <thead><tr>
+                <th data-i18n="diag.col.layer">Layer</th>
+                <th data-i18n="diag.col.tiles">Tile</th>
+                <th data-i18n="diag.col.size">Dimensione</th>
+              </tr></thead>
+              <tbody id="diagTilesByLayerBody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="diag-section">
+          <div class="diag-section-title" data-i18n="diag.section.net">Eventi rete (sessione)</div>
+          <div id="diagNetEmpty" class="hint" hidden data-i18n="diag.net.empty">Nessun evento rete registrato in questa sessione.</div>
+          <div id="diagNetWrap" class="diag-table-wrap" hidden>
+            <table class="diag-table" id="diagNetTable">
+              <thead><tr>
+                <th data-i18n="diag.col.host">Host</th>
+                <th data-i18n="diag.col.kind">Tipo</th>
+                <th data-i18n="diag.col.count">N.</th>
+                <th data-i18n="diag.col.ok">OK</th>
+                <th data-i18n="diag.col.last">Ultimo</th>
+              </tr></thead>
+              <tbody id="diagNetBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </details>
+
     <details id="sec-astro" data-tab-key="astro">
       <summary data-i18n="sec.astro">Alba / tramonto / luna (locale)</summary>
       <div class="section-body">
@@ -11722,6 +11813,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <span class="tool-desc" data-i18n="tools.session.desc">Backup di preferiti, cronologia, impostazioni.</span>
         </span>
       </button>
+      <button type="button" class="tool-item tool-item--gis-grid-dup" data-tool-target-sec="sec.diagnostics">
+        <span class="tool-ico">🩺</span>
+        <span class="tool-label">
+          <span data-i18n="tools.diagnostics">Diagnostica runtime</span>
+          <span class="tool-desc" data-i18n="tools.diagnostics.desc">Build, storage, cache tile e rete (solo lettura).</span>
+        </span>
+      </button>
     </div>
 
     <div class="tools-group">
@@ -11750,6 +11848,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="tools-menu-btn" data-tool="session">
           <span class="tmb-ico" aria-hidden="true">💾</span>
           <span class="tmb-lbl" data-i18n="sec.session">Sessione</span>
+        </button>
+        <button type="button" class="tools-menu-btn" data-tool="diagnostics">
+          <span class="tmb-ico" aria-hidden="true">🩺</span>
+          <span class="tmb-lbl" data-i18n="sec.diagnostics.short">Diagnostica</span>
         </button>
         <button type="button" class="tools-menu-btn" data-tool="astro">
           <span class="tmb-ico" aria-hidden="true">☀</span>
@@ -13536,6 +13638,71 @@ const I18N = {
     "tip.sessionImport":"Carica un file di sessione esportato in precedenza",
     "session.imported":"Sessione importata.",
     "session.badJson":"File JSON non valido o non riconosciuto.",
+    "sec.diagnostics":"Diagnostica runtime",
+    "sec.diagnostics.short":"Diagnostica",
+    "tools.diagnostics":"Diagnostica runtime",
+    "tools.diagnostics.desc":"Build, storage, cache tile e rete (solo lettura).",
+    "diag.hint":"Lettura locale di build, storage, cache tile e rete (sessione). Nessun dato operativo completo né invio esterno.",
+    "diag.refresh":"Aggiorna",
+    "diag.export":"Esporta report JSON…",
+    "diag.loading":"Aggiornamento metriche…",
+    "diag.updated":"Aggiornato: {0}",
+    "diag.error":"Impossibile aggiornare le metriche.",
+    "diag.exportNeedRefresh":"Aggiorna prima le metriche.",
+    "diag.exportDone":"Report JSON scaricato.",
+    "diag.section.warnings":"Avvisi",
+    "diag.section.build":"Build / runtime",
+    "diag.section.ops":"Modalità operative",
+    "diag.section.browserStorage":"Storage browser",
+    "diag.section.mainStore":"Store principale",
+    "diag.section.tiles":"Cache tile (IndexedDB)",
+    "diag.section.net":"Eventi rete (sessione)",
+    "diag.col.layer":"Layer",
+    "diag.col.tiles":"Tile",
+    "diag.col.size":"Dimensione",
+    "diag.col.host":"Host",
+    "diag.col.kind":"Tipo",
+    "diag.col.count":"N.",
+    "diag.col.ok":"OK",
+    "diag.col.last":"Ultimo",
+    "diag.net.empty":"Nessun evento rete registrato in questa sessione.",
+    "diag.na":"Non disponibile",
+    "diag.yes":"Sì",
+    "diag.no":"No",
+    "diag.label.buildId":"Build ID",
+    "diag.label.buildNum":"Build n.",
+    "diag.label.buildDetail":"Dettaglio",
+    "diag.label.location":"Percorso",
+    "diag.label.userAgent":"User agent",
+    "diag.label.lang":"Lingua",
+    "diag.label.forceOffline":"Offline forzato",
+    "diag.label.opsec":"OPSEC strict",
+    "diag.label.navOnline":"navigator.onLine",
+    "diag.label.effectiveOnline":"Effettivamente online",
+    "diag.label.mapLayer":"Layer mappa",
+    "diag.label.mapZoom":"Zoom",
+    "diag.label.secure":"Contesto sicuro",
+    "diag.label.consentNav":"Consenso proxy Navionics",
+    "diag.label.consentGsat":"Consenso Google Satellite",
+    "diag.label.consentBing":"Consenso Bing",
+    "diag.label.storageUsage":"Utilizzo",
+    "diag.label.storageQuota":"Quota",
+    "diag.label.storagePct":"Percentuale",
+    "diag.label.storeKey":"Chiave",
+    "diag.label.storeBytes":"Dimensione stimata",
+    "diag.label.storeUiBytes":"UI layout (stimata)",
+    "diag.label.entities":"Conteggi (solo numeri)",
+    "diag.label.tilesTotal":"Tile totali",
+    "diag.label.tilesBytes":"Byte tile",
+    "diag.label.tilesOther":"Altre voci IDB",
+    "diag.warn.storageUnavailable":"Stima storage browser non disponibile.",
+    "diag.warn.quotaHigh":"Utilizzo storage elevato (>{0}%).",
+    "diag.warn.opsecOn":"OPSEC strict attivo — rete sensibile bloccata.",
+    "diag.warn.offlineForced":"Offline forzato — solo tile in cache.",
+    "diag.warn.tilesUnavailable":"Statistiche cache tile non disponibili.",
+    "diag.warn.netEmpty":"Nessun evento rete in questa sessione.",
+    "diag.warn.fileProtocol":"App aperta da file:// — geolocalizzazione e alcune funzioni possono essere limitate.",
+    "diag.warn.none":"Nessun avviso.",
     "sec.astro":"Alba / tramonto / luna (locale)",
     "astro.hint":"Orari del Sole (cielo scuro) e della Luna, senza rete. LMT* = semplice correzione con longitudine/15°.",
     "astro.date":"Data (calendario)",
@@ -15244,6 +15411,71 @@ const I18N = {
     "tip.sessionImport":"Load a previously exported session file",
     "session.imported":"Session imported.",
     "session.badJson":"Invalid or unrecognized JSON file.",
+    "sec.diagnostics":"Runtime diagnostics",
+    "sec.diagnostics.short":"Diagnostics",
+    "tools.diagnostics":"Runtime diagnostics",
+    "tools.diagnostics.desc":"Build, storage, tile cache and network (read-only).",
+    "diag.hint":"Local readout of build, storage, tile cache and session network events. No full operational data or external upload.",
+    "diag.refresh":"Refresh",
+    "diag.export":"Export JSON report…",
+    "diag.loading":"Refreshing metrics…",
+    "diag.updated":"Updated: {0}",
+    "diag.error":"Could not refresh metrics.",
+    "diag.exportNeedRefresh":"Refresh metrics first.",
+    "diag.exportDone":"JSON report downloaded.",
+    "diag.section.warnings":"Warnings",
+    "diag.section.build":"Build / runtime",
+    "diag.section.ops":"Operational modes",
+    "diag.section.browserStorage":"Browser storage",
+    "diag.section.mainStore":"Main store",
+    "diag.section.tiles":"Tile cache (IndexedDB)",
+    "diag.section.net":"Network events (session)",
+    "diag.col.layer":"Layer",
+    "diag.col.tiles":"Tiles",
+    "diag.col.size":"Size",
+    "diag.col.host":"Host",
+    "diag.col.kind":"Kind",
+    "diag.col.count":"Count",
+    "diag.col.ok":"OK",
+    "diag.col.last":"Last",
+    "diag.net.empty":"No network events recorded this session.",
+    "diag.na":"Not available",
+    "diag.yes":"Yes",
+    "diag.no":"No",
+    "diag.label.buildId":"Build ID",
+    "diag.label.buildNum":"Build no.",
+    "diag.label.buildDetail":"Detail",
+    "diag.label.location":"Location",
+    "diag.label.userAgent":"User agent",
+    "diag.label.lang":"Language",
+    "diag.label.forceOffline":"Forced offline",
+    "diag.label.opsec":"OPSEC strict",
+    "diag.label.navOnline":"navigator.onLine",
+    "diag.label.effectiveOnline":"Effectively online",
+    "diag.label.mapLayer":"Map layer",
+    "diag.label.mapZoom":"Zoom",
+    "diag.label.secure":"Secure context",
+    "diag.label.consentNav":"Navionics proxy consent",
+    "diag.label.consentGsat":"Google Satellite consent",
+    "diag.label.consentBing":"Bing consent",
+    "diag.label.storageUsage":"Usage",
+    "diag.label.storageQuota":"Quota",
+    "diag.label.storagePct":"Percentage",
+    "diag.label.storeKey":"Key",
+    "diag.label.storeBytes":"Estimated size",
+    "diag.label.storeUiBytes":"UI layout (est.)",
+    "diag.label.entities":"Counts (numbers only)",
+    "diag.label.tilesTotal":"Total tiles",
+    "diag.label.tilesBytes":"Tile bytes",
+    "diag.label.tilesOther":"Other IDB entries",
+    "diag.warn.storageUnavailable":"Browser storage estimate not available.",
+    "diag.warn.quotaHigh":"High storage usage (>{0}%).",
+    "diag.warn.opsecOn":"OPSEC strict on — sensitive network blocked.",
+    "diag.warn.offlineForced":"Forced offline — cached tiles only.",
+    "diag.warn.tilesUnavailable":"Tile cache statistics not available.",
+    "diag.warn.netEmpty":"No network events this session.",
+    "diag.warn.fileProtocol":"Opened via file:// — geolocation and some features may be limited.",
+    "diag.warn.none":"No warnings.",
     "sec.astro":"Sun / moon (site)",
     "astro.hint":"Sun and moon times, network-free. LMT* = simple longitude/15° offset.",
     "astro.date":"Date",
@@ -16898,6 +17130,71 @@ const I18N = {
     "tip.sessionImport":"Charger un fichier exporté",
     "session.imported":"Session importée.",
     "session.badJson":"Fichier JSON invalide ou non reconnu.",
+    "sec.diagnostics":"Diagnostic runtime",
+    "sec.diagnostics.short":"Diagnostic",
+    "tools.diagnostics":"Diagnostic runtime",
+    "tools.diagnostics.desc":"Build, stockage, cache tuiles et réseau (lecture seule).",
+    "diag.hint":"Lecture locale du build, stockage, cache tuiles et réseau (session). Aucune donnée opérationnelle complète ni envoi externe.",
+    "diag.refresh":"Actualiser",
+    "diag.export":"Exporter rapport JSON…",
+    "diag.loading":"Actualisation des métriques…",
+    "diag.updated":"Actualisé : {0}",
+    "diag.error":"Impossible d'actualiser les métriques.",
+    "diag.exportNeedRefresh":"Actualisez d'abord les métriques.",
+    "diag.exportDone":"Rapport JSON téléchargé.",
+    "diag.section.warnings":"Avertissements",
+    "diag.section.build":"Build / runtime",
+    "diag.section.ops":"Modes opérationnels",
+    "diag.section.browserStorage":"Stockage navigateur",
+    "diag.section.mainStore":"Store principal",
+    "diag.section.tiles":"Cache tuiles (IndexedDB)",
+    "diag.section.net":"Événements réseau (session)",
+    "diag.col.layer":"Couche",
+    "diag.col.tiles":"Tuiles",
+    "diag.col.size":"Taille",
+    "diag.col.host":"Hôte",
+    "diag.col.kind":"Type",
+    "diag.col.count":"N.",
+    "diag.col.ok":"OK",
+    "diag.col.last":"Dernier",
+    "diag.net.empty":"Aucun événement réseau enregistré cette session.",
+    "diag.na":"Non disponible",
+    "diag.yes":"Oui",
+    "diag.no":"Non",
+    "diag.label.buildId":"ID build",
+    "diag.label.buildNum":"N° build",
+    "diag.label.buildDetail":"Détail",
+    "diag.label.location":"Chemin",
+    "diag.label.userAgent":"User agent",
+    "diag.label.lang":"Langue",
+    "diag.label.forceOffline":"Hors ligne forcé",
+    "diag.label.opsec":"OPSEC strict",
+    "diag.label.navOnline":"navigator.onLine",
+    "diag.label.effectiveOnline":"Effectivement en ligne",
+    "diag.label.mapLayer":"Couche carte",
+    "diag.label.mapZoom":"Zoom",
+    "diag.label.secure":"Contexte sécurisé",
+    "diag.label.consentNav":"Consentement proxy Navionics",
+    "diag.label.consentGsat":"Consentement Google Satellite",
+    "diag.label.consentBing":"Consentement Bing",
+    "diag.label.storageUsage":"Utilisation",
+    "diag.label.storageQuota":"Quota",
+    "diag.label.storagePct":"Pourcentage",
+    "diag.label.storeKey":"Clé",
+    "diag.label.storeBytes":"Taille estimée",
+    "diag.label.storeUiBytes":"Disposition UI (est.)",
+    "diag.label.entities":"Comptes (nombres seuls)",
+    "diag.label.tilesTotal":"Tuiles totales",
+    "diag.label.tilesBytes":"Octets tuiles",
+    "diag.label.tilesOther":"Autres entrées IDB",
+    "diag.warn.storageUnavailable":"Estimation stockage navigateur indisponible.",
+    "diag.warn.quotaHigh":"Utilisation stockage élevée (>{0}%).",
+    "diag.warn.opsecOn":"OPSEC strict actif — réseau sensible bloqué.",
+    "diag.warn.offlineForced":"Hors ligne forcé — tuiles en cache seulement.",
+    "diag.warn.tilesUnavailable":"Statistiques cache tuiles indisponibles.",
+    "diag.warn.netEmpty":"Aucun événement réseau cette session.",
+    "diag.warn.fileProtocol":"Ouvert via file:// — géolocalisation et certaines fonctions peuvent être limitées.",
+    "diag.warn.none":"Aucun avertissement.",
     "sec.astro":"Lever / coucher (site)",
     "astro.hint":"Soleil et lune, sans réseau. LMT* = décalage simple λ/15°.",
     "astro.date":"Date",
@@ -18484,7 +18781,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 22;
+const APP_BUILD_NUM = 23;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -40137,6 +40434,411 @@ function saveStoreMetaFields(){
   state.reportClass = a("printClass").trim().slice(0, 80);
   saveStore();
 }
+// #region JS — RUNTIME DIAGNOSTICS (MAJOR-1, read-only)
+let _diagLastSnapshot = null;
+let _diagPanelWired = false;
+const DIAG_QUOTA_WARN_PCT = 85;
+
+function diagFormatBytes(bytes){
+  const n = Number(bytes);
+  if (!Number.isFinite(n) || n < 0) return t("diag.na");
+  if (n === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  let v = n, u = 0;
+  while (v >= 1024 && u < units.length - 1){ v /= 1024; u++; }
+  const loc = (state.lang === "fr") ? "fr-FR" : (state.lang === "it") ? "it-IT" : "en-US";
+  const dec = (u === 0) ? 0 : (v < 10 ? 2 : 1);
+  return v.toLocaleString(loc, { maximumFractionDigits: dec, minimumFractionDigits: dec }) + " " + units[u];
+}
+
+function diagBoolLabel(v){ return v ? t("diag.yes") : t("diag.no"); }
+
+function diagIsTileStorageKey(key){
+  if (!key || typeof key !== "string") return false;
+  return /^[^:]+:\d+\/\d+\/\d+$/.test(key);
+}
+
+function diagEstimateLocalStorageKeyBytes(key){
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw == null) return 0;
+    return new Blob([raw]).size;
+  } catch(_){ return null; }
+}
+
+async function diagGetBrowserStorageEstimate(){
+  try {
+    if (!navigator.storage || typeof navigator.storage.estimate !== "function"){
+      return { available: false };
+    }
+    const est = await navigator.storage.estimate();
+    const usage = Number(est.usage);
+    const quota = Number(est.quota);
+    const out = { available: true };
+    if (Number.isFinite(usage)) out.usage = usage;
+    if (Number.isFinite(quota)) out.quota = quota;
+    if (Number.isFinite(usage) && Number.isFinite(quota) && quota > 0){
+      out.pct = Math.round((usage / quota) * 1000) / 10;
+    }
+    return out;
+  } catch(_){
+    return { available: false, error: true };
+  }
+}
+
+async function diagScanTileCacheStats(){
+  if (!window.indexedDB) return { available: false };
+  try {
+    const db = await getTileDB();
+    return await new Promise((res, rej) => {
+      let totalTiles = 0, totalBytes = 0, otherEntries = 0;
+      const byLayer = {};
+      const tx = db.transaction(TILE_IDB.store, "readonly");
+      const req = tx.objectStore(TILE_IDB.store).openCursor();
+      req.onsuccess = (ev) => {
+        const cursor = ev.target.result;
+        if (!cursor){
+          res({ available: true, totalTiles, totalBytes, otherEntries, byLayer });
+          return;
+        }
+        const key = cursor.key;
+        const val = cursor.value;
+        let bufLen = 0;
+        const buf = val && val.b;
+        if (buf && typeof buf.byteLength === "number" && Number.isFinite(buf.byteLength)) bufLen = buf.byteLength;
+        if (diagIsTileStorageKey(key)){
+          totalTiles++;
+          totalBytes += bufLen;
+          const lid = parseTileKeyLayerId(key) || "?";
+          if (!byLayer[lid]) byLayer[lid] = { tiles: 0, bytes: 0 };
+          byLayer[lid].tiles++;
+          byLayer[lid].bytes += bufLen;
+        } else {
+          otherEntries++;
+        }
+        cursor.continue();
+      };
+      req.onerror = () => rej(req.error);
+      tx.onerror = () => rej(tx.error);
+    });
+  } catch(_){
+    return { available: false, error: true };
+  }
+}
+
+function diagCollectNetEventsForReport(){
+  ensureNetEventsStore();
+  const rows = [];
+  if (!(state._netEvents instanceof Map)) return rows;
+  state._netEvents.forEach((v, host) => {
+    if (!host) return;
+    rows.push({
+      host: String(host).slice(0, 120),
+      kind: String(v.kind || "tile").slice(0, 24),
+      count: Number(v.count) || 0,
+      ok: !!v.ok,
+      lastAt: Number(v.lastAt) || 0
+    });
+  });
+  rows.sort((a, b) => (b.lastAt - a.lastAt) || (b.count - a.count));
+  return rows.slice(0, 200);
+}
+
+function diagSanitizeLocationForReport(){
+  try {
+    const loc = window.location;
+    if (!loc) return "";
+    const proto = String(loc.protocol || "");
+    if (proto === "file:") return "file://local";
+    const host = String(loc.host || "");
+    const path = String(loc.pathname || "").slice(0, 200);
+    return (proto + "//" + host + path).slice(0, 240);
+  } catch(_){ return ""; }
+}
+
+function diagAbbrevUserAgent(){
+  try {
+    const ua = String(navigator.userAgent || "");
+    if (!ua) return "";
+    return ua.length > 120 ? ua.slice(0, 117) + "\u2026" : ua;
+  } catch(_){ return ""; }
+}
+
+function diagCollectOperationalState(){
+  const layerId = sanitizeMapLayer(state.mapLayer || "osm");
+  let layerLabel = layerId;
+  try { layerLabel = mapLayerHudLabel() || layerId; } catch(_){}
+  return {
+    forceOffline: !!state.forceOffline,
+    opsecStrict: !!state.opsecStrict,
+    navigatorOnLine: (typeof navigator.onLine === "boolean") ? navigator.onLine : null,
+    effectivelyOnline: (typeof isEffectivelyOnline === "function") ? !!isEffectivelyOnline() : null,
+    mapLayerId: layerId,
+    mapLayerLabel: String(layerLabel || "").slice(0, 80),
+    mapZoom: Number.isFinite(state.mapZoom) ? state.mapZoom : null,
+    secureContext: !!(window.isSecureContext),
+    isFileProtocol: (function(){ try { return window.location.protocol === "file:"; } catch(_){ return false; } })()
+  };
+}
+
+function diagCollectConsents(){
+  return {
+    navProxy: !!state._navProxyConsentGranted,
+    gsat: !!state._gsatConsentGranted,
+    bing: !!state._bingConsentGranted
+  };
+}
+
+function diagCountEntities(){
+  return {
+    waypoints: (state.mapWaypoints || []).length,
+    savedTracks: (state.savedTracks || []).length,
+    gisPolygons: (state.gisPolygons || []).length,
+    gisTracks: (state.gisTracks || []).length,
+    namedAreas: (state.namedAreas || []).length,
+    rangeRingSets: (state.rangeRingSets || []).length,
+    favorites: (state.favorites || []).length
+  };
+}
+
+function diagFormatEntityCounts(entities){
+  if (!entities || typeof entities !== "object") return t("diag.na");
+  const parts = [];
+  const push = (k, label) => {
+    const n = Number(entities[k]);
+    if (Number.isFinite(n)) parts.push(label + ": " + n);
+  };
+  push("waypoints", "wp");
+  push("savedTracks", "trk");
+  push("gisPolygons", "poly");
+  push("gisTracks", "gisTrk");
+  push("namedAreas", "areas");
+  push("rangeRingSets", "rr");
+  push("favorites", "fav");
+  return parts.join(", ") || t("diag.na");
+}
+
+function diagComputeWarnings(snap){
+  const w = [];
+  const bs = snap.browserStorage || {};
+  if (!bs.available) w.push({ key: "storageUnavailable", level: "info" });
+  else if (Number.isFinite(bs.pct) && bs.pct >= DIAG_QUOTA_WARN_PCT){
+    w.push({ key: "quotaHigh", level: "warn", arg: String(DIAG_QUOTA_WARN_PCT) });
+  }
+  const op = snap.operational || {};
+  if (op.opsecStrict) w.push({ key: "opsecOn", level: "warn" });
+  if (op.forceOffline) w.push({ key: "offlineForced", level: "info" });
+  const tc = snap.tileCache || {};
+  if (!tc.available || tc.error) w.push({ key: "tilesUnavailable", level: "info" });
+  if (!snap.netEvents || !snap.netEvents.length) w.push({ key: "netEmpty", level: "info" });
+  if (op.isFileProtocol) w.push({ key: "fileProtocol", level: "warn" });
+  if (!w.length) w.push({ key: "none", level: "info" });
+  return w;
+}
+
+async function diagCollectSnapshot(){
+  const collectedAt = new Date().toISOString();
+  const storageEst = await diagGetBrowserStorageEstimate();
+  const tileStats = await diagScanTileCacheStats();
+  const mainStoreBytes = diagEstimateLocalStorageKeyBytes(STORAGE_KEY);
+  const uiStoreBytes = diagEstimateLocalStorageKeyBytes(UI_STORAGE_KEY);
+  const entities = diagCountEntities();
+  const snap = {
+    kind: "goi-gis-diagnostics",
+    version: 1,
+    collectedAt,
+    build: {
+      id: APP_BUILD_ID,
+      num: APP_BUILD_NUM,
+      detail: APP_BUILD_DETAIL,
+      label: APP_BUILD_ID + " · build " + APP_BUILD_NUM
+    },
+    runtime: {
+      location: diagSanitizeLocationForReport(),
+      userAgent: diagAbbrevUserAgent(),
+      lang: state.lang || "it"
+    },
+    operational: diagCollectOperationalState(),
+    consents: diagCollectConsents(),
+    browserStorage: storageEst,
+    mainStore: {
+      key: STORAGE_KEY,
+      bytes: mainStoreBytes,
+      entities
+    },
+    uiStore: { key: UI_STORAGE_KEY, bytes: uiStoreBytes },
+    tileCache: tileStats,
+    netEvents: diagCollectNetEventsForReport(),
+    warnings: []
+  };
+  snap.warnings = diagComputeWarnings(snap);
+  return snap;
+}
+
+function diagRenderDl(root, pairs){
+  if (!root) return;
+  root.textContent = "";
+  pairs.forEach(([dtKey, val]) => {
+    const dt = document.createElement("dt");
+    dt.textContent = t(dtKey);
+    const dd = document.createElement("dd");
+    dd.textContent = (val == null || val === "") ? t("diag.na") : String(val);
+    root.appendChild(dt);
+    root.appendChild(dd);
+  });
+}
+
+function diagFormatTs(ms){
+  const n = Number(ms);
+  if (!Number.isFinite(n) || n <= 0) return t("diag.na");
+  try {
+    const loc = (state.lang === "fr") ? "fr-FR" : (state.lang === "it") ? "it-IT" : "en-US";
+    return new Date(n).toLocaleString(loc);
+  } catch(_){ return new Date(n).toISOString(); }
+}
+
+function diagRenderSnapshot(snap){
+  if (!snap) return;
+  diagRenderDl(document.getElementById("diagBuild"), [
+    ["diag.label.buildId", snap.build && snap.build.id],
+    ["diag.label.buildNum", snap.build && snap.build.num],
+    ["diag.label.buildDetail", snap.build && snap.build.detail],
+    ["diag.label.location", snap.runtime && snap.runtime.location],
+    ["diag.label.userAgent", snap.runtime && snap.runtime.userAgent],
+    ["diag.label.lang", snap.runtime && snap.runtime.lang]
+  ]);
+  const op = snap.operational || {};
+  const cons = snap.consents || {};
+  diagRenderDl(document.getElementById("diagOps"), [
+    ["diag.label.forceOffline", diagBoolLabel(op.forceOffline)],
+    ["diag.label.opsec", diagBoolLabel(op.opsecStrict)],
+    ["diag.label.navOnline", op.navigatorOnLine == null ? t("diag.na") : diagBoolLabel(op.navigatorOnLine)],
+    ["diag.label.effectiveOnline", op.effectivelyOnline == null ? t("diag.na") : diagBoolLabel(op.effectivelyOnline)],
+    ["diag.label.mapLayer", (op.mapLayerLabel || op.mapLayerId || "") + (op.mapLayerId ? " (" + op.mapLayerId + ")" : "")],
+    ["diag.label.mapZoom", op.mapZoom],
+    ["diag.label.secure", diagBoolLabel(op.secureContext)],
+    ["diag.label.consentNav", diagBoolLabel(cons.navProxy)],
+    ["diag.label.consentGsat", diagBoolLabel(cons.gsat)],
+    ["diag.label.consentBing", diagBoolLabel(cons.bing)]
+  ]);
+  const bs = snap.browserStorage || {};
+  diagRenderDl(document.getElementById("diagBrowserStorage"), [
+    ["diag.label.storageUsage", bs.available && Number.isFinite(bs.usage) ? diagFormatBytes(bs.usage) : t("diag.na")],
+    ["diag.label.storageQuota", bs.available && Number.isFinite(bs.quota) ? diagFormatBytes(bs.quota) : t("diag.na")],
+    ["diag.label.storagePct", bs.available && Number.isFinite(bs.pct) ? (bs.pct + "%") : t("diag.na")]
+  ]);
+  const ms = snap.mainStore || {};
+  diagRenderDl(document.getElementById("diagMainStore"), [
+    ["diag.label.storeKey", ms.key],
+    ["diag.label.storeBytes", ms.bytes == null ? t("diag.na") : diagFormatBytes(ms.bytes)],
+    ["diag.label.storeUiBytes", snap.uiStore && snap.uiStore.bytes != null ? diagFormatBytes(snap.uiStore.bytes) : t("diag.na")],
+    ["diag.label.entities", diagFormatEntityCounts(ms.entities)]
+  ]);
+  const tc = snap.tileCache || {};
+  diagRenderDl(document.getElementById("diagTiles"), [
+    ["diag.label.tilesTotal", tc.available ? String(tc.totalTiles || 0) : t("diag.na")],
+    ["diag.label.tilesBytes", tc.available ? diagFormatBytes(tc.totalBytes || 0) : t("diag.na")],
+    ["diag.label.tilesOther", tc.available ? String(tc.otherEntries || 0) : t("diag.na")]
+  ]);
+  const layerWrap = document.getElementById("diagTilesByLayerWrap");
+  const layerBody = document.getElementById("diagTilesByLayerBody");
+  if (layerBody && layerWrap){
+    layerBody.textContent = "";
+    const entries = (tc.available && tc.byLayer) ? Object.entries(tc.byLayer) : [];
+    entries.sort((a, b) => (b[1].bytes - a[1].bytes) || (b[1].tiles - a[1].tiles));
+    const top = entries.slice(0, 14);
+    if (top.length){
+      layerWrap.hidden = false;
+      top.forEach(([lid, st]) => {
+        const tr = document.createElement("tr");
+        const td0 = document.createElement("td"); td0.textContent = lid;
+        const td1 = document.createElement("td"); td1.textContent = String(st.tiles || 0);
+        const td2 = document.createElement("td"); td2.textContent = diagFormatBytes(st.bytes || 0);
+        tr.append(td0, td1, td2);
+        layerBody.appendChild(tr);
+      });
+    } else {
+      layerWrap.hidden = true;
+    }
+  }
+  const netRows = snap.netEvents || [];
+  const netWrap = document.getElementById("diagNetWrap");
+  const netEmpty = document.getElementById("diagNetEmpty");
+  const netBody = document.getElementById("diagNetBody");
+  if (netBody && netWrap && netEmpty){
+    netBody.textContent = "";
+    if (!netRows.length){
+      netWrap.hidden = true;
+      netEmpty.hidden = false;
+    } else {
+      netEmpty.hidden = true;
+      netWrap.hidden = false;
+      netRows.forEach((row) => {
+        const tr = document.createElement("tr");
+        const td0 = document.createElement("td"); td0.textContent = row.host;
+        const td1 = document.createElement("td"); td1.textContent = row.kind;
+        const td2 = document.createElement("td"); td2.textContent = String(row.count);
+        const td3 = document.createElement("td"); td3.textContent = diagBoolLabel(row.ok);
+        const td4 = document.createElement("td"); td4.textContent = diagFormatTs(row.lastAt);
+        tr.append(td0, td1, td2, td3, td4);
+        netBody.appendChild(tr);
+      });
+    }
+  }
+  const warnList = document.getElementById("diagWarningsList");
+  if (warnList){
+    warnList.textContent = "";
+    (snap.warnings || []).forEach((w) => {
+      const li = document.createElement("li");
+      li.className = "diag-warn-item" + (w.level === "warn" ? " is-warn" : " is-info");
+      const msgKey = "diag.warn." + w.key;
+      let msg = t(msgKey);
+      if (w.arg != null) msg = msg.replace("{0}", w.arg);
+      li.textContent = msg;
+      warnList.appendChild(li);
+    });
+  }
+}
+
+async function diagRefreshPanel(){
+  const status = document.getElementById("diagStatus");
+  if (status) status.textContent = t("diag.loading");
+  try {
+    const snap = await diagCollectSnapshot();
+    _diagLastSnapshot = snap;
+    diagRenderSnapshot(snap);
+    if (status){
+      const loc = (state.lang === "fr") ? "fr-FR" : (state.lang === "it") ? "it-IT" : "en-US";
+      const when = new Date(snap.collectedAt).toLocaleString(loc);
+      status.textContent = t("diag.updated").replace("{0}", when);
+    }
+  } catch(_){
+    if (status) status.textContent = t("diag.error");
+  }
+}
+
+function diagExportReport(){
+  const status = document.getElementById("diagStatus");
+  if (!_diagLastSnapshot){
+    if (status) status.textContent = t("diag.exportNeedRefresh");
+    return;
+  }
+  const ts = String(_diagLastSnapshot.collectedAt || "").replace(/[:.]/g, "-").slice(0, 19);
+  const fname = "goi-gis-diagnostics-" + APP_BUILD_ID + "-b" + APP_BUILD_NUM + "-" + ts + ".json";
+  downloadBlob(JSON.stringify(_diagLastSnapshot, null, 2), fname, "application/json;charset=utf-8");
+  if (status) status.textContent = t("diag.exportDone");
+}
+
+function diagEnsurePanelWired(){
+  if (_diagPanelWired) return;
+  _diagPanelWired = true;
+  const btnRef = document.getElementById("btnDiagRefresh");
+  const btnExp = document.getElementById("btnDiagExport");
+  if (btnRef) btnRef.addEventListener("click", (ev) => { ev.preventDefault(); diagRefreshPanel(); });
+  if (btnExp) btnExp.addEventListener("click", (ev) => { ev.preventDefault(); diagExportReport(); });
+}
+// #endregion JS — RUNTIME DIAGNOSTICS
+
 function getSessionExportObject(){
   return {
     coordconvSession: 1,
@@ -43338,6 +44040,7 @@ function bindUI(){
     r.onload = () => { try { importSessionObject(JSON.parse(r.result)); } catch(_){ showError(t("session.badJson")); } };
     r.readAsText(f, "utf-8");
   });
+  diagEnsurePanelWired();
 
   const bAst = document.getElementById("btnAstro");
   if (bAst) bAst.addEventListener("click", runAstroUI);
@@ -43987,6 +44690,7 @@ const GIS_TOOL_SECTIONS = Object.freeze({
   batch:   "sec-batch",
   notes:   "sec-notes",
   session: "sec-session",
+  diagnostics: "sec-diagnostics",
   astro:   "sec-astro",
   mag:     "sec-mag",
   rangerings: "sec-rangerings"
@@ -52614,6 +53318,9 @@ function activateToolPanel(tool){
   if (tool === "rangerings"){
     try { if (typeof renderRangeRingsPanel === "function") renderRangeRingsPanel(); } catch(_){}
   }
+  if (tool === "diagnostics"){
+    try { diagEnsurePanelWired(); diagRefreshPanel(); } catch(_){}
+  }
 }
 
 /** Sync drawer/modal titles after a language change. */
@@ -52690,7 +53397,7 @@ function gisNavigateToolTarget(targetId, i18nKey){
     const byKey = {
       "sec.track":"track", "sec.measure":"measure", "sec.favorites":"favorites",
       "sec.history":"history", "sec.batch":"batch", "sec.notes":"notes",
-      "sec.session":"session", "sec.astro":"astro", "sec.mag":"mag", "sec.rangerings":"rangerings"
+      "sec.session":"session", "sec.diagnostics":"diagnostics", "sec.astro":"astro", "sec.mag":"mag", "sec.rangerings":"rangerings"
     }[i18nKey];
     if (byKey){
       if (GIS_VALID_TABS.includes(byKey)) tabKey = byKey;
