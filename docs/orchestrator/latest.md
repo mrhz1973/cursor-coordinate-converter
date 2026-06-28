@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-A CLOSED / PASS end-to-end:** commit task runtime **`61bcda5`** — resize pilota Preferiti + HUD `#gisMapHud` + cleanup rename bar; build 16; deploy GIS-only PASS (byte **2426256**, SHA **`26845901…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-A PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`61bcda5`**; blob **`5bf008d7…`**; prossimo: estensione resize / HUD avanzato; inbox **`2026-06-28_1035_riepilogo_finito-sessione.md`**.
+
 2026-06-28 — **`finito` sessione — METHOD-QA-PASS-AUTO-FINITO CLOSED / PASS docs-only:** commit task **`11cdb1f`** — chiusura formale `finito`; OM §7 + WU roadmap + HANDOFF seed aggiornati; blocco metodo già implementato in **`78ea6c9`**/**`bacabef`**; monolite invariato blob **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo: bundle runtime da backlog; inbox **`2026-06-28_0250_riepilogo_finito-sessione.md`**.
 
 2026-06-28 — **METHOD-QA-PASS-AUTO-FINITO codificato (docs/rules-only):** commit task **`78ea6c9`** — regola «QA-PASS AUTO-INNESCA FINITO»: nei prompt bundle runtime la riga `QA <BLOCK-ID> PASS operatore` innesca automaticamente la coda `finito` pre-autorizzata (chiusura docs + autosync); elimina giro separato «ora lancia finito»; Regola H OM §4; template coda in QA-CHECKLIST + OM §4; aggiornati `README.md`, `.cursor/rules/30-output-workflow.mdc`, `HANDOFF.md`; **nessun runtime/deploy**; monolite invariato blob **`71e353ee…`** @ runtime live **`7b8cf04`** build 15; inbox **`2026-06-28_0235_riepilogo_method-qa-pass-auto-finito.md`**.
