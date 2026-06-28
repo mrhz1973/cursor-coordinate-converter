@@ -2,8 +2,8 @@
 <html lang="it" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>GIS Tool/Converter · B6.6B</title>
+<meta name="application-name" content="GOI GIS Tool">
+<title>GOI GIS Tool · B5.5Z</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -6244,7 +6244,7 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   border-radius:0;
   box-shadow:none;
 }
-/* UX-NEXT-RUNTIME-BUNDLE-A/B/C: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
+/* UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
 body.gis-mode #gisMapMount > #gisMapHud{
   position:absolute;
   top:auto; left:auto; right:auto; bottom:auto;
@@ -6306,6 +6306,10 @@ body.gis-mode #gisMapHud .gis-map-hud-btn{
 body.gis-mode #gisMapHud .gis-map-hud-btn:hover{
   background:rgba(30,41,59,.78);
 }
+body.gis-mode #gisMapHud .gis-map-hud-btn:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+}
 body.gis-mode #gisMapHud .gis-map-hud-chip{
   font-size:.68rem;
   line-height:1.35;
@@ -6323,34 +6327,49 @@ body.gis-mode #gisMapHud .gis-map-hud-chip.is-warn{
   border-color:rgba(251,191,36,.45);
   background:rgba(69,26,3,.78);
 }
-body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]){
+body.gis-mode #gisMapHud .gis-map-hud-chip.is-status{
+  font-weight:600;
+  letter-spacing:.02em;
+}
+body.gis-mode #gisMapHud .gis-map-hud-chip.is-muted{
+  opacity:.88;
+  font-size:.64rem;
+}
+body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]):not([data-hud="layer-short"]){
+  display:none;
+}
+body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip[data-hud="layer"]{
+  display:none;
+}
+body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip[data-hud="build"]{
   display:none;
 }
 @media (max-width:600px){
   body.gis-mode #gisMapMount > #gisMapHud{
-    max-width:calc(100vw - 108px);
+    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 96px);
     gap:3px;
   }
   body.gis-mode #gisMapHud.is-corner-tl{
     top:calc(env(safe-area-inset-top, 0px) + 4px);
-    left:calc(env(safe-area-inset-left, 0px) + 4px);
+    left:calc(env(safe-area-inset-left, 0px) + 6px);
   }
   body.gis-mode #gisMapHud.is-corner-tr{
     top:calc(env(safe-area-inset-top, 0px) + 4px);
-    right:calc(env(safe-area-inset-right, 0px) + 56px);
-    max-width:calc(100vw - 120px);
+    right:calc(env(safe-area-inset-right, 0px) + 58px);
+    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 112px);
   }
   body.gis-mode #gisMapHud.is-corner-bl{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
-    left:calc(env(safe-area-inset-left, 0px) + 4px);
-    max-width:calc(100vw - 88px);
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
+    left:calc(env(safe-area-inset-left, 0px) + 6px);
+    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 80px);
   }
   body.gis-mode #gisMapHud.is-corner-br{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
-    right:calc(env(safe-area-inset-right, 0px) + 4px);
-    max-width:calc(100vw - 88px);
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
+    right:calc(env(safe-area-inset-right, 0px) + 6px);
+    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 80px);
   }
   body.gis-mode #gisMapHud .gis-map-hud-chip{ font-size:.62rem; padding:1px 6px; }
+  body.gis-mode #gisMapHud .gis-map-hud-btn{ min-width:24px; min-height:22px; }
 }
 
 /* Tab drawer: right-side panel, slides in when a tab is active.
@@ -8200,7 +8219,7 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="sw"],
 #favoritesPanel .gis-panel-resize-handle[data-handle="sw"],
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
-/* UX-NEXT-RUNTIME-BUNDLE-A/B/C: lateral width resize (e/w). */
+/* UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: lateral width resize (e/w) — shared helper gisPanelAttachResize. */
 #favoritesPanel .gis-panel-resize-handle[data-handle="e"],
 #polygonPanel .gis-panel-resize-handle[data-handle="e"],
 #layersPanel .gis-panel-resize-handle[data-handle="e"],
@@ -8289,8 +8308,36 @@ dialog.track-modal.app-modal{
   #measurePanel .gis-panel-resize-handle[data-handle="w"],
   #helpOverlay .gis-panel-resize-handle[data-handle="w"],
   #waypointModal .gis-panel-resize-handle[data-handle="w"]{
-    width:18px; height:56px;
+    width:20px; height:60px;
   }
+}
+body.gis-mode dialog.is-panel-resizing,
+body.gis-mode #favoritesPanel.is-panel-resizing,
+body.gis-mode #polygonPanel.is-panel-resizing,
+body.gis-mode #layersPanel.is-panel-resizing,
+body.gis-mode #searchPanel.is-panel-resizing,
+body.gis-mode #rangeRingsPanel.is-panel-resizing,
+body.gis-mode #measurePanel.is-panel-resizing,
+body.gis-mode #helpOverlay.is-panel-resizing,
+body.gis-mode #waypointModal.is-panel-resizing,
+body.gis-mode #trackModal.is-panel-resizing{
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
+    var(--shadow-elevated, 0 12px 32px rgba(0,0,0,.35));
+}
+.gis-panel-resize-handle[data-handle="e"]:focus-visible,
+.gis-panel-resize-handle[data-handle="w"]:focus-visible,
+#trackModal .track-resize-handle[data-handle="e"]:focus-visible,
+#trackModal .track-resize-handle[data-handle="w"]:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:-1px;
+}
+/* Floating GIS panels: contain horizontal scroll in body during resize polish. */
+body.gis-mode #favoritesPanel .app-modal-body,
+body.gis-mode #searchPanel .app-modal-body,
+body.gis-mode #layersPanel .app-modal-body,
+body.gis-mode #measurePanel .app-modal-body,
+body.gis-mode #rangeRingsPanel .app-modal-body{
+  overflow-x:hidden;
 }
 .gis-panel-resize-handle:hover,
 #trackModal .track-resize-handle:hover{ background:color-mix(in srgb, var(--accent) 7%, transparent); }
@@ -9468,7 +9515,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div class="header-start-spacer" aria-hidden="true"></div>
     <div class="brand">
       <h1 class="brand-title">
-        <span class="brand-main" data-i18n="app.titleMain">GIS Tool/Converter</span>
+        <span class="brand-main" data-i18n="app.titleMain">GOI GIS Tool</span>
         <span class="brand-by" data-i18n="app.titleBy">by</span>
         <span class="brand-signature" data-i18n="app.titleSig">Marty</span>
       </h1>
@@ -11978,9 +12025,9 @@ window.SunCalc = SunCalc;
 /* ========================= SECTION 1: I18N ========================= */
 const I18N = {
   it: {
-    "app.title":"GIS Tool/Converter by Marty",
-    "app.titleBase":"GIS Tool/Converter by",
-    "app.titleMain":"GIS Tool/Converter",
+    "app.title":"GOI GIS Tool by Marty",
+    "app.titleBase":"GOI GIS Tool by",
+    "app.titleMain":"GOI GIS Tool",
     "app.titleBy":"by",
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
@@ -12866,7 +12913,7 @@ const I18N = {
     "tip.polygonPanel.listShow":"Centra la mappa sul poligono.",
     "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
-    "tip.panelResizeEW":"Trascina il bordo per ridimensionare la larghezza",
+    "tip.panelResizeEW":"Trascina il bordo per ridimensionare la larghezza. Doppio clic per ripristinare.",
     "gis.hud.aria":"Stato mappa",
     "gis.hud.layer":"Layer",
     "gis.hud.zoom":"Zoom",
@@ -12879,6 +12926,9 @@ const I18N = {
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Ripristina HUD",
     "gis.hud.toolbar":"Controlli HUD",
+    "gis.hud.build":"Build",
+    "gis.hud.offlineForced":"Offline forzato",
+    "gis.hud.opsecOn":"OPSEC attivo",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
     "tip.zoomIn":"Zoom avanti",
@@ -13669,9 +13719,9 @@ const I18N = {
     "batch.locTip":"Ogni riga valida invierà una query a Nominatim (~1/sec). Rispetta la usage policy."
   },
   en: {
-    "app.title":"GIS Tool/Converter by Marty",
-    "app.titleBase":"GIS Tool/Converter by",
-    "app.titleMain":"GIS Tool/Converter",
+    "app.title":"GOI GIS Tool by Marty",
+    "app.titleBase":"GOI GIS Tool by",
+    "app.titleMain":"GOI GIS Tool",
     "app.titleBy":"by",
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
@@ -14556,7 +14606,7 @@ const I18N = {
     "tip.polygonPanel.listShow":"Center the map on the polygon.",
     "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
-    "tip.panelResizeEW":"Drag edge to resize panel width",
+    "tip.panelResizeEW":"Drag edge to resize panel width. Double-click to reset.",
     "gis.hud.aria":"Map status",
     "gis.hud.layer":"Layer",
     "gis.hud.zoom":"Zoom",
@@ -14569,6 +14619,9 @@ const I18N = {
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Reset HUD",
     "gis.hud.toolbar":"HUD controls",
+    "gis.hud.build":"Build",
+    "gis.hud.offlineForced":"Forced offline",
+    "gis.hud.opsecOn":"OPSEC on",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
     "tip.zoomIn":"Zoom in",
@@ -15360,9 +15413,9 @@ const I18N = {
     "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy."
   },
   fr: {
-    "app.title":"GIS Tool/Converter by Marty",
-    "app.titleBase":"GIS Tool/Converter by",
-    "app.titleMain":"GIS Tool/Converter",
+    "app.title":"GOI GIS Tool by Marty",
+    "app.titleBase":"GOI GIS Tool by",
+    "app.titleMain":"GOI GIS Tool",
     "app.titleBy":"by",
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
@@ -16209,7 +16262,7 @@ const I18N = {
     "tip.polygonPanel.visibility":"Afficher ou masquer le polygone sur la carte.",
     "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
-    "tip.panelResizeEW":"Faites glisser le bord pour redimensionner la largeur",
+    "tip.panelResizeEW":"Faites glisser le bord pour redimensionner la largeur. Double-clic pour réinitialiser.",
     "gis.hud.aria":"État carte",
     "gis.hud.layer":"Couche",
     "gis.hud.zoom":"Zoom",
@@ -16222,6 +16275,9 @@ const I18N = {
     "gis.hud.seamarks":"Seamarks",
     "gis.hud.reset":"Réinitialiser HUD",
     "gis.hud.toolbar":"Contrôles HUD",
+    "gis.hud.build":"Build",
+    "gis.hud.offlineForced":"Hors ligne forcé",
+    "gis.hud.opsecOn":"OPSEC actif",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
     "tip.zoomIn":"Zoom avant",
@@ -18308,12 +18364,12 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 18;
+const APP_BUILD_NUM = 19;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
     const buildDisp = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
-    document.title = "GIS Tool/Converter · " + buildDisp;
+    document.title = "GOI GIS Tool · " + buildDisp;
     const foot = document.getElementById("appBuildFooter");
     if (foot) foot.textContent = buildDisp;
     const about = document.getElementById("appBuildAbout");
@@ -43841,18 +43897,42 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
-/** UX-NEXT-RUNTIME-BUNDLE-A/B/C: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
+/** UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
 const GIS_MAP_HUD_CORNERS = ["tl", "tr", "br", "bl"];
 const GIS_MAP_HUD_DEFAULT_CORNER = "tl";
+/** Session layout keys for panels with e/w lateral resize (gisPanelAttachResize). */
+const GIS_PANEL_EW_RESIZE_KEYS = Object.freeze([
+  "favorites", "polygon", "layers", "search", "track", "rangeRings", "measure", "help", "waypoints"
+]);
 let _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
 let _gisMapHudCompact = false;
 function gisMapHudResetDefaults(){
   _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
   _gisMapHudCompact = false;
 }
+function formatHudCenterCompact(lat, lon){
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo)) return "";
+  const latStr = Math.abs(la).toFixed(3) + "°" + (la >= 0 ? "N" : "S");
+  const lonStr = Math.abs(lo).toFixed(3) + "°" + (lo >= 0 ? "E" : "W");
+  return latStr + " " + lonStr;
+}
 function mapLayerHudLabel(){
   const layer = sanitizeMapLayer(state.mapLayer || "osm");
-  try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return layer; }
+  try { return offlineLayerSelectLabel(layer); } catch(_){
+    try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return String(layer || ""); }
+  }
+}
+function mapLayerHudLabelShort(){
+  const full = mapLayerHudLabel();
+  if (!full) return "";
+  let s = String(full)
+    .replace(/\s*\(OpenStreetMap\)/gi, "")
+    .replace(/OpenStreetMap/gi, "OSM")
+    .replace(/Humanitarian/gi, "HOT")
+    .trim();
+  if (s.length > 18) s = s.slice(0, 16) + "…";
+  return s || full.slice(0, 16);
 }
 function applyGisMapHudChrome(hud){
   if (!hud) return;
@@ -43888,6 +43968,9 @@ function applyGisMapHudI18n(hud){
     resetBtn.setAttribute("aria-label", lbl);
     resetBtn.title = lbl;
   }
+  hud.querySelectorAll(".gis-map-hud-btn").forEach((btn) => {
+    if (!btn.getAttribute("aria-label") && btn.title) btn.setAttribute("aria-label", btn.title);
+  });
   hud.querySelectorAll(".gis-map-hud-chip[data-hud-tip]").forEach((chip) => {
     const tip = chip.getAttribute("data-hud-tip");
     if (tip){
@@ -43970,20 +44053,25 @@ function updateGisMapHud(zoomOverride){
   if (!chipsWrap) return;
   const layerKey = (typeof t === "function" ? t("gis.hud.layer") : "") || "Layer";
   const layerLbl = mapLayerHudLabel();
+  const layerShort = mapLayerHudLabelShort();
   const z = Number.isFinite(zoomOverride) ? zoomOverride : (state.mapZoom || 11);
   const zoomKey = (typeof t === "function" ? t("gis.hud.zoom") : "") || "Zoom";
   const layerTip = layerKey + ": " + layerLbl;
+  const layerShortTip = layerTip;
   const zoomTip = zoomKey + " " + String(z);
   const chips = [
     `<span class="gis-map-hud-chip" data-hud="layer" data-hud-tip="${esc(layerTip)}">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
+    `<span class="gis-map-hud-chip" data-hud="layer-short" data-hud-tip="${esc(layerShortTip)}">${esc(layerShort)}</span>`,
     `<span class="gis-map-hud-chip" data-hud="zoom" data-hud-tip="${esc(zoomTip)}">${esc(zoomKey)} ${esc(String(z))}</span>`
   ];
   if (!_gisMapHudCompact){
     const vc = state.viewCenter;
     if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
       const ck = (typeof t === "function" ? t("gis.hud.center") : "") || "Center";
-      const centerTip = ck + " " + vc.lat.toFixed(5) + ", " + vc.lon.toFixed(5);
-      chips.push(`<span class="gis-map-hud-chip" data-hud="center" data-hud-tip="${esc(centerTip)}">${esc(ck)} ${esc(vc.lat.toFixed(5))}, ${esc(vc.lon.toFixed(5))}</span>`);
+      const centerFull = vc.lat.toFixed(5) + ", " + vc.lon.toFixed(5);
+      const centerCompact = formatHudCenterCompact(vc.lat, vc.lon);
+      const centerTip = ck + " " + centerFull;
+      chips.push(`<span class="gis-map-hud-chip" data-hud="center" data-hud-tip="${esc(centerTip)}">${esc(ck)} ${esc(centerCompact)}</span>`);
     }
     if (state.showSeamarks){
       const smLbl = (typeof t === "function" ? t("gis.hud.seamarks") : "") || "Seamarks";
@@ -43991,13 +44079,17 @@ function updateGisMapHud(zoomOverride){
       chips.push(`<span class="gis-map-hud-chip${blocked ? " is-warn" : ""}" data-hud="seamarks" data-hud-tip="${esc(smLbl)}">${esc(smLbl)}</span>`);
     }
     if (state.forceOffline){
-      const offLbl = (typeof t === "function" ? t("gis.hud.offline") : "") || "Offline";
-      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline" data-hud-tip="${esc(offLbl)}">${esc(offLbl)}</span>`);
+      const offLbl = (typeof t === "function" ? t("gis.hud.offlineForced") : "") || "Forced offline";
+      chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="offline" data-hud-tip="${esc(offLbl)}">⛔ ${esc(offLbl)}</span>`);
     }
     if (state.opsecStrict){
-      const opLbl = (typeof t === "function" ? t("gis.hud.opsec") : "") || "OPSEC";
-      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec" data-hud-tip="${esc(opLbl)}">${esc(opLbl)}</span>`);
+      const opLbl = (typeof t === "function" ? t("gis.hud.opsecOn") : "") || "OPSEC on";
+      chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="opsec" data-hud-tip="${esc(opLbl)}">🔒 ${esc(opLbl)}</span>`);
     }
+    const buildKey = (typeof t === "function" ? t("gis.hud.build") : "") || "Build";
+    const buildDisp = APP_BUILD_ID + " · " + APP_BUILD_NUM;
+    const buildTip = buildKey + " " + buildDisp;
+    chips.push(`<span class="gis-map-hud-chip is-muted" data-hud="build" data-hud-tip="${esc(buildTip)}">${esc(buildDisp)}</span>`);
   }
   chipsWrap.innerHTML = chips.join("");
   applyGisMapHudI18n(hud);
@@ -45444,6 +45536,33 @@ function gisPanelDefaultRect(root, opts){
   const top = Math.max(pad, vh - h - pad);
   return gisPanelClampRect({ left, top, w, h }, { pad, minW, minH, maxW, maxH });
 }
+/** UX-NEXT-RUNTIME-BUNDLE-D: session-only reset of panel width from e/w handles (double-click). */
+function gisPanelResetEwWidth(root, opts, handle){
+  if (!root) return;
+  opts = opts || {};
+  const key = opts.key || "";
+  const br = root.getBoundingClientRect();
+  const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
+  const minW0 = Number.isFinite(opts.minW) ? opts.minW : GIS_PANEL_DEFAULTS.minW;
+  const vw = window.innerWidth;
+  const narrow = vw <= 600;
+  const minW = narrow ? Math.min(minW0, Math.max(260, vw - 40)) : minW0;
+  const maxW = Math.max(minW, vw - pad * 2);
+  const defaultW = Number.isFinite(opts.defaultW) ? opts.defaultW : GIS_PANEL_DEFAULTS.defaultW;
+  const w = Math.min(maxW, Math.max(minW, defaultW));
+  let left = br.left;
+  if (handle === "w") left = br.left + br.width - w;
+  const clampOpts = Object.assign({}, opts, { pad, minW, minH: br.height, maxW, maxH: br.height });
+  const rect = Number.isFinite(opts.partialMinVisible)
+    ? gisPanelClampRectPartialVisible({ left, top: br.top, w, h: br.height }, clampOpts)
+    : gisPanelClampRect({ left, top: br.top, w, h: br.height }, clampOpts);
+  root.style.left = rect.left + "px";
+  root.style.width = rect.w + "px";
+  root.style.right = "auto";
+  gisPanelSetLayout(key, { left: rect.left, top: br.top, w: rect.w, h: br.height, touched: false }, opts);
+  try { gisPanelSyncBodySize(root, opts); } catch(_){}
+  try { if (typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
+}
 function gisPanelApplyLayout(root, opts){
   opts = opts || {};
   if (!root) return null;
@@ -45577,14 +45696,23 @@ function gisPanelAttachResize(root, opts){
   if (!handles.length) return;
   const TH = Number.isFinite(opts.threshold) ? opts.threshold : 3;
   const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
-  const minW = Number.isFinite(opts.minW) ? opts.minW : GIS_PANEL_DEFAULTS.minW;
+  const minW0 = Number.isFinite(opts.minW) ? opts.minW : GIS_PANEL_DEFAULTS.minW;
   const minH = Number.isFinite(opts.minH) ? opts.minH : GIS_PANEL_DEFAULTS.minH;
+  const resolveMinW = () => {
+    const vw = window.innerWidth;
+    if (vw <= 600) return Math.min(minW0, Math.max(260, vw - 40));
+    return minW0;
+  };
   let down = null;
   let moved = false;
+  const setResizing = (on) => {
+    try { root.classList.toggle("is-panel-resizing", !!on); } catch(_){}
+  };
   const clean = () => {
     document.removeEventListener("pointermove", onMove, true);
     document.removeEventListener("pointerup", onUp, true);
     document.removeEventListener("pointercancel", onUp, true);
+    setResizing(false);
   };
   function onMove(ev){
     if (!down || ev.pointerId !== down.pid) return;
@@ -45593,6 +45721,7 @@ function gisPanelAttachResize(root, opts){
     moved = true;
     if (ev.cancelable) ev.preventDefault();
     const vw = window.innerWidth, vh = window.innerHeight;
+    const minW = resolveMinW();
     const maxW = Math.max(minW, vw - pad * 2);
     const maxH = Math.max(minH, vh - pad * 2);
     let L = down.startL, T = down.startT;
@@ -45656,6 +45785,21 @@ function gisPanelAttachResize(root, opts){
     moved = false;
   }
   handles.forEach(h => {
+    const handleId = (h.getAttribute("data-handle") || h.getAttribute("data-panel-resize") || "se");
+    if ((handleId === "e" || handleId === "w") && typeof t === "function"){
+      const tip = t("tip.panelResizeEW");
+      if (tip){
+        h.setAttribute("title", tip);
+        if (h.hasAttribute("data-i18n-aria")) h.setAttribute("aria-label", tip);
+      }
+    }
+    h.addEventListener("dblclick", (ev) => {
+      const hid = (h.getAttribute("data-handle") || "");
+      if (hid !== "e" && hid !== "w") return;
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      try { gisPanelResetEwWidth(root, opts, hid); } catch(_){}
+    }, true);
     h.addEventListener("pointerdown", (ev) => {
       if (ev.pointerType === "mouse" && ev.button !== 0) return;
       try { gisPanelBringToFront(root, opts); } catch(_){}
@@ -45669,10 +45813,11 @@ function gisPanelAttachResize(root, opts){
         startL: br.left, startT: br.top,
         pid: ev.pointerId,
         rectified: !!(root.style.left || root.style.top),
-        handle: (h.getAttribute("data-handle") || h.getAttribute("data-panel-resize") || "se"),
+        handle: handleId,
         handleEl: h
       };
       moved = false;
+      setResizing(true);
       try { h.setPointerCapture(ev.pointerId); } catch(_){}
       document.addEventListener("pointermove", onMove, true);
       document.addEventListener("pointerup", onUp, true);
