@@ -6244,18 +6244,67 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   border-radius:0;
   box-shadow:none;
 }
-/* UX-NEXT-RUNTIME-BUNDLE-A: compact GIS status HUD (layer/zoom/offline/OPSEC). */
+/* UX-NEXT-RUNTIME-BUNDLE-A/B: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact). */
 body.gis-mode #gisMapMount > #gisMapHud{
   position:absolute;
+  top:auto; left:auto; right:auto; bottom:auto;
+  z-index:11;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:flex-start;
+  gap:4px;
+  max-width:min(92vw, 480px);
+  pointer-events:none;
+}
+body.gis-mode #gisMapHud.is-corner-tl{
   top:calc(env(safe-area-inset-top, 0px) + 6px);
   left:calc(env(safe-area-inset-left, 0px) + 8px);
-  z-index:11;
+}
+body.gis-mode #gisMapHud.is-corner-tr{
+  top:calc(env(safe-area-inset-top, 0px) + 6px);
+  right:calc(env(safe-area-inset-right, 0px) + 52px);
+  left:auto;
+}
+body.gis-mode #gisMapHud.is-corner-bl{
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 48px);
+  left:calc(env(safe-area-inset-left, 0px) + 8px);
+  top:auto;
+}
+body.gis-mode #gisMapHud.is-corner-br{
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);
+  right:calc(env(safe-area-inset-right, 0px) + 8px);
+  top:auto;
+  left:auto;
+}
+body.gis-mode #gisMapHud .gis-map-hud-toolbar{
+  display:flex;
+  flex:0 0 auto;
+  gap:2px;
+  pointer-events:auto;
+}
+body.gis-mode #gisMapHud .gis-map-hud-chips{
   display:flex;
   flex-wrap:wrap;
   align-items:center;
   gap:4px;
-  max-width:min(92vw, 440px);
   pointer-events:none;
+  min-width:0;
+}
+body.gis-mode #gisMapHud .gis-map-hud-btn{
+  pointer-events:auto;
+  font-size:.62rem;
+  line-height:1.2;
+  padding:2px 6px;
+  min-width:22px;
+  min-height:20px;
+  border-radius:6px;
+  border:1px solid rgba(148,163,184,.35);
+  background:rgba(15,23,42,.55);
+  color:#cbd5e1;
+  cursor:pointer;
+}
+body.gis-mode #gisMapHud .gis-map-hud-btn:hover{
+  background:rgba(30,41,59,.78);
 }
 body.gis-mode #gisMapHud .gis-map-hud-chip{
   font-size:.68rem;
@@ -6274,12 +6323,25 @@ body.gis-mode #gisMapHud .gis-map-hud-chip.is-warn{
   border-color:rgba(251,191,36,.45);
   background:rgba(69,26,3,.78);
 }
+body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]){
+  display:none;
+}
 @media (max-width:600px){
   body.gis-mode #gisMapMount > #gisMapHud{
+    max-width:calc(100vw - 96px);
+    gap:3px;
+  }
+  body.gis-mode #gisMapHud.is-corner-tl{
     top:calc(env(safe-area-inset-top, 0px) + 4px);
     left:calc(env(safe-area-inset-left, 0px) + 4px);
-    max-width:calc(100vw - 88px);
-    gap:3px;
+  }
+  body.gis-mode #gisMapHud.is-corner-tr{
+    top:calc(env(safe-area-inset-top, 0px) + 4px);
+    right:calc(env(safe-area-inset-right, 0px) + 44px);
+  }
+  body.gis-mode #gisMapHud.is-corner-bl{
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 44px);
+    left:calc(env(safe-area-inset-left, 0px) + 4px);
   }
   body.gis-mode #gisMapHud .gis-map-hud-chip{ font-size:.62rem; padding:1px 6px; }
 }
@@ -8131,17 +8193,33 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="sw"],
 #favoritesPanel .gis-panel-resize-handle[data-handle="sw"],
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
-/* UX-NEXT-RUNTIME-BUNDLE-A: lateral width resize pilot — #favoritesPanel only. */
-#favoritesPanel .gis-panel-resize-handle[data-handle="e"]{
+/* UX-NEXT-RUNTIME-BUNDLE-A/B: lateral width resize (e/w). */
+#favoritesPanel .gis-panel-resize-handle[data-handle="e"],
+#polygonPanel .gis-panel-resize-handle[data-handle="e"],
+#layersPanel .gis-panel-resize-handle[data-handle="e"],
+#searchPanel .gis-panel-resize-handle[data-handle="e"],
+#trackModal .track-resize-handle[data-handle="e"]{
   right:0; top:50%; transform:translateY(-50%);
   width:14px; height:48px; cursor:ew-resize;
 }
-#favoritesPanel .gis-panel-resize-handle[data-handle="w"]{
+#favoritesPanel .gis-panel-resize-handle[data-handle="w"],
+#polygonPanel .gis-panel-resize-handle[data-handle="w"],
+#layersPanel .gis-panel-resize-handle[data-handle="w"],
+#searchPanel .gis-panel-resize-handle[data-handle="w"],
+#trackModal .track-resize-handle[data-handle="w"]{
   left:0; top:50%; transform:translateY(-50%);
   width:14px; height:48px; cursor:ew-resize;
 }
 #favoritesPanel .gis-panel-resize-handle[data-handle="e"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="w"]::after{
+#favoritesPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#polygonPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#polygonPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#layersPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#layersPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#searchPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#searchPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#trackModal .track-resize-handle[data-handle="e"]::after,
+#trackModal .track-resize-handle[data-handle="w"]::after{
   content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
   width:3px; height:18px; border-radius:2px;
   background:var(--gis-grip-stroke, rgba(255,255,255,.72));
@@ -10906,6 +10984,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="favoritesPanel" class="app-modal favorites-panel" aria-labelledby="favoritesPanelTitle" aria-modal="false">
@@ -10942,6 +11022,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="measurePanel" class="app-modal measure-panel" aria-labelledby="measurePanelTitle" aria-modal="false">
@@ -11122,6 +11204,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="polygonVertexCoordDialog" class="app-modal polygon-vertex-coord-dialog" aria-labelledby="polygonVertexCoordDialogTitle" aria-modal="true">
@@ -11367,6 +11451,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="track-resize-handle h-ne" data-role="track-modal-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="track-resize-handle h-sw" data-role="track-modal-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="track-resize-handle h-se" data-role="track-modal-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="track-resize-handle h-w" data-role="track-modal-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="track-resize-handle h-e" data-role="track-modal-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <footer>
@@ -12712,6 +12798,11 @@ const I18N = {
     "gis.hud.zoom":"Zoom",
     "gis.hud.offline":"Solo offline",
     "gis.hud.opsec":"OPSEC strict",
+    "gis.hud.cornerCycle":"Cambia posizione HUD",
+    "gis.hud.compact":"Comprimi HUD",
+    "gis.hud.expand":"Espandi HUD",
+    "gis.hud.center":"Centro",
+    "gis.hud.seamarks":"Seamarks",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
     "tip.zoomIn":"Zoom avanti",
@@ -14397,6 +14488,11 @@ const I18N = {
     "gis.hud.zoom":"Zoom",
     "gis.hud.offline":"Offline only",
     "gis.hud.opsec":"OPSEC strict",
+    "gis.hud.cornerCycle":"Cycle HUD position",
+    "gis.hud.compact":"Collapse HUD",
+    "gis.hud.expand":"Expand HUD",
+    "gis.hud.center":"Center",
+    "gis.hud.seamarks":"Seamarks",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
     "tip.zoomIn":"Zoom in",
@@ -16045,6 +16141,11 @@ const I18N = {
     "gis.hud.zoom":"Zoom",
     "gis.hud.offline":"Hors ligne seul",
     "gis.hud.opsec":"OPSEC strict",
+    "gis.hud.cornerCycle":"Changer position HUD",
+    "gis.hud.compact":"Réduire HUD",
+    "gis.hud.expand":"Développer HUD",
+    "gis.hud.center":"Centre",
+    "gis.hud.seamarks":"Seamarks",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
     "tip.zoomIn":"Zoom avant",
@@ -18131,7 +18232,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 16;
+const APP_BUILD_NUM = 17;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -43664,10 +43765,38 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
-/** UX-NEXT-RUNTIME-BUNDLE-A: compact map status HUD (layer/zoom/offline/OPSEC). */
+/** UX-NEXT-RUNTIME-BUNDLE-A/B: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact). */
+const GIS_MAP_HUD_CORNERS = ["tl", "tr", "br", "bl"];
+let _gisMapHudCorner = "tl";
+let _gisMapHudCompact = false;
 function mapLayerHudLabel(){
   const layer = sanitizeMapLayer(state.mapLayer || "osm");
   try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return layer; }
+}
+function applyGisMapHudChrome(hud){
+  if (!hud) return;
+  hud.classList.remove("is-corner-tl", "is-corner-tr", "is-corner-br", "is-corner-bl", "is-compact");
+  hud.classList.add("is-corner-" + (_gisMapHudCorner || "tl"));
+  if (_gisMapHudCompact) hud.classList.add("is-compact");
+}
+function applyGisMapHudI18n(hud){
+  if (!hud) return;
+  const aria = (typeof t === "function" ? t("gis.hud.aria") : "") || "Map status";
+  hud.setAttribute("aria-label", aria);
+  const cornerBtn = hud.querySelector('[data-role="gis-hud-corner"]');
+  const compactBtn = hud.querySelector('[data-role="gis-hud-compact"]');
+  if (cornerBtn && typeof t === "function"){
+    const lbl = t("gis.hud.cornerCycle");
+    cornerBtn.setAttribute("aria-label", lbl);
+    cornerBtn.title = lbl;
+  }
+  if (compactBtn && typeof t === "function"){
+    const key = _gisMapHudCompact ? "gis.hud.expand" : "gis.hud.compact";
+    const lbl = t(key);
+    compactBtn.setAttribute("aria-label", lbl);
+    compactBtn.title = lbl;
+    compactBtn.textContent = _gisMapHudCompact ? "+" : "−";
+  }
 }
 function gisEnsureMapHud(){
   if (!document.body.classList.contains("gis-mode")) return null;
@@ -43679,9 +43808,45 @@ function gisEnsureMapHud(){
     hud.id = "gisMapHud";
     hud.setAttribute("role", "status");
     hud.setAttribute("aria-live", "polite");
-    const aria = (typeof t === "function" ? t("gis.hud.aria") : "") || "Map status";
-    hud.setAttribute("aria-label", aria);
+    const toolbar = document.createElement("div");
+    toolbar.className = "gis-map-hud-toolbar";
+    toolbar.setAttribute("role", "group");
+    const cornerBtn = document.createElement("button");
+    cornerBtn.type = "button";
+    cornerBtn.className = "gis-map-hud-btn";
+    cornerBtn.setAttribute("data-role", "gis-hud-corner");
+    cornerBtn.textContent = "⊞";
+    cornerBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      const idx = GIS_MAP_HUD_CORNERS.indexOf(_gisMapHudCorner);
+      _gisMapHudCorner = GIS_MAP_HUD_CORNERS[(idx + 1) % GIS_MAP_HUD_CORNERS.length];
+      applyGisMapHudChrome(hud);
+      applyGisMapHudI18n(hud);
+    });
+    const compactBtn = document.createElement("button");
+    compactBtn.type = "button";
+    compactBtn.className = "gis-map-hud-btn";
+    compactBtn.setAttribute("data-role", "gis-hud-compact");
+    compactBtn.textContent = "−";
+    compactBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      _gisMapHudCompact = !_gisMapHudCompact;
+      applyGisMapHudChrome(hud);
+      applyGisMapHudI18n(hud);
+      try { updateGisMapHud(); } catch(_){}
+    });
+    toolbar.appendChild(cornerBtn);
+    toolbar.appendChild(compactBtn);
+    const chipsWrap = document.createElement("div");
+    chipsWrap.className = "gis-map-hud-chips";
+    chipsWrap.setAttribute("data-role", "gis-hud-chips");
+    hud.appendChild(toolbar);
+    hud.appendChild(chipsWrap);
     mount.appendChild(hud);
+    applyGisMapHudChrome(hud);
+    applyGisMapHudI18n(hud);
   }
   return hud;
 }
@@ -43689,6 +43854,8 @@ function updateGisMapHud(zoomOverride){
   if (!document.body.classList.contains("gis-mode")) return;
   const hud = gisEnsureMapHud();
   if (!hud) return;
+  const chipsWrap = hud.querySelector('[data-role="gis-hud-chips"]');
+  if (!chipsWrap) return;
   const layerKey = (typeof t === "function" ? t("gis.hud.layer") : "") || "Layer";
   const layerLbl = mapLayerHudLabel();
   const z = Number.isFinite(zoomOverride) ? zoomOverride : (state.mapZoom || 11);
@@ -43697,15 +43864,28 @@ function updateGisMapHud(zoomOverride){
     `<span class="gis-map-hud-chip" data-hud="layer">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
     `<span class="gis-map-hud-chip" data-hud="zoom">${esc(zoomKey)} ${esc(String(z))}</span>`
   ];
-  if (state.forceOffline){
-    const offLbl = (typeof t === "function" ? t("gis.hud.offline") : "") || "Offline";
-    chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline">${esc(offLbl)}</span>`);
+  if (!_gisMapHudCompact){
+    const vc = state.viewCenter;
+    if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
+      const ck = (typeof t === "function" ? t("gis.hud.center") : "") || "Center";
+      chips.push(`<span class="gis-map-hud-chip" data-hud="center">${esc(ck)} ${esc(vc.lat.toFixed(5))}, ${esc(vc.lon.toFixed(5))}</span>`);
+    }
+    if (state.showSeamarks){
+      const smLbl = (typeof t === "function" ? t("gis.hud.seamarks") : "") || "Seamarks";
+      const blocked = !!(state.forceOffline || state.opsecStrict);
+      chips.push(`<span class="gis-map-hud-chip${blocked ? " is-warn" : ""}" data-hud="seamarks">${esc(smLbl)}</span>`);
+    }
+    if (state.forceOffline){
+      const offLbl = (typeof t === "function" ? t("gis.hud.offline") : "") || "Offline";
+      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline">${esc(offLbl)}</span>`);
+    }
+    if (state.opsecStrict){
+      const opLbl = (typeof t === "function" ? t("gis.hud.opsec") : "") || "OPSEC";
+      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec">${esc(opLbl)}</span>`);
+    }
   }
-  if (state.opsecStrict){
-    const opLbl = (typeof t === "function" ? t("gis.hud.opsec") : "") || "OPSEC";
-    chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec">${esc(opLbl)}</span>`);
-  }
-  hud.innerHTML = chips.join("");
+  chipsWrap.innerHTML = chips.join("");
+  applyGisMapHudI18n(hud);
 }
 function gisInit(){
   if (_gisInitDone) return;
@@ -46535,7 +46715,7 @@ function attachTrackModalDrag(dlg){
     threshold: 4,
     draggingClass: "dragging",
     // Be conservative: same exclusions as before + general interactive elements.
-    ignoreSelector: "#trackModalClose,[data-role=\"trackmodal-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    ignoreSelector: "#trackModalClose,[data-role=\"trackmodal-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"track-modal-resize\"]"
   }));
   dlg._trackModalDragInstalled = true;
 }
@@ -46803,7 +46983,7 @@ function attachSearchPanelFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#searchPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    ignoreSelector: "#searchPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
@@ -47068,7 +47248,7 @@ function attachLayersPanelFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#layersPanelClose,[data-role=\"layerspanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    ignoreSelector: "#layersPanelClose,[data-role=\"layerspanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
