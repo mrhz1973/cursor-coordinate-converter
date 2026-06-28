@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-C CLOSED / PASS end-to-end:** commit task runtime **`8f56566`** — resize e/w Range Rings/Misura/Help/Waypoints + affordance resize + HUD polish/reset/i18n; build 18; deploy GIS-only PASS (byte **2440464**, SHA **`8ae47bdf…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-C PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`8f56566`**; prossimo: titolo `<title>` / polish audit; inbox **`2026-06-28_1130_riepilogo_finito-sessione.md`**.
+
 2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-B CLOSED / PASS end-to-end:** commit task runtime **`584135e`** — resize e/w Poligoni/Tracce/Offline/Cerca + HUD angolo/compatto/dati; build 17; deploy GIS-only PASS (byte **2434043**, SHA **`c303e69a…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-B PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`584135e`**; prossimo: resize pannelli residui; inbox **`2026-06-28_1105_riepilogo_finito-sessione.md`**.
 
 2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-A CLOSED / PASS end-to-end:** commit task runtime **`61bcda5`** — resize pilota Preferiti + HUD `#gisMapHud` + cleanup rename bar; build 16; deploy GIS-only PASS (byte **2426256**, SHA **`26845901…`**, CMP_PASS); **QA operatore PASS** («**QA UX-NEXT-RUNTIME-BUNDLE-A PASS operatore**»); trigger auto-`finito` Regola H; runtime VPS live **`61bcda5`**; blob **`5bf008d7…`**; prossimo: estensione resize / HUD avanzato; inbox **`2026-06-28_1035_riepilogo_finito-sessione.md`**.
