@@ -117,42 +117,45 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `584135e` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-B** — CLOSED / PASS end-to-end (build 17) |
+| HEAD remoto (verificato) | `8f56566` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-C** — CLOSED / PASS end-to-end (build 18) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `584135e1dc5840d15a212e5714805f8d94db85b2` |
-| Blob monolite (git) | `40f435685e473ebd2cd5e77995cc980b88c8a868` |
-| `APP_BUILD_NUM` | `17` |
-| Display runtime | `B5.5Z · build 17` |
+| Runtime live VPS | `8f56566557ef0ae9c5b740beed57eeaae630d784` |
+| Blob monolite (git) | `44a9ce09be9a977d304b41c152f35451d4110f8d` |
+| `APP_BUILD_NUM` | `18` |
+| Display runtime | `B5.5Z · build 18` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (resize 4 pannelli + HUD angolo/compatto/dati) |
+| UX-NEXT-RUNTIME-BUNDLE-C | **CLOSED / PASS end-to-end** (resize 4 pannelli residui + HUD polish/reset) |
+| UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=584135e` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=8f56566` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — resize pannelli flottanti residui; cleanup i18n cosmetico.
+**Da scegliere da roadmap/backlog** — titolo statico `<title>`; polish HUD/pannelli da audit.
 
 ---
 
 ## Backlog / note immediate
 
+### UX-NEXT-RUNTIME-BUNDLE-C — resize residui + HUD polish (runtime landed)
+
+- Resize e/w su **`#rangeRingsPanel`**, **`#measurePanel`**, **`#helpOverlay`**, **`#waypointModal`** (+ 5 pannelli da BUNDLE-A/B)
+- Affordance resize comune (handle/grip/hover/touch)
+- HUD: collision polish, tooltip/aria i18n, reset session-only `↺`
+- Cleanup i18n orphan `renameLabel`/`renameSave` **eseguito**
+
 ### UX-NEXT-RUNTIME-BUNDLE-B — resize multi-pannello + HUD (runtime landed)
 
 - Resize laterale e/w su **`#polygonPanel`**, **`#trackModal`**, **`#layersPanel`**, **`#searchPanel`** (+ Preferiti da BUNDLE-A)
 - HUD: 4 angoli session-only, modalità compatta, chip centro mappa + Seamarks
-- Pannelli flottanti residui senza e/w (Range Rings, Misura, Help) = backlog opzionale
 
 ### UX-NEXT-RUNTIME-BUNDLE-A — resize pilota + HUD (runtime landed)
 
-- Resize laterale **pilota** su `#favoritesPanel` (handle `e`/`w`) — esteso in BUNDLE-B ad altri 4 pannelli
+- Resize laterale **pilota** su `#favoritesPanel` (handle `e`/`w`) — esteso in BUNDLE-B/C
 - HUD leggero `#gisMapHud` (layer, zoom, offline/OPSEC warning) — sessione/transiente
 - Cleanup `#polygonPanelRenameBar` / `polygonHideRenameBar` **eseguito** (rename inline invariato)
-
-### Dead code candidato (non implementare ora)
-
-- Chiavi i18n orfane `gis.polygonPanel.renameLabel` / `renameSave` — cleanup cosmetico opzionale
 
 ---
 
