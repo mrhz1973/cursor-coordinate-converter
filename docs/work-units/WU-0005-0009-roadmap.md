@@ -320,6 +320,7 @@ Note operative:
   - **MODAL-STD-B2-FIX2 build 13 — CLOSED / PASS end-to-end:** runtime **`266b116`**, blob **`0f4d275e…`**, scroll `#favoritesPanelBody`, deploy GIS-only PASS, **QA operatore PASS**; display **`B5.5Z · build 13`**; superseded per runtime live da **BUNDLE-BACKLOG-B3** (`709079c`).
   - **BUNDLE-BACKLOG-B3 build 14 — CLOSED / PASS end-to-end:** runtime **`709079c`**, blob **`da27be43…`**, audit 4 candidati backlog; patch: rimossa `polygonShowRenameBar()`, guard P2 multi-touch vertex drag; non implementato: resize laterale, HUD, CSS legacy, `renderAllMaps`; review **NON RICHIESTA**, deploy GIS-only PASS (byte **2426501**, SHA **`ca0d74a6…`**, CMP_PASS), **QA operatore PASS** («**QA BUNDLE-BACKLOG-B3 PASS operatore**»); display **`B5.5Z · build 14`**; superseded per runtime live da **ROUTINE-CLEANUP-BUNDLE** (`7b8cf04`).
   - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
+  - **METHOD-QA-PASS-AUTO-FINITO — CLOSED / PASS docs-only (2026-06-28):** commit task **`78ea6c9`**, autosync **`bacabef`**; regola QA-PASS auto-innesca finito (OM §4 Regola H); template coda bundle; monolite invariato **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo bundle runtime con coda pre-autorizzata.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -1301,7 +1302,7 @@ Note:
 
 ### Backlog metodo — Adozione metodo / handoff discipline (post-catena 8d)
 
-**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`); **Fase F3 PASS** (`d69b100`).
+**Stato:** candidato backlog processo (non WU tecnica aperta; non runtime GIS; distinto da WU-0008 e WU-0009); **Blocco 0 PASS**; **Blocco B PASS** (`f2099c4`); **Fase C PASS** (`c691b8b`); **Fase D PASS** (`efaf77b`); **Fase E PASS** (`41411ec`); **Fase F1 PASS** (`5c59346`); **Fase F2 PASS** (`47b0016`); **Fase F3 PASS** (`d69b100`); **METHOD-BUNDLING-DEFAULT PASS** (`93f188a`, 2026-06-28); **METHOD-QA-PASS-AUTO-FINITO PASS** (`78ea6c9`/`bacabef`, 2026-06-28).
 
 **Fonte frozen per adozione metodo:** `mrhz1973/control-plane` `main` a SHA `df046f68867cdffcd350592a2781b53ce21ca8c0` (verificato con `git ls-remote https://github.com/mrhz1973/control-plane.git refs/heads/main`). Le fasi C–F copieranno/adatteranno forme operative da questo SHA; avanzare a uno SHA successivo richiede re-sync esplicito, non drift silenzioso.
 
