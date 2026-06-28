@@ -56,8 +56,10 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 - **Cursor write+commit = Agent+Auto** (Plan solo per diagnosi pura read-only).
 - Prompt Cursor: **pulito e unico**; indicazioni operatore **fuori** dal prompt.
 - **`finito`** = workflow interno a Cursor (non passo manuale operatore).
-- Nei blocchi già approvati: `finito` **condizionale in coda** al prompt quando applicabile.
+- Nei prompt **bundle** runtime: coda `finito` **pre-autorizzata**; trigger automatico = riga `QA <BLOCK-ID> PASS operatore` (OM §4 Regola H) — **non** chiedere «ora lancia finito» dopo QA PASS.
+- Nei blocchi non-bundle: `finito` **condizionale in coda** al prompt quando applicabile.
 - **Bundling di default (METHOD-BUNDLING-DEFAULT):** un bundle / un commit / una QA (≥5 item routine); gate solo a livello bundle; non frammentare micro-modifiche routine. Dettaglio: OM §4 Regola G.
+- **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** chiusura docs obbligatoria dopo QA PASS; cambia solo il trigger (automatico da attestazione). Dettaglio: OM §4 Regola H.
 
 ---
 
@@ -117,7 +119,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | --- | --- |
 | HEAD remoto (verificato) | `7b8cf04` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **ROUTINE-CLEANUP-BUNDLE** — CLOSED / PASS end-to-end |
-| Metodo vivo | **METHOD-BUNDLING-DEFAULT** — bundle-first (OM §4 Regola G) |
+| Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime live VPS | `7b8cf041383b55b80668a30ce12607a8888b774c` |
 | Blob monolite | `71e353ee85c15bf2713bc7998c72582f81723ec5` |
 | `APP_BUILD_NUM` | `15` |

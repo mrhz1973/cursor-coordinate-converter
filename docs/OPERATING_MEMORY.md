@@ -51,7 +51,7 @@
 - Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
 - Procedere per **bundle** coerenti (default METHOD-BUNDLING-DEFAULT); non frammentare il lavoro routine in micro-blocchi separati salvo categorie delicate (OM §4 Regola G).
 - Non toccare aree non correlate.
-- `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei blocchi già approvati è normalmente incluso nel prompt in forma **condizionale**, mentre resta separato e manuale per i blocchi delicati e gli altri casi elencati (vedi *Handoff & Close Discipline*, Regola A).
+- `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei prompt **bundle** runtime la coda `finito` è **pre-autorizzata** e si **innesca automaticamente** dalla riga `QA <BLOCK-ID> PASS operatore` (Regola H); resta manuale/non automatico per eccezioni in Regola A.
 - Nessun GPS silenzioso.
 - Nessun live tracking GPS senza decisione esplicita.
 - Modifiche runtime: commit separati — codice / docs operative / autosync.
@@ -65,15 +65,15 @@
 
 Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla manuale tra Cursor, GPT e Claude. Sostituisce integralmente ogni precedente catena fissa di revisione tra GPT, Claude e Cursor.
 
-**Regola A — `finito` condizionale nel prompt.** Ogni prompt Cursor relativo a un blocco **già approvato** include normalmente in coda la clausola:
+**Regola A — `finito` condizionale nel prompt (bundle: pre-autorizzato).** Ogni prompt Cursor **bundle runtime** già approvato include in coda la clausola `finito` **pre-autorizzata** (vedi **Regola H** e *Template coda prompt bundle* sotto). Per blocchi non-bundle o senza deploy/QA bundle, la clausola classica resta:
 
 > Se tutti i controlli statici risultano PASS e il diff resta nello scope dichiarato, esegui il workflow `finito`. Se un controllo fallisce o il diff esce dallo scope, NON eseguire `finito`: fermati e riporta il problema.
 
-Il workflow `finito` resta **separato e manuale** per: diagnosi; attività read-only; OPSEC; rete; tile; proxy; cache; storage; migrazioni dati; modifiche architetturali; modifiche sostanziali al metodo; diff rischiosi che richiedono review prima della pubblicazione; QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore.
+Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività read-only; blocchi delicati in attesa di review byte Claude (se richiesta e non ancora completata); review sostitutiva GPT non ancora loggata (bundle delicato); QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti; **deploy non eseguito**; **smoke fallito**; prompt che **non** ha autorizzato esplicitamente la coda `finito`. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore — e **non** un secondo giro separato dopo QA PASS di un bundle autorizzato.
 
 **Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**.
 
-- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → QA bundle → finito condizionale`. **Nessun hop Claude in nessun caso** — vai sempre, zero attese. Review del diff in Cursor/GPT; report nel flusso Cursor/GPT.
+- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → QA bundle → attestazione QA PASS → finito automatico` (Regola H). **Nessun hop Claude in nessun caso** — vai sempre, zero attese.
 - **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine): Claude **upstream** (sostanza, rischi, gate) → GPT redige prompt → Cursor implementa → Claude **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy, se Claude **disponibile**.
 - **Bundle DELICATO, Claude NON disponibile** (limite token / attesa inaccettabile): il deploy **non** si blocca. Procedere con **review sostitutiva GPT** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + review byte Claude **post-hoc** come backstop (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «review sostitutiva GPT», **mai** «Claude», e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
 
@@ -95,9 +95,27 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 - **Sanitizer/whitelist, nuovo campo persistito, nuovo create-path, storage:** estensione whitelist scoped (quali kind); nessun type-check allentato (`typeof x==="number"&&isFinite`, mai coercion lasca); il dato passa **sempre** dal sanitizer esistente, nessuna scrittura diretta; regressione round-trip **obbligatoria** save→reload→export→import su Tracce **e** poligoni. Bug **silenti** (non visibili in QA, corrompono dati/export) → categoria più rischiosa da sostituire: se grosso/dubbio preferire attesa Claude; se piccolo e checklist pulita, procedere.
 - **Rete/tile/proxy/OPSEC:** nessun endpoint/chiamata esterna nuova; offline ancora funzionante. OPSEC = massima cautela, preferire attesa se non banale.
 
+**Regola H — QA-PASS AUTO-INNESCA FINITO (METHOD-QA-PASS-AUTO-FINITO).** Elimina il giro separato «QA PASS → ChatGPT dice ora lancia finito».
+
+1. **Nei prompt bundle runtime**, la coda `finito` è **pre-autorizzata** nel prompt stesso (template *Coda prompt bundle* sotto).
+2. **Trigger:** la riga di attestazione operatore esatta `QA <BLOCK-ID> PASS operatore` (stesso `<BLOCK-ID>` del bundle).
+3. **Quando Cursor riceve quella riga**, se il prompt bundle prevedeva la coda, il **deploy tecnico è PASS**, nessuna eccezione attiva (Regola A) e la review richiesta (se bundle delicato) è già completata e loggata, Cursor **esegue automaticamente** senza chiedere un comando separato:
+   - chiusura docs `OPERATING_MEMORY.md` §7;
+   - aggiornamento roadmap/work-unit se previsto;
+   - aggiornamento `docs/QA-CHECKLIST.md` / `docs/HANDOFF.md` se previsto;
+   - autosync orchestratore (`latest.md` + `inbox` + `LAST_CURSOR_REPORT.md` se task reale);
+   - commit/push selettivi;
+   - verifica `HEAD` = `origin/main` = `git ls-remote origin main`;
+   - workspace pulito;
+   - conferma monolite invariato se la chiusura è docs-only.
+4. **Non significa saltare la chiusura.** La chiusura docs resta **obbligatoria**. OM §7 deve restare fresco per la chat successiva. Saltare la chiusura dopo QA PASS = OM §7 stale = **errore di metodo**.
+5. **GPT / orchestratore:** **non** emettere messaggi separati del tipo «ora esegui finito», «ora fai la chiusura docs», «ora lancia finito» dopo QA PASS di un bundle con coda pre-autorizzata.
+6. **Bundle ROUTINE:** regola applicata normalmente; un solo gate; nessun hop Claude.
+7. **Bundle DELICATO:** **non** auto-innescare `finito` prima della review byte Claude se richiesta; se Claude non disponibile e il metodo consente review sostitutiva GPT → applicare solo **dopo** review sostitutiva completata e loggata, deploy PASS e QA operatore PASS della categoria.
+
 **Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato a **Claude**; blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, Claude e Cursor salvo escalation reale.
 
-**Regola D — QA operatore unica (minima narrativa di default).** La QA operatore è fornita come **un'unica** emissione copiabile, **già compilata** con i dati noti, e **restituita una sola volta** dall'operatore. **Formato predefinito** (blocchi di routine, micro-fix UI, patch localizzate): **QA minima narrativa** — breve riepilogo PASS tecnico; frase «Ora serve solo la QA operatore minima, senza Cursor»; URL VPS con runtime short SHA; pochi passaggi concreti; pochi esiti specifici; risposta attesa `QA <BLOCK-ID> PASS operatore` oppure errore esatto e punto. **Checklist estesa** (caselle, sette categorie, campi strutturati): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). Non usare come modalità ordinaria: domande QA singole successive; round multipli PASS/FAIL; checklist frammentate; audit generale non pertinente. Fonte canonica: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). Formato URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<short-sha-runtime-reale>` (short SHA del commit **runtime** reale; mai docs/autosync; mai etichette `*-local` sul VPS). Cursor prepara la QA ma **non** attesta la QA visiva; senza risposta esplicita dell'operatore resta **QA pending** (fail-closed).
+**Regola D — QA operatore unica (minima narrativa di default).** La QA operatore è fornita come **un'unica** emissione copiabile, **già compilata** con i dati noti, e **restituita una sola volta** dall'operatore. **Formato predefinito** (blocchi di routine, bundle ROUTINE): **QA minima narrativa** — breve riepilogo PASS tecnico; frase «Ora serve solo la QA operatore minima, senza Cursor»; URL VPS con runtime short SHA; pochi passaggi concreti; pochi esiti specifici; risposta attesa `QA <BLOCK-ID> PASS operatore` oppure errore esatto e punto. **Quella riga PASS** (in un prompt bundle con coda pre-autorizzata) è il **trigger automatico** del workflow `finito` (Regola H) — Cursor **non** deve attendere un secondo messaggio «finito». **Checklist estesa** (caselle, sette categorie, campi strutturati): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). Non usare come modalità ordinaria: domande QA singole successive; round multipli PASS/FAIL; checklist frammentate; audit generale non pertinente. Fonte canonica: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md). Formato URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<short-sha-runtime-reale>` (short SHA del commit **runtime** reale; mai docs/autosync; mai etichette `*-local` sul VPS). Cursor prepara la QA ma **non** attesta la QA visiva; senza risposta esplicita dell'operatore resta **QA pending** (fail-closed).
 
 **Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza Claude → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
 
@@ -192,6 +210,24 @@ Le meta-istruzioni per l'operatore devono restare fuori dal blocco, sopra o sott
 L'operatore deve poter selezionare l'intero blocco e incollarlo in Cursor senza tagliare parti utili e senza includere testo estraneo.
 
 Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, delimitato, copiabile, senza testo estraneo dentro il blocco.
+
+### Template coda prompt bundle runtime (canonico)
+
+**Home:** questa sezione + [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) § *Template coda prompt bundle runtime*. GPT incolla la coda in ogni prompt bundle runtime.
+
+````text
+GATE / CHIUSURA (coda finito pre-autorizzata):
+Dopo deploy tecnico PASS, fermati per QA operatore.
+Quando l'operatore attesta esattamente:
+QA <BLOCK-ID> PASS operatore
+esegui automaticamente la coda finito già autorizzata:
+chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
+Non chiedere un comando separato «finito» né attendere un secondo messaggio.
+Se QA fallisce o deploy/smoke non PASS, NON eseguire finito.
+Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
+````
+
+Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`).
 
 ---
 

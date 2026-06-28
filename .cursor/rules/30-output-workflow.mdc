@@ -133,6 +133,16 @@ Cursor applica il **bundle di default**; **non** propone separazione per ogni mi
 - **Non** frammentare lavoro routine in micro-blocchi con review/deploy/QA per item. **Non** sollevare obiezioni di granularità sul routine.
 - Separare resta valido **solo** per categorie delicate (motivo: bug delicato in mega-bundle blocca tutto il deploy).
 
+## QA-PASS AUTO-INNESCA FINITO (METHOD-QA-PASS-AUTO-FINITO)
+
+Nei **prompt bundle runtime** con coda `finito` pre-autorizzata (OM §4 Regola H; template in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md)):
+
+- **Trigger:** riga esatta `QA <BLOCK-ID> PASS operatore` dall'operatore/orchestratore.
+- **Azione:** Cursor esegue **automaticamente** il workflow `finito` (chiusura docs OM §7, roadmap/WU, QA-CHECKLIST/HANDOFF se previsti, autosync orchestratore, commit/push, verifica `HEAD` = `origin/main` = `git ls-remote`, workspace pulito) **senza** chiedere un secondo messaggio «finito» / «ora esegui finito» / «ora fai la chiusura docs».
+- **Non** significa saltare la chiusura: OM §7 stale dopo QA PASS senza `finito` = errore di metodo.
+- **Non auto-innescare** se: deploy/smoke non PASS; workspace sporco; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; prompt senza coda pre-autorizzata; read-only/diagnosi; errori; scope drift.
+- **GPT/orchestratore:** non emettere passaggi separati «ora lancia finito» dopo QA PASS di bundle autorizzato.
+
 ## Prompt operativi autosufficienti (anti micro-pass di sola verifica)
 
 **Principio:** ogni **prompt operativo** (richiesta di implementazione o modifica sostanziale sul repo) deve essere **autosufficiente** per Cursor: nella **stessa** risposta/intervento devono confluire **implementazione**, **verifiche automatiche standard**, **test browser se possibile**, **aggiornamento memoria orchestratore** (come da sezione *Autosync orchestratore* ove applicabile) e **RIEPILOGO finale completo**. **Non** creare un **pass separato** dedicato **solo** a verifiche standard se quelle verifiche erano **già prevedibili** dal task operativo (es. dopo un’implementazione sul monolite, non delegare a un secondo giro ciò che poteva essere incluso nel primo).
@@ -254,6 +264,8 @@ Quando la **QA browser operatore** resta **pending** dopo un blocco di routine (
 4. `Poi:` — pochi passaggi concreti nell'app.
 5. `verifica che:` — soli esiti specifici del blocco e regressioni pertinenti.
 6. `Riportami:` `QA <BLOCK-ID> PASS operatore` oppure messaggio esatto dell'errore e punto di occorrenza.
+
+**Bundle con coda pre-autorizzata (Regola H):** quella riga PASS è il **trigger automatico** del workflow `finito` — Cursor **non** deve attendere un secondo comando «finito» né chiedere all'operatore di lanciarlo.
 
 **Vincoli:** una sola emissione; una sola risposta operatore; Cursor **non** attesta QA visiva; senza risposta esplicita → QA pending (fail-closed); niente audit generale; niente campi data/browser/risoluzione salvo necessità reale.
 

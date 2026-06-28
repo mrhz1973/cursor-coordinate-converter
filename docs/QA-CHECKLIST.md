@@ -820,6 +820,24 @@ QA POLY-PARITY-P5-B2-F PASS operatore
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
 ```
 
+## Template coda prompt bundle runtime (canonico)
+
+**Home duplicata:** OM §4 *Template coda prompt bundle runtime*. GPT incolla questa coda in ogni prompt bundle runtime con deploy.
+
+````text
+GATE / CHIUSURA (coda finito pre-autorizzata):
+Dopo deploy tecnico PASS, fermati per QA operatore.
+Quando l'operatore attesta esattamente:
+QA <BLOCK-ID> PASS operatore
+esegui automaticamente la coda finito già autorizzata:
+chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
+Non chiedere un comando separato «finito» né attendere un secondo messaggio.
+Se QA fallisce o deploy/smoke non PASS, NON eseguire finito.
+Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
+````
+
+Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`). Dettaglio metodo: OM §4 Regola H (METHOD-QA-PASS-AUTO-FINITO).
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
@@ -833,3 +851,5 @@ Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) dev
 - emettere tutto in **un unico fenced code block**;
 - **non** dichiarare PASS operatore prima dell'attestazione dell'operatore;
 - usare la **checklist estesa** solo nei casi delicati/complessi definiti sopra.
+
+**Dopo attestazione QA PASS (bundle con coda pre-autorizzata):** la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** il workflow `finito` in Cursor (OM §4 Regola H) — **non** serve un secondo messaggio «ora lancia finito» da GPT/orchestratore.
