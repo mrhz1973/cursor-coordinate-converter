@@ -393,7 +393,46 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=14605e9
 
 **Backlog operativo (non FAIL):**
 
-**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (resize laterale pannelli pilota, HUD-VIS design, CSS `.modal-overlay` Ramo A, audit `renderAllMaps`).
+## ROUTINE-CLEANUP-BUNDLE — primo bundle bundle-first cleanup routine (build 15) — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `7b8cf04` — blob `71e353ee85c15bf2713bc7998c72582f81723ec5` — **`APP_BUILD_NUM = 15`** — display **`B5.5Z · build 15`**.
+
+| Campo | Valore |
+|--------|--------|
+| Commit | `7b8cf041383b55b80668a30ce12607a8888b774c` |
+| Subject | `chore(ui): remove dead modal CSS and renderAllMaps calls (build 15)` |
+| Gate | **ROUTINE** — METHOD-BUNDLING-DEFAULT; un bundle / un commit / un deploy / una QA |
+| Review | **NON RICHIESTA** (Ramo A + JS no-op) |
+
+**Bundle (7 item):** CSS legacy `.modal-overlay`/`.modal`; selettori `.modal` duplicati Help; `.modal .modal-close` da chip unificati; print/mobile legacy; `.qr-modal` ridondante; 7× `renderAllMaps()` no-op rimossi; commento chip.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 7b8cf041383b55b80668a30ce12607a8888b774c
+VPS blob = 71e353ee85c15bf2713bc7998c72582f81723ec5
+HTTP 200
+byte repo/servito = 2423860 / 2423860
+SHA-256 = 0caa70651a4fca7b04112abddc1af50a44059c5539a9407ed5702ddb646146ba (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA ROUTINE-CLEANUP-BUNDLE PASS operatore
+```
+
+**Checklist QA verificata:** Help e QR aprono/chiudono (GIS + non-GIS); poligoni Modifica/handle/drag vertice OK; nessun errore console nuovo; footer/about **`B5.5Z · build 15`**.
+
+**URL runtime:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=7b8cf04
+```
+
+**Prossimo candidato operativo:** **da scegliere da roadmap/backlog** (resize laterale pilota, HUD-VIS design, `polygonHideRenameBar` cleanup).
 
 **`APP_BUILD_ID` `B5.5Z` invariato.**
 

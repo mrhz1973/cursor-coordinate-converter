@@ -115,21 +115,22 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `3f84122` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **BUNDLE-BACKLOG-B3** — CLOSED / PASS end-to-end |
+| HEAD remoto (verificato) | `7b8cf04` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **ROUTINE-CLEANUP-BUNDLE** — CLOSED / PASS end-to-end |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** — bundle-first (OM §4 Regola G) |
-| Runtime live VPS | `709079c989cc34b695e9cff3abf239ced77670dd` |
-| Blob monolite | `da27be4363e878f97f1f1b8d4dbc9df34f9c7ed3` |
-| `APP_BUILD_NUM` | `14` |
-| Display runtime | `B5.5Z · build 14` |
+| Runtime live VPS | `7b8cf041383b55b80668a30ce12607a8888b774c` |
+| Blob monolite | `71e353ee85c15bf2713bc7998c72582f81723ec5` |
+| `APP_BUILD_NUM` | `15` |
+| Display runtime | `B5.5Z · build 15` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| BUNDLE-BACKLOG-B3 | **CLOSED / PASS end-to-end** (build 14; audit bundle + 2 micro-fix) |
+| ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15; primo bundle-first, 7 item cleanup) |
+| BUNDLE-BACKLOG-B3 | **CLOSED / PASS end-to-end** (build 14) |
 | MODAL-STD-B2 | **CLOSED / PASS end-to-end** (build 11→13) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=709079c` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=7b8cf04` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — resize laterale pannelli (pilota), HUD-VIS/HUD-LAYOUT (design), CSS `.modal-overlay` Ramo A, audit `renderAllMaps` (nessun obbligo fisso).
+**Da scegliere da roadmap/backlog** — resize laterale pannelli (pilota), HUD-VIS/HUD-LAYOUT (design), `polygonHideRenameBar` cleanup (nessun obbligo fisso).
 
 ---
 
@@ -142,7 +143,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 ### Dead code candidato (non implementare ora)
 
-- `polygonShowRenameBar` non più chiamata dalla lista Poligoni; cleanup futuro solo se nessun altro path la usa
+- `polygonHideRenameBar` / `#polygonPanelRenameBar` — ancora wired (ESC/edit cancel); cleanup futuro bundle dedicato
 
 ---
 

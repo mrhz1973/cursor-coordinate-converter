@@ -292,8 +292,8 @@ Voci:
   - **riferimento tecnico esistente:** `#measurePanel` / `#sec-measure` (Range & Bearing via `openMeasureFloatingPanelGis`, `_measurePanelLayoutOpts` ~L45278); pattern full-height già su Range Rings B6.4a-2 (`_rangeRingsPanelLayoutOpts`, `defaultHeightFraction: 0.92`);
   - implementazione futura a **blocchi piccoli**, verifica modal per modal; **nessuna** riscrittura CSS/HTML/JS generale in questo step documentale;
   - **perimetro:** modal/pannelli operativi app; **esclude** dialoghi nativi browser (`alert`, `confirm`, `prompt`).
-  - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14, QA PASS).
-  - **Prossimi candidati audit:** resize laterale pilota; HUD-VIS/HUD-LAYOUT design; CSS `.modal-overlay` Ramo A; audit `renderAllMaps`.
+  - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14); **ROUTINE-CLEANUP-BUNDLE** — primo bundle-first cleanup (`7b8cf04`, build 15, QA PASS).
+  - **Prossimi candidati audit:** resize laterale pilota; HUD-VIS/HUD-LAYOUT design; `polygonHideRenameBar` cleanup.
 - Resize laterale dai lati, non solo dagli angoli (backlog correlato).
 
 Note operative:
@@ -308,7 +308,7 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog** (resize laterale pilota, HUD-VIS design, CSS `.modal-overlay` Ramo A, audit `renderAllMaps` — nessun obbligo fisso). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
+  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog** (resize laterale pilota, HUD-VIS design, `polygonHideRenameBar` cleanup — nessun obbligo fisso). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
@@ -318,7 +318,8 @@ Note operative:
   - **MODAL-STD-B2 build 11 — CLOSED / PASS tecnico, QA parziale:** runtime **`06ed2a0`**, blob **`431a9c88…`**, Preferiti layout/scroll (`_favoritesPanelLayoutOpts`, CSS MODAL-STD-B2) + Poligoni ESC GIS (precedenza barre/modali interne), review **NON RICHIESTA**, deploy GIS-only PASS; **QA parziale** — Poligoni ESC PASS; Preferiti FAIL (scroll/ESC/× guscio) → FIX1.
   - **MODAL-STD-B2-FIX1 build 12 — CLOSED / PASS tecnico, QA parziale:** runtime **`f53e2d8`**, blob **`4ac10423…`**, fix close/ESC Preferiti (`:not([open])`, `closeFavoritesPanel`, `preventDefault` ESC), review **NON RICHIESTA**, deploy GIS-only PASS (byte **2427546**, SHA **`4531f47e…`**, CMP_PASS); **QA** — ×/ESC/riapertura/Poligoni ESC PASS; scroll FAIL residuo → FIX2.
   - **MODAL-STD-B2-FIX2 build 13 — CLOSED / PASS end-to-end:** runtime **`266b116`**, blob **`0f4d275e…`**, scroll `#favoritesPanelBody`, deploy GIS-only PASS, **QA operatore PASS**; display **`B5.5Z · build 13`**; superseded per runtime live da **BUNDLE-BACKLOG-B3** (`709079c`).
-  - **BUNDLE-BACKLOG-B3 build 14 — CLOSED / PASS end-to-end:** runtime **`709079c`**, blob **`da27be43…`**, audit 4 candidati backlog; patch: rimossa `polygonShowRenameBar()`, guard P2 multi-touch vertex drag; non implementato: resize laterale, HUD, CSS legacy, `renderAllMaps`; review **NON RICHIESTA**, deploy GIS-only PASS (byte **2426501**, SHA **`ca0d74a6…`**, CMP_PASS), **QA operatore PASS** («**QA BUNDLE-BACKLOG-B3 PASS operatore**»); runtime VPS live **`709079c`**, display **`B5.5Z · build 14`**.
+  - **BUNDLE-BACKLOG-B3 build 14 — CLOSED / PASS end-to-end:** runtime **`709079c`**, blob **`da27be43…`**, audit 4 candidati backlog; patch: rimossa `polygonShowRenameBar()`, guard P2 multi-touch vertex drag; non implementato: resize laterale, HUD, CSS legacy, `renderAllMaps`; review **NON RICHIESTA**, deploy GIS-only PASS (byte **2426501**, SHA **`ca0d74a6…`**, CMP_PASS), **QA operatore PASS** («**QA BUNDLE-BACKLOG-B3 PASS operatore**»); display **`B5.5Z · build 14`**; superseded per runtime live da **ROUTINE-CLEANUP-BUNDLE** (`7b8cf04`).
+  - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
   - resize laterale pannelli flottanti.
 
@@ -1514,7 +1515,37 @@ goi-gis-app.service = active / enabled
 
 **QA operatore:** PASS — «**QA CONVERT-SOURCE-PICKER PASS operatore**».
 
-**Runtime autorevole live VPS:** superseded da **BUNDLE-BACKLOG-B3** (`709079c`).
+**Runtime autorevole live VPS:** superseded da **ROUTINE-CLEANUP-BUNDLE** (`7b8cf04`).
+
+#### ROUTINE-CLEANUP-BUNDLE — primo bundle bundle-first cleanup routine (build 15)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-28).
+
+**Runtime:** `7b8cf041383b55b80668a30ce12607a8888b774c` — blob `71e353ee85c15bf2713bc7998c72582f81723ec5`.
+
+**Scopo:** primo bundle **METHOD-BUNDLING-DEFAULT** — cleanup routine Ramo A + JS no-op in un unico gate (commit/deploy/QA).
+
+**Bundle (7 item):** rimozione CSS legacy `.modal-overlay`/`.modal`; selettori Help duplicati; chip `.modal .modal-close`; print/mobile; `.qr-modal` ridondante; 7× `renderAllMaps()`; commento chip.
+
+**Review:** **NON RICHIESTA** (ROUTINE).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 7b8cf041383b55b80668a30ce12607a8888b774c
+VPS blob = 71e353ee85c15bf2713bc7998c72582f81723ec5
+HTTP 200
+byte repo/servito = 2423860 / 2423860
+SHA-256 = 0caa70651a4fca7b04112abddc1af50a44059c5539a9407ed5702ddb646146ba (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**QA operatore:** PASS — «**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**».
+
+**Runtime autorevole live VPS:** `7b8cf04`.
+
+**Prossimi candidati:** resize laterale pilota; HUD-VIS design; `polygonHideRenameBar` cleanup.
 
 #### BUNDLE-BACKLOG-B3 — audit backlog bundle + micro-fix sicuri (build 14)
 
