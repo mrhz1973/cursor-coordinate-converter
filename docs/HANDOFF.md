@@ -117,7 +117,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `7b8cf04` — aggiornare con `git ls-remote` prima di ogni sessione |
+| HEAD remoto (verificato) | `78ea6c9` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **ROUTINE-CLEANUP-BUNDLE** — CLOSED / PASS end-to-end |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime live VPS | `7b8cf041383b55b80668a30ce12607a8888b774c` |
