@@ -18364,7 +18364,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 20;
+const APP_BUILD_NUM = 21;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37097,23 +37097,29 @@ function renderTileMap(lat, lon, zoom){
 /**
  * Wheel / trackpad zoom with cursor-anchored re-centering.
  *
+ * Wired once on #miniMap (survives renderTileMap innerHTML refresh).
+ *
  * Behavior:
- *   - A wheel up (deltaY < 0) zooms in; wheel down zooms out.
- *   - One debounced burst (classic notch or trackpad flick) changes zoom by
- *     exactly ±1 level — predictable control on high-resolution wheels that
- *     emit multiple events per physical click.
- *   - The geographic point under the cursor stays pinned to the same
- *     pixel after the zoom.
- *   - Events are collapsed with a short debounce so rapid wheel bursts
- *     produce a single re-render instead of dozens.
+ *   - Wheel up (deltaY < 0) zooms in; wheel down zooms out.
+ *   - One physical wheel detent → exactly ±1 zoom level: events from a single
+ *     notch often span >50 ms, so FIX1's short debounce could flush 2–5 times.
+ *     FIX2 waits for gesture idle, applies one step, then a brief cooldown
+ *     swallows the tail of the same detent.
+ *   - The geographic point under the cursor stays pinned after zoom.
  */
 function attachWheelZoom(root, lat, lon, zoom, layer){
-  const tileMap = root.querySelector(".tile-map");
-  if (!tileMap) return;
+  if (!root || root._wheelZoomWired) return;
+  root._wheelZoomWired = true;
 
-  let wheelAcc = 0;
-  let wheelTimer = null;
-  let lastCursor = null; // pixel offset from map center at time of event
+  const WHEEL_GESTURE_IDLE_MS = 140;
+  const WHEEL_STEP_COOLDOWN_MS = 100;
+
+  const st = {
+    acc: 0,
+    idleTimer: null,
+    lastCursor: null,
+    cooldownUntil: 0
+  };
 
   const wheelDeltaPx = (ev) => {
     let dy = ev.deltaY;
@@ -37123,47 +37129,59 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
   };
 
   const flush = () => {
-    wheelTimer = null;
-    if (!wheelAcc || !lastCursor) return;
-    // One burst → one zoom step (direction from accumulated delta sign).
-    const step = wheelAcc > 0 ? -1 : 1;
-    wheelAcc = 0;
+    st.idleTimer = null;
+    if (!st.acc || !st.lastCursor) return;
 
-    const curZoom = Math.max(2, Math.min(layer.maxZoom, Math.round(state.mapZoom || zoom)));
-    const newZoom = Math.max(2, Math.min(layer.maxZoom, curZoom + step));
+    const step = st.acc > 0 ? -1 : 1;
+    st.acc = 0;
+    st.cooldownUntil = Date.now() + WHEEL_STEP_COOLDOWN_MS;
+
+    const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+    const maxZ = mapLayer.maxZoom;
+    const curZoom = Math.max(2, Math.min(maxZ, Math.round(state.mapZoom || zoom)));
+    const newZoom = Math.max(2, Math.min(maxZ, curZoom + step));
     if (newZoom === curZoom) return;
 
-    const vc   = state.viewCenter || { lat, lon };
-    const vLat = Math.max(-85.05, Math.min(85.05, vc.lat));
-    const vLon = normalizeLon(vc.lon);
+    const anchor = state.viewCenter || { lat, lon };
+    const vLat = Math.max(-85.05, Math.min(85.05, anchor.lat));
+    const vLon = normalizeLon(anchor.lon);
     const vtx  = lonToTileX(vLon, curZoom);
     const vty  = latToTileY(vLat, curZoom);
     const factor = Math.pow(2, newZoom - curZoom);
+    const cx = st.lastCursor.x;
+    const cy = st.lastCursor.y;
 
-    const newVtx = factor * vtx + (factor - 1) * lastCursor.x / 256;
-    const newVty = factor * vty + (factor - 1) * lastCursor.y / 256;
+    const newVtx = factor * vtx + (factor - 1) * cx / 256;
+    const newVty = factor * vty + (factor - 1) * cy / 256;
     const newLon = normalizeLon(tileX2Lon(newVtx, newZoom));
     const newLat = tileY2Lat(newVty, newZoom);
 
     state.viewCenter = { lat: newLat, lon: newLon };
     state.mapZoom    = newZoom;
     saveStore();
-    renderTileMap(lat, lon, newZoom);
+    renderTileMap(anchor.lat, anchor.lon, newZoom);
   };
 
-  tileMap.addEventListener("wheel", (ev) => {
+  root.addEventListener("wheel", (ev) => {
+    const tileMap = root.querySelector(".tile-map");
+    if (!tileMap || !tileMap.contains(ev.target)) return;
     if (ev.target.closest("button, a")) return;
+    if (Date.now() < st.cooldownUntil) {
+      ev.preventDefault();
+      return;
+    }
+
     ev.preventDefault();
 
     const rect = tileMap.getBoundingClientRect();
-    lastCursor = {
+    st.lastCursor = {
       x: ev.clientX - rect.left - rect.width  / 2,
       y: ev.clientY - rect.top  - rect.height / 2
     };
-    wheelAcc += wheelDeltaPx(ev);
-    if (wheelTimer) clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(flush, 50);
-  }, { passive: false });
+    st.acc += wheelDeltaPx(ev);
+    if (st.idleTimer) clearTimeout(st.idleTimer);
+    st.idleTimer = setTimeout(flush, WHEEL_GESTURE_IDLE_MS);
+  }, { passive: false, capture: true });
 }
 
 /**
