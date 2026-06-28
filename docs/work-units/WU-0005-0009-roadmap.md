@@ -292,8 +292,8 @@ Voci:
   - **riferimento tecnico esistente:** `#measurePanel` / `#sec-measure` (Range & Bearing via `openMeasureFloatingPanelGis`, `_measurePanelLayoutOpts` ~L45278); pattern full-height già su Range Rings B6.4a-2 (`_rangeRingsPanelLayoutOpts`, `defaultHeightFraction: 0.92`);
   - implementazione futura a **blocchi piccoli**, verifica modal per modal; **nessuna** riscrittura CSS/HTML/JS generale in questo step documentale;
   - **perimetro:** modal/pannelli operativi app; **esclude** dialoghi nativi browser (`alert`, `confirm`, `prompt`).
-  - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14); **ROUTINE-CLEANUP-BUNDLE** — primo bundle-first cleanup (`7b8cf04`, build 15, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-A** — resize pilota Preferiti + HUD + cleanup rename bar (`61bcda5`, build 16, QA PASS).
-  - **Prossimi candidati audit:** estensione resize laterale ad altri pannelli; HUD avanzato (HUD-MOVE / HUD-VIS settings).
+  - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14); **ROUTINE-CLEANUP-BUNDLE** — primo bundle-first cleanup (`7b8cf04`, build 15, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-A** — resize pilota Preferiti + HUD + cleanup rename bar (`61bcda5`, build 16, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-B** — resize multi-pannello + HUD avanzato (`584135e`, build 17, QA PASS).
+  - **Prossimi candidati audit:** resize su pannelli flottanti residui; cleanup i18n cosmetico; titolo statico `<title>`.
 - Resize laterale dai lati, non solo dagli angoli (backlog correlato).
 
 Note operative:
@@ -308,7 +308,7 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog** — estensione resize laterale; HUD avanzato; cleanup i18n cosmetico. **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
+  - **Prossimo ordine operativo:** **da scegliere da roadmap/backlog** — resize pannelli residui; cleanup i18n cosmetico. **UX-NEXT-RUNTIME-BUNDLE-B** **CLOSED** (`584135e`, build 17). **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
@@ -1547,6 +1547,33 @@ goi-gis-app.service = active / enabled
 **Runtime autorevole live VPS:** `7b8cf04`.
 
 **Prossimi candidati:** estensione resize laterale ad altri pannelli; HUD avanzato (HUD-MOVE / HUD-VIS).
+
+#### UX-NEXT-RUNTIME-BUNDLE-B — resize multi-pannello + HUD avanzato (build 17)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-28).
+
+**Runtime:** `584135e1dc5840d15a212e5714805f8d94db85b2` — blob git `40f435685e473ebd2cd5e77995cc980b88c8a868`.
+
+**Scopo:** bundle ROUTINE con 8 item UX: resize e/w su Poligoni, Tracce, Mappe Offline, Cerca; HUD 4 angoli + compatto; chip centro/Seamarks; polish layout.
+
+**Review:** **NON RICHIESTA**.
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 584135e1dc5840d15a212e5714805f8d94db85b2
+HTTP 200
+byte repo/servito = 2434043 / 2434043
+SHA-256 file = c303e69a9b3c74c1b1cffa87f30e50969cee1953f7b4643ee708920aa2a4479f (match)
+CMP_PASS = yes
+goi-gis-app.service = active / enabled
+```
+
+**QA operatore:** PASS — «**QA UX-NEXT-RUNTIME-BUNDLE-B PASS operatore**» (trigger auto-`finito` Regola H).
+
+**Runtime autorevole live VPS:** `584135e`.
+
+**Prossimi candidati:** resize su pannelli flottanti residui; cleanup i18n cosmetico.
 
 #### UX-NEXT-RUNTIME-BUNDLE-A — resize pilota + HUD + cleanup rename bar (build 16)
 
