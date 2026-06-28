@@ -2588,7 +2588,6 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   background:linear-gradient(180deg, color-mix(in srgb, var(--panel2) 72%, transparent) 0%, var(--panel) 100%);
 }
 .polygon-panel #polygonPanelBody:has(#polygonPanelEditBar:not([hidden])) #polygonPanelNewBtn.btn-primary,
-.polygon-panel #polygonPanelBody:has(#polygonPanelRenameBar:not([hidden])) #polygonPanelNewBtn.btn-primary,
 .polygon-panel #polygonPanelBody:has(#polygonPanelDeleteBar:not([hidden])) #polygonPanelNewBtn.btn-primary{
   background:var(--panel2);
   color:var(--text);
@@ -2597,7 +2596,6 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   filter:none;
 }
 .polygon-panel #polygonPanelBody:has(#polygonPanelEditBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before,
-.polygon-panel #polygonPanelBody:has(#polygonPanelRenameBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before,
 .polygon-panel #polygonPanelBody:has(#polygonPanelDeleteBar:not([hidden])) #polygonPanelNewBtn.btn-primary::before{
   display:none;
 }
@@ -2784,9 +2782,6 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 }
 .polygon-panel .poly-list-actions-cell .btn-danger-subtle[data-role="poly-delete"] .danger-x{ margin-right:0; }
 .polygon-panel .poly-vis-btn{ min-width:1.6rem; }
-.polygon-panel .poly-rename-bar{ margin:0 0 8px; padding:8px; border-radius:6px; background:var(--gis-modal-notice-bg,rgba(241,245,249,.95)); border:1px solid rgba(100,116,139,.25); }
-.polygon-panel .poly-rename-bar .poly-rename-row{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
-.polygon-panel .poly-rename-bar input{ flex:1; min-width:120px; font-size:.88rem; padding:4px 8px; }
 .polygon-panel .poly-edit-bar{ margin:0 0 8px; padding:8px; border-radius:6px; background:var(--gis-modal-notice-bg,rgba(241,245,249,.95)); border:1px solid rgba(100,116,139,.25); }
 .polygon-panel .poly-edit-bar .poly-edit-title{ margin:0 0 4px; font-size:.88rem; font-weight:600; }
 .polygon-panel .poly-edit-bar .poly-edit-hint{ margin:0 0 6px; font-size:.78rem; opacity:.9; }
@@ -6249,6 +6244,45 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   border-radius:0;
   box-shadow:none;
 }
+/* UX-NEXT-RUNTIME-BUNDLE-A: compact GIS status HUD (layer/zoom/offline/OPSEC). */
+body.gis-mode #gisMapMount > #gisMapHud{
+  position:absolute;
+  top:calc(env(safe-area-inset-top, 0px) + 6px);
+  left:calc(env(safe-area-inset-left, 0px) + 8px);
+  z-index:11;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  max-width:min(92vw, 440px);
+  pointer-events:none;
+}
+body.gis-mode #gisMapHud .gis-map-hud-chip{
+  font-size:.68rem;
+  line-height:1.35;
+  padding:2px 8px;
+  border-radius:999px;
+  white-space:nowrap;
+  color:#e2e8f0;
+  background:rgba(15,23,42,.74);
+  border:1px solid rgba(148,163,184,.38);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+body.gis-mode #gisMapHud .gis-map-hud-chip.is-warn{
+  color:#fde68a;
+  border-color:rgba(251,191,36,.45);
+  background:rgba(69,26,3,.78);
+}
+@media (max-width:600px){
+  body.gis-mode #gisMapMount > #gisMapHud{
+    top:calc(env(safe-area-inset-top, 0px) + 4px);
+    left:calc(env(safe-area-inset-left, 0px) + 4px);
+    max-width:calc(100vw - 88px);
+    gap:3px;
+  }
+  body.gis-mode #gisMapHud .gis-map-hud-chip{ font-size:.62rem; padding:1px 6px; }
+}
 
 /* Tab drawer: right-side panel, slides in when a tab is active.
  * Uses a CSS transform so animations stay on the compositor. */
@@ -8097,6 +8131,21 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="sw"],
 #favoritesPanel .gis-panel-resize-handle[data-handle="sw"],
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+/* UX-NEXT-RUNTIME-BUNDLE-A: lateral width resize pilot — #favoritesPanel only. */
+#favoritesPanel .gis-panel-resize-handle[data-handle="e"]{
+  right:0; top:50%; transform:translateY(-50%);
+  width:14px; height:48px; cursor:ew-resize;
+}
+#favoritesPanel .gis-panel-resize-handle[data-handle="w"]{
+  left:0; top:50%; transform:translateY(-50%);
+  width:14px; height:48px; cursor:ew-resize;
+}
+#favoritesPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#favoritesPanel .gis-panel-resize-handle[data-handle="w"]::after{
+  content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  width:3px; height:18px; border-radius:2px;
+  background:var(--gis-grip-stroke, rgba(255,255,255,.72));
+}
 .gis-panel-resize-handle:hover,
 #trackModal .track-resize-handle:hover{ background:color-mix(in srgb, var(--accent) 7%, transparent); }
 /* NE: nessun alone visivo (la X è qui); hit-area resize invariata */
@@ -10874,6 +10923,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="layersPanel" class="app-modal layers-panel" aria-labelledby="layersPanelTitle" aria-modal="false">
@@ -10967,14 +11018,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <select id="polygonPanelVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
                 data-role="poly-vertex-coord-format"
                 data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
-      </div>
-    </div>
-    <div id="polygonPanelRenameBar" class="poly-rename-bar" role="region" aria-live="polite" hidden>
-      <div class="poly-rename-row">
-        <label for="polygonPanelRenameInput" class="hint" data-i18n="gis.polygonPanel.renameLabel">Nome</label>
-        <input type="text" id="polygonPanelRenameInput" maxlength="80" autocomplete="off" />
-        <button type="button" id="polygonPanelRenameSave" class="btn btn-sm btn-primary" data-i18n="gis.polygonPanel.renameSave">Salva</button>
-        <button type="button" id="polygonPanelRenameCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
       </div>
     </div>
     <div id="polygonPanelDeleteBar" class="poly-delete-bar wp-inline-confirm gis-rr-confirm-skin" role="region" aria-live="polite" hidden>
@@ -12663,6 +12706,12 @@ const I18N = {
     "tip.polygonPanel.listShow":"Centra la mappa sul poligono.",
     "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
+    "tip.panelResizeEW":"Ridimensiona larghezza pannello",
+    "gis.hud.aria":"Stato mappa",
+    "gis.hud.layer":"Layer",
+    "gis.hud.zoom":"Zoom",
+    "gis.hud.offline":"Solo offline",
+    "gis.hud.opsec":"OPSEC strict",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
     "tip.zoomIn":"Zoom avanti",
@@ -14342,6 +14391,12 @@ const I18N = {
     "tip.polygonPanel.listShow":"Center the map on the polygon.",
     "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
+    "tip.panelResizeEW":"Resize panel width",
+    "gis.hud.aria":"Map status",
+    "gis.hud.layer":"Layer",
+    "gis.hud.zoom":"Zoom",
+    "gis.hud.offline":"Offline only",
+    "gis.hud.opsec":"OPSEC strict",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
     "tip.zoomIn":"Zoom in",
@@ -15984,6 +16039,12 @@ const I18N = {
     "tip.polygonPanel.visibility":"Afficher ou masquer le polygone sur la carte.",
     "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
+    "tip.panelResizeEW":"Redimensionner la largeur du panneau",
+    "gis.hud.aria":"État carte",
+    "gis.hud.layer":"Couche",
+    "gis.hud.zoom":"Zoom",
+    "gis.hud.offline":"Hors ligne seul",
+    "gis.hud.opsec":"OPSEC strict",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
     "tip.zoomIn":"Zoom avant",
@@ -18070,7 +18131,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 15;
+const APP_BUILD_NUM = 16;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36797,6 +36858,7 @@ function renderTileMap(lat, lon, zoom){
   trackSyncPickModeUi();
   try { if (typeof refreshGeolocationBarriers === "function") refreshGeolocationBarriers(); } catch(_){}
   try { if (typeof syncGisMapGpsButtonFromTransient === "function") syncGisMapGpsButtonFromTransient(); } catch(_){}
+  try { if (typeof updateGisMapHud === "function") updateGisMapHud(zoom); } catch(_){}
 }
 
 /**
@@ -40540,6 +40602,7 @@ function applyLanguage(lang){
   refreshCoordCycleMapUi();
   trackSyncPickModeUi();
   if (typeof gisRefreshI18n === "function") gisRefreshI18n();
+  try { if (typeof updateGisMapHud === "function") updateGisMapHud(); } catch(_){}
   if (typeof polygonIsEditing === "function" && polygonIsEditing()){
     try { renderPolygonEditBar(); } catch(_){}
   }
@@ -43601,6 +43664,49 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
+/** UX-NEXT-RUNTIME-BUNDLE-A: compact map status HUD (layer/zoom/offline/OPSEC). */
+function mapLayerHudLabel(){
+  const layer = sanitizeMapLayer(state.mapLayer || "osm");
+  try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return layer; }
+}
+function gisEnsureMapHud(){
+  if (!document.body.classList.contains("gis-mode")) return null;
+  const mount = document.getElementById("gisMapMount");
+  if (!mount) return null;
+  let hud = document.getElementById("gisMapHud");
+  if (!hud){
+    hud = document.createElement("div");
+    hud.id = "gisMapHud";
+    hud.setAttribute("role", "status");
+    hud.setAttribute("aria-live", "polite");
+    const aria = (typeof t === "function" ? t("gis.hud.aria") : "") || "Map status";
+    hud.setAttribute("aria-label", aria);
+    mount.appendChild(hud);
+  }
+  return hud;
+}
+function updateGisMapHud(zoomOverride){
+  if (!document.body.classList.contains("gis-mode")) return;
+  const hud = gisEnsureMapHud();
+  if (!hud) return;
+  const layerKey = (typeof t === "function" ? t("gis.hud.layer") : "") || "Layer";
+  const layerLbl = mapLayerHudLabel();
+  const z = Number.isFinite(zoomOverride) ? zoomOverride : (state.mapZoom || 11);
+  const zoomKey = (typeof t === "function" ? t("gis.hud.zoom") : "") || "Zoom";
+  const chips = [
+    `<span class="gis-map-hud-chip" data-hud="layer">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
+    `<span class="gis-map-hud-chip" data-hud="zoom">${esc(zoomKey)} ${esc(String(z))}</span>`
+  ];
+  if (state.forceOffline){
+    const offLbl = (typeof t === "function" ? t("gis.hud.offline") : "") || "Offline";
+    chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline">${esc(offLbl)}</span>`);
+  }
+  if (state.opsecStrict){
+    const opLbl = (typeof t === "function" ? t("gis.hud.opsec") : "") || "OPSEC";
+    chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec">${esc(opLbl)}</span>`);
+  }
+  hud.innerHTML = chips.join("");
+}
 function gisInit(){
   if (_gisInitDone) return;
   _gisInitDone = true;
@@ -43654,6 +43760,7 @@ function gisInit(){
   // scale the toolbar buttons correctly; the body.gis-mode CSS then
   // sizes the mount to fill the remaining viewport.
   try { setMapSize("full"); } catch(_){}
+  try { gisEnsureMapHud(); updateGisMapHud(); } catch(_){}
   // Kill the Esri/mm-enlarged backdrop in GIS mode — the map IS the
   // background, there's no homepage to darken.
   const backdrop = document.getElementById("mapBackdrop");
@@ -44349,12 +44456,6 @@ function gisInit(){
         try { polygonHideDeleteBar(); } catch(_){}
         return;
       }
-      const polyRenBar = document.getElementById("polygonPanelRenameBar");
-      if (polyRenBar && !polyRenBar.hidden){
-        ev.preventDefault();
-        try { polygonHideRenameBar(); } catch(_){}
-        return;
-      }
       if (state._polygonPanelInlineRenameId){
         ev.preventDefault();
         try { polygonCancelInlineRename(); } catch(_){}
@@ -44680,8 +44781,7 @@ function gisRangeRingsMinimizeBlocked(){
   return false;
 }
 function gisPolygonMinimizeBlocked(){
-  const rename = document.getElementById("polygonPanelRenameBar");
-  if (rename && !rename.hidden) return true;
+  if (state._polygonPanelInlineRenameId) return true;
   const del = document.getElementById("polygonPanelDeleteBar");
   if (del && !del.hidden) return true;
   return false;
@@ -45203,7 +45303,12 @@ function gisPanelAttachResize(root, opts){
     let L = down.startL, T = down.startT;
     let w = down.startW, h = down.startH;
     const handle = down.handle;
-    if (handle === "se"){
+    if (handle === "e"){
+      w = down.startW + dx;
+    } else if (handle === "w"){
+      w = down.startW - dx;
+      L = down.startL + dx;
+    } else if (handle === "se"){
       w = down.startW + dx;
       h = down.startH + dy;
     } else if (handle === "sw"){
@@ -45222,7 +45327,7 @@ function gisPanelAttachResize(root, opts){
     }
     w = Math.max(minW, Math.min(maxW, w));
     h = Math.max(minH, Math.min(maxH, h));
-    if (handle === "sw" || handle === "nw"){
+    if (handle === "sw" || handle === "nw" || handle === "w"){
       const right = down.startL + down.startW;
       L = right - w;
     }
@@ -47179,7 +47284,7 @@ function closePolygonPanel(){
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
   state._polygonDrawAutoMinimized = false;
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
-  try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  try { polygonHideDeleteBar(); polygonCancelInlineRename(); } catch(_){}
   state.polygonPanelOpen = false;
   if (dlg){
     dlg.classList.remove("gis-panel-floating");
@@ -48247,7 +48352,7 @@ function polygonEditSaveHandler(){
   } else {
     polygonCancelEdit();
   }
-  try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  try { polygonHideDeleteBar(); polygonCancelInlineRename(); } catch(_){}
   polygonDisarmEmptyDrawIfSafe();
   polygonRefreshEditUi();
 }
@@ -48259,7 +48364,7 @@ function polygonEditCancelHandler(){
   polygonInvalidateEditOverlayRefresh();
   polygonCancelEdit();
   polygonHideEditBarErr();
-  try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  try { polygonHideDeleteBar(); polygonCancelInlineRename(); } catch(_){}
   polygonDisarmEmptyDrawIfSafe();
   polygonRefreshEditUi();
   polygonSyncRenderMapAfterEditEnd();
@@ -48279,7 +48384,7 @@ function polygonEditEnterFromList(id){
   if (polygonIsEditing() && String(state._polyEdit.id) === String(id)) return;
   state._polygonPanelInlineRenameId = null;
   if (!polygonEnterEdit(id)) return;
-  try { polygonHideDeleteBar(); polygonHideRenameBar(); } catch(_){}
+  try { polygonHideDeleteBar(); polygonCancelInlineRename(); } catch(_){}
   polygonHideEditBarErr();
   polygonRefreshEditUi();
 }
@@ -48750,13 +48855,6 @@ function polygonHideDeleteBar(){
   if (bar) bar.hidden = true;
   if (msg) msg.textContent = "";
 }
-function polygonHideRenameBar(){
-  state._polyPendingRenameId = null;
-  const bar = document.getElementById("polygonPanelRenameBar");
-  const inp = document.getElementById("polygonPanelRenameInput");
-  if (bar) bar.hidden = true;
-  if (inp) inp.value = "";
-}
 function polygonCancelInlineRename(){
   if (!state._polygonPanelInlineRenameId) return;
   state._polygonPanelInlineRenameId = null;
@@ -48768,7 +48866,6 @@ function polygonStartInlineRename(id){
   if (!sid || !gisFeatureGet(sid)) return;
   if (polygonIsEditing()) return;
   polygonHideDeleteBar();
-  polygonHideRenameBar();
   state._polygonPanelInlineRenameId = sid;
   renderPolygonPanelList();
 }
@@ -48782,7 +48879,7 @@ function polygonShowDeleteConfirm(idOrIds){
   ensureGisState();
   const arr = [...new Set((Array.isArray(idOrIds) ? idOrIds : [idOrIds]).map(String))].filter(Boolean);
   if (!arr.length) return;
-  polygonHideRenameBar();
+  polygonHideDeleteBar();
   state._polygonPanelInlineRenameId = null;
   polygonWirePanelBarsOnce();
   state._polyPendingDeleteId = arr.length === 1 ? arr[0] : null;
@@ -48816,7 +48913,6 @@ function polygonDeleteByIds(ids, opts){
   ensurePolygonPanelSelectionState();
   state._polygonPanelSelectedIds = (state._polygonPanelSelectedIds || []).filter(x => !set.has(String(x)));
   polygonHideDeleteBar();
-  polygonHideRenameBar();
   state._polygonPanelInlineRenameId = null;
   renderPolygonPanelList();
   try {
@@ -48840,7 +48936,6 @@ function polygonRenameExecute(id, newName){
   if (!nm || !id) return;
   const updated = gisFeatureUpdate(id, { properties: { name: nm, updated_at: new Date().toISOString() } }, { recordUndo: false });
   if (!updated) return;
-  polygonHideRenameBar();
   state._polygonPanelInlineRenameId = null;
   renderPolygonPanelList();
   try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.renameOk") : "") || "Nome aggiornato."); } catch(_){}
@@ -48858,9 +48953,6 @@ function polygonWirePanelBarsOnce(){
   state._polyPanelBarsWired = true;
   const dOk = document.getElementById("polygonPanelDeleteConfirm");
   const dCancel = document.getElementById("polygonPanelDeleteCancel");
-  const rSave = document.getElementById("polygonPanelRenameSave");
-  const rCancel = document.getElementById("polygonPanelRenameCancel");
-  const rInp = document.getElementById("polygonPanelRenameInput");
   if (dOk) dOk.addEventListener("click", (ev) => {
     ev.preventDefault();
     if (_polyPendingDeleteIds && _polyPendingDeleteIds.length){
@@ -48871,17 +48963,6 @@ function polygonWirePanelBarsOnce(){
     if (id) polygonDeleteExecute(id);
   });
   if (dCancel) dCancel.addEventListener("click", (ev) => { ev.preventDefault(); polygonHideDeleteBar(); });
-  if (rSave) rSave.addEventListener("click", (ev) => {
-    ev.preventDefault();
-    const id = state._polyPendingRenameId;
-    const inp = document.getElementById("polygonPanelRenameInput");
-    if (id && inp) polygonRenameExecute(id, inp.value);
-  });
-  if (rCancel) rCancel.addEventListener("click", (ev) => { ev.preventDefault(); polygonHideRenameBar(); });
-  if (rInp) rInp.addEventListener("keydown", (ev) => {
-    if (ev.key === "Enter"){ ev.preventDefault(); const id = state._polyPendingRenameId; if (id) polygonRenameExecute(id, rInp.value); }
-    else if (ev.key === "Escape"){ ev.preventDefault(); polygonHideRenameBar(); }
-  });
   const eSave = document.getElementById("polygonPanelEditSave");
   const eCancel = document.getElementById("polygonPanelEditCancel");
   const eName = document.getElementById("polygonPanelEditName");
