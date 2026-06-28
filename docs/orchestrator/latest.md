@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-29 — **`finito` sessione — MAJOR-1 CLOSED / PASS end-to-end:** commit task runtime **`9b359b7`** — pannello Diagnostica read-only (build 23); deploy GIS-only PASS (byte **2485630**, SHA **`db618459…`**, CMP_PASS); attestazione «**QA MAJOR-1 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`9b359b7`**; prossimo: **MAJOR-2** offline tile; inbox **`2026-06-29_0055_riepilogo_finito-sessione.md`**.
+
 2026-06-29 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-E CLOSED / PASS end-to-end:** commit task runtime **`fb871b7`** — consolidamento UX GIS (18 interventi: empty states, micro-help, aria/focus, mobile, build 22); deploy GIS-only PASS (byte **2455175**, SHA **`19bf6dc9…`**, CMP_PASS); attestazione «**QA UX-NEXT-RUNTIME-BUNDLE-E PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`fb871b7`**; wheel zoom invariato; prossimo: titolo `<title>`; inbox **`2026-06-29_0010_riepilogo_finito-sessione.md`**.
 
 2026-06-28 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-D CLOSED / PASS end-to-end:** catena runtime **`ec86b62`** (build 19, HUD/resize polish) → **`5fec693`** (D-FIX1 build 20, wheel debounce, **QA FAIL**) → **`19700b6`** (D-FIX2 build 21, wheel wire-once+idle+cooldown, **QA PASS**); deploy GIS-only PASS (byte **2446515**, SHA **`7019c56e…`**, CMP_PASS); attestazione «**QA UX-NEXT-RUNTIME-BUNDLE-D-FIX2 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`19700b6`**; prossimo: titolo `<title>`; inbox **`2026-06-28_2350_riepilogo_finito-sessione.md`**.
