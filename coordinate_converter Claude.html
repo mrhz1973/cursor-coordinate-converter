@@ -18364,7 +18364,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 19;
+const APP_BUILD_NUM = 20;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37099,54 +37099,47 @@ function renderTileMap(lat, lon, zoom){
  *
  * Behavior:
  *   - A wheel up (deltaY < 0) zooms in; wheel down zooms out.
- *   - One "click" of a classic mouse wheel ≈ one zoom level. Large
- *     trackpad deltas still map to at most ±3 levels per burst to keep
- *     the experience predictable on high-resolution input.
+ *   - One debounced burst (classic notch or trackpad flick) changes zoom by
+ *     exactly ±1 level — predictable control on high-resolution wheels that
+ *     emit multiple events per physical click.
  *   - The geographic point under the cursor stays pinned to the same
- *     pixel after the zoom — i.e. the map zooms toward the mouse, not
- *     toward the current view center. This matches the convention used
- *     by Leaflet/Google Maps.
+ *     pixel after the zoom.
  *   - Events are collapsed with a short debounce so rapid wheel bursts
  *     produce a single re-render instead of dozens.
- *
- * preventDefault on the wheel stops the page from scrolling while the
- * cursor is over the map, which is the behavior users expect from a
- * dedicated map widget.
  */
 function attachWheelZoom(root, lat, lon, zoom, layer){
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap) return;
 
-  // Recompute the same view-center tile coords the renderer used, so wheel
-  // math stays consistent with the currently displayed frame.
-  const vc   = state.viewCenter || { lat, lon };
-  const vLat = Math.max(-85.05, Math.min(85.05, vc.lat));
-  const vLon = normalizeLon(vc.lon);
-  const vtx  = lonToTileX(vLon, zoom);
-  const vty  = latToTileY(vLat, zoom);
-
   let wheelAcc = 0;
   let wheelTimer = null;
   let lastCursor = null; // pixel offset from map center at time of event
 
+  const wheelDeltaPx = (ev) => {
+    let dy = ev.deltaY;
+    if (ev.deltaMode === 1) dy *= 16;
+    else if (ev.deltaMode === 2) dy *= (window.innerHeight || 800);
+    return dy;
+  };
+
   const flush = () => {
     wheelTimer = null;
-    // Convert accumulated deltaY into integer zoom steps. deltaY > 0 on
-    // OS X / Windows means "scroll down / zoom out"; we flip the sign.
-    const raw = -Math.sign(wheelAcc) * Math.min(3, Math.max(1, Math.ceil(Math.abs(wheelAcc) / 100)));
+    if (!wheelAcc || !lastCursor) return;
+    // One burst → one zoom step (direction from accumulated delta sign).
+    const step = wheelAcc > 0 ? -1 : 1;
     wheelAcc = 0;
-    if (!raw || !lastCursor) return;
 
-    const newZoom = Math.max(2, Math.min(layer.maxZoom, zoom + raw));
-    if (newZoom === zoom) return;
-    const factor = Math.pow(2, newZoom - zoom);
+    const curZoom = Math.max(2, Math.min(layer.maxZoom, Math.round(state.mapZoom || zoom)));
+    const newZoom = Math.max(2, Math.min(layer.maxZoom, curZoom + step));
+    if (newZoom === curZoom) return;
 
-    // Keep the lat/lon that was under the cursor pinned at the same
-    // pixel after the zoom. Derivation:
-    //   oldTileCursor = vtx + cx/256                (at old zoom)
-    //   newTileCursor = factor * oldTileCursor      (tile space doubles per zoom)
-    //   newVtx        = newTileCursor - cx/256      (want same screen offset)
-    //                 = factor*vtx + (factor-1)*cx/256
+    const vc   = state.viewCenter || { lat, lon };
+    const vLat = Math.max(-85.05, Math.min(85.05, vc.lat));
+    const vLon = normalizeLon(vc.lon);
+    const vtx  = lonToTileX(vLon, curZoom);
+    const vty  = latToTileY(vLat, curZoom);
+    const factor = Math.pow(2, newZoom - curZoom);
+
     const newVtx = factor * vtx + (factor - 1) * lastCursor.x / 256;
     const newVty = factor * vty + (factor - 1) * lastCursor.y / 256;
     const newLon = normalizeLon(tileX2Lon(newVtx, newZoom));
@@ -37159,10 +37152,6 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
   };
 
   tileMap.addEventListener("wheel", (ev) => {
-    // Only zoom when the cursor is on the map itself (not over an overlay
-    // card that bubbled up). Overlays with pointer-events:none don't fire
-    // wheel events, so reaching this handler is already a good signal —
-    // but we still want to let native page scroll win on buttons.
     if (ev.target.closest("button, a")) return;
     ev.preventDefault();
 
@@ -37171,11 +37160,9 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
       x: ev.clientX - rect.left - rect.width  / 2,
       y: ev.clientY - rect.top  - rect.height / 2
     };
-    wheelAcc += ev.deltaY;
-    // Debounce: collapse rapid burst (typical of trackpads) into a
-    // single render. 45 ms feels instant but catches a full flick.
+    wheelAcc += wheelDeltaPx(ev);
     if (wheelTimer) clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(flush, 45);
+    wheelTimer = setTimeout(flush, 50);
   }, { passive: false });
 }
 
