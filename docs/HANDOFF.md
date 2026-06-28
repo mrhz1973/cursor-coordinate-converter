@@ -117,25 +117,26 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `fb871b7` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-E** — CLOSED / PASS end-to-end (build 22) |
+| HEAD remoto (verificato) | `9b359b7` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-1** — Diagnostica runtime / QA hardening (build 23) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `fb871b7684160c1eff48cb8567f62819544d7d5d` |
-| Blob monolite (git) | `3c5759048a8572b10e1271dd6d6759949dd1fc98` |
-| `APP_BUILD_NUM` | `22` |
-| Display runtime | `B5.5Z · build 22` |
+| Runtime live VPS | `9b359b71ee4f9791a5145c0b5ab6aa36164c2dc8` |
+| Blob monolite (git) | `51f0781fc26f4226e5516f49bbe34aa44d25c2cf` |
+| `APP_BUILD_NUM` | `23` |
+| Display runtime | `B5.5Z · build 23` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| UX-NEXT-RUNTIME-BUNDLE-E | **CLOSED / PASS end-to-end** (consolidamento UX pannelli/mappa) |
+| MAJOR-1 | **CLOSED / PASS end-to-end** (pannello Diagnostica read-only) |
+| UX-NEXT-RUNTIME-BUNDLE-E | **CLOSED / PASS end-to-end** (build 22) |
 | UX-NEXT-RUNTIME-BUNDLE-D | **CLOSED / PASS end-to-end** (build 21; wheel FIX2) |
 | UX-NEXT-RUNTIME-BUNDLE-C | **CLOSED / PASS end-to-end** (build 18) |
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=fb871b7` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=9b359b7` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — titolo statico `<title>`.
+**MAJOR-2 — Offline tile management serio** (programma major-feature).
 
 ---
 
