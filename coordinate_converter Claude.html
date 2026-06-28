@@ -4575,31 +4575,7 @@ body.mm-enlarged .sig-badge{display:none}
   border-radius:14px; z-index:5; letter-spacing:.3px;
 }
 
-/* ================= MODAL (help / shortcuts) ================= */
-/* TODO cleanup-legacy-modals-build5: legacy Help/QR modal styles after dialog migration */
-.modal-overlay{
-  position:fixed; inset:0; background:rgba(0,0,0,.55);
-  display:none; align-items:center; justify-content:center;
-  z-index:1000; padding:20px;
-  backdrop-filter:blur(var(--glass-blur)) saturate(120%);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(120%);
-  animation:fadeIn .15s ease-out;
-}
-.modal-overlay.open{display:flex}
-.modal{
-  background:var(--panel); color:var(--text);
-  border:1px solid var(--border); border-radius:var(--radius-card);
-  backdrop-filter:blur(var(--glass-blur)) saturate(150%);
-  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(150%);
-  box-shadow:var(--shadow-lg), var(--shadow-inset-card);
-  max-width:560px; width:100%; max-height:90vh; overflow:auto;
-  padding:22px 26px; position:relative;
-}
-.modal h2{margin-bottom:10px; font-size:1.35rem}
-/* Posizionamento close modale About/Help/QR; stile chip → blocco unificato .app-modal-close sotto. */
-.modal .modal-close{
-  position:absolute; top:12px; right:12px;
-}
+/* ================= HELP / QR DIALOG MODALS ================= */
 /* Help / QR — modern <dialog> content modals */
 dialog.help-modal.app-modal{
   max-width:min(560px, 96vw);
@@ -4621,7 +4597,6 @@ dialog.qr-modal.app-modal .app-modal-body{
   min-height:0;
 }
 /* QR modal: centered code + URL readout */
-.qr-modal{max-width:440px}
 .qr-svg-wrap{
   display:flex; justify-content:center; align-items:center;
   margin:16px auto 10px; padding:14px;
@@ -4640,15 +4615,10 @@ dialog.qr-modal.app-modal .app-modal-body{
   font-family:ui-monospace,Menlo,Consolas,monospace; font-size:.82rem;
   color:var(--text); text-align:center;
 }
-.modal p,
 dialog.help-modal.app-modal .app-modal-body p{color:var(--muted); font-size:.9rem}
-.modal table,
 dialog.help-modal.app-modal .app-modal-body table{width:100%; border-collapse:collapse; margin-top:10px}
-.modal table td,
 dialog.help-modal.app-modal .app-modal-body table td{padding:8px 4px; border-bottom:1px solid var(--border); font-size:.93rem; vertical-align:top}
-.modal table td:first-child,
 dialog.help-modal.app-modal .app-modal-body table td:first-child{width:40%}
-.modal kbd,
 dialog.help-modal.app-modal .app-modal-body kbd{
   display:inline-block; padding:2px 8px; border-radius:5px;
   border:1px solid var(--border-strong); background:var(--panel2);
@@ -5827,7 +5797,7 @@ body.printing-report #printReport:not(:empty){
   body:not(.printing-report) header, body:not(.printing-report) .paste-section,
   body:not(.printing-report) .input-col, body:not(.printing-report) details,
   body:not(.printing-report) footer, body:not(.printing-report) .actions,
-  body:not(.printing-report) .header-ctrls, body:not(.printing-report) .modal-overlay,
+  body:not(.printing-report) .header-ctrls,
   body:not(.printing-report) #helpOverlay, body:not(.printing-report) #qrModal,
   body:not(.printing-report) .sig-badge, body:not(.printing-report) #printReport:empty{ display:none !important; }
   body:not(.printing-report) .grid{ grid-template-columns:1fr; }
@@ -6356,7 +6326,6 @@ dialog.app-modal::backdrop{
 .app-modal-title{ margin:0; font-size:1.15rem; font-weight:700; }
 /* Family 1 — chiusura pannello/modal: chip glass neutro (× sempre visibile; non danger; focus = --ring-focus). */
 .app-modal-close,
-.modal .modal-close,
 .tools-drawer-head .drawer-close,
 .tab-drawer-close,
 .tile-map .tile-offline-float .toff-close{
@@ -6388,8 +6357,6 @@ dialog.app-modal::backdrop{
 }
 .app-modal-close:hover,
 .app-modal-close:focus-visible,
-.modal .modal-close:hover,
-.modal .modal-close:focus-visible,
 .tools-drawer-head .drawer-close:hover,
 .tools-drawer-head .drawer-close:focus-visible,
 .tab-drawer-close:hover,
@@ -6401,7 +6368,6 @@ dialog.app-modal::backdrop{
   transform:none;
 }
 .app-modal-close::before,
-.modal .modal-close::before,
 .tools-drawer-head .drawer-close::before,
 .tab-drawer-close::before,
 .tile-map .tile-offline-float .toff-close::before{
@@ -6418,8 +6384,6 @@ dialog.app-modal::backdrop{
 }
 .app-modal-close:hover::before,
 .app-modal-close:focus-visible::before,
-.modal .modal-close:hover::before,
-.modal .modal-close:focus-visible::before,
 .tools-drawer-head .drawer-close:hover::before,
 .tools-drawer-head .drawer-close:focus-visible::before,
 .tab-drawer-close:hover::before,
@@ -6429,7 +6393,6 @@ dialog.app-modal::backdrop{
   color:var(--text-primary);
 }
 .app-modal-close:focus-visible,
-.modal .modal-close:focus-visible,
 .tools-drawer-head .drawer-close:focus-visible,
 .tab-drawer-close:focus-visible,
 .tile-map .tile-offline-float .toff-close:focus-visible{
@@ -6437,7 +6400,6 @@ dialog.app-modal::backdrop{
   box-shadow:var(--ring-focus);
 }
 html[data-theme="light"] .app-modal-close,
-html[data-theme="light"] .modal .modal-close,
 html[data-theme="light"] .tools-drawer-head .drawer-close,
 html[data-theme="light"] .tab-drawer-close,
 html[data-theme="light"] .tile-map .tile-offline-float .toff-close{
@@ -6999,9 +6961,6 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 .app-modal-close[data-tip]::before,
 .app-modal-close[data-tip]:hover::before,
 .app-modal-close[data-tip]:focus-visible::before,
-.modal .modal-close[data-tip]::before,
-.modal .modal-close[data-tip]:hover::before,
-.modal .modal-close[data-tip]:focus-visible::before,
 .tools-drawer-head .drawer-close[data-tip]::before,
 .tools-drawer-head .drawer-close[data-tip]:hover::before,
 .tools-drawer-head .drawer-close[data-tip]:focus-visible::before,
@@ -7038,8 +6997,6 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 #waypointModal .app-modal-close[data-tip]:focus-visible::before,
 .app-modal-close[data-tip]:hover::before,
 .app-modal-close[data-tip]:focus-visible::before,
-.modal .modal-close[data-tip]:hover::before,
-.modal .modal-close[data-tip]:focus-visible::before,
 .tools-drawer-head .drawer-close[data-tip]:hover::before,
 .tools-drawer-head .drawer-close[data-tip]:focus-visible::before,
 .tab-drawer-close[data-tip]:hover::before,
@@ -8666,7 +8623,7 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 .offline-areas-table .btn-danger-subtle[data-offline-del] .danger-x{ margin-right:0; }
 
 /* Row-delete X (single-row destructive): unify look across tables/lists.
- * This is NOT a modal/panel close button (those use .modal-close/.drawer-close/.tab-drawer-close/.app-modal-close). */
+ * This is NOT a modal/panel close button (those use .drawer-close/.tab-drawer-close/.app-modal-close). */
 .saved-tracks-table .btn-danger-subtle[data-saved-del],
 .offline-areas-table .btn-danger-subtle[data-offline-del],
 #waypointModal button.btn.btn-sm[data-role="wp-del"],
@@ -9262,19 +9219,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     flex:1 1 0;
     min-height:44px;
     justify-content:center;
-  }
-  /* TODO cleanup-legacy-modals-build5: legacy Help/QR modal mobile styles after dialog migration */
-  .modal-overlay{
-    padding:max(10px, env(safe-area-inset-top, 0px)) max(10px, env(safe-area-inset-right, 0px)) max(10px, env(safe-area-inset-bottom, 0px)) max(10px, env(safe-area-inset-left, 0px));
-    align-items:flex-end;
-  }
-  .modal-overlay .modal{
-    width:100%;
-    max-width:100%;
-    max-height:calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 20px);
-    overflow-y:auto;
-    -webkit-overflow-scrolling:touch;
-    padding:18px 16px max(16px, env(safe-area-inset-bottom, 0px));
   }
   dialog.help-modal.app-modal,
   dialog.qr-modal.app-modal{
@@ -18126,7 +18070,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 14;
+const APP_BUILD_NUM = 15;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -47209,7 +47153,6 @@ function openPolygonPanel(){
       try { gisRestoreMinimizedPanel("polygonPanel"); } catch(_){}
     }
     try { renderPolygonPanelList(); renderPolygonEditBar(); } catch(_){}
-    try { renderAllMaps(); } catch(_){}
     return;
   }
   state.polygonPanelOpen = true;
@@ -47224,7 +47167,6 @@ function openPolygonPanel(){
   try { ensurePolygonPanelListWired(); polygonWirePanelBarsOnce(); } catch(_){}
   renderPolygonPanelList();
   try { renderPolygonEditBar(); } catch(_){}
-  try { renderAllMaps(); } catch(_){}
 }
 function closePolygonPanel(){
   const dlg = document.getElementById("polygonPanel");
@@ -47245,7 +47187,6 @@ function closePolygonPanel(){
     if (h) h.classList.remove("gis-panel-drag-head");
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
-  try { renderAllMaps(); } catch(_){}
 }
 /* ───── Polygon edit state (POLY-EDIT-B2) ───── */
 function polygonIsEditing(){
@@ -48878,7 +48819,6 @@ function polygonDeleteByIds(ids, opts){
   polygonHideRenameBar();
   state._polygonPanelInlineRenameId = null;
   renderPolygonPanelList();
-  try { renderAllMaps(); } catch(_){}
   try {
     const msg = n === 1
       ? ((typeof t === "function" ? t("gis.polygonPanel.deletedOk") : "") || "Poligono eliminato.")
@@ -48912,7 +48852,6 @@ function polygonToggleVisibility(id){
   const vis = f.properties && f.properties.visible !== false;
   gisFeatureUpdate(id, { properties: { visible: !vis } }, { recordUndo: false });
   renderPolygonPanelList();
-  try { renderAllMaps(); } catch(_){}
 }
 function polygonWirePanelBarsOnce(){
   if (state._polyPanelBarsWired) return;
@@ -49258,7 +49197,6 @@ function applyPolygonVisibilityByIds(ids, wantVisible){
   }
   if (!hit) return false;
   renderPolygonPanelList();
-  try { renderAllMaps(); } catch(_){}
   return true;
 }
 function applyPolygonVisibilityAll(wantVisible){
@@ -49270,7 +49208,6 @@ function applyPolygonVisibilityAll(wantVisible){
     gisFeatureUpdate(String(f.id), { properties: { visible: !!wantVisible } }, { recordUndo: false });
   }
   renderPolygonPanelList();
-  try { renderAllMaps(); } catch(_){}
 }
 function polygonListColResizeSpan(handleKey){
   const ra = (typeof t === "function") ? (t("track.colResizeAria") || "") : "";
