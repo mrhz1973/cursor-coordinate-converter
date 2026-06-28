@@ -117,20 +117,21 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `19700b6` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-D** — CLOSED / PASS end-to-end (build 21) |
+| HEAD remoto (verificato) | `fb871b7` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-E** — CLOSED / PASS end-to-end (build 22) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `19700b6a2cec925ec2bca16cd6127c46b7d84202` |
-| Blob monolite (git) | `65b7293ab229b2a37cb3f1ec03666f565900c73e` |
-| `APP_BUILD_NUM` | `21` |
-| Display runtime | `B5.5Z · build 21` |
+| Runtime live VPS | `fb871b7684160c1eff48cb8567f62819544d7d5d` |
+| Blob monolite (git) | `3c5759048a8572b10e1271dd6d6759949dd1fc98` |
+| `APP_BUILD_NUM` | `22` |
+| Display runtime | `B5.5Z · build 22` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| UX-NEXT-RUNTIME-BUNDLE-D | **CLOSED / PASS end-to-end** (HUD/resize polish + wheel FIX2; D-FIX1 QA FAIL storico) |
+| UX-NEXT-RUNTIME-BUNDLE-E | **CLOSED / PASS end-to-end** (consolidamento UX pannelli/mappa) |
+| UX-NEXT-RUNTIME-BUNDLE-D | **CLOSED / PASS end-to-end** (build 21; wheel FIX2) |
 | UX-NEXT-RUNTIME-BUNDLE-C | **CLOSED / PASS end-to-end** (build 18) |
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=19700b6` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=fb871b7` |
 
 **Prossimo ordine operativo:**
 
@@ -139,6 +140,14 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 ---
 
 ## Backlog / note immediate
+
+### UX-NEXT-RUNTIME-BUNDLE-E — consolidamento UX GIS (runtime landed)
+
+- Empty states + micro-help su Preferiti, Tracce, Poligoni, Waypoints, Layers, Range Rings, Misura, Cerca
+- Focus-visible toolbar/zoom/strati; `tip.modalClosePanelEsc` su pannelli GIS floating
+- HUD chip build 22 + tooltip `APP_BUILD_LABEL`; centro mappa con `gis.hud.centerFmt`
+- Mobile: hit target toolbar 36px; scroll body pannelli
+- **Wheel zoom invariato** (fix D-FIX2)
 
 ### UX-NEXT-RUNTIME-BUNDLE-D — HUD/resize polish + wheel zoom (runtime landed)
 
