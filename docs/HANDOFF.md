@@ -117,35 +117,35 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `11cdb1f` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **METHOD-QA-PASS-AUTO-FINITO** — CLOSED / PASS docs-only |
+| HEAD remoto (verificato) | `61bcda5` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-A** — CLOSED / PASS end-to-end (build 16) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `7b8cf041383b55b80668a30ce12607a8888b774c` |
-| Blob monolite | `71e353ee85c15bf2713bc7998c72582f81723ec5` |
-| `APP_BUILD_NUM` | `15` |
-| Display runtime | `B5.5Z · build 15` |
+| Runtime live VPS | `61bcda5a309aca0db7e7a053e4e65aa0280615eb` |
+| Blob monolite | `5bf008d739ba5679e64605fd3e6f9a3fb9644836` |
+| `APP_BUILD_NUM` | `16` |
+| Display runtime | `B5.5Z · build 16` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15; primo bundle-first, 7 item cleanup) |
-| BUNDLE-BACKLOG-B3 | **CLOSED / PASS end-to-end** (build 14) |
-| MODAL-STD-B2 | **CLOSED / PASS end-to-end** (build 11→13) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=7b8cf04` |
+| UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (resize Preferiti + HUD + cleanup rename bar) |
+| ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=61bcda5` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — resize laterale pannelli (pilota), HUD-VIS/HUD-LAYOUT (design), `polygonHideRenameBar` cleanup (nessun obbligo fisso).
+**Da scegliere da roadmap/backlog** — estensione resize laterale ad altri pannelli; HUD avanzato (HUD-MOVE / HUD-VIS settings).
 
 ---
 
 ## Backlog / note immediate
 
-### UX-NEXT-B — colonne ridimensionabili (runtime landed)
+### UX-NEXT-RUNTIME-BUNDLE-A — resize pilota + HUD (runtime landed)
 
-- Larghezze **sessione / transienti** su `state` o nodo mount
-- **Non** persistite in localStorage dedicato (salvo decisione esplicita futura)
+- Resize laterale **pilota** su `#favoritesPanel` (handle `e`/`w`); estensione ad altri pannelli = backlog
+- HUD leggero `#gisMapHud` (layer, zoom, offline/OPSEC warning) — sessione/transiente
+- Cleanup `#polygonPanelRenameBar` / `polygonHideRenameBar` **eseguito** (rename inline invariato)
 
 ### Dead code candidato (non implementare ora)
 
-- `polygonHideRenameBar` / `#polygonPanelRenameBar` — ancora wired (ESC/edit cancel); cleanup futuro bundle dedicato
+- Chiavi i18n orfane `gis.polygonPanel.renameLabel` / `renameSave` — cleanup cosmetico opzionale
 
 ---
 
