@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-28 — **`finito` sessione — METHOD-QA-PASS-AUTO-FINITO CLOSED / PASS docs-only:** commit task **`11cdb1f`** — chiusura formale `finito`; OM §7 + WU roadmap + HANDOFF seed aggiornati; blocco metodo già implementato in **`78ea6c9`**/**`bacabef`**; monolite invariato blob **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo: bundle runtime da backlog; inbox **`2026-06-28_0250_riepilogo_finito-sessione.md`**.
+
 2026-06-28 — **METHOD-QA-PASS-AUTO-FINITO codificato (docs/rules-only):** commit task **`78ea6c9`** — regola «QA-PASS AUTO-INNESCA FINITO»: nei prompt bundle runtime la riga `QA <BLOCK-ID> PASS operatore` innesca automaticamente la coda `finito` pre-autorizzata (chiusura docs + autosync); elimina giro separato «ora lancia finito»; Regola H OM §4; template coda in QA-CHECKLIST + OM §4; aggiornati `README.md`, `.cursor/rules/30-output-workflow.mdc`, `HANDOFF.md`; **nessun runtime/deploy**; monolite invariato blob **`71e353ee…`** @ runtime live **`7b8cf04`** build 15; inbox **`2026-06-28_0235_riepilogo_method-qa-pass-auto-finito.md`**.
 
 2026-06-28 — **ROUTINE-CLEANUP-BUNDLE CLOSED / PASS end-to-end (docs-only):** runtime **`7b8cf04`** (build 15, primo bundle METHOD-BUNDLING-DEFAULT: CSS legacy modal + 7× renderAllMaps no-op + cleanup cosmetico; review **NON RICHIESTA**, deploy GIS-only PASS byte **2423860** SHA **`0caa7065…`**, CMP_PASS); **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**; blob **`71e353ee…`**; display **`B5.5Z · build 15`**; monolite invariato in chiusura docs; inbox **`2026-06-28_0315_riepilogo_finito-sessione.md`**.

@@ -117,7 +117,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `bacabef` — aggiornare con `git ls-remote` prima di ogni sessione |
+| HEAD remoto (verificato) | `11cdb1f` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **METHOD-QA-PASS-AUTO-FINITO** — CLOSED / PASS docs-only |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime live VPS | `7b8cf041383b55b80668a30ce12607a8888b774c` |
