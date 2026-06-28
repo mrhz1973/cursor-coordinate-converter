@@ -6244,7 +6244,7 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   border-radius:0;
   box-shadow:none;
 }
-/* UX-NEXT-RUNTIME-BUNDLE-A/B: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact). */
+/* UX-NEXT-RUNTIME-BUNDLE-A/B/C: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
 body.gis-mode #gisMapMount > #gisMapHud{
   position:absolute;
   top:auto; left:auto; right:auto; bottom:auto;
@@ -6262,17 +6262,17 @@ body.gis-mode #gisMapHud.is-corner-tl{
 }
 body.gis-mode #gisMapHud.is-corner-tr{
   top:calc(env(safe-area-inset-top, 0px) + 6px);
-  right:calc(env(safe-area-inset-right, 0px) + 52px);
+  right:calc(env(safe-area-inset-right, 0px) + 56px);
   left:auto;
 }
 body.gis-mode #gisMapHud.is-corner-bl{
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 48px);
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
   left:calc(env(safe-area-inset-left, 0px) + 8px);
   top:auto;
 }
 body.gis-mode #gisMapHud.is-corner-br{
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 10px);
-  right:calc(env(safe-area-inset-right, 0px) + 8px);
+  bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);
+  right:calc(env(safe-area-inset-right, 0px) + 10px);
   top:auto;
   left:auto;
 }
@@ -6328,7 +6328,7 @@ body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]){
 }
 @media (max-width:600px){
   body.gis-mode #gisMapMount > #gisMapHud{
-    max-width:calc(100vw - 96px);
+    max-width:calc(100vw - 108px);
     gap:3px;
   }
   body.gis-mode #gisMapHud.is-corner-tl{
@@ -6337,11 +6337,18 @@ body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]){
   }
   body.gis-mode #gisMapHud.is-corner-tr{
     top:calc(env(safe-area-inset-top, 0px) + 4px);
-    right:calc(env(safe-area-inset-right, 0px) + 44px);
+    right:calc(env(safe-area-inset-right, 0px) + 56px);
+    max-width:calc(100vw - 120px);
   }
   body.gis-mode #gisMapHud.is-corner-bl{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 44px);
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
     left:calc(env(safe-area-inset-left, 0px) + 4px);
+    max-width:calc(100vw - 88px);
+  }
+  body.gis-mode #gisMapHud.is-corner-br{
+    bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
+    right:calc(env(safe-area-inset-right, 0px) + 4px);
+    max-width:calc(100vw - 88px);
   }
   body.gis-mode #gisMapHud .gis-map-hud-chip{ font-size:.62rem; padding:1px 6px; }
 }
@@ -8193,22 +8200,32 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="sw"],
 #favoritesPanel .gis-panel-resize-handle[data-handle="sw"],
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
-/* UX-NEXT-RUNTIME-BUNDLE-A/B: lateral width resize (e/w). */
+/* UX-NEXT-RUNTIME-BUNDLE-A/B/C: lateral width resize (e/w). */
 #favoritesPanel .gis-panel-resize-handle[data-handle="e"],
 #polygonPanel .gis-panel-resize-handle[data-handle="e"],
 #layersPanel .gis-panel-resize-handle[data-handle="e"],
 #searchPanel .gis-panel-resize-handle[data-handle="e"],
-#trackModal .track-resize-handle[data-handle="e"]{
+#trackModal .track-resize-handle[data-handle="e"],
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="e"],
+#measurePanel .gis-panel-resize-handle[data-handle="e"],
+#helpOverlay .gis-panel-resize-handle[data-handle="e"],
+#waypointModal .gis-panel-resize-handle[data-handle="e"]{
   right:0; top:50%; transform:translateY(-50%);
-  width:14px; height:48px; cursor:ew-resize;
+  width:16px; height:52px; cursor:ew-resize;
+  z-index:2; touch-action:none;
 }
 #favoritesPanel .gis-panel-resize-handle[data-handle="w"],
 #polygonPanel .gis-panel-resize-handle[data-handle="w"],
 #layersPanel .gis-panel-resize-handle[data-handle="w"],
 #searchPanel .gis-panel-resize-handle[data-handle="w"],
-#trackModal .track-resize-handle[data-handle="w"]{
+#trackModal .track-resize-handle[data-handle="w"],
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="w"],
+#measurePanel .gis-panel-resize-handle[data-handle="w"],
+#helpOverlay .gis-panel-resize-handle[data-handle="w"],
+#waypointModal .gis-panel-resize-handle[data-handle="w"]{
   left:0; top:50%; transform:translateY(-50%);
-  width:14px; height:48px; cursor:ew-resize;
+  width:16px; height:52px; cursor:ew-resize;
+  z-index:2; touch-action:none;
 }
 #favoritesPanel .gis-panel-resize-handle[data-handle="e"]::after,
 #favoritesPanel .gis-panel-resize-handle[data-handle="w"]::after,
@@ -8219,10 +8236,61 @@ dialog.track-modal.app-modal{
 #searchPanel .gis-panel-resize-handle[data-handle="e"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="w"]::after,
 #trackModal .track-resize-handle[data-handle="e"]::after,
-#trackModal .track-resize-handle[data-handle="w"]::after{
+#trackModal .track-resize-handle[data-handle="w"]::after,
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#measurePanel .gis-panel-resize-handle[data-handle="e"]::after,
+#measurePanel .gis-panel-resize-handle[data-handle="w"]::after,
+#helpOverlay .gis-panel-resize-handle[data-handle="e"]::after,
+#helpOverlay .gis-panel-resize-handle[data-handle="w"]::after,
+#waypointModal .gis-panel-resize-handle[data-handle="e"]::after,
+#waypointModal .gis-panel-resize-handle[data-handle="w"]::after{
   content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  width:3px; height:18px; border-radius:2px;
-  background:var(--gis-grip-stroke, rgba(255,255,255,.72));
+  width:4px; height:22px; border-radius:2px;
+  background:var(--gis-grip-stroke, rgba(255,255,255,.78));
+  box-shadow:0 0 0 1px rgba(0,0,0,.22);
+}
+#favoritesPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#favoritesPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#polygonPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#polygonPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#layersPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#layersPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#searchPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#searchPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#trackModal .track-resize-handle[data-handle="e"]:hover,
+#trackModal .track-resize-handle[data-handle="w"]:hover,
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#rangeRingsPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#measurePanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#measurePanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#helpOverlay .gis-panel-resize-handle[data-handle="e"]:hover,
+#helpOverlay .gis-panel-resize-handle[data-handle="w"]:hover,
+#waypointModal .gis-panel-resize-handle[data-handle="e"]:hover,
+#waypointModal .gis-panel-resize-handle[data-handle="w"]:hover{
+  background:color-mix(in srgb, var(--accent) 14%, transparent);
+}
+@media (max-width:600px){
+  #favoritesPanel .gis-panel-resize-handle[data-handle="e"],
+  #polygonPanel .gis-panel-resize-handle[data-handle="e"],
+  #layersPanel .gis-panel-resize-handle[data-handle="e"],
+  #searchPanel .gis-panel-resize-handle[data-handle="e"],
+  #trackModal .track-resize-handle[data-handle="e"],
+  #rangeRingsPanel .gis-panel-resize-handle[data-handle="e"],
+  #measurePanel .gis-panel-resize-handle[data-handle="e"],
+  #helpOverlay .gis-panel-resize-handle[data-handle="e"],
+  #waypointModal .gis-panel-resize-handle[data-handle="e"],
+  #favoritesPanel .gis-panel-resize-handle[data-handle="w"],
+  #polygonPanel .gis-panel-resize-handle[data-handle="w"],
+  #layersPanel .gis-panel-resize-handle[data-handle="w"],
+  #searchPanel .gis-panel-resize-handle[data-handle="w"],
+  #trackModal .track-resize-handle[data-handle="w"],
+  #rangeRingsPanel .gis-panel-resize-handle[data-handle="w"],
+  #measurePanel .gis-panel-resize-handle[data-handle="w"],
+  #helpOverlay .gis-panel-resize-handle[data-handle="w"],
+  #waypointModal .gis-panel-resize-handle[data-handle="w"]{
+    width:18px; height:56px;
+  }
 }
 .gis-panel-resize-handle:hover,
 #trackModal .track-resize-handle:hover{ background:color-mix(in srgb, var(--accent) 7%, transparent); }
@@ -10724,6 +10792,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <!-- JPG export options (B5.4): optional scale on canvas before toBlob. -->
@@ -11041,6 +11111,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="rangeRingsPanel" class="app-modal range-rings-panel" aria-labelledby="rangeRingsPanelTitle" aria-modal="false">
@@ -11058,6 +11130,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <dialog id="polygonPanel" class="app-modal polygon-panel" aria-labelledby="polygonPanelTitle" aria-modal="false">
@@ -11724,6 +11798,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <!-- ============ FLOATING AUTHOR MONOGRAM (bottom-right, always visible) ============ -->
@@ -12707,8 +12783,6 @@ const I18N = {
     "tip.polygonPanel.exportGeoJson":"Scarica tutti i poligoni come FeatureCollection GeoJSON.",
     "tip.polygonPanel.exportKml":"Scarica tutti i poligoni come file KML 2.2.",
     "gis.polygonPanel.rename":"Rinomina",
-    "gis.polygonPanel.renameLabel":"Nome poligono",
-    "gis.polygonPanel.renameSave":"Salva nome",
     "gis.polygonPanel.renameOk":"Nome aggiornato.",
     "gis.polygonPanel.delete":"Elimina",
     "gis.polygonPanel.deleteMsg":"Eliminare il poligono «{0}»?",
@@ -12792,7 +12866,7 @@ const I18N = {
     "tip.polygonPanel.listShow":"Centra la mappa sul poligono.",
     "tip.polygonPanel":"Poligoni",
     "tip.panelResize":"Ridimensiona pannello",
-    "tip.panelResizeEW":"Ridimensiona larghezza pannello",
+    "tip.panelResizeEW":"Trascina il bordo per ridimensionare la larghezza",
     "gis.hud.aria":"Stato mappa",
     "gis.hud.layer":"Layer",
     "gis.hud.zoom":"Zoom",
@@ -12803,6 +12877,8 @@ const I18N = {
     "gis.hud.expand":"Espandi HUD",
     "gis.hud.center":"Centro",
     "gis.hud.seamarks":"Seamarks",
+    "gis.hud.reset":"Ripristina HUD",
+    "gis.hud.toolbar":"Controlli HUD",
     "tip.toolsDrawerClose":"Chiudi strumenti",
     "tip.floatingClose":"Chiudi",
     "tip.zoomIn":"Zoom avanti",
@@ -14397,8 +14473,6 @@ const I18N = {
     "tip.polygonPanel.exportGeoJson":"Download all polygons as a GeoJSON FeatureCollection.",
     "tip.polygonPanel.exportKml":"Download all polygons as a KML 2.2 file.",
     "gis.polygonPanel.rename":"Rename",
-    "gis.polygonPanel.renameLabel":"Polygon name",
-    "gis.polygonPanel.renameSave":"Save name",
     "gis.polygonPanel.renameOk":"Name updated.",
     "gis.polygonPanel.delete":"Delete",
     "gis.polygonPanel.deleteMsg":"Delete polygon «{0}»?",
@@ -14482,7 +14556,7 @@ const I18N = {
     "tip.polygonPanel.listShow":"Center the map on the polygon.",
     "tip.polygonPanel":"Polygons",
     "tip.panelResize":"Resize panel",
-    "tip.panelResizeEW":"Resize panel width",
+    "tip.panelResizeEW":"Drag edge to resize panel width",
     "gis.hud.aria":"Map status",
     "gis.hud.layer":"Layer",
     "gis.hud.zoom":"Zoom",
@@ -14493,6 +14567,8 @@ const I18N = {
     "gis.hud.expand":"Expand HUD",
     "gis.hud.center":"Center",
     "gis.hud.seamarks":"Seamarks",
+    "gis.hud.reset":"Reset HUD",
+    "gis.hud.toolbar":"HUD controls",
     "tip.toolsDrawerClose":"Close tools",
     "tip.floatingClose":"Close",
     "tip.zoomIn":"Zoom in",
@@ -16088,8 +16164,6 @@ const I18N = {
     "tip.polygonPanel.exportGeoJson":"Télécharger tous les polygones en FeatureCollection GeoJSON.",
     "tip.polygonPanel.exportKml":"Télécharger tous les polygones en fichier KML 2.2.",
     "gis.polygonPanel.rename":"Renommer",
-    "gis.polygonPanel.renameLabel":"Nom du polygone",
-    "gis.polygonPanel.renameSave":"Enregistrer",
     "gis.polygonPanel.renameOk":"Nom mis à jour.",
     "gis.polygonPanel.delete":"Supprimer",
     "gis.polygonPanel.deleteMsg":"Supprimer le polygone « {0} » ?",
@@ -16135,7 +16209,7 @@ const I18N = {
     "tip.polygonPanel.visibility":"Afficher ou masquer le polygone sur la carte.",
     "tip.polygonPanel":"Polygones",
     "tip.panelResize":"Redimensionner le panneau",
-    "tip.panelResizeEW":"Redimensionner la largeur du panneau",
+    "tip.panelResizeEW":"Faites glisser le bord pour redimensionner la largeur",
     "gis.hud.aria":"État carte",
     "gis.hud.layer":"Couche",
     "gis.hud.zoom":"Zoom",
@@ -16146,6 +16220,8 @@ const I18N = {
     "gis.hud.expand":"Développer HUD",
     "gis.hud.center":"Centre",
     "gis.hud.seamarks":"Seamarks",
+    "gis.hud.reset":"Réinitialiser HUD",
+    "gis.hud.toolbar":"Contrôles HUD",
     "tip.toolsDrawerClose":"Fermer les outils",
     "tip.floatingClose":"Fermer",
     "tip.zoomIn":"Zoom avant",
@@ -18232,7 +18308,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 17;
+const APP_BUILD_NUM = 18;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -43765,10 +43841,15 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
-/** UX-NEXT-RUNTIME-BUNDLE-A/B: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact). */
+/** UX-NEXT-RUNTIME-BUNDLE-A/B/C: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
 const GIS_MAP_HUD_CORNERS = ["tl", "tr", "br", "bl"];
-let _gisMapHudCorner = "tl";
+const GIS_MAP_HUD_DEFAULT_CORNER = "tl";
+let _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
 let _gisMapHudCompact = false;
+function gisMapHudResetDefaults(){
+  _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
+  _gisMapHudCompact = false;
+}
 function mapLayerHudLabel(){
   const layer = sanitizeMapLayer(state.mapLayer || "osm");
   try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return layer; }
@@ -43783,8 +43864,13 @@ function applyGisMapHudI18n(hud){
   if (!hud) return;
   const aria = (typeof t === "function" ? t("gis.hud.aria") : "") || "Map status";
   hud.setAttribute("aria-label", aria);
+  const toolbar = hud.querySelector(".gis-map-hud-toolbar");
+  if (toolbar && typeof t === "function"){
+    toolbar.setAttribute("aria-label", t("gis.hud.toolbar"));
+  }
   const cornerBtn = hud.querySelector('[data-role="gis-hud-corner"]');
   const compactBtn = hud.querySelector('[data-role="gis-hud-compact"]');
+  const resetBtn = hud.querySelector('[data-role="gis-hud-reset"]');
   if (cornerBtn && typeof t === "function"){
     const lbl = t("gis.hud.cornerCycle");
     cornerBtn.setAttribute("aria-label", lbl);
@@ -43797,6 +43883,18 @@ function applyGisMapHudI18n(hud){
     compactBtn.title = lbl;
     compactBtn.textContent = _gisMapHudCompact ? "+" : "−";
   }
+  if (resetBtn && typeof t === "function"){
+    const lbl = t("gis.hud.reset");
+    resetBtn.setAttribute("aria-label", lbl);
+    resetBtn.title = lbl;
+  }
+  hud.querySelectorAll(".gis-map-hud-chip[data-hud-tip]").forEach((chip) => {
+    const tip = chip.getAttribute("data-hud-tip");
+    if (tip){
+      chip.setAttribute("title", tip);
+      chip.setAttribute("aria-label", tip);
+    }
+  });
 }
 function gisEnsureMapHud(){
   if (!document.body.classList.contains("gis-mode")) return null;
@@ -43837,8 +43935,22 @@ function gisEnsureMapHud(){
       applyGisMapHudI18n(hud);
       try { updateGisMapHud(); } catch(_){}
     });
+    const resetBtn = document.createElement("button");
+    resetBtn.type = "button";
+    resetBtn.className = "gis-map-hud-btn";
+    resetBtn.setAttribute("data-role", "gis-hud-reset");
+    resetBtn.textContent = "↺";
+    resetBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      gisMapHudResetDefaults();
+      applyGisMapHudChrome(hud);
+      applyGisMapHudI18n(hud);
+      try { updateGisMapHud(); } catch(_){}
+    });
     toolbar.appendChild(cornerBtn);
     toolbar.appendChild(compactBtn);
+    toolbar.appendChild(resetBtn);
     const chipsWrap = document.createElement("div");
     chipsWrap.className = "gis-map-hud-chips";
     chipsWrap.setAttribute("data-role", "gis-hud-chips");
@@ -43860,28 +43972,31 @@ function updateGisMapHud(zoomOverride){
   const layerLbl = mapLayerHudLabel();
   const z = Number.isFinite(zoomOverride) ? zoomOverride : (state.mapZoom || 11);
   const zoomKey = (typeof t === "function" ? t("gis.hud.zoom") : "") || "Zoom";
+  const layerTip = layerKey + ": " + layerLbl;
+  const zoomTip = zoomKey + " " + String(z);
   const chips = [
-    `<span class="gis-map-hud-chip" data-hud="layer">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
-    `<span class="gis-map-hud-chip" data-hud="zoom">${esc(zoomKey)} ${esc(String(z))}</span>`
+    `<span class="gis-map-hud-chip" data-hud="layer" data-hud-tip="${esc(layerTip)}">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
+    `<span class="gis-map-hud-chip" data-hud="zoom" data-hud-tip="${esc(zoomTip)}">${esc(zoomKey)} ${esc(String(z))}</span>`
   ];
   if (!_gisMapHudCompact){
     const vc = state.viewCenter;
     if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
       const ck = (typeof t === "function" ? t("gis.hud.center") : "") || "Center";
-      chips.push(`<span class="gis-map-hud-chip" data-hud="center">${esc(ck)} ${esc(vc.lat.toFixed(5))}, ${esc(vc.lon.toFixed(5))}</span>`);
+      const centerTip = ck + " " + vc.lat.toFixed(5) + ", " + vc.lon.toFixed(5);
+      chips.push(`<span class="gis-map-hud-chip" data-hud="center" data-hud-tip="${esc(centerTip)}">${esc(ck)} ${esc(vc.lat.toFixed(5))}, ${esc(vc.lon.toFixed(5))}</span>`);
     }
     if (state.showSeamarks){
       const smLbl = (typeof t === "function" ? t("gis.hud.seamarks") : "") || "Seamarks";
       const blocked = !!(state.forceOffline || state.opsecStrict);
-      chips.push(`<span class="gis-map-hud-chip${blocked ? " is-warn" : ""}" data-hud="seamarks">${esc(smLbl)}</span>`);
+      chips.push(`<span class="gis-map-hud-chip${blocked ? " is-warn" : ""}" data-hud="seamarks" data-hud-tip="${esc(smLbl)}">${esc(smLbl)}</span>`);
     }
     if (state.forceOffline){
       const offLbl = (typeof t === "function" ? t("gis.hud.offline") : "") || "Offline";
-      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline">${esc(offLbl)}</span>`);
+      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="offline" data-hud-tip="${esc(offLbl)}">${esc(offLbl)}</span>`);
     }
     if (state.opsecStrict){
       const opLbl = (typeof t === "function" ? t("gis.hud.opsec") : "") || "OPSEC";
-      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec">${esc(opLbl)}</span>`);
+      chips.push(`<span class="gis-map-hud-chip is-warn" data-hud="opsec" data-hud-tip="${esc(opLbl)}">${esc(opLbl)}</span>`);
     }
   }
   chipsWrap.innerHTML = chips.join("");
@@ -46849,7 +46964,7 @@ function attachWaypointModalFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#waypointModalClose,[data-role=\"waypointmodal-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    ignoreSelector: "#waypointModalClose,[data-role=\"waypointmodal-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
