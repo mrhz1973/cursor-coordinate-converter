@@ -117,27 +117,36 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `8f56566` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-C** — CLOSED / PASS end-to-end (build 18) |
+| HEAD remoto (verificato) | `19700b6` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **UX-NEXT-RUNTIME-BUNDLE-D** — CLOSED / PASS end-to-end (build 21) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `8f56566557ef0ae9c5b740beed57eeaae630d784` |
-| Blob monolite (git) | `44a9ce09be9a977d304b41c152f35451d4110f8d` |
-| `APP_BUILD_NUM` | `18` |
-| Display runtime | `B5.5Z · build 18` |
+| Runtime live VPS | `19700b6a2cec925ec2bca16cd6127c46b7d84202` |
+| Blob monolite (git) | `65b7293ab229b2a37cb3f1ec03666f565900c73e` |
+| `APP_BUILD_NUM` | `21` |
+| Display runtime | `B5.5Z · build 21` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| UX-NEXT-RUNTIME-BUNDLE-C | **CLOSED / PASS end-to-end** (resize 4 pannelli residui + HUD polish/reset) |
+| UX-NEXT-RUNTIME-BUNDLE-D | **CLOSED / PASS end-to-end** (HUD/resize polish + wheel FIX2; D-FIX1 QA FAIL storico) |
+| UX-NEXT-RUNTIME-BUNDLE-C | **CLOSED / PASS end-to-end** (build 18) |
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=8f56566` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=19700b6` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog** — titolo statico `<title>`; polish HUD/pannelli da audit.
+**Da scegliere da roadmap/backlog** — titolo statico `<title>`.
 
 ---
 
 ## Backlog / note immediate
+
+### UX-NEXT-RUNTIME-BUNDLE-D — HUD/resize polish + wheel zoom (runtime landed)
+
+- HUD compact/chip polish; focus-visible su HUD e handle resize e/w
+- `gisPanelResetEwWidth` — doppio-clic ripristino larghezza pannello
+- `tip.panelResizeEW` IT/EN/FR aggiornato
+- **Wheel zoom FIX2** — wire-once `#miniMap`, idle 140 ms, cooldown 100 ms, ±1 per gesto
+- **D-FIX1** (`5fec693`, build 20) — QA FAIL storico; superseded da FIX2
 
 ### UX-NEXT-RUNTIME-BUNDLE-C — resize residui + HUD polish (runtime landed)
 
