@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `9b359b7` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-1** — Diagnostica runtime / QA hardening (build 23) |
+| HEAD remoto (verificato) | `07ad4f4` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-2A** — Verificatore copertura offline read-only (build 24) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `9b359b71ee4f9791a5145c0b5ab6aa36164c2dc8` |
-| Blob monolite (git) | `51f0781fc26f4226e5516f49bbe34aa44d25c2cf` |
-| `APP_BUILD_NUM` | `23` |
-| Display runtime | `B5.5Z · build 23` |
+| Runtime live VPS | `07ad4f41c0916df1fcefebf64a11e1d49ec75b6d` |
+| Blob monolite (git) | `b789538db128f4467e1e503b82d4e245c8de7591` |
+| `APP_BUILD_NUM` | `24` |
+| Display runtime | `B5.5Z · build 24` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-2A | **CLOSED / PASS end-to-end** (verificatore copertura offline read-only) |
 | MAJOR-1 | **CLOSED / PASS end-to-end** (pannello Diagnostica read-only) |
 | UX-NEXT-RUNTIME-BUNDLE-E | **CLOSED / PASS end-to-end** (build 22) |
 | UX-NEXT-RUNTIME-BUNDLE-D | **CLOSED / PASS end-to-end** (build 21; wheel FIX2) |
@@ -132,11 +133,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=9b359b7` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=07ad4f4` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-2 — Offline tile management serio** (programma major-feature).
+**MAJOR-2** — Offline tile management (sottoblocchi **2B/2D/2E** write/delete/status persistito — rimandati dopo 2A).
 
 ---
 

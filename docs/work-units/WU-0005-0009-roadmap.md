@@ -292,6 +292,7 @@ Voci:
   - **riferimento tecnico esistente:** `#measurePanel` / `#sec-measure` (Range & Bearing via `openMeasureFloatingPanelGis`, `_measurePanelLayoutOpts` ~L45278); pattern full-height già su Range Rings B6.4a-2 (`_rangeRingsPanelLayoutOpts`, `defaultHeightFraction: 0.92`);
   - implementazione futura a **blocchi piccoli**, verifica modal per modal; **nessuna** riscrittura CSS/HTML/JS generale in questo step documentale;
   - **perimetro:** modal/pannelli operativi app; **esclude** dialoghi nativi browser (`alert`, `confirm`, `prompt`).
+  - **Landed (2026-06-29):** **MAJOR-2A** — verificatore copertura offline read-only (`07ad4f4`, build 24, QA PASS); primo sottoblocco MAJOR-2.
   - **Landed (2026-06-29):** **MAJOR-1** — pannello Diagnostica runtime read-only (`9b359b7`, build 23, QA PASS); programma major-feature avviato.
   - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14); **ROUTINE-CLEANUP-BUNDLE** — primo bundle-first cleanup (`7b8cf04`, build 15, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-A** — resize pilota Preferiti + HUD + cleanup rename bar (`61bcda5`, build 16, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-B** — resize multi-pannello + HUD avanzato (`584135e`, build 17, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-C** — resize pannelli residui + HUD polish (`8f56566`, build 18, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-D** — HUD/resize polish + wheel zoom (`ec86b62`→`5fec693` FIX1 FAIL→`19700b6` FIX2 PASS, build 19→21, QA PASS FIX2); **UX-NEXT-RUNTIME-BUNDLE-E** — consolidamento UX pannelli/mappa (`fb871b7`, build 22, QA PASS).
   - **Prossimi candidati audit:** titolo statico `<title>` allineamento build.
@@ -309,7 +310,7 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **MAJOR-2 — Offline tile management serio** (programma major-feature); titolo statico `<title>` backlog minore. **MAJOR-1** **CLOSED** (`9b359b7`, build 23). **UX-NEXT-RUNTIME-BUNDLE-E** **CLOSED** (`fb871b7`, build 22). **UX-NEXT-RUNTIME-BUNDLE-D** **CLOSED** (`19700b6`, build 21). **UX-NEXT-RUNTIME-BUNDLE-C** **CLOSED** (`8f56566`, build 18). **UX-NEXT-RUNTIME-BUNDLE-B** **CLOSED** (`584135e`, build 17). **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
+  - **Prossimo ordine operativo:** **MAJOR-2 — Offline tile management serio** (programma major-feature; **MAJOR-2A CLOSED** `07ad4f4` build 24; prossimi candidati 2B/2D/2E write/delete); titolo statico `<title>` backlog minore. **MAJOR-2A** **CLOSED** (`07ad4f4`, build 24). **MAJOR-1** **CLOSED** (`9b359b7`, build 23). **UX-NEXT-RUNTIME-BUNDLE-E** **CLOSED** (`fb871b7`, build 22). **UX-NEXT-RUNTIME-BUNDLE-D** **CLOSED** (`19700b6`, build 21). **UX-NEXT-RUNTIME-BUNDLE-C** **CLOSED** (`8f56566`, build 18). **UX-NEXT-RUNTIME-BUNDLE-B** **CLOSED** (`584135e`, build 17). **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
@@ -1549,6 +1550,33 @@ goi-gis-app.service = active / enabled
 
 **Prossimi candidati:** estensione resize laterale ad altri pannelli; HUD avanzato (HUD-MOVE / HUD-VIS).
 
+#### MAJOR-2A — Verificatore copertura offline read-only (build 24)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-06-29).
+
+**Runtime:** `07ad4f41c0916df1fcefebf64a11e1d49ec75b6d` — blob git `b789538db128f4467e1e503b82d4e245c8de7591`.
+
+**Scopo:** primo sottoblocco MAJOR-2 — audit read-only tile attese vs IndexedDB per named areas; UI «Verifica copertura» per riga + batch selezionate; stato session-only `state._offlineAreaAudit`; integrazione Diagnostica `offlineAreaAudits`; nessun fetch/write/delete IDB.
+
+**Review:** **NON RICHIESTA** (read-only ROUTINE).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = 07ad4f41c0916df1fcefebf64a11e1d49ec75b6d
+HTTP 200
+byte repo/servito = 2502490 / 2502490
+SHA-256 file = c8c5679c4c3dbe621ab0aaa2543bb184b4d9d85edfca92c4904f802c4436e1ea (match)
+CMP_PASS = yes
+goi-gis-app.service = active (bind 100.114.7.53:8000)
+```
+
+**QA operatore:** PASS — «**QA MAJOR-2A PASS operatore**» (trigger auto-`finito` Regola H).
+
+**Runtime autorevole live VPS:** `07ad4f4`.
+
+**Prossimi candidati MAJOR-2:** 2B/2D/2E (write/delete/status persistito — rimandati).
+
 #### MAJOR-1 — Diagnostica runtime / QA hardening (build 23)
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-06-29).
@@ -1572,9 +1600,9 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 
 **QA operatore:** PASS — «**QA MAJOR-1 PASS operatore**» (trigger auto-`finito` Regola H).
 
-**Runtime autorevole live VPS:** `9b359b7`.
+**Runtime autorevole live VPS:** `9b359b7` (superseded da MAJOR-2A `07ad4f4`).
 
-**Prossimi candidati:** MAJOR-2 Offline tile management serio.
+**Prossimi candidati:** MAJOR-2A **CLOSED** — vedi sopra; MAJOR-2B/2D/2E.
 
 #### UX-NEXT-RUNTIME-BUNDLE-E — consolidamento UX GIS pannelli/mappa (build 22)
 
