@@ -11687,11 +11687,28 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <button type="button" class="app-modal-close" data-close-offline-area-del data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
   </div>
   <div class="app-modal-body">
-    <p data-i18n="offcache.area.deleteDialogBody">Puoi rimuovere solo l’area dalla lista oppure eliminare anche le tile scaricate per questa area. Se alcune tile sono condivise con altre aree sovrapposte, verranno conservate quando possibile per non ridurre la copertura offline delle altre aree.</p>
+    <p data-i18n="offcache.area.deleteDialogBody">Puoi rimuovere solo l’area dalla lista (le tile offline restano nella cache) oppure cancellare anche le tile fisiche non condivise con altre aree. L’azione sulle tile è distruttiva e richiede conferma esplicita.</p>
+    <p id="offlineAreaDeletePreview" class="offline-delete-preview hint" role="status" aria-live="polite" hidden></p>
     <div class="offline-draft-warn-actions" role="group" aria-labelledby="offlineAreaDeleteTitle">
-      <button type="button" class="btn btn-sm" id="offlineAreaDeleteListOnly" data-i18n="offcache.area.deleteDialogListOnly">Rimuovi solo dalla lista</button>
-      <button type="button" class="btn btn-sm btn-danger" id="offlineAreaDeleteWithTiles" data-i18n="offcache.area.deleteDialogWithTiles">Rimuovi area e tile associate</button>
+      <button type="button" class="btn btn-sm" id="offlineAreaDeleteListOnly" data-i18n="offcache.area.deleteDialogListOnly">Rimuovi solo dalla lista (tile restano)</button>
+      <button type="button" class="btn btn-sm btn-danger" id="offlineAreaDeleteWithTiles" data-i18n="offcache.area.deleteDialogWithTiles">Cancella tile fisiche non condivise</button>
       <button type="button" class="btn btn-sm" id="offlineAreaDeleteCancel" data-i18n="offcache.area.deleteDialogCancel">Annulla</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="offlineAreaBatchDeleteDialog" class="app-modal" aria-labelledby="offlineAreaBatchDeleteTitle" aria-modal="true">
+  <div class="app-modal-head">
+    <h2 id="offlineAreaBatchDeleteTitle" class="app-modal-title" data-i18n="offcache.sel.deleteDialogTitle">Rimuovere aree selezionate?</h2>
+    <button type="button" class="app-modal-close" data-close-offline-batch-del data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+  </div>
+  <div class="app-modal-body">
+    <p id="offlineAreaBatchDeleteBody" data-i18n="offcache.sel.deleteDialogBody">Scegli se rimuovere solo le aree dalla lista (le tile restano) o cancellare anche le tile fisiche non condivise con altre aree non selezionate.</p>
+    <p id="offlineAreaBatchDeletePreview" class="offline-delete-preview hint" role="status" aria-live="polite" hidden></p>
+    <div class="offline-draft-warn-actions" role="group" aria-labelledby="offlineAreaBatchDeleteTitle">
+      <button type="button" class="btn btn-sm" id="offlineAreaBatchDeleteListOnly" data-i18n="offcache.sel.deleteDialogListOnly">Rimuovi solo dalla lista (tile restano)</button>
+      <button type="button" class="btn btn-sm btn-danger" id="offlineAreaBatchDeleteWithTiles" data-i18n="offcache.sel.deleteDialogWithTiles">Cancella tile fisiche non condivise</button>
+      <button type="button" class="btn btn-sm" id="offlineAreaBatchDeleteCancel" data-i18n="offcache.area.deleteDialogCancel">Annulla</button>
     </div>
   </div>
 </dialog>
@@ -12927,6 +12944,12 @@ const I18N = {
     "offcache.downloadAllNone":"Nessuna area in elenco scaricabile (controlla zoom, strato e limiti).",
     "offcache.batchAreaLine":"Area {0}/{1}: {2}",
     "offcache.sel.deleteConfirmMeta":"Eliminare le aree selezionate dall’elenco? Le tile offline già scaricate resteranno nella cache.",
+    "offcache.sel.deleteDialogTitle":"Rimuovere aree selezionate?",
+    "offcache.sel.deleteDialogBody":"Scegli se rimuovere {0} aree dalla lista (le tile restano) o cancellare anche le tile fisiche non condivise con altre aree non selezionate.",
+    "offcache.sel.deleteDialogListOnly":"Rimuovi solo dalla lista (tile restano)",
+    "offcache.sel.deleteDialogWithTiles":"Cancella tile fisiche non condivise",
+    "offcache.sel.deletePreview":"Anteprima ({0} aree): {1} tile in griglia; {2} cancellabili; {3} condivise (conservate).",
+    "offcache.sel.deleteMetaFeedback":"{0} aree rimosse dall’elenco. Le tile offline restano nella cache.",
     "offcache.area.statusUnknown":"Sconosciuto",
     "offcache.area.statusPartial":"Parziale",
     "offcache.area.statusComplete":"Completata",
@@ -12946,11 +12969,21 @@ const I18N = {
     "offcache.area.delete":"Elimina",
     "offcache.area.deleteConfirmMeta":"Eliminare questa area dall’elenco? Le tile offline già scaricate resteranno nella cache.",
     "offcache.area.deleteDialogTitle":"Rimuovere area offline?",
-    "offcache.area.deleteDialogBody":"Puoi rimuovere solo l’area dalla lista oppure eliminare anche le tile scaricate per questa area. Se alcune tile sono condivise con altre aree sovrapposte, verranno conservate quando possibile per non ridurre la copertura offline delle altre aree.",
-    "offcache.area.deleteDialogListOnly":"Rimuovi solo dalla lista",
-    "offcache.area.deleteDialogWithTiles":"Rimuovi area e tile associate",
+    "offcache.area.deleteDialogBody":"Puoi rimuovere solo l’area dalla lista (le tile offline restano nella cache) oppure cancellare anche le tile fisiche non condivise con altre aree. L’azione sulle tile è distruttiva e richiede conferma esplicita.",
+    "offcache.area.deleteDialogListOnly":"Rimuovi solo dalla lista (tile restano)",
+    "offcache.area.deleteDialogWithTiles":"Cancella tile fisiche non condivise",
     "offcache.area.deleteDialogCancel":"Annulla",
+    "offcache.area.deletePreview":"Anteprima tile: {0} nella griglia; {1} cancellabili; {2} condivise (conservate).",
+    "offcache.area.deletePreviewNone":"Nessuna tile nella griglia di quest’area.",
+    "offcache.area.deleteMetaFeedback":"Area rimossa dall’elenco. Le tile offline restano nella cache.",
     "offcache.area.deleteTilesFeedback":"Tile rimosse dalla cache: {0}. Conservate perché condivise con altre aree: {1} (griglia area: {2} tile).",
+    "offcache.err.quota":"Quota storage superata",
+    "offcache.err.idb":"Errore archivio locale (IndexedDB)",
+    "offcache.err.http":"Errore di rete HTTP",
+    "offcache.err.opsec":"Bloccato da OPSEC / consenso",
+    "offcache.err.abort":"Download annullato",
+    "offcache.err.offline":"Offline — impossibile scaricare",
+    "offcache.err.other":"Errore generico cache tile",
     "offcache.area.loadedChip":"Caricata",
     "offcache.loadedAreaTitle":"Area caricata: {0}",
     "offcache.loadedAreaMeta":"{0} · {1} · Carica solo i parametri (nessun download automatico).",
@@ -13735,11 +13768,14 @@ const I18N = {
     "diag.label.tilesTotal":"Tile totali",
     "diag.label.tilesBytes":"Byte tile",
     "diag.label.tilesOther":"Altre voci IDB",
+    "diag.label.tileCacheSession":"Errori cache tile (sessione)",
     "diag.warn.storageUnavailable":"Stima storage browser non disponibile.",
     "diag.warn.quotaHigh":"Utilizzo storage elevato (>{0}%).",
     "diag.warn.opsecOn":"OPSEC strict attivo — rete sensibile bloccata.",
     "diag.warn.offlineForced":"Offline forzato — solo tile in cache.",
     "diag.warn.tilesUnavailable":"Statistiche cache tile non disponibili.",
+    "diag.warn.tileQuotaSession":"Quota storage superata in questa sessione (cache tile).",
+    "diag.warn.tileCacheErrSession":"Errori cache tile registrati in questa sessione.",
     "diag.warn.netEmpty":"Nessun evento rete in questa sessione.",
     "diag.warn.fileProtocol":"App aperta da file:// — geolocalizzazione e alcune funzioni possono essere limitate.",
     "diag.warn.none":"Nessun avviso.",
@@ -14720,6 +14756,12 @@ const I18N = {
     "offcache.downloadAllNone":"No areas in the list can be downloaded (check zoom range, layer, and limits).",
     "offcache.batchAreaLine":"Area {0}/{1}: {2}",
     "offcache.sel.deleteConfirmMeta":"Remove the selected areas from the list? Downloaded offline tiles will remain in the cache.",
+    "offcache.sel.deleteDialogTitle":"Remove selected areas?",
+    "offcache.sel.deleteDialogBody":"Choose whether to remove {0} areas from the list (tiles stay) or also delete physical tiles not shared with non-selected areas.",
+    "offcache.sel.deleteDialogListOnly":"Remove from list only (tiles stay)",
+    "offcache.sel.deleteDialogWithTiles":"Delete unshared physical tiles",
+    "offcache.sel.deletePreview":"Preview ({0} areas): {1} tiles in grid; {2} deletable; {3} shared (kept).",
+    "offcache.sel.deleteMetaFeedback":"{0} areas removed from list. Offline tiles remain in cache.",
     "offcache.area.statusUnknown":"Unknown",
     "offcache.area.statusPartial":"Partial",
     "offcache.area.statusComplete":"Completed",
@@ -14739,11 +14781,21 @@ const I18N = {
     "offcache.area.delete":"Delete",
     "offcache.area.deleteConfirmMeta":"Remove this area from the list? Downloaded offline tiles will remain in the cache.",
     "offcache.area.deleteDialogTitle":"Remove offline area?",
-    "offcache.area.deleteDialogBody":"You can remove only the area from the list or also delete the cached tiles for this area. If some tiles are shared with other overlapping areas, they will be kept when possible to avoid reducing offline coverage for those areas.",
-    "offcache.area.deleteDialogListOnly":"Remove from list only",
-    "offcache.area.deleteDialogWithTiles":"Remove area and associated tiles",
+    "offcache.area.deleteDialogBody":"You can remove only the area from the list (offline tiles stay in cache) or also delete physical tiles not shared with other areas. The tile action is destructive and requires explicit confirmation.",
+    "offcache.area.deleteDialogListOnly":"Remove from list only (tiles stay)",
+    "offcache.area.deleteDialogWithTiles":"Delete unshared physical tiles",
     "offcache.area.deleteDialogCancel":"Cancel",
+    "offcache.area.deletePreview":"Tile preview: {0} in grid; {1} deletable; {2} shared (kept).",
+    "offcache.area.deletePreviewNone":"No tiles in this area’s grid.",
+    "offcache.area.deleteMetaFeedback":"Area removed from list. Offline tiles remain in cache.",
     "offcache.area.deleteTilesFeedback":"Tiles removed from cache: {0}. Kept as shared with other areas: {1} (this area’s grid: {2} tiles).",
+    "offcache.err.quota":"Storage quota exceeded",
+    "offcache.err.idb":"Local storage error (IndexedDB)",
+    "offcache.err.http":"HTTP network error",
+    "offcache.err.opsec":"Blocked by OPSEC / consent",
+    "offcache.err.abort":"Download cancelled",
+    "offcache.err.offline":"Offline — cannot download",
+    "offcache.err.other":"Generic tile cache error",
     "offcache.area.loadedChip":"Loaded",
     "offcache.loadedAreaTitle":"Loaded area: {0}",
     "offcache.loadedAreaMeta":"{0} · {1} · Loads parameters only (no automatic download).",
@@ -15529,11 +15581,14 @@ const I18N = {
     "diag.label.tilesTotal":"Total tiles",
     "diag.label.tilesBytes":"Tile bytes",
     "diag.label.tilesOther":"Other IDB entries",
+    "diag.label.tileCacheSession":"Tile cache errors (session)",
     "diag.warn.storageUnavailable":"Browser storage estimate not available.",
     "diag.warn.quotaHigh":"High storage usage (>{0}%).",
     "diag.warn.opsecOn":"OPSEC strict on — sensitive network blocked.",
     "diag.warn.offlineForced":"Forced offline — cached tiles only.",
     "diag.warn.tilesUnavailable":"Tile cache statistics not available.",
+    "diag.warn.tileQuotaSession":"Storage quota exceeded this session (tile cache).",
+    "diag.warn.tileCacheErrSession":"Tile cache errors recorded this session.",
     "diag.warn.netEmpty":"No network events this session.",
     "diag.warn.fileProtocol":"Opened via file:// — geolocation and some features may be limited.",
     "diag.warn.none":"No warnings.",
@@ -16514,6 +16569,12 @@ const I18N = {
     "offcache.downloadAllNone":"Aucune zone de la liste n’est téléchargeable (vérifiez zoom, couche et limites).",
     "offcache.batchAreaLine":"Zone {0}/{1} : {2}",
     "offcache.sel.deleteConfirmMeta":"Supprimer les zones sélectionnées de la liste ? Les tuiles hors ligne téléchargées resteront dans le cache.",
+    "offcache.sel.deleteDialogTitle":"Supprimer les zones sélectionnées ?",
+    "offcache.sel.deleteDialogBody":"Choisir de retirer {0} zones de la liste (tuiles conservées) ou de supprimer aussi les tuiles physiques non partagées avec les zones non sélectionnées.",
+    "offcache.sel.deleteDialogListOnly":"Retirer seulement de la liste (tuiles conservées)",
+    "offcache.sel.deleteDialogWithTiles":"Supprimer les tuiles physiques non partagées",
+    "offcache.sel.deletePreview":"Aperçu ({0} zones) : {1} tuiles en grille ; {2} supprimables ; {3} partagées (conservées).",
+    "offcache.sel.deleteMetaFeedback":"{0} zones retirées de la liste. Les tuiles hors ligne restent en cache.",
     "offcache.area.statusUnknown":"Inconnu",
     "offcache.area.statusPartial":"Partiel",
     "offcache.area.statusComplete":"Complétée",
@@ -16533,11 +16594,21 @@ const I18N = {
     "offcache.area.delete":"Supprimer",
     "offcache.area.deleteConfirmMeta":"Supprimer cette zone de la liste ? Les tuiles hors ligne téléchargées resteront dans le cache.",
     "offcache.area.deleteDialogTitle":"Supprimer la zone hors ligne ?",
-    "offcache.area.deleteDialogBody":"Vous pouvez supprimer uniquement la zone de la liste ou supprimer aussi les tuiles mises en cache pour cette zone. Si certaines tuiles sont partagées avec d’autres zones qui se chevauchent, elles seront conservées lorsque possible afin de ne pas réduire leur couverture hors ligne.",
-    "offcache.area.deleteDialogListOnly":"Retirer seulement de la liste",
-    "offcache.area.deleteDialogWithTiles":"Supprimer la zone et les tuiles associées",
+    "offcache.area.deleteDialogBody":"Vous pouvez retirer uniquement la zone de la liste (les tuiles hors ligne restent en cache) ou supprimer aussi les tuiles physiques non partagées avec d’autres zones. L’action sur les tuiles est destructive et exige une confirmation explicite.",
+    "offcache.area.deleteDialogListOnly":"Retirer seulement de la liste (tuiles conservées)",
+    "offcache.area.deleteDialogWithTiles":"Supprimer les tuiles physiques non partagées",
     "offcache.area.deleteDialogCancel":"Annuler",
+    "offcache.area.deletePreview":"Aperçu tuiles : {0} dans la grille ; {1} supprimables ; {2} partagées (conservées).",
+    "offcache.area.deletePreviewNone":"Aucune tuile dans la grille de cette zone.",
+    "offcache.area.deleteMetaFeedback":"Zone retirée de la liste. Les tuiles hors ligne restent en cache.",
     "offcache.area.deleteTilesFeedback":"Tuiles retirées du cache : {0}. Conservées (partagées avec d’autres zones) : {1} (grille de la zone : {2} tuiles).",
+    "offcache.err.quota":"Quota de stockage dépassé",
+    "offcache.err.idb":"Erreur stockage local (IndexedDB)",
+    "offcache.err.http":"Erreur réseau HTTP",
+    "offcache.err.opsec":"Bloqué par OPSEC / consentement",
+    "offcache.err.abort":"Téléchargement annulé",
+    "offcache.err.offline":"Hors ligne — téléchargement impossible",
+    "offcache.err.other":"Erreur générique cache tuiles",
     "offcache.area.loadedChip":"Chargée",
     "offcache.loadedAreaTitle":"Zone chargée : {0}",
     "offcache.loadedAreaMeta":"{0} · {1} · Charge seulement les paramètres (pas de téléchargement automatique).",
@@ -17269,11 +17340,14 @@ const I18N = {
     "diag.label.tilesTotal":"Tuiles totales",
     "diag.label.tilesBytes":"Octets tuiles",
     "diag.label.tilesOther":"Autres entrées IDB",
+    "diag.label.tileCacheSession":"Erreurs cache tuiles (session)",
     "diag.warn.storageUnavailable":"Estimation stockage navigateur indisponible.",
     "diag.warn.quotaHigh":"Utilisation stockage élevée (>{0}%).",
     "diag.warn.opsecOn":"OPSEC strict actif — réseau sensible bloqué.",
     "diag.warn.offlineForced":"Hors ligne forcé — tuiles en cache seulement.",
     "diag.warn.tilesUnavailable":"Statistiques cache tuiles indisponibles.",
+    "diag.warn.tileQuotaSession":"Quota de stockage dépassé cette session (cache tuiles).",
+    "diag.warn.tileCacheErrSession":"Erreurs cache tuiles enregistrées cette session.",
     "diag.warn.netEmpty":"Aucun événement réseau cette session.",
     "diag.warn.fileProtocol":"Ouvert via file:// — géolocalisation et certaines fonctions peuvent être limitées.",
     "diag.warn.none":"Aucun avertissement.",
@@ -18867,7 +18941,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 24;
+const APP_BUILD_NUM = 25;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29121,16 +29195,39 @@ function idbClearAllTilesOrThrow(){
 /** Delete a set of tile keys in one transaction. Used to wipe only the
  * tiles of a specific named area (bbox × z-range × every layer), instead
  * of trashing the whole IDB store. */
+async function idbDeleteKeysWithReport(keys){
+  const rep = { attempted: 0, deleted: 0, failed: 0 };
+  if (!keys || !keys.length) return rep;
+  try {
+    const db = await getTileDB();
+    await new Promise((res, rej) => {
+      const tx = db.transaction(TILE_IDB.store, "readwrite");
+      const store = tx.objectStore(TILE_IDB.store);
+      let pending = keys.length;
+      const tick = () => { if (--pending <= 0) { /* wait for tx.oncomplete */ } };
+      keys.forEach(k => {
+        rep.attempted++;
+        try {
+          const req = store.delete(k);
+          req.onsuccess = () => { rep.deleted++; tick(); };
+          req.onerror = () => { rep.failed++; tick(); };
+        } catch(_){
+          rep.failed++;
+          tick();
+        }
+      });
+      tx.oncomplete = () => res();
+      tx.onerror = () => rej(tx.error);
+    });
+  } catch(_){
+    rep.failed = Math.max(rep.failed, rep.attempted - rep.deleted);
+  }
+  return rep;
+}
+
 function idbDeleteKeys(keys){
   if (!keys || !keys.length) return Promise.resolve(0);
-  return getTileDB().then(db => new Promise((res, rej) => {
-    const tx = db.transaction(TILE_IDB.store, "readwrite");
-    let n = 0;
-    tx.oncomplete = () => res(n);
-    tx.onerror    = () => rej(tx.error);
-    const store = tx.objectStore(TILE_IDB.store);
-    keys.forEach(k => { try { store.delete(k); n++; } catch(_){} });
-  })).catch(() => 0);
+  return idbDeleteKeysWithReport(keys).then(rep => rep.deleted);
 }
 
 /** Wipe all cached tiles that fall inside a named area's bbox × z-range,
@@ -29182,20 +29279,95 @@ function collectProtectedTileKeysFromOtherNamedAreas(excludeId){
   return set;
 }
 
-/** Delete cached tiles for one area, skipping keys still overlapped by other saved areas (same layer / zoom semantics). */
-async function deleteNamedAreaTilesRespectingOthers(area, excludeAreaId){
+/** Read-only preview: tile keys for one area vs keys protected by other saved areas. */
+function previewNamedAreaTileDelete(area, excludeAreaId){
   const candidates = collectNamedAreaTileKeys(area);
-  if (!candidates.length) return { deleted: 0, candidates: 0, keptShared: 0 };
+  if (!candidates.length){
+    return { candidates: 0, toDelete: 0, keptShared: 0, toDelKeys: [] };
+  }
   const prot = collectProtectedTileKeysFromOtherNamedAreas(excludeAreaId);
   const toDel = [];
   for (let i = 0; i < candidates.length; i++){
     const k = candidates[i];
-    if (prot.has(k)) continue;
-    toDel.push(k);
+    if (!prot.has(k)) toDel.push(k);
   }
-  const deleted = await idbDeleteKeys(toDel);
-  const keptShared = candidates.length - toDel.length;
-  return { deleted, candidates: candidates.length, keptShared };
+  return {
+    candidates: candidates.length,
+    toDelete: toDel.length,
+    keptShared: candidates.length - toDel.length,
+    toDelKeys: toDel
+  };
+}
+
+/** Read-only preview for batch delete: union of selected areas minus keys still needed elsewhere. */
+function previewNamedAreasBatchTileDelete(areaIds){
+  const ids = new Set((areaIds || []).map(String).filter(Boolean));
+  const allCandidates = new Set();
+  (state.namedAreas || []).forEach(a => {
+    if (!a || !ids.has(String(a.id))) return;
+    collectNamedAreaTileKeys(a).forEach(k => allCandidates.add(k));
+  });
+  const prot = new Set();
+  (state.namedAreas || []).forEach(a => {
+    if (!a || ids.has(String(a.id))) return;
+    collectNamedAreaTileKeys(a).forEach(k => prot.add(k));
+  });
+  const toDel = [];
+  allCandidates.forEach(k => { if (!prot.has(k)) toDel.push(k); });
+  return {
+    candidates: allCandidates.size,
+    toDelete: toDel.length,
+    keptShared: allCandidates.size - toDel.length,
+    toDelKeys: toDel
+  };
+}
+
+/** Delete cached tiles for one area, skipping keys still overlapped by other saved areas (same layer / zoom semantics). */
+async function deleteNamedAreaTilesRespectingOthers(area, excludeAreaId){
+  const preview = previewNamedAreaTileDelete(area, excludeAreaId);
+  if (!preview.toDelKeys.length){
+    return {
+      deleted: 0,
+      candidates: preview.candidates,
+      keptShared: preview.keptShared,
+      attempted: 0,
+      failed: 0,
+      toDelete: preview.toDelete
+    };
+  }
+  const rep = await idbDeleteKeysWithReport(preview.toDelKeys);
+  return {
+    deleted: rep.deleted,
+    candidates: preview.candidates,
+    keptShared: preview.keptShared,
+    attempted: rep.attempted,
+    failed: rep.failed,
+    toDelete: preview.toDelete
+  };
+}
+
+/** Batch physical delete: keys unique to selected areas (not required by non-selected areas). */
+async function deleteNamedAreasTilesRespectingOthersBatch(areaIds){
+  const preview = previewNamedAreasBatchTileDelete(areaIds);
+  if (!preview.toDelKeys.length){
+    return {
+      deleted: 0,
+      candidates: preview.candidates,
+      keptShared: preview.keptShared,
+      attempted: 0,
+      failed: 0,
+      toDelete: preview.toDelete
+    };
+  }
+  const rep = await idbDeleteKeysWithReport(preview.toDelKeys);
+  return {
+    deleted: rep.deleted,
+    candidates: preview.candidates,
+    keptShared: preview.keptShared,
+    attempted: rep.attempted,
+    failed: rep.failed,
+    toDelete: preview.toDelete
+  };
 }
 
 /** MAJOR-2A: read-only offline tile coverage audit limits (session UI only). */
@@ -29638,6 +29810,103 @@ function recordNetEvent(urlOrHost, kind, ok){
   }
 }
 
+const TILE_ERR_KINDS = ["quota","idb","http","opsec","abort","offline","other"];
+
+function makeEmptyTileErrKinds(){
+  const o = {};
+  TILE_ERR_KINDS.forEach(k => { o[k] = 0; });
+  return o;
+}
+
+function classifyTileCacheError(e){
+  if (e == null) return "other";
+  const name = String(e.name || "");
+  const msg = String(e.message != null ? e.message : e).toLowerCase();
+  if (name === "AbortError" || msg.indexOf("abort") >= 0) return "abort";
+  if (name === "QuotaExceededError") return "quota";
+  try {
+    if (typeof DOMException !== "undefined" && e instanceof DOMException){
+      if (e.name === "QuotaExceededError" || e.code === 22) return "quota";
+    }
+  } catch(_){}
+  if (msg === "opsec-blocked" || msg.indexOf("opsec") >= 0) return "opsec";
+  if (msg === "no idb" || msg.indexOf("indexeddb") >= 0 || name === "InvalidStateError" || name === "NotFoundError") return "idb";
+  if (msg === "http" || msg.indexOf("failed to fetch") >= 0 || msg.indexOf("networkerror") >= 0){
+    if (typeof isEffectivelyOnline === "function" && !isEffectivelyOnline()) return "offline";
+    return "http";
+  }
+  if (msg.indexOf("offline") >= 0) return "offline";
+  return "other";
+}
+
+function bumpTileErrKind(kinds, err){
+  const k = classifyTileCacheError(err);
+  kinds[k] = (kinds[k] || 0) + 1;
+  return k;
+}
+
+function dominantTileErrKind(kinds){
+  if (!kinds) return "other";
+  let best = "other", n = 0;
+  TILE_ERR_KINDS.forEach(k => {
+    const v = Number(kinds[k]) || 0;
+    if (v > n){ n = v; best = k; }
+  });
+  return n > 0 ? best : "other";
+}
+
+function formatTileErrKindLabel(kind){
+  const key = "offcache.err." + (kind || "other");
+  const s = t(key);
+  return s !== key ? s : String(kind || "other");
+}
+
+function formatPrecacheErrSummary(info){
+  if (!info) return "";
+  const kinds = info.errKinds;
+  if (!kinds) return info.err > 0 ? t("offcache.err") : "";
+  const dom = info.dominantErr || dominantTileErrKind(kinds);
+  if (dom && dom !== "other" && kinds[dom] > 0){
+    return formatTileErrKindLabel(dom) + " (" + String(kinds[dom]) + ")";
+  }
+  const parts = [];
+  TILE_ERR_KINDS.forEach(k => {
+    if (kinds[k] > 0) parts.push(formatTileErrKindLabel(k) + ": " + kinds[k]);
+  });
+  return parts.length ? parts.join("; ") : (info.err > 0 ? t("offcache.err") : "");
+}
+
+function ensureTileCacheSessionErrors(){
+  if (!state._tileCacheSessionErrors || typeof state._tileCacheSessionErrors !== "object"){
+    state._tileCacheSessionErrors = makeEmptyTileErrKinds();
+  }
+  return state._tileCacheSessionErrors;
+}
+
+function recordTileCacheSessionError(err){
+  bumpTileErrKind(ensureTileCacheSessionErrors(), err);
+  if (classifyTileCacheError(err) === "quota") state._tileQuotaHit = Date.now();
+}
+
+function diagFormatTileCacheSessionErrors(kinds){
+  if (!kinds || typeof kinds !== "object") return t("diag.na");
+  const parts = [];
+  TILE_ERR_KINDS.forEach(k => {
+    const n = Number(kinds[k]) || 0;
+    if (n > 0) parts.push(formatTileErrKindLabel(k) + ": " + n);
+  });
+  return parts.length ? parts.join("; ") : t("diag.na");
+}
+
+function showOfflineDeleteTilesFeedback(res){
+  try {
+    setBadge("info", String(t("offcache.area.deleteTilesFeedback"))
+      .replace("{0}", String(res && res.deleted != null ? res.deleted : 0))
+      .replace("{1}", String(res && res.keptShared != null ? res.keptShared : 0))
+      .replace("{2}", String(res && res.candidates != null ? res.candidates : 0)));
+  } catch(_){}
+}
+
 async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
   const key  = makeTileKey(layerId, z, x, y);
   const have = await getTileBlobByKey(key);
@@ -29677,20 +29946,20 @@ async function startPrecacheDownload(opts){
   _precacheStrictOpConfirmed = false;
   if (state.opsecStrict){
     if (state.forceOffline){
-      return { aborted: true, done: 0, total, err: 0 };
+      return { aborted: true, done: 0, total, err: 0, errKinds: makeEmptyTileErrKinds() };
     }
     const ok = await showOpsecStrictConfirmDialog(
       t("offcache.start") || t("offcache.sectionDownload") || "",
       t("opsec.strict.tilesBlocked") || ""
     );
     if (!ok){
-      return { aborted: true, done: 0, total, err: 0, userCancelled: true };
+      return { aborted: true, done: 0, total, err: 0, userCancelled: true, errKinds: makeEmptyTileErrKinds() };
     }
     _precacheStrictOpConfirmed = true;
     if (tileLayerExternalKind(layerId) === "tailnet-proxy"){
       if (!await ensureProxyConsent(layerId)){
         _precacheStrictOpConfirmed = false;
-        return { aborted: true, done: 0, total, err: 0, userCancelled: true };
+        return { aborted: true, done: 0, total, err: 0, userCancelled: true, errKinds: makeEmptyTileErrKinds() };
       }
     }
   }
@@ -29698,6 +29967,7 @@ async function startPrecacheDownload(opts){
   _precacheAbort = ac;
   const conc   = 6;
   let nextIdx = 0, completed = 0, errs = 0;
+  const errKinds = makeEmptyTileErrKinds();
   try {
   const work = async () => {
     while (!ac.signal.aborted){
@@ -29706,17 +29976,30 @@ async function startPrecacheDownload(opts){
       const T = tiles[j];
       try {
         await fetchAndStoreTile(layerId, T.z, T.x, T.y, layer, ac.signal);
-      } catch(_){ errs++; }
+      } catch(e){
+        errs++;
+        bumpTileErrKind(errKinds, e);
+        recordTileCacheSessionError(e);
+      }
       completed++;
-      onProgress && onProgress({ done: completed, total, err: errs, aborted: ac.signal.aborted });
+      onProgress && onProgress({
+        done: completed, total, err: errs, errKinds,
+        dominantErr: dominantTileErrKind(errKinds),
+        aborted: ac.signal.aborted
+      });
     }
   };
   const workers = Array.from({ length: conc }, () => work());
   await Promise.all(workers);
-  onProgress && onProgress({ done: completed, total, err: errs, aborted: ac.signal.aborted });
+  const finalEv = {
+    done: completed, total, err: errs, errKinds,
+    dominantErr: dominantTileErrKind(errKinds),
+    aborted: ac.signal.aborted
+  };
+  onProgress && onProgress(finalEv);
   const aborted = ac.signal.aborted;
   _precacheAbort = null;
-  return { aborted, done: completed, total, err: errs };
+  return Object.assign({ aborted, done: completed, total, err: errs }, finalEv);
   } finally {
     _precacheStrictOpConfirmed = false;
   }
@@ -29779,7 +30062,9 @@ async function cacheTileFromDisplay(tkey, blob){
       s.bytes += (buf && buf.byteLength) ? buf.byteLength : 0;
       scheduleTileCacheCounterUpdate();
     }
-  } catch(_){ /* fail-soft: IndexedDB/quota errors must never break rendering */ }
+  } catch(e){
+    recordTileCacheSessionError(e);
+  }
   finally { state._tileCachePending.delete(tkey); }
 }
 
@@ -30130,8 +30415,11 @@ function onPrecacheStart(){
   if (btnS) btnS.disabled = true;
   if (prog){ prog.max = 100; prog.value = 0; }
 
-  void runOfflineAreasPrecacheQueue(queue, { useProgressBar: true }).then(() => {
-    if (st) st.textContent = t("offcache.done");
+  void runOfflineAreasPrecacheQueue(queue, { useProgressBar: true }).then((lastInfo) => {
+    if (st){
+      const sum = lastInfo && lastInfo.err > 0 ? formatPrecacheErrSummary(lastInfo) : "";
+      st.textContent = sum || t("offcache.done");
+    }
     if (btnS) btnS.disabled = false;
     if (btnP) btnP.hidden = true;
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
@@ -31175,6 +31463,18 @@ function applyPrecacheMetadataToNamedAreaById(areaId, info){
     status
   });
   state.namedAreas[idx] = normalizeOfflineArea(merged);
+  if (info && (err > 0 || info.errKinds)){
+    if (!state._offlineAreaLastPrecacheErr || typeof state._offlineAreaLastPrecacheErr !== "object"){
+      state._offlineAreaLastPrecacheErr = {};
+    }
+    const kinds = info.errKinds ? Object.assign(makeEmptyTileErrKinds(), info.errKinds) : makeEmptyTileErrKinds();
+    state._offlineAreaLastPrecacheErr[String(areaId)] = {
+      errKinds: kinds,
+      dominant: info.dominantErr || dominantTileErrKind(kinds),
+      err: err,
+      at: Date.now()
+    };
+  }
   saveStore();
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
   try { updateOfflineLayerCacheStats(); } catch(_){}
@@ -31284,6 +31584,8 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
   updatePrecacheEstimate();
   updateOfflineAreasToolbarUI();
 
+  let lastQueueInfo = null;
+
   try {
     for (let i = 0; i < ids.length; i++){
       if (bp.abortRequested) break;
@@ -31294,20 +31596,32 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
       bp.areaIndex = i;
       bp.currentId = id;
       const label = (area && area.name) ? area.name : id;
-      if (st) st.textContent = (t("offcache.batchAreaLine") || "Area {0}/{1}: {2}")
+      const areaLine = (t("offcache.batchAreaLine") || "Area {0}/{1}: {2}")
         .replace("{0}", String(i + 1)).replace("{1}", String(ids.length)).replace("{2}", String(label));
-      let lastEv = { done: 0, total: params.tot, err: 0, aborted: false };
+      let lastEv = { done: 0, total: params.tot, err: 0, errKinds: makeEmptyTileErrKinds(), aborted: false };
+      if (st) st.textContent = areaLine;
       try {
         const info = await startPrecacheDownload(Object.assign({}, params, {
           onProgress(ev){
-            lastEv = { done: ev.done, total: ev.total, err: ev.err, aborted: !!ev.aborted };
+            lastEv = {
+              done: ev.done, total: ev.total, err: ev.err,
+              errKinds: ev.errKinds || makeEmptyTileErrKinds(),
+              dominantErr: ev.dominantErr,
+              aborted: !!ev.aborted
+            };
             if (useBar && prog && ev.total) prog.value = Math.min(100, (ev.done / ev.total) * 100);
+            if (st && ev.err > 0){
+              const sum = formatPrecacheErrSummary(ev);
+              if (sum) st.textContent = areaLine + " — " + sum;
+            }
           }
         }));
-        applyPrecacheMetadataToNamedAreaById(id, info || lastEv);
+        lastQueueInfo = info || lastEv;
+        applyPrecacheMetadataToNamedAreaById(id, lastQueueInfo);
       } catch (err){
         if (!(err && err.message === "tooMany")){
-          applyPrecacheMetadataToNamedAreaById(id, Object.assign({}, lastEv, { fatal: true }));
+          lastQueueInfo = Object.assign({}, lastEv, { fatal: true });
+          applyPrecacheMetadataToNamedAreaById(id, lastQueueInfo);
         }
       }
     }
@@ -31320,11 +31634,21 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
     bp.startedAt = null;
     bp.abortRequested = false;
     if (useBar && bar) bar.hidden = true;
+    if (st && lastQueueInfo){
+      if (lastQueueInfo.aborted){
+        st.textContent = t("offcache.err.abort");
+      } else if (lastQueueInfo.fatal){
+        st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
+      } else if (lastQueueInfo.err > 0){
+        st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
+      }
+    }
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     try { updateOfflineLayerCacheStats(); } catch(_){}
   }
+  return lastQueueInfo;
 }
 
 /** Download/cache tiles for one saved offline area (row action). */
@@ -31710,46 +32034,38 @@ function drawCoverageOverlay(tileMap){
 }
 
 /**
- * Two-step delete flow triggered by the × on a coverage rectangle:
- *   1) "Delete this named area?" → Cancel aborts.
- *   2) "Also delete cached tiles inside it?" → OK wipes the tiles in
- *      IndexedDB for every known layer within the area's bbox × z-range;
- *      Cancel keeps the tiles (they remain reachable if another area or
- *      manual pan/zoom already covered the same region).
- * Using two window.confirm's keeps the flow dependency-free while still
- * being explicit about what's being deleted.
+ * Coverage-map × delete: same protected dialog as row delete (metadata-only default).
  */
 async function confirmRemoveNamedArea(area){
   if (!area) return;
-  const name = area.name || "Area";
-  const q1 = (t("cov.removeConfirm") || "Rimuovere la zona '{0}'?").replace("{0}", name);
-  if (!window.confirm(q1)) return;
-
-  let wipedTiles = 0;
-  const q2 = (t("cov.removeWithTiles") || "Cancellare anche i tile scaricati di '{0}' dall'archivio offline?").replace("{0}", name);
-  if (window.confirm(q2)){
-    try { wipedTiles = await deleteNamedAreaTiles(area); } catch(_){ wipedTiles = 0; }
+  const sid = String(area.id);
+  const preview = previewNamedAreaTileDelete(area, sid);
+  populateOfflineAreaDeleteDialogPreview(preview);
+  const choice = await showOfflineAreaDeleteChoiceDialog();
+  clearOfflineAreaDeleteDialogPreview();
+  if (choice === "cancel") return;
+  if (choice === "listOnly"){
+    deleteNamedAreaMetadataOnlyById(sid, { feedback: true });
+    return;
   }
-  // Remove the named area itself.
-  state.namedAreas = (state.namedAreas || []).filter(x => x.id !== area.id);
-  saveStore();
-  renderNamedAreasOptgroup();
-  const _tm = document.querySelector("#miniMap .tile-map");
-  if (_tm){
-    // If we wiped tiles, the current map needs a re-render so the freed
-    // tiles fall back to network (or show "?" offline). If we only removed
-    // the area entry, a light redraw of the overlay is enough.
-    if (wipedTiles > 0 && state.lastPoint){
-      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
-    } else {
-      drawCoverageOverlay(_tm);
-    }
+  if (choice === "withTiles"){
+    let res = {
+      deleted: 0,
+      candidates: preview.candidates,
+      keptShared: preview.keptShared,
+      attempted: 0,
+      failed: 0,
+      toDelete: preview.toDelete
+    };
+    try {
+      res = await deleteNamedAreaTilesRespectingOthers(area, sid);
+    } catch(_){}
+    deleteNamedAreaMetadataOnlyById(sid);
+    showOfflineDeleteTilesFeedback(res);
+    try {
+      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+    } catch(_){}
   }
-  const msg = wipedTiles > 0
-    ? (t("cov.removeOkTiles") || "Zona '{0}' rimossa ({1} tile cancellati).")
-        .replace("{0}", name).replace("{1}", wipedTiles)
-    : (t("cov.removeOk")      || "Zona '{0}' rimossa.").replace("{0}", name);
-  setBadge("success", msg);
 }
 
 /** Attach drag-to-resize behaviour on one of the 4 corner handles. */
@@ -32402,7 +32718,8 @@ function formatBytesShort(n){
   return s + " " + units[u];
 }
 
-function deleteNamedAreaMetadataOnlyById(id){
+function deleteNamedAreaMetadataOnlyById(id, opts){
+  opts = opts || {};
   const sid = String(id);
   const before = Array.isArray(state.namedAreas) ? state.namedAreas.length : 0;
   state.namedAreas = (state.namedAreas || []).filter(x => x && x.id !== sid);
@@ -32417,6 +32734,9 @@ function deleteNamedAreaMetadataOnlyById(id){
   renderOfflineAreasList();
   const tm = document.querySelector("#miniMap .tile-map");
   if (tm) drawCoverageOverlay(tm);
+  if (opts.feedback){
+    try { setBadge("info", t("offcache.area.deleteMetaFeedback")); } catch(_){}
+  }
 }
 
 /** O2: center the slippy map on a saved named bbox (same zoom heuristic as saved tracks). */
@@ -33150,25 +33470,56 @@ function ensureOfflineAreasListDelegation(){
       const tm = document.querySelector("#miniMap .tile-map");
       if (tm) drawCoverageOverlay(tm);
     };
-    const delMetaOnly = () => {
-      // TODO: quando si implementerà la rimozione multipla con tile, allineare a deleteNamedAreaTilesRespectingOthers / dialog.
-      const ids = new Set(selectedIds());
-      if (!ids.size) return;
-      const msg = t("offcache.sel.deleteConfirmMeta");
-      if (typeof window.confirm === "function" && !window.confirm(msg)) return;
-      state.namedAreas = (state.namedAreas || []).filter(a => !(a && ids.has(String(a.id))));
-      setSelectedIds([]); // clear selection after delete
-      state._offlineAreasLastSelectedIndex = null;
-      saveStore();
-      renderNamedAreasOptgroup();
-      renderOfflineAreasList();
-      const tm = document.querySelector("#miniMap .tile-map");
-      if (tm) drawCoverageOverlay(tm);
+    const handleBatchDelete = () => {
+      void (async () => {
+        const ids = selectedIds().map(String).filter(Boolean);
+        if (!ids.length) return;
+        const preview = previewNamedAreasBatchTileDelete(ids);
+        const choice = await showOfflineAreaBatchDeleteChoiceDialog({ count: ids.length, preview });
+        if (choice === "cancel") return;
+        if (choice === "listOnly"){
+          const idSet = new Set(ids);
+          state.namedAreas = (state.namedAreas || []).filter(a => !(a && idSet.has(String(a.id))));
+          setSelectedIds([]);
+          state._offlineAreasLastSelectedIndex = null;
+          saveStore();
+          renderNamedAreasOptgroup();
+          renderOfflineAreasList();
+          const tm = document.querySelector("#miniMap .tile-map");
+          if (tm) drawCoverageOverlay(tm);
+          try {
+            setBadge("info", String(t("offcache.sel.deleteMetaFeedback")).replace("{0}", String(ids.length)));
+          } catch(_){}
+          return;
+        }
+        if (choice === "withTiles"){
+          let res = {
+            deleted: 0,
+            candidates: preview.candidates,
+            keptShared: preview.keptShared,
+            attempted: 0,
+            failed: 0,
+            toDelete: preview.toDelete
+          };
+          try { res = await deleteNamedAreasTilesRespectingOthersBatch(ids); } catch(_){}
+          const idSet = new Set(ids);
+          state.namedAreas = (state.namedAreas || []).filter(a => !(a && idSet.has(String(a.id))));
+          setSelectedIds([]);
+          state._offlineAreasLastSelectedIndex = null;
+          saveStore();
+          renderNamedAreasOptgroup();
+          renderOfflineAreasList();
+          const tm = document.querySelector("#miniMap .tile-map");
+          if (tm) drawCoverageOverlay(tm);
+          if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+          showOfflineDeleteTilesFeedback(res);
+        }
+      })();
     };
 
     if (btnShow) btnShow.addEventListener("click", (ev) => { ev.preventDefault(); applyVis(true); });
     if (btnHide) btnHide.addEventListener("click", (ev) => { ev.preventDefault(); applyVis(false); });
-    if (btnDel)  btnDel.addEventListener("click", (ev) => { ev.preventDefault(); delMetaOnly(); });
+    if (btnDel)  btnDel.addEventListener("click", (ev) => { ev.preventDefault(); handleBatchDelete(); });
     if (btnPrecacheSel) btnPrecacheSel.addEventListener("click", (ev) => {
       ev.preventDefault();
       void startOfflineAreasBatchPrecache();
@@ -41003,6 +41354,11 @@ function diagComputeWarnings(snap){
   if (op.forceOffline) w.push({ key: "offlineForced", level: "info" });
   const tc = snap.tileCache || {};
   if (!tc.available || tc.error) w.push({ key: "tilesUnavailable", level: "info" });
+  if (snap.tileQuotaHitAt) w.push({ key: "tileQuotaSession", level: "warn" });
+  const tce = snap.tileCacheSessionErrors;
+  if (tce && ((Number(tce.quota) || 0) > 0 || (Number(tce.idb) || 0) > 0)){
+    w.push({ key: "tileCacheErrSession", level: "warn" });
+  }
   if (!snap.netEvents || !snap.netEvents.length) w.push({ key: "netEmpty", level: "info" });
   if (op.isFileProtocol) w.push({ key: "fileProtocol", level: "warn" });
   if (!w.length) w.push({ key: "none", level: "info" });
@@ -41060,6 +41416,12 @@ async function diagCollectSnapshot(){
     },
     uiStore: { key: UI_STORAGE_KEY, bytes: uiStoreBytes },
     tileCache: tileStats,
+    tileCacheSessionErrors: (function(){
+      const k = state._tileCacheSessionErrors;
+      if (!k || typeof k !== "object") return null;
+      return Object.assign(makeEmptyTileErrKinds(), k);
+    })(),
+    tileQuotaHitAt: state._tileQuotaHit || null,
     offlineAreaAudits: diagCollectOfflineAreaAudits(),
     netEvents: diagCollectNetEventsForReport(),
     warnings: []
@@ -41131,7 +41493,8 @@ function diagRenderSnapshot(snap){
   diagRenderDl(document.getElementById("diagTiles"), [
     ["diag.label.tilesTotal", tc.available ? String(tc.totalTiles || 0) : t("diag.na")],
     ["diag.label.tilesBytes", tc.available ? diagFormatBytes(tc.totalBytes || 0) : t("diag.na")],
-    ["diag.label.tilesOther", tc.available ? String(tc.otherEntries || 0) : t("diag.na")]
+    ["diag.label.tilesOther", tc.available ? String(tc.otherEntries || 0) : t("diag.na")],
+    ["diag.label.tileCacheSession", diagFormatTileCacheSessionErrors(snap.tileCacheSessionErrors)]
   ]);
   const layerWrap = document.getElementById("diagTilesByLayerWrap");
   const layerBody = document.getElementById("diagTilesByLayerBody");
@@ -51815,6 +52178,63 @@ function showOfflineDraftWarnDialog(){
 }
 
 let _offlineAreaDeleteResolve = null;
+
+function populateOfflineAreaDeleteDialogPreview(preview){
+  const prev = document.getElementById("offlineAreaDeletePreview");
+  const btnTiles = document.getElementById("offlineAreaDeleteWithTiles");
+  if (prev){
+    if (preview){
+      prev.hidden = false;
+      prev.textContent = preview.candidates > 0
+        ? String(t("offcache.area.deletePreview"))
+            .replace("{0}", String(preview.candidates))
+            .replace("{1}", String(preview.toDelete))
+            .replace("{2}", String(preview.keptShared))
+        : t("offcache.area.deletePreviewNone");
+    } else {
+      prev.hidden = true;
+      prev.textContent = "";
+    }
+  }
+  if (btnTiles) btnTiles.disabled = !!(preview && preview.toDelete <= 0);
+}
+
+function clearOfflineAreaDeleteDialogPreview(){
+  populateOfflineAreaDeleteDialogPreview(null);
+}
+
+function populateOfflineAreaBatchDeleteDialogPreview(opts){
+  opts = opts || {};
+  const prev = document.getElementById("offlineAreaBatchDeletePreview");
+  const btnTiles = document.getElementById("offlineAreaBatchDeleteWithTiles");
+  const body = document.getElementById("offlineAreaBatchDeleteBody");
+  const preview = opts.preview;
+  if (body && opts.count > 0){
+    body.textContent = String(t("offcache.sel.deleteDialogBody"))
+      .replace("{0}", String(opts.count));
+  }
+  if (prev){
+    if (preview){
+      prev.hidden = false;
+      prev.textContent = preview.candidates > 0
+        ? String(t("offcache.sel.deletePreview"))
+            .replace("{0}", String(opts.count || 0))
+            .replace("{1}", String(preview.candidates))
+            .replace("{2}", String(preview.toDelete))
+            .replace("{3}", String(preview.keptShared))
+        : t("offcache.area.deletePreviewNone");
+    } else {
+      prev.hidden = true;
+      prev.textContent = "";
+    }
+  }
+  if (btnTiles) btnTiles.disabled = !!(preview && preview.toDelete <= 0);
+}
+
+function clearOfflineAreaBatchDeleteDialogPreview(){
+  populateOfflineAreaBatchDeleteDialogPreview({});
+}
+
 function ensureOfflineAreaDeleteDialogWired(){
   const d = document.getElementById("offlineAreaDeleteDialog");
   if (!d || d._offAreaDelWired) return;
@@ -51823,6 +52243,7 @@ function ensureOfflineAreaDeleteDialogWired(){
     if (!_offlineAreaDeleteResolve) return;
     const r = _offlineAreaDeleteResolve;
     _offlineAreaDeleteResolve = null;
+    clearOfflineAreaDeleteDialogPreview();
     try { d.close(); } catch(_){}
     r(act);
   };
@@ -51855,8 +52276,66 @@ function showOfflineAreaDeleteChoiceDialog(){
       return;
     }
     _offlineAreaDeleteResolve = resolve;
-    try { d.showModal(); } catch(_){
+    try {
+      d.showModal();
+      try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(d, state.lang || "it"); } catch(_){}
+    } catch(_){
       _offlineAreaDeleteResolve = null;
+      resolve("cancel");
+    }
+  });
+}
+
+let _offlineAreaBatchDeleteResolve = null;
+function ensureOfflineAreaBatchDeleteDialogWired(){
+  const d = document.getElementById("offlineAreaBatchDeleteDialog");
+  if (!d || d._offBatchDelWired) return;
+  d._offBatchDelWired = true;
+  const done = (act) => {
+    if (!_offlineAreaBatchDeleteResolve) return;
+    const r = _offlineAreaBatchDeleteResolve;
+    _offlineAreaBatchDeleteResolve = null;
+    clearOfflineAreaBatchDeleteDialogPreview();
+    try { d.close(); } catch(_){}
+    r(act);
+  };
+  d.addEventListener("cancel", (ev) => { ev.preventDefault(); done("cancel"); });
+  d.querySelector("[data-close-offline-batch-del]")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("cancel");
+  });
+  document.getElementById("offlineAreaBatchDeleteListOnly")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("listOnly");
+  });
+  document.getElementById("offlineAreaBatchDeleteWithTiles")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("withTiles");
+  });
+  document.getElementById("offlineAreaBatchDeleteCancel")?.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    done("cancel");
+  });
+}
+
+/** Promise → `"cancel"` | `"listOnly"` | `"withTiles"` */
+function showOfflineAreaBatchDeleteChoiceDialog(opts){
+  ensureOfflineAreaBatchDeleteDialogWired();
+  populateOfflineAreaBatchDeleteDialogPreview(opts || {});
+  const d = document.getElementById("offlineAreaBatchDeleteDialog");
+  return new Promise((resolve) => {
+    if (!d || typeof d.showModal !== "function"){
+      clearOfflineAreaBatchDeleteDialogPreview();
+      resolve("cancel");
+      return;
+    }
+    _offlineAreaBatchDeleteResolve = resolve;
+    try {
+      d.showModal();
+      try { if (typeof syncI18nInRoot === "function") syncI18nInRoot(d, state.lang || "it"); } catch(_){}
+    } catch(_){
+      _offlineAreaBatchDeleteResolve = null;
+      clearOfflineAreaBatchDeleteDialogPreview();
       resolve("cancel");
     }
   });
@@ -51963,14 +52442,24 @@ async function handleOfflineAreaRowDelete(id){
   const sid = String(id || "");
   const area = (state.namedAreas || []).find(x => x && String(x.id) === sid);
   if (!area) return;
+  const preview = previewNamedAreaTileDelete(area, sid);
+  populateOfflineAreaDeleteDialogPreview(preview);
   const choice = await showOfflineAreaDeleteChoiceDialog();
+  clearOfflineAreaDeleteDialogPreview();
   if (choice === "cancel") return;
   if (choice === "listOnly"){
-    deleteNamedAreaMetadataOnlyById(sid);
+    deleteNamedAreaMetadataOnlyById(sid, { feedback: true });
     return;
   }
   if (choice === "withTiles"){
-    let res = { deleted: 0, candidates: 0, keptShared: 0 };
+    let res = {
+      deleted: 0,
+      candidates: preview.candidates,
+      keptShared: preview.keptShared,
+      attempted: 0,
+      failed: 0,
+      toDelete: preview.toDelete
+    };
     try {
       res = await deleteNamedAreaTilesRespectingOthers(area, sid);
     } catch(_){}
@@ -51978,11 +52467,9 @@ async function handleOfflineAreaRowDelete(id){
     try {
       if (typeof updateOfflineBboxAreaFeedback === "function") updateOfflineBboxAreaFeedback();
     } catch(_){}
+    showOfflineDeleteTilesFeedback(res);
     try {
-      setBadge("info", String(t("offcache.area.deleteTilesFeedback"))
-        .replace("{0}", String(res.deleted))
-        .replace("{1}", String(res.keptShared))
-        .replace("{2}", String(res.candidates)));
+      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     } catch(_){}
   }
 }
