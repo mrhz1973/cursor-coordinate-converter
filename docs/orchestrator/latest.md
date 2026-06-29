@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-29 — **MAJOR-2BCD-PLAN completato (read-only, orchestratore):** piano tecnico offline tile management salvato; nessun file runtime modificato; runtime VPS live invariato **`07ad4f4`** build 24; prossimo runtime consigliato: **MAJOR-2B** (2B può partire per primo; 2C accorpabile a 2B solo se piccolo/non distruttivo; **2D sempre separato/gated** — distruttivo); vincoli: nessun fetch/proxy/OPSEC; nessun sanitizer/import-export; delete fisico solo con preview+conferma danger; tile condivise protette; default metadata-only; i18n IT/EN/FR per nuove stringhe (tensione freeze FR 2026-06-25 da decidere al gate); dettaglio piano → **`docs/orchestrator/inbox/2026-06-29_maj-2bcd-plan.md`**.
+
 2026-06-29 — **BACKLOG-UPDATE — priorità post MAJOR-2A (docs-only):** commit task **`ea1e168`** — registra decisione operatore: prossimo programma **MAJOR-2BCD** (2B+2C+2D); **2E/3/4** backlog basso; **5A** dopo 2BCD; stop micro-UX; aggiornati OM §7, WU roadmap, HANDOFF; monolite **non** modificato; runtime VPS live invariato **`07ad4f4`** build 24; prossimo: **MAJOR-2BCD-PLAN**; inbox **`2026-06-29_1500_backlog-update-major-2bcd-priority.md`**.
 
 2026-06-29 — **`finito` sessione — MAJOR-2A CLOSED / PASS end-to-end:** commit task runtime **`07ad4f4`** — verificatore copertura offline read-only (build 24); deploy GIS-only PASS (byte **2502490**, SHA **`c8c5679c…`**, CMP_PASS); attestazione «**QA MAJOR-2A PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`07ad4f4`**; prossimo: **MAJOR-2B/2D/2E**; inbox **`2026-06-29_1245_riepilogo_finito-sessione.md`**.
