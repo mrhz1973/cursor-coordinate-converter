@@ -1160,6 +1160,18 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offline-areas-selcount{ font-size:.78rem; color:var(--muted); }
 .offline-areas-toolbar-actions{ display:flex; flex-wrap:wrap; gap:8px; }
 .offline-areas-toolbar .btn[disabled]{ opacity:.55; cursor:not-allowed; }
+.offline-areas-audit-feedback{
+  margin:0 0 8px;
+}
+.offline-area-audit-badge{
+  display:block; margin-top:3px;
+  font-size:.68rem; font-weight:600; line-height:1.25;
+  color:var(--muted); font-variant-numeric:tabular-nums;
+}
+.offline-area-audit-badge--complete{ color:#16a34a; }
+.offline-area-audit-badge--partial{ color:#d97706; }
+.offline-area-audit-badge--empty{ color:var(--muted); }
+.offline-area-audit-badge--error{ color:var(--danger, #dc2626); }
 .offline-areas-list{
   display:flex; flex-direction:column; gap:8px;
   overflow:visible;
@@ -3634,6 +3646,11 @@ html[data-theme="dark"] .tile-map .tlayer-item.is-active .tlayer-check{ color:#4
   font-size:.82rem; font-weight:600; line-height:1.35;
   color:var(--muted, #64748b); background:var(--panel2, #f1f5f9);
   border-radius:6px; border:1px solid var(--border, #e2e8f0);
+}
+.offcache-neutral-msg.is-error{
+  color:var(--danger, #dc2626);
+  border-color:rgba(220,38,38,.35);
+  background:rgba(220,38,38,.06);
 }
 .offcache-section--online-only{
   opacity:.62;
@@ -10170,8 +10187,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 <button type="button" class="btn btn-sm" id="btnOfflineAreasHideSel" data-i18n="offcache.sel.hideSelected" data-i18n-tip="tip.offlineHideSel" disabled>Nascondi selezionate</button>
                 <button type="button" class="btn btn-sm btn-danger" id="btnOfflineAreasDeleteSel" data-i18n="offcache.sel.deleteSelected" data-i18n-tip="tip.offlineDelSel" disabled>Elimina selezionate</button>
                 <button type="button" class="btn btn-sm btn-primary" id="btnOfflineAreasPrecacheSel" data-i18n="offcache.sel.precacheSelected" data-i18n-tip="tip.offlinePrecacheSel" data-i18n-aria="tip.offlinePrecacheSel" disabled>Scarica selezionate</button>
+                <button type="button" class="btn btn-sm" id="btnOfflineAreasVerifySel" data-i18n="offcache.sel.verifySelected" data-i18n-tip="tip.offlineVerifySel" data-i18n-aria="tip.offlineVerifySel" disabled>Verifica selezionate</button>
               </div>
             </div>
+            <div id="offlineAreasAuditFeedback" class="offcache-neutral-msg offline-areas-audit-feedback" hidden aria-live="polite" role="status"></div>
             <div class="offline-areas-global-cache" id="offlineAreasGlobalCache">
               <button type="button" class="btn btn-sm btn-danger-subtle" id="btnPrecacheClear" data-i18n="offcache.clear" data-i18n-tip="tip.precacheClear">Svuota tutta la cache tile</button>
             </div>
@@ -12898,6 +12917,7 @@ const I18N = {
     "offcache.sel.useOne":"Modifica",
     "offcache.sel.fitOne":"Centra",
     "offcache.sel.precacheSelected":"Scarica selezionate",
+    "offcache.sel.verifySelected":"Verifica selezionate",
     "offcache.precacheConflictBatch":"È in corso lo scaricamento di più aree offline. Attendi il termine prima di avviare un download singolo.",
     "offcache.draftWarnTitle":"Area sulla mappa non salvata",
     "offcache.draftWarnBody":"Hai un’area sulla mappa non ancora salvata in elenco. Se continui senza salvarla, andrà persa.",
@@ -12989,6 +13009,7 @@ const I18N = {
     "tip.offlineUseOne":"Carica l’area selezionata nei campi per modificarla",
     "tip.offlineFitOne":"Centra mappa sull’area selezionata",
     "tip.offlinePrecacheSel":"Scarica in sequenza le tile offline per le aree selezionate (una alla volta).",
+    "tip.offlineVerifySel":"Verifica in sequenza la copertura offline delle aree selezionate (solo lettura cache).",
     "tip.modalClose":"Chiudi pannello",
     "tip.modalClosePanelEsc":"Chiudi pannello (Esc)",
     "tip.panelMinimize":"Minimizza",
@@ -13477,6 +13498,25 @@ const I18N = {
     "offcache.exportFileNamePh":"opzionale, es. AO-FLINTLOCK",
     "offcache.area.download":"Scarica",
     "offcache.area.downloadTip":"Scarica in cache le tile di questa area (layer e zoom dell'area salvata)",
+    "offcache.area.verifyBtn":"Verifica",
+    "offcache.area.verifyTip":"Verifica copertura offline (solo lettura cache, nessun download)",
+    "offcache.audit.status.notVerified":"Non verificata",
+    "offcache.audit.status.complete":"Completa",
+    "offcache.audit.status.partial":"Parziale",
+    "offcache.audit.status.empty":"Vuota",
+    "offcache.audit.status.error":"Errore",
+    "offcache.audit.rowSummary":"{pct} · {present}/{expected}",
+    "offcache.audit.running":"Verifica copertura: {0}…",
+    "offcache.audit.progress":"Verifica {0}: {1}/{2} tile",
+    "offcache.audit.batchProgress":"Verifica {0}/{1}: {2}",
+    "offcache.audit.feedback":"{name}: {present}/{expected} presenti, {missing} mancanti ({pct}%) — {status}",
+    "offcache.audit.busy":"Verifica già in corso su un'altra area",
+    "offcache.audit.confirmLarge":"L'area richiede circa {0} tile (limite consigliato {1}). Continuare la verifica?",
+    "offcache.audit.aborted":"Verifica annullata",
+    "offcache.audit.noIdb":"IndexedDB non disponibile",
+    "offcache.audit.areaNotFound":"Area non trovata",
+    "offcache.audit.tooManyTiles":"Troppe tile attese ({0}); limite {1}. Conferma per procedere.",
+    "offcache.audit.error":"Errore durante la verifica copertura",
     "offcache.area.alreadyDownloaded":"Già in cache del browser (IndexedDB) — non compare in Download del PC. Per un file JPEG usa «Esporta JPG offline» sotto.",
     "meas.inverse":"Distanza e azimuth tra due punti",
     "meas.gisIntro":"Solo mappa: scegli i punti sulla cartina. Distanza e azimuth si aggiornano trascinando; in «Proietta» puoi digitare distanza/azimuth per spostare il punto finale.",
@@ -14670,6 +14710,7 @@ const I18N = {
     "offcache.sel.useOne":"Edit",
     "offcache.sel.fitOne":"Center",
     "offcache.sel.precacheSelected":"Download selected",
+    "offcache.sel.verifySelected":"Verify selected",
     "offcache.precacheConflictBatch":"A multi-area offline download is in progress. Wait for it to finish before starting a single download.",
     "offcache.draftWarnTitle":"Unsaved map area",
     "offcache.draftWarnBody":"You have a map area that is not yet saved to the list. If you continue without saving, it will be lost.",
@@ -14761,6 +14802,7 @@ const I18N = {
     "tip.offlineUseOne":"Load the selected area into the fields to edit it",
     "tip.offlineFitOne":"Center map on selected area",
     "tip.offlinePrecacheSel":"Download offline tiles for the selected areas sequentially (one area at a time).",
+    "tip.offlineVerifySel":"Check offline coverage for selected areas sequentially (read-only cache scan).",
     "tip.modalClose":"Close panel",
     "tip.modalClosePanelEsc":"Close panel (Esc)",
     "tip.panelMinimize":"Minimize",
@@ -15249,6 +15291,25 @@ const I18N = {
     "offcache.exportFileNamePh":"optional, e.g. AO-FLINTLOCK",
     "offcache.area.download":"Download",
     "offcache.area.downloadTip":"Cache tiles for this area (saved area layer and zoom range)",
+    "offcache.area.verifyBtn":"Verify",
+    "offcache.area.verifyTip":"Check offline coverage (read-only cache scan, no download)",
+    "offcache.audit.status.notVerified":"Not verified",
+    "offcache.audit.status.complete":"Complete",
+    "offcache.audit.status.partial":"Partial",
+    "offcache.audit.status.empty":"Empty",
+    "offcache.audit.status.error":"Error",
+    "offcache.audit.rowSummary":"{pct} · {present}/{expected}",
+    "offcache.audit.running":"Checking coverage: {0}…",
+    "offcache.audit.progress":"Checking {0}: {1}/{2} tiles",
+    "offcache.audit.batchProgress":"Verify {0}/{1}: {2}",
+    "offcache.audit.feedback":"{name}: {present}/{expected} present, {missing} missing ({pct}%) — {status}",
+    "offcache.audit.busy":"Coverage check already running on another area",
+    "offcache.audit.confirmLarge":"This area needs about {0} tiles (recommended limit {1}). Continue?",
+    "offcache.audit.aborted":"Coverage check cancelled",
+    "offcache.audit.noIdb":"IndexedDB not available",
+    "offcache.audit.areaNotFound":"Area not found",
+    "offcache.audit.tooManyTiles":"Too many expected tiles ({0}); limit {1}. Confirm to proceed.",
+    "offcache.audit.error":"Error while checking coverage",
     "offcache.area.alreadyDownloaded":"Already in browser cache (IndexedDB) — not saved to your PC Downloads folder. For a JPEG file use «Export offline JPG» below.",
     "meas.inverse":"Distance and bearing between two points",
     "meas.gisIntro":"Map only: pick points on the chart. Distance and bearing update while dragging; in “Project” you can type distance/bearing to move the end point.",
@@ -16443,6 +16504,7 @@ const I18N = {
     "offcache.sel.useOne":"Modifier",
     "offcache.sel.fitOne":"Centrer",
     "offcache.sel.precacheSelected":"Télécharger les sélectionnées",
+    "offcache.sel.verifySelected":"Vérifier sélectionnées",
     "offcache.precacheConflictBatch":"Un téléchargement hors ligne de plusieurs zones est en cours. Attendez la fin avant de lancer un téléchargement unique.",
     "offcache.draftWarnTitle":"Zone sur la carte non enregistrée",
     "offcache.draftWarnBody":"Une zone sur la carte n’est pas encore enregistrée dans la liste. Si vous continuez sans l’enregistrer, elle sera perdue.",
@@ -16534,6 +16596,7 @@ const I18N = {
     "tip.offlineUseOne":"Charger la zone sélectionnée dans les champs pour la modifier",
     "tip.offlineFitOne":"Centrer la carte sur la zone sélectionnée",
     "tip.offlinePrecacheSel":"Télécharger hors ligne les tuiles des zones sélectionnées l’une après l’autre.",
+    "tip.offlineVerifySel":"Vérifier en séquence la couverture hors ligne des zones sélectionnées (lecture cache seule).",
     "tip.modalClose":"Fermer le panneau",
     "tip.modalClosePanelEsc":"Fermer le panneau (Échap)",
     "tip.panelMinimize":"Réduire",
@@ -16984,6 +17047,25 @@ const I18N = {
     "offcache.exportFileNamePh":"optionnel, ex. AO-FLINTLOCK",
     "offcache.area.download":"Télécharger",
     "offcache.area.downloadTip":"Mettre en cache les tuiles de cette zone (layer et zoom de la zone enregistrée)",
+    "offcache.area.verifyBtn":"Vérifier",
+    "offcache.area.verifyTip":"Vérifier la couverture hors ligne (lecture cache seule, pas de téléchargement)",
+    "offcache.audit.status.notVerified":"Non vérifiée",
+    "offcache.audit.status.complete":"Complète",
+    "offcache.audit.status.partial":"Partielle",
+    "offcache.audit.status.empty":"Vide",
+    "offcache.audit.status.error":"Erreur",
+    "offcache.audit.rowSummary":"{pct} · {present}/{expected}",
+    "offcache.audit.running":"Vérification couverture : {0}…",
+    "offcache.audit.progress":"Vérification {0} : {1}/{2} tuiles",
+    "offcache.audit.batchProgress":"Vérification {0}/{1} : {2}",
+    "offcache.audit.feedback":"{name} : {present}/{expected} présentes, {missing} manquantes ({pct}%) — {status}",
+    "offcache.audit.busy":"Vérification déjà en cours sur une autre zone",
+    "offcache.audit.confirmLarge":"Cette zone nécessite environ {0} tuiles (limite recommandée {1}). Continuer ?",
+    "offcache.audit.aborted":"Vérification annulée",
+    "offcache.audit.noIdb":"IndexedDB indisponible",
+    "offcache.audit.areaNotFound":"Zone introuvable",
+    "offcache.audit.tooManyTiles":"Trop de tuiles attendues ({0}) ; limite {1}. Confirmer pour continuer.",
+    "offcache.audit.error":"Erreur lors de la vérification de couverture",
     "offcache.area.alreadyDownloaded":"Déjà en cache navigateur (IndexedDB) — pas dans Téléchargements du PC. Pour un fichier JPEG : « Exporter JPG hors ligne » ci-dessous.",
     "meas.inverse":"Distance et azimut entre deux points",
     "meas.gisIntro":"Carte uniquement : choisissez les points sur la carte. Distance et azimut se mettent à jour au déplacement ; dans « Projeter » vous pouvez saisir distance/azimut pour déplacer le point final.",
@@ -17578,6 +17660,10 @@ const state = {
   // Do not persist to localStorage.
   _offlineAreasSelectedIds: [],
   _offlineAreasLastSelectedIndex: null,
+  /** MAJOR-2A: session-only offline coverage audit results keyed by named area id. */
+  _offlineAreaAudit: null,
+  /** MAJOR-2A: area id currently under IDB coverage scan (transient). */
+  _offlineAreaAuditRunning: null,
   /** O6a: transient batch precache (sequential); never persisted to localStorage. */
   _offlineBatchPrecache: null,
   /** B4: bbox modificata da mappa/viewport ma non salvata come named area. */
@@ -18781,7 +18867,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 23;
+const APP_BUILD_NUM = 24;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29112,6 +29198,268 @@ async function deleteNamedAreaTilesRespectingOthers(area, excludeAreaId){
   return { deleted, candidates: candidates.length, keptShared };
 }
 
+/** MAJOR-2A: read-only offline tile coverage audit limits (session UI only). */
+const OFFLINE_AREA_AUDIT_MAX_TILES = 20000;
+const OFFLINE_AREA_AUDIT_SAMPLE_MISSING = 8;
+const OFFLINE_AREA_AUDIT_YIELD_EVERY = 64;
+let _offlineAreaAuditRunToken = 0;
+
+function ensureOfflineAreaAuditStore(){
+  if (!state._offlineAreaAudit || typeof state._offlineAreaAudit !== "object"){
+    state._offlineAreaAudit = {};
+  }
+  return state._offlineAreaAudit;
+}
+
+function offlineAreaAuditDeriveStatus(expected, present){
+  const exp = Number(expected);
+  const pres = Number(present);
+  if (!Number.isFinite(exp) || exp < 0 || !Number.isFinite(pres) || pres < 0) return "error";
+  if (exp === 0) return "empty";
+  if (pres <= 0) return "empty";
+  if (pres >= exp) return "complete";
+  return "partial";
+}
+
+function offlineAreaAuditStatusLabel(status){
+  const s = String(status || "notVerified").toLowerCase();
+  const key = (s === "complete" ? "offcache.audit.status.complete"
+    : s === "partial" ? "offcache.audit.status.partial"
+    : s === "empty" ? "offcache.audit.status.empty"
+    : s === "error" ? "offcache.audit.status.error"
+    : "offcache.audit.status.notVerified");
+  return t(key);
+}
+
+function formatOfflineAreaAuditRowSummary(audit){
+  if (!audit || typeof audit !== "object") return "";
+  const pct = Number.isFinite(audit.pct) ? audit.pct : null;
+  const pctTxt = pct == null ? "—" : (String(pct) + "%");
+  return String(t("offcache.audit.rowSummary") || "{pct}% · {present}/{expected}")
+    .replace("{pct}", pctTxt)
+    .replace("{present}", String(Number(audit.present) || 0))
+    .replace("{expected}", String(Number(audit.expected) || 0));
+}
+
+function setOfflineAreasAuditFeedback(msg, isError){
+  const el = document.getElementById("offlineAreasAuditFeedback");
+  if (!el) return;
+  const txt = String(msg || "").trim();
+  if (!txt){
+    el.hidden = true;
+    el.textContent = "";
+    el.classList.remove("is-error");
+    return;
+  }
+  el.hidden = false;
+  el.textContent = txt;
+  el.classList.toggle("is-error", !!isError);
+}
+
+/**
+ * Read-only scan: expected tile keys for a named area vs blobs present in IndexedDB.
+ * Does not fetch, write, delete, or persist audit results (caller stores in session state).
+ */
+async function auditNamedAreaTileCoverage(areaOrId, opts){
+  opts = opts || {};
+  const sid = (areaOrId && typeof areaOrId === "object") ? String(areaOrId.id || "") : String(areaOrId || "");
+  const area = (areaOrId && typeof areaOrId === "object") ? areaOrId
+    : (state.namedAreas || []).find(x => x && String(x.id) === sid);
+  const now = Date.now();
+  const baseFail = (code, extra) => Object.assign({
+    areaId: sid,
+    areaName: area ? String(area.name || "") : "",
+    verifiedAt: now,
+    status: "error",
+    errorCode: code,
+    expected: 0,
+    present: 0,
+    missing: 0,
+    pct: null,
+    sampleMissing: [],
+    truncated: false
+  }, extra || {});
+
+  if (!area) return baseFail("areaNotFound");
+  if (!window.indexedDB) return baseFail("noIdb", { errorCode: "noIdb" });
+
+  let keys = [];
+  try {
+    keys = collectNamedAreaTileKeys(area);
+  } catch(_){
+    return baseFail("bboxInvalid");
+  }
+
+  const expected = keys.length;
+  if (expected === 0){
+    return Object.assign(baseFail("noTilesExpected"), {
+      status: "empty",
+      expected: 0,
+      present: 0,
+      missing: 0,
+      pct: 0,
+      errorCode: null
+    });
+  }
+
+  const maxTiles = Number.isFinite(opts.maxTiles) ? opts.maxTiles : OFFLINE_AREA_AUDIT_MAX_TILES;
+  if (expected > maxTiles && !opts.forceLarge){
+    return baseFail("tooManyTiles", { expected, maxTiles });
+  }
+
+  let present = 0;
+  const sampleMissing = [];
+  const onProgress = opts.onProgress;
+
+  try {
+    for (let i = 0; i < keys.length; i++){
+      if (opts.signal && opts.signal.aborted){
+        return Object.assign(baseFail("aborted"), {
+          expected,
+          present,
+          missing: Math.max(0, expected - present),
+          pct: expected > 0 ? Math.round((present / expected) * 1000) / 10 : null
+        });
+      }
+      const blob = await getTileBlobByKey(keys[i]);
+      if (blob) present++;
+      else if (sampleMissing.length < OFFLINE_AREA_AUDIT_SAMPLE_MISSING) sampleMissing.push(keys[i]);
+      if (onProgress && (i % OFFLINE_AREA_AUDIT_YIELD_EVERY === 0 || i === keys.length - 1)){
+        onProgress({ done: i + 1, total: expected });
+      }
+      if (i > 0 && i % OFFLINE_AREA_AUDIT_YIELD_EVERY === 0){
+        await new Promise(res => { setTimeout(res, 0); });
+      }
+    }
+  } catch(_){
+    return baseFail("idbRead", {
+      expected,
+      present,
+      missing: Math.max(0, expected - present),
+      pct: expected > 0 ? Math.round((present / expected) * 1000) / 10 : null
+    });
+  }
+
+  const missing = Math.max(0, expected - present);
+  const pct = expected > 0 ? Math.round((present / expected) * 1000) / 10 : 0;
+  return {
+    areaId: sid,
+    areaName: String(area.name || ""),
+    verifiedAt: now,
+    status: offlineAreaAuditDeriveStatus(expected, present),
+    expected,
+    present,
+    missing,
+    pct,
+    sampleMissing,
+    truncated: false,
+    errorCode: null
+  };
+}
+
+function offlineAreaAuditFeedbackFromResult(result){
+  if (!result || typeof result !== "object") return "";
+  if (result.errorCode === "tooManyTiles"){
+    return String(t("offcache.audit.tooManyTiles") || "")
+      .replace("{0}", String(result.expected || "?"))
+      .replace("{1}", String(result.maxTiles || OFFLINE_AREA_AUDIT_MAX_TILES));
+  }
+  if (result.errorCode === "noIdb") return t("offcache.audit.noIdb");
+  if (result.errorCode === "areaNotFound") return t("offcache.audit.areaNotFound");
+  if (result.errorCode === "aborted") return t("offcache.audit.aborted");
+  if (result.status === "error" && result.errorCode) return t("offcache.audit.error");
+  const name = String(result.areaName || result.areaId || "—");
+  const statusLbl = offlineAreaAuditStatusLabel(result.status);
+  return String(t("offcache.audit.feedback") || "")
+    .replace("{name}", name)
+    .replace("{present}", String(result.present))
+    .replace("{expected}", String(result.expected))
+    .replace("{missing}", String(result.missing))
+    .replace("{pct}", Number.isFinite(result.pct) ? String(result.pct) : "—")
+    .replace("{status}", statusLbl);
+}
+
+async function runOfflineAreaCoverageAudit(areaId, opts){
+  opts = opts || {};
+  const id = String(areaId || "");
+  if (!id) return null;
+  if (state._offlineAreaAuditRunning && state._offlineAreaAuditRunning !== id && !opts.batch){
+    setOfflineAreasAuditFeedback(t("offcache.audit.busy"), true);
+    return null;
+  }
+  const area = (state.namedAreas || []).find(x => x && String(x.id) === id);
+  if (!area) return null;
+
+  let forceLarge = !!opts.forceLarge;
+  if (!forceLarge){
+    let est = 0;
+    try { est = collectNamedAreaTileKeys(area).length; } catch(_){ est = 0; }
+    if (est > OFFLINE_AREA_AUDIT_MAX_TILES){
+      const q = String(t("offcache.audit.confirmLarge") || "")
+        .replace("{0}", String(est))
+        .replace("{1}", String(OFFLINE_AREA_AUDIT_MAX_TILES));
+      if (typeof window.confirm === "function" && !window.confirm(q)) return null;
+      forceLarge = true;
+    }
+  }
+
+  const token = ++_offlineAreaAuditRunToken;
+  state._offlineAreaAuditRunning = id;
+  const areaName = String(area.name || id);
+  setOfflineAreasAuditFeedback(
+    String(t("offcache.audit.running") || "").replace("{0}", areaName),
+    false
+  );
+  try { renderOfflineAreasList(); } catch(_){}
+
+  const result = await auditNamedAreaTileCoverage(area, {
+    forceLarge,
+    onProgress: (ev) => {
+      if (token !== _offlineAreaAuditRunToken) return;
+      if (!ev || !Number.isFinite(ev.total)) return;
+      setOfflineAreasAuditFeedback(
+        String(t("offcache.audit.progress") || "")
+          .replace("{0}", areaName)
+          .replace("{1}", String(ev.done))
+          .replace("{2}", String(ev.total)),
+        false
+      );
+    }
+  });
+
+  if (token !== _offlineAreaAuditRunToken) return null;
+
+  const store = ensureOfflineAreaAuditStore();
+  store[id] = result;
+  state._offlineAreaAuditRunning = null;
+  setOfflineAreasAuditFeedback(offlineAreaAuditFeedbackFromResult(result), result && result.status === "error");
+  try { renderOfflineAreasList(); } catch(_){}
+  return result;
+}
+
+async function runOfflineAreasVerifySelected(){
+  const ids = Array.isArray(state._offlineAreasSelectedIds)
+    ? state._offlineAreasSelectedIds.map(String).filter(Boolean)
+    : [];
+  if (!ids.length) return;
+  for (let i = 0; i < ids.length; i++){
+    const id = ids[i];
+    const area = (state.namedAreas || []).find(x => x && String(x.id) === id);
+    const label = area ? String(area.name || id) : id;
+    if (ids.length > 1){
+      setOfflineAreasAuditFeedback(
+        String(t("offcache.audit.batchProgress") || "")
+          .replace("{0}", String(i + 1))
+          .replace("{1}", String(ids.length))
+          .replace("{2}", label),
+        false
+      );
+    }
+    await runOfflineAreaCoverageAudit(id, { batch: true, forceLarge: i > 0 });
+    if (state._offlineAreaAuditRunning) break;
+  }
+}
+
 async function getTileBlobByKey(key){
   try {
     const r = await idbGet(key);
@@ -32272,12 +32620,22 @@ function renderOfflineAreasList(){
       ? esc(t("offcache.area.alreadyDownloaded"))
       : esc(t("offcache.area.downloadTip"));
     const dlLbl = esc(t("offcache.area.download"));
+    const auditRunning = String(state._offlineAreaAuditRunning || "") === String(a.id);
+    const audit = (state._offlineAreaAudit && state._offlineAreaAudit[a.id]) ? state._offlineAreaAudit[a.id] : null;
+    let auditHtml = "";
+    if (audit){
+      const ast = String(audit.status || "notVerified").toLowerCase();
+      auditHtml = `<span class="offline-area-audit-badge offline-area-audit-badge--${esc(ast)}">${esc(formatOfflineAreaAuditRowSummary(audit))}</span>`;
+    }
+    const verifyTip = esc(t("offcache.area.verifyTip"));
+    const verifyLbl = esc(t("offcache.area.verifyBtn"));
+    const verifyDisabled = auditRunning || !!state._offlineAreaAuditRunning;
 
     html += `<tr data-offa-row data-id="${esc(a.id)}" class="${sel ? "is-selected" : ""}${loaded ? " is-loaded" : ""}${rowComplete}">
       <td><input type="checkbox" data-offa-sel="${esc(a.id)}" data-i18n-tip="offcache.row.selTip" data-tip="${esc(t("offcache.row.selTip"))}" data-i18n-aria="offcache.row.selTip" ${sel ? "checked" : ""}></td>
       <td class="offa-viscell"><span class="offline-area-vis-indicator ${vis ? "is-visible" : "is-hidden"}${visOverlayOff ? " is-overlay-off" : ""}" role="img" aria-label="${ariaVis}"></span></td>
       <td data-tip="${esc(String(a.name != null ? a.name : "—").slice(0, 200))}"><input type="text" class="offa-name-inp" data-offa-rename="${esc(a.id)}" value="${esc(a.name || "")}" maxlength="40" aria-label="${esc(t("offcache.list.colName"))}"></td>
-      <td><span class="offline-area-status offline-area-status--${esc(stClass)}">${esc(stLbl)}</span>${loadedChip}</td>
+      <td><span class="offline-area-status offline-area-status--${esc(stClass)}">${esc(stLbl)}</span>${loadedChip}${auditHtml}</td>
       <td>${esc(whenTxt)}</td>
       <td>${esc(zLine)}</td>
       <td>${esc(layerLbl)}</td>
@@ -32285,6 +32643,7 @@ function renderOfflineAreasList(){
       <td>${esc(spaceTxt)}</td>
       <td class="offa-actions-cell"><div class="offa-actions">
         <button type="button" class="btn btn-sm btn-primary" data-offline-download="${esc(a.id)}" data-tip="${dlTip}" aria-label="${dlTip}" ${dlDisabled ? "disabled" : ""}>${dlLbl}</button>
+        <button type="button" class="btn btn-sm" data-offline-verify="${esc(a.id)}" data-tip="${verifyTip}" aria-label="${verifyTip}" ${verifyDisabled ? "disabled" : ""}>${verifyLbl}</button>
         <button type="button" class="btn btn-sm" data-offline-load="${esc(a.id)}" data-i18n-tip="offcache.area.loadTip" data-i18n-aria="offcache.area.loadTip" data-tip="${esc(t("offcache.area.loadTip"))}" aria-label="${esc(t("offcache.area.loadTip"))}"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm" data-offline-fit="${esc(a.id)}" data-i18n-tip="offcache.area.fitTip" data-i18n-aria="offcache.area.fitTip" data-tip="${esc(t("offcache.area.fitTip"))}" aria-label="${esc(t("offcache.area.fitTip"))}"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-offline-del="${esc(a.id)}" data-i18n-tip="tip.offlineAreaDeleteOne" data-i18n-aria="tip.offlineAreaDeleteOne" data-tip="${esc(t("tip.offlineAreaDeleteOne"))}" aria-label="${esc(t("tip.offlineAreaDeleteOne"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
@@ -32777,6 +33136,7 @@ function ensureOfflineAreasListDelegation(){
     const btnHide = document.getElementById("btnOfflineAreasHideSel");
     const btnDel  = document.getElementById("btnOfflineAreasDeleteSel");
     const btnPrecacheSel = document.getElementById("btnOfflineAreasPrecacheSel");
+    const btnVerifySel = document.getElementById("btnOfflineAreasVerifySel");
 
     const applyVis = (vis) => {
       const ids = new Set(selectedIds());
@@ -32812,6 +33172,10 @@ function ensureOfflineAreasListDelegation(){
     if (btnPrecacheSel) btnPrecacheSel.addEventListener("click", (ev) => {
       ev.preventDefault();
       void startOfflineAreasBatchPrecache();
+    });
+    if (btnVerifySel) btnVerifySel.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      void runOfflineAreasVerifySelected();
     });
   }
 
@@ -32886,6 +33250,12 @@ function ensureOfflineAreasListDelegation(){
       void precacheOfflineNamedAreaById(dlBtn.getAttribute("data-offline-download"));
       return;
     }
+    const verifyBtn = ev.target.closest && ev.target.closest("[data-offline-verify]");
+    if (verifyBtn){
+      ev.preventDefault();
+      void runOfflineAreaCoverageAudit(verifyBtn.getAttribute("data-offline-verify"));
+      return;
+    }
     const loadBtn = ev.target.closest && ev.target.closest("[data-offline-load]");
     if (loadBtn){
       ev.preventDefault();
@@ -32914,14 +33284,17 @@ function updateOfflineAreasToolbarUI(){
   const btnHide = document.getElementById("btnOfflineAreasHideSel");
   const btnDel  = document.getElementById("btnOfflineAreasDeleteSel");
   const btnPrecacheSel = document.getElementById("btnOfflineAreasPrecacheSel");
+  const btnVerifySel = document.getElementById("btnOfflineAreasVerifySel");
   const n = Array.isArray(state._offlineAreasSelectedIds) ? state._offlineAreasSelectedIds.length : 0;
   if (cntEl) cntEl.textContent = String(n);
   const any = n > 0;
   const busy = typeof isOfflinePrecacheBusy === "function" && isOfflinePrecacheBusy();
+  const auditBusy = !!state._offlineAreaAuditRunning;
   if (btnShow) btnShow.disabled = !any;
   if (btnHide) btnHide.disabled = !any;
   if (btnDel)  btnDel.disabled  = !any;
   if (btnPrecacheSel) btnPrecacheSel.disabled = !any || busy;
+  if (btnVerifySel) btnVerifySel.disabled = !any || auditBusy;
 }
 
 function renderSavedTracksList(){
@@ -40636,6 +41009,25 @@ function diagComputeWarnings(snap){
   return w;
 }
 
+function diagCollectOfflineAreaAudits(){
+  const store = state._offlineAreaAudit;
+  if (!store || typeof store !== "object") return [];
+  return Object.keys(store).slice(0, 30).map((id) => {
+    const a = store[id];
+    if (!a || typeof a !== "object") return null;
+    return {
+      areaId: String(a.areaId || id).slice(0, 48),
+      areaName: String(a.areaName || "").slice(0, 40),
+      status: String(a.status || "").slice(0, 16),
+      expected: Number(a.expected) || 0,
+      present: Number(a.present) || 0,
+      missing: Number(a.missing) || 0,
+      pct: Number.isFinite(a.pct) ? a.pct : null,
+      verifiedAt: Number(a.verifiedAt) || 0
+    };
+  }).filter(Boolean);
+}
+
 async function diagCollectSnapshot(){
   const collectedAt = new Date().toISOString();
   const storageEst = await diagGetBrowserStorageEstimate();
@@ -40668,6 +41060,7 @@ async function diagCollectSnapshot(){
     },
     uiStore: { key: UI_STORAGE_KEY, bytes: uiStoreBytes },
     tileCache: tileStats,
+    offlineAreaAudits: diagCollectOfflineAreaAudits(),
     netEvents: diagCollectNetEventsForReport(),
     warnings: []
   };
