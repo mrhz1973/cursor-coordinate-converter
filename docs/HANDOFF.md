@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `823bb73` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-2BCD** — Offline tile management combined (build 25) |
+| HEAD remoto (verificato) | `d74cbb7` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-5A1** — GIS Object Workbench catalogo read-only (build 26) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `823bb7303351264c80f1c38cbc5ef455eb4c8fde` |
-| Blob monolite (git) | `02a08d495671ba7e4a9684a5e7d613eb3c8bdb59` |
-| `APP_BUILD_NUM` | `25` |
-| Display runtime | `B5.5Z · build 25` |
+| Runtime live VPS | `d74cbb736e0543035112601625f8685c8c6fe0fa` |
+| Blob monolite (git) | `335257d4e1e02a467af149572613105a23c2bc5f` |
+| `APP_BUILD_NUM` | `26` |
+| Display runtime | `B5.5Z · build 26` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-5A1 | **CLOSED / PASS end-to-end** (catalogo oggetti read-only + filtri + fly-to) |
 | MAJOR-2BCD | **CLOSED / PASS end-to-end** (quota/errori + delete metadata vs fisico protetto) |
 | MAJOR-2A | **CLOSED / PASS end-to-end** (verificatore copertura offline read-only) |
 | MAJOR-1 | **CLOSED / PASS end-to-end** (pannello Diagnostica read-only) |
@@ -134,11 +135,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=823bb73` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d74cbb7` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-5A** — GIS Object Workbench (candidato prioritario post-2BCD).
+**MAJOR-5A2** — selezione mappa↔lista + highlight sessione (piano MAJOR-5A).
 
 **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
 
