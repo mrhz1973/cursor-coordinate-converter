@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-29 — **`finito` sessione — MAJOR-2A CLOSED / PASS end-to-end:** commit task runtime **`07ad4f4`** — verificatore copertura offline read-only (build 24); deploy GIS-only PASS (byte **2502490**, SHA **`c8c5679c…`**, CMP_PASS); attestazione «**QA MAJOR-2A PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`07ad4f4`**; prossimo: **MAJOR-2B/2D/2E**; inbox **`2026-06-29_1245_riepilogo_finito-sessione.md`**.
+
 2026-06-29 — **`finito` sessione — MAJOR-1 CLOSED / PASS end-to-end:** commit task runtime **`9b359b7`** — pannello Diagnostica read-only (build 23); deploy GIS-only PASS (byte **2485630**, SHA **`db618459…`**, CMP_PASS); attestazione «**QA MAJOR-1 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`9b359b7`**; prossimo: **MAJOR-2** offline tile; inbox **`2026-06-29_0055_riepilogo_finito-sessione.md`**.
 
 2026-06-29 — **`finito` sessione — UX-NEXT-RUNTIME-BUNDLE-E CLOSED / PASS end-to-end:** commit task runtime **`fb871b7`** — consolidamento UX GIS (18 interventi: empty states, micro-help, aria/focus, mobile, build 22); deploy GIS-only PASS (byte **2455175**, SHA **`19bf6dc9…`**, CMP_PASS); attestazione «**QA UX-NEXT-RUNTIME-BUNDLE-E PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`fb871b7`**; wheel zoom invariato; prossimo: titolo `<title>`; inbox **`2026-06-29_0010_riepilogo_finito-sessione.md`**.
