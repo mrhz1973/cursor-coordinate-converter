@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `ade8ac3` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-2A** — Verificatore copertura offline read-only (build 24) |
+| HEAD remoto (verificato) | `823bb73` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-2BCD** — Offline tile management combined (build 25) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `07ad4f41c0916df1fcefebf64a11e1d49ec75b6d` |
-| Blob monolite (git) | `b789538db128f4467e1e503b82d4e245c8de7591` |
-| `APP_BUILD_NUM` | `24` |
-| Display runtime | `B5.5Z · build 24` |
+| Runtime live VPS | `823bb7303351264c80f1c38cbc5ef455eb4c8fde` |
+| Blob monolite (git) | `02a08d495671ba7e4a9684a5e7d613eb3c8bdb59` |
+| `APP_BUILD_NUM` | `25` |
+| Display runtime | `B5.5Z · build 25` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-2BCD | **CLOSED / PASS end-to-end** (quota/errori + delete metadata vs fisico protetto) |
 | MAJOR-2A | **CLOSED / PASS end-to-end** (verificatore copertura offline read-only) |
 | MAJOR-1 | **CLOSED / PASS end-to-end** (pannello Diagnostica read-only) |
 | UX-NEXT-RUNTIME-BUNDLE-E | **CLOSED / PASS end-to-end** (build 22) |
@@ -133,18 +134,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=07ad4f4` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=823bb73` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-2BCD-PLAN** — piano/gate/review per programma **MAJOR-2BCD** (offline tile: **2B** quota/errori + **2C** metadata vs delete fisico + **2D** delete selettivo protetto); categoria **DELICATA**; Diagnostica MAJOR-1 + verifier MAJOR-2A come QA.
+**MAJOR-5A** — GIS Object Workbench (candidato prioritario post-2BCD).
 
-**Priorità (decisione operatore post MAJOR-2A):**
+**Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
 
-- **Ora:** MAJOR-2B / 2C / 2D come programma unico **MAJOR-2BCD**
-- **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4
-- **Dopo 2BCD:** valutare **MAJOR-5A** (GIS Object Workbench)
-- **Stop:** microcorrezioni UX non funzionali salvo bug reale
+**Stop:** microcorrezioni UX non funzionali salvo bug reale.
 
 ---
 
