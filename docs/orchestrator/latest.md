@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-30 — **`finito` sessione — MAJOR-5A1 CLOSED / PASS end-to-end:** commit task runtime **`d74cbb7`** — GIS Object Workbench catalogo read-only (build 26); deploy GIS-only PASS (byte **2550551**, SHA **`2ec9a006…`**, CMP_PASS); attestazione «**QA MAJOR-5A1 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d74cbb7`**; prossimo: **MAJOR-5A2**; inbox **`2026-06-30_1200_riepilogo_finito-sessione.md`**.
+
 2026-06-30 — **MAJOR-5A1 runtime landed (QA operatore pending):** commit task runtime **`d74cbb7`** — GIS Object Workbench catalogo read-only (waypoint + savedTracks + gisPolygons), filtri tipo/testo, ⌖ fly-to delegato, azione Apri pannello nativo; `state._workbench` session-only; build **`B5.5Z · build 26`**; deploy GIS-only PASS (HTTP **200**, byte **2550551**, SHA **`2ec9a006…`**, CMP_PASS file=body); `goi-gis-app` active/enabled; **QA operatore non attestata** — attendere `QA MAJOR-5A1 PASS operatore` per auto-`finito`; inbox **`2026-06-30_maj-5a1-runtime.md`**.
 
 2026-06-29 — **MAJOR-5A-PLAN completato (read-only, orchestratore):** piano tecnico GIS Object Workbench salvato; nessun file runtime modificato; runtime VPS live invariato **`823bb73`** build 25; prossimo runtime consigliato: **MAJOR-5A1** (catalogo oggetti read-only + filtri + fly-to — waypoint, tracce salvate, poligoni GIS; esclude delete/rename/pick mappa/highlight avanzato/`gisTracks[]`/range rings/import-export/mission package/schema nuovo); `state._workbench` session-only; `state.mapWaypoints[]` resta canonico; **MAJOR-2E/3/4** backlog basso; stop micro-UX salvo bug reale; dettaglio piano → **`docs/orchestrator/inbox/2026-06-29_maj-5a-plan.md`**.
