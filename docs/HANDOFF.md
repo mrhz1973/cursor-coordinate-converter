@@ -117,7 +117,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `07ad4f4` — aggiornare con `git ls-remote` prima di ogni sessione |
+| HEAD remoto (verificato) | `ade8ac3` — aggiornare con `git ls-remote` prima di ogni sessione |
 | Ultimo blocco chiuso | **MAJOR-2A** — Verificatore copertura offline read-only (build 24) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime live VPS | `07ad4f41c0916df1fcefebf64a11e1d49ec75b6d` |
@@ -137,7 +137,14 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-**MAJOR-2** — Offline tile management (sottoblocchi **2B/2D/2E** write/delete/status persistito — rimandati dopo 2A).
+**MAJOR-2BCD-PLAN** — piano/gate/review per programma **MAJOR-2BCD** (offline tile: **2B** quota/errori + **2C** metadata vs delete fisico + **2D** delete selettivo protetto); categoria **DELICATA**; Diagnostica MAJOR-1 + verifier MAJOR-2A come QA.
+
+**Priorità (decisione operatore post MAJOR-2A):**
+
+- **Ora:** MAJOR-2B / 2C / 2D come programma unico **MAJOR-2BCD**
+- **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4
+- **Dopo 2BCD:** valutare **MAJOR-5A** (GIS Object Workbench)
+- **Stop:** microcorrezioni UX non funzionali salvo bug reale
 
 ---
 

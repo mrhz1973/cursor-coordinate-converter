@@ -310,7 +310,7 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **MAJOR-2 — Offline tile management serio** (programma major-feature; **MAJOR-2A CLOSED** `07ad4f4` build 24; prossimi candidati 2B/2D/2E write/delete); titolo statico `<title>` backlog minore. **MAJOR-2A** **CLOSED** (`07ad4f4`, build 24). **MAJOR-1** **CLOSED** (`9b359b7`, build 23). **UX-NEXT-RUNTIME-BUNDLE-E** **CLOSED** (`fb871b7`, build 22). **UX-NEXT-RUNTIME-BUNDLE-D** **CLOSED** (`19700b6`, build 21). **UX-NEXT-RUNTIME-BUNDLE-C** **CLOSED** (`8f56566`, build 18). **UX-NEXT-RUNTIME-BUNDLE-B** **CLOSED** (`584135e`, build 17). **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
+  - **Prossimo ordine operativo:** **MAJOR-2BCD-PLAN** → programma **MAJOR-2BCD** (2B+2C+2D insieme; categoria DELICATA; piano/gate/review prima del runtime); **MAJOR-2A CLOSED** `07ad4f4` build 24; **2E/3/4** backlog basso; **5A** dopo 2BCD; titolo statico `<title>` e micro-UX **non ora** (salvo bug reale). **MAJOR-2A** **CLOSED** (`07ad4f4`, build 24). **MAJOR-1** **CLOSED** (`9b359b7`, build 23). **UX-NEXT-RUNTIME-BUNDLE-E** **CLOSED** (`fb871b7`, build 22). **UX-NEXT-RUNTIME-BUNDLE-D** **CLOSED** (`19700b6`, build 21). **UX-NEXT-RUNTIME-BUNDLE-C** **CLOSED** (`8f56566`, build 18). **UX-NEXT-RUNTIME-BUNDLE-B** **CLOSED** (`584135e`, build 17). **UX-NEXT-RUNTIME-BUNDLE-A** **CLOSED** (`61bcda5`, build 16). **ROUTINE-CLEANUP-BUNDLE** **CLOSED** (`7b8cf04`, build 15). **BUNDLE-BACKLOG-B3** **CLOSED** (`709079c`, build 14). **MODAL-STD-B2** **CLOSED** (`266b116`, build 13). **MODAL-STD-SEARCH-B1** **CLOSED** (`33c95ad`, build 10).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
@@ -1575,7 +1575,39 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 
 **Runtime autorevole live VPS:** `07ad4f4`.
 
-**Prossimi candidati MAJOR-2:** 2B/2D/2E (write/delete/status persistito — rimandati).
+**Prossimi candidati MAJOR-2:** vedi § **Programma MAJOR-2 post MAJOR-2A — priorità 2B/2C/2D** sotto.
+
+## Programma MAJOR-2 post MAJOR-2A — priorità 2B/2C/2D
+
+**Stato programma:** **MAJOR-2A** landed/PASS (`07ad4f4`, build 24). **Prossima priorità operatore:** **MAJOR-2BCD** — pianificare e implementare **2B**, **2C** e **2D** come programma unico.
+
+### Scopo del programma MAJOR-2BCD
+
+| Sottoblocco | Scopo |
+| --- | --- |
+| **MAJOR-2B** | Rendere visibili quota alta, `QuotaExceededError` ed errori IDB/cache/precache |
+| **MAJOR-2C** | Rendere inequivocabile **metadata-only** vs cancellazione **tile fisiche** |
+| **MAJOR-2D** | Introdurre o rafforzare delete fisico selettivo, con preview, conferma danger e protezione tile condivise |
+
+### Vincoli (2B/2C/2D)
+
+- **Nessun** cambio fetch/proxy/OPSEC salvo decisione esplicita.
+- **Nessun** delete fisico senza preview e conferma esplicita.
+- Default conservativo **metadata-only**.
+- **Tile condivise protette** (non cancellabili senza guardrail).
+- Usare **Diagnostica MAJOR-1** e **coverage verifier MAJOR-2A** come strumenti QA del programma.
+- Categoria **DELICATA** o mista (cache/storage/delete) → **piano/gate/review tiered obbligatori** prima del runtime.
+
+### Backlog bassa priorità / rinviato (non ora)
+
+| ID | Titolo | Nota |
+| --- | --- | --- |
+| **MAJOR-2E** | Status partial/complete persistito da scan IDB | Rinviato — dopo stabilizzazione 2BCD |
+| **MAJOR-3** | Import/export GIS unificato | Rinviato — offline/tile management prima |
+| **MAJOR-4** | Mission/project package | Rinviato — offline/tile management prima |
+| **MAJOR-5A** | GIS Object Workbench (candidato) | Da valutare **dopo MAJOR-2BCD** — lista oggetti GIS, selezione mappa↔tabella, evidenziazione, filtri, batch actions leggere; solo riferimenti già documentati; esclude mission package, import/export unificato, schema dati grosso |
+
+**Microcorrezioni UX non funzionali:** stop salvo bug reale.
 
 #### MAJOR-1 — Diagnostica runtime / QA hardening (build 23)
 
