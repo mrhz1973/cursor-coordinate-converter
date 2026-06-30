@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-06-30 — **`finito` sessione — MAJOR-5A2a CLOSED / PASS end-to-end:** commit task runtime **`d2f7856`** — Workbench selezione lista + highlight (build 27); deploy GIS-only PASS (byte **2559724**, SHA **`328377ad…`**, CMP_PASS); attestazione «**QA MAJOR-5A2a PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d2f7856`**; prossimo: **MAJOR-5A2b**; inbox **`2026-06-30_1400_riepilogo_finito-sessione.md`**.
+
 2026-06-30 — **MAJOR-5A2-PLAN completato (read-only, orchestratore):** piano tecnico selezione/highlight Workbench salvato; nessun file runtime modificato; runtime VPS live invariato **`d74cbb7`** build 26; prossimo runtime consigliato: **MAJOR-5A2a** (click riga → `{kind,id}` session-only + riga evidenziata + highlight mappa WP/traccia/poligono; ⌖ fly-to separato; deselect toggle/Esc/chiusura/prune; **esclusi** mappa→lista, pick mode, delete/rename/edit, schema persistito, `gisTracks[]`, range rings); `state._workbench.selected` già scaffold 5A1 ma non usato in render; mappa→lista rinviata **5A2b/5A2c** (conflitti pick/draw/edit); **MAJOR-2E/3/4** backlog basso; stop micro-UX salvo bug reale; dettaglio piano → **`docs/orchestrator/inbox/2026-06-30_plan_major-5a2-selection-highlight.md`**.
 
 2026-06-30 — **`finito` sessione — MAJOR-5A1 CLOSED / PASS end-to-end:** commit task runtime **`d74cbb7`** — GIS Object Workbench catalogo read-only (build 26); deploy GIS-only PASS (byte **2550551**, SHA **`2ec9a006…`**, CMP_PASS); attestazione «**QA MAJOR-5A1 PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d74cbb7`**; prossimo: **MAJOR-5A2**; inbox **`2026-06-30_1200_riepilogo_finito-sessione.md`**.
