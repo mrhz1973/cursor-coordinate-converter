@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-07-01 — **`finito` sessione — MAJOR-5A2c CLOSED / PASS end-to-end:** commit task runtime **`eb1451b`** — Workbench pick mappa poligoni (build 29); review Claude PASS pre-deploy; deploy GIS-only PASS (byte **2574712**, SHA **`3f3adb17…`**, CMP_PASS); attestazione «**QA MAJOR-5A2c PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`eb1451b`**; programma pick MAJOR-5A2 completo; prossimo: **MAJOR-5A2-UX-BACKLOG** o **MAJOR-2E/3/4**; inbox **`2026-07-01_0145_riepilogo_finito-sessione.md`**.
+
 2026-06-30 — **QA arricchita MAJOR-5A2b + backlog UX (docs-only):** attestazione operatore «**QA MAJOR-5A2b PASS operatore**» confermata funzionale (selezione riga, pick WP/traccia, esclusione poligoni, Esc/cleanup, build 28); registrati **3 item UX non bloccanti** (non FAIL) come **MAJOR-5A2-UX-BACKLOG** — toolbar Oggetti GIS chiara, resize angoli pannello Workbench, chip filtri troppo chiari; runtime VPS invariato **`cef7d42`** build 28; prossimo runtime: **MAJOR-5A2c**; aggiornati OM §7, WU, HANDOFF; inbox **`2026-06-30_2300_riepilogo_finito-sessione.md`** arricchito.
 
 2026-06-30 — **`finito` sessione — MAJOR-5A2b CLOSED / PASS end-to-end:** commit task runtime **`cef7d42`** — Workbench pick mappa WP+traccia (build 28); review Claude PASS pre-deploy; deploy GIS-only PASS (byte **2571484**, SHA **`8786d082…`**, CMP_PASS); attestazione «**QA MAJOR-5A2b PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`cef7d42`**; prossimo: **MAJOR-5A2c**; inbox **`2026-06-30_2300_riepilogo_finito-sessione.md`**.

@@ -1653,7 +1653,7 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 2. `#gisWorkbenchPanel` — resize angoli coerente altri pannelli floating.
 3. Chip filtro `.wb-filter-chip` — palette dark, stati attivo/inattivo/disabilitato, contrasto.
 
-**Nota:** candidato bundle ROUTINE CSS/HTML; non prioritario rispetto a **MAJOR-5A2c**.
+**Nota:** candidato bundle ROUTINE CSS/HTML; **prossimo candidato UX** post-chiusura programma pick MAJOR-5A2.
 
 #### MAJOR-5A2a — Workbench selezione lista + highlight (build 27)
 
