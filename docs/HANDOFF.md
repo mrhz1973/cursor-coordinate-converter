@@ -145,11 +145,23 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
 
+**Backlog UX non bloccante (post-QA 5A2b, non FAIL):** **MAJOR-5A2-UX-BACKLOG** — toolbar Oggetti GIS chiara; resize angoli `#gisWorkbenchPanel`; chip filtri Workbench troppo chiari. ROUTINE quando autorizzato; priorità inferiore a **MAJOR-5A2c**.
+
 **Stop:** microcorrezioni UX non funzionali salvo bug reale.
 
 ---
 
 ## Backlog / note immediate
+
+### MAJOR-5A2-UX-BACKLOG — Workbench UX post-QA 5A2b (non bloccante)
+
+**Origine:** QA operatore arricchita post-chiusura MAJOR-5A2b — **non FAIL** del blocco.
+
+1. Pulsante toolbar mappa «Oggetti GIS» (`.twb-btn`) — troppo bianco/chiaro; uniformare tema GIS scuro.
+2. `#gisWorkbenchPanel` — non ridimensionabile dagli angoli; allineare resize ad altri pannelli floating GIS.
+3. Chip filtro Workbench (`.wb-filter-chip`: Tutti/WP/Tracce/Poligoni) — palette dark, stati attivo/inattivo/disabilitato, contrasto.
+
+**Nota:** candidato bundle ROUTINE CSS/HTML; priorità inferiore a **MAJOR-5A2c**.
 
 ### UX-NEXT-RUNTIME-BUNDLE-E — consolidamento UX GIS (runtime landed)
 

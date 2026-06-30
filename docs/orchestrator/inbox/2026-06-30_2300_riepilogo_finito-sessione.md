@@ -41,7 +41,19 @@ URL QA = http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cef7d42
 
 - **PASS** — attestazione operatore: «**QA MAJOR-5A2b PASS operatore**»
 - Provenienza: operatore (trigger auto-`finito`)
+- Funzionale verificato: selezione riga, pick waypoint, pick traccia salvata, esclusione poligoni, Esc/cleanup, build 28 OK
 - Regressione 5A2a verificata; poligoni fuori scope pick; conflitti non rilevati in QA
+- **Backlog UX non bloccante (non FAIL del blocco):** vedi sezione **MAJOR-5A2-UX-BACKLOG** sotto
+
+## MAJOR-5A2-UX-BACKLOG (post-QA, non bloccante)
+
+Registrato come backlog UX — **non** FAIL MAJOR-5A2b.
+
+1. **Toolbar «Oggetti GIS»** — pulsante map toolbar (`.twb-btn` / `data-role="workbench-open"`) appare bianco/chiaro; uniformare al tema GIS scuro.
+2. **Resize pannello** — `#gisWorkbenchPanel` non ridimensionabile dagli angoli; aggiungere resize coerente con altri pannelli floating GIS (handle presenti in markup, wiring/efficacia da verificare).
+3. **Chip filtri** — `.wb-filter-chip` (Tutti/WP/Tracce/Poligoni) troppo bianchi/chiari; riallineare stile dark, stati attivo/inattivo/disabilitato e contrasto.
+
+**Priorità:** inferiore a **MAJOR-5A2c**; candidato bundle ROUTINE CSS/HTML quando autorizzato.
 
 ## Monolite nel commit finito/orchestratore
 
@@ -59,6 +71,8 @@ URL QA = http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cef7d42
 **MAJOR-5A2c** — pick mappa poligoni Workbench (piano `2026-06-30_plan_major-5a2-selection-highlight.md`).
 
 **Backlog basso:** MAJOR-2E, MAJOR-3, MAJOR-4.
+
+**Backlog UX:** **MAJOR-5A2-UX-BACKLOG** (toolbar dark, resize pannello, chip filtri) — non bloccante, non FAIL.
 
 ## Limiti
 

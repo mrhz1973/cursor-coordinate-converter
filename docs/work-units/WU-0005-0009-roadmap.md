@@ -1607,11 +1607,25 @@ SHA-256 file = 8786d08290051f6fca8a71f484982871a00e0cffaab71ff62c1d235ddf4d4466 
 goi-gis-app.service = active (bind 100.114.7.53:8000)
 ```
 
-**QA operatore:** PASS — «**QA MAJOR-5A2b PASS operatore**» (trigger auto-`finito` Regola H).
+**QA operatore:** PASS — «**QA MAJOR-5A2b PASS operatore**» (trigger auto-`finito` Regola H). Funzionale verificato: selezione riga, pick WP/traccia, esclusione poligoni, Esc/cleanup, build 28. **Backlog UX non bloccante** (non FAIL): toolbar Oggetti GIS chiara; resize angoli pannello; chip filtri troppo chiari — vedi **MAJOR-5A2-UX-BACKLOG**.
 
 **Runtime autorevole live VPS:** `cef7d42`.
 
 **Prossimi candidati:** **MAJOR-5A2c**; **MAJOR-2E/3/4** backlog basso.
+
+#### MAJOR-5A2-UX-BACKLOG — Workbench UX post-QA (non bloccante)
+
+**Stato:** backlog UX — **non FAIL** blocco 5A2b.
+
+**Origine:** QA operatore arricchita post-chiusura MAJOR-5A2b.
+
+**Item:**
+
+1. Toolbar «Oggetti GIS» — tema scuro GIS (pulsante map toolbar troppo chiaro).
+2. `#gisWorkbenchPanel` — resize angoli coerente altri pannelli floating.
+3. Chip filtro `.wb-filter-chip` — palette dark, stati attivo/inattivo/disabilitato, contrasto.
+
+**Nota:** candidato bundle ROUTINE CSS/HTML; non prioritario rispetto a **MAJOR-5A2c**.
 
 #### MAJOR-5A2a — Workbench selezione lista + highlight (build 27)
 
@@ -1720,7 +1734,8 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 | **MAJOR-3** | Import/export GIS unificato | Rinviato — offline/tile management prima |
 | **MAJOR-4** | Mission/project package | Rinviato — offline/tile management prima |
 | **MAJOR-5A** | GIS Object Workbench | **5A1 CLOSED** (`d74cbb7`, build 26); **5A2a CLOSED** (`d2f7856`, build 27); **5A2b CLOSED** (`cef7d42`, build 28) — pick mappa WP+traccia; **prossimo: 5A2c** pick poligoni |
-| **MAJOR-5A2c** | Workbench pick poligoni | Candidato prioritario — DELICATO leggero; piano `2026-06-30_plan_major-5a2-selection-highlight.md` |
+| **MAJOR-5A2c** | Workbench pick poligoni | Candidato prioritario runtime — DELICATO leggero; piano `2026-06-30_plan_major-5a2-selection-highlight.md` |
+| **MAJOR-5A2-UX-BACKLOG** | Workbench UX dark/resize/filtri | Backlog non bloccante post-QA 5A2b — toolbar chiara, resize pannello, chip filtri; ROUTINE quando autorizzato |
 
 **Microcorrezioni UX non funzionali:** stop salvo bug reale.
 
