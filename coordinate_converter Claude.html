@@ -13987,11 +13987,11 @@ const I18N = {
     "workbench.fly":"Centra in mappa",
     "workbench.open":"Apri pannello",
     "workbench.mapPick":"Seleziona da mappa",
-    "workbench.mapPickTip":"Clicca un waypoint o una traccia salvata visibile in mappa",
+    "workbench.mapPickTip":"Clicca un waypoint, una traccia salvata o un poligono GIS visibile in mappa",
     "workbench.mapPickActive":"Selezione mappa attiva",
-    "workbench.mapPickHint":"Clicca un waypoint o una traccia salvata sulla mappa. Esc per uscire.",
+    "workbench.mapPickHint":"Clicca un waypoint, una traccia salvata o un poligono GIS sulla mappa. Esc per uscire.",
     "workbench.mapPickBlocked":"Selezione mappa non disponibile: chiudi le altre modalità di pick o modifica in corso.",
-    "workbench.mapPickNoHit":"Nessun waypoint o traccia salvata in questo punto.",
+    "workbench.mapPickNoHit":"Nessun waypoint, traccia salvata o poligono GIS in questo punto.",
     "workbench.mapPickDone":"Oggetto selezionato dal pick mappa.",
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Traccia",
@@ -15827,11 +15827,11 @@ const I18N = {
     "workbench.fly":"Center on map",
     "workbench.open":"Open panel",
     "workbench.mapPick":"Select from map",
-    "workbench.mapPickTip":"Click a visible waypoint or saved track on the map",
+    "workbench.mapPickTip":"Click a visible waypoint, saved track, or GIS polygon on the map",
     "workbench.mapPickActive":"Map selection active",
-    "workbench.mapPickHint":"Click a waypoint or saved track on the map. Esc to exit.",
+    "workbench.mapPickHint":"Click a waypoint, saved track, or GIS polygon on the map. Esc to exit.",
     "workbench.mapPickBlocked":"Map selection unavailable: close other pick or edit modes first.",
-    "workbench.mapPickNoHit":"No waypoint or saved track at this point.",
+    "workbench.mapPickNoHit":"No waypoint, saved track, or GIS polygon at this point.",
     "workbench.mapPickDone":"Object selected from map pick.",
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Track",
@@ -19217,7 +19217,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 28;
+const APP_BUILD_NUM = 29;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51621,6 +51621,8 @@ function workbenchMapInteractionBlocked(){
   if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
   if (typeof mapTrackDocDrag !== "undefined" && mapTrackDocDrag) return true;
   if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
+  if (typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag) return true;
+  if (typeof mapPolyMoveDocDrag !== "undefined" && mapPolyMoveDocDrag) return true;
   return false;
 }
 
@@ -51689,6 +51691,59 @@ function workbenchDistSqToSegment(px, py, x1, y1, x2, y2){
   return (px - nx) * (px - nx) + (py - ny) * (py - ny);
 }
 
+function workbenchPointInPolygon(px, py, pts){
+  if (!pts || pts.length < 3) return false;
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++){
+    const xi = pts[i].x, yi = pts[i].y;
+    const xj = pts[j].x, yj = pts[j].y;
+    const denom = yj - yi;
+    const intersect = ((yi > py) !== (yj > py)) &&
+      (px < (xj - xi) * (py - yi) / (Math.abs(denom) < 1e-12 ? 1e-12 : denom) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function workbenchPolygonAreaAbs(pts){
+  if (!pts || pts.length < 3) return 0;
+  let a = 0;
+  for (let i = 0; i < pts.length; i++){
+    const j = (i + 1) % pts.length;
+    a += pts[i].x * pts[j].y - pts[j].x * pts[i].y;
+  }
+  return Math.abs(a * 0.5);
+}
+
+function workbenchMinDistSqToPolygonRing(px, py, pts){
+  if (!pts || pts.length < 2) return Infinity;
+  let best = Infinity;
+  for (let i = 0; i < pts.length; i++){
+    const j = (i + 1) % pts.length;
+    const d = workbenchDistSqToSegment(px, py, pts[i].x, pts[i].y, pts[j].x, pts[j].y);
+    if (d < best) best = d;
+  }
+  return best;
+}
+
+function workbenchPolygonPxRing(root, f, tx, ty){
+  if (!f || !f.geometry || f.geometry.type !== "Polygon") return null;
+  const ring = (Array.isArray(f.geometry.coordinates) && Array.isArray(f.geometry.coordinates[0]))
+    ? f.geometry.coordinates[0] : [];
+  if (ring.length < 3) return null;
+  const pxPts = [];
+  for (const c of ring){
+    if (!Array.isArray(c) || c.length < 2) continue;
+    const px = tileMapLatLonToPx(root, c[1], c[0]);
+    if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+    pxPts.push({ x: px.x - tx, y: px.y - ty });
+  }
+  if (pxPts.length < 3) return null;
+  const last = pxPts[pxPts.length - 1], first = pxPts[0];
+  if (Math.abs(last.x - first.x) < 0.5 && Math.abs(last.y - first.y) < 0.5) pxPts.pop();
+  return pxPts.length >= 3 ? pxPts : null;
+}
+
 function workbenchMapHitTestAtClient(root, tileMap, clientX, clientY, markerLat, markerLon, zoom){
   if (!root || !tileMap) return null;
   const off = workbenchTileMapOffset(tileMap);
@@ -51733,13 +51788,35 @@ function workbenchMapHitTestAtClient(root, tileMap, clientX, clientY, markerLat,
     }
   }
   if (bestSt) return { kind: "savedTrack", id: String(bestSt.id) };
+  ensureGisState();
+  const skipEditId = (typeof polygonIsEditing === "function" && polygonIsEditing() && state._polyEdit)
+    ? String(state._polyEdit.id || "") : "";
+  const polyEdgeMaxD = 14 * 14;
+  let bestInsidePoly = null, bestInsideArea = Infinity;
+  let bestEdgePoly = null, bestEdgeD = polyEdgeMaxD;
+  for (const f of (state.gisPolygons || [])){
+    if (!f || !f.id) continue;
+    if (skipEditId && String(f.id || "") === skipEditId) continue;
+    if (!polygonMapVisible(f)) continue;
+    const pxPts = workbenchPolygonPxRing(root, f, tx, ty);
+    if (!pxPts) continue;
+    if (workbenchPointInPolygon(px, py, pxPts)){
+      const area = workbenchPolygonAreaAbs(pxPts);
+      if (area < bestInsideArea){ bestInsideArea = area; bestInsidePoly = f; }
+      continue;
+    }
+    const edgeD = workbenchMinDistSqToPolygonRing(px, py, pxPts);
+    if (edgeD < bestEdgeD){ bestEdgeD = edgeD; bestEdgePoly = f; }
+  }
+  if (bestInsidePoly) return { kind: "polygon", id: String(bestInsidePoly.id) };
+  if (bestEdgePoly) return { kind: "polygon", id: String(bestEdgePoly.id) };
   return null;
 }
 
 function workbenchMapPickSelect(kind, id){
   if (workbenchMapInteractionBlocked()) return false;
   const k = String(kind || ""), sid = String(id || "");
-  if (k !== "waypoint" && k !== "savedTrack") return false;
+  if (k !== "waypoint" && k !== "savedTrack" && k !== "polygon") return false;
   if (!workbenchSelectionExists({ kind: k, id: sid })) return false;
   workbenchSetSelection(k, sid);
   workbenchScrollSelectedRowIntoView();
