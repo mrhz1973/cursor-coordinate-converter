@@ -8211,6 +8211,18 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
   padding:4px 8px;
 }
 .wb-count{ font-size:.72rem; white-space:nowrap; margin-left:auto; }
+.wb-map-pick-btn.is-active{
+  background:#eff6ff;
+  border-color:#93c5fd;
+  color:#1d4ed8;
+}
+.tile-map.workbench-pick-mode{ cursor:crosshair; }
+.tile-map.workbench-pick-mode .saved-tracks-overlay polyline[data-saved-map-hit],
+.tile-map.workbench-pick-mode .saved-tracks-overlay polygon[data-saved-map-hit],
+.tile-map.workbench-pick-mode .saved-tracks-overlay circle[data-saved-map-hit]{
+  cursor:crosshair;
+}
+.tile-map.workbench-pick-mode .waypoints-overlay .wpt-handle{ cursor:crosshair; }
 .wb-list-wrap{
   flex:1 1 auto;
   min-height:0;
@@ -11516,6 +11528,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="search" id="gisWorkbenchSearch" class="wb-search-inp" maxlength="120" autocomplete="off"
              data-i18n-placeholder="workbench.searchPh" placeholder="Cerca nome o riepilogo…">
     </label>
+    <button type="button" id="gisWorkbenchMapPickBtn" class="btn btn-sm wb-map-pick-btn"
+            data-i18n="workbench.mapPick" data-i18n-tip="workbench.mapPickTip">Seleziona da mappa</button>
     <div id="gisWorkbenchCount" class="wb-count hint" role="status" aria-live="polite"></div>
   </div>
   <div class="app-modal-body" id="gisWorkbenchPanelBody">
@@ -13972,6 +13986,13 @@ const I18N = {
     "workbench.noResults":"Nessun risultato per filtro o ricerca corrente.",
     "workbench.fly":"Centra in mappa",
     "workbench.open":"Apri pannello",
+    "workbench.mapPick":"Seleziona da mappa",
+    "workbench.mapPickTip":"Clicca un waypoint o una traccia salvata visibile in mappa",
+    "workbench.mapPickActive":"Selezione mappa attiva",
+    "workbench.mapPickHint":"Clicca un waypoint o una traccia salvata sulla mappa. Esc per uscire.",
+    "workbench.mapPickBlocked":"Selezione mappa non disponibile: chiudi le altre modalità di pick o modifica in corso.",
+    "workbench.mapPickNoHit":"Nessun waypoint o traccia salvata in questo punto.",
+    "workbench.mapPickDone":"Oggetto selezionato dal pick mappa.",
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Traccia",
     "workbench.typePolygon":"Poligono",
@@ -15805,6 +15826,13 @@ const I18N = {
     "workbench.noResults":"No results for the current filter or search.",
     "workbench.fly":"Center on map",
     "workbench.open":"Open panel",
+    "workbench.mapPick":"Select from map",
+    "workbench.mapPickTip":"Click a visible waypoint or saved track on the map",
+    "workbench.mapPickActive":"Map selection active",
+    "workbench.mapPickHint":"Click a waypoint or saved track on the map. Esc to exit.",
+    "workbench.mapPickBlocked":"Map selection unavailable: close other pick or edit modes first.",
+    "workbench.mapPickNoHit":"No waypoint or saved track at this point.",
+    "workbench.mapPickDone":"Object selected from map pick.",
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Track",
     "workbench.typePolygon":"Polygon",
@@ -17584,6 +17612,13 @@ const I18N = {
     "workbench.noResults":"Aucun résultat pour le filtre ou la recherche actuelle.",
     "workbench.fly":"Centrer sur la carte",
     "workbench.open":"Ouvrir le panneau",
+    "workbench.mapPick":"Sélectionner sur la carte",
+    "workbench.mapPickTip":"Cliquez un waypoint ou une trace enregistrée visible sur la carte",
+    "workbench.mapPickActive":"Sélection carte active",
+    "workbench.mapPickHint":"Cliquez un waypoint ou une trace enregistrée sur la carte. Échap pour quitter.",
+    "workbench.mapPickBlocked":"Sélection carte indisponible : fermez les autres modes pick ou édition en cours.",
+    "workbench.mapPickNoHit":"Aucun waypoint ou trace enregistrée à cet endroit.",
+    "workbench.mapPickDone":"Objet sélectionné depuis la carte.",
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Trace",
     "workbench.typePolygon":"Polygone",
@@ -19182,7 +19217,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 27;
+const APP_BUILD_NUM = 28;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -34141,6 +34176,20 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
     const sid = hit.getAttribute("data-saved-map-hit");
     if (sid) showTrkSavedCtxMenu(ev.clientX, ev.clientY, sid, { source: "map" });
   }, true);
+  svg.addEventListener("click", (ev) => {
+    if (!workbenchIsPickModeActive()) return;
+    const hit = ev.target && ev.target.closest && ev.target.closest("[data-saved-map-hit]");
+    if (!hit) return;
+    if (workbenchMapInteractionBlocked()){
+      setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickBlocked") : "") || "Blocked", { error: true });
+      ev.preventDefault();
+      ev.stopPropagation();
+      return;
+    }
+    ev.preventDefault();
+    ev.stopPropagation();
+    workbenchMapPickSelect("savedTrack", hit.getAttribute("data-saved-map-hit"));
+  }, true);
   for (const st of visible){
     const pts = st.points;
     const stroke = savedTrackStrokeColor(st.id);
@@ -35614,6 +35663,7 @@ function trackSyncPickModeUi(){
     tileMap.classList.toggle("range-rings-edit-move-mode", !!state._rrEditingMoveCenterMode);
     tileMap.classList.toggle("astro-pick-mode", !!state.astroPickCenterMode);
     tileMap.classList.toggle("convert-pick-mode", !!state.convertSourcePickMode);
+    tileMap.classList.toggle("workbench-pick-mode", workbenchIsPickModeActive());
   }
   const btnFin = document.getElementById("btnTrackFinish");
   if (btnFin){
@@ -36888,6 +36938,16 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
   svg.addEventListener("pointerdown", (ev) => {
     const h = ev.target && ev.target.closest && ev.target.closest(".wpt-handle");
     if (!h) return;
+    if (workbenchIsPickModeActive()){
+      ev.stopPropagation();
+      if (ev.cancelable) ev.preventDefault();
+      if (workbenchMapInteractionBlocked()){
+        setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickBlocked") : "") || "Blocked", { error: true });
+        return;
+      }
+      workbenchMapPickSelect("waypoint", String(h.dataset.id || ""));
+      return;
+    }
     ev.stopPropagation();
     if (ev.cancelable) ev.preventDefault();
     mapMeasureDocDragCleanup();
@@ -39114,6 +39174,9 @@ function attachPanHandlers(root, lat, lon, zoom){
           try { ev.stopPropagation(); } catch(_){}
         }
         return;
+      }
+      if (workbenchIsPickModeActive() && !drag.moved && cx != null && cy != null){
+        if (workbenchHandleMapPickUpClick(ev, root, tileMap, lat, lon, zoom, cx, cy)) return;
       }
       if (state.mapPickMode && !drag.moved && cx != null && cy != null){
         const zPick = state.mapZoom || zoom;
@@ -46651,6 +46714,11 @@ function gisInit(){
     const wbd = document.getElementById("gisWorkbenchPanel");
     if (state.workbenchPanelOpen || (wbd && wbd.open)){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("gisWorkbenchPanel")) return;
+      if (state._workbench && state._workbench.pickMode){
+        ev.preventDefault();
+        try { workbenchExitPickMode(); } catch(_){}
+        return;
+      }
       if (state._workbench && state._workbench.selected){
         ev.preventDefault();
         try { workbenchClearSelection(); } catch(_){}
@@ -51524,10 +51592,187 @@ function ensureWorkbenchState(){
   const fk = String(state._workbench.filterKind || "all");
   state._workbench.filterKind = WORKBENCH_FILTER_KINDS.includes(fk) ? fk : "all";
   if (typeof state._workbench.search !== "string") state._workbench.search = "";
+  if (typeof state._workbench.pickMode !== "boolean") state._workbench.pickMode = false;
   const sel = state._workbench.selected;
   if (sel != null && (typeof sel !== "object" || !sel.kind || !sel.id)){
     state._workbench.selected = null;
   }
+}
+
+function workbenchIsPickModeActive(){
+  ensureWorkbenchState();
+  if (!state._workbench.pickMode) return false;
+  const dlg = document.getElementById("gisWorkbenchPanel");
+  return !!(state.workbenchPanelOpen && dlg && dlg.open);
+}
+
+function workbenchMapInteractionBlocked(){
+  if (state.waypointPickMode) return true;
+  if (state.track && state.track.pickMode) return true;
+  if (typeof trackMapPickEditingActive === "function" && trackMapPickEditingActive()) return true;
+  if (state.polygonDrawMode) return true;
+  if (typeof polygonIsEditing === "function" && polygonIsEditing()) return true;
+  if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode || state._rrEditingMoveCenterMode) return true;
+  if (state.convertSourcePickMode) return true;
+  if (state.mapPickMode) return true;
+  if (state.astroPickCenterMode) return true;
+  if (state.mapMeasureMode) return true;
+  if (state._bboxSelecting) return true;
+  if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
+  if (typeof mapTrackDocDrag !== "undefined" && mapTrackDocDrag) return true;
+  if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
+  return false;
+}
+
+function workbenchSyncPickModeUi(){
+  ensureWorkbenchState();
+  const on = workbenchIsPickModeActive();
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (tileMap) tileMap.classList.toggle("workbench-pick-mode", on);
+  const btn = document.getElementById("gisWorkbenchMapPickBtn");
+  if (btn){
+    btn.classList.toggle("is-active", on);
+    btn.setAttribute("aria-pressed", on ? "true" : "false");
+    const lbl = on
+      ? ((typeof t === "function" ? t("workbench.mapPickActive") : "") || "Map pick active")
+      : ((typeof t === "function" ? t("workbench.mapPick") : "") || "Select from map");
+    btn.textContent = lbl;
+    const tip = (typeof t === "function" ? (t("workbench.mapPickTip") || lbl) : "") || lbl;
+    btn.setAttribute("data-tip", tip);
+    btn.setAttribute("aria-label", lbl);
+  }
+}
+
+function workbenchExitPickMode(opts){
+  opts = opts || {};
+  ensureWorkbenchState();
+  if (!state._workbench.pickMode) return;
+  state._workbench.pickMode = false;
+  workbenchSyncPickModeUi();
+  if (!opts.keepStatus) setWorkbenchPanelStatus("");
+}
+
+function workbenchTogglePickMode(){
+  ensureWorkbenchState();
+  if (state._workbench.pickMode){
+    workbenchExitPickMode();
+    return;
+  }
+  if (workbenchMapInteractionBlocked()){
+    setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickBlocked") : "") || "Blocked", { error: true });
+    return;
+  }
+  state._workbench.pickMode = true;
+  workbenchSyncPickModeUi();
+  setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickHint") : "") || "");
+}
+
+function workbenchScrollSelectedRowIntoView(){
+  ensureWorkbenchState();
+  const sel = state._workbench.selected;
+  if (!sel) return;
+  const mount = document.getElementById("gisWorkbenchList");
+  if (!mount) return;
+  const kind = String(sel.kind || ""), sid = String(sel.id || "");
+  const row = mount.querySelector('.wb-row[data-wb-kind="' + kind.replace(/"/g, "") + '"][data-wb-id="' + sid.replace(/"/g, "") + '"]');
+  if (row) try { row.scrollIntoView({ block: "nearest", behavior: "smooth" }); } catch(_){}
+}
+
+function workbenchDistSqToSegment(px, py, x1, y1, x2, y2){
+  const dx = x2 - x1, dy = y2 - y1;
+  const lenSq = dx * dx + dy * dy;
+  if (lenSq < 1e-6) return (px - x1) * (px - x1) + (py - y1) * (py - y1);
+  let t = ((px - x1) * dx + (py - y1) * dy) / lenSq;
+  t = Math.max(0, Math.min(1, t));
+  const nx = x1 + t * dx, ny = y1 + t * dy;
+  return (px - nx) * (px - nx) + (py - ny) * (py - ny);
+}
+
+function workbenchMapHitTestAtClient(root, tileMap, clientX, clientY, markerLat, markerLon, zoom){
+  if (!root || !tileMap) return null;
+  const off = workbenchTileMapOffset(tileMap);
+  if (!off) return null;
+  const rect = tileMap.getBoundingClientRect();
+  const px = clientX - rect.left;
+  const py = clientY - rect.top;
+  const tx = off.tx, ty = off.ty;
+  const z = state.mapZoom || zoom || 11;
+  ensureMapWaypointsState();
+  let bestWp = null, bestWpD = 20 * 20;
+  for (const p of (state.mapWaypoints || [])){
+    if (!p || !p.id) continue;
+    const c = tileMapLatLonToPx(root, p.lat, p.lon);
+    const cx = c.x - tx, cy = c.y - ty;
+    const d = (px - cx) * (px - cx) + (py - cy) * (py - cy);
+    if (d < bestWpD){ bestWpD = d; bestWp = p; }
+  }
+  if (bestWp) return { kind: "waypoint", id: String(bestWp.id) };
+  ensureSavedTracksState();
+  const editingId = state._trackEditingSavedId ? String(state._trackEditingSavedId) : "";
+  let bestSt = null, bestStD = 14 * 14;
+  for (const st of (state.savedTracks || [])){
+    if (!st || !st.id || st.visible === false || !Array.isArray(st.points) || !st.points.length) continue;
+    if (editingId && String(st.id) === editingId) continue;
+    const pts = st.points;
+    if (pts.length === 1){
+      const c = tileMapLatLonToPx(root, pts[0].lat, pts[0].lon);
+      const cx = c.x - tx, cy = c.y - ty;
+      const d = (px - cx) * (px - cx) + (py - cy) * (py - cy);
+      if (d < bestStD){ bestStD = d; bestSt = st; }
+      continue;
+    }
+    const closed = !!st.closed && pts.length >= 3;
+    const linePts = trackLinePointsForMapRender(pts, closed);
+    const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+    for (let i = 1; i < coords.length; i++){
+      const x1 = coords[i - 1].x - tx, y1 = coords[i - 1].y - ty;
+      const x2 = coords[i].x - tx, y2 = coords[i].y - ty;
+      const d = workbenchDistSqToSegment(px, py, x1, y1, x2, y2);
+      if (d < bestStD){ bestStD = d; bestSt = st; }
+    }
+  }
+  if (bestSt) return { kind: "savedTrack", id: String(bestSt.id) };
+  return null;
+}
+
+function workbenchMapPickSelect(kind, id){
+  if (workbenchMapInteractionBlocked()) return false;
+  const k = String(kind || ""), sid = String(id || "");
+  if (k !== "waypoint" && k !== "savedTrack") return false;
+  if (!workbenchSelectionExists({ kind: k, id: sid })) return false;
+  workbenchSetSelection(k, sid);
+  workbenchScrollSelectedRowIntoView();
+  workbenchExitPickMode({ keepStatus: true });
+  const msg = (typeof t === "function" ? t("workbench.mapPickDone") : "") || "";
+  if (msg) setWorkbenchPanelStatus(msg);
+  return true;
+}
+
+function workbenchHandleMapPickUpClick(ev, root, tileMap, markerLat, markerLon, zoom, clientX, clientY){
+  if (!workbenchIsPickModeActive()) return false;
+  if (workbenchMapInteractionBlocked()){
+    setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickBlocked") : "") || "Blocked", { error: true });
+    if (ev && ev.cancelable) ev.preventDefault();
+    return true;
+  }
+  const savedHit = ev && ev.target && ev.target.closest && ev.target.closest("[data-saved-map-hit]");
+  if (savedHit){
+    workbenchMapPickSelect("savedTrack", savedHit.getAttribute("data-saved-map-hit"));
+    if (ev && ev.cancelable) ev.preventDefault();
+    try { if (ev) ev.stopPropagation(); } catch(_){}
+    return true;
+  }
+  const geoHit = workbenchMapHitTestAtClient(root, tileMap, clientX, clientY, markerLat, markerLon, zoom);
+  if (geoHit){
+    workbenchMapPickSelect(geoHit.kind, geoHit.id);
+    if (ev && ev.cancelable) ev.preventDefault();
+    try { if (ev) ev.stopPropagation(); } catch(_){}
+    return true;
+  }
+  setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickNoHit") : "") || "No hit");
+  if (ev && ev.cancelable) ev.preventDefault();
+  return true;
 }
 
 function workbenchRemoveSelectionHighlightDom(){
@@ -51974,12 +52219,14 @@ function openGisWorkbenchPanel(){
       wireGisWorkbenchPanelFloating(dlg);
       syncWorkbenchFilterChips();
       renderWorkbenchList();
+      workbenchSyncPickModeUi();
       try { trackSyncPickModeUi(); } catch(_){}
       return true;
     }
     wireGisWorkbenchPanelFloating(dlg);
     syncWorkbenchFilterChips();
     renderWorkbenchList();
+    workbenchSyncPickModeUi();
     try { trackSyncPickModeUi(); } catch(_){}
     return true;
   }
@@ -51991,6 +52238,7 @@ function openGisWorkbenchPanel(){
   wireGisWorkbenchPanelFloating(dlg);
   syncWorkbenchFilterChips();
   renderWorkbenchList();
+  workbenchSyncPickModeUi();
   try { trackSyncPickModeUi(); } catch(_){}
   return true;
 }
@@ -51998,6 +52246,7 @@ function openGisWorkbenchPanel(){
 function closeGisWorkbenchPanel(){
   const dlg = document.getElementById("gisWorkbenchPanel");
   if (!state.workbenchPanelOpen && !(dlg && dlg.open)) return;
+  try { workbenchExitPickMode({ keepStatus: true }); } catch(_){}
   try { workbenchClearSelection({ skipList: true }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("gisWorkbenchPanel"); } catch(_){}
   state.workbenchPanelOpen = false;
@@ -52056,6 +52305,14 @@ function wireGisWorkbenchPanelOnce(){
       ensureWorkbenchState();
       state._workbench.search = String(searchInp.value || "").slice(0, 120);
       renderWorkbenchList();
+    });
+  }
+  const pickBtn = document.getElementById("gisWorkbenchMapPickBtn");
+  if (pickBtn && !pickBtn._wbPickWired){
+    pickBtn._wbPickWired = true;
+    pickBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      workbenchTogglePickMode();
     });
   }
   const list = document.getElementById("gisWorkbenchList");
