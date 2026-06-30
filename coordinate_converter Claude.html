@@ -8226,7 +8226,32 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
   border-bottom:1px solid var(--border,#f3f4f6);
   font-size:.78rem;
 }
+.wb-row{ cursor:pointer; }
 .wb-row:hover{ background:rgba(37,99,235,.04); }
+.wb-row.is-selected{
+  background:color-mix(in srgb, var(--accent,#2563eb) 12%, transparent);
+  box-shadow:inset 3px 0 0 var(--accent,#2563eb);
+}
+.wb-row.is-selected:hover{
+  background:color-mix(in srgb, var(--accent,#2563eb) 16%, transparent);
+}
+.workbench-selection-overlay{
+  position:absolute; inset:0; pointer-events:none; z-index:7;
+}
+.workbench-selection-overlay svg{
+  position:absolute; inset:0; width:100%; height:100%; pointer-events:none; display:block; overflow:visible;
+}
+.workbench-selection-overlay .wb-sel-hl-ring{
+  fill:none; stroke:#2563eb; stroke-width:3; stroke-opacity:.88;
+}
+.workbench-selection-overlay .wb-sel-hl-line{
+  fill:none; stroke:#2563eb; stroke-width:4.5; stroke-linejoin:round; stroke-linecap:round; stroke-opacity:.92;
+  filter:drop-shadow(0 0 4px rgba(37,99,235,.45));
+}
+.workbench-selection-overlay .wb-sel-hl-poly{
+  fill:rgba(37,99,235,.08); stroke:#2563eb; stroke-width:3.5; stroke-linejoin:round; stroke-opacity:.92;
+  filter:drop-shadow(0 0 5px rgba(37,99,235,.35));
+}
 .wb-type{
   font-size:.68rem;
   font-weight:600;
@@ -19157,7 +19182,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 26;
+const APP_BUILD_NUM = 27;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -32717,6 +32742,7 @@ function deleteSavedTracksByIds(ids, opts){
   }
   state.savedTracks = state.savedTracks.filter(st => !set.has(st.id));
   saveStore();
+  try { workbenchPruneSelection(); } catch(_){}
   renderSavedTracksList();
   refreshTileMapForTrackUi();
   if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
@@ -35303,6 +35329,7 @@ function waypointRemove(id){
   ensureMapWaypointsState();
   state.mapWaypoints = state.mapWaypoints.filter(p => p.id !== id);
   saveStore();
+  try { workbenchPruneSelection(); } catch(_){}
   renderMapWaypointsAll();
 }
 
@@ -38471,6 +38498,7 @@ function renderTileMap(lat, lon, zoom){
       try { renderGisPolygonsOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderPolygonEditOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderPolygonDraftOverlay(tileMap, lat, lon, zoom); } catch(_){}
+      try { renderWorkbenchSelectionHighlight(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
     }
   }
@@ -46623,6 +46651,11 @@ function gisInit(){
     const wbd = document.getElementById("gisWorkbenchPanel");
     if (state.workbenchPanelOpen || (wbd && wbd.open)){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("gisWorkbenchPanel")) return;
+      if (state._workbench && state._workbench.selected){
+        ev.preventDefault();
+        try { workbenchClearSelection(); } catch(_){}
+        return;
+      }
       if (typeof closeGisWorkbenchPanel === "function") closeGisWorkbenchPanel();
       return;
     }
@@ -51212,6 +51245,7 @@ function polygonDeleteByIds(ids, opts){
   if (!n) return;
   ensurePolygonPanelSelectionState();
   state._polygonPanelSelectedIds = (state._polygonPanelSelectedIds || []).filter(x => !set.has(String(x)));
+  try { workbenchPruneSelection(); } catch(_){}
   polygonHideDeleteBar();
   state._polygonPanelInlineRenameId = null;
   renderPolygonPanelList();
@@ -51496,6 +51530,194 @@ function ensureWorkbenchState(){
   }
 }
 
+function workbenchRemoveSelectionHighlightDom(){
+  try {
+    const root = document.getElementById("miniMap");
+    if (!root) return;
+    root.querySelectorAll(".workbench-selection-overlay").forEach(el => { try { el.remove(); } catch(_){} });
+  } catch(_){}
+}
+
+function workbenchSelectionExists(sel){
+  if (!sel || typeof sel !== "object") return false;
+  const k = String(sel.kind || ""), sid = String(sel.id || "");
+  if (!k || !sid) return false;
+  if (k === "waypoint"){
+    ensureMapWaypointsState();
+    return (state.mapWaypoints || []).some(p => p && String(p.id) === sid);
+  }
+  if (k === "savedTrack"){
+    ensureSavedTracksState();
+    return (state.savedTracks || []).some(st => st && String(st.id) === sid);
+  }
+  if (k === "polygon"){
+    ensureGisState();
+    return (state.gisPolygons || []).some(f => f && String(f.id) === sid);
+  }
+  return false;
+}
+
+function workbenchIsSelected(kind, id){
+  ensureWorkbenchState();
+  const sel = state._workbench.selected;
+  if (!sel) return false;
+  return String(sel.kind || "") === String(kind || "") && String(sel.id || "") === String(id || "");
+}
+
+function workbenchClearSelection(opts){
+  opts = opts || {};
+  ensureWorkbenchState();
+  state._workbench.selected = null;
+  workbenchRemoveSelectionHighlightDom();
+  if (!opts.skipList && state.workbenchPanelOpen) renderWorkbenchList();
+}
+
+function workbenchPruneSelection(){
+  ensureWorkbenchState();
+  const sel = state._workbench.selected;
+  if (!sel) return false;
+  if (workbenchSelectionExists(sel)) return false;
+  workbenchClearSelection({ skipList: true });
+  if (state.workbenchPanelOpen) renderWorkbenchList();
+  return true;
+}
+
+function workbenchSetSelection(kind, id){
+  ensureWorkbenchState();
+  const k = String(kind || ""), sid = String(id || "");
+  if (!k || !sid) return;
+  const cur = state._workbench.selected;
+  if (cur && String(cur.kind) === k && String(cur.id) === sid){
+    workbenchClearSelection();
+    return;
+  }
+  if (!workbenchSelectionExists({ kind: k, id: sid })) return;
+  state._workbench.selected = { kind: k, id: sid };
+  renderWorkbenchList();
+  workbenchRefreshMapHighlight();
+}
+
+function workbenchTileMapOffset(tileMap){
+  if (!tileMap) return null;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return null;
+  const style = tileLayer.style.transform || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  return { tileLayer, tx, ty };
+}
+
+function workbenchRefreshMapHighlight(){
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!tileMap){
+    workbenchRemoveSelectionHighlightDom();
+    return;
+  }
+  const lp = state.lastPoint || state.viewCenter || { lat: 0, lon: 0 };
+  const z = state.mapZoom || 11;
+  try { renderWorkbenchSelectionHighlight(tileMap, lp.lat, lp.lon, z); } catch(_){}
+}
+
+function renderWorkbenchSelectionHighlight(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  workbenchRemoveSelectionHighlightDom();
+  workbenchPruneSelection();
+  ensureWorkbenchState();
+  const sel = state._workbench.selected;
+  if (!sel || !workbenchSelectionExists(sel)) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const off = workbenchTileMapOffset(tileMap);
+  if (!off) return;
+  const tileLayer = off.tileLayer, tx = off.tx, ty = off.ty;
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  let drew = false;
+  const k = String(sel.kind || ""), sid = String(sel.id || "");
+  if (k === "waypoint"){
+    ensureMapWaypointsState();
+    const p = (state.mapWaypoints || []).find(x => x && String(x.id) === sid);
+    if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
+      const c = tileMapLatLonToPx(root, p.lat, p.lon);
+      const cx = c.x - tx, cy = c.y - ty;
+      const ring = document.createElementNS(ns, "circle");
+      ring.setAttribute("class", "wb-sel-hl-ring");
+      ring.setAttribute("cx", cx.toFixed(1));
+      ring.setAttribute("cy", cy.toFixed(1));
+      ring.setAttribute("r", "18");
+      svg.appendChild(ring);
+      drew = true;
+    }
+  } else if (k === "savedTrack"){
+    ensureSavedTracksState();
+    const st = (state.savedTracks || []).find(x => x && String(x.id) === sid);
+    if (st && Array.isArray(st.points) && st.points.length){
+      const closed = !!st.closed && st.points.length >= 3;
+      const linePts = trackLinePointsForMapRender(st.points, closed);
+      const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+      if (st.points.length === 1){
+        const c = coords[0];
+        const dot = document.createElementNS(ns, "circle");
+        dot.setAttribute("class", "wb-sel-hl-ring");
+        dot.setAttribute("cx", (c.x - tx).toFixed(1));
+        dot.setAttribute("cy", (c.y - ty).toFixed(1));
+        dot.setAttribute("r", "10");
+        svg.appendChild(dot);
+        drew = true;
+      } else if (coords.length >= 2){
+        const ptStr = coords.map(c => (c.x - tx).toFixed(1) + "," + (c.y - ty).toFixed(1)).join(" ");
+        const line = document.createElementNS(ns, closed ? "polygon" : "polyline");
+        line.setAttribute("class", "wb-sel-hl-line");
+        if (closed) line.setAttribute("points", ptStr);
+        else line.setAttribute("points", ptStr);
+        svg.appendChild(line);
+        drew = true;
+      }
+    }
+  } else if (k === "polygon"){
+    ensureGisState();
+    const f = (state.gisPolygons || []).find(x => x && String(x.id) === sid);
+    if (f && f.geometry && f.geometry.type === "Polygon"){
+      const ring = (Array.isArray(f.geometry.coordinates) && Array.isArray(f.geometry.coordinates[0]))
+        ? f.geometry.coordinates[0] : [];
+      const pxPts = [];
+      for (const c of ring){
+        if (!Array.isArray(c) || c.length < 2) continue;
+        const px = tileMapLatLonToPx(root, c[1], c[0]);
+        if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+        pxPts.push({ x: px.x - tx, y: px.y - ty });
+      }
+      if (pxPts.length >= 3){
+        const last = pxPts[pxPts.length - 1], first = pxPts[0];
+        if (Math.abs(last.x - first.x) < 0.5 && Math.abs(last.y - first.y) < 0.5) pxPts.pop();
+      }
+      if (pxPts.length >= 3){
+        const ptStr = pxPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+        const poly = document.createElementNS(ns, "polygon");
+        poly.setAttribute("class", "wb-sel-hl-poly");
+        poly.setAttribute("points", ptStr);
+        svg.appendChild(poly);
+        drew = true;
+      }
+    }
+  }
+  if (!drew) return;
+  const wrap = document.createElement("div");
+  wrap.className = "workbench-selection-overlay";
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
+}
+
 function workbenchTypeLabel(kind){
   const k = String(kind || "");
   if (k === "waypoint") return (typeof t === "function" ? t("workbench.typeWaypoint") : "") || "Waypoint";
@@ -51623,6 +51845,7 @@ function renderWorkbenchList(){
   const cntEl = document.getElementById("gisWorkbenchCount");
   if (!mount) return;
   ensureWorkbenchState();
+  workbenchPruneSelection();
   const all = workbenchCollectRows();
   const rows = workbenchFilterRows(all);
   const total = all.length;
@@ -51644,9 +51867,11 @@ function renderWorkbenchList(){
     return;
   }
   let html = "";
+  const curSel = state._workbench.selected;
   for (const r of rows){
     const typeLbl = esc(workbenchTypeLabel(r.kind));
-    html += `<div class="wb-row" role="listitem" data-wb-kind="${esc(r.kind)}" data-wb-id="${esc(r.id)}">
+    const isSel = !!(curSel && String(curSel.kind) === String(r.kind) && String(curSel.id) === String(r.id));
+    html += `<div class="wb-row${isSel ? " is-selected" : ""}" role="listitem" aria-selected="${isSel ? "true" : "false"}" data-wb-kind="${esc(r.kind)}" data-wb-id="${esc(r.id)}">
       <span class="wb-type">${typeLbl}</span>
       <span class="wb-name" title="${esc(r.name)}">${esc(r.name)}</span>
       <span class="wb-summary" title="${esc(r.summary)}">${esc(r.summary)}</span>
@@ -51760,6 +51985,7 @@ function openGisWorkbenchPanel(){
   }
   ensureWorkbenchState();
   state.workbenchPanelOpen = true;
+  workbenchPruneSelection();
   try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
   try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
   wireGisWorkbenchPanelFloating(dlg);
@@ -51772,6 +51998,7 @@ function openGisWorkbenchPanel(){
 function closeGisWorkbenchPanel(){
   const dlg = document.getElementById("gisWorkbenchPanel");
   if (!state.workbenchPanelOpen && !(dlg && dlg.open)) return;
+  try { workbenchClearSelection({ skipList: true }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("gisWorkbenchPanel"); } catch(_){}
   state.workbenchPanelOpen = false;
   if (dlg){
@@ -51849,7 +52076,10 @@ function wireGisWorkbenchPanelOnce(){
       if (open){
         ev.preventDefault();
         workbenchOpenNativePanel(kind);
+        return;
       }
+      ev.preventDefault();
+      workbenchSetSelection(kind, id);
     });
   }
 }
