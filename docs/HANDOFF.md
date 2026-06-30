@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `cef7d42` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-5A2b** — Workbench pick mappa WP+traccia (build 28) |
+| HEAD remoto (verificato) | `eb1451b` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-5A2c** — Workbench pick mappa poligoni (build 29) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `cef7d42ada6ec88d571b758e28db78fd3bc4231a` |
-| Blob monolite (git) | `638978935fcbead38a7c885b725976417a71c628` |
-| `APP_BUILD_NUM` | `28` |
-| Display runtime | `B5.5Z · build 28` |
+| Runtime live VPS | `eb1451b04a3d46322b826ae9e3e0c977ddb21640` |
+| Blob monolite (git) | `5ed0d4c5cb37d60fe8ce4a683f3bd172a7e060b2` |
+| `APP_BUILD_NUM` | `29` |
+| Display runtime | `B5.5Z · build 29` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-5A2c | **CLOSED / PASS end-to-end** (pick mappa poligoni GIS) |
 | MAJOR-5A2b | **CLOSED / PASS end-to-end** (pick mappa esplicito WP+traccia) |
 | MAJOR-5A2a | **CLOSED / PASS end-to-end** (selezione riga + highlight mappa session-only) |
 | MAJOR-5A1 | **CLOSED / PASS end-to-end** (catalogo oggetti read-only + filtri + fly-to) |
@@ -137,11 +138,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cef7d42` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=eb1451b` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-5A2c** — pick mappa poligoni Workbench (piano MAJOR-5A2).
+**MAJOR-5A2-UX-BACKLOG** — toolbar/resize/chip Workbench (ROUTINE quando autorizzato); oppure **MAJOR-2E/3/4** backlog basso. **Programma pick Workbench MAJOR-5A2 completo** (5A2a+5A2b+5A2c).
 
 **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
 
@@ -161,7 +162,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 2. `#gisWorkbenchPanel` — non ridimensionabile dagli angoli; allineare resize ad altri pannelli floating GIS.
 3. Chip filtro Workbench (`.wb-filter-chip`: Tutti/WP/Tracce/Poligoni) — palette dark, stati attivo/inattivo/disabilitato, contrasto.
 
-**Nota:** candidato bundle ROUTINE CSS/HTML; priorità inferiore a **MAJOR-5A2c**.
+**Nota:** candidato bundle ROUTINE CSS/HTML; **prossimo candidato UX** post-chiusura programma pick MAJOR-5A2.
 
 ### UX-NEXT-RUNTIME-BUNDLE-E — consolidamento UX GIS (runtime landed)
 
