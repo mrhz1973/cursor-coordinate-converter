@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `d2f7856` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-5A2a** — Workbench selezione lista + highlight (build 27) |
+| HEAD remoto (verificato) | `cef7d42` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-5A2b** — Workbench pick mappa WP+traccia (build 28) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `d2f7856881dcb213e33b5f403ad27bff219d10a4` |
-| Blob monolite (git) | `895e1b9bc8fad8e12374ebe10f1d9962639bdfb4` |
-| `APP_BUILD_NUM` | `27` |
-| Display runtime | `B5.5Z · build 27` |
+| Runtime live VPS | `cef7d42ada6ec88d571b758e28db78fd3bc4231a` |
+| Blob monolite (git) | `638978935fcbead38a7c885b725976417a71c628` |
+| `APP_BUILD_NUM` | `28` |
+| Display runtime | `B5.5Z · build 28` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-5A2b | **CLOSED / PASS end-to-end** (pick mappa esplicito WP+traccia) |
 | MAJOR-5A2a | **CLOSED / PASS end-to-end** (selezione riga + highlight mappa session-only) |
 | MAJOR-5A1 | **CLOSED / PASS end-to-end** (catalogo oggetti read-only + filtri + fly-to) |
 | MAJOR-2BCD | **CLOSED / PASS end-to-end** (quota/errori + delete metadata vs fisico protetto) |
@@ -136,11 +137,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d2f7856` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cef7d42` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-5A2b** — pick mappa esplicito waypoint + traccia salvata (piano MAJOR-5A2).
+**MAJOR-5A2c** — pick mappa poligoni Workbench (piano MAJOR-5A2).
 
 **Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
 
