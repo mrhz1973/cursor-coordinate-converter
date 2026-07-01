@@ -2,36 +2,36 @@
 
 ## LATEST
 
-* real_task_commit: `d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229`
-* real_task_subject: fix(gis): polish workbench panel styling (build 30)
-* report_generated_at: 2026-07-01T03:00:00+02:00
+* real_task_commit: `d9238b62291507c05789e369caeabb9061ec8bca`
+* real_task_subject: fix(gis): persist offline area audit status (build 31)
+* report_generated_at: 2026-07-01T12:00:00+02:00
 * branch: main
-* remote_head_after_task_push: `d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229`
-* previous_report_container: `86d66705a7ab223a3c0b356b8bc510f5ac143b63` (orchestratore riconciliazione post-MAJOR-5A2c — esterno/verificabile)
+* remote_head_after_task_push: `d9238b62291507c05789e369caeabb9061ec8bca`
+* previous_report_container: `a47edcd` (orchestratore riconciliazione post-MAJOR-5A2-UX-BACKLOG — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: orchestrator/report staged pre-autosync
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: MAJOR-5A2-UX-BACKLOG CLOSED; finito docs post-QA PASS auto
+* result_cursor: MAJOR-2E-a CLOSED; finito docs post-QA PASS auto (Regola H)
 * pass_operatore: PASS
-* result_runtime: QA MAJOR-5A2-UX-BACKLOG — toolbar dark, resize angoli pannello, chip filtri dark, regressione pick Workbench; VPS d9c8f7b build 30
-* qa_attestation_source: operatore — «QA MAJOR-5A2-UX-BACKLOG PASS operatore»
-* notes: bundle ROUTINE CSS/HTML; gate resize persistence PASS (no new localStorage); review Claude NON RICHIESTA; byte 2578728; SHA file e22bbe34…; CMP_PASS deploy; programma MAJOR-5A2 pick + UX backlog chiusi
+* result_runtime: QA MAJOR-2E-a — persistenza status post-Verifica IDB su namedAreas; badge/lista coerenti dopo reload; VPS d9238b6 build 31
+* qa_attestation_source: operatore — «QA MAJOR-2E-a PASS operatore»
+* notes: bundle DELICATO cache/storage; review pre-deploy PASS; byte 2581430; SHA file cd61d8a7…; CMP_PASS deploy; backlog OFFLINE-DOWNLOAD-CONTROLS registrato (non implementato); prossimo MAJOR-3/4 backlog basso
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit verificato:
-d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229
+d9238b62291507c05789e369caeabb9061ec8bca
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-2b2bb3beac1575bba946c3170c3a2d8d48bd72f1
+73a6936a850ca1c65edd82ceb235593117aca946
 
 Deploy VPS (pre-finito, già verificato):
-VPS HEAD = d9c8f7b
+VPS HEAD = d9238b6
 HTTP 200
-byte = 2578728
-SHA-256 = e22bbe34b92a1ec1c5a631ebb40c237eac6f1fdadffe813500e48d8ba474fc9e
+byte = 2581430
+SHA-256 = cd61d8a76f4f3c1ac4bd4b344c3488c97961f7609cd3d73506094c9a1e53b03f
 CMP_PASS = yes
 ```
 
@@ -39,6 +39,7 @@ PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* d9c8f7b — MAJOR-5A2-UX-BACKLOG finito (real_task d9c8f7b; container report precedente a47edcd — esterno/verificabile)
 * eb1451b — MAJOR-5A2c finito (real_task eb1451b; container report precedente 86d6670 — esterno/verificabile)
 * cef7d42 — MAJOR-5A2b finito (real_task cef7d42; container report precedente b7ee0b2 — esterno/verificabile)
 * d2f7856 — MAJOR-5A2a finito (real_task d2f7856; container report precedente PENDING — backfill esterno se verificabile)
@@ -47,8 +48,8 @@ PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## LIMITI
 
-* MAJOR-2E/3/4 prossimi candidati backlog basso
-* MAJOR-2E status persistito ancora backlog
-* Runtime autorevole live VPS: d9c8f7b (build 30)
+* MAJOR-3/4 prossimi candidati backlog basso
+* OFFLINE-DOWNLOAD-CONTROLS backlog (Pausa/Stop/Riprendi download tile — non implementato)
+* Runtime autorevole live VPS: d9238b6 (build 31)
 * Poligoni donut: hit-test/render solo ring esterno (nota non bloccante)
 * QA touch/tablet non attestata nel flusso
