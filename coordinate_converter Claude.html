@@ -8189,6 +8189,53 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
   border-bottom:1px solid var(--border,#e5e7eb);
 }
 .wb-filters{ display:flex; flex-wrap:wrap; gap:4px; }
+#gisWorkbenchPanel .wb-export-hub{
+  margin:0 12px 8px;
+  font-size:.78rem;
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:6px;
+  padding:6px 8px;
+}
+#gisWorkbenchPanel .wb-export-hub > summary{
+  cursor:pointer;
+  font-weight:600;
+  user-select:none;
+}
+#gisWorkbenchPanel .wb-export-hub-body{
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#gisWorkbenchPanel .wb-export-hub-cats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  align-items:center;
+}
+#gisWorkbenchPanel .wb-export-hub-cats-label{ margin-right:4px; }
+#gisWorkbenchPanel .wb-export-hub-cb{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+}
+#gisWorkbenchPanel .wb-export-hub-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+#gisWorkbenchPanel .wb-export-hub-more > summary{
+  cursor:pointer;
+  font-size:.75rem;
+}
+#gisWorkbenchPanel .wb-export-hub-more-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:6px;
+}
 body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip{
   border:1px solid color-mix(in srgb, var(--border,#475569) 75%, #334155 25%);
   background:color-mix(in srgb, var(--panel,#1e293b) 88%, #0f172a 12%);
@@ -11618,6 +11665,27 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             data-i18n="workbench.mapPick" data-i18n-tip="workbench.mapPickTip">Seleziona da mappa</button>
     <div id="gisWorkbenchCount" class="wb-count hint" role="status" aria-live="polite"></div>
   </div>
+  <details class="wb-export-hub" id="wbExportHub">
+    <summary data-i18n="workbench.export.title">Export GIS</summary>
+    <div class="wb-export-hub-body">
+      <div class="wb-export-hub-cats" role="group" aria-labelledby="wbExportHubCatsLabel">
+        <span id="wbExportHubCatsLabel" class="hint wb-export-hub-cats-label" data-i18n="workbench.export.categories">Categorie</span>
+        <label class="wb-export-hub-cb"><input type="checkbox" id="wbExportHubWaypoints" checked> <span data-i18n="workbench.export.waypoints">Waypoint</span></label>
+        <label class="wb-export-hub-cb"><input type="checkbox" id="wbExportHubSavedTracks" checked> <span data-i18n="workbench.export.savedTracks">Tracce salvate</span></label>
+        <label class="wb-export-hub-cb"><input type="checkbox" id="wbExportHubPolygons" checked> <span data-i18n="workbench.export.polygons">Poligoni</span></label>
+      </div>
+      <div class="wb-export-hub-actions">
+        <button type="button" class="btn btn-sm btn-primary" data-role="wb-export-geojson" data-i18n="workbench.export.geojson">Esporta GeoJSON</button>
+        <details class="wb-export-hub-more">
+          <summary data-i18n="workbench.export.moreFormats">Altri formati</summary>
+          <div class="wb-export-hub-more-actions">
+            <button type="button" class="btn btn-sm" data-role="wb-export-gpx" data-i18n="workbench.export.gpx">GPX</button>
+            <button type="button" class="btn btn-sm" data-role="wb-export-kml" data-i18n="workbench.export.kml">KML</button>
+          </div>
+        </details>
+      </div>
+    </div>
+  </details>
   <div class="app-modal-body" id="gisWorkbenchPanelBody">
     <div id="gisWorkbenchList" class="wb-list-wrap" role="list"></div>
   </div>
@@ -14082,6 +14150,19 @@ const I18N = {
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Traccia",
     "workbench.typePolygon":"Poligono",
+    "workbench.export.title":"Export GIS",
+    "workbench.export.categories":"Categorie",
+    "workbench.export.waypoints":"Waypoint",
+    "workbench.export.savedTracks":"Tracce salvate",
+    "workbench.export.polygons":"Poligoni",
+    "workbench.export.geojson":"Esporta GeoJSON",
+    "workbench.export.moreFormats":"Altri formati",
+    "workbench.export.gpx":"GPX",
+    "workbench.export.kml":"KML",
+    "workbench.export.empty":"Nessun oggetto da esportare per le categorie selezionate.",
+    "workbench.export.noCategories":"Seleziona almeno una categoria da esportare.",
+    "workbench.export.ok":"Esportati {0} oggetti GIS.",
+    "workbench.export.errorConvert":"Impossibile convertire i dati nel formato richiesto.",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "gis.minimized.workbench":"Oggetti GIS",
     "tip.workbenchPanel":"Catalogo oggetti GIS (waypoint, tracce, poligoni)",
@@ -15922,6 +16003,19 @@ const I18N = {
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Track",
     "workbench.typePolygon":"Polygon",
+    "workbench.export.title":"GIS Export",
+    "workbench.export.categories":"Categories",
+    "workbench.export.waypoints":"Waypoints",
+    "workbench.export.savedTracks":"Saved tracks",
+    "workbench.export.polygons":"Polygons",
+    "workbench.export.geojson":"Export GeoJSON",
+    "workbench.export.moreFormats":"More formats",
+    "workbench.export.gpx":"GPX",
+    "workbench.export.kml":"KML",
+    "workbench.export.empty":"No objects to export for the selected categories.",
+    "workbench.export.noCategories":"Select at least one category to export.",
+    "workbench.export.ok":"Exported {0} GIS objects.",
+    "workbench.export.errorConvert":"Could not convert data to the requested format.",
     "workbenchPanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
     "gis.minimized.workbench":"GIS Objects",
     "tip.workbenchPanel":"GIS object catalog (waypoints, tracks, polygons)",
@@ -17708,6 +17802,19 @@ const I18N = {
     "workbench.typeWaypoint":"Waypoint",
     "workbench.typeTrack":"Trace",
     "workbench.typePolygon":"Polygone",
+    "workbench.export.title":"Export SIG",
+    "workbench.export.categories":"Catégories",
+    "workbench.export.waypoints":"Waypoints",
+    "workbench.export.savedTracks":"Traces enregistrées",
+    "workbench.export.polygons":"Polygones",
+    "workbench.export.geojson":"Exporter GeoJSON",
+    "workbench.export.moreFormats":"Autres formats",
+    "workbench.export.gpx":"GPX",
+    "workbench.export.kml":"KML",
+    "workbench.export.empty":"Aucun objet à exporter pour les catégories sélectionnées.",
+    "workbench.export.noCategories":"Sélectionnez au moins une catégorie à exporter.",
+    "workbench.export.ok":"{0} objets SIG exportés.",
+    "workbench.export.errorConvert":"Impossible de convertir les données au format demandé.",
     "workbenchPanel.minimizeBlockedSubdialog":"Terminez ou fermez les boîtes de dialogue ouvertes avant de réduire.",
     "gis.minimized.workbench":"Objets SIG",
     "tip.workbenchPanel":"Catalogue d'objets SIG (waypoints, traces, polygones)",
@@ -19303,7 +19410,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 31;
+const APP_BUILD_NUM = 32;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -52298,6 +52405,116 @@ function setWorkbenchPanelStatus(msg, opts){
   el.classList.toggle("err", !!opts.error);
 }
 
+function gisExportHubReadSelFromDom(){
+  const wp = document.getElementById("wbExportHubWaypoints");
+  const tr = document.getElementById("wbExportHubSavedTracks");
+  const pg = document.getElementById("wbExportHubPolygons");
+  return {
+    waypoints: wp ? !!wp.checked : true,
+    savedTracks: tr ? !!tr.checked : true,
+    polygons: pg ? !!pg.checked : true
+  };
+}
+
+function gisExportHubIsValidFeature(f){
+  if (!f || f.type !== "Feature" || !f.geometry) return false;
+  const g = f.geometry;
+  if (g.type === "Point" && Array.isArray(g.coordinates) && g.coordinates.length >= 2){
+    return Number.isFinite(g.coordinates[0]) && Number.isFinite(g.coordinates[1]);
+  }
+  if (g.type === "LineString" && Array.isArray(g.coordinates) && g.coordinates.length >= 2) return true;
+  if (g.type === "Polygon" && Array.isArray(g.coordinates) && Array.isArray(g.coordinates[0]) && g.coordinates[0].length >= 3) return true;
+  if (g.type === "MultiLineString" && Array.isArray(g.coordinates) && g.coordinates.length) return true;
+  return false;
+}
+
+function gisExportHubPushValidFeatures(target, srcFeatures){
+  if (!Array.isArray(target) || !Array.isArray(srcFeatures)) return;
+  for (const feat of srcFeatures){
+    if (!gisExportHubIsValidFeature(feat)) continue;
+    const copy = gisClonePlain(feat);
+    if (copy) target.push(copy);
+  }
+}
+
+function gisExportHubBuildFeatureCollection(sel){
+  sel = sel || {};
+  const features = [];
+  if (sel.waypoints){
+    ensureMapWaypointsState();
+    for (const p of (state.mapWaypoints || [])){
+      if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+      const f = gisWaypointToFeature(p);
+      if (!gisExportHubIsValidFeature(f)) continue;
+      const copy = gisClonePlain(f);
+      if (!copy) continue;
+      if (copy.properties){
+        if (typeof p.createdAt === "number" && Number.isFinite(p.createdAt)){
+          copy.properties.created_at = new Date(p.createdAt).toISOString();
+        }
+        if (typeof p.updatedAt === "number" && Number.isFinite(p.updatedAt)){
+          copy.properties.updated_at = new Date(p.updatedAt).toISOString();
+        }
+      }
+      features.push(copy);
+    }
+  }
+  if (sel.savedTracks){
+    ensureSavedTracksState();
+    for (const st of (state.savedTracks || [])){
+      if (!st || !Array.isArray(st.points) || st.points.length < 2) continue;
+      const stFc = savedTrackToFeatureCollection(st);
+      if (!stFc) continue;
+      gisExportHubPushValidFeatures(features, stFc.features);
+    }
+  }
+  if (sel.polygons){
+    const polyFc = polygonBuildGeoJson();
+    gisExportHubPushValidFeatures(features, polyFc && polyFc.features);
+  }
+  return {
+    type: "FeatureCollection",
+    metadata: exportGeoJsonMetadata({ model: "gis-export-hub", kind: "unified" }),
+    features
+  };
+}
+
+function gisExportHubRun(format){
+  const sel = gisExportHubReadSelFromDom();
+  if (!sel.waypoints && !sel.savedTracks && !sel.polygons){
+    setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.export.noCategories") : "") || "Select at least one category.", { error: true });
+    return;
+  }
+  const fc = gisExportHubBuildFeatureCollection(sel);
+  const n = fc.features ? fc.features.length : 0;
+  if (!n){
+    setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.export.empty") : "") || "Nothing to export.", { error: true });
+    return;
+  }
+  const stamp = new Date().toISOString().replace(/[^\w-]/g, "").slice(0, 24);
+  const fmt = String(format || "geojson").toLowerCase();
+  if (fmt === "geojson"){
+    downloadBlob(JSON.stringify(fc, null, 2), "gis-export-" + stamp + ".geojson", "application/geo+json;charset=utf-8");
+  } else if (fmt === "gpx"){
+    const x = spatialGeoJSONToGpx(fc);
+    if (!x){
+      setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.export.errorConvert") : "") || "Convert failed.", { error: true });
+      return;
+    }
+    downloadBlob(x, "gis-export-" + stamp + ".gpx", "application/gpx+xml;charset=utf-8");
+  } else if (fmt === "kml"){
+    const x = spatialGeoJSONToKml(fc);
+    if (!x){
+      setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.export.errorConvert") : "") || "Convert failed.", { error: true });
+      return;
+    }
+    downloadBlob(x, "gis-export-" + stamp + ".kml", "application/vnd.google-earth.kml+xml;charset=utf-8");
+  } else {
+    return;
+  }
+  setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.export.ok") : "Exported {0}.").replace("{0}", String(n)));
+}
+
 function workbenchFlyToRow(kind, id){
   const k = String(kind || ""), sid = String(id || "");
   if (!sid) return;
@@ -52570,6 +52787,19 @@ function wireGisWorkbenchPanelOnce(){
       }
       ev.preventDefault();
       workbenchSetSelection(kind, id);
+    });
+  }
+  const exportHub = document.getElementById("wbExportHub");
+  if (exportHub && !exportHub._wbExportWired){
+    exportHub._wbExportWired = true;
+    exportHub.addEventListener("click", (ev) => {
+      const btn = ev.target && ev.target.closest && ev.target.closest("[data-role^='wb-export-']");
+      if (!btn) return;
+      ev.preventDefault();
+      const role = String(btn.getAttribute("data-role") || "");
+      if (role === "wb-export-geojson") gisExportHubRun("geojson");
+      else if (role === "wb-export-gpx") gisExportHubRun("gpx");
+      else if (role === "wb-export-kml") gisExportHubRun("kml");
     });
   }
 }
