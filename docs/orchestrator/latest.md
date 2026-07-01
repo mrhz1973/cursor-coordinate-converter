@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-07-01 — **`finito` sessione — MAJOR-3-a CLOSED / PASS end-to-end:** commit task runtime **`c0fb4da`** — unified GIS export hub (build 32); review **GPT-sostitutiva** pre-deploy PASS (Claude offline); deploy GIS-only PASS (byte **2591276**, SHA **`09d8ca97…`**, CMP_PASS); attestazione «**QA MAJOR-3-a PASS operatore**»; runtime VPS live **`c0fb4da`**; prossimo: **MAJOR-4** backlog basso; inbox **`2026-07-01_1458_riepilogo_finito-sessione.md`**.
+
 2026-07-01 — **`finito` sessione — MAJOR-2E-a CLOSED / PASS end-to-end:** commit task runtime **`d9238b6`** — persist offline area audit status (build 31); bundle DELICATO; review pre-deploy PASS; deploy GIS-only PASS (byte **2581430**, SHA **`cd61d8a7…`**, CMP_PASS); attestazione «**QA MAJOR-2E-a PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d9238b6`**; backlog **OFFLINE-DOWNLOAD-CONTROLS** registrato (Pausa/Stop/Riprendi — non ora); prossimo: **MAJOR-3/4** backlog basso; inbox **`2026-07-01_1200_riepilogo_finito-sessione.md`**.
 
 2026-07-01 — **`finito` sessione — MAJOR-5A2-UX-BACKLOG CLOSED / PASS end-to-end:** commit task runtime **`d9c8f7b`** — Workbench visual polish (build 30); gate resize persistence PASS (ROUTINE); deploy GIS-only PASS (byte **2578728**, SHA **`e22bbe34…`**, CMP_PASS); attestazione «**QA MAJOR-5A2-UX-BACKLOG PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d9c8f7b`**; programma pick MAJOR-5A2 + catena UX backlog **chiusi**; prossimo: **MAJOR-2E/3/4** backlog basso; inbox **`2026-07-01_0300_riepilogo_finito-sessione.md`**.
