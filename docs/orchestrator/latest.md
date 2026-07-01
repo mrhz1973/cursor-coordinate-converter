@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-07-01 — **`finito` sessione — MAJOR-5A2-UX-BACKLOG CLOSED / PASS end-to-end:** commit task runtime **`d9c8f7b`** — Workbench visual polish (build 30); gate resize persistence PASS (ROUTINE); deploy GIS-only PASS (byte **2578728**, SHA **`e22bbe34…`**, CMP_PASS); attestazione «**QA MAJOR-5A2-UX-BACKLOG PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`d9c8f7b`**; programma pick MAJOR-5A2 + catena UX backlog **chiusi**; prossimo: **MAJOR-2E/3/4** backlog basso; inbox **`2026-07-01_0300_riepilogo_finito-sessione.md`**.
+
 2026-07-01 — **`finito` sessione — MAJOR-5A2c CLOSED / PASS end-to-end:** commit task runtime **`eb1451b`** — Workbench pick mappa poligoni (build 29); review Claude PASS pre-deploy; deploy GIS-only PASS (byte **2574712**, SHA **`3f3adb17…`**, CMP_PASS); attestazione «**QA MAJOR-5A2c PASS operatore**»; trigger auto-`finito` Regola H; runtime VPS live **`eb1451b`**; programma pick MAJOR-5A2 completo; prossimo: **MAJOR-5A2-UX-BACKLOG** o **MAJOR-2E/3/4**; inbox **`2026-07-01_0145_riepilogo_finito-sessione.md`**.
 
 2026-06-30 — **QA arricchita MAJOR-5A2b + backlog UX (docs-only):** attestazione operatore «**QA MAJOR-5A2b PASS operatore**» confermata funzionale (selezione riga, pick WP/traccia, esclusione poligoni, Esc/cleanup, build 28); registrati **3 item UX non bloccanti** (non FAIL) come **MAJOR-5A2-UX-BACKLOG** — toolbar Oggetti GIS chiara, resize angoli pannello Workbench, chip filtri troppo chiari; runtime VPS invariato **`cef7d42`** build 28; prossimo runtime: **MAJOR-5A2c**; aggiornati OM §7, WU, HANDOFF; inbox **`2026-06-30_2300_riepilogo_finito-sessione.md`** arricchito.
