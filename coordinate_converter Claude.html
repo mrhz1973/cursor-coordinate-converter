@@ -8189,6 +8189,35 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
   border-bottom:1px solid var(--border,#e5e7eb);
 }
 .wb-filters{ display:flex; flex-wrap:wrap; gap:4px; }
+body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip{
+  border:1px solid color-mix(in srgb, var(--border,#475569) 75%, #334155 25%);
+  background:color-mix(in srgb, var(--panel,#1e293b) 88%, #0f172a 12%);
+  color:color-mix(in srgb, var(--text,#e2e8f0) 92%, #cbd5e1 8%);
+  border-radius:999px;
+  padding:2px 10px;
+  font-size:.72rem;
+  cursor:pointer;
+  transition:background .12s ease,border-color .12s ease,color .12s ease;
+}
+body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip:hover:not(:disabled){
+  background:color-mix(in srgb, var(--panel,#1e293b) 70%, #334155 30%);
+  border-color:color-mix(in srgb, var(--accent,#60a5fa) 40%, var(--border,#475569) 60%);
+  color:var(--text,#f1f5f9);
+}
+body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip:focus-visible{
+  outline:2px solid color-mix(in srgb, var(--accent,#60a5fa) 55%, transparent);
+  outline-offset:1px;
+}
+body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip.is-active{
+  background:color-mix(in srgb, var(--accent,#2563eb) 32%, #0f172a 68%);
+  border-color:color-mix(in srgb, var(--accent,#60a5fa) 58%, #334155 42%);
+  color:#e0f2fe;
+  font-weight:600;
+}
+body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip:disabled{
+  opacity:.42;
+  cursor:not-allowed;
+}
 .wb-filter-chip{
   border:1px solid var(--border,#d1d5db);
   background:var(--surface,#fff);
@@ -8293,19 +8322,30 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
 .tile-map .twb-btn{
   min-width:36px; min-height:36px;
   display:inline-flex; align-items:center; justify-content:center;
-  border:1px solid var(--border,#d1d5db);
+  border:1px solid rgba(255,255,255,.2);
   border-radius:8px;
-  background:var(--surface,#fff);
-  color:inherit;
+  background:rgba(15,23,42,.82);
+  color:#e2e8f0;
   cursor:pointer;
   padding:4px;
+  box-shadow:0 1px 3px rgba(0,0,0,.35);
+  transition:background .12s ease,border-color .12s ease,color .12s ease,box-shadow .12s ease;
 }
 .tile-map .twb-btn .twb-ico-svg{ width:20px; height:20px; display:block; }
-.tile-map .twb-btn:hover{ background:#eff6ff; color:#1d4ed8; }
+.tile-map .twb-btn:hover{
+  background:rgba(30,41,59,.94);
+  border-color:rgba(147,197,253,.45);
+  color:#f8fafc;
+}
+.tile-map .twb-btn:focus-visible{
+  outline:2px solid rgba(147,197,253,.65);
+  outline-offset:2px;
+}
 .tile-map .twb-btn.active{
-  background:#dbeafe;
-  border-color:#60a5fa;
-  color:#1d4ed8;
+  background:#2563eb;
+  border-color:rgba(147,197,253,.55);
+  color:#fff;
+  box-shadow:0 0 0 2px rgba(255,255,255,.35), 0 1px 3px rgba(0,0,0,.35);
 }
 #trackModalBody .track-points-section{
   margin:8px 0 10px;
@@ -8463,6 +8503,7 @@ dialog.track-modal.app-modal{
 #rangeRingsPanel .gis-panel-resize-handle[data-handle="e"],
 #measurePanel .gis-panel-resize-handle[data-handle="e"],
 #helpOverlay .gis-panel-resize-handle[data-handle="e"],
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"],
 #waypointModal .gis-panel-resize-handle[data-handle="e"]{
   right:0; top:50%; transform:translateY(-50%);
   width:16px; height:52px; cursor:ew-resize;
@@ -8476,6 +8517,7 @@ dialog.track-modal.app-modal{
 #rangeRingsPanel .gis-panel-resize-handle[data-handle="w"],
 #measurePanel .gis-panel-resize-handle[data-handle="w"],
 #helpOverlay .gis-panel-resize-handle[data-handle="w"],
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"],
 #waypointModal .gis-panel-resize-handle[data-handle="w"]{
   left:0; top:50%; transform:translateY(-50%);
   width:16px; height:52px; cursor:ew-resize;
@@ -8497,6 +8539,8 @@ dialog.track-modal.app-modal{
 #measurePanel .gis-panel-resize-handle[data-handle="w"]::after,
 #helpOverlay .gis-panel-resize-handle[data-handle="e"]::after,
 #helpOverlay .gis-panel-resize-handle[data-handle="w"]::after,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="e"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="w"]::after{
   content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -8520,6 +8564,8 @@ dialog.track-modal.app-modal{
 #measurePanel .gis-panel-resize-handle[data-handle="w"]:hover,
 #helpOverlay .gis-panel-resize-handle[data-handle="e"]:hover,
 #helpOverlay .gis-panel-resize-handle[data-handle="w"]:hover,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"]:hover,
 #waypointModal .gis-panel-resize-handle[data-handle="e"]:hover,
 #waypointModal .gis-panel-resize-handle[data-handle="w"]:hover{
   background:color-mix(in srgb, var(--accent) 14%, transparent);
@@ -8533,6 +8579,7 @@ dialog.track-modal.app-modal{
   #rangeRingsPanel .gis-panel-resize-handle[data-handle="e"],
   #measurePanel .gis-panel-resize-handle[data-handle="e"],
   #helpOverlay .gis-panel-resize-handle[data-handle="e"],
+  #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"],
   #waypointModal .gis-panel-resize-handle[data-handle="e"],
   #favoritesPanel .gis-panel-resize-handle[data-handle="w"],
   #polygonPanel .gis-panel-resize-handle[data-handle="w"],
@@ -8542,6 +8589,7 @@ dialog.track-modal.app-modal{
   #rangeRingsPanel .gis-panel-resize-handle[data-handle="w"],
   #measurePanel .gis-panel-resize-handle[data-handle="w"],
   #helpOverlay .gis-panel-resize-handle[data-handle="w"],
+  #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"],
   #waypointModal .gis-panel-resize-handle[data-handle="w"]{
     width:20px; height:60px;
   }
@@ -8584,12 +8632,14 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #trackModal .track-resize-handle[data-handle="ne"]:focus-visible,
 #waypointModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #convertModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
-#layersPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+#layersPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
   background:transparent;
 }
 .gis-panel-resize-handle:focus-visible,
@@ -8724,6 +8774,42 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
   visibility:hidden !important;
 }
 #measurePanel .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
+/* #gisWorkbenchPanel: anchor angoli — handle nel DOM + wiring JS già presenti; mancava posizionamento CSS. */
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#gisWorkbenchPanel .gis-panel-resize-handle[data-handle="sw"]::after{
   left:0;
   bottom:0;
   border-left:1.5px solid var(--gis-grip-stroke);
@@ -19217,7 +19303,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 29;
+const APP_BUILD_NUM = 30;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -47052,7 +47138,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
