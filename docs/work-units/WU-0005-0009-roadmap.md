@@ -314,7 +314,7 @@ Note operative:
   - **P-POLYGON-LIST-UX-NEXT — backlog candidato (A chiuso; B runtime landed; B-FIX2 chiuso):** **(A) rinomina inline** — **CLOSED** (`6892890`, QA PASS); **(B) colonne ridimensionabili** — runtime landed (`0c5fe42`/`e1d7718`, build 4, QA PASS operatore storico); chiusura docs dedicata B non in questo blocco; **(B-FIX2) indicatore Vis.** — **CLOSED** (`b7b98c2`, build 9, QA PASS).
   - **APP-BUILD-NUM-B1 — build number monotono runtime (metodo B) — CLOSED / PASS tecnico end-to-end:** runtime **`bd588a8`**, blob **`afddf87a…`**; `APP_BUILD_NUM = 1`; display **`B5.5Z · build 1`**; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2365479**, SHA **`23907b80…`**, CMP_PASS); verifica runtime minima display **PASS**; **nessuna QA operatore estesa**; cleanup span build foldato in UX-NEXT-A; **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS superseded da **`6892890`**.
   - **P-POLYGON-LIST-UX-NEXT-A — rinomina inline + build 2 — CLOSED / PASS end-to-end:** runtime **`6892890`**, blob **`30358cd3…`**; inline rename via **`polygonRenameExecute(id, value)`**; `APP_BUILD_NUM = 2`; display **`B5.5Z · build 2`**; cleanup span statici; review byte Claude **PASS**; deploy GIS-only **PASS tecnico** (byte **2368796**, SHA **`96f9468e…`**, CMP_PASS); **QA operatore PASS** («**QA P-POLYGON-LIST-UX-NEXT-A PASS operatore**»); **`APP_BUILD_ID` `B5.5Z` invariato**; runtime VPS live **`6892890`**.
-  - **Prossimo ordine operativo:** **MAJOR-5A2-UX-BACKLOG** (ROUTINE quando autorizzato) o **MAJOR-2E/3/4** backlog basso; programma pick Workbench **MAJOR-5A2 completo**; **MAJOR-5A2c CLOSED** `eb1451b` build 29; **MAJOR-5A2b CLOSED** `cef7d42` build 28; **MAJOR-5A2a CLOSED** `d2f7856` build 27; **MAJOR-5A1 CLOSED** `d74cbb7` build 26; **MAJOR-2BCD CLOSED** `823bb73` build 25; **MAJOR-2A CLOSED** `07ad4f4` build 24; titolo statico `<title>` e micro-UX **non ora** (salvo bug reale).
+  - **Prossimo ordine operativo:** **MAJOR-2E/3/4** backlog basso; programma pick Workbench **MAJOR-5A2 completo**; **MAJOR-5A2-UX-BACKLOG CLOSED** `d9c8f7b` build 30; **MAJOR-5A2c CLOSED** `eb1451b` build 29; **MAJOR-5A2b CLOSED** `cef7d42` build 28; **MAJOR-5A2a CLOSED** `d2f7856` build 27; **MAJOR-5A1 CLOSED** `d74cbb7` build 26; **MAJOR-2BCD CLOSED** `823bb73` build 25; **MAJOR-2A CLOSED** `07ad4f4` build 24; titolo statico `<title>` e micro-UX **non ora** (salvo bug reale).
   - **UI-MODAL-PARITY-HELP-QR build 5 — CLOSED / PASS tecnico, QA FAIL:** runtime **`dcea02f`**, blob **`cf23cc9…`**, migrazione Help/QR a dialog, **`APP_BUILD_NUM = 5`**, deploy GIS-only PASS, QA operatore FAIL (Help GIS/QR Converti) → FIX1.
   - **UI-MODAL-PARITY-HELP-QR-FIX1 build 6 — CLOSED / PASS end-to-end:** runtime **`e8e8ff1`**, blob **`6eee6872…`**, Help floating + QR ripristinato, review **GPT sostitutiva PASS** (Claude indisponibile), deploy GIS-only PASS (byte **2404202**, SHA **`3fe2ac2e…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX1 PASS operatore**»); display **`B5.5Z · build 6`**.
   - **UI-MODAL-PARITY-HELP-QR-FIX2 build 7 — CLOSED / PASS end-to-end:** runtime **`14605e9`**, blob **`0886b6bb…`**, QR ridimensionabile GIS mode (handle angoli, pattern Help FIX1), review **GPT sostitutiva PASS** (Claude non disponibile), deploy GIS-only PASS (byte **2407357**, SHA **`14477224…`**, CMP_PASS), **QA operatore PASS** («**QA UI-MODAL-PARITY-HELP-QR-FIX2 PASS operatore**»); display **`B5.5Z · build 7`**; superseded per runtime live da **CONVERT-SOURCE-PICKER** (`b294140`).
@@ -1583,7 +1583,37 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 
 ## Programma MAJOR-2 post MAJOR-2A — priorità 2B/2C/2D
 
-**Stato programma:** **MAJOR-5A2c** **CLOSED / PASS end-to-end** (`eb1451b`, build 29). **MAJOR-5A2b** **CLOSED / PASS end-to-end** (`cef7d42`, build 28). **MAJOR-5A2a** **CLOSED / PASS end-to-end** (`d2f7856`, build 27). **MAJOR-5A1** **CLOSED / PASS end-to-end** (`d74cbb7`, build 26). **MAJOR-2BCD** **CLOSED / PASS end-to-end** (`823bb73`, build 25). **MAJOR-2A** landed/PASS (`07ad4f4`, build 24). **Prossima priorità operatore:** **MAJOR-5A2-UX-BACKLOG** (ROUTINE) o **MAJOR-2E/3/4** backlog basso; programma pick Workbench **MAJOR-5A2 completo**.
+**Stato programma:** **MAJOR-5A2-UX-BACKLOG** **CLOSED / PASS end-to-end** (`d9c8f7b`, build 30). **MAJOR-5A2c** **CLOSED / PASS end-to-end** (`eb1451b`, build 29). **MAJOR-5A2b** **CLOSED / PASS end-to-end** (`cef7d42`, build 28). **MAJOR-5A2a** **CLOSED / PASS end-to-end** (`d2f7856`, build 27). **MAJOR-5A1** **CLOSED / PASS end-to-end** (`d74cbb7`, build 26). **MAJOR-2BCD** **CLOSED / PASS end-to-end** (`823bb73`, build 25). **MAJOR-2A** landed/PASS (`07ad4f4`, build 24). **Prossima priorità operatore:** **MAJOR-2E/3/4** backlog basso; programma pick Workbench **MAJOR-5A2 completo**; catena UX backlog 5A2b **chiusa**.
+
+#### MAJOR-5A2-UX-BACKLOG — Workbench visual polish (build 30)
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-01).
+
+**Runtime:** `d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229` — blob git `2b2bb3beac1575bba946c3170c3a2d8d48bd72f1`.
+
+**Scopo:** polish UX non bloccante emerso da QA 5A2b/5A2c — toolbar `.twb-btn` dark; resize angoli `#gisWorkbenchPanel` (CSS handle + z-order); chip `.wb-filter-chip` dark scoped.
+
+**Gate:** resize persistence PASS — `gisWorkbenchPanel` non in `UI_PANEL_KEYS`; nessuna nuova persistenza.
+
+**Esclusi:** logica pick/selezione Workbench, storage, i18n, lifecycle dialog.
+
+**Review:** **NON RICHIESTA** (bundle ROUTINE CSS/HTML).
+
+**Deploy GIS-only (PASS tecnico):**
+
+```text
+VPS HEAD = d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229
+HTTP 200
+byte repo/servito = 2578728 / 2578728
+SHA-256 file = e22bbe34b92a1ec1c5a631ebb40c237eac6f1fdadffe813500e48d8ba474fc9e (CMP_PASS)
+goi-gis-app.service = active/enabled (bind 100.114.7.53:8000)
+```
+
+**QA operatore:** PASS — «**QA MAJOR-5A2-UX-BACKLOG PASS operatore**» (trigger auto-`finito` Regola H).
+
+**Runtime autorevole live VPS:** `d9c8f7b`.
+
+**Prossimi candidati:** **MAJOR-2E/3/4** backlog basso.
 
 #### MAJOR-5A2c — Workbench pick mappa poligoni (build 29)
 
@@ -1609,9 +1639,9 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 
 **QA operatore:** PASS — «**QA MAJOR-5A2c PASS operatore**» (trigger auto-`finito` Regola H).
 
-**Runtime autorevole live VPS:** `eb1451b`.
+**Runtime autorevole live VPS:** `d9c8f7b` (superseded da UX-BACKLOG).
 
-**Prossimi candidati:** **MAJOR-5A2-UX-BACKLOG**; **MAJOR-2E/3/4** backlog basso.
+**Prossimi candidati:** **MAJOR-2E/3/4** backlog basso.
 
 #### MAJOR-5A2b — Workbench pick mappa WP+traccia (build 28)
 
@@ -1635,25 +1665,23 @@ SHA-256 file = 8786d08290051f6fca8a71f484982871a00e0cffaab71ff62c1d235ddf4d4466 
 goi-gis-app.service = active (bind 100.114.7.53:8000)
 ```
 
-**QA operatore:** PASS — «**QA MAJOR-5A2b PASS operatore**» (trigger auto-`finito` Regola H). Funzionale verificato: selezione riga, pick WP/traccia, esclusione poligoni, Esc/cleanup, build 28. **Backlog UX non bloccante** (non FAIL): toolbar Oggetti GIS chiara; resize angoli pannello; chip filtri troppo chiari — vedi **MAJOR-5A2-UX-BACKLOG**.
+**QA operatore:** PASS — «**QA MAJOR-5A2b PASS operatore**» (trigger auto-`finito` Regola H). Funzionale verificato: selezione riga, pick WP/traccia, esclusione poligoni, Esc/cleanup, build 28. **Backlog UX non bloccante** (non FAIL) emerso in QA — **chiuso** in **MAJOR-5A2-UX-BACKLOG** (`d9c8f7b`, build 30).
 
 **Runtime autorevole live VPS:** `cef7d42`.
 
 **Prossimi candidati:** **MAJOR-5A2c**; **MAJOR-2E/3/4** backlog basso.
 
-#### MAJOR-5A2-UX-BACKLOG — Workbench UX post-QA (non bloccante)
+#### MAJOR-5A2-UX-BACKLOG — Workbench visual polish (build 30) — CLOSED
 
-**Stato:** backlog UX — **non FAIL** blocco 5A2b.
+**Stato:** **CLOSED / PASS end-to-end** — vedi sezione programma MAJOR-2 sopra (runtime `d9c8f7b`, build 30).
 
-**Origine:** QA operatore arricchita post-chiusura MAJOR-5A2b.
+**Origine:** QA operatore arricchita post-chiusura MAJOR-5A2b — item UX non bloccanti (non FAIL).
 
-**Item:**
+**Item risolti:**
 
-1. Toolbar «Oggetti GIS» — tema scuro GIS (pulsante map toolbar troppo chiaro).
+1. Toolbar «Oggetti GIS» — tema scuro GIS.
 2. `#gisWorkbenchPanel` — resize angoli coerente altri pannelli floating.
-3. Chip filtro `.wb-filter-chip` — palette dark, stati attivo/inattivo/disabilitato, contrasto.
-
-**Nota:** candidato bundle ROUTINE CSS/HTML; **prossimo candidato UX** post-chiusura programma pick MAJOR-5A2.
+3. Chip filtro `.wb-filter-chip` — palette dark, stati attivo/inattivo/disabilitato.
 
 #### MAJOR-5A2a — Workbench selezione lista + highlight (build 27)
 
@@ -1761,8 +1789,8 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 | **MAJOR-2E** | Status partial/complete persistito da scan IDB | Rinviato — dopo stabilizzazione 2BCD |
 | **MAJOR-3** | Import/export GIS unificato | Rinviato — offline/tile management prima |
 | **MAJOR-4** | Mission/project package | Rinviato — offline/tile management prima |
-| **MAJOR-5A** | GIS Object Workbench | **5A1 CLOSED** (`d74cbb7`, build 26); **5A2a CLOSED** (`d2f7856`, build 27); **5A2b CLOSED** (`cef7d42`, build 28); **5A2c CLOSED** (`eb1451b`, build 29) — programma pick **completo** |
-| **MAJOR-5A2-UX-BACKLOG** | Workbench UX dark/resize/filtri | Backlog non bloccante post-QA 5A2b — toolbar chiara, resize pannello, chip filtri; ROUTINE quando autorizzato; **prossimo candidato UX** |
+| **MAJOR-5A** | GIS Object Workbench | **5A1 CLOSED** (`d74cbb7`, build 26); **5A2a CLOSED** (`d2f7856`, build 27); **5A2b CLOSED** (`cef7d42`, build 28); **5A2c CLOSED** (`eb1451b`, build 29); **5A2-UX-BACKLOG CLOSED** (`d9c8f7b`, build 30) — programma pick **completo**; catena UX backlog **chiusa** |
+| **MAJOR-5A2-UX-BACKLOG** | Workbench UX dark/resize/filtri | **CLOSED / PASS** (`d9c8f7b`, build 30) — toolbar dark, resize pannello, chip filtri; ROUTINE CSS/HTML |
 
 **Microcorrezioni UX non funzionali:** stop salvo bug reale.
 
