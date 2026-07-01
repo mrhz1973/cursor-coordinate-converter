@@ -19303,7 +19303,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 30;
+const APP_BUILD_NUM = 31;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29913,6 +29913,75 @@ function offlineAreaAuditFeedbackFromResult(result){
     .replace("{status}", statusLbl);
 }
 
+/** MAJOR-2E-a: map session audit status to persisted named-area status (OFFLINE_AREA_STATUS_VALUES only). */
+function offlineAreaAuditMapToNamedStatus(auditStatus, expected, present){
+  const s = String(auditStatus || "").toLowerCase();
+  if (s === "complete") return "complete";
+  if (s === "partial") return "partial";
+  if (s === "empty"){
+    const exp = Number(expected);
+    if (Number.isFinite(exp) && exp > 0) return "partial";
+    return null;
+  }
+  return null;
+}
+
+/**
+ * MAJOR-2E-a: after explicit Verifica, persist named-area metadata from IDB audit ground truth.
+ * Metadata-only — does not read/write/delete tile blobs beyond the audit scan already performed.
+ * Returns true if namedAreas[] was mutated and saveStore() ran.
+ */
+function applyOfflineAreaAuditToNamedArea(areaId, auditResult){
+  if (!auditResult || typeof auditResult !== "object") return false;
+  if (auditResult.errorCode) return false;
+
+  const id = String(areaId || auditResult.areaId || "");
+  if (!id) return false;
+
+  const areas = state.namedAreas;
+  if (!Array.isArray(areas)) return false;
+  const idx = areas.findIndex(x => x && String(x.id) === id);
+  if (idx < 0) return false;
+
+  const newStatus = offlineAreaAuditMapToNamedStatus(
+    auditResult.status,
+    auditResult.expected,
+    auditResult.present
+  );
+  if (!newStatus || !OFFLINE_AREA_STATUS_VALUES.includes(newStatus)) return false;
+
+  const cur = areas[idx];
+  const expected = Number.isFinite(auditResult.expected) ? Math.max(0, auditResult.expected | 0) : null;
+  const present = Number.isFinite(auditResult.present) ? Math.max(0, auditResult.present | 0) : null;
+  const tileCountEstimated = expected;
+  const tileCountDownloaded = present;
+
+  const curSt = String(cur.status || "unknown").toLowerCase();
+  const statusSame = curSt === newStatus;
+  const estSame = (cur.tileCountEstimated == null && tileCountEstimated == null)
+    || (Number(cur.tileCountEstimated) === tileCountEstimated);
+  const dnSame = (cur.tileCountDownloaded == null && tileCountDownloaded == null)
+    || (Number(cur.tileCountDownloaded) === tileCountDownloaded);
+  if (statusSame && estSame && dnSame) return false;
+
+  const merged = Object.assign({}, cur, {
+    status: newStatus,
+    tileCountEstimated,
+    tileCountDownloaded,
+    updatedAt: Date.now()
+  });
+  const normalized = normalizeOfflineArea(merged);
+  if (!normalized) return false;
+
+  state.namedAreas[idx] = normalized;
+  saveStore();
+  try { renderNamedAreasOptgroup(); } catch(_){}
+  try { updateOfflineLayerCacheStats(); } catch(_){}
+  const tm = document.querySelector("#miniMap .tile-map");
+  if (tm) drawCoverageOverlay(tm);
+  return true;
+}
+
 async function runOfflineAreaCoverageAudit(areaId, opts){
   opts = opts || {};
   const id = String(areaId || "");
@@ -29965,6 +30034,7 @@ async function runOfflineAreaCoverageAudit(areaId, opts){
 
   const store = ensureOfflineAreaAuditStore();
   store[id] = result;
+  applyOfflineAreaAuditToNamedArea(id, result);
   state._offlineAreaAuditRunning = null;
   setOfflineAreasAuditFeedback(offlineAreaAuditFeedbackFromResult(result), result && result.status === "error");
   try { renderOfflineAreasList(); } catch(_){}
