@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `c0fb4da` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-3-a** — Unified GIS export hub (build 32) |
+| HEAD remoto (verificato) | `73269a0` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-4-a** — Mission Package export (build 33) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `c0fb4da4205f0771d5c9e8952ed48eefe49f7475` |
-| Blob monolite (git) | `92d8ff692bc5ea7d7eb45ca1fae449d75e38b640` |
-| `APP_BUILD_NUM` | `32` |
-| Display runtime | `B5.5Z · build 32` |
+| Runtime live VPS | `73269a064365e4a93ad4f68d1f8b1fb52daea7e0` |
+| Blob monolite (git) | `0da1faa5a95410947340fadc9def320acb199566` |
+| `APP_BUILD_NUM` | `33` |
+| Display runtime | `B5.5Z · build 33` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-4-a | **CLOSED / PASS end-to-end** (Mission Package JSON export Workbench) |
 | MAJOR-3-a | **CLOSED / PASS end-to-end** (export hub Workbench GeoJSON/GPX/KML) |
 | MAJOR-2E-a | **CLOSED / PASS end-to-end** (persistenza status post-Verifica IDB) |
 | MAJOR-5A2-UX-BACKLOG | **CLOSED / PASS end-to-end** (toolbar dark, resize pannello, chip filtri) |
@@ -141,13 +142,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c0fb4da` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=73269a0` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-4** backlog basso. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi download tile — **non ora**). **Programma pick Workbench MAJOR-5A2 completo.**
+**OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi download tile — **non ora**). Estensioni **MAJOR-3** (import unificato) backlog basso. **MAJOR-4** import/restore mission package backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** MAJOR-4, eventuali estensioni MAJOR-3 (import unificato), OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
 **Stop:** microcorrezioni UX non funzionali salvo bug reale.
 
