@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `d9c8f7b` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-5A2-UX-BACKLOG** — Workbench visual polish (build 30) |
+| HEAD remoto (verificato) | `d9238b6` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **MAJOR-2E-a** — Persist offline area audit status (build 31) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `d9c8f7b79d668050e3cdfbc9a5aa809da7eb3229` |
-| Blob monolite (git) | `2b2bb3beac1575bba946c3170c3a2d8d48bd72f1` |
-| `APP_BUILD_NUM` | `30` |
-| Display runtime | `B5.5Z · build 30` |
+| Runtime live VPS | `d9238b62291507c05789e369caeabb9061ec8bca` |
+| Blob monolite (git) | `73a6936a850ca1c65edd82ceb235593117aca946` |
+| `APP_BUILD_NUM` | `31` |
+| Display runtime | `B5.5Z · build 31` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-2E-a | **CLOSED / PASS end-to-end** (persistenza status post-Verifica IDB) |
 | MAJOR-5A2-UX-BACKLOG | **CLOSED / PASS end-to-end** (toolbar dark, resize pannello, chip filtri) |
 | MAJOR-5A2c | **CLOSED / PASS end-to-end** (pick mappa poligoni GIS) |
 | MAJOR-5A2b | **CLOSED / PASS end-to-end** (pick mappa esplicito WP+traccia) |
@@ -139,19 +140,29 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d9c8f7b` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d9238b6` |
 
 **Prossimo ordine operativo:**
 
-**MAJOR-2E/3/4** backlog basso. **Programma pick Workbench MAJOR-5A2 completo** (5A2a+5A2b+5A2c). **Catena UX backlog post-5A2b chiusa** (MAJOR-5A2-UX-BACKLOG build 30).
+**MAJOR-3/4** backlog basso. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi download tile — **non ora**). **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** MAJOR-2E, MAJOR-3, MAJOR-4.
+**Backlog basso / non ora:** MAJOR-3, MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
 **Stop:** microcorrezioni UX non funzionali salvo bug reale.
 
 ---
 
 ## Backlog / note immediate
+
+### OFFLINE-DOWNLOAD-CONTROLS — controlli download tile (backlog)
+
+**Stato:** backlog candidato — **non implementato**, **non bloccante**.
+
+**Origine:** nota operatore post-QA MAJOR-2E-a (2026-07-01).
+
+**Ambito:** Mappe Offline — aggiungere in futuro controlli sul job download tile: **Pausa**, **Stop/Annulla**, **Riprendi**.
+
+**Non ora:** nessun runtime in questo blocco.
 
 ### MAJOR-5A2-UX-BACKLOG — Workbench visual polish (build 30) — CLOSED
 
