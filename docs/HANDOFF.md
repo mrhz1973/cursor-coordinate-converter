@@ -117,14 +117,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `73269a0` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **MAJOR-4-a** — Mission Package export (build 33) |
+| HEAD remoto (verificato) | `5f57a75` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **IMPORT-DROP-A** — multi-file GPX/KML drag & drop (build 34) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `73269a064365e4a93ad4f68d1f8b1fb52daea7e0` |
-| Blob monolite (git) | `0da1faa5a95410947340fadc9def320acb199566` |
-| `APP_BUILD_NUM` | `33` |
-| Display runtime | `B5.5Z · build 33` |
+| Runtime live VPS | `5f57a755c5e809de2e4495aa9d5caba58d8084a5` |
+| Blob monolite (git) | `0d7137024c4b1de0496967bb5e3548256ea37e72` |
+| `APP_BUILD_NUM` | `34` |
+| Display runtime | `B5.5Z · build 34` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| IMPORT-DROP-A | **CLOSED / PASS end-to-end** (drag & drop GPX/KML multi-file) |
 | MAJOR-4-a | **CLOSED / PASS end-to-end** (Mission Package JSON export Workbench) |
 | MAJOR-3-a | **CLOSED / PASS end-to-end** (export hub Workbench GeoJSON/GPX/KML) |
 | MAJOR-2E-a | **CLOSED / PASS end-to-end** (persistenza status post-Verifica IDB) |
@@ -142,19 +143,36 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=73269a0` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5f57a75` |
 
 **Prossimo ordine operativo:**
 
-**OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi download tile — **non ora**). Estensioni **MAJOR-3** (import unificato) backlog basso. **MAJOR-4** import/restore mission package backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
+Candidati tracce/import (**non aperti**): **IMPORT-DROP-B**, **TRACK-MODAL-UX-A**, **TRACK-STYLE-A**, **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** IMPORT-DROP-B / TRACK-* (sopra), import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura IMPORT-DROP-A.
 
 ---
 
 ## Backlog / note immediate
+
+### IMPORT-DROP-A — multi-file GPX/KML drag & drop (build 34) — CLOSED
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-21).
+
+**Runtime:** `5f57a755c5e809de2e4495aa9d5caba58d8084a5` — blob `0d713702…` — byte **2606270** — SHA-256 **`849bf44f…`** — CMP_PASS — PR #2 squash — review PASS — deploy GIS-only PASS — restart servizio **non necessario** — QA «**QA IMPORT-DROP-A PASS operatore**».
+
+### IMPORT-DROP-B / TRACK-MODAL-UX-A / TRACK-STYLE-A / TRACK-BRUSH-A — candidati (non aperti)
+
+**Stato:** backlog registrato in chiusura IMPORT-DROP-A — **non implementare ora**, **non WU aperte**.
+
+- **IMPORT-DROP-B:** aggiungere `.kmz` al drop globale riusando pipeline KMZ esistente; fit solo sulle tracce appena importate (o altri oggetti se assenti tracce); limiti 20/25 MB; isolamento errori; zero rete.
+- **TRACK-MODAL-UX-A:** «Centra sulla mappa» per traccia salvata corrente; Unità nella barra comandi punti; layout Punti | Aggiorna | Mostra | Centra | Unità; Aggiorna resta primary.
+- **TRACK-STYLE-A:** colore/spessore/opacità/tratteggio riusando modello stile poligoni; batch su selezione; legacy senza stile; export KML/GPX stile = decisione separata.
+- **TRACK-BRUSH-A:** disegno libero + screen-to-geo + ricampionamento + anteprima + salvataggio via helper saved-track comune.
+
+Finding IMPORT-DROP-A **note-only** (non runtime ora): concatenazione segmenti (F1); costanti nominate cap; feedback `saveStore`; conteggio errori aggregato (F6); mismatch accept drop vs paste; sampling fit; N+1 `saveStore` poligoni.
 
 ### OFFLINE-DOWNLOAD-CONTROLS — controlli download tile (backlog)
 

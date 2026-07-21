@@ -2,46 +2,52 @@
 
 ## LATEST
 
-* real_task_commit: `73269a064365e4a93ad4f68d1f8b1fb52daea7e0`
-* real_task_subject: feat(gis): add mission package export (build 33)
-* report_generated_at: 2026-07-01T23:15:00+02:00
+* real_task_commit: `5f57a755c5e809de2e4495aa9d5caba58d8084a5`
+* real_task_subject: feat(gis): add multi-file GPX/KML drag and drop import (build 34)
+* report_generated_at: 2026-07-21T22:04:00+02:00
 * branch: main
-* remote_head_after_task_push: `8e15c4c` (finito docs post-runtime 73269a0 — esterno/verificabile)
-* previous_report_container: `c5d3ad8` (orchestratore riconciliazione post-MAJOR-3-a — esterno/verificabile)
+* remote_head_after_task_push: `5f57a755c5e809de2e4495aa9d5caba58d8084a5` (squash merge PR #2 — esterno/verificabile pre-docs)
+* previous_report_container: `92fd178` (orchestratore riconciliazione post-MAJOR-4-a — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: orchestrator/report staged pre-autosync
+* working_tree_status: docs finito staged pre-autosync
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: MAJOR-4-a CLOSED; finito docs post-QA PASS
+* result_cursor: IMPORT-DROP-A CLOSED; finito docs post-QA PASS
 * pass_operatore: PASS
-* result_runtime: QA MAJOR-4-a — Mission Package JSON export Workbench; categorie checkbox; VPS 73269a0 build 33
-* qa_attestation_source: operatore — «QA MAJOR-4-a PASS operatore»
-* notes: bundle ROUTINE export read-only; review GPT/GLM sostitutiva pre-deploy (Claude offline); byte 2650883; SHA file 5bc551d9…; CMP_PASS deploy; prossimo OFFLINE-DOWNLOAD-CONTROLS / import backlog
+* result_runtime: QA IMPORT-DROP-A — drop GPX/KML multi-file; VPS 5f57a75 build 34; CMP_PASS; restart non necessario
+* qa_attestation_source: operatore/ChatGPT — «QA IMPORT-DROP-A PASS operatore»
+* notes: bundle DELICATO; review sostitutiva PASS GO MERGE; PR #2 squash; byte 2606270; SHA-256 849bf44f…; backlog IMPORT-DROP-B / TRACK-MODAL-UX-A / TRACK-STYLE-A / TRACK-BRUSH-A registrato senza implementazione
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit verificato:
-73269a064365e4a93ad4f68d1f8b1fb52daea7e0
+5f57a755c5e809de2e4495aa9d5caba58d8084a5
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-0da1faa5a95410947340fadc9def320acb199566
+0d7137024c4b1de0496967bb5e3548256ea37e72
 
-finito docs commit (step 2):
-8e15c4c docs: finito MAJOR-4-a — mission package export build 33
+git cat-file -s HEAD:"coordinate_converter Claude.html"
+2606270
 
 Deploy VPS (pre-finito, già verificato):
-VPS HEAD = 73269a0
+VPS HEAD = 5f57a755c5e809de2e4495aa9d5caba58d8084a5
 HTTP 200
-byte = 2650883
-SHA-256 = 5bc551d952f03aa02565e4cefe844624fc63f52c64283afcbbe308a3cf35ee76d
+byte = 2606270
+SHA-256 = 849bf44f9b3eac9de547ebfeb040fb2d812968df43785eb722a757293b504b14
 CMP_PASS = yes
+restart = non necessario
+
+PR #2 MERGED (squash)
+REVIEW PRE-DEPLOY IMPORT-DROP-A — PASS — GO MERGE
+QA IMPORT-DROP-A PASS operatore
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 73269a0 — MAJOR-4-a finito (real_task 73269a0; finito docs 8e15c4c; container report precedente 92fd178 — esterno/verificabile)
 * c0fb4da — MAJOR-3-a finito (real_task c0fb4da; container report precedente c5d3ad8 — esterno/verificabile)
 * d9238b6 — MAJOR-2E-a finito (real_task d9238b6; container report precedente ab11a8e — esterno/verificabile)
 * d9c8f7b — MAJOR-5A2-UX-BACKLOG finito (real_task d9c8f7b; container report precedente a47edcd — esterno/verificabile)
@@ -53,9 +59,9 @@ PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## LIMITI
 
-* OFFLINE-DOWNLOAD-CONTROLS backlog (Pausa/Stop/Riprendi download tile — non implementato)
-* Estensioni MAJOR-3 (import unificato) backlog basso
-* MAJOR-4 import/restore mission package backlog basso
-* Runtime autorevole live VPS: 73269a0 (build 33)
-* Poligoni donut: hit-test/render solo ring esterno (nota non bloccante)
+* Backlog registrato non aperto: IMPORT-DROP-B, TRACK-MODAL-UX-A, TRACK-STYLE-A, TRACK-BRUSH-A
+* OFFLINE-DOWNLOAD-CONTROLS backlog (Pausa/Stop/Riprendi — non implementato)
+* Estensioni MAJOR-3 (import unificato) / MAJOR-4 (import/restore) backlog basso
+* Finding IMPORT-DROP-A F1–F7 note-only (non runtime in questo finito)
+* Runtime autorevole live VPS: 5f57a75 (build 34)
 * QA touch/tablet non attestata nel flusso
