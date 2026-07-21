@@ -13194,6 +13194,7 @@ const I18N = {
     "track.styleAppliedOne":"Stile applicato.",
     "track.styleResetDone":"Stile ripristinato ai predefiniti.",
     "track.styleEditingBlocked":"Chiudi la modifica geometria della traccia prima di cambiarne lo stile.",
+    "track.styleSelectionChanged":"Selezione cambiata: riapri Modifica stile selezionate.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -15080,6 +15081,7 @@ const I18N = {
     "track.styleAppliedOne":"Style applied.",
     "track.styleResetDone":"Style restored to defaults.",
     "track.styleEditingBlocked":"Finish geometric editing of the track before changing its style.",
+    "track.styleSelectionChanged":"Selection changed: reopen Edit style of selected.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -19600,7 +19602,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 36;
+const APP_BUILD_NUM = 37;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -33312,8 +33314,10 @@ function ensureSavedTracksState(){
   try {
     if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
       const keep = state._savedTrackStyleEdit.ids.filter(id => _stIdSet.has(String(id)));
-      if (!keep.length) savedTrackClearStyleEditor({ skipRender: true });
-      else state._savedTrackStyleEdit.ids = keep.map(String);
+      if (!keep.length || keep.length !== state._savedTrackStyleEdit.ids.length){
+        // FIX1: never silently shrink targets when tracks disappear — close editor
+        savedTrackClearStyleEditor({ skipRender: true });
+      }
     }
   } catch(_){}
 }
@@ -33520,6 +33524,69 @@ function savedTrackClearStyleEditor(opts){
   if (!opts.skipRender){
     try { refreshTileMapForTrackUi(); } catch(_){}
   }
+}
+
+/** FIX1 — idempotent lifecycle close (no saveStore, no persisted mutation). */
+function savedTrackStyleCloseForLifecycle(opts){
+  opts = opts || {};
+  if (!state._savedTrackStyleEdit && opts.onlyIfOpen) return false;
+  savedTrackClearStyleEditor({ skipRender: !!opts.skipRender });
+  return true;
+}
+
+/** Canonical pruned selection set for saved-track batch ops (no ensure — caller must sanitize). */
+function savedTrackStyleCurrentSelectionIdSet(){
+  const alive = new Set((Array.isArray(state.savedTracks) ? state.savedTracks : [])
+    .map(st => st && String(st.id)).filter(Boolean));
+  const out = new Set();
+  (state._savedTracksSelectedIds || []).forEach((id) => {
+    const s = String(id || "");
+    if (s && alive.has(s)) out.add(s);
+  });
+  return out;
+}
+
+function savedTrackStyleIdSetsEqual(a, b){
+  if (!a || !b || a.size !== b.size) return false;
+  for (const id of a){ if (!b.has(id)) return false; }
+  return true;
+}
+
+/** True when batch editor snapshot matches current explicit selection (set-based). */
+function savedTrackStyleBatchSelectionMatches(ed){
+  if (!ed || ed.mode !== "batch" || !Array.isArray(ed.ids)) return false;
+  try { ensureSavedTracksState(); } catch(_){}
+  const snap = new Set(ed.ids.map(String).filter(Boolean));
+  const cur = savedTrackStyleCurrentSelectionIdSet();
+  return savedTrackStyleIdSetsEqual(snap, cur);
+}
+
+/**
+ * FIX1 — invalidate open batch style editor when selection diverges.
+ * Does not mutate selection; no saveStore; clears preview.
+ */
+function savedTrackStyleInvalidateBatchOnSelectionChange(opts){
+  opts = opts || {};
+  const ed = state._savedTrackStyleEdit;
+  if (!ed) return false;
+  if (ed.mode === "batch" || opts.force){
+    savedTrackClearStyleEditor({ skipRender: !!opts.skipRender });
+    if (!opts.skipFeedback){
+      const msg = (typeof t === "function" ? (t("track.styleSelectionChanged") || "") : "")
+        || "Selezione cambiata: riapri Modifica stile selezionate.";
+      try { setBadge("info", msg); } catch(_){}
+      try { savedTrackStyleEditorSetFeedback(msg); } catch(_){}
+    }
+    return true;
+  }
+  return false;
+}
+
+/** Clear mixed flag for one field after explicit operator change/reset. */
+function savedTrackStyleClearMixedField(field){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed || !ed.mixed || !field) return;
+  ed.mixed[field] = false;
 }
 
 /** Build preview override object for one track id from current editor state, or null. */
@@ -34075,12 +34142,21 @@ function savedTrackStyleEditorBuildPatchFromUi(){
 function savedTrackStyleEditorApply(){
   const ed = state._savedTrackStyleEdit;
   if (!ed) return;
+  if (ed.mode === "batch"){
+    if (!savedTrackStyleBatchSelectionMatches(ed)){
+      savedTrackStyleInvalidateBatchOnSelectionChange({ skipRender: false });
+      return;
+    }
+  }
   const patch = savedTrackStyleEditorBuildPatchFromUi();
   if (!patch || !Object.keys(patch).length){
     savedTrackStyleEditorSetFeedback(t("track.styleNoChange") || "");
     return;
   }
-  const res = savedTracksApplyStyleByIds(ed.ids, patch, { skipUi: true });
+  const targetIds = ed.mode === "batch"
+    ? Array.from(savedTrackStyleCurrentSelectionIdSet())
+    : ed.ids.slice();
+  const res = savedTracksApplyStyleByIds(targetIds, patch, { skipUi: true });
   const mode = ed.mode;
   const n = res.count || 0;
   savedTrackClearStyleEditor({ skipRender: true });
@@ -34098,8 +34174,17 @@ function savedTrackStyleEditorApply(){
 function savedTrackStyleEditorResetAll(){
   const ed = state._savedTrackStyleEdit;
   if (!ed || !ed.ids || !ed.ids.length) return;
+  if (ed.mode === "batch"){
+    if (!savedTrackStyleBatchSelectionMatches(ed)){
+      savedTrackStyleInvalidateBatchOnSelectionChange({ skipRender: false });
+      return;
+    }
+  }
   const patch = { color: null, lineWidth: null, lineOpacity: null, lineStyle: null };
-  const res = savedTracksApplyStyleByIds(ed.ids, patch, { skipUi: true });
+  const targetIds = ed.mode === "batch"
+    ? Array.from(savedTrackStyleCurrentSelectionIdSet())
+    : ed.ids.slice();
+  const res = savedTracksApplyStyleByIds(targetIds, patch, { skipUi: true });
   savedTrackClearStyleEditor({ skipRender: true });
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { renderSavedTracksList(); } catch(_){}
@@ -34114,6 +34199,7 @@ function savedTrackStyleEditorResetOneField(field){
   if (!ed || !ed.working) return;
   if (!ed.working.reset) ed.working.reset = {};
   ed.working.reset[field] = true;
+  savedTrackStyleClearMixedField(field);
   if (ed.mode === "single"){
     if (!ed.touched) ed.touched = {};
     ed.touched[field] = true;
@@ -34157,9 +34243,13 @@ function trackWireSavedStyleBarOnce(){
     const ed = state._savedTrackStyleEdit;
     if (!ed) return;
     if (ed.working && ed.working.reset) ed.working.reset[field] = false;
+    savedTrackStyleClearMixedField(field);
     if (ed.mode === "single"){
       if (!ed.touched) ed.touched = {};
       ed.touched[field] = true;
+    } else if (ed.mode === "batch"){
+      if (!ed.include) ed.include = {};
+      ed.include[field] = true;
     }
   };
   const onCtrl = (field) => {
@@ -34220,9 +34310,8 @@ function deleteSavedTracksByIds(ids, opts){
   state.savedTracks = state.savedTracks.filter(st => !set.has(st.id));
   try {
     if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
-      const left = state._savedTrackStyleEdit.ids.filter(id => !set.has(String(id)));
-      if (!left.length) savedTrackClearStyleEditor({ skipRender: true });
-      else state._savedTrackStyleEdit.ids = left;
+      const hit = state._savedTrackStyleEdit.ids.some(id => set.has(String(id)));
+      if (hit) savedTrackClearStyleEditor({ skipRender: true });
     }
   } catch(_){}
   saveStore();
@@ -34260,6 +34349,8 @@ function beginEditSavedTrackById(id){
       if (useSavedClose) setBadge("info", t("track.editDiscardedNotify") || "");
     } catch(_){}
   }
+  // TRACK-STYLE-A-FIX1: close style preview/editor before geometric edit (any track).
+  try { savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
   trackPickCancelDeferred();
   state.track.points = st.points.map(p => ({
     id: String(p.id || uidNamed()),
@@ -35390,8 +35481,13 @@ function renderSavedTracksList(){
   try {
     if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
       const alive = state._savedTrackStyleEdit.ids.filter((id) => rows.some((x) => x && String(x.id) === String(id)));
-      if (!alive.length) savedTrackClearStyleEditor({ skipRender: true });
-      else if (alive.length !== state._savedTrackStyleEdit.ids.length) state._savedTrackStyleEdit.ids = alive.map(String);
+      if (!alive.length || alive.length !== state._savedTrackStyleEdit.ids.length){
+        savedTrackClearStyleEditor({ skipRender: true });
+      } else if (state._savedTrackStyleEdit.mode === "batch"
+          && typeof savedTrackStyleBatchSelectionMatches === "function"
+          && !savedTrackStyleBatchSelectionMatches(state._savedTrackStyleEdit)){
+        savedTrackStyleInvalidateBatchOnSelectionChange({ skipFeedback: true, skipRender: true });
+      }
     }
   } catch(_){}
   const tipFly = esc(t("tip.trackSavedFly") || "");
@@ -48836,6 +48932,10 @@ function gisMinimizePanel(panelId, labelKey, opts){
       else if (document.body && document.body.focus) document.body.focus();
     }
   } catch(_){}
+  // TRACK-STYLE-A-FIX1: minimize hides editor UI — fail-closed clear of style preview.
+  if (panelId === "trackModal"){
+    try { savedTrackStyleCloseForLifecycle({ skipRender: false }); } catch(_){}
+  }
   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
 }
 function gisRestoreMinimizedPanel(panelId){
@@ -55542,6 +55642,8 @@ function closeTrackModal(opts){
 function _closeTrackModalCore(opts){
   opts = opts || {};
   try { if (typeof trackHideSavedDeleteConfirmBar === "function") trackHideSavedDeleteConfirmBar(); } catch(_){}
+  // TRACK-STYLE-A-FIX1: real close of Tracce must drop style preview/editor (no saveStore).
+  try { savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
   const dlg = document.getElementById("trackModal");
   if (!state.trackModalOpen && !(dlg && dlg.open)) return false;
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("trackModal"); } catch(_){}
@@ -55701,6 +55803,14 @@ function savedTrackMapVisible(st){
 
 function syncSavedTracksSelectionActions(){
   ensureSavedTracksState();
+  // TRACK-STYLE-A-FIX1: batch style editor is invalidated if selection diverges.
+  try {
+    const ed = state._savedTrackStyleEdit;
+    if (ed && ed.mode === "batch" && typeof savedTrackStyleBatchSelectionMatches === "function"
+        && !savedTrackStyleBatchSelectionMatches(ed)){
+      savedTrackStyleInvalidateBatchOnSelectionChange({ skipRender: false });
+    }
+  } catch(_){}
   const btnDel = document.getElementById("btnSavedTracksDeleteSelected");
   const btnStyle = document.getElementById("btnSavedTracksStyleSelected");
   const batchBar = document.getElementById("savedTracksBatchBar");
