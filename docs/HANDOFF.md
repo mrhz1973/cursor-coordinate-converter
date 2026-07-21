@@ -117,14 +117,16 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `5f57a75` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **IMPORT-DROP-A** — multi-file GPX/KML drag & drop (build 34) |
+| HEAD remoto (verificato) | `1d28163` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **IMPORT-DROP-B-TRACK-MODAL-UX-A** — KMZ drop + Centra/Unità Tracce (build 35) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime live VPS | `5f57a755c5e809de2e4495aa9d5caba58d8084a5` |
-| Blob monolite (git) | `0d7137024c4b1de0496967bb5e3548256ea37e72` |
-| `APP_BUILD_NUM` | `34` |
-| Display runtime | `B5.5Z · build 34` |
+| Runtime Git / atteso VPS | `1d2816351c71bcecd69d33325cd3d8f01cea8028` (CMP VPS non ri-verificato da Cursor in chiusura) |
+| Blob monolite (git) | `ee599bde006d7f1cf9fe835f9e9e437187330a0b` |
+| Byte monolite (git) | `2610149` |
+| `APP_BUILD_NUM` | `35` |
+| Display runtime | `B5.5Z · build 35` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| IMPORT-DROP-B / TRACK-MODAL-UX-A | **CLOSED / PASS end-to-end** (KMZ drop + fit + Centra/Unità) |
 | IMPORT-DROP-A | **CLOSED / PASS end-to-end** (drag & drop GPX/KML multi-file) |
 | MAJOR-4-a | **CLOSED / PASS end-to-end** (Mission Package JSON export Workbench) |
 | MAJOR-3-a | **CLOSED / PASS end-to-end** (export hub Workbench GeoJSON/GPX/KML) |
@@ -143,19 +145,25 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5f57a75` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1d28163` |
 
 **Prossimo ordine operativo:**
 
-Candidati tracce/import (**non aperti**): **IMPORT-DROP-B**, **TRACK-MODAL-UX-A**, **TRACK-STYLE-A**, **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
+Candidati tracce (**non aperti**): **TRACK-STYLE-A**, **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** IMPORT-DROP-B / TRACK-* (sopra), import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** TRACK-STYLE-A / TRACK-BRUSH-A, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura IMPORT-DROP-A.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura IMPORT-DROP-B-TRACK-MODAL-UX-A.
 
 ---
 
 ## Backlog / note immediate
+
+### IMPORT-DROP-B-TRACK-MODAL-UX-A — KMZ drop + Centra/Unità (build 35) — CLOSED
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-21).
+
+**Runtime:** `1d2816351c71bcecd69d33325cd3d8f01cea8028` — blob `ee599bde…` — byte **2610149** — SHA-256 **`21617a76…`** — build **35** — QA «**QA IMPORT-DROP-B-TRACK-MODAL-UX-A PASS operatore**» — deploy Cursor SSH non disponibile (manuale operatore); chiusi **IMPORT-DROP-B** + **TRACK-MODAL-UX-A**.
 
 ### IMPORT-DROP-A — multi-file GPX/KML drag & drop (build 34) — CLOSED
 
@@ -163,12 +171,10 @@ Candidati tracce/import (**non aperti**): **IMPORT-DROP-B**, **TRACK-MODAL-UX-A*
 
 **Runtime:** `5f57a755c5e809de2e4495aa9d5caba58d8084a5` — blob `0d713702…` — byte **2606270** — SHA-256 **`849bf44f…`** — CMP_PASS — PR #2 squash — review PASS — deploy GIS-only PASS — restart servizio **non necessario** — QA «**QA IMPORT-DROP-A PASS operatore**».
 
-### IMPORT-DROP-B / TRACK-MODAL-UX-A / TRACK-STYLE-A / TRACK-BRUSH-A — candidati (non aperti)
+### TRACK-STYLE-A / TRACK-BRUSH-A — candidati (non aperti)
 
-**Stato:** backlog registrato in chiusura IMPORT-DROP-A — **non implementare ora**, **non WU aperte**.
+**Stato:** backlog residuo post build 35 — **non implementare ora**, **non WU aperte**.
 
-- **IMPORT-DROP-B:** aggiungere `.kmz` al drop globale riusando pipeline KMZ esistente; fit solo sulle tracce appena importate (o altri oggetti se assenti tracce); limiti 20/25 MB; isolamento errori; zero rete.
-- **TRACK-MODAL-UX-A:** «Centra sulla mappa» per traccia salvata corrente; Unità nella barra comandi punti; layout Punti | Aggiorna | Mostra | Centra | Unità; Aggiorna resta primary.
 - **TRACK-STYLE-A:** colore/spessore/opacità/tratteggio riusando modello stile poligoni; batch su selezione; legacy senza stile; export KML/GPX stile = decisione separata.
 - **TRACK-BRUSH-A:** disegno libero + screen-to-geo + ricampionamento + anteprima + salvataggio via helper saved-track comune.
 
