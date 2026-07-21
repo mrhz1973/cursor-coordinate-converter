@@ -5009,6 +5009,18 @@ dialog.help-modal.app-modal .app-modal-body kbd{
 }
 .track-unit-row label{ margin:0; white-space:nowrap; }
 .track-unit-row select{ min-width:4.5rem; }
+#trackUnitHome{ display:block; }
+.track-unit-row.tps-unit-inline{
+  margin:0;
+  margin-left:auto;
+  flex-shrink:0;
+  gap:6px;
+  font-size:.85rem;
+}
+.track-unit-row.tps-unit-inline select{ min-width:3.75rem; }
+.tps-unit-inline-mount{
+  display:flex; align-items:center; margin-left:auto; flex-wrap:wrap;
+}
 #trackModalBody .track-save-cta.btn.btn-sm.btn-primary{
   min-height: 40px;
   padding-inline: var(--wp-space-4, 16px);
@@ -10797,13 +10809,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <div id="track-points-head" class="track-points-section-head" hidden></div>
         <div id="track-points" class="track-points-list" data-empty="—"></div>
         </div>
-        <div class="track-unit-row field-group">
-          <label for="trackDisplayUnit" data-i18n="track.unitLabel">Unità</label>
-          <select id="trackDisplayUnit" data-role="track-display-unit" data-i18n-aria="track.unitAria">
-            <option value="km">km</option>
-            <option value="nm">NM</option>
-            <option value="mi">mi</option>
-          </select>
+        <div id="trackUnitHome">
+          <div class="track-unit-row field-group" id="trackUnitRow">
+            <label for="trackDisplayUnit" data-i18n="track.unitLabel">Unità</label>
+            <select id="trackDisplayUnit" data-role="track-display-unit" data-i18n-aria="track.unitAria">
+              <option value="km">km</option>
+              <option value="nm">NM</option>
+              <option value="mi">mi</option>
+            </select>
+          </div>
         </div>
         <div id="track-summary"></div>
         <hr class="sub-sep" style="margin:14px 0">
@@ -13028,6 +13042,7 @@ const I18N = {
     "track.pointsHide":"Nascondi punti",
     "track.pointsCollapsedSummary":"Lista punti nascosta",
     "tip.trackPointsToggle":"Mostra o nascondi l’elenco punti della traccia.",
+    "tip.trackCenterCurrent":"Centra la mappa sulla traccia corrente.",
     "tip.trackAddCurrent":"Aggiunge alla traccia il punto attualmente convertito nella card risultati.",
     "tip.trackPickMap":"Attiva la modalità click-on-map: ogni click sulla mini-mappa aggiunge un punto.",
     "tip.trackMapBuild":"Traccia: ogni clic sulla mappa aggiunge un vertice senza nome (polyline aperta). Ripremi per uscire.",
@@ -14891,6 +14906,7 @@ const I18N = {
     "track.pointsHide":"Hide points",
     "track.pointsCollapsedSummary":"Point list hidden",
     "tip.trackPointsToggle":"Show or hide the track point list.",
+    "tip.trackCenterCurrent":"Center the map on the current track.",
     "tip.trackAddCurrent":"Adds to the track the point currently displayed in the results card.",
     "tip.trackPickMap":"Enable click-on-map mode: every click on the mini-map adds a point.",
     "tip.trackMapBuild":"Track: each map click adds an unnamed vertex (open polyline). Click again to exit.",
@@ -19440,7 +19456,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 34;
+const APP_BUILD_NUM = 35;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25801,10 +25817,11 @@ function dropImportPushErr(summary, name, detail){
 }
 
 /**
- * IMPORT-DROP-A — classify one FeatureCollection into canonical stores.
+ * IMPORT-DROP-A/B — classify one FeatureCollection into canonical stores.
  * Does not touch state.track draft. Does not call saveStore (except via gisFeatureAdd).
+ * fitAcc (transient): { trackPts:[], otherPts:[] } — only geometries from this apply.
  */
-function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
+function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
   ensureMapWaypointsState();
   ensureSavedTracksState();
   const feats = (fc && fc.features) ? fc.features : [];
@@ -25815,10 +25832,25 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
   let wpCapReported = false;
   let polyCapReported = false;
   summary._lastTrackCreated = false;
+  const acc = fitAcc || { trackPts: [], otherPts: [] };
+  if (!Array.isArray(acc.trackPts)) acc.trackPts = [];
+  if (!Array.isArray(acc.otherPts)) acc.otherPts = [];
 
   const pushErr = (detail) => {
     fileHadErr = true;
     dropImportPushErr(summary, fname, detail);
+  };
+  const pushOther = (lat, lon) => {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+    acc.otherPts.push({ lat: lat, lon: lon });
+  };
+  const pushTrackPts = (pts) => {
+    if (!Array.isArray(pts)) return;
+    for (let ti = 0; ti < pts.length; ti++){
+      const p = pts[ti];
+      if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+      acc.trackPts.push({ lat: p.lat, lon: p.lon });
+    }
   };
 
   for (const f of feats){
@@ -25844,7 +25876,7 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
       });
       summary.waypoints++;
       addedAny = true;
-      fitPts.push({ lat, lon });
+      pushOther(lat, lon);
     } else if (g.type === "LineString" && g.coordinates && g.coordinates.length >= 2){
       lineParts.push(g.coordinates);
     } else if (g.type === "MultiLineString"){
@@ -25867,7 +25899,7 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
         const ring = added.geometry && added.geometry.coordinates && added.geometry.coordinates[0];
         if (Array.isArray(ring)){
           for (const c of ring){
-            if (c && Number.isFinite(c[0]) && Number.isFinite(c[1])) fitPts.push({ lat: c[1], lon: c[0] });
+            if (c && Number.isFinite(c[0]) && Number.isFinite(c[1])) pushOther(c[1], c[0]);
           }
         }
       } else {
@@ -25908,7 +25940,8 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
         summary.tracks++;
         summary._lastTrackCreated = true;
         addedAny = true;
-        for (const p of allPts) fitPts.push({ lat: p.lat, lon: p.lon });
+        const savedPts = (res.track && Array.isArray(res.track.points)) ? res.track.points : allPts;
+        pushTrackPts(savedPts);
       } else if (res && res.reason === "cap"){
         pushErr((t("dropImport.capTracks") || "cap {0}").replace("{0}", String(SAVED_TRACKS_CAP)));
       } else {
@@ -25935,7 +25968,7 @@ async function importDroppedSpatialFiles(fileList){
     errors: 0,
     errNames: []
   };
-  const fitPts = [];
+  const fitAcc = { trackPts: [], otherPts: [] };
   let createdTrack = false;
 
   if (all.length > DROP_IMPORT_MAX_FILES){
@@ -25945,7 +25978,7 @@ async function importDroppedSpatialFiles(fileList){
 
   for (const file of batch){
     const name = (file && file.name) ? String(file.name) : "";
-    if (!/\.(gpx|kml)$/i.test(name)){
+    if (!/\.(gpx|kml|kmz)$/i.test(name)){
       summary.ignored++;
       continue;
     }
@@ -25956,19 +25989,35 @@ async function importDroppedSpatialFiles(fileList){
     }
     summary.processed++;
     try {
-      const buf = await file.arrayBuffer();
-      const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
-      if (!String(text || "").trim()){
-        dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
-        continue;
+      let fc = null;
+      if (/\.kmz$/i.test(name)){
+        const buf = await file.arrayBuffer();
+        const kmlText = await spatialExtractKmlTextFromKmz(buf);
+        if (!String(kmlText || "").trim()){
+          dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
+          continue;
+        }
+        fc = spatialKmlToFeatureCollection(kmlText);
+      } else {
+        const buf = await file.arrayBuffer();
+        const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
+        if (!String(text || "").trim()){
+          dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
+          continue;
+        }
+        const r = spatialTextToFeatureCollection(text, name);
+        if (!r || !r.ok || !r.fc){
+          dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
+          continue;
+        }
+        fc = r.fc;
       }
-      const r = spatialTextToFeatureCollection(text, name);
-      if (!r || !r.ok || !r.fc || !r.fc.features || !r.fc.features.length){
+      if (!fc || !fc.features || !fc.features.length){
         dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
         continue;
       }
       const beforeTracks = summary.tracks;
-      applyDroppedFeatureCollection(r.fc, name, summary, fitPts);
+      applyDroppedFeatureCollection(fc, name, summary, fitAcc);
       if (summary.tracks > beforeTracks) createdTrack = true;
     } catch(_){
       dropImportPushErr(summary, name, t("dropImport.empty") || "error");
@@ -25980,8 +26029,10 @@ async function importDroppedSpatialFiles(fileList){
   try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
   try { if (typeof renderPolygonPanelList === "function") renderPolygonPanelList(); } catch(_){}
   try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
-  if (fitPts.length){
-    try { flyMapToTrackPoints(fitPts); } catch(_){}
+  if (fitAcc.trackPts.length){
+    try { flyMapToTrackPoints(fitAcc.trackPts); } catch(_){}
+  } else if (fitAcc.otherPts.length){
+    try { flyMapToTrackPoints(fitAcc.otherPts); } catch(_){}
   }
   if (createdTrack){
     try { if (typeof openTrackModal === "function") openTrackModal(); } catch(_){}
@@ -37014,6 +37065,14 @@ function wireTrackPointsSectionToggleOnce(){
       if (typeof trackAbandonOrFinishDraftUi === "function") trackAbandonOrFinishDraftUi({ source: "points-head-close" });
       return;
     }
+    const centerBtn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-center-map\"]");
+    if (centerBtn){
+      ev.preventDefault();
+      if (centerBtn.disabled) return;
+      ensureTrackState();
+      try { flyMapToTrackPoints(state.track.points); } catch(_){}
+      return;
+    }
     const btn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-points-toggle\"]");
     if (!btn) return;
     ev.preventDefault();
@@ -37021,6 +37080,28 @@ function wireTrackPointsSectionToggleOnce(){
     state._trackPointsListMode = expanded ? "collapsed" : "expanded";
     renderTrackAll();
   });
+}
+
+/** Mount home for #trackUnitRow (static). Keep select node identity across reparent. */
+function trackUnitRowEl(){
+  return document.getElementById("trackUnitRow");
+}
+function trackUnitRestoreHome(){
+  const home = document.getElementById("trackUnitHome");
+  const row = trackUnitRowEl();
+  if (!row) return;
+  try { row.classList.remove("tps-unit-inline"); } catch(_){}
+  if (home && row.parentElement !== home){
+    try { home.appendChild(row); } catch(_){}
+  }
+}
+function trackUnitMountInline(mount){
+  const row = trackUnitRowEl();
+  if (!mount || !row) return;
+  try { row.classList.add("tps-unit-inline"); } catch(_){}
+  if (row.parentElement !== mount){
+    try { mount.appendChild(row); } catch(_){}
+  }
 }
 
 /** Render the full point list into #track-points with drag&drop reorder. */
@@ -37036,6 +37117,7 @@ function renderTrackPointsList(){
     state._trackPointsListMode = null;
     root.classList.remove("is-collapsed");
     root.innerHTML = "";
+    trackUnitRestoreHome();
     if (head){
       head.innerHTML = "";
       head.hidden = true;
@@ -37047,8 +37129,12 @@ function renderTrackPointsList(){
   const tdu = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   const title = String(t("track.pointsCount") || "Punti ({0})").replace("{0}", String(n));
   const tipTog = t("tip.trackPointsToggle") || "";
+  const tipCenter = t("tip.trackCenterCurrent") || "";
   const btnLabel = expanded ? (t("track.pointsHide") || "Nascondi punti") : (t("track.pointsShow") || "Mostra punti");
+  const centerLbl = esc(t("common.center") || "Centra");
   if (head){
+    // Reparent unit row out of head before destroying head HTML (preserve #trackDisplayUnit).
+    trackUnitRestoreHome();
     head.hidden = false;
     let coordsLine = "";
     if (!expanded){
@@ -37065,13 +37151,14 @@ function renderTrackPointsList(){
     const saveLbl = esc(libEdit ? (t("track.updateLibrary") || "Aggiorna traccia") : (t("track.saveLibrary") || "Salva traccia"));
     const canSave = n >= 2;
     const hideHeadSave = !!(canSave && state._trackPromptOpen);
+    const canCenter = pts.some(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
     head.innerHTML = `
-      <div class="tps-head-row" style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+      <div class="tps-head-row" style="display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:wrap;">
         <span class="tps-title">${esc(title)}</span>
-        <span class="tps-head-actions" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-          <button type="button" class="btn btn-sm btn-primary track-save-cta" data-role="track-save-current" ${(!canSave || hideHeadSave) ? "hidden" : ""} ${(!canSave || hideHeadSave) ? "disabled" : ""}>${saveLbl}</button>
-          <button type="button" class="btn btn-sm btn-track-points-toggle" data-role="track-points-toggle" aria-expanded="${expanded ? "true" : "false"}" data-i18n-tip="tip.trackPointsToggle">${esc(btnLabel)}</button>
-        </span>
+        <button type="button" class="btn btn-sm btn-primary track-save-cta" data-role="track-save-current" ${(!canSave || hideHeadSave) ? "hidden" : ""} ${(!canSave || hideHeadSave) ? "disabled" : ""}>${saveLbl}</button>
+        <button type="button" class="btn btn-sm btn-track-points-toggle" data-role="track-points-toggle" aria-expanded="${expanded ? "true" : "false"}" data-i18n-tip="tip.trackPointsToggle">${esc(btnLabel)}</button>
+        <button type="button" class="btn btn-sm" data-role="track-center-map" data-i18n="common.center" data-i18n-tip="tip.trackCenterCurrent" data-i18n-aria="tip.trackCenterCurrent" ${canCenter ? "" : "disabled"}>${centerLbl}</button>
+        <span class="tps-unit-inline-mount" data-role="track-unit-inline-mount"></span>
       </div>
       ${coordsLine}`;
     const sb = head.querySelector("[data-role=\"track-save-current\"]");
@@ -37087,6 +37174,14 @@ function renderTrackPointsList(){
       tb.setAttribute("data-tip", tipTog);
       tb.setAttribute("aria-label", tipTog);
     }
+    const cb = head.querySelector("[data-role=\"track-center-map\"]");
+    if (cb && tipCenter){
+      cb.setAttribute("data-tip", tipCenter);
+      cb.setAttribute("aria-label", tipCenter);
+    }
+    const unitMount = head.querySelector("[data-role=\"track-unit-inline-mount\"]");
+    trackUnitMountInline(unitMount);
+    syncTrackDisplayUnitSelect();
   }
   if (!expanded){
     root.classList.add("is-collapsed");
