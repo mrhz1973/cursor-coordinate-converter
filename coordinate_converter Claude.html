@@ -9243,6 +9243,43 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   margin-top:8px;
 }
 .saved-tracks-batch-bar .sep{ margin:0 2px; opacity:.45; }
+.track-saved-style-bar{
+  margin-top:10px; padding:10px 12px; border-radius:8px;
+  border:1px solid color-mix(in srgb, var(--border) 80%, var(--accent) 20%);
+  background:color-mix(in srgb, var(--panel2) 88%, var(--accent) 12%);
+  display:flex; flex-direction:column; gap:8px;
+}
+.track-saved-style-bar[hidden]{ display:none !important; }
+.track-saved-style-bar .tss-head{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;
+}
+.track-saved-style-bar .tss-head strong{ font-size:.9rem; }
+.track-saved-style-bar .tss-fields{
+  display:flex; flex-wrap:wrap; gap:10px 14px; align-items:flex-end;
+}
+.track-saved-style-bar .tss-field{
+  display:flex; flex-direction:column; gap:4px; min-width:7.5rem;
+}
+.track-saved-style-bar .tss-field-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+}
+.track-saved-style-bar .tss-include{
+  display:inline-flex; align-items:center; gap:4px; font-size:.78rem; color:var(--muted);
+  white-space:nowrap;
+}
+.track-saved-style-bar .tss-include[hidden]{ display:none !important; }
+.track-saved-style-bar label.tss-lbl{ font-size:.8rem; margin:0; white-space:nowrap; }
+.track-saved-style-bar input[type="color"]{
+  width:2.4rem; height:1.8rem; padding:0; border:1px solid var(--border); border-radius:4px; background:transparent;
+}
+.track-saved-style-bar input[type="range"]{ width:7.5rem; max-width:100%; }
+.track-saved-style-bar .tss-val{ font-size:.78rem; color:var(--muted); min-width:2.6rem; }
+.track-saved-style-bar .tss-hex{ font-size:.75rem; font-family:ui-monospace,monospace; color:var(--muted); }
+.track-saved-style-bar .tss-mixed{ font-size:.75rem; color:var(--warn, #f59e0b); font-weight:600; }
+.track-saved-style-bar .tss-actions{
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+.track-saved-style-bar .tss-feedback{ font-size:.82rem; min-height:1.2em; }
 .saved-tracks-table .btn-danger-subtle[data-saved-del],
 .offline-areas-table .btn-danger-subtle[data-offline-del]{
   min-width:2.25em;
@@ -9392,7 +9429,9 @@ button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
 .saved-tracks-table td:nth-child(2){ width:44px; min-width:44px; box-sizing:border-box; }
 .saved-tracks-empty{ padding:12px; color:var(--muted); font-size:.86rem; }
 .saved-tracks-overlay .track-line{
-  fill:none; stroke-width:2.5; stroke-linejoin:round; stroke-linecap:round;
+  fill:none;
+  stroke-width: var(--saved-track-width, 2.5px);
+  stroke-linejoin:round; stroke-linecap:round;
 }
 .saved-tracks-overlay polyline.track-line[data-saved-map-hit]{
   pointer-events:stroke;
@@ -9410,13 +9449,10 @@ button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
   cursor:context-menu;
   transition:stroke-width .15s ease, filter .15s ease, opacity .15s ease;
 }
-.saved-tracks-overlay polyline[data-saved-map-hit]:hover{
-  stroke-width:3.6 !important;
-  filter:drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 45%, transparent));
-}
+.saved-tracks-overlay polyline[data-saved-map-hit]:hover,
 .saved-tracks-overlay polygon[data-saved-map-hit]:hover{
-  stroke-width:3.2 !important;
-  filter:drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 40%, transparent));
+  stroke-width: calc(var(--saved-track-width, 2.5px) + 1.1px) !important;
+  filter:drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 45%, transparent));
 }
 .saved-tracks-overlay circle[data-saved-map-hit]:hover{
   filter:brightness(1.15) drop-shadow(0 0 4px rgba(0,0,0,.35));
@@ -9439,7 +9475,8 @@ button.btn.btn-sm.btn-danger[data-fav-del]:focus-visible{
 .saved-tracks-overlay polygon.track-line{
   fill:color-mix(in srgb, var(--accent) 12%, transparent);
 }
-.saved-tracks-overlay .track-line-saved{ stroke-dasharray:6 4; opacity:0.9; }
+/* TRACK-STYLE-A: dash/opacity/width applied inline via savedTrackResolveStyleProps; class kept for selectors. */
+.saved-tracks-overlay .track-line-saved{ }
 /* Tracce salvate: affordance desktop (dopo hover breve) + focus tastiera */
 .saved-tracks-table tbody tr[data-saved-row]{
   position:relative;
@@ -10835,6 +10872,67 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <button type="button" id="btnSavedTracksHideAll" class="btn btn-sm" disabled data-i18n="track.batchHideAll" data-i18n-tip="tip.trackBatchHideAll">Nascondi tutte</button>
           <span class="sep" aria-hidden="true"></span>
           <button type="button" id="btnSavedTracksDeleteSelected" class="btn btn-sm btn-danger-subtle" hidden data-i18n-tip="tip.trackDeleteSelected"><span class="danger-x" aria-hidden="true">✕</span><span data-i18n="track.deleteSelected">Elimina selezionate</span></button>
+          <span class="sep" aria-hidden="true"></span>
+          <button type="button" id="btnSavedTracksStyleSelected" class="btn btn-sm" disabled data-i18n="track.styleBatch" data-i18n-tip="tip.trackStyleSelected" data-i18n-aria="tip.trackStyleSelected">Modifica stile selezionate</button>
+        </div>
+        <div id="trackSavedStyleBar" class="track-saved-style-bar" role="region" aria-labelledby="trackSavedStyleTitle" aria-live="polite" hidden>
+          <div class="tss-head">
+            <strong id="trackSavedStyleTitle" data-i18n="track.styleEditTitle">Modifica stile</strong>
+            <span id="trackSavedStyleMeta" class="hint"></span>
+          </div>
+          <p id="trackSavedStyleFeedback" class="tss-feedback hint" role="status" aria-live="polite"></p>
+          <div class="tss-fields">
+            <div class="tss-field" data-tss-field="color">
+              <label class="tss-include" data-tss-include-wrap for="tssIncludeColor"><input type="checkbox" id="tssIncludeColor" data-tss-include="color"> <span data-i18n="track.styleInclude">Includi</span></label>
+              <label class="tss-lbl" for="tssColor" data-i18n="track.styleColor">Colore</label>
+              <div class="tss-field-row">
+                <input type="color" id="tssColor" value="#16a34a" data-tss-ctrl="color" aria-describedby="tssColorHex">
+                <span id="tssColorHex" class="tss-hex">#16a34a</span>
+                <button type="button" class="btn btn-ghost btn-sm tss-reset-one" data-tss-reset="color" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne" title="Predefinito">↺</button>
+                <span class="tss-mixed" data-tss-mixed="color" hidden data-i18n="track.styleMixed">Misto</span>
+              </div>
+            </div>
+            <div class="tss-field" data-tss-field="lineWidth">
+              <label class="tss-include" data-tss-include-wrap for="tssIncludeWidth"><input type="checkbox" id="tssIncludeWidth" data-tss-include="lineWidth"> <span data-i18n="track.styleInclude">Includi</span></label>
+              <label class="tss-lbl" for="tssWidth" data-i18n="track.styleLineWidth">Spessore</label>
+              <div class="tss-field-row">
+                <input type="range" id="tssWidth" min="10" max="80" step="1" value="25" data-tss-ctrl="lineWidth">
+                <span id="tssWidthVal" class="tss-val">2.5</span>
+                <button type="button" class="btn btn-ghost btn-sm tss-reset-one" data-tss-reset="lineWidth" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne" title="Predefinito">↺</button>
+                <span class="tss-mixed" data-tss-mixed="lineWidth" hidden data-i18n="track.styleMixed">Misto</span>
+              </div>
+            </div>
+            <div class="tss-field" data-tss-field="lineOpacity">
+              <label class="tss-include" data-tss-include-wrap for="tssIncludeOpacity"><input type="checkbox" id="tssIncludeOpacity" data-tss-include="lineOpacity"> <span data-i18n="track.styleInclude">Includi</span></label>
+              <label class="tss-lbl" for="tssOpacity" data-i18n="track.styleLineOpacity">Opacità</label>
+              <div class="tss-field-row">
+                <input type="range" id="tssOpacity" min="0" max="100" step="1" value="90" data-tss-ctrl="lineOpacity">
+                <span id="tssOpacityVal" class="tss-val">0.90</span>
+                <button type="button" class="btn btn-ghost btn-sm tss-reset-one" data-tss-reset="lineOpacity" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne" title="Predefinito">↺</button>
+                <span class="tss-mixed" data-tss-mixed="lineOpacity" hidden data-i18n="track.styleMixed">Misto</span>
+              </div>
+            </div>
+            <div class="tss-field" data-tss-field="lineStyle">
+              <label class="tss-include" data-tss-include-wrap for="tssIncludeStyle"><input type="checkbox" id="tssIncludeStyle" data-tss-include="lineStyle"> <span data-i18n="track.styleInclude">Includi</span></label>
+              <label class="tss-lbl" for="tssLineStyle" data-i18n="track.styleLineStyle">Tipo linea</label>
+              <div class="tss-field-row">
+                <select id="tssLineStyle" data-tss-ctrl="lineStyle">
+                  <option value="" data-i18n="track.styleLineDefault">Predefinito</option>
+                  <option value="solid" data-i18n="rangeRings.lineSolid">Continua</option>
+                  <option value="dashLarge" data-i18n="rangeRings.lineDashLarge">Tratteggiata grande</option>
+                  <option value="dashSmall" data-i18n="rangeRings.lineDashSmall">Tratteggiata piccola</option>
+                  <option value="dotted" data-i18n="rangeRings.lineDotted">Puntinata</option>
+                </select>
+                <button type="button" class="btn btn-ghost btn-sm tss-reset-one" data-tss-reset="lineStyle" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne" title="Predefinito">↺</button>
+                <span class="tss-mixed" data-tss-mixed="lineStyle" hidden data-i18n="track.styleMixed">Misto</span>
+              </div>
+            </div>
+          </div>
+          <div class="tss-actions">
+            <button type="button" id="tssApply" class="btn btn-sm btn-primary" data-i18n="track.styleApply">Applica stile</button>
+            <button type="button" id="tssCancel" class="btn btn-sm" data-i18n="track.styleCancel">Annulla</button>
+            <button type="button" id="tssResetAll" class="btn btn-sm" data-i18n="track.styleResetAll">Ripristina predefiniti</button>
+          </div>
         </div>
         <div id="savedTracksMount" class="saved-tracks-wrap" aria-live="polite"></div>
       </div>
@@ -13074,6 +13172,28 @@ const I18N = {
     "tip.trackDeleteSelected":"Elimina le tracce spuntate nella colonna a sinistra.",
     "tip.trackSavedDelOne":"Elimina questa traccia dall'archivio",
     "tip.trackSavedVisToggle":"Mostra o nasconde questa traccia sulla mappa.",
+    "tip.trackStyleRow":"Modifica colore, spessore, opacità e tratteggio di questa traccia.",
+    "tip.trackStyleSelected":"Modifica lo stile delle tracce selezionate (solo attributi inclusi).",
+    "track.style":"Stile",
+    "track.styleEditTitle":"Modifica stile",
+    "track.styleBatch":"Modifica stile selezionate",
+    "track.styleApply":"Applica stile",
+    "track.styleCancel":"Annulla",
+    "track.styleResetAll":"Ripristina predefiniti",
+    "track.styleResetOne":"Ripristina predefinito per questo attributo",
+    "track.styleColor":"Colore",
+    "track.styleLineWidth":"Spessore",
+    "track.styleLineOpacity":"Opacità",
+    "track.styleLineStyle":"Tipo linea",
+    "track.styleLineDefault":"Predefinito",
+    "track.styleInclude":"Includi",
+    "track.styleMixed":"Misto",
+    "track.styleNoSelection":"Nessuna traccia selezionata.",
+    "track.styleNoChange":"Nessuna modifica selezionata.",
+    "track.styleAppliedN":"Stile applicato a {0} tracce.",
+    "track.styleAppliedOne":"Stile applicato.",
+    "track.styleResetDone":"Stile ripristinato ai predefiniti.",
+    "track.styleEditingBlocked":"Chiudi la modifica geometria della traccia prima di cambiarne lo stile.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -14938,6 +15058,28 @@ const I18N = {
     "tip.trackDeleteSelected":"Delete the tracks checked in the left column.",
     "tip.trackSavedDelOne":"Remove this track from the archive",
     "tip.trackSavedVisToggle":"Show or hide this track on the map.",
+    "tip.trackStyleRow":"Edit color, width, opacity and dash style for this track.",
+    "tip.trackStyleSelected":"Edit style of selected tracks (included attributes only).",
+    "track.style":"Style",
+    "track.styleEditTitle":"Edit style",
+    "track.styleBatch":"Edit style of selected",
+    "track.styleApply":"Apply style",
+    "track.styleCancel":"Cancel",
+    "track.styleResetAll":"Restore defaults",
+    "track.styleResetOne":"Restore default for this attribute",
+    "track.styleColor":"Color",
+    "track.styleLineWidth":"Width",
+    "track.styleLineOpacity":"Opacity",
+    "track.styleLineStyle":"Line style",
+    "track.styleLineDefault":"Default",
+    "track.styleInclude":"Include",
+    "track.styleMixed":"Mixed",
+    "track.styleNoSelection":"No track selected.",
+    "track.styleNoChange":"No change selected.",
+    "track.styleAppliedN":"Style applied to {0} tracks.",
+    "track.styleAppliedOne":"Style applied.",
+    "track.styleResetDone":"Style restored to defaults.",
+    "track.styleEditingBlocked":"Finish geometric editing of the track before changing its style.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -18414,6 +18556,8 @@ const state = {
   trackModalOpen: false,
   /** Transient: when editing an existing saved track, holds its `savedTracks[].id`. */
   _trackEditingSavedId: null,
+  /** Transient TRACK-STYLE-A: style editor working copy { mode, ids, working, include, touched } — not persisted. */
+  _savedTrackStyleEdit: null,
   /** One-shot after load: reopen track modal if last session had track tab. */
   _pendingTrackModal: false,
   /** Persisted: saved track archive (polyline/polygon snapshots), max 50. */
@@ -19456,7 +19600,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 35;
+const APP_BUILD_NUM = 36;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -19534,14 +19678,21 @@ function saveStore(){
       mapWaypoints: (Array.isArray(state.mapWaypoints) ? state.mapWaypoints : []).slice(0, 200),
       savedTracks: (function(){
         ensureSavedTracksState();
-        return state.savedTracks.map(st => ({
-          id: st.id,
-          name: st.name,
-          savedAt: st.savedAt,
-          closed: !!st.closed,
-          visible: st.visible !== false,
-          points: st.points.slice(0, 500)
-        }));
+        return state.savedTracks.map(st => {
+          const row = {
+            id: st.id,
+            name: st.name,
+            savedAt: st.savedAt,
+            closed: !!st.closed,
+            visible: st.visible !== false,
+            points: st.points.slice(0, 500)
+          };
+          if (typeof st.color === "string" && /^#[0-9a-fA-F]{6}$/.test(st.color)) row.color = st.color;
+          if (typeof st.lineWidth === "number" && Number.isFinite(st.lineWidth)) row.lineWidth = st.lineWidth;
+          if (typeof st.lineOpacity === "number" && Number.isFinite(st.lineOpacity)) row.lineOpacity = st.lineOpacity;
+          if (typeof st.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(st.lineStyle)) row.lineStyle = st.lineStyle;
+          return row;
+        });
       })(),
       gisTracks: gisSanitizeFeatureArray(state.gisTracks, "track"),
       gisPolygons: gisSanitizeFeatureArray(state.gisPolygons, "polygon"),
@@ -33098,6 +33249,32 @@ function ensureMapWaypointsState(){
 }
 
 const SAVED_TRACKS_CAP = 50;
+/** TRACK-STYLE-A — patch sentinel: null = reset (delete property); never persisted. */
+function savedTrackSanitizeStyleOnTrack(st){
+  if (!st || typeof st !== "object") return;
+  if (typeof st.color === "string"){
+    const c = st.color.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(c)) st.color = sanitizeTrackColor(c);
+    else delete st.color;
+  } else if ("color" in st){
+    delete st.color;
+  }
+  if (typeof st.lineWidth === "number" && Number.isFinite(st.lineWidth)){
+    st.lineWidth = Math.max(1, Math.min(8, st.lineWidth));
+  } else if ("lineWidth" in st){
+    delete st.lineWidth;
+  }
+  if (typeof st.lineOpacity === "number" && Number.isFinite(st.lineOpacity)){
+    st.lineOpacity = Math.max(0, Math.min(1, st.lineOpacity));
+  } else if ("lineOpacity" in st){
+    delete st.lineOpacity;
+  }
+  if (typeof st.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(st.lineStyle)){
+    st.lineStyle = st.lineStyle;
+  } else if ("lineStyle" in st){
+    delete st.lineStyle;
+  }
+}
 function ensureSavedTracksState(){
   if (!Array.isArray(state.savedTracks)) state.savedTracks = [];
   state.savedTracks = state.savedTracks.filter(st => st && typeof st === "object").slice(0, SAVED_TRACKS_CAP);
@@ -33127,10 +33304,18 @@ function ensureSavedTracksState(){
       });
     }
     st.points = clean;
+    savedTrackSanitizeStyleOnTrack(st);
   }
   if (!Array.isArray(state._savedTracksSelectedIds)) state._savedTracksSelectedIds = [];
   const _stIdSet = new Set(state.savedTracks.map(s => String(s.id)));
   state._savedTracksSelectedIds = state._savedTracksSelectedIds.filter(id => _stIdSet.has(String(id)));
+  try {
+    if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
+      const keep = state._savedTrackStyleEdit.ids.filter(id => _stIdSet.has(String(id)));
+      if (!keep.length) savedTrackClearStyleEditor({ skipRender: true });
+      else state._savedTrackStyleEdit.ids = keep.map(String);
+    }
+  } catch(_){}
 }
 function savedTrackDistanceM(st){
   const pts = st && Array.isArray(st.points) ? st.points : [];
@@ -33143,6 +33328,252 @@ function savedTrackStrokeColor(id){
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
   const hue = h % 360;
   return `hsl(${hue} 72% 42%)`;
+}
+
+/** TRACK-STYLE-A — convert resolved CSS color (incl. HSL legacy) to #RRGGBB for <input type="color">. UI-only; does not persist. */
+function savedTrackCssColorToHex(cssColor){
+  const raw = String(cssColor == null ? "" : cssColor).trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(raw)) return raw.toLowerCase();
+  const hslM = raw.match(/^hsl\(\s*([-\d.]+)\s+([-\d.]+)%\s+([-\d.]+)%\s*\)$/i);
+  if (hslM){
+    let h = ((parseFloat(hslM[1]) % 360) + 360) % 360;
+    const s = Math.max(0, Math.min(100, parseFloat(hslM[2]))) / 100;
+    const l = Math.max(0, Math.min(100, parseFloat(hslM[3]))) / 100;
+    const c = (1 - Math.abs(2 * l - 1)) * s;
+    const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    const m = l - c / 2;
+    let r = 0, g = 0, b = 0;
+    if (h < 60){ r = c; g = x; b = 0; }
+    else if (h < 120){ r = x; g = c; b = 0; }
+    else if (h < 180){ r = 0; g = c; b = x; }
+    else if (h < 240){ r = 0; g = x; b = c; }
+    else if (h < 300){ r = x; g = 0; b = c; }
+    else { r = c; g = 0; b = x; }
+    const toHex = (v) => {
+      const n = Math.round((v + m) * 255);
+      const clamped = Math.max(0, Math.min(255, n));
+      return (clamped < 16 ? "0" : "") + clamped.toString(16);
+    };
+    return "#" + toHex(r) + toHex(g) + toHex(b);
+  }
+  try {
+    if (typeof document !== "undefined"){
+      const el = document.createElement("span");
+      el.style.color = raw;
+      document.body.appendChild(el);
+      const cs = getComputedStyle(el).color;
+      document.body.removeChild(el);
+      const rgbM = String(cs || "").match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+      if (rgbM){
+        const hx = (n) => {
+          const v = Math.max(0, Math.min(255, parseInt(rgbM[n], 10) || 0));
+          return (v < 16 ? "0" : "") + v.toString(16);
+        };
+        return "#" + hx(1) + hx(2) + hx(3);
+      }
+    }
+  } catch(_){}
+  return "#16a34a";
+}
+
+/**
+ * TRACK-STYLE-A — resolve stroke style for a saved track.
+ * previewOverride: optional { color?, lineWidth?, lineOpacity?, lineStyle?|null, _legacyDash?:boolean }
+ * lineStyle null in preview = explicit reset → legacy dash "6 4".
+ * Absent lineStyle on track = legacy dash "6 4" (not RR enum).
+ */
+function savedTrackResolveStyleProps(st, previewOverride){
+  const id = st && st.id != null ? String(st.id) : "";
+  let strokeColor = savedTrackStrokeColor(id);
+  let lineWidth = 2.5;
+  let lineOpacity = 0.9;
+  let lineStyleKey = null; // null = legacy / predefinito
+  let dashArray = "6 4";
+
+  if (st && typeof st.color === "string" && /^#[0-9a-fA-F]{6}$/.test(st.color)) strokeColor = st.color;
+  if (st && typeof st.lineWidth === "number" && Number.isFinite(st.lineWidth)) lineWidth = Math.max(1, Math.min(8, st.lineWidth));
+  if (st && typeof st.lineOpacity === "number" && Number.isFinite(st.lineOpacity)) lineOpacity = Math.max(0, Math.min(1, st.lineOpacity));
+  if (st && typeof st.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(st.lineStyle)){
+    lineStyleKey = st.lineStyle;
+    const d = rrLineStyleToDashArray(st.lineStyle);
+    dashArray = d == null ? null : d;
+  }
+
+  const ov = previewOverride && typeof previewOverride === "object" ? previewOverride : null;
+  if (ov){
+    if ("color" in ov){
+      if (ov.color == null) strokeColor = savedTrackStrokeColor(id);
+      else if (typeof ov.color === "string" && /^#[0-9a-fA-F]{6}$/.test(ov.color)) strokeColor = ov.color;
+    }
+    if ("lineWidth" in ov){
+      if (ov.lineWidth == null) lineWidth = 2.5;
+      else if (typeof ov.lineWidth === "number" && Number.isFinite(ov.lineWidth)) lineWidth = Math.max(1, Math.min(8, ov.lineWidth));
+    }
+    if ("lineOpacity" in ov){
+      if (ov.lineOpacity == null) lineOpacity = 0.9;
+      else if (typeof ov.lineOpacity === "number" && Number.isFinite(ov.lineOpacity)) lineOpacity = Math.max(0, Math.min(1, ov.lineOpacity));
+    }
+    if ("lineStyle" in ov){
+      if (ov.lineStyle == null || ov.lineStyle === ""){
+        lineStyleKey = null;
+        dashArray = "6 4";
+      } else if (typeof ov.lineStyle === "string" && RR_LINE_STYLES.has(ov.lineStyle)){
+        lineStyleKey = ov.lineStyle;
+        const d = rrLineStyleToDashArray(ov.lineStyle);
+        dashArray = d == null ? null : d;
+      }
+    }
+  }
+  return { strokeColor, lineWidth, lineOpacity, lineStyleKey, dashArray };
+}
+
+/** Normalize a style patch. Absent key = do not change. null value = reset (delete). Invalid non-null dropped. */
+function savedTrackNormalizeStylePatch(patch){
+  const out = {};
+  if (!patch || typeof patch !== "object") return out;
+  if ("color" in patch){
+    if (patch.color == null) out.color = null;
+    else if (typeof patch.color === "string"){
+      const c = patch.color.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(c)) out.color = sanitizeTrackColor(c);
+    }
+  }
+  if ("lineWidth" in patch){
+    if (patch.lineWidth == null) out.lineWidth = null;
+    else if (typeof patch.lineWidth === "number" && Number.isFinite(patch.lineWidth)){
+      out.lineWidth = Math.max(1, Math.min(8, patch.lineWidth));
+    }
+  }
+  if ("lineOpacity" in patch){
+    if (patch.lineOpacity == null) out.lineOpacity = null;
+    else if (typeof patch.lineOpacity === "number" && Number.isFinite(patch.lineOpacity)){
+      out.lineOpacity = Math.max(0, Math.min(1, patch.lineOpacity));
+    }
+  }
+  if ("lineStyle" in patch){
+    if (patch.lineStyle == null || patch.lineStyle === "") out.lineStyle = null;
+    else if (typeof patch.lineStyle === "string" && typeof RR_LINE_STYLES !== "undefined" && RR_LINE_STYLES.has(patch.lineStyle)){
+      out.lineStyle = patch.lineStyle;
+    }
+  }
+  return out;
+}
+
+function savedTrackApplyNormalizedPatchToTrack(st, norm){
+  if (!st || !norm) return false;
+  let hit = false;
+  if ("color" in norm){
+    if (norm.color == null){ if ("color" in st){ delete st.color; hit = true; } }
+    else { st.color = norm.color; hit = true; }
+  }
+  if ("lineWidth" in norm){
+    if (norm.lineWidth == null){ if ("lineWidth" in st){ delete st.lineWidth; hit = true; } }
+    else { st.lineWidth = norm.lineWidth; hit = true; }
+  }
+  if ("lineOpacity" in norm){
+    if (norm.lineOpacity == null){ if ("lineOpacity" in st){ delete st.lineOpacity; hit = true; } }
+    else { st.lineOpacity = norm.lineOpacity; hit = true; }
+  }
+  if ("lineStyle" in norm){
+    if (norm.lineStyle == null){ if ("lineStyle" in st){ delete st.lineStyle; hit = true; } }
+    else { st.lineStyle = norm.lineStyle; hit = true; }
+  }
+  return hit;
+}
+
+/**
+ * TRACK-STYLE-A — apply style patch to existing saved tracks by id.
+ * One saveStore + one map refresh + one list render. Does not touch name/points/closed/visible/savedAt.
+ * @returns {{ ok:boolean, count:number }}
+ */
+function savedTracksApplyStyleByIds(ids, patch, opts){
+  opts = opts || {};
+  ensureSavedTracksState();
+  const set = new Set((ids || []).map(String));
+  const norm = savedTrackNormalizeStylePatch(patch);
+  if (!set.size || !Object.keys(norm).length) return { ok: false, count: 0 };
+  let count = 0;
+  for (const st of state.savedTracks){
+    if (!st || !set.has(String(st.id))) continue;
+    savedTrackApplyNormalizedPatchToTrack(st, norm);
+    count++;
+  }
+  if (!count) return { ok: false, count: 0 };
+  for (const st of state.savedTracks){
+    if (st && set.has(String(st.id))) savedTrackSanitizeStyleOnTrack(st);
+  }
+  saveStore();
+  if (!opts.skipUi){
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    try { renderSavedTracksList(); } catch(_){}
+  }
+  return { ok: true, count: count };
+}
+
+function savedTrackClearStyleEditor(opts){
+  opts = opts || {};
+  state._savedTrackStyleEdit = null;
+  const bar = document.getElementById("trackSavedStyleBar");
+  if (bar) bar.hidden = true;
+  const fb = document.getElementById("trackSavedStyleFeedback");
+  if (fb) fb.textContent = "";
+  if (!opts.skipRender){
+    try { refreshTileMapForTrackUi(); } catch(_){}
+  }
+}
+
+/** Build preview override object for one track id from current editor state, or null. */
+function savedTrackStylePreviewOverrideForId(id){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed || !Array.isArray(ed.ids)) return null;
+  const sid = String(id || "");
+  if (ed.ids.map(String).indexOf(sid) < 0) return null;
+  const w = ed.working || {};
+  const reset = w.reset || {};
+  const ov = {};
+  const put = (field, active) => {
+    if (!active) return;
+    if (field === "color"){
+      if (reset.color) ov.color = null;
+      else if (typeof w.color === "string") ov.color = w.color;
+    } else if (field === "lineWidth"){
+      if (reset.lineWidth) ov.lineWidth = null;
+      else if (typeof w.lineWidth === "number") ov.lineWidth = w.lineWidth;
+    } else if (field === "lineOpacity"){
+      if (reset.lineOpacity) ov.lineOpacity = null;
+      else if (typeof w.lineOpacity === "number") ov.lineOpacity = w.lineOpacity;
+    } else if (field === "lineStyle"){
+      if (reset.lineStyle || w.lineStyleKey == null || w.lineStyleKey === "") ov.lineStyle = null;
+      else ov.lineStyle = w.lineStyleKey;
+    }
+  };
+  if (ed.mode === "batch"){
+    const inc = ed.include || {};
+    put("color", !!inc.color);
+    put("lineWidth", !!inc.lineWidth);
+    put("lineOpacity", !!inc.lineOpacity);
+    put("lineStyle", !!inc.lineStyle);
+    if (!Object.keys(ov).length) return null;
+  } else {
+    const touched = ed.touched || {};
+    // Live preview of full working copy; untouched fields still match resolved defaults.
+    put("color", true);
+    put("lineWidth", true);
+    put("lineOpacity", true);
+    put("lineStyle", true);
+    if (!touched.color && !touched.lineWidth && !touched.lineOpacity && !touched.lineStyle
+        && !reset.color && !reset.lineWidth && !reset.lineOpacity && !reset.lineStyle){
+      // Opening editor must not invent a preview until the operator changes something
+      // or requests an explicit reset (avoids materializing hex color visually as "edited").
+      return null;
+    }
+  }
+  return ov;
+}
+
+function savedTrackStyleEditorSetFeedback(msg){
+  const fb = document.getElementById("trackSavedStyleFeedback");
+  if (fb) fb.textContent = msg ? String(msg) : "";
 }
 function flyMapToTrackPoints(pts){
   if (!pts || !pts.length) return;
@@ -33419,6 +33850,356 @@ function trackWireSavedDeleteBarOnce(){
     trackHideSavedDeleteConfirmBar();
   });
 }
+
+/** TRACK-STYLE-A — sync controls from state._savedTrackStyleEdit without destroying focus unnecessarily. */
+function savedTrackStyleEditorSyncDom(){
+  const ed = state._savedTrackStyleEdit;
+  const bar = document.getElementById("trackSavedStyleBar");
+  if (!bar) return;
+  if (!ed || !ed.ids || !ed.ids.length){
+    bar.hidden = true;
+    return;
+  }
+  bar.hidden = false;
+  const isBatch = ed.mode === "batch";
+  const title = document.getElementById("trackSavedStyleTitle");
+  if (title) title.textContent = isBatch
+    ? (t("track.styleBatch") || "Modifica stile selezionate")
+    : (t("track.styleEditTitle") || "Modifica stile");
+  const meta = document.getElementById("trackSavedStyleMeta");
+  if (meta){
+    meta.textContent = isBatch
+      ? String(ed.ids.length)
+      : "";
+  }
+  bar.querySelectorAll("[data-tss-include-wrap]").forEach((el) => {
+    el.hidden = !isBatch;
+  });
+  const w = ed.working || {};
+  const colorEl = document.getElementById("tssColor");
+  const hexEl = document.getElementById("tssColorHex");
+  const widthEl = document.getElementById("tssWidth");
+  const widthVal = document.getElementById("tssWidthVal");
+  const opacEl = document.getElementById("tssOpacity");
+  const opacVal = document.getElementById("tssOpacityVal");
+  const styleEl = document.getElementById("tssLineStyle");
+  if (colorEl && typeof w.color === "string"){
+    try { colorEl.value = w.color; } catch(_){}
+    if (hexEl) hexEl.textContent = w.color;
+  }
+  if (widthEl && typeof w.lineWidth === "number"){
+    widthEl.value = String(Math.round(w.lineWidth * 10));
+    if (widthVal) widthVal.textContent = (Math.round(w.lineWidth * 10) / 10).toFixed(1);
+  }
+  if (opacEl && typeof w.lineOpacity === "number"){
+    opacEl.value = String(Math.round(w.lineOpacity * 100));
+    if (opacVal) opacVal.textContent = (Math.round(w.lineOpacity * 100) / 100).toFixed(2);
+  }
+  if (styleEl){
+    try { styleEl.value = (w.lineStyleKey == null ? "" : String(w.lineStyleKey)); } catch(_){}
+  }
+  const inc = ed.include || {};
+  ["color", "lineWidth", "lineOpacity", "lineStyle"].forEach((k) => {
+    const cb = bar.querySelector('[data-tss-include="' + k + '"]');
+    if (cb) cb.checked = isBatch ? !!inc[k] : true;
+    const mixed = bar.querySelector('[data-tss-mixed="' + k + '"]');
+    if (mixed) mixed.hidden = !(isBatch && ed.mixed && ed.mixed[k]);
+  });
+  const applyBtn = document.getElementById("tssApply");
+  if (applyBtn){
+    let can = false;
+    if (isBatch){
+      can = !!(inc.color || inc.lineWidth || inc.lineOpacity || inc.lineStyle);
+    } else {
+      const touched = ed.touched || {};
+      can = !!(touched.color || touched.lineWidth || touched.lineOpacity || touched.lineStyle);
+    }
+    applyBtn.disabled = !can;
+  }
+}
+
+function savedTrackStyleEditorReadWorkingFromDom(){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed) return;
+  if (!ed.working) ed.working = {};
+  const colorEl = document.getElementById("tssColor");
+  const widthEl = document.getElementById("tssWidth");
+  const opacEl = document.getElementById("tssOpacity");
+  const styleEl = document.getElementById("tssLineStyle");
+  if (colorEl){
+    const c = String(colorEl.value || "").trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(c)) ed.working.color = c.toLowerCase();
+    const hexEl = document.getElementById("tssColorHex");
+    if (hexEl) hexEl.textContent = ed.working.color || c;
+  }
+  if (widthEl){
+    const n = Number(widthEl.value);
+    if (Number.isFinite(n)) ed.working.lineWidth = Math.max(1, Math.min(8, n / 10));
+    const widthVal = document.getElementById("tssWidthVal");
+    if (widthVal && typeof ed.working.lineWidth === "number") widthVal.textContent = ed.working.lineWidth.toFixed(1);
+  }
+  if (opacEl){
+    const n = Number(opacEl.value);
+    if (Number.isFinite(n)) ed.working.lineOpacity = Math.max(0, Math.min(1, n / 100));
+    const opacVal = document.getElementById("tssOpacityVal");
+    if (opacVal && typeof ed.working.lineOpacity === "number") opacVal.textContent = ed.working.lineOpacity.toFixed(2);
+  }
+  if (styleEl){
+    ed.working.lineStyleKey = String(styleEl.value || "");
+  }
+  if (ed.mode === "batch"){
+    if (!ed.include) ed.include = {};
+    ["color", "lineWidth", "lineOpacity", "lineStyle"].forEach((k) => {
+      const cb = document.querySelector('#trackSavedStyleBar [data-tss-include="' + k + '"]');
+      ed.include[k] = !!(cb && cb.checked);
+    });
+  } else {
+    if (!ed.touched) ed.touched = {};
+  }
+}
+
+function savedTrackStyleEditorPreviewRefresh(){
+  savedTrackStyleEditorReadWorkingFromDom();
+  savedTrackStyleEditorSyncDom();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+
+function savedTrackStyleComputeMixed(ids){
+  ensureSavedTracksState();
+  const tracks = state.savedTracks.filter(st => st && ids.indexOf(String(st.id)) >= 0);
+  const mixed = { color: false, lineWidth: false, lineOpacity: false, lineStyle: false };
+  if (tracks.length < 2) return mixed;
+  const keyOf = (st, field) => {
+    if (field === "color") return (typeof st.color === "string") ? st.color.toLowerCase() : "";
+    if (field === "lineWidth") return (typeof st.lineWidth === "number" && Number.isFinite(st.lineWidth)) ? String(st.lineWidth) : "";
+    if (field === "lineOpacity") return (typeof st.lineOpacity === "number" && Number.isFinite(st.lineOpacity)) ? String(st.lineOpacity) : "";
+    if (field === "lineStyle") return (typeof st.lineStyle === "string") ? st.lineStyle : "";
+    return "";
+  };
+  ["color", "lineWidth", "lineOpacity", "lineStyle"].forEach((field) => {
+    const first = keyOf(tracks[0], field);
+    for (let i = 1; i < tracks.length; i++){
+      if (keyOf(tracks[i], field) !== first){ mixed[field] = true; break; }
+    }
+  });
+  return mixed;
+}
+
+function savedTrackStyleWorkingFromTracks(ids){
+  ensureSavedTracksState();
+  const st0 = state.savedTracks.find(x => x && String(x.id) === String(ids[0]));
+  const sty = savedTrackResolveStyleProps(st0 || { id: ids[0] }, null);
+  return {
+    color: savedTrackCssColorToHex(sty.strokeColor),
+    lineWidth: sty.lineWidth,
+    lineOpacity: sty.lineOpacity,
+    lineStyleKey: (st0 && typeof st0.lineStyle === "string" && RR_LINE_STYLES.has(st0.lineStyle)) ? st0.lineStyle : ""
+  };
+}
+
+function openSavedTrackStyleEditorSingle(id){
+  ensureSavedTracksState();
+  const sid = String(id || "");
+  const st = state.savedTracks.find(x => x && String(x.id) === sid);
+  if (!st) return;
+  if (state._trackEditingSavedId && String(state._trackEditingSavedId) === sid){
+    savedTrackStyleEditorSetFeedback(t("track.styleEditingBlocked") || "");
+    return;
+  }
+  state._savedTrackStyleEdit = {
+    mode: "single",
+    ids: [sid],
+    working: Object.assign(savedTrackStyleWorkingFromTracks([sid]), {
+      reset: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false }
+    }),
+    include: { color: true, lineWidth: true, lineOpacity: true, lineStyle: true },
+    touched: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false },
+    mixed: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false }
+  };
+  savedTrackStyleEditorSetFeedback("");
+  trackWireSavedStyleBarOnce();
+  savedTrackStyleEditorSyncDom();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+
+function openSavedTrackStyleEditorBatch(ids){
+  ensureSavedTracksState();
+  const list = (ids || []).map(String).filter((id) => state.savedTracks.some(st => st && String(st.id) === id));
+  if (!list.length){
+    savedTrackStyleEditorSetFeedback(t("track.styleNoSelection") || "");
+    return;
+  }
+  const mixed = savedTrackStyleComputeMixed(list);
+  state._savedTrackStyleEdit = {
+    mode: "batch",
+    ids: list,
+    working: Object.assign(savedTrackStyleWorkingFromTracks(list), {
+      reset: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false }
+    }),
+    include: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false },
+    touched: { color: false, lineWidth: false, lineOpacity: false, lineStyle: false },
+    mixed: mixed
+  };
+  savedTrackStyleEditorSetFeedback("");
+  trackWireSavedStyleBarOnce();
+  savedTrackStyleEditorSyncDom();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+
+function savedTrackStyleEditorBuildPatchFromUi(){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed) return null;
+  savedTrackStyleEditorReadWorkingFromDom();
+  const w = ed.working || {};
+  const reset = w.reset || {};
+  const patch = {};
+  const take = (field) => {
+    if (ed.mode === "batch") return !!(ed.include && ed.include[field]);
+    return !!(ed.touched && ed.touched[field]);
+  };
+  if (take("color")){
+    patch.color = reset.color ? null : (typeof w.color === "string" ? w.color : null);
+  }
+  if (take("lineWidth")){
+    patch.lineWidth = reset.lineWidth ? null : (typeof w.lineWidth === "number" ? w.lineWidth : null);
+  }
+  if (take("lineOpacity")){
+    patch.lineOpacity = reset.lineOpacity ? null : (typeof w.lineOpacity === "number" ? w.lineOpacity : null);
+  }
+  if (take("lineStyle")){
+    patch.lineStyle = (reset.lineStyle || w.lineStyleKey == null || w.lineStyleKey === "") ? null : w.lineStyleKey;
+  }
+  return patch;
+}
+
+function savedTrackStyleEditorApply(){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed) return;
+  const patch = savedTrackStyleEditorBuildPatchFromUi();
+  if (!patch || !Object.keys(patch).length){
+    savedTrackStyleEditorSetFeedback(t("track.styleNoChange") || "");
+    return;
+  }
+  const res = savedTracksApplyStyleByIds(ed.ids, patch, { skipUi: true });
+  const mode = ed.mode;
+  const n = res.count || 0;
+  savedTrackClearStyleEditor({ skipRender: true });
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { renderSavedTracksList(); } catch(_){}
+  if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
+  if (res.ok){
+    const msg = (mode === "batch")
+      ? String(t("track.styleAppliedN") || "").replace("{0}", String(n))
+      : (t("track.styleAppliedOne") || "");
+    try { setBadge("success", msg); } catch(_){}
+  }
+}
+
+function savedTrackStyleEditorResetAll(){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed || !ed.ids || !ed.ids.length) return;
+  const patch = { color: null, lineWidth: null, lineOpacity: null, lineStyle: null };
+  const res = savedTracksApplyStyleByIds(ed.ids, patch, { skipUi: true });
+  savedTrackClearStyleEditor({ skipRender: true });
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { renderSavedTracksList(); } catch(_){}
+  if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
+  if (res.ok){
+    try { setBadge("success", t("track.styleResetDone") || ""); } catch(_){}
+  }
+}
+
+function savedTrackStyleEditorResetOneField(field){
+  const ed = state._savedTrackStyleEdit;
+  if (!ed || !ed.working) return;
+  if (!ed.working.reset) ed.working.reset = {};
+  ed.working.reset[field] = true;
+  if (ed.mode === "single"){
+    if (!ed.touched) ed.touched = {};
+    ed.touched[field] = true;
+  } else {
+    if (!ed.include) ed.include = {};
+    ed.include[field] = true;
+  }
+  if (field === "lineStyle"){
+    ed.working.lineStyleKey = "";
+    const styleEl = document.getElementById("tssLineStyle");
+    if (styleEl) styleEl.value = "";
+  } else if (field === "color"){
+    const sid = ed.ids && ed.ids[0];
+    const hex = savedTrackCssColorToHex(savedTrackStrokeColor(sid));
+    ed.working.color = hex;
+    const colorEl = document.getElementById("tssColor");
+    if (colorEl) try { colorEl.value = hex; } catch(_){}
+    const hexEl = document.getElementById("tssColorHex");
+    if (hexEl) hexEl.textContent = hex;
+  } else if (field === "lineWidth"){
+    ed.working.lineWidth = 2.5;
+    const widthEl = document.getElementById("tssWidth");
+    if (widthEl) widthEl.value = "25";
+    const widthVal = document.getElementById("tssWidthVal");
+    if (widthVal) widthVal.textContent = "2.5";
+  } else if (field === "lineOpacity"){
+    ed.working.lineOpacity = 0.9;
+    const opacEl = document.getElementById("tssOpacity");
+    if (opacEl) opacEl.value = "90";
+    const opacVal = document.getElementById("tssOpacityVal");
+    if (opacVal) opacVal.textContent = "0.90";
+  }
+  savedTrackStyleEditorPreviewRefresh();
+}
+
+function trackWireSavedStyleBarOnce(){
+  const bar = document.getElementById("trackSavedStyleBar");
+  if (!bar || bar._trackSavedStyleBound) return;
+  bar._trackSavedStyleBound = true;
+  const markTouched = (field) => {
+    const ed = state._savedTrackStyleEdit;
+    if (!ed) return;
+    if (ed.working && ed.working.reset) ed.working.reset[field] = false;
+    if (ed.mode === "single"){
+      if (!ed.touched) ed.touched = {};
+      ed.touched[field] = true;
+    }
+  };
+  const onCtrl = (field) => {
+    markTouched(field);
+    savedTrackStyleEditorPreviewRefresh();
+  };
+  const colorEl = document.getElementById("tssColor");
+  if (colorEl) colorEl.addEventListener("input", () => onCtrl("color"));
+  const widthEl = document.getElementById("tssWidth");
+  if (widthEl) widthEl.addEventListener("input", () => onCtrl("lineWidth"));
+  const opacEl = document.getElementById("tssOpacity");
+  if (opacEl) opacEl.addEventListener("input", () => onCtrl("lineOpacity"));
+  const styleEl = document.getElementById("tssLineStyle");
+  if (styleEl) styleEl.addEventListener("change", () => onCtrl("lineStyle"));
+  bar.querySelectorAll("[data-tss-include]").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      savedTrackStyleEditorPreviewRefresh();
+    });
+  });
+  bar.querySelectorAll("[data-tss-reset]").forEach((btn) => {
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      const field = btn.getAttribute("data-tss-reset");
+      if (field) savedTrackStyleEditorResetOneField(field);
+    });
+  });
+  const applyBtn = document.getElementById("tssApply");
+  if (applyBtn) applyBtn.addEventListener("click", (ev) => { ev.preventDefault(); savedTrackStyleEditorApply(); });
+  const cancelBtn = document.getElementById("tssCancel");
+  if (cancelBtn) cancelBtn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    savedTrackClearStyleEditor();
+  });
+  const resetBtn = document.getElementById("tssResetAll");
+  if (resetBtn) resetBtn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    savedTrackStyleEditorResetAll();
+  });
+}
+
 function deleteSavedTracksByIds(ids, opts){
   opts = opts || {};
   ensureSavedTracksState();
@@ -33437,6 +34218,13 @@ function deleteSavedTracksByIds(ids, opts){
     if (st && set.has(st.id) && Array.isArray(st.points)) deletedPointSnapshots.push(st.points.slice());
   }
   state.savedTracks = state.savedTracks.filter(st => !set.has(st.id));
+  try {
+    if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
+      const left = state._savedTrackStyleEdit.ids.filter(id => !set.has(String(id)));
+      if (!left.length) savedTrackClearStyleEditor({ skipRender: true });
+      else state._savedTrackStyleEdit.ids = left;
+    }
+  } catch(_){}
   saveStore();
   try { workbenchPruneSelection(); } catch(_){}
   renderSavedTracksList();
@@ -34595,11 +35383,20 @@ function renderSavedTracksList(){
   const u = normalizeTrackDisplayUnit(state.trackDisplayUnit);
   if (!rows.length){
     mount.innerHTML = `<div class="panel-empty-state saved-tracks-empty" role="status"><p class="panel-empty-main">${esc(t("track.savedEmpty") || "Nessuna traccia salvata.")}</p><p class="panel-empty-hint">${esc(t("track.savedEmptyHint") || "")}</p></div>`;
+    if (state._savedTrackStyleEdit) savedTrackClearStyleEditor({ skipRender: true });
     if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
     return;
   }
+  try {
+    if (state._savedTrackStyleEdit && Array.isArray(state._savedTrackStyleEdit.ids)){
+      const alive = state._savedTrackStyleEdit.ids.filter((id) => rows.some((x) => x && String(x.id) === String(id)));
+      if (!alive.length) savedTrackClearStyleEditor({ skipRender: true });
+      else if (alive.length !== state._savedTrackStyleEdit.ids.length) state._savedTrackStyleEdit.ids = alive.map(String);
+    }
+  } catch(_){}
   const tipFly = esc(t("tip.trackSavedFly") || "");
   const rowCtxHint = esc(t("track.savedRowCtxHint") || "");
+  const editingId = state._trackEditingSavedId ? String(state._trackEditingSavedId) : "";
   const selSet = new Set((state._savedTracksSelectedIds || []).map(String));
   let html = `<table class="saved-tracks-table"><colgroup>
     <col style="width:36px" />
@@ -34616,7 +35413,7 @@ function renderSavedTracksList(){
     ${savedTracksSortHeaderHtml("pts", "track.colPts", { thStyle: "width:52px" })}
     ${savedTracksSortHeaderHtml("when", "track.colWhen", { resizeHandle: "when", thClass: "saved-th-when" })}
     ${savedTracksSortHeaderHtml("dist", "track.colDist", { resizeHandle: "dist", thClass: "saved-th-dist" })}
-    <th class="saved-th-actions" style="min-width:120px;text-align:left">${esc(t("track.savedColActions") || "Azioni")}</th>
+    <th class="saved-th-actions" style="min-width:148px;text-align:left">${esc(t("track.savedColActions") || "Azioni")}</th>
   </tr></thead><tbody>`;
   for (const st of rows){
     const d = savedTrackDistanceM(st);
@@ -34624,6 +35421,9 @@ function renderSavedTracksList(){
     const vis = (typeof savedTrackMapVisible === "function") ? savedTrackMapVisible(st) : (st.visible !== false);
     const rowSel = selSet.has(String(st.id));
     const ariaVis = esc((typeof t === "function") ? (vis ? (t("track.savedVisOnMap") || "") : (t("track.savedVisHiddenFromMap") || "")) : "");
+    const styleBlocked = editingId && editingId === String(st.id);
+    const styleDis = styleBlocked ? " disabled" : "";
+    const styleAria = styleBlocked ? ' aria-disabled="true"' : "";
     html += `<tr data-saved-row data-id="${esc(st.id)}" data-saved-hint="${rowCtxHint}" class="${rowSel ? "is-selected" : ""}">
       <td><input type="checkbox" class="saved-sel-cb" data-saved-sel="${esc(st.id)}"${rowSel ? " checked" : ""}></td>
       <td class="saved-tracks-vis-cell"><span class="saved-track-vis-indicator ${vis ? "is-visible" : "is-hidden"}" role="img" aria-label="${ariaVis}"></span></td>
@@ -34633,6 +35433,7 @@ function renderSavedTracksList(){
       <td>${esc(distStr)}</td>
       <td class="saved-actions-cell"><div class="saved-row-actions">
         <button type="button" class="btn btn-sm" data-saved-edit="${esc(st.id)}" data-i18n-tip="tip.trackEditSaved" data-i18n-aria="tip.trackEditSaved"><span aria-hidden="true">✎</span></button>
+        <button type="button" class="btn btn-sm" data-saved-style="${esc(st.id)}" data-i18n-tip="tip.trackStyleRow" data-i18n-aria="tip.trackStyleRow"${styleDis}${styleAria}><span aria-hidden="true">◈</span></button>
         <button type="button" class="btn btn-sm btn-saved-fly" data-saved-fly="${esc(st.id)}" data-i18n-tip="tip.trackSavedFly" data-i18n-aria="tip.trackSavedFly" data-tip="${tipFly}"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-saved-del="${esc(st.id)}" data-i18n-tip="tip.trackSavedDelOne" data-i18n-aria="tip.trackSavedDelOne"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div></td>
@@ -34664,6 +35465,14 @@ function renderSavedTracksList(){
         b.setAttribute("aria-label", tipEdit);
       });
     }
+    const tipStyle = (typeof t === "function") ? (t("tip.trackStyleRow") || "") : "";
+    if (tipStyle){
+      mount.querySelectorAll("[data-saved-style]").forEach((b) => {
+        b.setAttribute("data-tip", tipStyle);
+        b.setAttribute("aria-label", tipStyle);
+        b.setAttribute("title", tipStyle);
+      });
+    }
     const tipFlyRaw = (typeof t === "function") ? (t("tip.trackSavedFly") || "") : "";
     if (tipFlyRaw){
       mount.querySelectorAll("[data-saved-fly]").forEach((b) => {
@@ -34688,6 +35497,7 @@ function renderSavedTracksList(){
   } catch(_){}
   if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
   if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
+  try { if (typeof savedTrackStyleEditorSyncDom === "function") savedTrackStyleEditorSyncDom(); } catch(_){}
   if (!mount._savedTracksDelegated){
     mount._savedTracksDelegated = true;
     mount.addEventListener("focusin", (ev) => {
@@ -34781,6 +35591,14 @@ function renderSavedTracksList(){
         if (sid && typeof beginEditSavedTrackById === "function") beginEditSavedTrackById(sid);
         return;
       }
+      const styBtn = ev.target.closest && ev.target.closest("[data-saved-style]");
+      if (styBtn){
+        ev.preventDefault();
+        if (styBtn.disabled) return;
+        const sid = styBtn.getAttribute("data-saved-style");
+        if (sid && typeof openSavedTrackStyleEditorSingle === "function") openSavedTrackStyleEditorSingle(sid);
+        return;
+      }
       const fly = ev.target.closest && ev.target.closest("[data-saved-fly]");
       if (fly){
         ev.preventDefault();
@@ -34853,7 +35671,9 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
   }, true);
   for (const st of visible){
     const pts = st.points;
-    const stroke = savedTrackStrokeColor(st.id);
+    const previewOv = savedTrackStylePreviewOverrideForId(st.id);
+    const sty = savedTrackResolveStyleProps(st, previewOv);
+    const stroke = sty.strokeColor;
     const sid = String(st.id || "");
     if (pts.length === 1){
       const c = tileMapLatLonToPx(root, pts[0].lat, pts[0].lon);
@@ -34865,6 +35685,7 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
       dot.setAttribute("fill", stroke);
       dot.setAttribute("stroke", "#fff");
       dot.setAttribute("stroke-width", "1.5");
+      dot.style.opacity = String(sty.lineOpacity);
       if (sid) dot.setAttribute("data-saved-map-hit", sid);
       try { wireSavedTrackMapHoverHintOnHitEl(dot); } catch(_){}
       svg.appendChild(dot);
@@ -34878,6 +35699,11 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
     line.setAttribute("points", ptStr);
     line.setAttribute("class", closed ? "track-line track-line-closed track-line-saved" : "track-line track-line-saved");
     line.style.stroke = stroke;
+    line.style.strokeWidth = String(sty.lineWidth);
+    line.style.strokeOpacity = String(sty.lineOpacity);
+    line.style.setProperty("--saved-track-width", sty.lineWidth + "px");
+    if (sty.dashArray == null) line.style.strokeDasharray = "none";
+    else line.style.strokeDasharray = String(sty.dashArray);
     if (sid) line.setAttribute("data-saved-map-hit", sid);
     try { wireSavedTrackMapHoverHintOnHitEl(line); } catch(_){}
     svg.appendChild(line);
@@ -46373,6 +47199,17 @@ function bindUI(){
     requestSavedTracksDelete(ids);
   });
   try { if (typeof trackWireSavedDeleteBarOnce === "function") trackWireSavedDeleteBarOnce(); } catch(_){}
+  try { if (typeof trackWireSavedStyleBarOnce === "function") trackWireSavedStyleBarOnce(); } catch(_){}
+  const btnStyleSel = document.getElementById("btnSavedTracksStyleSelected");
+  if (btnStyleSel) btnStyleSel.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    const ids = (typeof getSelectedSavedTrackIdsForExport === "function") ? getSelectedSavedTrackIdsForExport() : [];
+    if (!ids.length){
+      setBadge("info", t("track.noSelection") || "Seleziona almeno una traccia.");
+      return;
+    }
+    openSavedTrackStyleEditorBatch(ids);
+  });
   const btnSvShowSel = document.getElementById("btnSavedTracksShowSelected");
   if (btnSvShowSel) btnSvShowSel.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -54865,6 +55702,7 @@ function savedTrackMapVisible(st){
 function syncSavedTracksSelectionActions(){
   ensureSavedTracksState();
   const btnDel = document.getElementById("btnSavedTracksDeleteSelected");
+  const btnStyle = document.getElementById("btnSavedTracksStyleSelected");
   const batchBar = document.getElementById("savedTracksBatchBar");
   const btnShowSel = document.getElementById("btnSavedTracksShowSelected");
   const btnHideSel = document.getElementById("btnSavedTracksHideSelected");
@@ -54903,6 +55741,9 @@ function syncSavedTracksSelectionActions(){
   if (btnDel){
     btnDel.hidden = !anyRow;
     btnDel.disabled = sel === 0;
+  }
+  if (btnStyle){
+    btnStyle.disabled = sel === 0;
   }
 }
 
