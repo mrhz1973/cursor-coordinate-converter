@@ -2,49 +2,55 @@
 
 ## LATEST
 
-* real_task_commit: `1d2816351c71bcecd69d33325cd3d8f01cea8028`
-* real_task_subject: feat(gis): add KMZ drop and track map controls (build 35)
-* report_generated_at: 2026-07-21T20:59:00Z
+* real_task_commit: `40c97b6bec5ac9120d772b444906accca00f8c9d`
+* real_task_subject: fix(gis): sync batch style inclusion before preview (build 38)
+* report_generated_at: 2026-07-21T23:55:00Z
 * branch: main
-* remote_head_after_task_push: `1d2816351c71bcecd69d33325cd3d8f01cea8028` (runtime già su origin/main pre-docs)
-* previous_report_container: `57adf61` (orchestratore riconciliazione post IMPORT-DROP-A finito — esterno/verificabile)
+* remote_head_after_task_push: `40c97b6bec5ac9120d772b444906accca00f8c9d` (runtime già su origin/main pre-docs finito)
+* previous_report_container: `93a3e68` (orchestratore riconciliazione post IMPORT-DROP-B-TRACK-MODAL-UX-A finito — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs finito staged pre-autosync
+* working_tree_status: docs-only finito (OM/HANDOFF/WU/LAST_CURSOR_REPORT); monolite invariato
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: IMPORT-DROP-B + TRACK-MODAL-UX-A CLOSED; finito docs post-QA PASS
+* result_cursor: TRACK-STYLE-A + FIX1 + FIX2 CLOSED; finito docs post QA PASS + autorizzazione esplicita
 * pass_operatore: PASS
-* result_runtime: QA IMPORT-DROP-B-TRACK-MODAL-UX-A — KMZ drop, fitAcc, Centra, Unità inline; build 35; deploy Cursor SSH non disponibile (manuale operatore); QA PASS
-* qa_attestation_source: operatore — «QA IMPORT-DROP-B-TRACK-MODAL-UX-A PASS operatore»
-* notes: bundle ROUTINE; chiusi IMPORT-DROP-B e TRACK-MODAL-UX-A; restano non aperti TRACK-STYLE-A / TRACK-BRUSH-A; blob ee599bde…; byte 2610149; SHA-256 21617a76…
+* result_runtime: QA TRACK-STYLE-A — stile saved tracks build 38; deploy PASS attestato operatore fuori Cursor (byte 2655368, SHA-256 match); QA PASS
+* qa_attestation_source: operatore — «QA TRACK-STYLE-A PASS operatore» + «AUTORIZZAZIONE ESPLICITA FINITO»
+* notes: bundle DELICATO; catena ab5455d (36) → 1146e59 (37) → 40c97b6 (38); chiusi TRACK-STYLE-A / FIX1 / FIX2; resta non aperto TRACK-BRUSH-A; blob 2acf7711…; byte 2655368; SHA-256 952550ef…; monolite non modificato in chiusura docs
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit verificato:
-1d2816351c71bcecd69d33325cd3d8f01cea8028
+40c97b6bec5ac9120d772b444906accca00f8c9d
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-ee599bde006d7f1cf9fe835f9e9e437187330a0b
+2acf77113a73f1d76d130dc2b2947c8310080f6e
 
 git cat-file -s HEAD:"coordinate_converter Claude.html"
-2610149
+2655368
 
 sha256sum (repo file):
-21617a766ec606ddcce6a8480db16a69df9c6bbfe3aa60bf855431a37b345562
+952550efe6eff48d2e6894fdb32fc41cbec7c22734c0bb69b78b9614f5827d49
 
-Deploy VPS (Cursor cloud):
-SSH ionos-n8n NON risolvibile — deploy non eseguito da Cursor
-DEPLOY MANUALE RICHIESTO (sessione runtime) — QA operatore PASS implica verifica live lato operatore
-CMP/byte VPS: non ri-verificati da Cursor in chiusura finito
+Deploy VPS (fuori sessione Cursor — attestato operatore):
+goi-gis-app.service active/enabled
+HTTP 200
+byte serviti: 2655368
+SHA-256 servito: 952550efe6eff48d2e6894fdb32fc41cbec7c22734c0bb69b78b9614f5827d49
+contenuto coincidente con runtime approvato
+DEPLOY NON RIPETUTO DA CURSOR IN CHIUSURA FINITO
 
-QA IMPORT-DROP-B-TRACK-MODAL-UX-A PASS operatore
+QA TRACK-STYLE-A PASS operatore
+AUTORIZZAZIONE ESPLICITA FINITO — TRACK-STYLE-A
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 93a3e68 — IMPORT-DROP-B-TRACK-MODAL-UX-A finito autosync/orchestratore (real_task 1d28163; finito docs 434ece7; container report precedente 93a3e68 — esterno/verificabile)
+* 1d28163 — IMPORT-DROP-B + TRACK-MODAL-UX-A runtime (build 35; report LATEST precedente spostato qui come storia)
 * 57adf61 — IMPORT-DROP-A finito autosync/orchestratore (real_task 5f57a75; finito docs d4d49e6; container report precedente 57adf61 — esterno/verificabile)
 * 5f57a75 — IMPORT-DROP-A runtime (build 34; report LATEST precedente spostato qui come storia; container autosync 57adf61)
 * 73269a0 — MAJOR-4-a finito (real_task 73269a0; finito docs 8e15c4c; container report precedente 92fd178 — esterno/verificabile)
@@ -59,9 +65,9 @@ PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## LIMITI
 
-* Backlog non aperto: TRACK-STYLE-A, TRACK-BRUSH-A
+* Backlog non aperto: TRACK-BRUSH-A
 * OFFLINE-DOWNLOAD-CONTROLS backlog (Pausa/Stop/Riprendi — non implementato)
 * Estensioni MAJOR-3 (import unificato) / MAJOR-4 (import/restore) backlog basso
-* Finding IMPORT-DROP-A F1–F7 note-only (non runtime in questo finito)
-* Deploy VPS CMP non ri-verificato da Cursor (SSH assente in cloud agent)
+* Export stile GPX/KML / Mission Package stile — fuori scope TRACK-STYLE-A (invariati)
+* Deploy VPS non ripetuto da Cursor in chiusura (attestato operatore fuori sessione)
 * QA touch/tablet non attestata nel flusso

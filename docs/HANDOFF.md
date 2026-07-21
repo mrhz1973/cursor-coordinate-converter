@@ -117,15 +117,16 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `1d28163` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **IMPORT-DROP-B-TRACK-MODAL-UX-A** — KMZ drop + Centra/Unità Tracce (build 35) |
+| HEAD remoto (verificato) | `40c97b6` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **TRACK-STYLE-A** (+ FIX1 + FIX2) — stile saved tracks (build 38) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `1d2816351c71bcecd69d33325cd3d8f01cea8028` (CMP VPS non ri-verificato da Cursor in chiusura) |
-| Blob monolite (git) | `ee599bde006d7f1cf9fe835f9e9e437187330a0b` |
-| Byte monolite (git) | `2610149` |
-| `APP_BUILD_NUM` | `35` |
-| Display runtime | `B5.5Z · build 35` |
+| Runtime Git / atteso VPS | `40c97b6bec5ac9120d772b444906accca00f8c9d` (deploy PASS attestato operatore fuori Cursor) |
+| Blob monolite (git) | `2acf77113a73f1d76d130dc2b2947c8310080f6e` |
+| Byte monolite (git) | `2655368` |
+| `APP_BUILD_NUM` | `38` |
+| Display runtime | `B5.5Z · build 38` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| TRACK-STYLE-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (stile saved tracks + lifecycle + Include sync) |
 | IMPORT-DROP-B / TRACK-MODAL-UX-A | **CLOSED / PASS end-to-end** (KMZ drop + fit + Centra/Unità) |
 | IMPORT-DROP-A | **CLOSED / PASS end-to-end** (drag & drop GPX/KML multi-file) |
 | MAJOR-4-a | **CLOSED / PASS end-to-end** (Mission Package JSON export Workbench) |
@@ -145,15 +146,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1d28163` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=40c97b6` |
 
 **Prossimo ordine operativo:**
 
-Candidati tracce (**non aperti**): **TRACK-STYLE-A**, **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
+Candidato tracce (**non aperto**): **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** TRACK-STYLE-A / TRACK-BRUSH-A, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** TRACK-BRUSH-A, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura IMPORT-DROP-B-TRACK-MODAL-UX-A.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-STYLE-A.
 
 ---
 
@@ -171,11 +172,16 @@ Candidati tracce (**non aperti**): **TRACK-STYLE-A**, **TRACK-BRUSH-A**. **OFFLI
 
 **Runtime:** `5f57a755c5e809de2e4495aa9d5caba58d8084a5` — blob `0d713702…` — byte **2606270** — SHA-256 **`849bf44f…`** — CMP_PASS — PR #2 squash — review PASS — deploy GIS-only PASS — restart servizio **non necessario** — QA «**QA IMPORT-DROP-A PASS operatore**».
 
-### TRACK-STYLE-A / TRACK-BRUSH-A — candidati (non aperti)
+### TRACK-STYLE-A (+ FIX1 + FIX2) — stile saved tracks (build 38) — CLOSED
 
-**Stato:** backlog residuo post build 35 — **non implementare ora**, **non WU aperte**.
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-21).
 
-- **TRACK-STYLE-A:** colore/spessore/opacità/tratteggio riusando modello stile poligoni; batch su selezione; legacy senza stile; export KML/GPX stile = decisione separata.
+**Runtime tip:** `40c97b6bec5ac9120d772b444906accca00f8c9d` — blob `2acf7711…` — byte **2655368** — SHA-256 **`952550ef…`** — build **38** — catena `ab5455d` (36) → `1146e59` (37 FIX1) → `40c97b6` (38 FIX2) — deploy PASS (operatore fuori Cursor) — QA «**QA TRACK-STYLE-A PASS operatore**».
+
+### TRACK-BRUSH-A — candidato (non aperto)
+
+**Stato:** backlog residuo post TRACK-STYLE-A — **non implementare ora**, **non WU aperta**.
+
 - **TRACK-BRUSH-A:** disegno libero + screen-to-geo + ricampionamento + anteprima + salvataggio via helper saved-track comune.
 
 Finding IMPORT-DROP-A **note-only** (non runtime ora): concatenazione segmenti (F1); costanti nominate cap; feedback `saveStore`; conteggio errori aggregato (F6); mismatch accept drop vs paste; sampling fit; N+1 `saveStore` poligoni.
