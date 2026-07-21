@@ -4641,6 +4641,15 @@ body.mm-enlarged .sig-badge{display:none}
   font-size:1.1rem; font-weight:700; pointer-events:none;
   border-radius:14px; z-index:5; letter-spacing:.3px;
 }
+/* IMPORT-DROP-A — temporary global GPX/KML drop affordance (Files only). */
+body.spatial-drop-active::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:99998;
+  box-shadow:inset 0 0 0 3px var(--accent);
+  background:color-mix(in srgb, var(--accent) 10%, transparent);
+}
 
 /* ================= HELP / QR DIALOG MODALS ================= */
 /* Help / QR — modern <dialog> content modals */
@@ -13003,6 +13012,14 @@ const I18N = {
     "track.etaCar":"Auto ({0})",
     "track.noExport":"Aggiungi almeno 2 punti per esportare.",
     "track.importedN":"Importati {0} punti nella traccia.",
+    "dropImport.summary":"Import drop: {0} file · {1} waypoint · {2} tracce · {3} poligoni · {4} ignorati · {5} errori.",
+    "dropImport.errDetail":"Errori: {0}",
+    "dropImport.capTracks":"Libreria tracce piena (cap {0}).",
+    "dropImport.capWaypoints":"Cap waypoint raggiunto.",
+    "dropImport.capPolygons":"Cap poligoni raggiunto.",
+    "dropImport.tooLarge":"troppo grande (>25 MB)",
+    "dropImport.empty":"vuoto o non valido",
+    "dropImport.noGeometry":"nessuna geometria importabile",
     "track.addedOk":"Punto aggiunto alla traccia.",
     "track.cannotAdd":"Nessun punto convertito da aggiungere.",
     "track.dragReorder":"Trascina per riordinare",
@@ -14858,6 +14875,14 @@ const I18N = {
     "track.etaCar":"Car ({0})",
     "track.noExport":"Add at least 2 points to export.",
     "track.importedN":"Imported {0} points into the track.",
+    "dropImport.summary":"Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.",
+    "dropImport.errDetail":"Errors: {0}",
+    "dropImport.capTracks":"Saved track library full (cap {0}).",
+    "dropImport.capWaypoints":"Waypoint cap reached.",
+    "dropImport.capPolygons":"Polygon cap reached.",
+    "dropImport.tooLarge":"too large (>25 MB)",
+    "dropImport.empty":"empty or invalid",
+    "dropImport.noGeometry":"no importable geometry",
     "track.addedOk":"Point added to the track.",
     "track.cannotAdd":"No converted point to add.",
     "track.dragReorder":"Drag to reorder",
@@ -19415,7 +19440,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 33;
+const APP_BUILD_NUM = 34;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25750,37 +25775,311 @@ function copyPermalink(){
 }
 
 /* ========================= SECTION 14F: DRAG & DROP ========================= */
+const DROP_IMPORT_MAX_FILES = 20;
+const DROP_IMPORT_MAX_BYTES = 25 * 1024 * 1024;
+
+function dropImportDataTransferHasFiles(dt){
+  if (!dt || !dt.types) return false;
+  try {
+    if (typeof dt.types.contains === "function") return dt.types.contains("Files");
+    return Array.prototype.indexOf.call(dt.types, "Files") >= 0;
+  } catch(_){
+    try { return !!(dt.files && dt.files.length); } catch(__){ return false; }
+  }
+}
+
+function dropImportClearVisual(depthRef){
+  if (depthRef) depthRef.n = 0;
+  try { document.body.classList.remove("spatial-drop-active"); } catch(_){}
+}
+
+function dropImportPushErr(summary, name, detail){
+  summary.errors++;
+  const leaf = String(name || "file").replace(/^.*[\\/]/, "").slice(0, 40);
+  const d = detail ? (" " + String(detail).slice(0, 40)) : "";
+  if (summary.errNames.length < 8) summary.errNames.push(leaf + d);
+}
+
+/**
+ * IMPORT-DROP-A — classify one FeatureCollection into canonical stores.
+ * Does not touch state.track draft. Does not call saveStore (except via gisFeatureAdd).
+ */
+function applyDroppedFeatureCollection(fc, filename, summary, fitPts){
+  ensureMapWaypointsState();
+  ensureSavedTracksState();
+  const feats = (fc && fc.features) ? fc.features : [];
+  const fname = String(filename || "");
+  const lineParts = [];
+  let addedAny = false;
+  let fileHadErr = false;
+  let wpCapReported = false;
+  let polyCapReported = false;
+  summary._lastTrackCreated = false;
+
+  const pushErr = (detail) => {
+    fileHadErr = true;
+    dropImportPushErr(summary, fname, detail);
+  };
+
+  for (const f of feats){
+    const g = f && f.geometry;
+    if (!g) continue;
+    if (g.type === "Point" && g.coordinates){
+      if (state.mapWaypoints.length >= 200){
+        if (!wpCapReported){
+          wpCapReported = true;
+          pushErr(t("dropImport.capWaypoints") || "waypoint cap");
+        }
+        continue;
+      }
+      const lat = g.coordinates[1], lon = g.coordinates[0];
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+      const pr = f.properties || {};
+      const nm = pr.name || pr.Name || null;
+      state.mapWaypoints.push({
+        id: uidNamed(),
+        lat, lon,
+        name: String(nm || "").slice(0, 60),
+        meta: { from: "import", filename: fname }
+      });
+      summary.waypoints++;
+      addedAny = true;
+      fitPts.push({ lat, lon });
+    } else if (g.type === "LineString" && g.coordinates && g.coordinates.length >= 2){
+      lineParts.push(g.coordinates);
+    } else if (g.type === "MultiLineString"){
+      for (const line of (g.coordinates || [])){
+        if (line && line.length >= 2) lineParts.push(line);
+      }
+    } else if (g.type === "Polygon"){
+      try { ensureGisState(); } catch(_){}
+      if (state.gisPolygons && state.gisPolygons.length >= GIS_POLYGON_CAP){
+        if (!polyCapReported){
+          polyCapReported = true;
+          pushErr(t("dropImport.capPolygons") || "polygon cap");
+        }
+        continue;
+      }
+      const added = typeof gisFeatureAdd === "function" ? gisFeatureAdd("polygon", f) : null;
+      if (added){
+        summary.polygons++;
+        addedAny = true;
+        const ring = added.geometry && added.geometry.coordinates && added.geometry.coordinates[0];
+        if (Array.isArray(ring)){
+          for (const c of ring){
+            if (c && Number.isFinite(c[0]) && Number.isFinite(c[1])) fitPts.push({ lat: c[1], lon: c[0] });
+          }
+        }
+      } else {
+        pushErr(t("dropImport.noGeometry") || "invalid polygon");
+      }
+    }
+  }
+
+  if (lineParts.length){
+    const allPts = [];
+    for (const coords of lineParts){
+      const pts = spatialLineToTrackPoints(coords, { from: "import" });
+      for (const p of pts){
+        if (allPts.length >= 500) break;
+        allPts.push(p);
+      }
+      if (allPts.length >= 500) break;
+    }
+    if (allPts.length >= 2){
+      const lineFeats = feats.filter(f => {
+        const gt = f && f.geometry && f.geometry.type;
+        return gt === "LineString" || gt === "MultiLineString";
+      });
+      let nm = "";
+      try {
+        nm = spatialDeriveImportedTrackPromptName(
+          { type: "FeatureCollection", features: lineFeats },
+          fname
+        ) || "";
+      } catch(_){ nm = ""; }
+      const res = savedTrackAddFromPoints({
+        name: nm,
+        points: allPts,
+        closed: false,
+        visible: true
+      });
+      if (res && res.ok){
+        summary.tracks++;
+        summary._lastTrackCreated = true;
+        addedAny = true;
+        for (const p of allPts) fitPts.push({ lat: p.lat, lon: p.lon });
+      } else if (res && res.reason === "cap"){
+        pushErr((t("dropImport.capTracks") || "cap {0}").replace("{0}", String(SAVED_TRACKS_CAP)));
+      } else {
+        pushErr(t("dropImport.noGeometry") || "track");
+      }
+    } else {
+      pushErr(t("dropImport.noGeometry") || "track");
+    }
+  }
+
+  if (!addedAny && !fileHadErr){
+    pushErr(t("dropImport.noGeometry") || "no geometry");
+  }
+}
+
+async function importDroppedSpatialFiles(fileList){
+  const all = Array.prototype.slice.call(fileList || [], 0);
+  const summary = {
+    processed: 0,
+    waypoints: 0,
+    tracks: 0,
+    polygons: 0,
+    ignored: 0,
+    errors: 0,
+    errNames: []
+  };
+  const fitPts = [];
+  let createdTrack = false;
+
+  if (all.length > DROP_IMPORT_MAX_FILES){
+    summary.ignored += all.length - DROP_IMPORT_MAX_FILES;
+  }
+  const batch = all.slice(0, DROP_IMPORT_MAX_FILES);
+
+  for (const file of batch){
+    const name = (file && file.name) ? String(file.name) : "";
+    if (!/\.(gpx|kml)$/i.test(name)){
+      summary.ignored++;
+      continue;
+    }
+    const sz = file && Number.isFinite(file.size) ? file.size : 0;
+    if (sz > DROP_IMPORT_MAX_BYTES){
+      dropImportPushErr(summary, name, t("dropImport.tooLarge") || ">25MB");
+      continue;
+    }
+    summary.processed++;
+    try {
+      const buf = await file.arrayBuffer();
+      const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
+      if (!String(text || "").trim()){
+        dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
+        continue;
+      }
+      const r = spatialTextToFeatureCollection(text, name);
+      if (!r || !r.ok || !r.fc || !r.fc.features || !r.fc.features.length){
+        dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
+        continue;
+      }
+      const beforeTracks = summary.tracks;
+      applyDroppedFeatureCollection(r.fc, name, summary, fitPts);
+      if (summary.tracks > beforeTracks) createdTrack = true;
+    } catch(_){
+      dropImportPushErr(summary, name, t("dropImport.empty") || "error");
+    }
+  }
+
+  try { saveStore(); } catch(_){}
+  try { renderMapWaypointsAll(); } catch(_){}
+  try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
+  try { if (typeof renderPolygonPanelList === "function") renderPolygonPanelList(); } catch(_){}
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+  if (fitPts.length){
+    try { flyMapToTrackPoints(fitPts); } catch(_){}
+  }
+  if (createdTrack){
+    try { if (typeof openTrackModal === "function") openTrackModal(); } catch(_){}
+  }
+
+  const base = (typeof t === "function" ? t("dropImport.summary") : "")
+    || "Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.";
+  let msg = base
+    .replace("{0}", String(summary.processed))
+    .replace("{1}", String(summary.waypoints))
+    .replace("{2}", String(summary.tracks))
+    .replace("{3}", String(summary.polygons))
+    .replace("{4}", String(summary.ignored))
+    .replace("{5}", String(summary.errors));
+  if (summary.errNames.length){
+    const det = (typeof t === "function" ? t("dropImport.errDetail") : "") || "Errors: {0}";
+    msg += " " + det.replace("{0}", summary.errNames.join(", "));
+  }
+  const anyOk = summary.waypoints + summary.tracks + summary.polygons > 0;
+  try {
+    setBadge(anyOk ? "success" : (summary.errors ? "error" : "info"), msg);
+  } catch(_){}
+  return summary;
+}
+
+function bindGlobalSpatialDropOnce(){
+  if (window._goiGlobalSpatialDropBound) return;
+  window._goiGlobalSpatialDropBound = true;
+  const depthRef = { n: 0 };
+  const onEsc = (ev) => {
+    if (ev.key === "Escape") dropImportClearVisual(depthRef);
+  };
+  document.addEventListener("dragenter", (ev) => {
+    if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    depthRef.n++;
+    try { document.body.classList.add("spatial-drop-active"); } catch(_){}
+  }, false);
+  document.addEventListener("dragover", (ev) => {
+    if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    try { ev.dataTransfer.dropEffect = "copy"; } catch(_){}
+  }, false);
+  document.addEventListener("dragleave", (ev) => {
+    if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+    depthRef.n--;
+    if (depthRef.n <= 0) dropImportClearVisual(depthRef);
+  }, false);
+  document.addEventListener("drop", (ev) => {
+    if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+    ev.preventDefault();
+    dropImportClearVisual(depthRef);
+    const files = ev.dataTransfer && ev.dataTransfer.files;
+    if (!files || !files.length) return;
+    Promise.resolve()
+      .then(() => importDroppedSpatialFiles(files))
+      .catch(() => { dropImportClearVisual(depthRef); })
+      .finally(() => { dropImportClearVisual(depthRef); });
+  }, false);
+  document.addEventListener("keydown", onEsc, false);
+}
+
 function bindDragDrop(){
   const sec = document.getElementById("pasteSection");
-  if (!sec) return;
-  let depth = 0;
-  const stop = (ev) => { ev.preventDefault(); ev.stopPropagation(); };
-  sec.addEventListener("dragenter", (ev) => { stop(ev); depth++; sec.classList.add("dragover"); });
-  sec.addEventListener("dragover",  stop);
-  sec.addEventListener("dragleave", (ev) => { stop(ev); depth--; if (depth <= 0){ depth = 0; sec.classList.remove("dragover"); } });
-  sec.addEventListener("drop", (ev) => {
-    stop(ev); depth = 0; sec.classList.remove("dragover");
-    const files = ev.dataTransfer && ev.dataTransfer.files;
-    if (files && files.length){
-      const f = files[0];
-      if (/\.(gpx|kml|kmz|geojson|json|csv|txt|shp|wkt)$/i.test(f.name)){
-        importFileIntoBatch(f);
-      } else {
-        const reader = new FileReader();
-        reader.onload = () => {
-          document.getElementById("pasteInput").value = String(reader.result || "").trim().slice(0, 10000);
-          doPasteDetect();
-        };
-        reader.readAsText(f);
+  if (sec){
+    let depth = 0;
+    const stop = (ev) => { ev.preventDefault(); ev.stopPropagation(); };
+    sec.addEventListener("dragenter", (ev) => { stop(ev); depth++; sec.classList.add("dragover"); });
+    sec.addEventListener("dragover",  stop);
+    sec.addEventListener("dragleave", (ev) => { stop(ev); depth--; if (depth <= 0){ depth = 0; sec.classList.remove("dragover"); } });
+    sec.addEventListener("drop", (ev) => {
+      stop(ev); depth = 0; sec.classList.remove("dragover");
+      const files = ev.dataTransfer && ev.dataTransfer.files;
+      if (files && files.length){
+        const f = files[0];
+        if (/\.(gpx|kml|kmz|geojson|json|csv|txt|shp|wkt)$/i.test(f.name)){
+          importFileIntoBatch(f);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            document.getElementById("pasteInput").value = String(reader.result || "").trim().slice(0, 10000);
+            doPasteDetect();
+          };
+          reader.readAsText(f);
+        }
+      } else if (ev.dataTransfer && ev.dataTransfer.getData("text")){
+        document.getElementById("pasteInput").value = ev.dataTransfer.getData("text");
+        doPasteDetect();
       }
-    } else if (ev.dataTransfer && ev.dataTransfer.getData("text")){
-      document.getElementById("pasteInput").value = ev.dataTransfer.getData("text");
-      doPasteDetect();
-    }
-  });
+    });
+  }
   // Prevent the browser from opening files dropped outside of the section
-  window.addEventListener("dragover", (e) => e.preventDefault(), false);
-  window.addEventListener("drop",     (e) => e.preventDefault(), false);
+  if (!window._goiDropPreventBound){
+    window._goiDropPreventBound = true;
+    window.addEventListener("dragover", (e) => e.preventDefault(), false);
+    window.addEventListener("drop",     (e) => e.preventDefault(), false);
+  }
+  bindGlobalSpatialDropOnce();
 }
 
 /* ========================= SECTION 14G: BADGE (detected format chip) ========================= */
@@ -32849,6 +33148,49 @@ function notifyTrackSaveMinPointsBlocked(){
   if (pe){ pe.textContent = msg; pe.hidden = false; }
   const ne = document.getElementById("trackNewPromptSaveErr");
   if (ne){ ne.textContent = msg; ne.hidden = false; }
+}
+/**
+ * Library CRUD helper: create one saved track from an explicit point list.
+ * Same persisted shape as saveCurrentTrackToLibrary (new entry).
+ * No saveStore / render / modal. Does not silently drop existing tracks when at cap.
+ * @returns {{ ok:true, track:object }|{ ok:false, reason:string }}
+ */
+function savedTrackAddFromPoints(opts){
+  opts = opts || {};
+  ensureSavedTracksState();
+  if (state.savedTracks.length >= SAVED_TRACKS_CAP){
+    return { ok: false, reason: "cap" };
+  }
+  const rawPts = Array.isArray(opts.points) ? opts.points : [];
+  const snap = [];
+  for (const p of rawPts.slice(0, 500)){
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    let meta = null;
+    if (p.meta && typeof p.meta === "object"){
+      try { meta = JSON.parse(JSON.stringify(p.meta)); } catch(_){ meta = null; }
+    }
+    snap.push({
+      id: String(p.id || uidNamed()),
+      lat: p.lat, lon: p.lon,
+      name: String(p.name || "").slice(0, 60),
+      meta
+    });
+  }
+  if (snap.length < 2){
+    return { ok: false, reason: "min_points" };
+  }
+  const nm = String(opts.name == null ? "" : opts.name).trim().slice(0, 80)
+    || (typeof t === "function" ? (t("track.saveDefaultName") || "Traccia") : "Traccia");
+  const track = {
+    id: uid(),
+    name: nm,
+    savedAt: Date.now(),
+    closed: !!opts.closed,
+    visible: opts.visible !== false,
+    points: snap
+  };
+  state.savedTracks.push(track);
+  return { ok: true, track };
 }
 function saveCurrentTrackToLibrary(name, opts){
   opts = opts || {};
