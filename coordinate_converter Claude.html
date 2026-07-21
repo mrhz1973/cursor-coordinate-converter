@@ -19602,7 +19602,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 37;
+const APP_BUILD_NUM = 38;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -33589,6 +33589,29 @@ function savedTrackStyleClearMixedField(field){
   ed.mixed[field] = false;
 }
 
+const SAVED_TRACK_STYLE_FIELDS = ["color", "lineWidth", "lineOpacity", "lineStyle"];
+/**
+ * TRACK-STYLE-A-FIX2 — activate one batch field after an explicit operator action.
+ * Syncs state AND the DOM include checkbox BEFORE any DOM re-read (ReadWorkingFromDom),
+ * so include[field] cannot be rolled back to false by the canonical reader.
+ * opts.reset: true = mark transient reset sentinel; false/absent = value edit (clears reset).
+ * No saveStore; no state.savedTracks mutation; no listeners; no synthetic events.
+ */
+function savedTrackStyleActivateBatchField(field, opts){
+  opts = opts || {};
+  if (SAVED_TRACK_STYLE_FIELDS.indexOf(field) < 0) return;
+  const ed = state._savedTrackStyleEdit;
+  if (!ed || ed.mode !== "batch") return;
+  if (!ed.include) ed.include = {};
+  ed.include[field] = true;
+  if (!ed.working) ed.working = {};
+  if (!ed.working.reset) ed.working.reset = {};
+  ed.working.reset[field] = !!opts.reset;
+  savedTrackStyleClearMixedField(field);
+  const cb = document.querySelector('#trackSavedStyleBar [data-tss-include="' + field + '"]');
+  if (cb) cb.checked = true;
+}
+
 /** Build preview override object for one track id from current editor state, or null. */
 function savedTrackStylePreviewOverrideForId(id){
   const ed = state._savedTrackStyleEdit;
@@ -34204,8 +34227,8 @@ function savedTrackStyleEditorResetOneField(field){
     if (!ed.touched) ed.touched = {};
     ed.touched[field] = true;
   } else {
-    if (!ed.include) ed.include = {};
-    ed.include[field] = true;
+    // FIX2: sync include state + DOM checkbox before PreviewRefresh re-reads the DOM.
+    savedTrackStyleActivateBatchField(field, { reset: true });
   }
   if (field === "lineStyle"){
     ed.working.lineStyleKey = "";
@@ -34248,8 +34271,8 @@ function trackWireSavedStyleBarOnce(){
       if (!ed.touched) ed.touched = {};
       ed.touched[field] = true;
     } else if (ed.mode === "batch"){
-      if (!ed.include) ed.include = {};
-      ed.include[field] = true;
+      // FIX2: sync include state + DOM checkbox before PreviewRefresh re-reads the DOM.
+      savedTrackStyleActivateBatchField(field, { reset: false });
     }
   };
   const onCtrl = (field) => {
