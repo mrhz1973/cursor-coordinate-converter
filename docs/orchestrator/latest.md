@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
+2026-07-22 — **TRACK-BRUSH-A — piano corretto salvato (docs-only):** feature **non aperta**; runtime invariato (tip **`40c97b6`**, build 38); piano completo in inbox **`2026-07-22_0035_plan_track-brush-a.md`**; prevede **un solo bundle DELICATO** (build target futura 39); antimeridiano completo = backlog separato **TRACK-BRUSH-ANTIMERIDIAN** (in A: reject fail-closed); nessun monolite in questo commit.
+
 2026-07-21 — **`finito` sessione — TRACK-STYLE-A (+ FIX1 + FIX2) CLOSED / PASS end-to-end:** runtime tip **`40c97b6`** (build 38; catena `ab5455d`→`1146e59`→`40c97b6`); finito docs task **`0a7dd11`**; monolite **incluso** nel commit runtime già su main (non nel commit docs); working tree pre-autosync **pulito**; deploy PASS attestato operatore fuori Cursor (byte **2655368**, SHA-256 **`952550ef…`**, HTTP 200; Cursor **non** ha ripetuto il deploy); attestazione «**QA TRACK-STYLE-A PASS operatore**» + autorizzazione esplicita `finito`; chiusi **TRACK-STYLE-A** / **FIX1** / **FIX2**; resta non aperto **TRACK-BRUSH-A**; inbox **`2026-07-21_2355_riepilogo_finito-sessione.md`**.
 
 2026-07-21 — **`finito` sessione — IMPORT-DROP-B-TRACK-MODAL-UX-A CLOSED / PASS end-to-end:** commit runtime **`1d28163`** (build 35); finito docs task **`434ece7`**; monolite **incluso** nel commit runtime già su main (non nel commit docs); working tree pre-autosync **pulito**; attestazione «**QA IMPORT-DROP-B-TRACK-MODAL-UX-A PASS operatore**»; deploy Cursor SSH **non** disponibile (manuale operatore); chiusi **IMPORT-DROP-B** + **TRACK-MODAL-UX-A**; inbox **`2026-07-21_2059_riepilogo_finito-sessione.md`**.
