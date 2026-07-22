@@ -5062,6 +5062,25 @@ dialog.help-modal.app-modal .app-modal-body kbd{
 .track-overlay .trk-handle{
   pointer-events:auto;
 }
+/* TRACK-BRUSH-A: transient freehand preview (not saved-track style). */
+.track-brush-overlay{
+  position:absolute; inset:0;
+  pointer-events:none; z-index:7;
+}
+.track-brush-overlay .track-brush-line{
+  fill:none;
+  stroke:#06b6d4;
+  stroke-width:3;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+  stroke-dasharray:5 4;
+  opacity:0.95;
+}
+.track-brush-overlay .track-brush-end{
+  fill:#06b6d4;
+  stroke:#ffffff;
+  stroke-width:1.5;
+}
 
 .waypoints-overlay{
   position:absolute; inset:0;
@@ -9280,6 +9299,38 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
   display:flex; flex-wrap:wrap; gap:6px; align-items:center;
 }
 .track-saved-style-bar .tss-feedback{ font-size:.82rem; min-height:1.2em; }
+.track-brush-bar{
+  margin-top:10px; padding:10px 12px; border-radius:8px;
+  border:1px solid color-mix(in srgb, var(--border) 75%, #06b6d4 25%);
+  background:color-mix(in srgb, var(--panel2) 90%, #06b6d4 10%);
+  display:flex; flex-direction:column; gap:8px;
+}
+.track-brush-bar[hidden]{ display:none !important; }
+.track-brush-bar .tbb-head{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 12px;
+}
+.track-brush-bar .tbb-head strong{ font-size:.9rem; }
+.track-brush-bar .tbb-instr{ font-size:.85rem; margin:0; color:var(--muted); }
+.track-brush-bar .tbb-feedback{ font-size:.82rem; min-height:1.2em; margin:0; }
+.track-brush-bar .tbb-stats{ font-size:.82rem; color:var(--muted); margin:0; }
+.track-brush-bar .tbb-name-row{
+  display:flex; flex-wrap:wrap; align-items:center; gap:8px;
+}
+.track-brush-bar .tbb-name-row label{ font-size:.82rem; margin:0; white-space:nowrap; }
+.track-brush-bar .tbb-name-row input{
+  flex:1 1 12rem; min-width:8rem; max-width:100%;
+}
+.track-brush-bar .tbb-actions{
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+.track-brush-bar .tbb-confirm{
+  display:flex; flex-direction:column; gap:6px;
+  padding-top:4px; border-top:1px dashed var(--border);
+}
+.track-brush-bar .tbb-confirm-msg{ font-size:.85rem; margin:0; font-weight:600; }
+.mini-map.track-brush-armed .tile-map,
+.mini-map.track-brush-drawing .tile-map{ cursor:crosshair; }
+.mini-map.track-brush-drawing{ touch-action:none; }
 .saved-tracks-table .btn-danger-subtle[data-saved-del],
 .offline-areas-table .btn-danger-subtle[data-offline-del]{
   min-width:2.25em;
@@ -10813,6 +10864,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <span class="track-new-plus" aria-hidden="true">+</span>
             <span data-i18n="track.new">Nuova traccia</span>
           </button>
+          <button type="button" id="btnTrackBrush" class="btn btn-sm" data-i18n="track.brush" data-i18n-tip="tip.trackBrush" data-i18n-aria="tip.trackBrush" aria-pressed="false">Pennello</button>
           <button type="button" id="btnTrackAddCurrent" class="btn btn-sm" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
           <button type="button" id="btnTrackFinish" class="btn btn-sm" data-i18n="track.finish" data-i18n-tip="tip.trackFinish" hidden>✅ Termina traccia</button>
           <button type="button" id="btnTrackPaste" class="btn btn-sm" hidden aria-hidden="true" tabindex="-1" data-i18n="track.paste" data-i18n-tip="tip.trackPaste">📋 Incolla lista punti</button>
@@ -10827,6 +10879,31 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         </div>
         <div id="trackSaveGuardMsg" class="hint geo-warn" role="alert" hidden
              style="margin-top:8px;font-weight:600;line-height:1.35;"></div>
+        <div id="trackBrushBar" class="track-brush-bar" role="region" aria-labelledby="trackBrushTitle" hidden>
+          <div class="tbb-head">
+            <strong id="trackBrushTitle" data-i18n="track.brush">Pennello</strong>
+            <span id="trackBrushPhaseMeta" class="hint"></span>
+          </div>
+          <p id="trackBrushInstr" class="tbb-instr" data-i18n="track.brush.drawHint">Traccia sulla mappa</p>
+          <p id="trackBrushFeedback" class="tbb-feedback hint" role="status" aria-live="polite"></p>
+          <p id="trackBrushStats" class="tbb-stats" hidden></p>
+          <div id="trackBrushNameRow" class="tbb-name-row" hidden>
+            <label for="trackBrushNameInput" data-i18n="track.brush.name">Nome</label>
+            <input type="text" id="trackBrushNameInput" maxlength="80" autocomplete="off">
+          </div>
+          <div id="trackBrushActions" class="tbb-actions">
+            <button type="button" id="trackBrushSaveBtn" class="btn btn-sm btn-primary" data-i18n="track.brush.save" hidden>Salva traccia</button>
+            <button type="button" id="trackBrushCancelBtn" class="btn btn-sm" data-i18n="track.brush.cancel">Annulla</button>
+            <button type="button" id="trackBrushClearBtn" class="btn btn-sm btn-ghost" data-i18n="track.brush.clear" hidden>Pulisci</button>
+          </div>
+          <div id="trackBrushCloseConfirm" class="tbb-confirm" hidden>
+            <p id="trackBrushCloseConfirmMsg" class="tbb-confirm-msg" data-i18n="track.brush.discardCloseMsg">Scartare il tratto e chiudere Tracce?</p>
+            <div class="tbb-actions">
+              <button type="button" id="trackBrushDiscardCloseBtn" class="btn btn-sm btn-danger" data-i18n="track.brush.discardClose">Scarta e chiudi</button>
+              <button type="button" id="trackBrushStayBtn" class="btn btn-sm" data-i18n="track.brush.stay">Resta</button>
+            </div>
+          </div>
+        </div>
         <div id="trackSavedDeleteBar" class="gis-rr-confirm-skin track-saved-delete-bar" role="region" aria-live="polite" hidden>
           <p id="trackSavedDeleteMsg" class="gis-rr-confirm-msg"></p>
           <div class="gis-rr-confirm-actions">
@@ -13195,6 +13272,37 @@ const I18N = {
     "track.styleResetDone":"Stile ripristinato ai predefiniti.",
     "track.styleEditingBlocked":"Chiudi la modifica geometria della traccia prima di cambiarne lo stile.",
     "track.styleSelectionChanged":"Selezione cambiata: riapri Modifica stile selezionate.",
+    "track.brush":"Pennello",
+    "tip.trackBrush":"Disegna una nuova traccia a mano libera sulla mappa.",
+    "track.brush.drawHint":"Traccia sulla mappa",
+    "track.brush.name":"Nome",
+    "track.brush.save":"Salva traccia",
+    "track.brush.clear":"Pulisci",
+    "track.brush.cancel":"Annulla",
+    "track.brush.discardClose":"Scarta e chiudi",
+    "track.brush.stay":"Resta",
+    "track.brush.discardCloseMsg":"Scartare il tratto e chiudere Tracce?",
+    "track.brush.unsupported":"Pennello non disponibile: questo browser non supporta Pointer Events.",
+    "track.brush.tooShort":"Tratto troppo corto.",
+    "track.brush.minPoints":"Servono almeno due punti distinti.",
+    "track.brush.rawCap":"Limite di campionamento raggiunto (4096). Tratto pronto per la revisione.",
+    "track.brush.resampled":"Ricampionamento: {0} → {1} punti · {2}",
+    "track.brush.antimeridian":"Attraversamento antimeridiano non supportato. Tratto annullato.",
+    "track.brush.conflictDraft":"Salva o annulla la traccia corrente prima di usare il Pennello.",
+    "track.brush.conflictEdit":"Termina o annulla la modifica geometrica prima di usare il Pennello.",
+    "track.brush.conflictTool":"Chiudi o completa lo strumento attivo prima di usare il Pennello.",
+    "track.brush.gestureCancelled":"Gesto annullato.",
+    "track.brush.secondPointer":"Secondo puntatore: tratto annullato.",
+    "track.brush.mapChanged":"La mappa è cambiata durante il disegno: tratto annullato.",
+    "track.brush.savedOk":"Traccia salvata in archivio.",
+    "track.brush.saveFailCap":"Archivio pieno (massimo 50 tracce).",
+    "track.brush.saveFail":"Salvataggio non riuscito.",
+    "track.brush.armedMeta":"Pronto",
+    "track.brush.drawingMeta":"Disegno…",
+    "track.brush.reviewMeta":"Revisione",
+    "track.brush.minimizeBlocked":"Salva o annulla il Pennello prima di minimizzare.",
+    "track.brush.libraryBlocked":"Azioni archivio bloccate durante il Pennello.",
+    "track.brush.phaseArmed":"Disegna sulla mappa con il puntatore principale.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -15082,6 +15190,37 @@ const I18N = {
     "track.styleResetDone":"Style restored to defaults.",
     "track.styleEditingBlocked":"Finish geometric editing of the track before changing its style.",
     "track.styleSelectionChanged":"Selection changed: reopen Edit style of selected.",
+    "track.brush":"Brush",
+    "tip.trackBrush":"Draw a new freehand track on the map.",
+    "track.brush.drawHint":"Draw on the map",
+    "track.brush.name":"Name",
+    "track.brush.save":"Save track",
+    "track.brush.clear":"Clear",
+    "track.brush.cancel":"Cancel",
+    "track.brush.discardClose":"Discard and close",
+    "track.brush.stay":"Stay",
+    "track.brush.discardCloseMsg":"Discard the stroke and close Tracks?",
+    "track.brush.unsupported":"Brush unavailable: this browser does not support Pointer Events.",
+    "track.brush.tooShort":"Stroke too short.",
+    "track.brush.minPoints":"At least two distinct points are required.",
+    "track.brush.rawCap":"Sampling limit reached (4096). Stroke ready for review.",
+    "track.brush.resampled":"Resampled: {0} → {1} points · {2}",
+    "track.brush.antimeridian":"Antimeridian crossing is not supported. Stroke discarded.",
+    "track.brush.conflictDraft":"Save or discard the current track before using Brush.",
+    "track.brush.conflictEdit":"Finish or cancel geometric editing before using Brush.",
+    "track.brush.conflictTool":"Close or finish the active tool before using Brush.",
+    "track.brush.gestureCancelled":"Gesture cancelled.",
+    "track.brush.secondPointer":"Second pointer: stroke cancelled.",
+    "track.brush.mapChanged":"Map changed during drawing: stroke cancelled.",
+    "track.brush.savedOk":"Track saved to archive.",
+    "track.brush.saveFailCap":"Archive full (maximum 50 tracks).",
+    "track.brush.saveFail":"Save failed.",
+    "track.brush.armedMeta":"Ready",
+    "track.brush.drawingMeta":"Drawing…",
+    "track.brush.reviewMeta":"Review",
+    "track.brush.minimizeBlocked":"Save or cancel Brush before minimizing.",
+    "track.brush.libraryBlocked":"Archive actions blocked while Brush is active.",
+    "track.brush.phaseArmed":"Draw on the map with the primary pointer.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -18560,6 +18699,8 @@ const state = {
   _trackEditingSavedId: null,
   /** Transient TRACK-STYLE-A: style editor working copy { mode, ids, working, include, touched } — not persisted. */
   _savedTrackStyleEdit: null,
+  /** Transient TRACK-BRUSH-A: freehand draw state machine — not persisted. */
+  _trackBrush: null,
   /** One-shot after load: reopen track modal if last session had track tab. */
   _pendingTrackModal: false,
   /** Persisted: saved track archive (polyline/polygon snapshots), max 50. */
@@ -19602,7 +19743,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 38;
+const APP_BUILD_NUM = 39;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26671,6 +26812,12 @@ function bindHotkeys(){
   document.addEventListener("keydown", (ev) => {
     // Esc: priority to closing modal; otherwise blur/clear
       if (ev.key === "Escape"){
+      try {
+        if (typeof trackBrushHandleEsc === "function" && trackBrushHandleEsc()){
+          ev.preventDefault();
+          return;
+        }
+      } catch(_){}
       if (state.trackWaypointDraft){
         state.trackWaypointDraft = null;
         refreshTileMapForTrackUi();
@@ -33764,6 +33911,1080 @@ function savedTrackAddFromPoints(opts){
   state.savedTracks.push(track);
   return { ok: true, track };
 }
+
+/* ========================= TRACK-BRUSH-A (build 39) ========================= */
+const TRACK_BRUSH_MIN_SAMPLE_PX = 5;
+const TRACK_BRUSH_MIN_STROKE_PX = 8;
+const TRACK_BRUSH_RAW_CAP = 4096;
+const TRACK_BRUSH_RDP_EPSILON_PX = 2.5;
+const TRACK_BRUSH_FINAL_CAP = 500;
+
+function trackBrushEnsure(){
+  if (!state._trackBrush || typeof state._trackBrush !== "object"){
+    state._trackBrush = {
+      phase: "idle",
+      pointerId: null,
+      pointerType: "",
+      ignorePointerId: null,
+      raw: [],
+      reviewPoints: [],
+      rawAccepted: 0,
+      name: "",
+      feedback: "",
+      closeConfirm: false,
+      raf: 0,
+      lastSx: NaN,
+      lastSy: NaN,
+      originSx: NaN,
+      originSy: NaN,
+      drawSnap: null,
+      captureEl: null,
+      docListeners: false,
+      blurBound: false
+    };
+  }
+  return state._trackBrush;
+}
+
+function trackBrushPhase(){
+  try {
+    const b = state._trackBrush;
+    return b && b.phase ? String(b.phase) : "idle";
+  } catch(_){ return "idle"; }
+}
+
+function trackBrushIsActive(){
+  const p = trackBrushPhase();
+  return p === "armed" || p === "drawing" || p === "review" || p === "saving";
+}
+
+function trackBrushBlocksLibraryMutations(){
+  const p = trackBrushPhase();
+  return p === "drawing" || p === "review" || p === "saving";
+}
+
+function trackBrushBlocksMinimize(){
+  const p = trackBrushPhase();
+  return p === "drawing" || p === "review" || p === "saving";
+}
+
+function trackBrushYieldsPan(){
+  const p = trackBrushPhase();
+  return p === "armed" || p === "drawing";
+}
+
+function trackBrushBlocksWheel(){
+  return trackBrushPhase() === "drawing";
+}
+
+function trackBrushBlocksDblClick(){
+  const p = trackBrushPhase();
+  return p === "armed" || p === "drawing";
+}
+
+function trackBrushMsg(key, fallback){
+  try {
+    if (typeof t === "function"){
+      const s = t(key);
+      if (s) return String(s);
+    }
+  } catch(_){}
+  return fallback || key;
+}
+
+function trackBrushSetFeedback(msg){
+  const b = trackBrushEnsure();
+  b.feedback = msg ? String(msg) : "";
+  const el = document.getElementById("trackBrushFeedback");
+  if (el) el.textContent = b.feedback;
+}
+
+function trackBrushCancelRaf(){
+  const b = state._trackBrush;
+  if (!b) return;
+  if (b.raf){
+    try { cancelAnimationFrame(b.raf); } catch(_){}
+    b.raf = 0;
+  }
+}
+
+function trackBrushReleaseCapture(){
+  const b = state._trackBrush;
+  if (!b) return;
+  const el = b.captureEl;
+  const pid = b.pointerId;
+  b.captureEl = null;
+  if (el && pid != null && typeof el.releasePointerCapture === "function"){
+    try {
+      if (el.hasPointerCapture && el.hasPointerCapture(pid)) el.releasePointerCapture(pid);
+      else el.releasePointerCapture(pid);
+    } catch(_){}
+  }
+}
+
+function trackBrushUnbindDocListeners(){
+  const b = state._trackBrush;
+  if (!b || !b.docListeners) return;
+  try { document.removeEventListener("pointermove", trackBrushOnPointerMove, true); } catch(_){}
+  try { document.removeEventListener("pointerup", trackBrushOnPointerUp, true); } catch(_){}
+  try { document.removeEventListener("pointercancel", trackBrushOnPointerCancel, true); } catch(_){}
+  try { document.removeEventListener("lostpointercapture", trackBrushOnLostCapture, true); } catch(_){}
+  b.docListeners = false;
+}
+
+function trackBrushBindDocListeners(){
+  const b = trackBrushEnsure();
+  if (b.docListeners) return;
+  document.addEventListener("pointermove", trackBrushOnPointerMove, true);
+  document.addEventListener("pointerup", trackBrushOnPointerUp, true);
+  document.addEventListener("pointercancel", trackBrushOnPointerCancel, true);
+  document.addEventListener("lostpointercapture", trackBrushOnLostCapture, true);
+  b.docListeners = true;
+}
+
+function trackBrushBindBlurOnce(){
+  const b = trackBrushEnsure();
+  if (b.blurBound) return;
+  b.blurBound = true;
+  window.addEventListener("blur", trackBrushOnWindowBlur);
+  document.addEventListener("visibilitychange", trackBrushOnVisibility);
+}
+
+function trackBrushRemoveOverlay(){
+  try {
+    const root = document.getElementById("miniMap");
+    if (!root) return;
+    root.querySelectorAll(".track-brush-overlay").forEach((n) => { try { n.remove(); } catch(_){} });
+  } catch(_){}
+}
+
+function trackBrushSyncMapClasses(){
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const p = trackBrushPhase();
+  root.classList.toggle("track-brush-armed", p === "armed");
+  root.classList.toggle("track-brush-drawing", p === "drawing");
+  if (p === "drawing"){
+    try { root.style.touchAction = "none"; } catch(_){}
+  } else {
+    try {
+      if (root.style.touchAction === "none") root.style.touchAction = "";
+    } catch(_){}
+  }
+}
+
+function trackBrushCrossesAntimeridian(pts){
+  if (!Array.isArray(pts) || pts.length < 2) return false;
+  for (let i = 1; i < pts.length; i++){
+    const a = pts[i - 1], b = pts[i];
+    if (!a || !b || !Number.isFinite(a.lon) || !Number.isFinite(b.lon)) continue;
+    const la = normalizeLon(a.lon);
+    const lb = normalizeLon(b.lon);
+    if (Math.abs(lb - la) > 180) return true;
+  }
+  return false;
+}
+
+function trackBrushRdpIterative(points, epsilon){
+  const n = points.length;
+  if (n <= 2) return points.slice();
+  const keep = new Array(n);
+  for (let i = 0; i < n; i++) keep[i] = false;
+  keep[0] = true;
+  keep[n - 1] = true;
+  const stack = [[0, n - 1]];
+  const eps = Math.max(0, Number(epsilon) || 0);
+  while (stack.length){
+    const seg = stack.pop();
+    const i0 = seg[0], i1 = seg[1];
+    let maxD = -1, maxI = -1;
+    const ax = points[i0].sx, ay = points[i0].sy;
+    const bx = points[i1].sx, by = points[i1].sy;
+    const dx = bx - ax, dy = by - ay;
+    const len2 = dx * dx + dy * dy;
+    for (let i = i0 + 1; i < i1; i++){
+      let d;
+      if (len2 <= 0){
+        d = Math.hypot(points[i].sx - ax, points[i].sy - ay);
+      } else {
+        const t = ((points[i].sx - ax) * dx + (points[i].sy - ay) * dy) / len2;
+        const px = ax + t * dx, py = ay + t * dy;
+        d = Math.hypot(points[i].sx - px, points[i].sy - py);
+      }
+      if (d > maxD){ maxD = d; maxI = i; }
+    }
+    if (maxD > eps && maxI >= 0){
+      keep[maxI] = true;
+      stack.push([i0, maxI], [maxI, i1]);
+    }
+  }
+  const out = [];
+  for (let i = 0; i < n; i++) if (keep[i]) out.push(points[i]);
+  return out;
+}
+
+function trackBrushDedupGeo(points){
+  const out = [];
+  for (let i = 0; i < points.length; i++){
+    const p = points[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    const lat = Math.max(-85.05, Math.min(85.05, p.lat));
+    const lon = normalizeLon(p.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const last = out[out.length - 1];
+    if (last && Math.abs(last.lat - lat) < 1e-5 && Math.abs(last.lon - lon) < 1e-5) continue;
+    out.push({
+      sx: p.sx, sy: p.sy,
+      lat, lon,
+      name: "",
+      meta: null
+    });
+  }
+  return out;
+}
+
+function trackBrushPostProcess(rawIn){
+  const raw = Array.isArray(rawIn) ? rawIn.slice() : [];
+  if (raw.length < 2) return { ok: false, reason: "min_points" };
+  let stroke = 0;
+  for (let i = 1; i < raw.length; i++){
+    stroke += Math.hypot(raw[i].sx - raw[i - 1].sx, raw[i].sy - raw[i - 1].sy);
+  }
+  if (!(stroke >= TRACK_BRUSH_MIN_STROKE_PX)) return { ok: false, reason: "too_short" };
+  let pts = trackBrushDedupGeo(raw);
+  if (pts.length < 2) return { ok: false, reason: "min_points" };
+  if (trackBrushCrossesAntimeridian(pts)) return { ok: false, reason: "antimeridian" };
+  let simp = trackBrushRdpIterative(pts, TRACK_BRUSH_RDP_EPSILON_PX);
+  if (simp.length > TRACK_BRUSH_FINAL_CAP){
+    let lo = TRACK_BRUSH_RDP_EPSILON_PX;
+    let hi = Math.max(lo * 2, 64);
+    let best = simp;
+    for (let iter = 0; iter < 12; iter++){
+      const mid = (lo + hi) / 2;
+      const cand = trackBrushRdpIterative(pts, mid);
+      if (cand.length > TRACK_BRUSH_FINAL_CAP){
+        lo = mid;
+      } else {
+        best = cand;
+        hi = mid;
+      }
+      if (best.length <= TRACK_BRUSH_FINAL_CAP && (hi - lo) < 0.05) break;
+    }
+    if (best.length > TRACK_BRUSH_FINAL_CAP){
+      // Deterministic last resort: binary-search higher epsilon up to large value
+      lo = hi; hi = Math.max(hi * 4, 512);
+      for (let iter = 0; iter < 10; iter++){
+        const mid = (lo + hi) / 2;
+        const cand = trackBrushRdpIterative(pts, mid);
+        if (cand.length > TRACK_BRUSH_FINAL_CAP) lo = mid;
+        else { best = cand; hi = mid; }
+      }
+    }
+    simp = best;
+  }
+  if (!simp || simp.length < 2) return { ok: false, reason: "min_points" };
+  if (simp.length > TRACK_BRUSH_FINAL_CAP) return { ok: false, reason: "cap" };
+  if (trackBrushCrossesAntimeridian(simp)) return { ok: false, reason: "antimeridian" };
+  const reviewPoints = simp.map((p) => ({
+    lat: p.lat,
+    lon: p.lon,
+    name: "",
+    meta: null
+  }));
+  return { ok: true, reviewPoints, rawCount: raw.length, finalCount: reviewPoints.length };
+}
+
+function trackBrushSampleFromEvent(ev){
+  const root = document.getElementById("miniMap");
+  if (!root) return null;
+  const tileMap = root.querySelector(".tile-map");
+  if (!tileMap) return null;
+  const rect = tileMap.getBoundingClientRect();
+  const sx = ev.clientX - rect.left;
+  const sy = ev.clientY - rect.top;
+  if (!Number.isFinite(sx) || !Number.isFinite(sy)) return null;
+  const z = state.mapZoom || 11;
+  const vc = state.viewCenter || state.lastPoint || { lat: DEFAULT_MAP_LAT, lon: DEFAULT_MAP_LON };
+  const pick = mapClientToLatLonMap(root, vc.lat, vc.lon, z, ev.clientX, ev.clientY);
+  if (!pick || !Number.isFinite(pick.lat) || !Number.isFinite(pick.lon)) return null;
+  const lat = Math.max(-85.05, Math.min(85.05, pick.lat));
+  const lon = normalizeLon(pick.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  return { sx, sy, lat, lon };
+}
+
+function trackBrushAcceptSample(sample){
+  const b = trackBrushEnsure();
+  if (!sample) return false;
+  if (b.raw.length >= TRACK_BRUSH_RAW_CAP) return false;
+  if (b.raw.length){
+    const dx = sample.sx - b.lastSx;
+    const dy = sample.sy - b.lastSy;
+    if (Math.hypot(dx, dy) < TRACK_BRUSH_MIN_SAMPLE_PX) return false;
+  }
+  b.raw.push(sample);
+  b.lastSx = sample.sx;
+  b.lastSy = sample.sy;
+  b.rawAccepted = b.raw.length;
+  if (!Number.isFinite(b.originSx)){
+    b.originSx = sample.sx;
+    b.originSy = sample.sy;
+  }
+  return true;
+}
+
+function trackBrushSchedulePreview(){
+  const b = trackBrushEnsure();
+  if (b.raf) return;
+  b.raf = requestAnimationFrame(() => {
+    b.raf = 0;
+    try { trackBrushPaintOverlay(); } catch(_){}
+  });
+}
+
+function trackBrushPaintOverlay(){
+  const b = state._trackBrush;
+  if (!b) return;
+  const phase = b.phase;
+  if (phase !== "drawing" && phase !== "review"){
+    trackBrushRemoveOverlay();
+    return;
+  }
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileMap = root.querySelector(".tile-map");
+  if (!tileMap) return;
+  trackBrushRemoveOverlay();
+  const ns = "http://www.w3.org/2000/svg";
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const wrap = document.createElement("div");
+  wrap.className = "track-brush-overlay";
+  wrap.setAttribute("aria-hidden", "true");
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:7";
+  let coords = [];
+  if (phase === "drawing"){
+    coords = (b.raw || []).map((p) => ({ x: p.sx, y: p.sy }));
+    tileMap.appendChild(wrap);
+  } else {
+    const tileLayer = tileMap.querySelector(".tile-layer");
+    if (!tileLayer) return;
+    let tx = 0, ty = 0;
+    try {
+      const off = typeof workbenchTileMapOffset === "function" ? workbenchTileMapOffset(tileMap) : null;
+      if (off){ tx = off.tx || 0; ty = off.ty || 0; }
+    } catch(_){}
+    const pts = b.reviewPoints || [];
+    coords = pts.map((p) => {
+      const c = tileMapLatLonToPx(root, p.lat, p.lon);
+      return { x: c.x - tx, y: c.y - ty };
+    });
+    wrap.style.transform = "translate3d(0,0,0)";
+    tileLayer.appendChild(wrap);
+  }
+  if (coords.length >= 2){
+    const line = document.createElementNS(ns, "polyline");
+    line.setAttribute("class", "track-brush-line");
+    line.setAttribute("points", coords.map((c) => c.x.toFixed(1) + "," + c.y.toFixed(1)).join(" "));
+    svg.appendChild(line);
+  }
+  if (coords.length){
+    const a = coords[0], z = coords[coords.length - 1];
+    [[a, 4.5], [z, 5.5]].forEach((pair) => {
+      const c = pair[0], r = pair[1];
+      if (!c) return;
+      const circ = document.createElementNS(ns, "circle");
+      circ.setAttribute("class", "track-brush-end");
+      circ.setAttribute("cx", c.x.toFixed(1));
+      circ.setAttribute("cy", c.y.toFixed(1));
+      circ.setAttribute("r", String(r));
+      svg.appendChild(circ);
+    });
+  }
+  wrap.appendChild(svg);
+}
+
+function trackBrushOnMapRender(){
+  const p = trackBrushPhase();
+  if (p === "drawing"){
+    trackBrushAbortGesture(trackBrushMsg("track.brush.mapChanged", "Map changed during drawing: stroke cancelled."));
+    return;
+  }
+  if (p === "review"){
+    try { trackBrushPaintOverlay(); } catch(_){}
+  } else if (p === "idle"){
+    trackBrushRemoveOverlay();
+  }
+}
+
+function trackBrushCaptureDrawSnap(){
+  const b = trackBrushEnsure();
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  const vc = state.viewCenter || {};
+  b.drawSnap = {
+    zoom: state.mapZoom || 11,
+    lat: vc.lat,
+    lon: vc.lon,
+    tileMap: tileMap || null
+  };
+}
+
+function trackBrushDrawSnapBroken(){
+  const b = state._trackBrush;
+  if (!b || !b.drawSnap) return false;
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  const vc = state.viewCenter || {};
+  if (tileMap !== b.drawSnap.tileMap) return true;
+  if ((state.mapZoom || 11) !== b.drawSnap.zoom) return true;
+  if (vc.lat !== b.drawSnap.lat || vc.lon !== b.drawSnap.lon) return true;
+  return false;
+}
+
+function trackBrushCleanupCore(opts){
+  opts = opts || {};
+  trackBrushCancelRaf();
+  trackBrushReleaseCapture();
+  trackBrushUnbindDocListeners();
+  trackBrushRemoveOverlay();
+  const b = trackBrushEnsure();
+  b.pointerId = null;
+  b.pointerType = "";
+  if (!opts.keepIgnore) b.ignorePointerId = null;
+  b.raw = [];
+  b.reviewPoints = [];
+  b.rawAccepted = 0;
+  b.lastSx = NaN;
+  b.lastSy = NaN;
+  b.originSx = NaN;
+  b.originSy = NaN;
+  b.drawSnap = null;
+  b.closeConfirm = false;
+  if (!opts.keepName) b.name = "";
+  if (!opts.keepFeedback) b.feedback = "";
+  trackBrushSyncMapClasses();
+}
+
+function trackBrushSetPhase(phase){
+  const b = trackBrushEnsure();
+  b.phase = phase;
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+}
+
+function trackBrushSyncUi(){
+  const b = trackBrushEnsure();
+  const phase = b.phase || "idle";
+  const bar = document.getElementById("trackBrushBar");
+  const btn = document.getElementById("btnTrackBrush");
+  const peOk = typeof window !== "undefined" && !!window.PointerEvent;
+  if (btn){
+    btn.disabled = !peOk;
+    btn.setAttribute("aria-pressed", trackBrushIsActive() ? "true" : "false");
+    btn.classList.toggle("is-active", trackBrushIsActive());
+  }
+  if (!bar) return;
+  if (phase === "idle"){
+    bar.hidden = true;
+    return;
+  }
+  bar.hidden = false;
+  const meta = document.getElementById("trackBrushPhaseMeta");
+  if (meta){
+    if (phase === "armed") meta.textContent = trackBrushMsg("track.brush.armedMeta", "Ready");
+    else if (phase === "drawing") meta.textContent = trackBrushMsg("track.brush.drawingMeta", "Drawing…");
+    else if (phase === "review" || phase === "saving") meta.textContent = trackBrushMsg("track.brush.reviewMeta", "Review");
+    else meta.textContent = "";
+  }
+  const instr = document.getElementById("trackBrushInstr");
+  if (instr){
+    instr.hidden = !(phase === "armed" || phase === "drawing");
+    if (!instr.hidden) instr.textContent = trackBrushMsg("track.brush.drawHint", "Draw on the map");
+  }
+  const fb = document.getElementById("trackBrushFeedback");
+  if (fb) fb.textContent = b.feedback || "";
+  const nameRow = document.getElementById("trackBrushNameRow");
+  const stats = document.getElementById("trackBrushStats");
+  const saveBtn = document.getElementById("trackBrushSaveBtn");
+  const clearBtn = document.getElementById("trackBrushClearBtn");
+  const cancelBtn = document.getElementById("trackBrushCancelBtn");
+  const confirm = document.getElementById("trackBrushCloseConfirm");
+  const inReview = phase === "review" || phase === "saving";
+  if (nameRow) nameRow.hidden = !inReview;
+  if (stats) stats.hidden = !inReview;
+  if (saveBtn){
+    saveBtn.hidden = !inReview;
+    saveBtn.disabled = phase === "saving";
+  }
+  if (clearBtn){
+    const showClear = (phase === "review") || (phase === "drawing" && b.raw.length > 0);
+    clearBtn.hidden = !showClear;
+    clearBtn.disabled = phase === "saving";
+  }
+  if (cancelBtn) cancelBtn.disabled = phase === "saving";
+  if (confirm) confirm.hidden = !b.closeConfirm;
+  if (inReview){
+    const nameIn = document.getElementById("trackBrushNameInput");
+    if (nameIn && document.activeElement !== nameIn){
+      nameIn.value = b.name || "";
+      nameIn.disabled = phase === "saving";
+    }
+    if (stats){
+      const distM = routeDistance(b.reviewPoints || [], false);
+      const distTxt = (typeof formatTrackDistance === "function")
+        ? formatTrackDistance(distM, state.trackDisplayUnit || "km")
+        : (Math.round(distM) + " m");
+      const tmpl = trackBrushMsg("track.brush.resampled", "{0} → {1} · {2}");
+      stats.textContent = tmpl
+        .replace("{0}", String(b.rawAccepted || 0))
+        .replace("{1}", String((b.reviewPoints || []).length))
+        .replace("{2}", distTxt);
+    }
+  }
+}
+
+function trackBrushDisarmTransientTools(){
+  try { if (typeof trackExitPickMode === "function") trackExitPickMode(); } catch(_){}
+  try { if (typeof convertClearSourcePickMode === "function") convertClearSourcePickMode("sourceChange"); } catch(_){}
+  try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("sourceChange"); } catch(_){}
+  try { if (typeof workbenchExitPickMode === "function") workbenchExitPickMode(); } catch(_){}
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  try { if (typeof savedTrackStyleCloseForLifecycle === "function") savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
+  try { if (typeof mapMeasureDocDragCleanup === "function") mapMeasureDocDragCleanup(); } catch(_){}
+  try {
+    if (state.mapMeasureMode){
+      state.mapMeasureMode = false;
+      state.mapMeasurePts = null;
+      state.mapPolyPts = null;
+    }
+  } catch(_){}
+  try {
+    if (state.polygonDrawMode){
+      const verts = state._polygonDraftVertices;
+      if (!verts || !verts.length){
+        if (typeof polygonCancelDraw === "function") polygonCancelDraw();
+      }
+    }
+  } catch(_){}
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.toggle("map-pick-mode", false);
+  } catch(_){}
+}
+
+function trackBrushActivationBlocked(){
+  try { ensureTrackState(); } catch(_){}
+  const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
+  if (pts.length > 0){
+    return trackBrushMsg("track.brush.conflictDraft", "Save or discard the current track before using Brush.");
+  }
+  if (state._trackEditingSavedId){
+    return trackBrushMsg("track.brush.conflictEdit", "Finish or cancel geometric editing before using Brush.");
+  }
+  try {
+    if (typeof polygonIsEditing === "function" && polygonIsEditing()){
+      return trackBrushMsg("track.brush.conflictTool", "Close or finish the active tool before using Brush.");
+    }
+  } catch(_){}
+  try {
+    if (state.polygonDrawMode && state._polygonDraftVertices && state._polygonDraftVertices.length){
+      return trackBrushMsg("track.brush.conflictTool", "Close or finish the active tool before using Brush.");
+    }
+  } catch(_){}
+  if (state._rrEditingSetId || state._rrEditingMoveCenterMode){
+    return trackBrushMsg("track.brush.conflictTool", "Close or finish the active tool before using Brush.");
+  }
+  return "";
+}
+
+function trackBrushEnterArmed(opts){
+  opts = opts || {};
+  if (typeof window === "undefined" || !window.PointerEvent){
+    trackBrushSetFeedback(trackBrushMsg("track.brush.unsupported", "Brush unavailable."));
+    const bar = document.getElementById("trackBrushBar");
+    if (bar) bar.hidden = false;
+    trackBrushEnsure().phase = "idle";
+    trackBrushSyncUi();
+    return false;
+  }
+  const block = trackBrushActivationBlocked();
+  if (block){
+    trackBrushSetFeedback(block);
+    const bar = document.getElementById("trackBrushBar");
+    if (bar){ bar.hidden = false; }
+    return false;
+  }
+  trackBrushDisarmTransientTools();
+  trackBrushCleanupCore({ keepFeedback: !!opts.keepFeedback });
+  trackBrushBindBlurOnce();
+  trackBrushWireUiOnce();
+  trackBrushWireMiniMapOnce();
+  const b = trackBrushEnsure();
+  b.phase = "armed";
+  if (!opts.keepFeedback) b.feedback = trackBrushMsg("track.brush.phaseArmed", "Draw on the map with the primary pointer.");
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+  return true;
+}
+
+function trackBrushExitToIdle(opts){
+  opts = opts || {};
+  trackBrushCleanupCore({ keepFeedback: !!opts.keepFeedback });
+  const b = trackBrushEnsure();
+  b.phase = "idle";
+  if (!opts.keepFeedback) b.feedback = "";
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+}
+
+function trackBrushAbortGesture(msg){
+  trackBrushCancelRaf();
+  trackBrushReleaseCapture();
+  trackBrushUnbindDocListeners();
+  trackBrushRemoveOverlay();
+  const b = trackBrushEnsure();
+  const ign = b.ignorePointerId;
+  b.raw = [];
+  b.reviewPoints = [];
+  b.rawAccepted = 0;
+  b.pointerId = null;
+  b.pointerType = "";
+  b.drawSnap = null;
+  b.lastSx = NaN;
+  b.lastSy = NaN;
+  b.originSx = NaN;
+  b.originSy = NaN;
+  b.closeConfirm = false;
+  if (ign != null) b.ignorePointerId = ign;
+  b.phase = "armed";
+  b.feedback = msg ? String(msg) : trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled.");
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+}
+
+function trackBrushFinishGesture(opts){
+  opts = opts || {};
+  const b = trackBrushEnsure();
+  if (b.phase !== "drawing") return;
+  const raw = b.raw.slice();
+  const hitCap = !!opts.rawCap;
+  if (hitCap && b.pointerId != null) b.ignorePointerId = b.pointerId;
+  trackBrushCancelRaf();
+  trackBrushReleaseCapture();
+  trackBrushUnbindDocListeners();
+  b.pointerId = null;
+  b.pointerType = "";
+  b.drawSnap = null;
+  const res = trackBrushPostProcess(raw);
+  if (!res.ok){
+    trackBrushRemoveOverlay();
+    b.raw = [];
+    b.reviewPoints = [];
+    b.rawAccepted = 0;
+    b.phase = "armed";
+    if (res.reason === "antimeridian"){
+      b.feedback = trackBrushMsg("track.brush.antimeridian", "Antimeridian crossing is not supported.");
+    } else if (res.reason === "too_short"){
+      b.feedback = trackBrushMsg("track.brush.tooShort", "Stroke too short.");
+    } else {
+      b.feedback = trackBrushMsg("track.brush.minPoints", "At least two distinct points are required.");
+    }
+    trackBrushSyncMapClasses();
+    trackBrushSyncUi();
+    return;
+  }
+  b.raw = [];
+  b.reviewPoints = res.reviewPoints;
+  b.rawAccepted = res.rawCount;
+  try {
+    b.name = (typeof trackMakeAutoName === "function") ? trackMakeAutoName() : (trackBrushMsg("track.saveDefaultName", "Track"));
+  } catch(_){
+    b.name = trackBrushMsg("track.saveDefaultName", "Track");
+  }
+  b.phase = "review";
+  if (hitCap){
+    b.feedback = trackBrushMsg("track.brush.rawCap", "Sampling limit reached (4096).");
+  } else {
+    b.feedback = "";
+  }
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+  try { trackBrushPaintOverlay(); } catch(_){}
+  const nameIn = document.getElementById("trackBrushNameInput");
+  if (nameIn){
+    try { nameIn.focus(); nameIn.select(); } catch(_){}
+  }
+}
+
+function trackBrushOnPointerDown(ev){
+  const b = trackBrushEnsure();
+  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+    if (ev.cancelable) ev.preventDefault();
+    return;
+  }
+  if (b.phase === "drawing"){
+    if (b.pointerId != null && ev.pointerId !== b.pointerId){
+      trackBrushAbortGesture(trackBrushMsg("track.brush.secondPointer", "Second pointer: stroke cancelled."));
+      if (ev.cancelable) ev.preventDefault();
+    }
+    return;
+  }
+  if (b.phase !== "armed") return;
+  if (ev.isPrimary === false) return;
+  if (ev.pointerType === "mouse" && ev.button !== 0) return;
+  const root = document.getElementById("miniMap");
+  if (!root || !root.contains(ev.target)) return;
+  const tileMap = root.querySelector(".tile-map");
+  if (!tileMap || !tileMap.contains(ev.target)) return;
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit, button, a, input, select, textarea, .bbox-handle, .bbox-remove, .bbox-move";
+  if (ev.target.closest && ev.target.closest(CTRL_SEL)) return;
+  const sample = trackBrushSampleFromEvent(ev);
+  if (!sample) return;
+  if (ev.cancelable) ev.preventDefault();
+  try { ev.stopPropagation(); } catch(_){}
+  b.phase = "drawing";
+  b.pointerId = ev.pointerId;
+  b.pointerType = String(ev.pointerType || "");
+  b.ignorePointerId = null;
+  b.raw = [];
+  b.reviewPoints = [];
+  b.rawAccepted = 0;
+  b.lastSx = NaN;
+  b.lastSy = NaN;
+  b.originSx = NaN;
+  b.originSy = NaN;
+  b.closeConfirm = false;
+  b.feedback = "";
+  trackBrushAcceptSample(sample);
+  trackBrushCaptureDrawSnap();
+  b.captureEl = root;
+  if (typeof root.setPointerCapture === "function"){
+    try { root.setPointerCapture(ev.pointerId); } catch(_){}
+  }
+  trackBrushBindDocListeners();
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+  trackBrushSchedulePreview();
+}
+
+function trackBrushOnPointerMove(ev){
+  const b = state._trackBrush;
+  if (!b) return;
+  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+    if (ev.cancelable) ev.preventDefault();
+    return;
+  }
+  if (b.phase !== "drawing") return;
+  if (b.pointerId == null) return;
+  if (ev.pointerId !== b.pointerId){
+    if (ev.isPrimary === false || ev.pointerId !== b.pointerId){
+      trackBrushAbortGesture(trackBrushMsg("track.brush.secondPointer", "Second pointer: stroke cancelled."));
+      if (ev.cancelable) ev.preventDefault();
+      return;
+    }
+  }
+  if (trackBrushDrawSnapBroken()){
+    trackBrushAbortGesture(trackBrushMsg("track.brush.mapChanged", "Map changed during drawing: stroke cancelled."));
+    return;
+  }
+  if (ev.cancelable) ev.preventDefault();
+  let list = null;
+  try {
+    if (typeof ev.getCoalescedEvents === "function") list = ev.getCoalescedEvents();
+  } catch(_){ list = null; }
+  if (!list || !list.length) list = [ev];
+  for (let i = 0; i < list.length; i++){
+    const e = list[i];
+    if (b.raw.length >= TRACK_BRUSH_RAW_CAP) break;
+    const sample = trackBrushSampleFromEvent(e);
+    if (!sample) continue;
+    trackBrushAcceptSample(sample);
+    if (b.raw.length >= TRACK_BRUSH_RAW_CAP){
+      trackBrushSchedulePreview();
+      trackBrushFinishGesture({ rawCap: true });
+      return;
+    }
+  }
+  trackBrushSchedulePreview();
+}
+
+function trackBrushOnPointerUp(ev){
+  const b = state._trackBrush;
+  if (!b) return;
+  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+    b.ignorePointerId = null;
+    if (ev.cancelable) ev.preventDefault();
+    return;
+  }
+  if (b.phase !== "drawing") return;
+  if (b.pointerId == null || ev.pointerId !== b.pointerId) return;
+  if (ev.cancelable) ev.preventDefault();
+  trackBrushFinishGesture({ rawCap: false });
+}
+
+function trackBrushOnPointerCancel(ev){
+  const b = state._trackBrush;
+  if (!b) return;
+  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+    b.ignorePointerId = null;
+    return;
+  }
+  if (b.phase !== "drawing") return;
+  if (b.pointerId != null && ev.pointerId !== b.pointerId) return;
+  trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+}
+
+function trackBrushOnLostCapture(ev){
+  const b = state._trackBrush;
+  if (!b || b.phase !== "drawing") return;
+  if (b.pointerId != null && ev.pointerId !== b.pointerId) return;
+  trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+}
+
+function trackBrushOnWindowBlur(){
+  if (trackBrushPhase() === "drawing"){
+    trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+  }
+}
+
+function trackBrushOnVisibility(){
+  try {
+    if (document.hidden && trackBrushPhase() === "drawing"){
+      trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+    }
+  } catch(_){}
+}
+
+function trackBrushToggle(){
+  if (trackBrushIsActive()){
+    if (trackBrushPhase() === "drawing" || trackBrushPhase() === "review"){
+      trackBrushExitToIdle();
+      return;
+    }
+    trackBrushExitToIdle();
+    return;
+  }
+  trackBrushEnterArmed();
+}
+
+function trackBrushClearToArmed(){
+  const p = trackBrushPhase();
+  if (p === "drawing"){
+    trackBrushAbortGesture("");
+    trackBrushSetFeedback("");
+    return;
+  }
+  if (p === "review"){
+    trackBrushCleanupCore();
+    const b = trackBrushEnsure();
+    b.phase = "armed";
+    b.feedback = trackBrushMsg("track.brush.phaseArmed", "Draw on the map with the primary pointer.");
+    trackBrushSyncMapClasses();
+    trackBrushSyncUi();
+  }
+}
+
+function trackBrushSave(){
+  const b = trackBrushEnsure();
+  if (b.phase !== "review") return false;
+  let name = "";
+  const nameIn = document.getElementById("trackBrushNameInput");
+  if (nameIn) name = String(nameIn.value || "").trim();
+  if (!name){
+    try { name = (typeof trackMakeAutoName === "function") ? trackMakeAutoName() : ""; } catch(_){ name = ""; }
+  }
+  if (!name) name = trackBrushMsg("track.saveDefaultName", "Track");
+  name = name.slice(0, 80);
+  const pts = Array.isArray(b.reviewPoints) ? b.reviewPoints : [];
+  if (pts.length < 2){
+    trackBrushSetFeedback(trackBrushMsg("track.brush.minPoints", "At least two distinct points are required."));
+    return false;
+  }
+  if (pts.length > TRACK_BRUSH_FINAL_CAP){
+    trackBrushSetFeedback(trackBrushMsg("track.brush.saveFail", "Save failed."));
+    return false;
+  }
+  b.phase = "saving";
+  trackBrushSyncUi();
+  let res = null;
+  try {
+    res = savedTrackAddFromPoints({
+      name,
+      points: pts.map((p) => ({ lat: p.lat, lon: p.lon, name: "", meta: null })),
+      closed: false,
+      visible: true
+    });
+  } catch(_){
+    res = { ok: false, reason: "error" };
+  }
+  if (!res || !res.ok){
+    b.phase = "review";
+    if (res && res.reason === "cap"){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.saveFailCap", "Archive full."));
+    } else if (res && res.reason === "min_points"){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.minPoints", "At least two distinct points are required."));
+    } else {
+      trackBrushSetFeedback(trackBrushMsg("track.brush.saveFail", "Save failed."));
+    }
+    trackBrushSyncUi();
+    return false;
+  }
+  trackBrushCleanupCore();
+  b.phase = "idle";
+  trackBrushSyncMapClasses();
+  trackBrushSyncUi();
+  try { saveStore(); } catch(_){}
+  try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+  try { setBadge("ok", trackBrushMsg("track.brush.savedOk", "Track saved to archive.")); } catch(_){}
+  return true;
+}
+
+function trackBrushHandleEsc(){
+  const p = trackBrushPhase();
+  if (p === "idle") return false;
+  const b = trackBrushEnsure();
+  if (b.closeConfirm){
+    b.closeConfirm = false;
+    trackBrushSyncUi();
+    return true;
+  }
+  if (p === "drawing"){
+    trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+    return true;
+  }
+  if (p === "review" || p === "saving"){
+    if (p === "saving") return true;
+    trackBrushClearToArmed();
+    return true;
+  }
+  if (p === "armed"){
+    trackBrushExitToIdle();
+    return true;
+  }
+  return false;
+}
+
+function trackBrushRequestClose(){
+  const p = trackBrushPhase();
+  if (p === "idle") return true;
+  if (p === "armed"){
+    trackBrushExitToIdle();
+    return true;
+  }
+  if (p === "drawing" || p === "review" || p === "saving"){
+    const b = trackBrushEnsure();
+    b.closeConfirm = true;
+    trackBrushSetFeedback(trackBrushMsg("track.brush.discardCloseMsg", "Discard the stroke and close Tracks?"));
+    trackBrushSyncUi();
+    return false;
+  }
+  return true;
+}
+
+function trackBrushConfirmDiscardClose(){
+  trackBrushExitToIdle();
+  try { closeTrackModal({ force: true }); } catch(_){}
+}
+
+function trackBrushCancelDiscardClose(){
+  const b = trackBrushEnsure();
+  b.closeConfirm = false;
+  trackBrushSetFeedback("");
+  trackBrushSyncUi();
+}
+
+function trackBrushOnMinimizeAttempt(){
+  const p = trackBrushPhase();
+  if (p === "armed"){
+    trackBrushExitToIdle();
+    return true;
+  }
+  if (p === "drawing" || p === "review" || p === "saving"){
+    trackBrushSetFeedback(trackBrushMsg("track.brush.minimizeBlocked", "Save or cancel Brush before minimizing."));
+    return false;
+  }
+  return true;
+}
+
+function trackBrushWireMiniMapOnce(){
+  const root = document.getElementById("miniMap");
+  if (!root || root._trackBrushPtrWired) return;
+  root._trackBrushPtrWired = true;
+  root.addEventListener("pointerdown", trackBrushOnPointerDown, true);
+}
+
+function trackBrushWireUiOnce(){
+  const btn = document.getElementById("btnTrackBrush");
+  if (btn && !btn._trackBrushBound){
+    btn._trackBrushBound = true;
+    btn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      trackBrushToggle();
+    });
+    if (typeof window === "undefined" || !window.PointerEvent){
+      btn.disabled = true;
+    }
+  }
+  const saveBtn = document.getElementById("trackBrushSaveBtn");
+  if (saveBtn && !saveBtn._trackBrushBound){
+    saveBtn._trackBrushBound = true;
+    saveBtn.addEventListener("click", (ev) => { ev.preventDefault(); trackBrushSave(); });
+  }
+  const cancelBtn = document.getElementById("trackBrushCancelBtn");
+  if (cancelBtn && !cancelBtn._trackBrushBound){
+    cancelBtn._trackBrushBound = true;
+    cancelBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      trackBrushExitToIdle();
+    });
+  }
+  const clearBtn = document.getElementById("trackBrushClearBtn");
+  if (clearBtn && !clearBtn._trackBrushBound){
+    clearBtn._trackBrushBound = true;
+    clearBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      trackBrushClearToArmed();
+    });
+  }
+  const discard = document.getElementById("trackBrushDiscardCloseBtn");
+  if (discard && !discard._trackBrushBound){
+    discard._trackBrushBound = true;
+    discard.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      trackBrushConfirmDiscardClose();
+    });
+  }
+  const stay = document.getElementById("trackBrushStayBtn");
+  if (stay && !stay._trackBrushBound){
+    stay._trackBrushBound = true;
+    stay.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      trackBrushCancelDiscardClose();
+    });
+  }
+  const nameIn = document.getElementById("trackBrushNameInput");
+  if (nameIn && !nameIn._trackBrushBound){
+    nameIn._trackBrushBound = true;
+    nameIn.addEventListener("input", () => {
+      const bb = trackBrushEnsure();
+      bb.name = String(nameIn.value || "").slice(0, 80);
+    });
+  }
+}
+
+/* end TRACK-BRUSH-A */
+
+
 function saveCurrentTrackToLibrary(name, opts){
   opts = opts || {};
   ensureTrackState();
@@ -33905,6 +35126,12 @@ function trackShowSavedDeleteConfirmBar(ids){
 }
 /** Saved-track delete: internal confirm in #trackModal when open; else browser confirm fallback. */
 function requestSavedTracksDelete(ids){
+  try {
+    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+      return;
+    }
+  } catch(_){}
   const arr = [...new Set((ids || []).map(String))].filter(Boolean);
   if (!arr.length) return;
   const tmd = document.getElementById("trackModal");
@@ -34088,6 +35315,12 @@ function savedTrackStyleWorkingFromTracks(ids){
 }
 
 function openSavedTrackStyleEditorSingle(id){
+  try {
+    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+      return;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   const sid = String(id || "");
   const st = state.savedTracks.find(x => x && String(x.id) === sid);
@@ -34113,6 +35346,12 @@ function openSavedTrackStyleEditorSingle(id){
 }
 
 function openSavedTrackStyleEditorBatch(ids){
+  try {
+    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+      return;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   const list = (ids || []).map(String).filter((id) => state.savedTracks.some(st => st && String(st.id) === id));
   if (!list.length){
@@ -34354,6 +35593,12 @@ function flyToSavedTrackById(id){
 
 /** Load a saved library track into the editable draft (explicit user action). */
 function beginEditSavedTrackById(id){
+  try {
+    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+      return;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   ensureTrackState();
   const st = state.savedTracks.find(x => x && x.id === String(id));
@@ -37024,6 +38269,16 @@ function trackClear(){
 
 /** Start a brand new track (does not touch savedTracks). */
 function trackStartNew(){
+  try {
+    const bp = typeof trackBrushPhase === "function" ? trackBrushPhase() : "idle";
+    if (bp === "drawing" || bp === "review" || bp === "saving"){
+      if (typeof trackBrushSetFeedback === "function"){
+        trackBrushSetFeedback(trackBrushMsg("track.brush.conflictTool", "Close or finish the active tool before using Brush."));
+      }
+      return;
+    }
+    if (bp === "armed" && typeof trackBrushExitToIdle === "function") trackBrushExitToIdle();
+  } catch(_){}
   ensureTrackState();
   ensureMapWaypointsState();
   const pts = state.track.points || [];
@@ -38708,6 +39963,7 @@ function renderTrackAll(){
     renderMapWaypointsOverlay(tileMap, lp.lat, lp.lon, z);
     renderRangeRingsOverlay(tileMap, lp.lat, lp.lon, z);
     try { renderGisPolygonsOverlay(tileMap, lp.lat, lp.lon, z); } catch(_){}
+    try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
   }
   if (root) updateTrackMapFloatReadout(root);
   renderSavedTracksList();
@@ -40210,6 +41466,7 @@ function renderTileMap(lat, lon, zoom){
       try { renderPolygonDraftOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderWorkbenchSelectionHighlight(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
+      try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
     }
   }
 
@@ -40300,6 +41557,12 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     const tileMap = root.querySelector(".tile-map");
     if (!tileMap || !tileMap.contains(ev.target)) return;
     if (ev.target.closest("button, a")) return;
+    try {
+      if (typeof trackBrushBlocksWheel === "function" && trackBrushBlocksWheel()){
+        ev.preventDefault();
+        return;
+      }
+    } catch(_){}
     if (Date.now() < st.cooldownUntil) {
       ev.preventDefault();
       return;
@@ -40546,6 +41809,9 @@ function monitorTileLoading(root, lat, lon){
 /** GIS: doppio click sulla mappa centra la vista sul punto (solo viewCenter + render; niente lastResult/renderResults). */
 function gisMapOnDblClickCenter(ev){
   if (!document.body.classList.contains("gis-mode")) return;
+  try {
+    if (typeof trackBrushBlocksDblClick === "function" && trackBrushBlocksDblClick()) return;
+  } catch(_){}
   const root = document.getElementById("miniMap");
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
@@ -40608,6 +41874,9 @@ function attachPanHandlers(root, lat, lon, zoom){
   const onDown = (ev) => {
     if (ev.target.closest(CTRL_SEL)) return; // don't hijack button clicks
     if (ev.button !== undefined && ev.button !== 0) return; // only left-click
+    try {
+      if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()) return;
+    } catch(_){}
     // Yield to bbox selection / handle drag. While .bbox-selecting is set
     // on .tile-map, the bbox draw handlers own the pointer. Also bail out
     // if the user clicked directly on an overlay handle or remove button.
@@ -47143,6 +48412,8 @@ function bindUI(){
   if (btnTFinish) btnTFinish.addEventListener("click", (ev) => { ev.preventDefault(); completeCurrentTrack({ promptSave: true, source: "button" }); });
   const btnTNew = document.getElementById("btnTrackNew");
   if (btnTNew) btnTNew.addEventListener("click", (ev) => { ev.preventDefault(); trackStartNew(); });
+  try { if (typeof trackBrushWireUiOnce === "function") trackBrushWireUiOnce(); } catch(_){}
+  try { if (typeof trackBrushWireMiniMapOnce === "function") trackBrushWireMiniMapOnce(); } catch(_){}
   const btnTPaste = document.getElementById("btnTrackPaste");
   if (btnTPaste) btnTPaste.addEventListener("click", (ev) => { ev.preventDefault(); openTrackPasteModal(); });
   const btnTImp = document.getElementById("btnTrackImport");
@@ -48894,6 +50165,14 @@ function gisMinimizePanel(panelId, labelKey, opts){
       return;
     }
   } else if (panelId === "trackModal"){
+    try {
+      if (typeof trackBrushOnMinimizeAttempt === "function"){
+        if (trackBrushOnMinimizeAttempt() === false){
+          gisFlashMinimizeBlockedNotice("trackModal");
+          return;
+        }
+      }
+    } catch(_){}
     if (gisTrackModalBlockingSubdialogsOpen()){
       gisFlashMinimizeBlockedNotice("trackModal");
       return;
@@ -55603,6 +56882,8 @@ function openTrackModal(){
     }
   } catch(_){}
   if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+  try { if (typeof trackBrushWireUiOnce === "function") trackBrushWireUiOnce(); } catch(_){}
+  try { if (typeof trackBrushWireMiniMapOnce === "function") trackBrushWireMiniMapOnce(); } catch(_){}
   syncTrackModalHeadI18n();
   attachTrackModalDrag(dlg);
   attachTrackModalResize(dlg);
@@ -55645,6 +56926,9 @@ function trackDiscardDraftWithNotify(){
 function closeTrackModal(opts){
   opts = opts || {};
   if (!opts.force){
+    try {
+      if (typeof trackBrushRequestClose === "function" && trackBrushRequestClose() === false) return false;
+    } catch(_){}
     const until = Number(state._trackFilePickerGuardUntil || 0);
     if (until && Date.now() < until) return false;
     if (trackHasUnsavedDraft()){
@@ -55665,6 +56949,7 @@ function closeTrackModal(opts){
 function _closeTrackModalCore(opts){
   opts = opts || {};
   try { if (typeof trackHideSavedDeleteConfirmBar === "function") trackHideSavedDeleteConfirmBar(); } catch(_){}
+  try { if (typeof trackBrushExitToIdle === "function") trackBrushExitToIdle({ keepFeedback: false }); } catch(_){}
   // TRACK-STYLE-A-FIX1: real close of Tracce must drop style preview/editor (no saveStore).
   try { savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
   const dlg = document.getElementById("trackModal");
@@ -55773,6 +57058,12 @@ function syncSavedTracksSelectAllState(mount){
 }
 
 function applySavedTracksVisibilityByIds(ids, wantVisible){
+  try {
+    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
+      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+      return false;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   if (!set.size) return false;
