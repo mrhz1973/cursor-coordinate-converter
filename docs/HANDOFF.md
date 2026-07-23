@@ -117,16 +117,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (snapshot pre DOCS-STATE-REALIGN-A) | `f352c20d4bc01792ed2d0372dc30bc9dbe3fd0cd` — tip docs/orchestratore post finito TRACK-BRUSH-A; **non** confondere col runtime. Dopo chiusura di questo blocco docs-only la HEAD documentale corrente sarà il nuovo commit di chiusura (verificare con `git ls-remote`). |
-| Runtime live / commit monolite | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (`d4f877a`) — unico commit che contiene il monolite distribuito; invariato da questo intervento docs-only |
-| Ultimo blocco runtime chiuso | **TRACK-BRUSH-A** (+ FIX1 + FIX2 + FIX3) — pennello freehand (build 42) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync finito) | tip runtime **`9cc7937`** già su `origin/main`; il commit docs `finito` di questa chiusura aggiorna la HEAD documentale (verificare con `git ls-remote` post-push) |
+| Runtime live / commit monolite | `9cc7937e807f06f92a783472f292372b9ec7f085` (`9cc7937`) — tip TRACK-BRUSH-ANTIMERIDIAN-FIX1 |
+| Ultimo blocco runtime chiuso | **TRACK-BRUSH-ANTIMERIDIAN** (+ FIX1) — dateline brush/render/fit (build 44) — **CLOSED / PASS tecnico**; QA operatore **non attestata** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (deploy GIS-only Cursor SSH PASS; stesso SHA della riga «Runtime live») |
-| Blob monolite (git) | `6e6760890b40eed1f62a24893e815edc69140489` |
-| Byte monolite (git) | `2728773` |
-| `APP_BUILD_NUM` | `42` |
-| Display runtime | `B5.5Z · build 42` |
+| Runtime Git / atteso VPS | `9cc7937e807f06f92a783472f292372b9ec7f085` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `6f22b7e9a197c1a5b2efd4d116c325247a07eee1` |
+| Byte monolite (git) | `2733148` |
+| `APP_BUILD_NUM` | `44` |
+| Display runtime | `B5.5Z · build 44` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS tecnico** (dateline shortest-wrap + fit ordinato; QA operatore non attestata) |
 | TRACK-BRUSH-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (pennello freehand + lifecycle + import lock + Esc) |
 | TRACK-STYLE-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (stile saved tracks + lifecycle + Include sync) |
 | IMPORT-DROP-B / TRACK-MODAL-UX-A | **CLOSED / PASS end-to-end** (KMZ drop + fit + Centra/Unità) |
@@ -148,15 +149,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d4f877a` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=9cc7937` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog.** **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. Backlog correlato tracce: **TRACK-BRUSH-ANTIMERIDIAN** (non aperto). **Programma pick Workbench MAJOR-5A2 completo.**
+**Da scegliere da roadmap/backlog.** **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.** QA opzionale residua: TRACK-BRUSH-ANTIMERIDIAN (non attestata).
 
-**Backlog basso / non ora:** TRACK-BRUSH-ANTIMERIDIAN, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-BRUSH-A.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-BRUSH-ANTIMERIDIAN.
 
 ---
 
@@ -180,6 +181,14 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Runtime tip:** `40c97b6bec5ac9120d772b444906accca00f8c9d` — blob `2acf7711…` — byte **2655368** — SHA-256 **`952550ef…`** — build **38** — catena `ab5455d` (36) → `1146e59` (37 FIX1) → `40c97b6` (38 FIX2) — deploy PASS (operatore fuori Cursor) — QA «**QA TRACK-STYLE-A PASS operatore**».
 
+### TRACK-BRUSH-ANTIMERIDIAN (+ FIX1) — dateline brush/render/fit (build 44) — CLOSED tecnico
+
+**Stato:** **CLOSED / PASS tecnico** (runtime + deploy). **Non** WU aperta. **QA operatore non attestata.**
+
+**Runtime tip:** `9cc7937e807f06f92a783472f292372b9ec7f085` — catena `bebf517` (43) → `9cc7937` (44 FIX1) — blob `6f22b7e9…` — byte **2733148** — SHA-256 **`91272498…`** — display **`B5.5Z · build 44`** — deploy GIS-only Cursor SSH PASS — review downstream PASS.
+
+**Sintesi:** shortest-wrap render (saved/draft/brush review) + lift reject antimeridiano brush; FIX1 fit/Centra su unwrap ordinato (stesso ordine del render), incluso segmento chiusura se `closed`.
+
 ### TRACK-BRUSH-A (+ FIX1–FIX3) — pennello freehand (build 42) — CLOSED
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-23). **Non** è una WU aperta. **Non** è un candidato corrente.
@@ -187,8 +196,6 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 **Runtime tip:** `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` — catena `15f9640` (39) → `75a1d5c` (40) → `db10408` (41) → `d4f877a` (42) — blob `6e676089…` — byte **2728773** — SHA-256 **`3660ce50…`** — display **`B5.5Z · build 42`** — deploy GIS-only Cursor SSH PASS — QA «**QA TRACK-BRUSH-A PASS operatore**».
 
 **Sintesi storica utile:** disegno libero + screen-to-geo + ricampionamento + anteprima/review + salvataggio via helper saved-track comune; FIX1 lifecycle/pointer; FIX2 persistence/geometry; FIX3 import lock + Esc non distruttivo in review.
-
-**Backlog distinto (non aperto, non autorizzato da questo intervento):** **TRACK-BRUSH-ANTIMERIDIAN**.
 
 Finding IMPORT-DROP-A **note-only** (storico; non runtime ora): concatenazione segmenti (F1); costanti nominate cap; feedback `saveStore`; conteggio errori aggregato (F6); mismatch accept drop vs paste; sampling fit; N+1 `saveStore` poligoni.
 
