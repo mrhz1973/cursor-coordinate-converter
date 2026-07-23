@@ -1585,7 +1585,9 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 
 ## Programma MAJOR-2 post MAJOR-2A — priorità 2B/2C/2D
 
-**Stato programma:** **IMPORT-DROP-A** **CLOSED / PASS end-to-end** (`5f57a75`, build 34). **MAJOR-4-a** **CLOSED / PASS end-to-end** (`73269a0`, build 33). **MAJOR-3-a** **CLOSED / PASS end-to-end** (`c0fb4da`, build 32). **MAJOR-2E-a** **CLOSED / PASS end-to-end** (`d9238b6`, build 31). **MAJOR-5A2-UX-BACKLOG** **CLOSED / PASS end-to-end** (`d9c8f7b`, build 30). **MAJOR-5A2c** **CLOSED / PASS end-to-end** (`eb1451b`, build 29). **MAJOR-5A2b** **CLOSED / PASS end-to-end** (`cef7d42`, build 28). **MAJOR-5A2a** **CLOSED / PASS end-to-end** (`d2f7856`, build 27). **MAJOR-5A1** **CLOSED / PASS end-to-end** (`d74cbb7`, build 26). **MAJOR-2BCD** **CLOSED / PASS end-to-end** (`823bb73`, build 25). **MAJOR-2A** landed/PASS (`07ad4f4`, build 24). **Prossima priorità operatore:** candidati **IMPORT-DROP-B** / **TRACK-MODAL-UX-A** / **TRACK-STYLE-A** / **TRACK-BRUSH-A** (non aperti); **OFFLINE-DOWNLOAD-CONTROLS** backlog; estensioni **MAJOR-3**/**MAJOR-4** import backlog basso; programma pick Workbench **MAJOR-5A2 completo**.
+**Stato programma:** **IMPORT-DROP-A** **CLOSED / PASS end-to-end** (`5f57a75`, build 34). **MAJOR-4-a** **CLOSED / PASS end-to-end** (`73269a0`, build 33). **MAJOR-3-a** **CLOSED / PASS end-to-end** (`c0fb4da`, build 32). **MAJOR-2E-a** **CLOSED / PASS end-to-end** (`d9238b6`, build 31). **MAJOR-5A2-UX-BACKLOG** **CLOSED / PASS end-to-end** (`d9c8f7b`, build 30). **MAJOR-5A2c** **CLOSED / PASS end-to-end** (`eb1451b`, build 29). **MAJOR-5A2b** **CLOSED / PASS end-to-end** (`cef7d42`, build 28). **MAJOR-5A2a** **CLOSED / PASS end-to-end** (`d2f7856`, build 27). **MAJOR-5A1** **CLOSED / PASS end-to-end** (`d74cbb7`, build 26). **MAJOR-2BCD** **CLOSED / PASS end-to-end** (`823bb73`, build 25). **MAJOR-2A** landed/PASS (`07ad4f4`, build 24). **IMPORT-DROP-B + TRACK-MODAL-UX-A** **CLOSED** (`1d28163`, build 35). **TRACK-STYLE-A** **CLOSED** (`40c97b6`, build 38). **TRACK-BRUSH-A** (+ FIX1–FIX3) **CLOSED** (`d4f877a`, build 42).
+
+> **Snapshot storico (superato — non usare come coda operativa attuale):** la formulazione precedente «Prossima priorità operatore: candidati IMPORT-DROP-B / TRACK-MODAL-UX-A / TRACK-STYLE-A / TRACK-BRUSH-A (non aperti)» rifletteva lo stato **post-IMPORT-DROP-A**; quei blocchi risultano ora **CLOSED / PASS**. **Stato vivo corrente:** nessuna WU runtime aperta; prossimo blocco **da scegliere da roadmap/backlog**; backlog non aperto: **TRACK-BRUSH-ANTIMERIDIAN**, **OFFLINE-DOWNLOAD-CONTROLS**, estensioni **MAJOR-3**/**MAJOR-4** import; programma pick Workbench **MAJOR-5A2 completo**. Fonte primaria: OM §7.
 
 #### IMPORT-DROP-A — multi-file GPX/KML drag & drop (build 34)
 
@@ -1616,9 +1618,7 @@ restart = non necessario (http.server serve WorkingDirectory)
 
 **Runtime autorevole live VPS:** `5f57a75`.
 
-**Backlog correlato (non aperto):** IMPORT-DROP-B (KMZ); TRACK-MODAL-UX-A; TRACK-STYLE-A; TRACK-BRUSH-A; finding F1–F7 note-only.
-
-**Prossimi candidati:** IMPORT-DROP-B / TRACK-MODAL-UX-A / TRACK-STYLE-A / TRACK-BRUSH-A; OFFLINE-DOWNLOAD-CONTROLS backlog.
+> **Snapshot storico post-IMPORT-DROP-A (superato — non coda attuale):** all’epoca il backlog correlato elencava IMPORT-DROP-B (KMZ), TRACK-MODAL-UX-A, TRACK-STYLE-A, TRACK-BRUSH-A (+ finding F1–F7 note-only). **Oggi:** IMPORT-DROP-B + TRACK-MODAL-UX-A **CLOSED** (`1d28163`); TRACK-STYLE-A **CLOSED** (`40c97b6`); TRACK-BRUSH-A **CLOSED** (`d4f877a`). Finding F1–F7 restano note-only. **Coda viva:** prossimo blocco **da scegliere**; backlog non aperto: **TRACK-BRUSH-ANTIMERIDIAN**, **OFFLINE-DOWNLOAD-CONTROLS**, estensioni MAJOR-3/4 import (OM §7).
 
 #### MAJOR-4-a — Mission Package export (build 33)
 
@@ -1915,7 +1915,7 @@ goi-gis-app.service = active (bind 100.114.7.53:8000)
 | --- | --- | --- |
 | **MAJOR-2E-a** | Status partial/complete persistito da scan IDB | **CLOSED / PASS** (`d9238b6`, build 31) — persistenza post-Verifica |
 | **OFFLINE-DOWNLOAD-CONTROLS** | Pausa / Stop-Annulla / Riprendi download tile | Backlog — emerso QA MAJOR-2E-a; **non implementare ora** |
-| **MAJOR-3** | Import/export GIS unificato | **MAJOR-3-a CLOSED** (`c0fb4da`, build 32 — export hub); import unificato backlog basso; **IMPORT-DROP-A CLOSED** (`5f57a75`, build 34 — drop GPX/KML); **IMPORT-DROP-B** (KMZ) backlog |
+| **MAJOR-3** | Import/export GIS unificato | **MAJOR-3-a CLOSED** (`c0fb4da`, build 32 — export hub); import unificato backlog basso; **IMPORT-DROP-A CLOSED** (`5f57a75`, build 34 — drop GPX/KML); **IMPORT-DROP-B CLOSED** (`1d28163`, build 35 — KMZ drop; non più candidato) |)
 | **MAJOR-4** | Mission/project package | **MAJOR-4-a CLOSED / PASS** (`73269a0`, build 33 — export JSON); import/restore backlog basso |
 | **MAJOR-5A** | GIS Object Workbench | **5A1 CLOSED** (`d74cbb7`, build 26); **5A2a CLOSED** (`d2f7856`, build 27); **5A2b CLOSED** (`cef7d42`, build 28); **5A2c CLOSED** (`eb1451b`, build 29); **5A2-UX-BACKLOG CLOSED** (`d9c8f7b`, build 30) — programma pick **completo**; catena UX backlog **chiusa** |
 | **MAJOR-5A2-UX-BACKLOG** | Workbench UX dark/resize/filtri | **CLOSED / PASS** (`d9c8f7b`, build 30) — toolbar dark, resize pannello, chip filtri; ROUTINE CSS/HTML |

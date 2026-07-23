@@ -117,10 +117,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `d4f877a` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **TRACK-BRUSH-A** (+ FIX1 + FIX2 + FIX3) — pennello freehand (build 42) |
+| HEAD documentale (snapshot pre DOCS-STATE-REALIGN-A) | `f352c20d4bc01792ed2d0372dc30bc9dbe3fd0cd` — tip docs/orchestratore post finito TRACK-BRUSH-A; **non** confondere col runtime. Dopo chiusura di questo blocco docs-only la HEAD documentale corrente sarà il nuovo commit di chiusura (verificare con `git ls-remote`). |
+| Runtime live / commit monolite | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (`d4f877a`) — unico commit che contiene il monolite distribuito; invariato da questo intervento docs-only |
+| Ultimo blocco runtime chiuso | **TRACK-BRUSH-A** (+ FIX1 + FIX2 + FIX3) — pennello freehand (build 42) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (deploy GIS-only Cursor SSH PASS) |
+| Runtime Git / atteso VPS | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (deploy GIS-only Cursor SSH PASS; stesso SHA della riga «Runtime live») |
 | Blob monolite (git) | `6e6760890b40eed1f62a24893e815edc69140489` |
 | Byte monolite (git) | `2728773` |
 | `APP_BUILD_NUM` | `42` |
@@ -179,13 +180,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Runtime tip:** `40c97b6bec5ac9120d772b444906accca00f8c9d` — blob `2acf7711…` — byte **2655368** — SHA-256 **`952550ef…`** — build **38** — catena `ab5455d` (36) → `1146e59` (37 FIX1) → `40c97b6` (38 FIX2) — deploy PASS (operatore fuori Cursor) — QA «**QA TRACK-STYLE-A PASS operatore**».
 
-### TRACK-BRUSH-A — candidato (non aperto)
+### TRACK-BRUSH-A (+ FIX1–FIX3) — pennello freehand (build 42) — CLOSED
 
-**Stato:** backlog residuo post TRACK-STYLE-A — **non implementare ora**, **non WU aperta**.
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-23). **Non** è una WU aperta. **Non** è un candidato corrente.
 
-- **TRACK-BRUSH-A:** disegno libero + screen-to-geo + ricampionamento + anteprima + salvataggio via helper saved-track comune.
+**Runtime tip:** `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` — catena `15f9640` (39) → `75a1d5c` (40) → `db10408` (41) → `d4f877a` (42) — blob `6e676089…` — byte **2728773** — SHA-256 **`3660ce50…`** — display **`B5.5Z · build 42`** — deploy GIS-only Cursor SSH PASS — QA «**QA TRACK-BRUSH-A PASS operatore**».
 
-Finding IMPORT-DROP-A **note-only** (non runtime ora): concatenazione segmenti (F1); costanti nominate cap; feedback `saveStore`; conteggio errori aggregato (F6); mismatch accept drop vs paste; sampling fit; N+1 `saveStore` poligoni.
+**Sintesi storica utile:** disegno libero + screen-to-geo + ricampionamento + anteprima/review + salvataggio via helper saved-track comune; FIX1 lifecycle/pointer; FIX2 persistence/geometry; FIX3 import lock + Esc non distruttivo in review.
+
+**Backlog distinto (non aperto, non autorizzato da questo intervento):** **TRACK-BRUSH-ANTIMERIDIAN**.
+
+Finding IMPORT-DROP-A **note-only** (storico; non runtime ora): concatenazione segmenti (F1); costanti nominate cap; feedback `saveStore`; conteggio errori aggregato (F6); mismatch accept drop vs paste; sampling fit; N+1 `saveStore` poligoni.
 
 ### OFFLINE-DOWNLOAD-CONTROLS — controlli download tile (backlog)
 
