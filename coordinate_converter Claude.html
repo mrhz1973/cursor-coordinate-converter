@@ -10622,7 +10622,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </div>
             <div class="offcache-actions">
               <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica area corrente</button>
-              <button type="button" class="btn btn-sm" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Interrompi</button>
+              <button type="button" class="btn btn-sm" id="btnPrecachePauseResume" hidden data-dl-action="pause" data-i18n="offcache.pause" data-i18n-tip="tip.precachePause">Pausa</button>
+              <button type="button" class="btn btn-sm btn-danger-subtle" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Stop download</button>
             </div>
           </section>
           <section class="offcache-section offcache-section--export" aria-labelledby="offcacheSectionExportTitle">
@@ -10645,7 +10646,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="offcache-bar" id="pcBar" hidden>
             <progress id="pcProgress" max="100" value="0"></progress>
-            <span id="pcStatus" class="offcache-status"></span>
+            <span id="pcStatus" class="offcache-status" aria-live="polite"></span>
           </div>
           <section id="offlineAreasSection" class="offline-areas-section" aria-labelledby="offlineAreasSectionTitle">
             <div class="offline-areas-section-head">
@@ -13649,7 +13650,15 @@ const I18N = {
     "offcache.layerCacheStats":"Cache layer: {0} tile · {1} MB",
     "offcache.layerCacheStatsZero":"Cache layer: 0 tile · 0 MB",
     "offcache.start":"Scarica area corrente",
-    "offcache.stop":"Interrompi",
+    "offcache.stop":"Stop download",
+    "offcache.pause":"Pausa",
+    "offcache.pauseBusy":"Pausa in corso…",
+    "offcache.resume":"Riprendi",
+    "offcache.paused":"Download in pausa",
+    "offcache.stopped":"Download fermato",
+    "offcache.pauseReason.forceOffline":"In pausa: modalità offline attiva",
+    "offcache.pauseReason.opsec":"In pausa: OPSEC strict",
+    "offcache.pauseReason.offline":"In pausa: connessione assente",
     "offcache.clear":"Svuota tutta la cache tile",
     "offcache.hints":"Evidenzia tile “live” (non in pacchetto)",
     "offcache.coverage":"Mostra copertura offline",
@@ -13831,7 +13840,9 @@ const I18N = {
     "tip.offlineAreaUpdate":"Salva le modifiche all’area offline selezionata.",
     "tip.bboxClear":"Rimuovi area dai campi",
     "tip.precacheStart":"Scarica in cache le tile per l’area corrente impostata sopra, usando zoom e strato configurati. Può consumare rete e spazio locale.",
-    "tip.precacheStop":"Interrompi download in corso",
+    "tip.precacheStop":"Ferma il download offline (le tile già salvate restano)",
+    "tip.precachePause":"Metti in pausa il download (nessuna nuova richiesta; le tile in corso possono terminare)",
+    "tip.precacheResume":"Riprendi il download dalla pausa",
     "tip.precacheClear":"Svuota tutte le tile offline e l’elenco aree salvate (azione globale, richiede conferma).",
     "tip.offlineHints":"Evidenzia i tile caricati live rispetto a quelli già salvati offline",
     "tip.offlineShowSel":"Mostra aree selezionate sulla mappa",
@@ -15579,7 +15590,15 @@ const I18N = {
     "offcache.layerCacheStats":"Layer cache: {0} tiles · {1} MB",
     "offcache.layerCacheStatsZero":"Layer cache: 0 tiles · 0 MB",
     "offcache.start":"Download current area",
-    "offcache.stop":"Stop",
+    "offcache.stop":"Stop download",
+    "offcache.pause":"Pause",
+    "offcache.pauseBusy":"Pausing…",
+    "offcache.resume":"Resume",
+    "offcache.paused":"Download paused",
+    "offcache.stopped":"Download stopped",
+    "offcache.pauseReason.forceOffline":"Paused: offline mode active",
+    "offcache.pauseReason.opsec":"Paused: OPSEC strict",
+    "offcache.pauseReason.offline":"Paused: no connection",
     "offcache.clear":"Clear entire tile cache",
     "offcache.hints":"Highlight “live” tiles (not in pack)",
     "offcache.coverage":"Show offline coverage",
@@ -15760,7 +15779,9 @@ const I18N = {
     "tip.offlineAreaUpdate":"Save changes to the selected offline area.",
     "tip.bboxClear":"Clear area from fields",
     "tip.precacheStart":"Cache tiles for the current area configured above, using the selected zoom range and layer. This may use network data and local storage.",
-    "tip.precacheStop":"Stop the current download",
+    "tip.precacheStop":"Stop the offline download (tiles already saved are kept)",
+    "tip.precachePause":"Pause the download (no new requests; in-flight tiles may finish)",
+    "tip.precacheResume":"Resume the paused download",
     "tip.precacheClear":"Clear all offline tiles and the saved-area list (global action; asks for confirmation).",
     "tip.offlineHints":"Highlight live-loaded tiles versus tiles already saved offline",
     "tip.offlineShowSel":"Show selected areas on the map",
@@ -19954,7 +19975,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 46;
+const APP_BUILD_NUM = 47;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29531,6 +29552,7 @@ function bindGeocodeSettings(){
       if (enabling){
         try { setBadge("info", t("opsec.strict.activateWarn")); } catch(_){}
       }
+      try { maybeAutoPauseOfflineDownload(); } catch(_){}
       (state._onOpsecChange || []).forEach(fn => { try { fn(); } catch(_){} });
     });
   }
@@ -31200,19 +31222,244 @@ function revokeMapBlobUrls(root){
 }
 
 let _precacheAbort = null;
-/** True while a single-form precache or an O6a batch precache run holds the download slot. */
+let _offlineDownloadTokenSeq = 0;
+let _offlineDlStatusThrottleAt = 0;
+
+/** Ensure session-only batch/job object (never persisted). */
+function ensureOfflineBatchPrecacheState(){
+  let bp = state._offlineBatchPrecache;
+  if (!bp || typeof bp !== "object"){
+    bp = state._offlineBatchPrecache = {
+      running: false,
+      queue: [],
+      currentId: null,
+      areaIndex: 0,
+      total: 0,
+      abortRequested: false,
+      startedAt: null,
+      phase: "idle",
+      token: 0,
+      pauseRequested: false,
+      stopRequested: false,
+      nextIdx: 0,
+      done: 0,
+      err: 0,
+      errKinds: null,
+      inFlight: 0,
+      autoPauseReason: null,
+      layerId: null,
+      areaTotal: 0,
+      lastStatusKind: null,
+      _pauseResolvers: null,
+      _wakePause: null
+    };
+  }
+  return bp;
+}
+
+/** True while a single-form precache or an O6a batch precache run holds the download slot (incl. paused). */
 function isOfflinePrecacheBusy(){
   if (_precacheAbort !== null) return true;
   const bp = state._offlineBatchPrecache;
   return !!(bp && bp.running);
 }
 
+function _flushOfflinePauseResolvers(bp){
+  const list = bp && bp._pauseResolvers;
+  if (!list || !list.length) return;
+  const copy = list.splice(0, list.length);
+  copy.forEach((r) => { try { r(); } catch(_){} });
+}
+
+/**
+ * Canonical stop: abort in-flight fetches + stop entire multi-area batch.
+ * Does not delete tiles or area metadata.
+ */
 function abortOfflinePrecacheRuns(){
+  const bp = ensureOfflineBatchPrecacheState();
+  bp.stopRequested = true;
+  bp.abortRequested = true;
+  bp.pauseRequested = false;
   if (_precacheAbort){
     try { _precacheAbort.abort(); } catch(_){}
   }
+  _flushOfflinePauseResolvers(bp);
+  if (typeof bp._wakePause === "function"){
+    try { bp._wakePause(); } catch(_){}
+  }
+  if (bp.running && (bp.phase === "running" || bp.phase === "pausing" || bp.phase === "paused")){
+    bp.phase = "stopping";
+  }
+  try { syncOfflineDownloadControlsUi(); } catch(_){}
+}
+
+function pauseOfflineDownload(opts){
+  opts = opts || {};
   const bp = state._offlineBatchPrecache;
-  if (bp && typeof bp === "object") bp.abortRequested = true;
+  if (!bp || !bp.running) return false;
+  if (bp.stopRequested || bp.abortRequested) return false;
+  if (bp.phase !== "running" && bp.phase !== "pausing"){
+    if (bp.phase === "paused" && opts.reason){
+      bp.autoPauseReason = opts.reason;
+      try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+    }
+    return false;
+  }
+  bp.pauseRequested = true;
+  if (opts.reason) bp.autoPauseReason = opts.reason;
+  else if (!opts.keepReason) bp.autoPauseReason = null;
+  if (bp.inFlight > 0) bp.phase = "pausing";
+  else bp.phase = "paused";
+  try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+  return true;
+}
+
+function resumeOfflineDownload(){
+  const bp = state._offlineBatchPrecache;
+  if (!bp || !bp.running) return false;
+  if (bp.phase !== "paused" && bp.phase !== "pausing") return false;
+  if (bp.stopRequested || bp.abortRequested) return false;
+  const layerId = bp.layerId;
+  const blocked = offlineDownloadMidJobBlocked(layerId);
+  if (blocked){
+    bp.autoPauseReason = blocked;
+    bp.pauseRequested = true;
+    bp.phase = "paused";
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+    return false;
+  }
+  bp.pauseRequested = false;
+  bp.autoPauseReason = null;
+  bp.phase = "running";
+  _flushOfflinePauseResolvers(bp);
+  try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+  return true;
+}
+
+/** Mid-job gate (no prompts). Returns reason key or null if OK. */
+function offlineDownloadMidJobBlocked(layerId){
+  if (state.forceOffline) return "forceOffline";
+  if (typeof navigator !== "undefined" && navigator.onLine === false) return "offline";
+  const id = String(layerId || "");
+  if (!id) return null;
+  if (state.opsecStrict){
+    const ext = tileLayerExternalKind(id);
+    if (ext === "internet"){
+      if (!_precacheStrictOpConfirmed) return "opsec";
+    } else if (ext === "tailnet-proxy"){
+      const prov = tileLayerProxyProvider(id);
+      if (prov === "google" && !state._gsatConsentGranted) return "opsec";
+      if (prov === "bing" && !state._bingConsentGranted) return "opsec";
+      if (prov === "navionics" && !state._navProxyConsentGranted) return "opsec";
+    }
+  }
+  return null;
+}
+
+function maybeAutoPauseOfflineDownload(){
+  const bp = state._offlineBatchPrecache;
+  if (!bp || !bp.running) return;
+  if (bp.stopRequested || bp.abortRequested) return;
+  if (bp.phase !== "running" && bp.phase !== "pausing" && bp.phase !== "paused") return;
+  const reason = offlineDownloadMidJobBlocked(bp.layerId);
+  if (!reason) return;
+  if (bp.phase === "paused"){
+    if (bp.autoPauseReason !== reason){
+      bp.autoPauseReason = reason;
+      try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+    }
+    return;
+  }
+  pauseOfflineDownload({ reason: reason });
+}
+
+function offlineDownloadPauseStatusText(bp){
+  const reason = bp && bp.autoPauseReason;
+  if (reason === "forceOffline") return t("offcache.pauseReason.forceOffline");
+  if (reason === "opsec") return t("offcache.pauseReason.opsec");
+  if (reason === "offline") return t("offcache.pauseReason.offline");
+  if (bp && bp.phase === "pausing") return t("offcache.pauseBusy");
+  return t("offcache.paused");
+}
+
+function syncOfflineDownloadControlsUi(opts){
+  opts = opts || {};
+  const bp = state._offlineBatchPrecache;
+  const btnS = document.getElementById("btnPrecacheStart");
+  const btnPr = document.getElementById("btnPrecachePauseResume");
+  const btnStop = document.getElementById("btnPrecacheStop");
+  const bar = document.getElementById("pcBar");
+  const prog = document.getElementById("pcProgress");
+  const st = document.getElementById("pcStatus");
+  const busy = isOfflinePrecacheBusy();
+  const phase = bp && bp.running ? String(bp.phase || "") : "idle";
+
+  if (btnStop){
+    const showStop = busy && (phase === "running" || phase === "pausing" || phase === "paused" || phase === "stopping");
+    btnStop.hidden = !showStop;
+    btnStop.disabled = !showStop;
+  }
+  if (btnPr){
+    if (!busy || phase === "idle" || phase === "completed" || phase === "failed" || phase === "stopped" || phase === "stopping"){
+      btnPr.hidden = true;
+      btnPr.disabled = true;
+    } else if (phase === "running"){
+      btnPr.hidden = false;
+      btnPr.disabled = false;
+      btnPr.dataset.dlAction = "pause";
+      btnPr.classList.remove("btn-primary");
+      btnPr.textContent = t("offcache.pause");
+      try {
+        btnPr.setAttribute("data-i18n", "offcache.pause");
+        btnPr.setAttribute("data-tip", t("tip.precachePause"));
+        btnPr.setAttribute("title", t("tip.precachePause"));
+        btnPr.setAttribute("aria-label", t("offcache.pause"));
+      } catch(_){}
+    } else if (phase === "pausing"){
+      btnPr.hidden = false;
+      btnPr.disabled = true;
+      btnPr.dataset.dlAction = "pause";
+      btnPr.classList.remove("btn-primary");
+      btnPr.textContent = t("offcache.pauseBusy");
+      try {
+        btnPr.setAttribute("aria-label", t("offcache.pauseBusy"));
+        btnPr.setAttribute("data-tip", t("offcache.pauseBusy"));
+        btnPr.setAttribute("title", t("offcache.pauseBusy"));
+      } catch(_){}
+    } else if (phase === "paused"){
+      btnPr.hidden = false;
+      btnPr.disabled = false;
+      btnPr.dataset.dlAction = "resume";
+      btnPr.classList.add("btn-primary");
+      btnPr.textContent = t("offcache.resume");
+      try {
+        btnPr.setAttribute("data-i18n", "offcache.resume");
+        btnPr.setAttribute("data-tip", t("tip.precacheResume"));
+        btnPr.setAttribute("title", t("tip.precacheResume"));
+        btnPr.setAttribute("aria-label", t("offcache.resume"));
+      } catch(_){}
+    } else {
+      btnPr.hidden = true;
+      btnPr.disabled = true;
+    }
+  }
+  if (btnS && busy) btnS.disabled = true;
+  else if (typeof syncOfflinePrecacheMainButton === "function"){
+    try { syncOfflinePrecacheMainButton(); } catch(_){}
+  }
+
+  if (busy && bar) bar.hidden = false;
+  if (prog && bp && bp.running && bp.areaTotal > 0){
+    prog.max = 100;
+    prog.value = Math.min(100, (bp.done / bp.areaTotal) * 100);
+  }
+
+  if (st && (opts.forceStatus || phase === "pausing" || phase === "paused")){
+    if (phase === "pausing" || phase === "paused"){
+      st.textContent = offlineDownloadPauseStatusText(bp);
+      bp.lastStatusKind = "pause";
+    }
+  }
 }
 
 function waitUntilOfflinePrecacheIdle(maxMs){
@@ -31272,6 +31519,8 @@ async function performOfflineGlobalReset(){
   if (prog){ prog.value = 0; prog.max = 100; }
   const btnP = document.getElementById("btnPrecacheStop");
   if (btnP) btnP.hidden = true;
+  const btnPr = document.getElementById("btnPrecachePauseResume");
+  if (btnPr){ btnPr.hidden = true; btnPr.disabled = true; }
 
   const tm = document.querySelector("#miniMap .tile-map");
   if (tm){
@@ -31458,6 +31707,7 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
 
 /**
  * B1: download every tile in the bbox for [z0..z1] and save to IndexedDB.
+ * Supports session-only Pause (drain in-flight) / Resume / Stop (abort + no further tiles).
  */
 async function startPrecacheDownload(opts){
   const { n, s, e, w, z0, z1, layerId, onProgress } = opts;
@@ -31485,44 +31735,160 @@ async function startPrecacheDownload(opts){
       }
     }
   }
+  const bp = ensureOfflineBatchPrecacheState();
+  if (bp.stopRequested || bp.abortRequested){
+    return { aborted: true, done: 0, total, err: 0, errKinds: makeEmptyTileErrKinds() };
+  }
+  const token = ++_offlineDownloadTokenSeq;
+  bp.token = token;
+  bp.layerId = layerId;
+  bp.areaTotal = total;
+  bp.nextIdx = 0;
+  bp.done = 0;
+  bp.err = 0;
+  bp.errKinds = makeEmptyTileErrKinds();
+  bp.inFlight = 0;
+  bp.pauseRequested = false;
+  bp.autoPauseReason = null;
+  bp.phase = "running";
+  bp._pauseResolvers = [];
+
   const ac = new AbortController();
   _precacheAbort = ac;
-  const conc   = 6;
+  const conc = 6;
   let nextIdx = 0, completed = 0, errs = 0;
   const errKinds = makeEmptyTileErrKinds();
-  try {
-  const work = async () => {
-    while (!ac.signal.aborted){
-      const j = nextIdx++;
-      if (j >= tiles.length) return;
-      const T = tiles[j];
-      try {
-        await fetchAndStoreTile(layerId, T.z, T.x, T.y, layer, ac.signal);
-      } catch(e){
-        errs++;
-        bumpTileErrKind(errKinds, e);
-        recordTileCacheSessionError(e);
-      }
-      completed++;
-      onProgress && onProgress({
-        done: completed, total, err: errs, errKinds,
-        dominantErr: dominantTileErrKind(errKinds),
-        aborted: ac.signal.aborted
+  let finalized = false;
+
+  const emitProgress = (extra) => {
+    if (bp.token !== token) return;
+    bp.done = completed;
+    bp.err = errs;
+    bp.errKinds = errKinds;
+    bp.nextIdx = nextIdx;
+    const ev = Object.assign({
+      done: completed, total, err: errs, errKinds,
+      dominantErr: dominantTileErrKind(errKinds),
+      aborted: !!(bp.stopRequested || ac.signal.aborted)
+    }, extra || {});
+    onProgress && onProgress(ev);
+  };
+
+  const wakePause = () => {
+    if (bp.token !== token) return;
+    if (bp.stopRequested || ac.signal.aborted){
+      _flushOfflinePauseResolvers(bp);
+      return;
+    }
+    if (!bp.pauseRequested) return;
+    if (bp.inFlight > 0){
+      if (bp.phase !== "pausing") bp.phase = "pausing";
+    } else {
+      if (bp.phase !== "paused") bp.phase = "paused";
+    }
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+  };
+  bp._wakePause = wakePause;
+
+  const waitWhilePaused = async () => {
+    while (bp.token === token && bp.pauseRequested && !bp.stopRequested && !ac.signal.aborted){
+      wakePause();
+      await new Promise((resolve) => {
+        if (!bp._pauseResolvers) bp._pauseResolvers = [];
+        bp._pauseResolvers.push(resolve);
       });
     }
   };
-  const workers = Array.from({ length: conc }, () => work());
-  await Promise.all(workers);
-  const finalEv = {
-    done: completed, total, err: errs, errKinds,
-    dominantErr: dominantTileErrKind(errKinds),
-    aborted: ac.signal.aborted
-  };
-  onProgress && onProgress(finalEv);
-  const aborted = ac.signal.aborted;
-  _precacheAbort = null;
-  return Object.assign({ aborted, done: completed, total, err: errs }, finalEv);
+
+  try {
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+    const work = async () => {
+      while (bp.token === token){
+        if (bp.stopRequested || ac.signal.aborted) return;
+        if (nextIdx >= tiles.length) return;
+
+        const gateBlock = offlineDownloadMidJobBlocked(layerId);
+        if (gateBlock){
+          pauseOfflineDownload({ reason: gateBlock });
+        }
+
+        if (bp.pauseRequested && !bp.stopRequested && !ac.signal.aborted){
+          await waitWhilePaused();
+          if (bp.token !== token || bp.stopRequested || ac.signal.aborted) return;
+          if (nextIdx >= tiles.length) return;
+          continue;
+        }
+
+        if (nextIdx >= tiles.length) return;
+        const j = nextIdx++;
+        bp.nextIdx = nextIdx;
+        if (j >= tiles.length) return;
+        const T = tiles[j];
+
+        bp.inFlight++;
+        if (bp.phase !== "pausing" && bp.phase !== "paused") bp.phase = "running";
+        try {
+          await fetchAndStoreTile(layerId, T.z, T.x, T.y, layer, ac.signal);
+          completed++;
+          emitProgress();
+        } catch(e){
+          const kind = classifyTileCacheError(e);
+          const isStopAbort = kind === "abort" && (bp.stopRequested || ac.signal.aborted);
+          if (isStopAbort){
+            /* AbortError from Stop: do not inflate err / done */
+          } else {
+            errs++;
+            bumpTileErrKind(errKinds, e);
+            recordTileCacheSessionError(e);
+            completed++;
+            emitProgress();
+          }
+        } finally {
+          bp.inFlight--;
+          if (nextIdx >= tiles.length && bp.inFlight === 0){
+            if (bp.pauseRequested && !bp.stopRequested){
+              bp.pauseRequested = false;
+              bp.autoPauseReason = null;
+              _flushOfflinePauseResolvers(bp);
+            }
+          } else if (bp.pauseRequested && !bp.stopRequested){
+            wakePause();
+          }
+        }
+      }
+    };
+    const workers = Array.from({ length: conc }, () => work());
+    await Promise.all(workers);
+
+    if (bp.token === token && !finalized){
+      finalized = true;
+      const aborted = !!(bp.stopRequested || ac.signal.aborted || bp.abortRequested);
+      if (aborted) bp.phase = "stopped";
+      else if (errs > 0 && completed < total) bp.phase = "failed";
+      else bp.phase = "completed";
+      const finalEv = {
+        done: completed, total, err: errs, errKinds,
+        dominantErr: dominantTileErrKind(errKinds),
+        aborted
+      };
+      bp.done = completed;
+      bp.err = errs;
+      onProgress && onProgress(finalEv);
+      if (_precacheAbort === ac) _precacheAbort = null;
+      return Object.assign({ aborted, done: completed, total, err: errs }, finalEv);
+    }
+    if (_precacheAbort === ac) _precacheAbort = null;
+    return {
+      aborted: true, done: completed, total, err: errs, errKinds,
+      dominantErr: dominantTileErrKind(errKinds)
+    };
   } finally {
+    if (_precacheAbort === ac) _precacheAbort = null;
+    if (bp.token === token){
+      bp.inFlight = 0;
+      bp._wakePause = null;
+      _flushOfflinePauseResolvers(bp);
+    }
     _precacheStrictOpConfirmed = false;
   }
 }
@@ -31931,27 +32297,28 @@ function onPrecacheStart(){
   const bar = document.getElementById("pcBar");
   const prog = document.getElementById("pcProgress");
   const btnS = document.getElementById("btnPrecacheStart");
-  const btnP = document.getElementById("btnPrecacheStop");
   if (bar) bar.hidden = false;
-  if (btnP) btnP.hidden = false;
   if (btnS) btnS.disabled = true;
   if (prog){ prog.max = 100; prog.value = 0; }
+  try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
 
   void runOfflineAreasPrecacheQueue(queue, { useProgressBar: true }).then((lastInfo) => {
     if (st){
-      const sum = lastInfo && lastInfo.err > 0 ? formatPrecacheErrSummary(lastInfo) : "";
-      st.textContent = sum || t("offcache.done");
+      if (lastInfo && lastInfo.aborted){
+        st.textContent = t("offcache.stopped") || t("offcache.err.abort");
+      } else {
+        const sum = lastInfo && lastInfo.err > 0 ? formatPrecacheErrSummary(lastInfo) : "";
+        st.textContent = sum || t("offcache.done");
+      }
     }
-    if (btnS) btnS.disabled = false;
-    if (btnP) btnP.hidden = true;
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
     try { updateOfflineLayerCacheStats(); } catch(_){}
   }).catch(() => {
     if (st) st.textContent = t("offcache.err");
-    if (btnS) btnS.disabled = false;
-    if (btnP) btnP.hidden = true;
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
     try { updateOfflineLayerCacheStats(); } catch(_){}
@@ -33112,18 +33479,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
   if (!window.indexedDB) return;
   const ids = (queueIds || []).map(String).filter(Boolean);
   if (!ids.length) return;
-  let bp = state._offlineBatchPrecache;
-  if (!bp || typeof bp !== "object"){
-    bp = state._offlineBatchPrecache = {
-      running: false,
-      queue: [],
-      currentId: null,
-      areaIndex: 0,
-      total: 0,
-      abortRequested: false,
-      startedAt: null
-    };
-  }
+  const bp = ensureOfflineBatchPrecacheState();
   if (bp.running) return;
   if (_precacheAbort !== null) return;
 
@@ -33136,11 +33492,21 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
   bp.total = ids.length;
   bp.areaIndex = 0;
   bp.abortRequested = false;
+  bp.stopRequested = false;
+  bp.pauseRequested = false;
+  bp.autoPauseReason = null;
+  bp.phase = "running";
   bp.startedAt = Date.now();
   bp.currentId = null;
+  bp.done = 0;
+  bp.err = 0;
+  bp.inFlight = 0;
+  bp.areaTotal = 0;
+  bp.layerId = null;
 
   if (useBar && bar) bar.hidden = false;
   if (useBar && prog){ prog.max = 100; prog.value = 0; }
+  try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
 
   updatePrecacheEstimate();
   updateOfflineAreasToolbarUI();
@@ -33149,7 +33515,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
 
   try {
     for (let i = 0; i < ids.length; i++){
-      if (bp.abortRequested) break;
+      if (bp.abortRequested || bp.stopRequested) break;
       const id = ids[i];
       const area = (state.namedAreas || []).find(x => x && String(x.id) === id);
       const params = area && namedAreaToPrecacheParams(area);
@@ -33164,6 +33530,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
       try {
         const info = await startPrecacheDownload(Object.assign({}, params, {
           onProgress(ev){
+            if (bp.token && state._offlineBatchPrecache && state._offlineBatchPrecache.token !== bp.token) return;
             lastEv = {
               done: ev.done, total: ev.total, err: ev.err,
               errKinds: ev.errKinds || makeEmptyTileErrKinds(),
@@ -33171,22 +33538,33 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
               aborted: !!ev.aborted
             };
             if (useBar && prog && ev.total) prog.value = Math.min(100, (ev.done / ev.total) * 100);
+            const phase = bp.phase;
+            if (phase === "pausing" || phase === "paused"){
+              if (st) st.textContent = offlineDownloadPauseStatusText(bp);
+              return;
+            }
             if (st && ev.err > 0){
               const sum = formatPrecacheErrSummary(ev);
               if (sum) st.textContent = areaLine + " — " + sum;
+            } else if (st && !ev.aborted){
+              st.textContent = areaLine;
             }
+            try { syncOfflineDownloadControlsUi(); } catch(_){}
           }
         }));
         lastQueueInfo = info || lastEv;
         applyPrecacheMetadataToNamedAreaById(id, lastQueueInfo);
+        if (bp.abortRequested || bp.stopRequested || (info && info.aborted)) break;
       } catch (err){
         if (!(err && err.message === "tooMany")){
           lastQueueInfo = Object.assign({}, lastEv, { fatal: true });
           applyPrecacheMetadataToNamedAreaById(id, lastQueueInfo);
         }
+        if (bp.abortRequested || bp.stopRequested) break;
       }
     }
   } finally {
+    const wasStopped = !!(bp.stopRequested || bp.abortRequested || (lastQueueInfo && lastQueueInfo.aborted));
     bp.running = false;
     bp.currentId = null;
     bp.queue = [];
@@ -33194,16 +33572,23 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
     bp.total = 0;
     bp.startedAt = null;
     bp.abortRequested = false;
-    if (useBar && bar) bar.hidden = true;
+    bp.stopRequested = false;
+    bp.pauseRequested = false;
+    bp.inFlight = 0;
+    bp.phase = wasStopped ? "stopped" : (lastQueueInfo && lastQueueInfo.fatal ? "failed" : "completed");
+    bp._wakePause = null;
+    _flushOfflinePauseResolvers(bp);
+    if (useBar && bar && !wasStopped) bar.hidden = true;
     if (st && lastQueueInfo){
-      if (lastQueueInfo.aborted){
-        st.textContent = t("offcache.err.abort");
+      if (lastQueueInfo.aborted || wasStopped){
+        st.textContent = t("offcache.stopped") || t("offcache.err.abort");
       } else if (lastQueueInfo.fatal){
         st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
       } else if (lastQueueInfo.err > 0){
         st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
       }
     }
+    try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
     updatePrecacheEstimate();
     updateOfflineAreasToolbarUI();
     if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
@@ -49219,6 +49604,7 @@ function updateNetStatus(){
   // always reflects the latest set of external domains we've hit (e.g.
   // nominatim.openstreetmap.org after the first geocoding call).
   try { refreshHostsContactedUI(); } catch(_){}
+  try { maybeAutoPauseOfflineDownload(); } catch(_){}
   // Re-render the map so the tile source can swap between network and cache.
   // Use resetView=false so the user's current pan/view stays where it is:
   // toggling online ↔ offline must NOT re-center on the last converted point.
@@ -49668,7 +50054,10 @@ function bindUI(){
   if (otpEl) makeOfflinePanelDraggable(otpEl);
   if (otpEl){
     otpEl.addEventListener("toggle", () => {
-      if (otpEl.open) try { updateOfflineLayerCacheStats(); } catch(_){}
+      if (otpEl.open){
+        try { updateOfflineLayerCacheStats(); } catch(_){}
+        try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+      }
     });
   }
 
@@ -49728,7 +50117,15 @@ function bindUI(){
   }
   try { updateOfflineExportZoomFeedback(); } catch(_){}
   const btnPstop = document.getElementById("btnPrecacheStop");
-  if (btnPstop) btnPstop.addEventListener("click", () => { if (_precacheAbort) _precacheAbort.abort(); });
+  if (btnPstop) btnPstop.addEventListener("click", () => { abortOfflinePrecacheRuns(); });
+  const btnPauseResume = document.getElementById("btnPrecachePauseResume");
+  if (btnPauseResume){
+    btnPauseResume.addEventListener("click", () => {
+      const act = btnPauseResume.dataset.dlAction || "pause";
+      if (act === "resume") resumeOfflineDownload();
+      else pauseOfflineDownload();
+    });
+  }
   const btnPclr = document.getElementById("btnPrecacheClear");
   if (btnPclr) btnPclr.addEventListener("click", async () => {
     const ok = await showOfflineGlobalClearDialog();
@@ -57885,6 +58282,7 @@ function openLayersPanel(){
       try { trackSyncPickModeUi(); } catch(_){}
       if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
       try { updateOfflineLayerCacheStats(); } catch(_){}
+      try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
       return;
     }
   }
@@ -57906,6 +58304,7 @@ function openLayersPanel(){
   try { trackSyncPickModeUi(); } catch(_){}
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
   try { updateOfflineLayerCacheStats(); } catch(_){}
+  try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
 }
 let _offlineDraftResolve = null;
 function ensureOfflineDraftWarnDialogWired(){
