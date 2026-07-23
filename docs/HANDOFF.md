@@ -117,9 +117,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito) | tip runtime **`9cc7937`** già su `origin/main`; il commit docs `finito` di questa chiusura aggiorna la HEAD documentale (verificare con `git ls-remote` post-push) |
+| HEAD documentale (pre-autosync finito QA) | tip docs precedente **`02dceac`**; runtime **`9cc7937`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
 | Runtime live / commit monolite | `9cc7937e807f06f92a783472f292372b9ec7f085` (`9cc7937`) — tip TRACK-BRUSH-ANTIMERIDIAN-FIX1 |
-| Ultimo blocco runtime chiuso | **TRACK-BRUSH-ANTIMERIDIAN** (+ FIX1) — dateline brush/render/fit (build 44) — **CLOSED / PASS tecnico**; QA operatore **non attestata** |
+| Ultimo blocco runtime chiuso | **TRACK-BRUSH-ANTIMERIDIAN** (+ FIX1) — dateline brush/render/fit (build 44) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime Git / atteso VPS | `9cc7937e807f06f92a783472f292372b9ec7f085` (deploy GIS-only Cursor SSH PASS) |
 | Blob monolite (git) | `6f22b7e9a197c1a5b2efd4d116c325247a07eee1` |
@@ -127,7 +127,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | `APP_BUILD_NUM` | `44` |
 | Display runtime | `B5.5Z · build 44` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
-| TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS tecnico** (dateline shortest-wrap + fit ordinato; QA operatore non attestata) |
+| TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS end-to-end** (dateline shortest-wrap + fit ordinato; QA PASS) |
 | TRACK-BRUSH-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (pennello freehand + lifecycle + import lock + Esc) |
 | TRACK-STYLE-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (stile saved tracks + lifecycle + Include sync) |
 | IMPORT-DROP-B / TRACK-MODAL-UX-A | **CLOSED / PASS end-to-end** (KMZ drop + fit + Centra/Unità) |
@@ -153,7 +153,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog.** **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.** QA opzionale residua: TRACK-BRUSH-ANTIMERIDIAN (non attestata).
+**Da scegliere da roadmap/backlog.** **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
 **Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
@@ -181,11 +181,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Runtime tip:** `40c97b6bec5ac9120d772b444906accca00f8c9d` — blob `2acf7711…` — byte **2655368** — SHA-256 **`952550ef…`** — build **38** — catena `ab5455d` (36) → `1146e59` (37 FIX1) → `40c97b6` (38 FIX2) — deploy PASS (operatore fuori Cursor) — QA «**QA TRACK-STYLE-A PASS operatore**».
 
-### TRACK-BRUSH-ANTIMERIDIAN (+ FIX1) — dateline brush/render/fit (build 44) — CLOSED tecnico
+### TRACK-BRUSH-ANTIMERIDIAN (+ FIX1) — dateline brush/render/fit (build 44) — CLOSED
 
-**Stato:** **CLOSED / PASS tecnico** (runtime + deploy). **Non** WU aperta. **QA operatore non attestata.**
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-23). **Non** WU aperta.
 
-**Runtime tip:** `9cc7937e807f06f92a783472f292372b9ec7f085` — catena `bebf517` (43) → `9cc7937` (44 FIX1) — blob `6f22b7e9…` — byte **2733148** — SHA-256 **`91272498…`** — display **`B5.5Z · build 44`** — deploy GIS-only Cursor SSH PASS — review downstream PASS.
+**Runtime tip:** `9cc7937e807f06f92a783472f292372b9ec7f085` — catena `bebf517` (43) → `9cc7937` (44 FIX1) — blob `6f22b7e9…` — byte **2733148** — SHA-256 **`91272498…`** — display **`B5.5Z · build 44`** — deploy GIS-only Cursor SSH PASS — review downstream PASS — QA «**QA TRACK-BRUSH-ANTIMERIDIAN PASS operatore**».
 
 **Sintesi:** shortest-wrap render (saved/draft/brush review) + lift reject antimeridiano brush; FIX1 fit/Centra su unwrap ordinato (stesso ordine del render), incluso segmento chiusura se `closed`.
 
