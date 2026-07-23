@@ -13318,6 +13318,7 @@ const I18N = {
     "track.brush.mutationBlocked":"Azioni traccia bloccate mentre il Pennello è attivo.",
     "track.brush.persistFail":"Persistenza non riuscita. Revisione mantenuta.",
     "track.brush.conflictRename":"Termina o annulla la rinomina della traccia prima di usare il Pennello.",
+    "track.brush.conflictImport":"Attendi la fine dell'import prima di usare il Pennello.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -15240,6 +15241,7 @@ const I18N = {
     "track.brush.mutationBlocked":"Track actions are blocked while Brush is active.",
     "track.brush.persistFail":"Could not persist the track. Review kept.",
     "track.brush.conflictRename":"Finish or cancel the track rename before using Brush.",
+    "track.brush.conflictImport":"Wait for the import to finish before using Brush.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -19762,7 +19764,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 40;
+const APP_BUILD_NUM = 41;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26271,6 +26273,12 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
 }
 
 async function importDroppedSpatialFiles(fileList){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return null;
+    }
+  } catch(_){}
   const all = Array.prototype.slice.call(fileList || [], 0);
   const summary = {
     processed: 0,
@@ -26284,91 +26292,110 @@ async function importDroppedSpatialFiles(fileList){
   const fitAcc = { trackPts: [], otherPts: [] };
   let createdTrack = false;
 
-  if (all.length > DROP_IMPORT_MAX_FILES){
-    summary.ignored += all.length - DROP_IMPORT_MAX_FILES;
-  }
-  const batch = all.slice(0, DROP_IMPORT_MAX_FILES);
+  try { state._gisSpatialImportBusy = true; } catch(_){}
+  try {
+    if (all.length > DROP_IMPORT_MAX_FILES){
+      summary.ignored += all.length - DROP_IMPORT_MAX_FILES;
+    }
+    const batch = all.slice(0, DROP_IMPORT_MAX_FILES);
 
-  for (const file of batch){
-    const name = (file && file.name) ? String(file.name) : "";
-    if (!/\.(gpx|kml|kmz)$/i.test(name)){
-      summary.ignored++;
-      continue;
-    }
-    const sz = file && Number.isFinite(file.size) ? file.size : 0;
-    if (sz > DROP_IMPORT_MAX_BYTES){
-      dropImportPushErr(summary, name, t("dropImport.tooLarge") || ">25MB");
-      continue;
-    }
-    summary.processed++;
-    try {
-      let fc = null;
-      if (/\.kmz$/i.test(name)){
-        const buf = await file.arrayBuffer();
-        const kmlText = await spatialExtractKmlTextFromKmz(buf);
-        if (!String(kmlText || "").trim()){
-          dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
-          continue;
+    for (const file of batch){
+      // Mutual exclusion: never mutate if Brush armed mid-batch (busy should prevent arming).
+      try {
+        if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+          if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+          break;
         }
-        fc = spatialKmlToFeatureCollection(kmlText);
-      } else {
-        const buf = await file.arrayBuffer();
-        const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
-        if (!String(text || "").trim()){
-          dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
-          continue;
+      } catch(_){}
+      const name = (file && file.name) ? String(file.name) : "";
+      if (!/\.(gpx|kml|kmz)$/i.test(name)){
+        summary.ignored++;
+        continue;
+      }
+      const sz = file && Number.isFinite(file.size) ? file.size : 0;
+      if (sz > DROP_IMPORT_MAX_BYTES){
+        dropImportPushErr(summary, name, t("dropImport.tooLarge") || ">25MB");
+        continue;
+      }
+      summary.processed++;
+      try {
+        let fc = null;
+        if (/\.kmz$/i.test(name)){
+          const buf = await file.arrayBuffer();
+          const kmlText = await spatialExtractKmlTextFromKmz(buf);
+          if (!String(kmlText || "").trim()){
+            dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
+            continue;
+          }
+          fc = spatialKmlToFeatureCollection(kmlText);
+        } else {
+          const buf = await file.arrayBuffer();
+          const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
+          if (!String(text || "").trim()){
+            dropImportPushErr(summary, name, t("dropImport.empty") || "empty");
+            continue;
+          }
+          const r = spatialTextToFeatureCollection(text, name);
+          if (!r || !r.ok || !r.fc){
+            dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
+            continue;
+          }
+          fc = r.fc;
         }
-        const r = spatialTextToFeatureCollection(text, name);
-        if (!r || !r.ok || !r.fc){
+        if (!fc || !fc.features || !fc.features.length){
           dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
           continue;
         }
-        fc = r.fc;
+        // Re-check immediately before first canonical mutation for this file.
+        try {
+          if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+            if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+            break;
+          }
+        } catch(_){}
+        const beforeTracks = summary.tracks;
+        applyDroppedFeatureCollection(fc, name, summary, fitAcc);
+        if (summary.tracks > beforeTracks) createdTrack = true;
+      } catch(_){
+        dropImportPushErr(summary, name, t("dropImport.empty") || "error");
       }
-      if (!fc || !fc.features || !fc.features.length){
-        dropImportPushErr(summary, name, t("dropImport.empty") || "invalid");
-        continue;
-      }
-      const beforeTracks = summary.tracks;
-      applyDroppedFeatureCollection(fc, name, summary, fitAcc);
-      if (summary.tracks > beforeTracks) createdTrack = true;
-    } catch(_){
-      dropImportPushErr(summary, name, t("dropImport.empty") || "error");
     }
-  }
 
-  try { saveStore(); } catch(_){}
-  try { renderMapWaypointsAll(); } catch(_){}
-  try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
-  try { if (typeof renderPolygonPanelList === "function") renderPolygonPanelList(); } catch(_){}
-  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
-  if (fitAcc.trackPts.length){
-    try { flyMapToTrackPoints(fitAcc.trackPts); } catch(_){}
-  } else if (fitAcc.otherPts.length){
-    try { flyMapToTrackPoints(fitAcc.otherPts); } catch(_){}
-  }
-  if (createdTrack){
-    try { if (typeof openTrackModal === "function") openTrackModal(); } catch(_){}
-  }
+    try { saveStore(); } catch(_){}
+    try { renderMapWaypointsAll(); } catch(_){}
+    try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
+    try { if (typeof renderPolygonPanelList === "function") renderPolygonPanelList(); } catch(_){}
+    try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+    if (fitAcc.trackPts.length){
+      try { flyMapToTrackPoints(fitAcc.trackPts); } catch(_){}
+    } else if (fitAcc.otherPts.length){
+      try { flyMapToTrackPoints(fitAcc.otherPts); } catch(_){}
+    }
+    if (createdTrack){
+      try { if (typeof openTrackModal === "function") openTrackModal(); } catch(_){}
+    }
 
-  const base = (typeof t === "function" ? t("dropImport.summary") : "")
-    || "Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.";
-  let msg = base
-    .replace("{0}", String(summary.processed))
-    .replace("{1}", String(summary.waypoints))
-    .replace("{2}", String(summary.tracks))
-    .replace("{3}", String(summary.polygons))
-    .replace("{4}", String(summary.ignored))
-    .replace("{5}", String(summary.errors));
-  if (summary.errNames.length){
-    const det = (typeof t === "function" ? t("dropImport.errDetail") : "") || "Errors: {0}";
-    msg += " " + det.replace("{0}", summary.errNames.join(", "));
+    const base = (typeof t === "function" ? t("dropImport.summary") : "")
+      || "Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.";
+    let msg = base
+      .replace("{0}", String(summary.processed))
+      .replace("{1}", String(summary.waypoints))
+      .replace("{2}", String(summary.tracks))
+      .replace("{3}", String(summary.polygons))
+      .replace("{4}", String(summary.ignored))
+      .replace("{5}", String(summary.errors));
+    if (summary.errNames.length){
+      const det = (typeof t === "function" ? t("dropImport.errDetail") : "") || "Errors: {0}";
+      msg += " " + det.replace("{0}", summary.errNames.join(", "));
+    }
+    const anyOk = summary.waypoints + summary.tracks + summary.polygons > 0;
+    try {
+      setBadge(anyOk ? "success" : (summary.errors ? "error" : "info"), msg);
+    } catch(_){}
+    return summary;
+  } finally {
+    try { state._gisSpatialImportBusy = false; } catch(_){}
   }
-  const anyOk = summary.waypoints + summary.tracks + summary.polygons > 0;
-  try {
-    setBadge(anyOk ? "success" : (summary.errors ? "error" : "info"), msg);
-  } catch(_){}
-  return summary;
 }
 
 function bindGlobalSpatialDropOnce(){
@@ -26400,6 +26427,12 @@ function bindGlobalSpatialDropOnce(){
     dropImportClearVisual(depthRef);
     const files = ev.dataTransfer && ev.dataTransfer.files;
     if (!files || !files.length) return;
+    try {
+      if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+        if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+        return;
+      }
+    } catch(_){}
     Promise.resolve()
       .then(() => importDroppedSpatialFiles(files))
       .catch(() => { dropImportClearVisual(depthRef); })
@@ -33658,12 +33691,6 @@ function savedTrackApplyNormalizedPatchToTrack(st, norm){
  */
 function savedTracksApplyStyleByIds(ids, patch, opts){
   opts = opts || {};
-  try {
-    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
-      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
-      return { ok: false, count: 0 };
-    }
-  } catch(_){}
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   const norm = savedTrackNormalizeStylePatch(patch);
@@ -33937,7 +33964,7 @@ function savedTrackAddFromPoints(opts){
   return { ok: true, track };
 }
 
-/* ========================= TRACK-BRUSH-A (build 40 / FIX1) ========================= */
+/* ========================= TRACK-BRUSH-A (build 41 / FIX2) ========================= */
 const TRACK_BRUSH_MIN_SAMPLE_PX = 5;
 const TRACK_BRUSH_MIN_STROKE_PX = 8;
 const TRACK_BRUSH_RAW_CAP = 4096;
@@ -34258,7 +34285,9 @@ function trackBrushRdpIterative(points, epsilon){
       if (len2 <= 0){
         d = Math.hypot(points[i].sx - ax, points[i].sy - ay);
       } else {
-        const t = ((points[i].sx - ax) * dx + (points[i].sy - ay) * dy) / len2;
+        // Point-to-segment (clamp t to [0,1]): not infinite line; preserves U-turns/hairpins.
+        let t = ((points[i].sx - ax) * dx + (points[i].sy - ay) * dy) / len2;
+        t = Math.max(0, Math.min(1, t));
         const px = ax + t * dx, py = ay + t * dy;
         d = Math.hypot(points[i].sx - px, points[i].sy - py);
       }
@@ -34766,6 +34795,11 @@ function trackBrushDisarmTransientTools(){
 
 function trackBrushActivationBlocked(){
   try { ensureTrackState(); } catch(_){}
+  try {
+    if (state._gisSpatialImportBusy){
+      return trackBrushMsg("track.brush.conflictImport", "Wait for the import to finish before using Brush.");
+    }
+  } catch(_){}
   if (trackBrushHasOpenSavedRename()){
     return trackBrushMsg("track.brush.conflictRename", "Finish or cancel the track rename before using Brush.");
   }
@@ -34792,6 +34826,11 @@ function trackBrushActivationBlocked(){
   return "";
 }
 
+/** True when Brush may arm; returns "" if ok, else localized block reason. */
+function trackBrushCanActivate(){
+  return trackBrushActivationBlocked();
+}
+
 function trackBrushEnterArmed(opts){
   opts = opts || {};
   if (typeof window === "undefined" || !window.PointerEvent){
@@ -34801,7 +34840,7 @@ function trackBrushEnterArmed(opts){
     trackBrushSyncUi();
     return false;
   }
-  const block = trackBrushActivationBlocked();
+  const block = trackBrushCanActivate();
   if (block){
     trackBrushNotifyBlocked(block);
     // keep idle; show message on panel guard
@@ -34934,7 +34973,20 @@ function trackBrushOnPointerDown(ev){
   }
   if (b.phase !== "armed") return;
   if (ev.isPrimary === false) return;
-  if (ev.pointerType === "mouse" && ev.button !== 0) return;
+  // Mouse and pen: primary tip only (button 0). Ignore barrel / eraser / secondary.
+  // Touch primary continues (button typically 0).
+  {
+    const pType = String(ev.pointerType || "");
+    if (pType === "mouse" || pType === "pen"){
+      if (ev.button !== 0) return;
+      if (typeof ev.buttons === "number" && ev.buttons !== 0 && !(ev.buttons & 1)) return;
+    } else if (pType === "touch"){
+      if (ev.button != null && ev.button !== 0) return;
+    } else {
+      // Unknown pointer types: require primary button semantics when reported.
+      if (ev.button != null && ev.button !== 0) return;
+    }
+  }
   const root = document.getElementById("miniMap");
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
@@ -35053,12 +35105,24 @@ function trackBrushOnWindowBlur(){
   if (trackBrushPhase() === "drawing"){
     trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
   }
+  // Drain may remain after raw-cap→review; clear without touching review.
+  try {
+    const b = state._trackBrush;
+    if (b && b.drainPointerId != null){
+      trackBrushUnbindDrainListeners();
+    }
+  } catch(_){}
 }
 
 function trackBrushOnVisibility(){
   try {
-    if (document.hidden && trackBrushPhase() === "drawing"){
+    if (!document.hidden) return;
+    if (trackBrushPhase() === "drawing"){
       trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
+    }
+    const b = state._trackBrush;
+    if (b && b.drainPointerId != null){
+      trackBrushUnbindDrainListeners();
     }
   } catch(_){}
 }
@@ -35099,6 +35163,56 @@ function trackBrushClearToArmed(){
   }
 }
 
+function trackBrushVerifyPersistedTrack(createdId, name, pts){
+  try {
+    if (!createdId) return false;
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw == null || raw === "") return false;
+    let data = null;
+    try { data = JSON.parse(raw); } catch(_){ return false; }
+    if (!data || typeof data !== "object" || !Array.isArray(data.savedTracks)) return false;
+    let row = null;
+    for (let i = 0; i < data.savedTracks.length; i++){
+      const st = data.savedTracks[i];
+      if (st && String(st.id) === String(createdId)){ row = st; break; }
+    }
+    if (!row) return false;
+    if (String(row.name || "") !== String(name || "")) return false;
+    if (!Array.isArray(row.points) || row.points.length !== pts.length) return false;
+    if (!!row.closed) return false;
+    if (row.visible === false) return false;
+    const first = row.points[0];
+    const last = row.points[row.points.length - 1];
+    const p0 = pts[0];
+    const pN = pts[pts.length - 1];
+    if (!first || !last || !p0 || !pN) return false;
+    if (!Number.isFinite(first.lat) || !Number.isFinite(first.lon)) return false;
+    if (!Number.isFinite(last.lat) || !Number.isFinite(last.lon)) return false;
+    if (!Number.isFinite(p0.lat) || !Number.isFinite(p0.lon)) return false;
+    if (!Number.isFinite(pN.lat) || !Number.isFinite(pN.lon)) return false;
+    if (Math.abs(first.lat - p0.lat) > 1e-9 || Math.abs(first.lon - p0.lon) > 1e-9) return false;
+    if (Math.abs(last.lat - pN.lat) > 1e-9 || Math.abs(last.lon - pN.lon) > 1e-9) return false;
+    return true;
+  } catch(_){
+    return false;
+  }
+}
+
+function trackBrushRollbackCreatedTrack(createdId, prevSelectedIds){
+  try {
+    ensureSavedTracksState();
+    const id = String(createdId || "");
+    if (id){
+      state.savedTracks = state.savedTracks.filter((x) => !(x && String(x.id) === id));
+    }
+    if (Array.isArray(prevSelectedIds)){
+      state._savedTracksSelectedIds = prevSelectedIds.slice();
+    } else if (Array.isArray(state._savedTracksSelectedIds) && id){
+      state._savedTracksSelectedIds = state._savedTracksSelectedIds.filter((x) => String(x) !== id);
+    }
+  } catch(_){}
+}
+
 function trackBrushSave(){
   const b = trackBrushEnsure();
   if (b.phase !== "review") return false;
@@ -35119,10 +35233,14 @@ function trackBrushSave(){
     trackBrushSetFeedback(trackBrushMsg("track.brush.saveFail", "Save failed."));
     return false;
   }
-  // Keep review until persistence succeeds.
+  // Keep review until persistence + read-back succeed.
   b.phase = "saving";
   b.name = name;
+  b.reviewPoints = pts;
   trackBrushSyncUi();
+  const prevSelectedIds = Array.isArray(state._savedTracksSelectedIds)
+    ? state._savedTracksSelectedIds.slice()
+    : [];
   let res = null;
   try {
     res = savedTrackAddFromPoints({
@@ -35136,6 +35254,8 @@ function trackBrushSave(){
   }
   if (!res || !res.ok){
     b.phase = "review";
+    b.reviewPoints = pts;
+    b.name = name;
     if (res && res.reason === "cap"){
       trackBrushSetFeedback(trackBrushMsg("track.brush.saveFailCap", "Archive full."));
     } else if (res && res.reason === "min_points"){
@@ -35148,23 +35268,10 @@ function trackBrushSave(){
   }
   const created = res.track || null;
   const createdId = created && created.id != null ? String(created.id) : "";
-  let persistThrew = false;
   try {
     saveStore();
-  } catch(err){
-    persistThrew = true;
-  }
-  if (persistThrew){
-    // Rollback only the just-created record; no second saveStore.
-    try {
-      ensureSavedTracksState();
-      if (createdId){
-        state.savedTracks = state.savedTracks.filter((x) => !(x && String(x.id) === createdId));
-      }
-      if (Array.isArray(state._savedTracksSelectedIds)){
-        state._savedTracksSelectedIds = state._savedTracksSelectedIds.filter((id) => String(id) !== createdId);
-      }
-    } catch(_){}
+  } catch(_){
+    trackBrushRollbackCreatedTrack(createdId, prevSelectedIds);
     b.phase = "review";
     b.reviewPoints = pts;
     b.name = name;
@@ -35172,8 +35279,18 @@ function trackBrushSave(){
     trackBrushSyncUi();
     return false;
   }
-  // NOTE: saveStore() swallows storage errors internally and returns void.
-  // Silent quota/disabled-storage failures are not observable without changing saveStore.
+  // saveStore() swallows storage errors: confirm via synchronous read-back of STORAGE_KEY.
+  const confirmed = trackBrushVerifyPersistedTrack(createdId, name, pts);
+  if (!confirmed){
+    trackBrushRollbackCreatedTrack(createdId, prevSelectedIds);
+    // No second saveStore on rollback.
+    b.phase = "review";
+    b.reviewPoints = pts;
+    b.name = name;
+    trackBrushSetFeedback(trackBrushMsg("track.brush.persistFail", "Could not persist the track. Review kept."));
+    trackBrushSyncUi();
+    return false;
+  }
   trackBrushCleanupCore();
   b.phase = "idle";
   trackBrushSyncMapClasses();
@@ -35741,6 +35858,12 @@ function savedTrackStyleEditorBuildPatchFromUi(){
 }
 
 function savedTrackStyleEditorApply(){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   const ed = state._savedTrackStyleEdit;
   if (!ed) return;
   if (ed.mode === "batch"){
@@ -35773,6 +35896,12 @@ function savedTrackStyleEditorApply(){
 }
 
 function savedTrackStyleEditorResetAll(){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   const ed = state._savedTrackStyleEdit;
   if (!ed || !ed.ids || !ed.ids.length) return;
   if (ed.mode === "batch"){
@@ -40608,7 +40737,11 @@ function importTrackFile(file){
     }
   } catch(_){}
   if (!file) return;
-    const name = file.name || "";
+  const name = file.name || "";
+  const clearImportBusy = () => {
+    try { state._gisSpatialImportBusy = false; } catch(_){}
+  };
+  try { state._gisSpatialImportBusy = true; } catch(_){}
   const reader = new FileReader();
   reader.onload = async () => {
     try {
@@ -40623,17 +40756,35 @@ function importTrackFile(file){
         if (r.ok && r.fc && r.fc.features && r.fc.features.length) fc = r.fc;
       }
       if (!fc || !fc.features.length){
-      setBadge("error", t("err.importFailed") || "Import failed.");
-      return;
-    }
+        setBadge("error", t("err.importFailed") || "Import failed.");
+        return;
+      }
+      // Re-check immediately before first canonical mutation (async gap).
+      try {
+        if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+          if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+          return;
+        }
+      } catch(_){}
       spatialApplyFeatureCollectionToTrackMerge(fc, { filename: name });
       setBadge("success", t("track.importedN").replace("{0}", String(fc.features.length)));
     } catch(_){
       setBadge("error", t("err.importFailed") || "Import failed.");
+    } finally {
+      clearImportBusy();
     }
   };
-  reader.onerror = () => setBadge("error", t("err.importFailed") || "Import failed.");
-  reader.readAsArrayBuffer(file);
+  reader.onerror = () => {
+    clearImportBusy();
+    setBadge("error", t("err.importFailed") || "Import failed.");
+  };
+  reader.onabort = () => { clearImportBusy(); };
+  try {
+    reader.readAsArrayBuffer(file);
+  } catch(_){
+    clearImportBusy();
+    setBadge("error", t("err.importFailed") || "Import failed.");
+  }
 }
 /* ============== TOOLS DRAWER ============== */
 
