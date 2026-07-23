@@ -19766,7 +19766,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 42;
+const APP_BUILD_NUM = 43;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28618,6 +28618,100 @@ function normalizeLon(lon){
   return x;
 }
 
+/** Shortest signed Δlon from a→b in (-180, 180]. Pure; uses normalizeLon on inputs. */
+function lonShortestDelta(a, b){
+  const la = normalizeLon(a);
+  const lb = normalizeLon(b);
+  let d = lb - la;
+  if (d > 180) d -= 360;
+  if (d <= -180) d += 360;
+  return d;
+}
+
+/**
+ * Transient continuous longitudes (may leave [-180,180]) via consecutive shortest-wrap.
+ * Does not mutate `lons`. Output is for rendering/fit only — never persist.
+ */
+function trackLonsUnwrapTransient(lons){
+  if (!Array.isArray(lons) || !lons.length) return [];
+  const out = new Array(lons.length);
+  let prev = NaN;
+  for (let i = 0; i < lons.length; i++){
+    const raw = lons[i];
+    if (!Number.isFinite(raw)){ out[i] = NaN; continue; }
+    const n = normalizeLon(raw);
+    if (!Number.isFinite(prev)){
+      prev = n;
+      out[i] = prev;
+    } else {
+      prev = prev + lonShortestDelta(prev, n);
+      out[i] = prev;
+    }
+  }
+  return out;
+}
+
+/** Shift an unwrapped lon series so its first finite value sits near viewLon (±180). Pure. */
+function trackLonsAlignToView(unwrapped, viewLon){
+  if (!Array.isArray(unwrapped) || !unwrapped.length) return [];
+  const vc = normalizeLon(viewLon);
+  let anchor = NaN;
+  for (let i = 0; i < unwrapped.length; i++){
+    if (Number.isFinite(unwrapped[i])){ anchor = unwrapped[i]; break; }
+  }
+  if (!Number.isFinite(anchor)) return unwrapped.slice();
+  let shift = 0;
+  while ((anchor + shift) - vc > 180) shift -= 360;
+  while ((anchor + shift) - vc < -180) shift += 360;
+  if (shift === 0) return unwrapped.slice();
+  return unwrapped.map((v) => (Number.isFinite(v) ? v + shift : v));
+}
+
+/**
+ * Minimal circular longitude arc covering the given lons (canonical degrees).
+ * Returns { center, span, west, east } or null. Does not mutate input.
+ */
+function trackLonMinimalArc(lons){
+  const norm = [];
+  if (!Array.isArray(lons)) return null;
+  for (let i = 0; i < lons.length; i++){
+    const L = lons[i];
+    if (!Number.isFinite(L)) continue;
+    norm.push(normalizeLon(L));
+  }
+  if (!norm.length) return null;
+  if (norm.length === 1){
+    return { west: norm[0], east: norm[0], center: norm[0], span: 0 };
+  }
+  const sorted = norm.slice().sort((a, b) => a - b);
+  let maxGap = -1;
+  let maxGapI = 0;
+  for (let i = 0; i < sorted.length - 1; i++){
+    const g = sorted[i + 1] - sorted[i];
+    if (g > maxGap){ maxGap = g; maxGapI = i; }
+  }
+  const wrapGap = (sorted[0] + 360) - sorted[sorted.length - 1];
+  if (wrapGap > maxGap){
+    maxGap = wrapGap;
+    maxGapI = sorted.length - 1;
+  }
+  let west, east, span;
+  if (maxGapI === sorted.length - 1){
+    west = sorted[0];
+    east = sorted[sorted.length - 1];
+    span = east - west;
+  } else {
+    west = sorted[maxGapI + 1];
+    east = sorted[maxGapI];
+    span = (east + 360) - west;
+  }
+  let center = west + span / 2;
+  if (center > 180) center -= 360;
+  if (center <= -180) center += 360;
+  center = normalizeLon(center);
+  return { west, east, center, span };
+}
+
 /**
  * Render an interactive OSM tile map inside #miniMap. Uses direct <img>
  * tiles from tile.openstreetmap.org (no 3rd-party JS), positioned absolutely.
@@ -32001,6 +32095,45 @@ function tileMapLatLonToPx(root, lat, lon){
   return { x: pX, y: pY };
 }
 
+/**
+ * Like tileMapLatLonToPx but allows lon outside [-180,180] (transient unwrap for track polylines).
+ * View center remains canonical. Never use for persistence.
+ */
+function tileMapLatLonToPxUnwrapped(root, lat, lon){
+  const zoom = state.mapZoom || 11;
+  const vc   = state.viewCenter || state.lastPoint || { lat: 0, lon: 0 };
+  const { W, H } = gisMapTileMathViewport(root);
+  const vtx  = lonToTileX(normalizeLon(vc.lon), zoom);
+  const vty  = latToTileY(Math.max(-85.05, Math.min(85.05, vc.lat)), zoom);
+  const ctrPx = vtx * 256, ctrPy = vty * 256;
+  const originX = ctrPx - W / 2;
+  const originY = ctrPy - H / 2;
+  const pX = lonToTileX(lon, zoom) * 256 - originX;
+  const pY = latToTileY(Math.max(-85.05, Math.min(85.05, lat)), zoom) * 256 - originY;
+  return { x: pX, y: pY };
+}
+
+/**
+ * Project track points to map px using consecutive shortest-wrap lon (transient).
+ * Does not mutate `pts`. Returns [{x,y}, …] aligned 1:1 with input.
+ */
+function trackPointsToMapPx(root, pts){
+  if (!root || !Array.isArray(pts) || !pts.length) return [];
+  const vc = state.viewCenter || state.lastPoint || { lat: 0, lon: 0 };
+  const lons = pts.map((p) => (p && Number.isFinite(p.lon) ? p.lon : NaN));
+  const aligned = trackLonsAlignToView(trackLonsUnwrapTransient(lons), vc.lon);
+  const out = new Array(pts.length);
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(aligned[i])){
+      out[i] = { x: NaN, y: NaN };
+      continue;
+    }
+    out[i] = tileMapLatLonToPxUnwrapped(root, p.lat, aligned[i]);
+  }
+  return out;
+}
+
 /** Count how many tiles are covered by a bbox {n,s,e,w} over a zoom range.
  *  (Different signature from the earlier countBboxTiles(n,s,e,w,z0,z1) used
  *  by the pre-cache engine — kept distinct to avoid accidental shadowing.) */
@@ -33905,24 +34038,27 @@ function flyMapToTrackPoints(pts){
   if (pts.length === 1){
     const p = pts[0];
     if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) return;
-    state.viewCenter = { lat: p.lat, lon: p.lon };
+    state.viewCenter = { lat: p.lat, lon: normalizeLon(p.lon) };
     const z0 = state.mapZoom || 11;
     state.mapZoom = clampBasemapFitZoom(z0 < 12 ? 14 : z0);
     saveStore();
-    renderTileMap(p.lat, p.lon, state.mapZoom);
+    renderTileMap(p.lat, normalizeLon(p.lon), state.mapZoom);
     return;
   }
-  let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+  let minLat = 90, maxLat = -90;
+  const lons = [];
   for (const p of pts){
     if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     minLat = Math.min(minLat, p.lat); maxLat = Math.max(maxLat, p.lat);
-    minLon = Math.min(minLon, p.lon); maxLon = Math.max(maxLon, p.lon);
+    lons.push(p.lon);
   }
   if (minLat > maxLat) return;
+  const arc = trackLonMinimalArc(lons);
+  if (!arc) return;
   const clat = (minLat + maxLat) / 2;
-  const clon = (minLon + maxLon) / 2;
+  const clon = arc.center;
   const latSpan = Math.abs(maxLat - minLat) || 1e-6;
-  const lonSpan = Math.abs(maxLon - minLon) || 1e-6;
+  const lonSpan = Math.abs(arc.span) || 1e-6;
   const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
   let z = 16;
   if (span > 2) z = 8;
@@ -34287,18 +34423,6 @@ function trackBrushSyncMapClasses(){
   } catch(_){}
 }
 
-function trackBrushCrossesAntimeridian(pts){
-  if (!Array.isArray(pts) || pts.length < 2) return false;
-  for (let i = 1; i < pts.length; i++){
-    const a = pts[i - 1], b = pts[i];
-    if (!a || !b || !Number.isFinite(a.lon) || !Number.isFinite(b.lon)) continue;
-    const la = normalizeLon(a.lon);
-    const lb = normalizeLon(b.lon);
-    if (Math.abs(lb - la) > 180) return true;
-  }
-  return false;
-}
-
 function trackBrushRdpIterative(points, epsilon){
   const n = points.length;
   if (n <= 2) return points.slice();
@@ -34369,7 +34493,6 @@ function trackBrushPostProcess(rawIn){
   if (!(stroke >= TRACK_BRUSH_MIN_STROKE_PX)) return { ok: false, reason: "too_short" };
   let pts = trackBrushDedupGeo(raw);
   if (pts.length < 2) return { ok: false, reason: "min_points" };
-  if (trackBrushCrossesAntimeridian(pts)) return { ok: false, reason: "antimeridian" };
   let simp = trackBrushRdpIterative(pts, TRACK_BRUSH_RDP_EPSILON_PX);
   if (simp.length > TRACK_BRUSH_FINAL_CAP){
     let lo = TRACK_BRUSH_RDP_EPSILON_PX;
@@ -34395,7 +34518,6 @@ function trackBrushPostProcess(rawIn){
   }
   if (!simp || simp.length < 2) return { ok: false, reason: "min_points" };
   if (simp.length > TRACK_BRUSH_FINAL_CAP) return { ok: false, reason: "cap" };
-  if (trackBrushCrossesAntimeridian(simp)) return { ok: false, reason: "antimeridian" };
   const reviewPoints = simp.map((p) => ({
     lat: p.lat,
     lon: p.lon,
@@ -34547,10 +34669,7 @@ function trackBrushPaintOverlay(){
       const off = typeof workbenchTileMapOffset === "function" ? workbenchTileMapOffset(tileMap) : null;
       if (off){ tx = off.tx || 0; ty = off.ty || 0; }
     } catch(_){}
-    coords = (b.reviewPoints || []).map((p) => {
-      const c = tileMapLatLonToPx(root, p.lat, p.lon);
-      return { x: c.x - tx, y: c.y - ty };
-    });
+    coords = trackPointsToMapPx(root, b.reviewPoints || []).map((c) => ({ x: c.x - tx, y: c.y - ty }));
   }
   if (b.overlayLine){
     if (coords.length >= 2){
@@ -34957,9 +35076,7 @@ function trackBrushFinishGesture(opts){
     b.reviewPoints = [];
     b.rawAccepted = 0;
     b.phase = "armed";
-    if (res.reason === "antimeridian"){
-      b.feedback = trackBrushMsg("track.brush.antimeridian", "Antimeridian crossing is not supported.");
-    } else if (res.reason === "too_short"){
+    if (res.reason === "too_short"){
       b.feedback = trackBrushMsg("track.brush.tooShort", "Stroke too short.");
     } else {
       b.feedback = trackBrushMsg("track.brush.minPoints", "At least two distinct points are required.");
@@ -37624,7 +37741,7 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
     }
     const closed = !!st.closed && pts.length >= 3;
     const linePts = trackLinePointsForMapRender(pts, closed);
-    const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+    const coords = trackPointsToMapPx(root, linePts);
     const ptStr = coords.map(c => (c.x - tx).toFixed(1) + "," + (c.y - ty).toFixed(1)).join(" ");
     const line = document.createElementNS(ns, closed ? "polygon" : "polyline");
     line.setAttribute("points", ptStr);
@@ -40221,7 +40338,8 @@ function renderTrackOverlay(tileMap, markerLat, markerLon, zoom){
 
   const closed = !!state.track.closed && pts.length >= 3;
   const linePts = trackLinePointsForMapRender(pts, closed);
-  const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+  const coords = trackPointsToMapPx(root, linePts);
+  const handleCoords = trackPointsToMapPx(root, pts);
   const W = tileMap.clientWidth || root.clientWidth || 400;
   const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
   const z = state.mapZoom || zoom || 11;
@@ -40251,7 +40369,8 @@ function renderTrackOverlay(tileMap, markerLat, markerLon, zoom){
   const markerLo = Number.isFinite(loRef) ? loRef : 0;
 
   for (let i = 0; i < pts.length; i++){
-    const c = coords[i];
+    const c = handleCoords[i];
+    if (!c || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
     const cx = c.x - tx, cy = c.y - ty;
     const p = pts[i];
     const g = document.createElementNS(ns, "g");
@@ -55374,7 +55493,7 @@ function workbenchMapHitTestAtClient(root, tileMap, clientX, clientY, markerLat,
     }
     const closed = !!st.closed && pts.length >= 3;
     const linePts = trackLinePointsForMapRender(pts, closed);
-    const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+    const coords = trackPointsToMapPx(root, linePts);
     for (let i = 1; i < coords.length; i++){
       const x1 = coords[i - 1].x - tx, y1 = coords[i - 1].y - ty;
       const x2 = coords[i].x - tx, y2 = coords[i].y - ty;
@@ -55581,9 +55700,9 @@ function renderWorkbenchSelectionHighlight(tileMap, markerLat, markerLon, zoom){
     if (st && Array.isArray(st.points) && st.points.length){
       const closed = !!st.closed && st.points.length >= 3;
       const linePts = trackLinePointsForMapRender(st.points, closed);
-      const coords = linePts.map(p => tileMapLatLonToPx(root, p.lat, p.lon));
+      const coords = trackPointsToMapPx(root, linePts);
       if (st.points.length === 1){
-        const c = coords[0];
+        const c = tileMapLatLonToPx(root, st.points[0].lat, st.points[0].lon);
         const dot = document.createElementNS(ns, "circle");
         dot.setAttribute("class", "wb-sel-hl-ring");
         dot.setAttribute("cx", (c.x - tx).toFixed(1));
