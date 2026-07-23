@@ -117,16 +117,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | tip docs precedente **`02dceac`**; runtime **`9cc7937`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
-| Runtime live / commit monolite | `9cc7937e807f06f92a783472f292372b9ec7f085` (`9cc7937`) — tip TRACK-BRUSH-ANTIMERIDIAN-FIX1 |
-| Ultimo blocco runtime chiuso | **TRACK-BRUSH-ANTIMERIDIAN** (+ FIX1) — dateline brush/render/fit (build 44) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync finito QA) | tip docs precedente su antimeridian; runtime **`793f4cb`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
+| Runtime live / commit monolite | `793f4cb30437eb490cb65a71831195bdc5441837` (`793f4cb`) — tip TRACK-CREATE-EDIT-UX-A-FIX1 |
+| Ultimo blocco runtime chiuso | **TRACK-CREATE-EDIT-UX-A** (+ FIX1) — CTA Nuova traccia + stile review/edit + verify persistenza (build 46) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `9cc7937e807f06f92a783472f292372b9ec7f085` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `6f22b7e9a197c1a5b2efd4d116c325247a07eee1` |
-| Byte monolite (git) | `2733148` |
-| `APP_BUILD_NUM` | `44` |
-| Display runtime | `B5.5Z · build 44` |
+| Runtime Git / atteso VPS | `793f4cb30437eb490cb65a71831195bdc5441837` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `0afb9c91177facc4fdca1a468144df870ddbcd8b` |
+| Byte monolite (git LF) | `2765139` |
+| `APP_BUILD_NUM` | `46` |
+| Display runtime | `B5.5Z · build 46` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| TRACK-CREATE-EDIT-UX-A / FIX1 | **CLOSED / PASS end-to-end** (CTA punti/pennello + stile unificato + verify; QA PASS) |
 | TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS end-to-end** (dateline shortest-wrap + fit ordinato; QA PASS) |
 | TRACK-BRUSH-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (pennello freehand + lifecycle + import lock + Esc) |
 | TRACK-STYLE-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (stile saved tracks + lifecycle + Include sync) |
@@ -149,7 +150,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=9cc7937` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=793f4cb` |
 
 **Prossimo ordine operativo:**
 
@@ -157,11 +158,19 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-BRUSH-ANTIMERIDIAN.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-CREATE-EDIT-UX-A.
 
 ---
 
 ## Backlog / note immediate
+
+### TRACK-CREATE-EDIT-UX-A (+ FIX1) — CTA Nuova traccia + stile unificato (build 46) — CLOSED
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-24). **Non** WU aperta.
+
+**Runtime tip:** `793f4cb30437eb490cb65a71831195bdc5441837` — catena `33dc33d` (45) → `793f4cb` (46 FIX1) — blob `0afb9c91…` — byte LF **2765139** — SHA-256 LF **`61c8b386…`** — display **`B5.5Z · build 46`** — deploy GIS-only Cursor SSH PASS — review downstream FIX1 PASS — QA «**QA TRACK-CREATE-EDIT-UX-A + FIX1 PASS operatore**».
+
+**Sintesi:** menu Nuova traccia (Per punti / Con pennello); `workingStyle` in review brush; Modifica unificata geometria+nome+stile; rimozione Stile riga; batch stile preservato; FIX1 confronto canonico post-`saveStore` + rollback.
 
 ### IMPORT-DROP-B-TRACK-MODAL-UX-A — KMZ drop + Centra/Unità (build 35) — CLOSED
 
