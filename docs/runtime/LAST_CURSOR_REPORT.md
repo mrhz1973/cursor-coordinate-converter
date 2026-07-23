@@ -2,53 +2,56 @@
 
 ## LATEST
 
-* real_task_commit: `40c97b6bec5ac9120d772b444906accca00f8c9d`
-* real_task_subject: fix(gis): sync batch style inclusion before preview (build 38)
-* report_generated_at: 2026-07-21T23:55:00Z
+* real_task_commit: `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c`
+* real_task_subject: fix(gis): serialize brush imports and preserve review lifecycle (build 42)
+* report_generated_at: 2026-07-23T07:10:00Z
 * branch: main
-* remote_head_after_task_push: `40c97b6bec5ac9120d772b444906accca00f8c9d` (runtime già su origin/main pre-docs finito)
-* previous_report_container: `93a3e68` (orchestratore riconciliazione post IMPORT-DROP-B-TRACK-MODAL-UX-A finito — esterno/verificabile)
+* remote_head_after_task_push: `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (runtime già su origin/main pre-docs finito)
+* previous_report_container: `87aaca9` (orchestratore riconciliazione post TRACK-STYLE-A finito — esterno/verificabile); report LATEST precedente in finito docs `0a7dd11`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: docs-only finito (OM/HANDOFF/WU/LAST_CURSOR_REPORT); monolite invariato
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: TRACK-STYLE-A + FIX1 + FIX2 CLOSED; finito docs post QA PASS + autorizzazione esplicita
+* result_cursor: TRACK-BRUSH-A + FIX1 + FIX2 + FIX3 CLOSED; finito docs post QA PASS (auto-finito Regola H)
 * pass_operatore: PASS
-* result_runtime: QA TRACK-STYLE-A — stile saved tracks build 38; deploy PASS attestato operatore fuori Cursor (byte 2655368, SHA-256 match); QA PASS
-* qa_attestation_source: operatore — «QA TRACK-STYLE-A PASS operatore» + «AUTORIZZAZIONE ESPLICITA FINITO»
-* notes: bundle DELICATO; catena ab5455d (36) → 1146e59 (37) → 40c97b6 (38); chiusi TRACK-STYLE-A / FIX1 / FIX2; resta non aperto TRACK-BRUSH-A; blob 2acf7711…; byte 2655368; SHA-256 952550ef…; monolite non modificato in chiusura docs
+* result_runtime: QA TRACK-BRUSH-A — pennello freehand build 42; deploy GIS-only Cursor SSH PASS (byte 2728773, SHA-256 match, HTTP 200); QA PASS
+* qa_attestation_source: operatore — «QA TRACK-BRUSH-A PASS operatore»
+* notes: bundle DELICATO; catena 15f9640 (39) → 75a1d5c (40) → db10408 (41) → d4f877a (42); chiusi TRACK-BRUSH-A / FIX1 / FIX2 / FIX3; blob 6e676089…; byte 2728773; SHA-256 3660ce50…; monolite non modificato in chiusura docs; backlog correlato TRACK-BRUSH-ANTIMERIDIAN non aperto
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit verificato:
-40c97b6bec5ac9120d772b444906accca00f8c9d
+d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-2acf77113a73f1d76d130dc2b2947c8310080f6e
+6e6760890b40eed1f62a24893e815edc69140489
 
 git cat-file -s HEAD:"coordinate_converter Claude.html"
-2655368
+2728773
 
-sha256sum (repo file):
-952550efe6eff48d2e6894fdb32fc41cbec7c22734c0bb69b78b9614f5827d49
+sha256sum (git blob / deploy):
+3660ce5002023ac419d575b960f5a8c366191a7a72245fc650ca09c5bb2df4e3
 
-Deploy VPS (fuori sessione Cursor — attestato operatore):
+Deploy VPS GIS-only (Cursor SSH ionos-n8n):
+pull FF 40c97b6 → d4f877a
 goi-gis-app.service active/enabled
 HTTP 200
-byte serviti: 2655368
-SHA-256 servito: 952550efe6eff48d2e6894fdb32fc41cbec7c22734c0bb69b78b9614f5827d49
-contenuto coincidente con runtime approvato
-DEPLOY NON RIPETUTO DA CURSOR IN CHIUSURA FINITO
+URL: http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d4f877a
+byte/SHA/cmp PASS
+Planet-Clone/proxy/Docker/n8n/Tailscale/firewall NON TOCCATI
+DEPLOY NON RIPETUTO IN CHIUSURA FINITO
 
-QA TRACK-STYLE-A PASS operatore
-AUTORIZZAZIONE ESPLICITA FINITO — TRACK-STYLE-A
+QA TRACK-BRUSH-A PASS operatore
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 87aaca9 — TRACK-STYLE-A finito autosync/orchestratore (real_task 40c97b6; finito docs 0a7dd11; container report precedente 87aaca9 — esterno/verificabile)
+* 0a7dd11 — TRACK-STYLE-A finito docs (real_task 40c97b6 build 38; report LATEST precedente spostato qui come storia)
+* 40c97b6 — TRACK-STYLE-A + FIX1 + FIX2 runtime (build 38; catena ab5455d→1146e59→40c97b6)
 * 93a3e68 — IMPORT-DROP-B-TRACK-MODAL-UX-A finito autosync/orchestratore (real_task 1d28163; finito docs 434ece7; container report precedente 93a3e68 — esterno/verificabile)
 * 1d28163 — IMPORT-DROP-B + TRACK-MODAL-UX-A runtime (build 35; report LATEST precedente spostato qui come storia)
 * 57adf61 — IMPORT-DROP-A finito autosync/orchestratore (real_task 5f57a75; finito docs d4d49e6; container report precedente 57adf61 — esterno/verificabile)
@@ -65,9 +68,9 @@ PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## LIMITI
 
-* Backlog non aperto: TRACK-BRUSH-A
+* Backlog correlato non aperto: TRACK-BRUSH-ANTIMERIDIAN
 * OFFLINE-DOWNLOAD-CONTROLS backlog (Pausa/Stop/Riprendi — non implementato)
 * Estensioni MAJOR-3 (import unificato) / MAJOR-4 (import/restore) backlog basso
-* Export stile GPX/KML / Mission Package stile — fuori scope TRACK-STYLE-A (invariati)
-* Deploy VPS non ripetuto da Cursor in chiusura (attestato operatore fuori sessione)
+* Prossimo ordine operativo: da scegliere da roadmap/backlog
+* Deploy VPS non ripetuto in chiusura finito (già PASS tecnico pre-QA)
 * QA touch/tablet non attestata nel flusso

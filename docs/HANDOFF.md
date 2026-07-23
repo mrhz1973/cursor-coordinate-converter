@@ -117,15 +117,16 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD remoto (verificato) | `40c97b6` — aggiornare con `git ls-remote` prima di ogni sessione |
-| Ultimo blocco chiuso | **TRACK-STYLE-A** (+ FIX1 + FIX2) — stile saved tracks (build 38) |
+| HEAD remoto (verificato) | `d4f877a` — aggiornare con `git ls-remote` prima di ogni sessione |
+| Ultimo blocco chiuso | **TRACK-BRUSH-A** (+ FIX1 + FIX2 + FIX3) — pennello freehand (build 42) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `40c97b6bec5ac9120d772b444906accca00f8c9d` (deploy PASS attestato operatore fuori Cursor) |
-| Blob monolite (git) | `2acf77113a73f1d76d130dc2b2947c8310080f6e` |
-| Byte monolite (git) | `2655368` |
-| `APP_BUILD_NUM` | `38` |
-| Display runtime | `B5.5Z · build 38` |
+| Runtime Git / atteso VPS | `d4f877ae0d4c7d936fc1e0193e9c40fa8f7c1a9c` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `6e6760890b40eed1f62a24893e815edc69140489` |
+| Byte monolite (git) | `2728773` |
+| `APP_BUILD_NUM` | `42` |
+| Display runtime | `B5.5Z · build 42` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| TRACK-BRUSH-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (pennello freehand + lifecycle + import lock + Esc) |
 | TRACK-STYLE-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (stile saved tracks + lifecycle + Include sync) |
 | IMPORT-DROP-B / TRACK-MODAL-UX-A | **CLOSED / PASS end-to-end** (KMZ drop + fit + Centra/Unità) |
 | IMPORT-DROP-A | **CLOSED / PASS end-to-end** (drag & drop GPX/KML multi-file) |
@@ -146,15 +147,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=40c97b6` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d4f877a` |
 
 **Prossimo ordine operativo:**
 
-Candidato tracce (**non aperto**): **TRACK-BRUSH-A**. **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
+**Da scegliere da roadmap/backlog.** **OFFLINE-DOWNLOAD-CONTROLS** backlog (Pausa / Stop-Annulla / Riprendi — **non ora**). Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. Backlog correlato tracce: **TRACK-BRUSH-ANTIMERIDIAN** (non aperto). **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** TRACK-BRUSH-A, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
+**Backlog basso / non ora:** TRACK-BRUSH-ANTIMERIDIAN, import unificato MAJOR-3, import/restore MAJOR-4, OFFLINE-DOWNLOAD-CONTROLS.
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-STYLE-A.
+**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-BRUSH-A.
 
 ---
 
