@@ -19975,7 +19975,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 47;
+const APP_BUILD_NUM = 48;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -30798,6 +30798,9 @@ function previewNamedAreasBatchTileDelete(areaIds){
 
 /** Delete cached tiles for one area, skipping keys still overlapped by other saved areas (same layer / zoom semantics). */
 async function deleteNamedAreaTilesRespectingOthers(area, excludeAreaId){
+  if (guardOfflineDestructiveOrNotify()){
+    return { deleted: 0, candidates: 0, keptShared: 0, attempted: 0, failed: 0, toDelete: 0, blocked: true };
+  }
   const preview = previewNamedAreaTileDelete(area, excludeAreaId);
   if (!preview.toDelKeys.length){
     return {
@@ -30822,6 +30825,9 @@ async function deleteNamedAreaTilesRespectingOthers(area, excludeAreaId){
 
 /** Batch physical delete: keys unique to selected areas (not required by non-selected areas). */
 async function deleteNamedAreasTilesRespectingOthersBatch(areaIds){
+  if (guardOfflineDestructiveOrNotify()){
+    return { deleted: 0, candidates: 0, keptShared: 0, attempted: 0, failed: 0, toDelete: 0, blocked: true };
+  }
   const preview = previewNamedAreasBatchTileDelete(areaIds);
   if (!preview.toDelKeys.length){
     return {
@@ -31224,36 +31230,60 @@ function revokeMapBlobUrls(root){
 let _precacheAbort = null;
 let _offlineDownloadTokenSeq = 0;
 let _offlineDlStatusThrottleAt = 0;
+const OFFLINE_DL_STATUS_THROTTLE_MS = 800;
 
-/** Ensure session-only batch/job object (never persisted). */
+/** Ensure session-only batch/job object (never persisted). Non-destructive backfill for legacy/incomplete shapes. */
 function ensureOfflineBatchPrecacheState(){
+  const defaults = {
+    running: false,
+    queue: [],
+    currentId: null,
+    areaIndex: 0,
+    total: 0,
+    abortRequested: false,
+    startedAt: null,
+    phase: "idle",
+    token: 0,
+    pauseRequested: false,
+    stopRequested: false,
+    nextIdx: 0,
+    done: 0,
+    err: 0,
+    errKinds: null,
+    inFlight: 0,
+    autoPauseReason: null,
+    layerId: null,
+    areaTotal: 0,
+    lastStatusKind: null,
+    _pauseResolvers: null,
+    _wakePause: null
+  };
   let bp = state._offlineBatchPrecache;
   if (!bp || typeof bp !== "object"){
-    bp = state._offlineBatchPrecache = {
-      running: false,
-      queue: [],
-      currentId: null,
-      areaIndex: 0,
-      total: 0,
-      abortRequested: false,
-      startedAt: null,
-      phase: "idle",
-      token: 0,
-      pauseRequested: false,
-      stopRequested: false,
-      nextIdx: 0,
-      done: 0,
-      err: 0,
-      errKinds: null,
-      inFlight: 0,
-      autoPauseReason: null,
-      layerId: null,
-      areaTotal: 0,
-      lastStatusKind: null,
-      _pauseResolvers: null,
-      _wakePause: null
-    };
+    bp = state._offlineBatchPrecache = Object.assign({}, defaults);
+    bp._pauseResolvers = [];
+    return bp;
   }
+  for (const k of Object.keys(defaults)){
+    if (!Object.prototype.hasOwnProperty.call(bp, k) || bp[k] === undefined){
+      bp[k] = defaults[k];
+    }
+  }
+  if (!Array.isArray(bp.queue)) bp.queue = [];
+  if (!Array.isArray(bp._pauseResolvers)) bp._pauseResolvers = [];
+  if (typeof bp.running !== "boolean") bp.running = !!bp.running;
+  if (bp.running){
+    const ph = String(bp.phase || "");
+    if (!ph || ph === "idle" || ph === "completed" || ph === "failed" || ph === "stopped"){
+      bp.phase = "running";
+    }
+  }
+  if (typeof bp.token !== "number" || !Number.isFinite(bp.token)) bp.token = 0;
+  if (typeof bp.nextIdx !== "number" || !Number.isFinite(bp.nextIdx) || bp.nextIdx < 0) bp.nextIdx = 0;
+  if (typeof bp.done !== "number" || !Number.isFinite(bp.done) || bp.done < 0) bp.done = 0;
+  if (typeof bp.err !== "number" || !Number.isFinite(bp.err) || bp.err < 0) bp.err = 0;
+  if (typeof bp.inFlight !== "number" || !Number.isFinite(bp.inFlight) || bp.inFlight < 0) bp.inFlight = 0;
+  if (typeof bp.areaTotal !== "number" || !Number.isFinite(bp.areaTotal) || bp.areaTotal < 0) bp.areaTotal = 0;
   return bp;
 }
 
@@ -31262,6 +31292,69 @@ function isOfflinePrecacheBusy(){
   if (_precacheAbort !== null) return true;
   const bp = state._offlineBatchPrecache;
   return !!(bp && bp.running);
+}
+
+/** Destructive area/tile ops blocked for the whole offline job (running|pausing|paused|stopping). */
+function offlineDestructiveOpsBlocked(){
+  return isOfflinePrecacheBusy();
+}
+
+function notifyOfflineDestructiveBusy(){
+  try {
+    const msg = t("export.offlineJpg.precacheBusy");
+    setBadge("info", msg);
+    setOfflineDownloadStatusText(msg, { force: true });
+  } catch(_){}
+}
+
+/** Fail-closed: true if blocked (caller must return without mutation). */
+function guardOfflineDestructiveOrNotify(){
+  if (!offlineDestructiveOpsBlocked()) return false;
+  notifyOfflineDestructiveBusy();
+  return true;
+}
+
+/**
+ * Throttled #pcStatus text for aria-live. Progress bar updates stay separate.
+ * force:true bypasses throttle (pause/resume/stop/error/complete/area change/100%).
+ */
+function setOfflineDownloadStatusText(text, opts){
+  opts = opts || {};
+  const st = document.getElementById("pcStatus");
+  if (!st) return false;
+  const next = String(text == null ? "" : text);
+  const force = !!opts.force;
+  const now = Date.now();
+  if (!force){
+    if (st.textContent === next) return false;
+    if (_offlineDlStatusThrottleAt && (now - _offlineDlStatusThrottleAt) < OFFLINE_DL_STATUS_THROTTLE_MS){
+      return false;
+    }
+  }
+  _offlineDlStatusThrottleAt = now;
+  st.textContent = next;
+  return true;
+}
+
+/** Sync disabled state on offline destructive controls (toolbar + row delete + clear). */
+function syncOfflineDestructiveControlsUi(){
+  const busy = offlineDestructiveOpsBlocked();
+  try {
+    const btnDel = document.getElementById("btnOfflineAreasDeleteSel");
+    if (btnDel){
+      const n = Array.isArray(state._offlineAreasSelectedIds) ? state._offlineAreasSelectedIds.length : 0;
+      btnDel.disabled = busy || n <= 0;
+    }
+  } catch(_){}
+  try {
+    const btnClear = document.getElementById("btnPrecacheClear");
+    if (btnClear) btnClear.disabled = busy;
+  } catch(_){}
+  try {
+    document.querySelectorAll("[data-offline-del]").forEach((btn) => {
+      btn.disabled = busy;
+    });
+  } catch(_){}
 }
 
 function _flushOfflinePauseResolvers(bp){
@@ -31317,7 +31410,8 @@ function pauseOfflineDownload(opts){
 function resumeOfflineDownload(){
   const bp = state._offlineBatchPrecache;
   if (!bp || !bp.running) return false;
-  if (bp.phase !== "paused" && bp.phase !== "pausing") return false;
+  /* Resume only from paused — never mid-drain (pausing). */
+  if (bp.phase !== "paused") return false;
   if (bp.stopRequested || bp.abortRequested) return false;
   const layerId = bp.layerId;
   const blocked = offlineDownloadMidJobBlocked(layerId);
@@ -31454,12 +31548,13 @@ function syncOfflineDownloadControlsUi(opts){
     prog.value = Math.min(100, (bp.done / bp.areaTotal) * 100);
   }
 
-  if (st && (opts.forceStatus || phase === "pausing" || phase === "paused")){
+  if (opts.forceStatus || phase === "pausing" || phase === "paused"){
     if (phase === "pausing" || phase === "paused"){
-      st.textContent = offlineDownloadPauseStatusText(bp);
+      setOfflineDownloadStatusText(offlineDownloadPauseStatusText(bp), { force: true });
       bp.lastStatusKind = "pause";
     }
   }
+  try { syncOfflineDestructiveControlsUi(); } catch(_){}
 }
 
 function waitUntilOfflinePrecacheIdle(maxMs){
@@ -31482,6 +31577,7 @@ function waitUntilOfflinePrecacheIdle(maxMs){
  * Keeps current bbox form fields and map view where possible.
  */
 async function performOfflineGlobalReset(){
+  if (guardOfflineDestructiveOrNotify()) return;
   abortOfflinePrecacheRuns();
   await waitUntilOfflinePrecacheIdle(6000);
   try { await idbClearAllTiles(); } catch(_){}
@@ -33526,7 +33622,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
       const areaLine = (t("offcache.batchAreaLine") || "Area {0}/{1}: {2}")
         .replace("{0}", String(i + 1)).replace("{1}", String(ids.length)).replace("{2}", String(label));
       let lastEv = { done: 0, total: params.tot, err: 0, errKinds: makeEmptyTileErrKinds(), aborted: false };
-      if (st) st.textContent = areaLine;
+      if (st) setOfflineDownloadStatusText(areaLine, { force: true });
       try {
         const info = await startPrecacheDownload(Object.assign({}, params, {
           onProgress(ev){
@@ -33540,14 +33636,15 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
             if (useBar && prog && ev.total) prog.value = Math.min(100, (ev.done / ev.total) * 100);
             const phase = bp.phase;
             if (phase === "pausing" || phase === "paused"){
-              if (st) st.textContent = offlineDownloadPauseStatusText(bp);
+              setOfflineDownloadStatusText(offlineDownloadPauseStatusText(bp), { force: true });
               return;
             }
-            if (st && ev.err > 0){
+            if (ev.err > 0){
               const sum = formatPrecacheErrSummary(ev);
-              if (sum) st.textContent = areaLine + " — " + sum;
-            } else if (st && !ev.aborted){
-              st.textContent = areaLine;
+              if (sum) setOfflineDownloadStatusText(areaLine + " — " + sum, { force: true });
+            } else if (!ev.aborted){
+              const atEnd = ev.total > 0 && ev.done >= ev.total;
+              setOfflineDownloadStatusText(areaLine, { force: atEnd });
             }
             try { syncOfflineDownloadControlsUi(); } catch(_){}
           }
@@ -33581,11 +33678,13 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
     if (useBar && bar && !wasStopped) bar.hidden = true;
     if (st && lastQueueInfo){
       if (lastQueueInfo.aborted || wasStopped){
-        st.textContent = t("offcache.stopped") || t("offcache.err.abort");
+        setOfflineDownloadStatusText(t("offcache.stopped") || t("offcache.err.abort"), { force: true });
       } else if (lastQueueInfo.fatal){
-        st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
+        setOfflineDownloadStatusText(formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err"), { force: true });
       } else if (lastQueueInfo.err > 0){
-        st.textContent = formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err");
+        setOfflineDownloadStatusText(formatPrecacheErrSummary(lastQueueInfo) || t("offcache.err"), { force: true });
+      } else {
+        setOfflineDownloadStatusText(t("offcache.done"), { force: true });
       }
     }
     try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
@@ -33765,6 +33864,7 @@ function saveNamedArea(name){
 
 /** Delete a named area by id (with confirm). */
 function deleteNamedArea(id){
+  if (guardOfflineDestructiveOrNotify()) return;
   const a = (state.namedAreas || []).find(x => x.id === id);
   if (!a) return;
   const msg = t("offcache.deleteConfirm").replace("{0}", a.name);
@@ -33984,6 +34084,7 @@ function drawCoverageOverlay(tileMap){
  */
 async function confirmRemoveNamedArea(area){
   if (!area) return;
+  if (guardOfflineDestructiveOrNotify()) return;
   const sid = String(area.id);
   const preview = previewNamedAreaTileDelete(area, sid);
   populateOfflineAreaDeleteDialogPreview(preview);
@@ -37535,6 +37636,7 @@ function formatBytesShort(n){
 
 function deleteNamedAreaMetadataOnlyById(id, opts){
   opts = opts || {};
+  if (guardOfflineDestructiveOrNotify()) return;
   const sid = String(id);
   const before = Array.isArray(state.namedAreas) ? state.namedAreas.length : 0;
   state.namedAreas = (state.namedAreas || []).filter(x => x && x.id !== sid);
@@ -37781,7 +37883,7 @@ function renderOfflineAreasList(){
         <button type="button" class="btn btn-sm" data-offline-verify="${esc(a.id)}" data-tip="${verifyTip}" aria-label="${verifyTip}" ${verifyDisabled ? "disabled" : ""}>${verifyLbl}</button>
         <button type="button" class="btn btn-sm" data-offline-load="${esc(a.id)}" data-i18n-tip="offcache.area.loadTip" data-i18n-aria="offcache.area.loadTip" data-tip="${esc(t("offcache.area.loadTip"))}" aria-label="${esc(t("offcache.area.loadTip"))}"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm" data-offline-fit="${esc(a.id)}" data-i18n-tip="offcache.area.fitTip" data-i18n-aria="offcache.area.fitTip" data-tip="${esc(t("offcache.area.fitTip"))}" aria-label="${esc(t("offcache.area.fitTip"))}"><span aria-hidden="true">⌖</span></button>
-        <button type="button" class="btn btn-sm btn-danger-subtle" data-offline-del="${esc(a.id)}" data-i18n-tip="tip.offlineAreaDeleteOne" data-i18n-aria="tip.offlineAreaDeleteOne" data-tip="${esc(t("tip.offlineAreaDeleteOne"))}" aria-label="${esc(t("tip.offlineAreaDeleteOne"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
+        <button type="button" class="btn btn-sm btn-danger-subtle" data-offline-del="${esc(a.id)}" data-i18n-tip="tip.offlineAreaDeleteOne" data-i18n-aria="tip.offlineAreaDeleteOne" data-tip="${esc(t("tip.offlineAreaDeleteOne"))}" aria-label="${esc(t("tip.offlineAreaDeleteOne"))}" ${busy ? "disabled" : ""}><span class="danger-x" aria-hidden="true">✕</span></button>
       </div></td>
     </tr>`;
   }
@@ -38287,6 +38389,7 @@ function ensureOfflineAreasListDelegation(){
     };
     const handleBatchDelete = () => {
       void (async () => {
+        if (guardOfflineDestructiveOrNotify()) return;
         const ids = selectedIds().map(String).filter(Boolean);
         if (!ids.length) return;
         const preview = previewNamedAreasBatchTileDelete(ids);
@@ -38437,6 +38540,7 @@ function ensureOfflineAreasListDelegation(){
     const delBtn = ev.target.closest && ev.target.closest("[data-offline-del]");
     if (delBtn){
       ev.preventDefault();
+      if (delBtn.disabled || guardOfflineDestructiveOrNotify()) return;
       const id = delBtn.getAttribute("data-offline-del");
       void handleOfflineAreaRowDelete(id);
       return;
@@ -38458,9 +38562,13 @@ function updateOfflineAreasToolbarUI(){
   const auditBusy = !!state._offlineAreaAuditRunning;
   if (btnShow) btnShow.disabled = !any;
   if (btnHide) btnHide.disabled = !any;
-  if (btnDel)  btnDel.disabled  = !any;
+  if (btnDel)  btnDel.disabled  = !any || busy;
   if (btnPrecacheSel) btnPrecacheSel.disabled = !any || busy;
   if (btnVerifySel) btnVerifySel.disabled = !any || auditBusy;
+  try {
+    const btnClear = document.getElementById("btnPrecacheClear");
+    if (btnClear) btnClear.disabled = busy;
+  } catch(_){}
 }
 
 function renderSavedTracksList(){
@@ -50128,6 +50236,7 @@ function bindUI(){
   }
   const btnPclr = document.getElementById("btnPrecacheClear");
   if (btnPclr) btnPclr.addEventListener("click", async () => {
+    if (guardOfflineDestructiveOrNotify()) return;
     const ok = await showOfflineGlobalClearDialog();
     if (!ok) return;
     await performOfflineGlobalReset();
@@ -58458,6 +58567,10 @@ function ensureOfflineAreaDeleteDialogWired(){
 
 /** Promise → `"cancel"` | `"listOnly"` | `"withTiles"` */
 function showOfflineAreaDeleteChoiceDialog(){
+  if (offlineDestructiveOpsBlocked()){
+    notifyOfflineDestructiveBusy();
+    return Promise.resolve("cancel");
+  }
   ensureOfflineAreaDeleteDialogWired();
   const d = document.getElementById("offlineAreaDeleteDialog");
   return new Promise((resolve) => {
@@ -58510,6 +58623,10 @@ function ensureOfflineAreaBatchDeleteDialogWired(){
 
 /** Promise → `"cancel"` | `"listOnly"` | `"withTiles"` */
 function showOfflineAreaBatchDeleteChoiceDialog(opts){
+  if (offlineDestructiveOpsBlocked()){
+    notifyOfflineDestructiveBusy();
+    return Promise.resolve("cancel");
+  }
   ensureOfflineAreaBatchDeleteDialogWired();
   populateOfflineAreaBatchDeleteDialogPreview(opts || {});
   const d = document.getElementById("offlineAreaBatchDeleteDialog");
@@ -58560,6 +58677,10 @@ function ensureOfflineGlobalClearDialogWired(){
 
 /** Promise → true if user confirmed destructive global offline reset. */
 function showOfflineGlobalClearDialog(){
+  if (offlineDestructiveOpsBlocked()){
+    notifyOfflineDestructiveBusy();
+    return Promise.resolve(false);
+  }
   ensureOfflineGlobalClearDialogWired();
   const d = document.getElementById("offlineGlobalClearDialog");
   return new Promise((resolve) => {
@@ -58629,6 +58750,7 @@ function showOpsecStrictConfirmDialog(title, body){
 
 /** Row-X delete: choose metadata-only vs tiles; tiles skip keys still needed by other saved areas. */
 async function handleOfflineAreaRowDelete(id){
+  if (guardOfflineDestructiveOrNotify()) return;
   const sid = String(id || "");
   const area = (state.namedAreas || []).find(x => x && String(x.id) === sid);
   if (!area) return;
