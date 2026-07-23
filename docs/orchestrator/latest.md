@@ -9,9 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-23 — **`finito` sessione — TRACK-BRUSH-ANTIMERIDIAN (+ FIX1) CLOSED / PASS end-to-end:** runtime tip **`9cc7937`** (build 44; catena `bebf517`→`9cc7937`); finito docs task **`77a7f00`** (QA reconcile); monolite **già su main + VPS** (non nel commit docs); working tree pre-autosync **pulito**; deploy GIS-only già PASS; **QA PASS** «**QA TRACK-BRUSH-ANTIMERIDIAN PASS operatore**»; prossimo **da scegliere**; inbox **`2026-07-23_2155_riepilogo_finito-sessione.md`**.
+2026-07-23 — **`finito` conferma sessione (noop):** working tree **già pulito**; HEAD **`2655d98`** = `origin/main` = `ls-remote`; nessun commit task (niente da versionare); stato vivo già allineato — **TRACK-BRUSH-ANTIMERIDIAN** (+ FIX1) **CLOSED / PASS end-to-end** (runtime **`9cc7937`** build 44; QA PASS; finito docs **`77a7f00`**); monolite **già su main + VPS**; prossimo **da scegliere**; inbox **`2026-07-23_2156_riepilogo_finito-sessione.md`**.
 
-2026-07-23 — **`finito` sessione — TRACK-BRUSH-ANTIMERIDIAN PASS tecnico (pre-QA):** finito docs **`4b43311`**; autosync precedente **`02dceac`**.
+2026-07-23 — **`finito` sessione — TRACK-BRUSH-ANTIMERIDIAN (+ FIX1) CLOSED / PASS end-to-end:** runtime tip **`9cc7937`**; finito docs task **`77a7f00`**; autosync **`2655d98`**.
 
 2026-07-23 — **`finito` docs-only — DOCS-STATE-REALIGN-A:** task **`33b7b89`**; autosync **`d510d54`**.
 
