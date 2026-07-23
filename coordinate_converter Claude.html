@@ -9330,7 +9330,18 @@ body:not(.gis-mode) dialog.track-modal.app-modal .app-modal-body{
 .track-brush-bar .tbb-confirm-msg{ font-size:.85rem; margin:0; font-weight:600; }
 .mini-map.track-brush-armed .tile-map,
 .mini-map.track-brush-drawing .tile-map{ cursor:crosshair; }
-.mini-map.track-brush-drawing{ touch-action:none; }
+.mini-map.track-brush-armed,
+.mini-map.track-brush-drawing{
+  touch-action:none;
+}
+.mini-map.track-brush-armed .tile-map,
+.mini-map.track-brush-drawing .tile-map{
+  touch-action:none;
+}
+button#btnTrackBrush.is-disabled,
+button#btnTrackBrush[aria-disabled="true"]{
+  opacity:.55; cursor:not-allowed;
+}
 .saved-tracks-table .btn-danger-subtle[data-saved-del],
 .offline-areas-table .btn-danger-subtle[data-offline-del]{
   min-width:2.25em;
@@ -13303,6 +13314,10 @@ const I18N = {
     "track.brush.minimizeBlocked":"Salva o annulla il Pennello prima di minimizzare.",
     "track.brush.libraryBlocked":"Azioni archivio bloccate durante il Pennello.",
     "track.brush.phaseArmed":"Disegna sulla mappa con il puntatore principale.",
+    "track.brush.toggleBlocked":"Salva, pulisci o annulla il Pennello prima di uscire.",
+    "track.brush.mutationBlocked":"Azioni traccia bloccate mentre il Pennello è attivo.",
+    "track.brush.persistFail":"Persistenza non riuscita. Revisione mantenuta.",
+    "track.brush.conflictRename":"Termina o annulla la rinomina della traccia prima di usare il Pennello.",
     "paste.title":"Input automatico",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM o MGRS — con o senza spazi: l'app riconosce automaticamente il formato.",
     "paste.placeholder":"es. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -15221,6 +15236,10 @@ const I18N = {
     "track.brush.minimizeBlocked":"Save or cancel Brush before minimizing.",
     "track.brush.libraryBlocked":"Archive actions blocked while Brush is active.",
     "track.brush.phaseArmed":"Draw on the map with the primary pointer.",
+    "track.brush.toggleBlocked":"Save, clear or cancel Brush before exiting.",
+    "track.brush.mutationBlocked":"Track actions are blocked while Brush is active.",
+    "track.brush.persistFail":"Could not persist the track. Review kept.",
+    "track.brush.conflictRename":"Finish or cancel the track rename before using Brush.",
     "paste.title":"Automatic input",
     "paste.hint":"Lat/Lon (DD/DDM/DMS), UTM or MGRS — with or without spaces: the app auto-detects the format.",
     "paste.placeholder":"e.g. 5°15'34.0\"N 4°02'38.1\"W  ·  33T2919524640699  ·  30NUL8431881439  ·  8FVC2222+22",
@@ -19743,7 +19762,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 39;
+const APP_BUILD_NUM = 40;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -33639,6 +33658,12 @@ function savedTrackApplyNormalizedPatchToTrack(st, norm){
  */
 function savedTracksApplyStyleByIds(ids, patch, opts){
   opts = opts || {};
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return { ok: false, count: 0 };
+    }
+  } catch(_){}
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   const norm = savedTrackNormalizeStylePatch(patch);
@@ -33912,7 +33937,7 @@ function savedTrackAddFromPoints(opts){
   return { ok: true, track };
 }
 
-/* ========================= TRACK-BRUSH-A (build 39) ========================= */
+/* ========================= TRACK-BRUSH-A (build 40 / FIX1) ========================= */
 const TRACK_BRUSH_MIN_SAMPLE_PX = 5;
 const TRACK_BRUSH_MIN_STROKE_PX = 8;
 const TRACK_BRUSH_RAW_CAP = 4096;
@@ -33925,12 +33950,13 @@ function trackBrushEnsure(){
       phase: "idle",
       pointerId: null,
       pointerType: "",
-      ignorePointerId: null,
+      drainPointerId: null,
       raw: [],
       reviewPoints: [],
       rawAccepted: 0,
       name: "",
       feedback: "",
+      idlePanelFeedback: "",
       closeConfirm: false,
       raf: 0,
       lastSx: NaN,
@@ -33940,7 +33966,15 @@ function trackBrushEnsure(){
       drawSnap: null,
       captureEl: null,
       docListeners: false,
-      blurBound: false
+      drainListeners: false,
+      blurBound: false,
+      overlayWrap: null,
+      overlaySvg: null,
+      overlayLine: null,
+      overlayEndA: null,
+      overlayEndB: null,
+      overlayTileMap: null,
+      overlayMode: ""
     };
   }
   return state._trackBrush;
@@ -33958,9 +33992,26 @@ function trackBrushIsActive(){
   return p === "armed" || p === "drawing" || p === "review" || p === "saving";
 }
 
-function trackBrushBlocksLibraryMutations(){
+function trackBrushIsDraining(){
+  try {
+    const b = state._trackBrush;
+    return !!(b && b.drainPointerId != null);
+  } catch(_){ return false; }
+}
+
+/** Canonical mutation block for Track Builder + archive while brush owns the panel. */
+function trackBrushBlocksTrackMutation(){
   const p = trackBrushPhase();
-  return p === "drawing" || p === "review" || p === "saving";
+  if (p === "armed" || p === "drawing" || p === "review" || p === "saving") return true;
+  try {
+    const b = state._trackBrush;
+    if (b && b.closeConfirm) return true;
+  } catch(_){}
+  return false;
+}
+
+function trackBrushBlocksLibraryMutations(){
+  return trackBrushBlocksTrackMutation();
 }
 
 function trackBrushBlocksMinimize(){
@@ -33969,6 +34020,7 @@ function trackBrushBlocksMinimize(){
 }
 
 function trackBrushYieldsPan(){
+  if (trackBrushIsDraining()) return true;
   const p = trackBrushPhase();
   return p === "armed" || p === "drawing";
 }
@@ -33992,11 +34044,51 @@ function trackBrushMsg(key, fallback){
   return fallback || key;
 }
 
+function trackBrushNotifyBlocked(msg){
+  const m = msg || trackBrushMsg("track.brush.mutationBlocked", "Track actions are blocked while Brush is active.");
+  trackBrushSetFeedback(m);
+  try {
+    const pe = document.getElementById("trackSaveGuardMsg");
+    if (pe && (trackBrushPhase() === "idle" || !document.getElementById("trackBrushBar") || document.getElementById("trackBrushBar").hidden)){
+      pe.textContent = m;
+      pe.hidden = false;
+    }
+  } catch(_){}
+}
+
 function trackBrushSetFeedback(msg){
   const b = trackBrushEnsure();
   b.feedback = msg ? String(msg) : "";
   const el = document.getElementById("trackBrushFeedback");
   if (el) el.textContent = b.feedback;
+}
+
+function trackBrushSetIdlePanelFeedback(msg){
+  const b = trackBrushEnsure();
+  b.idlePanelFeedback = msg ? String(msg) : "";
+  const pe = document.getElementById("trackSaveGuardMsg");
+  if (pe){
+    if (b.idlePanelFeedback){
+      pe.textContent = b.idlePanelFeedback;
+      pe.hidden = false;
+    } else if (pe.textContent === trackBrushMsg("track.brush.unsupported", "Brush unavailable: this browser does not support Pointer Events.") ||
+               pe.dataset.trackBrushIdle === "1"){
+      pe.textContent = "";
+      pe.hidden = true;
+      try { delete pe.dataset.trackBrushIdle; } catch(_){}
+    }
+  }
+  if (pe && b.idlePanelFeedback){
+    try { pe.dataset.trackBrushIdle = "1"; } catch(_){}
+  }
+}
+
+function trackBrushHasOpenSavedRename(){
+  try {
+    const a = document.activeElement;
+    if (a && a.matches && a.matches("input[data-saved-rename]")) return true;
+  } catch(_){}
+  return false;
 }
 
 function trackBrushCancelRaf(){
@@ -34042,6 +34134,50 @@ function trackBrushBindDocListeners(){
   b.docListeners = true;
 }
 
+function trackBrushUnbindDrainListeners(){
+  const b = state._trackBrush;
+  if (!b) return;
+  if (b.drainListeners){
+    try { document.removeEventListener("pointermove", trackBrushOnDrainMove, true); } catch(_){}
+    try { document.removeEventListener("pointerup", trackBrushOnDrainUp, true); } catch(_){}
+    try { document.removeEventListener("pointercancel", trackBrushOnDrainCancel, true); } catch(_){}
+  }
+  b.drainListeners = false;
+  b.drainPointerId = null;
+}
+
+function trackBrushBindDrainListeners(pointerId){
+  const b = trackBrushEnsure();
+  trackBrushUnbindDrainListeners();
+  if (pointerId == null) return;
+  b.drainPointerId = pointerId;
+  b.drainListeners = true;
+  document.addEventListener("pointermove", trackBrushOnDrainMove, true);
+  document.addEventListener("pointerup", trackBrushOnDrainUp, true);
+  document.addEventListener("pointercancel", trackBrushOnDrainCancel, true);
+}
+
+function trackBrushOnDrainMove(ev){
+  const b = state._trackBrush;
+  if (!b || b.drainPointerId == null) return;
+  if (ev.pointerId !== b.drainPointerId) return;
+  if (ev.cancelable) ev.preventDefault();
+  try { ev.stopPropagation(); } catch(_){}
+}
+
+function trackBrushOnDrainUp(ev){
+  const b = state._trackBrush;
+  if (!b || b.drainPointerId == null) return;
+  if (ev.pointerId !== b.drainPointerId) return;
+  if (ev.cancelable) ev.preventDefault();
+  try { ev.stopPropagation(); } catch(_){}
+  trackBrushUnbindDrainListeners();
+}
+
+function trackBrushOnDrainCancel(ev){
+  trackBrushOnDrainUp(ev);
+}
+
 function trackBrushBindBlurOnce(){
   const b = trackBrushEnsure();
   if (b.blurBound) return;
@@ -34050,12 +34186,30 @@ function trackBrushBindBlurOnce(){
   document.addEventListener("visibilitychange", trackBrushOnVisibility);
 }
 
+function trackBrushClearOverlayRefs(){
+  const b = state._trackBrush;
+  if (!b) return;
+  b.overlayWrap = null;
+  b.overlaySvg = null;
+  b.overlayLine = null;
+  b.overlayEndA = null;
+  b.overlayEndB = null;
+  b.overlayTileMap = null;
+  b.overlayMode = "";
+}
+
 function trackBrushRemoveOverlay(){
   try {
+    const b = state._trackBrush;
+    if (b && b.overlayWrap){
+      try { b.overlayWrap.remove(); } catch(_){}
+    }
     const root = document.getElementById("miniMap");
-    if (!root) return;
-    root.querySelectorAll(".track-brush-overlay").forEach((n) => { try { n.remove(); } catch(_){} });
+    if (root){
+      root.querySelectorAll(".track-brush-overlay").forEach((n) => { try { n.remove(); } catch(_){} });
+    }
   } catch(_){}
+  trackBrushClearOverlayRefs();
 }
 
 function trackBrushSyncMapClasses(){
@@ -34064,13 +34218,10 @@ function trackBrushSyncMapClasses(){
   const p = trackBrushPhase();
   root.classList.toggle("track-brush-armed", p === "armed");
   root.classList.toggle("track-brush-drawing", p === "drawing");
-  if (p === "drawing"){
-    try { root.style.touchAction = "none"; } catch(_){}
-  } else {
-    try {
-      if (root.style.touchAction === "none") root.style.touchAction = "";
-    } catch(_){}
-  }
+  // touch-action is CSS-driven via .track-brush-armed / .track-brush-drawing
+  try {
+    if (root.style.touchAction) root.style.touchAction = "";
+  } catch(_){}
 }
 
 function trackBrushCrossesAntimeridian(pts){
@@ -34162,16 +34313,11 @@ function trackBrushPostProcess(rawIn){
     for (let iter = 0; iter < 12; iter++){
       const mid = (lo + hi) / 2;
       const cand = trackBrushRdpIterative(pts, mid);
-      if (cand.length > TRACK_BRUSH_FINAL_CAP){
-        lo = mid;
-      } else {
-        best = cand;
-        hi = mid;
-      }
+      if (cand.length > TRACK_BRUSH_FINAL_CAP) lo = mid;
+      else { best = cand; hi = mid; }
       if (best.length <= TRACK_BRUSH_FINAL_CAP && (hi - lo) < 0.05) break;
     }
     if (best.length > TRACK_BRUSH_FINAL_CAP){
-      // Deterministic last resort: binary-search higher epsilon up to large value
       lo = hi; hi = Math.max(hi * 4, 512);
       for (let iter = 0; iter < 10; iter++){
         const mid = (lo + hi) / 2;
@@ -34194,7 +34340,20 @@ function trackBrushPostProcess(rawIn){
   return { ok: true, reviewPoints, rawCount: raw.length, finalCount: reviewPoints.length };
 }
 
-function trackBrushSampleFromEvent(ev){
+function trackBrushEventInMapBounds(ev){
+  if (!ev || !Number.isFinite(ev.clientX) || !Number.isFinite(ev.clientY)) return false;
+  const root = document.getElementById("miniMap");
+  if (!root) return false;
+  const tileMap = root.querySelector(".tile-map");
+  if (!tileMap) return false;
+  const rect = tileMap.getBoundingClientRect();
+  return ev.clientX >= rect.left && ev.clientX <= rect.right
+    && ev.clientY >= rect.top && ev.clientY <= rect.bottom;
+}
+
+function trackBrushSampleFromEvent(ev, opts){
+  opts = opts || {};
+  if (!opts.skipBounds && !trackBrushEventInMapBounds(ev)) return null;
   const root = document.getElementById("miniMap");
   if (!root) return null;
   const tileMap = root.querySelector(".tile-map");
@@ -34242,18 +34401,18 @@ function trackBrushSchedulePreview(){
   });
 }
 
-function trackBrushPaintOverlay(){
-  const b = state._trackBrush;
-  if (!b) return;
-  const phase = b.phase;
-  if (phase !== "drawing" && phase !== "review"){
-    trackBrushRemoveOverlay();
-    return;
-  }
+function trackBrushEnsureOverlayDom(mode){
+  const b = trackBrushEnsure();
   const root = document.getElementById("miniMap");
-  if (!root) return;
+  if (!root) return null;
   const tileMap = root.querySelector(".tile-map");
-  if (!tileMap) return;
+  if (!tileMap) return null;
+  const parent = (mode === "drawing") ? tileMap : tileMap.querySelector(".tile-layer");
+  if (!parent) return null;
+  if (b.overlayWrap && b.overlayTileMap === tileMap && b.overlayMode === mode
+      && b.overlayWrap.isConnected && b.overlayWrap.parentNode === parent){
+    return { root, tileMap, parent, reused: true };
+  }
   trackBrushRemoveOverlay();
   const ns = "http://www.w3.org/2000/svg";
   const W = tileMap.clientWidth || root.clientWidth || 400;
@@ -34267,46 +34426,90 @@ function trackBrushPaintOverlay(){
   svg.setAttribute("height", String(H));
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
   svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:7";
+  const line = document.createElementNS(ns, "polyline");
+  line.setAttribute("class", "track-brush-line");
+  line.setAttribute("points", "");
+  line.style.display = "none";
+  const endA = document.createElementNS(ns, "circle");
+  endA.setAttribute("class", "track-brush-end");
+  endA.setAttribute("r", "4.5");
+  endA.style.display = "none";
+  const endB = document.createElementNS(ns, "circle");
+  endB.setAttribute("class", "track-brush-end");
+  endB.setAttribute("r", "5.5");
+  endB.style.display = "none";
+  svg.appendChild(line);
+  svg.appendChild(endA);
+  svg.appendChild(endB);
+  wrap.appendChild(svg);
+  parent.appendChild(wrap);
+  b.overlayWrap = wrap;
+  b.overlaySvg = svg;
+  b.overlayLine = line;
+  b.overlayEndA = endA;
+  b.overlayEndB = endB;
+  b.overlayTileMap = tileMap;
+  b.overlayMode = mode;
+  return { root, tileMap, parent, reused: false };
+}
+
+function trackBrushPaintOverlay(){
+  const b = state._trackBrush;
+  if (!b) return;
+  const phase = b.phase;
+  if (phase !== "drawing" && phase !== "review"){
+    trackBrushRemoveOverlay();
+    return;
+  }
+  const mode = (phase === "drawing") ? "drawing" : "review";
+  const ctx = trackBrushEnsureOverlayDom(mode);
+  if (!ctx) return;
+  const root = ctx.root;
+  const tileMap = ctx.tileMap;
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  if (b.overlaySvg){
+    b.overlaySvg.setAttribute("width", String(W));
+    b.overlaySvg.setAttribute("height", String(H));
+    b.overlaySvg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  }
   let coords = [];
-  if (phase === "drawing"){
+  if (mode === "drawing"){
     coords = (b.raw || []).map((p) => ({ x: p.sx, y: p.sy }));
-    tileMap.appendChild(wrap);
   } else {
-    const tileLayer = tileMap.querySelector(".tile-layer");
-    if (!tileLayer) return;
     let tx = 0, ty = 0;
     try {
       const off = typeof workbenchTileMapOffset === "function" ? workbenchTileMapOffset(tileMap) : null;
       if (off){ tx = off.tx || 0; ty = off.ty || 0; }
     } catch(_){}
-    const pts = b.reviewPoints || [];
-    coords = pts.map((p) => {
+    coords = (b.reviewPoints || []).map((p) => {
       const c = tileMapLatLonToPx(root, p.lat, p.lon);
       return { x: c.x - tx, y: c.y - ty };
     });
-    wrap.style.transform = "translate3d(0,0,0)";
-    tileLayer.appendChild(wrap);
   }
-  if (coords.length >= 2){
-    const line = document.createElementNS(ns, "polyline");
-    line.setAttribute("class", "track-brush-line");
-    line.setAttribute("points", coords.map((c) => c.x.toFixed(1) + "," + c.y.toFixed(1)).join(" "));
-    svg.appendChild(line);
+  if (b.overlayLine){
+    if (coords.length >= 2){
+      b.overlayLine.setAttribute("points", coords.map((c) => c.x.toFixed(1) + "," + c.y.toFixed(1)).join(" "));
+      b.overlayLine.style.display = "";
+    } else {
+      b.overlayLine.setAttribute("points", "");
+      b.overlayLine.style.display = "none";
+    }
   }
-  if (coords.length){
-    const a = coords[0], z = coords[coords.length - 1];
-    [[a, 4.5], [z, 5.5]].forEach((pair) => {
-      const c = pair[0], r = pair[1];
-      if (!c) return;
-      const circ = document.createElementNS(ns, "circle");
-      circ.setAttribute("class", "track-brush-end");
-      circ.setAttribute("cx", c.x.toFixed(1));
-      circ.setAttribute("cy", c.y.toFixed(1));
-      circ.setAttribute("r", String(r));
-      svg.appendChild(circ);
-    });
+  if (b.overlayEndA && b.overlayEndB){
+    if (coords.length){
+      const a = coords[0], z = coords[coords.length - 1];
+      b.overlayEndA.setAttribute("cx", a.x.toFixed(1));
+      b.overlayEndA.setAttribute("cy", a.y.toFixed(1));
+      b.overlayEndA.style.display = "";
+      b.overlayEndB.setAttribute("cx", z.x.toFixed(1));
+      b.overlayEndB.setAttribute("cy", z.y.toFixed(1));
+      b.overlayEndB.style.display = "";
+    } else {
+      b.overlayEndA.style.display = "none";
+      b.overlayEndB.style.display = "none";
+    }
   }
-  wrap.appendChild(svg);
 }
 
 function trackBrushOnMapRender(){
@@ -34316,9 +34519,14 @@ function trackBrushOnMapRender(){
     return;
   }
   if (p === "review"){
+    trackBrushClearOverlayRefs();
     try { trackBrushPaintOverlay(); } catch(_){}
-  } else if (p === "idle"){
-    trackBrushRemoveOverlay();
+  } else if (p === "idle" || p === "armed"){
+    if (p === "idle") trackBrushRemoveOverlay();
+    else {
+      // armed: no geometry preview
+      trackBrushRemoveOverlay();
+    }
   }
 }
 
@@ -34352,11 +34560,11 @@ function trackBrushCleanupCore(opts){
   trackBrushCancelRaf();
   trackBrushReleaseCapture();
   trackBrushUnbindDocListeners();
+  trackBrushUnbindDrainListeners();
   trackBrushRemoveOverlay();
   const b = trackBrushEnsure();
   b.pointerId = null;
   b.pointerType = "";
-  if (!opts.keepIgnore) b.ignorePointerId = null;
   b.raw = [];
   b.reviewPoints = [];
   b.rawAccepted = 0;
@@ -34371,11 +34579,59 @@ function trackBrushCleanupCore(opts){
   trackBrushSyncMapClasses();
 }
 
-function trackBrushSetPhase(phase){
-  const b = trackBrushEnsure();
-  b.phase = phase;
-  trackBrushSyncMapClasses();
-  trackBrushSyncUi();
+function trackBrushSyncMutationControls(){
+  const block = trackBrushBlocksTrackMutation();
+  const ids = [
+    "btnTrackNew", "btnTrackAddCurrent", "btnTrackFinish", "btnTrackPaste",
+    "btnTrackImport", "btnTrackUndo", "btnTrackClear", "btnTrackSaveLibrary",
+    "btnSavedTracksShowSelected", "btnSavedTracksHideSelected",
+    "btnSavedTracksShowAll", "btnSavedTracksHideAll",
+    "btnSavedTracksDeleteSelected", "btnSavedTracksStyleSelected"
+  ];
+  for (let i = 0; i < ids.length; i++){
+    const el = document.getElementById(ids[i]);
+    if (!el) continue;
+    if (block){
+      if (!el.dataset.trackBrushPrevDis){
+        el.dataset.trackBrushPrevDis = el.disabled ? "1" : "0";
+      }
+      el.disabled = true;
+      el.setAttribute("aria-disabled", "true");
+    } else if (el.dataset.trackBrushPrevDis != null){
+      const prev = el.dataset.trackBrushPrevDis === "1";
+      el.disabled = prev;
+      if (prev) el.setAttribute("aria-disabled", "true");
+      else el.removeAttribute("aria-disabled");
+      try { delete el.dataset.trackBrushPrevDis; } catch(_){}
+    }
+  }
+  try {
+    document.querySelectorAll("input[data-saved-rename]").forEach((inp) => {
+      if (block){
+        inp.readOnly = true;
+        inp.setAttribute("aria-disabled", "true");
+      } else {
+        inp.readOnly = false;
+        inp.removeAttribute("aria-disabled");
+      }
+    });
+  } catch(_){}
+  try {
+    document.querySelectorAll("[data-saved-edit],[data-saved-style],[data-saved-del]").forEach((btn) => {
+      if (block){
+        if (!btn.dataset.trackBrushPrevDis){
+          btn.dataset.trackBrushPrevDis = btn.disabled ? "1" : "0";
+        }
+        btn.disabled = true;
+        btn.setAttribute("aria-disabled", "true");
+      } else if (btn.dataset.trackBrushPrevDis != null){
+        const prev = btn.dataset.trackBrushPrevDis === "1";
+        btn.disabled = prev;
+        if (!prev) btn.removeAttribute("aria-disabled");
+        try { delete btn.dataset.trackBrushPrevDis; } catch(_){}
+      }
+    });
+  } catch(_){}
 }
 
 function trackBrushSyncUi(){
@@ -34385,68 +34641,97 @@ function trackBrushSyncUi(){
   const btn = document.getElementById("btnTrackBrush");
   const peOk = typeof window !== "undefined" && !!window.PointerEvent;
   if (btn){
-    btn.disabled = !peOk;
     btn.setAttribute("aria-pressed", trackBrushIsActive() ? "true" : "false");
     btn.classList.toggle("is-active", trackBrushIsActive());
-  }
-  if (!bar) return;
-  if (phase === "idle"){
-    bar.hidden = true;
-    return;
-  }
-  bar.hidden = false;
-  const meta = document.getElementById("trackBrushPhaseMeta");
-  if (meta){
-    if (phase === "armed") meta.textContent = trackBrushMsg("track.brush.armedMeta", "Ready");
-    else if (phase === "drawing") meta.textContent = trackBrushMsg("track.brush.drawingMeta", "Drawing…");
-    else if (phase === "review" || phase === "saving") meta.textContent = trackBrushMsg("track.brush.reviewMeta", "Review");
-    else meta.textContent = "";
-  }
-  const instr = document.getElementById("trackBrushInstr");
-  if (instr){
-    instr.hidden = !(phase === "armed" || phase === "drawing");
-    if (!instr.hidden) instr.textContent = trackBrushMsg("track.brush.drawHint", "Draw on the map");
-  }
-  const fb = document.getElementById("trackBrushFeedback");
-  if (fb) fb.textContent = b.feedback || "";
-  const nameRow = document.getElementById("trackBrushNameRow");
-  const stats = document.getElementById("trackBrushStats");
-  const saveBtn = document.getElementById("trackBrushSaveBtn");
-  const clearBtn = document.getElementById("trackBrushClearBtn");
-  const cancelBtn = document.getElementById("trackBrushCancelBtn");
-  const confirm = document.getElementById("trackBrushCloseConfirm");
-  const inReview = phase === "review" || phase === "saving";
-  if (nameRow) nameRow.hidden = !inReview;
-  if (stats) stats.hidden = !inReview;
-  if (saveBtn){
-    saveBtn.hidden = !inReview;
-    saveBtn.disabled = phase === "saving";
-  }
-  if (clearBtn){
-    const showClear = (phase === "review") || (phase === "drawing" && b.raw.length > 0);
-    clearBtn.hidden = !showClear;
-    clearBtn.disabled = phase === "saving";
-  }
-  if (cancelBtn) cancelBtn.disabled = phase === "saving";
-  if (confirm) confirm.hidden = !b.closeConfirm;
-  if (inReview){
-    const nameIn = document.getElementById("trackBrushNameInput");
-    if (nameIn && document.activeElement !== nameIn){
-      nameIn.value = b.name || "";
-      nameIn.disabled = phase === "saving";
-    }
-    if (stats){
-      const distM = routeDistance(b.reviewPoints || [], false);
-      const distTxt = (typeof formatTrackDistance === "function")
-        ? formatTrackDistance(distM, state.trackDisplayUnit || "km")
-        : (Math.round(distM) + " m");
-      const tmpl = trackBrushMsg("track.brush.resampled", "{0} → {1} · {2}");
-      stats.textContent = tmpl
-        .replace("{0}", String(b.rawAccepted || 0))
-        .replace("{1}", String((b.reviewPoints || []).length))
-        .replace("{2}", distTxt);
+    if (!peOk){
+      btn.disabled = false;
+      btn.setAttribute("aria-disabled", "true");
+      btn.classList.add("is-disabled");
+    } else {
+      btn.removeAttribute("aria-disabled");
+      btn.classList.remove("is-disabled");
+      btn.disabled = false;
     }
   }
+  if (bar){
+    if (phase === "idle"){
+      bar.hidden = true;
+    } else {
+      bar.hidden = false;
+      const meta = document.getElementById("trackBrushPhaseMeta");
+      if (meta){
+        if (phase === "armed") meta.textContent = trackBrushMsg("track.brush.armedMeta", "Ready");
+        else if (phase === "drawing") meta.textContent = trackBrushMsg("track.brush.drawingMeta", "Drawing…");
+        else if (phase === "review" || phase === "saving") meta.textContent = trackBrushMsg("track.brush.reviewMeta", "Review");
+        else meta.textContent = "";
+      }
+      const instr = document.getElementById("trackBrushInstr");
+      if (instr){
+        instr.hidden = !(phase === "armed" || phase === "drawing");
+        if (!instr.hidden) instr.textContent = trackBrushMsg("track.brush.drawHint", "Draw on the map");
+      }
+      const fb = document.getElementById("trackBrushFeedback");
+      if (fb) fb.textContent = b.feedback || "";
+      const nameRow = document.getElementById("trackBrushNameRow");
+      const stats = document.getElementById("trackBrushStats");
+      const saveBtn = document.getElementById("trackBrushSaveBtn");
+      const clearBtn = document.getElementById("trackBrushClearBtn");
+      const cancelBtn = document.getElementById("trackBrushCancelBtn");
+      const confirm = document.getElementById("trackBrushCloseConfirm");
+      const inReview = phase === "review" || phase === "saving";
+      if (nameRow) nameRow.hidden = !inReview;
+      if (stats) stats.hidden = !inReview;
+      if (saveBtn){
+        saveBtn.hidden = !inReview;
+        saveBtn.disabled = phase === "saving";
+      }
+      if (clearBtn){
+        const showClear = (phase === "review") || (phase === "drawing" && b.raw.length > 0);
+        clearBtn.hidden = !showClear;
+        clearBtn.disabled = phase === "saving";
+      }
+      if (cancelBtn) cancelBtn.disabled = phase === "saving";
+      if (confirm) confirm.hidden = !b.closeConfirm;
+      if (inReview){
+        const nameIn = document.getElementById("trackBrushNameInput");
+        if (nameIn && document.activeElement !== nameIn){
+          nameIn.value = b.name || "";
+          nameIn.disabled = phase === "saving";
+        }
+        if (stats){
+          const distM = routeDistance(b.reviewPoints || [], false);
+          const distTxt = (typeof formatTrackDistance === "function")
+            ? formatTrackDistance(distM, state.trackDisplayUnit || "km")
+            : (Math.round(distM) + " m");
+          const tmpl = trackBrushMsg("track.brush.resampled", "{0} → {1} · {2}");
+          stats.textContent = tmpl
+            .replace("{0}", String(b.rawAccepted || 0))
+            .replace("{1}", String((b.reviewPoints || []).length))
+            .replace("{2}", distTxt);
+        }
+      }
+    }
+  }
+  trackBrushSyncMutationControls();
+}
+
+function trackBrushClearMapPickModeFully(){
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+    const pickBtn = root && root.querySelector(".tile-pick");
+    if (pickBtn){
+      pickBtn.classList.remove("is-active");
+      pickBtn.setAttribute("aria-pressed", "false");
+      const ar = (typeof t === "function") ? (t("map.pickStart") || "") : "";
+      if (ar){
+        pickBtn.setAttribute("aria-label", ar);
+        const lbl = pickBtn.querySelector(".tmb-label");
+        if (lbl) lbl.textContent = ar;
+      }
+    }
+  } catch(_){}
 }
 
 function trackBrushDisarmTransientTools(){
@@ -34456,9 +34741,13 @@ function trackBrushDisarmTransientTools(){
   try { if (typeof workbenchExitPickMode === "function") workbenchExitPickMode(); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   try { if (typeof savedTrackStyleCloseForLifecycle === "function") savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
-  try { if (typeof mapMeasureDocDragCleanup === "function") mapMeasureDocDragCleanup(); } catch(_){}
   try {
-    if (state.mapMeasureMode){
+    if (state.measurePanelOpen && typeof closeMeasureFloatingPanelGis === "function"){
+      closeMeasureFloatingPanelGis();
+    } else if (typeof gisExitMeasureTabPartial === "function"){
+      gisExitMeasureTabPartial();
+    } else if (typeof mapMeasureDocDragCleanup === "function"){
+      mapMeasureDocDragCleanup();
       state.mapMeasureMode = false;
       state.mapMeasurePts = null;
       state.mapPolyPts = null;
@@ -34472,15 +34761,14 @@ function trackBrushDisarmTransientTools(){
       }
     }
   } catch(_){}
-  try {
-    state.mapPickMode = false;
-    const root = document.getElementById("miniMap");
-    if (root) root.classList.toggle("map-pick-mode", false);
-  } catch(_){}
+  trackBrushClearMapPickModeFully();
 }
 
 function trackBrushActivationBlocked(){
   try { ensureTrackState(); } catch(_){}
+  if (trackBrushHasOpenSavedRename()){
+    return trackBrushMsg("track.brush.conflictRename", "Finish or cancel the track rename before using Brush.");
+  }
   const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
   if (pts.length > 0){
     return trackBrushMsg("track.brush.conflictDraft", "Save or discard the current track before using Brush.");
@@ -34507,20 +34795,22 @@ function trackBrushActivationBlocked(){
 function trackBrushEnterArmed(opts){
   opts = opts || {};
   if (typeof window === "undefined" || !window.PointerEvent){
-    trackBrushSetFeedback(trackBrushMsg("track.brush.unsupported", "Brush unavailable."));
-    const bar = document.getElementById("trackBrushBar");
-    if (bar) bar.hidden = false;
+    trackBrushSetIdlePanelFeedback(trackBrushMsg("track.brush.unsupported", "Brush unavailable: this browser does not support Pointer Events."));
     trackBrushEnsure().phase = "idle";
+    trackBrushSyncMapClasses();
     trackBrushSyncUi();
     return false;
   }
   const block = trackBrushActivationBlocked();
   if (block){
-    trackBrushSetFeedback(block);
-    const bar = document.getElementById("trackBrushBar");
-    if (bar){ bar.hidden = false; }
+    trackBrushNotifyBlocked(block);
+    // keep idle; show message on panel guard
+    trackBrushSetIdlePanelFeedback(block);
+    trackBrushEnsure().phase = "idle";
+    trackBrushSyncUi();
     return false;
   }
+  trackBrushSetIdlePanelFeedback("");
   trackBrushDisarmTransientTools();
   trackBrushCleanupCore({ keepFeedback: !!opts.keepFeedback });
   trackBrushBindBlurOnce();
@@ -34550,9 +34840,11 @@ function trackBrushAbortGesture(msg){
   trackBrushCancelRaf();
   trackBrushReleaseCapture();
   trackBrushUnbindDocListeners();
+  // Keep drain if already draining? Abort during drawing shouldn't leave drain unless we had started drain.
+  // Drawing abort: clear drain too (pointer will re-engage next gesture).
+  trackBrushUnbindDrainListeners();
   trackBrushRemoveOverlay();
   const b = trackBrushEnsure();
-  const ign = b.ignorePointerId;
   b.raw = [];
   b.reviewPoints = [];
   b.rawAccepted = 0;
@@ -34564,7 +34856,6 @@ function trackBrushAbortGesture(msg){
   b.originSx = NaN;
   b.originSy = NaN;
   b.closeConfirm = false;
-  if (ign != null) b.ignorePointerId = ign;
   b.phase = "armed";
   b.feedback = msg ? String(msg) : trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled.");
   trackBrushSyncMapClasses();
@@ -34577,7 +34868,7 @@ function trackBrushFinishGesture(opts){
   if (b.phase !== "drawing") return;
   const raw = b.raw.slice();
   const hitCap = !!opts.rawCap;
-  if (hitCap && b.pointerId != null) b.ignorePointerId = b.pointerId;
+  const drainId = (hitCap && b.pointerId != null) ? b.pointerId : null;
   trackBrushCancelRaf();
   trackBrushReleaseCapture();
   trackBrushUnbindDocListeners();
@@ -34598,6 +34889,8 @@ function trackBrushFinishGesture(opts){
     } else {
       b.feedback = trackBrushMsg("track.brush.minPoints", "At least two distinct points are required.");
     }
+    // Still drain physical pointer if raw-cap path somehow failed post-process while pressed
+    if (drainId != null) trackBrushBindDrainListeners(drainId);
     trackBrushSyncMapClasses();
     trackBrushSyncUi();
     return;
@@ -34616,6 +34909,7 @@ function trackBrushFinishGesture(opts){
   } else {
     b.feedback = "";
   }
+  if (drainId != null) trackBrushBindDrainListeners(drainId);
   trackBrushSyncMapClasses();
   trackBrushSyncUi();
   try { trackBrushPaintOverlay(); } catch(_){}
@@ -34627,7 +34921,7 @@ function trackBrushFinishGesture(opts){
 
 function trackBrushOnPointerDown(ev){
   const b = trackBrushEnsure();
-  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+  if (b.drainPointerId != null && ev.pointerId === b.drainPointerId){
     if (ev.cancelable) ev.preventDefault();
     return;
   }
@@ -34647,6 +34941,7 @@ function trackBrushOnPointerDown(ev){
   if (!tileMap || !tileMap.contains(ev.target)) return;
   const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit, button, a, input, select, textarea, .bbox-handle, .bbox-remove, .bbox-move";
   if (ev.target.closest && ev.target.closest(CTRL_SEL)) return;
+  if (!trackBrushEventInMapBounds(ev)) return;
   const sample = trackBrushSampleFromEvent(ev);
   if (!sample) return;
   if (ev.cancelable) ev.preventDefault();
@@ -34654,7 +34949,7 @@ function trackBrushOnPointerDown(ev){
   b.phase = "drawing";
   b.pointerId = ev.pointerId;
   b.pointerType = String(ev.pointerType || "");
-  b.ignorePointerId = null;
+  trackBrushUnbindDrainListeners();
   b.raw = [];
   b.reviewPoints = [];
   b.rawAccepted = 0;
@@ -34679,18 +34974,16 @@ function trackBrushOnPointerDown(ev){
 function trackBrushOnPointerMove(ev){
   const b = state._trackBrush;
   if (!b) return;
-  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
+  if (b.drainPointerId != null && ev.pointerId === b.drainPointerId){
     if (ev.cancelable) ev.preventDefault();
     return;
   }
   if (b.phase !== "drawing") return;
   if (b.pointerId == null) return;
   if (ev.pointerId !== b.pointerId){
-    if (ev.isPrimary === false || ev.pointerId !== b.pointerId){
-      trackBrushAbortGesture(trackBrushMsg("track.brush.secondPointer", "Second pointer: stroke cancelled."));
-      if (ev.cancelable) ev.preventDefault();
-      return;
-    }
+    trackBrushAbortGesture(trackBrushMsg("track.brush.secondPointer", "Second pointer: stroke cancelled."));
+    if (ev.cancelable) ev.preventDefault();
+    return;
   }
   if (trackBrushDrawSnapBroken()){
     trackBrushAbortGesture(trackBrushMsg("track.brush.mapChanged", "Map changed during drawing: stroke cancelled."));
@@ -34705,6 +34998,7 @@ function trackBrushOnPointerMove(ev){
   for (let i = 0; i < list.length; i++){
     const e = list[i];
     if (b.raw.length >= TRACK_BRUSH_RAW_CAP) break;
+    if (!trackBrushEventInMapBounds(e)) continue;
     const sample = trackBrushSampleFromEvent(e);
     if (!sample) continue;
     trackBrushAcceptSample(sample);
@@ -34720,22 +35014,27 @@ function trackBrushOnPointerMove(ev){
 function trackBrushOnPointerUp(ev){
   const b = state._trackBrush;
   if (!b) return;
-  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
-    b.ignorePointerId = null;
+  if (b.drainPointerId != null && ev.pointerId === b.drainPointerId){
+    trackBrushUnbindDrainListeners();
     if (ev.cancelable) ev.preventDefault();
     return;
   }
   if (b.phase !== "drawing") return;
   if (b.pointerId == null || ev.pointerId !== b.pointerId) return;
   if (ev.cancelable) ev.preventDefault();
+  // Final sample when still in-bounds; never clamp to edge.
+  if (trackBrushEventInMapBounds(ev) && b.raw.length < TRACK_BRUSH_RAW_CAP){
+    const sample = trackBrushSampleFromEvent(ev);
+    if (sample) trackBrushAcceptSample(sample);
+  }
   trackBrushFinishGesture({ rawCap: false });
 }
 
 function trackBrushOnPointerCancel(ev){
   const b = state._trackBrush;
   if (!b) return;
-  if (b.ignorePointerId != null && ev.pointerId === b.ignorePointerId){
-    b.ignorePointerId = null;
+  if (b.drainPointerId != null && ev.pointerId === b.drainPointerId){
+    trackBrushUnbindDrainListeners();
     return;
   }
   if (b.phase !== "drawing") return;
@@ -34765,11 +35064,18 @@ function trackBrushOnVisibility(){
 }
 
 function trackBrushToggle(){
-  if (trackBrushIsActive()){
-    if (trackBrushPhase() === "drawing" || trackBrushPhase() === "review"){
-      trackBrushExitToIdle();
-      return;
-    }
+  const peOk = typeof window !== "undefined" && !!window.PointerEvent;
+  if (!peOk){
+    trackBrushSetIdlePanelFeedback(trackBrushMsg("track.brush.unsupported", "Brush unavailable: this browser does not support Pointer Events."));
+    return;
+  }
+  const p = trackBrushPhase();
+  if (p === "drawing" || p === "review" || p === "saving"){
+    trackBrushSetFeedback(trackBrushMsg("track.brush.toggleBlocked", "Save, clear or cancel Brush before exiting."));
+    trackBrushSyncUi();
+    return;
+  }
+  if (p === "armed"){
     trackBrushExitToIdle();
     return;
   }
@@ -34804,7 +35110,7 @@ function trackBrushSave(){
   }
   if (!name) name = trackBrushMsg("track.saveDefaultName", "Track");
   name = name.slice(0, 80);
-  const pts = Array.isArray(b.reviewPoints) ? b.reviewPoints : [];
+  const pts = Array.isArray(b.reviewPoints) ? b.reviewPoints.slice() : [];
   if (pts.length < 2){
     trackBrushSetFeedback(trackBrushMsg("track.brush.minPoints", "At least two distinct points are required."));
     return false;
@@ -34813,7 +35119,9 @@ function trackBrushSave(){
     trackBrushSetFeedback(trackBrushMsg("track.brush.saveFail", "Save failed."));
     return false;
   }
+  // Keep review until persistence succeeds.
   b.phase = "saving";
+  b.name = name;
   trackBrushSyncUi();
   let res = null;
   try {
@@ -34838,11 +35146,38 @@ function trackBrushSave(){
     trackBrushSyncUi();
     return false;
   }
+  const created = res.track || null;
+  const createdId = created && created.id != null ? String(created.id) : "";
+  let persistThrew = false;
+  try {
+    saveStore();
+  } catch(err){
+    persistThrew = true;
+  }
+  if (persistThrew){
+    // Rollback only the just-created record; no second saveStore.
+    try {
+      ensureSavedTracksState();
+      if (createdId){
+        state.savedTracks = state.savedTracks.filter((x) => !(x && String(x.id) === createdId));
+      }
+      if (Array.isArray(state._savedTracksSelectedIds)){
+        state._savedTracksSelectedIds = state._savedTracksSelectedIds.filter((id) => String(id) !== createdId);
+      }
+    } catch(_){}
+    b.phase = "review";
+    b.reviewPoints = pts;
+    b.name = name;
+    trackBrushSetFeedback(trackBrushMsg("track.brush.persistFail", "Could not persist the track. Review kept."));
+    trackBrushSyncUi();
+    return false;
+  }
+  // NOTE: saveStore() swallows storage errors internally and returns void.
+  // Silent quota/disabled-storage failures are not observable without changing saveStore.
   trackBrushCleanupCore();
   b.phase = "idle";
   trackBrushSyncMapClasses();
   trackBrushSyncUi();
-  try { saveStore(); } catch(_){}
   try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
   try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
   try { setBadge("ok", trackBrushMsg("track.brush.savedOk", "Track saved to archive.")); } catch(_){}
@@ -34931,9 +35266,6 @@ function trackBrushWireUiOnce(){
       ev.preventDefault();
       trackBrushToggle();
     });
-    if (typeof window === "undefined" || !window.PointerEvent){
-      btn.disabled = true;
-    }
   }
   const saveBtn = document.getElementById("trackBrushSaveBtn");
   if (saveBtn && !saveBtn._trackBrushBound){
@@ -34985,8 +35317,15 @@ function trackBrushWireUiOnce(){
 /* end TRACK-BRUSH-A */
 
 
+
 function saveCurrentTrackToLibrary(name, opts){
   opts = opts || {};
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return false;
+    }
+  } catch(_){}
   ensureTrackState();
   ensureSavedTracksState();
   const pts = state.track.points;
@@ -35127,8 +35466,8 @@ function trackShowSavedDeleteConfirmBar(ids){
 /** Saved-track delete: internal confirm in #trackModal when open; else browser confirm fallback. */
 function requestSavedTracksDelete(ids){
   try {
-    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
-      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return;
     }
   } catch(_){}
@@ -35316,8 +35655,8 @@ function savedTrackStyleWorkingFromTracks(ids){
 
 function openSavedTrackStyleEditorSingle(id){
   try {
-    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
-      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return;
     }
   } catch(_){}
@@ -35347,8 +35686,8 @@ function openSavedTrackStyleEditorSingle(id){
 
 function openSavedTrackStyleEditorBatch(ids){
   try {
-    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
-      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return;
     }
   } catch(_){}
@@ -35594,8 +35933,8 @@ function flyToSavedTrackById(id){
 /** Load a saved library track into the editable draft (explicit user action). */
 function beginEditSavedTrackById(id){
   try {
-    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
-      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return;
     }
   } catch(_){}
@@ -36862,11 +37201,19 @@ function renderSavedTracksList(){
   if (typeof syncSavedTracksSelectAllState === "function") syncSavedTracksSelectAllState(mount);
   if (typeof syncSavedTracksSelectionActions === "function") syncSavedTracksSelectionActions();
   try { if (typeof savedTrackStyleEditorSyncDom === "function") savedTrackStyleEditorSyncDom(); } catch(_){}
+  try { if (typeof trackBrushSyncMutationControls === "function") trackBrushSyncMutationControls(); } catch(_){}
   if (!mount._savedTracksDelegated){
     mount._savedTracksDelegated = true;
     mount.addEventListener("focusin", (ev) => {
       const inp = ev.target;
       if (!inp || !inp.matches || !inp.matches("[data-saved-rename]")) return;
+      try {
+        if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+          if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+          try { inp.blur(); } catch(_){}
+          return;
+        }
+      } catch(_){}
       const id = inp.getAttribute("data-saved-rename");
       ensureSavedTracksState();
       const st = state.savedTracks.find(x => x.id === id);
@@ -36909,6 +37256,14 @@ function renderSavedTracksList(){
         return;
       }
       if (el.matches("[data-saved-rename]")){
+        try {
+          if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+            if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+            const prevB = String(el.dataset._prevSavedName != null ? el.dataset._prevSavedName : el.value || "");
+            el.value = prevB;
+            return;
+          }
+        } catch(_){}
         const id = el.getAttribute("data-saved-rename");
         ensureSavedTracksState();
         const st = state.savedTracks.find(x => x.id === id);
@@ -38164,6 +38519,12 @@ function gisAllAsFeatureCollection(opts){
 
 /** Add a point to the track. Deduplicates consecutive duplicates. */
 function trackAddPoint(lat, lon, name, meta){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return false;
+    }
+  } catch(_){}
   ensureTrackState();
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
   if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return false;
@@ -38197,6 +38558,12 @@ function trackAddPoint(lat, lon, name, meta){
 }
 
 function trackRemovePoint(id){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureTrackState();
   state.track.points = state.track.points.filter(p => p.id !== id);
   saveStore();
@@ -38262,6 +38629,12 @@ function mapWaypointsClear(){
 }
 
 function trackClear(){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureTrackState();
   if (!state.track.points.length) return;
   openTrackClearCurrentDialog();
@@ -38270,14 +38643,10 @@ function trackClear(){
 /** Start a brand new track (does not touch savedTracks). */
 function trackStartNew(){
   try {
-    const bp = typeof trackBrushPhase === "function" ? trackBrushPhase() : "idle";
-    if (bp === "drawing" || bp === "review" || bp === "saving"){
-      if (typeof trackBrushSetFeedback === "function"){
-        trackBrushSetFeedback(trackBrushMsg("track.brush.conflictTool", "Close or finish the active tool before using Brush."));
-      }
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return;
     }
-    if (bp === "armed" && typeof trackBrushExitToIdle === "function") trackBrushExitToIdle();
   } catch(_){}
   ensureTrackState();
   ensureMapWaypointsState();
@@ -38413,6 +38782,12 @@ function resumeTrackEditing(){
 
 /** Remove the last point from the current track (undo). */
 function trackUndoLastPoint(){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureTrackState();
   if (!state.track.points.length){
     setBadge("info", t("track.undoEmpty") || t("track.cannotAdd"));
@@ -38438,6 +38813,12 @@ function mapWaypointsUndoLast(){
 }
 
 function trackRenamePoint(id, name){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureTrackState();
   const p = state.track.points.find(x => x.id === id);
   if (!p) return;
@@ -38448,6 +38829,12 @@ function trackRenamePoint(id, name){
 /** Parse a free-text bulk input (one coord per line) and append all valid
  *  points to the current track. Returns { ok, fail }. */
 function trackAddFromText(text){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return { ok: 0, fail: 0 };
+    }
+  } catch(_){}
   ensureTrackState();
   const lines = String(text || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
   let ok = 0, fail = 0;
@@ -38473,6 +38860,12 @@ function trackAddFromText(text){
 
 /** Add the currently converted point (from state.lastResult/lastPoint). */
 function trackAddCurrent(){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   if (state && state._trackCompleted){
     try { state._trackPromptOpen = true; } catch(_){}
     try { renderTrackAll(); } catch(_){}
@@ -38693,6 +39086,12 @@ function trackMakeAutoName(){
 
 function trackPromptAndSaveCurrent(opts){
   opts = opts || {};
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return false;
+    }
+  } catch(_){}
   ensureTrackState();
   // If editing a saved library track: update directly (no browser prompt).
   if (trackIsEditingSavedLibrary()){
@@ -38916,6 +39315,12 @@ function renderTrackCompletionPrompt(){
 
 function completeCurrentTrack(opts){
   opts = opts || {};
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureTrackState();
   trackPickFlushDeferred();
   if (!state.track.points || !state.track.points.length) return;
@@ -40196,6 +40601,12 @@ function exportTrack(kind){
 
 /** Import spatial file (GPX/KML/KMZ/GeoJSON/CSV/WKT/SHP) → GeoJSON → waypoints + track. Appends. */
 function importTrackFile(file){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   if (!file) return;
     const name = file.name || "";
   const reader = new FileReader();
@@ -57059,8 +57470,8 @@ function syncSavedTracksSelectAllState(mount){
 
 function applySavedTracksVisibilityByIds(ids, wantVisible){
   try {
-    if (typeof trackBrushBlocksLibraryMutations === "function" && trackBrushBlocksLibraryMutations()){
-      trackBrushSetFeedback(trackBrushMsg("track.brush.libraryBlocked", "Archive actions blocked while Brush is active."));
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
       return false;
     }
   } catch(_){}
@@ -57079,6 +57490,12 @@ function applySavedTracksVisibilityByIds(ids, wantVisible){
 }
 
 function applySavedTracksVisibilityOnlySelected(ids){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return false;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   const set = new Set((ids || []).map(String));
   if (!set.size) return false;
@@ -57096,6 +57513,12 @@ function applySavedTracksVisibilityOnlySelected(ids){
 }
 
 function applySavedTracksVisibilityAll(wantVisible){
+  try {
+    if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+      if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+      return;
+    }
+  } catch(_){}
   ensureSavedTracksState();
   if (!state.savedTracks.length) return;
   for (const st of state.savedTracks){ st.visible = !!wantVisible; }
