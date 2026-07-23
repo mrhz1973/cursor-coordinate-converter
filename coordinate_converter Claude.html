@@ -13212,6 +13212,7 @@ const I18N = {
     "track.etaCar":"Auto ({0})",
     "track.noExport":"Aggiungi almeno 2 punti per esportare.",
     "track.importedN":"Importati {0} punti nella traccia.",
+    "dropImport.busy":"Un altro import è in corso. Attendi la fine prima di importare.",
     "dropImport.summary":"Import drop: {0} file · {1} waypoint · {2} tracce · {3} poligoni · {4} ignorati · {5} errori.",
     "dropImport.errDetail":"Errori: {0}",
     "dropImport.capTracks":"Libreria tracce piena (cap {0}).",
@@ -15135,6 +15136,7 @@ const I18N = {
     "track.etaCar":"Car ({0})",
     "track.noExport":"Add at least 2 points to export.",
     "track.importedN":"Imported {0} points into the track.",
+    "dropImport.busy":"Another import is in progress. Wait for it to finish before importing.",
     "dropImport.summary":"Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.",
     "dropImport.errDetail":"Errors: {0}",
     "dropImport.capTracks":"Saved track library full (cap {0}).",
@@ -19764,7 +19766,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 41;
+const APP_BUILD_NUM = 42;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26272,6 +26274,35 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
   }
 }
 
+/*
+ * FIX3 — transient ownership lock for spatial imports (Track Builder file
+ * import + global GPX/KML/KMZ drop). Replaces the fragile shared boolean:
+ * only the operation holding the active token may release the lock, so a
+ * late callback of a finished/aborted import can never unlock a newer one.
+ * Not persisted; no timeout.
+ */
+function gisSpatialImportAcquire(kind){
+  try {
+    if (state._gisSpatialImportOp && state._gisSpatialImportOp.token) return null;
+    const token = "imp-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 10);
+    state._gisSpatialImportOp = { token: token, kind: String(kind || "") };
+    return token;
+  } catch(_){ return null; }
+}
+
+function gisSpatialImportRelease(token){
+  try {
+    const op = state._gisSpatialImportOp;
+    if (op && token != null && String(op.token) === String(token)){
+      state._gisSpatialImportOp = null;
+    }
+  } catch(_){}
+}
+
+function gisSpatialImportIsBusy(){
+  try { return !!(state._gisSpatialImportOp && state._gisSpatialImportOp.token); } catch(_){ return false; }
+}
+
 async function importDroppedSpatialFiles(fileList){
   try {
     if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
@@ -26279,6 +26310,12 @@ async function importDroppedSpatialFiles(fileList){
       return null;
     }
   } catch(_){}
+  // One ownership token for the whole batch; reject the entire drop when busy.
+  const importToken = gisSpatialImportAcquire("drop");
+  if (!importToken){
+    try { setBadge("error", t("dropImport.busy") || "Another import is in progress."); } catch(_){}
+    return null;
+  }
   const all = Array.prototype.slice.call(fileList || [], 0);
   const summary = {
     processed: 0,
@@ -26292,7 +26329,6 @@ async function importDroppedSpatialFiles(fileList){
   const fitAcc = { trackPts: [], otherPts: [] };
   let createdTrack = false;
 
-  try { state._gisSpatialImportBusy = true; } catch(_){}
   try {
     if (all.length > DROP_IMPORT_MAX_FILES){
       summary.ignored += all.length - DROP_IMPORT_MAX_FILES;
@@ -26394,7 +26430,7 @@ async function importDroppedSpatialFiles(fileList){
     } catch(_){}
     return summary;
   } finally {
-    try { state._gisSpatialImportBusy = false; } catch(_){}
+    gisSpatialImportRelease(importToken);
   }
 }
 
@@ -33964,7 +34000,7 @@ function savedTrackAddFromPoints(opts){
   return { ok: true, track };
 }
 
-/* ========================= TRACK-BRUSH-A (build 41 / FIX2) ========================= */
+/* ========================= TRACK-BRUSH-A (build 42 / FIX3) ========================= */
 const TRACK_BRUSH_MIN_SAMPLE_PX = 5;
 const TRACK_BRUSH_MIN_STROKE_PX = 8;
 const TRACK_BRUSH_RAW_CAP = 4096;
@@ -34796,7 +34832,7 @@ function trackBrushDisarmTransientTools(){
 function trackBrushActivationBlocked(){
   try { ensureTrackState(); } catch(_){}
   try {
-    if (state._gisSpatialImportBusy){
+    if (typeof gisSpatialImportIsBusy === "function" && gisSpatialImportIsBusy()){
       return trackBrushMsg("track.brush.conflictImport", "Wait for the import to finish before using Brush.");
     }
   } catch(_){}
@@ -35179,8 +35215,9 @@ function trackBrushVerifyPersistedTrack(createdId, name, pts){
     if (!row) return false;
     if (String(row.name || "") !== String(name || "")) return false;
     if (!Array.isArray(row.points) || row.points.length !== pts.length) return false;
-    if (!!row.closed) return false;
-    if (row.visible === false) return false;
+    // Strict booleans: missing/null/string/number values must fail.
+    if (row.closed !== false) return false;
+    if (row.visible !== true) return false;
     const first = row.points[0];
     const last = row.points[row.points.length - 1];
     const p0 = pts[0];
@@ -35213,6 +35250,29 @@ function trackBrushRollbackCreatedTrack(createdId, prevSelectedIds){
   } catch(_){}
 }
 
+/**
+ * FIX3 — restore the raw STORAGE_KEY value captured before the brush save.
+ * prevRaw === null means the key was absent. Returns true when the raw value
+ * matches the snapshot after the restore (best-effort verification).
+ */
+function trackBrushRestoreStorageRaw(prevRaw){
+  try {
+    if (prevRaw == null){
+      localStorage.removeItem(STORAGE_KEY);
+    } else {
+      localStorage.setItem(STORAGE_KEY, prevRaw);
+    }
+  } catch(_){
+    return false;
+  }
+  try {
+    const cur = localStorage.getItem(STORAGE_KEY);
+    return (prevRaw == null) ? (cur == null) : (cur === prevRaw);
+  } catch(_){
+    return false;
+  }
+}
+
 function trackBrushSave(){
   const b = trackBrushEnsure();
   if (b.phase !== "review") return false;
@@ -35238,6 +35298,23 @@ function trackBrushSave(){
   b.name = name;
   b.reviewPoints = pts;
   trackBrushSyncUi();
+  // FIX3 — snapshot the previous raw storage value before any mutation so a
+  // failed persist can restore storage exactly (key absent vs previous string).
+  let prevRaw = null;
+  let snapshotOk = true;
+  try {
+    prevRaw = localStorage.getItem(STORAGE_KEY);
+  } catch(_){
+    snapshotOk = false;
+  }
+  if (!snapshotOk){
+    b.phase = "review";
+    b.reviewPoints = pts;
+    b.name = name;
+    trackBrushSetFeedback(trackBrushMsg("track.brush.persistFail", "Could not persist the track. Review kept."));
+    trackBrushSyncUi();
+    return false;
+  }
   const prevSelectedIds = Array.isArray(state._savedTracksSelectedIds)
     ? state._savedTracksSelectedIds.slice()
     : [];
@@ -35272,6 +35349,7 @@ function trackBrushSave(){
     saveStore();
   } catch(_){
     trackBrushRollbackCreatedTrack(createdId, prevSelectedIds);
+    trackBrushRestoreStorageRaw(prevRaw);
     b.phase = "review";
     b.reviewPoints = pts;
     b.name = name;
@@ -35283,7 +35361,9 @@ function trackBrushSave(){
   const confirmed = trackBrushVerifyPersistedTrack(createdId, name, pts);
   if (!confirmed){
     trackBrushRollbackCreatedTrack(createdId, prevSelectedIds);
-    // No second saveStore on rollback.
+    // Restore the pre-save raw value so a half-written record does not
+    // survive in storage. No second saveStore on rollback.
+    trackBrushRestoreStorageRaw(prevRaw);
     b.phase = "review";
     b.reviewPoints = pts;
     b.name = name;
@@ -35314,11 +35394,14 @@ function trackBrushHandleEsc(){
     trackBrushAbortGesture(trackBrushMsg("track.brush.gestureCancelled", "Gesture cancelled."));
     return true;
   }
-  if (p === "review" || p === "saving"){
-    if (p === "saving") return true;
-    trackBrushClearToArmed();
+  if (p === "review"){
+    // FIX3 — Esc is inert in review: never discard geometry/name without
+    // explicit Save/Clear/Cancel. Handled so the global modal stays open.
+    trackBrushSetFeedback(trackBrushMsg("track.brush.toggleBlocked", "Save, clear or cancel Brush before exiting."));
+    trackBrushSyncUi();
     return true;
   }
+  if (p === "saving") return true;
   if (p === "armed"){
     trackBrushExitToIdle();
     return true;
@@ -40737,11 +40820,17 @@ function importTrackFile(file){
     }
   } catch(_){}
   if (!file) return;
+  // Acquire the transient import lock before opening the FileReader; a late
+  // callback can only release its own token (never a newer operation's).
+  const importToken = gisSpatialImportAcquire("trackfile");
+  if (!importToken){
+    try { setBadge("error", t("dropImport.busy") || "Another import is in progress."); } catch(_){}
+    return;
+  }
   const name = file.name || "";
   const clearImportBusy = () => {
-    try { state._gisSpatialImportBusy = false; } catch(_){}
+    gisSpatialImportRelease(importToken);
   };
-  try { state._gisSpatialImportBusy = true; } catch(_){}
   const reader = new FileReader();
   reader.onload = async () => {
     try {
