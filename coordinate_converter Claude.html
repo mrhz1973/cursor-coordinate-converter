@@ -19766,7 +19766,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 43;
+const APP_BUILD_NUM = 44;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28667,50 +28667,8 @@ function trackLonsAlignToView(unwrapped, viewLon){
   return unwrapped.map((v) => (Number.isFinite(v) ? v + shift : v));
 }
 
-/**
- * Minimal circular longitude arc covering the given lons (canonical degrees).
- * Returns { center, span, west, east } or null. Does not mutate input.
- */
-function trackLonMinimalArc(lons){
-  const norm = [];
-  if (!Array.isArray(lons)) return null;
-  for (let i = 0; i < lons.length; i++){
-    const L = lons[i];
-    if (!Number.isFinite(L)) continue;
-    norm.push(normalizeLon(L));
-  }
-  if (!norm.length) return null;
-  if (norm.length === 1){
-    return { west: norm[0], east: norm[0], center: norm[0], span: 0 };
-  }
-  const sorted = norm.slice().sort((a, b) => a - b);
-  let maxGap = -1;
-  let maxGapI = 0;
-  for (let i = 0; i < sorted.length - 1; i++){
-    const g = sorted[i + 1] - sorted[i];
-    if (g > maxGap){ maxGap = g; maxGapI = i; }
-  }
-  const wrapGap = (sorted[0] + 360) - sorted[sorted.length - 1];
-  if (wrapGap > maxGap){
-    maxGap = wrapGap;
-    maxGapI = sorted.length - 1;
-  }
-  let west, east, span;
-  if (maxGapI === sorted.length - 1){
-    west = sorted[0];
-    east = sorted[sorted.length - 1];
-    span = east - west;
-  } else {
-    west = sorted[maxGapI + 1];
-    east = sorted[maxGapI];
-    span = (east + 360) - west;
-  }
-  let center = west + span / 2;
-  if (center > 180) center -= 360;
-  if (center <= -180) center += 360;
-  center = normalizeLon(center);
-  return { west, east, center, span };
-}
+/* trackLonMinimalArc removed in TRACK-BRUSH-ANTIMERIDIAN-FIX1:
+ * set-based circular arc ignored vertex order and diverged from rendered unwrap path. */
 
 /**
  * Render an interactive OSM tile map inside #miniMap. Uses direct <img>
@@ -34033,7 +33991,14 @@ function savedTrackStyleEditorSetFeedback(msg){
   const fb = document.getElementById("trackSavedStyleFeedback");
   if (fb) fb.textContent = msg ? String(msg) : "";
 }
-function flyMapToTrackPoints(pts){
+/**
+ * Fit/zoom map to track points. Lon span/center from ordered shortest-wrap unwrap
+ * (same semantics as trackPointsToMapPx / rendering). `closed` includes the
+ * last→first segment in the transient unwrap sequence when true.
+ * Does not mutate `pts`. Persists only canonical normalizeLon(center).
+ */
+function flyMapToTrackPoints(pts, closed){
+  closed = !!closed;
   if (!pts || !pts.length) return;
   if (pts.length === 1){
     const p = pts[0];
@@ -34045,20 +34010,54 @@ function flyMapToTrackPoints(pts){
     renderTileMap(p.lat, normalizeLon(p.lon), state.mapZoom);
     return;
   }
+  let linePts = (typeof trackLinePointsForMapRender === "function")
+    ? trackLinePointsForMapRender(pts, closed)
+    : pts;
+  if (!Array.isArray(linePts) || !linePts.length) linePts = pts;
+  let seq = linePts;
+  if (closed && linePts.length >= 3){
+    const a = linePts[0], b = linePts[linePts.length - 1];
+    const same = !!(a && b
+      && Number.isFinite(a.lat) && Number.isFinite(b.lat)
+      && Number.isFinite(a.lon) && Number.isFinite(b.lon)
+      && Math.abs(a.lat - b.lat) < 1e-8
+      && Math.abs(normalizeLon(a.lon) - normalizeLon(b.lon)) < 1e-8);
+    if (!same) seq = linePts.concat([linePts[0]]);
+  }
   let minLat = 90, maxLat = -90;
   const lons = [];
-  for (const p of pts){
-    if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
-    minLat = Math.min(minLat, p.lat); maxLat = Math.max(maxLat, p.lat);
+  for (let i = 0; i < seq.length; i++){
+    const p = seq[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    minLat = Math.min(minLat, p.lat);
+    maxLat = Math.max(maxLat, p.lat);
     lons.push(p.lon);
   }
-  if (minLat > maxLat) return;
-  const arc = trackLonMinimalArc(lons);
-  if (!arc) return;
+  if (minLat > maxLat || !lons.length) return;
+  if (lons.length === 1){
+    const lon1 = normalizeLon(lons[0]);
+    const clat1 = minLat;
+    state.viewCenter = { lat: clat1, lon: lon1 };
+    const z1 = state.mapZoom || 11;
+    state.mapZoom = clampBasemapFitZoom(z1 < 12 ? 14 : z1);
+    saveStore();
+    renderTileMap(clat1, lon1, state.mapZoom);
+    return;
+  }
+  const unwrapped = trackLonsUnwrapTransient(lons);
+  let minU = Infinity, maxU = -Infinity;
+  for (let i = 0; i < unwrapped.length; i++){
+    const u = unwrapped[i];
+    if (!Number.isFinite(u)) continue;
+    if (u < minU) minU = u;
+    if (u > maxU) maxU = u;
+  }
+  if (!(minU <= maxU)) return;
+  const lonSpan = Math.abs(maxU - minU) || 1e-6;
+  const centerUnwrapped = (minU + maxU) / 2;
+  const clon = normalizeLon(centerUnwrapped);
   const clat = (minLat + maxLat) / 2;
-  const clon = arc.center;
   const latSpan = Math.abs(maxLat - minLat) || 1e-6;
-  const lonSpan = Math.abs(arc.span) || 1e-6;
   const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
   let z = 16;
   if (span > 2) z = 8;
@@ -36256,7 +36255,7 @@ function flyToSavedTrackById(id){
   ensureSavedTracksState();
   const st = state.savedTracks.find(x => x.id === String(id));
   if (!st || !st.points.length) return;
-  flyMapToTrackPoints(st.points);
+  flyMapToTrackPoints(st.points, !!st.closed);
 }
 
 /** Load a saved library track into the editable draft (explicit user action). */
@@ -40004,7 +40003,7 @@ function wireTrackPointsSectionToggleOnce(){
       ev.preventDefault();
       if (centerBtn.disabled) return;
       ensureTrackState();
-      try { flyMapToTrackPoints(state.track.points); } catch(_){}
+      try { flyMapToTrackPoints(state.track.points, !!state.track.closed); } catch(_){}
       return;
     }
     const btn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-points-toggle\"]");
@@ -55293,7 +55292,7 @@ function polygonShowOnMapFromList(id){
   if (!f) return;
   const m = polygonFeatureListMetrics(f);
   if (!m.pts || !m.pts.length) return;
-  try { flyMapToTrackPoints(m.pts); } catch(_){}
+  try { flyMapToTrackPoints(m.pts, true); } catch(_){}
 }
 
 /* ========================= GIS Object Workbench (MAJOR-5A1) ========================= */
