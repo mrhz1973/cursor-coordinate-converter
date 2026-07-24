@@ -117,16 +117,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | runtime **`fb11986`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
-| Runtime live / commit monolite | `fb119866bb57316b4188906c86d24d7d6879ebd7` (`fb11986`) — tip OFFLINE-DOWNLOAD-CONTROLS-A-FIX3 |
-| Ultimo blocco runtime chiuso | **OFFLINE-DOWNLOAD-CONTROLS-A** (+ FIX1 + FIX2 + FIX3) — Pause/Resume/Stop + sticky job bar + tabella aree (build 50) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync finito QA) | runtime **`1812010`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
+| Runtime live / commit monolite | `18120102f319721aa237badb1db3c28327739e88` (`1812010`) — tip MAJOR-3-b1 |
+| Ultimo blocco runtime chiuso | **MAJOR-3-b1** — Unified GIS Import Hub foundation preview zero-write (build 51) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `fb119866bb57316b4188906c86d24d7d6879ebd7` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `2e31c335970cece26e20896fec85e4c5555aa95e` |
-| Byte monolite (git LF) | `2788844` |
-| `APP_BUILD_NUM` | `50` |
-| Display runtime | `B5.5Z · build 50` |
+| Runtime Git / atteso VPS | `18120102f319721aa237badb1db3c28327739e88` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `ba2cf240f20595ef066dd59e7a3b685850f049c5` |
+| Byte monolite (git LF) | `2815080` |
+| `APP_BUILD_NUM` | `51` |
+| Display runtime | `B5.5Z · build 51` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
 | TRACK-CREATE-EDIT-UX-A / FIX1 | **CLOSED / PASS end-to-end** (CTA punti/pennello + stile unificato + verify; QA PASS) |
 | TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS end-to-end** (dateline shortest-wrap + fit ordinato; QA PASS) |
@@ -151,13 +152,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=fb11986` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1812010` |
 
 **Prossimo ordine operativo:**
 
-**Da scegliere da roadmap/backlog.** Estensioni **MAJOR-3** (import unificato) e **MAJOR-4** (import/restore) backlog basso. **Programma pick Workbench MAJOR-5A2 completo.** **OFFLINE-DOWNLOAD-CONTROLS-A** (+ FIX1–FIX3) **CLOSED** (`fb11986`, build 50).
+**MAJOR-3-b2** (apply additivo Import Hub) da decidere. **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.** **MAJOR-3-b1** **CLOSED** (`1812010`, build 51). **OFFLINE-DOWNLOAD-CONTROLS-A** (+ FIX1–FIX3) **CLOSED** (`fb11986`, build 50).
 
-**Backlog basso / non ora:** import unificato MAJOR-3, import/restore MAJOR-4.
+**Backlog basso / non ora:** apply MAJOR-3-b2 (finché non autorizzato), import/restore MAJOR-4.
 
 **Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-CREATE-EDIT-UX-A.
 
