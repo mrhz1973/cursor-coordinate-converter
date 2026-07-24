@@ -1,13 +1,14 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b NEXT**
+**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 NEXT**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `d95f7457cd051f5bb997afce57f8597d51d98648` (`d95f745`) — display **`B5.5Z · build 54`**
+**Runtime autorevole attuale:** `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — display **`B5.5Z · build 56`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
-**Prossimo bundle runtime autorizzabile:** **B1b** (pick + marker drag + GPS; richiede prompt Cursor dedicato + review downstream pre-deploy)
+**B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
+**Prossimo bundle runtime autorizzabile:** **B2** (route GraphHopper / endpoint; richiede prompt Cursor dedicato + review downstream pre-deploy)
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 
@@ -169,7 +170,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 ### BUNDLE B1 — Planner UI no-route
 
-> **Split operativo eseguito:** **B1a** (shell no-map) **CLOSED** tip `d95f745` build 54; **B1b** (pick + marker + GPS) = prossimo bundle.
+> **Split operativo eseguito:** **B1a** (shell no-map) **CLOSED** tip `d95f745` build 54; **B1b** (pick + marker + GPS) **CLOSED** tip `3a702e1` build 56; prossimo **B2**.
 
 **Scope originale B1 (piano):**
 
@@ -538,6 +539,6 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 - **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
 - **MAJOR-4 import/restore** resta backlog basso.
-- Runtime autorevole: **`d95f745` build 54** (B1a CLOSED); prossimo bundle **B1b**.
+- Runtime autorevole: **`3a702e1` build 56** (B1b CLOSED); prossimo bundle **B2**.
 - Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC).
 - Questo documento è **piano**, non stato corrente. Stato vivo: `docs/OPERATING_MEMORY.md` §7.

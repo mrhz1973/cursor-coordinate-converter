@@ -117,16 +117,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | runtime **`d95f745`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). |
-| Runtime live / commit monolite | `d95f7457cd051f5bb997afce57f8597d51d98648` (`d95f745`) — tip OUTDOOR-ROUTING-GH-B1a-FIX2 |
-| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1a (+ FIX1 + FIX2)** — planner shell no-map (build 54) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync finito QA) | runtime **`3a702e1`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). |
+| Runtime live / commit monolite | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — tip OUTDOOR-ROUTING-GH-B1b-FIX1 |
+| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1b (+ FIX1)** — pick/marker/GPS (build 56) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d95f7457cd051f5bb997afce57f8597d51d98648` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `06c83dffc8d284e22e8203d784aba0f2211bf780` |
-| Byte monolite (git LF) | `2843944` |
-| `APP_BUILD_NUM` | `54` |
-| Display runtime | `B5.5Z · build 54` |
+| Runtime Git / atteso VPS | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `15c57074cc3c1ea5e2b75d4c6b724b7eee5a41b2` |
+| Byte monolite (git LF) | `2868398` |
+| `APP_BUILD_NUM` | `56` |
+| Display runtime | `B5.5Z · build 56` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
 | OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
 | MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
@@ -153,11 +154,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d95f745` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=3a702e1` |
 
 **Prossimo ordine operativo:**
 
-**OUTDOOR-ROUTING-GH-B1b** — pick mappa + marker temporanei + GPS single-shot (WU-0010 **OPEN / B1a CLOSED**). Review downstream pre-deploy obbligatoria. Runtime live **`d95f745` build 54**. **MAJOR-3-b2** resta parcheggiato.
+**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**). Review downstream pre-deploy obbligatoria. Runtime live **`3a702e1` build 56**. **MAJOR-3-b2** resta parcheggiato.
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
