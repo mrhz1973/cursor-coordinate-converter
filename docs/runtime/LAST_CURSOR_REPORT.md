@@ -2,74 +2,57 @@
 
 ## LATEST
 
-* real_task_commit: `8a61b9117b28c420b139950eec5403e1a542c42b`
-* real_task_subject: docs: publish WU-0010 — Outdoor Routing GraphHopper plan
-* report_generated_at: 2026-07-24T08:45:00Z
+* real_task_commit: `d95f7457cd051f5bb997afce57f8597d51d98648`
+* real_task_subject: fix(gis): improve outdoor planner QA usability (build 54)
+* report_generated_at: 2026-07-24T19:25:00Z
 * branch: main
-* remote_head_after_task_push: `8a61b9117b28c420b139950eec5403e1a542c42b`
-* previous_report_container: `3b6447f` (orchestratore post finito MAJOR-3-b1 QA — esterno/verificabile)
+* remote_head_after_task_push: `d95f7457cd051f5bb997afce57f8597d51d98648`
+* previous_report_container: `57ef41e` (autosync WU-0010 plan — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs-only recovery/autosync WU-0010; monolite invariato; report in autosync
-* pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: WU-0010 PLAN PUBLISHED (docs-only); recovery CASO B — push task esistente + autosync; runtime invariato
-* pass_operatore: non applicabile (docs-only, nessun runtime)
-* result_runtime: runtime live 1812010 build 51 invariato; nessun deploy
-* qa_attestation_source: n/a — pubblicazione piano
-* notes: OPEN / PLAN APPROVED / RUNTIME NOT STARTED; review GLM PASS CON CORREZIONI; split B1+B2; prossimo B1; MAJOR-3-b2 parcheggiato; blob ba2cf240… invariato
+* working_tree_status: finito docs `2cd2414` già pushato; monolite tip `d95f745` invariato in chiusura; report in autosync
+* pass_tecnico_remoto: PASS (HEAD/origin/ls-remote = `d95f745` pre-finito; VPS deploy FIX2 PASS)
+* result_cursor: OUTDOOR-ROUTING-GH-B1a (+FIX1+FIX2) CLOSED / PASS end-to-end via QA PASS + finito
+* pass_operatore: PASS
+* result_runtime: VPS live `d95f745` B5.5Z build 54; blob `06c83dff…`; byte 2843944
+* qa_attestation_source: operatore — `QA OUTDOOR-ROUTING-GH-B1a PASS operatore` (2026-07-24)
+* notes: B1b next; MAJOR-3-b2 parked; FR byte-identical; zero GraphHopper network in B1a
 
 ## OUTPUT VERBATIM
 
 ```text
-real_task_commit verificato:
-8a61b9117b28c420b139950eec5403e1a542c42b
+real_task_commit (runtime tip B1a-FIX2):
+d95f7457cd051f5bb997afce57f8597d51d98648
 
-git rev-parse HEAD (post task push, pre-autosync):
-8a61b9117b28c420b139950eec5403e1a542c42b
-
-git rev-parse origin/main (post task push):
-8a61b9117b28c420b139950eec5403e1a542c42b
-
-git ls-remote origin refs/heads/main (post task push):
-8a61b9117b28c420b139950eec5403e1a542c42b	refs/heads/main
+finito docs task (pre-autosync):
+2cd2414491feaae2c7ebe7ecb6e45f0adde451da
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-ba2cf240f20595ef066dd59e7a3b685850f049c5
+06c83dffc8d284e22e8203d784aba0f2211bf780
 
 git branch --show-current
 main
 
-git status --short (pre-autosync)
-(empty)
-
-Recovery classificazione: CASO B
-commit-msg.txt: assente
-Deploy: non eseguito
+Deploy VPS FIX2: PASS (cmp PASS, HTTP 200, build 54)
+QA operatore: PASS (attestazione esplicita)
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 57ef41e — WU-0010 plan autosync (real_task docs 8a61b91)
+* 8a61b91 — WU-0010 Outdoor Routing plan published
 * 3b6447f — MAJOR-3-b1 finito autosync post QA (real_task 1812010; finito docs 1c05d13)
 * 1812010 — MAJOR-3-b1 runtime tip (build 51)
 * 43f638e — OFFLINE-DOWNLOAD-CONTROLS-A finito autosync post QA (real_task fb11986; finito docs 95010cd)
 * fb11986 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX3 runtime tip (build 50)
-* ede0215 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX2 (build 49)
-* 5426cb1 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX1 (build 48)
-* e130a6e — OFFLINE-DOWNLOAD-CONTROLS-A feature (build 47)
-* 45a5404 — TRACK-CREATE-EDIT-UX-A finito autosync post QA (real_task 793f4cb; finito docs 1b37275)
-* 48c63ef — finito conferma sessione noop (HEAD già 45a5404)
-* 793f4cb — TRACK-CREATE-EDIT-UX-A-FIX1 runtime tip (build 46)
-* 33dc33d — TRACK-CREATE-EDIT-UX-A feature (build 45)
-* 2655d98 — TRACK-BRUSH-ANTIMERIDIAN finito autosync post QA (real_task 9cc7937; finito docs 77a7f00)
-* 9cc7937 — TRACK-BRUSH-ANTIMERIDIAN-FIX1 runtime tip (build 44)
-* d4f877a — TRACK-BRUSH-A + FIX1–FIX3 runtime tip (build 42)
-* 40c97b6 — TRACK-STYLE-A runtime (build 38)
+* d95f745 — OUTDOOR-ROUTING-GH-B1a-FIX2 runtime tip (build 54)
+* 3760c77 — OUTDOOR-ROUTING-GH-B1a-FIX1 (build 53)
+* 53e25d6 — OUTDOOR-ROUTING-GH-B1a feature (build 52)
 
 ## LIMITI
 
-* Runtime Outdoor Routing **non** implementato (piano soltanto)
-* MAJOR-3-b2 resta parcheggiato
-* Nessun deploy in questo intervento
+* B1b / B2 / GraphHopper network non avviati
+* Deploy non ripetuto in chiusura finito
 * PASS remoto container corrente = EXTERNAL_ONLY

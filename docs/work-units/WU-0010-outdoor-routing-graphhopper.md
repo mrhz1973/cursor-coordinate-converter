@@ -538,6 +538,6 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 - **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
 - **MAJOR-4 import/restore** resta backlog basso.
-- Runtime autorevole resta **`1812010` build 51** finché il primo bundle runtime di questo programma non sarà mergeato e deployato.
+- Runtime autorevole: **`d95f745` build 54** (B1a CLOSED); prossimo bundle **B1b**.
 - Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC).
 - Questo documento è **piano**, non stato corrente. Stato vivo: `docs/OPERATING_MEMORY.md` §7.
