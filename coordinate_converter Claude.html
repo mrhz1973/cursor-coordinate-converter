@@ -20592,7 +20592,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 55;
+const APP_BUILD_NUM = 56;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -33949,6 +33949,10 @@ async function startBboxSelection(){
   if (state._bboxSelecting) return;
   if (!(await resolveOfflineDraftBeforeReplacingBbox())) return;
   if (!state._offlineEditingAreaId) _offlineExitEditForNewDraft();
+  try {
+    if (typeof routingExitPickMode === "function")
+      routingExitPickMode({ silent: true });
+  } catch (_) {}
   state._bboxSelecting = true;
   state._offlineBboxEditorOpen = true;
   tileMap.classList.add("bbox-selecting");
@@ -57857,6 +57861,10 @@ function routingDisarmOtherMapPicks(){
       workbenchExitPickMode({ keepStatus: true });
   } catch(_){}
   try { if (typeof trackBrushClearMapPickModeFully === "function") trackBrushClearMapPickModeFully(); } catch(_){}
+  try {
+    if (state._bboxSelecting && typeof cancelBboxSelection === "function")
+      cancelBboxSelection();
+  } catch(_){}
 }
 function routingExitPickMode(options){
   options = options || {};
