@@ -1133,6 +1133,58 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 .offcache-bar progress{width:100%; height:10px; accent-color:var(--accent)}
 .offcache-status{display:block; font-size:.74rem; color:var(--muted); margin-top:4px}
 
+/* FIX2: sticky offline download job controls (Start / Pause-Resume / Stop + progress). */
+.offcache-job-controls-bar{
+  position:sticky;
+  top:0;
+  z-index:40;
+  margin:8px 0 12px;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid color-mix(in srgb, var(--border) 70%, transparent);
+  background:color-mix(in srgb, var(--panel) 92%, transparent);
+  box-shadow:0 1px 0 color-mix(in srgb, var(--border) 55%, transparent);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+}
+html[data-theme="dark"] .offcache-job-controls-bar{
+  background:color-mix(in srgb, var(--panel) 88%, #0b1220 12%);
+  border-color:color-mix(in srgb, var(--border) 80%, transparent);
+}
+.offcache-job-controls-bar .offcache-job-controls-btns{
+  margin:0;
+  align-items:center;
+}
+.offcache-job-controls-bar .offcache-bar{
+  margin-top:6px;
+  min-width:0;
+}
+.offcache-job-controls-bar .offcache-status{
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.35;
+}
+#layersPanelBody .offcache-job-controls-bar{
+  top:0;
+}
+.offcache-job-controls-bar.offcache-section--online-only{
+  opacity:.62;
+}
+.offcache-job-controls-bar.offcache-section--online-only button{
+  pointer-events:none;
+}
+.sr-only{
+  position:absolute !important;
+  width:1px !important;
+  height:1px !important;
+  padding:0 !important;
+  margin:-1px !important;
+  overflow:hidden !important;
+  clip:rect(0,0,0,0) !important;
+  white-space:nowrap !important;
+  border:0 !important;
+}
+
 /* O2: saved offline areas list (Mappa/Offline panel) */
 .offline-areas-section{
   margin-top:12px; padding-top:10px;
@@ -1149,16 +1201,21 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   font-size:.74rem; color:var(--muted); font-variant-numeric:tabular-nums;
 }
 .offline-areas-toolbar{
-  display:flex; align-items:center; justify-content:space-between;
+  display:flex; align-items:flex-start; justify-content:space-between;
   gap:10px; flex-wrap:wrap;
   margin:8px 0 10px;
   padding:8px 10px;
   border-radius:10px;
   background:color-mix(in srgb, var(--panel2) 92%, transparent);
   border:1px solid color-mix(in srgb, var(--border) 65%, transparent);
+  max-width:100%;
+  box-sizing:border-box;
 }
-.offline-areas-selcount{ font-size:.78rem; color:var(--muted); }
-.offline-areas-toolbar-actions{ display:flex; flex-wrap:wrap; gap:8px; }
+.offline-areas-selcount{ font-size:.78rem; color:var(--muted); flex:0 1 auto; min-width:0; }
+.offline-areas-toolbar-actions{
+  display:flex; flex-wrap:wrap; gap:8px;
+  flex:1 1 12rem; min-width:0; max-width:100%;
+}
 .offline-areas-toolbar .btn[disabled]{ opacity:.55; cursor:not-allowed; }
 .offline-areas-audit-feedback{
   margin:0 0 8px;
@@ -1176,17 +1233,25 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   display:flex; flex-direction:column; gap:8px;
   overflow:visible;
   padding-right:2px;
-  scrollbar-gutter:stable;
 }
+/* FIX2: no nested vertical scroll — panel body (#layersPanelBody) is the sole vertical scroller.
+ * Prefer overflow-y:clip with overflow-x:auto so CSS does not compute overflow-y to auto.
+ * Horizontal overflow only as fallback on narrow viewports. */
 .offline-areas-list > .offline-areas-list-scroll{
-  max-height:min(42vh, 320px);
-  overflow-y:auto;
+  max-height:none;
   overflow-x:auto;
-  scrollbar-gutter:stable;
+  overflow-y:clip;
+  padding-bottom:14px; /* room so h-scrollbar does not cover last row */
+  -webkit-overflow-scrolling:touch;
 }
-/* Mappe Offline (#layersPanel): area tabella più alta del default globale (coerenza con pannelli Waypoint/Traccia). */
+@supports not (overflow-y: clip){
+  .offline-areas-list > .offline-areas-list-scroll{
+    overflow-x:auto;
+    overflow-y:hidden;
+  }
+}
 #layersPanelBody #offlineAreasList > .offline-areas-list-scroll{
-  max-height:min(70vh, 560px);
+  max-height:none;
 }
 /* A3: preset <select> resta nel DOM per optgroup / applyPrecachePreset, fuori dalla UI. */
 .offcache-preset-hidden{
@@ -1264,25 +1329,27 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
 }
 .offline-areas-table{
   width:100%;
+  max-width:100%;
   border-collapse:collapse;
+  table-layout:fixed;
   font-size:.78rem;
-  --offa-name-col:160px;
-  --offa-status-col:90px;
-  --offa-when-col:120px;
-  --offa-zoom-col:90px;
-  --offa-layer-col:110px;
-  --offa-tiles-col:110px;
-  --offa-space-col:110px;
-  --offa-actions-col:200px;
+  --offa-name-col:16%;
+  --offa-status-col:11%;
+  --offa-when-col:12%;
+  --offa-zoom-col:8%;
+  --offa-layer-col:12%;
+  --offa-tiles-col:10%;
+  --offa-space-col:9%;
+  --offa-actions-col:18%;
 }
-.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:72px; }
-.offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:64px; }
-.offline-areas-table col.offa-col-when{ width:var(--offa-when-col); min-width:72px; }
-.offline-areas-table col.offa-col-zoom{ width:var(--offa-zoom-col); min-width:56px; }
-.offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:72px; }
-.offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:72px; }
-.offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:72px; }
-.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:160px; }
+.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:0; }
+.offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:0; }
+.offline-areas-table col.offa-col-when{ width:var(--offa-when-col); min-width:0; }
+.offline-areas-table col.offa-col-zoom{ width:var(--offa-zoom-col); min-width:0; }
+.offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:0; }
+.offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:0; }
+.offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:0; }
+.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:0; }
 .offline-areas-table .offa-th-name,
 .offline-areas-table .offa-th-status,
 .offline-areas-table .offa-th-when,
@@ -1393,11 +1460,19 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   border-bottom:1px solid color-mix(in srgb, var(--border) 60%, transparent);
   vertical-align:top;
   font-variant-numeric:tabular-nums;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  white-space:normal;
 }
 .offline-areas-table th{
   text-align:left; color:var(--muted); font-weight:700;
   position:sticky; top:0;
   background:var(--panel2); z-index:1;
+}
+/* Stick table header below sticky job controls when scrolling the panel body. */
+#layersPanelBody .offline-areas-table thead th{
+  top:var(--offcache-dl-controls-sticky-offset, 3.75rem);
+  z-index:5;
 }
 .offline-areas-table tr[data-offa-row]:hover{
   background:color-mix(in srgb, var(--accent) 6%, var(--panel));
@@ -1455,9 +1530,12 @@ body.mm-enlarged #offlineTilePanel.dragging > summary{ cursor:grabbing }
   outline-offset:1px;
 }
 .offline-areas-table .offa-name-inp{
-  white-space:nowrap;
+  white-space:normal;
   overflow:hidden;
   text-overflow:ellipsis;
+  max-width:100%;
+  width:100%;
+  box-sizing:border-box;
 }
 /* Tooltip sotto i bottoni azione: evita copertura da thead sticky e da righe sopra. */
 .offline-areas-list .offa-actions [data-tip]:hover::after,
@@ -1597,11 +1675,11 @@ html[data-theme="light"] body.gis-mode dialog#favoritesPanel.favorites-panel{
 .offline-areas-table .offa-sort-btn:hover{ color:var(--text); text-decoration:underline; }
 .offline-areas-table td.offa-actions-cell{
   vertical-align:middle;
-  white-space:nowrap;
+  white-space:normal;
 }
 .offline-areas-table .offa-actions{
   display:inline-flex;
-  flex-wrap:nowrap;
+  flex-wrap:wrap;
   align-items:center;
   gap:4px;
   max-width:100%;
@@ -9847,6 +9925,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   background:transparent !important;
   border:none !important; box-shadow:none !important;
   padding:0 !important;
+  overflow:visible !important;
 }
 .tab-drawer-body #offlineTilePanel > summary,
 .tools-panel-wrap #offlineTilePanel > summary,
@@ -9860,6 +9939,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 #layersPanelBody #offlineTilePanel{
   /* The floating panel already has a titlebar; flatten the inner <details>. */
   border:none !important;
+  /* FIX2: must not be a nested scrollport — sticky job controls + single panel scroll. */
+  overflow:visible !important;
+  max-height:none !important;
 }
 #layersPanelBody #offlineTilePanel[open] > *{ margin-top:0 !important; }
 .tab-drawer-body #offlineTilePanel > summary::after,
@@ -10573,6 +10655,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             </button>
             <button type="button" class="btn btn-sm" id="btnBboxClear" hidden data-i18n="offcache.bboxClear" data-i18n-tip="tip.bboxClear">❌ Rimuovi area</button>
           </div>
+          <!-- FIX2: sticky job controls — same IDs, always reachable while scrolling the panel body -->
+          <div id="offcacheJobControlsBar" class="offcache-job-controls-bar" role="region" aria-labelledby="offcacheJobControlsLabel">
+            <span id="offcacheJobControlsLabel" class="sr-only" data-i18n="offcache.sectionDownload">Download mappe offline</span>
+            <div class="offcache-job-controls-btns offcache-actions">
+              <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica area corrente</button>
+              <button type="button" class="btn btn-sm" id="btnPrecachePauseResume" hidden data-dl-action="pause" data-i18n="offcache.pause" data-i18n-tip="tip.precachePause">Pausa</button>
+              <button type="button" class="btn btn-sm btn-danger-subtle" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Stop download</button>
+            </div>
+            <div class="offcache-bar" id="pcBar" hidden>
+              <progress id="pcProgress" max="100" value="0"></progress>
+              <span id="pcStatus" class="offcache-status" aria-live="polite"></span>
+            </div>
+          </div>
           <div id="pcBboxFieldsWrap" class="pc-bbox-fields-wrap" hidden>
           <div class="offcache-grid4">
             <label><span data-i18n="offcache.north">Nord</span><input type="number" id="pcN" step="0.01" value="10.8"></label>
@@ -10620,11 +10715,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <input type="text" id="pcAreaName" maxlength="40" data-i18n-ph="offcache.areaNamePh" placeholder="Nome area (es. AO FLINTLOCK)">
               <button type="button" class="btn btn-sm" id="btnSaveNamedArea" data-i18n="offcache.saveNamed" data-i18n-tip="tip.saveNamed">💾 Salva</button>
             </div>
-            <div class="offcache-actions">
-              <button type="button" class="btn btn-sm btn-primary" id="btnPrecacheStart" data-i18n="offcache.start" data-i18n-tip="tip.precacheStart">Scarica area corrente</button>
-              <button type="button" class="btn btn-sm" id="btnPrecachePauseResume" hidden data-dl-action="pause" data-i18n="offcache.pause" data-i18n-tip="tip.precachePause">Pausa</button>
-              <button type="button" class="btn btn-sm btn-danger-subtle" id="btnPrecacheStop" hidden data-i18n="offcache.stop" data-i18n-tip="tip.precacheStop">Stop download</button>
-            </div>
           </section>
           <section class="offcache-section offcache-section--export" aria-labelledby="offcacheSectionExportTitle">
             <h4 id="offcacheSectionExportTitle" class="offcache-section-title" data-i18n="offcache.sectionExportJpg">Export JPG offline</h4>
@@ -10643,10 +10733,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <button type="button" class="btn btn-sm" id="btnOfflineExportJpg" data-i18n="offcache.exportJpg" data-i18n-tip="tip.offlineExportJpg">Esporta JPG offline</button>
             </div>
           </section>
-          </div>
-          <div class="offcache-bar" id="pcBar" hidden>
-            <progress id="pcProgress" max="100" value="0"></progress>
-            <span id="pcStatus" class="offcache-status" aria-live="polite"></span>
           </div>
           <section id="offlineAreasSection" class="offline-areas-section" aria-labelledby="offlineAreasSectionTitle">
             <div class="offline-areas-section-head">
@@ -19975,7 +20061,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 48;
+const APP_BUILD_NUM = 49;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29343,7 +29429,8 @@ function syncOfflinePanelNeutralState(layerId){
   }
   const dlSec = document.querySelector(".offcache-section--download");
   const exSec = document.querySelector(".offcache-section--export");
-  [dlSec, exSec].forEach(el => {
+  const jobBar = document.getElementById("offcacheJobControlsBar");
+  [dlSec, exSec, jobBar].forEach(el => {
     if (!el) return;
     el.classList.toggle("offcache-section--online-only", onlineOnly);
     el.setAttribute("aria-disabled", onlineOnly ? "true" : "false");
