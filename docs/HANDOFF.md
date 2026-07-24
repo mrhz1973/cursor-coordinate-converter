@@ -117,7 +117,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | runtime **`1812010`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push) |
+| HEAD documentale (pre-autosync finito QA) | runtime **`1812010`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). Nota: ultima chiusura docs rilevante = **WU-0010 OUTDOOR-ROUTING-GH piano pubblicato** (docs-only, runtime invariato). |
 | Runtime live / commit monolite | `18120102f319721aa237badb1db3c28327739e88` (`1812010`) — tip MAJOR-3-b1 |
 | Ultimo blocco runtime chiuso | **MAJOR-3-b1** — Unified GIS Import Hub foundation preview zero-write (build 51) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
@@ -156,7 +156,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-**MAJOR-3-b2** (apply additivo Import Hub) da decidere. **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.** **MAJOR-3-b1** **CLOSED** (`1812010`, build 51). **OFFLINE-DOWNLOAD-CONTROLS-A** (+ FIX1–FIX3) **CLOSED** (`fb11986`, build 50).
+**OUTDOOR-ROUTING-GH** è il **programma corrente pianificato** — [`WU-0010-outdoor-routing-graphhopper.md`](docs/work-units/WU-0010-outdoor-routing-graphhopper.md) **OPEN / PLAN APPROVED / RUNTIME NOT STARTED** (review GLM **PASS CON CORREZIONI**; split **B1+B2** ratificato; 3 correzioni bloccanti registrate: estensione `workbenchMapInteractionBlocked`, pick in `attachPanHandlers.onUp`, `geocodingAllowed` esplicito). **Prossimo bundle autorizzabile: B1** — Planner UI no-route (build futuro 52, target 350–500 righe, **DELICATO** lifecycle pick/drag; richiede prompt Cursor dedicato + review downstream pre-deploy). Runtime live **invariato `1812010` build 51** — B1 non ancora implementato.
+
+**MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
 **Backlog basso / non ora:** apply MAJOR-3-b2 (finché non autorizzato), import/restore MAJOR-4.
 
