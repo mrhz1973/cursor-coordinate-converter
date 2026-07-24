@@ -8404,6 +8404,100 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
   gap:6px;
   margin-top:6px;
 }
+#gisWorkbenchPanel .wb-import-hub{
+  margin:0 12px 8px;
+  font-size:.78rem;
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:6px;
+  padding:6px 8px;
+}
+#gisWorkbenchPanel .wb-import-hub > summary{
+  cursor:pointer;
+  font-weight:600;
+  user-select:none;
+}
+#gisWorkbenchPanel .wb-import-hub-body{
+  margin-top:8px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+#gisWorkbenchPanel .wb-import-hub-drop{
+  border:1px dashed color-mix(in srgb, var(--border,#94a3b8) 70%, transparent);
+  border-radius:6px;
+  padding:10px 12px;
+  text-align:center;
+  background:color-mix(in srgb, var(--panel,#fff) 92%, var(--border,#e5e7eb) 8%);
+}
+#gisWorkbenchPanel .wb-import-hub-drop.is-dragover{
+  border-color:var(--accent,#2563eb);
+  background:color-mix(in srgb, var(--accent,#2563eb) 12%, var(--panel,#fff) 88%);
+}
+#gisWorkbenchPanel .wb-import-hub-drop-hint{
+  margin:0 0 8px;
+  color:var(--muted,#64748b);
+  font-size:.75rem;
+  line-height:1.35;
+}
+#gisWorkbenchPanel .wb-import-hub-cats{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px 12px;
+  align-items:center;
+}
+#gisWorkbenchPanel .wb-import-hub-cats-label{ margin-right:4px; }
+#gisWorkbenchPanel .wb-import-hub-cb{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  cursor:pointer;
+}
+#gisWorkbenchPanel .wb-import-hub-status{
+  min-height:1.2em;
+  font-size:.75rem;
+  color:var(--muted,#64748b);
+}
+#gisWorkbenchPanel .wb-import-hub-status.is-err{ color:var(--danger,#b91c1c); }
+#gisWorkbenchPanel .wb-import-hub-status.is-ok{ color:var(--ok,#15803d); }
+#gisWorkbenchPanel .wb-import-hub-totals{
+  font-size:.75rem;
+  line-height:1.4;
+}
+#gisWorkbenchPanel .wb-import-hub-preview{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+#gisWorkbenchPanel .wb-import-hub-file{
+  border:1px solid var(--border,#e5e7eb);
+  border-radius:4px;
+  padding:6px 8px;
+  font-size:.72rem;
+  line-height:1.35;
+  word-break:break-word;
+}
+#gisWorkbenchPanel .wb-import-hub-file.is-err{
+  border-color:color-mix(in srgb, var(--danger,#b91c1c) 45%, var(--border,#e5e7eb));
+}
+#gisWorkbenchPanel .wb-import-hub-file-name{ font-weight:600; }
+#gisWorkbenchPanel .wb-import-hub-file-meta{
+  color:var(--muted,#64748b);
+  margin-top:2px;
+}
+#gisWorkbenchPanel .wb-import-hub-file-warn{
+  color:color-mix(in srgb, #b45309 85%, var(--text,#111) 15%);
+  margin-top:2px;
+}
+#gisWorkbenchPanel .wb-import-hub-file-err{
+  color:var(--danger,#b91c1c);
+  margin-top:2px;
+}
+#gisWorkbenchPanel .wb-import-hub-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
 body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip{
   border:1px solid color-mix(in srgb, var(--border,#475569) 75%, #334155 25%);
   background:color-mix(in srgb, var(--panel,#1e293b) 88%, #0f172a 12%);
@@ -12161,6 +12255,29 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
   </details>
+  <details class="wb-import-hub" id="wbImportHub">
+    <summary data-i18n="importHub.title">Import GIS</summary>
+    <div class="wb-import-hub-body">
+      <div class="wb-import-hub-drop" id="wbImportHubDrop" role="region" aria-labelledby="wbImportHubDropHint">
+        <p id="wbImportHubDropHint" class="wb-import-hub-drop-hint" data-i18n="importHub.dropHint">Trascina qui file GPX, KML, KMZ o GeoJSON, oppure selezionali.</p>
+        <button type="button" class="btn btn-sm" id="wbImportHubPickBtn" data-i18n="importHub.pickBtn">Seleziona file</button>
+        <input type="file" id="wbImportHubFile" class="file-input-hidden" multiple
+               accept=".gpx,.kml,.kmz,.geojson,.json,application/gpx+xml,application/vnd.google-earth.kml+xml,application/geo+json,application/json,application/vnd.google-earth.kmz,application/zip">
+      </div>
+      <div id="wbImportHubStatus" class="wb-import-hub-status" role="status" aria-live="polite"></div>
+      <div class="wb-import-hub-cats" role="group" aria-labelledby="wbImportHubCatsLabel">
+        <span id="wbImportHubCatsLabel" class="hint wb-import-hub-cats-label" data-i18n="importHub.categories">Categorie (anteprima)</span>
+        <label class="wb-import-hub-cb"><input type="checkbox" id="wbImportHubWaypoints" checked> <span data-i18n="importHub.waypoints">Waypoint</span></label>
+        <label class="wb-import-hub-cb"><input type="checkbox" id="wbImportHubSavedTracks" checked> <span data-i18n="importHub.savedTracks">Tracce salvate</span></label>
+        <label class="wb-import-hub-cb"><input type="checkbox" id="wbImportHubPolygons" checked> <span data-i18n="importHub.polygons">Poligoni</span></label>
+      </div>
+      <div id="wbImportHubTotals" class="wb-import-hub-totals hint" role="status" aria-live="polite"></div>
+      <div id="wbImportHubPreview" class="wb-import-hub-preview" aria-live="polite"></div>
+      <div class="wb-import-hub-actions">
+        <button type="button" class="btn btn-sm" id="wbImportHubClearBtn" data-i18n="importHub.clear">Svuota anteprima</button>
+      </div>
+    </div>
+  </details>
   <div class="app-modal-body" id="gisWorkbenchPanelBody">
     <div id="gisWorkbenchList" class="wb-list-wrap" role="list"></div>
   </div>
@@ -14725,6 +14842,32 @@ const I18N = {
     "workbench.export.missionPackage":"Mission Package JSON",
     "workbench.export.missionOk":"Mission Package: esportate {0} feature.",
     "workbench.export.errorConvert":"Impossibile convertire i dati nel formato richiesto.",
+    "importHub.title":"Import GIS",
+    "importHub.pickBtn":"Seleziona file",
+    "importHub.dropHint":"Trascina qui file GPX, KML, KMZ o GeoJSON, oppure selezionali.",
+    "importHub.categories":"Categorie (anteprima)",
+    "importHub.analyzing":"Analisi in corso…",
+    "importHub.preview":"Anteprima",
+    "importHub.empty":"Nessun file selezionato.",
+    "importHub.waypoints":"Waypoint",
+    "importHub.savedTracks":"Tracce salvate",
+    "importHub.polygons":"Poligoni",
+    "importHub.discarded":"scartate",
+    "importHub.warning":"Avviso",
+    "importHub.fileError":"Errore",
+    "importHub.unsupported":"Formato non supportato",
+    "importHub.tooLarge":"File troppo grande (>25 MB)",
+    "importHub.tooMany":"Troppi file (massimo {0}). Analizzati i primi {0}.",
+    "importHub.missionRefused":"Mission Package non ammesso qui. Usa un file GPX, KML, KMZ o GeoJSON.",
+    "importHub.clear":"Svuota anteprima",
+    "importHub.totals":"Totale: {0} waypoint · {1} tracce · {2} poligoni · {3} scartate · {4} errori",
+    "importHub.fileOk":"OK",
+    "importHub.fileCounts":"{0} waypoint · {1} tracce · {2} poligoni · {3} scartate",
+    "importHub.busy":"Un’altra analisi o importazione è in corso.",
+    "importHub.noGeometry":"Nessuna geometria riconosciuta",
+    "importHub.invalidCoords":"coordinate non valide",
+    "importHub.unsupportedGeom":"geometria non supportata",
+    "importHub.jsonNotGeo":"JSON non riconosciuto come GeoJSON",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "gis.minimized.workbench":"Oggetti GIS",
     "tip.workbenchPanel":"Catalogo oggetti GIS (waypoint, tracce, poligoni)",
@@ -16665,6 +16808,32 @@ const I18N = {
     "workbench.export.missionPackage":"Mission Package JSON",
     "workbench.export.missionOk":"Mission Package: exported {0} features.",
     "workbench.export.errorConvert":"Could not convert data to the requested format.",
+    "importHub.title":"GIS Import",
+    "importHub.pickBtn":"Select files",
+    "importHub.dropHint":"Drop GPX, KML, KMZ or GeoJSON files here, or select them.",
+    "importHub.categories":"Categories (preview)",
+    "importHub.analyzing":"Analyzing…",
+    "importHub.preview":"Preview",
+    "importHub.empty":"No files selected.",
+    "importHub.waypoints":"Waypoints",
+    "importHub.savedTracks":"Saved tracks",
+    "importHub.polygons":"Polygons",
+    "importHub.discarded":"discarded",
+    "importHub.warning":"Warning",
+    "importHub.fileError":"Error",
+    "importHub.unsupported":"Unsupported format",
+    "importHub.tooLarge":"File too large (>25 MB)",
+    "importHub.tooMany":"Too many files (max {0}). Analyzed the first {0}.",
+    "importHub.missionRefused":"Mission Package not allowed here. Use a GPX, KML, KMZ or GeoJSON file.",
+    "importHub.clear":"Clear preview",
+    "importHub.totals":"Total: {0} waypoints · {1} tracks · {2} polygons · {3} discarded · {4} errors",
+    "importHub.fileOk":"OK",
+    "importHub.fileCounts":"{0} waypoints · {1} tracks · {2} polygons · {3} discarded",
+    "importHub.busy":"Another analysis or import is in progress.",
+    "importHub.noGeometry":"No recognized geometry",
+    "importHub.invalidCoords":"invalid coordinates",
+    "importHub.unsupportedGeom":"unsupported geometry",
+    "importHub.jsonNotGeo":"JSON not recognized as GeoJSON",
     "workbenchPanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
     "gis.minimized.workbench":"GIS Objects",
     "tip.workbenchPanel":"GIS object catalog (waypoints, tracks, polygons)",
@@ -20072,7 +20241,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 50;
+const APP_BUILD_NUM = 51;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26737,6 +26906,519 @@ async function importDroppedSpatialFiles(fileList){
     return summary;
   } finally {
     gisSpatialImportRelease(importToken);
+  }
+}
+
+/* ========================= MAJOR-3-b1: Unified GIS Import Hub (preview, no writes) ========================= */
+function gisImportHubEnsureState(){
+  if (!state._gisImportHub || typeof state._gisImportHub !== "object"){
+    state._gisImportHub = {
+      phase: "idle",
+      gen: 0,
+      token: null,
+      files: [],
+      totals: { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 },
+      selection: { waypoints: true, savedTracks: true, polygons: true },
+      status: "",
+      statusKind: ""
+    };
+  }
+  const h = state._gisImportHub;
+  if (typeof h.gen !== "number") h.gen = 0;
+  if (!Array.isArray(h.files)) h.files = [];
+  if (!h.totals || typeof h.totals !== "object") h.totals = { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 };
+  if (!h.selection || typeof h.selection !== "object") h.selection = { waypoints: true, savedTracks: true, polygons: true };
+  return h;
+}
+
+function gisImportHubIsValidCoord(lon, lat){
+  return Number.isFinite(lat) && Number.isFinite(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
+}
+
+/** Preview-only classify — mirrors drop apply categories without mutating stores. */
+function gisImportHubClassifyFeatureCollection(fc){
+  const out = {
+    waypoints: 0,
+    tracks: 0,
+    polygons: 0,
+    discarded: 0,
+    warnings: []
+  };
+  const feats = (fc && Array.isArray(fc.features)) ? fc.features : [];
+  let lineParts = 0;
+  let invCoords = 0;
+  let unsupported = 0;
+  for (const f of feats){
+    const g = f && f.geometry;
+    if (!g || !g.type){
+      out.discarded++;
+      unsupported++;
+      continue;
+    }
+    if (g.type === "Point"){
+      const c = g.coordinates;
+      if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){
+        out.discarded++;
+        invCoords++;
+        continue;
+      }
+      out.waypoints++;
+    } else if (g.type === "LineString"){
+      const coords = g.coordinates;
+      if (!Array.isArray(coords) || coords.length < 2){
+        out.discarded++;
+        unsupported++;
+        continue;
+      }
+      let ok = true;
+      for (let i = 0; i < coords.length; i++){
+        const c = coords[i];
+        if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
+      }
+      if (!ok){ out.discarded++; invCoords++; continue; }
+      lineParts++;
+    } else if (g.type === "MultiLineString"){
+      const lines = g.coordinates;
+      if (!Array.isArray(lines) || !lines.length){
+        out.discarded++;
+        unsupported++;
+        continue;
+      }
+      let any = false;
+      for (const line of lines){
+        if (!Array.isArray(line) || line.length < 2) continue;
+        let ok = true;
+        for (let i = 0; i < line.length; i++){
+          const c = line[i];
+          if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
+        }
+        if (!ok){ invCoords++; continue; }
+        lineParts++;
+        any = true;
+      }
+      if (!any){ out.discarded++; unsupported++; }
+    } else if (g.type === "Polygon"){
+      const ring = g.coordinates && g.coordinates[0];
+      if (!Array.isArray(ring) || ring.length < 3){
+        out.discarded++;
+        unsupported++;
+        continue;
+      }
+      let ok = true;
+      for (let i = 0; i < ring.length; i++){
+        const c = ring[i];
+        if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
+      }
+      if (!ok){ out.discarded++; invCoords++; continue; }
+      out.polygons++;
+    } else {
+      out.discarded++;
+      unsupported++;
+    }
+  }
+  // Drop apply merges all LineString/MultiLineString of one file into one saved track.
+  out.tracks = lineParts > 0 ? 1 : 0;
+  if (invCoords){
+    out.warnings.push((typeof t === "function" ? t("importHub.invalidCoords") : "") || "invalid coordinates");
+  }
+  if (unsupported){
+    out.warnings.push((typeof t === "function" ? t("importHub.unsupportedGeom") : "") || "unsupported geometry");
+  }
+  return out;
+}
+
+function gisImportHubDetectFormat(name){
+  const n = String(name || "").toLowerCase();
+  if (/\.gpx$/i.test(n)) return "gpx";
+  if (/\.kml$/i.test(n)) return "kml";
+  if (/\.kmz$/i.test(n)) return "kmz";
+  if (/\.geojson$/i.test(n) || /\.json$/i.test(n)) return "json";
+  return "";
+}
+
+function gisImportHubIsMissionPackageObj(obj){
+  return !!(obj && typeof obj === "object" && !Array.isArray(obj) && obj.type === "GOI_GIS_MISSION_PACKAGE");
+}
+
+function gisImportHubFormatBytes(n){
+  const b = Number(n) || 0;
+  if (b < 1024) return b + " B";
+  if (b < 1024 * 1024) return (b / 1024).toFixed(1) + " KB";
+  return (b / (1024 * 1024)).toFixed(1) + " MB";
+}
+
+function gisImportHubSetStatus(msg, kind){
+  const h = gisImportHubEnsureState();
+  h.status = msg == null ? "" : String(msg);
+  h.statusKind = kind || "";
+  const el = document.getElementById("wbImportHubStatus");
+  if (!el) return;
+  el.textContent = h.status;
+  el.classList.remove("is-err", "is-ok");
+  if (kind === "error") el.classList.add("is-err");
+  if (kind === "ok") el.classList.add("is-ok");
+}
+
+function gisImportHubReadSelectionFromDom(){
+  const h = gisImportHubEnsureState();
+  const wp = document.getElementById("wbImportHubWaypoints");
+  const tr = document.getElementById("wbImportHubSavedTracks");
+  const pg = document.getElementById("wbImportHubPolygons");
+  h.selection = {
+    waypoints: wp ? !!wp.checked : true,
+    savedTracks: tr ? !!tr.checked : true,
+    polygons: pg ? !!pg.checked : true
+  };
+  return h.selection;
+}
+
+function gisImportHubSyncSelectionToDom(){
+  const h = gisImportHubEnsureState();
+  const sel = h.selection || {};
+  const wp = document.getElementById("wbImportHubWaypoints");
+  const tr = document.getElementById("wbImportHubSavedTracks");
+  const pg = document.getElementById("wbImportHubPolygons");
+  if (wp) wp.checked = sel.waypoints !== false;
+  if (tr) tr.checked = sel.savedTracks !== false;
+  if (pg) pg.checked = sel.polygons !== false;
+}
+
+function gisImportHubRenderPreview(){
+  const h = gisImportHubEnsureState();
+  const prev = document.getElementById("wbImportHubPreview");
+  const totEl = document.getElementById("wbImportHubTotals");
+  if (!prev) return;
+  const files = Array.isArray(h.files) ? h.files : [];
+  if (!files.length){
+    prev.innerHTML = "";
+    if (totEl) totEl.textContent = "";
+    return;
+  }
+  const sel = h.selection || { waypoints: true, savedTracks: true, polygons: true };
+  let html = "";
+  for (const f of files){
+    const errCls = f.error ? " is-err" : "";
+    const fmt = f.format ? String(f.format).toUpperCase() : "—";
+    const size = gisImportHubFormatBytes(f.size);
+    const st = f.error
+      ? ((typeof t === "function" ? t("importHub.fileError") : "") || "Error")
+      : ((typeof t === "function" ? t("importHub.fileOk") : "") || "OK");
+    const countsTpl = (typeof t === "function" ? t("importHub.fileCounts") : "")
+      || "{0} waypoints · {1} tracks · {2} polygons · {3} discarded";
+    const cWp = sel.waypoints ? (f.waypoints || 0) : 0;
+    const cTr = sel.savedTracks ? (f.tracks || 0) : 0;
+    const cPg = sel.polygons ? (f.polygons || 0) : 0;
+    const cDisc = f.discarded || 0;
+    const counts = countsTpl
+      .replace("{0}", String(cWp))
+      .replace("{1}", String(cTr))
+      .replace("{2}", String(cPg))
+      .replace("{3}", String(cDisc));
+    html += '<div class="wb-import-hub-file' + errCls + '">';
+    html += '<div class="wb-import-hub-file-name">' + esc(String(f.name || "file")) + "</div>";
+    html += '<div class="wb-import-hub-file-meta">' + esc(fmt) + " · " + esc(size) + " · " + esc(st) + "</div>";
+    if (!f.error){
+      html += '<div class="wb-import-hub-file-meta">' + esc(counts) + "</div>";
+    }
+    if (Array.isArray(f.warnings) && f.warnings.length){
+      html += '<div class="wb-import-hub-file-warn">' + esc(((typeof t === "function" ? t("importHub.warning") : "") || "Warning") + ": " + f.warnings.join("; ")) + "</div>";
+    }
+    if (f.error){
+      html += '<div class="wb-import-hub-file-err">' + esc(String(f.error)) + "</div>";
+    }
+    html += "</div>";
+  }
+  prev.innerHTML = html;
+  if (totEl){
+    const totals = h.totals || {};
+    const showWp = sel.waypoints ? (totals.waypoints || 0) : 0;
+    const showTr = sel.savedTracks ? (totals.tracks || 0) : 0;
+    const showPg = sel.polygons ? (totals.polygons || 0) : 0;
+    const tpl = (typeof t === "function" ? t("importHub.totals") : "")
+      || "Total: {0} waypoints · {1} tracks · {2} polygons · {3} discarded · {4} errors";
+    totEl.textContent = tpl
+      .replace("{0}", String(showWp))
+      .replace("{1}", String(showTr))
+      .replace("{2}", String(showPg))
+      .replace("{3}", String(totals.discarded || 0))
+      .replace("{4}", String(totals.errors || 0));
+  }
+}
+
+function gisImportHubClear(opts){
+  opts = opts || {};
+  const h = gisImportHubEnsureState();
+  h.gen = (h.gen | 0) + 1;
+  if (h.token){
+    try { gisSpatialImportRelease(h.token); } catch(_){}
+    h.token = null;
+  }
+  h.phase = "idle";
+  h.files = [];
+  h.totals = { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 };
+  const fi = document.getElementById("wbImportHubFile");
+  if (fi) fi.value = "";
+  const drop = document.getElementById("wbImportHubDrop");
+  if (drop) drop.classList.remove("is-dragover");
+  gisImportHubSetStatus(opts.silent ? "" : ((typeof t === "function" ? t("importHub.empty") : "") || "No files selected."), "");
+  gisImportHubRenderPreview();
+}
+
+async function gisImportHubParseOneFile(file){
+  const name = (file && file.name) ? String(file.name) : "file";
+  const size = file && Number.isFinite(file.size) ? file.size : 0;
+  const row = {
+    name: name,
+    size: size,
+    format: gisImportHubDetectFormat(name),
+    waypoints: 0,
+    tracks: 0,
+    polygons: 0,
+    discarded: 0,
+    warnings: [],
+    error: ""
+  };
+  if (!row.format){
+    row.error = (typeof t === "function" ? t("importHub.unsupported") : "") || "Unsupported format";
+    return row;
+  }
+  if (size > DROP_IMPORT_MAX_BYTES){
+    row.error = (typeof t === "function" ? t("importHub.tooLarge") : "") || "File too large (>25 MB)";
+    return row;
+  }
+  try {
+    if (row.format === "kmz"){
+      const buf = await file.arrayBuffer();
+      const kmlText = await spatialExtractKmlTextFromKmz(buf);
+      if (!String(kmlText || "").trim()){
+        row.error = (typeof t === "function" ? t("dropImport.empty") : "") || "empty or invalid";
+        return row;
+      }
+      const fc = spatialKmlToFeatureCollection(kmlText);
+      const cls = gisImportHubClassifyFeatureCollection(fc);
+      row.waypoints = cls.waypoints;
+      row.tracks = cls.tracks;
+      row.polygons = cls.polygons;
+      row.discarded = cls.discarded;
+      row.warnings = cls.warnings;
+      if (!cls.waypoints && !cls.tracks && !cls.polygons){
+        row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
+      }
+      return row;
+    }
+    const buf = await file.arrayBuffer();
+    const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
+    if (!String(text || "").trim()){
+      row.error = (typeof t === "function" ? t("dropImport.empty") : "") || "empty or invalid";
+      return row;
+    }
+    if (row.format === "json"){
+      let obj = null;
+      try { obj = JSON.parse(text); } catch(_){
+        row.error = (typeof t === "function" ? t("importHub.jsonNotGeo") : "") || "JSON not recognized as GeoJSON";
+        return row;
+      }
+      if (gisImportHubIsMissionPackageObj(obj)){
+        row.format = "mission";
+        row.error = (typeof t === "function" ? t("importHub.missionRefused") : "")
+          || "Mission Package not allowed here. Use a GPX, KML, KMZ or GeoJSON file.";
+        return row;
+      }
+      try {
+        const fc = spatialNormalizeGeoJSON(obj);
+        const cls = gisImportHubClassifyFeatureCollection(fc);
+        row.format = "geojson";
+        row.waypoints = cls.waypoints;
+        row.tracks = cls.tracks;
+        row.polygons = cls.polygons;
+        row.discarded = cls.discarded;
+        row.warnings = cls.warnings;
+        if (!cls.waypoints && !cls.tracks && !cls.polygons){
+          row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
+        }
+      } catch(_){
+        row.error = (typeof t === "function" ? t("importHub.jsonNotGeo") : "") || "JSON not recognized as GeoJSON";
+      }
+      return row;
+    }
+    const r = spatialTextToFeatureCollection(text, name);
+    if (!r || !r.ok || !r.fc){
+      row.error = (r && r.error)
+        ? String(r.error).slice(0, 120)
+        : ((typeof t === "function" ? t("dropImport.empty") : "") || "empty or invalid");
+      return row;
+    }
+    const cls = gisImportHubClassifyFeatureCollection(r.fc);
+    row.waypoints = cls.waypoints;
+    row.tracks = cls.tracks;
+    row.polygons = cls.polygons;
+    row.discarded = cls.discarded;
+    row.warnings = cls.warnings;
+    if (!cls.waypoints && !cls.tracks && !cls.polygons){
+      row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
+    }
+    return row;
+  } catch (e){
+    row.error = String(e && e.message ? e.message : e).slice(0, 120)
+      || ((typeof t === "function" ? t("importHub.fileError") : "") || "Error");
+    return row;
+  }
+}
+
+async function gisImportHubAnalyzeFiles(fileList){
+  const h = gisImportHubEnsureState();
+  const gen = (h.gen | 0) + 1;
+  h.gen = gen;
+  if (h.token){
+    try { gisSpatialImportRelease(h.token); } catch(_){}
+    h.token = null;
+  }
+  const token = gisSpatialImportAcquire("hub");
+  if (!token){
+    gisImportHubSetStatus((typeof t === "function" ? t("importHub.busy") : "") || "Busy", "error");
+    return null;
+  }
+  h.token = token;
+  h.phase = "parsing";
+  h.files = [];
+  h.totals = { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 };
+  gisImportHubSetStatus((typeof t === "function" ? t("importHub.analyzing") : "") || "Analyzing…", "");
+  gisImportHubRenderPreview();
+
+  try {
+    const all = Array.prototype.slice.call(fileList || [], 0);
+    let truncated = false;
+    if (all.length > DROP_IMPORT_MAX_FILES){
+      truncated = true;
+    }
+    const batch = all.slice(0, DROP_IMPORT_MAX_FILES);
+    const rows = [];
+    for (const file of batch){
+      if (h.gen !== gen) return null;
+      const row = await gisImportHubParseOneFile(file);
+      if (h.gen !== gen) return null;
+      rows.push(row);
+    }
+    if (h.gen !== gen) return null;
+    h.files = rows;
+    const totals = { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 };
+    for (const r of rows){
+      if (r.error) totals.errors++;
+      else {
+        totals.waypoints += r.waypoints || 0;
+        totals.tracks += r.tracks || 0;
+        totals.polygons += r.polygons || 0;
+      }
+      totals.discarded += r.discarded || 0;
+    }
+    h.totals = totals;
+    h.phase = totals.errors && !totals.waypoints && !totals.tracks && !totals.polygons ? "error" : "preview";
+    gisImportHubReadSelectionFromDom();
+    gisImportHubRenderPreview();
+    let status = (typeof t === "function" ? t("importHub.preview") : "") || "Preview";
+    if (truncated){
+      status += " — " + ((typeof t === "function" ? t("importHub.tooMany") : "") || "Too many files (max {0}).")
+        .replace(/\{0\}/g, String(DROP_IMPORT_MAX_FILES));
+    }
+    const kind = totals.errors && !(totals.waypoints + totals.tracks + totals.polygons) ? "error" : "ok";
+    gisImportHubSetStatus(status, kind);
+    return h;
+  } finally {
+    if (h.token === token){
+      gisSpatialImportRelease(token);
+      h.token = null;
+    }
+    if (h.gen === gen && h.phase === "parsing") h.phase = "idle";
+  }
+}
+
+function bindWorkbenchImportHubOnce(){
+  const hub = document.getElementById("wbImportHub");
+  if (!hub || hub._wbImportWired) return;
+  hub._wbImportWired = true;
+  gisImportHubEnsureState();
+  gisImportHubSyncSelectionToDom();
+
+  const pickBtn = document.getElementById("wbImportHubPickBtn");
+  const fileIn = document.getElementById("wbImportHubFile");
+  const clearBtn = document.getElementById("wbImportHubClearBtn");
+  const drop = document.getElementById("wbImportHubDrop");
+
+  if (pickBtn && fileIn){
+    pickBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      try { fileIn.click(); } catch(_){}
+    });
+  }
+  if (fileIn){
+    fileIn.addEventListener("change", () => {
+      const files = fileIn.files;
+      if (!files || !files.length) return;
+      Promise.resolve()
+        .then(() => gisImportHubAnalyzeFiles(files))
+        .catch(() => {
+          gisImportHubSetStatus((typeof t === "function" ? t("importHub.fileError") : "") || "Error", "error");
+        });
+      try { fileIn.value = ""; } catch(_){}
+    });
+  }
+  if (clearBtn){
+    clearBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      gisImportHubClear();
+    });
+  }
+  const onSelChange = () => {
+    gisImportHubReadSelectionFromDom();
+    gisImportHubRenderPreview();
+  };
+  const wp = document.getElementById("wbImportHubWaypoints");
+  const tr = document.getElementById("wbImportHubSavedTracks");
+  const pg = document.getElementById("wbImportHubPolygons");
+  if (wp) wp.addEventListener("change", onSelChange);
+  if (tr) tr.addEventListener("change", onSelChange);
+  if (pg) pg.addEventListener("change", onSelChange);
+
+  if (drop){
+    let depth = 0;
+    const clearVis = () => {
+      depth = 0;
+      drop.classList.remove("is-dragover");
+    };
+    drop.addEventListener("dragenter", (ev) => {
+      if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      depth++;
+      drop.classList.add("is-dragover");
+    });
+    drop.addEventListener("dragover", (ev) => {
+      if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { ev.dataTransfer.dropEffect = "copy"; } catch(_){}
+    });
+    drop.addEventListener("dragleave", (ev) => {
+      if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      depth--;
+      if (depth <= 0) clearVis();
+    });
+    drop.addEventListener("drop", (ev) => {
+      if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      clearVis();
+      const files = ev.dataTransfer && ev.dataTransfer.files;
+      if (!files || !files.length) return;
+      Promise.resolve()
+        .then(() => gisImportHubAnalyzeFiles(files))
+        .catch(() => {
+          clearVis();
+          gisImportHubSetStatus((typeof t === "function" ? t("importHub.fileError") : "") || "Error", "error");
+        });
+    });
   }
 }
 
@@ -57602,6 +58284,7 @@ function wireGisWorkbenchPanelOnce(){
       else if (role === "wb-export-mission") gisMissionPackageExportRun();
     });
   }
+  try { bindWorkbenchImportHubOnce(); } catch(_){}
 }
 
 function polygonResetListColWidths(){
