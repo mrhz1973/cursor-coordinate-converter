@@ -117,16 +117,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | runtime **`1812010`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). Nota: ultima chiusura docs rilevante = **WU-0010 OUTDOOR-ROUTING-GH piano pubblicato** (docs-only, runtime invariato). |
-| Runtime live / commit monolite | `18120102f319721aa237badb1db3c28327739e88` (`1812010`) — tip MAJOR-3-b1 |
-| Ultimo blocco runtime chiuso | **MAJOR-3-b1** — Unified GIS Import Hub foundation preview zero-write (build 51) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync finito QA) | runtime **`d95f745`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). |
+| Runtime live / commit monolite | `d95f7457cd051f5bb997afce57f8597d51d98648` (`d95f745`) — tip OUTDOOR-ROUTING-GH-B1a-FIX2 |
+| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1a (+ FIX1 + FIX2)** — planner shell no-map (build 54) — **CLOSED / PASS end-to-end** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `18120102f319721aa237badb1db3c28327739e88` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `ba2cf240f20595ef066dd59e7a3b685850f049c5` |
-| Byte monolite (git LF) | `2815080` |
-| `APP_BUILD_NUM` | `51` |
-| Display runtime | `B5.5Z · build 51` |
+| Runtime Git / atteso VPS | `d95f7457cd051f5bb997afce57f8597d51d98648` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `06c83dffc8d284e22e8203d784aba0f2211bf780` |
+| Byte monolite (git LF) | `2843944` |
+| `APP_BUILD_NUM` | `54` |
+| Display runtime | `B5.5Z · build 54` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
+| OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
 | MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
 | TRACK-CREATE-EDIT-UX-A / FIX1 | **CLOSED / PASS end-to-end** (CTA punti/pennello + stile unificato + verify; QA PASS) |
@@ -152,11 +153,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1812010` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d95f745` |
 
 **Prossimo ordine operativo:**
 
-**OUTDOOR-ROUTING-GH** è il **programma corrente pianificato** — [`WU-0010-outdoor-routing-graphhopper.md`](docs/work-units/WU-0010-outdoor-routing-graphhopper.md) **OPEN / PLAN APPROVED / RUNTIME NOT STARTED** (review GLM **PASS CON CORREZIONI**; split **B1+B2** ratificato; 3 correzioni bloccanti registrate: estensione `workbenchMapInteractionBlocked`, pick in `attachPanHandlers.onUp`, `geocodingAllowed` esplicito). **Prossimo bundle autorizzabile: B1** — Planner UI no-route (build futuro 52, target 350–500 righe, **DELICATO** lifecycle pick/drag; richiede prompt Cursor dedicato + review downstream pre-deploy). Runtime live **invariato `1812010` build 51** — B1 non ancora implementato.
+**OUTDOOR-ROUTING-GH-B1b** — pick mappa + marker temporanei + GPS single-shot (WU-0010 **OPEN / B1a CLOSED**). Review downstream pre-deploy obbligatoria. Runtime live **`d95f745` build 54**. **MAJOR-3-b2** resta parcheggiato.
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 

@@ -1,12 +1,13 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / PLAN APPROVED / RUNTIME NOT STARTED**
+**Stato:** **OPEN / B1a CLOSED / B1b NEXT**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `18120102f319721aa237badb1db3c28327739e88` (`1812010`) — display **`B5.5Z · build 51`** — **invariato**
-**MAJOR-3-b1:** CLOSED / PASS end-to-end (runtime live `1812010`)
+**Runtime autorevole attuale:** `d95f7457cd051f5bb997afce57f8597d51d98648` (`d95f745`) — display **`B5.5Z · build 54`**
+**MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
-**Prossimo bundle runtime autorizzabile:** **B1** (richiede prompt Cursor dedicato + review downstream pre-deploy)
+**B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
+**Prossimo bundle runtime autorizzabile:** **B1b** (pick + marker drag + GPS; richiede prompt Cursor dedicato + review downstream pre-deploy)
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 
@@ -168,7 +169,9 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 ### BUNDLE B1 — Planner UI no-route
 
-**Scope:**
+> **Split operativo eseguito:** **B1a** (shell no-map) **CLOSED** tip `d95f745` build 54; **B1b** (pick + marker + GPS) = prossimo bundle.
+
+**Scope originale B1 (piano):**
 
 - Pannello floating dedicato
 - Stato transiente (`state._routing`)
@@ -177,31 +180,30 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 - Aggiunta/eliminazione punti
 - Riordino lista
 - Pulsanti accessibili Su/Giù
-- Pick dalla mappa (ramo in `attachPanHandlers.onUp`, Correzione 2)
-- Marker temporanei
-- Drag marker (Pointer Events, vedi §9)
-- GPS single-shot (Correzione di method, vedi §11)
+- Pick dalla mappa (ramo in `attachPanHandlers.onUp`, Correzione 2) — **B1b**
+- Marker temporanei — **B1b**
+- Drag marker (Pointer Events, vedi §9) — **B1b**
+- GPS single-shot (Correzione di method, vedi §11) — **B1b**
 - Cleanup idempotente (Esc / chiusura / disarmo)
 - i18n IT/EN (FR congelato)
-- Build bump futuro **51 → 52**
+- Build: B1a **52→54** (con FIX1/FIX2); B1b userà build successiva
 
-**Esclusioni:**
+**B1a landed (CLOSED):** pannello + lista + label editabili + CTA/menu GraphHopper (no rete) + minimize/resize GIS; zero mappa/GPS/geocode/GraphHopper network.
 
-- Nessun geocoding
-- Nessuna chiamata GraphHopper
-- Nessuna configurazione endpoint
-- Nessuna rete nuova
-- Nessun salvataggio canonico
+**Esclusioni (B1a e B1b shell):**
+
+- Nessun geocoding (B2)
+- Nessuna chiamata GraphHopper `/info`/`/route` (C)
+- Nessuna configurazione endpoint (C)
+- Nessun salvataggio canonico (D)
 - Nessuno storage
-- Nessun profilo altimetrico
+- Nessun profilo altimetrico (E)
 
-**Classificazione:** **DELICATO** per lifecycle pick/drag e interazioni mappa.
+**Classificazione:** **DELICATO** (B1a lifecycle pannello; B1b lifecycle pick/drag mappa).
 
 **Review downstream pre-deploy:** **obbligatoria**.
 
-**Target diff:** 350–500 righe.
-
-**Soglia di arresto:** oltre 650 righe rivalutare split B1a (pannello + lista) / B1b (pick + drag + GPS).
+**Target diff B1 originale:** 350–500 righe → split B1a/B1b sotto soglia di arresto 650.
 
 ### BUNDLE B2 — Cerca/geocoding multi-riga
 
