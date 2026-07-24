@@ -8745,6 +8745,11 @@ dialog.track-modal.app-modal{
 #routingPlannerPanel.routing-planner-panel{
   width:min(420px, calc(100vw - 24px));
   max-height:min(70vh, 640px);
+}
+#routingPlannerPanel.routing-planner-panel:not([open]){
+  display:none;
+}
+#routingPlannerPanel.routing-planner-panel[open]{
   display:flex;
   flex-direction:column;
 }
@@ -8771,19 +8776,20 @@ dialog.track-modal.app-modal{
   border-radius:8px;
   background:color-mix(in srgb, var(--panel, #fff) 92%, transparent);
 }
-.routing-point-row.is-pick-target{
-  outline:2px solid var(--accent, #2563eb);
-  outline-offset:1px;
-}
 .routing-pt-grip{
   cursor:grab;
-  touch-action:none;
+  touch-action:pan-y;
   user-select:none;
   color:var(--muted);
   text-align:center;
   font-size:.9rem;
   line-height:1;
   padding:4px 0;
+}
+#routingAddViaBtn[aria-disabled="true"],
+.routing-pt-actions [data-routing-act="remove"][aria-disabled="true"]{
+  opacity:.55;
+  cursor:not-allowed;
 }
 .routing-pt-grip:active{ cursor:grabbing; }
 .routing-pt-badge{
@@ -12816,12 +12822,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
     </div>
   </div>
-  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
-  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
-  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
-  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
-  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
-  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
 <footer>
@@ -14987,7 +14987,6 @@ const I18N = {
     "routing.minimumPoints":"Servono almeno partenza e destinazione.",
     "routing.orderChanged":"Ordine punti aggiornato.",
     "routing.routeNotAvailableYet":"Il calcolo del percorso non è ancora attivo.",
-    "routing.close":"Chiudi",
     "routing.dragHandle":"Trascina per riordinare",
     "gis.minimized.routing":"Pianifica percorso",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
@@ -16971,7 +16970,6 @@ const I18N = {
     "routing.minimumPoints":"At least start and destination are required.",
     "routing.orderChanged":"Point order updated.",
     "routing.routeNotAvailableYet":"Route calculation is not available yet.",
-    "routing.close":"Close",
     "routing.dragHandle":"Drag to reorder",
     "gis.minimized.routing":"Plan route",
     "workbenchPanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
@@ -20383,7 +20381,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 52;
+const APP_BUILD_NUM = 53;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -57538,7 +57536,9 @@ function routingRenderList(){
     let kindLbl = routingT("routing.start", "Start");
     if (kind === "end") kindLbl = routingT("routing.end", "End");
     else if (kind === "via") kindLbl = String(routingT("routing.via", "Via {0}")).replace("{0}", String(i));
-    row.setAttribute("aria-label", kindLbl + " " + badge);
+    if (kind === "start") row.setAttribute("aria-label", "A \u2014 " + kindLbl);
+    else if (kind === "end") row.setAttribute("aria-label", "B \u2014 " + kindLbl);
+    else row.setAttribute("aria-label", kindLbl);
     const grip = document.createElement("span");
     grip.className = "routing-pt-grip";
     grip.setAttribute("draggable", "true");
@@ -57578,7 +57578,8 @@ function routingRenderList(){
     down.disabled = i >= n - 1;
     actions.appendChild(down);
     const rm = mkBtn("routing.remove", "Remove", "btn-danger-subtle", "remove");
-    rm.disabled = n <= 2;
+    if (n <= 2) rm.setAttribute("aria-disabled", "true");
+    else rm.removeAttribute("aria-disabled");
     actions.appendChild(rm);
     row.appendChild(grip);
     row.appendChild(badgeEl);
@@ -57589,7 +57590,10 @@ function routingRenderList(){
   list.innerHTML = "";
   list.appendChild(frag);
   const addBtn = document.getElementById("routingAddViaBtn");
-  if (addBtn) addBtn.disabled = n >= ROUTING_MAX_POINTS;
+  if (addBtn){
+    if (n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
+    else addBtn.removeAttribute("aria-disabled");
+  }
 }
 function routingMovePoint(id, delta){
   const r = routingEnsureState();
@@ -57615,6 +57619,7 @@ function routingRemovePoint(id){
   }
   r.points = r.points.filter(p => p && p.id !== id);
   r.dirty = true;
+  routingSetStatus("", false);
   routingRenderList();
 }
 function routingAddVia(){
@@ -57716,10 +57721,8 @@ function attachRoutingPanelFloating(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#routingPlannerPanelClose,[data-role=\"routingpanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+    ignoreSelector: "#routingPlannerPanelClose,[data-role=\"routingpanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
   }));
-  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
-  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
 }
 function wireRoutingPanelFloating(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
@@ -57761,11 +57764,11 @@ function openRoutingPlannerPanel(){
   routingEnsureState();
   if (!(state._routing.points && state._routing.points.length)) routingInitDefaultPoints();
   state._routing.panelOpen = true;
-  try { wireRoutingPanelFloating(dlg); } catch(_){}
   try {
     if (typeof dlg.show === "function") dlg.show();
     else dlg.setAttribute("open", "");
   } catch(_){ dlg.setAttribute("open", ""); }
+  try { wireRoutingPanelFloating(dlg); } catch(_){}
   routingSetStatus("", false);
   routingRenderList();
   try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
@@ -57799,6 +57802,18 @@ function wireRoutingPlannerOnce(){
   if (list){
     list.addEventListener("click", routingHandleListAction);
     routingAttachListDnd(list);
+  }
+  const langSel = document.getElementById("languageSelect");
+  if (langSel && !langSel._routingLangBound){
+    langSel._routingLangBound = true;
+    langSel.addEventListener("change", () => {
+      setTimeout(() => {
+        const dlg = document.getElementById("routingPlannerPanel");
+        if (!state._routing || !state._routing.panelOpen || !dlg || !dlg.open) return;
+        routingSetStatus("", false);
+        routingRenderList();
+      }, 0);
+    });
   }
 }
 
