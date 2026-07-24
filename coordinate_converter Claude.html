@@ -1328,28 +1328,30 @@ html[data-theme="dark"] .offcache-job-controls-bar{
   line-height:1.35;
 }
 .offline-areas-table{
-  width:100%;
-  max-width:100%;
+  /* FIX3: auto layout + min-width — prefer horizontal scroll over crushing columns */
+  width:max(100%, 980px);
+  min-width:980px;
+  max-width:none;
   border-collapse:collapse;
-  table-layout:fixed;
+  table-layout:auto;
   font-size:.78rem;
-  --offa-name-col:16%;
-  --offa-status-col:11%;
-  --offa-when-col:12%;
-  --offa-zoom-col:8%;
-  --offa-layer-col:12%;
-  --offa-tiles-col:10%;
-  --offa-space-col:9%;
-  --offa-actions-col:18%;
+  --offa-name-col:168px;
+  --offa-status-col:108px;
+  --offa-when-col:118px;
+  --offa-zoom-col:72px;
+  --offa-layer-col:120px;
+  --offa-tiles-col:88px;
+  --offa-space-col:78px;
+  --offa-actions-col:220px;
 }
-.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:0; }
-.offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:0; }
-.offline-areas-table col.offa-col-when{ width:var(--offa-when-col); min-width:0; }
-.offline-areas-table col.offa-col-zoom{ width:var(--offa-zoom-col); min-width:0; }
-.offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:0; }
-.offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:0; }
-.offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:0; }
-.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:0; }
+.offline-areas-table col.offa-col-name{ width:var(--offa-name-col); min-width:140px; }
+.offline-areas-table col.offa-col-status{ width:var(--offa-status-col); min-width:96px; }
+.offline-areas-table col.offa-col-when{ width:var(--offa-when-col); min-width:100px; }
+.offline-areas-table col.offa-col-zoom{ width:var(--offa-zoom-col); min-width:64px; }
+.offline-areas-table col.offa-col-layer{ width:var(--offa-layer-col); min-width:100px; }
+.offline-areas-table col.offa-col-tiles{ width:var(--offa-tiles-col); min-width:72px; }
+.offline-areas-table col.offa-col-space{ width:var(--offa-space-col); min-width:64px; }
+.offline-areas-table col.offa-col-actions{ width:var(--offa-actions-col); min-width:200px; }
 .offline-areas-table .offa-th-name,
 .offline-areas-table .offa-th-status,
 .offline-areas-table .offa-th-when,
@@ -1460,19 +1462,27 @@ html[data-theme="dark"] .offcache-job-controls-bar{
   border-bottom:1px solid color-mix(in srgb, var(--border) 60%, transparent);
   vertical-align:top;
   font-variant-numeric:tabular-nums;
-  overflow-wrap:anywhere;
-  word-break:break-word;
   white-space:normal;
+  overflow-wrap:break-word;
+  word-break:normal;
 }
 .offline-areas-table th{
+  /* FIX3: static header in Mappe Offline — sticky thead overlapped body rows with job-bar offset */
   text-align:left; color:var(--muted); font-weight:700;
-  position:sticky; top:0;
-  background:var(--panel2); z-index:1;
+  position:static;
+  top:auto;
+  background:var(--panel2);
+  z-index:auto;
 }
-/* Stick table header below sticky job controls when scrolling the panel body. */
-#layersPanelBody .offline-areas-table thead th{
-  top:var(--offcache-dl-controls-sticky-offset, 3.75rem);
-  z-index:5;
+/* Zoom / tiles / space: keep number+unit on one line when column has room */
+.offline-areas-table tbody td:nth-child(6),
+.offline-areas-table tbody td:nth-child(8),
+.offline-areas-table tbody td:nth-child(9){
+  white-space:nowrap;
+}
+.offline-areas-table .offline-area-status{
+  white-space:nowrap;
+  max-width:100%;
 }
 .offline-areas-table tr[data-offa-row]:hover{
   background:color-mix(in srgb, var(--accent) 6%, var(--panel));
@@ -1530,7 +1540,7 @@ html[data-theme="dark"] .offcache-job-controls-bar{
   outline-offset:1px;
 }
 .offline-areas-table .offa-name-inp{
-  white-space:normal;
+  white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   max-width:100%;
@@ -1676,12 +1686,13 @@ html[data-theme="light"] body.gis-mode dialog#favoritesPanel.favorites-panel{
 .offline-areas-table td.offa-actions-cell{
   vertical-align:middle;
   white-space:normal;
+  min-width:200px;
 }
 .offline-areas-table .offa-actions{
   display:inline-flex;
   flex-wrap:wrap;
   align-items:center;
-  gap:4px;
+  gap:6px;
   max-width:100%;
 }
 /* Azioni riga compatte (icone + tooltip/portal), stile Preferiti/Waypoint; delete resta su regole dedicate sotto. */
@@ -1696,9 +1707,9 @@ html[data-theme="light"] body.gis-mode dialog#favoritesPanel.favorites-panel{
   align-items:center;
   justify-content:center;
 }
-.offline-areas-table .offline-area-status{ display:inline-block; }
-.offline-areas-table .offa-selcell{ width:34px; }
-.offline-areas-table .offa-viscell{ width:44px; text-align:center; vertical-align:middle; }
+.offline-areas-table .offline-area-status{ display:inline-block; white-space:nowrap; }
+.offline-areas-table .offa-selcell{ width:34px; min-width:34px; }
+.offline-areas-table .offa-viscell{ width:44px; min-width:44px; text-align:center; vertical-align:middle; }
 .offline-areas-table .offline-area-vis-indicator{
   display:inline-block;
   width:10px;
@@ -20061,7 +20072,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 49;
+const APP_BUILD_NUM = 50;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
