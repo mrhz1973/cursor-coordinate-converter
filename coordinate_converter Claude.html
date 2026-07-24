@@ -8810,6 +8810,16 @@ dialog.track-modal.app-modal{
   font-size:.82rem;
   font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+.routing-pt-coords{
+  grid-column:3 / -1;
+  font-size:.78rem;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color:var(--muted);
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 .routing-pt-actions{
   display:flex;
   flex-wrap:wrap;
@@ -8817,6 +8827,17 @@ dialog.track-modal.app-modal{
   grid-column:1 / -1;
   justify-content:flex-end;
 }
+.routing-pt-actions [data-routing-act="pick"][aria-pressed="true"]{
+  outline:2px solid var(--accent, #2563eb);
+  outline-offset:1px;
+}
+.routing-markers-overlay{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:6;
+}
+.routing-marker-handle,.routing-marker-hit{ pointer-events:auto; cursor:grab; touch-action:none; }
+.routing-marker-handle:active{ cursor:grabbing; }
+.tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
 .routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
 .routing-open-split{ display:inline-flex; align-items:stretch; }
@@ -15064,6 +15085,19 @@ const I18N = {
     "routing.startPlaceholder":"Nome partenza",
     "routing.viaPlaceholder":"Nome passaggio",
     "routing.endPlaceholder":"Nome destinazione",
+    "routing.pickMap":"Scegli sulla mappa",
+    "routing.pickMapTip":"Imposta questo punto con un click sulla mappa",
+    "routing.pickInstruction":"Clicca sulla mappa per impostare il punto.",
+    "routing.pickCancelled":"Selezione mappa annullata.",
+    "routing.coordinateUnset":"Coordinate non impostate",
+    "routing.useCurrentPosition":"Usa posizione corrente",
+    "routing.gpsSecureContextRequired":"Serve un contesto sicuro (HTTPS o localhost) per il GPS.",
+    "routing.gpsUnavailable":"Geolocalizzazione non disponibile.",
+    "routing.gpsAcquiring":"Acquisizione posizione…",
+    "routing.gpsSuccess":"Posizione impostata da GPS.",
+    "routing.gpsPermissionDenied":"Permesso posizione negato.",
+    "routing.gpsPositionUnavailable":"Posizione non disponibile.",
+    "routing.gpsTimeout":"Timeout posizione.",
     "gis.minimized.routing":"Pianifica percorso",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "gis.minimized.workbench":"Oggetti GIS",
@@ -17053,6 +17087,19 @@ const I18N = {
     "routing.startPlaceholder":"Start name",
     "routing.viaPlaceholder":"Via name",
     "routing.endPlaceholder":"Destination name",
+    "routing.pickMap":"Pick on map",
+    "routing.pickMapTip":"Set this point with a map click",
+    "routing.pickInstruction":"Click the map to set the point.",
+    "routing.pickCancelled":"Map pick cancelled.",
+    "routing.coordinateUnset":"Coordinates not set",
+    "routing.useCurrentPosition":"Use current location",
+    "routing.gpsSecureContextRequired":"A secure context (HTTPS or localhost) is required for GPS.",
+    "routing.gpsUnavailable":"Geolocation is unavailable.",
+    "routing.gpsAcquiring":"Acquiring location…",
+    "routing.gpsSuccess":"Location set from GPS.",
+    "routing.gpsPermissionDenied":"Location permission denied.",
+    "routing.gpsPositionUnavailable":"Location unavailable.",
+    "routing.gpsTimeout":"Location timeout.",
     "gis.minimized.routing":"Plan route",
     "workbenchPanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
     "gis.minimized.workbench":"GIS Objects",
@@ -19973,6 +20020,88 @@ function mapWptDocDragUp(ev){
   if (ev.cancelable) ev.preventDefault();
 }
 
+/* OUTDOOR-ROUTING-GH-B1b marker drag (doc capture + RAF) */
+let mapRoutingMarkerDocDrag = null;
+let mapRoutingMarkerDocDragRaf = 0;
+function mapRoutingMarkerDocDragCleanup(){
+  if (mapRoutingMarkerDocDragRaf){
+    try { cancelAnimationFrame(mapRoutingMarkerDocDragRaf); } catch(_){}
+    mapRoutingMarkerDocDragRaf = 0;
+  }
+  if (mapRoutingMarkerDocDrag){
+    document.removeEventListener("pointermove", mapRoutingMarkerDocDragMove, true);
+    document.removeEventListener("pointerup", mapRoutingMarkerDocDragUp, true);
+    document.removeEventListener("pointercancel", mapRoutingMarkerDocDragCancel, true);
+    mapRoutingMarkerDocDrag = null;
+  }
+  if (state._routing) state._routing.markerDrag = null;
+}
+function mapRoutingMarkerDocDragMove(ev){
+  const d = mapRoutingMarkerDocDrag;
+  if (!d || ev.pointerId !== d.pid) return;
+  const ll = mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
+  if (ll && Number.isFinite(ll.lat) && Number.isFinite(ll.lon) && Math.abs(ll.lat) <= 90){
+    d.liveLat = ll.lat;
+    d.liveLon = normalizeLon(ll.lon);
+    if (!mapRoutingMarkerDocDragRaf){
+      mapRoutingMarkerDocDragRaf = requestAnimationFrame(() => {
+        mapRoutingMarkerDocDragRaf = 0;
+        const dd = mapRoutingMarkerDocDrag;
+        if (!dd || !state._routing) return;
+        const pt = (state._routing.points || []).find(p => p && p.id === dd.id);
+        if (!pt) return;
+        pt.lat = dd.liveLat;
+        pt.lon = dd.liveLon;
+        try { renderRoutingMarkers(dd.tileMap, dd.markerLat, dd.markerLon, dd.z); } catch(_){}
+        try { routingUpdateRowCoordsReadout(dd.id); } catch(_){}
+      });
+    }
+  }
+  if (ev.cancelable) ev.preventDefault();
+}
+function mapRoutingMarkerDocDragUp(ev){
+  if (!mapRoutingMarkerDocDrag) return;
+  if (!ev || ev.pointerId !== mapRoutingMarkerDocDrag.pid) return;
+  const d = mapRoutingMarkerDocDrag;
+  const id = d.id;
+  const lat = Number.isFinite(d.liveLat) ? d.liveLat : d.prevLat;
+  const lon = Number.isFinite(d.liveLon) ? d.liveLon : d.prevLon;
+  const prevSrc = d.prevSource;
+  mapRoutingMarkerDocDragCleanup();
+  if (state._routing && Number.isFinite(lat) && Number.isFinite(lon)){
+    try { routingSetPointCoordinates(id, lat, lon, "map"); } catch(_){}
+  } else if (state._routing){
+    const pt = (state._routing.points || []).find(p => p && p.id === id);
+    if (pt && Number.isFinite(d.prevLat) && Number.isFinite(d.prevLon)){
+      pt.lat = d.prevLat; pt.lon = d.prevLon;
+      if (prevSrc) pt.source = prevSrc;
+    }
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+  }
+  if (ev.cancelable) ev.preventDefault();
+}
+function mapRoutingMarkerDocDragCancel(ev){
+  if (!mapRoutingMarkerDocDrag) return;
+  if (!ev || ev.pointerId !== mapRoutingMarkerDocDrag.pid) return;
+  const d = mapRoutingMarkerDocDrag;
+  const id = d.id;
+  const prevLat = d.prevLat, prevLon = d.prevLon, prevSrc = d.prevSource;
+  mapRoutingMarkerDocDragCleanup();
+  if (state._routing){
+    const pt = (state._routing.points || []).find(p => p && p.id === id);
+    if (pt){
+      if (Number.isFinite(prevLat) && Number.isFinite(prevLon)){
+        pt.lat = prevLat; pt.lon = prevLon;
+        if (prevSrc != null) pt.source = prevSrc;
+      }
+    }
+  }
+  try { routingRenderList(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  if (ev.cancelable) ev.preventDefault();
+}
+
 /** Drag Range Rings center handle during edit move-center mode (B6.5). */
 let mapRrCenterDocDrag = null;
 function mapRrCenterDocDragCleanup(){
@@ -20463,7 +20592,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "B5.5Z";
 const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 54;
+const APP_BUILD_NUM = 55;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36665,6 +36794,7 @@ function trackBrushClearMapPickModeFully(){
 }
 
 function trackBrushDisarmTransientTools(){
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof trackExitPickMode === "function") trackExitPickMode(); } catch(_){}
   try { if (typeof convertClearSourcePickMode === "function") convertClearSourcePickMode("sourceChange"); } catch(_){}
   try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("sourceChange"); } catch(_){}
@@ -36892,7 +37022,7 @@ function trackBrushOnPointerDown(ev){
   if (!root || !root.contains(ev.target)) return;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap || !tileMap.contains(ev.target)) return;
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit, button, a, input, select, textarea, .bbox-handle, .bbox-remove, .bbox-move";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit, button, a, input, select, textarea, .bbox-handle, .bbox-remove, .bbox-move";
   if (ev.target.closest && ev.target.closest(CTRL_SEL)) return;
   if (!trackBrushEventInMapBounds(ev)) return;
   const sample = trackBrushSampleFromEvent(ev);
@@ -41826,6 +41956,7 @@ function completeCurrentTrack(opts){
 function trackTogglePickMode(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   if (state._trackNewPromptOpen) return;
   // If the track was completed, "resume" should actually reopen editing.
@@ -41846,6 +41977,7 @@ function trackTogglePickMode(){
 function trackToggleWaypointPickMode(){
   ensureTrackState();
   ensureMapWaypointsState();
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   state.waypointPickMode = !state.waypointPickMode;
   if (state.waypointPickMode){
@@ -44400,6 +44532,7 @@ function renderTileMap(lat, lon, zoom){
       try { renderPolygonDraftOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { renderWorkbenchSelectionHighlight(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
+      try { if (typeof renderRoutingMarkers === "function") renderRoutingMarkers(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
     }
   }
@@ -44798,7 +44931,7 @@ function attachPanHandlers(root, lat, lon, zoom){
   const tileLayer = root.querySelector(".tile-layer");
   if (!tileMap || !tileLayer) return;
 
-  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit";
+  const CTRL_SEL = ".tz-btn, .ts-btn, .tlayer-btn, .tg-btn, .tcov-btn, .tmeas-btn, .ttrk-btn, .ttrk-group, .twpt-btn, .twpt-group, .tgps-btn, .trr-btn, .tpoly-btn, .twb-btn, .tile-ctrls, .tile-layers, .tile-attrib, .tile-recenter, .tile-pick, .tile-bottom-left, .tile-bl-row, .tile-readout, .trp, .tile-measure-box, .tile-track-float, .tile-waypoint-editor, .tile-offline-float, .mm-handle, .trk-handle, .wpt-handle, .rr-center-handle, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit";
 
   const getPt = (ev) => {
     const src = (ev.touches && ev.touches.length) ? ev.touches[0] : ev;
@@ -44886,6 +45019,33 @@ function attachPanHandlers(root, lat, lon, zoom){
           try { refreshTileMapForTrackUi(); } catch(_){}
           if (ev.cancelable) ev.preventDefault();
           try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
+      if (state._routing && state._routing.pickMode && state._routing.pickTargetId && !drag.moved && cx != null && cy != null){
+        try {
+          if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()) return;
+        } catch(_){}
+        if (state._bboxSelecting) return;
+        if (ev.target && ev.target.closest && ev.target.closest(CTRL_SEL)) return;
+        const zPickR = state.mapZoom || zoom;
+        const pickR = mapClientToLatLonMap(root, lat, lon, zPickR, cx, cy);
+        if (pickR && Number.isFinite(pickR.lat) && Number.isFinite(pickR.lon) && Math.abs(pickR.lat) <= 90){
+          const tid = state._routing.pickTargetId;
+          try {
+            if (typeof routingApplyMapPick === "function") routingApplyMapPick(pickR.lat, pickR.lon);
+            else if (typeof routingSetPointCoordinates === "function"){
+              routingSetPointCoordinates(tid, pickR.lat, pickR.lon, "map");
+              if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true });
+            }
+          } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        } else {
+          try {
+            if (typeof routingSetStatus === "function")
+              routingSetStatus(routingT("routing.invalidCoords", "Invalid coordinates."), true);
+          } catch(_){}
         }
         return;
       }
@@ -46202,6 +46362,7 @@ function astroClearPickCenterMode(reason){
 }
 /** Arm next map click for Astro position; disarms competing pick/measure/RR modes. */
 function astroEnterPickCenterMode(){
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof convertClearSourcePickMode === "function") convertClearSourcePickMode("sourceChange"); } catch(_){}
   try { if (typeof astroCloseWaypointPicker === "function") astroCloseWaypointPicker(); } catch(_){}
   try { if (typeof astroCloseFavoritePicker === "function") astroCloseFavoritePicker(); } catch(_){}
@@ -48268,6 +48429,7 @@ function convertApplyLatLonFromSource(lat, lon){
   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
 }
 function convertDisarmOtherPickModesForSource(){
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (state.astroPickCenterMode && typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("convertSource"); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   try { if (typeof trackExitPickMode === "function") trackExitPickMode(); } catch(_){}
@@ -49962,6 +50124,7 @@ function rangeRingsClearPickCenterMode(opts){
 function rangeRingsEnterPickCenterMode(){
   state._rrEditingMoveCenterMode = false;
   state.rangeRingsPickAndCreateMode = false;
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("rr"); } catch(_){}
   try { trackExitPickMode(); } catch(_){}
   try {
@@ -49992,6 +50155,7 @@ function rangeRingsEnterPickCenterMode(){
  * Mutually exclusive with pick-center, track, waypoint, map pick, measure.
  */
 function rangeRingsEnterPickAndCreateMode(){
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("rr"); } catch(_){}
   if (state._rrEditingSetId){
     rrShowError("rangeRings.err.pickCreateBlockedEdit");
@@ -52630,6 +52794,16 @@ function gisInit(){
     const rpd = document.getElementById("routingPlannerPanel");
     if ((state._routing && state._routing.panelOpen) || (rpd && rpd.open)){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")) return;
+      if (typeof mapRoutingMarkerDocDrag !== "undefined" && mapRoutingMarkerDocDrag){
+        try { if (typeof routingCancelMarkerDrag === "function") routingCancelMarkerDrag({ rollback: true }); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
+      if (state._routing && state._routing.pickMode){
+        try { if (typeof routingExitPickMode === "function") routingExitPickMode(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       if (typeof closeRoutingPlannerPanel === "function") closeRoutingPlannerPanel();
       ev.preventDefault();
       return;
@@ -53199,7 +53373,9 @@ function gisMinimizePanel(panelId, labelKey, opts){
   } else if (panelId === "helpOverlay"){
     /* Help: nessun sub-dialog modale bloccante. */
   } else if (panelId === "routingPlannerPanel"){
-    /* Outdoor routing B1a shell: nessun sub-dialog bloccante. */
+    /* Outdoor routing B1b: exit pick / rollback marker drag before minimize. */
+    try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
+    try { if (typeof routingCancelMarkerDrag === "function") routingCancelMarkerDrag({ rollback: true }); } catch(_){}
   } else {
     return;
   }
@@ -53316,6 +53492,8 @@ function gisRestoreMinimizedPanel(panelId){
       gisPanelBringToFront(dlg, o);
       gisPanelApplyLayout(dlg, o);
       gisPanelSyncBodySize(dlg, o);
+      try { if (typeof routingRenderList === "function") routingRenderList(); } catch(_){}
+      try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
     }
   } catch(_){}
   const fm = GIS_MIN_FOCUS_MAP[panelId];
@@ -56853,6 +57031,7 @@ function polygonRemoveLastDraftPoint(){
 }
 function polygonStartDraw(){
   if (state.polygonDrawMode) return;
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   ensureGisState();
   polygonHideDrawErr();
   state.polygonDrawMode = true;
@@ -57549,7 +57728,7 @@ function workbenchIsPickModeActive(){
   return !!(state.workbenchPanelOpen && dlg && dlg.open);
 }
 
-/* ===== OUTDOOR-ROUTING-GH-B1a — planner shell no-map (transient) ===== */
+/* ===== OUTDOOR-ROUTING-GH-B1b — map pick, markers, GPS (transient) ===== */
 const ROUTING_MAX_POINTS = 20;
 function uidRouting(){
   return "rt" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -57559,24 +57738,42 @@ function routingT(key, fb){
   return fb || key;
 }
 function routingEnsureState(){
-  if (state._routing && typeof state._routing === "object") return state._routing;
+  if (state._routing && typeof state._routing === "object"){
+    const r = state._routing;
+    if (typeof r.pickMode !== "boolean") r.pickMode = false;
+    if (!("pickTargetId" in r)) r.pickTargetId = null;
+    if (!("markerDrag" in r)) r.markerDrag = null;
+    if (typeof r.gpsRequestGeneration !== "number") r.gpsRequestGeneration = 0;
+    if (!("gpsBusyId" in r)) r.gpsBusyId = null;
+    return r;
+  }
   state._routing = {
     points: [],
     listReorderDrag: null,
     panelOpen: false,
     dirty: false,
     error: "",
-    service: null
+    service: null,
+    pickMode: false,
+    pickTargetId: null,
+    markerDrag: null,
+    gpsRequestGeneration: 0,
+    gpsBusyId: null
   };
   return state._routing;
 }
 function routingInitDefaultPoints(){
   const r = routingEnsureState();
   r.points = [
-    { id: uidRouting(), label: "", source: "manual" },
-    { id: uidRouting(), label: "", source: "manual" },
-    { id: uidRouting(), label: "", source: "manual" }
+    { id: uidRouting(), label: "" },
+    { id: uidRouting(), label: "" },
+    { id: uidRouting(), label: "" }
   ];
+}
+function routingFindPoint(id){
+  const r = state._routing;
+  if (!r || !id) return null;
+  return (r.points || []).find(p => p && p.id === id) || null;
 }
 function routingPointKind(i, n){
   if (i <= 0) return "start";
@@ -57588,6 +57785,9 @@ function routingPointBadge(i, n){
   if (i >= n - 1) return "B";
   return String(i);
 }
+function routingFormatCoords(lat, lon){
+  return Number(lat).toFixed(5) + ", " + Number(lon).toFixed(5);
+}
 function routingSetStatus(msg, isErr){
   const el = document.getElementById("routingPlannerStatus");
   if (!el) return;
@@ -57596,11 +57796,290 @@ function routingSetStatus(msg, isErr){
   el.classList.toggle("is-err", !!isErr && !!textMsg);
   if (state._routing) state._routing.error = textMsg;
 }
+function routingRemoveMarkersOverlay(){
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (!tm) return;
+    const old = tm.querySelector(".routing-markers-overlay");
+    if (old) old.remove();
+  } catch(_){}
+}
+function routingSyncPickModeUi(){
+  const on = !!(state._routing && state._routing.pickMode);
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap) tileMap.classList.toggle("routing-pick-mode", on);
+  } catch(_){}
+}
+function routingCancelMarkerDrag(opts){
+  opts = opts || {};
+  const d = (typeof mapRoutingMarkerDocDrag !== "undefined") ? mapRoutingMarkerDocDrag : null;
+  if (!d){
+    if (state._routing) state._routing.markerDrag = null;
+    return;
+  }
+  if (opts.rollback){
+    const id = d.id, prevLat = d.prevLat, prevLon = d.prevLon, prevSrc = d.prevSource;
+    mapRoutingMarkerDocDragCleanup();
+    const pt = routingFindPoint(id);
+    if (pt && Number.isFinite(prevLat) && Number.isFinite(prevLon)){
+      pt.lat = prevLat; pt.lon = prevLon;
+      if (prevSrc != null) pt.source = prevSrc;
+    }
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+  } else {
+    mapRoutingMarkerDocDragCleanup();
+  }
+}
+function routingDisarmOtherMapPicks(){
+  try { if (typeof trackExitPickMode === "function") trackExitPickMode(); } catch(_){}
+  try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
+  try { if (typeof convertClearSourcePickMode === "function") convertClearSourcePickMode("routing"); } catch(_){}
+  try { if (typeof astroClearPickCenterMode === "function") astroClearPickCenterMode("routing"); } catch(_){}
+  try {
+    if (state.polygonDrawMode && typeof polygonCancelDraw === "function") polygonCancelDraw();
+  } catch(_){}
+  try {
+    state.mapMeasureMode = false;
+    state.mapMeasurePts = null;
+    state.mapPolyPts = null;
+  } catch(_){}
+  try {
+    state.mapPickMode = false;
+    const root = document.getElementById("miniMap");
+    if (root) root.classList.remove("map-pick-mode");
+  } catch(_){}
+  try {
+    if (state._workbench && state._workbench.pickMode && typeof workbenchExitPickMode === "function")
+      workbenchExitPickMode({ keepStatus: true });
+  } catch(_){}
+  try { if (typeof trackBrushClearMapPickModeFully === "function") trackBrushClearMapPickModeFully(); } catch(_){}
+}
+function routingExitPickMode(options){
+  options = options || {};
+  if (!state._routing) return;
+  const was = !!state._routing.pickMode;
+  state._routing.pickMode = false;
+  state._routing.pickTargetId = null;
+  try { routingSyncPickModeUi(); } catch(_){}
+  if (!options.silent && was)
+    routingSetStatus(routingT("routing.pickCancelled", "Map pick cancelled."), false);
+  try { routingRenderList(); } catch(_){}
+}
+function routingEnterPickMode(pointId){
+  const r = routingEnsureState();
+  const id = String(pointId || "");
+  if (!id || !routingFindPoint(id)) return;
+  if (r.pickMode && r.pickTargetId === id){
+    routingExitPickMode();
+    return;
+  }
+  try { routingCancelMarkerDrag({ rollback: true }); } catch(_){}
+  try { routingDisarmOtherMapPicks(); } catch(_){}
+  r.pickMode = true;
+  r.pickTargetId = id;
+  routingSetStatus(routingT("routing.pickInstruction", "Click the map to set the point."), false);
+  try { routingSyncPickModeUi(); } catch(_){}
+  try { routingRenderList(); } catch(_){}
+  try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+}
+function routingSetPointCoordinates(pointId, lat, lon, source){
+  const pt = routingFindPoint(pointId);
+  if (!pt) return false;
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90) return false;
+  pt.lat = la;
+  pt.lon = normalizeLon(lo);
+  pt.source = (source === "gps") ? "gps" : "map";
+  if (state._routing) state._routing.dirty = true;
+  try { routingRenderList(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  return true;
+}
+function routingApplyMapPick(lat, lon){
+  const r = state._routing;
+  if (!r || !r.pickMode || !r.pickTargetId) return false;
+  const tid = r.pickTargetId;
+  const ok = routingSetPointCoordinates(tid, lat, lon, "map");
+  routingExitPickMode({ silent: true });
+  if (!ok) routingSetStatus(routingT("routing.invalidCoords", "Invalid coordinates."), true);
+  else routingSetStatus("", false);
+  return ok;
+}
+function routingUpdateRowCoordsReadout(id){
+  const pt = routingFindPoint(id);
+  const sel = '.routing-pt-coords[data-routing-id="' + routingEscapeAttr(id) + '"]';
+  const el = document.querySelector(sel);
+  if (!el) return;
+  if (pt && Number.isFinite(pt.lat) && Number.isFinite(pt.lon))
+    el.textContent = routingFormatCoords(pt.lat, pt.lon);
+  else
+    el.textContent = routingT("routing.coordinateUnset", "Coordinates not set");
+}
+function routingRequestGpsForPoint(id){
+  const r = routingEnsureState();
+  if (!routingFindPoint(id)) return;
+  try { routingExitPickMode({ silent: true }); } catch(_){}
+  try { routingCancelMarkerDrag({ rollback: true }); } catch(_){}
+  if (!window.isSecureContext){
+    routingSetStatus(routingT("routing.gpsSecureContextRequired", "Secure context required."), true);
+    return;
+  }
+  if (!navigator.geolocation){
+    routingSetStatus(routingT("routing.gpsUnavailable", "Geolocation unavailable."), true);
+    return;
+  }
+  const gen = (r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1);
+  r.gpsBusyId = id;
+  routingSetStatus(routingT("routing.gpsAcquiring", "Acquiring location…"), false);
+  routingRenderList();
+  const opts = (typeof GEO_OPTIONS !== "undefined") ? GEO_OPTIONS : { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      if (!state._routing || state._routing.gpsRequestGeneration !== gen) return;
+      if (!state._routing.panelOpen) return;
+      if (!routingFindPoint(id)) return;
+      state._routing.gpsBusyId = null;
+      const la = pos && pos.coords ? pos.coords.latitude : NaN;
+      const lo = pos && pos.coords ? pos.coords.longitude : NaN;
+      if (!routingSetPointCoordinates(id, la, lo, "gps"))
+        routingSetStatus(routingT("routing.invalidCoords", "Invalid coordinates."), true);
+      else
+        routingSetStatus(routingT("routing.gpsSuccess", "Location set from GPS."), false);
+    },
+    (err) => {
+      if (!state._routing || state._routing.gpsRequestGeneration !== gen) return;
+      state._routing.gpsBusyId = null;
+      const code = err && err.code;
+      if (code === 1) routingSetStatus(routingT("routing.gpsPermissionDenied", "Permission denied."), true);
+      else if (code === 3) routingSetStatus(routingT("routing.gpsTimeout", "Timeout."), true);
+      else if (code === 2) routingSetStatus(routingT("routing.gpsPositionUnavailable", "Unavailable."), true);
+      else routingSetStatus(routingT("routing.gpsUnavailable", "Geolocation unavailable."), true);
+      try { routingRenderList(); } catch(_){}
+    },
+    opts
+  );
+}
+function routingStartMarkerDrag(ev, pointId, root, tileMap, markerLat, markerLon, z){
+  if (!ev || (ev.button !== undefined && ev.button !== 0)) return;
+  if (ev.isPrimary === false) return;
+  const pt = routingFindPoint(pointId);
+  if (!pt || !Number.isFinite(pt.lat) || !Number.isFinite(pt.lon)) return;
+  ev.stopPropagation();
+  if (ev.cancelable) ev.preventDefault();
+  try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
+  try { routingExitPickMode({ silent: true }); } catch(_){}
+  const r = routingEnsureState();
+  r.markerDrag = { id: pt.id };
+  mapRoutingMarkerDocDrag = {
+    pid: ev.pointerId,
+    id: pt.id,
+    root,
+    tileMap,
+    markerLat,
+    markerLon,
+    z,
+    prevLat: pt.lat,
+    prevLon: pt.lon,
+    prevSource: pt.source || "map",
+    liveLat: pt.lat,
+    liveLon: pt.lon
+  };
+  document.addEventListener("pointermove", mapRoutingMarkerDocDragMove, true);
+  document.addEventListener("pointerup", mapRoutingMarkerDocDragUp, true);
+  document.addEventListener("pointercancel", mapRoutingMarkerDocDragCancel, true);
+}
+function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  const old = tileMap.querySelector(".routing-markers-overlay");
+  if (old) old.remove();
+  if (!state._routing || !state._routing.panelOpen) return;
+  const pts = state._routing.points || [];
+  const placed = pts.filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
+  if (!placed.length) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || root.clientHeight || W;
+  const z = state.mapZoom || zoom || 11;
+  const ns = "http://www.w3.org/2000/svg";
+  const wrap = document.createElement("div");
+  wrap.className = "routing-markers-overlay";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;";
+  const n = pts.length;
+  const llRef = Number.isFinite(markerLat) ? markerLat : ((state.viewCenter && state.viewCenter.lat) || 0);
+  const loRef = Number.isFinite(markerLon) ? markerLon : ((state.viewCenter && state.viewCenter.lon) || 0);
+  for (let i = 0; i < n; i++){
+    const p = pts[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    const c = tileMapLatLonToPx(root, p.lat, p.lon);
+    if (!c || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+    const g = document.createElementNS(ns, "g");
+    g.setAttribute("class", "routing-marker-handle");
+    g.setAttribute("data-routing-id", p.id);
+    g.setAttribute("tabindex", "0");
+    g.setAttribute("role", "button");
+    const badge = routingPointBadge(i, n);
+    const tip = (p.label ? String(p.label) + " — " : "") + badge + ": " + routingFormatCoords(p.lat, p.lon);
+    g.setAttribute("aria-label", tip);
+    g.setAttribute("title", tip);
+    const hit = document.createElementNS(ns, "circle");
+    hit.setAttribute("class", "routing-marker-hit");
+    hit.setAttribute("cx", String(c.x));
+    hit.setAttribute("cy", String(c.y));
+    hit.setAttribute("r", "14");
+    hit.setAttribute("fill", "transparent");
+    hit.style.pointerEvents = "all";
+    const circ = document.createElementNS(ns, "circle");
+    circ.setAttribute("cx", String(c.x));
+    circ.setAttribute("cy", String(c.y));
+    circ.setAttribute("r", "11");
+    circ.setAttribute("fill", "#7c3aed");
+    circ.setAttribute("stroke", "#fff");
+    circ.setAttribute("stroke-width", "2");
+    circ.style.pointerEvents = "none";
+    const txt = document.createElementNS(ns, "text");
+    txt.setAttribute("x", String(c.x));
+    txt.setAttribute("y", String(c.y + 3.5));
+    txt.setAttribute("text-anchor", "middle");
+    txt.setAttribute("fill", "#fff");
+    txt.setAttribute("font-size", "10");
+    txt.setAttribute("font-weight", "700");
+    txt.style.pointerEvents = "none";
+    txt.textContent = badge;
+    g.appendChild(hit);
+    g.appendChild(circ);
+    g.appendChild(txt);
+    g.addEventListener("pointerdown", (ev) => {
+      routingStartMarkerDrag(ev, p.id, root, tileMap, llRef, loRef, z);
+    });
+    svg.appendChild(g);
+  }
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
+}
 function routingFullCleanup(){
+  try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
   if (state._routing){
+    state._routing.gpsRequestGeneration = (state._routing.gpsRequestGeneration || 0) + 1;
+    state._routing.gpsBusyId = null;
+    state._routing.pickMode = false;
+    state._routing.pickTargetId = null;
+    state._routing.markerDrag = null;
     state._routing.listReorderDrag = null;
     state._routing.panelOpen = false;
   }
+  try { routingSyncPickModeUi(); } catch(_){}
+  try { routingRemoveMarkersOverlay(); } catch(_){}
   state._routing = null;
   const list = document.getElementById("routingPointsList");
   if (list) list.innerHTML = "";
@@ -57614,6 +58093,13 @@ function routingRenderList(){
   if (!list || !state._routing) return;
   const pts = state._routing.points || [];
   const n = pts.length;
+  const pickId = state._routing.pickMode ? state._routing.pickTargetId : null;
+  const gpsBusy = state._routing.gpsBusyId;
+  const gpsOk = !!(window.isSecureContext && navigator.geolocation);
+  let gpsTip = "";
+  if (!window.isSecureContext) gpsTip = routingT("routing.gpsSecureContextRequired", "Secure context required.");
+  else if (!navigator.geolocation) gpsTip = routingT("routing.gpsUnavailable", "Geolocation unavailable.");
+  else if (gpsBusy) gpsTip = routingT("routing.gpsAcquiring", "Acquiring location…");
   const frag = document.createDocumentFragment();
   for (let i = 0; i < n; i++){
     const p = pts[i];
@@ -57654,6 +58140,13 @@ function routingRenderList(){
     else if (kind === "via") ph = routingT("routing.viaPlaceholder", "Via name");
     field.placeholder = ph;
     field.value = p.label != null ? String(p.label) : "";
+    const coords = document.createElement("div");
+    coords.className = "routing-pt-coords";
+    coords.setAttribute("data-routing-id", p.id);
+    if (Number.isFinite(p.lat) && Number.isFinite(p.lon))
+      coords.textContent = routingFormatCoords(p.lat, p.lon);
+    else
+      coords.textContent = routingT("routing.coordinateUnset", "Coordinates not set");
     const actions = document.createElement("div");
     actions.className = "routing-pt-actions";
     const mkBtn = (labelKey, fb, cls, act) => {
@@ -57667,6 +58160,21 @@ function routingRenderList(){
       b.setAttribute("data-routing-id", p.id);
       return b;
     };
+    const pick = mkBtn("routing.pickMap", "Pick on map", "btn-ghost", "pick");
+    pick.title = routingT("routing.pickMapTip", "Set this point with a map click");
+    if (pickId === p.id){
+      pick.setAttribute("aria-pressed", "true");
+      pick.classList.add("is-active");
+    } else {
+      pick.setAttribute("aria-pressed", "false");
+    }
+    actions.appendChild(pick);
+    const gps = mkBtn("routing.useCurrentPosition", "Use current location", "btn-ghost", "gps");
+    if (!gpsOk || gpsBusy){
+      gps.disabled = true;
+      if (gpsTip) gps.title = gpsTip;
+    }
+    actions.appendChild(gps);
     const up = mkBtn("routing.moveUp", "Up", "btn-ghost", "up");
     up.disabled = i === 0;
     actions.appendChild(up);
@@ -57680,6 +58188,7 @@ function routingRenderList(){
     row.appendChild(grip);
     row.appendChild(badgeEl);
     row.appendChild(field);
+    row.appendChild(coords);
     row.appendChild(actions);
     frag.appendChild(row);
   }
@@ -57704,6 +58213,7 @@ function routingMovePoint(id, delta){
   r.dirty = true;
   routingSetStatus(routingT("routing.orderChanged", "Reordered"), false);
   routingRenderList();
+  try { refreshTileMapForTrackUi(); } catch(_){}
   const grip = document.querySelector('.routing-point-row[data-routing-id="' + routingEscapeAttr(id) + '"] .routing-pt-grip');
   try { if (grip) grip.focus(); } catch(_){}
 }
@@ -57713,10 +58223,17 @@ function routingRemovePoint(id){
     routingSetStatus(routingT("routing.minimumPoints", "Min 2"), true);
     return;
   }
+  if (r.pickMode && r.pickTargetId === id) routingExitPickMode({ silent: true });
+  if (r.markerDrag && r.markerDrag.id === id) routingCancelMarkerDrag({ rollback: true });
+  if (r.gpsBusyId === id){
+    r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1;
+    r.gpsBusyId = null;
+  }
   r.points = r.points.filter(p => p && p.id !== id);
   r.dirty = true;
   routingSetStatus("", false);
   routingRenderList();
+  try { refreshTileMapForTrackUi(); } catch(_){}
 }
 function routingAddVia(){
   const r = routingEnsureState();
@@ -57724,7 +58241,7 @@ function routingAddVia(){
     routingSetStatus(routingT("routing.maxPoints", "Max 20"), true);
     return;
   }
-  r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "", source: "manual" });
+  r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "" });
   r.dirty = true;
   routingSetStatus("", false);
   routingRenderList();
@@ -57735,6 +58252,8 @@ function routingHandleListAction(ev){
   const act = btn.getAttribute("data-routing-act");
   const id = btn.getAttribute("data-routing-id");
   if (!act || !id) return;
+  if (act === "pick"){ routingEnterPickMode(id); return; }
+  if (act === "gps"){ routingRequestGpsForPoint(id); return; }
   if (act === "up") routingMovePoint(id, -1);
   else if (act === "down") routingMovePoint(id, 1);
   else if (act === "remove") routingRemovePoint(id);
@@ -57774,6 +58293,7 @@ function routingAttachListDnd(list){
     r.dirty = true;
     routingSetStatus(routingT("routing.orderChanged", "Reordered"), false);
     routingRenderList();
+    try { refreshTileMapForTrackUi(); } catch(_){}
   });
   list.addEventListener("dragend", () => {
     dragId = null;
@@ -57860,6 +58380,8 @@ function openRoutingPlannerPanel(service){
       try { gisRestoreMinimizedPanel("routingPlannerPanel"); } catch(_){}
     }
     try { gisPanelBringToFront(dlg, _routingPanelLayoutOpts()); } catch(_){}
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
     return true;
   }
   routingEnsureState();
@@ -57873,6 +58395,7 @@ function openRoutingPlannerPanel(service){
   try { wireRoutingPanelFloating(dlg); } catch(_){}
   routingSetStatus("", false);
   routingRenderList();
+  try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
   return true;
 }
@@ -57955,6 +58478,8 @@ function wireRoutingPlannerOnce(){
   const minBtn = document.querySelector('#routingPlannerPanel [data-role="routingpanel-minimize"]');
   if (minBtn) minBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
+    try { routingExitPickMode({ silent: true }); } catch(_){}
+    try { routingCancelMarkerDrag({ rollback: true }); } catch(_){}
     if (typeof gisMinimizePanel === "function")
       gisMinimizePanel("routingPlannerPanel", "gis.minimized.routing");
   });
@@ -58008,6 +58533,8 @@ function workbenchMapInteractionBlocked(){
   if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
   if (typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag) return true;
   if (typeof mapPolyMoveDocDrag !== "undefined" && mapPolyMoveDocDrag) return true;
+  if (state._routing && state._routing.pickMode) return true;
+  if (state._routing && state._routing.markerDrag) return true;
   return false;
 }
 
@@ -58046,6 +58573,7 @@ function workbenchTogglePickMode(){
     workbenchExitPickMode();
     return;
   }
+  try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
   if (workbenchMapInteractionBlocked()){
     setWorkbenchPanelStatus((typeof t === "function" ? t("workbench.mapPickBlocked") : "") || "Blocked", { error: true });
     return;
