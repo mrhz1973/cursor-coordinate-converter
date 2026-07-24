@@ -2,70 +2,66 @@
 
 ## LATEST
 
-* real_task_commit: `fb119866bb57316b4188906c86d24d7d6879ebd7`
-* real_task_subject: fix(gis): prevent offline area table header overlap (build 50)
-* report_generated_at: 2026-07-24T01:15:00Z
+* real_task_commit: `18120102f319721aa237badb1db3c28327739e88`
+* real_task_subject: feat(gis): add unified import hub preview (build 51)
+* report_generated_at: 2026-07-24T02:10:00Z
 * branch: main
-* remote_head_after_task_push: `fb119866bb57316b4188906c86d24d7d6879ebd7` (runtime già su origin/main + VPS)
-* previous_report_container: `45a5404` (orchestratore post finito TRACK-CREATE-EDIT-UX-A QA — esterno/verificabile)
+* remote_head_after_task_push: `18120102f319721aa237badb1db3c28327739e88` (runtime già su origin/main + VPS)
+* previous_report_container: `43f638e` (orchestratore post finito OFFLINE-DOWNLOAD-CONTROLS-A QA — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: docs-only finito QA-reconcile (OM/HANDOFF/WU); monolite invariato; report in autosync
 * pass_tecnico_remoto: non attestato nel file per container corrente
-* result_cursor: OFFLINE-DOWNLOAD-CONTROLS-A + FIX1 + FIX2 + FIX3 CLOSED / PASS end-to-end; finito docs post QA PASS (auto-finito Regola H)
+* result_cursor: MAJOR-3-b1 CLOSED / PASS end-to-end; finito docs post QA PASS (auto-finito Regola H)
 * pass_operatore: PASS
-* result_runtime: QA OFFLINE-DOWNLOAD-CONTROLS-A + FIX1 + FIX2 + FIX3 — build 50; deploy GIS-only già PASS; QA PASS
-* qa_attestation_source: operatore — «QA OFFLINE-DOWNLOAD-CONTROLS-A + FIX1 + FIX2 + FIX3 PASS operatore»
-* notes: bundle DELICATO; catena e130a6e (47) → 5426cb1 (48) → ede0215 (49) → fb11986 (50); blob 2e31c335…; byte LF 2788844; SHA-256 5d54aee7…; monolite non modificato in chiusura docs
+* result_runtime: QA MAJOR-3-b1 — build 51; deploy GIS-only già PASS; gate statico no-write PASS; review GPT PASS; QA PASS
+* qa_attestation_source: operatore — «QA MAJOR-3-b1 PASS operatore»
+* notes: preview Workbench #wbImportHub GPX/KML/KMZ/GeoJSON; zero-write; Mission Package rifiutato; blob ba2cf240…; byte LF 2815080; SHA-256 a3032d8f…; monolite non modificato in chiusura docs; MAJOR-3-b2 apply resta candidato
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit verificato:
-fb119866bb57316b4188906c86d24d7d6879ebd7
+18120102f319721aa237badb1db3c28327739e88
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-2e31c335970cece26e20896fec85e4c5555aa95e
+ba2cf240f20595ef066dd59e7a3b685850f049c5
 
 git cat-file -s HEAD:"coordinate_converter Claude.html"
-2788844
+2815080
 
 sha256sum (git LF / deploy):
-5d54aee7798d724add018b6e229ff07dffc81f550d5670ef1295571848e0e2c3
+a3032d8f219e7c26f999515b7f906636a11c90b37deb1c3728fd58f7aa631d94
 
 Deploy VPS GIS-only (già PASS; non ripetuto in chiusura QA):
-URL: http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=fb11986
-byte/SHA/cmp PASS; build 50
+URL: http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1812010
+byte/SHA/cmp PASS; build 51
 
-QA OFFLINE-DOWNLOAD-CONTROLS-A + FIX1 + FIX2 + FIX3 PASS operatore
+QA MAJOR-3-b1 PASS operatore
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 43f638e — OFFLINE-DOWNLOAD-CONTROLS-A finito autosync post QA (real_task fb11986; finito docs 95010cd)
+* fb11986 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX3 runtime tip (build 50)
+* ede0215 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX2 (build 49)
+* 5426cb1 — OFFLINE-DOWNLOAD-CONTROLS-A-FIX1 (build 48)
+* e130a6e — OFFLINE-DOWNLOAD-CONTROLS-A feature (build 47)
 * 45a5404 — TRACK-CREATE-EDIT-UX-A finito autosync post QA (real_task 793f4cb; finito docs 1b37275)
 * 48c63ef — finito conferma sessione noop (HEAD già 45a5404)
 * 793f4cb — TRACK-CREATE-EDIT-UX-A-FIX1 runtime tip (build 46)
 * 33dc33d — TRACK-CREATE-EDIT-UX-A feature (build 45)
 * 2655d98 — TRACK-BRUSH-ANTIMERIDIAN finito autosync post QA (real_task 9cc7937; finito docs 77a7f00)
-* 02dceac — TRACK-BRUSH-ANTIMERIDIAN finito autosync (QA non attestata all’epoca; real_task 9cc7937; finito docs 4b43311)
-* 4b43311 — TRACK-BRUSH-ANTIMERIDIAN finito docs tecnico (QA non attestata; report LATEST precedente)
 * 9cc7937 — TRACK-BRUSH-ANTIMERIDIAN-FIX1 runtime tip (build 44)
-* bebf517 — TRACK-BRUSH-ANTIMERIDIAN feature (build 43)
-* d510d54 — DOCS-STATE-REALIGN-A finito autosync
-* 33b7b89 — DOCS-STATE-REALIGN-A finito docs
-* f352c20 — TRACK-BRUSH-A finito autosync
-* 1dd7e6d — TRACK-BRUSH-A finito docs (build 42)
 * d4f877a — TRACK-BRUSH-A + FIX1–FIX3 runtime tip (build 42)
-* 87aaca9 — TRACK-STYLE-A finito autosync
-* 0a7dd11 — TRACK-STYLE-A finito docs
 * 40c97b6 — TRACK-STYLE-A runtime (build 38)
 
 ## LIMITI
 
-* Estensioni MAJOR-3 / MAJOR-4 import backlog basso
-* Prossimo ordine operativo: da scegliere da roadmap/backlog
+* MAJOR-3-b2 (apply additivo) non ancora implementato
+* MAJOR-4 import/restore backlog basso
 * Deploy VPS non ripetuto in questa chiusura QA
 * QA touch/tablet non attestata
-* OFFLINE-DOWNLOAD-CONTROLS-A (+ FIX1–FIX3) CLOSED (`fb11986`, build 50)
+* MAJOR-3-b1 CLOSED (`1812010`, build 51) — solo preview
