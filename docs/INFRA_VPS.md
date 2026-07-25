@@ -130,6 +130,25 @@ apt update && apt upgrade -y
 
 ---
 
+## Censimento GraphHopper (2026-07-24 / 2026-07-25) — solo inventario, non deploy
+
+> **Censimento datato.** Non è una promessa di deploy. Nessuna modifica infrastrutturale eseguita in questa registrazione. Dettaglio piano PoC: [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
+
+| Voce | Valore al censimento |
+|------|----------------------|
+| RAM totale VPS | ~3.8 GB |
+| RAM disponibile (approx.) | ~2532 MB |
+| Swap | assente |
+| Porta **8989** | libera al censimento |
+| nginx | attivo su porta **80** (precedentemente assente dall’inventario di questo doc) |
+| Idoneità import Nord-Ovest sul VPS | **non idoneo** (RAM insufficiente per import; import previsto su Ryzen in INFRA-GH-1A) |
+| Serving GraphHopper futuro | **possibile solo dopo** misure INFRA-GH-1A / INFRA-GH-1B |
+| `MemoryMax` systemd | **nessuno ratificato** (vietato fissarlo prima delle misure) |
+| Modifiche infrastrutturali in 1A | **nessuna** (PoC solo loopback locale; VPS intatto) |
+| Endpoint GraphHopper attivo | **nessuno** |
+
+---
+
 ## URL operativi (tailnet)
 
 | Servizio | URL |

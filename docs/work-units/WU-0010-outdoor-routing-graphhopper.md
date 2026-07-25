@@ -1,6 +1,6 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 NEXT**
+**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 BLOCKED (attesa INFRA-GH-1A)**
 **Data pubblicazione piano:** 2026-07-24
 **Runtime autorevole attuale:** `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — display **`B5.5Z · build 56`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
@@ -8,7 +8,9 @@
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**Prossimo bundle runtime autorizzabile:** **B2** (route GraphHopper / endpoint; richiede prompt Cursor dedicato + review downstream pre-deploy)
+**B2 operativo (autorità viva):** GraphHopper endpoint / richiesta `/route` / preview transiente — **BLOCKED** finché non esiste un endpoint reale (PASS di [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) / INFRA-GH-1A).
+**Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — GraphHopper 11.0 PoC locale Ryzen — **READY / GO EXECUTION** (piano registrato 2026-07-25; PoC non ancora eseguito).
+**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo corrente. Online/gateway rinviato a futura work-unit server-side.
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 
@@ -207,6 +209,8 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 **Target diff B1 originale:** 350–500 righe → split B1a/B1b sotto soglia di arresto 650.
 
 ### BUNDLE B2 — Cerca/geocoding multi-riga
+
+> **Numerazione storica superseded (2026-07-25).** Il **B2 operativo vivo** (OM §7 / HANDOFF) è **GraphHopper endpoint / `/route` / preview**, attualmente **BLOCKED** in attesa di [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md). Il contenuto sotto resta piano storico per un **backlog geocoding multi-riga separato** — **non** fa parte di INFRA-GH-1A e **non** è il prossimo bundle runtime autorizzabile.
 
 **Scope:**
 
@@ -539,6 +543,6 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 - **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
 - **MAJOR-4 import/restore** resta backlog basso.
-- Runtime autorevole: **`3a702e1` build 56** (B1b CLOSED); prossimo bundle **B2**.
+- Runtime autorevole: **`3a702e1` build 56** (B1b CLOSED); **B2 operativo BLOCKED** — prerequisito [`WU-0011 / INFRA-GH-1A`](WU-0011-infra-gh-1a-graphhopper-local-poc.md).
 - Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC).
 - Questo documento è **piano**, non stato corrente. Stato vivo: `docs/OPERATING_MEMORY.md` §7.

@@ -117,9 +117,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync finito QA) | runtime **`3a702e1`** già su main/VPS; nuovo commit docs di questa chiusura aggiorna la HEAD documentale (verificare `git ls-remote` post-push). |
+| HEAD documentale (pre-autosync) | commit docs **WU-0011 / INFRA-GH-1A** di questa registrazione (verificare `git ls-remote` post-push); runtime monolite **invariato**. |
 | Runtime live / commit monolite | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — tip OUTDOOR-ROUTING-GH-B1b-FIX1 |
 | Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1b (+ FIX1)** — pick/marker/GPS (build 56) — **CLOSED / PASS end-to-end** |
+| WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A** — GraphHopper 11.0 PoC locale Ryzen — **READY / GO EXECUTION** — [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
+| Endpoint GraphHopper | **nessuno attivo** (né loopback PoC ancora eseguito, né VPS) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime Git / atteso VPS | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (deploy GIS-only Cursor SSH PASS) |
 | Blob monolite (git) | `15c57074cc3c1ea5e2b75d4c6b724b7eee5a41b2` |
@@ -128,6 +130,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | Display runtime | `B5.5Z · build 56` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
+| OUTDOOR-ROUTING-GH-B2 | **BLOCKED** — assenza endpoint GraphHopper reale; attesa PASS WU-0011 / INFRA-GH-1A |
 | OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
 | MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
@@ -158,13 +161,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**). Review downstream pre-deploy obbligatoria. Runtime live **`3a702e1` build 56**. **MAJOR-3-b2** resta parcheggiato.
+**WU-0011 / INFRA-GH-1A** — esecuzione PoC GraphHopper 11.0 locale Ryzen (Nord-Ovest · elevation ON · loopback). Piano registrato; PoC **non** ancora eseguito. Dettaglio: [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
+
+**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**) resta **BLOCKED** fino al PASS di INFRA-GH-1A (assenza endpoint reale). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. Online/gateway rinviato. **MAJOR-3-b2** resta parcheggiato.
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** apply MAJOR-3-b2 (finché non autorizzato), import/restore MAJOR-4.
+**Backlog basso / non ora:** apply MAJOR-3-b2 (finché non autorizzato), import/restore MAJOR-4, geocoding multi-riga (ex «B2» storico WU-0010).
 
-**Stop:** microcorrezioni UX non funzionali salvo bug reale. Nessuna WU runtime aperta in chiusura TRACK-CREATE-EDIT-UX-A.
+**Stop:** non implementare B2 monolite; non deploy GraphHopper su VPS in 1A; nessun MemoryMax ratificato.
 
 ---
 
