@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-25 — **`finito` sessione — OUTDOOR-ROUTING-GH-B1b (+ FIX1) CLOSED / PASS end-to-end:** runtime tip **`3a702e1`** (build 56); QA «**QA OUTDOOR-ROUTING-GH-B1b PASS operatore**»; finito docs task **`87b89a7`**; working tree pre-autosync: solo artefatti autosync; monolite **già** in `3a702e1` (non in questo ciclo docs); inbox **`2026-07-25_0023_riepilogo_finito-sessione.md`**.
+2026-07-25 — **WU-0011 / INFRA-GH-1A piano registrato (docs-only):** task **`e593301`** — `docs(infra): register GraphHopper local PoC work unit`; stato WU **READY / GO EXECUTION**; **OUTDOOR-ROUTING-GH-B2 BLOCKED**; runtime live invariato **`3a702e1`** build 56; monolite **non** nel commit; inbox **`2026-07-25_0205_riepilogo_wu-0011-infra-gh-1a-plan.md`**.
+
+2026-07-25 — **`finito` sessione — OUTDOOR-ROUTING-GH-B1b (+ FIX1) CLOSED / PASS end-to-end:** runtime tip **`3a702e1`** (build 56); QA «**QA OUTDOOR-ROUTING-GH-B1b PASS operatore**»; finito docs task **`87b89a7`**.
 
 2026-07-24 — **`finito` sessione — OUTDOOR-ROUTING-GH-B1a (+ FIX1 + FIX2) CLOSED / PASS end-to-end:** runtime tip **`d95f745`** (build 54); finito docs task **`2cd2414`**; autosync **`0b9777c`**.
-
-2026-07-24 — **WU-0010 OUTDOOR-ROUTING-GH — PLAN PUBLISHED (docs-only, recovery):** task docs **`8a61b91`**; autosync **`57ef41e`**.
