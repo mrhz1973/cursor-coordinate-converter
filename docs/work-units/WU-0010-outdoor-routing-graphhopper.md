@@ -10,7 +10,7 @@
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
 **B2 operativo (autorità viva):** GraphHopper endpoint / richiesta `/route` / preview transiente — **BLOCKED** finché non esiste un endpoint reale (PASS di [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) / INFRA-GH-1A).
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — GraphHopper 11.0 PoC locale Ryzen — **READY / GO EXECUTION** (piano registrato 2026-07-25; PoC non ancora eseguito).
-**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo corrente. Online/gateway rinviato a futura work-unit server-side.
+**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo corrente. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 
@@ -241,11 +241,29 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 ## 6. Bundle successivi (scope futuro, sintetico)
 
+### OUTDOOR-ROUTING-API-GATEWAY-A — gateway HTTPS API mondiale (**BACKLOG / NON APERTO**)
+
+**Stato:** **BACKLOG / NON APERTO** (registrato 2026-07-25). **Nessuna implementazione autorizzata.** Nessuna WU numerata aperta. **Non** interrompe [`WU-0011 / INFRA-GH-1A`](WU-0011-infra-gh-1a-graphhopper-local-poc.md).
+
+**Obiettivo futuro:** piccolo gateway HTTPS server-side che custodisce la chiave di un’API di routing **mondiale** e inoltra le richieste dal file HTML standalone (PC e cellulari):
+
+`HTML standalone → endpoint HTTPS controllato → API esterna mondiale → risposta normalizzata al planner GIS`
+
+**Evita:** API key nel monolite; GraphHopper installato sul dispositivo; distribuzione graph-cache; VPS con molta RAM per il grafo mondiale; CORS diretto browser↔provider; esposizione incontrollata della quota.
+
+**Provider da confrontare (nessuno scelto):** GraphHopper Directions API; openrouteservice API; eventuali provider outdoor-compatibili. Riferimenti open source da studiare (licenza, termini, API — senza copiare codice alla cieca): GNOME Maps, WTracks, Obsidian Map View, openrouteservice-app, client ufficiali GraphHopper.
+
+**Vincoli strategici:** nessuna API key nel HTML; gateway minimo/stateless (salvo rate-limit/cache ammessa); HTTPS obbligatorio; endpoint configurabile; nessuna chiamata al boot; richieste solo su comando operatore; errori controllati; provider usato mostrato nel planner; fallback futuro Locale → VPS → gateway; HTML standalone; i18n IT/EN (FR congelato).
+
+**Nessun legame obbligatorio** con la graph-cache locale/VPS. Online/gateway di B2 **non cancellato**: rinviato qui. Rivalutazione dopo PASS INFRA-GH-1A oppure prima di implementare Online in B2.
+
+**Questioni aperte prima di qualsiasi apertura:** provider; quota/costi; licenza/ToS; profili hiking/MTB; elevation/alternative; formato API; hosting; stack già sul VPS; auth/token app; rate-limit; anti-abuso; logging senza dati sensibili inutili; cache consentita; mobile; offline/fallback; dominio+certificato HTTPS.
+
 ### BUNDLE C — GraphHopper provider preview
 
 **Scope futuro:**
 
-- Endpoint Locale / VPS / Online
+- Endpoint Locale / VPS / Online (Online = via **OUTDOOR-ROUTING-API-GATEWAY-A**, non ancora aperto)
 - Modalità Auto (ordine Locale → VPS → Online → errore controllato)
 - `/info` (verifica provider)
 - POST `/route`
@@ -254,6 +272,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 - Normalizzazione risposta
 - Preview percorso (geometria read-only, no salvataggio)
 - Endpoint effettivamente usato mostrato all'operatore
+- **Nessuna API key nel monolite**
 
 **Classificazione:** **DELICATO** per rete, proxy e OPSEC.
 

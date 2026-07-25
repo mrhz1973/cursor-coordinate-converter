@@ -163,17 +163,23 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **WU-0011 / INFRA-GH-1A** — esecuzione PoC GraphHopper 11.0 locale Ryzen (Nord-Ovest · elevation ON · loopback). Piano registrato; PoC **non** ancora eseguito. Dettaglio: [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
 
-**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**) resta **BLOCKED** fino al PASS di INFRA-GH-1A (assenza endpoint reale). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. Online/gateway rinviato. **MAJOR-3-b2** resta parcheggiato.
+**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**) resta **BLOCKED** fino al PASS di INFRA-GH-1A (assenza endpoint reale). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. **MAJOR-3-b2** resta parcheggiato.
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** apply MAJOR-3-b2 (finché non autorizzato), import/restore MAJOR-4, geocoding multi-riga (ex «B2» storico WU-0010).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A** (gateway HTTPS API mondiale, chiave server-side, destinazione PC/cellulari — **BACKLOG / NON APERTO**; non interrompe INFRA-GH-1A); apply MAJOR-3-b2 (finché non autorizzato); import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010).
 
-**Stop:** non implementare B2 monolite; non deploy GraphHopper su VPS in 1A; nessun MemoryMax ratificato.
+**Stop:** non implementare B2 monolite; non implementare gateway; non deploy GraphHopper su VPS in 1A; nessun MemoryMax ratificato. **INFRA-GH-1A resta il prossimo blocco operativo.**
 
 ---
 
 ## Backlog / note immediate
+
+### OUTDOOR-ROUTING-API-GATEWAY-A — gateway HTTPS API mondiale — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-25). **Non** WU aperta. **Non** autorizzato.
+
+**Sintesi:** gateway HTTPS server-side futuro per routing API mondiale (HTML standalone → endpoint controllato → provider esterno); chiave **solo** server-side; nessuna API key nel monolite; provider da scegliere (GraphHopper Directions / openrouteservice / compatibili); rivalutazione dopo PoC locale o prima di Online in B2. **Prossimo operativo resta WU-0011 / INFRA-GH-1A.**
 
 ### TRACK-CREATE-EDIT-UX-A (+ FIX1) — CTA Nuova traccia + stile unificato (build 46) — CLOSED
 
