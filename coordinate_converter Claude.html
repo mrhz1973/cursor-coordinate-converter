@@ -6207,6 +6207,37 @@ body.gis-mode #appTopbar [data-tip]:focus-visible::before{
   border-top-color:transparent;
   border-bottom-color:var(--tooltip-bg);
 }
+/* TRACK-POINT-CAP-2000-FIX2 — GIS-visible drop-import status (outside #pasteSection). */
+#gisDropImportNotice{
+  display:none;
+}
+body.gis-mode #gisDropImportNotice:not([hidden]){
+  display:block;
+  position:fixed;
+  left:50%;
+  top:calc(env(safe-area-inset-top, 0px) + 72px);
+  transform:translateX(-50%);
+  z-index:45;
+  max-width:min(560px, calc(100vw - 24px));
+  margin:0;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid color-mix(in srgb, var(--danger, #b91c1c) 45%, var(--border));
+  background:color-mix(in srgb, var(--panel) 88%, var(--danger, #b91c1c) 12%);
+  box-shadow:0 8px 24px rgba(0,0,0,.28);
+  pointer-events:none;
+  white-space:pre-wrap;
+  word-break:break-word;
+  font-size:.85rem;
+  line-height:1.35;
+}
+body.gis-mode #gisDropImportNotice.is-error{
+  color:var(--danger, #b91c1c);
+}
+html[data-theme="light"] body.gis-mode #gisDropImportNotice.is-error{
+  color:#991b1b;
+}
+
 /* Spazio a sinistra: tutti i controlli GIS affollati a destra, stile unificato. */
 .app-topbar-spacer{
   flex:1 1 0;
@@ -8718,6 +8749,21 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip:disab
   padding:0;
   border:0;
 }
+#trackModalBody .tps-pager{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:8px 0 4px;
+  padding:4px 0;
+}
+#trackModalBody .tps-pager-range{
+  font-size:.85rem;
+  color:var(--muted);
+  min-width:7em;
+  text-align:center;
+}
 /* Traccia (GIS): pannello flottante non modale — mappa resta cliccabile (show(), non showModal()).
    z-index sotto .tab-drawer (30) e sotto strumenti/guida; sopra #gisMapMount (0). */
 dialog.track-modal.app-modal{
@@ -10598,6 +10644,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   </div>
 </nav>
+
+<!-- GIS-visible drop-import notice (pasteBadges is hidden in gis-mode). -->
+<div id="gisDropImportNotice" class="gis-drop-import-notice hint geo-warn" role="status" aria-live="polite" hidden></div>
 
 <main>
 
@@ -13819,6 +13868,9 @@ const I18N = {
     "track.pointsShow":"Mostra punti",
     "track.pointsHide":"Nascondi punti",
     "track.pointsCollapsedSummary":"Lista punti nascosta",
+    "track.pointsPageRange":"{0}–{1} di {2}",
+    "track.pointsPagePrev":"Precedente",
+    "track.pointsPageNext":"Successiva",
     "tip.trackPointsToggle":"Mostra o nascondi l’elenco punti della traccia.",
     "tip.trackCenterCurrent":"Centra la mappa sulla traccia corrente.",
     "tip.trackAddCurrent":"Aggiunge alla traccia il punto attualmente convertito nella card risultati.",
@@ -15830,6 +15882,9 @@ const I18N = {
     "track.pointsShow":"Show points",
     "track.pointsHide":"Hide points",
     "track.pointsCollapsedSummary":"Point list hidden",
+    "track.pointsPageRange":"{0}–{1} of {2}",
+    "track.pointsPagePrev":"Previous",
+    "track.pointsPageNext":"Next",
     "tip.trackPointsToggle":"Show or hide the track point list.",
     "tip.trackCenterCurrent":"Center the map on the current track.",
     "tip.trackAddCurrent":"Adds to the track the point currently displayed in the results card.",
@@ -17834,6 +17889,9 @@ const I18N = {
     "track.pointsShow":"Afficher les points",
     "track.pointsHide":"Masquer les points",
     "track.pointsCollapsedSummary":"Liste des points masquée",
+    "track.pointsPageRange":"{0}–{1} sur {2}",
+    "track.pointsPagePrev":"Précédent",
+    "track.pointsPageNext":"Suivant",
     "tip.trackPointsToggle":"Afficher ou masquer la liste des points de la trace.",
     "tip.trackAddCurrent":"Ajoute à la trace le point actuellement affiché dans la carte des résultats.",
     "tip.trackPickMap":"Active le mode clic-carte : chaque clic sur la mini-carte ajoute un point.",
@@ -19487,6 +19545,8 @@ const state = {
   trackModalOpen: false,
   /** Transient: when editing an existing saved track, holds its `savedTracks[].id`. */
   _trackEditingSavedId: null,
+  /** Transient TRACK-POINT-CAP-2000-FIX2: 0-based page for expanded track points list — not persisted. */
+  _trackPointsListPage: 0,
   /** Transient TRACK-STYLE-A: style editor working copy { mode, ids, working, include, touched } — not persisted. */
   _savedTrackStyleEdit: null,
   /** Transient TRACK-CREATE-EDIT-UX-A: unified Modifica session — not persisted. */
@@ -20617,9 +20677,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "B5.5Z";
-const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000-FIX1 — verify and rollback saved track creation";
+const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000-FIX2 — paginate point list + GIS import cap notice";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 58;
+const APP_BUILD_NUM = 59;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27018,7 +27078,8 @@ function dropImportClearVisual(depthRef){
 function dropImportPushErr(summary, name, detail){
   summary.errors++;
   const leaf = String(name || "file").replace(/^.*[\\/]/, "").slice(0, 40);
-  const d = detail ? (" " + String(detail).slice(0, 40)) : "";
+  // FIX2: allow full points_cap / i18n detail (was truncated at 40).
+  const d = detail ? (" " + String(detail).slice(0, 120)) : "";
   if (summary.errNames.length < 8) summary.errNames.push(leaf + d);
 }
 
@@ -27351,6 +27412,12 @@ async function importDroppedSpatialFiles(fileList){
     const anyOk = summary.waypoints + summary.tracks + summary.polygons > 0;
     try {
       setBadge(anyOk ? "success" : (summary.errors ? "error" : "info"), msg);
+    } catch(_){}
+    // TRACK-POINT-CAP-2000-FIX2: #pasteBadges is hidden in gis-mode — mirror to GIS notice.
+    try {
+      if (summary.errors > 0 && typeof showGisDropImportNotice === "function"){
+        showGisDropImportNotice(msg, { error: true });
+      }
     } catch(_){}
     return summary;
   } finally {
@@ -27953,6 +28020,35 @@ function bindDragDrop(){
 }
 
 /* ========================= SECTION 14G: BADGE (detected format chip) ========================= */
+let _gisDropImportNoticeTimer = null;
+function showGisDropImportNotice(msg, opts){
+  opts = opts || {};
+  const el = document.getElementById("gisDropImportNotice");
+  if (!el) return;
+  const s = String(msg || "").trim();
+  if (_gisDropImportNoticeTimer){
+    try { clearTimeout(_gisDropImportNoticeTimer); } catch(_){}
+    _gisDropImportNoticeTimer = null;
+  }
+  if (!s){
+    el.textContent = "";
+    el.hidden = true;
+    el.classList.remove("is-error");
+    return;
+  }
+  el.textContent = s;
+  el.hidden = false;
+  el.classList.toggle("is-error", opts.error !== false);
+  _gisDropImportNoticeTimer = setTimeout(() => {
+    _gisDropImportNoticeTimer = null;
+    try {
+      el.textContent = "";
+      el.hidden = true;
+      el.classList.remove("is-error");
+    } catch(_){}
+  }, 10000);
+}
+
 function setBadge(type, extra){
   const root = document.getElementById("pasteBadges");
   if (!root) return;
@@ -38748,6 +38844,7 @@ function beginEditSavedTrackById(id){
   // TRACK-STYLE-A-FIX1: close style preview/editor before geometric edit (any track).
   try { savedTrackStyleCloseForLifecycle({ skipRender: true }); } catch(_){}
   trackPickCancelDeferred();
+  try { trackPointsListResetPage(); } catch(_){}
   state.track.points = st.points.map(p => ({
     id: String(p.id || uidNamed()),
     lat: p.lat,
@@ -41360,6 +41457,7 @@ function trackRemovePoint(id){
   } catch(_){}
   ensureTrackState();
   state.track.points = state.track.points.filter(p => p.id !== id);
+  try { trackPointsListClampPage(); } catch(_){}
   saveStore();
   renderTrackAll();
 }
@@ -41469,6 +41567,7 @@ function trackResetCurrentOnly(opts){
   state.track.points = [];
   state.track.closed = false;
   state.track.pickMode = pick;
+  try { trackPointsListResetPage(); } catch(_){}
   state.trackWaypointDraft = null;
   state._trackCompleted = false;
   state._trackSavedAt = null;
@@ -42003,6 +42102,7 @@ function trackClearCurrentCommit(){
   ensureTrackState();
   if (!state.track.points.length) return;
   state.track.points = [];
+  try { trackPointsListResetPage(); } catch(_){}
   state.track.closed = false;
   const chk = document.getElementById("trackClosed");
   if (chk) chk.checked = false;
@@ -42452,8 +42552,36 @@ function fmtEta(seconds){
   return m + " min";
 }
 
+
 /** Max points before default-collapsed list (session auto mode). */
 const TRACK_POINTS_LIST_AUTO_THRESHOLD = 10;
+/** TRACK-POINT-CAP-2000-FIX2 — page size for expanded detailed list (session-only). */
+const TRACK_POINTS_LIST_PAGE_SIZE = 50;
+
+/** @returns {number} max 0-based page for n points */
+function trackPointsListMaxPage(n){
+  const size = TRACK_POINTS_LIST_PAGE_SIZE;
+  const nn = Math.max(0, Number(n) || 0);
+  if (nn <= 0) return 0;
+  return Math.max(0, Math.ceil(nn / size) - 1);
+}
+
+/** Clamp state._trackPointsListPage to a valid 0-based page; return it. */
+function trackPointsListClampPage(){
+  ensureTrackState();
+  const n = (state.track && Array.isArray(state.track.points)) ? state.track.points.length : 0;
+  let page = state._trackPointsListPage;
+  if (typeof page !== "number" || !Number.isFinite(page) || page < 0) page = 0;
+  page = Math.floor(page);
+  const maxP = trackPointsListMaxPage(n);
+  if (page > maxP) page = maxP;
+  state._trackPointsListPage = page;
+  return page;
+}
+
+function trackPointsListResetPage(){
+  state._trackPointsListPage = 0;
+}
 
 /** @returns {boolean} */
 function trackPointsListEffectiveExpanded(){
@@ -42492,6 +42620,26 @@ function wireTrackPointsSectionToggleOnce(){
       try { flyMapToTrackPoints(state.track.points, !!state.track.closed); } catch(_){}
       return;
     }
+    const prevBtn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-points-page-prev\"]");
+    if (prevBtn){
+      ev.preventDefault();
+      if (prevBtn.disabled) return;
+      trackPointsListClampPage();
+      if (state._trackPointsListPage > 0) state._trackPointsListPage -= 1;
+      renderTrackAll();
+      return;
+    }
+    const nextBtn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-points-page-next\"]");
+    if (nextBtn){
+      ev.preventDefault();
+      if (nextBtn.disabled) return;
+      ensureTrackState();
+      const maxP = trackPointsListMaxPage(state.track.points.length);
+      trackPointsListClampPage();
+      if (state._trackPointsListPage < maxP) state._trackPointsListPage += 1;
+      renderTrackAll();
+      return;
+    }
     const btn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-points-toggle\"]");
     if (!btn) return;
     ev.preventDefault();
@@ -42523,7 +42671,8 @@ function trackUnitMountInline(mount){
   }
 }
 
-/** Render the full point list into #track-points with drag&drop reorder. */
+/** Render the full point list into #track-points with drag&drop reorder.
+ *  TRACK-POINT-CAP-2000-FIX2: when expanded and n > PAGE_SIZE, render one page only. */
 function renderTrackPointsList(){
   const root = document.getElementById("track-points");
   const head = document.getElementById("track-points-head");
@@ -42534,6 +42683,7 @@ function renderTrackPointsList(){
   const pts = state.track.points;
   if (!pts.length){
     state._trackPointsListMode = null;
+    trackPointsListResetPage();
     root.classList.remove("is-collapsed");
     root.innerHTML = "";
     trackUnitRestoreHome();
@@ -42608,17 +42758,30 @@ function renderTrackPointsList(){
     return;
   }
   root.classList.remove("is-collapsed");
-  // Pre-compute leg distances and bearings
-  const legs = [];
-  for (let i = 1; i < pts.length; i++){
-    try {
-      const inv = vincentyInverse(pts[i-1].lat, pts[i-1].lon, pts[i].lat, pts[i].lon);
-      legs.push({ dist: inv.distance, brg: inv.initialBearing });
-    } catch(_){ legs.push({ dist: NaN, brg: NaN }); }
+
+  const pageSize = TRACK_POINTS_LIST_PAGE_SIZE;
+  const needPager = n > pageSize;
+  const page = trackPointsListClampPage();
+  const start = needPager ? (page * pageSize) : 0;
+  const end = needPager ? Math.min(n, start + pageSize) : n;
+  const lastPage = trackPointsListMaxPage(n);
+
+  // Legs only for visible page rows (first row of page>0 uses global previous point).
+  const pageRows = [];
+  for (let i = start; i < end; i++){
+    const p = pts[i];
+    let leg = null;
+    if (i > 0){
+      try {
+        const inv = vincentyInverse(pts[i - 1].lat, pts[i - 1].lon, p.lat, p.lon);
+        leg = { dist: inv.distance, brg: inv.initialBearing };
+      } catch(_){ leg = { dist: NaN, brg: NaN }; }
+    }
+    pageRows.push({ i: i, p: p, leg: leg });
   }
-  // Closing leg (only if closed and ≥3 points)
+  // Closing leg (only if closed and ≥3 points) — show on last page only.
   let closingLeg = null;
-  if (state.track.closed && pts.length >= 3){
+  if (state.track.closed && pts.length >= 3 && page === lastPage){
     try {
       const last = pts[pts.length - 1], first = pts[0];
       const inv = vincentyInverse(last.lat, last.lon, first.lat, first.lon);
@@ -42626,16 +42789,13 @@ function renderTrackPointsList(){
     } catch(_){}
   }
 
-  const html = pts.map((p, i) => {
+  const html = pageRows.map(({ i, p, leg }) => {
     const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
     let mgrsStr = "";
     try { mgrsStr = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
     let legStr = "";
-    if (i > 0){
-      const lg = legs[i-1];
-      if (lg && Number.isFinite(lg.dist)){
-        legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(lg.dist, tdu)} · ${lg.brg.toFixed(1)}°</span>`;
-      }
+    if (i > 0 && leg && Number.isFinite(leg.dist)){
+      legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(leg.dist, tdu)} · ${leg.brg.toFixed(1)}°</span>`;
     }
     const idxLbl = trackPointDisplayLabel(i, pts.length);
     return `<div class="track-point-row" draggable="true" data-id="${esc(p.id)}" data-idx="${i}">
@@ -42664,9 +42824,29 @@ function renderTrackPointsList(){
     </div>`;
   }
 
-  root.innerHTML = html + closingRow;
+  let pagerHtml = "";
+  if (needPager){
+    const from = start + 1;
+    const to = end;
+    const rangeTpl = t("track.pointsPageRange") || "{0}–{1} di {2}";
+    const rangeTxt = String(rangeTpl)
+      .replace("{0}", String(from))
+      .replace("{1}", String(to))
+      .replace("{2}", String(n));
+    const prevLbl = esc(t("track.pointsPagePrev") || "Precedente");
+    const nextLbl = esc(t("track.pointsPageNext") || "Successiva");
+    const prevDis = page <= 0 ? " disabled" : "";
+    const nextDis = page >= lastPage ? " disabled" : "";
+    pagerHtml = `<div class="tps-pager" data-role="track-points-pager">
+      <button type="button" class="btn btn-sm" data-role="track-points-page-prev"${prevDis}>${prevLbl}</button>
+      <span class="tps-pager-range" data-role="track-points-page-range">${esc(rangeTxt)}</span>
+      <button type="button" class="btn btn-sm" data-role="track-points-page-next"${nextDis}>${nextLbl}</button>
+    </div>`;
+  }
 
-  // Wire remove buttons and name edits
+  root.innerHTML = pagerHtml + html + closingRow;
+
+  // Wire remove buttons and name edits (global id / data-idx)
   root.querySelectorAll('[data-role="tp-rm"]').forEach(btn => {
     btn.addEventListener("click", (ev) => {
       ev.preventDefault();
@@ -42681,7 +42861,7 @@ function renderTrackPointsList(){
     });
   });
 
-  // Drag & drop to reorder
+  // Drag & drop to reorder (intra-page only; id-based global splice)
   attachTrackDnd(root);
 }
 
