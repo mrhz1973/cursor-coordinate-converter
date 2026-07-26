@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-25 — **OUTDOOR-ROUTING-API-GATEWAY-A backlog registrato (docs-only):** task **`3e9bc6a`** — `docs(routing): add worldwide API gateway backlog`; stato **BACKLOG / NON APERTO**; **WU-0011** resta **READY / GO EXECUTION**; **B2 BLOCKED**; runtime **`3a702e1`** build 56 invariato; inbox **`2026-07-25_0240_riepilogo_outdoor-routing-api-gateway-backlog.md`**.
+2026-07-26 — **INFRA-GH-1A Fase A PASS + QA CORS:** task **`b599ae0`** — `docs(infra): register INFRA-GH-1A Phase A PASS with CORS QA`; attestazione «**QA CORS INFRA-GH-1A PASS operatore**»; WU-0011 **FASE A PASS / IMPORT B PENDING**; B2 **BLOCKED**; runtime **`3a702e1`** build 56 invariato; PoC fuori repo; monolite non in commit; inbox sotto.
 
-2026-07-25 — **WU-0011 / INFRA-GH-1A piano registrato (docs-only):** task **`e593301`**; stato WU **READY / GO EXECUTION**; autosync **`70ba2d3`**.
+2026-07-25 — **OUTDOOR-ROUTING-API-GATEWAY-A backlog** — task **`3e9bc6a`**; autosync **`13829e2`**.
 
-2026-07-25 — **`finito` sessione — OUTDOOR-ROUTING-GH-B1b (+ FIX1) CLOSED / PASS end-to-end:** runtime tip **`3a702e1`** (build 56).
+2026-07-25 — **WU-0011 piano registrato** — task **`e593301`**; autosync **`70ba2d3`**.
