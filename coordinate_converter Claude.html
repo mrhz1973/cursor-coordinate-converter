@@ -13754,6 +13754,11 @@ const I18N = {
     "track.saveDefaultName":"Traccia",
     "track.saveMinTwoPoints":"La traccia deve contenere almeno 2 punti per essere salvata.",
     "track.savedOk":"Traccia salvata: {0}",
+    "track.capReachedAdd":"Limite punti raggiunto ({0}). Punto non aggiunto.",
+    "track.capReachedPaste":"Incollare rifiutato: supererebbe il limite di {0} punti.",
+    "track.capReachedImport":"Import rifiutato: la traccia supera il limite di {0} punti.",
+    "track.persistQuotaExceeded":"Salvataggio non riuscito (spazio insufficiente). Dati precedenti conservati.",
+    "track.legacyTruncated":"Tracce preesistenti ridotte al limite di {0} punti (difensivo).",
     "track.savedEmpty":"Nessuna traccia salvata.",
     "track.savedEmptyHint":"Disegna punti sul builder traccia e salva dall'archivio in basso.",
     "track.renameConfirm":"Salvare il nuovo nome della traccia?",
@@ -13799,6 +13804,8 @@ const I18N = {
     "dropImport.summary":"Import drop: {0} file · {1} waypoint · {2} tracce · {3} poligoni · {4} ignorati · {5} errori.",
     "dropImport.errDetail":"Errori: {0}",
     "dropImport.capTracks":"Libreria tracce piena (cap {0}).",
+    "dropImport.capPoints":"Traccia rifiutata: supera il limite di {0} punti.",
+    "dropImport.persistFail":"Persistenza fallita per una traccia; dati precedenti conservati.",
     "dropImport.capWaypoints":"Cap waypoint raggiunto.",
     "dropImport.capPolygons":"Cap poligoni raggiunto.",
     "dropImport.tooLarge":"troppo grande (>25 MB)",
@@ -13891,6 +13898,7 @@ const I18N = {
     "track.brush.mapChanged":"La mappa è cambiata durante il disegno: tratto annullato.",
     "track.brush.savedOk":"Traccia salvata in archivio.",
     "track.brush.saveFailCap":"Archivio pieno (massimo 50 tracce).",
+    "track.brush.saveFailPointsCap":"Troppi punti (limite {0}). Resta in revisione.",
     "track.brush.saveFail":"Salvataggio non riuscito.",
     "track.brush.armedMeta":"Pronto",
     "track.brush.drawingMeta":"Disegno…",
@@ -15756,6 +15764,11 @@ const I18N = {
     "track.saveDefaultName":"Track",
     "track.saveMinTwoPoints":"The track must contain at least 2 points before it can be saved.",
     "track.savedOk":"Track saved: {0}",
+    "track.capReachedAdd":"Point cap reached ({0}). Point not added.",
+    "track.capReachedPaste":"Paste rejected: would exceed the {0}-point cap.",
+    "track.capReachedImport":"Import rejected: track exceeds the {0}-point cap.",
+    "track.persistQuotaExceeded":"Save failed (storage full). Previous data kept.",
+    "track.legacyTruncated":"Pre-existing tracks trimmed to the {0}-point cap (defensive).",
     "track.savedEmpty":"No saved tracks yet.",
     "track.savedEmptyHint":"Draw points in the track builder and save from the archive below.",
     "track.renameConfirm":"Save the new track name?",
@@ -15801,6 +15814,8 @@ const I18N = {
     "dropImport.summary":"Drop import: {0} files · {1} waypoints · {2} tracks · {3} polygons · {4} ignored · {5} errors.",
     "dropImport.errDetail":"Errors: {0}",
     "dropImport.capTracks":"Saved track library full (cap {0}).",
+    "dropImport.capPoints":"Track rejected: exceeds the {0}-point cap.",
+    "dropImport.persistFail":"Persisting a track failed; previous data kept.",
     "dropImport.capWaypoints":"Waypoint cap reached.",
     "dropImport.capPolygons":"Polygon cap reached.",
     "dropImport.tooLarge":"too large (>25 MB)",
@@ -15893,6 +15908,7 @@ const I18N = {
     "track.brush.mapChanged":"Map changed during drawing: stroke cancelled.",
     "track.brush.savedOk":"Track saved to archive.",
     "track.brush.saveFailCap":"Archive full (maximum 50 tracks).",
+    "track.brush.saveFailPointsCap":"Too many points (cap {0}). Review kept.",
     "track.brush.saveFail":"Save failed.",
     "track.brush.armedMeta":"Ready",
     "track.brush.drawingMeta":"Drawing…",
@@ -17759,6 +17775,11 @@ const I18N = {
     "track.saveDefaultName":"Trace",
     "track.saveMinTwoPoints":"La trace doit contenir au moins 2 points pour être enregistrée.",
     "track.savedOk":"Trace enregistrée : {0}",
+    "track.capReachedAdd":"Limite de points atteint ({0}). Point non ajouté.",
+    "track.capReachedPaste":"Collage refusé : dépasserait la limite de {0} points.",
+    "track.capReachedImport":"Import refusé : la trace dépasse la limite de {0} points.",
+    "track.persistQuotaExceeded":"Échec de l'enregistrement (espace insuffisant). Données précédentes conservées.",
+    "track.legacyTruncated":"Traces préexistantes ramenées à la limite de {0} points (défensif).",
     "track.savedEmpty":"Aucune trace enregistrée.",
     "track.savedEmptyHint":"Tracez des points dans le builder et enregistrez depuis l'archive ci-dessous.",
     "track.renameConfirm":"Enregistrer le nouveau nom de la trace ?",
@@ -20590,9 +20611,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "B5.5Z";
-const APP_BUILD_DETAIL = "Quick geographic JPG export and segmented high-zoom tiles";
+const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000 — raise track point cap to 2000 safely";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 56;
+const APP_BUILD_NUM = 57;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -20664,7 +20685,7 @@ function saveStore(){
       favorites: state.favorites || [],
       namedAreas: (state.namedAreas || []).slice(0, 30),
       track: {
-        points: (state.track && Array.isArray(state.track.points)) ? state.track.points.slice(0, 500) : [],
+        points: (state.track && Array.isArray(state.track.points)) ? state.track.points.slice(0, TRACK_POINTS_CAP) : [],
         closed: !!(state.track && state.track.closed)
       },
       mapWaypoints: (Array.isArray(state.mapWaypoints) ? state.mapWaypoints : []).slice(0, 200),
@@ -20677,7 +20698,7 @@ function saveStore(){
             savedAt: st.savedAt,
             closed: !!st.closed,
             visible: st.visible !== false,
-            points: st.points.slice(0, 500)
+            points: st.points.slice(0, TRACK_POINTS_CAP)
           };
           if (typeof st.color === "string" && /^#[0-9a-fA-F]{6}$/.test(st.color)) row.color = st.color;
           if (typeof st.lineWidth === "number" && Number.isFinite(st.lineWidth)) row.lineWidth = st.lineWidth;
@@ -20695,6 +20716,31 @@ function saveStore(){
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
   } catch(_){ /* quota exceeded or storage disabled → ignore silently */ }
+}
+/* TRACK-POINT-CAP-2000 — transactional wrapper around saveStore().
+ * Performs saveStore() then a synchronous read-back that confirms STORAGE_KEY
+ * contains a valid JSON payload. Returns { ok:boolean }.
+ *
+ * Rationale: saveStore() swallows all errors (QuotaExceededError, SecurityError,
+ * serialization). Callers that mutate sensitive state (saved tracks add/replace,
+ * brush save, drop import) need to know whether the mutation was actually
+ * persisted; otherwise they would declare success and leave an in-memory ghost
+ * that disappears at next reload. This wrapper preserves saveStore()'s existing
+ * 135+ call sites unchanged: only the four transactional paths in this block
+ * use saveStoreReported() + their own rollback logic.
+ *
+ * ok:true  → STORAGE_KEY is present and parses as JSON after the write.
+ * ok:false → write failed OR read-back missing/invalid (rollback required). */
+function saveStoreReported(){
+  try {
+    saveStore();
+    const after = localStorage.getItem(STORAGE_KEY);
+    if (!after) return { ok: false };
+    JSON.parse(after);
+    return { ok: true };
+  } catch(_){
+    return { ok: false };
+  }
 }
 function clearStore(){
   try { localStorage.removeItem(STORAGE_KEY); } catch(_){}
@@ -26688,12 +26734,23 @@ function spatialApplyFeatureCollectionToTrackMerge(fc, opts){
       }
     }
   }
+  // TRACK-POINT-CAP-2000 — atomic pre-check: project total length before any push.
+  let _projectedAdd = 0;
+  for (const part of lineParts){
+    if (part.coords && part.coords.length >= 2) _projectedAdd += part.coords.length;
+  }
+  if (state.track.points.length + _projectedAdd > TRACK_POINTS_CAP){
+    // Reject the whole merge: do not push anything, leave the draft unchanged.
+    try { setBadge("info", (t("track.capReachedImport") || "cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
+    try { renderTrackAll(); } catch(_){}
+    try { renderMapWaypointsAll(); } catch(_){}
+    return;
+  }
   for (const part of lineParts){
     const pts = spatialLineToTrackPoints(part.coords, { from: "import", filename: fname });
     for (const p of pts) state.track.points.push(p);
   }
   if (anyPoly) state.track.closed = true;
-  if (state.track.points.length > 500) state.track.points.splice(0, state.track.points.length - 500);
   try {
     const derived = spatialDeriveImportedTrackPromptName(fc, fname);
     if (derived){
@@ -27052,14 +27109,13 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
   }
 
   if (lineParts.length){
+    // TRACK-POINT-CAP-2000: do NOT silently truncate to 500. Collect ALL points;
+    // savedTrackAddFromPoints() rejects atomically with reason:"points_cap" if the
+    // single track exceeds TRACK_POINTS_CAP. No partial geometry is ever created.
     const allPts = [];
     for (const coords of lineParts){
       const pts = spatialLineToTrackPoints(coords, { from: "import" });
-      for (const p of pts){
-        if (allPts.length >= 500) break;
-        allPts.push(p);
-      }
-      if (allPts.length >= 500) break;
+      for (const p of pts) allPts.push(p);
     }
     if (allPts.length >= 2){
       const lineFeats = feats.filter(f => {
@@ -27073,22 +27129,58 @@ function applyDroppedFeatureCollection(fc, filename, summary, fitAcc){
           fname
         ) || "";
       } catch(_){ nm = ""; }
-      const res = savedTrackAddFromPoints({
-        name: nm,
-        points: allPts,
-        closed: false,
-        visible: true
-      });
-      if (res && res.ok){
-        summary.tracks++;
-        summary._lastTrackCreated = true;
-        addedAny = true;
-        const savedPts = (res.track && Array.isArray(res.track.points)) ? res.track.points : allPts;
-        pushTrackPts(savedPts);
-      } else if (res && res.reason === "cap"){
-        pushErr((t("dropImport.capTracks") || "cap {0}").replace("{0}", String(SAVED_TRACKS_CAP)));
+      // TRACK-POINT-CAP-2000 — transactional persistence. Snapshot raw storage
+      // before the mutation so we can restore it exactly on QuotaExceededError or
+      // read-back mismatch. savedTrackAddFromPoints mutates state.savedTracks but
+      // does NOT persist: this is the only saveStore in this path.
+      let _prevRaw = null;
+      let _snapOk = true;
+      try { _prevRaw = localStorage.getItem(STORAGE_KEY); } catch(_){ _snapOk = false; }
+      if (!_snapOk){
+        pushErr(t("dropImport.persistFail") || "persist failed");
       } else {
-        pushErr(t("dropImport.noGeometry") || "track");
+        const res = savedTrackAddFromPoints({
+          name: nm,
+          points: allPts,
+          closed: false,
+          visible: true
+        });
+        if (res && res.ok){
+          // Verify the mutation actually reached localStorage; rollback on failure.
+          const rep = saveStoreReported();
+          let confirmed = rep.ok;
+          if (confirmed){
+            try {
+              const expected = res.track || null;
+              confirmed = !!(expected && typeof trackVerifyPersistedSavedTrack === "function"
+                && trackVerifyPersistedSavedTrack(expected));
+            } catch(_){ confirmed = false; }
+          }
+          if (confirmed){
+            summary.tracks++;
+            summary._lastTrackCreated = true;
+            addedAny = true;
+            const savedPts = (res.track && Array.isArray(res.track.points)) ? res.track.points : allPts;
+            pushTrackPts(savedPts);
+          } else {
+            // Rollback the in-memory add and restore the raw storage value.
+            try {
+              if (res.track && res.track.id != null && typeof trackBrushRollbackCreatedTrack === "function"){
+                trackBrushRollbackCreatedTrack(String(res.track.id), null);
+              } else if (res.track && res.track.id != null){
+                state.savedTracks = state.savedTracks.filter(x => !(x && String(x.id) === String(res.track.id)));
+              }
+            } catch(_){}
+            try { if (typeof trackBrushRestoreStorageRaw === "function") trackBrushRestoreStorageRaw(_prevRaw); } catch(_){}
+            pushErr(t("dropImport.persistFail") || "persist failed");
+          }
+        } else if (res && res.reason === "cap"){
+          pushErr((t("dropImport.capTracks") || "cap {0}").replace("{0}", String(SAVED_TRACKS_CAP)));
+        } else if (res && res.reason === "points_cap"){
+          pushErr((t("dropImport.capPoints") || "track points cap {0}").replace("{0}", String(TRACK_POINTS_CAP)));
+        } else {
+          pushErr(t("dropImport.noGeometry") || "track");
+        }
       }
     } else {
       pushErr(t("dropImport.noGeometry") || "track");
@@ -35380,6 +35472,12 @@ function ensureTrackState(){
   if ("waypointPickMode" in state.track) delete state.track.waypointPickMode;
 }
 
+/* TRACK-POINT-CAP-2000 — canonical max number of points per track (draft + saved).
+ * Applies to creation/import/edit paths (fail-closed) AND to defensive load/verify
+ * clamps. Unrelated caps (polygon ring vertices, featureIds, routing, CoT, notes)
+ * are intentionally NOT aligned to this constant. */
+const TRACK_POINTS_CAP = 2000;
+
 function ensureMapWaypointsState(){
   if (!Array.isArray(state.mapWaypoints)) state.mapWaypoints = [];
   if (typeof state.waypointPickMode !== "boolean") state.waypointPickMode = false;
@@ -35423,7 +35521,15 @@ function ensureSavedTracksState(){
     st.visible = st.visible !== false;
     const pts = Array.isArray(st.points) ? st.points : [];
     const clean = [];
-    for (const p of pts.slice(0, 500)){
+    // TRACK-POINT-CAP-2000: defensive load clamp. Pre-existing data that exceeds
+    // TRACK_POINTS_CAP (legacy from the old 500 era, or untrusted storage) is
+    // trimmed ONCE at load. Mutating this flag informs a post-init one-shot badge
+    // (track.legacyTruncated) — see init(). Ordinary create/import paths MUST NOT
+    // rely on this clamp: they fail-closed earlier in their own pre-checks.
+    if (pts.length > TRACK_POINTS_CAP){
+      try { state._legacyTruncatedTracks = true; } catch(_){}
+    }
+    for (const p of pts.slice(0, TRACK_POINTS_CAP)){
       if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
       let meta = null;
       if (p.meta && typeof p.meta === "object"){
@@ -35904,7 +36010,17 @@ function notifyTrackSaveMinPointsBlocked(){
  * Library CRUD helper: create one saved track from an explicit point list.
  * Same persisted shape as saveCurrentTrackToLibrary (new entry).
  * No saveStore / render / modal. Does not silently drop existing tracks when at cap.
- * @returns {{ ok:true, track:object }|{ ok:false, reason:string }}
+ *
+ * TRACK-POINT-CAP-2000 contract:
+ *   - Input beyond TRACK_POINTS_CAP is rejected atomically (no silent truncation,
+ *     no `truncated:true` in the return, no partial geometry).
+ *   - No mutation of state.savedTracks when return is ok:false.
+ *   - No persistence inside this helper (caller decides whether to saveStore).
+ *
+ * @returns {{ ok:true, track:object } | { ok:false, reason:"cap"|"points_cap"|"min_points" }}
+ *   reason:"cap"         → library full (savedTracks.length >= SAVED_TRACKS_CAP)
+ *   reason:"points_cap"  → opts.points.length > TRACK_POINTS_CAP (single track beyond limit)
+ *   reason:"min_points"  → snap.length < 2 after sanitization
  */
 function savedTrackAddFromPoints(opts){
   opts = opts || {};
@@ -35913,8 +36029,12 @@ function savedTrackAddFromPoints(opts){
     return { ok: false, reason: "cap" };
   }
   const rawPts = Array.isArray(opts.points) ? opts.points : [];
+  // TRACK-POINT-CAP-2000: atomic pre-check. Reject before building/clamping.
+  if (rawPts.length > TRACK_POINTS_CAP){
+    return { ok: false, reason: "points_cap" };
+  }
   const snap = [];
-  for (const p of rawPts.slice(0, 500)){
+  for (const p of rawPts){
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     let meta = null;
     if (p.meta && typeof p.meta === "object"){
@@ -36015,7 +36135,7 @@ const TRACK_BRUSH_MIN_SAMPLE_PX = 5;
 const TRACK_BRUSH_MIN_STROKE_PX = 8;
 const TRACK_BRUSH_RAW_CAP = 4096;
 const TRACK_BRUSH_RDP_EPSILON_PX = 2.5;
-const TRACK_BRUSH_FINAL_CAP = 500;
+const TRACK_BRUSH_FINAL_CAP = TRACK_POINTS_CAP;
 
 function trackBrushEnsure(){
   if (!state._trackBrush || typeof state._trackBrush !== "object"){
@@ -37362,7 +37482,7 @@ function savedTrackSanitizeCloneForVerify(st){
   c.visible = c.visible !== false;
   const pts = Array.isArray(c.points) ? c.points : [];
   const clean = [];
-  for (const p of pts.slice(0, 500)){
+  for (const p of pts.slice(0, TRACK_POINTS_CAP)){
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     clean.push({
       id: String(p.id || ""),
@@ -37386,7 +37506,7 @@ function savedTrackPersistShapeForVerify(st){
     savedAt: clean.savedAt,
     closed: !!clean.closed,
     visible: clean.visible !== false,
-    points: clean.points.slice(0, 500)
+    points: clean.points.slice(0, TRACK_POINTS_CAP)
   };
   if (typeof clean.color === "string" && /^#[0-9a-fA-F]{6}$/.test(clean.color)) row.color = clean.color;
   if (typeof clean.lineWidth === "number" && Number.isFinite(clean.lineWidth)) row.lineWidth = clean.lineWidth;
@@ -37595,6 +37715,10 @@ function trackBrushSave(){
     b.name = name;
     if (res && res.reason === "cap"){
       trackBrushSetFeedback(trackBrushMsg("track.brush.saveFailCap", "Archive full."));
+    } else if (res && res.reason === "points_cap"){
+      // TRACK-POINT-CAP-2000 — brush review exceeded TRACK_POINTS_CAP (RDP could
+      // not reduce enough). Review is preserved; no persistence, no partial track.
+      trackBrushSetFeedback(trackBrushMsg("track.brush.saveFailPointsCap", "Too many points."));
     } else if (res && res.reason === "min_points"){
       trackBrushSetFeedback(trackBrushMsg("track.brush.minPoints", "At least two distinct points are required."));
     } else {
@@ -37605,9 +37729,11 @@ function trackBrushSave(){
   }
   const created = res.track || null;
   const createdId = created && created.id != null ? String(created.id) : "";
-  try {
-    saveStore();
-  } catch(_){
+  // TRACK-POINT-CAP-2000 — transactional persistence via saveStoreReported().
+  // saveStore() swallows QuotaExceededError silently; saveStoreReported() also
+  // performs a synchronous read-back so we know whether the mutation landed.
+  const _rep = saveStoreReported();
+  if (!_rep.ok){
     trackBrushRollbackCreatedTrack(createdId, prevSelectedIds);
     trackBrushRestoreStorageRaw(prevRaw);
     b.phase = "review";
@@ -37825,12 +37951,22 @@ function saveCurrentTrackToLibrary(name, opts){
   let prevRaw = null;
   let snapshotRow = null;
   let snapshotOk = true;
+  // TRACK-POINT-CAP-2000 — transactional snapshot for both create and replace
+  // modes. create-mode previously had NO rollback, which produced false successes
+  // on QuotaExceededError (track visible in RAM but gone on reload). Snapshot
+  // prevRaw now so either mode can restore storage exactly.
+  try { prevRaw = localStorage.getItem(STORAGE_KEY); } catch(_){ snapshotOk = false; }
+  if (!snapshotOk){
+    try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
+    return false;
+  }
+  // TRACK-POINT-CAP-2000 — atomic pre-check: reject before pushing if draft
+  // exceeds TRACK_POINTS_CAP. Draft is left unchanged; no partial mutation.
+  if (pts.length > TRACK_POINTS_CAP){
+    try { setBadge("info", (t("track.capReachedImport") || "cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
+    return false;
+  }
   if (rid){
-    try { prevRaw = localStorage.getItem(STORAGE_KEY); } catch(_){ snapshotOk = false; }
-    if (!snapshotOk){
-      try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
-      return false;
-    }
     const ix = state.savedTracks.findIndex(x => x && String(x.id) === rid);
     if (ix < 0){
       setBadge("error", t("track.savedEditMissing") || "");
@@ -37858,15 +37994,22 @@ function saveCurrentTrackToLibrary(name, opts){
     });
   }
   if (state.savedTracks.length > SAVED_TRACKS_CAP) state.savedTracks.splice(0, state.savedTracks.length - SAVED_TRACKS_CAP);
-  try {
-    saveStore();
-  } catch(_){
-    if (didReplace && snapshotRow){
+  // TRACK-POINT-CAP-2000 — transactional persistence. saveStore() swallows
+  // QuotaExceededError silently; saveStoreReported() also performs a synchronous
+  // read-back so we know whether the mutation landed. Rollback restores BOTH the
+  // in-memory snapshot (snapshotRow for replace; pop() for create) and the raw
+  // localStorage value, so no false success and no corrupt partial payload.
+  const _rep = saveStoreReported();
+  if (!_rep.ok){
+    if (didReplace){
       const ix2 = state.savedTracks.findIndex(x => x && String(x.id) === rid);
-      if (ix2 >= 0) state.savedTracks[ix2] = snapshotRow;
-      try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
+      if (ix2 >= 0 && snapshotRow) state.savedTracks[ix2] = snapshotRow;
+    } else {
+      // Create-mode rollback: remove the freshly-pushed row.
+      state.savedTracks.pop();
     }
-    try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
+    try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
+    try { setBadge("error", t("track.persistQuotaExceeded") || "Persist failed"); } catch(_){}
     return false;
   }
   if (didReplace){
@@ -41147,6 +41290,12 @@ function trackAddPoint(lat, lon, name, meta){
   // Collapse consecutive duplicates within ~1 m (same rounded DD key)
   const last = pts[pts.length - 1];
   if (last && Math.abs(last.lat - lat) < 1e-5 && Math.abs(last.lon - lon) < 1e-5) return false;
+  // TRACK-POINT-CAP-2000 — fail-closed: reject the (CAP+1)-th point instead of
+  // silently dropping earlier points. Draft is left unchanged; user is informed.
+  if (pts.length >= TRACK_POINTS_CAP){
+    try { setBadge("info", (t("track.capReachedAdd") || "cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
+    return false;
+  }
   pts.push({
     id: uidNamed(),
     lat: lat,
@@ -41154,7 +41303,6 @@ function trackAddPoint(lat, lon, name, meta){
     name: (typeof name === "string" ? name : "").slice(0, 60),
     meta: meta || null
   });
-  if (pts.length > 500) pts.splice(0, pts.length - 500);
   // After the first point exists, re-enable map-click insertion while the Track panel is open
   // (GIS: only meaningful when the floating Track panel is active).
   try {
@@ -41443,7 +41591,10 @@ function trackRenamePoint(id, name){
 }
 
 /** Parse a free-text bulk input (one coord per line) and append all valid
- *  points to the current track. Returns { ok, fail }. */
+ *  points to the current track. Returns { ok, fail, capBlocked? }.
+ *  TRACK-POINT-CAP-2000: if existing + valid new lines would exceed TRACK_POINTS_CAP,
+ *  the whole paste is rejected atomically (draft unchanged) and capBlocked:true
+ *  is returned. No partial push, no silent truncation. */
 function trackAddFromText(text){
   try {
     if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
@@ -41453,25 +41604,35 @@ function trackAddFromText(text){
   } catch(_){}
   ensureTrackState();
   const lines = String(text || "").split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-  let ok = 0, fail = 0;
+  // Pre-validate lines without mutating state, so we can compute the projected
+  // total and reject atomically if it would exceed TRACK_POINTS_CAP.
+  const parsed = [];
+  let fail = 0;
   for (const line of lines){
     try {
       const d = autoDetect(line);
       if (d && Number.isFinite(d.lat) && Number.isFinite(d.lon)){
-        // Bypass consecutive-dup check for bulk paste — each line is intentional
-        state.track.points.push({
-          id: uidNamed(),
-          lat: d.lat, lon: d.lon,
-          name: "", meta: { from: "paste" }
-        });
-        ok++;
+        parsed.push({ lat: d.lat, lon: d.lon });
       } else { fail++; }
     } catch(_){ fail++; }
   }
-  if (state.track.points.length > 500) state.track.points.splice(0, state.track.points.length - 500);
+  const existing = state.track.points.length;
+  // TRACK-POINT-CAP-2000 — atomic reject. Existing points stay; nothing pushed.
+  if (existing + parsed.length > TRACK_POINTS_CAP){
+    try { setBadge("info", (t("track.capReachedPaste") || "cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
+    return { ok: 0, fail: lines.length, capBlocked: true };
+  }
+  for (const p of parsed){
+    // Bypass consecutive-dup check for bulk paste — each line is intentional
+    state.track.points.push({
+      id: uidNamed(),
+      lat: p.lat, lon: p.lon,
+      name: "", meta: { from: "paste" }
+    });
+  }
   saveStore();
   renderTrackAll();
-  return { ok, fail };
+  return { ok: parsed.length, fail };
 }
 
 /** Add the currently converted point (from state.lastResult/lastPoint). */
@@ -62823,10 +62984,14 @@ function init(){
         else kept.push(row);
       }
       state.track = {
-        points: kept.slice(0, 500),
+        points: kept.slice(0, TRACK_POINTS_CAP),
         closed: !!stored.track.closed,
         pickMode: false
       };
+      // TRACK-POINT-CAP-2000 — flag legacy draft trim for the post-init one-shot badge.
+      if (kept.length > TRACK_POINTS_CAP){
+        try { state._legacyTruncatedTracks = true; } catch(_){}
+      }
       for (const w of migratedWp){
         if (state.mapWaypoints.length >= 200) break;
         state.mapWaypoints.push(w);
@@ -62909,6 +63074,17 @@ function init(){
 
   // Self-check (silent). Only runs if URL has ?debug
   if (/[?&]debug\b/.test(location.search)) runSelfCheck();
+
+  // TRACK-POINT-CAP-2000 — one-shot legacy clamp notice. If ensureSavedTracksState
+  // or the init() migration had to trim pre-existing tracks above TRACK_POINTS_CAP
+  // (legacy 500-era data, or untrusted storage), inform the user once. Mutating
+  // paths never rely on this: they fail-closed earlier in their own pre-checks.
+  try {
+    if (state._legacyTruncatedTracks){
+      setBadge("info", (t("track.legacyTruncated") || "legacy cap {0}").replace("{0}", String(TRACK_POINTS_CAP)));
+      state._legacyTruncatedTracks = false;
+    }
+  } catch(_){}
 }
 
 /**
