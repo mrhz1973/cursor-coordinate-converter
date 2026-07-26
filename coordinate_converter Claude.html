@@ -13757,6 +13757,7 @@ const I18N = {
     "track.capReachedAdd":"Limite punti raggiunto ({0}). Punto non aggiunto.",
     "track.capReachedPaste":"Incollare rifiutato: supererebbe il limite di {0} punti.",
     "track.capReachedImport":"Import rifiutato: la traccia supera il limite di {0} punti.",
+    "track.capReachedSave":"Salvataggio rifiutato: la traccia supera il limite di {0} punti. Nessun dato rimosso.",
     "track.persistQuotaExceeded":"Salvataggio non riuscito (spazio insufficiente). Dati precedenti conservati.",
     "track.legacyTruncated":"Tracce preesistenti ridotte al limite di {0} punti (difensivo).",
     "track.savedEmpty":"Nessuna traccia salvata.",
@@ -15767,6 +15768,7 @@ const I18N = {
     "track.capReachedAdd":"Point cap reached ({0}). Point not added.",
     "track.capReachedPaste":"Paste rejected: would exceed the {0}-point cap.",
     "track.capReachedImport":"Import rejected: track exceeds the {0}-point cap.",
+    "track.capReachedSave":"Save rejected: track exceeds the {0}-point cap. No data removed.",
     "track.persistQuotaExceeded":"Save failed (storage full). Previous data kept.",
     "track.legacyTruncated":"Pre-existing tracks trimmed to the {0}-point cap (defensive).",
     "track.savedEmpty":"No saved tracks yet.",
@@ -17778,8 +17780,12 @@ const I18N = {
     "track.capReachedAdd":"Limite de points atteint ({0}). Point non ajouté.",
     "track.capReachedPaste":"Collage refusé : dépasserait la limite de {0} points.",
     "track.capReachedImport":"Import refusé : la trace dépasse la limite de {0} points.",
+    "track.capReachedSave":"Enregistrement refusé : la trace dépasse la limite de {0} points. Aucune donnée supprimée.",
     "track.persistQuotaExceeded":"Échec de l'enregistrement (espace insuffisant). Données précédentes conservées.",
     "track.legacyTruncated":"Traces préexistantes ramenées à la limite de {0} points (défensif).",
+    "dropImport.capPoints":"Trace refusée : dépasse la limite de {0} points.",
+    "dropImport.persistFail":"Échec de persistance d'une trace ; données précédentes conservées.",
+    "track.brush.saveFailPointsCap":"Trop de points (limite {0}). Revue conservée.",
     "track.savedEmpty":"Aucune trace enregistrée.",
     "track.savedEmptyHint":"Tracez des points dans le builder et enregistrez depuis l'archive ci-dessous.",
     "track.renameConfirm":"Enregistrer le nouveau nom de la trace ?",
@@ -20611,9 +20617,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "B5.5Z";
-const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000 — raise track point cap to 2000 safely";
+const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000-FIX1 — verify and rollback saved track creation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 57;
+const APP_BUILD_NUM = 58;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37718,7 +37724,10 @@ function trackBrushSave(){
     } else if (res && res.reason === "points_cap"){
       // TRACK-POINT-CAP-2000 — brush review exceeded TRACK_POINTS_CAP (RDP could
       // not reduce enough). Review is preserved; no persistence, no partial track.
-      trackBrushSetFeedback(trackBrushMsg("track.brush.saveFailPointsCap", "Too many points."));
+      trackBrushSetFeedback(
+        (trackBrushMsg("track.brush.saveFailPointsCap", "Too many points (cap {0}). Review kept.") || "")
+          .replace("{0}", String(TRACK_POINTS_CAP))
+      );
     } else if (res && res.reason === "min_points"){
       trackBrushSetFeedback(trackBrushMsg("track.brush.minPoints", "At least two distinct points are required."));
     } else {
@@ -37950,11 +37959,15 @@ function saveCurrentTrackToLibrary(name, opts){
   let didReplace = false;
   let prevRaw = null;
   let snapshotRow = null;
+  let snapshotTracks = null;
+  let prevSelectedIds = null;
   let snapshotOk = true;
-  // TRACK-POINT-CAP-2000 — transactional snapshot for both create and replace
-  // modes. create-mode previously had NO rollback, which produced false successes
-  // on QuotaExceededError (track visible in RAM but gone on reload). Snapshot
-  // prevRaw now so either mode can restore storage exactly.
+  let createdRow = null;
+  // TRACK-POINT-CAP-2000-FIX1 — transactional snapshots before any mutation.
+  // Create-mode needs a FULL independent clone of state.savedTracks so that a
+  // failed persist (including QuotaExceededError swallowed by saveStore) can
+  // restore the exact pre-mutation library — including the oldest track that
+  // may have been pruned by the SAVED_TRACKS_CAP splice. Never use pop().
   try { prevRaw = localStorage.getItem(STORAGE_KEY); } catch(_){ snapshotOk = false; }
   if (!snapshotOk){
     try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
@@ -37963,7 +37976,7 @@ function saveCurrentTrackToLibrary(name, opts){
   // TRACK-POINT-CAP-2000 — atomic pre-check: reject before pushing if draft
   // exceeds TRACK_POINTS_CAP. Draft is left unchanged; no partial mutation.
   if (pts.length > TRACK_POINTS_CAP){
-    try { setBadge("info", (t("track.capReachedImport") || "cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
+    try { setBadge("info", (t("track.capReachedSave") || "save cap {0}").replace("{0}", String(TRACK_POINTS_CAP))); } catch(_){}
     return false;
   }
   if (rid){
@@ -37984,46 +37997,64 @@ function saveCurrentTrackToLibrary(name, opts){
     }
     // Keep original id + savedAt for stable references/overlays.
   } else {
-    state.savedTracks.push({
+    try { snapshotTracks = JSON.parse(JSON.stringify(state.savedTracks)); } catch(_){
+      snapshotTracks = null;
+    }
+    if (!snapshotTracks){
+      try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
+      return false;
+    }
+    try {
+      prevSelectedIds = Array.isArray(state._savedTracksSelectedIds)
+        ? state._savedTracksSelectedIds.slice()
+        : [];
+    } catch(_){ prevSelectedIds = []; }
+    createdRow = {
       id: uid(),
       name: nm,
       savedAt: Date.now(),
       closed: !!state.track.closed,
       visible: true,
       points: snap
-    });
+    };
+    state.savedTracks.push(createdRow);
   }
   if (state.savedTracks.length > SAVED_TRACKS_CAP) state.savedTracks.splice(0, state.savedTracks.length - SAVED_TRACKS_CAP);
-  // TRACK-POINT-CAP-2000 — transactional persistence. saveStore() swallows
-  // QuotaExceededError silently; saveStoreReported() also performs a synchronous
-  // read-back so we know whether the mutation landed. Rollback restores BOTH the
-  // in-memory snapshot (snapshotRow for replace; pop() for create) and the raw
-  // localStorage value, so no false success and no corrupt partial payload.
+  // TRACK-POINT-CAP-2000-FIX1 — persist + mutation-specific verify.
+  // saveStoreReported() alone is insufficient: after QuotaExceededError the old
+  // JSON may still parse, yielding ok:true. Create MUST confirm the new row is
+  // actually present via trackVerifyPersistedSavedTrack before any success UI.
   const _rep = saveStoreReported();
-  if (!_rep.ok){
+  let confirmed = !!(_rep && _rep.ok);
+  if (confirmed){
+    if (didReplace){
+      const expectedRow = state.savedTracks.find(x => x && String(x.id) === rid) || null;
+      confirmed = !!trackEditVerifyPersistedReplace(expectedRow);
+    } else {
+      confirmed = !!(createdRow && trackVerifyPersistedSavedTrack(createdRow));
+    }
+  }
+  if (!confirmed){
     if (didReplace){
       const ix2 = state.savedTracks.findIndex(x => x && String(x.id) === rid);
       if (ix2 >= 0 && snapshotRow) state.savedTracks[ix2] = snapshotRow;
-    } else {
-      // Create-mode rollback: remove the freshly-pushed row.
-      state.savedTracks.pop();
+    } else if (snapshotTracks){
+      // Full-array restore (covers cap-50 prune of oldest track).
+      state.savedTracks = snapshotTracks;
+      try {
+        if (Array.isArray(prevSelectedIds)) state._savedTracksSelectedIds = prevSelectedIds.slice();
+      } catch(_){}
     }
-    try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
-    try { setBadge("error", t("track.persistQuotaExceeded") || "Persist failed"); } catch(_){}
+    let rawRestored = true;
+    try { rawRestored = trackBrushRestoreStorageRaw(prevRaw) !== false; } catch(_){ rawRestored = false; }
+    try {
+      setBadge("error", t(rawRestored ? "track.persistQuotaExceeded" : "track.editPersistFail") || "Persist failed");
+    } catch(_){}
+    try { if (didReplace) trackEditSessionSyncUi(); } catch(_){}
+    try { renderSavedTracksList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    // Draft / edit session intentionally left intact so retry remains possible.
     return false;
-  }
-  if (didReplace){
-    const expectedRow = state.savedTracks.find(x => x && String(x.id) === rid) || null;
-    const confirmed = trackEditVerifyPersistedReplace(expectedRow);
-    if (!confirmed){
-      const ix2 = state.savedTracks.findIndex(x => x && String(x.id) === rid);
-      if (ix2 >= 0 && snapshotRow) state.savedTracks[ix2] = snapshotRow;
-      try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
-      try { setBadge("error", t("track.editPersistFail") || ""); } catch(_){}
-      try { trackEditSessionSyncUi(); } catch(_){}
-      try { refreshTileMapForTrackUi(); } catch(_){}
-      return false;
-    }
   }
   state._trackEditSession = null;
   renderSavedTracksList();
