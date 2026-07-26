@@ -117,11 +117,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **WU-0011 / INFRA-GH-1A** di questa registrazione (verificare `git ls-remote` post-push); runtime monolite **invariato**. |
+| HEAD documentale (pre-autosync) | commit docs **INFRA-GH-1A Fase A PASS + QA CORS** di questa registrazione (verificare `git ls-remote` post-push); runtime monolite **invariato**. |
 | Runtime live / commit monolite | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — tip OUTDOOR-ROUTING-GH-B1b-FIX1 |
 | Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1b (+ FIX1)** — pick/marker/GPS (build 56) — **CLOSED / PASS end-to-end** |
-| WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A** — GraphHopper 11.0 PoC locale Ryzen — **READY / GO EXECUTION** — [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
-| Endpoint GraphHopper | **nessuno attivo** (né loopback PoC ancora eseguito, né VPS) |
+| WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A** — **FASE A PASS** (diagnostica + QA CORS); Import B **pending** — [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
+| Endpoint GraphHopper | PoC loopback `127.0.0.1:8989` **validato** (server attualmente **spento**); **nessun** endpoint VPS |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
 | Runtime Git / atteso VPS | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (deploy GIS-only Cursor SSH PASS) |
 | Blob monolite (git) | `15c57074cc3c1ea5e2b75d4c6b724b7eee5a41b2` |
@@ -130,7 +130,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | Display runtime | `B5.5Z · build 56` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
-| OUTDOOR-ROUTING-GH-B2 | **BLOCKED** — assenza endpoint GraphHopper reale; attesa PASS WU-0011 / INFRA-GH-1A |
+| OUTDOOR-ROUTING-GH-B2 | **BLOCKED** — Fase A PoC PASS; manca Import B / endpoint servito al monolite (VPS o decisione loopback) |
 | OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
 | MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
@@ -161,15 +161,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-**WU-0011 / INFRA-GH-1A** — esecuzione PoC GraphHopper 11.0 locale Ryzen (Nord-Ovest · elevation ON · loopback). Piano registrato; PoC **non** ancora eseguito. Dettaglio: [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
+**WU-0011 Continuazione** — taratura / Import B (solo con GO esplicito) **oppure** decisione endpoint per B2. Fase A **PASS** (report PoC + QA CORS). Dettaglio: [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
 
-**OUTDOOR-ROUTING-GH-B2** — calcolo percorso GraphHopper / endpoint (WU-0010 **OPEN / B1a+B1b CLOSED**) resta **BLOCKED** fino al PASS di INFRA-GH-1A (assenza endpoint reale). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. **MAJOR-3-b2** resta parcheggiato.
+**OUTDOOR-ROUTING-GH-B2** — resta **BLOCKED** (nessun endpoint VPS/servito al monolite). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. **MAJOR-3-b2** resta parcheggiato.
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A** (gateway HTTPS API mondiale, chiave server-side, destinazione PC/cellulari — **BACKLOG / NON APERTO**; non interrompe INFRA-GH-1A); apply MAJOR-3-b2 (finché non autorizzato); import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**); apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010).
 
-**Stop:** non implementare B2 monolite; non implementare gateway; non deploy GraphHopper su VPS in 1A; nessun MemoryMax ratificato. **INFRA-GH-1A resta il prossimo blocco operativo.**
+**Stop:** non Import B senza GO; non B2 monolite senza endpoint deciso; non gateway; non deploy GH su VPS senza INFRA-GH-1B; nessun MemoryMax ratificato.
 
 ---
 
