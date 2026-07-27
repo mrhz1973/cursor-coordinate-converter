@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B5.5Z</title>
+<title>GOI GIS Tool · B6.0B2</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -8886,6 +8886,40 @@ dialog.track-modal.app-modal{
 .tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
 .routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.routing-profile-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 0 2px;
+}
+.routing-profile-label{
+  font-size:.8rem;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.routing-profile-select{
+  flex:1;
+  min-width:170px;
+  max-width:240px;
+}
+.routing-profile-select select,
+#routingProfileSelect{
+  width:100%;
+}
+.routing-route-preview-overlay{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:5;
+}
+.routing-route-preview-line{
+  fill:none;
+  stroke:color-mix(in srgb, var(--accent, #7c3aed) 85%, #ffffff 15%);
+  stroke-width:3;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.routing-route-preview-line.is-dashed{
+  stroke-dasharray:6 6;
+}
 .routing-open-split{ display:inline-flex; align-items:stretch; }
 .routing-open-split #btnRoutingPlannerOpen{
   border-top-right-radius:0; border-bottom-right-radius:0;
@@ -12950,9 +12984,20 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <p id="routingPlannerPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="routingPlannerPanelBody">
     <div id="routingPlannerStatus" class="routing-panel-status hint" role="status" aria-live="polite"></div>
-    <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper — calcolo non ancora attivo</p>
+    <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
+    <div class="routing-profile-row">
+      <span class="routing-profile-label">Profilo</span>
+      <select id="routingProfileSelect" class="routing-profile-select" aria-label="GraphHopper profile">
+        <option value="hiking">hiking</option>
+        <option value="hiking_easy">hiking_easy</option>
+        <option value="mtb_touring">mtb_touring</option>
+        <option value="mtb_trail">mtb_trail</option>
+      </select>
+    </div>
     <div id="routingPointsList" class="routing-points-list" role="list"></div>
     <div class="routing-panel-actions">
+      <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
+              data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
     </div>
   </div>
@@ -12972,7 +13017,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B5.5Z</span>
+    <span id="appBuildFooter">B6.0B2</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13230,7 +13275,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B5.5Z</code>
+            <code id="appBuildAbout">B6.0B2</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15139,10 +15184,29 @@ const I18N = {
     "routing.minimumPoints":"Servono almeno partenza e destinazione.",
     "routing.orderChanged":"Ordine punti aggiornato.",
     "routing.routeNotAvailableYet":"Il calcolo del percorso non è ancora attivo.",
+    "routing.calculate":"Calcola percorso",
+    "routing.calculating":"Calcolo percorso…",
+    "routing.routeReady":"Percorso pronto",
+    "routing.distance":"Distanza",
+    "routing.duration":"Durata",
+    "routing.ascent":"Salita",
+    "routing.descent":"Discesa",
+    "routing.errorOffline":"Routing bloccato: modalità offline forzata.",
+    "routing.errorOpsec":"Routing bloccato: OPSEC strict attivo.",
+    "routing.errorInvalidPoints":"Punti non validi (servono almeno 2 coordinate).",
+    "routing.errorInvalidProfile":"Profilo GraphHopper non valido.",
+    "routing.errorTimeout":"Timeout durante il calcolo del percorso.",
+    "routing.errorNetwork":"Impossibile raggiungere GraphHopper.",
+    "routing.errorHttp":"Errore HTTP durante il calcolo del percorso.",
+    "routing.errorNoPath":"Nessun percorso disponibile per i punti selezionati.",
+    "routing.errorInvalidResponse":"Risposta del router non valida.",
+    "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
+    "routing.errorGeneric":"Errore durante la richiesta al router.",
+    "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
     "routing.dragHandle":"Trascina per riordinare",
     "routing.serviceMenu":"Scegli servizio di routing",
     "routing.serviceGraphHopper":"GraphHopper",
-    "routing.selectedService":"Servizio: GraphHopper — calcolo non ancora attivo",
+    "routing.selectedService":"Servizio: GraphHopper",
     "routing.startPlaceholder":"Nome partenza",
     "routing.viaPlaceholder":"Nome passaggio",
     "routing.endPlaceholder":"Nome destinazione",
@@ -17153,10 +17217,29 @@ const I18N = {
     "routing.minimumPoints":"At least start and destination are required.",
     "routing.orderChanged":"Point order updated.",
     "routing.routeNotAvailableYet":"Route calculation is not available yet.",
+    "routing.calculate":"Calculate route",
+    "routing.calculating":"Calculating route…",
+    "routing.routeReady":"Route ready",
+    "routing.distance":"Distance",
+    "routing.duration":"Duration",
+    "routing.ascent":"Ascent",
+    "routing.descent":"Descent",
+    "routing.errorOffline":"Routing blocked: forced offline mode.",
+    "routing.errorOpsec":"Routing blocked: OPSEC strict is active.",
+    "routing.errorInvalidPoints":"Invalid points (at least 2 coordinates required).",
+    "routing.errorInvalidProfile":"Invalid GraphHopper profile.",
+    "routing.errorTimeout":"Timeout while calculating the route.",
+    "routing.errorNetwork":"Unable to reach GraphHopper.",
+    "routing.errorHttp":"HTTP error while calculating the route.",
+    "routing.errorNoPath":"No route available for the selected points.",
+    "routing.errorInvalidResponse":"Invalid router response.",
+    "routing.errorCors":"CORS / network error while calculating the route.",
+    "routing.errorGeneric":"Router request failed.",
+    "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
     "routing.dragHandle":"Drag to reorder",
     "routing.serviceMenu":"Choose routing service",
     "routing.serviceGraphHopper":"GraphHopper",
-    "routing.selectedService":"Service: GraphHopper — route calculation not active yet",
+    "routing.selectedService":"Service: GraphHopper",
     "routing.startPlaceholder":"Start name",
     "routing.viaPlaceholder":"Via name",
     "routing.endPlaceholder":"Destination name",
@@ -19267,7 +19350,27 @@ const I18N = {
     "set.geo.dsCleared":"Jeu supprimé",
     "batch.th.loc":"Localité",
     "batch.locCol":"Ajouter la colonne Localité (géocodage inverse, 1 req/s)",
-    "batch.locTip":"Chaque ligne valide envoie une requête à Nominatim (~1/sec). Respecte la politique d'usage."
+    "batch.locTip":"Chaque ligne valide envoie une requête à Nominatim (~1/sec). Respecte la politique d'usage.",
+    "routing.selectedService":"Service : GraphHopper",
+    "routing.calculate":"Calculer l’itinéraire",
+    "routing.calculating":"Calcul de l’itinéraire…",
+    "routing.routeReady":"Itinéraire prêt",
+    "routing.distance":"Distance",
+    "routing.duration":"Durée",
+    "routing.ascent":"Dénivelé positif",
+    "routing.descent":"Dénivelé négatif",
+    "routing.errorOffline":"Itinéraire bloqué : mode hors ligne forcé.",
+    "routing.errorOpsec":"Itinéraire bloqué : OPSEC strict actif.",
+    "routing.errorInvalidPoints":"Points non valides (au moins 2 coordonnées requises).",
+    "routing.errorInvalidProfile":"Profil GraphHopper non valide.",
+    "routing.errorTimeout":"Délai dépassé pendant le calcul de l’itinéraire.",
+    "routing.errorNetwork":"Impossible de joindre GraphHopper.",
+    "routing.errorHttp":"Erreur HTTP pendant le calcul de l’itinéraire.",
+    "routing.errorNoPath":"Aucun itinéraire disponible pour les points sélectionnés.",
+    "routing.errorInvalidResponse":"Réponse du routeur invalide.",
+    "routing.errorCors":"Erreur CORS / réseau pendant le calcul de l’itinéraire.",
+    "routing.errorGeneric":"Échec de la requête du routeur.",
+    "tip.routingCalculate":"Calculer l’itinéraire avec GraphHopper (transitoire)."
   }
 };
 
@@ -20676,10 +20779,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B5.5Z";
+const APP_BUILD_ID = "B6.0B2";
 const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000-FIX2 — paginate point list + GIS import cap notice";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 59;
+const APP_BUILD_NUM = 60;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25026,7 +25129,7 @@ function computeQuickExportSegmentCrop(fullGrid, sc, sr, best, fullCrop){
   return { sx: cropX, sy: cropY, sw: cropRight - cropX, sh: cropBottom - cropY, finalW, finalH };
 }
 
-/** Segment plan for quick export: tile-aligned sub-grids, bbox crop on outer edges (B5.5Z-DELTA-A1). */
+/** Segment plan for quick export: tile-aligned sub-grids, bbox crop on outer edges (B6.0B2-DELTA-A1). */
 function computeQuickExportSegmentPlan(grid, bbox, zoom){
   if (!grid || !grid.cols || !grid.rows || !grid.tileCount || !bbox) return null;
   const cols = grid.cols;
@@ -25136,7 +25239,7 @@ function quickExportSegmentFilename(base, z, row, col, totalRows, totalCols){
   return exportPrefixedDownloadFilename(`${base}_z${z}_r${r}c${c}.jpg`);
 }
 
-/** Read-only snapshot of the visible map viewport for quick JPG export (B5.5Z). No state/DOM mutation, no fetch. */
+/** Read-only snapshot of the visible map viewport for quick JPG export (B6.0B2). No state/DOM mutation, no fetch. */
 function getQuickExportViewportSnapshot(){
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
@@ -25196,7 +25299,7 @@ function getQuickExportViewportSnapshot(){
   };
 }
 
-/** Pure helper: all integer zoom levels from currentZoom up to layer max (B5.5Z-DELTA-A1). */
+/** Pure helper: all integer zoom levels from currentZoom up to layer max (B6.0B2-DELTA-A1). */
 function computeQuickExportZoomLevelsAll(bbox, currentZoom, layer){
   const fail = (reason) => ({
     levels: [],
@@ -25238,7 +25341,7 @@ function computeQuickExportZoomLevelsAll(bbox, currentZoom, layer){
   };
 }
 
-/** Pure helper: exportable integer zoom levels from currentZoom up to layer/offline limits (B5.5Z). */
+/** Pure helper: exportable integer zoom levels from currentZoom up to layer/offline limits (B6.0B2). */
 function computeQuickExportZoomLevels(bbox, currentZoom, layer){
   const fail = (reason) => ({
     levels: [],
@@ -25294,7 +25397,7 @@ function computeQuickExportZoomLevels(bbox, currentZoom, layer){
   };
 }
 
-/** Shared OPSEC/proxy consent gate for offline + quick geographic JPG export (B5.5Z-3). */
+/** Shared OPSEC/proxy consent gate for offline + quick geographic JPG export (B6.0B2-3). */
 async function confirmOfflineJpgTileExportConsent(layerId){
   if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
     const ok = await showOpsecStrictConfirmDialog(
@@ -44909,6 +45012,7 @@ function renderTileMap(lat, lon, zoom){
       try { renderWorkbenchSelectionHighlight(tileMap, lat, lon, zoom); } catch(_){}
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof renderRoutingMarkers === "function") renderRoutingMarkers(tileMap, lat, lon, zoom); } catch(_){}
+      try { if (typeof renderRoutingRoutePreviewOverlay === "function") renderRoutingRoutePreviewOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
     }
   }
@@ -58106,6 +58210,15 @@ function workbenchIsPickModeActive(){
 
 /* ===== OUTDOOR-ROUTING-GH-B1b — map pick, markers, GPS (transient) ===== */
 const ROUTING_MAX_POINTS = 20;
+const ROUTING_GRAPHHOPPER_ENDPOINT = "http://100.114.7.53:8989";
+const ROUTING_GRAPHHOPPER_ROUTE_PATH = "/route";
+const ROUTING_GRAPHHOPPER_TIMEOUT_MS = 20000;
+const ROUTING_GRAPHHOPPER_PROFILES = Object.freeze([
+  "hiking",
+  "hiking_easy",
+  "mtb_touring",
+  "mtb_trail"
+]);
 function uidRouting(){
   return "rt" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
@@ -58121,6 +58234,13 @@ function routingEnsureState(){
     if (!("markerDrag" in r)) r.markerDrag = null;
     if (typeof r.gpsRequestGeneration !== "number") r.gpsRequestGeneration = 0;
     if (!("gpsBusyId" in r)) r.gpsBusyId = null;
+    if (!("requestController" in r)) r.requestController = null;
+    if (typeof r.requestSequence !== "number") r.requestSequence = 0;
+    if (typeof r.requestLoading !== "boolean") r.requestLoading = false;
+    if (typeof r.requestTimedOut !== "boolean") r.requestTimedOut = false;
+    if (!("previewCoordinates" in r)) r.previewCoordinates = null;
+    if (!("routeMetrics" in r)) r.routeMetrics = null;
+    if (typeof r.routeError !== "string") r.routeError = "";
     return r;
   }
   state._routing = {
@@ -58133,6 +58253,13 @@ function routingEnsureState(){
     pickMode: false,
     pickTargetId: null,
     markerDrag: null,
+    requestController: null,
+    requestSequence: 0,
+    requestLoading: false,
+    requestTimedOut: false,
+    previewCoordinates: null,
+    routeMetrics: null,
+    routeError: "",
     gpsRequestGeneration: 0,
     gpsBusyId: null
   };
@@ -58181,6 +58308,79 @@ function routingRemoveMarkersOverlay(){
     if (old) old.remove();
   } catch(_){}
 }
+function routingRemoveRoutePreviewOverlay(){
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (!tm) return;
+    const old = tm.querySelector(".routing-route-preview-overlay");
+    if (old) old.remove();
+  } catch(_){}
+}
+function routingGetSelectedGraphhopperProfile(){
+  const sel = document.getElementById("routingProfileSelect");
+  const v = sel && typeof sel.value === "string" ? sel.value : "hiking";
+  return String(v);
+}
+function routingGraphhopperProfileIsValid(profile){
+  return !!profile && ROUTING_GRAPHHOPPER_PROFILES.indexOf(profile) >= 0;
+}
+function routingExtractValidGraphhopperPoints(){
+  const r = state._routing;
+  if (!r) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+  const pts = r.points || [];
+  if (!Array.isArray(pts) || pts.length < 2) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+
+  const pointsLonLat = [];
+  const pointsLatLon = [];
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    if (!p) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+    const lat = Number(p.lat);
+    const lon = Number(p.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+    if (lat < -90 || lat > 90) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+    if (lon < -180 || lon > 180) return { ok: false, pointsLonLat: [], pointsLatLon: [] };
+    const nLon = normalizeLon(lon);
+    pointsLonLat.push([nLon, lat]);
+    pointsLatLon.push({ lat, lon: nLon });
+  }
+  return { ok: true, pointsLonLat, pointsLatLon };
+}
+function routingSyncCalculateBtnUi(){
+  const calcBtn = document.getElementById("routingCalculateBtn");
+  if (!calcBtn) return;
+  if (!state._routing){
+    calcBtn.disabled = true;
+    return;
+  }
+  if (state._routing.requestLoading){
+    calcBtn.disabled = true;
+    return;
+  }
+  const profile = routingGetSelectedGraphhopperProfile();
+  const profOk = routingGraphhopperProfileIsValid(profile);
+  const ptsRes = routingExtractValidGraphhopperPoints();
+  const ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
+  calcBtn.disabled = !ok;
+}
+function routingInvalidateRoutePreview(){
+  if (!state._routing) return;
+  try { if (state._routing.requestController) state._routing.requestController.abort(); } catch(_){}
+  state._routing.requestSequence = (state._routing.requestSequence || 0) + 1;
+  state._routing.requestLoading = false;
+  state._routing.requestTimedOut = false;
+  state._routing.requestController = null;
+
+  state._routing.previewCoordinates = null;
+  state._routing.routeMetrics = null;
+  state._routing.routeError = "";
+
+  try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+  routingSetStatus("", false);
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  routingSyncCalculateBtnUi();
+}
 function routingSyncPickModeUi(){
   const on = !!(state._routing && state._routing.pickMode);
   try {
@@ -58205,7 +58405,7 @@ function routingCancelMarkerDrag(opts){
       if (prevSrc != null) pt.source = prevSrc;
     }
     try { routingRenderList(); } catch(_){}
-    try { refreshTileMapForTrackUi(); } catch(_){}
+    try { routingInvalidateRoutePreview(); } catch(_){}
   } else {
     mapRoutingMarkerDocDragCleanup();
   }
@@ -58276,7 +58476,7 @@ function routingSetPointCoordinates(pointId, lat, lon, source){
   pt.source = (source === "gps") ? "gps" : "map";
   if (state._routing) state._routing.dirty = true;
   try { routingRenderList(); } catch(_){}
-  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { routingInvalidateRoutePreview(); } catch(_){}
   return true;
 }
 function routingApplyMapPick(lat, lon){
@@ -58450,6 +58650,14 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
 function routingFullCleanup(){
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
   if (state._routing){
+    try { if (state._routing.requestController) state._routing.requestController.abort(); } catch(_){}
+    state._routing.requestSequence = (state._routing.requestSequence || 0) + 1;
+    state._routing.requestLoading = false;
+    state._routing.requestTimedOut = false;
+    state._routing.requestController = null;
+    state._routing.previewCoordinates = null;
+    state._routing.routeMetrics = null;
+    state._routing.routeError = "";
     state._routing.gpsRequestGeneration = (state._routing.gpsRequestGeneration || 0) + 1;
     state._routing.gpsBusyId = null;
     state._routing.pickMode = false;
@@ -58460,6 +58668,7 @@ function routingFullCleanup(){
   }
   try { routingSyncPickModeUi(); } catch(_){}
   try { routingRemoveMarkersOverlay(); } catch(_){}
+  try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   state._routing = null;
   const list = document.getElementById("routingPointsList");
   if (list) list.innerHTML = "";
@@ -58579,6 +58788,11 @@ function routingRenderList(){
     if (n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
     else addBtn.removeAttribute("aria-disabled");
   }
+  const calcBtn = document.getElementById("routingCalculateBtn");
+  if (calcBtn){
+    if (typeof routingSyncCalculateBtnUi === "function") routingSyncCalculateBtnUi();
+    else calcBtn.disabled = true;
+  }
 }
 function routingMovePoint(id, delta){
   const r = routingEnsureState();
@@ -58591,9 +58805,9 @@ function routingMovePoint(id, delta){
   pts[ix] = pts[j];
   pts[j] = tmp;
   r.dirty = true;
+  try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus(routingT("routing.orderChanged", "Reordered"), false);
   routingRenderList();
-  try { refreshTileMapForTrackUi(); } catch(_){}
   const grip = document.querySelector('.routing-point-row[data-routing-id="' + routingEscapeAttr(id) + '"] .routing-pt-grip');
   try { if (grip) grip.focus(); } catch(_){}
 }
@@ -58611,9 +58825,9 @@ function routingRemovePoint(id){
   }
   r.points = r.points.filter(p => p && p.id !== id);
   r.dirty = true;
+  try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus("", false);
   routingRenderList();
-  try { refreshTileMapForTrackUi(); } catch(_){}
 }
 function routingAddVia(){
   const r = routingEnsureState();
@@ -58623,8 +58837,368 @@ function routingAddVia(){
   }
   r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "" });
   r.dirty = true;
+  try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus("", false);
   routingRenderList();
+}
+function routingNetworkGateGraphhopper(){
+  if (state.forceOffline) return { ok: false, errKey: "routing.errorOffline" };
+  if (state.opsecStrict) return { ok: false, errKey: "routing.errorOpsec" };
+  if (!isEffectivelyOnline()) return { ok: false, errKey: "routing.errorNetwork" };
+  return { ok: true };
+}
+function routingBuildGraphhopperRouteBody(profile, pointsLonLat){
+  return {
+    profile: profile,
+    points: pointsLonLat,
+    elevation: true,
+    points_encoded: false,
+    instructions: false
+  };
+}
+function routingFmtDurationMs(ms){
+  const v = Number(ms);
+  if (!Number.isFinite(v) || v < 0) return "—";
+  const totalMin = v / 60000;
+  if (totalMin < 60){
+    const m = Math.round(totalMin * 10) / 10;
+    const show = (m < 10 && Math.abs(m - Math.round(m)) > 1e-9) ? m.toFixed(1) : String(Math.round(m));
+    return show + " min";
+  }
+  const h = Math.floor(totalMin / 60);
+  const m = Math.round(totalMin - h * 60);
+  return h + "h " + m + "m";
+}
+function routingFmtMetricValueMeters(m){
+  const v = Number(m);
+  if (!Number.isFinite(v) || v < 0) return "—";
+  return String(Math.round(v)) + " m";
+}
+function routingFmtRouteStatusMessage(metrics){
+  const distLabel = routingT("routing.distance", "Distance");
+  const durLabel = routingT("routing.duration", "Duration");
+  const ascLabel = routingT("routing.ascent", "Ascent");
+  const desLabel = routingT("routing.descent", "Descent");
+  const ready = routingT("routing.routeReady", "Route ready");
+
+  const distStr = metrics && metrics.distanceM != null ? fmtDistMetric(metrics.distanceM) : "—";
+  const durStr = metrics && metrics.durationMs != null ? routingFmtDurationMs(metrics.durationMs) : "—";
+  const ascStr = metrics && metrics.ascentM != null ? routingFmtMetricValueMeters(metrics.ascentM) : "—";
+  const desStr = metrics && metrics.descentM != null ? routingFmtMetricValueMeters(metrics.descentM) : "—";
+
+  return ready + " · " + distLabel + ": " + distStr + " · " + durLabel + ": " + durStr
+    + " · " + ascLabel + ": " + ascStr + " · " + desLabel + ": " + desStr;
+}
+function routingValidateGraphhopperResponse(data){
+  if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
+  const paths = Array.isArray(data.paths) ? data.paths : null;
+  if (!paths || paths.length < 1) return { ok: false, errKey: "routing.errorNoPath" };
+  const p0 = paths[0];
+  if (!p0 || typeof p0 !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
+  const points = p0.points;
+  if (!points || typeof points !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
+  if (points.type !== "LineString") return { ok: false, errKey: "routing.errorInvalidResponse" };
+  const coords = Array.isArray(points.coordinates) ? points.coordinates : null;
+  if (!coords || coords.length < 2) return { ok: false, errKey: "routing.errorNoPath" };
+
+  const previewCoordinates = [];
+  for (let i = 0; i < coords.length; i++){
+    const c = coords[i];
+    if (!Array.isArray(c) || c.length < 2) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    const lon = Number(c[0]);
+    const lat = Number(c[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (lon < -180 || lon > 180) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (lat < -90 || lat > 90) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    // elevation is optional; validate if present
+    if (c.length >= 3){
+      const e = Number(c[2]);
+      if (!Number.isFinite(e)) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    }
+    previewCoordinates.push({ lat, lon: normalizeLon(lon) });
+  }
+
+  const metrics = {};
+  const maybeNum = (v) => (v == null ? null : Number(v));
+  const distanceM = maybeNum(p0.distance);
+  if (distanceM != null){
+    if (!Number.isFinite(distanceM) || distanceM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    metrics.distanceM = distanceM;
+  }
+  const timeV = maybeNum(p0.time);
+  if (timeV != null){
+    if (!Number.isFinite(timeV) || timeV < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    // GraphHopper `time` is usually milliseconds; if it's "small", treat it as seconds.
+    metrics.durationMs = (timeV < 1000) ? (timeV * 1000) : timeV;
+  }
+  const ascendM = maybeNum(p0.ascend);
+  if (ascendM != null){
+    if (!Number.isFinite(ascendM) || ascendM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    metrics.ascentM = ascendM;
+  }
+  const descendM = maybeNum(p0.descend);
+  if (descendM != null){
+    if (!Number.isFinite(descendM) || descendM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    metrics.descentM = descendM;
+  }
+
+  return { ok: true, previewCoordinates, metrics };
+}
+function routingFitMapToRoutePreview(previewCoordinates){
+  if (!Array.isArray(previewCoordinates) || previewCoordinates.length < 2) return false;
+
+  let minLat = 90, maxLat = -90;
+  const lons = [];
+  for (let i = 0; i < previewCoordinates.length; i++){
+    const p = previewCoordinates[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
+    minLat = Math.min(minLat, p.lat);
+    maxLat = Math.max(maxLat, p.lat);
+    lons.push(p.lon);
+  }
+  if (minLat > maxLat || !lons.length) return false;
+
+  const unwrapped = trackLonsUnwrapTransient(lons);
+  let minU = Infinity, maxU = -Infinity;
+  for (let i = 0; i < unwrapped.length; i++){
+    const u = unwrapped[i];
+    if (!Number.isFinite(u)) continue;
+    minU = Math.min(minU, u);
+    maxU = Math.max(maxU, u);
+  }
+  if (!(minU <= maxU) || !Number.isFinite(minU) || !Number.isFinite(maxU)) return false;
+
+  const lonSpan = Math.abs(maxU - minU) || 1e-6;
+  const centerUnwrapped = (minU + maxU) / 2;
+  const clon = normalizeLon(centerUnwrapped);
+  const clat = (minLat + maxLat) / 2;
+
+  const latSpan = Math.abs(maxLat - minLat);
+  const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
+
+  let z = 16;
+  if (span > 2) z = 8;
+  else if (span > 0.8) z = 9;
+  else if (span > 0.35) z = 10;
+  else if (span > 0.15) z = 11;
+  else if (span > 0.06) z = 12;
+  else if (span > 0.025) z = 13;
+  else if (span > 0.012) z = 14;
+  else if (span > 0.006) z = 15;
+
+  z = clampBasemapFitZoom(z);
+  state.viewCenter = { lat: clat, lon: clon };
+  state.mapZoom = z;
+  renderTileMap(clat, clon, z);
+  return true;
+}
+async function routingCalculateRouteGraphhopper(){
+  const r = state._routing;
+  if (!r || r.requestLoading) return;
+
+  const profile = routingGetSelectedGraphhopperProfile();
+  if (!routingGraphhopperProfileIsValid(profile)){
+    routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  const ptsRes = routingExtractValidGraphhopperPoints();
+  if (!ptsRes.ok){
+    routingSetStatus(routingT("routing.errorInvalidPoints", "Invalid points."), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  const gate = routingNetworkGateGraphhopper();
+  if (!gate.ok){
+    routingSetStatus(routingT(gate.errKey, gate.errKey), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  // Start request: abort previous one and clear the old preview.
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const reqSeq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.requestLoading = true;
+  r.requestTimedOut = false;
+  r.previewCoordinates = null;
+  r.routeMetrics = null;
+  r.routeError = "";
+
+  try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+  routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
+  routingSyncCalculateBtnUi();
+
+  const url = ROUTING_GRAPHHOPPER_ENDPOINT + ROUTING_GRAPHHOPPER_ROUTE_PATH;
+  const bodyObj = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat);
+  const body = JSON.stringify(bodyObj);
+
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    timeoutId = setTimeout(() => {
+      timedOut = true;
+      try { controller.abort(); } catch(_){}
+    }, ROUTING_GRAPHHOPPER_TIMEOUT_MS);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      signal: controller.signal
+    });
+
+    if (!res || !res.ok){
+      const status = res && typeof res.status === "number" ? res.status : 0;
+      throw { kind: "http", status: status };
+    }
+
+    let data;
+    try { data = await res.json(); } catch(_){ throw { kind: "json" }; }
+
+    const validated = routingValidateGraphhopperResponse(data);
+    if (!validated.ok){
+      let ghMsg = "";
+      try {
+        if (data && typeof data.message === "string") ghMsg = data.message;
+        if (!ghMsg && Array.isArray(data && data.hints)) ghMsg = String(data.hints[0] || "");
+      } catch(_){}
+      throw { kind: "gh", errKey: validated.errKey, ghMsg: ghMsg };
+    }
+
+    // Anti-race: only update if this is still the active request.
+    if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+
+    r.previewCoordinates = validated.previewCoordinates;
+    r.routeMetrics = validated.metrics || null;
+    r.routeError = "";
+    routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
+
+    // Fit once after success; if it fails, just refresh overlays.
+    try {
+      const ok = routingFitMapToRoutePreview(r.previewCoordinates);
+      if (!ok) refreshTileMapForTrackUi();
+    } catch(_){
+      try { refreshTileMapForTrackUi(); } catch(_){}
+    }
+  } catch(e){
+    const isAbort = e && e.name === "AbortError";
+    if (isAbort && !timedOut) return; // voluntary cancel (new request / reset / close)
+    if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+
+    if (timedOut){
+      routingSetStatus(routingT("routing.errorTimeout", "Request timed out."), true);
+      routingSyncCalculateBtnUi();
+      return;
+    }
+
+    if (e && e.kind === "http"){
+      routingSetStatus(routingT("routing.errorHttp", "HTTP error.") + " (" + String(e.status) + ")", true);
+      return;
+    }
+
+    if (e && e.kind === "json"){
+      routingSetStatus(routingT("routing.errorInvalidResponse", "Invalid response."), true);
+      return;
+    }
+
+    if (e && e.kind === "gh"){
+      let base = routingT(e.errKey || "routing.errorNoPath", "No route available");
+      if (e.ghMsg){
+        base = base + ": " + String(e.ghMsg).slice(0, 220);
+      }
+      routingSetStatus(base, true);
+      return;
+    }
+
+    const msg = String(e && e.message ? e.message : e || "");
+    const lower = msg.toLowerCase();
+    if (lower.indexOf("cors") >= 0){
+      routingSetStatus(routingT("routing.errorCors", "CORS error."), true);
+    } else {
+      routingSetStatus(routingT("routing.errorNetwork", "Network error."), true);
+    }
+  } finally {
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){ } }
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    if (state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.requestTimedOut = !!timedOut;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+  }
+}
+
+function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  const old = tileMap.querySelector(".routing-route-preview-overlay");
+  if (old) old.remove();
+
+  const r = state._routing;
+  if (!r || !Array.isArray(r.previewCoordinates) || r.previewCoordinates.length < 2) return;
+
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+
+  const style = tileLayer.style.transform || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+
+  const pts = r.previewCoordinates.filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
+  if (pts.length < 2) return;
+
+  const lons = pts.map(p => (Number.isFinite(p.lon) ? p.lon : NaN));
+  const aligned = trackLonsAlignToView(trackLonsUnwrapTransient(lons), (state.viewCenter && state.viewCenter.lon) || 0);
+
+  const mapPts = [];
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    const al = aligned[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(al)){
+      mapPts.push({ x: NaN, y: NaN });
+      continue;
+    }
+    mapPts.push(tileMapLatLonToPxUnwrapped(root, p.lat, al));
+  }
+
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || ((state.mapSize === "small") ? W : (root.clientHeight || W));
+  const ns = "http://www.w3.org/2000/svg";
+
+  const wrap = document.createElement("div");
+  wrap.className = "routing-route-preview-overlay";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;display:block;z-index:1";
+
+  const ptStr = mapPts
+    .filter(p => p && Number.isFinite(p.x) && Number.isFinite(p.y))
+    .map(c => (c.x - tx).toFixed(1) + "," + (c.y - ty).toFixed(1))
+    .join(" ");
+
+  if (ptStr && ptStr.split(" ").length >= 2){
+    const line = document.createElementNS(ns, "polyline");
+    line.setAttribute("points", ptStr);
+    line.setAttribute("class", "routing-route-preview-line");
+    line.style.pointerEvents = "none";
+    svg.appendChild(line);
+  }
+
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
 }
 function routingHandleListAction(ev){
   const btn = ev.target && ev.target.closest && ev.target.closest("[data-routing-act]");
@@ -58867,6 +59441,18 @@ function wireRoutingPlannerOnce(){
   if (addBtn) addBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
     routingAddVia();
+  });
+  const profSel = document.getElementById("routingProfileSelect");
+  if (profSel) profSel.addEventListener("change", () => {
+    // Profile selection affects the route; invalidate the preview.
+    try { routingSetStatus("", false); } catch(_){}
+    try { routingInvalidateRoutePreview(); } catch(_){}
+  });
+  const calcBtn = document.getElementById("routingCalculateBtn");
+  if (calcBtn) calcBtn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    if (calcBtn.disabled) return;
+    routingCalculateRouteGraphhopper();
   });
   const list = document.getElementById("routingPointsList");
   if (list){
