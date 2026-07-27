@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0B2-FIX1</title>
+<title>GOI GIS Tool · B6.0B2-FIX2</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -8886,6 +8886,20 @@ dialog.track-modal.app-modal{
 .tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
 .routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.routing-endpoint-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:6px 8px;
+  margin:2px 0 4px;
+}
+.routing-endpoint-label{ color:var(--muted); }
+.routing-endpoint-value{
+  font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size:.78rem;
+  user-select:text;
+  word-break:break-all;
+}
 .routing-profile-row{
   display:flex;
   align-items:center;
@@ -12985,6 +12999,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-modal-body" id="routingPlannerPanelBody">
     <div id="routingPlannerStatus" class="routing-panel-status hint" role="status" aria-live="polite"></div>
     <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
+    <p class="routing-panel-note hint routing-endpoint-row" id="routingEndpointRow">
+      <span class="routing-endpoint-label" data-i18n="routing.endpointLabel">Endpoint</span>
+      <code id="routingEndpointValue" class="routing-endpoint-value"></code>
+    </p>
     <div class="routing-profile-row">
       <label class="routing-profile-label" for="routingProfileSelect" data-i18n="routing.profile">Profilo</label>
       <select id="routingProfileSelect" class="routing-profile-select"
@@ -13019,7 +13037,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0B2-FIX1</span>
+    <span id="appBuildFooter">B6.0B2-FIX2</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13277,7 +13295,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0B2-FIX1</code>
+            <code id="appBuildAbout">B6.0B2-FIX2</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15211,6 +15229,7 @@ const I18N = {
     "routing.serviceMenu":"Scegli servizio di routing",
     "routing.serviceGraphHopper":"GraphHopper",
     "routing.selectedService":"Servizio: GraphHopper",
+    "routing.endpointLabel":"Endpoint",
     "routing.startPlaceholder":"Nome partenza",
     "routing.viaPlaceholder":"Nome passaggio",
     "routing.endPlaceholder":"Nome destinazione",
@@ -17246,6 +17265,7 @@ const I18N = {
     "routing.serviceMenu":"Choose routing service",
     "routing.serviceGraphHopper":"GraphHopper",
     "routing.selectedService":"Service: GraphHopper",
+    "routing.endpointLabel":"Endpoint",
     "routing.startPlaceholder":"Start name",
     "routing.viaPlaceholder":"Via name",
     "routing.endPlaceholder":"Destination name",
@@ -19358,6 +19378,7 @@ const I18N = {
     "batch.locCol":"Ajouter la colonne Localité (géocodage inverse, 1 req/s)",
     "batch.locTip":"Chaque ligne valide envoie une requête à Nominatim (~1/sec). Respecte la politique d'usage.",
     "routing.selectedService":"Service : GraphHopper",
+    "routing.endpointLabel":"Endpoint",
     "routing.calculate":"Calculer l’itinéraire",
     "routing.calculating":"Calcul de l’itinéraire…",
     "routing.routeReady":"Itinéraire prêt",
@@ -20787,10 +20808,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0B2-FIX1";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-B2-FIX1 — GraphHopper route preview with transient lifecycle";
+const APP_BUILD_ID = "B6.0B2-FIX2";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-B2-FIX2 — close downstream review findings";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 61;
+const APP_BUILD_NUM = 62;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51376,6 +51397,7 @@ function updateNetStatus(){
     renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
   }
   try { syncForceOfflineCheckbox(); } catch(_){}
+  try { if (typeof routingOnNetworkPolicyChange === "function") routingOnNetworkPolicyChange(); } catch(_){}
 }
 
 function bindUI(){
@@ -58249,6 +58271,8 @@ function routingEnsureState(){
     if (!("previewCoordinates" in r)) r.previewCoordinates = null;
     if (!("routeMetrics" in r)) r.routeMetrics = null;
     if (typeof r.routeError !== "string") r.routeError = "";
+    if (typeof r.resolvedEndpoint !== "string" || !r.resolvedEndpoint)
+      r.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
     return r;
   }
   state._routing = {
@@ -58268,6 +58292,7 @@ function routingEnsureState(){
     previewCoordinates: null,
     routeMetrics: null,
     routeError: "",
+    resolvedEndpoint: ROUTING_GRAPHHOPPER_ENDPOINT,
     gpsRequestGeneration: 0,
     gpsBusyId: null
   };
@@ -58388,6 +58413,45 @@ function routingInvalidateRoutePreview(){
   routingSetStatus("", false);
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
+}
+function routingResolvedEndpoint(){
+  const r = state._routing;
+  if (r && typeof r.resolvedEndpoint === "string" && r.resolvedEndpoint)
+    return r.resolvedEndpoint;
+  return ROUTING_GRAPHHOPPER_ENDPOINT;
+}
+function routingSyncEndpointUi(){
+  const el = document.getElementById("routingEndpointValue");
+  if (!el) return;
+  el.textContent = routingResolvedEndpoint();
+}
+function routingAbortActiveRequestForPolicy(errKey){
+  if (!state._routing) return false;
+  const r = state._routing;
+  const hadActive = !!(r.requestLoading || r.requestController);
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  r.requestLoading = false;
+  r.requestTimedOut = false;
+  r.requestController = null;
+  r.previewCoordinates = null;
+  r.routeMetrics = null;
+  r.routeError = errKey || "";
+  try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+  if (r.panelOpen){
+    routingSetStatus(routingT(errKey || "routing.errorGeneric", errKey || "Blocked"), true);
+  }
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  routingSyncCalculateBtnUi();
+  return hadActive;
+}
+function routingOnNetworkPolicyChange(){
+  const gate = routingNetworkGateGraphhopper();
+  if (gate.ok) return;
+  if (!state._routing) return;
+  const r = state._routing;
+  if (r.requestLoading || r.requestController)
+    routingAbortActiveRequestForPolicy(gate.errKey);
 }
 function routingSyncPickModeUi(){
   const on = !!(state._routing && state._routing.pickMode);
@@ -58852,6 +58916,8 @@ function routingAddVia(){
 function routingNetworkGateGraphhopper(){
   if (state.forceOffline) return { ok: false, errKey: "routing.errorOffline" };
   if (state.opsecStrict) return { ok: false, errKey: "routing.errorOpsec" };
+  if (typeof navigator !== "undefined" && navigator.onLine === false)
+    return { ok: false, errKey: "routing.errorOffline" };
   if (!isEffectivelyOnline()) return { ok: false, errKey: "routing.errorNetwork" };
   return { ok: true };
 }
@@ -58981,18 +59047,28 @@ function routingFitMapToRoutePreview(previewCoordinates){
   const clon = normalizeLon(centerUnwrapped);
   const clat = (minLat + maxLat) / 2;
 
-  const latSpan = Math.abs(maxLat - minLat);
-  const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
+  // Web Mercator fit: horizontal span is lon-based (no cos(lat) shrink);
+  // vertical span uses mercator Y. Prefer viewport-aware zoom selection.
+  const mercXSpan = lonSpan / 360;
+  const yNorth = latToTileY(Math.max(-85.05, Math.min(85.05, maxLat)), 0);
+  const ySouth = latToTileY(Math.max(-85.05, Math.min(85.05, minLat)), 0);
+  const mercYSpan = Math.abs(ySouth - yNorth) || 1e-12;
+
+  const root = document.getElementById("miniMap");
+  const vp = (typeof gisMapTileMathViewport === "function")
+    ? gisMapTileMathViewport(root)
+    : { W: 400, H: 400 };
+  const padFrac = 0.12;
+  const availW = Math.max(64, (vp.W || 400) * (1 - 2 * padFrac));
+  const availH = Math.max(64, (vp.H || 400) * (1 - 2 * padFrac));
 
   let z = 16;
-  if (span > 2) z = 8;
-  else if (span > 0.8) z = 9;
-  else if (span > 0.35) z = 10;
-  else if (span > 0.15) z = 11;
-  else if (span > 0.06) z = 12;
-  else if (span > 0.025) z = 13;
-  else if (span > 0.012) z = 14;
-  else if (span > 0.006) z = 15;
+  for (; z >= 2; z--){
+    const scale = Math.pow(2, z) * 256;
+    const pxW = mercXSpan * scale;
+    const pxH = mercYSpan * scale;
+    if (pxW <= availW && pxH <= availH) break;
+  }
 
   z = clampBasemapFitZoom(z);
   state.viewCenter = { lat: clat, lon: clon };
@@ -59006,6 +59082,7 @@ async function routingCalculateRouteGraphhopper(){
 
   const profile = routingGetSelectedGraphhopperProfile();
   if (!routingGraphhopperProfileIsValid(profile)){
+    r.routeError = "routing.errorInvalidProfile";
     routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
     routingSyncCalculateBtnUi();
     return;
@@ -59013,6 +59090,7 @@ async function routingCalculateRouteGraphhopper(){
 
   const ptsRes = routingExtractValidGraphhopperPoints();
   if (!ptsRes.ok){
+    r.routeError = "routing.errorInvalidPoints";
     routingSetStatus(routingT("routing.errorInvalidPoints", "Invalid points."), true);
     routingSyncCalculateBtnUi();
     return;
@@ -59020,6 +59098,7 @@ async function routingCalculateRouteGraphhopper(){
 
   const gate = routingNetworkGateGraphhopper();
   if (!gate.ok){
+    r.routeError = gate.errKey;
     routingSetStatus(routingT(gate.errKey, gate.errKey), true);
     routingSyncCalculateBtnUi();
     return;
@@ -59036,12 +59115,14 @@ async function routingCalculateRouteGraphhopper(){
   r.previewCoordinates = null;
   r.routeMetrics = null;
   r.routeError = "";
+  r.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
 
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
   routingSyncCalculateBtnUi();
+  try { routingSyncEndpointUi(); } catch(_){}
 
-  const url = ROUTING_GRAPHHOPPER_ENDPOINT + ROUTING_GRAPHHOPPER_ROUTE_PATH;
+  const url = routingResolvedEndpoint() + ROUTING_GRAPHHOPPER_ROUTE_PATH;
   const bodyObj = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat);
   const body = JSON.stringify(bodyObj);
 
@@ -59081,6 +59162,18 @@ async function routingCalculateRouteGraphhopper(){
     // Anti-race: only update if this is still the active request.
     if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
 
+    // Re-gate before applying preview/metrics (policy may have changed mid-fetch).
+    const reGate = routingNetworkGateGraphhopper();
+    if (!reGate.ok){
+      r.previewCoordinates = null;
+      r.routeMetrics = null;
+      r.routeError = reGate.errKey;
+      try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+      if (r.panelOpen)
+        routingSetStatus(routingT(reGate.errKey, reGate.errKey), true);
+      return;
+    }
+
     r.previewCoordinates = validated.previewCoordinates;
     r.routeMetrics = validated.metrics || null;
     r.routeError = "";
@@ -59099,22 +59192,26 @@ async function routingCalculateRouteGraphhopper(){
     if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
 
     if (timedOut){
+      r.routeError = "routing.errorTimeout";
       routingSetStatus(routingT("routing.errorTimeout", "Request timed out."), true);
       routingSyncCalculateBtnUi();
       return;
     }
 
     if (e && e.kind === "http"){
+      r.routeError = "routing.errorHttp";
       routingSetStatus(routingT("routing.errorHttp", "HTTP error.") + " (" + String(e.status) + ")", true);
       return;
     }
 
     if (e && e.kind === "json"){
+      r.routeError = "routing.errorInvalidResponse";
       routingSetStatus(routingT("routing.errorInvalidResponse", "Invalid response."), true);
       return;
     }
 
     if (e && e.kind === "gh"){
+      r.routeError = e.errKey || "routing.errorNoPath";
       let base = routingT(e.errKey || "routing.errorNoPath", "No route available");
       if (e.ghMsg){
         base = base + ": " + String(e.ghMsg).slice(0, 220);
@@ -59126,8 +59223,10 @@ async function routingCalculateRouteGraphhopper(){
     const msg = String(e && e.message ? e.message : e || "");
     const lower = msg.toLowerCase();
     if (lower.indexOf("cors") >= 0){
+      r.routeError = "routing.errorCors";
       routingSetStatus(routingT("routing.errorCors", "CORS error."), true);
     } else {
+      r.routeError = "routing.errorNetwork";
       routingSetStatus(routingT("routing.errorNetwork", "Network error."), true);
     }
   } finally {
@@ -59253,9 +59352,9 @@ function routingAttachListDnd(list){
     const item = pts.splice(from, 1)[0];
     pts.splice(to, 0, item);
     r.dirty = true;
+    try { routingInvalidateRoutePreview(); } catch(_){}
     routingSetStatus(routingT("routing.orderChanged", "Reordered"), false);
     routingRenderList();
-    try { refreshTileMapForTrackUi(); } catch(_){}
   });
   list.addEventListener("dragend", () => {
     dragId = null;
@@ -59338,16 +59437,19 @@ function openRoutingPlannerPanel(service){
   const svc = service || "graphhopper";
   if (state._routing && state._routing.panelOpen && dlg.open){
     state._routing.service = svc;
+    state._routing.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
     if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")){
       try { gisRestoreMinimizedPanel("routingPlannerPanel"); } catch(_){}
     }
     try { gisPanelBringToFront(dlg, _routingPanelLayoutOpts()); } catch(_){}
+    try { routingSyncEndpointUi(); } catch(_){}
     try { routingRenderList(); } catch(_){}
     try { refreshTileMapForTrackUi(); } catch(_){}
     return true;
   }
   routingEnsureState();
   state._routing.service = svc;
+  state._routing.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
   if (!(state._routing.points && state._routing.points.length)) routingInitDefaultPoints();
   state._routing.panelOpen = true;
   try {
@@ -59356,9 +59458,11 @@ function openRoutingPlannerPanel(service){
   } catch(_){ dlg.setAttribute("open", ""); }
   try { wireRoutingPanelFloating(dlg); } catch(_){}
   routingSetStatus("", false);
+  try { routingSyncEndpointUi(); } catch(_){}
   routingRenderList();
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
+  try { routingSyncEndpointUi(); } catch(_){}
   return true;
 }
 function routingServiceMenuIsOpen(){
@@ -59483,9 +59587,23 @@ function wireRoutingPlannerOnce(){
       setTimeout(() => {
         const dlg = document.getElementById("routingPlannerPanel");
         if (!state._routing || !state._routing.panelOpen || !dlg || !dlg.open) return;
-        routingSetStatus("", false);
+        try { routingSyncEndpointUi(); } catch(_){}
         routingRenderList();
+        const r = state._routing;
+        if (r.routeMetrics && Array.isArray(r.previewCoordinates) && r.previewCoordinates.length >= 2){
+          routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
+        } else if (r.routeError){
+          const ek = String(r.routeError);
+          routingSetStatus(routingT(ek, ek), true);
+        }
       }, 0);
+    });
+  }
+  if (!wireRoutingPlannerOnce._opsecHooked){
+    wireRoutingPlannerOnce._opsecHooked = true;
+    state._onOpsecChange = state._onOpsecChange || [];
+    state._onOpsecChange.push(function routingOpsecPolicyHook(){
+      try { routingOnNetworkPolicyChange(); } catch(_){}
     });
   }
 }
