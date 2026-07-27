@@ -1,14 +1,15 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / PASS end-to-end**
+**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / C (+ FIX1) CLOSED / PASS end-to-end**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `89bbf285cd8f27fd0e2f30f4c1f9de550451c85b` (`89bbf28`) — display **`B6.0B2-FIX2 · build 62`**
+**Runtime autorevole attuale:** `dd9ad2f07a3efde9ed54384874a328d75bbfae23` (`dd9ad2f`) — display **`B6.0C-FIX1 · build 64`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**B2 operativo (autorità viva):** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
+**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C**.
+**C (+ FIX1) (autorità viva):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS end-to-end** (2026-07-27).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
@@ -259,24 +260,26 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Questioni aperte prima di qualsiasi apertura:** provider; quota/costi; licenza/ToS; profili hiking/MTB; elevation/alternative; formato API; hosting; stack già sul VPS; auth/token app; rate-limit; anti-abuso; logging senza dati sensibili inutili; cache consentita; mobile; offline/fallback; dominio+certificato HTTPS.
 
-### BUNDLE C — GraphHopper provider preview
+### BUNDLE C — GraphHopper provider Local/VPS/Auto — **CLOSED / PASS end-to-end**
 
-**Scope futuro:**
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-27). Tip runtime **`dd9ad2f`** build **64** / `B6.0C-FIX1` (base C `61b5b34` build 63 + FIX1 init A/B).
 
-- Endpoint Locale / VPS / Online (Online = via **OUTDOOR-ROUTING-API-GATEWAY-A**, non ancora aperto)
-- Modalità Auto (ordine Locale → VPS → Online → errore controllato)
-- `/info` (verifica provider)
-- POST `/route`
-- `AbortController` + generation token
-- Timeout e fallback
-- Normalizzazione risposta
-- Preview percorso (geometria read-only, no salvataggio)
-- Endpoint effettivamente usato mostrato all'operatore
-- **Nessuna API key nel monolite**
+**Landed:**
 
-**Classificazione:** **DELICATO** per rete, proxy e OPSEC.
+- Endpoint Locale `http://127.0.0.1:8989` / VPS `http://100.114.7.53:8989` (Online **non** in C — resta **OUTDOOR-ROUTING-API-GATEWAY-A**)
+- Modalità Auto (ordine Locale → VPS → errore controllato; nessun Online)
+- `/info` (Verifica provider + resolve Auto)
+- POST `/route` (una sola dopo resolve; payload B2 invariato)
+- `AbortController` + sequence anti-stale
+- Timeout `/info` ~3s / `/route` 20s
+- Consenso loopback session-only; OPSEC fail-closed; forced-offline scoped
+- Endpoint effettivo mostrato read-only
+- FIX1: init planner soli A/B (nessun via automatico)
+- **Nessuna API key nel monolite**; nessuna persistenza route
 
-**Review downstream estesa obbligatoria** (checklist QA-CHECKLIST estesa, non minima narrativa).
+**Classificazione:** **DELICATO** (rete/OPSEC). Review GLM PASS; QA estesa PASS.
+
+**Backlog UX (non implementato in C):** ROUTING-POINT-ACTIVE-BADGE-A; ROUTING-INCOMPLETE-POINT-FEEDBACK-A; ROUTING-GRADE-METRICS-A; ROUTING-RESULT-FOCUS-A; ROUTING-BLOCKED-ACTION-FEEDBACK-A.
 
 ### BUNDLE D — Salva come traccia
 
@@ -562,6 +565,6 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 - **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
 - **MAJOR-4 import/restore** resta backlog basso.
-- Runtime autorevole: **`ff43878` build 59** (B1b CLOSED); **B2 operativo READY** — endpoint VPS `http://100.114.7.53:8989`; prerequisito [`WU-0011 / INFRA-GH-1A+1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) **CLOSED / PASS**.
-- Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC).
+- Runtime autorevole: **`dd9ad2f` build 64** / `B6.0C-FIX1` (**C + FIX1 CLOSED**); endpoint VPS `http://100.114.7.53:8989` + Local `http://127.0.0.1:8989`; prerequisito [`WU-0011 / INFRA-GH-1A+1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) **CLOSED / PASS**.
+- Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC — **chiuso**).
 - Questo documento è **piano**, non stato corrente. Stato vivo: `docs/OPERATING_MEMORY.md` §7.
