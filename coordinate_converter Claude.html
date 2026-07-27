@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0B2-FIX2</title>
+<title>GOI GIS Tool · B6.0C</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -8920,6 +8920,49 @@ dialog.track-modal.app-modal{
 #routingProfileSelect{
   width:100%;
 }
+.routing-provider-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px 10px;
+  padding:4px 0 2px;
+}
+.routing-provider-label{
+  font-size:.8rem;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.routing-provider-select{
+  flex:1;
+  min-width:120px;
+  max-width:180px;
+}
+.routing-provider-status{
+  margin:0;
+  font-size:.78rem;
+  color:var(--muted);
+  flex:1 1 100%;
+}
+.routing-provider-status.is-err{ color:var(--danger, #b91c1c); font-weight:600; }
+.routing-loopback-opt{
+  margin-top:10px;
+  padding-top:8px;
+  border-top:1px solid color-mix(in srgb, var(--border, #ccc) 70%, transparent);
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.routing-loopback-opt label{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  font-size:.82rem;
+  cursor:pointer;
+}
+.routing-loopback-opt .hint{
+  margin:0 0 0 22px;
+  font-size:.75rem;
+}
 .routing-route-preview-overlay{
   position:absolute;inset:0;width:100%;height:100%;
   pointer-events:none;z-index:5;
@@ -12999,6 +13042,19 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-modal-body" id="routingPlannerPanelBody">
     <div id="routingPlannerStatus" class="routing-panel-status hint" role="status" aria-live="polite"></div>
     <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
+    <div class="routing-provider-row">
+      <label class="routing-provider-label" for="routingProviderSelect" data-i18n="routing.providerLabel">Provider</label>
+      <select id="routingProviderSelect" class="routing-provider-select"
+              data-i18n-aria="tip.routingProvider" data-i18n-tip="tip.routingProvider"
+              aria-label="Provider GraphHopper">
+        <option value="vps" data-i18n="routing.providerVps">VPS</option>
+        <option value="local" data-i18n="routing.providerLocal">Locale</option>
+        <option value="auto" data-i18n="routing.providerAuto">Auto</option>
+      </select>
+      <button type="button" id="routingVerifyBtn" class="btn btn-sm"
+              data-i18n="routing.verify" data-i18n-tip="tip.routingVerify" data-i18n-aria="tip.routingVerify">Verifica provider</button>
+      <p id="routingProviderStatus" class="routing-provider-status hint" role="status" aria-live="polite"></p>
+    </div>
     <p class="routing-panel-note hint routing-endpoint-row" id="routingEndpointRow">
       <span class="routing-endpoint-label" data-i18n="routing.endpointLabel">Endpoint</span>
       <code id="routingEndpointValue" class="routing-endpoint-value"></code>
@@ -13020,6 +13076,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
     </div>
+    <div class="routing-loopback-opt">
+      <label for="routingLoopbackConsent">
+        <input type="checkbox" id="routingLoopbackConsent" />
+        <span data-i18n="routing.loopbackConsent">Consenti GraphHopper locale in modalità offline</span>
+      </label>
+      <p class="hint" data-i18n="routing.loopbackConsentHelp">Permette solo GraphHopper sul dispositivo (127.0.0.1). Non abilita VPS né rete remota.</p>
+    </div>
   </div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
@@ -13037,7 +13100,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0B2-FIX2</span>
+    <span id="appBuildFooter">B6.0C</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13295,7 +13358,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0B2-FIX2</code>
+            <code id="appBuildAbout">B6.0C</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15230,6 +15293,29 @@ const I18N = {
     "routing.serviceGraphHopper":"GraphHopper",
     "routing.selectedService":"Servizio: GraphHopper",
     "routing.endpointLabel":"Endpoint",
+    "routing.providerLabel":"Provider",
+    "routing.providerVps":"VPS",
+    "routing.providerLocal":"Locale",
+    "routing.providerAuto":"Auto",
+    "routing.verify":"Verifica provider",
+    "routing.verifying":"Verifica provider…",
+    "routing.providerAvailable":"Provider disponibile",
+    "routing.providerUnavailable":"Provider non disponibile",
+    "routing.autoResolvedLocal":"Auto: risolto su Locale",
+    "routing.autoResolvedVps":"Auto: risolto su VPS",
+    "routing.noProviderAvailable":"Nessun provider GraphHopper disponibile",
+    "routing.endpointUnresolved":"Endpoint non risolto",
+    "routing.loopbackConsent":"Consenti GraphHopper locale in modalità offline",
+    "routing.loopbackConsentHelp":"Permette solo GraphHopper sul dispositivo (127.0.0.1). Non abilita VPS né rete remota.",
+    "routing.errorLoopbackConsent":"Routing locale bloccato: attiva il consenso loopback (solo dispositivo).",
+    "routing.errorInfoTimeout":"Timeout durante la verifica del provider.",
+    "routing.errorInfoHttp":"Errore HTTP durante la verifica del provider.",
+    "routing.errorInfoInvalid":"Risposta /info non valida.",
+    "routing.errorInfoProfiles":"Profili GraphHopper mancanti in /info.",
+    "routing.errorInfoNetwork":"Impossibile verificare il provider GraphHopper.",
+    "routing.errorInfoCors":"Errore CORS / rete durante la verifica del provider.",
+    "tip.routingProvider":"Seleziona VPS, Locale o Auto",
+    "tip.routingVerify":"Verifica disponibilità GraphHopper (/info)",
     "routing.startPlaceholder":"Nome partenza",
     "routing.viaPlaceholder":"Nome passaggio",
     "routing.endPlaceholder":"Nome destinazione",
@@ -17266,6 +17352,29 @@ const I18N = {
     "routing.serviceGraphHopper":"GraphHopper",
     "routing.selectedService":"Service: GraphHopper",
     "routing.endpointLabel":"Endpoint",
+    "routing.providerLabel":"Provider",
+    "routing.providerVps":"VPS",
+    "routing.providerLocal":"Local",
+    "routing.providerAuto":"Auto",
+    "routing.verify":"Verify provider",
+    "routing.verifying":"Verifying provider…",
+    "routing.providerAvailable":"Provider available",
+    "routing.providerUnavailable":"Provider unavailable",
+    "routing.autoResolvedLocal":"Auto: resolved to Local",
+    "routing.autoResolvedVps":"Auto: resolved to VPS",
+    "routing.noProviderAvailable":"No GraphHopper provider available",
+    "routing.endpointUnresolved":"Endpoint unresolved",
+    "routing.loopbackConsent":"Allow local GraphHopper while offline",
+    "routing.loopbackConsentHelp":"Allows GraphHopper on this device only (127.0.0.1). Does not enable VPS or remote network.",
+    "routing.errorLoopbackConsent":"Local routing blocked: enable loopback consent (device only).",
+    "routing.errorInfoTimeout":"Provider verification timed out.",
+    "routing.errorInfoHttp":"HTTP error during provider verification.",
+    "routing.errorInfoInvalid":"Invalid /info response.",
+    "routing.errorInfoProfiles":"Required GraphHopper profiles missing in /info.",
+    "routing.errorInfoNetwork":"Unable to verify GraphHopper provider.",
+    "routing.errorInfoCors":"CORS / network error during provider verification.",
+    "tip.routingProvider":"Select VPS, Local or Auto",
+    "tip.routingVerify":"Verify GraphHopper availability (/info)",
     "routing.startPlaceholder":"Start name",
     "routing.viaPlaceholder":"Via name",
     "routing.endPlaceholder":"Destination name",
@@ -19379,6 +19488,29 @@ const I18N = {
     "batch.locTip":"Chaque ligne valide envoie une requête à Nominatim (~1/sec). Respecte la politique d'usage.",
     "routing.selectedService":"Service : GraphHopper",
     "routing.endpointLabel":"Endpoint",
+    "routing.providerLabel":"Fournisseur",
+    "routing.providerVps":"VPS",
+    "routing.providerLocal":"Local",
+    "routing.providerAuto":"Auto",
+    "routing.verify":"Vérifier le fournisseur",
+    "routing.verifying":"Vérification du fournisseur…",
+    "routing.providerAvailable":"Fournisseur disponible",
+    "routing.providerUnavailable":"Fournisseur indisponible",
+    "routing.autoResolvedLocal":"Auto : résolu sur Local",
+    "routing.autoResolvedVps":"Auto : résolu sur VPS",
+    "routing.noProviderAvailable":"Aucun fournisseur GraphHopper disponible",
+    "routing.endpointUnresolved":"Point de terminaison non résolu",
+    "routing.loopbackConsent":"Autoriser GraphHopper local en mode hors ligne",
+    "routing.loopbackConsentHelp":"Autorise uniquement GraphHopper sur cet appareil (127.0.0.1). N'active pas le VPS ni le réseau distant.",
+    "routing.errorLoopbackConsent":"Routage local bloqué : activez le consentement loopback (appareil uniquement).",
+    "routing.errorInfoTimeout":"Délai dépassé lors de la vérification du fournisseur.",
+    "routing.errorInfoHttp":"Erreur HTTP lors de la vérification du fournisseur.",
+    "routing.errorInfoInvalid":"Réponse /info non valide.",
+    "routing.errorInfoProfiles":"Profils GraphHopper manquants dans /info.",
+    "routing.errorInfoNetwork":"Impossible de vérifier le fournisseur GraphHopper.",
+    "routing.errorInfoCors":"Erreur CORS / réseau lors de la vérification du fournisseur.",
+    "tip.routingProvider":"Choisir VPS, Local ou Auto",
+    "tip.routingVerify":"Vérifier la disponibilité GraphHopper (/info)",
     "routing.calculate":"Calculer l’itinéraire",
     "routing.calculating":"Calcul de l’itinéraire…",
     "routing.routeReady":"Itinéraire prêt",
@@ -20808,10 +20940,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0B2-FIX2";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-B2-FIX2 — close downstream review findings";
+const APP_BUILD_ID = "B6.0C";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-C — Local, VPS and Auto provider resolution";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 62;
+const APP_BUILD_NUM = 63;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -58241,8 +58373,38 @@ function workbenchIsPickModeActive(){
 /* ===== OUTDOOR-ROUTING-GH-B1b — map pick, markers, GPS (transient) ===== */
 const ROUTING_MAX_POINTS = 20;
 const ROUTING_GRAPHHOPPER_ENDPOINT = "http://100.114.7.53:8989";
+const ROUTING_GRAPHHOPPER_ENDPOINT_LOCAL = "http://127.0.0.1:8989";
 const ROUTING_GRAPHHOPPER_ROUTE_PATH = "/route";
+const ROUTING_GRAPHHOPPER_INFO_PATH = "/info";
 const ROUTING_GRAPHHOPPER_TIMEOUT_MS = 20000;
+const ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS = 3000;
+/** Session-only prefs surviving panel close (not persisted). */
+var _routingSessionPrefs = { provider: "vps", loopbackConsent: false };
+function routingProviderNormalize(v){
+  const s = String(v || "").trim().toLowerCase();
+  if (s === "local" || s === "auto" || s === "vps") return s;
+  return "vps";
+}
+function routingEndpointForProvider(provider){
+  const p = routingProviderNormalize(provider);
+  if (p === "local") return ROUTING_GRAPHHOPPER_ENDPOINT_LOCAL;
+  return ROUTING_GRAPHHOPPER_ENDPOINT;
+}
+function routingEndpointIsValidatedLoopback(endpoint){
+  try {
+    const u = new URL(String(endpoint || ""));
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    const h = String(u.hostname || "").toLowerCase();
+    if (h === "127.0.0.1" || h === "localhost") return true;
+    return false;
+  } catch(_){
+    return false;
+  }
+}
+function routingLoopbackAllowedInForcedOffline(){
+  const r = state._routing;
+  return !!(r && r.loopbackConsent === true);
+}
 const ROUTING_GRAPHHOPPER_PROFILES = Object.freeze([
   "hiking",
   "hiking_easy",
@@ -58268,13 +58430,20 @@ function routingEnsureState(){
     if (typeof r.requestSequence !== "number") r.requestSequence = 0;
     if (typeof r.requestLoading !== "boolean") r.requestLoading = false;
     if (typeof r.requestTimedOut !== "boolean") r.requestTimedOut = false;
+    if (typeof r.infoLoading !== "boolean") r.infoLoading = false;
     if (!("previewCoordinates" in r)) r.previewCoordinates = null;
     if (!("routeMetrics" in r)) r.routeMetrics = null;
     if (typeof r.routeError !== "string") r.routeError = "";
-    if (typeof r.resolvedEndpoint !== "string" || !r.resolvedEndpoint)
-      r.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
+    if (typeof r.provider !== "string") r.provider = routingProviderNormalize(_routingSessionPrefs.provider);
+    else r.provider = routingProviderNormalize(r.provider);
+    if (!("resolvedProvider" in r)) r.resolvedProvider = r.provider === "auto" ? null : r.provider;
+    if (typeof r.resolvedEndpoint !== "string")
+      r.resolvedEndpoint = r.provider === "auto" ? "" : routingEndpointForProvider(r.provider);
+    if (typeof r.loopbackConsent !== "boolean") r.loopbackConsent = !!_routingSessionPrefs.loopbackConsent;
+    if (typeof r.providerStatusKey !== "string") r.providerStatusKey = "";
     return r;
   }
+  const prefProv = routingProviderNormalize(_routingSessionPrefs.provider);
   state._routing = {
     points: [],
     listReorderDrag: null,
@@ -58289,10 +58458,15 @@ function routingEnsureState(){
     requestSequence: 0,
     requestLoading: false,
     requestTimedOut: false,
+    infoLoading: false,
     previewCoordinates: null,
     routeMetrics: null,
     routeError: "",
-    resolvedEndpoint: ROUTING_GRAPHHOPPER_ENDPOINT,
+    provider: prefProv,
+    resolvedProvider: prefProv === "auto" ? null : prefProv,
+    resolvedEndpoint: prefProv === "auto" ? "" : routingEndpointForProvider(prefProv),
+    loopbackConsent: !!_routingSessionPrefs.loopbackConsent,
+    providerStatusKey: "",
     gpsRequestGeneration: 0,
     gpsBusyId: null
   };
@@ -58382,12 +58556,15 @@ function routingExtractValidGraphhopperPoints(){
 }
 function routingSyncCalculateBtnUi(){
   const calcBtn = document.getElementById("routingCalculateBtn");
+  const verifyBtn = document.getElementById("routingVerifyBtn");
+  const busy = !!(state._routing && (state._routing.requestLoading || state._routing.infoLoading));
+  if (verifyBtn) verifyBtn.disabled = !state._routing || busy;
   if (!calcBtn) return;
   if (!state._routing){
     calcBtn.disabled = true;
     return;
   }
-  if (state._routing.requestLoading){
+  if (busy){
     calcBtn.disabled = true;
     return;
   }
@@ -58402,6 +58579,7 @@ function routingInvalidateRoutePreview(){
   try { if (state._routing.requestController) state._routing.requestController.abort(); } catch(_){}
   state._routing.requestSequence = (state._routing.requestSequence || 0) + 1;
   state._routing.requestLoading = false;
+  state._routing.infoLoading = false;
   state._routing.requestTimedOut = false;
   state._routing.requestController = null;
 
@@ -58418,20 +58596,65 @@ function routingResolvedEndpoint(){
   const r = state._routing;
   if (r && typeof r.resolvedEndpoint === "string" && r.resolvedEndpoint)
     return r.resolvedEndpoint;
-  return ROUTING_GRAPHHOPPER_ENDPOINT;
+  if (r && r.provider && r.provider !== "auto")
+    return routingEndpointForProvider(r.provider);
+  return "";
 }
 function routingSyncEndpointUi(){
   const el = document.getElementById("routingEndpointValue");
   if (!el) return;
-  el.textContent = routingResolvedEndpoint();
+  const ep = routingResolvedEndpoint();
+  el.textContent = ep || routingT("routing.endpointUnresolved", "Endpoint unresolved");
+}
+function routingSetProviderStatus(key, isErr){
+  const el = document.getElementById("routingProviderStatus");
+  const r = state._routing;
+  if (r) r.providerStatusKey = key ? String(key) : "";
+  if (!el) return;
+  if (!key){
+    el.textContent = "";
+    el.classList.remove("is-err");
+    return;
+  }
+  el.textContent = routingT(key, key);
+  el.classList.toggle("is-err", !!isErr);
+}
+function routingSyncProviderUi(){
+  const r = routingEnsureState();
+  const sel = document.getElementById("routingProviderSelect");
+  if (sel && sel.value !== r.provider) sel.value = r.provider;
+  const cb = document.getElementById("routingLoopbackConsent");
+  if (cb) cb.checked = !!r.loopbackConsent;
+  routingSyncEndpointUi();
+  if (r.providerStatusKey)
+    routingSetProviderStatus(r.providerStatusKey, /error|Unavailable|noProvider/i.test(r.providerStatusKey));
+  else
+    routingSetProviderStatus("", false);
+  routingSyncCalculateBtnUi();
+}
+function routingApplyPinnedEndpointFromProvider(){
+  const r = routingEnsureState();
+  const p = routingProviderNormalize(r.provider);
+  r.provider = p;
+  _routingSessionPrefs.provider = p;
+  if (p === "auto"){
+    r.resolvedProvider = null;
+    r.resolvedEndpoint = "";
+  } else {
+    r.resolvedProvider = p;
+    r.resolvedEndpoint = routingEndpointForProvider(p);
+  }
+  r.providerStatusKey = "";
+  routingSyncProviderUi();
 }
 function routingAbortActiveRequestForPolicy(errKey){
   if (!state._routing) return false;
   const r = state._routing;
-  const hadActive = !!(r.requestLoading || r.requestController);
+  const hadActive = !!(r.requestLoading || r.infoLoading || r.requestController);
   try { if (r.requestController) r.requestController.abort(); } catch(_){}
   r.requestSequence = (r.requestSequence || 0) + 1;
   r.requestLoading = false;
+  r.infoLoading = false;
   r.requestTimedOut = false;
   r.requestController = null;
   r.previewCoordinates = null;
@@ -58440,17 +58663,21 @@ function routingAbortActiveRequestForPolicy(errKey){
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   if (r.panelOpen){
     routingSetStatus(routingT(errKey || "routing.errorGeneric", errKey || "Blocked"), true);
+    routingSetProviderStatus(errKey || "", true);
   }
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
   return hadActive;
 }
 function routingOnNetworkPolicyChange(){
-  const gate = routingNetworkGateGraphhopper();
-  if (gate.ok) return;
   if (!state._routing) return;
   const r = state._routing;
-  if (r.requestLoading || r.requestController)
+  const gate = routingNetworkGateGraphhopper({
+    provider: r.provider,
+    endpoint: r.resolvedEndpoint || null
+  });
+  if (gate.ok) return;
+  if (r.requestLoading || r.infoLoading || r.requestController)
     routingAbortActiveRequestForPolicy(gate.errKey);
 }
 function routingSyncPickModeUi(){
@@ -58722,9 +58949,14 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
 function routingFullCleanup(){
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
   if (state._routing){
+    try {
+      _routingSessionPrefs.provider = routingProviderNormalize(state._routing.provider);
+      _routingSessionPrefs.loopbackConsent = !!state._routing.loopbackConsent;
+    } catch(_){}
     try { if (state._routing.requestController) state._routing.requestController.abort(); } catch(_){}
     state._routing.requestSequence = (state._routing.requestSequence || 0) + 1;
     state._routing.requestLoading = false;
+    state._routing.infoLoading = false;
     state._routing.requestTimedOut = false;
     state._routing.requestController = null;
     state._routing.previewCoordinates = null;
@@ -58745,6 +58977,10 @@ function routingFullCleanup(){
   const list = document.getElementById("routingPointsList");
   if (list) list.innerHTML = "";
   routingSetStatus("", false);
+  try {
+    const ps = document.getElementById("routingProviderStatus");
+    if (ps){ ps.textContent = ""; ps.classList.remove("is-err"); }
+  } catch(_){}
 }
 function routingEscapeAttr(id){
   return String(id == null ? "" : id).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -58913,13 +59149,201 @@ function routingAddVia(){
   routingSetStatus("", false);
   routingRenderList();
 }
-function routingNetworkGateGraphhopper(){
-  if (state.forceOffline) return { ok: false, errKey: "routing.errorOffline" };
+function routingNetworkGateGraphhopper(opts){
+  opts = opts || {};
+  const provider = opts.provider != null ? routingProviderNormalize(opts.provider) : null;
+  const endpoint = typeof opts.endpoint === "string" && opts.endpoint ? opts.endpoint : null;
+
   if (state.opsecStrict) return { ok: false, errKey: "routing.errorOpsec" };
+
+  if (state.forceOffline){
+    const consent = routingLoopbackAllowedInForcedOffline();
+    const epLoop = endpoint ? routingEndpointIsValidatedLoopback(endpoint) : false;
+    if (provider === "vps") return { ok: false, errKey: "routing.errorOffline" };
+    if (provider === "local"){
+      if (!consent) return { ok: false, errKey: "routing.errorLoopbackConsent" };
+      return { ok: true };
+    }
+    if (provider === "auto"){
+      if (!consent) return { ok: false, errKey: "routing.errorLoopbackConsent" };
+      return { ok: true };
+    }
+    if (epLoop && consent) return { ok: true };
+    if (epLoop && !consent) return { ok: false, errKey: "routing.errorLoopbackConsent" };
+    return { ok: false, errKey: "routing.errorOffline" };
+  }
+
   if (typeof navigator !== "undefined" && navigator.onLine === false)
     return { ok: false, errKey: "routing.errorOffline" };
   if (!isEffectivelyOnline()) return { ok: false, errKey: "routing.errorNetwork" };
   return { ok: true };
+}
+function routingValidateGraphhopperInfo(data){
+  if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInfoInvalid" };
+  const profiles = Array.isArray(data.profiles) ? data.profiles : null;
+  if (!profiles || !profiles.length) return { ok: false, errKey: "routing.errorInfoProfiles" };
+  const names = Object.create(null);
+  for (let i = 0; i < profiles.length; i++){
+    const p = profiles[i];
+    if (!p || typeof p !== "object") continue;
+    if (typeof p.name !== "string" || !p.name) continue;
+    names[p.name] = true;
+  }
+  for (let i = 0; i < ROUTING_GRAPHHOPPER_PROFILES.length; i++){
+    const need = ROUTING_GRAPHHOPPER_PROFILES[i];
+    if (!names[need]) return { ok: false, errKey: "routing.errorInfoProfiles" };
+  }
+  return { ok: true };
+}
+async function routingGraphhopperInfoCheck(endpoint, parentSignal){
+  const ep = String(endpoint || "");
+  if (!ep) return { ok: false, errKey: "routing.errorInfoInvalid" };
+  const localCtrl = new AbortController();
+  const onAbort = function(){ try { localCtrl.abort(); } catch(_){} };
+  if (parentSignal){
+    if (parentSignal.aborted) return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+    parentSignal.addEventListener("abort", onAbort, { once: true });
+  }
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    timeoutId = setTimeout(function(){
+      timedOut = true;
+      try { localCtrl.abort(); } catch(_){}
+    }, ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS);
+    const res = await fetch(ep + ROUTING_GRAPHHOPPER_INFO_PATH, {
+      method: "GET",
+      signal: localCtrl.signal
+    });
+    if (!res || !res.ok){
+      const status = res && typeof res.status === "number" ? res.status : 0;
+      return { ok: false, errKey: "routing.errorInfoHttp", status: status };
+    }
+    let data;
+    try { data = await res.json(); } catch(_){
+      return { ok: false, errKey: "routing.errorInfoInvalid" };
+    }
+    const validated = routingValidateGraphhopperInfo(data);
+    if (!validated.ok) return validated;
+    return { ok: true };
+  } catch(e){
+    const isAbort = e && e.name === "AbortError";
+    if (isAbort && timedOut) return { ok: false, errKey: "routing.errorInfoTimeout" };
+    if (isAbort) return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+    const msg = String(e && e.message ? e.message : e || "").toLowerCase();
+    if (msg.indexOf("cors") >= 0) return { ok: false, errKey: "routing.errorInfoCors" };
+    return { ok: false, errKey: "routing.errorInfoNetwork" };
+  } finally {
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
+    if (parentSignal){ try { parentSignal.removeEventListener("abort", onAbort); } catch(_){} }
+  }
+}
+async function routingResolveProvider(opts){
+  opts = opts || {};
+  const r = state._routing;
+  if (!r) return { ok: false, errKey: "routing.errorGeneric" };
+  const selected = routingProviderNormalize(r.provider);
+  const controller = opts.controller;
+  const seq = opts.seq;
+  const purpose = opts.purpose || "verify";
+
+  const candidates = [];
+  if (selected === "auto"){
+    if (state.forceOffline){
+      if (!routingLoopbackAllowedInForcedOffline())
+        return { ok: false, errKey: "routing.errorLoopbackConsent" };
+      candidates.push("local");
+    } else {
+      candidates.push("local", "vps");
+    }
+  } else {
+    candidates.push(selected);
+  }
+
+  let lastErr = "routing.noProviderAvailable";
+  for (let i = 0; i < candidates.length; i++){
+    if (!state._routing || state._routing.requestSequence !== seq) return { ok: false, errKey: "routing.errorGeneric", stale: true };
+    if (controller && controller.signal && controller.signal.aborted)
+      return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+
+    const cand = candidates[i];
+    const endpoint = routingEndpointForProvider(cand);
+    const gate = routingNetworkGateGraphhopper({ provider: cand, endpoint: endpoint });
+    if (!gate.ok){
+      lastErr = gate.errKey;
+      continue;
+    }
+    const info = await routingGraphhopperInfoCheck(endpoint, controller && controller.signal);
+    if (!state._routing || state._routing.requestSequence !== seq) return { ok: false, errKey: "routing.errorGeneric", stale: true };
+    if (info.aborted) return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+    if (!info.ok){
+      lastErr = info.errKey || "routing.providerUnavailable";
+      continue;
+    }
+    // Re-gate before applying
+    const reGate = routingNetworkGateGraphhopper({ provider: cand, endpoint: endpoint });
+    if (!reGate.ok){
+      lastErr = reGate.errKey;
+      continue;
+    }
+    r.resolvedProvider = cand;
+    r.resolvedEndpoint = endpoint;
+    if (selected === "auto"){
+      r.providerStatusKey = cand === "local" ? "routing.autoResolvedLocal" : "routing.autoResolvedVps";
+    } else {
+      r.providerStatusKey = "routing.providerAvailable";
+    }
+    routingSyncEndpointUi();
+    routingSetProviderStatus(r.providerStatusKey, false);
+    return { ok: true, provider: cand, endpoint: endpoint, purpose: purpose };
+  }
+  r.resolvedProvider = null;
+  r.resolvedEndpoint = "";
+  r.providerStatusKey = lastErr || "routing.noProviderAvailable";
+  routingSyncEndpointUi();
+  routingSetProviderStatus(r.providerStatusKey, true);
+  return { ok: false, errKey: lastErr || "routing.noProviderAvailable" };
+}
+async function routingVerifyProvider(){
+  const r = routingEnsureState();
+  if (r.requestLoading || r.infoLoading) return;
+
+  const gate0 = routingNetworkGateGraphhopper({ provider: r.provider });
+  if (!gate0.ok){
+    routingSetProviderStatus(gate0.errKey, true);
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    return;
+  }
+
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const seq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.infoLoading = true;
+  r.requestLoading = false;
+  r.requestTimedOut = false;
+  routingSetStatus(routingT("routing.verifying", "Verifying…"), false);
+  routingSetProviderStatus("routing.verifying", false);
+  routingSyncCalculateBtnUi();
+
+  try {
+    const resolved = await routingResolveProvider({ controller: controller, seq: seq, purpose: "verify" });
+    if (!state._routing || state._routing.requestSequence !== seq) return;
+    if (resolved.stale || resolved.aborted) return;
+    if (!resolved.ok){
+      routingSetStatus(routingT(resolved.errKey || "routing.noProviderAvailable", "No provider"), true);
+      return;
+    }
+    routingSetStatus(routingT(r.providerStatusKey || "routing.providerAvailable", "OK"), false);
+  } finally {
+    if (!state._routing || state._routing.requestSequence !== seq) return;
+    if (state._routing.requestController === controller){
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+  }
 }
 function routingBuildGraphhopperRouteBody(profile, pointsLonLat){
   return {
@@ -59078,7 +59502,7 @@ function routingFitMapToRoutePreview(previewCoordinates){
 }
 async function routingCalculateRouteGraphhopper(){
   const r = state._routing;
-  if (!r || r.requestLoading) return;
+  if (!r || r.requestLoading || r.infoLoading) return;
 
   const profile = routingGetSelectedGraphhopperProfile();
   if (!routingGraphhopperProfileIsValid(profile)){
@@ -59096,10 +59520,12 @@ async function routingCalculateRouteGraphhopper(){
     return;
   }
 
-  const gate = routingNetworkGateGraphhopper();
-  if (!gate.ok){
-    r.routeError = gate.errKey;
-    routingSetStatus(routingT(gate.errKey, gate.errKey), true);
+  const selectedProvider = routingProviderNormalize(r.provider);
+  const gate0 = routingNetworkGateGraphhopper({ provider: selectedProvider });
+  if (!gate0.ok){
+    r.routeError = gate0.errKey;
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    routingSetProviderStatus(gate0.errKey, true);
     routingSyncCalculateBtnUi();
     return;
   }
@@ -59111,18 +59537,61 @@ async function routingCalculateRouteGraphhopper(){
   const controller = new AbortController();
   r.requestController = controller;
   r.requestLoading = true;
+  r.infoLoading = false;
   r.requestTimedOut = false;
   r.previewCoordinates = null;
   r.routeMetrics = null;
   r.routeError = "";
-  r.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
 
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
   routingSyncCalculateBtnUi();
+
+  let routeEndpoint = "";
+  let routeProvider = null;
+  try {
+    if (selectedProvider === "auto"){
+      const resolved = await routingResolveProvider({ controller: controller, seq: reqSeq, purpose: "route" });
+      if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+      if (resolved.aborted || resolved.stale){ if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){ state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi(); } return; }
+      if (!resolved.ok){
+        r.routeError = resolved.errKey || "routing.noProviderAvailable";
+        routingSetStatus(routingT(r.routeError, r.routeError), true);
+        if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){ state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi(); }
+        return;
+      }
+      routeEndpoint = resolved.endpoint;
+      routeProvider = resolved.provider;
+    } else {
+      routeProvider = selectedProvider;
+      routeEndpoint = routingEndpointForProvider(selectedProvider);
+      r.resolvedProvider = routeProvider;
+      r.resolvedEndpoint = routeEndpoint;
+      routingSyncEndpointUi();
+    }
+  } catch(eResolve){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = "routing.errorGeneric";
+    routingSetStatus(routingT("routing.errorGeneric", "Error"), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){ state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi(); }
+    return;
+  }
+
+  const gateEp = routingNetworkGateGraphhopper({ provider: routeProvider, endpoint: routeEndpoint });
+  if (!gateEp.ok){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = gateEp.errKey;
+    routingSetStatus(routingT(gateEp.errKey, gateEp.errKey), true);
+    routingSetProviderStatus(gateEp.errKey, true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){ state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi(); }
+    return;
+  }
+
+  r.resolvedProvider = routeProvider;
+  r.resolvedEndpoint = routeEndpoint;
   try { routingSyncEndpointUi(); } catch(_){}
 
-  const url = routingResolvedEndpoint() + ROUTING_GRAPHHOPPER_ROUTE_PATH;
+  const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
   const bodyObj = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat);
   const body = JSON.stringify(bodyObj);
 
@@ -59163,7 +59632,10 @@ async function routingCalculateRouteGraphhopper(){
     if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
 
     // Re-gate before applying preview/metrics (policy may have changed mid-fetch).
-    const reGate = routingNetworkGateGraphhopper();
+    const reGate = routingNetworkGateGraphhopper({
+      provider: r.resolvedProvider || routeProvider,
+      endpoint: r.resolvedEndpoint || routeEndpoint
+    });
     if (!reGate.ok){
       r.previewCoordinates = null;
       r.routeMetrics = null;
@@ -59234,6 +59706,7 @@ async function routingCalculateRouteGraphhopper(){
     if (!state._routing || state._routing.requestSequence !== reqSeq) return;
     if (state._routing.requestController === controller){
       state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
       state._routing.requestTimedOut = !!timedOut;
       state._routing.requestController = null;
     }
@@ -59437,19 +59910,17 @@ function openRoutingPlannerPanel(service){
   const svc = service || "graphhopper";
   if (state._routing && state._routing.panelOpen && dlg.open){
     state._routing.service = svc;
-    state._routing.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
     if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")){
       try { gisRestoreMinimizedPanel("routingPlannerPanel"); } catch(_){}
     }
     try { gisPanelBringToFront(dlg, _routingPanelLayoutOpts()); } catch(_){}
-    try { routingSyncEndpointUi(); } catch(_){}
+    try { routingSyncProviderUi(); } catch(_){}
     try { routingRenderList(); } catch(_){}
     try { refreshTileMapForTrackUi(); } catch(_){}
     return true;
   }
   routingEnsureState();
   state._routing.service = svc;
-  state._routing.resolvedEndpoint = ROUTING_GRAPHHOPPER_ENDPOINT;
   if (!(state._routing.points && state._routing.points.length)) routingInitDefaultPoints();
   state._routing.panelOpen = true;
   try {
@@ -59458,11 +59929,11 @@ function openRoutingPlannerPanel(service){
   } catch(_){ dlg.setAttribute("open", ""); }
   try { wireRoutingPanelFloating(dlg); } catch(_){}
   routingSetStatus("", false);
-  try { routingSyncEndpointUi(); } catch(_){}
+  try { routingSyncProviderUi(); } catch(_){}
   routingRenderList();
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
-  try { routingSyncEndpointUi(); } catch(_){}
+  try { routingSyncProviderUi(); } catch(_){}
   return true;
 }
 function routingServiceMenuIsOpen(){
@@ -59560,6 +60031,39 @@ function wireRoutingPlannerOnce(){
     try { routingSetStatus("", false); } catch(_){}
     try { routingInvalidateRoutePreview(); } catch(_){}
   });
+  const provSel = document.getElementById("routingProviderSelect");
+  if (provSel && !provSel._routingProvBound){
+    provSel._routingProvBound = true;
+    provSel.addEventListener("change", () => {
+      const r = routingEnsureState();
+      const next = routingProviderNormalize(provSel.value);
+      r.provider = next;
+      _routingSessionPrefs.provider = next;
+      try { routingInvalidateRoutePreview(); } catch(_){}
+      routingApplyPinnedEndpointFromProvider();
+      routingSetStatus("", false);
+    });
+  }
+  const verifyBtn = document.getElementById("routingVerifyBtn");
+  if (verifyBtn && !verifyBtn._routingVerifyBound){
+    verifyBtn._routingVerifyBound = true;
+    verifyBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (verifyBtn.disabled) return;
+      routingVerifyProvider();
+    });
+  }
+  const loopCb = document.getElementById("routingLoopbackConsent");
+  if (loopCb && !loopCb._routingLoopBound){
+    loopCb._routingLoopBound = true;
+    loopCb.addEventListener("change", () => {
+      const r = routingEnsureState();
+      r.loopbackConsent = !!loopCb.checked;
+      _routingSessionPrefs.loopbackConsent = r.loopbackConsent;
+      try { routingOnNetworkPolicyChange(); } catch(_){}
+      try { routingSyncProviderUi(); } catch(_){}
+    });
+  }
   const calcBtn = document.getElementById("routingCalculateBtn");
   if (calcBtn) calcBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
@@ -59587,7 +60091,7 @@ function wireRoutingPlannerOnce(){
       setTimeout(() => {
         const dlg = document.getElementById("routingPlannerPanel");
         if (!state._routing || !state._routing.panelOpen || !dlg || !dlg.open) return;
-        try { routingSyncEndpointUi(); } catch(_){}
+        try { routingSyncProviderUi(); } catch(_){}
         routingRenderList();
         const r = state._routing;
         if (r.routeMetrics && Array.isArray(r.previewCoordinates) && r.previewCoordinates.length >= 2){
@@ -59595,6 +60099,8 @@ function wireRoutingPlannerOnce(){
         } else if (r.routeError){
           const ek = String(r.routeError);
           routingSetStatus(routingT(ek, ek), true);
+        } else if (r.providerStatusKey){
+          routingSetProviderStatus(r.providerStatusKey, /error|Unavailable|noProvider/i.test(r.providerStatusKey));
         }
       }, 0);
     });
