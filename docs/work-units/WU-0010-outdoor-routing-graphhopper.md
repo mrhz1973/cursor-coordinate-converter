@@ -1,16 +1,16 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 READY / NEXT RUNTIME BUNDLE**
+**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / PASS end-to-end**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `ff43878e07acb57b714a3b77c877a1f8a40ae42b` (`ff43878`) — display **`B5.5Z · build 59`**
+**Runtime autorevole attuale:** `89bbf285cd8f27fd0e2f30f4c1f9de550451c85b` (`89bbf28`) — display **`B6.0B2-FIX2 · build 62`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**B2 operativo (autorità viva):** GraphHopper endpoint / richiesta `/route` / preview transiente — **READY / NEXT RUNTIME BUNDLE** (endpoint VPS Tailscale `http://100.114.7.53:8989` disponibile; **non** implementato nel monolite). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
+**B2 operativo (autorità viva):** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS end-to-end** (2026-07-27).
-**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo corrente. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
+**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 
@@ -210,7 +210,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 ### BUNDLE B2 — Cerca/geocoding multi-riga
 
-> **Numerazione storica superseded (2026-07-25).** Il **B2 operativo vivo** (OM §7 / HANDOFF) è **GraphHopper endpoint / `/route` / preview**, attualmente **READY / NEXT RUNTIME BUNDLE** — endpoint VPS disponibile; monolite **non** implementato. Il contenuto sotto resta piano storico per un **backlog geocoding multi-riga separato** — **non** fa parte di INFRA-GH-1A/1B e **non** è il prossimo bundle runtime autorizzabile.
+> **Numerazione storica superseded (2026-07-25).** Il **B2 operativo vivo** (OM §7 / HANDOFF) è **GraphHopper endpoint / `/route` / preview** — **CLOSED / PASS end-to-end** tip `89bbf28` build 62. Il contenuto sotto resta piano storico per un **backlog geocoding multi-riga separato** — **non** fa parte di INFRA-GH-1A/1B e **non** è il B2 operativo chiuso.
 
 **Scope:**
 
