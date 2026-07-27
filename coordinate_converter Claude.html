@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0C-FIX1</title>
+<title>GOI GIS Tool · B6.0D</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13075,6 +13075,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
               data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
+      <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
+              data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
     </div>
     <div class="routing-loopback-opt">
       <label for="routingLoopbackConsent">
@@ -13100,7 +13102,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0C-FIX1</span>
+    <span id="appBuildFooter">B6.0D</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13358,7 +13360,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0C-FIX1</code>
+            <code id="appBuildAbout">B6.0D</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15287,6 +15289,7 @@ const I18N = {
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
     "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
+    "tip.routingSaveAsTrack":"Salva il percorso valido corrente come traccia in archivio.",
     "tip.routingProfile":"Profilo di routing GraphHopper",
     "routing.dragHandle":"Trascina per riordinare",
     "routing.serviceMenu":"Scegli servizio di routing",
@@ -15332,6 +15335,14 @@ const I18N = {
     "routing.gpsPermissionDenied":"Permesso posizione negato.",
     "routing.gpsPositionUnavailable":"Posizione non disponibile.",
     "routing.gpsTimeout":"Timeout posizione.",
+    "routing.saveAsTrack":"Salva come traccia",
+    "routing.saveAsTrackBusy":"Salvataggio in corso…",
+    "routing.saveAsTrackSuccess":"Traccia salvata: {0}",
+    "routing.noRouteToSave":"Calcola un percorso valido prima di salvare.",
+    "routing.saveAsTrackError":"Salvataggio traccia non riuscito.",
+    "routing.routeTooLong":"Percorso troppo lungo (massimo 2000 punti).",
+    "routing.routeTooShort":"Percorso troppo corto (minimo 2 punti).",
+    "routing.archiveFull":"Archivio tracce pieno (massimo 50).",
     "gis.minimized.routing":"Pianifica percorso",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "gis.minimized.workbench":"Oggetti GIS",
@@ -17346,6 +17357,7 @@ const I18N = {
     "routing.errorCors":"CORS / network error while calculating the route.",
     "routing.errorGeneric":"Router request failed.",
     "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
+    "tip.routingSaveAsTrack":"Save the current valid route as a track in the archive.",
     "tip.routingProfile":"GraphHopper routing profile",
     "routing.dragHandle":"Drag to reorder",
     "routing.serviceMenu":"Choose routing service",
@@ -17391,6 +17403,14 @@ const I18N = {
     "routing.gpsPermissionDenied":"Location permission denied.",
     "routing.gpsPositionUnavailable":"Location unavailable.",
     "routing.gpsTimeout":"Location timeout.",
+    "routing.saveAsTrack":"Save as track",
+    "routing.saveAsTrackBusy":"Saving…",
+    "routing.saveAsTrackSuccess":"Track saved: {0}",
+    "routing.noRouteToSave":"Compute a valid route before saving.",
+    "routing.saveAsTrackError":"Track save failed.",
+    "routing.routeTooLong":"Route too long (max 2000 points).",
+    "routing.routeTooShort":"Route too short (min 2 points).",
+    "routing.archiveFull":"Track archive full (max 50).",
     "gis.minimized.routing":"Plan route",
     "workbenchPanel.minimizeBlockedSubdialog":"Please finish or close open dialogs before minimizing.",
     "gis.minimized.workbench":"GIS Objects",
@@ -20940,10 +20960,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0C-FIX1";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-C-FIX1 — initialize planner with start and destination only";
+const APP_BUILD_ID = "B6.0D";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-D — save current route as track";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 64;
+const APP_BUILD_NUM = 65;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -58572,6 +58592,111 @@ function routingSyncCalculateBtnUi(){
   const ptsRes = routingExtractValidGraphhopperPoints();
   const ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
   calcBtn.disabled = !ok;
+  try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+}
+let _routingSaveBusy = false;
+function routingRoutePreviewIsValid(){
+  const r = state._routing;
+  return !!(r && Array.isArray(r.previewCoordinates) && r.previewCoordinates.length >= 2);
+}
+function routingSyncSaveAsTrackBtnUi(){
+  const btn = document.getElementById("routingSaveAsTrackBtn");
+  if (!btn) return;
+  const r = state._routing;
+  if (!r){
+    btn.disabled = true;
+    return;
+  }
+  if (_routingSaveBusy || r.requestLoading || r.infoLoading){
+    btn.disabled = true;
+    return;
+  }
+  btn.disabled = !routingRoutePreviewIsValid();
+}
+function routingFormatSaveAsTrackSuccess(name){
+  return String(routingT("routing.saveAsTrackSuccess", "Track saved: {0}")).replace("{0}", String(name));
+}
+function onRoutingSaveAsTrackClick(ev){
+  if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
+  routingPerformSaveAsTrack();
+}
+function routingPerformSaveAsTrack(){
+  const r = state._routing;
+  if (!r){
+    routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
+    return;
+  }
+  if (_routingSaveBusy) return;
+  if (!routingRoutePreviewIsValid()){
+    routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
+    return;
+  }
+  _routingSaveBusy = true;
+  try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  routingSetStatus(routingT("routing.saveAsTrackBusy", "Saving…"), false);
+
+  let rollbackTrackId = null;
+  let prevRaw = null;
+  let prevSel = null;
+  let confirmed = false;
+  let res = null;
+  try {
+    prevRaw = (function(){ try { return localStorage.getItem(STORAGE_KEY); } catch(_) { return null; } })();
+    prevSel = Array.isArray(state._savedTracksSelectedIds) ? state._savedTracksSelectedIds.slice() : [];
+
+    const name = trackMakeAutoName();
+    res = savedTrackAddFromPoints({
+      points: r.previewCoordinates,
+      name: name,
+      closed: false,
+      visible: true
+    });
+    if (!res || !res.ok){
+      const reason = res && res.reason ? res.reason : "";
+      let msg;
+      if (reason === "points_cap"){
+        msg = routingT("routing.routeTooLong", "Route too long (max 2000 points).");
+      } else if (reason === "min_points"){
+        msg = routingT("routing.routeTooShort", "Route too short (min 2 points).");
+      } else if (reason === "cap"){
+        msg = routingT("routing.archiveFull", "Track archive full (max 50).");
+      } else {
+        msg = routingT("routing.saveAsTrackError", "Track save failed.");
+      }
+      routingSetStatus(msg, true);
+      return;
+    }
+    rollbackTrackId = String(res.track.id);
+
+    const rep = saveStoreReported();
+    confirmed = !!(rep && rep.ok);
+    if (confirmed){
+      try { confirmed = !!trackVerifyPersistedSavedTrack(res.track); } catch(_) { confirmed = false; }
+    }
+
+    if (!confirmed){
+      try { trackBrushRollbackCreatedTrack(rollbackTrackId, prevSel); } catch(_){}
+      try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
+      routingSetStatus(routingT("routing.saveAsTrackError", "Track save failed."), true);
+      return;
+    }
+
+    try { renderSavedTracksList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    if (state.workbenchPanelOpen){
+      try { renderWorkbenchList(); } catch(_){}
+    }
+    routingSetStatus(routingFormatSaveAsTrackSuccess(res.track.name), false);
+  } catch(_){
+    if (rollbackTrackId){
+      try { trackBrushRollbackCreatedTrack(rollbackTrackId, prevSel); } catch(_){}
+      try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
+    }
+    routingSetStatus(routingT("routing.saveAsTrackError", "Track save failed."), true);
+  } finally {
+    _routingSaveBusy = false;
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  }
 }
 function routingInvalidateRoutePreview(){
   if (!state._routing) return;
@@ -58590,6 +58715,7 @@ function routingInvalidateRoutePreview(){
   routingSetStatus("", false);
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
+  try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
 }
 function routingResolvedEndpoint(){
   const r = state._routing;
@@ -59657,6 +59783,7 @@ async function routingCalculateRouteGraphhopper(){
     } catch(_){
       try { refreshTileMapForTrackUi(); } catch(_){}
     }
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
   } catch(e){
     const isAbort = e && e.name === "AbortError";
     if (isAbort && !timedOut) return; // voluntary cancel (new request / reset / close)
@@ -59933,6 +60060,7 @@ function openRoutingPlannerPanel(service){
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
   try { routingSyncProviderUi(); } catch(_){}
+  try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
   return true;
 }
 function routingServiceMenuIsOpen(){
@@ -60069,6 +60197,8 @@ function wireRoutingPlannerOnce(){
     if (calcBtn.disabled) return;
     routingCalculateRouteGraphhopper();
   });
+  const saveTrackBtn = document.getElementById("routingSaveAsTrackBtn");
+  if (saveTrackBtn) saveTrackBtn.addEventListener("click", onRoutingSaveAsTrackClick);
   const list = document.getElementById("routingPointsList");
   if (list){
     list.addEventListener("click", routingHandleListAction);
