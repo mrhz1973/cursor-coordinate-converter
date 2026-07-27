@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0B2</title>
+<title>GOI GIS Tool · B6.0B2-FIX1</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -12986,8 +12986,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div id="routingPlannerStatus" class="routing-panel-status hint" role="status" aria-live="polite"></div>
     <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
     <div class="routing-profile-row">
-      <span class="routing-profile-label">Profilo</span>
-      <select id="routingProfileSelect" class="routing-profile-select" aria-label="GraphHopper profile">
+      <label class="routing-profile-label" for="routingProfileSelect" data-i18n="routing.profile">Profilo</label>
+      <select id="routingProfileSelect" class="routing-profile-select"
+              data-i18n-aria="tip.routingProfile" data-i18n-tip="tip.routingProfile"
+              aria-label="Profilo di routing GraphHopper">
         <option value="hiking">hiking</option>
         <option value="hiking_easy">hiking_easy</option>
         <option value="mtb_touring">mtb_touring</option>
@@ -13017,7 +13019,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0B2</span>
+    <span id="appBuildFooter">B6.0B2-FIX1</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13275,7 +13277,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0B2</code>
+            <code id="appBuildAbout">B6.0B2-FIX1</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15191,6 +15193,7 @@ const I18N = {
     "routing.duration":"Durata",
     "routing.ascent":"Salita",
     "routing.descent":"Discesa",
+    "routing.profile":"Profilo",
     "routing.errorOffline":"Routing bloccato: modalità offline forzata.",
     "routing.errorOpsec":"Routing bloccato: OPSEC strict attivo.",
     "routing.errorInvalidPoints":"Punti non validi (servono almeno 2 coordinate).",
@@ -15203,6 +15206,7 @@ const I18N = {
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
     "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
+    "tip.routingProfile":"Profilo di routing GraphHopper",
     "routing.dragHandle":"Trascina per riordinare",
     "routing.serviceMenu":"Scegli servizio di routing",
     "routing.serviceGraphHopper":"GraphHopper",
@@ -17224,6 +17228,7 @@ const I18N = {
     "routing.duration":"Duration",
     "routing.ascent":"Ascent",
     "routing.descent":"Descent",
+    "routing.profile":"Profile",
     "routing.errorOffline":"Routing blocked: forced offline mode.",
     "routing.errorOpsec":"Routing blocked: OPSEC strict is active.",
     "routing.errorInvalidPoints":"Invalid points (at least 2 coordinates required).",
@@ -17236,6 +17241,7 @@ const I18N = {
     "routing.errorCors":"CORS / network error while calculating the route.",
     "routing.errorGeneric":"Router request failed.",
     "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
+    "tip.routingProfile":"GraphHopper routing profile",
     "routing.dragHandle":"Drag to reorder",
     "routing.serviceMenu":"Choose routing service",
     "routing.serviceGraphHopper":"GraphHopper",
@@ -19359,6 +19365,7 @@ const I18N = {
     "routing.duration":"Durée",
     "routing.ascent":"Dénivelé positif",
     "routing.descent":"Dénivelé négatif",
+    "routing.profile":"Profil",
     "routing.errorOffline":"Itinéraire bloqué : mode hors ligne forcé.",
     "routing.errorOpsec":"Itinéraire bloqué : OPSEC strict actif.",
     "routing.errorInvalidPoints":"Points non valides (au moins 2 coordonnées requises).",
@@ -19370,7 +19377,8 @@ const I18N = {
     "routing.errorInvalidResponse":"Réponse du routeur invalide.",
     "routing.errorCors":"Erreur CORS / réseau pendant le calcul de l’itinéraire.",
     "routing.errorGeneric":"Échec de la requête du routeur.",
-    "tip.routingCalculate":"Calculer l’itinéraire avec GraphHopper (transitoire)."
+    "tip.routingCalculate":"Calculer l’itinéraire avec GraphHopper (transitoire).",
+    "tip.routingProfile":"Profil de routage GraphHopper"
   }
 };
 
@@ -20779,10 +20787,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0B2";
-const APP_BUILD_DETAIL = "TRACK-POINT-CAP-2000-FIX2 — paginate point list + GIS import cap notice";
+const APP_BUILD_ID = "B6.0B2-FIX1";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-B2-FIX1 — GraphHopper route preview with transient lifecycle";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 60;
+const APP_BUILD_NUM = 61;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25129,7 +25137,7 @@ function computeQuickExportSegmentCrop(fullGrid, sc, sr, best, fullCrop){
   return { sx: cropX, sy: cropY, sw: cropRight - cropX, sh: cropBottom - cropY, finalW, finalH };
 }
 
-/** Segment plan for quick export: tile-aligned sub-grids, bbox crop on outer edges (B6.0B2-DELTA-A1). */
+/** Segment plan for quick export: tile-aligned sub-grids, bbox crop on outer edges (B5.5Z-DELTA-A1). */
 function computeQuickExportSegmentPlan(grid, bbox, zoom){
   if (!grid || !grid.cols || !grid.rows || !grid.tileCount || !bbox) return null;
   const cols = grid.cols;
@@ -25239,7 +25247,7 @@ function quickExportSegmentFilename(base, z, row, col, totalRows, totalCols){
   return exportPrefixedDownloadFilename(`${base}_z${z}_r${r}c${c}.jpg`);
 }
 
-/** Read-only snapshot of the visible map viewport for quick JPG export (B6.0B2). No state/DOM mutation, no fetch. */
+/** Read-only snapshot of the visible map viewport for quick JPG export (B5.5Z). No state/DOM mutation, no fetch. */
 function getQuickExportViewportSnapshot(){
   const root = document.getElementById("miniMap");
   const tileMap = root && root.querySelector(".tile-map");
@@ -25299,7 +25307,7 @@ function getQuickExportViewportSnapshot(){
   };
 }
 
-/** Pure helper: all integer zoom levels from currentZoom up to layer max (B6.0B2-DELTA-A1). */
+/** Pure helper: all integer zoom levels from currentZoom up to layer max (B5.5Z-DELTA-A1). */
 function computeQuickExportZoomLevelsAll(bbox, currentZoom, layer){
   const fail = (reason) => ({
     levels: [],
@@ -25341,7 +25349,7 @@ function computeQuickExportZoomLevelsAll(bbox, currentZoom, layer){
   };
 }
 
-/** Pure helper: exportable integer zoom levels from currentZoom up to layer/offline limits (B6.0B2). */
+/** Pure helper: exportable integer zoom levels from currentZoom up to layer/offline limits (B5.5Z). */
 function computeQuickExportZoomLevels(bbox, currentZoom, layer){
   const fail = (reason) => ({
     levels: [],
@@ -25397,7 +25405,7 @@ function computeQuickExportZoomLevels(bbox, currentZoom, layer){
   };
 }
 
-/** Shared OPSEC/proxy consent gate for offline + quick geographic JPG export (B6.0B2-3). */
+/** Shared OPSEC/proxy consent gate for offline + quick geographic JPG export (B5.5Z-3). */
 async function confirmOfflineJpgTileExportConsent(layerId){
   if (state.opsecStrict && isEffectivelyOnline() && !state.forceOffline){
     const ok = await showOpsecStrictConfirmDialog(
