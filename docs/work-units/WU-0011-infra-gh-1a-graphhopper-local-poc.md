@@ -1,28 +1,24 @@
 # WU-0011 — INFRA-GH-1A — GraphHopper 11.0 PoC locale Ryzen
 
-**Stato:** **FASE A PASS / IMPORT B PENDING**
-**Blocco:** INFRA-GH-1A
-**Tipo:** infrastruttura / PoC locale (fuori repository GIS)
+**Stato:** **CLOSED / PASS end-to-end** (INFRA-GH-1A + INFRA-GH-1B)
+**Blocco:** INFRA-GH-1A (PoC locale) + INFRA-GH-1B (deploy VPS)
+**Tipo:** infrastruttura / PoC locale + deploy VPS (fuori repository GIS per esecuzione; docs in repo GIS)
 **Data registrazione piano:** 2026-07-25
-**Data Fase A + QA CORS:** 2026-07-25 esecuzione · 2026-07-26 QA CORS PASS operatore
-**Esito pianificazione:** **GO INFRA-GH-1A** (revisione 2, piano corretto e consolidato)
-**Esito Fase A:** **PASS** (diagnostica D1–D9 + CORS HTTP + QA CORS browser/operatore)
-**Runtime live invariato:** `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — display **B5.5Z · build 56**
-**Monolite:** **non toccato**; nessun deploy monolite
-**Relazione WU-0010:** OUTDOOR-ROUTING-GH-B2 resta **BLOCKED** (manca Import B / endpoint VPS o decisione loopback servito al monolite)
-**Prossima fase dopo PASS completo 1A (Import B):** INFRA-GH-1B (VPS) — **non ancora aperta**
+**Data chiusura 1A+1B:** 2026-07-27
+**Esito pianificazione:** **GO INFRA-GH-1A** (revisione 2)
+**Esito esecuzione:** **PASS end-to-end** — Fase A + FREEZE-B + Import B + MMAP smoke locale + INFRA-GH-1B WRITE
+**Runtime live invariato (monolite GIS):** `ff43878e07acb57b714a3b77c877a1f8a40ae42b` (`ff43878`) — display **B5.5Z · build 59**
+**Monolite:** **non toccato** dai blocchi infra; nessun deploy monolite GraphHopper
+**Relazione WU-0010:** **OUTDOOR-ROUTING-GH-B2 — READY / NEXT RUNTIME BUNDLE** (endpoint VPS disponibile; B2 **non** implementato)
 **Online/gateway:** rinviato a OUTDOOR-ROUTING-API-GATEWAY-A (**BACKLOG / NON APERTO**)
 
-> Fonte primaria: piano INFRA-GH-1A revisione 2 + report PoC `INFRA-GH-1A-PHASE-A-REPORT.md`.
-> **Fase A eseguita e PASS.** Import B / freeze profili applicativi **non** eseguiti. WU **non CLOSED**.
+> Fonte primaria esecuzione: report PoC in `C:\Users\mrhz\Documents\AI\Tools\graphhopper-poc\reports\` + verifica VPS read-only 2026-07-27. **INFRA-GH-1A e INFRA-GH-1B CLOSED / PASS.**
 
 ---
 
 ## Contesto e motivo del blocco B2
 
-OUTDOOR-ROUTING-GH-B1a e B1b sono **CLOSED / PASS end-to-end** (runtime tip `3a702e1`, build 56). Il bundle operativo successivo **OUTDOOR-ROUTING-GH-B2** (GraphHopper endpoint, richiesta `/route`, preview transiente) è risultato **BLOCKED** in diagnosi read-only: **non esiste ancora alcun endpoint GraphHopper reale** (né locale né VPS).
-
-Decisione operatore: **deploy_first** — work-unit infrastrutturale prima del monolite. INFRA-GH-1A produce il PoC locale su Ryzen; B2 resta bloccato fino al PASS di 1A. Il geocoding multi-riga (vecchia numerazione «B2» in WU-0010 §5) è **superseded** come nome e resta backlog separato.
+OUTDOOR-ROUTING-GH-B1a e B1b sono **CLOSED / PASS end-to-end** (runtime tip `ff43878`, build 59 per monolite live; B1b tip `3a702e1` build 56). Il bundle operativo successivo **OUTDOOR-ROUTING-GH-B2** (GraphHopper endpoint, richiesta `/route`, preview transiente) era **BLOCKED** fino al PASS di INFRA-GH-1A/1B; **ora READY** con endpoint VPS Tailscale. Decisione operatore: **deploy_first** — work-unit infrastrutturale prima del monolite.
 
 ---
 
@@ -772,36 +768,52 @@ Le fonti sono verificate al tag 11.0, gli artefatti sono pinnabili con checksum 
 
 ---
 
-## Stato esecuzione (aggiornato 2026-07-26)
+## Stato esecuzione (aggiornato 2026-07-27)
 
-### Fase A — PASS
+### Fase A — PASS (2026-07-25/26)
 
-- PoC root: `C:\Users\mrhz\Documents\AI\Tools\graphhopper-poc`
-- Artefatti: GH 11.0, Temurin 21.0.11+10, PBF `nord-ovest-260724.osm.pbf` (checksum OK)
-- Import A: exit 0, ~210.5 s, profili `hike`+`mtb`, elevation CGIAR, `import_date=2026-07-25T01:45:35Z`
-- D1–D9 PASS; CORS HTTP PASS; restart senza re-import PASS; server spento; cache A + elevation conservate
-- Report: `reports\INFRA-GH-1A-PHASE-A-REPORT.md` (fuori repo)
+- Report: `reports\INFRA-GH-1A-PHASE-A-REPORT.md`
 - **QA CORS operatore:** «**QA CORS INFRA-GH-1A PASS operatore**» (2026-07-26)
-- Import B: **NON ESEGUITO**
-- Custom model applicativi: **non congelati**
-- Repository GIS monolite: **invariato** (`3a702e1` / blob `15c57074…`)
 
-### Prossimo (non autorizzato da questa registrazione)
+### FREEZE-B — PASS (2026-07-27)
 
-1. Taratura inline / freeze profili (hiking_easy, mtb_touring, mtb_trail) — solo con GO
-2. Import B + packaging cache — solo con GO
-3. Decisione endpoint per sbloccare B2 (loopback sviluppo vs INFRA-GH-1B VPS)
+- Tre custom model congelati: `hiking_easy.json`, `mtb_touring.json`, `mtb_trail.json` (Soluzione A)
+- Report: `reports\INFRA-GH-1A-FREEZE-B-REPORT.md`
+
+### Import B — PASS (2026-07-27)
+
+- Cache `nord-ovest-B`: 16 file, 790681035 byte, 4 profili, CH×4, elevation
+- `import_date=2026-07-27T01:04:53Z`; diag-A preservata
+- Report: `reports\INFRA-GH-1A-IMPORT-B-REPORT.md`
+
+### MMAP smoke locale — PASS (2026-07-27)
+
+- Cache RAM_STORE compatibile con serving MMAP; no reimport
+- Report: `reports\INFRA-GH-1B-MMAP-SMOKE-LOCAL-REPORT.md`
+
+### INFRA-GH-1B WRITE — PASS (2026-07-27)
+
+- Servizio `goi-graphhopper.service`; endpoint `http://100.114.7.53:8989`; soak 30 min PASS
+- Report: `reports\INFRA-GH-1B-WRITE-REPORT.md`, `INFRA-GH-1B-WRITE-SOAK.json`
+- Dettaglio VPS: [`INFRA_VPS.md`](../INFRA_VPS.md)
+
+### GIS monolite
+
+- **Non modificato** dai blocchi infra — tip `ff43878`, build 59, blob `db0d669…`
+
+### Prossimo (runtime GIS, non infra)
+
+- **OUTDOOR-ROUTING-GH-B2** — READY / NEXT RUNTIME BUNDLE (endpoint resolution + POST `/route` + preview)
 
 ---
 
-## Stato finale atteso della futura esecuzione completa
+## Chiusura INFRA-GH-1A + INFRA-GH-1B (registrazione docs 2026-07-27)
 
-Al PASS **completo** di INFRA-GH-1A (Import B incluso — **non ancora raggiunto**):
+**Stato WU:** **CLOSED / PASS end-to-end**. Obiettivi del piano raggiunti:
 
-- PoC locale operativo su `http://127.0.0.1:8989` con elevation reale e quattro profili applicativi.
-- Graph-cache B pacchettizzata e trasferibile (senza trasferimento ancora eseguito).
-- Contratto API (`/info`, `/route`, errori, CORS/PNA, timeout) documentato per sbloccare **OUTDOOR-ROUTING-GH-B2**.
-- Repository GIS invariato a livello monolite; VPS invariato fino a INFRA-GH-1B.
-- INFRA-GH-1B ancora da aprire; Online/gateway ancora rinviato.
+- PoC locale completo (Import B, profili congelati, cache trasferibile)
+- Endpoint VPS Tailscale operativo con collaudo soak
+- Contratto API verificato per B2 (`/info`, POST `/route`, CORS, errori)
+- Repository GIS monolite invariato; **B2 non implementato**
 
-**Stato corrente di questa WU:** **FASE A PASS / IMPORT B PENDING** — diagnostica e QA CORS chiuse; Import B e freeze profili aperti.
+**Stato corrente di questa WU:** **CLOSED / PASS end-to-end** — vedi anche OM §7 e [`HANDOFF.md`](../HANDOFF.md).

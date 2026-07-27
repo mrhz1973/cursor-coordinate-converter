@@ -117,20 +117,20 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **INFRA-GH-1A Fase A PASS + QA CORS** di questa registrazione (verificare `git ls-remote` post-push); runtime monolite **invariato**. |
-| Runtime live / commit monolite | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (`3a702e1`) — tip OUTDOOR-ROUTING-GH-B1b-FIX1 |
-| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-B1b (+ FIX1)** — pick/marker/GPS (build 56) — **CLOSED / PASS end-to-end** |
-| WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A** — **FASE A PASS** (diagnostica + QA CORS); Import B **pending** — [`docs/work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
-| Endpoint GraphHopper | PoC loopback `127.0.0.1:8989` **validato** (server attualmente **spento**); **nessun** endpoint VPS |
+| HEAD documentale (pre-autosync) | commit docs **INFRA-GH-1A/1B CLOSED** di questa registrazione (verificare `git ls-remote` post-push); runtime monolite **invariato** |
+| Runtime live / commit monolite | `ff43878e07acb57b714a3b77c877a1f8a40ae42b` (`ff43878`) — tip TRACK-POINT-CAP-2000-FIX2 |
+| Ultimo blocco runtime chiuso | **TRACK-POINT-CAP-2000 (+ FIX1 + FIX2)** — cap 2000 + paginazione + notice import (build 59) — **CLOSED / PASS end-to-end** |
+| WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
+| Endpoint GraphHopper | **`http://100.114.7.53:8989`** (Tailscale only; ACL tcp:8989 operatore); admin **`127.0.0.1:8990`** (solo localhost VPS) |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `3a702e1489aabbec52de6a0dbc3858d6184a6fdd` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `15c57074cc3c1ea5e2b75d4c6b724b7eee5a41b2` |
-| Byte monolite (git LF) | `2868398` |
-| `APP_BUILD_NUM` | `56` |
-| Display runtime | `B5.5Z · build 56` |
+| Runtime Git / atteso VPS | `ff43878e07acb57b714a3b77c877a1f8a40ae42b` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `db0d669db330466cf07a90db143e3c0922ec443c` |
+| Byte monolite (git LF) | `2887395` |
+| `APP_BUILD_NUM` | `59` |
+| Display runtime | `B5.5Z · build 59` |
 | `APP_BUILD_ID` | `B5.5Z` (invariato) |
 | OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
-| OUTDOOR-ROUTING-GH-B2 | **BLOCKED** — Fase A PoC PASS; manca Import B / endpoint servito al monolite (VPS o decisione loopback) |
+| OUTDOOR-ROUTING-GH-B2 | **READY / NEXT RUNTIME BUNDLE** — endpoint VPS disponibile; **non** implementato nel monolite |
 | OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
 | MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
@@ -157,19 +157,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=3a702e1` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=ff43878` |
 
 **Prossimo ordine operativo:**
 
-**WU-0011 Continuazione** — taratura / Import B (solo con GO esplicito) **oppure** decisione endpoint per B2. Fase A **PASS** (report PoC + QA CORS). Dettaglio: [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md).
-
-**OUTDOOR-ROUTING-GH-B2** — resta **BLOCKED** (nessun endpoint VPS/servito al monolite). Runtime live **`3a702e1` build 56** invariato. **INFRA-GH-1B** non aperta. **MAJOR-3-b2** resta parcheggiato.
+**OUTDOOR-ROUTING-GH-B2** — endpoint resolution + POST `/route` + preview transiente (**READY**; endpoint VPS `http://100.114.7.53:8989`; bundle **DELICATO**; review pre-deploy obbligatoria). **INFRA-GH-1A/1B CLOSED / PASS**. Runtime live **`ff43878`** build 59 invariato. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**); apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**); apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**.
 
-**Stop:** non Import B senza GO; non B2 monolite senza endpoint deciso; non gateway; non deploy GH su VPS senza INFRA-GH-1B; nessun MemoryMax ratificato.
+**Stop:** non B2 senza review downstream; non gateway; non modifiche infra GH senza blocco dedicato; monolite senza chiamate GraphHopper finché B2 non autorizzato.
 
 ---
 
@@ -179,7 +177,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Stato:** **BACKLOG / NON APERTO** (2026-07-25). **Non** WU aperta. **Non** autorizzato.
 
-**Sintesi:** gateway HTTPS server-side futuro per routing API mondiale (HTML standalone → endpoint controllato → provider esterno); chiave **solo** server-side; nessuna API key nel monolite; provider da scegliere (GraphHopper Directions / openrouteservice / compatibili); rivalutazione dopo PoC locale o prima di Online in B2. **Prossimo operativo resta WU-0011 / INFRA-GH-1A.**
+**Sintesi:** gateway HTTPS server-side futuro per routing API mondiale (HTML standalone → endpoint controllato → provider esterno); chiave **solo** server-side; nessuna API key nel monolite; provider da scegliere (GraphHopper Directions / openrouteservice / compatibili); rivalutazione prima della modalità Online in B2. **INFRA-GH-1A/1B CLOSED**; prossimo operativo routing: **OUTDOOR-ROUTING-GH-B2**.
 
 ### TRACK-CREATE-EDIT-UX-A (+ FIX1) — CTA Nuova traccia + stile unificato (build 46) — CLOSED
 
