@@ -2,52 +2,55 @@
 
 ## LATEST
 
-* real_task_commit: `b3217f559b945f41d854fa78ec4148153b476320`
-* real_task_subject: docs(infra): close GraphHopper 1A and 1B after VPS PASS
-* report_generated_at: 2026-07-27T06:15:00Z
+* real_task_commit: `6d9c4f41005c7f35bc86532ee72b4838affc5014`
+* real_task_subject: docs: close OUTDOOR-ROUTING-GH-B2 after QA PASS
+* report_generated_at: 2026-07-27T10:00:00Z
 * branch: main
-* remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `c7da511` (autosync TRACK-POINT-CAP-2000-FIX2 — esterno/verificabile)
+* remote_head_after_task_push: `6d9c4f41005c7f35bc86532ee72b4838affc5014`
+* previous_report_container: `bff1a91` (autosync INFRA-GH-1A/1B docs-only — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: task `b3217f5` committato localmente; autosync in corso; monolite blob `db0d669…` invariato
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task `b3217f5` push da verificare esternamente post-autosync
-* result_cursor: INFRA-GH-1A/1B chiusi in docs; B2 READY; OM §7/HANDOFF/INFRA_VPS/WU aggiornati
-* pass_operatore: non applicabile (docs-only)
-* result_runtime: monolite tip `ff43878` build 59 invariato; endpoint GH VPS `http://100.114.7.53:8989` verificato read-only
-* qa_attestation_source: n/a (docs-only)
-* notes: esecuzione infra PoC/VPS precedente; questo blocco solo riconciliazione documentale GIS
+* working_tree_status: task docs `6d9c4f4` pushato; monolite tip `89bbf28` invariato (blob `83da60d9…`); report in autosync
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task `6d9c4f4` su origin pre-autosync
+* result_cursor: OUTDOOR-ROUTING-GH-B2 (+FIX1+FIX2) chiuso in OM §7 / WU-0010 / roadmap / HANDOFF; QA PASS operatore registrata
+* pass_operatore: PASS — «QA OUTDOOR-ROUTING-GH-B2 PASS operatore»
+* result_runtime: VPS live `89bbf28` B6.0B2-FIX2 build 62; blob `83da60d9…`; byte 2916874; endpoint `http://100.114.7.53:8989`
+* qa_attestation_source: operatore (2026-07-27)
+* notes: review GPT-sostitutiva pre-deploy PASS; GLM non disponibile (post-hoc backstop); monolite non in commit docs; deploy GIS-only già PASS
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit:
-b3217f559b945f41d854fa78ec4148153b476320
+6d9c4f41005c7f35bc86532ee72b4838affc5014
 
-git rev-parse HEAD (post-task-commit, pre-autosync):
-b3217f559b945f41d854fa78ec4148153b476320
+runtime tip (monolite):
+89bbf285cd8f27fd0e2f30f4c1f9de550451c85b
+
+git rev-parse HEAD (post-task-push, pre-autosync):
+6d9c4f41005c7f35bc86532ee72b4838affc5014
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-db0d669db330466cf07a90db143e3c0922ec443c
+83da60d9def49bf7374a51031ec85e1761071f86
 
 git branch --show-current
 main
 
-pre-flight origin/main (inizio intervento):
-325c4d9aa23dd8d3b2522500147ef62354cbad92
+git ls-remote origin refs/heads/main (post-task, pre-autosync):
+6d9c4f41005c7f35bc86532ee72b4838affc5014	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
-* c7da511 — docs TRACK-POINT-CAP-2000-FIX2 close (real_task)
-* b3217f5 — docs INFRA-GH-1A/1B close (real_task corrente)
-* ff43878 — TRACK-POINT-CAP-2000-FIX2 runtime tip (build 59)
-* 325c4d9 — HEAD pre-intervento docs close
+* bff1a91 — autosync INFRA-GH-1A/1B docs-only (previous_report_container)
+* b3217f5 — docs INFRA-GH-1A/1B close (real_task precedente)
+* 6d9c4f4 — docs OUTDOOR-ROUTING-GH-B2 close (real_task corrente)
+* 89bbf28 — OUTDOOR-ROUTING-GH-B2-FIX2 runtime tip (build 62)
 
 ## LIMITI
 
 * PASS remoto container corrente = EXTERNAL_ONLY
-* B2 GraphHopper **READY** ma **non** implementato nel monolite
-* Admin GraphHopper 8990 localhost-only — non documentato come tailnet
+* GLM downstream non eseguita (non disponibile); backstop post-hoc non bloccante
+* Nessun terzo commit finalize-hash

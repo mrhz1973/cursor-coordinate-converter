@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-27 — **INFRA-GH-1A/1B DOCS CLOSE** — task docs **`b3217f5`** (`docs(infra): close GraphHopper 1A and 1B after VPS PASS`); **INFRA-GH-1A + INFRA-GH-1B CLOSED / PASS**; endpoint VPS `http://100.114.7.53:8989`; **OUTDOOR-ROUTING-GH-B2 READY** (non implementato); monolite tip **`ff43878`** build 59 invariato; inbox `2026-07-27_0810_infra-gh-1a-1b-docs-close.md`.
+2026-07-27 — **OUTDOOR-ROUTING-GH-B2 (+ FIX1 + FIX2) CLOSED / PASS** — task docs **`6d9c4f4`** (`docs: close OUTDOOR-ROUTING-GH-B2 after QA PASS`); runtime tip **`89bbf28`** build 62 / `B6.0B2-FIX2`; blob **`83da60d9…`**; review GPT-sostitutiva pre-deploy PASS; deploy tecnico PASS; QA «**QA OUTDOOR-ROUTING-GH-B2 PASS operatore**»; monolite già in `89bbf28` (non in commit docs); inbox `2026-07-27_1157_riepilogo_finito-sessione.md`.
 
-2026-07-27 — **TRACK-POINT-CAP-2000-FIX2 CLOSED / PASS** — task docs **`c7da511`**; runtime tip **`ff43878`** build 59.
+2026-07-27 — **INFRA-GH-1A/1B DOCS CLOSE** — task docs **`b3217f5`**; endpoint VPS `http://100.114.7.53:8989`.
 
-2026-07-26 — **INFRA-GH-1A Fase A PASS + QA CORS** — superseded da chiusura 1A/1B sopra.
+2026-07-27 — **TRACK-POINT-CAP-2000-FIX2 CLOSED / PASS** — task docs **`c7da511`**; runtime tip storico **`ff43878`** build 59.
