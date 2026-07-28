@@ -185,6 +185,44 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## OUTDOOR-ROUTING-GH-D (+ FIX1) — Salva percorso come traccia — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `567b611` (catena base `c806099` + FIX1 `567b611`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Catena runtime:**
+
+| Commit | Ruolo | Blob monolite |
+|--------|--------|----------------|
+| `c806099` | Base — CTA Salva come traccia; create-path + storage + rollback | `bcda184bf5c316e216a37b4ea7d1d5a6db8dc0c1` |
+| `567b611` | FIX1 — harden doppio clic / snapshot fail-closed / predicato busy | `4f679f5b3cba9e50ee81b6d6d92689dd9db5ace3` |
+
+**Deploy FIX1 registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = 567b611a39bd38722a16b7a13dbc2d7e68e14bdd
+blob = 4f679f5b3cba9e50ee81b6d6d92689dd9db5ace3
+goi-gis-app.service active / enabled
+HTTP 200
+byte repo/servito = 2945471 / 2945471
+SHA-256 = cd1c86e350f89642293ac8110f91665a82339d399d72befd6dddf78b321cd81f (match)
+CMP_PASS = sì
+GraphHopper / Planet-Clone / proxy / Docker / n8n / Tailscale non toccati
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA OUTDOOR-ROUTING-GH-D PASS operatore
+```
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611
+```
+
+**Display:** `B6.0D-FIX1 · build 66`. Review GPT-sostitutiva D + FIX1 PASS / GO DEPLOY.
+
 ## P-VERTEX-MODAL — modifica numerica coordinate vertice — CLOSED / PASS end-to-end
 
 **Runtime autorevole:** `5449cb9` (catena `a4fa8e7` + `5f8f73d` + `5449cb9`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.

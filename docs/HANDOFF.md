@@ -117,18 +117,19 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-GH-C CLOSED** di questa registrazione (verificare `git ls-remote` post-push); monolite runtime **già** su tip `dd9ad2f` (non in commit docs) |
-| Runtime live / commit monolite | `dd9ad2f07a3efde9ed54384874a328d75bbfae23` (`dd9ad2f`) — tip OUTDOOR-ROUTING-GH-C-FIX1 |
-| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-C (+ FIX1)** — Local/VPS/Auto providers (build 64) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-GH-D CLOSED** di questa registrazione (verificare `git ls-remote` post-push); monolite runtime **già** su tip `567b611` (non in commit docs) |
+| Runtime live / commit monolite | `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (`567b611`) — tip OUTDOOR-ROUTING-GH-D-FIX1 |
+| Ultimo blocco runtime chiuso | **OUTDOOR-ROUTING-GH-D (+ FIX1)** — Salva percorso come traccia (build 66) — **CLOSED / PASS end-to-end** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `dd9ad2f07a3efde9ed54384874a328d75bbfae23` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `a650c1c6fd318cd8d332cdc13b38c68252848732` |
-| Byte monolite (git LF) | `2940001` |
-| `APP_BUILD_NUM` | `64` |
-| Display runtime | `B6.0C-FIX1 · build 64` |
-| `APP_BUILD_ID` | `B6.0C-FIX1` |
+| Runtime Git / atteso VPS | `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `4f679f5b3cba9e50ee81b6d6d92689dd9db5ace3` |
+| Byte monolite (git LF) | `2945471` |
+| `APP_BUILD_NUM` | `66` |
+| Display runtime | `B6.0D-FIX1 · build 66` |
+| `APP_BUILD_ID` | `B6.0D-FIX1` |
+| OUTDOOR-ROUTING-GH-D / FIX1 | **CLOSED / PASS end-to-end** (salva route come traccia + harden; QA PASS) |
 | OUTDOOR-ROUTING-GH-C / FIX1 | **CLOSED / PASS end-to-end** (providers Local/VPS/Auto + init A/B; QA PASS) |
 | OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
 | OUTDOOR-ROUTING-GH-B2 / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (endpoint + `/route` + preview; review GPT-sostitutiva PASS; deploy+QA PASS) |
@@ -158,11 +159,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=dd9ad2f` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: WU-0010 bundle D/E/F / backlog routing UX (badge attivi, feedback punto incompleto, grade metrics, focus risultati, blocked-action feedback) / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A**. **INFRA-GH-1A/1B CLOSED / PASS**. Runtime live **`dd9ad2f`** / **`B6.0C-FIX1 · build 64`**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: WU-0010 bundle E/F / backlog routing UX (badge attivi, feedback punto incompleto, grade metrics, focus risultati, blocked-action feedback) / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A**. **INFRA-GH-1A/1B CLOSED / PASS**. Runtime live **`567b611`** / **`B6.0D-FIX1 · build 66`**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 

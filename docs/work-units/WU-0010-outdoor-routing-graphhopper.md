@@ -1,15 +1,16 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / C (+ FIX1) CLOSED / PASS end-to-end**
+**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / C (+ FIX1) CLOSED / D (+ FIX1) CLOSED / PASS end-to-end**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `dd9ad2f07a3efde9ed54384874a328d75bbfae23` (`dd9ad2f`) — display **`B6.0C-FIX1 · build 64`**
+**Runtime autorevole attuale:** `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (`567b611`) — display **`B6.0D-FIX1 · build 66`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C**.
-**C (+ FIX1) (autorità viva):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
+**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** poi **D**.
+**C (+ FIX1):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27).
+**D (+ FIX1) (autorità viva):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS end-to-end** (2026-07-27).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
@@ -281,19 +282,23 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Backlog UX (non implementato in C):** ROUTING-POINT-ACTIVE-BADGE-A; ROUTING-INCOMPLETE-POINT-FEEDBACK-A; ROUTING-GRADE-METRICS-A; ROUTING-RESULT-FOCUS-A; ROUTING-BLOCKED-ACTION-FEEDBACK-A.
 
-### BUNDLE D — Salva come traccia
+### BUNDLE D — Salva come traccia — **CLOSED / PASS end-to-end**
 
-**Scope futuro:**
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-28). Tip runtime **`567b611`** build **66** / `B6.0D-FIX1` (base D `c806099` build 65 + FIX1 harden).
 
-- Riuso `savedTrackAddFromPoints(opts)` (helper esistente, già read-only rispetto al draft `state.track`)
-- `saveStore` (prima persistenza del programma)
-- Read-back canonico
-- Rollback su errore
-- Refresh Tracce (`renderSavedTracksList`) e Workbench
+**Landed:**
 
-**Classificazione:** **DELICATO** per create-path e storage.
+- CTA `#routingSaveAsTrackBtn` in `.routing-panel-actions` (secondaria; primary resta Calcola)
+- Predicato `routingRoutePreviewIsValid` (preview ≥2 + fail-closed su `requestLoading`/`infoLoading`)
+- Sequenza transazionale `routingPerformSaveAsTrack`: snapshot `STORAGE_KEY` + selezione → `savedTrackAddFromPoints` → `saveStoreReported` → `trackVerifyPersistedSavedTrack` → rollback mirato su fail
+- Auto-name `trackMakeAutoName` (nessun dialog nome)
+- Lock modulo `_routingSaveBusy`; guardia doppio clic `Number(ev.detail) > 1` (FIX1)
+- Snapshot `localStorage.getItem` diretto fail-closed (FIX1; niente IIFE swallow)
+- Refresh `renderSavedTracksList` + `refreshTileMapForTrackUi` + `renderWorkbenchList` se aperto
+- i18n IT/EN (`routing.saveAsTrack*`, `tip.routingSaveAsTrack`); FR congelato
+- **Nessuna** rete aggiuntiva; **nessun** nuovo campo persistito; draft/`mapWaypoints`/GIS store intatti
 
-**Review downstream estesa obbligatoria.**
+**Classificazione:** **DELICATO** (cache/storage + create-path caller). Review GPT-sostitutiva D PASS (3 finding → FIX1); review FIX1 PASS / GO DEPLOY; deploy GIS-only PASS; QA «**QA OUTDOOR-ROUTING-GH-D PASS operatore**».
 
 ### BUNDLE E — Altimetria e difficoltà
 
@@ -565,6 +570,6 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 - **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
 - **MAJOR-4 import/restore** resta backlog basso.
-- Runtime autorevole: **`dd9ad2f` build 64** / `B6.0C-FIX1` (**C + FIX1 CLOSED**); endpoint VPS `http://100.114.7.53:8989` + Local `http://127.0.0.1:8989`; prerequisito [`WU-0011 / INFRA-GH-1A+1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) **CLOSED / PASS**.
-- Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/D/E minima narrativa o estesa a seconda del contenuto; **C estesa** per rete/OPSEC — **chiuso**).
+- Runtime autorevole: **`567b611` build 66** / `B6.0D-FIX1` (**D + FIX1 CLOSED**); endpoint VPS `http://100.114.7.53:8989` + Local `http://127.0.0.1:8989`; prerequisito [`WU-0011 / INFRA-GH-1A+1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) **CLOSED / PASS**.
+- Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/E minima narrativa o estesa a seconda del contenuto; **C estesa** rete/OPSEC — **chiuso**; **D estesa** storage/create-path — **chiuso**).
 - Questo documento è **piano**, non stato corrente. Stato vivo: `docs/OPERATING_MEMORY.md` §7.
