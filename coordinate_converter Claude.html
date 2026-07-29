@@ -13184,7 +13184,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E · build 67</span>
+    <span id="appBuildFooter">B6.0E-FIX1 · build 68</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -21092,10 +21092,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E — elevation profile, difficulty, map sync";
+const APP_BUILD_ID = "B6.0E-FIX1";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-FIX1 — fail-soft elevation validation (non-finite ele → null, keep route)";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 67;
+const APP_BUILD_NUM = 68;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -59706,13 +59706,15 @@ function routingValidateGraphhopperResponse(data){
     const nLon = normalizeLon(lon);
     // Geometry for map preview / save-as-track remains strictly 2D.
     previewCoordinates.push({ lat, lon: nLon });
-    // Optional elevation sample (parallel index). Missing third coord → ele:null.
-    let ele = null;
-    if (c.length >= 3){
-      const e = Number(c[2]);
-      if (!Number.isFinite(e)) return { ok: false, errKey: "routing.errorInvalidResponse" };
-      ele = e;
-    }
+    // Elevation is optional and fail-soft: bad/missing third values become ele:null
+    // without invalidating the whole route. Accept only finite typeof number
+    // (avoid Number(null)→0 and Number("")→0 false zeros).
+    const ele =
+      c.length >= 3 &&
+      typeof c[2] === "number" &&
+      Number.isFinite(c[2])
+        ? c[2]
+        : null;
     elevationCoordinates.push({ lat, lon: nLon, ele });
   }
 
