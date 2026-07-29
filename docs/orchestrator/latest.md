@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-30 — **`finito` Regola H — TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS end-to-end** — task docs **`0f270e8`** (`docs: finito TRACK-MODAL-DISPLAY-PREFS-A after Regola H QA PASS`); trigger «**QA TRACK-MODAL-DISPLAY-PREFS-A PASS operatore**»; runtime tip **`1e218a2`** / **`B6.0TDP-A · build 77`** (già versionato; non in commit docs); review GPT-sostitutiva PASS; deploy GIS-only PASS; backlog preservati PROFILE / POINT-UNDO / UNITS; working tree pre-autosync pulito post-task; inbox `2026-07-30_0025_riepilogo_finito-sessione.md`.
+2026-07-30 — **`finito` Regola H — OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** — task docs **`63ec2d1`** (`docs: finito OUTDOOR-ROUTING-ELEVATION-STYLE-A after Regola H QA PASS`); trigger «**QA OUTDOOR-ROUTING-ELEVATION-STYLE-A PASS operatore**»; runtime tip **`d28bc44`** / **`B6.0ES-A · build 78`** (già versionato nel commit runtime precedente; **incluso** nel tip monolite remoto, non nel commit docs); deploy GIS-only PASS; working tree pre-autosync pulito post-task; inbox `2026-07-30_0148_riepilogo_finito-sessione.md`.
+
+2026-07-30 — **`finito` Regola H — TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS end-to-end** — task docs **`0f270e8`**; runtime tip storico **`1e218a2`** build 77.
 
 2026-07-29 — **`finito` Regola H — OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS end-to-end** — task docs **`00c58e6`**; runtime tip storico **`d54c915`** build 76.
-
-2026-07-29 — **`finito` Regola H — OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8) CLOSED / PASS end-to-end** — task docs **`5884f62`**; runtime tip storico **`e7d9398`** build 75.
