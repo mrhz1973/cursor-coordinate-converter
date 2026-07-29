@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0TDP-A</title>
+<title>GOI GIS Tool · B6.0ES-A</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -9041,20 +9041,30 @@ dialog.track-modal.app-modal{
   #routingPlannerPanel .gis-panel-resize-handle[data-handle="w"]{ width:20px; height:60px; }
 }
 /* OUTDOOR-ROUTING-GH-E — elevation profile + difficulty */
+/* OUTDOOR-ROUTING-ELEVATION-STYLE-A — segmented elevation profile visual refresh */
 .routing-result-card{
-  display:flex; flex-direction:column; gap:8px;
-  margin:8px 0 4px; padding:8px 10px;
+  display:flex; flex-direction:column; gap:10px;
+  margin:8px 0 4px; padding:10px 12px;
   border:1px solid var(--border, rgba(148,163,184,.35));
   border-radius:var(--radius-control, 12px);
   background:var(--panel2, var(--panel, transparent));
 }
 .routing-result-card[hidden]{ display:none !important; }
 .routing-result-summary{
-  display:flex; flex-wrap:wrap; gap:6px 12px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(96px, 1fr));
+  gap:8px 12px;
   font-size:.82rem; color:var(--text, inherit);
 }
 .routing-result-summary .routing-metric{
-  display:inline-flex; gap:4px; align-items:baseline;
+  display:flex; flex-direction:column; gap:1px; min-width:0;
+}
+.routing-metric-value{
+  font-size:1.05rem; font-weight:700; line-height:1.15;
+  color:var(--text, inherit); letter-spacing:-0.01em;
+}
+.routing-metric-label{
+  font-size:.72rem; color:var(--muted); line-height:1.25;
 }
 .routing-result-summary .routing-metric-k{ color:var(--muted); font-size:.75rem; }
 .routing-difficulty-row{ display:flex; flex-direction:column; gap:4px; }
@@ -9062,7 +9072,7 @@ dialog.track-modal.app-modal{
 .routing-difficulty-label{ font-size:.75rem; color:var(--muted); }
 .routing-difficulty-badge{
   display:inline-flex; align-self:flex-start;
-  padding:2px 10px; border-radius:999px; font-size:.8rem; font-weight:600;
+  padding:3px 12px; border-radius:999px; font-size:.8rem; font-weight:600;
   border:1px solid var(--border);
   background:var(--accent-soft, rgba(59,130,246,.18));
   color:var(--text);
@@ -9082,20 +9092,45 @@ dialog.track-modal.app-modal{
   color:var(--text); list-style:none;
 }
 .routing-altitude-summary::-webkit-details-marker{ display:none; }
-.routing-altitude-chart-host{ display:flex; flex-direction:column; gap:4px; margin-top:6px; }
+.routing-altitude-chart-host{ display:flex; flex-direction:column; gap:4px; margin-top:6px; position:relative; }
 .routing-altitude-chart{
-  width:100%; height:clamp(140px, 28vh, 260px);
-  border:1px solid var(--border); border-radius:8px;
+  --routing-elev-band-light: #67a92f;
+  --routing-elev-band-moderate: #e8bd32;
+  --routing-elev-band-steep: #f39a24;
+  --routing-elev-band-very-steep: #ed5b35;
+  --routing-elev-band-extreme: #b92e2e;
+  --routing-elev-band-neutral: color-mix(in srgb, var(--muted, #94a3b8) 70%, transparent);
+  --routing-elev-fill-alpha: .18;
+  --routing-elev-grid: color-mix(in srgb, var(--muted, #94a3b8) 28%, transparent);
+  --routing-elev-axis: color-mix(in srgb, var(--muted, #94a3b8) 72%, var(--text, #111) 8%);
+  --routing-elev-tip-bg: var(--panel2, var(--panel, rgba(255,255,255,.96)));
+  --routing-elev-tip-stroke: var(--border, rgba(148,163,184,.5));
+  --routing-elev-marker-a: #2f9e44;
+  --routing-elev-marker-b: #e8590c;
+  width:100%; height:clamp(150px, 30vh, 280px);
+  border:1px solid var(--border); border-radius:10px;
   background:var(--panel, transparent); outline:none;
+  overflow:hidden;
+}
+:root[data-theme="dark"] .routing-altitude-chart{
+  --routing-elev-band-light: #8bc34a;
+  --routing-elev-band-moderate: #f4cf52;
+  --routing-elev-band-steep: #f7a64b;
+  --routing-elev-band-very-steep: #f07043;
+  --routing-elev-band-extreme: #d94c4c;
+  --routing-elev-fill-alpha: .26;
+  --routing-elev-tip-bg: rgba(20,24,33,.95);
 }
 .routing-altitude-chart:focus-visible{
   box-shadow:var(--ring-focus, 0 0 0 3px rgba(59,130,246,.15));
 }
 .routing-altitude-chart svg{ width:100%; height:100%; display:block; }
 .routing-altitude-text-equiv,
-.routing-altitude-legend,
-.routing-altitude-warn{ margin:0; font-size:.72rem; }
-.routing-altitude-warn{ color:var(--warn, #d97706); }
+.routing-altitude-legend{
+  position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+.routing-altitude-warn{ margin:0; font-size:.72rem; color:var(--warn, #d97706); }
 .routing-altitude-warn[hidden]{ display:none !important; }
 .routing-altitude-sync-marker{ pointer-events:none; }
 .routing-altitude-sync-marker circle{
@@ -9110,28 +9145,49 @@ dialog.track-modal.app-modal{
   stroke:var(--panel, #fff);
   stroke-width:3px;
 }
-.routing-speed-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px; margin:8px 0 4px; }
-.routing-speed-row label{ font-size:.78rem; color:var(--muted); }
-.routing-speed-select{ min-width:9.5rem; max-width:100%; }
+.routing-speed-row{
+  display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px 8px;
+  margin:2px 0 2px; padding:4px 8px;
+  border:1px solid var(--border, rgba(148,163,184,.3));
+  border-radius:999px; background:color-mix(in srgb, var(--panel, transparent) 80%, transparent);
+  max-width:100%;
+}
+.routing-speed-row label{ font-size:.75rem; color:var(--muted); }
+.routing-speed-select{ min-width:8.5rem; max-width:100%; }
 .routing-speed-custom{ width:5.5rem; }
 .routing-speed-custom[aria-invalid="true"]{ border-color:var(--error); }
 .routing-speed-summary{ font-size:.72rem; color:var(--muted); }
-.routing-ascent-detail{ margin:8px 0 0; border:1px solid var(--border); border-radius:8px; padding:0 8px 8px; background:var(--panel2, transparent); }
+.routing-ascent-detail{
+  --routing-elev-band-light: #67a92f;
+  --routing-elev-band-moderate: #e8bd32;
+  --routing-elev-band-steep: #f39a24;
+  --routing-elev-band-very-steep: #ed5b35;
+  --routing-elev-band-extreme: #b92e2e;
+  margin:8px 0 0; border:1px solid var(--border); border-radius:8px; padding:0 8px 8px; background:var(--panel2, transparent);
+}
+:root[data-theme="dark"] .routing-ascent-detail{
+  --routing-elev-band-light: #8bc34a;
+  --routing-elev-band-moderate: #f4cf52;
+  --routing-elev-band-steep: #f7a64b;
+  --routing-elev-band-very-steep: #f07043;
+  --routing-elev-band-extreme: #d94c4c;
+}
 .routing-ascent-detail > summary{ cursor:pointer; list-style:none; padding:8px 2px; font-size:.82rem; font-weight:600; }
 .routing-ascent-detail > summary::-webkit-details-marker{ display:none; }
 .routing-ascent-detail-table{ width:100%; border-collapse:collapse; font-size:.72rem; }
 .routing-ascent-detail-table th, .routing-ascent-detail-table td{ padding:4px 6px; text-align:left; border-top:1px solid var(--border); vertical-align:middle; }
 .routing-ascent-detail-table th{ color:var(--muted); font-weight:600; }
 .routing-band-pill{ display:inline-block; min-width:0.7rem; height:0.7rem; border-radius:999px; margin-right:6px; vertical-align:middle; }
-.routing-band-pill.band-light{ background:var(--success, #16a34a); }
-.routing-band-pill.band-moderate{ background:#eab308; }
-.routing-band-pill.band-steep{ background:#f97316; }
-.routing-band-pill.band-very-steep{ background:var(--error, #dc2626); }
-.routing-band-pill.band-extreme{ background:#7f1d1d; }
+.routing-band-pill.band-light{ background:var(--routing-elev-band-light); }
+.routing-band-pill.band-moderate{ background:var(--routing-elev-band-moderate); }
+.routing-band-pill.band-steep{ background:var(--routing-elev-band-steep); }
+.routing-band-pill.band-very-steep{ background:var(--routing-elev-band-very-steep); }
+.routing-band-pill.band-extreme{ background:var(--routing-elev-band-extreme); }
 .routing-ascent-detail-note{ margin:6px 0 0; font-size:.7rem; color:var(--muted); }
 .routing-ascent-detail-note[hidden]{ display:none !important; }
 @media (max-width:520px){
   .routing-ascent-detail-table{ display:block; overflow-x:auto; }
+  .routing-result-summary{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
 }
 .visually-hidden{
   position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
@@ -13271,7 +13327,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0TDP-A · build 77</span>
+    <span id="appBuildFooter">B6.0ES-A · build 78</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13529,11 +13585,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0TDP-A · build 77</code>
+            <code id="appBuildAbout">B6.0ES-A · build 78</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">TRACK-MODAL-DISPLAY-PREFS-A — track units and coordinate display formats</div>
+          <div class="about-line muted" id="appBuildAboutDetail">OUTDOOR-ROUTING-ELEVATION-STYLE-A — segmented elevation profile visual refresh</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21258,10 +21314,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0TDP-A";
-const APP_BUILD_DETAIL = "TRACK-MODAL-DISPLAY-PREFS-A — track units and coordinate display formats";
+const APP_BUILD_ID = "B6.0ES-A";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-ELEVATION-STYLE-A — segmented elevation profile visual refresh";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 77;
+const APP_BUILD_NUM = 78;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61385,16 +61441,16 @@ function routingRenderAltitudePanel(opts){
     const addMetric = (label, value) => {
       const el = document.createElement("div");
       el.className = "routing-metric";
-      el.innerHTML = "<span class=\"routing-metric-label\"></span><strong class=\"routing-metric-value\"></strong>";
-      el.querySelector(".routing-metric-label").textContent = label;
+      el.innerHTML = "<strong class=\"routing-metric-value\"></strong><span class=\"routing-metric-label\"></span>";
       el.querySelector(".routing-metric-value").textContent = value;
+      el.querySelector(".routing-metric-label").textContent = label;
       sum.appendChild(el);
     };
     if (Number.isFinite(m.distanceM)) addMetric(routingT("routing.distance", "Distance"), routingFmtRouteDistanceKm(m.distanceM));
-    const estMs = routingEstimatedDurationMs(r);
-    if (Number.isFinite(estMs)) addMetric(routingT("routing.duration", "Estimated time"), routingFmtEstimatedDurationMs(estMs));
     if (auth.ascentM != null) addMetric(routingT("routing.ascent", "Positive elevation"), routingFmtAltitudeMeters(auth.ascentM));
     if (auth.descentM != null) addMetric(routingT("routing.descent", "Negative elevation"), routingFmtAltitudeMeters(auth.descentM));
+    const estMs = routingEstimatedDurationMs(r);
+    if (Number.isFinite(estMs)) addMetric(routingT("routing.duration", "Estimated time"), routingFmtEstimatedDurationMs(estMs));
   }
   try { routingSyncSpeedControlsUi(); } catch(_){}
   try { routingRenderAscentDetail(r); } catch(_){}
@@ -61590,6 +61646,18 @@ function routingDecimateElevationSamplesGapSafe(samples, maxPts){
   return { parts: parts, pointCount: pointCount, reduced: reduced, note: note };
 }
 
+function routingElevBandCssVar(bandId){
+  if (bandId === "light") return "var(--routing-elev-band-light)";
+  if (bandId === "moderate") return "var(--routing-elev-band-moderate)";
+  if (bandId === "steep") return "var(--routing-elev-band-steep)";
+  if (bandId === "very_steep") return "var(--routing-elev-band-very-steep)";
+  if (bandId === "extreme") return "var(--routing-elev-band-extreme)";
+  return "var(--routing-elev-band-neutral, var(--routing-elev-axis, #888))";
+}
+function routingElevBandForSample(sample){
+  if (!sample || sample.gradePct == null || !Number.isFinite(sample.gradePct)) return null;
+  return routingClassifyGradeBand(sample.gradePct);
+}
 function routingDrawAltitudeChart(opts){
   opts = opts || {};
   const chart = document.getElementById("routingAltitudeChart");
@@ -61601,8 +61669,8 @@ function routingDrawAltitudeChart(opts){
   const prevHover = preserveHover && r.altitudeHover ? Object.assign({}, r.altitudeHover) : null;
   const rect = chart.getBoundingClientRect();
   const W = Math.max(280, Math.floor(rect.width || 320));
-  const H = Math.max(140, Math.floor(rect.height || 180));
-  const margin = { t: 12, r: 12, b: 28, l: 40 };
+  const H = Math.max(150, Math.floor(rect.height || 180));
+  const margin = { t: 18, r: 14, b: 30, l: 44 };
   const plotW = W - margin.l - margin.r;
   const plotH = H - margin.t - margin.b;
   const samples = ep.samples;
@@ -61614,9 +61682,13 @@ function routingDrawAltitudeChart(opts){
   }
   if (!Number.isFinite(minEle)){ minEle = 0; maxEle = 1; }
   if (maxEle - minEle < 1){ maxEle = minEle + 1; }
+  const padY = Math.max(5, (maxEle - minEle) * 0.08);
+  const minElePlot = minEle - padY;
+  const maxElePlot = maxEle + padY;
   const totalDist = Math.max(1e-6, samples[samples.length - 1].cumDistM || 1);
   const xOf = (d) => margin.l + (d / totalDist) * plotW;
-  const yOf = (e) => margin.t + (1 - ((e - minEle) / (maxEle - minEle))) * plotH;
+  const yOf = (e) => margin.t + (1 - ((e - minElePlot) / (maxElePlot - minElePlot))) * plotH;
+  const baselineY = margin.t + plotH;
 
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
@@ -61635,31 +61707,184 @@ function routingDrawAltitudeChart(opts){
   desc.textContent = teEl ? String(teEl.textContent || "") : routingT("routing.altitudeTitle", "Elevation profile");
   svg.appendChild(desc);
 
-  let pathD = "";
-  let gap = true;
+  const bg = document.createElementNS(ns, "rect");
+  bg.setAttribute("x", "0"); bg.setAttribute("y", "0");
+  bg.setAttribute("width", String(W)); bg.setAttribute("height", String(H));
+  bg.setAttribute("fill", "transparent");
+  bg.setAttribute("aria-hidden", "true");
+  svg.appendChild(bg);
+
+  const gGrid = document.createElementNS(ns, "g");
+  gGrid.setAttribute("class", "routing-elev-grid");
+  gGrid.setAttribute("aria-hidden", "true");
+  const nH = 4, nV = 5;
+  for (let i = 0; i <= nH; i++){
+    const t = i / nH;
+    const y = margin.t + t * plotH;
+    const ele = maxElePlot - t * (maxElePlot - minElePlot);
+    const line = document.createElementNS(ns, "line");
+    line.setAttribute("x1", String(margin.l));
+    line.setAttribute("x2", String(margin.l + plotW));
+    line.setAttribute("y1", String(y));
+    line.setAttribute("y2", String(y));
+    line.setAttribute("stroke", "var(--routing-elev-grid)");
+    line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke-dasharray", i === nH ? "0" : "3 3");
+    gGrid.appendChild(line);
+    const lab = document.createElementNS(ns, "text");
+    lab.setAttribute("x", String(margin.l - 6));
+    lab.setAttribute("y", String(y + 3));
+    lab.setAttribute("text-anchor", "end");
+    lab.setAttribute("font-size", "10");
+    lab.setAttribute("fill", "var(--routing-elev-axis)");
+    lab.textContent = routingFmtAltitudeMeters(ele);
+    gGrid.appendChild(lab);
+  }
+  for (let i = 0; i <= nV; i++){
+    const t = i / nV;
+    const x = margin.l + t * plotW;
+    const dist = t * totalDist;
+    const line = document.createElementNS(ns, "line");
+    line.setAttribute("x1", String(x));
+    line.setAttribute("x2", String(x));
+    line.setAttribute("y1", String(margin.t));
+    line.setAttribute("y2", String(margin.t + plotH));
+    line.setAttribute("stroke", "var(--routing-elev-grid)");
+    line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke-dasharray", "3 3");
+    gGrid.appendChild(line);
+    const lab = document.createElementNS(ns, "text");
+    lab.setAttribute("x", String(x));
+    lab.setAttribute("y", String(margin.t + plotH + 14));
+    lab.setAttribute("text-anchor", t === 0 ? "start" : (t === 1 ? "end" : "middle"));
+    lab.setAttribute("font-size", "10");
+    lab.setAttribute("fill", "var(--routing-elev-axis)");
+    lab.textContent = routingFmtRouteDistanceKm(dist);
+    gGrid.appendChild(lab);
+  }
+  svg.appendChild(gGrid);
+
+  const gFill = document.createElementNS(ns, "g");
+  gFill.setAttribute("class", "routing-elev-fill");
+  gFill.setAttribute("aria-hidden", "true");
+  const gLine = document.createElementNS(ns, "g");
+  gLine.setAttribute("class", "routing-elev-line");
+  gLine.setAttribute("aria-hidden", "true");
+
+  let firstValid = null, lastValid = null;
+  let linePathCount = 0, fillPathCount = 0;
   const parts = (drawn && Array.isArray(drawn.parts)) ? drawn.parts : [];
+
+  function flushBandGroup(pts, bandId){
+    if (!pts || pts.length < 2) return;
+    const stroke = routingElevBandCssVar(bandId);
+    let dLine = "M" + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+    for (let i = 1; i < pts.length; i++){
+      dLine += " L" + pts[i].x.toFixed(1) + " " + pts[i].y.toFixed(1);
+    }
+    const pLine = document.createElementNS(ns, "path");
+    pLine.setAttribute("d", dLine);
+    pLine.setAttribute("fill", "none");
+    pLine.setAttribute("stroke", stroke);
+    pLine.setAttribute("stroke-width", "2.25");
+    pLine.setAttribute("stroke-linecap", "round");
+    pLine.setAttribute("stroke-linejoin", "round");
+    pLine.setAttribute("vector-effect", "non-scaling-stroke");
+    gLine.appendChild(pLine);
+    linePathCount++;
+
+    let dFill = "M" + pts[0].x.toFixed(1) + " " + pts[0].y.toFixed(1);
+    for (let i = 1; i < pts.length; i++){
+      dFill += " L" + pts[i].x.toFixed(1) + " " + pts[i].y.toFixed(1);
+    }
+    const last = pts[pts.length - 1];
+    dFill += " L" + last.x.toFixed(1) + " " + baselineY.toFixed(1);
+    dFill += " L" + pts[0].x.toFixed(1) + " " + baselineY.toFixed(1) + " Z";
+    const pFill = document.createElementNS(ns, "path");
+    pFill.setAttribute("d", dFill);
+    pFill.setAttribute("fill", stroke);
+    pFill.setAttribute("fill-opacity", "var(--routing-elev-fill-alpha)");
+    pFill.setAttribute("stroke", "none");
+    gFill.appendChild(pFill);
+    fillPathCount++;
+  }
+
   for (let pi = 0; pi < parts.length; pi++){
     const part = parts[pi];
-    if (!part || part.type === "gap"){ gap = true; continue; }
+    if (!part || part.type === "gap") continue;
     const rs = part.samples || [];
+    let groupPts = [];
+    let groupBand = undefined;
     for (let i = 0; i < rs.length; i++){
       const s = rs[i];
-      if (!s || s.ele == null || !Number.isFinite(s.ele)){ gap = true; continue; }
-      const x = xOf(s.cumDistM), y = yOf(s.ele);
-      if (gap){ pathD += "M" + x.toFixed(1) + " " + y.toFixed(1) + " "; gap = false; }
-      else pathD += "L" + x.toFixed(1) + " " + y.toFixed(1) + " ";
+      if (!s || s.ele == null || !Number.isFinite(s.ele)){
+        flushBandGroup(groupPts, groupBand);
+        groupPts = [];
+        groupBand = undefined;
+        continue;
+      }
+      const pt = { x: xOf(s.cumDistM), y: yOf(s.ele), sample: s };
+      if (!firstValid) firstValid = pt;
+      lastValid = pt;
+      if (groupPts.length === 0){
+        groupPts.push(pt);
+        continue;
+      }
+      const prev = groupPts[groupPts.length - 1];
+      // Band of segment prev → s uses b.gradePct (sample s)
+      const band = routingElevBandForSample(s);
+      if (groupPts.length === 1 && groupBand === undefined){
+        groupBand = band;
+        groupPts.push(pt);
+        continue;
+      }
+      if (band === groupBand){
+        groupPts.push(pt);
+      } else {
+        flushBandGroup(groupPts, groupBand);
+        // Continuity: new path starts at previous end (no chromatic gap)
+        groupPts = [prev, pt];
+        groupBand = band;
+      }
     }
-    gap = true;
+    flushBandGroup(groupPts, groupBand);
   }
-  const path = document.createElementNS(ns, "path");
-  path.setAttribute("d", pathD.trim());
-  path.setAttribute("fill", "none");
-  path.setAttribute("stroke", "var(--accent, #2563eb)");
-  path.setAttribute("stroke-width", "2");
-  path.setAttribute("aria-hidden", "true");
-  svg.appendChild(path);
+  svg.appendChild(gFill);
+  svg.appendChild(gLine);
+
+  const gMarkers = document.createElementNS(ns, "g");
+  gMarkers.setAttribute("class", "routing-elev-markers");
+  gMarkers.setAttribute("aria-hidden", "true");
+  function addEndpointBadge(pt, label, fillVar){
+    if (!pt) return;
+    const bx = Math.max(margin.l + 10, Math.min(margin.l + plotW - 10, pt.x));
+    const by = Math.max(margin.t + 10, Math.min(margin.t + plotH - 10, pt.y - 12));
+    const g = document.createElementNS(ns, "g");
+    const c = document.createElementNS(ns, "circle");
+    c.setAttribute("cx", String(bx));
+    c.setAttribute("cy", String(by));
+    c.setAttribute("r", "9");
+    c.setAttribute("fill", fillVar);
+    c.setAttribute("stroke", "#fff");
+    c.setAttribute("stroke-width", "1.5");
+    g.appendChild(c);
+    const t = document.createElementNS(ns, "text");
+    t.setAttribute("x", String(bx));
+    t.setAttribute("y", String(by + 3.5));
+    t.setAttribute("text-anchor", "middle");
+    t.setAttribute("font-size", "10");
+    t.setAttribute("font-weight", "700");
+    t.setAttribute("fill", "#fff");
+    t.textContent = label;
+    g.appendChild(t);
+    gMarkers.appendChild(g);
+  }
+  addEndpointBadge(firstValid, "A", "var(--routing-elev-marker-a)");
+  addEndpointBadge(lastValid, "B", "var(--routing-elev-marker-b)");
+  svg.appendChild(gMarkers);
 
   const gHover = document.createElementNS(ns, "g");
+  gHover.setAttribute("class", "routing-elev-hover");
   gHover.setAttribute("aria-hidden", "true");
   const vLine = document.createElementNS(ns, "line");
   vLine.setAttribute("stroke", "var(--muted, #888)");
@@ -61667,17 +61892,31 @@ function routingDrawAltitudeChart(opts){
   vLine.setAttribute("stroke-dasharray", "3 3");
   vLine.style.display = "none";
   const hDot = document.createElementNS(ns, "circle");
-  hDot.setAttribute("r", "4");
+  hDot.setAttribute("r", "4.5");
   hDot.setAttribute("fill", "var(--accent, #2563eb)");
+  hDot.setAttribute("stroke", "#fff");
+  hDot.setAttribute("stroke-width", "2");
   hDot.style.display = "none";
+  const tipGroup = document.createElementNS(ns, "g");
+  tipGroup.style.display = "none";
+  const tipBg = document.createElementNS(ns, "rect");
+  tipBg.setAttribute("rx", "6");
+  tipBg.setAttribute("ry", "6");
+  tipBg.setAttribute("fill", "var(--routing-elev-tip-bg)");
+  tipBg.setAttribute("stroke", "var(--routing-elev-tip-stroke)");
+  tipBg.setAttribute("stroke-width", "1");
   const tip = document.createElementNS(ns, "text");
   tip.setAttribute("font-size", "11");
   tip.setAttribute("fill", "var(--text, #111)");
-  tip.style.display = "none";
-  gHover.appendChild(vLine); gHover.appendChild(hDot); gHover.appendChild(tip);
+  tipGroup.appendChild(tipBg);
+  tipGroup.appendChild(tip);
+  gHover.appendChild(vLine);
+  gHover.appendChild(hDot);
+  gHover.appendChild(tipGroup);
   svg.appendChild(gHover);
 
   const hit = document.createElementNS(ns, "rect");
+  hit.setAttribute("class", "routing-elev-hit");
   hit.setAttribute("x", String(margin.l));
   hit.setAttribute("y", String(margin.t));
   hit.setAttribute("width", String(plotW));
@@ -61689,7 +61928,17 @@ function routingDrawAltitudeChart(opts){
 
   chart.innerHTML = "";
   chart.appendChild(svg);
-  r._altitudeChartLayout = { W, H, margin, plotW, plotH, totalDist, minEle, maxEle, xOf, yOf, gHover, vLine, hDot, tip, hit, chartEl: chart };
+  r._altitudeChartLayout = {
+    W, H, margin, plotW, plotH, totalDist, minEle, maxEle, minElePlot, maxElePlot,
+    xOf, yOf, gHover, vLine, hDot, tip, tipGroup, tipBg, hit, chartEl: chart,
+    _svgNodeCount: svg.childNodes.length,
+    _linePathCount: linePathCount,
+    _fillPathCount: fillPathCount
+  };
+  // Count all descendant nodes for harness budget
+  try {
+    r._altitudeChartLayout._svgDescendantCount = svg.querySelectorAll("*").length;
+  } catch(_){ r._altitudeChartLayout._svgDescendantCount = -1; }
   if (prevHover && Number.isFinite(prevHover.sampleIndex)){
     r.altitudeHover = prevHover;
     routingApplyAltitudeHoverVisuals();
@@ -61789,7 +62038,8 @@ function routingApplyAltitudeHoverVisuals(){
   if (!hover || !samples || hover.sampleIndex < 0 || hover.sampleIndex >= samples.length){
     if (layout.vLine) layout.vLine.style.display = "none";
     if (layout.hDot) layout.hDot.style.display = "none";
-    if (layout.tip) layout.tip.style.display = "none";
+    if (layout.tipGroup) layout.tipGroup.style.display = "none";
+    else if (layout.tip) layout.tip.style.display = "none";
     return;
   }
   const s = samples[hover.sampleIndex];
@@ -61801,13 +62051,56 @@ function routingApplyAltitudeHoverVisuals(){
     const y = layout.yOf(s.ele);
     layout.hDot.setAttribute("cx", x); layout.hDot.setAttribute("cy", y);
     layout.hDot.style.display = "";
-    layout.tip.textContent = routingFmtAltitudeMeters(s.ele) + " · " + routingFmtRouteDistanceKm(s.cumDistM) + (s.gradePct != null && Number.isFinite(s.gradePct) ? (" · " + routingFmtGradePct(s.gradePct)) : "");
-    layout.tip.setAttribute("x", Math.min(x + 8, layout.margin.l + layout.plotW - 4));
-    layout.tip.setAttribute("y", Math.max(layout.margin.t + 12, y - 8));
-    layout.tip.style.display = "";
+    const eleTxt = routingFmtAltitudeMeters(s.ele);
+    const distTxt = routingFmtRouteDistanceKm(s.cumDistM);
+    const grTxt = (s.gradePct != null && Number.isFinite(s.gradePct)) ? routingFmtGradePct(s.gradePct) : null;
+    const line1 = eleTxt + " · " + distTxt;
+    const line2 = grTxt || "";
+    const tip = layout.tip;
+    const tipGroup = layout.tipGroup;
+    const tipBg = layout.tipBg;
+    if (tip && tipGroup && tipBg){
+      while (tip.firstChild) tip.removeChild(tip.firstChild);
+      const t1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+      t1.setAttribute("x", "0");
+      t1.setAttribute("dy", "0");
+      t1.textContent = line1;
+      tip.appendChild(t1);
+      if (line2){
+        const t2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+        t2.setAttribute("x", "0");
+        t2.setAttribute("dy", "13");
+        t2.textContent = line2;
+        tip.appendChild(t2);
+      }
+      // Deterministic tip size (fail-soft; avoid getBBox dependency)
+      const tipW = Math.min(160, Math.max(110, 8 + Math.max(line1.length, line2.length) * 6.2));
+      const tipH = line2 ? 34 : 22;
+      const pad = 8;
+      let posX = x + 10;
+      if (posX + tipW > layout.margin.l + layout.plotW) posX = x - 10 - tipW;
+      posX = Math.max(layout.margin.l, Math.min(layout.margin.l + layout.plotW - tipW, posX));
+      let posY = y - tipH - 8;
+      if (posY < layout.margin.t) posY = y + 8;
+      posY = Math.max(layout.margin.t, Math.min(layout.margin.t + layout.plotH - tipH, posY));
+      tipBg.setAttribute("x", "0");
+      tipBg.setAttribute("y", "0");
+      tipBg.setAttribute("width", String(tipW));
+      tipBg.setAttribute("height", String(tipH));
+      tip.setAttribute("x", String(pad));
+      tip.setAttribute("y", String(pad + 11));
+      tipGroup.setAttribute("transform", "translate(" + posX.toFixed(1) + " " + posY.toFixed(1) + ")");
+      tipGroup.style.display = "";
+    } else if (tip){
+      tip.textContent = line1 + (line2 ? (" · " + line2) : "");
+      tip.setAttribute("x", Math.min(x + 8, layout.margin.l + layout.plotW - 4));
+      tip.setAttribute("y", Math.max(layout.margin.t + 12, y - 8));
+      tip.style.display = "";
+    }
   } else {
     layout.hDot.style.display = "none";
-    layout.tip.style.display = "none";
+    if (layout.tipGroup) layout.tipGroup.style.display = "none";
+    else if (layout.tip) layout.tip.style.display = "none";
   }
 }
 function routingClearAltitudeHoverIfSource(source){
