@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0E-FIX8</title>
+<title>GOI GIS Tool · B6.0R-A</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13220,6 +13220,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
               data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
+      <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
+              data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
       <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
               data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
     </div>
@@ -13247,7 +13249,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E-FIX8 · build 75</span>
+    <span id="appBuildFooter">B6.0R-A · build 76</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -15407,6 +15409,9 @@ const I18N = {
     "routing.end":"Destinazione",
     "routing.pointUnset":"Punto non impostato",
     "routing.addVia":"Aggiungi punto di passaggio",
+    "routing.reverse":"Inverti percorso",
+    "routing.reverseDone":"Ordine invertito. Premi Calcola percorso.",
+    "routing.reverseUnavailable":"Inversione non disponibile in questo stato.",
     "routing.moveUp":"Sposta su",
     "routing.moveDown":"Sposta giù",
     "routing.remove":"Elimina",
@@ -15434,6 +15439,7 @@ const I18N = {
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
     "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
+    "tip.routingReverse":"Scambia partenza e destinazione e inverte i passaggi",
     "tip.routingSaveAsTrack":"Salva il percorso valido corrente come traccia in archivio.",
     "tip.routingProfile":"Profilo di routing GraphHopper",
     "routing.dragHandle":"Trascina per riordinare",
@@ -17525,6 +17531,9 @@ const I18N = {
     "routing.end":"Destination",
     "routing.pointUnset":"Point not set",
     "routing.addVia":"Add via point",
+    "routing.reverse":"Reverse route",
+    "routing.reverseDone":"Route order reversed. Press Calculate route.",
+    "routing.reverseUnavailable":"Reverse is not available in this state.",
     "routing.moveUp":"Move up",
     "routing.moveDown":"Move down",
     "routing.remove":"Remove",
@@ -17552,6 +17561,7 @@ const I18N = {
     "routing.errorCors":"CORS / network error while calculating the route.",
     "routing.errorGeneric":"Router request failed.",
     "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
+    "tip.routingReverse":"Swap start and destination and reverse intermediate points",
     "tip.routingSaveAsTrack":"Save the current valid route as a track in the archive.",
     "tip.routingProfile":"GraphHopper routing profile",
     "routing.dragHandle":"Drag to reorder",
@@ -19779,6 +19789,9 @@ const I18N = {
     "routing.calculate":"Calculer l’itinéraire",
     "routing.calculating":"Calcul de l’itinéraire…",
     "routing.routeReady":"Itinéraire prêt",
+    "routing.reverse":"Inverser l’itinéraire",
+    "routing.reverseDone":"Ordre inversé. Appuyez sur Calculer l’itinéraire.",
+    "routing.reverseUnavailable":"Inversion non disponible dans cet état.",
     "routing.distance":"Distance",
     "routing.duration":"Durée",
     "routing.ascent":"Dénivelé positif",
@@ -19796,6 +19809,7 @@ const I18N = {
     "routing.errorCors":"Erreur CORS / réseau pendant le calcul de l’itinéraire.",
     "routing.errorGeneric":"Échec de la requête du routeur.",
     "tip.routingCalculate":"Calculer l’itinéraire avec GraphHopper (transitoire).",
+    "tip.routingReverse":"Permute le départ et l’arrivée et inverse les étapes intermédiaires",
     "tip.routingProfile":"Profil de routage GraphHopper"
   }
 };
@@ -21205,10 +21219,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E-FIX8";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-QA-FIX8 — preserve planner language and numeric locale";
+const APP_BUILD_ID = "B6.0R-A";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-REVERSE-A — reverse start destination and via order";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 75;
+const APP_BUILD_NUM = 76;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -58866,13 +58880,20 @@ function routingSyncCalculateBtnUi(){
   const verifyBtn = document.getElementById("routingVerifyBtn");
   const busy = !!(state._routing && (state._routing.requestLoading || state._routing.infoLoading));
   if (verifyBtn) verifyBtn.disabled = !state._routing || busy;
-  if (!calcBtn) return;
+  if (!calcBtn){
+    try { routingSyncReverseBtnUi(); } catch(_){}
+    return;
+  }
   if (!state._routing){
     calcBtn.disabled = true;
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+    try { routingSyncReverseBtnUi(); } catch(_){}
     return;
   }
   if (busy){
     calcBtn.disabled = true;
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+    try { routingSyncReverseBtnUi(); } catch(_){}
     return;
   }
   const profile = routingGetSelectedGraphhopperProfile();
@@ -58881,6 +58902,7 @@ function routingSyncCalculateBtnUi(){
   const ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
   calcBtn.disabled = !ok;
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  try { routingSyncReverseBtnUi(); } catch(_){}
 }
 let _routingSaveBusy = false;
 function routingRoutePreviewIsValid(){
@@ -58906,6 +58928,65 @@ function routingSyncSaveAsTrackBtnUi(){
     return;
   }
   btn.disabled = !routingRoutePreviewIsValid();
+}
+function routingReverseIsBusyBlocked(r){
+  if (!r) return true;
+  if (r.requestLoading || r.infoLoading) return true;
+  if (r.markerDrag) return true;
+  if (r.gpsBusyId) return true;
+  if (r.listReorderDrag) return true;
+  return false;
+}
+function routingSyncReverseBtnUi(){
+  const btn = document.getElementById("routingReverseBtn");
+  if (!btn) return;
+  const r = state._routing;
+  if (!r){
+    btn.disabled = true;
+    return;
+  }
+  const n = Array.isArray(r.points) ? r.points.length : 0;
+  btn.disabled = routingReverseIsBusyBlocked(r) || n < 2;
+}
+function routingReversePoints(){
+  const r = routingEnsureState();
+  if (routingReverseIsBusyBlocked(r)){
+    routingSetStatus(routingT("routing.reverseUnavailable", "Reverse is not available in this state."), true);
+    try { routingSyncReverseBtnUi(); } catch(_){}
+    return false;
+  }
+  const pts = r.points;
+  if (!Array.isArray(pts) || pts.length < 2){
+    routingSetStatus(routingT("routing.reverseUnavailable", "Reverse is not available in this state."), true);
+    try { routingSyncReverseBtnUi(); } catch(_){}
+    return false;
+  }
+  if (r.pickMode){
+    try { routingExitPickMode({ silent: true }); } catch(_){}
+  }
+  pts.reverse();
+  r.dirty = true;
+  try { routingInvalidateRoutePreview(); } catch(_){}
+  try { routingRenderList(); } catch(_){}
+  try { routingSyncReverseBtnUi(); } catch(_){}
+  routingSetStatus(routingT("routing.reverseDone", "Route order reversed. Press Calculate route."), false);
+  const btn = document.getElementById("routingReverseBtn");
+  if (btn && !btn.disabled){
+    try { btn.focus(); } catch(_){}
+  }
+  return true;
+}
+function onRoutingReverseClick(ev){
+  if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
+  const btn = document.getElementById("routingReverseBtn");
+  if (btn && btn.disabled) return;
+  const r = state._routing;
+  if (routingReverseIsBusyBlocked(r) || !r || !Array.isArray(r.points) || r.points.length < 2){
+    routingSetStatus(routingT("routing.reverseUnavailable", "Reverse is not available in this state."), true);
+    try { routingSyncReverseBtnUi(); } catch(_){}
+    return;
+  }
+  routingReversePoints();
 }
 function routingFormatSaveAsTrackSuccess(name){
   return String(routingT("routing.saveAsTrackSuccess", "Track saved: {0}")).replace("{0}", String(name));
@@ -59018,6 +59099,7 @@ function routingInvalidateRoutePreview(){
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  try { routingSyncReverseBtnUi(); } catch(_){}
 }
 function routingResolvedEndpoint(){
   const r = state._routing;
@@ -59537,6 +59619,7 @@ function routingRenderList(){
     if (typeof routingSyncCalculateBtnUi === "function") routingSyncCalculateBtnUi();
     else calcBtn.disabled = true;
   }
+  try { routingSyncReverseBtnUi(); } catch(_){}
 }
 function routingMovePoint(id, delta){
   const r = routingEnsureState();
@@ -62035,6 +62118,7 @@ function openRoutingPlannerPanel(service){
   try { if (typeof applyLanguage === "function") applyLanguage(state.lang); } catch(_){}
   try { routingSyncProviderUi(); } catch(_){}
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  try { routingSyncReverseBtnUi(); } catch(_){}
   return true;
 }
 function routingServiceMenuIsOpen(){
@@ -62126,6 +62210,11 @@ function wireRoutingPlannerOnce(){
     ev.preventDefault();
     routingAddVia();
   });
+  const reverseBtn = document.getElementById("routingReverseBtn");
+  if (reverseBtn && !reverseBtn._routingReverseBound){
+    reverseBtn._routingReverseBound = true;
+    reverseBtn.addEventListener("click", onRoutingReverseClick);
+  }
   const profSel = document.getElementById("routingProfileSelect");
   if (profSel) profSel.addEventListener("change", () => {
     // Profile selection affects the route; invalidate the preview.
