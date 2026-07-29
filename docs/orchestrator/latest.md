@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-29 — **`finito` Regola H — INFRA-GH-1D-EXEC-C CLOSED / PASS end-to-end** — task docs **`5690f92`** (`docs: finito INFRA-GH-1D after Regola H QA PASS`); trigger «**QA INFRA-GH-1D-EXEC-C PASS operatore**»; GraphHopper live **`nord-ovest-B-v3-elev`** (bilinear+ramer max_elevation 5; downtime 11 s); V0+backup trattenuti; **Bundle E SBLOCCABILE** (non implementato); backlog **OUTDOOR-ROUTING-REVERSE-A**; HANDOFF + QA-CHECKLIST aggiornati; monolite tip **`567b611`** invariato; working tree pre-autosync pulito post-task; inbox `2026-07-29_1335_riepilogo_finito-sessione.md`.
+2026-07-29 — **`finito` Regola H — OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8) CLOSED / PASS end-to-end** — task docs **`5884f62`** (`docs: finito OUTDOOR-ROUTING-GH-E after Regola H QA PASS`); trigger «**QA OUTDOOR-ROUTING-GH-E PASS operatore**»; runtime tip **`e7d9398`** / **`B6.0E-FIX8 · build 75`** (già versionato; non in commit docs); due QA FAIL intermedi (altimetrico/pointer; locale numerico) registrati e chiusi; backlog **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A**; working tree pre-autosync pulito post-task; inbox `2026-07-29_2254_riepilogo_finito-sessione.md`.
 
-2026-07-29 — chiusura docs preliminare INFRA-GH-1D (`42cf1af` / autosync `3638654`) — superseduta dal `finito` Regola H sopra per HANDOFF/QA-CHECKLIST.
+2026-07-29 — **`finito` Regola H — INFRA-GH-1D-EXEC-C CLOSED / PASS** — task docs **`5690f92`**; GraphHopper V3 live; Bundle E poi CLOSED sopra.
 
-2026-07-28 — **OUTDOOR-ROUTING-GH-D (+ FIX1) CLOSED / PASS** — task docs **`4aa8e89`**; runtime tip **`567b611`** build 66 / `B6.0D-FIX1`.
+2026-07-28 — **OUTDOOR-ROUTING-GH-D (+ FIX1) CLOSED / PASS** — task docs **`4aa8e89`**; runtime tip storico **`567b611`** build 66.
