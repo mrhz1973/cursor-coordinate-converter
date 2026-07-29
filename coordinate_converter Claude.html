@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0E-FIX3</title>
+<title>GOI GIS Tool · B6.0E-FIX4</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13183,7 +13183,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E-FIX3 · build 70</span>
+    <span id="appBuildFooter">B6.0E-FIX4 · build 71</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -21091,10 +21091,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E-FIX3";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-FIX3 — fix map-sync cache coordinates and accessibility";
+const APP_BUILD_ID = "B6.0E-FIX4";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-FIX4 — prevent stale pan hover and update sync marker only";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 70;
+const APP_BUILD_NUM = 71;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -60035,11 +60035,8 @@ async function routingCalculateRouteGraphhopper(){
   }
 }
 
-function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom, opts){
-  const preserveAltitudePixelCache = !!(opts && opts.preserveAltitudePixelCache);
-  if (!preserveAltitudePixelCache){
-    try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
-  }
+function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
+  try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
   if (!tileMap) return;
   const old = tileMap.querySelector(".routing-route-preview-overlay");
   if (old) old.remove();
@@ -60052,12 +60049,9 @@ function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom, o
   const tileLayer = tileMap.querySelector(".tile-layer");
   if (!tileLayer) return;
 
-  const style = tileLayer.style.transform || "";
-  let tx = 0, ty = 0;
-  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
-  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
-  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
-  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  const { tx, ty } = (typeof routingTileLayerTranslatePx === "function")
+    ? routingTileLayerTranslatePx(tileLayer)
+    : { tx: 0, ty: 0 };
 
   const pts = r.previewCoordinates.filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
   if (pts.length < 2) return;
@@ -60102,55 +60096,10 @@ function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom, o
     svg.appendChild(line);
   }
 
-  // OUTDOOR-ROUTING-GH-E: transient altitude sync marker (profile ↔ map)
-  try {
-    const hover = r.altitudeHover;
-    const ep = r.elevationProfile;
-    if (hover && ep && Array.isArray(ep.samples) && ep.samples[hover.sampleIndex]){
-      const s = ep.samples[hover.sampleIndex];
-      if (s && Number.isFinite(s.lat) && Number.isFinite(s.lon)){
-        const si = Math.max(0, Math.min(pts.length - 1, hover.sampleIndex));
-        // Prefer matching preview index when lengths align; else project sample lat/lon
-        let px = null;
-        if (si < mapPts.length && mapPts[si] && Number.isFinite(mapPts[si].x)){
-          px = mapPts[si];
-        } else {
-          const al2 = trackLonsAlignToView(trackLonsUnwrapTransient([s.lon]), (state.viewCenter && state.viewCenter.lon) || 0);
-          px = tileMapLatLonToPxUnwrapped(root, s.lat, al2[0]);
-        }
-        if (px && Number.isFinite(px.x) && Number.isFinite(px.y)){
-          const g = document.createElementNS(ns, "g");
-          g.setAttribute("class", "routing-altitude-sync-marker");
-          g.style.pointerEvents = "none";
-          const c = document.createElementNS(ns, "circle");
-          c.setAttribute("cx", String(px.x - tx));
-          c.setAttribute("cy", String(px.y - ty));
-          c.setAttribute("r", "6");
-          c.setAttribute("fill", "var(--accent)");
-          c.setAttribute("stroke", "#fff");
-          c.setAttribute("stroke-width", "2");
-          g.appendChild(c);
-          if (Number.isFinite(s.ele)){
-            const t = document.createElementNS(ns, "text");
-            t.setAttribute("x", String(px.x - tx + 10));
-            t.setAttribute("y", String(px.y - ty - 8));
-            t.setAttribute("fill", "var(--text)");
-            t.setAttribute("font-size", "11");
-            t.setAttribute("stroke", "var(--panel)");
-            t.setAttribute("stroke-width", "3");
-            t.setAttribute("paint-order", "stroke");
-            const gStr = Number.isFinite(s.gradePct) ? (" · " + s.gradePct.toFixed(0) + "%") : "";
-            t.textContent = routingFmtAltitude(s.ele) + gStr;
-            g.appendChild(t);
-          }
-          svg.appendChild(g);
-        }
-      }
-    }
-  } catch(_){}
-
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
+  // Marker is hover-only; append without rebuilding polyline/cache.
+  try { if (typeof routingUpdateAltitudeSyncMarkerOnly === "function") routingUpdateAltitudeSyncMarkerOnly(); } catch(_){}
 }
 /* ================= OUTDOOR-ROUTING-GH-E-FIX2 — elevation profile hardening ================= */
 const ROUTING_ELEV_MIN_SEG_M = 0.5;
@@ -60882,15 +60831,71 @@ function routingRenderAltitudeChart(){
   host.appendChild(svg);
   r._altitudeChartLayout = { W, H, margin, plotW, plotH, totalDist, minEle, maxEle, xOf, yOf, gHover, vLine, hDot, tip, hit };
 }
-function routingRefreshPreviewOverlayOnly(){
+function routingTileLayerTranslatePx(tileLayer){
+  let tx = 0, ty = 0;
+  try {
+    const style = (tileLayer && tileLayer.style && tileLayer.style.transform) || "";
+    const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+    if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+    const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+    if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  } catch(_){}
+  return { tx: tx, ty: ty };
+}
+/** Hover-only: update/remove .routing-altitude-sync-marker without rebuilding the route preview or pixel cache. */
+function routingUpdateAltitudeSyncMarkerOnly(){
   try {
     const root = document.getElementById("miniMap");
-    const tm = root && root.querySelector(".tile-map");
-    if (!tm) return;
-    const z = state.mapZoom || 11;
-    const vc = state.viewCenter || { lat: 0, lon: 0 };
-    // Hover-only redraw must not drop the geometric pixel cache.
-    renderRoutingRoutePreviewOverlay(tm, vc.lat, vc.lon, z, { preserveAltitudePixelCache: true });
+    const tileMap = root && root.querySelector(".tile-map");
+    const tileLayer = tileMap && tileMap.querySelector(".tile-layer");
+    const wrap = tileMap && tileMap.querySelector(".routing-route-preview-overlay");
+    const svg = wrap && wrap.querySelector("svg");
+    if (!svg) return;
+    const oldMarks = svg.querySelectorAll(".routing-altitude-sync-marker");
+    for (let i = 0; i < oldMarks.length; i++){
+      try { oldMarks[i].remove(); } catch(_){}
+    }
+    const r = state._routing;
+    const hover = r && r.altitudeHover;
+    const ep = r && r.elevationProfile;
+    if (!hover || !ep || !Array.isArray(ep.samples) || !ep.samples[hover.sampleIndex]) return;
+    const s = ep.samples[hover.sampleIndex];
+    if (!s || !Number.isFinite(s.lat) || !Number.isFinite(s.lon)) return;
+    const al = trackLonsAlignToView(
+      trackLonsUnwrapTransient([s.lon]),
+      (state.viewCenter && state.viewCenter.lon) || 0
+    );
+    const px = tileMapLatLonToPxUnwrapped(root, s.lat, al[0]);
+    if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) return;
+    const tr = routingTileLayerTranslatePx(tileLayer);
+    const localX = px.x - tr.tx;
+    const localY = px.y - tr.ty;
+    const ns = "http://www.w3.org/2000/svg";
+    const g = document.createElementNS(ns, "g");
+    g.setAttribute("class", "routing-altitude-sync-marker");
+    g.style.pointerEvents = "none";
+    const c = document.createElementNS(ns, "circle");
+    c.setAttribute("cx", String(localX));
+    c.setAttribute("cy", String(localY));
+    c.setAttribute("r", "6");
+    c.setAttribute("fill", "var(--accent)");
+    c.setAttribute("stroke", "#fff");
+    c.setAttribute("stroke-width", "2");
+    g.appendChild(c);
+    if (Number.isFinite(s.ele)){
+      const t = document.createElementNS(ns, "text");
+      t.setAttribute("x", String(localX + 10));
+      t.setAttribute("y", String(localY - 8));
+      t.setAttribute("fill", "var(--text)");
+      t.setAttribute("font-size", "11");
+      t.setAttribute("stroke", "var(--panel)");
+      t.setAttribute("stroke-width", "3");
+      t.setAttribute("paint-order", "stroke");
+      const gStr = Number.isFinite(s.gradePct) ? (" · " + s.gradePct.toFixed(0) + "%") : "";
+      t.textContent = routingFmtAltitude(s.ele) + gStr;
+      g.appendChild(t);
+    }
+    svg.appendChild(g);
   } catch(_){}
 }
 function routingSetAltitudeHover(sampleIndex, source){
@@ -60901,7 +60906,7 @@ function routingSetAltitudeHover(sampleIndex, source){
     if (r.altitudeHover){
       r.altitudeHover = null;
       routingUpdateAltitudeCrosshair();
-      routingRefreshPreviewOverlayOnly();
+      routingUpdateAltitudeSyncMarkerOnly();
     }
     return;
   }
@@ -60912,7 +60917,7 @@ function routingSetAltitudeHover(sampleIndex, source){
   }
   r.altitudeHover = { sampleIndex: sampleIndex, source: source || "chart" };
   routingUpdateAltitudeCrosshair();
-  routingRefreshPreviewOverlayOnly();
+  routingUpdateAltitudeSyncMarkerOnly();
 }
 function routingUpdateAltitudeCrosshair(){
   const r = state._routing;
@@ -60999,6 +61004,12 @@ function routingAltitudeMapSyncBlocked(){
   const r = state._routing;
   if (!r || !r.panelOpen) return true;
   if (r.pickMode || r.markerDrag) return true;
+  // Real map pan in progress (attachPanHandlers sets .dragging on .tile-map).
+  try {
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (tileMap && tileMap.classList.contains("dragging")) return true;
+  } catch(_){}
   // Prefer the ratified central workbench guard (covers pick/edit/bbox/drags).
   try {
     if (typeof workbenchMapInteractionBlocked === "function" && workbenchMapInteractionBlocked()) return true;
