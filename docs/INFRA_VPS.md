@@ -79,7 +79,8 @@ Dati rilevati **live** il **2026-06-16**. Host **condiviso** con altri servizi (
 | JVM | `-Xms256m -Xmx768m -XX:+UseG1GC` |
 | Storage grafo | **MMAP** (`graph.dataaccess.default_type=MMAP`) |
 | systemd limiti | `MemoryHigh=1100M`, `MemoryMax=1400M` |
-| Cache | `nord-ovest-B`: 16 file / 790681035 byte; CH×4; elevation; **no reimport** a runtime |
+| Cache live | **`nord-ovest-B-v3-elev`**: 16 file / **776000971** byte; CH×4; elevation **bilinear + ramer max_elevation 5** (INFRA-GH-1D PASS 2026-07-29); `import_date=2026-07-28T23:39:23Z`; **no reimport** a runtime |
+| Cache V0 (rollback) | `nord-ovest-B`: 16 file / 790681035 byte — **trattenuta**; non cancellare |
 | Collaudo | INFRA-GH-1B WRITE PASS (2026-07-27): smoke VPS + tailnet CORS + soak 30 min (p95 ~7.6 ms) |
 | RAM osservata (soak) | MemoryCurrent max ~242 MiB; MemoryPeak ~248 MiB |
 | Swap osservata (soak) | ~1.3 MiB usati su swapfile 1 GiB |

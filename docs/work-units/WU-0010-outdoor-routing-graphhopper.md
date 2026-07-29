@@ -1,6 +1,6 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a CLOSED / B1b CLOSED / B2 CLOSED / C (+ FIX1) CLOSED / D (+ FIX1) CLOSED / PASS end-to-end**
+**Stato:** **OPEN / B1a–D CLOSED / Bundle E SBLOCCABILE (non implementato) / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
 **Runtime autorevole attuale:** `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (`567b611`) — display **`B6.0D-FIX1 · build 66`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
@@ -10,8 +10,11 @@
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
 **B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** poi **D**.
 **C (+ FIX1):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27).
-**D (+ FIX1) (autorità viva):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28). Infra prerequisito **INFRA-GH-1A/1B CLOSED / PASS** (vedi [`WU-0011`](WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](../INFRA_VPS.md)).
-**Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS end-to-end** (2026-07-27).
+**D (+ FIX1) (autorità viva monolite):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28).
+**INFRA-GH-1D (VPS elevation V3):** **CLOSED / PASS** (2026-07-29) — graph live `nord-ovest-B-v3-elev`; bilinear+ramer max_elevation 5; QA «**QA INFRA-GH-1D-EXEC-C PASS operatore**»; V0+backup trattenuti. Gate: `PASS INFRA-GH-1D-EXEC-C — V3 ADOTTATA E QA PASS`.
+**Bundle E:** **SBLOCCABILE** nel prossimo blocco documentale/operativo — **non** implementato in chiusura 1D.
+**Backlog UX (docs-only):** **OUTDOOR-ROUTING-REVERSE-A** — Pulsante Inverti percorso (contratto: swap A/B; invert via; profilo/opzioni invariati; ricalcolo esplicito; OPSEC/forced-offline; i18n IT/EN/FR).
+**Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
