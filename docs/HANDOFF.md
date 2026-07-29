@@ -117,20 +117,21 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `1e218a2` (non in commit docs) |
-| Runtime live / commit monolite | `1e218a2fe97199893b2c82b58637524a1da58830` (`1e218a2`) — tip TRACK-MODAL-DISPLAY-PREFS-A |
-| Ultimo blocco chiuso | **TRACK-MODAL-DISPLAY-PREFS-A** — Unità e formato coordinate modale Tracce — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **TRACK-MODAL-DISPLAY-PREFS-A** — tip `1e218a2` build 77 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `d28bc44` (non in commit docs) |
+| Runtime live / commit monolite | `d28bc44ddda221417ef6bcb3296d9df155d2032c` (`d28bc44`) — tip OUTDOOR-ROUTING-ELEVATION-STYLE-A |
+| Ultimo blocco chiuso | **OUTDOOR-ROUTING-ELEVATION-STYLE-A** — Restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **OUTDOOR-ROUTING-ELEVATION-STYLE-A** — tip `d28bc44` build 78 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `1e218a2fe97199893b2c82b58637524a1da58830` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `8ef3e17196790fdfb5507dee711af9ede68967ad` |
-| Byte monolite (git LF) | `3038595` |
-| `APP_BUILD_NUM` | `77` |
-| Display runtime | `B6.0TDP-A · build 77` |
-| `APP_BUILD_ID` | `B6.0TDP-A` |
+| Runtime Git / atteso VPS | `d28bc44ddda221417ef6bcb3296d9df155d2032c` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `e9ae353257ecb57793c5bb0adaeb0f9dcbe94dfd` |
+| Byte monolite (git LF) | `3050747` |
+| `APP_BUILD_NUM` | `78` |
+| Display runtime | `B6.0ES-A · build 78` |
+| `APP_BUILD_ID` | `B6.0ES-A` |
+| OUTDOOR-ROUTING-ELEVATION-STYLE-A | **CLOSED / PASS end-to-end** (restyle profilo altimetrico segmentato; QA PASS) |
 | TRACK-MODAL-DISPLAY-PREFS-A | **CLOSED / PASS end-to-end** (unità m/ft + formato coordinate display; QA PASS) |
 | OUTDOOR-ROUTING-REVERSE-A | **CLOSED / PASS end-to-end** (Inverti percorso; QA PASS) |
 | OUTDOOR-ROUTING-GH-E / FIX1–FIX8 | **CLOSED / PASS end-to-end** (altimetria + difficoltà + sync + locale; due QA FAIL intermedi chiusi; QA PASS finale) |
@@ -165,11 +166,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1e218a2` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d28bc44` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. Runtime live monolite **`1e218a2`** / **`B6.0TDP-A · build 77`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. Runtime live monolite **`d28bc44`** / **`B6.0ES-A · build 78`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
@@ -180,6 +181,10 @@ Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** /
 ---
 
 ## Backlog / note immediate
+
+### OUTDOOR-ROUTING-ELEVATION-STYLE-A — Restyle profilo altimetrico — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-30). Tip `d28bc44` / `B6.0ES-A · build 78`. QA «**QA OUTDOOR-ROUTING-ELEVATION-STYLE-A PASS operatore**».
 
 ### OUTDOOR-ROUTING-REVERSE-A — Inverti percorso — CLOSED / PASS end-to-end
 

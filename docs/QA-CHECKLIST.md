@@ -185,9 +185,46 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## OUTDOOR-ROUTING-ELEVATION-STYLE-A — Restyle visuale profilo altimetrico — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `d28bc44` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = d28bc44ddda221417ef6bcb3296d9df155d2032c
+blob = e9ae353257ecb57793c5bb0adaeb0f9dcbe94dfd
+goi-gis-app.service active / enabled
+HTTP 200 (bind Tailscale 100.114.7.53:8000)
+byte repo/servito = 3050747 / 3050747
+SHA-256 = 8e94e77a65793b18535c98eb28bb1419044ae581804e17e623f8c586a47acbb8 (match)
+CMP_PASS = sì
+GraphHopper / proxy / Docker / n8n / Tailscale non toccati
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA OUTDOOR-ROUTING-ELEVATION-STYLE-A PASS operatore
+```
+
+**Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H**.
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d28bc44
+```
+
+**Display:** `B6.0ES-A · build 78`.
+
+**Note:** Komoot = ispirazione UI non replica. Classificazione segmento via `b.gradePct`. Dark `:root[data-theme="dark"]`.
+
+**Backlog preservato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
+
 ## TRACK-MODAL-DISPLAY-PREFS-A — Unità e formato coordinate modale Tracce — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `1e218a2` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime autorevole live:** `1e218a2` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **OUTDOOR-ROUTING-ELEVATION-STYLE-A** `d28bc44`.
 
 **Deploy registrato (GIS-only, PASS tecnico):**
 
@@ -224,7 +261,7 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1e218a2
 
 ## OUTDOOR-ROUTING-REVERSE-A — Inverti percorso — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `d54c915` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **TRACK-MODAL-DISPLAY-PREFS-A** `1e218a2`.
+**Runtime autorevole live:** `d54c915` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **TRACK-MODAL-DISPLAY-PREFS-A** `1e218a2` poi **ELEVATION-STYLE-A** `d28bc44`.
 
 **Deploy registrato (GIS-only, PASS tecnico):**
 

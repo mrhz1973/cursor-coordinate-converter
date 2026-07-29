@@ -1,20 +1,21 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–E + REVERSE-A CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `1e218a2fe97199893b2c82b58637524a1da58830` (`1e218a2`) — display **`B6.0TDP-A · build 77`** (TRACK-MODAL-DISPLAY-PREFS-A; tip routing REVERSE-A storico `d54c915`)
+**Runtime autorevole attuale:** `d28bc44ddda221417ef6bcb3296d9df155d2032c` (`d28bc44`) — display **`B6.0ES-A · build 78`** (OUTDOOR-ROUTING-ELEVATION-STYLE-A; tip TRACK-MODAL storico `1e218a2`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** → **D** → **E** → **REVERSE-A** → **TRACK-MODAL**.
+**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** → **D** → **E** → **REVERSE-A** → **TRACK-MODAL** → **ELEVATION-STYLE-A**.
 **C (+ FIX1):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27).
 **D (+ FIX1):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28).
 **INFRA-GH-1D (VPS elevation V3):** **CLOSED / PASS end-to-end** (2026-07-29) — graph live `nord-ovest-B-v3-elev`; bilinear+ramer max_elevation 5; QA «**QA INFRA-GH-1D-EXEC-C PASS operatore**»; V0+backup trattenuti; **finito Regola H** (correzione coda EXEC-C). Gate: `PASS INFRA-GH-1D-EXEC-C — V3 ADOTTATA E QA PASS`.
 **E (+ FIX1–FIX8):** profilo altimetrico + difficoltà + sync mappa + locale numerico — **CLOSED / PASS end-to-end** (catena `e3cf114`…→ tip `e7d9398` FIX8 build 75; blob `df09e9dc…`; review GPT-sostitutiva E+FIX1–FIX8 PASS; deploy FIX8+QA PASS 2026-07-29).
 **REVERSE-A:** Inverti percorso — **CLOSED / PASS end-to-end** (tip `d54c915` build 76 / `B6.0R-A`; blob `5c79d266…`; deploy+QA PASS 2026-07-29).
-**TRACK-MODAL-DISPLAY-PREFS-A (autorità viva monolite):** unità/formato display modale Tracce — **CLOSED / PASS end-to-end** (tip `1e218a2` build 77 / `B6.0TDP-A`; blob `8ef3e171…`; review GPT-sostitutiva PASS; deploy+QA PASS 2026-07-30).
+**TRACK-MODAL-DISPLAY-PREFS-A:** unità/formato display modale Tracce — **CLOSED / PASS end-to-end** (tip `1e218a2` build 77 / `B6.0TDP-A`; blob `8ef3e171…`; review GPT-sostitutiva PASS; deploy+QA PASS 2026-07-30).
+**ELEVATION-STYLE-A (autorità viva monolite):** restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (tip `d28bc44` build 78 / `B6.0ES-A`; blob `e9ae353…`; deploy+QA PASS 2026-07-30; Regola H).
 **Backlog UX (docs-only):** **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
