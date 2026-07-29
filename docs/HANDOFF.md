@@ -117,20 +117,21 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **INFRA-GH-1D CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `567b611` (non in commit docs) |
-| Runtime live / commit monolite | `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (`567b611`) — tip OUTDOOR-ROUTING-GH-D-FIX1 (invariato in INFRA-GH-1D) |
-| Ultimo blocco chiuso | **INFRA-GH-1D-EXEC-C** — cutover GraphHopper VPS MMAP+V3 — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **OUTDOOR-ROUTING-GH-D (+ FIX1)** — Salva percorso come traccia (build 66) — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-GH-E CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `e7d9398` (non in commit docs) |
+| Runtime live / commit monolite | `e7d93984ad875c1faf6cd5873199f815d5062448` (`e7d9398`) — tip OUTDOOR-ROUTING-GH-E-FIX8 |
+| Ultimo blocco chiuso | **OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8)** — profilo altimetrico + difficoltà + locale numerico — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8)** — tip `e7d9398` build 75 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `4f679f5b3cba9e50ee81b6d6d92689dd9db5ace3` |
-| Byte monolite (git LF) | `2945471` |
-| `APP_BUILD_NUM` | `66` |
-| Display runtime | `B6.0D-FIX1 · build 66` |
-| `APP_BUILD_ID` | `B6.0D-FIX1` |
+| Runtime Git / atteso VPS | `e7d93984ad875c1faf6cd5873199f815d5062448` (deploy GIS-only Cursor SSH PASS FIX8) |
+| Blob monolite (git) | `df09e9dc073e1fc0c39b2e2167254c6a1155ca59` |
+| Byte monolite (git LF) | `3029257` |
+| `APP_BUILD_NUM` | `75` |
+| Display runtime | `B6.0E-FIX8 · build 75` |
+| `APP_BUILD_ID` | `B6.0E-FIX8` |
+| OUTDOOR-ROUTING-GH-E / FIX1–FIX8 | **CLOSED / PASS end-to-end** (altimetria + difficoltà + sync + locale; due QA FAIL intermedi chiusi; QA PASS finale) |
 | INFRA-GH-1D / EXEC-C | **CLOSED / PASS end-to-end** (V3 MMAP live `nord-ovest-B-v3-elev`; QA PASS; finito Regola H 2026-07-29) |
 | OUTDOOR-ROUTING-GH-D / FIX1 | **CLOSED / PASS end-to-end** (salva route come traccia + harden; QA PASS) |
 | OUTDOOR-ROUTING-GH-C / FIX1 | **CLOSED / PASS end-to-end** (providers Local/VPS/Auto + init A/B; QA PASS) |
@@ -162,17 +163,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e7d9398` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: **Bundle E** (**SBLOCCABILE**, non implementato ora) oppure **OUTDOOR-ROUTING-REVERSE-A** (backlog) / altri backlog routing UX (badge attivi, feedback punto incompleto, grade metrics, focus risultati, blocked-action feedback) / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`567b611`** / **`B6.0D-FIX1 · build 66`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: **OUTDOOR-ROUTING-REVERSE-A** (backlog) / **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / altri backlog routing UX (badge attivi, feedback punto incompleto, grade metrics, focus risultati, blocked-action feedback) / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. Runtime live monolite **`e7d9398`** / **`B6.0E-FIX8 · build 75`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-REVERSE-A** (**BACKLOG / NON APERTO** — Inverti percorso); **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**); apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-REVERSE-A**; **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
 
-**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C; non implementare Bundle E in questa chiusura.
+**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
@@ -180,9 +181,21 @@ Da scegliere: **Bundle E** (**SBLOCCABILE**, non implementato ora) oppure **OUTD
 
 ### OUTDOOR-ROUTING-REVERSE-A — Pulsante Inverti percorso — BACKLOG / NON APERTO
 
-**Stato:** **BACKLOG / NON APERTO** (2026-07-29). **Nessuna implementazione** in chiusura INFRA-GH-1D.
+**Stato:** **BACKLOG / NON APERTO** (2026-07-29). **Nessuna implementazione** in chiusura Bundle E.
 
 **Contratto preliminare:** scambio partenza/destinazione; inversione ordine via point; conservazione profilo e opzioni; ricalcolo solo su azione esplicita; rispetto OPSEC strict e forced offline; i18n IT/EN/FR; nessuna modifica a logiche GIS non correlate.
+
+### TRACK-ELEVATION-PROFILE-A — Profilo altimetrico tracce salvate — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-29, registrato in chiusura OUTDOOR-ROUTING-GH-E). Estendere profilo Bundle E alle tracce canoniche. **Nessuna implementazione**.
+
+### OUTDOOR-ROUTING-POINT-UNDO-A — Undo punti Routing — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-29). Undo spostamenti punti planner, session-only. **Nessuna implementazione**.
+
+### OUTDOOR-ROUTING-UNITS-A — Unità dedicate planner — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-29). Selettori km/mi e m/ft nel pannello Routing, indipendenti da mappa/poligoni. **Nessuna implementazione**.
 
 ### Routing UX post-C (registrati, non aperti)
 

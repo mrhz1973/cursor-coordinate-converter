@@ -185,9 +185,64 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8) — Profilo altimetrico + difficoltà — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `e7d9398` (catena `e3cf114` + FIX1–FIX8) — deploy GIS-only FIX8 **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Catena runtime (sintesi):**
+
+| Commit | Ruolo | Build |
+|--------|--------|-------|
+| `e3cf114` | Feature — profilo SVG + difficoltà | 67 · B6.0E |
+| `ab9c0a9`…`166f1c4` | FIX1–FIX4 hardening elevation / hover | 68–71 |
+| `476c446` | FIX5 — metriche filtrate + pointer + velocità | 72 |
+| `abbd836` | FIX6 — contratto dati filtrati + difficoltà 0–100 | 73 |
+| `8ea0938` | FIX7 — sync pointer robusto / GIS guards | 74 |
+| `e7d9398` | FIX8 — preserva locale numerico planner | 75 · tip |
+
+**QA FAIL intermedi (chiusi):**
+
+```text
+QA FAIL #1 — altimetrico/pointer (post deploy FIX4 166f1c4) → FIX5–FIX7
+QA FAIL #2 — locale numerico IT 3.8km vs 3,8km (post deploy FIX7 8ea0938) → FIX8
+```
+
+**Deploy FIX8 registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = e7d93984ad875c1faf6cd5873199f815d5062448
+blob = df09e9dc073e1fc0c39b2e2167254c6a1155ca59
+goi-gis-app.service active / enabled
+HTTP 200
+byte repo/servito = 3029257 / 3029257
+SHA-256 = 1f7e2a7f2fad9794cd2b380df48e18cf8a58c1b6ba310d6a8ce9ca9f3bcd383c (match)
+CMP_PASS = sì
+GraphHopper / proxy / Docker / n8n / Tailscale non toccati
+```
+
+**Review finale:** PASS REVIEW GPT-SOSTITUTIVA OUTDOOR-ROUTING-GH-E + FIX1–FIX8.
+
+**Attestazione QA (operatore):**
+
+```text
+QA OUTDOOR-ROUTING-GH-E PASS operatore
+```
+
+**Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H**.
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=e7d9398
+```
+
+**Display:** `B6.0E-FIX8 · build 75`.
+
+**Backlog registrato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
+
 ## INFRA-GH-1D-EXEC-C — cutover GraphHopper VPS MMAP+V3 — CLOSED / PASS end-to-end
 
-**Natura:** infrastruttura GraphHopper VPS (PoC fuori repo + config VPS) — **non** patch monolite. Monolite runtime live resta `567b611` / `B6.0D-FIX1 · build 66`.
+**Natura:** infrastruttura GraphHopper VPS (PoC fuori repo + config VPS) — **non** patch monolite. Monolite runtime live superseduto da Bundle E tip `e7d9398`.
 
 **Esito:** **CLOSED / PASS end-to-end** (2026-07-29). Gate: `PASS INFRA-GH-1D-EXEC-C — V3 ADOTTATA E QA PASS`.
 
@@ -199,8 +254,8 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 | Downtime cutover | 11 s |
 | Restart persistenza | PASS |
 | V0 / backup / staging | `nord-ovest-B` + backup/rollback **mantenuti** (non cancellati) |
-| Bundle E | **SBLOCCABILE** nel prossimo blocco — **non** implementato qui |
-| Backlog | **OUTDOOR-ROUTING-REVERSE-A** (docs-only) |
+| Bundle E | **CLOSED** tip `e7d9398` (post-1D) |
+| Backlog | **OUTDOOR-ROUTING-REVERSE-A** (+ backlog E: PROFILE / POINT-UNDO / UNITS) |
 
 **Attestazione QA (operatore):**
 
@@ -210,7 +265,7 @@ QA INFRA-GH-1D-EXEC-C PASS operatore
 
 **Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H** (correzione: il prompt EXEC-C aveva escluso erroneamente la coda `finito`; questa chiusura esegue il workflow `finito` senza secondo comando).
 
-**URL runtime app (monolite invariato):**
+**URL runtime app (storico al momento 1D):**
 
 ```
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611
@@ -220,7 +275,7 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611
 
 ## OUTDOOR-ROUTING-GH-D (+ FIX1) — Salva percorso come traccia — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `567b611` (catena base `c806099` + FIX1 `567b611`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime autorevole live:** `567b611` (catena base `c806099` + FIX1 `567b611`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **E** `e7d9398`.
 
 **Catena runtime:**
 
@@ -248,7 +303,7 @@ GraphHopper / Planet-Clone / proxy / Docker / n8n / Tailscale non toccati
 QA OUTDOOR-ROUTING-GH-D PASS operatore
 ```
 
-**URL runtime live:**
+**URL runtime live (storico):**
 
 ```
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611

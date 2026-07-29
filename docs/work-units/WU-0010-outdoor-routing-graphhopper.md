@@ -1,19 +1,19 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–D CLOSED / Bundle E SBLOCCABILE (non implementato) / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `567b611a39bd38722a16b7a13dbc2d7e68e14bdd` (`567b611`) — display **`B6.0D-FIX1 · build 66`**
+**Runtime autorevole attuale:** `e7d93984ad875c1faf6cd5873199f815d5062448` (`e7d9398`) — display **`B6.0E-FIX8 · build 75`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
-**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** poi **D**.
+**B2 operativo:** GraphHopper endpoint / richiesta `/route` / preview transiente — **CLOSED / PASS end-to-end** (catena `42b01b3`→`feb1eb3`→tip `89bbf28` build 62; blob `83da60d9…`; endpoint `http://100.114.7.53:8989`; review GPT-sostitutiva pre-deploy PASS; deploy+QA PASS 2026-07-27). Superseded live da **C** → **D** → **E**.
 **C (+ FIX1):** provider Local/VPS/Auto + `/info` + consenso loopback — **CLOSED / PASS end-to-end** (catena `61b5b34` build 63 → tip `dd9ad2f` FIX1 build 64; blob `a650c1c6…`; review GLM PASS + GPT-sostitutiva FIX1 PASS; deploy+QA PASS 2026-07-27).
-**D (+ FIX1) (autorità viva monolite):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28).
+**D (+ FIX1):** Salva percorso corrente come traccia — **CLOSED / PASS end-to-end** (catena `c806099` build 65 → tip `567b611` FIX1 build 66; blob `4f679f5b…`; review GPT-sostitutiva D+FIX1 PASS; deploy+QA PASS 2026-07-28).
 **INFRA-GH-1D (VPS elevation V3):** **CLOSED / PASS end-to-end** (2026-07-29) — graph live `nord-ovest-B-v3-elev`; bilinear+ramer max_elevation 5; QA «**QA INFRA-GH-1D-EXEC-C PASS operatore**»; V0+backup trattenuti; **finito Regola H** (correzione coda EXEC-C). Gate: `PASS INFRA-GH-1D-EXEC-C — V3 ADOTTATA E QA PASS`.
-**Bundle E:** **SBLOCCABILE** nel prossimo blocco documentale/operativo — **non** implementato in chiusura 1D.
-**Backlog UX (docs-only):** **OUTDOOR-ROUTING-REVERSE-A** — Pulsante Inverti percorso (contratto: swap A/B; invert via; profilo/opzioni invariati; ricalcolo esplicito; OPSEC/forced-offline; i18n IT/EN/FR).
+**E (+ FIX1–FIX8) (autorità viva monolite):** profilo altimetrico + difficoltà + sync mappa + locale numerico — **CLOSED / PASS end-to-end** (catena `e3cf114`…→ tip `e7d9398` FIX8 build 75; blob `df09e9dc…`; review GPT-sostitutiva E+FIX1–FIX8 PASS; deploy FIX8+QA PASS 2026-07-29). Due QA FAIL intermedi registrati (altimetrico/pointer post-FIX4; locale numerico post-FIX7) e chiusi da FIX5–FIX8.
+**Backlog UX (docs-only):** **OUTDOOR-ROUTING-REVERSE-A**; **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
@@ -305,18 +305,28 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 ### BUNDLE E — Altimetria e difficoltà
 
-**Scope futuro:**
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-29) — tip `e7d9398` / `B6.0E-FIX8 · build 75`.
 
-- Grafico **SVG vanilla** (preferenza SVG su canvas)
-- Quota e distanza
-- Pendenza per segmento
-- Salita e discesa cumulative
-- Sincronizzazione mappa ↔ profilo (crosshair)
-- Difficoltà stimata spiegabile (facile / moderata / difficile / molto difficile)
-- Dark/light + mobile + unità metriche/imperiali
-- Gestione quote mancanti e spike
+**Landed:**
 
-**Vincoli:** nessuna libreria runtime esterna; nessuna modifica a sanitizer/storage/CRUD.
+- Grafico **SVG vanilla** (quota/distanza; gap-safe)
+- Pendenza / Dislivello ± filtrati (bucket mediana 25 m; deadband 3 m su ascent/descent filtrati; autorità `filterAvailable`)
+- Difficoltà stimata 0–100 spiegabile (pesi `/4.7`)
+- Sincronizzazione mappa ↔ profilo (pointer ownership; marker SVG su preview; FIX7 GIS guards)
+- Velocità media → Tempo stimato (no refetch)
+- Formattatori quota sempre metri; distanza `X,Ykm` / `X.Ykm` via locale IT/EN/FR (FIX8 preserva `state.lang`)
+- Dark/light + mobile; gestione quote mancanti/spike (FIX1+)
+
+**QA FAIL registrati (chiusi):**
+
+1. **Altimetrico/pointer** (post deploy FIX4 `166f1c4`) → FIX5–FIX7
+2. **Locale numerico IT** (post deploy FIX7 `8ea0938`, forma `3.8km`) → FIX8
+
+**Review finale:** PASS REVIEW GPT-SOSTITUTIVA OUTDOOR-ROUTING-GH-E + FIX1–FIX8.
+
+**Vincoli rispettati:** nessuna libreria runtime esterna; nessuna modifica a sanitizer/storage/CRUD.
+
+**Fuori scope Bundle E (backlog):** unità dedicate planner (**OUTDOOR-ROUTING-UNITS-A**); profilo su tracce salvate (**TRACK-ELEVATION-PROFILE-A**); undo punti (**OUTDOOR-ROUTING-POINT-UNDO-A**).
 
 ### BUNDLE F — Funzioni avanzate
 
