@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0E-FIX7</title>
+<title>GOI GIS Tool · B6.0E-FIX8</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13247,7 +13247,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E-FIX7 · build 74</span>
+    <span id="appBuildFooter">B6.0E-FIX8 · build 75</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -21205,10 +21205,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E-FIX7";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-QA-FIX7 — repair runtime map sync, GIS guards and gap-safe decimation";
+const APP_BUILD_ID = "B6.0E-FIX8";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-QA-FIX8 — preserve planner language and numeric locale";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 74;
+const APP_BUILD_NUM = 75;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -49673,10 +49673,28 @@ function syncI18nInRoot(root, lang){
   });
 }
 
+function normalizeSupportedLanguage(value){
+  const raw = String(value == null ? "" : value)
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, "-");
+  const base = raw.split("-")[0];
+  if (base === "it" || base === "en" || base === "fr") return base;
+  return "";
+}
 function applyLanguage(lang){
-  state.lang = lang;
-  document.documentElement.setAttribute("lang", lang);
-  syncI18nInRoot(document, lang);
+  const requested = normalizeSupportedLanguage(lang);
+  const current = normalizeSupportedLanguage(state && state.lang);
+  let domLang = "";
+  try {
+    domLang = normalizeSupportedLanguage(
+      document.documentElement && document.documentElement.getAttribute("lang")
+    );
+  } catch(_){ domLang = ""; }
+  const resolved = requested || current || domLang || "it";
+  state.lang = resolved;
+  document.documentElement.setAttribute("lang", resolved);
+  syncI18nInRoot(document, resolved);
   renderNotes();
   renderHistory();
   renderFavorites();
@@ -60295,11 +60313,24 @@ function routingFmtAltitude(meters){ return routingFmtAltitudeMeters(meters); }
 function routingFmtDistPreferUnit(meters){ return routingFmtRouteDistanceKm(meters); }
 function routingCurrentNumberLocale(){
   try {
-    const lang = String((state && state.lang) || "en").toLowerCase();
+    const stateLang = (typeof normalizeSupportedLanguage === "function")
+      ? normalizeSupportedLanguage(state && state.lang)
+      : "";
+    let domLang = "";
+    try {
+      domLang = (typeof normalizeSupportedLanguage === "function")
+        ? normalizeSupportedLanguage(
+            document.documentElement && document.documentElement.getAttribute("lang")
+          )
+        : "";
+    } catch(_){ domLang = ""; }
+    const lang = stateLang || domLang || "it";
     if (lang === "it") return "it-IT";
     if (lang === "fr") return "fr-FR";
-  } catch(_){}
-  return "en-US";
+    return "en-US";
+  } catch(_){
+    return "it-IT";
+  }
 }
 function routingNumberFormatter(opts){
   opts = opts || {};
@@ -62001,7 +62032,7 @@ function openRoutingPlannerPanel(service){
   try { routingSyncProviderUi(); } catch(_){}
   routingRenderList();
   try { refreshTileMapForTrackUi(); } catch(_){}
-  try { if (typeof applyLanguage === "function") applyLanguage(); } catch(_){}
+  try { if (typeof applyLanguage === "function") applyLanguage(state.lang); } catch(_){}
   try { routingSyncProviderUi(); } catch(_){}
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
   return true;
