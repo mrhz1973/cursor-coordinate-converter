@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0R-A</title>
+<title>GOI GIS Tool · B6.0TDP-A</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -5132,22 +5132,29 @@ dialog.help-modal.app-modal .app-modal-body kbd{
 }
 .track-newtrack-prompt .tnp-actions .btn{ padding:5px 10px; font-size:.82rem; }
 .track-unit-row{
-  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap;
   margin:10px 0 6px; font-size:.9rem;
 }
+.track-unit-ctrl{
+  display:flex; align-items:center; gap:6px; flex-wrap:nowrap; min-width:0;
+}
 .track-unit-row label{ margin:0; white-space:nowrap; }
-.track-unit-row select{ min-width:4.5rem; }
+.track-unit-row select{ min-width:4.5rem; max-width:100%; }
+.track-unit-row select#trackPointCoordFormat{ min-width:7.25rem; }
 #trackUnitHome{ display:block; }
 .track-unit-row.tps-unit-inline{
   margin:0;
   margin-left:auto;
-  flex-shrink:0;
-  gap:6px;
+  flex-shrink:1;
+  gap:8px 12px;
   font-size:.85rem;
+  max-width:100%;
 }
 .track-unit-row.tps-unit-inline select{ min-width:3.75rem; }
+.track-unit-row.tps-unit-inline select#trackPointCoordFormat{ min-width:6.5rem; }
 .tps-unit-inline-mount{
   display:flex; align-items:center; margin-left:auto; flex-wrap:wrap;
+  max-width:100%;
 }
 #trackModalBody .track-save-cta.btn.btn-sm.btn-primary{
   min-height: 40px;
@@ -11700,12 +11707,27 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         </div>
         <div id="trackUnitHome">
           <div class="track-unit-row field-group" id="trackUnitRow">
-            <label for="trackDisplayUnit" data-i18n="track.unitLabel">Unità</label>
-            <select id="trackDisplayUnit" data-role="track-display-unit" data-i18n-aria="track.unitAria">
-              <option value="km">km</option>
-              <option value="nm">NM</option>
-              <option value="mi">mi</option>
-            </select>
+            <div class="track-unit-ctrl">
+              <label for="trackDisplayUnit" data-i18n="track.unitLabel">Unità distanza</label>
+              <select id="trackDisplayUnit" data-role="track-display-unit" data-i18n-aria="track.unitAria" data-i18n-tip="tip.trackUnit">
+                <option value="km">km</option>
+                <option value="m">m</option>
+                <option value="nm">NM</option>
+                <option value="mi">mi</option>
+                <option value="ft">ft</option>
+              </select>
+            </div>
+            <div class="track-unit-ctrl">
+              <label for="trackPointCoordFormat" data-i18n="track.coordFormatLabel">Formato coordinate</label>
+              <select id="trackPointCoordFormat" data-role="track-point-coord-format" data-i18n-aria="track.coordFormatAria" data-i18n-tip="tip.trackCoordFormat">
+                <option value="default" data-i18n="track.coordFormatDefault">Predefinito</option>
+                <option value="dd">DD</option>
+                <option value="ddm">DDM</option>
+                <option value="dms">DMS</option>
+                <option value="utm">UTM</option>
+                <option value="mgrs">MGRS</option>
+              </select>
+            </div>
           </div>
         </div>
         <div id="track-summary"></div>
@@ -13249,7 +13271,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0R-A · build 76</span>
+    <span id="appBuildFooter">B6.0TDP-A · build 77</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13507,11 +13529,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.0D-FIX1</code>
+            <code id="appBuildAbout">B6.0TDP-A · build 77</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">Quick geographic JPG export and segmented high-zoom tiles</div>
+          <div class="about-line muted" id="appBuildAboutDetail">TRACK-MODAL-DISPLAY-PREFS-A — track units and coordinate display formats</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -14121,8 +14143,13 @@ const I18N = {
     "track.points":"Punti",
     "track.distance":"Distanza totale",
     "track.area":"Area",
-    "track.unitLabel":"Unità",
+    "track.unitLabel":"Unità distanza",
     "track.unitAria":"Unità di visualizzazione distanza e velocità nella traccia",
+    "track.coordFormatLabel":"Formato coordinate",
+    "track.coordFormatAria":"Formato di visualizzazione delle coordinate dei punti traccia",
+    "track.coordFormatDefault":"Predefinito",
+    "tip.trackUnit":"Unità usata solo per visualizzare distanze e velocità di riferimento nella traccia.",
+    "tip.trackCoordFormat":"Formato delle coordinate mostrate nell’elenco punti (solo visualizzazione).",
     "track.etaWalk":"A piedi ({0})",
     "track.etaCar":"Auto ({0})",
     "track.noExport":"Aggiungi almeno 2 punti per esportare.",
@@ -16243,8 +16270,13 @@ const I18N = {
     "track.points":"Points",
     "track.distance":"Total distance",
     "track.area":"Area",
-    "track.unitLabel":"Units",
+    "track.unitLabel":"Distance unit",
     "track.unitAria":"Display unit for track distance and speed references",
+    "track.coordFormatLabel":"Coordinate format",
+    "track.coordFormatAria":"Display format for track point coordinates",
+    "track.coordFormatDefault":"Default",
+    "tip.trackUnit":"Unit used only to display track distances and reference speeds.",
+    "tip.trackCoordFormat":"Format of coordinates shown in the track point list (display only).",
     "track.etaWalk":"On foot ({0})",
     "track.etaCar":"Car ({0})",
     "track.noExport":"Add at least 2 points to export.",
@@ -18369,8 +18401,13 @@ const I18N = {
     "track.points":"Points",
     "track.distance":"Distance totale",
     "track.area":"Aire",
-    "track.unitLabel":"Unités",
+    "track.unitLabel":"Unité de distance",
     "track.unitAria":"Unité d’affichage pour la distance et les vitesses de référence de la trace",
+    "track.coordFormatLabel":"Format des coordonnées",
+    "track.coordFormatAria":"Format d’affichage des coordonnées des points de la trace",
+    "track.coordFormatDefault":"Par défaut",
+    "tip.trackUnit":"Unité utilisée uniquement pour afficher les distances et vitesses de référence de la trace.",
+    "tip.trackCoordFormat":"Format des coordonnées affichées dans la liste des points (affichage seul).",
     "track.etaWalk":"À pied ({0})",
     "track.etaCar":"Voiture ({0})",
     "track.noExport":"Ajoutez au moins 2 points pour exporter.",
@@ -19988,7 +20025,9 @@ const state = {
   /** Transient session-only (P-UNITS): polygon metric display units — not persisted. */
   polygonMetricLengthUnit: "auto", // session-only: auto | m | km | nm | mi | ft
   polygonMetricAreaUnit: "auto", // auto | m2 | ha | km2
-  trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | nm | mi
+  trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | m | nm | mi | ft
+  /** Transient session-only: coordinate display format in track points list (not persisted). */
+  _trackPointCoordFormat: "default", // session-only: default | dd | ddm | dms | utm | mgrs
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
   /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
   _measEscNoticePending: false,
@@ -21219,10 +21258,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0R-A";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-REVERSE-A — reverse start destination and via order";
+const APP_BUILD_ID = "B6.0TDP-A";
+const APP_BUILD_DETAIL = "TRACK-MODAL-DISPLAY-PREFS-A — track units and coordinate display formats";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 76;
+const APP_BUILD_NUM = 77;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -43003,7 +43042,7 @@ function fmtDistMetric(meters){
   return (meters / 1000).toFixed(meters < 10000 ? 2 : 1) + " km";
 }
 
-const TRACK_DISPLAY_UNITS = new Set(["km", "nm", "mi"]);
+const TRACK_DISPLAY_UNITS = new Set(["km", "m", "nm", "mi", "ft"]);
 function normalizeTrackDisplayUnit(value){
   const u = String(value == null ? "" : value).toLowerCase();
   return TRACK_DISPLAY_UNITS.has(u) ? u : "km";
@@ -43014,6 +43053,23 @@ function formatTrackDistance(meters, unit){
   const m = Number(meters);
   if (!Number.isFinite(m)) return "—";
   const u = normalizeTrackDisplayUnit(unit);
+  if (u === "m"){
+    const abs = Math.abs(m);
+    if (abs < 10){
+      const r = Math.round(m * 10) / 10;
+      return ((Math.abs(r - Math.round(r)) < 1e-9) ? String(Math.round(r)) : r.toFixed(1)) + " m";
+    }
+    return Math.round(m) + " m";
+  }
+  if (u === "ft"){
+    const v = m * 3.280839895013123;
+    const abs = Math.abs(v);
+    if (abs < 10){
+      const r = Math.round(v * 10) / 10;
+      return ((Math.abs(r - Math.round(r)) < 1e-9) ? String(Math.round(r)) : r.toFixed(1)) + " ft";
+    }
+    return Math.round(v) + " ft";
+  }
   let v;
   let suffix;
   if (u === "km"){
@@ -43043,7 +43099,7 @@ function formatTrackSpeed(mps, unit){
   const v = Number(mps);
   if (!Number.isFinite(v) || v < 0) return "—";
   const u = normalizeTrackDisplayUnit(unit);
-  if (u === "km"){
+  if (u === "km" || u === "m"){
     const kmh = v * 3.6;
     const num = (kmh < 10 ? kmh.toFixed(1) : String(Math.round(kmh)));
     return num + " km/h";
@@ -43083,6 +43139,53 @@ function wireTrackDisplayUnitOnce(){
     saveStore();
     syncTrackDisplayUnitSelect();
     renderTrackAll();
+  });
+}
+
+const TRACK_POINT_COORD_FORMATS = new Set(["default", "dd", "ddm", "dms", "utm", "mgrs"]);
+function normalizeTrackPointCoordFormat(value){
+  const v = String(value == null ? "" : value).toLowerCase();
+  return TRACK_POINT_COORD_FORMATS.has(v) ? v : "default";
+}
+function trackPointCoordFormatEffective(){
+  const sel = normalizeTrackPointCoordFormat(state._trackPointCoordFormat);
+  if (sel !== "default") return sel;
+  const p = String(state.primary || "").toUpperCase();
+  if (p === "DD") return "dd";
+  if (p === "DDM") return "ddm";
+  if (p === "DMS") return "dms";
+  if (p === "UTM") return "utm";
+  if (p === "MGRS") return "mgrs";
+  return "dd";
+}
+function formatTrackPointCoordinates(lat, lon){
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo)) return "—";
+  const mode = trackPointCoordFormatEffective();
+  try {
+    if (mode === "ddm") return fmtDDM(la, lo);
+    if (mode === "dms") return fmtDMS(la, lo);
+    if (mode === "utm") return fmtUTM(latLonToUTM(la, lo));
+    if (mode === "mgrs") return latLonToMGRS(la, lo, 5);
+    return fmtDD(la, lo).signed;
+  } catch(_){
+    return "—";
+  }
+}
+function syncTrackPointCoordFormatSelect(){
+  const sel = document.getElementById("trackPointCoordFormat");
+  if (!sel) return;
+  const v = normalizeTrackPointCoordFormat(state._trackPointCoordFormat);
+  try { sel.value = v; } catch(_){}
+}
+function wireTrackPointCoordFormatOnce(){
+  const sel = document.getElementById("trackPointCoordFormat");
+  if (!sel || sel._trackPointCoordFormatBound) return;
+  sel._trackPointCoordFormatBound = true;
+  sel.addEventListener("change", (ev) => {
+    state._trackPointCoordFormat = normalizeTrackPointCoordFormat(ev.target && ev.target.value);
+    syncTrackPointCoordFormatSelect();
+    try { renderTrackPointsList(); } catch(_){}
   });
 }
 
@@ -43250,7 +43353,7 @@ function renderTrackPointsList(){
     head.hidden = false;
     let coordsLine = "";
     if (!expanded){
-      const fmtShort = (p) => p.lat.toFixed(4) + ", " + p.lon.toFixed(4);
+      const fmtShort = (p) => formatTrackPointCoordinates(p.lat, p.lon);
       if (n === 1){
         coordsLine = `<div class="tps-coords">${esc(trackPointDisplayLabel(0, n))}: ${esc(fmtShort(pts[0]))}</div>`;
       } else {
@@ -43294,6 +43397,7 @@ function renderTrackPointsList(){
     const unitMount = head.querySelector("[data-role=\"track-unit-inline-mount\"]");
     trackUnitMountInline(unitMount);
     syncTrackDisplayUnitSelect();
+    syncTrackPointCoordFormatSelect();
   }
   if (!expanded){
     root.classList.add("is-collapsed");
@@ -43333,9 +43437,7 @@ function renderTrackPointsList(){
   }
 
   const html = pageRows.map(({ i, p, leg }) => {
-    const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
-    let mgrsStr = "";
-    try { mgrsStr = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
+    const coordStr = formatTrackPointCoordinates(p.lat, p.lon);
     let legStr = "";
     if (i > 0 && leg && Number.isFinite(leg.dist)){
       legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(leg.dist, tdu)} · ${leg.brg.toFixed(1)}°</span>`;
@@ -43346,7 +43448,7 @@ function renderTrackPointsList(){
       <span class="tp-grip" aria-hidden="true">⋮⋮</span>
       <div class="tp-data">
         <label class="tp-name"><input type="text" maxlength="60" data-role="tp-name" value="${esc(p.name || "")}" placeholder="${esc(t("track.pointNamePh"))}"></label>
-        <div class="tp-coords">${esc(coordStr)}${esc(mgrsStr)}</div>
+        <div class="tp-coords">${esc(coordStr)}</div>
         ${legStr}
       </div>
       <div class="tp-actions">
@@ -44814,8 +44916,10 @@ function renderTileMap(lat, lon, zoom){
           <label>${esc(t("map.unit") || "Unità")}</label>
           <select data-role="track-float-unit">
             <option value="km" ${tdu==="km"?"selected":""}>km</option>
+            <option value="m" ${tdu==="m"?"selected":""}>m</option>
             <option value="nm" ${tdu==="nm"?"selected":""}>NM</option>
             <option value="mi" ${tdu==="mi"?"selected":""}>mi</option>
+            <option value="ft" ${tdu==="ft"?"selected":""}>ft</option>
           </select>
         </div>
         <div class="mb-row"><label style="opacity:.95">${hintTf}</label></div>
@@ -51869,6 +51973,14 @@ function bindUI(){
   primSel.addEventListener("change", (e) => {
     state.primary = e.target.value; markPrimary(); saveStore();
     syncHdrChipValue(e.target);
+    try {
+      if (normalizeTrackPointCoordFormat(state._trackPointCoordFormat) === "default"){
+        const dlg = document.getElementById("trackModal");
+        if (state.trackModalOpen || (dlg && dlg.open)){
+          renderTrackPointsList();
+        }
+      }
+    } catch(_){}
   });
   syncHdrChipValue(primSel);
   // Language
@@ -52466,6 +52578,7 @@ function bindUI(){
 
   // ---- Track builder ----
   wireTrackDisplayUnitOnce();
+  wireTrackPointCoordFormatOnce();
   const btnTAdd = document.getElementById("btnTrackAddCurrent");
   if (btnTAdd) btnTAdd.addEventListener("click", (ev) => { ev.preventDefault(); trackAddCurrent(); });
   const btnTFinish = document.getElementById("btnTrackFinish");
