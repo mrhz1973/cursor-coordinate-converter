@@ -2,33 +2,33 @@
 
 ## LATEST
 
-* real_task_commit: `4aa8e8980b714718b82faefd796b316d83a04079`
-* real_task_subject: docs: close OUTDOOR-ROUTING-GH-D after QA PASS
-* report_generated_at: 2026-07-28T08:55:00Z
+* real_task_commit: `42cf1af5c290a83d7b8840f02eb365475cfe18bd`
+* real_task_subject: docs: close INFRA-GH-1D after QA PASS; unlock Bundle E; backlog REVERSE-A
+* report_generated_at: 2026-07-29T11:20:00Z
 * branch: main
-* remote_head_after_task_push: `4aa8e8980b714718b82faefd796b316d83a04079`
-* previous_report_container: `147475c39ce78e051bfb07b004f09414642a2874` (autosync finito GH-C — esterno/verificabile)
+* remote_head_after_task_push: `42cf1af5c290a83d7b8840f02eb365475cfe18bd`
+* previous_report_container: `66b382ddd0e9c27ef4a023d798cf29582cd97302` (autosync finito GH-D — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: task docs `4aa8e89` pushato; monolite tip `567b611` invariato (blob `4f679f5b…`); report in autosync
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task `4aa8e89` su origin pre-autosync
-* result_cursor: OUTDOOR-ROUTING-GH-D (+FIX1) chiuso in OM §7 / WU-0010 / roadmap / HANDOFF / QA-CHECKLIST; QA PASS operatore registrata
-* pass_operatore: PASS — «QA OUTDOOR-ROUTING-GH-D PASS operatore»
-* result_runtime: VPS live `567b611` B6.0D-FIX1 build 66; blob `4f679f5b…`; byte 2945471; SHA-256 `cd1c86e3…`; CMP_PASS deploy
-* qa_attestation_source: operatore (2026-07-28)
-* notes: review GPT-sostitutiva D+FIX1 PASS; monolite non in commit docs; deploy GIS-only già PASS; WU-0010 resta OPEN (E/F)
+* working_tree_status: task docs `42cf1af` pushato; monolite tip `567b611` invariato; report in autosync
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task `42cf1af` su origin pre-autosync
+* result_cursor: INFRA-GH-1D CLOSED in OM §7 / WU-0010 / roadmap / INFRA_VPS; Bundle E sbloccabile; OUTDOOR-ROUTING-REVERSE-A backlog; monolite non toccato
+* pass_operatore: PASS — «QA INFRA-GH-1D-EXEC-C PASS operatore» (2026-07-29)
+* result_runtime: GraphHopper VPS live `nord-ovest-B-v3-elev` bilinear+ramer max_elevation 5; import_date 2026-07-28T23:39:23Z; PID 2034035; downtime 11s; monolite GIS `567b611` invariato
+* qa_attestation_source: operatore (2026-07-29)
+* notes: V0 nord-ovest-B + backup staging trattenuti; Bundle E non implementato; REVERSE-A solo backlog
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit:
-4aa8e8980b714718b82faefd796b316d83a04079
+42cf1af5c290a83d7b8840f02eb365475cfe18bd
 
 runtime tip (monolite):
 567b611a39bd38722a16b7a13dbc2d7e68e14bdd
 
 git rev-parse HEAD (post-task-push, pre-autosync):
-4aa8e8980b714718b82faefd796b316d83a04079
+42cf1af5c290a83d7b8840f02eb365475cfe18bd
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
 4f679f5b3cba9e50ee81b6d6d92689dd9db5ace3
@@ -37,25 +37,14 @@ git branch --show-current
 main
 
 git ls-remote origin refs/heads/main (post-task, pre-autosync):
-4aa8e8980b714718b82faefd796b316d83a04079	refs/heads/main
+42cf1af5c290a83d7b8840f02eb365475cfe18bd	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
-* 147475c — autosync finito GH-C / previous_report_container (risolto esterno)
-* eb8b7e8 — docs OUTDOOR-ROUTING-GH-C close (real_task precedente)
-* dd9ad2f — OUTDOOR-ROUTING-GH-C-FIX1 runtime tip (build 64)
+* 66b382d — autosync finito GH-D / previous_report_container (risolto esterno); real_task_commit storico `4aa8e89` (close OUTDOOR-ROUTING-GH-D)
+* 4aa8e89 — docs: close OUTDOOR-ROUTING-GH-D after QA PASS
+* 147475c — autosync finito GH-C
 * 567b611 — OUTDOOR-ROUTING-GH-D-FIX1 runtime tip (build 66)
-* c806099 — OUTDOOR-ROUTING-GH-D runtime base (build 65)
-* 4aa8e89 — docs OUTDOOR-ROUTING-GH-D close (real_task corrente)
-* 5cb4e0b — autosync finito B2
-* 6d9c4f4 — docs OUTDOOR-ROUTING-GH-B2 close
-
-## LIMITI
-
-* PASS remoto container corrente = EXTERNAL_ONLY
-* Nessun terzo commit finalize-hash
-* WU-0010 resta OPEN (bundle E/F)
-* Backlog UX routing registrato ma non implementato

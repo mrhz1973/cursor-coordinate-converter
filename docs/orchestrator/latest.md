@@ -9,8 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-28 — **OUTDOOR-ROUTING-GH-D (+ FIX1) CLOSED / PASS** — task docs **`4aa8e89`** (`docs: close OUTDOOR-ROUTING-GH-D after QA PASS`); runtime tip **`567b611`** build 66 / `B6.0D-FIX1`; blob **`4f679f5b…`**; byte LF **2945471**; review GPT-sostitutiva D+FIX1 PASS; deploy GIS-only PASS; QA «**QA OUTDOOR-ROUTING-GH-D PASS operatore**»; monolite già in `567b611` (non in commit docs); working tree pre-autosync pulito post-task; inbox `2026-07-28_1055_riepilogo_finito-sessione.md`.
+2026-07-29 — **INFRA-GH-1D CLOSED / PASS** — task docs **`42cf1af`** (`docs: close INFRA-GH-1D after QA PASS; unlock Bundle E; backlog REVERSE-A`); GraphHopper VPS live **`nord-ovest-B-v3-elev`** (bilinear+ramer max_elevation 5); downtime 11 s; QA «**QA INFRA-GH-1D-EXEC-C PASS operatore**»; V0+backup trattenuti; **Bundle E SBLOCCABILE** (non implementato); backlog **OUTDOOR-ROUTING-REVERSE-A**; monolite tip **`567b611`** invariato; working tree pre-autosync pulito post-task; inbox `2026-07-29_1320_riepilogo_infra-gh-1d-chiusura.md`.
 
-2026-07-27 — **OUTDOOR-ROUTING-GH-C (+ FIX1) CLOSED / PASS** — task docs **`eb8b7e8`**; runtime tip storico **`dd9ad2f`** build 64.
-
-2026-07-27 — **OUTDOOR-ROUTING-GH-B2 (+ FIX1 + FIX2) CLOSED / PASS** — task docs **`6d9c4f4`**; runtime tip storico **`89bbf28`** build 62.
+2026-07-28 — **OUTDOOR-ROUTING-GH-D (+ FIX1) CLOSED / PASS** — task docs **`4aa8e89`**; runtime tip **`567b611`** build 66 / `B6.0D-FIX1`.
