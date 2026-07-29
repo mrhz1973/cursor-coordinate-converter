@@ -185,6 +185,39 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## INFRA-GH-1D-EXEC-C — cutover GraphHopper VPS MMAP+V3 — CLOSED / PASS end-to-end
+
+**Natura:** infrastruttura GraphHopper VPS (PoC fuori repo + config VPS) — **non** patch monolite. Monolite runtime live resta `567b611` / `B6.0D-FIX1 · build 66`.
+
+**Esito:** **CLOSED / PASS end-to-end** (2026-07-29). Gate: `PASS INFRA-GH-1D-EXEC-C — V3 ADOTTATA E QA PASS`.
+
+| Voce | Valore |
+|------|--------|
+| Graph live | `nord-ovest-B-v3-elev` (16 file / 776000971 byte) |
+| Elevation | bilinear + ramer, `max_elevation: 5` |
+| Import date | `2026-07-28T23:39:23Z` |
+| Downtime cutover | 11 s |
+| Restart persistenza | PASS |
+| V0 / backup / staging | `nord-ovest-B` + backup/rollback **mantenuti** (non cancellati) |
+| Bundle E | **SBLOCCABILE** nel prossimo blocco — **non** implementato qui |
+| Backlog | **OUTDOOR-ROUTING-REVERSE-A** (docs-only) |
+
+**Attestazione QA (operatore):**
+
+```text
+QA INFRA-GH-1D-EXEC-C PASS operatore
+```
+
+**Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H** (correzione: il prompt EXEC-C aveva escluso erroneamente la coda `finito`; questa chiusura esegue il workflow `finito` senza secondo comando).
+
+**URL runtime app (monolite invariato):**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=567b611
+```
+
+**Ambito QA osservato:** app/route/altimetria + OPSEC strict + forced-offline — PASS.
+
 ## OUTDOOR-ROUTING-GH-D (+ FIX1) — Salva percorso come traccia — CLOSED / PASS end-to-end
 
 **Runtime autorevole live:** `567b611` (catena base `c806099` + FIX1 `567b611`) — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
