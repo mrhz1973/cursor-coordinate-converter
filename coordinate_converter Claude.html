@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0D-FIX1</title>
+<title>GOI GIS Tool · B6.0E-FIX2</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13133,7 +13133,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </select>
     </div>
     <div id="routingPointsList" class="routing-points-list" role="list"></div>
-    <section id="routingResultCard" class="routing-result-card" hidden aria-live="polite">
+    <section id="routingResultCard" class="routing-result-card" hidden>
       <div class="routing-result-summary" id="routingResultSummary"></div>
       <div class="routing-difficulty-row" id="routingDifficultyRow" hidden>
         <span class="routing-difficulty-label" data-i18n="routing.difficultyLabel">Difficoltà stimata</span>
@@ -13184,7 +13184,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E-FIX1 · build 68</span>
+    <span id="appBuildFooter">B6.0E-FIX2 · build 69</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -15434,7 +15434,7 @@ const I18N = {
     "routing.altitudeAscent":"Salita",
     "routing.altitudeDescent":"Discesa",
     "routing.altitudeDiscrepancy":"Discrepanza altimetria",
-    "routing.altitudeSpikeRejected":"{0} punto/i anomalo/i",
+    "routing.altitudeSpikeRejected":"{0} segmento/i sospetto/i",
     "routing.altitudeGap":"dato mancante",
     "routing.difficultyLabel":"Difficoltà stimata",
     "routing.difficultyEasy":"facile",
@@ -17527,7 +17527,7 @@ const I18N = {
     "routing.altitudeAscent":"Ascent",
     "routing.altitudeDescent":"Descent",
     "routing.altitudeDiscrepancy":"Elevation discrepancy",
-    "routing.altitudeSpikeRejected":"{0} anomalous point(s)",
+    "routing.altitudeSpikeRejected":"{0} suspect segment(s)",
     "routing.altitudeGap":"missing data",
     "routing.difficultyLabel":"Estimated difficulty",
     "routing.difficultyEasy":"easy",
@@ -21092,10 +21092,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E-FIX1";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-FIX1 — fail-soft elevation validation (non-finite ele → null, keep route)";
+const APP_BUILD_ID = "B6.0E-FIX2";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-FIX2 — harden weighted difficulty, SVG decimation and pixel map sync";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 68;
+const APP_BUILD_NUM = 69;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -45589,7 +45589,7 @@ function attachCursorReadout(root, lat, lon, zoom){
     state.mapCursorLL = { lat: curLat, lon: curLon };
     setCursorElev(curLat, curLon);
     try {
-      if (typeof routingAltitudeOnMapHover === "function") routingAltitudeOnMapHover(curLat, curLon);
+      if (typeof routingAltitudeOnMapHover === "function" && lastPt) routingAltitudeOnMapHover(lastPt.x, lastPt.y);
     } catch(_){}
   };
 
@@ -58857,6 +58857,7 @@ function routingPerformSaveAsTrack(){
 }
 function routingInvalidateRoutePreview(){
   if (!state._routing) return;
+  try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
   try { if (state._routing.requestController) state._routing.requestController.abort(); } catch(_){}
   state._routing.requestSequence = (state._routing.requestSequence || 0) + 1;
   state._routing.requestLoading = false;
@@ -59235,6 +59236,7 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wrap);
 }
 function routingFullCleanup(){
+  try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
   if (state._routing){
     try {
@@ -59849,6 +59851,7 @@ async function routingCalculateRouteGraphhopper(){
   r.altitudeHover = null;
   r._altitudeChartLayout = null;
   r.routeError = "";
+  try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
 
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
@@ -60034,6 +60037,7 @@ async function routingCalculateRouteGraphhopper(){
 }
 
 function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
+  try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
   if (!tileMap) return;
   const old = tileMap.querySelector(".routing-route-preview-overlay");
   if (old) old.remove();
@@ -60146,14 +60150,20 @@ function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
 }
-/* ================= OUTDOOR-ROUTING-GH-E — elevation profile + difficulty ================= */
+/* ================= OUTDOOR-ROUTING-GH-E-FIX2 — elevation profile hardening ================= */
 const ROUTING_ELEV_MIN_SEG_M = 0.5;
-const ROUTING_ELEV_SPIKE_MAX_DELTA_M = 120;
-const ROUTING_ELEV_SPIKE_MAX_SEG_M = 5;
+const ROUTING_ELEV_SUSPECT_MAX_SEG_M = 10;
+const ROUTING_ELEV_SUSPECT_MAX_DELTA_M = 100;
 const ROUTING_ELEV_MAX_SVG_POINTS = 600;
 const ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY = 5;
+const ROUTING_ELEV_MIN_USABLE_GRADE_SEGS = 4;
+const ROUTING_ELEV_MAP_HIT_PX = 12;
+const ROUTING_ELEV_MAP_COARSE_MAX = 140;
 let _routingAltitudeResizeObserver = null;
 let _routingAltitudeChartRaf = 0;
+let _routingAltitudeMapPixelCache = null;
+let _routingAltitudeMapHoverRaf = 0;
+let _routingAltitudeMapHoverPending = null;
 
 function routingFmtAltitude(meters){
   const m = Number(meters);
@@ -60167,6 +60177,24 @@ function routingFmtAltitude(meters){
 }
 function routingFmtDistPreferUnit(meters){
   return formatMapMeasureDistance(meters, state.mapMeasureUnit || "m");
+}
+function routingDisconnectAltitudeResizeObserver(){
+  try {
+    if (_routingAltitudeResizeObserver){
+      try { _routingAltitudeResizeObserver.disconnect(); } catch(_){}
+      _routingAltitudeResizeObserver = null;
+    }
+  } catch(_){ _routingAltitudeResizeObserver = null; }
+  if (_routingAltitudeChartRaf){
+    try { cancelAnimationFrame(_routingAltitudeChartRaf); } catch(_){}
+    _routingAltitudeChartRaf = 0;
+  }
+  if (_routingAltitudeMapHoverRaf){
+    try { cancelAnimationFrame(_routingAltitudeMapHoverRaf); } catch(_){}
+    _routingAltitudeMapHoverRaf = 0;
+  }
+  _routingAltitudeMapHoverPending = null;
+  _routingAltitudeMapPixelCache = null;
 }
 function routingClearAltitudeUi(){
   try {
@@ -60188,6 +60216,20 @@ function routingClearAltitudeUi(){
     if (warn){ warn.hidden = true; warn.textContent = ""; }
   } catch(_){}
 }
+function routingDistanceWeightedPercentile(items, p){
+  if (!Array.isArray(items) || !items.length) return undefined;
+  const sorted = items.slice().sort((a, b) => a.grade - b.grade);
+  let total = 0;
+  for (let i = 0; i < sorted.length; i++) total += sorted[i].weight;
+  if (!(total > 0)) return undefined;
+  const target = total * p;
+  let acc = 0;
+  for (let i = 0; i < sorted.length; i++){
+    acc += sorted[i].weight;
+    if (acc >= target) return sorted[i].grade;
+  }
+  return sorted[sorted.length - 1].grade;
+}
 function routingBuildElevationProfile(previewCoordinates, elevationCoordinates){
   if (!Array.isArray(previewCoordinates) || previewCoordinates.length < 2) return null;
   const elev = Array.isArray(elevationCoordinates) ? elevationCoordinates : [];
@@ -60198,7 +60240,7 @@ function routingBuildElevationProfile(previewCoordinates, elevationCoordinates){
     const p = previewCoordinates[i];
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     const eObj = elev[i];
-    const ele = (eObj && Number.isFinite(eObj.ele)) ? Number(eObj.ele) : undefined;
+    const ele = (eObj && typeof eObj.ele === "number" && Number.isFinite(eObj.ele)) ? eObj.ele : null;
     let segDistM = 0;
     if (samples.length > 0){
       const prev = samples[samples.length - 1];
@@ -60215,98 +60257,128 @@ function routingBuildElevationProfile(previewCoordinates, elevationCoordinates){
       ele: ele,
       segDistM: segDistM,
       cumDistM: cum,
-      gradePct: undefined,
-      valid: Number.isFinite(ele)
+      gradePct: null,
+      gradeUsable: false,
+      suspect: false
     });
   }
 
-  let spikeRejected = 0;
+  let suspectSegmentCount = 0;
+  let missingElevationCount = 0;
+  let elevationSampleCount = 0;
   for (let i = 0; i < samples.length; i++){
     const s = samples[i];
-    if (!Number.isFinite(s.ele)){ s.valid = false; s.gradePct = undefined; continue; }
-    if (i === 0){ s.valid = true; s.gradePct = undefined; continue; }
-    const prev = samples[i - 1];
-    if (!Number.isFinite(prev.ele)){ s.valid = true; s.gradePct = undefined; continue; }
-    if (s.segDistM < ROUTING_ELEV_MIN_SEG_M){ s.valid = false; s.gradePct = undefined; continue; }
-    const dEle = s.ele - prev.ele;
-    if (s.segDistM < ROUTING_ELEV_SPIKE_MAX_SEG_M && Math.abs(dEle) > ROUTING_ELEV_SPIKE_MAX_DELTA_M){
-      s.valid = false;
-      s.gradePct = undefined;
-      spikeRejected++;
+    if (s.ele == null || !Number.isFinite(s.ele)){
+      missingElevationCount++;
+      s.ele = null;
+      s.gradePct = null;
+      s.gradeUsable = false;
+      s.suspect = false;
       continue;
     }
-    s.valid = true;
+    elevationSampleCount++;
+    if (i === 0){
+      s.gradePct = null;
+      s.gradeUsable = false;
+      s.suspect = false;
+      continue;
+    }
+    const prev = samples[i - 1];
+    if (prev.ele == null || !Number.isFinite(prev.ele)){
+      s.gradePct = null;
+      s.gradeUsable = false;
+      s.suspect = false;
+      continue;
+    }
+    if (s.segDistM < ROUTING_ELEV_MIN_SEG_M){
+      s.gradePct = null;
+      s.gradeUsable = false;
+      s.suspect = false;
+      continue;
+    }
+    const dEle = s.ele - prev.ele;
     s.gradePct = (dEle / s.segDistM) * 100;
+    const suspect = (s.segDistM < ROUTING_ELEV_SUSPECT_MAX_SEG_M && Math.abs(dEle) > ROUTING_ELEV_SUSPECT_MAX_DELTA_M);
+    s.suspect = !!suspect;
+    if (suspect){
+      suspectSegmentCount++;
+      s.gradeUsable = false;
+    } else {
+      s.gradeUsable = Number.isFinite(s.gradePct);
+    }
   }
 
-  let ascendClientM = 0, descendClientM = 0, lengthOver15pctM = 0, lengthOver25pctM = 0;
-  const gradeLens = [];
-  let eleCount = 0;
-  for (let i = 0; i < samples.length; i++){
+  let ascendClientM = 0, descendClientM = 0;
+  let lengthOver15pctM = 0, lengthOver25pctM = 0;
+  let usableGradeDistanceM = 0;
+  const usableItems = [];
+  let maxUsableGradePct = undefined;
+
+  for (let i = 1; i < samples.length; i++){
     const s = samples[i];
-    if (Number.isFinite(s.ele)) eleCount++;
-    if (i === 0) continue;
-    if (!s.valid || !Number.isFinite(s.gradePct) || !Number.isFinite(s.ele)) continue;
     const prev = samples[i - 1];
-    if (!Number.isFinite(prev.ele)) continue;
+    if (s.ele == null || prev.ele == null) continue;
+    if (!(s.segDistM >= ROUTING_ELEV_MIN_SEG_M)) continue;
     const dEle = s.ele - prev.ele;
     if (dEle > 0) ascendClientM += dEle;
     else if (dEle < 0) descendClientM += -dEle;
+
+    if (!s.gradeUsable || !Number.isFinite(s.gradePct) || !(s.segDistM > 0)) continue;
     const gAbs = Math.abs(s.gradePct);
-    gradeLens.push({ grade: gAbs, len: s.segDistM });
+    usableItems.push({ grade: gAbs, weight: s.segDistM });
+    usableGradeDistanceM += s.segDistM;
+    if (!Number.isFinite(maxUsableGradePct) || gAbs > maxUsableGradePct) maxUsableGradePct = gAbs;
     if (gAbs > 15) lengthOver15pctM += s.segDistM;
     if (gAbs > 25) lengthOver25pctM += s.segDistM;
   }
 
-  let maxGradePct = undefined, p75GradePct = undefined, p95GradePct = undefined;
-  if (gradeLens.length){
-    const expanded = [];
-    for (let i = 0; i < gradeLens.length; i++){
-      const n = Math.max(1, Math.round(gradeLens[i].len / 10));
-      for (let k = 0; k < n; k++) expanded.push(gradeLens[i].grade);
-    }
-    expanded.sort((a, b) => a - b);
-    maxGradePct = expanded[expanded.length - 1];
-    p75GradePct = expanded[Math.min(expanded.length - 1, Math.floor(expanded.length * 0.75))];
-    p95GradePct = expanded[Math.min(expanded.length - 1, Math.floor(expanded.length * 0.95))];
-  }
+  const distanceWeightedP95GradePct = routingDistanceWeightedPercentile(usableItems, 0.95);
+  const hasAnyElevation = elevationSampleCount > 0;
 
-  const hasAnyElevation = eleCount > 0;
   return {
     samples: samples,
     stats: {
       ascendClientM: ascendClientM,
       descendClientM: descendClientM,
-      maxGradePct: maxGradePct,
-      p75GradePct: p75GradePct,
-      p95GradePct: p95GradePct,
+      distanceWeightedP95GradePct: distanceWeightedP95GradePct,
+      maxUsableGradePct: maxUsableGradePct,
+      usableGradeSegmentCount: usableItems.length,
+      usableGradeDistanceM: usableGradeDistanceM,
       lengthOver15pctM: lengthOver15pctM,
       lengthOver25pctM: lengthOver25pctM,
-      validSamplesCount: eleCount
+      elevationSampleCount: elevationSampleCount,
+      missingElevationCount: missingElevationCount,
+      suspectSegmentCount: suspectSegmentCount
     },
     meta: {
       totalPoints: samples.length,
-      validPoints: eleCount,
+      validPoints: elevationSampleCount,
       hasAnyElevation: hasAnyElevation,
-      completeProfile: eleCount === samples.length && samples.length >= 2,
-      spikeRejected: spikeRejected,
+      completeProfile: missingElevationCount === 0 && samples.length >= 2,
+      suspectSegmentCount: suspectSegmentCount,
       generatedAt: Date.now()
     }
   };
 }
-function routingDifficultyBucket(value, edges, scores){
+function routingDifficultyBucket100(value, edges){
   for (let i = 0; i < edges.length; i++){
-    if (value < edges[i]) return scores[i];
+    if (value < edges[i]) return i * 25;
   }
-  return scores[scores.length - 1];
+  return 100;
 }
 function routingComputeDifficulty(metrics, profile, activityProfile){
-  void activityProfile; // single threshold set (hiking) for all profiles in E
+  void activityProfile;
   const m = metrics || {};
   const st = profile && profile.stats ? profile.stats : null;
-  const meta = profile && profile.meta ? profile.meta : null;
-  const insufficient = !(meta && meta.hasAnyElevation && st && st.validSamplesCount >= ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY
-    && Number.isFinite(m.distanceM) && m.distanceM > 0);
+  const insufficient = !(
+    st &&
+    Number.isFinite(m.distanceM) && m.distanceM > 0 &&
+    Number.isFinite(m.ascentM) && m.ascentM >= 0 &&
+    st.elevationSampleCount >= ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY &&
+    st.usableGradeSegmentCount >= ROUTING_ELEV_MIN_USABLE_GRADE_SEGS &&
+    st.usableGradeDistanceM > 0 &&
+    Number.isFinite(st.distanceWeightedP95GradePct)
+  );
   if (insufficient){
     return {
       level: "unknown",
@@ -60317,23 +60389,29 @@ function routingComputeDifficulty(metrics, profile, activityProfile){
       insufficient: true
     };
   }
-  const distanceM = Number(m.distanceM) || 0;
-  const ascentM = Number.isFinite(m.ascentM) ? Number(m.ascentM) : st.ascendClientM;
+  const distanceM = Number(m.distanceM);
+  const ascentM = Number(m.ascentM);
   const km = distanceM / 1000;
   const ascentPerKm = km > 0 ? (ascentM / km) : 0;
-  const p95 = Number.isFinite(st.p95GradePct) ? st.p95GradePct : 0;
+  const p95 = Number(st.distanceWeightedP95GradePct);
   const steepKm = (Number(st.lengthOver15pctM) || 0) / 1000;
 
-  const sDist = routingDifficultyBucket(km, [6, 12, 20, 35], [0, 15, 30, 45, 60]);
-  const sAsc = routingDifficultyBucket(ascentM, [150, 400, 800, 1500], [0, 15, 30, 45, 60]);
-  const sApk = routingDifficultyBucket(ascentPerKm, [15, 35, 70, 120], [0, 10, 25, 40, 60]);
-  const sP95 = routingDifficultyBucket(p95, [5, 10, 15, 25], [0, 10, 20, 35, 50]);
-  const sSteep = routingDifficultyBucket(steepKm, [0.001, 0.5, 2, 5], [0, 5, 15, 25, 35]);
+  const distanceScore = routingDifficultyBucket100(km, [6, 12, 20, 35]);
+  const ascentScore = routingDifficultyBucket100(ascentM, [150, 400, 800, 1500]);
+  const ascentPerKmScore = routingDifficultyBucket100(ascentPerKm, [15, 35, 70, 120]);
+  const p95GradeScore = routingDifficultyBucket100(p95, [5, 10, 15, 25]);
+  const steepLengthScore = routingDifficultyBucket100(steepKm, [1e-12, 0.5, 2, 5]);
 
-  const w = { d: 1.0, a: 1.2, apk: 1.0, p95: 0.8, steep: 0.7 };
-  const raw = w.d * sDist + w.a * sAsc + w.apk * sApk + w.p95 * sP95 + w.steep * sSteep;
-  const max = w.d * 60 + w.a * 60 + w.apk * 60 + w.p95 * 50 + w.steep * 35;
-  const score = Math.max(0, Math.min(100, Math.round((raw / max) * 100)));
+  const score = Math.round(
+    (
+      distanceScore * 1.0 +
+      ascentScore * 1.2 +
+      ascentPerKmScore * 1.0 +
+      p95GradeScore * 0.8 +
+      steepLengthScore * 0.7
+    ) / 4.7
+  );
+
   let level = "easy";
   if (score >= 75) level = "very_hard";
   else if (score >= 50) level = "hard";
@@ -60378,40 +60456,80 @@ function routingAltitudeSampleIndexAtCumDist(profile, cumDistM){
   }
   return lo;
 }
-function routingAltitudeNearestSampleByLatLon(profile, lat, lon){
-  const samples = profile && profile.samples;
-  if (!samples || !samples.length) return -1;
-  let best = -1, bestD = Infinity;
-  for (let i = 0; i < samples.length; i++){
-    const s = samples[i];
-    try {
-      const inv = vincentyInverse(lat, lon, s.lat, s.lon);
-      const d = inv && Number.isFinite(inv.distance) ? inv.distance : Infinity;
-      if (d < bestD){ bestD = d; best = i; }
-    } catch(_){}
+function routingDecimateRunMinMax(indices, samples, budget){
+  if (!indices || indices.length <= budget) return indices.slice();
+  if (budget < 2) budget = 2;
+  const first = indices[0];
+  const last = indices[indices.length - 1];
+  const inner = indices.slice(1, -1);
+  if (!inner.length) return [first, last];
+  const keepInner = budget - 2;
+  if (keepInner <= 0) return [first, last];
+  const buckets = Math.max(1, Math.floor(keepInner / 2));
+  const out = [first];
+  const seen = new Set([first, last]);
+  for (let b = 0; b < buckets; b++){
+    const start = Math.floor((b * inner.length) / buckets);
+    const end = Math.floor(((b + 1) * inner.length) / buckets);
+    if (end <= start) continue;
+    let minI = inner[start], maxI = inner[start];
+    let minE = samples[minI].ele, maxE = samples[maxI].ele;
+    for (let k = start + 1; k < end; k++){
+      const idx = inner[k];
+      const e = samples[idx].ele;
+      if (e < minE){ minE = e; minI = idx; }
+      if (e > maxE){ maxE = e; maxI = idx; }
+    }
+    const pair = (minI <= maxI) ? [minI, maxI] : [maxI, minI];
+    for (let p = 0; p < pair.length; p++){
+      const idx = pair[p];
+      if (!seen.has(idx)){ out.push(idx); seen.add(idx); }
+    }
   }
-  // Ignore if farther than ~80 m from the route (map hover away from polyline)
-  if (!(bestD < 80)) return -1;
-  return best;
+  if (!seen.has(last)) out.push(last);
+  else if (out[out.length - 1] !== last) out.push(last);
+  out.sort((a, b) => a - b);
+  return out;
 }
-function routingDecimateIndices(n, maxN){
-  if (n <= maxN){
-    const all = [];
-    for (let i = 0; i < n; i++) all.push(i);
-    return all;
+function routingDecimateProfileForSvg(samples, maxPoints){
+  const runs = [];
+  let cur = [];
+  const flush = () => {
+    if (cur.length) runs.push(cur);
+    cur = [];
+  };
+  for (let i = 0; i < samples.length; i++){
+    if (samples[i].ele == null || !Number.isFinite(samples[i].ele)){ flush(); continue; }
+    cur.push(i);
   }
-  const out = [];
-  const step = (n - 1) / (maxN - 1);
-  for (let k = 0; k < maxN; k++) out.push(Math.round(k * step));
-  // ensure unique + last
-  const uniq = [];
-  let prev = -1;
-  for (let i = 0; i < out.length; i++){
-    const v = out[i];
-    if (v !== prev){ uniq.push(v); prev = v; }
+  flush();
+  if (!runs.length) return [];
+
+  const total = runs.reduce((s, r) => s + r.length, 0);
+  const budgets = runs.map(r => {
+    const minKeep = Math.min(r.length, r.length === 1 ? 1 : 2);
+    if (total <= maxPoints) return r.length;
+    const share = Math.max(minKeep, Math.round((r.length / total) * maxPoints));
+    return Math.min(r.length, Math.max(minKeep, share));
+  });
+  let sumB = budgets.reduce((a, b) => a + b, 0);
+  while (sumB > maxPoints){
+    let best = -1, bestExtra = 0;
+    for (let i = 0; i < budgets.length; i++){
+      const minKeep = Math.min(runs[i].length, runs[i].length === 1 ? 1 : 2);
+      const extra = budgets[i] - minKeep;
+      if (extra > bestExtra){ bestExtra = extra; best = i; }
+    }
+    if (best < 0 || bestExtra <= 0) break;
+    budgets[best]--;
+    sumB--;
   }
-  if (uniq[uniq.length - 1] !== n - 1) uniq.push(n - 1);
-  return uniq;
+
+  const outRuns = [];
+  for (let i = 0; i < runs.length; i++){
+    outRuns.push(routingDecimateRunMinMax(runs[i], samples, budgets[i]));
+  }
+  return outRuns;
 }
 function routingEnsureAltitudeResizeObserver(){
   const host = document.getElementById("routingAltitudeChartHost");
@@ -60438,28 +60556,24 @@ function routingRenderAltitudePanel(){
   const m = r.routeMetrics;
   const sum = document.getElementById("routingResultSummary");
   if (sum){
-    const parts = [];
-    if (Number.isFinite(m.distanceM)){
-      parts.push('<span class="routing-metric"><span class="routing-metric-k">' +
-        routingT("routing.distance", "Distance") + '</span> <strong>' +
-        routingFmtDistPreferUnit(m.distanceM) + '</strong></span>');
-    }
-    if (Number.isFinite(m.durationMs)){
-      parts.push('<span class="routing-metric"><span class="routing-metric-k">' +
-        routingT("routing.duration", "Duration") + '</span> <strong>' +
-        routingFmtDurationMs(m.durationMs) + '</strong></span>');
-    }
-    if (Number.isFinite(m.ascentM)){
-      parts.push('<span class="routing-metric"><span class="routing-metric-k">' +
-        routingT("routing.ascent", "Ascent") + '</span> <strong>' +
-        routingFmtAltitude(m.ascentM) + '</strong></span>');
-    }
-    if (Number.isFinite(m.descentM)){
-      parts.push('<span class="routing-metric"><span class="routing-metric-k">' +
-        routingT("routing.descent", "Descent") + '</span> <strong>' +
-        routingFmtAltitude(m.descentM) + '</strong></span>');
-    }
-    sum.innerHTML = parts.join("");
+    sum.textContent = "";
+    const addMetric = (label, value) => {
+      const span = document.createElement("span");
+      span.className = "routing-metric";
+      const k = document.createElement("span");
+      k.className = "routing-metric-k";
+      k.textContent = label;
+      const strong = document.createElement("strong");
+      strong.textContent = value;
+      span.appendChild(k);
+      span.appendChild(document.createTextNode(" "));
+      span.appendChild(strong);
+      sum.appendChild(span);
+    };
+    if (Number.isFinite(m.distanceM)) addMetric(routingT("routing.distance", "Distance"), routingFmtDistPreferUnit(m.distanceM));
+    if (Number.isFinite(m.durationMs)) addMetric(routingT("routing.duration", "Duration"), routingFmtDurationMs(m.durationMs));
+    if (Number.isFinite(m.ascentM)) addMetric(routingT("routing.ascent", "Ascent"), routingFmtAltitude(m.ascentM));
+    if (Number.isFinite(m.descentM)) addMetric(routingT("routing.descent", "Descent"), routingFmtAltitude(m.descentM));
   }
 
   const diff = r.difficultySummary;
@@ -60469,9 +60583,18 @@ function routingRenderAltitudePanel(){
   if (diffRow && badge && factorsEl){
     diffRow.hidden = false;
     const level = diff && diff.level ? diff.level : "unknown";
+    const prevLevel = badge.getAttribute("data-level");
     badge.setAttribute("data-level", level);
     badge.textContent = routingDifficultyLevelLabel(level) +
       (diff && !diff.insufficient ? " · " + String(diff.score) : "");
+    if (prevLevel && prevLevel !== level && level !== "unknown"){
+      try {
+        routingSetStatus(
+          routingT("routing.difficultyLabel", "Estimated difficulty") + ": " + routingDifficultyLevelLabel(level),
+          false
+        );
+      } catch(_){}
+    }
     factorsEl.innerHTML = "";
     if (diff && diff.insufficient){
       const li = document.createElement("li");
@@ -60511,8 +60634,8 @@ function routingRenderAltitudePanel(){
   if (warn){
     const msgs = [];
     if (!ep.meta.completeProfile) msgs.push(routingT("routing.altitudeGap", "missing data"));
-    if (ep.meta.spikeRejected > 0){
-      msgs.push(String(routingT("routing.altitudeSpikeRejected", "{0} anomalous point(s)")).replace("{0}", String(ep.meta.spikeRejected)));
+    if (ep.stats && ep.stats.suspectSegmentCount > 0){
+      msgs.push(String(routingT("routing.altitudeSpikeRejected", "{0} suspect segment(s)")).replace("{0}", String(ep.stats.suspectSegmentCount)));
     }
     if (Number.isFinite(m.ascentM) && Number.isFinite(ep.stats.ascendClientM) && m.ascentM > 0){
       const ratio = ep.stats.ascendClientM / m.ascentM;
@@ -60575,11 +60698,20 @@ function routingRenderAltitudeChart(){
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
   svg.setAttribute("preserveAspectRatio", "none");
   svg.setAttribute("role", "img");
+  const titleId = "routingAltitudeSvgTitle";
+  const descId = "routingAltitudeSvgDesc";
+  svg.setAttribute("aria-labelledby", titleId);
+  svg.setAttribute("aria-describedby", descId);
   const title = document.createElementNS(ns, "title");
+  title.setAttribute("id", titleId);
   title.textContent = routingT("routing.altitudeTitle", "Elevation profile");
   svg.appendChild(title);
+  const desc = document.createElementNS(ns, "desc");
+  desc.setAttribute("id", descId);
+  const teEl = document.getElementById("routingAltitudeTextEquiv");
+  desc.textContent = teEl ? String(teEl.textContent || "") : routingT("routing.altitudeTitle", "Elevation profile");
+  svg.appendChild(desc);
 
-  // grid
   for (let g = 0; g <= 4; g++){
     const yy = margin.top + (plotH * g) / 4;
     const line = document.createElementNS(ns, "line");
@@ -60623,25 +60755,18 @@ function routingRenderAltitudeChart(){
     svg.appendChild(lbl);
   }
 
-  // Build polyline segments skipping invalid elevation gaps
-  const idxs = routingDecimateIndices(samples.length, ROUTING_ELEV_MAX_SVG_POINTS);
-  const segs = [];
-  let cur = [];
-  const flush = () => {
-    if (cur.length >= 2) segs.push(cur);
-    cur = [];
-  };
-  for (let k = 0; k < idxs.length; k++){
-    const s = samples[idxs[k]];
-    if (!s || !Number.isFinite(s.ele)){ flush(); continue; }
-    cur.push({ x: xOf(s.cumDistM), y: yOf(s.ele), i: idxs[k] });
-  }
-  flush();
-
-  for (let s = 0; s < segs.length; s++){
-    const pts = segs[s];
+  const runs = routingDecimateProfileForSvg(samples, ROUTING_ELEV_MAX_SVG_POINTS);
+  for (let ri = 0; ri < runs.length; ri++){
+    const idxs = runs[ri];
+    if (!idxs || idxs.length < 2) continue;
+    const pts = [];
+    for (let k = 0; k < idxs.length; k++){
+      const s = samples[idxs[k]];
+      if (!s || !Number.isFinite(s.ele)) continue;
+      pts.push({ x: xOf(s.cumDistM), y: yOf(s.ele) });
+    }
+    if (pts.length < 2) continue;
     const polyPts = pts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
-    // area under curve
     const areaPts = polyPts + " " + pts[pts.length - 1].x.toFixed(1) + "," + (margin.top + plotH).toFixed(1) +
       " " + pts[0].x.toFixed(1) + "," + (margin.top + plotH).toFixed(1);
     const area = document.createElementNS(ns, "polygon");
@@ -60659,10 +60784,21 @@ function routingRenderAltitudeChart(){
     svg.appendChild(line);
   }
 
-  // critical grade markers
   for (let i = 1; i < samples.length; i++){
     const s = samples[i];
-    if (!s.valid || !Number.isFinite(s.gradePct) || !Number.isFinite(s.ele)) continue;
+    if (!Number.isFinite(s.ele)) continue;
+    if (s.suspect){
+      const c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", String(xOf(s.cumDistM)));
+      c.setAttribute("cy", String(yOf(s.ele)));
+      c.setAttribute("r", "3.4");
+      c.setAttribute("fill", "var(--warn)");
+      c.setAttribute("stroke", "var(--panel)");
+      c.setAttribute("stroke-width", "1");
+      svg.appendChild(c);
+      continue;
+    }
+    if (!s.gradeUsable || !Number.isFinite(s.gradePct)) continue;
     const absG = Math.abs(s.gradePct);
     if (absG <= 15) continue;
     const c = document.createElementNS(ns, "circle");
@@ -60673,7 +60809,6 @@ function routingRenderAltitudeChart(){
     svg.appendChild(c);
   }
 
-  // crosshair group
   const gHover = document.createElementNS(ns, "g");
   gHover.setAttribute("class", "routing-altitude-crosshair");
   gHover.style.display = "none";
@@ -60697,7 +60832,6 @@ function routingRenderAltitudeChart(){
   gHover.appendChild(tip);
   svg.appendChild(gHover);
 
-  // hit area
   const hit = document.createElementNS(ns, "rect");
   hit.setAttribute("x", String(margin.left));
   hit.setAttribute("y", String(margin.top));
@@ -60759,7 +60893,9 @@ function routingUpdateAltitudeCrosshair(){
   layout.vLine.setAttribute("x2", String(x));
   layout.hDot.setAttribute("cx", String(x));
   layout.hDot.setAttribute("cy", String(y));
-  const gradeStr = Number.isFinite(s.gradePct) ? (s.gradePct.toFixed(1) + "%") : "—";
+  let gradeStr = "—";
+  if (Number.isFinite(s.gradePct)) gradeStr = s.gradePct.toFixed(1) + "%";
+  if (s.suspect) gradeStr += " !";
   layout.tip.setAttribute("x", String(x));
   layout.tip.setAttribute("y", String(Math.max(12, y - 10)));
   layout.tip.textContent = routingFmtDistPreferUnit(s.cumDistM) + " · " + routingFmtAltitude(s.ele) + " · " + gradeStr;
@@ -60821,21 +60957,158 @@ function routingWireAltitudeChartInteractions(){
     });
   }
 }
-function routingAltitudeOnMapHover(lat, lon){
+function routingAltitudeMapSyncBlocked(){
+  const r = state._routing;
+  if (!r || !r.panelOpen) return true;
+  if (r.pickMode || r.markerDrag) return true;
+  if (state._bboxSelecting) return true;
+  try { if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()) return true; } catch(_){}
+  if (state._trackBrush) return true;
+  if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
+  if (typeof mapTrackDocDrag !== "undefined" && mapTrackDocDrag) return true;
+  if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
+  if (typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag) return true;
+  if (typeof mapPolyMoveDocDrag !== "undefined" && mapPolyMoveDocDrag) return true;
+  if (typeof mapRoutingMarkerDocDrag !== "undefined" && mapRoutingMarkerDocDrag) return true;
+  if (typeof mapMeasureDocDrag !== "undefined" && mapMeasureDocDrag) return true;
+  return false;
+}
+function routingInvalidateAltitudeMapPixelCache(){
+  _routingAltitudeMapPixelCache = null;
+}
+function routingBuildAltitudeMapPixelCache(tileMap){
+  const r = state._routing;
+  if (!r || !r.elevationProfile || !Array.isArray(r.previewCoordinates) || r.previewCoordinates.length < 2) return null;
+  const root = document.getElementById("miniMap");
+  if (!root || !tileMap) return null;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  const style = (tileLayer && tileLayer.style.transform) || "";
+  let tx = 0, ty = 0;
+  const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+  if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+  const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+  if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+
+  const pts = r.previewCoordinates;
+  const lons = pts.map(p => (p && Number.isFinite(p.lon) ? p.lon : NaN));
+  const aligned = trackLonsAlignToView(trackLonsUnwrapTransient(lons), (state.viewCenter && state.viewCenter.lon) || 0);
+  const pixels = [];
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    const al = aligned[i];
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(al)){
+      pixels.push({ x: NaN, y: NaN, i: i, cum: (r.elevationProfile.samples[i] && r.elevationProfile.samples[i].cumDistM) || 0 });
+      continue;
+    }
+    const px = tileMapLatLonToPxUnwrapped(root, p.lat, al);
+    pixels.push({
+      x: px.x - tx,
+      y: px.y - ty,
+      i: i,
+      cum: (r.elevationProfile.samples[i] && Number.isFinite(r.elevationProfile.samples[i].cumDistM))
+        ? r.elevationProfile.samples[i].cumDistM
+        : 0
+    });
+  }
+  const z = state.mapZoom || 11;
+  const vc = state.viewCenter || {};
+  const key = String(z) + "|" + String(vc.lat) + "|" + String(vc.lon) + "|" +
+    String(tileMap.clientWidth) + "x" + String(tileMap.clientHeight) + "|" +
+    String(tx) + "," + String(ty) + "|" + String(pts.length);
+  const cache = { key: key, pixels: pixels, z: z };
+  _routingAltitudeMapPixelCache = cache;
+  return cache;
+}
+function routingPointSegDist2(px, py, ax, ay, bx, by){
+  const dx = bx - ax, dy = by - ay;
+  const len2 = dx * dx + dy * dy;
+  if (len2 <= 1e-9){
+    const ex = px - ax, ey = py - ay;
+    return { d2: ex * ex + ey * ey, t: 0 };
+  }
+  let t = ((px - ax) * dx + (py - ay) * dy) / len2;
+  if (t < 0) t = 0; else if (t > 1) t = 1;
+  const cx = ax + t * dx, cy = ay + t * dy;
+  const ex = px - cx, ey = py - cy;
+  return { d2: ex * ex + ey * ey, t: t };
+}
+function routingAltitudeHitTestPixel(clientX, clientY){
+  const r = state._routing;
+  if (!r || !r.elevationProfile) return -1;
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!tileMap) return -1;
+  const rect = tileMap.getBoundingClientRect();
+  const px = clientX - rect.left;
+  const py = clientY - rect.top;
+
+  let cache = _routingAltitudeMapPixelCache;
+  const z = state.mapZoom || 11;
+  const vc = state.viewCenter || {};
+  const expectKeyPrefix = String(z) + "|" + String(vc.lat) + "|" + String(vc.lon) + "|" +
+    String(tileMap.clientWidth) + "x" + String(tileMap.clientHeight);
+  if (!cache || String(cache.key).indexOf(expectKeyPrefix) !== 0){
+    cache = routingBuildAltitudeMapPixelCache(tileMap);
+  }
+  if (!cache || !cache.pixels || cache.pixels.length < 2) return -1;
+  const pix = cache.pixels;
+  const nSeg = pix.length - 1;
+  if (nSeg < 1) return -1;
+
+  const step = Math.max(1, Math.ceil(nSeg / ROUTING_ELEV_MAP_COARSE_MAX));
+  let bestI = -1, bestD2 = Infinity, bestT = 0;
+  for (let i = 0; i < nSeg; i += step){
+    const a = pix[i], b = pix[Math.min(nSeg, i + step)];
+    if (!a || !b || !Number.isFinite(a.x) || !Number.isFinite(b.x)) continue;
+    const hit = routingPointSegDist2(px, py, a.x, a.y, b.x, b.y);
+    if (hit.d2 < bestD2){ bestD2 = hit.d2; bestI = i; bestT = hit.t; }
+  }
+  if (bestI < 0) return -1;
+
+  const lo = Math.max(0, bestI - step * 2);
+  const hi = Math.min(nSeg - 1, bestI + step * 2);
+  bestD2 = Infinity; bestI = -1; bestT = 0;
+  for (let i = lo; i <= hi; i++){
+    const a = pix[i], b = pix[i + 1];
+    if (!a || !b || !Number.isFinite(a.x) || !Number.isFinite(b.x)) continue;
+    const hit = routingPointSegDist2(px, py, a.x, a.y, b.x, b.y);
+    if (hit.d2 < bestD2){ bestD2 = hit.d2; bestI = i; bestT = hit.t; }
+  }
+  if (bestI < 0) return -1;
+  if (bestD2 > (ROUTING_ELEV_MAP_HIT_PX * ROUTING_ELEV_MAP_HIT_PX)) return -1;
+
+  const a = pix[bestI], b = pix[bestI + 1];
+  const cum = a.cum + (b.cum - a.cum) * bestT;
+  return routingAltitudeSampleIndexAtCumDist(r.elevationProfile, cum);
+}
+function routingAltitudeOnMapHover(clientX, clientY){
   const r = state._routing;
   if (!r || !r.panelOpen || !r.elevationProfile) return;
-  if (r.pickMode || r.markerDrag) return;
-  if (r.altitudeHover && r.altitudeHover.source === "chart") return; // chart owns hover
-  const idx = routingAltitudeNearestSampleByLatLon(r.elevationProfile, lat, lon);
-  if (idx < 0){
-    if (r.altitudeHover && r.altitudeHover.source === "map") routingSetAltitudeHover(-1, "map");
-    return;
-  }
-  routingSetAltitudeHover(idx, "map");
+  if (r.altitudeHover && r.altitudeHover.source === "chart") return;
+  if (routingAltitudeMapSyncBlocked()) return;
+  _routingAltitudeMapHoverPending = { x: clientX, y: clientY };
+  if (_routingAltitudeMapHoverRaf) return;
+  _routingAltitudeMapHoverRaf = requestAnimationFrame(() => {
+    _routingAltitudeMapHoverRaf = 0;
+    const pend = _routingAltitudeMapHoverPending;
+    _routingAltitudeMapHoverPending = null;
+    if (!pend || !state._routing) return;
+    if (state._routing.altitudeHover && state._routing.altitudeHover.source === "chart") return;
+    if (routingAltitudeMapSyncBlocked()) return;
+    const idx = routingAltitudeHitTestPixel(pend.x, pend.y);
+    if (idx < 0){
+      if (state._routing.altitudeHover && state._routing.altitudeHover.source === "map"){
+        routingSetAltitudeHover(-1, "map");
+      }
+      return;
+    }
+    routingSetAltitudeHover(idx, "map");
+  });
 }
 function routingAltitudeOnMapLeave(){
   const r = state._routing;
   if (!r) return;
+  _routingAltitudeMapHoverPending = null;
   if (r.altitudeHover && r.altitudeHover.source === "map") routingSetAltitudeHover(-1, "map");
 }
 
