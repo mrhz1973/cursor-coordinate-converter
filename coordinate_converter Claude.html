@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.0E-FIX5</title>
+<title>GOI GIS Tool · B6.0E-FIX6</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13235,7 +13235,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.0E-FIX5 · build 72</span>
+    <span id="appBuildFooter">B6.0E-FIX6 · build 73</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -21193,10 +21193,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.0E-FIX5";
-const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-QA-FIX5 — filtered elevation gain, pointer sync, speed and grade details";
+const APP_BUILD_ID = "B6.0E-FIX6";
+const APP_BUILD_DETAIL = "OUTDOOR-ROUTING-GH-E-QA-FIX6 — repair elevation data contract, units and difficulty formula";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 72;
+const APP_BUILD_NUM = 73;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -60252,33 +60252,68 @@ let _routingAltitudeMapHoverRaf = 0;
 let _routingAltitudeMapHoverPending = null;
 
 function routingFmtAltitudeMeters(meters){
-  const m = Number(meters);
-  if (!Number.isFinite(m)) return "—";
-  const abs = Math.abs(m);
-  const nf = (n, d) => {
-    try {
-      return new Intl.NumberFormat("it-IT", { maximumFractionDigits: d, minimumFractionDigits: d }).format(n);
-    } catch(_){
-      return Number(n).toFixed(d).replace(".", ",");
-    }
-  };
-  if (abs < 1000) return Math.round(m) + " m";
-  return nf(m / 1000, 2) + " km";
+  const n = Number(meters);
+  if (!Number.isFinite(n)) return "—";
+  return routingNumberFormatter({
+    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    useGrouping: true
+  }).format(Math.round(n)) + " m";
 }
 function routingFmtAltitude(meters){ return routingFmtAltitudeMeters(meters); }
 function routingFmtDistPreferUnit(meters){ return routingFmtRouteDistanceKm(meters); }
+function routingCurrentNumberLocale(){
+  try {
+    const lang = String((state && state.lang) || "en").toLowerCase();
+    if (lang === "it") return "it-IT";
+    if (lang === "fr") return "fr-FR";
+  } catch(_){}
+  return "en-US";
+}
+function routingNumberFormatter(opts){
+  opts = opts || {};
+  try {
+    return new Intl.NumberFormat(routingCurrentNumberLocale(), opts);
+  } catch(_){
+    return {
+      format: (n) => {
+        const d = opts.maximumFractionDigits != null ? opts.maximumFractionDigits : 0;
+        return Number(n).toFixed(d);
+      }
+    };
+  }
+}
+function routingFmtSegmentDistance(meters){
+  const m = Number(meters);
+  if (!Number.isFinite(m) || m < 0) return "—";
+  if (m < 1000){
+    return routingNumberFormatter({ maximumFractionDigits: 0, minimumFractionDigits: 0, useGrouping: true }).format(Math.round(m)) + " m";
+  }
+  return routingFmtRouteDistanceKm(m);
+}
+function routingFmtGradePct(value){
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return routingNumberFormatter({ maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(n) + "%";
+}
+function routingFmtSpeedKmh(value){
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "—";
+  return routingNumberFormatter({ maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(n) + " km/h";
+}
 function routingFmtRouteDistanceKm(meters){
   const m = Number(meters);
   if (!Number.isFinite(m) || m < 0) return "—";
   const km = m / 1000;
+  const digits = km >= 100 ? 0 : (km >= 10 ? 1 : 2);
   let body;
   try {
-    body = new Intl.NumberFormat("it-IT", {
-      maximumFractionDigits: km >= 100 ? 0 : (km >= 10 ? 1 : 2),
+    body = routingNumberFormatter({
+      maximumFractionDigits: digits,
       minimumFractionDigits: 0
     }).format(km);
   } catch(_){
-    body = (km >= 100 ? Math.round(km) : (km >= 10 ? km.toFixed(1) : km.toFixed(2))).replace(".", ",");
+    body = String(Number(km.toFixed(digits)));
   }
   return body + "km";
 }
@@ -60300,14 +60335,13 @@ function routingDisconnectAltitudeResizeObserver(){
     }
   } catch(_){ _routingAltitudeResizeObserver = null; }
 }
-function routingHaversineM(lat1, lon1, lat2, lon2){
-  const R = 6371000;
-  const toR = Math.PI / 180;
-  const dLat = (lat2 - lat1) * toR;
-  const dLon = (lon2 - lon1) * toR;
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * toR) * Math.cos(lat2 * toR) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(a)));
+function routingSegmentDistanceM(lat1, lon1, lat2, lon2){
+  try {
+    if (typeof vincentyInverse !== "function") return 0;
+    const inv = vincentyInverse(lat1, lon1, lat2, lon2);
+    const d = inv && Number(inv.distance);
+    return Number.isFinite(d) && d >= 0 ? d : 0;
+  } catch(_){ return 0; }
 }
 function routingMedianFinite(values){
   const a = [];
@@ -60411,6 +60445,11 @@ function routingBuildFilteredElevationModel(samples){
     filteredP95GradePct: null,
     maxFilteredGradePct: null,
     gradeBands: emptyBands,
+    filteredGradeSegmentCount: 0,
+    filteredGradeDistanceM: 0,
+    filteredLengthOver15pctM: 0,
+    filterAvailable: false,
+    filterFallbackReason: "insufficient",
     filterMeta: {
       bucketM: ROUTING_ELEV_FILTER_BUCKET_M,
       deadbandM: ROUTING_ELEV_FILTER_DEADBAND_M,
@@ -60418,7 +60457,8 @@ function routingBuildFilteredElevationModel(samples){
       bucketCount: 0,
       gapCount: 0,
       filteredPointCount: 0,
-      gradeSegCount: 0
+      gradeSegCount: 0,
+      multiPointRunCount: 0
     },
     diagnostics: {
       rawClientAscentM: null,
@@ -60430,18 +60470,27 @@ function routingBuildFilteredElevationModel(samples){
       netEleM: null
     }
   };
-  if (!Array.isArray(samples) || !samples.length) return base;
+  if (!Array.isArray(samples) || !samples.length){
+    base.filterFallbackReason = "no_elevation";
+    return base;
+  }
 
   let rawAsc = 0, rawDes = 0, rawOk = false;
   let minEle = Infinity, maxEle = -Infinity;
   let startEle = null, endEle = null;
+  let finiteEle = 0;
   for (let i = 0; i < samples.length; i++){
     const s = samples[i];
     if (!s || s.ele == null || !Number.isFinite(s.ele)) continue;
+    finiteEle++;
     if (startEle == null) startEle = s.ele;
     endEle = s.ele;
     if (s.ele < minEle) minEle = s.ele;
     if (s.ele > maxEle) maxEle = s.ele;
+  }
+  if (!finiteEle){
+    base.filterFallbackReason = "no_elevation";
+    return base;
   }
   for (let i = 1; i < samples.length; i++){
     const a = samples[i - 1], b = samples[i];
@@ -60475,40 +60524,54 @@ function routingBuildFilteredElevationModel(samples){
   if (cur.length) runs.push(cur);
   base.filterMeta.runCount = runs.length;
   base.filterMeta.gapCount = gapCount;
+  if (!runs.length){
+    base.filterFallbackReason = "no_run";
+    return base;
+  }
 
   const allFiltered = [];
   let bucketCount = 0;
-  let filtAsc = 0, filtDes = 0, filtOk = false;
+  let filtAsc = 0, filtDes = 0;
+  let ascentOk = false;
+  let multiPointRuns = 0;
   const gradeAbs = [];
   const gradeW = [];
   let maxGrade = null;
   const bands = routingEmptyGradeBands();
+  let gradeSegCount = 0;
+  let gradeDist = 0;
+  let steep15 = 0;
 
   for (let r = 0; r < runs.length; r++){
     const pts = routingFilterRunBucketMedian(samples, runs[r], ROUTING_ELEV_FILTER_BUCKET_M);
     bucketCount += Math.max(0, pts.length - 2);
     for (let i = 0; i < pts.length; i++) allFiltered.push(pts[i]);
-    const dd = routingDeadbandAscentDescent(pts, ROUTING_ELEV_FILTER_DEADBAND_M);
-    filtAsc += dd.ascentM;
-    filtDes += dd.descentM;
-    filtOk = true;
-    for (let i = 1; i < pts.length; i++){
-      const a = pts[i - 1], b = pts[i];
-      const dist = Number(b.cumDistM) - Number(a.cumDistM);
-      if (!(dist > 0) || !Number.isFinite(a.ele) || !Number.isFinite(b.ele)) continue;
-      const grade = ((b.ele - a.ele) / dist) * 100;
-      if (!Number.isFinite(grade)) continue;
-      const absG = Math.abs(grade);
-      gradeAbs.push(absG);
-      gradeW.push(dist);
-      base.filterMeta.gradeSegCount++;
-      if (dist >= ROUTING_ELEV_MAX_GRADE_MIN_SEG_M){
-        if (maxGrade == null || absG > maxGrade) maxGrade = absG;
-      }
-      const bandId = routingClassifyGradeBand(absG);
-      if (bandId && bands[bandId]){
-        if (grade >= 0) bands[bandId].posM += dist;
-        else bands[bandId].negM += dist;
+    if (pts.length >= 2){
+      multiPointRuns++;
+      const dd = routingDeadbandAscentDescent(pts, ROUTING_ELEV_FILTER_DEADBAND_M);
+      filtAsc += dd.ascentM;
+      filtDes += dd.descentM;
+      ascentOk = true;
+      for (let i = 1; i < pts.length; i++){
+        const a = pts[i - 1], b = pts[i];
+        const dist = Number(b.cumDistM) - Number(a.cumDistM);
+        if (!(dist > 0) || !Number.isFinite(a.ele) || !Number.isFinite(b.ele)) continue;
+        const grade = ((b.ele - a.ele) / dist) * 100;
+        if (!Number.isFinite(grade)) continue;
+        const absG = Math.abs(grade);
+        gradeAbs.push(absG);
+        gradeW.push(dist);
+        gradeSegCount++;
+        gradeDist += dist;
+        if (absG > 15) steep15 += dist;
+        if (dist >= ROUTING_ELEV_MAX_GRADE_MIN_SEG_M){
+          if (maxGrade == null || absG > maxGrade) maxGrade = absG;
+        }
+        const bandId = routingClassifyGradeBand(absG);
+        if (bandId && bands[bandId]){
+          if (grade >= 0) bands[bandId].posM += dist;
+          else bands[bandId].negM += dist;
+        }
       }
     }
   }
@@ -60516,15 +60579,39 @@ function routingBuildFilteredElevationModel(samples){
   base.filteredPoints = allFiltered;
   base.filterMeta.bucketCount = bucketCount;
   base.filterMeta.filteredPointCount = allFiltered.length;
-  base.filteredAscentM = filtOk ? filtAsc : null;
-  base.filteredDescentM = filtOk ? filtDes : null;
+  base.filterMeta.multiPointRunCount = multiPointRuns;
+  base.filterMeta.gradeSegCount = gradeSegCount;
+  base.filteredAscentM = ascentOk ? filtAsc : null;
+  base.filteredDescentM = ascentOk ? filtDes : null;
   base.filteredP95GradePct = gradeAbs.length
     ? routingPercentileWeighted(gradeAbs, gradeW, 0.95)
     : null;
   base.maxFilteredGradePct = maxGrade;
   base.gradeBands = bands;
+  base.filteredGradeSegmentCount = gradeSegCount;
+  base.filteredGradeDistanceM = gradeDist;
+  base.filteredLengthOver15pctM = steep15;
+
+  let reason = "available";
+  if (!multiPointRuns) reason = "no_run";
+  else if (gradeSegCount < 4) reason = "insufficient_segments";
+  else if (!(gradeDist > 0)) reason = "no_grade_distance";
+  else if (!(base.filteredP95GradePct != null && Number.isFinite(base.filteredP95GradePct))) reason = "no_percentile";
+  else if (!(Number.isFinite(base.filteredAscentM) && Number.isFinite(base.filteredDescentM))) reason = "invalid_totals";
+
+  base.filterAvailable = (
+    multiPointRuns >= 1 &&
+    gradeSegCount >= 4 &&
+    gradeDist > 0 &&
+    Number.isFinite(base.filteredAscentM) &&
+    Number.isFinite(base.filteredDescentM) &&
+    base.filteredP95GradePct != null &&
+    Number.isFinite(base.filteredP95GradePct)
+  );
+  base.filterFallbackReason = base.filterAvailable ? "available" : reason;
   return base;
 }
+
 function routingBuildElevationProfile(previewCoords, elevCoords){
   const samples = [];
   const n = Array.isArray(previewCoords) ? previewCoords.length : 0;
@@ -60535,18 +60622,31 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
   let gaps = 0;
   for (let i = 0; i < n; i++){
     const p = previewCoords[i];
-    if (!Array.isArray(p) || p.length < 2) continue;
-    const lat = Number(p[0]), lon = Number(p[1]);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-    if (prevLat != null) cum += routingHaversineM(prevLat, prevLon, lat, lon);
+    if (
+      !p ||
+      typeof p !== "object" ||
+      !Number.isFinite(p.lat) ||
+      !Number.isFinite(p.lon)
+    ){
+      continue;
+    }
+    const lat = Number(p.lat);
+    const lon = Number(p.lon);
+    if (prevLat != null){
+      const seg = routingSegmentDistanceM(prevLat, prevLon, lat, lon);
+      if (Number.isFinite(seg) && seg > 0) cum += seg;
+    }
     prevLat = lat; prevLon = lon;
-    let ele = null;
     const e = elev[i];
-    if (Array.isArray(e) && e.length >= 3){
-      const ev = Number(e[2]);
-      if (typeof e[2] === "number" && Number.isFinite(ev)){ ele = ev; finiteEle++; }
-      else gaps++;
-    } else gaps++;
+    const ele =
+      e &&
+      typeof e === "object" &&
+      typeof e.ele === "number" &&
+      Number.isFinite(e.ele)
+        ? e.ele
+        : null;
+    if (ele != null) finiteEle++;
+    else gaps++;
     samples.push({
       index: samples.length,
       lat, lon, ele,
@@ -60619,6 +60719,11 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
       filteredP95GradePct: filtered.filteredP95GradePct,
       maxFilteredGradePct: filtered.maxFilteredGradePct,
       gradeBands: filtered.gradeBands,
+      filteredGradeSegmentCount: filtered.filteredGradeSegmentCount,
+      filteredGradeDistanceM: filtered.filteredGradeDistanceM,
+      filteredLengthOver15pctM: filtered.filteredLengthOver15pctM,
+      filterAvailable: !!filtered.filterAvailable,
+      filterFallbackReason: filtered.filterFallbackReason,
       filterMeta: filtered.filterMeta,
       diagnostics: filtered.diagnostics
     },
@@ -60629,6 +60734,7 @@ function routingBuildElevationProfile(previewCoords, elevCoords){
     }
   };
 }
+
 function routingPercentileWeighted(values, weights, p){
   if (!values.length) return null;
   const idx = values.map((_, i) => i).sort((a, b) => values[a] - values[b]);
@@ -60646,68 +60752,94 @@ function routingPercentileWeighted(values, weights, p){
 function routingDifficultyBucketScore(metric, thresholds){
   if (!Number.isFinite(metric)) return 0;
   for (let i = 0; i < thresholds.length; i++){
-    if (metric <= thresholds[i].max) return thresholds[i].score;
+    if (metric < thresholds[i].max) return thresholds[i].score;
   }
   return thresholds[thresholds.length - 1].score;
 }
+function routingDifficultySubScoreLt(metric, cuts){
+  // cuts: four ascending exclusive upper bounds → scores 0/25/50/75 else 100
+  if (!Number.isFinite(metric)) return 0;
+  if (metric < cuts[0]) return 0;
+  if (metric < cuts[1]) return 25;
+  if (metric < cuts[2]) return 50;
+  if (metric < cuts[3]) return 75;
+  return 100;
+}
+
 function routingComputeDifficulty(routeMetrics, elevationProfile, profileId){
   void profileId;
   const m = routeMetrics || {};
   const st = (elevationProfile && elevationProfile.stats) || {};
   const distanceM = Number(m.distanceM);
-  const ascentAuth = (st.filteredAscentM != null && Number.isFinite(st.filteredAscentM))
-    ? Number(st.filteredAscentM)
-    : Number(m.ascentM);
-  const ascentM = ascentAuth;
   const samples = elevationProfile && elevationProfile.samples;
   const sampleCount = Array.isArray(samples) ? samples.length : 0;
-  const usable = Number(st.usableGradeSegmentCount) || 0;
+  const filterOk = !!st.filterAvailable;
+  const ascentM = filterOk
+    ? Number(st.filteredAscentM)
+    : Number(m.ascentM);
+  const p95 = filterOk
+    ? Number(st.filteredP95GradePct)
+    : (Number.isFinite(st.p95AbsGradePct) ? Number(st.p95AbsGradePct) : null);
+  const steepLenM = filterOk
+    ? Number(st.filteredLengthOver15pctM) || 0
+    : (Number(st.lengthOver15pctM) || 0);
+  const maxG = (st.maxFilteredGradePct != null && Number.isFinite(st.maxFilteredGradePct))
+    ? Number(st.maxFilteredGradePct)
+    : null;
+  const usable = filterOk
+    ? (Number(st.filteredGradeSegmentCount) || 0)
+    : (Number(st.usableGradeSegmentCount) || 0);
+
+  const unknown = () => ({
+    level: "unknown",
+    score: null,
+    factors: [],
+    rule: "routing.difficultyInsufficient",
+    maxFilteredGradePct: maxG,
+    filteredP95GradePct: Number.isFinite(p95) ? p95 : null
+  });
+
   if (!(Number.isFinite(distanceM) && distanceM > 0) ||
       sampleCount < ROUTING_ELEV_MIN_SAMPLES_FOR_DIFFICULTY ||
       usable < ROUTING_ELEV_MIN_USABLE_GRADE_SEGS ||
-      !Number.isFinite(ascentM)){
-    return {
-      level: "unknown",
-      score: null,
-      factors: [],
-      rule: "routing.difficultyInsufficient",
-      maxFilteredGradePct: st.maxFilteredGradePct != null ? st.maxFilteredGradePct : null,
-      filteredP95GradePct: st.filteredP95GradePct != null ? st.filteredP95GradePct : null
-    };
+      !Number.isFinite(ascentM) ||
+      !(p95 != null && Number.isFinite(p95))){
+    return unknown();
   }
+
   const ascentPerKm = (ascentM / distanceM) * 1000;
-  const p95 = (st.filteredP95GradePct != null && Number.isFinite(st.filteredP95GradePct))
-    ? Number(st.filteredP95GradePct)
-    : (Number.isFinite(st.p95AbsGradePct) ? Number(st.p95AbsGradePct) : null);
-  const maxG = (st.maxFilteredGradePct != null && Number.isFinite(st.maxFilteredGradePct))
-    ? Number(st.maxFilteredGradePct)
-    : p95;
-  const distScore = routingDifficultyBucketScore(distanceM / 1000, [
-    { max: 5, score: 1 }, { max: 12, score: 2 }, { max: 20, score: 3 }, { max: Infinity, score: 4 }
-  ]);
-  const ascScore = routingDifficultyBucketScore(ascentM, [
-    { max: 150, score: 1 }, { max: 400, score: 2 }, { max: 800, score: 3 }, { max: Infinity, score: 4 }
-  ]);
-  const apkScore = routingDifficultyBucketScore(ascentPerKm, [
-    { max: 20, score: 1 }, { max: 40, score: 2 }, { max: 70, score: 3 }, { max: Infinity, score: 4 }
-  ]);
-  const p95Score = routingDifficultyBucketScore(p95, [
-    { max: 8, score: 1 }, { max: 12, score: 2 }, { max: 18, score: 3 }, { max: Infinity, score: 4 }
-  ]);
-  const steepScore = routingDifficultyBucketScore(st.lengthOver15pctM || 0, [
-    { max: 100, score: 1 }, { max: 400, score: 2 }, { max: 1000, score: 3 }, { max: Infinity, score: 4 }
-  ]);
-  const score = (distScore + ascScore + apkScore + p95Score + steepScore) / 4.7;
-  let level = "easy";
-  if (score >= 3.2) level = "very_hard";
-  else if (score >= 2.4) level = "hard";
-  else if (score >= 1.6) level = "moderate";
+  const distanceScore = routingDifficultySubScoreLt(distanceM / 1000, [6, 12, 20, 35]);
+  const ascentScore = routingDifficultySubScoreLt(ascentM, [150, 400, 800, 1500]);
+  const ascentPerKmScore = routingDifficultySubScoreLt(ascentPerKm, [15, 35, 70, 120]);
+  const p95GradeScore = routingDifficultySubScoreLt(p95, [5, 10, 15, 25]);
+  let steepLengthScore = 0;
+  const steepKm = steepLenM / 1000;
+  if (steepLenM > 0){
+    if (steepKm < 0.5) steepLengthScore = 25;
+    else if (steepKm < 2) steepLengthScore = 50;
+    else if (steepKm < 5) steepLengthScore = 75;
+    else steepLengthScore = 100;
+  }
+  const score = Math.round(
+    (
+      distanceScore * 1.0 +
+      ascentScore * 1.2 +
+      ascentPerKmScore * 1.0 +
+      p95GradeScore * 0.8 +
+      steepLengthScore * 0.7
+    ) / 4.7
+  );
+  let level = "very_hard";
+  if (score < 25) level = "easy";
+  else if (score < 50) level = "moderate";
+  else if (score < 75) level = "hard";
+
   const factors = [
-    { key: "distance", labelKey: "routing.difficultyFactorDistance", value: distanceM, unit: "m" },
-    { key: "ascent", labelKey: "routing.difficultyFactorAscent", value: ascentM, unit: "m" },
+    { key: "distance", labelKey: "routing.difficultyFactorDistance", value: distanceM, unit: "dist" },
+    { key: "ascent", labelKey: "routing.difficultyFactorAscent", value: ascentM, unit: "alt" },
     { key: "ascentPerKm", labelKey: "routing.difficultyFactorAscentPerKm", value: ascentPerKm, unit: "m/km" },
     { key: "maxGrade", labelKey: "routing.difficultyFactorMaxGrade", value: maxG, unit: "%" },
-    { key: "steep", labelKey: "routing.difficultyFactorSteepLen", value: st.lengthOver15pctM, unit: "m" }
+    { key: "steep", labelKey: "routing.difficultyFactorSteepLen", value: steepLenM, unit: "dist" }
   ];
   return {
     level,
@@ -60715,9 +60847,13 @@ function routingComputeDifficulty(routeMetrics, elevationProfile, profileId){
     factors,
     rule: "routing.difficultyLabel",
     maxFilteredGradePct: maxG,
-    filteredP95GradePct: p95
+    filteredP95GradePct: p95,
+    subScores: {
+      distanceScore, ascentScore, ascentPerKmScore, p95GradeScore, steepLengthScore
+    }
   };
 }
+
 function routingDifficultyLevelLabel(level){
   if (level === "easy") return routingT("routing.difficultyEasy", "easy");
   if (level === "moderate") return routingT("routing.difficultyModerate", "moderate");
@@ -60761,12 +60897,10 @@ function routingAuthorityAscentDescent(r){
   const st = r && r.elevationProfile && r.elevationProfile.stats;
   const serverAsc = m && Number.isFinite(m.ascentM) ? Number(m.ascentM) : null;
   const serverDes = m && Number.isFinite(m.descentM) ? Number(m.descentM) : null;
-  const filtAsc = st && Number.isFinite(st.filteredAscentM) ? Number(st.filteredAscentM) : null;
-  const filtDes = st && Number.isFinite(st.filteredDescentM) ? Number(st.filteredDescentM) : null;
-  if (filtAsc != null && filtDes != null){
+  if (st && st.filterAvailable === true){
     return {
-      ascentM: filtAsc,
-      descentM: filtDes,
+      ascentM: Number(st.filteredAscentM),
+      descentM: Number(st.filteredDescentM),
       source: "filtered",
       serverAscentM: serverAsc,
       serverDescentM: serverDes
@@ -60780,6 +60914,7 @@ function routingAuthorityAscentDescent(r){
     serverDescentM: serverDes
   };
 }
+
 function routingClearAltitudeUi(){
   try { routingDisconnectAltitudeResizeObserver(); } catch(_){}
   _routingAltitudeMapPixelCache = null;
@@ -60841,13 +60976,17 @@ function routingSyncSpeedControlsUi(){
   if (summary){
     const sp = routingResolveSpeedKmh(r);
     if (sp.mode === "server" && sp.valid){
-      const kmhTxt = (Math.round(sp.kmh * 10) / 10).toFixed(1).replace(".", ",");
-      summary.textContent = String(routingT("routing.speedSummaryAuto", "Automatic · {0} km/h")).replace("{0}", kmhTxt);
+      summary.textContent = String(routingT("routing.speedSummaryAuto", "Automatic · {0} km/h"))
+        .replace("{0}", routingNumberFormatter({ maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(sp.kmh));
+    } else if (sp.mode === "custom" && sp.valid){
+      summary.textContent = routingT("routing.speedCustom", "Custom") + " · " + routingFmtSpeedKmh(sp.kmh);
     } else if (sp.valid){
-      summary.textContent = (Math.round(sp.kmh * 10) / 10).toFixed(1).replace(".", ",") + " km/h";
+      const opt = sel.querySelector('option[value="' + sp.mode + '"]');
+      summary.textContent = opt ? String(opt.textContent || "").trim() : routingFmtSpeedKmh(sp.kmh);
     } else summary.textContent = "";
   }
 }
+
 function routingOnSpeedModeChange(){
   const r = state._routing;
   const sel = document.getElementById("routingSpeedSelect");
@@ -60933,23 +61072,44 @@ function routingRenderAscentDetail(r){
       routingT(def.labelKey, def.labelFb);
     addRow(
       label,
-      routingFmtAltitudeMeters(b.posM || 0),
-      routingFmtAltitudeMeters(b.negM || 0)
+      routingFmtSegmentDistance(b.posM || 0),
+      routingFmtSegmentDistance(b.negM || 0)
     );
   }
-  if (auth.source === "filtered" && note && auth.serverAscentM != null){
-    note.hidden = false;
-    note.textContent =
-      routingT("routing.serverData", "Server data") + ": " +
-      routingFmtAltitudeMeters(auth.serverAscentM) + " / " + routingFmtAltitudeMeters(auth.serverDescentM) +
-      " · " +
-      routingT("routing.filteredValue", "Filtered value shown") + ": " +
-      routingFmtAltitudeMeters(auth.ascentM) + " / " + routingFmtAltitudeMeters(auth.descentM);
+  if (auth.source === "filtered" && note){
+    const serverAsc = auth.serverAscentM;
+    const filtAsc = auth.ascentM;
+    const serverDes = auth.serverDescentM;
+    const filtDes = auth.descentM;
+    let show = false;
+    if (serverAsc != null && filtAsc != null && Number.isFinite(serverAsc) && Number.isFinite(filtAsc)){
+      const absDiff = Math.abs(serverAsc - filtAsc);
+      const pctDiff = absDiff / Math.max(1, Math.abs(serverAsc));
+      if (absDiff > 100 || pctDiff > 0.15) show = true;
+    }
+    if (!show && serverDes != null && filtDes != null && Number.isFinite(serverDes) && Number.isFinite(filtDes)){
+      const absDiff = Math.abs(serverDes - filtDes);
+      const pctDiff = absDiff / Math.max(1, Math.abs(serverDes));
+      if (absDiff > 100 || pctDiff > 0.15) show = true;
+    }
+    if (show){
+      note.hidden = false;
+      note.textContent =
+        routingT("routing.serverData", "Server data") + ": " +
+        routingFmtAltitudeMeters(serverAsc) + " / " + routingFmtAltitudeMeters(serverDes) +
+        " · " +
+        routingT("routing.filteredValue", "Filtered value shown") + ": " +
+        routingFmtAltitudeMeters(filtAsc) + " / " + routingFmtAltitudeMeters(filtDes);
+    } else {
+      note.hidden = true;
+      note.textContent = "";
+    }
   } else if (auth.source === "server" && note){
     note.hidden = false;
     note.textContent = routingT("routing.filteredUnavailable", "Filtered profile unavailable");
   }
 }
+
 function routingRenderAltitudePanel(opts){
   opts = opts || {};
   const r = state._routing;
@@ -60995,9 +61155,12 @@ function routingRenderAltitudePanel(opts){
       ds.factors.forEach((f) => {
         const li = document.createElement("li");
         let txt = routingT(f.labelKey, f.key) + ": ";
-        if (f.unit === "m") txt += routingFmtAltitudeMeters(f.value);
-        else if (f.unit === "m/km") txt += (Number.isFinite(f.value) ? Math.round(f.value) : "—") + " m/km";
-        else if (f.unit === "%") txt += (Number.isFinite(f.value) ? f.value.toFixed(1) : "—") + " %";
+        if (f.unit === "alt") txt += routingFmtAltitudeMeters(f.value);
+        else if (f.unit === "dist") txt += routingFmtSegmentDistance(f.value);
+        else if (f.unit === "m/km") txt += (Number.isFinite(f.value)
+          ? routingNumberFormatter({ maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(Math.round(f.value))
+          : "—") + " m/km";
+        else if (f.unit === "%") txt += routingFmtGradePct(f.value);
         else txt += String(f.value);
         li.textContent = txt;
         factorsEl.appendChild(li);
@@ -61038,7 +61201,8 @@ function routingRenderAltitudePanel(opts){
     }
     if (auth.source === "filtered" && auth.serverAscentM != null && Number.isFinite(auth.ascentM)){
       const delta = Math.abs(auth.serverAscentM - auth.ascentM);
-      if (delta > 50 && delta / Math.max(1, auth.serverAscentM) > 0.12){
+      const pct = delta / Math.max(1, Math.abs(auth.serverAscentM));
+      if (delta > 100 || pct > 0.15){
         msgs.push(routingT("routing.altitudeDiscrepancy", "Elevation discrepancy"));
       }
     }
@@ -61266,7 +61430,7 @@ function routingApplyAltitudeHoverVisuals(){
     const y = layout.yOf(s.ele);
     layout.hDot.setAttribute("cx", x); layout.hDot.setAttribute("cy", y);
     layout.hDot.style.display = "";
-    layout.tip.textContent = routingFmtAltitudeMeters(s.ele) + " · " + routingFmtRouteDistanceKm(s.cumDistM);
+    layout.tip.textContent = routingFmtAltitudeMeters(s.ele) + " · " + routingFmtRouteDistanceKm(s.cumDistM) + (s.gradePct != null && Number.isFinite(s.gradePct) ? (" · " + routingFmtGradePct(s.gradePct)) : "");
     layout.tip.setAttribute("x", Math.min(x + 8, layout.margin.l + layout.plotW - 4));
     layout.tip.setAttribute("y", Math.max(layout.margin.t + 12, y - 8));
     layout.tip.style.display = "";
@@ -61282,6 +61446,17 @@ function routingClearAltitudeHoverIfSource(source){
   r.altitudeHover = null;
   routingApplyAltitudeHoverVisuals();
   routingUpdateAltitudeSyncMarkerOnly();
+}
+function routingAltitudeSampleIndexAtCumDist(samples, dist){
+  if (!Array.isArray(samples) || !samples.length) return -1;
+  const target = Number(dist);
+  if (!Number.isFinite(target)) return -1;
+  let best = 0, bestD = Infinity;
+  for (let i = 0; i < samples.length; i++){
+    const d = Math.abs(Number(samples[i].cumDistM) - target);
+    if (d < bestD){ bestD = d; best = i; }
+  }
+  return best;
 }
 function routingWireAltitudeChartInteractions(){
   const chart = document.getElementById("routingAltitudeChart");
@@ -61300,12 +61475,8 @@ function routingWireAltitudeChartInteractions(){
     const xSvg = (xCss / rect.width) * lay.W;
     const rel = Math.max(0, Math.min(1, (xSvg - lay.margin.l) / Math.max(1e-6, lay.plotW)));
     const dist = rel * lay.totalDist;
-    let best = 0, bestD = Infinity;
-    for (let i = 0; i < ep.samples.length; i++){
-      const d = Math.abs(ep.samples[i].cumDistM - dist);
-      if (d < bestD){ bestD = d; best = i; }
-    }
-    routingSetAltitudeHover(best, "chart");
+    const best = routingAltitudeSampleIndexAtCumDist(ep.samples, dist);
+    if (best >= 0) routingSetAltitudeHover(best, "chart");
   };
   chart.addEventListener("pointermove", (ev) => { pickFromClient(ev.clientX); });
   chart.addEventListener("pointerdown", (ev) => { pickFromClient(ev.clientX); });
@@ -61350,8 +61521,8 @@ function routingEnsureAltitudeMapPixelCache(){
   const pts = [];
   for (let i = 0; i < coords.length; i++){
     const c = coords[i];
-    if (!Array.isArray(c) || c.length < 2) continue;
-    const lat = Number(c[0]), lon = Number(c[1]);
+    if (!c || typeof c !== "object") continue;
+    const lat = Number(c.lat), lon = Number(c.lon);
     if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
     const p = latLonToPixel(lat, lon, clat, clon, zoom, wh.w, wh.h);
     if (!p) continue;
