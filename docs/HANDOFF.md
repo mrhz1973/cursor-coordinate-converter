@@ -117,20 +117,21 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `d54c915` (non in commit docs) |
-| Runtime live / commit monolite | `d54c915a9c4663ccebe067623bc4f12cdd18e590` (`d54c915`) — tip OUTDOOR-ROUTING-REVERSE-A |
-| Ultimo blocco chiuso | **OUTDOOR-ROUTING-REVERSE-A** — Inverti percorso — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **OUTDOOR-ROUTING-REVERSE-A** — tip `d54c915` build 76 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `1e218a2` (non in commit docs) |
+| Runtime live / commit monolite | `1e218a2fe97199893b2c82b58637524a1da58830` (`1e218a2`) — tip TRACK-MODAL-DISPLAY-PREFS-A |
+| Ultimo blocco chiuso | **TRACK-MODAL-DISPLAY-PREFS-A** — Unità e formato coordinate modale Tracce — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **TRACK-MODAL-DISPLAY-PREFS-A** — tip `1e218a2` build 77 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d54c915a9c4663ccebe067623bc4f12cdd18e590` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `5c79d266e93a9c9ead36aa486bb87a17426a368c` |
-| Byte monolite (git LF) | `3033162` |
-| `APP_BUILD_NUM` | `76` |
-| Display runtime | `B6.0R-A · build 76` |
-| `APP_BUILD_ID` | `B6.0R-A` |
+| Runtime Git / atteso VPS | `1e218a2fe97199893b2c82b58637524a1da58830` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `8ef3e17196790fdfb5507dee711af9ede68967ad` |
+| Byte monolite (git LF) | `3038595` |
+| `APP_BUILD_NUM` | `77` |
+| Display runtime | `B6.0TDP-A · build 77` |
+| `APP_BUILD_ID` | `B6.0TDP-A` |
+| TRACK-MODAL-DISPLAY-PREFS-A | **CLOSED / PASS end-to-end** (unità m/ft + formato coordinate display; QA PASS) |
 | OUTDOOR-ROUTING-REVERSE-A | **CLOSED / PASS end-to-end** (Inverti percorso; QA PASS) |
 | OUTDOOR-ROUTING-GH-E / FIX1–FIX8 | **CLOSED / PASS end-to-end** (altimetria + difficoltà + sync + locale; due QA FAIL intermedi chiusi; QA PASS finale) |
 | INFRA-GH-1D / EXEC-C | **CLOSED / PASS end-to-end** (V3 MMAP live `nord-ovest-B-v3-elev`; QA PASS; finito Regola H 2026-07-29) |
@@ -164,15 +165,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d54c915` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1e218a2` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / **TRACK-MODAL-DISPLAY-PREFS-A** / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. Runtime live monolite **`d54c915`** / **`B6.0R-A · build 76`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. Runtime live monolite **`1e218a2`** / **`B6.0TDP-A · build 77`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **TRACK-MODAL-DISPLAY-PREFS-A**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
+**Backlog basso / non ora:** **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
@@ -196,11 +197,9 @@ Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** /
 
 **Stato:** **BACKLOG / NON APERTO** (2026-07-29). Selettori km/mi e m/ft nel pannello Routing, indipendenti da mappa/poligoni. **Nessuna implementazione**.
 
-### TRACK-MODAL-DISPLAY-PREFS-A — Unità e formato coordinate modale Tracce — BACKLOG / NON APERTO
+### TRACK-MODAL-DISPLAY-PREFS-A — Unità e formato coordinate modale Tracce — CLOSED / PASS end-to-end
 
-**Stato:** **BACKLOG / NON APERTO** (2026-07-29, registrato in chiusura OUTDOOR-ROUTING-REVERSE-A).
-
-**Scope futuro:** selettore unità sezione Punti con metri e piedi (oltre opzioni esistenti) — solo visualizzazione distanze segmenti; selettore formato coordinate Predefinito/DD/DDM/DMS/UTM/MGRS (Predefinito = formato primario globale); nessuna modifica a coordinate canoniche/geometria/salvataggio/export; preferenza UI modale (non proprietà traccia); i18n IT/EN/FR. **Nessuna implementazione** in questa chiusura.
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-30). Tip `1e218a2` / `B6.0TDP-A · build 77`. Review GPT-sostitutiva PASS. Deploy GIS-only PASS. QA «**QA TRACK-MODAL-DISPLAY-PREFS-A PASS operatore**».
 
 ### Routing UX post-C (registrati, non aperti)
 

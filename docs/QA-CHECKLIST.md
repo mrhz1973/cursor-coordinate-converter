@@ -185,9 +185,46 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## TRACK-MODAL-DISPLAY-PREFS-A — Unità e formato coordinate modale Tracce — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `1e218a2` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = 1e218a2fe97199893b2c82b58637524a1da58830
+blob = 8ef3e17196790fdfb5507dee711af9ede68967ad
+goi-gis-app.service active / enabled
+HTTP 200
+byte repo/servito = 3038595 / 3038595
+SHA-256 = 27f646a13e0d6902eeb24e19671134314df2d67943a2e18b676fbc6939077433 (match)
+CMP_PASS = sì
+GraphHopper / proxy / Docker / n8n / Tailscale non toccati
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA TRACK-MODAL-DISPLAY-PREFS-A PASS operatore
+```
+
+**Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H**.
+
+**Review:** `PASS REVIEW GPT-SOSTITUTIVA TRACK-MODAL-DISPLAY-PREFS-A`.
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1e218a2
+```
+
+**Display:** `B6.0TDP-A · build 77`.
+
+**Backlog preservato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
+
 ## OUTDOOR-ROUTING-REVERSE-A — Inverti percorso — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `d54c915` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime autorevole live:** `d54c915` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **TRACK-MODAL-DISPLAY-PREFS-A** `1e218a2`.
 
 **Deploy registrato (GIS-only, PASS tecnico):**
 
@@ -218,11 +255,11 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d54c915
 
 **Display:** `B6.0R-A · build 76`.
 
-**Backlog registrato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A; **TRACK-MODAL-DISPLAY-PREFS-A**.
+**Backlog registrato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A; TRACK-MODAL-DISPLAY-PREFS-A (poi CLOSED).
 
 ## OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8) — Profilo altimetrico + difficoltà — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `e7d9398` (catena `e3cf114` + FIX1–FIX8) — deploy GIS-only FIX8 **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **REVERSE-A** `d54c915`.
+**Runtime autorevole live:** `e7d9398` (catena `e3cf114` + FIX1–FIX8) — deploy GIS-only FIX8 **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **REVERSE-A** `d54c915` poi **TRACK-MODAL** `1e218a2`.
 
 **Catena runtime (sintesi):**
 
