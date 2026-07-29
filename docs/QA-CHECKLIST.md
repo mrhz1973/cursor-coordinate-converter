@@ -185,9 +185,44 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha
 - **Mai** etichette `*-local` sul VPS.
 - L'URL è **già compilato** dal workflow quando il runtime è noto.
 
+## OUTDOOR-ROUTING-REVERSE-A — Inverti percorso — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `d54c915` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+
+```text
+HEAD VPS = d54c915a9c4663ccebe067623bc4f12cdd18e590
+blob = 5c79d266e93a9c9ead36aa486bb87a17426a368c
+goi-gis-app.service active / enabled
+HTTP 200
+byte repo/servito = 3033162 / 3033162
+SHA-256 = 9643ed48f372cf3f12b7ddaffd4e52531083b40235c65fe066217430a0ed20f5 (match)
+CMP_PASS = sì
+GraphHopper / proxy / Docker / n8n / Tailscale non toccati
+```
+
+**Attestazione QA (operatore):**
+
+```text
+QA OUTDOOR-ROUTING-REVERSE-A PASS operatore
+```
+
+**Metodo:** attestazione = trigger **METHOD-QA-PASS-AUTO-FINITO / Regola H**.
+
+**URL runtime live:**
+
+```
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d54c915
+```
+
+**Display:** `B6.0R-A · build 76`.
+
+**Backlog registrato in chiusura (non aperti):** TRACK-ELEVATION-PROFILE-A; OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A; **TRACK-MODAL-DISPLAY-PREFS-A**.
+
 ## OUTDOOR-ROUTING-GH-E (+ FIX1–FIX8) — Profilo altimetrico + difficoltà — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `e7d9398` (catena `e3cf114` + FIX1–FIX8) — deploy GIS-only FIX8 **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime autorevole live:** `e7d9398` (catena `e3cf114` + FIX1–FIX8) — deploy GIS-only FIX8 **PASS tecnico**; **CLOSED / PASS end-to-end**. Superseded live da **REVERSE-A** `d54c915`.
 
 **Catena runtime (sintesi):**
 
