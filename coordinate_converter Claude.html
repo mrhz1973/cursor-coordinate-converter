@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.1TP-A-FIX3</title>
+<title>GOI GIS Tool · B6.1TSN-A</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -8893,6 +8893,39 @@ dialog.track-modal.app-modal{
 .tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
 .routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.routing-save-as-track-form{
+  margin:8px 0 4px;
+  padding:8px 10px;
+  border:1px solid var(--border, rgba(127,127,127,.35));
+  border-radius:8px;
+  background:var(--surface-glass, rgba(127,127,127,.08));
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.routing-save-as-track-form[hidden]{ display:none !important; }
+.routing-save-as-track-hint{ margin:0; font-size:.78rem; }
+.routing-save-as-track-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+}
+.routing-save-as-track-row > label{
+  font-size:.8rem;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.routing-save-as-track-name{
+  flex:1 1 140px;
+  min-width:120px;
+  max-width:100%;
+}
+.routing-save-as-track-btns{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
 .routing-endpoint-row{
   display:flex;
   flex-wrap:wrap;
@@ -13351,6 +13384,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
               data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
     </div>
+    <div id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden>
+      <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
+      <div class="routing-save-as-track-row">
+        <label for="routingSaveAsTrackName" data-i18n="routing.saveAsTrackNameLabel">Nome traccia</label>
+        <input type="text" id="routingSaveAsTrackName" class="routing-save-as-track-name" maxlength="80" autocomplete="off" />
+        <div class="routing-save-as-track-btns">
+          <button type="button" id="routingSaveAsTrackConfirmBtn" class="btn btn-sm btn-primary" data-i18n="routing.saveAsTrackConfirm">Salva</button>
+          <button type="button" id="routingSaveAsTrackCancelBtn" class="btn btn-sm" data-i18n="routing.saveAsTrackCancel">Annulla</button>
+        </div>
+      </div>
+    </div>
     <div class="routing-loopback-opt">
       <label for="routingLoopbackConsent">
         <input type="checkbox" id="routingLoopbackConsent" />
@@ -13375,7 +13419,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1TP-A-FIX3 · build 82</span>
+    <span id="appBuildFooter">B6.1TSN-A · build 83</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13633,7 +13677,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1TP-A-FIX3 · build 82</code>
+            <code id="appBuildAbout">B6.1TSN-A · build 83</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -15635,6 +15679,11 @@ const I18N = {
     "routing.saveAsTrackSuccess":"Traccia salvata: {0}",
     "routing.noRouteToSave":"Calcola un percorso valido prima di salvare.",
     "routing.saveAsTrackError":"Salvataggio traccia non riuscito.",
+    "routing.saveAsTrackNameLabel":"Nome traccia",
+    "routing.saveAsTrackNameHint":"Scegli il nome prima del salvataggio",
+    "routing.saveAsTrackConfirm":"Salva",
+    "routing.saveAsTrackCancel":"Annulla",
+    "routing.saveAsTrackNameRequired":"Il nome della traccia è obbligatorio",
     "routing.routeTooLong":"Percorso troppo lungo (massimo 2000 punti).",
     "routing.routeTooShort":"Percorso troppo corto (minimo 2 punti).",
     "routing.archiveFull":"Archivio tracce pieno (massimo 50).",
@@ -17775,6 +17824,11 @@ const I18N = {
     "routing.saveAsTrackSuccess":"Track saved: {0}",
     "routing.noRouteToSave":"Compute a valid route before saving.",
     "routing.saveAsTrackError":"Track save failed.",
+    "routing.saveAsTrackNameLabel":"Track name",
+    "routing.saveAsTrackNameHint":"Choose the name before saving",
+    "routing.saveAsTrackConfirm":"Save",
+    "routing.saveAsTrackCancel":"Cancel",
+    "routing.saveAsTrackNameRequired":"Track name is required",
     "routing.routeTooLong":"Route too long (max 2000 points).",
     "routing.routeTooShort":"Route too short (min 2 points).",
     "routing.archiveFull":"Track archive full (max 50).",
@@ -19990,7 +20044,20 @@ const I18N = {
     "routing.errorGeneric":"Échec de la requête du routeur.",
     "tip.routingCalculate":"Calculer l’itinéraire avec GraphHopper (transitoire).",
     "tip.routingReverse":"Permute le départ et l’arrivée et inverse les étapes intermédiaires",
-    "tip.routingProfile":"Profil de routage GraphHopper"
+    "tip.routingProfile":"Profil de routage GraphHopper",
+    "routing.saveAsTrack":"Enregistrer comme trace",
+    "routing.saveAsTrackBusy":"Enregistrement…",
+    "routing.saveAsTrackSuccess":"Trace enregistrée : {0}",
+    "routing.noRouteToSave":"Calculez un itinéraire valide avant d’enregistrer.",
+    "routing.saveAsTrackError":"Échec de l’enregistrement de la trace.",
+    "routing.saveAsTrackNameLabel":"Nom de la trace",
+    "routing.saveAsTrackNameHint":"Choisissez le nom avant l’enregistrement",
+    "routing.saveAsTrackConfirm":"Enregistrer",
+    "routing.saveAsTrackCancel":"Annuler",
+    "routing.saveAsTrackNameRequired":"Le nom de la trace est obligatoire",
+    "routing.routeTooLong":"Itinéraire trop long (maximum 2000 points).",
+    "routing.routeTooShort":"Itinéraire trop court (minimum 2 points).",
+    "routing.archiveFull":"Archive de traces pleine (maximum 50)."
   }
 };
 
@@ -21401,10 +21468,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.1TP-A-FIX3";
-const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX3 — align saved-profile map hover to canonical geometry";
+const APP_BUILD_ID = "B6.1TSN-A";
+const APP_BUILD_DETAIL = "TRACK-SAVE-AS-NAME-A — choose track name before routing save";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 82;
+const APP_BUILD_NUM = 83;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -60440,6 +60507,8 @@ function routingEnsureState(){
       r.resolvedEndpoint = r.provider === "auto" ? "" : routingEndpointForProvider(r.provider);
     if (typeof r.loopbackConsent !== "boolean") r.loopbackConsent = !!_routingSessionPrefs.loopbackConsent;
     if (typeof r.providerStatusKey !== "string") r.providerStatusKey = "";
+    if (typeof r.saveAsTrackPromptOpen !== "boolean") r.saveAsTrackPromptOpen = false;
+    if (typeof r.saveAsTrackNameDraft !== "string") r.saveAsTrackNameDraft = "";
     return r;
   }
   const prefProv = routingProviderNormalize(_routingSessionPrefs.provider);
@@ -60474,7 +60543,9 @@ function routingEnsureState(){
     loopbackConsent: !!_routingSessionPrefs.loopbackConsent,
     providerStatusKey: "",
     gpsRequestGeneration: 0,
-    gpsBusyId: null
+    gpsBusyId: null,
+    saveAsTrackPromptOpen: false,
+    saveAsTrackNameDraft: ""
   };
   return state._routing;
 }
@@ -60675,12 +60746,108 @@ function onRoutingReverseClick(ev){
 function routingFormatSaveAsTrackSuccess(name){
   return String(routingT("routing.saveAsTrackSuccess", "Track saved: {0}")).replace("{0}", String(name));
 }
+function routingNormalizeSaveAsTrackName(raw){
+  return String(raw == null ? "" : raw).trim().slice(0, 80);
+}
+function routingSyncSaveAsTrackFormUi(){
+  const form = document.getElementById("routingSaveAsTrackForm");
+  const nameIn = document.getElementById("routingSaveAsTrackName");
+  const confirmBtn = document.getElementById("routingSaveAsTrackConfirmBtn");
+  const cancelBtn = document.getElementById("routingSaveAsTrackCancelBtn");
+  const r = state._routing;
+  const open = !!(r && r.saveAsTrackPromptOpen);
+  if (form) form.hidden = !open;
+  if (nameIn){
+    if (open) nameIn.value = String(r.saveAsTrackNameDraft == null ? "" : r.saveAsTrackNameDraft);
+    nameIn.disabled = !open || !!_routingSaveBusy;
+  }
+  if (confirmBtn) confirmBtn.disabled = !open || !!_routingSaveBusy;
+  if (cancelBtn) cancelBtn.disabled = !open || !!_routingSaveBusy;
+}
+function routingCloseSaveAsTrackPrompt(opts){
+  opts = opts || {};
+  if (_routingSaveBusy && !opts.force) return;
+  const r = state._routing;
+  if (r){
+    r.saveAsTrackPromptOpen = false;
+    r.saveAsTrackNameDraft = "";
+  }
+  try { routingSyncSaveAsTrackFormUi(); } catch(_){}
+  if (opts.focusSaveBtn){
+    const btn = document.getElementById("routingSaveAsTrackBtn");
+    if (btn && !btn.disabled){
+      try { btn.focus(); } catch(_){}
+    }
+  }
+}
+function routingFocusSaveAsTrackNameInput(selectAll){
+  const nameIn = document.getElementById("routingSaveAsTrackName");
+  if (!nameIn || nameIn.disabled) return;
+  try {
+    nameIn.focus();
+    if (selectAll !== false && typeof nameIn.select === "function") nameIn.select();
+  } catch(_){}
+}
+function routingOpenSaveAsTrackPrompt(){
+  if (!routingRoutePreviewIsValid()){
+    routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
+    return false;
+  }
+  const r = routingEnsureState();
+  if (r.saveAsTrackPromptOpen){
+    try { routingSyncSaveAsTrackFormUi(); } catch(_){}
+    routingFocusSaveAsTrackNameInput(false);
+    return true;
+  }
+  let autoName = "";
+  try { autoName = String(trackMakeAutoName() || ""); } catch(_){ autoName = ""; }
+  r.saveAsTrackPromptOpen = true;
+  r.saveAsTrackNameDraft = autoName.slice(0, 80);
+  try { routingSyncSaveAsTrackFormUi(); } catch(_){}
+  routingFocusSaveAsTrackNameInput(true);
+  return true;
+}
 function onRoutingSaveAsTrackClick(ev){
   if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
   if (ev && Number(ev.detail) > 1) return;
-  routingPerformSaveAsTrack();
+  if (_routingSaveBusy) return;
+  routingOpenSaveAsTrackPrompt();
 }
-function routingPerformSaveAsTrack(){
+function onRoutingSaveAsTrackCancel(ev){
+  if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
+  if (_routingSaveBusy) return;
+  routingCloseSaveAsTrackPrompt({ focusSaveBtn: true });
+}
+function onRoutingSaveAsTrackConfirm(ev){
+  if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
+  if (ev && Number(ev.detail) > 1) return;
+  if (_routingSaveBusy) return;
+  const r = state._routing;
+  if (!r || !r.saveAsTrackPromptOpen) return;
+  const nameIn = document.getElementById("routingSaveAsTrackName");
+  const raw = nameIn ? nameIn.value : r.saveAsTrackNameDraft;
+  const name = routingNormalizeSaveAsTrackName(raw);
+  r.saveAsTrackNameDraft = nameIn ? String(nameIn.value || "").slice(0, 80) : String(raw == null ? "" : raw).slice(0, 80);
+  if (!name){
+    routingSetStatus(routingT("routing.saveAsTrackNameRequired", "Track name is required"), true);
+    routingFocusSaveAsTrackNameInput(true);
+    return;
+  }
+  routingPerformSaveAsTrack(name);
+}
+function onRoutingSaveAsTrackNameKeydown(ev){
+  if (!ev) return;
+  if (ev.key === "Enter"){
+    ev.preventDefault();
+    onRoutingSaveAsTrackConfirm(ev);
+    return;
+  }
+  if (ev.key === "Escape" || ev.key === "Esc"){
+    ev.preventDefault();
+    onRoutingSaveAsTrackCancel(ev);
+  }
+}
+function routingPerformSaveAsTrack(explicitName){
   const r = state._routing;
   if (!r){
     routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
@@ -60691,8 +60858,15 @@ function routingPerformSaveAsTrack(){
     routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
     return;
   }
+  const name = routingNormalizeSaveAsTrackName(explicitName);
+  if (!name){
+    routingSetStatus(routingT("routing.saveAsTrackNameRequired", "Track name is required"), true);
+    routingFocusSaveAsTrackNameInput(true);
+    return;
+  }
   _routingSaveBusy = true;
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  try { routingSyncSaveAsTrackFormUi(); } catch(_){}
   routingSetStatus(routingT("routing.saveAsTrackBusy", "Saving…"), false);
 
   let rollbackTrackId = null;
@@ -60704,7 +60878,6 @@ function routingPerformSaveAsTrack(){
     prevRaw = localStorage.getItem(STORAGE_KEY);
     prevSel = Array.isArray(state._savedTracksSelectedIds) ? state._savedTracksSelectedIds.slice() : [];
 
-    const name = trackMakeAutoName();
     res = savedTrackAddFromPoints({
       points: r.previewCoordinates,
       name: name,
@@ -60770,6 +60943,7 @@ function routingPerformSaveAsTrack(){
     if (state.workbenchPanelOpen){
       try { renderWorkbenchList(); } catch(_){}
     }
+    routingCloseSaveAsTrackPrompt({ force: true });
     routingSetStatus(routingFormatSaveAsTrackSuccess(res.track.name), false);
   } catch(_){
     if (rollbackTrackId){
@@ -60780,6 +60954,7 @@ function routingPerformSaveAsTrack(){
   } finally {
     _routingSaveBusy = false;
     try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+    try { routingSyncSaveAsTrackFormUi(); } catch(_){}
   }
 }
 function routingInvalidateRoutePreview(){
@@ -60804,6 +60979,7 @@ function routingInvalidateRoutePreview(){
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
   routingSetStatus("", false);
+  try { if (!_routingSaveBusy) routingCloseSaveAsTrackPrompt(); } catch(_){}
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
@@ -61164,6 +61340,7 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wrap);
 }
 function routingFullCleanup(){
+  try { routingCloseSaveAsTrackPrompt({ force: true }); } catch(_){}
   try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
   if (state._routing){
@@ -61200,6 +61377,7 @@ function routingFullCleanup(){
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
   state._routing = null;
+  try { routingSyncSaveAsTrackFormUi(); } catch(_){}
   const list = document.getElementById("routingPointsList");
   if (list) list.innerHTML = "";
   routingSetStatus("", false);
@@ -64329,6 +64507,38 @@ function wireRoutingPlannerOnce(){
   });
   const saveTrackBtn = document.getElementById("routingSaveAsTrackBtn");
   if (saveTrackBtn) saveTrackBtn.addEventListener("click", onRoutingSaveAsTrackClick);
+  const saveConfirmBtn = document.getElementById("routingSaveAsTrackConfirmBtn");
+  if (saveConfirmBtn && !saveConfirmBtn._routingSaveNameBound){
+    saveConfirmBtn._routingSaveNameBound = true;
+    saveConfirmBtn.addEventListener("click", onRoutingSaveAsTrackConfirm);
+  }
+  const saveCancelBtn = document.getElementById("routingSaveAsTrackCancelBtn");
+  if (saveCancelBtn && !saveCancelBtn._routingSaveNameBound){
+    saveCancelBtn._routingSaveNameBound = true;
+    saveCancelBtn.addEventListener("click", onRoutingSaveAsTrackCancel);
+  }
+  const saveNameIn = document.getElementById("routingSaveAsTrackName");
+  if (saveNameIn && !saveNameIn._routingSaveNameBound){
+    saveNameIn._routingSaveNameBound = true;
+    saveNameIn.addEventListener("keydown", onRoutingSaveAsTrackNameKeydown);
+    saveNameIn.addEventListener("input", () => {
+      const rr = state._routing;
+      if (!rr || !rr.saveAsTrackPromptOpen) return;
+      rr.saveAsTrackNameDraft = String(saveNameIn.value || "").slice(0, 80);
+    });
+  }
+  const saveForm = document.getElementById("routingSaveAsTrackForm");
+  if (saveForm && !saveForm._routingSaveNameBound){
+    saveForm._routingSaveNameBound = true;
+    saveForm.addEventListener("keydown", (ev) => {
+      if (!ev) return;
+      if (ev.key === "Escape" || ev.key === "Esc"){
+        if (ev.target && ev.target.id === "routingSaveAsTrackName") return;
+        ev.preventDefault();
+        onRoutingSaveAsTrackCancel(ev);
+      }
+    });
+  }
   const list = document.getElementById("routingPointsList");
   if (list){
     list.addEventListener("click", routingHandleListAction);
