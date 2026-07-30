@@ -9,8 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-30 — **`finito` Regola H — OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** — task docs **`63ec2d1`** (`docs: finito OUTDOOR-ROUTING-ELEVATION-STYLE-A after Regola H QA PASS`); trigger «**QA OUTDOOR-ROUTING-ELEVATION-STYLE-A PASS operatore**»; runtime tip **`d28bc44`** / **`B6.0ES-A · build 78`** (già versionato nel commit runtime precedente; **incluso** nel tip monolite remoto, non nel commit docs); deploy GIS-only PASS; working tree pre-autosync pulito post-task; inbox `2026-07-30_0148_riepilogo_finito-sessione.md`.
+2026-07-30 — **TRACK-ELEVATION-PROFILE-A — UI/renderer (locale, monolitico non committato)** — completati pezzi UI rimanenti su fondazione già in working tree (`B6.1TP-A` / build 79): renderer comune `elevationProfileDrawChart`, adapter Routing, sezione profilo tracce salvate, CTA «Profilo», hover chart↔mappa, CSS, i18n IT/EN/FR. **Monolite solo locale** (escluso da questo autosync). Inbox: `2026-07-30_0258_riepilogo_track-elevation-profile-a-ui.md`. Prossimo: review + commit/push runtime monolite + QA operatore.
 
-2026-07-30 — **`finito` Regola H — TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS end-to-end** — task docs **`0f270e8`**; runtime tip storico **`1e218a2`** build 77.
-
-2026-07-29 — **`finito` Regola H — OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS end-to-end** — task docs **`00c58e6`**; runtime tip storico **`d54c915`** build 76.
+2026-07-30 — **`finito` Regola H — OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** — tip runtime remoto **`d28bc44`** / **`B6.0ES-A · build 78`**.
