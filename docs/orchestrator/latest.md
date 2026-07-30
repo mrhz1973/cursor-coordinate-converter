@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-30 — **TRACK-ELEVATION-PROFILE-A — UI/renderer (locale, monolitico non committato)** — completati pezzi UI rimanenti su fondazione già in working tree (`B6.1TP-A` / build 79): renderer comune `elevationProfileDrawChart`, adapter Routing, sezione profilo tracce salvate, CTA «Profilo», hover chart↔mappa, CSS, i18n IT/EN/FR. **Monolite solo locale** (escluso da questo autosync). Inbox: `2026-07-30_0258_riepilogo_track-elevation-profile-a-ui.md`. Prossimo: review + commit/push runtime monolite + QA operatore.
+2026-07-31 — **`finito` Regola H — TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS end-to-end** — tip runtime remoto **`1fc9d70`** / **`B6.1TP-A-FIX3 · build 82`**. Commit docs task **`322ac29`** (pre-autosync). Monolite già versionato nel tip runtime (non in docs/autosync). Inbox: `2026-07-31_0005_riepilogo_finito-sessione.md`. Prossimo: backlog POINT-UNDO / UNITS / UX profilo / Bundle F.
 
-2026-07-30 — **`finito` Regola H — OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** — tip runtime remoto **`d28bc44`** / **`B6.0ES-A · build 78`**.
+2026-07-30 — **TRACK-ELEVATION-PROFILE-A — UI/renderer (locale, monolitico non committato)** — **STALE / superseded** dal tip `1fc9d70` live (vedi chiusura sopra; storico `98c201f`).
