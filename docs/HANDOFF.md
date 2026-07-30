@@ -117,20 +117,21 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `d28bc44` (non in commit docs) |
-| Runtime live / commit monolite | `d28bc44ddda221417ef6bcb3296d9df155d2032c` (`d28bc44`) — tip OUTDOOR-ROUTING-ELEVATION-STYLE-A |
-| Ultimo blocco chiuso | **OUTDOOR-ROUTING-ELEVATION-STYLE-A** — Restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **OUTDOOR-ROUTING-ELEVATION-STYLE-A** — tip `d28bc44` build 78 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `1fc9d70` (non in commit docs) |
+| Runtime live / commit monolite | `1fc9d7022c48f64176d612936e9d01c47245cc24` (`1fc9d70`) — tip TRACK-ELEVATION-PROFILE-A-FIX3 |
+| Ultimo blocco chiuso | **TRACK-ELEVATION-PROFILE-A + FIX1 + FIX2 + FIX3** — Profilo altimetrico Saved Track — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **TRACK-ELEVATION-PROFILE-A-FIX3** — tip `1fc9d70` build 82 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d28bc44ddda221417ef6bcb3296d9df155d2032c` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `e9ae353257ecb57793c5bb0adaeb0f9dcbe94dfd` |
-| Byte monolite (git LF) | `3050747` |
-| `APP_BUILD_NUM` | `78` |
-| Display runtime | `B6.0ES-A · build 78` |
-| `APP_BUILD_ID` | `B6.0ES-A` |
+| Runtime Git / atteso VPS | `1fc9d7022c48f64176d612936e9d01c47245cc24` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `fd6f6ecc8a0e6eaf305731dbec8c1fca6fc6061f` |
+| Byte monolite (git LF) | `3121652` |
+| `APP_BUILD_NUM` | `82` |
+| Display runtime | `B6.1TP-A-FIX3 · build 82` |
+| `APP_BUILD_ID` | `B6.1TP-A-FIX3` |
+| TRACK-ELEVATION-PROFILE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (profilo Saved Track; QA FAIL FIX2 → FIX3; QA PASS FIX3) |
 | OUTDOOR-ROUTING-ELEVATION-STYLE-A | **CLOSED / PASS end-to-end** (restyle profilo altimetrico segmentato; QA PASS) |
 | TRACK-MODAL-DISPLAY-PREFS-A | **CLOSED / PASS end-to-end** (unità m/ft + formato coordinate display; QA PASS) |
 | OUTDOOR-ROUTING-REVERSE-A | **CLOSED / PASS end-to-end** (Inverti percorso; QA PASS) |
@@ -166,21 +167,25 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d28bc44` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1fc9d70` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. Runtime live monolite **`d28bc44`** / **`B6.0ES-A · build 78`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog UX profilo (**TRACK-SAVE-AS-NAME-A** / **MAP-CENTER-VIEWPORT-AWARE-A** / …) / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. Runtime live monolite **`1fc9d70`** / **`B6.1TP-A-FIX3 · build 82`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **TRACK-SAVE-AS-NAME-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
 ## Backlog / note immediate
+
+### TRACK-ELEVATION-PROFILE-A (+ FIX1 + FIX2 + FIX3) — Profilo altimetrico Saved Track — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Tip `1fc9d70` / `B6.1TP-A-FIX3 · build 82`. Catena `4fb0d5a`→`45bbf57`→`ae9ca1e`→`1fc9d70`. QA FAIL FIX2 storica preservata; QA «**QA TRACK-ELEVATION-PROFILE-A-FIX3 PASS operatore**».
 
 ### OUTDOOR-ROUTING-ELEVATION-STYLE-A — Restyle profilo altimetrico — CLOSED / PASS end-to-end
 
@@ -190,10 +195,6 @@ Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** /
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-29). Tip `d54c915` / `B6.0R-A · build 76`. QA «**QA OUTDOOR-ROUTING-REVERSE-A PASS operatore**».
 
-### TRACK-ELEVATION-PROFILE-A — Profilo altimetrico tracce salvate — BACKLOG / NON APERTO
-
-**Stato:** **BACKLOG / NON APERTO** (2026-07-29, registrato in chiusura OUTDOOR-ROUTING-GH-E). Estendere profilo Bundle E alle tracce canoniche. **Nessuna implementazione**.
-
 ### OUTDOOR-ROUTING-POINT-UNDO-A — Undo punti Routing — BACKLOG / NON APERTO
 
 **Stato:** **BACKLOG / NON APERTO** (2026-07-29). Undo spostamenti punti planner, session-only. **Nessuna implementazione**.
@@ -201,6 +202,26 @@ Da scegliere: **TRACK-ELEVATION-PROFILE-A** / **OUTDOOR-ROUTING-POINT-UNDO-A** /
 ### OUTDOOR-ROUTING-UNITS-A — Unità dedicate planner — BACKLOG / NON APERTO
 
 **Stato:** **BACKLOG / NON APERTO** (2026-07-29). Selettori km/mi e m/ft nel pannello Routing, indipendenti da mappa/poligoni. **Nessuna implementazione**.
+
+### TRACK-SAVE-AS-NAME-A — Nome in Salva come traccia — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31, post-QA TRACK-ELEVATION). Nome editabile al salvataggio Routing→traccia.
+
+### ROUTING-PROFILE-EDIT-A — Editing A/B/intermedi — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Flusso editing integrato punti planner; non mescolare al profilo read-only senza progetto.
+
+### TRACK-PROFILE-POINTS-DISPLAY-A — Overlay punti in apertura Profilo — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Distinguere visualizzazione read-only e modifica geometrica.
+
+### MAP-CENTER-VIEWPORT-AWARE-A — Centra viewport-aware — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Centra sulla porzione mappa libera dai pannelli flottanti.
+
+### QA-OPERATOR-IT-ONLY-PREF — QA operatore solo italiano — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Preferenza metodo: QA operatore in IT salvo blocchi i18n.
 
 ### TRACK-MODAL-DISPLAY-PREFS-A — Unità e formato coordinate modale Tracce — CLOSED / PASS end-to-end
 

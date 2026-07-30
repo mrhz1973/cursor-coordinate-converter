@@ -1073,6 +1073,27 @@ Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review 
 
 Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`). Dettaglio metodo: OM §4 Regola H (METHOD-QA-PASS-AUTO-FINITO).
 
+## TRACK-ELEVATION-PROFILE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
+
+**Blocco:** TRACK-ELEVATION-PROFILE-A + FIX1 + FIX2 + FIX3  
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31)  
+**Runtime tip:** `1fc9d7022c48f64176d612936e9d01c47245cc24`  
+**Blob / byte LF / SHA-256 LF:** `fd6f6ecc…` / `3121652` / `251dfad4…`  
+**Build:** `B6.1TP-A-FIX3 · build 82`
+
+### Storia QA/review (preservata)
+
+| Step | Esito |
+| --- | --- |
+| Implementazione A `4fb0d5a` build 79 | shipped |
+| FIX1 `45bbf57` build 80 | shipped |
+| FIX2 `ae9ca1e` build 81 | deploy GIS-only PASS |
+| `QA TRACK-ELEVATION-PROFILE-A-FIX2 FAIL operatore` | mappa→profilo FAIL (corde campioni + pickMode auto-arm) |
+| FIX3 `1fc9d70` build 82 | review GPT-sostitutiva PASS; deploy GIS-only PASS |
+| `QA TRACK-ELEVATION-PROFILE-A-FIX3 PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX registrato (non implementato):** TRACK-SAVE-AS-NAME-A; ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:

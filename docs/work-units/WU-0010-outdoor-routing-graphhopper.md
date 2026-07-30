@@ -1,8 +1,8 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `d28bc44ddda221417ef6bcb3296d9df155d2032c` (`d28bc44`) — display **`B6.0ES-A · build 78`** (OUTDOOR-ROUTING-ELEVATION-STYLE-A; tip TRACK-MODAL storico `1e218a2`)
+**Runtime autorevole attuale:** `1fc9d7022c48f64176d612936e9d01c47245cc24` (`1fc9d70`) — display **`B6.1TP-A-FIX3 · build 82`** (TRACK-ELEVATION-PROFILE-A + FIX1–FIX3; tip ELEVATION-STYLE storico `d28bc44`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
@@ -15,8 +15,9 @@
 **E (+ FIX1–FIX8):** profilo altimetrico + difficoltà + sync mappa + locale numerico — **CLOSED / PASS end-to-end** (catena `e3cf114`…→ tip `e7d9398` FIX8 build 75; blob `df09e9dc…`; review GPT-sostitutiva E+FIX1–FIX8 PASS; deploy FIX8+QA PASS 2026-07-29).
 **REVERSE-A:** Inverti percorso — **CLOSED / PASS end-to-end** (tip `d54c915` build 76 / `B6.0R-A`; blob `5c79d266…`; deploy+QA PASS 2026-07-29).
 **TRACK-MODAL-DISPLAY-PREFS-A:** unità/formato display modale Tracce — **CLOSED / PASS end-to-end** (tip `1e218a2` build 77 / `B6.0TDP-A`; blob `8ef3e171…`; review GPT-sostitutiva PASS; deploy+QA PASS 2026-07-30).
-**ELEVATION-STYLE-A (autorità viva monolite):** restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (tip `d28bc44` build 78 / `B6.0ES-A`; blob `e9ae353…`; deploy+QA PASS 2026-07-30; Regola H).
-**Backlog UX (docs-only):** **TRACK-ELEVATION-PROFILE-A**; **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**.
+**ELEVATION-STYLE-A:** restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (tip `d28bc44` build 78 / `B6.0ES-A`; blob `e9ae353…`; deploy+QA PASS 2026-07-30; Regola H). Superseded live da **TRACK-ELEVATION-PROFILE-A**.
+**TRACK-ELEVATION-PROFILE-A (+ FIX1–FIX3) (autorità viva monolite):** profilo altimetrico Saved Track — **CLOSED / PASS end-to-end** (tip `1fc9d70` build 82 / `B6.1TP-A-FIX3`; blob `fd6f6ecc…`; byte LF **3121652**; SHA-256 LF **`251dfad4…`**; QA FAIL FIX2 storica → FIX3; review GPT-sostitutiva FIX3 PASS; deploy+QA PASS 2026-07-31; Regola H).
+**Backlog UX (docs-only):** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **TRACK-SAVE-AS-NAME-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
@@ -329,7 +330,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Vincoli rispettati:** nessuna libreria runtime esterna; nessuna modifica a sanitizer/storage/CRUD.
 
-**Fuori scope Bundle E (backlog):** unità dedicate planner (**OUTDOOR-ROUTING-UNITS-A**); profilo su tracce salvate (**TRACK-ELEVATION-PROFILE-A**); undo punti (**OUTDOOR-ROUTING-POINT-UNDO-A**).
+**Fuori scope Bundle E (storico):** unità dedicate planner (**OUTDOOR-ROUTING-UNITS-A**, ancora backlog); profilo su tracce salvate (**TRACK-ELEVATION-PROFILE-A** — **ora CLOSED** tip `1fc9d70`); undo punti (**OUTDOOR-ROUTING-POINT-UNDO-A**, ancora backlog).
 
 ### BUNDLE F — Funzioni avanzate
 
