@@ -1094,24 +1094,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 **Backlog UX registrato (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
 
-## TRACK-SAVE-AS-NAME-A — CLOSED / PASS end-to-end
+## ROUTING-SUMMARY-DEDUP-A — CLOSED / PASS end-to-end
 
-**Blocco:** TRACK-SAVE-AS-NAME-A  
+**Blocco:** ROUTING-SUMMARY-DEDUP-A  
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-31)  
-**Runtime tip:** `8a641bc7abb9b1c2be98c3591e4a590e127e0a77`  
-**Blob / byte LF / SHA-256 LF:** `be95db55…` / `3130487` / `cacd9360…`  
-**Build:** `B6.1TSN-A · build 83`
+**Runtime tip:** `58197bb14e1f5eb7f00abbe348500f2d093ff381`  
+**Blob / byte LF / SHA-256 LF:** `79ba3e65…` / `3129462` / `db113b40…`  
+**Build:** `B6.1RSD-A · build 84`
 
 ### Storia QA/review
 
 | Step | Esito |
 | --- | --- |
-| Implementazione `8a641bc` build 83 | shipped |
-| Review GPT-sostitutiva PASS | pre-deploy |
+| Implementazione `58197bb` build 84 | shipped |
 | Deploy GIS-only PASS | HTTP 200; byte/SHA/`cmp` match; solo `goi-gis-app` |
-| `QA TRACK-SAVE-AS-NAME-A PASS operatore` | trigger Regola H / `finito` (UI italiana) |
-
-**Preservato:** rollback/read-back/elevation addon; form inline (no modal/prompt/confirm).
+| `QA ROUTING-SUMMARY-DEDUP-A PASS operatore` | trigger Regola H / `finito` (UI italiana) |
 
 ## Istruzioni per il workflow `finito`
 
