@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.1TSN-A</title>
+<title>GOI GIS Tool · B6.1RSD-A</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13419,7 +13419,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1TSN-A · build 83</span>
+    <span id="appBuildFooter">B6.1RSD-A · build 84</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13677,7 +13677,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1TSN-A · build 83</code>
+            <code id="appBuildAbout">B6.1RSD-A · build 84</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -21468,10 +21468,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.1TSN-A";
-const APP_BUILD_DETAIL = "TRACK-SAVE-AS-NAME-A — choose track name before routing save";
+const APP_BUILD_ID = "B6.1RSD-A";
+const APP_BUILD_DETAIL = "ROUTING-SUMMARY-DEDUP-A — keep route status concise and metrics in cards";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 83;
+const APP_BUILD_NUM = 84;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61781,25 +61781,10 @@ function routingFmtMetricValueMeters(m){
   return String(Math.round(v)) + " m";
 }
 function routingFmtRouteStatusMessage(metrics){
-  const r = state._routing;
-  const distLabel = routingT("routing.distance", "Distance");
-  const durLabel = routingT("routing.duration", "Estimated time");
-  const ascLabel = routingT("routing.ascent", "Positive elevation");
-  const desLabel = routingT("routing.descent", "Negative elevation");
-  const ready = routingT("routing.routeReady", "Route ready");
-
-  const distStr = metrics && metrics.distanceM != null ? routingFmtRouteDistanceKm(metrics.distanceM) : "—";
-  const estMs = r ? routingEstimatedDurationMs(r) : (metrics && Number.isFinite(metrics.durationMs) ? metrics.durationMs : null);
-  const durStr = Number.isFinite(estMs) ? routingFmtEstimatedDurationMs(estMs) : "—";
-  const auth = r ? routingAuthorityAscentDescent(r) : {
-    ascentM: metrics && metrics.ascentM != null ? metrics.ascentM : null,
-    descentM: metrics && metrics.descentM != null ? metrics.descentM : null
-  };
-  const ascStr = auth.ascentM != null ? routingFmtAltitudeMeters(auth.ascentM) : "—";
-  const desStr = auth.descentM != null ? routingFmtAltitudeMeters(auth.descentM) : "—";
-
-  return ready + " · " + distLabel + ": " + distStr + " · " + durLabel + ": " + durStr
-    + " · " + ascLabel + ": " + ascStr + " · " + desLabel + ": " + desStr;
+  // ROUTING-SUMMARY-DEDUP-A — metrics live in cards; status line stays concise.
+  // `metrics` retained for call-site compatibility.
+  void metrics;
+  return routingT("routing.routeReady", "Route ready");
 }
 function routingValidateGraphhopperResponse(data){
   if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
