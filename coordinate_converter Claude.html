@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.1TP-A</title>
+<title>GOI GIS Tool · B6.1TP-A-FIX1</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13375,7 +13375,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1TP-A · build 79</span>
+    <span id="appBuildFooter">B6.1TP-A-FIX1 · build 80</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13633,7 +13633,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1TP-A · build 79</code>
+            <code id="appBuildAbout">B6.1TP-A-FIX1 · build 80</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -21401,10 +21401,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.1TP-A";
-const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A — saved-track elevation profile foundation";
+const APP_BUILD_ID = "B6.1TP-A-FIX1";
+const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX1 — elevation sync ownership and lifecycle hardening";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 79;
+const APP_BUILD_NUM = 80;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36323,6 +36323,8 @@ const SAVED_TRACK_ELEVATION_MIN_M = -12000;
 const SAVED_TRACK_ELEVATION_MAX_M = 100000;
 const SAVED_TRACK_ELEVATION_MAX_DIST_M = 5e7;
 const SAVED_TRACK_ELEVATION_DIST_EPS = 0.05;
+/** Endpoint A/B tolerance — coherent with 0.1 m rounding of persisted distances. */
+const SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M = 0.15;
 const SAVED_TRACK_ELEVATION_HASH_RE = /^fnv1a32:[0-9a-f]{8}$/;
 
 function savedTrackFnv1a32Hex(str){
@@ -36378,9 +36380,14 @@ function savedTrackRound01(n){
 }
 function savedTrackIsIso8601(s){
   if (typeof s !== "string" || !s) return false;
-  if (s.length < 10 || s.length > 40) return false;
+  if (s.length < 20 || s.length > 40) return false;
   const t = Date.parse(s);
-  return Number.isFinite(t);
+  if (!Number.isFinite(t)) return false;
+  try {
+    return new Date(t).toISOString() === s;
+  } catch(_){
+    return false;
+  }
 }
 function savedTrackCloneElevationProfilePlain(ep){
   if (!ep || typeof ep !== "object") return null;
@@ -36416,7 +36423,7 @@ function savedTrackSanitizeElevationProfile(rawProfile, track){
     if (!track || typeof track !== "object") return null;
     const pts = Array.isArray(track.points) ? track.points : [];
     if (pts.length < 2 || pts.length > TRACK_POINTS_CAP) return null;
-    if (Number(rawProfile.schema) !== SAVED_TRACK_ELEVATION_SCHEMA) return null;
+    if (rawProfile.schema !== SAVED_TRACK_ELEVATION_SCHEMA) return null;
     if (String(rawProfile.source || "") !== SAVED_TRACK_ELEVATION_SOURCE_ROUTING) return null;
     if (!savedTrackIsIso8601(rawProfile.capturedAt)) return null;
     const gh = String(rawProfile.geometryHash || "");
@@ -36428,7 +36435,8 @@ function savedTrackSanitizeElevationProfile(rawProfile, track){
     if (pointCount > TRACK_POINTS_CAP) return null;
     const totalDistM = Number(rawProfile.totalDistM);
     if (!Number.isFinite(totalDistM) || !(totalDistM > 0) || totalDistM > SAVED_TRACK_ELEVATION_MAX_DIST_M) return null;
-    const completeProfile = !!rawProfile.completeProfile;
+    if (typeof rawProfile.completeProfile !== "boolean") return null;
+    const completeProfile = rawProfile.completeProfile;
     const sum = rawProfile.summary;
     if (!sum || typeof sum !== "object") return null;
     const minEleM = Number(sum.minEleM);
@@ -36617,6 +36625,53 @@ function ensureSavedTrackElevationViewState(){
   }
   return state._savedTrackElevationView;
 }
+let _savedTrackElevationResizeObserver = null;
+let _savedTrackElevationResizeRaf = 0;
+let _savedTrackElevMapPixelCache = null;
+function savedTrackInvalidateElevationMapPixelCache(){
+  _savedTrackElevMapPixelCache = null;
+}
+function savedTrackDisconnectElevationResizeObserver(){
+  try {
+    if (_savedTrackElevationResizeRaf){
+      cancelAnimationFrame(_savedTrackElevationResizeRaf);
+      _savedTrackElevationResizeRaf = 0;
+    }
+  } catch(_){ _savedTrackElevationResizeRaf = 0; }
+  try {
+    if (_savedTrackElevationResizeObserver){
+      _savedTrackElevationResizeObserver.disconnect();
+    }
+  } catch(_){}
+}
+function savedTrackEnsureElevationResizeObserver(){
+  const host = document.getElementById("trackSavedElevationChartHost")
+    || document.getElementById("trackSavedElevationChart");
+  if (!host) return;
+  if (typeof ResizeObserver === "undefined") return;
+  if (!savedTrackElevationSectionOpen()){
+    savedTrackDisconnectElevationResizeObserver();
+    return;
+  }
+  if (!_savedTrackElevationResizeObserver){
+    _savedTrackElevationResizeObserver = new ResizeObserver(() => {
+      if (_savedTrackElevationResizeRaf) cancelAnimationFrame(_savedTrackElevationResizeRaf);
+      _savedTrackElevationResizeRaf = requestAnimationFrame(() => {
+        _savedTrackElevationResizeRaf = 0;
+        try {
+          if (!savedTrackElevationSectionOpen()){
+            savedTrackDisconnectElevationResizeObserver();
+            return;
+          }
+          savedTrackInvalidateElevationMapPixelCache();
+          renderSavedTrackElevationSection();
+        } catch(_){}
+      });
+    });
+  }
+  try { _savedTrackElevationResizeObserver.disconnect(); } catch(_){}
+  try { _savedTrackElevationResizeObserver.observe(host); } catch(_){}
+}
 function savedTrackRemoveElevationSyncMarker(){
   try {
     const nodes = document.querySelectorAll(".saved-track-elevation-sync-marker");
@@ -36628,6 +36683,8 @@ function savedTrackRemoveElevationSyncMarker(){
 }
 function savedTrackClearElevationView(opts){
   opts = opts || {};
+  try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
+  try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
   const view = ensureSavedTrackElevationViewState();
   view.trackId = "";
   view.hover = null;
@@ -36710,6 +36767,21 @@ function savedTrackInterpolateLatLonAtCumDist(cache, distM){
   const lonUnw = a.lon + (b.lon - a.lon) * t;
   return { lat: lat, lon: normalizeLon(lonUnw) };
 }
+/**
+ * Map a GraphHopper profile distance onto the canonical geometry length.
+ * Fail-soft: returns null when profileTotalM is invalid; geometryTotalM === 0 → 0.
+ */
+function savedTrackProfileDistToGeometryDist(profileDistM, profileTotalM, geometryTotalM){
+  const pd = Number(profileDistM);
+  const pt = Number(profileTotalM);
+  const gt = Number(geometryTotalM);
+  if (!Number.isFinite(pd) || !Number.isFinite(pt) || !(pt > 0)) return null;
+  if (!Number.isFinite(gt) || gt < 0) return null;
+  let ratio = pd / pt;
+  if (ratio < 0) ratio = 0;
+  else if (ratio > 1) ratio = 1;
+  return ratio * gt;
+}
 function savedTrackBuildRuntimeElevationProfile(st){
   try {
     if (!st || typeof st !== "object") return null;
@@ -36718,6 +36790,9 @@ function savedTrackBuildRuntimeElevationProfile(st){
     const runs = Array.isArray(ep.runs) ? ep.runs : [];
     if (!runs.length) return null;
     const cache = savedTrackBuildGeometryCumCache(st);
+    const profileTotal = Number(ep.totalDistM);
+    const geometryTotal = cache && Number.isFinite(cache.total) ? cache.total : 0;
+    const mapSyncOk = Number.isFinite(profileTotal) && profileTotal > 0 && cache && geometryTotal > 0;
     const samples = [];
     let hasAny = false;
     const minSeg = (typeof ROUTING_ELEV_MIN_SEG_M === "number") ? ROUTING_ELEV_MIN_SEG_M : 0.5;
@@ -36732,7 +36807,8 @@ function savedTrackBuildRuntimeElevationProfile(st){
           ele: null,
           gradePct: null,
           lat: null,
-          lon: null
+          lon: null,
+          runIndex: null
         });
       }
       for (let j = 0; j < run.length; j++){
@@ -36751,14 +36827,26 @@ function savedTrackBuildRuntimeElevationProfile(st){
             gradePct = ((e - pe) / seg) * 100;
           }
         }
-        const ll = cache ? savedTrackInterpolateLatLonAtCumDist(cache, d) : { lat: null, lon: null };
+        let lat = null, lon = null;
+        if (mapSyncOk){
+          const geoDist = savedTrackProfileDistToGeometryDist(d, profileTotal, geometryTotal);
+          if (geoDist != null){
+            const ll = savedTrackInterpolateLatLonAtCumDist(cache, geoDist);
+            lat = ll.lat;
+            lon = ll.lon;
+          }
+        } else if (cache && geometryTotal === 0 && cache.geo && cache.geo.length){
+          lat = cache.geo[0].lat;
+          lon = normalizeLon(cache.geo[0].lon);
+        }
         samples.push({
           index: samples.length,
           cumDistM: d,
           ele: e,
           gradePct: gradePct,
-          lat: ll.lat,
-          lon: ll.lon
+          lat: lat,
+          lon: lon,
+          runIndex: ri
         });
       }
     }
@@ -36768,7 +36856,8 @@ function savedTrackBuildRuntimeElevationProfile(st){
       samples: samples,
       meta: {
         hasAnyElevation: hasAny,
-        completeProfile: !!ep.completeProfile
+        completeProfile: ep.completeProfile === true,
+        mapSyncEnabled: !!mapSyncOk
       },
       stats: {
         totalDistM: (Number.isFinite(td) && td > 0)
@@ -36886,12 +36975,14 @@ function savedTrackApplyElevationHoverVisuals(){
 function savedTrackUpdateElevationSyncMarkerOnly(){
   try {
     savedTrackRemoveElevationSyncMarker();
+    if (typeof elevationProfileMapSyncOwner === "function" && elevationProfileMapSyncOwner() !== "saved-track") return;
     const view = ensureSavedTrackElevationViewState();
     const hover = view.hover;
     const samples = view.runtimeProfile && view.runtimeProfile.samples;
     if (!hover || !samples || hover.sampleIndex < 0 || hover.sampleIndex >= samples.length) return;
     const sample = samples[hover.sampleIndex];
     if (!sample || !Number.isFinite(sample.lat) || !Number.isFinite(sample.lon)) return;
+    if (view.runtimeProfile && view.runtimeProfile.meta && view.runtimeProfile.meta.mapSyncEnabled === false) return;
     const root = document.getElementById("miniMap");
     const tileMap = root && root.querySelector(".tile-map");
     const tileLayer = tileMap && tileMap.querySelector(".tile-layer");
@@ -36962,30 +37053,141 @@ function savedTrackClearElevationHoverIfSource(source){
   savedTrackApplyElevationHoverVisuals();
   savedTrackUpdateElevationSyncMarkerOnly();
 }
-function savedTrackNearestElevationSampleByMapPixel(x, y){
+function savedTrackElevationSampleIndexAtCumDistInRun(samples, dist, runIndex){
+  if (!Array.isArray(samples) || !samples.length) return -1;
+  const target = Number(dist);
+  if (!Number.isFinite(target)) return -1;
+  let best = -1, bestD = Infinity;
+  for (let i = 0; i < samples.length; i++){
+    const s = samples[i];
+    if (!s || s.ele == null || !Number.isFinite(s.ele)) continue;
+    if (runIndex != null && s.runIndex !== runIndex) continue;
+    const d = Math.abs(Number(s.cumDistM) - target);
+    if (d < bestD){ bestD = d; best = i; }
+  }
+  return best;
+}
+function savedTrackEnsureElevationMapPixelCache(){
   try {
     const view = ensureSavedTrackElevationViewState();
     const samples = view.runtimeProfile && view.runtimeProfile.samples;
-    if (!samples || !samples.length) return -1;
     const root = document.getElementById("miniMap");
     const tileMap = root && root.querySelector(".tile-map");
-    if (!root || !tileMap) return -1;
+    if (!view.trackId || !samples || !samples.length || !root || !tileMap){
+      _savedTrackElevMapPixelCache = null;
+      return null;
+    }
+    ensureSavedTracksState();
+    const st = (state.savedTracks || []).find((x) => x && String(x.id) === String(view.trackId));
+    const gh = (st && st.elevationProfile && st.elevationProfile.geometryHash) ? String(st.elevationProfile.geometryHash) : "";
     const vc = state.viewCenter || { lat: 0, lon: 0 };
-    const hitR = (typeof ROUTING_ELEV_MAP_HIT_PX === "number") ? ROUTING_ELEV_MAP_HIT_PX : 14;
-    const hitR2 = hitR * hitR;
-    let best = -1, bestD2 = Infinity;
+    const zoom = state.mapZoom || 11;
+    const vp = (typeof gisMapTileMathViewport === "function")
+      ? gisMapTileMathViewport(root)
+      : { W: tileMap.clientWidth || 400, H: tileMap.clientHeight || 400 };
+    const W = tileMap.clientWidth > 0 ? tileMap.clientWidth : vp.W;
+    const H = tileMap.clientHeight > 0 ? tileMap.clientHeight : vp.H;
+    const key = [
+      String(view.trackId),
+      gh,
+      String(zoom),
+      String(vc.lat),
+      String(vc.lon),
+      String(W),
+      String(H),
+      String(samples.length)
+    ].join("|");
+    if (_savedTrackElevMapPixelCache && _savedTrackElevMapPixelCache.key === key) return _savedTrackElevMapPixelCache;
+
+    const pts = [];
     for (let i = 0; i < samples.length; i++){
       const s = samples[i];
-      if (!s || s.ele == null || !Number.isFinite(s.lat) || !Number.isFinite(s.lon)) continue;
+      if (!s || s.ele == null || !Number.isFinite(s.ele) || !Number.isFinite(s.lat) || !Number.isFinite(s.lon)) continue;
       const alignedLon = trackLonsAlignToView(trackLonsUnwrapTransient([s.lon]), vc.lon)[0];
       if (!Number.isFinite(alignedLon)) continue;
       const px = tileMapLatLonToPxUnwrapped(root, s.lat, alignedLon);
-      if (!px) continue;
-      const d2 = (x - px.x) * (x - px.x) + (y - px.y) * (y - px.y);
-      if (d2 < bestD2){ bestD2 = d2; best = i; }
+      if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+      pts.push({
+        sampleIndex: i,
+        runIndex: s.runIndex,
+        x: px.x,
+        y: px.y,
+        cumDistM: Number(s.cumDistM)
+      });
     }
-    if (best < 0 || bestD2 > hitR2) return -1;
-    return best;
+    const segs = [];
+    for (let i = 0; i < pts.length - 1; i++){
+      const a = pts[i], b = pts[i + 1];
+      if (!a || !b) continue;
+      if (a.runIndex == null || b.runIndex == null || a.runIndex !== b.runIndex) continue;
+      segs.push({
+        ax: a.x, ay: a.y, bx: b.x, by: b.y,
+        aCum: a.cumDistM, bCum: b.cumDistM,
+        aIdx: a.sampleIndex, bIdx: b.sampleIndex,
+        runIndex: a.runIndex
+      });
+    }
+    _savedTrackElevMapPixelCache = { key: key, pts: pts, segs: segs };
+    return _savedTrackElevMapPixelCache;
+  } catch(_){
+    _savedTrackElevMapPixelCache = null;
+    return null;
+  }
+}
+function savedTrackNearestElevationSampleByMapPixel(x, y){
+  try {
+    const cache = savedTrackEnsureElevationMapPixelCache();
+    if (!cache) return -1;
+    const hitR = (typeof ROUTING_ELEV_MAP_HIT_PX === "number") ? ROUTING_ELEV_MAP_HIT_PX : 14;
+    const hitR2 = hitR * hitR;
+    const segs = cache.segs || [];
+    let bestD2 = Infinity, bestCum = NaN, bestRun = null, bestIdx = -1, mode = "";
+    for (let i = 0; i < segs.length; i++){
+      const s = segs[i];
+      const dx = s.bx - s.ax, dy = s.by - s.ay;
+      const len2 = dx * dx + dy * dy;
+      let t = 0;
+      if (len2 > 1e-6){
+        t = ((x - s.ax) * dx + (y - s.ay) * dy) / len2;
+        if (t < 0) t = 0; else if (t > 1) t = 1;
+      }
+      const px = s.ax + t * dx, py = s.ay + t * dy;
+      const d2 = (x - px) * (x - px) + (y - py) * (y - py);
+      if (d2 < bestD2){
+        bestD2 = d2;
+        bestCum = s.aCum + (s.bCum - s.aCum) * t;
+        bestRun = s.runIndex;
+        bestIdx = -1;
+        mode = "seg";
+      }
+    }
+    /* Single-sample run fallback: nearest-point within hit radius (no gap bridging). */
+    const pts = cache.pts || [];
+    const runCounts = Object.create(null);
+    for (let i = 0; i < pts.length; i++){
+      const ri = pts[i].runIndex;
+      runCounts[ri] = (runCounts[ri] || 0) + 1;
+    }
+    for (let i = 0; i < pts.length; i++){
+      const p = pts[i];
+      if ((runCounts[p.runIndex] || 0) !== 1) continue;
+      const d2 = (x - p.x) * (x - p.x) + (y - p.y) * (y - p.y);
+      if (d2 < bestD2){
+        bestD2 = d2;
+        bestIdx = p.sampleIndex;
+        bestCum = NaN;
+        bestRun = p.runIndex;
+        mode = "pt";
+      }
+    }
+    if (!(bestD2 <= hitR2)) return -1;
+    if (mode === "pt") return bestIdx;
+    if (mode === "seg" && Number.isFinite(bestCum)){
+      const view = ensureSavedTrackElevationViewState();
+      const samples = view.runtimeProfile && view.runtimeProfile.samples;
+      return savedTrackElevationSampleIndexAtCumDistInRun(samples, bestCum, bestRun);
+    }
+    return -1;
   } catch(_){
     return -1;
   }
@@ -37088,6 +37290,8 @@ function renderSavedTrackElevationSection(){
     view.runtimeProfile = null;
     view.layout = null;
     view.hover = null;
+    try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
+    try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
     savedTrackRemoveElevationSyncMarker();
     return;
   }
@@ -37101,6 +37305,8 @@ function renderSavedTrackElevationSection(){
     view.runtimeProfile = null;
     view.layout = null;
     view.hover = null;
+    try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
+    try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
     savedTrackRemoveElevationSyncMarker();
     return;
   }
@@ -37108,6 +37314,7 @@ function renderSavedTrackElevationSection(){
   const runtime = savedTrackBuildRuntimeElevationProfile(st);
   view.runtimeProfile = runtime;
   view.geometryCache = savedTrackBuildGeometryCumCache(st);
+  try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
   if (!runtime || !runtime.meta || !runtime.meta.hasAnyElevation){
     sec.classList.add("is-unavailable");
     if (status) status.textContent = tt("track.profile.unavailable", "Profilo non disponibile");
@@ -37115,6 +37322,7 @@ function renderSavedTrackElevationSection(){
     if (chart) chart.innerHTML = "";
     if (warn){ warn.hidden = false; warn.textContent = tt("track.profile.unavailable", ""); }
     view.layout = null;
+    try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
     return;
   }
 
@@ -37159,6 +37367,23 @@ function renderSavedTrackElevationSection(){
     te.textContent = bits.join(" · ") || tt("track.profile.title", "Profilo altimetrico");
   }
   if (chart){
+    const tol = (typeof SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M === "number")
+      ? SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M
+      : 0.15;
+    const axisTotal = (runtime.stats && Number.isFinite(runtime.stats.totalDistM) && runtime.stats.totalDistM > 0)
+      ? runtime.stats.totalDistM
+      : 0;
+    let firstValidSample = null, lastValidSample = null;
+    for (let i = 0; i < runtime.samples.length; i++){
+      const s = runtime.samples[i];
+      if (!s || s.ele == null || !Number.isFinite(s.ele)) continue;
+      if (!firstValidSample) firstValidSample = s;
+      lastValidSample = s;
+    }
+    const showStartMarker = !!(firstValidSample && Number.isFinite(firstValidSample.cumDistM)
+      && firstValidSample.cumDistM <= tol);
+    const showEndMarker = !!(lastValidSample && Number.isFinite(lastValidSample.cumDistM) && axisTotal > 0
+      && Math.abs(lastValidSample.cumDistM - axisTotal) <= tol);
     const result = elevationProfileDrawChart({
       chartEl: chart,
       profile: runtime,
@@ -37169,20 +37394,31 @@ function renderSavedTrackElevationSection(){
       formatGrade: routingFmtGradePct,
       markerStartLabel: "A",
       markerEndLabel: "B",
+      showStartMarker: showStartMarker,
+      showEndMarker: showEndMarker,
       ariaTitleId: "trackSavedElevationSvgTitle",
       ariaDescId: "trackSavedElevationSvgDesc",
       titleText: tt("track.profile.title", "Profilo altimetrico"),
       descText: te ? String(te.textContent || "") : tt("track.profile.title", "Profilo altimetrico")
     });
     view.layout = result && result.layout ? result.layout : null;
-    if (prevHover && view.layout){
+    if (prevHover && view.layout && Number.isFinite(prevHover.sampleIndex)
+      && prevHover.sampleIndex >= 0
+      && prevHover.sampleIndex < runtime.samples.length
+      && runtime.samples[prevHover.sampleIndex]
+      && runtime.samples[prevHover.sampleIndex].ele != null){
       view.hover = prevHover;
       savedTrackApplyElevationHoverVisuals();
       savedTrackUpdateElevationSyncMarkerOnly();
     } else if (!preserveHover){
       view.hover = null;
+    } else if (prevHover){
+      view.hover = null;
+      savedTrackApplyElevationHoverVisuals();
+      savedTrackUpdateElevationSyncMarkerOnly();
     }
     try { savedTrackWireElevationChartInteractions(); } catch(_){}
+    try { savedTrackEnsureElevationResizeObserver(); } catch(_){}
   }
 }
 function openSavedTrackElevationProfile(trackId){
@@ -50967,6 +51203,9 @@ function applyLanguage(lang){
       renderSavedTracksList();
     }
   }
+  if (typeof savedTrackElevationSectionOpen === "function" && savedTrackElevationSectionOpen()){
+    try { renderSavedTrackElevationSection(); } catch(_){}
+  }
   if (typeof renderOfflineAreasList === "function") renderOfflineAreasList();
   if (typeof syncOfflineSaveButtonLabel === "function") syncOfflineSaveButtonLabel();
   syncThemeSelectOptions();
@@ -60742,6 +60981,9 @@ function routingFullCleanup(){
     const ps = document.getElementById("routingProviderStatus");
     if (ps){ ps.textContent = ""; ps.classList.remove("is-err"); }
   } catch(_){}
+  try {
+    if (typeof savedTrackUpdateElevationSyncMarkerOnly === "function") savedTrackUpdateElevationSyncMarkerOnly();
+  } catch(_){}
 }
 function routingEscapeAttr(id){
   return String(id == null ? "" : id).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
@@ -62744,6 +62986,8 @@ function elevationProfileDrawChart(options){
   void formatGrade;
   const markerStartLabel = (options.markerStartLabel != null) ? String(options.markerStartLabel) : "A";
   const markerEndLabel = (options.markerEndLabel != null) ? String(options.markerEndLabel) : "B";
+  const showStartMarker = (options.showStartMarker === false) ? false : true;
+  const showEndMarker = (options.showEndMarker === false) ? false : true;
   const ariaTitleId = options.ariaTitleId || "elevationProfileTitleId";
   const ariaDescId = options.ariaDescId || "elevationProfileDescId";
   const titleText = (options.titleText != null) ? String(options.titleText) : "Elevation profile";
@@ -62766,8 +63010,24 @@ function elevationProfileDrawChart(options){
   const padY = Math.max(5, (maxEle - minEle) * 0.08);
   const minElePlot = minEle - padY;
   const maxElePlot = maxEle + padY;
-  const totalDist = Math.max(1e-6, samples[samples.length - 1].cumDistM || 1);
-  const xOf = (d) => margin.l + (d / totalDist) * plotW;
+  let totalDist = 0;
+  const statsTd = ep.stats && Number(ep.stats.totalDistM);
+  if (Number.isFinite(statsTd) && statsTd > 0){
+    totalDist = statsTd;
+  } else {
+    let lastCum = 0;
+    for (let i = samples.length - 1; i >= 0; i--){
+      const d = samples[i] && Number(samples[i].cumDistM);
+      if (Number.isFinite(d)){ lastCum = d; break; }
+    }
+    totalDist = Math.max(1e-6, lastCum || 1);
+  }
+  if (!(totalDist > 0)) totalDist = 1e-6;
+  const xOf = (d) => {
+    const dd = Number(d);
+    const clamped = Number.isFinite(dd) ? Math.max(0, Math.min(totalDist, dd)) : 0;
+    return margin.l + (clamped / totalDist) * plotW;
+  };
   const yOf = (e) => margin.t + (1 - ((e - minElePlot) / (maxElePlot - minElePlot))) * plotH;
   const baselineY = margin.t + plotH;
 
@@ -62959,8 +63219,8 @@ function elevationProfileDrawChart(options){
     g.appendChild(t);
     gMarkers.appendChild(g);
   }
-  addEndpointBadge(firstValid, markerStartLabel, "var(--routing-elev-marker-a)");
-  addEndpointBadge(lastValid, markerEndLabel, "var(--routing-elev-marker-b)");
+  addEndpointBadge(showStartMarker ? firstValid : null, markerStartLabel, "var(--routing-elev-marker-a)");
+  addEndpointBadge(showEndMarker ? lastValid : null, markerEndLabel, "var(--routing-elev-marker-b)");
   svg.appendChild(gMarkers);
 
   const gHover = document.createElementNS(ns, "g");
@@ -63073,6 +63333,8 @@ function routingRemoveAltitudeSyncMarker(){
 function routingUpdateAltitudeSyncMarkerOnly(){
   try {
     routingRemoveAltitudeSyncMarker();
+    if (typeof elevationProfileMapSyncOwner === "function" && elevationProfileMapSyncOwner() !== "routing") return;
+    try { if (typeof savedTrackRemoveElevationSyncMarker === "function") savedTrackRemoveElevationSyncMarker(); } catch(_){}
     const r = state._routing;
     const hover = r && r.altitudeHover;
     const ep = r && r.elevationProfile;
@@ -63272,13 +63534,11 @@ function routingWireAltitudeChartInteractions(){
     else if (ev.key === "Escape"){ ev.preventDefault(); routingClearAltitudeHoverIfSource("chart"); }
   });
 }
-function routingAltitudeMapSyncBlocked(){
+function elevationProfileMapInteractionBlocked(){
   try {
     const r = state._routing;
-    if (!r || !r.panelOpen) return true;
-    if (!r.elevationProfile || !Array.isArray(r.previewCoordinates) || r.previewCoordinates.length < 2) return true;
-    if (r.pickMode || r.markerDrag) return true;
-  } catch(_){ return true; }
+    if (r && (r.pickMode || r.markerDrag)) return true;
+  } catch(_){}
   try {
     const tm = document.querySelector(".tile-map");
     if (tm && tm.classList.contains("dragging")) return true;
@@ -63303,6 +63563,33 @@ function routingAltitudeMapSyncBlocked(){
     if (typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag) return true;
     if (typeof mapPolyMoveDocDrag !== "undefined" && mapPolyMoveDocDrag) return true;
   } catch(_){}
+  return false;
+}
+function elevationProfileRoutingOwnerCandidate(){
+  try {
+    const r = state._routing;
+    if (!r || !r.panelOpen) return false;
+    if (!r.elevationProfile || !r.elevationProfile.meta || !r.elevationProfile.meta.hasAnyElevation) return false;
+    if (!Array.isArray(r.elevationProfile.samples) || r.elevationProfile.samples.length < 2) return false;
+    if (typeof routingRoutePreviewIsValid === "function" && !routingRoutePreviewIsValid()) return false;
+    return true;
+  } catch(_){
+    return false;
+  }
+}
+/** Unique map-sync owner: "routing" | "saved-track" | "none". Routing wins while eligible. */
+function elevationProfileMapSyncOwner(){
+  try {
+    if (elevationProfileRoutingOwnerCandidate()) return "routing";
+    if (typeof savedTrackElevationMapHoverActive === "function" && savedTrackElevationMapHoverActive()) return "saved-track";
+  } catch(_){}
+  return "none";
+}
+function routingAltitudeMapSyncBlocked(){
+  try {
+    if (elevationProfileMapSyncOwner() !== "routing") return true;
+    if (elevationProfileMapInteractionBlocked()) return true;
+  } catch(_){ return true; }
   return false;
 }
 
@@ -63416,7 +63703,19 @@ function routingNearestRouteSampleByMapPixel(x, y){
 }
 
 function routingAltitudeOnMapHover(x, y){
-  if (!routingAltitudeMapSyncBlocked()){
+  const owner = (typeof elevationProfileMapSyncOwner === "function")
+    ? elevationProfileMapSyncOwner()
+    : "none";
+  const blocked = (typeof elevationProfileMapInteractionBlocked === "function")
+    && elevationProfileMapInteractionBlocked();
+
+  if (owner === "routing"){
+    try { if (typeof savedTrackClearElevationHoverIfSource === "function") savedTrackClearElevationHoverIfSource("map"); } catch(_){}
+    try { if (typeof savedTrackRemoveElevationSyncMarker === "function") savedTrackRemoveElevationSyncMarker(); } catch(_){}
+    if (blocked){
+      try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
+      return;
+    }
     _routingAltitudeMapHoverPending = { x: x, y: y };
     if (_routingAltitudeMapHoverRaf) return;
     _routingAltitudeMapHoverRaf = requestAnimationFrame(() => {
@@ -63424,7 +63723,7 @@ function routingAltitudeOnMapHover(x, y){
       const p = _routingAltitudeMapHoverPending;
       _routingAltitudeMapHoverPending = null;
       if (!p) return;
-      if (routingAltitudeMapSyncBlocked()){
+      if (elevationProfileMapSyncOwner() !== "routing" || elevationProfileMapInteractionBlocked()){
         try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
         return;
       }
@@ -63437,12 +63736,20 @@ function routingAltitudeOnMapHover(x, y){
     });
     return;
   }
-  try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
-  if (typeof savedTrackElevationMapHoverActive === "function" && savedTrackElevationMapHoverActive()){
+
+  if (owner === "saved-track"){
+    try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
+    if (blocked){
+      try { if (typeof savedTrackClearElevationHoverIfSource === "function") savedTrackClearElevationHoverIfSource("map"); } catch(_){}
+      return;
+    }
     try { savedTrackAltitudeOnMapHover(x, y); } catch(_){}
     return;
   }
+
+  try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
   try { if (typeof savedTrackClearElevationHoverIfSource === "function") savedTrackClearElevationHoverIfSource("map"); } catch(_){}
+  try { if (typeof savedTrackRemoveElevationSyncMarker === "function") savedTrackRemoveElevationSyncMarker(); } catch(_){}
 }
 
 function routingAttachAltitudeMapHoverOnce(tileMap){
@@ -63450,12 +63757,10 @@ function routingAttachAltitudeMapHoverOnce(tileMap){
   tileMap._routingAltMapHoverBound = true;
   tileMap.addEventListener("pointermove", (ev) => {
     try {
-      const routingActive = !routingAltitudeMapSyncBlocked()
-        && state._routing
-        && state._routing.elevationProfile;
-      const savedActive = (typeof savedTrackElevationMapHoverActive === "function")
-        && savedTrackElevationMapHoverActive();
-      if (!routingActive && !savedActive){
+      const owner = (typeof elevationProfileMapSyncOwner === "function")
+        ? elevationProfileMapSyncOwner()
+        : "none";
+      if (owner === "none"){
         try { routingClearAltitudeHoverIfSource("map"); } catch(_){}
         try { if (typeof savedTrackClearElevationHoverIfSource === "function") savedTrackClearElevationHoverIfSource("map"); } catch(_){}
         return;
@@ -63638,6 +63943,9 @@ function openRoutingPlannerPanel(service){
   state._routing.service = svc;
   if (!(state._routing.points && state._routing.points.length)) routingInitDefaultPoints();
   state._routing.panelOpen = true;
+  try {
+    if (typeof savedTrackRemoveElevationSyncMarker === "function") savedTrackRemoveElevationSyncMarker();
+  } catch(_){}
   try {
     if (typeof dlg.show === "function") dlg.show();
     else dlg.setAttribute("open", "");
