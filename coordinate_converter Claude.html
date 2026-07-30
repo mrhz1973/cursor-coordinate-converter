@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.1TP-A-FIX1</title>
+<title>GOI GIS Tool · B6.1TP-A-FIX2</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13375,7 +13375,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1TP-A-FIX1 · build 80</span>
+    <span id="appBuildFooter">B6.1TP-A-FIX2 · build 81</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13633,7 +13633,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1TP-A-FIX1 · build 80</code>
+            <code id="appBuildAbout">B6.1TP-A-FIX2 · build 81</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -21401,10 +21401,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.1TP-A-FIX1";
-const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX1 — elevation sync ownership and lifecycle hardening";
+const APP_BUILD_ID = "B6.1TP-A-FIX2";
+const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX2 — stabilize saved-profile resize lifecycle";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 80;
+const APP_BUILD_NUM = 81;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36626,51 +36626,130 @@ function ensureSavedTrackElevationViewState(){
   return state._savedTrackElevationView;
 }
 let _savedTrackElevationResizeObserver = null;
+let _savedTrackElevationResizeTarget = null;
 let _savedTrackElevationResizeRaf = 0;
+let _savedTrackElevationResizeLastWidth = null;
+let _savedTrackElevationResizeLastHeight = null;
 let _savedTrackElevMapPixelCache = null;
 function savedTrackInvalidateElevationMapPixelCache(){
   _savedTrackElevMapPixelCache = null;
+}
+function savedTrackElevationResizeReadSize(el){
+  try {
+    if (!el || typeof el.getBoundingClientRect !== "function") return { w: 0, h: 0 };
+    const r = el.getBoundingClientRect();
+    return {
+      w: (r && Number.isFinite(r.width)) ? r.width : 0,
+      h: (r && Number.isFinite(r.height)) ? r.height : 0
+    };
+  } catch(_){
+    return { w: 0, h: 0 };
+  }
+}
+function savedTrackElevationResizeProfileValid(){
+  try {
+    if (!savedTrackElevationSectionOpen()) return false;
+    const sec = document.getElementById("trackSavedElevationSection");
+    if (!sec || sec.hidden) return false;
+    if (sec.classList.contains("is-unavailable") || sec.classList.contains("is-stale")) return false;
+    const view = state._savedTrackElevationView;
+    const rp = view && view.runtimeProfile;
+    if (!rp || !rp.meta || !rp.meta.hasAnyElevation) return false;
+    if (!Array.isArray(rp.samples) || rp.samples.length < 2) return false;
+    return true;
+  } catch(_){
+    return false;
+  }
 }
 function savedTrackDisconnectElevationResizeObserver(){
   try {
     if (_savedTrackElevationResizeRaf){
       cancelAnimationFrame(_savedTrackElevationResizeRaf);
-      _savedTrackElevationResizeRaf = 0;
     }
-  } catch(_){ _savedTrackElevationResizeRaf = 0; }
+  } catch(_){}
+  _savedTrackElevationResizeRaf = 0;
   try {
     if (_savedTrackElevationResizeObserver){
       _savedTrackElevationResizeObserver.disconnect();
     }
   } catch(_){}
+  _savedTrackElevationResizeTarget = null;
+  _savedTrackElevationResizeLastWidth = null;
+  _savedTrackElevationResizeLastHeight = null;
 }
 function savedTrackEnsureElevationResizeObserver(){
   const host = document.getElementById("trackSavedElevationChartHost")
     || document.getElementById("trackSavedElevationChart");
-  if (!host) return;
-  if (typeof ResizeObserver === "undefined") return;
-  if (!savedTrackElevationSectionOpen()){
+  if (!host || typeof ResizeObserver === "undefined"){
+    savedTrackDisconnectElevationResizeObserver();
+    return;
+  }
+  if (!savedTrackElevationResizeProfileValid()){
     savedTrackDisconnectElevationResizeObserver();
     return;
   }
   if (!_savedTrackElevationResizeObserver){
-    _savedTrackElevationResizeObserver = new ResizeObserver(() => {
-      if (_savedTrackElevationResizeRaf) cancelAnimationFrame(_savedTrackElevationResizeRaf);
-      _savedTrackElevationResizeRaf = requestAnimationFrame(() => {
-        _savedTrackElevationResizeRaf = 0;
-        try {
-          if (!savedTrackElevationSectionOpen()){
-            savedTrackDisconnectElevationResizeObserver();
-            return;
+    _savedTrackElevationResizeObserver = new ResizeObserver((entries) => {
+      try {
+        if (!savedTrackElevationResizeProfileValid()){
+          savedTrackDisconnectElevationResizeObserver();
+          return;
+        }
+        const target = _savedTrackElevationResizeTarget;
+        if (!target) return;
+        let w = null, h = null;
+        if (entries && entries.length){
+          for (let i = 0; i < entries.length; i++){
+            const entry = entries[i];
+            if (!entry || entry.target !== target) continue;
+            const cr = entry.contentRect;
+            if (cr && Number.isFinite(cr.width) && Number.isFinite(cr.height)){
+              w = cr.width;
+              h = cr.height;
+              break;
+            }
           }
-          savedTrackInvalidateElevationMapPixelCache();
-          renderSavedTrackElevationSection();
-        } catch(_){}
-      });
+        }
+        if (w == null || h == null){
+          const sz = savedTrackElevationResizeReadSize(target);
+          w = sz.w;
+          h = sz.h;
+        }
+        const lw = _savedTrackElevationResizeLastWidth;
+        const lh = _savedTrackElevationResizeLastHeight;
+        if (lw != null && lh != null
+          && Math.abs(w - lw) < 0.5
+          && Math.abs(h - lh) < 0.5){
+          return;
+        }
+        _savedTrackElevationResizeLastWidth = w;
+        _savedTrackElevationResizeLastHeight = h;
+        if (_savedTrackElevationResizeRaf){
+          try { cancelAnimationFrame(_savedTrackElevationResizeRaf); } catch(_){}
+        }
+        const observedHost = target;
+        _savedTrackElevationResizeRaf = requestAnimationFrame(() => {
+          _savedTrackElevationResizeRaf = 0;
+          try {
+            if (!savedTrackElevationResizeProfileValid()){
+              savedTrackDisconnectElevationResizeObserver();
+              return;
+            }
+            if (_savedTrackElevationResizeTarget !== observedHost) return;
+            savedTrackInvalidateElevationMapPixelCache();
+            renderSavedTrackElevationSection();
+          } catch(_){}
+        });
+      } catch(_){}
     });
   }
+  if (_savedTrackElevationResizeTarget === host) return;
   try { _savedTrackElevationResizeObserver.disconnect(); } catch(_){}
   try { _savedTrackElevationResizeObserver.observe(host); } catch(_){}
+  _savedTrackElevationResizeTarget = host;
+  const sz0 = savedTrackElevationResizeReadSize(host);
+  _savedTrackElevationResizeLastWidth = sz0.w;
+  _savedTrackElevationResizeLastHeight = sz0.h;
 }
 function savedTrackRemoveElevationSyncMarker(){
   try {
