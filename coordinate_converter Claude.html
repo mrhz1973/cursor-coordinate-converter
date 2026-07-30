@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="application-name" content="GOI GIS Tool">
-<title>GOI GIS Tool · B6.1TP-A-FIX2</title>
+<title>GOI GIS Tool · B6.1TP-A-FIX3</title>
 <style>
 /* #region CSS — DESIGN TOKENS THEMES */
 /* =============================================================================
@@ -13375,7 +13375,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1TP-A-FIX2 · build 81</span>
+    <span id="appBuildFooter">B6.1TP-A-FIX3 · build 82</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13633,7 +13633,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1TP-A-FIX2 · build 81</code>
+            <code id="appBuildAbout">B6.1TP-A-FIX3 · build 82</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
@@ -21401,10 +21401,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.1TP-A-FIX2";
-const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX2 — stabilize saved-profile resize lifecycle";
+const APP_BUILD_ID = "B6.1TP-A-FIX3";
+const APP_BUILD_DETAIL = "TRACK-ELEVATION-PROFILE-A-FIX3 — align saved-profile map hover to canonical geometry";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 81;
+const APP_BUILD_NUM = 82;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36861,6 +36861,21 @@ function savedTrackProfileDistToGeometryDist(profileDistM, profileTotalM, geomet
   else if (ratio > 1) ratio = 1;
   return ratio * gt;
 }
+/**
+ * Inverse of savedTrackProfileDistToGeometryDist — map geometry length onto profile distance axis.
+ * Fail-soft: returns null on invalid totals; never throws.
+ */
+function savedTrackGeometryDistToProfileDist(geometryDistM, geometryTotalM, profileTotalM){
+  const gd = Number(geometryDistM);
+  const gt = Number(geometryTotalM);
+  const pt = Number(profileTotalM);
+  if (!Number.isFinite(gd) || !Number.isFinite(gt) || !(gt > 0)) return null;
+  if (!Number.isFinite(pt) || !(pt > 0)) return null;
+  let ratio = gd / gt;
+  if (ratio < 0) ratio = 0;
+  else if (ratio > 1) ratio = 1;
+  return ratio * pt;
+}
 function savedTrackBuildRuntimeElevationProfile(st){
   try {
     if (!st || typeof st !== "object") return null;
@@ -37146,6 +37161,98 @@ function savedTrackElevationSampleIndexAtCumDistInRun(samples, dist, runIndex){
   }
   return best;
 }
+/**
+ * Build transient run ranges from runtime elevation samples (valid ele only).
+ * Used for gap-safe profileDist → sampleIndex mapping.
+ */
+function savedTrackBuildElevationRunRanges(samples){
+  const ranges = [];
+  if (!Array.isArray(samples) || !samples.length) return ranges;
+  let cur = null;
+  for (let i = 0; i < samples.length; i++){
+    const s = samples[i];
+    if (!s || s.ele == null || !Number.isFinite(s.ele) || !Number.isFinite(s.cumDistM) || s.runIndex == null){
+      if (cur){ ranges.push(cur); cur = null; }
+      continue;
+    }
+    if (!cur || cur.runIndex !== s.runIndex){
+      if (cur) ranges.push(cur);
+      cur = {
+        runIndex: s.runIndex,
+        firstIdx: i,
+        lastIdx: i,
+        firstDist: Number(s.cumDistM),
+        lastDist: Number(s.cumDistM),
+        indices: [i]
+      };
+    } else {
+      cur.lastIdx = i;
+      cur.lastDist = Number(s.cumDistM);
+      cur.indices.push(i);
+    }
+  }
+  if (cur) ranges.push(cur);
+  return ranges;
+}
+/**
+ * Gap-safe: map a profile distance to a valid elevation sample index.
+ * Distances falling between runs (gaps) return -1.
+ */
+function savedTrackElevationSampleIndexAtProfileDist(samples, profileDistM){
+  try {
+    if (!Array.isArray(samples) || !samples.length) return -1;
+    const target = Number(profileDistM);
+    if (!Number.isFinite(target)) return -1;
+    const tol = (typeof SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M === "number")
+      ? SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M
+      : 0.15;
+    const ranges = savedTrackBuildElevationRunRanges(samples);
+    if (!ranges.length) return -1;
+    let hit = null;
+    for (let i = 0; i < ranges.length; i++){
+      const r = ranges[i];
+      const lo = Math.min(r.firstDist, r.lastDist) - tol;
+      const hi = Math.max(r.firstDist, r.lastDist) + tol;
+      if (target >= lo && target <= hi){ hit = r; break; }
+    }
+    if (!hit) return -1;
+    if (hit.indices.length === 1){
+      const only = samples[hit.indices[0]];
+      if (!only || Math.abs(Number(only.cumDistM) - target) > tol) return -1;
+      return hit.indices[0];
+    }
+    /* Binary search nearest valid sample inside the run by cumDistM. */
+    const idxs = hit.indices;
+    let lo = 0, hi = idxs.length - 1;
+    while (lo < hi){
+      const mid = (lo + hi) >> 1;
+      const md = Number(samples[idxs[mid]].cumDistM);
+      if (md < target) lo = mid + 1;
+      else hi = mid;
+    }
+    let best = idxs[lo];
+    let bestD = Math.abs(Number(samples[best].cumDistM) - target);
+    if (lo > 0){
+      const prev = idxs[lo - 1];
+      const dPrev = Math.abs(Number(samples[prev].cumDistM) - target);
+      if (dPrev < bestD){ best = prev; bestD = dPrev; }
+    }
+    if (lo + 1 < idxs.length){
+      const next = idxs[lo + 1];
+      const dNext = Math.abs(Number(samples[next].cumDistM) - target);
+      if (dNext < bestD) best = next;
+    }
+    const s = samples[best];
+    if (!s || s.ele == null || !Number.isFinite(s.ele)) return -1;
+    return best;
+  } catch(_){
+    return -1;
+  }
+}
+/**
+ * Pixel cache for Saved Track map→chart: segments from canonical geometry (not sparse elevation samples).
+ * Pointer and projected pixels share tile-map / unwrapped map-px space (same as Routing dispatcher).
+ */
 function savedTrackEnsureElevationMapPixelCache(){
   try {
     const view = ensureSavedTrackElevationViewState();
@@ -37158,7 +37265,19 @@ function savedTrackEnsureElevationMapPixelCache(){
     }
     ensureSavedTracksState();
     const st = (state.savedTracks || []).find((x) => x && String(x.id) === String(view.trackId));
-    const gh = (st && st.elevationProfile && st.elevationProfile.geometryHash) ? String(st.elevationProfile.geometryHash) : "";
+    if (!st){
+      _savedTrackElevMapPixelCache = null;
+      return null;
+    }
+    const gh = (st.elevationProfile && st.elevationProfile.geometryHash)
+      ? String(st.elevationProfile.geometryHash)
+      : "";
+    const geoCache = view.geometryCache || savedTrackBuildGeometryCumCache(st);
+    if (!geoCache || !geoCache.geo || geoCache.geo.length < 1){
+      _savedTrackElevMapPixelCache = null;
+      return null;
+    }
+    view.geometryCache = geoCache;
     const vc = state.viewCenter || { lat: 0, lon: 0 };
     const zoom = state.mapZoom || 11;
     const vp = (typeof gisMapTileMathViewport === "function")
@@ -37166,6 +37285,9 @@ function savedTrackEnsureElevationMapPixelCache(){
       : { W: tileMap.clientWidth || 400, H: tileMap.clientHeight || 400 };
     const W = tileMap.clientWidth > 0 ? tileMap.clientWidth : vp.W;
     const H = tileMap.clientHeight > 0 ? tileMap.clientHeight : vp.H;
+    const profileTotal = (view.runtimeProfile.stats && Number(view.runtimeProfile.stats.totalDistM) > 0)
+      ? Number(view.runtimeProfile.stats.totalDistM)
+      : Number(st.elevationProfile && st.elevationProfile.totalDistM);
     const key = [
       String(view.trackId),
       gh,
@@ -37174,39 +37296,54 @@ function savedTrackEnsureElevationMapPixelCache(){
       String(vc.lon),
       String(W),
       String(H),
-      String(samples.length)
+      String(geoCache.geo.length),
+      String(geoCache.total),
+      String(profileTotal)
     ].join("|");
     if (_savedTrackElevMapPixelCache && _savedTrackElevMapPixelCache.key === key) return _savedTrackElevMapPixelCache;
 
-    const pts = [];
-    for (let i = 0; i < samples.length; i++){
-      const s = samples[i];
-      if (!s || s.ele == null || !Number.isFinite(s.ele) || !Number.isFinite(s.lat) || !Number.isFinite(s.lon)) continue;
-      const alignedLon = trackLonsAlignToView(trackLonsUnwrapTransient([s.lon]), vc.lon)[0];
-      if (!Number.isFinite(alignedLon)) continue;
-      const px = tileMapLatLonToPxUnwrapped(root, s.lat, alignedLon);
+    /* Project entire unwrapped geometry sequence for antimeridian continuity. */
+    const aligned = trackLonsAlignToView(
+      geoCache.geo.map((g) => g.lon),
+      vc.lon
+    );
+    const geoPts = [];
+    for (let i = 0; i < geoCache.geo.length; i++){
+      const g = geoCache.geo[i];
+      const al = aligned[i];
+      if (!g || !Number.isFinite(g.lat) || !Number.isFinite(al)) continue;
+      const px = tileMapLatLonToPxUnwrapped(root, g.lat, al);
       if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
-      pts.push({
-        sampleIndex: i,
-        runIndex: s.runIndex,
+      geoPts.push({
+        geoIndex: i,
         x: px.x,
         y: px.y,
-        cumDistM: Number(s.cumDistM)
+        geometryCumDist: Number(geoCache.cum[i]) || 0
       });
     }
     const segs = [];
-    for (let i = 0; i < pts.length - 1; i++){
-      const a = pts[i], b = pts[i + 1];
+    for (let i = 0; i < geoPts.length - 1; i++){
+      const a = geoPts[i], b = geoPts[i + 1];
       if (!a || !b) continue;
-      if (a.runIndex == null || b.runIndex == null || a.runIndex !== b.runIndex) continue;
+      /* Only consecutive geometry indices — never bridge missing projections. */
+      if (b.geoIndex !== a.geoIndex + 1) continue;
       segs.push({
         ax: a.x, ay: a.y, bx: b.x, by: b.y,
-        aCum: a.cumDistM, bCum: b.cumDistM,
-        aIdx: a.sampleIndex, bIdx: b.sampleIndex,
-        runIndex: a.runIndex
+        aGeoCum: a.geometryCumDist,
+        bGeoCum: b.geometryCumDist,
+        aGeoIdx: a.geoIndex,
+        bGeoIdx: b.geoIndex
       });
     }
-    _savedTrackElevMapPixelCache = { key: key, pts: pts, segs: segs };
+    const runRanges = savedTrackBuildElevationRunRanges(samples);
+    _savedTrackElevMapPixelCache = {
+      key: key,
+      geoPts: geoPts,
+      segs: segs,
+      geometryTotal: geoCache.total,
+      profileTotal: profileTotal,
+      runRanges: runRanges
+    };
     return _savedTrackElevMapPixelCache;
   } catch(_){
     _savedTrackElevMapPixelCache = null;
@@ -37220,7 +37357,7 @@ function savedTrackNearestElevationSampleByMapPixel(x, y){
     const hitR = (typeof ROUTING_ELEV_MAP_HIT_PX === "number") ? ROUTING_ELEV_MAP_HIT_PX : 14;
     const hitR2 = hitR * hitR;
     const segs = cache.segs || [];
-    let bestD2 = Infinity, bestCum = NaN, bestRun = null, bestIdx = -1, mode = "";
+    let bestD2 = Infinity, bestGeoCum = NaN;
     for (let i = 0; i < segs.length; i++){
       const s = segs[i];
       const dx = s.bx - s.ax, dy = s.by - s.ay;
@@ -37234,39 +37371,32 @@ function savedTrackNearestElevationSampleByMapPixel(x, y){
       const d2 = (x - px) * (x - px) + (y - py) * (y - py);
       if (d2 < bestD2){
         bestD2 = d2;
-        bestCum = s.aCum + (s.bCum - s.aCum) * t;
-        bestRun = s.runIndex;
-        bestIdx = -1;
-        mode = "seg";
+        bestGeoCum = s.aGeoCum + (s.bGeoCum - s.aGeoCum) * t;
       }
     }
-    /* Single-sample run fallback: nearest-point within hit radius (no gap bridging). */
-    const pts = cache.pts || [];
-    const runCounts = Object.create(null);
-    for (let i = 0; i < pts.length; i++){
-      const ri = pts[i].runIndex;
-      runCounts[ri] = (runCounts[ri] || 0) + 1;
-    }
-    for (let i = 0; i < pts.length; i++){
-      const p = pts[i];
-      if ((runCounts[p.runIndex] || 0) !== 1) continue;
-      const d2 = (x - p.x) * (x - p.x) + (y - p.y) * (y - p.y);
-      if (d2 < bestD2){
+    /* Degenerate / single-point geometry fallback within hit radius. */
+    if (!(Number.isFinite(bestGeoCum)) || !(bestD2 <= hitR2)){
+      const geoPts = cache.geoPts || [];
+      if (geoPts.length === 1){
+        const p = geoPts[0];
+        const d2 = (x - p.x) * (x - p.x) + (y - p.y) * (y - p.y);
+        if (d2 > hitR2) return -1;
+        bestGeoCum = p.geometryCumDist;
         bestD2 = d2;
-        bestIdx = p.sampleIndex;
-        bestCum = NaN;
-        bestRun = p.runIndex;
-        mode = "pt";
+      } else {
+        return -1;
       }
     }
-    if (!(bestD2 <= hitR2)) return -1;
-    if (mode === "pt") return bestIdx;
-    if (mode === "seg" && Number.isFinite(bestCum)){
-      const view = ensureSavedTrackElevationViewState();
-      const samples = view.runtimeProfile && view.runtimeProfile.samples;
-      return savedTrackElevationSampleIndexAtCumDistInRun(samples, bestCum, bestRun);
-    }
-    return -1;
+    if (!(bestD2 <= hitR2) || !Number.isFinite(bestGeoCum)) return -1;
+    const profileDist = savedTrackGeometryDistToProfileDist(
+      bestGeoCum,
+      cache.geometryTotal,
+      cache.profileTotal
+    );
+    if (profileDist == null) return -1;
+    const view = ensureSavedTrackElevationViewState();
+    const samples = view.runtimeProfile && view.runtimeProfile.samples;
+    return savedTrackElevationSampleIndexAtProfileDist(samples, profileDist);
   } catch(_){
     return -1;
   }
@@ -37514,6 +37644,23 @@ function openSavedTrackElevationProfile(trackId){
   try {
     if (document.body.classList.contains("gis-mode") && typeof openTrackModal === "function"){
       openTrackModal();
+    }
+  } catch(_){}
+  /*
+   * FIX3: openTrackModal auto-arms state.track.pickMode for draft drawing.
+   * That makes workbenchMapInteractionBlocked() true, which falsely blocks
+   * Saved Track elevation map→chart while the profile is only viewed read-only.
+   * Disarm pickMode when we are not editing a library track and have no draft points.
+   * Preserve real edit/draw sessions (editing id or non-empty draft).
+   */
+  try {
+    ensureTrackState();
+    const editing = !!(state._trackEditingSavedId);
+    const hasDraft = !!(state.track && Array.isArray(state.track.points) && state.track.points.length > 0);
+    if (!editing && !hasDraft && state.track && state.track.pickMode){
+      state.track.pickMode = false;
+      if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
+      if (typeof workbenchSyncPickModeUi === "function") workbenchSyncPickModeUi();
     }
   } catch(_){}
   renderSavedTrackElevationSection();
