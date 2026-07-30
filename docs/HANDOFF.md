@@ -176,7 +176,7 @@ Da scegliere: **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / b
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **ROUTING-SUMMARY-DEDUP-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
@@ -207,6 +207,10 @@ Da scegliere: **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / b
 ### TRACK-SAVE-AS-NAME-A — Nome in Salva come traccia — CLOSED / PASS end-to-end
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Tip `8a641bc` / `B6.1TSN-A · build 83`. Form inline; Invio/Esc; validazione nome obbligatorio; elevation addon preservato. Review GPT-sostitutiva PASS. Deploy GIS-only PASS. QA «**QA TRACK-SAVE-AS-NAME-A PASS operatore**».
+
+### ROUTING-SUMMARY-DEDUP-A — Riepilogo Routing senza metriche duplicate — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Deduplicare la riga «Percorso pronto»: togliere distanza/tempo/dislivelli già nelle card metriche; lasciare solo stato sintetico + messaggi operativi/loading/avviso/errore. Card metriche invariate. Emerso in QA TRACK-SAVE-AS-NAME-A (**non** FAIL). **Nessuna implementazione.**
 
 ### ROUTING-PROFILE-EDIT-A — Editing A/B/intermedi — BACKLOG / NON APERTO
 
