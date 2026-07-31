@@ -9,6 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-07-31 — **Backlog registrato `APP-BUILD-LABEL-UX-A` — BACKLOG / NON APERTO**. Badge build fuori topbar mappa (footer + About restano). Docs-only; monolite invariato (`173b6cb` / build 86). Commit task **`acb4539`**. Inbox: `2026-07-31_2037_riepilogo_app-build-label-ux-backlog.md`.
+2026-07-31 — **`finito` Regola H — APP-BUILD-LABEL-UX-A (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`da3397b`** / **`B6.2BL-A-FIX1 · build 88`**. Commit docs **`4314f03`**. Working tree pre-autosync: pulito. Monolite **già** nel tip runtime (non nel commit docs). Inbox: `2026-07-31_2156_riepilogo_finito-sessione.md`. WU-0010 resta **OPEN** (Bundle F).
 
-2026-07-31 — **`finito` Regola H — ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`173b6cb`** / **`B6.2UX-A-FIX1 · build 86`**. Commit docs **`b0758b0`**. Inbox: `2026-07-31_2030_riepilogo_finito-sessione.md`.
+2026-07-31 — Backlog storico `APP-BUILD-LABEL-UX-A` (poi implementato/chiuso) — inbox `2026-07-31_2037_riepilogo_app-build-label-ux-backlog.md`.
+
+2026-07-31 — **`finito` Regola H — ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED** — tip storico **`173b6cb`** (superseded live).
