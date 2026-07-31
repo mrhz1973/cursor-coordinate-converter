@@ -9143,6 +9143,8 @@ dialog.track-modal.app-modal{
   stroke:var(--panel, #fff);
   stroke-width:3px;
 }
+.saved-track-profile-points-overlay{ pointer-events:none; }
+.saved-track-profile-point{ fill:var(--accent, #2563eb); fill-opacity:0.6; stroke:#fff; stroke-width:1; vector-effect:non-scaling-stroke; pointer-events:none; }
 .routing-altitude-text-equiv,
 .routing-altitude-legend{
   position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
@@ -13400,7 +13402,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2BL-A-FIX1 · build 88</span>
+    <span id="appBuildFooter">B6.2TPD-A · build 89</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13658,11 +13660,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2BL-A-FIX1 · build 88</code>
+            <code id="appBuildAbout">B6.2TPD-A · build 89</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">APP-BUILD-LABEL-UX-A-FIX1 — remove map HUD and keep footer visible</div>
+          <div class="about-line muted" id="appBuildAboutDetail">TRACK-PROFILE-POINTS-DISPLAY-A — distance-decimated saved-track profile points</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21519,10 +21521,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2BL-A-FIX1";
-const APP_BUILD_DETAIL = "APP-BUILD-LABEL-UX-A-FIX1 — remove map HUD and keep footer visible";
+const APP_BUILD_ID = "B6.2TPD-A";
+const APP_BUILD_DETAIL = "TRACK-PROFILE-POINTS-DISPLAY-A — distance-decimated saved-track profile points";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 88;
+const APP_BUILD_NUM = 89;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36444,6 +36446,7 @@ const SAVED_TRACK_ELEVATION_MAX_DIST_M = 5e7;
 const SAVED_TRACK_ELEVATION_DIST_EPS = 0.05;
 /** Endpoint A/B tolerance — coherent with 0.1 m rounding of persisted distances. */
 const SAVED_TRACK_ELEVATION_ENDPOINT_TOL_M = 0.15;
+const SAVED_TRACK_PROFILE_POINTS_BUDGET = 120;
 const SAVED_TRACK_ELEVATION_HASH_RE = /^fnv1a32:[0-9a-f]{8}$/;
 
 function savedTrackFnv1a32Hex(str){
@@ -36879,6 +36882,75 @@ function savedTrackRemoveElevationSyncMarker(){
     }
   } catch(_){}
 }
+function savedTrackRemoveProfilePointsOverlay(){
+  try { document.querySelectorAll(".saved-track-profile-points-overlay").forEach((n) => { if (n && n.parentNode) n.parentNode.removeChild(n); }); } catch(_){}
+}
+function savedTrackBuildProfilePointSubset(st){
+  const budget = SAVED_TRACK_PROFILE_POINTS_BUDGET || 120; // distance path; index fallback = degrado
+  const pts = (st && st.points) || [], valid = [];
+  for (let i = 0; i < pts.length; i++){
+    const lat = pts[i] && Number(pts[i].lat), lon = pts[i] && Number(pts[i].lon);
+    if (Number.isFinite(lat) && Number.isFinite(lon)) valid.push({ lat: lat, lon: lon });
+  }
+  const n = valid.length;
+  if (n < 1) return [];
+  if (n <= budget) return valid.slice();
+  const byIndex = () => {
+    const out = []; let last = -1;
+    for (let k = 0; k < budget; k++){
+      let idx = (k === 0) ? 0 : ((k === budget - 1) ? (n - 1) : Math.round(k * (n - 1) / (budget - 1)));
+      if (idx <= last) idx = last + 1;
+      const maxA = n - (budget - k); if (idx > maxA) idx = maxA;
+      if (idx <= last || idx >= n) continue;
+      out.push({ lat: valid[idx].lat, lon: valid[idx].lon }); last = idx;
+    }
+    return out;
+  };
+  const cache = savedTrackBuildGeometryCumCache({ points: valid });
+  const cum = cache && cache.cum, total = cache && Number(cache.total);
+  if (!cum || cum.length !== n || !(total > 0)) return byIndex();
+  const out = []; let j = 0, last = -1;
+  for (let k = 0; k < budget; k++){
+    const target = (k / (budget - 1)) * total, maxA = n - 1 - (budget - 1 - k), minA = last + 1;
+    while (j < maxA && Math.abs(cum[j + 1] - target) <= Math.abs(cum[j] - target)) j++;
+    let pick = (k === 0) ? 0 : ((k === budget - 1) ? (n - 1) : j);
+    if (pick < minA) pick = minA; if (pick > maxA) pick = maxA;
+    if (pick <= last || pick >= n) continue;
+    out.push({ lat: valid[pick].lat, lon: valid[pick].lon }); last = pick; j = pick;
+  }
+  return out.length ? out : byIndex();
+}
+function savedTrackProfilePointsOverlayShouldShow(){
+  try {
+    if (!savedTrackElevationSectionOpen()) return false;
+    const tid = String((state._savedTrackElevationView && state._savedTrackElevationView.trackId) || "");
+    const sec = document.getElementById("trackSavedElevationSection");
+    if (!tid || !sec || sec.hidden || sec.classList.contains("is-unavailable") || sec.classList.contains("is-stale")) return false;
+    if (!(state.savedTracks || []).some((x) => x && String(x.id) === tid)) return false;
+    return sec.classList.contains("is-valid") || sec.classList.contains("is-partial");
+  } catch(_){ return false; }
+}
+function savedTrackAppendProfilePointsOverlay(svg, st, tx, ty, root){
+  try {
+    if (!svg || !st || !root || !savedTrackProfilePointsOverlayShouldShow()) return;
+    if (String(st.id || "") !== String(ensureSavedTrackElevationViewState().trackId || "")) return;
+    const subset = savedTrackBuildProfilePointSubset(st);
+    if (!subset.length) return;
+    const ns = "http://www.w3.org/2000/svg", g = document.createElementNS(ns, "g");
+    g.setAttribute("class", "saved-track-profile-points-overlay");
+    g.setAttribute("aria-hidden", "true"); g.style.pointerEvents = "none";
+    const coords = trackPointsToMapPx(root, subset);
+    for (let i = 0; i < coords.length; i++){
+      const c = coords[i];
+      if (!c || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+      const el = document.createElementNS(ns, "circle");
+      el.setAttribute("class", "saved-track-profile-point");
+      el.setAttribute("cx", (c.x - tx).toFixed(1)); el.setAttribute("cy", (c.y - ty).toFixed(1));
+      el.setAttribute("r", "2.75"); el.style.pointerEvents = "none"; g.appendChild(el);
+    }
+    if (g.childNodes.length) svg.appendChild(g);
+  } catch(_){}
+}
 function savedTrackClearElevationView(opts){
   opts = opts || {};
   try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
@@ -36890,6 +36962,7 @@ function savedTrackClearElevationView(opts){
   view.runtimeProfile = null;
   view.geometryCache = null;
   try { savedTrackRemoveElevationSyncMarker(); } catch(_){}
+  savedTrackRemoveProfilePointsOverlay();
   const sec = document.getElementById("trackSavedElevationSection");
   if (sec){
     sec.hidden = true;
@@ -37621,6 +37694,7 @@ function renderSavedTrackElevationSection(){
     try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
     try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
     savedTrackRemoveElevationSyncMarker();
+    savedTrackRemoveProfilePointsOverlay();
     return;
   }
   if (savedTrackElevationIsStale(st)){
@@ -37636,6 +37710,7 @@ function renderSavedTrackElevationSection(){
     try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
     try { savedTrackInvalidateElevationMapPixelCache(); } catch(_){}
     savedTrackRemoveElevationSyncMarker();
+    savedTrackRemoveProfilePointsOverlay();
     return;
   }
 
@@ -37651,6 +37726,7 @@ function renderSavedTrackElevationSection(){
     if (warn){ warn.hidden = false; warn.textContent = tt("track.profile.unavailable", ""); }
     view.layout = null;
     try { savedTrackDisconnectElevationResizeObserver(); } catch(_){}
+    savedTrackRemoveProfilePointsOverlay();
     return;
   }
 
@@ -37783,6 +37859,7 @@ function openSavedTrackElevationProfile(trackId){
     }
   } catch(_){}
   renderSavedTrackElevationSection();
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
   try {
     const sec = document.getElementById("trackSavedElevationSection");
     if (sec && typeof sec.scrollIntoView === "function"){
@@ -42578,13 +42655,16 @@ function renderSavedTracksOverlays(tileMap, markerLat, markerLon, zoom){
     try { wireSavedTrackMapHoverHintOnHitEl(line); } catch(_){}
     svg.appendChild(line);
   }
+  try {
+    const tid = state._savedTrackElevationView && state._savedTrackElevationView.trackId;
+    const active = tid && visible.find((x) => x && String(x.id) === String(tid));
+    if (active) savedTrackAppendProfilePointsOverlay(svg, active, tx, ty, root);
+  } catch(_){}
   const wrap = document.createElement("div");
   wrap.className = "saved-tracks-overlay";
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
-  try {
-    if (typeof savedTrackUpdateElevationSyncMarkerOnly === "function") savedTrackUpdateElevationSyncMarkerOnly();
-  } catch(_){}
+  try { savedTrackUpdateElevationSyncMarkerOnly(); } catch(_){}
 }
 
 /** P-STYLE-A+B — risoluzione stile poligono (saved|edit); fallback per contesto; nessun side effect. */
