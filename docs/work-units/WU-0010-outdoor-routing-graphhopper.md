@@ -2,7 +2,7 @@
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `173b6cb1ab4358c94352fed4b82e0b394b4e8d7b` (`173b6cb`) — display **`B6.2UX-A-FIX1 · build 86`** (ROUTING-UX-POLISH-BUNDLE-A-FIX1; tip RSD storico `58197bb`)
+**Runtime autorevole attuale:** `da3397b8658a46dd2689f26dc79ec12ad48b0461` (`da3397b`) — display **`B6.2BL-A-FIX1 · build 88`** (APP-BUILD-LABEL-UX-A-FIX1; tip UX-POLISH storico `173b6cb`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto

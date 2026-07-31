@@ -1132,6 +1132,27 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 **Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.  
 **Assorbiti:** OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
 
+## APP-BUILD-LABEL-UX-A (+ FIX1) — CLOSED / PASS end-to-end
+
+**Blocco:** APP-BUILD-LABEL-UX-A-FIX1 (chiude anche APP-BUILD-LABEL-UX-A)  
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31)  
+**Runtime tip:** `da3397b8658a46dd2689f26dc79ec12ad48b0461`  
+**Blob / byte LF / SHA-256 LF:** `f028f390…` / `3139603` / `49d4db86…`  
+**Build:** `B6.2BL-A-FIX1 · build 88`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Implementazione `6de0e98` build 87 | shipped (solo badge build) |
+| `QA APP-BUILD-LABEL-UX-A FAIL operatore` | HUD residua + footer intermittente → FIX1 |
+| Implementazione `da3397b` build 88 | shipped (FIX1) |
+| Deploy GIS-only PASS | HTTP 200; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| Harness locale | 29/29 PASS |
+| `QA APP-BUILD-LABEL-UX-A-FIX1 PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
