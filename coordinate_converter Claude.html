@@ -6619,9 +6619,6 @@ body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]):not
 body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip[data-hud="layer"]{
   display:none;
 }
-body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip[data-hud="build"]{
-  display:none;
-}
 @media (max-width:600px){
   body.gis-mode #gisMapMount > #gisMapHud{
     max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 96px);
@@ -13505,7 +13502,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.1RSD-A · build 84</span>
+    <span id="appBuildFooter">B6.2BL-A · build 87</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13763,11 +13760,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.1RSD-A · build 84</code>
+            <code id="appBuildAbout">B6.2BL-A · build 87</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">TRACK-ELEVATION-PROFILE-A — saved-track elevation profile foundation</div>
+          <div class="about-line muted" id="appBuildAboutDetail">APP-BUILD-LABEL-UX-A — remove technical build badge from map toolbar</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21624,10 +21621,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2UX-A-FIX1";
-const APP_BUILD_DETAIL = "ROUTING-UX-POLISH-BUNDLE-A-FIX1 — restore point mutations and highlight positioned points";
+const APP_BUILD_ID = "B6.2BL-A";
+const APP_BUILD_DETAIL = "APP-BUILD-LABEL-UX-A — remove technical build badge from map toolbar";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 86;
+const APP_BUILD_NUM = 87;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -54953,10 +54950,6 @@ function updateGisMapHud(zoomOverride){
       const opLbl = (typeof t === "function" ? t("gis.hud.opsecOn") : "") || "OPSEC on";
       chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="opsec" data-hud-tip="${esc(opLbl)}">🔒 ${esc(opLbl)}</span>`);
     }
-    const buildKey = (typeof t === "function" ? t("gis.hud.build") : "") || "Build";
-    const buildDisp = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
-    const buildTip = buildKey + " " + APP_BUILD_LABEL;
-    chips.push(`<span class="gis-map-hud-chip is-muted" data-hud="build" data-hud-tip="${esc(buildTip)}">${esc(buildDisp)}</span>`);
   }
   chipsWrap.innerHTML = chips.join("");
   applyGisMapHudI18n(hud);
