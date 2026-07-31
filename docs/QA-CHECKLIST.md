@@ -1092,7 +1092,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | FIX3 `1fc9d70` build 82 | review GPT-sostitutiva PASS; deploy GIS-only PASS |
 | `QA TRACK-ELEVATION-PROFILE-A-FIX3 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX registrato (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+**Backlog UX registrato (non implementato all’epoca; TPD-A poi CLOSED):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
 
 ## ROUTING-SUMMARY-DEDUP-A — CLOSED / PASS end-to-end
 
@@ -1129,7 +1129,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Harness locale | 59/59 PASS |
 | `QA ROUTING-UX-POLISH-BUNDLE-A-FIX1 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.  
+**Backlog UX residuo (storico; TPD-A poi CLOSED):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.  
 **Assorbiti:** OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
 
 ## APP-BUILD-LABEL-UX-A (+ FIX1) — CLOSED / PASS end-to-end
@@ -1151,7 +1151,27 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Harness locale | 29/29 PASS |
 | `QA APP-BUILD-LABEL-UX-A-FIX1 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+
+## TRACK-PROFILE-POINTS-DISPLAY-A — CLOSED / PASS end-to-end
+
+**Blocco:** TRACK-PROFILE-POINTS-DISPLAY-A  
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
+**Runtime tip:** `3838e9ec57efa5ebdc977f88279b30928a47c851`  
+**Blob / byte LF / SHA-256 LF:** `48abde62…` / `3144095` / `464eed94…`  
+**Build:** `B6.2TPD-A · build 89`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Piano `2484e8d` | docs-only; opzione B vincolante |
+| Implementazione `3838e9e` build 89 | shipped (+89/−9) |
+| Review downstream PASS — DEPLOY AUTHORIZED | harness JS reale 43/43 |
+| Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| `QA TRACK-PROFILE-POINTS-DISPLAY-A PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
 
 ## Istruzioni per il workflow `finito`
 

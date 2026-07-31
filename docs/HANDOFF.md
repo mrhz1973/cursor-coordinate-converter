@@ -117,21 +117,22 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **APP-BUILD-LABEL-UX-A-FIX1 CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `da3397b` (non in commit docs) |
-| Runtime live / commit monolite | `da3397b8658a46dd2689f26dc79ec12ad48b0461` (`da3397b`) — tip APP-BUILD-LABEL-UX-A-FIX1 |
-| Ultimo blocco chiuso | **APP-BUILD-LABEL-UX-A (+ FIX1)** — HUD testuale rimossa + footer stabile — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **APP-BUILD-LABEL-UX-A-FIX1** — tip `da3397b` build 88 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **TRACK-PROFILE-POINTS-DISPLAY-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `3838e9e` (non in commit docs) |
+| Runtime live / commit monolite | `3838e9ec57efa5ebdc977f88279b30928a47c851` (`3838e9e`) — tip TRACK-PROFILE-POINTS-DISPLAY-A |
+| Ultimo blocco chiuso | **TRACK-PROFILE-POINTS-DISPLAY-A** — overlay punti Profilo Saved Track (max 120) — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **TRACK-PROFILE-POINTS-DISPLAY-A** — tip `3838e9e` build 89 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `da3397b8658a46dd2689f26dc79ec12ad48b0461` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `f028f390c46f306b18177b535c1d0fd09c36872c` |
-| Byte monolite (git LF) | `3139603` |
-| `APP_BUILD_NUM` | `88` |
-| Display runtime | `B6.2BL-A-FIX1 · build 88` |
-| `APP_BUILD_ID` | `B6.2BL-A-FIX1` |
-| APP-BUILD-LABEL-UX-A / FIX1 | **CLOSED / PASS end-to-end** (HUD testuale rimossa; footer GIS stabile; QA PASS FIX1) |
+| Runtime Git / atteso VPS | `3838e9ec57efa5ebdc977f88279b30928a47c851` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `48abde6250c7f92dbc4f1650d5552ec3f8c921a0` |
+| Byte monolite (git LF) | `3144095` |
+| `APP_BUILD_NUM` | `89` |
+| Display runtime | `B6.2TPD-A · build 89` |
+| `APP_BUILD_ID` | `B6.2TPD-A` |
+| TRACK-PROFILE-POINTS-DISPLAY-A | **CLOSED / PASS end-to-end** (overlay punti Profilo; review PASS; deploy+QA PASS) |
+| APP-BUILD-LABEL-UX-A / FIX1 | **CLOSED / PASS end-to-end** (HUD rimossa; footer stabile; superseded live da TPD-A) |
 | ROUTING-UX-POLISH-BUNDLE-A / FIX1 | **CLOSED / PASS end-to-end** (undo storico + unità session + feedback + badge + focus; QA PASS FIX1; superseded live da APP-BUILD-LABEL) |
 | ROUTING-SUMMARY-DEDUP-A | **CLOSED / PASS end-to-end** (status «Percorso pronto» senza metriche duplicate; QA PASS; superseded live) |
 | TRACK-SAVE-AS-NAME-A | **CLOSED / PASS end-to-end** (nome inline pre-salvataggio Routing→traccia; QA PASS; superseded live da RSD-A) |
@@ -171,21 +172,25 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=da3397b` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=3838e9e` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: backlog UX profilo (**ROUTING-PROFILE-EDIT-A** / **TRACK-PROFILE-POINTS-DISPLAY-A** / **MAP-CENTER-VIEWPORT-AWARE-A** / …) / **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. **TRACK-SAVE-AS-NAME-A CLOSED / PASS**. **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS**. **ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / PASS**. **APP-BUILD-LABEL-UX-A (+ FIX1) CLOSED / PASS**. Runtime live monolite **`da3397b`** / **`B6.2BL-A-FIX1 · build 88`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: backlog UX profilo (**ROUTING-PROFILE-EDIT-A** / **MAP-CENTER-VIEWPORT-AWARE-A** / …) / **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. **TRACK-SAVE-AS-NAME-A CLOSED / PASS**. **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS**. **ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / PASS**. **APP-BUILD-LABEL-UX-A (+ FIX1) CLOSED / PASS**. **TRACK-PROFILE-POINTS-DISPLAY-A CLOSED / PASS**. Runtime live monolite **`3838e9e`** / **`B6.2TPD-A · build 89`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**.
+**Backlog basso / non ora:** **ROUTING-PROFILE-EDIT-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**.
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
 ## Backlog / note immediate
+
+### TRACK-PROFILE-POINTS-DISPLAY-A — Overlay punti Profilo Saved Track — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01). Tip `3838e9e` / `B6.2TPD-A · build 89`. Blob `48abde62…` · byte LF **3144095** · SHA-256 LF **`464eed94…`**. Review downstream PASS; deploy GIS-only PASS; QA «**QA TRACK-PROFILE-POINTS-DISPLAY-A PASS operatore**».
 
 ### TRACK-ELEVATION-PROFILE-A (+ FIX1 + FIX2 + FIX3) — Profilo altimetrico Saved Track — CLOSED / PASS end-to-end
 
