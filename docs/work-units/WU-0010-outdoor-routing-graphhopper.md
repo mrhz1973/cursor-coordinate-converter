@@ -1,8 +1,8 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `58197bb14e1f5eb7f00abbe348500f2d093ff381` (`58197bb`) — display **`B6.1RSD-A · build 84`** (ROUTING-SUMMARY-DEDUP-A; tip TSN storico `8a641bc`)
+**Runtime autorevole attuale:** `173b6cb1ab4358c94352fed4b82e0b394b4e8d7b` (`173b6cb`) — display **`B6.2UX-A-FIX1 · build 86`** (ROUTING-UX-POLISH-BUNDLE-A-FIX1; tip RSD storico `58197bb`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
 **MAJOR-3-b2:** **parcheggiato** (non annullato)
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
@@ -18,8 +18,9 @@
 **ELEVATION-STYLE-A:** restyle visuale profilo altimetrico — **CLOSED / PASS end-to-end** (tip `d28bc44` build 78 / `B6.0ES-A`; blob `e9ae353…`; deploy+QA PASS 2026-07-30; Regola H). Superseded live da **TRACK-ELEVATION-PROFILE-A**.
 **TRACK-ELEVATION-PROFILE-A (+ FIX1–FIX3):** profilo altimetrico Saved Track — **CLOSED / PASS end-to-end** (tip storico `1fc9d70` build 82 / `B6.1TP-A-FIX3`; superseded live da **TRACK-SAVE-AS-NAME-A**).
 **TRACK-SAVE-AS-NAME-A:** nome editabile inline prima di «Salva come traccia» — **CLOSED / PASS end-to-end** (tip storico `8a641bc` build 83 / `B6.1TSN-A`; superseded live da **ROUTING-SUMMARY-DEDUP-A**).
-**ROUTING-SUMMARY-DEDUP-A:** riga stato solo «Percorso pronto» — **CLOSED / PASS end-to-end** (tip `58197bb` build 84 / `B6.1RSD-A`; blob `79ba3e65…`; byte LF **3129462**; SHA-256 LF **`db113b40…`**; deploy+QA PASS 2026-07-31; Regola H).
-**Backlog UX (docs-only):** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**.
+**ROUTING-SUMMARY-DEDUP-A:** riga stato solo «Percorso pronto» — **CLOSED / PASS end-to-end** (tip storico `58197bb` build 84 / `B6.1RSD-A`; superseded live da UX-POLISH).
+**ROUTING-UX-POLISH-BUNDLE-A (+ FIX1):** undo storico / unità session / feedback / badge / focus — **CLOSED / PASS end-to-end** (catena `7653ee7` build 85 → tip `173b6cb` build 86 / `B6.2UX-A-FIX1`; blob `9686245e…`; byte LF **3150227**; SHA-256 LF **`4c197243…`**; deploy+QA PASS 2026-07-31; Regola H). Absorbe **POINT-UNDO-A** e **UNITS-A**.
+**Backlog UX (docs-only):** **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 

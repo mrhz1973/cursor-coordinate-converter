@@ -1110,6 +1110,28 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA ROUTING-SUMMARY-DEDUP-A PASS operatore` | trigger Regola H / `finito` (UI italiana) |
 
+## ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) — CLOSED / PASS end-to-end
+
+**Blocco:** ROUTING-UX-POLISH-BUNDLE-A-FIX1 (chiude anche ROUTING-UX-POLISH-BUNDLE-A)  
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31)  
+**Runtime tip:** `173b6cb1ab4358c94352fed4b82e0b394b4e8d7b`  
+**Blob / byte LF / SHA-256 LF:** `9686245e…` / `3150227` / `4c197243…`  
+**Build:** `B6.2UX-A-FIX1 · build 86`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Implementazione `7653ee7` build 85 | shipped (bundle A) |
+| QA operatore FAIL su Undo/A-B/badge | → FIX1 |
+| Implementazione `173b6cb` build 86 | shipped (FIX1) |
+| Deploy GIS-only PASS | HTTP 200; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| Harness locale | 59/59 PASS |
+| `QA ROUTING-UX-POLISH-BUNDLE-A-FIX1 PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; TRACK-PROFILE-POINTS-DISPLAY-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.  
+**Assorbiti:** OUTDOOR-ROUTING-POINT-UNDO-A; OUTDOOR-ROUTING-UNITS-A.
+
 ## Istruzioni per il workflow `finito`
 
 Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:

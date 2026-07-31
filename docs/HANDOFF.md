@@ -117,21 +117,22 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `58197bb` (non in commit docs) |
-| Runtime live / commit monolite | `58197bb14e1f5eb7f00abbe348500f2d093ff381` (`58197bb`) — tip ROUTING-SUMMARY-DEDUP-A |
-| Ultimo blocco chiuso | **ROUTING-SUMMARY-DEDUP-A** — Riepilogo Routing senza metriche duplicate — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **ROUTING-SUMMARY-DEDUP-A** — tip `58197bb` build 84 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **ROUTING-UX-POLISH-BUNDLE-A-FIX1 CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `173b6cb` (non in commit docs) |
+| Runtime live / commit monolite | `173b6cb1ab4358c94352fed4b82e0b394b4e8d7b` (`173b6cb`) — tip ROUTING-UX-POLISH-BUNDLE-A-FIX1 |
+| Ultimo blocco chiuso | **ROUTING-UX-POLISH-BUNDLE-A (+ FIX1)** — Undo storico / unità / feedback / badge / focus — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **ROUTING-UX-POLISH-BUNDLE-A-FIX1** — tip `173b6cb` build 86 — **CLOSED / PASS end-to-end** |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `58197bb14e1f5eb7f00abbe348500f2d093ff381` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `79ba3e6556198c1a2509594f4947f8526e2872d6` |
-| Byte monolite (git LF) | `3129462` |
-| `APP_BUILD_NUM` | `84` |
-| Display runtime | `B6.1RSD-A · build 84` |
-| `APP_BUILD_ID` | `B6.1RSD-A` |
-| ROUTING-SUMMARY-DEDUP-A | **CLOSED / PASS end-to-end** (status «Percorso pronto» senza metriche duplicate; QA PASS) |
+| Runtime Git / atteso VPS | `173b6cb1ab4358c94352fed4b82e0b394b4e8d7b` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `9686245ee19476440ecaeb1a1625aed28b50ea07` |
+| Byte monolite (git LF) | `3150227` |
+| `APP_BUILD_NUM` | `86` |
+| Display runtime | `B6.2UX-A-FIX1 · build 86` |
+| `APP_BUILD_ID` | `B6.2UX-A-FIX1` |
+| ROUTING-UX-POLISH-BUNDLE-A / FIX1 | **CLOSED / PASS end-to-end** (undo storico + unità session + feedback + badge + focus; QA PASS FIX1) |
+| ROUTING-SUMMARY-DEDUP-A | **CLOSED / PASS end-to-end** (status «Percorso pronto» senza metriche duplicate; QA PASS; superseded live da UX-POLISH) |
 | TRACK-SAVE-AS-NAME-A | **CLOSED / PASS end-to-end** (nome inline pre-salvataggio Routing→traccia; QA PASS; superseded live da RSD-A) |
 | TRACK-ELEVATION-PROFILE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (profilo Saved Track; QA FAIL FIX2 → FIX3; QA PASS FIX3; superseded live da TSN-A) |
 | OUTDOOR-ROUTING-ELEVATION-STYLE-A | **CLOSED / PASS end-to-end** (restyle profilo altimetrico segmentato; QA PASS) |
@@ -169,15 +170,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=58197bb` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=173b6cb` |
 
 **Prossimo ordine operativo:**
 
-Da scegliere: **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / backlog UX profilo (**ROUTING-PROFILE-EDIT-A** / **TRACK-PROFILE-POINTS-DISPLAY-A** / **MAP-CENTER-VIEWPORT-AWARE-A** / …) / backlog routing UX / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. **TRACK-SAVE-AS-NAME-A CLOSED / PASS**. **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS**. Runtime live monolite **`58197bb`** / **`B6.1RSD-A · build 84`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Da scegliere: backlog UX profilo (**ROUTING-PROFILE-EDIT-A** / **TRACK-PROFILE-POINTS-DISPLAY-A** / **MAP-CENTER-VIEWPORT-AWARE-A** / …) / **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. **TRACK-SAVE-AS-NAME-A CLOSED / PASS**. **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS**. **ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / PASS**. Runtime live monolite **`173b6cb`** / **`B6.2UX-A-FIX1 · build 86`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-POINT-UNDO-A**; **OUTDOOR-ROUTING-UNITS-A**; **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**; routing UX post-C (badge/feedback/grade/focus/blocked-action).
+**Backlog basso / non ora:** **ROUTING-PROFILE-EDIT-A**; **TRACK-PROFILE-POINTS-DISPLAY-A**; **MAP-CENTER-VIEWPORT-AWARE-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**.
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
@@ -211,7 +212,11 @@ Da scegliere: **OUTDOOR-ROUTING-POINT-UNDO-A** / **OUTDOOR-ROUTING-UNITS-A** / b
 
 ### ROUTING-SUMMARY-DEDUP-A — Riepilogo Routing senza metriche duplicate — CLOSED / PASS end-to-end
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Tip `58197bb` / `B6.1RSD-A · build 84`. Status solo «Percorso pronto»; card metriche invariate. Deploy GIS-only PASS. QA «**QA ROUTING-SUMMARY-DEDUP-A PASS operatore**».
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Tip storico `58197bb` / `B6.1RSD-A · build 84`. Status solo «Percorso pronto»; card metriche invariate. Deploy GIS-only PASS. QA «**QA ROUTING-SUMMARY-DEDUP-A PASS operatore**». Superseded live da UX-POLISH.
+
+### ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) — Undo / unità / feedback / badge / focus — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Catena `7653ee7` build 85 → tip `173b6cb` / `B6.2UX-A-FIX1 · build 86`. Undo storico fail-closed; A/B strutturali; unità page-session; badge positioned; feedback punti; focus risultato. Deploy GIS-only PASS. QA «**QA ROUTING-UX-POLISH-BUNDLE-A-FIX1 PASS operatore**». Absorbe POINT-UNDO-A e UNITS-A.
 
 ### ROUTING-PROFILE-EDIT-A — Editing A/B/intermedi — BACKLOG / NON APERTO
 
