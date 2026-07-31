@@ -4575,6 +4575,26 @@ footer{
   color:var(--muted); font-size:.85rem; text-align:center;
   border-top:1px solid var(--border); margin-top:18px;
 }
+/* GIS: footer as dedicated bottom band (dialogs between main/footer force fixed+reserve). */
+body.gis-mode > footer{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:12;
+  margin:0;
+  max-width:none;
+  width:100%;
+  box-sizing:border-box;
+  background:var(--panel);
+  border-top:1px solid var(--border);
+  padding:8px 14px max(10px, env(safe-area-inset-bottom, 0px));
+  font-size:.82rem;
+  box-shadow:0 -6px 20px rgba(0,0,0,.16);
+}
+body.gis-mode > footer .signature{
+  margin-top:2px;
+}
 footer .signature{
   margin-top:4px; font-size:.78rem; opacity:.7;
   letter-spacing:.02em;
@@ -6334,13 +6354,15 @@ html[data-theme="light"] body.gis-mode #gisDropImportNotice.is-error{
   .app-topbar-tabs{ max-width:min(56vw, 420px); }
 }
 
-/* Map mount: fills the remaining viewport when gis-mode is active.
- * Uses dynamic viewport units where available (dvh) so mobile
- * chrome collapsing doesn't cause a scrollbar jitter. */
+/* Map mount: fills remaining viewport above the GIS footer band.
+ * --gis-footer-reserve is synced from the real footer height (wrapping-safe). */
+body.gis-mode{
+  --gis-footer-reserve: 3.5rem;
+}
 .gis-map-mount{
   position:relative; width:100%;
-  height:calc(100vh - var(--gis-topbar-h) - 76px);
-  height:calc(100dvh - var(--gis-topbar-h) - 76px);
+  height:calc(100vh - var(--gis-topbar-h) - 76px - var(--gis-footer-reserve, 0px));
+  height:calc(100dvh - var(--gis-topbar-h) - 76px - var(--gis-footer-reserve, 0px));
   min-height:360px;
   background:#0a1a2d;
   /* GIS: non clip controlli mappa (Layers / ombre) che possono estendersi di pochi px fuori dal box tile. */
@@ -6521,130 +6543,6 @@ body.gis-mode #gisMapMount > #miniMap.mini-map.mm-full{
   border:none;
   border-radius:0;
   box-shadow:none;
-}
-/* UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: compact GIS status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
-body.gis-mode #gisMapMount > #gisMapHud{
-  position:absolute;
-  top:auto; left:auto; right:auto; bottom:auto;
-  z-index:11;
-  display:flex;
-  flex-wrap:wrap;
-  align-items:flex-start;
-  gap:4px;
-  max-width:min(92vw, 480px);
-  pointer-events:none;
-}
-body.gis-mode #gisMapHud.is-corner-tl{
-  top:calc(env(safe-area-inset-top, 0px) + 6px);
-  left:calc(env(safe-area-inset-left, 0px) + 8px);
-}
-body.gis-mode #gisMapHud.is-corner-tr{
-  top:calc(env(safe-area-inset-top, 0px) + 6px);
-  right:calc(env(safe-area-inset-right, 0px) + 56px);
-  left:auto;
-}
-body.gis-mode #gisMapHud.is-corner-bl{
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 52px);
-  left:calc(env(safe-area-inset-left, 0px) + 8px);
-  top:auto;
-}
-body.gis-mode #gisMapHud.is-corner-br{
-  bottom:calc(env(safe-area-inset-bottom, 0px) + 12px);
-  right:calc(env(safe-area-inset-right, 0px) + 10px);
-  top:auto;
-  left:auto;
-}
-body.gis-mode #gisMapHud .gis-map-hud-toolbar{
-  display:flex;
-  flex:0 0 auto;
-  gap:2px;
-  pointer-events:auto;
-}
-body.gis-mode #gisMapHud .gis-map-hud-chips{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:4px;
-  pointer-events:none;
-  min-width:0;
-}
-body.gis-mode #gisMapHud .gis-map-hud-btn{
-  pointer-events:auto;
-  font-size:.62rem;
-  line-height:1.2;
-  padding:2px 6px;
-  min-width:22px;
-  min-height:20px;
-  border-radius:6px;
-  border:1px solid rgba(148,163,184,.35);
-  background:rgba(15,23,42,.55);
-  color:#cbd5e1;
-  cursor:pointer;
-}
-body.gis-mode #gisMapHud .gis-map-hud-btn:hover{
-  background:rgba(30,41,59,.78);
-}
-body.gis-mode #gisMapHud .gis-map-hud-btn:focus-visible{
-  outline:2px solid var(--accent);
-  outline-offset:1px;
-}
-body.gis-mode #gisMapHud .gis-map-hud-chip{
-  font-size:.68rem;
-  line-height:1.35;
-  padding:2px 8px;
-  border-radius:999px;
-  white-space:nowrap;
-  color:#e2e8f0;
-  background:rgba(15,23,42,.74);
-  border:1px solid rgba(148,163,184,.38);
-  backdrop-filter:blur(4px);
-  -webkit-backdrop-filter:blur(4px);
-}
-body.gis-mode #gisMapHud .gis-map-hud-chip.is-warn{
-  color:#fde68a;
-  border-color:rgba(251,191,36,.45);
-  background:rgba(69,26,3,.78);
-}
-body.gis-mode #gisMapHud .gis-map-hud-chip.is-status{
-  font-weight:600;
-  letter-spacing:.02em;
-}
-body.gis-mode #gisMapHud .gis-map-hud-chip.is-muted{
-  opacity:.88;
-  font-size:.64rem;
-}
-body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip:not([data-hud="zoom"]):not([data-hud="layer-short"]){
-  display:none;
-}
-body.gis-mode #gisMapHud.is-compact .gis-map-hud-chip[data-hud="layer"]{
-  display:none;
-}
-@media (max-width:600px){
-  body.gis-mode #gisMapMount > #gisMapHud{
-    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 96px);
-    gap:3px;
-  }
-  body.gis-mode #gisMapHud.is-corner-tl{
-    top:calc(env(safe-area-inset-top, 0px) + 4px);
-    left:calc(env(safe-area-inset-left, 0px) + 6px);
-  }
-  body.gis-mode #gisMapHud.is-corner-tr{
-    top:calc(env(safe-area-inset-top, 0px) + 4px);
-    right:calc(env(safe-area-inset-right, 0px) + 58px);
-    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 112px);
-  }
-  body.gis-mode #gisMapHud.is-corner-bl{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
-    left:calc(env(safe-area-inset-left, 0px) + 6px);
-    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 80px);
-  }
-  body.gis-mode #gisMapHud.is-corner-br{
-    bottom:calc(env(safe-area-inset-bottom, 0px) + 56px);
-    right:calc(env(safe-area-inset-right, 0px) + 6px);
-    max-width:calc(100vw - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px) - 80px);
-  }
-  body.gis-mode #gisMapHud .gis-map-hud-chip{ font-size:.62rem; padding:1px 6px; }
-  body.gis-mode #gisMapHud .gis-map-hud-btn{ min-width:24px; min-height:22px; }
 }
 
 /* Tab drawer: right-side panel, slides in when a tab is active.
@@ -13502,7 +13400,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2BL-A · build 87</span>
+    <span id="appBuildFooter">B6.2BL-A-FIX1 · build 88</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13760,11 +13658,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2BL-A · build 87</code>
+            <code id="appBuildAbout">B6.2BL-A-FIX1 · build 88</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">APP-BUILD-LABEL-UX-A — remove technical build badge from map toolbar</div>
+          <div class="about-line muted" id="appBuildAboutDetail">APP-BUILD-LABEL-UX-A-FIX1 — remove map HUD and keep footer visible</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21621,10 +21519,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2BL-A";
-const APP_BUILD_DETAIL = "APP-BUILD-LABEL-UX-A — remove technical build badge from map toolbar";
+const APP_BUILD_ID = "B6.2BL-A-FIX1";
+const APP_BUILD_DETAIL = "APP-BUILD-LABEL-UX-A-FIX1 — remove map HUD and keep footer visible";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 87;
+const APP_BUILD_NUM = 88;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -21636,6 +21534,7 @@ function applyAppBuildLabel(){
     if (about) about.textContent = buildDisp;
     const det = document.getElementById("appBuildAboutDetail");
     if (det) det.textContent = APP_BUILD_DETAIL;
+    try { if (typeof syncGisFooterReserve === "function") syncGisFooterReserve(); } catch(_){}
   } catch(_){}
 }
 function loadStore(){
@@ -54760,199 +54659,53 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
-/** UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: compact map status HUD (layer/zoom/offline/OPSEC + corner/compact/reset). */
-const GIS_MAP_HUD_CORNERS = ["tl", "tr", "br", "bl"];
-const GIS_MAP_HUD_DEFAULT_CORNER = "tl";
-/** Session layout keys for panels with e/w lateral resize (gisPanelAttachResize). */
-const GIS_PANEL_EW_RESIZE_KEYS = Object.freeze([
-  "favorites", "polygon", "layers", "search", "track", "rangeRings", "measure", "help", "waypoints"
-]);
-let _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
-let _gisMapHudCompact = false;
-function gisMapHudResetDefaults(){
-  _gisMapHudCorner = GIS_MAP_HUD_DEFAULT_CORNER;
-  _gisMapHudCompact = false;
-}
-function formatHudCenterCompact(lat, lon){
-  const la = Number(lat), lo = Number(lon);
-  if (!Number.isFinite(la) || !Number.isFinite(lo)) return "";
-  const latStr = Math.abs(la).toFixed(3) + "°" + (la >= 0 ? "N" : "S");
-  const lonStr = Math.abs(lo).toFixed(3) + "°" + (lo >= 0 ? "E" : "W");
-  return latStr + " " + lonStr;
-}
+/** APP-BUILD-LABEL-UX-A-FIX1: map status HUD removed; layer label kept for diagnostics. */
 function mapLayerHudLabel(){
   const layer = sanitizeMapLayer(state.mapLayer || "osm");
   try { return offlineLayerSelectLabel(layer); } catch(_){
     try { return offlineNamedAreaLayerLabel(layer); } catch(_){ return String(layer || ""); }
   }
 }
-function mapLayerHudLabelShort(){
-  const full = mapLayerHudLabel();
-  if (!full) return "";
-  let s = String(full)
-    .replace(/\s*\(OpenStreetMap\)/gi, "")
-    .replace(/OpenStreetMap/gi, "OSM")
-    .replace(/Humanitarian/gi, "HOT")
-    .trim();
-  if (s.length > 18) s = s.slice(0, 16) + "…";
-  return s || full.slice(0, 16);
+function gisRemoveMapHud(){
+  try {
+    const hud = document.getElementById("gisMapHud");
+    if (hud && hud.parentNode) hud.parentNode.removeChild(hud);
+  } catch(_){}
 }
-function applyGisMapHudChrome(hud){
-  if (!hud) return;
-  hud.classList.remove("is-corner-tl", "is-corner-tr", "is-corner-br", "is-corner-bl", "is-compact");
-  hud.classList.add("is-corner-" + (_gisMapHudCorner || "tl"));
-  if (_gisMapHudCompact) hud.classList.add("is-compact");
-}
-function applyGisMapHudI18n(hud){
-  if (!hud) return;
-  const aria = (typeof t === "function" ? t("gis.hud.aria") : "") || "Map status";
-  hud.setAttribute("aria-label", aria);
-  const toolbar = hud.querySelector(".gis-map-hud-toolbar");
-  if (toolbar && typeof t === "function"){
-    toolbar.setAttribute("aria-label", t("gis.hud.toolbar"));
-  }
-  const cornerBtn = hud.querySelector('[data-role="gis-hud-corner"]');
-  const compactBtn = hud.querySelector('[data-role="gis-hud-compact"]');
-  const resetBtn = hud.querySelector('[data-role="gis-hud-reset"]');
-  if (cornerBtn && typeof t === "function"){
-    const lbl = t("gis.hud.cornerCycle");
-    cornerBtn.setAttribute("aria-label", lbl);
-    cornerBtn.title = lbl;
-  }
-  if (compactBtn && typeof t === "function"){
-    const key = _gisMapHudCompact ? "gis.hud.expand" : "gis.hud.compact";
-    const lbl = t(key);
-    compactBtn.setAttribute("aria-label", lbl);
-    compactBtn.title = lbl;
-    compactBtn.textContent = _gisMapHudCompact ? "+" : "−";
-  }
-  if (resetBtn && typeof t === "function"){
-    const lbl = t("gis.hud.reset");
-    resetBtn.setAttribute("aria-label", lbl);
-    resetBtn.title = lbl;
-  }
-  hud.querySelectorAll(".gis-map-hud-btn").forEach((btn) => {
-    if (!btn.getAttribute("aria-label") && btn.title) btn.setAttribute("aria-label", btn.title);
-  });
-  hud.querySelectorAll(".gis-map-hud-chip[data-hud-tip]").forEach((chip) => {
-    const tip = chip.getAttribute("data-hud-tip");
-    if (tip){
-      chip.setAttribute("title", tip);
-      chip.setAttribute("aria-label", tip);
-    }
-  });
-}
+/** Null-safe stubs: never create/update the textual map HUD. */
 function gisEnsureMapHud(){
-  if (!document.body.classList.contains("gis-mode")) return null;
-  const mount = document.getElementById("gisMapMount");
-  if (!mount) return null;
-  let hud = document.getElementById("gisMapHud");
-  if (!hud){
-    hud = document.createElement("div");
-    hud.id = "gisMapHud";
-    hud.setAttribute("role", "status");
-    hud.setAttribute("aria-live", "polite");
-    const toolbar = document.createElement("div");
-    toolbar.className = "gis-map-hud-toolbar";
-    toolbar.setAttribute("role", "group");
-    const cornerBtn = document.createElement("button");
-    cornerBtn.type = "button";
-    cornerBtn.className = "gis-map-hud-btn";
-    cornerBtn.setAttribute("data-role", "gis-hud-corner");
-    cornerBtn.textContent = "⊞";
-    cornerBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (ev.cancelable) ev.preventDefault();
-      const idx = GIS_MAP_HUD_CORNERS.indexOf(_gisMapHudCorner);
-      _gisMapHudCorner = GIS_MAP_HUD_CORNERS[(idx + 1) % GIS_MAP_HUD_CORNERS.length];
-      applyGisMapHudChrome(hud);
-      applyGisMapHudI18n(hud);
-    });
-    const compactBtn = document.createElement("button");
-    compactBtn.type = "button";
-    compactBtn.className = "gis-map-hud-btn";
-    compactBtn.setAttribute("data-role", "gis-hud-compact");
-    compactBtn.textContent = "−";
-    compactBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (ev.cancelable) ev.preventDefault();
-      _gisMapHudCompact = !_gisMapHudCompact;
-      applyGisMapHudChrome(hud);
-      applyGisMapHudI18n(hud);
-      try { updateGisMapHud(); } catch(_){}
-    });
-    const resetBtn = document.createElement("button");
-    resetBtn.type = "button";
-    resetBtn.className = "gis-map-hud-btn";
-    resetBtn.setAttribute("data-role", "gis-hud-reset");
-    resetBtn.textContent = "↺";
-    resetBtn.addEventListener("click", (ev) => {
-      ev.stopPropagation();
-      if (ev.cancelable) ev.preventDefault();
-      gisMapHudResetDefaults();
-      applyGisMapHudChrome(hud);
-      applyGisMapHudI18n(hud);
-      try { updateGisMapHud(); } catch(_){}
-    });
-    toolbar.appendChild(cornerBtn);
-    toolbar.appendChild(compactBtn);
-    toolbar.appendChild(resetBtn);
-    const chipsWrap = document.createElement("div");
-    chipsWrap.className = "gis-map-hud-chips";
-    chipsWrap.setAttribute("data-role", "gis-hud-chips");
-    hud.appendChild(toolbar);
-    hud.appendChild(chipsWrap);
-    mount.appendChild(hud);
-    applyGisMapHudChrome(hud);
-    applyGisMapHudI18n(hud);
-  }
-  return hud;
+  gisRemoveMapHud();
+  return null;
 }
-function updateGisMapHud(zoomOverride){
-  if (!document.body.classList.contains("gis-mode")) return;
-  const hud = gisEnsureMapHud();
-  if (!hud) return;
-  const chipsWrap = hud.querySelector('[data-role="gis-hud-chips"]');
-  if (!chipsWrap) return;
-  const layerKey = (typeof t === "function" ? t("gis.hud.layer") : "") || "Layer";
-  const layerLbl = mapLayerHudLabel();
-  const layerShort = mapLayerHudLabelShort();
-  const z = Number.isFinite(zoomOverride) ? zoomOverride : (state.mapZoom || 11);
-  const zoomKey = (typeof t === "function" ? t("gis.hud.zoom") : "") || "Zoom";
-  const layerTip = layerKey + ": " + layerLbl;
-  const layerShortTip = layerTip;
-  const zoomTip = zoomKey + " " + String(z);
-  const chips = [
-    `<span class="gis-map-hud-chip" data-hud="layer" data-hud-tip="${esc(layerTip)}">${esc(layerKey)}: ${esc(layerLbl)}</span>`,
-    `<span class="gis-map-hud-chip" data-hud="layer-short" data-hud-tip="${esc(layerShortTip)}">${esc(layerShort)}</span>`,
-    `<span class="gis-map-hud-chip" data-hud="zoom" data-hud-tip="${esc(zoomTip)}">${esc(zoomKey)} ${esc(String(z))}</span>`
-  ];
-  if (!_gisMapHudCompact){
-    const vc = state.viewCenter;
-    if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
-      const ck = (typeof t === "function" ? t("gis.hud.center") : "") || "Center";
-      const centerFull = vc.lat.toFixed(5) + ", " + vc.lon.toFixed(5);
-      const centerCompact = formatHudCenterCompact(vc.lat, vc.lon);
-      const centerFmt = (typeof t === "function" ? t("gis.hud.centerFmt") : "") || "DD";
-      const centerTip = ck + ": " + centerFull + " (" + centerFmt + ")";
-      chips.push(`<span class="gis-map-hud-chip" data-hud="center" data-hud-tip="${esc(centerTip)}">${esc(ck)} ${esc(centerCompact)}</span>`);
+function updateGisMapHud(/* zoomOverride */){
+  gisRemoveMapHud();
+}
+let _gisFooterReserveBound = false;
+function syncGisFooterReserve(){
+  try {
+    if (!document.body.classList.contains("gis-mode")){
+      document.body.style.removeProperty("--gis-footer-reserve");
+      return;
     }
-    if (state.showSeamarks){
-      const smLbl = (typeof t === "function" ? t("gis.hud.seamarks") : "") || "Seamarks";
-      const blocked = !!(state.forceOffline || state.opsecStrict);
-      chips.push(`<span class="gis-map-hud-chip${blocked ? " is-warn" : ""}" data-hud="seamarks" data-hud-tip="${esc(smLbl)}">${esc(smLbl)}</span>`);
+    const foot = document.querySelector("body > footer");
+    if (!foot) return;
+    const h = Math.max(40, Math.ceil(foot.getBoundingClientRect().height || 0));
+    document.body.style.setProperty("--gis-footer-reserve", h + "px");
+  } catch(_){}
+}
+function bindGisFooterReserve(){
+  if (_gisFooterReserveBound) return;
+  _gisFooterReserveBound = true;
+  try {
+    window.addEventListener("resize", () => { try { syncGisFooterReserve(); } catch(_){} });
+    if (typeof ResizeObserver === "function"){
+      const foot = document.querySelector("body > footer");
+      if (foot){
+        const ro = new ResizeObserver(() => { try { syncGisFooterReserve(); } catch(_){} });
+        ro.observe(foot);
+      }
     }
-    if (state.forceOffline){
-      const offLbl = (typeof t === "function" ? t("gis.hud.offlineForced") : "") || "Forced offline";
-      chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="offline" data-hud-tip="${esc(offLbl)}">⛔ ${esc(offLbl)}</span>`);
-    }
-    if (state.opsecStrict){
-      const opLbl = (typeof t === "function" ? t("gis.hud.opsecOn") : "") || "OPSEC on";
-      chips.push(`<span class="gis-map-hud-chip is-warn is-status" data-hud="opsec" data-hud-tip="${esc(opLbl)}">🔒 ${esc(opLbl)}</span>`);
-    }
-  }
-  chipsWrap.innerHTML = chips.join("");
-  applyGisMapHudI18n(hud);
+  } catch(_){}
 }
 function gisInit(){
   if (_gisInitDone) return;
@@ -55008,6 +54761,7 @@ function gisInit(){
   // sizes the mount to fill the remaining viewport.
   try { setMapSize("full"); } catch(_){}
   try { gisEnsureMapHud(); updateGisMapHud(); } catch(_){}
+  try { bindGisFooterReserve(); syncGisFooterReserve(); } catch(_){}
   // Kill the Esri/mm-enlarged backdrop in GIS mode — the map IS the
   // background, there's no homepage to darken.
   const backdrop = document.getElementById("mapBackdrop");
