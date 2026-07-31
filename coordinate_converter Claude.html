@@ -8859,10 +8859,25 @@ dialog.track-modal.app-modal{
   background:color-mix(in srgb, var(--accent, #2563eb) 18%, transparent);
   color:var(--fg, inherit);
 }
+.routing-pt-badge[data-positioned="true"]{
+  background:#7c3aed;
+  color:#fff;
+}
 .routing-pt-badge[data-active="true"]{
   outline:2px solid var(--accent, #2563eb);
   outline-offset:2px;
-  background:color-mix(in srgb, var(--accent, #2563eb) 38%, transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent, #2563eb) 35%, transparent);
+}
+.routing-pt-badge[data-positioned="true"][data-active="true"]{
+  background:#7c3aed;
+  color:#fff;
+  outline:2px solid #fff;
+  outline-offset:2px;
+  box-shadow:0 0 0 4px color-mix(in srgb, #7c3aed 55%, transparent);
+}
+:root[data-theme="dark"] .routing-pt-badge[data-positioned="true"]{
+  background:color-mix(in srgb, #7c3aed 88%, #fff 12%);
+  color:#fff;
 }
 .routing-points-feedback{
   margin:0;
@@ -13435,7 +13450,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
               data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
-              data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultimo punto</button>
+              data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
       <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
               data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
@@ -15681,8 +15696,10 @@ const I18N = {
     "routing.calculate":"Calcola percorso",
     "routing.calculating":"Calcolo percorso…",
     "routing.routeReady":"Percorso pronto",
-    "routing.undoLastPoint":"Annulla ultimo punto",
-    "routing.undoLastPointTip":"Rimuove l'ultimo punto senza ricalcolare",
+    "routing.undoLastPoint":"Annulla ultima modifica",
+    "routing.undoLastPointTip":"Ripristina lo stato precedente dei punti senza ricalcolare",
+    "routing.positionedPointBadge":"Punto impostato {0}",
+    "routing.activePositionedPointBadge":"Punto impostato attivo {0}",
     "routing.unitsLabel":"Unità",
     "routing.unitsDistance":"Distanza",
     "routing.unitsAltitude":"Quota",
@@ -17838,8 +17855,10 @@ const I18N = {
     "routing.calculate":"Calculate route",
     "routing.calculating":"Calculating route…",
     "routing.routeReady":"Route ready",
-    "routing.undoLastPoint":"Undo last point",
-    "routing.undoLastPointTip":"Removes the last point without recalculating",
+    "routing.undoLastPoint":"Undo last change",
+    "routing.undoLastPointTip":"Restores the previous point state without recalculating",
+    "routing.positionedPointBadge":"Positioned point {0}",
+    "routing.activePositionedPointBadge":"Active positioned point {0}",
     "routing.unitsLabel":"Units",
     "routing.unitsDistance":"Distance",
     "routing.unitsAltitude":"Elevation",
@@ -20118,8 +20137,10 @@ const I18N = {
     "routing.calculate":"Calculer l’itinéraire",
     "routing.calculating":"Calcul de l’itinéraire…",
     "routing.routeReady":"Itinéraire prêt",
-    "routing.undoLastPoint":"Annuler le dernier point",
-    "routing.undoLastPointTip":"Supprime le dernier point sans recalculer",
+    "routing.undoLastPoint":"Annuler la dernière modification",
+    "routing.undoLastPointTip":"Restaure l'état précédent des points sans recalculer",
+    "routing.positionedPointBadge":"Point défini {0}",
+    "routing.activePositionedPointBadge":"Point défini actif {0}",
     "routing.unitsLabel":"Unités",
     "routing.unitsDistance":"Distance",
     "routing.unitsAltitude":"Altitude",
@@ -21053,9 +21074,35 @@ function mapRoutingMarkerDocDragUp(ev){
   const lat = Number.isFinite(d.liveLat) ? d.liveLat : d.prevLat;
   const lon = Number.isFinite(d.liveLon) ? d.liveLon : d.prevLon;
   const prevSrc = d.prevSource;
+  const undoSnap = d.undoSnap;
+  const changed =
+    Number.isFinite(lat) && Number.isFinite(lon) &&
+    Number.isFinite(Number(d.prevLat)) && Number.isFinite(Number(d.prevLon)) &&
+    (Number(lat) !== Number(d.prevLat) || Number(lon) !== Number(d.prevLon));
   mapRoutingMarkerDocDragCleanup();
   if (state._routing && Number.isFinite(lat) && Number.isFinite(lon)){
-    try { routingSetPointCoordinates(id, lat, lon, "map"); } catch(_){}
+    if (changed && undoSnap && state._routing && !state._routing._pointUndoSuppress){
+      try {
+        if (!Array.isArray(state._routing.pointUndoStack)) state._routing.pointUndoStack = [];
+        const top = state._routing.pointUndoStack.length
+          ? state._routing.pointUndoStack[state._routing.pointUndoStack.length - 1]
+          : null;
+        if (!top || !routingPointsSnapshotsEqual(top, undoSnap)){
+          state._routing.pointUndoStack.push(routingClonePointsSnapshot(undoSnap));
+          while (state._routing.pointUndoStack.length > ROUTING_POINT_UNDO_MAX)
+            state._routing.pointUndoStack.shift();
+        }
+        // Apply coords without a second push (snapshot already captured).
+        state._routing._pointUndoSuppress = true;
+        try { routingSetPointCoordinates(id, lat, lon, "map"); }
+        finally { state._routing._pointUndoSuppress = false; }
+        try { routingSyncUndoBtnUi(); } catch(_){}
+      } catch(_){
+        try { routingSetPointCoordinates(id, lat, lon, "map"); } catch(_){}
+      }
+    } else {
+      try { routingSetPointCoordinates(id, lat, lon, "map"); } catch(_){}
+    }
   } else if (state._routing){
     const pt = (state._routing.points || []).find(p => p && p.id === id);
     if (pt && Number.isFinite(d.prevLat) && Number.isFinite(d.prevLon)){
@@ -21577,10 +21624,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2UX-A";
-const APP_BUILD_DETAIL = "ROUTING-UX-POLISH-BUNDLE-A — undo, units, active point, points feedback and result focus";
+const APP_BUILD_ID = "B6.2UX-A-FIX1";
+const APP_BUILD_DETAIL = "ROUTING-UX-POLISH-BUNDLE-A-FIX1 — restore point mutations and highlight positioned points";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 85;
+const APP_BUILD_NUM = 86;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -60632,6 +60679,8 @@ function routingEnsureState(){
     if (typeof r.providerStatusKey !== "string") r.providerStatusKey = "";
     if (typeof r.saveAsTrackPromptOpen !== "boolean") r.saveAsTrackPromptOpen = false;
     if (typeof r.saveAsTrackNameDraft !== "string") r.saveAsTrackNameDraft = "";
+    if (!Array.isArray(r.pointUndoStack)) r.pointUndoStack = [];
+    try { routingEnsureAbPoints(r); } catch(_){}
     return r;
   }
   const prefProv = routingProviderNormalize(_routingSessionPrefs.provider);
@@ -60668,9 +60717,76 @@ function routingEnsureState(){
     gpsRequestGeneration: 0,
     gpsBusyId: null,
     saveAsTrackPromptOpen: false,
-    saveAsTrackNameDraft: ""
+    saveAsTrackNameDraft: "",
+    pointUndoStack: []
   };
+  try { routingEnsureAbPoints(state._routing); } catch(_){}
   return state._routing;
+}
+const ROUTING_POINT_UNDO_MAX = 30;
+function routingPointIsPositioned(p){
+  if (!p) return false;
+  const la = Number(p.lat), lo = Number(p.lon);
+  return Number.isFinite(la) && Number.isFinite(lo) && Math.abs(la) <= 90 && Math.abs(lo) <= 180;
+}
+function routingClonePointsSnapshot(points){
+  const out = [];
+  const arr = Array.isArray(points) ? points : [];
+  for (let i = 0; i < arr.length; i++){
+    const p = arr[i];
+    if (!p) continue;
+    const o = {
+      id: String(p.id || uidRouting()),
+      label: p.label != null ? String(p.label).slice(0, 80) : ""
+    };
+    if (Number.isFinite(Number(p.lat))) o.lat = Number(p.lat);
+    if (Number.isFinite(Number(p.lon))) o.lon = Number(p.lon);
+    if (p.source === "gps" || p.source === "map") o.source = p.source;
+    out.push(o);
+  }
+  return out;
+}
+function routingPointsSnapshotsEqual(a, b){
+  if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++){
+    const x = a[i], y = b[i];
+    if (!x || !y) return false;
+    if (String(x.id) !== String(y.id)) return false;
+    if (String(x.label || "") !== String(y.label || "")) return false;
+    const xl = Number.isFinite(Number(x.lat)), yl = Number.isFinite(Number(y.lat));
+    if (xl !== yl) return false;
+    if (xl && Number(x.lat) !== Number(y.lat)) return false;
+    const xo = Number.isFinite(Number(x.lon)), yo = Number.isFinite(Number(y.lon));
+    if (xo !== yo) return false;
+    if (xo && Number(x.lon) !== Number(y.lon)) return false;
+    if (String(x.source || "") !== String(y.source || "")) return false;
+  }
+  return true;
+}
+function routingEnsureAbPoints(r){
+  if (!r || typeof r !== "object") return;
+  if (!Array.isArray(r.points)) r.points = [];
+  while (r.points.length < 2){
+    r.points.push({ id: uidRouting(), label: "" });
+  }
+  // Drop null holes without removing trailing structure
+  r.points = r.points.filter(p => !!p);
+  while (r.points.length < 2){
+    r.points.push({ id: uidRouting(), label: "" });
+  }
+}
+function routingPushPointUndoSnapshot(){
+  const r = state._routing;
+  if (!r || r._pointUndoSuppress) return false;
+  if (!Array.isArray(r.pointUndoStack)) r.pointUndoStack = [];
+  try { routingEnsureAbPoints(r); } catch(_){}
+  const snap = routingClonePointsSnapshot(r.points);
+  const top = r.pointUndoStack.length ? r.pointUndoStack[r.pointUndoStack.length - 1] : null;
+  if (top && routingPointsSnapshotsEqual(top, snap)) return false;
+  r.pointUndoStack.push(snap);
+  while (r.pointUndoStack.length > ROUTING_POINT_UNDO_MAX) r.pointUndoStack.shift();
+  try { routingSyncUndoBtnUi(); } catch(_){}
+  return true;
 }
 function routingInitDefaultPoints(){
   const r = routingEnsureState();
@@ -60678,6 +60794,7 @@ function routingInitDefaultPoints(){
     { id: uidRouting(), label: "" },
     { id: uidRouting(), label: "" }
   ];
+  r.pointUndoStack = [];
 }
 function routingFindPoint(id){
   const r = state._routing;
@@ -60717,7 +60834,11 @@ function routingSyncPointsFeedback(){
   if (!r || !r.panelOpen){ hide(); return; }
   if (r.requestLoading || r.infoLoading){ hide(); return; }
   if (r.routeError){ hide(); return; }
-  const n = Array.isArray(r.points) ? r.points.length : 0;
+  const pts = Array.isArray(r.points) ? r.points : [];
+  let n = 0;
+  for (let i = 0; i < pts.length; i++){
+    if (routingPointIsPositioned(pts[i])) n++;
+  }
   if (n >= 2){ hide(); return; }
   const msg = (n <= 0)
     ? routingT("routing.needsPointsStart", "Add at least start and destination")
@@ -60730,35 +60851,51 @@ function routingSyncUndoBtnUi(){
   const btn = document.getElementById("routingUndoLastPointBtn");
   if (!btn) return;
   const r = state._routing;
-  const n = (r && Array.isArray(r.points)) ? r.points.length : 0;
+  const stackN = (r && Array.isArray(r.pointUndoStack)) ? r.pointUndoStack.length : 0;
   const loading = !!(r && (r.requestLoading || r.infoLoading));
   const dragging = !!(r && r.markerDrag) || !!mapRoutingMarkerDocDrag;
   const picking = !!(r && r.pickMode);
-  const disabled = !r || n < 1 || loading || dragging || picking;
+  const disabled = !r || stackN < 1 || loading || dragging || picking;
   btn.disabled = disabled;
   if (disabled) btn.setAttribute("aria-disabled", "true");
   else btn.removeAttribute("aria-disabled");
 }
 function routingRemoveLastPoint(){
+  /* ROUTING-UX-POLISH-BUNDLE-A-FIX1 — Undo last point *mutation* (history), not delete last row. */
+  return routingUndoLastPointChange();
+}
+function routingUndoLastPointChange(){
   const r = state._routing;
   if (!r) return false;
   if (r.requestLoading || r.infoLoading) return false;
   if (r.markerDrag || mapRoutingMarkerDocDrag) return false;
   if (r.pickMode) return false;
-  const pts = r.points || [];
-  if (pts.length < 1) return false;
-  const last = pts[pts.length - 1];
-  if (last && r.gpsBusyId === last.id){
-    r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1;
-    r.gpsBusyId = null;
+  if (!Array.isArray(r.pointUndoStack) || !r.pointUndoStack.length) return false;
+  const snap = r.pointUndoStack.pop();
+  if (!snap) return false;
+  r._pointUndoSuppress = true;
+  try {
+    r.points = routingClonePointsSnapshot(snap);
+    routingEnsureAbPoints(r);
+    if (r.pickTargetId && !routingFindPoint(r.pickTargetId)){
+      r.pickMode = false;
+      r.pickTargetId = null;
+      try { routingSyncPickModeUi(); } catch(_){}
+    }
+    if (r.gpsBusyId && !routingFindPoint(r.gpsBusyId)){
+      r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1;
+      r.gpsBusyId = null;
+    }
+    r.dirty = true;
+    try { routingInvalidateRoutePreview(); } catch(_){}
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    try { routingSyncPointsFeedback(); } catch(_){}
+    try { routingSyncUndoBtnUi(); } catch(_){}
+    try { routingSyncReverseBtnUi(); } catch(_){}
+  } finally {
+    r._pointUndoSuppress = false;
   }
-  r.points = pts.slice(0, -1);
-  r.dirty = true;
-  try { routingInvalidateRoutePreview(); } catch(_){}
-  try { routingRenderList(); } catch(_){}
-  try { refreshTileMapForTrackUi(); } catch(_){}
-  try { routingSyncPointsFeedback(); } catch(_){}
-  try { routingSyncUndoBtnUi(); } catch(_){}
   return true;
 }
 function routingRemoveMarkersOverlay(){
@@ -60902,6 +61039,7 @@ function routingReversePoints(){
   if (r.pickMode){
     try { routingExitPickMode({ silent: true }); } catch(_){}
   }
+  try { routingPushPointUndoSnapshot(); } catch(_){}
   pts.reverse();
   r.dirty = true;
   try { routingInvalidateRoutePreview(); } catch(_){}
@@ -61346,9 +61484,17 @@ function routingSetPointCoordinates(pointId, lat, lon, source){
   if (!pt) return false;
   const la = Number(lat), lo = Number(lon);
   if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90) return false;
+  const nLon = normalizeLon(lo);
+  const src = (source === "gps") ? "gps" : "map";
+  const same =
+    Number.isFinite(Number(pt.lat)) && Number.isFinite(Number(pt.lon)) &&
+    Number(pt.lat) === la && Number(pt.lon) === nLon &&
+    String(pt.source || "") === src;
+  if (same) return true;
+  try { routingPushPointUndoSnapshot(); } catch(_){}
   pt.lat = la;
-  pt.lon = normalizeLon(lo);
-  pt.source = (source === "gps") ? "gps" : "map";
+  pt.lon = nLon;
+  pt.source = src;
   if (state._routing) state._routing.dirty = true;
   try { routingRenderList(); } catch(_){}
   try { routingInvalidateRoutePreview(); } catch(_){}
@@ -61441,7 +61587,9 @@ function routingStartMarkerDrag(ev, pointId, root, tileMap, markerLat, markerLon
     prevLon: pt.lon,
     prevSource: pt.source || "map",
     liveLat: pt.lat,
-    liveLon: pt.lon
+    liveLon: pt.lon,
+    undoSnap: routingClonePointsSnapshot(r.points),
+    undoPushed: false
   };
   document.addEventListener("pointermove", mapRoutingMarkerDocDragMove, true);
   document.addEventListener("pointerup", mapRoutingMarkerDocDragUp, true);
@@ -61555,6 +61703,7 @@ function routingFullCleanup(){
     state._routing.panelOpen = false;
     state._routing.speedMode = "server";
     state._routing.customSpeedKmh = null;
+    state._routing.pointUndoStack = [];
   }
   try { routingSyncPickModeUi(); } catch(_){}
   try { routingRemoveMarkersOverlay(); } catch(_){}
@@ -61583,6 +61732,7 @@ function routingEscapeAttr(id){
 function routingRenderList(){
   const list = document.getElementById("routingPointsList");
   if (!list || !state._routing) return;
+  try { routingEnsureAbPoints(state._routing); } catch(_){}
   const pts = state._routing.points || [];
   const n = pts.length;
   const pickId = state._routing.pickMode ? state._routing.pickTargetId : null;
@@ -61619,9 +61769,21 @@ function routingRenderList(){
     const badgeEl = document.createElement("span");
     badgeEl.className = "routing-pt-badge";
     badgeEl.textContent = badge;
-    if (pickId === p.id){
+    const positioned = routingPointIsPositioned(p);
+    if (positioned) badgeEl.setAttribute("data-positioned", "true");
+    else badgeEl.removeAttribute("data-positioned");
+    const isActive = pickId === p.id;
+    if (isActive){
       badgeEl.setAttribute("data-active", "true");
-      badgeEl.setAttribute("aria-label", String(routingT("routing.activePointBadge", "Active point {0}")).replace("{0}", badge));
+      const aKey = positioned
+        ? "routing.activePositionedPointBadge"
+        : "routing.activePointBadge";
+      const aFb = positioned ? "Active positioned point {0}" : "Active point {0}";
+      badgeEl.setAttribute("aria-label", String(routingT(aKey, aFb)).replace("{0}", badge));
+      badgeEl.removeAttribute("aria-hidden");
+    } else if (positioned){
+      badgeEl.removeAttribute("data-active");
+      badgeEl.setAttribute("aria-label", String(routingT("routing.positionedPointBadge", "Positioned point {0}")).replace("{0}", badge));
       badgeEl.removeAttribute("aria-hidden");
     } else {
       badgeEl.removeAttribute("data-active");
@@ -61681,7 +61843,8 @@ function routingRenderList(){
     down.disabled = i >= n - 1;
     actions.appendChild(down);
     const rm = mkBtn("routing.remove", "Remove", "btn-danger-subtle", "remove");
-    if (n <= 2) rm.setAttribute("aria-disabled", "true");
+    const isEndpoint = (i === 0 || i >= n - 1);
+    if (n <= 2 || isEndpoint) rm.setAttribute("aria-disabled", "true");
     else rm.removeAttribute("aria-disabled");
     actions.appendChild(rm);
     row.appendChild(grip);
@@ -61714,6 +61877,7 @@ function routingMovePoint(id, delta){
   if (ix < 0) return;
   const j = ix + delta;
   if (j < 0 || j >= pts.length) return;
+  try { routingPushPointUndoSnapshot(); } catch(_){}
   const tmp = pts[ix];
   pts[ix] = pts[j];
   pts[j] = tmp;
@@ -61726,7 +61890,15 @@ function routingMovePoint(id, delta){
 }
 function routingRemovePoint(id){
   const r = routingEnsureState();
+  try { routingEnsureAbPoints(r); } catch(_){}
   if ((r.points || []).length <= 2){
+    routingSetStatus(routingT("routing.minimumPoints", "Min 2"), true);
+    return;
+  }
+  const ix = (r.points || []).findIndex(p => p && p.id === id);
+  if (ix < 0) return;
+  // Structural A/B rows (first/last) cannot be deleted — only vias.
+  if (ix === 0 || ix === r.points.length - 1){
     routingSetStatus(routingT("routing.minimumPoints", "Min 2"), true);
     return;
   }
@@ -61736,7 +61908,9 @@ function routingRemovePoint(id){
     r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1;
     r.gpsBusyId = null;
   }
+  try { routingPushPointUndoSnapshot(); } catch(_){}
   r.points = r.points.filter(p => p && p.id !== id);
+  try { routingEnsureAbPoints(r); } catch(_){}
   r.dirty = true;
   try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus("", false);
@@ -61748,6 +61922,7 @@ function routingAddVia(){
     routingSetStatus(routingT("routing.maxPoints", "Max 20"), true);
     return;
   }
+  try { routingPushPointUndoSnapshot(); } catch(_){}
   r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "" });
   r.dirty = true;
   try { routingInvalidateRoutePreview(); } catch(_){}
@@ -64528,6 +64703,7 @@ function routingAttachListDnd(list){
     dragId = null;
     r.listReorderDrag = null;
     if (from < 0 || to < 0 || from === to) return;
+    try { routingPushPointUndoSnapshot(); } catch(_){}
     const item = pts.splice(from, 1)[0];
     pts.splice(to, 0, item);
     r.dirty = true;
