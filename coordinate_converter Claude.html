@@ -13402,7 +13402,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2MC-A · build 90</span>
+    <span id="appBuildFooter">B6.2MCV-A-FIX1 · build 91</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13660,11 +13660,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2MC-A · build 90</code>
+            <code id="appBuildAbout">B6.2MCV-A-FIX1 · build 91</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A — usable-rect center/fit for floating GIS panels</div>
+          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX1 — viewport-aware camera containment fixes</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21521,10 +21521,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2MC-A";
-const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A — usable-rect center/fit for floating GIS panels";
+const APP_BUILD_ID = "B6.2MCV-A-FIX1";
+const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX1 — viewport-aware camera containment fixes";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 90;
+const APP_BUILD_NUM = 91;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -34847,101 +34847,78 @@ function gisMapTileMathViewport(root){
   return { W, H };
 }
 
-/** GIS floating UI occluders (DOM-measured). MAP-CENTER-VIEWPORT-AWARE-A */
-const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze([
-  "trackModal","waypointModal","convertModal","searchPanel","favoritesPanel","layersPanel",
-  "measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel",
-  "routingPlannerPanel","helpOverlay","qrModal","gisMinimizedDock"
-]);
+/* MAP-CENTER-VIEWPORT-AWARE-A: usable rect + pure camera math (no temp state). */
+const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze(["trackModal","waypointModal","convertModal","searchPanel","favoritesPanel","layersPanel","measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel","routingPlannerPanel","helpOverlay","qrModal","gisMinimizedDock"]);
 const GIS_MAP_USABLE_MIN_W = 120, GIS_MAP_USABLE_MIN_H = 120, GIS_MAP_USABLE_MIN_AREA_FRAC = 0.18;
 const GIS_MAP_OCCLUDER_MIN_EDGE = 24, GIS_MAP_FIT_EDGE_PAD = 8;
 
-function gisMapIsOccluderElementVisible(el){
-  if (!el || el.hidden) return false;
-  try {
-    if (typeof HTMLDialogElement !== "undefined" && el instanceof HTMLDialogElement && !el.open) return false;
-    if (el.id === "gisMinimizedDock" && el.getAttribute("aria-hidden") === "true") return false;
-    const cs = window.getComputedStyle(el);
-    if (!cs || cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) return false;
-    const r = el.getBoundingClientRect();
-    return !!(r && r.width >= 1 && r.height >= 1);
-  } catch(_){ return false; }
+function gisMapPxAt(root, lat, lon, vc, z, unwrap){
+  const { W, H } = gisMapTileMathViewport(root);
+  const ox = lonToTileX(normalizeLon(vc.lon), z) * 256 - W / 2;
+  const oy = latToTileY(Math.max(-85.05, Math.min(85.05, vc.lat)), z) * 256 - H / 2;
+  const lx = unwrap ? lon : normalizeLon(lon);
+  return { x: lonToTileX(lx, z) * 256 - ox, y: latToTileY(Math.max(-85.05, Math.min(85.05, lat)), z) * 256 - oy };
 }
-function gisMapCollectFloatingOccluderRects(mapRect){
-  const out = [];
-  if (!mapRect) return out;
-  for (let i = 0; i < GIS_MAP_FLOATING_OCCLUDER_IDS.length; i++){
-    const el = document.getElementById(GIS_MAP_FLOATING_OCCLUDER_IDS[i]);
-    if (!gisMapIsOccluderElementVisible(el)) continue;
-    let r; try { r = el.getBoundingClientRect(); } catch(_){ continue; }
-    const left = Math.max(mapRect.left, r.left), top = Math.max(mapRect.top, r.top);
-    const right = Math.min(mapRect.right, r.right), bottom = Math.min(mapRect.bottom, r.bottom);
-    const w = right - left, h = bottom - top;
-    if (w >= GIS_MAP_OCCLUDER_MIN_EDGE && h >= GIS_MAP_OCCLUDER_MIN_EDGE) out.push({ left, top, right, bottom, w, h });
-  }
-  return out;
-}
-function gisMapComputeEdgeInsets(mapRect, occluders){
-  let padL = 0, padR = 0, padT = 0, padB = 0;
-  const mw = mapRect.width, mh = mapRect.height;
-  for (let i = 0; i < (occluders || []).length; i++){
-    const I = occluders[i];
-    const fromL = I.right - mapRect.left, fromR = mapRect.right - I.left;
-    const fromT = I.bottom - mapRect.top, fromB = mapRect.bottom - I.top;
-    let best = fromL, edge = "L";
-    if (fromR < best){ best = fromR; edge = "R"; }
-    if (fromT < best){ best = fromT; edge = "T"; }
-    if (fromB < best){ best = fromB; edge = "B"; }
-    if (!(best > 0) || !Number.isFinite(best)) continue;
-    if (edge === "L") padL = Math.max(padL, Math.min(best, mw));
-    else if (edge === "R") padR = Math.max(padR, Math.min(best, mw));
-    else if (edge === "T") padT = Math.max(padT, Math.min(best, mh));
-    else padB = Math.max(padB, Math.min(best, mh));
-  }
-  return { padL, padR, padT, padB };
-}
-/** Usable #miniMap sub-rect in map-local px; fallback → full geometric center. */
 function gisMapUsableRect(root){
   try {
     root = root || document.getElementById("miniMap");
     if (!root) return null;
-    const mapRect = root.getBoundingClientRect();
-    if (!(mapRect.width > 0 && mapRect.height > 0)) return null;
-    const full = { left:0, top:0, right:mapRect.width, bottom:mapRect.height, w:mapRect.width, h:mapRect.height,
-      cx:mapRect.width/2, cy:mapRect.height/2, fallback:true, mapW:mapRect.width, mapH:mapRect.height };
-    const occ = gisMapCollectFloatingOccluderRects(mapRect);
-    if (!occ.length){ full.fallback = false; return full; }
-    const p = gisMapComputeEdgeInsets(mapRect, occ);
-    const left = p.padL, top = p.padT, right = mapRect.width - p.padR, bottom = mapRect.height - p.padB;
+    const mr = root.getBoundingClientRect();
+    if (!(mr.width > 0 && mr.height > 0)) return null;
+    const full = { left:0, top:0, right:mr.width, bottom:mr.height, w:mr.width, h:mr.height, cx:mr.width/2, cy:mr.height/2, fallback:true };
+    let padL = 0, padR = 0, padT = 0, padB = 0, nOcc = 0;
+    for (let i = 0; i < GIS_MAP_FLOATING_OCCLUDER_IDS.length; i++){
+      const el = document.getElementById(GIS_MAP_FLOATING_OCCLUDER_IDS[i]);
+      if (!el || el.hidden) continue;
+      try {
+        if (typeof HTMLDialogElement !== "undefined" && el instanceof HTMLDialogElement && !el.open) continue;
+        if (el.id === "gisMinimizedDock" && el.getAttribute("aria-hidden") === "true") continue;
+        const cs = window.getComputedStyle(el);
+        if (!cs || cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) continue;
+        const r = el.getBoundingClientRect();
+        const L = Math.max(mr.left, r.left), T = Math.max(mr.top, r.top);
+        const R = Math.min(mr.right, r.right), B = Math.min(mr.bottom, r.bottom);
+        if (!((R - L) >= GIS_MAP_OCCLUDER_MIN_EDGE && (B - T) >= GIS_MAP_OCCLUDER_MIN_EDGE)) continue;
+        nOcc++;
+        const fromL = R - mr.left, fromR = mr.right - L, fromT = B - mr.top, fromB = mr.bottom - T;
+        let best = fromL, edge = "L";
+        if (fromR < best){ best = fromR; edge = "R"; }
+        if (fromT < best){ best = fromT; edge = "T"; }
+        if (fromB < best){ best = fromB; edge = "B"; }
+        if (!(best > 0)) continue;
+        if (edge === "L") padL = Math.max(padL, Math.min(best, mr.width));
+        else if (edge === "R") padR = Math.max(padR, Math.min(best, mr.width));
+        else if (edge === "T") padT = Math.max(padT, Math.min(best, mr.height));
+        else padB = Math.max(padB, Math.min(best, mr.height));
+      } catch(_){}
+    }
+    if (!nOcc){ full.fallback = false; return full; }
+    const left = padL, top = padT, right = mr.width - padR, bottom = mr.height - padB;
     const w = right - left, h = bottom - top;
-    if (!(w >= GIS_MAP_USABLE_MIN_W && h >= GIS_MAP_USABLE_MIN_H && (w*h) >= GIS_MAP_USABLE_MIN_AREA_FRAC * mapRect.width * mapRect.height)) return full;
-    return { left, top, right, bottom, w, h, cx:left+w/2, cy:top+h/2, fallback:false, mapW:mapRect.width, mapH:mapRect.height };
+    if (!(w >= GIS_MAP_USABLE_MIN_W && h >= GIS_MAP_USABLE_MIN_H && (w * h) >= GIS_MAP_USABLE_MIN_AREA_FRAC * mr.width * mr.height)) return full;
+    return { left, top, right, bottom, w, h, cx: left + w / 2, cy: top + h / 2, fallback: false };
   } catch(_){ return null; }
 }
-/** View-center so target projects to usable.cx/cy. */
-function gisMapOffsetViewCenterForUsablePixel(root, targetLat, targetLon, zoom, usable){
-  if (!usable || usable.fallback) return { lat: targetLat, lon: normalizeLon(targetLon) };
+function gisMapOffsetVC(root, tLat, tLon, z, u){
+  const base = { lat: tLat, lon: normalizeLon(tLon) };
+  if (!u || u.fallback) return base;
   const { W, H } = gisMapTileMathViewport(root);
-  const ux = usable.cx, uy = usable.cy;
-  if (!(Number.isFinite(ux) && Number.isFinite(uy) && W > 0 && H > 0)) return { lat: targetLat, lon: normalizeLon(targetLon) };
-  if (Math.abs(ux - W/2) < 0.5 && Math.abs(uy - H/2) < 0.5) return { lat: targetLat, lon: normalizeLon(targetLon) };
-  const prevVC = state.viewCenter, prevZ = state.mapZoom;
-  state.viewCenter = { lat: targetLat, lon: normalizeLon(targetLon) }; state.mapZoom = zoom;
-  try {
-    const vc = tileMapPxToLatLon(root, W - ux, H - uy);
-    if (!vc || !Number.isFinite(vc.lat) || !Number.isFinite(vc.lon)) return { lat: targetLat, lon: normalizeLon(targetLon) };
-    return { lat: Math.max(-85.05, Math.min(85.05, vc.lat)), lon: normalizeLon(vc.lon) };
-  } catch(_){ return { lat: targetLat, lon: normalizeLon(targetLon) }; }
-  finally { state.viewCenter = prevVC; state.mapZoom = prevZ; }
+  if (!(Number.isFinite(u.cx) && Number.isFinite(u.cy) && W > 0 && H > 0)) return base;
+  if (Math.abs(u.cx - W / 2) < 0.5 && Math.abs(u.cy - H / 2) < 0.5) return base;
+  const vtx = lonToTileX(base.lon, z), vty = latToTileY(Math.max(-85.05, Math.min(85.05, base.lat)), z);
+  const lat = tileY2Lat((vty * 256 - H / 2 + (H - u.cy)) / 256, z);
+  const lon = tileX2Lon((vtx * 256 - W / 2 + (W - u.cx)) / 256, z);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return base;
+  return { lat: Math.max(-85.05, Math.min(85.05, lat)), lon: normalizeLon(lon) };
 }
-function gisMapProjectPtsInUsable(root, pts, usable, edgePad, unwrappedLons){
-  const pad = Number.isFinite(edgePad) ? edgePad : 0;
-  const L = usable.left + pad, T = usable.top + pad, R = usable.right - pad, B = usable.bottom - pad;
+function gisMapPtsInUsable(root, pts, u, pad, unwrap, vc, z){
+  const p = Number.isFinite(pad) ? pad : 0;
+  const L = u.left + p, T = u.top + p, R = u.right - p, B = u.bottom - p;
   if (!(R > L && B > T)) return false;
   for (let i = 0; i < pts.length; i++){
-    const p = pts[i]; if (!p || !Number.isFinite(p.lat)) return false;
-    const lon = unwrappedLons ? unwrappedLons[i] : p.lon; if (!Number.isFinite(lon)) return false;
-    const xy = unwrappedLons ? tileMapLatLonToPxUnwrapped(root, p.lat, lon) : tileMapLatLonToPx(root, p.lat, lon);
+    const pt = pts[i]; if (!pt || !Number.isFinite(pt.lat)) return false;
+    const lon = unwrap ? unwrap[i] : pt.lon; if (!Number.isFinite(lon)) return false;
+    const xy = gisMapPxAt(root, pt.lat, lon, vc, z, !!unwrap);
     if (!xy || !Number.isFinite(xy.x) || !Number.isFinite(xy.y) || xy.x < L || xy.x > R || xy.y < T || xy.y > B) return false;
   }
   return true;
@@ -38417,12 +38394,7 @@ function flyMapToTrackPoints(pts, closed){
   if (pts.length === 1){
     const p = pts[0];
     if (!Number.isFinite(p.lat) || !Number.isFinite(p.lon)) return;
-    try { gisMapCenterOnLatLon(p.lat, p.lon); } catch(_){
-      state.viewCenter = { lat: p.lat, lon: normalizeLon(p.lon) };
-      const z0 = state.mapZoom || 11;
-      state.mapZoom = clampBasemapFitZoom(z0 < 12 ? 14 : z0);
-      renderTileMap(p.lat, normalizeLon(p.lon), state.mapZoom);
-    }
+    gisMapCenterOnLatLon(p.lat, p.lon);
     saveStore();
     return;
   }
@@ -38441,8 +38413,7 @@ function flyMapToTrackPoints(pts, closed){
     if (!same) seq = linePts.concat([linePts[0]]);
   }
   let minLat = 90, maxLat = -90;
-  const lons = [];
-  const seqPts = [];
+  const lons = [], seqPts = [];
   for (let i = 0; i < seq.length; i++){
     const p = seq[i];
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
@@ -38453,13 +38424,7 @@ function flyMapToTrackPoints(pts, closed){
   }
   if (minLat > maxLat || !lons.length) return;
   if (lons.length === 1){
-    try { gisMapCenterOnLatLon(minLat, lons[0]); } catch(_){
-      const lon1 = normalizeLon(lons[0]);
-      state.viewCenter = { lat: minLat, lon: lon1 };
-      const z1 = state.mapZoom || 11;
-      state.mapZoom = clampBasemapFitZoom(z1 < 12 ? 14 : z1);
-      renderTileMap(minLat, lon1, state.mapZoom);
-    }
+    gisMapCenterOnLatLon(minLat, lons[0]);
     saveStore();
     return;
   }
@@ -38473,55 +38438,33 @@ function flyMapToTrackPoints(pts, closed){
   }
   if (!(minU <= maxU)) return;
   const lonSpan = Math.abs(maxU - minU) || 1e-6;
-  const centerUnwrapped = (minU + maxU) / 2;
-  const clon = normalizeLon(centerUnwrapped);
+  const clon = normalizeLon((minU + maxU) / 2);
   const clat = (minLat + maxLat) / 2;
   const latSpan = Math.abs(maxLat - minLat) || 1e-6;
   const span = Math.max(latSpan, lonSpan * Math.cos(clat * DEG));
-  let zHeur = 16;
-  if (span > 2) zHeur = 8;
-  else if (span > 0.8) zHeur = 9;
-  else if (span > 0.35) zHeur = 10;
-  else if (span > 0.15) zHeur = 11;
-  else if (span > 0.06) zHeur = 12;
-  else if (span > 0.025) zHeur = 13;
-  else if (span > 0.012) zHeur = 14;
-  else if (span > 0.006) zHeur = 15;
-  zHeur = clampBasemapFitZoom(zHeur);
-
-  const root = document.getElementById("miniMap");
-  const usable = (typeof gisMapUsableRect === "function") ? gisMapUsableRect(root) : null;
-  let chosenZ = zHeur;
-  let chosenVC = { lat: clat, lon: clon };
-
+  let z = 16;
+  if (span > 2) z = 8;
+  else if (span > 0.8) z = 9;
+  else if (span > 0.35) z = 10;
+  else if (span > 0.15) z = 11;
+  else if (span > 0.06) z = 12;
+  else if (span > 0.025) z = 13;
+  else if (span > 0.012) z = 14;
+  else if (span > 0.006) z = 15;
+  z = clampBasemapFitZoom(z);
+  let cam = { lat: clat, lon: clon };
+  const root = document.getElementById("miniMap"), usable = gisMapUsableRect(root);
   if (root && usable && !usable.fallback && seqPts.length >= 2){
-    const prevVC = state.viewCenter, prevZ = state.mapZoom;
-    let ok = false;
-    for (let z = zHeur; z >= 2; z--){
-      const zTry = clampBasemapFitZoom(z);
-      const off = gisMapOffsetViewCenterForUsablePixel(root, clat, clon, zTry, usable);
-      state.viewCenter = { lat: off.lat, lon: off.lon };
-      state.mapZoom = zTry;
-      if (gisMapProjectPtsInUsable(root, seqPts, usable, GIS_MAP_FIT_EDGE_PAD, unwrapped)){
-        chosenZ = zTry;
-        chosenVC = { lat: off.lat, lon: off.lon };
-        ok = true;
-        break;
-      }
+    for (let zt = z; zt >= 2; zt--){
+      const zTry = clampBasemapFitZoom(zt), off = gisMapOffsetVC(root, clat, clon, zTry, usable);
+      if (gisMapPtsInUsable(root, seqPts, usable, GIS_MAP_FIT_EDGE_PAD, unwrapped, off, zTry)){ cam = off; z = zTry; break; }
       if (zTry <= 2) break;
     }
-    state.viewCenter = prevVC;
-    state.mapZoom = prevZ;
-    if (!ok){
-      chosenZ = zHeur;
-      chosenVC = { lat: clat, lon: clon };
-    }
   }
-
-  state.viewCenter = { lat: chosenVC.lat, lon: chosenVC.lon };
-  state.mapZoom = chosenZ;
+  state.viewCenter = { lat: cam.lat, lon: cam.lon };
+  state.mapZoom = z;
   saveStore();
-  renderTileMap(clat, clon, state.mapZoom);
+  renderTileMap(cam.lat, cam.lon, z);
 }
 function clearTrackSaveMinPointsNotice(){
   const ids = ["trackSaveGuardMsg", "trackPromptSaveErr", "trackNewPromptSaveErr"];
@@ -68534,40 +68477,17 @@ function waypointImportSelectedFavoritesAsWaypoints(){
  *  (uses `renderTileMap` + `viewCenter` only). */
 function gisMapCenterOnLatLon(lat, lon, opts){
   opts = opts || {};
-  try {
-    validateLatLon(lat, lon);
-  } catch(_){
-    return false;
-  }
-  const latC = Math.max(-85.05, Math.min(85.05, lat));
-  const lonC = normalizeLon(lon);
+  try { validateLatLon(lat, lon); } catch(_){ return false; }
+  const latC = Math.max(-85.05, Math.min(85.05, lat)), lonC = normalizeLon(lon);
   let z = state.mapZoom || 11;
-  if (!opts.skipZoomBump && z < 12){
-    z = 14;
-    state.mapZoom = z;
-  } else {
-    state.mapZoom = z;
-  }
+  if (!opts.skipZoomBump && z < 12) z = 14;
   const root = document.getElementById("miniMap");
   if (!root || typeof renderTileMap !== "function") return false;
-  let vcLat = latC, vcLon = lonC;
-  try {
-    const usable = gisMapUsableRect(root);
-    if (usable && !usable.fallback){
-      const off = gisMapOffsetViewCenterForUsablePixel(root, latC, lonC, z, usable);
-      if (off && Number.isFinite(off.lat) && Number.isFinite(off.lon)){
-        vcLat = off.lat;
-        vcLon = normalizeLon(off.lon);
-      }
-    }
-  } catch(_){}
-  state.viewCenter = { lat: vcLat, lon: vcLon };
-  try {
-    renderTileMap(latC, lonC, z);
-    return true;
-  } catch(_){
-    return false;
-  }
+  let cam = { lat: latC, lon: lonC };
+  try { const u = gisMapUsableRect(root); if (u && !u.fallback) cam = gisMapOffsetVC(root, latC, lonC, z, u); } catch(_){}
+  state.viewCenter = { lat: cam.lat, lon: cam.lon };
+  state.mapZoom = z;
+  try { renderTileMap(latC, lonC, z); return true; } catch(_){ return false; }
 }
 
 /** Center the tile-map on the given waypoint. */
