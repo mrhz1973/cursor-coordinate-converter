@@ -1,3 +1,7 @@
+<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
+> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
+<!-- /AUTO-VIA-HEADER -->
+
 # WU-0005 → WU-0009 — Piano backlog GIS monolite
 
 **Stato:** ACTIVE / PARTIALLY EXECUTED — piano vivo con blocchi completati e candidati futuri  
@@ -2815,3 +2819,6 @@ Decidere fuori dal repo GIS:
 - **B5.5Z backlog opzionale:** overlay geografici su segmenti oltre-cap (non bloccante);
 - **WU-0009A B0-B4 — proxy readiness in Planet-Clone**, separato/sensibile;
 - **Mappe offline UX** (matrice dipendenze), alternativa leggera non-proxy.
+<!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
+> **PROMEMORIA FINALE — AUTO-VIA.** In assenza di una decisione reale da sottoporre all’operatore, procedere direttamente al passo successivo senza chiedere conferme. Non trasformare raccomandazioni tecniche, preferenze già ratificate o gate già risolti in false scelte utente. Il nuovo `vai` si chiede soltanto quando esistono alternative sostanziali che richiedono davvero la scelta dell’operatore.
+<!-- /AUTO-VIA-FOOTER -->

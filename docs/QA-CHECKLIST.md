@@ -1,3 +1,7 @@
+<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
+> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
+<!-- /AUTO-VIA-HEADER -->
+
 # GOI GIS Tool — QA operatore
 
 > **Natura del file**
@@ -1255,3 +1259,6 @@ Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) dev
 - usare la **checklist estesa** solo nei casi delicati/complessi definiti sopra.
 
 **Dopo attestazione QA PASS (bundle con coda pre-autorizzata):** la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** il workflow `finito` in Cursor (OM §4 Regola H) — **non** serve un secondo messaggio «ora lancia finito» da GPT/orchestratore.
+<!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
+> **PROMEMORIA FINALE — AUTO-VIA.** In assenza di una decisione reale da sottoporre all’operatore, procedere direttamente al passo successivo senza chiedere conferme. Non trasformare raccomandazioni tecniche, preferenze già ratificate o gate già risolti in false scelte utente. Il nuovo `vai` si chiede soltanto quando esistono alternative sostanziali che richiedono davvero la scelta dell’operatore.
+<!-- /AUTO-VIA-FOOTER -->
