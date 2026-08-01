@@ -5041,6 +5041,18 @@ dialog.help-modal.app-modal .app-modal-body kbd{
   align-items:center;
   justify-content:flex-end;
 }
+/* Centra punto: compatto, allineato a Rimuovi (TRACK-POINT-CENTER-BUTTON-A). */
+.track-point-row .tp-actions .btn.btn-sm[data-role="tp-center"]{
+  box-sizing:border-box;
+  min-width:30px;
+  padding:3px 8px;
+  font-size:1em;
+  line-height:1;
+  flex-shrink:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
 /* Rimuovi punto: compatto, stile danger condiviso (Pass 6 Step 6C). */
 .track-point-row .tp-actions .btn.btn-sm.btn-danger-subtle[data-role="tp-rm"]{
   box-sizing:border-box;
@@ -21555,10 +21567,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.3RPC-A-FIX1";
-const APP_BUILD_DETAIL = "ROUTING-POINT-COORD-EDIT-A-FIX1 — clear stale coordinate feedback";
+const APP_BUILD_ID = "B6.3TPC-A";
+const APP_BUILD_DETAIL = "TRACK-POINT-CENTER-BUTTON-A — center individual track points";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 95;
+const APP_BUILD_NUM = 96;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -45108,6 +45120,26 @@ function trackPointsListResetPage(){
   state._trackPointsListPage = 0;
 }
 
+/** TRACK-POINT-CENTER-BUTTON-A — center map on one track point by stable id (no saveStore, no mutation). */
+function trackCenterOnPointById(id){
+  try { ensureTrackState(); } catch(_){}
+  const sid = String(id == null ? "" : id);
+  if (!sid) return false;
+  const pts = (state.track && Array.isArray(state.track.points)) ? state.track.points : [];
+  let p = null;
+  for (let i = 0; i < pts.length; i++){
+    if (pts[i] && String(pts[i].id) === sid){ p = pts[i]; break; }
+  }
+  if (!p) return false;
+  const lat = Number(p.lat), lon = Number(p.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+  if (Math.abs(lat) > 90 || Math.abs(lon) > 180) return false;
+  try {
+    if (typeof gisMapCenterOnLatLon !== "function") return false;
+    return !!gisMapCenterOnLatLon(lat, lon);
+  } catch(_){ return false; }
+}
+
 /** @returns {boolean} */
 function trackPointsListEffectiveExpanded(){
   ensureTrackState();
@@ -45135,6 +45167,14 @@ function wireTrackPointsSectionToggleOnce(){
     if (closeBtn){
       ev.preventDefault();
       if (typeof trackAbandonOrFinishDraftUi === "function") trackAbandonOrFinishDraftUi({ source: "points-head-close" });
+      return;
+    }
+    const tpCenterBtn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"tp-center\"]");
+    if (tpCenterBtn){
+      ev.preventDefault();
+      const row = tpCenterBtn.closest(".track-point-row");
+      const pid = row && row.getAttribute("data-id");
+      try { trackCenterOnPointById(pid); } catch(_){}
       return;
     }
     const centerBtn = ev.target && ev.target.closest && ev.target.closest("[data-role=\"track-center-map\"]");
@@ -45322,6 +45362,7 @@ function renderTrackPointsList(){
       legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(leg.dist, tdu)} · ${leg.brg.toFixed(1)}°</span>`;
     }
     const idxLbl = trackPointDisplayLabel(i, pts.length);
+    const tipCenterPt = esc(t("tip.common.centerMapPoint") || t("common.center") || "Centra");
     return `<div class="track-point-row" draggable="true" data-id="${esc(p.id)}" data-idx="${i}">
       <span class="tp-idx">${esc(idxLbl)}</span>
       <span class="tp-grip" aria-hidden="true">⋮⋮</span>
@@ -45331,6 +45372,7 @@ function renderTrackPointsList(){
         ${legStr}
       </div>
       <div class="tp-actions">
+        <button type="button" class="btn btn-sm btn-ghost" data-role="tp-center" data-i18n-tip="tip.common.centerMapPoint" data-tip="${tipCenterPt}" data-i18n-aria="tip.common.centerMapPoint" aria-label="${tipCenterPt}"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-role="tp-rm" data-i18n-tip="tip.trackRemovePoint" data-tip="${esc(t("tip.trackRemovePoint"))}" data-i18n-aria="tip.trackRemovePoint" aria-label="${esc(t("tip.trackRemovePoint"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div>
     </div>`;
