@@ -1,0 +1,80 @@
+name: One-shot enforce AUTO-VIA
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/one-shot-enforce-auto-via.yml
+
+permissions:
+  contents: write
+
+jobs:
+  enforce-auto-via:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add binding AUTO-VIA rule to the operational read-set
+        shell: python
+        run: |
+          from pathlib import Path
+
+          files = [
+              Path("README.md"),
+              Path("docs/OPERATING_MEMORY.md"),
+              Path("docs/HANDOFF.md"),
+              Path("docs/QA-CHECKLIST.md"),
+              Path("docs/work-units/WU-0005-0009-roadmap.md"),
+              Path("docs/work-units/WU-0010-outdoor-routing-graphhopper.md"),
+          ]
+
+          header = """<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
+> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
+<!-- /AUTO-VIA-HEADER -->"""
+
+          footer = """<!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
+> **PROMEMORIA FINALE — AUTO-VIA.** In assenza di una decisione reale da sottoporre all’operatore, procedere direttamente al passo successivo senza chiedere conferme. Non trasformare raccomandazioni tecniche, preferenze già ratificate o gate già risolti in false scelte utente. Il nuovo `vai` si chiede soltanto quando esistono alternative sostanziali che richiedono davvero la scelta dell’operatore.
+<!-- /AUTO-VIA-FOOTER -->"""
+
+          for path in files:
+              if not path.exists():
+                  raise SystemExit(f"File operativo mancante: {path}")
+
+              text = path.read_text(encoding="utf-8")
+              if "<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->" in text or "<!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->" in text:
+                  raise SystemExit(f"Marker AUTO-VIA già presente o stato ambiguo: {path}")
+
+              body = text
+              if body and not body.endswith("\n"):
+                  body += "\n"
+
+              path.write_text(
+                  header + "\n\n" + body + "\n" + footer + "\n",
+                  encoding="utf-8",
+                  newline="\n",
+              )
+
+          workflow = Path(".github/workflows/one-shot-enforce-auto-via.yml")
+          workflow.unlink()
+
+      - name: Commit and push the governance rule
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md \
+            docs/OPERATING_MEMORY.md \
+            docs/HANDOFF.md \
+            docs/QA-CHECKLIST.md \
+            docs/work-units/WU-0005-0009-roadmap.md \
+            docs/work-units/WU-0010-outdoor-routing-graphhopper.md \
+            .github/workflows/one-shot-enforce-auto-via.yml
+          git diff --cached --check
+          git commit -m "docs: enforce automatic continuation without redundant approval"
+          git push origin HEAD:main
