@@ -13402,7 +13402,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2MCV-A-FIX1 · build 91</span>
+    <span id="appBuildFooter">B6.2MCV-A-FIX2 · build 92</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13660,11 +13660,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2MCV-A-FIX1 · build 91</code>
+            <code id="appBuildAbout">B6.2MCV-A-FIX2 · build 92</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX1 — viewport-aware camera containment fixes</div>
+          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX2 — marker/camera split + antimeridian align</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21521,10 +21521,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2MCV-A-FIX1";
-const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX1 — viewport-aware camera containment fixes";
+const APP_BUILD_ID = "B6.2MCV-A-FIX2";
+const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX2 — marker/camera split + antimeridian align";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 91;
+const APP_BUILD_NUM = 92;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38457,14 +38457,14 @@ function flyMapToTrackPoints(pts, closed){
   if (root && usable && !usable.fallback && seqPts.length >= 2){
     for (let zt = z; zt >= 2; zt--){
       const zTry = clampBasemapFitZoom(zt), off = gisMapOffsetVC(root, clat, clon, zTry, usable);
-      if (gisMapPtsInUsable(root, seqPts, usable, GIS_MAP_FIT_EDGE_PAD, unwrapped, off, zTry)){ cam = off; z = zTry; break; }
+      if (gisMapPtsInUsable(root, seqPts, usable, GIS_MAP_FIT_EDGE_PAD, trackLonsAlignToView(unwrapped, off.lon), off, zTry)){ cam = off; z = zTry; break; }
       if (zTry <= 2) break;
     }
   }
   state.viewCenter = { lat: cam.lat, lon: cam.lon };
   state.mapZoom = z;
   saveStore();
-  renderTileMap(cam.lat, cam.lon, z);
+  renderTileMap(clat, clon, z);
 }
 function clearTrackSaveMinPointsNotice(){
   const ids = ["trackSaveGuardMsg", "trackPromptSaveErr", "trackNewPromptSaveErr"];
