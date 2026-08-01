@@ -117,23 +117,24 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **ROUTING-POINT-COORD-EDIT-A OPEN / DESIGN READY** (verificare `git ls-remote` post-push); monolite runtime **invariato** tip `d0688ea` |
-| Runtime live / commit monolite | `d0688ea44513501cae766f79d1538934729234e3` (`d0688ea`) — tip MAP-CENTER-VIEWPORT-AWARE-A-FIX3 |
-| Ultimo blocco chiuso | **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3)** — Centra viewport-aware — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **MAP-CENTER-VIEWPORT-AWARE-A-FIX3** — tip `d0688ea` build 93 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | **ROUTING-POINT-COORD-EDIT-A** — **OPEN / DESIGN READY — DOCS-ONLY** (piano `2026-08-01_1724_plan_…`; runtime non iniziato) |
-| ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A) |
+| HEAD documentale (pre-autosync) | commit docs **finito ROUTING-POINT-COORD-EDIT-A (+ FIX1)** (verificare `git ls-remote` post-push); monolite tip `6475804` già versionato |
+| Runtime live / commit monolite | `6475804db952e311f8a228df1435d104e3d2557a` (`6475804`) — tip ROUTING-POINT-COORD-EDIT-A-FIX1 |
+| Ultimo blocco chiuso | **ROUTING-POINT-COORD-EDIT-A (+ FIX1)** — Modifica coordinate manuali — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **ROUTING-POINT-COORD-EDIT-A-FIX1** — tip `6475804` build 95 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | nessuno runtime aperto — prossimo da backlog (QA-IT-ONLY / Bundle F / …) |
+| ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d0688ea44513501cae766f79d1538934729234e3` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `55d414bca54b7e8e18a487c74ef28e58301f2ce7` |
-| Byte monolite (git LF) | `3149321` |
-| `APP_BUILD_NUM` | `93` |
-| Display runtime | `B6.2MCV-A-FIX3 · build 93` |
-| `APP_BUILD_ID` | `B6.2MCV-A-FIX3` |
-| MAP-CENTER-VIEWPORT-AWARE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (centra usable; costi normalizzati FIX3; review+deploy+QA PASS) |
+| Runtime Git / atteso VPS | `6475804db952e311f8a228df1435d104e3d2557a` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `a87920fe6421d690313439842648c6208de2df4c` |
+| Byte monolite (git LF) | `3162728` |
+| `APP_BUILD_NUM` | `95` |
+| Display runtime | `B6.3RPC-A-FIX1 · build 95` |
+| `APP_BUILD_ID` | `B6.3RPC-A-FIX1` |
+| ROUTING-POINT-COORD-EDIT-A / FIX1 | **CLOSED / PASS end-to-end** (coord DD atomiche; FIX1 clear feedback stale; review+deploy+QA PASS) |
+| MAP-CENTER-VIEWPORT-AWARE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live da ROUTING-POINT tip `6475804`) |
 | TRACK-PROFILE-POINTS-DISPLAY-A | **CLOSED / PASS end-to-end** (overlay punti Profilo; superseded live da MAP-CENTER) |
 | APP-BUILD-LABEL-UX-A / FIX1 | **CLOSED / PASS end-to-end** (HUD rimossa; footer stabile; superseded live da TPD-A) |
 | ROUTING-UX-POLISH-BUNDLE-A / FIX1 | **CLOSED / PASS end-to-end** (undo storico + unità session + feedback + badge + focus; QA PASS FIX1; superseded live da APP-BUILD-LABEL) |
@@ -179,13 +180,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-Task aperto corrente: **ROUTING-POINT-COORD-EDIT-A** (**OPEN / DESIGN READY** — prompt runtime chirurgico dopo review del piano [`2026-08-01_1724_plan_routing-point-coord-edit-a.md`](orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md)). **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Altri candidati: **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Ultimo blocco chiuso: **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / PASS**. Runtime live monolite **`d0688ea`** / **`B6.2MCV-A-FIX3 · build 93`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED / PASS**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Candidati: **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`6475804`** / **`B6.3RPC-A-FIX1 · build 95`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
 **Backlog basso / non ora:** **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C; **non** implementare ROUTING-POINT-COORD-EDIT-A senza prompt runtime dedicato.
+**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
@@ -239,9 +240,9 @@ Task aperto corrente: **ROUTING-POINT-COORD-EDIT-A** (**OPEN / DESIGN READY** �
 
 **Stato:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01). Discovery: operazioni editing (label/pick/drag/GPS/CRUD/reorder/Reverse/Undo) già presenti. **Nessuna implementazione** sotto questo ID; **non** CLOSED/PASS. Residuo → **ROUTING-POINT-COORD-EDIT-A**.
 
-### ROUTING-POINT-COORD-EDIT-A — Coordinate manuali A/B/intermedi — OPEN / DESIGN READY
+### ROUTING-POINT-COORD-EDIT-A (+ FIX1) — Coordinate manuali A/B/intermedi — CLOSED / PASS end-to-end
 
-**Stato:** **OPEN / DESIGN READY — DOCS-ONLY** (2026-08-01). CTA «Modifica coordinate»; input DD lat/lon atomici; draft UI keyed by ID; nessun `source:"manual"`; nessuna persistenza/rete/geocoding; profilo read-only. Classificazione futura **DELICATO leggero**; review downstream obbligatoria. Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md). **Runtime non iniziato.** Prossimo passo: prompt runtime chirurgico dopo review del piano.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01). Catena `f509125` build 94 → tip `6475804` / `B6.3RPC-A-FIX1 · build 95`. Blob `a87920fe…` · byte LF **3162728** · SHA-256 LF **`559795bf…`**. CTA «Modifica coordinate»; DD atomici; draft keyed-by-id; clear `source` su commit; FIX1 clear feedback stale. Review PASS; deploy GIS-only PASS; QA «**QA ROUTING-POINT-COORD-EDIT-A PASS operatore**». Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md).
 
 ### QA-OPERATOR-IT-ONLY-PREF — QA operatore solo italiano — BACKLOG / NON APERTO
 

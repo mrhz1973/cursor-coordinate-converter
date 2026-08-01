@@ -1153,6 +1153,28 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 **Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF.
 
+## ROUTING-POINT-COORD-EDIT-A (+ FIX1) — CLOSED / PASS end-to-end
+
+**Blocco:** ROUTING-POINT-COORD-EDIT-A + FIX1  
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
+**Runtime tip:** `6475804db952e311f8a228df1435d104e3d2557a`  
+**Blob / byte LF / SHA-256 LF:** `a87920fe…` / `3162728` / `559795bf…`  
+**Build:** `B6.3RPC-A-FIX1 · build 95`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Piano `2026-08-01_1724_plan…` | docs-only; Opzione B light |
+| Implementazione `f509125` build 94 | shipped (Modifica coordinate) |
+| Review downstream A | PASS WITH BLOCKING → FIX1 feedback stale |
+| FIX1 `6475804` build 95 | clear feedback dopo setter/Undo/remove |
+| Review FIX1 | PASS — DEPLOY AUTHORIZED |
+| Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| `QA ROUTING-POINT-COORD-EDIT-A PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F.
+
 ## MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
 **Blocco:** MAP-CENTER-VIEWPORT-AWARE-A + FIX1 + FIX2 + FIX3  
