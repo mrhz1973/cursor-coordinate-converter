@@ -13402,7 +13402,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2MCV-A-FIX2 · build 92</span>
+    <span id="appBuildFooter">B6.2MCV-A-FIX3 · build 93</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13660,11 +13660,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2MCV-A-FIX2 · build 92</code>
+            <code id="appBuildAbout">B6.2MCV-A-FIX3 · build 93</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX2 — marker/camera split + antimeridian align</div>
+          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX3 — normalized occluder edge selection</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -21521,10 +21521,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2MCV-A-FIX2";
-const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX2 — marker/camera split + antimeridian align";
+const APP_BUILD_ID = "B6.2MCV-A-FIX3";
+const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX3 — normalized occluder edge selection";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 92;
+const APP_BUILD_NUM = 93;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -34881,15 +34881,15 @@ function gisMapUsableRect(root){
         if (!((R - L) >= GIS_MAP_OCCLUDER_MIN_EDGE && (B - T) >= GIS_MAP_OCCLUDER_MIN_EDGE)) continue;
         nOcc++;
         const fromL = R - mr.left, fromR = mr.right - L, fromT = B - mr.top, fromB = mr.bottom - T;
-        let best = fromL, edge = "L";
-        if (fromR < best){ best = fromR; edge = "R"; }
-        if (fromT < best){ best = fromT; edge = "T"; }
-        if (fromB < best){ best = fromB; edge = "B"; }
-        if (!(best > 0)) continue;
-        if (edge === "L") padL = Math.max(padL, Math.min(best, mr.width));
-        else if (edge === "R") padR = Math.max(padR, Math.min(best, mr.width));
-        else if (edge === "T") padT = Math.max(padT, Math.min(best, mr.height));
-        else padB = Math.max(padB, Math.min(best, mr.height));
+        let bestCost = fromL / mr.width, bestInset = fromL, edge = "L";
+        if (fromR / mr.width < bestCost){ bestCost = fromR / mr.width; bestInset = fromR; edge = "R"; }
+        if (fromT / mr.height < bestCost){ bestCost = fromT / mr.height; bestInset = fromT; edge = "T"; }
+        if (fromB / mr.height < bestCost){ bestCost = fromB / mr.height; bestInset = fromB; edge = "B"; }
+        if (!(bestInset > 0)) continue;
+        if (edge === "L") padL = Math.max(padL, Math.min(bestInset, mr.width));
+        else if (edge === "R") padR = Math.max(padR, Math.min(bestInset, mr.width));
+        else if (edge === "T") padT = Math.max(padT, Math.min(bestInset, mr.height));
+        else padB = Math.max(padB, Math.min(bestInset, mr.height));
       } catch(_){}
     }
     if (!nOcc){ full.fallback = false; return full; }
