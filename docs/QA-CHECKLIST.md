@@ -1151,7 +1151,30 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Harness locale | 29/29 PASS |
 | `QA APP-BUILD-LABEL-UX-A-FIX1 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF.
+
+## MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
+
+**Blocco:** MAP-CENTER-VIEWPORT-AWARE-A + FIX1 + FIX2 + FIX3  
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
+**Runtime tip:** `d0688ea44513501cae766f79d1538934729234e3`  
+**Blob / byte LF / SHA-256 LF:** `55d414bc…` / `3149321` / `0c23594c…`  
+**Build:** `B6.2MCV-A-FIX3 · build 93`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Piano `2026-08-01_1013_plan…` | docs-only; opzione A′ |
+| Implementazione `5b5e052` build 90 | shipped (viewport-aware) |
+| FIX1 `1a7c98c` build 91 | harden + diff ≤150 |
+| FIX2 `a640ca2` build 92 | marker/camera + antimeridiano; deploy PASS |
+| QA FAIL operatore post-FIX2 | bordo L/R classificato come B (pixel grezzi) → FIX3 |
+| FIX3 `d0688ea` build 93 | costi normalizzati; review PASS — DEPLOY AUTHORIZED |
+| Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| `QA MAP-CENTER-VIEWPORT-AWARE-A-FIX3 PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF.
 
 ## TRACK-PROFILE-POINTS-DISPLAY-A — CLOSED / PASS end-to-end
 
@@ -1171,7 +1194,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA TRACK-PROFILE-POINTS-DISPLAY-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; MAP-CENTER-VIEWPORT-AWARE-A; QA-OPERATOR-IT-ONLY-PREF.
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF. **MAP-CENTER** poi CLOSED tip `d0688ea`.
 
 ## Istruzioni per il workflow `finito`
 
