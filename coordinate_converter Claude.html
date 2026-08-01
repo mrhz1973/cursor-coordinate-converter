@@ -8724,6 +8724,12 @@ dialog.track-modal.app-modal{
   border-radius:8px;
   background:color-mix(in srgb, var(--panel, #fff) 92%, transparent);
 }
+.routing-point-row.is-coord-edit{ display:flex; flex-direction:column; align-items:stretch; gap:6px; }
+.routing-point-row-main{ display:grid; grid-template-columns:18px 28px minmax(0,1fr) auto; gap:6px; align-items:center; min-width:0; }
+.routing-pt-coord-edit{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; min-width:0; }
+.routing-pt-coord{ flex:1 1 6.5rem; min-width:0; max-width:100%; font-size:.85rem; padding:4px 6px; }
+.routing-pt-coord-apply{ flex:0 0 auto; }
+#routingCoordEditBtn[aria-pressed="true"], #routingCoordEditBtn.is-active{ outline:2px solid var(--accent, #2563eb); outline-offset:1px; }
 .routing-pt-grip{
   cursor:grab;
   touch-action:pan-y;
@@ -8992,6 +8998,8 @@ dialog.track-modal.app-modal{
 }
 @media (max-width:480px){
   .routing-point-row{ grid-template-columns:18px 24px minmax(0,1fr); }
+  .routing-point-row-main{ grid-template-columns:18px 24px minmax(0,1fr); }
+  .routing-pt-coord{ flex:1 1 100%; max-width:none; }
 }
 /* Routing panel resize anchors (same pattern as #measurePanel). */
 #routingPlannerPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
@@ -13348,6 +13356,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
       <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
               data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
+      <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
+              data-i18n="routing.coordEdit" data-i18n-tip="tip.routingCoordEdit" data-i18n-aria="tip.routingCoordEdit">Modifica coordinate</button>
       <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
       <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
               data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
@@ -13402,7 +13412,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <span class="sig-sep">·</span>
     <span data-i18n="footer.appName">GIS Tool/Converter by Marty</span>
     <span class="sig-sep">·</span>
-    <span id="appBuildFooter">B6.2MCV-A-FIX3 · build 93</span>
+    <span id="appBuildFooter">B6.3RPC-A · build 94</span>
     <span class="sig-sep">·</span>
     <span>© 2026</span>
   </p>
@@ -13660,11 +13670,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <div class="about-line">
             <span data-i18n="about.version">Versione</span>:
-            <code id="appBuildAbout">B6.2MCV-A-FIX3 · build 93</code>
+            <code id="appBuildAbout">B6.3RPC-A · build 94</code>
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
-          <div class="about-line muted" id="appBuildAboutDetail">MAP-CENTER-VIEWPORT-AWARE-A-FIX3 — normalized occluder edge selection</div>
+          <div class="about-line muted" id="appBuildAboutDetail">ROUTING-POINT-COORD-EDIT-A — atomic manual routing coordinates</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
         </div>
       </div>
@@ -15594,6 +15604,14 @@ const I18N = {
     "routing.calculating":"Calcolo percorso…",
     "routing.routeReady":"Percorso pronto",
     "routing.undoLastPoint":"Annulla ultima modifica",
+    "routing.coordEdit":"Modifica coordinate",
+    "routing.coordEditDone":"Fine modifica",
+    "routing.coordLat":"Latitudine",
+    "routing.coordLon":"Longitudine",
+    "routing.coordApply":"Applica",
+    "routing.coordEditHint":"Inserisci latitudine e longitudine in gradi decimali, poi Applica o Invio.",
+    "routing.coordInvalid":"Serve una latitudine (−90…+90) e una longitudine (−180…+180) valide.",
+    "tip.routingCoordEdit":"Modifica le coordinate numeriche dei punti del percorso",
     "routing.undoLastPointTip":"Ripristina lo stato precedente dei punti senza ricalcolare",
     "routing.positionedPointBadge":"Punto impostato {0}",
     "routing.activePositionedPointBadge":"Punto impostato attivo {0}",
@@ -17753,6 +17771,14 @@ const I18N = {
     "routing.calculating":"Calculating route…",
     "routing.routeReady":"Route ready",
     "routing.undoLastPoint":"Undo last change",
+    "routing.coordEdit":"Edit coordinates",
+    "routing.coordEditDone":"Done editing",
+    "routing.coordLat":"Latitude",
+    "routing.coordLon":"Longitude",
+    "routing.coordApply":"Apply",
+    "routing.coordEditHint":"Enter latitude and longitude in decimal degrees, then Apply or Enter.",
+    "routing.coordInvalid":"Enter a valid latitude (−90…+90) and longitude (−180…+180).",
+    "tip.routingCoordEdit":"Edit numeric coordinates for route points",
     "routing.undoLastPointTip":"Restores the previous point state without recalculating",
     "routing.positionedPointBadge":"Positioned point {0}",
     "routing.activePositionedPointBadge":"Active positioned point {0}",
@@ -20035,6 +20061,14 @@ const I18N = {
     "routing.calculating":"Calcul de l’itinéraire…",
     "routing.routeReady":"Itinéraire prêt",
     "routing.undoLastPoint":"Annuler la dernière modification",
+    "routing.coordEdit":"Modifier les coordonnées",
+    "routing.coordEditDone":"Terminer la modification",
+    "routing.coordLat":"Latitude",
+    "routing.coordLon":"Longitude",
+    "routing.coordApply":"Appliquer",
+    "routing.coordEditHint":"Saisissez latitude et longitude en degrés décimaux, puis Appliquer ou Entrée.",
+    "routing.coordInvalid":"Indiquez une latitude (−90…+90) et une longitude (−180…+180) valides.",
+    "tip.routingCoordEdit":"Modifier les coordonnées numériques des points d’itinéraire",
     "routing.undoLastPointTip":"Restaure l'état précédent des points sans recalculer",
     "routing.positionedPointBadge":"Point défini {0}",
     "routing.activePositionedPointBadge":"Point défini actif {0}",
@@ -21521,10 +21555,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.2MCV-A-FIX3";
-const APP_BUILD_DETAIL = "MAP-CENTER-VIEWPORT-AWARE-A-FIX3 — normalized occluder edge selection";
+const APP_BUILD_ID = "B6.3RPC-A";
+const APP_BUILD_DETAIL = "ROUTING-POINT-COORD-EDIT-A — atomic manual routing coordinates";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 93;
+const APP_BUILD_NUM = 94;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -55566,6 +55600,11 @@ function gisInit(){
         ev.preventDefault();
         return;
       }
+      if (state._routing && state._routing.coordEditMode){
+        try { if (typeof routingExitCoordEditMode === "function") routingExitCoordEditMode(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       if (typeof closeRoutingPlannerPanel === "function") closeRoutingPlannerPanel();
       ev.preventDefault();
       return;
@@ -60553,6 +60592,115 @@ function routingT(key, fb){
   try { if (typeof t === "function"){ const v = t(key); if (v) return v; } } catch(_){}
   return fb || key;
 }
+
+function routingCoordEditEnsureDraftBag(r){
+  if (!r || typeof r !== "object") return Object.create(null);
+  if (!r.coordEditDrafts || typeof r.coordEditDrafts !== "object" || Array.isArray(r.coordEditDrafts))
+    r.coordEditDrafts = Object.create(null);
+  return r.coordEditDrafts;
+}
+function routingParseCoordNumber(raw){
+  if (raw == null) return { ok: false };
+  const s0 = String(raw).trim();
+  if (!s0 || /[eE]/.test(s0) || (s0.indexOf(".") >= 0 && s0.indexOf(",") >= 0)) return { ok: false };
+  if ((s0.match(/\./g) || []).length > 1 || (s0.match(/,/g) || []).length > 1) return { ok: false };
+  const s = s0.replace(",", ".");
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(s)) return { ok: false };
+  const n = Number(s);
+  return Number.isFinite(n) ? { ok: true, value: n } : { ok: false };
+}
+function routingCoordEditDraftFromPoint(p){
+  return routingPointIsPositioned(p) ? { latText: String(p.lat), lonText: String(p.lon) } : { latText: "", lonText: "" };
+}
+function routingCoordEditReseedAllDrafts(r){
+  if (!r) return;
+  const d = Object.create(null), pts = Array.isArray(r.points) ? r.points : [];
+  for (let i = 0; i < pts.length; i++){ const p = pts[i]; if (p && p.id != null) d[String(p.id)] = routingCoordEditDraftFromPoint(p); }
+  r.coordEditDrafts = d;
+}
+function routingCoordEditPruneDrafts(r){
+  if (!r || !r.coordEditDrafts) return;
+  const drafts = routingCoordEditEnsureDraftBag(r), live = Object.create(null), pts = Array.isArray(r.points) ? r.points : [];
+  for (let i = 0; i < pts.length; i++){ const p = pts[i]; if (p && p.id != null) live[String(p.id)] = true; }
+  const next = Object.create(null);
+  Object.keys(drafts).forEach((id) => { if (live[id]) next[id] = drafts[id]; });
+  r.coordEditDrafts = next;
+}
+function routingCoordEditSyncDraftFromPoint(pointId){
+  const r = state._routing; if (!r || !r.coordEditMode) return;
+  const id = String(pointId || ""); if (!id) return;
+  const drafts = routingCoordEditEnsureDraftBag(r), pt = routingFindPoint(id);
+  if (!pt){ try { delete drafts[id]; } catch(_){} return; }
+  drafts[id] = routingCoordEditDraftFromPoint(pt);
+}
+function routingCoordEditGetDraft(pointId){
+  const r = state._routing; if (!r) return { latText: "", lonText: "" };
+  const drafts = routingCoordEditEnsureDraftBag(r), id = String(pointId || "");
+  if (!drafts[id]) drafts[id] = { latText: "", lonText: "" };
+  drafts[id].latText = String(drafts[id].latText || "");
+  drafts[id].lonText = String(drafts[id].lonText || "");
+  return drafts[id];
+}
+function routingCoordEditSetFeedback(msg, isErr){
+  const r = state._routing; if (!r) return;
+  r.coordEditFeedback = msg == null ? "" : String(msg);
+  r.coordEditFeedbackIsErr = !!isErr && !!r.coordEditFeedback;
+  try { routingSyncPointsFeedback(); } catch(_){}
+}
+function routingCoordEditClearFeedback(){
+  const r = state._routing; if (!r) return;
+  r.coordEditFeedback = ""; r.coordEditFeedbackIsErr = false;
+  try { routingSyncPointsFeedback(); } catch(_){}
+}
+function routingSyncCoordEditBtnUi(){
+  const btn = document.getElementById("routingCoordEditBtn"); if (!btn) return;
+  const on = !!(state._routing && state._routing.coordEditMode);
+  const label = on ? routingT("routing.coordEditDone", "Done editing") : routingT("routing.coordEdit", "Edit coordinates");
+  btn.textContent = label; btn.setAttribute("aria-label", label);
+  btn.title = routingT("tip.routingCoordEdit", "Edit numeric coordinates for route points");
+  btn.setAttribute("aria-pressed", on ? "true" : "false"); btn.classList.toggle("is-active", on);
+}
+function routingEnterCoordEditMode(){
+  const r = routingEnsureState(); r.coordEditMode = true; routingCoordEditReseedAllDrafts(r); routingCoordEditClearFeedback();
+  try { routingSyncCoordEditBtnUi(); } catch(_){} try { routingRenderList(); } catch(_){}
+}
+function routingExitCoordEditMode(){
+  const r = state._routing; if (!r) return;
+  r.coordEditMode = false; r.coordEditDrafts = Object.create(null); routingCoordEditClearFeedback();
+  try { routingSyncCoordEditBtnUi(); } catch(_){} try { routingRenderList(); } catch(_){}
+}
+function routingToggleCoordEditMode(){ const r = routingEnsureState(); if (r.coordEditMode) routingExitCoordEditMode(); else routingEnterCoordEditMode(); }
+function routingApplyManualCoords(pointId){
+  const r = state._routing; if (!r || !r.coordEditMode) return false;
+  const id = String(pointId || ""); if (!id || !routingFindPoint(id)) return false;
+  const draft = routingCoordEditGetDraft(id);
+  const err = () => { routingCoordEditSetFeedback(routingT("routing.coordInvalid", "Enter a valid latitude and longitude."), true); return false; };
+  if (!String(draft.latText || "").trim() || !String(draft.lonText || "").trim()) return err();
+  const latP = routingParseCoordNumber(draft.latText), lonP = routingParseCoordNumber(draft.lonText);
+  if (!latP.ok || !lonP.ok || latP.value < -90 || latP.value > 90 || lonP.value < -180 || lonP.value > 180) return err();
+  const ok = routingSetPointCoordinates(id, latP.value, lonP.value, null);
+  if (ok) routingCoordEditClearFeedback(); else err();
+  return ok;
+}
+function routingBuildCoordEditControls(p){
+  const ed = document.createElement("div"); ed.className = "routing-pt-coord-edit";
+  const draft = routingCoordEditGetDraft(p.id);
+  const hint = routingT("routing.coordEditHint", "Enter latitude and longitude in decimal degrees, then Apply or Enter.");
+  const mkIn = (axis, key, fb, val) => {
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.className = "routing-pt-coord"; inp.maxLength = 24;
+    inp.setAttribute("inputmode", "decimal"); inp.setAttribute("autocomplete", "off"); inp.setAttribute("spellcheck", "false");
+    inp.setAttribute("data-routing-id", p.id); inp.setAttribute("data-routing-coord", axis);
+    inp.setAttribute("aria-label", routingT(key, fb)); inp.title = hint; inp.placeholder = routingT(key, fb); inp.value = val;
+    return inp;
+  };
+  ed.appendChild(mkIn("lat", "routing.coordLat", "Latitude", draft.latText));
+  ed.appendChild(mkIn("lon", "routing.coordLon", "Longitude", draft.lonText));
+  const b = document.createElement("button"); b.type = "button"; b.className = "btn btn-sm routing-pt-coord-apply";
+  b.textContent = routingT("routing.coordApply", "Apply"); b.setAttribute("aria-label", b.textContent); b.title = b.textContent;
+  b.setAttribute("data-routing-act", "apply-coords"); b.setAttribute("data-routing-id", p.id); ed.appendChild(b);
+  return ed;
+}
 function routingEnsureState(){
   if (state._routing && typeof state._routing === "object"){
     const r = state._routing;
@@ -60586,6 +60734,10 @@ function routingEnsureState(){
     if (typeof r.saveAsTrackPromptOpen !== "boolean") r.saveAsTrackPromptOpen = false;
     if (typeof r.saveAsTrackNameDraft !== "string") r.saveAsTrackNameDraft = "";
     if (!Array.isArray(r.pointUndoStack)) r.pointUndoStack = [];
+    if (typeof r.coordEditMode !== "boolean") r.coordEditMode = false;
+    routingCoordEditEnsureDraftBag(r);
+    if (typeof r.coordEditFeedback !== "string") r.coordEditFeedback = "";
+    if (typeof r.coordEditFeedbackIsErr !== "boolean") r.coordEditFeedbackIsErr = false;
     try { routingEnsureAbPoints(r); } catch(_){}
     return r;
   }
@@ -60624,7 +60776,11 @@ function routingEnsureState(){
     gpsBusyId: null,
     saveAsTrackPromptOpen: false,
     saveAsTrackNameDraft: "",
-    pointUndoStack: []
+    pointUndoStack: [],
+    coordEditMode: false,
+    coordEditDrafts: Object.create(null),
+    coordEditFeedback: "",
+    coordEditFeedbackIsErr: false
   };
   try { routingEnsureAbPoints(state._routing); } catch(_){}
   return state._routing;
@@ -60738,6 +60894,12 @@ function routingSyncPointsFeedback(){
     el.classList.remove("is-warn");
   };
   if (!r || !r.panelOpen){ hide(); return; }
+  if (r.coordEditFeedback){
+    el.textContent = r.coordEditFeedback;
+    el.hidden = false;
+    el.classList.toggle("is-warn", !!r.coordEditFeedbackIsErr);
+    return;
+  }
   if (r.requestLoading || r.infoLoading){ hide(); return; }
   if (r.routeError){ hide(); return; }
   const pts = Array.isArray(r.points) ? r.points : [];
@@ -60793,12 +60955,16 @@ function routingUndoLastPointChange(){
       r.gpsBusyId = null;
     }
     r.dirty = true;
+    if (r.coordEditMode){
+      try { routingCoordEditReseedAllDrafts(r); } catch(_){}
+    }
     try { routingInvalidateRoutePreview(); } catch(_){}
     try { routingRenderList(); } catch(_){}
     try { refreshTileMapForTrackUi(); } catch(_){}
     try { routingSyncPointsFeedback(); } catch(_){}
     try { routingSyncUndoBtnUi(); } catch(_){}
     try { routingSyncReverseBtnUi(); } catch(_){}
+    try { routingSyncCoordEditBtnUi(); } catch(_){}
   } finally {
     r._pointUndoSuppress = false;
   }
@@ -61390,18 +61556,34 @@ function routingSetPointCoordinates(pointId, lat, lon, source){
   if (!pt) return false;
   const la = Number(lat), lo = Number(lon);
   if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90) return false;
-  const nLon = normalizeLon(lo);
-  const src = (source === "gps") ? "gps" : "map";
+  const clearSource = (source === null);
+  let nLon;
+  if (clearSource){
+    if (lo < -180 || lo > 180) return false;
+    nLon = lo;
+  } else {
+    nLon = normalizeLon(lo);
+  }
+  const src = clearSource ? "" : ((source === "gps") ? "gps" : "map");
+  const curSrc = (pt.source === "gps" || pt.source === "map") ? String(pt.source) : "";
   const same =
     Number.isFinite(Number(pt.lat)) && Number.isFinite(Number(pt.lon)) &&
     Number(pt.lat) === la && Number(pt.lon) === nLon &&
-    String(pt.source || "") === src;
-  if (same) return true;
+    curSrc === src;
+  if (same){
+    try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
+    return true;
+  }
   try { routingPushPointUndoSnapshot(); } catch(_){}
   pt.lat = la;
   pt.lon = nLon;
-  pt.source = src;
+  if (clearSource){
+    try { delete pt.source; } catch(_){ try { pt.source = undefined; } catch(__){} }
+  } else {
+    pt.source = src;
+  }
   if (state._routing) state._routing.dirty = true;
+  try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
   try { routingRenderList(); } catch(_){}
   try { routingInvalidateRoutePreview(); } catch(_){}
   return true;
@@ -61610,6 +61792,10 @@ function routingFullCleanup(){
     state._routing.speedMode = "server";
     state._routing.customSpeedKmh = null;
     state._routing.pointUndoStack = [];
+    state._routing.coordEditMode = false;
+    state._routing.coordEditDrafts = Object.create(null);
+    state._routing.coordEditFeedback = "";
+    state._routing.coordEditFeedbackIsErr = false;
   }
   try { routingSyncPickModeUi(); } catch(_){}
   try { routingRemoveMarkersOverlay(); } catch(_){}
@@ -61620,6 +61806,7 @@ function routingFullCleanup(){
   const list = document.getElementById("routingPointsList");
   if (list) list.innerHTML = "";
   routingSetStatus("", false);
+  try { routingSyncCoordEditBtnUi(); } catch(_){}
   try {
     const fb = document.getElementById("routingPointsFeedback");
     if (fb){ fb.textContent = ""; fb.hidden = true; fb.classList.remove("is-warn"); }
@@ -61642,6 +61829,10 @@ function routingRenderList(){
   const pts = state._routing.points || [];
   const n = pts.length;
   const pickId = state._routing.pickMode ? state._routing.pickTargetId : null;
+  const editMode = !!state._routing.coordEditMode;
+  if (editMode){
+    try { routingCoordEditPruneDrafts(state._routing); } catch(_){}
+  }
   const gpsBusy = state._routing.gpsBusyId;
   const gpsOk = !!(window.isSecureContext && navigator.geolocation);
   let gpsTip = "";
@@ -61655,7 +61846,7 @@ function routingRenderList(){
     const kind = routingPointKind(i, n);
     const badge = routingPointBadge(i, n);
     const row = document.createElement("div");
-    row.className = "routing-point-row";
+    row.className = "routing-point-row" + (editMode ? " is-coord-edit" : "");
     row.setAttribute("role", "listitem");
     row.setAttribute("data-routing-id", p.id);
     let kindLbl = routingT("routing.start", "Start");
@@ -61753,15 +61944,28 @@ function routingRenderList(){
     if (n <= 2 || isEndpoint) rm.setAttribute("aria-disabled", "true");
     else rm.removeAttribute("aria-disabled");
     actions.appendChild(rm);
-    row.appendChild(grip);
-    row.appendChild(badgeEl);
-    row.appendChild(field);
-    row.appendChild(coords);
-    row.appendChild(actions);
+    if (editMode){
+      const main = document.createElement("div");
+      main.className = "routing-point-row-main";
+      main.appendChild(grip);
+      main.appendChild(badgeEl);
+      main.appendChild(field);
+      main.appendChild(coords);
+      main.appendChild(actions);
+      row.appendChild(main);
+      row.appendChild(routingBuildCoordEditControls(p));
+    } else {
+      row.appendChild(grip);
+      row.appendChild(badgeEl);
+      row.appendChild(field);
+      row.appendChild(coords);
+      row.appendChild(actions);
+    }
     frag.appendChild(row);
   }
   list.innerHTML = "";
   list.appendChild(frag);
+  try { routingSyncCoordEditBtnUi(); } catch(_){}
   const addBtn = document.getElementById("routingAddViaBtn");
   if (addBtn){
     if (n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
@@ -61816,7 +62020,12 @@ function routingRemovePoint(id){
   }
   try { routingPushPointUndoSnapshot(); } catch(_){}
   r.points = r.points.filter(p => p && p.id !== id);
+  try {
+    const drafts = routingCoordEditEnsureDraftBag(r);
+    try { delete drafts[String(id)]; } catch(_){}
+  } catch(_){}
   try { routingEnsureAbPoints(r); } catch(_){}
+  try { routingCoordEditPruneDrafts(r); } catch(_){}
   r.dirty = true;
   try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus("", false);
@@ -64575,6 +64784,7 @@ function routingHandleListAction(ev){
   if (!act || !id) return;
   if (act === "pick"){ routingEnterPickMode(id); return; }
   if (act === "gps"){ routingRequestGpsForPoint(id); return; }
+  if (act === "apply-coords"){ routingApplyManualCoords(id); return; }
   if (act === "up") routingMovePoint(id, -1);
   else if (act === "down") routingMovePoint(id, 1);
   else if (act === "remove") routingRemovePoint(id);
@@ -64825,6 +65035,14 @@ function wireRoutingPlannerOnce(){
     ev.preventDefault();
     routingAddVia();
   });
+  const coordEditBtn = document.getElementById("routingCoordEditBtn");
+  if (coordEditBtn && !coordEditBtn._routingCoordEditBound){
+    coordEditBtn._routingCoordEditBound = true;
+    coordEditBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      routingToggleCoordEditMode();
+    });
+  }
   const reverseBtn = document.getElementById("routingReverseBtn");
   if (reverseBtn && !reverseBtn._routingReverseBound){
     reverseBtn._routingReverseBound = true;
@@ -64924,6 +65142,18 @@ function wireRoutingPlannerOnce(){
   if (list){
     list.addEventListener("click", routingHandleListAction);
     list.addEventListener("input", (ev) => {
+      const coordInp = ev.target && ev.target.closest && ev.target.closest("input.routing-pt-coord[data-routing-id]");
+      if (coordInp && state._routing){
+        const id = coordInp.getAttribute("data-routing-id");
+        const axis = coordInp.getAttribute("data-routing-coord");
+        if (id && (axis === "lat" || axis === "lon")){
+          const draft = routingCoordEditGetDraft(id);
+          const val = String(coordInp.value || "").slice(0, 24);
+          if (axis === "lat") draft.latText = val;
+          else draft.lonText = val;
+        }
+        return;
+      }
       const inp = ev.target && ev.target.closest && ev.target.closest("input.routing-pt-field[data-routing-id]");
       if (!inp || !state._routing) return;
       const id = inp.getAttribute("data-routing-id");
@@ -64932,6 +65162,17 @@ function wireRoutingPlannerOnce(){
       p.label = String(inp.value || "").slice(0, 80);
       state._routing.dirty = true;
     });
+    if (!list._routingCoordKeyBound){
+      list._routingCoordKeyBound = true;
+      list.addEventListener("keydown", (ev) => {
+        const coordInp = ev && ev.target && ev.target.closest && ev.target.closest("input.routing-pt-coord[data-routing-id]");
+        if (!coordInp) return;
+        if (ev.key === "Enter"){ ev.preventDefault(); const id = coordInp.getAttribute("data-routing-id"); if (id) routingApplyManualCoords(id); return; }
+        if ((ev.key === "Escape" || ev.key === "Esc") && state._routing && state._routing.coordEditMode){
+          ev.preventDefault(); ev.stopPropagation(); routingExitCoordEditMode();
+        }
+      });
+    }
     routingAttachListDnd(list);
   }
   const langSel = document.getElementById("languageSelect");
