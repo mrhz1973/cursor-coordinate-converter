@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-01 — **`finito` Regola H — MAJOR-3-b2 (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`cad28e7`** / **`B6.4IHA-B2-FIX1 · build 98`**. Documentale tip **`80265c3`**. Docs finito **`0e0a82c`**. Working tree pre-autosync: pulito. Monolite **già** nel tip runtime (non nel commit docs). Dettaglio: `docs/orchestrator/inbox/2026-08-01_2338_riepilogo_finito-sessione.md`.
+2026-08-01 — **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** + **Oggetti GIS FROZEN**. Commit task **`157a31d`**. Runtime tip **`cad28e7`** / build 98 **invariato**. Deploy non richiesto. Working tree pre-autosync: pulito. Monolite **escluso**. Dettaglio: `docs/orchestrator/inbox/2026-08-01_2348_riepilogo_qa-operator-it-only-pref.md`.
+
+2026-08-01 — **MAJOR-3-b2 (+ FIX1) CLOSED** — tip **`cad28e7`** / build 98 (runtime live).
 
 2026-08-01 — **TRACK-POINT-CENTER-BUTTON-A CLOSED** — tip storico **`0482ef8`** / build 96 (superseded live).
-
-2026-08-01 — **ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED** — tip storico **`6475804`** / build 95 (superseded live).
