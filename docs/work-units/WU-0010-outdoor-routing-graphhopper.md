@@ -1,6 +1,6 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / ROUTING-POINT-COORD-EDIT-A OPEN DESIGN READY / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
 **Runtime autorevole attuale:** `d0688ea44513501cae766f79d1538934729234e3` (`d0688ea`) — display **`B6.2MCV-A-FIX3 · build 93`** (MAP-CENTER-VIEWPORT-AWARE-A-FIX3; tip TPD-A storico `3838e9e`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
@@ -23,7 +23,9 @@
 **APP-BUILD-LABEL-UX-A (+ FIX1):** HUD testuale rimossa + footer stabile — **CLOSED / PASS end-to-end** (tip storico `da3397b` build 88 / `B6.2BL-A-FIX1`; superseded live da TPD-A).
 **TRACK-PROFILE-POINTS-DISPLAY-A:** overlay punti Saved Track in sola apertura Profilo (max 120, distance-decimated) — **CLOSED / PASS end-to-end** (tip storico `3838e9e` build 89 / `B6.2TPD-A`; superseded live da **MAP-CENTER**).
 **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3):** Centra viewport-aware (usable rect + costi normalizzati) — **CLOSED / PASS end-to-end** (tip `d0688ea` build 93 / `B6.2MCV-A-FIX3`; blob `55d414bc…`; byte LF **3149321**; SHA-256 LF **`0c23594c…`**; review FIX3 PASS; deploy+QA PASS 2026-08-01; Regola H).
-**Backlog UX (docs-only):** **ROUTING-PROFILE-EDIT-A**; **QA-OPERATOR-IT-ONLY-PREF**.
+**ROUTING-PROFILE-EDIT-A:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01) — discovery: editing base già presente; nessuna implementazione sotto questo ID; residuo → **ROUTING-POINT-COORD-EDIT-A**.
+**ROUTING-POINT-COORD-EDIT-A:** **OPEN / DESIGN READY — DOCS-ONLY** (2026-08-01) — immissione manuale atomica lat/lon DD; CTA «Modifica coordinate»; DELICATO leggero; review downstream obbligatoria; **runtime non iniziato**. Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](../orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md). Bundle F resta futuro e separato.
+**Backlog UX (docs-only):** **QA-OPERATOR-IT-ONLY-PREF**.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 

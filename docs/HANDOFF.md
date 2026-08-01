@@ -117,10 +117,12 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **MAP-CENTER-VIEWPORT-AWARE-A-FIX3 CLOSED / PASS end-to-end** di questa registrazione `finito` Regola H (verificare `git ls-remote` post-push); monolite runtime **già** su tip `d0688ea` (non in commit docs) |
+| HEAD documentale (pre-autosync) | commit docs **ROUTING-POINT-COORD-EDIT-A OPEN / DESIGN READY** (verificare `git ls-remote` post-push); monolite runtime **invariato** tip `d0688ea` |
 | Runtime live / commit monolite | `d0688ea44513501cae766f79d1538934729234e3` (`d0688ea`) — tip MAP-CENTER-VIEWPORT-AWARE-A-FIX3 |
 | Ultimo blocco chiuso | **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3)** — Centra viewport-aware — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
 | Ultimo blocco runtime monolite | **MAP-CENTER-VIEWPORT-AWARE-A-FIX3** — tip `d0688ea` build 93 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | **ROUTING-POINT-COORD-EDIT-A** — **OPEN / DESIGN READY — DOCS-ONLY** (piano `2026-08-01_1724_plan_…`; runtime non iniziato) |
+| ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
@@ -177,13 +179,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-Da scegliere: backlog UX (**ROUTING-PROFILE-EDIT-A** / **QA-OPERATOR-IT-ONLY-PREF**) / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. **OUTDOOR-ROUTING-GH-E CLOSED / PASS**. **OUTDOOR-ROUTING-REVERSE-A CLOSED / PASS**. **TRACK-MODAL-DISPLAY-PREFS-A CLOSED / PASS**. **OUTDOOR-ROUTING-ELEVATION-STYLE-A CLOSED / PASS**. **TRACK-ELEVATION-PROFILE-A + FIX1–FIX3 CLOSED / PASS**. **TRACK-SAVE-AS-NAME-A CLOSED / PASS**. **ROUTING-SUMMARY-DEDUP-A CLOSED / PASS**. **ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) CLOSED / PASS**. **APP-BUILD-LABEL-UX-A (+ FIX1) CLOSED / PASS**. **TRACK-PROFILE-POINTS-DISPLAY-A CLOSED / PASS**. **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / PASS**. Runtime live monolite **`d0688ea`** / **`B6.2MCV-A-FIX3 · build 93`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Task aperto corrente: **ROUTING-POINT-COORD-EDIT-A** (**OPEN / DESIGN READY** — prompt runtime chirurgico dopo review del piano [`2026-08-01_1724_plan_routing-point-coord-edit-a.md`](orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md)). **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Altri candidati: **QA-OPERATOR-IT-ONLY-PREF** / geocoding multi-riga / **MAJOR-3-b2** (parcheggiato) / **TRACK-POINT-CENTER-BUTTON-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Ultimo blocco chiuso: **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / PASS**. Runtime live monolite **`d0688ea`** / **`B6.2MCV-A-FIX3 · build 93`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **ROUTING-PROFILE-EDIT-A**; **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**.
+**Backlog basso / non ora:** **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (ex «B2» storico WU-0010); **TRACK-POINT-CENTER-BUTTON-A**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C; **non** implementare ROUTING-POINT-COORD-EDIT-A senza prompt runtime dedicato.
 
 ---
 
@@ -233,9 +235,13 @@ Da scegliere: backlog UX (**ROUTING-PROFILE-EDIT-A** / **QA-OPERATOR-IT-ONLY-PRE
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-07-31). Catena `6de0e98` build 87 → tip `da3397b` / `B6.2BL-A-FIX1 · build 88`. HUD `#gisMapHud` rimossa; footer GIS fixed + riserva dinamica; build solo footer/About. QA FAIL A → FIX1. Deploy GIS-only PASS. QA «**QA APP-BUILD-LABEL-UX-A-FIX1 PASS operatore**».
 
-### ROUTING-PROFILE-EDIT-A — Editing A/B/intermedi — BACKLOG / NON APERTO
+### ROUTING-PROFILE-EDIT-A — SUPERSEDED / RENAMED — NO RUNTIME
 
-**Stato:** **BACKLOG / NON APERTO** (2026-07-31). Flusso editing integrato punti planner; non mescolare al profilo read-only senza progetto.
+**Stato:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01). Discovery: operazioni editing (label/pick/drag/GPS/CRUD/reorder/Reverse/Undo) già presenti. **Nessuna implementazione** sotto questo ID; **non** CLOSED/PASS. Residuo → **ROUTING-POINT-COORD-EDIT-A**.
+
+### ROUTING-POINT-COORD-EDIT-A — Coordinate manuali A/B/intermedi — OPEN / DESIGN READY
+
+**Stato:** **OPEN / DESIGN READY — DOCS-ONLY** (2026-08-01). CTA «Modifica coordinate»; input DD lat/lon atomici; draft UI keyed by ID; nessun `source:"manual"`; nessuna persistenza/rete/geocoding; profilo read-only. Classificazione futura **DELICATO leggero**; review downstream obbligatoria. Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md). **Runtime non iniziato.** Prossimo passo: prompt runtime chirurgico dopo review del piano.
 
 ### QA-OPERATOR-IT-ONLY-PREF — QA operatore solo italiano — BACKLOG / NON APERTO
 
