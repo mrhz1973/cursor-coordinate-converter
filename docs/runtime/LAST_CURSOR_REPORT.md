@@ -2,57 +2,54 @@
 
 ## LATEST
 
-* real_task_commit: `6475804db952e311f8a228df1435d104e3d2557a`
-* real_task_subject: fix(routing): clear stale coordinate edit feedback
-* report_generated_at: 2026-08-01T16:25:00Z
+* real_task_commit: `0482ef8d88b15daea0a67a0b9552e0c69a35fe5f`
+* real_task_subject: feat(track): center individual track points
+* report_generated_at: 2026-08-01T18:55:00Z
 * branch: main
-* remote_head_after_task_push: `270726fa0d2b3703178ec6b83d584bf310db3242` (docs finito pre-autosync); runtime tip `6475804`
-* previous_report_container: `1fc3096` (autosync finito MAP-CENTER — esterno/verificabile)
+* remote_head_after_task_push: `7417ae010b289dfc9a2213499f70154df7bf74b7` (docs finito pre-autosync); runtime tip `0482ef8`
+* previous_report_container: `b336224` (autosync finito ROUTING-POINT — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs finito `270726f` pushato; monolite tip `6475804` escluso da docs/autosync
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); runtime `6475804` + docs `270726f` pushati pre-autosync
-* result_cursor: ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED / PASS end-to-end in OM/HANDOFF/WU-0010/roadmap/QA-CHECKLIST; finito Regola H
-* pass_operatore: PASS — attestazione esplicita «QA ROUTING-POINT-COORD-EDIT-A PASS operatore» (2026-08-01)
-* result_runtime: tip `6475804` / B6.3RPC-A-FIX1 · build 95; blob `a87920fe6421d690313439842648c6208de2df4c`; byte LF 3162728; SHA-256 LF `559795bf817a580ab34aba5db892de585ade7f12a3ad41a381912464ea8a2908`
+* working_tree_status: docs finito `7417ae0` pushato; monolite tip `0482ef8` escluso da docs/autosync
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); runtime `0482ef8` + docs `7417ae0` pushati pre-autosync
+* result_cursor: TRACK-POINT-CENTER-BUTTON-A CLOSED / PASS end-to-end in OM/HANDOFF/roadmap/QA-CHECKLIST; finito Regola H
+* pass_operatore: PASS — attestazione esplicita «QA TRACK-POINT-CENTER-BUTTON-A PASS operatore» (2026-08-01)
+* result_runtime: tip `0482ef8` / B6.3TPC-A · build 96; blob `4f121880f988984e574178b6f1ec84eb67ce945e`; byte LF 3164587; SHA-256 LF `e77ad65e376ac8a4e80e16f513c1b02776ecefad7e65a90614264d8ed0295038`
 * qa_attestation_source: operatore
-* notes: DELICATO leggero; review A+FIX1 PASS; deploy GIS-only PASS; catena f509125→6475804; MAP-CENTER superseded live
+* notes: ROUTINE; harness 31/31; deploy GIS-only PASS; Centra per-riga ID stabile; ROUTING-POINT tip `6475804` superseded live
 
 ## OUTPUT VERBATIM
 
 ```text
-real_task_commit (runtime tip FIX1):
-6475804db952e311f8a228df1435d104e3d2557a
-
-feature A:
-f50912539a949569a358815d27369733f23e6e00
+real_task_commit (runtime tip):
+0482ef8d88b15daea0a67a0b9552e0c69a35fe5f
 
 docs finito (pre-autosync):
-270726fa0d2b3703178ec6b83d584bf310db3242
+7417ae010b289dfc9a2213499f70154df7bf74b7
 
 git rev-parse HEAD:"coordinate_converter Claude.html"
-a87920fe6421d690313439842648c6208de2df4c
+4f121880f988984e574178b6f1ec84eb67ce945e
 
 git branch --show-current
 main
 
 git ls-remote origin refs/heads/main (post-docs, pre-autosync):
-270726fa0d2b3703178ec6b83d584bf310db3242	refs/heads/main
+7417ae010b289dfc9a2213499f70154df7bf74b7	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* b336224 — autosync / riconciliazione finito ROUTING-POINT-COORD-EDIT-A (+ FIX1); real_task_commit storico `6475804`
+* 270726f — docs: finito ROUTING-POINT-COORD-EDIT-A after Regola H QA PASS
+* 6475804 — ROUTING-POINT-COORD-EDIT-A-FIX1 runtime tip storico (build 95)
+* f509125 — ROUTING-POINT-COORD-EDIT-A runtime (build 94)
+* 0482ef8 — TRACK-POINT-CENTER-BUTTON-A runtime tip (build 96)
+* 7417ae0 — docs: finito TRACK-POINT-CENTER-BUTTON-A after Regola H QA PASS
 * 1fc3096 — autosync / riconciliazione finito MAP-CENTER-VIEWPORT-AWARE-A-FIX3; real_task_commit storico `d0688ea`
 * b77d643 — docs: finito MAP-CENTER-VIEWPORT-AWARE-A-FIX3 after Regola H QA PASS
 * d0688ea — MAP-CENTER FIX3 runtime tip storico (build 93)
-* 3e4ac48 — docs: open ROUTING-POINT-COORD-EDIT-A design
-* f509125 — ROUTING-POINT-COORD-EDIT-A runtime (build 94)
-* 6475804 — ROUTING-POINT-COORD-EDIT-A-FIX1 runtime tip (build 95)
-* 270726f — docs: finito ROUTING-POINT-COORD-EDIT-A after Regola H QA PASS
-* 88d47db — autosync / riconciliazione finito TRACK-PROFILE-POINTS-DISPLAY-A; real_task_commit storico `3838e9e`
-* 62808f4 — autosync / riconciliazione finito APP-BUILD-LABEL-UX-A-FIX1; real_task_commit storico `da3397b`
 
 ## LIMITI
 

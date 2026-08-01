@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-01 — **`finito` Regola H — ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`6475804`** / **`B6.3RPC-A-FIX1 · build 95`**. Docs finito **`270726f`**. Dettaglio: `docs/orchestrator/inbox/2026-08-01_1820_riepilogo_finito-sessione.md`.
+2026-08-01 — **`finito` Regola H — TRACK-POINT-CENTER-BUTTON-A CLOSED / PASS end-to-end**. Runtime tip **`0482ef8`** / **`B6.3TPC-A · build 96`**. Docs finito **`7417ae0`**. Working tree pre-autosync: pulito. Monolite **già** nel tip runtime (non nel commit docs). Dettaglio: `docs/orchestrator/inbox/2026-08-01_2055_riepilogo_finito-sessione.md`.
+
+2026-08-01 — **ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED** — tip storico **`6475804`** / build 95 (superseded live).
 
 2026-08-01 — **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED** — tip storico **`d0688ea`** / build 93 (superseded live).
-
-2026-08-01 — **TRACK-PROFILE-POINTS-DISPLAY-A CLOSED** — tip storico **`3838e9e`** / build 89 (superseded live).
