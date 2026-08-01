@@ -12825,7 +12825,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div id="wbImportHubTotals" class="wb-import-hub-totals hint" role="status" aria-live="polite"></div>
       <div id="wbImportHubPreview" class="wb-import-hub-preview" aria-live="polite"></div>
       <div class="wb-import-hub-actions">
-        <button type="button" class="btn btn-sm" id="wbImportHubClearBtn" data-i18n="importHub.clear">Svuota anteprima</button>
+        <button type="button" class="btn btn-sm btn-primary" id="wbImportHubApplyBtn" data-i18n="importHub.apply" data-i18n-tip="tip.importHub.apply" data-i18n-aria="tip.importHub.apply" disabled>Applica anteprima</button>
+        <button type="button" class="btn btn-sm btn-ghost" id="wbImportHubClearBtn" data-i18n="importHub.clear">Svuota anteprima</button>
       </div>
     </div>
   </details>
@@ -15586,6 +15587,22 @@ const I18N = {
     "importHub.tooMany":"Troppi file (massimo {0}). Analizzati i primi {0}.",
     "importHub.missionRefused":"Mission Package non ammesso qui. Usa un file GPX, KML, KMZ o GeoJSON.",
     "importHub.clear":"Svuota anteprima",
+    "importHub.apply":"Applica anteprima",
+    "tip.importHub.apply":"Aggiunge in modo additivo le categorie selezionate dell’anteprima.",
+    "importHub.applying":"Applicazione in corso…",
+    "importHub.noSelection":"Seleziona almeno una categoria con elementi validi.",
+    "importHub.noPayload":"Payload anteprima non disponibile. Ricarica i file.",
+    "importHub.capWaypoints":"Cap waypoint raggiunto (massimo {0}).",
+    "importHub.capTracks":"Cap tracce salvate raggiunto (massimo {0}).",
+    "importHub.capPolygons":"Cap poligoni raggiunto (massimo {0}).",
+    "importHub.capTrackPoints":"Una traccia supera il massimo di {0} punti.",
+    "importHub.applyOk":"Importati {0} waypoint · {1} tracce · {2} poligoni.",
+    "importHub.applyFail":"Applicazione fallita. Nessuna modifica applicata.",
+    "importHub.rollbackOk":"Applicazione fallita; rollback eseguito.",
+    "importHub.rollbackFail":"Rollback fallito: verificare i dati locali.",
+    "importHub.validationFail":"Validazione fallita: {0}",
+    "importHub.invalidTrack":"traccia non valida",
+    "importHub.invalidPolygon":"poligono non valido",
     "importHub.totals":"Totale: {0} waypoint · {1} tracce · {2} poligoni · {3} scartate · {4} errori",
     "importHub.fileOk":"OK",
     "importHub.fileCounts":"{0} waypoint · {1} tracce · {2} poligoni · {3} scartate",
@@ -17753,6 +17770,22 @@ const I18N = {
     "importHub.tooMany":"Too many files (max {0}). Analyzed the first {0}.",
     "importHub.missionRefused":"Mission Package not allowed here. Use a GPX, KML, KMZ or GeoJSON file.",
     "importHub.clear":"Clear preview",
+    "importHub.apply":"Apply preview",
+    "tip.importHub.apply":"Additively import the selected preview categories.",
+    "importHub.applying":"Applying…",
+    "importHub.noSelection":"Select at least one category with valid items.",
+    "importHub.noPayload":"Preview payload unavailable. Reload the files.",
+    "importHub.capWaypoints":"Waypoint cap reached (max {0}).",
+    "importHub.capTracks":"Saved tracks cap reached (max {0}).",
+    "importHub.capPolygons":"Polygon cap reached (max {0}).",
+    "importHub.capTrackPoints":"A track exceeds the maximum of {0} points.",
+    "importHub.applyOk":"Imported {0} waypoints · {1} tracks · {2} polygons.",
+    "importHub.applyFail":"Apply failed. No changes were kept.",
+    "importHub.rollbackOk":"Apply failed; rollback completed.",
+    "importHub.rollbackFail":"Rollback failed: check local data.",
+    "importHub.validationFail":"Validation failed: {0}",
+    "importHub.invalidTrack":"invalid track",
+    "importHub.invalidPolygon":"invalid polygon",
     "importHub.totals":"Total: {0} waypoints · {1} tracks · {2} polygons · {3} discarded · {4} errors",
     "importHub.fileOk":"OK",
     "importHub.fileCounts":"{0} waypoints · {1} tracks · {2} polygons · {3} discarded",
@@ -19768,6 +19801,48 @@ const I18N = {
     "workbench.export.noCategories":"Sélectionnez au moins une catégorie à exporter.",
     "workbench.export.ok":"{0} objets SIG exportés.",
     "workbench.export.errorConvert":"Impossible de convertir les données au format demandé.",
+    "importHub.title":"Import SIG",
+    "importHub.pickBtn":"Choisir fichiers",
+    "importHub.dropHint":"Déposez ici des fichiers GPX, KML, KMZ ou GeoJSON, ou sélectionnez-les.",
+    "importHub.categories":"Catégories (aperçu)",
+    "importHub.analyzing":"Analyse en cours…",
+    "importHub.preview":"Aperçu",
+    "importHub.empty":"Aucun fichier sélectionné.",
+    "importHub.waypoints":"Waypoints",
+    "importHub.savedTracks":"Traces enregistrées",
+    "importHub.polygons":"Polygones",
+    "importHub.discarded":"ignorées",
+    "importHub.warning":"Avertissement",
+    "importHub.fileError":"Erreur",
+    "importHub.unsupported":"Format non pris en charge",
+    "importHub.tooLarge":"Fichier trop volumineux (>25 Mo)",
+    "importHub.tooMany":"Trop de fichiers (maximum {0}). Analysés les {0} premiers.",
+    "importHub.missionRefused":"Mission Package non autorisé ici. Utilisez un fichier GPX, KML, KMZ ou GeoJSON.",
+    "importHub.clear":"Vider l'aperçu",
+    "importHub.apply":"Appliquer l'aperçu",
+    "tip.importHub.apply":"Ajoute de façon additive les catégories sélectionnées de l'aperçu.",
+    "importHub.applying":"Application en cours…",
+    "importHub.noSelection":"Sélectionnez au moins une catégorie avec des éléments valides.",
+    "importHub.noPayload":"Charge utile d'aperçu indisponible. Rechargez les fichiers.",
+    "importHub.capWaypoints":"Cap waypoints atteint (maximum {0}).",
+    "importHub.capTracks":"Cap traces enregistrées atteint (maximum {0}).",
+    "importHub.capPolygons":"Cap polygones atteint (maximum {0}).",
+    "importHub.capTrackPoints":"Une trace dépasse le maximum de {0} points.",
+    "importHub.applyOk":"Importé : {0} waypoint(s) · {1} trace(s) · {2} polygone(s).",
+    "importHub.applyFail":"Application échouée. Aucune modification conservée.",
+    "importHub.rollbackOk":"Application échouée ; restauration effectuée.",
+    "importHub.rollbackFail":"Échec de restauration : vérifier les données locales.",
+    "importHub.validationFail":"Validation échouée : {0}",
+    "importHub.invalidTrack":"trace non valide",
+    "importHub.invalidPolygon":"polygone non valide",
+    "importHub.totals":"Total : {0} waypoints · {1} traces · {2} polygones · {3} ignorées · {4} erreurs",
+    "importHub.fileOk":"OK",
+    "importHub.fileCounts":"{0} waypoints · {1} traces · {2} polygones · {3} ignorées",
+    "importHub.busy":"Une autre analyse ou importation est en cours.",
+    "importHub.noGeometry":"Aucune géométrie reconnue",
+    "importHub.invalidCoords":"coordonnées non valides",
+    "importHub.unsupportedGeom":"géométrie non prise en charge",
+    "importHub.jsonNotGeo":"JSON non reconnu comme GeoJSON",
     "workbenchPanel.minimizeBlockedSubdialog":"Terminez ou fermez les boîtes de dialogue ouvertes avant de réduire.",
     "gis.minimized.workbench":"Objets SIG",
     "tip.workbenchPanel":"Catalogue d'objets SIG (waypoints, traces, polygones)",
@@ -21567,10 +21642,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.3TPC-A";
-const APP_BUILD_DETAIL = "TRACK-POINT-CENTER-BUTTON-A — center individual track points";
+const APP_BUILD_ID = "B6.4IHA-B2";
+const APP_BUILD_DETAIL = "MAJOR-3-b2 — apply Import Hub preview additively";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 96;
+const APP_BUILD_NUM = 97;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28345,17 +28420,26 @@ function gisImportHubIsValidCoord(lon, lat){
   return Number.isFinite(lat) && Number.isFinite(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
 }
 
-/** Preview-only classify — mirrors drop apply categories without mutating stores. */
+function gisImportHubCloneJson(v){
+  try { return JSON.parse(JSON.stringify(v)); } catch(_){ return null; }
+}
+
+function gisImportHubCloneCoords(coords){
+  const c = gisImportHubCloneJson(coords);
+  return Array.isArray(c) ? c : null;
+}
+
+/** Classify + session-only payload — mirrors drop categories; no store mutation. */
 function gisImportHubClassifyFeatureCollection(fc){
   const out = {
     waypoints: 0,
     tracks: 0,
     polygons: 0,
     discarded: 0,
-    warnings: []
+    warnings: [],
+    payload: { waypoints: [], lineParts: [], polygons: [], trackName: "" }
   };
   const feats = (fc && Array.isArray(fc.features)) ? fc.features : [];
-  let lineParts = 0;
   let invCoords = 0;
   let unsupported = 0;
   for (const f of feats){
@@ -28372,7 +28456,13 @@ function gisImportHubClassifyFeatureCollection(fc){
         invCoords++;
         continue;
       }
-      out.waypoints++;
+      const pr = (f.properties && typeof f.properties === "object") ? f.properties : {};
+      const nm = pr.name || pr.Name || "";
+      out.payload.waypoints.push({
+        lat: c[1],
+        lon: c[0],
+        name: String(nm || "").slice(0, 60)
+      });
     } else if (g.type === "LineString"){
       const coords = g.coordinates;
       if (!Array.isArray(coords) || coords.length < 2){
@@ -28386,7 +28476,9 @@ function gisImportHubClassifyFeatureCollection(fc){
         if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
       }
       if (!ok){ out.discarded++; invCoords++; continue; }
-      lineParts++;
+      const cloned = gisImportHubCloneCoords(coords);
+      if (cloned) out.payload.lineParts.push(cloned);
+      else { out.discarded++; unsupported++; }
     } else if (g.type === "MultiLineString"){
       const lines = g.coordinates;
       if (!Array.isArray(lines) || !lines.length){
@@ -28403,7 +28495,9 @@ function gisImportHubClassifyFeatureCollection(fc){
           if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
         }
         if (!ok){ invCoords++; continue; }
-        lineParts++;
+        const cloned = gisImportHubCloneCoords(line);
+        if (!cloned) continue;
+        out.payload.lineParts.push(cloned);
         any = true;
       }
       if (!any){ out.discarded++; unsupported++; }
@@ -28420,14 +28514,30 @@ function gisImportHubClassifyFeatureCollection(fc){
         if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){ ok = false; break; }
       }
       if (!ok){ out.discarded++; invCoords++; continue; }
-      out.polygons++;
+      const feat = gisImportHubCloneJson({
+        type: "Feature",
+        geometry: g,
+        properties: (f.properties && typeof f.properties === "object") ? f.properties : {}
+      });
+      if (feat){
+        try { delete feat.id; } catch(_){}
+        if (feat.properties && typeof feat.properties === "object"){
+          try { delete feat.properties.id; } catch(_){}
+        }
+        out.payload.polygons.push(feat);
+      } else {
+        out.discarded++;
+        unsupported++;
+      }
     } else {
       out.discarded++;
       unsupported++;
     }
   }
   // Drop apply merges all LineString/MultiLineString of one file into one saved track.
-  out.tracks = lineParts > 0 ? 1 : 0;
+  out.waypoints = out.payload.waypoints.length;
+  out.tracks = out.payload.lineParts.length > 0 ? 1 : 0;
+  out.polygons = out.payload.polygons.length;
   if (invCoords){
     out.warnings.push((typeof t === "function" ? t("importHub.invalidCoords") : "") || "invalid coordinates");
   }
@@ -28435,6 +28545,440 @@ function gisImportHubClassifyFeatureCollection(fc){
     out.warnings.push((typeof t === "function" ? t("importHub.unsupportedGeom") : "") || "unsupported geometry");
   }
   return out;
+}
+
+function gisImportHubAttachClassify(row, cls, fc, filename){
+  row.waypoints = cls.waypoints;
+  row.tracks = cls.tracks;
+  row.polygons = cls.polygons;
+  row.discarded = cls.discarded;
+  row.warnings = cls.warnings || [];
+  if (row.error || (!cls.waypoints && !cls.tracks && !cls.polygons)){
+    row.payload = null;
+    return row;
+  }
+  const payload = cls.payload || { waypoints: [], lineParts: [], polygons: [], trackName: "" };
+  if (payload.lineParts && payload.lineParts.length){
+    let nm = "";
+    try {
+      nm = (typeof spatialDeriveImportedTrackPromptName === "function")
+        ? (spatialDeriveImportedTrackPromptName(fc, filename) || "")
+        : "";
+    } catch(_){ nm = ""; }
+    payload.trackName = String(nm || "").slice(0, 80);
+  }
+  row.payload = payload;
+  return row;
+}
+
+function gisImportHubSelectedApplyTotals(h){
+  const sel = (h && h.selection) || { waypoints: true, savedTracks: true, polygons: true };
+  const totals = { waypoints: 0, tracks: 0, polygons: 0, items: 0 };
+  const files = (h && Array.isArray(h.files)) ? h.files : [];
+  for (const f of files){
+    if (!f || f.error || !f.payload) continue;
+    const p = f.payload;
+    if (sel.waypoints && Array.isArray(p.waypoints)) totals.waypoints += p.waypoints.length;
+    if (sel.savedTracks && Array.isArray(p.lineParts) && p.lineParts.length) totals.tracks += 1;
+    if (sel.polygons && Array.isArray(p.polygons)) totals.polygons += p.polygons.length;
+  }
+  totals.items = totals.waypoints + totals.tracks + totals.polygons;
+  return totals;
+}
+
+function gisImportHubCanApply(){
+  const h = gisImportHubEnsureState();
+  if (h.phase !== "preview") return false;
+  if (gisSpatialImportIsBusy()) return false;
+  const sel = h.selection || {};
+  if (!sel.waypoints && !sel.savedTracks && !sel.polygons) return false;
+  return gisImportHubSelectedApplyTotals(h).items > 0;
+}
+
+function gisImportHubSyncApplyBtnUi(){
+  const btn = document.getElementById("wbImportHubApplyBtn");
+  if (!btn) return;
+  const h = gisImportHubEnsureState();
+  const busy = h.phase === "parsing" || h.phase === "applying" || gisSpatialImportIsBusy();
+  btn.disabled = busy || !gisImportHubCanApply();
+}
+
+function gisImportHubSetControlsBusy(busy){
+  const drop = document.getElementById("wbImportHubDrop");
+  const pick = document.getElementById("wbImportHubPickBtn");
+  const fileIn = document.getElementById("wbImportHubFile");
+  const clearBtn = document.getElementById("wbImportHubClearBtn");
+  const wp = document.getElementById("wbImportHubWaypoints");
+  const tr = document.getElementById("wbImportHubSavedTracks");
+  const pg = document.getElementById("wbImportHubPolygons");
+  const dis = !!busy;
+  if (drop){
+    drop.classList.toggle("is-busy", dis);
+    try { drop.setAttribute("aria-disabled", dis ? "true" : "false"); } catch(_){}
+  }
+  if (pick) pick.disabled = dis;
+  if (fileIn) fileIn.disabled = dis;
+  if (clearBtn) clearBtn.disabled = dis;
+  if (wp) wp.disabled = dis;
+  if (tr) tr.disabled = dis;
+  if (pg) pg.disabled = dis;
+  gisImportHubSyncApplyBtnUi();
+}
+
+function gisImportHubTakeSnapshot(){
+  try { ensureMapWaypointsState(); } catch(_){}
+  try { ensureSavedTracksState(); } catch(_){}
+  try { ensureGisState(); } catch(_){}
+  let storageRaw = null;
+  let ok = true;
+  try { storageRaw = localStorage.getItem(STORAGE_KEY); } catch(_){ ok = false; }
+  const mapWaypoints = gisImportHubCloneJson(state.mapWaypoints);
+  const savedTracks = gisImportHubCloneJson(state.savedTracks);
+  const gisPolygons = gisImportHubCloneJson(state.gisPolygons);
+  const gisLayers = gisImportHubCloneJson(state.gisLayers);
+  if (!Array.isArray(mapWaypoints) || !Array.isArray(savedTracks) || !Array.isArray(gisPolygons) || !Array.isArray(gisLayers)) ok = false;
+  return {
+    ok: ok,
+    storageRaw: storageRaw,
+    mapWaypoints: mapWaypoints || [],
+    savedTracks: savedTracks || [],
+    gisPolygons: gisPolygons || [],
+    gisLayers: gisLayers || []
+  };
+}
+
+function gisImportHubStoresEqual(a, b){
+  try { return JSON.stringify(a) === JSON.stringify(b); } catch(_){ return false; }
+}
+
+function gisImportHubRestoreSnapshot(snap){
+  if (!snap) return false;
+  try {
+    state.mapWaypoints = gisImportHubCloneJson(snap.mapWaypoints) || [];
+    state.savedTracks = gisImportHubCloneJson(snap.savedTracks) || [];
+    state.gisPolygons = gisImportHubCloneJson(snap.gisPolygons) || [];
+    state.gisLayers = gisImportHubCloneJson(snap.gisLayers) || [];
+  } catch(_){ return false; }
+  try {
+    if (snap.storageRaw == null) localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, snap.storageRaw);
+  } catch(_){ return false; }
+  return gisImportHubVerifySnapshotMatch(snap);
+}
+
+function gisImportHubVerifySnapshotMatch(snap){
+  if (!snap) return false;
+  try {
+    const cur = localStorage.getItem(STORAGE_KEY);
+    if (cur !== snap.storageRaw) return false;
+  } catch(_){ return false; }
+  if (!gisImportHubStoresEqual(state.mapWaypoints, snap.mapWaypoints)) return false;
+  if (!gisImportHubStoresEqual(state.savedTracks, snap.savedTracks)) return false;
+  if (!gisImportHubStoresEqual(state.gisPolygons, snap.gisPolygons)) return false;
+  if (!gisImportHubStoresEqual(state.gisLayers, snap.gisLayers)) return false;
+  return true;
+}
+
+function gisImportHubRefreshAfterMutation(){
+  try { if (typeof renderMapWaypointsAll === "function") renderMapWaypointsAll(); } catch(_){}
+  try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
+  try {
+    if (state.lastPoint && typeof renderMiniMap === "function"){
+      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+    } else if (typeof renderMiniMap === "function"){
+      renderMiniMap(DEFAULT_MAP_LAT, DEFAULT_MAP_LON, false);
+    }
+  } catch(_){}
+  try {
+    if (state.workbenchPanelOpen && typeof renderWorkbenchList === "function") renderWorkbenchList();
+  } catch(_){}
+}
+
+function gisImportHubPrevalidate(h, sel){
+  if (!h || h.phase !== "preview"){
+    return { ok: false, reason: "phase", message: (typeof t === "function" ? t("importHub.noPayload") : "") || "Preview payload unavailable" };
+  }
+  if (typeof waypointAdd !== "function" || typeof savedTrackAddFromPoints !== "function" || typeof gisFeatureAdd !== "function"){
+    return { ok: false, reason: "funnel", message: (typeof t === "function" ? t("importHub.applyFail") : "") || "Apply failed" };
+  }
+  if (gisSpatialImportIsBusy()){
+    return { ok: false, reason: "lock", message: (typeof t === "function" ? t("importHub.busy") : "") || "Busy" };
+  }
+  try { ensureMapWaypointsState(); } catch(_){}
+  try { ensureSavedTracksState(); } catch(_){}
+  try { ensureGisState(); } catch(_){}
+  const totals = gisImportHubSelectedApplyTotals(h);
+  if (!totals.items){
+    return { ok: false, reason: "selection", message: (typeof t === "function" ? t("importHub.noSelection") : "") || "No selection" };
+  }
+  const wpCap = 200;
+  const curWp = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.length : 0;
+  const curTr = Array.isArray(state.savedTracks) ? state.savedTracks.length : 0;
+  const curPg = Array.isArray(state.gisPolygons) ? state.gisPolygons.length : 0;
+  if (sel.waypoints && (curWp + totals.waypoints) > wpCap){
+    return {
+      ok: false,
+      reason: "cap_waypoints",
+      message: ((typeof t === "function" ? t("importHub.capWaypoints") : "") || "Waypoint cap (max {0}).").replace(/\{0\}/g, String(wpCap))
+    };
+  }
+  if (sel.savedTracks && (curTr + totals.tracks) > SAVED_TRACKS_CAP){
+    return {
+      ok: false,
+      reason: "cap_tracks",
+      message: ((typeof t === "function" ? t("importHub.capTracks") : "") || "Tracks cap (max {0}).").replace(/\{0\}/g, String(SAVED_TRACKS_CAP))
+    };
+  }
+  if (sel.polygons && (curPg + totals.polygons) > GIS_POLYGON_CAP){
+    return {
+      ok: false,
+      reason: "cap_polygons",
+      message: ((typeof t === "function" ? t("importHub.capPolygons") : "") || "Polygons cap (max {0}).").replace(/\{0\}/g, String(GIS_POLYGON_CAP))
+    };
+  }
+  const files = Array.isArray(h.files) ? h.files : [];
+  for (const file of files){
+    if (!file || file.error) continue;
+    if (!file.payload){
+      if ((sel.waypoints && file.waypoints) || (sel.savedTracks && file.tracks) || (sel.polygons && file.polygons)){
+        return { ok: false, reason: "payload", message: (typeof t === "function" ? t("importHub.noPayload") : "") || "Preview payload unavailable" };
+      }
+      continue;
+    }
+    const p = file.payload;
+    if (sel.waypoints){
+      const wps = Array.isArray(p.waypoints) ? p.waypoints : [];
+      if (wps.length !== (file.waypoints || 0)){
+        return { ok: false, reason: "payload_mismatch", message: (typeof t === "function" ? t("importHub.noPayload") : "") || "Preview payload unavailable" };
+      }
+      for (const wp of wps){
+        if (!wp || !gisImportHubIsValidCoord(wp.lon, wp.lat)){
+          return {
+            ok: false,
+            reason: "validation",
+            message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+              .replace("{0}", (typeof t === "function" ? t("importHub.invalidCoords") : "") || "invalid coordinates")
+          };
+        }
+      }
+    }
+    if (sel.savedTracks && Array.isArray(p.lineParts) && p.lineParts.length){
+      if ((file.tracks || 0) !== 1){
+        return { ok: false, reason: "payload_mismatch", message: (typeof t === "function" ? t("importHub.noPayload") : "") || "Preview payload unavailable" };
+      }
+      const allPts = [];
+      for (const coords of p.lineParts){
+        if (!Array.isArray(coords) || coords.length < 2){
+          return {
+            ok: false,
+            reason: "validation",
+            message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+              .replace("{0}", (typeof t === "function" ? t("importHub.invalidTrack") : "") || "invalid track")
+          };
+        }
+        for (let i = 0; i < coords.length; i++){
+          const c = coords[i];
+          if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){
+            return {
+              ok: false,
+              reason: "validation",
+              message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+                .replace("{0}", (typeof t === "function" ? t("importHub.invalidCoords") : "") || "invalid coordinates")
+            };
+          }
+        }
+        const pts = (typeof spatialLineToTrackPoints === "function")
+          ? spatialLineToTrackPoints(coords, { from: "import" })
+          : [];
+        for (const pt of pts) allPts.push(pt);
+      }
+      if (allPts.length < 2){
+        return {
+          ok: false,
+          reason: "validation",
+          message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+            .replace("{0}", (typeof t === "function" ? t("importHub.invalidTrack") : "") || "invalid track")
+        };
+      }
+      if (allPts.length > TRACK_POINTS_CAP){
+        return {
+          ok: false,
+          reason: "cap_track_points",
+          message: ((typeof t === "function" ? t("importHub.capTrackPoints") : "") || "Track points cap {0}.")
+            .replace(/\{0\}/g, String(TRACK_POINTS_CAP))
+        };
+      }
+    }
+    if (sel.polygons){
+      const polys = Array.isArray(p.polygons) ? p.polygons : [];
+      if (polys.length !== (file.polygons || 0)){
+        return { ok: false, reason: "payload_mismatch", message: (typeof t === "function" ? t("importHub.noPayload") : "") || "Preview payload unavailable" };
+      }
+      for (const feat of polys){
+        const ring = feat && feat.geometry && feat.geometry.coordinates && feat.geometry.coordinates[0];
+        if (!Array.isArray(ring) || ring.length < 3){
+          return {
+            ok: false,
+            reason: "validation",
+            message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+              .replace("{0}", (typeof t === "function" ? t("importHub.invalidPolygon") : "") || "invalid polygon")
+          };
+        }
+        for (let i = 0; i < ring.length; i++){
+          const c = ring[i];
+          if (!Array.isArray(c) || c.length < 2 || !gisImportHubIsValidCoord(c[0], c[1])){
+            return {
+              ok: false,
+              reason: "validation",
+              message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+                .replace("{0}", (typeof t === "function" ? t("importHub.invalidCoords") : "") || "invalid coordinates")
+            };
+          }
+        }
+        if (typeof gisSanitizeFeature === "function"){
+          const clean = gisSanitizeFeature(feat, "polygon");
+          if (!clean){
+            return {
+              ok: false,
+              reason: "validation",
+              message: ((typeof t === "function" ? t("importHub.validationFail") : "") || "Validation failed: {0}")
+                .replace("{0}", (typeof t === "function" ? t("importHub.invalidPolygon") : "") || "invalid polygon")
+            };
+          }
+        }
+      }
+    }
+  }
+  return { ok: true, totals: totals };
+}
+
+function gisImportHubMutateApply(h, sel){
+  const added = { waypoints: 0, tracks: 0, polygons: 0 };
+  const files = Array.isArray(h.files) ? h.files : [];
+  for (const file of files){
+    if (!file || file.error || !file.payload) continue;
+    const p = file.payload;
+    const fname = String(file.name || "file");
+    if (sel.waypoints && Array.isArray(p.waypoints)){
+      for (const wp of p.waypoints){
+        const ok = waypointAdd(wp.lat, wp.lon, wp.name || "", { from: "import", filename: fname }, { allowNearDuplicate: true });
+        if (!ok) throw new Error("waypointAdd failed");
+        added.waypoints++;
+      }
+    }
+    if (sel.savedTracks && Array.isArray(p.lineParts) && p.lineParts.length){
+      const allPts = [];
+      for (const coords of p.lineParts){
+        const pts = spatialLineToTrackPoints(coords, { from: "import", filename: fname });
+        for (const pt of pts) allPts.push(pt);
+      }
+      const res = savedTrackAddFromPoints({
+        name: String(p.trackName || "").trim().slice(0, 80) || fname.replace(/\.[^.]+$/, "").slice(0, 80),
+        points: allPts,
+        closed: false,
+        visible: true
+      });
+      if (!res || !res.ok) throw new Error("savedTrackAddFromPoints:" + (res && res.reason ? res.reason : "fail"));
+      const rep = (typeof saveStoreReported === "function") ? saveStoreReported() : { ok: false };
+      let confirmed = !!(rep && rep.ok);
+      if (confirmed && typeof trackVerifyPersistedSavedTrack === "function"){
+        try { confirmed = !!trackVerifyPersistedSavedTrack(res.track); } catch(_){ confirmed = false; }
+      }
+      if (!confirmed) throw new Error("track persist verify failed");
+      added.tracks++;
+    }
+    if (sel.polygons && Array.isArray(p.polygons)){
+      for (const feat of p.polygons){
+        const clone = gisImportHubCloneJson(feat);
+        if (!clone) throw new Error("polygon clone failed");
+        try { delete clone.id; } catch(_){}
+        if (clone.properties && typeof clone.properties === "object"){
+          try { delete clone.properties.id; } catch(_){}
+        }
+        const addedFeat = gisFeatureAdd("polygon", clone, { recordUndo: false });
+        if (!addedFeat) throw new Error("gisFeatureAdd polygon failed");
+        added.polygons++;
+      }
+    }
+  }
+  return added;
+}
+
+function gisImportHubApplyPreview(){
+  const h = gisImportHubEnsureState();
+  gisImportHubReadSelectionFromDom();
+  const sel = h.selection || { waypoints: true, savedTracks: true, polygons: true };
+  const pre = gisImportHubPrevalidate(h, sel);
+  if (!pre.ok){
+    gisImportHubSetStatus(pre.message || ((typeof t === "function" ? t("importHub.applyFail") : "") || "Apply failed"), "error");
+    gisImportHubSyncApplyBtnUi();
+    return { ok: false, stage: "prevalidate", reason: pre.reason || "prevalidate" };
+  }
+  const snap = gisImportHubTakeSnapshot();
+  if (!snap.ok){
+    gisImportHubSetStatus((typeof t === "function" ? t("importHub.applyFail") : "") || "Apply failed", "error");
+    gisImportHubSyncApplyBtnUi();
+    return { ok: false, stage: "snapshot", reason: "snapshot" };
+  }
+  const token = gisSpatialImportAcquire("hub-apply");
+  if (!token){
+    gisImportHubSetStatus((typeof t === "function" ? t("importHub.busy") : "") || "Busy", "error");
+    gisImportHubSyncApplyBtnUi();
+    return { ok: false, stage: "lock", reason: "lock" };
+  }
+  h.token = token;
+  h.phase = "applying";
+  gisImportHubSetStatus((typeof t === "function" ? t("importHub.applying") : "") || "Applying…", "");
+  gisImportHubSetControlsBusy(true);
+  let added = null;
+  try {
+    added = gisImportHubMutateApply(h, sel);
+    // Final persistence confirm for waypoint/polygon saves already done per funnel;
+    // ensure STORAGE_KEY still parses after batch.
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw == null) throw new Error("missing storage");
+      JSON.parse(raw);
+    } catch(_){
+      throw new Error("persist read-back failed");
+    }
+    if (added.waypoints !== pre.totals.waypoints || added.tracks !== pre.totals.tracks || added.polygons !== pre.totals.polygons){
+      throw new Error("count mismatch");
+    }
+    gisImportHubClear({ silent: true });
+    const okTpl = (typeof t === "function" ? t("importHub.applyOk") : "")
+      || "Imported {0} waypoints · {1} tracks · {2} polygons.";
+    gisImportHubSetStatus(
+      okTpl.replace("{0}", String(added.waypoints)).replace("{1}", String(added.tracks)).replace("{2}", String(added.polygons)),
+      "ok"
+    );
+    gisImportHubRefreshAfterMutation();
+    return { ok: true, stage: "success", added: added };
+  } catch (e){
+    let rollbackOk = false;
+    try { rollbackOk = gisImportHubRestoreSnapshot(snap); } catch(_){ rollbackOk = false; }
+    try { gisImportHubRefreshAfterMutation(); } catch(_){}
+    if (h.phase === "applying") h.phase = "preview";
+    const msg = rollbackOk
+      ? ((typeof t === "function" ? t("importHub.rollbackOk") : "") || "Apply failed; rollback completed.")
+      : ((typeof t === "function" ? t("importHub.rollbackFail") : "") || "Rollback failed");
+    gisImportHubSetStatus(msg, "error");
+    gisImportHubRenderPreview();
+    return {
+      ok: false,
+      stage: "apply",
+      reason: String(e && e.message ? e.message : e || "apply"),
+      rollback: rollbackOk ? "pass" : "fail"
+    };
+  } finally {
+    if (h.token === token){
+      try { gisSpatialImportRelease(token); } catch(_){}
+      h.token = null;
+    }
+    if (h.phase === "applying") h.phase = "preview";
+    gisImportHubSetControlsBusy(false);
+    gisImportHubSyncApplyBtnUi();
+  }
 }
 
 function gisImportHubDetectFormat(name){
@@ -28553,6 +29097,7 @@ function gisImportHubRenderPreview(){
       .replace("{3}", String(totals.discarded || 0))
       .replace("{4}", String(totals.errors || 0));
   }
+  gisImportHubSyncApplyBtnUi();
 }
 
 function gisImportHubClear(opts){
@@ -28569,9 +29114,14 @@ function gisImportHubClear(opts){
   const fi = document.getElementById("wbImportHubFile");
   if (fi) fi.value = "";
   const drop = document.getElementById("wbImportHubDrop");
-  if (drop) drop.classList.remove("is-dragover");
-  gisImportHubSetStatus(opts.silent ? "" : ((typeof t === "function" ? t("importHub.empty") : "") || "No files selected."), "");
+  if (drop) drop.classList.remove("is-dragover", "is-busy");
+  if (!opts.silent){
+    gisImportHubSetStatus((typeof t === "function" ? t("importHub.empty") : "") || "No files selected.", "");
+  } else {
+    // Keep caller-provided status (success counts after apply).
+  }
   gisImportHubRenderPreview();
+  gisImportHubSyncApplyBtnUi();
 }
 
 async function gisImportHubParseOneFile(file){
@@ -28586,7 +29136,8 @@ async function gisImportHubParseOneFile(file){
     polygons: 0,
     discarded: 0,
     warnings: [],
-    error: ""
+    error: "",
+    payload: null
   };
   if (!row.format){
     row.error = (typeof t === "function" ? t("importHub.unsupported") : "") || "Unsupported format";
@@ -28606,15 +29157,10 @@ async function gisImportHubParseOneFile(file){
       }
       const fc = spatialKmlToFeatureCollection(kmlText);
       const cls = gisImportHubClassifyFeatureCollection(fc);
-      row.waypoints = cls.waypoints;
-      row.tracks = cls.tracks;
-      row.polygons = cls.polygons;
-      row.discarded = cls.discarded;
-      row.warnings = cls.warnings;
       if (!cls.waypoints && !cls.tracks && !cls.polygons){
         row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
       }
-      return row;
+      return gisImportHubAttachClassify(row, cls, fc, name);
     }
     const buf = await file.arrayBuffer();
     const text = new TextDecoder("utf-8").decode(new Uint8Array(buf));
@@ -28638,14 +29184,10 @@ async function gisImportHubParseOneFile(file){
         const fc = spatialNormalizeGeoJSON(obj);
         const cls = gisImportHubClassifyFeatureCollection(fc);
         row.format = "geojson";
-        row.waypoints = cls.waypoints;
-        row.tracks = cls.tracks;
-        row.polygons = cls.polygons;
-        row.discarded = cls.discarded;
-        row.warnings = cls.warnings;
         if (!cls.waypoints && !cls.tracks && !cls.polygons){
           row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
         }
+        return gisImportHubAttachClassify(row, cls, fc, name);
       } catch(_){
         row.error = (typeof t === "function" ? t("importHub.jsonNotGeo") : "") || "JSON not recognized as GeoJSON";
       }
@@ -28659,18 +29201,14 @@ async function gisImportHubParseOneFile(file){
       return row;
     }
     const cls = gisImportHubClassifyFeatureCollection(r.fc);
-    row.waypoints = cls.waypoints;
-    row.tracks = cls.tracks;
-    row.polygons = cls.polygons;
-    row.discarded = cls.discarded;
-    row.warnings = cls.warnings;
     if (!cls.waypoints && !cls.tracks && !cls.polygons){
       row.error = (typeof t === "function" ? t("importHub.noGeometry") : "") || "No recognized geometry";
     }
-    return row;
+    return gisImportHubAttachClassify(row, cls, r.fc, name);
   } catch (e){
     row.error = String(e && e.message ? e.message : e).slice(0, 120)
       || ((typeof t === "function" ? t("importHub.fileError") : "") || "Error");
+    row.payload = null;
     return row;
   }
 }
@@ -28693,6 +29231,7 @@ async function gisImportHubAnalyzeFiles(fileList){
   h.files = [];
   h.totals = { waypoints: 0, tracks: 0, polygons: 0, discarded: 0, errors: 0 };
   gisImportHubSetStatus((typeof t === "function" ? t("importHub.analyzing") : "") || "Analyzing…", "");
+  gisImportHubSetControlsBusy(true);
   gisImportHubRenderPreview();
 
   try {
@@ -28739,6 +29278,8 @@ async function gisImportHubAnalyzeFiles(fileList){
       h.token = null;
     }
     if (h.gen === gen && h.phase === "parsing") h.phase = "idle";
+    gisImportHubSetControlsBusy(false);
+    gisImportHubSyncApplyBtnUi();
   }
 }
 
@@ -28748,20 +29289,32 @@ function bindWorkbenchImportHubOnce(){
   hub._wbImportWired = true;
   gisImportHubEnsureState();
   gisImportHubSyncSelectionToDom();
+  gisImportHubSyncApplyBtnUi();
 
   const pickBtn = document.getElementById("wbImportHubPickBtn");
   const fileIn = document.getElementById("wbImportHubFile");
   const clearBtn = document.getElementById("wbImportHubClearBtn");
+  const applyBtn = document.getElementById("wbImportHubApplyBtn");
   const drop = document.getElementById("wbImportHubDrop");
+
+  const hubIsBusy = () => {
+    const h = gisImportHubEnsureState();
+    return h.phase === "parsing" || h.phase === "applying" || gisSpatialImportIsBusy();
+  };
 
   if (pickBtn && fileIn){
     pickBtn.addEventListener("click", (ev) => {
       ev.preventDefault();
+      if (hubIsBusy()) return;
       try { fileIn.click(); } catch(_){}
     });
   }
   if (fileIn){
     fileIn.addEventListener("change", () => {
+      if (hubIsBusy()){
+        try { fileIn.value = ""; } catch(_){}
+        return;
+      }
       const files = fileIn.files;
       if (!files || !files.length) return;
       Promise.resolve()
@@ -28775,12 +29328,25 @@ function bindWorkbenchImportHubOnce(){
   if (clearBtn){
     clearBtn.addEventListener("click", (ev) => {
       ev.preventDefault();
+      if (hubIsBusy()) return;
       gisImportHubClear();
     });
   }
+  if (applyBtn){
+    applyBtn.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (hubIsBusy()) return;
+      try { gisImportHubApplyPreview(); } catch(_){
+        gisImportHubSetStatus((typeof t === "function" ? t("importHub.applyFail") : "") || "Apply failed", "error");
+        gisImportHubSyncApplyBtnUi();
+      }
+    });
+  }
   const onSelChange = () => {
+    if (hubIsBusy()) return;
     gisImportHubReadSelectionFromDom();
     gisImportHubRenderPreview();
+    gisImportHubSyncApplyBtnUi();
   };
   const wp = document.getElementById("wbImportHubWaypoints");
   const tr = document.getElementById("wbImportHubSavedTracks");
@@ -28796,6 +29362,7 @@ function bindWorkbenchImportHubOnce(){
       drop.classList.remove("is-dragover");
     };
     drop.addEventListener("dragenter", (ev) => {
+      if (hubIsBusy()) return;
       if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
       ev.preventDefault();
       ev.stopPropagation();
@@ -28803,6 +29370,7 @@ function bindWorkbenchImportHubOnce(){
       drop.classList.add("is-dragover");
     });
     drop.addEventListener("dragover", (ev) => {
+      if (hubIsBusy()) return;
       if (!dropImportDataTransferHasFiles(ev.dataTransfer)) return;
       ev.preventDefault();
       ev.stopPropagation();
@@ -28820,6 +29388,7 @@ function bindWorkbenchImportHubOnce(){
       ev.preventDefault();
       ev.stopPropagation();
       clearVis();
+      if (hubIsBusy()) return;
       const files = ev.dataTransfer && ev.dataTransfer.files;
       if (!files || !files.length) return;
       Promise.resolve()
@@ -43935,13 +44504,14 @@ function trackRemovePoint(id){
   renderTrackAll();
 }
 
-function waypointAdd(lat, lon, name, meta){
+function waypointAdd(lat, lon, name, meta, opts){
   ensureMapWaypointsState();
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
   if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return false;
   const pts = state.mapWaypoints;
   const last = pts[pts.length - 1];
-  if (last && Math.abs(last.lat - lat) < 1e-5 && Math.abs(last.lon - lon) < 1e-5) return false;
+  // MAJOR-3-b2: Import Hub may pass { allowNearDuplicate: true } — default unchanged.
+  if (!(opts && opts.allowNearDuplicate) && last && Math.abs(last.lat - lat) < 1e-5 && Math.abs(last.lon - lon) < 1e-5) return false;
   const now = Date.now();
   pts.push({
     id: uidNamed(),
