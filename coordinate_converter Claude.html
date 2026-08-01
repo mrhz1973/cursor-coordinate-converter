@@ -21718,10 +21718,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.5RGM-A";
-const APP_BUILD_DETAIL = "ROUTING-GEOCODING-MULTIROW-A — per-stop geocoding search";
+const APP_BUILD_ID = "B6.5RGM-A-FIX1";
+const APP_BUILD_DETAIL = "ROUTING-GEOCODING-MULTIROW-A-FIX1 — anti-stale search + dropdown cleanup";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 99;
+const APP_BUILD_NUM = 100;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -62756,10 +62756,25 @@ function routingSearchOnLabelInput(pointId, raw){
     try { routingSearchSyncDropdownDom(pointId); } catch(_){}
     return;
   }
+  /* Immediate stale invalidation before debounce: bump token/query now so
+     in-flight callbacks for the previous query fail routingSearchCallbackStillValid. */
+  e.query = q;
+  e.token = ++_routingSearchPageGen;
+  e.loading = true;
+  e.errorKey = "";
+  e.hits = [];
+  e.sourceKind = "";
+  e.open = true;
+  e.activeIndex = -1;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
   const id = String(pointId);
+  const tokenAtSchedule = e.token;
+  const queryAtSchedule = q;
   _routingSearchDebTO[id] = setTimeout(function(){
     try { delete _routingSearchDebTO[id]; } catch(_){}
-    try { routingSearchRun(pointId, q); } catch(_){}
+    const cur = state._routing && state._routing.search && state._routing.search[id];
+    if (!cur || cur.token !== tokenAtSchedule || String(cur.query || "") !== queryAtSchedule) return;
+    try { routingSearchRun(pointId, queryAtSchedule); } catch(_){}
   }, 250);
 }
 async function routingSearchRun(pointId, query){
@@ -62855,21 +62870,27 @@ function routingSearchPick(pointId, idx){
   if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90) return false;
   if (lo < -180 || lo > 180) return false;
   const label = String(h.display_name || "").slice(0, 80);
-  const ok = routingSetPointCoordinates(pointId, la, lo, null, { label: label });
+  /* Variant A: close entry + sync DOM before setter so routingRenderList
+     does not restore an open dropdown from a still-open entry. */
   routingSearchClearTimer(pointId);
-  if (e){
-    e.token = ++_routingSearchPageGen;
-    e.loading = false;
-    e.errorKey = "";
-    e.hits = [];
-    e.sourceKind = "";
-    e.open = false;
-    e.activeIndex = -1;
-  }
+  e.token = ++_routingSearchPageGen;
+  e.loading = false;
+  e.errorKey = "";
+  e.hits = [];
+  e.sourceKind = "";
+  e.open = false;
+  e.activeIndex = -1;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+  const ok = routingSetPointCoordinates(pointId, la, lo, null, { label: label });
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
   setTimeout(function(){
     try {
       const inp = document.querySelector('input.routing-pt-field[data-routing-id="' + routingEscapeAttr(pointId) + '"]');
-      if (inp) inp.focus();
+      if (inp){
+        inp.focus();
+        inp.setAttribute("aria-expanded", "false");
+        inp.removeAttribute("aria-activedescendant");
+      }
     } catch(_){}
   }, 0);
   return !!ok;
