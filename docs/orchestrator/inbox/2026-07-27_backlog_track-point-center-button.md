@@ -1,9 +1,9 @@
 # Backlog — TRACK-POINT-CENTER-BUTTON-A
 
 **Data:** 2026-07-27  
-**Stato:** BACKLOG / NON APERTO  
-**Tipo:** UX Track Builder, routine ma da verificare sul paging  
-**File runtime futuro:** `coordinate_converter Claude.html`
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01) — tip runtime **`0482ef8`** / **`B6.3TPC-A · build 96`**; QA «**QA TRACK-POINT-CENTER-BUTTON-A PASS operatore**»; finito Regola H  
+**Tipo:** UX Track Builder, ROUTINE  
+**File runtime:** `coordinate_converter Claude.html`
 
 ## Richiesta operatore
 

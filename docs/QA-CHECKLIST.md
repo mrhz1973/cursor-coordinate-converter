@@ -1173,7 +1173,29 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA ROUTING-POINT-COORD-EDIT-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F.
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F; ROUTING-GEOCODING-MULTIROW-A; MAJOR-3-b2.
+
+## TRACK-POINT-CENTER-BUTTON-A — CLOSED / PASS end-to-end
+
+**Blocco:** TRACK-POINT-CENTER-BUTTON-A  
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
+**Runtime tip:** `0482ef8d88b15daea0a67a0b9552e0c69a35fe5f`  
+**Blob / byte LF / SHA-256 LF:** `4f121880…` / `3164587` / `e77ad65e…`  
+**Build:** `B6.3TPC-A · build 96`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Backlog `2026-07-27_backlog_track-point-center-button` | docs-only |
+| Discovery congiunta 2026-08-01 | ROUTINE confermata; helper `gisMapCenterOnLatLon` |
+| Implementazione `0482ef8` build 96 | shipped (Centra per-riga; ID stabile) |
+| Review Claude | NON RICHIESTA (ROUTINE) |
+| Harness JS reale | 31/31 PASS; `executesRealJs=true` |
+| Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
+| `QA TRACK-POINT-CENTER-BUTTON-A PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; MAJOR-3-b2; Bundle F.
 
 ## MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
