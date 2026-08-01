@@ -21642,10 +21642,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.4IHA-B2";
-const APP_BUILD_DETAIL = "MAJOR-3-b2 — apply Import Hub preview additively";
+const APP_BUILD_ID = "B6.4IHA-B2-FIX1";
+const APP_BUILD_DETAIL = "MAJOR-3-b2-FIX1 — verify persisted Import Hub apply";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 97;
+const APP_BUILD_NUM = 98;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -28852,8 +28852,77 @@ function gisImportHubPrevalidate(h, sel){
   return { ok: true, totals: totals };
 }
 
+/** Read STORAGE_KEY without mutating state — Import Hub persistence verify only. */
+function gisImportHubReadPersistedCanonicalSnapshot(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw == null || raw === "") return { ok: false, reason: "missing" };
+    let data = null;
+    try { data = JSON.parse(raw); } catch(_){ return { ok: false, reason: "json" }; }
+    if (!data || typeof data !== "object") return { ok: false, reason: "json" };
+    return {
+      ok: true,
+      data: data,
+      mapWaypoints: Array.isArray(data.mapWaypoints) ? data.mapWaypoints : [],
+      savedTracks: Array.isArray(data.savedTracks) ? data.savedTracks : [],
+      gisPolygons: Array.isArray(data.gisPolygons) ? data.gisPolygons : []
+    };
+  } catch(_){
+    return { ok: false, reason: "error" };
+  }
+}
+
+/**
+ * Verify every created ref is present and valid in the persisted payload.
+ * refs: { waypoints:[{id,lat,lon}], tracks:[{id,pointCount}], polygons:[{id}] }
+ */
+function gisImportHubVerifyPersistedAddedRefs(refs){
+  refs = refs || {};
+  const wantWp = Array.isArray(refs.waypoints) ? refs.waypoints : [];
+  const wantTr = Array.isArray(refs.tracks) ? refs.tracks : [];
+  const wantPg = Array.isArray(refs.polygons) ? refs.polygons : [];
+  const snap = gisImportHubReadPersistedCanonicalSnapshot();
+  if (!snap.ok) return { ok: false, reason: snap.reason || "read" };
+  let foundWp = 0, foundTr = 0, foundPg = 0;
+  for (const exp of wantWp){
+    if (!exp || exp.id == null) return { ok: false, reason: "waypoint_ref" };
+    const row = snap.mapWaypoints.find(p => p && String(p.id) === String(exp.id));
+    if (!row) return { ok: false, reason: "waypoint_missing" };
+    if (!Number.isFinite(row.lat) || !Number.isFinite(row.lon)) return { ok: false, reason: "waypoint_coords" };
+    if (!(Number.isFinite(exp.lat) && Number.isFinite(exp.lon))) return { ok: false, reason: "waypoint_coords" };
+    if (Math.abs(row.lat - exp.lat) > 1e-9 || Math.abs(row.lon - exp.lon) > 1e-9){
+      return { ok: false, reason: "waypoint_coords" };
+    }
+    foundWp++;
+  }
+  for (const exp of wantTr){
+    if (!exp || exp.id == null) return { ok: false, reason: "track_ref" };
+    const row = snap.savedTracks.find(st => st && String(st.id) === String(exp.id));
+    if (!row) return { ok: false, reason: "track_missing" };
+    const pts = Array.isArray(row.points) ? row.points : [];
+    if (pts.length < 2) return { ok: false, reason: "track_points" };
+    if (Number(exp.pointCount) !== pts.length) return { ok: false, reason: "track_points" };
+    foundTr++;
+  }
+  for (const exp of wantPg){
+    if (!exp || exp.id == null) return { ok: false, reason: "polygon_ref" };
+    const row = snap.gisPolygons.find(f => f && String(f.id) === String(exp.id));
+    if (!row) return { ok: false, reason: "polygon_missing" };
+    const clean = (typeof gisSanitizeFeature === "function") ? gisSanitizeFeature(row, "polygon") : null;
+    if (!clean || !clean.geometry || clean.geometry.type !== "Polygon"){
+      return { ok: false, reason: "polygon_geom" };
+    }
+    foundPg++;
+  }
+  if (foundWp !== wantWp.length || foundTr !== wantTr.length || foundPg !== wantPg.length){
+    return { ok: false, reason: "count" };
+  }
+  return { ok: true, found: { waypoints: foundWp, tracks: foundTr, polygons: foundPg } };
+}
+
 function gisImportHubMutateApply(h, sel){
   const added = { waypoints: 0, tracks: 0, polygons: 0 };
+  const refs = { waypoints: [], tracks: [], polygons: [] };
   const files = Array.isArray(h.files) ? h.files : [];
   for (const file of files){
     if (!file || file.error || !file.payload) continue;
@@ -28861,8 +28930,17 @@ function gisImportHubMutateApply(h, sel){
     const fname = String(file.name || "file");
     if (sel.waypoints && Array.isArray(p.waypoints)){
       for (const wp of p.waypoints){
+        ensureMapWaypointsState();
+        const beforeLen = state.mapWaypoints.length;
+        const beforeIds = new Set(state.mapWaypoints.map(x => x && String(x.id)));
         const ok = waypointAdd(wp.lat, wp.lon, wp.name || "", { from: "import", filename: fname }, { allowNearDuplicate: true });
         if (!ok) throw new Error("waypointAdd failed");
+        if (state.mapWaypoints.length !== beforeLen + 1) throw new Error("waypoint delta");
+        const created = state.mapWaypoints.find(x => x && !beforeIds.has(String(x.id)));
+        if (!created || created.id == null || !Number.isFinite(created.lat) || !Number.isFinite(created.lon)){
+          throw new Error("waypoint id");
+        }
+        refs.waypoints.push({ id: String(created.id), lat: created.lat, lon: created.lon });
         added.waypoints++;
       }
     }
@@ -28885,6 +28963,10 @@ function gisImportHubMutateApply(h, sel){
         try { confirmed = !!trackVerifyPersistedSavedTrack(res.track); } catch(_){ confirmed = false; }
       }
       if (!confirmed) throw new Error("track persist verify failed");
+      if (!res.track || res.track.id == null) throw new Error("track id");
+      const pc = Array.isArray(res.track.points) ? res.track.points.length : 0;
+      if (pc < 2) throw new Error("track points");
+      refs.tracks.push({ id: String(res.track.id), pointCount: pc });
       added.tracks++;
     }
     if (sel.polygons && Array.isArray(p.polygons)){
@@ -28896,11 +28978,13 @@ function gisImportHubMutateApply(h, sel){
           try { delete clone.properties.id; } catch(_){}
         }
         const addedFeat = gisFeatureAdd("polygon", clone, { recordUndo: false });
-        if (!addedFeat) throw new Error("gisFeatureAdd polygon failed");
+        if (!addedFeat || addedFeat.id == null) throw new Error("gisFeatureAdd polygon failed");
+        refs.polygons.push({ id: String(addedFeat.id) });
         added.polygons++;
       }
     }
   }
+  added.refs = refs;
   return added;
 }
 
@@ -28933,17 +29017,14 @@ function gisImportHubApplyPreview(){
   let added = null;
   try {
     added = gisImportHubMutateApply(h, sel);
-    // Final persistence confirm for waypoint/polygon saves already done per funnel;
-    // ensure STORAGE_KEY still parses after batch.
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw == null) throw new Error("missing storage");
-      JSON.parse(raw);
-    } catch(_){
-      throw new Error("persist read-back failed");
-    }
     if (added.waypoints !== pre.totals.waypoints || added.tracks !== pre.totals.tracks || added.polygons !== pre.totals.polygons){
       throw new Error("count mismatch");
+    }
+    const rep = (typeof saveStoreReported === "function") ? saveStoreReported() : { ok: false };
+    if (!rep || rep.ok !== true) throw new Error("final saveStoreReported failed");
+    const verified = gisImportHubVerifyPersistedAddedRefs(added.refs);
+    if (!verified || !verified.ok){
+      throw new Error("persisted verify:" + (verified && verified.reason ? verified.reason : "fail"));
     }
     gisImportHubClear({ silent: true });
     const okTpl = (typeof t === "function" ? t("importHub.applyOk") : "")
@@ -28953,7 +29034,7 @@ function gisImportHubApplyPreview(){
       "ok"
     );
     gisImportHubRefreshAfterMutation();
-    return { ok: true, stage: "success", added: added };
+    return { ok: true, stage: "success", added: added, refs: added.refs };
   } catch (e){
     let rollbackOk = false;
     try { rollbackOk = gisImportHubRestoreSnapshot(snap); } catch(_){ rollbackOk = false; }
