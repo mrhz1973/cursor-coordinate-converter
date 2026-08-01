@@ -16,12 +16,14 @@
 - **Cursor non attesta la QA visiva.** Cursor prepara la richiesta QA, ma non apre l'app, non carica tile e non inventa esiti al posto dell'operatore.
 - **Emissione unica.** La QA viene emessa **una sola volta** nel report `finito` (o subito dopo deploy), dentro **un unico fenced code block** copiabile; l'operatore risponde **una sola volta**.
 - **Fail-closed.** Senza attestazione esplicita dell'operatore, l'esito resta **QA operatore non eseguita / non attestata**. Non si inferisce PASS operatore da PASS tecnico, diff pulito o `node --check`.
+- **Lingua IT (QA-OPERATOR-IT-ONLY-PREF CLOSED).** Istruzioni QA operatore **solo in italiano**, salvo blocchi il cui oggetto è la verifica i18n/localizzazione. Runtime app resta IT/EN/FR.
+- **Etichette UI visibili.** Usare testi/percorsi realmente visibili (etichetta, tooltip se unico ID, icona/posizione, nome pannello, sequenza concreta). **Vietato** come percorso UI: nomi interni, ID DOM, «Workbench», «Import Hub» (salvo nota tecnica separata). Preferire **«Oggetti GIS»** / **«Import GIS»** quando sono le etichette visibili. Prima di emettere: verificare nel monolite corrente; non inventare menu.
 
 ## Formato predefinito — QA operatore minima narrativa
 
-Per **micro-fix UI**, **patch runtime localizzate**, **correzioni circoscritte** e **blocchi di routine** senza OPSEC, rete, cache, storage o migrazioni, il formato **predefinito** è una **QA minima narrativa**: breve, operativa, immediatamente eseguibile.
+Per **micro-fix UI**, **patch runtime localizzate**, **correzioni circoscritte** e **blocchi di routine** senza OPSEC, rete, cache, storage o migrazioni, il formato **predefinito** è una **QA minima narrativa**: breve, operativa, immediatamente eseguibile, **in italiano**, limitata al blocco.
 
-**Non usare come formato ordinario:** tabelle; caselle `[ ]`; sezioni ripetute con sette categorie obbligatorie; campi data/browser/risoluzione salvo reale necessità; audit generale dell'app; controlli non pertinenti al blocco.
+**Non usare come formato ordinario:** tabelle; caselle `[ ]`; sezioni ripetute con sette categorie obbligatorie; campi data/browser/risoluzione salvo reale necessità; audit generale dell'app; controlli non pertinenti al blocco; percorsi UI con nomi tecnici non visibili.
 
 ### Struttura canonica
 
@@ -1177,7 +1179,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA ROUTING-POINT-COORD-EDIT-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F; ROUTING-GEOCODING-MULTIROW-A.
+**Backlog UX residuo (al tempo ROUTING-POINT):** poi **QA-OPERATOR-IT-ONLY-PREF CLOSED**; residuo Bundle F; ROUTING-GEOCODING-MULTIROW-A.
 
 ## TRACK-POINT-CENTER-BUTTON-A — CLOSED / PASS end-to-end
 
@@ -1199,7 +1201,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA TRACK-POINT-CENTER-BUTTON-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; Bundle F. Superseded live da **MAJOR-3-b2** tip `cad28e7`.
+**Backlog UX residuo (storico al tempo TPC):** poi **QA-OPERATOR-IT-ONLY-PREF CLOSED**; residuo **ROUTING-GEOCODING-MULTIROW-A**; Bundle F. Superseded live da **MAJOR-3-b2** tip `cad28e7`.
 
 ## MAJOR-3-b2 (+ FIX1) — CLOSED / PASS end-to-end
 
@@ -1223,7 +1225,26 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app`; VPS `0482ef8`→`80265c3` / runtime tip `cad28e7` |
 | `QA MAJOR-3-b2 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; Bundle F.
+**Backlog UX residuo (non implementato):** ROUTING-GEOCODING-MULTIROW-A; Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED** (docs-only). **Oggetti GIS FROZEN**.
+
+## QA-OPERATOR-IT-ONLY-PREF — CLOSED / PASS docs-only
+
+**Blocco:** QA-OPERATOR-IT-ONLY-PREF (+ freeze **Oggetti GIS**)
+**Stato:** **CLOSED / PASS docs-only** (2026-08-01)
+**Runtime:** invariato (`cad28e7` / build 98)
+**Deploy:** non richiesto
+
+### Decisioni registrate
+
+| Decisione | Esito |
+| --- | --- |
+| QA operatore future solo IT | sì (salvo blocchi i18n) |
+| Percorsi UI = etichette visibili | sì; vietati Workbench/Import Hub come percorso QA |
+| Verifica monolite prima dell’emissione | obbligatoria |
+| QA minima narrativa limitata al blocco | invariata / rafforzata |
+| Oggetti GIS | **FROZEN** — resta in runtime; no sviluppo/refactor dedicato; no auto-proposta; solo bug bloccanti/perdita dati/regressioni |
+
+**Backlog UX residuo (non implementato / non aperto):** ROUTING-GEOCODING-MULTIROW-A; Bundle F. Nessun candidato runtime aperto da questo blocco.
 
 ## MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
