@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-01 — **ROUTING-POINT-COORD-EDIT-A OPEN / DESIGN READY — DOCS-ONLY**. Opzione B light ratificata («Modifica coordinate»); input DD lat/lon atomici; nessun `source:"manual"`; nessuna persistenza/rete/geocoding. Classificazione futura **DELICATO leggero**; review downstream obbligatoria. **Runtime non iniziato.** Piano: `docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`. **ROUTING-PROFILE-EDIT-A** → **SUPERSEDED / RENAMED — NO RUNTIME**. Runtime live invariato **`d0688ea`** / **`B6.2MCV-A-FIX3 · build 93`**. Prossimo gate: prompt runtime chirurgico dopo review del piano.
+2026-08-01 — **`finito` Regola H — ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`6475804`** / **`B6.3RPC-A-FIX1 · build 95`**. Docs finito **`270726f`**. Dettaglio: `docs/orchestrator/inbox/2026-08-01_1820_riepilogo_finito-sessione.md`.
 
-2026-08-01 — **`finito` Regola H — MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED / PASS end-to-end**. Runtime tip **`d0688ea`** / build 93.
+2026-08-01 — **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) CLOSED** — tip storico **`d0688ea`** / build 93 (superseded live).
 
 2026-08-01 — **TRACK-PROFILE-POINTS-DISPLAY-A CLOSED** — tip storico **`3838e9e`** / build 89 (superseded live).
