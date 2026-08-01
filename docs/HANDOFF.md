@@ -121,25 +121,26 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito TRACK-POINT-CENTER-BUTTON-A** (verificare `git ls-remote` post-push); monolite tip `0482ef8` già versionato |
-| Runtime live / commit monolite | `0482ef8d88b15daea0a67a0b9552e0c69a35fe5f` (`0482ef8`) — tip TRACK-POINT-CENTER-BUTTON-A |
-| Ultimo blocco chiuso | **TRACK-POINT-CENTER-BUTTON-A** — Centra per-riga Track Builder — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
-| Ultimo blocco runtime monolite | **TRACK-POINT-CENTER-BUTTON-A** — tip `0482ef8` build 96 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | nessuno runtime aperto — prossimo da backlog (QA-IT-ONLY / MAJOR-3-b2 / ROUTING-GEOCODING-MULTIROW-A / Bundle F / …) |
+| HEAD documentale (pre-autosync) | commit docs **finito MAJOR-3-b2** (verificare `git ls-remote` post-push); monolite tip `cad28e7` già versionato; documentale tip `80265c3` |
+| Runtime live / commit monolite | `cad28e73ab1b3b00c872a09b9e8455c7ac674196` (`cad28e7`) — tip MAJOR-3-b2-FIX1 |
+| Ultimo blocco chiuso | **MAJOR-3-b2 (+ FIX1)** — Import Hub Apply + verify persistenza — **CLOSED / PASS end-to-end** (Regola H / METHOD-QA-PASS-AUTO-FINITO) |
+| Ultimo blocco runtime monolite | **MAJOR-3-b2 (+ FIX1)** — tip `cad28e7` build 98 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | nessuno runtime aperto — prossimo da backlog (QA-IT-ONLY / ROUTING-GEOCODING-MULTIROW-A / Bundle F / …) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `0482ef8d88b15daea0a67a0b9552e0c69a35fe5f` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `4f121880f988984e574178b6f1ec84eb67ce945e` |
-| Byte monolite (git LF) | `3164587` |
-| `APP_BUILD_NUM` | `96` |
-| Display runtime | `B6.3TPC-A · build 96` |
-| `APP_BUILD_ID` | `B6.3TPC-A` |
-| TRACK-POINT-CENTER-BUTTON-A | **CLOSED / PASS end-to-end** (Centra per-riga; ID stabile; ROUTINE; review N/A; deploy+QA PASS) |
-| ROUTING-POINT-COORD-EDIT-A / FIX1 | **CLOSED / PASS end-to-end** (coord DD atomiche; FIX1 clear feedback stale; review+deploy+QA PASS; superseded live da TPC-A) |
-| MAP-CENTER-VIEWPORT-AWARE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live da tip `0482ef8`) |
+| Runtime Git / atteso VPS | `cad28e73ab1b3b00c872a09b9e8455c7ac674196` (deploy GIS-only Cursor SSH PASS; HEAD doc `80265c3`) |
+| Blob monolite (git) | `ca931d93c23befd7dc101de2997a7892dbefdfec` |
+| Byte monolite (git LF) | `3195195` |
+| `APP_BUILD_NUM` | `98` |
+| Display runtime | `B6.4IHA-B2-FIX1 · build 98` |
+| `APP_BUILD_ID` | `B6.4IHA-B2-FIX1` |
+| MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (apply anteprima Import Hub + verify persistenza; DELICATO; review+deploy+QA PASS) |
+| TRACK-POINT-CENTER-BUTTON-A | **CLOSED / PASS end-to-end** (Centra per-riga; ID stabile; ROUTINE; review N/A; deploy+QA PASS; superseded live da MAJOR-3-b2) |
+| ROUTING-POINT-COORD-EDIT-A / FIX1 | **CLOSED / PASS end-to-end** (coord DD atomiche; FIX1 clear feedback stale; review+deploy+QA PASS; superseded live) |
+| MAP-CENTER-VIEWPORT-AWARE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live) |
 | TRACK-PROFILE-POINTS-DISPLAY-A | **CLOSED / PASS end-to-end** (overlay punti Profilo; superseded live da MAP-CENTER) |
 | APP-BUILD-LABEL-UX-A / FIX1 | **CLOSED / PASS end-to-end** (HUD rimossa; footer stabile; superseded live da TPD-A) |
 | ROUTING-UX-POLISH-BUNDLE-A / FIX1 | **CLOSED / PASS end-to-end** (undo storico + unità session + feedback + badge + focus; QA PASS FIX1; superseded live da APP-BUILD-LABEL) |
@@ -156,7 +157,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | OUTDOOR-ROUTING-GH-B1b / FIX1 | **CLOSED / PASS end-to-end** (pick/marker/GPS + BBOX mutual disarm; QA PASS) |
 | OUTDOOR-ROUTING-GH-B2 / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (endpoint + `/route` + preview; review GPT-sostitutiva PASS; deploy+QA PASS) |
 | OUTDOOR-ROUTING-GH-B1a / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (shell planner; QA PASS) |
-| MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS) |
+| MAJOR-3-b1 | **CLOSED / PASS end-to-end** (Import Hub preview; QA PASS; superseded live da MAJOR-3-b2) |
 | OFFLINE-DOWNLOAD-CONTROLS-A / FIX1 / FIX2 / FIX3 | **CLOSED / PASS end-to-end** (Pause/Resume/Stop + sticky bar + tabella; QA PASS) |
 | TRACK-CREATE-EDIT-UX-A / FIX1 | **CLOSED / PASS end-to-end** (CTA punti/pennello + stile unificato + verify; QA PASS) |
 | TRACK-BRUSH-ANTIMERIDIAN / FIX1 | **CLOSED / PASS end-to-end** (dateline shortest-wrap + fit ordinato; QA PASS) |
@@ -181,15 +182,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0482ef8` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cad28e7` |
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **TRACK-POINT-CENTER-BUTTON-A CLOSED / PASS**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Candidati: **QA-OPERATOR-IT-ONLY-PREF** / **ROUTING-GEOCODING-MULTIROW-A** / **MAJOR-3-b2** (parcheggiato) / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`0482ef8`** / **`B6.3TPC-A · build 96`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **MAJOR-3-b2 (+ FIX1) CLOSED / PASS**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Candidati: **QA-OPERATOR-IT-ONLY-PREF** / **ROUTING-GEOCODING-MULTIROW-A** / Bundle F. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`cad28e7`** / **`B6.4IHA-B2-FIX1 · build 98`** (documentale tip **`80265c3`**). GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**MAJOR-3-b2** (apply additivo Import Hub) **parcheggiato** (non annullato). **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
+**MAJOR-3-b2 (+ FIX1)** CLOSED tip **`cad28e7`**. **MAJOR-4** import/restore backlog basso. **Programma pick Workbench MAJOR-5A2 completo.**
 
-**Backlog basso / non ora:** **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; apply MAJOR-3-b2; import/restore MAJOR-4; geocoding multi-riga (**ROUTING-GEOCODING-MULTIROW-A**). **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **QA-OPERATOR-IT-ONLY-PREF**; **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; geocoding multi-riga (**ROUTING-GEOCODING-MULTIROW-A**); Bundle F. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
@@ -245,9 +246,13 @@ Nessun task runtime aperto. Ultimo blocco chiuso: **TRACK-POINT-CENTER-BUTTON-A 
 
 **Stato:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01). Discovery: operazioni editing (label/pick/drag/GPS/CRUD/reorder/Reverse/Undo) già presenti. **Nessuna implementazione** sotto questo ID; **non** CLOSED/PASS. Residuo → **ROUTING-POINT-COORD-EDIT-A**.
 
+### MAJOR-3-b2 (+ FIX1) — Import Hub Apply + verify persistenza — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01). Catena `4d70bbc` build 97 → tip `cad28e7` / `B6.4IHA-B2-FIX1 · build 98`. Documentale tip `80265c3` (AUTO-VIA; monolite invariato). Blob `ca931d93…` · byte LF **3195195** · SHA-256 LF **`177c9cb1…`**. Apply anteprima additivo all-or-nothing; FIX1 read-back persistenza; Mission Package rifiutato; DELICATO; harness 90/90; review+deploy GIS-only PASS; QA «**QA MAJOR-3-b2 PASS operatore**».
+
 ### TRACK-POINT-CENTER-BUTTON-A — Centra per-riga Track Builder — CLOSED / PASS end-to-end
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-01). Tip `0482ef8` / `B6.3TPC-A · build 96`. Blob `4f121880…` · byte LF **3164587** · SHA-256 LF **`e77ad65e…`**. Pulsante ⌖ per riga; `trackCenterOnPointById` + `gisMapCenterOnLatLon`; ID stabile; ROUTINE; harness 31/31; deploy GIS-only PASS; QA «**QA TRACK-POINT-CENTER-BUTTON-A PASS operatore**». Backlog: [`docs/orchestrator/inbox/2026-07-27_backlog_track-point-center-button.md`](orchestrator/inbox/2026-07-27_backlog_track-point-center-button.md).
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01). Tip storico `0482ef8` / `B6.3TPC-A · build 96`. Blob `4f121880…` · byte LF **3164587** · SHA-256 LF **`e77ad65e…`**. Pulsante ⌖ per riga; `trackCenterOnPointById` + `gisMapCenterOnLatLon`; ID stabile; ROUTINE; harness 31/31; deploy GIS-only PASS; QA «**QA TRACK-POINT-CENTER-BUTTON-A PASS operatore**». Superseded live da MAJOR-3-b2 tip `cad28e7`. Backlog: [`docs/orchestrator/inbox/2026-07-27_backlog_track-point-center-button.md`](orchestrator/inbox/2026-07-27_backlog_track-point-center-button.md).
 
 ### ROUTING-POINT-COORD-EDIT-A (+ FIX1) — Coordinate manuali A/B/intermedi — CLOSED / PASS end-to-end
 

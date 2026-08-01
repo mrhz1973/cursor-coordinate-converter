@@ -8,7 +8,7 @@
 **Data pubblicazione piano:** 2026-07-24
 **Runtime autorevole attuale:** `d0688ea44513501cae766f79d1538934729234e3` (`d0688ea`) — display **`B6.2MCV-A-FIX3 · build 93`** (MAP-CENTER-VIEWPORT-AWARE-A-FIX3; tip TPD-A storico `3838e9e`)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
-**MAJOR-3-b2:** **parcheggiato** (non annullato)
+**MAJOR-3-b2 (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-01) — tip runtime **`cad28e7`** build 98 / `B6.4IHA-B2-FIX1`; catena `4d70bbc`→`cad28e7`; documentale tip `80265c3`; blob `ca931d93…`; byte LF **3195195**; SHA-256 LF **`177c9cb1…`**; apply Import Hub + verify persistenza; review+deploy+QA PASS; Regola H.
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
@@ -597,7 +597,7 @@ Helper consigliati: `mapRoutingMarkerDocDrag` + `mapRoutingMarkerDocDragCleanup`
 
 ## 20. Note operative
 
-- **MAJOR-3-b2 resta parcheggiato** (non annullato). OUTDOOR-ROUTING-GH ha la precedenza come programma corrente.
+- **MAJOR-3-b2 (+ FIX1) CLOSED** tip **`cad28e7`**. OUTDOOR-ROUTING-GH resta programma corrente (Bundle F futuro).
 - **MAJOR-4 import/restore** resta backlog basso.
 - Runtime autorevole: **`567b611` build 66** / `B6.0D-FIX1` (**D + FIX1 CLOSED**); endpoint VPS `http://100.114.7.53:8989` + Local `http://127.0.0.1:8989`; prerequisito [`WU-0011 / INFRA-GH-1A+1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) **CLOSED / PASS**.
 - Ogni bundle runtime di questo programma è **DELICATO** e richiede **review downstream pre-deploy** (B1/B2/E minima narrativa o estesa a seconda del contenuto; **C estesa** rete/OPSEC — **chiuso**; **D estesa** storage/create-path — **chiuso**).

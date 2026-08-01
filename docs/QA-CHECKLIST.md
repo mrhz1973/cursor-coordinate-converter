@@ -1177,7 +1177,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA ROUTING-POINT-COORD-EDIT-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F; ROUTING-GEOCODING-MULTIROW-A; MAJOR-3-b2.
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; Bundle F; ROUTING-GEOCODING-MULTIROW-A.
 
 ## TRACK-POINT-CENTER-BUTTON-A — CLOSED / PASS end-to-end
 
@@ -1199,7 +1199,31 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA TRACK-POINT-CENTER-BUTTON-A PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; MAJOR-3-b2; Bundle F.
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; Bundle F. Superseded live da **MAJOR-3-b2** tip `cad28e7`.
+
+## MAJOR-3-b2 (+ FIX1) — CLOSED / PASS end-to-end
+
+**Blocco:** MAJOR-3-b2 + FIX1  
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
+**Runtime tip:** `cad28e73ab1b3b00c872a09b9e8455c7ac674196`  
+**Documentale tip:** `80265c36ce845639dc75ce39ea304fadc942cd2a` (AUTO-VIA; monolite invariato)  
+**Blob / byte LF / SHA-256 LF:** `ca931d93…` / `3195195` / `177c9cb1…`  
+**Build:** `B6.4IHA-B2-FIX1 · build 98`
+
+### Storia QA/review
+
+| Step | Esito |
+| --- | --- |
+| Implementazione `4d70bbc` build 97 | shipped (Applica anteprima Import Hub) |
+| Harness JS reale (b2) | 70/70 PASS; `executesRealJs=true` |
+| Review downstream b2 | PASS → FIX1 persistenza |
+| FIX1 `cad28e7` build 98 | verify persistenza + `saveStoreReported` |
+| Harness JS reale (FIX1) | 90/90 PASS; `executesRealJs=true` |
+| Docs AUTO-VIA `80265c3` | monolite blob invariato vs FIX1 |
+| Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app`; VPS `0482ef8`→`80265c3` / runtime tip `cad28e7` |
+| `QA MAJOR-3-b2 PASS operatore` | trigger Regola H / `finito` |
+
+**Backlog UX residuo (non implementato):** QA-OPERATOR-IT-ONLY-PREF; ROUTING-GEOCODING-MULTIROW-A; Bundle F.
 
 ## MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
