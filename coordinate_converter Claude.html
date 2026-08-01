@@ -8846,6 +8846,70 @@ dialog.track-modal.app-modal{
   font-size:.82rem;
   font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+.routing-point-row{ position:relative; }
+.routing-pt-search-status{
+  grid-column:1 / -1;
+  margin:0;
+  font-size:.75rem;
+  color:var(--muted);
+  min-height:0;
+}
+.routing-pt-search-status:empty,
+.routing-pt-search-status[hidden]{ display:none !important; }
+.routing-pt-search-status.is-err{ color:var(--danger, #b91c1c); font-weight:600; }
+.routing-pt-search-dropdown{
+  grid-column:1 / -1;
+  max-height:160px;
+  overflow:auto;
+  margin:0;
+  padding:2px 0;
+  border:1px solid var(--border, rgba(127,127,127,.4));
+  border-radius:6px;
+  background:var(--panel, #fff);
+  z-index:6;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+.routing-pt-search-dropdown[hidden]{ display:none !important; }
+.routing-pt-search-item{
+  display:block;
+  width:100%;
+  text-align:left;
+  border:0;
+  background:transparent;
+  padding:6px 8px;
+  cursor:pointer;
+  font:inherit;
+  color:inherit;
+}
+.routing-pt-search-item:hover,
+.routing-pt-search-item.is-active{
+  background:color-mix(in srgb, var(--accent, #2563eb) 16%, transparent);
+}
+.routing-pt-search-name{
+  font-size:.8rem;
+  line-height:1.25;
+  word-break:break-word;
+}
+.routing-pt-search-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:2px;
+  font-size:.72rem;
+  color:var(--muted);
+}
+.routing-pt-search-badge{
+  display:inline-block;
+  padding:0 5px;
+  border-radius:999px;
+  border:1px solid var(--border, rgba(127,127,127,.4));
+  font-size:.68rem;
+  line-height:1.4;
+}
+.routing-pt-search-item.is-offline .routing-pt-search-badge{
+  border-color:color-mix(in srgb, var(--warn, #d97706) 55%, transparent);
+  color:var(--warn, #d97706);
+}
 .routing-pt-coords{
   grid-column:3 / -1;
   font-size:.78rem;
@@ -15705,6 +15769,12 @@ const I18N = {
     "routing.startPlaceholder":"Nome partenza",
     "routing.viaPlaceholder":"Nome passaggio",
     "routing.endPlaceholder":"Nome destinazione",
+    "routing.searchLoading":"Ricerca…",
+    "routing.searchNoResults":"Nessun risultato",
+    "routing.searchError":"Ricerca non disponibile",
+    "routing.searchDisabledOpsec":"Ricerca online bloccata (OPSEC)",
+    "routing.searchOnlineBadge":"online",
+    "routing.searchOfflineBadge":"offline",
     "routing.pickMap":"Scegli sulla mappa",
     "routing.pickMapTip":"Imposta questo punto con un click sulla mappa",
     "routing.pickInstruction":"Clicca sulla mappa per impostare il punto.",
@@ -17888,6 +17958,12 @@ const I18N = {
     "routing.startPlaceholder":"Start name",
     "routing.viaPlaceholder":"Via name",
     "routing.endPlaceholder":"Destination name",
+    "routing.searchLoading":"Searching…",
+    "routing.searchNoResults":"No results",
+    "routing.searchError":"Search unavailable",
+    "routing.searchDisabledOpsec":"Online search blocked (OPSEC)",
+    "routing.searchOnlineBadge":"online",
+    "routing.searchOfflineBadge":"offline",
     "routing.pickMap":"Pick on map",
     "routing.pickMapTip":"Set this point with a map click",
     "routing.pickInstruction":"Click the map to set the point.",
@@ -21642,10 +21718,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.4IHA-B2-FIX1";
-const APP_BUILD_DETAIL = "MAJOR-3-b2-FIX1 — verify persisted Import Hub apply";
+const APP_BUILD_ID = "B6.5RGM-A";
+const APP_BUILD_DETAIL = "ROUTING-GEOCODING-MULTIROW-A — per-stop geocoding search";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 98;
+const APP_BUILD_NUM = 99;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -56293,6 +56369,11 @@ function gisInit(){
         ev.preventDefault();
         return;
       }
+      if (typeof routingSearchAnyDropdownOpen === "function" && routingSearchAnyDropdownOpen()){
+        try { routingSearchCloseAll(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       if (state._routing && state._routing.coordEditMode){
         try { if (typeof routingExitCoordEditMode === "function") routingExitCoordEditMode(); } catch(_){}
         ev.preventDefault();
@@ -61431,6 +61512,7 @@ function routingEnsureState(){
     routingCoordEditEnsureDraftBag(r);
     if (typeof r.coordEditFeedback !== "string") r.coordEditFeedback = "";
     if (typeof r.coordEditFeedbackIsErr !== "boolean") r.coordEditFeedbackIsErr = false;
+    if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
     try { routingEnsureAbPoints(r); } catch(_){}
     return r;
   }
@@ -61473,7 +61555,8 @@ function routingEnsureState(){
     coordEditMode: false,
     coordEditDrafts: Object.create(null),
     coordEditFeedback: "",
-    coordEditFeedbackIsErr: false
+    coordEditFeedbackIsErr: false,
+    search: Object.create(null)
   };
   try { routingEnsureAbPoints(state._routing); } catch(_){}
   return state._routing;
@@ -62151,6 +62234,7 @@ function routingAbortActiveRequestForPolicy(errKey){
 }
 function routingOnNetworkPolicyChange(){
   if (!state._routing) return;
+  try { routingSearchResetAll(); } catch(_){}
   const r = state._routing;
   const gate = routingNetworkGateGraphhopper({
     provider: r.provider,
@@ -62245,7 +62329,8 @@ function routingEnterPickMode(pointId){
   try { routingRenderList(); } catch(_){}
   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
 }
-function routingSetPointCoordinates(pointId, lat, lon, source){
+function routingSetPointCoordinates(pointId, lat, lon, source, opts){
+  opts = opts || {};
   const pt = routingFindPoint(pointId);
   if (!pt) return false;
   const la = Number(lat), lo = Number(lon);
@@ -62260,18 +62345,30 @@ function routingSetPointCoordinates(pointId, lat, lon, source){
   }
   const src = clearSource ? "" : ((source === "gps") ? "gps" : "map");
   const curSrc = (pt.source === "gps" || pt.source === "map") ? String(pt.source) : "";
+  const nextLabel = (opts.label != null) ? String(opts.label).slice(0, 80) : null;
   const same =
     Number.isFinite(Number(pt.lat)) && Number.isFinite(Number(pt.lon)) &&
     Number(pt.lat) === la && Number(pt.lon) === nLon &&
     curSrc === src;
   if (same){
+    if (nextLabel != null && String(pt.label || "") !== nextLabel){
+      if (!opts.skipUndo){ try { routingPushPointUndoSnapshot(); } catch(_){} }
+      pt.label = nextLabel;
+      if (state._routing) state._routing.dirty = true;
+      try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
+      if (state._routing && state._routing.coordEditMode){
+        try { routingCoordEditClearFeedback(); } catch(_){}
+      }
+      try { routingRenderList(); } catch(_){}
+      return true;
+    }
     try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
     if (state._routing && state._routing.coordEditMode){
       try { routingCoordEditClearFeedback(); } catch(_){}
     }
     return true;
   }
-  try { routingPushPointUndoSnapshot(); } catch(_){}
+  if (!opts.skipUndo){ try { routingPushPointUndoSnapshot(); } catch(_){} }
   pt.lat = la;
   pt.lon = nLon;
   if (clearSource){
@@ -62279,6 +62376,7 @@ function routingSetPointCoordinates(pointId, lat, lon, source){
   } else {
     pt.source = src;
   }
+  if (nextLabel != null) pt.label = nextLabel;
   if (state._routing) state._routing.dirty = true;
   try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
   if (state._routing && state._routing.coordEditMode){
@@ -62463,6 +62561,7 @@ function routingFullCleanup(){
   try { routingCloseSaveAsTrackPrompt({ force: true }); } catch(_){}
   try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
+  try { routingSearchResetAll(); } catch(_){}
   if (state._routing){
     try {
       _routingSessionPrefs.provider = routingProviderNormalize(state._routing.provider);
@@ -62496,6 +62595,7 @@ function routingFullCleanup(){
     state._routing.coordEditDrafts = Object.create(null);
     state._routing.coordEditFeedback = "";
     state._routing.coordEditFeedbackIsErr = false;
+    state._routing.search = Object.create(null);
   }
   try { routingSyncPickModeUi(); } catch(_){}
   try { routingRemoveMarkersOverlay(); } catch(_){}
@@ -62521,6 +62621,376 @@ function routingFullCleanup(){
 }
 function routingEscapeAttr(id){
   return String(id == null ? "" : id).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+/* ===== ROUTING-GEOCODING-MULTIROW-A — per-stop search (session-only) ===== */
+let _routingSearchPageGen = 0;
+const _routingSearchDebTO = Object.create(null);
+function routingSearchEnsureMap(r){
+  if (!r) return null;
+  if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
+  return r.search;
+}
+function routingSearchEntry(pointId){
+  const r = state._routing;
+  if (!r || !pointId) return null;
+  const map = routingSearchEnsureMap(r);
+  if (!map) return null;
+  const id = String(pointId);
+  if (!map[id]){
+    map[id] = {
+      query: "",
+      token: 0,
+      loading: false,
+      errorKey: "",
+      hits: [],
+      sourceKind: "",
+      open: false,
+      activeIndex: -1
+    };
+  }
+  return map[id];
+}
+function routingSearchClearTimer(pointId){
+  const id = String(pointId == null ? "" : pointId);
+  if (!id) return;
+  if (_routingSearchDebTO[id] != null){
+    try { clearTimeout(_routingSearchDebTO[id]); } catch(_){}
+    try { delete _routingSearchDebTO[id]; } catch(_){}
+  }
+}
+function routingSearchAnyDropdownOpen(){
+  const r = state._routing;
+  if (!r || !r.search) return false;
+  const ids = Object.keys(r.search);
+  for (let i = 0; i < ids.length; i++){
+    const e = r.search[ids[i]];
+    if (e && e.open) return true;
+  }
+  return false;
+}
+function routingSearchClose(pointId){
+  routingSearchClearTimer(pointId);
+  const e = state._routing && state._routing.search && state._routing.search[String(pointId)];
+  if (e){
+    e.token = ++_routingSearchPageGen;
+    e.loading = false;
+    e.errorKey = "";
+    e.hits = [];
+    e.sourceKind = "";
+    e.open = false;
+    e.activeIndex = -1;
+  }
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+}
+function routingSearchCloseAll(){
+  const r = state._routing;
+  if (!r || !r.search) return;
+  const ids = Object.keys(r.search);
+  for (let i = 0; i < ids.length; i++){
+    try { routingSearchClose(ids[i]); } catch(_){}
+  }
+}
+function routingSearchReset(pointId){
+  routingSearchClearTimer(pointId);
+  const r = state._routing;
+  if (!r || !r.search) return;
+  const id = String(pointId);
+  const e = r.search[id];
+  if (e) e.token = ++_routingSearchPageGen;
+  try { delete r.search[id]; } catch(_){}
+  try {
+    const row = document.querySelector('.routing-point-row[data-routing-id="' + routingEscapeAttr(id) + '"]');
+    if (row){
+      row.querySelectorAll(".routing-pt-search-dropdown, .routing-pt-search-status").forEach(function(el){ el.remove(); });
+      const inp = row.querySelector("input.routing-pt-field[data-routing-label]");
+      if (inp){
+        inp.setAttribute("aria-expanded", "false");
+        inp.removeAttribute("aria-activedescendant");
+      }
+    }
+  } catch(_){}
+}
+function routingSearchResetAll(){
+  const keys = Object.keys(_routingSearchDebTO);
+  for (let i = 0; i < keys.length; i++) routingSearchClearTimer(keys[i]);
+  const r = state._routing;
+  if (r && r.search){
+    const ids = Object.keys(r.search);
+    for (let i = 0; i < ids.length; i++){
+      const e = r.search[ids[i]];
+      if (e) e.token = ++_routingSearchPageGen;
+    }
+    r.search = Object.create(null);
+  }
+  try {
+    document.querySelectorAll(".routing-pt-search-dropdown, .routing-pt-search-status").forEach(function(el){ el.remove(); });
+  } catch(_){}
+}
+function routingSearchCallbackStillValid(pointId, token, query){
+  const r = state._routing;
+  if (!r || !r.panelOpen) return false;
+  const dlg = document.getElementById("routingPlannerPanel");
+  if (!dlg || !dlg.open) return false;
+  if (!routingFindPoint(pointId)) return false;
+  const e = r.search && r.search[String(pointId)];
+  if (!e) return false;
+  if (e.token !== token) return false;
+  if (String(e.query || "") !== String(query || "")) return false;
+  return true;
+}
+function routingSearchOnLabelInput(pointId, raw){
+  if (!state._routing || !pointId) return;
+  const e = routingSearchEntry(pointId);
+  if (!e) return;
+  const q = String(raw || "").trim();
+  routingSearchClearTimer(pointId);
+  if (q.length < 3){
+    e.query = q;
+    e.token = ++_routingSearchPageGen;
+    e.loading = false;
+    e.errorKey = "";
+    e.hits = [];
+    e.sourceKind = "";
+    e.open = false;
+    e.activeIndex = -1;
+    try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+    return;
+  }
+  const id = String(pointId);
+  _routingSearchDebTO[id] = setTimeout(function(){
+    try { delete _routingSearchDebTO[id]; } catch(_){}
+    try { routingSearchRun(pointId, q); } catch(_){}
+  }, 250);
+}
+async function routingSearchRun(pointId, query){
+  if (!state._routing) return;
+  const e = routingSearchEntry(pointId);
+  if (!e) return;
+  const q = String(query || "").trim();
+  if (q.length < 3){
+    e.query = q;
+    e.token = ++_routingSearchPageGen;
+    e.loading = false;
+    e.errorKey = "";
+    e.hits = [];
+    e.sourceKind = "";
+    e.open = false;
+    e.activeIndex = -1;
+    try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+    return;
+  }
+  const token = ++_routingSearchPageGen;
+  e.query = q;
+  e.token = token;
+  e.loading = true;
+  e.errorKey = "";
+  e.hits = [];
+  e.sourceKind = "";
+  e.open = true;
+  e.activeIndex = -1;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+  let hits = [];
+  let sourceKind = "";
+  const onlineOk = (typeof geocodingAllowed === "function" && geocodingAllowed()) &&
+    (typeof isEffectivelyOnline === "function" && isEffectivelyOnline());
+  try {
+    if (onlineOk){
+      try {
+        hits = await geocodeSearch(q, { limit: 8 });
+        if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+        if (hits && hits.length){
+          sourceKind = "online";
+        } else {
+          hits = await offlineForwardSearch(q);
+          if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+          sourceKind = (hits && hits.length) ? "offline" : "";
+        }
+      } catch(_onlineErr){
+        if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+        try {
+          hits = await offlineForwardSearch(q);
+          if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+          sourceKind = (hits && hits.length) ? "offline" : "";
+          if (!hits || !hits.length) e.errorKey = "routing.searchError";
+        } catch(_offErr){
+          if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+          hits = [];
+          e.errorKey = "routing.searchError";
+        }
+      }
+    } else {
+      try {
+        hits = await offlineForwardSearch(q);
+        if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+        sourceKind = (hits && hits.length) ? "offline" : "";
+        if ((!hits || !hits.length) && state.opsecStrict) e.errorKey = "routing.searchDisabledOpsec";
+      } catch(_offErr2){
+        if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+        hits = [];
+        e.errorKey = state.opsecStrict ? "routing.searchDisabledOpsec" : "routing.searchError";
+      }
+    }
+  } catch(_outer){
+    if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+    hits = [];
+    e.errorKey = "routing.searchError";
+  }
+  if (!routingSearchCallbackStillValid(pointId, token, q)) return;
+  e.loading = false;
+  e.hits = Array.isArray(hits) ? hits : [];
+  e.sourceKind = sourceKind;
+  if (!e.hits.length && !e.errorKey) e.errorKey = "routing.searchNoResults";
+  e.open = true;
+  e.activeIndex = e.hits.length ? 0 : -1;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+}
+function routingSearchPick(pointId, idx){
+  const r = state._routing;
+  if (!r) return false;
+  const e = r.search && r.search[String(pointId)];
+  if (!e || !Array.isArray(e.hits)) return false;
+  const h = e.hits[idx];
+  if (!h) return false;
+  const la = Number(h.lat), lo = Number(h.lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90) return false;
+  if (lo < -180 || lo > 180) return false;
+  const label = String(h.display_name || "").slice(0, 80);
+  const ok = routingSetPointCoordinates(pointId, la, lo, null, { label: label });
+  routingSearchClearTimer(pointId);
+  if (e){
+    e.token = ++_routingSearchPageGen;
+    e.loading = false;
+    e.errorKey = "";
+    e.hits = [];
+    e.sourceKind = "";
+    e.open = false;
+    e.activeIndex = -1;
+  }
+  setTimeout(function(){
+    try {
+      const inp = document.querySelector('input.routing-pt-field[data-routing-id="' + routingEscapeAttr(pointId) + '"]');
+      if (inp) inp.focus();
+    } catch(_){}
+  }, 0);
+  return !!ok;
+}
+function routingSearchMoveActive(pointId, delta){
+  const e = state._routing && state._routing.search && state._routing.search[String(pointId)];
+  if (!e || !e.open || !e.hits || !e.hits.length) return;
+  const n = e.hits.length;
+  let i = Number(e.activeIndex);
+  if (!Number.isFinite(i)) i = -1;
+  i = (i + delta + n) % n;
+  e.activeIndex = i;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+  try {
+    const opt = document.getElementById("routing-search-opt-" + String(pointId) + "-" + i);
+    if (opt && opt.scrollIntoView) opt.scrollIntoView({ block: "nearest" });
+  } catch(_){}
+}
+function routingSearchSyncDropdownDom(pointId){
+  const id = String(pointId || "");
+  if (!id) return;
+  const row = document.querySelector('.routing-point-row[data-routing-id="' + routingEscapeAttr(id) + '"]');
+  if (!row) return;
+  const field = row.querySelector("input.routing-pt-field[data-routing-label]");
+  const e = state._routing && state._routing.search && state._routing.search[id];
+  let status = row.querySelector(".routing-pt-search-status");
+  let dd = row.querySelector(".routing-pt-search-dropdown");
+  if (!e || !e.open){
+    if (status){ status.hidden = true; status.textContent = ""; status.classList.remove("is-err"); }
+    if (dd){ dd.hidden = true; dd.innerHTML = ""; }
+    if (field){
+      field.setAttribute("aria-expanded", "false");
+      field.removeAttribute("aria-activedescendant");
+    }
+    return;
+  }
+  if (!status){
+    status = document.createElement("div");
+    status.className = "routing-pt-search-status";
+    status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
+    row.appendChild(status);
+  }
+  if (!dd){
+    dd = document.createElement("div");
+    dd.className = "routing-pt-search-dropdown";
+    dd.setAttribute("role", "listbox");
+    dd.id = "routing-search-dd-" + id;
+    row.appendChild(dd);
+  }
+  if (field){
+    field.setAttribute("aria-autocomplete", "list");
+    field.setAttribute("aria-controls", dd.id);
+    field.setAttribute("aria-expanded", "true");
+  }
+  if (e.loading){
+    status.hidden = false;
+    status.classList.remove("is-err");
+    status.textContent = routingT("routing.searchLoading", "Searching…");
+    dd.hidden = true;
+    dd.innerHTML = "";
+    if (field) field.removeAttribute("aria-activedescendant");
+    return;
+  }
+  if (e.errorKey && (!e.hits || !e.hits.length)){
+    status.hidden = false;
+    status.classList.add("is-err");
+    status.textContent = routingT(e.errorKey, e.errorKey);
+    dd.hidden = true;
+    dd.innerHTML = "";
+    if (field) field.removeAttribute("aria-activedescendant");
+    return;
+  }
+  status.hidden = true;
+  status.textContent = "";
+  status.classList.remove("is-err");
+  const hits = Array.isArray(e.hits) ? e.hits : [];
+  if (!hits.length){
+    dd.hidden = true;
+    dd.innerHTML = "";
+    if (field) field.removeAttribute("aria-activedescendant");
+    return;
+  }
+  dd.hidden = false;
+  let html = "";
+  for (let i = 0; i < hits.length; i++){
+    const h = hits[i] || {};
+    const offline = !!h._offline || e.sourceKind === "offline";
+    const name = esc(String(h.display_name || ""));
+    const typeLbl = esc((h.class && h.type) ? (h.class + "/" + h.type) : (h.type || ""));
+    const badge = offline
+      ? routingT("routing.searchOfflineBadge", "offline")
+      : routingT("routing.searchOnlineBadge", "online");
+    const active = (i === e.activeIndex) ? " is-active" : "";
+    const offCls = offline ? " is-offline" : "";
+    const optId = "routing-search-opt-" + id + "-" + i;
+    html += '<button type="button" class="routing-pt-search-item' + active + offCls + '" role="option" id="' + optId +
+      '" data-routing-search-pick="1" data-routing-id="' + esc(id) + '" data-idx="' + i + '"' +
+      (i === e.activeIndex ? ' aria-selected="true"' : ' aria-selected="false"') + '>' +
+      '<div class="routing-pt-search-name">' + name + '</div>' +
+      '<div class="routing-pt-search-meta">' +
+      (typeLbl ? '<span>' + typeLbl + '</span>' : '') +
+      '<span class="routing-pt-search-badge">' + esc(badge) + '</span>' +
+      '</div></button>';
+  }
+  dd.innerHTML = html;
+  if (field){
+    if (e.activeIndex >= 0) field.setAttribute("aria-activedescendant", "routing-search-opt-" + id + "-" + e.activeIndex);
+    else field.removeAttribute("aria-activedescendant");
+  }
+}
+function routingSearchRestoreOpenDropdowns(){
+  const r = state._routing;
+  if (!r || !r.search) return;
+  const ids = Object.keys(r.search);
+  for (let i = 0; i < ids.length; i++){
+    const e = r.search[ids[i]];
+    if (e && e.open){
+      try { routingSearchSyncDropdownDom(ids[i]); } catch(_){}
+    }
+  }
 }
 function routingRenderList(){
   const list = document.getElementById("routingPointsList");
@@ -62593,6 +63063,10 @@ function routingRenderList(){
     field.setAttribute("data-routing-id", p.id);
     field.setAttribute("data-routing-label", "1");
     field.setAttribute("aria-label", kindLbl);
+    field.setAttribute("aria-autocomplete", "list");
+    field.setAttribute("aria-controls", "routing-search-dd-" + p.id);
+    const seOpen = !!(state._routing.search && state._routing.search[p.id] && state._routing.search[p.id].open);
+    field.setAttribute("aria-expanded", seOpen ? "true" : "false");
     let ph = routingT("routing.startPlaceholder", "Start name");
     if (kind === "end") ph = routingT("routing.endPlaceholder", "Destination name");
     else if (kind === "via") ph = routingT("routing.viaPlaceholder", "Via name");
@@ -62679,6 +63153,7 @@ function routingRenderList(){
   try { routingSyncReverseBtnUi(); } catch(_){}
   try { routingSyncUndoBtnUi(); } catch(_){}
   try { routingSyncPointsFeedback(); } catch(_){}
+  try { routingSearchRestoreOpenDropdowns(); } catch(_){}
 }
 function routingMovePoint(id, delta){
   const r = routingEnsureState();
@@ -62718,6 +63193,7 @@ function routingRemovePoint(id){
     r.gpsRequestGeneration = (r.gpsRequestGeneration || 0) + 1;
     r.gpsBusyId = null;
   }
+  try { routingSearchReset(id); } catch(_){}
   try { routingPushPointUndoSnapshot(); } catch(_){}
   r.points = r.points.filter(p => p && p.id !== id);
   try {
@@ -65480,6 +65956,16 @@ function routingEnsureAltitudeResizeObserver(){
 }
 
 function routingHandleListAction(ev){
+  const pickEl = ev.target && ev.target.closest && ev.target.closest("[data-routing-search-pick][data-routing-id]");
+  if (pickEl){
+    const pid = pickEl.getAttribute("data-routing-id");
+    const idx = Number(pickEl.getAttribute("data-idx"));
+    if (pid && Number.isFinite(idx)){
+      ev.preventDefault();
+      try { routingSearchPick(pid, idx); } catch(_){}
+    }
+    return;
+  }
   const btn = ev.target && ev.target.closest && ev.target.closest("[data-routing-act]");
   if (!btn) return;
   const act = btn.getAttribute("data-routing-act");
@@ -65864,10 +66350,33 @@ function wireRoutingPlannerOnce(){
       if (!p) return;
       p.label = String(inp.value || "").slice(0, 80);
       state._routing.dirty = true;
+      try { routingSearchOnLabelInput(id, p.label); } catch(_){}
     });
     if (!list._routingCoordKeyBound){
       list._routingCoordKeyBound = true;
       list.addEventListener("keydown", (ev) => {
+        const labelInp = ev && ev.target && ev.target.closest && ev.target.closest("input.routing-pt-field[data-routing-label]");
+        if (labelInp){
+          const lid = labelInp.getAttribute("data-routing-id");
+          const se = state._routing && state._routing.search && lid ? state._routing.search[lid] : null;
+          if (se && se.open){
+            if (ev.key === "ArrowDown"){ ev.preventDefault(); try { routingSearchMoveActive(lid, 1); } catch(_){} return; }
+            if (ev.key === "ArrowUp"){ ev.preventDefault(); try { routingSearchMoveActive(lid, -1); } catch(_){} return; }
+            if (ev.key === "Enter"){
+              if (se.activeIndex >= 0 && se.hits && se.hits[se.activeIndex]){
+                ev.preventDefault();
+                try { routingSearchPick(lid, se.activeIndex); } catch(_){}
+                return;
+              }
+            }
+            if (ev.key === "Escape" || ev.key === "Esc"){
+              ev.preventDefault();
+              ev.stopPropagation();
+              try { routingSearchClose(lid); } catch(_){}
+              return;
+            }
+          }
+        }
         const coordInp = ev && ev.target && ev.target.closest && ev.target.closest("input.routing-pt-coord[data-routing-id]");
         if (!coordInp) return;
         if (ev.key === "Enter"){ ev.preventDefault(); const id = coordInp.getAttribute("data-routing-id"); if (id) routingApplyManualCoords(id); return; }
@@ -65875,6 +66384,15 @@ function wireRoutingPlannerOnce(){
           ev.preventDefault(); ev.stopPropagation(); routingExitCoordEditMode();
         }
       });
+    }
+    if (!list._routingSearchOutsideBound){
+      list._routingSearchOutsideBound = true;
+      document.addEventListener("click", function routingSearchOutsideClick(ev){
+        if (!state._routing || !routingSearchAnyDropdownOpen()) return;
+        const t = ev.target;
+        if (t && t.closest && (t.closest("#routingPointsList") || t.closest(".routing-pt-search-dropdown"))) return;
+        try { routingSearchCloseAll(); } catch(_){}
+      }, true);
     }
     routingAttachListDnd(list);
   }
