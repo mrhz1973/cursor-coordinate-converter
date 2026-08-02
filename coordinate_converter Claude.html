@@ -21894,10 +21894,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-MODAL-OPEN-EXPANDED-A-FIX1";
-const APP_BUILD_DETAIL = "routing planner max height with operational width";
+const APP_BUILD_ID = "UI-MODAL-ERROR-FOCUS-A-FIX1";
+const APP_BUILD_DETAIL = "uniform attention for all modal error messages";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 109;
+const APP_BUILD_NUM = 110;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39428,11 +39428,19 @@ function notifyTrackSaveMinPointsBlocked(){
   const msg = t("track.saveMinTwoPoints") || "La traccia deve contenere almeno 2 punti per essere salvata.";
   try { setBadge("error", msg); } catch(_){}
   const strip = document.getElementById("trackSaveGuardMsg");
-  if (strip){ strip.textContent = msg; strip.hidden = false; try { appRevealModalError(strip); } catch(_){} }
+  if (strip){ strip.textContent = msg; strip.hidden = false; }
   const pe = document.getElementById("trackPromptSaveErr");
-  if (pe){ pe.textContent = msg; pe.hidden = false; try { appRevealModalError(pe); } catch(_){} }
+  if (pe){ pe.textContent = msg; pe.hidden = false; }
   const ne = document.getElementById("trackNewPromptSaveErr");
-  if (ne){ ne.textContent = msg; ne.hidden = false; try { appRevealModalError(ne); } catch(_){} }
+  if (ne){ ne.textContent = msg; ne.hidden = false; }
+  try {
+    if (typeof appRevealModalErrors === "function") appRevealModalErrors([strip, pe, ne]);
+    else {
+      if (strip) try { appRevealModalError(strip); } catch(_){}
+      if (pe) try { appRevealModalError(pe); } catch(_){}
+      if (ne) try { appRevealModalError(ne); } catch(_){}
+    }
+  } catch(_){}
 }
 /**
  * Library CRUD helper: create one saved track from an explicit point list.
@@ -49384,11 +49392,19 @@ function clearError(){
   box.hidden = true;
 }
 
-/** UI-MODAL-ERROR-FOCUS-A — scroll/focus/attention for red modal errors (central helper). */
-let _appModalErrorAttentionEl = null;
-let _appModalErrorAttentionTimer = null;
+/** UI-MODAL-ERROR-FOCUS-A (+ FIX1) — pulse/scroll/focus for red modal errors (central). */
+const _appModalErrorAttentionTimers = typeof WeakMap === "function" ? new WeakMap() : null;
+let _appModalErrorPrimaryModal = null;
+let _appModalErrorPrimaryAt = 0;
+const APP_MODAL_ERROR_PRIMARY_WINDOW_MS = 120;
+const APP_MODAL_ERROR_ATTENTION_MS = 1800;
 function appModalErrorIsVisible(el){
-  if (!el || !(el instanceof Element)) return false;
+  if (!el || typeof el !== "object") return false;
+  try {
+    if (typeof Element !== "undefined" && !(el instanceof Element) && !el.tagName) return false;
+  } catch(_){
+    if (!el.tagName) return false;
+  }
   if (el.hidden) return false;
   if (el.getAttribute("hidden") != null && el.hidden !== false) return false;
   try {
@@ -49402,7 +49418,8 @@ function appFindOpenModalRoot(el){
   if (!el || !el.closest) return null;
   const root = el.closest("dialog.app-modal, dialog, .app-modal, [role='dialog']");
   if (!root) return null;
-  if (root instanceof HTMLDialogElement){
+  const tag = String(root.tagName || "").toUpperCase();
+  if (tag === "DIALOG"){
     if (!root.open && !root.hasAttribute("open")) return null;
   } else if (root.hidden){
     return null;
@@ -49441,57 +49458,115 @@ function appFindModalScrollParent(el, modalRoot){
   }
   return null;
 }
+/** Pulse-only attention (no scroll/focus). Safe for secondary red errors. */
+function appPulseModalError(errorElement){
+  return appRevealModalError(errorElement, { pulse: true, scroll: false, focus: false });
+}
+/**
+ * Reveal one or more red modal errors.
+ * All visible → pulse; first → pulse + scroll + focus; rest → pulse only.
+ */
+function appRevealModalErrors(errorElements, options){
+  options = options || {};
+  const raw = Array.isArray(errorElements) ? errorElements : (errorElements ? [errorElements] : []);
+  const list = [];
+  for (let i = 0; i < raw.length; i++){
+    const el = raw[i];
+    if (!el || typeof el !== "object") continue;
+    if (!el.tagName && !(typeof Element !== "undefined" && el instanceof Element)) continue;
+    if (!appModalErrorIsVisible(el)) continue;
+    if (!appFindOpenModalRoot(el)) continue;
+    list.push(el);
+  }
+  if (!list.length) return false;
+  for (let i = 0; i < list.length; i++){
+    appRevealModalError(list[i], {
+      pulse: true,
+      scroll: i === 0 && options.scroll !== false,
+      focus: i === 0 && options.focus !== false,
+      forcePrimary: i === 0,
+      topPad: options.topPad,
+      keepTabIndex: options.keepTabIndex
+    });
+  }
+  return true;
+}
 function appRevealModalError(errorElement, options){
   options = options || {};
   const el = errorElement;
-  if (!el || !(el instanceof Element)) return false;
+  if (!el || typeof el !== "object") return false;
+  try {
+    if (typeof Element !== "undefined" && !(el instanceof Element) && !el.tagName) return false;
+  } catch(_){
+    if (!el.tagName) return false;
+  }
   if (!appModalErrorIsVisible(el)) return false;
   const modalRoot = appFindOpenModalRoot(el);
   if (!modalRoot) return false;
+  let doPulse = options.pulse !== false;
+  let doScroll = options.scroll !== false;
+  let doFocus = options.focus !== false;
+  if (options.asSecondary === true){
+    doScroll = false;
+    doFocus = false;
+  } else if ((doScroll || doFocus) && options.forcePrimary !== true){
+    const now = Date.now();
+    if (_appModalErrorPrimaryModal === modalRoot
+        && (now - _appModalErrorPrimaryAt) < APP_MODAL_ERROR_PRIMARY_WINDOW_MS){
+      doScroll = false;
+      doFocus = false;
+    } else {
+      _appModalErrorPrimaryModal = modalRoot;
+      _appModalErrorPrimaryAt = now;
+    }
+  } else if (options.forcePrimary === true && (doScroll || doFocus)){
+    _appModalErrorPrimaryModal = modalRoot;
+    _appModalErrorPrimaryAt = Date.now();
+  }
   try {
     if (!el.getAttribute("role")) el.setAttribute("role", "alert");
     const live = el.getAttribute("aria-live");
     if (!live || live === "off") el.setAttribute("aria-live", "assertive");
   } catch(_){}
   const run = function(){
-    try {
-      const scroller = appFindModalScrollParent(el, modalRoot);
-      if (scroller){
-        const er = el.getBoundingClientRect();
-        const sr = scroller.getBoundingClientRect();
-        const topPad = (options.topPad != null && Number.isFinite(options.topPad)) ? options.topPad : 12;
-        const delta = (er.top - sr.top) - topPad;
-        if (Math.abs(delta) > 2) scroller.scrollTop += delta;
-      } else {
-        try { el.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch(_){}
-      }
-    } catch(_){}
-    try {
-      const prevTab = el.getAttribute("tabindex");
-      if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
-      try { el.focus({ preventScroll: true }); } catch(_){ try { el.focus(); } catch(__){} }
-      if (prevTab == null && options.keepTabIndex !== true){
-        /* keep tabindex=-1 for programmatic re-focus */
-      }
-    } catch(_){}
-    try {
-      if (_appModalErrorAttentionTimer){
-        try { clearTimeout(_appModalErrorAttentionTimer); } catch(_){}
-        _appModalErrorAttentionTimer = null;
-      }
-      if (_appModalErrorAttentionEl && _appModalErrorAttentionEl !== el){
-        try { _appModalErrorAttentionEl.classList.remove("app-modal-error-attention"); } catch(_){}
-      }
-      el.classList.remove("app-modal-error-attention");
-      void el.offsetWidth;
-      el.classList.add("app-modal-error-attention");
-      _appModalErrorAttentionEl = el;
-      _appModalErrorAttentionTimer = setTimeout(function(){
-        _appModalErrorAttentionTimer = null;
-        try { el.classList.remove("app-modal-error-attention"); } catch(_){}
-        if (_appModalErrorAttentionEl === el) _appModalErrorAttentionEl = null;
-      }, 1800);
-    } catch(_){}
+    if (doScroll){
+      try {
+        const scroller = appFindModalScrollParent(el, modalRoot);
+        if (scroller){
+          const er = el.getBoundingClientRect();
+          const sr = scroller.getBoundingClientRect();
+          const topPad = (options.topPad != null && Number.isFinite(options.topPad)) ? options.topPad : 12;
+          const delta = (er.top - sr.top) - topPad;
+          if (Math.abs(delta) > 2) scroller.scrollTop += delta;
+        } else {
+          try { el.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch(_){}
+        }
+      } catch(_){}
+    }
+    if (doFocus){
+      try {
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+        try { el.focus({ preventScroll: true }); } catch(_){ try { el.focus(); } catch(__){} }
+      } catch(_){}
+    }
+    if (doPulse){
+      try {
+        if (_appModalErrorAttentionTimers){
+          const prevT = _appModalErrorAttentionTimers.get(el);
+          if (prevT){ try { clearTimeout(prevT); } catch(_){} }
+        }
+        el.classList.remove("app-modal-error-attention");
+        void el.offsetWidth;
+        el.classList.add("app-modal-error-attention");
+        const tid = setTimeout(function(){
+          try {
+            if (_appModalErrorAttentionTimers) _appModalErrorAttentionTimers.delete(el);
+          } catch(_){}
+          try { el.classList.remove("app-modal-error-attention"); } catch(_){}
+        }, APP_MODAL_ERROR_ATTENTION_MS);
+        if (_appModalErrorAttentionTimers) _appModalErrorAttentionTimers.set(el, tid);
+      } catch(_){}
+    }
   };
   try {
     if (typeof requestAnimationFrame === "function"){
@@ -62009,14 +62084,35 @@ function routingPointBadge(i, n){
 function routingFormatCoords(lat, lon){
   return Number(lat).toFixed(5) + ", " + Number(lon).toFixed(5);
 }
-function routingSetStatus(msg, isErr){
+function routingSetStatus(msg, isErr, opts){
+  opts = opts || {};
   const el = document.getElementById("routingPlannerStatus");
   if (!el) return;
   const textMsg = msg == null ? "" : String(msg);
   el.textContent = textMsg;
   el.classList.toggle("is-err", !!isErr && !!textMsg);
   if (state._routing) state._routing.error = textMsg;
-  if (isErr && textMsg) try { appRevealModalError(el); } catch(_){}
+  if (isErr && textMsg && !opts.deferReveal) try { appRevealModalError(el); } catch(_){}
+}
+/** Pulse/scroll/focus for visible Routing Planner red status rows (status first, then provider). */
+function routingRevealPanelErrors(){
+  const st = document.getElementById("routingPlannerStatus");
+  const ps = document.getElementById("routingProviderStatus");
+  const list = [];
+  try {
+    if (st && st.classList.contains("is-err") && typeof appModalErrorIsVisible === "function" && appModalErrorIsVisible(st))
+      list.push(st);
+  } catch(_){}
+  try {
+    if (ps && ps.classList.contains("is-err") && typeof appModalErrorIsVisible === "function" && appModalErrorIsVisible(ps))
+      list.push(ps);
+  } catch(_){}
+  if (!list.length) return false;
+  try {
+    if (list.length > 1 && typeof appRevealModalErrors === "function")
+      return appRevealModalErrors(list);
+    return appRevealModalError(list[0]);
+  } catch(_){ return false; }
 }
 function routingSyncPointsFeedback(){
   const el = document.getElementById("routingPointsFeedback");
@@ -62601,7 +62697,8 @@ function routingSyncEndpointUi(){
   const ep = routingResolvedEndpoint();
   el.textContent = ep || routingT("routing.endpointUnresolved", "Endpoint unresolved");
 }
-function routingSetProviderStatus(key, isErr){
+function routingSetProviderStatus(key, isErr, opts){
+  opts = opts || {};
   const el = document.getElementById("routingProviderStatus");
   const r = state._routing;
   if (r) r.providerStatusKey = key ? String(key) : "";
@@ -62613,7 +62710,7 @@ function routingSetProviderStatus(key, isErr){
   }
   el.textContent = routingT(key, key);
   el.classList.toggle("is-err", !!isErr);
-  if (isErr) try { appRevealModalError(el); } catch(_){}
+  if (isErr && !opts.deferReveal) try { appRevealModalError(el); } catch(_){}
 }
 function routingSyncProviderUi(){
   const r = routingEnsureState();
@@ -62658,8 +62755,9 @@ function routingAbortActiveRequestForPolicy(errKey){
   r.routeError = errKey || "";
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   if (r.panelOpen){
-    routingSetStatus(routingT(errKey || "routing.errorGeneric", errKey || "Blocked"), true);
-    routingSetProviderStatus(errKey || "", true);
+    routingSetStatus(routingT(errKey || "routing.errorGeneric", errKey || "Blocked"), true, { deferReveal: true });
+    routingSetProviderStatus(errKey || "", true, { deferReveal: true });
+    try { routingRevealPanelErrors(); } catch(_){}
   }
   try { refreshTileMapForTrackUi(); } catch(_){}
   routingSyncCalculateBtnUi();
@@ -63551,6 +63649,7 @@ function routingSearchSyncDropdownDom(pointId){
     status.hidden = false;
     status.classList.add("is-err");
     status.textContent = routingT(e.errorKey, e.errorKey);
+    try { if (typeof appPulseModalError === "function") appPulseModalError(status); } catch(_){}
     dd.hidden = true;
     dd.innerHTML = "";
     if (field) field.removeAttribute("aria-activedescendant");
@@ -63566,6 +63665,7 @@ function routingSearchSyncDropdownDom(pointId){
       status.hidden = false;
       status.classList.add("is-err");
       status.textContent = routingT(e.errorKey, e.errorKey);
+      try { if (typeof appPulseModalError === "function") appPulseModalError(status); } catch(_){}
     } else {
       status.hidden = true;
       status.textContent = "";
@@ -64502,8 +64602,9 @@ async function routingVerifyProvider(){
 
   const gate0 = routingNetworkGateGraphhopper({ provider: r.provider });
   if (!gate0.ok){
-    routingSetProviderStatus(gate0.errKey, true);
-    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true, { deferReveal: true });
+    routingSetProviderStatus(gate0.errKey, true, { deferReveal: true });
+    try { routingRevealPanelErrors(); } catch(_){}
     return;
   }
 
