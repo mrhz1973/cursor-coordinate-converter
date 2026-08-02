@@ -2,19 +2,19 @@
 
 ## LATEST
 
-* real_task_commit: `e1e8a59c64e3df834caf61a36aeb6c6d6d0cf77b`
-* real_task_subject: docs: finito UX-SEARCH-ERROR-FOCUS-A after Regola H QA PASS
-* report_generated_at: 2026-08-02T15:00:00Z
+* real_task_commit: `d67f942b311bf2de1dabdfe873cc166f1c581827`
+* real_task_subject: docs: finito ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 after Regola H QA PASS
+* report_generated_at: 2026-08-02T18:25:00Z
 * branch: main
-* remote_head_after_task_push: `e1e8a59c64e3df834caf61a36aeb6c6d6d0cf77b` (docs finito pre-autosync); runtime tip `0b27e27`
-* previous_report_container: `351e3e7` (autosync / riconciliazione finito ROUTING-GEOCODE-SNAP-A — esterno/verificabile)
+* remote_head_after_task_push: `d67f942b311bf2de1dabdfe873cc166f1c581827` (docs finito pre-autosync); runtime tip `89a08fb`
+* previous_report_container: `134c401` (autosync / riconciliazione finito UX-SEARCH-ERROR-FOCUS-A — esterno/verificabile)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs finito `e1e8a59` pushato; monolite tip `0b27e27` escluso dal commit docs (già in main)
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); docs `e1e8a59` pushato pre-autosync
-* result_cursor: UX-SEARCH-ERROR-FOCUS-A CLOSED; chiude ROUTING-SEARCH-UX-A + UI-MODAL-ERROR-FOCUS-A
-* pass_operatore: PASS — attestazione «QA UX-SEARCH-ERROR-FOCUS-A PASS operatore»
-* result_runtime: tip `0b27e27` / UX-SEARCH-ERROR-FOCUS-A · build 107
+* working_tree_status: docs finito `d67f942` pushato; monolite tip `89a08fb` escluso dal commit docs (già in main)
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); docs `d67f942` pushato pre-autosync
+* result_cursor: ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) CLOSED; QA FAIL A → FIX1; QA PASS FIX1
+* pass_operatore: PASS — attestazione «QA ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 PASS operatore»
+* result_runtime: tip `89a08fb` / ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 · build 109
 * qa_attestation_source: operatore (Regola H → auto-finito)
 * notes: monolite non modificato in finito; nessun terzo commit
 
@@ -22,46 +22,42 @@
 
 ```text
 real_task_commit (docs finito):
-e1e8a59c64e3df834caf61a36aeb6c6d6d0cf77b
+d67f942b311bf2de1dabdfe873cc166f1c581827
 
 runtime tip (live):
-0b27e27c46fecd69b42983680c2d70c12d8fe302
+89a08fb0954051dc3e2232c6c7b740f05cd03f43
 
 git branch --show-current
 main
 
 git log --oneline -5 (post-task, pre-autosync):
+d67f942 docs: finito ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 after Regola H QA PASS
+89a08fb fix(routing): keep planner width operational
+ae28eec fix(routing): open planner expanded
+134c401 docs: orchestratore — riconciliazione finito sessione
 e1e8a59 docs: finito UX-SEARCH-ERROR-FOCUS-A after Regola H QA PASS
-0b27e27 feat(ux): add routing history and focus modal errors
-351e3e7 docs: orchestratore — riconciliazione finito sessione
-a0c81d4 docs: finito ROUTING-GEOCODE-SNAP-A after Regola H QA PASS
-d1e770e feat(routing): preflight geocoded points against GraphHopper
 
 git rev-parse HEAD (post-task, pre-autosync):
-e1e8a59c64e3df834caf61a36aeb6c6d6d0cf77b
+d67f942b311bf2de1dabdfe873cc166f1c581827
 
 git ls-remote origin refs/heads/main (post-task, pre-autosync):
-e1e8a59c64e3df834caf61a36aeb6c6d6d0cf77b	refs/heads/main
+d67f942b311bf2de1dabdfe873cc166f1c581827	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 134c401 — autosync / riconciliazione finito UX-SEARCH-ERROR-FOCUS-A; real_task_commit storico `e1e8a59`
+* e1e8a59 — docs: finito UX-SEARCH-ERROR-FOCUS-A after Regola H QA PASS
+* 0b27e27 — feat UX-SEARCH runtime tip (build 107; superseded by `89a08fb`)
+* ae28eec — feat ROUTING-MODAL-OPEN-EXPANDED-A (build 108; superseded by FIX1)
+* 89a08fb — fix FIX1 runtime tip live (build 109)
 * 351e3e7 — autosync / riconciliazione finito ROUTING-GEOCODE-SNAP-A; real_task_commit storico `a0c81d4`
 * a0c81d4 — docs: finito ROUTING-GEOCODE-SNAP-A after Regola H QA PASS
-* d1e770e — feat SNAP-A runtime tip (build 106; superseded by `0b27e27`)
+* d1e770e — feat SNAP-A runtime tip (build 106; superseded)
 * d2bcbb1 — autosync L10N-EN-FR-FREEZE-A; real_task_commit storico `5280c82`
 * 5280c82 — docs(l10n): freeze EN and FR expansion
-* 894ce74 — autosync / riconciliazione finito ROUTING-ALTERNATIVE-ROUTES-A; real_task_commit storico `fe9139b`
-* fe9139b — docs: finito ROUTING-ALTERNATIVE-ROUTES-A after Regola H QA PASS
-* 0c078ae — AR-A-FIX3 runtime tip (build 105; superseded)
-* da56156 — autosync / riconciliazione QA-CHATGPT-3LINE-CURSOR-RULES-A; real_task_commit storico `0703f92`
-* 0703f92 — docs(cursor): align QA workflow rules with ChatGPT handoff
-* 101cc73 — autosync / riconciliazione QA-CHATGPT-3LINE-HANDOFF-PREF; real_task_commit storico `2072b7a`
-* 2072b7a — docs: route operator QA through ChatGPT three-line format
-* 8d48f62 — autosync / riconciliazione finito MULTIROW-A (+ FIX1 + FIX2); real_task_commit storico `16499ea`
-* 16499ea — docs: finito ROUTING-GEOCODING-MULTIROW-A after Regola H QA PASS
 
 ## LIMITI
 
