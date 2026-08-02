@@ -124,9 +124,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **QA-CHATGPT-3LINE-HANDOFF-PREF** (verificare `git ls-remote` post-push); monolite tip `1f7c05f` invariato |
+| HEAD documentale (pre-autosync) | commit docs/rules **QA-CHATGPT-3LINE-CURSOR-RULES-A** (verificare `git ls-remote` post-push); monolite tip `1f7c05f` invariato |
 | Runtime live / commit monolite | `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (`1f7c05f`) — tip MULTIROW-A-FIX2 (**invariato**) |
-| Ultimo blocco chiuso | **QA-CHATGPT-3LINE-HANDOFF-PREF** — **CLOSED / PASS docs-only** |
+| Ultimo blocco chiuso | **QA-CHATGPT-3LINE-CURSOR-RULES-A** — **CLOSED / PASS docs-only** (rules Cursor ↔ Regola D2) |
 | Ultimo blocco runtime monolite | **ROUTING-GEOCODING-MULTIROW-A-FIX2** — tip `1f7c05f` build 101 — **CLOSED / PASS end-to-end** |
 | Task aperto corrente | nessuno runtime aperto — backlog non aperto (Bundle F); **non** auto-aprire |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -142,6 +142,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | `APP_BUILD_ID` | `B6.5RGM-A-FIX2` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
+| QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
 | ROUTING-GEOCODING-MULTIROW-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (geocoding per-riga + anti-stale + Centra viewport-aware) |
 | MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (superseded live da MULTIROW-A-FIX2) |

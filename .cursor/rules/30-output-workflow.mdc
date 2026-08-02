@@ -167,9 +167,16 @@ Se un prompt operativo modifica **`coordinate_converter Claude.html`** (o altro 
 - **test browser manuale** se **realisticamente eseguibile** nell’ambiente (es. server locale già attivo, percorso noto);
 - **memoria orchestratore** secondo la rule *Autosync orchestratore* (nessun micro-commit “solo verifica” al posto dell’autosync previsto per l’intervento operativo).
 
-Se i **test browser** **non** sono stati eseguiti, il **RIEPILOGO** deve **dichiararlo chiaramente** e preparare per default una **QA operatore minima narrativa** (non una checklist lunga con caselle) secondo [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) e *Handoff & Close Discipline* Regola D in [`docs/OPERATING_MEMORY.md`](../docs/OPERATING_MEMORY.md) §4.
+Se i **test browser** **non** sono stati eseguiti (o dopo **deploy tecnico PASS** in attesa di QA operatore), il **RIEPILOGO** deve:
 
-**Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
+1. **dichiarare chiaramente** che i test browser non sono stati eseguiti (o che la QA operatore è pending);
+2. riportare i **fatti tecnici** disponibili (deploy, runtime SHA, smoke, scope, repo);
+3. riportare l’**URL runtime** corretto se noto (`?v=<runtime-short-sha>`);
+4. dichiarare il gate **`QA FINALE CHATGPT — PENDING`**;
+5. **non** preparare passaggi QA; **non** produrre checklist o QA narrativa; **non** chiedere all’operatore di verificare azioni nell’app;
+6. attendere **solo** l’attestazione finale PASS/FAIL prodotta dopo la QA gestita da **ChatGPT** (OM §4 Regola D2).
+
+**Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche tecniche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
 
 ## README / OPERATING_MEMORY / roadmap sync
 
@@ -252,24 +259,25 @@ Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti 
 
 Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
-## QA operatore minima (default)
+## QA operatore post-deploy (Regola D2 — ChatGPT emette)
 
-Quando la **QA browser operatore** resta **pending** dopo un blocco di routine (micro-fix UI, patch runtime localizzata, correzione circoscritta), Cursor prepara per **default** una **QA minima narrativa** — non una checklist lunga con caselle `[ ]`, tabelle o sette categorie obbligatorie.
+**Autorità viva:** OM §4 Regola D2 + [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md) (*Procedura canonica ChatGPT — tre righe per passaggio*). Questa sezione **sostituisce** la vecchia «QA minima narrativa» emessa da Cursor.
 
-**Struttura obbligatoria (un unico fenced code block):**
+Dopo **deploy tecnico PASS** (o quando la QA browser resta pending):
 
-1. `Il deploy tecnico di <BLOCK-ID> è PASS:` + elenco breve fatti tecnici già verificati (deploy, runtime SHA, servizio, HTTP 200, byte/hash match se applicabili, scope non toccato, repo pulito).
-2. `Ora serve solo la QA operatore minima, senza Cursor.` (o formulazione equivalente).
-3. `Apri:` + URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha>` (SHA **runtime** reale; mai docs/autosync).
-4. `Poi:` — pochi passaggi concreti nell'app.
-5. `verifica che:` — soli esiti specifici del blocco e regressioni pertinenti.
-6. `Riportami:` `QA <BLOCK-ID> PASS operatore` oppure messaggio esatto dell'errore e punto di occorrenza.
+1. Cursor **si ferma**; riporta fatti tecnici + URL runtime (`?v=<runtime-short-sha>`, SHA **runtime** reale; mai docs/autosync) + gate **`QA FINALE CHATGPT — PENDING`**.
+2. Cursor **non** prepara e **non** emette istruzioni QA operatore (né passaggi manuali nell’app, né checklist, né QA narrativa).
+3. **ChatGPT** è l’**autore unico** della QA: **un unico messaggio**; ogni passaggio operativo contiene esattamente:
+   - `Dove:`
+   - `Azione:`
+   - `Risultato atteso:`
+4. Dubbi, istruzioni non comprese, comportamenti inattesi e FAIL circoscritti tornano a **ChatGPT** (non a Cursor).
+5. Nella sessione **Cursor** arriva **solo** l’attestazione finale: `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore e punto>`.
+6. **Bundle con coda pre-autorizzata (Regola H):** la riga PASS è il **trigger automatico** del workflow `finito` — Cursor **non** deve attendere un secondo comando «finito» né chiedere all'operatore di lanciarlo.
 
-**Bundle con coda pre-autorizzata (Regola H):** quella riga PASS è il **trigger automatico** del workflow `finito` — Cursor **non** deve attendere un secondo comando «finito» né chiedere all'operatore di lanciarlo.
+**Vincoli invariati:** fail-closed senza attestazione; PASS tecnico ≠ PASS operatore; QA in italiano (D1); etichette UI visibili; Cursor **non** attesta QA visiva; divieto di inventare PASS operatore.
 
-**Vincoli:** una sola emissione; una sola risposta operatore; Cursor **non** attesta QA visiva; senza risposta esplicita → QA pending (fail-closed); niente audit generale; niente campi data/browser/risoluzione salvo necessità reale.
-
-**Checklist estesa** (caselle, NUCLEO STANDING, categorie strutturate): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — vedi [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md).
+**Checklist estesa** (caselle, NUCLEO STANDING, categorie strutturate): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — **sempre emessa da ChatGPT**, mai da Cursor — vedi [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md).
 
 ## LAST_CURSOR_REPORT — Fase F1–F3 (spec → collaudo → obbligo GIS-only)
 
