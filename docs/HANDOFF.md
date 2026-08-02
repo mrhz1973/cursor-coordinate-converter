@@ -68,6 +68,16 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 ---
 
+## L10N — IT attiva / EN·FR frozen
+
+- **Nuove feature e nuove stringhe UI:** italiano only (obbligo di lavoro).
+- **EN / FR:** espansione e manutenzione evolutiva **congelate** — no nuove traduzioni, no parità formale, no backfill, no QA ordinaria EN/FR, no fix cosmetici EN/FR non richiesti.
+- **Sistema i18n esistente:** preservato (dizionari, selettore, chiavi, `data-i18n` / `data-i18n-html`, traduzioni storiche).
+- **Unfreeze:** solo decisione **esplicita** dell’operatore.
+- Rule: [`.cursor/rules/32-l10n-en-fr-freeze.mdc`](../.cursor/rules/32-l10n-en-fr-freeze.mdc) — prevale su requisiti storici di parità IT/EN/FR.
+
+---
+
 ## Gate bundle (sostituisce separazione per-microblocco come default)
 
 | Tipo bundle | Contenuto tipico | Review / deploy |
@@ -124,11 +134,12 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs finito **ROUTING-ALTERNATIVE-ROUTES-A** (verificare `git ls-remote` post-push) |
-| Runtime live / commit monolite | `0c078aeebe6691fa025e5fe448c0886c6dc49056` (`0c078ae`) — tip AR-A-FIX3 |
-| Ultimo blocco chiuso | **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3)** — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs/rules **L10N-EN-FR-FREEZE-A** (verificare `git ls-remote` post-push); monolite tip `0c078ae` invariato |
+| Runtime live / commit monolite | `0c078aeebe6691fa025e5fe448c0886c6dc49056` (`0c078ae`) — tip AR-A-FIX3 (**invariato**) |
+| Ultimo blocco chiuso | **L10N-EN-FR-FREEZE-A** — **CLOSED / PASS docs-only** (freeze EN/FR; IT attiva) |
 | Ultimo blocco runtime monolite | **ROUTING-ALTERNATIVE-ROUTES-A-FIX3** — tip `0c078ae` build 105 — **CLOSED / PASS end-to-end** |
 | Task aperto corrente | nessuno runtime aperto — resto Bundle F non aperto; **non** auto-aprire |
+| L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
@@ -195,7 +206,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3) CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: resto **Bundle F** — **non** auto-aprire. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`0c078ae`** / **`B6.6AR-A-FIX3 · build 105`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **L10N-EN-FR-FREEZE-A CLOSED / PASS docs-only**. Ultimo runtime: **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3) CLOSED**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: resto **Bundle F** — **non** auto-aprire. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`0c078ae`** / **`B6.6AR-A-FIX3 · build 105`** (**invariato**). GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3)** CLOSED tip **`0c078ae`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
