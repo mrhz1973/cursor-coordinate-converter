@@ -8721,10 +8721,12 @@ dialog.track-modal.app-modal{
 }
 /* #endregion CSS — GIS VIEWER PLANNER LAYOUT */
 /* #region CSS — GIS FLOATING PANELS AND DIALOGS */
-/* OUTDOOR-ROUTING-GH-B1 — planner panel (transient points) */
+/* OUTDOOR-ROUTING-GH-B1 — planner panel (transient points).
+   ROUTING-MODAL-OPEN-EXPANDED-A: CSS fallback matches max usable size before JS layout. */
 #routingPlannerPanel.routing-planner-panel{
-  width:min(420px, calc(100vw - 24px));
-  max-height:min(70vh, 640px);
+  width:min(1600px, calc(100vw - 24px));
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
 }
 #routingPlannerPanel.routing-planner-panel:not([open]){
   display:none;
@@ -21892,10 +21894,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "UX-SEARCH-ERROR-FOCUS-A";
-const APP_BUILD_DETAIL = "routing search history, direct coordinate enter, modal error focus";
+const APP_BUILD_ID = "ROUTING-MODAL-OPEN-EXPANDED-A";
+const APP_BUILD_DETAIL = "open routing planner at maximum usable viewport size";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 107;
+const APP_BUILD_NUM = 108;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -56990,6 +56992,12 @@ function gisInit(){
       if (state.astroFavoritePickerOpen && afR && afR.open && document.body.classList.contains("gis-mode")){
         try { clampAstroFavoritePickerRect(afR); gisPanelSyncBodySize(afR, _astroFavoritePickerLayoutOpts()); } catch(_){}
       }
+      const rp = document.getElementById("routingPlannerPanel");
+      if (state._routing && state._routing.panelOpen && rp && rp.open
+          && document.body.classList.contains("gis-mode")
+          && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel"))){
+        try { clampRoutingPlannerPanelRect(rp); gisPanelSyncBodySize(rp, _routingPanelLayoutOpts()); } catch(_){}
+      }
     });
   }
 }
@@ -67647,10 +67655,11 @@ function _routingPanelLayoutOpts(){
     pad: 12,
     minW: 320,
     minH: 240,
-    defaultW: 400,
+    /* ROUTING-MODAL-OPEN-EXPANDED-A: large defaults clamp to viewport − pad (max usable). */
+    defaultW: 1600,
     defaultH: null,
-    defaultHeightFraction: 0.55,
-    defaultHeightCap: 560,
+    defaultHeightFraction: 0.98,
+    defaultHeightCap: 10000,
     topbarReserve: 104,
     bodyMinH: 120,
     partialMinVisible: 72,
@@ -67658,6 +67667,45 @@ function _routingPanelLayoutOpts(){
     headId: "routingPlannerPanelHead",
     closeId: "routingPlannerPanelClose"
   };
+}
+/** Clear session-only geometry so the next open does not reuse a shrunk/stale rect. */
+function routingClearOpenLayout(){
+  try {
+    if (typeof gPanelLayouts === "object" && gPanelLayouts) delete gPanelLayouts.routingPlannerPanel;
+  } catch(_){}
+}
+/** Apply maximum usable default geometry for a fresh Routing Planner open (scoped). */
+function routingApplyExpandedOpenLayout(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return null;
+  const opts = _routingPanelLayoutOpts();
+  routingClearOpenLayout();
+  try { dlg.classList.remove("gis-panel-minimized"); } catch(_){}
+  try { gisPanelBringToFront(dlg, opts); } catch(_){}
+  const rect = gisPanelApplyLayout(dlg, opts);
+  try { gisPanelSyncBodySize(dlg, opts); } catch(_){}
+  try { clampRoutingPlannerPanelRect(dlg); } catch(_){}
+  return rect;
+}
+function clampRoutingPlannerPanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")) return;
+  const opts = _routingPanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = Number.isFinite(opts.partialMinVisible)
+    ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
+    : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  dlg.style.transform = "none";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
 }
 function attachRoutingPanelFloating(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
@@ -67684,14 +67732,17 @@ function wireRoutingPanelFloating(dlg){
   } catch(_){}
   attachRoutingPanelFloating(dlg);
   gisPanelAttachBringToFront(dlg, _routingPanelLayoutOpts());
-  gisPanelBringToFront(dlg, _routingPanelLayoutOpts());
-  gisPanelApplyLayout(dlg, _routingPanelLayoutOpts());
-  gisPanelSyncBodySize(dlg, _routingPanelLayoutOpts());
+  try {
+    requestAnimationFrame(() => { routingApplyExpandedOpenLayout(dlg); });
+  } catch(_){
+    routingApplyExpandedOpenLayout(dlg);
+  }
 }
 function closeRoutingPlannerPanel(){
   const dlg = document.getElementById("routingPlannerPanel");
   try { routingServiceMenuClose({ focusBtn: false }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("routingPlannerPanel"); } catch(_){}
+  routingClearOpenLayout();
   routingFullCleanup();
   if (dlg && dlg.open){
     try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
