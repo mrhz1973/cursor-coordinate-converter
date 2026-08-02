@@ -8940,6 +8940,12 @@ dialog.track-modal.app-modal{
 .tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
 .routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.routing-result-details{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.routing-result-details[hidden]{ display:none !important; }
 .routing-save-as-track-form{
   margin:8px 0 4px;
   padding:8px 10px;
@@ -13441,6 +13447,33 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                data-i18n-aria="routing.speedCustomAria" aria-label="Velocità personalizzata km/h" />
         <span class="routing-speed-summary hint" id="routingSpeedSummary"></span>
       </div>
+    </section>
+    <div class="routing-panel-actions">
+      <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
+              data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
+      <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
+              data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
+      <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
+              data-i18n="routing.coordEdit" data-i18n-tip="tip.routingCoordEdit" data-i18n-aria="tip.routingCoordEdit">Modifica coordinate</button>
+      <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
+      <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
+              data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
+      <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
+              data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
+    </div>
+    <form id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden autocomplete="off">
+      <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
+      <div class="routing-save-as-track-row">
+        <label for="routingSaveAsTrackName" data-i18n="routing.saveAsTrackNameLabel">Nome traccia</label>
+        <input type="text" id="routingSaveAsTrackName" class="routing-save-as-track-name" maxlength="80" autocomplete="off" />
+        <div class="routing-save-as-track-btns">
+          <button type="submit" id="routingSaveAsTrackConfirmBtn" class="btn btn-sm btn-primary" data-i18n="routing.saveAsTrackConfirm">Salva</button>
+          <button type="button" id="routingSaveAsTrackCancelBtn" class="btn btn-sm" data-i18n="routing.saveAsTrackCancel">Annulla</button>
+        </div>
+      </div>
+      <p id="routingSaveAsTrackFeedback" class="routing-save-as-track-feedback" role="status" aria-live="polite" hidden></p>
+    </form>
+    <div id="routingResultDetails" class="routing-result-details" hidden>
       <div class="routing-difficulty-row" id="routingDifficultyRow" hidden>
         <span class="routing-difficulty-label" data-i18n="routing.difficultyLabel">Difficoltà stimata</span>
         <span class="routing-difficulty-badge" id="routingDifficultyBadge" data-level="unknown">—</span>
@@ -13471,32 +13504,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         </table>
         <p class="routing-ascent-detail-note hint" id="routingAscentDetailNote" hidden></p>
       </details>
-    </section>
-    <div class="routing-panel-actions">
-      <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
-              data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
-      <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
-              data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
-      <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
-              data-i18n="routing.coordEdit" data-i18n-tip="tip.routingCoordEdit" data-i18n-aria="tip.routingCoordEdit">Modifica coordinate</button>
-      <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
-      <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
-              data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
-      <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
-              data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
     </div>
-    <form id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden autocomplete="off">
-      <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
-      <div class="routing-save-as-track-row">
-        <label for="routingSaveAsTrackName" data-i18n="routing.saveAsTrackNameLabel">Nome traccia</label>
-        <input type="text" id="routingSaveAsTrackName" class="routing-save-as-track-name" maxlength="80" autocomplete="off" />
-        <div class="routing-save-as-track-btns">
-          <button type="submit" id="routingSaveAsTrackConfirmBtn" class="btn btn-sm btn-primary" data-i18n="routing.saveAsTrackConfirm">Salva</button>
-          <button type="button" id="routingSaveAsTrackCancelBtn" class="btn btn-sm" data-i18n="routing.saveAsTrackCancel">Annulla</button>
-        </div>
-      </div>
-      <p id="routingSaveAsTrackFeedback" class="routing-save-as-track-feedback" role="status" aria-live="polite" hidden></p>
-    </form>
     <div class="routing-units-row" id="routingUnitsRow">
       <span class="export-group-label" data-i18n="routing.unitsLabel">Unità</span>
       <span class="routing-units-group" role="group" aria-labelledby="routingUnitsDistLabel">
@@ -21794,10 +21802,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6AR-A-FIX2";
-const APP_BUILD_DETAIL = "scope red defaults to routes and tracks";
+const APP_BUILD_ID = "B6.6AR-A-FIX3";
+const APP_BUILD_DETAIL = "routing actions below alternatives and speed";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 104;
+const APP_BUILD_NUM = 105;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -65179,6 +65187,8 @@ function routingClearAltitudeUi(){
   if (sum) sum.innerHTML = "";
   const card = document.getElementById("routingResultCard");
   if (card) card.hidden = true;
+  const details = document.getElementById("routingResultDetails");
+  if (details) details.hidden = true;
   const speedRow = document.getElementById("routingSpeedRow");
   if (speedRow) speedRow.hidden = true;
   const altRow = document.getElementById("routingAlternativesRow");
@@ -65410,6 +65420,8 @@ function routingRenderAltitudePanel(opts){
     return;
   }
   if (card) card.hidden = false;
+  const details = document.getElementById("routingResultDetails");
+  if (details) details.hidden = false;
   const m = r.routeMetrics;
   const auth = routingAuthorityAscentDescent(r);
   if (sum){
