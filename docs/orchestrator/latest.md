@@ -9,7 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-02 — **QA-CHATGPT-3LINE-CURSOR-RULES-A CLOSED / PASS docs-only**. Commit task **`0703f92`**. Runtime tip **`1f7c05f`** / build 101 **invariato**. Rules Cursor (`.cursor/rules/30-output-workflow.mdc`) allineate a Regola D2: post-deploy → `QA FINALE CHATGPT — PENDING`; ChatGPT autore QA. Deploy non richiesto. Working tree pre-autosync: pulito. Monolite **escluso**. Bundle F **non** aperto. Oggetti GIS **FROZEN**. Dettaglio: `docs/orchestrator/inbox/2026-08-02_1045_riepilogo_qa-chatgpt-3line-cursor-rules-a.md`.
+2026-08-02 — **OUTDOOR-ROUTING-BUNDLE-F-DISCOVERY-A** — piano discovery **pubblicato** (sola memoria orchestratore). Baseline **`da56156`** intatta. Runtime tip **`1f7c05f`** / build 101 **invariato**. Bundle F resta **non aperto**. Primo sottoblocco raccomandato: **`ROUTING-ALTERNATIVE-ROUTES-A`** con **step 0 probe** obbligatorio (`alternative_route` / `ch.disable`); scelta operatore già acquisita: probe nello stesso blocco. Oggetti GIS **FROZEN**. Nessun probe, runtime, deploy o QA eseguiti in questa pubblicazione. Piano completo: `docs/orchestrator/inbox/2026-08-02_1116_plan_outdoor-routing-bundle-f-discovery.md`.
+
+2026-08-02 — **QA-CHATGPT-3LINE-CURSOR-RULES-A CLOSED / PASS docs-only**. Commit task **`0703f92`**. Rules Cursor allineate a Regola D2.
 
 2026-08-02 — **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED / PASS docs-only**. Commit task **`2072b7a`**. Regola D2 in OM §4.
 
