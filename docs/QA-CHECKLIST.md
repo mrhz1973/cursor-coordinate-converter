@@ -69,9 +69,31 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) — Max height + larghezza operativa — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `89a08fb` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `ROUTING-MODAL-OPEN-EXPANDED-A-FIX1` (catena A → FIX1) |
+| Tip A | `ae28eec5b4bc5bab1ed47ac2f2816b1eaabbd97d` (build 108) |
+| Tip FIX1 | `89a08fb0954051dc3e2232c6c7b740f05cd03f43` |
+| Build | `ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 · build 109` |
+| Blob | `a1ad55e518dba1107574cbb0973807970e96ae9d` |
+| Byte LF | `3287946` |
+| SHA-256 LF | `235ea017dce93d239cf124890934b0b02898a3a1633b0ccb01c346e49b74f3fc` |
+| Bundle | DELICATO leggero — lifecycle apertura `#routingPlannerPanel` |
+| Geometria | altezza max utile; `defaultW` **680**; reset session-only a riapertura |
+| Harness | 26/26 PASS, `executesRealJs=true` |
+| QA | FAIL A (larghezza full-bleed) → FIX1; **PASS** «QA ROUTING-MODAL-OPEN-EXPANDED-A-FIX1 PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=89a08fb
+
 ## UX-SEARCH-ERROR-FOCUS-A — History Cerca + focus errori modal — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `0b27e27` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da ROUTING-MODAL-OPEN-EXPANDED-A-FIX1):** `0b27e27` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
