@@ -4230,24 +4230,36 @@ html[data-theme="dark"] #layersPanelBody .btn:hover{
 .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
 
 /* ================= ERROR BOX ================= */
+/* Paint-only attention: no margin/padding/border/outline-offset (no layout shift). */
 @keyframes app-modal-error-attention-pulse{
-  0%, 100%{ box-shadow:0 0 0 0 transparent; outline-color:transparent; }
-  35%{ box-shadow:0 0 0 3px color-mix(in srgb, var(--error, #dc2626) 45%, transparent);
-        outline-color:color-mix(in srgb, var(--error, #dc2626) 70%, transparent); }
-  70%{ box-shadow:0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 25%, transparent);
-        outline-color:color-mix(in srgb, var(--error, #dc2626) 40%, transparent); }
+  0%, 100%{
+    box-shadow:0 0 0 0 transparent, inset 0 0 0 0 transparent;
+  }
+  35%{
+    box-shadow:0 0 0 3px color-mix(in srgb, var(--error, #dc2626) 40%, transparent),
+               inset 0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
+  }
+  70%{
+    box-shadow:0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 22%, transparent),
+               inset 0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 35%, transparent);
+  }
 }
 .app-modal-error-attention{
-  outline:2px solid color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
-  outline-offset:2px;
+  outline:none;
+  outline-offset:0;
+  overflow-anchor:none;
   background-color:color-mix(in srgb, var(--error-bg, #fef2f2) 80%, transparent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 45%, transparent);
   animation:app-modal-error-attention-pulse 0.5s ease-in-out 3;
 }
 @media (prefers-reduced-motion: reduce){
   .app-modal-error-attention{
     animation:none;
-    outline:2px solid color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
-    outline-offset:2px;
+    outline:none;
+    outline-offset:0;
+    overflow-anchor:none;
+    box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
+    background-color:color-mix(in srgb, var(--error-bg, #fef2f2) 80%, transparent);
   }
 }
 .error-box{
@@ -21894,10 +21906,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "UI-MODAL-ERROR-FOCUS-A-FIX1";
-const APP_BUILD_DETAIL = "uniform attention for all modal error messages";
+const APP_BUILD_ID = "UI-MODAL-ERROR-FOCUS-A-FIX2";
+const APP_BUILD_DETAIL = "layout-neutral modal error attention; scroll only if clipped";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 110;
+const APP_BUILD_NUM = 111;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -49392,7 +49404,7 @@ function clearError(){
   box.hidden = true;
 }
 
-/** UI-MODAL-ERROR-FOCUS-A (+ FIX1) — pulse/scroll/focus for red modal errors (central). */
+/** UI-MODAL-ERROR-FOCUS-A (+ FIX1/FIX2) — pulse/scroll/focus for red modal errors (central). */
 const _appModalErrorAttentionTimers = typeof WeakMap === "function" ? new WeakMap() : null;
 let _appModalErrorPrimaryModal = null;
 let _appModalErrorPrimaryAt = 0;
@@ -49458,6 +49470,36 @@ function appFindModalScrollParent(el, modalRoot){
   }
   return null;
 }
+/**
+ * Scroll only if the error is not fully visible inside the modal scroller.
+ * Does not force-align to top when already visible (avoids layout jump / clipping).
+ */
+function appScrollModalErrorIntoViewIfNeeded(el, modalRoot, options){
+  options = options || {};
+  if (!el) return false;
+  const topPad = (options.topPad != null && Number.isFinite(options.topPad)) ? options.topPad : 8;
+  const bottomPad = (options.bottomPad != null && Number.isFinite(options.bottomPad)) ? options.bottomPad : 8;
+  try {
+    const scroller = appFindModalScrollParent(el, modalRoot);
+    if (!scroller){
+      try { el.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch(_){}
+      return true;
+    }
+    const er = el.getBoundingClientRect();
+    const sr = scroller.getBoundingClientRect();
+    const fullyVisible = (er.top >= sr.top + topPad - 0.5)
+      && (er.bottom <= sr.bottom - bottomPad + 0.5);
+    if (fullyVisible) return false;
+    if (er.top < sr.top + topPad){
+      scroller.scrollTop += (er.top - sr.top) - topPad;
+    } else if (er.bottom > sr.bottom - bottomPad){
+      scroller.scrollTop += (er.bottom - (sr.bottom - bottomPad));
+    }
+    return true;
+  } catch(_){
+    return false;
+  }
+}
 /** Pulse-only attention (no scroll/focus). Safe for secondary red errors. */
 function appPulseModalError(errorElement){
   return appRevealModalError(errorElement, { pulse: true, scroll: false, focus: false });
@@ -49479,13 +49521,25 @@ function appRevealModalErrors(errorElements, options){
     list.push(el);
   }
   if (!list.length) return false;
+  // Pulse all first (no scroll/focus); then scroll+focus only the primary once.
   for (let i = 0; i < list.length; i++){
     appRevealModalError(list[i], {
       pulse: true,
-      scroll: i === 0 && options.scroll !== false,
-      focus: i === 0 && options.focus !== false,
-      forcePrimary: i === 0,
+      scroll: false,
+      focus: false,
+      asSecondary: true,
       topPad: options.topPad,
+      keepTabIndex: options.keepTabIndex
+    });
+  }
+  if (options.scroll !== false || options.focus !== false){
+    appRevealModalError(list[0], {
+      pulse: false,
+      scroll: options.scroll !== false,
+      focus: options.focus !== false,
+      forcePrimary: true,
+      topPad: options.topPad,
+      bottomPad: options.bottomPad,
       keepTabIndex: options.keepTabIndex
     });
   }
@@ -49529,26 +49583,7 @@ function appRevealModalError(errorElement, options){
     if (!live || live === "off") el.setAttribute("aria-live", "assertive");
   } catch(_){}
   const run = function(){
-    if (doScroll){
-      try {
-        const scroller = appFindModalScrollParent(el, modalRoot);
-        if (scroller){
-          const er = el.getBoundingClientRect();
-          const sr = scroller.getBoundingClientRect();
-          const topPad = (options.topPad != null && Number.isFinite(options.topPad)) ? options.topPad : 12;
-          const delta = (er.top - sr.top) - topPad;
-          if (Math.abs(delta) > 2) scroller.scrollTop += delta;
-        } else {
-          try { el.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch(_){}
-        }
-      } catch(_){}
-    }
-    if (doFocus){
-      try {
-        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
-        try { el.focus({ preventScroll: true }); } catch(_){ try { el.focus(); } catch(__){} }
-      } catch(_){}
-    }
+    // Pulse before scroll so paint-only class is on; scroll only if still clipped.
     if (doPulse){
       try {
         if (_appModalErrorAttentionTimers){
@@ -49565,6 +49600,15 @@ function appRevealModalError(errorElement, options){
           try { el.classList.remove("app-modal-error-attention"); } catch(_){}
         }, APP_MODAL_ERROR_ATTENTION_MS);
         if (_appModalErrorAttentionTimers) _appModalErrorAttentionTimers.set(el, tid);
+      } catch(_){}
+    }
+    if (doScroll){
+      try { appScrollModalErrorIntoViewIfNeeded(el, modalRoot, options); } catch(_){}
+    }
+    if (doFocus){
+      try {
+        if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+        try { el.focus({ preventScroll: true }); } catch(_){ try { el.focus(); } catch(__){} }
       } catch(_){}
     }
   };
