@@ -13,11 +13,61 @@
 ## Principi
 
 - **PASS operatore ≠ PASS tecnico.** Il PASS tecnico remoto (hash, deploy VPS, byte-match, `node --check`) è distinto dal PASS operatore (comportamento runtime verificato da una persona).
-- **Cursor non attesta la QA visiva.** Cursor prepara la richiesta QA, ma non apre l'app, non carica tile e non inventa esiti al posto dell'operatore.
-- **Emissione unica.** La QA viene emessa **una sola volta** nel report `finito` (o subito dopo deploy), dentro **un unico fenced code block** copiabile; l'operatore risponde **una sola volta**.
+- **Cursor non attesta la QA visiva** e **non** prepara/emette le istruzioni QA (Regola D2). Dopo deploy PASS dichiara solo fatti tecnici + URL + `QA FINALE CHATGPT — PENDING`.
+- **Autore QA:** **ChatGPT** prepara ed emette **un unico** messaggio QA operatore.
 - **Fail-closed.** Senza attestazione esplicita dell'operatore, l'esito resta **QA operatore non eseguita / non attestata**. Non si inferisce PASS operatore da PASS tecnico, diff pulito o `node --check`.
 - **Lingua IT (QA-OPERATOR-IT-ONLY-PREF CLOSED).** Istruzioni QA operatore **solo in italiano**, salvo blocchi il cui oggetto è la verifica i18n/localizzazione. Runtime app resta IT/EN/FR.
 - **Etichette UI visibili.** Usare testi/percorsi realmente visibili (etichetta, tooltip se unico ID, icona/posizione, nome pannello, sequenza concreta). **Vietato** come percorso UI: nomi interni, ID DOM, «Workbench», «Import Hub» (salvo nota tecnica separata). Preferire **«Oggetti GIS»** / **«Import GIS»** quando sono le etichette visibili. Prima di emettere: verificare nel monolite corrente; non inventare menu.
+- **Attestazione in Cursor:** solo la riga finale `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore>`; dubbi/FAIL intermedi con ChatGPT.
+
+## Procedura canonica ChatGPT — tre righe per passaggio
+
+**Vincolo vivo (QA-CHATGPT-3LINE-HANDOFF-PREF / OM §4 Regola D2).**
+
+1. Un solo messaggio QA da **ChatGPT** dopo che Cursor ha dichiarato deploy PASS + URL + `QA FINALE CHATGPT — PENDING`.
+2. Cursor **non** emette istruzioni QA (né post-deploy né nel report `finito`).
+3. Ogni passaggio operativo contiene **esattamente**:
+
+```text
+Dove:
+Azione:
+Risultato atteso:
+```
+
+4. Numero di passaggi proporzionato allo scope del blocco.
+5. Niente tabelle o checklist estese salvo reale necessità (OPSEC, rete, cache, storage, migrazioni, alto rischio); anche allora: un solo messaggio ChatGPT; Cursor non emette.
+6. L’operatore riferisce a **ChatGPT** errori, punti non chiari o FAIL circoscritti; ChatGPT chiarisce prima dell’attestazione.
+7. ChatGPT produce la **riga finale** da riportare in Cursor; PASS finale esplicito; fail-closed senza attestazione.
+8. `QA <BLOCK-ID> PASS operatore` in Cursor → auto-`finito` Regola H (nessun secondo «finito»).
+
+### Template ChatGPT (canonico)
+
+```text
+Deploy tecnico di <BLOCK-ID> = PASS (verificato da Cursor).
+URL:
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha>
+
+Passaggio 1
+Dove:
+<luogo UI visibile>
+Azione:
+<cosa fare>
+Risultato atteso:
+<esito osservabile>
+
+Passaggio 2
+Dove:
+…
+Azione:
+…
+Risultato atteso:
+…
+
+Quando hai finito, riporta in Cursor soltanto:
+QA <BLOCK-ID> PASS operatore
+oppure
+QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
+```
 
 ## ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) — Geocoding per-stop + Centra — CLOSED / PASS end-to-end
 
@@ -38,23 +88,25 @@
 **URL:**
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1f7c05f
 
-## Formato predefinito — QA operatore minima narrativa
+## Formato legacy — QA minima narrativa (storico; non procedura viva)
 
-Per **micro-fix UI**, **patch runtime localizzate**, **correzioni circoscritte** e **blocchi di routine** senza OPSEC, rete, cache, storage o migrazioni, il formato **predefinito** è una **QA minima narrativa**: breve, operativa, immediatamente eseguibile, **in italiano**, limitata al blocco.
+> **Storico.** Prima di **QA-CHATGPT-3LINE-HANDOFF-PREF** (2026-08-02) il formato predefinito era la «QA minima narrativa» spesso emessa da Cursor. **Procedura viva = sezione «Procedura canonica ChatGPT — tre righe per passaggio»** e OM §4 Regola D2. I template sotto restano solo come riferimento storico di struttura breve.
 
-**Non usare come formato ordinario:** tabelle; caselle `[ ]`; sezioni ripetute con sette categorie obbligatorie; campi data/browser/risoluzione salvo reale necessità; audit generale dell'app; controlli non pertinenti al blocco; percorsi UI con nomi tecnici non visibili.
+Per **micro-fix UI** e blocchi di routine, lo **spirito** resta: breve, operativa, **in italiano**, limitata al blocco — ma l’**autore** è ChatGPT e ogni passaggio usa `Dove:` / `Azione:` / `Risultato atteso:`.
 
-### Struttura canonica
+**Non usare come formato ordinario:** tabelle; caselle `[ ]`; audit generale; percorsi UI con nomi tecnici non visibili.
+
+### Struttura canonica (storica — sostituita da Dove/Azione/Risultato atteso)
+
+> Non usare come procedura viva. Vedi **Procedura canonica ChatGPT — tre righe per passaggio**.
 
 1. **Apertura:** `Il deploy tecnico di <BLOCK-ID> è PASS:`
-2. **Elenco breve** dei fatti tecnici già provati (quando noti): VPS/HEAD deploy; commit runtime; servizio attivo; HTTP 200; byte-match e SHA-256 match; componenti delicati non toccati; repository pulito.
-3. **Frase:** `Ora serve solo la QA operatore minima, senza Cursor.`
-4. **Sezione `Apri:`** con URL VPS e cache-buster runtime (vedi sotto).
-5. **Sezione `Poi:`** con pochi passaggi concreti nell'app.
-6. **Sezione `verifica che:`** con soli controlli specifici del blocco e regressioni strettamente pertinenti.
-7. **Chiusura `Riportami:`** una sola risposta attesa:
-   - `QA <BLOCK-ID> PASS operatore`
-   - oppure il messaggio esatto dell'errore e il punto in cui si verifica.
+2. **Elenco breve** dei fatti tecnici già verificati.
+3. **Frase storica:** `Ora serve solo la QA operatore minima, senza Cursor.`
+4. **Sezione `Apri:`** URL VPS.
+5. **Sezione `Poi:`** passaggi (oggi: ogni passaggio = Dove/Azione/Risultato atteso).
+6. **Sezione `verifica che:`** esiti (oggi: dentro `Risultato atteso:`).
+7. **Chiusura:** riga `QA <BLOCK-ID> PASS operatore` da riportare in Cursor.
 
 ### Esempio generico (template)
 
@@ -1086,8 +1138,10 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
 
 ````text
 GATE / CHIUSURA (coda finito pre-autorizzata):
-Dopo deploy tecnico PASS, fermati per QA operatore.
-Quando l'operatore attesta esattamente:
+Dopo deploy tecnico PASS, fermati.
+Riporta solo: deploy PASS, URL runtime, gate «QA FINALE CHATGPT — PENDING».
+Non preparare e non emettere istruzioni QA operatore (Regola D2 — ChatGPT emette la QA).
+Quando l'operatore (via ChatGPT) attesta esattamente in Cursor:
 QA <BLOCK-ID> PASS operatore
 esegui automaticamente la coda finito già autorizzata:
 chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
@@ -1096,7 +1150,7 @@ Se QA fallisce o deploy/smoke non PASS, NON eseguire finito.
 Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
 ````
 
-Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`). Dettaglio metodo: OM §4 Regola H (METHOD-QA-PASS-AUTO-FINITO).
+Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`). Dettaglio metodo: OM §4 Regola H + Regola D2.
 
 ## TRACK-ELEVATION-PROFILE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
@@ -1308,19 +1362,20 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 **Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF. **MAP-CENTER** poi CLOSED tip `d0688ea`.
 
-## Istruzioni per il workflow `finito`
+## Istruzioni per Cursor dopo deploy (e per `finito`)
 
-Quando la QA operatore resta **pending**, `finito` (o il report post-deploy) deve:
+Quando il deploy tecnico è **PASS** e la QA operatore è ancora **pending**, Cursor deve:
 
-- riportare prima i **risultati tecnici già verificati** (PASS tecnico);
-- emettere per **default** la **QA minima narrativa** (non una checklist lunga con caselle) per blocchi di routine;
-- usare la frase **«Ora serve solo la QA operatore minima, senza Cursor»** (o equivalente);
-- inserire il **runtime short SHA reale** nell'URL QA;
-- includere **solo** passaggi ed esiti specifici e regressioni pertinenti al blocco;
-- chiedere come risposta: `QA <BLOCK-ID> PASS operatore` oppure errore esatto e punto di occorrenza;
-- emettere tutto in **un unico fenced code block**;
-- **non** dichiarare PASS operatore prima dell'attestazione dell'operatore;
-- usare la **checklist estesa** solo nei casi delicati/complessi definiti sopra.
+- riportare i **risultati tecnici già verificati** (PASS tecnico);
+- riportare l’**URL** con runtime short SHA reale;
+- dichiarare il gate **`QA FINALE CHATGPT — PENDING`**;
+- **non** emettere istruzioni QA, template Dove/Azione/Risultato, né «QA minima narrativa»;
+- **non** dichiarare PASS operatore;
+- attendere in sessione Cursor solo l’attestazione finale.
+
+**ChatGPT** (non Cursor) emette il messaggio QA unico a tre righe per passaggio.
+
+**Checklist estesa** (OPSEC/rete/cache/storage/migrazioni/alto rischio): solo da ChatGPT, un solo messaggio; Cursor non emette.
 
 **Dopo attestazione QA PASS (bundle con coda pre-autorizzata):** la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** il workflow `finito` in Cursor (OM §4 Regola H) — **non** serve un secondo messaggio «ora lancia finito» da GPT/orchestratore.
 <!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->

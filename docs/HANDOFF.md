@@ -49,9 +49,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Attore | Ruolo |
 | --- | --- |
-| **GPT** | Orchestratore — scrive prompt Cursor e prompt review Claude |
+| **GPT / ChatGPT** | Orchestratore — scrive prompt Cursor e prompt review Claude; **autore unico** delle istruzioni QA operatore (Regola D2: Dove/Azione/Risultato atteso) |
 | **Claude** | Consigliere upstream e verifier byte downstream; advisory; **no push**; **non** scrive prompt Cursor |
-| **Cursor** | Esegue, committa, deploya secondo prompt e workflow del repo |
+| **Cursor** | Implementa, testa tecnicamente, committa, deploya; dopo deploy PASS dichiara `QA FINALE CHATGPT — PENDING`; riceve **solo** l’attestazione finale PASS/FAIL |
 
 ---
 
@@ -64,6 +64,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 - Nei blocchi non-bundle: `finito` **condizionale in coda** al prompt quando applicabile.
 - **Bundling di default (METHOD-BUNDLING-DEFAULT):** un bundle / un commit / una QA (≥5 item routine); gate solo a livello bundle; non frammentare micro-modifiche routine. Dettaglio: OM §4 Regola G.
 - **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** chiusura docs obbligatoria dopo QA PASS; cambia solo il trigger (automatico da attestazione). Dettaglio: OM §4 Regola H.
+- **QA ChatGPT a tre righe (Regola D2):** dopo deploy PASS Cursor **non** emette QA; gate `QA FINALE CHATGPT — PENDING`; ChatGPT emette un messaggio con passaggi `Dove:` / `Azione:` / `Risultato atteso:`; dubbi/FAIL con ChatGPT; in Cursor solo attestazione finale.
 
 ---
 
@@ -111,7 +112,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 - Cursor **non inventa** PASS operatore.
 - **Fail-closed** senza attestazione esplicita.
-- QA **minima narrativa** di default; checklist estesa solo per OPSEC, rete, cache/storage, migrazioni, architettura, diff multi-area, alto rischio.
+- Dopo deploy PASS: Cursor dichiara **`QA FINALE CHATGPT — PENDING`** (non emette istruzioni QA).
+- QA operativa: **ChatGPT**, struttura obbligatoria **Dove / Azione / Risultato atteso** (OM §4 Regola D2); checklist estesa solo OPSEC/rete/cache/storage/migrazioni/alto rischio, sempre da ChatGPT.
+- Riga `QA <BLOCK-ID> PASS operatore` in Cursor → **auto-finito** Regola H.
 
 ---
 
@@ -121,9 +124,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs finito **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** (verificare `git ls-remote` post-push) |
-| Runtime live / commit monolite | `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (`1f7c05f`) — tip MULTIROW-A-FIX2 |
-| Ultimo blocco chiuso | **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **QA-CHATGPT-3LINE-HANDOFF-PREF** (verificare `git ls-remote` post-push); monolite tip `1f7c05f` invariato |
+| Runtime live / commit monolite | `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (`1f7c05f`) — tip MULTIROW-A-FIX2 (**invariato**) |
+| Ultimo blocco chiuso | **QA-CHATGPT-3LINE-HANDOFF-PREF** — **CLOSED / PASS docs-only** |
 | Ultimo blocco runtime monolite | **ROUTING-GEOCODING-MULTIROW-A-FIX2** — tip `1f7c05f` build 101 — **CLOSED / PASS end-to-end** |
 | Task aperto corrente | nessuno runtime aperto — backlog non aperto (Bundle F); **non** auto-aprire |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -138,6 +141,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | Display runtime | `B6.5RGM-A-FIX2 · build 101` |
 | `APP_BUILD_ID` | `B6.5RGM-A-FIX2` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
+| QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
 | ROUTING-GEOCODING-MULTIROW-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (geocoding per-riga + anti-stale + Centra viewport-aware) |
 | MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (superseded live da MULTIROW-A-FIX2) |
@@ -189,11 +193,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: **Bundle F** — **non** aperto da questo blocco. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`1f7c05f`** / **`B6.5RGM-A-FIX2 · build 101`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED / PASS docs-only**. Ultimo runtime: **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: **Bundle F** — **non** aperto da questo blocco. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`1f7c05f`** / **`B6.5RGM-A-FIX2 · build 101`** (**invariato**). GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** CLOSED tip **`1f7c05f`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
