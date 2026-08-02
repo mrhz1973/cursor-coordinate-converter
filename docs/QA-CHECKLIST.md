@@ -69,9 +69,31 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) — Attenzione errori rossi modali layout-neutral — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `5fc39e9` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `UI-MODAL-ERROR-FOCUS-A-FIX2` (catena FIX1 → FIX2; finding su **UI-MODAL-ERROR-FOCUS-A**) |
+| Tip FIX1 | `6d272d7de32f8315bbf5844d5efa46bd19b20bf8` (build 110) |
+| Tip FIX2 | `5fc39e9f1294b92828867628e2b439f55f051cb2` |
+| Build | `UI-MODAL-ERROR-FOCUS-A-FIX2 · build 111` |
+| Blob | `45b9132ab3479d7b0e9a7742fd6802f7041c45c8` |
+| Byte LF | `3293265` |
+| SHA-256 LF | `da5e8f956eb8e6c26e28205940fd74f845d38c0a2bba1b276c1b04a8530ab077` |
+| Bundle | ROUTINE — CSS/JS attenzione; no storage/rete/lifecycle |
+| Fix | paint-only pulse; scroll solo se clipped; multi-errore → focus/scroll solo primo |
+| Harness FIX2 | 37/37 PASS, `executesRealJs=true` |
+| QA | FAIL FIX1 (layout jump) → FIX2; **PASS** «QA UI-MODAL-ERROR-FOCUS-A-FIX2 PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5fc39e9
+
 ## ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) — Max height + larghezza operativa — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `89a08fb` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da UI-MODAL-ERROR-FOCUS-A-FIX2; geometria 680/0.98 preservata):** `89a08fb` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
