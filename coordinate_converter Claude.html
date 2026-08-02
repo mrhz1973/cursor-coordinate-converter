@@ -21671,12 +21671,14 @@ function appendTrackNatoSymbolSvg(ns, parent, icon, color, scaleOpt){
 }
 
 /** Canonical default stroke for calculated routes / new tracks without explicit color.
- *  Cartographic red already used for map pins (#ef4444); not tied to danger-button semantics. */
+ *  Cartographic red (#ef4444). Track/route scoped only — do NOT use as global sanitizeTrackColor fallback. */
 const TRACK_DEFAULT_COLOR = "#ef4444";
+/** Shared hex sanitizer for mixed cartographic objects (tracks, waypoints, Range Rings, layers, …).
+ *  Historical empty/invalid fallback remains green #16a34a — not TRACK_DEFAULT_COLOR. */
 function sanitizeTrackColor(hex){
   const s = String(hex || "").trim();
   if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
-  return TRACK_DEFAULT_COLOR;
+  return "#16a34a";
 }
 
 /** Before replacing #miniMap innerHTML, move the offline pack mount out so it is not destroyed. */
@@ -21792,10 +21794,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6AR-A-FIX1";
-const APP_BUILD_DETAIL = "alternative route UX, centering and red defaults";
+const APP_BUILD_ID = "B6.6AR-A-FIX2";
+const APP_BUILD_DETAIL = "scope red defaults to routes and tracks";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 103;
+const APP_BUILD_NUM = 104;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38889,12 +38891,10 @@ function savedTrackDistanceM(st){
   if (pts.length < 2) return null;
   try { return routeDistance(pts, !!st.closed); } catch(_){ return null; }
 }
+/** Track-only fallback when a saved track has no explicit color (visual; does not mutate storage). */
 function savedTrackStrokeColor(id){
-  let h = 0;
-  const s = String(id || "");
-  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
-  const hue = h % 360;
-  return `hsl(${hue} 72% 42%)`;
+  void id;
+  return TRACK_DEFAULT_COLOR;
 }
 
 /** TRACK-STYLE-A — convert resolved CSS color (incl. HSL legacy) to #RRGGBB for <input type="color">. UI-only; does not persist. */
