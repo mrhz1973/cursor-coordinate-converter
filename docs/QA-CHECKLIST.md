@@ -69,9 +69,31 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-ACTION-ROW-UX-A — Action strip unificata modalità+azioni — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `dde5156` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `ROUTING-ACTION-ROW-UX-A` |
+| Tip | `dde51561f908e025f5cdcbfc9ec26b578b13f29a` |
+| Build | `ROUTING-ACTION-ROW-UX-A · build 113` |
+| Blob | `e999cafe156b7ddf449f267a70c914fed04450d9` |
+| Byte LF | `3309352` |
+| SHA-256 LF | `53293444955ceb9c0781c9a2e0007c0657b9043f106b468b3ea6c9e732ffdff2` |
+| Bundle | ROUTINE — HTML/CSS action strip; no rete/storage/lifecycle |
+| Scope | unico `#routingModeRow` + `.routing-panel-actions` annidato; flex/wrap; Calcola unica primary |
+| Harness | 28/28 PASS, `executesRealJs=true` |
+| Deploy | GIS-only PASS (FF `c1a6c89`→`dde5156`; solo `goi-gis-app`; GH PID invariato) |
+| QA | **PASS** «QA ROUTING-ACTION-ROW-UX-A PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=dde5156
+
 ## ROUTING-ANDATA-RITORNO-A — Andata e ritorno reale GraphHopper — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `c1a6c89` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da ROUTING-ACTION-ROW-UX-A):** `c1a6c89` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
