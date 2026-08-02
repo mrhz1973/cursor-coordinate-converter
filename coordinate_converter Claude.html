@@ -8968,6 +8968,12 @@ dialog.track-modal.app-modal{
   min-width:120px;
   max-width:100%;
 }
+.routing-save-as-track-feedback{
+  margin:6px 0 0;
+  font-size:.78rem;
+  color:var(--error, #dc2626);
+}
+.routing-save-as-track-feedback[hidden]{ display:none !important; }
 .routing-save-as-track-btns{
   display:flex;
   gap:6px;
@@ -9056,10 +9062,11 @@ dialog.track-modal.app-modal{
 }
 .routing-route-preview-line{
   fill:none;
-  stroke:color-mix(in srgb, var(--accent, #7c3aed) 85%, #ffffff 15%);
+  stroke:var(--routing-preview-stroke, #ef4444);
   stroke-width:3;
   stroke-linecap:round;
   stroke-linejoin:round;
+  stroke-opacity:.92;
 }
 .routing-route-preview-line.is-dashed{
   stroke-dasharray:6 6;
@@ -9159,12 +9166,22 @@ dialog.track-modal.app-modal{
 .routing-alternatives-chips{
   display:flex; flex-wrap:wrap; gap:6px; align-items:center;
 }
+.routing-alt-item{
+  display:inline-flex; flex-wrap:wrap; align-items:center; gap:4px;
+  max-width:100%;
+}
 .routing-alt-chip{
   font-size:.78rem;
   line-height:1.25;
   white-space:normal;
   text-align:left;
   max-width:100%;
+}
+.routing-alt-center{
+  font-size:.72rem;
+  line-height:1.2;
+  min-width:auto;
+  padding-inline:8px;
 }
 .routing-alt-chip.is-active,
 .routing-alt-chip[aria-pressed="true"]{
@@ -11769,8 +11786,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <div class="tbb-style-field">
                 <label class="tss-lbl" for="tbsColor" data-i18n="track.styleColor">Colore</label>
                 <div class="tss-field-row">
-                  <input type="color" id="tbsColor" value="#16a34a" data-tbs-ctrl="color" aria-describedby="tbsColorHex">
-                  <span id="tbsColorHex" class="tss-hex">#16a34a</span>
+                  <input type="color" id="tbsColor" value="#ef4444" data-tbs-ctrl="color" aria-describedby="tbsColorHex">
+                  <span id="tbsColorHex" class="tss-hex">#ef4444</span>
                   <button type="button" class="btn btn-ghost btn-sm" id="tbsResetColor" data-tbs-reset="color" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne">↺</button>
                 </div>
               </div>
@@ -11844,8 +11861,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <div class="tbb-style-field">
               <label class="tss-lbl" for="tesColor" data-i18n="track.styleColor">Colore</label>
               <div class="tss-field-row">
-                <input type="color" id="tesColor" value="#16a34a" data-tes-ctrl="color" aria-describedby="tesColorHex">
-                <span id="tesColorHex" class="tss-hex">#16a34a</span>
+                <input type="color" id="tesColor" value="#ef4444" data-tes-ctrl="color" aria-describedby="tesColorHex">
+                <span id="tesColorHex" class="tss-hex">#ef4444</span>
                 <button type="button" class="btn btn-ghost btn-sm" data-tes-reset="color" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne">↺</button>
               </div>
             </div>
@@ -11943,8 +11960,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <label class="tss-include" data-tss-include-wrap for="tssIncludeColor"><input type="checkbox" id="tssIncludeColor" data-tss-include="color"> <span data-i18n="track.styleInclude">Includi</span></label>
               <label class="tss-lbl" for="tssColor" data-i18n="track.styleColor">Colore</label>
               <div class="tss-field-row">
-                <input type="color" id="tssColor" value="#16a34a" data-tss-ctrl="color" aria-describedby="tssColorHex">
-                <span id="tssColorHex" class="tss-hex">#16a34a</span>
+                <input type="color" id="tssColor" value="#ef4444" data-tss-ctrl="color" aria-describedby="tssColorHex">
+                <span id="tssColorHex" class="tss-hex">#ef4444</span>
                 <button type="button" class="btn btn-ghost btn-sm tss-reset-one" data-tss-reset="color" data-i18n-tip="track.styleResetOne" data-i18n-aria="track.styleResetOne" title="Predefinito">↺</button>
                 <span class="tss-mixed" data-tss-mixed="color" hidden data-i18n="track.styleMixed">Misto</span>
               </div>
@@ -13468,17 +13485,18 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
               data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
     </div>
-    <div id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden>
+    <form id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden autocomplete="off">
       <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
       <div class="routing-save-as-track-row">
         <label for="routingSaveAsTrackName" data-i18n="routing.saveAsTrackNameLabel">Nome traccia</label>
         <input type="text" id="routingSaveAsTrackName" class="routing-save-as-track-name" maxlength="80" autocomplete="off" />
         <div class="routing-save-as-track-btns">
-          <button type="button" id="routingSaveAsTrackConfirmBtn" class="btn btn-sm btn-primary" data-i18n="routing.saveAsTrackConfirm">Salva</button>
+          <button type="submit" id="routingSaveAsTrackConfirmBtn" class="btn btn-sm btn-primary" data-i18n="routing.saveAsTrackConfirm">Salva</button>
           <button type="button" id="routingSaveAsTrackCancelBtn" class="btn btn-sm" data-i18n="routing.saveAsTrackCancel">Annulla</button>
         </div>
       </div>
-    </div>
+      <p id="routingSaveAsTrackFeedback" class="routing-save-as-track-feedback" role="status" aria-live="polite" hidden></p>
+    </form>
     <div class="routing-units-row" id="routingUnitsRow">
       <span class="export-group-label" data-i18n="routing.unitsLabel">Unità</span>
       <span class="routing-units-group" role="group" aria-labelledby="routingUnitsDistLabel">
@@ -15765,7 +15783,15 @@ const I18N = {
     "routing.alternativesLabel":"Percorsi alternativi",
     "routing.alternativeN":"Percorso {0}",
     "routing.alternativesUnavailable":"Alternative non disponibili su questo provider; percorso singolo.",
+    "routing.altComparedWith":"Percorso {0} rispetto a Percorso 1: {1}",
+    "routing.altFaster":"{0} più rapido",
+    "routing.altSlower":"{0} più lento",
+    "routing.altAscentPart":"{0} salita",
+    "routing.altDescentPart":"{0} discesa",
+    "routing.centerAlternative":"Centra",
+    "routing.centerAlternativeAria":"Centra Percorso {0}",
     "tip.routingSelectAlternative":"Mostra questo percorso alternativo sulla mappa",
+    "tip.routingCenterAlternative":"Centra la mappa su questo percorso",
     "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
     "tip.routingReverse":"Scambia partenza e destinazione e inverte i passaggi",
     "tip.routingSaveAsTrack":"Salva il percorso valido corrente come traccia in archivio.",
@@ -17959,7 +17985,15 @@ const I18N = {
     "routing.alternativesLabel":"Alternative routes",
     "routing.alternativeN":"Route {0}",
     "routing.alternativesUnavailable":"Alternatives unavailable on this provider; single route.",
+    "routing.altComparedWith":"Route {0} compared with Route 1: {1}",
+    "routing.altFaster":"{0} faster",
+    "routing.altSlower":"{0} slower",
+    "routing.altAscentPart":"{0} ascent",
+    "routing.altDescentPart":"{0} descent",
+    "routing.centerAlternative":"Center",
+    "routing.centerAlternativeAria":"Center Route {0}",
     "tip.routingSelectAlternative":"Show this alternative route on the map",
+    "tip.routingCenterAlternative":"Center the map on this route",
     "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
     "tip.routingReverse":"Swap start and destination and reverse intermediate points",
     "tip.routingSaveAsTrack":"Save the current valid route as a track in the archive.",
@@ -21636,10 +21670,13 @@ function appendTrackNatoSymbolSvg(ns, parent, icon, color, scaleOpt){
   parent.appendChild(g);
 }
 
+/** Canonical default stroke for calculated routes / new tracks without explicit color.
+ *  Cartographic red already used for map pins (#ef4444); not tied to danger-button semantics. */
+const TRACK_DEFAULT_COLOR = "#ef4444";
 function sanitizeTrackColor(hex){
   const s = String(hex || "").trim();
   if (/^#[0-9a-fA-F]{6}$/.test(s)) return s;
-  return "#16a34a";
+  return TRACK_DEFAULT_COLOR;
 }
 
 /** Before replacing #miniMap innerHTML, move the offline pack mount out so it is not destroyed. */
@@ -21755,10 +21792,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6AR-A";
-const APP_BUILD_DETAIL = "selectable alternative routes";
+const APP_BUILD_ID = "B6.6AR-A-FIX1";
+const APP_BUILD_DETAIL = "alternative route UX, centering and red defaults";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 102;
+const APP_BUILD_NUM = 103;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38903,7 +38940,7 @@ function savedTrackCssColorToHex(cssColor){
       }
     }
   } catch(_){}
-  return "#16a34a";
+  return TRACK_DEFAULT_COLOR;
 }
 
 /**
@@ -38914,7 +38951,7 @@ function savedTrackCssColorToHex(cssColor){
  */
 function savedTrackResolveStyleProps(st, previewOverride){
   const id = st && st.id != null ? String(st.id) : "";
-  let strokeColor = savedTrackStrokeColor(id);
+  let strokeColor = TRACK_DEFAULT_COLOR;
   let lineWidth = 2.5;
   let lineOpacity = 0.9;
   let lineStyleKey = null; // null = legacy / predefinito
@@ -38932,7 +38969,7 @@ function savedTrackResolveStyleProps(st, previewOverride){
   const ov = previewOverride && typeof previewOverride === "object" ? previewOverride : null;
   if (ov){
     if ("color" in ov){
-      if (ov.color == null) strokeColor = savedTrackStrokeColor(id);
+      if (ov.color == null) strokeColor = TRACK_DEFAULT_COLOR;
       else if (typeof ov.color === "string" && /^#[0-9a-fA-F]{6}$/.test(ov.color)) strokeColor = ov.color;
     }
     if ("lineWidth" in ov){
@@ -39349,6 +39386,9 @@ function savedTrackAddFromPoints(opts){
   };
   if (opts.style && typeof opts.style === "object"){
     try { trackApplyWorkingStyleToTrackObject(track, opts.style); } catch(_){}
+  }
+  if (!(typeof track.color === "string" && /^#[0-9a-fA-F]{6}$/.test(track.color))){
+    track.color = TRACK_DEFAULT_COLOR;
   }
   state.savedTracks.push(track);
   return { ok: true, track };
@@ -41321,6 +41361,12 @@ function saveCurrentTrackToLibrary(name, opts){
       visible: true,
       points: snap
     };
+    if (sess && sess.workingStyle){
+      try { trackApplyWorkingStyleToTrackObject(createdRow, sess.workingStyle); } catch(_){}
+    }
+    if (!(typeof createdRow.color === "string" && /^#[0-9a-fA-F]{6}$/.test(createdRow.color))){
+      createdRow.color = TRACK_DEFAULT_COLOR;
+    }
     state.savedTracks.push(createdRow);
   }
   if (state.savedTracks.length > SAVED_TRACKS_CAP) state.savedTracks.splice(0, state.savedTracks.length - SAVED_TRACKS_CAP);
@@ -61967,6 +62013,24 @@ function routingFormatSaveAsTrackSuccess(name){
 function routingNormalizeSaveAsTrackName(raw){
   return String(raw == null ? "" : raw).trim().slice(0, 80);
 }
+function routingClearSaveAsTrackFormFeedback(){
+  const fb = document.getElementById("routingSaveAsTrackFeedback");
+  if (!fb) return;
+  fb.textContent = "";
+  fb.hidden = true;
+  fb.classList.remove("is-err");
+}
+function routingSetSaveAsTrackFormFeedback(msg, isErr){
+  const fb = document.getElementById("routingSaveAsTrackFeedback");
+  const text = msg == null ? "" : String(msg);
+  if (!fb){
+    if (text) routingSetStatus(text, !!isErr);
+    return;
+  }
+  fb.textContent = text;
+  fb.hidden = !text;
+  fb.classList.toggle("is-err", !!isErr && !!text);
+}
 function routingSyncSaveAsTrackFormUi(){
   const form = document.getElementById("routingSaveAsTrackForm");
   const nameIn = document.getElementById("routingSaveAsTrackName");
@@ -61977,10 +62041,12 @@ function routingSyncSaveAsTrackFormUi(){
   if (form) form.hidden = !open;
   if (nameIn){
     if (open) nameIn.value = String(r.saveAsTrackNameDraft == null ? "" : r.saveAsTrackNameDraft);
+    else nameIn.value = "";
     nameIn.disabled = !open || !!_routingSaveBusy;
   }
   if (confirmBtn) confirmBtn.disabled = !open || !!_routingSaveBusy;
   if (cancelBtn) cancelBtn.disabled = !open || !!_routingSaveBusy;
+  if (!open) routingClearSaveAsTrackFormFeedback();
 }
 function routingCloseSaveAsTrackPrompt(opts){
   opts = opts || {};
@@ -61990,6 +62056,7 @@ function routingCloseSaveAsTrackPrompt(opts){
     r.saveAsTrackPromptOpen = false;
     r.saveAsTrackNameDraft = "";
   }
+  routingClearSaveAsTrackFormFeedback();
   try { routingSyncSaveAsTrackFormUi(); } catch(_){}
   if (opts.focusSaveBtn){
     const btn = document.getElementById("routingSaveAsTrackBtn");
@@ -62021,6 +62088,7 @@ function routingOpenSaveAsTrackPrompt(){
   try { autoName = String(trackMakeAutoName() || ""); } catch(_){ autoName = ""; }
   r.saveAsTrackPromptOpen = true;
   r.saveAsTrackNameDraft = autoName.slice(0, 80);
+  routingClearSaveAsTrackFormFeedback();
   try { routingSyncSaveAsTrackFormUi(); } catch(_){}
   routingFocusSaveAsTrackNameInput(true);
   return true;
@@ -62036,28 +62104,35 @@ function onRoutingSaveAsTrackCancel(ev){
   if (_routingSaveBusy) return;
   routingCloseSaveAsTrackPrompt({ focusSaveBtn: true });
 }
-function onRoutingSaveAsTrackConfirm(ev){
+/** Canonical submit for Enter, Salva click, and form submit — one create-path only. */
+function routingSubmitSaveAsTrack(ev){
   if (ev && typeof ev.preventDefault === "function") ev.preventDefault();
-  if (ev && Number(ev.detail) > 1) return;
-  if (_routingSaveBusy) return;
+  if (ev && Number(ev.detail) > 1) return false;
+  if (_routingSaveBusy) return false;
   const r = state._routing;
-  if (!r || !r.saveAsTrackPromptOpen) return;
+  if (!r || !r.saveAsTrackPromptOpen) return false;
   const nameIn = document.getElementById("routingSaveAsTrackName");
   const raw = nameIn ? nameIn.value : r.saveAsTrackNameDraft;
   const name = routingNormalizeSaveAsTrackName(raw);
   r.saveAsTrackNameDraft = nameIn ? String(nameIn.value || "").slice(0, 80) : String(raw == null ? "" : raw).slice(0, 80);
   if (!name){
-    routingSetStatus(routingT("routing.saveAsTrackNameRequired", "Track name is required"), true);
+    const msg = routingT("routing.saveAsTrackNameRequired", "Track name is required");
+    routingSetSaveAsTrackFormFeedback(msg, true);
+    routingSetStatus(msg, true);
     routingFocusSaveAsTrackNameInput(true);
-    return;
+    return false;
   }
-  routingPerformSaveAsTrack(name);
+  routingClearSaveAsTrackFormFeedback();
+  return routingPerformSaveAsTrack(name);
+}
+function onRoutingSaveAsTrackConfirm(ev){
+  return routingSubmitSaveAsTrack(ev);
 }
 function onRoutingSaveAsTrackNameKeydown(ev){
   if (!ev) return;
   if (ev.key === "Enter"){
     ev.preventDefault();
-    onRoutingSaveAsTrackConfirm(ev);
+    routingSubmitSaveAsTrack(ev);
     return;
   }
   if (ev.key === "Escape" || ev.key === "Esc"){
@@ -62068,19 +62143,25 @@ function onRoutingSaveAsTrackNameKeydown(ev){
 function routingPerformSaveAsTrack(explicitName){
   const r = state._routing;
   if (!r){
-    routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
-    return;
+    const msg = routingT("routing.noRouteToSave", "Compute a valid route before saving.");
+    routingSetSaveAsTrackFormFeedback(msg, true);
+    routingSetStatus(msg, true);
+    return false;
   }
-  if (_routingSaveBusy) return;
+  if (_routingSaveBusy) return false;
   if (!routingRoutePreviewIsValid()){
-    routingSetStatus(routingT("routing.noRouteToSave", "Compute a valid route before saving."), true);
-    return;
+    const msg = routingT("routing.noRouteToSave", "Compute a valid route before saving.");
+    routingSetSaveAsTrackFormFeedback(msg, true);
+    routingSetStatus(msg, true);
+    return false;
   }
   const name = routingNormalizeSaveAsTrackName(explicitName);
   if (!name){
-    routingSetStatus(routingT("routing.saveAsTrackNameRequired", "Track name is required"), true);
+    const msg = routingT("routing.saveAsTrackNameRequired", "Track name is required");
+    routingSetSaveAsTrackFormFeedback(msg, true);
+    routingSetStatus(msg, true);
     routingFocusSaveAsTrackNameInput(true);
-    return;
+    return false;
   }
   _routingSaveBusy = true;
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
@@ -62092,6 +62173,7 @@ function routingPerformSaveAsTrack(explicitName){
   let prevSel = null;
   let confirmed = false;
   let res = null;
+  let okOut = false;
   try {
     prevRaw = localStorage.getItem(STORAGE_KEY);
     prevSel = Array.isArray(state._savedTracksSelectedIds) ? state._savedTracksSelectedIds.slice() : [];
@@ -62114,8 +62196,9 @@ function routingPerformSaveAsTrack(explicitName){
       } else {
         msg = routingT("routing.saveAsTrackError", "Track save failed.");
       }
+      routingSetSaveAsTrackFormFeedback(msg, true);
       routingSetStatus(msg, true);
-      return;
+      return false;
     }
     rollbackTrackId = String(res.track.id);
 
@@ -62152,8 +62235,10 @@ function routingPerformSaveAsTrack(explicitName){
     if (!confirmed){
       try { trackBrushRollbackCreatedTrack(rollbackTrackId, prevSel); } catch(_){}
       try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
-      routingSetStatus(routingT("routing.saveAsTrackError", "Track save failed."), true);
-      return;
+      const failMsg = routingT("routing.saveAsTrackError", "Track save failed.");
+      routingSetSaveAsTrackFormFeedback(failMsg, true);
+      routingSetStatus(failMsg, true);
+      return false;
     }
 
     try { renderSavedTracksList(); } catch(_){}
@@ -62161,18 +62246,29 @@ function routingPerformSaveAsTrack(explicitName){
     if (state.workbenchPanelOpen){
       try { renderWorkbenchList(); } catch(_){}
     }
-    routingCloseSaveAsTrackPrompt({ force: true });
+    routingCloseSaveAsTrackPrompt({ force: true, focusSaveBtn: true });
     routingSetStatus(routingFormatSaveAsTrackSuccess(res.track.name), false);
+    okOut = true;
+    return true;
   } catch(_){
     if (rollbackTrackId){
       try { trackBrushRollbackCreatedTrack(rollbackTrackId, prevSel); } catch(_){}
       try { trackBrushRestoreStorageRaw(prevRaw); } catch(_){}
     }
-    routingSetStatus(routingT("routing.saveAsTrackError", "Track save failed."), true);
+    const failMsg = routingT("routing.saveAsTrackError", "Track save failed.");
+    routingSetSaveAsTrackFormFeedback(failMsg, true);
+    routingSetStatus(failMsg, true);
+    return false;
   } finally {
     _routingSaveBusy = false;
     try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
     try { routingSyncSaveAsTrackFormUi(); } catch(_){}
+    if (okOut){
+      const btn = document.getElementById("routingSaveAsTrackBtn");
+      if (btn && !btn.disabled){
+        try { btn.focus(); } catch(_){}
+      }
+    }
   }
 }
 function routingInvalidateRoutePreview(){
@@ -63730,6 +63826,57 @@ function routingAltChipLabel(alt, displayIndex){
   if (Number.isFinite(m.durationMs)) parts.push(routingFmtDurationMs(m.durationMs));
   return parts.join(" · ");
 }
+function routingFmtSignedRouteDistanceDelta(deltaM){
+  const d = Number(deltaM);
+  if (!Number.isFinite(d) || Math.abs(d) < 0.5) return "";
+  const absTxt = routingFmtRouteDistanceForUnit(Math.abs(d));
+  if (!absTxt || absTxt === "—") return "";
+  return (d > 0 ? "+" : "−") + absTxt;
+}
+function routingFmtSignedAltitudeDelta(deltaM){
+  const d = Number(deltaM);
+  if (!Number.isFinite(d) || Math.abs(d) < 0.5) return "";
+  const absTxt = routingFmtAltitudeForUnit(Math.abs(d));
+  if (!absTxt || absTxt === "—") return "";
+  return (d > 0 ? "+" : "−") + absTxt;
+}
+function routingAltCompareParts(alt, baseline){
+  const parts = [];
+  if (!alt || !baseline) return parts;
+  const am = alt.metrics || {};
+  const bm = baseline.metrics || {};
+  if (Number.isFinite(am.distanceM) && Number.isFinite(bm.distanceM)){
+    const distPart = routingFmtSignedRouteDistanceDelta(am.distanceM - bm.distanceM);
+    if (distPart) parts.push(distPart);
+  }
+  if (Number.isFinite(am.durationMs) && Number.isFinite(bm.durationMs)){
+    const dMs = am.durationMs - bm.durationMs;
+    if (Math.abs(dMs) >= 500){
+      const durTxt = routingFmtDurationMs(Math.abs(dMs));
+      if (durTxt && durTxt !== "—"){
+        if (dMs > 0) parts.push(String(routingT("routing.altSlower", "{0} slower")).replace("{0}", durTxt));
+        else parts.push(String(routingT("routing.altFaster", "{0} faster")).replace("{0}", durTxt));
+      }
+    }
+  }
+  if (Number.isFinite(am.ascentM) && Number.isFinite(bm.ascentM)){
+    const asc = routingFmtSignedAltitudeDelta(am.ascentM - bm.ascentM);
+    if (asc) parts.push(String(routingT("routing.altAscentPart", "{0} ascent")).replace("{0}", asc));
+  }
+  if (Number.isFinite(am.descentM) && Number.isFinite(bm.descentM)){
+    const des = routingFmtSignedAltitudeDelta(am.descentM - bm.descentM);
+    if (des) parts.push(String(routingT("routing.altDescentPart", "{0} descent")).replace("{0}", des));
+  }
+  return parts;
+}
+function routingAltCompareText(alt, displayIndex, baseline){
+  if (displayIndex <= 0 || !baseline) return "";
+  const parts = routingAltCompareParts(alt, baseline);
+  if (!parts.length) return "";
+  return String(routingT("routing.altComparedWith", "Route {0} compared with Route 1: {1}"))
+    .replace("{0}", String(displayIndex + 1))
+    .replace("{1}", parts.join(", "));
+}
 function routingSyncAlternativesRowUi(){
   const row = document.getElementById("routingAlternativesRow");
   const chips = document.getElementById("routingAlternativesChips");
@@ -63746,26 +63893,88 @@ function routingSyncAlternativesRowUi(){
   }
   row.hidden = false;
   const sel = (r.selectedAlternative == null) ? 0 : Number(r.selectedAlternative);
+  const baseline = alts[0] || null;
   chips.innerHTML = "";
   for (let i = 0; i < alts.length; i++){
+    const wrap = document.createElement("div");
+    wrap.className = "routing-alt-item";
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "btn btn-sm routing-alt-chip" + (i === sel ? " is-active" : "");
     btn.setAttribute("data-routing-alt-index", String(i));
     btn.setAttribute("aria-pressed", i === sel ? "true" : "false");
     btn.disabled = busy;
-    const tip = routingT("tip.routingSelectAlternative", "Show this alternative route on the map");
+    const labelTxt = routingAltChipLabel(alts[i], i);
+    const compareTxt = routingAltCompareText(alts[i], i, baseline);
+    const baseTip = routingT("tip.routingSelectAlternative", "Show this alternative route on the map");
+    const tip = compareTxt ? (baseTip + " — " + compareTxt) : baseTip;
+    const aria = compareTxt ? (labelTxt + ". " + compareTxt) : (baseTip + ": " + labelTxt);
     btn.setAttribute("data-tip", tip);
-    btn.setAttribute("aria-label", tip + ": " + routingAltChipLabel(alts[i], i));
-    btn.textContent = routingAltChipLabel(alts[i], i);
-    chips.appendChild(btn);
+    btn.setAttribute("title", tip);
+    btn.setAttribute("aria-label", aria);
+    btn.textContent = labelTxt;
+    wrap.appendChild(btn);
+
+    const centerBtn = document.createElement("button");
+    centerBtn.type = "button";
+    centerBtn.className = "btn btn-sm btn-ghost routing-alt-center";
+    centerBtn.setAttribute("data-routing-alt-center", String(i));
+    centerBtn.disabled = busy;
+    const centerLabel = routingT("routing.centerAlternative", "Center");
+    const centerAria = String(routingT("routing.centerAlternativeAria", "Center Route {0}")).replace("{0}", String(i + 1));
+    const centerTip = routingT("tip.routingCenterAlternative", "Center the map on this route");
+    centerBtn.setAttribute("data-tip", centerTip);
+    centerBtn.setAttribute("title", centerTip);
+    centerBtn.setAttribute("aria-label", centerAria);
+    centerBtn.textContent = centerLabel;
+    wrap.appendChild(centerBtn);
+
+    chips.appendChild(wrap);
   }
+}
+function routingSelectAlternativeAt(index, options){
+  options = options || {};
+  const r = state._routing;
+  if (!r || r.requestLoading || r.infoLoading) return false;
+  const idx = Number(index);
+  if (!Number.isFinite(idx)) return false;
+  const alts = Array.isArray(r.alternatives) ? r.alternatives : [];
+  if (idx < 0 || idx >= alts.length) return false;
+  const already = r.selectedAlternative === idx;
+  const wantFit = options.fitMap !== false;
+  if (already){
+    if (wantFit){
+      try {
+        const ok = routingFitMapToRoutePreview(r.previewCoordinates);
+        if (!ok) refreshTileMapForTrackUi();
+      } catch(_){
+        try { refreshTileMapForTrackUi(); } catch(__){}
+      }
+    }
+    return true;
+  }
+  const ok = routingApplyAlternative(idx, { fitMap: wantFit, renderUi: true });
+  if (ok && r.routeMetrics){
+    try { routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false); } catch(_){}
+  }
+  return ok;
 }
 function routingWireAlternativesRowOnce(){
   const chips = document.getElementById("routingAlternativesChips");
   if (!chips || chips._routingAltWired) return;
   chips._routingAltWired = true;
   chips.addEventListener("click", (ev) => {
+    const centerBtn = ev.target && ev.target.closest ? ev.target.closest("button[data-routing-alt-center]") : null;
+    if (centerBtn && chips.contains(centerBtn)){
+      if (centerBtn.disabled) return;
+      ev.preventDefault();
+      const r = state._routing;
+      if (!r || r.requestLoading || r.infoLoading) return;
+      const idx = Number(centerBtn.getAttribute("data-routing-alt-center"));
+      routingSelectAlternativeAt(idx, { fitMap: true });
+      return;
+    }
     const btn = ev.target && ev.target.closest ? ev.target.closest("button[data-routing-alt-index]") : null;
     if (!btn || !chips.contains(btn) || btn.disabled) return;
     ev.preventDefault();
@@ -63774,10 +63983,7 @@ function routingWireAlternativesRowOnce(){
     const idx = Number(btn.getAttribute("data-routing-alt-index"));
     if (!Number.isFinite(idx)) return;
     if (r.selectedAlternative === idx) return;
-    const ok = routingApplyAlternative(idx, { fitMap: false, renderUi: true });
-    if (ok && r.routeMetrics){
-      try { routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false); } catch(_){}
-    }
+    routingSelectAlternativeAt(idx, { fitMap: true });
   });
 }
 function routingFitMapToRoutePreview(previewCoordinates){
@@ -63785,14 +63991,16 @@ function routingFitMapToRoutePreview(previewCoordinates){
 
   let minLat = 90, maxLat = -90;
   const lons = [];
+  const seqPts = [];
   for (let i = 0; i < previewCoordinates.length; i++){
     const p = previewCoordinates[i];
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     minLat = Math.min(minLat, p.lat);
     maxLat = Math.max(maxLat, p.lat);
     lons.push(p.lon);
+    seqPts.push({ lat: p.lat, lon: p.lon });
   }
-  if (minLat > maxLat || !lons.length) return false;
+  if (minLat > maxLat || !lons.length || seqPts.length < 2) return false;
 
   const unwrapped = trackLonsUnwrapTransient(lons);
   let minU = Infinity, maxU = -Infinity;
@@ -63805,9 +64013,8 @@ function routingFitMapToRoutePreview(previewCoordinates){
   if (!(minU <= maxU) || !Number.isFinite(minU) || !Number.isFinite(maxU)) return false;
 
   const lonSpan = Math.abs(maxU - minU) || 1e-6;
-  const centerUnwrapped = (minU + maxU) / 2;
-  const clon = normalizeLon(centerUnwrapped);
   const clat = (minLat + maxLat) / 2;
+  const clon = normalizeLon((minU + maxU) / 2);
 
   // Web Mercator fit: horizontal span is lon-based (no cos(lat) shrink);
   // vertical span uses mercator Y. Prefer viewport-aware zoom selection.
@@ -63817,12 +64024,17 @@ function routingFitMapToRoutePreview(previewCoordinates){
   const mercYSpan = Math.abs(ySouth - yNorth) || 1e-12;
 
   const root = document.getElementById("miniMap");
+  const usable = (typeof gisMapUsableRect === "function") ? gisMapUsableRect(root) : null;
   const vp = (typeof gisMapTileMathViewport === "function")
     ? gisMapTileMathViewport(root)
     : { W: 400, H: 400 };
   const padFrac = 0.12;
-  const availW = Math.max(64, (vp.W || 400) * (1 - 2 * padFrac));
-  const availH = Math.max(64, (vp.H || 400) * (1 - 2 * padFrac));
+  let availW = Math.max(64, (vp.W || 400) * (1 - 2 * padFrac));
+  let availH = Math.max(64, (vp.H || 400) * (1 - 2 * padFrac));
+  if (usable && !usable.fallback && usable.w > 0 && usable.h > 0){
+    availW = Math.max(64, usable.w * (1 - 2 * padFrac));
+    availH = Math.max(64, usable.h * (1 - 2 * padFrac));
+  }
 
   let z = 16;
   for (; z >= 2; z--){
@@ -63833,9 +64045,26 @@ function routingFitMapToRoutePreview(previewCoordinates){
   }
 
   z = clampBasemapFitZoom(z);
-  state.viewCenter = { lat: clat, lon: clon };
+  let cam = { lat: clat, lon: clon };
+  if (root && usable && !usable.fallback && seqPts.length >= 2 && typeof gisMapOffsetVC === "function" && typeof gisMapPtsInUsable === "function"){
+    for (let zt = z; zt >= 2; zt--){
+      const zTry = clampBasemapFitZoom(zt);
+      const off = gisMapOffsetVC(root, clat, clon, zTry, usable);
+      const aligned = (typeof trackLonsAlignToView === "function")
+        ? trackLonsAlignToView(unwrapped, off.lon)
+        : unwrapped;
+      if (gisMapPtsInUsable(root, seqPts, usable, GIS_MAP_FIT_EDGE_PAD, aligned, off, zTry)){
+        cam = off;
+        z = zTry;
+        break;
+      }
+      if (zTry <= 2) break;
+    }
+  }
+
+  state.viewCenter = { lat: cam.lat, lon: cam.lon };
   state.mapZoom = z;
-  renderTileMap(clat, clon, z);
+  renderTileMap(cam.lat, cam.lon, z);
   return true;
 }
 async function routingCalculateRouteGraphhopper(){
@@ -66608,6 +66837,9 @@ function wireRoutingPlannerOnce(){
   const saveForm = document.getElementById("routingSaveAsTrackForm");
   if (saveForm && !saveForm._routingSaveNameBound){
     saveForm._routingSaveNameBound = true;
+    saveForm.addEventListener("submit", (ev) => {
+      routingSubmitSaveAsTrack(ev);
+    });
     saveForm.addEventListener("keydown", (ev) => {
       if (!ev) return;
       if (ev.key === "Escape" || ev.key === "Esc"){
