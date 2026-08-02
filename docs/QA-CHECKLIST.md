@@ -69,9 +69,31 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-ANDATA-RITORNO-A — Andata e ritorno reale GraphHopper — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `c1a6c89` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `ROUTING-ANDATA-RITORNO-A` |
+| Tip | `c1a6c8939d34ae42f0342813388cc2984ee3cf0e` |
+| Build | `ROUTING-ANDATA-RITORNO-A · build 112` |
+| Blob | `0d8824e018ecbbb38f6ce6b6061d62a005ffdcba` |
+| Byte LF | `3308964` |
+| SHA-256 LF | `71f7bb1b5bbecb1590f42ac70430e7ee2c2567f93b59cfdb45750b00c7da9c56` |
+| Bundle | DELICATO — due POST `/route`, anti-stale/abort, modalità transiente |
+| Scope | `routeMode` session-only; out-and-back sequenziale; merge 1 m; metriche/profilo unici; alternative solo `one_way` |
+| Review | PASS PRE-DEPLOY |
+| Deploy | GIS-only PASS (FF `5fc39e9`→`c1a6c89`; solo `goi-gis-app`; GH PID invariato) |
+| QA | **PASS** «QA ROUTING-ANDATA-RITORNO-A PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c1a6c89
+
 ## UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) — Attenzione errori rossi modali layout-neutral — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `5fc39e9` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da ROUTING-ANDATA-RITORNO-A):** `5fc39e9` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
