@@ -8803,6 +8803,36 @@ dialog.track-modal.app-modal{
   color:var(--warn, #d97706);
   font-weight:600;
 }
+.routing-pt-snap-feedback{
+  grid-column:1 / -1;
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:6px 8px;
+  margin:2px 0 4px;
+  font-size:.78rem;
+  color:var(--muted);
+}
+.routing-pt-snap-feedback.is-warn{
+  color:var(--warn, #d97706);
+  font-weight:600;
+}
+.routing-pt-snap-feedback.is-ok{
+  color:var(--ok, #15803d);
+}
+.routing-marker-snap{
+  fill:none;
+  stroke:#7c3aed;
+  stroke-width:2;
+  opacity:.85;
+  pointer-events:none;
+}
+:root[data-theme="dark"] .routing-pt-snap-feedback.is-warn{
+  color:color-mix(in srgb, var(--warn, #fbbf24) 90%, #fff 10%);
+}
+:root[data-theme="dark"] .routing-pt-snap-feedback.is-ok{
+  color:color-mix(in srgb, var(--ok, #4ade80) 85%, #fff 15%);
+}
 .routing-units-row{
   display:flex;
   flex-wrap:wrap;
@@ -15788,6 +15818,17 @@ const I18N = {
     "routing.errorInvalidResponse":"Risposta del router non valida.",
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
+    "routing.snapAdapted":"Punto {0} adattato di {1} m alla strada più vicina.",
+    "routing.snapConfirmRequired":"Punto {0} dista {1} m dalla strada più vicina.",
+    "routing.snapUseAnyway":"Usa comunque",
+    "routing.snapConfirmed":"Punto {0}: userai la strada a {1} m. Premi di nuovo Calcola percorso.",
+    "routing.snapRejected":"Punto {0} è troppo lontano dalla rete instradabile: {1} m. Scegli un altro punto o usa Scegli sulla mappa.",
+    "routing.snapNoRoad":"Punto {0} è nell'area coperta ma non è agganciabile alla rete stradale indicizzata.",
+    "routing.snapOutOfCoverage":"Punto {0} fuori dall'area di copertura GraphHopper.",
+    "routing.snapCoverageUnknown":"Punto {0}: copertura non verificabile. Riprova o scegli sulla mappa.",
+    "routing.snapStale":"Verifica copertura da rifare.",
+    "routing.snapBlocked":"Calcolo bloccato: verifica i punti evidenziati.",
+    "routing.snapVerifying":"Verifica copertura punti…",
     "routing.alternativesLabel":"Percorsi alternativi",
     "routing.alternativeN":"Percorso {0}",
     "routing.alternativesUnavailable":"Alternative non disponibili su questo provider; percorso singolo.",
@@ -21802,10 +21843,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.6AR-A-FIX3";
-const APP_BUILD_DETAIL = "routing actions below alternatives and speed";
+const APP_BUILD_ID = "ROUTING-GEOCODE-SNAP-A";
+const APP_BUILD_DETAIL = "preflight geocoded points against GraphHopper /nearest";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 105;
+const APP_BUILD_NUM = 106;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61401,6 +61442,10 @@ const ROUTING_GRAPHHOPPER_ENDPOINT = "http://100.114.7.53:8989";
 const ROUTING_GRAPHHOPPER_ENDPOINT_LOCAL = "http://127.0.0.1:8989";
 const ROUTING_GRAPHHOPPER_ROUTE_PATH = "/route";
 const ROUTING_GRAPHHOPPER_INFO_PATH = "/info";
+const ROUTING_NEAREST_PATH = "/nearest";
+const ROUTING_NEAREST_TIMEOUT_MS = 3000;
+const ROUTING_SNAP_SOFT_DELTA_M = 50;
+const ROUTING_SNAP_MAX_DELTA_M = 250;
 const ROUTING_GRAPHHOPPER_TIMEOUT_MS = 20000;
 const ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS = 3000;
 /** CH-first alternative routes (GraphHopper 11). Do not send ch.disable. */
@@ -61611,6 +61656,8 @@ function routingEnsureState(){
     if (!("selectedAlternative" in r)) r.selectedAlternative = null;
     else if (r.selectedAlternative != null && !Number.isFinite(Number(r.selectedAlternative))) r.selectedAlternative = null;
     if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
+    if (!r.infoCache || typeof r.infoCache !== "object") r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
+    try { routingNormalizeAllPointSnapFields(r); } catch(_){}
     try { routingEnsureAbPoints(r); } catch(_){}
     return r;
   }
@@ -61656,7 +61703,8 @@ function routingEnsureState(){
     coordEditFeedbackIsErr: false,
     alternatives: [],
     selectedAlternative: null,
-    search: Object.create(null)
+    search: Object.create(null),
+    infoCache: { bbox: null, profiles: null, fetchedAt: null, provider: null }
   };
   try { routingEnsureAbPoints(state._routing); } catch(_){}
   return state._routing;
@@ -61705,13 +61753,14 @@ function routingEnsureAbPoints(r){
   if (!r || typeof r !== "object") return;
   if (!Array.isArray(r.points)) r.points = [];
   while (r.points.length < 2){
-    r.points.push({ id: uidRouting(), label: "" });
+    r.points.push({ id: uidRouting(), label: "", snapStatus: "unverified" });
   }
   // Drop null holes without removing trailing structure
   r.points = r.points.filter(p => !!p);
   while (r.points.length < 2){
-    r.points.push({ id: uidRouting(), label: "" });
+    r.points.push({ id: uidRouting(), label: "", snapStatus: "unverified" });
   }
+  try { routingNormalizeAllPointSnapFields(r); } catch(_){}
 }
 function routingPushPointUndoSnapshot(){
   const r = state._routing;
@@ -61729,8 +61778,8 @@ function routingPushPointUndoSnapshot(){
 function routingInitDefaultPoints(){
   const r = routingEnsureState();
   r.points = [
-    { id: uidRouting(), label: "" },
-    { id: uidRouting(), label: "" }
+    { id: uidRouting(), label: "", snapStatus: "unverified" },
+    { id: uidRouting(), label: "", snapStatus: "unverified" }
   ];
   r.pointUndoStack = [];
 }
@@ -61777,7 +61826,24 @@ function routingSyncPointsFeedback(){
     return;
   }
   if (r.requestLoading || r.infoLoading){ hide(); return; }
-  if (r.routeError){ hide(); return; }
+  // Prefer snap blocking messages when present.
+  try {
+    const blockMsgs = [];
+    const ptsSnap = Array.isArray(r.points) ? r.points : [];
+    for (let i = 0; i < ptsSnap.length; i++){
+      const p = ptsSnap[i];
+      if (!p || !routingSnapStatusIsBlocking(p.snapStatus)) continue;
+      const m = routingSnapPointMessage(p, i, ptsSnap.length);
+      if (m) blockMsgs.push(m);
+    }
+    if (blockMsgs.length){
+      el.textContent = blockMsgs[0];
+      el.hidden = false;
+      el.classList.add("is-warn");
+      return;
+    }
+  } catch(_){}
+  if (r.routeError && r.routeError !== "routing.snapBlocked"){ hide(); return; }
   const pts = Array.isArray(r.points) ? r.points : [];
   let n = 0;
   for (let i = 0; i < pts.length; i++){
@@ -61821,6 +61887,7 @@ function routingUndoLastPointChange(){
   try {
     r.points = routingClonePointsSnapshot(snap);
     routingEnsureAbPoints(r);
+    try { routingMarkAllPointsSnapStale(); } catch(_){}
     if (r.pickTargetId && !routingFindPoint(r.pickTargetId)){
       r.pickMode = false;
       r.pickTargetId = null;
@@ -62532,6 +62599,8 @@ function routingSetPointCoordinates(pointId, lat, lon, source, opts){
     pt.source = src;
   }
   if (nextLabel != null) pt.label = nextLabel;
+  // Coordinate change invalidates prior snap / confirmation (session-only).
+  try { routingClearPointSnapFields(pt, "stale"); } catch(_){ pt.snapStatus = "stale"; }
   if (state._routing) state._routing.dirty = true;
   try { routingCoordEditSyncDraftFromPoint(pointId); } catch(_){}
   if (state._routing && state._routing.coordEditMode){
@@ -62708,6 +62777,20 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
       routingStartMarkerDrag(ev, p.id, root, tileMap, llRef, loRef, z);
     });
     svg.appendChild(g);
+    // ROUTING-GEOCODE-SNAP-A — discrete snapped circle (r=4), original marker preserved.
+    if (routingSnapStatusShowsMarker(p.snapStatus) &&
+        Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
+      const sc = tileMapLatLonToPx(root, Number(p.snapLat), Number(p.snapLon));
+      if (sc && Number.isFinite(sc.x) && Number.isFinite(sc.y)){
+        const snapCirc = document.createElementNS(ns, "circle");
+        snapCirc.setAttribute("class", "routing-marker-snap");
+        snapCirc.setAttribute("cx", String(sc.x));
+        snapCirc.setAttribute("cy", String(sc.y));
+        snapCirc.setAttribute("r", "4");
+        snapCirc.style.pointerEvents = "none";
+        svg.appendChild(snapCirc);
+      }
+    }
   }
   wrap.appendChild(svg);
   tileLayer.appendChild(wrap);
@@ -63317,6 +63400,30 @@ function routingRenderList(){
       row.appendChild(coords);
       row.appendChild(actions);
     }
+    // Per-point snap feedback + inline "Usa comunque" (no modal).
+    const snapMsg = routingSnapPointMessage(p, i, n);
+    if (snapMsg && p.snapStatus && p.snapStatus !== "unverified"){
+      const snapFb = document.createElement("div");
+      snapFb.className = "routing-pt-snap-feedback";
+      snapFb.setAttribute("role", "status");
+      if (routingSnapStatusIsBlocking(p.snapStatus)) snapFb.classList.add("is-warn");
+      else if (p.snapStatus === "verified" || p.snapStatus === "confirmed") snapFb.classList.add("is-ok");
+      const snapTxt = document.createElement("span");
+      snapTxt.textContent = snapMsg;
+      snapFb.appendChild(snapTxt);
+      if (p.snapStatus === "confirm-required"){
+        const confBtn = document.createElement("button");
+        confBtn.type = "button";
+        confBtn.className = "btn btn-sm";
+        confBtn.textContent = routingT("routing.snapUseAnyway", "Usa comunque");
+        confBtn.setAttribute("aria-label", confBtn.textContent);
+        confBtn.title = confBtn.textContent;
+        confBtn.setAttribute("data-routing-act", "confirm-snap");
+        confBtn.setAttribute("data-routing-id", p.id);
+        snapFb.appendChild(confBtn);
+      }
+      row.appendChild(snapFb);
+    }
     frag.appendChild(row);
   }
   list.innerHTML = "";
@@ -63399,11 +63506,442 @@ function routingAddVia(){
     return;
   }
   try { routingPushPointUndoSnapshot(); } catch(_){}
-  r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "" });
+  r.points.splice(Math.max(1, r.points.length - 1), 0, { id: uidRouting(), label: "", snapStatus: "unverified" });
   r.dirty = true;
   try { routingInvalidateRoutePreview(); } catch(_){}
   routingSetStatus("", false);
   routingRenderList();
+}
+function routingClearPointSnapFields(pt, status){
+  if (!pt || typeof pt !== "object") return;
+  const st = status || "unverified";
+  pt.snapStatus = st;
+  try { delete pt.snapLat; } catch(_){ pt.snapLat = undefined; }
+  try { delete pt.snapLon; } catch(_){ pt.snapLon = undefined; }
+  try { delete pt.snapDeltaM; } catch(_){ pt.snapDeltaM = undefined; }
+  try { delete pt.snapCheckedProfile; } catch(_){ pt.snapCheckedProfile = undefined; }
+  try { delete pt.snapCheckedProvider; } catch(_){ pt.snapCheckedProvider = undefined; }
+  try { delete pt.snapCheckedAt; } catch(_){ pt.snapCheckedAt = undefined; }
+  try { delete pt.snapSource; } catch(_){ pt.snapSource = undefined; }
+}
+function routingNormalizePointSnapFields(pt){
+  if (!pt || typeof pt !== "object") return;
+  const allowed = {
+    "unverified":1, "stale":1, "verified":1, "confirm-required":1, "confirmed":1,
+    "rejected":1, "no-road":1, "out-of-coverage":1, "coverage-unknown":1
+  };
+  if (!pt.snapStatus || !allowed[pt.snapStatus]) pt.snapStatus = "unverified";
+}
+function routingNormalizeAllPointSnapFields(r){
+  if (!r || !Array.isArray(r.points)) return;
+  for (let i = 0; i < r.points.length; i++) routingNormalizePointSnapFields(r.points[i]);
+}
+function routingMarkAllPointsSnapStale(opts){
+  opts = opts || {};
+  const r = state._routing;
+  if (!r || !Array.isArray(r.points)) return;
+  for (let i = 0; i < r.points.length; i++){
+    const p = r.points[i];
+    if (!p) continue;
+    if (routingPointIsPositioned(p)) routingClearPointSnapFields(p, "stale");
+    else routingClearPointSnapFields(p, "unverified");
+  }
+  if (opts.clearInfoCache && r.infoCache){
+    r.infoCache.bbox = null;
+    r.infoCache.profiles = null;
+    r.infoCache.fetchedAt = null;
+    r.infoCache.provider = null;
+  }
+}
+function routingHaversineMeters(aLat, aLon, bLat, bLon){
+  try {
+    if (typeof haversine === "function"){
+      const h = haversine(aLat, aLon, bLat, bLon);
+      if (h && Number.isFinite(h.distance)) return h.distance;
+    }
+  } catch(_){}
+  const toRad = Math.PI / 180;
+  const R = 6371008.8;
+  const dLat = (bLat - aLat) * toRad;
+  const dLon = (bLon - aLon) * toRad;
+  const la1 = aLat * toRad, la2 = bLat * toRad;
+  const s = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(la1) * Math.cos(la2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+}
+function routingPointInBbox(bbox, lat, lon){
+  if (!Array.isArray(bbox) || bbox.length < 4) return false;
+  const minLon = Number(bbox[0]), minLat = Number(bbox[1]), maxLon = Number(bbox[2]), maxLat = Number(bbox[3]);
+  if (![minLon, minLat, maxLon, maxLat].every(Number.isFinite)) return false;
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo)) return false;
+  return lo >= minLon && lo <= maxLon && la >= minLat && la <= maxLat;
+}
+function routingParseInfoBbox(data){
+  if (!data || typeof data !== "object") return null;
+  const b = data.bbox;
+  if (!Array.isArray(b) || b.length < 4) return null;
+  const out = [Number(b[0]), Number(b[1]), Number(b[2]), Number(b[3])];
+  if (!out.every(Number.isFinite)) return null;
+  return out;
+}
+function routingSnapBadgeForPoint(pt, index, n){
+  try { return routingPointBadge(index, n); } catch(_){}
+  return String(index + 1);
+}
+function routingFmtSnapDeltaM(m){
+  const v = Number(m);
+  if (!Number.isFinite(v) || v < 0) return "—";
+  if (v >= 1000){
+    const k = Math.round(v);
+    return String(k).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+  return String(Math.round(v));
+}
+function routingSnapPointMessage(pt, index, n){
+  if (!pt || !pt.snapStatus) return "";
+  const badge = routingSnapBadgeForPoint(pt, index, n);
+  const d = routingFmtSnapDeltaM(pt.snapDeltaM);
+  switch (pt.snapStatus){
+    case "verified":
+      return String(routingT("routing.snapAdapted", "Punto {0} adattato di {1} m alla strada più vicina.")).replace("{0}", badge).replace("{1}", d);
+    case "confirm-required":
+      return String(routingT("routing.snapConfirmRequired", "Punto {0} dista {1} m dalla strada più vicina.")).replace("{0}", badge).replace("{1}", d);
+    case "confirmed":
+      return String(routingT("routing.snapConfirmed", "Punto {0}: userai la strada a {1} m. Premi di nuovo Calcola percorso.")).replace("{0}", badge).replace("{1}", d);
+    case "rejected":
+      return String(routingT("routing.snapRejected", "Punto {0} è troppo lontano dalla rete instradabile: {1} m. Scegli un altro punto o usa Scegli sulla mappa.")).replace("{0}", badge).replace("{1}", d);
+    case "no-road":
+      return String(routingT("routing.snapNoRoad", "Punto {0} è nell'area coperta ma non è agganciabile alla rete stradale indicizzata.")).replace("{0}", badge);
+    case "out-of-coverage":
+      return String(routingT("routing.snapOutOfCoverage", "Punto {0} fuori dall'area di copertura GraphHopper.")).replace("{0}", badge);
+    case "coverage-unknown":
+      return String(routingT("routing.snapCoverageUnknown", "Punto {0}: copertura non verificabile. Riprova o scegli sulla mappa.")).replace("{0}", badge);
+    case "stale":
+      return routingT("routing.snapStale", "Verifica copertura da rifare.");
+    default:
+      return "";
+  }
+}
+function routingSnapStatusIsBlocking(st){
+  return st === "confirm-required" || st === "rejected" || st === "no-road" ||
+    st === "out-of-coverage" || st === "coverage-unknown";
+}
+function routingSnapStatusShowsMarker(st){
+  return st === "verified" || st === "confirmed";
+}
+function routingSnapIsReusable(pt, profile, provider){
+  if (!pt) return false;
+  if (pt.snapStatus !== "verified" && pt.snapStatus !== "confirmed") return false;
+  if (!Number.isFinite(Number(pt.snapLat)) || !Number.isFinite(Number(pt.snapLon))) return false;
+  if (String(pt.snapCheckedProfile || "") !== String(profile || "")) return false;
+  if (String(pt.snapCheckedProvider || "") !== String(provider || "")) return false;
+  return true;
+}
+function routingClassifySnap(point, infoCache, profile, provider){
+  if (!point || !routingPointIsPositioned(point)) return "unverified";
+  const bbox = infoCache && Array.isArray(infoCache.bbox) ? infoCache.bbox : null;
+  const hasBbox = !!bbox;
+  const inside = hasBbox ? routingPointInBbox(bbox, point.lat, point.lon) : null;
+
+  if (hasBbox && inside === false){
+    routingClearPointSnapFields(point, "out-of-coverage");
+    point.snapCheckedProfile = profile;
+    point.snapCheckedProvider = provider;
+    point.snapCheckedAt = Date.now();
+    return "out-of-coverage";
+  }
+
+  if (point._nearestUnresolvable){
+    try { delete point._nearestUnresolvable; } catch(_){ point._nearestUnresolvable = undefined; }
+    if (!hasBbox){
+      routingClearPointSnapFields(point, "coverage-unknown");
+      point.snapCheckedProfile = profile;
+      point.snapCheckedProvider = provider;
+      point.snapCheckedAt = Date.now();
+      return "coverage-unknown";
+    }
+    routingClearPointSnapFields(point, "no-road");
+    point.snapCheckedProfile = profile;
+    point.snapCheckedProvider = provider;
+    point.snapCheckedAt = Date.now();
+    return "no-road";
+  }
+
+  const delta = Number(point.snapDeltaM);
+  if (!Number.isFinite(delta) || !Number.isFinite(Number(point.snapLat)) || !Number.isFinite(Number(point.snapLon))){
+    if (!hasBbox){
+      point.snapStatus = "coverage-unknown";
+      return "coverage-unknown";
+    }
+    point.snapStatus = "no-road";
+    return "no-road";
+  }
+
+  point.snapCheckedProfile = profile;
+  point.snapCheckedProvider = provider;
+  point.snapCheckedAt = Date.now();
+  point.snapSource = point.snapSource || "nearest";
+  if (delta <= ROUTING_SNAP_SOFT_DELTA_M){
+    point.snapStatus = "verified";
+    return "verified";
+  }
+  if (delta <= ROUTING_SNAP_MAX_DELTA_M){
+    point.snapStatus = "confirm-required";
+    return "confirm-required";
+  }
+  point.snapStatus = "rejected";
+  return "rejected";
+}
+async function routingNearestForPoint(endpoint, point, signal){
+  const ep = String(endpoint || "");
+  if (!ep || !point || !routingPointIsPositioned(point))
+    return { ok: false, unresolvable: true, errKey: "routing.errorGeneric" };
+  const localCtrl = new AbortController();
+  const onAbort = function(){ try { localCtrl.abort(); } catch(_){} };
+  if (signal){
+    if (signal.aborted) return { ok: false, aborted: true, errKey: "routing.errorGeneric" };
+    signal.addEventListener("abort", onAbort, { once: true });
+  }
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    timeoutId = setTimeout(function(){
+      timedOut = true;
+      try { localCtrl.abort(); } catch(_){}
+    }, ROUTING_NEAREST_TIMEOUT_MS);
+    const url = ep + ROUTING_NEAREST_PATH + "?point=" +
+      encodeURIComponent(String(point.lat) + "," + String(point.lon));
+    const res = await fetch(url, { method: "GET", signal: localCtrl.signal });
+    if (!res) return { ok: false, unresolvable: true, errKey: "routing.errorNetwork" };
+    if (res.status === 400){
+      let bodyText = "";
+      try { bodyText = await res.text(); } catch(_){ bodyText = ""; }
+      return { ok: false, unresolvable: true, status: 400, bodyText: bodyText };
+    }
+    if (!res.ok){
+      const status = typeof res.status === "number" ? res.status : 0;
+      return { ok: false, unresolvable: true, status: status, errKey: "routing.errorHttp" };
+    }
+    let data;
+    try { data = await res.json(); } catch(_){
+      return { ok: false, unresolvable: true, errKey: "routing.errorInvalidResponse" };
+    }
+    if (!data || typeof data !== "object") return { ok: false, unresolvable: true, errKey: "routing.errorInvalidResponse" };
+    const coords = Array.isArray(data.coordinates) ? data.coordinates : null;
+    if (!coords || coords.length < 2) return { ok: false, unresolvable: true, errKey: "routing.errorInvalidResponse" };
+    const snapLon = Number(coords[0]);
+    const snapLat = Number(coords[1]);
+    if (!Number.isFinite(snapLon) || !Number.isFinite(snapLat)) return { ok: false, unresolvable: true, errKey: "routing.errorInvalidResponse" };
+    let distance = Number(data.distance);
+    if (!Number.isFinite(distance) || distance < 0){
+      distance = routingHaversineMeters(point.lat, point.lon, snapLat, snapLon);
+    }
+    return {
+      ok: true,
+      snapLat: snapLat,
+      snapLon: snapLon,
+      distance: distance,
+      type: data.type || "Point"
+    };
+  } catch(e){
+    const isAbort = e && e.name === "AbortError";
+    if (isAbort && timedOut) return { ok: false, errKey: "routing.errorTimeout", timedOut: true };
+    if (isAbort) return { ok: false, aborted: true, errKey: "routing.errorGeneric" };
+    const msg = String(e && e.message ? e.message : e || "").toLowerCase();
+    if (msg.indexOf("cors") >= 0) return { ok: false, errKey: "routing.errorCors", unresolvable: true };
+    return { ok: false, errKey: "routing.errorNetwork", unresolvable: true };
+  } finally {
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
+    if (signal){ try { signal.removeEventListener("abort", onAbort); } catch(_){} }
+  }
+}
+function routingSyncPointSnapFeedback(){
+  try { routingSyncPointsFeedback(); } catch(_){}
+  try { routingRenderList(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+function routingConfirmPointSnapAnyway(pointId){
+  const pt = routingFindPoint(pointId);
+  if (!pt || pt.snapStatus !== "confirm-required") return false;
+  if (!Number.isFinite(Number(pt.snapLat)) || !Number.isFinite(Number(pt.snapLon))) return false;
+  pt.snapStatus = "confirmed";
+  try { routingSyncPointSnapFeedback(); } catch(_){}
+  const r = state._routing;
+  const pts = (r && r.points) || [];
+  const ix = pts.findIndex(p => p && p.id === pointId);
+  const msg = routingSnapPointMessage(pt, ix >= 0 ? ix : 0, pts.length || 2);
+  if (msg) routingSetStatus(msg, false);
+  return true;
+}
+function routingBuildRoutePointsLonLatFromSnap(){
+  const r = state._routing;
+  if (!r) return { ok: false, pointsLonLat: [], blocking: [] };
+  const pts = r.points || [];
+  if (!Array.isArray(pts) || pts.length < 2) return { ok: false, pointsLonLat: [], blocking: [] };
+  const pointsLonLat = [];
+  const blocking = [];
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    if (!p || !routingPointIsPositioned(p)) return { ok: false, pointsLonLat: [], blocking: [] };
+    const st = p.snapStatus || "unverified";
+    if (routingSnapStatusIsBlocking(st) || st === "unverified" || st === "stale"){
+      blocking.push({ index: i, id: p.id, status: st });
+      continue;
+    }
+    if ((st === "verified" || st === "confirmed") &&
+        Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
+      pointsLonLat.push([Number(p.snapLon), Number(p.snapLat)]);
+    } else {
+      pointsLonLat.push([Number(p.lon), Number(p.lat)]);
+    }
+  }
+  if (blocking.length) return { ok: false, pointsLonLat: [], blocking: blocking };
+  return { ok: true, pointsLonLat: pointsLonLat, blocking: [] };
+}
+function routingApplySnappedWaypointsToPoints(snappedCoords){
+  const r = state._routing;
+  if (!r || !Array.isArray(r.points) || !Array.isArray(snappedCoords)) return;
+  const n = Math.min(r.points.length, snappedCoords.length);
+  for (let i = 0; i < n; i++){
+    const p = r.points[i];
+    const c = snappedCoords[i];
+    if (!p || !Array.isArray(c) || c.length < 2) continue;
+    if (!routingSnapStatusShowsMarker(p.snapStatus) && p.snapStatus !== "verified" && p.snapStatus !== "confirmed") continue;
+    const snapLon = Number(c[0]);
+    const snapLat = Number(c[1]);
+    if (!Number.isFinite(snapLon) || !Number.isFinite(snapLat)) continue;
+    p.snapLon = snapLon;
+    p.snapLat = snapLat;
+    if (routingPointIsPositioned(p)){
+      p.snapDeltaM = routingHaversineMeters(p.lat, p.lon, snapLat, snapLon);
+    }
+    p.snapSource = "route";
+  }
+}
+function routingExtractPointNotFoundIndex(errData){
+  if (!errData || typeof errData !== "object") return -1;
+  const hints = Array.isArray(errData.hints) ? errData.hints : [];
+  for (let i = 0; i < hints.length; i++){
+    const h = hints[i];
+    if (!h || typeof h !== "object") continue;
+    const details = String(h.details || "");
+    const msg = String(h.message || "");
+    const isPnf = details.indexOf("PointNotFoundException") >= 0 ||
+      msg.toLowerCase().indexOf("cannot find point") >= 0;
+    if (!isPnf) continue;
+    const idx = Number(h.point_index);
+    if (Number.isFinite(idx) && idx >= 0) return idx;
+  }
+  const message = String(errData.message || "");
+  const m = message.match(/point\s+(\d+)/i);
+  if (m){
+    const idx = Number(m[1]);
+    if (Number.isFinite(idx) && idx >= 0) return idx;
+  }
+  return -1;
+}
+function routingRetroClassifyPointNotFound(pointIndex, infoCache, profile, provider){
+  const r = state._routing;
+  if (!r || !Array.isArray(r.points)) return;
+  const ix = Number(pointIndex);
+  if (!Number.isFinite(ix) || ix < 0 || ix >= r.points.length) return;
+  const p = r.points[ix];
+  if (!p) return;
+  const bbox = infoCache && Array.isArray(infoCache.bbox) ? infoCache.bbox : null;
+  if (bbox && routingPointIsPositioned(p) && !routingPointInBbox(bbox, p.lat, p.lon)){
+    routingClearPointSnapFields(p, "out-of-coverage");
+  } else {
+    routingClearPointSnapFields(p, "no-road");
+  }
+  p.snapCheckedProfile = profile;
+  p.snapCheckedProvider = provider;
+  p.snapCheckedAt = Date.now();
+}
+async function routingEnsureInfoCache(endpoint, provider, parentSignal){
+  const r = state._routing;
+  if (!r) return { ok: false, errKey: "routing.errorGeneric" };
+  if (r.infoCache && Array.isArray(r.infoCache.bbox) && r.infoCache.provider === provider)
+    return { ok: true, bbox: r.infoCache.bbox, fromCache: true };
+  const info = await routingGraphhopperInfoCheck(endpoint, parentSignal);
+  if (!info.ok) return info;
+  if (!r.infoCache || typeof r.infoCache !== "object")
+    r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
+  r.infoCache.bbox = info.bbox || null;
+  r.infoCache.profiles = info.profiles || null;
+  r.infoCache.fetchedAt = Date.now();
+  r.infoCache.provider = provider;
+  return { ok: true, bbox: r.infoCache.bbox, fromCache: false };
+}
+async function routingVerifyPointsAgainstNearest(endpoint, provider, profile, parentSignal, seq){
+  const r = state._routing;
+  if (!r) return { ok: false, errKey: "routing.errorGeneric", blocking: [] };
+  const infoEnsured = await routingEnsureInfoCache(endpoint, provider, parentSignal);
+  if (!state._routing || state._routing.requestSequence !== seq)
+    return { ok: false, stale: true, errKey: "routing.errorGeneric", blocking: [] };
+  if (infoEnsured.aborted) return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
+  // Missing bbox is allowed — classify with coverage-unknown when needed.
+  const infoCache = r.infoCache || { bbox: null };
+  const pts = Array.isArray(r.points) ? r.points : [];
+  const blocking = [];
+
+  for (let i = 0; i < pts.length; i++){
+    if (!state._routing || state._routing.requestSequence !== seq)
+      return { ok: false, stale: true, errKey: "routing.errorGeneric", blocking: [] };
+    if (parentSignal && parentSignal.aborted)
+      return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
+
+    const p = pts[i];
+    if (!p || !routingPointIsPositioned(p)) continue;
+
+    if (routingSnapIsReusable(p, profile, provider)) continue;
+
+    const bbox = infoCache.bbox;
+    if (Array.isArray(bbox) && !routingPointInBbox(bbox, p.lat, p.lon)){
+      routingClearPointSnapFields(p, "out-of-coverage");
+      p.snapCheckedProfile = profile;
+      p.snapCheckedProvider = provider;
+      p.snapCheckedAt = Date.now();
+      blocking.push({ index: i, id: p.id, status: "out-of-coverage" });
+      continue;
+    }
+
+    const nearest = await routingNearestForPoint(endpoint, p, parentSignal);
+    if (!state._routing || state._routing.requestSequence !== seq)
+      return { ok: false, stale: true, errKey: "routing.errorGeneric", blocking: [] };
+    if (nearest.aborted) return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
+    if (nearest.timedOut) return { ok: false, errKey: "routing.errorTimeout", blocking: [] };
+
+    if (!nearest.ok || nearest.unresolvable){
+      p._nearestUnresolvable = true;
+      const st = routingClassifySnap(p, infoCache, profile, provider);
+      if (routingSnapStatusIsBlocking(st)) blocking.push({ index: i, id: p.id, status: st });
+      continue;
+    }
+
+    p.snapLat = nearest.snapLat;
+    p.snapLon = nearest.snapLon;
+    p.snapDeltaM = nearest.distance;
+    p.snapSource = "nearest";
+    const st = routingClassifySnap(p, infoCache, profile, provider);
+    if (routingSnapStatusIsBlocking(st)) blocking.push({ index: i, id: p.id, status: st });
+  }
+
+  return { ok: blocking.length === 0, blocking: blocking };
+}
+function routingCollectSnapStatusMessages(){
+  const r = state._routing;
+  if (!r || !Array.isArray(r.points)) return [];
+  const pts = r.points;
+  const msgs = [];
+  for (let i = 0; i < pts.length; i++){
+    const p = pts[i];
+    if (!p) continue;
+    const m = routingSnapPointMessage(p, i, pts.length);
+    if (m && (routingSnapStatusIsBlocking(p.snapStatus) || p.snapStatus === "verified" || p.snapStatus === "confirmed" || p.snapStatus === "stale"))
+      msgs.push(m);
+  }
+  return msgs;
 }
 function routingNetworkGateGraphhopper(opts){
   opts = opts || {};
@@ -63449,7 +63987,7 @@ function routingValidateGraphhopperInfo(data){
     const need = ROUTING_GRAPHHOPPER_PROFILES[i];
     if (!names[need]) return { ok: false, errKey: "routing.errorInfoProfiles" };
   }
-  return { ok: true };
+  return { ok: true, bbox: routingParseInfoBbox(data), profiles: profiles };
 }
 async function routingGraphhopperInfoCheck(endpoint, parentSignal){
   const ep = String(endpoint || "");
@@ -63481,7 +64019,7 @@ async function routingGraphhopperInfoCheck(endpoint, parentSignal){
     }
     const validated = routingValidateGraphhopperInfo(data);
     if (!validated.ok) return validated;
-    return { ok: true };
+    return { ok: true, bbox: validated.bbox || null, profiles: validated.profiles || null };
   } catch(e){
     const isAbort = e && e.name === "AbortError";
     if (isAbort && timedOut) return { ok: false, errKey: "routing.errorInfoTimeout" };
@@ -63544,6 +64082,12 @@ async function routingResolveProvider(opts){
     }
     r.resolvedProvider = cand;
     r.resolvedEndpoint = endpoint;
+    if (!r.infoCache || typeof r.infoCache !== "object")
+      r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
+    r.infoCache.bbox = info.bbox || null;
+    r.infoCache.profiles = info.profiles || null;
+    r.infoCache.fetchedAt = Date.now();
+    r.infoCache.provider = cand;
     if (selected === "auto"){
       r.providerStatusKey = cand === "local" ? "routing.autoResolvedLocal" : "routing.autoResolvedVps";
     } else {
@@ -64176,8 +64720,98 @@ async function routingCalculateRouteGraphhopper(){
   r.resolvedEndpoint = routeEndpoint;
   try { routingSyncEndpointUi(); } catch(_){}
 
+  // ROUTING-GEOCODE-SNAP-A — preflight /nearest before /route (explicit Calcola only).
+  routingSetStatus(routingT("routing.snapVerifying", "Verifica copertura punti…"), false);
+  let snapPre;
+  try {
+    snapPre = await routingVerifyPointsAgainstNearest(
+      routeEndpoint, routeProvider, profile, controller.signal, reqSeq
+    );
+  } catch(eSnap){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = "routing.errorGeneric";
+    routingSetStatus(routingT("routing.errorGeneric", "Error"), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+  if (snapPre.aborted || snapPre.stale){
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (snapPre.errKey === "routing.errorTimeout"){
+    r.routeError = "routing.errorTimeout";
+    routingSetStatus(routingT("routing.errorTimeout", "Request timed out."), true);
+    try { routingRenderList(); } catch(_){}
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (!snapPre.ok){
+    const msgs = routingCollectSnapStatusMessages();
+    const first = msgs.length ? msgs[0] : routingT("routing.snapBlocked", "Calcolo bloccato: verifica i punti evidenziati.");
+    r.routeError = "routing.snapBlocked";
+    routingSetStatus(first, true);
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  const snapPts = routingBuildRoutePointsLonLatFromSnap();
+  if (!snapPts.ok){
+    const msgs = routingCollectSnapStatusMessages();
+    r.routeError = "routing.snapBlocked";
+    routingSetStatus(msgs[0] || routingT("routing.snapBlocked", "Calcolo bloccato: verifica i punti evidenziati."), true);
+    try { routingRenderList(); } catch(_){}
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  // Re-gate after nearest (policy may have changed).
+  const gateAfterSnap = routingNetworkGateGraphhopper({ provider: routeProvider, endpoint: routeEndpoint });
+  if (!gateAfterSnap.ok){
+    r.routeError = gateAfterSnap.errKey;
+    routingSetStatus(routingT(gateAfterSnap.errKey, gateAfterSnap.errKey), true);
+    routingSetProviderStatus(gateAfterSnap.errKey, true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
+  try { routingRenderList(); } catch(_){}
+
   const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
-  const bodyPrimary = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat, { withAlternatives: true });
+  const bodyPrimary = routingBuildGraphhopperRouteBody(profile, snapPts.pointsLonLat, { withAlternatives: true });
 
   let timedOut = false;
   let timeoutId = null;
@@ -64233,7 +64867,7 @@ async function routingCalculateRouteGraphhopper(){
         if (!gateFb.ok) throw ePrimary;
         if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) throw ePrimary;
         if (timedOut) throw ePrimary;
-        const bodyFallback = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat, { withAlternatives: false });
+        const bodyFallback = routingBuildGraphhopperRouteBody(profile, snapPts.pointsLonLat, { withAlternatives: false });
         usedAlternativesFallback = true;
         data = await postRouteBody(bodyFallback);
       } else {
@@ -64274,6 +64908,12 @@ async function routingCalculateRouteGraphhopper(){
 
     r.alternatives = Array.isArray(validated.alternatives) ? validated.alternatives : [];
     r.routeError = "";
+    try {
+      const primaryPath = data && Array.isArray(data.paths) ? data.paths[0] : null;
+      const sw = primaryPath && primaryPath.snapped_waypoints;
+      const swCoords = sw && Array.isArray(sw.coordinates) ? sw.coordinates : null;
+      if (swCoords) routingApplySnappedWaypointsToPoints(swCoords);
+    } catch(_){}
     const applied = routingApplyAlternative(0, { fitMap: true, renderUi: true });
     if (!applied){
       r.alternatives = [];
@@ -64283,11 +64923,18 @@ async function routingCalculateRouteGraphhopper(){
       r.routeMetrics = null;
       throw { kind: "gh", errKey: "routing.errorNoPath", ghMsg: "" };
     }
+    const snapMsgs = routingCollectSnapStatusMessages().filter((m, idx, arr) => {
+      // Prefer adapted/confirmed notes after success; keep first few.
+      return idx < 3;
+    });
     if (usedAlternativesFallback){
       routingSetStatus(routingT("routing.alternativesUnavailable", "Alternatives unavailable on this provider; single route."), false);
+    } else if (snapMsgs.length){
+      routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics) + " — " + snapMsgs[0], false);
     } else {
       routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
     }
+    try { routingRenderList(); } catch(_){}
 
     try { routingFocusResultAfterSuccess(); } catch(_){}
   } catch(e){
@@ -64303,6 +64950,22 @@ async function routingCalculateRouteGraphhopper(){
     }
 
     if (e && e.kind === "http"){
+      const pnfIdx = routingExtractPointNotFoundIndex(e.data);
+      if (pnfIdx >= 0){
+        try {
+          routingRetroClassifyPointNotFound(
+            pnfIdx,
+            r.infoCache,
+            profile,
+            r.resolvedProvider || routeProvider
+          );
+        } catch(_){}
+        const msgs = routingCollectSnapStatusMessages();
+        r.routeError = "routing.snapBlocked";
+        routingSetStatus(msgs[0] || routingT("routing.snapBlocked", "Calcolo bloccato: verifica i punti evidenziati."), true);
+        try { routingRenderList(); } catch(_){}
+        return;
+      }
       r.routeError = "routing.errorHttp";
       routingSetStatus(routingT("routing.errorHttp", "HTTP error.") + " (" + String(e.status) + ")", true);
       return;
@@ -66492,6 +67155,7 @@ function routingHandleListAction(ev){
   if (act === "gps"){ routingRequestGpsForPoint(id); return; }
   if (act === "center"){ routingCenterOnPoint(id); return; }
   if (act === "apply-coords"){ routingApplyManualCoords(id); return; }
+  if (act === "confirm-snap"){ routingConfirmPointSnapAnyway(id); return; }
   if (act === "up") routingMovePoint(id, -1);
   else if (act === "down") routingMovePoint(id, 1);
   else if (act === "remove") routingRemovePoint(id);
@@ -66769,9 +67433,11 @@ function wireRoutingPlannerOnce(){
   }
   const profSel = document.getElementById("routingProfileSelect");
   if (profSel) profSel.addEventListener("change", () => {
-    // Profile selection affects the route; invalidate the preview.
-    try { routingSetStatus("", false); } catch(_){}
+    // Profile selection affects the route; invalidate the preview and snap checks.
+    try { routingMarkAllPointsSnapStale(); } catch(_){}
+    try { routingSetStatus(routingT("routing.snapStale", "Verifica copertura da rifare."), false); } catch(_){}
     try { routingInvalidateRoutePreview(); } catch(_){}
+    try { routingRenderList(); } catch(_){}
   });
   const provSel = document.getElementById("routingProviderSelect");
   if (provSel && !provSel._routingProvBound){
@@ -66781,9 +67447,11 @@ function wireRoutingPlannerOnce(){
       const next = routingProviderNormalize(provSel.value);
       r.provider = next;
       _routingSessionPrefs.provider = next;
+      try { routingMarkAllPointsSnapStale({ clearInfoCache: true }); } catch(_){}
       try { routingInvalidateRoutePreview(); } catch(_){}
       routingApplyPinnedEndpointFromProvider();
-      routingSetStatus("", false);
+      routingSetStatus(routingT("routing.snapStale", "Verifica copertura da rifare."), false);
+      try { routingRenderList(); } catch(_){}
     });
   }
   const verifyBtn = document.getElementById("routingVerifyBtn");
