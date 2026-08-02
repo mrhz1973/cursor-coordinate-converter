@@ -134,32 +134,33 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito ROUTING-GEOCODE-SNAP-A** (verificare `git ls-remote` post-push); monolite tip `d1e770e` |
-| Runtime live / commit monolite | `d1e770e26e1eda625a877fbbe6e2b1b301567b21` (`d1e770e`) — tip ROUTING-GEOCODE-SNAP-A |
-| Ultimo blocco chiuso | **ROUTING-GEOCODE-SNAP-A** — **CLOSED / PASS end-to-end** (QA PASS + finito Regola H) |
-| Ultimo blocco runtime monolite | **ROUTING-GEOCODE-SNAP-A** — tip `d1e770e` build 106 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | nessuno runtime aperto — backlog additivo **ROUTING-SEARCH-UX-A** / **UI-MODAL-ERROR-FOCUS-A** non auto-aprire |
+| HEAD documentale (pre-autosync) | commit docs **finito UX-SEARCH-ERROR-FOCUS-A** (verificare `git ls-remote` post-push); monolite tip `0b27e27` |
+| Runtime live / commit monolite | `0b27e27c46fecd69b42983680c2d70c12d8fe302` (`0b27e27`) — tip UX-SEARCH-ERROR-FOCUS-A |
+| Ultimo blocco chiuso | **UX-SEARCH-ERROR-FOCUS-A** — **CLOSED / PASS end-to-end** (QA PASS + finito Regola H; chiude SEARCH-UX-A + UI-MODAL-ERROR-FOCUS-A) |
+| Ultimo blocco runtime monolite | **UX-SEARCH-ERROR-FOCUS-A** — tip `0b27e27` build 107 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | nessuno runtime aperto — resto Bundle F da scegliere |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `d1e770e26e1eda625a877fbbe6e2b1b301567b21` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `204f901c9ccca47ec0faace4ac242aebb2a5d592` |
-| Byte monolite (git LF) | `3266772` |
-| `APP_BUILD_NUM` | `106` |
-| Display runtime | `ROUTING-GEOCODE-SNAP-A · build 106` |
-| `APP_BUILD_ID` | `ROUTING-GEOCODE-SNAP-A` |
+| Runtime Git / atteso VPS | `0b27e27c46fecd69b42983680c2d70c12d8fe302` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `c56b4a357687150158231676cdecb9ca6030a2b5` |
+| Byte monolite (git LF) | `3285428` |
+| `APP_BUILD_NUM` | `107` |
+| Display runtime | `UX-SEARCH-ERROR-FOCUS-A · build 107` |
+| `APP_BUILD_ID` | `UX-SEARCH-ERROR-FOCUS-A` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
-| ROUTING-GEOCODE-SNAP-A | **CLOSED / PASS end-to-end** (preflight `/nearest` + soglie + conferma inline) |
-| ROUTING-ALTERNATIVE-ROUTES-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live da GEOCODE-SNAP-A) |
+| UX-SEARCH-ERROR-FOCUS-A | **CLOSED / PASS end-to-end** (bundle ROUTINE: history + modal error focus; build 107) |
+| ROUTING-SEARCH-UX-A | **CLOSED nel bundle** UX-SEARCH-ERROR-FOCUS-A (session-only) |
+| UI-MODAL-ERROR-FOCUS-A | **CLOSED nel bundle** UX-SEARCH-ERROR-FOCUS-A (helper centrale) |
+| ROUTING-GEOCODE-SNAP-A | **CLOSED / PASS end-to-end** (superseded live da UX-SEARCH-ERROR-FOCUS-A) |
+| ROUTING-ALTERNATIVE-ROUTES-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live) |
 | ROUTING-GEOCODING-MULTIROW-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (superseded live) |
-| Backlog ROUTING-SEARCH-UX-A | **NON APERTO** — cronologia 10 + Invio coord; decisione session vs persistenza OPSEC |
-| Backlog UI-MODAL-ERROR-FOCUS-A | **NON APERTO** — scroll+impulsi errori modal via helper centrale |
 | MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (superseded live) |
 | TRACK-POINT-CENTER-BUTTON-A | **CLOSED / PASS end-to-end** (Centra per-riga; ID stabile; ROUTINE; review N/A; deploy+QA PASS; superseded live da MAJOR-3-b2) |
 | ROUTING-POINT-COORD-EDIT-A / FIX1 | **CLOSED / PASS end-to-end** (coord DD atomiche; FIX1 clear feedback stale; review+deploy+QA PASS; superseded live) |
@@ -205,15 +206,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d1e770e` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0b27e27` |
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-GEOCODE-SNAP-A CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog additivo non bloccante (**non** auto-aprire): **ROUTING-SEARCH-UX-A**, **UI-MODAL-ERROR-FOCUS-A**; resto **Bundle F**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`d1e770e`** / **`ROUTING-GEOCODE-SNAP-A · build 106`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **UX-SEARCH-ERROR-FOCUS-A CLOSED / PASS end-to-end** (chiude SEARCH-UX-A + UI-MODAL-ERROR-FOCUS-A). **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Resto **Bundle F** da scegliere. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`0b27e27`** / **`UX-SEARCH-ERROR-FOCUS-A · build 107`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**ROUTING-GEOCODE-SNAP-A** CLOSED tip **`d1e770e`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
+**UX-SEARCH-ERROR-FOCUS-A** CLOSED tip **`0b27e27`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **ROUTING-SEARCH-UX-A**; **UI-MODAL-ERROR-FOCUS-A**; **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 

@@ -69,9 +69,27 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## UX-SEARCH-ERROR-FOCUS-A — History Cerca + focus errori modal — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `0b27e27` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `UX-SEARCH-ERROR-FOCUS-A` |
+| Tip | `0b27e27c46fecd69b42983680c2d70c12d8fe302` |
+| Build | `UX-SEARCH-ERROR-FOCUS-A · build 107` |
+| Blob | `c56b4a357687150158231676cdecb9ca6030a2b5` |
+| Byte LF | `3285428` |
+| SHA-256 LF | `25988cb5f51c57da73d0c9c02ba9bd51e6438c6b78173920df85f2a4ce9c0c8f` |
+| Bundle | ROUTINE — chiude **ROUTING-SEARCH-UX-A** + **UI-MODAL-ERROR-FOCUS-A** |
+| Persistenza | session-only (`state._routing.searchHistory`) |
+| Harness | 38/38 PASS, `executesRealJs=true` |
+| QA operatore | **PASS** — «QA UX-SEARCH-ERROR-FOCUS-A PASS operatore» |
+| Finito | Regola H auto-finito |
+
 ## ROUTING-GEOCODE-SNAP-A — Preflight /nearest + soglie — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `d1e770e` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da UX-SEARCH-ERROR-FOCUS-A):** `d1e770e` — **CLOSED / PASS end-to-end**.
 
 **Commit:** `d1e770e26e1eda625a877fbbe6e2b1b301567b21` — `feat(routing): preflight geocoded points against GraphHopper` (`ROUTING-GEOCODE-SNAP-A` · build 106).
 
@@ -89,7 +107,7 @@ QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 **URL:**
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d1e770e
 
-**Backlog additivo registrato (non implementato in chiusura):** ROUTING-SEARCH-UX-A; UI-MODAL-ERROR-FOCUS-A.
+**Backlog additivo:** **ROUTING-SEARCH-UX-A** e **UI-MODAL-ERROR-FOCUS-A** chiusi nel bundle **UX-SEARCH-ERROR-FOCUS-A** (tip `0b27e27`).
 
 ## ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3) — Percorsi alternativi — CLOSED / PASS end-to-end
 
