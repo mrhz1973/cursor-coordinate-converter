@@ -4,11 +4,12 @@
 
 # WU-0010 — Outdoor Routing GraphHopper
 
-**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED / Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
-**Runtime autorevole attuale:** `d0688ea44513501cae766f79d1538934729234e3` (`d0688ea`) — display **`B6.2MCV-A-FIX3 · build 93`** (MAP-CENTER-VIEWPORT-AWARE-A-FIX3; tip TPD-A storico `3838e9e`)
+**Runtime autorevole attuale:** `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (`1f7c05f`) — display **`B6.5RGM-A-FIX2 · build 101`** (ROUTING-GEOCODING-MULTIROW-A-FIX2)
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
-**MAJOR-3-b2 (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-01) — tip runtime **`cad28e7`** build 98 / `B6.4IHA-B2-FIX1`; catena `4d70bbc`→`cad28e7`; documentale tip `80265c3`; blob `ca931d93…`; byte LF **3195195**; SHA-256 LF **`177c9cb1…`**; apply Import Hub + verify persistenza; review+deploy+QA PASS; Regola H.
+**MAJOR-3-b2 (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-01) — tip storico **`cad28e7`** build 98 / `B6.4IHA-B2-FIX1`; superseded live da **MULTIROW-A-FIX2** `1f7c05f`.
+**ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (2026-08-02) — catena `2468418`→`5e87c86`→ tip **`1f7c05f`** build 101 / `B6.5RGM-A-FIX2`; blob `c1fc1ca4…`; byte LF **3216092**; SHA-256 LF **`e8555944…`**; ricerca per-riga + anti-stale FIX1 + «Centra» viewport-aware FIX2; review+deploy+QA PASS; Regola H.
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
@@ -29,9 +30,9 @@
 **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3):** Centra viewport-aware (usable rect + costi normalizzati) — **CLOSED / PASS end-to-end** (tip storico `d0688ea` build 93 / `B6.2MCV-A-FIX3`; superseded live da **ROUTING-POINT-COORD-EDIT-A**).
 **ROUTING-PROFILE-EDIT-A:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01) — discovery: editing base già presente; nessuna implementazione sotto questo ID; residuo → **ROUTING-POINT-COORD-EDIT-A**.
 **ROUTING-POINT-COORD-EDIT-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-01) — tip `6475804` build 95 / `B6.3RPC-A-FIX1`; blob `a87920fe…`; byte LF **3162728**; SHA-256 LF **`559795bf…`**; CTA «Modifica coordinate»; DD atomici; FIX1 clear feedback stale; review+deploy+QA PASS; Regola H. Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](../orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md). Bundle F resta futuro e separato.
-**Backlog UX:** **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** (2026-08-01). **Oggetti GIS FROZEN**. **ROUTING-GEOCODING-MULTIROW-A** / Bundle F = backlog non aperti.
+**Backlog UX:** **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** (2026-08-01). **Oggetti GIS FROZEN**. **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED**. Bundle F = backlog non aperto.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
-**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga resta **backlog separato** e **non** appartiene a INFRA-GH-1A né al B2 operativo chiuso. La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
+**Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga è stato chiuso come **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** (tip `1f7c05f`). La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
 > Questa WU è la **fonte di piano dedicata** per il programma Outdoor Routing GraphHopper. Implementazione e chiusura avvengono nei singoli bundle; lo stato operativo vivo resta in `docs/OPERATING_MEMORY.md` §7.
 

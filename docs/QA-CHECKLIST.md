@@ -19,6 +19,25 @@
 - **Lingua IT (QA-OPERATOR-IT-ONLY-PREF CLOSED).** Istruzioni QA operatore **solo in italiano**, salvo blocchi il cui oggetto è la verifica i18n/localizzazione. Runtime app resta IT/EN/FR.
 - **Etichette UI visibili.** Usare testi/percorsi realmente visibili (etichetta, tooltip se unico ID, icona/posizione, nome pannello, sequenza concreta). **Vietato** come percorso UI: nomi interni, ID DOM, «Workbench», «Import Hub» (salvo nota tecnica separata). Preferire **«Oggetti GIS»** / **«Import GIS»** quando sono le etichette visibili. Prima di emettere: verificare nel monolite corrente; non inventare menu.
 
+## ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) — Geocoding per-stop + Centra — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `1f7c05f` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Catena:** `2468418` (A · build 99) → `5e87c86` (FIX1 · 100) → tip `1f7c05f` (FIX2 · 101 / `B6.5RGM-A-FIX2`).
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+- VPS HEAD / runtime tip `1f7c05f2186be5759d3e0e34a69d88564a0d8690`
+- blob `c1fc1ca4cad61105893bd948c6262f962ff2c2cb`
+- byte LF **3216092** / SHA-256 LF **`e85559440c5141361901e2ece8508d493febe1a5b2a776936f5189ec2b0c0f89`**
+- goi-gis-app.service active / enabled
+- HTTP 200 (bind Tailscale 100.114.7.53:8000)
+- CMP_PASS
+
+**QA:** FIX1 partial (FAIL circoscritto «Centra») → FIX2 → attestazione «**QA ROUTING-GEOCODING-MULTIROW-A-FIX2 PASS operatore**» (2026-08-02); finito Regola H.
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1f7c05f
+
 ## Formato predefinito — QA operatore minima narrativa
 
 Per **micro-fix UI**, **patch runtime localizzate**, **correzioni circoscritte** e **blocchi di routine** senza OPSEC, rete, cache, storage o migrazioni, il formato **predefinito** è una **QA minima narrativa**: breve, operativa, immediatamente eseguibile, **in italiano**, limitata al blocco.

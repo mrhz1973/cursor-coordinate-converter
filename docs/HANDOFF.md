@@ -121,25 +121,26 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **QA-OPERATOR-IT-ONLY-PREF + freeze Oggetti GIS** (verificare `git ls-remote` post-push); monolite tip `cad28e7` invariato |
-| Runtime live / commit monolite | `cad28e73ab1b3b00c872a09b9e8455c7ac674196` (`cad28e7`) — tip MAJOR-3-b2-FIX1 (**invariato**) |
-| Ultimo blocco chiuso | **QA-OPERATOR-IT-ONLY-PREF** — **CLOSED / PASS docs-only** (+ **Oggetti GIS FROZEN**) |
-| Ultimo blocco runtime monolite | **MAJOR-3-b2 (+ FIX1)** — tip `cad28e7` build 98 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | nessuno runtime aperto — backlog non aperto (ROUTING-GEOCODING-MULTIROW-A / Bundle F); **non** auto-aprire |
+| HEAD documentale (pre-autosync) | commit docs finito **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** (verificare `git ls-remote` post-push) |
+| Runtime live / commit monolite | `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (`1f7c05f`) — tip MULTIROW-A-FIX2 |
+| Ultimo blocco chiuso | **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** — **CLOSED / PASS end-to-end** |
+| Ultimo blocco runtime monolite | **ROUTING-GEOCODING-MULTIROW-A-FIX2** — tip `1f7c05f` build 101 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | nessuno runtime aperto — backlog non aperto (Bundle F); **non** auto-aprire |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `cad28e73ab1b3b00c872a09b9e8455c7ac674196` (deploy GIS-only Cursor SSH PASS; HEAD doc `80265c3`) |
-| Blob monolite (git) | `ca931d93c23befd7dc101de2997a7892dbefdfec` |
-| Byte monolite (git LF) | `3195195` |
-| `APP_BUILD_NUM` | `98` |
-| Display runtime | `B6.4IHA-B2-FIX1 · build 98` |
-| `APP_BUILD_ID` | `B6.4IHA-B2-FIX1` |
+| Runtime Git / atteso VPS | `1f7c05f2186be5759d3e0e34a69d88564a0d8690` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `c1fc1ca4cad61105893bd948c6262f962ff2c2cb` |
+| Byte monolite (git LF) | `3216092` |
+| `APP_BUILD_NUM` | `101` |
+| Display runtime | `B6.5RGM-A-FIX2 · build 101` |
+| `APP_BUILD_ID` | `B6.5RGM-A-FIX2` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
-| MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (apply anteprima Import GIS + verify persistenza; DELICATO; review+deploy+QA PASS) |
+| ROUTING-GEOCODING-MULTIROW-A / FIX1 / FIX2 | **CLOSED / PASS end-to-end** (geocoding per-riga + anti-stale + Centra viewport-aware) |
+| MAJOR-3-b2 / FIX1 | **CLOSED / PASS end-to-end** (superseded live da MULTIROW-A-FIX2) |
 | TRACK-POINT-CENTER-BUTTON-A | **CLOSED / PASS end-to-end** (Centra per-riga; ID stabile; ROUTINE; review N/A; deploy+QA PASS; superseded live da MAJOR-3-b2) |
 | ROUTING-POINT-COORD-EDIT-A / FIX1 | **CLOSED / PASS end-to-end** (coord DD atomiche; FIX1 clear feedback stale; review+deploy+QA PASS; superseded live) |
 | MAP-CENTER-VIEWPORT-AWARE-A / FIX1–FIX3 | **CLOSED / PASS end-to-end** (superseded live) |
@@ -184,15 +185,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=cad28e7` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1f7c05f` |
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** (+ **Oggetti GIS FROZEN**). Ultimo runtime: **MAJOR-3-b2 (+ FIX1) CLOSED**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: **ROUTING-GEOCODING-MULTIROW-A** / Bundle F — **non** aperti da questo blocco. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`cad28e7`** / **`B6.4IHA-B2-FIX1 · build 98`** (**invariato**). GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Backlog non aperto: **Bundle F** — **non** aperto da questo blocco. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`1f7c05f`** / **`B6.5RGM-A-FIX2 · build 101`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**MAJOR-3-b2 (+ FIX1)** CLOSED tip **`cad28e7`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
+**ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** CLOSED tip **`1f7c05f`**. **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; geocoding multi-riga (**ROUTING-GEOCODING-MULTIROW-A**); Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
 **Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
