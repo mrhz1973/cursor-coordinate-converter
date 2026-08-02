@@ -69,14 +69,34 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3) — Percorsi alternativi — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `0c078ae` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Catena:** `0d14820` (A · build 102) → `2728ca2` (FIX1 · 103) → `ab432b7` (FIX2 · 104) → tip `0c078ae` (FIX3 · 105 / `B6.6AR-A-FIX3`). Antenato docs `ccac6d8` (QA single-message rule).
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+- VPS HEAD / runtime tip `0c078aeebe6691fa025e5fe448c0886c6dc49056`
+- blob `024986bcedeb11514b0da730afaca394ad16643e`
+- byte LF **3236322** / SHA-256 LF **`0770e72d70b80ef3534b0f0f9b75a6faf57b37fa1c356f0eb2bb210e65eb6532`**
+- goi-gis-app.service active / enabled
+- HTTP 200 (bind Tailscale 100.114.7.53:8000)
+- CMP_PASS
+- GraphHopper PID invariato (non riavviato)
+
+**QA:** FAIL A → FIX1; FAIL FIX1 → FIX2; FAIL FIX2 (layout) → FIX3 → attestazione «**QA ROUTING-ALTERNATIVE-ROUTES-A-FIX3 PASS operatore**» (2026-08-02); finito Regola H.
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0c078ae
+
 ## ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) — Geocoding per-stop + Centra — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `1f7c05f` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da AR-A-FIX3):** `1f7c05f` — **CLOSED / PASS end-to-end**.
 
 **Catena:** `2468418` (A · build 99) → `5e87c86` (FIX1 · 100) → tip `1f7c05f` (FIX2 · 101 / `B6.5RGM-A-FIX2`).
 
 **Deploy registrato (GIS-only, PASS tecnico):**
-- VPS HEAD / runtime tip `1f7c05f2186be5759d3e0e34a69d88564a0d8690`
+- VPS HEAD / runtime tip storico `1f7c05f2186be5759d3e0e34a69d88564a0d8690`
 - blob `c1fc1ca4cad61105893bd948c6262f962ff2c2cb`
 - byte LF **3216092** / SHA-256 LF **`e85559440c5141361901e2ece8508d493febe1a5b2a776936f5189ec2b0c0f89`**
 - goi-gis-app.service active / enabled
@@ -85,7 +105,7 @@ QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 
 **QA:** FIX1 partial (FAIL circoscritto «Centra») → FIX2 → attestazione «**QA ROUTING-GEOCODING-MULTIROW-A-FIX2 PASS operatore**» (2026-08-02); finito Regola H.
 
-**URL:**
+**URL (storico):**
 http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1f7c05f
 
 ## Formato legacy — QA minima narrativa (storico; non procedura viva)
