@@ -9149,6 +9149,29 @@ dialog.track-modal.app-modal{
   font-size:.72rem; color:var(--muted); line-height:1.25;
 }
 .routing-result-summary .routing-metric-k{ color:var(--muted); font-size:.75rem; }
+.routing-alternatives-row{
+  display:flex; flex-direction:column; gap:6px;
+}
+.routing-alternatives-row[hidden]{ display:none !important; }
+.routing-alternatives-label{
+  font-size:.75rem; color:var(--muted); line-height:1.25;
+}
+.routing-alternatives-chips{
+  display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+}
+.routing-alt-chip{
+  font-size:.78rem;
+  line-height:1.25;
+  white-space:normal;
+  text-align:left;
+  max-width:100%;
+}
+.routing-alt-chip.is-active,
+.routing-alt-chip[aria-pressed="true"]{
+  outline:2px solid var(--accent, #2563eb);
+  outline-offset:1px;
+  font-weight:700;
+}
 .routing-difficulty-row{ display:flex; flex-direction:column; gap:4px; }
 .routing-difficulty-row[hidden]{ display:none !important; }
 .routing-difficulty-label{ font-size:.75rem; color:var(--muted); }
@@ -13382,6 +13405,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     <div id="routingPointsFeedback" class="routing-points-feedback hint" role="status" aria-live="polite" hidden></div>
     <section id="routingResultCard" class="routing-result-card" tabindex="-1" hidden>
       <div class="routing-result-summary" id="routingResultSummary"></div>
+      <div id="routingAlternativesRow" class="routing-alternatives-row" hidden>
+        <span id="routingAlternativesLabel" class="routing-alternatives-label" data-i18n="routing.alternativesLabel">Percorsi alternativi</span>
+        <div id="routingAlternativesChips" class="routing-alternatives-chips" role="group" aria-labelledby="routingAlternativesLabel"></div>
+      </div>
       <div class="routing-speed-row" id="routingSpeedRow" hidden>
         <label for="routingSpeedSelect" data-i18n="routing.avgSpeed">Velocità media</label>
         <select id="routingSpeedSelect" class="routing-speed-select" data-i18n-aria="routing.avgSpeedAria" aria-label="Velocità media">
@@ -15735,6 +15762,10 @@ const I18N = {
     "routing.errorInvalidResponse":"Risposta del router non valida.",
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
+    "routing.alternativesLabel":"Percorsi alternativi",
+    "routing.alternativeN":"Percorso {0}",
+    "routing.alternativesUnavailable":"Alternative non disponibili su questo provider; percorso singolo.",
+    "tip.routingSelectAlternative":"Mostra questo percorso alternativo sulla mappa",
     "tip.routingCalculate":"Calcola percorso con GraphHopper (transiente).",
     "tip.routingReverse":"Scambia partenza e destinazione e inverte i passaggi",
     "tip.routingSaveAsTrack":"Salva il percorso valido corrente come traccia in archivio.",
@@ -17925,6 +17956,10 @@ const I18N = {
     "routing.errorInvalidResponse":"Invalid router response.",
     "routing.errorCors":"CORS / network error while calculating the route.",
     "routing.errorGeneric":"Router request failed.",
+    "routing.alternativesLabel":"Alternative routes",
+    "routing.alternativeN":"Route {0}",
+    "routing.alternativesUnavailable":"Alternatives unavailable on this provider; single route.",
+    "tip.routingSelectAlternative":"Show this alternative route on the map",
     "tip.routingCalculate":"Calculate route with GraphHopper (transient).",
     "tip.routingReverse":"Swap start and destination and reverse intermediate points",
     "tip.routingSaveAsTrack":"Save the current valid route as a track in the archive.",
@@ -21720,10 +21755,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "B6.5RGM-A-FIX2";
-const APP_BUILD_DETAIL = "ROUTING-GEOCODING-MULTIROW-A-FIX2 — per-point viewport-aware center";
+const APP_BUILD_ID = "B6.6AR-A";
+const APP_BUILD_DETAIL = "selectable alternative routes";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 101;
+const APP_BUILD_NUM = 102;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61314,6 +61349,10 @@ const ROUTING_GRAPHHOPPER_ROUTE_PATH = "/route";
 const ROUTING_GRAPHHOPPER_INFO_PATH = "/info";
 const ROUTING_GRAPHHOPPER_TIMEOUT_MS = 20000;
 const ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS = 3000;
+/** CH-first alternative routes (GraphHopper 11). Do not send ch.disable. */
+const ROUTING_ALTERNATIVE_MAX_PATHS = 3;
+const ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR = 1.4;
+const ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR = 0.6;
 /** Session-only prefs surviving panel close (not persisted; reset on page reload). */
 var _routingSessionPrefs = { provider: "vps", loopbackConsent: false, unitsDistance: "km", unitsAltitude: "m" };
 function routingGetUnitsPrefs(){
@@ -61514,6 +61553,9 @@ function routingEnsureState(){
     routingCoordEditEnsureDraftBag(r);
     if (typeof r.coordEditFeedback !== "string") r.coordEditFeedback = "";
     if (typeof r.coordEditFeedbackIsErr !== "boolean") r.coordEditFeedbackIsErr = false;
+    if (!Array.isArray(r.alternatives)) r.alternatives = [];
+    if (!("selectedAlternative" in r)) r.selectedAlternative = null;
+    else if (r.selectedAlternative != null && !Number.isFinite(Number(r.selectedAlternative))) r.selectedAlternative = null;
     if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
     try { routingEnsureAbPoints(r); } catch(_){}
     return r;
@@ -61558,6 +61600,8 @@ function routingEnsureState(){
     coordEditDrafts: Object.create(null),
     coordEditFeedback: "",
     coordEditFeedbackIsErr: false,
+    alternatives: [],
+    selectedAlternative: null,
     search: Object.create(null)
   };
   try { routingEnsureAbPoints(state._routing); } catch(_){}
@@ -61818,6 +61862,7 @@ function routingSyncCalculateBtnUi(){
     try { routingSyncReverseBtnUi(); } catch(_){}
     try { routingSyncUndoBtnUi(); } catch(_){}
     try { routingSyncPointsFeedback(); } catch(_){}
+    try { routingSyncAlternativesRowUi(); } catch(_){}
     return;
   }
   const profile = routingGetSelectedGraphhopperProfile();
@@ -61829,6 +61874,7 @@ function routingSyncCalculateBtnUi(){
   try { routingSyncReverseBtnUi(); } catch(_){}
   try { routingSyncUndoBtnUi(); } catch(_){}
   try { routingSyncPointsFeedback(); } catch(_){}
+  try { routingSyncAlternativesRowUi(); } catch(_){}
 }
 let _routingSaveBusy = false;
 function routingRoutePreviewIsValid(){
@@ -62147,6 +62193,8 @@ function routingInvalidateRoutePreview(){
   state._routing.altitudeHover = null;
   state._routing._altitudeChartLayout = null;
   state._routing.routeError = "";
+  state._routing.alternatives = [];
+  state._routing.selectedAlternative = null;
 
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
@@ -62156,6 +62204,7 @@ function routingInvalidateRoutePreview(){
   routingSyncCalculateBtnUi();
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
   try { routingSyncReverseBtnUi(); } catch(_){}
+  try { routingSyncAlternativesRowUi(); } catch(_){}
 }
 function routingResolvedEndpoint(){
   const r = state._routing;
@@ -63448,14 +63497,22 @@ async function routingVerifyProvider(){
     routingSyncCalculateBtnUi();
   }
 }
-function routingBuildGraphhopperRouteBody(profile, pointsLonLat){
-  return {
+function routingBuildGraphhopperRouteBody(profile, pointsLonLat, opts){
+  opts = opts || {};
+  const body = {
     profile: profile,
     points: pointsLonLat,
     elevation: true,
     points_encoded: false,
     instructions: false
   };
+  if (opts.withAlternatives){
+    body.algorithm = "alternative_route";
+    body["alternative_route.max_paths"] = ROUTING_ALTERNATIVE_MAX_PATHS;
+    body["alternative_route.max_weight_factor"] = ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR;
+    body["alternative_route.max_share_factor"] = ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR;
+  }
+  return body;
 }
 function routingFmtDurationMs(ms){
   const v = Number(ms);
@@ -63512,34 +63569,26 @@ function routingFocusResultAfterSuccess(){
     try { card.scrollIntoView(false); } catch(_){}
   }
 }
-function routingValidateGraphhopperResponse(data){
-  if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
-  const paths = Array.isArray(data.paths) ? data.paths : null;
-  if (!paths || paths.length < 1) return { ok: false, errKey: "routing.errorNoPath" };
-  const p0 = paths[0];
-  if (!p0 || typeof p0 !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
-  const points = p0.points;
-  if (!points || typeof points !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
-  if (points.type !== "LineString") return { ok: false, errKey: "routing.errorInvalidResponse" };
+function routingParseGraphhopperPath(pathObj, originalIndex){
+  if (!pathObj || typeof pathObj !== "object") return null;
+  const points = pathObj.points;
+  if (!points || typeof points !== "object") return null;
+  if (points.type !== "LineString") return null;
   const coords = Array.isArray(points.coordinates) ? points.coordinates : null;
-  if (!coords || coords.length < 2) return { ok: false, errKey: "routing.errorNoPath" };
+  if (!coords || coords.length < 2) return null;
 
   const previewCoordinates = [];
   const elevationCoordinates = [];
   for (let i = 0; i < coords.length; i++){
     const c = coords[i];
-    if (!Array.isArray(c) || c.length < 2) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (!Array.isArray(c) || c.length < 2) return null;
     const lon = Number(c[0]);
     const lat = Number(c[1]);
-    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return { ok: false, errKey: "routing.errorInvalidResponse" };
-    if (lon < -180 || lon > 180) return { ok: false, errKey: "routing.errorInvalidResponse" };
-    if (lat < -90 || lat > 90) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+    if (lon < -180 || lon > 180) return null;
+    if (lat < -90 || lat > 90) return null;
     const nLon = normalizeLon(lon);
-    // Geometry for map preview / save-as-track remains strictly 2D.
     previewCoordinates.push({ lat, lon: nLon });
-    // Elevation is optional and fail-soft: bad/missing third values become ele:null
-    // without invalidating the whole route. Accept only finite typeof number
-    // (avoid Number(null)→0 and Number("")→0 false zeros).
     const ele =
       c.length >= 3 &&
       typeof c[2] === "number" &&
@@ -63551,29 +63600,185 @@ function routingValidateGraphhopperResponse(data){
 
   const metrics = {};
   const maybeNum = (v) => (v == null ? null : Number(v));
-  const distanceM = maybeNum(p0.distance);
+  const distanceM = maybeNum(pathObj.distance);
   if (distanceM != null){
-    if (!Number.isFinite(distanceM) || distanceM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (!Number.isFinite(distanceM) || distanceM < 0) return null;
     metrics.distanceM = distanceM;
   }
-  const timeV = maybeNum(p0.time);
+  const timeV = maybeNum(pathObj.time);
   if (timeV != null){
-    if (!Number.isFinite(timeV) || timeV < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
-    // GraphHopper `time` is usually milliseconds; if it's "small", treat it as seconds.
+    if (!Number.isFinite(timeV) || timeV < 0) return null;
     metrics.durationMs = (timeV < 1000) ? (timeV * 1000) : timeV;
   }
-  const ascendM = maybeNum(p0.ascend);
+  const ascendM = maybeNum(pathObj.ascend);
   if (ascendM != null){
-    if (!Number.isFinite(ascendM) || ascendM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (!Number.isFinite(ascendM) || ascendM < 0) return null;
     metrics.ascentM = ascendM;
   }
-  const descendM = maybeNum(p0.descend);
+  const descendM = maybeNum(pathObj.descend);
   if (descendM != null){
-    if (!Number.isFinite(descendM) || descendM < 0) return { ok: false, errKey: "routing.errorInvalidResponse" };
+    if (!Number.isFinite(descendM) || descendM < 0) return null;
     metrics.descentM = descendM;
   }
 
-  return { ok: true, previewCoordinates, elevationCoordinates, metrics };
+  return {
+    originalIndex: originalIndex,
+    previewCoordinates: previewCoordinates,
+    elevationCoordinates: elevationCoordinates,
+    metrics: metrics
+  };
+}
+function routingValidateGraphhopperResponse(data){
+  if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
+  const paths = Array.isArray(data.paths) ? data.paths : null;
+  if (!paths || paths.length < 1) return { ok: false, errKey: "routing.errorNoPath" };
+
+  const alternatives = [];
+  const maxScan = Math.min(paths.length, ROUTING_ALTERNATIVE_MAX_PATHS);
+  for (let i = 0; i < maxScan; i++){
+    const alt = routingParseGraphhopperPath(paths[i], i);
+    if (alt) alternatives.push(alt);
+    else {
+      try { console.info("[routing] skip invalid alternative path index=" + i); } catch(_){}
+    }
+  }
+  if (paths.length > ROUTING_ALTERNATIVE_MAX_PATHS){
+    try { console.info("[routing] clamped alternative paths to " + ROUTING_ALTERNATIVE_MAX_PATHS); } catch(_){}
+  }
+  if (!alternatives.length) return { ok: false, errKey: "routing.errorNoPath" };
+
+  const primary = alternatives[0];
+  return {
+    ok: true,
+    alternatives: alternatives,
+    previewCoordinates: primary.previewCoordinates,
+    elevationCoordinates: primary.elevationCoordinates,
+    metrics: primary.metrics
+  };
+}
+function routingHttpErrorSuggestsAlternativesUnsupported(err){
+  if (!err || err.kind !== "http") return false;
+  let msg = "";
+  try {
+    if (err.data && typeof err.data.message === "string") msg += " " + err.data.message;
+    if (err.data && Array.isArray(err.data.hints)){
+      for (let i = 0; i < err.data.hints.length; i++){
+        const h = err.data.hints[i];
+        if (typeof h === "string") msg += " " + h;
+        else if (h && typeof h.message === "string") msg += " " + h.message;
+      }
+    }
+    if (typeof err.bodyText === "string") msg += " " + err.bodyText;
+  } catch(_){}
+  const hay = String(msg).toLowerCase();
+  return (
+    hay.indexOf("alternative_route") >= 0 ||
+    hay.indexOf("algorithm") >= 0 ||
+    hay.indexOf("max_paths") >= 0 ||
+    hay.indexOf("max_weight_factor") >= 0 ||
+    hay.indexOf("max_share_factor") >= 0
+  );
+}
+function routingApplyAlternative(index, options){
+  options = options || {};
+  const r = state._routing;
+  if (!r) return false;
+  const alts = Array.isArray(r.alternatives) ? r.alternatives : [];
+  const idx = Number(index);
+  if (!Number.isFinite(idx) || idx < 0 || idx >= alts.length) return false;
+  const alt = alts[idx];
+  if (!alt || !Array.isArray(alt.previewCoordinates) || alt.previewCoordinates.length < 2) return false;
+
+  r.selectedAlternative = idx;
+  r.previewCoordinates = alt.previewCoordinates;
+  r.elevationCoordinates = Array.isArray(alt.elevationCoordinates) ? alt.elevationCoordinates : null;
+  r.routeMetrics = alt.metrics || null;
+  r.altitudeHover = null;
+  r._altitudeChartLayout = null;
+  try { if (typeof routingRemoveAltitudeSyncMarker === "function") routingRemoveAltitudeSyncMarker(); } catch(_){}
+  try {
+    r.elevationProfile = routingBuildElevationProfile(r.previewCoordinates, r.elevationCoordinates);
+    r._altitudeProfileGeneration = (r._altitudeProfileGeneration || 0) + 1;
+    try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
+    r.difficultySummary = routingComputeDifficulty(r.routeMetrics, r.elevationProfile, routingGetSelectedGraphhopperProfile());
+  } catch(_){
+    r.elevationProfile = null;
+    r.difficultySummary = null;
+  }
+
+  if (options.renderUi !== false){
+    try { routingRenderAltitudePanel({ preserveHover: false }); } catch(_){}
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  }
+  if (options.fitMap){
+    try {
+      const ok = routingFitMapToRoutePreview(r.previewCoordinates);
+      if (!ok) refreshTileMapForTrackUi();
+    } catch(_){
+      try { refreshTileMapForTrackUi(); } catch(_){}
+    }
+  }
+  return true;
+}
+function routingAltChipLabel(alt, displayIndex){
+  const name = String(routingT("routing.alternativeN", "Route {0}")).replace("{0}", String(displayIndex + 1));
+  const m = alt && alt.metrics ? alt.metrics : {};
+  const parts = [name];
+  if (Number.isFinite(m.distanceM)) parts.push(routingFmtRouteDistanceForUnit(m.distanceM));
+  if (Number.isFinite(m.durationMs)) parts.push(routingFmtDurationMs(m.durationMs));
+  return parts.join(" · ");
+}
+function routingSyncAlternativesRowUi(){
+  const row = document.getElementById("routingAlternativesRow");
+  const chips = document.getElementById("routingAlternativesChips");
+  const label = document.getElementById("routingAlternativesLabel");
+  if (!row || !chips) return;
+  const r = state._routing;
+  const alts = r && Array.isArray(r.alternatives) ? r.alternatives : [];
+  const busy = !!(r && (r.requestLoading || r.infoLoading));
+  if (label) label.textContent = routingT("routing.alternativesLabel", "Alternative routes");
+  if (!r || !r.routeMetrics || alts.length < 2){
+    chips.innerHTML = "";
+    row.hidden = true;
+    return;
+  }
+  row.hidden = false;
+  const sel = (r.selectedAlternative == null) ? 0 : Number(r.selectedAlternative);
+  chips.innerHTML = "";
+  for (let i = 0; i < alts.length; i++){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn btn-sm routing-alt-chip" + (i === sel ? " is-active" : "");
+    btn.setAttribute("data-routing-alt-index", String(i));
+    btn.setAttribute("aria-pressed", i === sel ? "true" : "false");
+    btn.disabled = busy;
+    const tip = routingT("tip.routingSelectAlternative", "Show this alternative route on the map");
+    btn.setAttribute("data-tip", tip);
+    btn.setAttribute("aria-label", tip + ": " + routingAltChipLabel(alts[i], i));
+    btn.textContent = routingAltChipLabel(alts[i], i);
+    chips.appendChild(btn);
+  }
+}
+function routingWireAlternativesRowOnce(){
+  const chips = document.getElementById("routingAlternativesChips");
+  if (!chips || chips._routingAltWired) return;
+  chips._routingAltWired = true;
+  chips.addEventListener("click", (ev) => {
+    const btn = ev.target && ev.target.closest ? ev.target.closest("button[data-routing-alt-index]") : null;
+    if (!btn || !chips.contains(btn) || btn.disabled) return;
+    ev.preventDefault();
+    const r = state._routing;
+    if (!r || r.requestLoading || r.infoLoading) return;
+    const idx = Number(btn.getAttribute("data-routing-alt-index"));
+    if (!Number.isFinite(idx)) return;
+    if (r.selectedAlternative === idx) return;
+    const ok = routingApplyAlternative(idx, { fitMap: false, renderUi: true });
+    if (ok && r.routeMetrics){
+      try { routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false); } catch(_){}
+    }
+  });
 }
 function routingFitMapToRoutePreview(previewCoordinates){
   if (!Array.isArray(previewCoordinates) || previewCoordinates.length < 2) return false;
@@ -63680,12 +63885,15 @@ async function routingCalculateRouteGraphhopper(){
   r.altitudeHover = null;
   r._altitudeChartLayout = null;
   r.routeError = "";
+  r.alternatives = [];
+  r.selectedAlternative = null;
   try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
 
   try { routingRemoveRoutePreviewOverlay(); } catch(_){}
   try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
   routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
   routingSyncCalculateBtnUi();
+  try { routingSyncAlternativesRowUi(); } catch(_){}
 
   let routeEndpoint = "";
   let routeProvider = null;
@@ -63732,31 +63940,69 @@ async function routingCalculateRouteGraphhopper(){
   try { routingSyncEndpointUi(); } catch(_){}
 
   const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
-  const bodyObj = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat);
-  const body = JSON.stringify(bodyObj);
+  const bodyPrimary = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat, { withAlternatives: true });
 
   let timedOut = false;
   let timeoutId = null;
+  let usedAlternativesFallback = false;
   try {
     timeoutId = setTimeout(() => {
       timedOut = true;
       try { controller.abort(); } catch(_){}
     }, ROUTING_GRAPHHOPPER_TIMEOUT_MS);
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body,
-      signal: controller.signal
-    });
-
-    if (!res || !res.ok){
-      const status = res && typeof res.status === "number" ? res.status : 0;
-      throw { kind: "http", status: status };
+    async function postRouteBody(bodyObj){
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bodyObj),
+        signal: controller.signal
+      });
+      let rawText = "";
+      try { rawText = await res.text(); } catch(_){ rawText = ""; }
+      let data = null;
+      if (rawText){
+        try { data = JSON.parse(rawText); } catch(_){
+          if (!res || !res.ok){
+            const status = res && typeof res.status === "number" ? res.status : 0;
+            throw { kind: "http", status: status, bodyText: rawText, data: null };
+          }
+          throw { kind: "json" };
+        }
+      }
+      if (!res || !res.ok){
+        const status = res && typeof res.status === "number" ? res.status : 0;
+        throw { kind: "http", status: status, bodyText: rawText, data: data };
+      }
+      if (!data || typeof data !== "object") throw { kind: "json" };
+      return data;
     }
 
     let data;
-    try { data = await res.json(); } catch(_){ throw { kind: "json" }; }
+    try {
+      data = await postRouteBody(bodyPrimary);
+    } catch(ePrimary){
+      const isAbort = ePrimary && ePrimary.name === "AbortError";
+      if (isAbort || timedOut) throw ePrimary;
+      if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) throw ePrimary;
+      if (
+        ePrimary && ePrimary.kind === "http" &&
+        routingHttpErrorSuggestsAlternativesUnsupported(ePrimary)
+      ){
+        const gateFb = routingNetworkGateGraphhopper({
+          provider: r.resolvedProvider || routeProvider,
+          endpoint: r.resolvedEndpoint || routeEndpoint
+        });
+        if (!gateFb.ok) throw ePrimary;
+        if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) throw ePrimary;
+        if (timedOut) throw ePrimary;
+        const bodyFallback = routingBuildGraphhopperRouteBody(profile, ptsRes.pointsLonLat, { withAlternatives: false });
+        usedAlternativesFallback = true;
+        data = await postRouteBody(bodyFallback);
+      } else {
+        throw ePrimary;
+      }
+    }
 
     const validated = routingValidateGraphhopperResponse(data);
     if (!validated.ok){
@@ -63779,38 +64025,33 @@ async function routingCalculateRouteGraphhopper(){
     if (!reGate.ok){
       r.previewCoordinates = null;
       r.routeMetrics = null;
+      r.alternatives = [];
+      r.selectedAlternative = null;
       r.routeError = reGate.errKey;
       try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+      try { routingSyncAlternativesRowUi(); } catch(_){}
       if (r.panelOpen)
         routingSetStatus(routingT(reGate.errKey, reGate.errKey), true);
       return;
     }
 
-    r.previewCoordinates = validated.previewCoordinates;
-    r.elevationCoordinates = Array.isArray(validated.elevationCoordinates) ? validated.elevationCoordinates : null;
-    r.routeMetrics = validated.metrics || null;
+    r.alternatives = Array.isArray(validated.alternatives) ? validated.alternatives : [];
     r.routeError = "";
-    r.altitudeHover = null;
-    try {
-      r.elevationProfile = routingBuildElevationProfile(r.previewCoordinates, r.elevationCoordinates);
-      r._altitudeProfileGeneration = (r._altitudeProfileGeneration || 0) + 1;
-      try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
-      r.difficultySummary = routingComputeDifficulty(r.routeMetrics, r.elevationProfile, routingGetSelectedGraphhopperProfile());
-    } catch(_){
-      r.elevationProfile = null;
-      r.difficultySummary = null;
+    const applied = routingApplyAlternative(0, { fitMap: true, renderUi: true });
+    if (!applied){
+      r.alternatives = [];
+      r.selectedAlternative = null;
+      r.previewCoordinates = null;
+      r.elevationCoordinates = null;
+      r.routeMetrics = null;
+      throw { kind: "gh", errKey: "routing.errorNoPath", ghMsg: "" };
     }
-    routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
-    try { routingRenderAltitudePanel(); } catch(_){}
+    if (usedAlternativesFallback){
+      routingSetStatus(routingT("routing.alternativesUnavailable", "Alternatives unavailable on this provider; single route."), false);
+    } else {
+      routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
+    }
 
-    // Fit once after success; if it fails, just refresh overlays.
-    try {
-      const ok = routingFitMapToRoutePreview(r.previewCoordinates);
-      if (!ok) refreshTileMapForTrackUi();
-    } catch(_){
-      try { refreshTileMapForTrackUi(); } catch(_){}
-    }
-    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
     try { routingFocusResultAfterSuccess(); } catch(_){}
   } catch(e){
     const isAbort = e && e.name === "AbortError";
@@ -63865,6 +64106,7 @@ async function routingCalculateRouteGraphhopper(){
       state._routing.requestController = null;
     }
     routingSyncCalculateBtnUi();
+    try { routingSyncAlternativesRowUi(); } catch(_){}
   }
 }
 
@@ -64710,6 +64952,10 @@ function routingClearAltitudeUi(){
   if (card) card.hidden = true;
   const speedRow = document.getElementById("routingSpeedRow");
   if (speedRow) speedRow.hidden = true;
+  const altRow = document.getElementById("routingAlternativesRow");
+  if (altRow) altRow.hidden = true;
+  const altChips = document.getElementById("routingAlternativesChips");
+  if (altChips) altChips.innerHTML = "";
   const body = document.getElementById("routingAscentDetailBody");
   if (body) body.innerHTML = "";
   const note = document.getElementById("routingAscentDetailNote");
@@ -64837,6 +65083,7 @@ function routingWireUnitsRowOnce(){
     try {
       if (state._routing && state._routing.routeMetrics) routingRenderAltitudePanel({ preserveHover: true });
     } catch(_){}
+    try { routingSyncAlternativesRowUi(); } catch(_){}
   });
   routingSyncUnitsRowUi();
 }
@@ -66320,6 +66567,7 @@ function wireRoutingPlannerOnce(){
   }
   try { routingWireSpeedControlsOnce(); } catch(_){}
   try { routingWireUnitsRowOnce(); } catch(_){}
+  try { routingWireAlternativesRowOnce(); } catch(_){}
   const calcBtn = document.getElementById("routingCalculateBtn");
   if (calcBtn) calcBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
