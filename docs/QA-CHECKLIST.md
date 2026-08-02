@@ -69,9 +69,31 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-GEOCODE-SNAP-A — Preflight /nearest + soglie — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `d1e770e` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+**Commit:** `d1e770e26e1eda625a877fbbe6e2b1b301567b21` — `feat(routing): preflight geocoded points against GraphHopper` (`ROUTING-GEOCODE-SNAP-A` · build 106).
+
+**Deploy registrato (GIS-only, PASS tecnico):**
+- VPS HEAD / runtime tip `d1e770e26e1eda625a877fbbe6e2b1b301567b21`
+- blob `204f901c9ccca47ec0faace4ac242aebb2a5d592`
+- byte LF **3266772** / SHA-256 LF **`98b1e5077206e38d072222bd5c7484d10aad354690b20dd9939107085b649f04`**
+- goi-gis-app.service active / enabled
+- HTTP 200 (bind Tailscale 100.114.7.53:8000)
+- CMP_PASS
+- GraphHopper PID invariato `2034035` (non riavviato)
+
+**QA:** attestazione «**QA ROUTING-GEOCODE-SNAP-A PASS operatore**» (2026-08-02); finito Regola H.
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=d1e770e
+
+**Backlog additivo registrato (non implementato in chiusura):** ROUTING-SEARCH-UX-A; UI-MODAL-ERROR-FOCUS-A.
+
 ## ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1 + FIX2 + FIX3) — Percorsi alternativi — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `0c078ae` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da GEOCODE-SNAP-A):** `0c078ae` — **CLOSED / PASS end-to-end**.
 
 **Catena:** `0d14820` (A · build 102) → `2728ca2` (FIX1 · 103) → `ab432b7` (FIX2 · 104) → tip `0c078ae` (FIX3 · 105 / `B6.6AR-A-FIX3`). Antenato docs `ccac6d8` (QA single-message rule).
 
