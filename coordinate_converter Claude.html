@@ -4230,6 +4230,26 @@ html[data-theme="dark"] #layersPanelBody .btn:hover{
 .actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap}
 
 /* ================= ERROR BOX ================= */
+@keyframes app-modal-error-attention-pulse{
+  0%, 100%{ box-shadow:0 0 0 0 transparent; outline-color:transparent; }
+  35%{ box-shadow:0 0 0 3px color-mix(in srgb, var(--error, #dc2626) 45%, transparent);
+        outline-color:color-mix(in srgb, var(--error, #dc2626) 70%, transparent); }
+  70%{ box-shadow:0 0 0 1px color-mix(in srgb, var(--error, #dc2626) 25%, transparent);
+        outline-color:color-mix(in srgb, var(--error, #dc2626) 40%, transparent); }
+}
+.app-modal-error-attention{
+  outline:2px solid color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
+  outline-offset:2px;
+  background-color:color-mix(in srgb, var(--error-bg, #fef2f2) 80%, transparent);
+  animation:app-modal-error-attention-pulse 0.5s ease-in-out 3;
+}
+@media (prefers-reduced-motion: reduce){
+  .app-modal-error-attention{
+    animation:none;
+    outline:2px solid color-mix(in srgb, var(--error, #dc2626) 55%, transparent);
+    outline-offset:2px;
+  }
+}
 .error-box{
   margin-top:12px; padding:10px 12px; border-radius:6px;
   background:var(--error-bg); color:var(--error);
@@ -8935,6 +8955,32 @@ dialog.track-modal.app-modal{
   border:1px solid var(--border, rgba(127,127,127,.4));
   font-size:.68rem;
   line-height:1.4;
+}
+.routing-pt-search-item.is-history{
+  border-left:3px solid color-mix(in srgb, var(--muted, #64748b) 55%, transparent);
+}
+.routing-pt-search-item.is-history .routing-pt-search-badge{
+  opacity:.85;
+  font-style:italic;
+}
+.routing-pt-search-clear-hist{
+  display:block;
+  width:100%;
+  text-align:center;
+  border:0;
+  border-top:1px solid var(--border, rgba(127,127,127,.35));
+  background:transparent;
+  padding:7px 8px;
+  margin:0;
+  cursor:pointer;
+  font:inherit;
+  font-size:.78rem;
+  color:var(--muted, #64748b);
+}
+.routing-pt-search-clear-hist:hover,
+.routing-pt-search-clear-hist:focus-visible{
+  color:var(--danger, #b91c1c);
+  background:color-mix(in srgb, var(--danger, #b91c1c) 8%, transparent);
 }
 .routing-pt-search-item.is-offline .routing-pt-search-badge{
   border-color:color-mix(in srgb, var(--warn, #d97706) 55%, transparent);
@@ -15882,6 +15928,8 @@ const I18N = {
     "routing.searchDisabledOpsec":"Ricerca online bloccata (OPSEC)",
     "routing.searchOnlineBadge":"online",
     "routing.searchOfflineBadge":"offline",
+    "routing.searchHistoryBadge":"recente",
+    "routing.searchClearHistory":"Cancella cronologia",
     "routing.pickMap":"Scegli sulla mappa",
     "routing.pickMapTip":"Imposta questo punto con un click sulla mappa",
     "routing.pickInstruction":"Clicca sulla mappa per impostare il punto.",
@@ -20938,6 +20986,7 @@ function measShowError(key){
   if (!err) return;
   err.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
   err.hidden = !String(err.textContent || "").trim();
+  if (!err.hidden) try { appRevealModalError(err); } catch(_){}
 }
 function measShowInfo(key){
   const err = document.getElementById("measNoticeErr");
@@ -21843,10 +21892,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-GEOCODE-SNAP-A";
-const APP_BUILD_DETAIL = "preflight geocoded points against GraphHopper /nearest";
+const APP_BUILD_ID = "UX-SEARCH-ERROR-FOCUS-A";
+const APP_BUILD_DETAIL = "routing search history, direct coordinate enter, modal error focus";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 106;
+const APP_BUILD_NUM = 107;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25694,11 +25743,12 @@ function jpgExportSyncCoordsSubUi(){
   }
 }
 
-function jpgExportShowDialogMsg(msg){
+function jpgExportShowDialogMsg(msg, isErr){
   const el = document.getElementById("jpgExportDialogMsg");
   if (!el) return;
   el.textContent = msg || "";
   el.hidden = !msg;
+  if (msg && isErr) try { appRevealModalError(el); } catch(_){}
 }
 
 function jpgExportClearDialogMsg(){
@@ -25861,7 +25911,7 @@ function jpgExportUpdateQuickEstimate(){
       .replace("{0}", String(jobPlan.plan.tileCount))
       .replace("{1}", String(jobPlan.plan.imageCount))
       .replace("{2}", String(QUICK_EXPORT_EGRESS_TILE_HARD))
-      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)));
+      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)), true);
     jpgExportSetConfirmEnabled(false);
   } else {
     if (!_jpgQuickExportBusy) jpgExportClearDialogMsg();
@@ -25890,7 +25940,7 @@ function jpgExportCancelSegmentJob(){
   jpgExportShowSegProgressUi(false);
   jpgExportShowSegDownloadButton(false);
   jpgExportSetDialogBusy(false);
-  jpgExportShowDialogMsg(t("export.jpg.quickSegCancelled"));
+  jpgExportShowDialogMsg(t("export.jpg.quickSegCancelled"), true);
 }
 
 function jpgExportCancelActiveJobOrClose(){
@@ -25932,7 +25982,7 @@ function jpgExportApplyQuickSnapshotToDialog(){
     if (layerEl) layerEl.textContent = "—";
     jpgExportPopulateQuickZoomSelect([], null);
     if (zoomSel) zoomSel.disabled = true;
-    jpgExportShowDialogMsg(t(jpgExportQuickSnapshotErrorKey(snap && snap.reason)));
+    jpgExportShowDialogMsg(t(jpgExportQuickSnapshotErrorKey(snap && snap.reason)), true);
     jpgExportSetConfirmEnabled(false);
     return;
   }
@@ -25942,7 +25992,7 @@ function jpgExportApplyQuickSnapshotToDialog(){
     if (layerEl) layerEl.textContent = offlineNamedAreaLayerLabel(snap.layerId);
     jpgExportPopulateQuickZoomSelect([], snap.zoom);
     if (zoomSel) zoomSel.disabled = true;
-    jpgExportShowDialogMsg(t("offcache.onlineOnly"));
+    jpgExportShowDialogMsg(t("offcache.onlineOnly"), true);
     jpgExportSetConfirmEnabled(false);
     return;
   }
@@ -25952,7 +26002,7 @@ function jpgExportApplyQuickSnapshotToDialog(){
     jpgExportPopulateQuickZoomSelect([], snap.zoom);
     if (zoomSel) zoomSel.disabled = true;
     const errKey = (zinfo.reason && t(zinfo.reason) !== zinfo.reason) ? zinfo.reason : "export.jpg.quickNoZoomLevels";
-    jpgExportShowDialogMsg(t(errKey));
+    jpgExportShowDialogMsg(t(errKey), true);
     jpgExportSetConfirmEnabled(false);
     jpgExportUpdateQuickEstimate();
     return;
@@ -26496,7 +26546,7 @@ async function exportQuickViewportSegmentedJob(ctx){
   const layerId = ctx.layerId;
   const consent = await confirmOfflineJpgTileExportConsent(layerId);
   if (!consent.ok){
-    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"));
+    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"), true);
     return;
   }
   jpgExportHideHighEgressConfirm();
@@ -26658,7 +26708,7 @@ function jpgQuickSegmentJobFail(err){
   jpgExportSetDialogBusy(false);
   const msg = String(err && (err.message || err) || "");
   const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
-  jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.quickSegFail"));
+  jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.quickSegFail"), true);
   try { showError(t(tainted ? "export.jpg.tainted" : "export.jpg.quickSegFail")); } catch(_){}
 }
 
@@ -26667,30 +26717,30 @@ async function exportQuickViewportAsJpg(options){
   if (_jpgQuickExportBusy || _jpgQuickSegmentJob) return;
   const snap = _jpgQuickExportSnapshot;
   if (!snap || !snap.ok){
-    jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
+    jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"), true);
     jpgExportSetConfirmEnabled(false);
     return;
   }
   const z = jpgExportReadQuickZoom();
   if (z == null){
-    jpgExportShowDialogMsg(t("export.jpg.quickNoZoomLevels"));
+    jpgExportShowDialogMsg(t("export.jpg.quickNoZoomLevels"), true);
     return;
   }
   const layerId = snap.layerId;
   const layer = getOfflineTileLayer(layerId);
   if (isLayerOfflineUnavailable(layerId)){
-    jpgExportShowDialogMsg(t("offcache.onlineOnly"));
+    jpgExportShowDialogMsg(t("offcache.onlineOnly"), true);
     return;
   }
   const zoomErr = validateExportZoomForLayer(z, layer);
   if (zoomErr){
-    jpgExportShowDialogMsg(t(zoomErr).replace("{0}", String(offlineLayerMaxZoom(layer))));
+    jpgExportShowDialogMsg(t(zoomErr).replace("{0}", String(offlineLayerMaxZoom(layer))), true);
     return;
   }
   const bbox = snap.bbox;
   const jobPlan = buildQuickExportJobPlan(bbox, z);
   if (!jobPlan.ok){
-    jpgExportShowDialogMsg(t(jobPlan.reason || "export.offlineJpg.noTiles"));
+    jpgExportShowDialogMsg(t(jobPlan.reason || "export.offlineJpg.noTiles"), true);
     return;
   }
   if (jobPlan.egressLevel === "hard"){
@@ -26698,7 +26748,7 @@ async function exportQuickViewportAsJpg(options){
       .replace("{0}", String(jobPlan.plan.tileCount))
       .replace("{1}", String(jobPlan.plan.imageCount))
       .replace("{2}", String(QUICK_EXPORT_EGRESS_TILE_HARD))
-      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)));
+      .replace("{3}", String(QUICK_EXPORT_EGRESS_IMAGE_HARD)), true);
     return;
   }
   if (jobPlan.plan.segmented){
@@ -26717,12 +26767,12 @@ async function exportQuickViewportAsJpg(options){
   const finalH = Math.max(1, Math.round(sh));
   const cropErr = validateQuickExportCropSize(finalW, finalH);
   if (cropErr){
-    jpgExportShowDialogMsg(t(cropErr));
+    jpgExportShowDialogMsg(t(cropErr), true);
     return;
   }
   const consent = await confirmOfflineJpgTileExportConsent(layerId);
   if (!consent.ok){
-    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"));
+    if (consent.reason === "opsec") jpgExportShowDialogMsg(t("opsec.strict.tilesBlocked"), true);
     return;
   }
   jpgExportHideHighEgressConfirm();
@@ -26776,11 +26826,11 @@ async function exportQuickViewportAsJpg(options){
     const http404 = mosaic.http404;
     if (missing > 0){
       if (http404 >= missing && http404 > 0){
-        jpgExportShowDialogMsg(t("export.offlineJpg.zoomTooHigh").replace("{0}", String(offlineLayerMaxZoom(layer))));
+        jpgExportShowDialogMsg(t("export.offlineJpg.zoomTooHigh").replace("{0}", String(offlineLayerMaxZoom(layer))), true);
       } else if (state.forceOffline || !isEffectivelyOnline()){
-        jpgExportShowDialogMsg(String(t("export.offlineJpg.offlineMissing")).replace("{0}", String(missing)));
+        jpgExportShowDialogMsg(String(t("export.offlineJpg.offlineMissing")).replace("{0}", String(missing)), true);
       } else {
-        jpgExportShowDialogMsg(String(t("export.offlineJpg.tilesUnavailable")));
+        jpgExportShowDialogMsg(String(t("export.offlineJpg.tilesUnavailable")), true);
       }
     }
     const blob = await new Promise((resolve, reject) => {
@@ -26811,7 +26861,7 @@ async function exportQuickViewportAsJpg(options){
   } catch(err){
     const msg = String(err && (err.message || err) || "");
     const tainted = /tainted|SecurityError|insecure/i.test(msg) || (err && err.name === "SecurityError");
-    jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.fail"));
+    jpgExportShowDialogMsg(t(tainted ? "export.jpg.tainted" : "export.jpg.fail"), true);
     try { showError(t(tainted ? "export.jpg.tainted" : "export.jpg.fail")); } catch(_){}
   } finally {
     _exportJpgStrictOpConfirmed = false;
@@ -29293,6 +29343,7 @@ function gisImportHubSetStatus(msg, kind){
   el.classList.remove("is-err", "is-ok");
   if (kind === "error") el.classList.add("is-err");
   if (kind === "ok") el.classList.add("is-ok");
+  if (kind === "error" && h.status) try { appRevealModalError(el); } catch(_){}
 }
 
 function gisImportHubReadSelectionFromDom(){
@@ -29980,6 +30031,7 @@ function showAppFullResetDialogError(msg){
   if (err){
     err.style.display = "block";
     err.textContent = msg || "";
+    try { appRevealModalError(err); } catch(_){}
   }
   setAppFullResetDialogBusy(false);
 }
@@ -33977,6 +34029,7 @@ function setOfflineAreasAuditFeedback(msg, isError){
   el.hidden = false;
   el.textContent = txt;
   el.classList.toggle("is-error", !!isError);
+  if (isError) try { appRevealModalError(el); } catch(_){}
 }
 
 /**
@@ -39373,11 +39426,11 @@ function notifyTrackSaveMinPointsBlocked(){
   const msg = t("track.saveMinTwoPoints") || "La traccia deve contenere almeno 2 punti per essere salvata.";
   try { setBadge("error", msg); } catch(_){}
   const strip = document.getElementById("trackSaveGuardMsg");
-  if (strip){ strip.textContent = msg; strip.hidden = false; }
+  if (strip){ strip.textContent = msg; strip.hidden = false; try { appRevealModalError(strip); } catch(_){} }
   const pe = document.getElementById("trackPromptSaveErr");
-  if (pe){ pe.textContent = msg; pe.hidden = false; }
+  if (pe){ pe.textContent = msg; pe.hidden = false; try { appRevealModalError(pe); } catch(_){} }
   const ne = document.getElementById("trackNewPromptSaveErr");
-  if (ne){ ne.textContent = msg; ne.hidden = false; }
+  if (ne){ ne.textContent = msg; ne.hidden = false; try { appRevealModalError(ne); } catch(_){} }
 }
 /**
  * Library CRUD helper: create one saved track from an explicit point list.
@@ -45395,6 +45448,7 @@ function trackSaveNameDialogCommit(){
     if (err){
       err.textContent = t("track.saveNameRequired") || "";
       err.hidden = false;
+      try { appRevealModalError(err); } catch(_){}
     }
     try { inp.focus(); } catch(_){}
     return;
@@ -49316,13 +49370,137 @@ function markPrimary(){
 
 function showError(msg){
   const box = document.getElementById("errorBox");
+  if (!box) return;
   box.textContent = msg;
   box.hidden = false;
+  try { appRevealModalError(box); } catch(_){}
 }
 function clearError(){
   const box = document.getElementById("errorBox");
+  if (!box) return;
   box.textContent = "";
   box.hidden = true;
+}
+
+/** UI-MODAL-ERROR-FOCUS-A — scroll/focus/attention for red modal errors (central helper). */
+let _appModalErrorAttentionEl = null;
+let _appModalErrorAttentionTimer = null;
+function appModalErrorIsVisible(el){
+  if (!el || !(el instanceof Element)) return false;
+  if (el.hidden) return false;
+  if (el.getAttribute("hidden") != null && el.hidden !== false) return false;
+  try {
+    const st = window.getComputedStyle(el);
+    if (st.display === "none" || st.visibility === "hidden") return false;
+  } catch(_){}
+  const txt = String(el.textContent || "").trim();
+  return !!txt;
+}
+function appFindOpenModalRoot(el){
+  if (!el || !el.closest) return null;
+  const root = el.closest("dialog.app-modal, dialog, .app-modal, [role='dialog']");
+  if (!root) return null;
+  if (root instanceof HTMLDialogElement){
+    if (!root.open && !root.hasAttribute("open")) return null;
+  } else if (root.hidden){
+    return null;
+  }
+  return root;
+}
+function appFindModalScrollParent(el, modalRoot){
+  let node = el && el.parentElement;
+  if (!node && el && el.parentNode) node = el.parentNode;
+  while (node && node !== document.body && node !== document.documentElement){
+    if (modalRoot && node !== modalRoot && typeof modalRoot.contains === "function" && !modalRoot.contains(node)) break;
+    if (node && (node.nodeType === 1 || node.tagName)){
+      try {
+        const st = window.getComputedStyle(node);
+        const oy = (st && (st.overflowY || st.overflow)) || "";
+        const sh = Number(node.scrollHeight) || 0;
+        const ch = Number(node.clientHeight) || 0;
+        if ((oy === "auto" || oy === "scroll" || oy === "overlay") && sh > ch + 2){
+          return node;
+        }
+      } catch(_){}
+    }
+    if (node === modalRoot) break;
+    node = node.parentElement || node.parentNode;
+  }
+  if (modalRoot){
+    try {
+      const st = window.getComputedStyle(modalRoot);
+      const oy = (st && (st.overflowY || st.overflow)) || "";
+      const sh = Number(modalRoot.scrollHeight) || 0;
+      const ch = Number(modalRoot.clientHeight) || 0;
+      if ((oy === "auto" || oy === "scroll" || oy === "overlay") && sh > ch + 2){
+        return modalRoot;
+      }
+    } catch(_){}
+  }
+  return null;
+}
+function appRevealModalError(errorElement, options){
+  options = options || {};
+  const el = errorElement;
+  if (!el || !(el instanceof Element)) return false;
+  if (!appModalErrorIsVisible(el)) return false;
+  const modalRoot = appFindOpenModalRoot(el);
+  if (!modalRoot) return false;
+  try {
+    if (!el.getAttribute("role")) el.setAttribute("role", "alert");
+    const live = el.getAttribute("aria-live");
+    if (!live || live === "off") el.setAttribute("aria-live", "assertive");
+  } catch(_){}
+  const run = function(){
+    try {
+      const scroller = appFindModalScrollParent(el, modalRoot);
+      if (scroller){
+        const er = el.getBoundingClientRect();
+        const sr = scroller.getBoundingClientRect();
+        const topPad = (options.topPad != null && Number.isFinite(options.topPad)) ? options.topPad : 12;
+        const delta = (er.top - sr.top) - topPad;
+        if (Math.abs(delta) > 2) scroller.scrollTop += delta;
+      } else {
+        try { el.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch(_){}
+      }
+    } catch(_){}
+    try {
+      const prevTab = el.getAttribute("tabindex");
+      if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "-1");
+      try { el.focus({ preventScroll: true }); } catch(_){ try { el.focus(); } catch(__){} }
+      if (prevTab == null && options.keepTabIndex !== true){
+        /* keep tabindex=-1 for programmatic re-focus */
+      }
+    } catch(_){}
+    try {
+      if (_appModalErrorAttentionTimer){
+        try { clearTimeout(_appModalErrorAttentionTimer); } catch(_){}
+        _appModalErrorAttentionTimer = null;
+      }
+      if (_appModalErrorAttentionEl && _appModalErrorAttentionEl !== el){
+        try { _appModalErrorAttentionEl.classList.remove("app-modal-error-attention"); } catch(_){}
+      }
+      el.classList.remove("app-modal-error-attention");
+      void el.offsetWidth;
+      el.classList.add("app-modal-error-attention");
+      _appModalErrorAttentionEl = el;
+      _appModalErrorAttentionTimer = setTimeout(function(){
+        _appModalErrorAttentionTimer = null;
+        try { el.classList.remove("app-modal-error-attention"); } catch(_){}
+        if (_appModalErrorAttentionEl === el) _appModalErrorAttentionEl = null;
+      }, 1800);
+    } catch(_){}
+  };
+  try {
+    if (typeof requestAnimationFrame === "function"){
+      requestAnimationFrame(function(){ requestAnimationFrame(run); });
+    } else {
+      setTimeout(run, 0);
+    }
+  } catch(_){
+    try { run(); } catch(__){}
+  }
+  return true;
 }
 
 function clearForm(){
@@ -49560,6 +49738,7 @@ function flashPasteStatusLine(msg, kind){
   if (!st || msg == null || msg === "") return;
   st.textContent = msg;
   st.className = kind === "err" ? "err" : kind === "ok" ? "ok" : "";
+  if (kind === "err") try { appRevealModalError(st); } catch(_){}
   const prev = msg;
   setTimeout(() => {
     if (st.textContent === prev){ st.textContent = ""; st.className = ""; }
@@ -49572,6 +49751,7 @@ function showWpModalListFavFeedback(kind, msg){
   el.classList.remove("is-ok", "is-err");
   if (kind === "ok") el.classList.add("is-ok");
   else if (kind === "err") el.classList.add("is-err");
+  if (kind === "err" && msg) try { appRevealModalError(el); } catch(_){}
   try { clearTimeout(el._wpFavFbTm); } catch(_){}
   if (msg) el._wpFavFbTm = setTimeout(() => {
     el.textContent = "";
@@ -50275,6 +50455,7 @@ function astroShowError(msgKeyOrText){
     : String(msgKeyOrText);
   err.textContent = txt;
   err.hidden = !txt;
+  if (!err.hidden) try { appRevealModalError(err); } catch(_){}
 }
 function astroUpdateSourceButtons(){
   const cur = state.astro && state.astro.source;
@@ -52157,6 +52338,7 @@ function convertShowSourceFeedback(msg, kind){
   el.hidden = false;
   el.textContent = s;
   el.className = "hint convert-source-feedback" + (kind === "ok" ? " is-ok" : (kind === "err" ? " is-err" : " is-info"));
+  if (kind === "err") try { appRevealModalError(el); } catch(_){}
 }
 function convertActivateManualDDTab(){
   try {
@@ -52783,6 +52965,7 @@ function rrShowError(key){
   if (!e) return;
   e.textContent = (typeof t === "function" ? (t(key) || "") : "") || String(key || "");
   e.hidden = false;
+  try { appRevealModalError(e); } catch(_){}
 }
 function rrShowOk(key){
   state._rrPanelEscNotice = false;
@@ -54967,13 +55150,13 @@ function bindUI(){
     if (!segExport && coordsCfg.enabled){
       const resolved = jpgExportResolveCoordsModel(coordsCfg);
       if (!resolved || !resolved.ok){
-        jpgExportShowDialogMsg(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable"));
+        jpgExportShowDialogMsg(t(resolved && resolved.errorKey || "export.jpg.coordsSourceUnavailable"), true);
         return;
       }
       coordsModel = resolved;
     }
     if (!snapOk){
-      jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"));
+      jpgExportShowDialogMsg(t("export.jpg.quickSnapshotFail"), true);
       jpgExportSetConfirmEnabled(false);
       return;
     }
@@ -58234,6 +58417,7 @@ function showWaypointImportDialogMessage(kind, msg){
   el.classList.remove("is-err", "is-ok");
   if (kind === "error") el.classList.add("is-err");
   if (kind === "success") el.classList.add("is-ok");
+  if (kind === "error" && m.trim()) try { appRevealModalError(el); } catch(_){}
 }
 
 function handleWaypointImportFile(file){
@@ -60044,6 +60228,7 @@ function polygonShowEditBarErr(msg){
   if (msg){
     err.textContent = String(msg);
     err.hidden = false;
+    try { appRevealModalError(err); } catch(_){}
   } else {
     err.textContent = "";
     err.hidden = true;
@@ -60059,6 +60244,7 @@ function polygonShowDrawErr(msg){
   if (msg){
     err.textContent = String(msg);
     err.hidden = false;
+    try { appRevealModalError(err); } catch(_){}
   } else {
     err.textContent = "";
     err.hidden = true;
@@ -60287,6 +60473,7 @@ function polygonShowVertexCoordModalErr(msgKey){
   const msg = (typeof t === "function" ? t(msgKey) : "") || msgKey;
   err.textContent = msg;
   err.hidden = false;
+  try { appRevealModalError(err); } catch(_){}
 }
 function polygonValidateVertexCoordModalInputs(latStr, lonStr, combinedStr, fmt){
   return polygonParseVertexCoordByFormat(fmt || polygonVertexCoordFormat || "dd", latStr, lonStr, combinedStr);
@@ -61503,7 +61690,18 @@ function uidRouting(){
   return "rt" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 }
 function routingT(key, fb){
-  try { if (typeof t === "function"){ const v = t(key); if (v) return v; } } catch(_){}
+  try {
+    if (typeof t === "function"){
+      const lang = (state && state.lang) || "it";
+      const dict = (typeof I18N !== "undefined" && I18N) ? (I18N[lang] || I18N.it) : null;
+      if (dict && Object.prototype.hasOwnProperty.call(dict, key) && dict[key]) return dict[key];
+      if (typeof I18N !== "undefined" && I18N.it && Object.prototype.hasOwnProperty.call(I18N.it, key) && I18N.it[key])
+        return I18N.it[key];
+      if (fb) return fb;
+      const v = t(key);
+      if (v && v !== key) return v;
+    }
+  } catch(_){}
   return fb || key;
 }
 
@@ -61656,6 +61854,7 @@ function routingEnsureState(){
     if (!("selectedAlternative" in r)) r.selectedAlternative = null;
     else if (r.selectedAlternative != null && !Number.isFinite(Number(r.selectedAlternative))) r.selectedAlternative = null;
     if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
+    if (!Array.isArray(r.searchHistory)) r.searchHistory = [];
     if (!r.infoCache || typeof r.infoCache !== "object") r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
     try { routingNormalizeAllPointSnapFields(r); } catch(_){}
     try { routingEnsureAbPoints(r); } catch(_){}
@@ -61704,6 +61903,7 @@ function routingEnsureState(){
     alternatives: [],
     selectedAlternative: null,
     search: Object.create(null),
+    searchHistory: [],
     infoCache: { bbox: null, profiles: null, fetchedAt: null, provider: null }
   };
   try { routingEnsureAbPoints(state._routing); } catch(_){}
@@ -61808,6 +62008,7 @@ function routingSetStatus(msg, isErr){
   el.textContent = textMsg;
   el.classList.toggle("is-err", !!isErr && !!textMsg);
   if (state._routing) state._routing.error = textMsg;
+  if (isErr && textMsg) try { appRevealModalError(el); } catch(_){}
 }
 function routingSyncPointsFeedback(){
   const el = document.getElementById("routingPointsFeedback");
@@ -62105,6 +62306,7 @@ function routingSetSaveAsTrackFormFeedback(msg, isErr){
   fb.textContent = text;
   fb.hidden = !text;
   fb.classList.toggle("is-err", !!isErr && !!text);
+  if (isErr && text) try { appRevealModalError(fb); } catch(_){}
 }
 function routingSyncSaveAsTrackFormUi(){
   const form = document.getElementById("routingSaveAsTrackForm");
@@ -62403,6 +62605,7 @@ function routingSetProviderStatus(key, isErr){
   }
   el.textContent = routingT(key, key);
   el.classList.toggle("is-err", !!isErr);
+  if (isErr) try { appRevealModalError(el); } catch(_){}
 }
 function routingSyncProviderUi(){
   const r = routingEnsureState();
@@ -62861,12 +63064,147 @@ function routingEscapeAttr(id){
   return String(id == null ? "" : id).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
 }
 /* ===== ROUTING-GEOCODING-MULTIROW-A — per-stop search (session-only) ===== */
+/* ===== ROUTING-SEARCH-UX-A — session-only search history + coord Enter ===== */
 let _routingSearchPageGen = 0;
 const _routingSearchDebTO = Object.create(null);
+const ROUTING_SEARCH_HISTORY_MAX = 10;
 function routingSearchEnsureMap(r){
   if (!r) return null;
   if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
   return r.search;
+}
+function routingSearchHistoryList(){
+  const r = routingEnsureState();
+  if (!Array.isArray(r.searchHistory)) r.searchHistory = [];
+  return r.searchHistory;
+}
+function routingSearchHistoryDedupeKey(lat, lon, label){
+  const la = Number(lat), lo = Number(lon);
+  const lFixed = Number.isFinite(la) ? la.toFixed(6) : "";
+  const oFixed = Number.isFinite(lo) ? lo.toFixed(6) : "";
+  const lb = String(label || "").trim().toLowerCase().replace(/\s+/g, " ");
+  return lFixed + "|" + oFixed + "|" + lb;
+}
+function routingSearchHistoryAdd(entry){
+  const list = routingSearchHistoryList();
+  const lat = Number(entry && entry.lat), lon = Number(entry && entry.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+  if (Math.abs(lat) > 90 || lon < -180 || lon > 180) return false;
+  const label = String((entry && entry.label) || "").slice(0, 80) || routingFormatCoords(lat, lon);
+  const source = String((entry && entry.source) || "search").slice(0, 24);
+  const key = routingSearchHistoryDedupeKey(lat, lon, label);
+  for (let i = list.length - 1; i >= 0; i--){
+    if (list[i] && list[i].dedupeKey === key) list.splice(i, 1);
+  }
+  list.unshift({ label: label, lat: lat, lon: lon, source: source, dedupeKey: key, ts: Date.now() });
+  while (list.length > ROUTING_SEARCH_HISTORY_MAX) list.pop();
+  return true;
+}
+function routingSearchHistoryClear(){
+  const r = state._routing;
+  if (!r) return;
+  r.searchHistory = [];
+}
+function routingSearchHistoryFiltered(query){
+  const list = routingSearchHistoryList();
+  const q = String(query || "").trim().toLowerCase();
+  if (!q) return list.slice();
+  const out = [];
+  for (let i = 0; i < list.length; i++){
+    const h = list[i];
+    if (!h) continue;
+    const lb = String(h.label || "").toLowerCase();
+    const coords = routingFormatCoords(h.lat, h.lon).toLowerCase();
+    if (lb.indexOf(q) >= 0 || coords.indexOf(q) >= 0) out.push(h);
+  }
+  return out;
+}
+function routingSearchTryParseCoords(text){
+  const s = String(text || "").trim();
+  if (!s) return null;
+  try {
+    if (typeof parseFreeTextLatLon !== "function") return null;
+    const p = parseFreeTextLatLon(s);
+    if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) return null;
+    if (Math.abs(p.lat) > 90 || p.lon < -180 || p.lon > 180) return null;
+    return { lat: p.lat, lon: p.lon };
+  } catch(_){
+    return null;
+  }
+}
+function routingSearchComposeItems(pointId){
+  const id = String(pointId || "");
+  const e = state._routing && state._routing.search && state._routing.search[id];
+  const q = e ? String(e.query || "").trim() : "";
+  const hist = routingSearchHistoryFiltered(q);
+  const hits = (e && Array.isArray(e.hits)) ? e.hits : [];
+  const items = [];
+  for (let i = 0; i < hist.length; i++) items.push({ kind: "history", entry: hist[i] });
+  for (let i = 0; i < hits.length; i++) items.push({ kind: "geo", geoIndex: i, hit: hits[i] });
+  return items;
+}
+function routingSearchApplyCoordsDirect(pointId, lat, lon, label, histSource){
+  if (!state._routing || !pointId) return false;
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo) || Math.abs(la) > 90 || lo < -180 || lo > 180) return false;
+  routingSearchClearTimer(pointId);
+  const e = routingSearchEntry(pointId);
+  if (e){
+    e.token = ++_routingSearchPageGen;
+    e.loading = false;
+    e.errorKey = "";
+    e.hits = [];
+    e.sourceKind = "";
+    e.open = false;
+    e.activeIndex = -1;
+    try { routingSearchSyncDropdownDom(pointId); } catch(_){}
+  }
+  const lbl = (label != null && String(label).trim())
+    ? String(label).trim().slice(0, 80)
+    : routingFormatCoords(la, lo);
+  const ok = routingSetPointCoordinates(pointId, la, lo, null, { label: lbl });
+  if (ok){
+    try { routingSearchHistoryAdd({ label: lbl, lat: la, lon: lo, source: histSource || "coords" }); } catch(_){}
+  }
+  setTimeout(function(){
+    try {
+      const inp = document.querySelector('input.routing-pt-field[data-routing-id="' + routingEscapeAttr(pointId) + '"]');
+      if (inp){
+        inp.focus();
+        inp.setAttribute("aria-expanded", "false");
+        inp.removeAttribute("aria-activedescendant");
+      }
+    } catch(_){}
+  }, 0);
+  return !!ok;
+}
+function routingSearchPickHistory(pointId, entry){
+  if (!entry) return false;
+  return routingSearchApplyCoordsDirect(pointId, entry.lat, entry.lon, entry.label, "history");
+}
+function routingSearchPickCompose(pointId, activeIndex){
+  const items = routingSearchComposeItems(pointId);
+  const it = items[activeIndex];
+  if (!it) return false;
+  if (it.kind === "history") return routingSearchPickHistory(pointId, it.entry);
+  return routingSearchPick(pointId, it.geoIndex);
+}
+function routingSearchOnFocus(pointId){
+  if (!state._routing || !pointId) return;
+  const e = routingSearchEntry(pointId);
+  if (!e || e.loading) return;
+  let q = String(e.query || "").trim();
+  try {
+    const field = document.querySelector('input.routing-pt-field[data-routing-id="' + routingEscapeAttr(pointId) + '"]');
+    if (field) q = String(field.value || "").trim();
+  } catch(_){}
+  e.query = q;
+  const hist = routingSearchHistoryFiltered(q);
+  const hasHits = !!(e.hits && e.hits.length);
+  if (!hist.length && !hasHits) return;
+  e.open = true;
+  if (!(e.activeIndex >= 0)) e.activeIndex = 0;
+  try { routingSearchSyncDropdownDom(pointId); } catch(_){}
 }
 function routingSearchEntry(pointId){
   const r = state._routing;
@@ -62989,8 +63327,9 @@ function routingSearchOnLabelInput(pointId, raw){
     e.errorKey = "";
     e.hits = [];
     e.sourceKind = "";
-    e.open = false;
-    e.activeIndex = -1;
+    const hist = routingSearchHistoryFiltered(q);
+    e.open = hist.length > 0;
+    e.activeIndex = hist.length ? 0 : -1;
     try { routingSearchSyncDropdownDom(pointId); } catch(_){}
     return;
   }
@@ -63027,8 +63366,9 @@ async function routingSearchRun(pointId, query){
     e.errorKey = "";
     e.hits = [];
     e.sourceKind = "";
-    e.open = false;
-    e.activeIndex = -1;
+    const histShort = routingSearchHistoryFiltered(q);
+    e.open = histShort.length > 0;
+    e.activeIndex = histShort.length ? 0 : -1;
     try { routingSearchSyncDropdownDom(pointId); } catch(_){}
     return;
   }
@@ -63092,9 +63432,11 @@ async function routingSearchRun(pointId, query){
   e.loading = false;
   e.hits = Array.isArray(hits) ? hits : [];
   e.sourceKind = sourceKind;
-  if (!e.hits.length && !e.errorKey) e.errorKey = "routing.searchNoResults";
-  e.open = true;
-  e.activeIndex = e.hits.length ? 0 : -1;
+  const histDone = routingSearchHistoryFiltered(q);
+  if (!e.hits.length && !histDone.length && !e.errorKey) e.errorKey = "routing.searchNoResults";
+  if (histDone.length && !e.hits.length) e.errorKey = "";
+  e.open = !!(e.hits.length || histDone.length || e.errorKey);
+  e.activeIndex = (histDone.length || e.hits.length) ? 0 : -1;
   try { routingSearchSyncDropdownDom(pointId); } catch(_){}
 }
 function routingSearchPick(pointId, idx){
@@ -63120,6 +63462,9 @@ function routingSearchPick(pointId, idx){
   e.activeIndex = -1;
   try { routingSearchSyncDropdownDom(pointId); } catch(_){}
   const ok = routingSetPointCoordinates(pointId, la, lo, null, { label: label });
+  if (ok){
+    try { routingSearchHistoryAdd({ label: label, lat: la, lon: lo, source: "geocode" }); } catch(_){}
+  }
   try { routingSearchSyncDropdownDom(pointId); } catch(_){}
   setTimeout(function(){
     try {
@@ -63135,8 +63480,10 @@ function routingSearchPick(pointId, idx){
 }
 function routingSearchMoveActive(pointId, delta){
   const e = state._routing && state._routing.search && state._routing.search[String(pointId)];
-  if (!e || !e.open || !e.hits || !e.hits.length) return;
-  const n = e.hits.length;
+  if (!e || !e.open) return;
+  const items = routingSearchComposeItems(pointId);
+  const n = items.length;
+  if (!n) return;
   let i = Number(e.activeIndex);
   if (!Number.isFinite(i)) i = -1;
   i = (i + delta + n) % n;
@@ -63188,12 +63535,11 @@ function routingSearchSyncDropdownDom(pointId){
     status.hidden = false;
     status.classList.remove("is-err");
     status.textContent = routingT("routing.searchLoading", "Searching…");
-    dd.hidden = true;
-    dd.innerHTML = "";
-    if (field) field.removeAttribute("aria-activedescendant");
-    return;
+    /* Keep history visible under loading when available. */
   }
-  if (e.errorKey && (!e.hits || !e.hits.length)){
+  const items = routingSearchComposeItems(id);
+  const histOnlyErr = !!(e.errorKey && (!e.hits || !e.hits.length) && !items.some(function(it){ return it.kind === "history"; }));
+  if (histOnlyErr && !e.loading){
     status.hidden = false;
     status.classList.add("is-err");
     status.textContent = routingT(e.errorKey, e.errorKey);
@@ -63202,11 +63548,31 @@ function routingSearchSyncDropdownDom(pointId){
     if (field) field.removeAttribute("aria-activedescendant");
     return;
   }
-  status.hidden = true;
-  status.textContent = "";
-  status.classList.remove("is-err");
-  const hits = Array.isArray(e.hits) ? e.hits : [];
-  if (!hits.length){
+  if (!e.loading){
+    if (e.errorKey && (!e.hits || !e.hits.length) && items.some(function(it){ return it.kind === "geo"; }) === false &&
+        items.some(function(it){ return it.kind === "history"; })){
+      status.hidden = true;
+      status.textContent = "";
+      status.classList.remove("is-err");
+    } else if (e.errorKey && (!e.hits || !e.hits.length) && !items.length){
+      status.hidden = false;
+      status.classList.add("is-err");
+      status.textContent = routingT(e.errorKey, e.errorKey);
+    } else {
+      status.hidden = true;
+      status.textContent = "";
+      status.classList.remove("is-err");
+    }
+  }
+  const histLen = routingSearchHistoryList().length;
+  if (!items.length && !histLen){
+    dd.hidden = true;
+    dd.innerHTML = "";
+    if (field) field.removeAttribute("aria-activedescendant");
+    if (!e.loading) e.open = !!(e.errorKey);
+    return;
+  }
+  if (!items.length && histLen === 0){
     dd.hidden = true;
     dd.innerHTML = "";
     if (field) field.removeAttribute("aria-activedescendant");
@@ -63214,29 +63580,47 @@ function routingSearchSyncDropdownDom(pointId){
   }
   dd.hidden = false;
   let html = "";
-  for (let i = 0; i < hits.length; i++){
-    const h = hits[i] || {};
-    const offline = !!h._offline || e.sourceKind === "offline";
-    const name = esc(String(h.display_name || ""));
-    const typeLbl = esc((h.class && h.type) ? (h.class + "/" + h.type) : (h.type || ""));
-    const badge = offline
-      ? routingT("routing.searchOfflineBadge", "offline")
-      : routingT("routing.searchOnlineBadge", "online");
+  for (let i = 0; i < items.length; i++){
+    const it = items[i];
     const active = (i === e.activeIndex) ? " is-active" : "";
-    const offCls = offline ? " is-offline" : "";
     const optId = "routing-search-opt-" + id + "-" + i;
-    html += '<button type="button" class="routing-pt-search-item' + active + offCls + '" role="option" id="' + optId +
-      '" data-routing-search-pick="1" data-routing-id="' + esc(id) + '" data-idx="' + i + '"' +
-      (i === e.activeIndex ? ' aria-selected="true"' : ' aria-selected="false"') + '>' +
-      '<div class="routing-pt-search-name">' + name + '</div>' +
-      '<div class="routing-pt-search-meta">' +
-      (typeLbl ? '<span>' + typeLbl + '</span>' : '') +
-      '<span class="routing-pt-search-badge">' + esc(badge) + '</span>' +
-      '</div></button>';
+    if (it.kind === "history"){
+      const h = it.entry || {};
+      const name = esc(String(h.label || routingFormatCoords(h.lat, h.lon)));
+      const badge = routingT("routing.searchHistoryBadge", "recente");
+      html += '<button type="button" class="routing-pt-search-item is-history' + active + '" role="option" id="' + optId +
+        '" data-routing-search-hist="1" data-routing-id="' + esc(id) + '" data-idx="' + i + '"' +
+        (i === e.activeIndex ? ' aria-selected="true"' : ' aria-selected="false"') + '>' +
+        '<div class="routing-pt-search-name">' + name + '</div>' +
+        '<div class="routing-pt-search-meta">' +
+        '<span class="routing-pt-search-badge">' + esc(badge) + '</span>' +
+        '</div></button>';
+    } else {
+      const h = it.hit || {};
+      const offline = !!h._offline || e.sourceKind === "offline";
+      const name = esc(String(h.display_name || ""));
+      const typeLbl = esc((h.class && h.type) ? (h.class + "/" + h.type) : (h.type || ""));
+      const badge = offline
+        ? routingT("routing.searchOfflineBadge", "offline")
+        : routingT("routing.searchOnlineBadge", "online");
+      const offCls = offline ? " is-offline" : "";
+      html += '<button type="button" class="routing-pt-search-item' + active + offCls + '" role="option" id="' + optId +
+        '" data-routing-search-pick="1" data-routing-id="' + esc(id) + '" data-idx="' + it.geoIndex + '" data-compose-idx="' + i + '"' +
+        (i === e.activeIndex ? ' aria-selected="true"' : ' aria-selected="false"') + '>' +
+        '<div class="routing-pt-search-name">' + name + '</div>' +
+        '<div class="routing-pt-search-meta">' +
+        (typeLbl ? '<span>' + typeLbl + '</span>' : '') +
+        '<span class="routing-pt-search-badge">' + esc(badge) + '</span>' +
+        '</div></button>';
+    }
+  }
+  if (histLen > 0){
+    html += '<button type="button" class="routing-pt-search-clear-hist" data-routing-search-clear-hist="1">' +
+      esc(routingT("routing.searchClearHistory", "Cancella cronologia")) + '</button>';
   }
   dd.innerHTML = html;
   if (field){
-    if (e.activeIndex >= 0) field.setAttribute("aria-activedescendant", "routing-search-opt-" + id + "-" + e.activeIndex);
+    if (e.activeIndex >= 0 && items.length) field.setAttribute("aria-activedescendant", "routing-search-opt-" + id + "-" + e.activeIndex);
     else field.removeAttribute("aria-activedescendant");
   }
 }
@@ -67136,6 +67520,35 @@ function routingEnsureAltitudeResizeObserver(){
 }
 
 function routingHandleListAction(ev){
+  const clearHist = ev.target && ev.target.closest && ev.target.closest("[data-routing-search-clear-hist]");
+  if (clearHist){
+    ev.preventDefault();
+    try { routingSearchHistoryClear(); } catch(_){}
+    try {
+      const r = state._routing;
+      if (r && r.search){
+        const ids = Object.keys(r.search);
+        for (let i = 0; i < ids.length; i++){
+          const se = r.search[ids[i]];
+          if (!se || !se.open) continue;
+          const items = routingSearchComposeItems(ids[i]);
+          if (!items.length && !se.loading && !se.errorKey) se.open = false;
+          try { routingSearchSyncDropdownDom(ids[i]); } catch(_){}
+        }
+      }
+    } catch(_){}
+    return;
+  }
+  const histEl = ev.target && ev.target.closest && ev.target.closest("[data-routing-search-hist][data-routing-id]");
+  if (histEl){
+    const pid = histEl.getAttribute("data-routing-id");
+    const idx = Number(histEl.getAttribute("data-idx"));
+    if (pid && Number.isFinite(idx)){
+      ev.preventDefault();
+      try { routingSearchPickCompose(pid, idx); } catch(_){}
+    }
+    return;
+  }
   const pickEl = ev.target && ev.target.closest && ev.target.closest("[data-routing-search-pick][data-routing-id]");
   if (pickEl){
     const pid = pickEl.getAttribute("data-routing-id");
@@ -67532,6 +67945,15 @@ function wireRoutingPlannerOnce(){
   const list = document.getElementById("routingPointsList");
   if (list){
     list.addEventListener("click", routingHandleListAction);
+    if (!list._routingSearchFocusBound){
+      list._routingSearchFocusBound = true;
+      list.addEventListener("focusin", (ev) => {
+        const inp = ev.target && ev.target.closest && ev.target.closest("input.routing-pt-field[data-routing-label]");
+        if (!inp || !state._routing) return;
+        const id = inp.getAttribute("data-routing-id");
+        if (id) try { routingSearchOnFocus(id); } catch(_){}
+      });
+    }
     list.addEventListener("input", (ev) => {
       const coordInp = ev.target && ev.target.closest && ev.target.closest("input.routing-pt-coord[data-routing-id]");
       if (coordInp && state._routing){
@@ -67561,13 +67983,22 @@ function wireRoutingPlannerOnce(){
         if (labelInp){
           const lid = labelInp.getAttribute("data-routing-id");
           const se = state._routing && state._routing.search && lid ? state._routing.search[lid] : null;
+          if (ev.key === "Enter"){
+            const parsed = routingSearchTryParseCoords(String(labelInp.value || ""));
+            if (parsed){
+              ev.preventDefault();
+              try { routingSearchApplyCoordsDirect(lid, parsed.lat, parsed.lon, String(labelInp.value || "").trim(), "coords"); } catch(_){}
+              return;
+            }
+          }
           if (se && se.open){
             if (ev.key === "ArrowDown"){ ev.preventDefault(); try { routingSearchMoveActive(lid, 1); } catch(_){} return; }
             if (ev.key === "ArrowUp"){ ev.preventDefault(); try { routingSearchMoveActive(lid, -1); } catch(_){} return; }
             if (ev.key === "Enter"){
-              if (se.activeIndex >= 0 && se.hits && se.hits[se.activeIndex]){
+              const items = routingSearchComposeItems(lid);
+              if (se.activeIndex >= 0 && items[se.activeIndex]){
                 ev.preventDefault();
-                try { routingSearchPick(lid, se.activeIndex); } catch(_){}
+                try { routingSearchPickCompose(lid, se.activeIndex); } catch(_){}
                 return;
               }
             }
@@ -68169,6 +68600,7 @@ function setWorkbenchPanelStatus(msg, opts){
   el.textContent = s;
   el.hidden = false;
   el.classList.toggle("err", !!opts.error);
+  if (opts.error) try { appRevealModalError(el); } catch(_){}
 }
 
 function gisExportHubReadSelFromDom(){
@@ -70355,6 +70787,7 @@ function setConvertWaypointFeedback(kind, msg){
       if (kind === "ok") el.classList.add("is-ok");
       else if (kind === "err") el.classList.add("is-err");
       else el.classList.add("is-info");
+      if (kind === "err") try { appRevealModalError(el); } catch(_){}
       return;
     }
   }
@@ -70757,6 +71190,7 @@ function onEditorCoordInput(str){
       const key = (err && (err.key || err.i18nKey)) || "err.notRecognized";
       fb.textContent = t(key);
       fb.classList.remove("is-ok"); fb.classList.add("is-err");
+      try { appRevealModalError(fb); } catch(_){}
     }
   }
 }
@@ -70773,13 +71207,13 @@ function commitWaypointEditor(){
   }
   if (!Number.isFinite(d.lat) || !Number.isFinite(d.lon)){
     const fb = document.getElementById("wpFieldCoordFeedback");
-    if (fb){ fb.textContent = t("err.notRecognized"); fb.classList.add("is-err"); }
+    if (fb){ fb.textContent = t("err.notRecognized"); fb.classList.add("is-err"); try { appRevealModalError(fb); } catch(_){} }
     return;
   }
   try { validateLatLon(d.lat, d.lon); }
   catch(err){
     const fb = document.getElementById("wpFieldCoordFeedback");
-    if (fb){ fb.textContent = t((err && (err.key || err.i18nKey)) || "err.latRange"); fb.classList.add("is-err"); }
+    if (fb){ fb.textContent = t((err && (err.key || err.i18nKey)) || "err.latRange"); fb.classList.add("is-err"); try { appRevealModalError(fb); } catch(_){} }
     return;
   }
   const lat = Math.max(-90, Math.min(90, d.lat));
