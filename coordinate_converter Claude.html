@@ -9029,7 +9029,15 @@ dialog.track-modal.app-modal{
 .routing-marker-handle:active{ cursor:grabbing; }
 .tile-map.routing-pick-mode{ cursor:crosshair; }
 .routing-pt-actions .btn{ min-height:32px; }
-.routing-panel-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+.routing-panel-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  flex:1 1 220px;
+  justify-content:flex-end;
+  min-width:0;
+}
 .routing-result-details{
   display:flex;
   flex-direction:column;
@@ -9109,8 +9117,19 @@ dialog.track-modal.app-modal{
   display:flex;
   flex-wrap:wrap;
   align-items:center;
-  gap:8px 10px;
+  justify-content:space-between;
+  gap:8px 12px;
   padding:2px 0 6px;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.routing-mode-group{
+  display:inline-flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px 10px;
+  flex:0 1 auto;
+  min-width:0;
 }
 .routing-mode-label{
   font-size:.8rem;
@@ -13541,15 +13560,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <option value="mtb_trail">mtb_trail</option>
       </select>
     </div>
-    <div class="routing-mode-row" id="routingModeRow">
-      <span class="routing-mode-label" data-i18n="routing.routeMode">Percorso</span>
-      <div class="routing-mode-chips" role="radiogroup" aria-label="Modalità percorso">
-        <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="one_way"
-                data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
-        <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="out_and_back"
-                data-i18n="routing.outAndBack" aria-pressed="false">Andata e ritorno</button>
-      </div>
-    </div>
     <div id="routingPointsList" class="routing-points-list" role="list"></div>
     <div id="routingPointsFeedback" class="routing-points-feedback hint" role="status" aria-live="polite" hidden></div>
     <section id="routingResultCard" class="routing-result-card" tabindex="-1" hidden>
@@ -13574,18 +13584,29 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span class="routing-speed-summary hint" id="routingSpeedSummary"></span>
       </div>
     </section>
-    <div class="routing-panel-actions">
-      <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
-              data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
-      <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
-              data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
-      <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
-              data-i18n="routing.coordEdit" data-i18n-tip="tip.routingCoordEdit" data-i18n-aria="tip.routingCoordEdit">Modifica coordinate</button>
-      <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
-      <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
-              data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
-      <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
-              data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
+    <div class="routing-mode-row" id="routingModeRow">
+      <div class="routing-mode-group">
+        <span class="routing-mode-label" data-i18n="routing.routeMode">Percorso</span>
+        <div class="routing-mode-chips" role="radiogroup" aria-label="Modalità percorso">
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="one_way"
+                  data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="out_and_back"
+                  data-i18n="routing.outAndBack" aria-pressed="false">Andata e ritorno</button>
+        </div>
+      </div>
+      <div class="routing-panel-actions">
+        <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
+                data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
+        <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
+                data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
+        <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
+                data-i18n="routing.coordEdit" data-i18n-tip="tip.routingCoordEdit" data-i18n-aria="tip.routingCoordEdit">Modifica coordinate</button>
+        <button type="button" id="routingAddViaBtn" class="btn btn-sm" data-i18n="routing.addVia">Aggiungi punto di passaggio</button>
+        <button type="button" id="routingReverseBtn" class="btn btn-sm" disabled
+                data-i18n="routing.reverse" data-i18n-tip="tip.routingReverse" data-i18n-aria="tip.routingReverse">Inverti percorso</button>
+        <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
+                data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
+      </div>
     </div>
     <form id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden autocomplete="off">
       <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
@@ -21949,10 +21970,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-ANDATA-RITORNO-A";
-const APP_BUILD_DETAIL = "real GraphHopper out-and-back routing";
+const APP_BUILD_ID = "ROUTING-ACTION-ROW-UX-A";
+const APP_BUILD_DETAIL = "unified routing mode and action row";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 112;
+const APP_BUILD_NUM = 113;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
