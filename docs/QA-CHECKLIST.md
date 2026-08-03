@@ -69,9 +69,32 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## ROUTING-ANELLO-A (+ FIX1) — modalità Anello GraphHopper `round_trip` — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `f718582` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `ROUTING-ANELLO-A-FIX1` (catena A build 114 → FIX1) |
+| Tip feature | `4135737c4d630989726e66170b12e04ca9e3f23b` (build 114) |
+| Tip FIX1 / live | `f7185823af3028069ff24613151a6ef0209d0966` |
+| Build | `ROUTING-ANELLO-A-FIX1 · build 115` |
+| Blob | `0ffb7b34d036722945350b4094c73d89c3dab1da` |
+| Byte LF | `3347642` |
+| SHA-256 LF | `0513e768591a8e03bdb6f92100f81913b2e19a84bdd944efc28828bbd766a19b` |
+| Bundle | DELICATO — GraphHopper `round_trip` + multi-seed + OPSEC/rete |
+| Scope | Anello nativo; max 3 seed; FIX1 re-gate per seed + timeout-with-best + chiusura antimeridiano |
+| Review | build 114 FIX REQUIRED; FIX1 **PASS — DEPLOY AUTHORIZED** |
+| Deploy | GIS-only PASS (FF → `f718582`; solo `goi-gis-app`; HTTP 200; CMP_PASS; GH `/info` 200) |
+| QA | **PASS** «QA ROUTING-ANELLO-A-FIX1 PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=f718582
+
 ## ROUTING-ACTION-ROW-UX-A — Action strip unificata modalità+azioni — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `dde5156` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da ROUTING-ANELLO-A-FIX1):** `dde5156` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
