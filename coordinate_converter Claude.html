@@ -22056,10 +22056,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-ANELLO-A";
-const APP_BUILD_DETAIL = "native GraphHopper multi-seed loop routing";
+const APP_BUILD_ID = "ROUTING-ANELLO-A-FIX1";
+const APP_BUILD_DETAIL = "round trip batch gate and timeout hardening";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 114;
+const APP_BUILD_NUM = 115;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -64930,12 +64930,28 @@ function routingBuildGraphhopperRoundTripBody(profile, pointLonLat, distanceM, s
     instructions: false
   };
 }
+/** Shortest-wrap longitude relative to lonFrom (degrees); does not mutate inputs. */
+function routingShortestWrappedLonDeg(lonFrom, lonTo){
+  const a = Number(lonFrom);
+  const b = Number(lonTo);
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+  let d = b - a;
+  d = ((d + 180) % 360 + 360) % 360 - 180;
+  return a + d;
+}
 function routingRoundTripClosureOk(previewCoordinates, tolM){
   if (!Array.isArray(previewCoordinates) || previewCoordinates.length < 2) return false;
   const a = previewCoordinates[0];
   const b = previewCoordinates[previewCoordinates.length - 1];
   if (!a || !b) return false;
-  const d = routingHaversineMeters(a.lat, a.lon, b.lat, b.lon);
+  const latA = Number(a.lat);
+  const lonA = Number(a.lon);
+  const latB = Number(b.lat);
+  const lonB = Number(b.lon);
+  if (![latA, lonA, latB, lonB].every(Number.isFinite)) return false;
+  const lonBAdj = routingShortestWrappedLonDeg(lonA, lonB);
+  if (!Number.isFinite(lonBAdj)) return false;
+  const d = routingHaversineMeters(latA, lonA, latB, lonBAdj);
   const tol = Number.isFinite(tolM) ? tolM : ROUTING_ROUND_TRIP_CLOSE_TOL_M;
   return Number.isFinite(d) && d <= tol;
 }
@@ -65383,6 +65399,15 @@ async function routingCalculateRoundTripGraphhopper(){
     routingSetStatus(routingT("routing.calcRoundTrip", "Calcolo candidati anello…"), false);
     for (let si = 0; si < seeds.length; si++){
       if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+      const gateSeed = routingNetworkGateGraphhopper({
+        provider: r.resolvedProvider || routeProvider,
+        endpoint: r.resolvedEndpoint || routeEndpoint
+      });
+      if (!gateSeed.ok){
+        r.routeError = gateSeed.errKey;
+        routingSetStatus(routingT(gateSeed.errKey, gateSeed.errKey), true);
+        return;
+      }
       const seed = seeds[si];
       const body = routingBuildGraphhopperRoundTripBody(profile, startSnap.pointLonLat, targetM, seed);
       armRouteTimeout();
@@ -65391,6 +65416,13 @@ async function routingCalculateRoundTripGraphhopper(){
         data = await postRouteBody(body);
       } catch(eCand){
         const isAbort = eCand && eCand.name === "AbortError";
+        // Timeout mid-batch with a valid best: stop further seeds, keep best for final reGate/apply.
+        if (timedOut && best &&
+            state._routing && state._routing.requestSequence === reqSeq &&
+            state._routing.requestController === controller){
+          timedOut = false;
+          break;
+        }
         if (isAbort || timedOut) throw eCand;
         if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
         try {
