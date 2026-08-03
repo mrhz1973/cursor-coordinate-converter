@@ -9151,6 +9151,57 @@ dialog.track-modal.app-modal{
   outline-offset:1px;
   font-weight:700;
 }
+.routing-round-trip-controls{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  padding:2px 0 8px;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.routing-round-trip-controls[hidden]{ display:none !important; }
+.routing-round-trip-dist-row{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+.routing-round-trip-label{
+  font-size:.8rem;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.routing-round-trip-distance{
+  width:6.5rem;
+  max-width:100%;
+}
+.routing-round-trip-unit{
+  font-size:.8rem;
+  color:var(--muted);
+}
+.routing-round-trip-presets{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  align-items:center;
+}
+.routing-round-trip-preset.is-active{
+  outline:2px solid var(--accent, #2563eb);
+  outline-offset:1px;
+  font-weight:700;
+}
+.routing-round-trip-hint{
+  margin:0;
+  font-size:.78rem;
+}
+.routing-round-trip-feedback{
+  margin:0;
+  font-size:.78rem;
+}
+.routing-round-trip-feedback.is-err{ color:var(--danger, #b91c1c); }
+.routing-round-trip-feedback.is-warn{ color:var(--warn, #b45309); }
+.routing-round-trip-feedback.is-ok{ color:var(--ok, #15803d); }
 .routing-profile-select select,
 #routingProfileSelect{
   width:100%;
@@ -13592,6 +13643,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                   data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
           <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="out_and_back"
                   data-i18n="routing.outAndBack" aria-pressed="false">Andata e ritorno</button>
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="round_trip"
+                  data-i18n="routing.roundTrip" aria-pressed="false">Anello</button>
         </div>
       </div>
       <div class="routing-panel-actions">
@@ -13607,6 +13660,25 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" id="routingSaveAsTrackBtn" class="btn btn-sm" disabled
                 data-i18n="routing.saveAsTrack" data-i18n-tip="tip.routingSaveAsTrack" data-i18n-aria="tip.routingSaveAsTrack">Salva come traccia</button>
       </div>
+    </div>
+    <div id="routingRoundTripControls" class="routing-round-trip-controls" hidden>
+      <div class="routing-round-trip-dist-row">
+        <label for="routingRoundTripDistanceInput" class="routing-round-trip-label" data-i18n="routing.roundTripDistance">Distanza anello</label>
+        <input type="number" id="routingRoundTripDistanceInput" class="routing-round-trip-distance" min="2" max="40" step="0.5"
+               inputmode="decimal" data-i18n-aria="routing.roundTripDistanceAria" aria-label="Distanza obiettivo anello" />
+        <span class="routing-round-trip-unit" id="routingRoundTripUnitLabel">km</span>
+      </div>
+      <div class="routing-round-trip-presets" id="routingRoundTripPresets" role="group" aria-label="Preset distanza anello">
+        <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="5">5 km</button>
+        <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="10">10 km</button>
+        <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="15">15 km</button>
+        <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="25">25 km</button>
+      </div>
+      <p class="hint routing-round-trip-hint" data-i18n="routing.roundTripHint">Percorso circolare dalla partenza A. Non è un semplice andata e ritorno.</p>
+      <button type="button" id="routingRoundTripRegenBtn" class="btn btn-sm" disabled
+              data-i18n="routing.generateAnotherLoop" data-i18n-tip="tip.routingGenerateAnotherLoop"
+              data-i18n-aria="tip.routingGenerateAnotherLoop">Genera un altro anello</button>
+      <p id="routingRoundTripFeedback" class="routing-round-trip-feedback" role="status" aria-live="polite" hidden></p>
     </div>
     <form id="routingSaveAsTrackForm" class="routing-save-as-track-form" hidden autocomplete="off">
       <p class="hint routing-save-as-track-hint" data-i18n="routing.saveAsTrackNameHint">Scegli il nome prima del salvataggio</p>
@@ -15927,6 +15999,20 @@ const I18N = {
     "routing.routeMode":"Percorso",
     "routing.oneWay":"Solo andata",
     "routing.outAndBack":"Andata e ritorno",
+    "routing.roundTrip":"Anello",
+    "routing.roundTripDistance":"Distanza anello",
+    "routing.roundTripDistanceAria":"Distanza obiettivo anello",
+    "routing.roundTripHint":"Percorso circolare dalla partenza A. Non è un semplice andata e ritorno.",
+    "routing.generateAnotherLoop":"Genera un altro anello",
+    "tip.routingGenerateAnotherLoop":"Calcola un altro anello con seed diversi, stessa partenza e distanza",
+    "routing.calcRoundTrip":"Calcolo candidati anello…",
+    "routing.roundTripReady":"Anello pronto",
+    "routing.roundTripDistanceInvalid":"Distanza anello non valida (2–40 km).",
+    "routing.roundTripNeedStart":"Imposta la partenza A per l’anello.",
+    "routing.roundTripNoCandidate":"Nessun anello valido generato. Prova un’altra distanza o Genera un altro anello.",
+    "routing.roundTripDistanceWarn":"Distanza ottenuta molto diversa dall’obiettivo.",
+    "routing.roundTripGeometryInvalid":"Geometria anello non valida o non chiusa.",
+    "routing.errorRoundTrip":"Calcolo anello non riuscito.",
     "routing.calcOutbound":"Calcolo percorso andata…",
     "routing.calcReturn":"Calcolo percorso ritorno…",
     "routing.errorOutbound":"Calcolo andata non riuscito.",
@@ -21970,10 +22056,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-ACTION-ROW-UX-A";
-const APP_BUILD_DETAIL = "unified routing mode and action row";
+const APP_BUILD_ID = "ROUTING-ANELLO-A";
+const APP_BUILD_DETAIL = "native GraphHopper multi-seed loop routing";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 113;
+const APP_BUILD_NUM = 114;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61830,6 +61916,15 @@ const ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS = 3000;
 const ROUTING_ALTERNATIVE_MAX_PATHS = 3;
 const ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR = 1.4;
 const ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR = 0.6;
+/** ROUTING-ANELLO-A — native GraphHopper round_trip (CH requires ch.disable). */
+const ROUTING_ROUND_TRIP_DISTANCE_MIN_M = 2000;
+const ROUTING_ROUND_TRIP_DISTANCE_MAX_M = 40000;
+const ROUTING_ROUND_TRIP_DISTANCE_DEFAULT_M = 10000;
+const ROUTING_ROUND_TRIP_MAX_SEEDS = 3;
+const ROUTING_ROUND_TRIP_CLOSE_TOL_M = 25;
+const ROUTING_ROUND_TRIP_DELTA_WARN_PCT = 40;
+const ROUTING_ROUND_TRIP_SEED_STRIDES = Object.freeze([0, 7919, 104729]);
+const ROUTING_ROUND_TRIP_PRESET_KM = Object.freeze([5, 10, 15, 25]);
 /** Session-only prefs surviving panel close (not persisted; reset on page reload). */
 var _routingSessionPrefs = { provider: "vps", loopbackConsent: false, unitsDistance: "km", unitsAltitude: "m" };
 function routingGetUnitsPrefs(){
@@ -62044,7 +62139,16 @@ function routingEnsureState(){
     if (!Array.isArray(r.alternatives)) r.alternatives = [];
     if (!("selectedAlternative" in r)) r.selectedAlternative = null;
     else if (r.selectedAlternative != null && !Number.isFinite(Number(r.selectedAlternative))) r.selectedAlternative = null;
-    if (r.routeMode !== "one_way" && r.routeMode !== "out_and_back") r.routeMode = "one_way";
+    if (r.routeMode !== "one_way" && r.routeMode !== "out_and_back" && r.routeMode !== "round_trip") r.routeMode = "one_way";
+    if (!Number.isFinite(Number(r.roundTripDistanceM))) r.roundTripDistanceM = ROUTING_ROUND_TRIP_DISTANCE_DEFAULT_M;
+    else {
+      let d = Math.round(Number(r.roundTripDistanceM));
+      if (d < ROUTING_ROUND_TRIP_DISTANCE_MIN_M) d = ROUTING_ROUND_TRIP_DISTANCE_MIN_M;
+      if (d > ROUTING_ROUND_TRIP_DISTANCE_MAX_M) d = ROUTING_ROUND_TRIP_DISTANCE_MAX_M;
+      r.roundTripDistanceM = d;
+    }
+    if (r.roundTripSeed != null && !Number.isFinite(Number(r.roundTripSeed))) r.roundTripSeed = null;
+    if (typeof r.roundTripWarnKey !== "string") r.roundTripWarnKey = "";
     if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
     if (!Array.isArray(r.searchHistory)) r.searchHistory = [];
     if (!r.infoCache || typeof r.infoCache !== "object") r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
@@ -62095,6 +62199,9 @@ function routingEnsureState(){
     alternatives: [],
     selectedAlternative: null,
     routeMode: "one_way",
+    roundTripDistanceM: ROUTING_ROUND_TRIP_DISTANCE_DEFAULT_M,
+    roundTripSeed: null,
+    roundTripWarnKey: "",
     search: Object.create(null),
     searchHistory: [],
     infoCache: { bbox: null, profiles: null, fetchedAt: null, provider: null }
@@ -62404,8 +62511,16 @@ function routingSyncCalculateBtnUi(){
   }
   const profile = routingGetSelectedGraphhopperProfile();
   const profOk = routingGraphhopperProfileIsValid(profile);
-  const ptsRes = routingExtractValidGraphhopperPoints();
-  const ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
+  const mode = routingGetRouteMode();
+  let ok = false;
+  if (mode === "round_trip"){
+    const startOk = routingRoundTripStartIsReady();
+    const distOk = routingRoundTripDistanceIsValid(state._routing && state._routing.roundTripDistanceM);
+    ok = profOk && startOk && distOk;
+  } else {
+    const ptsRes = routingExtractValidGraphhopperPoints();
+    ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
+  }
   calcBtn.disabled = !ok;
   try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
   try { routingSyncReverseBtnUi(); } catch(_){}
@@ -62413,6 +62528,7 @@ function routingSyncCalculateBtnUi(){
   try { routingSyncPointsFeedback(); } catch(_){}
   try { routingSyncAlternativesRowUi(); } catch(_){}
   try { routingSyncModeRowUi(); } catch(_){}
+  try { routingSyncRoundTripRegenBtnUi(); } catch(_){}
 }
 let _routingSaveBusy = false;
 function routingRoutePreviewIsValid(){
@@ -62455,11 +62571,20 @@ function routingSyncReverseBtnUi(){
     btn.disabled = true;
     return;
   }
+  if (routingGetRouteMode() === "round_trip"){
+    btn.disabled = true;
+    return;
+  }
   const n = Array.isArray(r.points) ? r.points.length : 0;
   btn.disabled = routingReverseIsBusyBlocked(r) || n < 2;
 }
 function routingReversePoints(){
   const r = routingEnsureState();
+  if (routingGetRouteMode() === "round_trip"){
+    routingSetStatus(routingT("routing.reverseUnavailable", "Reverse is not available in this state."), true);
+    try { routingSyncReverseBtnUi(); } catch(_){}
+    return false;
+  }
   if (routingReverseIsBusyBlocked(r)){
     routingSetStatus(routingT("routing.reverseUnavailable", "Reverse is not available in this state."), true);
     try { routingSyncReverseBtnUi(); } catch(_){}
@@ -62782,6 +62907,7 @@ function routingInvalidateRoutePreview(){
   state._routing.altitudeHover = null;
   state._routing._altitudeChartLayout = null;
   state._routing.routeError = "";
+  state._routing.roundTripWarnKey = "";
   state._routing.alternatives = [];
   state._routing.selectedAlternative = null;
 
@@ -63153,7 +63279,9 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
   const n = pts.length;
   const llRef = Number.isFinite(markerLat) ? markerLat : ((state.viewCenter && state.viewCenter.lat) || 0);
   const loRef = Number.isFinite(markerLon) ? markerLon : ((state.viewCenter && state.viewCenter.lon) || 0);
+  const roundTripOnlyA = routingGetRouteMode() === "round_trip";
   for (let i = 0; i < n; i++){
+    if (roundTripOnlyA && i !== 0) continue;
     const p = pts[i];
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     const c = tileMapLatLonToPx(root, p.lat, p.lon);
@@ -63873,9 +64001,11 @@ function routingRenderList(){
   else if (!navigator.geolocation) gpsTip = routingT("routing.gpsUnavailable", "Geolocation unavailable.");
   else if (gpsBusy) gpsTip = routingT("routing.gpsAcquiring", "Acquiring location…");
   const frag = document.createDocumentFragment();
+  const roundTripMode = routingGetRouteMode() === "round_trip";
   for (let i = 0; i < n; i++){
     const p = pts[i];
     if (!p) continue;
+    if (roundTripMode && i !== 0) continue;
     const kind = routingPointKind(i, n);
     const badge = routingPointBadge(i, n);
     const row = document.createElement("div");
@@ -64035,7 +64165,7 @@ function routingRenderList(){
   try { routingSyncCoordEditBtnUi(); } catch(_){}
   const addBtn = document.getElementById("routingAddViaBtn");
   if (addBtn){
-    if (n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
+    if (routingGetRouteMode() === "round_trip" || n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
     else addBtn.removeAttribute("aria-disabled");
   }
   const calcBtn = document.getElementById("routingCalculateBtn");
@@ -64105,6 +64235,10 @@ function routingRemovePoint(id){
 }
 function routingAddVia(){
   const r = routingEnsureState();
+  if (routingGetRouteMode() === "round_trip"){
+    routingSetStatus(routingT("routing.roundTripHint", "Percorso circolare dalla partenza A."), true);
+    return;
+  }
   if ((r.points || []).length >= ROUTING_MAX_POINTS){
     routingSetStatus(routingT("routing.maxPoints", "Max 20"), true);
     return;
@@ -64750,8 +64884,667 @@ async function routingVerifyProvider(){
     routingSyncCalculateBtnUi();
   }
 }
+
+function routingClampRoundTripDistanceM(m){
+  let d = Math.round(Number(m));
+  if (!Number.isFinite(d)) d = ROUTING_ROUND_TRIP_DISTANCE_DEFAULT_M;
+  if (d < ROUTING_ROUND_TRIP_DISTANCE_MIN_M) d = ROUTING_ROUND_TRIP_DISTANCE_MIN_M;
+  if (d > ROUTING_ROUND_TRIP_DISTANCE_MAX_M) d = ROUTING_ROUND_TRIP_DISTANCE_MAX_M;
+  return d;
+}
+function routingRoundTripDistanceIsValid(m){
+  const d = Number(m);
+  return Number.isFinite(d) && d >= ROUTING_ROUND_TRIP_DISTANCE_MIN_M && d <= ROUTING_ROUND_TRIP_DISTANCE_MAX_M;
+}
+function routingGetRoundTripStartPoint(){
+  const r = state._routing;
+  if (!r || !Array.isArray(r.points) || !r.points.length) return null;
+  const p = r.points[0];
+  return p || null;
+}
+function routingRoundTripStartIsReady(){
+  return routingPointIsPositioned(routingGetRoundTripStartPoint());
+}
+function routingNewRoundTripSeed(){
+  const n = (Date.now() ^ (Math.floor(Math.random() * 0x7fffffff))) >>> 0;
+  return n === 0 ? 1 : n;
+}
+function routingRoundTripSeedBatch(baseSeed){
+  const base = (Number(baseSeed) >>> 0) || routingNewRoundTripSeed();
+  const out = [];
+  for (let i = 0; i < ROUTING_ROUND_TRIP_MAX_SEEDS && i < ROUTING_ROUND_TRIP_SEED_STRIDES.length; i++){
+    out.push((base + ROUTING_ROUND_TRIP_SEED_STRIDES[i]) >>> 0 || 1);
+  }
+  return out;
+}
+function routingBuildGraphhopperRoundTripBody(profile, pointLonLat, distanceM, seed){
+  return {
+    profile: profile,
+    points: [pointLonLat],
+    algorithm: "round_trip",
+    "round_trip.distance": Math.round(Number(distanceM)),
+    "round_trip.seed": (Number(seed) >>> 0) || 1,
+    "ch.disable": true,
+    elevation: true,
+    points_encoded: false,
+    instructions: false
+  };
+}
+function routingRoundTripClosureOk(previewCoordinates, tolM){
+  if (!Array.isArray(previewCoordinates) || previewCoordinates.length < 2) return false;
+  const a = previewCoordinates[0];
+  const b = previewCoordinates[previewCoordinates.length - 1];
+  if (!a || !b) return false;
+  const d = routingHaversineMeters(a.lat, a.lon, b.lat, b.lon);
+  const tol = Number.isFinite(tolM) ? tolM : ROUTING_ROUND_TRIP_CLOSE_TOL_M;
+  return Number.isFinite(d) && d <= tol;
+}
+function routingScoreRoundTripCandidate(metrics, targetM){
+  const dist = metrics && Number(metrics.distanceM);
+  const t = Number(targetM);
+  if (!Number.isFinite(dist) || dist < 0 || !Number.isFinite(t) || t <= 0) return Infinity;
+  return Math.abs(dist - t);
+}
+function routingRoundTripDeltaPct(metrics, targetM){
+  const dist = metrics && Number(metrics.distanceM);
+  const t = Number(targetM);
+  if (!Number.isFinite(dist) || !Number.isFinite(t) || t <= 0) return null;
+  return 100 * (dist - t) / t;
+}
+function routingDisplayRoundTripDistanceValue(meters){
+  const m = Number(meters);
+  if (!Number.isFinite(m)) return "";
+  const units = routingGetUnitsPrefs();
+  if (units.distance === "mi") return String(Math.round((m / 1609.344) * 100) / 100);
+  return String(Math.round((m / 1000) * 100) / 100);
+}
+function routingParseRoundTripDistanceInputToMeters(raw){
+  const v = Number(raw);
+  if (!Number.isFinite(v) || v <= 0) return NaN;
+  const units = routingGetUnitsPrefs();
+  if (units.distance === "mi") return v * 1609.344;
+  return v * 1000;
+}
+function routingSetRoundTripFeedback(msg, kind){
+  const el = document.getElementById("routingRoundTripFeedback");
+  if (!el) return;
+  const text = msg != null ? String(msg) : "";
+  if (!text){
+    el.hidden = true;
+    el.textContent = "";
+    el.classList.remove("is-err", "is-warn", "is-ok");
+    return;
+  }
+  el.hidden = false;
+  el.textContent = text;
+  el.classList.toggle("is-err", kind === "err");
+  el.classList.toggle("is-warn", kind === "warn");
+  el.classList.toggle("is-ok", kind === "ok");
+}
+function routingSyncRoundTripRegenBtnUi(){
+  const btn = document.getElementById("routingRoundTripRegenBtn");
+  if (!btn) return;
+  const r = state._routing;
+  const busy = !!(r && (r.requestLoading || r.infoLoading));
+  const modeOk = routingGetRouteMode() === "round_trip";
+  const previewOk = routingRoutePreviewIsValid();
+  btn.disabled = !modeOk || busy || !previewOk;
+}
+function routingSyncRoundTripControlsUi(){
+  const wrap = document.getElementById("routingRoundTripControls");
+  const r = routingEnsureState();
+  const mode = routingGetRouteMode();
+  const on = mode === "round_trip";
+  if (wrap) wrap.hidden = !on;
+  if (!on){
+    routingSetRoundTripFeedback("", "");
+    try { routingSyncRoundTripRegenBtnUi(); } catch(_){}
+    return;
+  }
+  const units = routingGetUnitsPrefs();
+  const unitLab = document.getElementById("routingRoundTripUnitLabel");
+  if (unitLab) unitLab.textContent = units.distance === "mi" ? "mi" : "km";
+  const input = document.getElementById("routingRoundTripDistanceInput");
+  const distM = routingClampRoundTripDistanceM(r.roundTripDistanceM);
+  r.roundTripDistanceM = distM;
+  if (input && document.activeElement !== input){
+    input.value = routingDisplayRoundTripDistanceValue(distM);
+    if (units.distance === "mi"){
+      input.min = "1.25";
+      input.max = "25";
+      input.step = "0.25";
+    } else {
+      input.min = "2";
+      input.max = "40";
+      input.step = "0.5";
+    }
+  }
+  const presets = document.querySelectorAll("#routingRoundTripPresets [data-rt-preset-km]");
+  for (let i = 0; i < presets.length; i++){
+    const b = presets[i];
+    const km = Number(b.getAttribute("data-rt-preset-km"));
+    const m = km * 1000;
+    const active = Math.abs(distM - m) < 1;
+    b.classList.toggle("is-active", active);
+    if (units.distance === "mi"){
+      const mi = Math.round((m / 1609.344) * 10) / 10;
+      b.textContent = String(mi) + " mi";
+    } else {
+      b.textContent = String(km) + " km";
+    }
+  }
+  const busy = !!(r.requestLoading || r.infoLoading);
+  if (input) input.disabled = !!busy;
+  for (let i = 0; i < presets.length; i++) presets[i].disabled = !!busy;
+  if (r.roundTripWarnKey){
+    routingSetRoundTripFeedback(routingT(r.roundTripWarnKey, r.roundTripWarnKey), "warn");
+  } else {
+    routingSetRoundTripFeedback("", "");
+  }
+  try { routingSyncRoundTripRegenBtnUi(); } catch(_){}
+}
+function routingWireRoundTripControlsOnce(){
+  const wrap = document.getElementById("routingRoundTripControls");
+  if (!wrap || wrap._routingRoundTripWired) return;
+  wrap._routingRoundTripWired = true;
+  const input = document.getElementById("routingRoundTripDistanceInput");
+  if (input){
+    input.addEventListener("change", () => {
+      const r = routingEnsureState();
+      const meters = routingParseRoundTripDistanceInputToMeters(input.value);
+      if (!routingRoundTripDistanceIsValid(meters)){
+        routingSetRoundTripFeedback(routingT("routing.roundTripDistanceInvalid", "Distanza anello non valida (2–40 km)."), "err");
+        routingSyncRoundTripControlsUi();
+        routingSyncCalculateBtnUi();
+        return;
+      }
+      const next = routingClampRoundTripDistanceM(meters);
+      if (next !== r.roundTripDistanceM){
+        r.roundTripDistanceM = next;
+        r.roundTripWarnKey = "";
+        try { routingInvalidateRoutePreview(); } catch(_){}
+      }
+      routingSyncRoundTripControlsUi();
+      routingSyncCalculateBtnUi();
+    });
+  }
+  const presets = document.getElementById("routingRoundTripPresets");
+  if (presets){
+    presets.addEventListener("click", (ev) => {
+      const b = ev.target && ev.target.closest ? ev.target.closest("[data-rt-preset-km]") : null;
+      if (!b || !presets.contains(b) || b.disabled) return;
+      ev.preventDefault();
+      const km = Number(b.getAttribute("data-rt-preset-km"));
+      if (!Number.isFinite(km)) return;
+      const r = routingEnsureState();
+      const next = routingClampRoundTripDistanceM(km * 1000);
+      if (next !== r.roundTripDistanceM){
+        r.roundTripDistanceM = next;
+        r.roundTripWarnKey = "";
+        try { routingInvalidateRoutePreview(); } catch(_){}
+      }
+      routingSyncRoundTripControlsUi();
+      routingSyncCalculateBtnUi();
+    });
+  }
+  const regen = document.getElementById("routingRoundTripRegenBtn");
+  if (regen){
+    regen.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (regen.disabled) return;
+      if (routingGetRouteMode() !== "round_trip") return;
+      const r = routingEnsureState();
+      r.roundTripSeed = routingNewRoundTripSeed();
+      r.roundTripWarnKey = "";
+      routingCalculateRoundTripGraphhopper();
+    });
+  }
+  routingSyncRoundTripControlsUi();
+}
+async function routingVerifyRoundTripStartAgainstNearest(endpoint, provider, profile, parentSignal, seq){
+  const r = state._routing;
+  if (!r) return { ok: false, errKey: "routing.errorGeneric", blocking: [] };
+  const infoEnsured = await routingEnsureInfoCache(endpoint, provider, parentSignal);
+  if (!state._routing || state._routing.requestSequence !== seq)
+    return { ok: false, stale: true, errKey: "routing.errorGeneric", blocking: [] };
+  if (infoEnsured.aborted) return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
+  const infoCache = r.infoCache || { bbox: null };
+  const p = routingGetRoundTripStartPoint();
+  if (!p || !routingPointIsPositioned(p))
+    return { ok: false, errKey: "routing.roundTripNeedStart", blocking: [{ index: 0, status: "missing" }] };
+  if (routingSnapIsReusable(p, profile, provider))
+    return { ok: !routingSnapStatusIsBlocking(p.snapStatus), blocking: routingSnapStatusIsBlocking(p.snapStatus) ? [{ index: 0, id: p.id, status: p.snapStatus }] : [] };
+  const bbox = infoCache.bbox;
+  if (Array.isArray(bbox) && !routingPointInBbox(bbox, p.lat, p.lon)){
+    routingClearPointSnapFields(p, "out-of-coverage");
+    p.snapCheckedProfile = profile;
+    p.snapCheckedProvider = provider;
+    p.snapCheckedAt = Date.now();
+    return { ok: false, errKey: "routing.snapBlocked", blocking: [{ index: 0, id: p.id, status: "out-of-coverage" }] };
+  }
+  const nearest = await routingNearestForPoint(endpoint, p, parentSignal);
+  if (!state._routing || state._routing.requestSequence !== seq)
+    return { ok: false, stale: true, errKey: "routing.errorGeneric", blocking: [] };
+  if (nearest.aborted) return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
+  if (nearest.timedOut) return { ok: false, errKey: "routing.errorTimeout", blocking: [] };
+  if (!nearest.ok || nearest.unresolvable){
+    p._nearestUnresolvable = true;
+    const st = routingClassifySnap(p, infoCache, profile, provider);
+    return { ok: false, errKey: "routing.snapBlocked", blocking: [{ index: 0, id: p.id, status: st }] };
+  }
+  p.snapLat = nearest.snapLat;
+  p.snapLon = nearest.snapLon;
+  p.snapDeltaM = nearest.distance;
+  p.snapSource = "nearest";
+  const st = routingClassifySnap(p, infoCache, profile, provider);
+  if (routingSnapStatusIsBlocking(st))
+    return { ok: false, errKey: "routing.snapBlocked", blocking: [{ index: 0, id: p.id, status: st }] };
+  return { ok: true, blocking: [] };
+}
+function routingBuildRoundTripStartLonLatFromSnap(){
+  const p = routingGetRoundTripStartPoint();
+  if (!p || !routingPointIsPositioned(p)) return { ok: false, pointLonLat: null };
+  const st = p.snapStatus || "unverified";
+  if (routingSnapStatusIsBlocking(st) || st === "unverified" || st === "stale")
+    return { ok: false, pointLonLat: null, status: st };
+  if ((st === "verified" || st === "confirmed") &&
+      Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
+    return { ok: true, pointLonLat: [Number(p.snapLon), Number(p.snapLat)] };
+  }
+  return { ok: true, pointLonLat: [Number(p.lon), Number(p.lat)] };
+}
+async function routingCalculateRoundTripGraphhopper(){
+  const r = state._routing;
+  if (!r || r.requestLoading || r.infoLoading) return;
+
+  const profile = routingGetSelectedGraphhopperProfile();
+  if (!routingGraphhopperProfileIsValid(profile)){
+    r.routeError = "routing.errorInvalidProfile";
+    routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  if (!routingRoundTripStartIsReady()){
+    r.routeError = "routing.roundTripNeedStart";
+    routingSetStatus(routingT("routing.roundTripNeedStart", "Imposta la partenza A per l’anello."), true);
+    routingSetRoundTripFeedback(routingT("routing.roundTripNeedStart", "Imposta la partenza A per l’anello."), "err");
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  r.roundTripDistanceM = routingClampRoundTripDistanceM(r.roundTripDistanceM);
+  if (!routingRoundTripDistanceIsValid(r.roundTripDistanceM)){
+    r.routeError = "routing.roundTripDistanceInvalid";
+    routingSetStatus(routingT("routing.roundTripDistanceInvalid", "Distanza anello non valida (2–40 km)."), true);
+    routingSetRoundTripFeedback(routingT("routing.roundTripDistanceInvalid", "Distanza anello non valida (2–40 km)."), "err");
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  const selectedProvider = routingProviderNormalize(r.provider);
+  const gate0 = routingNetworkGateGraphhopper({ provider: selectedProvider });
+  if (!gate0.ok){
+    r.routeError = gate0.errKey;
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    routingSetProviderStatus(gate0.errKey, true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const reqSeq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.requestLoading = true;
+  r.infoLoading = false;
+  r.requestTimedOut = false;
+  r.previewCoordinates = null;
+  r.elevationCoordinates = null;
+  r.routeMetrics = null;
+  r.elevationProfile = null;
+  r.difficultySummary = null;
+  r.altitudeHover = null;
+  r._altitudeChartLayout = null;
+  r.routeError = "";
+  r.roundTripWarnKey = "";
+  r.alternatives = [];
+  r.selectedAlternative = null;
+  try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
+  try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+  try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
+  routingSetStatus(routingT("routing.calcRoundTrip", "Calcolo candidati anello…"), false);
+  routingSetRoundTripFeedback("", "");
+  routingSyncCalculateBtnUi();
+  try { routingSyncAlternativesRowUi(); } catch(_){}
+  try { routingSyncRoundTripControlsUi(); } catch(_){}
+
+  let routeEndpoint = "";
+  let routeProvider = null;
+  try {
+    if (selectedProvider === "auto"){
+      const resolved = await routingResolveProvider({ controller: controller, seq: reqSeq, purpose: "route" });
+      if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+      if (resolved.aborted || resolved.stale){
+        if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+          state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+        }
+        return;
+      }
+      if (!resolved.ok){
+        r.routeError = resolved.errKey || "routing.noProviderAvailable";
+        routingSetStatus(routingT(r.routeError, r.routeError), true);
+        if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+          state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+        }
+        return;
+      }
+      routeEndpoint = resolved.endpoint;
+      routeProvider = resolved.provider;
+    } else {
+      routeProvider = selectedProvider;
+      routeEndpoint = routingEndpointForProvider(selectedProvider);
+      r.resolvedProvider = routeProvider;
+      r.resolvedEndpoint = routeEndpoint;
+      routingSyncEndpointUi();
+    }
+  } catch(eResolve){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = "routing.errorGeneric";
+    routingSetStatus(routingT("routing.errorGeneric", "Error"), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  const gateEp = routingNetworkGateGraphhopper({ provider: routeProvider, endpoint: routeEndpoint });
+  if (!gateEp.ok){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = gateEp.errKey;
+    routingSetStatus(routingT(gateEp.errKey, gateEp.errKey), true);
+    routingSetProviderStatus(gateEp.errKey, true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  r.resolvedProvider = routeProvider;
+  r.resolvedEndpoint = routeEndpoint;
+  try { routingSyncEndpointUi(); } catch(_){}
+
+  routingSetStatus(routingT("routing.snapVerifying", "Verifica copertura punti…"), false);
+  let snapPre;
+  try {
+    snapPre = await routingVerifyRoundTripStartAgainstNearest(routeEndpoint, routeProvider, profile, controller.signal, reqSeq);
+  } catch(eSnap){
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    r.routeError = "routing.errorGeneric";
+    routingSetStatus(routingT("routing.errorGeneric", "Error"), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+  if (snapPre.aborted || snapPre.stale){
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (snapPre.errKey === "routing.errorTimeout"){
+    r.routeError = "routing.errorTimeout";
+    routingSetStatus(routingT("routing.errorTimeout", "Request timed out."), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+  if (!snapPre.ok){
+    const msgs = routingCollectSnapStatusMessages();
+    const first = msgs.length ? msgs[0] : routingT("routing.snapBlocked", "Calcolo bloccato: verifica i punti evidenziati.");
+    r.routeError = snapPre.errKey || "routing.snapBlocked";
+    routingSetStatus(first, true);
+    try { routingRenderList(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  const startSnap = routingBuildRoundTripStartLonLatFromSnap();
+  if (!startSnap.ok || !startSnap.pointLonLat){
+    r.routeError = "routing.snapBlocked";
+    routingSetStatus(routingT("routing.snapBlocked", "Calcolo bloccato: verifica i punti evidenziati."), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  const gateAfterSnap = routingNetworkGateGraphhopper({ provider: routeProvider, endpoint: routeEndpoint });
+  if (!gateAfterSnap.ok){
+    r.routeError = gateAfterSnap.errKey;
+    routingSetStatus(routingT(gateAfterSnap.errKey, gateAfterSnap.errKey), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false; state._routing.infoLoading = false; state._routing.requestController = null; routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
+  if (r.roundTripSeed == null || !Number.isFinite(Number(r.roundTripSeed)))
+    r.roundTripSeed = routingNewRoundTripSeed();
+  const seeds = routingRoundTripSeedBatch(r.roundTripSeed);
+  const targetM = r.roundTripDistanceM;
+  const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
+  let timedOut = false;
+  let timeoutId = null;
+  let best = null;
+  let lastGhMsg = "";
+
+  function armRouteTimeout(){
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
+    timedOut = false;
+    timeoutId = setTimeout(() => {
+      timedOut = true;
+      try { controller.abort(); } catch(_){}
+    }, ROUTING_GRAPHHOPPER_TIMEOUT_MS);
+  }
+
+  async function postRouteBody(bodyObj){
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bodyObj),
+      signal: controller.signal
+    });
+    let rawText = "";
+    try { rawText = await res.text(); } catch(_){ rawText = ""; }
+    let data = null;
+    if (rawText){
+      try { data = JSON.parse(rawText); } catch(_){
+        if (!res || !res.ok){
+          const status = res && typeof res.status === "number" ? res.status : 0;
+          throw { kind: "http", status: status, bodyText: rawText, data: null };
+        }
+        throw { kind: "json" };
+      }
+    }
+    if (!res || !res.ok){
+      const status = res && typeof res.status === "number" ? res.status : 0;
+      throw { kind: "http", status: status, bodyText: rawText, data: data };
+    }
+    if (!data || typeof data !== "object") throw { kind: "json" };
+    return data;
+  }
+
+  try {
+    routingSetStatus(routingT("routing.calcRoundTrip", "Calcolo candidati anello…"), false);
+    for (let si = 0; si < seeds.length; si++){
+      if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+      const seed = seeds[si];
+      const body = routingBuildGraphhopperRoundTripBody(profile, startSnap.pointLonLat, targetM, seed);
+      armRouteTimeout();
+      let data = null;
+      try {
+        data = await postRouteBody(body);
+      } catch(eCand){
+        const isAbort = eCand && eCand.name === "AbortError";
+        if (isAbort || timedOut) throw eCand;
+        if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+        try {
+          if (eCand && eCand.data && typeof eCand.data.message === "string") lastGhMsg = eCand.data.message;
+        } catch(_){}
+        continue;
+      }
+      if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+      const validated = routingValidateGraphhopperResponse(data);
+      if (!validated.ok){
+        try {
+          if (data && typeof data.message === "string") lastGhMsg = data.message;
+        } catch(_){}
+        continue;
+      }
+      const alt = Array.isArray(validated.alternatives) && validated.alternatives.length ? validated.alternatives[0] : null;
+      if (!alt || !Array.isArray(alt.previewCoordinates) || alt.previewCoordinates.length < 2) continue;
+      if (!routingRoundTripClosureOk(alt.previewCoordinates, ROUTING_ROUND_TRIP_CLOSE_TOL_M)) continue;
+      if (!alt.metrics || !Number.isFinite(Number(alt.metrics.distanceM))) continue;
+      const score = routingScoreRoundTripCandidate(alt.metrics, targetM);
+      if (!best || score < best.score){
+        best = { score: score, alt: alt, seed: seed, data: data };
+      }
+    }
+
+    if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+    if (!best){
+      r.routeError = "routing.roundTripNoCandidate";
+      let msg = routingT("routing.roundTripNoCandidate", "Nessun anello valido generato.");
+      if (lastGhMsg) msg = msg + ": " + String(lastGhMsg).slice(0, 180);
+      routingSetStatus(msg, true);
+      routingSetRoundTripFeedback(msg, "err");
+      return;
+    }
+
+    const reGate = routingNetworkGateGraphhopper({
+      provider: r.resolvedProvider || routeProvider,
+      endpoint: r.resolvedEndpoint || routeEndpoint
+    });
+    if (!reGate.ok){
+      r.routeError = reGate.errKey;
+      routingSetStatus(routingT(reGate.errKey, reGate.errKey), true);
+      return;
+    }
+
+    const chosen = best.alt;
+    const elev = Array.isArray(chosen.elevationCoordinates) && chosen.elevationCoordinates.length
+      ? chosen.elevationCoordinates
+      : chosen.previewCoordinates.map(function(pt){ return { lat: pt.lat, lon: pt.lon, ele: null }; });
+
+    r.alternatives = [];
+    r.selectedAlternative = null;
+    r.previewCoordinates = chosen.previewCoordinates.slice();
+    r.elevationCoordinates = elev;
+    r.routeMetrics = chosen.metrics;
+    r.altitudeHover = null;
+    r._altitudeChartLayout = null;
+    r.routeError = "";
+    r.roundTripSeed = best.seed;
+    const deltaPct = routingRoundTripDeltaPct(chosen.metrics, targetM);
+    if (deltaPct != null && Math.abs(deltaPct) > ROUTING_ROUND_TRIP_DELTA_WARN_PCT){
+      r.roundTripWarnKey = "routing.roundTripDistanceWarn";
+    } else {
+      r.roundTripWarnKey = "";
+    }
+    try {
+      r.elevationProfile = routingBuildElevationProfile(r.previewCoordinates, r.elevationCoordinates);
+      r._altitudeProfileGeneration = (r._altitudeProfileGeneration || 0) + 1;
+      try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
+      r.difficultySummary = routingComputeDifficulty(r.routeMetrics, r.elevationProfile, profile);
+    } catch(_){
+      r.elevationProfile = null;
+      r.difficultySummary = null;
+    }
+    try { routingRenderAltitudePanel({ preserveHover: false }); } catch(_){}
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+    try {
+      const okFit = routingFitMapToRoutePreview(r.previewCoordinates);
+      if (!okFit) refreshTileMapForTrackUi();
+    } catch(_){
+      try { refreshTileMapForTrackUi(); } catch(_){}
+    }
+    let statusMsg = routingFmtRouteStatusMessage(r.routeMetrics);
+    if (r.roundTripWarnKey){
+      statusMsg = statusMsg + " — " + routingT(r.roundTripWarnKey, r.roundTripWarnKey);
+      routingSetRoundTripFeedback(routingT(r.roundTripWarnKey, r.roundTripWarnKey), "warn");
+    } else {
+      routingSetRoundTripFeedback("", "");
+    }
+    routingSetStatus(statusMsg, false);
+    try { routingRenderList(); } catch(_){}
+    try { routingFocusResultAfterSuccess(); } catch(_){}
+  } catch(e){
+    const isAbort = e && e.name === "AbortError";
+    if (isAbort && !timedOut) return;
+    if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+    r.previewCoordinates = null;
+    r.elevationCoordinates = null;
+    r.routeMetrics = null;
+    r.elevationProfile = null;
+    r.difficultySummary = null;
+    r.altitudeHover = null;
+    r._altitudeChartLayout = null;
+    r.alternatives = [];
+    r.selectedAlternative = null;
+    try { routingRemoveRoutePreviewOverlay(); } catch(_){}
+    try { if (typeof routingClearAltitudeUi === "function") routingClearAltitudeUi(); } catch(_){}
+    try { refreshTileMapForTrackUi(); } catch(_){}
+    if (timedOut){
+      r.routeError = "routing.errorTimeout";
+      routingSetStatus(routingT("routing.errorTimeout", "Request timed out."), true);
+      return;
+    }
+    if (e && e.kind === "http"){
+      r.routeError = "routing.errorRoundTrip";
+      routingSetStatus(routingT("routing.errorRoundTrip", "Calcolo anello non riuscito.") + " (" + String(e.status) + ")", true);
+      return;
+    }
+    if (e && e.kind === "json"){
+      r.routeError = "routing.errorInvalidResponse";
+      routingSetStatus(routingT("routing.errorInvalidResponse", "Invalid response."), true);
+      return;
+    }
+    const msg = String(e && e.message ? e.message : e || "");
+    const lower = msg.toLowerCase();
+    if (lower.indexOf("cors") >= 0){
+      r.routeError = "routing.errorCors";
+      routingSetStatus(routingT("routing.errorCors", "CORS error."), true);
+    } else {
+      r.routeError = "routing.errorNetwork";
+      routingSetStatus(routingT("routing.errorNetwork", "Network error."), true);
+    }
+  } finally {
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
+    if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+    if (state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestTimedOut = !!timedOut;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+    try { routingSyncModeRowUi(); } catch(_){}
+    try { routingSyncRoundTripControlsUi(); } catch(_){}
+  }
+}
+
 function routingNormalizeRouteMode(v){
-  return v === "out_and_back" ? "out_and_back" : "one_way";
+  if (v === "out_and_back") return "out_and_back";
+  if (v === "round_trip") return "round_trip";
+  return "one_way";
 }
 function routingGetRouteMode(){
   const r = state._routing;
@@ -64764,11 +65557,17 @@ function routingSetRouteMode(mode){
   const prev = routingNormalizeRouteMode(r.routeMode);
   if (next === prev){
     try { routingSyncModeRowUi(); } catch(_){}
+    try { routingSyncRoundTripControlsUi(); } catch(_){}
     return next;
   }
   r.routeMode = next;
+  if (next !== "round_trip") r.roundTripWarnKey = "";
   try { routingInvalidateRoutePreview(); } catch(_){}
   try { routingSyncModeRowUi(); } catch(_){}
+  try { routingSyncRoundTripControlsUi(); } catch(_){}
+  try { routingRenderList(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { routingSyncCalculateBtnUi(); } catch(_){}
   return next;
 }
 function routingSyncModeRowUi(){
@@ -64785,10 +65584,12 @@ function routingSyncModeRowUi(){
     b.setAttribute("aria-pressed", on ? "true" : "false");
     b.disabled = !!busy;
     if (val === "out_and_back") b.textContent = routingT("routing.outAndBack", "Andata e ritorno");
+    else if (val === "round_trip") b.textContent = routingT("routing.roundTrip", "Anello");
     else b.textContent = routingT("routing.oneWay", "Solo andata");
   }
   const lab = row.querySelector(".routing-mode-label");
   if (lab) lab.textContent = routingT("routing.routeMode", "Percorso");
+  try { routingSyncRoundTripControlsUi(); } catch(_){}
 }
 function routingWireModeRowOnce(){
   const row = document.getElementById("routingModeRow");
@@ -64800,7 +65601,7 @@ function routingWireModeRowOnce(){
     ev.preventDefault();
     if (b.disabled) return;
     const mode = b.getAttribute("data-routing-mode");
-    if (mode !== "one_way" && mode !== "out_and_back") return;
+    if (mode !== "one_way" && mode !== "out_and_back" && mode !== "round_trip") return;
     routingSetRouteMode(mode);
   });
   routingSyncModeRowUi();
@@ -64894,6 +65695,8 @@ function routingFmtRouteStatusMessage(metrics){
   // ROUTING-SUMMARY-DEDUP-A — metrics live in cards; status line stays concise.
   // `metrics` retained for call-site compatibility.
   void metrics;
+  if (routingGetRouteMode() === "round_trip")
+    return routingT("routing.roundTripReady", "Anello pronto");
   return routingT("routing.routeReady", "Route ready");
 }
 function routingFocusResultAfterSuccess(){
@@ -65148,7 +65951,7 @@ function routingSyncAlternativesRowUi(){
   const alts = r && Array.isArray(r.alternatives) ? r.alternatives : [];
   const busy = !!(r && (r.requestLoading || r.infoLoading));
   if (label) label.textContent = routingT("routing.alternativesLabel", "Alternative routes");
-  if (!r || !r.routeMetrics || alts.length < 2){
+  if (!r || routingGetRouteMode() === "round_trip" || !r.routeMetrics || alts.length < 2){
     chips.innerHTML = "";
     row.hidden = true;
     return;
@@ -65332,6 +66135,9 @@ function routingFitMapToRoutePreview(previewCoordinates){
 async function routingCalculateRouteGraphhopper(){
   const r = state._routing;
   if (!r || r.requestLoading || r.infoLoading) return;
+  if (routingGetRouteMode() === "round_trip"){
+    return routingCalculateRoundTripGraphhopper();
+  }
 
   const profile = routingGetSelectedGraphhopperProfile();
   if (!routingGraphhopperProfileIsValid(profile)){
@@ -66857,6 +67663,7 @@ function routingOnSpeedCustomInput(){
   }
 }
 function routingSyncUnitsRowUi(){
+  try { routingSyncRoundTripControlsUi(); } catch(_){}
   const prefs = routingGetUnitsPrefs();
   const row = document.getElementById("routingUnitsRow");
   if (!row) return;
@@ -67546,7 +68353,8 @@ function routingDrawAltitudeChart(opts){
     formatAltitude: routingFmtAltitudeForUnit,
     formatGrade: routingFmtGradePct,
     markerStartLabel: "A",
-    markerEndLabel: "B",
+    markerEndLabel: "A",
+    showEndMarker: routingGetRouteMode() !== "round_trip",
     ariaTitleId: "routingAltitudeSvgTitle",
     ariaDescId: "routingAltitudeDescId",
     titleText: routingT("routing.altitudeTitle", "Elevation profile"),
@@ -68303,6 +69111,7 @@ function openRoutingPlannerPanel(service){
   try { routingSyncUnitsRowUi(); } catch(_){}
   try { routingWireUnitsRowOnce(); } catch(_){}
   try { routingWireModeRowOnce(); } catch(_){}
+  try { routingWireRoundTripControlsOnce(); } catch(_){}
   try { routingSyncModeRowUi(); } catch(_){}
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(state.lang); } catch(_){}
@@ -68462,6 +69271,7 @@ function wireRoutingPlannerOnce(){
   try { routingWireSpeedControlsOnce(); } catch(_){}
   try { routingWireUnitsRowOnce(); } catch(_){}
   try { routingWireModeRowOnce(); } catch(_){}
+  try { routingWireRoundTripControlsOnce(); } catch(_){}
   try { routingWireAlternativesRowOnce(); } catch(_){}
   const calcBtn = document.getElementById("routingCalculateBtn");
   if (calcBtn) calcBtn.addEventListener("click", (ev) => {
