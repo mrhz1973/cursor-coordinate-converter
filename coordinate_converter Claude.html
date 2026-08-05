@@ -22119,10 +22119,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-BOX-ZOOM-A";
-const APP_BUILD_DETAIL = "map box zoom control";
+const APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1";
+const APP_BUILD_DETAIL = "pixel-ratio box zoom fit";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 116;
+const APP_BUILD_NUM = 117;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36311,6 +36311,37 @@ function cancelBboxSelection(){ endBboxSelection(); }
 
 /* ---- MAP-BOX-ZOOM-A: transient rectangle zoom (no GIS objects / no storage) ---- */
 const BOX_ZOOM_MIN_PX = 10;
+/** Final fit padding per side (px): keeps the whole selected box visible after zoom. */
+const BOX_ZOOM_FIT_PAD_PX = 20;
+/**
+ * Pure pixel-ratio zoom target for MAP-BOX-ZOOM-A.
+ * Returns the largest integer zoom that still fits the box in the viewport
+ * with padding (Math.floor on log2 — never crop the selection).
+ */
+function boxZoomComputeTargetZoom(currentZoom, viewportW, viewportH, boxW, boxH, padPx){
+  const z0 = Number(currentZoom);
+  const vw = Number(viewportW);
+  const vh = Number(viewportH);
+  const bw = Number(boxW);
+  const bh = Number(boxH);
+  const pad = Number.isFinite(padPx) ? Math.max(0, padPx) : BOX_ZOOM_FIT_PAD_PX;
+  if (!Number.isFinite(z0) || !Number.isFinite(vw) || !Number.isFinite(vh)
+      || !Number.isFinite(bw) || !Number.isFinite(bh)) return null;
+  if (vw <= 0 || vh <= 0 || bw < BOX_ZOOM_MIN_PX || bh < BOX_ZOOM_MIN_PX) return null;
+  const availableW = vw - 2 * pad;
+  const availableH = vh - 2 * pad;
+  if (!(availableW > 0) || !(availableH > 0)) return null;
+  const scaleX = availableW / bw;
+  const scaleY = availableH / bh;
+  const fitScale = Math.min(scaleX, scaleY);
+  if (!(fitScale > 0) || !Number.isFinite(fitScale)) return null;
+  const zoomDelta = Math.max(0, Math.floor(Math.log2(fitScale)));
+  let targetZoom = z0 + zoomDelta;
+  if (!Number.isFinite(targetZoom)) return null;
+  if (typeof clampBasemapFitZoom === "function") targetZoom = clampBasemapFitZoom(targetZoom);
+  else targetZoom = Math.max(2, targetZoom);
+  return targetZoom | 0;
+}
 function boxZoomT(key, fb){
   try {
     const v = (typeof t === "function") ? t(key) : "";
@@ -36413,16 +36444,31 @@ function cancelBoxZoom(){
   } catch(_){}
 }
 function boxZoomFitFromPixels(root, x1, y1, x2, y2){
-  const X1 = Math.min(x1, x2), X2v = Math.max(x1, x2);
-  const Y1 = Math.min(y1, y2), Y2v = Math.max(y1, y2);
-  const nw = tileMapPxToLatLon(root, X1, Y1);
-  const ne = tileMapPxToLatLon(root, X2v, Y1);
-  const sw = tileMapPxToLatLon(root, X1, Y2v);
-  const se = tileMapPxToLatLon(root, X2v, Y2v);
-  const pts = [nw, ne, se, sw].filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
-  if (pts.length < 2) return false;
+  if (!root) return false;
+  const tileMap = root.querySelector(".tile-map");
+  if (!tileMap) return false;
+  const vw = tileMap.clientWidth;
+  const vh = tileMap.clientHeight;
+  if (!(vw > 0) || !(vh > 0)) return false;
+  const left = Math.max(0, Math.min(vw, Math.min(x1, x2)));
+  const right = Math.max(0, Math.min(vw, Math.max(x1, x2)));
+  const top = Math.max(0, Math.min(vh, Math.min(y1, y2)));
+  const bottom = Math.max(0, Math.min(vh, Math.max(y1, y2)));
+  const boxW = right - left;
+  const boxH = bottom - top;
+  if (boxW < BOX_ZOOM_MIN_PX || boxH < BOX_ZOOM_MIN_PX) return false;
+  const currentZoom = state.mapZoom || 11;
+  const targetZoom = boxZoomComputeTargetZoom(currentZoom, vw, vh, boxW, boxH, BOX_ZOOM_FIT_PAD_PX);
+  if (targetZoom == null || !Number.isFinite(targetZoom)) return false;
+  const centerX = (left + right) / 2;
+  const centerY = (top + bottom) / 2;
+  const center = tileMapPxToLatLon(root, centerX, centerY);
+  if (!center || !Number.isFinite(center.lat) || !Number.isFinite(center.lon)) return false;
+  const latC = Math.max(-85.05, Math.min(85.05, center.lat));
+  const lonC = normalizeLon(center.lon);
+  state.viewCenter = { lat: latC, lon: lonC };
   try {
-    flyMapToTrackPoints(pts, true);
+    renderTileMap(latC, lonC, targetZoom);
     return true;
   } catch(_){ return false; }
 }
