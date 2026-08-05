@@ -8068,6 +8068,143 @@ body.gis-mode dialog#rangeRingsPanel.range-rings-panel{
   z-index:24;
 }
 /* GIS: Astro floating (Pass 5 Step B) — stessa famiglia Range Rings. */
+body.gis-mode dialog#cartoIgmPanel.carto-igm-panel{
+  position:fixed;
+  margin:0;
+  transform:none;
+  right:auto;
+  bottom:auto;
+  max-width:calc(100vw - 24px);
+  max-height:calc(100vh - 24px);
+  overflow:hidden;
+  pointer-events:auto;
+  z-index:24;
+}
+body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
+  display:flex;
+  flex-direction:column;
+}
+#cartoIgmPanel .app-modal-body{
+  flex:1 1 auto;
+  min-height:0;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:0.55rem;
+}
+#cartoIgmPanel .carto-status-badge{
+  font-size:0.75rem;
+  font-weight:600;
+  padding:0.15rem 0.45rem;
+  border-radius:999px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  margin-inline-start:0.4rem;
+  white-space:nowrap;
+}
+#cartoIgmPanel .carto-bbox-summary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.45rem 0.85rem;
+  font-variant-numeric:tabular-nums;
+  font-size:0.85rem;
+}
+#cartoIgmPanel .carto-actions-primary{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+  align-items:center;
+}
+#cartoIgmPanel .carto-filters{
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:0.45rem 0.65rem;
+  margin:0;
+}
+#cartoIgmPanel .carto-filter-item{
+  display:inline-flex;
+  align-items:center;
+  gap:0.35rem;
+  margin-inline-end:0.85rem;
+  font-size:0.9rem;
+}
+#cartoIgmPanel .carto-results-list{
+  flex:1 1 auto;
+  min-height:120px;
+  max-height:min(42vh, 360px);
+  overflow:auto;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel);
+}
+#cartoIgmPanel .carto-result-row{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  grid-template-rows:auto auto;
+  gap:0.1rem 0.55rem;
+  width:100%;
+  text-align:left;
+  border:0;
+  border-bottom:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+  padding:0.45rem 0.55rem;
+  cursor:pointer;
+  font:inherit;
+}
+#cartoIgmPanel .carto-result-row:hover{ background:var(--accent-soft); }
+#cartoIgmPanel .carto-result-row.is-selected{
+  outline:2px solid var(--accent);
+  outline-offset:-2px;
+  background:color-mix(in srgb, var(--accent) 14%, transparent);
+}
+#cartoIgmPanel .carto-row-series{
+  font-weight:700;
+  font-size:0.75rem;
+  color:var(--accent);
+  grid-row:1;
+}
+#cartoIgmPanel .carto-row-id{
+  font-weight:700;
+  grid-row:1;
+}
+#cartoIgmPanel .carto-row-title{
+  grid-column:1 / -1;
+  grid-row:1;
+  justify-self:end;
+  font-weight:600;
+  max-width:60%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#cartoIgmPanel .carto-row-meta{
+  grid-column:1 / -1;
+  grid-row:2;
+  font-size:0.78rem;
+  opacity:0.85;
+}
+#cartoIgmPanel .carto-legal-line{
+  font-size:0.72rem;
+  opacity:0.75;
+  margin-top:0.35rem;
+  line-height:1.35;
+}
+.carto-igm-overlay{ pointer-events:none !important; }
+.carto-igm-overlay .carto-footprint{
+  fill:color-mix(in srgb, var(--accent) 18%, transparent);
+  stroke:var(--accent);
+  stroke-width:1.25;
+  fill-rule:evenodd;
+  clip-rule:evenodd;
+  pointer-events:none;
+}
+.carto-igm-overlay .carto-footprint.is-selected{
+  fill:color-mix(in srgb, var(--accent) 32%, transparent);
+  stroke:var(--accent);
+  stroke-width:2.5;
+}
+
 body.gis-mode dialog#astroPanel.astro-panel{
   position:fixed;
   margin:0;
@@ -13109,6 +13246,54 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
 </dialog>
 
+<dialog id="cartoIgmPanel" class="app-modal carto-igm-panel" aria-labelledby="cartoIgmPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="cartoIgmPanelHead">
+    <h2 id="cartoIgmPanelTitle" class="app-modal-title" data-i18n="carto.title">Indice cartografico IGM</h2>
+    <span id="cartoIgmPanelStatus" class="carto-status-badge" data-status="idle" data-i18n="carto.status.idle">Non caricato</span>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="cartoigm-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="cartoIgmPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    </div>
+  </div>
+  <p id="cartoIgmPanelNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
+  <div class="app-modal-body" id="cartoIgmPanelBody">
+    <p class="hint carto-data-source" data-i18n="carto.dataSource">Dati embedded — nessuna richiesta di rete</p>
+    <div class="carto-search-area">
+      <div class="carto-search-label" data-i18n="carto.currentView">Vista corrente della mappa</div>
+      <div class="carto-bbox-summary" aria-live="polite">
+        <span><span data-i18n="carto.bbox.n">N</span>: <strong id="cartoIgmBboxN">—</strong></span>
+        <span><span data-i18n="carto.bbox.s">S</span>: <strong id="cartoIgmBboxS">—</strong></span>
+        <span><span data-i18n="carto.bbox.e">E</span>: <strong id="cartoIgmBboxE">—</strong></span>
+        <span><span data-i18n="carto.bbox.w">O</span>: <strong id="cartoIgmBboxW">—</strong></span>
+      </div>
+      <p id="cartoIgmStaleNotice" class="hint carto-stale" data-i18n="carto.staleView" hidden>Risultati riferiti a una vista precedente</p>
+    </div>
+    <div class="carto-actions-primary">
+      <button type="button" id="cartoIgmSearchBtn" class="btn btn-primary" data-i18n="carto.search">Cerca nella vista</button>
+      <button type="button" id="cartoIgmRefreshBtn" class="btn btn-sm" data-i18n="carto.refresh" hidden>Aggiorna dalla vista corrente</button>
+      <button type="button" id="cartoIgmClearBtn" class="btn btn-sm btn-danger-subtle" data-i18n="carto.clear" hidden>Cancella risultati</button>
+    </div>
+    <fieldset class="carto-filters">
+      <legend data-i18n="carto.filters">Filtri serie</legend>
+      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter50" checked> <span data-i18n="carto.series50">Serie 50</span></label>
+      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter100v" checked> <span data-i18n="carto.series100v">Serie 100V</span></label>
+    </fieldset>
+    <label class="carto-show-all"><input type="checkbox" id="cartoIgmShowAll" checked> <span data-i18n="carto.showAll">Mostra tutte le impronte</span></label>
+    <div id="cartoIgmResultsHeader" class="carto-results-header hint" hidden></div>
+    <div id="cartoIgmResultsList" class="carto-results-list" role="listbox" aria-label="Risultati"></div>
+    <p id="cartoIgmZeroState" class="hint carto-zero" data-i18n="carto.zero" hidden>Nessuna carta interseca l’area</p>
+    <p id="cartoIgmErrorState" class="hint carto-error" role="alert" hidden></p>
+    <div class="carto-legal-line"><span id="cartoIgmLegalAttribution"></span></div>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
+</dialog>
+
 <dialog id="gisWorkbenchPanel" class="app-modal gis-workbench-panel" aria-labelledby="gisWorkbenchPanelTitle" aria-modal="false">
   <div class="app-modal-head" id="gisWorkbenchPanelHead">
     <h2 id="gisWorkbenchPanelTitle" class="app-modal-title" data-i18n="workbench.title">Oggetti GIS</h2>
@@ -13925,6 +14110,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="tools-menu-btn" data-tool="mag">
           <span class="tmb-ico" aria-hidden="true">🧭</span>
           <span class="tmb-lbl" data-i18n="sec.mag">Declinazione</span>
+        </button>
+        <button type="button" class="tools-menu-btn" data-tool="cartoigm">
+          <span class="tmb-ico" aria-hidden="true">🗺</span>
+          <span class="tmb-lbl" data-i18n="sec.cartoigm">Indice IGM</span>
         </button>
       </div>
       <div class="tools-panel-wrap" id="toolsPanelWrap" aria-live="polite"
@@ -15207,7 +15396,42 @@ const I18N = {
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Misura",
     "gis.minimized.polygon":"Poligoni",
-    "gis.minimized.help":"Guida",
+        "gis.minimized.help":"Guida",
+    "gis.minimized.cartoigm":"Indice IGM",
+    "sec.cartoigm":"Indice IGM",
+    "carto.title":"Indice cartografico IGM",
+    "carto.dataSource":"Dati embedded — nessuna richiesta di rete",
+    "carto.currentView":"Vista corrente della mappa",
+    "carto.bbox.n":"N",
+    "carto.bbox.s":"S",
+    "carto.bbox.e":"E",
+    "carto.bbox.w":"O",
+    "carto.filters":"Filtri serie",
+    "carto.series50":"Serie 50",
+    "carto.series100v":"Serie 100V",
+    "carto.search":"Cerca nella vista",
+    "carto.refresh":"Aggiorna dalla vista corrente",
+    "carto.clear":"Cancella risultati",
+    "carto.showAll":"Mostra tutte le impronte",
+    "carto.results":"Risultati",
+    "carto.total":"Totale",
+    "carto.returned":"Restituiti",
+    "carto.truncated":"Elenco troncato (max 200)",
+    "carto.zero":"Nessuna carta interseca l’area",
+    "carto.error":"Errore nella ricerca dell’indice",
+    "carto.status.idle":"Non caricato",
+    "carto.status.loading":"Caricamento…",
+    "carto.status.ready":"Pronto",
+    "carto.status.error":"Errore",
+    "carto.scale":"Scala",
+    "carto.edition":"Ed.",
+    "carto.relation.contains-query":"contiene la vista",
+    "carto.relation.inside-query":"dentro la vista",
+    "carto.relation.intersects":"interseca",
+    "carto.relation.bbox-only":"sovrapposizione bbox",
+    "carto.notAvailable":"Non disponibile",
+    "carto.staleView":"Risultati riferiti a una vista precedente",
+    "carto.needOneSeries":"Seleziona almeno una serie",
     "gis.polygonPanel.title":"Poligoni",
     "gis.polygonPanel.newPolygon":"Nuovo poligono",
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
@@ -17446,7 +17670,42 @@ const I18N = {
     "gis.minimized.rings":"Range Rings",
     "gis.minimized.measure":"Measure",
     "gis.minimized.polygon":"Polygons",
-    "gis.minimized.help":"Help",
+        "gis.minimized.help":"Help",
+    "gis.minimized.cartoigm":"IGM Index",
+    "sec.cartoigm":"IGM Index",
+    "carto.title":"IGM chart index",
+    "carto.dataSource":"Embedded data — no network request",
+    "carto.currentView":"Current map view",
+    "carto.bbox.n":"N",
+    "carto.bbox.s":"S",
+    "carto.bbox.e":"E",
+    "carto.bbox.w":"W",
+    "carto.filters":"Series filters",
+    "carto.series50":"Series 50",
+    "carto.series100v":"Series 100V",
+    "carto.search":"Search in view",
+    "carto.refresh":"Refresh from current view",
+    "carto.clear":"Clear results",
+    "carto.showAll":"Show all footprints",
+    "carto.results":"Results",
+    "carto.total":"Total",
+    "carto.returned":"Returned",
+    "carto.truncated":"List truncated (max 200)",
+    "carto.zero":"No charts intersect the area",
+    "carto.error":"Chart index search error",
+    "carto.status.idle":"Not loaded",
+    "carto.status.loading":"Loading…",
+    "carto.status.ready":"Ready",
+    "carto.status.error":"Error",
+    "carto.scale":"Scale",
+    "carto.edition":"Ed.",
+    "carto.relation.contains-query":"contains view",
+    "carto.relation.inside-query":"inside view",
+    "carto.relation.intersects":"intersects",
+    "carto.relation.bbox-only":"bbox overlap",
+    "carto.notAvailable":"Not available",
+    "carto.staleView":"Results refer to a previous view",
+    "carto.needOneSeries":"Select at least one series",
     "gis.polygonPanel.title":"Polygons",
     "gis.polygonPanel.newPolygon":"New polygon",
     "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
@@ -19570,7 +19829,42 @@ const I18N = {
     "gis.minimized.rings":"Anneaux",
     "gis.minimized.measure":"Mesure",
     "gis.minimized.polygon":"Polygones",
-    "gis.minimized.help":"Aide",
+        "gis.minimized.help":"Aide",
+    "gis.minimized.cartoigm":"Index IGM",
+    "sec.cartoigm":"Index IGM",
+    "carto.title":"Index cartographique IGM",
+    "carto.dataSource":"Données intégrées — aucune requête réseau",
+    "carto.currentView":"Vue carte actuelle",
+    "carto.bbox.n":"N",
+    "carto.bbox.s":"S",
+    "carto.bbox.e":"E",
+    "carto.bbox.w":"O",
+    "carto.filters":"Filtres de série",
+    "carto.series50":"Série 50",
+    "carto.series100v":"Série 100V",
+    "carto.search":"Chercher dans la vue",
+    "carto.refresh":"Actualiser depuis la vue actuelle",
+    "carto.clear":"Effacer les résultats",
+    "carto.showAll":"Afficher toutes les empreintes",
+    "carto.results":"Résultats",
+    "carto.total":"Total",
+    "carto.returned":"Renvoyés",
+    "carto.truncated":"Liste tronquée (max 200)",
+    "carto.zero":"Aucune carte n’intersecte la zone",
+    "carto.error":"Erreur de recherche d’index",
+    "carto.status.idle":"Non chargé",
+    "carto.status.loading":"Chargement…",
+    "carto.status.ready":"Prêt",
+    "carto.status.error":"Erreur",
+    "carto.scale":"Échelle",
+    "carto.edition":"Éd.",
+    "carto.relation.contains-query":"contient la vue",
+    "carto.relation.inside-query":"dans la vue",
+    "carto.relation.intersects":"intersecte",
+    "carto.relation.bbox-only":"chevauchement bbox",
+    "carto.notAvailable":"Non disponible",
+    "carto.staleView":"Résultats relatifs à une vue précédente",
+    "carto.needOneSeries":"Sélectionnez au moins une série",
     "gis.polygonPanel.title":"Polygones",
     "gis.polygonPanel.newPolygon":"Nouveau polygone",
     "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
@@ -20973,6 +21267,8 @@ const state = {
   _routing: null,
   /** Transient CARTO-SEARCH-ENGINE-A: embedded IGM index cache — not persisted. */
   _cartoIndex: null,
+  /** Transient CARTO-UI-RESULTS-A: panel/results/overlay UI — not persisted. */
+  _cartoUi: null,
   /** One-shot after load: reopen track modal if last session had track tab. */
   _pendingTrackModal: false,
   /** Persisted: saved track archive (polyline/polygon snapshots), max 50. */
@@ -22128,10 +22424,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-SEARCH-ENGINE-A";
-const APP_BUILD_DETAIL = "embedded IGM local chart index search engine";
+const APP_BUILD_ID = "CARTO-UI-RESULTS-A";
+const APP_BUILD_DETAIL = "IGM chart search results and footprint overlay";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 118;
+const APP_BUILD_NUM = 119;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -22150,13 +22446,15 @@ function applyAppBuildLabel(){
 /* ===== JS — CARTOGRAPHIC INDEX SEARCH ENGINE (CARTO-SEARCH-ENGINE-A) ===== */
 /* ===== CARTO-SEARCH-ENGINE-A — IGM local chart index (read-only) =====
  * Lazy-loads #cartoIgmEmbeddedData. No fetch / IndexedDB / localStorage / saveStore.
- * Bundle DELICATO. Predisposto per CARTO-UI-RESULTS-A (non implementato qui).
+ * Bundle DELICATO. Predisposto per CARTO-UI-RESULTS-A (bridge lessicale privato sotto).
  */
+const CARTO_IGM_ATTRIBUTION =
+  "© Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50 e 100V. Dati geografici elaborati per uso non commerciale.";
+/** Lexical bridge for CARTO-UI-RESULTS-A: assigned inside IIFE; never on window. */
+let cartoIndexGetGeometryForUi = function(){ return null; };
 (function initCartoSearchEngineA(){
   "use strict";
 
-  const CARTO_IGM_ATTRIBUTION =
-    "© Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50 e 100V. Dati geografici elaborati per uso non commerciale.";
   const CARTO_IGM_AUTH_REF = "Prot. IGM-2024-7891";
   const CARTO_IGM_EXPECTED_COUNT = 911;
 
@@ -22165,6 +22463,7 @@ function applyAppBuildLabel(){
       state._cartoIndex = {
         status: "idle",
         records: null,
+        byRecordId: null,
         loadedAt: null,
         error: null,
         manifest: null,
@@ -22179,6 +22478,7 @@ function applyAppBuildLabel(){
     const t = cartoIndexGetTransient();
     t.status = "idle";
     t.records = null;
+    t.byRecordId = null;
     t.loadedAt = null;
     t.error = null;
     t.manifest = null;
@@ -22205,6 +22505,27 @@ function applyAppBuildLabel(){
     };
   }
 
+  function cartoDeepCloneGeometry(geom){
+    if (!geom || typeof geom !== "object") return null;
+    try {
+      if (typeof structuredClone === "function") return structuredClone(geom);
+    } catch(_){}
+    try { return JSON.parse(JSON.stringify(geom)); } catch(_){ return null; }
+  }
+
+  /** Private UI helper (lexical bridge). Deep copy of geometry only; never on window. */
+  cartoIndexGetGeometryForUi = function(recordId){
+    try {
+      const t = state._cartoIndex;
+      if (!t || t.status !== "ready" || !t.byRecordId || typeof t.byRecordId.get !== "function") return null;
+      const id = recordId == null ? "" : String(recordId);
+      if (!id) return null;
+      const rec = t.byRecordId.get(id);
+      if (!rec || !rec.geometry) return null;
+      return cartoDeepCloneGeometry(rec.geometry);
+    } catch(_){ return null; }
+  };
+
   function cartoIndexEnsureLoaded(){
     const t = cartoIndexGetTransient();
     if (t.status === "ready" && Array.isArray(t.records)) {
@@ -22230,6 +22551,14 @@ function applyAppBuildLabel(){
         return String(a.record_id).localeCompare(String(b.record_id));
       });
       t.records = records;
+      {
+        const byId = new Map();
+        for (let i = 0; i < records.length; i++){
+          const r = records[i];
+          if (r && r.record_id != null) byId.set(String(r.record_id), r);
+        }
+        t.byRecordId = byId;
+      }
       t.loadedAt = Date.now();
       t.error = null;
       t.payloadSha256 = el.getAttribute("data-sha256") || null;
@@ -22628,6 +22957,670 @@ function applyAppBuildLabel(){
   window.cartoIndexClearTransient = cartoIndexClearTransient;
 })();
 /* ===== /CARTO-SEARCH-ENGINE-A ===== */
+
+/* ===== JS — CARTO-UI-RESULTS-A — UI read-only + overlay impronte ===== */
+(function initCartoUiResultsARegion(){
+  "use strict";
+
+  const CARTO_UI_RESULT_LIMIT = 200;
+
+  function cartoUiGetState(){
+    if (!state._cartoUi || typeof state._cartoUi !== "object") {
+      state._cartoUi = {
+        isOpen: false,
+        isMinimized: false,
+        status: "idle",
+        queryBbox: null,
+        selectedSeries: ["50", "100v"],
+        results: [],
+        total: 0,
+        truncated: false,
+        selectedRecordId: null,
+        showAllFootprints: true,
+        error: null
+      };
+    }
+    return state._cartoUi;
+  }
+
+  function cartoUiNormLon(lon){
+    let x = Number(lon);
+    if (!Number.isFinite(x)) return NaN;
+    x = ((x + 540) % 360) - 180;
+    if (x === 180) x = -180;
+    return x;
+  }
+
+  function cartoUiComputeViewportBbox(){
+    const root = document.getElementById("miniMap");
+    if (!root || typeof tileMapPxToLatLon !== "function" || typeof gisMapTileMathViewport !== "function") return null;
+    let W = 0, H = 0;
+    try {
+      const vp = gisMapTileMathViewport(root);
+      W = vp && Number(vp.W) || 0;
+      H = vp && Number(vp.H) || 0;
+    } catch(_){ return null; }
+    if (!(W > 0 && H > 0)) return null;
+    const corners = [
+      tileMapPxToLatLon(root, 0, 0),
+      tileMapPxToLatLon(root, W, 0),
+      tileMapPxToLatLon(root, 0, H),
+      tileMapPxToLatLon(root, W, H)
+    ];
+    const lats = [];
+    const lons = [];
+    for (let i = 0; i < corners.length; i++){
+      const c = corners[i];
+      if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) return null;
+      lats.push(c.lat);
+      lons.push(cartoUiNormLon(c.lon));
+    }
+    const south = Math.min.apply(null, lats);
+    const north = Math.max.apply(null, lats);
+    if (!(south < north)) return null;
+    let minLon = Math.min.apply(null, lons);
+    let maxLon = Math.max.apply(null, lons);
+    let west, east;
+    if ((maxLon - minLon) <= 180){
+      west = minLon;
+      east = maxLon;
+    } else {
+      // Crossing ±180°: shift negatives into [0,360), then map back.
+      const shifted = lons.map(function(x){ return x < 0 ? x + 360 : x; });
+      let wS = Math.min.apply(null, shifted);
+      let eS = Math.max.apply(null, shifted);
+      west = wS > 180 ? wS - 360 : wS;
+      east = eS > 180 ? eS - 360 : eS;
+      // Expect west > east for a true antimeridian crossing.
+    }
+    if (!Number.isFinite(west) || !Number.isFinite(east)) return null;
+    return { west: west, south: south, east: east, north: north };
+  }
+
+  function cartoUiFmtCoord(n){
+    if (!Number.isFinite(n)) return "—";
+    return (Math.round(n * 1e5) / 1e5).toFixed(5);
+  }
+
+  function cartoUiFmtScale(den){
+    if (!Number.isFinite(den) || den <= 0) return null;
+    try {
+      return "1:" + Math.round(den).toLocaleString("it-IT");
+    } catch(_){
+      return "1:" + String(Math.round(den));
+    }
+  }
+
+  function cartoUiBboxEqual(a, b, eps){
+    if (!a || !b) return false;
+    const e = Number.isFinite(eps) ? eps : 1e-7;
+    return Math.abs(a.west - b.west) <= e
+      && Math.abs(a.south - b.south) <= e
+      && Math.abs(a.east - b.east) <= e
+      && Math.abs(a.north - b.north) <= e;
+  }
+
+  function cartoUiClearResultsAndOverlay(){
+    const u = cartoUiGetState();
+    u.results = [];
+    u.total = 0;
+    u.truncated = false;
+    u.queryBbox = null;
+    u.selectedRecordId = null;
+    u.error = null;
+    u.status = "idle";
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) drawCartoIgmOverlay(tm);
+    } catch(_){}
+  }
+
+  function cartoUiSyncLegal(){
+    const el = document.getElementById("cartoIgmLegalAttribution");
+    if (!el) return;
+    const txt = (typeof CARTO_IGM_ATTRIBUTION === "string" && CARTO_IGM_ATTRIBUTION)
+      || (window.GOICartoIndex && window.GOICartoIndex.attribution)
+      || "";
+    el.textContent = txt;
+  }
+
+  function cartoUiSetNotice(msg, isErr){
+    const n = document.getElementById("cartoIgmPanelNotice");
+    if (!n) return;
+    if (!msg){ n.hidden = true; n.textContent = ""; return; }
+    n.hidden = false;
+    n.textContent = msg;
+    n.classList.toggle("is-error", !!isErr);
+  }
+
+  function cartoUiSelectedSeriesFromDom(){
+    const out = [];
+    const c50 = document.getElementById("cartoIgmFilter50");
+    const c100 = document.getElementById("cartoIgmFilter100v");
+    if (c50 && c50.checked) out.push("50");
+    if (c100 && c100.checked) out.push("100v");
+    return out;
+  }
+
+  function cartoUiRunSearch(){
+    const u = cartoUiGetState();
+    const series = cartoUiSelectedSeriesFromDom();
+    u.selectedSeries = series.slice();
+    if (!series.length){
+      cartoUiSetNotice(t("carto.needOneSeries"), true);
+      try { cartoUiRenderPanel(); } catch(_){}
+      return;
+    }
+    const bbox = cartoUiComputeViewportBbox();
+    if (!bbox){
+      u.status = "error";
+      u.error = "viewport_unavailable";
+      cartoUiSetNotice(t("carto.error"), true);
+      try { cartoUiRenderPanel(); } catch(_){}
+      return;
+    }
+    if (!window.GOICartoIndex || typeof window.GOICartoIndex.searchBbox !== "function"){
+      u.status = "error";
+      u.error = "api_missing";
+      cartoUiSetNotice(t("carto.error"), true);
+      try { cartoUiRenderPanel(); } catch(_){}
+      return;
+    }
+    u.status = "loading";
+    u.error = null;
+    u.queryBbox = { west: bbox.west, south: bbox.south, east: bbox.east, north: bbox.north };
+    try { cartoUiRenderPanel(); } catch(_){}
+    let res;
+    try {
+      res = window.GOICartoIndex.searchBbox(u.queryBbox, {
+        seriesIds: series.slice(),
+        limit: CARTO_UI_RESULT_LIMIT,
+        preciseIntersection: true
+      });
+    } catch(err){
+      u.status = "error";
+      u.error = "search_exception";
+      u.results = [];
+      u.total = 0;
+      u.truncated = false;
+      u.selectedRecordId = null;
+      cartoUiSetNotice(t("carto.error"), true);
+      try { cartoUiRenderPanel(); } catch(_){}
+      return;
+    }
+    if (!res || res.error){
+      u.status = "error";
+      u.error = (res && res.error) || "search_error";
+      u.results = [];
+      u.total = 0;
+      u.truncated = false;
+      u.selectedRecordId = null;
+      cartoUiSetNotice(t("carto.error"), true);
+      try { cartoUiRenderPanel(); } catch(_){}
+      try {
+        const root = document.getElementById("miniMap");
+        const tm = root && root.querySelector(".tile-map");
+        if (tm) drawCartoIgmOverlay(tm);
+      } catch(_){}
+      return;
+    }
+    u.status = "ready";
+    u.results = Array.isArray(res.results) ? res.results.slice() : [];
+    u.total = Number(res.total) || 0;
+    u.truncated = !!res.truncated;
+    u.selectedRecordId = u.results.length ? String(u.results[0].record_id) : null;
+    u.error = null;
+    cartoUiSetNotice(null, false);
+    try { cartoUiRenderPanel(); } catch(_){}
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) drawCartoIgmOverlay(tm);
+    } catch(_){}
+  }
+
+  function cartoUiSelectRecord(recordId){
+    const u = cartoUiGetState();
+    u.selectedRecordId = recordId == null ? null : String(recordId);
+    try { cartoUiRenderPanel(); } catch(_){}
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) drawCartoIgmOverlay(tm);
+    } catch(_){}
+  }
+
+  function cartoUiRelationLabel(rel){
+    const k = "carto.relation." + String(rel || "");
+    const v = t(k);
+    return (v && v !== k) ? v : String(rel || t("carto.notAvailable"));
+  }
+
+  function cartoUiRenderRow(item, selectedId){
+    const id = item && item.record_id != null ? String(item.record_id) : "";
+    const sel = id && id === selectedId;
+    const series = item.series_id || "—";
+    const chart = item.chart_id != null ? String(item.chart_id) : t("carto.notAvailable");
+    const title = (item.title != null && String(item.title).trim()) ? String(item.title) : t("carto.notAvailable");
+    const scale = cartoUiFmtScale(item.scale_denominator) || t("carto.notAvailable");
+    const ed = item.edition != null ? String(item.edition) : t("carto.notAvailable");
+    const edt = item.edition_date != null ? String(item.edition_date) : "";
+    const rel = cartoUiRelationLabel(item.spatial_relation);
+    const div = document.createElement("button");
+    div.type = "button";
+    div.className = "carto-result-row" + (sel ? " is-selected" : "");
+    div.setAttribute("data-record-id", id);
+    div.setAttribute("aria-pressed", sel ? "true" : "false");
+    div.innerHTML =
+      '<span class="carto-row-series">' + esc(String(series)) + '</span>' +
+      '<span class="carto-row-id">' + esc(chart) + '</span>' +
+      '<span class="carto-row-title">' + esc(title) + '</span>' +
+      '<span class="carto-row-meta">' + esc(scale) +
+        ' · ' + esc(t("carto.edition")) + ' ' + esc(ed) +
+        (edt ? (' · ' + esc(edt)) : '') +
+        ' · ' + esc(rel) + '</span>';
+    return div;
+  }
+
+  function cartoUiRenderPanel(){
+    const u = cartoUiGetState();
+    const body = document.getElementById("cartoIgmPanelBody");
+    const statusEl = document.getElementById("cartoIgmPanelStatus");
+    if (statusEl){
+      const sk = "carto.status." + (u.status || "idle");
+      statusEl.textContent = t(sk);
+      statusEl.setAttribute("data-status", u.status || "idle");
+    }
+    const qb = u.queryBbox;
+    const setB = function(id, v){
+      const el = document.getElementById(id);
+      if (el) el.textContent = qb ? cartoUiFmtCoord(v) : "—";
+    };
+    if (qb){
+      setB("cartoIgmBboxN", qb.north);
+      setB("cartoIgmBboxS", qb.south);
+      setB("cartoIgmBboxE", qb.east);
+      setB("cartoIgmBboxW", qb.west);
+    } else {
+      setB("cartoIgmBboxN", NaN);
+      setB("cartoIgmBboxS", NaN);
+      setB("cartoIgmBboxE", NaN);
+      setB("cartoIgmBboxW", NaN);
+    }
+    const stale = document.getElementById("cartoIgmStaleNotice");
+    if (stale){
+      let show = false;
+      if (qb && u.results.length){
+        try {
+          const cur = cartoUiComputeViewportBbox();
+          show = !!(cur && !cartoUiBboxEqual(qb, cur));
+        } catch(_){ show = false; }
+      }
+      stale.hidden = !show;
+    }
+    const hasRes = u.results.length > 0;
+    const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
+    const clearBtn = document.getElementById("cartoIgmClearBtn");
+    if (refreshBtn) refreshBtn.hidden = !hasRes;
+    if (clearBtn) clearBtn.hidden = !hasRes;
+    const c50 = document.getElementById("cartoIgmFilter50");
+    const c100 = document.getElementById("cartoIgmFilter100v");
+    if (c50) c50.checked = u.selectedSeries.indexOf("50") >= 0;
+    if (c100) c100.checked = u.selectedSeries.indexOf("100v") >= 0;
+    const showAll = document.getElementById("cartoIgmShowAll");
+    if (showAll) showAll.checked = !!u.showAllFootprints;
+    const searchBtn = document.getElementById("cartoIgmSearchBtn");
+    if (searchBtn) searchBtn.disabled = cartoUiSelectedSeriesFromDom().length === 0;
+
+    const hdr = document.getElementById("cartoIgmResultsHeader");
+    if (hdr){
+      if (u.status === "ready" || hasRes){
+        let txt = t("carto.results") + ": " + u.results.length;
+        if (u.total) txt += " / " + u.total;
+        if (u.truncated) txt += " — " + t("carto.truncated");
+        hdr.textContent = txt;
+        hdr.hidden = false;
+      } else {
+        hdr.textContent = "";
+        hdr.hidden = true;
+      }
+    }
+    const list = document.getElementById("cartoIgmResultsList");
+    if (list){
+      list.textContent = "";
+      const sel = u.selectedRecordId;
+      for (let i = 0; i < u.results.length; i++){
+        list.appendChild(cartoUiRenderRow(u.results[i], sel));
+      }
+    }
+    const zero = document.getElementById("cartoIgmZeroState");
+    if (zero) zero.hidden = !(u.status === "ready" && u.results.length === 0 && !u.error);
+    const err = document.getElementById("cartoIgmErrorState");
+    if (err){
+      err.hidden = u.status !== "error";
+      if (u.status === "error") err.textContent = t("carto.error") + (u.error ? (" (" + u.error + ")") : "");
+    }
+    cartoUiSyncLegal();
+    if (body && typeof syncI18nInRoot === "function"){
+      try { syncI18nInRoot(body, state.lang || "it"); } catch(_){}
+    }
+    const dlg = document.getElementById("cartoIgmPanel");
+    if (dlg && typeof syncI18nInRoot === "function"){
+      try { syncI18nInRoot(dlg, state.lang || "it"); } catch(_){}
+    }
+  }
+
+  function cartoGeomToSvgPathD(geom, root, tx, ty){
+    if (!geom || !geom.coordinates) return "";
+    const polys = geom.type === "MultiPolygon" ? geom.coordinates : [geom.coordinates];
+    let d = "";
+    for (let pi = 0; pi < polys.length; pi++){
+      const poly = polys[pi];
+      if (!Array.isArray(poly)) continue;
+      for (let ri = 0; ri < poly.length; ri++){
+        const ring = poly[ri];
+        if (!Array.isArray(ring) || ring.length < 3) continue;
+        let first = true;
+        for (let i = 0; i < ring.length; i++){
+          const pt = ring[i];
+          if (!pt || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) continue;
+          const xy = tileMapLatLonToPx(root, pt[1], pt[0]);
+          if (!xy || !Number.isFinite(xy.x) || !Number.isFinite(xy.y)) continue;
+          const x = (xy.x - tx).toFixed(1);
+          const y = (xy.y - ty).toFixed(1);
+          if (first){ d += "M" + x + " " + y; first = false; }
+          else d += "L" + x + " " + y;
+        }
+        if (!first) d += "Z";
+      }
+    }
+    return d;
+  }
+
+  function drawCartoIgmOverlay(tileMap){
+    if (!tileMap) return;
+    const old = tileMap.querySelector(".carto-igm-overlay");
+    if (old) old.remove();
+    const u = state._cartoUi;
+    if (!u || !u.isOpen || u.isMinimized) return;
+    if (!Array.isArray(u.results) || !u.results.length) return;
+    if (!u.showAllFootprints && !u.selectedRecordId) return;
+    const root = document.getElementById("miniMap");
+    if (!root) return;
+    const tileLayer = tileMap.querySelector(".tile-layer");
+    if (!tileLayer) return;
+    const style = tileLayer.style.transform || "";
+    let tx = 0, ty = 0;
+    const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+    if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+    const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+    if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+    const W = tileMap.clientWidth || root.clientWidth || 400;
+    const H = tileMap.clientHeight || root.clientHeight || W;
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("xmlns", ns);
+    svg.setAttribute("class", "carto-igm-overlay");
+    svg.setAttribute("width", String(W));
+    svg.setAttribute("height", String(H));
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
+    const items = u.showAllFootprints
+      ? u.results
+      : u.results.filter(function(r){ return r && String(r.record_id) === String(u.selectedRecordId); });
+    for (let i = 0; i < items.length; i++){
+      const item = items[i];
+      if (!item || item.record_id == null) continue;
+      const geom = (typeof cartoIndexGetGeometryForUi === "function")
+        ? cartoIndexGetGeometryForUi(item.record_id)
+        : null;
+      if (!geom) continue;
+      const d = cartoGeomToSvgPathD(geom, root, tx, ty);
+      if (!d) continue;
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("fill-rule", "evenodd");
+      path.setAttribute("clip-rule", "evenodd");
+      path.setAttribute("pointer-events", "none");
+      const isSel = String(item.record_id) === String(u.selectedRecordId);
+      path.setAttribute("class", "carto-footprint" + (isSel ? " is-selected" : ""));
+      svg.appendChild(path);
+    }
+    tileLayer.appendChild(svg);
+  }
+  // expose for renderTileMap call site
+  window.__drawCartoIgmOverlay = drawCartoIgmOverlay;
+
+  function _cartoIgmPanelLayoutOpts(){
+    return {
+      key: "cartoigm",
+      pad: 12,
+      minW: 360,
+      minH: 320,
+      defaultW: 560,
+      defaultH: null,
+      defaultHeightFraction: 0.58,
+      defaultHeightCap: 640,
+      topbarReserve: 104,
+      bodyMinH: 160,
+      partialMinVisible: 72,
+      bodyId: "cartoIgmPanelBody",
+      headId: "cartoIgmPanelHead",
+      closeId: "cartoIgmPanelClose"
+    };
+  }
+
+  function attachCartoIgmPanelFloatingGis(dlg){
+    if (!dlg || !document.body.classList.contains("gis-mode")) return;
+    const opts = _cartoIgmPanelLayoutOpts();
+    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+      threshold: 4,
+      draggingClass: "dragging",
+      ignoreSelector: "#cartoIgmPanelClose,[data-role=\"cartoigm-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"],.carto-results-list"
+    }));
+    const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+    gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+  }
+
+  function clampCartoIgmPanelRect(dlg){
+    if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+    const opts = _cartoIgmPanelLayoutOpts();
+    const br = dlg.getBoundingClientRect();
+    const w = Math.max(0, br.width), h = Math.max(0, br.height);
+    if (!dlg.style.left && !dlg.style.top) return;
+    const L0 = parseFloat(dlg.style.left) || br.left;
+    const T0 = parseFloat(dlg.style.top) || br.top;
+    const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w: w, h: h }, opts);
+    dlg.style.left = rect.left + "px";
+    dlg.style.top = rect.top + "px";
+    dlg.style.width = rect.w + "px";
+    dlg.style.height = rect.h + "px";
+    gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+  }
+
+  function wireCartoIgmPanelFloatingGis(dlg){
+    if (!dlg || !document.body.classList.contains("gis-mode")) return;
+    dlg.classList.add("gis-panel-floating");
+    dlg.style.position = "fixed";
+    dlg.style.margin = "0";
+    dlg.style.transform = "none";
+    dlg.style.right = "auto";
+    dlg.style.bottom = "auto";
+    try {
+      const h = document.getElementById("cartoIgmPanelHead");
+      if (h) h.classList.add("gis-panel-drag-head");
+    } catch(_){}
+    attachCartoIgmPanelFloatingGis(dlg);
+    gisPanelAttachBringToFront(dlg, _cartoIgmPanelLayoutOpts());
+    gisPanelBringToFront(dlg, _cartoIgmPanelLayoutOpts());
+    gisPanelApplyLayout(dlg, _cartoIgmPanelLayoutOpts());
+    clampCartoIgmPanelRect(dlg);
+    gisPanelSyncBodySize(dlg, _cartoIgmPanelLayoutOpts());
+  }
+
+  function openCartoIgmPanel(){
+    if (!document.body.classList.contains("gis-mode")) return false;
+    const dlg = document.getElementById("cartoIgmPanel");
+    if (!dlg) return false;
+    const u = cartoUiGetState();
+    if (u.isOpen && dlg.open){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
+        try { gisRestoreMinimizedPanel("cartoIgmPanel"); } catch(_){}
+        u.isMinimized = false;
+      }
+      try { wireCartoIgmPanelFloatingGis(dlg); } catch(_){}
+      try { cartoUiRenderPanel(); } catch(_){}
+      return true;
+    }
+    try { closeToolsModal(); } catch(_){}
+    try { closeToolsDrawer(); } catch(_){}
+    u.isOpen = true;
+    u.isMinimized = false;
+    try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+    try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+    try { wireCartoIgmPanelFloatingGis(dlg); } catch(_){}
+    try { cartoUiRenderPanel(); } catch(_){}
+    try {
+      requestAnimationFrame(function(){
+        try { clampCartoIgmPanelRect(dlg); gisPanelSyncBodySize(dlg, _cartoIgmPanelLayoutOpts()); } catch(_){}
+      });
+    } catch(_){}
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) drawCartoIgmOverlay(tm);
+    } catch(_){}
+    return true;
+  }
+
+  function closeCartoIgmPanel(){
+    const dlg = document.getElementById("cartoIgmPanel");
+    const u = cartoUiGetState();
+    cartoUiClearResultsAndOverlay();
+    u.isOpen = false;
+    u.isMinimized = false;
+    try {
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
+        // ensure dock chip removed by closing dialog
+      }
+    } catch(_){}
+    if (dlg){
+      try { dlg.classList.remove("gis-panel-minimized"); } catch(_){}
+      try { if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open"); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+    }
+    if (state.toolsMenuOpen === "cartoigm") state.toolsMenuOpen = null;
+    try {
+      document.querySelectorAll('#toolsMenuGrid .tools-menu-btn[data-tool="cartoigm"]').forEach(function(b){
+        b.classList.remove("is-active");
+      });
+    } catch(_){}
+    try { cartoUiRenderPanel(); } catch(_){}
+  }
+
+  function minimizeCartoIgmPanel(){
+    const u = cartoUiGetState();
+    if (!u.isOpen) return;
+    if (typeof gisMinimizePanel === "function"){
+      try { gisMinimizePanel("cartoIgmPanel", "gis.minimized.cartoigm"); } catch(_){}
+    }
+    u.isMinimized = true;
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) drawCartoIgmOverlay(tm);
+    } catch(_){}
+  }
+
+  function toggleCartoIgmPanel(){
+    const u = cartoUiGetState();
+    const dlg = document.getElementById("cartoIgmPanel");
+    if (u.isOpen && dlg && dlg.open && !(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel"))){
+      closeCartoIgmPanel();
+    } else {
+      openCartoIgmPanel();
+    }
+  }
+
+  function initCartoUiResultsA(){
+    if (initCartoUiResultsA._done) return;
+    initCartoUiResultsA._done = true;
+    cartoUiGetState();
+    cartoUiSyncLegal();
+    const dlg = document.getElementById("cartoIgmPanel");
+    const closeBtn = document.getElementById("cartoIgmPanelClose");
+    if (closeBtn) closeBtn.addEventListener("click", function(ev){ ev.preventDefault(); closeCartoIgmPanel(); });
+    if (dlg){
+      dlg.addEventListener("cancel", function(ev){ ev.preventDefault(); closeCartoIgmPanel(); });
+    }
+    const minBtn = document.querySelector('[data-role="cartoigm-minimize"]');
+    if (minBtn && !minBtn._cartoMinBound){
+      minBtn._cartoMinBound = true;
+      minBtn.addEventListener("click", function(ev){ ev.preventDefault(); minimizeCartoIgmPanel(); });
+    }
+    const searchBtn = document.getElementById("cartoIgmSearchBtn");
+    if (searchBtn) searchBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoUiRunSearch(); });
+    const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
+    if (refreshBtn) refreshBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoUiRunSearch(); });
+    const clearBtn = document.getElementById("cartoIgmClearBtn");
+    if (clearBtn) clearBtn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      cartoUiClearResultsAndOverlay();
+      cartoUiSetNotice(null, false);
+      cartoUiRenderPanel();
+    });
+    const c50 = document.getElementById("cartoIgmFilter50");
+    const c100 = document.getElementById("cartoIgmFilter100v");
+    function onFilter(){
+      const u = cartoUiGetState();
+      u.selectedSeries = cartoUiSelectedSeriesFromDom();
+      const sb = document.getElementById("cartoIgmSearchBtn");
+      if (sb) sb.disabled = u.selectedSeries.length === 0;
+      if (u.selectedSeries.length === 0) cartoUiSetNotice(t("carto.needOneSeries"), true);
+      else cartoUiSetNotice(null, false);
+    }
+    if (c50) c50.addEventListener("change", onFilter);
+    if (c100) c100.addEventListener("change", onFilter);
+    const showAll = document.getElementById("cartoIgmShowAll");
+    if (showAll) showAll.addEventListener("change", function(){
+      const u = cartoUiGetState();
+      u.showAllFootprints = !!showAll.checked;
+      try {
+        const root = document.getElementById("miniMap");
+        const tm = root && root.querySelector(".tile-map");
+        if (tm) drawCartoIgmOverlay(tm);
+      } catch(_){}
+    });
+    const list = document.getElementById("cartoIgmResultsList");
+    if (list && !list._cartoClickBound){
+      list._cartoClickBound = true;
+      list.addEventListener("click", function(ev){
+        const row = ev.target && ev.target.closest ? ev.target.closest("[data-record-id]") : null;
+        if (!row) return;
+        ev.preventDefault();
+        cartoUiSelectRecord(row.getAttribute("data-record-id"));
+      });
+    }
+    // Hook restore-from-dock: when panel restored, clear isMinimized
+    try {
+      const _origRestore = typeof gisRestoreMinimizedPanel === "function" ? gisRestoreMinimizedPanel : null;
+      if (_origRestore && !gisRestoreMinimizedPanel._cartoWrapped){
+        // leave global; track via MutationObserver-lite on open
+      }
+    } catch(_){}
+  }
+
+  // Public (same-script) exports for wiring outside this IIFE
+  window.openCartoIgmPanel = openCartoIgmPanel;
+  window.closeCartoIgmPanel = closeCartoIgmPanel;
+  window.toggleCartoIgmPanel = toggleCartoIgmPanel;
+  window.minimizeCartoIgmPanel = minimizeCartoIgmPanel;
+  window.initCartoUiResultsA = initCartoUiResultsA;
+  window.cartoUiComputeViewportBbox = cartoUiComputeViewportBbox;
+  window.cartoUiRenderPanel = cartoUiRenderPanel;
+  window.drawCartoIgmOverlay = drawCartoIgmOverlay;
+})();
+/* ===== /CARTO-UI-RESULTS-A ===== */
 
 /* ===== /JS — CARTOGRAPHIC INDEX SEARCH ENGINE ===== */
 function loadStore(){
@@ -49450,6 +50443,7 @@ function renderTileMap(lat, lon, zoom){
       try { if (typeof renderRoutingMarkers === "function") renderRoutingMarkers(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof renderRoutingRoutePreviewOverlay === "function") renderRoutingRoutePreviewOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
+      try { if (typeof drawCartoIgmOverlay === "function") drawCartoIgmOverlay(tileMap); } catch(_){}
     }
   }
 
@@ -57825,6 +58819,13 @@ function gisInit(){
       if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis();
       return;
     }
+    const cip = document.getElementById("cartoIgmPanel");
+    if ((state._cartoUi && state._cartoUi.isOpen) || (cip && cip.open)){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")) return;
+      if (typeof closeCartoIgmPanel === "function") closeCartoIgmPanel();
+      ev.preventDefault();
+      return;
+    }
     const rpd = document.getElementById("routingPlannerPanel");
     if ((state._routing && state._routing.panelOpen) || (rpd && rpd.open)){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")) return;
@@ -58462,6 +59463,19 @@ function gisMinimizePanel(panelId, labelKey, opts){
   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
 }
 function gisRestoreMinimizedPanel(panelId){
+  try {
+    if (panelId === "cartoIgmPanel" && state._cartoUi){
+      state._cartoUi.isMinimized = false;
+      state._cartoUi.isOpen = true;
+      try { if (typeof cartoUiRenderPanel === "function") cartoUiRenderPanel(); } catch(_){}
+      try {
+        const root = document.getElementById("miniMap");
+        const tm = root && root.querySelector(".tile-map");
+        if (tm && typeof drawCartoIgmOverlay === "function") drawCartoIgmOverlay(tm);
+      } catch(_){}
+    }
+  } catch(_){}
+
   if (!document.body.classList.contains("gis-mode")) return;
   const dlg = document.getElementById(panelId);
   if (!dlg || !dlg.open) return;
@@ -74344,6 +75358,28 @@ function waypointsImportCoTXml(file, opts){
 
 function activateToolPanel(tool){
   if (!document.body.classList.contains("gis-mode")) return;
+  if (tool === "cartoigm"){
+    if (!gisTryCloseTrackModalForContextSwitch()) return;
+    try {
+      if (state.rangeRingsPanelOpen && typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
+    } catch(_){}
+    if (state.toolsMenuOpen && state.toolsMenuOpen !== "cartoigm" && state.toolsMenuOpen !== "astro"){
+      const prev = state.toolsMenuOpen;
+      if (GIS_TOOL_SECTIONS[prev]) gisRestoreSection(GIS_TOOL_SECTIONS[prev]);
+    }
+    if (state.toolsMenuOpen === "cartoigm"){
+      try { if (typeof closeCartoIgmPanel === "function") closeCartoIgmPanel(); } catch(_){}
+      state.toolsMenuOpen = null;
+      document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => b.classList.remove("is-active"));
+      return;
+    }
+    try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
+    state.toolsMenuOpen = "cartoigm";
+    document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => {
+      b.classList.toggle("is-active", b.getAttribute("data-tool") === "cartoigm");
+    });
+    return;
+  }
   if (!GIS_VALID_TOOLS.includes(tool)) return;
   const wrap = document.getElementById("toolsPanelWrap");
   if (!wrap) return;
@@ -74354,8 +75390,8 @@ function activateToolPanel(tool){
   } catch(_){}
   if (state.toolsMenuOpen && state.toolsMenuOpen !== tool){
     const prev = state.toolsMenuOpen;
-    // Astro is a floating GIS panel: keep it open when switching tools.
-    gisRestoreSection(GIS_TOOL_SECTIONS[prev]);
+    // Astro / cartoigm are floating GIS panels: keep open; only restore drawer sections.
+    if (prev !== "cartoigm" && GIS_TOOL_SECTIONS[prev]) gisRestoreSection(GIS_TOOL_SECTIONS[prev]);
   }
   // Toggle off if same tile clicked twice
   if (state.toolsMenuOpen === tool){
@@ -74741,6 +75777,7 @@ function init(){
   // happens inside #gisMapMount (post-reparent), and AFTER applyLanguage
   // so drawer/modal labels already have their translations.
   gisInit();
+  try { if (typeof initCartoUiResultsA === "function") initCartoUiResultsA(); } catch(_){}
   applyUiState();
 
   // Mini-mappa subito (La Spezia) se nessun punto da permalink/converti
