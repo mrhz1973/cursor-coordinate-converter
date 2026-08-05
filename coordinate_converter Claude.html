@@ -8204,6 +8204,30 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   stroke:var(--accent);
   stroke-width:2.5;
 }
+/* IGM explicit area selection — amber/ochre, distinct from offline green/teal and footprints */
+.carto-igm-overlay .carto-igm-area-selection{
+  fill:rgba(180, 83, 9, 0.12);
+  stroke:#b45309;
+  stroke-width:2.5;
+  stroke-dasharray:8 4;
+  fill-rule:evenodd;
+  pointer-events:none;
+}
+.tile-map.carto-igm-selecting{cursor:crosshair}
+.tile-map .carto-igm-draft{
+  position:absolute;
+  border:2px dashed #b45309;
+  background:rgba(180, 83, 9, 0.12);
+  pointer-events:none;
+  z-index:6;
+  box-sizing:border-box;
+}
+.tlayer-item.tlayer-action .tlayer-badge-catalog{
+  margin-left:auto;
+  font-size:0.68rem;
+  opacity:0.75;
+  font-weight:500;
+}
 
 body.gis-mode dialog#astroPanel.astro-panel{
   position:fixed;
@@ -13267,10 +13291,15 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span><span data-i18n="carto.bbox.e">E</span>: <strong id="cartoIgmBboxE">—</strong></span>
         <span><span data-i18n="carto.bbox.w">O</span>: <strong id="cartoIgmBboxW">—</strong></span>
       </div>
+      <p id="cartoIgmAreaSourceLabel" class="hint" role="status">Sorgente: vista corrente</p>
+      <div class="carto-area-actions" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.4rem 0 0.2rem">
+        <button type="button" id="cartoIgmPickAreaBtn" class="btn btn-sm">Seleziona area sulla mappa</button>
+        <button type="button" id="cartoIgmUseViewBtn" class="btn btn-sm">Usa vista corrente</button>
+      </div>
       <p id="cartoIgmStaleNotice" class="hint carto-stale" data-i18n="carto.staleView" hidden>Risultati riferiti a una vista precedente</p>
     </div>
     <div class="carto-actions-primary">
-      <button type="button" id="cartoIgmSearchBtn" class="btn btn-primary" data-i18n="carto.search">Cerca nella vista</button>
+      <button type="button" id="cartoIgmSearchBtn" class="btn btn-primary">Cerca nella vista</button>
       <button type="button" id="cartoIgmRefreshBtn" class="btn btn-sm" data-i18n="carto.refresh" hidden>Aggiorna dalla vista corrente</button>
       <button type="button" id="cartoIgmClearBtn" class="btn btn-sm btn-danger-subtle" data-i18n="carto.clear" hidden>Cancella risultati</button>
     </div>
@@ -15433,6 +15462,16 @@ const I18N = {
     "carto.staleView":"Risultati riferiti a una vista precedente",
     "carto.needOneSeries":"Seleziona almeno una serie",
     "carto.resultsListAria":"Risultati indice cartografico",
+    "carto.pickArea":"Seleziona area sulla mappa",
+    "carto.useCurrentView":"Usa vista corrente",
+    "carto.searchInView":"Cerca nella vista",
+    "carto.searchInArea":"Cerca nell’area",
+    "carto.areaSourceView":"Sorgente: vista corrente",
+    "carto.areaSourceSelected":"Sorgente: area selezionata",
+    "carto.layerMenuSection":"Cataloghi",
+    "carto.layerMenuLabel":"Indice IGM",
+    "carto.layerMenuCatalog":"Catalogo carte",
+    "carto.layerMenuTip":"Apri Indice cartografico IGM",
     "gis.polygonPanel.title":"Poligoni",
     "gis.polygonPanel.newPolygon":"Nuovo poligono",
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
@@ -22355,10 +22394,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX3";
-const APP_BUILD_DETAIL = "use scoped Italian fallback for IGM UI labels";
+const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A";
+const APP_BUILD_DETAIL = "coordinate map tools, box zoom and IGM area workflow";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 122;
+const APP_BUILD_NUM = 123;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -22388,6 +22427,17 @@ let openCartoIgmPanel = function(){ return false; };
 let closeCartoIgmPanel = function(){};
 let cartoUiRenderPanel = function(){};
 let drawCartoIgmOverlay = function(){};
+let cartoIgmCancelAreaPick = function(){};
+
+/** Scoped Italian fallback for CARTO / layer-menu strings that exist only in I18N.it
+ * (L10N freeze — never use t() for these keys; EN/FR would show raw key names). */
+function cartoScopedT(key){
+  try {
+    const it = (typeof I18N !== "undefined" && I18N.it) ? I18N.it : null;
+    if (it && Object.prototype.hasOwnProperty.call(it, key)) return it[key];
+  } catch(_){}
+  return String(key || "");
+}
 (function initCartoSearchEngineA(){
   "use strict";
 
@@ -22927,8 +22977,19 @@ let drawCartoIgmOverlay = function(){};
         truncated: false,
         selectedRecordId: null,
         showAllFootprints: true,
-        error: null
+        error: null,
+        areaMode: "current-view",
+        selectedArea: null,
+        areaPickActive: false
       };
+    } else {
+      // Additive defaults for fields introduced by MAP-INTERACTION-CARTO-UX-BUNDLE-A.
+      if (state._cartoUi.areaMode !== "selected-area" && state._cartoUi.areaMode !== "current-view")
+        state._cartoUi.areaMode = "current-view";
+      if (!Object.prototype.hasOwnProperty.call(state._cartoUi, "selectedArea"))
+        state._cartoUi.selectedArea = null;
+      if (!Object.prototype.hasOwnProperty.call(state._cartoUi, "areaPickActive"))
+        state._cartoUi.areaPickActive = false;
     }
     return state._cartoUi;
   }
@@ -23056,6 +23117,9 @@ let drawCartoIgmOverlay = function(){};
     u.selectedRecordId = null;
     u.error = null;
     u.status = "idle";
+    // Clearing results also drops the explicit IGM area selection (semantic coherence).
+    u.selectedArea = null;
+    u.areaMode = "current-view";
   }
 
   function cartoUiClearResultsAndOverlay(){
@@ -23112,7 +23176,16 @@ let drawCartoIgmOverlay = function(){};
       try { cartoUiRenderPanel(); } catch(_){}
       return;
     }
-    const bbox = cartoUiComputeViewportBbox();
+    const bbox = (u.areaMode === "selected-area" && u.selectedArea
+      && Number.isFinite(u.selectedArea.west) && Number.isFinite(u.selectedArea.south)
+      && Number.isFinite(u.selectedArea.east) && Number.isFinite(u.selectedArea.north))
+      ? {
+          west: u.selectedArea.west,
+          south: u.selectedArea.south,
+          east: u.selectedArea.east,
+          north: u.selectedArea.north
+        }
+      : cartoUiComputeViewportBbox();
     if (!bbox){
       cartoUiFailSearch("viewport_unavailable");
       return;
@@ -23227,29 +23300,51 @@ let drawCartoIgmOverlay = function(){};
     // F1: status badge AFTER i18n sync so static data-i18n cannot overwrite it.
     cartoUiSyncStatusBadge();
 
-    const qb = u.queryBbox;
+    // Display bbox: explicit selected area takes precedence over last query bbox.
+    const displayBbox = (u.areaMode === "selected-area" && u.selectedArea) ? u.selectedArea : u.queryBbox;
     const setB = function(id, v){
       const el = document.getElementById(id);
-      if (el) el.textContent = qb ? cartoUiFmtCoord(v) : "—";
+      if (el) el.textContent = displayBbox ? cartoUiFmtCoord(v) : "—";
     };
-    if (qb){
-      setB("cartoIgmBboxN", qb.north);
-      setB("cartoIgmBboxS", qb.south);
-      setB("cartoIgmBboxE", qb.east);
-      setB("cartoIgmBboxW", qb.west);
+    if (displayBbox){
+      setB("cartoIgmBboxN", displayBbox.north);
+      setB("cartoIgmBboxS", displayBbox.south);
+      setB("cartoIgmBboxE", displayBbox.east);
+      setB("cartoIgmBboxW", displayBbox.west);
     } else {
       setB("cartoIgmBboxN", NaN);
       setB("cartoIgmBboxS", NaN);
       setB("cartoIgmBboxE", NaN);
       setB("cartoIgmBboxW", NaN);
     }
+
+    // Source label + dynamic search CTA (scoped IT via cartoUiT — no data-i18n for new keys).
+    const srcLbl = document.getElementById("cartoIgmAreaSourceLabel");
+    if (srcLbl){
+      srcLbl.textContent = (u.areaMode === "selected-area")
+        ? cartoUiT("carto.areaSourceSelected")
+        : cartoUiT("carto.areaSourceView");
+    }
+    const pickBtn = document.getElementById("cartoIgmPickAreaBtn");
+    if (pickBtn) pickBtn.textContent = cartoUiT("carto.pickArea");
+    const useViewBtn = document.getElementById("cartoIgmUseViewBtn");
+    if (useViewBtn) useViewBtn.textContent = cartoUiT("carto.useCurrentView");
+    const searchBtn = document.getElementById("cartoIgmSearchBtn");
+    if (searchBtn){
+      searchBtn.textContent = (u.areaMode === "selected-area")
+        ? cartoUiT("carto.searchInArea")
+        : cartoUiT("carto.searchInView");
+      try { searchBtn.removeAttribute("data-i18n"); } catch(_){}
+    }
+
     const stale = document.getElementById("cartoIgmStaleNotice");
     if (stale){
       let show = false;
-      if (qb && u.results.length){
+      // Stale only in current-view mode; selected-area bbox is canonical.
+      if (u.areaMode === "current-view" && u.queryBbox && u.results.length){
         try {
           const cur = cartoUiComputeViewportBbox();
-          show = !!(cur && !cartoUiBboxEqual(qb, cur));
+          show = !!(cur && !cartoUiBboxEqual(u.queryBbox, cur));
         } catch(_){ show = false; }
       }
       stale.hidden = !show;
@@ -23259,8 +23354,8 @@ let drawCartoIgmOverlay = function(){};
     const clearBtn = document.getElementById("cartoIgmClearBtn");
     if (refreshBtn) refreshBtn.hidden = !hasRes && u.status !== "ready";
     if (clearBtn) clearBtn.hidden = !hasRes && u.status !== "ready" && u.status !== "error";
-    // Keep clear visible when there is something to clear (results or error state with query)
-    if (clearBtn) clearBtn.hidden = !(hasRes || u.queryBbox || u.status === "error");
+    // Keep clear visible when there is something to clear (results, error, or explicit area)
+    if (clearBtn) clearBtn.hidden = !(hasRes || u.queryBbox || u.selectedArea || u.status === "error");
     const c50 = document.getElementById("cartoIgmFilter50");
     const c100 = document.getElementById("cartoIgmFilter100v");
     if (c50) c50.checked = u.selectedSeries.indexOf("50") >= 0;
@@ -23338,9 +23433,14 @@ let drawCartoIgmOverlay = function(){};
     const old = tileMap.querySelector(".carto-igm-overlay");
     if (old) old.remove();
     const u = state._cartoUi;
-    if (!u || !u.isOpen || u.isMinimized) return;
-    if (!Array.isArray(u.results) || !u.results.length) return;
-    if (!u.showAllFootprints && !u.selectedRecordId) return;
+    if (!u || !u.isOpen) return;
+    const hasArea = !!(u.selectedArea
+      && Number.isFinite(u.selectedArea.west) && Number.isFinite(u.selectedArea.south)
+      && Number.isFinite(u.selectedArea.east) && Number.isFinite(u.selectedArea.north));
+    const showFootprints = !u.isMinimized
+      && Array.isArray(u.results) && u.results.length
+      && !!(u.showAllFootprints || u.selectedRecordId);
+    if (!hasArea && !showFootprints) return;
     const root = document.getElementById("miniMap");
     if (!root) return;
     const tileLayer = tileMap.querySelector(".tile-layer");
@@ -23361,29 +23461,203 @@ let drawCartoIgmOverlay = function(){};
     svg.setAttribute("height", String(H));
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
-    const items = u.showAllFootprints
-      ? u.results
-      : u.results.filter(function(r){ return r && String(r.record_id) === String(u.selectedRecordId); });
-    for (let i = 0; i < items.length; i++){
-      const item = items[i];
-      if (!item || item.record_id == null) continue;
-      const geom = (typeof cartoIndexGetGeometryForUi === "function")
-        ? cartoIndexGetGeometryForUi(item.record_id)
-        : null;
-      if (!geom) continue;
-      const d = cartoGeomToSvgPathD(geom, root, tx, ty);
-      if (!d) continue;
-      const path = document.createElementNS(ns, "path");
-      path.setAttribute("d", d);
-      path.setAttribute("fill-rule", "evenodd");
-      path.setAttribute("clip-rule", "evenodd");
-      path.setAttribute("pointer-events", "none");
-      const isSel = String(item.record_id) === String(u.selectedRecordId);
-      path.setAttribute("class", "carto-footprint" + (isSel ? " is-selected" : ""));
-      svg.appendChild(path);
+
+    // Amber selection rectangle (distinct from offline green/teal and footprint accent).
+    if (hasArea && typeof tileMapLatLonToPx === "function"){
+      try {
+        const a = u.selectedArea;
+        const nw = tileMapLatLonToPx(root, a.north, a.west);
+        const ne = tileMapLatLonToPx(root, a.north, a.east);
+        const se = tileMapLatLonToPx(root, a.south, a.east);
+        const sw = tileMapLatLonToPx(root, a.south, a.west);
+        if (nw && ne && se && sw){
+          const d = "M" + (nw.x - tx).toFixed(1) + " " + (nw.y - ty).toFixed(1)
+            + "L" + (ne.x - tx).toFixed(1) + " " + (ne.y - ty).toFixed(1)
+            + "L" + (se.x - tx).toFixed(1) + " " + (se.y - ty).toFixed(1)
+            + "L" + (sw.x - tx).toFixed(1) + " " + (sw.y - ty).toFixed(1) + "Z";
+          const path = document.createElementNS(ns, "path");
+          path.setAttribute("d", d);
+          path.setAttribute("class", "carto-igm-area-selection");
+          path.setAttribute("pointer-events", "none");
+          svg.appendChild(path);
+        }
+      } catch(_){}
+    }
+
+    if (showFootprints){
+      const items = u.showAllFootprints
+        ? u.results
+        : u.results.filter(function(r){ return r && String(r.record_id) === String(u.selectedRecordId); });
+      for (let i = 0; i < items.length; i++){
+        const item = items[i];
+        if (!item || item.record_id == null) continue;
+        const geom = (typeof cartoIndexGetGeometryForUi === "function")
+          ? cartoIndexGetGeometryForUi(item.record_id)
+          : null;
+        if (!geom) continue;
+        const d = cartoGeomToSvgPathD(geom, root, tx, ty);
+        if (!d) continue;
+        const path = document.createElementNS(ns, "path");
+        path.setAttribute("d", d);
+        path.setAttribute("fill-rule", "evenodd");
+        path.setAttribute("clip-rule", "evenodd");
+        path.setAttribute("pointer-events", "none");
+        const isSel = String(item.record_id) === String(u.selectedRecordId);
+        path.setAttribute("class", "carto-footprint" + (isSel ? " is-selected" : ""));
+        svg.appendChild(path);
+      }
     }
     tileLayer.appendChild(svg);
   };
+
+  // ---- IGM explicit area selection (rectangleDrag shared with box-zoom) ----
+  let _cartoIgmAreaDetach = null;
+
+  function cartoIgmPxRectToBbox(root, px){
+    if (!root || !px || typeof tileMapPxToLatLon !== "function") return null;
+    const c1 = tileMapPxToLatLon(root, px.x1, px.y1);
+    const c2 = tileMapPxToLatLon(root, px.x2, px.y2);
+    if (!c1 || !c2) return null;
+    if (!Number.isFinite(c1.lat) || !Number.isFinite(c1.lon) || !Number.isFinite(c2.lat) || !Number.isFinite(c2.lon)) return null;
+    const south = Math.min(c1.lat, c2.lat);
+    const north = Math.max(c1.lat, c2.lat);
+    let lon1 = cartoUiNormLon(c1.lon), lon2 = cartoUiNormLon(c2.lon);
+    if (!Number.isFinite(lon1) || !Number.isFinite(lon2)) return null;
+    let west = Math.min(lon1, lon2), east = Math.max(lon1, lon2);
+    if ((east - west) > 180){
+      // Prefer the smaller wrap-around span.
+      const tmp = west; west = east; east = tmp;
+    }
+    if (!(south < north)) return null;
+    return { west: west, south: south, east: east, north: north };
+  }
+
+  function cartoIgmCancelAreaPickImpl(opts){
+    opts = opts || {};
+    const u = cartoUiGetState();
+    // Idempotent: already idle → just free coordinator slot if we still own it.
+    if (!u.areaPickActive && !_cartoIgmAreaDetach){
+      try { mapToolDeactivate("carto-igm-area"); } catch(_){}
+      return;
+    }
+    u.areaPickActive = false;
+    try {
+      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
+    } catch(_){}
+    _cartoIgmAreaDetach = null;
+    try { mapToolDeactivate("carto-igm-area"); } catch(_){}
+    if (opts.restore){
+      try {
+        if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
+          gisRestoreMinimizedPanel("cartoIgmPanel");
+        }
+      } catch(_){}
+      u.isMinimized = false;
+    }
+    // Preserve any previous selectedArea; do not start a search.
+    try { cartoUiRenderPanel(); } catch(_){}
+    cartoUiRefreshOverlay();
+  }
+
+  function cartoIgmCommitAreaFromPx(px){
+    const root = document.getElementById("miniMap");
+    const bbox = cartoIgmPxRectToBbox(root, px);
+    const u = cartoUiGetState();
+    u.areaPickActive = false;
+    try {
+      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
+    } catch(_){}
+    _cartoIgmAreaDetach = null;
+    try { mapToolDeactivate("carto-igm-area"); } catch(_){}
+    if (!bbox){
+      // Invalid drag — restore panel, keep previous selection.
+      try {
+        if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
+          gisRestoreMinimizedPanel("cartoIgmPanel");
+        }
+      } catch(_){}
+      u.isMinimized = false;
+      try { cartoUiRenderPanel(); } catch(_){}
+      return;
+    }
+    u.selectedArea = {
+      west: bbox.west, south: bbox.south, east: bbox.east, north: bbox.north
+    };
+    u.areaMode = "selected-area";
+    try {
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
+        gisRestoreMinimizedPanel("cartoIgmPanel");
+      }
+    } catch(_){}
+    u.isMinimized = false;
+    try { cartoUiRenderPanel(); } catch(_){}
+    // Panel-aware fit of the selected area (no auto-search).
+    try {
+      if (typeof gisFitBboxPanelAware === "function"){
+        const fit = gisFitBboxPanelAware(root, u.selectedArea, { padFrac: 0.10 });
+        if (fit && fit.center && Number.isFinite(fit.zoom)){
+          state.viewCenter = { lat: fit.center.lat, lon: fit.center.lon };
+          state.mapZoom = fit.zoom;
+          if (typeof renderTileMap === "function"){
+            renderTileMap(fit.center.lat, fit.center.lon, fit.zoom);
+          }
+        }
+      }
+    } catch(_){}
+    cartoUiRefreshOverlay();
+  }
+
+  function cartoIgmStartAreaPick(){
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (!root || !tileMap){
+      try { cartoUiSetNotice(cartoUiT("carto.error") + " (no_map)", true); } catch(_){}
+      return;
+    }
+    const u = cartoUiGetState();
+    if (!u.isOpen){
+      try { openCartoIgmPanel(); } catch(_){}
+    }
+    // Register as exclusive map consumer; cleanup cancels the pick and restores panel.
+    mapToolActivate("carto-igm-area", function(){
+      try { cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
+    });
+    u.areaPickActive = true;
+    try { minimizeCartoIgmPanel(); } catch(_){}
+    try {
+      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
+    } catch(_){}
+    _cartoIgmAreaDetach = rectangleDragInstall(tileMap, {
+      cssClass: "carto-igm-selecting",
+      draftClass: "carto-igm-draft",
+      minPx: 10,
+      onCommit: function(px){ cartoIgmCommitAreaFromPx(px); },
+      onCancel: function(){ cartoIgmCancelAreaPick({ restore: true }); }
+    });
+  }
+
+  function cartoIgmUseCurrentView(){
+    const u = cartoUiGetState();
+    u.selectedArea = null;
+    u.areaMode = "current-view";
+    // Show live viewport coords in N/S/E/O (without starting a search).
+    try {
+      const vb = cartoUiComputeViewportBbox();
+      if (vb){
+        // Temporarily surface as queryBbox display only when no results; otherwise
+        // just clear selectedArea and let render show "—" until next search, or
+        // show the viewport as display when idle.
+        if (!u.results.length) u.queryBbox = {
+          west: vb.west, south: vb.south, east: vb.east, north: vb.north
+        };
+      }
+    } catch(_){}
+    try { cartoUiRenderPanel(); } catch(_){}
+    cartoUiRefreshOverlay();
+  }
+
+  // Export cancel to outer scope for Esc / coordinator callers.
+  cartoIgmCancelAreaPick = cartoIgmCancelAreaPickImpl;
 
   function _cartoIgmPanelLayoutOpts(){
     return {
@@ -23486,6 +23760,10 @@ let drawCartoIgmOverlay = function(){};
   closeCartoIgmPanel = function(){
     const dlg = document.getElementById("cartoIgmPanel");
     const u = cartoUiGetState();
+    // Abort any in-progress area pick without restoring (panel is closing).
+    if (u.areaPickActive){
+      try { cartoIgmCancelAreaPickImpl({ restore: false }); } catch(_){}
+    }
     cartoUiInvalidatePendingSearch();
     cartoUiClearResultsAndOverlay();
     cartoUiSetNotice(null, false);
@@ -23554,6 +23832,16 @@ let drawCartoIgmOverlay = function(){};
       cartoUiSetBusy(false);
       cartoUiRenderPanel();
     });
+    const pickAreaBtn = document.getElementById("cartoIgmPickAreaBtn");
+    if (pickAreaBtn && !pickAreaBtn._cartoPickBound){
+      pickAreaBtn._cartoPickBound = true;
+      pickAreaBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoIgmStartAreaPick(); });
+    }
+    const useViewBtn = document.getElementById("cartoIgmUseViewBtn");
+    if (useViewBtn && !useViewBtn._cartoUseViewBound){
+      useViewBtn._cartoUseViewBound = true;
+      useViewBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoIgmUseCurrentView(); });
+    }
     const c50 = document.getElementById("cartoIgmFilter50");
     const c100 = document.getElementById("cartoIgmFilter100v");
     function onFilter(){
@@ -32070,6 +32358,11 @@ function bindHotkeys(){
       if (td && td.classList.contains("open")){ closeToolsDrawer(); ev.preventDefault(); return; }
       // Cancel an in-progress bbox selection first — it has no visible
       // modal but does have a sticky banner on the map.
+      if (state._cartoUi && state._cartoUi.areaPickActive){
+        try { if (typeof cartoIgmCancelAreaPick === "function") cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       if (typeof boxZoomIsActive === "function" && boxZoomIsActive()){
         try { cancelBoxZoom(); } catch(_){}
         ev.preventDefault();
@@ -37481,7 +37774,7 @@ function gisMapTileMathViewport(root){
 }
 
 /* MAP-CENTER-VIEWPORT-AWARE-A: usable rect + pure camera math (no temp state). */
-const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze(["trackModal","waypointModal","convertModal","searchPanel","favoritesPanel","layersPanel","measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel","routingPlannerPanel","helpOverlay","qrModal","gisMinimizedDock"]);
+const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze(["trackModal","waypointModal","convertModal","searchPanel","favoritesPanel","layersPanel","measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel","routingPlannerPanel","cartoIgmPanel","helpOverlay","qrModal","gisMinimizedDock"]);
 const GIS_MAP_USABLE_MIN_W = 120, GIS_MAP_USABLE_MIN_H = 120, GIS_MAP_USABLE_MIN_AREA_FRAC = 0.18;
 const GIS_MAP_OCCLUDER_MIN_EDGE = 24, GIS_MAP_FIT_EDGE_PAD = 8;
 
@@ -37714,6 +38007,8 @@ async function startBboxSelection(){
   tileMap.classList.add("bbox-selecting");
   offlinePanelMinimizeForBbox();
   syncPcBboxEditorSectionFromState();
+  // MAP-TOOL-COORDINATOR-A: minimal participation (no engine migration).
+  try { mapToolActivate("offline-bbox", function(){ try { cancelBboxSelection(); } catch(_){} }); } catch(_){}
 
   // Inject banner
   let banner = tileMap.querySelector(".bbox-mode-banner");
@@ -37755,18 +38050,267 @@ function endBboxSelection(){
   state._bboxSelecting = false;
   offlinePanelRestoreAfterBbox();
   syncPcBboxEditorSectionFromState();
+  // Free the coordinator slot (covers commit, cancel and cleanup paths).
+  try { mapToolDeactivate("offline-bbox"); } catch(_){}
 }
 
 function cancelBboxSelection(){ endBboxSelection(); }
+
+/* ===================== JS — MAP-TOOL-COORDINATOR-A =====================
+ * Transient registry for exclusive arbitration of map interaction tools.
+ * Only one map-click/drag consumer can be active at a time.
+ * Atomic re-entrant safety: capture current id/cleanup, clear state BEFORE
+ * invoking cleanup, so recursive calls from inside a cleanup see an empty
+ * registry and never recurse. try/finally guarantees state stays consistent.
+ * No window.* export, no persistence, no per-tool rewrites. */
+const _mapToolConsumer = { id: null, cleanup: null };
+function mapToolActivate(id, cleanup){
+  if (_mapToolConsumer.id === id) return; // same consumer → no-op
+  const prevCleanup = _mapToolConsumer.cleanup;
+  _mapToolConsumer.id = null;
+  _mapToolConsumer.cleanup = null;
+  if (typeof prevCleanup === "function"){
+    try { prevCleanup(); } finally { /* state already cleared */ }
+  }
+  _mapToolConsumer.id = id || null;
+  _mapToolConsumer.cleanup = (typeof cleanup === "function") ? cleanup : null;
+}
+function mapToolDeactivate(id){
+  if (id != null && _mapToolConsumer.id !== id) return; // only on match
+  const prevCleanup = _mapToolConsumer.cleanup;
+  _mapToolConsumer.id = null;
+  _mapToolConsumer.cleanup = null;
+  if (typeof prevCleanup === "function"){
+    try { prevCleanup(); } finally { /* state already cleared */ }
+  }
+}
+function mapToolDeactivateAll(){ mapToolDeactivate(null); }
+function mapToolActiveId(){ return _mapToolConsumer.id; }
+
+/* ===================== JS — RECTANGLE-DRAG-A =====================
+ * Small shared abstraction extracted from MAP-BOX-ZOOM-A. Both box-zoom and
+ * IGM area-selection use it; the offline-area selector keeps its own engine.
+ * Same event scheme as box-zoom: capture-phase pointerdown on tileMap, then
+ * window pointermove/up/cancel while dragging, contextmenu to cancel.
+ * Idempotent via flag; returns a detach() that removes ALL installed listeners.
+ * No window.* export, no new dependency. */
+function rectangleDragInstall(tileMap, opts){
+  opts = opts || {};
+  if (!tileMap) return function(){};
+  // Idempotency: if an instance is already installed on this tileMap, detach it first.
+  if (typeof tileMap._rectangleDragDetach === "function"){
+    try { tileMap._rectangleDragDetach(); } catch(_){}
+  }
+  const cssClass   = opts.cssClass || "";
+  const draftClass = opts.draftClass || "bbox-draft";
+  const minPx      = Number.isFinite(opts.minPx) ? Math.max(1, opts.minPx) : 10;
+  const ignoreSelector = opts.ignoreSelector ||
+    ".tile-ctrls, .tile-layers, .tile-attrib, .tz-btn, .tz-box-zoom, button, a, input, select, textarea, .trk-handle, .wpt-handle, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit, .rr-center-handle, .mm-handle, .bbox-handle, .bbox-remove, .bbox-move";
+  const onStart  = (typeof opts.onStart  === "function") ? opts.onStart  : null;
+  const onMoveCb = (typeof opts.onMove   === "function") ? opts.onMove   : null;
+  const onCommit = (typeof opts.onCommit === "function") ? opts.onCommit : null;
+  const onCancel = (typeof opts.onCancel === "function") ? opts.onCancel : null;
+
+  let installed = true;
+  let dragging = false;
+  let pointerId = null;
+  let startX = 0, startY = 0, curX = 0, curY = 0;
+  let tempHandlers = null;
+
+  function localPoint(tm, ev){
+    const r = tm.getBoundingClientRect();
+    return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+  }
+  function updateDraft(tm, x1, y1, x2, y2){
+    let draft = tm.querySelector("." + draftClass);
+    if (!draft){
+      draft = document.createElement("div");
+      draft.className = draftClass;
+      tm.appendChild(draft);
+    }
+    const tmW = tm.clientWidth, tmH = tm.clientHeight;
+    const xa = Math.max(0, Math.min(tmW, Math.min(x1, x2)));
+    const ya = Math.max(0, Math.min(tmH, Math.min(y1, y2)));
+    const xb = Math.max(0, Math.min(tmW, Math.max(x1, x2)));
+    const yb = Math.max(0, Math.min(tmH, Math.max(y1, y2)));
+    draft.style.left = xa + "px";
+    draft.style.top = ya + "px";
+    draft.style.width = Math.max(0, xb - xa) + "px";
+    draft.style.height = Math.max(0, yb - ya) + "px";
+  }
+  function removeDraft(tm){
+    try { const d = tm && tm.querySelector("." + draftClass); if (d) d.remove(); } catch(_){}
+  }
+  function detachTemp(){
+    if (!tempHandlers) return;
+    try {
+      if (tempHandlers.move)   window.removeEventListener("pointermove", tempHandlers.move, true);
+      if (tempHandlers.up)     window.removeEventListener("pointerup", tempHandlers.up, true);
+      if (tempHandlers.cancel) window.removeEventListener("pointercancel", tempHandlers.cancel, true);
+    } catch(_){}
+    tempHandlers = null;
+  }
+  function releasePointer(tm){
+    if (pointerId == null) return;
+    try {
+      if (tm && typeof tm.releasePointerCapture === "function"
+          && tm.hasPointerCapture && tm.hasPointerCapture(pointerId)){
+        tm.releasePointerCapture(pointerId);
+      }
+    } catch(_){}
+    pointerId = null;
+  }
+  function finishDrag(e, commit){
+    if (pointerId != null && e && e.pointerId !== pointerId) return;
+    const tm = tileMap;
+    detachTemp();
+    releasePointer(tm);
+    const wasDrag = dragging;
+    dragging = false;
+    if (!wasDrag){ removeDraft(tm); return; }
+    const q = (e && Number.isFinite(e.clientX)) ? localPoint(tm, e) : { x: curX, y: curY };
+    const w = Math.abs(q.x - startX);
+    const h = Math.abs(q.y - startY);
+    removeDraft(tm);
+    if (!commit || w < minPx || h < minPx){
+      if (onCancel) { try { onCancel(e); } catch(_){} }
+      return;
+    }
+    if (onCommit){
+      try { onCommit({ x1: startX, y1: startY, x2: q.x, y2: q.y, w: w, h: h }, e); } catch(_){}
+    }
+    if (e && e.cancelable) e.preventDefault();
+    try { if (e) e.stopPropagation(); } catch(_){}
+  }
+  function onPointerDown(ev){
+    if (!installed) return;
+    if (ev.button !== undefined && ev.button !== 0) return;
+    if (!tileMap.contains(ev.target)) return;
+    if (ev.target.closest && ev.target.closest(ignoreSelector)) return;
+    if (onStart){ try { if (onStart(ev) === false) return; } catch(_){} }
+    const p = localPoint(tileMap, ev);
+    dragging = true;
+    pointerId = ev.pointerId;
+    startX = p.x; startY = p.y; curX = p.x; curY = p.y;
+    try {
+      if (typeof tileMap.setPointerCapture === "function") tileMap.setPointerCapture(ev.pointerId);
+    } catch(_){}
+    if (cssClass) tileMap.classList.add(cssClass);
+    updateDraft(tileMap, p.x, p.y, p.x, p.y);
+    if (ev.cancelable) ev.preventDefault();
+    try { ev.stopPropagation(); } catch(_){}
+    const onMove = (e) => {
+      if (!dragging || e.pointerId !== pointerId) return;
+      const q = localPoint(tileMap, e);
+      curX = q.x; curY = q.y;
+      updateDraft(tileMap, startX, startY, q.x, q.y);
+      if (onMoveCb){ try { onMoveCb({ x1: startX, y1: startY, x2: q.x, y2: q.y, w: Math.abs(q.x-startX), h: Math.abs(q.y-startY) }, e); } catch(_){} }
+      if (e.cancelable) e.preventDefault();
+    };
+    const onUp     = (e) => finishDrag(e, true);
+    const onCancelW= (e) => finishDrag(e, false);
+    detachTemp();
+    tempHandlers = { move: onMove, up: onUp, cancel: onCancelW };
+    window.addEventListener("pointermove", onMove, true);
+    window.addEventListener("pointerup", onUp, true);
+    window.addEventListener("pointercancel", onCancelW, true);
+  }
+  function onContextmenu(ev){
+    if (!installed || !dragging) return;
+    ev.preventDefault();
+    try { ev.stopPropagation(); } catch(_){}
+    detachTemp();
+    releasePointer(tileMap);
+    removeDraft(tileMap);
+    dragging = false;
+    if (cssClass) tileMap.classList.remove(cssClass);
+    if (onCancel) { try { onCancel(ev); } catch(_){} }
+  }
+  tileMap.addEventListener("pointerdown", onPointerDown, true);
+  tileMap.addEventListener("contextmenu", onContextmenu, true);
+
+  function detach(){
+    if (!installed) return;
+    installed = false;
+    try { tileMap.removeEventListener("pointerdown", onPointerDown, true); } catch(_){}
+    try { tileMap.removeEventListener("contextmenu", onContextmenu, true); } catch(_){}
+    detachTemp();
+    releasePointer(tileMap);
+    removeDraft(tileMap);
+    if (cssClass) tileMap.classList.remove(cssClass);
+    dragging = false;
+  }
+  tileMap._rectangleDragDetach = detach;
+  return detach;
+}
+
+/* ===================== JS — MAP-CENTER-VIEWPORT-AWARE-A (fit helper) =====================
+ * Generalizes the panel-aware fit pattern already used by routing and
+ * flyMapToTrackPoints. Reuses gisMapUsableRect + gisMapOffsetVC +
+ * clampBasemapFitZoom. Works without panels (fallback → standard fit). */
+function gisFitBboxPanelAware(root, bbox, opts){
+  if (!root || !bbox) return null;
+  const west  = Number(bbox.west), south = Number(bbox.south);
+  const east  = Number(bbox.east), north = Number(bbox.north);
+  if (![west, south, east, north].every(Number.isFinite)) return null;
+  if (!(south < north)) return null;
+  let w1 = west, e1 = east;
+  // Normalize longitude span (handle wrap-around if > 180)
+  if (e1 < w1) e1 += 360;
+  const clat = (south + north) / 2;
+  const clon = normalizeLon((w1 + e1) / 2);
+  opts = opts || {};
+  const padFrac = Number.isFinite(opts.padFrac) ? Math.max(0, Math.min(0.4, opts.padFrac)) : 0.12;
+  const usableProvided = opts.usable && !opts.usable.fallback ? opts.usable : null;
+  const usable = usableProvided || (typeof gisMapUsableRect === "function" ? gisMapUsableRect(root) : null);
+  if (!usable) return null;
+  const vp = (typeof gisMapTileMathViewport === "function") ? gisMapTileMathViewport(root) : { W: 400, H: 400 };
+  let availW, availH;
+  if (!usable.fallback && usable.w > 0 && usable.h > 0){
+    availW = Math.max(64, usable.w * (1 - 2 * padFrac));
+    availH = Math.max(64, usable.h * (1 - 2 * padFrac));
+  } else {
+    availW = Math.max(64, (vp.W || 400) * (1 - 2 * padFrac));
+    availH = Math.max(64, (vp.H || 400) * (1 - 2 * padFrac));
+  }
+  // Mercator span of the bbox at the given latitude.
+  const latRad = clat * Math.PI / 180;
+  const cosLat = Math.max(1e-6, Math.cos(latRad));
+  const mercXSpan = Math.abs(e1 - w1) / 360;                 // 0..1 of world width
+  const mercYSpan = Math.abs(north - south) / 360;           // approximate (good enough for fit)
+  if (!(mercXSpan > 0) || !(mercYSpan > 0)) return null;
+  // Walk-down zoom: highest z whose pixel span fits usable area.
+  const maxAllowed = (typeof opts.maxZoom === "number" && Number.isFinite(opts.maxZoom))
+    ? opts.maxZoom
+    : (typeof clampBasemapFitZoom === "function" ? 19 : 19);
+  let z = Math.min(19, Math.floor(maxAllowed || 19));
+  for (; z >= 2; z--){
+    const scale = Math.pow(2, z) * 256;
+    const pxW = mercXSpan * cosLat * scale;
+    const pxH = mercYSpan * scale;
+    if (pxW <= availW && pxH <= availH) break;
+  }
+  if (z < 2) z = 2;
+  if (typeof clampBasemapFitZoom === "function") z = clampBasemapFitZoom(z);
+  // Panel-aware camera offset.
+  let cam = { lat: clat, lon: clon };
+  if (!usable.fallback && typeof gisMapOffsetVC === "function"){
+    try { cam = gisMapOffsetVC(root, clat, clon, z, usable); } catch(_){}
+  }
+  return { center: cam, zoom: z };
+}
 
 /* ---- MAP-BOX-ZOOM-A: transient rectangle zoom (no GIS objects / no storage) ---- */
 const BOX_ZOOM_MIN_PX = 10;
 /** Final fit padding per side (px): keeps the whole selected box visible after zoom. */
 const BOX_ZOOM_FIT_PAD_PX = 20;
 /**
- * Pure pixel-ratio zoom target for MAP-BOX-ZOOM-A.
- * Returns the largest integer zoom that still fits the box in the viewport
- * with padding (Math.floor on log2 — never crop the selection).
+ * MAP-BOX-ZOOM-A target zoom.
+ * Selects the integer zoom candidate that MAXIMIZES box occupation of the
+ * usable area without exceeding it (target ~80–95%), instead of the previous
+ * Math.floor(log2) which consistently lost ~1 level. Compares zFloor and zCeil
+ * (both clampBasemapFitZoom-protected); if neither fits, walks zFloor downward
+ * until the first value that fits. No arbitrary zoom-subtraction constants.
  */
 function boxZoomComputeTargetZoom(currentZoom, viewportW, viewportH, boxW, boxH, padPx){
   const z0 = Number(currentZoom);
@@ -37778,19 +38322,38 @@ function boxZoomComputeTargetZoom(currentZoom, viewportW, viewportH, boxW, boxH,
   if (!Number.isFinite(z0) || !Number.isFinite(vw) || !Number.isFinite(vh)
       || !Number.isFinite(bw) || !Number.isFinite(bh)) return null;
   if (vw <= 0 || vh <= 0 || bw < BOX_ZOOM_MIN_PX || bh < BOX_ZOOM_MIN_PX) return null;
-  const availableW = vw - 2 * pad;
-  const availableH = vh - 2 * pad;
-  if (!(availableW > 0) || !(availableH > 0)) return null;
-  const scaleX = availableW / bw;
-  const scaleY = availableH / bh;
+  const availW = vw - 2 * pad;
+  const availH = vh - 2 * pad;
+  if (!(availW > 0) || !(availH > 0)) return null;
+  const scaleX = availW / bw;
+  const scaleY = availH / bh;
   const fitScale = Math.min(scaleX, scaleY);
   if (!(fitScale > 0) || !Number.isFinite(fitScale)) return null;
-  const zoomDelta = Math.max(0, Math.floor(Math.log2(fitScale)));
-  let targetZoom = z0 + zoomDelta;
-  if (!Number.isFinite(targetZoom)) return null;
-  if (typeof clampBasemapFitZoom === "function") targetZoom = clampBasemapFitZoom(targetZoom);
-  else targetZoom = Math.max(2, targetZoom);
-  return targetZoom | 0;
+  const logScale = Math.log2(fitScale);
+  const zFloorRaw = z0 + Math.floor(logScale);
+  const zCeilRaw  = z0 + Math.ceil(logScale);
+  const clamp = (typeof clampBasemapFitZoom === "function")
+    ? clampBasemapFitZoom
+    : (zz) => Math.max(2, zz);
+  const zFloor = clamp(zFloorRaw) | 0;
+  const zCeil  = clamp(zCeilRaw)  | 0;
+  // projected box size at a candidate zoom = box * 2^(z - z0)
+  const fits = (zcand) => {
+    if (!Number.isFinite(zcand)) return false;
+    const factor = Math.pow(2, zcand - z0);
+    const projW = bw * factor;
+    const projH = bh * factor;
+    return projW <= availW && projH <= availH;
+  };
+  // Prefer the higher candidate when it still fits (maximizes occupation, ≤ 100%).
+  if (zCeil > zFloor && fits(zCeil)) return zCeil | 0;
+  if (fits(zFloor)) return zFloor | 0;
+  // Fallback: decrement from zFloor until something fits (handles clamp/round edge cases).
+  for (let z = zFloor - 1; z >= 2; z--){
+    const zTry = clamp(z) | 0;
+    if (fits(zTry)) return zTry | 0;
+  }
+  return (clamp(2) | 0);
 }
 function boxZoomT(key, fb){
   try {
@@ -37819,6 +38382,7 @@ function boxZoomIsActive(){
 function boxZoomConflictActive(){
   try {
     if (state._bboxSelecting) return true;
+    if (state._cartoUi && state._cartoUi.areaPickActive) return true;
     if (state.waypointPickMode) return true;
     if (state.track && state.track.pickMode) return true;
     if (typeof trackMapPickEditingActive === "function" && trackMapPickEditingActive()) return true;
@@ -37878,13 +38442,20 @@ function boxZoomDetachTempHandlers(tileMap){
 function cancelBoxZoom(){
   const bz = boxZoomEnsureState();
   const tileMap = boxZoomGetTileMap();
+  // Detach shared rectangleDrag instance owned by box-zoom (if any).
+  try {
+    if (bz._rectDetach && typeof bz._rectDetach === "function"){
+      bz._rectDetach();
+      bz._rectDetach = null;
+    }
+  } catch(_){}
   boxZoomDetachTempHandlers(tileMap);
   boxZoomReleasePointer(bz, tileMap);
   boxZoomRemoveDraft(tileMap);
   bz.active = false;
   bz.dragging = false;
   bz.pointerId = null;
-  try { if (tileMap) tileMap.classList.remove("box-zoom-selecting"); } catch(_){}
+  try { if (tileMap){ tileMap.classList.remove("box-zoom-selecting"); tileMap._boxZoomHandlersInstalled = false; } } catch(_){}
   try {
     const btn = document.querySelector('[data-role="box-zoom-toggle"]');
     if (btn){
@@ -37892,18 +38463,31 @@ function cancelBoxZoom(){
       btn.setAttribute("aria-pressed", "false");
     }
   } catch(_){}
+  // Free the coordinator slot (only if we still own it).
+  try { mapToolDeactivate("box-zoom"); } catch(_){}
 }
 function boxZoomFitFromPixels(root, x1, y1, x2, y2){
   if (!root) return false;
   const tileMap = root.querySelector(".tile-map");
   if (!tileMap) return false;
-  const vw = tileMap.clientWidth;
-  const vh = tileMap.clientHeight;
+  // Panel-aware viewport: prefer gisMapUsableRect (accounts for floating occluders)
+  // and fall back to full tile-map dimensions when no panel is present.
+  let vw = tileMap.clientWidth, vh = tileMap.clientHeight;
+  let usable = null;
+  try {
+    if (typeof gisMapUsableRect === "function"){
+      usable = gisMapUsableRect(root);
+      if (usable && !usable.fallback && usable.w > 0 && usable.h > 0){
+        vw = usable.w;
+        vh = usable.h;
+      }
+    }
+  } catch(_){ usable = null; }
   if (!(vw > 0) || !(vh > 0)) return false;
-  const left = Math.max(0, Math.min(vw, Math.min(x1, x2)));
-  const right = Math.max(0, Math.min(vw, Math.max(x1, x2)));
-  const top = Math.max(0, Math.min(vh, Math.min(y1, y2)));
-  const bottom = Math.max(0, Math.min(vh, Math.max(y1, y2)));
+  const left = Math.max(0, Math.min(tileMap.clientWidth, Math.min(x1, x2)));
+  const right = Math.max(0, Math.min(tileMap.clientWidth, Math.max(x1, x2)));
+  const top = Math.max(0, Math.min(tileMap.clientHeight, Math.min(y1, y2)));
+  const bottom = Math.max(0, Math.min(tileMap.clientHeight, Math.max(y1, y2)));
   const boxW = right - left;
   const boxH = bottom - top;
   if (boxW < BOX_ZOOM_MIN_PX || boxH < BOX_ZOOM_MIN_PX) return false;
@@ -37916,7 +38500,14 @@ function boxZoomFitFromPixels(root, x1, y1, x2, y2){
   if (!center || !Number.isFinite(center.lat) || !Number.isFinite(center.lon)) return false;
   const latC = Math.max(-85.05, Math.min(85.05, center.lat));
   const lonC = normalizeLon(center.lon);
-  state.viewCenter = { lat: latC, lon: lonC };
+  // Panel-aware camera offset: shift the viewCenter so the box center lands at
+  // the usable-rect center instead of the raw viewport center.
+  let cam = { lat: latC, lon: lonC };
+  if (usable && !usable.fallback && typeof gisMapOffsetVC === "function"){
+    try { cam = gisMapOffsetVC(root, latC, lonC, targetZoom, usable); } catch(_){}
+  }
+  state.viewCenter = { lat: cam.lat, lon: cam.lon };
+  state.mapZoom = targetZoom;
   try {
     renderTileMap(latC, lonC, targetZoom);
     return true;
@@ -37945,63 +38536,13 @@ function boxZoomLocalPoint(tileMap, ev){
 }
 function boxZoomOnPointerDown(ev){
   if (!boxZoomIsActive()) return;
-  if (ev.button !== undefined && ev.button !== 0) return;
-  const tileMap = boxZoomGetTileMap();
-  if (!tileMap || !tileMap.contains(ev.target)) return;
-  if (ev.target.closest && ev.target.closest(
-    ".tile-ctrls, .tile-layers, .tile-attrib, .tz-btn, .tz-box-zoom, button, a, input, select, textarea, .trk-handle, .wpt-handle, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit, .rr-center-handle, .mm-handle, .bbox-handle, .bbox-remove, .bbox-move"
-  )) return;
-  const bz = boxZoomEnsureState();
-  const p = boxZoomLocalPoint(tileMap, ev);
-  bz.dragging = true;
-  bz.pointerId = ev.pointerId;
-  bz.startX = p.x; bz.startY = p.y;
-  bz.curX = p.x; bz.curY = p.y;
-  try {
-    if (typeof tileMap.setPointerCapture === "function") tileMap.setPointerCapture(ev.pointerId);
-  } catch(_){}
-  boxZoomUpdateDraft(tileMap, p.x, p.y, p.x, p.y);
-  if (ev.cancelable) ev.preventDefault();
-  try { ev.stopPropagation(); } catch(_){}
-  const onMove = (e) => {
-    if (!bz.dragging || e.pointerId !== bz.pointerId) return;
-    const tm = boxZoomGetTileMap();
-    if (!tm) return;
-    const q = boxZoomLocalPoint(tm, e);
-    bz.curX = q.x; bz.curY = q.y;
-    boxZoomUpdateDraft(tm, bz.startX, bz.startY, q.x, q.y);
-    if (e.cancelable) e.preventDefault();
-  };
-  const finishDrag = (e, commit) => {
-    if (bz.pointerId != null && e && e.pointerId !== bz.pointerId) return;
-    const tm = boxZoomGetTileMap();
-    const root = document.getElementById("miniMap");
-    boxZoomDetachTempHandlers(tm);
-    boxZoomReleasePointer(bz, tm);
-    const wasDrag = bz.dragging;
-    bz.dragging = false;
-    if (!wasDrag || !tm || !root){
-      boxZoomRemoveDraft(tm);
-      return;
-    }
-    const q = (e && Number.isFinite(e.clientX)) ? boxZoomLocalPoint(tm, e) : { x: bz.curX, y: bz.curY };
-    const w = Math.abs(q.x - bz.startX);
-    const h = Math.abs(q.y - bz.startY);
-    const sx = bz.startX, sy = bz.startY, ex = q.x, ey = q.y;
-    boxZoomRemoveDraft(tm);
-    if (!commit || w < BOX_ZOOM_MIN_PX || h < BOX_ZOOM_MIN_PX) return;
-    cancelBoxZoom();
-    boxZoomFitFromPixels(root, sx, sy, ex, ey);
-    if (e && e.cancelable) e.preventDefault();
-    try { if (e) e.stopPropagation(); } catch(_){}
-  };
-  const onUp = (e) => finishDrag(e, true);
-  const onCancel = (e) => finishDrag(e, false);
-  boxZoomDetachTempHandlers(tileMap);
-  tileMap._boxZoomTempHandlers = { move: onMove, up: onUp, cancel: onCancel };
-  window.addEventListener("pointermove", onMove, true);
-  window.addEventListener("pointerup", onUp, true);
-  window.addEventListener("pointercancel", onCancel, true);
+  // Delegate to the shared rectangleDrag handler: if an instance is not yet
+  // installed for box-zoom on this tileMap, install it lazily now.
+  // (rectangleDragInstall is idempotent and re-uses the same DOM event scheme.)
+  // NOTE: boxZoomOnPointerDown is retained as a stable external reference and
+  // is wired by boxZoomEnsureHandlers; the actual drag logic lives in rectangleDrag.
+  // The lazy-install path below is a defensive no-op when handlers are already
+  // installed via boxZoomEnsureHandlers → rectangleDragInstall.
 }
 function startBoxZoom(){
   const root = document.getElementById("miniMap");
@@ -38024,6 +38565,8 @@ function startBoxZoom(){
     btn.classList.add("is-active");
     btn.setAttribute("aria-pressed", "true");
   }
+  // MAP-TOOL-COORDINATOR-A: register as active consumer; cleanup disarms box-zoom.
+  mapToolActivate("box-zoom", function(){ try { cancelBoxZoom(); } catch(_){} });
   try { setBadge("info", boxZoomT("map.boxZoom.hint", "Trascina un riquadro sulla mappa")); } catch(_){}
   boxZoomEnsureHandlers(tileMap);
 }
@@ -38031,27 +38574,45 @@ function toggleBoxZoom(){
   if (boxZoomIsActive()) cancelBoxZoom();
   else startBoxZoom();
 }
+// Thin wrapper over the shared rectangleDrag abstraction. Box-zoom preserves
+// its external interface (boxZoomIsActive/cancelBoxZoom/toggleBoxZoom/state._boxZoom)
+// and delegates the drag mechanics to rectangleDragInstall. The onCommit
+// callback defers to boxZoomFitFromPixels (corrected panel-aware fit).
 function boxZoomEnsureHandlers(tileMap){
   if (!tileMap || tileMap._boxZoomHandlersInstalled) return;
+  if (!boxZoomIsActive()) return; // do not steal rectangleDrag from IGM / others
   tileMap._boxZoomHandlersInstalled = true;
-  tileMap.addEventListener("pointerdown", boxZoomOnPointerDown, true);
-  tileMap.addEventListener("contextmenu", (ev) => {
-    if (!boxZoomIsActive()) return;
-    ev.preventDefault();
-    try { ev.stopPropagation(); } catch(_){}
-    cancelBoxZoom();
-  }, true);
+  const bz = boxZoomEnsureState();
+  bz._rectDetach = rectangleDragInstall(tileMap, {
+    cssClass: "box-zoom-selecting",
+    draftClass: "box-zoom-draft",
+    minPx: BOX_ZOOM_MIN_PX,
+    onStart: function(){
+      // Only accept drags while box-zoom is the armed consumer.
+      return boxZoomIsActive();
+    },
+    onCommit: function(px, ev){
+      const root = document.getElementById("miniMap");
+      try { cancelBoxZoom(); } catch(_){}
+      try { boxZoomFitFromPixels(root, px.x1, px.y1, px.x2, px.y2); } catch(_){}
+    },
+    onCancel: function(){ try { cancelBoxZoom(); } catch(_){} }
+  });
 }
 function boxZoomSyncAfterRender(root){
   const tileMap = root && root.querySelector(".tile-map");
   if (!tileMap) return;
-  tileMap._boxZoomHandlersInstalled = false;
-  boxZoomEnsureHandlers(tileMap);
-  if (!boxZoomIsActive()) return;
+  if (!boxZoomIsActive()){
+    // Leave IGM / other rectangleDrag consumers alone.
+    tileMap._boxZoomHandlersInstalled = false;
+    return;
+  }
   if (boxZoomConflictActive()){
     cancelBoxZoom();
     return;
   }
+  tileMap._boxZoomHandlersInstalled = false;
+  boxZoomEnsureHandlers(tileMap);
   tileMap.classList.add("box-zoom-selecting");
   const btn = tileMap.querySelector('[data-role="box-zoom-toggle"]');
   if (btn){
@@ -46965,6 +47526,14 @@ function trackResetCurrentOnly(opts){
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
   renderTrackAll();
+  // MAP-TOOL-COORDINATOR-A: register/deregister based on pickMode option.
+  try {
+    if (pick){
+      mapToolActivate("track-pick", function(){ try { trackExitPickMode(); } catch(_){} });
+    } else {
+      mapToolDeactivate("track-pick");
+    }
+  } catch(_){}
 }
 
 function trackSyncPromptsSticky(){
@@ -47648,6 +48217,14 @@ function trackTogglePickMode(){
   state.trackWaypointDraft = null;
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
+  // MAP-TOOL-COORDINATOR-A: register/deregister as active map consumer.
+  try {
+    if (state.track.pickMode){
+      mapToolActivate("track-pick", function(){ try { trackExitPickMode(); } catch(_){} });
+    } else {
+      mapToolDeactivate("track-pick");
+    }
+  } catch(_){}
 }
 
 /** Enable/disable "click the map to add named waypoints" mode. */
@@ -47832,6 +48409,7 @@ function trackExitPickMode(){
   trackPickCancelDeferred();
   trackSyncPickModeUi();
   refreshTileMapForTrackUi();
+  try { mapToolDeactivate("track-pick"); } catch(_){}
 }
 
 /** Format a metric distance as "X m" or "Y.YY km" (legacy; prefer formatTrackDistance for track UI). */
@@ -49536,6 +50114,12 @@ function renderTileMap(lat, lon, zoom){
       ${tlayerSection(lblSecTopo, topoItems)}
       ${tlayerSection(lblSecSat, satItems)}
       ${tlayerSection(lblSecNaut, nautItems)}
+      ${tlayerSection(esc(cartoScopedT("carto.layerMenuSection")),
+        `<button type="button" class="tlayer-item tlayer-action" data-role="open-carto-igm" role="menuitem" data-tip="${esc(cartoScopedT("carto.layerMenuTip"))}" aria-label="${esc(cartoScopedT("carto.layerMenuTip"))}">`
+        + `<span class="tlayer-check" aria-hidden="true"></span>`
+        + `<span class="tlayer-item-label">${esc(cartoScopedT("carto.layerMenuLabel"))}</span>`
+        + `<span class="tlayer-badge-catalog">${esc(cartoScopedT("carto.layerMenuCatalog"))}</span>`
+        + `</button>`)}
     </div>
   </div>`;
   }
@@ -49941,6 +50525,14 @@ function renderTileMap(lat, lon, zoom){
     b.addEventListener("click", (ev) => {
       ev.stopPropagation();
       setMapLayer(b.dataset.layer);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-role="open-carto-igm"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      try { state.mapBasemapMenuOpen = false; } catch(_){}
+      try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
+      try { renderTileMap(lat, lon, zoom); } catch(_){}
     });
   });
   root.querySelectorAll('.tlayer-item[data-overlay="seamarks"]').forEach(b => {
@@ -58784,6 +59376,11 @@ function gisInit(){
       return;
     }
     const cip = document.getElementById("cartoIgmPanel");
+    if (state._cartoUi && state._cartoUi.areaPickActive){
+      try { if (typeof cartoIgmCancelAreaPick === "function") cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
+      ev.preventDefault();
+      return;
+    }
     if ((state._cartoUi && state._cartoUi.isOpen) || (cip && cip.open)){
       if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")) return;
       if (typeof closeCartoIgmPanel === "function") closeCartoIgmPanel();
@@ -63082,6 +63679,8 @@ function polygonStartDraw(){
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
   polygonDrawMinimizeIfOpen();
+  // MAP-TOOL-COORDINATOR-A: register as active map consumer.
+  try { mapToolActivate("polygon-draw", function(){ try { polygonCancelDraw(); } catch(_){} }); } catch(_){}
 }
 function polygonCancelDraw(){
   if (!state.polygonDrawMode) return;
@@ -63094,6 +63693,7 @@ function polygonCancelDraw(){
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
   polygonDrawRestoreIfAutoMinimized();
+  try { mapToolDeactivate("polygon-draw"); } catch(_){}
 }
 function polygonFinishDraw(){
   if (!state.polygonDrawMode) return;
@@ -64941,6 +65541,7 @@ function routingExitPickMode(options){
   if (!options.silent && was)
     routingSetStatus(routingT("routing.pickCancelled", "Map pick cancelled."), false);
   try { routingRenderList(); } catch(_){}
+  try { mapToolDeactivate("routing-pick"); } catch(_){}
 }
 function routingEnterPickMode(pointId){
   const r = routingEnsureState();
@@ -64958,6 +65559,8 @@ function routingEnterPickMode(pointId){
   try { routingSyncPickModeUi(); } catch(_){}
   try { routingRenderList(); } catch(_){}
   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+  // MAP-TOOL-COORDINATOR-A: real consumer (map click interception).
+  try { mapToolActivate("routing-pick", function(){ try { routingExitPickMode({ silent: true }); } catch(_){} }); } catch(_){}
 }
 function routingSetPointCoordinates(pointId, lat, lon, source, opts){
   opts = opts || {};
@@ -70974,6 +71577,10 @@ function openRoutingPlannerPanel(service){
   if (!document.body.classList.contains("gis-mode")) return false;
   const dlg = document.getElementById("routingPlannerPanel");
   if (!dlg) return false;
+  // MAP-TOOL-COORDINATOR-A: disarm any active map consumer (e.g. track drawing)
+  // but do NOT register "routing-panel-open" — the panel itself does not
+  // intercept map click/drag until the user enters a pick mode.
+  try { if (typeof mapToolActiveId === "function" && mapToolActiveId()) mapToolDeactivateAll(); } catch(_){}
   const svc = service || "graphhopper";
   if (state._routing && state._routing.panelOpen && dlg.open){
     state._routing.service = svc;
@@ -73692,6 +74299,12 @@ function openTrackModal(){
         || state.mapMeasureMode);
       state.track.pickMode = !blocked;
       if (state.track.pickMode) state.waypointPickMode = false;
+      // MAP-TOOL-COORDINATOR-A: register if auto-armed.
+      try {
+        if (state.track.pickMode){
+          mapToolActivate("track-pick", function(){ try { trackExitPickMode(); } catch(_){} });
+        }
+      } catch(_){}
     }
   } catch(_){}
   if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi();
