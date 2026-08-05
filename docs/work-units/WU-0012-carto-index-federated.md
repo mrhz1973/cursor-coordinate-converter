@@ -1,16 +1,17 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / DISCOVERY PHASE 1`  
-**Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1`  
-**Gate discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1 — COMPLETE / NO RUNTIME`  
-**Tipo:** docs-only / discovery tecnica (fonti, formati, licenze, schema)  
-**Data apertura:** 2026-08-05  
-**Baseline remota all’apertura:** `8a7ba360c3b1c4150621601412a7fd11cbb462df`  
-**Runtime live da preservare:** tip monolite `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` · `APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1"` · `APP_BUILD_NUM = 117`  
-**Monolite:** **non modificato** da questa WU in Fase 1  
-**Autorizzazione corrente:** ricerca, campioni **fuori repo**, progettazione documentale — **nessuna** implementazione runtime, IndexedDB, build bump, deploy, QA operatore, VPS, Planet-Clone, proxy
+**Stato:** `OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION`
+**Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
+**Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
+**Tipo:** docs-only + acquisizione/normalizzazione **locale fuori repo** (nessun runtime)
+**Data apertura:** 2026-08-05
+**Baseline remota all’apertura discovery:** `8a7ba360c3b1c4150621601412a7fd11cbb462df`
+**Baseline remota all’acquire:** `11a8ac8d58c0a41e1999bcc0ff047b78426e3b5d`
+**Runtime live da preservare:** tip monolite `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` · `APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1"` · `APP_BUILD_NUM = 117`
+**Monolite:** **non modificato**
+**Autorizzazione corrente:** pacchetto IGM locale validato **fuori repo**; **nessuna** redistribuzione; **nessuna** implementazione runtime / IndexedDB / UI / deploy / QA operatore
 
-> Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).  
+> Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Collegamento opzionale futuro a **MAP-BOX-ZOOM-A** (CLOSED): riuso gesto/area, senza cambiare il comportamento chiuso del box zoom.
 
 ---
@@ -154,8 +155,8 @@ Pagine prodotto correlate (ufficiali):
 
 ## 4. Campioni IGM (fuori repository)
 
-Directory: `C:\tmp\goi-carto-discovery\igm\`  
-Analisi JSON: `C:\tmp\goi-carto-discovery\notes\igm-sample-analysis.json`  
+Directory: `C:\tmp\goi-carto-discovery\igm\`
+Analisi JSON: `C:\tmp\goi-carto-discovery\notes\igm-sample-analysis.json`
 **Nessun file cartografico committato.**
 
 ### 4.1 Hash e byte
@@ -346,7 +347,7 @@ file_name, archive_reference, edition_owned, status, notes
 
 Stati: `presente` | `mancante` | `da_verificare` | `versione_differente` | `duplicato`.
 
-Matching: preferire `logical_key`; fallback `normalize(chart_id)` + `series_id`; poi fuzzy titolo **solo** con conferma operatore.  
+Matching: preferire `logical_key`; fallback `normalize(chart_id)` + `series_id`; poi fuzzy titolo **solo** con conferma operatore.
 **Non** accedere ai file personali in Fase 1; **non** creare store.
 
 ---
@@ -403,12 +404,12 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ---
 
-## 12. Decisioni Fase 1
+## 12. Decisioni Fase 1 + Acquire-A
 
-1. WU-0012 aperta in `OPEN / DISCOVERY PHASE 1`.
-2. MVP provider = **IGM** (evidenza matrice).
-3. Pacchetto raccomandato = **ZIP + manifest + GeoJSON/NDJSON**.
-4. Redistribuzione indici derivati = **non autorizzata** nel repo finché `UNKNOWN`/`RICHIEDE AUTORIZZAZIONE`.
+1. WU-0012: discovery COMPLETE; acquire **COMPLETE** — stato `OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION`.
+2. MVP provider = **IGM**; serie 50+100V localmente normalizzate.
+3. Pacchetto raccomandato = **ZIP + manifest + GeoJSON** (prototipo locale già prodotto fuori repo).
+4. Redistribuzione indici derivati = **non autorizzata** (fail-closed).
 5. Runtime / monolite / IndexedDB = **non aperti**.
 6. MAP-BOX-ZOOM-A resta CLOSED; riuso solo futuro via helper condiviso.
 
@@ -429,16 +430,115 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 14. Controlli discovery (self-check)
 
-- [x] Solo fonti ufficiali come autorità  
-- [x] Nessun diritto inventato (`UNKNOWN` dove manca prova)  
-- [x] Campioni fuori repo; nessun file cartografico in Git  
-- [x] Monolite invariato  
-- [x] Nessun runtime / build bump / deploy / QA  
-- [x] WU-0012 ID libero (nessun overwrite)  
-- [x] Stato allineabile a OM §7 / roadmap / HANDOFF  
+- [x] Solo fonti ufficiali come autorità
+- [x] Nessun diritto inventato (`UNKNOWN` dove manca prova)
+- [x] Campioni fuori repo; nessun file cartografico in Git
+- [x] Monolite invariato
+- [x] Nessun runtime / build bump / deploy / QA
+- [x] WU-0012 ID libero (nessun overwrite)
+- [x] Stato allineabile a OM §7 / roadmap / HANDOFF
 
 ---
 
 ## 15. Prossimo passo consigliato
 
-Blocco docs/process successivo: chiarimento licenza IGM (contatto ufficiale) **oppure** blocco tecnico **CARTO-IGM-ACQUIRE-A** (conversione offline locale, pacchetto non pubblico) — **solo** dopo decisione operatore. **Nessun** auto-start runtime.
+**CARTO-IGM-ACQUIRE-A COMPLETE.** Prossimo candidato (solo dopo decisione operatore):
+
+1. **CARTO-IGM-VALIDATE-A** (approfondimento schema/topologia se richiesto) **oppure**
+2. **CARTO-SEARCH-ENGINE-A** — motore ricerca locale read-only nel monolite (**DELICATO**; non autorizzato ora) **oppure**
+3. Chiarimento licenza IGM (contatto ufficiale) prima di qualunque pubblicazione di derivati.
+
+**Nessun** MVP runtime autorizzato. **Nessun** auto-start.
+
+---
+
+## 16. CARTO-IGM-ACQUIRE-A — acquisizione e normalizzazione locale (2026-08-05)
+
+**Gate:** `CARTO-IGM-ACQUIRE-A — COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME`
+
+### 16.1 Directory locale (NON in Git)
+
+```text
+C:\tmp\goi-carto-discovery\igm-acquire-a\
+├── source\          # copie ZIP ufficiali (hash Fase 1 invariati)
+├── extracted\
+├── normalized\      # GeoJSON + manifest
+├── validation\      # seconda conversione determinismo
+├── scripts-temp\    # igm_acquire_normalize.py (non committato)
+└── reports\         # inventory, validation, spatial, summary
+```
+
+### 16.2 Sorgenti usate
+
+| File | URL ufficiale | Byte | SHA-256 | Match Fase 1 |
+| --- | --- | --- | --- | --- |
+| `serie_50_wgs84_geo.zip` | `…/serie_50_wgs84_geo.zip` | 199745 | `1F62D8B3E11E2609D081F3E8BB7FD7B9E0A3BF24DEB34633B207EC9D9413F627` | **sì** |
+| `serie_100_wgs84.zip` | `…/serie_100_wgs84.zip` | 65797 | `9020C818E86C0CAC420AB630158068DC30E0E897C6DD3531D0931442AE7DB8FF` | **sì** |
+
+Layer usati: `serie_50_wgs84_geo` (PolygonZ→2D); `serie_100_wgs84_geo` (Polygon).
+Acquired_at (manifest): `2026-08-05T18:22:00+02:00`.
+Nessun riscarico: hash coincidente con Discovery-1.
+
+### 16.3 Strumenti
+
+- Python **3.14.2** (stdlib: `zipfile`, `struct`, `json`, `hashlib`, `math`, `re`)
+- **GDAL/OGR:** NON_AVAILABLE (non installato)
+- PowerShell per hash/copy/dir
+- Generator: `carto-igm-acquire-a` v`1.0.0`
+
+### 16.4 Mapping campi
+
+| Sorgente | → Schema | Note |
+| --- | --- | --- |
+| SHEET | `chart_id` | trim; collapse whitespace; collapse `--`/`//`; **non** cast numerico |
+| TITLE | `title` | latin-1 decode |
+| CURRENT_ED | `edition` | as-is |
+| EDITION_DA | `edition_date` | YYYYMMDD o DD/MM/YYYY → ISO; altrimenti null + raw in notes |
+| SCALE | `scale_denominator` | `int(float)` |
+| SERIES | notes only | `series_id` da config pacchetto (`50` / `100v`) |
+| AIVABLE | `raw_properties` only | **`provider_availability = null`** — semantics not formally confirmed |
+
+Chiave stabile: `igm:{series_id}:{normalized_chart_id}` (= `record_id`). Collisioni: **0** per serie; cross-series: **0**.
+
+### 16.5 Output pacchetto (locale)
+
+| File | Feature | Byte | SHA-256 |
+| --- | --- | --- | --- |
+| `normalized/igm-series-50.geojson` | 633 | 1738772 | `401D6715E65561ECBF4FC9C653DF769324BC6D747FC5CA7EA73C91279E1158A1` |
+| `normalized/igm-series-100v.geojson` | 278 | 524432 | `C9619E5238A7F3FEA1DDFB0A95DCE886CBCDF0C88858B3B6D9BBA6AA22F9704C` |
+| `normalized/manifest.json` | — | 7033 | `3E59F015F69A57F2CA115289BAF72A2260422B4864B56AB96F5033A4D3928FDA` |
+
+`rights_status` (manifest): **`local-use-prototype-no-redistribution`**.
+Nota: prototipo locale; non redistribuire; non committare; non pubblicare; fonte IGM.
+
+### 16.6 Metriche / anomalie
+
+| Serie | Source | Convertite | Scartate | ID dup | Geom invalide | Chiusure strutturali | Findings |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 50 | 633 | 633 | 0 | 0 | 0 | 0 | 0 |
+| 100v | 278 | 278 | 0 | 0 | 0 | 0 | 0 |
+
+- SCALE distinti: 50 → `{50000:633}`; 100v → `{100000:278}`
+- AIVABLE raw: 50 → `{1:545, 0:88}`; 100v → `{1:278}` (preservato; non mappato a availability)
+- PolygonZ: Z droppata in output 2D (serie 50)
+- Determinismo: **PASS** (due conversioni SHA-256 identici per entrambi i GeoJSON)
+- Area Italia: bbox entro inviluppo atteso; nessuna inversione lat/lon rilevata
+
+### 16.7 Test spaziali locali (offline)
+
+| Rettangolo | Hit |
+| --- | --- |
+| nord_italia | 147 |
+| centro_italia | 133 |
+| sud_isole | 94 |
+| fuori_italia | **0** |
+| confine_fogli_liguria | 9 |
+
+Assertion aggregate: **PASS**. Nessun servizio online.
+
+### 16.8 Decisioni
+
+1. Pacchetto IGM MVP **validato localmente**.
+2. **Fail-closed** su redistribuzione / commit dati.
+3. Runtime / UI / IndexedDB **non** aperti.
+4. Prossimo gate candidati: vedi §15 (decisione operatore).
