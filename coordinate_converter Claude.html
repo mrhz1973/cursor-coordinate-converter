@@ -22355,10 +22355,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX2";
-const APP_BUILD_DETAIL = "align IGM results UI with EN/FR localization freeze";
+const APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX3";
+const APP_BUILD_DETAIL = "use scoped Italian fallback for IGM UI labels";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 121;
+const APP_BUILD_NUM = 122;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -22901,6 +22901,19 @@ let drawCartoIgmOverlay = function(){};
   const CARTO_UI_RESULT_LIMIT = 200;
   let _cartoSearchSeq = 0;
 
+  function cartoUiT(key){
+    const lang = state && state.lang ? state.lang : "it";
+    const dict = I18N && I18N[lang] ? I18N[lang] : null;
+    if (dict && Object.prototype.hasOwnProperty.call(dict, key)){
+      return dict[key];
+    }
+    const it = I18N && I18N.it ? I18N.it : null;
+    if (it && Object.prototype.hasOwnProperty.call(it, key)){
+      return it[key];
+    }
+    return String(key || "");
+  }
+
   function cartoUiGetState(){
     if (!state._cartoUi || typeof state._cartoUi !== "object") {
       state._cartoUi = {
@@ -23059,7 +23072,7 @@ let drawCartoIgmOverlay = function(){};
     u.truncated = false;
     u.selectedRecordId = null;
     cartoUiSetBusy(false);
-    cartoUiSetNotice(t("carto.error"), true);
+    cartoUiSetNotice(cartoUiT("carto.error"), true);
     cartoUiRefreshOverlay();
     try { cartoUiRenderPanel(); } catch(_){}
   }
@@ -23079,7 +23092,7 @@ let drawCartoIgmOverlay = function(){};
     const u = cartoUiGetState();
     const st = u.status || "idle";
     const sk = "carto.status." + st;
-    statusEl.textContent = t(sk);
+    statusEl.textContent = cartoUiT(sk);
     statusEl.setAttribute("data-status", st);
     try { statusEl.removeAttribute("data-i18n"); } catch(_){}
   }
@@ -23094,7 +23107,7 @@ let drawCartoIgmOverlay = function(){};
     const series = cartoUiSelectedSeriesFromDom();
     u.selectedSeries = series.slice();
     if (!series.length){
-      cartoUiSetNotice(t("carto.needOneSeries"), true);
+      cartoUiSetNotice(cartoUiT("carto.needOneSeries"), true);
       cartoUiSetBusy(false);
       try { cartoUiRenderPanel(); } catch(_){}
       return;
@@ -23169,18 +23182,18 @@ let drawCartoIgmOverlay = function(){};
 
   function cartoUiRelationLabel(rel){
     const k = "carto.relation." + String(rel || "");
-    const v = t(k);
-    return (v && v !== k) ? v : String(rel || t("carto.notAvailable"));
+    const v = cartoUiT(k);
+    return (v && v !== k) ? v : String(rel || cartoUiT("carto.notAvailable"));
   }
 
   function cartoUiRenderRow(item, selectedId){
     const id = item && item.record_id != null ? String(item.record_id) : "";
     const sel = id && id === selectedId;
     const series = item.series_id || "—";
-    const chart = item.chart_id != null ? String(item.chart_id) : t("carto.notAvailable");
-    const title = (item.title != null && String(item.title).trim()) ? String(item.title) : t("carto.notAvailable");
-    const scale = cartoUiFmtScale(item.scale_denominator) || t("carto.notAvailable");
-    const ed = item.edition != null ? String(item.edition) : t("carto.notAvailable");
+    const chart = item.chart_id != null ? String(item.chart_id) : cartoUiT("carto.notAvailable");
+    const title = (item.title != null && String(item.title).trim()) ? String(item.title) : cartoUiT("carto.notAvailable");
+    const scale = cartoUiFmtScale(item.scale_denominator) || cartoUiT("carto.notAvailable");
+    const ed = item.edition != null ? String(item.edition) : cartoUiT("carto.notAvailable");
     const edt = item.edition_date != null ? String(item.edition_date) : "";
     const rel = cartoUiRelationLabel(item.spatial_relation);
     const div = document.createElement("button");
@@ -23195,7 +23208,7 @@ let drawCartoIgmOverlay = function(){};
       '<span class="carto-row-id">' + esc(chart) + '</span>' +
       '<span class="carto-row-title">' + esc(title) + '</span>' +
       '<span class="carto-row-meta">' + esc(scale) +
-        ' · ' + esc(t("carto.edition")) + ' ' + esc(ed) +
+        ' · ' + esc(cartoUiT("carto.edition")) + ' ' + esc(ed) +
         (edt ? (' · ' + esc(edt)) : '') +
         ' · ' + esc(rel) + '</span>';
     return div;
@@ -23259,9 +23272,9 @@ let drawCartoIgmOverlay = function(){};
     const hdr = document.getElementById("cartoIgmResultsHeader");
     if (hdr){
       if (u.status === "ready" || hasRes){
-        let txt = t("carto.results") + ": " + u.results.length;
+        let txt = cartoUiT("carto.results") + ": " + u.results.length;
         if (u.total) txt += " / " + u.total;
-        if (u.truncated) txt += " — " + t("carto.truncated");
+        if (u.truncated) txt += " — " + cartoUiT("carto.truncated");
         hdr.textContent = txt;
         hdr.hidden = false;
       } else {
@@ -23278,7 +23291,7 @@ let drawCartoIgmOverlay = function(){};
         list.appendChild(cartoUiRenderRow(u.results[i], sel));
       }
       const ariaKey = "carto.resultsListAria";
-      const ariaLbl = t(ariaKey);
+      const ariaLbl = cartoUiT(ariaKey);
       if (ariaLbl && ariaLbl !== ariaKey) list.setAttribute("aria-label", ariaLbl);
     }
     const zero = document.getElementById("cartoIgmZeroState");
@@ -23286,7 +23299,7 @@ let drawCartoIgmOverlay = function(){};
     const err = document.getElementById("cartoIgmErrorState");
     if (err){
       err.hidden = u.status !== "error";
-      if (u.status === "error") err.textContent = t("carto.error") + (u.error ? (" (" + u.error + ")") : "");
+      if (u.status === "error") err.textContent = cartoUiT("carto.error") + (u.error ? (" (" + u.error + ")") : "");
     }
     cartoUiSyncLegal();
     // Re-apply status after any late i18n touch
@@ -23496,7 +23509,7 @@ let drawCartoIgmOverlay = function(){};
     const u = cartoUiGetState();
     if (!u.isOpen) return;
     if (typeof gisMinimizePanel === "function"){
-      try { gisMinimizePanel("cartoIgmPanel", "gis.minimized.cartoigm"); } catch(_){}
+      try { gisMinimizePanel("cartoIgmPanel", cartoUiT("gis.minimized.cartoigm")); } catch(_){}
     }
     u.isMinimized = true;
     cartoUiRefreshOverlay();
@@ -23547,7 +23560,7 @@ let drawCartoIgmOverlay = function(){};
       const u = cartoUiGetState();
       u.selectedSeries = cartoUiSelectedSeriesFromDom();
       cartoUiSetBusy(u.status === "loading");
-      if (u.selectedSeries.length === 0) cartoUiSetNotice(t("carto.needOneSeries"), true);
+      if (u.selectedSeries.length === 0) cartoUiSetNotice(cartoUiT("carto.needOneSeries"), true);
       else cartoUiSetNotice(null, false);
     }
     if (c50) c50.addEventListener("change", onFilter);
