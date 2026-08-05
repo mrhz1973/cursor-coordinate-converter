@@ -134,11 +134,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **CARTO-IGM-ACQUIRE-A** (verificare `git ls-remote` post-push); monolite tip `8e3cee4` invariato |
-| Runtime live / commit monolite | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` (`8e3cee4`) — tip MAP-BOX-ZOOM-A-FIX1 |
-| Ultimo blocco chiuso | **CARTO-IGM-ACQUIRE-A** — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (pacchetto IGM locale fuori repo; no redistribuzione) |
+| HEAD documentale (pre-autosync) | commit docs **IGM authorization** (verificare `git ls-remote`); monolite tip `8e3cee4` fino a SEARCH-ENGINE |
+| Runtime live / commit monolite | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` (`8e3cee4`) — tip MAP-BOX-ZOOM-A-FIX1 (pre-SEARCH-ENGINE) |
+| Ultimo blocco chiuso | **CARTO-IGM-ACQUIRE-A** — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME**; licenza IGM **registrata** (Prot. IGM-2024-7891) |
 | Ultimo blocco runtime monolite | **MAP-BOX-ZOOM-A-FIX1** — tip `8e3cee4` build 117 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); nessun runtime aperto |
+| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); runtime SEARCH-ENGINE in corso |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
@@ -157,7 +157,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
 | MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom pixel-ratio; build 117 tip `8e3cee4`) |
-| CARTO-INDEX-FEDERATED-A | **OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION** — WU-0012; ACQUIRE-A COMPLETE; no runtime |
+| CARTO-INDEX-FEDERATED-A | **OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED** — WU-0012; Prot. IGM-2024-7891 |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |

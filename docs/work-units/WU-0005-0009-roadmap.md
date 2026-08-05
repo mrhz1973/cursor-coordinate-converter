@@ -461,7 +461,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION** (2026-08-05). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 **COMPLETE**. **`CARTO-IGM-ACQUIRE-A` COMPLETE** — pacchetto locale 50+100V validato fuori repo (`C:\tmp\goi-carto-discovery\igm-acquire-a\`); **no redistribuzione / no commit dati**. **Nessuna implementazione runtime autorizzata.** Monolite tip live: `8e3cee4` / `MAP-BOX-ZOOM-A-FIX1` · build 117.
+**Stato:** **OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED** (2026-08-05). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A COMPLETE. Autorizzazione IGM (**Prot. IGM-2024-7891**, 2024-05-24) — sintesi [`../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md). Bundle **DELICATO** SEARCH-ENGINE autorizzato (**non** CLOSED). Monolite tip pre-blocco: `8e3cee4` / build 117.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 

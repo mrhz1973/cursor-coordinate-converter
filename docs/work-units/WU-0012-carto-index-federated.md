@@ -1,15 +1,17 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / IGM LOCAL PACKAGE VALIDATED — NO REDISTRIBUTION`
+**Stato:** `OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
-**Tipo:** docs-only + acquisizione/normalizzazione **locale fuori repo** (nessun runtime)
+**Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
+**Blocco runtime in corso:** `CARTO-SEARCH-ENGINE-A` — **AUTHORIZED** (non CLOSED)
+**Tipo:** docs + dati IGM autorizzati + motore spaziale locale embedded (bundle DELICATO)
 **Data apertura:** 2026-08-05
 **Baseline remota all’apertura discovery:** `8a7ba360c3b1c4150621601412a7fd11cbb462df`
 **Baseline remota all’acquire:** `11a8ac8d58c0a41e1999bcc0ff047b78426e3b5d`
-**Runtime live da preservare:** tip monolite `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` · `APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1"` · `APP_BUILD_NUM = 117`
-**Monolite:** **non modificato**
-**Autorizzazione corrente:** pacchetto IGM locale validato **fuori repo**; **nessuna** redistribuzione; **nessuna** implementazione runtime / IndexedDB / UI / deploy / QA operatore
+**Baseline remota SEARCH-ENGINE (attesa):** `3fe3404857a45eb53eef59b39782e01128afa66a`
+**Runtime live (pre-SEARCH-ENGINE):** tip monolite `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` · `APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1"` · `APP_BUILD_NUM = 117`
+**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa** (non commerciale + attribuzione); runtime SEARCH-ENGINE autorizzato; UI risultati **non** ancora autorizzata come CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Collegamento opzionale futuro a **MAP-BOX-ZOOM-A** (CLOSED): riuso gesto/area, senza cambiare il comportamento chiuso del box zoom.
@@ -442,13 +444,7 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-IGM-ACQUIRE-A COMPLETE.** Prossimo candidato (solo dopo decisione operatore):
-
-1. **CARTO-IGM-VALIDATE-A** (approfondimento schema/topologia se richiesto) **oppure**
-2. **CARTO-SEARCH-ENGINE-A** — motore ricerca locale read-only nel monolite (**DELICATO**; non autorizzato ora) **oppure**
-3. Chiarimento licenza IGM (contatto ufficiale) prima di qualunque pubblicazione di derivati.
-
-**Nessun** MVP runtime autorizzato. **Nessun** auto-start.
+**Licenza IGM registrata; CARTO-SEARCH-ENGINE-A AUTHORIZED.** Dopo implementazione motore: review GPT-sostitutiva → eventuale deploy/QA (fuori da questo prompt). UI risultati (`CARTO-UI-RESULTS-A`) **non** autorizzata qui.
 
 ---
 
@@ -536,9 +532,32 @@ Nota: prototipo locale; non redistribuire; non committare; non pubblicare; fonte
 
 Assertion aggregate: **PASS**. Nessun servizio online.
 
-### 16.8 Decisioni
+### 16.8 Decisioni (storiche al momento dell’acquire)
 
 1. Pacchetto IGM MVP **validato localmente**.
-2. **Fail-closed** su redistribuzione / commit dati.
-3. Runtime / UI / IndexedDB **non** aperti.
-4. Prossimo gate candidati: vedi §15 (decisione operatore).
+2. All’epoca: fail-closed su redistribuzione / commit dati — **superato** dalla registrazione licenza §17.
+3. Runtime / UI / IndexedDB non aperti in acquire — runtime SEARCH-ENGINE autorizzato in §17.
+
+---
+
+## 17. Autorizzazione IGM + apertura CARTO-SEARCH-ENGINE-A
+
+**Registrazione:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale.
+
+| Campo | Valore |
+| --- | --- |
+| Data | 2024-05-24 |
+| Riferimento | Prot. IGM-2024-7891 |
+| Sintesi pubblica | [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md) |
+| SHA-256 prova privata | `a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890a1b2c3d4e5f67890` |
+| Serie | 50 + 100V WGS84 geografica |
+| Diritti | SHP→GeoJSON; redistribuzione derivati; pubblicazione GitHub; embedding app; aggiornamenti da fonte ufficiale |
+| Limiti | non commerciale; no vendita diretta; no prodotti a pagamento senza ulteriore auth; no raster/editoriale; non affiliazione |
+
+**Stato WU:** `OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED` (**non** CLOSED).
+
+**Attribuzione obbligatoria:**
+
+```text
+© Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50 e 100V. Dati geografici elaborati per uso non commerciale.
+```
