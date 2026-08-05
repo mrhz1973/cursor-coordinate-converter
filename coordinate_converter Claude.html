@@ -2276,6 +2276,55 @@ body.gis-mode .tile-map .tile-marker.tile-marker-draft::after{
 }
 .tile-map .tz-btn:hover{background:rgba(255,255,255,.12)}
 .tile-map .tz-btn:disabled{opacity:.35; cursor:default}
+.tile-map .tz-box-zoom{
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+}
+.tile-map .tz-box-zoom .tz-box-zoom-ico{
+  width:16px; height:16px; display:block; pointer-events:none;
+}
+.tile-map .tz-box-zoom.is-active,
+.tile-map .tz-box-zoom[aria-pressed="true"]{
+  background:#2563eb; color:#fff;
+}
+.tile-map .tz-box-zoom.is-active:hover,
+.tile-map .tz-box-zoom[aria-pressed="true"]:hover{
+  background:#1d4ed8; color:#fff;
+}
+.tile-map.box-zoom-selecting{cursor:crosshair}
+.tile-map.box-zoom-selecting .tile-layer{cursor:crosshair}
+.tile-map.box-zoom-selecting .tile-marker,
+.tile-map.box-zoom-selecting .tile-readout,
+.tile-map.box-zoom-selecting .tile-scale,
+.tile-map.box-zoom-selecting .tile-recenter,
+.tile-map.box-zoom-selecting .tile-pick,
+.tile-map.box-zoom-selecting .tcov-btn,
+.tile-map.box-zoom-selecting .tmeas-btn,
+.tile-map.box-zoom-selecting .ttrk-btn,
+.tile-map.box-zoom-selecting .ttrk-group,
+.tile-map.box-zoom-selecting .twpt-btn,
+.tile-map.box-zoom-selecting .twpt-group,
+.tile-map.box-zoom-selecting .tgps-btn,
+.tile-map.box-zoom-selecting .trr-btn,
+.tile-map.box-zoom-selecting .tpoly-btn,
+.tile-map.box-zoom-selecting .tile-measure-box,
+.tile-map.box-zoom-selecting .tile-track-float,
+.tile-map.box-zoom-selecting .tile-waypoint-editor,
+.tile-map.box-zoom-selecting .waypoints-overlay,
+.tile-map.box-zoom-selecting .tile-offline-float,
+.tile-map.box-zoom-selecting .tile-layers,
+.tile-map.box-zoom-selecting .tile-attrib{pointer-events:none; opacity:.35; transition:opacity .12s}
+.box-zoom-draft{
+  position:absolute;
+  border:2px dashed var(--accent, #2563eb);
+  background:rgba(37,99,235,.16);
+  pointer-events:none;
+  z-index:41;
+  box-sizing:border-box;
+}
+html[data-theme="dark"] .box-zoom-draft{
+  background:rgba(96,165,250,.20);
+}
 .tile-map .tz-level{
   font-size:.68rem; color:#f8fafc; text-align:center;
   font-family:ui-monospace,monospace; padding:2px 0;
@@ -3859,6 +3908,14 @@ html[data-theme="dark"] .tile-map .tlayer-item.is-active .tlayer-check{ color:#4
 .tile-map .tile-ctrls .tile-zoom .tz-btn:hover{
   background: #eff6ff;
   color: #1d4ed8;
+}
+.tile-map .tile-ctrls .tile-zoom .tz-box-zoom.is-active,
+.tile-map .tile-ctrls .tile-zoom .tz-box-zoom[aria-pressed="true"]{
+  background:#2563eb; color:#fff;
+}
+.tile-map .tile-ctrls .tile-zoom .tz-box-zoom.is-active:hover,
+.tile-map .tile-ctrls .tile-zoom .tz-box-zoom[aria-pressed="true"]:hover{
+  background:#1d4ed8; color:#fff;
 }
 .tile-map .tile-ctrls .tz-level{
   align-self:stretch;
@@ -15264,6 +15321,10 @@ const I18N = {
     "tip.zoomOut":"Zoom indietro",
     "tip.zoomControls":"Controlli zoom mappa",
     "tip.zoomLevel":"Livello zoom corrente",
+    "tip.boxZoom":"Zoom su area",
+    "map.boxZoom.hint":"Trascina un riquadro sulla mappa",
+    "map.boxZoom.blocked":"Termina prima l’altra modalità mappa.",
+    "map.boxZoom.noMap":"Apri prima la mappa.",
     "tip.tileMarker":"Coordinate punto",
     "tip.tileMarkerDraft":"Bozza punto",
     "tip.waypointSwatch":"Colore waypoint",
@@ -20821,6 +20882,8 @@ const state = {
   namedAreas: [],
   /** Active selection session flag (ESC or mouseup closes it). */
   _bboxSelecting: false,
+  /** Transient MAP-BOX-ZOOM-A: box-zoom mode (not persisted). */
+  _boxZoom: null,
   /** Multi-point track builder (polyline/polygon only on map). */
   track: { points: [], closed: false, pickMode: false },
   /** Map waypoints: independent POIs { id, lat, lon, name, meta? } — not part of the track polyline. */
@@ -22056,10 +22119,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "ROUTING-ANELLO-A-FIX1";
-const APP_BUILD_DETAIL = "round trip batch gate and timeout hardening";
+const APP_BUILD_ID = "MAP-BOX-ZOOM-A";
+const APP_BUILD_DETAIL = "map box zoom control";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 115;
+const APP_BUILD_NUM = 116;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -30236,6 +30299,7 @@ async function prepareUiBeforeAppFullReset(){
   try { if (typeof closeRangeRingsPanel === "function") closeRangeRingsPanel(); } catch(_){}
   try { if (typeof rangeRingsClearPickCenterMode === "function") rangeRingsClearPickCenterMode(); } catch(_){}
   try { if (typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis(); } catch(_){}
+  try { if (typeof cancelBoxZoom === "function") cancelBoxZoom(); } catch(_){}
 }
 
 async function performAppFullLocalReset(){
@@ -30556,6 +30620,11 @@ function bindHotkeys(){
       if (td && td.classList.contains("open")){ closeToolsDrawer(); ev.preventDefault(); return; }
       // Cancel an in-progress bbox selection first — it has no visible
       // modal but does have a sticky banner on the map.
+      if (typeof boxZoomIsActive === "function" && boxZoomIsActive()){
+        try { cancelBoxZoom(); } catch(_){}
+        ev.preventDefault();
+        return;
+      }
       if (state._bboxSelecting){ cancelBboxSelection(); ev.preventDefault(); return; }
       if (state.mapBasemapMenuOpen){
         state.mapBasemapMenuOpen = false;
@@ -36181,6 +36250,9 @@ async function startBboxSelection(){
     return;
   }
   if (state._bboxSelecting) return;
+  try {
+    if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) cancelBoxZoom();
+  } catch(_){}
   if (!(await resolveOfflineDraftBeforeReplacingBbox())) return;
   if (!state._offlineEditingAreaId) _offlineExitEditForNewDraft();
   try {
@@ -36236,6 +36308,261 @@ function endBboxSelection(){
 }
 
 function cancelBboxSelection(){ endBboxSelection(); }
+
+/* ---- MAP-BOX-ZOOM-A: transient rectangle zoom (no GIS objects / no storage) ---- */
+const BOX_ZOOM_MIN_PX = 10;
+function boxZoomT(key, fb){
+  try {
+    const v = (typeof t === "function") ? t(key) : "";
+    if (v && v !== key) return String(v);
+  } catch(_){}
+  return fb || "";
+}
+function boxZoomEnsureState(){
+  if (!state._boxZoom || typeof state._boxZoom !== "object"){
+    state._boxZoom = {
+      active: false,
+      dragging: false,
+      pointerId: null,
+      startX: 0,
+      startY: 0,
+      curX: 0,
+      curY: 0
+    };
+  }
+  return state._boxZoom;
+}
+function boxZoomIsActive(){
+  try { return !!(state._boxZoom && state._boxZoom.active); } catch(_){ return false; }
+}
+function boxZoomConflictActive(){
+  try {
+    if (state._bboxSelecting) return true;
+    if (state.waypointPickMode) return true;
+    if (state.track && state.track.pickMode) return true;
+    if (typeof trackMapPickEditingActive === "function" && trackMapPickEditingActive()) return true;
+    if (state.polygonDrawMode) return true;
+    if (typeof polygonIsEditing === "function" && polygonIsEditing()) return true;
+    if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode || state._rrEditingMoveCenterMode) return true;
+    if (state.convertSourcePickMode) return true;
+    if (state.mapPickMode) return true;
+    if (state.astroPickCenterMode) return true;
+    if (state.mapMeasureMode) return true;
+    if (state._routing && (state._routing.pickMode || state._routing.markerDrag)) return true;
+    if (typeof workbenchIsPickModeActive === "function" && workbenchIsPickModeActive()) return true;
+    if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
+    if (typeof mapTrackDocDrag !== "undefined" && mapTrackDocDrag) return true;
+    if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
+    if (typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag) return true;
+    if (typeof mapPolyMoveDocDrag !== "undefined" && mapPolyMoveDocDrag) return true;
+    if (typeof mapMeasureDocDrag !== "undefined" && mapMeasureDocDrag) return true;
+    if (typeof mapRoutingMarkerDocDrag !== "undefined" && mapRoutingMarkerDocDrag) return true;
+    const phase = (typeof trackBrushPhase === "function") ? trackBrushPhase() : "idle";
+    if (phase === "armed" || phase === "drawing") return true;
+    if (typeof trackBrushIsDraining === "function" && trackBrushIsDraining()) return true;
+  } catch(_){}
+  return false;
+}
+function boxZoomGetTileMap(){
+  const root = document.getElementById("miniMap");
+  return root && root.querySelector(".tile-map");
+}
+function boxZoomReleasePointer(bz, tileMap){
+  if (!bz || bz.pointerId == null) return;
+  try {
+    if (tileMap && typeof tileMap.releasePointerCapture === "function"
+        && tileMap.hasPointerCapture && tileMap.hasPointerCapture(bz.pointerId)){
+      tileMap.releasePointerCapture(bz.pointerId);
+    }
+  } catch(_){}
+  bz.pointerId = null;
+}
+function boxZoomRemoveDraft(tileMap){
+  try {
+    const d = tileMap && tileMap.querySelector(".box-zoom-draft");
+    if (d) d.remove();
+  } catch(_){}
+}
+function boxZoomDetachTempHandlers(tileMap){
+  if (!tileMap) return;
+  const h = tileMap._boxZoomTempHandlers;
+  if (!h) return;
+  try {
+    if (h.move) window.removeEventListener("pointermove", h.move, true);
+    if (h.up) window.removeEventListener("pointerup", h.up, true);
+    if (h.cancel) window.removeEventListener("pointercancel", h.cancel, true);
+  } catch(_){}
+  tileMap._boxZoomTempHandlers = null;
+}
+function cancelBoxZoom(){
+  const bz = boxZoomEnsureState();
+  const tileMap = boxZoomGetTileMap();
+  boxZoomDetachTempHandlers(tileMap);
+  boxZoomReleasePointer(bz, tileMap);
+  boxZoomRemoveDraft(tileMap);
+  bz.active = false;
+  bz.dragging = false;
+  bz.pointerId = null;
+  try { if (tileMap) tileMap.classList.remove("box-zoom-selecting"); } catch(_){}
+  try {
+    const btn = document.querySelector('[data-role="box-zoom-toggle"]');
+    if (btn){
+      btn.classList.remove("is-active");
+      btn.setAttribute("aria-pressed", "false");
+    }
+  } catch(_){}
+}
+function boxZoomFitFromPixels(root, x1, y1, x2, y2){
+  const X1 = Math.min(x1, x2), X2v = Math.max(x1, x2);
+  const Y1 = Math.min(y1, y2), Y2v = Math.max(y1, y2);
+  const nw = tileMapPxToLatLon(root, X1, Y1);
+  const ne = tileMapPxToLatLon(root, X2v, Y1);
+  const sw = tileMapPxToLatLon(root, X1, Y2v);
+  const se = tileMapPxToLatLon(root, X2v, Y2v);
+  const pts = [nw, ne, se, sw].filter(p => p && Number.isFinite(p.lat) && Number.isFinite(p.lon));
+  if (pts.length < 2) return false;
+  try {
+    flyMapToTrackPoints(pts, true);
+    return true;
+  } catch(_){ return false; }
+}
+function boxZoomUpdateDraft(tileMap, x1, y1, x2, y2){
+  let draft = tileMap.querySelector(".box-zoom-draft");
+  if (!draft){
+    draft = document.createElement("div");
+    draft.className = "box-zoom-draft";
+    tileMap.appendChild(draft);
+  }
+  const tmW = tileMap.clientWidth, tmH = tileMap.clientHeight;
+  const xa = Math.max(0, Math.min(tmW, Math.min(x1, x2)));
+  const ya = Math.max(0, Math.min(tmH, Math.min(y1, y2)));
+  const xb = Math.max(0, Math.min(tmW, Math.max(x1, x2)));
+  const yb = Math.max(0, Math.min(tmH, Math.max(y1, y2)));
+  draft.style.left = xa + "px";
+  draft.style.top = ya + "px";
+  draft.style.width = Math.max(0, xb - xa) + "px";
+  draft.style.height = Math.max(0, yb - ya) + "px";
+}
+function boxZoomLocalPoint(tileMap, ev){
+  const r = tileMap.getBoundingClientRect();
+  return { x: ev.clientX - r.left, y: ev.clientY - r.top };
+}
+function boxZoomOnPointerDown(ev){
+  if (!boxZoomIsActive()) return;
+  if (ev.button !== undefined && ev.button !== 0) return;
+  const tileMap = boxZoomGetTileMap();
+  if (!tileMap || !tileMap.contains(ev.target)) return;
+  if (ev.target.closest && ev.target.closest(
+    ".tile-ctrls, .tile-layers, .tile-attrib, .tz-btn, .tz-box-zoom, button, a, input, select, textarea, .trk-handle, .wpt-handle, .poly-edit-handle, .poly-edit-handle-hit, .routing-marker-handle, .routing-marker-hit, .rr-center-handle, .mm-handle, .bbox-handle, .bbox-remove, .bbox-move"
+  )) return;
+  const bz = boxZoomEnsureState();
+  const p = boxZoomLocalPoint(tileMap, ev);
+  bz.dragging = true;
+  bz.pointerId = ev.pointerId;
+  bz.startX = p.x; bz.startY = p.y;
+  bz.curX = p.x; bz.curY = p.y;
+  try {
+    if (typeof tileMap.setPointerCapture === "function") tileMap.setPointerCapture(ev.pointerId);
+  } catch(_){}
+  boxZoomUpdateDraft(tileMap, p.x, p.y, p.x, p.y);
+  if (ev.cancelable) ev.preventDefault();
+  try { ev.stopPropagation(); } catch(_){}
+  const onMove = (e) => {
+    if (!bz.dragging || e.pointerId !== bz.pointerId) return;
+    const tm = boxZoomGetTileMap();
+    if (!tm) return;
+    const q = boxZoomLocalPoint(tm, e);
+    bz.curX = q.x; bz.curY = q.y;
+    boxZoomUpdateDraft(tm, bz.startX, bz.startY, q.x, q.y);
+    if (e.cancelable) e.preventDefault();
+  };
+  const finishDrag = (e, commit) => {
+    if (bz.pointerId != null && e && e.pointerId !== bz.pointerId) return;
+    const tm = boxZoomGetTileMap();
+    const root = document.getElementById("miniMap");
+    boxZoomDetachTempHandlers(tm);
+    boxZoomReleasePointer(bz, tm);
+    const wasDrag = bz.dragging;
+    bz.dragging = false;
+    if (!wasDrag || !tm || !root){
+      boxZoomRemoveDraft(tm);
+      return;
+    }
+    const q = (e && Number.isFinite(e.clientX)) ? boxZoomLocalPoint(tm, e) : { x: bz.curX, y: bz.curY };
+    const w = Math.abs(q.x - bz.startX);
+    const h = Math.abs(q.y - bz.startY);
+    const sx = bz.startX, sy = bz.startY, ex = q.x, ey = q.y;
+    boxZoomRemoveDraft(tm);
+    if (!commit || w < BOX_ZOOM_MIN_PX || h < BOX_ZOOM_MIN_PX) return;
+    cancelBoxZoom();
+    boxZoomFitFromPixels(root, sx, sy, ex, ey);
+    if (e && e.cancelable) e.preventDefault();
+    try { if (e) e.stopPropagation(); } catch(_){}
+  };
+  const onUp = (e) => finishDrag(e, true);
+  const onCancel = (e) => finishDrag(e, false);
+  boxZoomDetachTempHandlers(tileMap);
+  tileMap._boxZoomTempHandlers = { move: onMove, up: onUp, cancel: onCancel };
+  window.addEventListener("pointermove", onMove, true);
+  window.addEventListener("pointerup", onUp, true);
+  window.addEventListener("pointercancel", onCancel, true);
+}
+function startBoxZoom(){
+  const root = document.getElementById("miniMap");
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!root || !tileMap || root.clientWidth <= 0){
+    try { setBadge("error", boxZoomT("map.boxZoom.noMap", "Apri prima la mappa.")); } catch(_){}
+    return;
+  }
+  if (boxZoomConflictActive()){
+    try { setBadge("error", boxZoomT("map.boxZoom.blocked", "Termina prima l’altra modalità mappa.")); } catch(_){}
+    return;
+  }
+  const bz = boxZoomEnsureState();
+  bz.active = true;
+  bz.dragging = false;
+  bz.pointerId = null;
+  tileMap.classList.add("box-zoom-selecting");
+  const btn = tileMap.querySelector('[data-role="box-zoom-toggle"]');
+  if (btn){
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+  }
+  try { setBadge("info", boxZoomT("map.boxZoom.hint", "Trascina un riquadro sulla mappa")); } catch(_){}
+  boxZoomEnsureHandlers(tileMap);
+}
+function toggleBoxZoom(){
+  if (boxZoomIsActive()) cancelBoxZoom();
+  else startBoxZoom();
+}
+function boxZoomEnsureHandlers(tileMap){
+  if (!tileMap || tileMap._boxZoomHandlersInstalled) return;
+  tileMap._boxZoomHandlersInstalled = true;
+  tileMap.addEventListener("pointerdown", boxZoomOnPointerDown, true);
+  tileMap.addEventListener("contextmenu", (ev) => {
+    if (!boxZoomIsActive()) return;
+    ev.preventDefault();
+    try { ev.stopPropagation(); } catch(_){}
+    cancelBoxZoom();
+  }, true);
+}
+function boxZoomSyncAfterRender(root){
+  const tileMap = root && root.querySelector(".tile-map");
+  if (!tileMap) return;
+  tileMap._boxZoomHandlersInstalled = false;
+  boxZoomEnsureHandlers(tileMap);
+  if (!boxZoomIsActive()) return;
+  if (boxZoomConflictActive()){
+    cancelBoxZoom();
+    return;
+  }
+  tileMap.classList.add("box-zoom-selecting");
+  const btn = tileMap.querySelector('[data-role="box-zoom-toggle"]');
+  if (btn){
+    btn.classList.add("is-active");
+    btn.setAttribute("aria-pressed", "true");
+  }
+}
 
 /* While drawing the bbox the offline panel would cover the map, so minimize it
  * (GIS Layers dialog) or temporarily hide the floating panel, then restore it
@@ -47733,6 +48060,12 @@ function renderTileMap(lat, lon, zoom){
       return `<div class="tile-zoom" role="group" aria-label="${zoomGrpLbl}">
       <button class="tz-btn" type="button" data-zdelta="1"  data-tip="${esc(t("tip.zoomIn"))}" aria-label="${esc(t("tip.zoomIn"))}" ${zoom >= layer.maxZoom ? "disabled" : ""}>+</button>
       <button class="tz-btn" type="button" data-zdelta="-1" data-tip="${esc(t("tip.zoomOut"))}" aria-label="${esc(t("tip.zoomOut"))}" ${zoom <= 2 ? "disabled" : ""}>−</button>
+      ${(() => {
+        const tipBox = boxZoomT("tip.boxZoom", "Zoom su area");
+        const onBox = (typeof boxZoomIsActive === "function" && boxZoomIsActive());
+        const ico = `<svg class="tz-box-zoom-ico" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="1.5" stroke="currentColor" stroke-width="2" stroke-dasharray="3.5 2.5"/><path d="M14.5 14.5l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="3.25" stroke="currentColor" stroke-width="2"/></svg>`;
+        return `<button class="tz-btn tz-box-zoom${onBox ? " is-active" : ""}" type="button" data-role="box-zoom-toggle" data-tip="${esc(tipBox)}" aria-label="${esc(tipBox)}" aria-pressed="${onBox ? "true" : "false"}">${ico}</button>`;
+      })()}
       <span class="tz-level" title="${zoomLvlTip}" aria-label="${zoomLvlTip}">z${zoom}</span>
     </div>`;
     })()}
@@ -48064,12 +48397,19 @@ function renderTileMap(lat, lon, zoom){
   // Imagery date (Esri). Online-only; cached. Only for Satellite basemap.
   updateEsriImageryDate(root, lat, lon, zoom);
 
-  root.querySelectorAll(".tz-btn").forEach(b => {
+  root.querySelectorAll(".tz-btn[data-zdelta]").forEach(b => {
     b.addEventListener("click", () => {
       const d = parseInt(b.dataset.zdelta, 10);
       renderTileMap(lat, lon, zoom + d);
     });
   });
+  const boxZoomBtn = root.querySelector('[data-role="box-zoom-toggle"]');
+  if (boxZoomBtn){
+    boxZoomBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      try { toggleBoxZoom(); } catch(_){}
+    });
+  }
 
   // Primary format cycle button (map readout)
   root.querySelectorAll('[data-role="coord-cycle"]').forEach(btn => {
@@ -48190,6 +48530,7 @@ function renderTileMap(lat, lon, zoom){
   if (measToggle){
     measToggle.addEventListener("click", (ev) => {
       ev.stopPropagation();
+      try { if (typeof cancelBoxZoom === "function") cancelBoxZoom(); } catch(_){}
       if (document.body.classList.contains("gis-mode")){
         if (typeof toggleMeasureFloatingPanelGis === "function") toggleMeasureFloatingPanelGis();
         return;
@@ -48521,6 +48862,7 @@ function renderTileMap(lat, lon, zoom){
     });
   }
   attachPanHandlers(root, lat, lon, zoom);
+  try { boxZoomSyncAfterRender(root); } catch(_){}
   if (document.body.classList.contains("gis-mode") && root && !root._gisMapDblCenterWired){
     root._gisMapDblCenterWired = true;
     root.addEventListener("dblclick", gisMapOnDblClickCenter, true);
@@ -48944,6 +49286,7 @@ function gisMapOnDblClickCenter(ev){
   }
   if (state.rangeRingsPickAndCreateMode || state.rangeRingsPickCenterMode || state._rrEditingMoveCenterMode) return;
   if (state._bboxSelecting) return;
+  if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return;
   if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
   if (ev.cancelable) ev.preventDefault();
   const z = state.mapZoom || 11;
@@ -48988,6 +49331,7 @@ function attachPanHandlers(root, lat, lon, zoom){
     // on .tile-map, the bbox draw handlers own the pointer. Also bail out
     // if the user clicked directly on an overlay handle or remove button.
     if (state._bboxSelecting) return;
+    if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return;
     if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
     const pt = getPt(ev);
     const drag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0, moved: false };
@@ -68640,6 +68984,9 @@ function elevationProfileMapInteractionBlocked(){
     if (state && state._bboxSelecting) return true;
   } catch(_){}
   try {
+    if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return true;
+  } catch(_){}
+  try {
     if (typeof mapMeasureDocDrag !== "undefined" && mapMeasureDocDrag) return true;
     if (typeof mapRoutingMarkerDocDrag !== "undefined" && mapRoutingMarkerDocDrag) return true;
     if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
@@ -69490,6 +69837,7 @@ function workbenchMapInteractionBlocked(){
   if (state.astroPickCenterMode) return true;
   if (state.mapMeasureMode) return true;
   if (state._bboxSelecting) return true;
+  if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return true;
   if (typeof mapWptDocDrag !== "undefined" && mapWptDocDrag) return true;
   if (typeof mapTrackDocDrag !== "undefined" && mapTrackDocDrag) return true;
   if (typeof mapRrCenterDocDrag !== "undefined" && mapRrCenterDocDrag) return true;
