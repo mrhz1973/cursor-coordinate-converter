@@ -134,11 +134,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito MAP-BOX-ZOOM-A-FIX1** (verificare `git ls-remote` post-push); monolite tip `8e3cee4` |
+| HEAD documentale (pre-autosync) | commit docs **CARTO-INDEX-FEDERATED-A-DISCOVERY-1** (verificare `git ls-remote` post-push); monolite tip `8e3cee4` invariato |
 | Runtime live / commit monolite | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` (`8e3cee4`) — tip MAP-BOX-ZOOM-A-FIX1 |
 | Ultimo blocco chiuso | **MAP-BOX-ZOOM-A (+ FIX1)** — **CLOSED / PASS end-to-end** (ROUTINE; box zoom; QA FAIL A → FIX1; deploy+QA PASS; finito Regola H) |
 | Ultimo blocco runtime monolite | **MAP-BOX-ZOOM-A-FIX1** — tip `8e3cee4` build 117 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | nessuno runtime aperto — resto Bundle F da scegliere |
+| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / DISCOVERY PHASE 1** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); nessun runtime aperto |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
@@ -157,6 +157,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
 | MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom pixel-ratio; build 117 tip `8e3cee4`) |
+| CARTO-INDEX-FEDERATED-A | **OPEN / DISCOVERY PHASE 1** — WU-0012; MVP IGM; no runtime |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |

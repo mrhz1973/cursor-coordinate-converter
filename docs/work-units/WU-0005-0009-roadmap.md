@@ -461,7 +461,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **BACKLOG / DISCOVERY RICHIESTA / NON APERTO** (registrato 2026-08-05, docs-only). **Nessuna implementazione autorizzata.** **Nessuna Work Unit aperta.** Discovery **obbligatoria** prima di qualunque prompt runtime.
+**Stato:** **OPEN / DISCOVERY PHASE 1** (2026-08-05, docs-only). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Blocco discovery **`CARTO-INDEX-FEDERATED-A-DISCOVERY-1`**. **Nessuna implementazione runtime autorizzata.** Monolite tip live da preservare: `8e3cee4` / `MAP-BOX-ZOOM-A-FIX1` · build 117. MVP discovery: **IGM** (SHP quadri ufficiali); IIM/CIGA/UKHO sospesi/posticipati. Gate: `CARTO-INDEX-FEDERATED-A-DISCOVERY-1 — COMPLETE / NO RUNTIME`.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
@@ -497,9 +497,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 - schema dati provider-neutral prima dell’implementazione.
 
 **Classificazione preliminare:**
-- macro-feature separata; discovery obbligatoria;
-- probabile bundle **DELICATO** (storage, import dati, possibili aggiornamenti rete, OPSEC);
-- nessuna WU aperta in questa registrazione.
+- macro-feature separata; discovery Fase 1 **aperta** in WU-0012;
+- futuro runtime probabile bundle **DELICATO** (storage, import dati, possibili aggiornamenti rete, OPSEC);
+- **nessun** blocco runtime aperto da questa discovery.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
