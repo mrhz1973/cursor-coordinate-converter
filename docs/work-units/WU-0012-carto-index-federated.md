@@ -1,17 +1,14 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED`
+**Stato:** `OPEN / SEARCH-ENGINE CLOSED — NEXT UI/ARCHIVE`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
-**Blocco runtime in corso:** `CARTO-SEARCH-ENGINE-A` — **AUTHORIZED** (non CLOSED)
-**Tipo:** docs + dati IGM autorizzati + motore spaziale locale embedded (bundle DELICATO)
+**Blocco runtime:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip `c80129e` / build 118
+**Tipo:** macro-feature federata — motore locale CLOSED; UI/archivio/serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Baseline remota all’apertura discovery:** `8a7ba360c3b1c4150621601412a7fd11cbb462df`
-**Baseline remota all’acquire:** `11a8ac8d58c0a41e1999bcc0ff047b78426e3b5d`
-**Baseline remota SEARCH-ENGINE (attesa):** `3fe3404857a45eb53eef59b39782e01128afa66a`
-**Runtime live (pre-SEARCH-ENGINE):** tip monolite `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` · `APP_BUILD_ID = "MAP-BOX-ZOOM-A-FIX1"` · `APP_BUILD_NUM = 117`
-**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa** (non commerciale + attribuzione); runtime SEARCH-ENGINE autorizzato; UI risultati **non** ancora autorizzata come CLOSED
+**Runtime live:** tip monolite `c80129ed7d3a1928236b6b4f7de874fb595b2f98` · `APP_BUILD_ID = "CARTO-SEARCH-ENGINE-A"` · `APP_BUILD_NUM = 118`
+**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; **CARTO-UI-RESULTS-A** / archivio / espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Collegamento opzionale futuro a **MAP-BOX-ZOOM-A** (CLOSED): riuso gesto/area, senza cambiare il comportamento chiuso del box zoom.
@@ -444,7 +441,13 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**Licenza IGM registrata; CARTO-SEARCH-ENGINE-A AUTHORIZED.** Dopo implementazione motore: review GPT-sostitutiva → eventuale deploy/QA (fuori da questo prompt). UI risultati (`CARTO-UI-RESULTS-A`) **non** autorizzata qui.
+**CARTO-SEARCH-ENGINE-A CLOSED / PASS end-to-end.** Prossimo candidato (solo dopo decisione operatore):
+
+1. **CARTO-UI-RESULTS-A** — UI risultati + evidenziazione impronte (predisposto al motore)
+2. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale
+3. Espansione serie IGM / provider IIM·CIGA·UKHO
+
+**Nessun** auto-start. WU-0012 **resta OPEN**.
 
 ---
 
@@ -554,10 +557,29 @@ Assertion aggregate: **PASS**. Nessun servizio online.
 | Diritti | SHP→GeoJSON; redistribuzione derivati; pubblicazione GitHub; embedding app; aggiornamenti da fonte ufficiale |
 | Limiti | non commerciale; no vendita diretta; no prodotti a pagamento senza ulteriore auth; no raster/editoriale; non affiliazione |
 
-**Stato WU:** `OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED` (**non** CLOSED).
+**Stato WU (post-licenza, pre-chiusura SEARCH-ENGINE):** `OPEN / IGM LICENSE GRANTED — CARTO-SEARCH-ENGINE-A AUTHORIZED` — **superato** da §18.
 
 **Attribuzione obbligatoria:**
 
 ```text
 © Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50 e 100V. Dati geografici elaborati per uso non commerciale.
 ```
+
+---
+
+## 18. CARTO-SEARCH-ENGINE-A — CLOSED / PASS end-to-end (2026-08-05)
+
+| Campo | Valore |
+| --- | --- |
+| Tip runtime | `c80129ed7d3a1928236b6b4f7de874fb595b2f98` (`c80129e`) |
+| Parent licenza | `ec1cd88e13062edd3718e8ca1670e2717373ea47` (`ec1cd88`) |
+| Build | `CARTO-SEARCH-ENGINE-A · build 118` |
+| Blob / byte LF / SHA-256 LF | `2ef0a206…` / 4571370 / `c6b01abe…cc17572` |
+| Dataset | 911 (50=633, 100V=278) in `data/carto/igm/` |
+| Payload | `#cartoIgmEmbeddedData` compact-v1 SHA `E65C39C0…CA5D` |
+| Review | GPT-sostitutiva **PASS / DEPLOY AUTHORIZED** |
+| Deploy | GIS-only PASS (solo `goi-gis-app`) |
+| QA | «**QA CARTO-SEARCH-ENGINE-A PASS operatore**» |
+| URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c80129e` |
+
+**Fuori scope (resta OPEN nella WU):** UI risultati, overlay, selezione area dedicata, archivio personale, aggiornamento online, IIM/CIGA/UKHO, Serie 25, IndexedDB.

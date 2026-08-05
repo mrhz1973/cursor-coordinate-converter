@@ -69,9 +69,32 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## CARTO-SEARCH-ENGINE-A — Motore indice IGM embedded — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `c80129e` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `CARTO-SEARCH-ENGINE-A` |
+| Tip feature / live | `c80129ed7d3a1928236b6b4f7de874fb595b2f98` |
+| Parent licenza | `ec1cd88e13062edd3718e8ca1670e2717373ea47` |
+| Build | `CARTO-SEARCH-ENGINE-A · build 118` |
+| Blob | `2ef0a206f76b392bcdcd58bae329ee36fc4b773f` |
+| Byte LF | `4571370` |
+| SHA-256 LF | `c6b01abe588ab3d4ff4bf99f1424e8d1c84654a0f7c64aec61cc81aa6cc17572` |
+| Bundle | DELICATO — redistribuzione dati IGM + embed + motore spaziale |
+| Scope | `data/carto/igm/**` + payload `#cartoIgmEmbeddedData` + `cartoIndex*` + About attribuzione; no UI risultati |
+| Review | GPT-sostitutiva **PASS / DEPLOY AUTHORIZED** |
+| Deploy | GIS-only PASS (solo `goi-gis-app`; HTTP 200; CMP_PASS) |
+| QA | **PASS** «QA CARTO-SEARCH-ENGINE-A PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c80129e
+
 ## MAP-BOX-ZOOM-A (+ FIX1) — Zoom mappa via riquadro — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `8e3cee4` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da CARTO-SEARCH-ENGINE-A):** `8e3cee4` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
