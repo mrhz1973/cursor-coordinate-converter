@@ -13249,7 +13249,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <dialog id="cartoIgmPanel" class="app-modal carto-igm-panel" aria-labelledby="cartoIgmPanelTitle" aria-modal="false">
   <div class="app-modal-head" id="cartoIgmPanelHead">
     <h2 id="cartoIgmPanelTitle" class="app-modal-title" data-i18n="carto.title">Indice cartografico IGM</h2>
-    <span id="cartoIgmPanelStatus" class="carto-status-badge" data-status="idle" data-i18n="carto.status.idle">Non caricato</span>
+    <span id="cartoIgmPanelStatus" class="carto-status-badge" data-status="idle">Non caricato</span>
     <div class="app-modal-head-actions">
       <button type="button" data-role="cartoigm-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
@@ -13281,7 +13281,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </fieldset>
     <label class="carto-show-all"><input type="checkbox" id="cartoIgmShowAll" checked> <span data-i18n="carto.showAll">Mostra tutte le impronte</span></label>
     <div id="cartoIgmResultsHeader" class="carto-results-header hint" hidden></div>
-    <div id="cartoIgmResultsList" class="carto-results-list" role="listbox" aria-label="Risultati"></div>
+    <div id="cartoIgmResultsList" class="carto-results-list" data-i18n-aria="carto.resultsListAria"></div>
     <p id="cartoIgmZeroState" class="hint carto-zero" data-i18n="carto.zero" hidden>Nessuna carta interseca l’area</p>
     <p id="cartoIgmErrorState" class="hint carto-error" role="alert" hidden></p>
     <div class="carto-legal-line"><span id="cartoIgmLegalAttribution"></span></div>
@@ -15432,6 +15432,7 @@ const I18N = {
     "carto.notAvailable":"Non disponibile",
     "carto.staleView":"Risultati riferiti a una vista precedente",
     "carto.needOneSeries":"Seleziona almeno una serie",
+    "carto.resultsListAria":"Risultati indice cartografico",
     "gis.polygonPanel.title":"Poligoni",
     "gis.polygonPanel.newPolygon":"Nuovo poligono",
     "gis.polygonPanel.newPolygonDisabled":"Disegno disponibile in Pass C",
@@ -17706,6 +17707,7 @@ const I18N = {
     "carto.notAvailable":"Not available",
     "carto.staleView":"Results refer to a previous view",
     "carto.needOneSeries":"Select at least one series",
+    "carto.resultsListAria":"Chart index results",
     "gis.polygonPanel.title":"Polygons",
     "gis.polygonPanel.newPolygon":"New polygon",
     "gis.polygonPanel.newPolygonDisabled":"Drawing available in Pass C",
@@ -19865,6 +19867,7 @@ const I18N = {
     "carto.notAvailable":"Non disponible",
     "carto.staleView":"Résultats relatifs à une vue précédente",
     "carto.needOneSeries":"Sélectionnez au moins une série",
+    "carto.resultsListAria":"Résultats de l’index cartographique",
     "gis.polygonPanel.title":"Polygones",
     "gis.polygonPanel.newPolygon":"Nouveau polygone",
     "gis.polygonPanel.newPolygonDisabled":"Dessin disponible en Pass C",
@@ -22424,10 +22427,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-UI-RESULTS-A";
-const APP_BUILD_DETAIL = "IGM chart search results and footprint overlay";
+const APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX1";
+const APP_BUILD_DETAIL = "harden IGM results UI state and accessibility";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 119;
+const APP_BUILD_NUM = 120;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -22450,8 +22453,13 @@ function applyAppBuildLabel(){
  */
 const CARTO_IGM_ATTRIBUTION =
   "© Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50 e 100V. Dati geografici elaborati per uso non commerciale.";
-/** Lexical bridge for CARTO-UI-RESULTS-A: assigned inside IIFE; never on window. */
+/** Lexical bridges for CARTO-UI-RESULTS-A: assigned inside IIFEs; never on window. */
 let cartoIndexGetGeometryForUi = function(){ return null; };
+let initCartoUiResultsA = function(){};
+let openCartoIgmPanel = function(){ return false; };
+let closeCartoIgmPanel = function(){};
+let cartoUiRenderPanel = function(){};
+let drawCartoIgmOverlay = function(){};
 (function initCartoSearchEngineA(){
   "use strict";
 
@@ -22958,11 +22966,12 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
 })();
 /* ===== /CARTO-SEARCH-ENGINE-A ===== */
 
-/* ===== JS — CARTO-UI-RESULTS-A — UI read-only + overlay impronte ===== */
+/* ===== JS — CARTO-UI-RESULTS-A-FIX1 — UI read-only + overlay (hardened) ===== */
 (function initCartoUiResultsARegion(){
   "use strict";
 
   const CARTO_UI_RESULT_LIMIT = 200;
+  let _cartoSearchSeq = 0;
 
   function cartoUiGetState(){
     if (!state._cartoUi || typeof state._cartoUi !== "object") {
@@ -23025,13 +23034,11 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       west = minLon;
       east = maxLon;
     } else {
-      // Crossing ±180°: shift negatives into [0,360), then map back.
       const shifted = lons.map(function(x){ return x < 0 ? x + 360 : x; });
       let wS = Math.min.apply(null, shifted);
       let eS = Math.max.apply(null, shifted);
       west = wS > 180 ? wS - 360 : wS;
       east = eS > 180 ? eS - 360 : eS;
-      // Expect west > east for a true antimeridian crossing.
     }
     if (!Number.isFinite(west) || !Number.isFinite(east)) return null;
     return { west: west, south: south, east: east, north: north };
@@ -23060,15 +23067,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       && Math.abs(a.north - b.north) <= e;
   }
 
-  function cartoUiClearResultsAndOverlay(){
-    const u = cartoUiGetState();
-    u.results = [];
-    u.total = 0;
-    u.truncated = false;
-    u.queryBbox = null;
-    u.selectedRecordId = null;
-    u.error = null;
-    u.status = "idle";
+  function cartoUiRefreshOverlay(){
     try {
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
@@ -23076,22 +23075,18 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     } catch(_){}
   }
 
-  function cartoUiSyncLegal(){
-    const el = document.getElementById("cartoIgmLegalAttribution");
-    if (!el) return;
-    const txt = (typeof CARTO_IGM_ATTRIBUTION === "string" && CARTO_IGM_ATTRIBUTION)
-      || (window.GOICartoIndex && window.GOICartoIndex.attribution)
-      || "";
-    el.textContent = txt;
-  }
-
   function cartoUiSetNotice(msg, isErr){
     const n = document.getElementById("cartoIgmPanelNotice");
     if (!n) return;
-    if (!msg){ n.hidden = true; n.textContent = ""; return; }
+    if (!msg){
+      n.hidden = true;
+      n.textContent = "";
+      try { n.classList.remove("is-error"); } catch(_){}
+      return;
+    }
     n.hidden = false;
     n.textContent = msg;
-    n.classList.toggle("is-error", !!isErr);
+    try { n.classList.toggle("is-error", !!isErr); } catch(_){}
   }
 
   function cartoUiSelectedSeriesFromDom(){
@@ -23103,92 +23098,145 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     return out;
   }
 
+  function cartoUiSetBusy(busy){
+    const seriesEmpty = cartoUiSelectedSeriesFromDom().length === 0;
+    const searchBtn = document.getElementById("cartoIgmSearchBtn");
+    const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
+    if (searchBtn) searchBtn.disabled = !!busy || seriesEmpty;
+    if (refreshBtn) refreshBtn.disabled = !!busy;
+  }
+
+  function cartoUiClearResultsData(){
+    const u = cartoUiGetState();
+    u.results = [];
+    u.total = 0;
+    u.truncated = false;
+    u.queryBbox = null;
+    u.selectedRecordId = null;
+    u.error = null;
+    u.status = "idle";
+  }
+
+  function cartoUiClearResultsAndOverlay(){
+    cartoUiClearResultsData();
+    cartoUiRefreshOverlay();
+  }
+
+  function cartoUiFailSearch(errorCode){
+    const u = cartoUiGetState();
+    u.status = "error";
+    u.error = errorCode || "search_error";
+    u.results = [];
+    u.total = 0;
+    u.truncated = false;
+    u.selectedRecordId = null;
+    cartoUiSetBusy(false);
+    cartoUiSetNotice(t("carto.error"), true);
+    cartoUiRefreshOverlay();
+    try { cartoUiRenderPanel(); } catch(_){}
+  }
+
+  function cartoUiSyncLegal(){
+    const el = document.getElementById("cartoIgmLegalAttribution");
+    if (!el) return;
+    const txt = (typeof CARTO_IGM_ATTRIBUTION === "string" && CARTO_IGM_ATTRIBUTION)
+      || (window.GOICartoIndex && window.GOICartoIndex.attribution)
+      || "";
+    el.textContent = txt;
+  }
+
+  function cartoUiSyncStatusBadge(){
+    const statusEl = document.getElementById("cartoIgmPanelStatus");
+    if (!statusEl) return;
+    const u = cartoUiGetState();
+    const st = u.status || "idle";
+    const sk = "carto.status." + st;
+    statusEl.textContent = t(sk);
+    statusEl.setAttribute("data-status", st);
+    try { statusEl.removeAttribute("data-i18n"); } catch(_){}
+  }
+
+  function cartoUiInvalidatePendingSearch(){
+    _cartoSearchSeq += 1;
+  }
+
   function cartoUiRunSearch(){
     const u = cartoUiGetState();
+    if (u.status === "loading") return;
     const series = cartoUiSelectedSeriesFromDom();
     u.selectedSeries = series.slice();
     if (!series.length){
       cartoUiSetNotice(t("carto.needOneSeries"), true);
+      cartoUiSetBusy(false);
       try { cartoUiRenderPanel(); } catch(_){}
       return;
     }
     const bbox = cartoUiComputeViewportBbox();
     if (!bbox){
-      u.status = "error";
-      u.error = "viewport_unavailable";
-      cartoUiSetNotice(t("carto.error"), true);
-      try { cartoUiRenderPanel(); } catch(_){}
+      cartoUiFailSearch("viewport_unavailable");
       return;
     }
     if (!window.GOICartoIndex || typeof window.GOICartoIndex.searchBbox !== "function"){
-      u.status = "error";
-      u.error = "api_missing";
-      cartoUiSetNotice(t("carto.error"), true);
-      try { cartoUiRenderPanel(); } catch(_){}
+      cartoUiFailSearch("api_missing");
       return;
     }
+    const seq = ++_cartoSearchSeq;
     u.status = "loading";
     u.error = null;
     u.queryBbox = { west: bbox.west, south: bbox.south, east: bbox.east, north: bbox.north };
-    try { cartoUiRenderPanel(); } catch(_){}
-    let res;
-    try {
-      res = window.GOICartoIndex.searchBbox(u.queryBbox, {
-        seriesIds: series.slice(),
-        limit: CARTO_UI_RESULT_LIMIT,
-        preciseIntersection: true
-      });
-    } catch(err){
-      u.status = "error";
-      u.error = "search_exception";
-      u.results = [];
-      u.total = 0;
-      u.truncated = false;
-      u.selectedRecordId = null;
-      cartoUiSetNotice(t("carto.error"), true);
-      try { cartoUiRenderPanel(); } catch(_){}
-      return;
-    }
-    if (!res || res.error){
-      u.status = "error";
-      u.error = (res && res.error) || "search_error";
-      u.results = [];
-      u.total = 0;
-      u.truncated = false;
-      u.selectedRecordId = null;
-      cartoUiSetNotice(t("carto.error"), true);
-      try { cartoUiRenderPanel(); } catch(_){}
-      try {
-        const root = document.getElementById("miniMap");
-        const tm = root && root.querySelector(".tile-map");
-        if (tm) drawCartoIgmOverlay(tm);
-      } catch(_){}
-      return;
-    }
-    u.status = "ready";
-    u.results = Array.isArray(res.results) ? res.results.slice() : [];
-    u.total = Number(res.total) || 0;
-    u.truncated = !!res.truncated;
-    u.selectedRecordId = u.results.length ? String(u.results[0].record_id) : null;
-    u.error = null;
+    cartoUiSetBusy(true);
     cartoUiSetNotice(null, false);
     try { cartoUiRenderPanel(); } catch(_){}
-    try {
-      const root = document.getElementById("miniMap");
-      const tm = root && root.querySelector(".tile-map");
-      if (tm) drawCartoIgmOverlay(tm);
-    } catch(_){}
+
+    // Allow at least one paint before sync search/parse (rAF x2 + macrotask).
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        setTimeout(function(){
+          if (seq !== _cartoSearchSeq) return;
+          const cur = cartoUiGetState();
+          if (!cur.isOpen) return;
+          let res;
+          try {
+            res = window.GOICartoIndex.searchBbox(cur.queryBbox, {
+              seriesIds: cur.selectedSeries.slice(),
+              limit: CARTO_UI_RESULT_LIMIT,
+              preciseIntersection: true
+            });
+          } catch(err){
+            if (seq !== _cartoSearchSeq) return;
+            cartoUiFailSearch("search_exception");
+            return;
+          }
+          if (seq !== _cartoSearchSeq) return;
+          if (!cur.isOpen) return;
+          if (!res || typeof res !== "object"){
+            cartoUiFailSearch("invalid_response");
+            return;
+          }
+          if (res.error){
+            cartoUiFailSearch(String(res.error));
+            return;
+          }
+          cur.status = "ready";
+          cur.results = Array.isArray(res.results) ? res.results.slice() : [];
+          cur.total = Number(res.total) || 0;
+          cur.truncated = !!res.truncated;
+          cur.selectedRecordId = cur.results.length ? String(cur.results[0].record_id) : null;
+          cur.error = null;
+          cartoUiSetBusy(false);
+          cartoUiSetNotice(null, false);
+          try { cartoUiRenderPanel(); } catch(_){}
+          cartoUiRefreshOverlay();
+        }, 0);
+      });
+    });
   }
 
   function cartoUiSelectRecord(recordId){
     const u = cartoUiGetState();
     u.selectedRecordId = recordId == null ? null : String(recordId);
     try { cartoUiRenderPanel(); } catch(_){}
-    try {
-      const root = document.getElementById("miniMap");
-      const tm = root && root.querySelector(".tile-map");
-      if (tm) drawCartoIgmOverlay(tm);
-    } catch(_){}
+    cartoUiRefreshOverlay();
   }
 
   function cartoUiRelationLabel(rel){
@@ -23212,6 +23260,8 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     div.className = "carto-result-row" + (sel ? " is-selected" : "");
     div.setAttribute("data-record-id", id);
     div.setAttribute("aria-pressed", sel ? "true" : "false");
+    if (sel) div.setAttribute("aria-current", "true");
+    else try { div.removeAttribute("aria-current"); } catch(_){}
     div.innerHTML =
       '<span class="carto-row-series">' + esc(String(series)) + '</span>' +
       '<span class="carto-row-id">' + esc(chart) + '</span>' +
@@ -23223,15 +23273,19 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     return div;
   }
 
-  function cartoUiRenderPanel(){
+  cartoUiRenderPanel = function(){
     const u = cartoUiGetState();
     const body = document.getElementById("cartoIgmPanelBody");
-    const statusEl = document.getElementById("cartoIgmPanelStatus");
-    if (statusEl){
-      const sk = "carto.status." + (u.status || "idle");
-      statusEl.textContent = t(sk);
-      statusEl.setAttribute("data-status", u.status || "idle");
+    const dlg = document.getElementById("cartoIgmPanel");
+    if (body && typeof syncI18nInRoot === "function"){
+      try { syncI18nInRoot(body, state.lang || "it"); } catch(_){}
     }
+    if (dlg && typeof syncI18nInRoot === "function"){
+      try { syncI18nInRoot(dlg, state.lang || "it"); } catch(_){}
+    }
+    // F1: status badge AFTER i18n sync so static data-i18n cannot overwrite it.
+    cartoUiSyncStatusBadge();
+
     const qb = u.queryBbox;
     const setB = function(id, v){
       const el = document.getElementById(id);
@@ -23262,16 +23316,17 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     const hasRes = u.results.length > 0;
     const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
     const clearBtn = document.getElementById("cartoIgmClearBtn");
-    if (refreshBtn) refreshBtn.hidden = !hasRes;
-    if (clearBtn) clearBtn.hidden = !hasRes;
+    if (refreshBtn) refreshBtn.hidden = !hasRes && u.status !== "ready";
+    if (clearBtn) clearBtn.hidden = !hasRes && u.status !== "ready" && u.status !== "error";
+    // Keep clear visible when there is something to clear (results or error state with query)
+    if (clearBtn) clearBtn.hidden = !(hasRes || u.queryBbox || u.status === "error");
     const c50 = document.getElementById("cartoIgmFilter50");
     const c100 = document.getElementById("cartoIgmFilter100v");
     if (c50) c50.checked = u.selectedSeries.indexOf("50") >= 0;
     if (c100) c100.checked = u.selectedSeries.indexOf("100v") >= 0;
     const showAll = document.getElementById("cartoIgmShowAll");
     if (showAll) showAll.checked = !!u.showAllFootprints;
-    const searchBtn = document.getElementById("cartoIgmSearchBtn");
-    if (searchBtn) searchBtn.disabled = cartoUiSelectedSeriesFromDom().length === 0;
+    cartoUiSetBusy(u.status === "loading");
 
     const hdr = document.getElementById("cartoIgmResultsHeader");
     if (hdr){
@@ -23289,10 +23344,14 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     const list = document.getElementById("cartoIgmResultsList");
     if (list){
       list.textContent = "";
+      try { list.removeAttribute("role"); } catch(_){}
       const sel = u.selectedRecordId;
       for (let i = 0; i < u.results.length; i++){
         list.appendChild(cartoUiRenderRow(u.results[i], sel));
       }
+      const ariaKey = "carto.resultsListAria";
+      const ariaLbl = t(ariaKey);
+      if (ariaLbl && ariaLbl !== ariaKey) list.setAttribute("aria-label", ariaLbl);
     }
     const zero = document.getElementById("cartoIgmZeroState");
     if (zero) zero.hidden = !(u.status === "ready" && u.results.length === 0 && !u.error);
@@ -23302,14 +23361,9 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       if (u.status === "error") err.textContent = t("carto.error") + (u.error ? (" (" + u.error + ")") : "");
     }
     cartoUiSyncLegal();
-    if (body && typeof syncI18nInRoot === "function"){
-      try { syncI18nInRoot(body, state.lang || "it"); } catch(_){}
-    }
-    const dlg = document.getElementById("cartoIgmPanel");
-    if (dlg && typeof syncI18nInRoot === "function"){
-      try { syncI18nInRoot(dlg, state.lang || "it"); } catch(_){}
-    }
-  }
+    // Re-apply status after any late i18n touch
+    cartoUiSyncStatusBadge();
+  };
 
   function cartoGeomToSvgPathD(geom, root, tx, ty){
     if (!geom || !geom.coordinates) return "";
@@ -23338,7 +23392,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     return d;
   }
 
-  function drawCartoIgmOverlay(tileMap){
+  drawCartoIgmOverlay = function(tileMap){
     if (!tileMap) return;
     const old = tileMap.querySelector(".carto-igm-overlay");
     if (old) old.remove();
@@ -23388,9 +23442,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       svg.appendChild(path);
     }
     tileLayer.appendChild(svg);
-  }
-  // expose for renderTileMap call site
-  window.__drawCartoIgmOverlay = drawCartoIgmOverlay;
+  };
 
   function _cartoIgmPanelLayoutOpts(){
     return {
@@ -23459,7 +23511,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     gisPanelSyncBodySize(dlg, _cartoIgmPanelLayoutOpts());
   }
 
-  function openCartoIgmPanel(){
+  openCartoIgmPanel = function(){
     if (!document.body.classList.contains("gis-mode")) return false;
     const dlg = document.getElementById("cartoIgmPanel");
     if (!dlg) return false;
@@ -23486,25 +23538,19 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
         try { clampCartoIgmPanelRect(dlg); gisPanelSyncBodySize(dlg, _cartoIgmPanelLayoutOpts()); } catch(_){}
       });
     } catch(_){}
-    try {
-      const root = document.getElementById("miniMap");
-      const tm = root && root.querySelector(".tile-map");
-      if (tm) drawCartoIgmOverlay(tm);
-    } catch(_){}
+    cartoUiRefreshOverlay();
     return true;
-  }
+  };
 
-  function closeCartoIgmPanel(){
+  closeCartoIgmPanel = function(){
     const dlg = document.getElementById("cartoIgmPanel");
     const u = cartoUiGetState();
+    cartoUiInvalidatePendingSearch();
     cartoUiClearResultsAndOverlay();
+    cartoUiSetNotice(null, false);
+    cartoUiSetBusy(false);
     u.isOpen = false;
     u.isMinimized = false;
-    try {
-      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
-        // ensure dock chip removed by closing dialog
-      }
-    } catch(_){}
     if (dlg){
       try { dlg.classList.remove("gis-panel-minimized"); } catch(_){}
       try { if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open"); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
@@ -23516,7 +23562,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       });
     } catch(_){}
     try { cartoUiRenderPanel(); } catch(_){}
-  }
+  };
 
   function minimizeCartoIgmPanel(){
     const u = cartoUiGetState();
@@ -23525,11 +23571,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
       try { gisMinimizePanel("cartoIgmPanel", "gis.minimized.cartoigm"); } catch(_){}
     }
     u.isMinimized = true;
-    try {
-      const root = document.getElementById("miniMap");
-      const tm = root && root.querySelector(".tile-map");
-      if (tm) drawCartoIgmOverlay(tm);
-    } catch(_){}
+    cartoUiRefreshOverlay();
   }
 
   function toggleCartoIgmPanel(){
@@ -23542,7 +23584,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     }
   }
 
-  function initCartoUiResultsA(){
+  initCartoUiResultsA = function(){
     if (initCartoUiResultsA._done) return;
     initCartoUiResultsA._done = true;
     cartoUiGetState();
@@ -23565,8 +23607,10 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     const clearBtn = document.getElementById("cartoIgmClearBtn");
     if (clearBtn) clearBtn.addEventListener("click", function(ev){
       ev.preventDefault();
+      cartoUiInvalidatePendingSearch();
       cartoUiClearResultsAndOverlay();
       cartoUiSetNotice(null, false);
+      cartoUiSetBusy(false);
       cartoUiRenderPanel();
     });
     const c50 = document.getElementById("cartoIgmFilter50");
@@ -23574,8 +23618,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     function onFilter(){
       const u = cartoUiGetState();
       u.selectedSeries = cartoUiSelectedSeriesFromDom();
-      const sb = document.getElementById("cartoIgmSearchBtn");
-      if (sb) sb.disabled = u.selectedSeries.length === 0;
+      cartoUiSetBusy(u.status === "loading");
       if (u.selectedSeries.length === 0) cartoUiSetNotice(t("carto.needOneSeries"), true);
       else cartoUiSetNotice(null, false);
     }
@@ -23585,11 +23628,7 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
     if (showAll) showAll.addEventListener("change", function(){
       const u = cartoUiGetState();
       u.showAllFootprints = !!showAll.checked;
-      try {
-        const root = document.getElementById("miniMap");
-        const tm = root && root.querySelector(".tile-map");
-        if (tm) drawCartoIgmOverlay(tm);
-      } catch(_){}
+      cartoUiRefreshOverlay();
     });
     const list = document.getElementById("cartoIgmResultsList");
     if (list && !list._cartoClickBound){
@@ -23601,26 +23640,10 @@ let cartoIndexGetGeometryForUi = function(){ return null; };
         cartoUiSelectRecord(row.getAttribute("data-record-id"));
       });
     }
-    // Hook restore-from-dock: when panel restored, clear isMinimized
-    try {
-      const _origRestore = typeof gisRestoreMinimizedPanel === "function" ? gisRestoreMinimizedPanel : null;
-      if (_origRestore && !gisRestoreMinimizedPanel._cartoWrapped){
-        // leave global; track via MutationObserver-lite on open
-      }
-    } catch(_){}
-  }
-
-  // Public (same-script) exports for wiring outside this IIFE
-  window.openCartoIgmPanel = openCartoIgmPanel;
-  window.closeCartoIgmPanel = closeCartoIgmPanel;
-  window.toggleCartoIgmPanel = toggleCartoIgmPanel;
-  window.minimizeCartoIgmPanel = minimizeCartoIgmPanel;
-  window.initCartoUiResultsA = initCartoUiResultsA;
-  window.cartoUiComputeViewportBbox = cartoUiComputeViewportBbox;
-  window.cartoUiRenderPanel = cartoUiRenderPanel;
-  window.drawCartoIgmOverlay = drawCartoIgmOverlay;
+    try { cartoUiRenderPanel(); } catch(_){}
+  };
 })();
-/* ===== /CARTO-UI-RESULTS-A ===== */
+/* ===== /CARTO-UI-RESULTS-A-FIX1 ===== */
 
 /* ===== /JS — CARTOGRAPHIC INDEX SEARCH ENGINE ===== */
 function loadStore(){
