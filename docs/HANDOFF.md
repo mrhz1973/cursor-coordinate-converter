@@ -134,10 +134,10 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito ROUTING-ANELLO-A-FIX1** (verificare `git ls-remote` post-push); monolite tip `f718582` |
-| Runtime live / commit monolite | `f7185823af3028069ff24613151a6ef0209d0966` (`f718582`) — tip ROUTING-ANELLO-A-FIX1 |
-| Ultimo blocco chiuso | **ROUTING-ANELLO-A (+ FIX1)** — **CLOSED / PASS end-to-end** (DELICATO; round_trip multi-seed; review+deploy+QA PASS; finito Regola H) |
-| Ultimo blocco runtime monolite | **ROUTING-ANELLO-A-FIX1** — tip `f718582` build 115 — **CLOSED / PASS end-to-end** |
+| HEAD documentale (pre-autosync) | commit docs **finito MAP-BOX-ZOOM-A-FIX1** (verificare `git ls-remote` post-push); monolite tip `8e3cee4` |
+| Runtime live / commit monolite | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` (`8e3cee4`) — tip MAP-BOX-ZOOM-A-FIX1 |
+| Ultimo blocco chiuso | **MAP-BOX-ZOOM-A (+ FIX1)** — **CLOSED / PASS end-to-end** (ROUTINE; box zoom; QA FAIL A → FIX1; deploy+QA PASS; finito Regola H) |
+| Ultimo blocco runtime monolite | **MAP-BOX-ZOOM-A-FIX1** — tip `8e3cee4` build 117 — **CLOSED / PASS end-to-end** |
 | Task aperto corrente | nessuno runtime aperto — resto Bundle F da scegliere |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -145,18 +145,19 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `f7185823af3028069ff24613151a6ef0209d0966` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `0ffb7b34d036722945350b4094c73d89c3dab1da` |
-| Byte monolite (git LF) | `3347642` |
-| SHA-256 monolite (git LF) | `0513e768591a8e03bdb6f92100f81913b2e19a84bdd944efc28828bbd766a19b` |
-| `APP_BUILD_NUM` | `115` |
-| Display runtime | `ROUTING-ANELLO-A-FIX1 · build 115` |
-| `APP_BUILD_ID` | `ROUTING-ANELLO-A-FIX1` |
+| Runtime Git / atteso VPS | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `f05a4ea9611d97b38e3dff0eeada7a7dac4f3cbe` |
+| Byte monolite (git LF) | `3364287` |
+| SHA-256 monolite (git LF) | `4b350d44f7f5e77e0c24530e63bf2f4a6931596d69f5eda4447b9dec7f41ce75` |
+| `APP_BUILD_NUM` | `117` |
+| Display runtime | `MAP-BOX-ZOOM-A-FIX1 · build 117` |
+| `APP_BUILD_ID` | `MAP-BOX-ZOOM-A-FIX1` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
-| ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115 tip `f718582`) |
+| MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom pixel-ratio; build 117 tip `8e3cee4`) |
+| ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |
 | UI-MODAL-ERROR-FOCUS-A-FIX1 / FIX2 | **CLOSED / PASS end-to-end** (multi-riga layout-neutral; QA FAIL FIX1 → FIX2; build 111; superseded live) |
@@ -212,27 +213,25 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=f718582` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=8e3cee4` |
 
 **Prossimo ordine operativo:**
 
-Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-ANELLO-A (+ FIX1) CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Resto **Bundle F** da scegliere. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`f718582`** / **`ROUTING-ANELLO-A-FIX1 · build 115`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Nessun task runtime aperto. Ultimo blocco chiuso: **MAP-BOX-ZOOM-A (+ FIX1) CLOSED / PASS end-to-end**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. Resto **Bundle F** da scegliere. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`8e3cee4`** / **`MAP-BOX-ZOOM-A-FIX1 · build 117`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**ROUTING-ANELLO-A (+ FIX1)** CLOSED tip **`f718582`**. **ROUTING-ACTION-ROW-UX-A** CLOSED (superseded live). **ROUTING-ANDATA-RITORNO-A** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
+**MAP-BOX-ZOOM-A (+ FIX1)** CLOSED tip **`8e3cee4`**. **ROUTING-ANELLO-A (+ FIX1)** CLOSED (superseded live). **ROUTING-ACTION-ROW-UX-A** CLOSED (superseded live). **ROUTING-ANDATA-RITORNO-A** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; **MAP-BOX-ZOOM-A** (NON APERTO); **CARTO-INDEX-FEDERATED-A** (DISCOVERY RICHIESTA / NON APERTO); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; **CARTO-INDEX-FEDERATED-A** (DISCOVERY RICHIESTA / NON APERTO); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** aprire MAP-BOX-ZOOM-A / CARTO-INDEX-FEDERATED-A senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** aprire CARTO-INDEX-FEDERATED-A senza decisione esplicita + discovery; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
 ## Backlog / note immediate
 
-### MAP-BOX-ZOOM-A — Zoom mappa via riquadro — BACKLOG / NON APERTO
+### MAP-BOX-ZOOM-A (+ FIX1) — Zoom mappa via riquadro — CLOSED / PASS end-to-end
 
-**Stato:** **BACKLOG / NON APERTO** (2026-08-05). **Non** WU aperta. **Non** autorizzato. Fonte: [`WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md).
-
-**Sintesi:** pulsante sotto zoom `+`/`−`; selezione rettangolare transiente; fit vista; no GIS/persistenza/rete; offline; collegamento futuro opzionale a copertura cartografica.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-05). Tip `8e3cee4` / `MAP-BOX-ZOOM-A-FIX1 · build 117`. Catena `ffbe9fd`→`8e3cee4`. Blob `f05a4ea9…` · byte LF **3364287** · SHA-256 LF **`4b350d44…`**. QA FAIL A → FIX1; deploy GIS-only PASS; QA «**QA MAP-BOX-ZOOM-A-FIX1 PASS operatore**».
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato — BACKLOG / DISCOVERY RICHIESTA / NON APERTO
 

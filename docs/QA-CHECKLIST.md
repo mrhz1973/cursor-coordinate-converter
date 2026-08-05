@@ -69,9 +69,32 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## MAP-BOX-ZOOM-A (+ FIX1) — Zoom mappa via riquadro — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `8e3cee4` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `MAP-BOX-ZOOM-A-FIX1` (catena A build 116 → FIX1) |
+| Tip feature | `ffbe9fd1af6f267d8a6b9735195f9222540dbe86` (build 116) |
+| Tip FIX1 / live | `8e3cee446cab76120ce4da4df1b6c01e4a45afd6` |
+| Build | `MAP-BOX-ZOOM-A-FIX1 · build 117` |
+| Blob | `f05a4ea9611d97b38e3dff0eeada7a7dac4f3cbe` |
+| Byte LF | `3364287` |
+| SHA-256 LF | `4b350d44f7f5e77e0c24530e63bf2f4a6931596d69f5eda4447b9dec7f41ce75` |
+| Bundle | ROUTINE — UI/JS mappa transiente; no rete/storage |
+| Scope | Box zoom sotto `+/−`; FIX1 fit pixel-ratio (no `flyMapToTrackPoints`) |
+| Review | N/A (ROUTINE) |
+| Deploy | GIS-only PASS (FF → `8e3cee4`; solo `goi-gis-app`; HTTP 200; CMP_PASS) |
+| QA | FAIL A → FIX1; **PASS** «QA MAP-BOX-ZOOM-A-FIX1 PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=8e3cee4
+
 ## ROUTING-ANELLO-A (+ FIX1) — modalità Anello GraphHopper `round_trip` — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `f718582` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da MAP-BOX-ZOOM-A-FIX1):** `f718582` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |

@@ -446,27 +446,18 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Ordine:** HUD-VIS prima (o parallelo solo per decisione esplicita); HUD-MOVE separato; nessun nome definitivo `state.*` / `settings.*` in questa voce.
 
-### MAP-BOX-ZOOM-A — Zoom della mappa tramite riquadro selezionabile
+### MAP-BOX-ZOOM-A (+ FIX1) — Zoom della mappa tramite riquadro selezionabile
 
-**Stato:** **BACKLOG / NON APERTO** (registrato 2026-08-05, docs-only). **Nessuna implementazione autorizzata.** **Non** è una WU runtime aperta. **Non** apre un task corrente.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-05). Catena **`ffbe9fd`** (build 116 / `MAP-BOX-ZOOM-A`) → tip **`8e3cee4`** (FIX1 · build 117 / `MAP-BOX-ZOOM-A-FIX1`). Bundle **ROUTINE**. QA FAIL A (fit geografico troppo conservativo) → FIX1 pixel-ratio. Attestazione «**QA MAP-BOX-ZOOM-A-FIX1 PASS operatore**»; finito Regola H.
 
 **Ambito:** GIS monolite — controllo mappa / interazione viewport.
 
-**Idea:** nuovo pulsante mappa immediatamente sotto i controlli zoom `+` / `−`; modalità temporanea di selezione rettangolare; trascinamento per definire l’area; al rilascio, adattamento della vista all’estensione selezionata; annullamento con `Esc`, clic destro o nuova pressione del pulsante.
+**Implementato:**
+- pulsante sotto zoom `+` / `−`; modalità temporanea selezione rettangolare; fit vista; Esc / toggle / clic destro / cleanup;
+- rettangolo **esclusivamente transiente**; nessuna creazione GIS; nessuna persistenza del riquadro; nessuna rete;
+- FIX1: fit dedicato pixel-ratio (`boxZoomComputeTargetZoom` + pad 20px + `clampBasemapFitZoom`); **non** usa più `flyMapToTrackPoints` per il box zoom.
 
-**Requisiti da rispettare in un’eventuale apertura futura:**
-- rettangolo **esclusivamente transiente** (overlay UI);
-- **nessuna** creazione o modifica di waypoint, tracce, poligoni o altri oggetti GIS canonici;
-- **nessuna** persistenza;
-- **nessuna** chiamata di rete; funzionamento **offline**;
-- distinzione netta dagli strumenti di disegno GIS (poligoni, misura, bbox offline, pick Routing, ecc.);
-- compatibilità futura con l’uso dello stesso tipo di area per ricerca di copertura cartografica (vedi [`CARTO-INDEX-FEDERATED-A`](#carto-index-federated-a--indice-cartografico-federato-e-catalogo-archivio-personale) sotto) — **senza** accoppiare obbligatoriamente le due implementazioni.
-
-**Classificazione preliminare (non definitiva):**
-- probabile bundle **ROUTINE** se resta limitato a controllo mappa e interazione transiente;
-- in discovery verificare coordinamento con pan, drag, strumenti di misura, disegno e selezione già esistenti.
-
-**Vincolo:** nessuna apertura runtime da questa registrazione.
+**Collegamento futuro opzionale** a copertura cartografica (vedi [`CARTO-INDEX-FEDERATED-A`](#carto-index-federated-a--indice-cartografico-federato-e-catalogo-archivio-personale)) — **senza** accoppiamento obbligatorio.
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
