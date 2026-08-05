@@ -220,13 +220,25 @@ Nessun task runtime aperto. Ultimo blocco chiuso: **ROUTING-ANELLO-A (+ FIX1) CL
 
 **ROUTING-ANELLO-A (+ FIX1)** CLOSED tip **`f718582`**. **ROUTING-ACTION-ROW-UX-A** CLOSED (superseded live). **ROUTING-ANDATA-RITORNO-A** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; **MAP-BOX-ZOOM-A** (NON APERTO); **CARTO-INDEX-FEDERATED-A** (DISCOVERY RICHIESTA / NON APERTO); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** aprire MAP-BOX-ZOOM-A / CARTO-INDEX-FEDERATED-A senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
 ## Backlog / note immediate
+
+### MAP-BOX-ZOOM-A — Zoom mappa via riquadro — BACKLOG / NON APERTO
+
+**Stato:** **BACKLOG / NON APERTO** (2026-08-05). **Non** WU aperta. **Non** autorizzato. Fonte: [`WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md).
+
+**Sintesi:** pulsante sotto zoom `+`/`−`; selezione rettangolare transiente; fit vista; no GIS/persistenza/rete; offline; collegamento futuro opzionale a copertura cartografica.
+
+### CARTO-INDEX-FEDERATED-A — Indice cartografico federato — BACKLOG / DISCOVERY RICHIESTA / NON APERTO
+
+**Stato:** **BACKLOG / DISCOVERY RICHIESTA / NON APERTO** (2026-08-05). **Non** WU aperta. **Non** autorizzato. Fonte: [`WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md).
+
+**Sintesi:** IGM/IIM/CIGA/UKHO; ricerca per area; metadati+impronte; catalogo personale; online solo opt-in; OPSEC fail-closed; discovery obbligatoria prima di runtime.
 
 ### MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1 + FIX2 + FIX3) — Centra viewport-aware — CLOSED / PASS end-to-end
 

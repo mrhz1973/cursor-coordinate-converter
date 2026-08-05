@@ -446,6 +446,70 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Ordine:** HUD-VIS prima (o parallelo solo per decisione esplicita); HUD-MOVE separato; nessun nome definitivo `state.*` / `settings.*` in questa voce.
 
+### MAP-BOX-ZOOM-A — Zoom della mappa tramite riquadro selezionabile
+
+**Stato:** **BACKLOG / NON APERTO** (registrato 2026-08-05, docs-only). **Nessuna implementazione autorizzata.** **Non** è una WU runtime aperta. **Non** apre un task corrente.
+
+**Ambito:** GIS monolite — controllo mappa / interazione viewport.
+
+**Idea:** nuovo pulsante mappa immediatamente sotto i controlli zoom `+` / `−`; modalità temporanea di selezione rettangolare; trascinamento per definire l’area; al rilascio, adattamento della vista all’estensione selezionata; annullamento con `Esc`, clic destro o nuova pressione del pulsante.
+
+**Requisiti da rispettare in un’eventuale apertura futura:**
+- rettangolo **esclusivamente transiente** (overlay UI);
+- **nessuna** creazione o modifica di waypoint, tracce, poligoni o altri oggetti GIS canonici;
+- **nessuna** persistenza;
+- **nessuna** chiamata di rete; funzionamento **offline**;
+- distinzione netta dagli strumenti di disegno GIS (poligoni, misura, bbox offline, pick Routing, ecc.);
+- compatibilità futura con l’uso dello stesso tipo di area per ricerca di copertura cartografica (vedi [`CARTO-INDEX-FEDERATED-A`](#carto-index-federated-a--indice-cartografico-federato-e-catalogo-archivio-personale) sotto) — **senza** accoppiare obbligatoriamente le due implementazioni.
+
+**Classificazione preliminare (non definitiva):**
+- probabile bundle **ROUTINE** se resta limitato a controllo mappa e interazione transiente;
+- in discovery verificare coordinamento con pan, drag, strumenti di misura, disegno e selezione già esistenti.
+
+**Vincolo:** nessuna apertura runtime da questa registrazione.
+
+### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
+
+**Stato:** **BACKLOG / DISCOVERY RICHIESTA / NON APERTO** (registrato 2026-08-05, docs-only). **Nessuna implementazione autorizzata.** **Nessuna Work Unit aperta.** Discovery **obbligatoria** prima di qualunque prompt runtime.
+
+**Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
+
+**Provider iniziali (candidati, non integrati):**
+- Istituto Geografico Militare — **IGM**;
+- Istituto Idrografico della Marina — **IIM** (Genova);
+- Centro Informazioni Geotopografiche Aeronautiche — **CIGA** (Pratica di Mare);
+- UK Hydrographic Office — **UKHO / ADMIRALTY**.
+
+**Requisiti funzionali (futuri, non autorizzati ora):**
+- ricerca delle carte che intersecano un’area geografica;
+- area definibile in futuro tramite rettangolo, poligono, vista corrente o buffer lungo una traccia (collegamento opzionale a **MAP-BOX-ZOOM-A**);
+- risultati unificati multi-provider;
+- metadati normalizzati: ente, famiglia/serie, codice carta, eventuale codice internazionale, titolo, scala, edizione, revisione, data fonte, impronta geografica;
+- supporto a una o più geometrie per la stessa carta;
+- evidenziazione impronte sulla mappa; intersezione/copertura vs area selezionata;
+- ordinamento e filtri (ente, tipologia, scala, serie, disponibilità, copertura);
+- catalogo personale separato (carta presente/mancante, nome file, riferimento archivistico, note);
+- scope limitato a indici/impronte/metadati utilizzabili nel rispetto delle licenze;
+- dataset locali o importabili; possibile persistenza futura in IndexedDB;
+- aggiornamenti online **solo** espliciti e opt-in; **forced-offline** e **OPSEC strict** devono bloccare ogni aggiornamento/interrogazione online;
+- ricerca locale sui cataloghi già importati deve restare utilizzabile offline;
+- data dell’ultimo aggiornamento visibile per ogni catalogo.
+
+**Discovery preliminare obbligatoria (prima di runtime):**
+- reperibilità quadri d’unione / impronte ufficiali;
+- formati: SHP, KML, GeoJSON, PDF, OGC, ArcGIS REST, cataloghi proprietari;
+- campi disponibili, CRS, dimensioni, frequenza aggiornamento;
+- condizioni d’uso e licenze; possibilità di conservare/distribuire dataset derivati;
+- distinzione esistenza teorica foglio / disponibilità commerciale / possesso archivio personale;
+- carte con inserti o più riquadri;
+- peso dati: evitare cataloghi mondiali voluminosi nel monolite;
+- schema dati provider-neutral prima dell’implementazione.
+
+**Classificazione preliminare:**
+- macro-feature separata; discovery obbligatoria;
+- probabile bundle **DELICATO** (storage, import dati, possibili aggiornamenti rete, OPSEC);
+- nessuna WU aperta in questa registrazione.
+
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
 **Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.
