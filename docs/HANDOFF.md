@@ -134,31 +134,32 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito CARTO-SEARCH-ENGINE-A** (verificare `git ls-remote`) |
-| Runtime live / commit monolite | `c80129ed7d3a1928236b6b4f7de874fb595b2f98` (`c80129e`) — tip CARTO-SEARCH-ENGINE-A |
-| Ultimo blocco chiuso | **CARTO-SEARCH-ENGINE-A** — **CLOSED / PASS end-to-end** (Regola H; QA PASS operatore) |
-| Ultimo blocco runtime monolite | **CARTO-SEARCH-ENGINE-A** — tip `c80129e` build 118 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / SEARCH-ENGINE CLOSED — NEXT UI/ARCHIVE** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); prossimo candidato **CARTO-UI-RESULTS-A** |
+| HEAD documentale (pre-autosync) | commit docs **finito CARTO-UI-RESULTS-A** (verificare `git ls-remote`) |
+| Runtime live / commit monolite | `62d24eb15b119adb19d60fde5e5c386d6a21a87b` (`62d24eb`) — tip CARTO-UI-RESULTS-A-FIX3 |
+| Ultimo blocco chiuso | **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** — **CLOSED / PASS end-to-end** (Regola H; QA PASS operatore) |
+| Ultimo blocco runtime monolite | **CARTO-UI-RESULTS-A-FIX3** — tip `62d24eb` build 122 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); prossimo candidato **CARTO-ARCHIVE-MATCH-A** |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `c80129ed7d3a1928236b6b4f7de874fb595b2f98` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `2ef0a206f76b392bcdcd58bae329ee36fc4b773f` |
-| Byte monolite (git LF) | `4571370` |
-| SHA-256 monolite (git LF) | `c6b01abe588ab3d4ff4bf99f1424e8d1c84654a0f7c64aec61cc81aa6cc17572` |
-| `APP_BUILD_NUM` | `118` |
-| Display runtime | `CARTO-SEARCH-ENGINE-A · build 118` |
-| `APP_BUILD_ID` | `CARTO-SEARCH-ENGINE-A` |
+| Runtime Git / atteso VPS | `62d24eb15b119adb19d60fde5e5c386d6a21a87b` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `af24b5bf97abd616f80c1f310c73ffbbe3b7d5c8` |
+| Byte monolite (git LF) | `4610584` |
+| SHA-256 monolite (git LF) | `f489b4459b8e144f7cb3aa0176869993f2ff9c68afc88f3a3f837d1ad4bb1cd1` |
+| `APP_BUILD_NUM` | `122` |
+| Display runtime | `CARTO-UI-RESULTS-A-FIX3 · build 122` |
+| `APP_BUILD_ID` | `CARTO-UI-RESULTS-A-FIX3` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
-| MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom; superseded live da SEARCH-ENGINE) |
-| CARTO-SEARCH-ENGINE-A | **CLOSED / PASS end-to-end** (motore IGM embedded; tip `c80129e` build 118) |
-| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED — NEXT UI/ARCHIVE** — WU-0012; Prot. IGM-2024-7891 |
+| MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom; superseded live) |
+| CARTO-SEARCH-ENGINE-A | **CLOSED / PASS end-to-end** (motore IGM embedded; tip storico `c80129e` build 118; superseded live) |
+| CARTO-UI-RESULTS-A (+ FIX1–FIX3) | **CLOSED / PASS end-to-end** (UI risultati IGM; tip `62d24eb` build 122) |
+| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** — WU-0012; Prot. IGM-2024-7891 |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |
@@ -215,17 +216,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c80129e` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=62d24eb` |
 
 **Prossimo ordine operativo:**
 
-Ultimo blocco chiuso: **CARTO-SEARCH-ENGINE-A CLOSED / PASS end-to-end**. WU-0012 **OPEN** — prossimo candidato **CARTO-UI-RESULTS-A** (o Bundle F). **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`c80129e`** / **`CARTO-SEARCH-ENGINE-A · build 118`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Ultimo blocco chiuso: **CARTO-UI-RESULTS-A (+ FIX1–FIX3) CLOSED / PASS end-to-end**. WU-0012 **OPEN** — prossimo candidato **CARTO-ARCHIVE-MATCH-A** (o espansione serie / Bundle F). **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`62d24eb`** / **`CARTO-UI-RESULTS-A-FIX3 · build 122`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**CARTO-SEARCH-ENGINE-A** CLOSED tip **`c80129e`**. **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
+**CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED tip **`62d24eb`**. **CARTO-SEARCH-ENGINE-A** CLOSED (superseded live). **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; **CARTO-UI-RESULTS-A** / archivio / serie / provider (WU-0012 OPEN); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; **CARTO-ARCHIVE-MATCH-A** / serie / provider (WU-0012 OPEN); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** aprire CARTO-UI-RESULTS-A senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** aprire archivio/serie/provider senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
@@ -235,9 +236,13 @@ Ultimo blocco chiuso: **CARTO-SEARCH-ENGINE-A CLOSED / PASS end-to-end**. WU-001
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-08-05). Tip `8e3cee4` / `MAP-BOX-ZOOM-A-FIX1 · build 117`. Catena `ffbe9fd`→`8e3cee4`. Blob `f05a4ea9…` · byte LF **3364287** · SHA-256 LF **`4b350d44…`**. QA FAIL A → FIX1; deploy GIS-only PASS; QA «**QA MAP-BOX-ZOOM-A-FIX1 PASS operatore**».
 
+### CARTO-UI-RESULTS-A (+ FIX1–FIX3) — UI risultati IGM — CLOSED / PASS end-to-end
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip `62d24eb` / `CARTO-UI-RESULTS-A-FIX3 · build 122`. Catena `5e734f5`→`9991955`→`105fd7f`→`62d24eb`. Blob `af24b5bf…` · byte LF **4610584** · SHA-256 LF **`f489b445…`**. FIX2 deploy PASS / review revocata (L10N); FIX3 `cartoUiT` + review PASS; deploy GIS-only PASS; QA «**QA CARTO-UI-RESULTS-A-FIX3 PASS operatore**»; finito Regola H.
+
 ### CARTO-SEARCH-ENGINE-A — Motore indice IGM embedded — CLOSED / PASS end-to-end
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-05). Tip `c80129e` / `CARTO-SEARCH-ENGINE-A · build 118`. Parent licenza `ec1cd88`. Blob `2ef0a206…` · byte LF **4571370** · SHA-256 LF **`c6b01abe…`**. Review GPT-sostitutiva PASS; deploy GIS-only PASS; QA «**QA CARTO-SEARCH-ENGINE-A PASS operatore**»; finito Regola H.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-05). Tip storico `c80129e` / `CARTO-SEARCH-ENGINE-A · build 118`. **Superseded live** da CARTO-UI-RESULTS-A-FIX3. Parent licenza `ec1cd88`. Blob `2ef0a206…` · byte LF **4571370** · SHA-256 LF **`c6b01abe…`**. Review GPT-sostitutiva PASS; deploy GIS-only PASS; QA «**QA CARTO-SEARCH-ENGINE-A PASS operatore**»; finito Regola H.
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato — OPEN / SEARCH-ENGINE CLOSED — NEXT UI/ARCHIVE
 

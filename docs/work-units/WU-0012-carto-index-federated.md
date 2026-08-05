@@ -1,14 +1,15 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / SEARCH-ENGINE CLOSED — NEXT UI/ARCHIVE`
+**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
-**Blocco runtime:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip `c80129e` / build 118
-**Tipo:** macro-feature federata — motore locale CLOSED; UI/archivio/serie/provider **ancora aperti**
+**Blocco runtime motore:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip storico `c80129e` / build 118
+**Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `62d24eb` / build 122
+**Tipo:** macro-feature federata — motore + UI risultati CLOSED; archivio/serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Runtime live:** tip monolite `c80129ed7d3a1928236b6b4f7de874fb595b2f98` · `APP_BUILD_ID = "CARTO-SEARCH-ENGINE-A"` · `APP_BUILD_NUM = 118`
-**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; **CARTO-UI-RESULTS-A** / archivio / espansione serie / provider successivi **non** CLOSED
+**Runtime live:** tip monolite `62d24eb15b119adb19d60fde5e5c386d6a21a87b` · `APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX3"` · `APP_BUILD_NUM = 122`
+**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; archivio / espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Collegamento opzionale futuro a **MAP-BOX-ZOOM-A** (CLOSED): riuso gesto/area, senza cambiare il comportamento chiuso del box zoom.
@@ -441,11 +442,11 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-SEARCH-ENGINE-A CLOSED / PASS end-to-end.** Prossimo candidato (solo dopo decisione operatore):
+**CARTO-SEARCH-ENGINE-A** e **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo candidato (solo dopo decisione operatore):
 
-1. **CARTO-UI-RESULTS-A** — UI risultati + evidenziazione impronte (predisposto al motore)
-2. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale
-3. Espansione serie IGM / provider IIM·CIGA·UKHO
+1. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale
+2. Espansione serie IGM / provider IIM·CIGA·UKHO
+3. **CARTO-ONLINE-UPDATE-A** — aggiornamenti online espliciti (opt-in, OPSEC)
 
 **Nessun** auto-start. WU-0012 **resta OPEN**.
 
@@ -582,4 +583,25 @@ Assertion aggregate: **PASS**. Nessun servizio online.
 | QA | «**QA CARTO-SEARCH-ENGINE-A PASS operatore**» |
 | URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c80129e` |
 
-**Fuori scope (resta OPEN nella WU):** UI risultati, overlay, selezione area dedicata, archivio personale, aggiornamento online, IIM/CIGA/UKHO, Serie 25, IndexedDB.
+**Fuori scope (resta OPEN nella WU):** archivio personale, aggiornamento online, IIM/CIGA/UKHO, Serie 25, IndexedDB. (UI risultati + overlay: CLOSED in §19.)
+
+---
+
+## 19. CARTO-UI-RESULTS-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end (2026-08-06)
+
+| Campo | Valore |
+| --- | --- |
+| Tip finale / live | `62d24eb15b119adb19d60fde5e5c386d6a21a87b` (`62d24eb`) |
+| Catena | `5e734f5` (A · 119) → `9991955` (FIX1 · 120) → `105fd7f` (FIX2 · 121) → `62d24eb` (FIX3 · 122) |
+| Build | `CARTO-UI-RESULTS-A-FIX3 · build 122` |
+| Blob / byte LF / SHA-256 LF | `af24b5bf…` / 4610584 / `f489b445…bb1cd1` |
+| Payload embedded | SHA `E65C39C0…CA5D` invariato |
+| Review FIX3 | GPT-sostitutiva **PASS / DEPLOY AUTHORIZED** |
+| FIX2 | deploy tecnico PASS; QA non iniziata; review revocata (finding L10N `t()` → chiavi grezze EN/FR) |
+| FIX3 | `cartoUiT` fallback IT scoped; EN/FR senza chiavi CARTO; `t()` globale invariato |
+| Deploy | GIS-only PASS tip `62d24eb` (solo `goi-gis-app`; HTTP 200; CMP_PASS) |
+| QA | «**QA CARTO-UI-RESULTS-A-FIX3 PASS operatore**» |
+| URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=62d24eb` |
+
+**Chiuso:** sottoblocco UI risultati + overlay + lifecycle/a11y/L10N freeze-safe.  
+**Resta OPEN nella WU:** archivio personale, espansione serie, provider IIM/CIGA/UKHO, aggiornamento online, IndexedDB.

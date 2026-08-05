@@ -69,9 +69,36 @@ oppure
 QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
 ```
 
+## CARTO-UI-RESULTS-A (+ FIX1 + FIX2 + FIX3) — UI risultati IGM — CLOSED / PASS end-to-end
+
+**Runtime autorevole live:** `62d24eb` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+
+| Campo | Valore |
+| --- | --- |
+| Block ID | `CARTO-UI-RESULTS-A-FIX3` (catena A → FIX1 → FIX2 → FIX3) |
+| Tip A | `5e734f5478325e7242dc6d84181c60c400acd927` (build 119) |
+| Tip FIX1 | `9991955df9ec88a8c9667e54b633db00b0b13258` (build 120) |
+| Tip FIX2 | `105fd7f1c7372441dee99f7d19cda2336638c456` (build 121) |
+| Tip FIX3 / live | `62d24eb15b119adb19d60fde5e5c386d6a21a87b` |
+| Build | `CARTO-UI-RESULTS-A-FIX3 · build 122` |
+| Blob | `af24b5bf97abd616f80c1f310c73ffbbe3b7d5c8` |
+| Byte LF | `4610584` |
+| SHA-256 LF | `f489b4459b8e144f7cb3aa0176869993f2ff9c68afc88f3a3f837d1ad4bb1cd1` |
+| Payload embedded | `E65C39C01EC274EB558EDFA3369D8C1364965140CC2B693595703D4F4223CA5D` invariato |
+| Bundle | DELICATO leggero — UI stato/lifecycle/a11y + L10N freeze-safe |
+| Scope | pannello Indice IGM; overlay; `cartoUiT`; no chiavi CARTO EN/FR; no modifica `t()` globale |
+| Review FIX3 | GPT-sostitutiva **PASS / DEPLOY AUTHORIZED** |
+| FIX2 | deploy PASS; QA non iniziata; review revocata (finding L10N) |
+| Deploy | GIS-only PASS (solo `goi-gis-app`; HTTP 200; CMP_PASS) |
+| QA | **PASS** «QA CARTO-UI-RESULTS-A-FIX3 PASS operatore» |
+| Finito | Regola H auto-finito |
+
+**URL:**
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=62d24eb
+
 ## CARTO-SEARCH-ENGINE-A — Motore indice IGM embedded — CLOSED / PASS end-to-end
 
-**Runtime autorevole live:** `c80129e` — deploy GIS-only **PASS tecnico**; **CLOSED / PASS end-to-end**.
+**Runtime storico (superseded live da CARTO-UI-RESULTS-A-FIX3):** `c80129e` — **CLOSED / PASS end-to-end**.
 
 | Campo | Valore |
 | --- | --- |
