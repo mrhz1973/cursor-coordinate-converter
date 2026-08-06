@@ -6896,6 +6896,12 @@ html[data-theme="light"]{
   color:var(--text);
 }
 .gis-modal-minimize-notice[hidden]{ display:none !important; }
+#cartoIgmPanelNotice.is-error{
+  color:var(--danger, #b91c1c);
+}
+html[data-theme="light"] #cartoIgmPanelNotice.is-error{
+  color:#991b1b;
+}
 .gis-minimized-dock{
   position:fixed;
   top:calc(env(safe-area-inset-top, 0px) + var(--gis-minimized-dock-offset, 78px));
@@ -22742,10 +22748,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A-FIX1";
-const APP_BUILD_DETAIL = "fix archive persistence result and normalize ISO UTC";
+const APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A-FIX2";
+const APP_BUILD_DETAIL = "close archive editor after save; flash panel notices";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 134;
+const APP_BUILD_NUM = 135;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23431,9 +23437,15 @@ function cartoScopedT(key){
     } catch(_){}
   }
 
-  function cartoUiSetNotice(msg, isErr){
+  let _cartoUiNoticeTimer = null;
+  function cartoUiSetNotice(msg, isErr, opts){
+    opts = opts || {};
     const n = document.getElementById("cartoIgmPanelNotice");
     if (!n) return;
+    if (_cartoUiNoticeTimer){
+      try { clearTimeout(_cartoUiNoticeTimer); } catch(_){}
+      _cartoUiNoticeTimer = null;
+    }
     if (!msg){
       n.hidden = true;
       n.textContent = "";
@@ -23441,8 +23453,20 @@ function cartoScopedT(key){
       return;
     }
     n.hidden = false;
-    n.textContent = msg;
+    n.textContent = String(msg);
     try { n.classList.toggle("is-error", !!isErr); } catch(_){}
+    // Same temporal behaviour as GIS drop-import / Nuova traccia feedback: auto-hide.
+    const ttl = (opts.ttlMs == null) ? 10000 : Number(opts.ttlMs);
+    if (ttl > 0){
+      _cartoUiNoticeTimer = setTimeout(function(){
+        _cartoUiNoticeTimer = null;
+        try {
+          n.textContent = "";
+          n.hidden = true;
+          n.classList.remove("is-error");
+        } catch(_){}
+      }, ttl);
+    }
   }
 
   function cartoUiSelectedSeriesFromDom(){
@@ -23862,10 +23886,12 @@ function cartoScopedT(key){
           chart_id: ed.chart_id,
           archive_record_id: String(res.record.archive_record_id),
           pendingDelete: false,
-          notice: cartoUiT("carto.archive.duplicate"),
-          noticeErr: true,
+          notice: null,
+          noticeErr: false,
           _syncForm: true
         };
+        cartoArchiveEditorSetNotice(null, false);
+        cartoUiSetNotice(cartoUiT("carto.archive.duplicate"), true);
         try { cartoUiRenderPanel(); } catch(_){}
         return;
       }
@@ -23878,22 +23904,15 @@ function cartoScopedT(key){
       else if (res && res.reason === "cap") msg = cartoUiT("carto.archive.capReached");
       else if (res && res.reason === "year_invalid") msg = cartoUiT("carto.archive.yearInvalid");
       else if (res && res.reason === "duplicate") msg = cartoUiT("carto.archive.duplicate");
-      ed.notice = msg;
-      ed.noticeErr = true;
-      cartoArchiveEditorSetNotice(msg, true);
+      ed.notice = null;
+      ed.noticeErr = false;
+      cartoArchiveEditorSetNotice(null, false);
+      cartoUiSetNotice(msg, true);
       return;
     }
-    u.archiveEditor = {
-      mode: "edit",
-      provider_id: ed.provider_id,
-      series_id: ed.series_id,
-      chart_id: ed.chart_id,
-      archive_record_id: String(res.record.archive_record_id),
-      pendingDelete: false,
-      notice: cartoUiT("carto.archive.savedOk"),
-      noticeErr: false,
-      _syncForm: true
-    };
+    // Success: close editor; leave updated result row; flash panel notice (non-persistent).
+    cartoArchiveEditorClose({ skipRender: true });
+    cartoUiSetNotice(cartoUiT("carto.archive.savedOk"), false);
     try { cartoUiRenderPanel(); } catch(_){}
   }
 
@@ -23907,13 +23926,16 @@ function cartoScopedT(key){
         ? cartoUiT("carto.archive.saveFailed")
         : cartoUiT("carto.archive.invalid");
       ed.pendingDelete = false;
-      ed.notice = msg;
-      ed.noticeErr = true;
+      ed.notice = null;
+      ed.noticeErr = false;
+      cartoArchiveEditorSetNotice(null, false);
+      cartoUiSetNotice(msg, true);
       try { cartoUiRenderPanel(); } catch(_){}
       return;
     }
+    cartoArchiveEditorClose({ skipRender: true });
     cartoUiSetNotice(cartoUiT("carto.archive.deletedOk"), false);
-    cartoArchiveEditorClose({});
+    try { cartoUiRenderPanel(); } catch(_){}
   }
 
   cartoArchiveEditorHandleEscape = function(){
