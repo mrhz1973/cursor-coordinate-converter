@@ -134,24 +134,24 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito CARTO-ARCHIVE-MATCH-A** (verificare `git ls-remote`) |
-| Runtime live / commit monolite | `c4d7db5753c3a5a43c119f491bed1732789ecc0d` (`c4d7db5`) — tip CARTO-ARCHIVE-MATCH-A-FIX2 |
-| Ultimo blocco chiuso | **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** — **CLOSED / PASS end-to-end** (Regola H; QA PASS operatore) |
-| Ultimo blocco runtime monolite | **CARTO-ARCHIVE-MATCH-A-FIX2** — tip `c4d7db5` build 135 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED — NEXT SERIES\|PROVIDER\|ESC** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); prossimi candidati ESC / COORD / SERIES |
+| HEAD documentale (pre-autosync) | commit docs **finito CARTO-IGM-AREA-ESC-RESTORE-A** (verificare `git ls-remote`) |
+| Runtime live / commit monolite | `764e661b269b31f9fb8a17a683f63768a9910140` (`764e661`) — tip CARTO-IGM-AREA-ESC-RESTORE-A |
+| Ultimo blocco chiuso | **CARTO-IGM-AREA-ESC-RESTORE-A** — **CLOSED / PASS end-to-end** (Regola H; QA PASS operatore) |
+| Ultimo blocco runtime monolite | **CARTO-IGM-AREA-ESC-RESTORE-A** — tip `764e661` build 136 — **CLOSED / PASS end-to-end** |
+| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED — NEXT COORD\|SERIES\|PROVIDER** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); prossimi candidati COORD / SERIES |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `c4d7db5753c3a5a43c119f491bed1732789ecc0d` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `e39dd1fe1d9d8ab04a78e009b50b128749509ee7` |
-| Byte monolite (git LF) | `4692528` |
-| SHA-256 monolite (git LF) | `d7c683f300818ab5ee05cfb83a9fbe694d0b82211a0258091bcdb15b36629b81` |
-| `APP_BUILD_NUM` | `135` |
-| Display runtime | `CARTO-ARCHIVE-MATCH-A-FIX2 · build 135` |
-| `APP_BUILD_ID` | `CARTO-ARCHIVE-MATCH-A-FIX2` |
+| Runtime Git / atteso VPS | `764e661b269b31f9fb8a17a683f63768a9910140` (deploy GIS-only Cursor SSH PASS) |
+| Blob monolite (git) | `d3ea31061f95afcfa762586356b0e4cd1636b269` |
+| Byte monolite (git LF) | `4693977` |
+| SHA-256 monolite (git LF) | `81aba7926cc20cee613972b45f97597731974a2a655fd2a94c069f7d89c40d15` |
+| `APP_BUILD_NUM` | `136` |
+| Display runtime | `CARTO-IGM-AREA-ESC-RESTORE-A · build 136` |
+| `APP_BUILD_ID` | `CARTO-IGM-AREA-ESC-RESTORE-A` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
@@ -159,8 +159,9 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom; superseded live) |
 | CARTO-SEARCH-ENGINE-A | **CLOSED / PASS end-to-end** (motore IGM embedded; tip storico `c80129e` build 118; superseded live) |
 | CARTO-UI-RESULTS-A (+ FIX1–FIX3) | **CLOSED / PASS end-to-end** (UI risultati IGM; tip storico `62d24eb` build 122; superseded live) |
-| CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) | **CLOSED / PASS end-to-end** (catalogo metadati locale IGM; tip `c4d7db5` build 135) |
-| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED — NEXT SERIES\|PROVIDER\|ESC** — WU-0012; Prot. IGM-2024-7891 |
+| CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) | **CLOSED / PASS end-to-end** (catalogo metadati locale IGM; tip storico `c4d7db5` build 135; superseded live) |
+| CARTO-IGM-AREA-ESC-RESTORE-A | **CLOSED / PASS end-to-end** (Esc area-pick restore; tip `764e661` build 136) |
+| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED — NEXT COORD\|SERIES\|PROVIDER** — WU-0012; Prot. IGM-2024-7891 |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |
@@ -217,17 +218,17 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c4d7db5` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=764e661` |
 
 **Prossimo ordine operativo:**
 
-Ultimo blocco chiuso: **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED / PASS end-to-end**. WU-0012 **OPEN** — prossimi candidati **CARTO-IGM-AREA-ESC-RESTORE-A** / **COORD-MODAL-FORMAT-COPY-A** / **CARTO-IGM-SERIES-EXPAND-A** (nessun auto-start). **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`c4d7db5`** / **`CARTO-ARCHIVE-MATCH-A-FIX2 · build 135`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Ultimo blocco chiuso: **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED / PASS end-to-end**. WU-0012 **OPEN** — prossimi candidati **COORD-MODAL-FORMAT-COPY-A** / **CARTO-IGM-SERIES-EXPAND-A** (nessun auto-start). **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`764e661`** / **`CARTO-IGM-AREA-ESC-RESTORE-A · build 136`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
-**CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** CLOSED tip **`c4d7db5`**. **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-SEARCH-ENGINE-A** CLOSED (superseded live). **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
+**CARTO-IGM-AREA-ESC-RESTORE-A** CLOSED tip **`764e661`**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** CLOSED (superseded live). **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-SEARCH-ENGINE-A** CLOSED (superseded live). **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; serie / provider (WU-0012 OPEN); ESC/COORD follow-up; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; serie / provider (WU-0012 OPEN); COORD follow-up; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** aprire serie/provider/ESC/COORD senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** aprire serie/provider/COORD senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 

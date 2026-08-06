@@ -487,13 +487,11 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) — Catalogo metadati locale Indice IGM
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-07). Tip **`c4d7db5`** / build **135** / `CARTO-ARCHIVE-MATCH-A-FIX2`. Catena `39ba407`→`84c9710`→`c4d7db5`. Store additivo `cartoArchiveRecords`; chiave `provider+series_id+chart_id`; CRUD + rollback; UI Indice IGM; FIX1 persistenza transazionale + ISO UTC; FIX2 chiusura editor post-Salva + notice flash 10s. Attestazione «**QA CARTO-ARCHIVE-MATCH-A-FIX2 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=c4d7db5`). Limitazioni: matching foglio≠edizione CRS; no scansioni/file.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-07). Tip storico **`c4d7db5`** / build **135** / `CARTO-ARCHIVE-MATCH-A-FIX2`. Catena `39ba407`→`84c9710`→`c4d7db5`. Store additivo `cartoArchiveRecords`; chiave `provider+series_id+chart_id`; CRUD + rollback; UI Indice IGM; FIX1 persistenza transazionale + ISO UTC; FIX2 chiusura editor post-Salva + notice flash 10s. Attestazione «**QA CARTO-ARCHIVE-MATCH-A-FIX2 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=c4d7db5`). Limitazioni: matching foglio≠edizione CRS; no scansioni/file. **Superseded live** da **CARTO-IGM-AREA-ESC-RESTORE-A** tip **`764e661`**.
 
 ### CARTO-IGM-AREA-ESC-RESTORE-A — Esc ripristina Indice IGM in area-pick
 
-**Stato:** **BACKLOG / NOT OPENED** (docs-only 2026-08-06). Categoria futura: **DELICATO leggero** (lifecycle pannello + coordinatore map-tool) — blocco proprio / bundle delicato, **non** mega-bundle routine.
-
-**Contratto futuro:** Indice IGM → «Seleziona area» → pannello minimizzato → Esc annulla draft/disarma area-pick → pannello torna visibile nello stato precedente; nessuna ricerca; risultati/selezione invariati; nessuna tile toccata; corretto anche dopo wheel/+/− con pick armato. **Non** implementato.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-07). Tip **`764e661`** / build **136** / `CARTO-IGM-AREA-ESC-RESTORE-A`. Flag session-only `_areaPickMinimizedByPicker`; restore solo se minimizzato dal picker; `stopImmediatePropagation` su entrambi i listener Esc area-pick; preserva risultati/selezione/overlay; rearm wheel/+/− invariato. Attestazione «**QA CARTO-IGM-AREA-ESC-RESTORE-A PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=764e661`). Bundle **DELICATO leggero**.
 
 ### COORD-MODAL-FORMAT-COPY-A — Formato e copia coordinate nei modal
 
@@ -501,9 +499,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED — NEXT SERIES|PROVIDER|ESC** (2026-08-07). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED** + **`CARTO-IGM-CRS-AUDIT-A` DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** + **`CARTO-ARCHIVE-MATCH-A` (+ FIX1–FIX2) CLOSED / PASS end-to-end** (tip `c4d7db5` / build 135). Macro-feature **non** CLOSED: restano espansione serie, provider successivi. Runtime live: `c4d7db5` / `CARTO-ARCHIVE-MATCH-A-FIX2 · build 135`.
+**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED — NEXT COORD|SERIES|PROVIDER** (2026-08-07). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED** + **`CARTO-IGM-CRS-AUDIT-A` DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** + **`CARTO-ARCHIVE-MATCH-A` (+ FIX1–FIX2) CLOSED** + **`CARTO-IGM-AREA-ESC-RESTORE-A` CLOSED / PASS end-to-end** (tip `764e661` / build 136). Macro-feature **non** CLOSED: restano espansione serie, provider successivi; **COORD-MODAL-FORMAT-COPY-A** backlog. Runtime live: `764e661` / `CARTO-IGM-AREA-ESC-RESTORE-A · build 136`.
 
-**Ordine candidato post-ARCHIVE (nessun runtime auto-aperto):** (1) **CARTO-IGM-AREA-ESC-RESTORE-A**; (2) **COORD-MODAL-FORMAT-COPY-A**; (3) **CARTO-IGM-SERIES-EXPAND-A**; (4) provider successivi. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
+**Ordine candidato post-ESC (nessun runtime auto-aperto):** (1) **COORD-MODAL-FORMAT-COPY-A**; (2) **CARTO-IGM-SERIES-EXPAND-A**; (3) provider successivi. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
