@@ -22512,10 +22512,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX2";
-const APP_BUILD_DETAIL = "recover IGM label double-click fit without map recenter";
+const APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3";
+const APP_BUILD_DETAIL = "remove IGM label double-click navigation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 131;
+const APP_BUILD_NUM = 132;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23196,33 +23196,6 @@ function cartoScopedT(key){
     } catch(_){}
   }
 
-  // Align with typical OS double-click windows (~500ms). 250ms caused QA FAIL:
-  // second click often arrived after the single-click timer had already fired.
-  const CARTO_LABEL_CLICK_MS = 500;
-  let _cartoLabelClickTimer = null;
-  let _cartoLabelClickId = null;
-  let _cartoLabelLastFitId = null;
-  let _cartoLabelLastFitAt = 0;
-
-  function cartoIgmClearLabelClickTimer(){
-    if (_cartoLabelClickTimer){
-      try { clearTimeout(_cartoLabelClickTimer); } catch(_){}
-      _cartoLabelClickTimer = null;
-    }
-    _cartoLabelClickId = null;
-  }
-
-  /** One panel-aware fit per label gesture (second click and native dblclick share this). */
-  function cartoIgmSelectAndFitOnce(recordId){
-    const id = recordId == null ? null : String(recordId);
-    if (!id) return;
-    const now = Date.now();
-    if (_cartoLabelLastFitId === id && (now - _cartoLabelLastFitAt) < 450) return;
-    _cartoLabelLastFitId = id;
-    _cartoLabelLastFitAt = now;
-    cartoIgmSelectAndFit(id);
-  }
-
   function cartoUiSetNotice(msg, isErr){
     const n = document.getElementById("cartoIgmPanelNotice");
     if (!n) return;
@@ -23271,7 +23244,6 @@ function cartoScopedT(key){
   }
 
   function cartoUiClearResultsAndOverlay(){
-    cartoIgmClearLabelClickTimer();
     cartoUiClearResultsData();
     cartoUiRefreshOverlay();
   }
@@ -24081,7 +24053,6 @@ function cartoScopedT(key){
   closeCartoIgmPanel = function(){
     const dlg = document.getElementById("cartoIgmPanel");
     const u = cartoUiGetState();
-    cartoIgmClearLabelClickTimer();
     // Abort any in-progress area pick without restoring (panel is closing).
     if (u.areaPickActive){
       try { cartoIgmCancelAreaPickImpl({ restore: false }); } catch(_){}
@@ -24222,36 +24193,7 @@ function cartoScopedT(key){
           if (!id) return;
           if (ev.cancelable) ev.preventDefault();
           try { ev.stopPropagation(); } catch(_){}
-          if (_cartoLabelClickTimer && _cartoLabelClickId === id){
-            cartoIgmClearLabelClickTimer();
-            cartoIgmSelectAndFitOnce(id);
-            return;
-          }
-          cartoIgmClearLabelClickTimer();
-          _cartoLabelClickId = id;
-          _cartoLabelClickTimer = setTimeout(function(){
-            _cartoLabelClickTimer = null;
-            const rid = _cartoLabelClickId;
-            _cartoLabelClickId = null;
-            if (!rid) return;
-            cartoIgmSelectShowRowNoFit(rid);
-          }, CARTO_LABEL_CLICK_MS);
-        }, true);
-        mapRoot.addEventListener("dblclick", function(ev){
-          const g = ev.target && ev.target.closest
-            ? ev.target.closest('[data-role="carto-igm-label"]')
-            : null;
-          if (!g || !mapRoot.contains(g)) return;
-          const id = g.getAttribute("data-record-id");
-          if (ev.cancelable) ev.preventDefault();
-          // Same-element capture siblings (gisMapOnDblClickCenter) ignore stopPropagation.
-          try { ev.stopImmediatePropagation(); } catch(_){
-            try { ev.stopPropagation(); } catch(__){}
-          }
-          // Native dblclick is the reliable OS signal when the 2nd click arrives
-          // after the single-click timer (QA FAIL FIX1: no fit, map recenter blocked).
-          cartoIgmClearLabelClickTimer();
-          if (id) cartoIgmSelectAndFitOnce(id);
+          cartoIgmSelectShowRowNoFit(id);
         }, true);
       }
     } catch(_){}
@@ -51828,12 +51770,6 @@ function monitorTileLoading(root, lat, lon){
 /** GIS: doppio click sulla mappa centra la vista sul punto (solo viewCenter + render; niente lastResult/renderResults). */
 function gisMapOnDblClickCenter(ev){
   if (!document.body.classList.contains("gis-mode")) return;
-  // IGM footprint labels: both this handler and the carto label dblclick listener
-  // are on #miniMap (capture). stopPropagation does not block same-element siblings.
-  try {
-    const t = ev && ev.target;
-    if (t && typeof t.closest === "function" && t.closest('[data-role="carto-igm-label"]')) return;
-  } catch(_){}
   try {
     if (typeof trackBrushBlocksDblClick === "function" && trackBrushBlocksDblClick()) return;
   } catch(_){}
