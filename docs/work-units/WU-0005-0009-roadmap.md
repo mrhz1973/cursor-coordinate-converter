@@ -465,11 +465,31 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3) — Area-pick / risultati / label IGM
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip **`51e0f5b`** / build **132** / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3`. Catena `0ad97ee`→`b5d2e44`→`b89c140`→`51e0f5b`. FIX3: rimozione navigazione speciale doppio-click label; click singolo select/scroll no-fit; ricentramento mappa generale ripristinato sulle label. Attestazione «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=51e0f5b`). Esc area-pick = backlog separato.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip **`51e0f5b`** / build **132** / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3`. Catena `0ad97ee`→`b5d2e44`→`b89c140`→`51e0f5b`. FIX3: rimozione navigazione speciale doppio-click label; click singolo select/scroll no-fit; ricentramento mappa generale ripristinato sulle label. Attestazione «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=51e0f5b`). Follow-up QA → backlog sotto (non aperti).
+
+### CARTO-IGM-CRS-AUDIT-A — Audit geodetico impronte IGM
+
+**Stato:** **BACKLOG / NOT OPENED — RECOMMENDED PREREQUISITE** (docs-only 2026-08-06, `DOCS-BACKLOG-CARTO-COORD-CRS-A`). Categoria futura: **DELICATO** (geodesia / provenienza / trasformazioni). **Non** runtime; **non** attestare audit del payload embedded finché non eseguito.
+
+**Evidenza già in WU-0012 (non nuova attestazione runtime):** pacchetti ufficiali Serie 50 / 100V scelti = layer geografici **WGS84**; schema provider-neutral prevede geometria WGS84 + `crs_original`; esistono varianti ufficiali ED50 / Roma40 / UTM / altri CRS — **non** confonderle col layer incorporato.
+
+**Audit futuro (contratto):** archivio/layer sorgente; checksum/data/build; `.prj`/metadato CRS; datum/proiezione/unità/assi/fuso; pipeline pre-embed; CRS effettivo payload; compatibilità mappa; punti di controllo; scarti (datum / generalizzazione / quadro / scansione / bordo vs footprint). Distinzione obbligatoria: **(A)** CRS geometria impronta vs **(B)** datum/proiezione/reticolato della carta — possono divergere. UI futura: mostrare A/B/fonte/stato trasformazione/incertezza o «Sconosciuto» senza inventare metadati. Prerequisito raccomandato prima di **CARTO-ARCHIVE-MATCH-A**, **CARTO-IGM-SERIES-EXPAND-A**, varianti ED50/Roma40/RDN2008/provider.
+
+### CARTO-IGM-AREA-ESC-RESTORE-A — Esc ripristina Indice IGM in area-pick
+
+**Stato:** **BACKLOG / NOT OPENED** (docs-only 2026-08-06). Categoria futura: **DELICATO leggero** (lifecycle pannello + coordinatore map-tool) — blocco proprio / bundle delicato, **non** mega-bundle routine.
+
+**Contratto futuro:** Indice IGM → «Seleziona area» → pannello minimizzato → Esc annulla draft/disarma area-pick → pannello torna visibile nello stato precedente; nessuna ricerca; risultati/selezione invariati; nessuna tile toccata; corretto anche dopo wheel/+/− con pick armato. **Non** implementato.
+
+### COORD-MODAL-FORMAT-COPY-A — Formato e copia coordinate nei modal
+
+**Stato:** **BACKLOG / NOT OPENED** (docs-only 2026-08-06). Trasversale UI. Preliminare obbligatorio: inventory read-only dei modal/pannelli con coordinate. Formati candidati (dove già supportati): DD/DDM/DMS/UTM/MGRS/Plus Code; datum/griglie nazionali solo se contesto + convertitore esistenti. Selettore formato + Copia (esatta rappresentazione); cambio formato = sola presentazione; canonica interna invariata; riuso helper esistenti; no duplicazione conversione; no storage/schema arbitrari; stringhe **solo IT/EN** (FR freeze). **Non** aperto; **non** runtime.
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
 **Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** (2026-08-06). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED / PASS end-to-end** (tip `51e0f5b` / build 132). Macro-feature **non** CLOSED: restano archivio personale, espansione serie, provider successivi. Runtime live: `51e0f5b` / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 · build 132`.
+
+**Ordine candidato post-BUNDLE-B (nessun runtime scelto da `DOCS-BACKLOG-CARTO-COORD-CRS-A`):** (1) **CARTO-IGM-CRS-AUDIT-A**; (2) **CARTO-ARCHIVE-MATCH-A** (non aperto); (3) **CARTO-IGM-AREA-ESC-RESTORE-A**; (4) **COORD-MODAL-FORMAT-COPY-A**; (5) espansione serie/provider (non aperta).
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 

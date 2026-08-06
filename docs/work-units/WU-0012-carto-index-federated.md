@@ -444,13 +444,15 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo candidato (solo dopo decisione operatore):
+**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime scelto da `DOCS-BACKLOG-CARTO-COORD-CRS-A`):
 
-1. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale
-2. Espansione serie IGM / provider IIM·CIGA·UKHO
-3. **CARTO-ONLINE-UPDATE-A** — aggiornamenti online espliciti (opt-in, OPSEC)
+1. **CARTO-IGM-CRS-AUDIT-A** — audit geodetico impronte (BACKLOG / NOT OPENED — RECOMMENDED PREREQUISITE)
+2. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale (**non** aperto)
+3. **CARTO-IGM-AREA-ESC-RESTORE-A** — Esc ripristina pannello in area-pick (BACKLOG / NOT OPENED)
+4. **COORD-MODAL-FORMAT-COPY-A** — formato + copia coordinate nei modal (BACKLOG / NOT OPENED; trasversale)
+5. Espansione serie IGM / provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
 
-**Nessun** auto-start. WU-0012 **resta OPEN**. Esc area-pick IGM = backlog separato (non auto-aperto).
+**Nessun** auto-start. WU-0012 **resta OPEN**.
 
 ---
 
@@ -466,7 +468,30 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 | URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=51e0f5b` |
 
 **Chiuso:** area-pick rearm; CTA area/vista; fit/Centra; click singolo label (select/scroll, no fit); rimozione navigazione doppio-click label (FIX3).  
-**Resta OPEN nella WU:** archivio, espansione serie, provider, aggiornamento online, IndexedDB; Esc area-pick backlog.
+**Resta OPEN nella WU:** archivio, espansione serie, provider, aggiornamento online, IndexedDB. Follow-up QA → §15c backlog (non aperti).
+
+---
+
+## 15c. Backlog follow-up QA BUNDLE-B — `DOCS-BACKLOG-CARTO-COORD-CRS-A` (2026-08-06)
+
+Docs-only; **nessun** runtime; **nessun** build bump; bundle B resta CLOSED.
+
+### CARTO-IGM-AREA-ESC-RESTORE-A — BACKLOG / NOT OPENED
+
+- Categoria futura: **DELICATO leggero** (lifecycle pannello + map-tool coordinator); blocco proprio / bundle delicato, non mega-bundle routine.
+- Contratto futuro: Esc in area-pick → annulla draft + disarm + ripristina Indice IGM minimizzato; no search; no clear risultati/selezione; no tile; corretto dopo wheel/+/− con pick armato.
+
+### COORD-MODAL-FORMAT-COPY-A — BACKLOG / NOT OPENED
+
+- Trasversale. Inventory UI preliminare obbligatorio.
+- Formato + Copia coerenti col modal waypoint; formati candidati già supportati (DD/DDM/DMS/UTM/MGRS/Plus Code dove applicabili); riuso formatter; presentazione only; IT/EN only (FR freeze).
+
+### CARTO-IGM-CRS-AUDIT-A — BACKLOG / NOT OPENED — RECOMMENDED PREREQUISITE
+
+- Categoria futura: **DELICATO** (geodesia / provenienza / trasformazioni).
+- Evidenza discovery (non nuova attestazione payload): Serie 50/100V scelte = layer geo **WGS84**; schema con `geometry` WGS84 + `crs_original`; altre CRS ufficiali esistono ma non sono il layer embedded.
+- Audit futuro: sorgente/checksum/`.prj`/datum/pipeline/CRS payload/compatibilità mappa/punti di controllo/scarti; distinguere **(A)** CRS geometria impronta vs **(B)** datum/reticolato carta; UI futura con A/B/fonte/stato trasformazione/incertezza o «Sconosciuto» senza inventare metadati.
+- Prerequisito raccomandato prima di **CARTO-ARCHIVE-MATCH-A**, **CARTO-IGM-SERIES-EXPAND-A**, varianti ED50/Roma40/RDN2008/provider.
 
 ---
 
