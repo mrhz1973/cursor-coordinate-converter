@@ -22394,10 +22394,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX1";
-const APP_BUILD_DETAIL = "correct Web Mercator fit and reentrant map tool coordination";
+const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX2";
+const APP_BUILD_DETAIL = "preserve incoming map tool across self-deregistering cleanup";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 124;
+const APP_BUILD_NUM = 125;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38056,96 +38056,95 @@ function endBboxSelection(){
 
 function cancelBboxSelection(){ endBboxSelection(); }
 
-/* ===================== JS — MAP-TOOL-COORDINATOR-A (FIX1 re-entrant) =====================
+/* ===================== JS — MAP-TOOL-COORDINATOR-A (FIX2 self-deregister) =====================
  * Transient registry for exclusive arbitration of map interaction tools.
- * Serialized transitions with pending "last request wins" while transitioning:
- * clear → cleanup (once) → apply pending or install requested consumer.
- * Nested activate/deactivate from inside a cleanup never overwrites an installed
- * consumer without cleanup; they queue as pending and replace the in-flight request.
+ * Transition fields: transitioning, outgoingId, requested activation, pendingActivate.
+ * During outgoing cleanup:
+ *  - deactivate(outgoingId) = idempotent ack (ignored);
+ *  - deactivate(null) does NOT cancel the incoming request;
+ *  - deactivate(other id) = no-op;
+ *  - nested activate replaces requested (last-activate-wins).
+ * After cleanup: install pendingActivate || requested (or stay idle on pure deactivate).
  * No window.* export, no persistence. */
 const _mapToolConsumer = {
   id: null,
   cleanup: null,
   transitioning: false,
-  pending: null // { type:"activate"|"deactivate", id, cleanup }
+  outgoingId: null,
+  requested: null,       // { id, cleanup } — original incoming activation
+  pendingActivate: null  // { id, cleanup } — nested last-activate-wins
 };
-function mapToolActivate(id, cleanup){
-  const nextCleanup = (typeof cleanup === "function") ? cleanup : null;
-  // Idempotent same-id while idle.
-  if (!_mapToolConsumer.transitioning && _mapToolConsumer.id === id) return;
-  if (_mapToolConsumer.transitioning){
-    // Last request during transition wins.
-    _mapToolConsumer.pending = { type: "activate", id: id || null, cleanup: nextCleanup };
+function _mapToolInstall(entry){
+  if (!entry || entry.id == null){
+    _mapToolConsumer.id = null;
+    _mapToolConsumer.cleanup = null;
     return;
   }
+  _mapToolConsumer.id = entry.id;
+  _mapToolConsumer.cleanup = (typeof entry.cleanup === "function") ? entry.cleanup : null;
+}
+function mapToolActivate(id, cleanup){
+  const nextCleanup = (typeof cleanup === "function") ? cleanup : null;
+  if (_mapToolConsumer.transitioning){
+    // Nested activate during cleanup: last-activate-wins over requested.
+    _mapToolConsumer.pendingActivate = { id: id || null, cleanup: nextCleanup };
+    return;
+  }
+  // Idempotent same-id while idle.
   if (_mapToolConsumer.id === id) return;
 
   const prevCleanup = _mapToolConsumer.cleanup;
+  const outgoingId = _mapToolConsumer.id;
   _mapToolConsumer.transitioning = true;
+  _mapToolConsumer.outgoingId = outgoingId;
   _mapToolConsumer.id = null;
   _mapToolConsumer.cleanup = null;
-  _mapToolConsumer.pending = null;
+  _mapToolConsumer.requested = { id: id || null, cleanup: nextCleanup };
+  _mapToolConsumer.pendingActivate = null;
 
   if (typeof prevCleanup === "function"){
     try { prevCleanup(); } catch(_){}
   }
 
-  const pending = _mapToolConsumer.pending;
-  _mapToolConsumer.pending = null;
+  const toInstall = _mapToolConsumer.pendingActivate || _mapToolConsumer.requested;
+  _mapToolConsumer.pendingActivate = null;
+  _mapToolConsumer.requested = null;
+  _mapToolConsumer.outgoingId = null;
   _mapToolConsumer.transitioning = false;
-
-  if (pending){
-    if (pending.type === "activate"){
-      mapToolActivate(pending.id, pending.cleanup);
-      return;
-    }
-    if (pending.type === "deactivate"){
-      mapToolDeactivate(pending.id);
-      return;
-    }
-  }
-
-  _mapToolConsumer.id = id || null;
-  _mapToolConsumer.cleanup = nextCleanup;
+  _mapToolInstall(toInstall);
 }
 function mapToolDeactivate(id){
-  // No-op when id does not match the active consumer (unless force-all via null).
-  if (!_mapToolConsumer.transitioning){
-    if (id != null && _mapToolConsumer.id !== id) return;
-    if (_mapToolConsumer.id == null && _mapToolConsumer.cleanup == null) return;
-  } else {
-    // Queue last request; deactivate(null) = clear-all intent.
-    _mapToolConsumer.pending = { type: "deactivate", id: (id == null ? null : id), cleanup: null };
+  if (_mapToolConsumer.transitioning){
+    // Self-deregistration of the outgoing consumer: idempotent ack.
+    if (id != null && id === _mapToolConsumer.outgoingId) return;
+    // deactivate(null) from cleanup must not cancel the incoming request.
+    if (id == null) return;
+    // Other id while transitioning: no-op.
     return;
   }
+  if (id != null && _mapToolConsumer.id !== id) return;
+  if (_mapToolConsumer.id == null && _mapToolConsumer.cleanup == null) return;
 
   const prevCleanup = _mapToolConsumer.cleanup;
+  const outgoingId = _mapToolConsumer.id;
   _mapToolConsumer.transitioning = true;
+  _mapToolConsumer.outgoingId = outgoingId;
   _mapToolConsumer.id = null;
   _mapToolConsumer.cleanup = null;
-  _mapToolConsumer.pending = null;
+  _mapToolConsumer.requested = null;
+  _mapToolConsumer.pendingActivate = null;
 
   if (typeof prevCleanup === "function"){
     try { prevCleanup(); } catch(_){}
   }
 
-  const pending = _mapToolConsumer.pending;
-  _mapToolConsumer.pending = null;
+  // Only a nested activate during deactivate-cleanup can install something.
+  const toInstall = _mapToolConsumer.pendingActivate;
+  _mapToolConsumer.pendingActivate = null;
+  _mapToolConsumer.requested = null;
+  _mapToolConsumer.outgoingId = null;
   _mapToolConsumer.transitioning = false;
-
-  if (pending){
-    if (pending.type === "activate"){
-      mapToolActivate(pending.id, pending.cleanup);
-      return;
-    }
-    if (pending.type === "deactivate"){
-      // Already cleared; only recurse if a more specific pending deactivate needs handling.
-      // State is empty — mismatch no-ops; deactivate(null) no-ops on empty.
-      if (pending.id == null) return;
-      mapToolDeactivate(pending.id);
-      return;
-    }
-  }
+  _mapToolInstall(toInstall);
 }
 function mapToolDeactivateAll(){ mapToolDeactivate(null); }
 function mapToolActiveId(){ return _mapToolConsumer.id; }
