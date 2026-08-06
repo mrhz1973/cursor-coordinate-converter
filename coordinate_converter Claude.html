@@ -22748,10 +22748,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A-FIX2";
-const APP_BUILD_DETAIL = "close archive editor after save; flash panel notices";
+const APP_BUILD_ID = "CARTO-IGM-AREA-ESC-RESTORE-A";
+const APP_BUILD_DETAIL = "restore IGM panel on area-pick Escape; consume Esc fully";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 135;
+const APP_BUILD_NUM = 136;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23338,7 +23338,8 @@ function cartoScopedT(key){
         areaMode: "current-view",
         selectedArea: null,
         areaPickActive: false,
-        archiveEditor: null
+        archiveEditor: null,
+        _areaPickMinimizedByPicker: false
       };
     } else {
       // Additive defaults for fields introduced by MAP-INTERACTION-CARTO-UX-BUNDLE-A.
@@ -23350,6 +23351,8 @@ function cartoScopedT(key){
         state._cartoUi.areaPickActive = false;
       if (!Object.prototype.hasOwnProperty.call(state._cartoUi, "archiveEditor"))
         state._cartoUi.archiveEditor = null;
+      if (!Object.prototype.hasOwnProperty.call(state._cartoUi, "_areaPickMinimizedByPicker"))
+        state._cartoUi._areaPickMinimizedByPicker = false;
     }
     return state._cartoUi;
   }
@@ -24429,11 +24432,14 @@ function cartoScopedT(key){
   function cartoIgmCancelAreaPickImpl(opts){
     opts = opts || {};
     const u = cartoUiGetState();
+    const wasMinimizedByPicker = !!u._areaPickMinimizedByPicker;
     // Idempotent: already idle → just free coordinator slot if we still own it.
     if (!u.areaPickActive && !_cartoIgmAreaDetach){
+      try { u._areaPickMinimizedByPicker = false; } catch(_){}
       try { mapToolDeactivate("carto-igm-area"); } catch(_){}
       return;
     }
+    u._areaPickMinimizedByPicker = false;
     u.areaPickActive = false;
     try { u._areaDragging = false; } catch(_){}
     try {
@@ -24441,7 +24447,8 @@ function cartoScopedT(key){
     } catch(_){}
     _cartoIgmAreaDetach = null;
     try { mapToolDeactivate("carto-igm-area"); } catch(_){}
-    if (opts.restore){
+    // Restore only when Esc/cancel requested restore AND the picker itself minimized the panel.
+    if (opts.restore && wasMinimizedByPicker){
       try {
         if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel")){
           gisRestoreMinimizedPanel("cartoIgmPanel");
@@ -24502,6 +24509,7 @@ function cartoScopedT(key){
     const root = document.getElementById("miniMap");
     const bbox = cartoIgmPxRectToBbox(root, px);
     const u = cartoUiGetState();
+    u._areaPickMinimizedByPicker = false;
     u.areaPickActive = false;
     try { u._areaDragging = false; } catch(_){}
     cartoIgmSilentDetachAreaListeners();
@@ -24551,10 +24559,24 @@ function cartoScopedT(key){
     });
     u.areaPickActive = true;
     try { u._areaDragging = false; } catch(_){}
+    // Snapshot: true only when THIS picker session auto-minimizes an open panel.
+    let alreadyMin = false;
+    try {
+      alreadyMin = typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("cartoIgmPanel");
+    } catch(_){ alreadyMin = false; }
+    u._areaPickMinimizedByPicker = !alreadyMin;
     try { minimizeCartoIgmPanel(); } catch(_){}
     cartoIgmSilentDetachAreaListeners();
-    _cartoIgmAreaDetach = cartoIgmInstallAreaDrag(tileMap);
-    try { tileMap.classList.add("carto-igm-selecting"); } catch(_){}
+    try {
+      _cartoIgmAreaDetach = cartoIgmInstallAreaDrag(tileMap);
+      tileMap.classList.add("carto-igm-selecting");
+    } catch(err){
+      // Abort incomplete session: clear snapshot so Esc/cleanup cannot restore stale.
+      try { u._areaPickMinimizedByPicker = false; } catch(_){}
+      try { u.areaPickActive = false; } catch(_){}
+      try { mapToolDeactivate("carto-igm-area"); } catch(_){}
+      return;
+    }
   }
 
   function cartoIgmUseCurrentView(){
@@ -24674,6 +24696,7 @@ function cartoScopedT(key){
     if (u.areaPickActive){
       try { cartoIgmCancelAreaPickImpl({ restore: false }); } catch(_){}
     }
+    try { u._areaPickMinimizedByPicker = false; } catch(_){}
     try { cartoArchiveEditorClose({ skipRender: true }); } catch(_){}
     cartoUiInvalidatePendingSearch();
     cartoUiClearResultsAndOverlay();
@@ -33664,8 +33687,10 @@ function bindHotkeys(){
       // Cancel an in-progress bbox selection first — it has no visible
       // modal but does have a sticky banner on the map.
       if (state._cartoUi && state._cartoUi.areaPickActive){
+        try { ev.preventDefault(); } catch(_){}
+        try { ev.stopPropagation(); } catch(_){}
+        try { ev.stopImmediatePropagation(); } catch(_){}
         try { if (typeof cartoIgmCancelAreaPick === "function") cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
-        ev.preventDefault();
         return;
       }
       if (typeof boxZoomIsActive === "function" && boxZoomIsActive()){
@@ -60777,8 +60802,10 @@ function gisInit(){
     }
     const cip = document.getElementById("cartoIgmPanel");
     if (state._cartoUi && state._cartoUi.areaPickActive){
+      try { ev.preventDefault(); } catch(_){}
+      try { ev.stopPropagation(); } catch(_){}
+      try { ev.stopImmediatePropagation(); } catch(_){}
       try { if (typeof cartoIgmCancelAreaPick === "function") cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
-      ev.preventDefault();
       return;
     }
     if ((state._cartoUi && state._cartoUi.isOpen) || (cip && cip.open)){
