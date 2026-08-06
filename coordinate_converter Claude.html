@@ -8133,6 +8133,22 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   margin-inline-end:0.85rem;
   font-size:0.9rem;
 }
+#cartoIgmPanel .carto-area-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+  margin:0.4rem 0 0.2rem;
+}
+#cartoIgmPanel #cartoIgmUseViewBtn.carto-btn-outline{
+  background:transparent;
+  color:var(--accent);
+  border:1.5px solid var(--accent);
+  box-shadow:none;
+}
+#cartoIgmPanel #cartoIgmUseViewBtn.carto-btn-outline:hover,
+#cartoIgmPanel #cartoIgmUseViewBtn.carto-btn-outline:focus-visible{
+  background:color-mix(in srgb, var(--accent) 12%, transparent);
+}
 #cartoIgmPanel .carto-results-list{
   flex:1 1 auto;
   min-height:120px;
@@ -8143,25 +8159,42 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   background:var(--panel);
 }
 #cartoIgmPanel .carto-result-row{
-  display:grid;
-  grid-template-columns:auto auto 1fr;
-  grid-template-rows:auto auto;
-  gap:0.1rem 0.55rem;
+  display:flex;
+  align-items:stretch;
+  gap:0.35rem;
   width:100%;
-  text-align:left;
   border:0;
   border-bottom:1px solid var(--border);
   background:transparent;
   color:var(--text);
-  padding:0.45rem 0.55rem;
-  cursor:pointer;
-  font:inherit;
+  padding:0.25rem 0.35rem;
+  box-sizing:border-box;
 }
 #cartoIgmPanel .carto-result-row:hover{ background:var(--accent-soft); }
 #cartoIgmPanel .carto-result-row.is-selected{
   outline:2px solid var(--accent);
   outline-offset:-2px;
   background:color-mix(in srgb, var(--accent) 14%, transparent);
+}
+#cartoIgmPanel .carto-row-main{
+  display:grid;
+  grid-template-columns:auto auto 1fr;
+  grid-template-rows:auto auto;
+  gap:0.1rem 0.55rem;
+  flex:1 1 auto;
+  min-width:0;
+  text-align:left;
+  border:0;
+  background:transparent;
+  color:inherit;
+  padding:0.2rem 0.2rem;
+  cursor:pointer;
+  font:inherit;
+}
+#cartoIgmPanel .carto-row-center{
+  flex:0 0 auto;
+  align-self:center;
+  white-space:nowrap;
 }
 #cartoIgmPanel .carto-row-series{
   font-weight:700;
@@ -8208,6 +8241,28 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   fill:color-mix(in srgb, var(--accent) 32%, transparent);
   stroke:var(--accent);
   stroke-width:2.5;
+}
+.carto-igm-overlay .carto-footprint-label-group{
+  pointer-events:auto !important;
+  cursor:pointer;
+}
+.carto-igm-overlay .carto-footprint-label{
+  font:600 11px/1.15 ui-sans-serif, system-ui, sans-serif;
+  fill:var(--text);
+  paint-order:stroke fill;
+  stroke:var(--panel);
+  stroke-width:3px;
+  stroke-linejoin:round;
+  pointer-events:auto;
+}
+.carto-igm-overlay .carto-footprint-label-group.is-selected .carto-footprint-label{
+  fill:var(--accent);
+  font-weight:700;
+}
+.carto-igm-overlay .carto-footprint-label-hit{
+  fill:transparent;
+  stroke:none;
+  pointer-events:auto;
 }
 /* IGM explicit area selection — amber/ochre, distinct from offline green/teal and footprints */
 .carto-igm-overlay .carto-igm-area-selection{
@@ -13316,14 +13371,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <span><span data-i18n="carto.bbox.w">O</span>: <strong id="cartoIgmBboxW">—</strong></span>
       </div>
       <p id="cartoIgmAreaSourceLabel" class="hint" role="status">Sorgente: vista corrente</p>
-      <div class="carto-area-actions" style="display:flex;flex-wrap:wrap;gap:0.4rem;margin:0.4rem 0 0.2rem">
-        <button type="button" id="cartoIgmPickAreaBtn" class="btn btn-sm">Seleziona area sulla mappa</button>
-        <button type="button" id="cartoIgmUseViewBtn" class="btn btn-sm">Usa vista corrente</button>
+      <div class="carto-area-actions">
+        <button type="button" id="cartoIgmPickAreaBtn" class="btn btn-sm btn-primary">Seleziona area sulla mappa</button>
+        <button type="button" id="cartoIgmUseViewBtn" class="btn btn-sm carto-btn-outline">Usa vista corrente</button>
       </div>
       <p id="cartoIgmStaleNotice" class="hint carto-stale" data-i18n="carto.staleView" hidden>Risultati riferiti a una vista precedente</p>
     </div>
     <div class="carto-actions-primary">
-      <button type="button" id="cartoIgmSearchBtn" class="btn btn-primary">Cerca nella vista</button>
       <button type="button" id="cartoIgmRefreshBtn" class="btn btn-sm" data-i18n="carto.refresh" hidden>Aggiorna dalla vista corrente</button>
       <button type="button" id="cartoIgmClearBtn" class="btn btn-sm btn-danger-subtle" data-i18n="carto.clear" hidden>Cancella risultati</button>
     </div>
@@ -14163,10 +14217,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="tools-menu-btn" data-tool="mag">
           <span class="tmb-ico" aria-hidden="true">🧭</span>
           <span class="tmb-lbl" data-i18n="sec.mag">Declinazione</span>
-        </button>
-        <button type="button" class="tools-menu-btn" data-tool="cartoigm">
-          <span class="tmb-ico" aria-hidden="true">🗺</span>
-          <span class="tmb-lbl" data-i18n="sec.cartoigm">Indice IGM</span>
         </button>
       </div>
       <div class="tools-panel-wrap" id="toolsPanelWrap" aria-live="polite"
@@ -22462,10 +22512,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5";
-const APP_BUILD_DETAIL = "complete track displacement and IGM browser interaction fixes";
+const APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B";
+const APP_BUILD_DETAIL = "improve IGM area search and footprint navigation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 128;
+const APP_BUILD_NUM = 129;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -22496,6 +22546,7 @@ let closeCartoIgmPanel = function(){};
 let cartoUiRenderPanel = function(){};
 let drawCartoIgmOverlay = function(){};
 let cartoIgmCancelAreaPick = function(){};
+let cartoIgmRearmAfterRender = function(){};
 
 /** Scoped Italian fallback for CARTO / layer-menu strings that exist only in I18N.it
  * (L10N freeze — never use t() for these keys; EN/FR would show raw key names). */
@@ -23145,6 +23196,18 @@ function cartoScopedT(key){
     } catch(_){}
   }
 
+  const CARTO_LABEL_CLICK_MS = 250;
+  let _cartoLabelClickTimer = null;
+  let _cartoLabelClickId = null;
+
+  function cartoIgmClearLabelClickTimer(){
+    if (_cartoLabelClickTimer){
+      try { clearTimeout(_cartoLabelClickTimer); } catch(_){}
+      _cartoLabelClickTimer = null;
+    }
+    _cartoLabelClickId = null;
+  }
+
   function cartoUiSetNotice(msg, isErr){
     const n = document.getElementById("cartoIgmPanelNotice");
     if (!n) return;
@@ -23170,10 +23233,12 @@ function cartoScopedT(key){
 
   function cartoUiSetBusy(busy){
     const seriesEmpty = cartoUiSelectedSeriesFromDom().length === 0;
-    const searchBtn = document.getElementById("cartoIgmSearchBtn");
     const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
-    if (searchBtn) searchBtn.disabled = !!busy || seriesEmpty;
+    const pickBtn = document.getElementById("cartoIgmPickAreaBtn");
+    const useViewBtn = document.getElementById("cartoIgmUseViewBtn");
     if (refreshBtn) refreshBtn.disabled = !!busy;
+    if (pickBtn) pickBtn.disabled = !!busy;
+    if (useViewBtn) useViewBtn.disabled = !!busy || seriesEmpty;
   }
 
   function cartoUiClearResultsData(){
@@ -23191,6 +23256,7 @@ function cartoScopedT(key){
   }
 
   function cartoUiClearResultsAndOverlay(){
+    cartoIgmClearLabelClickTimer();
     cartoUiClearResultsData();
     cartoUiRefreshOverlay();
   }
@@ -23329,7 +23395,7 @@ function cartoScopedT(key){
 
   function cartoUiRenderRow(item, selectedId){
     const id = item && item.record_id != null ? String(item.record_id) : "";
-    const sel = id && id === selectedId;
+    const sel = !!(id && id === selectedId);
     const series = item.series_id || "—";
     const chart = item.chart_id != null ? String(item.chart_id) : cartoUiT("carto.notAvailable");
     const title = (item.title != null && String(item.title).trim()) ? String(item.title) : cartoUiT("carto.notAvailable");
@@ -23337,14 +23403,16 @@ function cartoScopedT(key){
     const ed = item.edition != null ? String(item.edition) : cartoUiT("carto.notAvailable");
     const edt = item.edition_date != null ? String(item.edition_date) : "";
     const rel = cartoUiRelationLabel(item.spatial_relation);
-    const div = document.createElement("button");
-    div.type = "button";
-    div.className = "carto-result-row" + (sel ? " is-selected" : "");
-    div.setAttribute("data-record-id", id);
-    div.setAttribute("aria-pressed", sel ? "true" : "false");
-    if (sel) div.setAttribute("aria-current", "true");
-    else try { div.removeAttribute("aria-current"); } catch(_){}
-    div.innerHTML =
+    const row = document.createElement("div");
+    row.className = "carto-result-row" + (sel ? " is-selected" : "");
+    row.setAttribute("data-record-id", id);
+    if (sel) row.setAttribute("aria-current", "true");
+    else try { row.removeAttribute("aria-current"); } catch(_){}
+    const main = document.createElement("button");
+    main.type = "button";
+    main.className = "carto-row-main";
+    main.setAttribute("aria-pressed", sel ? "true" : "false");
+    main.innerHTML =
       '<span class="carto-row-series">' + esc(String(series)) + '</span>' +
       '<span class="carto-row-id">' + esc(chart) + '</span>' +
       '<span class="carto-row-title">' + esc(title) + '</span>' +
@@ -23352,7 +23420,14 @@ function cartoScopedT(key){
         ' · ' + esc(cartoUiT("carto.edition")) + ' ' + esc(ed) +
         (edt ? (' · ' + esc(edt)) : '') +
         ' · ' + esc(rel) + '</span>';
-    return div;
+    const centerBtn = document.createElement("button");
+    centerBtn.type = "button";
+    centerBtn.className = "btn btn-sm carto-row-center";
+    centerBtn.setAttribute("data-role", "carto-row-center");
+    centerBtn.textContent = cartoUiT("common.center");
+    row.appendChild(main);
+    row.appendChild(centerBtn);
+    return row;
   }
 
   cartoUiRenderPanel = function(){
@@ -23397,13 +23472,6 @@ function cartoScopedT(key){
     if (pickBtn) pickBtn.textContent = cartoUiT("carto.pickArea");
     const useViewBtn = document.getElementById("cartoIgmUseViewBtn");
     if (useViewBtn) useViewBtn.textContent = cartoUiT("carto.useCurrentView");
-    const searchBtn = document.getElementById("cartoIgmSearchBtn");
-    if (searchBtn){
-      searchBtn.textContent = (u.areaMode === "selected-area")
-        ? cartoUiT("carto.searchInArea")
-        : cartoUiT("carto.searchInView");
-      try { searchBtn.removeAttribute("data-i18n"); } catch(_){}
-    }
 
     const stale = document.getElementById("cartoIgmStaleNotice");
     if (stale){
@@ -23574,12 +23642,166 @@ function cartoScopedT(key){
         path.setAttribute("class", "carto-footprint" + (isSel ? " is-selected" : ""));
         svg.appendChild(path);
       }
+      // Labels: first introduction (overlay previously had paths only — verified no existing IGM text layer).
+      for (let i = 0; i < items.length; i++){
+        const item = items[i];
+        if (!item || item.record_id == null) continue;
+        let ax = NaN, ay = NaN;
+        if (Array.isArray(item.bbox) && item.bbox.length >= 4
+            && typeof tileMapLatLonToPx === "function"){
+          const latC = (Number(item.bbox[1]) + Number(item.bbox[3])) / 2;
+          const lonC = (Number(item.bbox[0]) + Number(item.bbox[2])) / 2;
+          if (Number.isFinite(latC) && Number.isFinite(lonC)){
+            const xy = tileMapLatLonToPx(root, latC, lonC);
+            if (xy && Number.isFinite(xy.x) && Number.isFinite(xy.y)){
+              ax = xy.x - tx;
+              ay = xy.y - ty;
+            }
+          }
+        }
+        if (!Number.isFinite(ax) || !Number.isFinite(ay)) continue;
+        const isSel = String(item.record_id) === String(u.selectedRecordId);
+        const labelTxt = (item.chart_id != null && String(item.chart_id).trim())
+          ? String(item.chart_id)
+          : ((item.title != null && String(item.title).trim()) ? String(item.title) : String(item.record_id));
+        const g = document.createElementNS(ns, "g");
+        g.setAttribute("class", "carto-footprint-label-group" + (isSel ? " is-selected" : ""));
+        g.setAttribute("data-role", "carto-igm-label");
+        g.setAttribute("data-record-id", String(item.record_id));
+        g.setAttribute("pointer-events", "auto");
+        const hit = document.createElementNS(ns, "rect");
+        hit.setAttribute("class", "carto-footprint-label-hit");
+        hit.setAttribute("x", String(ax - 28));
+        hit.setAttribute("y", String(ay - 10));
+        hit.setAttribute("width", "56");
+        hit.setAttribute("height", "20");
+        hit.setAttribute("rx", "3");
+        hit.setAttribute("pointer-events", "auto");
+        g.appendChild(hit);
+        const text = document.createElementNS(ns, "text");
+        text.setAttribute("class", "carto-footprint-label");
+        text.setAttribute("x", String(ax));
+        text.setAttribute("y", String(ay));
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "middle");
+        text.setAttribute("pointer-events", "auto");
+        text.textContent = labelTxt.length > 18 ? (labelTxt.slice(0, 17) + "…") : labelTxt;
+        g.appendChild(text);
+        svg.appendChild(g);
+      }
     }
     tileLayer.appendChild(svg);
   };
 
   // ---- IGM explicit area selection (rectangleDrag shared with box-zoom) ----
   let _cartoIgmAreaDetach = null;
+
+  function cartoIgmBboxFromGeometry(geom){
+    if (!geom || !geom.coordinates) return null;
+    const polys = geom.type === "MultiPolygon" ? geom.coordinates
+      : (geom.type === "Polygon" ? [geom.coordinates] : null);
+    if (!Array.isArray(polys)) return null;
+    let minLon = Infinity, minLat = Infinity, maxLon = -Infinity, maxLat = -Infinity;
+    for (let pi = 0; pi < polys.length; pi++){
+      const poly = polys[pi];
+      if (!Array.isArray(poly)) continue;
+      for (let ri = 0; ri < poly.length; ri++){
+        const ring = poly[ri];
+        if (!Array.isArray(ring)) continue;
+        for (let i = 0; i < ring.length; i++){
+          const pt = ring[i];
+          if (!pt || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) continue;
+          if (pt[0] < minLon) minLon = pt[0];
+          if (pt[0] > maxLon) maxLon = pt[0];
+          if (pt[1] < minLat) minLat = pt[1];
+          if (pt[1] > maxLat) maxLat = pt[1];
+        }
+      }
+    }
+    if (!(minLat < maxLat) || !Number.isFinite(minLon) || !Number.isFinite(maxLon)) return null;
+    return { west: minLon, south: minLat, east: maxLon, north: maxLat };
+  }
+
+  function cartoIgmBboxForRecordId(recordId){
+    const id = String(recordId == null ? "" : recordId);
+    if (!id) return null;
+    const u = cartoUiGetState();
+    const items = Array.isArray(u.results) ? u.results : [];
+    for (let i = 0; i < items.length; i++){
+      const it = items[i];
+      if (!it || String(it.record_id) !== id) continue;
+      if (Array.isArray(it.bbox) && it.bbox.length >= 4){
+        const w = Number(it.bbox[0]), s = Number(it.bbox[1]);
+        const e = Number(it.bbox[2]), n = Number(it.bbox[3]);
+        if ([w, s, e, n].every(Number.isFinite) && s < n){
+          return { west: w, south: s, east: e, north: n };
+        }
+      }
+      break;
+    }
+    const geom = (typeof cartoIndexGetGeometryForUi === "function")
+      ? cartoIndexGetGeometryForUi(id)
+      : null;
+    return cartoIgmBboxFromGeometry(geom);
+  }
+
+  function cartoIgmApplyFitBbox(bbox){
+    const root = document.getElementById("miniMap");
+    if (!root || !bbox || typeof gisFitBboxPanelAware !== "function") return false;
+    try {
+      const fit = gisFitBboxPanelAware(root, bbox, { padFrac: 0.10 });
+      if (fit && fit.center && Number.isFinite(fit.zoom)){
+        state.viewCenter = { lat: fit.center.lat, lon: fit.center.lon };
+        state.mapZoom = fit.zoom;
+        if (typeof renderTileMap === "function"){
+          renderTileMap(fit.center.lat, fit.center.lon, fit.zoom);
+        }
+        return true;
+      }
+    } catch(_){}
+    return false;
+  }
+
+  function cartoIgmFitRecord(recordId){
+    const bbox = cartoIgmBboxForRecordId(recordId);
+    if (!bbox) return false;
+    return cartoIgmApplyFitBbox(bbox);
+  }
+
+  function cartoIgmSelectShowRowNoFit(recordId){
+    const id = recordId == null ? null : String(recordId);
+    cartoUiSelectRecord(id);
+    try { openCartoIgmPanel(); } catch(_){}
+    try {
+      const list = document.getElementById("cartoIgmResultsList");
+      if (!list || !id) return;
+      const rows = list.querySelectorAll(".carto-result-row[data-record-id]");
+      for (let i = 0; i < rows.length; i++){
+        if (String(rows[i].getAttribute("data-record-id")) === id){
+          try { rows[i].scrollIntoView({ block: "nearest" }); } catch(_){}
+          break;
+        }
+      }
+    } catch(_){}
+  }
+
+  function cartoIgmSelectAndFit(recordId){
+    const id = recordId == null ? null : String(recordId);
+    cartoUiSelectRecord(id);
+    try {
+      const list = document.getElementById("cartoIgmResultsList");
+      if (list && id){
+        const rows = list.querySelectorAll(".carto-result-row[data-record-id]");
+        for (let i = 0; i < rows.length; i++){
+          if (String(rows[i].getAttribute("data-record-id")) === id){
+            try { rows[i].scrollIntoView({ block: "nearest" }); } catch(_){}
+            break;
+          }
+        }
+      }
+    } catch(_){}
+    cartoIgmFitRecord(id);
+  }
 
   function cartoIgmPxRectToBbox(root, px){
     if (!root || !px || typeof tileMapPxToLatLon !== "function") return null;
@@ -23609,6 +23831,7 @@ function cartoScopedT(key){
       return;
     }
     u.areaPickActive = false;
+    try { u._areaDragging = false; } catch(_){}
     try {
       if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
     } catch(_){}
@@ -23627,15 +23850,57 @@ function cartoScopedT(key){
     cartoUiRefreshOverlay();
   }
 
+  function cartoIgmInstallAreaDrag(tileMap){
+    return rectangleDragInstall(tileMap, {
+      cssClass: "carto-igm-selecting",
+      draftClass: "carto-igm-draft",
+      minPx: 10,
+      onStart: function(){
+        try { cartoUiGetState()._areaDragging = true; } catch(_){}
+      },
+      onCommit: function(px){
+        try { cartoUiGetState()._areaDragging = false; } catch(_){}
+        cartoIgmCommitAreaFromPx(px);
+      },
+      onCancel: function(){
+        try { cartoUiGetState()._areaDragging = false; } catch(_){}
+        cartoIgmCancelAreaPick({ restore: true });
+      }
+    });
+  }
+
+  function cartoIgmSilentDetachAreaListeners(){
+    // rectangleDragInstall.detach removes listeners/draft/class only — does NOT call onCancel.
+    try {
+      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
+    } catch(_){}
+    _cartoIgmAreaDetach = null;
+  }
+
+  cartoIgmRearmAfterRender = function(){
+    const u = state._cartoUi;
+    if (!u || !u.areaPickActive) return;
+    if (u._areaDragging) return;
+    let activeId = null;
+    try { activeId = typeof mapToolActiveId === "function" ? mapToolActiveId() : null; } catch(_){}
+    if (activeId !== "carto-igm-area") return;
+    const root = document.getElementById("miniMap");
+    const tileMap = root && root.querySelector(".tile-map");
+    if (!tileMap) return;
+    cartoIgmSilentDetachAreaListeners();
+    try {
+      _cartoIgmAreaDetach = cartoIgmInstallAreaDrag(tileMap);
+      tileMap.classList.add("carto-igm-selecting");
+    } catch(_){}
+  };
+
   function cartoIgmCommitAreaFromPx(px){
     const root = document.getElementById("miniMap");
     const bbox = cartoIgmPxRectToBbox(root, px);
     const u = cartoUiGetState();
     u.areaPickActive = false;
-    try {
-      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
-    } catch(_){}
-    _cartoIgmAreaDetach = null;
+    try { u._areaDragging = false; } catch(_){}
+    cartoIgmSilentDetachAreaListeners();
     try { mapToolDeactivate("carto-igm-area"); } catch(_){}
     if (!bbox){
       // Invalid drag — restore panel, keep previous selection.
@@ -23659,20 +23924,10 @@ function cartoScopedT(key){
     } catch(_){}
     u.isMinimized = false;
     try { cartoUiRenderPanel(); } catch(_){}
-    // Panel-aware fit of the selected area (no auto-search).
-    try {
-      if (typeof gisFitBboxPanelAware === "function"){
-        const fit = gisFitBboxPanelAware(root, u.selectedArea, { padFrac: 0.10 });
-        if (fit && fit.center && Number.isFinite(fit.zoom)){
-          state.viewCenter = { lat: fit.center.lat, lon: fit.center.lon };
-          state.mapZoom = fit.zoom;
-          if (typeof renderTileMap === "function"){
-            renderTileMap(fit.center.lat, fit.center.lon, fit.zoom);
-          }
-        }
-      }
-    } catch(_){}
+    // Panel-aware fit of the selected area, then one search.
+    cartoIgmApplyFitBbox(u.selectedArea);
     cartoUiRefreshOverlay();
+    try { cartoUiRunSearch(); } catch(_){}
   }
 
   function cartoIgmStartAreaPick(){
@@ -23691,37 +23946,20 @@ function cartoScopedT(key){
       try { cartoIgmCancelAreaPick({ restore: true }); } catch(_){}
     });
     u.areaPickActive = true;
+    try { u._areaDragging = false; } catch(_){}
     try { minimizeCartoIgmPanel(); } catch(_){}
-    try {
-      if (typeof _cartoIgmAreaDetach === "function"){ _cartoIgmAreaDetach(); }
-    } catch(_){}
-    _cartoIgmAreaDetach = rectangleDragInstall(tileMap, {
-      cssClass: "carto-igm-selecting",
-      draftClass: "carto-igm-draft",
-      minPx: 10,
-      onCommit: function(px){ cartoIgmCommitAreaFromPx(px); },
-      onCancel: function(){ cartoIgmCancelAreaPick({ restore: true }); }
-    });
+    cartoIgmSilentDetachAreaListeners();
+    _cartoIgmAreaDetach = cartoIgmInstallAreaDrag(tileMap);
+    try { tileMap.classList.add("carto-igm-selecting"); } catch(_){}
   }
 
   function cartoIgmUseCurrentView(){
     const u = cartoUiGetState();
     u.selectedArea = null;
     u.areaMode = "current-view";
-    // Show live viewport coords in N/S/E/O (without starting a search).
-    try {
-      const vb = cartoUiComputeViewportBbox();
-      if (vb){
-        // Temporarily surface as queryBbox display only when no results; otherwise
-        // just clear selectedArea and let render show "—" until next search, or
-        // show the viewport as display when idle.
-        if (!u.results.length) u.queryBbox = {
-          west: vb.west, south: vb.south, east: vb.east, north: vb.north
-        };
-      }
-    } catch(_){}
     try { cartoUiRenderPanel(); } catch(_){}
     cartoUiRefreshOverlay();
+    try { cartoUiRunSearch(); } catch(_){}
   }
 
   // Export cancel to outer scope for Esc / coordinator callers.
@@ -23828,6 +24066,7 @@ function cartoScopedT(key){
   closeCartoIgmPanel = function(){
     const dlg = document.getElementById("cartoIgmPanel");
     const u = cartoUiGetState();
+    cartoIgmClearLabelClickTimer();
     // Abort any in-progress area pick without restoring (panel is closing).
     if (u.areaPickActive){
       try { cartoIgmCancelAreaPickImpl({ restore: false }); } catch(_){}
@@ -23894,8 +24133,6 @@ function cartoScopedT(key){
       minBtn._cartoMinBound = true;
       minBtn.addEventListener("click", function(ev){ ev.preventDefault(); minimizeCartoIgmPanel(); });
     }
-    const searchBtn = document.getElementById("cartoIgmSearchBtn");
-    if (searchBtn) searchBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoUiRunSearch(); });
     const refreshBtn = document.getElementById("cartoIgmRefreshBtn");
     if (refreshBtn) refreshBtn.addEventListener("click", function(ev){ ev.preventDefault(); cartoUiRunSearch(); });
     const clearBtn = document.getElementById("cartoIgmClearBtn");
@@ -23938,12 +24175,63 @@ function cartoScopedT(key){
     if (list && !list._cartoClickBound){
       list._cartoClickBound = true;
       list.addEventListener("click", function(ev){
-        const row = ev.target && ev.target.closest ? ev.target.closest("[data-record-id]") : null;
-        if (!row) return;
-        ev.preventDefault();
-        cartoUiSelectRecord(row.getAttribute("data-record-id"));
+        const row = ev.target && ev.target.closest ? ev.target.closest(".carto-result-row[data-record-id]") : null;
+        if (!row || !list.contains(row)) return;
+        const id = row.getAttribute("data-record-id");
+        if (!id) return;
+        const centerBtn = ev.target.closest ? ev.target.closest('[data-role="carto-row-center"]') : null;
+        if (centerBtn && row.contains(centerBtn)){
+          ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+          cartoIgmSelectAndFit(id);
+          return;
+        }
+        const main = ev.target.closest ? ev.target.closest(".carto-row-main") : null;
+        if (main && row.contains(main)){
+          ev.preventDefault();
+          cartoIgmSelectAndFit(id);
+        }
       });
     }
+    // Stable delegation on #miniMap (SVG overlay is recreated by renderTileMap).
+    try {
+      const mapRoot = document.getElementById("miniMap");
+      if (mapRoot && !mapRoot._cartoLabelDelBound){
+        mapRoot._cartoLabelDelBound = true;
+        mapRoot.addEventListener("click", function(ev){
+          const g = ev.target && ev.target.closest
+            ? ev.target.closest('[data-role="carto-igm-label"]')
+            : null;
+          if (!g || !mapRoot.contains(g)) return;
+          const id = g.getAttribute("data-record-id");
+          if (!id) return;
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+          if (_cartoLabelClickTimer && _cartoLabelClickId === id){
+            cartoIgmClearLabelClickTimer();
+            cartoIgmSelectAndFit(id);
+            return;
+          }
+          cartoIgmClearLabelClickTimer();
+          _cartoLabelClickId = id;
+          _cartoLabelClickTimer = setTimeout(function(){
+            _cartoLabelClickTimer = null;
+            const rid = _cartoLabelClickId;
+            _cartoLabelClickId = null;
+            if (!rid) return;
+            cartoIgmSelectShowRowNoFit(rid);
+          }, CARTO_LABEL_CLICK_MS);
+        }, true);
+        mapRoot.addEventListener("dblclick", function(ev){
+          const g = ev.target && ev.target.closest
+            ? ev.target.closest('[data-role="carto-igm-label"]')
+            : null;
+          if (!g || !mapRoot.contains(g)) return;
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }, true);
+      }
+    } catch(_){}
     try { cartoUiRenderPanel(); } catch(_){}
   };
 })();
@@ -50637,6 +50925,10 @@ function renderTileMap(lat, lon, zoom){
 
   root.querySelectorAll(".tz-btn[data-zdelta]").forEach(b => {
     b.addEventListener("click", () => {
+      try {
+        const cu = state._cartoUi;
+        if (cu && cu.areaPickActive && cu._areaDragging) return;
+      } catch(_){}
       const d = parseInt(b.dataset.zdelta, 10);
       renderTileMap(lat, lon, zoom + d);
     });
@@ -51158,6 +51450,7 @@ function renderTileMap(lat, lon, zoom){
       try { if (typeof renderRoutingRoutePreviewOverlay === "function") renderRoutingRoutePreviewOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
       try { if (typeof drawCartoIgmOverlay === "function") drawCartoIgmOverlay(tileMap); } catch(_){}
+      try { if (typeof cartoIgmRearmAfterRender === "function") cartoIgmRearmAfterRender(); } catch(_){}
     }
   }
 
@@ -51250,6 +51543,13 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     if (ev.target.closest("button, a")) return;
     try {
       if (typeof trackBrushBlocksWheel === "function" && trackBrushBlocksWheel()){
+        ev.preventDefault();
+        return;
+      }
+    } catch(_){}
+    try {
+      const cu = state._cartoUi;
+      if (cu && cu.areaPickActive && cu._areaDragging){
         ev.preventDefault();
         return;
       }
@@ -76098,28 +76398,6 @@ function waypointsImportCoTXml(file, opts){
 
 function activateToolPanel(tool){
   if (!document.body.classList.contains("gis-mode")) return;
-  if (tool === "cartoigm"){
-    if (!gisTryCloseTrackModalForContextSwitch()) return;
-    try {
-      if (state.rangeRingsPanelOpen && typeof closeRangeRingsPanel === "function") closeRangeRingsPanel();
-    } catch(_){}
-    if (state.toolsMenuOpen && state.toolsMenuOpen !== "cartoigm" && state.toolsMenuOpen !== "astro"){
-      const prev = state.toolsMenuOpen;
-      if (GIS_TOOL_SECTIONS[prev]) gisRestoreSection(GIS_TOOL_SECTIONS[prev]);
-    }
-    if (state.toolsMenuOpen === "cartoigm"){
-      try { if (typeof closeCartoIgmPanel === "function") closeCartoIgmPanel(); } catch(_){}
-      state.toolsMenuOpen = null;
-      document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => b.classList.remove("is-active"));
-      return;
-    }
-    try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
-    state.toolsMenuOpen = "cartoigm";
-    document.querySelectorAll("#toolsMenuGrid .tools-menu-btn").forEach(b => {
-      b.classList.toggle("is-active", b.getAttribute("data-tool") === "cartoigm");
-    });
-    return;
-  }
   if (!GIS_VALID_TOOLS.includes(tool)) return;
   const wrap = document.getElementById("toolsPanelWrap");
   if (!wrap) return;
