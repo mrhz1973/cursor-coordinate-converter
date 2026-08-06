@@ -22742,10 +22742,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A";
-const APP_BUILD_DETAIL = "local IGM archive metadata catalog";
+const APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A-FIX1";
+const APP_BUILD_DETAIL = "fix archive persistence result and normalize ISO UTC";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 133;
+const APP_BUILD_NUM = 134;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24941,25 +24941,28 @@ function saveStore(){
       rangeRingSets: (Array.isArray(state.rangeRingSets) ? state.rangeRingSets : []).slice(0, RANGE_RING_SETS_CAP)
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  } catch(_){ /* quota exceeded or storage disabled → ignore silently */ }
+    return true;
+  } catch(_){
+    /* quota exceeded or storage disabled → fail observably for saveStoreReported */
+    return false;
+  }
 }
 /* TRACK-POINT-CAP-2000 — transactional wrapper around saveStore().
- * Performs saveStore() then a synchronous read-back that confirms STORAGE_KEY
- * contains a valid JSON payload. Returns { ok:boolean }.
+ * Requires saveStore() === true (setItem succeeded), then a synchronous
+ * read-back that confirms STORAGE_KEY contains a valid JSON payload.
+ * Returns { ok:boolean }.
  *
- * Rationale: saveStore() swallows all errors (QuotaExceededError, SecurityError,
- * serialization). Callers that mutate sensitive state (saved tracks add/replace,
- * brush save, drop import) need to know whether the mutation was actually
- * persisted; otherwise they would declare success and leave an in-memory ghost
- * that disappears at next reload. This wrapper preserves saveStore()'s existing
- * 135+ call sites unchanged: only the four transactional paths in this block
- * use saveStoreReported() + their own rollback logic.
+ * Rationale: a prior payload may remain readable if setItem throws; checking
+ * only "JSON still present" would false-positive. Callers that mutate
+ * sensitive state (saved tracks, brush, drop import, carto archive) must use
+ * saveStoreReported() + rollback. Ordinary call sites may ignore the boolean
+ * return from saveStore().
  *
- * ok:true  → STORAGE_KEY is present and parses as JSON after the write.
+ * ok:true  → write confirmed and STORAGE_KEY parses as JSON.
  * ok:false → write failed OR read-back missing/invalid (rollback required). */
 function saveStoreReported(){
   try {
-    saveStore();
+    if (saveStore() !== true) return { ok: false };
     const after = localStorage.getItem(STORAGE_KEY);
     if (!after) return { ok: false };
     JSON.parse(after);
@@ -24986,10 +24989,14 @@ function cartoArchiveNewId(){
 }
 
 function cartoArchiveSanitizeIso(s){
-  if (typeof s !== "string" || !s) return null;
-  const t = s.trim().slice(0, 40);
-  if (!t || Number.isNaN(Date.parse(t))) return null;
-  return t;
+  if (typeof s !== "string" || !s.trim()) return null;
+  const ms = Date.parse(s.trim());
+  if (!Number.isFinite(ms)) return null;
+  try {
+    return new Date(ms).toISOString();
+  } catch(_){
+    return null;
+  }
 }
 
 function cartoArchiveSanitizeOptionalString(v, maxLen){
