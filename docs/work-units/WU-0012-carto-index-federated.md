@@ -1,18 +1,19 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / CRS AUDIT PARTIAL — NEXT ARCHIVE`
+**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / CRS AUDIT PARTIAL — NEXT SERIES|PROVIDER|ESC`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
 **Blocco runtime motore:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip storico `c80129e` / build 118
 **Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `62d24eb` / build 122
 **Blocco runtime UX mappa/IGM:** `MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `8bdd69c` / build 128
-**Blocco runtime risultati/area/label:** `CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `51e0f5b` / build 132
-**Diagnosi geodetica:** `CARTO-IGM-CRS-AUDIT-A` — **DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** (2026-08-06) — ARCHIVE-MATCH PASS WITH DOCUMENTED LIMITATIONS / non aperto
-**Tipo:** macro-feature federata — motore + UI risultati CLOSED; CRS audit PARTIAL; archivio/serie/provider **ancora aperti**
+**Blocco runtime risultati/area/label:** `CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `51e0f5b` / build 132
+**Diagnosi geodetica:** `CARTO-IGM-CRS-AUDIT-A` — **DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** (2026-08-06)
+**Blocco runtime archivio:** `CARTO-ARCHIVE-MATCH-A` (+ FIX1 + FIX2) — **CLOSED / PASS end-to-end** (2026-08-07) — tip `c4d7db5` / build 135
+**Tipo:** macro-feature federata — motore + UI risultati + archivio CLOSED; CRS audit PARTIAL; serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Runtime live:** tip monolite `51e0f5b7e0b6975e745de0de5c5461f72c9446d6` · `APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3"` · `APP_BUILD_NUM = 132`
-**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; archivio / espansione serie / provider successivi **non** CLOSED
+**Runtime live:** tip monolite `c4d7db5753c3a5a43c119f491bed1732789ecc0d` · `APP_BUILD_ID = "CARTO-ARCHIVE-MATCH-A-FIX2"` · `APP_BUILD_NUM = 135`
+**Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; ARCHIVE CLOSED; espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Collegamento opzionale futuro a **MAP-BOX-ZOOM-A** (CLOSED): riuso gesto/area, senza cambiare il comportamento chiuso del box zoom.
@@ -445,15 +446,14 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (vedi §15d). Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime scelto da `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`):
+**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)**, **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** e **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** CLOSED / PASS end-to-end. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (vedi §15d). Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime auto-aperto):
 
-1. **CARTO-ARCHIVE-MATCH-A** — PASS WITH DOCUMENTED LIMITATIONS / candidato **non** aperto
-2. **CARTO-IGM-AREA-ESC-RESTORE-A** — Esc ripristina pannello in area-pick (BACKLOG / NOT OPENED)
-3. **COORD-MODAL-FORMAT-COPY-A** — formato + copia coordinate nei modal (BACKLOG / NOT OPENED; trasversale)
-4. **CARTO-IGM-SERIES-EXPAND-A** — espansione serie IGM (non aperto)
-5. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
+1. **CARTO-IGM-AREA-ESC-RESTORE-A** — Esc ripristina pannello in area-pick (BACKLOG / NOT OPENED)
+2. **COORD-MODAL-FORMAT-COPY-A** — formato + copia coordinate nei modal (BACKLOG / NOT OPENED; trasversale)
+3. **CARTO-IGM-SERIES-EXPAND-A** — espansione serie IGM (non aperto)
+4. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
 
-**Nessun** auto-start. WU-0012 **resta OPEN**.
+**Nessun** auto-start. WU-0012 **resta OPEN** (serie/provider). Runtime live: tip **`c4d7db5`** / build **135** (`CARTO-ARCHIVE-MATCH-A-FIX2`).
 
 ---
 
@@ -469,7 +469,7 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 | URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=51e0f5b` |
 
 **Chiuso:** area-pick rearm; CTA area/vista; fit/Centra; click singolo label (select/scroll, no fit); rimozione navigazione doppio-click label (FIX3).  
-**Resta OPEN nella WU:** archivio, espansione serie, provider, aggiornamento online, IndexedDB. Follow-up QA → §15c backlog (non aperti).
+**Resta OPEN nella WU:** espansione serie, provider, aggiornamento online, IndexedDB. **Archivio** → §15e CLOSED. Follow-up QA → §15c backlog (non aperti).
 
 ---
 
@@ -500,8 +500,8 @@ Esito registrato in **§15d** — DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 | Campo | Valore |
 |-------|--------|
 | Classificazione | **CRS AUDIT PARTIAL** |
-| ARCHIVE-MATCH | **PASS WITH DOCUMENTED LIMITATIONS** / candidato **non** aperto |
-| Runtime | tip live invariato `51e0f5b` / build 132 |
+| ARCHIVE-MATCH | sblocco tecnico storico → poi **CLOSED** runtime (§15e) |
+| Runtime al close audit | tip allora `51e0f5b` / build 132 (poi superseded da ARCHIVE tip `c4d7db5`) |
 
 ### Evidenze provate
 
@@ -562,6 +562,23 @@ Usabile per: ricerca spaziale; visualizzazione; associazione esemplare→foglio/
 Limitazioni: matching = foglio **non** edizione automatica; chiave `provider+series_id+chart_id` (mai solo numero foglio); Polygon+MultiPolygon; tolleranza bordi; non dedurre datum/proiezione/reticolato esemplare; mostrare UNKNOWN/NOT VERIFIED senza fonte edizione.
 
 Metadati futuri: `crs_geometry` (= OGC:CRS84), `source_file`, `source_checksum`, `catalog_build_id`, `transform_status`; `datum_chart` / `projection_chart` / `grid_chart` / `uncertainty_note` restano UNKNOWN/NOT VERIFIED senza fonte per-edizione.
+
+---
+
+## 15e. CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) — CLOSED / PASS end-to-end (2026-08-07)
+
+| Campo | Valore |
+|-------|--------|
+| Catena | `39ba407` (A · 133) → `84c9710` (FIX1 · 134) → `c4d7db5` (FIX2 · 135) |
+| Build | `CARTO-ARCHIVE-MATCH-A-FIX2 · build 135` |
+| Blob / byte / SHA-256 LF | `e39dd1fe…` / `4692528` / `d7c683f3…6629b81` |
+| Deploy | GIS-only PASS tip `c4d7db5` (solo `goi-gis-app`; CMP_PASS) |
+| QA | «**QA CARTO-ARCHIVE-MATCH-A-FIX2 PASS operatore**» |
+| URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c4d7db5` |
+
+**Chiuso:** catalogo metadati locale Indice IGM (`state.cartoArchiveRecords`); chiave logica `provider+series_id+chart_id`; CRUD + rollback; UI badge/editor; FIX1 persistenza transazionale + ISO UTC; FIX2 chiusura editor post-Salva + notice pannello flash 10s.  
+**Limitazioni invariate:** matching = foglio ≠ edizione CRS automatica; no scansioni/file.  
+**Resta OPEN nella WU:** espansione serie, provider, aggiornamento online, IndexedDB.
 
 ---
 

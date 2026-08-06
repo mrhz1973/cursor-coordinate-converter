@@ -465,11 +465,11 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3) — Area-pick / risultati / label IGM
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip **`51e0f5b`** / build **132** / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3`. Catena `0ad97ee`→`b5d2e44`→`b89c140`→`51e0f5b`. FIX3: rimozione navigazione speciale doppio-click label; click singolo select/scroll no-fit; ricentramento mappa generale ripristinato sulle label. Attestazione «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=51e0f5b`). Follow-up QA → backlog sotto (non aperti).
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip storico **`51e0f5b`** / build **132** / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3`. Catena `0ad97ee`→`b5d2e44`→`b89c140`→`51e0f5b`. FIX3: rimozione navigazione speciale doppio-click label; click singolo select/scroll no-fit; ricentramento mappa generale ripristinato sulle label. Attestazione «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=51e0f5b`). Follow-up QA → backlog sotto (non aperti). **Superseded live** da **CARTO-ARCHIVE-MATCH-A-FIX2** tip **`c4d7db5`**.
 
 ### CARTO-IGM-CRS-AUDIT-A — Audit geodetico impronte IGM
 
-**Stato:** **DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** (docs-only 2026-08-06, `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`). Diagnosi read-only; **nessuna** modifica runtime. **ARCHIVE-MATCH:** PASS WITH DOCUMENTED LIMITATIONS / candidato **non** aperto.
+**Stato:** **DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** (docs-only 2026-08-06, `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`). Diagnosi read-only; **nessuna** modifica runtime richiesta dall’audit. **ARCHIVE-MATCH** successivamente aperto e **CLOSED** (vedi voce dedicata).
 
 **Evidenze provate:** payload `carto-igm-compact-v1` 911 record (633 Serie 50 + 278 Serie 100V); sorgenti `serie_50_wgs84_geo` / `serie_100_wgs84_geo`; geometrie **OGC:CRS84** (coordinate lon/lat; non affermare identità formale «EPSG:4326 lon-first»); bbox west/south/east/north; renderer coerente (`tileMapLatLonToPx(lat, lon)`); nessuna riproiezione datum in browser; bbox/geometrie coerenti 911/911; anelli chiusi; checksum/manifest/conteggi allineati; `chart_id` non univoco cross-serie → chiave `provider + series_id + chart_id`.
 
@@ -485,6 +485,10 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Metadati UI futuri:** `crs_geometry` (= OGC:CRS84), `source_file`, `source_checksum`, `catalog_build_id`, `transform_status` valorizzabili; `datum_chart` / `projection_chart` / `grid_chart` / `uncertainty_note` restano UNKNOWN / NOT VERIFIED senza fonte per-edizione.
 
+### CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) — Catalogo metadati locale Indice IGM
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-07). Tip **`c4d7db5`** / build **135** / `CARTO-ARCHIVE-MATCH-A-FIX2`. Catena `39ba407`→`84c9710`→`c4d7db5`. Store additivo `cartoArchiveRecords`; chiave `provider+series_id+chart_id`; CRUD + rollback; UI Indice IGM; FIX1 persistenza transazionale + ISO UTC; FIX2 chiusura editor post-Salva + notice flash 10s. Attestazione «**QA CARTO-ARCHIVE-MATCH-A-FIX2 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=c4d7db5`). Limitazioni: matching foglio≠edizione CRS; no scansioni/file.
+
 ### CARTO-IGM-AREA-ESC-RESTORE-A — Esc ripristina Indice IGM in area-pick
 
 **Stato:** **BACKLOG / NOT OPENED** (docs-only 2026-08-06). Categoria futura: **DELICATO leggero** (lifecycle pannello + coordinatore map-tool) — blocco proprio / bundle delicato, **non** mega-bundle routine.
@@ -497,9 +501,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** (2026-08-06). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED / PASS end-to-end** (tip `51e0f5b` / build 132). Macro-feature **non** CLOSED: restano archivio personale, espansione serie, provider successivi. Runtime live: `51e0f5b` / `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 · build 132`.
+**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED — NEXT SERIES|PROVIDER|ESC** (2026-08-07). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED** + **`CARTO-IGM-CRS-AUDIT-A` DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** + **`CARTO-ARCHIVE-MATCH-A` (+ FIX1–FIX2) CLOSED / PASS end-to-end** (tip `c4d7db5` / build 135). Macro-feature **non** CLOSED: restano espansione serie, provider successivi. Runtime live: `c4d7db5` / `CARTO-ARCHIVE-MATCH-A-FIX2 · build 135`.
 
-**Ordine candidato post-audit CRS (nessun runtime scelto da `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`):** (1) **CARTO-ARCHIVE-MATCH-A** (PASS WITH DOCUMENTED LIMITATIONS; candidato **non** aperto); (2) **CARTO-IGM-AREA-ESC-RESTORE-A**; (3) **COORD-MODAL-FORMAT-COPY-A**; (4) **CARTO-IGM-SERIES-EXPAND-A**; (5) provider successivi. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (non più backlog).
+**Ordine candidato post-ARCHIVE (nessun runtime auto-aperto):** (1) **CARTO-IGM-AREA-ESC-RESTORE-A**; (2) **COORD-MODAL-FORMAT-COPY-A**; (3) **CARTO-IGM-SERIES-EXPAND-A**; (4) provider successivi. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
