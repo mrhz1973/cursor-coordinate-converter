@@ -9,8 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-06 — **`finito` Regola H** dopo «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**». Commit task docs **`c79e9d2`** (`docs: finito CARTO-IGM-RESULTS-UX-BUNDLE-B after Regola H QA PASS`). Runtime tip **`51e0f5b`** / **`CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 · build 132`** già in `origin/main` (deploy GIS-only PASS). Bundle **CLOSED / PASS end-to-end**. WU-0012 resta **OPEN / NEXT ARCHIVE**. Monolite **nel** commit runtime `51e0f5b` (non nel commit docs). Working tree pre-autosync: pulito dopo push docs. Inbox: `docs/orchestrator/inbox/2026-08-06_1323_riepilogo_finito-sessione.md`.
+2026-08-06 — **`DOCS-BACKLOG-CARTO-COORD-CRS-A` CLOSED / PASS docs-only.** Commit task **`f0a68b3`** (`docs(backlog): register coordinate and IGM CRS follow-ups`). Registrati backlog **CARTO-IGM-CRS-AUDIT-A**, **CARTO-IGM-AREA-ESC-RESTORE-A**, **COORD-MODAL-FORMAT-COPY-A**. Bundle B resta CLOSED tip **`51e0f5b`** / build **132**. WU-0012 OPEN. Nessun runtime/deploy. Monolite **escluso**. Inbox: `docs/orchestrator/inbox/2026-08-06_1335_docs-backlog-carto-coord-crs-a.md`.
 
-2026-08-06 — **`finito` Regola H** dopo «**QA MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5 PASS operatore**» (storico; superseded live).
-
-2026-08-06 — **`finito` Regola H** dopo «**QA CARTO-UI-RESULTS-A-FIX3 PASS operatore**» (storico; superseded live).
+2026-08-06 — **`finito` Regola H** dopo «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**» (storico; tip live invariato).
