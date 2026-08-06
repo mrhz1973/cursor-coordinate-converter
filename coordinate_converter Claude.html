@@ -22394,10 +22394,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A";
-const APP_BUILD_DETAIL = "coordinate map tools, box zoom and IGM area workflow";
+const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX1";
+const APP_BUILD_DETAIL = "correct Web Mercator fit and reentrant map tool coordination";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 123;
+const APP_BUILD_NUM = 124;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38056,32 +38056,95 @@ function endBboxSelection(){
 
 function cancelBboxSelection(){ endBboxSelection(); }
 
-/* ===================== JS — MAP-TOOL-COORDINATOR-A =====================
+/* ===================== JS — MAP-TOOL-COORDINATOR-A (FIX1 re-entrant) =====================
  * Transient registry for exclusive arbitration of map interaction tools.
- * Only one map-click/drag consumer can be active at a time.
- * Atomic re-entrant safety: capture current id/cleanup, clear state BEFORE
- * invoking cleanup, so recursive calls from inside a cleanup see an empty
- * registry and never recurse. try/finally guarantees state stays consistent.
- * No window.* export, no persistence, no per-tool rewrites. */
-const _mapToolConsumer = { id: null, cleanup: null };
+ * Serialized transitions with pending "last request wins" while transitioning:
+ * clear → cleanup (once) → apply pending or install requested consumer.
+ * Nested activate/deactivate from inside a cleanup never overwrites an installed
+ * consumer without cleanup; they queue as pending and replace the in-flight request.
+ * No window.* export, no persistence. */
+const _mapToolConsumer = {
+  id: null,
+  cleanup: null,
+  transitioning: false,
+  pending: null // { type:"activate"|"deactivate", id, cleanup }
+};
 function mapToolActivate(id, cleanup){
-  if (_mapToolConsumer.id === id) return; // same consumer → no-op
+  const nextCleanup = (typeof cleanup === "function") ? cleanup : null;
+  // Idempotent same-id while idle.
+  if (!_mapToolConsumer.transitioning && _mapToolConsumer.id === id) return;
+  if (_mapToolConsumer.transitioning){
+    // Last request during transition wins.
+    _mapToolConsumer.pending = { type: "activate", id: id || null, cleanup: nextCleanup };
+    return;
+  }
+  if (_mapToolConsumer.id === id) return;
+
   const prevCleanup = _mapToolConsumer.cleanup;
+  _mapToolConsumer.transitioning = true;
   _mapToolConsumer.id = null;
   _mapToolConsumer.cleanup = null;
+  _mapToolConsumer.pending = null;
+
   if (typeof prevCleanup === "function"){
-    try { prevCleanup(); } finally { /* state already cleared */ }
+    try { prevCleanup(); } catch(_){}
   }
+
+  const pending = _mapToolConsumer.pending;
+  _mapToolConsumer.pending = null;
+  _mapToolConsumer.transitioning = false;
+
+  if (pending){
+    if (pending.type === "activate"){
+      mapToolActivate(pending.id, pending.cleanup);
+      return;
+    }
+    if (pending.type === "deactivate"){
+      mapToolDeactivate(pending.id);
+      return;
+    }
+  }
+
   _mapToolConsumer.id = id || null;
-  _mapToolConsumer.cleanup = (typeof cleanup === "function") ? cleanup : null;
+  _mapToolConsumer.cleanup = nextCleanup;
 }
 function mapToolDeactivate(id){
-  if (id != null && _mapToolConsumer.id !== id) return; // only on match
+  // No-op when id does not match the active consumer (unless force-all via null).
+  if (!_mapToolConsumer.transitioning){
+    if (id != null && _mapToolConsumer.id !== id) return;
+    if (_mapToolConsumer.id == null && _mapToolConsumer.cleanup == null) return;
+  } else {
+    // Queue last request; deactivate(null) = clear-all intent.
+    _mapToolConsumer.pending = { type: "deactivate", id: (id == null ? null : id), cleanup: null };
+    return;
+  }
+
   const prevCleanup = _mapToolConsumer.cleanup;
+  _mapToolConsumer.transitioning = true;
   _mapToolConsumer.id = null;
   _mapToolConsumer.cleanup = null;
+  _mapToolConsumer.pending = null;
+
   if (typeof prevCleanup === "function"){
-    try { prevCleanup(); } finally { /* state already cleared */ }
+    try { prevCleanup(); } catch(_){}
+  }
+
+  const pending = _mapToolConsumer.pending;
+  _mapToolConsumer.pending = null;
+  _mapToolConsumer.transitioning = false;
+
+  if (pending){
+    if (pending.type === "activate"){
+      mapToolActivate(pending.id, pending.cleanup);
+      return;
+    }
+    if (pending.type === "deactivate"){
+      // Already cleared; only recurse if a more specific pending deactivate needs handling.
+      // State is empty — mismatch no-ops; deactivate(null) no-ops on empty.
+      if (pending.id == null) return;
+      mapToolDeactivate(pending.id);
+      return;
+    }
   }
 }
 function mapToolDeactivateAll(){ mapToolDeactivate(null); }
@@ -38245,20 +38308,44 @@ function rectangleDragInstall(tileMap, opts){
 }
 
 /* ===================== JS — MAP-CENTER-VIEWPORT-AWARE-A (fit helper) =====================
- * Generalizes the panel-aware fit pattern already used by routing and
- * flyMapToTrackPoints. Reuses gisMapUsableRect + gisMapOffsetVC +
- * clampBasemapFitZoom. Works without panels (fallback → standard fit). */
+ * FIX1: true Web Mercator spans via lon fraction + latToTileY(z=0), no cos(lat)
+ * degree approximation. Reuses gisMapUsableRect + gisMapOffsetVC + clampBasemapFitZoom.
+ * Vertical centre from Mercator Y midpoint → tileY2Lat. Antimeridian preserved. */
 function gisFitBboxPanelAware(root, bbox, opts){
   if (!root || !bbox) return null;
   const west  = Number(bbox.west), south = Number(bbox.south);
   const east  = Number(bbox.east), north = Number(bbox.north);
   if (![west, south, east, north].every(Number.isFinite)) return null;
   if (!(south < north)) return null;
+
+  // Clamp to Web Mercator latitude limits used by the tile engine.
+  const southC = Math.max(-85.05, Math.min(85.05, south));
+  const northC = Math.max(-85.05, Math.min(85.05, north));
+  if (!(southC < northC)) return null;
+
+  // Longitude span (degrees), unwrap across antimeridian; no cos(lat).
   let w1 = west, e1 = east;
-  // Normalize longitude span (handle wrap-around if > 180)
   if (e1 < w1) e1 += 360;
-  const clat = (south + north) / 2;
+  let lonSpanDeg = e1 - w1;
+  if (!(lonSpanDeg > 0)) return null;
+  if (lonSpanDeg > 360) lonSpanDeg = 360;
+  const mercXSpan = lonSpanDeg / 360; // fraction of world width
+
+  // Y span in world-fraction units via tile Y at zoom 0 (true Web Mercator).
+  if (typeof latToTileY !== "function" || typeof tileY2Lat !== "function") return null;
+  const tyN = latToTileY(northC, 0);
+  const tyS = latToTileY(southC, 0);
+  if (!Number.isFinite(tyN) || !Number.isFinite(tyS)) return null;
+  const mercYSpan = Math.abs(tyS - tyN);
+  if (!(mercXSpan > 0) || !(mercYSpan > 0)) return null;
+
+  // Centre: lon midpoint (normalized); lat from Mercator Y midpoint.
   const clon = normalizeLon((w1 + e1) / 2);
+  const tyMid = (tyN + tyS) / 2;
+  let clat = tileY2Lat(tyMid, 0);
+  if (!Number.isFinite(clat)) clat = (southC + northC) / 2;
+  clat = Math.max(-85.05, Math.min(85.05, clat));
+
   opts = opts || {};
   const padFrac = Number.isFinite(opts.padFrac) ? Math.max(0, Math.min(0.4, opts.padFrac)) : 0.12;
   const usableProvided = opts.usable && !opts.usable.fallback ? opts.usable : null;
@@ -38273,26 +38360,24 @@ function gisFitBboxPanelAware(root, bbox, opts){
     availW = Math.max(64, (vp.W || 400) * (1 - 2 * padFrac));
     availH = Math.max(64, (vp.H || 400) * (1 - 2 * padFrac));
   }
-  // Mercator span of the bbox at the given latitude.
-  const latRad = clat * Math.PI / 180;
-  const cosLat = Math.max(1e-6, Math.cos(latRad));
-  const mercXSpan = Math.abs(e1 - w1) / 360;                 // 0..1 of world width
-  const mercYSpan = Math.abs(north - south) / 360;           // approximate (good enough for fit)
-  if (!(mercXSpan > 0) || !(mercYSpan > 0)) return null;
-  // Walk-down zoom: highest z whose pixel span fits usable area.
-  const maxAllowed = (typeof opts.maxZoom === "number" && Number.isFinite(opts.maxZoom))
-    ? opts.maxZoom
-    : (typeof clampBasemapFitZoom === "function" ? 19 : 19);
-  let z = Math.min(19, Math.floor(maxAllowed || 19));
+
+  // Highest integer zoom whose projected bbox fits entirely in the usable rect.
+  let zStart = 19;
+  if (typeof opts.maxZoom === "number" && Number.isFinite(opts.maxZoom)){
+    zStart = Math.min(19, Math.floor(opts.maxZoom));
+  } else if (typeof clampBasemapFitZoom === "function"){
+    zStart = clampBasemapFitZoom(19);
+  }
+  let z = zStart;
   for (; z >= 2; z--){
-    const scale = Math.pow(2, z) * 256;
-    const pxW = mercXSpan * cosLat * scale;
-    const pxH = mercYSpan * scale;
+    const worldPx = Math.pow(2, z) * 256;
+    const pxW = mercXSpan * worldPx;
+    const pxH = mercYSpan * worldPx;
     if (pxW <= availW && pxH <= availH) break;
   }
   if (z < 2) z = 2;
   if (typeof clampBasemapFitZoom === "function") z = clampBasemapFitZoom(z);
-  // Panel-aware camera offset.
+
   let cam = { lat: clat, lon: clon };
   if (!usable.fallback && typeof gisMapOffsetVC === "function"){
     try { cam = gisMapOffsetVC(root, clat, clon, z, usable); } catch(_){}
