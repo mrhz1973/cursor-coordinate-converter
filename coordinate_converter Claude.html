@@ -22512,10 +22512,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B";
-const APP_BUILD_DETAIL = "improve IGM area search and footprint navigation";
+const APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX1";
+const APP_BUILD_DETAIL = "isolate IGM label double click from map recenter";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 129;
+const APP_BUILD_NUM = 130;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24228,7 +24228,10 @@ function cartoScopedT(key){
             : null;
           if (!g || !mapRoot.contains(g)) return;
           if (ev.cancelable) ev.preventDefault();
-          try { ev.stopPropagation(); } catch(_){}
+          // Same-element capture siblings (gisMapOnDblClickCenter) ignore stopPropagation.
+          try { ev.stopImmediatePropagation(); } catch(_){
+            try { ev.stopPropagation(); } catch(__){}
+          }
         }, true);
       }
     } catch(_){}
@@ -51805,6 +51808,12 @@ function monitorTileLoading(root, lat, lon){
 /** GIS: doppio click sulla mappa centra la vista sul punto (solo viewCenter + render; niente lastResult/renderResults). */
 function gisMapOnDblClickCenter(ev){
   if (!document.body.classList.contains("gis-mode")) return;
+  // IGM footprint labels: both this handler and the carto label dblclick listener
+  // are on #miniMap (capture). stopPropagation does not block same-element siblings.
+  try {
+    const t = ev && ev.target;
+    if (t && typeof t.closest === "function" && t.closest('[data-role="carto-igm-label"]')) return;
+  } catch(_){}
   try {
     if (typeof trackBrushBlocksDblClick === "function" && trackBrushBlocksDblClick()) return;
   } catch(_){}
