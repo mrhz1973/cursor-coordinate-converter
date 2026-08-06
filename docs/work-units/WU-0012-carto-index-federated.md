@@ -5,10 +5,11 @@
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
 **Blocco runtime motore:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip storico `c80129e` / build 118
-**Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `62d24eb` / build 122
+**Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `62d24eb` / build 122
+**Blocco runtime UX mappa/IGM:** `MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `8bdd69c` / build 128
 **Tipo:** macro-feature federata — motore + UI risultati CLOSED; archivio/serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Runtime live:** tip monolite `62d24eb15b119adb19d60fde5e5c386d6a21a87b` · `APP_BUILD_ID = "CARTO-UI-RESULTS-A-FIX3"` · `APP_BUILD_NUM = 122`
+**Runtime live:** tip monolite `8bdd69c47f70ad55df6f729052e011148eb0430e` · `APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5"` · `APP_BUILD_NUM = 128`
 **Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; archivio / espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).

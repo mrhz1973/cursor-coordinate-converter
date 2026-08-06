@@ -459,9 +459,13 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Collegamento futuro opzionale** a copertura cartografica (vedi [`CARTO-INDEX-FEDERATED-A`](#carto-index-federated-a--indice-cartografico-federato-e-catalogo-archivio-personale)) — **senza** accoppiamento obbligatorio.
 
+### MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5) — Coordinamento tool mappa + UX Indice IGM
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-06). Tip **`8bdd69c`** / build **128** / `MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5`. Bundle **ROUTINE**. FIX5: track→box-zoom displacement; menu layer sopra footer; resize handle IGM. Attestazione «**QA MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5 PASS operatore**»; finito Regola H. Deploy GIS-only PASS (`?v=8bdd69c`).
+
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** (2026-08-06). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED / PASS end-to-end** (tip `62d24eb` / build 122). Macro-feature **non** CLOSED: restano archivio personale, espansione serie, provider successivi. Runtime live: `62d24eb` / `CARTO-UI-RESULTS-A-FIX3 · build 122`.
+**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE** (2026-08-06). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED / PASS end-to-end** (tip `8bdd69c` / build 128). Macro-feature **non** CLOSED: restano archivio personale, espansione serie, provider successivi. Runtime live: `8bdd69c` / `MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5 · build 128`.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
