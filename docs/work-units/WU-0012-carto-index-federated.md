@@ -1,6 +1,6 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
-**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED — NEXT ARCHIVE`
+**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / CRS AUDIT PARTIAL — NEXT ARCHIVE`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
@@ -8,7 +8,8 @@
 **Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `62d24eb` / build 122
 **Blocco runtime UX mappa/IGM:** `MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `8bdd69c` / build 128
 **Blocco runtime risultati/area/label:** `CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `51e0f5b` / build 132
-**Tipo:** macro-feature federata — motore + UI risultati CLOSED; archivio/serie/provider **ancora aperti**
+**Diagnosi geodetica:** `CARTO-IGM-CRS-AUDIT-A` — **DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** (2026-08-06) — ARCHIVE-MATCH PASS WITH DOCUMENTED LIMITATIONS / non aperto
+**Tipo:** macro-feature federata — motore + UI risultati CLOSED; CRS audit PARTIAL; archivio/serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
 **Runtime live:** tip monolite `51e0f5b7e0b6975e745de0de5c5461f72c9446d6` · `APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3"` · `APP_BUILD_NUM = 132`
 **Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; archivio / espansione serie / provider successivi **non** CLOSED
@@ -444,13 +445,13 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime scelto da `DOCS-BACKLOG-CARTO-COORD-CRS-A`):
+**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (vedi §15d). Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime scelto da `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`):
 
-1. **CARTO-IGM-CRS-AUDIT-A** — audit geodetico impronte (BACKLOG / NOT OPENED — RECOMMENDED PREREQUISITE)
-2. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale (**non** aperto)
-3. **CARTO-IGM-AREA-ESC-RESTORE-A** — Esc ripristina pannello in area-pick (BACKLOG / NOT OPENED)
-4. **COORD-MODAL-FORMAT-COPY-A** — formato + copia coordinate nei modal (BACKLOG / NOT OPENED; trasversale)
-5. Espansione serie IGM / provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
+1. **CARTO-ARCHIVE-MATCH-A** — PASS WITH DOCUMENTED LIMITATIONS / candidato **non** aperto
+2. **CARTO-IGM-AREA-ESC-RESTORE-A** — Esc ripristina pannello in area-pick (BACKLOG / NOT OPENED)
+3. **COORD-MODAL-FORMAT-COPY-A** — formato + copia coordinate nei modal (BACKLOG / NOT OPENED; trasversale)
+4. **CARTO-IGM-SERIES-EXPAND-A** — espansione serie IGM (non aperto)
+5. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
 
 **Nessun** auto-start. WU-0012 **resta OPEN**.
 
@@ -486,12 +487,81 @@ Docs-only; **nessun** runtime; **nessun** build bump; bundle B resta CLOSED.
 - Trasversale. Inventory UI preliminare obbligatorio.
 - Formato + Copia coerenti col modal waypoint; formati candidati già supportati (DD/DDM/DMS/UTM/MGRS/Plus Code dove applicabili); riuso formatter; presentazione only; IT/EN only (FR freeze).
 
-### CARTO-IGM-CRS-AUDIT-A — BACKLOG / NOT OPENED — RECOMMENDED PREREQUISITE
+### CARTO-IGM-CRS-AUDIT-A — vedi §15d (non più BACKLOG)
 
-- Categoria futura: **DELICATO** (geodesia / provenienza / trasformazioni).
-- Evidenza discovery (non nuova attestazione payload): Serie 50/100V scelte = layer geo **WGS84**; schema con `geometry` WGS84 + `crs_original`; altre CRS ufficiali esistono ma non sono il layer embedded.
-- Audit futuro: sorgente/checksum/`.prj`/datum/pipeline/CRS payload/compatibilità mappa/punti di controllo/scarti; distinguere **(A)** CRS geometria impronta vs **(B)** datum/reticolato carta; UI futura con A/B/fonte/stato trasformazione/incertezza o «Sconosciuto» senza inventare metadati.
-- Prerequisito raccomandato prima di **CARTO-ARCHIVE-MATCH-A**, **CARTO-IGM-SERIES-EXPAND-A**, varianti ED50/Roma40/RDN2008/provider.
+Esito registrato in **§15d** — DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
+
+---
+
+## 15d. CARTO-IGM-CRS-AUDIT-A — DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (2026-08-06)
+
+**Task docs:** `DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE`. Diagnosi read-only; **nessuna** modifica runtime / payload / `data/carto/igm/**` / licenze.
+
+| Campo | Valore |
+|-------|--------|
+| Classificazione | **CRS AUDIT PARTIAL** |
+| ARCHIVE-MATCH | **PASS WITH DOCUMENTED LIMITATIONS** / candidato **non** aperto |
+| Runtime | tip live invariato `51e0f5b` / build 132 |
+
+### Evidenze provate
+
+- Payload `#cartoIgmEmbeddedData` `carto-igm-compact-v1`: **911** record (633 Serie 50 + 278 Serie 100V).
+- Sorgenti dichiarate: `serie_50_wgs84_geo` / `serie_100_wgs84_geo` (ZIP ufficiali + checksum in manifest).
+- Geometrie embedded: **OGC:CRS84**, coordinate **longitudine, latitudine**; bbox **west, south, east, north**.
+- Renderer: `cartoGeomToSvgPathD` → `tileMapLatLonToPx(root, pt[1], pt[0])` coerente; nessuna riproiezione datum in browser.
+- Bbox e geometrie strutturalmente coerenti 911/911; anelli chiusi; coordinate finite.
+- Payload ↔ GeoJSON collegati da conteggi, manifest e checksum documentati.
+- `chart_id` **non** univoco tra serie → chiave logica obbligatoria `provider + series_id + chart_id`.
+
+### Terminologia
+
+- Usare «**OGC:CRS84, coordinate lon/lat**»; **non** scrivere che CRS84 è formalmente identico a «EPSG:4326 lon-first».
+- GeoJSON usa comunque coordinate longitudine/latitudine.
+
+### Serie 50 PolygonZ
+
+- Layer sorgente Serie 50 = PolygonZ; pipeline ha scartato Z.
+- **Non** dichiarare CRS tridimensionale; CRS orizzontale = CRS84; significato/datum verticale Z = **NOT VERIFIED**.
+
+### Pipeline
+
+- SHP → GeoJSON via strumento Python esterno documentato (formato, DBF Latin-1→UTF-8, chiusura anelli, drop Z).
+- Nessun datum shift necessario (layer già WGS84 geographic).
+- Script non nel repository → implementazione interna non completamente verificabile.
+- **Non** scrivere errore posizionale = 0: nessuno scarto da riproiezione datum risulta introdotto dalla pipeline documentata; accuratezza assoluta footprint / generalizzazione quadro d’unione **non quantificate**.
+
+### Controllo operatore — foglio 232 S50 SESTRI LEVANTE
+
+| Voce | Valore |
+|------|--------|
+| NW embedded | ≈ 9.332321 E / 44.399023 N |
+| Waypoint QA (MGRS) | `32T NQ 26463 16249` |
+| Conversione WGS84/UTM 32N | ≈ 9.332304 E / 44.399044 N |
+| Scarto approx. | ≈ **2,7 m** |
+
+Conclusione: waypoint ≈ angolo NW footprint; nessun offset significativo Roma40/ED50 sul footprint; differenza vs foto/scansione può dipendere da prospettiva/deformazione/taglio/margini/georeferenziazione; verifica sul footprint, **non** prova datum edizione cartacea.
+
+### Bordi densificati Serie 50
+
+Molte geometrie Serie 50 presentano bordi densificati; causa esatta **non provata** (possibile rappresentazione geografica del bordo foglio). **Non** attribuire significato territoriale (coste/province) senza ulteriori evidenze.
+
+### Distinzione footprint / carta
+
+| | A. Geometria footprint | B. Carta / edizione fisica |
+|---|---|---|
+| CRS / sistema | OGC:CRS84 lon/lat | datum / proiezione / reticolato |
+| Uso | ricerca spaziale, visualizzazione, Web Mercator | esemplare fisico |
+| Stato | **PROVATO** | **NOT VERIFIED** per singola edizione (anche margini/tagli/scansione) |
+
+Una carta Roma40/Gauss-Boaga o ED50/UTM può essere rappresentata da un footprint catalografico moderno in WGS84. **Non** assegnare datum/proiezione alla carta dal CRS del footprint.
+
+### ARCHIVE-MATCH — limitazioni documentate
+
+Usabile per: ricerca spaziale; visualizzazione; associazione esemplare→foglio/serie; area coperta.
+
+Limitazioni: matching = foglio **non** edizione automatica; chiave `provider+series_id+chart_id` (mai solo numero foglio); Polygon+MultiPolygon; tolleranza bordi; non dedurre datum/proiezione/reticolato esemplare; mostrare UNKNOWN/NOT VERIFIED senza fonte edizione.
+
+Metadati futuri: `crs_geometry` (= OGC:CRS84), `source_file`, `source_checksum`, `catalog_build_id`, `transform_status`; `datum_chart` / `projection_chart` / `grid_chart` / `uncertainty_note` restano UNKNOWN/NOT VERIFIED senza fonte per-edizione.
 
 ---
 
