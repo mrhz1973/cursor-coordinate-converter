@@ -22411,10 +22411,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX3";
-const APP_BUILD_DETAIL = "box-zoom displaces track; IGM minimize and layer menu clickability";
+const APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX4";
+const APP_BUILD_DETAIL = "preserve scoped IGM minimized dock label";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 126;
+const APP_BUILD_NUM = 127;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23804,7 +23804,14 @@ function cartoScopedT(key){
     const u = cartoUiGetState();
     if (!u.isOpen) return;
     if (typeof gisMinimizePanel === "function"){
-    try { gisMinimizePanel("cartoIgmPanel", "gis.minimized.cartoigm"); } catch(_){}
+      // FIX4: pass scoped Italian label (not i18n key). gisRenderMinimizedDock
+      // applies t(row.labelKey); raw key would surface in EN/FR (key only in I18N.it).
+      try {
+        gisMinimizePanel(
+          "cartoIgmPanel",
+          cartoUiT("gis.minimized.cartoigm")
+        );
+      } catch(_){}
     }
     u.isMinimized = true;
     cartoUiRefreshOverlay();
