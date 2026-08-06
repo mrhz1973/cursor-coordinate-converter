@@ -6,10 +6,11 @@
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
 **Blocco runtime motore:** `CARTO-SEARCH-ENGINE-A` — **CLOSED / PASS end-to-end** (2026-08-05) — tip storico `c80129e` / build 118
 **Blocco runtime UI:** `CARTO-UI-RESULTS-A` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `62d24eb` / build 122
-**Blocco runtime UX mappa/IGM:** `MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `8bdd69c` / build 128
+**Blocco runtime UX mappa/IGM:** `MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) — **CLOSED / PASS end-to-end** (2026-08-06) — tip storico `8bdd69c` / build 128
+**Blocco runtime risultati/area/label:** `CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1 + FIX2 + FIX3) — **CLOSED / PASS end-to-end** (2026-08-06) — tip `51e0f5b` / build 132
 **Tipo:** macro-feature federata — motore + UI risultati CLOSED; archivio/serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Runtime live:** tip monolite `8bdd69c47f70ad55df6f729052e011148eb0430e` · `APP_BUILD_ID = "MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5"` · `APP_BUILD_NUM = 128`
+**Runtime live:** tip monolite `51e0f5b7e0b6975e745de0de5c5461f72c9446d6` · `APP_BUILD_ID = "CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3"` · `APP_BUILD_NUM = 132`
 **Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; archivio / espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
@@ -443,13 +444,29 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 ## 15. Prossimo passo consigliato
 
-**CARTO-SEARCH-ENGINE-A** e **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo candidato (solo dopo decisione operatore):
+**CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)** e **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED / PASS end-to-end. Prossimo candidato (solo dopo decisione operatore):
 
 1. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale
 2. Espansione serie IGM / provider IIM·CIGA·UKHO
 3. **CARTO-ONLINE-UPDATE-A** — aggiornamenti online espliciti (opt-in, OPSEC)
 
-**Nessun** auto-start. WU-0012 **resta OPEN**.
+**Nessun** auto-start. WU-0012 **resta OPEN**. Esc area-pick IGM = backlog separato (non auto-aperto).
+
+---
+
+## 15b. CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3) — CLOSED / PASS end-to-end (2026-08-06)
+
+| Campo | Valore |
+|-------|--------|
+| Catena | `0ad97ee` (B · 129) → `b5d2e44` (FIX1 · 130) → `b89c140` (FIX2 · 131) → `51e0f5b` (FIX3 · 132) |
+| Build | `CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 · build 132` |
+| Blob / byte / SHA-256 LF | `7154fff5…` / `4653927` / `e6f3a61a…5c417e` |
+| Deploy | GIS-only PASS tip `51e0f5b` (solo `goi-gis-app`; CMP_PASS) |
+| QA | «**QA CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3 PASS operatore**» |
+| URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=51e0f5b` |
+
+**Chiuso:** area-pick rearm; CTA area/vista; fit/Centra; click singolo label (select/scroll, no fit); rimozione navigazione doppio-click label (FIX3).  
+**Resta OPEN nella WU:** archivio, espansione serie, provider, aggiornamento online, IndexedDB; Esc area-pick backlog.
 
 ---
 
