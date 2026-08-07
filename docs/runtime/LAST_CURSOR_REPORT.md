@@ -2,57 +2,54 @@
 
 ## LATEST
 
-* real_task_commit: `a0a68167f159b6945be4fbd3089a7acb7403093f`
-* real_task_subject: fix(coords): sync waypoint editor format and pasted coordinates
-* report_generated_at: 2026-08-07T12:39:00+02:00
+* real_task_commit: `77bceb10976dbd06fa1001f0eaadfe38c804641e`
+* real_task_subject: docs: backlog waypoint center and transparent overlay stack
+* report_generated_at: 2026-08-07T12:47:00+02:00
 * branch: main
-* remote_head_after_task_push: `a7dc659ce510d81bcefd29b893c32df50d46d5a2`
-* previous_report_container: `4b0c8a7` (autosync finito ESC-RESTORE)
+* remote_head_after_task_push: `77bceb10976dbd06fa1001f0eaadfe38c804641e`
+* previous_report_container: `c702d89` (autosync finito COORD-FIX1)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs finito `a7dc659` pushato; monolite tip `a0a6816` invariato in chiusura
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task docs `a7dc659` e tip runtime `a0a6816` già su origin pre-autosync
-* result_cursor: COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED / PASS end-to-end; finito Regola H
-* pass_operatore: PASS — attestazione `QA COORD-MODAL-FORMAT-COPY-A-FIX1 PASS operatore`
-* result_runtime: tip live `a0a6816` / COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138
-* qa_attestation_source: operatore (Regola H)
-* notes: due commit chiusura (docs finito + autosync/report); monolite escluso dal docs/autosync; nessun redeploy; backlog MODAL-OPEN-TOP-ALIGN-A registrato
+* working_tree_status: docs task `77bceb1` pushato; monolite tip `a0a6816` invariato
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task docs `77bceb1` già su origin pre-autosync
+* result_cursor: DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A CLOSED / PASS docs-only
+* pass_operatore: non applicabile (docs-only; nessun QA runtime)
+* result_runtime: tip live invariato `a0a6816` / COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138
+* qa_attestation_source: n/a (docs-only)
+* notes: backlog WAYPOINT-EDITOR-CENTER-A + MAP-TRANSPARENT-OVERLAY-STACK-A; ordine next invariato; WU-0012 non toccata; monolite escluso
 
 ## OUTPUT VERBATIM
 
 ```text
-real_task_commit (runtime tip QA'd):
-a0a68167f159b6945be4fbd3089a7acb7403093f
-
-docs finito (task chiusura lean):
-a7dc659ce510d81bcefd29b893c32df50d46d5a2
+real_task_commit (docs-only):
+77bceb10976dbd06fa1001f0eaadfe38c804641e
 
 git branch --show-current
 main
 
-git log --oneline -5 (post-task docs, pre-autosync):
+git log --oneline -5 (post-task, pre-autosync):
+77bceb1 docs: backlog waypoint center and transparent overlay stack
+c702d89 docs: orchestratore — riconciliazione finito sessione
 a7dc659 docs: finito COORD-MODAL-FORMAT-COPY-A-FIX1 after Regola H QA PASS
 a0a6816 fix(coords): sync waypoint editor format and pasted coordinates
 04c4d37 feat(coords): add format and copy controls to coordinate lists
-4b0c8a7 docs: orchestratore — riconciliazione finito sessione
-b0a60e0 docs: finito CARTO-IGM-AREA-ESC-RESTORE-A after Regola H QA PASS
 
 git rev-parse HEAD (post-task, pre-autosync):
-a7dc659ce510d81bcefd29b893c32df50d46d5a2
+77bceb10976dbd06fa1001f0eaadfe38c804641e
 
 git ls-remote origin refs/heads/main (post-task, pre-autosync):
-a7dc659ce510d81bcefd29b893c32df50d46d5a2	refs/heads/main
+77bceb10976dbd06fa1001f0eaadfe38c804641e	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* c702d89 — docs: orchestratore — riconciliazione finito sessione (COORD-FIX1; real_task_commit storico `a0a6816`)
+* a7dc659 — docs: finito COORD-MODAL-FORMAT-COPY-A-FIX1 after Regola H QA PASS
 * 4b0c8a7 — docs: orchestratore — riconciliazione finito sessione (ESC-RESTORE; real_task_commit storico `764e661`)
 * b0a60e0 — docs: finito CARTO-IGM-AREA-ESC-RESTORE-A after Regola H QA PASS
-* 788e29c — docs: orchestratore — riconciliazione finito sessione (ARCHIVE; real_task_commit storico `c4d7db5`)
-* 1bd20f6 — docs: finito CARTO-ARCHIVE-MATCH-A after Regola H QA PASS
-* a0a6816 — fix(coords): sync waypoint editor format and pasted coordinates (runtime tip corrente)
+* 77bceb1 — docs: backlog waypoint center and transparent overlay stack (docs-only corrente)
 
 ## LIMITI
 

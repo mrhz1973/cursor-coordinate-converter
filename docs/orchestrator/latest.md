@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-07 — **`finito` Regola H** dopo **`QA COORD-MODAL-FORMAT-COPY-A-FIX1 PASS operatore`**. Commit task docs **`a7dc659`** (`docs: finito COORD-MODAL-FORMAT-COPY-A-FIX1 after Regola H QA PASS`). Blocco **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED / PASS end-to-end**. Runtime tip **`a0a6816`** / build **138** (già su `main` e VPS). Working tree post-task pre-autosync: **pulito**. Monolite **nel tip runtime** (`a0a6816`), **non** nel commit docs finito. Backlog registrato: **MODAL-OPEN-TOP-ALIGN-A**. Inbox: `docs/orchestrator/inbox/2026-08-07_1239_riepilogo_finito-sessione.md`.
+2026-08-07 — **`DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A` CLOSED / PASS docs-only**. Commit task **`77bceb1`** (`docs: backlog waypoint center and transparent overlay stack`). Registrati backlog **WAYPOINT-EDITOR-CENTER-A** + **MAP-TRANSPARENT-OVERLAY-STACK-A** (NOT OPENED; non next). **MODAL-OPEN-TOP-ALIGN-A** preservato. Ordine next invariato: SERIES → provider → MODAL-OPEN. Runtime tip **`a0a6816`** / build **138** invariato. Monolite **non** modificato. WU-0012 **non** toccata (overlay fuori federated index). Inbox: `docs/orchestrator/inbox/2026-08-07_1247_docs_backlog_waypoint_center_overlays.md`.
 
-2026-08-07 — **`finito` ESC-RESTORE** (storico; task `b0a60e0`; tip allora `764e661`).
+2026-08-07 — **`finito` COORD-FIX1** (storico; task docs `a7dc659`; tip `a0a6816`).
