@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-07 — **`DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN` CLOSED / PASS docs-only**. Commit task **`5b4e411`** (`docs: open transparent overlay stack after provider discovery`). **MAP-TRANSPARENT-OVERLAY-STACK-A** promosso a **OPEN / READY FOR IMPLEMENTATION**. Diagnostic/provider discovery + product scope v1 + proxy Planet-Clone (`0fa1941`) registrati. WU-0012 sequenza **sospesa** (non cancellata). Corrente: GIS IMPLEMENTATION target build **139**. Runtime tip **`a0a6816`** / build **138** invariato. Monolite **non** modificato. Inbox: `docs/orchestrator/inbox/2026-08-07_1555_docs_open_transparent_overlay_stack.md`.
+2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`de8e053c196952a74f9cd0db3a80d1836d5b9d6b`** (`feat(map): add cached raster overlay stack`; build **139**). Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. VPS live ancora **`a0a6816` / 138**. Coda `finito` Regola H pre-autorizzata post QA PASS. Inbox: `docs/orchestrator/inbox/2026-08-07_1645_map_transparent_overlay_stack_implemented.md`.
 
-2026-08-07 — **`DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A` CLOSED** (storico; task `77bceb1`).
+2026-08-07 — **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN** CLOSED (storico; task `5b4e411`).

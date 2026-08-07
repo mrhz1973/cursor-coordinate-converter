@@ -507,7 +507,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### MAP-TRANSPARENT-OVERLAY-STACK-A — Overlay cartografici trasparenti su Layers
 
-**Stato:** **OPEN / READY FOR IMPLEMENTATION** (docs 2026-08-07, `DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN`). Intent: estendere Layers con overlay trasparenti opzionali **sopra** la basemap attiva (composito tipo SAS.Planet), senza sostituirla. Categoria **DELICATO** (rete/tile/proxy/OPSEC/cache/storage/persistenza). **Fuori WU-0012**. Promosso dall’operatore a blocco operativo corrente (sequenza WU-0012 SERIES→provider→MODAL-OPEN **sospesa**, non cancellata). Runtime live ancora **`a0a6816` / build 138**; target implementazione GIS build **139** (non ancora runtime).
+**Stato:** **IMPLEMENTED / REVIEW GPT-SOSTITUTIVA PENDING** (2026-08-07). Runtime **`de8e053c196952a74f9cd0db3a80d1836d5b9d6b`** — `feat(map): add cached raster overlay stack`; build **139**. Categoria **DELICATO**. **Fuori WU-0012**. Deploy **NOT EXECUTED**; QA **NOT EXECUTED**; VPS live ancora `a0a6816`/138. Scope v1: OSM sharding; `gsat` invariato; WayMarked Hiking; Strava Run (proxy personal); Hillshade (proxy personal). Consent `"personal"` session-only.
 
 **Diagnostic (`MAP-TRANSPARENT-OVERLAY-STACK-A-PROVIDER-DISCOVERY`):** READ-ONLY; esito **PROVIDER DISCOVERY PARTIAL — PRODUCT DECISION COMPLETED**; baseline GIS `d5ce8fe`; monolite non toccato. OSM Standard (sharding a/b/c); `gsat` esistente; WayMarked Hiking READY (XYZ PNG, maxZoom 18, diretto); Strava Run (PNG, maxZoom v1 11, solo proxy); Hillshade OSM US (JPEG, maxZoom 12, solo proxy); Slope DEFERRED; Terrain/OpenMapSurfer DROP; Bing hybrid/labels DROP.
 
@@ -515,7 +515,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Proxy ready (Planet-Clone):** commit **`0fa194106b153e77bd22fb0be2ae3cd98cd202c3`** (`feat(proxy): add Strava Run and hillshade tile routes`); review GPT-sostitutiva PASS; deploy VPS TECHNICAL PASS; route `/strava-run/{z}/{x}/{y}.png`, `/hillshade/{z}/{x}/{y}.jpg`; smoke/CORS/regressioni documentate PASS. Non modificare Planet-Clone da questo repo GIS.
 
-**Prossimo gate:** GIS IMPLEMENTATION in `coordinate_converter Claude.html` (build 139). Residui runtime: OPSEC, consent proxy, IndexedDB cache, lifecycle, persistenza toggle, UI Layers, zero-fetch OFF/offline/out-of-range.
+**Prossimo gate:** REVIEW GPT-sostitutiva su `de8e053` → deploy GIS → QA → `finito`. Residui post-deploy: OPSEC live, consent, zero-fetch, compositing.
 
 ### DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN — Promozione formalizzata
 
@@ -529,7 +529,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED — NEXT SERIES|PROVIDER** (2026-08-07). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + **`CARTO-SEARCH-ENGINE-A` CLOSED** + **`CARTO-UI-RESULTS-A` (+ FIX1–FIX3) CLOSED** + **`MAP-INTERACTION-CARTO-UX-BUNDLE-A` (+ FIX1–FIX5) CLOSED** + **`CARTO-IGM-RESULTS-UX-BUNDLE-B` (+ FIX1–FIX3) CLOSED** + **`CARTO-IGM-CRS-AUDIT-A` DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL** + **`CARTO-ARCHIVE-MATCH-A` (+ FIX1–FIX2) CLOSED** + **`CARTO-IGM-AREA-ESC-RESTORE-A` CLOSED** + **`COORD-MODAL-FORMAT-COPY-A` (+ FIX1) CLOSED / PASS end-to-end** (tip `a0a6816` / build 138). Macro-feature **non** CLOSED: restano espansione serie, provider successivi. Runtime live: `a0a6816` / `COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138`. **MAP-TRANSPARENT-OVERLAY-STACK-A** è **fuori** questa WU e **OPEN** come corrente esterno; sequenza interna WU **sospesa** (non cancellata).
 
-**Ordine candidato WU-0012 (preservato; sospeso finché overlay corrente):** (1) **CARTO-IGM-SERIES-EXPAND-A**; (2) provider successivi; (3) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **Corrente operativo esterno WU:** **MAP-TRANSPARENT-OVERLAY-STACK-A — GIS IMPLEMENTATION** (target build 139). **WAYPOINT-EDITOR-CENTER-A** resta backlog. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED** (superseded live). **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
+**Ordine candidato WU-0012 (preservato; sospeso finché overlay corrente):** (1) **CARTO-IGM-SERIES-EXPAND-A**; (2) provider successivi; (3) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **Corrente esterno WU:** **MAP-TRANSPARENT-OVERLAY-STACK-A — IMPLEMENTED / REVIEW PENDING** (`de8e053` / build 139; VPS ancora 138). **WAYPOINT-EDITOR-CENTER-A** resta backlog. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED** (superseded live). **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
