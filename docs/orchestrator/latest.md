@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. FIX1_RUNTIME_COMMIT **`d42e3d22a8c0255872a2b338116ef3e31ab8ee56`** (`fix(map): enforce overlay max zoom and preserve sonar path`; build **140**). Parent `de8e053` review FAIL. Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. VPS live ancora **`a0a6816` / 138**. Inbox: `docs/orchestrator/inbox/2026-08-07_2335_map_transparent_overlay_stack_fix1.md`.
+2026-08-08 — **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX2 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. FIX2_RUNTIME_COMMIT **`5aaa54b8311317d078685d26acc64cdbac28e0cd`** (`fix(map): overzoom Strava and distinguish overlays`; build **141**). Parent FIX1 `d42e3d2` / tip pre-task `24aff93`. Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-08_0126_map_transparent_overlay_stack_fix2.md`.
 
-2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A** IMPLEMENTED storico `de8e053` (superseded by FIX1).
+2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1** storico `d42e3d2` (superseded by FIX2 runtime tip).
