@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`de8e053c196952a74f9cd0db3a80d1836d5b9d6b`** (`feat(map): add cached raster overlay stack`; build **139**). Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. VPS live ancora **`a0a6816` / 138**. Coda `finito` Regola H pre-autorizzata post QA PASS. Inbox: `docs/orchestrator/inbox/2026-08-07_1645_map_transparent_overlay_stack_implemented.md`.
+2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. FIX1_RUNTIME_COMMIT **`d42e3d22a8c0255872a2b338116ef3e31ab8ee56`** (`fix(map): enforce overlay max zoom and preserve sonar path`; build **140**). Parent `de8e053` review FAIL. Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. VPS live ancora **`a0a6816` / 138**. Inbox: `docs/orchestrator/inbox/2026-08-07_2335_map_transparent_overlay_stack_fix1.md`.
 
-2026-08-07 — **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN** CLOSED (storico; task `5b4e411`).
+2026-08-07 — **MAP-TRANSPARENT-OVERLAY-STACK-A** IMPLEMENTED storico `de8e053` (superseded by FIX1).
