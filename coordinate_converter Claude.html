@@ -7677,22 +7677,27 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   align-items:center;
   gap: var(--wp-space-2);
 }
-#waypointModalPanel .wp-list-coord-fmt-ctrl{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap: 6px;
-  margin-left: auto;
+#waypointModalPanel .wp-editor-grid > .wp-editor-name-fmt-row{
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px 12px;
   min-width: 0;
 }
-#waypointModalPanel .wp-list-coord-fmt-ctrl label{
-  font-size: 0.82rem;
-  color: var(--muted);
-  white-space: nowrap;
+#waypointModalPanel .wp-editor-name-fmt-row .wp-field--name{
+  flex: 1 1 12rem;
+  min-width: 0;
 }
-#waypointModalPanel .wp-list-coord-fmt-ctrl select{
+#waypointModalPanel .wp-editor-name-fmt-row .wp-field--fmt{
+  flex: 0 1 10rem;
   min-width: 7rem;
   max-width: 100%;
+}
+#waypointModalPanel .wp-editor-name-fmt-row .wp-field--fmt select{
+  width: 100%;
+  max-width: 100%;
+  min-width: 7rem;
 }
 #waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
@@ -12719,10 +12724,23 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
           <p id="wpEditorNewHint" class="hint wp-editor-new-hint" hidden data-i18n="waypointModal.editor.newFlowHint"></p>
           <div class="wp-editor-grid">
-            <label class="wp-field">
-              <span data-i18n="waypointModal.editor.name">Nome</span>
-              <input type="text" id="wpFieldName" maxlength="60" data-i18n-ph="waypointModal.editor.namePh" placeholder="Nome (opz.)">
-            </label>
+            <div class="wp-editor-name-fmt-row">
+              <label class="wp-field wp-field--name">
+                <span data-i18n="waypointModal.editor.name">Nome</span>
+                <input type="text" id="wpFieldName" maxlength="60" data-i18n-ph="waypointModal.editor.namePh" placeholder="Nome (opz.)">
+              </label>
+              <label class="wp-field wp-field--fmt">
+                <span data-i18n="track.coordFormatLabel">Formato coordinate</span>
+                <select id="waypointListCoordFormat" data-role="waypoint-list-coord-format" data-i18n-aria="track.coordFormatAria" data-i18n-tip="tip.trackCoordFormat">
+                  <option value="default" data-i18n="track.coordFormatDefault">Predefinito</option>
+                  <option value="dd">DD</option>
+                  <option value="ddm">DDM</option>
+                  <option value="dms">DMS</option>
+                  <option value="utm">UTM</option>
+                  <option value="mgrs">MGRS</option>
+                </select>
+              </label>
+            </div>
             <label class="wp-field wp-field--wide">
               <span data-i18n="waypointModal.editor.coord">Coordinata (qualsiasi formato)</span>
               <input type="text" id="wpFieldCoord" autocomplete="off" spellcheck="false" data-i18n-ph="waypointModal.editor.coordPh" placeholder="45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W">
@@ -12791,17 +12809,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <button type="button" id="wpBatchSelectAllBtn" class="btn btn-sm" data-i18n="waypointModal.selectAll">Seleziona tutti</button>
               <button type="button" id="wpBatchClearSelBtn" class="btn btn-sm" data-i18n="waypointModal.clearSelection" disabled>Deseleziona</button>
               <button type="button" id="wpBatchAddFavoritesBtn" class="btn btn-sm" data-i18n="waypointModal.addSelectedFavorites" disabled>Aggiungi selezionati ai Preferiti</button>
-            </div>
-            <div class="wp-list-coord-fmt-ctrl">
-              <label for="waypointListCoordFormat" data-i18n="track.coordFormatLabel">Formato coordinate</label>
-              <select id="waypointListCoordFormat" data-role="waypoint-list-coord-format" data-i18n-aria="track.coordFormatAria" data-i18n-tip="tip.trackCoordFormat">
-                <option value="default" data-i18n="track.coordFormatDefault">Predefinito</option>
-                <option value="dd">DD</option>
-                <option value="ddm">DDM</option>
-                <option value="dms">DMS</option>
-                <option value="utm">UTM</option>
-                <option value="mgrs">MGRS</option>
-              </select>
             </div>
           </div>
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
@@ -21467,7 +21474,7 @@ const state = {
   trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | m | nm | mi | ft
   /** Transient session-only: coordinate display format in track points list (not persisted). */
   _trackPointCoordFormat: "default", // session-only: default | dd | ddm | dms | utm | mgrs
-  /** Transient session-only: coordinate display format in waypoint modal list (not persisted). */
+  /** Transient session-only: waypoint list + editor coordinate display format (not persisted). */
   _waypointListCoordFormat: "default", // session-only: default | dd | ddm | dms | utm | mgrs
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
   /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
@@ -22787,10 +22794,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "COORD-MODAL-FORMAT-COPY-A";
-const APP_BUILD_DETAIL = "coordinate format and copy controls for waypoint, track and favorites lists";
+const APP_BUILD_ID = "COORD-MODAL-FORMAT-COPY-A-FIX1";
+const APP_BUILD_DETAIL = "move waypoint coordinate format to editor; auto-detect pasted coordinates and sync draft pin";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 137;
+const APP_BUILD_NUM = 138;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -50034,7 +50041,7 @@ function waypointListCoordFormatEffective(){
   if (p === "MGRS") return "mgrs";
   return "dd";
 }
-/** List-only waypoint coordinate display (WGS84 lat/lon → formatter). Session format; no data mutation. */
+/** Waypoint list + editor coordinate display (WGS84 lat/lon → formatter). Session format; no data mutation. */
 function formatWaypointListCoordinates(lat, lon){
   const la = Number(lat), lo = Number(lon);
   if (!Number.isFinite(la) || !Number.isFinite(lo)) return "—";
@@ -50055,6 +50062,14 @@ function syncWaypointListCoordFormatSelect(){
   const v = normalizeWaypointListCoordFormat(state._waypointListCoordFormat);
   try { sel.value = v; } catch(_){}
 }
+function writeWaypointEditorCoordFieldFromDraft(){
+  const coordEl = document.getElementById("wpFieldCoord");
+  const d = state.waypointEditorDraft;
+  if (!coordEl || !d) return;
+  if (!(Number.isFinite(d.lat) && Number.isFinite(d.lon))) return;
+  const s = formatWaypointListCoordinates(d.lat, d.lon);
+  if (s && s !== "—") coordEl.value = s;
+}
 function wireWaypointListCoordFormatOnce(){
   const sel = document.getElementById("waypointListCoordFormat");
   if (!sel || sel._waypointListCoordFormatBound) return;
@@ -50062,6 +50077,7 @@ function wireWaypointListCoordFormatOnce(){
   sel.addEventListener("change", (ev) => {
     state._waypointListCoordFormat = normalizeWaypointListCoordFormat(ev.target && ev.target.value);
     syncWaypointListCoordFormatSelect();
+    try { writeWaypointEditorCoordFieldFromDraft(); } catch(_){}
     try { renderWpModalList(); } catch(_){}
   });
 }
@@ -60748,9 +60764,39 @@ function gisInit(){
     if (d && d.id) requestWaypointDelete(d.id);
   });
   const wpCoord = document.getElementById("wpFieldCoord");
-  if (wpCoord) wpCoord.addEventListener("input", (ev) => {
-    onEditorCoordInput(ev.target.value);
-  });
+  if (wpCoord && !wpCoord._wpCoordLifecycleBound){
+    wpCoord._wpCoordLifecycleBound = true;
+    wpCoord.addEventListener("input", (ev) => {
+      clearWaypointCoordInputDebounce();
+      const val = ev.target && ev.target.value;
+      _wpCoordInputDebounceTimer = setTimeout(() => {
+        _wpCoordInputDebounceTimer = null;
+        onEditorCoordInput(val, { softFeedback: true });
+      }, 350);
+    });
+    wpCoord.addEventListener("paste", () => {
+      clearWaypointCoordInputDebounce();
+      setTimeout(() => {
+        if (!state.waypointEditorDraft) return;
+        const el = document.getElementById("wpFieldCoord");
+        if (!el) return;
+        onEditorCoordInput(el.value, { rewriteField: true });
+      }, 0);
+    });
+    wpCoord.addEventListener("blur", () => {
+      clearWaypointCoordInputDebounce();
+      if (!state.waypointEditorDraft) return;
+      const el = document.getElementById("wpFieldCoord");
+      if (!el) return;
+      const r = parseWaypointEditorCoordText(el.value);
+      if (r.ok){
+        applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: true });
+      } else if (r.empty){
+        applyWaypointEditorCoordEmpty();
+      }
+      // Invalid non-empty: leave text + previous draft intact.
+    });
+  }
   const wpName = document.getElementById("wpFieldName");
   if (wpName && !wpName._wpNameEnterBound) {
     wpName._wpNameEnterBound = true;
@@ -76496,6 +76542,7 @@ function renderWpModalList(){
  *  waypoint (by id). Prefills from `state.mapWaypoints` or from
  *  `state.waypointEditorDraft` (e.g. pick-on-map just set one). */
 function openWaypointEditor(opts){
+  try { clearWaypointCoordInputDebounce(); } catch(_){}
   const editor = document.getElementById("waypointEditor");
   if (!editor) return;
   ensureMapWaypointsState();
@@ -76543,11 +76590,15 @@ function openWaypointEditor(opts){
   const delBtn = document.getElementById("wpEditorDelete");
   if (nameEl) nameEl.value = d.name || "";
   if (coordEl){
-    coordEl.value = (Number.isFinite(d.lat) && Number.isFinite(d.lon))
-      ? (d.lat.toFixed(5) + ", " + d.lon.toFixed(5))
-      : "";
+    if (Number.isFinite(d.lat) && Number.isFinite(d.lon)){
+      const s = formatWaypointListCoordinates(d.lat, d.lon);
+      coordEl.value = (s && s !== "—") ? s : "";
+    } else {
+      coordEl.value = "";
+    }
     coordEl.removeAttribute("aria-invalid");
   }
+  try { syncWaypointListCoordFormatSelect(); } catch(_){}
   const fb = document.getElementById("wpFieldCoordFeedback");
   if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
   if (iconEl){
@@ -76570,6 +76621,7 @@ function openWaypointEditor(opts){
 }
 
 function closeWaypointEditor(){
+  try { clearWaypointCoordInputDebounce(); } catch(_){}
   const editor = document.getElementById("waypointEditor");
   if (editor) editor.hidden = true;
   const wasNew = !!(state.waypointEditorDraft && !state.waypointEditorDraft.id);
@@ -76600,38 +76652,108 @@ function startWaypointNewWaypointFlow(){
   openWaypointEditor();
 }
 
-/** Parse the free-text coordinate input and update the draft on success.
- *  Gives inline feedback (aria-invalid + localized message) on failure. */
-function onEditorCoordInput(str){
-  const fb = document.getElementById("wpFieldCoordFeedback");
-  const input = document.getElementById("wpFieldCoord");
-  if (!state.waypointEditorDraft) return;
+/** Parse free-text waypoint editor coordinate via Convert-canonical `autoDetect` (WGS84). */
+function parseWaypointEditorCoordText(str){
   const s = String(str || "").trim();
-  if (!s){
-    if (input) input.removeAttribute("aria-invalid");
-    if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
-    state.waypointEditorDraft.lat = NaN;
-    state.waypointEditorDraft.lon = NaN;
-    return;
-  }
+  if (!s) return { ok: false, empty: true };
   try {
     const det = autoDetect(s);
     validateLatLon(det.lat, det.lon);
-    state.waypointEditorDraft.lat = det.lat;
-    state.waypointEditorDraft.lon = normalizeLon(det.lon);
-    if (input) input.removeAttribute("aria-invalid");
-    if (fb){
-      fb.textContent = det.lat.toFixed(5) + ", " + det.lon.toFixed(5) + " (" + (det.type || "LatLon") + ")";
-      fb.classList.remove("is-err"); fb.classList.add("is-ok");
-    }
+    return { ok: true, lat: det.lat, lon: normalizeLon(det.lon), type: det.type || "LatLon" };
   } catch(err){
-    state.waypointEditorDraft.lat = NaN;
-    state.waypointEditorDraft.lon = NaN;
+    return { ok: false, empty: false, err: err };
+  }
+}
+
+/** Sync draft map pin from editor draft (new/pick flow only). No auto-center. */
+function syncWaypointDraftPinFromEditor(){
+  const d = state.waypointEditorDraft;
+  if (!d || d.id) return;
+  if (!Number.isFinite(d.lat) || !Number.isFinite(d.lon)) return;
+  const prev = state.trackWaypointDraft;
+  state.trackWaypointDraft = {
+    lat: d.lat,
+    lon: d.lon,
+    name: (prev && prev.name) || (typeof t === "function" ? (t("track.waypointDefaultName") || "Waypoint") : "Waypoint"),
+    color: d.color || (prev && prev.color) || "#2563eb",
+    icon: d.icon || (prev && prev.icon) || "hq"
+  };
+  try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+}
+
+function applyWaypointEditorCoordEmpty(){
+  if (!state.waypointEditorDraft) return;
+  state.waypointEditorDraft.lat = NaN;
+  state.waypointEditorDraft.lon = NaN;
+  const input = document.getElementById("wpFieldCoord");
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (input) input.removeAttribute("aria-invalid");
+  if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
+  if (!state.waypointEditorDraft.id){
+    state.trackWaypointDraft = null;
+    try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
+  }
+}
+
+function applyWaypointEditorCoordSuccess(lat, lon, type, opts){
+  opts = opts || {};
+  if (!state.waypointEditorDraft) return;
+  state.waypointEditorDraft.lat = lat;
+  state.waypointEditorDraft.lon = lon;
+  const input = document.getElementById("wpFieldCoord");
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (input) input.removeAttribute("aria-invalid");
+  if (fb){
+    if (opts.softFeedback){
+      fb.textContent = "";
+      fb.classList.remove("is-ok", "is-err");
+    } else {
+      fb.textContent = lat.toFixed(5) + ", " + lon.toFixed(5) + " (" + (type || "LatLon") + ")";
+      fb.classList.remove("is-err");
+      fb.classList.add("is-ok");
+    }
+  }
+  if (opts.rewriteField){
+    try { writeWaypointEditorCoordFieldFromDraft(); } catch(_){}
+  }
+  if (!state.waypointEditorDraft.id) syncWaypointDraftPinFromEditor();
+}
+
+let _wpCoordInputDebounceTimer = null;
+function clearWaypointCoordInputDebounce(){
+  if (_wpCoordInputDebounceTimer != null){
+    try { clearTimeout(_wpCoordInputDebounceTimer); } catch(_){}
+    _wpCoordInputDebounceTimer = null;
+  }
+}
+
+/** Parse editor coord text; update draft on success. Failures are non-destructive (except empty). */
+function onEditorCoordInput(str, opts){
+  opts = opts || {};
+  if (!state.waypointEditorDraft) return;
+  const s = String(str || "").trim();
+  if (!s){
+    applyWaypointEditorCoordEmpty();
+    return;
+  }
+  const r = parseWaypointEditorCoordText(s);
+  if (r.ok){
+    applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, {
+      rewriteField: !!opts.rewriteField,
+      softFeedback: !!opts.softFeedback
+    });
+    return;
+  }
+  // Invalid non-empty: keep previous canonical draft + field text.
+  if (opts.showInvalid){
+    const input = document.getElementById("wpFieldCoord");
+    const fb = document.getElementById("wpFieldCoordFeedback");
     if (input) input.setAttribute("aria-invalid", "true");
     if (fb){
-      const key = (err && (err.key || err.i18nKey)) || "err.notRecognized";
+      const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
       fb.textContent = t(key);
-      fb.classList.remove("is-ok"); fb.classList.add("is-err");
+      fb.classList.remove("is-ok");
+      fb.classList.add("is-err");
       try { appRevealModalError(fb); } catch(_){}
     }
   }
@@ -76642,16 +76764,25 @@ function onEditorCoordInput(str){
 function commitWaypointEditor(){
   const d = state.waypointEditorDraft;
   if (!d) return;
-  // Accept coord from the input box if it wasn't triggered yet.
+  try { clearWaypointCoordInputDebounce(); } catch(_){}
+  // Gate: always parse the CURRENT field text — never trust stale draft coords alone.
   const coordEl = document.getElementById("wpFieldCoord");
-  if (coordEl && coordEl.value && (!Number.isFinite(d.lat) || !Number.isFinite(d.lon))){
-    onEditorCoordInput(coordEl.value);
-  }
-  if (!Number.isFinite(d.lat) || !Number.isFinite(d.lon)){
+  const text = coordEl ? String(coordEl.value || "") : "";
+  const parsed = parseWaypointEditorCoordText(text);
+  if (!parsed.ok){
     const fb = document.getElementById("wpFieldCoordFeedback");
-    if (fb){ fb.textContent = t("err.notRecognized"); fb.classList.add("is-err"); try { appRevealModalError(fb); } catch(_){} }
+    if (coordEl) coordEl.setAttribute("aria-invalid", "true");
+    if (fb){
+      const key = (parsed.err && (parsed.err.key || parsed.err.i18nKey)) || "err.notRecognized";
+      fb.textContent = t(key);
+      fb.classList.remove("is-ok");
+      fb.classList.add("is-err");
+      try { appRevealModalError(fb); } catch(_){}
+    }
     return;
   }
+  d.lat = parsed.lat;
+  d.lon = parsed.lon;
   try { validateLatLon(d.lat, d.lon); }
   catch(err){
     const fb = document.getElementById("wpFieldCoordFeedback");
