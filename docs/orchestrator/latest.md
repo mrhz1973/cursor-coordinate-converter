@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-07 — **`DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A` CLOSED / PASS docs-only**. Commit task **`77bceb1`** (`docs: backlog waypoint center and transparent overlay stack`). Registrati backlog **WAYPOINT-EDITOR-CENTER-A** + **MAP-TRANSPARENT-OVERLAY-STACK-A** (NOT OPENED; non next). **MODAL-OPEN-TOP-ALIGN-A** preservato. Ordine next invariato: SERIES → provider → MODAL-OPEN. Runtime tip **`a0a6816`** / build **138** invariato. Monolite **non** modificato. WU-0012 **non** toccata (overlay fuori federated index). Inbox: `docs/orchestrator/inbox/2026-08-07_1247_docs_backlog_waypoint_center_overlays.md`.
+2026-08-07 — **`DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN` CLOSED / PASS docs-only**. Commit task **`5b4e411`** (`docs: open transparent overlay stack after provider discovery`). **MAP-TRANSPARENT-OVERLAY-STACK-A** promosso a **OPEN / READY FOR IMPLEMENTATION**. Diagnostic/provider discovery + product scope v1 + proxy Planet-Clone (`0fa1941`) registrati. WU-0012 sequenza **sospesa** (non cancellata). Corrente: GIS IMPLEMENTATION target build **139**. Runtime tip **`a0a6816`** / build **138** invariato. Monolite **non** modificato. Inbox: `docs/orchestrator/inbox/2026-08-07_1555_docs_open_transparent_overlay_stack.md`.
 
-2026-08-07 — **`finito` COORD-FIX1** (storico; task docs `a7dc659`; tip `a0a6816`).
+2026-08-07 — **`DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A` CLOSED** (storico; task `77bceb1`).
