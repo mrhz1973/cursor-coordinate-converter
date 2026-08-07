@@ -22881,10 +22881,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX2";
-const APP_BUILD_DETAIL = "extend Strava display with local overzoom and distinguish raster overlays";
+const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX3";
+const APP_BUILD_DETAIL = "preserve effective-online gate in Strava overzoom hydration";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 141;
+const APP_BUILD_NUM = 142;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39120,6 +39120,8 @@ async function hydrateStravaRunHeatmapTiles(mapRoot, tileGen, fetchSig){
       try {
         const hit = await getTileBlobByKey(sourceKey);
         if (hit) return hit;
+        /* Browse path: same gate as hydrateCachedRasterOverlayTiles — cache-first, then online. */
+        if (!isEffectivelyOnline()) return null;
         if (fetchSig && fetchSig.aborted) return null;
         try {
           await fetchAndStoreTile(layerId, sourceZ, sourceX, sourceY, layer, fetchSig || undefined);
