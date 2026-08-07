@@ -22831,10 +22831,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A";
-const APP_BUILD_DETAIL = "add OSM sharding and cached hiking, Strava Run and hillshade overlays";
+const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1";
+const APP_BUILD_DETAIL = "preserve SonarChart path and enforce overlay offline max zoom";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 139;
+const APP_BUILD_NUM = 140;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29500,6 +29500,16 @@ function offlineLayerMaxZoom(layer){
   return (layer && Number.isFinite(layer.maxZoom)) ? (layer.maxZoom | 0) : 19;
 }
 
+/** True when precache z0/z1 exceeds the layer's published maxZoom (no silent clamp). */
+function offlinePrecacheZoomExceedsLayerMax(z0, z1, layer){
+  const maxZ = offlineLayerMaxZoom(layer);
+  return (Number(z0) > maxZ) || (Number(z1) > maxZ);
+}
+
+function offlinePrecacheZoomTooHighMessage(layer){
+  return String(t("export.offlineJpg.zoomTooHigh")).replace("{0}", String(offlineLayerMaxZoom(layer)));
+}
+
 function readOfflineExportZoom(layer){
   const pi = (v) => parseInt(String(v == null ? "" : v).replace(",", "."), 10);
   let z = pi(document.getElementById("pcExportZ")?.value);
@@ -35414,7 +35424,7 @@ function trackLonsAlignToView(unwrapped, viewLon){
  *   tile.openstreetmap.fr. Subdomain sharding (a-c).
  *
  * OpenStreetMap standard (id `osmStandard`): tile.openstreetmap.org
- *   single host, no subdomains. Online-only for bulk offline/download
+ *   subdomain sharding (a-c) via (x+y)%3. Online-only for bulk offline/download
  *   (`cacheable: false` per OSMF tile usage policy).
  *
  * CyclOSM (id `cyclosm`): cyclosm.openstreetmap.fr. Subdomain sharding (a-c).
@@ -35668,13 +35678,13 @@ const HILLSHADE_OVERLAY = {
   maxZoom: 12
 };
 
-const CACHEABLE_RASTER_OVERLAY_IDS = Object.freeze([
-  "sonarchart", "waymarkedHiking", "stravaRunHeatmap", "hillshadeOverlay"
+/** New cacheable raster overlays only (SonarChart stays on its historical path). */
+const NEW_CACHEABLE_RASTER_OVERLAY_IDS = Object.freeze([
+  "waymarkedHiking", "stravaRunHeatmap", "hillshadeOverlay"
 ]);
 
-function getRasterOverlayDef(layerId){
+function getNewRasterOverlayDef(layerId){
   const id = String(layerId || "");
-  if (id === "sonarchart") return SONARCHART_OVERLAY;
   if (id === "waymarkedHiking") return WAYMARKED_HIKING_OVERLAY;
   if (id === "stravaRunHeatmap") return STRAVA_RUN_HEATMAP_OVERLAY;
   if (id === "hillshadeOverlay") return HILLSHADE_OVERLAY;
@@ -35690,8 +35700,11 @@ let _exportJpgStrictOpConfirmed = false;
 
 function tileLayerExternalKind(layerId){
   const id = String(layerId || "");
-  const ov = getRasterOverlayDef(id);
-  if (ov && ov.external) return ov.external;
+  if (id === "sonarchart" && SONARCHART_OVERLAY && SONARCHART_OVERLAY.external){
+    return SONARCHART_OVERLAY.external;
+  }
+  const nov = getNewRasterOverlayDef(id);
+  if (nov && nov.external) return nov.external;
   const layer = getOfflineTileLayer(layerId);
   if (layer && layer.external) return layer.external;
   return (id === "nav") ? "tailnet-proxy" : "internet";
@@ -35848,15 +35861,20 @@ const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "o
 function isLayerOfflineUnavailable(layerId){
   const id = String(layerId || "").trim();
   if (!id) return false;
-  const ov = getRasterOverlayDef(id);
-  if (ov) return !!(ov.cacheable === false);
+  if (id === "sonarchart"){
+    const layer = SONARCHART_OVERLAY;
+    return !!(layer && layer.cacheable === false);
+  }
+  const nov = getNewRasterOverlayDef(id);
+  if (nov) return !!(nov.cacheable === false);
   const layer = TILE_LAYERS[id];
   return !!(layer && layer.cacheable === false);
 }
 
 const OFFLINE_LAYER_IDS = Object.freeze([
   ...MAP_BASE_LAYER_IDS.filter(id => !isLayerOfflineUnavailable(id)),
-  ...CACHEABLE_RASTER_OVERLAY_IDS.filter(id => !isLayerOfflineUnavailable(id))
+  ...(isLayerOfflineUnavailable("sonarchart") ? [] : ["sonarchart"]),
+  ...NEW_CACHEABLE_RASTER_OVERLAY_IDS.filter(id => !isLayerOfflineUnavailable(id))
 ]);
 function resolveCatalogLayerId(id, allowedIds){
   const raw = String(id || "").trim();
@@ -35884,8 +35902,9 @@ function sanitizeOfflineLayerId(id){
 }
 function getOfflineTileLayer(layerId){
   const id = sanitizeOfflineLayerId(layerId);
-  const ov = getRasterOverlayDef(id);
-  if (ov) return ov;
+  if (id === "sonarchart") return SONARCHART_OVERLAY;
+  const nov = getNewRasterOverlayDef(id);
+  if (nov) return nov;
   return TILE_LAYERS[id] || TILE_LAYERS.osm;
 }
 function offlineLayerSelectLabel(layerId){
@@ -38393,6 +38412,10 @@ function showOfflineDeleteTilesFeedback(res){
 }
 
 async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
+  const maxZ = (layer && Number.isFinite(layer.maxZoom)) ? (layer.maxZoom | 0) : null;
+  if (maxZ != null && Number(z) > maxZ){
+    throw new Error("zoom-too-high");
+  }
   const key  = makeTileKey(layerId, z, x, y);
   const have = await getTileBlobByKey(key);
   if (have) return { skipped: true };
@@ -38426,6 +38449,9 @@ async function fetchAndStoreTile(layerId, z, x, y, layer, signal){
 async function startPrecacheDownload(opts){
   const { n, s, e, w, z0, z1, layerId, onProgress } = opts;
   const layer = getOfflineTileLayer(layerId);
+  if (offlinePrecacheZoomExceedsLayerMax(z0, z1, layer)){
+    return { aborted: true, done: 0, total: 0, err: 0, userCancelled: true, errKinds: makeEmptyTileErrKinds(), zoomTooHigh: true };
+  }
   const tiles = collectBboxTiles(n, s, e, w, z0, z1);
   const total = tiles.length;
   if (total > MAX_PRECACHE_TILES) throw new Error("tooMany");
@@ -38840,12 +38866,73 @@ async function hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, cfg){
 
 /** SonarChart overlay tiles: IndexedDB first, then network when allowed (online overlay toggle). */
 async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
-  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
-    layerId: "sonarchart",
-    layer: SONARCHART_OVERLAY,
-    imgSelector: "img.tile-sonarchart",
-    isVisible: (z) => (z == null ? !!state.showSonarChart : sonarChartOverlayVisible(z))
-  });
+  if (!mapRoot || !state.showSonarChart) return;
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen) return;
+  const layer = SONARCHART_OVERLAY;
+  const layerId = "sonarchart";
+  const imgs = [...mapRoot.querySelectorAll("img.tile-sonarchart")];
+  const online = isEffectivelyOnline();
+  const load1 = async (img) => {
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+    const wrap = img.closest(".tile-wrap");
+    if (!wrap) return;
+    const xw = +wrap.dataset.xw, y = +wrap.dataset.y, z = +wrap.dataset.z;
+    if (!Number.isFinite(xw) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+    if (!sonarChartOverlayVisible(z)) { img.style.display = "none"; return; }
+    const tkey = makeTileKey(layerId, z, xw, y);
+    const cleanBlobAttr = () => {
+      const u = img.getAttribute("data-blob-url");
+      if (u){ try { URL.revokeObjectURL(u); } catch(_){} img.removeAttribute("data-blob-url"); }
+    };
+    try {
+      const blob = await getTileBlobByKey(tkey);
+      if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+      if (blob){
+        cleanBlobAttr();
+        const u = URL.createObjectURL(blob);
+        img.setAttribute("data-blob-url", u);
+        img.src = u;
+        img.style.display = "";
+        return;
+      }
+      if (online && !state.forceOffline){
+        let mayFetch = tileFetchAllowed(layerId);
+        if (!mayFetch && state.opsecStrict && tileLayerExternalKind(layerId) === "tailnet-proxy"){
+          mayFetch = await ensureProxyConsent(layerId);
+        }
+        if (mayFetch){
+          const url = buildTileUrl(layer, z, xw, y);
+          const nKind = offlineTileNetworkKind(layerId);
+          const fetchOpts = { mode: "cors" };
+          if (fetchSig) fetchOpts.signal = fetchSig;
+          let netRecorded = false;
+          try {
+            const r = await fetch(url, fetchOpts);
+            if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+            if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; throw 0; }
+            const b = await r.blob();
+            if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+            cleanBlobAttr();
+            const u = URL.createObjectURL(b);
+            img.setAttribute("data-blob-url", u);
+            img.src = u;
+            img.style.display = "";
+            recordNetEvent(url, nKind, true);
+            netRecorded = true;
+            // Cache-on-browse: persist the just-fetched SonarChart overlay tile.
+            void cacheTileFromDisplay(tkey, b);
+            return;
+          } catch(_netErr){
+            if (!netRecorded) recordNetEvent(url, nKind, false);
+            throw _netErr;
+          }
+        }
+      }
+    } catch(_){}
+    if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+    img.style.display = "none";
+  };
+  await Promise.all(imgs.map(i => load1(i)));
 }
 
 async function hydrateWaymarkedHikingTiles(mapRoot, tileGen, fetchSig){
@@ -38939,6 +39026,15 @@ function onPrecacheStart(){
     if (st) st.textContent = t("offcache.badbox");
     setBadge("error", t("offcache.badbox"));
     return;
+  }
+  {
+    const layerForZoom = getOfflineTileLayer(layerId);
+    if (offlinePrecacheZoomExceedsLayerMax(z0, z1, layerForZoom)){
+      const msg = offlinePrecacheZoomTooHighMessage(layerForZoom);
+      if (st) st.textContent = msg;
+      setBadge("error", msg);
+      return;
+    }
   }
   let areaId = null;
   let wasNewRegistration = false;
@@ -40913,6 +41009,8 @@ function namedAreaToPrecacheParams(a){
   if (![n, s, e, w, z0, z1].every(Number.isFinite) || n <= s || w > e || z0 > z1 || z0 < 2 || z1 > 19) return null;
   const layerId = sanitizeOfflineLayerId((a.layerId != null && a.layerId !== "") ? String(a.layerId) : "osm");
   if (isLayerOfflineUnavailable(layerId)) return null;
+  const layer = getOfflineTileLayer(layerId);
+  if (offlinePrecacheZoomExceedsLayerMax(z0, z1, layer)) return null;
   let tot;
   try { tot = countBboxTiles(n, s, e, w, z0, z1); } catch(_){ return null; }
   if (!Number.isFinite(tot) || tot <= 0 || tot > MAX_PRECACHE_TILES) return null;
