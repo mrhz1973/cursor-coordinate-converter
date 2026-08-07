@@ -134,11 +134,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | commit docs **finito COORD-MODAL-FORMAT-COPY-A-FIX1** (verificare `git ls-remote`) |
+| HEAD documentale (pre-autosync) | commit docs **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN** (verificare `git ls-remote`) |
 | Runtime live / commit monolite | `a0a68167f159b6945be4fbd3089a7acb7403093f` (`a0a6816`) — tip COORD-MODAL-FORMAT-COPY-A-FIX1 |
-| Ultimo blocco chiuso | **COORD-MODAL-FORMAT-COPY-A (+ FIX1)** — **CLOSED / PASS end-to-end** (Regola H; QA PASS operatore) |
+| Ultimo blocco chiuso | **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN** — **CLOSED / PASS docs-only** (promozione overlay OPEN) |
 | Ultimo blocco runtime monolite | **COORD-MODAL-FORMAT-COPY-A-FIX1** — tip `a0a6816` build 138 — **CLOSED / PASS end-to-end** |
-| Task aperto corrente | **CARTO-INDEX-FEDERATED-A — OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED — NEXT SERIES\|PROVIDER** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)); prossimi candidati SERIES / provider |
+| Task aperto corrente | **MAP-TRANSPARENT-OVERLAY-STACK-A — OPEN / READY FOR IMPLEMENTATION** (fuori WU-0012; GIS IMPLEMENTATION target build 139). WU-0012 **OPEN** ma sequenza SERIES\|provider\|MODAL **sospesa** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)) |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
@@ -164,7 +164,8 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | COORD-MODAL-FORMAT-COPY-A (+ FIX1) | **CLOSED / PASS end-to-end** (formato+copia coordinate; tip `a0a6816` build 138) |
 | MODAL-OPEN-TOP-ALIGN-A | **BACKLOG / NOT OPENED** (apertura modal top-align) |
 | WAYPOINT-EDITOR-CENTER-A | **BACKLOG / NOT OPENED** (Centra in editor waypoint; non next) |
-| MAP-TRANSPARENT-OVERLAY-STACK-A | **BACKLOG / NOT OPENED** (overlay trasparenti Layers; DELICATO; fuori WU-0012; non next) |
+| MAP-TRANSPARENT-OVERLAY-STACK-A | **OPEN / READY FOR IMPLEMENTATION** (overlay Layers; DELICATO; fuori WU-0012; corrente operativo; target GIS build 139; tip live ancora `a0a6816`/138) |
+| DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN | **CLOSED / PASS docs-only** (promozione + diagnostic/scope/proxy registrati) |
 | CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED — NEXT SERIES\|PROVIDER** — WU-0012; Prot. IGM-2024-7891 |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
@@ -226,13 +227,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 **Prossimo ordine operativo:**
 
-Ultimo blocco chiuso: **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED / PASS end-to-end**. WU-0012 **OPEN** — prossimi candidati **CARTO-IGM-SERIES-EXPAND-A** / provider; backlog UX **MODAL-OPEN-TOP-ALIGN-A** (nessun auto-start). Backlog aggiuntivi **non** next: **WAYPOINT-EDITOR-CENTER-A**; **MAP-TRANSPARENT-OVERLAY-STACK-A**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`a0a6816`** / **`COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Ultimo blocco docs: **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN CLOSED / PASS docs-only**. **Corrente:** **MAP-TRANSPARENT-OVERLAY-STACK-A — GIS IMPLEMENTATION** (target build **139**; tip live ancora **`a0a6816`** / build **138**). WU-0012 **OPEN** — sequenza SERIES / provider / MODAL-OPEN **sospesa** (non cancellata); ripresa dopo overlay. Backlog: **WAYPOINT-EDITOR-CENTER-A**; **MODAL-OPEN-TOP-ALIGN-A**. **Oggetti GIS FROZEN**. **ROUTING-PROFILE-EDIT-A** = **SUPERSEDED / RENAMED — NO RUNTIME**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. Runtime live monolite **`a0a6816`** / **`COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138`**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **COORD-MODAL-FORMAT-COPY-A (+ FIX1)** CLOSED tip **`a0a6816`**. **CARTO-IGM-AREA-ESC-RESTORE-A** CLOSED (superseded live). **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** CLOSED (superseded live). **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-SEARCH-ENGINE-A** CLOSED (superseded live). **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
-**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; serie / provider (WU-0012 OPEN); **MODAL-OPEN-TOP-ALIGN-A**; **WAYPOINT-EDITOR-CENTER-A**; **MAP-TRANSPARENT-OVERLAY-STACK-A** (fuori WU-0012; DELICATO); import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
+**Backlog basso / non ora:** **OUTDOOR-ROUTING-API-GATEWAY-A**; serie / provider (WU-0012 sospesa); **MODAL-OPEN-TOP-ALIGN-A**; **WAYPOINT-EDITOR-CENTER-A**; import/restore MAJOR-4; resto Bundle F. **QA-OPERATOR-IT-ONLY-PREF CLOSED**. **QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED**. **TRACK-POINT-CENTER-BUTTON-A CLOSED**. **ROUTING-PROFILE-EDIT-A** non è più backlog attivo (SUPERSEDED / RENAMED).
 
-**Stop:** non gateway senza decisione; **non** aprire serie/provider/MODAL-OPEN/WAYPOINT-CENTER/OVERLAY-STACK senza decisione esplicita; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
+**Stop:** non gateway senza decisione; **non** riaprire Objects GIS; **non** modificare Planet-Clone da questo repo salvo blocco dedicato; **non** cancellare `nord-ovest-B` / `nord-ovest-B-v3-elev` / backup o staging EXEC-C.
 
 ---
 
