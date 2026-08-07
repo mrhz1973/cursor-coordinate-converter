@@ -1941,17 +1941,36 @@ html[data-theme="dark"] .bbox-overlay{
   position:absolute; left:0; top:0; width:256px; height:256px;
   display:block; pointer-events:none; image-rendering:auto;
 }
+/* Raster overlay stack (DOM order + shared z=3): basemap(2) < hillshade <
+ * waymarked < strava < sonarchart < seamark — all below GIS vectors (poly 4 / track+wp 5). */
+.tile-wrap .tile.tile-hillshade{
+  z-index:3;
+  opacity:.50;
+  pointer-events:none;
+}
+.tile-wrap .tile.tile-waymarked-hiking{
+  z-index:3;
+  opacity:.70;
+  pointer-events:none;
+}
+.tile-wrap .tile.tile-strava-run{
+  z-index:3;
+  opacity:.55;
+  pointer-events:none;
+}
+.tile-wrap .tile.tile-sonarchart{
+  z-index:3;
+  pointer-events:none;
+}
 .tile-wrap .tile.tile-seamark{
-  z-index:4;
+  z-index:3;
   opacity:.92;
   mix-blend-mode:multiply;
+  pointer-events:none;
 }
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
   opacity:.95;
   mix-blend-mode:screen;
-}
-.tile-wrap .tile.tile-sonarchart{
-  z-index:3;
 }
 /* B2: mission pack tile (from IndexedDB) — no chrome; looks “solid”. */
 .tile-wrap.tile-mission .tile{ z-index:2 }
@@ -15464,6 +15483,9 @@ const I18N = {
     "map.layerBathy":"Batimetria",
     "map.overlaySeamarks":"Seamarks (boe/fari)",
     "map.overlaySonarChart":"Navionics SonarChart",
+    "map.overlayHillshade":"Hillshade",
+    "map.overlayWaymarkedHiking":"WayMarked Trails — Hiking",
+    "map.overlayStravaRun":"Strava Heatmap — Run",
     "map.overlayMgrs":"Grigliato MGRS",
     "map.layersSectionTopographic":"Topografica",
     "map.layersSectionSatellite":"Satellitare",
@@ -15492,6 +15514,9 @@ const I18N = {
     "tip.overlaySeamarks":"Overlay nautico OpenSeaMap (boe, fari, segnalamenti). Solo online.",
     "tip.overlayMgrs":"Griglia MGRS/UTM sulla mappa. Overlay locale, nessuna rete.",
     "tip.overlaySonarChart":"Overlay batimetrico Navionics SonarChart — richiede il proxy tailnet (porta 5000)",
+    "tip.overlayHillshade":"Ombreggiatura del rilievo via proxy personale. Cache IndexedDB; max zoom 12.",
+    "tip.overlayWaymarkedHiking":"Sentieri WayMarked Trails (hiking). Overlay internet; cache IndexedDB; max zoom 18.",
+    "tip.overlayStravaRun":"Heatmap Strava Run via proxy personale. Cache IndexedDB; max zoom 11.",
     "tip.basemapPicker":"Tipo di mappa: cartografia o satellite",
     "tip.recenter":"Torna al punto convertito (ricentra la mappa)",
     "tip.recenterShort":"Torna sul punto",
@@ -17107,6 +17132,8 @@ const I18N = {
     "opsec.strict.gsatConfirm":"Consenti Google Satellite via proxy tailnet per questa sessione?",
     "opsec.strict.bsatWarn":"OPSEC strict è attivo. Bing Satellite passa sulla tailnet cifrata fino al tuo VPS; il VPS contatta Microsoft su internet pubblico (discovery su www.bing.com, tile su *.ssl.ak.tiles.virtualearth.net) usando il suo IP. Questo consenso abilita solo Bing Satellite — non Google Satellite, Navionics né SonarChart.",
     "opsec.strict.bsatConfirm":"Consenti Bing Satellite via proxy tailnet per questa sessione?",
+    "opsec.strict.personalProxyWarn":"OPSEC strict è attivo. Hillshade e Strava Heatmap passano sulla tailnet cifrata fino al tuo VPS; il VPS contatta gli upstream su internet pubblico usando il suo IP. Questo consenso abilita solo i layer proxy personali (Hillshade / Strava Run) — non Google, Bing, Navionics né SonarChart.",
+    "opsec.strict.personalProxyConfirm":"Consenti overlay proxy personali (Hillshade / Strava) via proxy tailnet per questa sessione?",
     "opsec.strict.seamarksBlocked":"OPSEC strict è attivo: OpenSeaMap seamarks è bloccato perché contatta direttamente un host internet dal browser.",
     "opsec.strict.activateWarn":"OPSEC strict graduato: geocoding e host internet pubblici vengono bloccati; il proxy tailnet richiede consenso per-sessione.",
     "help.guide.geo.title":"Geocoding (indirizzo ↔ coordinate)",
@@ -21304,6 +21331,13 @@ function t(key){
   const dict = I18N[state.lang] || I18N.it;
   return (key in dict) ? dict[key] : (I18N.en[key] || key);
 }
+/** L10N-freeze helper: prefer current lang, else IT (no new EN/FR keys). */
+function tIt(key){
+  const dict = I18N[state.lang] || I18N.it;
+  if (Object.prototype.hasOwnProperty.call(dict, key)) return dict[key];
+  if (I18N.it && Object.prototype.hasOwnProperty.call(I18N.it, key)) return I18N.it[key];
+  return key;
+}
 function translateError(e){
   if (e && e.key) return t(e.key);
   return e && e.message ? e.message : String(e);
@@ -21375,6 +21409,9 @@ const state = {
   showGrid: false,       // MGRS grid overlay toggle
   showSeamarks: false,   // OpenSeaMap seamark overlay (online-only)
   showSonarChart: false, // Navionics SonarChart transparent overlay (tailnet-proxy; default off)
+  showWaymarkedHiking: false,   // WayMarked Trails hiking overlay (internet; cacheable)
+  showStravaRunHeatmap: false,  // Strava Run heatmap overlay (personal proxy; cacheable)
+  showHillshadeOverlay: false,  // Hillshade overlay (personal proxy; cacheable)
   showCoverage: true,    // Offline coverage overlay (cached tiles + named areas)
   // Geocoding (Nominatim) — all opt-outable from settings.
   geocodeEnabled: true,  // Master switch for all Nominatim calls.
@@ -22794,10 +22831,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "COORD-MODAL-FORMAT-COPY-A-FIX1";
-const APP_BUILD_DETAIL = "move waypoint coordinate format to editor; auto-detect pasted coordinates and sync draft pin";
+const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A";
+const APP_BUILD_DETAIL = "add OSM sharding and cached hiking, Strava Run and hillshade overlays";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 138;
+const APP_BUILD_NUM = 139;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24965,6 +25002,9 @@ function saveStore(){
         showGrid: !!state.showGrid,
         showSeamarks: !!state.showSeamarks,
         showSonarChart: !!state.showSonarChart,
+        showWaymarkedHiking: !!state.showWaymarkedHiking,
+        showStravaRunHeatmap: !!state.showStravaRunHeatmap,
+        showHillshadeOverlay: !!state.showHillshadeOverlay,
         showCoverage: state.showCoverage !== false,
         mapMeasureUnit: String(state.mapMeasureUnit || "m"),
         trackDisplayUnit: normalizeTrackDisplayUnit(state.trackDisplayUnit),
@@ -35461,7 +35501,10 @@ const TILE_LAYERS = {
   osmStandard: {
     external: "internet",
     cacheable: false,
-    url:    (z, x, y) => `https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
+    url:    (z, x, y) => {
+      const sub = ["a", "b", "c"][Math.abs(x + y) % 3];
+      return `https://${sub}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+    },
     attrib: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
     maxZoom: 19
   },
@@ -35595,17 +35638,60 @@ const SONARCHART_OVERLAY = {
   maxZoom: 18
 };
 
+/* WayMarked Trails — Hiking (internet XYZ PNG; cacheable overlay). */
+const WAYMARKED_HIKING_OVERLAY = {
+  id: "waymarkedHiking",
+  external: "internet",
+  transparent: true,
+  defaultOn: false,
+  url: (z, x, y) => `https://tile.waymarkedtrails.org/hiking/${z}/${x}/${y}.png`,
+  maxZoom: 18
+};
+
+/* Strava Heatmap Run — personal tailnet proxy only (no direct upstream). */
+const STRAVA_RUN_HEATMAP_OVERLAY = {
+  id: "stravaRunHeatmap",
+  external: "tailnet-proxy",
+  transparent: true,
+  defaultOn: false,
+  url: (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/strava-run/${z}/${x}/${y}.png`,
+  maxZoom: 11
+};
+
+/* Hillshade — personal tailnet proxy only (JPEG + CSS opacity). */
+const HILLSHADE_OVERLAY = {
+  id: "hillshadeOverlay",
+  external: "tailnet-proxy",
+  transparent: true,
+  defaultOn: false,
+  url: (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/hillshade/${z}/${x}/${y}.jpg`,
+  maxZoom: 12
+};
+
+const CACHEABLE_RASTER_OVERLAY_IDS = Object.freeze([
+  "sonarchart", "waymarkedHiking", "stravaRunHeatmap", "hillshadeOverlay"
+]);
+
+function getRasterOverlayDef(layerId){
+  const id = String(layerId || "");
+  if (id === "sonarchart") return SONARCHART_OVERLAY;
+  if (id === "waymarkedHiking") return WAYMARKED_HIKING_OVERLAY;
+  if (id === "stravaRunHeatmap") return STRAVA_RUN_HEATMAP_OVERLAY;
+  if (id === "hillshadeOverlay") return HILLSHADE_OVERLAY;
+  return null;
+}
+
 let _navProxyConsentPending = null;
 let _gsatConsentPending = null;
 let _bsatConsentPending = null;
+let _personalProxyConsentPending = null;
 let _precacheStrictOpConfirmed = false;
 let _exportJpgStrictOpConfirmed = false;
 
 function tileLayerExternalKind(layerId){
   const id = String(layerId || "");
-  if (id === "sonarchart" && SONARCHART_OVERLAY && SONARCHART_OVERLAY.external){
-    return SONARCHART_OVERLAY.external;
-  }
+  const ov = getRasterOverlayDef(id);
+  if (ov && ov.external) return ov.external;
   const layer = getOfflineTileLayer(layerId);
   if (layer && layer.external) return layer.external;
   return (id === "nav") ? "tailnet-proxy" : "internet";
@@ -35625,6 +35711,7 @@ function tileFetchAllowed(layerId){
     if (prov === "google") return !!state._gsatConsentGranted;
     if (prov === "bing") return !!state._bingConsentGranted;
     if (prov === "navionics") return !!state._navProxyConsentGranted;
+    if (prov === "personal") return !!state._personalProxyConsentGranted;
     return false;
   }
   return true;
@@ -35634,6 +35721,27 @@ function sonarChartOverlayVisible(zoom){
   if (!state.showSonarChart) return false;
   const z = Number(zoom);
   if (Number.isFinite(SONARCHART_OVERLAY.maxZoom) && z > SONARCHART_OVERLAY.maxZoom) return false;
+  return true;
+}
+
+function waymarkedHikingOverlayVisible(zoom){
+  if (!state.showWaymarkedHiking) return false;
+  const z = Number(zoom);
+  if (Number.isFinite(WAYMARKED_HIKING_OVERLAY.maxZoom) && z > WAYMARKED_HIKING_OVERLAY.maxZoom) return false;
+  return true;
+}
+
+function stravaRunHeatmapOverlayVisible(zoom){
+  if (!state.showStravaRunHeatmap) return false;
+  const z = Number(zoom);
+  if (Number.isFinite(STRAVA_RUN_HEATMAP_OVERLAY.maxZoom) && z > STRAVA_RUN_HEATMAP_OVERLAY.maxZoom) return false;
+  return true;
+}
+
+function hillshadeOverlayVisible(zoom){
+  if (!state.showHillshadeOverlay) return false;
+  const z = Number(zoom);
+  if (Number.isFinite(HILLSHADE_OVERLAY.maxZoom) && z > HILLSHADE_OVERLAY.maxZoom) return false;
   return true;
 }
 
@@ -35672,6 +35780,7 @@ function tileLayerProxyProvider(layerId){
   if (id === "gsat") return "google";
   if (id === "bsat") return "bing";
   if (id === "nav" || id === "sonarchart") return "navionics";
+  if (id === "stravaRunHeatmap" || id === "hillshadeOverlay") return "personal";
   return null;
 }
 
@@ -35707,11 +35816,29 @@ async function ensureBsatConsent(){
   return _bsatConsentPending;
 }
 
+/** Session-only consent for personal-proxy overlays (Strava / Hillshade). Not persisted. */
+async function ensurePersonalProxyConsent(){
+  if (!state.opsecStrict) return true;
+  if (state.forceOffline) return false;
+  if (state._personalProxyConsentGranted) return true;
+  if (_personalProxyConsentPending) return _personalProxyConsentPending;
+  _personalProxyConsentPending = showOpsecStrictConfirmDialog(
+    tIt("opsec.strict.personalProxyConfirm") || "",
+    tIt("opsec.strict.personalProxyWarn") || ""
+  ).then((ok) => {
+    if (ok) state._personalProxyConsentGranted = true;
+    _personalProxyConsentPending = null;
+    return !!ok;
+  });
+  return _personalProxyConsentPending;
+}
+
 async function ensureProxyConsent(layerId){
   const prov = tileLayerProxyProvider(layerId);
   if (prov === "google") return ensureGsatConsent();
   if (prov === "bing") return ensureBsatConsent();
   if (prov === "navionics") return ensureNavProxyConsent();
+  if (prov === "personal") return ensurePersonalProxyConsent();
   return false;
 }
 
@@ -35721,17 +35848,15 @@ const MAP_BASE_LAYER_IDS = Object.freeze(["osmHot", "osmStandard", "cyclosm", "o
 function isLayerOfflineUnavailable(layerId){
   const id = String(layerId || "").trim();
   if (!id) return false;
-  if (id === "sonarchart"){
-    const layer = SONARCHART_OVERLAY;
-    return !!(layer && layer.cacheable === false);
-  }
+  const ov = getRasterOverlayDef(id);
+  if (ov) return !!(ov.cacheable === false);
   const layer = TILE_LAYERS[id];
   return !!(layer && layer.cacheable === false);
 }
 
 const OFFLINE_LAYER_IDS = Object.freeze([
   ...MAP_BASE_LAYER_IDS.filter(id => !isLayerOfflineUnavailable(id)),
-  ...(isLayerOfflineUnavailable("sonarchart") ? [] : ["sonarchart"])
+  ...CACHEABLE_RASTER_OVERLAY_IDS.filter(id => !isLayerOfflineUnavailable(id))
 ]);
 function resolveCatalogLayerId(id, allowedIds){
   const raw = String(id || "").trim();
@@ -35759,7 +35884,8 @@ function sanitizeOfflineLayerId(id){
 }
 function getOfflineTileLayer(layerId){
   const id = sanitizeOfflineLayerId(layerId);
-  if (id === "sonarchart") return SONARCHART_OVERLAY;
+  const ov = getRasterOverlayDef(id);
+  if (ov) return ov;
   return TILE_LAYERS[id] || TILE_LAYERS.osm;
 }
 function offlineLayerSelectLabel(layerId){
@@ -35772,10 +35898,17 @@ function offlineLayerSelectLabel(layerId){
     gsat: "map.layerGsat",
     bsat: "map.layerBsat",
     nav: "map.layerNav",
-    sonarchart: "map.overlaySonarChart"
+    sonarchart: "map.overlaySonarChart",
+    waymarkedHiking: "map.overlayWaymarkedHiking",
+    stravaRunHeatmap: "map.overlayStravaRun",
+    hillshadeOverlay: "map.overlayHillshade"
   };
   const k = keyMap[layerId];
-  return k ? t(k) : String(layerId || "");
+  if (!k) return String(layerId || "");
+  if (layerId === "waymarkedHiking" || layerId === "stravaRunHeatmap" || layerId === "hillshadeOverlay"){
+    return tIt(k);
+  }
+  return t(k);
 }
 /** Rebuild #pcLayer from OFFLINE_LAYER_IDS (offline/precache-eligible only). */
 function syncOfflineLayerSelect(){
@@ -35826,7 +35959,8 @@ function syncOfflinePanelNeutralState(layerId){
 }
 function offlineTileNetworkKind(layerId){
   const id = String(layerId || "");
-  return (id === "nav" || id === "sonarchart" || id === "gsat" || id === "bsat") ? "proxy" : "tile";
+  return (id === "nav" || id === "sonarchart" || id === "gsat" || id === "bsat"
+    || id === "stravaRunHeatmap" || id === "hillshadeOverlay") ? "proxy" : "tile";
 }
 
 /** Change the map size ("small" | "half" | "full") and re-render. */
@@ -36022,6 +36156,7 @@ function bindGeocodeSettings(){
       state._navProxyConsentGranted = false;
       state._gsatConsentGranted = false;
       state._bingConsentGranted = false;
+      state._personalProxyConsentGranted = false;
       saveStore();
       reflectCardState();
       if (enabling){
@@ -37191,7 +37326,12 @@ async function deleteNamedAreaTiles(area){
   Object.keys(TILE_LAYERS).forEach(layerId => {
     tiles.forEach(t => keys.push(makeTileKey(layerId, t.z, t.x, t.y)));
   });
-  tiles.forEach(t => keys.push(makeTileKey("sonarchart", t.z, t.x, t.y)));
+  tiles.forEach(t => {
+    keys.push(makeTileKey("sonarchart", t.z, t.x, t.y));
+    keys.push(makeTileKey("waymarkedHiking", t.z, t.x, t.y));
+    keys.push(makeTileKey("stravaRunHeatmap", t.z, t.x, t.y));
+    keys.push(makeTileKey("hillshadeOverlay", t.z, t.x, t.y));
+  });
   return idbDeleteKeys(keys);
 }
 
@@ -37921,6 +38061,8 @@ function offlineDownloadMidJobBlocked(layerId){
       if (prov === "google" && !state._gsatConsentGranted) return "opsec";
       if (prov === "bing" && !state._bingConsentGranted) return "opsec";
       if (prov === "navionics" && !state._navProxyConsentGranted) return "opsec";
+      if (prov === "personal" && !state._personalProxyConsentGranted) return "opsec";
+      if (ext === "tailnet-proxy" && !prov) return "opsec";
     }
   }
   return null;
@@ -38620,13 +38762,14 @@ async function hydrateMapTiles(mapRoot, layerId, layer, zoom, lat, lon, tileGen,
   monitorTileLoading(mapRoot, lat, lon);
 }
 
-/** SonarChart overlay tiles: IndexedDB first, then network when allowed (online overlay toggle). */
-async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
-  if (!mapRoot || !state.showSonarChart) return;
+/** Shared hydrator for cacheable raster overlays (cache-first, then gated network). */
+async function hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, cfg){
+  if (!mapRoot || !cfg || !cfg.layerId || !cfg.layer || !cfg.imgSelector) return;
+  if (typeof cfg.isVisible !== "function" || !cfg.isVisible()) return;
   if (tileGen != null && mapRoot._mapTileGen !== tileGen) return;
-  const layer = SONARCHART_OVERLAY;
-  const layerId = "sonarchart";
-  const imgs = [...mapRoot.querySelectorAll("img.tile-sonarchart")];
+  const layer = cfg.layer;
+  const layerId = cfg.layerId;
+  const imgs = [...mapRoot.querySelectorAll(cfg.imgSelector)];
   const online = isEffectivelyOnline();
   const load1 = async (img) => {
     if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
@@ -38634,7 +38777,7 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
     if (!wrap) return;
     const xw = +wrap.dataset.xw, y = +wrap.dataset.y, z = +wrap.dataset.z;
     if (!Number.isFinite(xw) || !Number.isFinite(y) || !Number.isFinite(z)) return;
-    if (!sonarChartOverlayVisible(z)) { img.style.display = "none"; return; }
+    if (!cfg.isVisible(z)) { img.style.display = "none"; return; }
     const tkey = makeTileKey(layerId, z, xw, y);
     const cleanBlobAttr = () => {
       const u = img.getAttribute("data-blob-url");
@@ -38668,6 +38811,11 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
             if (!r.ok) { recordNetEvent(url, nKind, false); netRecorded = true; throw 0; }
             const b = await r.blob();
             if (tileGen != null && (mapRoot._mapTileGen !== tileGen || !img.isConnected)) return;
+            const bType = String(b && b.type || "").toLowerCase();
+            if (bType && bType.indexOf("image/") !== 0){
+              recordNetEvent(url, nKind, false); netRecorded = true; throw 0;
+            }
+            if (!b || !b.size){ recordNetEvent(url, nKind, false); netRecorded = true; throw 0; }
             cleanBlobAttr();
             const u = URL.createObjectURL(b);
             img.setAttribute("data-blob-url", u);
@@ -38675,7 +38823,6 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
             img.style.display = "";
             recordNetEvent(url, nKind, true);
             netRecorded = true;
-            // Cache-on-browse: persist the just-fetched SonarChart overlay tile.
             void cacheTileFromDisplay(tkey, b);
             return;
           } catch(_netErr){
@@ -38689,6 +38836,43 @@ async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
     img.style.display = "none";
   };
   await Promise.all(imgs.map(i => load1(i)));
+}
+
+/** SonarChart overlay tiles: IndexedDB first, then network when allowed (online overlay toggle). */
+async function hydrateSonarChartTiles(mapRoot, tileGen, fetchSig){
+  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
+    layerId: "sonarchart",
+    layer: SONARCHART_OVERLAY,
+    imgSelector: "img.tile-sonarchart",
+    isVisible: (z) => (z == null ? !!state.showSonarChart : sonarChartOverlayVisible(z))
+  });
+}
+
+async function hydrateWaymarkedHikingTiles(mapRoot, tileGen, fetchSig){
+  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
+    layerId: "waymarkedHiking",
+    layer: WAYMARKED_HIKING_OVERLAY,
+    imgSelector: "img.tile-waymarked-hiking",
+    isVisible: (z) => (z == null ? !!state.showWaymarkedHiking : waymarkedHikingOverlayVisible(z))
+  });
+}
+
+async function hydrateStravaRunHeatmapTiles(mapRoot, tileGen, fetchSig){
+  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
+    layerId: "stravaRunHeatmap",
+    layer: STRAVA_RUN_HEATMAP_OVERLAY,
+    imgSelector: "img.tile-strava-run",
+    isVisible: (z) => (z == null ? !!state.showStravaRunHeatmap : stravaRunHeatmapOverlayVisible(z))
+  });
+}
+
+async function hydrateHillshadeOverlayTiles(mapRoot, tileGen, fetchSig){
+  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
+    layerId: "hillshadeOverlay",
+    layer: HILLSHADE_OVERLAY,
+    imgSelector: "img.tile-hillshade",
+    isVisible: (z) => (z == null ? !!state.showHillshadeOverlay : hillshadeOverlayVisible(z))
+  });
 }
 
 function updatePrecacheEstimate(){
@@ -40307,7 +40491,12 @@ function getCurrentOfflineLayerId(){
 
 function _sanitizeStoredLayerId(id){
   if (id == null || id === "") return null;
-  if (String(id).toLowerCase() === "sonarchart") return "sonarchart";
+  const raw = String(id);
+  const low = raw.toLowerCase();
+  if (low === "sonarchart") return "sonarchart";
+  if (low === "waymarkedhiking") return "waymarkedHiking";
+  if (low === "stravarunheatmap") return "stravaRunHeatmap";
+  if (low === "hillshadeoverlay") return "hillshadeOverlay";
   return resolveCatalogLayerId(id, MAP_BASE_LAYER_IDS);
 }
 
@@ -46405,6 +46594,9 @@ function offlineNamedAreaLayerLabel(layerId){
   if (lid === "esrioceanbase") return t("offcache.area.layerEsriOceanBase");
   if (lid === "nav") return t("offcache.area.layerNav");
   if (lid === "sonarchart") return t("offcache.area.layerSonar");
+  if (lid === "waymarkedhiking") return tIt("map.overlayWaymarkedHiking");
+  if (lid === "stravarunheatmap") return tIt("map.overlayStravaRun");
+  if (lid === "hillshadeoverlay") return tIt("map.overlayHillshade");
   return t("offcache.area.layerAny");
 }
 
@@ -51429,6 +51621,9 @@ function renderTileMap(lat, lon, zoom){
   const seamarksOn = !!state.showSeamarks && !state.forceOffline && !state.opsecStrict
     && zoom >= SEAMARK_OVERLAY.minZoom && zoom <= SEAMARK_OVERLAY.maxZoom;
   if (seamarksOn) recordNetEvent("https://tiles.openseamap.org/", "seamarks", false);
+  const hillshadeOn = hillshadeOverlayVisible(zoom);
+  const waymarkedOn = waymarkedHikingOverlayVisible(zoom);
+  const stravaOn = stravaRunHeatmapOverlayVisible(zoom);
   const sonarChartOn = sonarChartOverlayVisible(zoom);
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
@@ -51443,6 +51638,15 @@ function renderTileMap(lat, lon, zoom){
       html += `<div class="tile-wrap tile-pending" data-tkey="${esc(tkey)}" data-xw="${xw}" data-y="${y}" data-z="${zoom}" style="left:${left}px;top:${top}px">`;
       html += `<div class="tile-void" style="display:none" aria-hidden="true">?</div>`;
       html += `<img class="tile" alt="" data-layer="${esc(mapLayerId)}" style="left:0;top:0" draggable="false" decoding="async">`;
+      if (hillshadeOn){
+        html += `<img class="tile tile-hillshade" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
+      }
+      if (waymarkedOn){
+        html += `<img class="tile tile-waymarked-hiking" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
+      }
+      if (stravaOn){
+        html += `<img class="tile tile-strava-run" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
+      }
       if (sonarChartOn){
         html += `<img class="tile tile-sonarchart" alt="" style="left:0;top:0" draggable="false" decoding="async">`;
       }
@@ -51568,10 +51772,19 @@ function renderTileMap(lat, lon, zoom){
     const tipSeam = esc(t("tip.overlaySeamarks"));
     const lblSonar = esc(t("map.overlaySonarChart"));
     const tipSonar = esc(t("tip.overlaySonarChart"));
+    const lblHillshade = esc(tIt("map.overlayHillshade"));
+    const tipHillshade = esc(tIt("tip.overlayHillshade"));
+    const lblWaymarked = esc(tIt("map.overlayWaymarkedHiking"));
+    const tipWaymarked = esc(tIt("tip.overlayWaymarkedHiking"));
+    const lblStrava = esc(tIt("map.overlayStravaRun"));
+    const tipStrava = esc(tIt("tip.overlayStravaRun"));
     const lblMgrs = esc(t("map.overlayMgrs"));
     const tipMgrs = esc(t("tip.overlayMgrs"));
     const seamAct = state.showSeamarks ? " is-active" : "";
     const sonarAct = state.showSonarChart ? " is-active" : "";
+    const hillshadeAct = state.showHillshadeOverlay ? " is-active" : "";
+    const waymarkedAct = state.showWaymarkedHiking ? " is-active" : "";
+    const stravaAct = state.showStravaRunHeatmap ? " is-active" : "";
     const mgrsAct = state.showGrid ? " is-active" : "";
     const osmHotAct = state.mapLayer === "osmHot" ? " is-active" : "";
     const osmStandardAct = state.mapLayer === "osmStandard" ? " is-active" : "";
@@ -51613,13 +51826,16 @@ function renderTileMap(lat, lon, zoom){
       + tlayerBasemapBtn("esriStreet", esriStreetAct, tipEsriStreet, lblEsriStreet, state.mapLayer === "esriStreet")
       + tlayerBasemapBtn("esriHillshade", esriHillshadeAct, tipEsriHillshade, lblEsriHillshade, state.mapLayer === "esriHillshade")
       + tlayerBasemapBtn("esriRelief", esriReliefAct, tipEsriRelief, lblEsriRelief, state.mapLayer === "esriRelief")
+      + tlayerOverlayBtn("hillshadeOverlay", hillshadeAct, tipHillshade, lblHillshade, !!state.showHillshadeOverlay)
+      + tlayerOverlayBtn("waymarkedHiking", waymarkedAct, tipWaymarked, lblWaymarked, !!state.showWaymarkedHiking)
       + (_gisHub ? tlayerOverlayBtn("mgrs", mgrsAct, tipMgrs, lblMgrs, !!state.showGrid) : "");
     const satItems = tlayerBasemapBtn("sat", satAct, tipSat, lblSat, state.mapLayer === "sat")
       + tlayerBasemapBtn("gsat", gsatAct, tipGsat, lblGsat, state.mapLayer === "gsat")
       + tlayerBasemapBtn("bsat", bsatAct, tipBsat, lblBsat, state.mapLayer === "bsat")
       + (eoxLayerAllowedOnCurrentHost()
         ? tlayerBasemapBtn("eoxS2Cloudless", eoxS2Act, tipEoxS2, lblEoxS2, state.mapLayer === "eoxS2Cloudless")
-        : "");
+        : "")
+      + tlayerOverlayBtn("stravaRunHeatmap", stravaAct, tipStrava, lblStrava, !!state.showStravaRunHeatmap);
     const nautItems = tlayerBasemapBtn("esriOceanBase", esriOceanBaseAct, tipEsriOceanBase, lblEsriOceanBase, state.mapLayer === "esriOceanBase")
       + tlayerBasemapBtn("nav", navAct, tipNav, lblNav, state.mapLayer === "nav")
       + tlayerOverlayBtn("sonarchart", sonarAct, tipSonar, lblSonar, !!state.showSonarChart)
@@ -52091,6 +52307,48 @@ function renderTileMap(lat, lon, zoom){
       renderTileMap(lat, lon, zoom);
     });
   });
+  root.querySelectorAll('.tlayer-item[data-overlay="hillshadeOverlay"]').forEach(b => {
+    b.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      const next = !state.showHillshadeOverlay;
+      if (next && state.opsecStrict && !state.forceOffline && tileLayerExternalKind("hillshadeOverlay") === "tailnet-proxy"){
+        const ok = await ensureProxyConsent("hillshadeOverlay");
+        if (!ok){
+          state.showHillshadeOverlay = false;
+          renderTileMap(lat, lon, zoom);
+          return;
+        }
+      }
+      state.showHillshadeOverlay = next;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="waymarkedHiking"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.showWaymarkedHiking = !state.showWaymarkedHiking;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="stravaRunHeatmap"]').forEach(b => {
+    b.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      const next = !state.showStravaRunHeatmap;
+      if (next && state.opsecStrict && !state.forceOffline && tileLayerExternalKind("stravaRunHeatmap") === "tailnet-proxy"){
+        const ok = await ensureProxyConsent("stravaRunHeatmap");
+        if (!ok){
+          state.showStravaRunHeatmap = false;
+          renderTileMap(lat, lon, zoom);
+          return;
+        }
+      }
+      state.showStravaRunHeatmap = next;
+      saveStore();
+      renderTileMap(lat, lon, zoom);
+    });
+  });
   const recenterBtn = root.querySelector(".tile-recenter");
   if (recenterBtn){
     recenterBtn.addEventListener("click", () => {
@@ -52493,6 +52751,9 @@ function renderTileMap(lat, lon, zoom){
   root._mapTileGen = (root._mapTileGen | 0) + 1;
   const __mapTileGen = root._mapTileGen;
   void hydrateMapTiles(root, mapLayerId, layer, zoom, lat, lon, __mapTileGen, __hydrateFetchSig);
+  void hydrateHillshadeOverlayTiles(root, __mapTileGen, __hydrateFetchSig);
+  void hydrateWaymarkedHikingTiles(root, __mapTileGen, __hydrateFetchSig);
+  void hydrateStravaRunHeatmapTiles(root, __mapTileGen, __hydrateFetchSig);
   void hydrateSonarChartTiles(root, __mapTileGen, __hydrateFetchSig);
 
   // Offline coverage overlay: draw saved named areas + toggle the class
@@ -55899,7 +56160,8 @@ function diagCollectConsents(){
   return {
     navProxy: !!state._navProxyConsentGranted,
     gsat: !!state._gsatConsentGranted,
-    bing: !!state._bingConsentGranted
+    bing: !!state._bingConsentGranted,
+    personal: !!state._personalProxyConsentGranted
   };
 }
 
@@ -77792,6 +78054,9 @@ function init(){
       if (typeof stored.settings.showGrid === "boolean") state.showGrid = stored.settings.showGrid;
       if (typeof stored.settings.showSeamarks === "boolean") state.showSeamarks = stored.settings.showSeamarks;
       if (typeof stored.settings.showSonarChart === "boolean") state.showSonarChart = stored.settings.showSonarChart;
+      if (typeof stored.settings.showWaymarkedHiking === "boolean") state.showWaymarkedHiking = stored.settings.showWaymarkedHiking;
+      if (typeof stored.settings.showStravaRunHeatmap === "boolean") state.showStravaRunHeatmap = stored.settings.showStravaRunHeatmap;
+      if (typeof stored.settings.showHillshadeOverlay === "boolean") state.showHillshadeOverlay = stored.settings.showHillshadeOverlay;
       if (typeof stored.settings.mapMeasureUnit === "string") state.mapMeasureUnit = stored.settings.mapMeasureUnit;
       if (typeof stored.settings.trackDisplayUnit === "string") state.trackDisplayUnit = normalizeTrackDisplayUnit(stored.settings.trackDisplayUnit);
       if (stored.settings.mapMeasureKind === "line" || stored.settings.mapMeasureKind === "poly") state.mapMeasureKind = stored.settings.mapMeasureKind;
