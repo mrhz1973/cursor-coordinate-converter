@@ -3798,6 +3798,56 @@ html[data-theme="dark"] .tile-map .tlayer-item.is-active{
 .tile-map .tlayer-item.is-active .tlayer-check{ opacity:1; color:#16a34a }
 html[data-theme="dark"] .tile-map .tlayer-item.is-active .tlayer-check{ color:#4ade80 }
 .tile-map .tlayer-item .tlayer-item-label{ flex:1; min-width:0 }
+/* Overlay rows: additive stack, visually distinct from basemap cartography */
+.tile-map .tlayer-item.tlayer-overlay-item{
+  padding-left:10px;
+  border-left:3px solid rgba(217,119,6,.55);
+  background:rgba(245,158,11,.06);
+}
+.tile-map .tlayer-item.tlayer-overlay-item:hover{
+  background:rgba(245,158,11,.12);
+}
+.tile-map .tlayer-item.tlayer-overlay-item .tlayer-check::before{
+  content:"▤";
+  display:inline-block;
+  margin-right:.2em;
+  font-size:.78em;
+  font-weight:700;
+  opacity:.55;
+  color:rgba(180,83,9,.9);
+}
+.tile-map .tlayer-item.tlayer-overlay-item.is-active{
+  background:rgba(245,158,11,.18);
+  color:#b45309;
+  border-left-color:rgba(217,119,6,.9);
+}
+.tile-map .tlayer-item.tlayer-overlay-item.is-active .tlayer-check{
+  color:#d97706;
+  opacity:1;
+}
+.tile-map .tlayer-item.tlayer-overlay-item.is-active .tlayer-check::before{
+  opacity:.85;
+  color:#d97706;
+}
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item{
+  border-left-color:rgba(251,191,36,.55);
+  background:rgba(251,191,36,.08);
+}
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item:hover{
+  background:rgba(251,191,36,.14);
+}
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item .tlayer-check::before{
+  color:rgba(252,211,77,.85);
+}
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item.is-active{
+  background:rgba(251,191,36,.2);
+  color:#fcd34d;
+  border-left-color:rgba(251,191,36,.9);
+}
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item.is-active .tlayer-check,
+html[data-theme="dark"] .tile-map .tlayer-item.tlayer-overlay-item.is-active .tlayer-check::before{
+  color:#fbbf24;
+}
 .tile-map .tlayer-badge-no-offline{
   margin-left:auto; flex-shrink:0;
   font-size:.68rem; font-weight:700; letter-spacing:.01em;
@@ -22831,10 +22881,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1";
-const APP_BUILD_DETAIL = "preserve SonarChart path and enforce overlay offline max zoom";
+const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX2";
+const APP_BUILD_DETAIL = "extend Strava display with local overzoom and distinguish raster overlays";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 140;
+const APP_BUILD_NUM = 141;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35658,14 +35708,16 @@ const WAYMARKED_HIKING_OVERLAY = {
   maxZoom: 18
 };
 
-/* Strava Heatmap Run — personal tailnet proxy only (no direct upstream). */
+/* Strava Heatmap Run — personal tailnet proxy only (no direct upstream).
+ * maxZoom = native/fetch/precache; displayMaxZoom = local overzoom ceiling. */
 const STRAVA_RUN_HEATMAP_OVERLAY = {
   id: "stravaRunHeatmap",
   external: "tailnet-proxy",
   transparent: true,
   defaultOn: false,
   url: (z, x, y) => `http://${getNavProxyHost()}:${NAV_PROXY_PORT}/strava-run/${z}/${x}/${y}.png`,
-  maxZoom: 11
+  maxZoom: 11,
+  displayMaxZoom: 20
 };
 
 /* Hillshade — personal tailnet proxy only (JPEG + CSS opacity). */
@@ -35747,8 +35799,104 @@ function waymarkedHikingOverlayVisible(zoom){
 function stravaRunHeatmapOverlayVisible(zoom){
   if (!state.showStravaRunHeatmap) return false;
   const z = Number(zoom);
-  if (Number.isFinite(STRAVA_RUN_HEATMAP_OVERLAY.maxZoom) && z > STRAVA_RUN_HEATMAP_OVERLAY.maxZoom) return false;
+  const dMax = Number(STRAVA_RUN_HEATMAP_OVERLAY.displayMaxZoom);
+  if (Number.isFinite(dMax) && z > dMax) return false;
   return true;
+}
+
+/** Pure XYZ mapping: display tile → native Strava source tile + crop (0-based). */
+function stravaRunHeatmapSourceFromDisplay(displayZ, displayX, displayY){
+  const nativeMax = Number.isFinite(STRAVA_RUN_HEATMAP_OVERLAY.maxZoom)
+    ? (STRAVA_RUN_HEATMAP_OVERLAY.maxZoom | 0) : 11;
+  const dz = Number(displayZ);
+  const dx = Number(displayX);
+  const dy = Number(displayY);
+  if (!Number.isFinite(dz) || !Number.isFinite(dx) || !Number.isFinite(dy)) return null;
+  if (dz < 0 || !Number.isFinite(dx) || !Number.isFinite(dy)) return null;
+  const zInt = dz | 0;
+  const xInt = dx | 0;
+  const yInt = dy | 0;
+  if (zInt <= nativeMax){
+    return {
+      sourceZ: zInt, sourceX: xInt, sourceY: yInt,
+      factor: 1, subX: 0, subY: 0,
+      cropX: 0, cropY: 0, cropSize: 256,
+      needsCrop: false
+    };
+  }
+  const delta = zInt - nativeMax;
+  if (delta < 1 || delta > 30) return null;
+  const factor = Math.pow(2, delta);
+  if (!Number.isFinite(factor) || factor <= 0) return null;
+  const sourceZ = nativeMax;
+  const sourceX = Math.floor(xInt / factor);
+  const sourceY = Math.floor(yInt / factor);
+  const subX = ((xInt % factor) + factor) % factor;
+  const subY = ((yInt % factor) + factor) % factor;
+  const cropSize = 256 / factor;
+  return {
+    sourceZ, sourceX, sourceY,
+    factor, subX, subY,
+    cropX: subX * cropSize,
+    cropY: subY * cropSize,
+    cropSize,
+    needsCrop: true
+  };
+}
+
+/** Derive a transient 256×256 PNG blob by cropping/upscaling a native source tile. */
+async function stravaRunHeatmapDeriveDisplayBlob(sourceBlob, mapping){
+  if (!sourceBlob || !mapping) return null;
+  if (!mapping.needsCrop) return sourceBlob;
+  const cropX = Number(mapping.cropX);
+  const cropY = Number(mapping.cropY);
+  const cropSize = Number(mapping.cropSize);
+  if (!Number.isFinite(cropX) || !Number.isFinite(cropY) || !Number.isFinite(cropSize) || cropSize <= 0){
+    return null;
+  }
+  let bitmap = null;
+  let tmpUrl = null;
+  let imgEl = null;
+  try {
+    if (typeof createImageBitmap === "function"){
+      bitmap = await createImageBitmap(sourceBlob);
+    } else {
+      tmpUrl = URL.createObjectURL(sourceBlob);
+      imgEl = await new Promise((resolve, reject) => {
+        const im = new Image();
+        im.onload = () => resolve(im);
+        im.onerror = () => reject(new Error("img"));
+        im.src = tmpUrl;
+      });
+    }
+    const src = bitmap || imgEl;
+    if (!src) return null;
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return null;
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, 256, 256);
+    ctx.drawImage(src, cropX, cropY, cropSize, cropSize, 0, 0, 256, 256);
+    const out = await new Promise((resolve) => {
+      try {
+        canvas.toBlob((b) => resolve(b || null), "image/png");
+      } catch(_){
+        resolve(null);
+      }
+    });
+    return out;
+  } catch(_){
+    return null;
+  } finally {
+    if (bitmap && typeof bitmap.close === "function"){
+      try { bitmap.close(); } catch(_){}
+    }
+    if (tmpUrl){
+      try { URL.revokeObjectURL(tmpUrl); } catch(_){}
+    }
+  }
 }
 
 function hillshadeOverlayVisible(zoom){
@@ -38944,13 +39092,108 @@ async function hydrateWaymarkedHikingTiles(mapRoot, tileGen, fetchSig){
   });
 }
 
+/** Strava Run heatmap: native z<=11 via personal proxy; z12..displayMaxZoom local overzoom of source z11. */
 async function hydrateStravaRunHeatmapTiles(mapRoot, tileGen, fetchSig){
-  return hydrateCachedRasterOverlayTiles(mapRoot, tileGen, fetchSig, {
-    layerId: "stravaRunHeatmap",
-    layer: STRAVA_RUN_HEATMAP_OVERLAY,
-    imgSelector: "img.tile-strava-run",
-    isVisible: (z) => (z == null ? !!state.showStravaRunHeatmap : stravaRunHeatmapOverlayVisible(z))
-  });
+  if (!mapRoot || !state.showStravaRunHeatmap) return;
+  if (tileGen != null && mapRoot._mapTileGen !== tileGen) return;
+  const layerId = "stravaRunHeatmap";
+  const layer = STRAVA_RUN_HEATMAP_OVERLAY;
+  const imgs = [...mapRoot.querySelectorAll("img.tile-strava-run")];
+  if (!imgs.length) return;
+  const sourceInflight = new Map();
+  const cleanBlobAttr = (img) => {
+    const u = img.getAttribute("data-blob-url");
+    if (u){ try { URL.revokeObjectURL(u); } catch(_){} img.removeAttribute("data-blob-url"); }
+  };
+  const stillFresh = (img) => {
+    if (!img || !img.isConnected) return false;
+    if (!mapRoot || !mapRoot.isConnected) return false;
+    if (tileGen != null && mapRoot._mapTileGen !== tileGen) return false;
+    if (fetchSig && fetchSig.aborted) return false;
+    if (!state.showStravaRunHeatmap) return false;
+    return true;
+  };
+  const loadSourceBlob = (sourceZ, sourceX, sourceY) => {
+    const sourceKey = makeTileKey(layerId, sourceZ, sourceX, sourceY);
+    if (sourceInflight.has(sourceKey)) return sourceInflight.get(sourceKey);
+    const p = (async () => {
+      try {
+        const hit = await getTileBlobByKey(sourceKey);
+        if (hit) return hit;
+        if (fetchSig && fetchSig.aborted) return null;
+        try {
+          await fetchAndStoreTile(layerId, sourceZ, sourceX, sourceY, layer, fetchSig || undefined);
+        } catch(_){
+          return null;
+        }
+        if (fetchSig && fetchSig.aborted) return null;
+        return await getTileBlobByKey(sourceKey);
+      } catch(_){
+        return null;
+      }
+    })();
+    sourceInflight.set(sourceKey, p);
+    return p;
+  };
+  const load1 = async (img) => {
+    if (!stillFresh(img)) return;
+    const wrap = img.closest(".tile-wrap");
+    if (!wrap) return;
+    const xw = +wrap.dataset.xw, y = +wrap.dataset.y, z = +wrap.dataset.z;
+    if (!Number.isFinite(xw) || !Number.isFinite(y) || !Number.isFinite(z)) return;
+    if (!stravaRunHeatmapOverlayVisible(z)){
+      cleanBlobAttr(img);
+      img.style.display = "none";
+      return;
+    }
+    const mapping = stravaRunHeatmapSourceFromDisplay(z, xw, y);
+    if (!mapping){
+      cleanBlobAttr(img);
+      img.style.display = "none";
+      return;
+    }
+    const sourceBlob = await loadSourceBlob(mapping.sourceZ, mapping.sourceX, mapping.sourceY);
+    if (!stillFresh(img)) return;
+    if (+wrap.dataset.xw !== xw || +wrap.dataset.y !== y || +wrap.dataset.z !== z) return;
+    if (!stravaRunHeatmapOverlayVisible(z)){
+      cleanBlobAttr(img);
+      img.style.display = "none";
+      return;
+    }
+    if (!sourceBlob){
+      cleanBlobAttr(img);
+      img.style.display = "none";
+      return;
+    }
+    let displayBlob = sourceBlob;
+    if (mapping.needsCrop){
+      displayBlob = await stravaRunHeatmapDeriveDisplayBlob(sourceBlob, mapping);
+      if (!stillFresh(img)) return;
+      if (+wrap.dataset.xw !== xw || +wrap.dataset.y !== y || +wrap.dataset.z !== z) return;
+      if (!displayBlob){
+        cleanBlobAttr(img);
+        img.style.display = "none";
+        return;
+      }
+    }
+    if (!stillFresh(img)) return;
+    if (+wrap.dataset.xw !== xw || +wrap.dataset.y !== y || +wrap.dataset.z !== z) return;
+    if (!stravaRunHeatmapOverlayVisible(z)){
+      cleanBlobAttr(img);
+      img.style.display = "none";
+      return;
+    }
+    cleanBlobAttr(img);
+    const u = URL.createObjectURL(displayBlob);
+    if (!stillFresh(img)){
+      try { URL.revokeObjectURL(u); } catch(_){}
+      return;
+    }
+    img.setAttribute("data-blob-url", u);
+    img.src = u;
+    img.style.display = "";
+  };
+  await Promise.all(imgs.map(i => load1(i)));
 }
 
 async function hydrateHillshadeOverlayTiles(mapRoot, tileGen, fetchSig){
@@ -51911,7 +52154,7 @@ function renderTileMap(lat, lon, zoom){
         + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span class="tlayer-item-label">${lbl}</span>${badge}</button>`;
     };
     const tlayerOverlayBtn = (overlay, act, tip, lbl, on) =>
-      `<button type="button" class="tlayer-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}" aria-label="${tip}">`
+      `<button type="button" class="tlayer-item tlayer-overlay-item${act}" data-overlay="${overlay}" role="menuitemcheckbox" aria-checked="${on ? "true" : "false"}" data-tip="${tip}" aria-label="${tip}">`
       + `<span class="tlayer-check" aria-hidden="true">${on ? "✓" : ""}</span><span>${lbl}</span></button>`;
     const tlayerSection = (title, inner) =>
       `<div class="tlayer-section" role="group" aria-label="${title}"><div class="tlayer-section-title" aria-hidden="true">${title}</div>${inner}</div>`;
