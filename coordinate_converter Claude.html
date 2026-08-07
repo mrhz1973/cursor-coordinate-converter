@@ -7610,12 +7610,15 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   font-size: 0.82rem;
   line-height: 1.35;
   font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 #waypointModalPanel .wp-modal-table .wp-row-name-inp{
   border-radius: var(--wp-r-md);
   min-height: 34px;
   font-size: 0.875rem;
 }
+#waypointModalPanel .wp-modal-table .btn.btn-sm.copy-btn,
 #waypointModalPanel .wp-modal-table .btn.btn-sm[data-role="wp-zoom"],
 #waypointModalPanel .wp-modal-table .btn.btn-sm[data-role="wp-edit"],
 #waypointModalPanel .wp-modal-table .btn.btn-sm[data-role="wp-fav"],
@@ -7628,6 +7631,12 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   padding: 3px 8px;
   font-size: 1rem;
   line-height: 1;
+}
+#waypointModalPanel .wp-modal-table .btn.btn-sm.copy-btn{
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 4px 8px;
 }
 #waypointModalPanel .wp-modal-table .btn.btn-sm[data-role="wp-del"] .danger-x{
   margin-right: 0;
@@ -7668,6 +7677,23 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   align-items:center;
   gap: var(--wp-space-2);
 }
+#waypointModalPanel .wp-list-coord-fmt-ctrl{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap: 6px;
+  margin-left: auto;
+  min-width: 0;
+}
+#waypointModalPanel .wp-list-coord-fmt-ctrl label{
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+#waypointModalPanel .wp-list-coord-fmt-ctrl select{
+  min-width: 7rem;
+  max-width: 100%;
+}
 #waypointModalPanel .wp-modal-table-wrap .wp-list-actions{
   display:flex;
   justify-content:space-between;
@@ -7694,7 +7720,7 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   min-width: 72px;
 }
 #waypointModalPanel .wp-modal-table col.wp-col-actions{
-  min-width: 208px;
+  min-width: 248px;
   width: auto;
 }
 #waypointModalPanel .wp-modal-table .wp-th-actions,
@@ -12765,6 +12791,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <button type="button" id="wpBatchSelectAllBtn" class="btn btn-sm" data-i18n="waypointModal.selectAll">Seleziona tutti</button>
               <button type="button" id="wpBatchClearSelBtn" class="btn btn-sm" data-i18n="waypointModal.clearSelection" disabled>Deseleziona</button>
               <button type="button" id="wpBatchAddFavoritesBtn" class="btn btn-sm" data-i18n="waypointModal.addSelectedFavorites" disabled>Aggiungi selezionati ai Preferiti</button>
+            </div>
+            <div class="wp-list-coord-fmt-ctrl">
+              <label for="waypointListCoordFormat" data-i18n="track.coordFormatLabel">Formato coordinate</label>
+              <select id="waypointListCoordFormat" data-role="waypoint-list-coord-format" data-i18n-aria="track.coordFormatAria" data-i18n-tip="tip.trackCoordFormat">
+                <option value="default" data-i18n="track.coordFormatDefault">Predefinito</option>
+                <option value="dd">DD</option>
+                <option value="ddm">DDM</option>
+                <option value="dms">DMS</option>
+                <option value="utm">UTM</option>
+                <option value="mgrs">MGRS</option>
+              </select>
             </div>
           </div>
           <div id="wp-list" class="wp-list track-points-list" data-empty="—" role="region" aria-live="polite"></div>
@@ -21430,6 +21467,8 @@ const state = {
   trackDisplayUnit: "km", // preferenza persistita (solo display traccia): km | m | nm | mi | ft
   /** Transient session-only: coordinate display format in track points list (not persisted). */
   _trackPointCoordFormat: "default", // session-only: default | dd | ddm | dms | utm | mgrs
+  /** Transient session-only: coordinate display format in waypoint modal list (not persisted). */
+  _waypointListCoordFormat: "default", // session-only: default | dd | ddm | dms | utm | mgrs
   mapMeasurePanelOpen: false, // transient: HUD floating misura (solo non–GIS hub)
   /** Transient: one-shot Esc notice in #measOperativeNotices (GIS Misura). */
   _measEscNoticePending: false,
@@ -22748,10 +22787,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-AREA-ESC-RESTORE-A";
-const APP_BUILD_DETAIL = "restore IGM panel on area-pick Escape; consume Esc fully";
+const APP_BUILD_ID = "COORD-MODAL-FORMAT-COPY-A";
+const APP_BUILD_DETAIL = "coordinate format and copy controls for waypoint, track and favorites lists";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 136;
+const APP_BUILD_NUM = 137;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -49979,6 +50018,54 @@ function wireTrackPointCoordFormatOnce(){
   });
 }
 
+const WAYPOINT_LIST_COORD_FORMATS = new Set(["default", "dd", "ddm", "dms", "utm", "mgrs"]);
+function normalizeWaypointListCoordFormat(value){
+  const v = String(value == null ? "" : value).toLowerCase();
+  return WAYPOINT_LIST_COORD_FORMATS.has(v) ? v : "default";
+}
+function waypointListCoordFormatEffective(){
+  const sel = normalizeWaypointListCoordFormat(state._waypointListCoordFormat);
+  if (sel !== "default") return sel;
+  const p = String(state.primary || "").toUpperCase();
+  if (p === "DD") return "dd";
+  if (p === "DDM") return "ddm";
+  if (p === "DMS") return "dms";
+  if (p === "UTM") return "utm";
+  if (p === "MGRS") return "mgrs";
+  return "dd";
+}
+/** List-only waypoint coordinate display (WGS84 lat/lon → formatter). Session format; no data mutation. */
+function formatWaypointListCoordinates(lat, lon){
+  const la = Number(lat), lo = Number(lon);
+  if (!Number.isFinite(la) || !Number.isFinite(lo)) return "—";
+  const mode = waypointListCoordFormatEffective();
+  try {
+    if (mode === "ddm") return fmtDDM(la, lo);
+    if (mode === "dms") return fmtDMS(la, lo);
+    if (mode === "utm") return fmtUTM(latLonToUTM(la, lo));
+    if (mode === "mgrs") return latLonToMGRS(la, lo, 5);
+    return fmtDD(la, lo).cardinal;
+  } catch(_){
+    return "—";
+  }
+}
+function syncWaypointListCoordFormatSelect(){
+  const sel = document.getElementById("waypointListCoordFormat");
+  if (!sel) return;
+  const v = normalizeWaypointListCoordFormat(state._waypointListCoordFormat);
+  try { sel.value = v; } catch(_){}
+}
+function wireWaypointListCoordFormatOnce(){
+  const sel = document.getElementById("waypointListCoordFormat");
+  if (!sel || sel._waypointListCoordFormatBound) return;
+  sel._waypointListCoordFormatBound = true;
+  sel.addEventListener("change", (ev) => {
+    state._waypointListCoordFormat = normalizeWaypointListCoordFormat(ev.target && ev.target.value);
+    syncWaypointListCoordFormatSelect();
+    try { renderWpModalList(); } catch(_){}
+  });
+}
+
 /** Format an ETA duration (seconds) as "H h M min" or "M min". */
 function fmtEta(seconds){
   if (!Number.isFinite(seconds) || seconds <= 0) return "—";
@@ -50262,6 +50349,8 @@ function renderTrackPointsList(){
     }
     const idxLbl = trackPointDisplayLabel(i, pts.length);
     const tipCenterPt = esc(t("tip.common.centerMapPoint") || t("common.center") || "Centra");
+    const copyLbl = esc(t("btn.copy"));
+    const copyTip = esc(t("tip.copy"));
     return `<div class="track-point-row" draggable="true" data-id="${esc(p.id)}" data-idx="${i}">
       <span class="tp-idx">${esc(idxLbl)}</span>
       <span class="tp-grip" aria-hidden="true">⋮⋮</span>
@@ -50271,6 +50360,7 @@ function renderTrackPointsList(){
         ${legStr}
       </div>
       <div class="tp-actions">
+        <button type="button" class="btn btn-sm copy-btn" data-copy="${esc(coordStr)}" data-tip="${copyTip}" data-i18n-tip="tip.copy" data-i18n-aria="tip.copy" aria-label="${copyTip}">${copyLbl}</button>
         <button type="button" class="btn btn-sm btn-ghost" data-role="tp-center" data-i18n-tip="tip.common.centerMapPoint" data-tip="${tipCenterPt}" data-i18n-aria="tip.common.centerMapPoint" aria-label="${tipCenterPt}"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm btn-danger-subtle" data-role="tp-rm" data-i18n-tip="tip.trackRemovePoint" data-tip="${esc(t("tip.trackRemovePoint"))}" data-i18n-aria="tip.trackRemovePoint" aria-label="${esc(t("tip.trackRemovePoint"))}"><span class="danger-x" aria-hidden="true">✕</span></button>
       </div>
@@ -54367,7 +54457,10 @@ function renderFavorites(){
     const locTip = esc(String(f.locality || "").slice(0, 240));
     const locHtml = f.locality ? `<div class="fav-loc" data-tip="${locTip}">📍 ${esc(f.locality)}</div>` : "";
     const fid = esc(f.id);
-    const coordDisp = esc(formatFavoriteListCoordinate(f.lat, f.lon, favoritesListCoordDisplayMode));
+    const coordRaw = formatFavoriteListCoordinate(f.lat, f.lon, favoritesListCoordDisplayMode);
+    const coordDisp = esc(coordRaw);
+    const copyLbl = esc(t("btn.copy"));
+    const copyTip = esc(t("tip.copy"));
     bodyRows += `<tr class="fav-data-row" data-fav-row data-fav-id="${fid}">
       <td><input type="text" class="fav-name-inp" data-fav-rename="${fid}" data-tip="${esc(String(f.name || "").slice(0, 200))}" value="${esc(f.name)}" maxlength="120" aria-label="${ariaNm}"></td>
       <td class="fav-coords-cell"><code class="fav-coord-select" tabindex="0">${coordDisp}</code></td>
@@ -54376,6 +54469,7 @@ function renderFavorites(){
         <textarea class="fav-notes fav-notes-inline" rows="1" maxlength="500" data-fav-notes="${fid}" data-i18n-ph="fav.notesPh" placeholder="${esc(t("fav.notesPh"))}">${esc(notes)}</textarea>
       </div></td>
       <td class="fav-actions-cell"><div class="fav-row-actions">
+        <button type="button" class="btn btn-sm copy-btn" data-copy="${esc(coordRaw)}" data-tip="${copyTip}" data-i18n-tip="tip.copy" data-i18n-aria="tip.copy" aria-label="${copyTip}">${copyLbl}</button>
         <button type="button" class="btn btn-sm" data-fav-focus-name="${fid}" data-i18n-tip="tip.favEdit" data-i18n-aria="tip.favEdit"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm" data-fav-center="${fid}" data-i18n-tip="tip.common.centerMapPoint" data-i18n-aria="tip.common.centerMapPoint"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="btn btn-sm" data-fav-waypoint="${fid}" data-i18n-tip="tip.favAddWaypoint" data-i18n-aria="tip.favAddWaypoint"><span aria-hidden="true">📍</span></button>
@@ -59076,6 +59170,14 @@ function bindUI(){
         }
       }
     } catch(_){}
+    try {
+      if (normalizeWaypointListCoordFormat(state._waypointListCoordFormat) === "default"){
+        const wdlg = document.getElementById("waypointModal");
+        if (state.waypointsModalOpen || (wdlg && wdlg.open)){
+          renderWpModalList();
+        }
+      }
+    } catch(_){}
   });
   syncHdrChipValue(primSel);
   // Language
@@ -59396,6 +59498,8 @@ function bindUI(){
   document.body.addEventListener("click", (ev) => {
     const btn = ev.target.closest(".copy-btn");
     if (btn){
+      ev.preventDefault();
+      ev.stopPropagation();
       const text = btn.getAttribute("data-copy");
       if (text) copyText(text, btn);
     }
@@ -59674,6 +59778,7 @@ function bindUI(){
   // ---- Track builder ----
   wireTrackDisplayUnitOnce();
   wireTrackPointCoordFormatOnce();
+  wireWaypointListCoordFormatOnce();
   const btnTAdd = document.getElementById("btnTrackAddCurrent");
   if (btnTAdd) btnTAdd.addEventListener("click", (ev) => { ev.preventDefault(); trackAddCurrent(); });
   const btnTFinish = document.getElementById("btnTrackFinish");
@@ -76185,6 +76290,7 @@ function renderWpModalList(){
   if (countEl) countEl.textContent = pts.length ? (pts.length + " / 200") : "";
   if (!pts.length){
     root.innerHTML = "";
+    try { syncWaypointListCoordFormatSelect(); } catch(_){}
     syncWpSelectAllState(root);
     try {
       const wpx = document.getElementById("waypointExportDialog");
@@ -76213,27 +76319,28 @@ function renderWpModalList(){
     <th class="wp-th-actions">${esc(t("waypointModal.listColActions"))}</th>
   </tr></thead><tbody>`;
   html += pts.map(p => {
-    const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
-    let mgrs = "";
-    try { mgrs = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
+    const coordStr = formatWaypointListCoordinates(p.lat, p.lon);
     const icLab = waypointIconHumanLabel((p.meta && p.meta.icon) ? p.meta.icon : "hq");
     const rowCls = (p.id === draftId) ? " is-editing" : "";
     const nmVal = esc(p.name || "");
     const ph = esc(t("waypointModal.editor.namePh"));
-    const nmTipRaw = (p.name && String(p.name).trim()) ? String(p.name).trim().slice(0, 60) : (coordStr + mgrs).slice(0, 120);
+    const nmTipRaw = (p.name && String(p.name).trim()) ? String(p.name).trim().slice(0, 60) : String(coordStr).slice(0, 120);
     const nmTip = esc(nmTipRaw);
     const whenStr = esc(formatWaypointTableWhen(p));
     const favOn = waypointCoordinateHasMatchingFavorite(p.lat, p.lon);
     const favTipKey = favOn ? "tip.favWaypointInFavorites" : "tip.favAddWaypointRow";
     const favCls = favOn ? "btn btn-sm gis-wp-fav-on" : "btn btn-sm";
     const favPressed = favOn ? "true" : "false";
+    const copyLbl = esc(t("btn.copy"));
+    const copyTip = esc(t("tip.copy"));
     return `<tr data-wp-row data-id="${esc(p.id)}" class="${esc(rowCls.trim())}">
       <td><input type="checkbox" class="wp-sel-cb" data-wp-sel="${esc(p.id)}"></td>
       <td class="wp-vis-cell"><span class="saved-track-vis-indicator is-visible" role="img" aria-label="${ariaVisOn}"></span></td>
       <td data-tip="${nmTip}"><input type="text" class="wp-row-name-inp saved-name-inp" data-wp-rename="${esc(p.id)}" value="${nmVal}" maxlength="60" placeholder="${ph}" aria-label="${esc(t("waypointModal.listColName"))}"></td>
       <td class="wp-when-cell">${whenStr}</td>
-      <td><div class="wp-row__coord">${esc(coordStr)}${esc(mgrs)}<span class="wp-row__ico-hint"> · ${esc(icLab)}</span></div></td>
+      <td><div class="wp-row__coord">${esc(coordStr)}<span class="wp-row__ico-hint"> · ${esc(icLab)}</span></div></td>
       <td class="wp-actions-cell"><div class="saved-row-actions wp-row-actions">
+        <button type="button" class="btn btn-sm copy-btn" data-copy="${esc(coordStr)}" data-tip="${copyTip}" data-i18n-tip="tip.copy" data-i18n-aria="tip.copy" aria-label="${copyTip}">${copyLbl}</button>
         <button type="button" class="btn btn-sm" data-role="wp-edit" data-i18n-tip="waypointModal.editor.editTitle" data-i18n-aria="waypointModal.editor.editTitle"><span aria-hidden="true">✎</span></button>
         <button type="button" class="btn btn-sm btn-saved-fly" data-role="wp-zoom" data-i18n-tip="waypointModal.zoomTo" data-i18n-aria="waypointModal.zoomTo"><span aria-hidden="true">⌖</span></button>
         <button type="button" class="${favCls}" data-role="wp-fav" data-i18n-tip="${favTipKey}" data-i18n-aria="${favTipKey}" aria-pressed="${favPressed}"><span aria-hidden="true">★</span></button>
@@ -76243,6 +76350,7 @@ function renderWpModalList(){
   }).join("");
   html += "</tbody></table>";
   root.innerHTML = html;
+  try { syncWaypointListCoordFormatSelect(); } catch(_){}
   wpModalApplySelectionCheckboxes(root);
   try {
     const tbl = root.querySelector(".wp-modal-table");
@@ -76339,6 +76447,11 @@ function renderWpModalList(){
       }
     });
     root.addEventListener("click", (ev) => {
+      const cpy = ev.target.closest && ev.target.closest(".copy-btn");
+      if (cpy){
+        // Body-level .copy-btn delegate handles clipboard; skip row actions.
+        return;
+      }
       const ed = ev.target.closest && ev.target.closest('[data-role="wp-edit"]');
       if (ed){
         ev.preventDefault();
