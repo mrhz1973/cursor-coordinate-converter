@@ -2,57 +2,57 @@
 
 ## LATEST
 
-* real_task_commit: `764e661b269b31f9fb8a17a683f63768a9910140`
-* real_task_subject: fix(carto): preserve IGM panel on area-pick escape
-* report_generated_at: 2026-08-07T01:20:00+02:00
+* real_task_commit: `a0a68167f159b6945be4fbd3089a7acb7403093f`
+* real_task_subject: fix(coords): sync waypoint editor format and pasted coordinates
+* report_generated_at: 2026-08-07T12:39:00+02:00
 * branch: main
-* remote_head_after_task_push: `b0a60e0e9b8b86d4a625848823829859d4b0118a`
-* previous_report_container: `788e29c` (autosync finito ARCHIVE-MATCH)
+* remote_head_after_task_push: `a7dc659ce510d81bcefd29b893c32df50d46d5a2`
+* previous_report_container: `4b0c8a7` (autosync finito ESC-RESTORE)
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: docs finito `b0a60e0` pushato; monolite tip `764e661` invariato in chiusura
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task docs `b0a60e0` e tip runtime `764e661` già su origin pre-autosync
-* result_cursor: CARTO-IGM-AREA-ESC-RESTORE-A CLOSED / PASS end-to-end; finito Regola H
-* pass_operatore: PASS — attestazione `QA CARTO-IGM-AREA-ESC-RESTORE-A PASS operatore`
-* result_runtime: tip live `764e661` / CARTO-IGM-AREA-ESC-RESTORE-A · build 136
+* working_tree_status: docs finito `a7dc659` pushato; monolite tip `a0a6816` invariato in chiusura
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task docs `a7dc659` e tip runtime `a0a6816` già su origin pre-autosync
+* result_cursor: COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED / PASS end-to-end; finito Regola H
+* pass_operatore: PASS — attestazione `QA COORD-MODAL-FORMAT-COPY-A-FIX1 PASS operatore`
+* result_runtime: tip live `a0a6816` / COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138
 * qa_attestation_source: operatore (Regola H)
-* notes: due commit chiusura (docs finito + autosync/report); monolite escluso dal docs/autosync; nessun redeploy
+* notes: due commit chiusura (docs finito + autosync/report); monolite escluso dal docs/autosync; nessun redeploy; backlog MODAL-OPEN-TOP-ALIGN-A registrato
 
 ## OUTPUT VERBATIM
 
 ```text
 real_task_commit (runtime tip QA'd):
-764e661b269b31f9fb8a17a683f63768a9910140
+a0a68167f159b6945be4fbd3089a7acb7403093f
 
 docs finito (task chiusura lean):
-b0a60e0e9b8b86d4a625848823829859d4b0118a
+a7dc659ce510d81bcefd29b893c32df50d46d5a2
 
 git branch --show-current
 main
 
 git log --oneline -5 (post-task docs, pre-autosync):
+a7dc659 docs: finito COORD-MODAL-FORMAT-COPY-A-FIX1 after Regola H QA PASS
+a0a6816 fix(coords): sync waypoint editor format and pasted coordinates
+04c4d37 feat(coords): add format and copy controls to coordinate lists
+4b0c8a7 docs: orchestratore — riconciliazione finito sessione
 b0a60e0 docs: finito CARTO-IGM-AREA-ESC-RESTORE-A after Regola H QA PASS
-764e661 fix(carto): preserve IGM panel on area-pick escape
-788e29c docs: orchestratore — riconciliazione finito sessione
-1bd20f6 docs: finito CARTO-ARCHIVE-MATCH-A after Regola H QA PASS
-c4d7db5 fix(carto): close archive editor after save and flash notices
 
 git rev-parse HEAD (post-task, pre-autosync):
-b0a60e0e9b8b86d4a625848823829859d4b0118a
+a7dc659ce510d81bcefd29b893c32df50d46d5a2
 
 git ls-remote origin refs/heads/main (post-task, pre-autosync):
-b0a60e0e9b8b86d4a625848823829859d4b0118a	refs/heads/main
+a7dc659ce510d81bcefd29b893c32df50d46d5a2	refs/heads/main
 ```
 
 PASS remoto del container corrente: **EXTERNAL_ONLY**
 
 ## HISTORY
 
+* 4b0c8a7 — docs: orchestratore — riconciliazione finito sessione (ESC-RESTORE; real_task_commit storico `764e661`)
+* b0a60e0 — docs: finito CARTO-IGM-AREA-ESC-RESTORE-A after Regola H QA PASS
 * 788e29c — docs: orchestratore — riconciliazione finito sessione (ARCHIVE; real_task_commit storico `c4d7db5`)
 * 1bd20f6 — docs: finito CARTO-ARCHIVE-MATCH-A after Regola H QA PASS
-* 6271837 — docs: orchestratore — autosync DOCS-CARTO-IGM-CRS-AUDIT-A-CLOSE (real_task_commit storico `db2d430`)
-* db2d430 — docs(carto): record IGM CRS audit outcome
-* c4d7db5 — fix(carto): close archive editor after save and flash notices (runtime tip storico)
+* a0a6816 — fix(coords): sync waypoint editor format and pasted coordinates (runtime tip corrente)
 
 ## LIMITI
 
