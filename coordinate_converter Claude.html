@@ -8195,6 +8195,8 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   display:flex;
   flex-direction:column;
 }
+/* UX3 — il pulsante "Cancella risultati" è gestito internamente; non esposto nella UI GIS. */
+body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 #cartoIgmPanel .app-modal-body{
   flex:1 1 auto;
   min-height:0;
@@ -13629,8 +13631,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
       <p id="cartoIgmAreaSourceLabel" class="hint" role="status">Sorgente: vista corrente</p>
       <div class="carto-area-actions">
-        <button type="button" id="cartoIgmPickAreaBtn" class="btn btn-sm btn-primary">Seleziona area sulla mappa</button>
-        <button type="button" id="cartoIgmUseViewBtn" class="btn btn-sm carto-btn-outline">Usa vista corrente</button>
+        <button type="button" id="cartoIgmPickAreaBtn" class="btn btn-sm btn-primary" data-i18n-tip="carto.pickAreaTip" data-i18n-aria="carto.pickAreaTip">Seleziona area sulla mappa</button>
+        <button type="button" id="cartoIgmUseViewBtn" class="btn btn-sm carto-btn-outline" data-i18n-tip="carto.useCurrentViewTip" data-i18n-aria="carto.useCurrentViewTip">Usa vista corrente</button>
       </div>
       <p id="cartoIgmStaleNotice" class="hint carto-stale" data-i18n="carto.staleView" hidden>Risultati riferiti a una vista precedente</p>
     </div>
@@ -13640,13 +13642,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <fieldset class="carto-filters">
       <legend data-i18n="carto.filters">Filtri serie</legend>
-      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter50" checked> <span data-i18n="carto.series50">Serie 50</span></label>
-      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter100v" checked> <span data-i18n="carto.series100v">Serie 100V</span></label>
-      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter25" checked> <span>Serie 25/25DB</span></label>
-      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter25v" checked> <span>Serie 25V</span></label>
-      <label class="carto-filter-item"><input type="checkbox" id="cartoIgmFilter25kauto" checked> <span>Serie 25K Automatica</span></label>
+      <label class="carto-filter-item" data-i18n-tip="carto.series50Tip" data-i18n-aria="carto.series50Tip"><input type="checkbox" id="cartoIgmFilter50" checked> <span data-i18n="carto.series50">Serie 50</span></label>
+      <label class="carto-filter-item" data-i18n-tip="carto.series100vTip" data-i18n-aria="carto.series100vTip"><input type="checkbox" id="cartoIgmFilter100v" checked> <span data-i18n="carto.series100v">Serie 100V</span></label>
+      <label class="carto-filter-item" data-i18n-tip="carto.series25Tip" data-i18n-aria="carto.series25Tip"><input type="checkbox" id="cartoIgmFilter25" checked> <span>Serie 25/25DB</span></label>
+      <label class="carto-filter-item" data-i18n-tip="carto.series25vTip" data-i18n-aria="carto.series25vTip"><input type="checkbox" id="cartoIgmFilter25v" checked> <span>Serie 25V</span></label>
+      <label class="carto-filter-item" data-i18n-tip="carto.series25kautoTip" data-i18n-aria="carto.series25kautoTip"><input type="checkbox" id="cartoIgmFilter25kauto" checked> <span>Serie 25K Automatica</span></label>
     </fieldset>
-    <label class="carto-show-all"><input type="checkbox" id="cartoIgmShowAll" checked> <span data-i18n="carto.showAll">Mostra tutte le impronte</span></label>
+    <label class="carto-show-all" data-i18n-tip="carto.showAllTip" data-i18n-aria="carto.showAllTip"><input type="checkbox" id="cartoIgmShowAll" checked> <span data-i18n="carto.showAll">Mostra tutte le impronte</span></label>
     <div id="cartoIgmResultsHeader" class="carto-results-header hint" hidden></div>
     <div id="cartoIgmResultsList" class="carto-results-list" data-i18n-aria="carto.resultsListAria"></div>
     <p id="cartoIgmZeroState" class="hint carto-zero" data-i18n="carto.zero" hidden>Nessuna carta interseca l’area</p>
@@ -15863,7 +15865,15 @@ const I18N = {
     "carto.needOneSeries":"Seleziona almeno una serie",
     "carto.resultsListAria":"Risultati indice cartografico",
     "carto.pickArea":"Seleziona area sulla mappa",
-    "carto.useCurrentView":"Usa vista corrente",
+    "carto.useCurrentView":"Aggiorna vista corrente",
+    "carto.useCurrentViewTip":"Aggiorna risultati e impronte usando l'attuale vista della mappa",
+    "carto.pickAreaTip":"Seleziona manualmente un'area sulla mappa per cercare i fogli IGM",
+    "carto.showAllTip":"Mostra sulla mappa tutte le impronte dei fogli trovati nei risultati",
+    "carto.series50Tip":"Mostra o nasconde la Serie 50 nei risultati e sulla mappa",
+    "carto.series100vTip":"Mostra o nasconde la Serie 100V nei risultati e sulla mappa",
+    "carto.series25Tip":"Mostra o nasconde la Serie 25/25DB nei risultati e sulla mappa",
+    "carto.series25vTip":"Mostra o nasconde la Serie 25V nei risultati e sulla mappa",
+    "carto.series25kautoTip":"Mostra o nasconde la Serie 25K Automatica nei risultati e sulla mappa",
     "carto.searchInView":"Cerca nella vista",
     "carto.searchInArea":"Cerca nell’area",
     "carto.areaSourceView":"Sorgente: vista corrente",
@@ -22887,10 +22897,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX2";
-const APP_BUILD_DETAIL = "improve IGM footprint label contrast on light basemaps";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3";
+const APP_BUILD_DETAIL = "auto-refresh IGM filters, open map by default and improve IGM panel layout";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 146;
+const APP_BUILD_NUM = 147;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24861,8 +24871,8 @@ function cartoScopedT(key){
       minH: 320,
       defaultW: 560,
       defaultH: null,
-      defaultHeightFraction: 0.58,
-      defaultHeightCap: 640,
+      defaultHeightFraction: 0.78,
+      defaultHeightCap: 720,
       topbarReserve: 104,
       bodyMinH: 160,
       partialMinVisible: 72,
@@ -24936,11 +24946,30 @@ function cartoScopedT(key){
     }
     try { closeToolsModal(); } catch(_){}
     try { closeToolsDrawer(); } catch(_){}
+    // UX3 — first-open senza query valida: niente N/S/E/O = "—"; usa subito la
+    // vista mappa corrente. Query/sessione IGM valida preservata se esiste.
+    const hadQuery = !!(u.queryBbox || u.selectedArea);
     u.isOpen = true;
     u.isMinimized = false;
     try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
     try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
     try { wireCartoIgmPanelFloatingGis(dlg); } catch(_){}
+    try {
+      // UX3 — se la posizione salvata è nella metà bassa del viewport e non è
+      // stata esplicitamente touch-ata dall'utente in sessione, riposiziona in
+      // zona alta per dare una geometria di default più utile.
+      const lay = (typeof gPanelLayouts === "object" && gPanelLayouts && gPanelLayouts.cartoigm) ? gPanelLayouts.cartoigm : {};
+      if (!lay.touched){
+        const br = dlg.getBoundingClientRect();
+        if (br.top > window.innerHeight * 0.40){
+          const optsL = _cartoIgmPanelLayoutOpts();
+          const reserve = Number.isFinite(optsL.topbarReserve) ? optsL.topbarReserve : 104;
+          const pad = Number.isFinite(optsL.pad) ? optsL.pad : 12;
+          dlg.style.top = (pad + reserve) + "px";
+          try { clampCartoIgmPanelRect(dlg); } catch(_){}
+        }
+      }
+    } catch(_){}
     try { cartoUiRenderPanel(); } catch(_){}
     try {
       requestAnimationFrame(function(){
@@ -24948,6 +24977,9 @@ function cartoScopedT(key){
       });
     } catch(_){}
     cartoUiRefreshOverlay();
+    if (!hadQuery){
+      try { cartoIgmUseCurrentView(); } catch(_){}
+    }
     return true;
   };
 
@@ -25050,9 +25082,29 @@ function cartoScopedT(key){
     function onFilter(){
       const u = cartoUiGetState();
       u.selectedSeries = cartoUiSelectedSeriesFromDom();
-      cartoUiSetBusy(u.status === "loading");
-      if (u.selectedSeries.length === 0) cartoUiSetNotice(cartoUiT("carto.needOneSeries"), true);
-      else cartoUiSetNotice(null, false);
+      if (u.selectedSeries.length === 0){
+        cartoUiSetNotice(cartoUiT("carto.needOneSeries"), true);
+        cartoUiSetBusy(false);
+        try { cartoUiRenderPanel(); } catch(_){}
+        return;
+      }
+      cartoUiSetNotice(null, false);
+      // UX3 — se il record selezionato non appartiene più alle serie attive,
+      // azzera la selezione prima di rilanciare la ricerca.
+      if (u.selectedRecordId){
+        let stillIn = false;
+        const arr = Array.isArray(u.results) ? u.results : [];
+        for (let i = 0; i < arr.length; i++){
+          const r = arr[i];
+          if (r && String(r.record_id) === String(u.selectedRecordId)
+              && String(r.series_id) && u.selectedSeries.indexOf(String(r.series_id)) >= 0){
+            stillIn = true;
+            break;
+          }
+        }
+        if (!stillIn) u.selectedRecordId = null;
+      }
+      try { cartoUiRunSearch(); } catch(_){}
     }
     ["cartoIgmFilter50","cartoIgmFilter100v","cartoIgmFilter25","cartoIgmFilter25v","cartoIgmFilter25kauto"].forEach(function(fid){
       const el = document.getElementById(fid);
@@ -78571,6 +78623,10 @@ function init(){
       if (typeof stored.settings.reportTitle === "string") state.reportTitle = stored.settings.reportTitle;
       if (typeof stored.settings.reportClass === "string") state.reportClass = stored.settings.reportClass;
       if (typeof stored.settings.gisMode === "boolean") state.gisMode = stored.settings.gisMode;
+      // UX3 — la mappa è la vista iniziale effettiva dell'app. L'opt-out classico
+      // (gisMode=false) è disattivato in questa release: il convertitore resta
+      // pienamente accessibile dal tab "Converti" del topbar.
+      state.gisMode = true;
       if (stored.settings.waypointMapNameDisplay === "always" || stored.settings.waypointMapNameDisplay === "tooltip"){
         state.waypointMapNameDisplay = stored.settings.waypointMapNameDisplay;
       }
