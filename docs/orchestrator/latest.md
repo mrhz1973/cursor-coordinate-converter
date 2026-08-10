@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-10 — **CARTO-IGM-SERIES-EXPAND-A IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`535670041dcb22f1505ff85e45ff3286ff91d293`** (`feat(carto): expand IGM series index`; build **144**). Payload **8204** feature (50+100v+25+25v+25kauto); 25kauto RDN2008 TM→CRS84 PASS (round-trip max ~0.075 m). Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-10_1924_carto_igm_series_expand_a.md`.
+2026-08-10 — **CARTO-IGM-SERIES-EXPAND-A-UX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`1482f16c570f7d5c5f2b64af873ac673b5ad38e6`** (`fix(carto): improve IGM series visual distinction`; build **145**). Solo polish UI: colori footprint/label per serie + CTA Cataloga/Modifica. Payload **8204** invariato. Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-10_2126_carto_igm_series_expand_a_ux1.md`.
 
-2026-08-10 — **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) CLOSED** storico tip runtime `a667f74` / finito `53328ef`.
+2026-08-10 — **CARTO-IGM-SERIES-EXPAND-A** runtime `5356700` / tip tip precedente autosync `586e338` (deploy tecnico già PASS in sessione separata; QA EXPAND-A ancora aperta).
