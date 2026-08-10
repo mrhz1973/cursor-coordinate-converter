@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **`finito` Regola H** dopo **QA CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3 PASS operatore**. Catena EXPAND-A→UX3-FIX3 **CLOSED / PASS end-to-end**. Runtime **`65c9ef8`** / build **150** deployato; commit docs chiusura **`4e9f456`**. WU-0012: SERIES CLOSED — NEXT PROVIDER. Monolite **non** nel commit docs. Inbox: `docs/orchestrator/inbox/2026-08-11_0059_riepilogo_finito-sessione.md`.
+2026-08-11 — **WAYPOINT-EDITOR-CENTER-A** runtime pushato (`be97282`, build **151**): CTA secondaria **Centra** in editor Nuovo/Modifica waypoint (camera-only su `#wpFieldCoord` via `parseWaypointEditorCoordText` + `gisMapCenterOnLatLon`). Bundle ROUTINE — review Claude non richiesta; deploy GIS-only in corso / post-autosync. Monolite **escluso** da questo autosync. Inbox: `docs/orchestrator/inbox/2026-08-11_0132_riepilogo_waypoint-editor-center-a.md`.
