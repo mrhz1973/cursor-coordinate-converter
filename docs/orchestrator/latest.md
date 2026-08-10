@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **CARTO-IGM-SERIES-EXPAND-A-UX3-FIX2 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`cb2a38b447f27c2e93b1c9c01ddd38785d31393b`** (`fix(carto): eliminate startup flash and top-align IGM panel`; build **149**). Pre-paint `body.gis-boot` (CSS mirror landing hide + show `#gisMapMount`); `gisInit` rimuove `gis-boot` dopo `body.gis-mode`. Pannello IGM: top = `header.getBoundingClientRect().bottom + 10px` se `!touched` (sempre, non solo >40% vh). Height 0.78/720 invariati. Payload **8204** invariato. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-11_0033_carto_igm_series_expand_a_ux3_fix2.md`.
+2026-08-11 — **CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`65c9ef8fc8bf652f322c6c7e82a6d1d6912ecb76`** (`fix(carto): reveal GIS UI after startup initialization`; build **150**). Atomic reveal: `body.gis-boot > header{visibility:hidden;pointer-events:none}`; `remove(gis-boot)` spostato a fine `gisInit` via `requestAnimationFrame` (non più subito dopo `add(gis-mode)`). Failsafe classic preservato. Payload **8204** invariato. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-11_0046_carto_igm_series_expand_a_ux3_fix3.md`.
 
-2026-08-11 — UX3-FIX1 runtime `02c7b99` deploy tecnico PASS (tip `f35075b`).
+2026-08-11 — UX3-FIX2 runtime `cb2a38b` deploy tecnico PASS (tip `a6755b1`).
