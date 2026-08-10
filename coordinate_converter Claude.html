@@ -22897,10 +22897,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3";
-const APP_BUILD_DETAIL = "auto-refresh IGM filters, open map by default and improve IGM panel layout";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3-FIX1";
+const APP_BUILD_DETAIL = "clear stale IGM results when all series filters are disabled";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 147;
+const APP_BUILD_NUM = 148;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -25083,8 +25083,17 @@ function cartoScopedT(key){
       const u = cartoUiGetState();
       u.selectedSeries = cartoUiSelectedSeriesFromDom();
       if (u.selectedSeries.length === 0){
+        // UX3-FIX1 — zero-serie: svuota risultati/impronte stale senza toccare
+        // queryBbox / selectedArea / areaMode (non usare cartoUiClearResults*).
+        u.results = [];
+        u.total = 0;
+        u.truncated = false;
+        u.selectedRecordId = null;
+        u.error = null;
+        u.status = "ready";
         cartoUiSetNotice(cartoUiT("carto.needOneSeries"), true);
         cartoUiSetBusy(false);
+        try { cartoUiRefreshOverlay(); } catch(_){}
         try { cartoUiRenderPanel(); } catch(_){}
         return;
       }
