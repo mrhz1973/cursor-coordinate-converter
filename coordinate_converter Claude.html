@@ -6559,6 +6559,23 @@ body.gis-mode > main > #toolsCollapsible,
 body.gis-mode > main > #printReport{
   display:none !important;
 }
+/* UX3-FIX2 — pre-paint: nasconde la landing Convertitore PRIMA di gisInit.
+ * body.gis-mode resta la fonte runtime canonica; .gis-boot è solo anti-flash. */
+body.gis-boot > main > #pasteSection,
+body.gis-boot > main > #manualInputSection,
+body.gis-boot > main > #geocodeCard,
+body.gis-boot > main > .grid,
+body.gis-boot > main > #toolsCollapsible,
+body.gis-boot > main > #printReport{
+  display:none !important;
+}
+body.gis-boot > main{
+  max-width:none; padding:0; margin:0;
+}
+body.gis-boot #gisMapMount,
+body.gis-boot #gisMapMount[hidden]{
+  display:block !important;
+}
 /* Within #gisMapMount the map should fill the container. Inherits
  * the existing .mini-map.mm-full behaviour by piggy-backing on it
  * (setMapSize("full") is invoked at gis init). */
@@ -11619,7 +11636,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 /* #endregion CSS — GIS FLOATING PANELS AND DIALOGS */
 </style>
 </head>
-<body>
+<body class="gis-boot">
 
 <header>
   <div class="header-inner">
@@ -22897,10 +22914,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3-FIX1";
-const APP_BUILD_DETAIL = "clear stale IGM results when all series filters are disabled";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3-FIX2";
+const APP_BUILD_DETAIL = "eliminate startup converter flash and top-align IGM panel";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 148;
+const APP_BUILD_NUM = 149;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24955,19 +24972,31 @@ function cartoScopedT(key){
     try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
     try { wireCartoIgmPanelFloatingGis(dlg); } catch(_){}
     try {
-      // UX3 — se la posizione salvata è nella metà bassa del viewport e non è
-      // stata esplicitamente touch-ata dall'utente in sessione, riposiziona in
-      // zona alta per dare una geometria di default più utile.
+      // UX3-FIX2 — default/untouched: top immediatamente sotto la topbar GIS
+      // (misura DOM reale) + piccolo gap. Il default bottom-left di
+      // gisPanelDefaultRect lascia il pannello troppo basso; con altezza 0.78
+      // top resta spesso <40% vh quindi il reset UX3 non scattava.
+      // Geometry touchata dall'utente in sessione: non sovrascrivere.
       const lay = (typeof gPanelLayouts === "object" && gPanelLayouts && gPanelLayouts.cartoigm) ? gPanelLayouts.cartoigm : {};
       if (!lay.touched){
-        const br = dlg.getBoundingClientRect();
-        if (br.top > window.innerHeight * 0.40){
-          const optsL = _cartoIgmPanelLayoutOpts();
+        const optsL = _cartoIgmPanelLayoutOpts();
+        const gap = 10;
+        let topY = null;
+        try {
+          const hdr = document.querySelector("body.gis-mode > header") || document.querySelector("header");
+          if (hdr){
+            const hb = hdr.getBoundingClientRect();
+            if (Number.isFinite(hb.bottom) && hb.bottom > 0){
+              topY = hb.bottom + gap;
+            }
+          }
+        } catch(_){}
+        if (!(Number.isFinite(topY))){
           const reserve = Number.isFinite(optsL.topbarReserve) ? optsL.topbarReserve : 104;
-          const pad = Number.isFinite(optsL.pad) ? optsL.pad : 12;
-          dlg.style.top = (pad + reserve) + "px";
-          try { clampCartoIgmPanelRect(dlg); } catch(_){}
+          topY = reserve + gap;
         }
+        dlg.style.top = topY + "px";
+        try { clampCartoIgmPanelRect(dlg); } catch(_){}
       }
     } catch(_){}
     try { cartoUiRenderPanel(); } catch(_){}
@@ -61062,10 +61091,13 @@ function gisInit(){
   if (state.gisMode === false){
     // Classic layout opt-out kept for future toggles. In this release the
     // pivot is a net replacement, so gisMode defaults to true.
+    try { document.body.classList.remove("gis-boot"); } catch(_){}
     return;
   }
 
   document.body.classList.add("gis-mode");
+  // UX3-FIX2 — pre-paint marker non pilota più la navigazione dopo il boot.
+  try { document.body.classList.remove("gis-boot"); } catch(_){}
   try { gisRelocatePrimaryToConvertModal(); } catch(_){}
 
   // Integrate the GIS action bar into the main header row (left side),
