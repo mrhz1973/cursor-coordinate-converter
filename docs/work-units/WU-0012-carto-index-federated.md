@@ -14,7 +14,7 @@
 **Blocco runtime coordinate modal:** `COORD-MODAL-FORMAT-COPY-A` (+ FIX1) — **CLOSED / PASS end-to-end** (2026-08-07) — tip `a0a6816` / build 138
 **Tipo:** macro-feature federata — motore + UI risultati + archivio + Esc + COORD CLOSED; CRS audit PARTIAL; serie/provider **ancora aperti**
 **Data apertura:** 2026-08-05
-**Runtime live:** tip monolite `a0a68167f159b6945be4fbd3089a7acb7403093f` · `APP_BUILD_ID = "COORD-MODAL-FORMAT-COPY-A-FIX1"` · `APP_BUILD_NUM = 138`
+**Runtime live (GIS tip post-overlay):** `a667f7455ca0cdf73e56ea5944832011639e32e4` · `APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4"` · `APP_BUILD_NUM = 143` (overlay fuori WU; tip WU COORD storico `a0a6816` / 138 superseded)
 **Autorizzazione corrente:** redistribuzione/embedding Serie 50+100V **concessa**; SEARCH-ENGINE CLOSED; UI-RESULTS CLOSED; ARCHIVE CLOSED; ESC CLOSED; espansione serie / provider successivi **non** CLOSED
 
 > Relazione roadmap: sezione **CARTO-INDEX-FEDERATED-A** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
@@ -454,7 +454,7 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 2. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
 3. **MODAL-OPEN-TOP-ALIGN-A** — backlog UX (non aperto; non WU-0012 core)
 
-**Nessun** auto-start. WU-0012 **resta OPEN** (serie/provider). Runtime live: tip **`a0a6816`** / build **138** (`COORD-MODAL-FORMAT-COPY-A-FIX1`).
+**Nessun** auto-start. WU-0012 **resta OPEN** (serie/provider); sequenza **riprendibile** dopo chiusura **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4)**. Runtime Git tip: **`a667f74`** / build **143**.
 
 ---
 

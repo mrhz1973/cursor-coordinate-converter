@@ -134,24 +134,24 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | runtime **`d42e3d2`** MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 (verificare `git ls-remote`) |
-| Runtime live / commit monolite | VPS ancora `a0a68167f159b6945be4fbd3089a7acb7403093f` (`a0a6816`) build 138 — **repo tip** `d42e3d2` build 140 **pre-deploy** |
-| Ultimo blocco chiuso | **DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN** — **CLOSED / PASS docs-only** (promozione overlay OPEN) |
-| Ultimo blocco runtime monolite | **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1** — tip repo `d42e3d2` build 140 — **IMPLEMENTED / REVIEW PENDING** |
-| Task aperto corrente | **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED** (`d42e3d2`). WU-0012 **OPEN** sequenza **sospesa** ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)) |
+| HEAD documentale (pre-autosync) | runtime **`a667f74`** MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 (verificare `git ls-remote`) |
+| Runtime live / commit monolite | tip **`a667f7455ca0cdf73e56ea5944832011639e32e4`** (`a667f74`) build **143** — deploy presupposto da QA PASS |
+| Ultimo blocco chiuso | **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4)** — **CLOSED / PASS end-to-end** |
+| Ultimo blocco runtime monolite | **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4** — tip `a667f74` build 143 |
+| Task aperto corrente | WU-0012 **OPEN** — NEXT **SERIES\|PROVIDER** (sequenza **riprendibile**) ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)) |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `a0a68167f159b6945be4fbd3089a7acb7403093f` (deploy GIS-only Cursor SSH PASS) |
-| Blob monolite (git) | `ecd88f542c3ff96f8ad21a7f132996ca44ef0e3a` |
-| Byte monolite (git LF) | `4703770` |
-| SHA-256 monolite (git LF) | `f882bdaa54ff608cadf2b5cec260a5d28030ecd24ccde1ff8949d4da644b3d46` |
-| `APP_BUILD_NUM` | repo tip **140** (VPS live ancora **138** fino al deploy) |
-| Display runtime | repo: `MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 · build 140`; VPS live: `COORD-MODAL-FORMAT-COPY-A-FIX1 · build 138` |
-| `APP_BUILD_ID` | repo tip `MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1` |
+| Runtime Git / atteso VPS | `a667f7455ca0cdf73e56ea5944832011639e32e4` (deploy presupposto da QA PASS) |
+| Blob monolite (git) | `db1b6f24c22c9811f6a7d3d276b0215db4afeddc` |
+| Byte monolite (git LF) | `4809183` |
+| SHA-256 monolite (git LF) | `50e9bedd3f6d5992546feac166d9a3c2d05ee44026b3c65ba30cda5831b5d1c3` |
+| `APP_BUILD_NUM` | **143** |
+| Display runtime | `MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 · build 143` |
+| `APP_BUILD_ID` | `MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
@@ -164,10 +164,10 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | COORD-MODAL-FORMAT-COPY-A (+ FIX1) | **CLOSED / PASS end-to-end** (formato+copia coordinate; tip `a0a6816` build 138) |
 | MODAL-OPEN-TOP-ALIGN-A | **BACKLOG / NOT OPENED** (apertura modal top-align) |
 | WAYPOINT-EDITOR-CENTER-A | **BACKLOG / NOT OPENED** (Centra in editor waypoint; non next) |
-| MAP-TRANSPARENT-OVERLAY-STACK-A | **IMPLEMENTED via FIX1** (parent `de8e053` build 139 review FAIL) |
-| MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 | **IMPLEMENTED / REVIEW PENDING** (`d42e3d2` build 140; deploy/QA non eseguiti; VPS ancora 138) |
+| MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) | **CLOSED / PASS end-to-end** (tip `a667f74` build 143) |
+| MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 | **CLOSED / PASS end-to-end** (`a667f74` build 143; crop Strava dimension-aware) |
 | DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN | **CLOSED / PASS docs-only** (promozione + diagnostic/scope/proxy registrati) |
-| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED — NEXT SERIES\|PROVIDER** — WU-0012; Prot. IGM-2024-7891 |
+| CARTO-INDEX-FEDERATED-A | **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED — NEXT SERIES\|PROVIDER** — WU-0012; Prot. IGM-2024-7891; sequenza riprendibile |
 | ROUTING-ANELLO-A (+ FIX1) | **CLOSED / PASS end-to-end** (`round_trip` multi-seed; build 115; superseded live) |
 | ROUTING-ACTION-ROW-UX-A | **CLOSED / PASS end-to-end** (action strip mode+actions; build 113; superseded live) |
 | ROUTING-ANDATA-RITORNO-A | **CLOSED / PASS end-to-end** (out-and-back reale; due POST `/route`; build 112; superseded live) |
@@ -224,11 +224,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | UX-NEXT-RUNTIME-BUNDLE-B | **CLOSED / PASS end-to-end** (build 17) |
 | UX-NEXT-RUNTIME-BUNDLE-A | **CLOSED / PASS end-to-end** (build 16) |
 | ROUTINE-CLEANUP-BUNDLE | **CLOSED / PASS end-to-end** (build 15) |
-| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=a0a6816` |
+| URL runtime QA | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=a667f74` |
 
 **Prossimo ordine operativo:**
 
-Ultimo runtime repo: **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1 IMPLEMENTED** tip **`d42e3d2`** / build **140** — **REVIEW GPT-SOSTITUTIVA REQUIRED**; deploy/QA **NOT EXECUTED**; VPS live ancora **`a0a6816`** / **138**. WU-0012 **OPEN** — sequenza SERIES / provider / MODAL-OPEN **sospesa**. Backlog: **WAYPOINT-EDITOR-CENTER-A**; **MODAL-OPEN-TOP-ALIGN-A**. **Oggetti GIS FROZEN**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
+Ultimo runtime: **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) CLOSED / PASS** tip **`a667f74`** / build **143**. WU-0012 **OPEN** — sequenza SERIES / provider / MODAL-OPEN **riprendibile**. Backlog: **WAYPOINT-EDITOR-CENTER-A**; **MODAL-OPEN-TOP-ALIGN-A**. **Oggetti GIS FROZEN**. **INFRA-GH-1A/1B/1D CLOSED / PASS**. GraphHopper VPS **V3**. Dettaglio: [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md).
 
 **COORD-MODAL-FORMAT-COPY-A (+ FIX1)** CLOSED tip **`a0a6816`**. **CARTO-IGM-AREA-ESC-RESTORE-A** CLOSED (superseded live). **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)** CLOSED (superseded live). **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-UI-RESULTS-A (+ FIX1–FIX3)** CLOSED (superseded live). **CARTO-SEARCH-ENGINE-A** CLOSED (superseded live). **MAP-BOX-ZOOM-A (+ FIX1)** CLOSED (superseded live). **MAJOR-4** import/restore backlog basso. Programma pick **Oggetti GIS** (MAJOR-5A2) completo e pannello **FROZEN**.
 
