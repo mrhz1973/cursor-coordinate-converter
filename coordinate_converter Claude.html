@@ -6576,6 +6576,11 @@ body.gis-boot #gisMapMount,
 body.gis-boot #gisMapMount[hidden]{
   display:block !important;
 }
+/* UX3-FIX3 — header pre-GIS non percepibile durante boot; layout resta disponibile. */
+body.gis-boot > header{
+  visibility:hidden;
+  pointer-events:none;
+}
 /* Within #gisMapMount the map should fill the container. Inherits
  * the existing .mini-map.mm-full behaviour by piggy-backing on it
  * (setMapSize("full") is invoked at gis init). */
@@ -22914,10 +22919,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3-FIX2";
-const APP_BUILD_DETAIL = "eliminate startup converter flash and top-align IGM panel";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3";
+const APP_BUILD_DETAIL = "reveal GIS UI atomically after startup initialization";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 149;
+const APP_BUILD_NUM = 150;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -61096,8 +61101,7 @@ function gisInit(){
   }
 
   document.body.classList.add("gis-mode");
-  // UX3-FIX2 — pre-paint marker non pilota più la navigazione dopo il boot.
-  try { document.body.classList.remove("gis-boot"); } catch(_){}
+  // UX3-FIX3 — gis-boot resta fino a fine gisInit (reveal atomico via rAF).
   try { gisRelocatePrimaryToConvertModal(); } catch(_){}
 
   // Integrate the GIS action bar into the main header row (left side),
@@ -62136,6 +62140,15 @@ function gisInit(){
         try { clampRoutingPlannerPanelRect(rp); gisPanelSyncBodySize(rp, _routingPanelLayoutOpts()); } catch(_){}
       }
     });
+  }
+  // UX3-FIX3 — reveal atomico: rimuovi gis-boot solo dopo che header/mappa
+  // sono stati ricomposti; un rAF evita un paint intermedio a metà DOM.
+  try {
+    requestAnimationFrame(function(){
+      try { document.body.classList.remove("gis-boot"); } catch(_){}
+    });
+  } catch(_){
+    try { document.body.classList.remove("gis-boot"); } catch(_){}
   }
 }
 
