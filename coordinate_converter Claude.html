@@ -22881,10 +22881,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX3";
-const APP_BUILD_DETAIL = "preserve effective-online gate in Strava overzoom hydration";
+const APP_BUILD_ID = "MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4";
+const APP_BUILD_DETAIL = "use native Strava source dimensions for local overzoom crop";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 142;
+const APP_BUILD_NUM = 143;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35804,7 +35804,7 @@ function stravaRunHeatmapOverlayVisible(zoom){
   return true;
 }
 
-/** Pure XYZ mapping: display tile → native Strava source tile + crop (0-based). */
+/** Pure XYZ mapping: display tile → native Strava source tile + logical sub-quadrant. */
 function stravaRunHeatmapSourceFromDisplay(displayZ, displayX, displayY){
   const nativeMax = Number.isFinite(STRAVA_RUN_HEATMAP_OVERLAY.maxZoom)
     ? (STRAVA_RUN_HEATMAP_OVERLAY.maxZoom | 0) : 11;
@@ -35820,7 +35820,6 @@ function stravaRunHeatmapSourceFromDisplay(displayZ, displayX, displayY){
     return {
       sourceZ: zInt, sourceX: xInt, sourceY: yInt,
       factor: 1, subX: 0, subY: 0,
-      cropX: 0, cropY: 0, cropSize: 256,
       needsCrop: false
     };
   }
@@ -35833,27 +35832,38 @@ function stravaRunHeatmapSourceFromDisplay(displayZ, displayX, displayY){
   const sourceY = Math.floor(yInt / factor);
   const subX = ((xInt % factor) + factor) % factor;
   const subY = ((yInt % factor) + factor) % factor;
-  const cropSize = 256 / factor;
   return {
     sourceZ, sourceX, sourceY,
     factor, subX, subY,
-    cropX: subX * cropSize,
-    cropY: subY * cropSize,
-    cropSize,
     needsCrop: true
   };
+}
+
+/** Derive a transient 256×256 PNG blob by cropping/upscaling a native source tile.
+ *  Crop rectangle is computed from the decoded source intrinsic size (not hard-coded 256/512). */
+function stravaRunHeatmapCropRectFromSourceSize(srcW, srcH, mapping){
+  const factor = Number(mapping && mapping.factor);
+  const subX = Number(mapping && mapping.subX);
+  const subY = Number(mapping && mapping.subY);
+  const w = Number(srcW);
+  const h = Number(srcH);
+  if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return null;
+  if (!Number.isFinite(factor) || factor < 1) return null;
+  if (!Number.isFinite(subX) || !Number.isFinite(subY)) return null;
+  const cropW = w / factor;
+  const cropH = h / factor;
+  if (!Number.isFinite(cropW) || !Number.isFinite(cropH) || cropW <= 0 || cropH <= 0) return null;
+  const cropX = subX * cropW;
+  const cropY = subY * cropH;
+  if (!Number.isFinite(cropX) || !Number.isFinite(cropY)) return null;
+  if (cropX < 0 || cropY < 0 || cropX + cropW > w + 1e-9 || cropY + cropH > h + 1e-9) return null;
+  return { cropX, cropY, cropW, cropH };
 }
 
 /** Derive a transient 256×256 PNG blob by cropping/upscaling a native source tile. */
 async function stravaRunHeatmapDeriveDisplayBlob(sourceBlob, mapping){
   if (!sourceBlob || !mapping) return null;
   if (!mapping.needsCrop) return sourceBlob;
-  const cropX = Number(mapping.cropX);
-  const cropY = Number(mapping.cropY);
-  const cropSize = Number(mapping.cropSize);
-  if (!Number.isFinite(cropX) || !Number.isFinite(cropY) || !Number.isFinite(cropSize) || cropSize <= 0){
-    return null;
-  }
   let bitmap = null;
   let tmpUrl = null;
   let imgEl = null;
@@ -35871,6 +35881,10 @@ async function stravaRunHeatmapDeriveDisplayBlob(sourceBlob, mapping){
     }
     const src = bitmap || imgEl;
     if (!src) return null;
+    const srcW = bitmap ? Number(bitmap.width) : Number(imgEl && imgEl.naturalWidth);
+    const srcH = bitmap ? Number(bitmap.height) : Number(imgEl && imgEl.naturalHeight);
+    const rect = stravaRunHeatmapCropRectFromSourceSize(srcW, srcH, mapping);
+    if (!rect) return null;
     const canvas = document.createElement("canvas");
     canvas.width = 256;
     canvas.height = 256;
@@ -35878,7 +35892,7 @@ async function stravaRunHeatmapDeriveDisplayBlob(sourceBlob, mapping){
     if (!ctx) return null;
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, 256, 256);
-    ctx.drawImage(src, cropX, cropY, cropSize, cropSize, 0, 0, 256, 256);
+    ctx.drawImage(src, rect.cropX, rect.cropY, rect.cropW, rect.cropH, 0, 0, 256, 256);
     const out = await new Promise((resolve) => {
       try {
         canvas.toBlob((b) => resolve(b || null), "image/png");
