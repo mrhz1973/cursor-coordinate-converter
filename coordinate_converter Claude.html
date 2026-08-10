@@ -8489,20 +8489,23 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   cursor:pointer;
 }
 .carto-igm-overlay .carto-footprint-label{
-  font:600 11px/1.15 ui-sans-serif, system-ui, sans-serif;
+  font:700 13px/1.15 ui-sans-serif, system-ui, sans-serif;
   fill:var(--text);
   paint-order:stroke fill;
-  stroke:var(--panel);
-  stroke-width:3px;
+  stroke:#ffffff;
+  stroke-width:4.5px;
   stroke-linejoin:round;
+  stroke-linecap:round;
   pointer-events:auto;
 }
 .carto-igm-overlay .carto-footprint-label-group.is-selected .carto-footprint-label{
-  font-weight:700;
+  font-weight:800;
+  stroke-width:5.5px;
 }
 .carto-igm-overlay .carto-footprint-label-hit{
-  fill:transparent;
-  stroke:none;
+  fill:rgba(255,255,255,0.88);
+  stroke:rgba(15,23,42,0.18);
+  stroke-width:1;
   pointer-events:auto;
 }
 /* IGM explicit area selection — amber/ochre, distinct from offline green/teal and footprints */
@@ -22884,10 +22887,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX1";
-const APP_BUILD_DETAIL = "color-code IGM series footprints and clarify catalog actions";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX2";
+const APP_BUILD_DETAIL = "improve IGM footprint label contrast on light basemaps";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 145;
+const APP_BUILD_NUM = 146;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23466,7 +23469,7 @@ function cartoScopedT(key){
     return String(key || "");
   }
 
-  /** CARTO-IGM-SERIES-EXPAND-A-UX1 — unica mappa serie → stile footprint/label. */
+  /** CARTO-IGM-SERIES-EXPAND-A-UX1/UX2 — unica mappa serie → stile footprint/label. */
   const CARTO_IGM_SERIES_VISUAL = {
     "50": {
       fillColor: "#2563eb",
@@ -23474,7 +23477,8 @@ function cartoScopedT(key){
       fillOpacitySelected: 0.22,
       strokeColor: "#1d4ed8",
       strokeOpacity: 0.92,
-      labelColor: "#1e40af"
+      labelColor: "#1e3a8a",
+      labelHalo: "#ffffff"
     },
     "100v": {
       fillColor: "#0891b2",
@@ -23482,7 +23486,8 @@ function cartoScopedT(key){
       fillOpacitySelected: 0.22,
       strokeColor: "#0e7490",
       strokeOpacity: 0.92,
-      labelColor: "#155e75"
+      labelColor: "#164e63",
+      labelHalo: "#ffffff"
     },
     "25": {
       fillColor: "#d97706",
@@ -23490,7 +23495,8 @@ function cartoScopedT(key){
       fillOpacitySelected: 0.22,
       strokeColor: "#b45309",
       strokeOpacity: 0.95,
-      labelColor: "#92400e"
+      labelColor: "#9a3412",
+      labelHalo: "#ffffff"
     },
     "25v": {
       fillColor: "#7c3aed",
@@ -23498,7 +23504,8 @@ function cartoScopedT(key){
       fillOpacitySelected: 0.22,
       strokeColor: "#6d28d9",
       strokeOpacity: 0.92,
-      labelColor: "#5b21b6"
+      labelColor: "#5b21b6",
+      labelHalo: "#ffffff"
     },
     "25kauto": {
       fillColor: "#16a34a",
@@ -23506,7 +23513,8 @@ function cartoScopedT(key){
       fillOpacitySelected: 0.22,
       strokeColor: "#15803d",
       strokeOpacity: 0.92,
-      labelColor: "#166534"
+      labelColor: "#14532d",
+      labelHalo: "#ffffff"
     }
   };
   const CARTO_IGM_SERIES_VISUAL_FALLBACK = {
@@ -23515,7 +23523,8 @@ function cartoScopedT(key){
     fillOpacitySelected: 0.20,
     strokeColor: "#475569",
     strokeOpacity: 0.90,
-    labelColor: "#334155"
+    labelColor: "#0f172a",
+    labelHalo: "#ffffff"
   };
   function cartoIgmSeriesVisual(seriesId){
     const key = String(seriesId == null ? "" : seriesId);
@@ -23530,10 +23539,22 @@ function cartoScopedT(key){
     el.style.strokeOpacity = String(st.strokeOpacity);
     el.style.strokeWidth = isSelected ? "2.5" : "1.25";
   }
-  function cartoIgmApplyLabelStyle(el, seriesId){
+  function cartoIgmApplyLabelStyle(el, seriesId, isSelected){
     if (!el) return;
     const st = cartoIgmSeriesVisual(seriesId);
     el.style.fill = st.labelColor;
+    el.style.stroke = st.labelHalo || "#ffffff";
+    el.style.strokeWidth = isSelected ? "5.5px" : "4.5px";
+    el.style.fontWeight = isSelected ? "800" : "700";
+    el.style.fontSize = isSelected ? "14px" : "13px";
+  }
+  function cartoIgmApplyLabelHitStyle(el, seriesId, isSelected){
+    if (!el) return;
+    const st = cartoIgmSeriesVisual(seriesId);
+    el.style.fill = "rgba(255,255,255,0.90)";
+    el.style.stroke = st.strokeColor;
+    el.style.strokeOpacity = isSelected ? "0.55" : "0.35";
+    el.style.strokeWidth = isSelected ? "1.5" : "1";
   }
 
   function cartoUiGetState(){
@@ -24517,12 +24538,13 @@ function cartoScopedT(key){
         g.setAttribute("pointer-events", "auto");
         const hit = document.createElementNS(ns, "rect");
         hit.setAttribute("class", "carto-footprint-label-hit");
-        hit.setAttribute("x", String(ax - 28));
-        hit.setAttribute("y", String(ay - 10));
-        hit.setAttribute("width", "56");
-        hit.setAttribute("height", "20");
-        hit.setAttribute("rx", "3");
+        hit.setAttribute("x", String(ax - 32));
+        hit.setAttribute("y", String(ay - 11));
+        hit.setAttribute("width", "64");
+        hit.setAttribute("height", "22");
+        hit.setAttribute("rx", "4");
         hit.setAttribute("pointer-events", "auto");
+        cartoIgmApplyLabelHitStyle(hit, item.series_id, isSel);
         g.appendChild(hit);
         const text = document.createElementNS(ns, "text");
         text.setAttribute("class", "carto-footprint-label");
@@ -24531,7 +24553,7 @@ function cartoScopedT(key){
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("dominant-baseline", "middle");
         text.setAttribute("pointer-events", "auto");
-        cartoIgmApplyLabelStyle(text, item.series_id);
+        cartoIgmApplyLabelStyle(text, item.series_id, isSel);
         text.textContent = labelTxt.length > 18 ? (labelTxt.slice(0, 17) + "…") : labelTxt;
         g.appendChild(text);
         svg.appendChild(g);
