@@ -9,6 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`65c9ef8fc8bf652f322c6c7e82a6d1d6912ecb76`** (`fix(carto): reveal GIS UI after startup initialization`; build **150**). Atomic reveal: `body.gis-boot > header{visibility:hidden;pointer-events:none}`; `remove(gis-boot)` spostato a fine `gisInit` via `requestAnimationFrame` (non più subito dopo `add(gis-mode)`). Failsafe classic preservato. Payload **8204** invariato. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-11_0046_carto_igm_series_expand_a_ux3_fix3.md`.
-
-2026-08-11 — UX3-FIX2 runtime `cb2a38b` deploy tecnico PASS (tip `a6755b1`).
+2026-08-11 — **`finito` Regola H** dopo **QA CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3 PASS operatore**. Catena EXPAND-A→UX3-FIX3 **CLOSED / PASS end-to-end**. Runtime **`65c9ef8`** / build **150** deployato; commit docs chiusura **`4e9f456`**. WU-0012: SERIES CLOSED — NEXT PROVIDER. Monolite **non** nel commit docs. Inbox: `docs/orchestrator/inbox/2026-08-11_0059_riepilogo_finito-sessione.md`.
