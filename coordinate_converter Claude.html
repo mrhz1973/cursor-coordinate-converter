@@ -8472,8 +8472,9 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   }
 }
 .carto-igm-overlay{ pointer-events:none !important; }
+/* Series colors applied inline from CARTO_IGM_SERIES_VISUAL (UX1); CSS = fallback only */
 .carto-igm-overlay .carto-footprint{
-  fill:color-mix(in srgb, var(--accent) 18%, transparent);
+  fill:color-mix(in srgb, var(--accent) 14%, transparent);
   stroke:var(--accent);
   stroke-width:1.25;
   fill-rule:evenodd;
@@ -8481,8 +8482,6 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   pointer-events:none;
 }
 .carto-igm-overlay .carto-footprint.is-selected{
-  fill:color-mix(in srgb, var(--accent) 32%, transparent);
-  stroke:var(--accent);
   stroke-width:2.5;
 }
 .carto-igm-overlay .carto-footprint-label-group{
@@ -8499,7 +8498,6 @@ body.gis-mode dialog#cartoIgmPanel.carto-igm-panel[open]{
   pointer-events:auto;
 }
 .carto-igm-overlay .carto-footprint-label-group.is-selected .carto-footprint-label{
-  fill:var(--accent);
   font-weight:700;
 }
 .carto-igm-overlay .carto-footprint-label-hit{
@@ -15871,8 +15869,10 @@ const I18N = {
     "carto.layerMenuLabel":"Indice IGM",
     "carto.layerMenuCatalog":"Catalogo carte",
     "carto.layerMenuTip":"Apri Indice cartografico IGM",
-    "carto.archive.register":"Registra",
+    "carto.archive.register":"Cataloga",
+    "carto.archive.registerTip":"Aggiungi questo foglio al catalogo personale",
     "carto.archive.edit":"Modifica",
+    "carto.archive.editTip":"Modifica i dati di catalogo di questo foglio",
     "carto.archive.owned":"Posseduta",
     "carto.archive.notOwned":"Non posseduta",
     "carto.archive.save":"Salva",
@@ -22884,10 +22884,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A";
-const APP_BUILD_DETAIL = "expand IGM index with Series 25, 25V and validated RDN2008 footprints";
+const APP_BUILD_ID = "CARTO-IGM-SERIES-EXPAND-A-UX1";
+const APP_BUILD_DETAIL = "color-code IGM series footprints and clarify catalog actions";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 144;
+const APP_BUILD_NUM = 145;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -23464,6 +23464,76 @@ function cartoScopedT(key){
       return it[key];
     }
     return String(key || "");
+  }
+
+  /** CARTO-IGM-SERIES-EXPAND-A-UX1 — unica mappa serie → stile footprint/label. */
+  const CARTO_IGM_SERIES_VISUAL = {
+    "50": {
+      fillColor: "#2563eb",
+      fillOpacity: 0.14,
+      fillOpacitySelected: 0.22,
+      strokeColor: "#1d4ed8",
+      strokeOpacity: 0.92,
+      labelColor: "#1e40af"
+    },
+    "100v": {
+      fillColor: "#0891b2",
+      fillOpacity: 0.14,
+      fillOpacitySelected: 0.22,
+      strokeColor: "#0e7490",
+      strokeOpacity: 0.92,
+      labelColor: "#155e75"
+    },
+    "25": {
+      fillColor: "#d97706",
+      fillOpacity: 0.14,
+      fillOpacitySelected: 0.22,
+      strokeColor: "#b45309",
+      strokeOpacity: 0.95,
+      labelColor: "#92400e"
+    },
+    "25v": {
+      fillColor: "#7c3aed",
+      fillOpacity: 0.14,
+      fillOpacitySelected: 0.22,
+      strokeColor: "#6d28d9",
+      strokeOpacity: 0.92,
+      labelColor: "#5b21b6"
+    },
+    "25kauto": {
+      fillColor: "#16a34a",
+      fillOpacity: 0.14,
+      fillOpacitySelected: 0.22,
+      strokeColor: "#15803d",
+      strokeOpacity: 0.92,
+      labelColor: "#166534"
+    }
+  };
+  const CARTO_IGM_SERIES_VISUAL_FALLBACK = {
+    fillColor: "#64748b",
+    fillOpacity: 0.12,
+    fillOpacitySelected: 0.20,
+    strokeColor: "#475569",
+    strokeOpacity: 0.90,
+    labelColor: "#334155"
+  };
+  function cartoIgmSeriesVisual(seriesId){
+    const key = String(seriesId == null ? "" : seriesId);
+    return CARTO_IGM_SERIES_VISUAL[key] || CARTO_IGM_SERIES_VISUAL_FALLBACK;
+  }
+  function cartoIgmApplyFootprintStyle(el, seriesId, isSelected){
+    if (!el) return;
+    const st = cartoIgmSeriesVisual(seriesId);
+    el.style.fill = st.fillColor;
+    el.style.fillOpacity = String(isSelected ? st.fillOpacitySelected : st.fillOpacity);
+    el.style.stroke = st.strokeColor;
+    el.style.strokeOpacity = String(st.strokeOpacity);
+    el.style.strokeWidth = isSelected ? "2.5" : "1.25";
+  }
+  function cartoIgmApplyLabelStyle(el, seriesId){
+    if (!el) return;
+    const st = cartoIgmSeriesVisual(seriesId);
+    el.style.fill = st.labelColor;
   }
 
   function cartoUiGetState(){
@@ -24173,9 +24243,17 @@ function cartoScopedT(key){
     archBtn.type = "button";
     archBtn.className = "btn btn-sm carto-archive-cta";
     archBtn.setAttribute("data-role", "carto-archive-cta");
-    archBtn.textContent = archRec
-      ? cartoUiT("carto.archive.edit")
-      : cartoUiT("carto.archive.register");
+    if (archRec){
+      archBtn.textContent = cartoUiT("carto.archive.edit");
+      const tipEdit = cartoUiT("carto.archive.editTip");
+      archBtn.title = tipEdit;
+      archBtn.setAttribute("aria-label", tipEdit);
+    } else {
+      archBtn.textContent = cartoUiT("carto.archive.register");
+      const tipReg = cartoUiT("carto.archive.registerTip");
+      archBtn.title = tipReg;
+      archBtn.setAttribute("aria-label", tipReg);
+    }
     actions.appendChild(archBtn);
     const centerBtn = document.createElement("button");
     centerBtn.type = "button";
@@ -24406,6 +24484,8 @@ function cartoScopedT(key){
         path.setAttribute("pointer-events", "none");
         const isSel = String(item.record_id) === String(u.selectedRecordId);
         path.setAttribute("class", "carto-footprint" + (isSel ? " is-selected" : ""));
+        path.setAttribute("data-series-id", String(item.series_id || ""));
+        cartoIgmApplyFootprintStyle(path, item.series_id, isSel);
         svg.appendChild(path);
       }
       // Labels: first introduction (overlay previously had paths only — verified no existing IGM text layer).
@@ -24451,6 +24531,7 @@ function cartoScopedT(key){
         text.setAttribute("text-anchor", "middle");
         text.setAttribute("dominant-baseline", "middle");
         text.setAttribute("pointer-events", "auto");
+        cartoIgmApplyLabelStyle(text, item.series_id);
         text.textContent = labelTxt.length > 18 ? (labelTxt.slice(0, 17) + "…") : labelTxt;
         g.appendChild(text);
         svg.appendChild(g);
