@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-10 — **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) CLOSED / PASS end-to-end**. Trigger `QA MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 PASS operatore` → auto-`finito` Regola H. Runtime tip **`a667f74`** build **143**; commit task docs **`53328ef`**. WU-0012 sequenza SERIES/provider **riprendibile**. Inbox: `docs/orchestrator/inbox/2026-08-10_1559_riepilogo_finito-sessione.md`.
+2026-08-10 — **CARTO-IGM-SERIES-EXPAND-A IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`535670041dcb22f1505ff85e45ff3286ff91d293`** (`feat(carto): expand IGM series index`; build **144**). Payload **8204** feature (50+100v+25+25v+25kauto); 25kauto RDN2008 TM→CRS84 PASS (round-trip max ~0.075 m). Deploy **NOT EXECUTED**. QA **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-10_1924_carto_igm_series_expand_a.md`.
 
-2026-08-10 — **MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4** implementazione storica `a667f74` (chiusa sopra).
+2026-08-10 — **MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) CLOSED** storico tip runtime `a667f74` / finito `53328ef`.
