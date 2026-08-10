@@ -9,6 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-10 — **CARTO-IGM-SERIES-EXPAND-A-UX3 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`9588e6cdeca743afed3dad0358984a5af637e9a1`** (`fix(carto): streamline IGM filters and panel opening`; build **147**). Solo polish UI: startup view = MAPPA (forza `state.gisMode=true`); auto-refresh filtri serie e "Mostra tutte le impronte"; rimozione "Cancella risultati" dalla UI GIS; rename "Usa vista corrente" → "Aggiorna vista corrente"; tooltip IT su pickArea/useView/filtri/showAll; geometria pannello IGM più alto (frac 0.78, cap 720) + reset top se apre oltre 40% viewport; first-open senza query auto-cattura vista. Payload **8204** invariato. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-10_2353_carto_igm_series_expand_a_ux3.md`.
+2026-08-11 — **CARTO-IGM-SERIES-EXPAND-A-UX3-FIX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME_COMMIT **`02c7b99bd282df4723ecd879b75c655874327dc1`** (`fix(carto): clear stale IGM results with no active series`; build **148**). Solo ramo zero-serie di `onFilter()`: svuota risultati/impronte stale preservando `queryBbox`/`selectedArea`/`areaMode`; notice needOneSeries; nessun clear helper che azzera la query; riattivazione serie → `cartoUiRunSearch()`. Payload **8204** invariato. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-11_0003_carto_igm_series_expand_a_ux3_fix1.md`.
 
-2026-08-10 — UX2 runtime `ebc6752` (label contrast) deploy tecnico PASS.
+2026-08-10 — UX3 runtime `9588e6c` (auto-refresh / startup mappa / layout pannello) review pending.
