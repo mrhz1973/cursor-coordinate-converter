@@ -784,3 +784,20 @@ Assertion aggregate: **PASS**. Nessun servizio online.
 
 **Chiuso:** dataset serie 25/25V/25kauto (8204); colori/label; auto-refresh filtri; zero-serie clear; startup MAPPA; top-align pannello; reveal atomico GIS.  
 **Resta OPEN nella WU:** provider IIM/CIGA/UKHO, aggiornamento online, IndexedDB.
+
+---
+
+## Collegamento a WU-0013 — UAS-GEOZONE-DFLIGHT
+
+**D-Flight (Zone Geografiche UAS italiane ED-269/ED-318)** ha ora una **WU dedicata**: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md).
+
+**Motivazione separazione:** D-Flight è semanticamente un **layer operativo di spazio aereo UAS** (dataset vettoriale dinamico con geometria, verticalità, temporalità, regole, contatti), non una **carta cartografica statica a scala definita** come IGM/IIM/CIGA/UKHO. Condivide con WU-0012 solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati.
+
+**Conseguenze:**
+
+- Il piano D-Flight (discovery `CARTO-DFLIGHT-DISCOVERY-A`, modello dati, schema ED-269/ED-318, pipeline, render, piano blocchi D-FLIGHT-A→F) è documentato **unicamente** in WU-0013.
+- WU-0012 **non** duplica quel contenuto.
+- Il NEXT WU-0013 è `DFLIGHT-REAL-DATA-VALIDATE-A` (diagnostic read-only).
+- WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update).
+
+Nessuna modifica runtime; nessuna duplicazione di piano tra le due WU.

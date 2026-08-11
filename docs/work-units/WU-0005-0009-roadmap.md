@@ -571,6 +571,36 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 - futuro runtime probabile bundle **DELICATO** (storage, import dati, possibili aggiornamenti rete, OPSEC);
 - **nessun** blocco runtime aperto da questa discovery.
 
+### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
+
+**Stato:** **OPEN / DISCOVERY COMPLETE / NO RUNTIME — NEXT `DFLIGHT-REAL-DATA-VALIDATE-A`** (2026-08-11). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Blocco apertura: **`DOCS-DFLIGHT-WU-0013-OPEN-A` CLOSED / PASS DOCS-ONLY**. Discovery: **`CARTO-DFLIGHT-DISCOVERY-A` — DIAGNOSTIC COMPLETE / TECHNICAL PLAN READY** (read-only, 2026-08-11). Runtime live monolite: **`ac3a0ea` / `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 · build 157`** (invariato in apertura WU-0013).
+
+**Ambito:** layer operativo UAS — zone geografiche italiane pubblicate da **D-Flight** (portale ENAV/ENAC) in formato **EUROCAE ED-269** / **ED-318** (JSON). Dataset vettoriale dinamico con geometria, verticalità, temporalità, regole e contatti; semanticamente distinto da carte cartografiche statiche IGM/IIM/CIGA/UKHO (WU-0012). Condivide con WU-0012 solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer), non il modello dati.
+
+**Fonti ufficiali verificate (discovery):** portale https://www.d-flight.it/ (HTTP 200); manuali v14/v15 + ICD U-Box/UTM; conferma ENAC + EUROCAE ED-269 Change 1 / ED-318; schema pubblico EUROCONTROL SWIM (`eurocontrol-swim/geofencing-prototype`) + esempi `UASGeoZones/ED-318`. Endpoint JSON ED-269 italiano **provato esistente ma dietro autenticazione** BASE/PRO (URL live UNKNOWN). **Nessun** login automatico / credenziali / bypass auth nella discovery né nel prossimo blocco.
+
+**Modello dati GOI GIS (concettuale — NON implementato):** dataset autonomo `dflightZones[]` (cap 5000 default, transiente session-only per MVP); separato da `mapWaypoints`, `cartoArchiveRecords`, `track`/`savedTracks`, `gisPolygons`. Schema normalized: `zone_id`, `name`, `zone_type`, `restriction`, `reasons[]`, `volumes[]` (Polygon/Circle + lower/upper verticali AGL/AMSL M/FT), `bbox`, `applicability[]`, `permanent`, `temporal_state`, `zone_authority[]`, `source_updated_at`, `source_checksum` (SHA-256 del file importato).
+
+**Strategia raccomandata:** import manuale file JSON (drag-drop o file picker) → parser JS inline tollerante V1 (array ED-269) / V2 (header + features) / V3 (ED-318 FeatureCollection) → normalizzazione in memoria → render SVG via pattern esistente `drawCartoIgmOverlay` + `cartoGeomToSvgPathD` + `tileMapLatLonToPx`. Nessuna fetch automatica; OPSEC/offline-first; allineato a rule 32 (L10N IT only per MVP); Workbench/Oggetti GIS FROZEN.
+
+**Piano blocchi futuro (NON auto-aperti):**
+
+| Blocco | Categoria | Note |
+| --- | --- | --- |
+| **DFLIGHT-REAL-DATA-VALIDATE-A** | **DIAGNOSTIC** | Gate obbligatorio prima di qualsiasi runtime. Campione JSON reale IT in `C:\tmp\goi-carto-provider-next\dflight\` (operator-provided). |
+| **D-FLIGHT-A** ingest/parser | **ROUTINE** (post validate) | parser tollerante V1/V2/V3; sanitizer. |
+| **D-FLIGHT-B** normalized model | **ROUTINE** | `dflightNormalizeZone(raw)` → modello concettuale; bbox derived. |
+| **D-FLIGHT-C** overlay renderer | **ROUTINE leggero** | `drawDflightOverlay(tileMap)` SVG; circle→polygon; viewport culling; reuse helpers. |
+| **D-FLIGHT-D** Layers toggle/legend | **ROUTINE** | sezione "Cataloghi"; legenda `restriction`; i18n IT. |
+| **D-FLIGHT-E** zone details | **ROUTINE** se pannello GIS normale; **DELICATO** se usa/modifica lifecycle `<dialog>` | click zona → pannello. |
+| **D-FLIGHT-F** optional update/offline | **DELICATO** | IndexedDB opt-in; export GPX/GeoJSON; update online OPSEC-gated. |
+
+**Bundle coerente consigliato:** D-FLIGHT-A → D-FLIGHT-E in unico bundle ROUTINE (≥5 item) se D-FLIGHT-E resta su pannello GIS normale senza toccare lifecycle `<dialog>`.
+
+**Classificazione futura vincolata (decisione operatore):** D-FLIGHT-A→D candidati **ROUTINE** post `DFLIGHT-REAL-DATA-VALIDATE-A`; D-FLIGHT-E **ROUTINE** solo se pannello GIS normale, **DELICATO** se lifecycle `<dialog>`; D-FLIGHT-F **DELICATO**.
+
+**Nessun** blocco runtime aperto da questa sezione. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
+
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
 **Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.

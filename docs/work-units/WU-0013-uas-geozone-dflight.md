@@ -1,0 +1,430 @@
+<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
+> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
+<!-- /AUTO-VIA-HEADER -->
+
+# WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
+
+**Stato:** `OPEN / DISCOVERY COMPLETE / NO RUNTIME — NEXT DFLIGHT-REAL-DATA-VALIDATE-A`
+**Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
+**Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
+**Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
+**Data apertura:** 2026-08-11
+**Runtime live (GIS tip):** `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` · `APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A-FIX1"` · `APP_BUILD_NUM = 157`
+**Monolite in WU-0013:** **non modificato** in apertura; tutti i blocchi futuri sono **non ancora aperti**.
+
+> Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
+> Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
+
+---
+
+## 1. Scopo
+
+Produrre un layer vettoriale autonomo delle **Zone Geografiche UAS italiane** pubblicate da **D-Flight** (portale ENAV/ENAC), in formato **EUROCAE ED-269** / **ED-318** (JSON), come overlay operazionale del GOI GIS Tool. Il layer deve restare **dataset/layer concettualmente autonomo**, separato da:
+
+- `state.mapWaypoints[]` (waypoint);
+- `state.cartoArchiveRecords` (catalogo archivio personale IGM WU-0012);
+- `state.track` / `state.savedTracks[]` (tracce);
+- `state.gisPolygons[]` (poligoni GIS).
+
+**Non** incorpora carte cartografiche protette: il dataset D-Flight è un insieme di volumi di spazio aereo con geometria, verticalità, temporalità, regole e contatti.
+
+---
+
+## 2. Metodo e limiti (identici ai vincoli repo)
+
+| Voce | Valore |
+| --- | --- |
+| Verifica HTTP | PowerShell `Invoke-WebRequest` (GET/HEAD) su URL ufficiali |
+| Campioni | Solo in `C:\tmp\goi-carto-provider-next\dflight\` (fuori repo) |
+| Osservazione rete | Passiva, limitata a fonti pubbliche |
+| Autorità | Solo siti/enti ufficiali; fonti commerciali terze non usate come autorità |
+| Diritti non provati | Marcati `UNKNOWN` |
+| Redistribuzione | **Non** dedotta dal solo fatto che un file sia scaricabile |
+| OPSEC / offline-first | Nessuna fetch automatica al boot; import manuale esplicito |
+| Workbench / Oggetti GIS | **FROZEN** |
+
+---
+
+## 3. Fonti ufficiali verificate (Discovery 2026-08-11)
+
+Verifica: **2026-08-11 ~15:40–16:00 Europe/Rome** (timestamp sessione discovery).
+
+### 3.1 D-Flight — portale operativo
+
+| Campo | Evidenza |
+| --- | --- |
+| URL portale | https://www.d-flight.it/ · https://www.d-flight.it/new_portal/ |
+| URL servizi mappe | https://www.d-flight.it/new_portal/services/mappe/ |
+| URL annuncio JSON | https://www.d-flight.it/new_portal/d-flight-disponibili-le-zone-geografiche-uas-nel-formato-standard-comunitario/ (2 ago 2024) |
+| URL webapp | https://www.d-flight.it/web-app/ (SPA Leaflet-like; fallback HTML identico 57877 byte → routing client-side) |
+| URL manuali | https://www.d-flight.it/new_portal/guide-manuali/ |
+| HTTP | **200** su tutte le pagine pubbliche |
+| Servizio download JSON ED-269 | **PROVATO** (esiste) ma **dietro autenticazione** BASE/PRO subscription |
+| Endpoint live JSON | **UNKNOWN** (URL generato da azione utente post-login) |
+| Web map endpoint | **UNKNOWN** (dietro auth; non osservabile passivamente) |
+| Aggiornamento | «costantemente aggiornate» (dichiarato); frequenza esatta UNKNOWN |
+
+### 3.2 Documentazione tecnica D-Flight
+
+| Documento | URL | Stato |
+| --- | --- | --- |
+| Manuale Utente v15 ENG (gen 2026) | https://www.d-flight.it/new_portal/wp-content/uploads/2026/01/D-Flight-Manuale_Utente-v15-ENG.pdf | **PROVATO** — §6 *DOWNLOAD UAS GEOZONE* pag. 126 |
+| Manuale Utente v14 EN (lug 2024) | https://www.d-flight.it/new_portal/wp-content/uploads/2024/07/D-Flight-Manuale_Utente-v14_EN.pdf | PROVATO |
+| ICD U-Box/UTM v1.4 | https://www.d-flight.it/new_portal/wp-content/uploads/2022/08/DFLIGHT_ICD_U-Box_UTM_V.1.4.pdf | PROVATO (OpenID privato; M2M su richiesta) |
+
+### 3.3 Sorgenti istituzionali correlate
+
+| Fonte | URL | Ruolo |
+| --- | --- | --- |
+| ENAC — annuncio ED-269 | https://www.enac.gov.it/news/operazioni-con-uas-disponibilita-delle-zone-geografiche-uas-secondo-lo-standard-eurocae-ed-269/ | Conferma ufficiale download JSON ED-269 via D-Flight |
+| ENAC — Bozza Reg Zone Geografiche UAS (giu 2026) | https://www.enac.gov.it/app/uploads/2026/06/2026_06_22-Bozza-Reg-Zone-geografiche-UAS.pdf | Quadro normativo art. 15 Reg. (UE) 2019/947 |
+| EUROCAE ED-269 Change 1 (gen 2025) | https://www.eurocae.net/product/ed-269-change-1-mops-for-geofencing/ | Standard MOPS; **Ch. 8/9/Appendix 2 rimossi** (sostituiti da ED-318) |
+| EUROCAE ED-318 (gen 2024) | https://www.eurocae.net/product/ed-318-technical-specification-for-geographical-zones-and-u-space-data-provision-and-exchange/ | Technical Specification GeoZones + U-Space data exchange |
+| EUROCONTROL SWIM — UAS GeoZones | https://swim-eurocontrol.atlassian.net/wiki/spaces/UGZ/ | Linee guida implementative |
+| EUROCONTROL SWIM — Validation page | https://swim-eurocontrol.atlassian.net/wiki/spaces/UGZ/pages/59113476 | JSON Schema pubblico + esempi |
+| Schema JSON ED-269 (EUROCONTROL) | https://github.com/eurocontrol-swim/geofencing-prototype/tree/master/specs | **PROVATO** — UASZone + Authority + TimePeriod + AirspaceVolume |
+| Schema/esempi ED-318 | https://github.com/UASGeoZones/ED-318 | **PROVATO** — FeatureCollection GeoJSON + `layer` + `extent` |
+
+### 3.4 NOT REQUIRED
+
+| Voce | Classificazione |
+| --- | --- |
+| Web map scraping | **NOT REQUIRED** — il JSON ED-269 ufficiale è autosufficiente (tutte le geometrie) |
+| Endpoint tile privati | fuori scope (basemap commerciali PRO Google/Bing/Navteq; Land Use CORINE / Census ISTAT) |
+| Servizi M2M/API addizionali | fuori scope (richiedono contatto `protocollogenerale@pec.d-flight.it`) |
+
+---
+
+## 4. Schema JSON (ED-269 / ED-318) — pubblico
+
+Lo schema è documentato in `eurocontrol-swim/geofencing-prototype` + esempi `UASGeoZones/ED-318`. Il file IT può seguire una di tre varianti: il parser futuro deve rilevarla.
+
+### 4.1 Top-level — tre varianti
+
+- **V1 (ED-269 stand-alone array)**: `[ UASZone, … ]`.
+- **V2 (ED-269 con header)**: `{ "title": str, "description": str, "features": [ UASZone, … ] }`.
+- **V3 (ED-318 FeatureCollection)**: `{ "type": "FeatureCollection", "title": str, "metadata": { validFrom, issued }, "features": [ Feature, … ] }`.
+
+### 4.2 Campi `UASZone` (ED-269 schema)
+
+| Campo | Tipo | Obb/Opz | Esempio | Uso GIS |
+| --- | --- | --- | --- | --- |
+| `identifier` | string(7) | **OBBL** | `NFZ6546` | stable id |
+| `country` | string(3) | **OBBL** | `ITA` | filter |
+| `name` | string(200) | opz / multilingua V3 | `LIPA-4` | label/tooltip |
+| `type` | enum `COMMON`/`CUSTOMIZED` | **OBBL** | `COMMON` | categoria |
+| `restriction` | enum `PROHIBITED`/`REQ_AUTHORISATION`/`CONDITIONAL`/`NO_RESTRICTION` | **OBBL** | `REQ_AUTHORISATION` | styling/legenda |
+| `restrictionConditions` | string[] | opz | — | tooltip |
+| `region` | integer | opz | — | filtro |
+| `reason` | enum[≤9] `AIR_TRAFFIC`/`SENSITIVE`/`PRIVACY`/`POPULATION`/`NATURE`/`NOISE`/`FOREIGN_TERRITORY`/`EMERGENCY`/`OTHER` | opz | `["AIR_TRAFFIC"]` | legenda/filtro |
+| `otherReasonInfo` | string(200) | opz | — | tooltip |
+| `regulationExemption` | enum `YES`/`NO` | opz | — | icona |
+| `uSpaceClass` | string(100) | opz | — | filtro U-Space |
+| `message` | string(200) | opz | — | tooltip |
+| `zoneAuthority[]` | obj[] | **OBBL** (≥1) | vedi §4.3 | contatti/azioni |
+| `applicability[]` | obj[] (TimePeriod) | opz | vedi §4.4 | temporale |
+| `geometry[]` | obj[] (AirspaceVolume) | **OBBL** (≥1) | vedi §4.5 | rendering |
+| `extendedProperties` | object | opz | — | raw-only |
+
+### 4.3 `zoneAuthority[]`
+
+`name`, `service`, `email`, `contactName`, `siteURL`, `phone`, `purpose` (enum `AUTHORIZATION`/`NOTIFICATION`/`INFORMATION`), `intervalBefore` (ISO-8601 duration).
+
+### 4.4 `applicability[]` / TimePeriod
+
+`permanent` (`YES`/`NO`, **OBBL**), `startDateTime` (date-time), `endDateTime` (date-time), `schedule[]` (`day[]` MON…SUN/ANY, `startTime`/`endTime` time UTC).
+
+### 4.5 `geometry[]` / AirspaceVolume
+
+`uomDimensions` (enum `M`/`FT`, **OBBL**), `lowerLimit` (int), `lowerVerticalReference` (enum `AGL`/`AMSL`, **OBBL**), `upperLimit` (int), `upperVerticalReference` (enum `AGL`/`AMSL`, **OBBL**), `horizontalProjection` (`Polygon` GeoJSON oppure `Circle` center+radius, **OBBL**).
+
+---
+
+## 5. Geometria orizzontale
+
+- **Tipi**: `Polygon` (GeoJSON; array di anelli; primo = shell esterno; successivi = holes) e `Circle` (center `[lon,lat]` + radius metri).
+- **MultiPolygon nativo**: non presente — zone disgiunte/multi-volume → array `geometry[]` con più AirspaceVolume (Polygon) oppure `GeometryCollection` in ED-318.
+- **CRS**: `urn:ogc:def:crs:OGC::CRS84` (lon/lat), identico al default GeoJSON RFC 7946.
+- **Ordine coordinate**: **lon, lat** (verificato in tutti gli esempi pubblici).
+- **Anelli**: min 4 vertici (primo = ultimo → chiusura esplicita).
+- **Circle**: da rasterizzare in poligono (32-64 vertici; Vincenty geodetico).
+- **Antimeridiano**: non rilevante per Italia (lon ~6-19, lat ~35-48 atteso); parser difensivo con `normalizeLon` esistente.
+
+---
+
+## 6. Dimensione verticale
+
+Modello normalizzato (campo `geometry[]` è array → **più layer verticali** nativi):
+
+```text
+lower_value        = geometry[i].lowerLimit
+lower_unit         = geometry[i].uomDimensions      # M | FT
+lower_reference    = geometry[i].lowerVerticalReference   # AGL | AMSL
+upper_value        = geometry[i].upperLimit
+upper_unit         = geometry[i].uomDimensions
+upper_reference    = geometry[i].upperVerticalReference   # AGL | AMSL
+```
+
+Casi speciali:
+
+- `lowerLimit` assente + `lowerVerticalReference=AGL` → **SFC/GND** (0 AGL).
+- `upperLimit` assente/very-large → **unlimited**.
+- Conversione FT↔M per display (1 ft = 0.3048 m esatto).
+- ED-318 `layer` parallelo: `upper/lower/upperReference/lowerReference/uom`.
+
+---
+
+## 7. Temporale
+
+- `applicability[]` array di TimePeriod; ogni entry ha `permanent`, `startDateTime`, `endDateTime`, `schedule[]`.
+- `schedule[].day[]` MON…SUN o `ANY`; `startTime/endTime` ISO-8601 time (UTC).
+- `permanent=YES` → zona sempre attiva (date opzionali ignorate).
+- `permanent=NO` + `startDateTime/endDateTime` → intervallo esplicito; `schedule` opzionale per sotto-intervalli giornalieri.
+- Timezone: UTC (Z) ovunque negli esempi pubblici.
+
+**Stati temporali futuri per l'overlay** (logica non implementata):
+
+| Stato | Quando |
+| --- | --- |
+| `ACTIVE_NOW` | now ∈ [start,end] e schedule match |
+| `FUTURE` | start > now |
+| `EXPIRED` | end < now |
+| `ALWAYS_ACTIVE` | `permanent=YES` |
+| `UNKNOWN` | date mancanti/malformate |
+
+---
+
+## 8. Strategia pipeline raccomandata
+
+Confronto:
+
+1. JSON ED-269 importato direttamente dal browser → **complessità bassa, robustezza alta, parsing diretto, aggiornamento manuale, offline ok**.
+2. Conversione offline in formato interno → passaggio inutile.
+3. Conversione offline in GeoJSON → opzionale futuro (ED-318 è già vicino a GeoJSON).
+4. Fetch manuale esplicita → come #1 con UX di import file.
+5. Endpoint web map → scartato (auth/instabilità).
+6. Scraping geometrie web map → scartato (invasivo, fragile).
+
+**Raccomandata**: **#1 + #4 combinata** — import manuale file JSON (drag-drop o file picker) → parser JS inline tollerante V1/V2/V3 → normalizzazione in memoria (transiente session) → render SVG via pattern `drawCartoIgmOverlay`. Nessuna fetch automatica, nessuna dipendenza di rete, allineato a OPSEC/offline-first.
+
+---
+
+## 9. Modello dati GOI GIS (concettuale — NON implementato)
+
+Dataset autonomo `dflightZones[]` (cap 5000 di default, **transiente session-only per MVP**).
+
+| Campo | Tipo | Categoria |
+| --- | --- | --- |
+| `provider_id` | `"dflight"` | CORE |
+| `zone_id` | string (identifier + country) | CORE |
+| `name` | string (lingua preferita) | CORE |
+| `zone_type` | enum `COMMON`/`CUSTOMIZED` | CORE |
+| `restriction` | enum `PROHIBITED`/`REQ_AUTHORISATION`/`CONDITIONAL`/`NO_RESTRICTION` | CORE |
+| `reasons` | string[] | OPTIONAL |
+| `volumes[]` | array (vedi sotto) | CORE |
+| `bbox` | [w,s,e,n] | DERIVED |
+| `applicability[]` | normalized TimePeriod[] | OPTIONAL |
+| `permanent` | bool | CORE |
+| `temporal_state` | enum ACTIVE/FUTURE/EXPIRED/ALWAYS/UNKNOWN | DERIVED |
+| `zone_authority[]` | normalized authority[] | OPTIONAL |
+| `message` | string | OPTIONAL |
+| `source_updated_at` | ISO-8601 (da metadata del file se presente) | OPTIONAL |
+| `source_url` | string (note provenienza, mai automatic fetch) | OPTIONAL |
+| `source_checksum` | SHA-256 del file importato | CORE |
+| `raw_properties` | object | RAW-ONLY |
+
+`volumes[i]`: `{ horizontal_type: Polygon|Circle, geometry: GeoJSON-like, lower: {value,unit,reference}, upper: {value,unit,reference} }`.
+
+---
+
+## 10. Regioni del monolite da usare (design futuro, NON implementato)
+
+Identificate in fase di discovery (riferimenti di linea indicativi; validare all'apertura del blocco runtime):
+
+- Layer menu `tlayerSection` + sezione "Cataloghi" già esistente con item IGM (`data-role="open-carto-igm"`) — punto di integrazione naturale per toggle "Zone D-Flight".
+- Helper coordinate: `tileMapLatLonToPx`, `tileMapPxToLatLon`, `gisMapTileMathViewport`.
+- Template overlay SVG: `drawCartoIgmOverlay`, `cartoGeomToSvgPathD` (gestisce già Polygon + MultiPolygon + chiusura anelli + translate tile-layer). **Riuso diretto** per `drawDflightOverlay(tileMap)`.
+- Lifecycle: `renderTileMap`, `refreshTileMapForTrackUi` — hook di re-render post pan/zoom.
+- Export JPG overlay list — aggiungere `.dflight-zone-overlay svg` se export incluso.
+- State fields: `forceOffline`, `opsecStrict`; gate non necessario per render puro (no network), ma import va gestito OPSEC-aware.
+- i18n: dizionari IT/EN/FR con pattern `data-i18n`. **L10N freeze** (rule 32): nuove stringhe **solo IT** per MVP.
+
+### 10.1 Tecnologia overlay raccomandata: **SVG**
+
+Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); Canvas richiederebbe un'architettura nuova non coerente con il monolite. Hit-testing/tooltip nativi DOM; viewport culling + bbox prefilter per scalare a migliaia di zone.
+
+---
+
+## 11. Rendering design (futuro, NON implementato)
+
+- Conversione coordinate → pixel: `tileMapLatLonToPx(root, lat, lon)` riuso.
+- Viewport culling: prefilter per `bbox` vs viewport corrente.
+- Polygon/MultiPolygon/GeometryCollection: helper riuso/riadattato da `cartoGeomToSvgPathD` (anelli, holes impliciti via `fill-rule="evenodd"`).
+- Circle: approssimazione a poligono 32-64 vertici (Vincenty come `polygonGeodesicMidpointLonLat`).
+- Stile: fill opacity 0.15-0.25 + stroke 1.5-2px; palette per `restriction` (PROHIBITED=rosso, REQ_AUTHORISATION=arancio, CONDITIONAL=giallo, NO_RESTRICTION=verde); z-index sotto vettori GIS; pointer-events auto su path/label.
+- Label: identifier (max 18 char).
+- Hover/click/tooltip: pattern `data-record-id`; pannello laterale riusabile da `cartoIgmPanel` con dettagli (nome, restriction, reasons, quota, validità, authority).
+- Legenda minima basata su `restriction` effettivamente presenti nel dataset (4 valori enum); non inventare categorie.
+
+---
+
+## 12. UI/UX MVP
+
+- Posizionamento: **Layers → sezione "Cataloghi"** (la stessa di IGM) → toggle **"Zone D-Flight (UAS)"**.
+- Stato: `state.showDflightZones` (transiente session-only per MVP) + `state._dflightDataset` (raw parsed, transiente).
+- **MVP** (D-FLIGHT-A → D-FLIGHT-E bundle):
+  1. Import file JSON (drag-drop su Layers o file picker).
+  2. Toggle on/off.
+  3. Legenda categorie `restriction`.
+  4. Click zona → pannello dettaglio.
+  5. Indicator dataset (source_updated_at + checksum + count).
+  6. i18n IT only (rule 32).
+- **LATER** (D-FLIGHT-F + follow-up):
+  1. Opacità slider.
+  2. Filtro categorie `restriction`/`reason`.
+  3. Filtro stato temporale (ACTIVE_NOW/FUTURE/EXPIRED/ALWAYS/UNKNOWN).
+  4. Persistenza IndexedDB opt-in.
+  5. Export GPX/GeoJSON zone selezionate.
+  6. Cerca per identifier/nome.
+- **Vincoli**: nessuna modifica a Workbench/Oggetti GIS (FROZEN); nessun nuovo storage persistent senza decisione esplicita.
+
+---
+
+## 13. Offline / update design
+
+- **MVP storage = SESSION-ONLY** (no localStorage, no IndexedDB). Caricamento tramite import file; perso al refresh.
+- **Import flow**: drag-drop o picker → parse JSON → validate schema (V1/V2/V3 detect) → normalize → set `state._dflightDataset` + `state.showDflightZones=true` → render.
+- **Versione dataset visibile**: `source_updated_at` (da metadata se presente, altrimenti `UNKNOWN`) + SHA-256 file + count.
+- **Rollback**: re-import di file precedente (dataset in memoria sostituito; nessuno storico versionato in MVP).
+- **Malformed JSON**: parse error → notifica in-pannello + mantenimento dataset precedente se presente.
+- **Empty dataset**: clear overlay + notifica "no zones".
+- **Large dataset**: cap 5000 zone importate (fail-closed oltre); viewport culling al render.
+- **Network unavailable**: irrilevante per MVP (no fetch); versione future con download esplicito richiede OPSEC consent.
+- **Nessun fetch automatico al boot**.
+
+---
+
+## 14. Performance (stima architetturale — dataset reale IT NON disponibile)
+
+- Byte JSON: Francia pubblica ~1-5 MB; Italia atteso stesso range.
+- Zone count: ~1000-3000 (inclusi NOTAM dinamici).
+- Vertici: tipici Polygon ED-269 ~5-50 vertici; 100+ per circonvallazioni/scale operazionali.
+- Costi browser (stima da confermare con campione reale): parse JSON <500 ms / 5 MB; normalizzazione <200 ms / 3000 zone; render SVG ~50-200 ms / 500 zone visibili.
+- **Verdetti attesi**:
+  - **FULL RENDER OK** fino a ~500 zone visibili in-view.
+  - **VIEWPORT CULLING REQUIRED** sopra 500.
+  - **CANVAS** non richiesto (SVG + culling sufficiente).
+  - **SIMPLIFICATION** opzionale LATER (Douglas-Peucker); non MVP.
+
+---
+
+## 15. Piano blocchi futuro (NON auto-aperti)
+
+| Blocco | Scope | Dipendenze | Rischio | Categoria |
+| --- | --- | --- | --- | --- |
+| **DFLIGHT-REAL-DATA-VALIDATE-A** | Acquisizione campione JSON reale IT (operator-provided in `C:\tmp\goi-carto-provider-next\dflight\`) + parsing diagnostico + verifica schema V1/V2/V3 + metriche reali (byte, count, vertici, bbox) | nessuna | basso | **DIAGNOSTIC** (gate obbligatorio prima di qualsiasi runtime) |
+| **D-FLIGHT-A** — ingest/parser | parser JS tollerante V1/V2/V3; validator base; sanitizer; `dflightParseDataset(text, opts)` → `{meta, zones}` | DFLIGHT-REAL-DATA-VALIDATE-A | basso | **ROUTINE** |
+| **D-FLIGHT-B** — normalized model | struct in memoria; `dflightNormalizeZone(raw)` → modello §9; bbox derived | A | basso | **ROUTINE** |
+| **D-FLIGHT-C** — overlay renderer | `drawDflightOverlay(tileMap)` SVG; circle→polygon; viewport culling; reuse `tileMapLatLonToPx` + `cartoGeomToSvgPathD` pattern | A, B | basso-medio (render path) | **ROUTINE leggero** |
+| **D-FLIGHT-D** — Layers toggle/legend | sezione "Cataloghi" item toggle; legenda `restriction`; i18n IT | C | basso | **ROUTINE** |
+| **D-FLIGHT-E** — zone details | click zona → pannello (modal dialog riusabile); dettagli completi | D | basso se pannello GIS normale; **medio/alto se usa/modifica lifecycle `<dialog>`** | **ROUTINE** oppure **DELICATO** (in base a implementazione) |
+| **D-FLIGHT-F** — optional update/offline persistence | IndexedDB opt-in; export GPX/GeoJSON; update online esplicito OPSEC-gated | A–E | medio-alto (storage, rete, OPSEC) | **DELICATO** |
+
+**Bundle coerente consigliato**: **D-FLIGHT-A → D-FLIGHT-E** in un unico bundle ROUTINE (5 item, ≥5 come da `METHOD-BUNDLING-DEFAULT`); nessun hop Claude richiesto se D-FLIGHT-E resta su pannello GIS normale senza toccare lifecycle `<dialog>`.
+
+**Classificazione futura vincolata (decisione operatore):**
+
+- **D-FLIGHT-A→D**: candidati **ROUTINE** dopo `DFLIGHT-REAL-DATA-VALIDATE-A`.
+- **D-FLIGHT-E**: **ROUTINE** solo se pannello GIS normale; **DELICATO** se usa/modifica lifecycle `<dialog>`.
+- **D-FLIGHT-F**: **DELICATO**.
+
+**Nessun** blocco runtime aperto da questa apertura WU.
+
+---
+
+## 16. UNKNOWN principali (checklist — da chiudere in DFLIGHT-REAL-DATA-VALIDATE-A)
+
+- SHA-256 / byte / dataset reale IT (login required) → Fase B/N discovery non chiuse con prova.
+- Schema esatto del file IT (V1 array / V2 header / V3 FeatureCollection ED-318).
+- Versione ED-269Change1 vs ED-318 dichiarata nel file IT.
+- Presenza effettiva di `Circle` e `GeometryCollection` multi-layer nel dataset IT.
+- Frequenza aggiornamento dichiarata (manuale non specifica).
+- Distribuzione vertici per zona (max/avg) — non stimabile senza campione.
+- Mappatura `reason`/`restrictionConditions` effettivamente usate in IT.
+- Comportamento dataset NOTAM dinamici (vita breve; update frequente).
+- Possibile presenza di zone estere al confine (San Marino, Vaticano) nel file IT.
+- ToS D-Flight su conservazione offline del JSON (utenza BASE/PRO ha diritto di scaricare; redistribuzione pubblica del dataset derivato = **UNKNOWN/RICHIEDE AUTORIZZAZIONE** → fail-closed).
+
+---
+
+## 17. OPSEC e rete (vincoli futuri)
+
+- Nessuna richiesta automatica al boot.
+- Aggiornamento dataset **solo** azione esplicita (import file o, in futuro, download esplicito OPSEC-gated).
+- `state.forceOffline` blocca ogni download (in futuro).
+- OPSEC strict blocca fonti internet / endpoint sensibili.
+- Dataset già importato interrogabile offline.
+- Data fonte e stato aggiornamento sempre visibili.
+- **Nessun** invio di area/coordinate a servizi esterni (ricerca locale).
+- Nessun logging remoto delle aree ricercate.
+- **Nessun login automatico, nessuna acquisizione credenziali, nessun bypass auth.**
+
+---
+
+## 18. Collocazione WU — motivazione separazione da WU-0012
+
+**Raccomandazione applicata**: **WU-0013 separata**.
+
+Motivazione tecnica:
+
+1. D-Flight è semanticamente un **layer operativo di spazio aereo UAS**, non una **carta cartografica** (IGM/IIM/CIGA/UKHO sono indici di carte statiche a scala definita; D-Flight è un dataset vettoriale dinamico con logica temporale e verticale).
+2. Condivide con WU-0012 solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer), non il modello dati.
+3. Riutilizzare `cartoArchiveRecords` o `state.cartoArchive*` per D-Flight creerebbe accoppiamento improprio (concetti misti: chart_id/scale vs zone_id/restriction).
+4. Schema dati, provider relationship (login/API M2M), workflow di update e tematismo (verticale/temporale) sono tutti **diversi** da WU-0012.
+5. Una WU dedicata mantiene tracciabilità pulita e non inquina la storia WU-0012.
+
+WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update) con solo un riferimento incrociato a WU-0013 (nessuna duplicazione).
+
+---
+
+## 19. Decisioni DOCS-DFLIGHT-WU-0013-OPEN-A
+
+1. WU-0013 **APERTA** / `OPEN / DISCOVERY COMPLETE / NO RUNTIME`.
+2. NEXT registrato: **`DFLIGHT-REAL-DATA-VALIDATE-A`** (gate obbligatorio prima di qualsiasi runtime).
+3. D-Flight registrato come **layer operativo UAS separato** da WU-0012.
+4. Modello dati concettuale autonomo `dflightZones[]` (no riusuo `mapWaypoints`/`cartoArchiveRecords`/`track`/`gisPolygons`).
+5. Strategia raccomandata: **import manuale JSON + parser tollerante V1/V2/V3 + render SVG**.
+6. Tecnologia overlay: **SVG** (riuso pattern IGM).
+7. L10N: IT only per MVP (rule 32).
+8. Storage MVP: **SESSION-ONLY**; IndexedDB solo in D-FLIGHT-F (DELICATO).
+9. Piano futuro D-FLIGHT-A→F registrato; **NESSUN** blocco runtime aperto.
+10. Repo, monolite, build, IndexedDB, `state`: **invariati**.
+
+---
+
+## 20. Controlli apertura (self-check)
+
+- [x] Repo root, branch `main`, workspace pulito verificati in pre-flight
+- [x] HEAD = origin/main = `git ls-remote` = `fc2d1a4` prima della scrittura
+- [x] Monolite `coordinate_converter Claude.html` non toccato
+- [x] Nessun bump build, nessun deploy, nessuna modifica runtime
+- [x] Workbench / Oggetti GIS FROZEN
+- [x] Nessuna fetch automatica / login / credenziali
+- [x] WU-0012 non duplicata (solo riferimento incrociato)
+- [x] L10N freeze rispettato (solo IT per future stringhe)
+- [x] NEXT `DFLIGHT-REAL-DATA-VALIDATE-A` registrato
+- [x] Discovery `CARTO-DFLIGHT-DISCOVERY-A` richiamata come base
+
+---
+
+## 21. Prossimo passo consigliato
+
+**`DFLIGHT-REAL-DATA-VALIDATE-A`** (diagnostic read-only):
+
+- Operatore fornisce copia JSON reale IT in `C:\tmp\goi-carto-provider-next\dflight\` (attraverso utilizzo ordinario del portale D-Flight con credenziali BASE/PRO dell'operatore; **nessuna condivisione credenziali**, **nessun login automatico**).
+- Cursor esegue: parsing diagnostico fuori repo; verifica variante V1/V2/V3; calcolo metriche reali (byte, SHA-256, count zone, primitive Polygon/Circle, vertici max/avg/median, bbox complessivo Italia, distribuzione `restriction`/`reason`).
+- Output: report diagnostico in `/tmp/NN-goi-gis-riepilogo.md` + inbox; **nessun** runtime; **nessun** commit dataset nel repo.
+
+In ordine alternativo (decisione operatore): **MODAL-OPEN-TOP-ALIGN-A** (backlog UX non D-Flight); provider WU-0012 (IIM/CIGA/UKHO / online update).
+
+**Nessun auto-start.**
