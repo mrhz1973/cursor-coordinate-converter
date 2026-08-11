@@ -4,6 +4,13 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-A — CLOSED / PASS (2026-08-12)
+
+- Automated Browser QA **PASS** (pre-operatore).
+- Attestazione operatore: `QA D-FLIGHT-A PASS operatore` → auto-`finito` Regola H.
+- Scope: parser puro `window.GOIDflight`; zero rete/storage/UI overlay.
+- Runtime tip: `d52367b` / build 158.
+
 > **Natura del file**
 > - Fa parte del **read-set operativo** (voce 4; vedi [`README.md`](../README.md)).
 > - È una **procedura/template**, **non** la fonte dello stato vivo.

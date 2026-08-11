@@ -135,11 +135,11 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | tip chiusura `DFLIGHT-HELPER-H2-A-FIX1` (verificare `git ls-remote` post-finito) |
-| Runtime live / commit monolite | tip **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (`ac3a0ea`) build **157** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **DFLIGHT-HELPER-H2-A** (+ FIX1) — **CLOSED / PASS end-to-end** (helper VPS; QA PASS) |
-| Ultimo blocco runtime monolite | **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** — tip `ac3a0ea` build 157 |
-| Task aperto corrente | **WU-0013** OPEN / HELPER H2 DEPLOYED / NO GIS CLIENT — NEXT **`D-FLIGHT-A`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
+| HEAD documentale (pre-autosync) | tip chiusura `D-FLIGHT-A` (verificare `git ls-remote` post-finito) |
+| Runtime live / commit monolite | tip **`d52367b6f2b714f02384e9dc0dc8c4131447e5ea`** (`d52367b`) build **158** — deploy GIS-only PASS |
+| Ultimo blocco chiuso | **D-FLIGHT-A** — **CLOSED / PASS end-to-end** (parser client; QA PASS) |
+| Ultimo blocco runtime monolite | **D-FLIGHT-A** — tip `d52367b` build 158 |
+| Task aperto corrente | **WU-0013** OPEN / D-FLIGHT-A CLOSED / HELPER H2 LIVE — NEXT **`D-FLIGHT-B`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
 | Helper D-Flight VPS | **live** `goi-dflight-helper` @ `100.114.7.53:8010` · REVISION `bc80604` · READY · ~849 NFZ |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -147,13 +147,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** + **AUTOMATED-BROWSER-QA-PREOP** (OM §4 Regole G + H + D2bis) |
-| Runtime Git / atteso VPS | `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` (deploy GIS-only PASS; tip VPS `3ed3f8e`) |
-| Blob monolite (git) | `fceb5626511f38f75154759f0c4ab8a7474acebe` |
-| Byte monolite (git LF) | `9789222` |
-| SHA-256 monolite (git LF) | `0bcd7f5349464ed51c8ffaa779fe13d9bc1020d580c9aedd4e0a68d91db98717` |
-| `APP_BUILD_NUM` | **157** |
-| Display runtime | `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 · build 157` |
-| `APP_BUILD_ID` | `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1` |
+| Runtime Git / atteso VPS | `d52367b6f2b714f02384e9dc0dc8c4131447e5ea` (deploy GIS-only PASS; `?v=d52367b`) |
+| Blob monolite (git) | `8c6b3e3a85f74e0384ba121711c7da16135552c1` |
+| Byte monolite (git LF) | `9829585` |
+| SHA-256 monolite (git LF) | `d334ec6bae5654c5af3e45ed090de5e5f9b393a7a8ee2374e17b3593456fbe03` |
+| `APP_BUILD_NUM` | **158** |
+| Display runtime | `D-FLIGHT-A · build 158` |
+| `APP_BUILD_ID` | `D-FLIGHT-A` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
@@ -166,7 +166,8 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | COORD-MODAL-FORMAT-COPY-A (+ FIX1) | **CLOSED / PASS end-to-end** (formato+copia coordinate; tip `a0a6816` build 138) |
 | MODAL-OPEN-TOP-ALIGN-A | **BACKLOG / NOT OPENED** (apertura modal top-align) |
 | WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) | **CLOSED / PASS end-to-end** (tip storico `7f41c8e` build 155; superseded live) |
-| MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) | **CLOSED / PASS end-to-end** (tip `ac3a0ea` build 157; focus zoom-in panel-aware; track OUT; Workbench FROZEN) |
+| MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) | **CLOSED / PASS end-to-end** (tip storico `ac3a0ea` build 157; superseded live da D-FLIGHT-A) |
+| D-FLIGHT-A | **CLOSED / PASS end-to-end** (tip `d52367b` build 158; A3-light `GOIDflight`; zero rete/storage/UI; Workbench FROZEN) |
 | MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) | **CLOSED / PASS end-to-end** (tip storico `a667f74` build 143; superseded live) |
 | MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 | **CLOSED / PASS end-to-end** (`a667f74` build 143; superseded live) |
 | DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN | **CLOSED / PASS docs-only** (promozione + diagnostic/scope/proxy registrati) |
