@@ -8799,9 +8799,14 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-field{ display:flex; flex-direction:column; gap:4px; font-size:.85rem; color:var(--muted); }
 .wp-field--wide{ grid-column:1 / -1; }
 .wp-field input[type="color"]{ width:56px; height:34px; padding:2px; }
-.wp-feedback{ font-size:.78rem; min-height:1em; color:var(--muted); }
+.wp-feedback{ display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; font-size:.78rem; min-height:1em; color:var(--muted); }
+.wp-feedback .wp-feedback-text{ flex:1 1 auto; min-width:0; }
+.wp-feedback .copy-btn{ flex:0 0 auto; }
+.wp-feedback .copy-btn[hidden]{ display:none !important; }
 .wp-feedback.is-ok{ color:var(--success, var(--accent)); }
+.wp-feedback.is-ok .wp-feedback-text{ color:var(--success, var(--accent)); }
 .wp-feedback.is-err{ color:var(--error); }
+.wp-feedback.is-err .wp-feedback-text{ color:var(--error); }
 .wp-field input[aria-invalid="true"]{ border-color:var(--error); }
 .wp-editor-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
 .wp-list{ margin-top:6px; }
@@ -12858,7 +12863,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <label class="wp-field wp-field--wide">
               <span data-i18n="waypointModal.editor.coord">Coordinata (qualsiasi formato)</span>
               <input type="text" id="wpFieldCoord" autocomplete="off" spellcheck="false" data-i18n-ph="waypointModal.editor.coordPh" placeholder="45.1234 9.5678  •  32TQP 12345 67890  •  +30.0N 90.0W">
-              <span id="wpFieldCoordFeedback" class="wp-feedback" aria-live="polite"></span>
+              <span id="wpFieldCoordFeedback" class="wp-feedback" aria-live="polite" role="status">
+                <span id="wpFieldCoordFeedbackText" class="wp-feedback-text"></span>
+                <button type="button" id="wpFieldCoordCopyBtn" class="btn btn-sm copy-btn" hidden data-copy="" data-i18n="btn.copy" data-i18n-tip="tip.copy" data-i18n-aria="tip.copy" data-tip="Copia negli appunti" aria-label="Copia negli appunti">Copia</button>
+              </span>
             </label>
             <label class="wp-field">
               <span data-i18n="waypointModal.editor.icon">Icona (NATO)</span>
@@ -22939,10 +22947,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX2";
-const APP_BUILD_DETAIL = "preserve raw waypoint coordinate text and center on Enter";
+const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX3";
+const APP_BUILD_DETAIL = "fix UTM inverse accuracy and make waypoint conversion preview copyable";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 153;
+const APP_BUILD_NUM = 154;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26327,13 +26335,15 @@ function utmToLatLon(zone, hem, easting, northing){
   }
 
   const chi = Math.asin(Math.sin(xiP) / Math.cosh(etaP));
-  // Inverse hyperbolic conformal latitude → geodetic latitude via series
-  // Using tp = sin(chi), iterate to geodetic t
+  // Inverse conformal latitude χ → geodetic φ.
+  // Forward uses: tp = tanχ = t·A − σ·B with A=√(1+σ²), B=√(1+t²), σ=sinh(e·atanh(e·sinφ)).
+  // Correct rearrange: t = (tp + σ·B) / A  (iterate because σ depends on t).
+  // Previous bug used t = tp·A + σ·B → mid-latitude northing drift (~70 m at 44°N).
   let tp = Math.tan(chi);
   let t = tp;
   for (let i = 0; i < 10; i++){
     const sigma = Math.sinh(e * Math.atanh(e * t / Math.sqrt(1 + t*t)));
-    const tNew = tp * Math.sqrt(1 + sigma*sigma) + sigma * Math.sqrt(1 + t*t);
+    const tNew = (tp + sigma * Math.sqrt(1 + t*t)) / Math.sqrt(1 + sigma*sigma);
     if (Math.abs(tNew - t) < 1e-14){ t = tNew; break; }
     t = tNew;
   }
@@ -26378,6 +26388,19 @@ function utmToMGRS(utm, lat, precision){
   const eStr = pad(Math.floor(eRel / div), precision);
   const nStr = pad(Math.floor(nRel / div), precision);
   return utm.zone + band + " " + colLetter + rowLetter + " " + eStr + " " + nStr;
+}
+
+/** Canonical MGRS display from parseMGRS result — same precision, syntactic spacing/case only. */
+function formatMgrsCanonicalFromParse(p){
+  if (!p || !Number.isFinite(p.zone)) return "";
+  const prec = Math.max(0, Math.min(5, p.precision | 0));
+  const eRel = Math.floor(((Number(p.easting) % 100000) + 100000) % 100000);
+  const nRel = Math.floor(((Number(p.northing) % 100000) + 100000) % 100000);
+  if (prec === 0) return String(p.zone) + p.band + " " + p.col + p.row;
+  const div = Math.pow(10, 5 - prec);
+  const eStr = pad(Math.floor(eRel / div), prec);
+  const nStr = pad(Math.floor(nRel / div), prec);
+  return String(p.zone) + p.band + " " + p.col + p.row + " " + eStr + " " + nStr;
 }
 
 function latLonToAllMGRS(lat, lon){
@@ -50865,22 +50888,95 @@ function writeWaypointEditorCoordFieldFromDraft(){
   if (s && s !== "—") coordEl.value = s;
   try { syncWaypointEditorCenterBtn(); } catch(_){}
 }
+/** Prefer MGRS identity (parse→canonical) when source is MGRS and preview format is MGRS. */
+function formatWaypointEditorConversionValue(sourceText, lat, lon){
+  const mode = waypointListCoordFormatEffective();
+  if (mode === "mgrs"){
+    try {
+      const p = parseMGRS(sourceText);
+      const canon = formatMgrsCanonicalFromParse(p);
+      if (canon) return canon;
+    } catch(_){}
+  }
+  const formatted = formatWaypointListCoordinates(lat, lon);
+  if (formatted && formatted !== "—") return formatted;
+  if (Number.isFinite(lat) && Number.isFinite(lon)) return lat.toFixed(5) + ", " + lon.toFixed(5);
+  return "";
+}
+function ensureWaypointEditorCoordFeedbackDom(){
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (!fb) return null;
+  let textEl = document.getElementById("wpFieldCoordFeedbackText");
+  if (!textEl){
+    textEl = document.createElement("span");
+    textEl.id = "wpFieldCoordFeedbackText";
+    textEl.className = "wp-feedback-text";
+    fb.insertBefore(textEl, fb.firstChild);
+  }
+  let btn = document.getElementById("wpFieldCoordCopyBtn");
+  if (!btn){
+    btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "wpFieldCoordCopyBtn";
+    btn.className = "btn btn-sm copy-btn";
+    btn.hidden = true;
+    btn.setAttribute("data-copy", "");
+    btn.setAttribute("data-i18n", "btn.copy");
+    btn.setAttribute("data-i18n-tip", "tip.copy");
+    btn.setAttribute("data-i18n-aria", "tip.copy");
+    const copyLbl = (typeof t === "function" ? (t("btn.copy") || "Copia") : "Copia");
+    const copyTip = (typeof t === "function" ? (t("tip.copy") || "Copia negli appunti") : "Copia negli appunti");
+    btn.textContent = copyLbl;
+    btn.setAttribute("data-tip", copyTip);
+    btn.setAttribute("aria-label", copyTip);
+    fb.appendChild(btn);
+  }
+  return { fb, textEl, btn };
+}
+function clearWaypointEditorCoordFeedback(){
+  const dom = ensureWaypointEditorCoordFeedbackDom();
+  if (!dom) return;
+  dom.fb.classList.remove("is-ok", "is-err");
+  dom.textEl.textContent = "";
+  dom.btn.hidden = true;
+  dom.btn.setAttribute("data-copy", "");
+}
+function setWaypointEditorCoordConversionFeedback(value, type){
+  const dom = ensureWaypointEditorCoordFeedbackDom();
+  if (!dom) return;
+  const v = String(value || "");
+  dom.fb.classList.remove("is-err");
+  dom.fb.classList.add("is-ok");
+  const typeSuffix = type ? (" · " + type) : "";
+  dom.textEl.textContent = v ? ("Conversione: " + v + typeSuffix) : "";
+  if (v){
+    dom.btn.hidden = false;
+    dom.btn.setAttribute("data-copy", v);
+  } else {
+    dom.btn.hidden = true;
+    dom.btn.setAttribute("data-copy", "");
+  }
+}
+function setWaypointEditorCoordErrorFeedback(msg){
+  const dom = ensureWaypointEditorCoordFeedbackDom();
+  if (!dom) return;
+  dom.fb.classList.remove("is-ok");
+  dom.fb.classList.add("is-err");
+  dom.textEl.textContent = String(msg || "");
+  dom.btn.hidden = true;
+  dom.btn.setAttribute("data-copy", "");
+}
 /** Update conversion preview under #wpFieldCoord from current raw text. No field rewrite. No autocenter. */
 function refreshWaypointEditorCoordConversionPreview(){
   if (!state.waypointEditorDraft) return;
   const el = document.getElementById("wpFieldCoord");
-  const fb = document.getElementById("wpFieldCoordFeedback");
   if (!el) return;
   const r = parseWaypointEditorCoordText(el.value);
   if (!r.ok) return;
   state.waypointEditorDraft.lat = r.lat;
   state.waypointEditorDraft.lon = r.lon;
-  if (fb){
-    const formatted = formatWaypointListCoordinates(r.lat, r.lon);
-    fb.textContent = "Conversione: " + (formatted && formatted !== "—" ? formatted : (r.lat.toFixed(5) + ", " + r.lon.toFixed(5)));
-    fb.classList.remove("is-err");
-    fb.classList.add("is-ok");
-  }
+  const value = formatWaypointEditorConversionValue(el.value, r.lat, r.lon);
+  setWaypointEditorCoordConversionFeedback(value, r.type);
   if (!state.waypointEditorDraft.id){
     try { syncWaypointDraftPinFromEditor(); } catch(_){}
   }
@@ -77516,8 +77612,7 @@ function openWaypointEditor(opts){
     coordEl.removeAttribute("aria-invalid");
   }
   try { syncWaypointListCoordFormatSelect(); } catch(_){}
-  const fb = document.getElementById("wpFieldCoordFeedback");
-  if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
+  try { clearWaypointEditorCoordFeedback(); } catch(_){}
   if (iconEl){
     const icRaw = TRACK_WPT_ICON_SET.has(String(d.icon || "").toLowerCase())
       ? String(d.icon).toLowerCase() : "hq";
@@ -77610,9 +77705,8 @@ function applyWaypointEditorCoordEmpty(){
   state.waypointEditorDraft.lat = NaN;
   state.waypointEditorDraft.lon = NaN;
   const input = document.getElementById("wpFieldCoord");
-  const fb = document.getElementById("wpFieldCoordFeedback");
   if (input) input.removeAttribute("aria-invalid");
-  if (fb){ fb.textContent = ""; fb.classList.remove("is-ok", "is-err"); }
+  try { clearWaypointEditorCoordFeedback(); } catch(_){}
   if (!state.waypointEditorDraft.id){
     state.trackWaypointDraft = null;
     try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
@@ -77626,21 +77720,15 @@ function applyWaypointEditorCoordSuccess(lat, lon, type, opts){
   state.waypointEditorDraft.lat = lat;
   state.waypointEditorDraft.lon = lon;
   const input = document.getElementById("wpFieldCoord");
-  const fb = document.getElementById("wpFieldCoordFeedback");
   if (input) input.removeAttribute("aria-invalid");
-  if (fb){
-    if (opts.softFeedback){
-      fb.textContent = "";
-      fb.classList.remove("is-ok", "is-err");
-    } else {
-      const formatted = formatWaypointListCoordinates(lat, lon);
-      const body = (formatted && formatted !== "—")
-        ? formatted
-        : (lat.toFixed(5) + ", " + lon.toFixed(5));
-      fb.textContent = "Conversione: " + body + (type ? (" · " + type) : "");
-      fb.classList.remove("is-err");
-      fb.classList.add("is-ok");
-    }
+  if (opts.softFeedback){
+    try { clearWaypointEditorCoordFeedback(); } catch(_){}
+  } else {
+    const sourceText = (opts.sourceText != null)
+      ? String(opts.sourceText)
+      : (input ? String(input.value || "") : "");
+    const value = formatWaypointEditorConversionValue(sourceText, lat, lon);
+    setWaypointEditorCoordConversionFeedback(value, type);
   }
   // rewriteField remains supported for rare init callers; default runtime paths must leave source text intact.
   if (opts.rewriteField){
@@ -77669,16 +77757,13 @@ function handleWaypointEditorCoordEnter(){
     applyWaypointEditorCoordEmpty();
     return;
   }
-  const input = el;
-  const fb = document.getElementById("wpFieldCoordFeedback");
-  if (input) input.setAttribute("aria-invalid", "true");
-  if (fb){
-    const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
-    fb.textContent = t(key);
-    fb.classList.remove("is-ok");
-    fb.classList.add("is-err");
-    try { appRevealModalError(fb); } catch(_){}
-  }
+  if (el) el.setAttribute("aria-invalid", "true");
+  const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
+  setWaypointEditorCoordErrorFeedback(t(key));
+  try {
+    const fb = document.getElementById("wpFieldCoordFeedback");
+    if (fb) appRevealModalError(fb);
+  } catch(_){}
   try { syncWaypointEditorCenterBtn(); } catch(_){}
 }
 
@@ -77710,15 +77795,13 @@ function onEditorCoordInput(str, opts){
   // Invalid non-empty: keep previous canonical draft + field text.
   if (opts.showInvalid){
     const input = document.getElementById("wpFieldCoord");
-    const fb = document.getElementById("wpFieldCoordFeedback");
     if (input) input.setAttribute("aria-invalid", "true");
-    if (fb){
-      const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
-      fb.textContent = t(key);
-      fb.classList.remove("is-ok");
-      fb.classList.add("is-err");
-      try { appRevealModalError(fb); } catch(_){}
-    }
+    const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
+    setWaypointEditorCoordErrorFeedback(t(key));
+    try {
+      const fb = document.getElementById("wpFieldCoordFeedback");
+      if (fb) appRevealModalError(fb);
+    } catch(_){}
   }
 }
 
@@ -77770,23 +77853,24 @@ function commitWaypointEditor(){
   const text = coordEl ? String(coordEl.value || "") : "";
   const parsed = parseWaypointEditorCoordText(text);
   if (!parsed.ok){
-    const fb = document.getElementById("wpFieldCoordFeedback");
     if (coordEl) coordEl.setAttribute("aria-invalid", "true");
-    if (fb){
-      const key = (parsed.err && (parsed.err.key || parsed.err.i18nKey)) || "err.notRecognized";
-      fb.textContent = t(key);
-      fb.classList.remove("is-ok");
-      fb.classList.add("is-err");
-      try { appRevealModalError(fb); } catch(_){}
-    }
+    const key = (parsed.err && (parsed.err.key || parsed.err.i18nKey)) || "err.notRecognized";
+    setWaypointEditorCoordErrorFeedback(t(key));
+    try {
+      const fb = document.getElementById("wpFieldCoordFeedback");
+      if (fb) appRevealModalError(fb);
+    } catch(_){}
     return;
   }
   d.lat = parsed.lat;
   d.lon = parsed.lon;
   try { validateLatLon(d.lat, d.lon); }
   catch(err){
-    const fb = document.getElementById("wpFieldCoordFeedback");
-    if (fb){ fb.textContent = t((err && (err.key || err.i18nKey)) || "err.latRange"); fb.classList.add("is-err"); try { appRevealModalError(fb); } catch(_){} }
+    setWaypointEditorCoordErrorFeedback(t((err && (err.key || err.i18nKey)) || "err.latRange"));
+    try {
+      const fb = document.getElementById("wpFieldCoordFeedback");
+      if (fb) appRevealModalError(fb);
+    } catch(_){}
     return;
   }
   const lat = Math.max(-90, Math.min(90, d.lat));
@@ -79093,6 +79177,36 @@ function runSelfCheck(){
     const back = utmToLatLon(c1.zone, c1.hemisphere, c1.easting, c1.northing);
     console.assert(Math.abs(back.lat - 5.259444) < 1e-6, "UTM round-trip lat");
     console.assert(Math.abs(back.lon + 4.043909) < 1e-6, "UTM round-trip lon");
+
+    // FIX3 — UTM inverse mid-latitude / MGRS identity (fixed conformal→geodetic rearrange)
+    const qaMgrs = "32T NQ 75167 01394";
+    const qaP = parseMGRS(qaMgrs);
+    console.assert(qaP.easting === 575167 && qaP.northing === 4901394, "QA MGRS parse E/N");
+    const qaLl = mgrsToLatLonExt(qaMgrs);
+    console.assert(Math.abs(qaLl.lat - 44.26190620) < 1e-7 && Math.abs(qaLl.lon - 9.94169824) < 1e-7, "QA MGRS lat/lon vs known");
+    const qaU = latLonToUTM(qaLl.lat, qaLl.lon);
+    console.assert(Math.abs(qaU.easting - 575167) < 0.10 && Math.abs(qaU.northing - 4901394) < 0.10, "QA MGRS UTM RT <0.10 m");
+    console.assert(latLonToMGRS(qaLl.lat, qaLl.lon, 5) === "32T NQ 75167 01394", "QA MGRS cell identity");
+    console.assert(formatMgrsCanonicalFromParse(qaP) === "32T NQ 75167 01394", "MGRS canonical formatter");
+    console.assert(formatMgrsCanonicalFromParse(parseMGRS("32T NQ 75 01")) === "32T NQ 75 01", "MGRS reduced precision preserved");
+
+    const cmU = latLonToUTM(44.1, 9.0);
+    console.assert(cmU.zone === 32 && Math.abs(cmU.easting - 500000) < 1e-6, "CM 44.1N/9E easting");
+    console.assert(Math.abs(cmU.northing - 4882979.718) < 0.01, "CM 44.1N/9E northing known");
+    const cmB = utmToLatLon(cmU.zone, cmU.hemisphere, cmU.easting, cmU.northing);
+    console.assert(Math.abs(cmB.lat - 44.1) < 1e-9 && Math.abs(cmB.lon - 9) < 1e-9, "CM inverse exact");
+
+    const hiU = latLonToUTM(60, 15);
+    console.assert(hiU.zone === 33 && Math.abs(hiU.easting - 500000) < 1e-6, "60N/15E zone/easting");
+    console.assert(Math.abs(hiU.northing - 6651411.190) < 0.01, "60N/15E northing known");
+    const hiB = utmToLatLon(hiU.zone, hiU.hemisphere, hiU.easting, hiU.northing);
+    console.assert(Math.abs(hiB.lat - 60) < 1e-9 && Math.abs(hiB.lon - 15) < 1e-9, "60N inverse exact");
+
+    const sU = latLonToUTM(-34, 18);
+    console.assert(sU.zone === 34 && sU.hemisphere === "S", "S34 zone/hem");
+    console.assert(sU.northing > 1000000 && sU.northing < 10000000, "S34 false northing");
+    const sB = utmToLatLon(sU.zone, sU.hemisphere, sU.easting, sU.northing);
+    console.assert(Math.abs(sB.lat + 34) < 1e-9 && Math.abs(sB.lon - 18) < 1e-9, "S34 inverse exact");
 
     const mg = latLonToMGRS(5.259444, -4.043909, 5);
     console.assert(/^30N/.test(mg), "MGRS should start with 30N");
