@@ -501,9 +501,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Stato:** **BACKLOG / NOT OPENED** (2026-08-07). Diagnosi futura: posizione viewport vs geometry ricordata vs scroll interno vs `scrollTop` all’apertura (es. Traccia). **Non** implementato in COORD-FIX1.
 
-### WAYPOINT-EDITOR-CENTER-A — Centra mappa dall’editor waypoint
+### WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) — Centra mappa + conversione editor waypoint
 
-**Stato:** **BACKLOG / NOT OPENED** (docs-only 2026-08-07, `DOCS-BACKLOG-WAYPOINT-CENTER-MAP-OVERLAYS-A`). Intent: CTA secondaria **Centra** in editor Nuovo/Modifica waypoint sulla lat/lon canonica del draft/editor. Contratto futuro: disponibile nuovo+modifica; **non** richiede Salva; **non** muta `state.mapWaypoints[]`; **non** salva implicito; **non** auto dopo paste/input (solo click); invalido → disabled/no-op; riuso helper center canonico (preferibilmente viewport-aware); no nuovo fly/zoom parallelo; nessuna nuova persistenza. Categoria futura: ROUTINE / DELICATO leggero da confermare post-diagnosi helper. **Non** next; **non** runtime.
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-11). Tip runtime **`7f41c8e82330c943a569d5af8a1a60e63a489f05`** (`7f41c8e`) — `fix(waypoint): clear stale coordinate conversion preview`; build **155** / `WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1`. Catena `be97282`(151 A)→`defd22e`(152 FIX1)→`f4db001`(153 FIX2)→`79155a3`(154 FIX3 — **core `utmToLatLon`** + preview MGRS identity/Copia)→`7f41c8e`(155 FIX3-FIX1 — clear stale Conversione/`data-copy`). Blob **`22453cea…`**; byte LF **9781510**; SHA-256 LF **`14f8537f…`**. Review GPT-sostitutiva PASS; deploy GIS-only PASS; QA «**QA WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 PASS operatore**»; finito Regola H. Backlog correlato: **MAP-ZOOM-FOCUS-ANCHOR-A** (non aperto).
 
 ### MAP-TRANSPARENT-OVERLAY-STACK-A — Overlay cartografici trasparenti su Layers
 
@@ -527,7 +527,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime Git autorevole: `65c9ef8` / `CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3 · build 150`. Sequenza interna WU **riprendibile** (provider).
 
-**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **WAYPOINT-EDITOR-CENTER-A** resta backlog. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
+**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL. Backlog correlato waypoint/mappa: **MAP-ZOOM-FOCUS-ANCHOR-A**.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
