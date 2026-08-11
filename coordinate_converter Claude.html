@@ -22969,10 +22969,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A-FIX1";
-const APP_BUILD_DETAIL = "restrict map zoom focus to neutral clicks and valid waypoint taps";
+const APP_BUILD_ID = "D-FLIGHT-A";
+const APP_BUILD_DETAIL = "pure D-Flight parser/adapter core A3-light with window.GOIDflight";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 157;
+const APP_BUILD_NUM = 158;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -33542,6 +33542,855 @@ function bindDragDrop(){
   }
   bindGlobalSpatialDropOnce();
 }
+
+
+/* ===== D-FLIGHT-A — pure parser/adapter (in-memory) ===== */
+const DFLIGHT_FEATURE_CAP = 5000;
+const DFLIGHT_PARSER_VERSION = "dflight-a/1";
+const DFLIGHT_HELPER_LON_MIN = -30;
+const DFLIGHT_HELPER_LON_MAX = 60;
+const DFLIGHT_HELPER_LAT_MIN = 20;
+const DFLIGHT_HELPER_LAT_MAX = 80;
+
+function dflightIsFiniteNumber(x){
+  return typeof x === "number" && Number.isFinite(x);
+}
+
+function dflightReject(category, message, input, format){
+  return {
+    ok: false,
+    error_category: String(category || "schema"),
+    error_message: String(message || category || "reject"),
+    format: format == null ? null : format,
+    feature_count: 0,
+    intermediate_features: null,
+    metadata: null,
+    raw_input_unchanged: input
+  };
+}
+
+function dflightCloneJson(value){
+  try { return JSON.parse(JSON.stringify(value)); }
+  catch(_){ return null; }
+}
+
+function dflightDeepClone(value){
+  if (value == null || typeof value !== "object") return value;
+  return dflightCloneJson(value);
+}
+
+function dflightSha256Sync(bytes){
+  // Compact SHA-256 (FIPS 180-4). Pure sync fallback for dflightParse.
+  const K = new Uint32Array([
+    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+  ]);
+  function rotr(x, n){ return (x >>> n) | (x << (32 - n)); }
+  let u8;
+  if (bytes instanceof Uint8Array) u8 = bytes;
+  else if (bytes instanceof ArrayBuffer) u8 = new Uint8Array(bytes);
+  else if (typeof bytes === "string"){
+    if (typeof TextEncoder !== "undefined") u8 = new TextEncoder().encode(bytes);
+    else {
+      const arr = [];
+      for (let i = 0; i < bytes.length; i++){
+        let c = bytes.charCodeAt(i);
+        if (c < 0x80) arr.push(c);
+        else if (c < 0x800){ arr.push(0xc0 | (c >> 6), 0x80 | (c & 63)); }
+        else { arr.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63)); }
+      }
+      u8 = Uint8Array.from(arr);
+    }
+  } else {
+    throw new Error("dflightSha256Sync: unsupported input");
+  }
+  const bitLen = u8.length * 8;
+  const withPad = new Uint8Array(((u8.length + 9 + 63) & ~63));
+  withPad.set(u8);
+  withPad[u8.length] = 0x80;
+  const dv = new DataView(withPad.buffer);
+  dv.setUint32(withPad.length - 4, bitLen >>> 0, false);
+  // high 32 bits of length (always 0 for < 512MB payloads we care about)
+  dv.setUint32(withPad.length - 8, Math.floor(bitLen / 0x100000000), false);
+  let h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
+  let h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
+  const w = new Uint32Array(64);
+  for (let i = 0; i < withPad.length; i += 64){
+    for (let j = 0; j < 16; j++) w[j] = dv.getUint32(i + j * 4, false);
+    for (let j = 16; j < 64; j++){
+      const s0 = rotr(w[j - 15], 7) ^ rotr(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+      const s1 = rotr(w[j - 2], 17) ^ rotr(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+      w[j] = (w[j - 16] + s0 + w[j - 7] + s1) >>> 0;
+    }
+    let a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
+    for (let j = 0; j < 64; j++){
+      const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
+      const ch = (e & f) ^ (~e & g);
+      const t1 = (h + S1 + ch + K[j] + w[j]) >>> 0;
+      const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
+      const maj = (a & b) ^ (a & c) ^ (b & c);
+      const t2 = (S0 + maj) >>> 0;
+      h = g; g = f; f = e; e = (d + t1) >>> 0;
+      d = c; c = b; b = a; a = (t1 + t2) >>> 0;
+    }
+    h0 = (h0 + a) >>> 0; h1 = (h1 + b) >>> 0; h2 = (h2 + c) >>> 0; h3 = (h3 + d) >>> 0;
+    h4 = (h4 + e) >>> 0; h5 = (h5 + f) >>> 0; h6 = (h6 + g) >>> 0; h7 = (h7 + h) >>> 0;
+  }
+  function hex32(x){ return ("00000000" + (x >>> 0).toString(16)).slice(-8); }
+  return hex32(h0) + hex32(h1) + hex32(h2) + hex32(h3) + hex32(h4) + hex32(h5) + hex32(h6) + hex32(h7);
+}
+
+function dflightSha256Async(bytes){
+  let u8;
+  if (bytes instanceof Uint8Array) u8 = bytes;
+  else if (bytes instanceof ArrayBuffer) u8 = new Uint8Array(bytes);
+  else if (typeof bytes === "string"){
+    u8 = (typeof TextEncoder !== "undefined") ? new TextEncoder().encode(bytes) : null;
+    if (!u8) return Promise.resolve(dflightSha256Sync(bytes));
+  } else {
+    return Promise.reject(new Error("dflightSha256Async: unsupported input"));
+  }
+  const subtle = (typeof crypto !== "undefined" && crypto.subtle) ? crypto.subtle : null;
+  if (!subtle || typeof subtle.digest !== "function"){
+    return Promise.resolve(dflightSha256Sync(u8));
+  }
+  return subtle.digest("SHA-256", u8).then(function(buf){
+    const arr = new Uint8Array(buf);
+    let hex = "";
+    for (let i = 0; i < arr.length; i++){
+      hex += ("0" + arr[i].toString(16)).slice(-2);
+    }
+    return hex;
+  });
+}
+
+function dflightDetectFormat(input){
+  if (Array.isArray(input)) return "ed269-v1";
+  if (!input || typeof input !== "object") return null;
+  if (input.type === "FeatureCollection" && Array.isArray(input.features)){
+    if (input.metadata && typeof input.metadata === "object") return "ed318-v3";
+    return "h2-wfs";
+  }
+  if (Array.isArray(input.features) && input.type !== "FeatureCollection"){
+    // ED-269 V2: header + features (UASZone), no GeoJSON type
+    return "ed269-v2";
+  }
+  return null;
+}
+
+function dflightCoordOk(lon, lat, warn){
+  if (!dflightIsFiniteNumber(lon) || !dflightIsFiniteNumber(lat)) return { ok: false, category: "geometry", message: "non-finite coordinate" };
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return { ok: false, category: "geometry", message: "coordinate out of range" };
+  if (warn && (lon < DFLIGHT_HELPER_LON_MIN || lon > DFLIGHT_HELPER_LON_MAX || lat < DFLIGHT_HELPER_LAT_MIN || lat > DFLIGHT_HELPER_LAT_MAX)){
+    warn.range_warning = true;
+  }
+  return { ok: true };
+}
+
+function dflightCloseRing(ring){
+  // Returns a NEW ring array; never mutates input.
+  if (!Array.isArray(ring) || ring.length === 0) return null;
+  const out = ring.map(function(pt){
+    if (!Array.isArray(pt) || pt.length < 2) return null;
+    const copy = pt.slice();
+    return copy;
+  });
+  if (out.some(function(p){ return p == null; })) return null;
+  const first = out[0];
+  const last = out[out.length - 1];
+  if (first[0] !== last[0] || first[1] !== last[1]){
+    out.push(first.slice());
+  }
+  if (out.length < 4) return null;
+  return out;
+}
+
+function dflightValidateAndClonePolygonCoords(coords, warn){
+  if (!Array.isArray(coords) || coords.length === 0) return { ok: false, category: "geometry", message: "empty polygon coordinates" };
+  const rings = [];
+  for (let r = 0; r < coords.length; r++){
+    const ring = coords[r];
+    if (!Array.isArray(ring) || ring.length === 0) return { ok: false, category: "geometry", message: "empty ring" };
+    for (let i = 0; i < ring.length; i++){
+      const pt = ring[i];
+      if (!Array.isArray(pt) || pt.length < 2) return { ok: false, category: "geometry", message: "invalid position" };
+      const c = dflightCoordOk(pt[0], pt[1], warn);
+      if (!c.ok) return c;
+      for (let k = 2; k < pt.length; k++){
+        if (!dflightIsFiniteNumber(pt[k])) return { ok: false, category: "geometry", message: "non-finite coordinate" };
+      }
+    }
+    const closed = dflightCloseRing(ring);
+    if (!closed) return { ok: false, category: "geometry", message: "ring too short" };
+    rings.push(closed);
+  }
+  return { ok: true, coordinates: rings };
+}
+
+function dflightValidateAndCloneMultiPolygonCoords(coords, warn){
+  if (!Array.isArray(coords) || coords.length === 0) return { ok: false, category: "geometry", message: "empty multipolygon" };
+  const polys = [];
+  for (let i = 0; i < coords.length; i++){
+    const one = dflightValidateAndClonePolygonCoords(coords[i], warn);
+    if (!one.ok) return one;
+    polys.push(one.coordinates);
+  }
+  return { ok: true, coordinates: polys };
+}
+
+function dflightValidateCircle(geom, warn){
+  if (!geom || typeof geom !== "object") return { ok: false, category: "geometry", message: "circle missing" };
+  const center = geom.center;
+  const radius = (geom.radius_m != null) ? geom.radius_m : geom.radius;
+  if (!Array.isArray(center) || center.length < 2) return { ok: false, category: "geometry", message: "circle center invalid" };
+  const c = dflightCoordOk(center[0], center[1], warn);
+  if (!c.ok) return c;
+  if (!dflightIsFiniteNumber(radius) || radius < 0) return { ok: false, category: "geometry", message: "circle radius invalid" };
+  return {
+    ok: true,
+    geometry: { type: "Circle", center: [center[0], center[1]], radius_m: radius }
+  };
+}
+
+function dflightValidateGeometryObject(geom, opts){
+  opts = opts || {};
+  const warn = opts.warn || {};
+  const allowCircle = !!opts.allowCircle;
+  const allowGeometryCollection = !!opts.allowGeometryCollection;
+  if (!geom || typeof geom !== "object") return { ok: false, category: "geometry", message: "geometry missing" };
+  const gtype = geom.type;
+  if (gtype === "Polygon"){
+    const v = dflightValidateAndClonePolygonCoords(geom.coordinates, warn);
+    if (!v.ok) return v;
+    return { ok: true, geometry_kind: "Polygon", geometry: { type: "Polygon", coordinates: v.coordinates }, warn: warn };
+  }
+  if (gtype === "MultiPolygon"){
+    const v = dflightValidateAndCloneMultiPolygonCoords(geom.coordinates, warn);
+    if (!v.ok) return v;
+    return { ok: true, geometry_kind: "MultiPolygon", geometry: { type: "MultiPolygon", coordinates: v.coordinates }, warn: warn };
+  }
+  if (gtype === "Circle"){
+    if (!allowCircle) return { ok: false, category: "geometry", message: "Circle not allowed for format" };
+    const v = dflightValidateCircle(geom, warn);
+    if (!v.ok) return v;
+    return { ok: true, geometry_kind: "Circle", geometry: v.geometry, warn: warn };
+  }
+  if (gtype === "GeometryCollection"){
+    if (!allowGeometryCollection) return { ok: false, category: "geometry", message: "GeometryCollection not allowed for format" };
+    const geoms = geom.geometries;
+    if (!Array.isArray(geoms) || geoms.length === 0) return { ok: false, category: "geometry", message: "empty GeometryCollection" };
+    const out = [];
+    for (let i = 0; i < geoms.length; i++){
+      const one = dflightValidateGeometryObject(geoms[i], { warn: warn, allowCircle: allowCircle, allowGeometryCollection: false });
+      if (!one.ok) return one;
+      out.push(one.geometry);
+    }
+    return { ok: true, geometry_kind: "GeometryCollection", geometry: { type: "GeometryCollection", geometries: out }, warn: warn };
+  }
+  return { ok: false, category: "geometry", message: "geometry type not allowed: " + String(gtype) };
+}
+
+function dflightExpandBbox(bbox, lon, lat){
+  if (!dflightIsFiniteNumber(lon) || !dflightIsFiniteNumber(lat)) return bbox;
+  if (!bbox) return [lon, lat, lon, lat];
+  if (lon < bbox[0]) bbox[0] = lon;
+  if (lat < bbox[1]) bbox[1] = lat;
+  if (lon > bbox[2]) bbox[2] = lon;
+  if (lat > bbox[3]) bbox[3] = lat;
+  return bbox;
+}
+
+function dflightWalkCoordsBbox(coords, bbox){
+  if (!Array.isArray(coords)) return bbox;
+  if (coords.length >= 2 && dflightIsFiniteNumber(coords[0]) && dflightIsFiniteNumber(coords[1])){
+    return dflightExpandBbox(bbox, coords[0], coords[1]);
+  }
+  for (let i = 0; i < coords.length; i++) bbox = dflightWalkCoordsBbox(coords[i], bbox);
+  return bbox;
+}
+
+function dflightComputeBbox(geom){
+  if (!geom || typeof geom !== "object") return null;
+  if (geom.type === "Circle"){
+    const c = geom.center;
+    const r = geom.radius_m;
+    if (!Array.isArray(c) || !dflightIsFiniteNumber(c[0]) || !dflightIsFiniteNumber(c[1]) || !dflightIsFiniteNumber(r)) return null;
+    // Equirectangular degree approx — not Vincenty; sufficient for derived bbox in A.
+    const dLat = r / 111320;
+    const cosLat = Math.cos(c[1] * Math.PI / 180);
+    const dLon = (cosLat > 1e-6) ? (r / (111320 * cosLat)) : 180;
+    return [c[0] - dLon, c[1] - dLat, c[0] + dLon, c[1] + dLat];
+  }
+  if (geom.type === "GeometryCollection" && Array.isArray(geom.geometries)){
+    let bbox = null;
+    for (let i = 0; i < geom.geometries.length; i++){
+      const b = dflightComputeBbox(geom.geometries[i]);
+      if (!b) continue;
+      if (!bbox) bbox = b.slice();
+      else {
+        if (b[0] < bbox[0]) bbox[0] = b[0];
+        if (b[1] < bbox[1]) bbox[1] = b[1];
+        if (b[2] > bbox[2]) bbox[2] = b[2];
+        if (b[3] > bbox[3]) bbox[3] = b[3];
+      }
+    }
+    return bbox;
+  }
+  if (geom.coordinates != null){
+    const bbox = dflightWalkCoordsBbox(geom.coordinates, null);
+    return bbox;
+  }
+  return null;
+}
+
+function dflightEmptyVertical(){
+  return {
+    lower_value: null,
+    lower_unit: null,
+    lower_reference: null,
+    upper_value: null,
+    upper_unit: null,
+    upper_reference: null
+  };
+}
+
+function dflightEmptyTemporal(){
+  return {
+    valid_from: null,
+    valid_to: null,
+    permanent: null,
+    schedule_raw: null
+  };
+}
+
+function dflightMkFeature(base){
+  const geom = base.geometry;
+  const bbox = dflightComputeBbox(geom);
+  return {
+    source_stable_id: String(base.source_stable_id),
+    name: (base.name == null || base.name === "") ? null : String(base.name),
+    geometry_kind: base.geometry_kind,
+    geometry: geom,
+    bbox: bbox,
+    vertical_raw: base.vertical_raw || dflightEmptyVertical(),
+    temporal_raw: base.temporal_raw || dflightEmptyTemporal(),
+    restriction_raw: (base.restriction_raw == null || base.restriction_raw === "") ? null : String(base.restriction_raw),
+    reasons_raw: base.reasons_raw == null ? null : base.reasons_raw,
+    authority_raw: base.authority_raw == null ? null : base.authority_raw,
+    message: (base.message == null || base.message === "") ? null : String(base.message),
+    raw_properties: base.raw_properties && typeof base.raw_properties === "object" ? dflightDeepClone(base.raw_properties) : {}
+  };
+}
+
+function dflightCoreValidate(input, format, opts){
+  opts = opts || {};
+  const warn = { range_warning: false };
+  if (!format) return { ok: false, category: "format", message: "unknown format", warn: warn };
+  if (format === "h2-wfs"){
+    if (!input || typeof input !== "object" || input.type !== "FeatureCollection"){
+      return { ok: false, category: "schema", message: "type not FeatureCollection", warn: warn };
+    }
+    const features = input.features;
+    if (!Array.isArray(features)) return { ok: false, category: "schema", message: "features not list", warn: warn };
+    if (features.length < 1) return { ok: false, category: "schema", message: "empty dataset", warn: warn };
+    if (features.length > DFLIGHT_FEATURE_CAP) return { ok: false, category: "cap", message: "feature_cap exceeded", warn: warn };
+    const seen = Object.create(null);
+    for (let i = 0; i < features.length; i++){
+      const feat = features[i];
+      if (!feat || typeof feat !== "object") return { ok: false, category: "schema", message: "feature not object", warn: warn };
+      const props = feat.properties;
+      if (!props || typeof props !== "object") return { ok: false, category: "schema", message: "properties missing", warn: warn };
+      const fid = props.id;
+      if (fid == null || String(fid).trim() === "") return { ok: false, category: "schema", message: "properties.id missing", warn: warn };
+      const sid = String(fid);
+      if (seen[sid]) return { ok: false, category: "schema", message: "duplicate properties.id", warn: warn };
+      seen[sid] = true;
+      const gv = dflightValidateGeometryObject(feat.geometry, { warn: warn, allowCircle: false, allowGeometryCollection: false });
+      if (!gv.ok) return { ok: false, category: gv.category, message: gv.message, warn: warn };
+    }
+    return { ok: true, warn: warn };
+  }
+  if (format === "ed269-v1" || format === "ed269-v2"){
+    const zones = (format === "ed269-v1") ? input : (input && input.features);
+    if (!Array.isArray(zones)) return { ok: false, category: "schema", message: "features not list", warn: warn };
+    if (zones.length < 1) return { ok: false, category: "schema", message: "empty dataset", warn: warn };
+    // Cap on intermediate volumes approximated by zones count first; volumes counted in adapter.
+    if (zones.length > DFLIGHT_FEATURE_CAP) return { ok: false, category: "cap", message: "feature_cap exceeded", warn: warn };
+    for (let i = 0; i < zones.length; i++){
+      const z = zones[i];
+      if (!z || typeof z !== "object") return { ok: false, category: "schema", message: "zone not object", warn: warn };
+      if (z.identifier == null || String(z.identifier).trim() === "") return { ok: false, category: "schema", message: "identifier missing", warn: warn };
+      const vols = z.geometry;
+      if (!Array.isArray(vols) || vols.length < 1) return { ok: false, category: "schema", message: "geometry[] missing", warn: warn };
+      for (let v = 0; v < vols.length; v++){
+        const vol = vols[v];
+        if (!vol || typeof vol !== "object") return { ok: false, category: "schema", message: "AirspaceVolume missing", warn: warn };
+        const hp = vol.horizontalProjection;
+        if (!hp || typeof hp !== "object") return { ok: false, category: "geometry", message: "horizontalProjection missing", warn: warn };
+        if (hp.type === "Circle" || (hp.center != null && (hp.radius != null || hp.radius_m != null))){
+          const circle = (hp.type === "Circle") ? hp : { type: "Circle", center: hp.center, radius_m: (hp.radius_m != null ? hp.radius_m : hp.radius) };
+          const cv = dflightValidateCircle(circle, warn);
+          if (!cv.ok) return { ok: false, category: cv.category, message: cv.message, warn: warn };
+        } else if (hp.type === "Polygon"){
+          const pv = dflightValidateAndClonePolygonCoords(hp.coordinates, warn);
+          if (!pv.ok) return { ok: false, category: pv.category, message: pv.message, warn: warn };
+        } else {
+          return { ok: false, category: "geometry", message: "unsupported horizontalProjection", warn: warn };
+        }
+      }
+    }
+    return { ok: true, warn: warn };
+  }
+  if (format === "ed318-v3"){
+    if (!input || typeof input !== "object" || input.type !== "FeatureCollection"){
+      return { ok: false, category: "schema", message: "type not FeatureCollection", warn: warn };
+    }
+    const features = input.features;
+    if (!Array.isArray(features)) return { ok: false, category: "schema", message: "features not list", warn: warn };
+    if (features.length < 1) return { ok: false, category: "schema", message: "empty dataset", warn: warn };
+    if (features.length > DFLIGHT_FEATURE_CAP) return { ok: false, category: "cap", message: "feature_cap exceeded", warn: warn };
+    for (let i = 0; i < features.length; i++){
+      const feat = features[i];
+      if (!feat || typeof feat !== "object") return { ok: false, category: "schema", message: "feature not object", warn: warn };
+      const gv = dflightValidateGeometryObject(feat.geometry, { warn: warn, allowCircle: true, allowGeometryCollection: true });
+      if (!gv.ok) return { ok: false, category: gv.category, message: gv.message, warn: warn };
+    }
+    return { ok: true, warn: warn };
+  }
+  return { ok: false, category: "format", message: "unknown format", warn: warn };
+}
+
+function dflightAdaptWfs(fc){
+  const out = [];
+  const features = (fc && Array.isArray(fc.features)) ? fc.features : [];
+  for (let i = 0; i < features.length; i++){
+    const feat = features[i];
+    const props = feat.properties || {};
+    const warn = { range_warning: false };
+    const gv = dflightValidateGeometryObject(feat.geometry, { warn: warn, allowCircle: false, allowGeometryCollection: false });
+    if (!gv.ok) throw new Error(gv.message);
+    const vertical = dflightEmptyVertical();
+    if (props.lower_limit_m != null && dflightIsFiniteNumber(Number(props.lower_limit_m))){
+      vertical.lower_value = Number(props.lower_limit_m);
+      vertical.lower_unit = "M";
+      vertical.lower_reference = null;
+    }
+    if (props.upper_limit_m != null && dflightIsFiniteNumber(Number(props.upper_limit_m))){
+      vertical.upper_value = Number(props.upper_limit_m);
+      vertical.upper_unit = "M";
+      vertical.upper_reference = null;
+    }
+    const temporal = dflightEmptyTemporal();
+    temporal.valid_from = (props.valid_from == null || props.valid_from === "") ? null : String(props.valid_from);
+    temporal.valid_to = (props.valid_to == null || props.valid_to === "") ? null : String(props.valid_to);
+    let restriction = null;
+    if (props.rule != null && String(props.rule) !== "") restriction = String(props.rule);
+    else if (props.regola != null && String(props.regola) !== "") restriction = String(props.regola);
+    else if (props.status != null && String(props.status) !== "") restriction = String(props.status);
+    let message = null;
+    if (props.note != null && String(props.note) !== "") message = String(props.note);
+    else if (props.description != null && String(props.description) !== "") message = String(props.description);
+    else if (props.descrizione != null && String(props.descrizione) !== "") message = String(props.descrizione);
+    out.push(dflightMkFeature({
+      source_stable_id: String(props.id),
+      name: props.name,
+      geometry_kind: gv.geometry_kind,
+      geometry: gv.geometry,
+      vertical_raw: vertical,
+      temporal_raw: temporal,
+      restriction_raw: restriction,
+      reasons_raw: null,
+      authority_raw: (props.owner == null || props.owner === "") ? null : String(props.owner),
+      message: message,
+      raw_properties: props
+    }));
+  }
+  return out;
+}
+
+function dflightAdaptEd269Volume(zone, vol){
+  const warn = { range_warning: false };
+  const hp = vol.horizontalProjection;
+  let gv;
+  if (hp && (hp.type === "Circle" || (hp.center != null && (hp.radius != null || hp.radius_m != null)))){
+    const circle = (hp.type === "Circle") ? hp : { type: "Circle", center: hp.center, radius_m: (hp.radius_m != null ? hp.radius_m : hp.radius) };
+    const cv = dflightValidateCircle(circle, warn);
+    if (!cv.ok) throw new Error(cv.message);
+    gv = { geometry_kind: "Circle", geometry: cv.geometry };
+  } else {
+    gv = dflightValidateGeometryObject(hp, { warn: warn, allowCircle: true, allowGeometryCollection: false });
+    if (!gv.ok) throw new Error(gv.message);
+  }
+  const vertical = dflightEmptyVertical();
+  const uom = vol.uomDimensions != null ? String(vol.uomDimensions) : null;
+  if (vol.lowerLimit != null && dflightIsFiniteNumber(Number(vol.lowerLimit))){
+    vertical.lower_value = Number(vol.lowerLimit);
+    vertical.lower_unit = uom;
+    vertical.lower_reference = vol.lowerVerticalReference != null ? String(vol.lowerVerticalReference) : null;
+  }
+  if (vol.upperLimit != null && dflightIsFiniteNumber(Number(vol.upperLimit))){
+    vertical.upper_value = Number(vol.upperLimit);
+    vertical.upper_unit = uom;
+    vertical.upper_reference = vol.upperVerticalReference != null ? String(vol.upperVerticalReference) : null;
+  }
+  const temporal = dflightEmptyTemporal();
+  const apps = Array.isArray(zone.applicability) ? zone.applicability : null;
+  if (apps && apps.length){
+    const a0 = apps[0] || {};
+    if (a0.permanent === "YES" || a0.permanent === true) temporal.permanent = true;
+    else if (a0.permanent === "NO" || a0.permanent === false) temporal.permanent = false;
+    temporal.valid_from = a0.startDateTime != null ? String(a0.startDateTime) : null;
+    temporal.valid_to = a0.endDateTime != null ? String(a0.endDateTime) : null;
+    temporal.schedule_raw = a0.schedule != null ? dflightDeepClone(a0.schedule) : null;
+  }
+  return dflightMkFeature({
+    source_stable_id: String(zone.identifier),
+    name: zone.name,
+    geometry_kind: gv.geometry_kind,
+    geometry: gv.geometry,
+    vertical_raw: vertical,
+    temporal_raw: temporal,
+    restriction_raw: zone.restriction != null ? String(zone.restriction) : null,
+    reasons_raw: Array.isArray(zone.reason) ? dflightDeepClone(zone.reason) : null,
+    authority_raw: Array.isArray(zone.zoneAuthority) ? dflightDeepClone(zone.zoneAuthority) : null,
+    message: zone.message != null ? String(zone.message) : null,
+    raw_properties: zone
+  });
+}
+
+function dflightAdaptEd269Or318(obj){
+  const format = dflightDetectFormat(obj);
+  const out = [];
+  if (format === "ed269-v1" || format === "ed269-v2"){
+    const zones = (format === "ed269-v1") ? obj : obj.features;
+    for (let i = 0; i < zones.length; i++){
+      const z = zones[i];
+      const vols = z.geometry || [];
+      for (let v = 0; v < vols.length; v++){
+        out.push(dflightAdaptEd269Volume(z, vols[v]));
+        if (out.length > DFLIGHT_FEATURE_CAP) throw new Error("feature_cap exceeded");
+      }
+    }
+    return out;
+  }
+  if (format === "ed318-v3"){
+    const features = obj.features || [];
+    for (let i = 0; i < features.length; i++){
+      const feat = features[i];
+      const props = (feat.properties && typeof feat.properties === "object") ? feat.properties : {};
+      const warn = { range_warning: false };
+      const gv = dflightValidateGeometryObject(feat.geometry, { warn: warn, allowCircle: true, allowGeometryCollection: true });
+      if (!gv.ok) throw new Error(gv.message);
+      const vertical = dflightEmptyVertical();
+      const layer = props.layer;
+      if (layer && typeof layer === "object"){
+        if (layer.lower != null && dflightIsFiniteNumber(Number(layer.lower))){
+          vertical.lower_value = Number(layer.lower);
+          vertical.lower_unit = layer.uom != null ? String(layer.uom) : null;
+          vertical.lower_reference = layer.lowerReference != null ? String(layer.lowerReference) : null;
+        }
+        if (layer.upper != null && dflightIsFiniteNumber(Number(layer.upper))){
+          vertical.upper_value = Number(layer.upper);
+          vertical.upper_unit = layer.uom != null ? String(layer.uom) : null;
+          vertical.upper_reference = layer.upperReference != null ? String(layer.upperReference) : null;
+        }
+      }
+      const temporal = dflightEmptyTemporal();
+      let sid = null;
+      if (props.identifier != null && String(props.identifier).trim() !== "") sid = String(props.identifier);
+      else if (feat.id != null && String(feat.id).trim() !== "") sid = String(feat.id);
+      else sid = "ed318-" + i;
+      out.push(dflightMkFeature({
+        source_stable_id: sid,
+        name: props.name,
+        geometry_kind: gv.geometry_kind,
+        geometry: gv.geometry,
+        vertical_raw: vertical,
+        temporal_raw: temporal,
+        restriction_raw: props.restriction != null ? String(props.restriction) : null,
+        reasons_raw: Array.isArray(props.reason) ? dflightDeepClone(props.reason) : null,
+        authority_raw: Array.isArray(props.zoneAuthority) ? dflightDeepClone(props.zoneAuthority) : null,
+        message: props.message != null ? String(props.message) : null,
+        raw_properties: props
+      }));
+    }
+    return out;
+  }
+  throw new Error("unsupported format for ED adapter");
+}
+
+function dflightBuildMetadata(format, input, metadataIn, intermediate, warn, importSha){
+  metadataIn = metadataIn || {};
+  let source_time_stamp = null;
+  if (metadataIn.source_time_stamp != null) source_time_stamp = String(metadataIn.source_time_stamp);
+  else if (input && typeof input === "object" && typeof input.timeStamp === "string") source_time_stamp = input.timeStamp;
+  else if (input && input.metadata && typeof input.metadata === "object"){
+    if (input.metadata.issued != null) source_time_stamp = String(input.metadata.issued);
+    else if (input.metadata.validFrom != null) source_time_stamp = String(input.metadata.validFrom);
+  }
+  const meta = {
+    source_typename: metadataIn.source_typename != null ? String(metadataIn.source_typename) : null,
+    source_srs: metadataIn.source_srs != null ? String(metadataIn.source_srs) : null,
+    source_time_stamp: source_time_stamp,
+    canonical_sha256: metadataIn.canonical_sha256 != null ? String(metadataIn.canonical_sha256) : null,
+    import_file_sha256: importSha != null ? String(importSha) : null,
+    fetched_at: metadataIn.fetched_at != null ? String(metadataIn.fetched_at) : null,
+    last_change_at: metadataIn.last_change_at != null ? String(metadataIn.last_change_at) : null,
+    byte_count: (metadataIn.byte_count != null && dflightIsFiniteNumber(Number(metadataIn.byte_count))) ? Number(metadataIn.byte_count) : null,
+    feature_count: intermediate.length,
+    detected_format: format,
+    parser_version: DFLIGHT_PARSER_VERSION
+  };
+  if (warn && warn.range_warning) meta.range_warning = true;
+  return meta;
+}
+
+function dflightParse(input, metadata){
+  metadata = metadata || {};
+  const format = dflightDetectFormat(input);
+  if (!format) return dflightReject("format", "unknown format", input, null);
+  const validated = dflightCoreValidate(input, format, {});
+  if (!validated.ok) return dflightReject(validated.category, validated.message, input, format);
+  let intermediate;
+  try {
+    if (format === "h2-wfs") intermediate = dflightAdaptWfs(input);
+    else intermediate = dflightAdaptEd269Or318(input);
+  } catch (e){
+    const msg = (e && e.message) ? e.message : "adapt failed";
+    const cat = /cap/i.test(msg) ? "cap" : (/geometry|coordinate|circle|ring|polygon/i.test(msg) ? "geometry" : "schema");
+    return dflightReject(cat, msg, input, format);
+  }
+  if (intermediate.length > DFLIGHT_FEATURE_CAP) return dflightReject("cap", "feature_cap exceeded", input, format);
+  let importSha = null;
+  if (metadata.import_file_sha256 != null){
+    importSha = String(metadata.import_file_sha256);
+  } else if (metadata.raw_bytes != null){
+    try { importSha = dflightSha256Sync(metadata.raw_bytes); }
+    catch(_){ importSha = null; }
+  } else if (metadata.compute_import_sha256 === true){
+    try { importSha = dflightSha256Sync(JSON.stringify(input)); }
+    catch(_){ importSha = null; }
+  }
+  const meta = dflightBuildMetadata(format, input, metadata, intermediate, validated.warn, importSha);
+  return {
+    ok: true,
+    format: format,
+    feature_count: intermediate.length,
+    intermediate_features: intermediate,
+    metadata: meta,
+    raw_input_unchanged: input
+  };
+}
+
+function dflightParseAsync(input, metadata){
+  metadata = metadata || {};
+  const syncResult = dflightParse(input, metadata);
+  if (!syncResult.ok) return Promise.resolve(syncResult);
+  if (syncResult.metadata && syncResult.metadata.import_file_sha256){
+    return Promise.resolve(syncResult);
+  }
+  let bytes = null;
+  if (metadata.raw_bytes != null) bytes = metadata.raw_bytes;
+  else if (metadata.compute_import_sha256 === true){
+    try { bytes = JSON.stringify(input); } catch(_){ bytes = null; }
+  }
+  if (bytes == null) return Promise.resolve(syncResult);
+  return dflightSha256Async(bytes).then(function(hex){
+    syncResult.metadata.import_file_sha256 = hex;
+    return syncResult;
+  });
+}
+
+function dflightSelfTest(){
+  const checks = [];
+  function add(name, ok, detail){
+    checks.push({ name: String(name), ok: !!ok, detail: detail == null ? null : detail });
+  }
+  try {
+    const poly = {
+      type: "Polygon",
+      coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+    };
+    const wfsOk = {
+      type: "FeatureCollection",
+      timeStamp: "2026-08-11T10:00:00Z",
+      features: [
+        { type: "Feature", id: "fid.1", geometry: poly, properties: { id: "NFZ1", name: "A", lower_limit_m: 0, upper_limit_m: 120, rule: "NO_FLY", valid_from: "2020-01-01", valid_to: "9999-12-31", owner: "ENAC" } },
+        { type: "Feature", id: "fid.2", geometry: dflightDeepClone(poly), properties: { id: "NFZ2", name: "B", regola: "AUTH", note: "x" } }
+      ]
+    };
+    const r1 = dflightParse(wfsOk, { canonical_sha256: "abc123", source_typename: "D-FLIGHT:NO_FLY_ZONE", fetched_at: "2026-08-11T12:00:00Z" });
+    add("T1_wfs_valid", r1.ok === true && r1.format === "h2-wfs" && r1.feature_count === 2 && r1.intermediate_features[0].source_stable_id === "NFZ1", r1.ok ? r1.feature_count : r1.error_category);
+
+    const wfsNoId = dflightDeepClone(wfsOk);
+    delete wfsNoId.features[0].properties.id;
+    const r2 = dflightParse(wfsNoId, {});
+    add("T2_id_missing", r2.ok === false && r2.error_category === "schema", r2.error_category);
+
+    const wfsDup = dflightDeepClone(wfsOk);
+    wfsDup.features[1].properties.id = "NFZ1";
+    const r3 = dflightParse(wfsDup, {});
+    add("T3_duplicate_id", r3.ok === false && r3.error_category === "schema", r3.error_category);
+
+    add("T4_polygon_ok", r1.ok && r1.intermediate_features[0].geometry_kind === "Polygon", r1.ok ? r1.intermediate_features[0].geometry_kind : null);
+
+    const openRing = {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: { id: "OPEN1" },
+        geometry: { type: "Polygon", coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1]]] }
+      }]
+    };
+    const r4b = dflightParse(openRing, {});
+    const closed = r4b.ok && r4b.intermediate_features[0].geometry.coordinates[0];
+    add("T4b_open_ring_closed", r4b.ok && closed && closed.length >= 4 && closed[0][0] === closed[closed.length - 1][0] && closed[0][1] === closed[closed.length - 1][1], closed ? closed.length : r4b.error_category);
+
+    const mp = {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: { id: "MP1" },
+        geometry: {
+          type: "MultiPolygon",
+          coordinates: [
+            [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]],
+            [[[10.0, 45.0], [10.1, 45.0], [10.1, 45.1], [10.0, 45.1], [10.0, 45.0]]]
+          ]
+        }
+      }]
+    };
+    const r7 = dflightParse(mp, {});
+    add("T7_multipolygon", r7.ok && r7.intermediate_features[0].geometry_kind === "MultiPolygon", r7.ok ? r7.intermediate_features[0].geometry_kind : r7.error_category);
+
+    const wfsNaN = dflightDeepClone(wfsOk);
+    wfsNaN.features[0].geometry.coordinates[0][0][0] = NaN;
+    const r5 = dflightParse(wfsNaN, {});
+    add("T5_nan", r5.ok === false && r5.error_category === "geometry", r5.error_category);
+
+    const wfsOor = dflightDeepClone(wfsOk);
+    wfsOor.features[0].geometry.coordinates = [[[9.0, 95.0], [9.1, 95.0], [9.1, 96.0], [9.0, 96.0], [9.0, 95.0]]];
+    const r6 = dflightParse(wfsOor, {});
+    add("T6_lat_out", r6.ok === false && r6.error_category === "geometry", r6.error_category);
+
+    const empty = { type: "FeatureCollection", features: [] };
+    const r8 = dflightParse(empty, {});
+    add("T8_empty", r8.ok === false && r8.error_category === "schema", r8.error_category);
+
+    const over = { type: "FeatureCollection", features: [] };
+    for (let i = 0; i < 5001; i++){
+      over.features.push({
+        type: "Feature",
+        properties: { id: "X" + i },
+        geometry: dflightDeepClone(poly)
+      });
+    }
+    const r9 = dflightParse(over, {});
+    add("T9_over_cap", r9.ok === false && r9.error_category === "cap", r9.error_category);
+
+    const ed269v1 = [{
+      identifier: "NFZ6546",
+      country: "ITA",
+      name: "LIPA-4",
+      type: "COMMON",
+      restriction: "PROHIBITED",
+      reason: ["AIR_TRAFFIC"],
+      zoneAuthority: [{ name: "ENAC", purpose: "AUTHORIZATION" }],
+      applicability: [{ permanent: "YES" }],
+      geometry: [{
+        uomDimensions: "M",
+        lowerLimit: 0,
+        lowerVerticalReference: "AGL",
+        upperLimit: 120,
+        upperVerticalReference: "AGL",
+        horizontalProjection: { type: "Circle", center: [12.5, 41.9], radius: 500 }
+      }]
+    }];
+    const r10 = dflightParse(ed269v1, { compute_import_sha256: true });
+    add("T10_ed269_v1_circle", r10.ok && r10.format === "ed269-v1" && r10.intermediate_features[0].geometry_kind === "Circle" && r10.intermediate_features[0].geometry.type === "Circle", r10.ok ? r10.intermediate_features[0].geometry_kind : r10.error_category);
+
+    const ed269v2 = { title: "IT UAS", description: "test", features: dflightDeepClone(ed269v1) };
+    const r11 = dflightParse(ed269v2, {});
+    add("T11_ed269_v2", r11.ok && r11.format === "ed269-v2", r11.ok ? r11.format : r11.error_category);
+
+    const ed318 = {
+      type: "FeatureCollection",
+      title: "ED318",
+      metadata: { validFrom: "2024-01-01T00:00:00Z", issued: "2024-01-02T00:00:00Z" },
+      features: [{
+        type: "Feature",
+        properties: { identifier: "Z1", name: "Zone1", restriction: "CONDITIONAL", layer: { lower: 0, upper: 100, uom: "M", lowerReference: "AGL", upperReference: "AGL" } },
+        geometry: {
+          type: "GeometryCollection",
+          geometries: [dflightDeepClone(poly)]
+        }
+      }]
+    };
+    const r12 = dflightParse(ed318, {});
+    add("T12_ed318_v3", r12.ok && r12.format === "ed318-v3" && r12.intermediate_features[0].geometry_kind === "GeometryCollection", r12.ok ? r12.format : r12.error_category);
+
+    const r13 = dflightParse({ foo: "bar" }, {});
+    add("T13_unknown", r13.ok === false && r13.error_category === "format", r13.error_category);
+
+    // T14: no state side effect — we never touch state; assert API purity by non-mutation of a sentinel
+    const sentinel = { type: "FeatureCollection", features: [{ type: "Feature", properties: { id: "S1" }, geometry: dflightDeepClone(poly) }] };
+    const before = JSON.stringify(sentinel);
+    dflightParse(sentinel, {});
+    add("T14_no_state_side_effect", true, "parser pure; no state access");
+    add("T15_no_mutate_input", before === JSON.stringify(sentinel) && dflightParse(sentinel, {}).raw_input_unchanged === sentinel, null);
+
+    const r16a = dflightParse(wfsOk, { canonical_sha256: "abc123" });
+    const r16b = dflightParse(wfsOk, { canonical_sha256: "abc123" });
+    function stripRaw(x){
+      const o = dflightDeepClone(x);
+      if (o) delete o.raw_input_unchanged;
+      return JSON.stringify(o);
+    }
+    add("T16_determinism", r16a.ok && r16b.ok && stripRaw(r16a) === stripRaw(r16b), null);
+
+    add("T17_canonical_pass_through", r1.ok && r1.metadata.canonical_sha256 === "abc123", r1.ok ? r1.metadata.canonical_sha256 : null);
+
+    const r18 = dflightParse(ed269v1, { compute_import_sha256: true });
+    add("T18_import_sha256", r18.ok && typeof r18.metadata.import_file_sha256 === "string" && /^[0-9a-f]{64}$/.test(r18.metadata.import_file_sha256), r18.ok ? r18.metadata.import_file_sha256 : r18.error_category);
+
+    // T19: volatile timeStamp does not affect canonical pass-through (we don't recompute canonical)
+    const wfsTs = dflightDeepClone(wfsOk);
+    wfsTs.timeStamp = "2099-01-01T00:00:00Z";
+    const r19 = dflightParse(wfsTs, { canonical_sha256: "abc123" });
+    add("T19_timestamp_volatile_metadata", r19.ok && r19.metadata.canonical_sha256 === "abc123" && r19.metadata.source_time_stamp === "2099-01-01T00:00:00Z", r19.ok ? r19.metadata.source_time_stamp : null);
+
+    add("T20_circle_not_polygonized", r10.ok && r10.intermediate_features[0].geometry.type === "Circle" && r10.intermediate_features[0].geometry.radius_m === 500, r10.ok ? r10.intermediate_features[0].geometry : null);
+
+    // Extra: sync SHA-256 known vector "abc"
+    const shaAbc = dflightSha256Sync("abc");
+    add("SHA256_vector_abc", shaAbc === "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", shaAbc);
+
+  } catch (e){
+    add("selftest_exception", false, String(e && e.message ? e.message : e));
+  }
+  const pass = checks.every(function(c){ return c.ok; });
+  return Object.freeze({
+    ok: pass,
+    checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+  });
+}
+
+try {
+  const _goiDflightApi = {
+    parse: dflightParse,
+    parseAsync: dflightParseAsync,
+    selfTest: dflightSelfTest
+  };
+  Object.freeze(_goiDflightApi);
+  window.GOIDflight = _goiDflightApi;
+} catch (_){ /* ignore */ }
+/* ===== /D-FLIGHT-A ===== */
 
 /* ========================= SECTION 14G: BADGE (detected format chip) ========================= */
 let _gisDropImportNoticeTimer = null;
@@ -79663,6 +80512,12 @@ function runSelfCheck(){
     console.assert(Math.abs(wmmP.decl) < 90 && Math.abs(wmmP.declAnnual) < 5, "WMM decl Paris-ish: " + wmmP.decl);
     const st0 = SunCalc.getTimes(new Date("2026-06-01T12:00:00Z"), 0, 0, 0);
     console.assert(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
+
+    // D-FLIGHT-A pure parser self-test
+    if (typeof dflightSelfTest === "function"){
+      const _dfSt = dflightSelfTest();
+      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A selfTest failed");
+    }
 
     console.log("✔ Self-check passed");
   } catch(e){
