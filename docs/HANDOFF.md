@@ -134,10 +134,10 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | tip pre-chiusura **`06058d1`** (verificare `git ls-remote` post-finito) |
-| Runtime live / commit monolite | tip **`7f41c8e82330c943a569d5af8a1a60e63a489f05`** (`7f41c8e`) build **155** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1)** — **CLOSED / PASS end-to-end** |
-| Ultimo blocco runtime monolite | **WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1** — tip `7f41c8e` build 155 |
+| HEAD documentale (pre-autosync) | tip pre-chiusura **`3ed3f8e`** (verificare `git ls-remote` post-finito) |
+| Runtime live / commit monolite | tip **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (`ac3a0ea`) build **157** — deploy GIS-only PASS |
+| Ultimo blocco chiuso | **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1)** — **CLOSED / PASS end-to-end** |
+| Ultimo blocco runtime monolite | **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** — tip `ac3a0ea` build 157 |
 | Task aperto corrente | WU-0012 **OPEN** — NEXT **PROVIDER** (sequenza **riprendibile**) ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)) |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -145,13 +145,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
-| Runtime Git / atteso VPS | `7f41c8e82330c943a569d5af8a1a60e63a489f05` (deploy GIS-only PASS; tip VPS `06058d1`) |
-| Blob monolite (git) | `22453cea23dd73ab898ad7680654cfbeb67fa17f` |
-| Byte monolite (git LF) | `9781510` |
-| SHA-256 monolite (git LF) | `14f8537fc30bd0eb7b36b6c383d9f90c74673f7312bff8cc7c8b2bb8ab623324` |
-| `APP_BUILD_NUM` | **155** |
-| Display runtime | `WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 · build 155` |
-| `APP_BUILD_ID` | `WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1` |
+| Runtime Git / atteso VPS | `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` (deploy GIS-only PASS; tip VPS `3ed3f8e`) |
+| Blob monolite (git) | `fceb5626511f38f75154759f0c4ab8a7474acebe` |
+| Byte monolite (git LF) | `9789222` |
+| SHA-256 monolite (git LF) | `0bcd7f5349464ed51c8ffaa779fe13d9bc1020d580c9aedd4e0a68d91db98717` |
+| `APP_BUILD_NUM` | **157** |
+| Display runtime | `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 · build 157` |
+| `APP_BUILD_ID` | `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
@@ -163,8 +163,8 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | CARTO-IGM-AREA-ESC-RESTORE-A | **CLOSED / PASS end-to-end** (Esc area-pick restore; tip storico `764e661` build 136; superseded live) |
 | COORD-MODAL-FORMAT-COPY-A (+ FIX1) | **CLOSED / PASS end-to-end** (formato+copia coordinate; tip `a0a6816` build 138) |
 | MODAL-OPEN-TOP-ALIGN-A | **BACKLOG / NOT OPENED** (apertura modal top-align) |
-| WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) | **CLOSED / PASS end-to-end** (tip `7f41c8e` build 155; include core UTM/MGRS FIX3) |
-| MAP-ZOOM-FOCUS-ANCHOR-A | **BACKLOG / NOT OPENED** (ancoraggio zoom/focus mappa; non next) |
+| WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) | **CLOSED / PASS end-to-end** (tip storico `7f41c8e` build 155; superseded live) |
+| MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) | **CLOSED / PASS end-to-end** (tip `ac3a0ea` build 157; focus zoom-in panel-aware; track OUT; Workbench FROZEN) |
 | MAP-TRANSPARENT-OVERLAY-STACK-A (+ FIX1–FIX4) | **CLOSED / PASS end-to-end** (tip storico `a667f74` build 143; superseded live) |
 | MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4 | **CLOSED / PASS end-to-end** (`a667f74` build 143; superseded live) |
 | DOCS-MAP-TRANSPARENT-OVERLAY-STACK-A-OPEN | **CLOSED / PASS docs-only** (promozione + diagnostic/scope/proxy registrati) |

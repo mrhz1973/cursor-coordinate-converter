@@ -503,7 +503,11 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) — Centra mappa + conversione editor waypoint
 
-**Stato:** **CLOSED / PASS end-to-end** (2026-08-11). Tip runtime **`7f41c8e82330c943a569d5af8a1a60e63a489f05`** (`7f41c8e`) — `fix(waypoint): clear stale coordinate conversion preview`; build **155** / `WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1`. Catena `be97282`(151 A)→`defd22e`(152 FIX1)→`f4db001`(153 FIX2)→`79155a3`(154 FIX3 — **core `utmToLatLon`** + preview MGRS identity/Copia)→`7f41c8e`(155 FIX3-FIX1 — clear stale Conversione/`data-copy`). Blob **`22453cea…`**; byte LF **9781510**; SHA-256 LF **`14f8537f…`**. Review GPT-sostitutiva PASS; deploy GIS-only PASS; QA «**QA WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 PASS operatore**»; finito Regola H. Backlog correlato: **MAP-ZOOM-FOCUS-ANCHOR-A** (non aperto).
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-11). Tip storico **`7f41c8e`** / build **155**. Catena `be97282`(151)→…→`7f41c8e`(155). QA «**QA WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 PASS operatore**»; finito Regola H. **Superseded live** da **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** `ac3a0ea` / build **157**.
+
+### MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) — Focus zoom-in panel-aware
+
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-11). Tip runtime **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (`ac3a0ea`) — `fix(map): guard neutral zoom focus interactions`; build **157** / `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1`. Catena `f134629`(156 A — focus transiente `gMapZoomFocus` + zoom-in usable-center)→`ac3a0ea`(157 FIX1 — allowlist neutral basemap + waypoint `pointerup`-only). Blob **`fceb5626…`**; byte LF **9789222**; SHA-256 LF **`0bcd7f53…`**. Live: focus zoom-in panel-aware; focus non persistito; camera signature/stale; neutral map click; waypoint marker pointerup-only; track focus **OUT V1 / DEFERRED**; Workbench/Oggetti GIS **FROZEN**. Review GPT-sostitutiva PASS; deploy GIS-only PASS (`?v=ac3a0ea`); QA «**QA MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 PASS operatore**»; finito Regola H.
 
 ### MAP-TRANSPARENT-OVERLAY-STACK-A — Overlay cartografici trasparenti su Layers
 
@@ -525,9 +529,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip storico `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime live monolite: **`7f41c8e` / `WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 · build 155`**. Sequenza interna WU **riprendibile** (provider).
+**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip storico `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime live monolite: **`ac3a0ea` / `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 · build 157`**. Sequenza interna WU **riprendibile** (provider).
 
-**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL. Backlog correlato waypoint/mappa: **MAP-ZOOM-FOCUS-ANCHOR-A**.
+**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) CLOSED**. **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
