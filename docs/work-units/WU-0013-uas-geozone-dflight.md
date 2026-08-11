@@ -4,7 +4,7 @@
 
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** `OPEN / D-FLIGHT-A CLOSED / HELPER H2 LIVE — NEXT D-FLIGHT-B`
+**Stato:** `OPEN / D-FLIGHT-A+B CLOSED / HELPER H2 LIVE — NEXT D-FLIGHT-C`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
@@ -12,11 +12,12 @@
 **Blocco riconciliazione:** `DOCS-DFLIGHT-H2-RECONCILE-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco helper:** `DFLIGHT-HELPER-H2-A` (+ `FIX1`) — **CLOSED / PASS end-to-end** (2026-08-11) — repo `bc80604` · VPS deploy TECHNICAL PASS · Automated Browser QA **N/A** · QA operatore **PASS**
 **Blocco client parser:** `D-FLIGHT-A` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `d52367b` · build **158** · A3-light · `window.GOIDflight` · Automated Browser QA **PASS** · QA operatore **PASS**
+**Blocco normalized model:** `D-FLIGHT-B` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `4fc7ee3` · build **159** · `GOIDflight.normalize` · Automated Browser QA **PASS** · QA operatore **PASS**
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
-**Runtime live (GIS tip):** `d52367b6f2b714f02384e9dc0dc8c4131447e5ea` · `APP_BUILD_ID = "D-FLIGHT-A"` · `APP_BUILD_NUM = 158`
-**Monolite in WU-0013:** **modificato** in `D-FLIGHT-A` (parser puro in-memory; **nessun** overlay/toggle/rete/storage). Helper VPS **invariato**.
-**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS:** parser/adapter **CLOSED**; overlay/UI ancora fuori — NEXT **`D-FLIGHT-B`**.
+**Runtime live (GIS tip):** `4fc7ee3898bb69d465efb2ec81caa6b3b9046144` · `APP_BUILD_ID = "D-FLIGHT-B"` · `APP_BUILD_NUM = 159`
+**Monolite in WU-0013:** **modificato** in A+B (parser + normalized model; **nessun** overlay/toggle/rete/storage). Helper VPS **invariato**.
+**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS:** parser+normalize **CLOSED**; overlay/UI — NEXT **`D-FLIGHT-C`**.
 
 > Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
@@ -348,13 +349,13 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **DOCS-DFLIGHT-H2-RECONCILE-A** | Allineamento docs vivi a evidenze H2 | **CLOSED / PASS DOCS-ONLY** | DOCS |
 | **DFLIGHT-HELPER-H2-A** (+ FIX1) | Servizio helper VPS autenticato (WFS→cache→API); **no monolite** | **CLOSED / PASS end-to-end** (repo `bc80604`; VPS live; QA PASS) | **DELICATO** |
 | **D-FLIGHT-A** | parser/adapter client | **CLOSED / PASS end-to-end** — tip `d52367b` / build 158 | ROUTINE |
-| **D-FLIGHT-B** | normalized model | candidato; non auto-aperto | ROUTINE |
+| **D-FLIGHT-B** | normalized model | **CLOSED / PASS end-to-end** — tip `4fc7ee3` / build 159 | ROUTINE |
 | **D-FLIGHT-C** | overlay SVG | candidato; non auto-aperto | ROUTINE |
 | **D-FLIGHT-D** | toggle/legend | candidato; non auto-aperto | ROUTINE |
 | **D-FLIGHT-E** | zone details | candidato; non auto-aperto | ROUTINE o DELICATO (`<dialog>`) |
 | **D-FLIGHT-F** | client helper integration / persistence / OPSEC | candidato; decomporre se necessario | DELICATO |
 
-**NEXT univoco:** **`D-FLIGHT-B`** (normalized model — **non** auto-aperto; richiede prompt esplicito). Helper H2 VPS **CLOSED**. `D-FLIGHT-A` **CLOSED**.
+**NEXT univoco:** **`D-FLIGHT-C`** (overlay SVG — **non** auto-aperto; richiede prompt esplicito). Helper H2 **CLOSED**. `D-FLIGHT-A`+`B` **CLOSED**.
 
 **Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui futuri blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy.
 
@@ -448,11 +449,19 @@ WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update) con solo 
 
 ## 21. Prossimo passo consigliato
 
-**`D-FLIGHT-B`** (ROUTINE — normalized model; **non** auto-aperto):
+**`D-FLIGHT-C`** (ROUTINE — overlay SVG; **non** auto-aperto):
 
-- Consuma intermediate form di `D-FLIGHT-A` (`window.GOIDflight.parse` / `parseAsync`).
-- Clustering / temporal evaluation / Circle→Polygon / authority semantic — **non** in A.
-- Alternativi (decisione operatore): **D-FLIGHT-C…F**; provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
+- Consuma normalized zones di `D-FLIGHT-B` (`window.GOIDflight.normalize`).
+- Rendering SVG map-first; nessun nuovo fetch D-Flight dal browser.
+- Alternativi (decisione operatore): **D-FLIGHT-D…F**; provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
+
+### 21quater. Chiusura `D-FLIGHT-B` — 2026-08-12
+
+- Runtime tip: `4fc7ee3898bb69d465efb2ec81caa6b3b9046144` · build **159** · `APP_BUILD_ID = D-FLIGHT-B`.
+- Pure normalize: clustering B1+B2, zone_id, vertical/temporal, Circle→Polygon 64, `GOIDflight.normalize`.
+- Automated Browser QA **PASS**; QA operatore **`QA D-FLIGHT-B PASS operatore`** → auto-`finito` Regola H.
+- Finding wheel latency: **PREEXISTING/EXPECTED** (idle 140 ms) — non regressione B.
+- Zero state/storage/rete/UI overlay; Workbench FROZEN; helper VPS non toccato.
 
 ### 21ter. Chiusura `D-FLIGHT-A` — 2026-08-12
 

@@ -4,6 +4,14 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-B — CLOSED / PASS (2026-08-12)
+
+- Automated Browser QA **PASS** (pre-operatore).
+- Attestazione operatore: `QA D-FLIGHT-B PASS operatore` → auto-`finito` Regola H.
+- Scope: normalized semantic model `window.GOIDflight.normalize`; zero rete/storage/UI overlay.
+- Runtime tip: `4fc7ee3` / build 159.
+- Finding wheel latency: PREEXISTING/EXPECTED (non regressione B).
+
 ## D-FLIGHT-A — CLOSED / PASS (2026-08-12)
 
 - Automated Browser QA **PASS** (pre-operatore).
