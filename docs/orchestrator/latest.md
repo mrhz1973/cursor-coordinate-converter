@@ -9,4 +9,6 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX1** runtime pushato (`defd22e`, build **152**): in Nuovo waypoint, Centra+Salva+Annulla sulla stessa riga del titolo (layout-only; Centra invariato). Deploy GIS-only post-autosync. Monolite **escluso** da questo autosync. Inbox: `docs/orchestrator/inbox/2026-08-11_0256_riepilogo_waypoint-editor-center-a-fix1.md`.
+2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX2 IMPLEMENTED — deploy GIS-only in corso / QA PENDING**. RUNTIME **`f4db0016d233879b060b8e5ea03fac98ba789e7e`** (`fix(waypoint): preserve raw coordinate input and center on enter`; build **153**). Campo `#wpFieldCoord` = testo sorgente invariato; Enter = conversione + autocentro; Centra manuale invariato; Salva senza Enter ok. Inbox: `docs/orchestrator/inbox/2026-08-11_0845_waypoint_editor_center_a_fix2.md`.
+
+2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX1** storico `defd22e` (superseded by FIX2 tip).
