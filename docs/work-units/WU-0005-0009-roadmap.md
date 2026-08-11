@@ -573,25 +573,23 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / DISCOVERY COMPLETE / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT `DFLIGHT-HELPER-H2-A`** (2026-08-11). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Apertura: **`DOCS-DFLIGHT-WU-0013-OPEN-A` CLOSED**. Validate: **`DFLIGHT-REAL-DATA-VALIDATE-A` PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (superato). Auth capture: **`DFLIGHT-AUTH-CAPTURE-A` DIAGNOSTIC COMPLETE — PATH = H2 AUTHENTICATED**. Riconciliazione: **`DOCS-DFLIGHT-H2-RECONCILE-A` CLOSED / PASS DOCS-ONLY**. Runtime live monolite: **`ac3a0ea` / build 157** (invariato; **nessun** runtime GIS D-Flight).
+**Stato:** **OPEN / HELPER H2 DEPLOYED / NO GIS CLIENT RUNTIME — NEXT `D-FLIGHT-A`** (2026-08-11). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper: **`DFLIGHT-HELPER-H2-A` (+ FIX1) CLOSED / PASS end-to-end** — sorgente **`bc80604`**; VPS live Tailscale `:8010`; QA operatore PASS; Browser QA N/A. Runtime monolite: **`ac3a0ea` / build 157** (invariato; **nessun** client overlay D-Flight).
 
 **Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
 
-**Path helper autorizzato (NON implementato):** `GOI GIS → helper VPS → auth D-Flight → WFS autenticato` (**H2**). H0 public WFS **escluso** (401 anonimi). Credenziali solo server-side (`LoadCredential`). Sample/evidenze fuori repo. **Nessun secret** in repo/docs.
-
-**Evidenze sintetiche AUTH-CAPTURE:** WFS 36 typename / WMS 52 layer; `NO_FLY_ZONE` 850 Polygon (EPSG:4326 candidato; ~7.36 MB; ~149k vertici); NOTAM anche WFS vector (18); raw SHA instabile → **CANONICAL-FEATURE-HASH** su `properties.id`; WFS ≠ ED-269 (MVP overlay YES/PARTIAL).
+**Helper VPS (CLOSED):** `GOI GIS → helper VPS → auth D-Flight → WFS autenticato` (**H2**) implementato in `infra/dflight-helper/`; credenziali `LoadCredential`; live ~849 feature `NO_FLY_ZONE`. Sample/secret fuori repo.
 
 **Piano blocchi:**
 
 | Blocco | Categoria | Note |
 | --- | --- | --- |
-| **DFLIGHT-HELPER-H2-A** | **DELICATO** | **NEXT** — solo helper VPS; no monolite; rete+auth+secrets+cache+rollback |
-| **D-FLIGHT-A…E** | ROUTINE (E: ROUTINE/DELICATO) | client parser→overlay→toggle→details; non auto-aperti |
+| **DFLIGHT-HELPER-H2-A** (+ FIX1) | **DELICATO** | **CLOSED / PASS** — helper VPS live |
+| **D-FLIGHT-A…E** | ROUTINE (E: ROUTINE/DELICATO) | **NEXT A** — client parser→overlay→toggle→details; non auto-aperti |
 | **D-FLIGHT-F** | DELICATO | integrazione helper client / persistence / OPSEC; decomporre se serve |
 
-**Automated Browser QA:** obbligatoria sui futuri blocchi con UI browser; per solo H2-A backend puro → N/A ammesso + test API.
+**Automated Browser QA:** obbligatoria sui blocchi con UI browser (`D-FLIGHT-A`+); H2-A backend = N/A attestato.
 
-**Nessun** helper/runtime GIS ancora implementato. Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
+Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 

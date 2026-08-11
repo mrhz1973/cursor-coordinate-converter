@@ -135,11 +135,12 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | tip pre-chiusura **`3ed3f8e`** (verificare `git ls-remote` post-finito) |
+| HEAD documentale (pre-autosync) | tip chiusura `DFLIGHT-HELPER-H2-A-FIX1` (verificare `git ls-remote` post-finito) |
 | Runtime live / commit monolite | tip **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (`ac3a0ea`) build **157** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **DOCS-DFLIGHT-H2-RECONCILE-A** — **CLOSED / PASS DOCS-ONLY** (metodo PREOP già vivo) |
+| Ultimo blocco chiuso | **DFLIGHT-HELPER-H2-A** (+ FIX1) — **CLOSED / PASS end-to-end** (helper VPS; QA PASS) |
 | Ultimo blocco runtime monolite | **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** — tip `ac3a0ea` build 157 |
-| Task aperto corrente | **WU-0013** OPEN / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT **`DFLIGHT-HELPER-H2-A`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
+| Task aperto corrente | **WU-0013** OPEN / HELPER H2 DEPLOYED / NO GIS CLIENT — NEXT **`D-FLIGHT-A`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
+| Helper D-Flight VPS | **live** `goi-dflight-helper` @ `100.114.7.53:8010` · REVISION `bc80604` · READY · ~849 NFZ |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |

@@ -4,17 +4,18 @@
 
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** `OPEN / DISCOVERY COMPLETE / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT DFLIGHT-HELPER-H2-A`
+**Stato:** `OPEN / HELPER H2 DEPLOYED / NO GIS CLIENT RUNTIME — NEXT D-FLIGHT-A`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
 **Blocco auth capture:** `DFLIGHT-AUTH-CAPTURE-A` — **DIAGNOSTIC COMPLETE — PUBLIC/HYBRID/AUTH HELPER PATH PROVEN** · **PATH = H2 AUTHENTICATED** (2026-08-11, diagnostic read-only; sample fuori repo)
 **Blocco riconciliazione:** `DOCS-DFLIGHT-H2-RECONCILE-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
+**Blocco helper:** `DFLIGHT-HELPER-H2-A` (+ `FIX1`) — **CLOSED / PASS end-to-end** (2026-08-11) — repo `bc80604` · VPS deploy TECHNICAL PASS · Automated Browser QA **N/A** · QA operatore **PASS**
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
 **Runtime live (GIS tip):** `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` · `APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A-FIX1"` · `APP_BUILD_NUM = 157`
-**Monolite in WU-0013:** **non modificato**; **nessun** runtime GIS D-Flight; **nessun** helper implementato; NEXT = **`DFLIGHT-HELPER-H2-A`** (DELICATO, solo VPS).
-**Helper / GIS runtime:** **NON implementati** — H2 path **provato** in discovery autenticata; implementazione helper = blocco successivo.
+**Monolite in WU-0013:** **non modificato**; **nessun** client GIS D-Flight; helper VPS **deployato** (`goi-dflight-helper` · Tailscale `:8010`).
+**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS overlay:** non ancora — NEXT **`D-FLIGHT-A`**.
 
 > Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
@@ -344,19 +345,19 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **DFLIGHT-REAL-DATA-VALIDATE-A** | Inventario VPS + probing pubblico + auth flow da bundle | **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (superato da AUTH-CAPTURE) | DIAGNOSTIC |
 | **DFLIGHT-AUTH-CAPTURE-A** | Sessione autenticata; WFS/WMS inventory; fingerprint; path helper | **COMPLETE — PATH H2 AUTHENTICATED** | DIAGNOSTIC |
 | **DOCS-DFLIGHT-H2-RECONCILE-A** | Allineamento docs vivi a evidenze H2 | **CLOSED / PASS DOCS-ONLY** | DOCS |
-| **DFLIGHT-HELPER-H2-A** | Servizio helper VPS autenticato (WFS→cache→API); **no monolite** | **NEXT** — **NON aperto** | **DELICATO** |
-| **D-FLIGHT-A** | parser/adapter client | candidato; non auto-aperto | ROUTINE (post helper o import) |
+| **DFLIGHT-HELPER-H2-A** (+ FIX1) | Servizio helper VPS autenticato (WFS→cache→API); **no monolite** | **CLOSED / PASS end-to-end** (repo `bc80604`; VPS live; QA PASS) | **DELICATO** |
+| **D-FLIGHT-A** | parser/adapter client | **NEXT** — candidato; non auto-aperto | ROUTINE (post helper) |
 | **D-FLIGHT-B** | normalized model | candidato; non auto-aperto | ROUTINE |
 | **D-FLIGHT-C** | overlay SVG | candidato; non auto-aperto | ROUTINE |
 | **D-FLIGHT-D** | toggle/legend | candidato; non auto-aperto | ROUTINE |
 | **D-FLIGHT-E** | zone details | candidato; non auto-aperto | ROUTINE o DELICATO (`<dialog>`) |
 | **D-FLIGHT-F** | client helper integration / persistence / OPSEC | candidato; decomporre se necessario | DELICATO |
 
-**NEXT univoco:** **`DFLIGHT-HELPER-H2-A`** (solo backend VPS; credenziali server-side; WFS auth; cache LKG; atomic replace; canonical feature hash).
+**NEXT univoco:** **`D-FLIGHT-A`** (parser/adapter client GIS — **non** auto-aperto; richiede prompt esplicito). Helper H2 VPS **CLOSED**.
 
-**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** si applica ai futuri blocchi D-Flight con superficie browser. Per **solo** `DFLIGHT-HELPER-H2-A`: test tecnici/API automatici obbligatori; Automated Browser QA può essere **`NOT APPLICABLE`** se il blocco resta esclusivamente backend senza superficie browser; appena il helper è integrato nel browser GIS, Automated Browser QA torna **obbligatoria**.
+**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui futuri blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy.
 
-**Nessun** blocco runtime GIS / helper ancora implementato.
+**Helper VPS:** implementato + deployato. **Client GIS overlay:** non ancora.
 
 ---
 
@@ -446,17 +447,22 @@ WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update) con solo 
 
 ## 21. Prossimo passo consigliato
 
-**`DFLIGHT-HELPER-H2-A`** (DELICATO — rete + auth + secrets + VPS service + cache + rollback):
+**`D-FLIGHT-A`** (ROUTINE — parser/adapter client GIS; **non** auto-aperto):
 
-- Solo servizio helper VPS; **non** monolite GIS.
-- Credenziali server-side (`LoadCredential`); WFS autenticato; preferenza `EPSG:4326`.
-- Cache last-known-good; atomic replacement; previous dataset; CANONICAL-FEATURE-HASH.
-- API candidata da validare in implementazione: `GET /status`, `GET /dataset`, `POST /refresh` (non contratto definitivo).
-- Porta candidata tailnet-only **`:8010`** (non vincolo definitivo se collisioni).
-- Automated Browser QA: **N/A ammesso** se solo backend; test API obbligatori.
-- **Nessun auto-start** senza prompt esplicito.
+- Consumo dataset dal helper VPS già live (`GET /dataset` / status) **oppure** import file — decisione di prodotto.
+- **Non** toccare helper VPS salvo bug/regressione.
+- Automated Browser QA **obbligatoria** quando c’è superficie browser.
+- Alternativi (decisione operatore): **D-FLIGHT-B…F**; provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
 
-In ordine alternativo (decisione operatore): provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
+### 21bis. Chiusura `DFLIGHT-HELPER-H2-A` (+ FIX1) — 2026-08-11
+
+- Repo: `feat(dflight)` `f32f7c1` → FIX1 `bc806049c887417eea195da11b00b9c588bc05ea`.
+- VPS: `/opt/goi-dflight-helper/current`, user `goi-dflight`, LoadCredential, bind `100.114.7.53:8010`.
+- Live: `READY_CHANGED`; features **849**; bytes **7360227**; sha `88d564a65152a795fb2ea2cff8d11dc7b5fd013992cfdc7160b722a37f0d67f7`.
+- Cooldown 429; restart persistence; secret scan PASS; altri servizi GIS invariati.
+- Automated Browser QA: **NOT APPLICABLE** (backend-only).
+- QA operatore: **`QA DFLIGHT-HELPER-H2-A-FIX1 PASS operatore`** → auto-`finito` Regola H.
+- Finding minore: CLI `--rollback` stampa category `rollback` (non il testo `previous missing`); fail-closed verificato.
 
 ---
 
