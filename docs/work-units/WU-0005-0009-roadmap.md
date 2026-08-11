@@ -529,7 +529,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### CARTO-INDEX-FEDERATED-A — Indice cartografico federato e catalogo archivio personale
 
-**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip storico `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime live monolite: **`4fc7ee3` / `D-FLIGHT-B · build 159`** (A tip storico `d52367b` / 158 superseded). Sequenza interna WU **riprendibile** (provider).
+**Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip storico `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime live monolite: **`a37b912` / `D-FLIGHT-CDE · build 160`** (B tip storico `4fc7ee3` / 159 superseded). Sequenza interna WU **riprendibile** (provider).
 
 **Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) CLOSED**. **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
@@ -573,7 +573,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / D-FLIGHT-A+B CLOSED / HELPER H2 LIVE — NEXT `D-FLIGHT-C`** (2026-08-12). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper CLOSED. **A** CLOSED (`d52367b`/158). **B** CLOSED / PASS — tip **`4fc7ee3` / build 159** · `GOIDflight.normalize` · Automated Browser QA PASS · QA operatore PASS. Runtime monolite: **`4fc7ee3` / build 159**. Overlay/UI ancora fuori.
+**Stato:** **OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — NEXT `D-FLIGHT-F`** (2026-08-12). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper CLOSED. **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED / PASS — tip **`a37b912` / build 160** · SVG+toggle/legend+details · Automated Browser QA PASS · QA operatore PASS. Runtime monolite: **`a37b912` / build 160**. Overlay/UI CLOSED; rete client ancora fuori.
 
 **Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
 
@@ -586,10 +586,10 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 | **DFLIGHT-HELPER-H2-A** (+ FIX1) | **DELICATO** | **CLOSED / PASS** — helper VPS live |
 | **D-FLIGHT-A** | ROUTINE | **CLOSED / PASS** — tip `d52367b` / build 158 · A3-light · `GOIDflight` |
 | **D-FLIGHT-B** | ROUTINE | **CLOSED / PASS** — tip `4fc7ee3` / build 159 · normalize |
-| **D-FLIGHT-C…E** | ROUTINE (E: ROUTINE/DELICATO) | **NEXT C** — overlay→toggle→details; non auto-aperti |
-| **D-FLIGHT-F** | DELICATO | integrazione helper client / persistence / OPSEC; decomporre se serve |
+| **D-FLIGHT-CDE** | ROUTINE | **CLOSED / PASS** — tip `a37b912` / build 160 · overlay+UI |
+| **D-FLIGHT-F** | DELICATO | **NEXT** — integrazione helper client / persistence / OPSEC; decomporre se serve |
 
-**Automated Browser QA:** obbligatoria sui blocchi con UI browser (`D-FLIGHT-C`+); A/B = PASS; H2-A = N/A.
+**Automated Browser QA:** obbligatoria sui blocchi con UI browser; A/B/CDE = PASS; H2-A = N/A.
 
 Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
 

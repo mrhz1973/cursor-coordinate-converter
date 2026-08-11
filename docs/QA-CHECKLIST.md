@@ -4,6 +4,13 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-CDE — CLOSED / PASS (2026-08-12)
+
+- Automated Browser QA **PASS** (pre-operatore; fixture sintetiche).
+- Attestazione operatore: `QA D-FLIGHT-CDE PASS operatore` → auto-`finito` Regola H.
+- Scope: bundle ROUTINE SVG overlay + Cataloghi toggle/legend + zone details; zero rete helper/OPSEC/persistenza dataset.
+- Runtime tip: `a37b912` / build 160.
+
 ## D-FLIGHT-B — CLOSED / PASS (2026-08-12)
 
 - Automated Browser QA **PASS** (pre-operatore).
