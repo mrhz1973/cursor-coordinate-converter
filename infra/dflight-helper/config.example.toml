@@ -1,0 +1,35 @@
+# GOI D-Flight helper — non-secret config template
+# Copy to /etc/goi-dflight/config.toml on the VPS.
+# Secrets (username and password) are provided ONLY via systemd LoadCredential.
+
+[dflight]
+token_url = "https://www.d-flight.it/auth-iam/token"
+refresh_url = "https://www.d-flight.it/auth-iam/token/refresh"
+preflight_url = "https://www.d-flight.it/api-gateway/pre-flight"
+wfs_url = "https://www.d-flight.it/maps/wms"
+client_id = "web-app"
+scope = "openid email profile user-data personal-data pilot-license dflight-identification"
+typename = "D-FLIGHT:NO_FLY_ZONE"
+output_format = "application/json"
+srs_name = "EPSG:4326"
+timeout_sec = 30
+byte_cap = 26214400
+feature_cap = 5000
+csrf_public_key_path = "/etc/goi-dflight/csrf-public.pem"
+openssl_path = "/usr/bin/openssl"
+# Plausible WGS84 ranges for Italian UAS zones (with margin)
+lon_min = -30.0
+lon_max = 60.0
+lat_min = 20.0
+lat_max = 80.0
+
+[server]
+# Tailscale IPv4 of the VPS — never 0.0.0.0 / ::
+host = "100.114.7.53"
+port = 8010
+cooldown_sec = 300
+# Empty until D-FLIGHT-F configures the GIS Origin. Exact match only.
+origin_allowlist = []
+
+[cache]
+state_dir = "/var/lib/goi-dflight"

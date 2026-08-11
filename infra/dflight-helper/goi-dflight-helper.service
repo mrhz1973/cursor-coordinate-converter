@@ -1,0 +1,51 @@
+[Unit]
+Description=GOI D-Flight authenticated WFS helper (H2)
+Documentation=https://github.com/mrhz1973/cursor-coordinate-converter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=goi-dflight
+Group=goi-dflight
+WorkingDirectory=/opt/goi-dflight-helper/current
+Environment=GOI_DFLIGHT_CONFIG=/etc/goi-dflight/config.toml
+LoadCredential=dflight_username:/etc/systemd/dflight-credentials/dflight_username
+LoadCredential=dflight_password:/etc/systemd/dflight-credentials/dflight_password
+ExecStart=/usr/bin/python3 /opt/goi-dflight-helper/current/goi_dflight_helper.py
+Restart=on-failure
+RestartSec=10
+TimeoutStartSec=60
+TimeoutStopSec=30
+StateDirectory=goi-dflight
+StateDirectoryMode=0750
+RuntimeDirectory=goi-dflight
+RuntimeDirectoryMode=0750
+MemoryHigh=256M
+MemoryMax=384M
+TasksMax=64
+LimitNOFILE=1024
+OOMPolicy=stop
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+LockPersonality=true
+PrivateDevices=true
+RemoveIPC=true
+SystemCallArchitectures=native
+ReadWritePaths=/var/lib/goi-dflight /run/goi-dflight
+ReadOnlyPaths=/etc/goi-dflight /opt/goi-dflight-helper/current /usr/bin/openssl
+
+[Install]
+WantedBy=multi-user.target
