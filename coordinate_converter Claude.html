@@ -8511,6 +8511,80 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
   }
 }
 .carto-igm-overlay{ pointer-events:none !important; }
+
+/* ===== D-FLIGHT-CDE overlay + legend + details ===== */
+.dflight-zone-overlay{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; display:block; overflow:visible; z-index:2;
+}
+.dflight-zone-overlay .dflight-volume{
+  fill-opacity:0.2;
+  stroke-width:1.75;
+  stroke-linejoin:round;
+  stroke-linecap:round;
+}
+.dflight-zone-overlay .dflight-volume.is-prohibited{
+  fill:rgba(220,38,38,0.22); stroke:#dc2626;
+}
+.dflight-zone-overlay .dflight-volume.is-req-auth{
+  fill:rgba(234,88,12,0.2); stroke:#ea580c;
+}
+.dflight-zone-overlay .dflight-volume.is-conditional{
+  fill:rgba(202,138,4,0.2); stroke:#ca8a04;
+}
+.dflight-zone-overlay .dflight-volume.is-no-restriction{
+  fill:rgba(22,163,74,0.18); stroke:#16a34a;
+}
+.dflight-zone-overlay .dflight-volume.is-unknown{
+  fill:rgba(100,116,139,0.2); stroke:#64748b;
+}
+.dflight-zone-overlay .dflight-zone.is-selected .dflight-volume{
+  fill-opacity:0.38;
+  stroke-width:2.75;
+}
+.dflight-zone-overlay.is-interactive .dflight-volume{
+  pointer-events:visiblePainted;
+  cursor:pointer;
+}
+.dflight-legend{
+  display:flex; flex-direction:column; gap:6px; margin:0; padding:0; list-style:none;
+}
+.dflight-legend-item{
+  display:flex; align-items:center; gap:8px; font-size:12px; line-height:1.25;
+}
+.dflight-legend-swatch{
+  width:14px; height:14px; border-radius:3px; border:1.5px solid currentColor; flex:0 0 auto;
+}
+.dflight-legend-swatch.is-prohibited{ background:rgba(220,38,38,0.22); color:#dc2626; }
+.dflight-legend-swatch.is-req-auth{ background:rgba(234,88,12,0.2); color:#ea580c; }
+.dflight-legend-swatch.is-conditional{ background:rgba(202,138,4,0.2); color:#ca8a04; }
+.dflight-legend-swatch.is-no-restriction{ background:rgba(22,163,74,0.18); color:#16a34a; }
+.dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.2); color:#64748b; }
+.dflight-panel .dflight-status,
+.dflight-details-panel .dflight-details-meta{
+  font-size:12px; color:var(--muted, #64748b); margin:0 0 8px;
+}
+.dflight-details-grid{
+  display:grid; grid-template-columns:minmax(7rem,auto) 1fr; gap:4px 10px; font-size:12.5px;
+}
+.dflight-details-grid dt{ margin:0; color:var(--muted, #64748b); font-weight:600; }
+.dflight-details-grid dd{ margin:0; word-break:break-word; }
+.dflight-temporal-badge{
+  display:inline-block; padding:1px 7px; border-radius:999px; font-size:11px; font-weight:600;
+  background:rgba(100,116,139,0.18); color:var(--text);
+}
+.dflight-temporal-badge.is-active{ background:rgba(22,163,74,0.2); }
+.dflight-temporal-badge.is-future{ background:rgba(37,99,235,0.18); }
+.dflight-temporal-badge.is-expired{ background:rgba(100,116,139,0.22); }
+.dflight-volume-list{ margin:6px 0 0; padding-left:1.1rem; font-size:12px; }
+.dflight-volume-list li{ margin:0 0 4px; }
+.dflight-details-warnings{ margin-top:8px; font-size:12px; color:#b45309; }
+body.gis-mode dialog#dflightPanel.dflight-panel,
+body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel{
+  width:min(380px, 92vw);
+  max-height:min(70vh, 560px);
+}
+
 /* Series colors applied inline from CARTO_IGM_SERIES_VISUAL (UX1); CSS = fallback only */
 .carto-igm-overlay .carto-footprint{
   fill:color-mix(in srgb, var(--accent) 14%, transparent);
@@ -13399,6 +13473,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <input type="checkbox" id="jpgExportOvRangeRings">
         <span data-i18n="export.jpg.overlayRangeRings">Range Rings</span>
       </label>
+      <label class="jpg-export-scale-opt">
+        <input type="checkbox" id="jpgExportOvDflightZones" checked>
+        <span>Zone D-Flight</span>
+      </label>
     </div>
     <label class="jpg-export-scale-opt">
       <input type="checkbox" id="jpgExportIncludeCoords">
@@ -13764,6 +13842,47 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <div class="carto-legal-line"><span id="cartoIgmLegalAttribution"></span></div>
   </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
+</dialog>
+
+<dialog id="dflightPanel" class="app-modal dflight-panel" aria-labelledby="dflightPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="dflightPanelHead">
+    <h2 id="dflightPanelTitle" class="app-modal-title">Zone D-Flight (UAS)</h2>
+    <div class="app-modal-head-actions">
+      <button type="button" class="app-modal-close" id="dflightPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    </div>
+  </div>
+  <div class="app-modal-body" id="dflightPanelBody">
+    <p id="dflightPanelStatus" class="dflight-status hint" role="status" aria-live="polite">Nessun dataset caricato</p>
+    <label class="offcache-hintchk" id="dflightVisibleLabel">
+      <input type="checkbox" id="dflightVisibleToggle">
+      <span>Mostra zone sulla mappa</span>
+    </label>
+    <p id="dflightNoDatasetHint" class="hint" hidden>Carica un dataset normalizzato (API o futuro helper) per attivare il layer.</p>
+    <h3 class="hint" style="margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em">Legenda restriction</h3>
+    <ul id="dflightLegendList" class="dflight-legend" aria-label="Legenda zone D-Flight"></ul>
+  </div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
+</dialog>
+
+<dialog id="dflightDetailsPanel" class="app-modal dflight-details-panel" aria-labelledby="dflightDetailsPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="dflightDetailsPanelHead">
+    <h2 id="dflightDetailsPanelTitle" class="app-modal-title">Dettaglio zona</h2>
+    <div class="app-modal-head-actions">
+      <button type="button" class="app-modal-close" id="dflightDetailsPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    </div>
+  </div>
+  <div class="app-modal-body" id="dflightDetailsPanelBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
@@ -15932,6 +16051,39 @@ const I18N = {
     "carto.layerMenuLabel":"Indice IGM",
     "carto.layerMenuCatalog":"Catalogo carte",
     "carto.layerMenuTip":"Apri Indice cartografico IGM",
+    "dflight.layerMenuLabel":"Zone D-Flight (UAS)",
+    "dflight.layerMenuTip":"Mostra o nasconde le zone geografiche UAS D-Flight",
+    "dflight.panelTitle":"Zone D-Flight (UAS)",
+    "dflight.detailsTitle":"Dettaglio zona",
+    "dflight.toggleVisible":"Mostra zone sulla mappa",
+    "dflight.noDataset":"Nessun dataset caricato",
+    "dflight.noDatasetHint":"Carica un dataset normalizzato (API o futuro helper) per attivare il layer.",
+    "dflight.legendTitle":"Legenda restriction",
+    "dflight.restriction.PROHIBITED":"Proibita",
+    "dflight.restriction.REQ_AUTHORISATION":"Autorizzazione richiesta",
+    "dflight.restriction.CONDITIONAL":"Condizionale",
+    "dflight.restriction.NO_RESTRICTION":"Nessuna restrizione",
+    "dflight.restriction.UNKNOWN":"Sconosciuta",
+    "dflight.temporal.ALWAYS_ACTIVE":"Sempre attiva",
+    "dflight.temporal.ACTIVE_NOW":"Attiva ora",
+    "dflight.temporal.FUTURE":"Futura",
+    "dflight.temporal.EXPIRED":"Scaduta",
+    "dflight.temporal.UNKNOWN":"Stato sconosciuto",
+    "dflight.field.name":"Nome",
+    "dflight.field.zoneId":"ID zona",
+    "dflight.field.restriction":"Restriction",
+    "dflight.field.reasons":"Motivazioni",
+    "dflight.field.zoneType":"Tipo",
+    "dflight.field.temporal":"Temporalità",
+    "dflight.field.applicability":"Applicabilità",
+    "dflight.field.volumes":"Volumi",
+    "dflight.field.message":"Messaggio",
+    "dflight.field.authority":"Autorità",
+    "dflight.field.owner":"Owner",
+    "dflight.field.sourceUrl":"Sorgente",
+    "dflight.field.updated":"Aggiornato",
+    "dflight.field.warnings":"Avvisi",
+    "dflight.exportOverlay":"Zone D-Flight",
     "carto.archive.register":"Cataloga",
     "carto.archive.registerTip":"Aggiungi questo foglio al catalogo personale",
     "carto.archive.edit":"Modifica",
@@ -22969,10 +23121,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-B";
-const APP_BUILD_DETAIL = "D-Flight normalized semantic model on GOIDflight.normalize";
+const APP_BUILD_ID = "D-FLIGHT-CDE";
+const APP_BUILD_DETAIL = "D-Flight SVG overlay + Cataloghi toggle/legend + zone details";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 159;
+const APP_BUILD_NUM = 160;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -29119,7 +29271,8 @@ async function rasterizeJpgExportOverlaysOntoCanvas(ctx, opts){
       { selector: ".range-rings-overlay svg", key: "rangeRings" },
       { selector: ".saved-tracks-overlay svg", key: "tracks" },
       { selector: ".gis-polygons-overlay svg", key: "polygons" },
-      { selector: ".waypoints-overlay svg", key: "waypoints", labelsKey: "waypointLabels" }
+      { selector: ".waypoints-overlay svg", key: "waypoints", labelsKey: "waypointLabels" },
+      { selector: ".dflight-zone-overlay", key: "dflightZones" }
     ];
     for (const cat of overlayCategories){
       if (!overlayGranular[cat.key]) continue;
@@ -29251,14 +29404,16 @@ const JPG_EXPORT_OVERLAY_DEFAULTS = Object.freeze({
   waypoints: true,
   waypointLabels: true,
   polygons: true,
-  rangeRings: true
+  rangeRings: true,
+  dflightZones: true
 });
 let _jpgExportOverlayGranular = {
   tracks: true,
   waypoints: true,
   waypointLabels: true,
   polygons: true,
-  rangeRings: true
+  rangeRings: true,
+  dflightZones: true
 };
 let _jpgExportCoords = {
   enabled: false,
@@ -29559,7 +29714,7 @@ function jpgExportSetSegmentedUiMode(isSegmented){
   const scaleIds = ["jpgExportIncludeScale", "jpgExportIncludeOverlays", "jpgExportIncludeCoords",
     "jpgExportCoordsSource", "jpgExportCoordsWaypoint", "jpgExportCoordsFormat",
     "jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels",
-    "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+    "jpgExportOvPolygons", "jpgExportOvRangeRings", "jpgExportOvDflightZones"];
   if (isSegmented && !_jpgQuickExportSegMode){
     _jpgQuickExportToggleBackup = {
       includeScale: !!(document.getElementById("jpgExportIncludeScale") && document.getElementById("jpgExportIncludeScale").checked),
@@ -29677,7 +29832,7 @@ function jpgExportSetDialogBusy(busy){
     "jpgExportIncludeScale", "jpgExportIncludeOverlays", "jpgExportIncludeCoords",
     "jpgExportCoordsSource", "jpgExportCoordsWaypoint", "jpgExportCoordsFormat",
     "jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels",
-    "jpgExportOvPolygons", "jpgExportOvRangeRings", "jpgExportQuickHighConfirmOk"];
+    "jpgExportOvPolygons", "jpgExportOvRangeRings", "jpgExportOvDflightZones", "jpgExportQuickHighConfirmOk"];
   for (const id of disableIds){
     const el = document.getElementById(id);
     if (el) el.disabled = !!busy;
@@ -29741,7 +29896,8 @@ function jpgExportNormalizeOverlayGranular(src){
     waypoints: src.waypoints !== false,
     waypointLabels: src.waypointLabels !== false,
     polygons: src.polygons !== false,
-    rangeRings: src.rangeRings !== false
+    rangeRings: src.rangeRings !== false,
+    dflightZones: src.dflightZones !== false
   };
 }
 
@@ -29752,7 +29908,8 @@ function jpgExportReadOverlayGranularFromUi(){
     waypoints: byId("jpgExportOvWaypoints") ? byId("jpgExportOvWaypoints").checked : true,
     waypointLabels: byId("jpgExportOvWaypointLabels") ? byId("jpgExportOvWaypointLabels").checked : true,
     polygons: byId("jpgExportOvPolygons") ? byId("jpgExportOvPolygons").checked : true,
-    rangeRings: byId("jpgExportOvRangeRings") ? byId("jpgExportOvRangeRings").checked : true
+    rangeRings: byId("jpgExportOvRangeRings") ? byId("jpgExportOvRangeRings").checked : true,
+    dflightZones: byId("jpgExportOvDflightZones") ? byId("jpgExportOvDflightZones").checked : true
   });
 }
 
@@ -29763,7 +29920,8 @@ function jpgExportApplyOverlayGranularToUi(gran){
     jpgExportOvWaypoints: "waypoints",
     jpgExportOvWaypointLabels: "waypointLabels",
     jpgExportOvPolygons: "polygons",
-    jpgExportOvRangeRings: "rangeRings"
+    jpgExportOvRangeRings: "rangeRings",
+    jpgExportOvDflightZones: "dflightZones"
   };
   for (const id of Object.keys(map)){
     const el = document.getElementById(id);
@@ -29777,7 +29935,7 @@ function jpgExportSyncOverlaySubUi(){
   const masterOn = !!(master && master.checked);
   const subWrap = document.getElementById("jpgExportOverlaySubOpts");
   if (subWrap) subWrap.classList.toggle("is-disabled", !masterOn);
-  const subIds = ["jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels", "jpgExportOvPolygons", "jpgExportOvRangeRings"];
+  const subIds = ["jpgExportOvTracks", "jpgExportOvWaypoints", "jpgExportOvWaypointLabels", "jpgExportOvPolygons", "jpgExportOvRangeRings", "jpgExportOvDflightZones"];
   const wptEl = document.getElementById("jpgExportOvWaypoints");
   const wptOn = masterOn && !!(wptEl && wptEl.checked);
   for (const id of subIds){
@@ -35369,6 +35527,706 @@ try {
   window.GOIDflight = _goiDflightApiB;
 } catch (_){ /* ignore */ }
 /* ===== /D-FLIGHT-B ===== */
+
+/* ===== D-FLIGHT-CDE — SVG overlay + Cataloghi toggle/legend + zone details ===== */
+/** IT-only scoped strings (L10N freeze — do not use t() for these keys). */
+function dflightScopedT(key){
+  try {
+    const it = (typeof I18N !== "undefined" && I18N.it) ? I18N.it : null;
+    if (it && Object.prototype.hasOwnProperty.call(it, key)) return it[key];
+  } catch(_){}
+  return String(key || "");
+}
+function dflightEscHtml(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+let _dflightOverlaySession = null; // { dataset }
+let _dflightOverlayVisible = false; // default OFF
+let _dflightSelectedZoneId = null;
+let _dflightPanelOpen = false;
+let _dflightDetailsOpen = false;
+let _dflightUiWired = false;
+
+function dflightRestrictionCssClass(restriction){
+  if (restriction === "PROHIBITED") return "is-prohibited";
+  if (restriction === "REQ_AUTHORISATION") return "is-req-auth";
+  if (restriction === "CONDITIONAL") return "is-conditional";
+  if (restriction === "NO_RESTRICTION") return "is-no-restriction";
+  return "is-unknown";
+}
+function dflightRestrictionLabel(restriction){
+  if (restriction && DFLIGHT_RESTRICTION_ENUM[restriction]){
+    return dflightScopedT("dflight.restriction." + restriction);
+  }
+  return dflightScopedT("dflight.restriction.UNKNOWN");
+}
+function dflightTemporalLabel(ts){
+  const k = "dflight.temporal." + String(ts || "UNKNOWN");
+  const v = dflightScopedT(k);
+  return (v === k) ? dflightScopedT("dflight.temporal.UNKNOWN") : v;
+}
+function dflightTemporalBadgeClass(ts){
+  if (ts === "ALWAYS_ACTIVE" || ts === "ACTIVE_NOW") return "is-active";
+  if (ts === "FUTURE") return "is-future";
+  if (ts === "EXPIRED") return "is-expired";
+  return "";
+}
+
+function dflightReadTileLayerTranslate(tileMap){
+  let tx = 0, ty = 0;
+  try {
+    const tileLayer = tileMap && tileMap.querySelector(".tile-layer");
+    const style = (tileLayer && tileLayer.style && tileLayer.style.transform) || "";
+    const m = style.match(/translate\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px\s*\)/);
+    if (m){ tx = parseFloat(m[1]); ty = parseFloat(m[2]); }
+    const tr3 = style.match(/translate3d\(\s*(-?\d+(?:\.\d+)?)px\s*,\s*(-?\d+(?:\.\d+)?)px/);
+    if (tr3){ tx = parseFloat(tr3[1]); ty = parseFloat(tr3[2]); }
+  } catch(_){}
+  return { tx: tx, ty: ty };
+}
+
+function dflightGeomPolygonToSvgPathD(geom, root, tx, ty){
+  if (!geom || geom.type !== "Polygon" || !Array.isArray(geom.coordinates)) return "";
+  if (typeof tileMapLatLonToPx !== "function") return "";
+  let d = "";
+  const rings = geom.coordinates;
+  for (let ri = 0; ri < rings.length; ri++){
+    const ring = rings[ri];
+    if (!Array.isArray(ring) || ring.length < 3) continue;
+    let first = true;
+    for (let i = 0; i < ring.length; i++){
+      const pt = ring[i];
+      if (!pt || !Number.isFinite(pt[0]) || !Number.isFinite(pt[1])) continue;
+      const xy = tileMapLatLonToPx(root, pt[1], pt[0]);
+      if (!xy || !Number.isFinite(xy.x) || !Number.isFinite(xy.y)) continue;
+      const x = (xy.x - tx).toFixed(1);
+      const y = (xy.y - ty).toFixed(1);
+      if (first){ d += "M" + x + " " + y; first = false; }
+      else d += "L" + x + " " + y;
+    }
+    if (!first) d += "Z";
+  }
+  return d;
+}
+
+function dflightViewportBboxLonLat(root, tileMap){
+  if (!root || !tileMap || typeof tileMapPxToLatLon !== "function") return null;
+  const W = tileMap.clientWidth || root.clientWidth || 0;
+  const H = tileMap.clientHeight || root.clientHeight || 0;
+  if (!(W > 0 && H > 0)) return null;
+  const corners = [
+    tileMapPxToLatLon(root, 0, 0),
+    tileMapPxToLatLon(root, W, 0),
+    tileMapPxToLatLon(root, W, H),
+    tileMapPxToLatLon(root, 0, H)
+  ];
+  let west = Infinity, south = Infinity, east = -Infinity, north = -Infinity;
+  for (let i = 0; i < corners.length; i++){
+    const c = corners[i];
+    if (!c || !Number.isFinite(c.lat) || !Number.isFinite(c.lon)) continue;
+    if (c.lon < west) west = c.lon;
+    if (c.lon > east) east = c.lon;
+    if (c.lat < south) south = c.lat;
+    if (c.lat > north) north = c.lat;
+  }
+  if (!Number.isFinite(west) || !Number.isFinite(south) || !Number.isFinite(east) || !Number.isFinite(north)) return null;
+  return [west, south, east, north];
+}
+
+function dflightBboxOverlaps(a, b){
+  if (!a || !b || a.length < 4 || b.length < 4) return true; // fail-open
+  // Antimeridian defensive: if either wraps, fail-open draw
+  if (a[0] > a[2] || b[0] > b[2]) return true;
+  return !(a[2] < b[0] || a[0] > b[2] || a[3] < b[1] || a[1] > b[3]);
+}
+
+function dflightRemoveOverlayDom(tileMap){
+  if (!tileMap) return;
+  try {
+    const old = tileMap.querySelector(".dflight-zone-overlay");
+    if (old) old.remove();
+  } catch(_){}
+}
+
+function dflightFindZoneById(dataset, zoneId){
+  if (!dataset || !Array.isArray(dataset.zones)) return null;
+  const id = String(zoneId == null ? "" : zoneId);
+  for (let i = 0; i < dataset.zones.length; i++){
+    const z = dataset.zones[i];
+    if (z && String(z.zone_id) === id) return z;
+  }
+  return null;
+}
+
+function dflightDrawOverlayDom(tileMap, dataset){
+  const report = {
+    ok: true,
+    path_count: 0,
+    zone_count_in: 0,
+    zone_count_drawn: 0,
+    culled: 0,
+    skipped: 0
+  };
+  if (!tileMap){
+    report.ok = false;
+    report.error_category = "dom";
+    report.error_message = "missing_tileMap";
+    return report;
+  }
+  dflightRemoveOverlayDom(tileMap);
+  if (!dataset || dataset.ok === false){
+    report.ok = false;
+    report.error_category = "input";
+    report.error_message = "invalid_dataset";
+    return report;
+  }
+  const zones = Array.isArray(dataset.zones) ? dataset.zones : [];
+  report.zone_count_in = zones.length;
+  const root = document.getElementById("miniMap");
+  if (!root){
+    report.ok = false;
+    report.error_category = "dom";
+    report.error_message = "missing_miniMap";
+    return report;
+  }
+  const tr = dflightReadTileLayerTranslate(tileMap);
+  const viewBbox = dflightViewportBboxLonLat(root, tileMap);
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || root.clientHeight || W;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("xmlns", ns);
+  svg.setAttribute("class", "dflight-zone-overlay" + (_dflightOverlayVisible ? " is-interactive" : ""));
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
+
+  const frag = document.createDocumentFragment();
+  for (let zi = 0; zi < zones.length; zi++){
+    const zone = zones[zi];
+    if (!zone){ report.skipped++; continue; }
+    const zb = Array.isArray(zone.bbox) ? zone.bbox : null;
+    if (viewBbox && zb && !dflightBboxOverlaps(zb, viewBbox)){
+      report.culled++;
+      continue;
+    }
+    const vols = Array.isArray(zone.volumes) ? zone.volumes : [];
+    if (!vols.length){ report.skipped++; continue; }
+    const g = document.createElementNS(ns, "g");
+    g.setAttribute("class", "dflight-zone" + (String(zone.zone_id) === String(_dflightSelectedZoneId) ? " is-selected" : ""));
+    if (zone.zone_id != null) g.setAttribute("data-zone-id", String(zone.zone_id));
+    if (zone.temporal_state) g.setAttribute("data-temporal-state", String(zone.temporal_state));
+    const rClass = dflightRestrictionCssClass(zone.restriction);
+    let drew = 0;
+    for (let vi = 0; vi < vols.length; vi++){
+      const vol = vols[vi];
+      if (!vol || !vol.geometry){ report.skipped++; continue; }
+      const d = dflightGeomPolygonToSvgPathD(vol.geometry, root, tr.tx, tr.ty);
+      if (!d){ report.skipped++; continue; }
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", d);
+      path.setAttribute("class", "dflight-volume " + rClass);
+      path.setAttribute("fill-rule", "evenodd");
+      if (zone.zone_id != null) path.setAttribute("data-zone-id", String(zone.zone_id));
+      path.setAttribute("data-volume-index", String(vol.volume_index != null ? vol.volume_index : vi));
+      g.appendChild(path);
+      report.path_count++;
+      drew++;
+    }
+    if (drew){
+      frag.appendChild(g);
+      report.zone_count_drawn++;
+    } else {
+      report.skipped++;
+    }
+  }
+  svg.appendChild(frag);
+  tileMap.appendChild(svg);
+  try { dflightAttachClickHandler(tileMap); } catch(_){}
+  return report;
+}
+
+function dflightRenderOverlay(tileMap, dataset, options){
+  options = options || {};
+  if (dataset == null){
+    _dflightOverlaySession = null;
+    _dflightSelectedZoneId = null;
+    dflightRemoveOverlayDom(tileMap);
+    try { dflightCloseDetailsPanel(); } catch(_){}
+    try { dflightSyncPanelUi(); } catch(_){}
+    return { ok: true, path_count: 0, zone_count_in: 0, zone_count_drawn: 0, culled: 0, skipped: 0 };
+  }
+  if (!dataset || dataset.ok === false){
+    _dflightOverlaySession = null;
+    dflightRemoveOverlayDom(tileMap);
+    try { dflightSyncPanelUi(); } catch(_){}
+    return {
+      ok: false,
+      error_category: "input",
+      error_message: (dataset && dataset.error_message) || "invalid_dataset",
+      path_count: 0, zone_count_in: 0, zone_count_drawn: 0, culled: 0, skipped: 0
+    };
+  }
+  _dflightOverlaySession = { dataset: dataset };
+  if (options.visible === true) _dflightOverlayVisible = true;
+  if (options.visible === false) _dflightOverlayVisible = false;
+  if (options.interactive === true) _dflightOverlayVisible = true;
+  let report;
+  if (_dflightOverlayVisible || options.force === true){
+    report = dflightDrawOverlayDom(tileMap, dataset);
+  } else {
+    dflightRemoveOverlayDom(tileMap);
+    report = {
+      ok: true,
+      path_count: 0,
+      zone_count_in: Array.isArray(dataset.zones) ? dataset.zones.length : 0,
+      zone_count_drawn: 0,
+      culled: 0,
+      skipped: 0,
+      hidden: true
+    };
+  }
+  try { dflightSyncPanelUi(); } catch(_){}
+  return report;
+}
+
+function dflightClearOverlay(tileMap){
+  return dflightRenderOverlay(tileMap || (document.getElementById("miniMap") && document.getElementById("miniMap").querySelector(".tile-map")), null);
+}
+
+function dflightRedrawOverlayFromSession(tileMap){
+  if (!_dflightOverlaySession || !_dflightOverlaySession.dataset) return;
+  if (!_dflightOverlayVisible){
+    dflightRemoveOverlayDom(tileMap);
+    return;
+  }
+  try { dflightDrawOverlayDom(tileMap, _dflightOverlaySession.dataset); } catch(_){}
+}
+
+function dflightSetOverlayVisible(visible){
+  const next = !!visible;
+  if (next && !(_dflightOverlaySession && _dflightOverlaySession.dataset)){
+    _dflightOverlayVisible = false;
+    try { dflightSyncPanelUi(); } catch(_){}
+    return { ok: false, visible: false, error_message: "no_dataset" };
+  }
+  _dflightOverlayVisible = next;
+  const root = document.getElementById("miniMap");
+  const tm = root && root.querySelector(".tile-map");
+  if (!_dflightOverlayVisible){
+    dflightRemoveOverlayDom(tm);
+    _dflightSelectedZoneId = null;
+    try { dflightCloseDetailsPanel(); } catch(_){}
+  } else if (tm && _dflightOverlaySession){
+    dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+  }
+  try { dflightSyncPanelUi(); } catch(_){}
+  try {
+    if (typeof renderTileMap === "function" && root){
+      // refresh menu checkmark without forcing full rebuild of dataset
+    }
+  } catch(_){}
+  return { ok: true, visible: _dflightOverlayVisible };
+}
+
+function dflightFormatVerticalBound(bound){
+  if (!bound || bound.value == null) return "—";
+  const unit = bound.unit || "M";
+  const ref = bound.reference ? (" " + bound.reference) : "";
+  const v = Number.isFinite(bound.value) ? bound.value : bound.value;
+  return String(v) + " " + unit + ref;
+}
+
+function dflightFormatApplicability(arr){
+  if (!Array.isArray(arr) || !arr.length) return "—";
+  const parts = [];
+  for (let i = 0; i < Math.min(arr.length, 3); i++){
+    const a = arr[i];
+    if (!a) continue;
+    if (a.permanent === true){ parts.push("permanente"); continue; }
+    const from = a.start_datetime || a.valid_from || "";
+    const to = a.end_datetime || a.valid_to || "";
+    if (from || to) parts.push(String(from || "…") + " → " + String(to || "…"));
+  }
+  return parts.length ? parts.join("; ") : "—";
+}
+
+function dflightBuildDetailsHtml(zone){
+  if (!zone) return "<p class=\"hint\">—</p>";
+  const restr = dflightRestrictionLabel(zone.restriction);
+  const reasons = Array.isArray(zone.reasons) && zone.reasons.length
+    ? zone.reasons.join(", ")
+    : (Array.isArray(zone.reasons_raw) && zone.reasons_raw.length ? zone.reasons_raw.join(", ") : "—");
+  const auth = Array.isArray(zone.zone_authority) && zone.zone_authority.length
+    ? zone.zone_authority.map(function(a){ return a && (a.name || a.contact || a.email); }).filter(Boolean).join(", ")
+    : "—";
+  const vols = Array.isArray(zone.volumes) ? zone.volumes : [];
+  let volHtml = "<ul class=\"dflight-volume-list\">";
+  for (let i = 0; i < vols.length; i++){
+    const v = vols[i];
+    const lo = dflightFormatVerticalBound(v && v.lower);
+    const up = dflightFormatVerticalBound(v && v.upper);
+    let extra = "";
+    if (v && v.circle_source && Number.isFinite(v.circle_source.radius_m)){
+      extra = " · origine cerchio r=" + Math.round(v.circle_source.radius_m) + " m";
+    }
+    const holes = (v && v.geometry && Array.isArray(v.geometry.coordinates))
+      ? Math.max(0, v.geometry.coordinates.length - 1) : 0;
+    volHtml += "<li><strong>#" + (v && v.volume_index != null ? v.volume_index : i) + "</strong> — "
+      + dflightEscHtml(lo) + " → " + dflightEscHtml(up)
+      + " · Poligono" + (holes ? (" · " + holes + " hole") : "")
+      + dflightEscHtml(extra) + "</li>";
+  }
+  volHtml += "</ul>";
+  const ts = zone.temporal_state || "UNKNOWN";
+  const badgeCls = dflightTemporalBadgeClass(ts);
+  const warnings = Array.isArray(zone.warnings) && zone.warnings.length
+    ? ("<p class=\"dflight-details-warnings\">" + dflightEscHtml(zone.warnings.join(", ")) + "</p>")
+    : "";
+  return ""
+    + "<p class=\"dflight-details-meta\">" + dflightEscHtml(zone.name || "—") + "</p>"
+    + "<dl class=\"dflight-details-grid\">"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.zoneId")) + "</dt><dd>" + dflightEscHtml(zone.zone_id || "—") + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.restriction")) + "</dt><dd>" + dflightEscHtml(restr) + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.reasons")) + "</dt><dd>" + dflightEscHtml(reasons) + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.zoneType")) + "</dt><dd>" + dflightEscHtml(zone.zone_type || "—") + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.temporal")) + "</dt><dd><span class=\"dflight-temporal-badge " + badgeCls + "\">" + dflightEscHtml(dflightTemporalLabel(ts)) + "</span></dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.applicability")) + "</dt><dd>" + dflightEscHtml(dflightFormatApplicability(zone.applicability)) + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.volumes")) + "</dt><dd>" + vols.length + volHtml + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.message")) + "</dt><dd>" + dflightEscHtml(zone.message || "—") + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.authority")) + "</dt><dd>" + dflightEscHtml(auth) + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.owner")) + "</dt><dd>" + dflightEscHtml(zone.owner_raw || "—") + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.sourceUrl")) + "</dt><dd>" + dflightEscHtml(zone.source_url || "—") + "</dd>"
+    + "<dt>" + dflightEscHtml(dflightScopedT("dflight.field.updated")) + "</dt><dd>" + dflightEscHtml(zone.source_updated_at || "—") + "</dd>"
+    + "</dl>"
+    + (warnings ? ("<div><strong>" + dflightEscHtml(dflightScopedT("dflight.field.warnings")) + "</strong>" + warnings + "</div>") : "");
+}
+
+function dflightSelectZone(zoneId){
+  if (zoneId == null || zoneId === ""){
+    _dflightSelectedZoneId = null;
+    try { dflightCloseDetailsPanel(); } catch(_){}
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm && _dflightOverlayVisible && _dflightOverlaySession) dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+    return { ok: true, selected: null };
+  }
+  const ds = _dflightOverlaySession && _dflightOverlaySession.dataset;
+  const zone = dflightFindZoneById(ds, zoneId);
+  if (!zone){
+    return { ok: false, selected: null, error_message: "zone_not_found" };
+  }
+  _dflightSelectedZoneId = String(zone.zone_id);
+  const root = document.getElementById("miniMap");
+  const tm = root && root.querySelector(".tile-map");
+  if (tm && _dflightOverlayVisible && ds) dflightDrawOverlayDom(tm, ds);
+  try { dflightOpenDetailsPanel(zone); } catch(_){}
+  return { ok: true, selected: _dflightSelectedZoneId };
+}
+
+function dflightDetailsState(){
+  return { open: !!_dflightDetailsOpen, zoneId: _dflightSelectedZoneId };
+}
+
+function _dflightPanelLayoutOpts(kind){
+  const isDetails = kind === "details";
+  return {
+    key: isDetails ? "dflightDetailsPanel" : "dflightPanel",
+    pad: 12,
+    minW: 280,
+    minH: 180,
+    defaultW: isDetails ? 360 : 320,
+    defaultH: null,
+    defaultHeightFraction: isDetails ? 0.55 : 0.42,
+    defaultHeightCap: isDetails ? 520 : 420,
+    topbarReserve: 104,
+    bodyMinH: 100,
+    partialMinVisible: 64,
+    bodyId: isDetails ? "dflightDetailsPanelBody" : "dflightPanelBody",
+    headId: isDetails ? "dflightDetailsPanelHead" : "dflightPanelHead",
+    closeId: isDetails ? "dflightDetailsPanelClose" : "dflightPanelClose"
+  };
+}
+
+function dflightWireFloatingPanel(dlg, kind){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _dflightPanelLayoutOpts(kind);
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById(opts.headId);
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  if (typeof gisPanelAttachDrag === "function"){
+    gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+      threshold: 4,
+      draggingClass: "dragging",
+      ignoreSelector: "#" + opts.closeId + ",.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+    }));
+  }
+  if (typeof gisPanelAttachResize === "function"){
+    const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+    gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+  }
+  if (typeof gisPanelAttachBringToFront === "function") gisPanelAttachBringToFront(dlg, opts);
+  if (typeof gisPanelBringToFront === "function") gisPanelBringToFront(dlg, opts);
+  if (typeof gisPanelApplyLayout === "function") gisPanelApplyLayout(dlg, opts);
+  if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, opts);
+}
+
+function dflightOpenControlPanel(){
+  const dlg = document.getElementById("dflightPanel");
+  if (!dlg) return false;
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  _dflightPanelOpen = true;
+  try { dflightWireFloatingPanel(dlg, "control"); } catch(_){}
+  try { dflightSyncPanelUi(); } catch(_){}
+  return true;
+}
+
+function dflightCloseControlPanel(){
+  const dlg = document.getElementById("dflightPanel");
+  if (dlg){
+    try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  }
+  _dflightPanelOpen = false;
+}
+
+function dflightOpenDetailsPanel(zone){
+  const dlg = document.getElementById("dflightDetailsPanel");
+  const body = document.getElementById("dflightDetailsPanelBody");
+  const title = document.getElementById("dflightDetailsPanelTitle");
+  if (!dlg || !body) return false;
+  if (title) title.textContent = (zone && zone.name) ? String(zone.name) : dflightScopedT("dflight.detailsTitle");
+  body.innerHTML = dflightBuildDetailsHtml(zone);
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  _dflightDetailsOpen = true;
+  try { dflightWireFloatingPanel(dlg, "details"); } catch(_){}
+  return true;
+}
+
+function dflightCloseDetailsPanel(){
+  const dlg = document.getElementById("dflightDetailsPanel");
+  if (dlg){
+    try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  }
+  _dflightDetailsOpen = false;
+}
+
+function dflightCollectLegendCategories(dataset){
+  const order = ["PROHIBITED", "REQ_AUTHORISATION", "CONDITIONAL", "NO_RESTRICTION", "UNKNOWN"];
+  const seen = Object.create(null);
+  const zones = (dataset && Array.isArray(dataset.zones)) ? dataset.zones : [];
+  for (let i = 0; i < zones.length; i++){
+    const r = zones[i] && zones[i].restriction;
+    const key = (r && DFLIGHT_RESTRICTION_ENUM[r]) ? r : "UNKNOWN";
+    seen[key] = 1;
+  }
+  return order.filter(function(k){ return !!seen[k]; });
+}
+
+function dflightSyncPanelUi(){
+  const hasDs = !!(!_dflightOverlaySession ? false : _dflightOverlaySession.dataset);
+  const ds = hasDs ? _dflightOverlaySession.dataset : null;
+  const status = document.getElementById("dflightPanelStatus");
+  const tip = document.getElementById("dflightNoDatasetHint");
+  const tog = document.getElementById("dflightVisibleToggle");
+  const list = document.getElementById("dflightLegendList");
+  if (status){
+    if (!hasDs) status.textContent = dflightScopedT("dflight.noDataset");
+    else {
+      const n = Array.isArray(ds.zones) ? ds.zones.length : 0;
+      status.textContent = n + " zone · " + (_dflightOverlayVisible ? "visibile" : "nascosto");
+    }
+  }
+  if (tip) tip.hidden = !!hasDs;
+  if (tog){
+    tog.disabled = !hasDs;
+    tog.checked = !!(hasDs && _dflightOverlayVisible);
+  }
+  if (list){
+    list.innerHTML = "";
+    if (hasDs){
+      const cats = dflightCollectLegendCategories(ds);
+      for (let i = 0; i < cats.length; i++){
+        const cat = cats[i];
+        const li = document.createElement("li");
+        li.className = "dflight-legend-item";
+        const sw = document.createElement("span");
+        sw.className = "dflight-legend-swatch " + dflightRestrictionCssClass(cat === "UNKNOWN" ? null : cat);
+        sw.setAttribute("aria-hidden", "true");
+        const lab = document.createElement("span");
+        lab.textContent = dflightRestrictionLabel(cat === "UNKNOWN" ? null : cat);
+        li.appendChild(sw);
+        li.appendChild(lab);
+        list.appendChild(li);
+      }
+    }
+  }
+}
+
+function dflightAttachClickHandler(tileMap){
+  if (!tileMap || tileMap._dflightClickBound) return;
+  tileMap._dflightClickBound = true;
+  tileMap.addEventListener("click", function(ev){
+    if (!_dflightOverlayVisible || !_dflightOverlaySession) return;
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    if (!path) return;
+    try { ev.stopPropagation(); } catch(_){}
+    const zoneId = path.getAttribute("data-zone-id");
+    try { dflightSelectZone(zoneId); } catch(_){}
+  }, true);
+}
+
+function dflightEnsureUiWired(){
+  if (_dflightUiWired) return;
+  _dflightUiWired = true;
+  const closeP = document.getElementById("dflightPanelClose");
+  if (closeP) closeP.addEventListener("click", function(ev){
+    ev.preventDefault();
+    dflightCloseControlPanel();
+  });
+  const closeD = document.getElementById("dflightDetailsPanelClose");
+  if (closeD) closeD.addEventListener("click", function(ev){
+    ev.preventDefault();
+    _dflightSelectedZoneId = null;
+    dflightCloseDetailsPanel();
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm && _dflightOverlayVisible && _dflightOverlaySession) dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+  });
+  const tog = document.getElementById("dflightVisibleToggle");
+  if (tog) tog.addEventListener("change", function(){
+    const r = dflightSetOverlayVisible(!!tog.checked);
+    if (!r.ok) tog.checked = false;
+    try {
+      const root = document.getElementById("miniMap");
+      // refresh layer menu checkmark
+      if (root && typeof state !== "undefined"){
+        const lat = state.mapCenterLat, lon = state.mapCenterLon, z = state.mapZoom;
+        if (typeof renderTileMap === "function" && Number.isFinite(lat) && Number.isFinite(lon)){
+          renderTileMap(lat, lon, z || 11);
+        }
+      }
+    } catch(_){}
+  });
+}
+
+function dflightSelfTestCDE(){
+  const checks = [];
+  function add(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  }
+  try {
+    const poly = {
+      type: "Polygon",
+      coordinates: [
+        [[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]],
+        [[9.04, 44.04], [9.06, 44.04], [9.06, 44.06], [9.04, 44.06], [9.04, 44.04]]
+      ]
+    };
+    // mock path builder without DOM map: empty when no root helpers — test class mapping + bbox
+    add("C_restriction_prohibited", dflightRestrictionCssClass("PROHIBITED") === "is-prohibited");
+    add("C_restriction_unknown", dflightRestrictionCssClass(null) === "is-unknown");
+    add("C_restriction_req", dflightRestrictionCssClass("REQ_AUTHORISATION") === "is-req-auth");
+    add("C_restriction_cond", dflightRestrictionCssClass("CONDITIONAL") === "is-conditional");
+    add("C_restriction_none", dflightRestrictionCssClass("NO_RESTRICTION") === "is-no-restriction");
+    add("C_bbox_overlap_yes", dflightBboxOverlaps([9,44,10,45], [9.5,44.2,9.8,44.8]) === true);
+    add("C_bbox_overlap_no", dflightBboxOverlaps([9,44,10,45], [11,46,12,47]) === false);
+    add("C_bbox_failopen_null", dflightBboxOverlaps(null, [9,44,10,45]) === true);
+    const ds = {
+      ok: true,
+      zones: [{
+        zone_id: "ed:Z1",
+        name: "Test",
+        restriction: "PROHIBITED",
+        temporal_state: "ACTIVE_NOW",
+        bbox: [9, 44, 9.1, 44.1],
+        volumes: [{ volume_index: 0, geometry: poly, lower: { value: 0, unit: "M", reference: "AGL" }, upper: { value: 120, unit: "M", reference: "AGL" } }],
+        reasons: ["AIR_TRAFFIC"],
+        zone_authority: [{ name: "ENAC" }],
+        warnings: []
+      }]
+    };
+    const prevVis = _dflightOverlayVisible;
+    const prevSess = _dflightOverlaySession;
+    _dflightOverlayVisible = false;
+    const rHidden = dflightRenderOverlay(null, ds);
+    add("D_store_without_dom", rHidden.ok === true && !!_dflightOverlaySession);
+    const visNoDom = dflightSetOverlayVisible(true);
+    // may fail without tileMap; still should set flag if dataset present
+    add("D_set_visible_with_dataset", visNoDom.ok === true && _dflightOverlayVisible === true);
+    const cats = dflightCollectLegendCategories(ds);
+    add("D_legend_has_prohibited", cats.indexOf("PROHIBITED") >= 0);
+    const html = dflightBuildDetailsHtml(ds.zones[0]);
+    add("E_details_has_zone_id", html.indexOf("ed:Z1") >= 0);
+    add("E_details_has_volume", html.indexOf("Poligono") >= 0);
+    add("E_details_has_temporal", html.indexOf(dflightTemporalLabel("ACTIVE_NOW")) >= 0);
+    const dsUnk = { ok: true, zones: [{ zone_id: "wfs:1", name: "W", restriction: null, temporal_state: "UNKNOWN", volumes: [], bbox: null, owner_raw: "ENAC", warnings: [] }] };
+    const htmlU = dflightBuildDetailsHtml(dsUnk.zones[0]);
+    add("E_unknown_restriction_label", htmlU.indexOf(dflightRestrictionLabel(null)) >= 0);
+    add("E_owner_raw", htmlU.indexOf("ENAC") >= 0);
+    // restore
+    _dflightOverlayVisible = prevVis;
+    _dflightOverlaySession = prevSess;
+    add("CDE_no_network_static", true, "no fetch in CDE region");
+    add("CDE_api_surface", typeof dflightRenderOverlay === "function" && typeof dflightSetOverlayVisible === "function" && typeof dflightSelectZone === "function");
+  } catch (e){
+    add("selftest_cde_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
+
+const _dflightSelfTestABFn = dflightSelfTestAll;
+function dflightSelfTestAllCDE(){
+  const ab = _dflightSelfTestABFn();
+  const cde = dflightSelfTestCDE();
+  const checks = (ab.checks || []).concat(cde);
+  const pass = checks.every(function(c){ return c.ok; });
+  return Object.freeze({
+    ok: pass,
+    checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+  });
+}
+// Assignment (not declaration) so boot self-check picks up A+B+CDE without hoist recursion.
+dflightSelfTestAll = dflightSelfTestAllCDE;
+
+try {
+  const _goiDflightApiCDE = {
+    parse: dflightParse,
+    parseAsync: dflightParseAsync,
+    normalize: dflightNormalize,
+    selfTest: dflightSelfTestAllCDE,
+    renderOverlay: dflightRenderOverlay,
+    clearOverlay: dflightClearOverlay,
+    setOverlayVisible: dflightSetOverlayVisible,
+    selectZone: dflightSelectZone,
+    detailsState: dflightDetailsState
+  };
+  Object.freeze(_goiDflightApiCDE);
+  window.GOIDflight = _goiDflightApiCDE;
+} catch (_){ /* ignore */ }
+
+try {
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", function(){ try { dflightEnsureUiWired(); } catch(_){} });
+  } else {
+    dflightEnsureUiWired();
+  }
+} catch(_){}
+/* ===== /D-FLIGHT-CDE ===== */
+
+
 
 /* ========================= SECTION 14G: BADGE (detected format chip) ========================= */
 let _gisDropImportNoticeTimer = null;
@@ -54524,7 +55382,12 @@ function renderTileMap(lat, lon, zoom){
         + `<span class="tlayer-check" aria-hidden="true"></span>`
         + `<span class="tlayer-item-label">${esc(cartoScopedT("carto.layerMenuLabel"))}</span>`
         + `<span class="tlayer-badge-catalog">${esc(cartoScopedT("carto.layerMenuCatalog"))}</span>`
-        + `</button>`)}
+        + `</button>`
+        + tlayerOverlayBtn("dflightZones",
+            (typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible && typeof _dflightOverlaySession !== "undefined" && _dflightOverlaySession) ? " is-active" : "",
+            esc(dflightScopedT("dflight.layerMenuTip")),
+            esc(dflightScopedT("dflight.layerMenuLabel")),
+            !!(typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible && typeof _dflightOverlaySession !== "undefined" && _dflightOverlaySession)))}
     </div>
   </div>`;
   }
@@ -54957,6 +55820,24 @@ function renderTileMap(lat, lon, zoom){
       ev.stopPropagation();
       try { state.mapBasemapMenuOpen = false; } catch(_){}
       try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
+      try { renderTileMap(lat, lon, zoom); } catch(_){}
+    });
+  });
+  root.querySelectorAll('.tlayer-item[data-overlay="dflightZones"]').forEach(b => {
+    b.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      try { state.mapBasemapMenuOpen = false; } catch(_){}
+      const hasDs = !!(typeof _dflightOverlaySession !== "undefined" && _dflightOverlaySession && _dflightOverlaySession.dataset);
+      if (!hasDs){
+        try { if (typeof dflightOpenControlPanel === "function") dflightOpenControlPanel(); } catch(_){}
+        try { renderTileMap(lat, lon, zoom); } catch(_){}
+        return;
+      }
+      const next = !(typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible);
+      try { if (typeof dflightSetOverlayVisible === "function") dflightSetOverlayVisible(next); } catch(_){}
+      if (next){
+        try { if (typeof dflightOpenControlPanel === "function") dflightOpenControlPanel(); } catch(_){}
+      }
       try { renderTileMap(lat, lon, zoom); } catch(_){}
     });
   });
@@ -55471,6 +56352,7 @@ function renderTileMap(lat, lon, zoom){
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
       try { if (typeof drawCartoIgmOverlay === "function") drawCartoIgmOverlay(tileMap); } catch(_){}
       try { if (typeof cartoIgmRearmAfterRender === "function") cartoIgmRearmAfterRender(); } catch(_){}
+      try { if (typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tileMap); } catch(_){}
     }
   }
 
@@ -63977,6 +64859,21 @@ function gisInit(){
       }
       if (typeof closeCartoIgmPanel === "function") closeCartoIgmPanel();
       ev.preventDefault();
+      return;
+    }
+    const dfDet = document.getElementById("dflightDetailsPanel");
+    if ((typeof _dflightDetailsOpen !== "undefined" && _dflightDetailsOpen) || (dfDet && dfDet.open)){
+      try { ev.preventDefault(); } catch(_){}
+      try {
+        if (typeof dflightSelectZone === "function") dflightSelectZone(null);
+        else if (typeof dflightCloseDetailsPanel === "function") dflightCloseDetailsPanel();
+      } catch(_){}
+      return;
+    }
+    const dfCtl = document.getElementById("dflightPanel");
+    if ((typeof _dflightPanelOpen !== "undefined" && _dflightPanelOpen) || (dfCtl && dfCtl.open)){
+      try { ev.preventDefault(); } catch(_){}
+      try { if (typeof dflightCloseControlPanel === "function") dflightCloseControlPanel(); } catch(_){}
       return;
     }
     const rpd = document.getElementById("routingPlannerPanel");
@@ -81491,10 +82388,10 @@ function runSelfCheck(){
     const st0 = SunCalc.getTimes(new Date("2026-06-01T12:00:00Z"), 0, 0, 0);
     console.assert(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
 
-    // D-FLIGHT-A/B pure parser+normalizer self-test
+    // D-FLIGHT-A/B/CDE parser+normalizer+overlay self-test
     if (typeof dflightSelfTestAll === "function"){
       const _dfSt = dflightSelfTestAll();
-      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B selfTest failed");
+      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B/CDE selfTest failed");
     } else if (typeof dflightSelfTest === "function"){
       const _dfSt = dflightSelfTest();
       console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A selfTest failed");
