@@ -62,7 +62,7 @@
 - Blocchi docs-only: non toccare il monolite.
 - **Session / repo guard:** prima di patch non read-only, verificare repo root, branch e `git status --short`; se workspace atteso pulito risulta sporco all’avvio o repo/cartella non coerenti, fermarsi e riportare lo stato. Cursor non decide autonomamente se procedere; la decisione spetta alla review.
 - **Remote hash / PASS tecnico:** dopo push, il PASS remoto richiede output verbatim coerente di `HEAD`, tracking locale `origin/main` e `git ls-remote origin main`; l’autorità finale è `git ls-remote`, mentre RAW GitHub è secondario/best-effort e può essere stale. Se `origin/main` locale diverge da `ls-remote`, non è PASS. Se gli output mancano o sono ambigui, prima prompt Cursor verify-only; shell manuale utente solo fallback finale. Distinto da PASS operatore / QA runtime.
-- **QA evidence / PASS operatore:** il PASS operatore è distinto dal PASS tecnico remoto e richiede attestazione esplicita nel flusso da utente/operatore o orchestratore. Cursor non può inferirlo da PASS tecnico, diff pulito o `node --check`. In assenza di attestazione, default fail-closed: QA operatore non eseguita/non attestata. Se la QA è attestata, RIEPILOGO e docs devono registrarne provenienza, esiti concreti, ambiente essenziale e limiti.
+- **QA evidence / tre gate distinti:** (1) **PASS tecnico remoto** (hash/deploy/`ls-remote`); (2) **`AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`** — attestabile da Cursor dopo prove browser automatiche realmente eseguite (metodo **`AUTOMATED-BROWSER-QA-PREOP`**, Regola D2bis); (3) **PASS operatore** — attestazione umana esplicita `QA <BLOCK-ID> PASS operatore`. Cursor **non** può inferire PASS operatore da PASS tecnico, Automated Browser QA PASS, diff pulito o `node --check`. In assenza di attestazione umana, default fail-closed: QA operatore non eseguita/non attestata.
 - **LAST_CURSOR_REPORT (Fase F3):** da Fase F3 `docs/runtime/LAST_CURSOR_REPORT.md` è **obbligatorio** post-push per task reale GIS-only; non per read-only/plan/review diff senza commit; evidenza rolling post-push, non fonte viva primaria — OM §7 e roadmap restano primari; mapping: commit principale = task, autosync = report, nessun terzo commit/finalize-hash. **Home canonica dettagliata:** `.cursor/rules/30-output-workflow.mdc` e `docs/runtime/LAST_CURSOR_REPORT.template.md`. **`real_task_commit`** = anchor stabile del blocco; il container corrente resta **`PENDING_SELF_REFERENCE`** (non sostituirlo nel commit corrente); il report **non** attesta il proprio HEAD finale — HEAD e PASS remoto si provano **esternamente** con `git ls-remote origin main` e seed Regola F; **vietati** amend self-reference, terzo commit e finalize-hash; backfill dei container precedenti **solo** in HISTORY di un report successivo. **Ambito esteso:** la stessa disciplina F3 (container corrente, HEAD finale esterno, anti-ricorsione, anti-terzo-commit, backfill differito) vale anche per `docs/orchestrator/inbox/**` e `docs/orchestrator/latest.md` contenuti nel **commit autosync corrente**: lo SHA dell’autosync corrente, l’esito del suo push e l’HEAD finale sono **`EXTERNAL_ONLY`**; **non** autorare campi post-push «da creare/da verificare» destinati a un terzo commit; **vietati** i commit «completa inbox» e «finalize autosync»; *published = immutable* per l’intervento corrente. Home canonica dettagliata: `.cursor/rules/30-output-workflow.mdc`.
 
 ### Handoff & Close Discipline — minimizzazione copia-incolla
@@ -77,7 +77,7 @@ Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività
 
 **Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**.
 
-- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → ChatGPT emette QA operatore (Regola D2) → attestazione QA PASS in Cursor → finito automatico` (Regola H). **Nessun hop Claude in nessun caso** — vai sempre, zero attese.
+- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → Automated Browser QA PRE-OPERATORE (Regola D2bis) → solo se PASS/N/A: ChatGPT emette QA umana residua (Regola D2) → attestazione QA PASS operatore in Cursor → finito automatico` (Regola H). **Nessun hop Claude in nessun caso** — vai sempre, zero attese.
 - **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine): Claude **upstream** (sostanza, rischi, gate) → GPT redige prompt → Cursor implementa → Claude **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy, se Claude **disponibile**.
 - **Bundle DELICATO, Claude NON disponibile** (limite token / attesa inaccettabile): il deploy **non** si blocca. Procedere con **review sostitutiva GPT** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + review byte Claude **post-hoc** come backstop (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «review sostitutiva GPT», **mai** «Claude», e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
 
@@ -119,7 +119,7 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 
 **Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato a **Claude**; blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, Claude e Cursor salvo escalation reale.
 
-**Regola D — QA operatore unica (superseded nel formato vivo da Regola D2).** Resta valido: **un'unica** QA per blocco; risposta operatore **una sola volta** come attestazione finale; **fail-closed** senza attestazione; URL con runtime short SHA; distinzione PASS tecnico / PASS operatore; Cursor **non** attesta la QA visiva. Il **formato vivo e l’autore dell’emissione** sono definiti dalla **Regola D2** (prevalente). Checklist estesa: solo OPSEC/rete/cache/storage/migrazioni/alto rischio — sempre emessa da **ChatGPT**, non da Cursor — vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
+**Regola D — QA operatore unica (superseded nel formato vivo da Regola D2 + D2bis).** Resta valido: **un'unica** QA umana per blocco; risposta operatore **una sola volta** come attestazione finale; **fail-closed** senza attestazione; URL con runtime short SHA; distinzione PASS tecnico / Automated Browser QA / PASS operatore; Cursor **non** attesta la QA umana/percettiva. Il **formato vivo** delle istruzioni QA umane è Regola **D2**; il gate browser automatico pre-operatore è Regola **D2bis**. Checklist estesa: solo OPSEC/rete/cache/storage/migrazioni/alto rischio — sempre emessa da **ChatGPT**, non da Cursor — vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 
 **Regola D1 — QA operatore IT + etichette UI visibili (QA-OPERATOR-IT-ONLY-PREF CLOSED).** Decisione docs-only vincolante (2026-08-01):
 1. Tutte le future istruzioni di QA operatore sono **solo in italiano**, salvo blocchi il cui oggetto specifico sia la verifica i18n/localizzazione in altre lingue. Il runtime resta IT/EN/FR.
@@ -128,19 +128,34 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 4. Prima di emettere una QA, verificare nel monolite corrente etichetta/tooltip/icona/pannello/sequenza; se manca voce testuale, descrivere icona + tooltip + pannello che si apre; **non** inventare gerarchie di menu.
 5. La QA resta **limitata al blocco** e proporzionata allo scope (questo file + [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) + Regola D2).
 
-**Regola D2 — QA ChatGPT a tre righe per passaggio (QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED).** Decisione docs-only vincolante (2026-08-02); **prevale** su Regola D per autore, timing e struttura delle istruzioni QA:
-1. Dopo **deploy tecnico PASS**, Cursor **si ferma**; dichiara deploy PASS, URL runtime e gate **`QA FINALE CHATGPT — PENDING`**.
-2. Cursor **non** prepara e **non** emette istruzioni QA operatore (né nel report post-deploy né nel `finito`).
-3. **ChatGPT** prepara ed emette **tutta** la QA operatore in **un unico messaggio**.
+**Regola D2bis — AUTOMATED BROWSER QA PRE-OPERATORE (`AUTOMATED-BROWSER-QA-PREOP`, adozione `DOCS-AUTOMATED-BROWSER-QA-PREOP-A` CLOSED).** Decisione docs-only vincolante (2026-08-11). Gate **permanente** tra deploy tecnico PASS e QA umana finale.
+
+1. **Default obbligatorio** per ogni blocco runtime con acceptance criteria osservabili/esercitabili via browser: dopo **deploy tecnico PASS**, Cursor esegue **Automated Browser QA** (browser automation / CDP o equivalenti disponibili) **prima** di dichiarare `QA FINALE CHATGPT — PENDING`.
+2. Ambito = **capability scoped al blocco** (non checklist universale): apertura URL con cache-buster; load; Console errori rilevanti; Network attese/inattese; UI visibile; click/input/toggle; pannelli; pan/zoom; overlay; DOM; etichette verificabili; enabled/disabled; show/hide; responsive misurabile; errori; regressioni del blocco; OPSEC/offline (`forceOffline`/`opsecStrict`/assenza chiamata bloccata) se tocca rete; cache/storage se verificabile; Console/Network post-interazione; screenshot diagnostici.
+3. Cursor può attestare **solo**:
+   - `AUTOMATED BROWSER QA <BLOCK-ID> PASS`
+   - `AUTOMATED BROWSER QA <BLOCK-ID> FAIL — <finding>`
+   - `AUTOMATED BROWSER QA <BLOCK-ID> NOT APPLICABLE — <motivo>` (solo se nessuna acceptance browser reale, es. puro backend/infra senza superficie browser; motivo esplicito)
+4. Cursor **non** può emettere `QA <BLOCK-ID> PASS operatore` né fingere percezioni umane (leggibilità, ergonomia, qualità cartografica percepita, giudizio operativo finale).
+5. **Fail-closed:** su FAIL → **non** dichiarare `QA FINALE CHATGPT — PENDING`; **non** chiedere all’operatore di collaudare una build già fallita; riportare finding riproducibile; percorso FIX/review. Su BLOCKED/INCOMPLETE tecnico → **non** convertire in PASS; riportare blocker + minimo fallback.
+6. **Login:** se serve sessione autenticata, Cursor apre/sblocca il browser, chiede **una volta** il login normale; dopo `login fatto` prosegue. Vietato chiedere password/bearer/cookie/token o analisi manuale request-per-request se automatizzabile. Segreti: solo memoria temporanea; mai in report/docs/repo/log persistenti; evitare negli screenshot.
+7. **Evidenze minime del report:** URL/runtime; metodo browser; casi eseguiti; PASS/FAIL per caso; Console; Network se pertinente; screenshot/evidenze; anomalie; gate finale. Non inventare test non eseguiti. Screenshot = evidenza tecnica, non sostituto della valutazione umana; preferire `tmp`/fuori repo; non auto-committare artefatti pesanti.
+8. **Stato/dati test:** evitare effetti distruttivi; preferire session-only, dati isolati, snapshot/rollback, cleanup; non cancellare dati operativi reali solo per QA.
+9. **Backend/API** che alimentano il browser: test tecnici/API automatici pertinenti restano; se c’è integrazione browser nello stesso blocco, Automated Browser QA torna obbligatoria.
+
+**Regola D2 — QA ChatGPT a tre righe per passaggio (QA-CHATGPT-3LINE-HANDOFF-PREF CLOSED; aggiornata da AUTOMATED-BROWSER-QA-PREOP).** Decisione docs-only vincolante (2026-08-02); **prevale** su Regola D per autore e struttura delle istruzioni QA **umane**. Timing post-deploy aggiornato da D2bis:
+1. Dopo **deploy tecnico PASS**, Cursor esegue **Automated Browser QA** (Regola D2bis). **Solo se** esito `PASS` o `NOT APPLICABLE` giustificato, Cursor dichiara: deploy PASS; URL runtime; Automated Browser QA PASS|N/A; gate **`QA FINALE CHATGPT — PENDING`** — poi **si ferma**.
+2. Cursor **non** prepara e **non** emette istruzioni QA operatore (né nel report post-deploy né nel `finito`). **Può e deve** eseguire/attestare Automated Browser QA.
+3. **ChatGPT** prepara ed emette **tutta** la QA umana residua in **un unico messaggio** (aspetti non affidabili da automatizzare).
 4. Ogni passaggio operativo della QA contiene **esattamente** queste tre righe:
    - `Dove:`
    - `Azione:`
    - `Risultato atteso:`
-5. Numero di passaggi proporzionato allo scope; niente tabelle/checklist estese salvo reale necessità (OPSEC, rete, cache, storage, migrazioni, alto rischio) — anche allora: un solo messaggio ChatGPT; Cursor non emette.
+5. Numero di passaggi proporzionato allo scope residuo umano; niente tabelle/checklist estese salvo reale necessità (OPSEC, rete, cache, storage, migrazioni, alto rischio) — anche allora: un solo messaggio ChatGPT; Cursor non emette.
 6. L’operatore comunica a **ChatGPT** (non a Cursor) dubbi, istruzioni non comprese, comportamenti inattesi e FAIL circoscritti; ChatGPT chiarisce o gestisce prima dell’attestazione finale.
 7. Nella sessione **Cursor** arriva **solo** la riga finale di attestazione: `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore e punto>`.
 8. La riga PASS continua a innescare **automaticamente** `finito` (Regola H); **non** è richiesto un secondo comando `finito`.
-9. Restano invariati: fail-closed; PASS tecnico ≠ PASS operatore; IT (D1); etichette UI visibili; verifica monolite prima dei percorsi UI; URL `?v=<runtime-short-sha>`; divieto di inventare PASS operatore.
+9. Restano invariati: fail-closed; PASS tecnico ≠ Automated Browser QA ≠ PASS operatore; IT (D1); etichette UI visibili; verifica monolite prima dei percorsi UI; URL `?v=<runtime-short-sha>`; divieto di inventare PASS operatore.
 **Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza Claude → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
 
 **Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in un fenced code block:
@@ -173,23 +188,23 @@ con anche un pointer sintetico al read-set del README. `git ls-remote origin mai
 ### Sequenza blocco runtime GIS
 
 1. implementazione in Cursor;
-2. QA pre-commit a schermo sul file locale (`coordinate_converter Claude.html`), opzionale;
-3. `finito` in Cursor → commit selettivo + push `origin`;
+2. controlli tecnici / QA pre-commit a schermo sul file locale (`coordinate_converter Claude.html`), opzionale;
+3. pubblicazione secondo metodo corrente (`finito`/commit selettivo + push `origin` ove applicabile);
 4. **deploy VPS** necessario per QA/uso su tailnet — **modalità deploy:**
    - eseguito da **Cursor via SSH**, alias `ionos-n8n`, in **un unico prompt** (non far digitare comandi manuali all'operatore per deploy ordinario);
    - il prompt deploy deve coprire: `git pull origin main`; `systemctl restart goi-gis-app`; smoke HTTP (status, Content-Length, build label);
    - clone GIS VPS: `/root/local-files/handoff-runtime/cursor-coordinate-converter`;
    - **GIS-only** per blocchi GIS-only; Planet-Clone/proxy **solo** se cambia il proxy;
    - riferimento: [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](runtime/VPS_DEPLOY_RUNTIME.md);
-5. **QA operatore** sull'app deployata — **condotta QA (Regola D2):**
-   - visiva, nel browser; la esegue l'**operatore**; Cursor **non** sostituisce la QA visiva;
-   - dopo deploy PASS, Cursor dichiara solo fatti tecnici + URL + gate **`QA FINALE CHATGPT — PENDING`** — **non** emette istruzioni QA;
+5. **Automated Browser QA PRE-OPERATORE** (Regola D2bis / `AUTOMATED-BROWSER-QA-PREOP`) sull’URL deployato — eseguita da **Cursor**; attestazione `AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`;
+6. **solo se** Automated Browser QA = PASS (o N/A giustificato): Cursor dichiara deploy PASS + URL + Automated Browser QA esito + gate **`QA FINALE CHATGPT — PENDING`** — **non** emette istruzioni QA umane;
+7. **QA umana residua (Regola D2):**
    - **ChatGPT** emette **un unico** messaggio QA; ogni passaggio con `Dove:` / `Azione:` / `Risultato atteso:`;
    - dubbi e FAIL circoscritti tra **operatore ↔ ChatGPT**; in Cursor arriva solo l’attestazione finale `QA <BLOCK-ID> PASS|FAIL operatore`;
    - tailnet `:8000`; cache-buster `?v=<hash runtime>`; **non** usare etichette `*-local` per QA su VPS;
-   - attestazione onesta: PASS copre solo ciò che l'operatore ha guardato; esito mai inventato da AI;
+   - attestazione onesta: PASS operatore copre solo ciò che l'operatore ha verificato; esito mai inventato da AI;
    - PASS finale → auto-`finito` Regola H (nessun secondo comando `finito`);
-6. **registrazione in OM §7:** hash runtime, HEAD deploy, smoke, link QA, esito PASS/FAIL operatore — **verifica pubblicazione / published = verified:**
+8. **registrazione in OM §7:** hash runtime, HEAD deploy, smoke, Automated Browser QA, link QA, esito PASS/FAIL operatore — **verifica pubblicazione / published = verified:**
    - dopo ogni `finito`/push e dopo ogni deploy, la chiusura **non** basa solo su self-report Cursor; Cursor dichiara, la prova è su **origin**, indipendente;
    - autorità: `git ls-remote origin main` (arbitro del ref); lettura SHA-pinned / raw vincolato al commit (non `main` mutevole); per docs delicati, confronto blob SHA del file vs commit precedente per provare byte-identità delle parti non-target (es. mega-bullet §7, B5.5A);
    - post-deploy VPS: byte-match Content-Length servito su `:8000` vs `wc -c` del file allo stesso commit su origin — conferma che il VPS serve quel commit, non clone stale;
@@ -243,15 +258,17 @@ Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, d
 
 ````text
 GATE / CHIUSURA (coda finito pre-autorizzata):
-Dopo deploy tecnico PASS, fermati.
-Riporta solo: deploy PASS, URL runtime, gate «QA FINALE CHATGPT — PENDING».
-Non preparare e non emettere istruzioni QA operatore (Regola D2 — ChatGPT emette la QA).
+Dopo deploy tecnico PASS, esegui AUTOMATED BROWSER QA PRE-OPERATORE (Regola D2bis / AUTOMATED-BROWSER-QA-PREOP).
+Se Automated Browser QA = FAIL o BLOCKED/INCOMPLETE: NON dichiarare QA FINALE CHATGPT — PENDING; riporta finding; NON eseguire finito.
+Solo se Automated Browser QA = PASS (o NOT APPLICABLE giustificato), fermati e riporta:
+deploy PASS, URL runtime, Automated Browser QA PASS|N/A, gate «QA FINALE CHATGPT — PENDING».
+Non preparare e non emettere istruzioni QA operatore (Regola D2 — ChatGPT emette la QA umana residua).
 Quando l'operatore (via ChatGPT) attesta esattamente in Cursor:
 QA <BLOCK-ID> PASS operatore
 esegui automaticamente la coda finito già autorizzata:
 chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
 Non chiedere un comando separato «finito» né attendere un secondo messaggio.
-Se QA fallisce o deploy/smoke non PASS, NON eseguire finito.
+Se QA operatore fallisce o deploy/smoke non PASS o Automated Browser QA non PASS, NON eseguire finito.
 Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
 ````
 
@@ -295,6 +312,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 **Backlog GIS-monolite ammesso (non infrastruttura control-plane):**
 
+- **DOCS-AUTOMATED-BROWSER-QA-PREOP-A — adozione Automated Browser QA PRE-OPERATORE (2026-08-11, docs/rules-only) — CLOSED / PASS DOCS-ONLY:** metodo **`AUTOMATED-BROWSER-QA-PREOP`** (OM §4 **Regola D2bis** + aggiornamento Regola D2 / sequenza runtime / template coda; [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md); [`docs/HANDOFF.md`](HANDOFF.md); `.cursor/rules/30-output-workflow.mdc` + `31-qa-single-message.mdc`). Gate permanente: dopo deploy tecnico PASS → Automated Browser QA Cursor → solo se PASS/N/A → `QA FINALE CHATGPT — PENDING` → QA umana residua ChatGPT → `QA <BLOCK-ID> PASS operatore` → Regola H. Tre attestazioni distinte: PASS tecnico ≠ Automated Browser QA ≠ PASS operatore. Monolite invariato; nessun deploy; QA operatore N/A (docs-only). Runtime live riferimento **`ac3a0ea` / build 157**.
 - **README bootloader rules front-load (2026-06-27, docs-only):** commit **`c409819`** — tre regole AI in cerca (`git ls-remote`/read-set pinnato; `finito` condizionale in coda prompt; Cursor write+commit = Agent+Auto); dettaglio OM §4 Handoff & Close Discipline; monolite invariato blob **`8d13e41a36fe7cc0605dc8f315eff551725340ed`**; indipendente da chiusura P-STYLE: al momento di quel commit P-STYLE era deploy **`0a51379`** PASS tecnico / QA operatore **pending**; chiusura end-to-end P-STYLE registrata in commit docs successivo dopo attestazione «**QA P-STYLE PASS operatore**».
 - UX GIS / mappe offline / import-export / waypoint / tracce / poligoni
 - OPSEC, cache/tile/geocoding lato app

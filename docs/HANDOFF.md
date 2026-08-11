@@ -51,7 +51,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | --- | --- |
 | **GPT / ChatGPT** | Orchestratore — scrive prompt Cursor e prompt review Claude; **autore unico** delle istruzioni QA operatore (Regola D2: Dove/Azione/Risultato atteso) |
 | **Claude** | Consigliere upstream e verifier byte downstream; advisory; **no push**; **non** scrive prompt Cursor |
-| **Cursor** | Implementa, testa tecnicamente, committa, deploya; dopo deploy PASS dichiara `QA FINALE CHATGPT — PENDING`; riceve **solo** l’attestazione finale PASS/FAIL |
+| **Cursor** | Implementa, testa tecnicamente, committa, deploya; dopo deploy PASS esegue **Automated Browser QA** (D2bis); solo se PASS/N/A dichiara `QA FINALE CHATGPT — PENDING`; riceve **solo** l’attestazione finale PASS/FAIL operatore |
 
 ---
 
@@ -64,7 +64,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 - Nei blocchi non-bundle: `finito` **condizionale in coda** al prompt quando applicabile.
 - **Bundling di default (METHOD-BUNDLING-DEFAULT):** un bundle / un commit / una QA (≥5 item routine); gate solo a livello bundle; non frammentare micro-modifiche routine. Dettaglio: OM §4 Regola G.
 - **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** chiusura docs obbligatoria dopo QA PASS; cambia solo il trigger (automatico da attestazione). Dettaglio: OM §4 Regola H.
-- **QA ChatGPT a tre righe (Regola D2):** dopo deploy PASS Cursor **non** emette QA; gate `QA FINALE CHATGPT — PENDING`; ChatGPT emette un messaggio con passaggi `Dove:` / `Azione:` / `Risultato atteso:`; dubbi/FAIL con ChatGPT; in Cursor solo attestazione finale.
+- **QA ChatGPT a tre righe (Regola D2 + D2bis):** dopo deploy PASS → **Automated Browser QA** Cursor; solo se PASS/N/A → gate `QA FINALE CHATGPT — PENDING`; ChatGPT emette QA umana residua con `Dove:` / `Azione:` / `Risultato atteso:`; dubbi/FAIL con ChatGPT; in Cursor solo attestazione finale. Metodo: `AUTOMATED-BROWSER-QA-PREOP`.
 
 ---
 
@@ -118,12 +118,13 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | Tipo | Definizione |
 | --- | --- |
 | **PASS tecnico remoto** | Hash / HEAD / blob / deploy / byte / SHA / cmp verificati |
-| **PASS operatore** | Attestazione **persona** su app live |
+| **Automated Browser QA PASS** | Prove browser automatiche Cursor post-deploy (`AUTOMATED BROWSER QA <BLOCK-ID> PASS`) |
+| **PASS operatore** | Attestazione **persona** su app live (QA umana residua) |
 
-- Cursor **non inventa** PASS operatore.
-- **Fail-closed** senza attestazione esplicita.
-- Dopo deploy PASS: Cursor dichiara **`QA FINALE CHATGPT — PENDING`** (non emette istruzioni QA).
-- QA operativa: **ChatGPT**, struttura obbligatoria **Dove / Azione / Risultato atteso** (OM §4 Regola D2); checklist estesa solo OPSEC/rete/cache/storage/migrazioni/alto rischio, sempre da ChatGPT.
+- Cursor **non inventa** PASS operatore; **può** attestare Automated Browser QA solo se eseguita.
+- **Fail-closed** senza attestazione umana esplicita; su Automated Browser QA FAIL non aprire QA umana.
+- Dopo deploy PASS + Automated Browser QA PASS|N/A: Cursor dichiara **`QA FINALE CHATGPT — PENDING`** (non emette istruzioni QA umane).
+- QA operativa umana: **ChatGPT**, struttura obbligatoria **Dove / Azione / Risultato atteso** (OM §4 Regola D2); checklist estesa solo OPSEC/rete/cache/storage/migrazioni/alto rischio, sempre da ChatGPT.
 - Riga `QA <BLOCK-ID> PASS operatore` in Cursor → **auto-finito** Regola H.
 
 ---

@@ -167,14 +167,14 @@ Se un prompt operativo modifica **`coordinate_converter Claude.html`** (o altro 
 - **test browser manuale** se **realisticamente eseguibile** nell’ambiente (es. server locale già attivo, percorso noto);
 - **memoria orchestratore** secondo la rule *Autosync orchestratore* (nessun micro-commit “solo verifica” al posto dell’autosync previsto per l’intervento operativo).
 
-Se i **test browser** **non** sono stati eseguiti (o dopo **deploy tecnico PASS** in attesa di QA operatore), il **RIEPILOGO** deve:
+Se i **test browser automatici post-deploy** **non** sono stati eseguiti quando dovuti (o dopo **deploy tecnico PASS** in attesa di Automated Browser QA / QA operatore), il **RIEPILOGO** deve:
 
-1. **dichiarare chiaramente** che i test browser non sono stati eseguiti (o che la QA operatore è pending);
+1. **dichiarare chiaramente** lo stato (Automated Browser QA pending/FAIL/N/A, oppure QA operatore pending);
 2. riportare i **fatti tecnici** disponibili (deploy, runtime SHA, smoke, scope, repo);
 3. riportare l’**URL runtime** corretto se noto (`?v=<runtime-short-sha>`);
-4. dichiarare il gate **`QA FINALE CHATGPT — PENDING`**;
-5. **non** preparare passaggi QA; **non** produrre checklist o QA narrativa; **non** chiedere all’operatore di verificare azioni nell’app;
-6. attendere **solo** l’attestazione finale PASS/FAIL prodotta dopo la QA gestita da **ChatGPT** (OM §4 Regola D2).
+4. **solo dopo** Automated Browser QA PASS o N/A giustificato: dichiarare il gate **`QA FINALE CHATGPT — PENDING`**;
+5. **non** preparare passaggi QA umani; **non** produrre checklist o QA narrativa; **non** chiedere all’operatore di verificare azioni nell’app (salvo eventuale `login fatto` una tantum se richiesto dalla Browser QA);
+6. attendere **solo** l’attestazione finale PASS/FAIL prodotta dopo la QA gestita da **ChatGPT** (OM §4 Regola D2), dopo il gate Automated Browser QA.
 
 **Non** invitare l’utente a un **secondo prompt** di sola verifica se il **RIEPILOGO operativo** è già **completo** e le verifiche tecniche previste sono state eseguite o esplicitamente dichiarate non eseguibili con motivo.
 
@@ -233,25 +233,28 @@ Se gli output post-push mancano, sono incompleti o ambigui: **non** chiedere sub
 
 Questa regola riguarda **solo** il PASS tecnico remoto. **Non** sostituisce PASS operatore, browser QA o validazione runtime. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
-## QA evidence / PASS operatore
+## QA evidence / tre gate
 
-PASS tecnico remoto e PASS operatore sono **prove diverse**:
+PASS tecnico remoto, Automated Browser QA e PASS operatore sono **prove diverse**:
 
-- **PASS tecnico remoto** — commit/push verificati tramite hash e `git ls-remote`;
-- **PASS operatore** — comportamento runtime verificato da una persona o da prova runtime **esplicitamente attestata** nel flusso.
+- **PASS tecnico remoto** — commit/push/deploy verificati tramite hash e `git ls-remote`;
+- **Automated Browser QA** — prove browser automatiche Cursor post-deploy (`AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`, metodo `AUTOMATED-BROWSER-QA-PREOP` / OM §4 Regola D2bis);
+- **PASS operatore** — comportamento runtime verificato da una persona o prova runtime **esplicitamente attestata** (`QA <BLOCK-ID> PASS operatore`).
 
 **Regola di attestazione:**
 
 - PASS operatore registrabile **solo** con attestazione esplicita nel flusso: utente/operatore, oppure orchestratore che riporta tale attestazione.
-- Cursor **non** può scrivere «QA operatore PASS» di propria iniziativa: non ha occhi su runtime/browser.
-- Cursor può attestare solo prove tecniche realmente eseguite (es. `node --check`, git/hash, lint, verifiche automatiche).
-- PASS operatore **non** è inferibile da PASS tecnico remoto, `node --check`, diff pulito o commit pushato.
+- Cursor **non** può scrivere «QA operatore PASS» di propria iniziativa.
+- Cursor **può** attestare Automated Browser QA **solo** se ha eseguito realmente i casi automatici (o N/A giustificato).
+- Cursor può attestare altre prove tecniche realmente eseguite (es. `node --check`, git/hash, lint).
+- PASS operatore **non** è inferibile da PASS tecnico remoto, Automated Browser QA PASS, `node --check`, diff pulito o commit pushato.
 
 **Default fail-closed:**
 
 - Senza attestazione esplicita → «QA operatore non eseguita» o «QA operatore non attestata», **non** PASS.
 - Non trasformare QA non attestata in PASS.
 - Non trasformare QA attestata in «non eseguita»: se l’attestazione esiste nel flusso, registrarla correttamente.
+- Automated Browser QA FAIL → **non** dichiarare `QA FINALE CHATGPT — PENDING`.
 
 Se utente/orchestratore attesta QA manuale o runtime, RIEPILOGO e aggiornamenti docs devono registrare: **provenienza** (utente/operatore/orchestratore/test automatico); **data/contesto** blocco; **ambiente** essenziale se rilevante (localhost, file://, IP LAN, tailnet, browser, offline/OPSEC); **azione** verificata; **risultato** osservato; **limiti** o casi non testati.
 
@@ -259,23 +262,25 @@ Test **non deterministici** non valgono come evidenza di PASS. Descrivere esiti 
 
 Questa regola **non** sostituisce PASS tecnico remoto e **non** modifica la procedura `finito`. **Non** introduce `LAST_CURSOR_REPORT` né two-commit convention.
 
-## QA operatore post-deploy (Regola D2 — ChatGPT emette)
+## QA post-deploy (Regola D2bis + D2 — ChatGPT emette la QA umana)
 
-**Autorità viva:** OM §4 Regola D2 + [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md) (*Procedura canonica ChatGPT — tre righe per passaggio*). Questa sezione **sostituisce** la vecchia «QA minima narrativa» emessa da Cursor.
+**Autorità viva:** OM §4 Regola D2bis (`AUTOMATED-BROWSER-QA-PREOP`) + Regola D2 + [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md).
 
-Dopo **deploy tecnico PASS** (o quando la QA browser resta pending):
+Dopo **deploy tecnico PASS**:
 
-1. Cursor **si ferma**; riporta fatti tecnici + URL runtime (`?v=<runtime-short-sha>`, SHA **runtime** reale; mai docs/autosync) + gate **`QA FINALE CHATGPT — PENDING`**.
-2. Cursor **non** prepara e **non** emette istruzioni QA operatore (né passaggi manuali nell’app, né checklist, né QA narrativa).
-3. **ChatGPT** è l’**autore unico** della QA: **un unico messaggio**; ogni passaggio operativo contiene esattamente:
+1. Cursor esegue **Automated Browser QA PRE-OPERATORE** (browser automation / CDP scoped al blocco).
+2. Su **FAIL** / BLOCKED: riporta finding; **non** dichiara `QA FINALE CHATGPT — PENDING`; percorso FIX.
+3. Solo su **PASS** o **NOT APPLICABLE** giustificato: Cursor dichiara deploy PASS + URL runtime (`?v=<runtime-short-sha>`) + Automated Browser QA esito + gate **`QA FINALE CHATGPT — PENDING`** — poi **si ferma**.
+4. Cursor **non** prepara e **non** emette istruzioni QA operatore (né passaggi manuali nell’app, né checklist, né QA narrativa umana).
+5. **ChatGPT** è l’**autore unico** della QA umana residua: **un unico messaggio**; ogni passaggio operativo contiene esattamente:
    - `Dove:`
    - `Azione:`
    - `Risultato atteso:`
-4. Dubbi, istruzioni non comprese, comportamenti inattesi e FAIL circoscritti tornano a **ChatGPT** (non a Cursor).
-5. Nella sessione **Cursor** arriva **solo** l’attestazione finale: `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore e punto>`.
-6. **Bundle con coda pre-autorizzata (Regola H):** la riga PASS è il **trigger automatico** del workflow `finito` — Cursor **non** deve attendere un secondo comando «finito» né chiedere all'operatore di lanciarlo.
+6. Dubbi, istruzioni non comprese, comportamenti inattesi e FAIL circoscritti tornano a **ChatGPT** (non a Cursor).
+7. Nella sessione **Cursor** arriva **solo** l’attestazione finale: `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore e punto>`.
+8. **Bundle con coda pre-autorizzata (Regola H):** la riga PASS operatore è il **trigger automatico** del workflow `finito` — Cursor **non** deve attendere un secondo comando «finito» né chiedere all'operatore di lanciarlo.
 
-**Vincoli invariati:** fail-closed senza attestazione; PASS tecnico ≠ PASS operatore; QA in italiano (D1); etichette UI visibili; Cursor **non** attesta QA visiva; divieto di inventare PASS operatore.
+**Vincoli invariati:** fail-closed senza attestazione umana; PASS tecnico ≠ Automated Browser QA ≠ PASS operatore; QA in italiano (D1); etichette UI visibili; Cursor **non** attesta QA percettiva umana; divieto di inventare PASS operatore.
 
 **Checklist estesa** (caselle, NUCLEO STANDING, categorie strutturate): solo per OPSEC, rete/tile/proxy, cache/storage, migrazioni, architettura, diff multi-area, alto rischio o richiesta esplicita — **sempre emessa da ChatGPT**, mai da Cursor — vedi [`docs/QA-CHECKLIST.md`](../docs/QA-CHECKLIST.md).
 
