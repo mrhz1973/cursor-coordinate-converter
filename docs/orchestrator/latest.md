@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-12 — **`D-FLIGHT-B IMPLEMENTED / DEPLOYED — TECHNICAL PASS`** + **`AUTOMATED BROWSER QA D-FLIGHT-B PASS`**. Runtime tip **`4fc7ee3` / build 159** · `window.GOIDflight.normalize` · selfTest A+B 60/60. Deploy GIS-only CMP_PASS. Helper H2 invariato READY/849. **`QA FINALE CHATGPT — PENDING`**. Monolite nel commit task `4fc7ee3` (non in questo autosync). Inbox: [`docs/orchestrator/inbox/2026-08-12_0115_riepilogo_d-flight-b-implemented.md`](inbox/2026-08-12_0115_riepilogo_d-flight-b-implemented.md).
+2026-08-12 — **`D-FLIGHT-B` CLOSED / PASS end-to-end** (QA operatore PASS → auto-`finito` Regola H). Runtime tip **`4fc7ee3` / build 159** · `window.GOIDflight.normalize` · selfTest 60/60. Helper H2 invariato. WU-0013 **OPEN** — NEXT **`D-FLIGHT-C`**. Commit task docs: `3c29f20` (`docs: close D-FLIGHT-B after QA PASS`). Finding wheel latency: PREEXISTING/EXPECTED. Inbox: [`docs/orchestrator/inbox/2026-08-12_0124_riepilogo_finito-sessione.md`](inbox/2026-08-12_0124_riepilogo_finito-sessione.md).
