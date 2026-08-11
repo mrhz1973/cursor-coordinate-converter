@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import io
 import json
 import os
 import sys
@@ -11,10 +10,11 @@ import threading
 import time
 import unittest
 from datetime import datetime, timezone
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import Optional
 from unittest import mock
-from urllib.request import urlopen
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -28,6 +28,37 @@ EXAMPLE_PEM = ROOT / "csrf-public.pem.example"
 
 def _load_fixture(name: str) -> dict:
     return json.loads((FIXTURES / name).read_text(encoding="utf-8"))
+
+
+def _start_httpd(helper: h.DFlightHelper):
+    handler_cls = h.make_handler(helper)
+    httpd = h.HelperHTTPServer(("127.0.0.1", 0), handler_cls, helper)
+    thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    thread.start()
+    return httpd, thread
+
+
+def _stop_httpd(httpd, thread) -> None:
+    httpd.shutdown()
+    httpd.server_close()
+    thread.join(timeout=5)
+
+
+def _http_json(url: str, *, method: str = "GET", headers: Optional[dict] = None, data: bytes | None = None):
+    req = Request(url, data=data, headers=headers or {}, method=method)
+    try:
+        resp = urlopen(req, timeout=3)
+        try:
+            body = resp.read()
+            return resp.status, dict(resp.headers), body
+        finally:
+            resp.close()
+    except HTTPError as exc:
+        try:
+            body = exc.read()
+            return exc.code, dict(exc.headers or {}), body
+        finally:
+            exc.close()
 
 
 def _write_min_config(tmpdir: Path, *, host: str = "127.0.0.1", port: int = 0, allowlist=None) -> Path:
@@ -285,6 +316,90 @@ class TestCache(unittest.TestCase):
         result = self.store.rollback()
         self.assertEqual(result["canonical_sha256"], sha_first)
 
+    def test_read_current_meta_coherent(self):
+        fc = _load_fixture("valid_small.json")
+        raw = json.dumps(fc).encode("utf-8")
+        info = h.validate_feature_collection(fc, cfg=self.cfg, byte_count=len(raw))
+        sha = h.canonical_sha256(fc)
+        self.store.apply_refresh_result(fc=fc, raw=raw, sha=sha, info=info, unchanged=False)
+        # Stale meta on disk
+        self.store.current_meta_path.write_text(
+            json.dumps({"canonical_sha256": "deadbeef", "feature_count": 99}),
+            encoding="utf-8",
+        )
+        out_fc, out_meta, _ = self.store.read_current()
+        self.assertIsNotNone(out_fc)
+        self.assertEqual(out_meta["canonical_sha256"], sha)
+        self.assertEqual(out_meta["feature_count"], 2)
+
+    def test_startup_meta_mismatch_rebuild(self):
+        fc = _load_fixture("valid_small.json")
+        raw = json.dumps(fc).encode("utf-8")
+        self.store.current_path.write_bytes(raw)
+        self.store.current_meta_path.write_text(
+            json.dumps({"canonical_sha256": "mismatch", "feature_count": 1}),
+            encoding="utf-8",
+        )
+        out_fc, out_meta = self.store.startup_consistency()
+        self.assertEqual(out_meta["canonical_sha256"], h.canonical_sha256(fc))
+
+    def test_rollback_rebuilds_stale_previous_meta(self):
+        fc = _load_fixture("valid_small.json")
+        changed = _load_fixture("changed_small.json")
+        for obj in (fc, changed):
+            raw = json.dumps(obj).encode("utf-8")
+            info = h.validate_feature_collection(obj, cfg=self.cfg, byte_count=len(raw))
+            sha = h.canonical_sha256(obj)
+            self.store.apply_refresh_result(fc=obj, raw=raw, sha=sha, info=info, unchanged=False)
+        # Corrupt previous.meta while previous.json remains valid
+        self.store.previous_meta_path.write_text(
+            json.dumps({"canonical_sha256": "stale-prev", "feature_count": 0}),
+            encoding="utf-8",
+        )
+        result = self.store.rollback()
+        self.assertEqual(result["canonical_sha256"], h.canonical_sha256(fc))
+        cur_fc, cur_meta, _ = self.store.read_current()
+        self.assertEqual(cur_meta["canonical_sha256"], h.canonical_sha256(fc))
+        self.assertEqual(h.canonical_sha256(cur_fc), h.canonical_sha256(fc))
+
+    def test_changed_refresh_keeps_current_previous_coherent(self):
+        fc = _load_fixture("valid_small.json")
+        changed = _load_fixture("changed_small.json")
+        raw = json.dumps(fc).encode("utf-8")
+        info = h.validate_feature_collection(fc, cfg=self.cfg, byte_count=len(raw))
+        sha = h.canonical_sha256(fc)
+        self.store.apply_refresh_result(fc=fc, raw=raw, sha=sha, info=info, unchanged=False)
+        raw2 = json.dumps(changed).encode("utf-8")
+        info2 = h.validate_feature_collection(changed, cfg=self.cfg, byte_count=len(raw2))
+        sha2 = h.canonical_sha256(changed)
+        self.store.apply_refresh_result(fc=changed, raw=raw2, sha=sha2, info=info2, unchanged=False)
+        cur_fc, cur_meta, _ = self.store.read_current()
+        self.assertEqual(cur_meta["canonical_sha256"], sha2)
+        self.assertEqual(h.canonical_sha256(cur_fc), sha2)
+        prev = json.loads(self.store.previous_path.read_text(encoding="utf-8"))
+        prev_meta = json.loads(self.store.previous_meta_path.read_text(encoding="utf-8"))
+        self.assertEqual(prev_meta["canonical_sha256"], h.canonical_sha256(prev))
+        self.assertEqual(prev_meta["canonical_sha256"], sha)
+
+
+class TestContentType(unittest.TestCase):
+    def test_json_ok(self):
+        self.assertTrue(h.is_json_content_type("application/json"))
+
+    def test_json_charset_ok(self):
+        self.assertTrue(h.is_json_content_type("application/json; charset=utf-8"))
+
+    def test_geojson_ok(self):
+        self.assertTrue(h.is_json_content_type("application/geo+json"))
+
+    def test_missing_fail(self):
+        self.assertFalse(h.is_json_content_type(None))
+        self.assertFalse(h.is_json_content_type(""))
+
+    def test_html_fail(self):
+        self.assertFalse(h.is_json_content_type("text/html"))
+        self.assertFalse(h.is_json_content_type("image/png"))
+
 
 class FakeAuth(h.AuthClient):
     def __init__(self, cfg):
@@ -356,21 +471,79 @@ class TestHelperApi(unittest.TestCase):
         self.assertIn("username=username", body)
         self.assertNotIn("client_secret", body)
 
-    def test_refresh_busy_and_cooldown(self):
-        # busy
+    def test_refresh_busy_does_not_consume_cooldown(self):
+        state = self.helper.cache.load_state()
+        state["last_attempt_at"] = None
+        self.helper.cache.save_state(state)
         self.helper._refresh_lock.acquire()
         with self.assertRaises(h.HelperError) as cm:
             self.helper.refresh()
         self.assertEqual(cm.exception.category, "busy")
         self.helper._refresh_lock.release()
+        self.assertIsNone(self.helper.cache.load_state().get("last_attempt_at"))
+        self.assertEqual(self.helper.cooldown_remaining(), 0)
 
-        # seed successful refresh timestamp for cooldown
-        state = self.helper.cache.load_state()
-        state["last_refresh_at"] = h._utc_now_iso()
-        self.helper.cache.save_state(state)
+    def test_failed_refresh_triggers_cooldown(self):
+        with mock.patch.object(
+            h, "http_get_bytes_capped", side_effect=h.HelperError("network", "down")
+        ):
+            with self.assertRaises(h.HelperError) as cm:
+                self.helper.refresh()
+            self.assertEqual(cm.exception.category, "network")
+        self.assertGreater(self.helper.cooldown_remaining(), 0)
+        attempt = self.helper.cache.load_state()["last_attempt_at"]
+        with self.assertRaises(h.HelperError) as cm2:
+            self.helper.refresh()
+        self.assertEqual(cm2.exception.category, "cooldown")
+        self.assertEqual(self.helper.cache.load_state()["last_attempt_at"], attempt)
+
+    def test_successful_refresh_triggers_cooldown(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "application/json"}, self.valid_raw
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            self.helper.refresh()
+        self.assertGreater(self.helper.cooldown_remaining(), 0)
         with self.assertRaises(h.HelperError) as cm:
             self.helper.refresh()
         self.assertEqual(cm.exception.category, "cooldown")
+
+    def test_cooldown_reject_does_not_reset_timer(self):
+        state = self.helper.cache.load_state()
+        state["last_attempt_at"] = h._utc_now_iso()
+        self.helper.cache.save_state(state)
+        first_rem = self.helper.cooldown_remaining()
+        time.sleep(0.05)
+        with self.assertRaises(h.HelperError) as cm:
+            self.helper.refresh()
+        self.assertEqual(cm.exception.category, "cooldown")
+        # Timer not reset to full window
+        self.assertLessEqual(self.helper.cooldown_remaining(), first_rem)
+        self.assertEqual(self.helper.cache.load_state()["last_attempt_at"], state["last_attempt_at"])
+
+    def test_wfs_content_type_fail_closed(self):
+        cases = [
+            ({}, False),
+            ({"content-type": "text/html"}, False),
+            ({"content-type": "application/json"}, True),
+            ({"content-type": "application/json; charset=utf-8"}, True),
+        ]
+        for headers, ok in cases:
+            self.helper = h.DFlightHelper(self.cfg, auth_client=FakeAuth(self.cfg))
+            state = self.helper.cache.load_state()
+            state["last_attempt_at"] = None
+            self.helper.cache.save_state(state)
+
+            def fake_get(url, *, timeout, headers=None, byte_cap, _hdrs=headers):
+                return 200, _hdrs, self.valid_raw
+
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                if ok:
+                    self.helper.refresh()
+                else:
+                    with self.assertRaises(h.HelperError) as cm:
+                        self.helper.refresh()
+                    self.assertEqual(cm.exception.category, "validation")
 
     def test_refresh_mocked_wfs_and_dataset_headers(self):
         def fake_get(url, *, timeout, headers=None, byte_cap):
@@ -379,57 +552,76 @@ class TestHelperApi(unittest.TestCase):
             return 200, {"content-type": "application/json"}, self.valid_raw
 
         with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
-            # bypass cooldown
             state = self.helper.cache.load_state()
-            state["last_refresh_at"] = None
+            state["last_attempt_at"] = None
             self.helper.cache.save_state(state)
             result = self.helper.refresh()
         self.assertTrue(result["refreshed"])
         self.assertIn(result["status"], ("READY_CHANGED", "READY_UNCHANGED"))
 
-        handler_cls = h.make_handler(self.helper)
-        httpd = h.HelperHTTPServer(("127.0.0.1", 0), handler_cls, self.helper)
+        httpd, thread = _start_httpd(self.helper)
         port = httpd.server_address[1]
-        t = threading.Thread(target=httpd.serve_forever, daemon=True)
-        t.start()
         try:
-            with urlopen(f"http://127.0.0.1:{port}/status", timeout=3) as resp:
-                body = json.loads(resp.read().decode("utf-8"))
-            self.assertEqual(body["status"], h.STATUS_READY)
-            with urlopen(f"http://127.0.0.1:{port}/dataset", timeout=3) as resp:
-                self.assertEqual(resp.status, 200)
-                self.assertTrue(resp.headers.get("X-GOI-DFlight-Sha256"))
-                self.assertTrue(resp.headers.get("X-GOI-DFlight-Fetched-At"))
-                self.assertEqual(resp.headers.get("X-GOI-DFlight-Feature-Count"), "2")
-                data = json.loads(resp.read().decode("utf-8"))
-            self.assertEqual(data["type"], "FeatureCollection")
+            status, headers, body = _http_json(f"http://127.0.0.1:{port}/status")
+            self.assertEqual(status, 200)
+            self.assertEqual(json.loads(body.decode("utf-8"))["status"], h.STATUS_READY)
+            status, headers, body = _http_json(f"http://127.0.0.1:{port}/dataset")
+            self.assertEqual(status, 200)
+            self.assertTrue(headers.get("X-GOI-DFlight-Sha256"))
+            self.assertTrue(headers.get("X-GOI-DFlight-Fetched-At"))
+            self.assertEqual(headers.get("X-GOI-DFlight-Feature-Count"), "2")
+            self.assertEqual(json.loads(body.decode("utf-8"))["type"], "FeatureCollection")
 
-            # Origin unauthorized
-            from urllib.request import Request
-            req = Request(f"http://127.0.0.1:{port}/status", headers={"Origin": "http://evil.test"})
-            try:
-                urlopen(req, timeout=3)
-                self.fail("expected 403")
-            except Exception as exc:
-                self.assertIn("403", str(exc))
+            status, headers, body = _http_json(
+                f"http://127.0.0.1:{port}/status",
+                headers={"Origin": "http://evil.test"},
+            )
+            self.assertEqual(status, 403)
+            acao = headers.get("Access-Control-Allow-Origin")
+            self.assertTrue(acao is None or acao == "")
+            self.assertNotEqual(acao, "*")
         finally:
-            httpd.shutdown()
+            _stop_httpd(httpd, thread)
 
-    def test_origin_allowlisted(self):
+    def test_cors_actual_responses_allowlisted(self):
         cfg = h.load_config(_write_min_config(self.tmp, port=18012, allowlist=["http://gis.test"]))
         helper = h.DFlightHelper(cfg, auth_client=FakeAuth(cfg))
-        handler_cls = h.make_handler(helper)
-        httpd = h.HelperHTTPServer(("127.0.0.1", 0), handler_cls, helper)
+        info = h.validate_feature_collection(self.valid, cfg=cfg, byte_count=len(self.valid_raw))
+        sha = h.canonical_sha256(self.valid)
+        helper.cache.apply_refresh_result(
+            fc=self.valid, raw=self.valid_raw, sha=sha, info=info, unchanged=False
+        )
+        helper.current_fc = self.valid
+        helper.current_meta = helper.cache.read_current()[1]
+        helper._api_status = h.STATUS_READY
+
+        httpd, thread = _start_httpd(helper)
         port = httpd.server_address[1]
-        t = threading.Thread(target=httpd.serve_forever, daemon=True)
-        t.start()
+        origin = {"Origin": "http://gis.test"}
         try:
-            from urllib.request import Request
-            req = Request(f"http://127.0.0.1:{port}/status", headers={"Origin": "http://gis.test"})
-            with urlopen(req, timeout=3) as resp:
-                self.assertEqual(resp.status, 200)
+            for path in ("/status", "/dataset"):
+                status, headers, _body = _http_json(f"http://127.0.0.1:{port}{path}", headers=origin)
+                self.assertEqual(status, 200, path)
+                self.assertEqual(headers.get("Access-Control-Allow-Origin"), "http://gis.test")
+
+            def fake_get(url, *, timeout, headers=None, byte_cap):
+                return 200, {"content-type": "application/json"}, self.valid_raw
+
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                state = helper.cache.load_state()
+                state["last_attempt_at"] = None
+                helper.cache.save_state(state)
+                status, headers, body = _http_json(
+                    f"http://127.0.0.1:{port}/refresh",
+                    method="POST",
+                    headers={**origin, "Content-Type": "application/json"},
+                    data=b"{}",
+                )
+            self.assertEqual(status, 200)
+            self.assertEqual(headers.get("Access-Control-Allow-Origin"), "http://gis.test")
+            self.assertTrue(json.loads(body.decode("utf-8")).get("refreshed"))
         finally:
-            httpd.shutdown()
+            _stop_httpd(httpd, thread)
 
     def test_wfs_401_retries_once(self):
         calls = {"n": 0}
@@ -442,7 +634,7 @@ class TestHelperApi(unittest.TestCase):
 
         with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
             state = self.helper.cache.load_state()
-            state["last_refresh_at"] = None
+            state["last_attempt_at"] = None
             self.helper.cache.save_state(state)
             self.helper.refresh()
         self.assertEqual(calls["n"], 2)

@@ -31,7 +31,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-HELPER_VERSION = "0.1.0"
+HELPER_VERSION = "0.1.1"
 SCHEMA_VERSION = 1
 ACCESS_SAFETY_MARGIN_SEC = 60
 DEFAULT_END_NFZ = "9999-12-31T00:00"
@@ -666,6 +666,7 @@ class CacheStore:
         self.previous_path = state_dir / "previous.json"
         self.previous_meta_path = state_dir / "previous.meta.json"
         self.state_path = state_dir / "state.json"
+        self._lock = threading.RLock()
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.tmp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -675,20 +676,30 @@ class CacheStore:
                 "last_check_at": None,
                 "last_attempt_at": None,
                 "last_error_category": None,
-                "last_refresh_at": None,
             }
         try:
-            return json.loads(self.state_path.read_text(encoding="utf-8"))
+            data = json.loads(self.state_path.read_text(encoding="utf-8"))
+            if not isinstance(data, dict):
+                raise json.JSONDecodeError("not object", "", 0)
+            return {
+                "last_check_at": data.get("last_check_at"),
+                "last_attempt_at": data.get("last_attempt_at"),
+                "last_error_category": data.get("last_error_category"),
+            }
         except (OSError, json.JSONDecodeError):
             return {
                 "last_check_at": None,
                 "last_attempt_at": None,
                 "last_error_category": None,
-                "last_refresh_at": None,
             }
 
     def save_state(self, state: dict[str, Any]) -> None:
-        _atomic_write_json(self.state_path, state)
+        clean = {
+            "last_check_at": state.get("last_check_at"),
+            "last_attempt_at": state.get("last_attempt_at"),
+            "last_error_category": state.get("last_error_category"),
+        }
+        _atomic_write_json(self.state_path, clean)
 
     def _read_json_file(self, path: Path) -> Optional[dict[str, Any]]:
         if not path.is_file():
@@ -717,55 +728,75 @@ class CacheStore:
             "source_update_sequence": info.get("source_update_sequence"),
         }
 
+    def _verified_meta_for_dataset(
+        self,
+        fc: dict[str, Any],
+        raw: bytes,
+        meta_path: Path,
+        *,
+        persist: bool = True,
+    ) -> dict[str, Any]:
+        """Return meta matching dataset hash; rebuild if missing/mismatch."""
+        sha = canonical_sha256(fc)
+        meta = self._read_json_file(meta_path)
+        if meta and meta.get("canonical_sha256") == sha:
+            return meta
+        meta = self.rebuild_meta_from_current(fc, len(raw))
+        if persist:
+            _atomic_write_json(meta_path, meta)
+            log.info("event=meta_rebuilt path=%s sha_prefix=%s", meta_path.name, sha[:12])
+        return meta
+
     def startup_consistency(self) -> tuple[Optional[dict[str, Any]], Optional[dict[str, Any]]]:
         """Return (current_fc, current_meta) after recovery checks. No network."""
-        raw = None
-        if self.current_path.is_file():
-            try:
-                raw_bytes = self.current_path.read_bytes()
-                fc = json.loads(raw_bytes.decode("utf-8"))
-                if isinstance(fc, dict) and fc.get("type") == "FeatureCollection":
-                    validate_feature_collection(fc, cfg=self.cfg, byte_count=len(raw_bytes))
-                    meta = self._read_json_file(self.current_meta_path)
-                    sha = canonical_sha256(fc)
-                    if not meta or meta.get("canonical_sha256") != sha:
-                        meta = self.rebuild_meta_from_current(fc, len(raw_bytes))
-                        _atomic_write_json(self.current_meta_path, meta)
-                        log.info("event=startup_meta_rebuilt sha_prefix=%s", sha[:12])
-                    return fc, meta
-            except (OSError, json.JSONDecodeError, HelperError, UnicodeDecodeError) as exc:
-                log.info("event=startup_current_invalid category=%s", getattr(exc, "category", "parse"))
-                # Prefer previous if valid
-                prev = self._read_json_file(self.previous_path)
-                if prev is not None:
-                    try:
-                        prev_bytes = self.previous_path.read_bytes()
-                        validate_feature_collection(prev, cfg=self.cfg, byte_count=len(prev_bytes))
-                        meta = self._read_json_file(self.previous_meta_path) or self.rebuild_meta_from_current(
-                            prev, len(prev_bytes)
+        with self._lock:
+            if self.current_path.is_file():
+                try:
+                    raw_bytes = self.current_path.read_bytes()
+                    fc = json.loads(raw_bytes.decode("utf-8"))
+                    if isinstance(fc, dict) and fc.get("type") == "FeatureCollection":
+                        validate_feature_collection(fc, cfg=self.cfg, byte_count=len(raw_bytes))
+                        meta = self._verified_meta_for_dataset(
+                            fc, raw_bytes, self.current_meta_path, persist=True
                         )
-                        # Promote previous to current without network
-                        _atomic_write_bytes(self.current_path, prev_bytes)
-                        _atomic_write_json(self.current_meta_path, meta)
-                        log.info("event=startup_recovered_from_previous")
-                        return prev, meta
-                    except (OSError, HelperError):
-                        pass
-                return None, None
-        return None, None
+                        return fc, meta
+                except (OSError, json.JSONDecodeError, HelperError, UnicodeDecodeError) as exc:
+                    log.info(
+                        "event=startup_current_invalid category=%s",
+                        getattr(exc, "category", "parse"),
+                    )
+                    if self.previous_path.is_file():
+                        try:
+                            prev_bytes = self.previous_path.read_bytes()
+                            prev = json.loads(prev_bytes.decode("utf-8"))
+                            if not isinstance(prev, dict):
+                                raise HelperError("parse", "previous invalid")
+                            validate_feature_collection(prev, cfg=self.cfg, byte_count=len(prev_bytes))
+                            meta = self._verified_meta_for_dataset(
+                                prev, prev_bytes, self.previous_meta_path, persist=True
+                            )
+                            _atomic_write_bytes(self.current_path, prev_bytes)
+                            _atomic_write_json(self.current_meta_path, meta)
+                            log.info("event=startup_recovered_from_previous")
+                            return prev, meta
+                        except (OSError, HelperError, json.JSONDecodeError, UnicodeDecodeError):
+                            pass
+                    return None, None
+            return None, None
 
     def read_current(self) -> tuple[Optional[dict[str, Any]], Optional[dict[str, Any]], Optional[bytes]]:
-        if not self.current_path.is_file():
-            return None, None, None
-        try:
-            raw = self.current_path.read_bytes()
-            fc = json.loads(raw.decode("utf-8"))
-            meta = self._read_json_file(self.current_meta_path)
-            if not isinstance(fc, dict):
+        with self._lock:
+            if not self.current_path.is_file():
                 return None, None, None
-            return fc, meta, raw
-        except (OSError, json.JSONDecodeError, UnicodeDecodeError):
-            return None, None, None
+            try:
+                raw = self.current_path.read_bytes()
+                fc = json.loads(raw.decode("utf-8"))
+                if not isinstance(fc, dict):
+                    return None, None, None
+                meta = self._verified_meta_for_dataset(fc, raw, self.current_meta_path, persist=True)
+                return fc, meta, raw
+            except (OSError, json.JSONDecodeError, UnicodeDecodeError, HelperError):
+                return None, None, None
 
     def apply_refresh_result(
         self,
@@ -776,86 +807,97 @@ class CacheStore:
         info: dict[str, Any],
         unchanged: bool,
     ) -> dict[str, Any]:
-        state = self.load_state()
-        now = _utc_now_iso()
-        state["last_check_at"] = now
-        state["last_attempt_at"] = now
-        state["last_error_category"] = None
-        state["last_refresh_at"] = now
+        with self._lock:
+            state = self.load_state()
+            now = _utc_now_iso()
+            # last_attempt_at already stamped when the upstream attempt was accepted
+            state["last_check_at"] = now
+            state["last_error_category"] = None
 
-        if unchanged:
-            meta = self._read_json_file(self.current_meta_path) or {}
-            self.save_state(state)
-            return {
-                "result": "READY_UNCHANGED",
-                "canonical_sha256": meta.get("canonical_sha256") or sha,
-                "meta": meta,
+            if unchanged:
+                cur_fc, cur_meta, cur_raw = self.read_current()
+                meta = cur_meta or {}
+                if cur_fc is not None and cur_raw is not None and (
+                    not meta or meta.get("canonical_sha256") != sha
+                ):
+                    meta = self._verified_meta_for_dataset(
+                        cur_fc, cur_raw, self.current_meta_path, persist=True
+                    )
+                self.save_state(state)
+                return {
+                    "result": "READY_UNCHANGED",
+                    "canonical_sha256": meta.get("canonical_sha256") or sha,
+                    "meta": meta,
+                }
+
+            # CHANGED — crash-safe sequence (current stays until new tmp ready + previous preserved)
+            new_tmp = self.tmp_dir / f"new-{os.getpid()}-{secrets.token_hex(4)}.json"
+            _write_bytes_fsync(new_tmp, raw)
+
+            cur_fc, cur_meta, cur_raw = self.read_current()
+            if cur_raw is not None and cur_fc is not None:
+                prev_tmp = self.tmp_dir / f"prev-{os.getpid()}-{secrets.token_hex(4)}.json"
+                prev_meta_tmp = self.tmp_dir / f"prev-meta-{os.getpid()}-{secrets.token_hex(4)}.json"
+                _write_bytes_fsync(prev_tmp, cur_raw)
+                prev_meta_obj = cur_meta or self.rebuild_meta_from_current(cur_fc, len(cur_raw))
+                if prev_meta_obj.get("canonical_sha256") != canonical_sha256(cur_fc):
+                    prev_meta_obj = self.rebuild_meta_from_current(cur_fc, len(cur_raw))
+                _atomic_write_json(prev_meta_tmp, prev_meta_obj)
+                os.replace(prev_tmp, self.previous_path)
+                os.replace(prev_meta_tmp, self.previous_meta_path)
+
+            new_meta = {
+                "schema_version": SCHEMA_VERSION,
+                "helper_version": HELPER_VERSION,
+                "source_typename": self.cfg["dflight"]["typename"],
+                "source_srs": self.cfg["dflight"]["srs_name"],
+                "fetched_at": now,
+                "last_change_at": now,
+                "canonical_sha256": sha,
+                "byte_count": len(raw),
+                "feature_count": info["feature_count"],
+                "source_time_stamp": info.get("source_time_stamp"),
+                "source_update_sequence": info.get("source_update_sequence"),
             }
-
-        # CHANGED — crash-safe sequence
-        new_tmp = self.tmp_dir / f"new-{os.getpid()}-{secrets.token_hex(4)}.json"
-        _write_bytes_fsync(new_tmp, raw)
-
-        cur_fc, cur_meta, cur_raw = self.read_current()
-        if cur_raw is not None:
-            prev_tmp = self.tmp_dir / f"prev-{os.getpid()}-{secrets.token_hex(4)}.json"
-            prev_meta_tmp = self.tmp_dir / f"prev-meta-{os.getpid()}-{secrets.token_hex(4)}.json"
-            _write_bytes_fsync(prev_tmp, cur_raw)
-            prev_meta_obj = cur_meta or self.rebuild_meta_from_current(cur_fc or {}, len(cur_raw))
-            _atomic_write_json(prev_meta_tmp, prev_meta_obj)
-            os.replace(prev_tmp, self.previous_path)
-            os.replace(prev_meta_tmp, self.previous_meta_path)
-
-        new_meta = {
-            "schema_version": SCHEMA_VERSION,
-            "helper_version": HELPER_VERSION,
-            "source_typename": self.cfg["dflight"]["typename"],
-            "source_srs": self.cfg["dflight"]["srs_name"],
-            "fetched_at": now,
-            "last_change_at": now,
-            "canonical_sha256": sha,
-            "byte_count": len(raw),
-            "feature_count": info["feature_count"],
-            "source_time_stamp": info.get("source_time_stamp"),
-            "source_update_sequence": info.get("source_update_sequence"),
-        }
-        os.replace(new_tmp, self.current_path)
-        _atomic_write_json(self.current_meta_path, new_meta)
-        self.save_state(state)
-        return {"result": "READY_CHANGED", "canonical_sha256": sha, "meta": new_meta}
+            os.replace(new_tmp, self.current_path)
+            _atomic_write_json(self.current_meta_path, new_meta)
+            self.save_state(state)
+            return {"result": "READY_CHANGED", "canonical_sha256": sha, "meta": new_meta}
 
     def rollback(self) -> dict[str, Any]:
-        if not self.previous_path.is_file():
-            raise HelperError("rollback", "previous missing")
-        prev_raw = self.previous_path.read_bytes()
-        prev_fc = json.loads(prev_raw.decode("utf-8"))
-        validate_feature_collection(prev_fc, cfg=self.cfg, byte_count=len(prev_raw))
-        prev_meta = self._read_json_file(self.previous_meta_path) or self.rebuild_meta_from_current(
-            prev_fc, len(prev_raw)
-        )
+        with self._lock:
+            if not self.previous_path.is_file():
+                raise HelperError("rollback", "previous missing")
+            prev_raw = self.previous_path.read_bytes()
+            prev_fc = json.loads(prev_raw.decode("utf-8"))
+            validate_feature_collection(prev_fc, cfg=self.cfg, byte_count=len(prev_raw))
+            prev_meta = self._verified_meta_for_dataset(
+                prev_fc, prev_raw, self.previous_meta_path, persist=True
+            )
 
-        cur_fc, cur_meta, cur_raw = self.read_current()
-        # Preserve current into previous after validating swap targets
-        new_current_tmp = self.tmp_dir / f"rb-cur-{os.getpid()}-{secrets.token_hex(4)}.json"
-        _write_bytes_fsync(new_current_tmp, prev_raw)
+            cur_fc, cur_meta, cur_raw = self.read_current()
+            new_current_tmp = self.tmp_dir / f"rb-cur-{os.getpid()}-{secrets.token_hex(4)}.json"
+            _write_bytes_fsync(new_current_tmp, prev_raw)
 
-        if cur_raw is not None:
-            new_prev_tmp = self.tmp_dir / f"rb-prev-{os.getpid()}-{secrets.token_hex(4)}.json"
-            _write_bytes_fsync(new_prev_tmp, cur_raw)
-            os.replace(new_prev_tmp, self.previous_path)
-            if cur_meta:
-                _atomic_write_json(self.previous_meta_path, cur_meta)
+            if cur_raw is not None and cur_fc is not None:
+                new_prev_tmp = self.tmp_dir / f"rb-prev-{os.getpid()}-{secrets.token_hex(4)}.json"
+                _write_bytes_fsync(new_prev_tmp, cur_raw)
+                os.replace(new_prev_tmp, self.previous_path)
+                cur_meta_ok = cur_meta or self.rebuild_meta_from_current(cur_fc, len(cur_raw))
+                if cur_meta_ok.get("canonical_sha256") != canonical_sha256(cur_fc):
+                    cur_meta_ok = self.rebuild_meta_from_current(cur_fc, len(cur_raw))
+                _atomic_write_json(self.previous_meta_path, cur_meta_ok)
 
-        os.replace(new_current_tmp, self.current_path)
-        now = _utc_now_iso()
-        prev_meta = dict(prev_meta)
-        prev_meta["last_change_at"] = now
-        _atomic_write_json(self.current_meta_path, prev_meta)
-        state = self.load_state()
-        state["last_check_at"] = now
-        state["last_error_category"] = None
-        self.save_state(state)
-        return {"status": "ok", "canonical_sha256": prev_meta.get("canonical_sha256")}
+            os.replace(new_current_tmp, self.current_path)
+            now = _utc_now_iso()
+            prev_meta = dict(prev_meta)
+            prev_meta["last_change_at"] = now
+            _atomic_write_json(self.current_meta_path, prev_meta)
+            state = self.load_state()
+            state["last_check_at"] = now
+            state["last_error_category"] = None
+            self.save_state(state)
+            return {"status": "ok", "canonical_sha256": prev_meta.get("canonical_sha256")}
 
 
 # ---------------------------------------------------------------------------
@@ -895,11 +937,10 @@ class DFlightHelper:
 
     def cooldown_remaining(self) -> int:
         state = self.cache.load_state()
-        last = state.get("last_refresh_at")
+        last = state.get("last_attempt_at")
         if not last:
             return 0
         try:
-            # Accept Z iso
             ts = datetime.fromisoformat(str(last).replace("Z", "+00:00")).timestamp()
         except ValueError:
             return 0
@@ -946,9 +987,9 @@ class DFlightHelper:
             raise HelperError("auth", "WFS 401")
         if status != 200:
             raise HelperError("http", f"WFS HTTP {status}")
-        ctype = (headers.get("content-type") or "").split(";")[0].strip().lower()
-        if ctype and "json" not in ctype:
-            raise HelperError("validation", f"unexpected content-type {ctype}")
+        ctype = headers.get("content-type")
+        if not is_json_content_type(ctype):
+            raise HelperError("validation", "WFS content-type missing or not JSON-compatible")
         try:
             fc = json.loads(raw.decode("utf-8"))
         except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -967,6 +1008,11 @@ class DFlightHelper:
             rem = self.cooldown_remaining()
             if rem > 0:
                 raise HelperError("cooldown", f"retry_after_sec={rem}")
+
+            # Accepted upstream attempt: stamp cooldown clock before any D-Flight contact.
+            state = self.cache.load_state()
+            state["last_attempt_at"] = _utc_now_iso()
+            self.cache.save_state(state)
 
             viewparams = build_viewparams()
             token = self.auth.ensure_access_token()
@@ -993,7 +1039,6 @@ class DFlightHelper:
                 self.current_fc = fc
                 self.current_meta = result["meta"]
             else:
-                # keep current; ensure meta present
                 if self.current_meta is None:
                     self.current_meta = result.get("meta")
             self._last_error_category = None
@@ -1012,7 +1057,7 @@ class DFlightHelper:
             }
         except HelperError as exc:
             if exc.category in ("busy", "cooldown"):
-                # Restore prior status; these are not upstream failures.
+                # Rejected before accepted attempt — do not consume cooldown slot.
                 self._api_status = prev_status if prev_status != STATUS_CHECKING else (
                     STATUS_READY if self.current_fc is not None else STATUS_EMPTY
                 )
@@ -1020,7 +1065,7 @@ class DFlightHelper:
                 raise
             self._last_error_category = exc.category
             state = self.cache.load_state()
-            state["last_attempt_at"] = _utc_now_iso()
+            # Preserve last_attempt_at (already stamped); record failure category only.
             state["last_error_category"] = exc.category
             self.cache.save_state(state)
             if self.current_fc is not None:
@@ -1035,13 +1080,37 @@ class DFlightHelper:
 
 
 # ---------------------------------------------------------------------------
-# Origin policy
+# Origin / CORS policy
 # ---------------------------------------------------------------------------
 
 def origin_allowed(origin: Optional[str], allowlist: list[str]) -> bool:
     if origin is None or origin == "":
         return True
     return origin in allowlist
+
+
+def cors_response_headers(origin: Optional[str], allowlist: list[str]) -> dict[str, str]:
+    """CORS headers for actual responses. Never '*'. No credentials."""
+    if not origin:
+        return {}
+    if origin in allowlist:
+        return {"Access-Control-Allow-Origin": origin}
+    return {}
+
+
+def is_json_content_type(content_type: Optional[str]) -> bool:
+    """Fail-closed: missing header is invalid. Accept JSON / GeoJSON / +json."""
+    if content_type is None:
+        return False
+    raw = str(content_type).strip()
+    if not raw:
+        return False
+    main = raw.split(";", 1)[0].strip().lower()
+    if main in ("application/json", "application/geo+json"):
+        return True
+    if main.startswith("application/") and main.endswith("+json"):
+        return True
+    return False
 
 
 # ---------------------------------------------------------------------------
@@ -1071,14 +1140,21 @@ def make_handler(helper: DFlightHelper):
                 return b""
             return self.rfile.read(length)
 
+        def _cors_headers(self) -> dict[str, str]:
+            return cors_response_headers(
+                self.headers.get("Origin"),
+                helper.cfg["server"]["origin_allowlist"],
+            )
+
         def _send_json(self, status: int, obj: dict[str, Any], extra_headers: Optional[dict[str, str]] = None) -> None:
             raw = json.dumps(obj, ensure_ascii=False, allow_nan=False).encode("utf-8")
             self.send_response(status)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Content-Length", str(len(raw)))
-            if extra_headers:
-                for k, v in extra_headers.items():
-                    self.send_header(k, v)
+            headers = dict(extra_headers or {})
+            headers.update(self._cors_headers())
+            for k, v in headers.items():
+                self.send_header(k, v)
             self.end_headers()
             self.wfile.write(raw)
 
@@ -1087,6 +1163,7 @@ def make_handler(helper: DFlightHelper):
             allow = helper.cfg["server"]["origin_allowlist"]
             if origin_allowed(origin, allow):
                 return True
+            # Forbidden: no ACAO wildcard
             self._send_json(403, {"error": "origin_forbidden", "error_category": "origin"})
             return False
 
@@ -1128,6 +1205,7 @@ def make_handler(helper: DFlightHelper):
                     "X-GOI-DFlight-Fetched-At": str((meta or {}).get("fetched_at") or ""),
                     "X-GOI-DFlight-Feature-Count": str((meta or {}).get("feature_count") or ""),
                 }
+                headers.update(self._cors_headers())
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self.send_header("Content-Length", str(len(raw)))
@@ -1151,10 +1229,6 @@ def make_handler(helper: DFlightHelper):
                 return
             try:
                 result = helper.refresh()
-                # Start cooldown clock
-                state = helper.cache.load_state()
-                state["last_refresh_at"] = _utc_now_iso()
-                helper.cache.save_state(state)
                 self._send_json(200, result)
             except HelperError as exc:
                 if exc.category == "busy":

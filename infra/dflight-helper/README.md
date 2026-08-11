@@ -56,12 +56,13 @@ Omitting viewparams returns a much larger non-operational set and is rejected by
 
 - `GET /status` — no secrets; dataset availability + hashes/timestamps
 - `GET /dataset` — current FeatureCollection + `X-GOI-DFlight-*` headers; `503` if empty
-- `POST /refresh` — single-flight + 300s cooldown; preserves current on failure
+- `POST /refresh` — single-flight + 300s cooldown on **accepted** upstream attempts (success **or** failure); busy/cooldown rejects do not consume a slot; `last_attempt_at` stamped after cooldown check and before D-Flight contact
 
 ### Origin policy
 
-- Missing `Origin`: allowed (CLI/tailnet)
+- Missing `Origin`: allowed (CLI/tailnet); no CORS headers required
 - Present `Origin`: exact match against `server.origin_allowlist` only (default `[]` → browser Origins denied until D-FLIGHT-F)
+- Allowlisted Origin: actual GET/POST responses include `Access-Control-Allow-Origin: <exact>` (never `*`)
 
 ## Cache / crash consistency
 
