@@ -9,6 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**. RUNTIME **`7f41c8e82330c943a569d5af8a1a60e63a489f05`** (`fix(waypoint): clear stale coordinate conversion preview`; build **155**). Micro-fix: clear Conversione/Copia/`data-copy` on `#wpFieldCoord` input + on invalid/empty refresh. Core geodetico **byte-invariato** vs `79155a3`. Deploy **NOT EXECUTED**. Inbox: `docs/orchestrator/inbox/2026-08-11_0938_waypoint_editor_center_a_fix3_fix1.md`.
-
-2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX3** parent `79155a3` (ancestor; review finding stale preview only).
+2026-08-11 — **finito** post **QA WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1 PASS operatore**. Catena **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED / PASS end-to-end**. Runtime live **`7f41c8e`** / build **155**. Commit task chiusura docs **`b9740bcf7eccf9fc0a6d34d7a504f48bd073b6b1`**. Core UTM/MGRS (FIX3) nel runtime finale. Prossimo: provider WU-0012 / **MAP-ZOOM-FOCUS-ANCHOR-A** / **MODAL-OPEN-TOP-ALIGN-A**. Inbox: `docs/orchestrator/inbox/2026-08-11_1007_riepilogo_finito-sessione.md`.
