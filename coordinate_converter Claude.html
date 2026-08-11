@@ -7610,14 +7610,29 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   background: var(--panel2);
 }
 #waypointModalPanel .wp-editor-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wp-space-2);
+  flex-wrap: wrap;
   margin-bottom: var(--wp-space-3);
 }
 #waypointModalPanel .wp-editor-head strong{
+  flex: 1 1 8rem;
+  min-width: 0;
   font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.3;
   color: var(--text-primary);
+}
+#waypointModalPanel .wp-editor-head-actions{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
 }
 #waypointModalPanel #wpEditorCancel{
   background: transparent;
@@ -8774,8 +8789,9 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
   background:var(--panel2); padding:12px 14px; margin:8px 0 14px;
   box-shadow:var(--shadow-inset-card, none);
 }
-.wp-editor-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
-.wp-editor-head strong{ font-size:.98rem; }
+.wp-editor-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+.wp-editor-head strong{ flex:1 1 8rem; min-width:0; font-size:.98rem; }
+.wp-editor-head-actions{ display:flex; align-items:center; justify-content:flex-end; gap:8px; flex:0 1 auto; flex-wrap:wrap; }
 .wp-editor-grid{
   display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
   gap:10px 12px;
@@ -12814,7 +12830,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <div id="waypointEditor" class="wp-editor" hidden aria-live="polite">
           <div class="wp-editor-head">
             <strong id="wpEditorTitle" data-i18n="waypointModal.editor.newTitle">Nuovo waypoint</strong>
-            <button type="button" id="wpEditorCancel" class="btn btn-sm" data-i18n="waypointModal.editor.cancel">Annulla</button>
+            <div class="wp-editor-head-actions" role="group">
+              <button type="button" id="wpEditorCenter" class="btn btn-sm" disabled data-i18n="common.center" data-i18n-tip="tip.waypointModal.editor.center" data-i18n-aria="tip.waypointModal.editor.center" data-tip="Centra la mappa su queste coordinate" aria-label="Centra la mappa su queste coordinate">Centra</button>
+              <button type="button" id="wpEditorSave" class="btn btn-sm btn-primary" data-i18n="waypointModal.editor.save">Salva</button>
+              <button type="button" id="wpEditorCancel" class="btn btn-sm" data-i18n="waypointModal.editor.cancel">Annulla</button>
+            </div>
           </div>
           <p id="wpEditorNewHint" class="hint wp-editor-new-hint" hidden data-i18n="waypointModal.editor.newFlowHint"></p>
           <div class="wp-editor-grid">
@@ -12864,10 +12884,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
               <textarea id="wpFieldNotes" maxlength="500" rows="2" data-i18n-ph="waypointModal.editor.notesPh" placeholder="Note (max 500 caratteri)"></textarea>
             </label>
           </div>
-          <div class="wp-editor-actions">
+          <div class="wp-editor-actions" id="wpEditorActionsRow" hidden>
             <button type="button" id="wpEditorDelete" class="btn btn-sm btn-danger" hidden data-i18n="waypointModal.editor.delete">Elimina</button>
-            <button type="button" id="wpEditorCenter" class="btn btn-sm" disabled data-i18n="common.center" data-i18n-tip="tip.waypointModal.editor.center" data-i18n-aria="tip.waypointModal.editor.center" data-tip="Centra la mappa su queste coordinate" aria-label="Centra la mappa su queste coordinate">Centra</button>
-            <button type="button" id="wpEditorSave" class="btn btn-sm btn-primary" data-i18n="waypointModal.editor.save">Salva</button>
           </div>
         </div>
         <div class="wp-modal-table-wrap" id="wp-listWrap">
@@ -22921,10 +22939,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A";
-const APP_BUILD_DETAIL = "center map from current waypoint editor coordinates";
+const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX1";
+const APP_BUILD_DETAIL = "align new waypoint center save and cancel actions with title";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 151;
+const APP_BUILD_NUM = 152;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -77478,6 +77496,12 @@ function openWaypointEditor(opts){
   if (colorEl) colorEl.value = sanitizeTrackColor(d.color);
   if (notesEl) notesEl.value = d.notes || "";
   if (delBtn) delBtn.hidden = !id;
+  const actionsRow = document.getElementById("wpEditorActionsRow");
+  if (actionsRow) actionsRow.hidden = !id;
+  try {
+    editor.classList.toggle("wp-editor--new", !id);
+    editor.classList.toggle("wp-editor--edit", !!id);
+  } catch(_){}
 
   const hint = document.getElementById("wpEditorNewHint");
   if (hint){
