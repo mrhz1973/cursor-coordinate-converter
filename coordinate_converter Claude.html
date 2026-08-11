@@ -22939,10 +22939,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX1";
-const APP_BUILD_DETAIL = "align new waypoint center save and cancel actions with title";
+const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX2";
+const APP_BUILD_DETAIL = "preserve raw waypoint coordinate text and center on Enter";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 152;
+const APP_BUILD_NUM = 153;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -50855,6 +50855,7 @@ function syncWaypointListCoordFormatSelect(){
   const v = normalizeWaypointListCoordFormat(state._waypointListCoordFormat);
   try { sel.value = v; } catch(_){}
 }
+/** Prefill-only helper: formats draft lat/lon into #wpFieldCoord (open/init). Never call after operator edits. */
 function writeWaypointEditorCoordFieldFromDraft(){
   const coordEl = document.getElementById("wpFieldCoord");
   const d = state.waypointEditorDraft;
@@ -50864,6 +50865,27 @@ function writeWaypointEditorCoordFieldFromDraft(){
   if (s && s !== "—") coordEl.value = s;
   try { syncWaypointEditorCenterBtn(); } catch(_){}
 }
+/** Update conversion preview under #wpFieldCoord from current raw text. No field rewrite. No autocenter. */
+function refreshWaypointEditorCoordConversionPreview(){
+  if (!state.waypointEditorDraft) return;
+  const el = document.getElementById("wpFieldCoord");
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (!el) return;
+  const r = parseWaypointEditorCoordText(el.value);
+  if (!r.ok) return;
+  state.waypointEditorDraft.lat = r.lat;
+  state.waypointEditorDraft.lon = r.lon;
+  if (fb){
+    const formatted = formatWaypointListCoordinates(r.lat, r.lon);
+    fb.textContent = "Conversione: " + (formatted && formatted !== "—" ? formatted : (r.lat.toFixed(5) + ", " + r.lon.toFixed(5)));
+    fb.classList.remove("is-err");
+    fb.classList.add("is-ok");
+  }
+  if (!state.waypointEditorDraft.id){
+    try { syncWaypointDraftPinFromEditor(); } catch(_){}
+  }
+  try { syncWaypointEditorCenterBtn(); } catch(_){}
+}
 function wireWaypointListCoordFormatOnce(){
   const sel = document.getElementById("waypointListCoordFormat");
   if (!sel || sel._waypointListCoordFormatBound) return;
@@ -50871,7 +50893,7 @@ function wireWaypointListCoordFormatOnce(){
   sel.addEventListener("change", (ev) => {
     state._waypointListCoordFormat = normalizeWaypointListCoordFormat(ev.target && ev.target.value);
     syncWaypointListCoordFormatSelect();
-    try { writeWaypointEditorCoordFieldFromDraft(); } catch(_){}
+    try { refreshWaypointEditorCoordConversionPreview(); } catch(_){}
     try { renderWpModalList(); } catch(_){}
   });
 }
@@ -61646,7 +61668,8 @@ function gisInit(){
       const val = ev.target && ev.target.value;
       _wpCoordInputDebounceTimer = setTimeout(() => {
         _wpCoordInputDebounceTimer = null;
-        onEditorCoordInput(val, { softFeedback: true });
+        // Soft parse → draft only. Never rewrite operator source text. No autocenter.
+        onEditorCoordInput(val, { softFeedback: true, rewriteField: false });
         try { syncWaypointEditorCenterBtn(); } catch(_){}
       }, 350);
     });
@@ -61656,7 +61679,8 @@ function gisInit(){
         if (!state.waypointEditorDraft) return;
         const el = document.getElementById("wpFieldCoord");
         if (!el) return;
-        onEditorCoordInput(el.value, { rewriteField: true });
+        // Keep pasted source text intact; update draft only.
+        onEditorCoordInput(el.value, { softFeedback: true, rewriteField: false });
         try { syncWaypointEditorCenterBtn(); } catch(_){}
       }, 0);
     });
@@ -61667,12 +61691,18 @@ function gisInit(){
       if (!el) return;
       const r = parseWaypointEditorCoordText(el.value);
       if (r.ok){
-        applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: true });
+        // Draft update only — do not rewrite #wpFieldCoord source text.
+        applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: false, softFeedback: true });
       } else if (r.empty){
         applyWaypointEditorCoordEmpty();
       }
       try { syncWaypointEditorCenterBtn(); } catch(_){}
       // Invalid non-empty: leave text + previous draft intact.
+    });
+    wpCoord.addEventListener("keydown", (ev) => {
+      if (ev.key !== "Enter") return;
+      ev.preventDefault();
+      try { handleWaypointEditorCoordEnter(); } catch(_){}
     });
   }
   const wpName = document.getElementById("wpFieldName");
@@ -77603,15 +77633,52 @@ function applyWaypointEditorCoordSuccess(lat, lon, type, opts){
       fb.textContent = "";
       fb.classList.remove("is-ok", "is-err");
     } else {
-      fb.textContent = lat.toFixed(5) + ", " + lon.toFixed(5) + " (" + (type || "LatLon") + ")";
+      const formatted = formatWaypointListCoordinates(lat, lon);
+      const body = (formatted && formatted !== "—")
+        ? formatted
+        : (lat.toFixed(5) + ", " + lon.toFixed(5));
+      fb.textContent = "Conversione: " + body + (type ? (" · " + type) : "");
       fb.classList.remove("is-err");
       fb.classList.add("is-ok");
     }
   }
+  // rewriteField remains supported for rare init callers; default runtime paths must leave source text intact.
   if (opts.rewriteField){
     try { writeWaypointEditorCoordFieldFromDraft(); } catch(_){}
   }
   if (!state.waypointEditorDraft.id) syncWaypointDraftPinFromEditor();
+  try { syncWaypointEditorCenterBtn(); } catch(_){}
+}
+
+/** Enter on #wpFieldCoord: convert + preview + autocenter. Never save. Never rewrite source text. */
+function handleWaypointEditorCoordEnter(){
+  clearWaypointCoordInputDebounce();
+  if (!state.waypointEditorDraft) return;
+  const el = document.getElementById("wpFieldCoord");
+  if (!el) return;
+  const text = String(el.value || "");
+  const r = parseWaypointEditorCoordText(text);
+  if (r.ok){
+    applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: false, softFeedback: false });
+    if (typeof gisMapCenterOnLatLon === "function"){
+      try { gisMapCenterOnLatLon(r.lat, r.lon); } catch(_){}
+    }
+    return;
+  }
+  if (r.empty){
+    applyWaypointEditorCoordEmpty();
+    return;
+  }
+  const input = el;
+  const fb = document.getElementById("wpFieldCoordFeedback");
+  if (input) input.setAttribute("aria-invalid", "true");
+  if (fb){
+    const key = (r.err && (r.err.key || r.err.i18nKey)) || "err.notRecognized";
+    fb.textContent = t(key);
+    fb.classList.remove("is-ok");
+    fb.classList.add("is-err");
+    try { appRevealModalError(fb); } catch(_){}
+  }
   try { syncWaypointEditorCenterBtn(); } catch(_){}
 }
 
