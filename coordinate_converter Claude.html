@@ -22329,6 +22329,12 @@ function mapWptDocDragCleanup(){
 function mapWptDocDragMove(ev){
   const d = mapWptDocDrag;
   if (!d || ev.pointerId !== d.pid) return;
+  const dx = ev.clientX - d.sx, dy = ev.clientY - d.sy;
+  if (!d.moved && Math.hypot(dx, dy) > 3) d.moved = true;
+  if (!d.moved){
+    if (ev.cancelable) ev.preventDefault();
+    return;
+  }
   const ll = mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
   if (ll && Number.isFinite(ll.lat) && Number.isFinite(ll.lon)){
     waypointUpdateLatLon(d.id, ll.lat, ll.lon);
@@ -22339,9 +22345,23 @@ function mapWptDocDragMove(ev){
 function mapWptDocDragUp(ev){
   if (!mapWptDocDrag) return;
   if (!ev || ev.pointerId !== mapWptDocDrag.pid) return;
+  const d = mapWptDocDrag;
+  const wasMoved = !!d.moved;
+  const wptId = d.id;
   mapWptDocDragCleanup();
-  saveStore();
-  renderMapWaypointsAll();
+  if (!wasMoved){
+    // Click-without-drag: set zoom focus only — no fly, no save, no edit.
+    try {
+      ensureMapWaypointsState();
+      const p = (state.mapWaypoints || []).find(x => x && String(x.id) === String(wptId));
+      if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
+        mapZoomFocusSet(p.lat, p.lon, "waypoint-marker");
+      }
+    } catch(_){}
+  } else {
+    saveStore();
+    renderMapWaypointsAll();
+  }
   if (ev.cancelable) ev.preventDefault();
 }
 
@@ -22947,10 +22967,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1";
-const APP_BUILD_DETAIL = "clear stale waypoint coordinate conversion and copy state";
+const APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A";
+const APP_BUILD_DETAIL = "anchor map zoom-in to focused point within usable viewport";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 155;
+const APP_BUILD_NUM = 156;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -40019,6 +40039,83 @@ function gisMapOffsetVC(root, tLat, tLon, z, u){
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return base;
   return { lat: Math.max(-85.05, Math.min(85.05, lat)), lon: normalizeLon(lon) };
 }
+/* MAP-ZOOM-FOCUS-ANCHOR-A — session-only zoom focus (NOT in state / saveStore). */
+let gMapZoomFocus = null;
+const MAP_ZOOM_FOCUS_CAM_EPS = 1e-7;
+const MAP_ZOOM_FOCUS_ZOOM_EPS = 1e-6;
+function mapZoomFocusClear(){
+  gMapZoomFocus = null;
+}
+function mapZoomFocusCaptureCamera(){
+  const vc = state.viewCenter || {};
+  return {
+    cameraLat: Number.isFinite(vc.lat) ? vc.lat : null,
+    cameraLon: Number.isFinite(vc.lon) ? normalizeLon(vc.lon) : null,
+    cameraZoom: Number.isFinite(state.mapZoom) ? Number(state.mapZoom) : null
+  };
+}
+function mapZoomFocusCameraMatches(f){
+  if (!f) return false;
+  const vc = state.viewCenter || {};
+  const z = state.mapZoom;
+  if (!Number.isFinite(f.cameraLat) || !Number.isFinite(f.cameraLon) || !Number.isFinite(f.cameraZoom)) return false;
+  if (!Number.isFinite(vc.lat) || !Number.isFinite(vc.lon) || !Number.isFinite(z)) return false;
+  if (Math.abs(vc.lat - f.cameraLat) > MAP_ZOOM_FOCUS_CAM_EPS) return false;
+  let dLon = Math.abs(normalizeLon(vc.lon) - normalizeLon(f.cameraLon));
+  if (dLon > 180) dLon = 360 - dLon;
+  if (dLon > MAP_ZOOM_FOCUS_CAM_EPS) return false;
+  if (Math.abs(Number(z) - f.cameraZoom) > MAP_ZOOM_FOCUS_ZOOM_EPS) return false;
+  return true;
+}
+function mapZoomFocusSet(lat, lon, source){
+  try {
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90) return false;
+    const cam = mapZoomFocusCaptureCamera();
+    if (!Number.isFinite(cam.cameraLat) || !Number.isFinite(cam.cameraLon) || !Number.isFinite(cam.cameraZoom)) return false;
+    gMapZoomFocus = {
+      lat: Math.max(-85.05, Math.min(85.05, lat)),
+      lon: normalizeLon(lon),
+      source: String(source || ""),
+      cameraLat: cam.cameraLat,
+      cameraLon: cam.cameraLon,
+      cameraZoom: cam.cameraZoom
+    };
+    return true;
+  } catch(_){ return false; }
+}
+function mapZoomFocusGetValid(){
+  const f = gMapZoomFocus;
+  if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)){ gMapZoomFocus = null; return null; }
+  if (!mapZoomFocusCameraMatches(f)){ gMapZoomFocus = null; return null; }
+  return f;
+}
+function mapZoomFocusRefreshCameraSignature(){
+  if (!gMapZoomFocus) return;
+  const cam = mapZoomFocusCaptureCamera();
+  if (!Number.isFinite(cam.cameraLat) || !Number.isFinite(cam.cameraLon) || !Number.isFinite(cam.cameraZoom)) return;
+  gMapZoomFocus.cameraLat = cam.cameraLat;
+  gMapZoomFocus.cameraLon = cam.cameraLon;
+  gMapZoomFocus.cameraZoom = cam.cameraZoom;
+}
+/** Zoom-in only: place focus at usable-rect center. No zoom bump. No CTA side effects. */
+function mapZoomApplyFocusedZoomIn(root, newZoom, focus){
+  if (!root || !focus || !Number.isFinite(newZoom)) return false;
+  if (!Number.isFinite(focus.lat) || !Number.isFinite(focus.lon)) return false;
+  const layer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+  const maxZ = (layer && Number.isFinite(layer.maxZoom)) ? (layer.maxZoom | 0) : 19;
+  const z = Math.max(2, Math.min(maxZ, Math.round(newZoom)));
+  let u = null;
+  try { u = gisMapUsableRect(root); } catch(_){}
+  let cam = { lat: focus.lat, lon: normalizeLon(focus.lon) };
+  try {
+    if (u) cam = gisMapOffsetVC(root, focus.lat, focus.lon, z, u);
+  } catch(_){}
+  if (!cam || !Number.isFinite(cam.lat) || !Number.isFinite(cam.lon)) return false;
+  state.viewCenter = { lat: cam.lat, lon: cam.lon };
+  state.mapZoom = z;
+  mapZoomFocusRefreshCameraSignature();
+  return true;
+}
 function gisMapPtsInUsable(root, pts, u, pad, unwrap, vc, z){
   const p = Number.isFinite(pad) ? pad : 0;
   const L = u.left + p, T = u.top + p, R = u.right - p, B = u.bottom - p;
@@ -51760,7 +51857,10 @@ function renderMapWaypointsOverlay(tileMap, markerLat, markerLon, zoom){
       tileMap,
       markerLat: markerLa,
       markerLon: markerLo,
-      z
+      z,
+      sx: ev.clientX,
+      sy: ev.clientY,
+      moved: false
     };
     document.addEventListener("pointermove", mapWptDocDragMove, true);
     document.addEventListener("pointerup", mapWptDocDragUp, true);
@@ -52943,6 +53043,22 @@ function renderTileMap(lat, lon, zoom){
         if (cu && cu.areaPickActive && cu._areaDragging) return;
       } catch(_){}
       const d = parseInt(b.dataset.zdelta, 10);
+      if (d > 0){
+        let focus = null;
+        try { focus = mapZoomFocusGetValid(); } catch(_){ focus = null; }
+        if (focus){
+          const mapLayer = TILE_LAYERS[state.mapLayer] || TILE_LAYERS.osm;
+          const maxZ = (mapLayer && Number.isFinite(mapLayer.maxZoom)) ? (mapLayer.maxZoom | 0) : 19;
+          const curZoom = Math.max(2, Math.min(maxZ, Math.round(state.mapZoom || zoom)));
+          const newZoom = Math.max(2, Math.min(maxZ, curZoom + d));
+          if (newZoom === curZoom) return;
+          if (mapZoomApplyFocusedZoomIn(root, newZoom, focus)){
+            try { saveStore(); } catch(_){}
+            renderTileMap(focus.lat, focus.lon, newZoom);
+            return;
+          }
+        }
+      }
       renderTileMap(lat, lon, zoom + d);
     });
   });
@@ -53575,6 +53691,20 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
     const newZoom = Math.max(2, Math.min(maxZ, curZoom + step));
     if (newZoom === curZoom) return;
 
+    // Zoom-in with valid focus → usable-rect center (panel-aware). Else: zoom-around-cursor.
+    if (step > 0){
+      let focus = null;
+      try { focus = mapZoomFocusGetValid(); } catch(_){ focus = null; }
+      if (focus){
+        const mapRoot = document.getElementById("miniMap") || root;
+        if (mapZoomApplyFocusedZoomIn(mapRoot, newZoom, focus)){
+          saveStore();
+          renderTileMap(focus.lat, focus.lon, newZoom);
+          return;
+        }
+      }
+    }
+
     const anchor = state.viewCenter || { lat, lon };
     const vLat = Math.max(-85.05, Math.min(85.05, anchor.lat));
     const vLon = normalizeLon(anchor.lon);
@@ -53903,6 +54033,7 @@ function gisMapOnDblClickCenter(ev){
   state.viewCenter = { lat: pick.lat, lon: normalizeLon(pick.lon) };
   try { saveStore(); } catch(_){}
   try { renderTileMap(pick.lat, normalizeLon(pick.lon), z); } catch(_){}
+  try { mapZoomFocusSet(pick.lat, normalizeLon(pick.lon), "dblclick"); } catch(_){}
 }
 
 /**
@@ -54241,9 +54372,22 @@ function attachPanHandlers(root, lat, lon, zoom){
         }
         return;
       }
-      if (!drag.moved) return;
+      if (!drag.moved){
+        // Neutral map click → set zoom focus only (no camera/zoom/save/lastPoint change).
+        if (cx != null && cy != null){
+          try {
+            const zPickN = state.mapZoom || zoom;
+            const pickN = mapClientToLatLonMap(root, lat, lon, zPickN, cx, cy);
+            if (pickN && Number.isFinite(pickN.lat) && Number.isFinite(pickN.lon) && Math.abs(pickN.lat) <= 90){
+              mapZoomFocusSet(pickN.lat, pickN.lon, "neutral-click");
+            }
+          } catch(_){}
+        }
+        return;
+      }
 
       // Convert pixel drag into tile-space delta and then into lat/lon.
+      try { mapZoomFocusClear(); } catch(_){}
       const z = state.mapZoom || zoom;
       const vc = state.viewCenter || { lat, lon };
       const vLat = Math.max(-85.05, Math.min(85.05, vc.lat));
@@ -77842,7 +77986,9 @@ function centerMapFromWaypointEditor(){
   }
   if (typeof gisMapCenterOnLatLon !== "function") return false;
   try {
-    return !!gisMapCenterOnLatLon(parsed.lat, parsed.lon);
+    const ok = !!gisMapCenterOnLatLon(parsed.lat, parsed.lon);
+    if (ok){ try { mapZoomFocusSet(parsed.lat, parsed.lon, "waypoint"); } catch(_){} }
+    return ok;
   } catch(_){
     return false;
   }
@@ -78257,6 +78403,7 @@ function waypointsZoomTo(id){
   const p = state.mapWaypoints.find(x => x.id === id);
   if (!p) return;
   if (gisMapCenterOnLatLon(p.lat, p.lon)){
+    try { mapZoomFocusSet(p.lat, p.lon, "waypoint"); } catch(_){}
     try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
   }
 }
