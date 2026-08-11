@@ -22947,10 +22947,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX3";
-const APP_BUILD_DETAIL = "fix UTM inverse accuracy and make waypoint conversion preview copyable";
+const APP_BUILD_ID = "WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1";
+const APP_BUILD_DETAIL = "clear stale waypoint coordinate conversion and copy state";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 154;
+const APP_BUILD_NUM = 155;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -50972,7 +50972,11 @@ function refreshWaypointEditorCoordConversionPreview(){
   const el = document.getElementById("wpFieldCoord");
   if (!el) return;
   const r = parseWaypointEditorCoordText(el.value);
-  if (!r.ok) return;
+  if (!r.ok){
+    // Empty/invalid: drop any previous Conversione + stale data-copy (no invasive error on format change).
+    try { clearWaypointEditorCoordFeedback(); } catch(_){}
+    return;
+  }
   state.waypointEditorDraft.lat = r.lat;
   state.waypointEditorDraft.lon = r.lon;
   const value = formatWaypointEditorConversionValue(el.value, r.lat, r.lon);
@@ -61760,6 +61764,8 @@ function gisInit(){
     wpCoord._wpCoordLifecycleBound = true;
     wpCoord.addEventListener("input", (ev) => {
       clearWaypointCoordInputDebounce();
+      // Invalidate previous Conversione/Copia immediately so data-copy cannot stay stale.
+      try { clearWaypointEditorCoordFeedback(); } catch(_){}
       try { syncWaypointEditorCenterBtn(); } catch(_){}
       const val = ev.target && ev.target.value;
       _wpCoordInputDebounceTimer = setTimeout(() => {
