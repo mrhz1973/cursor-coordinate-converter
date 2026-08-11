@@ -137,15 +137,15 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | --- | --- |
 | HEAD documentale (pre-autosync) | tip pre-chiusura **`3ed3f8e`** (verificare `git ls-remote` post-finito) |
 | Runtime live / commit monolite | tip **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (`ac3a0ea`) build **157** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1)** — **CLOSED / PASS end-to-end** |
+| Ultimo blocco chiuso | **DOCS-DFLIGHT-H2-RECONCILE-A** — **CLOSED / PASS DOCS-ONLY** (metodo PREOP già vivo) |
 | Ultimo blocco runtime monolite | **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** — tip `ac3a0ea` build 157 |
-| Task aperto corrente | WU-0012 **OPEN** — NEXT **PROVIDER** (sequenza **riprendibile**) ([`WU-0012`](work-units/WU-0012-carto-index-federated.md)) |
+| Task aperto corrente | **WU-0013** OPEN / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT **`DFLIGHT-HELPER-H2-A`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
-| Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** (OM §4 Regole G + H) |
+| Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** + **AUTOMATED-BROWSER-QA-PREOP** (OM §4 Regole G + H + D2bis) |
 | Runtime Git / atteso VPS | `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` (deploy GIS-only PASS; tip VPS `3ed3f8e`) |
 | Blob monolite (git) | `fceb5626511f38f75154759f0c4ab8a7474acebe` |
 | Byte monolite (git LF) | `9789222` |

@@ -573,33 +573,25 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / DISCOVERY COMPLETE / NO RUNTIME — NEXT `DFLIGHT-REAL-DATA-VALIDATE-A`** (2026-08-11). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Blocco apertura: **`DOCS-DFLIGHT-WU-0013-OPEN-A` CLOSED / PASS DOCS-ONLY**. Discovery: **`CARTO-DFLIGHT-DISCOVERY-A` — DIAGNOSTIC COMPLETE / TECHNICAL PLAN READY** (read-only, 2026-08-11). Runtime live monolite: **`ac3a0ea` / `MAP-ZOOM-FOCUS-ANCHOR-A-FIX1 · build 157`** (invariato in apertura WU-0013).
+**Stato:** **OPEN / DISCOVERY COMPLETE / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT `DFLIGHT-HELPER-H2-A`** (2026-08-11). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Apertura: **`DOCS-DFLIGHT-WU-0013-OPEN-A` CLOSED**. Validate: **`DFLIGHT-REAL-DATA-VALIDATE-A` PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (superato). Auth capture: **`DFLIGHT-AUTH-CAPTURE-A` DIAGNOSTIC COMPLETE — PATH = H2 AUTHENTICATED**. Riconciliazione: **`DOCS-DFLIGHT-H2-RECONCILE-A` CLOSED / PASS DOCS-ONLY**. Runtime live monolite: **`ac3a0ea` / build 157** (invariato; **nessun** runtime GIS D-Flight).
 
-**Ambito:** layer operativo UAS — zone geografiche italiane pubblicate da **D-Flight** (portale ENAV/ENAC) in formato **EUROCAE ED-269** / **ED-318** (JSON). Dataset vettoriale dinamico con geometria, verticalità, temporalità, regole e contatti; semanticamente distinto da carte cartografiche statiche IGM/IIM/CIGA/UKHO (WU-0012). Condivide con WU-0012 solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer), non il modello dati.
+**Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
 
-**Fonti ufficiali verificate (discovery):** portale https://www.d-flight.it/ (HTTP 200); manuali v14/v15 + ICD U-Box/UTM; conferma ENAC + EUROCAE ED-269 Change 1 / ED-318; schema pubblico EUROCONTROL SWIM (`eurocontrol-swim/geofencing-prototype`) + esempi `UASGeoZones/ED-318`. Endpoint JSON ED-269 italiano **provato esistente ma dietro autenticazione** BASE/PRO (URL live UNKNOWN). **Nessun** login automatico / credenziali / bypass auth nella discovery né nel prossimo blocco.
+**Path helper autorizzato (NON implementato):** `GOI GIS → helper VPS → auth D-Flight → WFS autenticato` (**H2**). H0 public WFS **escluso** (401 anonimi). Credenziali solo server-side (`LoadCredential`). Sample/evidenze fuori repo. **Nessun secret** in repo/docs.
 
-**Modello dati GOI GIS (concettuale — NON implementato):** dataset autonomo `dflightZones[]` (cap 5000 default, transiente session-only per MVP); separato da `mapWaypoints`, `cartoArchiveRecords`, `track`/`savedTracks`, `gisPolygons`. Schema normalized: `zone_id`, `name`, `zone_type`, `restriction`, `reasons[]`, `volumes[]` (Polygon/Circle + lower/upper verticali AGL/AMSL M/FT), `bbox`, `applicability[]`, `permanent`, `temporal_state`, `zone_authority[]`, `source_updated_at`, `source_checksum` (SHA-256 del file importato).
+**Evidenze sintetiche AUTH-CAPTURE:** WFS 36 typename / WMS 52 layer; `NO_FLY_ZONE` 850 Polygon (EPSG:4326 candidato; ~7.36 MB; ~149k vertici); NOTAM anche WFS vector (18); raw SHA instabile → **CANONICAL-FEATURE-HASH** su `properties.id`; WFS ≠ ED-269 (MVP overlay YES/PARTIAL).
 
-**Strategia raccomandata:** import manuale file JSON (drag-drop o file picker) → parser JS inline tollerante V1 (array ED-269) / V2 (header + features) / V3 (ED-318 FeatureCollection) → normalizzazione in memoria → render SVG via pattern esistente `drawCartoIgmOverlay` + `cartoGeomToSvgPathD` + `tileMapLatLonToPx`. Nessuna fetch automatica; OPSEC/offline-first; allineato a rule 32 (L10N IT only per MVP); Workbench/Oggetti GIS FROZEN.
-
-**Piano blocchi futuro (NON auto-aperti):**
+**Piano blocchi:**
 
 | Blocco | Categoria | Note |
 | --- | --- | --- |
-| **DFLIGHT-REAL-DATA-VALIDATE-A** | **DIAGNOSTIC** | Gate obbligatorio prima di qualsiasi runtime. Campione JSON reale IT in `C:\tmp\goi-carto-provider-next\dflight\` (operator-provided). |
-| **D-FLIGHT-A** ingest/parser | **ROUTINE** (post validate) | parser tollerante V1/V2/V3; sanitizer. |
-| **D-FLIGHT-B** normalized model | **ROUTINE** | `dflightNormalizeZone(raw)` → modello concettuale; bbox derived. |
-| **D-FLIGHT-C** overlay renderer | **ROUTINE leggero** | `drawDflightOverlay(tileMap)` SVG; circle→polygon; viewport culling; reuse helpers. |
-| **D-FLIGHT-D** Layers toggle/legend | **ROUTINE** | sezione "Cataloghi"; legenda `restriction`; i18n IT. |
-| **D-FLIGHT-E** zone details | **ROUTINE** se pannello GIS normale; **DELICATO** se usa/modifica lifecycle `<dialog>` | click zona → pannello. |
-| **D-FLIGHT-F** optional update/offline | **DELICATO** | IndexedDB opt-in; export GPX/GeoJSON; update online OPSEC-gated. |
+| **DFLIGHT-HELPER-H2-A** | **DELICATO** | **NEXT** — solo helper VPS; no monolite; rete+auth+secrets+cache+rollback |
+| **D-FLIGHT-A…E** | ROUTINE (E: ROUTINE/DELICATO) | client parser→overlay→toggle→details; non auto-aperti |
+| **D-FLIGHT-F** | DELICATO | integrazione helper client / persistence / OPSEC; decomporre se serve |
 
-**Bundle coerente consigliato:** D-FLIGHT-A → D-FLIGHT-E in unico bundle ROUTINE (≥5 item) se D-FLIGHT-E resta su pannello GIS normale senza toccare lifecycle `<dialog>`.
+**Automated Browser QA:** obbligatoria sui futuri blocchi con UI browser; per solo H2-A backend puro → N/A ammesso + test API.
 
-**Classificazione futura vincolata (decisione operatore):** D-FLIGHT-A→D candidati **ROUTINE** post `DFLIGHT-REAL-DATA-VALIDATE-A`; D-FLIGHT-E **ROUTINE** solo se pannello GIS normale, **DELICATO** se lifecycle `<dialog>`; D-FLIGHT-F **DELICATO**.
-
-**Nessun** blocco runtime aperto da questa sezione. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
+**Nessun** helper/runtime GIS ancora implementato. Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 

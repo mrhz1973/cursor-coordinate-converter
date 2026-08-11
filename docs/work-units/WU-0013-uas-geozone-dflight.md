@@ -4,13 +4,17 @@
 
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** `OPEN / DISCOVERY COMPLETE / NO RUNTIME — NEXT DFLIGHT-REAL-DATA-VALIDATE-A`
+**Stato:** `OPEN / DISCOVERY COMPLETE / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT DFLIGHT-HELPER-H2-A`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
+**Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
+**Blocco auth capture:** `DFLIGHT-AUTH-CAPTURE-A` — **DIAGNOSTIC COMPLETE — PUBLIC/HYBRID/AUTH HELPER PATH PROVEN** · **PATH = H2 AUTHENTICATED** (2026-08-11, diagnostic read-only; sample fuori repo)
+**Blocco riconciliazione:** `DOCS-DFLIGHT-H2-RECONCILE-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
 **Runtime live (GIS tip):** `ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9` · `APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A-FIX1"` · `APP_BUILD_NUM = 157`
-**Monolite in WU-0013:** **non modificato** in apertura; tutti i blocchi futuri sono **non ancora aperti**.
+**Monolite in WU-0013:** **non modificato**; **nessun** runtime GIS D-Flight; **nessun** helper implementato; NEXT = **`DFLIGHT-HELPER-H2-A`** (DELICATO, solo VPS).
+**Helper / GIS runtime:** **NON implementati** — H2 path **provato** in discovery autenticata; implementazione helper = blocco successivo.
 
 > Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
@@ -196,16 +200,31 @@ Casi speciali:
 
 ## 8. Strategia pipeline raccomandata
 
-Confronto:
+### 8.1 Path helper autorizzato (post AUTH-CAPTURE) — **NON implementato**
 
-1. JSON ED-269 importato direttamente dal browser → **complessità bassa, robustezza alta, parsing diretto, aggiornamento manuale, offline ok**.
-2. Conversione offline in formato interno → passaggio inutile.
-3. Conversione offline in GeoJSON → opzionale futuro (ED-318 è già vicino a GeoJSON).
-4. Fetch manuale esplicita → come #1 con UX di import file.
-5. Endpoint web map → scartato (auth/instabilità).
-6. Scraping geometrie web map → scartato (invasivo, fragile).
+Decisione tecnica **autorizzata** dopo `DFLIGHT-AUTH-CAPTURE-A` (PATH = **H2 AUTHENTICATED**):
 
-**Raccomandata**: **#1 + #4 combinata** — import manuale file JSON (drag-drop o file picker) → parser JS inline tollerante V1/V2/V3 → normalizzazione in memoria (transiente session) → render SVG via pattern `drawCartoIgmOverlay`. Nessuna fetch automatica, nessuna dipendenza di rete, allineato a OPSEC/offline-first.
+```text
+GOI GIS → helper VPS GOI → autenticazione D-Flight → WFS D-Flight autenticato
+```
+
+- H0 PUBLIC-WFS CACHE: **ESCLUSO** (anonymous replay HTTP 401 su `/maps/*`).
+- Credenziali **solo** server-side (preferenza `systemd LoadCredential`); **mai** in monolite / browser / repo / docs / log.
+- Dataset operativo primario MVP overlay: **WFS GeoServer** (FeatureCollection), non equivalenza dimostrata al Download ED-269.
+- Import manuale ED-269 resta **utile** per parity EUROCAE futura; **non** blocca il percorso helper H2.
+
+Dettaglio architettura H2: §22.
+
+### 8.2 Path import file (discovery iniziale — ancora valido come fallback/MVP client)
+
+Confronto storico discovery:
+
+1. JSON ED-269 importato direttamente dal browser → complessità bassa, offline ok.
+2–3. Conversioni offline → opzionali.
+4. Fetch manuale esplicita → come #1 con UX import.
+5–6. Web map scraping → scartati.
+
+**MVP client futuro** può combinare: dataset da helper H2 (preferito) **e/o** import file ED-269. Nessuna fetch D-Flight dal browser; nessuna credenziale client.
 
 ---
 
@@ -318,27 +337,26 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 
 ---
 
-## 15. Piano blocchi futuro (NON auto-aperti)
+## 15. Piano blocchi (aggiornato post H2 reconcile)
 
-| Blocco | Scope | Dipendenze | Rischio | Categoria |
-| --- | --- | --- | --- | --- |
-| **DFLIGHT-REAL-DATA-VALIDATE-A** | Acquisizione campione JSON reale IT (operator-provided in `C:\tmp\goi-carto-provider-next\dflight\`) + parsing diagnostico + verifica schema V1/V2/V3 + metriche reali (byte, count, vertici, bbox) | nessuna | basso | **DIAGNOSTIC** (gate obbligatorio prima di qualsiasi runtime) |
-| **D-FLIGHT-A** — ingest/parser | parser JS tollerante V1/V2/V3; validator base; sanitizer; `dflightParseDataset(text, opts)` → `{meta, zones}` | DFLIGHT-REAL-DATA-VALIDATE-A | basso | **ROUTINE** |
-| **D-FLIGHT-B** — normalized model | struct in memoria; `dflightNormalizeZone(raw)` → modello §9; bbox derived | A | basso | **ROUTINE** |
-| **D-FLIGHT-C** — overlay renderer | `drawDflightOverlay(tileMap)` SVG; circle→polygon; viewport culling; reuse `tileMapLatLonToPx` + `cartoGeomToSvgPathD` pattern | A, B | basso-medio (render path) | **ROUTINE leggero** |
-| **D-FLIGHT-D** — Layers toggle/legend | sezione "Cataloghi" item toggle; legenda `restriction`; i18n IT | C | basso | **ROUTINE** |
-| **D-FLIGHT-E** — zone details | click zona → pannello (modal dialog riusabile); dettagli completi | D | basso se pannello GIS normale; **medio/alto se usa/modifica lifecycle `<dialog>`** | **ROUTINE** oppure **DELICATO** (in base a implementazione) |
-| **D-FLIGHT-F** — optional update/offline persistence | IndexedDB opt-in; export GPX/GeoJSON; update online esplicito OPSEC-gated | A–E | medio-alto (storage, rete, OPSEC) | **DELICATO** |
+| Blocco | Scope | Stato / note | Categoria |
+| --- | --- | --- | --- |
+| **DFLIGHT-REAL-DATA-VALIDATE-A** | Inventario VPS + probing pubblico + auth flow da bundle | **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (superato da AUTH-CAPTURE) | DIAGNOSTIC |
+| **DFLIGHT-AUTH-CAPTURE-A** | Sessione autenticata; WFS/WMS inventory; fingerprint; path helper | **COMPLETE — PATH H2 AUTHENTICATED** | DIAGNOSTIC |
+| **DOCS-DFLIGHT-H2-RECONCILE-A** | Allineamento docs vivi a evidenze H2 | **CLOSED / PASS DOCS-ONLY** | DOCS |
+| **DFLIGHT-HELPER-H2-A** | Servizio helper VPS autenticato (WFS→cache→API); **no monolite** | **NEXT** — **NON aperto** | **DELICATO** |
+| **D-FLIGHT-A** | parser/adapter client | candidato; non auto-aperto | ROUTINE (post helper o import) |
+| **D-FLIGHT-B** | normalized model | candidato; non auto-aperto | ROUTINE |
+| **D-FLIGHT-C** | overlay SVG | candidato; non auto-aperto | ROUTINE |
+| **D-FLIGHT-D** | toggle/legend | candidato; non auto-aperto | ROUTINE |
+| **D-FLIGHT-E** | zone details | candidato; non auto-aperto | ROUTINE o DELICATO (`<dialog>`) |
+| **D-FLIGHT-F** | client helper integration / persistence / OPSEC | candidato; decomporre se necessario | DELICATO |
 
-**Bundle coerente consigliato**: **D-FLIGHT-A → D-FLIGHT-E** in un unico bundle ROUTINE (5 item, ≥5 come da `METHOD-BUNDLING-DEFAULT`); nessun hop Claude richiesto se D-FLIGHT-E resta su pannello GIS normale senza toccare lifecycle `<dialog>`.
+**NEXT univoco:** **`DFLIGHT-HELPER-H2-A`** (solo backend VPS; credenziali server-side; WFS auth; cache LKG; atomic replace; canonical feature hash).
 
-**Classificazione futura vincolata (decisione operatore):**
+**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** si applica ai futuri blocchi D-Flight con superficie browser. Per **solo** `DFLIGHT-HELPER-H2-A`: test tecnici/API automatici obbligatori; Automated Browser QA può essere **`NOT APPLICABLE`** se il blocco resta esclusivamente backend senza superficie browser; appena il helper è integrato nel browser GIS, Automated Browser QA torna **obbligatoria**.
 
-- **D-FLIGHT-A→D**: candidati **ROUTINE** dopo `DFLIGHT-REAL-DATA-VALIDATE-A`.
-- **D-FLIGHT-E**: **ROUTINE** solo se pannello GIS normale; **DELICATO** se usa/modifica lifecycle `<dialog>`.
-- **D-FLIGHT-F**: **DELICATO**.
-
-**Nessun** blocco runtime aperto da questa apertura WU.
+**Nessun** blocco runtime GIS / helper ancora implementato.
 
 ---
 
@@ -387,44 +405,140 @@ WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update) con solo 
 
 ---
 
-## 19. Decisioni DOCS-DFLIGHT-WU-0013-OPEN-A
+## 19. Decisioni DOCS-DFLIGHT-WU-0013-OPEN-A (storico apertura)
 
-1. WU-0013 **APERTA** / `OPEN / DISCOVERY COMPLETE / NO RUNTIME`.
-2. NEXT registrato: **`DFLIGHT-REAL-DATA-VALIDATE-A`** (gate obbligatorio prima di qualsiasi runtime).
-3. D-Flight registrato come **layer operativo UAS separato** da WU-0012.
-4. Modello dati concettuale autonomo `dflightZones[]` (no riusuo `mapWaypoints`/`cartoArchiveRecords`/`track`/`gisPolygons`).
-5. Strategia raccomandata: **import manuale JSON + parser tollerante V1/V2/V3 + render SVG**.
-6. Tecnologia overlay: **SVG** (riuso pattern IGM).
-7. L10N: IT only per MVP (rule 32).
-8. Storage MVP: **SESSION-ONLY**; IndexedDB solo in D-FLIGHT-F (DELICATO).
-9. Piano futuro D-FLIGHT-A→F registrato; **NESSUN** blocco runtime aperto.
-10. Repo, monolite, build, IndexedDB, `state`: **invariati**.
+1. WU-0013 **APERTA** / `OPEN / DISCOVERY COMPLETE / NO RUNTIME` (all’apertura).
+2. NEXT iniziale: **`DFLIGHT-REAL-DATA-VALIDATE-A`**.
+3. D-Flight = layer operativo UAS separato da WU-0012.
+4. Modello dati concettuale autonomo `dflightZones[]`.
+5. Strategia iniziale: import manuale JSON + parser V1/V2/V3 + SVG (integrata/superseduta per path helper da §8.1 / §22).
+6–10. Overlay SVG; L10N IT; SESSION-ONLY MVP; piano A→F; monolite invariato.
+
+## 19bis. Decisioni DOCS-DFLIGHT-H2-RECONCILE-A (2026-08-11)
+
+1. `DFLIGHT-REAL-DATA-VALIDATE-A` registrato come **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (intermedio superato).
+2. `DFLIGHT-AUTH-CAPTURE-A` = **DIAGNOSTIC COMPLETE — PATH H2 AUTHENTICATED**.
+3. Stato WU vivo: **`OPEN / DISCOVERY COMPLETE / H2 AUTHENTICATED PROVEN / NO GIS RUNTIME — NEXT DFLIGHT-HELPER-H2-A`**.
+4. **Nessun** helper implementato; **nessun** runtime GIS D-Flight.
+5. Architettura H2 autorizzata (non implementata) — §22.
+6. Fingerprint: **CANONICAL-FEATURE-HASH** su `properties.id` (raw SHA instabile).
+7. WFS sufficiente per MVP overlay (YES/PARTIAL); equivalenza ED-269 **non** dimostrata.
+8. NEXT univoco: **`DFLIGHT-HELPER-H2-A`** (**DELICATO**).
+9. Sample/secret: **fuori repo**; mai nei docs.
+10. Workbench / Oggetti GIS **FROZEN**; runtime live **`ac3a0ea` / build 157** invariato.
 
 ---
 
 ## 20. Controlli apertura (self-check)
 
 - [x] Repo root, branch `main`, workspace pulito verificati in pre-flight
-- [x] HEAD = origin/main = `git ls-remote` = `fc2d1a4` prima della scrittura
+- [x] HEAD = origin/main = `git ls-remote` = `fc2d1a4` prima della scrittura (apertura)
 - [x] Monolite `coordinate_converter Claude.html` non toccato
 - [x] Nessun bump build, nessun deploy, nessuna modifica runtime
 - [x] Workbench / Oggetti GIS FROZEN
-- [x] Nessuna fetch automatica / login / credenziali
+- [x] Nessuna fetch automatica / login / credenziali nei docs
 - [x] WU-0012 non duplicata (solo riferimento incrociato)
 - [x] L10N freeze rispettato (solo IT per future stringhe)
-- [x] NEXT `DFLIGHT-REAL-DATA-VALIDATE-A` registrato
+- [x] NEXT iniziale `DFLIGHT-REAL-DATA-VALIDATE-A` registrato (poi superseduto da H2 reconcile → `DFLIGHT-HELPER-H2-A`)
 - [x] Discovery `CARTO-DFLIGHT-DISCOVERY-A` richiamata come base
 
 ---
 
 ## 21. Prossimo passo consigliato
 
-**`DFLIGHT-REAL-DATA-VALIDATE-A`** (diagnostic read-only):
+**`DFLIGHT-HELPER-H2-A`** (DELICATO — rete + auth + secrets + VPS service + cache + rollback):
 
-- Operatore fornisce copia JSON reale IT in `C:\tmp\goi-carto-provider-next\dflight\` (attraverso utilizzo ordinario del portale D-Flight con credenziali BASE/PRO dell'operatore; **nessuna condivisione credenziali**, **nessun login automatico**).
-- Cursor esegue: parsing diagnostico fuori repo; verifica variante V1/V2/V3; calcolo metriche reali (byte, SHA-256, count zone, primitive Polygon/Circle, vertici max/avg/median, bbox complessivo Italia, distribuzione `restriction`/`reason`).
-- Output: report diagnostico in `/tmp/NN-goi-gis-riepilogo.md` + inbox; **nessun** runtime; **nessun** commit dataset nel repo.
+- Solo servizio helper VPS; **non** monolite GIS.
+- Credenziali server-side (`LoadCredential`); WFS autenticato; preferenza `EPSG:4326`.
+- Cache last-known-good; atomic replacement; previous dataset; CANONICAL-FEATURE-HASH.
+- API candidata da validare in implementazione: `GET /status`, `GET /dataset`, `POST /refresh` (non contratto definitivo).
+- Porta candidata tailnet-only **`:8010`** (non vincolo definitivo se collisioni).
+- Automated Browser QA: **N/A ammesso** se solo backend; test API obbligatori.
+- **Nessun auto-start** senza prompt esplicito.
 
-In ordine alternativo (decisione operatore): **MODAL-OPEN-TOP-ALIGN-A** (backlog UX non D-Flight); provider WU-0012 (IIM/CIGA/UKHO / online update).
+In ordine alternativo (decisione operatore): provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
 
-**Nessun auto-start.**
+---
+
+## 22. Evidenze AUTH-CAPTURE + architettura H2 (sintesi — NO secrets)
+
+### 22.1 Auth / endpoint (presence only)
+
+| Voce | Evidenza |
+| --- | --- |
+| Mappe operative | `https://www.d-flight.it/maps/wms` (anche WFS via stesso path GeoServer) |
+| Auth token | `https://www.d-flight.it/auth-iam/token` (valori **non** nei docs) |
+| Downstream | `Authorization: Bearer` richiesto; cookie soli → **401** |
+| Anonymous replay | tutti i probe `/maps/wms|wfs|ows` → **HTTP 401** |
+| H0 PUBLIC-WFS | **ESCLUSO** |
+| Path helper | **H2 AUTHENTICATED** (provato) |
+
+### 22.2 WFS / WMS inventory (auth)
+
+- **36** FeatureType WFS `D-FLIGHT:*` (GetCapabilities auth PASS; `updateSequence` osservato).
+- **52** layer WMS `D-FLIGHT:*` (GetCapabilities auth PASS).
+- DescribeFeatureType auth PASS (`NO_FLY_ZONE`, `NOTAM`).
+- **NOTAM:** WMS raster **e** WFS vector (18 feature nel campione).
+- **ATM09:** anche GWC/TMS raster (`…/gwc/service/tms/1.0.0/D-FLIGHT:ATM09@…@png/{z}/{x}/{y}.png`).
+
+### 22.3 `NO_FLY_ZONE` (campione WFS reale — fuori repo)
+
+| Metrica | Valore |
+| --- | --- |
+| Tipo | GeoServer `FeatureCollection` |
+| Count | **850** feature |
+| Geometrie | tutte **Polygon**; 0 empty/invalid nel campione |
+| CRS | `EPSG:32633` e `EPSG:4326` (4326 = candidato GOI) |
+| Sample 4326 | **7 362 971** byte (fuori repo) |
+| Vertici | ~**149 479** tot; media ~176; mediana **33**; max **1513** |
+
+Properties principali: `id`, `name`, `quota_max`, `rule`, `status`, `regola`, `type`, `subtype`, `lower_limit_m`, `upper_limit_m`, `valid_from`, `valid_to`, `priority`, `description`, `descrizione`, `owner`, `note`.
+
+**Nota:** `feature.id` (fid GeoServer) **instabile**; chiave stabile = **`properties.id`**.
+
+### 22.4 Update detection
+
+| Detector | Esito |
+| --- | --- |
+| Raw body SHA-256 | **UNSTABLE** (`timeStamp` top-level + fid volatili) |
+| ETag / Last-Modified | **assenti** |
+| GetCapabilities `updateSequence` | presente; **non** sufficiente da solo come prova dataset applicativo |
+| Canonical fingerprint su `properties.id` (+ geometry/properties) | **STABLE** |
+| Strategia helper | **CANONICAL-FEATURE-HASH** |
+
+Separare: **raw transport hash ≠ semantic/canonical dataset fingerprint**.
+
+### 22.5 WFS vs ED-269
+
+- WFS webapp = modello operativo GeoServer **reale e verificato**.
+- Download UAS Geozone ED-269 = formato **distinto**; equivalenza completa **NON** dimostrata.
+- MVP overlay: WFS **tecnicamente sufficiente** (geometria + quota + temporalità + regole osservate) → **YES/PARTIAL**.
+- Parity ED-269 = futura; **non** blocca `DFLIGHT-HELPER-H2-A`.
+
+### 22.6 Architettura H2 (autorizzata — NON implementata)
+
+```text
+GOI GIS → helper VPS GOI → auth D-Flight → WFS autenticato
+```
+
+Helper target:
+
+- Python **3.12** stdlib se sufficiente; servizio **separato**;
+- credenziali **solo** server-side; preferenza **`systemd LoadCredential`**;
+- **nessuna** credenziale in monolite/browser/repo/docs/log;
+- WFS preferibilmente **EPSG:4326**;
+- cache **last-known-good**; **atomic replacement**; previous dataset per rollback;
+- change detection: **CANONICAL-FEATURE-HASH**;
+- status metadata; failure **non distruttivo** (no update current se download/parse/validation fallisce).
+
+Infra già osservata (VALIDATE): Ubuntu **24.04**, systemd **255**, Python **3.12**; porta candidata tailnet-only **`:8010`** (non vincolo definitivo).
+
+API candidata (**non** contratto definitivo — validare in H2-A): `GET /status`, `GET /dataset`, `POST /refresh`.
+
+### 22.7 Requisiti client futuro (quando si integra il helper)
+
+- Nessuna rete D-Flight al boot; nessuna credenziale D-Flight nel browser.
+- `forceOffline` e `opsecStrict` bloccano ogni call helper.
+- Check solo durante uso/attivazione D-Flight; cooldown indicativo **30–60 min**.
+- Dataset nuovo → indicazione non invasiva; applicazione **esplicita**.
+- Helper irraggiungibile → nessuna regressione GIS; LKG utilizzabile.
