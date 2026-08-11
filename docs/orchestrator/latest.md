@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **MAP-ZOOM-FOCUS-ANCHOR-A** implementato (build **156**). Runtime task **`f1346290a3ddc6c297c9c58f068715b532cb896a`**. Focus zoom-in transiente `gMapZoomFocus` (non persistito). **NO DEPLOY** — review GPT-sostitutiva richiesta. Inbox: `docs/orchestrator/inbox/2026-08-11_1105_riepilogo_map-zoom-focus-anchor-a.md`.
+2026-08-11 — **MAP-ZOOM-FOCUS-ANCHOR-A-FIX1** (build **157**). Runtime task **`ac3a0eaefd334e20f3e4ed3085668c70c5dbf1c9`** (parent A `f134629`). Neutral-target allowlist + waypoint `pointerup`-only. **NO DEPLOY** — review GPT-sostitutiva su A+FIX1. Inbox: `docs/orchestrator/inbox/2026-08-11_1125_riepilogo_map-zoom-focus-anchor-a-fix1.md`.
