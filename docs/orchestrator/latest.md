@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-11 — **WAYPOINT-EDITOR-CENTER-A** runtime pushato (`be97282`, build **151**): CTA secondaria **Centra** in editor Nuovo/Modifica waypoint (camera-only su `#wpFieldCoord` via `parseWaypointEditorCoordText` + `gisMapCenterOnLatLon`). Bundle ROUTINE — review Claude non richiesta; deploy GIS-only in corso / post-autosync. Monolite **escluso** da questo autosync. Inbox: `docs/orchestrator/inbox/2026-08-11_0132_riepilogo_waypoint-editor-center-a.md`.
+2026-08-11 — **WAYPOINT-EDITOR-CENTER-A-FIX1** runtime pushato (`defd22e`, build **152**): in Nuovo waypoint, Centra+Salva+Annulla sulla stessa riga del titolo (layout-only; Centra invariato). Deploy GIS-only post-autosync. Monolite **escluso** da questo autosync. Inbox: `docs/orchestrator/inbox/2026-08-11_0256_riepilogo_waypoint-editor-center-a-fix1.md`.
