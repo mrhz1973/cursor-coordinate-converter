@@ -22350,14 +22350,16 @@ function mapWptDocDragUp(ev){
   const wptId = d.id;
   mapWptDocDragCleanup();
   if (!wasMoved){
-    // Click-without-drag: set zoom focus only — no fly, no save, no edit.
-    try {
-      ensureMapWaypointsState();
-      const p = (state.mapWaypoints || []).find(x => x && String(x.id) === String(wptId));
-      if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
-        mapZoomFocusSet(p.lat, p.lon, "waypoint-marker");
-      }
-    } catch(_){}
+    // Click-without-drag focus only on real pointerup (not pointercancel).
+    if (ev.type === "pointerup"){
+      try {
+        ensureMapWaypointsState();
+        const p = (state.mapWaypoints || []).find(x => x && String(x.id) === String(wptId));
+        if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
+          mapZoomFocusSet(p.lat, p.lon, "waypoint-marker");
+        }
+      } catch(_){}
+    }
   } else {
     saveStore();
     renderMapWaypointsAll();
@@ -22967,10 +22969,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A";
-const APP_BUILD_DETAIL = "anchor map zoom-in to focused point within usable viewport";
+const APP_BUILD_ID = "MAP-ZOOM-FOCUS-ANCHOR-A-FIX1";
+const APP_BUILD_DETAIL = "restrict map zoom focus to neutral clicks and valid waypoint taps";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 156;
+const APP_BUILD_NUM = 157;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -40046,6 +40048,23 @@ const MAP_ZOOM_FOCUS_ZOOM_EPS = 1e-6;
 function mapZoomFocusClear(){
   gMapZoomFocus = null;
 }
+/** Allowlist: basemap surface only (tile-map / tile-layer / .tile-wrap raster). Not features/controls. */
+function mapZoomFocusIsNeutralMapTarget(target, tileMap, tileLayer){
+  try {
+    if (!target || !tileMap || !tileLayer) return false;
+    let el = target;
+    if (el.nodeType === 3) el = el.parentElement;
+    if (!el || el.nodeType !== 1) return false;
+    if (el !== tileMap && el !== tileLayer && !tileMap.contains(el)) return false;
+    if (el === tileMap || el === tileLayer) return true;
+    if (el.classList && el.classList.contains("tile-wrap") && tileLayer.contains(el)) return true;
+    if (el.classList && (el.classList.contains("tile") || el.classList.contains("tile-void"))){
+      const wrap = el.closest(".tile-wrap");
+      if (wrap && tileLayer.contains(wrap)) return true;
+    }
+    return false;
+  } catch(_){ return false; }
+}
 function mapZoomFocusCaptureCamera(){
   const vc = state.viewCenter || {};
   return {
@@ -54070,7 +54089,7 @@ function attachPanHandlers(root, lat, lon, zoom){
     if (typeof boxZoomIsActive === "function" && boxZoomIsActive()) return;
     if (ev.target.closest(".bbox-handle, .bbox-remove, .bbox-move")) return;
     const pt = getPt(ev);
-    const drag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0, moved: false };
+    const drag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0, moved: false, downTarget: ev.target };
 
     const onMove = (e) => {
       const p = getPt(e);
@@ -54374,6 +54393,16 @@ function attachPanHandlers(root, lat, lon, zoom){
       }
       if (!drag.moved){
         // Neutral map click → set zoom focus only (no camera/zoom/save/lastPoint change).
+        // Allowlist basemap surface; deny features/labels/controls (track/IGM/etc.).
+        try {
+          const upT = (ev && ev.target) ? ev.target : null;
+          const downT = drag.downTarget || upT;
+          const neutralDown = mapZoomFocusIsNeutralMapTarget(downT, tileMap, tileLayer);
+          const neutralUp = mapZoomFocusIsNeutralMapTarget(upT || downT, tileMap, tileLayer);
+          if (!neutralDown || !neutralUp) return;
+          // Ignore cancel-style ends (no intentional click).
+          if (ev && (ev.type === "touchcancel" || ev.type === "pointercancel")) return;
+        } catch(_){ return; }
         if (cx != null && cy != null){
           try {
             const zPickN = state.mapZoom || zoom;
