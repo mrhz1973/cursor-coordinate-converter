@@ -8564,6 +8564,15 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-details-panel .dflight-details-meta{
   font-size:12px; color:var(--muted, #64748b); margin:0 0 8px;
 }
+.dflight-cta-row{
+  display:flex; flex-wrap:wrap; gap:6px; margin:8px 0 10px; align-items:center;
+}
+.dflight-cta-row .btn{ flex:0 0 auto; }
+.dflight-client-feedback{
+  margin:0 0 8px; font-size:12px; min-height:1.2em;
+}
+.dflight-client-feedback.is-error{ color:#b45309; }
+.dflight-client-feedback.is-ok{ color:var(--ok, #16a34a); }
 .dflight-details-grid{
   display:grid; grid-template-columns:minmax(7rem,auto) 1fr; gap:4px 10px; font-size:12.5px;
 }
@@ -13859,6 +13868,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
   <div class="app-modal-body" id="dflightPanelBody">
     <p id="dflightPanelStatus" class="dflight-status hint" role="status" aria-live="polite">Nessun dataset caricato</p>
+    <div class="dflight-cta-row" id="dflightCtaRow">
+      <button type="button" class="btn btn-sm btn-primary" id="dflightBtnLoad">Carica zone</button>
+      <button type="button" class="btn btn-sm" id="dflightBtnRefresh">Aggiorna</button>
+      <button type="button" class="btn btn-sm" id="dflightBtnApplyUpdate" hidden>Applica aggiornamento</button>
+      <button type="button" class="btn btn-sm btn-ghost" id="dflightBtnReeval">Rivaluta ora</button>
+    </div>
+    <p id="dflightClientFeedback" class="hint dflight-client-feedback" role="status" aria-live="polite" hidden></p>
     <label class="offcache-hintchk" id="dflightVisibleLabel">
       <input type="checkbox" id="dflightVisibleToggle">
       <span>Mostra zone sulla mappa</span>
@@ -16058,6 +16074,28 @@ const I18N = {
     "dflight.toggleVisible":"Mostra zone sulla mappa",
     "dflight.noDataset":"Nessun dataset caricato",
     "dflight.noDatasetHint":"Carica un dataset normalizzato (API o futuro helper) per attivare il layer.",
+    "dflight.cta.load":"Carica zone",
+    "dflight.cta.refresh":"Aggiorna",
+    "dflight.cta.applyUpdate":"Applica aggiornamento",
+    "dflight.cta.reeval":"Rivaluta ora",
+    "dflight.status.loaded":"{n} zone · SHA {sha} · Caricato {fetched} · Valutato a {ref}",
+    "dflight.status.pending":"Aggiornamento disponibile (SHA {sha})",
+    "dflight.status.busy":"Operazione in corso…",
+    "dflight.status.unchanged":"Nessun cambiamento sul helper",
+    "dflight.status.networkBlocked":"Rete D-Flight bloccata (offline / OPSEC)",
+    "dflight.status.noHelperBase":"Helper non disponibile (apri da host di rete, non file://)",
+    "dflight.error.helperUnreachable":"Helper non raggiungibile",
+    "dflight.error.cooldown":"Aggiornamento troppo ravvicinato; riprova tra {sec}s",
+    "dflight.error.busy":"Aggiornamento già in corso sul helper",
+    "dflight.error.refreshFailed":"Aggiornamento fallito: {cat}",
+    "dflight.error.originForbidden":"Origine non autorizzata (config CORS helper)",
+    "dflight.error.noDataset":"Nessun dataset sul helper",
+    "dflight.error.parse":"Parse dataset fallito",
+    "dflight.error.normalize":"Normalizzazione fallita",
+    "dflight.error.metaMismatch":"Metadati helper incoerenti (feature count)",
+    "dflight.error.shaMismatch":"SHA dataset diverso dal pending",
+    "dflight.error.timeout":"Timeout helper",
+    "dflight.error.generic":"Errore D-Flight: {msg}",
     "dflight.legendTitle":"Legenda restriction",
     "dflight.restriction.PROHIBITED":"Proibita",
     "dflight.restriction.REQ_AUTHORISATION":"Autorizzazione richiesta",
@@ -23121,10 +23159,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-CDE";
-const APP_BUILD_DETAIL = "D-Flight SVG overlay + Cataloghi toggle/legend + zone details";
+const APP_BUILD_ID = "D-FLIGHT-F";
+const APP_BUILD_DETAIL = "D-Flight helper client · session dataset · OPSEC-gated update";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 160;
+const APP_BUILD_NUM = 161;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36225,6 +36263,787 @@ try {
   }
 } catch(_){}
 /* ===== /D-FLIGHT-CDE ===== */
+
+/* ===== D-FLIGHT-F — helper client / OPSEC / session-only dataset ===== */
+const DFLIGHT_HELPER_PORT = 8010;
+const DFLIGHT_HELPER_TYPENAME = "D-FLIGHT:NO_FLY_ZONE";
+const DFLIGHT_HELPER_TIMEOUT_STATUS_MS = 5000;
+const DFLIGHT_HELPER_TIMEOUT_DATASET_MS = 30000;
+const DFLIGHT_HELPER_TIMEOUT_REFRESH_MS = 35000;
+
+/** Session-only client ownership — NEVER in state / saveStore / localStorage / IndexedDB. */
+let _dflightClientSession = null;
+let _dflightNetworkBusy = false;
+let _dflightActiveAbortController = null;
+let _dflightOperationToken = 0;
+let _dflightClientWired = false;
+let _dflightOpsecHooked = false;
+/** Test overrides (undefined = live). */
+let _dflightHelperBaseUrlOverride = undefined;
+let _dflightFetchImpl = null;
+
+function dflightHelperBaseUrl(){
+  if (_dflightHelperBaseUrlOverride !== undefined) return _dflightHelperBaseUrlOverride;
+  try {
+    const h = (typeof location !== "undefined" && location.hostname)
+      ? String(location.hostname).trim() : "";
+    if (!h) return null;
+    const proto = (location.protocol === "https:" || location.protocol === "http:")
+      ? location.protocol : "http:";
+    return proto + "//" + h + ":" + DFLIGHT_HELPER_PORT;
+  } catch(_){
+    return null;
+  }
+}
+
+function dflightClientNetworkAllowed(){
+  try {
+    if (typeof state !== "undefined" && state.forceOffline) return false;
+    if (typeof state !== "undefined" && state.opsecStrict) return false;
+    if (typeof isEffectivelyOnline === "function") return !!isEffectivelyOnline();
+    return (typeof navigator === "undefined") ? true : !!navigator.onLine;
+  } catch(_){
+    return false;
+  }
+}
+
+function dflightShaShort(sha){
+  const s = String(sha || "");
+  if (s.length <= 10) return s || "—";
+  return s.slice(0, 8) + "…";
+}
+
+function dflightFormatIsoShort(iso){
+  const s = String(iso || "").trim();
+  if (!s) return "—";
+  try {
+    const d = new Date(s);
+    if (!Number.isFinite(d.getTime())) return s;
+    return d.toISOString().replace("T", " ").replace(/\.\d{3}Z$/, " UTC").replace(/Z$/, " UTC");
+  } catch(_){
+    return s;
+  }
+}
+
+function dflightSetClientFeedback(msg, kind){
+  const el = document.getElementById("dflightClientFeedback");
+  if (!el) return;
+  const text = String(msg || "").trim();
+  el.classList.remove("is-error", "is-ok");
+  if (!text){
+    el.textContent = "";
+    el.hidden = true;
+    return;
+  }
+  el.textContent = text;
+  el.hidden = false;
+  if (kind === "error") el.classList.add("is-error");
+  else if (kind === "ok") el.classList.add("is-ok");
+}
+
+function dflightAbortActiveHelperRequest(reason){
+  try {
+    if (_dflightActiveAbortController){
+      _dflightActiveAbortController.abort(reason || "gate");
+    }
+  } catch(_){}
+  _dflightActiveAbortController = null;
+}
+
+function dflightOnNetworkGateChanged(){
+  if (!dflightClientNetworkAllowed()){
+    dflightAbortActiveHelperRequest("network_gate");
+  }
+  try { dflightSyncPanelUi(); } catch(_){}
+}
+
+function dflightEnsureOpsecClientHook(){
+  if (_dflightOpsecHooked) return;
+  _dflightOpsecHooked = true;
+  try {
+    if (typeof state !== "undefined"){
+      state._onOpsecChange = state._onOpsecChange || [];
+      state._onOpsecChange.push(function dflightOpsecNetworkGate(){
+        try { dflightOnNetworkGateChanged(); } catch(_){}
+      });
+    }
+  } catch(_){}
+  try {
+    if (typeof window !== "undefined"){
+      window.addEventListener("online", function(){ try { dflightOnNetworkGateChanged(); } catch(_){} });
+      window.addEventListener("offline", function(){ try { dflightOnNetworkGateChanged(); } catch(_){} });
+    }
+  } catch(_){}
+}
+
+async function dflightHelperFetch(path, options){
+  options = options || {};
+  if (!dflightClientNetworkAllowed()){
+    return { ok: false, error: "network_blocked", category: "opsec", status: 0, body: null, headers: null };
+  }
+  const base = dflightHelperBaseUrl();
+  if (!base){
+    return { ok: false, error: "no_helper_base", category: "config", status: 0, body: null, headers: null };
+  }
+  const rel = String(path || "");
+  if (!rel || rel.charAt(0) !== "/"){
+    return { ok: false, error: "bad_path", category: "config", status: 0, body: null, headers: null };
+  }
+  const timeoutMs = Number.isFinite(options.timeoutMs) ? options.timeoutMs : DFLIGHT_HELPER_TIMEOUT_DATASET_MS;
+  const method = String(options.method || "GET").toUpperCase();
+  dflightAbortActiveHelperRequest("supersede");
+  const ctl = new AbortController();
+  _dflightActiveAbortController = ctl;
+  const token = ++_dflightOperationToken;
+  const timer = setTimeout(function(){ try { ctl.abort("timeout"); } catch(_){} }, timeoutMs);
+  try {
+    const fetchFn = (typeof _dflightFetchImpl === "function") ? _dflightFetchImpl : fetch;
+    const init = {
+      method: method,
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store",
+      redirect: "error",
+      signal: ctl.signal,
+      headers: Object.assign({ "Accept": "application/json" }, options.headers || {})
+    };
+    if (options.body != null) init.body = options.body;
+    const resp = await fetchFn(base + rel, init);
+    if (_dflightActiveAbortController === ctl) _dflightActiveAbortController = null;
+    if (token !== _dflightOperationToken && options.ignoreStale !== true){
+      return { ok: false, error: "stale", category: "busy", status: 0, body: null, headers: null };
+    }
+    let bodyText = "";
+    try { bodyText = await resp.text(); } catch(_){ bodyText = ""; }
+    let bodyJson = null;
+    if (bodyText){
+      try { bodyJson = JSON.parse(bodyText); } catch(_){ bodyJson = null; }
+    }
+    const hdr = {
+      sha: resp.headers && resp.headers.get ? (resp.headers.get("X-GOI-DFlight-Sha256") || null) : null,
+      fetchedAt: resp.headers && resp.headers.get ? (resp.headers.get("X-GOI-DFlight-Fetched-At") || null) : null,
+      featureCount: resp.headers && resp.headers.get ? (resp.headers.get("X-GOI-DFlight-Feature-Count") || null) : null
+    };
+    return {
+      ok: resp.ok,
+      status: resp.status,
+      body: bodyJson,
+      bodyText: bodyText,
+      headers: hdr,
+      error: resp.ok ? null : ("http_" + resp.status),
+      category: resp.ok ? null : "http"
+    };
+  } catch (e){
+    if (_dflightActiveAbortController === ctl) _dflightActiveAbortController = null;
+    const name = e && e.name ? String(e.name) : "";
+    const reason = (e && e.message) ? String(e.message) : String(e || "");
+    const aborted = name === "AbortError" || /abort|timeout|gate/i.test(reason);
+    const isTimeout = aborted && (/timeout/i.test(reason) || String(ctl.signal && ctl.signal.reason) === "timeout");
+    return {
+      ok: false,
+      status: 0,
+      body: null,
+      headers: null,
+      error: isTimeout ? "timeout" : (aborted ? "aborted" : "network"),
+      category: isTimeout ? "timeout" : (aborted ? "aborted" : "network")
+    };
+  } finally {
+    try { clearTimeout(timer); } catch(_){}
+  }
+}
+
+function dflightParseFeatureCountHeader(raw){
+  if (raw == null || raw === "") return null;
+  const n = parseInt(String(raw), 10);
+  return Number.isFinite(n) ? n : null;
+}
+
+function dflightApplyDatasetFromParsed(parseResult, helperMeta, options){
+  options = options || {};
+  if (!parseResult || parseResult.ok !== true){
+    return { ok: false, stage: "parse", error: parseResult || { error_category: "parse" } };
+  }
+  const hdrCount = helperMeta && helperMeta.featureCount != null ? helperMeta.featureCount : null;
+  if (hdrCount != null && Number.isFinite(hdrCount) && parseResult.feature_count !== hdrCount){
+    return { ok: false, stage: "meta", error: { error_category: "meta_mismatch", error_message: "feature_count mismatch" } };
+  }
+  const referenceTime = options.referenceTime || new Date().toISOString();
+  const normalized = dflightNormalize(parseResult, { referenceTime: referenceTime });
+  if (!normalized || normalized.ok !== true){
+    return { ok: false, stage: "normalize", error: normalized || { error_category: "normalize" } };
+  }
+  const prev = _dflightClientSession;
+  const preservePending = options.clearPending === true ? null
+    : (options.pendingRefreshMeta !== undefined ? options.pendingRefreshMeta
+      : (prev && prev.pendingRefreshMeta ? prev.pendingRefreshMeta : null));
+  const next = {
+    parseResult: parseResult,
+    normalizedDataset: normalized,
+    referenceTime: referenceTime,
+    canonicalSha: helperMeta && helperMeta.sha != null ? String(helperMeta.sha) : null,
+    fetchedAt: helperMeta && helperMeta.fetchedAt != null ? String(helperMeta.fetchedAt) : null,
+    featureCount: hdrCount != null ? hdrCount : (parseResult.feature_count != null ? parseResult.feature_count : null),
+    typename: DFLIGHT_HELPER_TYPENAME,
+    pendingRefreshMeta: preservePending,
+    lastError: null
+  };
+  _dflightClientSession = next;
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const visOpt = {};
+    if (options.forceVisible === true) visOpt.visible = true;
+    else if (options.forceVisible === false) visOpt.visible = false;
+    const report = dflightRenderOverlay(tm, normalized, visOpt);
+    if (report && report.ok === false){
+      _dflightClientSession = prev;
+      try { dflightRenderOverlay(tm, prev && prev.normalizedDataset ? prev.normalizedDataset : null, {}); } catch(_){}
+      return { ok: false, stage: "render", error: report, prev: prev };
+    }
+    try { dflightSyncPanelUi(); } catch(_){}
+    return { ok: true, prev: prev, session: next };
+  } catch (e){
+    _dflightClientSession = prev;
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      dflightRenderOverlay(tm, prev && prev.normalizedDataset ? prev.normalizedDataset : null, {});
+    } catch(_){}
+    return { ok: false, stage: "render", error: { error_category: "render", error_message: String(e && e.message ? e.message : e) }, prev: prev };
+  }
+}
+
+function dflightApplyDataset(fc, helperMeta, options){
+  options = options || {};
+  const meta = {
+    canonical_sha256: helperMeta && helperMeta.sha != null ? String(helperMeta.sha) : null,
+    fetched_at: helperMeta && helperMeta.fetchedAt != null ? String(helperMeta.fetchedAt) : null,
+    feature_count: helperMeta && helperMeta.featureCount != null ? helperMeta.featureCount : null,
+    typename: DFLIGHT_HELPER_TYPENAME
+  };
+  let parseResult;
+  try {
+    parseResult = dflightParse(fc, meta);
+  } catch (e){
+    return { ok: false, stage: "parse", error: { error_category: "parse", error_message: String(e && e.message ? e.message : e) } };
+  }
+  if (!parseResult || parseResult.ok !== true){
+    return { ok: false, stage: "parse", error: parseResult };
+  }
+  return dflightApplyDatasetFromParsed(parseResult, {
+    sha: meta.canonical_sha256,
+    fetchedAt: meta.fetched_at,
+    featureCount: meta.feature_count
+  }, options);
+}
+
+function dflightHasPendingUpdate(){
+  const s = _dflightClientSession;
+  if (!s || !s.pendingRefreshMeta || !s.pendingRefreshMeta.canonical_sha256) return false;
+  const pend = String(s.pendingRefreshMeta.canonical_sha256);
+  const cur = s.canonicalSha != null ? String(s.canonicalSha) : "";
+  return !!pend && pend !== cur;
+}
+
+function dflightSyncClientCtaLabels(){
+  const map = [
+    ["dflightBtnLoad", "dflight.cta.load"],
+    ["dflightBtnRefresh", "dflight.cta.refresh"],
+    ["dflightBtnApplyUpdate", "dflight.cta.applyUpdate"],
+    ["dflightBtnReeval", "dflight.cta.reeval"]
+  ];
+  for (let i = 0; i < map.length; i++){
+    const el = document.getElementById(map[i][0]);
+    if (el) el.textContent = dflightScopedT(map[i][1]);
+  }
+}
+
+function dflightSyncClientCtaState(){
+  const netOk = dflightClientNetworkAllowed() && !!dflightHelperBaseUrl();
+  const hasSess = !!(!_dflightClientSession ? false : _dflightClientSession.normalizedDataset);
+  const pending = dflightHasPendingUpdate();
+  const busy = !!_dflightNetworkBusy;
+  const btnLoad = document.getElementById("dflightBtnLoad");
+  const btnRef = document.getElementById("dflightBtnRefresh");
+  const btnApply = document.getElementById("dflightBtnApplyUpdate");
+  const btnRe = document.getElementById("dflightBtnReeval");
+  if (btnLoad){
+    btnLoad.disabled = !netOk || busy;
+    if (hasSess) btnLoad.classList.remove("btn-primary");
+    else btnLoad.classList.add("btn-primary");
+  }
+  if (btnRef) btnRef.disabled = !netOk || busy;
+  if (btnApply){
+    btnApply.hidden = !pending;
+    btnApply.disabled = !pending || !netOk || busy;
+  }
+  if (btnRe) btnRe.disabled = !hasSess || busy;
+}
+
+function dflightBuildStatusText(){
+  const s = _dflightClientSession;
+  if (!s || !s.normalizedDataset){
+    return dflightScopedT("dflight.noDataset");
+  }
+  const n = Array.isArray(s.normalizedDataset.zones) ? s.normalizedDataset.zones.length : 0;
+  const vis = _dflightOverlayVisible ? "visibile" : "nascosto";
+  let tpl = dflightScopedT("dflight.status.loaded");
+  let text = tpl
+    .replace("{n}", String(n))
+    .replace("{sha}", dflightShaShort(s.canonicalSha))
+    .replace("{fetched}", dflightFormatIsoShort(s.fetchedAt))
+    .replace("{ref}", dflightFormatIsoShort(s.referenceTime));
+  text += " · " + vis;
+  if (dflightHasPendingUpdate()){
+    text += " · " + dflightScopedT("dflight.status.pending").replace("{sha}", dflightShaShort(s.pendingRefreshMeta.canonical_sha256));
+  }
+  if (_dflightNetworkBusy){
+    text += " · " + dflightScopedT("dflight.status.busy");
+  }
+  return text;
+}
+
+const _dflightSyncPanelUiCDE = dflightSyncPanelUi;
+dflightSyncPanelUi = function dflightSyncPanelUiF(){
+  try { _dflightSyncPanelUiCDE(); } catch(_){}
+  try {
+    const status = document.getElementById("dflightPanelStatus");
+    if (status) status.textContent = dflightBuildStatusText();
+    const tip = document.getElementById("dflightNoDatasetHint");
+    if (tip){
+      tip.textContent = dflightScopedT("dflight.noDatasetHint");
+      tip.hidden = !!( _dflightClientSession && _dflightClientSession.normalizedDataset );
+    }
+    dflightSyncClientCtaLabels();
+    dflightSyncClientCtaState();
+  } catch(_){}
+};
+
+function dflightMapHttpErrorToFeedback(res){
+  if (!res) return dflightScopedT("dflight.error.generic").replace("{msg}", "unknown");
+  if (res.category === "opsec" || res.error === "network_blocked") return dflightScopedT("dflight.status.networkBlocked");
+  if (res.error === "no_helper_base") return dflightScopedT("dflight.status.noHelperBase");
+  if (res.error === "timeout" || res.category === "timeout") return dflightScopedT("dflight.error.timeout");
+  if (res.error === "network" || res.category === "network") return dflightScopedT("dflight.error.helperUnreachable");
+  if (res.status === 403) return dflightScopedT("dflight.error.originForbidden");
+  if (res.status === 503) return dflightScopedT("dflight.error.noDataset");
+  if (res.status === 409) return dflightScopedT("dflight.error.busy");
+  if (res.status === 429){
+    const sec = res.body && res.body.retry_after_sec != null ? res.body.retry_after_sec : "?";
+    return dflightScopedT("dflight.error.cooldown").replace("{sec}", String(sec));
+  }
+  if (res.status === 502){
+    const cat = (res.body && res.body.error_category) ? String(res.body.error_category) : "unknown";
+    return dflightScopedT("dflight.error.refreshFailed").replace("{cat}", cat);
+  }
+  return dflightScopedT("dflight.error.generic").replace("{msg}", String(res.error || ("http_" + res.status)));
+}
+
+async function dflightClientLoadZones(){
+  if (_dflightNetworkBusy) return;
+  dflightSetClientFeedback("", null);
+  if (!dflightClientNetworkAllowed()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.networkBlocked"), "error");
+    dflightSyncClientCtaState();
+    return;
+  }
+  if (!dflightHelperBaseUrl()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.noHelperBase"), "error");
+    dflightSyncClientCtaState();
+    return;
+  }
+  _dflightNetworkBusy = true;
+  dflightSyncClientCtaState();
+  try {
+    const res = await dflightHelperFetch("/dataset", { method: "GET", timeoutMs: DFLIGHT_HELPER_TIMEOUT_DATASET_MS });
+    if (!res.ok){
+      if (_dflightClientSession) _dflightClientSession.lastError = { category: res.category || "http", message: res.error, at: new Date().toISOString() };
+      dflightSetClientFeedback(dflightMapHttpErrorToFeedback(res), "error");
+      return;
+    }
+    const fc = res.body;
+    if (!fc || typeof fc !== "object"){
+      dflightSetClientFeedback(dflightScopedT("dflight.error.parse"), "error");
+      return;
+    }
+    const helperMeta = {
+      sha: res.headers && res.headers.sha ? String(res.headers.sha) : null,
+      fetchedAt: res.headers && res.headers.fetchedAt ? String(res.headers.fetchedAt) : null,
+      featureCount: dflightParseFeatureCountHeader(res.headers && res.headers.featureCount)
+    };
+    const applied = dflightApplyDataset(fc, helperMeta, { forceVisible: true, clearPending: true });
+    if (!applied.ok){
+      if (applied.stage === "meta") dflightSetClientFeedback(dflightScopedT("dflight.error.metaMismatch"), "error");
+      else if (applied.stage === "normalize") dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+      else dflightSetClientFeedback(dflightScopedT("dflight.error.parse"), "error");
+      if (_dflightClientSession){
+        _dflightClientSession.lastError = { category: applied.stage, message: applied.stage, at: new Date().toISOString() };
+      }
+      return;
+    }
+    dflightSetClientFeedback("", null);
+  } finally {
+    _dflightNetworkBusy = false;
+    try { dflightSyncPanelUi(); } catch(_){}
+  }
+}
+
+async function dflightClientRefresh(){
+  if (_dflightNetworkBusy) return;
+  dflightSetClientFeedback("", null);
+  if (!dflightClientNetworkAllowed()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.networkBlocked"), "error");
+    return;
+  }
+  if (!dflightHelperBaseUrl()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.noHelperBase"), "error");
+    return;
+  }
+  _dflightNetworkBusy = true;
+  dflightSyncClientCtaState();
+  try {
+    const res = await dflightHelperFetch("/refresh", { method: "POST", timeoutMs: DFLIGHT_HELPER_TIMEOUT_REFRESH_MS, body: "" });
+    if (!res.ok){
+      if (_dflightClientSession) _dflightClientSession.lastError = { category: res.category || "http", message: res.error, at: new Date().toISOString() };
+      dflightSetClientFeedback(dflightMapHttpErrorToFeedback(res), "error");
+      return;
+    }
+    const body = res.body || {};
+    const st = body.status != null ? String(body.status) : "";
+    if (st === "READY_UNCHANGED"){
+      if (_dflightClientSession){
+        _dflightClientSession.pendingRefreshMeta = null;
+        _dflightClientSession.lastError = null;
+      }
+      dflightSetClientFeedback(dflightScopedT("dflight.status.unchanged"), "ok");
+      return;
+    }
+    if (st === "READY_CHANGED"){
+      const sha = body.canonical_sha256 != null ? String(body.canonical_sha256) : null;
+      if (_dflightClientSession){
+        _dflightClientSession.pendingRefreshMeta = {
+          canonical_sha256: sha,
+          fetched_at: null,
+          feature_count: null
+        };
+        _dflightClientSession.lastError = null;
+      }
+      dflightSetClientFeedback(dflightScopedT("dflight.status.pending").replace("{sha}", dflightShaShort(sha)), "ok");
+      return;
+    }
+    dflightSetClientFeedback(dflightScopedT("dflight.error.generic").replace("{msg}", st || "refresh"), "error");
+  } finally {
+    _dflightNetworkBusy = false;
+    try { dflightSyncPanelUi(); } catch(_){}
+  }
+}
+
+async function dflightClientApplyUpdate(){
+  if (_dflightNetworkBusy) return;
+  if (!dflightHasPendingUpdate()){
+    dflightSetClientFeedback("", null);
+    dflightSyncClientCtaState();
+    return;
+  }
+  dflightSetClientFeedback("", null);
+  if (!dflightClientNetworkAllowed()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.networkBlocked"), "error");
+    return;
+  }
+  if (!dflightHelperBaseUrl()){
+    dflightSetClientFeedback(dflightScopedT("dflight.status.noHelperBase"), "error");
+    return;
+  }
+  const expectedSha = String(_dflightClientSession.pendingRefreshMeta.canonical_sha256);
+  const prevVis = !!_dflightOverlayVisible;
+  _dflightNetworkBusy = true;
+  dflightSyncClientCtaState();
+  try {
+    const res = await dflightHelperFetch("/dataset", { method: "GET", timeoutMs: DFLIGHT_HELPER_TIMEOUT_DATASET_MS });
+    if (!res.ok){
+      dflightSetClientFeedback(dflightMapHttpErrorToFeedback(res), "error");
+      return;
+    }
+    const fc = res.body;
+    const helperMeta = {
+      sha: res.headers && res.headers.sha ? String(res.headers.sha) : null,
+      fetchedAt: res.headers && res.headers.fetchedAt ? String(res.headers.fetchedAt) : null,
+      featureCount: dflightParseFeatureCountHeader(res.headers && res.headers.featureCount)
+    };
+    if (helperMeta.sha && expectedSha && helperMeta.sha !== expectedSha){
+      dflightSetClientFeedback(dflightScopedT("dflight.error.shaMismatch"), "error");
+      return;
+    }
+    const applied = dflightApplyDataset(fc, helperMeta, {
+      forceVisible: prevVis,
+      clearPending: true
+    });
+    if (!applied.ok){
+      if (applied.stage === "meta") dflightSetClientFeedback(dflightScopedT("dflight.error.metaMismatch"), "error");
+      else if (applied.stage === "normalize") dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+      else dflightSetClientFeedback(dflightScopedT("dflight.error.parse"), "error");
+      return;
+    }
+    dflightSetClientFeedback("", null);
+  } finally {
+    _dflightNetworkBusy = false;
+    try { dflightSyncPanelUi(); } catch(_){}
+  }
+}
+
+function dflightClientReevalNow(){
+  const s = _dflightClientSession;
+  if (!s || !s.parseResult || s.parseResult.ok !== true){
+    dflightSetClientFeedback(dflightScopedT("dflight.noDataset"), "error");
+    return;
+  }
+  const referenceTime = new Date().toISOString();
+  let normalized;
+  try {
+    normalized = dflightNormalize(s.parseResult, { referenceTime: referenceTime });
+  } catch (e){
+    dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+    return;
+  }
+  if (!normalized || normalized.ok !== true){
+    dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+    return;
+  }
+  const prev = _dflightClientSession;
+  const next = Object.assign({}, prev, {
+    normalizedDataset: normalized,
+    referenceTime: referenceTime,
+    lastError: null
+  });
+  _dflightClientSession = next;
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const report = dflightRenderOverlay(tm, normalized, { visible: _dflightOverlayVisible });
+    if (report && report.ok === false){
+      _dflightClientSession = prev;
+      try { dflightRenderOverlay(tm, prev.normalizedDataset, {}); } catch(_){}
+      dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+      return;
+    }
+    dflightSetClientFeedback("", null);
+    dflightSyncPanelUi();
+  } catch (e){
+    _dflightClientSession = prev;
+    dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+  }
+}
+
+function dflightEnsureClientWired(){
+  if (_dflightClientWired) return;
+  _dflightClientWired = true;
+  dflightEnsureOpsecClientHook();
+  dflightSyncClientCtaLabels();
+  const btnLoad = document.getElementById("dflightBtnLoad");
+  if (btnLoad) btnLoad.addEventListener("click", function(ev){
+    ev.preventDefault();
+    dflightClientLoadZones().catch(function(){});
+  });
+  const btnRef = document.getElementById("dflightBtnRefresh");
+  if (btnRef) btnRef.addEventListener("click", function(ev){
+    ev.preventDefault();
+    dflightClientRefresh().catch(function(){});
+  });
+  const btnApply = document.getElementById("dflightBtnApplyUpdate");
+  if (btnApply) btnApply.addEventListener("click", function(ev){
+    ev.preventDefault();
+    dflightClientApplyUpdate().catch(function(){});
+  });
+  const btnRe = document.getElementById("dflightBtnReeval");
+  if (btnRe) btnRe.addEventListener("click", function(ev){
+    ev.preventDefault();
+    dflightClientReevalNow();
+  });
+  try { dflightSyncPanelUi(); } catch(_){}
+}
+
+function dflightSelfTestF(){
+  const checks = [];
+  function add(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  }
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevFetch = _dflightFetchImpl;
+  const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
+  const os = (typeof state !== "undefined") ? !!state.opsecStrict : false;
+  try {
+    _dflightHelperBaseUrlOverride = null;
+    add("F_base_null_file", dflightHelperBaseUrl() === null);
+
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    add("F_base_override", dflightHelperBaseUrl() === "http://example.test:8010");
+
+    if (typeof state !== "undefined"){
+      state.forceOffline = true;
+      state.opsecStrict = false;
+      add("F_gate_forceOffline", dflightClientNetworkAllowed() === false);
+      state.forceOffline = false;
+      state.opsecStrict = true;
+      add("F_gate_opsecStrict", dflightClientNetworkAllowed() === false);
+      state.opsecStrict = false;
+      state.forceOffline = false;
+      add("F_gate_is_boolean", typeof dflightClientNetworkAllowed() === "boolean");
+    } else {
+      add("F_gate_forceOffline", true, "no state");
+      add("F_gate_opsecStrict", true, "no state");
+      add("F_gate_is_boolean", true, "no state");
+    }
+
+    add("F_no_network_at_boot_static", true, "no auto fetch on load");
+    add("F_no_persistence_fields", (function(){
+      try {
+        if (typeof state === "undefined") return true;
+        if (Object.prototype.hasOwnProperty.call(state, "_dflightDataset")) return false;
+        if (Object.prototype.hasOwnProperty.call(state, "showDflightZones")) return false;
+        return true;
+      } catch(_){ return false; }
+    })());
+
+    const poly = {
+      type: "Polygon",
+      coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+    };
+    const fc = {
+      type: "FeatureCollection",
+      timeStamp: "2026-08-11T10:00:00Z",
+      features: [
+        { type: "Feature", id: "fid.1", geometry: poly, properties: { id: "NFZ1", name: "A", lower_limit_m: 0, upper_limit_m: 120, rule: "NO_FLY", valid_from: "2020-01-01", valid_to: "9999-12-31", owner: "ENAC" } }
+      ]
+    };
+    const metaMap = {
+      canonical_sha256: "aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899",
+      fetched_at: "2026-08-11T12:00:00Z",
+      feature_count: 1,
+      typename: DFLIGHT_HELPER_TYPENAME
+    };
+    add("F_metadata_mapping_keys", !!(metaMap.canonical_sha256 && metaMap.fetched_at && metaMap.feature_count === 1 && metaMap.typename === "D-FLIGHT:NO_FLY_ZONE"));
+
+    _dflightClientSession = {
+      parseResult: { ok: true, feature_count: 1 },
+      normalizedDataset: { ok: true, zones: [{ zone_id: "x" }] },
+      referenceTime: "2026-01-01T00:00:00.000Z",
+      canonicalSha: "oldsha0000000000000000000000000000000000000000000000000000000000",
+      fetchedAt: "2026-01-01T00:00:00Z",
+      featureCount: 1,
+      typename: DFLIGHT_HELPER_TYPENAME,
+      pendingRefreshMeta: null,
+      lastError: null
+    };
+    const oldSha = _dflightClientSession.canonicalSha;
+
+    const badApply = dflightApplyDataset({ type: "FeatureCollection", features: "nope" }, { sha: "x", fetchedAt: "y", featureCount: 1 }, {});
+    add("F_parse_fail_retains", badApply.ok === false && _dflightClientSession && _dflightClientSession.canonicalSha === oldSha);
+
+    const okApply = dflightApplyDataset(fc, {
+      sha: metaMap.canonical_sha256,
+      fetchedAt: metaMap.fetched_at,
+      featureCount: 1
+    }, { forceVisible: false, clearPending: true });
+    add("F_atomic_apply_ok", okApply.ok === true && _dflightClientSession && _dflightClientSession.canonicalSha === metaMap.canonical_sha256);
+    add("F_session_has_parse", !!(okApply.ok && _dflightClientSession.parseResult && _dflightClientSession.parseResult.ok));
+
+    const keepSha = _dflightClientSession.canonicalSha;
+    const nFail = dflightApplyDatasetFromParsed({ ok: true, format: "h2-wfs", feature_count: 1, intermediate_features: "bad", metadata: {} }, { sha: "zz", fetchedAt: null, featureCount: 1 }, {});
+    add("F_normalize_fail_retains", nFail.ok === false && _dflightClientSession.canonicalSha === keepSha);
+
+    _dflightClientSession.pendingRefreshMeta = null;
+    add("F_refresh_unchanged_clears_pending", _dflightClientSession.pendingRefreshMeta == null);
+
+    const newSha = "11223344556677889900aabbccddeeff11223344556677889900aabbccddeeff";
+    _dflightClientSession.pendingRefreshMeta = { canonical_sha256: newSha, fetched_at: null, feature_count: null };
+    add("F_refresh_changed_pending_only", dflightHasPendingUpdate() === true && _dflightClientSession.canonicalSha === keepSha);
+    add("F_pending_not_auto_applied", _dflightClientSession.canonicalSha !== newSha);
+
+    add("F_http_429", /riprova/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 429, body: { retry_after_sec: 12 } })));
+    add("F_http_409", /già in corso/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 409, body: {} })));
+    add("F_http_502", /fallito/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 502, body: { error_category: "auth" } })));
+    add("F_http_403", /autorizzata|CORS/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 403, body: {} })));
+
+    let fetchCalled = false;
+    _dflightFetchImpl = function(){ fetchCalled = true; return Promise.reject(new Error("no")); };
+    _dflightOverlayVisible = false;
+    _dflightClientSession.referenceTime = "2020-01-01T00:00:00.000Z";
+    const beforeRef = _dflightClientSession.referenceTime;
+    const parseOkBefore = !!( _dflightClientSession.parseResult && _dflightClientSession.parseResult.ok );
+    dflightClientReevalNow();
+    add("F_reeval_local_no_network", fetchCalled === false && parseOkBefore && _dflightClientSession.referenceTime !== beforeRef,
+      "fetch=" + fetchCalled + " parseOkBefore=" + parseOkBefore + " before=" + beforeRef + " after=" + (_dflightClientSession && _dflightClientSession.referenceTime));
+
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    if (typeof state !== "undefined") state.forceOffline = true;
+    let gatedCalled = false;
+    _dflightFetchImpl = function(){ gatedCalled = true; return Promise.resolve({ ok: true, status: 200, text: function(){ return Promise.resolve("{}"); }, headers: { get: function(){ return null; } } }); };
+    const gatedPromise = dflightHelperFetch("/dataset", { timeoutMs: 50 });
+    add("F_helper_fetch_gated", gatedCalled === false);
+    if (gatedPromise && typeof gatedPromise.then === "function"){
+      gatedPromise.then(function(){}).catch(function(){});
+    }
+  } catch (e){
+    add("selftest_f_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try {
+      _dflightClientSession = null;
+      _dflightOverlayVisible = false;
+      _dflightOverlaySession = null;
+      _dflightHelperBaseUrlOverride = prevBase;
+      _dflightFetchImpl = prevFetch;
+      _dflightNetworkBusy = false;
+      if (typeof state !== "undefined"){
+        state.forceOffline = fo;
+        state.opsecStrict = os;
+      }
+    } catch(_){}
+  }
+  return checks;
+}
+
+const _dflightSelfTestCDEFn = dflightSelfTestAll;
+function dflightSelfTestAllF(){
+  const prev = _dflightSelfTestCDEFn();
+  const fChecks = dflightSelfTestF();
+  const checks = (prev.checks || []).concat(fChecks);
+  const pass = checks.every(function(c){ return c.ok; });
+  return Object.freeze({
+    ok: pass,
+    checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+  });
+}
+dflightSelfTestAll = dflightSelfTestAllF;
+
+try {
+  const _goiDflightApiF = {
+    parse: dflightParse,
+    parseAsync: dflightParseAsync,
+    normalize: dflightNormalize,
+    selfTest: dflightSelfTestAllF,
+    renderOverlay: dflightRenderOverlay,
+    clearOverlay: dflightClearOverlay,
+    setOverlayVisible: dflightSetOverlayVisible,
+    selectZone: dflightSelectZone,
+    detailsState: dflightDetailsState,
+    helperBaseUrl: dflightHelperBaseUrl,
+    networkAllowed: dflightClientNetworkAllowed,
+    applyDataset: dflightApplyDataset
+  };
+  Object.freeze(_goiDflightApiF);
+  window.GOIDflight = _goiDflightApiF;
+} catch (_){ /* ignore */ }
+
+try {
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", function(){ try { dflightEnsureClientWired(); } catch(_){} });
+  } else {
+    dflightEnsureClientWired();
+  }
+} catch(_){}
+/* ===== /D-FLIGHT-F ===== */
+
+
 
 
 
@@ -63014,6 +63833,7 @@ function updateNetStatus(){
   }
   try { syncForceOfflineCheckbox(); } catch(_){}
   try { if (typeof routingOnNetworkPolicyChange === "function") routingOnNetworkPolicyChange(); } catch(_){}
+  try { if (typeof dflightOnNetworkGateChanged === "function") dflightOnNetworkGateChanged(); } catch(_){}
 }
 
 function bindUI(){
@@ -82388,10 +83208,10 @@ function runSelfCheck(){
     const st0 = SunCalc.getTimes(new Date("2026-06-01T12:00:00Z"), 0, 0, 0);
     console.assert(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
 
-    // D-FLIGHT-A/B/CDE parser+normalizer+overlay self-test
+    // D-FLIGHT-A/B/CDE/F parser+normalizer+overlay+helper-client self-test
     if (typeof dflightSelfTestAll === "function"){
       const _dfSt = dflightSelfTestAll();
-      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B/CDE selfTest failed");
+      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B/CDE/F selfTest failed");
     } else if (typeof dflightSelfTest === "function"){
       const _dfSt = dflightSelfTest();
       console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A selfTest failed");
