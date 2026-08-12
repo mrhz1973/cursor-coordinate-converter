@@ -2,43 +2,44 @@
 
 ## LATEST
 
-* real_task_commit: `6540fcaddd178e2ce53eee33bd35444f3e705e62` — verify short `6540fca`
-* real_task_subject: docs: finito — chiude D-FLIGHT-G-UI-OVERLAY-A-FIX2 (QA PASS operatore)
-* report_generated_at: 2026-08-13T00:19:00+02:00
+* real_task_commit: `5cbae9c9f4434db173a3bc534bb7e8345d1d048d` — verify short `5cbae9c`
+* real_task_subject: feat: D-FLIGHT-F-ATM09-ARCH-A candidate — ATM09 WMS tile proxy + ATM09_INFO
+* report_generated_at: 2026-08-13T01:15:00+02:00
 * branch: main
-* remote_head_after_task_push: `6540fcaddd178e2ce53eee33bd35444f3e705e62`
-* previous_report_container: `eb87b971f3099bbfab6fcc01da4169b62d85417f`
+* remote_head_after_task_push: `5cbae9c9f4434db173a3bc534bb7e8345d1d048d`
+* previous_report_container: `677a1b8363315014014cec49a93b52748a1f4c23`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: pulito salvo autosync di questo intervento
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task finito pushato su `6540fca`
-* result_cursor: chiusura `finito` Regola H dopo QA operatore FIX2 PASS
-* pass_operatore: **PASS** — attestazione `QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore` (operatore)
-* result_runtime: GIS live `42edb6f` / D-FLIGHT-G-UI-OVERLAY-A-FIX2 / build **167**
-* qa_attestation_source: operatore; Automated Browser QA FIX2 PASS precedente; FAIL F/G/FIX1 restano storici
-* notes: serie G CLOSED; F non CLOSED; no terzo commit
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task candidate pushato su `5cbae9c`
+* result_cursor: candidate ATM09 ARCH-A implementato; **STOP PRE-DEPLOY**; review GPT-sostitutiva required
+* pass_operatore: **non applicabile** (pre-deploy; no QA operatore)
+* result_runtime: GIS live **invariato** `42edb6f` / build **167**; helper prod `:8010` invariato
+* qa_attestation_source: helper 78/78; node --check PASS; browser selftest 120/120; temp helper :8011 smoke La Spezia
+* notes: monolite escluso da questo commit autosync (già nel task `5cbae9c`); no deploy; no finito
 
 ## OUTPUT VERBATIM
 
 ```text
-git rev-parse HEAD (task finito, pre-autosync)
-6540fcaddd178e2ce53eee33bd35444f3e705e62
+git rev-parse HEAD (task candidate, pre-autosync)
+5cbae9c9f4434db173a3bc534bb7e8345d1d048d
 
-Attestazione:
-QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore
+git ls-remote origin main (post task push, pre-autosync)
+5cbae9c9f4434db173a3bc534bb7e8345d1d048d	refs/heads/main
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
+* `677a1b8363315014014cec49a93b52748a1f4c23` — docs: orchestratore — riconciliazione finito sessione (G-FIX2)
+* `6540fcaddd178e2ce53eee33bd35444f3e705e62` — docs: finito — chiude D-FLIGHT-G-UI-OVERLAY-A-FIX2
 * `eb87b971f3099bbfab6fcc01da4169b62d85417f` — docs: orchestratore — D-FLIGHT-G-UI-OVERLAY-A-FIX2 deploy + browser QA PASS
 * `0b650cc5481f6bc7d3f805d125db1f8b1116301b` — docs: orchestratore — D-FLIGHT-G-UI-OVERLAY-A-FIX1 deploy + browser QA PASS
 * `8d180314aaae69a6b2e49bd402d2090d143be442` — docs: orchestratore — D-FLIGHT-G-UI-OVERLAY-A deploy + browser QA PASS
-* `5f48c99003c0f352f9180297e1b872efee1d64c2` — docs: orchestratore — AUTOMATED BROWSER QA D-FLIGHT-F PASS
-* `d9fa25b130794de8402c30550fd0597211e139d2` — docs: orchestratore — D-FLIGHT-F ACL :8010 still blocked
 
 ## LIMITI
 
-* D-FLIGHT-F resta FAIL / non CLOSED.
+* Candidate non deployato.
+* D-FLIGHT-F non CLOSED end-to-end.
 * SHA autosync corrente = EXTERNAL_ONLY.
