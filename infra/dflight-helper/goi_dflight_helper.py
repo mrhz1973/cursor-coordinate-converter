@@ -31,7 +31,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-HELPER_VERSION = "0.1.1"
+HELPER_VERSION = "0.1.2"
 SCHEMA_VERSION = 1
 ACCESS_SAFETY_MARGIN_SEC = 60
 DEFAULT_END_NFZ = "9999-12-31T00:00"
@@ -1205,7 +1205,14 @@ def make_handler(helper: DFlightHelper):
                     "X-GOI-DFlight-Fetched-At": str((meta or {}).get("fetched_at") or ""),
                     "X-GOI-DFlight-Feature-Count": str((meta or {}).get("feature_count") or ""),
                 }
-                headers.update(self._cors_headers())
+                cors = self._cors_headers()
+                headers.update(cors)
+                # Scoped to /dataset: browser JS needs X-GOI-DFlight-* via headers.get().
+                # Only when Origin is already allowlisted (ACAO present). Never '*'.
+                if cors.get("Access-Control-Allow-Origin"):
+                    headers["Access-Control-Expose-Headers"] = (
+                        "X-GOI-DFlight-Sha256, X-GOI-DFlight-Fetched-At, X-GOI-DFlight-Feature-Count"
+                    )
                 self.send_response(200)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self.send_header("Content-Length", str(len(raw)))

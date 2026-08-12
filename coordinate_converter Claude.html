@@ -23159,10 +23159,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-F";
-const APP_BUILD_DETAIL = "D-Flight helper client · session dataset · OPSEC-gated update";
+const APP_BUILD_ID = "D-FLIGHT-F-FIX1";
+const APP_BUILD_DETAIL = "CORS expose X-GOI-DFlight-* · fail-closed pending SHA";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 161;
+const APP_BUILD_NUM = 162;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36770,7 +36770,9 @@ async function dflightClientApplyUpdate(){
       fetchedAt: res.headers && res.headers.fetchedAt ? String(res.headers.fetchedAt) : null,
       featureCount: dflightParseFeatureCountHeader(res.headers && res.headers.featureCount)
     };
-    if (helperMeta.sha && expectedSha && helperMeta.sha !== expectedSha){
+    // Fail-closed: pending expected SHA requires a present matching header SHA.
+    // Missing/null helper SHA must NOT bypass the check (truthiness bug fixed in FIX1).
+    if (!dflightClientPendingShaMatches(expectedSha, helperMeta.sha)){
       dflightSetClientFeedback(dflightScopedT("dflight.error.shaMismatch"), "error");
       return;
     }
@@ -36789,6 +36791,13 @@ async function dflightClientApplyUpdate(){
     _dflightNetworkBusy = false;
     try { dflightSyncPanelUi(); } catch(_){}
   }
+}
+
+/** Pure pending-SHA gate for apply: expected present ⇒ helper SHA must be present and equal. */
+function dflightClientPendingShaMatches(expectedSha, helperSha){
+  if (expectedSha == null || expectedSha === "") return true;
+  if (helperSha == null || helperSha === "") return false;
+  return String(helperSha) === String(expectedSha);
 }
 
 function dflightClientReevalNow(){
@@ -36958,6 +36967,22 @@ function dflightSelfTestF(){
     _dflightClientSession.pendingRefreshMeta = { canonical_sha256: newSha, fetched_at: null, feature_count: null };
     add("F_refresh_changed_pending_only", dflightHasPendingUpdate() === true && _dflightClientSession.canonicalSha === keepSha);
     add("F_pending_not_auto_applied", _dflightClientSession.canonicalSha !== newSha);
+
+    add("F_pending_sha_null_failclosed", dflightClientPendingShaMatches(newSha, null) === false);
+    add("F_pending_sha_empty_failclosed", dflightClientPendingShaMatches(newSha, "") === false);
+    add("F_pending_sha_mismatch_failclosed", dflightClientPendingShaMatches(newSha, "deadbeef") === false);
+    add("F_pending_sha_match_ok", dflightClientPendingShaMatches(newSha, newSha) === true);
+    add("F_pending_sha_absent_expected_ok", dflightClientPendingShaMatches("", null) === true);
+    {
+      const pendBefore = Object.assign({}, _dflightClientSession.pendingRefreshMeta);
+      const canBefore = _dflightClientSession.canonicalSha;
+      const missingOk = dflightClientPendingShaMatches(pendBefore.canonical_sha256, null);
+      add("F_pending_missing_header_blocks_apply", missingOk === false
+        && _dflightClientSession.canonicalSha === canBefore
+        && _dflightClientSession.pendingRefreshMeta
+        && String(_dflightClientSession.pendingRefreshMeta.canonical_sha256) === String(pendBefore.canonical_sha256));
+      add("F_pending_matching_header_allows_gate", dflightClientPendingShaMatches(pendBefore.canonical_sha256, pendBefore.canonical_sha256) === true);
+    }
 
     add("F_http_429", /riprova/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 429, body: { retry_after_sec: 12 } })));
     add("F_http_409", /già in corso/i.test(dflightMapHttpErrorToFeedback({ ok: false, status: 409, body: {} })));

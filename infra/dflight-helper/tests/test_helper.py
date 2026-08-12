@@ -603,6 +603,41 @@ class TestHelperApi(unittest.TestCase):
                 status, headers, _body = _http_json(f"http://127.0.0.1:{port}{path}", headers=origin)
                 self.assertEqual(status, 200, path)
                 self.assertEqual(headers.get("Access-Control-Allow-Origin"), "http://gis.test")
+                self.assertNotEqual(headers.get("Access-Control-Allow-Origin"), "*")
+
+            status, headers, _body = _http_json(
+                f"http://127.0.0.1:{port}/dataset", headers=origin
+            )
+            self.assertEqual(status, 200)
+            self.assertEqual(headers.get("Access-Control-Allow-Origin"), "http://gis.test")
+            expose = headers.get("Access-Control-Expose-Headers") or ""
+            self.assertTrue(expose, "Access-Control-Expose-Headers required on /dataset")
+            expose_l = expose.lower()
+            self.assertIn("x-goi-dflight-sha256", expose_l)
+            self.assertIn("x-goi-dflight-fetched-at", expose_l)
+            self.assertIn("x-goi-dflight-feature-count", expose_l)
+            self.assertNotIn("*", expose)
+            self.assertTrue(headers.get("X-GOI-DFlight-Sha256"))
+            self.assertTrue(headers.get("X-GOI-DFlight-Fetched-At"))
+            self.assertEqual(headers.get("X-GOI-DFlight-Feature-Count"), "2")
+
+            status, headers, _body = _http_json(
+                f"http://127.0.0.1:{port}/status", headers=origin
+            )
+            self.assertEqual(status, 200)
+            status_expose = headers.get("Access-Control-Expose-Headers")
+            self.assertTrue(status_expose is None or status_expose == "")
+
+            status, headers, _body = _http_json(
+                f"http://127.0.0.1:{port}/dataset",
+                headers={"Origin": "http://evil.test"},
+            )
+            self.assertEqual(status, 403)
+            acao = headers.get("Access-Control-Allow-Origin")
+            self.assertTrue(acao is None or acao == "")
+            self.assertNotEqual(acao, "*")
+            deny_expose = headers.get("Access-Control-Expose-Headers")
+            self.assertTrue(deny_expose is None or deny_expose == "")
 
             def fake_get(url, *, timeout, headers=None, byte_cap):
                 return 200, {"content-type": "application/json"}, self.valid_raw
