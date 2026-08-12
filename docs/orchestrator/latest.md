@@ -9,11 +9,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A`** candidate **IMPLEMENTATO / PRE-DEPLOY**.  
-Task **`5cbae9c`**. Helper ATM09 chiuso + monolite build **168**. **NON** deployato (né GIS né helper prod).  
+2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX1`** candidate **IMPLEMENTATO / PRE-DEPLOY**.  
+Task **`a5da8d415109cd50135a40e7390b26e36d785011`**. Monolite build **169**. Helper **byte-invariato**.  
 Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**.  
-CORS live OK (`http://100.114.7.53:8000`). Trasporto ATM09: WMS GetMap EPSG:3857 (TMS/GWC 404).
+Correzioni review: readiness ATM09 fail-closed (NFZ non soppresso finché tile load ok), load/error per generazione, network-gate abort INFO, opacity **1**.
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0115_riepilogo_d-flight-f-atm09-arch-a-candidate.md`](inbox/2026-08-13_0115_riepilogo_d-flight-f-atm09-arch-a-candidate.md).
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0128_riepilogo_d-flight-f-atm09-arch-a-fix1-candidate.md`](inbox/2026-08-13_0128_riepilogo_d-flight-f-atm09-arch-a-fix1-candidate.md).
 
-Runtime live invariato: `42edb6f` / build 167 (G-FIX2).
+Runtime live **invariato**: `42edb6f` / build **167** (G-FIX2). **Nessun deploy.**
