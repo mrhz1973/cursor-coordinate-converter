@@ -8518,25 +8518,29 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
   pointer-events:none; display:block; overflow:visible; z-index:2;
 }
 .dflight-zone-overlay .dflight-volume{
-  fill-opacity:0.32;
-  stroke-width:2.1;
+  fill-opacity:0.42;
+  stroke-width:2.4;
   stroke-linejoin:round;
   stroke-linecap:round;
 }
 .dflight-zone-overlay .dflight-volume.is-prohibited{
-  fill:rgba(220,38,38,0.34); stroke:#ef4444; stroke-dasharray:none;
+  fill:rgba(185,28,28,0.48); stroke:#fecaca; stroke-width:2.8; stroke-dasharray:none;
 }
 .dflight-zone-overlay .dflight-volume.is-req-auth{
-  fill:rgba(234,88,12,0.3); stroke:#f97316; stroke-dasharray:7 4;
+  fill:rgba(194,65,12,0.4); stroke:#fdba74; stroke-dasharray:10 5;
 }
-.dflight-zone-overlay .dflight-volume.is-conditional{
-  fill:rgba(202,138,4,0.28); stroke:#eab308; stroke-dasharray:3 5;
+.dflight-zone-overlay .dflight-volume.is-conditional,
+.dflight-zone-overlay .dflight-volume.is-temp-notam{
+  fill:rgba(161,98,7,0.38); stroke:#fde047; stroke-dasharray:3 4 10 4;
 }
 .dflight-zone-overlay .dflight-volume.is-no-restriction{
-  fill:rgba(22,163,74,0.22); stroke:#22c55e; stroke-dasharray:none;
+  fill:rgba(21,128,61,0.28); stroke:#86efac; stroke-dasharray:none;
+}
+.dflight-zone-overlay .dflight-volume.is-expired{
+  fill:rgba(71,85,105,0.22); stroke:#cbd5e1; stroke-dasharray:1 5; stroke-width:1.6;
 }
 .dflight-zone-overlay .dflight-volume.is-unknown{
-  fill:rgba(100,116,139,0.28); stroke:#94a3b8; stroke-dasharray:2 4;
+  fill:rgba(100,116,139,0.3); stroke:#e2e8f0; stroke-dasharray:2 6;
 }
 .dflight-map-hover-hint{
   position:fixed; z-index:9200; pointer-events:none; max-width:280px;
@@ -8563,11 +8567,18 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-legend-swatch{
   width:14px; height:14px; border-radius:3px; border:1.5px solid currentColor; flex:0 0 auto;
 }
-.dflight-legend-swatch.is-prohibited{ background:rgba(220,38,38,0.34); color:#ef4444; }
-.dflight-legend-swatch.is-req-auth{ background:rgba(234,88,12,0.3); color:#f97316; border-style:dashed; }
-.dflight-legend-swatch.is-conditional{ background:rgba(202,138,4,0.28); color:#eab308; border-style:dashed; }
-.dflight-legend-swatch.is-no-restriction{ background:rgba(22,163,74,0.22); color:#22c55e; }
-.dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.28); color:#94a3b8; border-style:dashed; }
+.dflight-legend-swatch.is-prohibited{ background:rgba(185,28,28,0.48); color:#fecaca; }
+.dflight-legend-swatch.is-req-auth{ background:rgba(194,65,12,0.4); color:#fdba74; border-style:dashed; }
+.dflight-legend-swatch.is-conditional,
+.dflight-legend-swatch.is-temp-notam{ background:rgba(161,98,7,0.38); color:#fde047; border-style:dashed; }
+.dflight-legend-swatch.is-no-restriction{ background:rgba(21,128,61,0.28); color:#86efac; }
+.dflight-legend-swatch.is-expired{ background:rgba(71,85,105,0.22); color:#cbd5e1; border-style:dotted; }
+.dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.3); color:#e2e8f0; border-style:dashed; }
+body.gis-mode dialog.app-modal.gis-panel-floating,
+body.gis-mode dialog.app-modal.gis-panel-floating[open]{
+  pointer-events:auto;
+  overscroll-behavior:contain;
+}
 .dflight-panel .dflight-status,
 .dflight-details-panel .dflight-details-meta{
   font-size:12px; color:var(--muted, #64748b); margin:0 0 8px;
@@ -16110,7 +16121,16 @@ const I18N = {
     "dflight.error.shaMismatch":"SHA dataset diverso dal pending",
     "dflight.error.timeout":"Timeout helper",
     "dflight.error.generic":"Errore D-Flight: {msg}",
-    "dflight.legendTitle":"Legenda restriction",
+    "dflight.legendTitle":"Legenda zone",
+    "dflight.style.PROHIBITED":"Proibita",
+    "dflight.style.REQ_AUTHORISATION":"Autorizzazione richiesta",
+    "dflight.style.CONDITIONAL":"Condizionale",
+    "dflight.style.NO_RESTRICTION":"Nessuna restrizione",
+    "dflight.style.UNKNOWN":"Non classificata",
+    "dflight.style.WFS_PROHIBITED":"Proibita (da regola)",
+    "dflight.style.WFS_REQ_AUTH":"Autorizzazione / eccezioni",
+    "dflight.style.WFS_TEMP_NOTAM":"Temporanea / NOTAM",
+    "dflight.style.WFS_EXPIRED":"Scaduta",
     "dflight.hover.preview":"{name} · {restriction} · {temporal}",
     "gis.minimized.dflight":"Zone D-Flight",
     "gis.minimized.dflightDetails":"Dettaglio zona",
@@ -23176,10 +23196,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A";
-const APP_BUILD_DETAIL = "D-Flight overlay pan-sync · GIS panels · legend/hover · minimize whitelist";
+const APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A-FIX1";
+const APP_BUILD_DETAIL = "WFS style from rule/status · panel wheel isolation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 164;
+const APP_BUILD_NUM = 165;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35606,11 +35626,63 @@ let _dflightDetailsOpen = false;
 let _dflightUiWired = false;
 
 function dflightRestrictionCssClass(restriction){
-  if (restriction === "PROHIBITED") return "is-prohibited";
-  if (restriction === "REQ_AUTHORISATION") return "is-req-auth";
-  if (restriction === "CONDITIONAL") return "is-conditional";
-  if (restriction === "NO_RESTRICTION") return "is-no-restriction";
+  return dflightStyleCssClass(dflightStyleKeyFromRestriction(restriction));
+}
+function dflightStyleKeyFromRestriction(restriction){
+  if (restriction === "PROHIBITED") return "PROHIBITED";
+  if (restriction === "REQ_AUTHORISATION") return "REQ_AUTHORISATION";
+  if (restriction === "CONDITIONAL") return "CONDITIONAL";
+  if (restriction === "NO_RESTRICTION") return "NO_RESTRICTION";
+  return "UNKNOWN";
+}
+function dflightStyleCssClass(styleKey){
+  const k = String(styleKey || "UNKNOWN");
+  if (k === "PROHIBITED" || k === "WFS_PROHIBITED") return "is-prohibited";
+  if (k === "REQ_AUTHORISATION" || k === "WFS_REQ_AUTH") return "is-req-auth";
+  if (k === "CONDITIONAL" || k === "WFS_TEMP_NOTAM") return "is-conditional is-temp-notam";
+  if (k === "NO_RESTRICTION") return "is-no-restriction";
+  if (k === "WFS_EXPIRED") return "is-expired";
   return "is-unknown";
+}
+function dflightStyleLabel(styleKey){
+  const k = String(styleKey || "UNKNOWN");
+  const key = "dflight.style." + k;
+  const v = dflightScopedT(key);
+  if (v && v !== key) return v;
+  if (DFLIGHT_RESTRICTION_ENUM[k]) return dflightRestrictionLabel(k);
+  return dflightScopedT("dflight.style.UNKNOWN");
+}
+function dflightStripHtmlLite(s){
+  return String(s == null ? "" : s).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+function dflightZoneStyleKey(zone){
+  if (!zone) return "UNKNOWN";
+  // ED-269 path: only when restriction_known + whitelist enum (never invent on WFS model).
+  if (zone.restriction_known && zone.restriction && DFLIGHT_RESTRICTION_ENUM[zone.restriction]){
+    return zone.restriction;
+  }
+  const props = (zone.raw_properties && typeof zone.raw_properties === "object") ? zone.raw_properties : null;
+  const status = props && props.status != null ? String(props.status).toUpperCase() : "";
+  if (status === "EXPIRED" || zone.temporal_state === "EXPIRED") return "WFS_EXPIRED";
+  const rawBits = [];
+  if (zone.restriction_raw) rawBits.push(String(zone.restriction_raw));
+  if (props){
+    if (props.rule != null) rawBits.push(String(props.rule));
+    if (props.regola != null) rawBits.push(String(props.regola));
+  }
+  const text = dflightStripHtmlLite(rawBits.join(" ")).toLowerCase();
+  if (!text) return "UNKNOWN";
+  // Live NO_FLY_ZONE semantics (observed): free-text rule/regola + status.
+  if (/\bnotam\b|temporary reserved|temporaneamente riserv|area temporaneamente|qwulw|qrtca|qwplw/.test(text)){
+    return "WFS_TEMP_NOTAM";
+  }
+  if (/prior operational authorization|autorizzazione operativa|formal request|richiedere autorizz|richiesta inviata|following a formal request|a seguito di richiesta/.test(text)){
+    return "WFS_REQ_AUTH";
+  }
+  if (/\bno[_-]?fly\b|prohibited|forbidden|vietate|sono vietate|operations are forbidden|uas operations are prohibited/.test(text)){
+    return "WFS_PROHIBITED";
+  }
+  return "UNKNOWN";
 }
 function dflightRestrictionLabel(restriction){
   if (restriction && DFLIGHT_RESTRICTION_ENUM[restriction]){
@@ -35783,7 +35855,7 @@ function dflightDrawOverlayDom(tileMap, dataset){
     g.setAttribute("class", "dflight-zone" + (String(zone.zone_id) === String(_dflightSelectedZoneId) ? " is-selected" : ""));
     if (zone.zone_id != null) g.setAttribute("data-zone-id", String(zone.zone_id));
     if (zone.temporal_state) g.setAttribute("data-temporal-state", String(zone.temporal_state));
-    const rClass = dflightRestrictionCssClass(zone.restriction);
+    const rClass = dflightStyleCssClass(dflightZoneStyleKey(zone));
     let drew = 0;
     for (let vi = 0; vi < vols.length; vi++){
       const vol = vols[vi];
@@ -36047,10 +36119,20 @@ function dflightPinPanelBelowTopbar(dlg, kind){
   try { if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, opts); } catch(_){}
 }
 
+function gisPanelTrapWheel(dlg){
+  if (!dlg || dlg._gisWheelTrapBound) return;
+  dlg._gisWheelTrapBound = true;
+  // When the wheel hits the panel, keep it here (native scroll). Map zoom is
+  // blocked separately via elementFromPoint in attachWheelZoom (fall-through).
+  dlg.addEventListener("wheel", function(ev){
+    try { ev.stopPropagation(); } catch(_){}
+  }, { passive: true, capture: true });
+}
 function dflightWireFloatingPanel(dlg, kind){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
   const opts = _dflightPanelLayoutOpts(kind);
   dlg.classList.add("gis-panel-floating");
+  try { gisPanelTrapWheel(dlg); } catch(_){}
   dlg.style.position = "fixed";
   dlg.style.margin = "0";
   dlg.style.transform = "none";
@@ -36123,10 +36205,22 @@ function dflightCloseDetailsPanel(){
 }
 
 function dflightCollectLegendCategories(dataset){
-  const order = ["PROHIBITED", "REQ_AUTHORISATION", "CONDITIONAL", "NO_RESTRICTION", "UNKNOWN"];
+  // Prefer keys actually present in the loaded dataset (ED enum and/or WFS-derived style).
+  const order = [
+    "PROHIBITED", "WFS_PROHIBITED",
+    "REQ_AUTHORISATION", "WFS_REQ_AUTH",
+    "CONDITIONAL", "WFS_TEMP_NOTAM",
+    "NO_RESTRICTION",
+    "WFS_EXPIRED",
+    "UNKNOWN"
+  ];
   if (!dataset || !Array.isArray(dataset.zones) || !dataset.zones.length) return [];
-  // Full semantic legend (restriction enum) when any dataset is loaded.
-  return order.slice();
+  const seen = Object.create(null);
+  for (let i = 0; i < dataset.zones.length; i++){
+    const k = dflightZoneStyleKey(dataset.zones[i]);
+    seen[k] = 1;
+  }
+  return order.filter(function(k){ return !!seen[k]; });
 }
 
 function dflightSyncPanelUi(){
@@ -36157,10 +36251,10 @@ function dflightSyncPanelUi(){
         const li = document.createElement("li");
         li.className = "dflight-legend-item";
         const sw = document.createElement("span");
-        sw.className = "dflight-legend-swatch " + dflightRestrictionCssClass(cat === "UNKNOWN" ? null : cat);
+        sw.className = "dflight-legend-swatch " + dflightStyleCssClass(cat);
         sw.setAttribute("aria-hidden", "true");
         const lab = document.createElement("span");
-        lab.textContent = dflightRestrictionLabel(cat === "UNKNOWN" ? null : cat);
+        lab.textContent = dflightStyleLabel(cat);
         li.appendChild(sw);
         li.appendChild(lab);
         list.appendChild(li);
@@ -36202,7 +36296,7 @@ function dflightHideHoverHint(){
 function dflightFormatHoverText(zone){
   if (!zone) return "";
   const name = zone.name ? String(zone.name) : (zone.zone_id ? String(zone.zone_id) : "—");
-  const restr = dflightRestrictionLabel(zone.restriction);
+  const restr = dflightStyleLabel(dflightZoneStyleKey(zone));
   const temp = dflightTemporalLabel(zone.temporal_state);
   let tpl = dflightScopedT("dflight.hover.preview");
   if (!tpl || tpl === "dflight.hover.preview") tpl = "{name} · {restriction} · {temporal}";
@@ -36359,15 +36453,34 @@ function dflightSelfTestCDE(){
     _dflightOverlaySession = prevSess;
     add("CDE_no_network_static", true, "no fetch in CDE region");
     add("CDE_api_surface", typeof dflightRenderOverlay === "function" && typeof dflightSetOverlayVisible === "function" && typeof dflightSelectZone === "function");
-    add("G_legend_full_enum", (function(){
+    add("G_legend_present_keys", (function(){
       const cats = dflightCollectLegendCategories(ds);
-      return cats.length === 5 && cats.indexOf("PROHIBITED") >= 0 && cats.indexOf("UNKNOWN") >= 0;
+      return cats.length === 1 && cats[0] === "PROHIBITED";
     })());
     add("G_hover_format", (function(){
       const txt = dflightFormatHoverText(ds.zones[0]);
-      return typeof txt === "string" && txt.indexOf("Test") >= 0 && txt.indexOf(dflightRestrictionLabel("PROHIBITED")) >= 0;
+      return typeof txt === "string" && txt.indexOf("Test") >= 0 && txt.indexOf(dflightStyleLabel("PROHIBITED")) >= 0;
     })());
     add("G_overlay_mount_tile_layer", String(dflightDrawOverlayDom).indexOf("tileLayer.appendChild(svg)") >= 0);
+    add("G_wfs_style_prohibited", dflightZoneStyleKey({
+      restriction: null, restriction_known: false,
+      restriction_raw: "NO_FLY",
+      raw_properties: { rule: "UAS operations are prohibited in this area", status: "ACTIVATED" }
+    }) === "WFS_PROHIBITED");
+    add("G_wfs_style_notam", dflightZoneStyleKey({
+      restriction: null, restriction_known: false,
+      restriction_raw: "x",
+      raw_properties: { rule: "TEMPORARY RESERVED AREAS AS FOR NOTAM (W2604/26", status: "ACTIVATED" }
+    }) === "WFS_TEMP_NOTAM");
+    add("G_wfs_style_auth", dflightZoneStyleKey({
+      restriction: null, restriction_known: false,
+      restriction_raw: "x",
+      raw_properties: { rule: "other UAS with a prior operational authorization issued by", status: "PUBLISHED" }
+    }) === "WFS_REQ_AUTH");
+    add("G_wfs_no_false_ed_enum", (function(){
+      const z = { restriction: null, restriction_known: false, restriction_raw: "NO_FLY", raw_properties: { rule: "NO_FLY", status: "ACTIVATED" } };
+      return z.restriction === null && dflightZoneStyleKey(z) === "WFS_PROHIBITED";
+    })());
   } catch (e){
     add("selftest_cde_exception", false, String(e && e.message ? e.message : e));
   }
@@ -57447,6 +57560,20 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
   };
 
   root.addEventListener("wheel", (ev) => {
+    // GIS floating panels sit above the map (z~24–29) but wheel can fall through
+    // to #miniMap when the panel body is not a scroll container. Never zoom then.
+    try {
+      const topEl = (typeof document.elementFromPoint === "function")
+        ? document.elementFromPoint(ev.clientX, ev.clientY)
+        : null;
+      const overUi = topEl && topEl.closest && topEl.closest(
+        "dialog.app-modal[open], .tab-drawer.is-open, #gisMinimizedDock, #toolsModal[open], #convertModal[open]"
+      );
+      if (overUi){
+        ev.preventDefault();
+        return;
+      }
+    } catch(_){}
     const tileMap = root.querySelector(".tile-map");
     if (!tileMap || !tileMap.contains(ev.target)) return;
     if (ev.target.closest("button, a")) return;
@@ -66254,7 +66381,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal"];
+    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal","dflightPanel","dflightDetailsPanel","cartoIgmPanel"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -66281,6 +66408,7 @@ function gisPanelAttachBringToFront(root, opts){
   root.addEventListener("pointerdown", () => {
     try { gisPanelBringToFront(root, opts); } catch(_){}
   }, true);
+  try { if (typeof gisPanelTrapWheel === "function") gisPanelTrapWheel(root); } catch(_){}
   root._gisPanelBringToFrontInstalled = true;
 }
 
