@@ -8518,25 +8518,33 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
   pointer-events:none; display:block; overflow:visible; z-index:2;
 }
 .dflight-zone-overlay .dflight-volume{
-  fill-opacity:0.2;
-  stroke-width:1.75;
+  fill-opacity:0.32;
+  stroke-width:2.1;
   stroke-linejoin:round;
   stroke-linecap:round;
 }
 .dflight-zone-overlay .dflight-volume.is-prohibited{
-  fill:rgba(220,38,38,0.22); stroke:#dc2626;
+  fill:rgba(220,38,38,0.34); stroke:#ef4444; stroke-dasharray:none;
 }
 .dflight-zone-overlay .dflight-volume.is-req-auth{
-  fill:rgba(234,88,12,0.2); stroke:#ea580c;
+  fill:rgba(234,88,12,0.3); stroke:#f97316; stroke-dasharray:7 4;
 }
 .dflight-zone-overlay .dflight-volume.is-conditional{
-  fill:rgba(202,138,4,0.2); stroke:#ca8a04;
+  fill:rgba(202,138,4,0.28); stroke:#eab308; stroke-dasharray:3 5;
 }
 .dflight-zone-overlay .dflight-volume.is-no-restriction{
-  fill:rgba(22,163,74,0.18); stroke:#16a34a;
+  fill:rgba(22,163,74,0.22); stroke:#22c55e; stroke-dasharray:none;
 }
 .dflight-zone-overlay .dflight-volume.is-unknown{
-  fill:rgba(100,116,139,0.2); stroke:#64748b;
+  fill:rgba(100,116,139,0.28); stroke:#94a3b8; stroke-dasharray:2 4;
+}
+.dflight-map-hover-hint{
+  position:fixed; z-index:9200; pointer-events:none; max-width:280px;
+  padding:5px 10px; border-radius:8px; font-size:.74rem; font-weight:600; line-height:1.25;
+  color:var(--text);
+  background:color-mix(in srgb, var(--panel) 88%, #dc2626 10%);
+  border:1px solid color-mix(in srgb, var(--border) 70%, #dc2626 30%);
+  box-shadow:0 2px 12px rgba(0,0,0,.22);
 }
 .dflight-zone-overlay .dflight-zone.is-selected .dflight-volume{
   fill-opacity:0.38;
@@ -8555,11 +8563,11 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-legend-swatch{
   width:14px; height:14px; border-radius:3px; border:1.5px solid currentColor; flex:0 0 auto;
 }
-.dflight-legend-swatch.is-prohibited{ background:rgba(220,38,38,0.22); color:#dc2626; }
-.dflight-legend-swatch.is-req-auth{ background:rgba(234,88,12,0.2); color:#ea580c; }
-.dflight-legend-swatch.is-conditional{ background:rgba(202,138,4,0.2); color:#ca8a04; }
-.dflight-legend-swatch.is-no-restriction{ background:rgba(22,163,74,0.18); color:#16a34a; }
-.dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.2); color:#64748b; }
+.dflight-legend-swatch.is-prohibited{ background:rgba(220,38,38,0.34); color:#ef4444; }
+.dflight-legend-swatch.is-req-auth{ background:rgba(234,88,12,0.3); color:#f97316; border-style:dashed; }
+.dflight-legend-swatch.is-conditional{ background:rgba(202,138,4,0.28); color:#eab308; border-style:dashed; }
+.dflight-legend-swatch.is-no-restriction{ background:rgba(22,163,74,0.22); color:#22c55e; }
+.dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.28); color:#94a3b8; border-style:dashed; }
 .dflight-panel .dflight-status,
 .dflight-details-panel .dflight-details-meta{
   font-size:12px; color:var(--muted, #64748b); margin:0 0 8px;
@@ -8590,8 +8598,8 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-details-warnings{ margin-top:8px; font-size:12px; color:#b45309; }
 body.gis-mode dialog#dflightPanel.dflight-panel,
 body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel{
-  width:min(380px, 92vw);
-  max-height:min(70vh, 560px);
+  width:min(400px, 94vw);
+  max-height:min(82vh, 640px);
 }
 
 /* Series colors applied inline from CARTO_IGM_SERIES_VISUAL (UX1); CSS = fallback only */
@@ -13863,9 +13871,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-modal-head" id="dflightPanelHead">
     <h2 id="dflightPanelTitle" class="app-modal-title">Zone D-Flight (UAS)</h2>
     <div class="app-modal-head-actions">
+      <button type="button" data-role="dflightpanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
       <button type="button" class="app-modal-close" id="dflightPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
+  <p id="dflightPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="dflightPanelBody">
     <p id="dflightPanelStatus" class="dflight-status hint" role="status" aria-live="polite">Nessun dataset caricato</p>
     <div class="dflight-cta-row" id="dflightCtaRow">
@@ -13895,9 +13906,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-modal-head" id="dflightDetailsPanelHead">
     <h2 id="dflightDetailsPanelTitle" class="app-modal-title">Dettaglio zona</h2>
     <div class="app-modal-head-actions">
+      <button type="button" data-role="dflightdetailspanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
       <button type="button" class="app-modal-close" id="dflightDetailsPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
     </div>
   </div>
+  <p id="dflightDetailsPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="dflightDetailsPanelBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
@@ -16097,6 +16111,9 @@ const I18N = {
     "dflight.error.timeout":"Timeout helper",
     "dflight.error.generic":"Errore D-Flight: {msg}",
     "dflight.legendTitle":"Legenda restriction",
+    "dflight.hover.preview":"{name} · {restriction} · {temporal}",
+    "gis.minimized.dflight":"Zone D-Flight",
+    "gis.minimized.dflightDetails":"Dettaglio zona",
     "dflight.restriction.PROHIBITED":"Proibita",
     "dflight.restriction.REQ_AUTHORISATION":"Autorizzazione richiesta",
     "dflight.restriction.CONDITIONAL":"Condizionale",
@@ -23159,10 +23176,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-F-FIX1";
-const APP_BUILD_DETAIL = "CORS expose X-GOI-DFlight-* · fail-closed pending SHA";
+const APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A";
+const APP_BUILD_DETAIL = "D-Flight overlay pan-sync · GIS panels · legend/hover UX";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 162;
+const APP_BUILD_NUM = 163;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35687,6 +35704,7 @@ function dflightRemoveOverlayDom(tileMap){
     const old = tileMap.querySelector(".dflight-zone-overlay");
     if (old) old.remove();
   } catch(_){}
+  try { dflightHideHoverHint(); } catch(_){}
 }
 
 function dflightFindZoneById(dataset, zoneId){
@@ -35728,6 +35746,13 @@ function dflightDrawOverlayDom(tileMap, dataset){
     report.ok = false;
     report.error_category = "dom";
     report.error_message = "missing_miniMap";
+    return report;
+  }
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer){
+    report.ok = false;
+    report.error_category = "dom";
+    report.error_message = "missing_tile_layer";
     return report;
   }
   const tr = dflightReadTileLayerTranslate(tileMap);
@@ -35783,8 +35808,9 @@ function dflightDrawOverlayDom(tileMap, dataset){
     }
   }
   svg.appendChild(frag);
-  tileMap.appendChild(svg);
+  tileLayer.appendChild(svg);
   try { dflightAttachClickHandler(tileMap); } catch(_){}
+  try { dflightAttachHoverHandler(tileMap); } catch(_){}
   return report;
 }
 
@@ -35977,17 +36003,48 @@ function _dflightPanelLayoutOpts(kind){
     pad: 12,
     minW: 280,
     minH: 180,
-    defaultW: isDetails ? 360 : 320,
+    defaultW: isDetails ? 380 : 340,
     defaultH: null,
-    defaultHeightFraction: isDetails ? 0.55 : 0.42,
-    defaultHeightCap: isDetails ? 520 : 420,
+    defaultHeightFraction: isDetails ? 0.62 : 0.58,
+    defaultHeightCap: isDetails ? 620 : 560,
     topbarReserve: 104,
-    bodyMinH: 100,
+    bodyMinH: 120,
     partialMinVisible: 64,
     bodyId: isDetails ? "dflightDetailsPanelBody" : "dflightPanelBody",
     headId: isDetails ? "dflightDetailsPanelHead" : "dflightPanelHead",
     closeId: isDetails ? "dflightDetailsPanelClose" : "dflightPanelClose"
   };
+}
+function dflightPinPanelBelowTopbar(dlg, kind){
+  if (!dlg) return;
+  const opts = _dflightPanelLayoutOpts(kind);
+  const key = opts.key;
+  const lay = (typeof gPanelLayouts === "object" && gPanelLayouts && gPanelLayouts[key]) ? gPanelLayouts[key] : {};
+  if (lay && lay.touched) return;
+  const gap = 10;
+  let topY = null;
+  try {
+    const hdr = document.querySelector("body.gis-mode > header") || document.querySelector("header");
+    if (hdr){
+      const hb = hdr.getBoundingClientRect();
+      if (Number.isFinite(hb.bottom) && hb.bottom > 0) topY = hb.bottom + gap;
+    }
+  } catch(_){}
+  if (!(Number.isFinite(topY))){
+    const reserve = Number.isFinite(opts.topbarReserve) ? opts.topbarReserve : 104;
+    topY = reserve + gap;
+  }
+  dlg.style.top = topY + "px";
+  dlg.style.left = (Number.isFinite(opts.pad) ? opts.pad : 12) + "px";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const br = dlg.getBoundingClientRect();
+    if (typeof gisPanelSetLayout === "function"){
+      gisPanelSetLayout(key, { left: br.left, top: topY, w: br.width, h: br.height, touched: false }, opts);
+    }
+  } catch(_){}
+  try { if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, opts); } catch(_){}
 }
 
 function dflightWireFloatingPanel(dlg, kind){
@@ -36026,7 +36083,9 @@ function dflightOpenControlPanel(){
   try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
   try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
   _dflightPanelOpen = true;
+  try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightPanel"); } catch(_){}
   try { dflightWireFloatingPanel(dlg, "control"); } catch(_){}
+  try { dflightPinPanelBelowTopbar(dlg, "control"); } catch(_){}
   try { dflightSyncPanelUi(); } catch(_){}
   return true;
 }
@@ -36049,7 +36108,9 @@ function dflightOpenDetailsPanel(zone){
   try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
   try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
   _dflightDetailsOpen = true;
+  try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightDetailsPanel"); } catch(_){}
   try { dflightWireFloatingPanel(dlg, "details"); } catch(_){}
+  try { dflightPinPanelBelowTopbar(dlg, "details"); } catch(_){}
   return true;
 }
 
@@ -36063,14 +36124,9 @@ function dflightCloseDetailsPanel(){
 
 function dflightCollectLegendCategories(dataset){
   const order = ["PROHIBITED", "REQ_AUTHORISATION", "CONDITIONAL", "NO_RESTRICTION", "UNKNOWN"];
-  const seen = Object.create(null);
-  const zones = (dataset && Array.isArray(dataset.zones)) ? dataset.zones : [];
-  for (let i = 0; i < zones.length; i++){
-    const r = zones[i] && zones[i].restriction;
-    const key = (r && DFLIGHT_RESTRICTION_ENUM[r]) ? r : "UNKNOWN";
-    seen[key] = 1;
-  }
-  return order.filter(function(k){ return !!seen[k]; });
+  if (!dataset || !Array.isArray(dataset.zones) || !dataset.zones.length) return [];
+  // Full semantic legend (restriction enum) when any dataset is loaded.
+  return order.slice();
 }
 
 function dflightSyncPanelUi(){
@@ -36121,9 +36177,77 @@ function dflightAttachClickHandler(tileMap){
     const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
     if (!path) return;
     try { ev.stopPropagation(); } catch(_){}
+    try { dflightHideHoverHint(); } catch(_){}
     const zoneId = path.getAttribute("data-zone-id");
     try { dflightSelectZone(zoneId); } catch(_){}
   }, true);
+}
+
+function dflightEnsureHoverHintEl(){
+  let el = document.getElementById("dflightMapHoverHint");
+  if (!el){
+    el = document.createElement("div");
+    el.id = "dflightMapHoverHint";
+    el.className = "dflight-map-hover-hint";
+    el.setAttribute("role", "status");
+    el.hidden = true;
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function dflightHideHoverHint(){
+  const h = document.getElementById("dflightMapHoverHint");
+  if (h) h.hidden = true;
+}
+function dflightFormatHoverText(zone){
+  if (!zone) return "";
+  const name = zone.name ? String(zone.name) : (zone.zone_id ? String(zone.zone_id) : "—");
+  const restr = dflightRestrictionLabel(zone.restriction);
+  const temp = dflightTemporalLabel(zone.temporal_state);
+  let tpl = dflightScopedT("dflight.hover.preview");
+  if (!tpl || tpl === "dflight.hover.preview") tpl = "{name} · {restriction} · {temporal}";
+  return tpl.replace("{name}", name).replace("{restriction}", restr).replace("{temporal}", temp);
+}
+function dflightAttachHoverHandler(tileMap){
+  if (!tileMap || tileMap._dflightHoverBound) return;
+  tileMap._dflightHoverBound = true;
+  let hoverTimer = null;
+  const clearT = function(){
+    if (hoverTimer){ try { clearTimeout(hoverTimer); } catch(_){} hoverTimer = null; }
+  };
+  tileMap.addEventListener("pointerover", function(ev){
+    if (!_dflightOverlayVisible || !_dflightOverlaySession) return;
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    if (!path) return;
+    const zoneId = path.getAttribute("data-zone-id");
+    const zone = dflightFindZoneById(_dflightOverlaySession.dataset, zoneId);
+    if (!zone) return;
+    clearT();
+    const cx = ev.clientX, cy = ev.clientY;
+    hoverTimer = setTimeout(function(){
+      hoverTimer = null;
+      const box = dflightEnsureHoverHintEl();
+      box.textContent = dflightFormatHoverText(zone);
+      const pad = 12;
+      box.hidden = false;
+      const bw = box.offsetWidth || 200;
+      const bh = box.offsetHeight || 28;
+      box.style.left = Math.max(pad, Math.min((cx || 0) + 14, window.innerWidth - bw - pad)) + "px";
+      box.style.top = Math.max(pad, Math.min((cy || 0) + 14, window.innerHeight - bh - pad)) + "px";
+    }, 320);
+  }, true);
+  tileMap.addEventListener("pointerout", function(ev){
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    if (!path) return;
+    const related = ev.relatedTarget;
+    if (related && related.closest){
+      const relPath = related.closest(".dflight-volume[data-zone-id]");
+      if (relPath && relPath.getAttribute("data-zone-id") === path.getAttribute("data-zone-id")) return;
+    }
+    clearT();
+    dflightHideHoverHint();
+  }, true);
+  tileMap.addEventListener("pointerdown", function(){ clearT(); dflightHideHoverHint(); }, true);
 }
 
 function dflightEnsureUiWired(){
@@ -36143,6 +36267,22 @@ function dflightEnsureUiWired(){
     const tm = root && root.querySelector(".tile-map");
     if (tm && _dflightOverlayVisible && _dflightOverlaySession) dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
   });
+  const minP = document.querySelector('[data-role="dflightpanel-minimize"]');
+  if (minP && !minP._dflightMinBound){
+    minP._dflightMinBound = true;
+    minP.addEventListener("click", function(ev){
+      ev.preventDefault();
+      try { if (typeof gisMinimizePanel === "function") gisMinimizePanel("dflightPanel", "gis.minimized.dflight"); } catch(_){}
+    });
+  }
+  const minD = document.querySelector('[data-role="dflightdetailspanel-minimize"]');
+  if (minD && !minD._dflightMinBound){
+    minD._dflightMinBound = true;
+    minD.addEventListener("click", function(ev){
+      ev.preventDefault();
+      try { if (typeof gisMinimizePanel === "function") gisMinimizePanel("dflightDetailsPanel", "gis.minimized.dflightDetails"); } catch(_){}
+    });
+  }
   const tog = document.getElementById("dflightVisibleToggle");
   if (tog) tog.addEventListener("change", function(){
     const r = dflightSetOverlayVisible(!!tog.checked);
@@ -36219,6 +36359,15 @@ function dflightSelfTestCDE(){
     _dflightOverlaySession = prevSess;
     add("CDE_no_network_static", true, "no fetch in CDE region");
     add("CDE_api_surface", typeof dflightRenderOverlay === "function" && typeof dflightSetOverlayVisible === "function" && typeof dflightSelectZone === "function");
+    add("G_legend_full_enum", (function(){
+      const cats = dflightCollectLegendCategories(ds);
+      return cats.length === 5 && cats.indexOf("PROHIBITED") >= 0 && cats.indexOf("UNKNOWN") >= 0;
+    })());
+    add("G_hover_format", (function(){
+      const txt = dflightFormatHoverText(ds.zones[0]);
+      return typeof txt === "string" && txt.indexOf("Test") >= 0 && txt.indexOf(dflightRestrictionLabel("PROHIBITED")) >= 0;
+    })());
+    add("G_overlay_mount_tile_layer", String(dflightDrawOverlayDom).indexOf("tileLayer.appendChild(svg)") >= 0);
   } catch (e){
     add("selftest_cde_exception", false, String(e && e.message ? e.message : e));
   }
@@ -66202,7 +66351,9 @@ const GIS_MIN_FOCUS_MAP = {
   polygonPanel: { headId: "polygonPanelHead", minSel: '[data-role="polygonpanel-minimize"]' },
   helpOverlay: { headId: "helpOverlayHead", minSel: '[data-role="helppanel-minimize"]' },
   routingPlannerPanel: { headId: "routingPlannerPanelHead", minSel: '[data-role="routingpanel-minimize"]' },
-  cartoIgmPanel: { headId: "cartoIgmPanelHead", minSel: '[data-role="cartoigm-minimize"]' }
+  cartoIgmPanel: { headId: "cartoIgmPanelHead", minSel: '[data-role="cartoigm-minimize"]' },
+  dflightPanel: { headId: "dflightPanelHead", minSel: '[data-role="dflightpanel-minimize"]' },
+  dflightDetailsPanel: { headId: "dflightDetailsPanelHead", minSel: '[data-role="dflightdetailspanel-minimize"]' }
 };
 function gisFlashMinimizeBlockedNotice(panelId){
   const cfg = GIS_MIN_BLOCKED_MAP[panelId];
@@ -66468,6 +66619,16 @@ function gisRestoreMinimizedPanel(panelId){
       try { if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi(); } catch(_){}
     } else if (panelId === "cartoIgmPanel"){
       try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
+    } else if (panelId === "dflightPanel"){
+      const o = _dflightPanelLayoutOpts("control");
+      gisPanelBringToFront(dlg, o);
+      gisPanelApplyLayout(dlg, o);
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "dflightDetailsPanel"){
+      const o = _dflightPanelLayoutOpts("details");
+      gisPanelBringToFront(dlg, o);
+      gisPanelApplyLayout(dlg, o);
+      gisPanelSyncBodySize(dlg, o);
     }
   } catch(_){}
   const fm = GIS_MIN_FOCUS_MAP[panelId];
