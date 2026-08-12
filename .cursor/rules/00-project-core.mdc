@@ -42,8 +42,12 @@ Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), n
 Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase breve tipo «ok finito», «per oggi finito»), eseguire in sequenza **senza chiedere conferma intermedia**:
 
 1. **Memoria lean (wiki-LLM):** verificare e aggiornare secondo modello lean:
-   - **WU corrente** in `docs/work-units/`;
-   - **`docs/OPERATING_MEMORY.md`** solo se cambia lo stato corrente;
+   - **WU corrente** in `docs/work-units/` — hot-header (`<!-- WU-HOT-HEADER -->`) con `STATUS`, `ACTIVE BLOCK`, `CURRENT GATE`, `REVIEW BASE` / `CANDIDATE RUNTIME` / `RUNTIME LIVE` (campi condizionali omessi se N/A), `NEXT`;
+   - **`docs/OPERATING_MEMORY.md` §7.1 FRONTIER** quando cambia lo stato operativo (workstream, blocco, gate, SHA semantiche distinte, next; **mai** HEAD remota persistita);
+   - **`docs/OPERATING_MEMORY.md` §7.2 RECENT / POINTERS** — rolling max ~5 chiusure recenti; FIFO; pointer brevi, nessun report inline;
+   - **`docs/OPERATING_MEMORY.md` §7.3 HISTORY** — solo pointer compatti; **non** aggiungere nuovi lunghi bullet CLOSED inline in §7;
+   - **SHA semantiche (obbligatorio):** `REVIEW BASE` (baseline diff review) ≠ `CANDIDATE RUNTIME` (implementato, non necessariamente live) ≠ `RUNTIME LIVE` (deployato); candidate pre-deploy **non** è live; post-deploy verificato il candidate può diventare `RUNTIME LIVE` e il candidate può essere omesso; **non** usare SHA docs/autosync come `REVIEW BASE` runtime;
+   - **Anti-self-reference OM §7.1:** **non** scrivere HEAD remota finale del commit corrente, SHA autosync corrente come frontier, né altri campi che richiedano conoscenza del commit prodotto dalla stessa operazione; HEAD finale = verifica esterna (`git ls-remote`, Regola F, F3 `EXTERNAL_ONLY`) — invariati `PENDING_SELF_REFERENCE`, `published = immutable`, anti-terzo-commit;
    - **`README.md`** snapshot operativo solo se necessario;
    - eventuale **autosync/inbox** se previsto dal workflow.
    **Non** scrivere `docs/checkpoint.md` né `docs/session-geolocalizzazione-e-mappa.md` come azione primaria di memoria corrente (restano legacy/storico). **Read-set operativo:** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.

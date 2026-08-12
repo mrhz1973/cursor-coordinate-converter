@@ -1,5 +1,13 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
+<!-- WU-HOT-HEADER: do not remove -->
+**STATUS:** OPEN / SERIES+SEARCH+UI+ARCHIVE CLOSED — NEXT PROVIDER
+**ACTIVE BLOCK:** CARTO-PROVIDER-NEXT (NO PROVIDER READY)
+**CURRENT GATE:** nessun provider IIM/CIGA/UKHO pronto — attesa decisione operatore o nuova discovery
+**RUNTIME LIVE:** `a37b91265a927a8ddfa8325437f34867b9de0570` · build 160 · `APP_BUILD_ID=D-FLIGHT-CDE` (monolite live; feature carto tip storico `65c9ef8` build 150)
+**NEXT:** rivalutazione provider post CARTO-PROVIDER-NEXT-A diagnostic
+<!-- /WU-HOT-HEADER -->
+
 **Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED / CRS AUDIT PARTIAL — NEXT PROVIDER`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)

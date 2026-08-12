@@ -4,6 +4,16 @@
 
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
+<!-- WU-HOT-HEADER: do not remove -->
+**STATUS:** OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — ACTIVE D-FLIGHT-F
+**ACTIVE BLOCK:** D-FLIGHT-F
+**CURRENT GATE:** review GPT-sostitutiva → CORS/config VPS → deploy → Automated Browser QA → QA operatore
+**REVIEW BASE:** `b1edfef6c678e3c75249371a8b73530d0dd68714`
+**CANDIDATE RUNTIME:** `52703420d97ee456476a1480aff53968a4472052` · build 161 · `APP_BUILD_ID=D-FLIGHT-F` · NOT DEPLOYED
+**RUNTIME LIVE:** `a37b91265a927a8ddfa8325437f34867b9de0570` · build 160 · `APP_BUILD_ID=D-FLIGHT-CDE`
+**NEXT:** review sostitutiva DELICATO su `5270342` → CORS/config helper `:8010` → deploy GIS-only
+<!-- /WU-HOT-HEADER -->
+
 **Stato:** `OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — NEXT D-FLIGHT-F`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)

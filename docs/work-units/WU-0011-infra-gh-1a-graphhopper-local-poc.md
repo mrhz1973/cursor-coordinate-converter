@@ -1,5 +1,13 @@
 # WU-0011 — INFRA-GH-1A — GraphHopper 11.0 PoC locale Ryzen
 
+<!-- WU-HOT-HEADER: do not remove -->
+**STATUS:** CLOSED / PASS end-to-end (INFRA-GH-1A + INFRA-GH-1B)
+**ACTIVE BLOCK:** —
+**CURRENT GATE:** —
+**RUNTIME LIVE:** `a37b91265a927a8ddfa8325437f34867b9de0570` · build 160 · `APP_BUILD_ID=D-FLIGHT-CDE` (monolite GIS invariato da blocchi infra)
+**NEXT:** nessuno — WU chiusa; GraphHopper VPS live via WU-0010 B2+
+<!-- /WU-HOT-HEADER -->
+
 **Stato:** **CLOSED / PASS end-to-end** (INFRA-GH-1A + INFRA-GH-1B)
 **Blocco:** INFRA-GH-1A (PoC locale) + INFRA-GH-1B (deploy VPS)
 **Tipo:** infrastruttura / PoC locale + deploy VPS (fuori repository GIS per esecuzione; docs in repo GIS)
