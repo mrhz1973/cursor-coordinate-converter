@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-12 — **`D-FLIGHT-CDE` CLOSED / PASS end-to-end** (auto-`finito` Regola H). Runtime tip **`a37b912` / build 160**. Commit chiusura docs task: **`6dd363e`**. NEXT **`D-FLIGHT-F`**. Helper H2 non toccato. Monolite già versionato in `a37b912` (non in commit docs). Inbox: [`docs/orchestrator/inbox/2026-08-12_0154_riepilogo_finito-sessione.md`](inbox/2026-08-12_0154_riepilogo_finito-sessione.md).
+2026-08-12 — **Piano `D-FLIGHT-F` pubblicato** (DELICATE; gate `PLAN COMPLETE — NO PRODUCT DECISION REQUIRED`). Baseline plan `da2058e`. Runtime tip invariato **`a37b912` / build 160**. Helper H2 live READY / 849; CORS allowlist ancora `[]` (config VPS non applicata). **Nessuna** implementazione / deploy / refresh / `finito`. Piano completo: [`docs/orchestrator/inbox/2026-08-12_0643_plan_d-flight-f.md`](inbox/2026-08-12_0643_plan_d-flight-f.md). NEXT: implementazione DELICATE F dopo review.
