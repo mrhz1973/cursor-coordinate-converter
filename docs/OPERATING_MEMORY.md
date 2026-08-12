@@ -320,24 +320,23 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-F |
-| **STATO BLOCCO** | IMPLEMENTED — REVIEW REQUIRED — NOT DEPLOYED |
-| **GATE CORRENTE** | review GPT-sostitutiva su CANDIDATE RUNTIME → CORS/config VPS → deploy → Automated Browser QA → QA operatore |
-| **REVIEW BASE** | `b1edfef6c678e3c75249371a8b73530d0dd68714` (piano D-FLIGHT-F; baseline diff) |
-| **CANDIDATE RUNTIME** | `52703420d97ee456476a1480aff53968a4472052` · build **161** · `APP_BUILD_ID=D-FLIGHT-F` · **NOT DEPLOYED** |
-| **RUNTIME LIVE** | `a37b91265a927a8ddfa8325437f34867b9de0570` · build **160** · `APP_BUILD_ID=D-FLIGHT-CDE` |
-| **NEXT** | review sostitutiva DELICATO → CORS/config helper `:8010` → deploy GIS-only → gate QA |
+| **BLOCCO ATTIVO** | D-FLIGHT-G-UI-OVERLAY-A (serie) — **CLOSED** su FIX2 |
+| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore`) |
+| **GATE CORRENTE** | nessuno sul blocco G; attesa prompt esplicito per ripresa **D-FLIGHT-F** (FAIL storico — **non** PASS) |
+| **REVIEW BASE** | `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` (runtime tip post G-FIX2; baseline diff successivi) |
+| **RUNTIME LIVE** | `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · build **167** · `APP_BUILD_ID=D-FLIGHT-G-UI-OVERLAY-A-FIX2` |
+| **NEXT** | ripresa **D-FLIGHT-F** (FAIL operatore registrato; CORS/helper/OPSEC) solo con prompt esplicito — **non** auto-aprire |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README + Regola I). **Non** memorizzare HEAD remota in §7.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **DOCS-LEAN-FRONTIER-A** — CLOSED / PASS DOCS-ONLY — OM §7.1/7.2/7.3 frontier lean + WU hot-header + `finito` maint
-2. **DOCS-CONTEXT-SAFE-BOOTSTRAP-A** — CLOSED / PASS DOCS-ONLY (`9f394bf`) — Regola I · [`inbox/2026-08-12_1118`](orchestrator/inbox/2026-08-12_1118_riepilogo_finito-sessione.md)
-3. **DOCS-AUTOMATED-BROWSER-QA-PREOP-A** — CLOSED / PASS DOCS-ONLY — Regola D2bis · [`inbox/2026-08-11_2205`](orchestrator/inbox/2026-08-11_2205_docs_automated_browser_qa_preop_a.md)
-4. **D-FLIGHT-CDE** — CLOSED / PASS end-to-end (`a37b912` build 160) — WU-0013 · [`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)
-5. **D-FLIGHT-B** — CLOSED / PASS end-to-end (`4fc7ee3` build 159) — WU-0013
+1. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS end-to-end (`42edb6f` build 167) — WU-0013 · wheel+Layer menu · [`inbox/2026-08-13_0008`](orchestrator/inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md)
+2. **D-FLIGHT-G-UI-OVERLAY-A-FIX1** — FAIL operatore (wheel incompleto) — tip `ddf84f3`/166 · non PASS
+3. **D-FLIGHT-G-UI-OVERLAY-A** — FAIL operatore (colori/pannelli/tooltip) → catena FIX · tip `457984b`/163
+4. **D-FLIGHT-F** — FAIL operatore (storico; **non** CLOSED/PASS) — WU-0013
+5. **D-FLIGHT-CDE** — CLOSED / PASS end-to-end (`a37b912` build 160) — WU-0013
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
@@ -369,7 +368,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | WU-0010 | OPEN | Outdoor Routing GraphHopper (B1a–E + REVERSE-A CLOSED; F futuro) |
 | WU-0011 | CLOSED / PASS | INFRA-GH-1A+1B GraphHopper PoC locale + VPS |
 | WU-0012 | OPEN / NEXT PROVIDER | CARTO-INDEX-FEDERATED — provider IIM/CIGA/UKHO / online update |
-| WU-0013 | OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE | UAS-GEOZONE-DFLIGHT — NEXT `D-FLIGHT-F` |
+| WU-0013 | OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE | UAS-GEOZONE-DFLIGHT — F FAIL storico; NEXT ripresa F su prompt |
 
 ---
 

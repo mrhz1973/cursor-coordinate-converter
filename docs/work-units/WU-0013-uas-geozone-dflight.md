@@ -5,16 +5,15 @@
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — ACTIVE D-FLIGHT-F
-**ACTIVE BLOCK:** D-FLIGHT-F
-**CURRENT GATE:** review GPT-sostitutiva → CORS/config VPS → deploy → Automated Browser QA → QA operatore
-**REVIEW BASE:** `b1edfef6c678e3c75249371a8b73530d0dd68714`
-**CANDIDATE RUNTIME:** `52703420d97ee456476a1480aff53968a4472052` · build 161 · `APP_BUILD_ID=D-FLIGHT-F` · NOT DEPLOYED
-**RUNTIME LIVE:** `a37b91265a927a8ddfa8325437f34867b9de0570` · build 160 · `APP_BUILD_ID=D-FLIGHT-CDE`
-**NEXT:** review sostitutiva DELICATO su `5270342` → CORS/config helper `:8010` → deploy GIS-only
+**STATUS:** OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE — D-FLIGHT-F FAIL (non CLOSED)
+**ACTIVE BLOCK:** D-FLIGHT-G-UI-OVERLAY-A — CLOSED su FIX2
+**CURRENT GATE:** nessuno su G; ripresa F solo con prompt esplicito
+**REVIEW BASE:** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2`
+**RUNTIME LIVE:** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · build 167 · `APP_BUILD_ID=D-FLIGHT-G-UI-OVERLAY-A-FIX2`
+**NEXT:** ripresa D-FLIGHT-F (FAIL operatore storico — **non** PASS) su prompt esplicito
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — NEXT D-FLIGHT-F`
+**Stato:** `OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE — D-FLIGHT-F FAIL (non CLOSED)`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
@@ -24,11 +23,13 @@
 **Blocco client parser:** `D-FLIGHT-A` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `d52367b` · build **158** · A3-light · `window.GOIDflight` · Automated Browser QA **PASS** · QA operatore **PASS**
 **Blocco normalized model:** `D-FLIGHT-B` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `4fc7ee3` · build **159** · `GOIDflight.normalize` · Automated Browser QA **PASS** · QA operatore **PASS**
 **Blocco overlay+UI:** `D-FLIGHT-CDE` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `a37b912` · build **160** · SVG+toggle/legend+details · Automated Browser QA **PASS** · QA operatore **PASS**
+**Blocco rete client:** `D-FLIGHT-F` — **FAIL operatore** (storico; **non** CLOSED/PASS) — tip candidato storico `5270342`/161 superseduto dal tip live G
+**Blocco UI overlay polish:** `D-FLIGHT-G-UI-OVERLAY-A` (+ FIX1 FAIL → **FIX2 PASS**) — **CLOSED / PASS end-to-end** (2026-08-13) — tip `42edb6f` · build **167** · pan-sync SVG + stile WFS + wheel isolation + Layer menu safeTop · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore`)
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
-**Runtime live (GIS tip):** `a37b91265a927a8ddfa8325437f34867b9de0570` · `APP_BUILD_ID = "D-FLIGHT-CDE"` · `APP_BUILD_NUM = 160`
-**Monolite in WU-0013:** **modificato** in A+B+CDE (parser + normalize + overlay/UI; **nessuna** rete helper/persistenza dataset). Helper VPS **invariato**.
-**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS:** parser+normalize+overlay/UI **CLOSED**; integrazione rete — NEXT **`D-FLIGHT-F`**.
+**Runtime live (GIS tip):** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · `APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A-FIX2"` · `APP_BUILD_NUM = 167`
+**Monolite in WU-0013:** **modificato** in A+B+CDE+G (parser + normalize + overlay/UI polish; rete helper F **non** CLOSED). Helper VPS **invariato** in G.
+**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS:** overlay/UI **CLOSED** (CDE+G); integrazione rete — **D-FLIGHT-F FAIL** da riprendere su prompt.
 
 > Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
@@ -362,13 +363,14 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **D-FLIGHT-A** | parser/adapter client | **CLOSED / PASS end-to-end** — tip `d52367b` / build 158 | ROUTINE |
 | **D-FLIGHT-B** | normalized model | **CLOSED / PASS end-to-end** — tip `4fc7ee3` / build 159 | ROUTINE |
 | **D-FLIGHT-CDE** | overlay SVG + toggle/legend + details | **CLOSED / PASS end-to-end** — tip `a37b912` / build 160 | ROUTINE |
-| **D-FLIGHT-F** | client helper integration / persistence / OPSEC | candidato; non auto-aperto; decomporre se necessario | DELICATO |
+| **D-FLIGHT-F** | client helper integration / persistence / OPSEC | **FAIL operatore** (storico; **non** CLOSED/PASS); ripresa su prompt | DELICATO |
+| **D-FLIGHT-G-UI-OVERLAY-A** (+FIX1/FIX2) | pan-sync SVG, stile WFS, pannelli GIS, wheel, Layer menu | **CLOSED / PASS** su **FIX2** — tip `42edb6f` / build 167; G FAIL → FIX1 FAIL → FIX2 PASS | ROUTINE |
 
-**NEXT univoco:** **`D-FLIGHT-F`** (helper client / rete / OPSEC / cache — **non** auto-aperto; richiede prompt esplicito). Helper H2 **CLOSED**. `D-FLIGHT-A`+`B`+`CDE` **CLOSED**.
+**NEXT univoco:** ripresa **`D-FLIGHT-F`** (FAIL storico — **non** PASS; helper client / rete / OPSEC / cache — **non** auto-aperto). Helper H2 **CLOSED**. `D-FLIGHT-A`+`B`+`CDE`+`G-UI-OVERLAY` **CLOSED**.
 
-**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE = PASS.
+**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE = PASS; G/FIX1/FIX2 Automated = PASS (FIX1 FAIL solo operatore).
 
-**Helper VPS:** implementato + deployato. **Client GIS overlay/UI:** CLOSED (CDE).
+**Helper VPS:** implementato + deployato. **Client GIS overlay/UI:** CLOSED (CDE + G-FIX2).
 
 ---
 

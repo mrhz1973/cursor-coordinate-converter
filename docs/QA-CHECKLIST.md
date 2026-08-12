@@ -4,6 +4,13 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-G-UI-OVERLAY-A-FIX2 — CLOSED / PASS (2026-08-13)
+
+- Automated Browser QA **PASS** (pre-operatore; wheel pannelli + Layer menu + safeTop).
+- Attestazione operatore: `QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore` → auto-`finito` Regola H.
+- Catena: G FAIL → FIX1 FAIL → **FIX2 PASS**. `D-FLIGHT-F` resta **FAIL** storico (non CLOSED).
+- Runtime tip: `42edb6f` / build 167.
+
 ## D-FLIGHT-CDE — CLOSED / PASS (2026-08-12)
 
 - Automated Browser QA **PASS** (pre-operatore; fixture sintetiche).
