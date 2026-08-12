@@ -26,6 +26,7 @@ Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte compl
 3. Cursor write+commit = **sempre Agent+Auto** (Plan solo per diagnosi pura read-only).
 4. **Bundling di default (METHOD-BUNDLING-DEFAULT):** il default operativo è **un bundle** — raggruppare il lavoro routine in **un blocco / un commit / una QA** (target ≥5 item; 5–10+ è normale). **Non** proporre separazione per ogni micro-modifica routine. Gate (review, deploy, QA) **solo a livello bundle**. Le **categorie delicate** restano in **bundle propri**. Dettaglio: OM §4 Regola G.
 5. **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** nei prompt bundle runtime, la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** la coda `finito` pre-autorizzata (chiusura docs + autosync). Dettaglio: OM §4 Regola H.
+6. **CONTEXT-SAFE BOOTSTRAP:** all'apertura di una nuova chat/handoff la lettura deve essere **context-safe** — non caricare preventivamente interi documenti grandi, cronologia di blocchi CLOSED o il monolite se bastano sezioni/range/diff mirati. Dettaglio: OM §4 Regola I. **AUTO-VIA resta valida:** il prossimo passo tecnicamente determinato si esegue con acquisizione progressiva delle evidenze, senza un nuovo `vai` e senza fermarsi dopo la sola riconciliazione.
 
 Dettaglio completo: `docs/OPERATING_MEMORY.md` §4 — Handoff & Close Discipline.
 ---
@@ -37,7 +38,7 @@ Read-set corrente, in ordine:
 3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
 4. `docs/QA-CHECKLIST.md` — procedura/template della checklist QA unica.
 5. `docs/HANDOFF.md` — handoff canonico breve (seed operativo; non sostituisce OM §7).
-6. `coordinate_converter Claude.html` — file operativo principale, da leggere solo quando serve codice/runtime.
+6. `coordinate_converter Claude.html` — file operativo principale; leggerlo **solo quando serve** codice/runtime, con ricerca/range/diff mirati (OM §4 Regola I), non per intero in bootstrap.
 
 Regola di precedenza:
 
