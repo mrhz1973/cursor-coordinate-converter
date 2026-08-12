@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-12 — **`D-FLIGHT-G-UI-OVERLAY-A-FIX1`** dopo FAIL operatore G. Runtime **`ddf84f3` / build 166**. Overlay style da semantica WFS reale (`rule`/`regola`/`status`, senza inventare enum ED su `restriction`); legenda coerente; wheel-zoom mappa bloccato sopra pannelli GIS (`elementFromPoint` + trap). **Helper/CORS/OPSEC non toccati.**
+2026-08-13 — **`D-FLIGHT-G-UI-OVERLAY-A-FIX2`** dopo FAIL operatore FIX1 (wheel + Layer menu). Runtime **`42edb6f` / build 167**. Isolamento wheel via `gisUiBlocksMapWheelZoom` (target + rect); menu basemap `safeTop` sotto header GIS. **Helper/CORS/OPSEC non toccati.**
 
-**Storico:** `QA D-FLIGHT-G-UI-OVERLAY-A FAIL operatore` (colori + wheel) → FIX1. `QA D-FLIGHT-F FAIL operatore` resta registrato.
+**Storico FAIL:** `QA D-FLIGHT-F FAIL operatore` · `QA D-FLIGHT-G-UI-OVERLAY-A FAIL operatore` · `QA D-FLIGHT-G-UI-OVERLAY-A-FIX1 FAIL operatore` (wheel incompleto + prima voce Layer coperta).
 
-**No** QA operatore su FIX1. **No** `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-12_2331_riepilogo_d-flight-g-ui-overlay-a-fix1.md`](inbox/2026-08-12_2331_riepilogo_d-flight-g-ui-overlay-a-fix1.md). NEXT: QA umana ChatGPT su FIX1.
+**No** `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md`](inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md). NEXT: QA umana ChatGPT su FIX2.
