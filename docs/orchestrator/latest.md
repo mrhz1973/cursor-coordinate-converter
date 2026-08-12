@@ -9,11 +9,11 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX1`** candidate **IMPLEMENTATO / PRE-DEPLOY**.  
-Task **`a5da8d415109cd50135a40e7390b26e36d785011`**. Monolite build **169**. Helper **byte-invariato**.  
+2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX2`** candidate **IMPLEMENTATO / PRE-DEPLOY**.  
+Task **`887d321944b941af06ff6091b0fb2bc19df4c065`**. Monolite build **170**. Helper **byte-invariato**.  
 Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**.  
-Correzioni review: readiness ATM09 fail-closed (NFZ non soppresso finché tile load ok), load/error per generazione, network-gate abort INFO, opacity **1**.
+Readiness **generation-complete** (expected/loaded/errors) + **settle-once** per img; MultiPolygon Esito B (fix client minimo).
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0128_riepilogo_d-flight-f-atm09-arch-a-fix1-candidate.md`](inbox/2026-08-13_0128_riepilogo_d-flight-f-atm09-arch-a-fix1-candidate.md).
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0155_riepilogo_d-flight-f-atm09-arch-a-fix2-candidate.md`](inbox/2026-08-13_0155_riepilogo_d-flight-f-atm09-arch-a-fix2-candidate.md).
 
-Runtime live **invariato**: `42edb6f` / build **167** (G-FIX2). **Nessun deploy.**
+Runtime live **invariato**: `42edb6f` / build **167**. **Nessun deploy.**
