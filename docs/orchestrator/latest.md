@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-G-UI-OVERLAY-A-FIX2`** dopo FAIL operatore FIX1 (wheel + Layer menu). Runtime **`42edb6f` / build 167**. Isolamento wheel via `gisUiBlocksMapWheelZoom` (target + rect); menu basemap `safeTop` sotto header GIS. **Helper/CORS/OPSEC non toccati.**
+2026-08-13 — **`finito`** dopo `QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore` (Regola H). Task chiusura docs **`6540fca`**. Runtime live **`42edb6f` / build 167**. Serie G CLOSED; **D-FLIGHT-F** resta **FAIL** storico (**non** PASS). **No** terzo commit post-autosync.
 
-**Storico FAIL:** `QA D-FLIGHT-F FAIL operatore` · `QA D-FLIGHT-G-UI-OVERLAY-A FAIL operatore` · `QA D-FLIGHT-G-UI-OVERLAY-A-FIX1 FAIL operatore` (wheel incompleto + prima voce Layer coperta).
+**Storico FAIL:** F · G · FIX1. **PASS:** FIX2.
 
-**No** `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md`](inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md). NEXT: QA umana ChatGPT su FIX2.
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0019_riepilogo_finito-sessione.md`](inbox/2026-08-13_0019_riepilogo_finito-sessione.md). NEXT: ripresa F su prompt esplicito.
