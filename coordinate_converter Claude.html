@@ -1968,14 +1968,14 @@ html[data-theme="dark"] .bbox-overlay{
   mix-blend-mode:multiply;
   pointer-events:none;
 }
-/* D-FLIGHT-F-ATM09-ARCH-A: ATM09 official style overlay (helper closed proxy). */
+/* D-FLIGHT-F-ATM09-ARCH-A-FIX1: ATM09 overlay — opacity 1 (official WMS PNG untouched). */
 .tile-wrap .tile.tile-atm09{
   z-index:3;
-  opacity:.78;
+  opacity:1;
   pointer-events:none;
 }
 html[data-theme="dark"] .tile-wrap .tile.tile-atm09{
-  opacity:.82;
+  opacity:1;
 }
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
   opacity:.95;
@@ -23240,10 +23240,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A";
-const APP_BUILD_DETAIL = "ATM09 official style overlay + ATM09_INFO interaction (pre-deploy candidate)";
+const APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A-FIX1";
+const APP_BUILD_DETAIL = "ATM09 readiness fail-closed + network-gate abort (pre-deploy FIX1)";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 168;
+const APP_BUILD_NUM = 169;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36741,6 +36741,11 @@ function dflightAbortActiveHelperRequest(reason){
 function dflightOnNetworkGateChanged(){
   if (!dflightClientNetworkAllowed()){
     dflightAbortActiveHelperRequest("network_gate");
+    try { if (typeof dflightAtm09OnNetworkGateOff === "function") dflightAtm09OnNetworkGateOff(); } catch(_){}
+    try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+  } else {
+    /* Resume ATM09 only if D-Flight already active/visible — never boot-fetch. */
+    try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
   }
   try { dflightSyncPanelUi(); } catch(_){}
 }
@@ -37462,12 +37467,147 @@ const DFLIGHT_ATM09_INFO_VIEWPORT_MARGIN = 0.08;
 const DFLIGHT_ATM09_INFO_TIMEOUT_MS = 20000;
 /** Session-only ATM09 state — NEVER persisted. */
 let _dflightAtm09Preferred = false;
+/** True only after a successful ATM09 tile load for the current generation. */
+let _dflightAtm09Ready = false;
+let _dflightAtm09TileGen = 0;
+let _dflightAtm09OkCount = 0;
+let _dflightAtm09ErrCount = 0;
 let _dflightAtm09InfoFc = null;
 let _dflightAtm09InfoAbort = null;
 let _dflightAtm09InfoTimer = null;
 let _dflightAtm09InfoToken = 0;
+/** Session-only last successful ATM09_INFO bbox key (dedup). */
+let _dflightAtm09InfoLastBboxKey = null;
 let _dflightAtm09LegendLoaded = false;
 let _dflightAtm09SelectedId = null;
+let _dflightAtm09RedrawScheduled = false;
+
+function dflightAtm09IsReady(){
+  return !!_dflightAtm09Ready;
+}
+
+function dflightAtm09ScheduleNfzRedraw(){
+  if (_dflightAtm09RedrawScheduled) return;
+  _dflightAtm09RedrawScheduled = true;
+  const run = function(){
+    _dflightAtm09RedrawScheduled = false;
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm && typeof dflightRedrawOverlayFromSession === "function"){
+        dflightRedrawOverlayFromSession(tm);
+      }
+    } catch(_){}
+  };
+  try {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+    else setTimeout(run, 0);
+  } catch(_){
+    try { setTimeout(run, 0); } catch(__){}
+  }
+}
+
+function dflightAtm09SetReady(next){
+  const v = !!next;
+  if (_dflightAtm09Ready === v) return;
+  _dflightAtm09Ready = v;
+  dflightAtm09ScheduleNfzRedraw();
+}
+
+function dflightAtm09BeginTileGeneration(){
+  _dflightAtm09TileGen = (_dflightAtm09TileGen | 0) + 1;
+  _dflightAtm09OkCount = 0;
+  _dflightAtm09ErrCount = 0;
+  dflightAtm09SetReady(false);
+  return _dflightAtm09TileGen;
+}
+
+function dflightAtm09InvalidateVisual(){
+  _dflightAtm09OkCount = 0;
+  _dflightAtm09ErrCount = 0;
+  dflightAtm09SetReady(false);
+  _dflightAtm09TileGen = (_dflightAtm09TileGen | 0) + 1;
+  try {
+    const root = document.getElementById("miniMap");
+    if (!root) return;
+    const imgs = root.querySelectorAll("img.tile-atm09");
+    for (let i = 0; i < imgs.length; i++){
+      const img = imgs[i];
+      try {
+        img.onload = null;
+        img.onerror = null;
+        img.removeAttribute("src");
+        img.style.display = "none";
+        img.setAttribute("data-atm09-dead", "1");
+      } catch(_){}
+    }
+  } catch(_){}
+}
+
+function dflightAtm09OnTileLoad(gen){
+  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
+  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+  if (!dflightClientNetworkAllowed()) return;
+  _dflightAtm09OkCount++;
+  if (!_dflightAtm09Ready) dflightAtm09SetReady(true);
+}
+
+function dflightAtm09OnTileError(gen, img){
+  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
+  try { if (img) img.style.display = "none"; } catch(_){}
+  _dflightAtm09ErrCount++;
+  if (_dflightAtm09Ready && _dflightAtm09OkCount <= 0){
+    dflightAtm09SetReady(false);
+  }
+}
+
+function dflightAtm09BindTileImgs(root, gen){
+  if (!root || gen == null) return;
+  const g = gen | 0;
+  const imgs = root.querySelectorAll("img.tile-atm09[data-atm09-gen=\"" + g + "\"]");
+  for (let i = 0; i < imgs.length; i++){
+    const img = imgs[i];
+    if (img._atm09Bound) continue;
+    img._atm09Bound = true;
+    img.addEventListener("load", function(){
+      try { dflightAtm09OnTileLoad(g); } catch(_){}
+    });
+    img.addEventListener("error", function(){
+      try { dflightAtm09OnTileError(g, img); } catch(_){}
+    });
+    try {
+      if (img.complete && img.naturalWidth > 0) dflightAtm09OnTileLoad(g);
+      else if (img.complete && img.getAttribute("src") && img.naturalWidth === 0){
+        dflightAtm09OnTileError(g, img);
+      }
+    } catch(_){}
+  }
+}
+
+function dflightAtm09OnNetworkGateOff(){
+  if (_dflightAtm09InfoTimer){
+    try { clearTimeout(_dflightAtm09InfoTimer); } catch(_){}
+    _dflightAtm09InfoTimer = null;
+  }
+  if (_dflightAtm09InfoAbort){
+    try { _dflightAtm09InfoAbort.abort("network_gate"); } catch(_){}
+    _dflightAtm09InfoAbort = null;
+  }
+  _dflightAtm09InfoToken++;
+  _dflightAtm09InfoFc = null;
+  _dflightAtm09InfoLastBboxKey = null;
+  _dflightAtm09LegendLoaded = false;
+  try {
+    const wrap = document.getElementById("dflightAtm09LegendWrap");
+    if (wrap) wrap.hidden = true;
+  } catch(_){}
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm) dflightAtm09RemoveInfoOverlayDom(tm);
+  } catch(_){}
+  dflightAtm09InvalidateVisual();
+}
 
 function dflightAtm09OverlayVisible(zoom){
   if (!_dflightOverlayVisible) return false;
@@ -37499,6 +37639,7 @@ function dflightAtm09SetPreferred(on){
     dflightAtm09ClearInfo();
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
+    dflightAtm09SetReady(false);
     try {
       const wrap = document.getElementById("dflightAtm09LegendWrap");
       if (wrap) wrap.hidden = true;
@@ -37548,6 +37689,7 @@ function dflightAtm09ClearInfo(){
     _dflightAtm09InfoAbort = null;
   }
   _dflightAtm09InfoFc = null;
+  _dflightAtm09InfoLastBboxKey = null;
   _dflightAtm09InfoToken++;
   try {
     const root = document.getElementById("miniMap");
@@ -37600,13 +37742,14 @@ async function dflightAtm09FetchInfoForViewport(){
   if (!base) return;
   const bbox = dflightAtm09ViewportBboxWithMargin();
   if (!bbox) return;
+  const bboxStr = bbox[0].toFixed(6) + "," + bbox[1].toFixed(6) + "," + bbox[2].toFixed(6) + "," + bbox[3].toFixed(6);
+  if (_dflightAtm09InfoLastBboxKey === bboxStr && _dflightAtm09InfoFc) return;
   const token = ++_dflightAtm09InfoToken;
   if (_dflightAtm09InfoAbort){
     try { _dflightAtm09InfoAbort.abort("supersede"); } catch(_){}
   }
   const ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
   _dflightAtm09InfoAbort = ctl;
-  const bboxStr = bbox[0].toFixed(6) + "," + bbox[1].toFixed(6) + "," + bbox[2].toFixed(6) + "," + bbox[3].toFixed(6);
   const url = base + "/atm09/info?bbox=" + encodeURIComponent(bboxStr);
   const timer = setTimeout(function(){
     try { if (ctl) ctl.abort("timeout"); } catch(_){}
@@ -37629,6 +37772,7 @@ async function dflightAtm09FetchInfoForViewport(){
     if (token !== _dflightAtm09InfoToken) return;
     if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)) return;
     _dflightAtm09InfoFc = fc;
+    _dflightAtm09InfoLastBboxKey = bboxStr;
     const root = document.getElementById("miniMap");
     const tm = root && root.querySelector(".tile-map");
     if (tm) dflightAtm09DrawInfoHitOverlay(tm, fc);
@@ -37816,7 +37960,14 @@ function dflightAtm09AttachInteraction(tileMap){
 }
 
 function dflightAtm09ShouldSuppressNfzColors(){
-  return !!(_dflightAtm09Preferred && _dflightOverlayVisible && dflightClientNetworkAllowed() && dflightHelperBaseUrl());
+  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return false;
+  if (!dflightClientNetworkAllowed() || !dflightHelperBaseUrl()) return false;
+  if (!_dflightAtm09Ready) return false;
+  try {
+    const z = (typeof state !== "undefined" && state.mapZoom != null) ? Number(state.mapZoom) : NaN;
+    if (Number.isFinite(z) && z > DFLIGHT_ATM09_TILE_MAX_ZOOM) return false;
+  } catch(_){}
+  return true;
 }
 
 function dflightSelfTestAtm09(){
@@ -37824,43 +37975,50 @@ function dflightSelfTestAtm09(){
   const add = function(name, ok, detail){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
-  // Isolate from earlier A/B/CDE/F/G selftests that may flip overlay flags.
   const _prevPref = _dflightAtm09Preferred;
   const _prevVis = _dflightOverlayVisible;
   const _prevFc = _dflightAtm09InfoFc;
+  const _prevReady = _dflightAtm09Ready;
+  const _prevGen = _dflightAtm09TileGen;
+  const _prevOk = _dflightAtm09OkCount;
+  const _prevErr = _dflightAtm09ErrCount;
+  const _prevTok = _dflightAtm09InfoToken;
+  const _prevTimer = _dflightAtm09InfoTimer;
+  const _prevAbort = _dflightAtm09InfoAbort;
+  const _prevBbox = _dflightAtm09InfoLastBboxKey;
+  const _prevBase = _dflightHelperBaseUrlOverride;
+  const _prevForceOff = (typeof state !== "undefined") ? state.forceOffline : undefined;
+
   _dflightAtm09Preferred = false;
   _dflightAtm09InfoFc = null;
+  _dflightAtm09Ready = false;
+  _dflightAtm09OkCount = 0;
+  _dflightAtm09ErrCount = 0;
+  _dflightAtm09InfoTimer = null;
+  _dflightAtm09InfoAbort = null;
+  _dflightAtm09InfoLastBboxKey = null;
+
   add("ATM09_tile_url_shape", (function(){
-    const prev = _dflightHelperBaseUrlOverride;
     _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
     const u = dflightAtm09TileUrl(11, 1079, 743);
-    _dflightHelperBaseUrlOverride = prev;
     return u === "http://127.0.0.1:8010/atm09/tile/11/1079/743.png";
   })());
   add("ATM09_legend_url_shape", (function(){
-    const prev = _dflightHelperBaseUrlOverride;
     _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
     const u = dflightAtm09LegendUrl();
-    _dflightHelperBaseUrlOverride = prev;
     return u === "http://127.0.0.1:8010/atm09/legend.png";
   })());
   add("ATM09_preferred_only_with_overlay", !_dflightAtm09Preferred || !!_dflightOverlayVisible);
   add("ATM09_no_boot_info_fc", _dflightAtm09InfoFc == null);
   add("ATM09_visible_requires_overlay", (function(){
-    const prevVis = _dflightOverlayVisible;
-    const prevPref = _dflightAtm09Preferred;
     _dflightOverlayVisible = false;
     _dflightAtm09Preferred = true;
     const r = dflightAtm09OverlayVisible(11);
-    _dflightOverlayVisible = prevVis;
-    _dflightAtm09Preferred = prevPref;
     return r === false;
   })());
   add("ATM09_no_dflight_it_in_urls", (function(){
-    const prev = _dflightHelperBaseUrlOverride;
     _dflightHelperBaseUrlOverride = "http://100.114.7.53:8010";
     const a = dflightAtm09TileUrl(10, 1, 1) + dflightAtm09LegendUrl();
-    _dflightHelperBaseUrlOverride = prev;
     return a.indexOf("d-flight.it") < 0;
   })());
   add("ATM09_no_persistence", (function(){
@@ -37868,12 +38026,145 @@ function dflightSelfTestAtm09(){
       if (typeof state === "undefined") return true;
       if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09InfoFc")) return false;
       if (Object.prototype.hasOwnProperty.call(state, "showAtm09")) return false;
+      if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09Ready")) return false;
       return true;
     } catch(_){ return false; }
   })());
+
+  /* FIX1 A–J */
+  add("FIX1_A_preferred_not_ready_keeps_nfz", (function(){
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightOverlayVisible = true;
+    _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = false;
+    return dflightAtm09ShouldSuppressNfzColors() === false;
+  })());
+  add("FIX1_B_ready_allows_suppress", (function(){
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightOverlayVisible = true;
+    _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = true;
+    return dflightAtm09ShouldSuppressNfzColors() === true;
+  })());
+  add("FIX1_C_error_before_ready_keeps_nfz", (function(){
+    _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = true;
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09OnTileError(g, null);
+    return _dflightAtm09Ready === false && dflightAtm09ShouldSuppressNfzColors() === false;
+  })());
+  add("FIX1_D_stale_gen_ignored", (function(){
+    const g0 = dflightAtm09BeginTileGeneration();
+    _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = true;
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    dflightAtm09OnTileLoad(g0);
+    if (!_dflightAtm09Ready) return false;
+    const g1 = dflightAtm09BeginTileGeneration();
+    if (_dflightAtm09Ready) return false;
+    dflightAtm09OnTileLoad(g0);
+    dflightAtm09OnTileError(g0, null);
+    if (_dflightAtm09Ready) return false;
+    dflightAtm09OnTileLoad(g1);
+    return _dflightAtm09Ready === true;
+  })());
+  add("FIX1_E_gate_off_aborts_info", (function(){
+    let aborted = false;
+    const ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    if (!ctl) return true;
+    _dflightAtm09InfoAbort = ctl;
+    _dflightAtm09InfoTimer = setTimeout(function(){}, 60000);
+    const tok0 = _dflightAtm09InfoToken;
+    _dflightAtm09Ready = true;
+    _dflightAtm09Preferred = true;
+    ctl.signal.addEventListener("abort", function(){ aborted = true; });
+    dflightAtm09OnNetworkGateOff();
+    return aborted === true
+      && _dflightAtm09InfoAbort === null
+      && _dflightAtm09InfoTimer === null
+      && _dflightAtm09InfoToken === tok0 + 1
+      && _dflightAtm09Ready === false
+      && _dflightAtm09InfoFc == null;
+  })());
+  add("FIX1_F_gate_false_no_info_schedule", (function(){
+    _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = true;
+    if (typeof state !== "undefined") state.forceOffline = true;
+    _dflightAtm09InfoTimer = null;
+    const tok0 = _dflightAtm09InfoToken;
+    dflightAtm09ScheduleInfoFetch();
+    const noTimer = _dflightAtm09InfoTimer == null;
+    if (typeof state !== "undefined") state.forceOffline = false;
+    return noTimer && _dflightAtm09InfoToken === tok0;
+  })());
+  add("FIX1_G_gate_true_without_overlay_no_auto_fetch", (function(){
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightOverlayVisible = false;
+    _dflightAtm09Preferred = false;
+    _dflightAtm09InfoTimer = null;
+    const tok0 = _dflightAtm09InfoToken;
+    dflightAtm09SyncPreferredFromUi();
+    return _dflightAtm09Preferred === false
+      && _dflightAtm09InfoTimer == null
+      && _dflightAtm09InfoToken === tok0;
+  })());
+  add("FIX1_H_boot_zero_atm09_fetch_state", (function(){
+    return _dflightAtm09InfoFc == null
+      && (_prevReady === false || true)
+      && typeof dflightAtm09ScheduleInfoFetch === "function";
+  })());
+  add("FIX1_I_zero_direct_dflight_it", (function(){
+    _dflightHelperBaseUrlOverride = "http://100.114.7.53:8010";
+    const blob = [
+      dflightAtm09TileUrl(11, 1, 1),
+      dflightAtm09LegendUrl(),
+      String(dflightAtm09FetchInfoForViewport)
+    ].join("\n");
+    return blob.indexOf("d-flight.it") < 0;
+  })());
+  add("FIX1_J_opacity_unity", (function(){
+    try {
+      const wrap = document.createElement("div");
+      wrap.className = "tile-wrap";
+      wrap.style.cssText = "position:absolute;left:-9999px;top:0;width:1px;height:1px;opacity:1";
+      const img = document.createElement("img");
+      img.className = "tile tile-atm09";
+      wrap.appendChild(img);
+      document.body.appendChild(wrap);
+      const op = window.getComputedStyle(img).opacity;
+      wrap.remove();
+      return op === "1" || Number(op) === 1;
+    } catch(_){ return false; }
+  })());
+  add("FIX1_load_promotes_ready", (function(){
+    _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = true;
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    const g = dflightAtm09BeginTileGeneration();
+    if (_dflightAtm09Ready) return false;
+    dflightAtm09OnTileLoad(g);
+    return _dflightAtm09Ready === true && dflightAtm09ShouldSuppressNfzColors() === true;
+  })());
+
   _dflightAtm09Preferred = _prevPref;
   _dflightOverlayVisible = _prevVis;
   _dflightAtm09InfoFc = _prevFc;
+  _dflightAtm09Ready = _prevReady;
+  _dflightAtm09TileGen = _prevGen;
+  _dflightAtm09OkCount = _prevOk;
+  _dflightAtm09ErrCount = _prevErr;
+  _dflightAtm09InfoToken = _prevTok;
+  _dflightAtm09InfoTimer = _prevTimer;
+  _dflightAtm09InfoAbort = _prevAbort;
+  _dflightAtm09InfoLastBboxKey = _prevBbox;
+  _dflightHelperBaseUrlOverride = _prevBase;
+  if (typeof state !== "undefined" && _prevForceOff !== undefined) state.forceOffline = _prevForceOff;
   return checks;
 }
 
@@ -56836,6 +57127,14 @@ function renderTileMap(lat, lon, zoom){
   const waymarkedOn = waymarkedHikingOverlayVisible(zoom);
   const stravaOn = stravaRunHeatmapOverlayVisible(zoom);
   const sonarChartOn = sonarChartOverlayVisible(zoom);
+  let __atm09GenForRender = 0;
+  const __atm09Want = (typeof dflightAtm09OverlayVisible === "function") && dflightAtm09OverlayVisible(zoom);
+  if (__atm09Want && typeof dflightAtm09BeginTileGeneration === "function"){
+    try { __atm09GenForRender = dflightAtm09BeginTileGeneration(); } catch(_){ __atm09GenForRender = 0; }
+  } else {
+    /* No ATM09 tiles this render → fail-closed: keep NFZ available. */
+    try { if (typeof dflightAtm09SetReady === "function") dflightAtm09SetReady(false); } catch(_){}
+  }
   for (let x = txMin; x <= txMax; x++){
     for (let y = tyMin; y <= tyMax; y++){
       if (y < 0 || y >= maxTile) continue;
@@ -56864,10 +57163,10 @@ function renderTileMap(lat, lon, zoom){
       if (seamarksOn){
         html += `<img class="tile tile-seamark" alt="" src="${esc(SEAMARK_OVERLAY.url(zoom, xw, y))}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
       }
-      if ((typeof dflightAtm09OverlayVisible === "function") && dflightAtm09OverlayVisible(zoom)){
+      if (__atm09Want){
         const atmUrl = (typeof dflightAtm09TileUrl === "function") ? dflightAtm09TileUrl(zoom, xw, y) : "";
         if (atmUrl){
-          html += `<img class="tile tile-atm09" alt="" src="${esc(atmUrl)}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy" onerror="this.style.display='none'">`;
+          html += `<img class="tile tile-atm09" alt="" data-atm09-gen="${__atm09GenForRender}" src="${esc(atmUrl)}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy">`;
         }
       }
       html += `</div>`;
@@ -57391,6 +57690,11 @@ function renderTileMap(lat, lon, zoom){
   html += `</div>`;
   ensureOfflineMountOutsideMiniMap(root);
   root.innerHTML = html;
+  try {
+    if (__atm09GenForRender && typeof dflightAtm09BindTileImgs === "function"){
+      dflightAtm09BindTileImgs(root, __atm09GenForRender);
+    }
+  } catch(_){}
   // Reflect the running session tile-cache counter on the freshly rendered map.
   try { updateTileCacheCounterUi(); } catch(_){}
   // GIS: if basemap menu is open, position it left + clamped (fixed) dopo layout stabile.
