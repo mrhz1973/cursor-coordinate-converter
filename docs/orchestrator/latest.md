@@ -9,8 +9,8 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-12 — **`D-FLIGHT-G-UI-OVERLAY-A`** implementato + deploy GIS + **`AUTOMATED BROWSER QA D-FLIGHT-G-UI-OVERLAY-A PASS`**. Runtime **`950aa54` / build 164**. Overlay pan-sync live (SVG in `.tile-layer`); pannelli floating/minimize/alta; legenda 5; hover preview. **Helper/CORS/OPSEC non toccati.**
+2026-08-12 — **`D-FLIGHT-G-UI-OVERLAY-A-FIX1`** dopo FAIL operatore G. Runtime **`ddf84f3` / build 166**. Overlay style da semantica WFS reale (`rule`/`regola`/`status`, senza inventare enum ED su `restriction`); legenda coerente; wheel-zoom mappa bloccato sopra pannelli GIS (`elementFromPoint` + trap). **Helper/CORS/OPSEC non toccati.**
 
-**Storico invariato:** `QA D-FLIGHT-F FAIL operatore` resta registrato (non ripristinato a PASS).
+**Storico:** `QA D-FLIGHT-G-UI-OVERLAY-A FAIL operatore` (colori + wheel) → FIX1. `QA D-FLIGHT-F FAIL operatore` resta registrato.
 
-**No** QA operatore su G. **No** `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-12_2209_riepilogo_d-flight-g-ui-overlay-a.md`](inbox/2026-08-12_2209_riepilogo_d-flight-g-ui-overlay-a.md). NEXT: QA umana ChatGPT su G → attestazione `QA D-FLIGHT-G-UI-OVERLAY-A PASS|FAIL operatore`.
+**No** QA operatore su FIX1. **No** `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-12_2331_riepilogo_d-flight-g-ui-overlay-a-fix1.md`](inbox/2026-08-12_2331_riepilogo_d-flight-g-ui-overlay-a-fix1.md). NEXT: QA umana ChatGPT su FIX1.
