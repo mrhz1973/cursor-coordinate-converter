@@ -23240,10 +23240,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A-FIX1";
-const APP_BUILD_DETAIL = "ATM09 readiness fail-closed + network-gate abort (pre-deploy FIX1)";
+const APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A-FIX2";
+const APP_BUILD_DETAIL = "ATM09 generation-complete readiness + settle-once (pre-deploy FIX2)";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 169;
+const APP_BUILD_NUM = 170;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37467,9 +37467,10 @@ const DFLIGHT_ATM09_INFO_VIEWPORT_MARGIN = 0.08;
 const DFLIGHT_ATM09_INFO_TIMEOUT_MS = 20000;
 /** Session-only ATM09 state — NEVER persisted. */
 let _dflightAtm09Preferred = false;
-/** True only after a successful ATM09 tile load for the current generation. */
+/** True only when ALL expected ATM09 tiles of the current gen loaded with zero errors. */
 let _dflightAtm09Ready = false;
 let _dflightAtm09TileGen = 0;
+let _dflightAtm09Expected = 0;
 let _dflightAtm09OkCount = 0;
 let _dflightAtm09ErrCount = 0;
 let _dflightAtm09InfoFc = null;
@@ -37514,15 +37515,39 @@ function dflightAtm09SetReady(next){
   dflightAtm09ScheduleNfzRedraw();
 }
 
+function dflightAtm09RecomputeReady(){
+  const gates = !!(
+    _dflightAtm09Preferred &&
+    _dflightOverlayVisible &&
+    dflightClientNetworkAllowed() &&
+    dflightHelperBaseUrl()
+  );
+  const complete = (
+    _dflightAtm09Expected > 0 &&
+    _dflightAtm09OkCount === _dflightAtm09Expected &&
+    _dflightAtm09ErrCount === 0
+  );
+  dflightAtm09SetReady(gates && complete);
+}
+
 function dflightAtm09BeginTileGeneration(){
   _dflightAtm09TileGen = (_dflightAtm09TileGen | 0) + 1;
+  _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
   _dflightAtm09ErrCount = 0;
   dflightAtm09SetReady(false);
   return _dflightAtm09TileGen;
 }
 
+function dflightAtm09SetExpected(gen, n){
+  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
+  const v = Number(n);
+  _dflightAtm09Expected = (Number.isFinite(v) && v > 0) ? (v | 0) : 0;
+  dflightAtm09RecomputeReady();
+}
+
 function dflightAtm09InvalidateVisual(){
+  _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
   _dflightAtm09ErrCount = 0;
   dflightAtm09SetReady(false);
@@ -37534,6 +37559,7 @@ function dflightAtm09InvalidateVisual(){
     for (let i = 0; i < imgs.length; i++){
       const img = imgs[i];
       try {
+        img._atm09Settled = "dead";
         img.onload = null;
         img.onerror = null;
         img.removeAttribute("src");
@@ -37544,21 +37570,34 @@ function dflightAtm09InvalidateVisual(){
   } catch(_){}
 }
 
-function dflightAtm09OnTileLoad(gen){
-  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
-  if (!dflightClientNetworkAllowed()) return;
-  _dflightAtm09OkCount++;
-  if (!_dflightAtm09Ready) dflightAtm09SetReady(true);
+/**
+ * Terminal settle for one ATM09 img of the current generation.
+ * First outcome wins; subsequent load/error/complete on the same img are ignored.
+ * Session/DOM-only — NEVER persisted.
+ * @returns {boolean} true if this call counted the outcome
+ */
+function dflightAtm09SettleTile(img, gen, outcome){
+  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return false;
+  if (!img) return false;
+  if (img._atm09Settled) return false;
+  const kind = (outcome === "error") ? "error" : "load";
+  img._atm09Settled = kind;
+  if (kind === "load"){
+    _dflightAtm09OkCount++;
+  } else {
+    try { img.style.display = "none"; } catch(_){}
+    _dflightAtm09ErrCount++;
+  }
+  dflightAtm09RecomputeReady();
+  return true;
+}
+
+function dflightAtm09OnTileLoad(gen, img){
+  return dflightAtm09SettleTile(img || { _atm09Stub: 1 }, gen, "load");
 }
 
 function dflightAtm09OnTileError(gen, img){
-  if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
-  try { if (img) img.style.display = "none"; } catch(_){}
-  _dflightAtm09ErrCount++;
-  if (_dflightAtm09Ready && _dflightAtm09OkCount <= 0){
-    dflightAtm09SetReady(false);
-  }
+  return dflightAtm09SettleTile(img || { _atm09Stub: 1 }, gen, "error");
 }
 
 function dflightAtm09BindTileImgs(root, gen){
@@ -37570,15 +37609,16 @@ function dflightAtm09BindTileImgs(root, gen){
     if (img._atm09Bound) continue;
     img._atm09Bound = true;
     img.addEventListener("load", function(){
-      try { dflightAtm09OnTileLoad(g); } catch(_){}
+      try { dflightAtm09SettleTile(img, g, "load"); } catch(_){}
     });
     img.addEventListener("error", function(){
-      try { dflightAtm09OnTileError(g, img); } catch(_){}
+      try { dflightAtm09SettleTile(img, g, "error"); } catch(_){}
     });
     try {
-      if (img.complete && img.naturalWidth > 0) dflightAtm09OnTileLoad(g);
-      else if (img.complete && img.getAttribute("src") && img.naturalWidth === 0){
-        dflightAtm09OnTileError(g, img);
+      if (img.complete && img.naturalWidth > 0){
+        dflightAtm09SettleTile(img, g, "load");
+      } else if (img.complete && img.getAttribute("src") && img.naturalWidth === 0){
+        dflightAtm09SettleTile(img, g, "error");
       }
     } catch(_){}
   }
@@ -37786,8 +37826,19 @@ async function dflightAtm09FetchInfoForViewport(){
 function dflightAtm09GeomToSvgPathD(geom, root, tx, ty){
   if (!geom || typeof dflightGeomPolygonToSvgPathD !== "function") return "";
   const t = geom.type;
-  if (t === "Polygon" || t === "MultiPolygon"){
+  if (t === "Polygon"){
     return dflightGeomPolygonToSvgPathD(geom, root, tx || 0, ty || 0) || "";
+  }
+  if (t === "MultiPolygon" && Array.isArray(geom.coordinates)){
+    let d = "";
+    for (let i = 0; i < geom.coordinates.length; i++){
+      const part = dflightGeomPolygonToSvgPathD(
+        { type: "Polygon", coordinates: geom.coordinates[i] },
+        root, tx || 0, ty || 0
+      );
+      if (part) d += part;
+    }
+    return d;
   }
   return "";
 }
@@ -37980,6 +38031,7 @@ function dflightSelfTestAtm09(){
   const _prevFc = _dflightAtm09InfoFc;
   const _prevReady = _dflightAtm09Ready;
   const _prevGen = _dflightAtm09TileGen;
+  const _prevExp = _dflightAtm09Expected;
   const _prevOk = _dflightAtm09OkCount;
   const _prevErr = _dflightAtm09ErrCount;
   const _prevTok = _dflightAtm09InfoToken;
@@ -37989,9 +38041,17 @@ function dflightSelfTestAtm09(){
   const _prevBase = _dflightHelperBaseUrlOverride;
   const _prevForceOff = (typeof state !== "undefined") ? state.forceOffline : undefined;
 
+  function _atm09TestGatesOn(){
+    _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = true;
+    if (typeof state !== "undefined") state.forceOffline = false;
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+  }
+
   _dflightAtm09Preferred = false;
   _dflightAtm09InfoFc = null;
   _dflightAtm09Ready = false;
+  _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
   _dflightAtm09ErrCount = 0;
   _dflightAtm09InfoTimer = null;
@@ -38013,8 +38073,7 @@ function dflightSelfTestAtm09(){
   add("ATM09_visible_requires_overlay", (function(){
     _dflightOverlayVisible = false;
     _dflightAtm09Preferred = true;
-    const r = dflightAtm09OverlayVisible(11);
-    return r === false;
+    return dflightAtm09OverlayVisible(11) === false;
   })());
   add("ATM09_no_dflight_it_in_urls", (function(){
     _dflightHelperBaseUrlOverride = "http://100.114.7.53:8010";
@@ -38027,51 +38086,21 @@ function dflightSelfTestAtm09(){
       if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09InfoFc")) return false;
       if (Object.prototype.hasOwnProperty.call(state, "showAtm09")) return false;
       if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09Ready")) return false;
+      if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09Expected")) return false;
       return true;
     } catch(_){ return false; }
   })());
 
-  /* FIX1 A–J */
+  /* FIX1 retained */
   add("FIX1_A_preferred_not_ready_keeps_nfz", (function(){
-    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
-    if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightOverlayVisible = true;
-    _dflightAtm09Preferred = true;
+    _atm09TestGatesOn();
     _dflightAtm09Ready = false;
     return dflightAtm09ShouldSuppressNfzColors() === false;
   })());
   add("FIX1_B_ready_allows_suppress", (function(){
-    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
-    if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightOverlayVisible = true;
-    _dflightAtm09Preferred = true;
+    _atm09TestGatesOn();
     _dflightAtm09Ready = true;
     return dflightAtm09ShouldSuppressNfzColors() === true;
-  })());
-  add("FIX1_C_error_before_ready_keeps_nfz", (function(){
-    _dflightAtm09Preferred = true;
-    _dflightOverlayVisible = true;
-    if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
-    const g = dflightAtm09BeginTileGeneration();
-    dflightAtm09OnTileError(g, null);
-    return _dflightAtm09Ready === false && dflightAtm09ShouldSuppressNfzColors() === false;
-  })());
-  add("FIX1_D_stale_gen_ignored", (function(){
-    const g0 = dflightAtm09BeginTileGeneration();
-    _dflightAtm09Preferred = true;
-    _dflightOverlayVisible = true;
-    if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
-    dflightAtm09OnTileLoad(g0);
-    if (!_dflightAtm09Ready) return false;
-    const g1 = dflightAtm09BeginTileGeneration();
-    if (_dflightAtm09Ready) return false;
-    dflightAtm09OnTileLoad(g0);
-    dflightAtm09OnTileError(g0, null);
-    if (_dflightAtm09Ready) return false;
-    dflightAtm09OnTileLoad(g1);
-    return _dflightAtm09Ready === true;
   })());
   add("FIX1_E_gate_off_aborts_info", (function(){
     let aborted = false;
@@ -38113,18 +38142,10 @@ function dflightSelfTestAtm09(){
       && _dflightAtm09InfoTimer == null
       && _dflightAtm09InfoToken === tok0;
   })());
-  add("FIX1_H_boot_zero_atm09_fetch_state", (function(){
-    return _dflightAtm09InfoFc == null
-      && (_prevReady === false || true)
-      && typeof dflightAtm09ScheduleInfoFetch === "function";
-  })());
+  add("FIX1_H_boot_zero_atm09_fetch_state", _dflightAtm09InfoFc == null && typeof dflightAtm09ScheduleInfoFetch === "function");
   add("FIX1_I_zero_direct_dflight_it", (function(){
     _dflightHelperBaseUrlOverride = "http://100.114.7.53:8010";
-    const blob = [
-      dflightAtm09TileUrl(11, 1, 1),
-      dflightAtm09LegendUrl(),
-      String(dflightAtm09FetchInfoForViewport)
-    ].join("\n");
+    const blob = [dflightAtm09TileUrl(11, 1, 1), dflightAtm09LegendUrl(), String(dflightAtm09FetchInfoForViewport)].join("\n");
     return blob.indexOf("d-flight.it") < 0;
   })());
   add("FIX1_J_opacity_unity", (function(){
@@ -38141,15 +38162,157 @@ function dflightSelfTestAtm09(){
       return op === "1" || Number(op) === 1;
     } catch(_){ return false; }
   })());
-  add("FIX1_load_promotes_ready", (function(){
-    _dflightAtm09Preferred = true;
-    _dflightOverlayVisible = true;
-    if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+
+  /* FIX2 1–11 generation-complete + settle-once */
+  add("FIX2_1_all_load_ready", (function(){
+    _atm09TestGatesOn();
     const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 2);
+    const a = {}, b = {};
+    dflightAtm09SettleTile(a, g, "load");
     if (_dflightAtm09Ready) return false;
-    dflightAtm09OnTileLoad(g);
-    return _dflightAtm09Ready === true && dflightAtm09ShouldSuppressNfzColors() === true;
+    dflightAtm09SettleTile(b, g, "load");
+    return _dflightAtm09Ready === true
+      && _dflightAtm09OkCount === 2
+      && _dflightAtm09ErrCount === 0
+      && dflightAtm09ShouldSuppressNfzColors() === true;
+  })());
+  add("FIX2_2_load_then_error_not_ready", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 2);
+    const a = {}, b = {};
+    dflightAtm09SettleTile(a, g, "load");
+    dflightAtm09SettleTile(b, g, "error");
+    return _dflightAtm09Ready === false
+      && _dflightAtm09ErrCount === 1
+      && dflightAtm09ShouldSuppressNfzColors() === false;
+  })());
+  add("FIX2_3_error_then_load_stays_false", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 2);
+    const a = {}, b = {};
+    dflightAtm09SettleTile(a, g, "error");
+    dflightAtm09SettleTile(b, g, "load");
+    return _dflightAtm09Ready === false && _dflightAtm09ErrCount === 1 && _dflightAtm09OkCount === 1;
+  })());
+  add("FIX2_4_partial_loads_not_ready", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 3);
+    dflightAtm09SettleTile({}, g, "load");
+    dflightAtm09SettleTile({}, g, "load");
+    return _dflightAtm09Ready === false && _dflightAtm09OkCount === 2;
+  })());
+  add("FIX2_5_zero_expected_not_ready", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 0);
+    dflightAtm09SettleTile({}, g, "load");
+    return _dflightAtm09Ready === false && _dflightAtm09Expected === 0;
+  })());
+  add("FIX2_6_stale_gen_ignored", (function(){
+    _atm09TestGatesOn();
+    const g0 = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g0, 1);
+    const staleImg = {};
+    dflightAtm09SettleTile(staleImg, g0, "load");
+    if (!_dflightAtm09Ready) return false;
+    const g1 = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g1, 1);
+    if (_dflightAtm09Ready) return false;
+    dflightAtm09SettleTile(staleImg, g0, "load");
+    dflightAtm09SettleTile({}, g0, "error");
+    if (_dflightAtm09Ready || _dflightAtm09OkCount !== 0 || _dflightAtm09ErrCount !== 0) return false;
+    dflightAtm09SettleTile({}, g1, "load");
+    return _dflightAtm09Ready === true;
+  })());
+  add("FIX2_7_new_gen_resets", (function(){
+    _atm09TestGatesOn();
+    const g0 = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g0, 1);
+    dflightAtm09SettleTile({}, g0, "load");
+    if (!_dflightAtm09Ready) return false;
+    const g1 = dflightAtm09BeginTileGeneration();
+    return _dflightAtm09Ready === false
+      && _dflightAtm09Expected === 0
+      && _dflightAtm09OkCount === 0
+      && _dflightAtm09ErrCount === 0
+      && g1 !== g0;
+  })());
+  add("FIX2_8_network_gate_off", (function(){
+    let aborted = false;
+    const ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    if (!ctl) return true;
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 1);
+    dflightAtm09SettleTile({}, g, "load");
+    if (!_dflightAtm09Ready) return false;
+    _dflightAtm09InfoAbort = ctl;
+    _dflightAtm09InfoTimer = setTimeout(function(){}, 60000);
+    const tok0 = _dflightAtm09InfoToken;
+    const gen0 = _dflightAtm09TileGen;
+    ctl.signal.addEventListener("abort", function(){ aborted = true; });
+    dflightAtm09OnNetworkGateOff();
+    return aborted
+      && _dflightAtm09Ready === false
+      && _dflightAtm09InfoAbort === null
+      && _dflightAtm09InfoTimer === null
+      && _dflightAtm09InfoToken === tok0 + 1
+      && _dflightAtm09TileGen !== gen0;
+  })());
+  add("FIX2_9_double_load_counted_once", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 1);
+    const img = {};
+    const r1 = dflightAtm09SettleTile(img, g, "load");
+    const r2 = dflightAtm09SettleTile(img, g, "load");
+    return r1 === true && r2 === false && _dflightAtm09OkCount === 1 && _dflightAtm09Ready === true;
+  })());
+  add("FIX2_10_complete_then_event_once", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 1);
+    const img = {};
+    dflightAtm09SettleTile(img, g, "load");
+    dflightAtm09SettleTile(img, g, "load");
+    return _dflightAtm09OkCount === 1 && _dflightAtm09Ready === true;
+  })());
+  add("FIX2_11_error_then_event_once", (function(){
+    _atm09TestGatesOn();
+    const g = dflightAtm09BeginTileGeneration();
+    dflightAtm09SetExpected(g, 1);
+    const img = {};
+    const r1 = dflightAtm09SettleTile(img, g, "error");
+    const r2 = dflightAtm09SettleTile(img, g, "error");
+    const r3 = dflightAtm09SettleTile(img, g, "load");
+    return r1 === true && r2 === false && r3 === false
+      && _dflightAtm09ErrCount === 1
+      && _dflightAtm09OkCount === 0
+      && _dflightAtm09Ready === false;
+  })());
+  add("FIX2_multipolygon_path", (function(){
+    const prev = dflightGeomPolygonToSvgPathD;
+    dflightGeomPolygonToSvgPathD = function(g){
+      if (!g || g.type !== "Polygon") return "";
+      return "P" + (Array.isArray(g.coordinates) ? g.coordinates.length : 0);
+    };
+    try {
+      const d = dflightAtm09GeomToSvgPathD({
+        type: "MultiPolygon",
+        coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]]], [[[2, 2], [3, 2], [3, 3], [2, 2]]]]
+      }, {}, 0, 0);
+      const poly = dflightAtm09GeomToSvgPathD({
+        type: "Polygon",
+        coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]
+      }, {}, 0, 0);
+      return d === "P1P1" && poly === "P1";
+    } finally {
+      dflightGeomPolygonToSvgPathD = prev;
+    }
   })());
 
   _dflightAtm09Preferred = _prevPref;
@@ -38157,6 +38320,7 @@ function dflightSelfTestAtm09(){
   _dflightAtm09InfoFc = _prevFc;
   _dflightAtm09Ready = _prevReady;
   _dflightAtm09TileGen = _prevGen;
+  _dflightAtm09Expected = _prevExp;
   _dflightAtm09OkCount = _prevOk;
   _dflightAtm09ErrCount = _prevErr;
   _dflightAtm09InfoToken = _prevTok;
@@ -57128,6 +57292,7 @@ function renderTileMap(lat, lon, zoom){
   const stravaOn = stravaRunHeatmapOverlayVisible(zoom);
   const sonarChartOn = sonarChartOverlayVisible(zoom);
   let __atm09GenForRender = 0;
+  let __atm09Expected = 0;
   const __atm09Want = (typeof dflightAtm09OverlayVisible === "function") && dflightAtm09OverlayVisible(zoom);
   if (__atm09Want && typeof dflightAtm09BeginTileGeneration === "function"){
     try { __atm09GenForRender = dflightAtm09BeginTileGeneration(); } catch(_){ __atm09GenForRender = 0; }
@@ -57167,6 +57332,7 @@ function renderTileMap(lat, lon, zoom){
         const atmUrl = (typeof dflightAtm09TileUrl === "function") ? dflightAtm09TileUrl(zoom, xw, y) : "";
         if (atmUrl){
           html += `<img class="tile tile-atm09" alt="" data-atm09-gen="${__atm09GenForRender}" src="${esc(atmUrl)}" style="left:0;top:0" draggable="false" decoding="async" loading="lazy">`;
+          __atm09Expected++;
         }
       }
       html += `</div>`;
@@ -57689,6 +57855,11 @@ function renderTileMap(lat, lon, zoom){
 
   html += `</div>`;
   ensureOfflineMountOutsideMiniMap(root);
+  try {
+    if (__atm09GenForRender && typeof dflightAtm09SetExpected === "function"){
+      dflightAtm09SetExpected(__atm09GenForRender, __atm09Expected);
+    }
+  } catch(_){}
   root.innerHTML = html;
   try {
     if (__atm09GenForRender && typeof dflightAtm09BindTileImgs === "function"){
