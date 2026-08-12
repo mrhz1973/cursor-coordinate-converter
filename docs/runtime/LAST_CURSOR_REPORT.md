@@ -2,50 +2,57 @@
 
 ## LATEST
 
-* real_task_commit: `6dd363ec75b84c4fc6a15337c36ef0c3a4e5f452` — `docs: close D-FLIGHT-CDE after QA PASS`
-* real_task_subject: docs: close D-FLIGHT-CDE after QA PASS (runtime tip `a37b912` / build 160)
-* report_generated_at: 2026-08-12T01:54:00+02:00
+* real_task_commit: `52703420d97ee456476a1480aff53968a4472052` — `feat(dflight): integrate helper client with OPSEC-gated session data`
+* real_task_subject: feat(dflight): integrate helper client with OPSEC-gated session data (build 161 / D-FLIGHT-F)
+* report_generated_at: 2026-08-12T07:04:42+02:00
 * branch: main
-* remote_head_after_task_push: `6dd363ec75b84c4fc6a15337c36ef0c3a4e5f452`
-* previous_report_container: `928e1fcd1903c5106fb5a2440b374e91700a6f3c`
+* remote_head_after_task_push: `52703420d97ee456476a1480aff53968a4472052`
+* previous_report_container: `da2058eef4906c37098b0682ff8dd4c4cf1a730c` (finito CDE) / piano F `b1edfef6c678e3c75249371a8b73530d0dd68714`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: post-task-push pre-autosync — solo artefatti orchestratore/report; monolite già in `a37b912`
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente)
-* result_cursor: chiusura `D-FLIGHT-CDE` lean docs + HANDOFF/QA-CHECKLIST; auto-`finito` Regola H
-* pass_operatore: PASS
-* result_runtime: tip `a37b912` / `D-FLIGHT-CDE · build 160` · byte 9910788 · URL `?v=a37b912`
-* qa_attestation_source: operatore — `QA D-FLIGHT-CDE PASS operatore` (2026-08-12); Automated Browser QA Cursor PASS
-* notes: NEXT `D-FLIGHT-F`; Workbench FROZEN; helper H2 non toccato; zero rete in CDE
+* working_tree_status: post-task-push pre-autosync — working tree pulito sul monolite; solo artefatti orchestratore/report in staging
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); task `5270342` = HEAD/origin/main/ls-remote allineati al push task
+* result_cursor: D-FLIGHT-F client helper session-only implementato; STOP PRE-DEPLOY
+* pass_operatore: non-attestato
+* result_runtime: tip `5270342` / `D-FLIGHT-F · build 161` — **NOT DEPLOYED**
+* qa_attestation_source: nessuno (pre-deploy; Automated Browser QA non eseguita)
+* notes: `D-FLIGHT-F IMPLEMENTED — REVIEW REQUIRED — NOT DEPLOYED`; NO CORS VPS; NO helper restart; NO POST /refresh; NO finito
 
 ## OUTPUT VERBATIM
 
 ```text
-Task push (docs close):
-6dd363ec75b84c4fc6a15337c36ef0c3a4e5f452
-docs: close D-FLIGHT-CDE after QA PASS
+Task push:
+52703420d97ee456476a1480aff53968a4472052
+feat(dflight): integrate helper client with OPSEC-gated session data
 
 Pre-autosync HEAD (= origin/main = ls-remote):
-6dd363ec75b84c4fc6a15337c36ef0c3a4e5f452
+52703420d97ee456476a1480aff53968a4472052
 
-Runtime tip (monolite, non in questo commit):
-a37b91265a927a8ddfa8325437f34867b9de0570
-feat(dflight): D-FLIGHT-CDE SVG overlay + Cataloghi toggle/legend + zone details
+git show --stat HEAD (task):
+ coordinate_converter Claude.html | 830 +++++
+ 1 file changed, 825 insertions(+), 5 deletions(-)
+
+Static checks (Cursor):
+- secret/URL diretti: PASS
+- persistence guard: PASS
+- fetch :8010 diretto: PASS
+- node --check (script JS, no JSON carto): PASS
+- selfTest A+B+CDE+F: 99/99 PASS
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
+* `b1edfef6c678e3c75249371a8b73530d0dd68714` — docs: orchestratore — piano D-FLIGHT-F DELICATE
+* `da2058eef4906c37098b0682ff8dd4c4cf1a730c` — docs: orchestratore — riconciliazione finito sessione (CDE close cycle)
+* `6dd363ec75b84c4fc6a15337c36ef0c3a4e5f452` — docs: close D-FLIGHT-CDE after QA PASS
 * `928e1fcd1903c5106fb5a2440b374e91700a6f3c` — docs: orchestratore — autosync D-FLIGHT-CDE implemented pending QA (real_task_commit `a37b912…`)
 * `a37b91265a927a8ddfa8325437f34867b9de0570` — feat(dflight): D-FLIGHT-CDE SVG overlay + Cataloghi toggle/legend + zone details
-* `6e4f8356e7b6176db6b69bc1f989d3ede87046d7` — docs: orchestratore — riconciliazione finito sessione (D-FLIGHT-B CLOSED; real_task_commit `3c29f20…`)
-* `3c29f20242b7ad0a7b3af097d3451eb4b4ddc4c8` — docs: close D-FLIGHT-B after QA PASS
-* `96dfc906170231a24763364556ba1aa2c5f8a0b8` — docs: orchestratore — autosync D-FLIGHT-B implemented pending QA (real_task_commit `4fc7ee3…`)
-* `4fc7ee3898bb69d465efb2ec81caa6b3b9046144` — feat(dflight): add normalized semantic model
 
 ## LIMITI
 
-* D-FLIGHT-F (helper/rete/OPSEC/cache) non aperto.
+* D-FLIGHT-F **non** CLOSED/PASS; review GPT-sostitutiva + CORS/config + deploy ancora da fare.
 * SHA autosync corrente / HEAD finale = EXTERNAL_ONLY.
 * WU-0013 macro resta OPEN.
+* Runtime **non** deployato sul VPS.
