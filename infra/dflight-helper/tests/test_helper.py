@@ -749,5 +749,460 @@ class TestLogging(unittest.TestCase):
                 self.assertNotIn(needle, blob)
 
 
+# ---------------------------------------------------------------------------
+# D-FLIGHT-F-ATM09-ARCH-A — closed-proxy unit tests
+# ---------------------------------------------------------------------------
+
+class TestAtm09TileValidation(unittest.TestCase):
+    def test_valid_tile_indices(self):
+        self.assertEqual(h.validate_tile_xyz("0", "0", "0"), (0, 0, 0))
+        self.assertEqual(h.validate_tile_xyz("11", "1079", "743"), (11, 1079, 743))
+
+    def test_reject_negative(self):
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("-1", "0", "0")
+
+    def test_reject_out_of_range(self):
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("25", "0", "0")
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("11", "99999", "0")  # x >= 2**11
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("5", "0", "32")  # y >= 2**5
+
+    def test_reject_non_decimal(self):
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("11", "abc", "0")
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("11", "1.5", "0")
+
+    def test_reject_leading_zeros(self):
+        # Leading zeros are rejected to avoid weird canonical forms.
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("01", "0", "0")
+        with self.assertRaises(h.HelperError):
+            h.validate_tile_xyz("5", "007", "0")
+
+    def test_tile_url_builder_uses_layer_and_style_constants(self):
+        url = h.build_atm09_tile_url(
+            wms_url="https://example.test/maps/wms", z=11, x=1079, y=743
+        )
+        self.assertIn("layers=D-FLIGHT%3AATM09", url)
+        self.assertIn("styles=D-FLIGHT%3Aatm09_style", url)
+        self.assertIn("width=256", url)
+        self.assertIn("height=256", url)
+        self.assertIn("srs=EPSG%3A3857", url)
+        self.assertIn("format=image%2Fpng", url)
+        self.assertIn("transparent=true", url)
+        self.assertIn("request=GetMap", url)
+        # bbox must be 4 numeric meters in EPSG:3857
+        self.assertIn("bbox=", url)
+
+
+class TestAtm09LegendUrl(unittest.TestCase):
+    def test_legend_url_constants(self):
+        url = h.build_atm09_legend_url(wms_url="https://example.test/maps/wms")
+        self.assertIn("layer=D-FLIGHT%3AATM09", url)
+        self.assertIn("style=D-FLIGHT%3Aatm09_style", url)
+        self.assertIn("request=GetLegendGraphic", url)
+        self.assertIn("format=image%2Fpng", url)
+
+
+class TestAtm09Bbox(unittest.TestCase):
+    def test_valid_bbox(self):
+        out = h.parse_atm09_bbox("9.6,43.95,10.05,44.30")
+        self.assertEqual(out, (9.6, 43.95, 10.05, 44.30))
+
+    def test_reject_non_numeric(self):
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("x,y,z,w")
+
+    def test_reject_inverted(self):
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("10.0,44.3,9.6,43.95")
+
+    def test_reject_too_large_extent(self):
+        # > 25 deg in either dimension -> reject
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("-10.0,30.0,20.0,60.0")
+
+    def test_reject_out_of_range(self):
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("-200.0,0,0,0")
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("0,0,0,95")
+
+    def test_reject_wrong_count(self):
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("1,2,3")
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("")
+
+    def test_reject_nan_inf(self):
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("nan,0,1,1")
+        with self.assertRaises(h.HelperError):
+            h.parse_atm09_bbox("0,inf,1,1")
+
+
+class TestAtm09ProxyCalls(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.cfg = h.load_config(_write_min_config(self.tmp, port=18013))
+        self.auth = FakeAuth(self.cfg)
+        self.helper = h.DFlightHelper(self.cfg, auth_client=self.auth)
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _tile_get_intercept(self, recorder):
+        def fake(url, *, timeout, headers=None, byte_cap):
+            recorder["url"] = url
+            recorder["headers"] = dict(headers or {})
+            recorder["byte_cap"] = byte_cap
+            return 200, {"content-type": "image/png"}, b"\x89PNG\r\n\x1a\n_TILE_BODY"
+        return fake
+
+    def test_proxy_tile_calls_with_bearer_no_url_leak_to_client(self):
+        rec = {}
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=self._tile_get_intercept(rec)):
+            status, hdrs, raw = self.helper.proxy_atm09_tile(11, 1079, 743)
+        self.assertEqual(status, 200)
+        self.assertEqual(hdrs.get("content-type"), "image/png")
+        self.assertTrue(raw.startswith(b"\x89PNG"))
+        # Auth header was attached helper-side only
+        self.assertTrue(rec["headers"]["Authorization"].startswith("Bearer "))
+        # URL is the closed ATM09 URL, not user-controlled
+        self.assertIn("layers=D-FLIGHT%3AATM09", rec["url"])
+        self.assertIn("styles=D-FLIGHT%3Aatm09_style", rec["url"])
+
+    def test_proxy_tile_401_retries_force_reauth(self):
+        calls = {"n": 0}
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return 401, {"content-type": "application/json"}, b'{"error":"auth"}'
+            return 200, {"content-type": "image/png"}, b"\x89PNG\r\n\x1a\n"
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            status, hdrs, raw = self.helper.proxy_atm09_tile(11, 1079, 743)
+        self.assertEqual(status, 200)
+        self.assertEqual(calls["n"], 2)
+        self.assertEqual(self.auth.force_calls, 1)
+
+    def test_proxy_tile_upstream_500_returns_no_body(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 500, {"content-type": "text/html"}, b"<html>boom</html>"
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            status, hdrs, raw = self.helper.proxy_atm09_tile(11, 1079, 743)
+        self.assertEqual(status, 500)
+        self.assertEqual(raw, b"")
+        # No upstream body leaked through headers
+        self.assertEqual(hdrs, {})
+
+    def test_proxy_tile_unexpected_ctype_returns_502(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "text/html"}, b"<html>oops</html>"
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            status, hdrs, raw = self.helper.proxy_atm09_tile(11, 1079, 743)
+        self.assertEqual(status, 502)
+        self.assertEqual(raw, b"")
+
+    def test_legend_passthrough(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "image/png"}, b"\x89PNG\r\n\x1a\n_LEGEND"
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            status, hdrs, raw = self.helper.fetch_atm09_legend()
+        self.assertEqual(status, 200)
+        self.assertEqual(hdrs.get("content-type"), "image/png")
+        self.assertTrue(raw.startswith(b"\x89PNG"))
+
+    def test_info_keeps_only_known_props_and_requires_id(self):
+        sample_fc = {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature", "id": "ATM09_INFO.fid-1",
+                    "geometry": {"type": "Polygon", "coordinates": [[[9.7, 44.0], [9.8, 44.0], [9.8, 44.1], [9.7, 44.0]]]},
+                    "properties": {
+                        "id": "545608",
+                        "name": "AREA TEST",
+                        "quota_max": 45,
+                        "type": "AREE MILITARI",
+                        "rule": "XR",
+                        "regola": "Divieto",
+                        "subtype": None,
+                        "lower_limit_m": 0,
+                        "upper_limit_m": 45,
+                        "valid_from": "2026-01-01T00:00:00Z",
+                        "valid_to": "9999-12-31T00:00:00Z",
+                        "priority": 5,
+                        "designator": "LS-ATZ",
+                        "icona_titolo": "tit",
+                        "title_rule": "TR",
+                        "titolo_regola": "TR_IT",
+                        "note": "n",
+                        # Should be dropped:
+                        "secret_internal": "x",
+                        "_admin": {"k": "v"},
+                        "raw_blob": [1, 2, 3],
+                    },
+                },
+                {
+                    "type": "Feature", "id": "ATM09_INFO.fid-2",
+                    "geometry": None,
+                    "properties": {"name": "NO_ID"},  # missing id -> dropped
+                },
+            ],
+        }
+        raw = json.dumps(sample_fc).encode("utf-8")
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            self.assertIn("typename=D-FLIGHT%3AATM09_INFO", url)
+            self.assertIn("count=", url)
+            self.assertIn("bbox=", url)
+            self.assertTrue((headers or {})["Authorization"].startswith("Bearer "))
+            return 200, {"content-type": "application/json"}, raw
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            fc = self.helper.fetch_atm09_info((9.6, 43.95, 10.05, 44.30))
+        self.assertEqual(len(fc["features"]), 1)
+        feat = fc["features"][0]
+        self.assertEqual(feat["id"], "545608")
+        self.assertEqual(feat["properties"]["name"], "AREA TEST")
+        self.assertNotIn("secret_internal", feat["properties"])
+        self.assertNotIn("_admin", feat["properties"])
+        self.assertNotIn("raw_blob", feat["properties"])
+        # Geometry preserved (Polygon validated upstream, not by us — sanity check only)
+        self.assertIsNotNone(feat["geometry"])
+
+    def test_info_401_retries(self):
+        calls = {"n": 0}
+        good = json.dumps({
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature", "id": "x", "geometry": None,
+                "properties": {"id": "1", "name": "x"},
+            }],
+        }).encode("utf-8")
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return 401, {"content-type": "application/json"}, b'{"error":"auth"}'
+            return 200, {"content-type": "application/json"}, good
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            fc = self.helper.fetch_atm09_info((9.6, 43.95, 10.05, 44.30))
+        self.assertEqual(calls["n"], 2)
+        self.assertEqual(self.auth.force_calls, 1)
+        self.assertEqual(len(fc["features"]), 1)
+
+    def test_info_non_json_content_type_rejected(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "text/html"}, b"<html/>"
+
+        with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+            with self.assertRaises(h.HelperError) as cm:
+                self.helper.fetch_atm09_info((9.6, 43.95, 10.05, 44.30))
+        self.assertEqual(cm.exception.category, "validation")
+
+
+class TestAtm09HttpRoutes(unittest.TestCase):
+    """End-to-end HTTP routes via the in-process ThreadingHTTPServer."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.cfg = h.load_config(_write_min_config(self.tmp, port=18014, allowlist=["http://gis.test"]))
+        self.auth = FakeAuth(self.cfg)
+        self.helper = h.DFlightHelper(self.cfg, auth_client=self.auth)
+
+    def tearDown(self):
+        import shutil
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def _start(self):
+        return _start_httpd(self.helper)
+
+    def test_tile_route_valid_returns_png_with_cors(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "image/png"}, b"\x89PNG\r\n\x1a\n_TILE"
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                status, hdrs, body = _http_json(
+                    f"http://127.0.0.1:{port}/atm09/tile/11/1079/743.png",
+                    headers={"Origin": "http://gis.test"},
+                )
+            self.assertEqual(status, 200)
+            self.assertEqual(hdrs.get("Content-Type"), "image/png")
+            self.assertEqual(hdrs.get("Access-Control-Allow-Origin"), "http://gis.test")
+            self.assertTrue(body.startswith(b"\x89PNG"))
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_tile_route_invalid_returns_400(self):
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            status, hdrs, body = _http_json(
+                f"http://127.0.0.1:{port}/atm09/tile/99/0/0.png",
+                headers={"Origin": "http://gis.test"},
+            )
+            self.assertEqual(status, 400)
+            self.assertEqual(json.loads(body.decode("utf-8")).get("error_category"), "validation")
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_tile_route_origin_forbidden(self):
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            status, hdrs, body = _http_json(
+                f"http://127.0.0.1:{port}/atm09/tile/11/1079/743.png",
+                headers={"Origin": "http://evil.test"},
+            )
+            self.assertEqual(status, 403)
+            acao = hdrs.get("Access-Control-Allow-Origin")
+            self.assertTrue(acao is None or acao == "")
+            self.assertNotEqual(acao, "*")
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_tile_route_no_arbitrary_upstream_via_query(self):
+        """Client query params like ?url= or ?layer= must NOT affect upstream call."""
+        captured = {}
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            captured["url"] = url
+            return 200, {"content-type": "image/png"}, b"\x89PNG"
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                _http_json(
+                    f"http://127.0.0.1:{port}/atm09/tile/11/1079/743.png?url=http://evil/&layer=D-FLIGHT:SECRET",
+                    headers={"Origin": "http://gis.test"},
+                )
+            # Upstream URL must be the closed ATM09 GetMap (no client overrides)
+            self.assertIn("layers=D-FLIGHT%3AATM09", captured["url"])
+            self.assertIn("styles=D-FLIGHT%3Aatm09_style", captured["url"])
+            self.assertNotIn("D-FLIGHT:SECRET", captured["url"])
+            self.assertNotIn("evil", captured["url"])
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_info_route_valid(self):
+        sample = json.dumps({
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature", "id": "x", "geometry": None,
+                "properties": {"id": "1", "name": "AREA"},
+            }],
+        }).encode("utf-8")
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            self.assertIn("typename=D-FLIGHT%3AATM09_INFO", url)
+            return 200, {"content-type": "application/json"}, sample
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                status, hdrs, body = _http_json(
+                    f"http://127.0.0.1:{port}/atm09/info?bbox=9.6,43.95,10.05,44.30",
+                    headers={"Origin": "http://gis.test"},
+                )
+            self.assertEqual(status, 200)
+            self.assertEqual(hdrs.get("Access-Control-Allow-Origin"), "http://gis.test")
+            self.assertEqual(hdrs.get("Cache-Control"), "no-store")
+            fc = json.loads(body.decode("utf-8"))
+            self.assertEqual(fc["type"], "FeatureCollection")
+            self.assertEqual(len(fc["features"]), 1)
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_info_route_invalid_bbox_400(self):
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            status, hdrs, body = _http_json(
+                f"http://127.0.0.1:{port}/atm09/info?bbox=NaN,0,1,1",
+                headers={"Origin": "http://gis.test"},
+            )
+            self.assertEqual(status, 400)
+            self.assertEqual(json.loads(body.decode("utf-8")).get("error_category"), "validation")
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_info_route_forbids_typename_override(self):
+        captured = {}
+
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            captured["url"] = url
+            return 200, {"content-type": "application/json"}, json.dumps({
+                "type": "FeatureCollection",
+                "features": [{"type": "Feature", "id": "x", "geometry": None, "properties": {"id": "1"}}],
+            }).encode("utf-8")
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                _http_json(
+                    f"http://127.0.0.1:{port}/atm09/info?bbox=9.6,43.95,10.05,44.30&typename=D-FLIGHT:SECRET",
+                    headers={"Origin": "http://gis.test"},
+                )
+            self.assertIn("typename=D-FLIGHT%3AATM09_INFO", captured["url"])
+            self.assertNotIn("D-FLIGHT:SECRET", captured["url"])
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_legend_route_returns_png(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 200, {"content-type": "image/png"}, b"\x89PNG_LEGEND"
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                status, hdrs, body = _http_json(
+                    f"http://127.0.0.1:{port}/atm09/legend.png",
+                    headers={"Origin": "http://gis.test"},
+                )
+            self.assertEqual(status, 200)
+            self.assertEqual(hdrs.get("Content-Type"), "image/png")
+            self.assertTrue(body.startswith(b"\x89PNG"))
+        finally:
+            _stop_httpd(httpd, thread)
+
+    def test_no_secret_in_atm09_error_bodies(self):
+        def fake_get(url, *, timeout, headers=None, byte_cap):
+            return 500, {"content-type": "text/html"}, b"<html>Bearer SECRET_TOKEN leaks?</html>"
+
+        httpd, thread = self._start()
+        port = httpd.server_address[1]
+        try:
+            with mock.patch.object(h, "http_get_bytes_capped", side_effect=fake_get):
+                status, hdrs, body = _http_json(
+                    f"http://127.0.0.1:{port}/atm09/tile/11/1079/743.png",
+                    headers={"Origin": "http://gis.test"},
+                )
+            self.assertEqual(status, 502)
+            txt = body.decode("utf-8")
+            for needle in ("Bearer", "SECRET_TOKEN", "password", "access_token"):
+                self.assertNotIn(needle, txt)
+        finally:
+            _stop_httpd(httpd, thread)
+
+
 if __name__ == "__main__":
     unittest.main()

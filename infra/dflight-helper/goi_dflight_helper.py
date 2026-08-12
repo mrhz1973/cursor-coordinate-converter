@@ -31,7 +31,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-HELPER_VERSION = "0.1.2"
+HELPER_VERSION = "0.1.3"
 SCHEMA_VERSION = 1
 ACCESS_SAFETY_MARGIN_SEC = 60
 DEFAULT_END_NFZ = "9999-12-31T00:00"
@@ -41,6 +41,23 @@ STATUS_READY = "READY"
 STATUS_CHECKING = "CHECKING"
 STATUS_STALE = "STALE"
 STATUS_ERROR = "ERROR"
+
+# ATM09 closed-proxy constants (D-FLIGHT-F-ATM09-ARCH-A).
+# Layer, style and FeatureType are hardcoded server-side: the browser cannot
+# override them. Tiles are 256x256 Web Mercator (EPSG:3857) over a WMS GetMap
+# upstream (TMS/GWC endpoints returned 404 during Gate 0B).
+ATM09_LAYER = "D-FLIGHT:ATM09"
+ATM09_STYLE = "D-FLIGHT:atm09_style"
+ATM09_INFO_TYPENAME = "D-FLIGHT:ATM09_INFO"
+ATM09_TILE_MIN_ZOOM = 0
+ATM09_TILE_MAX_ZOOM = 19
+ATM09_TILE_SIZE = 256
+ATM09_TILE_BYTE_CAP = 8 * 1024 * 1024  # 8 MiB per tile — generous ceiling
+ATM09_LEGEND_BYTE_CAP = 1 * 1024 * 1024  # 1 MiB legend
+ATM09_INFO_BYTE_CAP = 8 * 1024 * 1024  # 8 MiB FeatureCollection
+ATM09_INFO_FEATURE_CAP = 1000
+# Web Mercator spherical mercator constant (EPSG:3857 half-extent in meters).
+WEBMERCATOR_MAX_EXTENT = 20037508.342789244
 
 log = logging.getLogger("goi.dflight.helper")
 
@@ -490,6 +507,148 @@ def build_wfs_url(
     )
     sep = "&" if ("?" in wfs_url) else "?"
     return f"{wfs_url}{sep}{q}"
+
+
+# ---------------------------------------------------------------------------
+# ATM09 closed-proxy builders (Gate 0B — WMS GetMap upstream proven)
+# ---------------------------------------------------------------------------
+
+def _is_int_str(s: Any) -> bool:
+    if not isinstance(s, str) or not s:
+        return False
+    # Reject '+', '-', whitespace, leading zeros for non-zero numbers
+    if s in {"0"}:
+        return True
+    if not s.isdigit():
+        return False
+    return s[0] != "0"
+
+
+def validate_tile_xyz(z_raw: Any, x_raw: Any, y_raw: Any) -> tuple[int, int, int]:
+    """Fail-closed validation of Web Mercator tile indices (z/x/y, TMS-not-flipped)."""
+    if not (_is_int_str(z_raw) and _is_int_str(x_raw) and _is_int_str(y_raw)):
+        raise HelperError("validation", "tile z/x/y must be non-negative decimal integers")
+    z = int(z_raw)
+    x = int(x_raw)
+    y = int(y_raw)
+    if not (ATM09_TILE_MIN_ZOOM <= z <= ATM09_TILE_MAX_ZOOM):
+        raise HelperError("validation", f"z out of range [{ATM09_TILE_MIN_ZOOM},{ATM09_TILE_MAX_ZOOM}]")
+    n = 1 << z  # 2**z
+    if not (0 <= x < n and 0 <= y < n):
+        raise HelperError("validation", "x/y out of range for z")
+    return z, x, y
+
+
+def _tile_to_webmercator_bbox(z: int, x: int, y: int) -> tuple[float, float, float, float]:
+    """Return (xmin, ymin, xmax, ymax) in EPSG:3857 for the standard Web Mercator tile (z, x, y)."""
+    n = 1 << z
+    # Geo bounds
+    lon1 = x / n * 360.0 - 180.0
+    lon2 = (x + 1) / n * 360.0 - 180.0
+    # Web Mercator inverse: lat from y tile
+    def _lat_from_y(yt: int) -> float:
+        # n=2^z, y=0 -> top (~+85.0511°), y=n -> bottom (~-85.0511°)
+        ratio = math.pi * (1.0 - 2.0 * yt / n)
+        return math.degrees(math.atan(math.sinh(ratio)))
+    lat_top = _lat_from_y(y)
+    lat_bot = _lat_from_y(y + 1)
+    lat1 = max(lat_top, lat_bot)
+    lat2 = min(lat_top, lat_bot)
+
+    def _to3857(lon: float, lat: float) -> tuple[float, float]:
+        ex = lon * WEBMERCATOR_MAX_EXTENT / 180.0
+        ey = math.log(math.tan((90.0 + lat) * math.pi / 360.0)) / (math.pi / 180.0)
+        ey = ey * WEBMERCATOR_MAX_EXTENT / 180.0
+        return ex, ey
+
+    x1, y1 = _to3857(lon1, lat2)  # bottom-left
+    x2, y2 = _to3857(lon2, lat1)  # top-right
+    return (x1, y1, x2, y2)
+
+
+def build_atm09_tile_url(
+    *,
+    wms_url: str,
+    z: int,
+    x: int,
+    y: int,
+    layer: str = ATM09_LAYER,
+    style: str = ATM09_STYLE,
+) -> str:
+    """Build a closed WMS GetMap URL for ATM09 over a Web Mercator 256x256 tile bbox."""
+    bx1, by1, bx2, by2 = _tile_to_webmercator_bbox(z, x, y)
+    bbox = f"{bx1:.6f},{by1:.6f},{bx2:.6f},{by2:.6f}"
+    q = urlencode(
+        {
+            "service": "WMS",
+            "version": "1.1.1",
+            "request": "GetMap",
+            "layers": layer,
+            "styles": style,
+            "format": "image/png",
+            "transparent": "true",
+            "width": str(ATM09_TILE_SIZE),
+            "height": str(ATM09_TILE_SIZE),
+            "srs": "EPSG:3857",
+            "bbox": bbox,
+        }
+    )
+    sep = "&" if ("?" in wms_url) else "?"
+    return f"{wms_url}{sep}{q}"
+
+
+def build_atm09_legend_url(
+    *,
+    wms_url: str,
+    layer: str = ATM09_LAYER,
+    style: str = ATM09_STYLE,
+) -> str:
+    """Build a closed GetLegendGraphic URL for ATM09 official style."""
+    q = urlencode(
+        {
+            "service": "WMS",
+            "version": "1.1.1",
+            "request": "GetLegendGraphic",
+            "layer": layer,
+            "style": style,
+            "format": "image/png",
+            "width": "20",
+            "height": "20",
+            "legend_options": "fontSize:12;dpi:96",
+        }
+    )
+    sep = "&" if ("?" in wms_url) else "?"
+    return f"{wms_url}{sep}{q}"
+
+
+def parse_atm09_bbox(raw: Any) -> tuple[float, float, float, float]:
+    """Validate a client-supplied EPSG:4326 bbox query string value.
+
+    Returns (min_lon, min_lat, max_lon, max_lat) or raises HelperError.
+    """
+    if not isinstance(raw, str) or not raw.strip():
+        raise HelperError("validation", "bbox missing")
+    parts = [p.strip() for p in raw.split(",")]
+    if len(parts) != 4:
+        raise HelperError("validation", "bbox must have 4 values")
+    try:
+        lon_min = float(parts[0])
+        lat_min = float(parts[1])
+        lon_max = float(parts[2])
+        lat_max = float(parts[3])
+    except (TypeError, ValueError) as exc:
+        raise HelperError("validation", "bbox non-numeric") from exc
+    for v in (lon_min, lat_min, lon_max, lat_max):
+        if not _is_finite_number(v):
+            raise HelperError("validation", "bbox contains non-finite value")
+    if lon_min < -180.0 or lon_max > 180.0 or lat_min < -90.0 or lat_max > 90.0:
+        raise HelperError("validation", "bbox exceeds lon/lat range")
+    if lon_min >= lon_max or lat_min >= lat_max:
+        raise HelperError("validation", "bbox min must be < max")
+    # Reject pathological extent: >25° in any dimension (way beyond any reasonable viewport)
+    if (lon_max - lon_min) > 25.0 or (lat_max - lat_min) > 25.0:
+        raise HelperError("validation", "bbox extent too large")
+    return lon_min, lat_min, lon_max, lat_max
 
 
 # ---------------------------------------------------------------------------
@@ -1078,6 +1237,169 @@ class DFlightHelper:
             self._busy = False
             self._refresh_lock.release()
 
+    # -------------------------------------------------------------------
+    # ATM09 closed-proxy methods (D-FLIGHT-F-ATM09-ARCH-A)
+    # -------------------------------------------------------------------
+
+    def proxy_atm09_tile(self, z: int, x: int, y: int) -> tuple[int, dict[str, str], bytes]:
+        """Fetch a single ATM09 tile (256x256 PNG) from D-Flight WMS GetMap.
+
+        Returns (status, headers_lower, png_bytes). The Authorization header is
+        added helper-side only and never returned to the client. Upstream errors
+        are surfaced as controlled (status, sanitized_json_or_empty) tuples.
+        """
+        url = build_atm09_tile_url(
+            wms_url=self.cfg["dflight"]["wfs_url"],
+            z=z, x=x, y=y,
+            layer=ATM09_LAYER,
+            style=ATM09_STYLE,
+        )
+        token = self.auth.ensure_access_token()
+        status, headers, raw = http_get_bytes_capped(
+            url,
+            timeout=float(self.cfg["dflight"]["timeout_sec"]),
+            headers={"Authorization": f"Bearer {token}", "Accept": "image/png,*/*"},
+            byte_cap=ATM09_TILE_BYTE_CAP,
+        )
+        if status == 401:
+            # Try a single forced re-auth, then propagate the resulting status.
+            token = self.auth.force_reauth()
+            status, headers, raw = http_get_bytes_capped(
+                url,
+                timeout=float(self.cfg["dflight"]["timeout_sec"]),
+                headers={"Authorization": f"Bearer {token}", "Accept": "image/png,*/*"},
+                byte_cap=ATM09_TILE_BYTE_CAP,
+            )
+        if status != 200:
+            # Never leak the bearer / URL / upstream body details.
+            log.info("event=atm09_tile_upstream_status status=%s bytes=%s", status, len(raw))
+            return status, {}, b""
+        ctype = headers.get("content-type") or ""
+        if "image/png" not in ctype.lower():
+            log.info("event=atm09_tile_unexpected_ctype ctype=%s bytes=%s", ctype[:80], len(raw))
+            return 502, {}, b""
+        return 200, {"content-type": "image/png"}, raw
+
+    def fetch_atm09_legend(self) -> tuple[int, dict[str, str], bytes]:
+        """Fetch the authoritative ATM09 GetLegendGraphic PNG."""
+        url = build_atm09_legend_url(
+            wms_url=self.cfg["dflight"]["wfs_url"],
+            layer=ATM09_LAYER,
+            style=ATM09_STYLE,
+        )
+        token = self.auth.ensure_access_token()
+        status, headers, raw = http_get_bytes_capped(
+            url,
+            timeout=float(self.cfg["dflight"]["timeout_sec"]),
+            headers={"Authorization": f"Bearer {token}", "Accept": "image/png,*/*"},
+            byte_cap=ATM09_LEGEND_BYTE_CAP,
+        )
+        if status == 401:
+            token = self.auth.force_reauth()
+            status, headers, raw = http_get_bytes_capped(
+                url,
+                timeout=float(self.cfg["dflight"]["timeout_sec"]),
+                headers={"Authorization": f"Bearer {token}", "Accept": "image/png,*/*"},
+                byte_cap=ATM09_LEGEND_BYTE_CAP,
+            )
+        if status != 200:
+            log.info("event=atm09_legend_upstream_status status=%s bytes=%s", status, len(raw))
+            return status, {}, b""
+        ctype = headers.get("content-type") or ""
+        if "image/png" not in ctype.lower():
+            return 502, {}, b""
+        return 200, {"content-type": "image/png"}, raw
+
+    def fetch_atm09_info(self, bbox_4326: tuple[float, float, float, float]) -> dict[str, Any]:
+        """Fetch D-FLIGHT:ATM09_INFO features within the validated EPSG:4326 bbox.
+
+        Returns a sanitized GeoJSON FeatureCollection (id, name, quota_max,
+        type/subtype, rule/regola, lower/upper limit, valid_from/to, designator,
+        note, priority, icona_titolo, title_rule, titolo_regola). Geometries are
+        preserved. The typename is hardcoded helper-side.
+        """
+        lon_min, lat_min, lon_max, lat_max = bbox_4326
+        vp = build_viewparams()
+        typename = ATM09_INFO_TYPENAME  # hardcoded — client cannot override
+        # We can't reuse cfg's typename (NO_FLY_ZONE); build URL inline.
+        base = build_wfs_url(
+            wfs_url=self.cfg["dflight"]["wfs_url"],
+            typename=typename,
+            output_format="application/json",
+            srs_name="EPSG:4326",
+            viewparams=vp,
+        )
+        bbox_param = f"{lon_min:.6f},{lat_min:.6f},{lon_max:.6f},{lat_max:.6f},EPSG:4326"
+        url = base + "&bbox=" + bbox_param + "&count=" + str(ATM09_INFO_FEATURE_CAP)
+        token = self.auth.ensure_access_token()
+        status, headers, raw = http_get_bytes_capped(
+            url,
+            timeout=float(self.cfg["dflight"]["timeout_sec"]),
+            headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+            byte_cap=ATM09_INFO_BYTE_CAP,
+        )
+        if status == 401:
+            token = self.auth.force_reauth()
+            status, headers, raw = http_get_bytes_capped(
+                url,
+                timeout=float(self.cfg["dflight"]["timeout_sec"]),
+                headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+                byte_cap=ATM09_INFO_BYTE_CAP,
+            )
+        if status != 200:
+            raise HelperError("http", f"ATM09_INFO HTTP {status}")
+        ctype = headers.get("content-type")
+        if not is_json_content_type(ctype):
+            raise HelperError("validation", "ATM09_INFO content-type not JSON")
+        try:
+            fc = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            raise HelperError("parse", "ATM09_INFO JSON parse error") from exc
+        if not isinstance(fc, dict) or fc.get("type") != "FeatureCollection":
+            raise HelperError("validation", "ATM09_INFO not FeatureCollection")
+        feats = fc.get("features")
+        if not isinstance(feats, list):
+            raise HelperError("validation", "ATM09_INFO features not list")
+        if len(feats) > ATM09_INFO_FEATURE_CAP:
+            raise HelperError("cap", "ATM09_INFO feature_cap exceeded")
+
+        # Keep only well-known raw properties; preserve geometry (no inheritance
+        # from NO_FLY_ZONE enum). id always kept.
+        KEEP_PROPS = (
+            "id", "name", "quota_max", "type", "rule", "regola",
+            "subtype", "lower_limit_m", "upper_limit_m",
+            "valid_from", "valid_to", "priority", "designator",
+            "icona_titolo", "title_rule", "titolo_regola", "note",
+        )
+        sanitized = []
+        for feat in feats:
+            if not isinstance(feat, dict):
+                continue
+            geom = feat.get("geometry")
+            props_in = feat.get("properties") or {}
+            props_out: dict[str, Any] = {}
+            for k in KEEP_PROPS:
+                if k in props_in:
+                    v = props_in[k]
+                    # Coerce to safe scalar (string/int/float/None). Lists/dicts dropped.
+                    if v is None or isinstance(v, (str, int, float)):
+                        if isinstance(v, float) and not math.isfinite(v):
+                            props_out[k] = None
+                        else:
+                            props_out[k] = v
+            if "id" not in props_out or props_out["id"] in ("", None):
+                # No stable id -> skip (consistent with NO_FLY_ZONE validator).
+                # We intentionally do NOT fall back to the GeoServer-assigned
+                # feature-level id, since it is not stable across refreshes.
+                continue
+            sanitized.append({
+                "type": "Feature",
+                "id": props_out["id"],
+                "geometry": geom if isinstance(geom, dict) else None,
+                "properties": props_out,
+            })
+        return {"type": "FeatureCollection", "features": sanitized}
+
 
 # ---------------------------------------------------------------------------
 # Origin / CORS policy
@@ -1158,6 +1480,31 @@ def make_handler(helper: DFlightHelper):
             self.end_headers()
             self.wfile.write(raw)
 
+        def _send_bytes(
+            self,
+            status: int,
+            content_type: str,
+            payload: bytes,
+            extra_headers: Optional[dict[str, str]] = None,
+        ) -> None:
+            self.send_response(status)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(payload)))
+            # Conservative cache policy for ATM09 tiles/legend: short shared cache,
+            # no-store fallback for any client that ignores max-age.
+            headers = {"Cache-Control": "public, max-age=60"}
+            if extra_headers:
+                headers.update(extra_headers)
+            headers.update(self._cors_headers())
+            for k, v in headers.items():
+                self.send_header(k, v)
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def _send_atm09_error(self, status: int, category: str) -> None:
+            """Sanitized JSON error for ATM09 endpoints — never leaks upstream URL/body."""
+            self._send_json(status, {"error": "atm09_upstream", "error_category": category})
+
         def _check_origin(self) -> bool:
             origin = self.headers.get("Origin")
             allow = helper.cfg["server"]["origin_allowlist"]
@@ -1220,6 +1567,58 @@ def make_handler(helper: DFlightHelper):
                     self.send_header(k, v)
                 self.end_headers()
                 self.wfile.write(raw)
+                return
+            # ATM09 closed-proxy routes (D-FLIGHT-F-ATM09-ARCH-A).
+            path_only = self.path.split("?", 1)[0]
+            if path_only == "/atm09/legend.png":
+                try:
+                    status, hdrs, raw = helper.fetch_atm09_legend()
+                except HelperError as exc:
+                    self._send_atm09_error(502, exc.category)
+                    return
+                if status == 200 and raw:
+                    self._send_bytes(200, "image/png", raw)
+                else:
+                    self._send_atm09_error(502 if status >= 500 else 504, "legend_unavailable")
+                return
+            if path_only == "/atm09/info":
+                from urllib.parse import parse_qs as _parse_qs
+                qs = _parse_qs(self.path.split("?", 1)[1] if "?" in self.path else "")
+                bbox_raw = (qs.get("bbox") or [""])[0]
+                try:
+                    bbox = parse_atm09_bbox(bbox_raw)
+                    fc = helper.fetch_atm09_info(bbox)
+                except HelperError as exc:
+                    code = 400 if exc.category == "validation" else 502
+                    self._send_json(code, {"error": exc.category, "error_category": exc.category})
+                    return
+                raw = json.dumps(fc, ensure_ascii=False, allow_nan=False).encode("utf-8")
+                self._send_bytes(200, "application/json; charset=utf-8", raw,
+                                 extra_headers={"Cache-Control": "no-store"})
+                return
+            # /atm09/tile/{z}/{x}/{y}.png  — exact shape only; no query params honored.
+            if path_only.startswith("/atm09/tile/") and path_only.endswith(".png"):
+                rest = path_only[len("/atm09/tile/"):-len(".png")]
+                parts = rest.split("/")
+                if len(parts) != 3:
+                    self._send_json(404, {"error": "not_found"})
+                    return
+                try:
+                    z, x, y = validate_tile_xyz(*parts)
+                except HelperError as exc:
+                    self._send_json(400, {"error": exc.category, "error_category": exc.category})
+                    return
+                try:
+                    status, hdrs, raw = helper.proxy_atm09_tile(z, x, y)
+                except HelperError as exc:
+                    self._send_atm09_error(502, exc.category)
+                    return
+                if status == 200 and raw:
+                    self._send_bytes(200, "image/png", raw)
+                else:
+                    # Map upstream non-200 to a controlled client-side outcome.
+                    code = 502 if status >= 500 else 504
+                    self._send_atm09_error(code, "tile_unavailable")
                 return
             self._send_json(404, {"error": "not_found"})
 
