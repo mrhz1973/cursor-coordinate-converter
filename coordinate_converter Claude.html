@@ -23199,7 +23199,7 @@ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 const APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A-FIX1";
 const APP_BUILD_DETAIL = "WFS style from rule/status · panel wheel isolation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 165;
+const APP_BUILD_NUM = 166;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35639,7 +35639,8 @@ function dflightStyleCssClass(styleKey){
   const k = String(styleKey || "UNKNOWN");
   if (k === "PROHIBITED" || k === "WFS_PROHIBITED") return "is-prohibited";
   if (k === "REQ_AUTHORISATION" || k === "WFS_REQ_AUTH") return "is-req-auth";
-  if (k === "CONDITIONAL" || k === "WFS_TEMP_NOTAM") return "is-conditional is-temp-notam";
+  if (k === "CONDITIONAL") return "is-conditional";
+  if (k === "WFS_TEMP_NOTAM") return "is-conditional is-temp-notam";
   if (k === "NO_RESTRICTION") return "is-no-restriction";
   if (k === "WFS_EXPIRED") return "is-expired";
   return "is-unknown";
@@ -35657,8 +35658,8 @@ function dflightStripHtmlLite(s){
 }
 function dflightZoneStyleKey(zone){
   if (!zone) return "UNKNOWN";
-  // ED-269 path: only when restriction_known + whitelist enum (never invent on WFS model).
-  if (zone.restriction_known && zone.restriction && DFLIGHT_RESTRICTION_ENUM[zone.restriction]){
+  // ED-269 path: whitelist enum already on zone (never invent from WFS text onto restriction).
+  if (zone.restriction && DFLIGHT_RESTRICTION_ENUM[zone.restriction]){
     return zone.restriction;
   }
   const props = (zone.raw_properties && typeof zone.raw_properties === "object") ? zone.raw_properties : null;
