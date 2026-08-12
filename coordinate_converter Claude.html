@@ -23177,9 +23177,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A";
-const APP_BUILD_DETAIL = "D-Flight overlay pan-sync · GIS panels · legend/hover UX";
+const APP_BUILD_DETAIL = "D-Flight overlay pan-sync · GIS panels · legend/hover · minimize whitelist";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 163;
+const APP_BUILD_NUM = 164;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -66486,6 +66486,8 @@ function gisMinimizePanel(panelId, labelKey, opts){
     try { if (typeof routingCancelMarkerDrag === "function") routingCancelMarkerDrag({ rollback: true }); } catch(_){}
   } else if (panelId === "cartoIgmPanel"){
     /* Indice IGM: minimize during area-pick / map-first flows (FIX3 QA §14). */
+  } else if (panelId === "dflightPanel" || panelId === "dflightDetailsPanel"){
+    /* D-Flight: pannelli floating GIS — minimize consentito. */
   } else {
     return;
   }
