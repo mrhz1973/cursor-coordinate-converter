@@ -2,41 +2,43 @@
 
 ## LATEST
 
-* real_task_commit: `887d321944b941af06ff6091b0fb2bc19df4c065` — verify short `887d321`
-* real_task_subject: feat: D-FLIGHT-F-ATM09-ARCH-A-FIX2 — generation-complete readiness + settle-once
-* report_generated_at: 2026-08-13T02:18:00+02:00
+* real_task_commit: `64ad3c0c500a720570f5c87bb15dc2eb64117f22` — (baseline docs diagnosi; **nessun commit task runtime** in HELPER-DEPLOY-A; monolite resta `887d321`)
+* real_task_subject: D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — deploy helper 0.1.3 produzione + smoke + Automated Browser QA
+* report_generated_at: 2026-08-13T02:26:00+02:00
 * branch: main
-* remote_head_after_task_push: `887d321944b941af06ff6091b0fb2bc19df4c065`
-* previous_report_container: `5ce32a8d39d1ebfab7237b06a809a3f43c38d5db`
+* remote_head_after_task_push: `64ad3c0c500a720570f5c87bb15dc2eb64117f22` (pre-autosync; monolite live invariato `887d321`)
+* previous_report_container: `64ad3c0c500a720570f5c87bb15dc2eb64117f22`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: pulito salvo autosync diagnosi
-* pass_tecnico_remoto: GIS deploy ancora PASS (monolite 170 live)
-* result_cursor: **QA FAIL operatore** → diagnosi: helper prod 0.1.2 senza `/atm09/*` (404); ready false; NFZ resta
-* pass_operatore: **FAIL** (attestato operatore)
-* result_runtime: live FIX2/170; ATM09 non operativo end-to-end finché helper 0.1.3 non è deployato
-* qa_attestation_source: operatore FAIL + diagnosi Cursor (VPS logs + browser activation)
-* notes: **nessuna patch / nessun deploy / nessun finito** in questo intervento; solo memoria orchestratore
+* working_tree_status: solo memoria orchestratore/report in questo autosync; monolite non modificato
+* pass_tecnico_remoto: helper deploy VPS (non git); GIS runtime ancora `887d321` / build 170
+* result_cursor: helper **0.1.3** live; smoke ATM09 PASS; Automated Browser QA PASS; **QA OPERATORE REQUIRED**
+* pass_operatore: **non attestato** (gate aperto)
+* result_runtime: expected=60 ok=60 err=0 ready=true; overlay ATM09 visibile; suppress NFZ; zero `d-flight.it`
+* qa_attestation_source: Automated Browser QA Cursor post-helper; QA operatore pending
+* notes: **NO FINITO**; no FIX3; no patch monolite; rollback 0.1.2 predisposto su VPS
 
 ## OUTPUT VERBATIM
 
 ```text
-helper_version prod: 0.1.2
-GET /atm09/tile/... → 404 {"error":"not_found"}
-browser activation: expected=50 ok=0 err=50 ready=false suppress=false
+helper_version prod: 0.1.3
+GET /atm09/tile/11/1079/743.png → 200 image/png 3589B
+GET /atm09/legend.png → 200 image/png 3378B
+GET /atm09/info?bbox=9.6,44.0,10.0,44.3 → 200 FeatureCollection nfeat=13
+browser post-helper: expected=60 ok=60 err=0 ready=true suppress=true
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
+* `64ad3c0c500a720570f5c87bb15dc2eb64117f22` — docs: diagnosi QA FIX2 FAIL (helper 0.1.2 senza /atm09)
 * `5ce32a8d39d1ebfab7237b06a809a3f43c38d5db` — docs: orchestratore — D-FLIGHT-F-ATM09-ARCH-A-FIX2 deploy + browser QA PASS
 * `916c08106983ebd0e571fdcd6a0cc6f44d176df0` — docs: orchestratore — FIX2 candidate pre-deploy
 * `887d321944b941af06ff6091b0fb2bc19df4c065` — feat: FIX2 monolite
 * `2fdc6e977fb6a5da2e38f213f84408eb11448dce` — docs: FIX1 candidate
-* `a5da8d415109cd50135a40e7390b26e36d785011` — feat: FIX1
 
 ## LIMITI
 
-* Helper ATM09 non in produzione.
+* QA operatore ancora richiesta.
 * SHA autosync corrente = EXTERNAL_ONLY.
