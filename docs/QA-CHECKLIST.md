@@ -4,6 +4,14 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 — CLOSED / PASS (2026-08-13)
+
+- Automated Browser QA mirata Caso 5 **PASS** (A/B/C + smoke D2/D3/D4 + reopen E; zero-net isolation).
+- Attestazione operatore: `QA D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 PASS operatore` → auto-`finito` Regola H.
+- Catena: H → FIX1–FIX4 (FIX4 FAIL Caso 5) → **FIX5 PASS**.
+- Runtime tip monolite: `fb773c9` / build **176**; helper `:8010` = **0.1.3** invariato.
+- Nota: reset sessione da selftest F = PREEXISTING / OUT OF SCOPE (non regressione FIX5).
+
 ## D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — CLOSED / PASS (2026-08-13)
 
 - Helper prod **0.1.3** deployato; smoke ATM09 tile/legend/info PASS; regressione NO_FLY_ZONE OK.

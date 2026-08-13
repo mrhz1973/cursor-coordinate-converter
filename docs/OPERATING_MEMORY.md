@@ -323,11 +323,11 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — **CLOSED** / PASS |
-| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore`) |
+| **BLOCCO ATTIVO** | D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 — **CLOSED** / PASS |
+| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 PASS operatore`) |
 | **GATE CORRENTE** | nessuno — attesa prompt esplicito per prossimo blocco |
-| **REVIEW BASE** | `887d321944b941af06ff6091b0fb2bc19df4c065` (ATM09 FIX2 monolite / build 170) |
-| **RUNTIME LIVE** | monolite `887d321944b941af06ff6091b0fb2bc19df4c065` · build **170** · `APP_BUILD_ID=D-FLIGHT-F-ATM09-ARCH-A-FIX2` · helper prod **0.1.3** (`:8010`) |
+| **REVIEW BASE** | `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` (H-FIX5 monolite / build 176) |
+| **RUNTIME LIVE** | monolite `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` · build **176** · `APP_BUILD_ID=D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` · helper prod **0.1.3** (`:8010`) |
 | **NEXT** | da scegliere su prompt esplicito (follow-up WU-0013 LATER o altro workstream) — **non** auto-aprire |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
@@ -335,11 +335,11 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013 · [`inbox/2026-08-13_0226`](orchestrator/inbox/2026-08-13_0226_d-flight-f-atm09-helper-deploy-a.md)
-2. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
-3. **D-FLIGHT-F-ATM09-ARCH-A-FIX2** — monolite build 170 `887d321` (generation-complete) — WU-0013
-4. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS (`42edb6f` build 167) — WU-0013
-5. **D-FLIGHT-CDE** — CLOSED / PASS (`a37b912` build 160) — WU-0013
+1. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`; catena H→FIX5) — WU-0013 · [`inbox/2026-08-13_1330`](orchestrator/inbox/2026-08-13_1330_riepilogo_d-flight-h-autoload-ux-a-fix5-deploy-qa.md)
+2. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
+3. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
+4. **D-FLIGHT-F-ATM09-ARCH-A-FIX2** — monolite build 170 `887d321` (generation-complete) — WU-0013
+5. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS (`42edb6f` build 167) — WU-0013
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
@@ -371,7 +371,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | WU-0010 | OPEN | Outdoor Routing GraphHopper (B1a–E + REVERSE-A CLOSED; F futuro) |
 | WU-0011 | CLOSED / PASS | INFRA-GH-1A+1B GraphHopper PoC locale + VPS |
 | WU-0012 | OPEN / NEXT PROVIDER | CARTO-INDEX-FEDERATED — provider IIM/CIGA/UKHO / online update |
-| WU-0013 | OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE | UAS-GEOZONE-DFLIGHT — F FAIL storico; NEXT ripresa F su prompt |
+| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H CLOSED / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — NEXT su prompt esplicito |
 
 ---
 

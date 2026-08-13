@@ -135,25 +135,25 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | tip chiusura `D-FLIGHT-CDE` (verificare `git ls-remote` post-finito) |
-| Runtime live / commit monolite | tip **`a37b91265a927a8ddfa8325437f34867b9de0570`** (`a37b912`) build **160** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **D-FLIGHT-CDE** — **CLOSED / PASS end-to-end** (SVG+toggle/legend+details; QA PASS) |
-| Ultimo blocco runtime monolite | **D-FLIGHT-CDE** — tip `a37b912` build 160 |
-| Task aperto corrente | **WU-0013** OPEN / D-FLIGHT-A+B+CDE CLOSED / HELPER H2 LIVE — NEXT **`D-FLIGHT-F`** ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
-| Helper D-Flight VPS | **live** `goi-dflight-helper` @ `100.114.7.53:8010` · REVISION `bc80604` · READY · ~849 NFZ |
+| HEAD documentale (pre-autosync) | tip chiusura `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` (verificare `git ls-remote` post-finito) |
+| Runtime live / commit monolite | tip **`fb773c94088d7dbe6c672a104f1fdcb797ca6a6e`** (`fb773c9`) build **176** — deploy GIS-only PASS |
+| Ultimo blocco chiuso | **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — **CLOSED / PASS end-to-end** (autoload UX + selftest isolation; QA PASS) |
+| Ultimo blocco runtime monolite | **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — tip `fb773c9` build 176 |
+| Task aperto corrente | **WU-0013** OPEN / A+B+CDE+G+F-ATM09+H CLOSED / HELPER 0.1.3 LIVE — NEXT su prompt esplicito ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
+| Helper D-Flight VPS | **live** `goi-dflight-helper` @ `100.114.7.53:8010` · **0.1.3** · READY · ~846 NFZ |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
 | GraphHopper VPS live | **`nord-ovest-B-v3-elev`** — bilinear + ramer `max_elevation: 5`; import `2026-07-28T23:39:23Z`; downtime cutover **11 s**; V0 `nord-ovest-B` + backup/staging **mantenuti** |
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** + **AUTOMATED-BROWSER-QA-PREOP** (OM §4 Regole G + H + D2bis) |
-| Runtime Git / atteso VPS | `a37b91265a927a8ddfa8325437f34867b9de0570` (deploy GIS-only PASS; `?v=a37b912`) |
-| Blob monolite (git) | `4c1d3643f5116290ca2e3c3bcfccd6e912e9eb13` |
-| Byte monolite (git LF) | `9910788` |
-| SHA-256 monolite (git LF) | `0fbf2501f7244132d7d088ba4ac8a43f12322a3575b0ce48e4a9ffd661094953` |
-| `APP_BUILD_NUM` | **160** |
-| Display runtime | `D-FLIGHT-CDE · build 160` |
-| `APP_BUILD_ID` | `D-FLIGHT-CDE` |
+| Runtime Git / atteso VPS | `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` (deploy GIS-only PASS; tip docs deploy `a61c9aa`; `?v=fb773c9-fix5-qa`) |
+| Blob monolite (git) | `a93236f39f257e972ca6d279ba960ea8fb368962` |
+| Byte monolite (git LF) | `10036257` |
+| SHA-256 monolite (git LF) | `babde9d2c54ee028b077ea8fc1a69f312686ead31242b658a376f677a2d3a621` |
+| `APP_BUILD_NUM` | **176** |
+| Display runtime | `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 · build 176` |
+| `APP_BUILD_ID` | `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (2026-08-02); formato **SUPERSEDED** da `QA-HUMAN-SHORT-TARGETED` (Regola D2 viva) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate allora a Regola D2 3-line; no runtime) |
