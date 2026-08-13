@@ -333,32 +333,31 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — **CLOSED / PASS** end-to-end |
-| **STATO BLOCCO** | CLOSED — review GPT **PASS** · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-PERF-VISUAL-READY-A-FIX2 PASS operatore`) |
-| **GATE CORRENTE** | nessuno (serie VISUAL-READY chiusa) |
-| **REVIEW BASE** | `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178 — baseline storica review) |
-| **CANDIDATE RUNTIME** | *(omesso — coincidente con RUNTIME LIVE post-deploy verificato)* |
+| **WORKSTREAM ATTIVO** | nessuno — WU-0013 **CLOSED / PASS end-to-end** (scope H2+overlay; chiusura `DOCS-DFLIGHT-WU0013-CLOSE-A` 2026-08-14) |
+| **BLOCCO ATTIVO** | — |
+| **STATO BLOCCO** | — |
+| **GATE CORRENTE** | nessuno |
+| **CANDIDATE RUNTIME** | *(omesso)* |
 | **RUNTIME LIVE** | monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | Scegliere prossimo blocco WU-0013 / backlog (serie VISUAL-READY chiusa) |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **NEXT** | Scegliere prossimo workstream / backlog (decisione operatore; nessun blocco D-Flight auto-aperto) |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> Catena VISUAL-READY: **A** → **FIX1** (QA operatore **FAIL** lifecycle) → **FIX2** (**CLOSED / PASS** · LIVE build **179**). Helper **0.1.3** invariato.
-> Docs lean Blocco 2 `DOCS-LEAN-README-HANDOFF-A` = CLOSED (storico metodo).
+> WU-0013 scope H2+overlay chiuso; residui = backlog NOT OPENED (WU §23). Runtime live invariato (build **179** / helper **0.1.3**).
+> **Non** attivare automaticamente WU-0012 o WU-0010.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **DOCS-DFLIGHT-WU0013-PLAN-RECONCILE-A** — CLOSED / PASS DOCS-ONLY — §15 piano allineato a FIX2 CLOSED/PASS LIVE 179
-2. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
-3. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
-4. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
-5. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
+1. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay) · backlog residuo NOT OPENED
+2. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 (2026-08-14)
+3. **DOCS-DFLIGHT-WU0013-PLAN-RECONCILE-A** — CLOSED / PASS DOCS-ONLY — §15 piano allineato a FIX2 CLOSED/PASS LIVE 179
+4. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
+5. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
-- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) — [`work-units/`](work-units/)
-- **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, …): dettaglio in [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md) e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
+- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** — [`work-units/`](work-units/)
+- **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md) e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)

@@ -5,15 +5,19 @@
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE
-**ACTIVE BLOCK:** D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — CLOSED / PASS end-to-end
-**CURRENT GATE:** nessuno (serie VISUAL-READY chiusa)
-**REVIEW BASE:** `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178 — baseline storica review)
+**STATUS:** CLOSED / PASS end-to-end (scope H2+overlay completato)
+**ACTIVE BLOCK:** —
+**CURRENT GATE:** —
 **RUNTIME LIVE:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper **0.1.3**
-**NEXT:** Scegliere prossimo blocco WU-0013 / backlog
+**NEXT:** nessuno — WU chiusa; residui in backlog; riapertura/nuovo blocco solo con decisione di prodotto
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE`
+**Stato:** **CLOSED / PASS end-to-end** (scope H2+overlay completato) — chiusura formale `DOCS-DFLIGHT-WU0013-CLOSE-A` (2026-08-14)
+**Data chiusura:** 2026-08-14
+**Scope completato:** helper H2 + parser/normalize + overlay SVG/details + ATM09 + refresh/apply/reeval + autoload UX + VISUAL READY
+**Runtime live:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2`
+**Helper VPS:** **0.1.3 LIVE** (`:8010` · `NO_FLY_ZONE` + `/atm09/*`)
+**REVIEW BASE (storico, non gate corrente):** `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178)
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
@@ -204,23 +208,23 @@ Casi speciali:
 - `permanent=NO` + `startDateTime/endDateTime` → intervallo esplicito; `schedule` opzionale per sotto-intervalli giornalieri.
 - Timezone: UTC (Z) ovunque negli esempi pubblici.
 
-**Stati temporali futuri per l'overlay** (logica non implementata):
+**Stati temporali overlay** — **IMPLEMENTED** (`dflightEvalTemporalState`; filtro UI = backlog):
 
 | Stato | Quando |
 | --- | --- |
 | `ACTIVE_NOW` | now ∈ [start,end] e schedule match |
 | `FUTURE` | start > now |
 | `EXPIRED` | end < now |
-| `ALWAYS_ACTIVE` | `permanent=YES` |
+| `ALWAYS_ACTIVE` | `permanent=YES` / permanente |
 | `UNKNOWN` | date mancanti/malformate |
 
 ---
 
 ## 8. Strategia pipeline raccomandata
 
-### 8.1 Path helper autorizzato (post AUTH-CAPTURE) — **NON implementato**
+### 8.1 Path helper autorizzato (post AUTH-CAPTURE) — **LIVE** (helper 0.1.3)
 
-Decisione tecnica **autorizzata** dopo `DFLIGHT-AUTH-CAPTURE-A` (PATH = **H2 AUTHENTICATED**):
+Decisione tecnica **autorizzata** dopo `DFLIGHT-AUTH-CAPTURE-A` (PATH = **H2 AUTHENTICATED**) e **implementata** (`DFLIGHT-HELPER-H2-A` + client F/H):
 
 ```text
 GOI GIS → helper VPS GOI → autenticazione D-Flight → WFS D-Flight autenticato
@@ -228,134 +232,120 @@ GOI GIS → helper VPS GOI → autenticazione D-Flight → WFS D-Flight autentic
 
 - H0 PUBLIC-WFS CACHE: **ESCLUSO** (anonymous replay HTTP 401 su `/maps/*`).
 - Credenziali **solo** server-side (preferenza `systemd LoadCredential`); **mai** in monolite / browser / repo / docs / log.
-- Dataset operativo primario MVP overlay: **WFS GeoServer** (FeatureCollection), non equivalenza dimostrata al Download ED-269.
-- Import manuale ED-269 resta **utile** per parity EUROCAE futura; **non** blocca il percorso helper H2.
+- Dataset operativo primario overlay: **WFS GeoServer** via helper (`NO_FLY_ZONE`); equivalenza completa al Download ED-269 **non** dimostrata (UNKNOWN non bloccante — vedi backlog).
+- Parser ED-269/ED-318 client **esiste** (`GOIDflight.parse`); UI import file **non** esiste (backlog opzionale). **Non** blocca il path H2 chiuso.
 
-Dettaglio architettura H2: §22.
+Dettaglio architettura H2: §22 (storico design + stato LIVE in §22.6).
 
-### 8.2 Path import file (discovery iniziale — ancora valido come fallback/MVP client)
+### 8.2 Path import file (discovery iniziale — HISTORY / fallback non primario)
 
-Confronto storico discovery:
+Confronto storico discovery (2026-08-11):
 
 1. JSON ED-269 importato direttamente dal browser → complessità bassa, offline ok.
 2–3. Conversioni offline → opzionali.
 4. Fetch manuale esplicita → come #1 con UX import.
 5–6. Web map scraping → scartati.
 
-**MVP client futuro** può combinare: dataset da helper H2 (preferito) **e/o** import file ED-269. Nessuna fetch D-Flight dal browser; nessuna credenziale client.
+**Current-state:** path primario = helper H2. Import file UI D-Flight = **BACKLOG / NOT OPENED**. Parser API senza UI = disponibile. Nessuna fetch D-Flight dal browser; nessuna credenziale client.
 
 ---
 
-## 9. Modello dati GOI GIS (concettuale — NON implementato)
+## 9. Modello dati GOI GIS — **IMPLEMENTED** (normalize live)
 
-Dataset autonomo `dflightZones[]` (cap 5000 di default, **transiente session-only per MVP**).
+**Current-state (post D-FLIGHT-B + H):** modello normalizzato live via `GOIDflight.normalize` / `dflightNormalize*`; dataset in sessione client (`_dflightClientSession` / overlay session), **session-only** (no persistenza IndexedDB/localStorage del dataset D-Flight). Cap operativo allineato al design (~5000).
 
-| Campo | Tipo | Categoria |
+Campi core verificati in runtime (non elenco esaustivo di ogni proprietà WFS grezza):
+
+| Campo | Tipo | Stato |
 | --- | --- | --- |
-| `provider_id` | `"dflight"` | CORE |
-| `zone_id` | string (identifier + country) | CORE |
-| `name` | string (lingua preferita) | CORE |
-| `zone_type` | enum `COMMON`/`CUSTOMIZED` | CORE |
-| `restriction` | enum `PROHIBITED`/`REQ_AUTHORISATION`/`CONDITIONAL`/`NO_RESTRICTION` | CORE |
-| `reasons` | string[] | OPTIONAL |
-| `volumes[]` | array (vedi sotto) | CORE |
-| `bbox` | [w,s,e,n] | DERIVED |
-| `applicability[]` | normalized TimePeriod[] | OPTIONAL |
-| `permanent` | bool | CORE |
-| `temporal_state` | enum ACTIVE/FUTURE/EXPIRED/ALWAYS/UNKNOWN | DERIVED |
-| `zone_authority[]` | normalized authority[] | OPTIONAL |
-| `message` | string | OPTIONAL |
-| `source_updated_at` | ISO-8601 (da metadata del file se presente) | OPTIONAL |
-| `source_url` | string (note provenienza, mai automatic fetch) | OPTIONAL |
-| `source_checksum` | SHA-256 del file importato | CORE |
-| `raw_properties` | object | RAW-ONLY |
+| `provider_id` / provenienza | `"dflight"` / helper meta | LIVE |
+| `zone_id` | string stabile | LIVE |
+| `name` | string | LIVE |
+| `volumes[]` | Polygon/MultiPolygon (+ Circle→poly) + vertical bounds | LIVE |
+| `bbox` | [w,s,e,n] | LIVE (DERIVED) |
+| `applicability[]` / `permanent` | TimePeriod normalizzati | LIVE |
+| `temporal_state` | `ALWAYS_ACTIVE` / `ACTIVE_NOW` / `FUTURE` / `EXPIRED` / `UNKNOWN` | LIVE (`dflightEvalTemporalState`) |
+| vertical `lower`/`upper` | value + unit + AGL/AMSL | LIVE (`dflightNormalizeVerticalBound`) |
+| indicatori source | count + SHA/canonical + fetched times (pannello H) | LIVE |
+| `restriction` / `reasons` | presenti dove disponibili; WFS spesso `restriction` null / reasons `[]` | PARTIAL dati sorgente |
+| `raw_properties` | object | LIVE (RAW-ONLY) |
 
-`volumes[i]`: `{ horizontal_type: Polygon|Circle, geometry: GeoJSON-like, lower: {value,unit,reference}, upper: {value,unit,reference} }`.
+Design originario (tabella discovery con enum restriction ED-269 formali, `source_checksum` da file importato, ecc.) resta **HISTORY** rispetto al path H2; non inventare campi non verificati come “sempre popolati”.
 
 ---
 
-## 10. Regioni del monolite da usare (design futuro, NON implementato)
+## 10. Regioni del monolite — **IMPLEMENTED** (overlay path)
 
-Identificate in fase di discovery (riferimenti di linea indicativi; validare all'apertura del blocco runtime):
+**Current-state:** integrazioni live nel monolite (simboli `GOIDflight` / `dflight*` / pannello D-Flight / ATM09). Riferimenti discovery sotto restano utili come mappa concettuale.
 
-- Layer menu `tlayerSection` + sezione "Cataloghi" già esistente con item IGM (`data-role="open-carto-igm"`) — punto di integrazione naturale per toggle "Zone D-Flight".
-- Helper coordinate: `tileMapLatLonToPx`, `tileMapPxToLatLon`, `gisMapTileMathViewport`.
-- Template overlay SVG: `drawCartoIgmOverlay`, `cartoGeomToSvgPathD` (gestisce già Polygon + MultiPolygon + chiusura anelli + translate tile-layer). **Riuso diretto** per `drawDflightOverlay(tileMap)`.
-- Lifecycle: `renderTileMap`, `refreshTileMapForTrackUi` — hook di re-render post pan/zoom.
-- Export JPG overlay list — aggiungere `.dflight-zone-overlay svg` se export incluso.
-- State fields: `forceOffline`, `opsecStrict`; gate non necessario per render puro (no network), ma import va gestito OPSEC-aware.
-- i18n: dizionari IT/EN/FR con pattern `data-i18n`. **L10N freeze** (rule 32): nuove stringhe **solo IT** per MVP.
+- Pannello / Cataloghi D-Flight + toggle overlay; Layer menu.
+- Helper coordinate: `tileMapLatLonToPx`, viewport math.
+- Overlay SVG: `dflightDrawOverlayDom` (+ pattern affine a carto SVG).
+- Lifecycle re-render post pan/zoom; JPG export include `.dflight-zone-overlay`.
+- Gate rete: `forceOffline` / `opsecStrict` sul client helper (F/H) — non sul solo render SVG.
+- i18n: stringhe D-Flight IT; **L10N freeze** EN/FR.
 
-### 10.1 Tecnologia overlay raccomandata: **SVG**
+### 10.1 Tecnologia overlay: **SVG** (scelta confermata)
 
-Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); Canvas richiederebbe un'architettura nuova non coerente con il monolite. Hit-testing/tooltip nativi DOM; viewport culling + bbox prefilter per scalare a migliaia di zone.
-
----
-
-## 11. Rendering design (futuro, NON implementato)
-
-- Conversione coordinate → pixel: `tileMapLatLonToPx(root, lat, lon)` riuso.
-- Viewport culling: prefilter per `bbox` vs viewport corrente.
-- Polygon/MultiPolygon/GeometryCollection: helper riuso/riadattato da `cartoGeomToSvgPathD` (anelli, holes impliciti via `fill-rule="evenodd"`).
-- Circle: approssimazione a poligono 32-64 vertici (Vincenty come `polygonGeodesicMidpointLonLat`).
-- Stile: fill opacity 0.15-0.25 + stroke 1.5-2px; palette per `restriction` (PROHIBITED=rosso, REQ_AUTHORISATION=arancio, CONDITIONAL=giallo, NO_RESTRICTION=verde); z-index sotto vettori GIS; pointer-events auto su path/label.
-- Label: identifier (max 18 char).
-- Hover/click/tooltip: pattern `data-record-id`; pannello laterale riusabile da `cartoIgmPanel` con dettagli (nome, restriction, reasons, quota, validità, authority).
-- Legenda minima basata su `restriction` effettivamente presenti nel dataset (4 valori enum); non inventare categorie.
+SVG + viewport bbox culling live. Canvas / Douglas-Peucker = **OPTIONAL LATER** (non requirement — vedi backlog).
 
 ---
 
-## 12. UI/UX MVP
+## 11. Rendering — **IMPLEMENTED** (core overlay)
 
-- Posizionamento: **Layers → sezione "Cataloghi"** (la stessa di IGM) → toggle **"Zone D-Flight (UAS)"**.
-- Stato: `state.showDflightZones` (transiente session-only per MVP) + `state._dflightDataset` (raw parsed, transiente).
-- **MVP** (D-FLIGHT-A → D-FLIGHT-E bundle):
-  1. Import file JSON (drag-drop su Layers o file picker).
-  2. Toggle on/off.
-  3. Legenda categorie `restriction`.
-  4. Click zona → pannello dettaglio.
-  5. Indicator dataset (source_updated_at + checksum + count).
-  6. i18n IT only (rule 32).
-- **LATER** (D-FLIGHT-F + follow-up):
-  1. Opacità slider.
-  2. Filtro categorie `restriction`/`reason`.
-  3. Filtro stato temporale (ACTIVE_NOW/FUTURE/EXPIRED/ALWAYS/UNKNOWN).
-  4. Persistenza IndexedDB opt-in.
-  5. Export GPX/GeoJSON zone selezionate.
-  6. Cerca per identifier/nome.
-- **Vincoli**: nessuna modifica a Workbench/Oggetti GIS (FROZEN); nessun nuovo storage persistent senza decisione esplicita.
+**Current-state:**
+
+- Conversione lat/lon → pixel via helper mappa esistenti.
+- **Viewport bbox culling** live (`dflightViewportBboxLonLat` + `dflightBboxOverlaps` in `dflightDrawOverlayDom`).
+- Polygon / MultiPolygon supportati; Circle → poligono (64) in normalize.
+- Stile / legenda (euristiche WFS `rule`/`regola`/`status` quando `restriction` assente); details HTML (`dflightBuildDetailsHtml`) con temporal/vertical.
+- Click/select zona; pannello dettagli non-modale.
+
+**LATER (non implementati):** filtri UI restriction/reason/temporal; ricerca zona; opacity slider — vedi §23 backlog.
 
 ---
 
-## 13. Offline / update design
+## 12. UI/UX — path primario H2 (MVP file-import SUPERSEDED)
 
-- **MVP storage = SESSION-ONLY** (no localStorage, no IndexedDB). Caricamento tramite import file; perso al refresh.
-- **Import flow**: drag-drop o picker → parse JSON → validate schema (V1/V2/V3 detect) → normalize → set `state._dflightDataset` + `state.showDflightZones=true` → render.
-- **Versione dataset visibile**: `source_updated_at` (da metadata se presente, altrimenti `UNKNOWN`) + SHA-256 file + count.
-- **Rollback**: re-import di file precedente (dataset in memoria sostituito; nessuno storico versionato in MVP).
-- **Malformed JSON**: parse error → notifica in-pannello + mantenimento dataset precedente se presente.
-- **Empty dataset**: clear overlay + notifica "no zones".
-- **Large dataset**: cap 5000 zone importate (fail-closed oltre); viewport culling al render.
-- **Network unavailable**: irrilevante per MVP (no fetch); versione future con download esplicito richiede OPSEC consent.
-- **Nessun fetch automatico al boot**.
-
----
-
-## 14. Performance (stima architetturale — dataset reale IT NON disponibile)
-
-- Byte JSON: Francia pubblica ~1-5 MB; Italia atteso stesso range.
-- Zone count: ~1000-3000 (inclusi NOTAM dinamici).
-- Vertici: tipici Polygon ED-269 ~5-50 vertici; 100+ per circonvallazioni/scale operazionali.
-- Costi browser (stima da confermare con campione reale): parse JSON <500 ms / 5 MB; normalizzazione <200 ms / 3000 zone; render SVG ~50-200 ms / 500 zone visibili.
-- **Verdetti attesi**:
-  - **FULL RENDER OK** fino a ~500 zone visibili in-view.
-  - **VIEWPORT CULLING REQUIRED** sopra 500.
-  - **CANVAS** non richiesto (SVG + culling sufficiente).
-  - **SIMPLIFICATION** opzionale LATER (Douglas-Peucker); non MVP.
+- Posizionamento: pannello D-Flight / Layers (Cataloghi) — toggle zone + ATM09 dove previsto.
+- Stato runtime: session module vars (`_dflightClientSession`, `_dflightOverlaySession` / visibility) — **non** `state.showDflightZones` persistito.
+- **Path primario LIVE (H2):**
+  1. Autoload / load da helper `GET /dataset` (panel-open).
+  2. Toggle on/off overlay.
+  3. Legenda + details click.
+  4. Indicatori dataset (count · SHA · tempi fetched/update).
+  5. Refresh check + pending + **apply esplicito**; re-eval temporale locale.
+  6. i18n IT (rule 32).
+- **Parser** ED-269/ED-318: **API disponibile** (`GOIDflight.parse`); **UI file-import D-Flight: assente** (backlog).
+- **HISTORY (design MVP file-import):** drag-drop/picker come path primario — **SUPERSEDED BY H2** per lo scope chiuso.
+- **LATER / BACKLOG / NOT OPENED:** opacity; filtri restriction/reason/temporal; persistenza IDB opt-in; export vettoriale zone; ricerca id/nome — §23.
+- **Vincoli**: Workbench/Oggetti GIS FROZEN; nessuno storage persistent D-Flight senza nuova decisione.
 
 ---
 
-## 15. Piano blocchi (aggiornato post H2 reconcile)
+## 13. Offline / update — **IMPLEMENTED** (helper path; session-only)
+
+- **Storage = SESSION-ONLY** (no localStorage / IndexedDB per dataset D-Flight). Perso al refresh pagina.
+- **Update corrente:** `dflightClientLoadZones` / `dflightClientRefresh` → pending SHA → **apply esplicito** (`dflightBtnApplyUpdate`); auto-check periodico `DFLIGHT_AUTO_REFRESH_MS` (30 min) **senza** auto-apply.
+- **Re-eval temporale locale:** `dflightBtnReeval` (no rete).
+- **Versione dataset visibile:** count + canonical SHA + fetched/pending times nel pannello H (non “file importato”).
+- **Malformed / empty:** fail-closed con retention dataset precedente dove previsto dai selftest F.
+- **Viewport culling** al render (performance).
+- **Nessun fetch D-Flight diretto dal browser**; nessuna credenziale client.
+- **HISTORY:** workflow “import file → SHA file” come update MVP — superseduto dal path helper per lo scope chiuso. UI import file = backlog.
+
+---
+
+## 14. Performance (architetturale — dataset WFS live via helper)
+
+- Dataset IT operativo: WFS `NO_FLY_ZONE` via helper (~849 feature tipiche; byte multi-MB).
+- **Viewport culling:** implementato.
+- **SVG + culling:** sufficienti per lo scope chiuso.
+- **CANVAS / Douglas-Peucker:** **OPTIONAL LATER** — non requirement (backlog).
+
+---
+
+## 15. Piano blocchi (aggiornato post H2 reconcile; WU chiusa 2026-08-14)
 
 | Blocco | Scope | Stato / note | Categoria |
 | --- | --- | --- | --- |
@@ -371,7 +361,7 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **D-FLIGHT-H-AUTOLOAD-UX-A** (+FIX1–FIX5) | panel-open autoload, refresh 30m, legenda ATM09/native, selftest isolation | **CLOSED / PASS** su **FIX5** — tip `fb773c9` / build 176; H→FIX4 FAIL Caso 5 → FIX5 PASS | DELICATO |
 | **D-FLIGHT-PERF-VISUAL-READY-A** (+FIX1/FIX2) | post-apply ATM09 start + true VISUAL READY; FIX1 zoom-aware; FIX2 close/minimize lifecycle | **CLOSED / PASS** su **FIX2** — tip `52927c5` / build **179** LIVE · review GPT sostitutiva PASS · deploy GIS-only PASS · Automated Browser QA PASS · QA operatore PASS; FIX1 QA operatore FAIL lifecycle → FIX2; `58ade6c` SUPERSEDED; helper **0.1.3** invariato | DELICATO |
 
-**NEXT:** Scegliere prossimo blocco WU-0013 / backlog. Helper **0.1.3** LIVE. `D-FLIGHT-A`+`B`+`CDE`+`G`+`F-ATM09`+`H`+`VISUAL-READY` **CLOSED**.
+**NEXT (current-state):** nessuno — WU-0013 **CLOSED / PASS** (2026-08-14). Residui = **BACKLOG / NOT OPENED** (§23). Helper **0.1.3** LIVE. Scope H2+overlay: `A`+`B`+`CDE`+`G`+`F-ATM09`+`H`+`VISUAL-READY` **CLOSED**.
 
 **Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE/G/ATM09-HELPER-DEPLOY/H-FIX5/VISUAL-READY-FIX1/FIX2 Automated = PASS.
 
@@ -394,17 +384,17 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 
 ---
 
-## 17. OPSEC e rete (vincoli futuri)
+## 17. OPSEC e rete — **IMPLEMENTED** (helper H2 live)
 
-- Nessuna richiesta automatica al boot.
-- Aggiornamento dataset **solo** azione esplicita (import file o, in futuro, download esplicito OPSEC-gated).
-- `state.forceOffline` blocca ogni download (in futuro).
-- OPSEC strict blocca fonti internet / endpoint sensibili.
-- Dataset già importato interrogabile offline.
-- Data fonte e stato aggiornamento sempre visibili.
-- **Nessun** invio di area/coordinate a servizi esterni (ricerca locale).
-- Nessun logging remoto delle aree ricercate.
-- **Nessun login automatico, nessuna acquisizione credenziali, nessun bypass auth.**
+- Nessuna richiesta D-Flight automatica al **boot** GIS; autoload dataset solo all’uso del pannello D-Flight (H), non silenzioso globale.
+- Aggiornamento dataset: check refresh (manuale o timer) + **apply esplicito**; nessuna applicazione automatica del dataset nuovo.
+- `forceOffline` / `opsecStrict`: bloccano le call al helper secondo gate client F/H esistenti (nessun nuovo comportamento inventato qui).
+- Dataset in sessione interrogabile offline dopo load (session-only; perso al refresh).
+- Indicatori source/version visibili nel pannello (count / SHA / tempi).
+- **Nessuna** credenziale D-Flight nel browser / monolite / repo.
+- **Nessun** invio di area/coordinate a D-Flight dal client; ricerca locale se/quando aggiunta resta locale.
+- Helper VPS **0.1.3 LIVE** — path H2 non è più “futuro”.
+- Persistenza offline opt-in del dataset = **BACKLOG / NOT OPENED** (ToS conservazione = UNKNOWN non bloccante).
 
 ---
 
@@ -463,13 +453,15 @@ WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update) con solo 
 
 ---
 
-## 21. Prossimo passo consigliato
+## 21. Chiusura WU e storico passi (current-state + HISTORY)
 
-**`D-FLIGHT-F`** (DELICATE — helper client / rete / OPSEC / cache; **non** auto-aperto):
+**Current-state (2026-08-14):** WU-0013 **CLOSED / PASS end-to-end** (scope H2+overlay). **Nessun** NEXT runtime D-Flight obbligatorio. Residui = §23 backlog (**NOT OPENED**). Riapertura solo con decisione di prodotto.
 
-- Acquisizione dataset da helper H2 (`/dataset` / refresh) e feed a `GOIDflight.renderOverlay`.
-- Nessuna ridefinizione di CDE; F fornisce il canale dati.
-- Alternativi (decisione operatore): provider WU-0012; **MODAL-OPEN-TOP-ALIGN-A**.
+> **HISTORY:** il testo seguente fino a §21bis conserva chiusure di blocco datate. Un eventuale “prossimo passo `D-FLIGHT-F`” sotto era CURRENT al momento della scrittura post-CDE ed è **SUPERSEDED** (F/ATM09 già CLOSED).
+
+### 21sexies. Snapshot CURRENT post-CDE (SUPERSEDED — storico)
+
+**`D-FLIGHT-F`** era il candidato delicato successivo (helper client / rete / OPSEC). **Chiuso** nella serie ATM09 + HELPER-DEPLOY + H + VISUAL-READY. Non riaprire come NEXT corrente.
 
 ### 21quinquies. Chiusura `D-FLIGHT-CDE` — 2026-08-12
 
@@ -560,13 +552,15 @@ Separare: **raw transport hash ≠ semantic/canonical dataset fingerprint**.
 - MVP overlay: WFS **tecnicamente sufficiente** (geometria + quota + temporalità + regole osservate) → **YES/PARTIAL**.
 - Parity ED-269 = futura; **non** blocca `DFLIGHT-HELPER-H2-A`.
 
-### 22.6 Architettura H2 (autorizzata — NON implementata)
+### 22.6 Architettura H2 — **LIVE** (helper 0.1.3; design target sotto = HISTORY implementato)
 
 ```text
 GOI GIS → helper VPS GOI → auth D-Flight → WFS autenticato
 ```
 
-Helper target:
+**Current-state:** helper **0.1.3** LIVE su VPS (`:8010`); API operative include `GET /status`, `GET /dataset`, `POST /refresh`, più `/atm09/*`. Credenziali solo server-side (`LoadCredential`). Cache LKG / change detection canonical come da implementazione H2-A (+FIX). **Non** descrivere più H2 come “NON implementata”.
+
+Design target originale (preservato come HISTORY di specifica):
 
 - Python **3.12** stdlib se sufficiente; servizio **separato**;
 - credenziali **solo** server-side; preferenza **`systemd LoadCredential`**;
@@ -574,16 +568,45 @@ Helper target:
 - WFS preferibilmente **EPSG:4326**;
 - cache **last-known-good**; **atomic replacement**; previous dataset per rollback;
 - change detection: **CANONICAL-FEATURE-HASH**;
-- status metadata; failure **non distruttivo** (no update current se download/parse/validation fallisce).
+- status metadata; failure **non distruttivo**.
 
-Infra già osservata (VALIDATE): Ubuntu **24.04**, systemd **255**, Python **3.12**; porta candidata tailnet-only **`:8010`** (non vincolo definitivo).
+### 22.7 Client helper — **IMPLEMENTED** (F / H / VISUAL-READY)
 
-API candidata (**non** contratto definitivo — validare in H2-A): `GET /status`, `GET /dataset`, `POST /refresh`.
-
-### 22.7 Requisiti client futuro (quando si integra il helper)
+**Current-state (live):**
 
 - Nessuna rete D-Flight al boot; nessuna credenziale D-Flight nel browser.
-- `forceOffline` e `opsecStrict` bloccano ogni call helper.
-- Check solo durante uso/attivazione D-Flight; cooldown indicativo **30–60 min**.
-- Dataset nuovo → indicazione non invasiva; applicazione **esplicita**.
-- Helper irraggiungibile → nessuna regressione GIS; LKG utilizzabile.
+- `forceOffline` e `opsecStrict` bloccano le call helper (gate client esistenti).
+- Load / refresh / pending / apply esplicito / re-eval temporale locale / ATM09 overlay: **LIVE**.
+- Autoload all’apertura pannello (H); cooldown refresh ~30 min senza auto-apply.
+- Helper irraggiungibile → no regressione GIS globale; retention session dove applicabile.
+
+> Testo design “requisiti client futuro” della discovery resta semanticamente soddisfatto dal path F+H; non riaprire come gap obbligatorio.
+
+---
+
+## 23. Backlog post-chiusura WU-0013 — **BACKLOG / NOT OPENED** (non bloccante)
+
+Residui dal gap audit `D-FLIGHT-BACKLOG-GAP-AUDIT-A` (2026-08-14). **Non** aperti. **Non** obbligatori per lo scope H2+overlay chiuso. Riapertura solo con decisione di prodotto.
+
+| Item | Note | Candidato (NOT OPENED) |
+| --- | --- | --- |
+| Filtro UI temporal state | Core `temporal_state` già live | `D-FLIGHT-TEMPORAL-FILTER-UI-A` |
+| Filtro restriction | UI assente; dati WFS spesso euristici | `D-FLIGHT-RESTRICTION-FILTER-UI-A` |
+| Filtro reason | Qualità reasons WFS debole (`[]` tipico h2-wfs) | — |
+| Ricerca zona id/nome | UI assente | — |
+| Opacity slider | CSS fissa oggi | — |
+| Persistenza offline opt-in | Session-only oggi; DELICATO se aperto | `D-FLIGHT-SESSION-PERSIST-OPTIN-A` |
+| Export vettoriale GeoJSON/GPX zone | JPG overlay già live | — |
+| UI import ED-269/ED-318 | Parser API esiste; UI no | — |
+| Feed NOTAM vettoriale | Discovery WFS NOTAM ≠ prodotto; helper senza `/notam` | — |
+| Parity completa ED-269 ↔ WFS | UNKNOWN non bloccante | — |
+| Filtro operativo quota/altitudine | Display vertical live; filtro no | — |
+| Douglas-Peucker / Canvas | **OPTIONAL LATER** — non requirement | — |
+
+**UNKNOWN non bloccanti (registrati, non aperti):**
+
+- Parity semantica completa ED-269 vs WFS;
+- Qualità/distribuzione restriction/reason sul WFS live;
+- ToS / conservazione offline del dataset D-Flight.
+
+**Chiusura formale:** `DOCS-DFLIGHT-WU0013-CLOSE-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-14).

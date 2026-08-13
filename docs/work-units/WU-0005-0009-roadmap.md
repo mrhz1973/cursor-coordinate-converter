@@ -573,13 +573,13 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE** (2026-08-13). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED (`a37b912`/160). **G-UI-OVERLAY** CLOSED / PASS su **FIX2** — tip **`42edb6f` / build 167**. **F-ATM09** CLOSED / PASS su **HELPER-DEPLOY-A** — monolite storico **`887d321` / build 170** + helper 0.1.3. **H-AUTOLOAD-UX** CLOSED / PASS su **FIX5** — monolite storico **`fb773c9` / build 176**. **VISUAL-READY-A** CLOSED / PASS su **FIX2** — tip **`52927c5` / build 179** · review PASS · deploy PASS · Automated Browser QA PASS · QA operatore **PASS**.
+**Stato:** **CLOSED / PASS end-to-end** (scope H2+overlay completato) — chiusura formale `DOCS-DFLIGHT-WU0013-CLOSE-A` (2026-08-14). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). Runtime live monolite: **`52927c5` / build 179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2`. Residui = **BACKLOG / NOT OPENED** (filtri UI, search, persist opt-in, export vettoriale, import file UI, NOTAM, parity ED-269, ecc. — WU §23). **Nessun** NEXT runtime D-Flight obbligatorio.
 
-**Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
+**Ambito (chiuso):** layer operativo UAS — helper H2 + parser/normalize + overlay/details + ATM09 + refresh/apply/reeval + autoload UX + VISUAL READY. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012).
 
-**Helper VPS (CLOSED):** `GOI GIS → helper VPS → auth D-Flight → WFS autenticato` (**H2**) implementato in `infra/dflight-helper/`; credenziali `LoadCredential`; live ~849 feature `NO_FLY_ZONE`. Sample/secret fuori repo.
+**Helper VPS (CLOSED):** `GOI GIS → helper VPS → auth D-Flight → WFS autenticato` (**H2**) in `infra/dflight-helper/`; credenziali `LoadCredential`; live ~849 feature `NO_FLY_ZONE`. Sample/secret fuori repo.
 
-**Piano blocchi:**
+**Piano blocchi (tutti CLOSED sullo scope autorizzato):**
 
 | Blocco | Categoria | Note |
 | --- | --- | --- |
