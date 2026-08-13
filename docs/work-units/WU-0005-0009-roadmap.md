@@ -573,7 +573,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 IN-FLIGHT / HELPER 0.1.3 LIVE** (2026-08-13). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED (`a37b912`/160). **G-UI-OVERLAY** CLOSED / PASS su **FIX2** — tip **`42edb6f` / build 167**. **F-ATM09** CLOSED / PASS su **HELPER-DEPLOY-A** — monolite storico **`887d321` / build 170** + helper 0.1.3. **H-AUTOLOAD-UX** CLOSED / PASS su **FIX5** — monolite storico **`fb773c9` / build 176**. **VISUAL-READY-A** IN-FLIGHT su **FIX2** — live **FIX1** `12fcba5` / build **178**; candidate **FIX2** `52927c5` / build **179** **NON LIVE** (gate: review GPT sostitutiva). **Non** CLOSED/PASS su FIX2.
+**Stato:** **OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE** (2026-08-13). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED (`a37b912`/160). **G-UI-OVERLAY** CLOSED / PASS su **FIX2** — tip **`42edb6f` / build 167**. **F-ATM09** CLOSED / PASS su **HELPER-DEPLOY-A** — monolite storico **`887d321` / build 170** + helper 0.1.3. **H-AUTOLOAD-UX** CLOSED / PASS su **FIX5** — monolite storico **`fb773c9` / build 176**. **VISUAL-READY-A** CLOSED / PASS su **FIX2** — tip **`52927c5` / build 179** · review PASS · deploy PASS · Automated Browser QA PASS · QA operatore **PASS**.
 
 **Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
 
@@ -590,9 +590,9 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 | **D-FLIGHT-F** (+ATM09+HELPER-DEPLOY) | DELICATO | **CLOSED / PASS HELPER-DEPLOY-A** — `887d321`/170 · helper 0.1.3 |
 | **D-FLIGHT-G-UI-OVERLAY-A** (+FIX1/FIX2) | ROUTINE | **CLOSED / PASS FIX2** — tip `42edb6f` / build 167 |
 | **D-FLIGHT-H-AUTOLOAD-UX-A** (+FIX1–FIX5) | DELICATO | **CLOSED / PASS FIX5** — tip `fb773c9` / build 176 |
-| **D-FLIGHT-PERF-VISUAL-READY-A** (+FIX1/FIX2) | DELICATO | **IN-FLIGHT FIX2** — live FIX1 `12fcba5`/178; candidate `52927c5`/179; gate review GPT |
+| **D-FLIGHT-PERF-VISUAL-READY-A** (+FIX1/FIX2) | DELICATO | **CLOSED / PASS FIX2** — tip `52927c5` / build 179 · QA operatore PASS |
 
-**Automated Browser QA:** obbligatoria sui blocchi con UI browser; A/B/CDE/G-FIX2/H-FIX5/VISUAL-READY-FIX1 = PASS; FIX2 Automated = pending (pre-deploy).
+**Automated Browser QA:** obbligatoria sui blocchi con UI browser; A/B/CDE/G-FIX2/H-FIX5/VISUAL-READY-FIX1/FIX2 = PASS.
 
 Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
 

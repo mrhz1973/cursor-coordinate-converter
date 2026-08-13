@@ -334,22 +334,22 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — **DEPLOYED** / Automated Browser QA **PASS** / QA operatore **PENDING** |
-| **STATO BLOCCO** | IN-FLIGHT — review GPT sostitutiva **PASS** · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore FIX2 **PENDING** · `finito` non eseguito |
-| **GATE CORRENTE** | `QA FINALE CHATGPT — PENDING` |
-| **REVIEW BASE** | `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178 — baseline review) |
-| **CANDIDATE RUNTIME** | monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · review **PASS** · **ora LIVE** (`58ade6c` = first draft SUPERSEDED) |
+| **BLOCCO ATTIVO** | D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — **CLOSED / PASS** end-to-end |
+| **STATO BLOCCO** | CLOSED — review GPT **PASS** · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-PERF-VISUAL-READY-A-FIX2 PASS operatore`) |
+| **GATE CORRENTE** | nessuno (serie VISUAL-READY chiusa) |
+| **REVIEW BASE** | `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178 — baseline storica review) |
+| **CANDIDATE RUNTIME** | *(omesso — coincidente con RUNTIME LIVE post-deploy verificato)* |
 | **RUNTIME LIVE** | monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | QA operatore residuale ChatGPT → se PASS: Regola H auto-`finito` |
+| **NEXT** | Scegliere prossimo blocco WU-0013 / backlog (serie VISUAL-READY chiusa) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> Catena VISUAL-READY: **A** → **FIX1** (QA operatore **FAIL** lifecycle) → **FIX2** (review PASS · **LIVE** build **179** · Automated Browser QA PASS · QA operatore PENDING). Helper **0.1.3** invariato.
+> Catena VISUAL-READY: **A** → **FIX1** (QA operatore **FAIL** lifecycle) → **FIX2** (**CLOSED / PASS** · LIVE build **179**). Helper **0.1.3** invariato.
 > Docs lean Blocco 2 `DOCS-LEAN-README-HANDOFF-A` = CLOSED (storico metodo).
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — DEPLOYED / Automated Browser QA PASS / QA PENDING (build **179** / `52927c5` LIVE) — WU-0013
+1. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
 2. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
 3. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
 4. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
@@ -385,7 +385,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | WU-0010 | OPEN | Outdoor Routing GraphHopper (B1a–E + REVERSE-A CLOSED; F futuro) |
 | WU-0011 | CLOSED / PASS | INFRA-GH-1A+1B GraphHopper PoC locale + VPS |
 | WU-0012 | OPEN / NEXT PROVIDER | CARTO-INDEX-FEDERATED — provider IIM/CIGA/UKHO / online update |
-| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 DEPLOYED QA-PENDING / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — FIX2 `52927c5`/179 LIVE · QA FINALE CHATGPT PENDING |
+| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — FIX2 `52927c5`/179 LIVE · CLOSED/PASS |
 
 ---
 
