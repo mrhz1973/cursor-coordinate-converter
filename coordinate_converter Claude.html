@@ -23369,10 +23369,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A";
-const APP_BUILD_DETAIL = "Post-apply ATM09 start + true VISUAL READY (no premature Pronto).";
+const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX1";
+const APP_BUILD_DETAIL = "Zoom-aware VISUAL READY (no ATM09 preparing above max zoom).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 177;
+const APP_BUILD_NUM = 178;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37178,17 +37178,23 @@ function dflightSyncLoadingUi(){
     atmErr = (_dflightAtm09ErrCount | 0);
   } catch(_){}
   const atmSettled = atmOk + atmErr;
-  const atmEligible = !!(typeof dflightAtm09IsEligibleForStart === "function" && dflightAtm09IsEligibleForStart());
-  const atmWant = !!(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible());
+  /* FIX1: pass current map zoom so max-zoom gate matches ATM09 eligibility. */
+  let atmZoom = NaN;
+  try {
+    if (typeof state !== "undefined") atmZoom = Number(state.mapZoom);
+  } catch(_){ atmZoom = NaN; }
+  const atmEligible = !!(typeof dflightAtm09IsEligibleForStart === "function" && dflightAtm09IsEligibleForStart(atmZoom));
+  const atmWant = !!(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible(atmZoom));
   const atmReady = !!(typeof dflightAtm09IsReady === "function" && dflightAtm09IsReady());
+  /* Preparing only when ATM09 is actually eligible at current zoom — preferred alone must not stick at zoom > max. */
   const atmPreparing = !!(
     hasSess &&
     !_dflightNetworkBusy &&
     !pending &&
-    (atmWant || atmEligible) &&
+    atmEligible &&
+    (atmWant || _dflightAtm09StartPending || _dflightAtm09Preferred) &&
     !atmReady &&
-    atmExp === 0 &&
-    (_dflightAtm09StartPending || _dflightAtm09Preferred || atmWant)
+    atmExp === 0
   );
 
   let phase = _dflightUiPhase;
@@ -39090,8 +39096,15 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_177", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 177
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A");
+    add("H_build_178", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 178
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A-FIX1");
+    add("VR_FIX1_sync_loading_passes_zoom", (function(){
+      if (typeof dflightSyncLoadingUi !== "function") return false;
+      const src = String(dflightSyncLoadingUi);
+      return src.indexOf("dflightAtm09IsEligibleForStart(atmZoom)") >= 0
+        && src.indexOf("dflightAtm09OverlayVisible(atmZoom)") >= 0
+        && src.indexOf("dflightAtm09OverlayVisible()") < 0;
+    })());
 
     /* VISUAL-READY-A: pure/static + stubbed post-apply start (no live helper network). */
     add("VR_helpers_present", typeof dflightMaybeStartAtm09AfterDatasetReady === "function"
@@ -39132,10 +39145,15 @@ function dflightSelfTestH(){
       const prevBaseVR = _dflightHelperBaseUrlOverride;
       const foVR = (typeof state !== "undefined") ? !!state.forceOffline : false;
       const osVR = (typeof state !== "undefined") ? !!state.opsecStrict : false;
+      const prevZoomVR = (typeof state !== "undefined") ? state.mapZoom : undefined;
       let syncN = 0, renderN = 0;
       try {
         _dflightHelperBaseUrlOverride = "http://example.test:8010";
-        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+        if (typeof state !== "undefined"){
+          state.forceOffline = false;
+          state.opsecStrict = false;
+          state.mapZoom = (typeof DFLIGHT_ATM09_TILE_MAX_ZOOM === "number") ? Math.min(11, DFLIGHT_ATM09_TILE_MAX_ZOOM) : 11;
+        }
         _dflightOverlayVisible = true;
         _dflightAtm09Preferred = false;
         _dflightAtm09Ready = false;
@@ -39181,7 +39199,7 @@ function dflightSelfTestH(){
         add("VR_helper_missing_zero_start", renderN === 0 && !!(rHb && (rHb.reason === "not_eligible" || rHb.reason === "not_wanted_after_sync")));
 
         _dflightHelperBaseUrlOverride = "http://example.test:8010";
-        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; state.mapZoom = (typeof DFLIGHT_ATM09_TILE_MAX_ZOOM === "number") ? DFLIGHT_ATM09_TILE_MAX_ZOOM : 19; }
         _dflightOverlayVisible = true;
         _dflightAtm09Preferred = true;
         _dflightAtm09StartPending = true;
@@ -39220,6 +39238,60 @@ function dflightSelfTestH(){
         dflightSyncLoadingUi();
         const labNat = document.getElementById("dflightProgressLabel");
         add("VR_ui_native_pronto_when_atm09_off", !!(labNat && labNat.textContent === dflightScopedT("dflight.status.ready")));
+
+        /* FIX1: zoom-aware VISUAL READY (A–D). */
+        if (typeof state !== "undefined"){
+          state.forceOffline = false;
+          state.opsecStrict = false;
+        }
+        _dflightHelperBaseUrlOverride = "http://example.test:8010";
+        _dflightOverlayVisible = true;
+        _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+        _dflightNetworkBusy = false;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09StartPending = true;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09OkCount = 0;
+        _dflightAtm09ErrCount = 0;
+        _dflightAtm09Ready = false;
+        const zMax = (typeof DFLIGHT_ATM09_TILE_MAX_ZOOM === "number") ? DFLIGHT_ATM09_TILE_MAX_ZOOM : 19;
+        if (typeof state !== "undefined") state.mapZoom = zMax;
+        dflightSyncLoadingUi();
+        const labZmax = document.getElementById("dflightProgressLabel");
+        const txtZmax = labZmax ? String(labZmax.textContent || "") : "";
+        add("VR_FIX1_zoom_max_preparing", txtZmax.indexOf("Pronto") < 0
+          && (txtZmax.indexOf("ATM09") >= 0 || txtZmax.indexOf("Preparazione") >= 0));
+
+        if (typeof state !== "undefined") state.mapZoom = zMax + 1;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09StartPending = true;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Ready = false;
+        dflightSyncLoadingUi();
+        const labZover = document.getElementById("dflightProgressLabel");
+        const txtZover = labZover ? String(labZover.textContent || "") : "";
+        add("VR_FIX1_zoom_over_native_pronto", txtZover === dflightScopedT("dflight.status.ready")
+          && txtZover.indexOf("Preparazione") < 0);
+
+        syncN = 0; renderN = 0;
+        _dflightAtm09Preferred = false;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Ready = false;
+        _dflightAtm09StartPending = false;
+        if (typeof state !== "undefined") state.mapZoom = zMax + 1;
+        const rOver = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_FIX1_zoom_over_zero_render", renderN === 0
+          && !!(rOver && (rOver.reason === "not_eligible" || rOver.reason === "not_wanted_after_sync")));
+
+        if (typeof state !== "undefined") state.mapZoom = zMax;
+        syncN = 0; renderN = 0;
+        _dflightAtm09Preferred = false;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Ready = false;
+        _dflightAtm09StartPending = false;
+        const rBack = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_FIX1_zoom_max_start_ok", renderN === 1 && !!(rBack && rBack.started)
+          && syncN === 1 && !!_dflightAtm09Preferred);
       } catch (eVR){
         add("VR_selftest_exception", false, String(eVR && eVR.message ? eVR.message : eVR));
       } finally {
@@ -39240,6 +39312,7 @@ function dflightSelfTestH(){
         if (typeof state !== "undefined"){
           state.forceOffline = foVR;
           state.opsecStrict = osVR;
+          state.mapZoom = prevZoomVR;
         }
       }
     })();
