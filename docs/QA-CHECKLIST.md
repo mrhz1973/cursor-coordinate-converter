@@ -44,11 +44,12 @@
 - **Tre gate distinti.** (1) **PASS tecnico** (hash, deploy VPS, byte-match, `node --check`, `git ls-remote`); (2) **Automated Browser QA** (`AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`) — Cursor, post-deploy, metodo `AUTOMATED-BROWSER-QA-PREOP` / OM §4 Regola D2bis; (3) **PASS operatore** (`QA <BLOCK-ID> PASS operatore`) — persona, QA umana residua.
 - **Automated Browser QA ≠ PASS operatore.** Cursor può attestare solo Automated Browser QA (prove automatiche realmente eseguite). Cursor **non** attesta la QA umana/percettiva e **non** prepara/emette le istruzioni QA operatore (Regola D2).
 - **Sequenza viva:** deploy tecnico PASS → Automated Browser QA → **solo se PASS/N/A** → fatti tecnici + URL + Automated Browser QA esito + `QA FINALE CHATGPT — PENDING` → ChatGPT emette QA umana residua.
+- **Formato vivo QA umana: `QA-HUMAN-SHORT-TARGETED`.** Automated Browser QA fa il lavoro tecnico approfondito; la QA operatore verifica **solo** il residuo operativo/percettivo, in forma **corta e mirata** (normalmente 3–6 casi). Dettaglio: OM §4 Regola D2 + procedura sotto. Il precedente `QA-CHATGPT-3LINE-HANDOFF-PREF` (`Dove:` / `Azione:` / `Risultato atteso:` obbligatori) è **SUPERSEDED** per il formato.
 - **Autore QA umana:** **ChatGPT** prepara ed emette **un unico** messaggio QA operatore (aspetti non affidabili da automatizzare).
 - **Fail-closed.** Senza attestazione esplicita dell'operatore, l'esito resta **QA operatore non eseguita / non attestata**. Non si inferisce PASS operatore da PASS tecnico, Automated Browser QA PASS, diff pulito o `node --check`. Su Automated Browser QA FAIL: **non** dichiarare `QA FINALE CHATGPT — PENDING`.
 - **Lingua IT (QA-OPERATOR-IT-ONLY-PREF CLOSED).** Istruzioni QA operatore **solo in italiano**, salvo blocchi il cui oggetto è la verifica i18n/localizzazione. Runtime app resta IT/EN/FR.
 - **Etichette UI visibili.** Usare testi/percorsi realmente visibili (etichetta, tooltip se unico ID, icona/posizione, nome pannello, sequenza concreta). **Vietato** come percorso UI: nomi interni, ID DOM, «Workbench», «Import Hub» (salvo nota tecnica separata). Preferire **«Oggetti GIS»** / **«Import GIS»** quando sono le etichette visibili. Prima di emettere: verificare nel monolite corrente; non inventare menu.
-- **Attestazione in Cursor (umana):** solo la riga finale `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore>`; dubbi/FAIL intermedi con ChatGPT.
+- **Attestazione in Cursor (umana):** solo la riga finale `QA <BLOCK-ID> PASS operatore` oppure `QA <BLOCK-ID> FAIL operatore — <errore preciso>`; dubbi/FAIL intermedi con ChatGPT.
 
 ## Automated Browser QA PRE-OPERATORE (`AUTOMATED-BROWSER-QA-PREOP`)
 
@@ -61,55 +62,56 @@
 5. Login: una richiesta operatore; dopo `login fatto` proseguire. Vietato chiedere secret/token. Segreti mai in docs/repo/report.
 6. FAIL → FIX path; **non** QA umana su build già fallita. BLOCKED/INCOMPLETE → non convertire in PASS.
 
-## Procedura canonica ChatGPT — tre righe per passaggio
+## Procedura canonica ChatGPT — corta e mirata (`QA-HUMAN-SHORT-TARGETED`)
 
-**Vincolo vivo (QA-CHATGPT-3LINE-HANDOFF-PREF / OM §4 Regola D2 + D2bis).**
+**Vincolo vivo (OM §4 Regola D2 + D2bis; adozione `DOCS-QA-HUMAN-SHORT-TARGETED-A`).**  
+Precedente **`QA-CHATGPT-3LINE-HANDOFF-PREF`** (obbligo `Dove:` / `Azione:` / `Risultato atteso:`): **SUPERSEDED** per il formato.
 
 1. Un solo messaggio QA da **ChatGPT** **dopo** che Cursor ha dichiarato deploy PASS + Automated Browser QA PASS|N/A + URL + `QA FINALE CHATGPT — PENDING`.
 2. Cursor **non** emette istruzioni QA umane (né post-deploy né nel report `finito`); **deve** aver eseguito Automated Browser QA quando applicabile.
-3. Ogni passaggio operativo contiene **esattamente**:
-
-```text
-Dove:
-Azione:
-Risultato atteso:
-```
-
-4. Numero di passaggi proporzionato allo **scope umano residuo** del blocco.
-5. Niente tabelle o checklist estese salvo reale necessità (OPSEC, rete, cache, storage, migrazioni, alto rischio); anche allora: un solo messaggio ChatGPT; Cursor non emette.
-6. L’operatore riferisce a **ChatGPT** errori, punti non chiari o FAIL circoscritti; ChatGPT chiarisce prima dell’attestazione.
-7. ChatGPT produce la **riga finale** da riportare in Cursor; PASS finale esplicito; fail-closed senza attestazione.
-8. `QA <BLOCK-ID> PASS operatore` in Cursor → auto-`finito` Regola H (nessun secondo «finito»).
+3. La QA umana **non** ripete controlli già affidabilmente coperti da statici, selftest, Console, Network, DOM, HTTP/status, hash, contatori interni, smoke API o Automated Browser QA — salvo osservazione umana necessaria o gate ad alto rischio.
+4. Struttura normale del messaggio: apertura breve → `Apri:` + URL esatto → `Verifica questi N casi:` (di solito **3–6**) → riga PASS/FAIL → nota Regola H → eventuale NEXT noto.
+5. Ogni caso: titolo umano breve; azioni in bullet; bullet finale `atteso:` con esito inequivocabile. **Non** è obbligatorio ripetere le etichette `Dove:` / `Azione:` / `Risultato atteso:`.
+6. Niente tabelle né spiegazioni tecniche lunghe. Eccezione proporzionata solo per OPSEC, rete, cache/storage, migrazioni o rischi non automatizzabili.
+7. L’operatore riferisce a **ChatGPT** errori, punti non chiari o FAIL circoscritti; ChatGPT chiarisce prima dell’attestazione.
+8. `QA <BLOCK-ID> PASS operatore` in Cursor → auto-`finito` Regola H (nessun secondo «finito»). Su FAIL: non PASS; non `finito`.
 
 ### Template ChatGPT (canonico)
 
 ```text
-Deploy tecnico di <BLOCK-ID> = PASS (verificato da Cursor).
-AUTOMATED BROWSER QA <BLOCK-ID> = PASS (o NOT APPLICABLE — <motivo>).
-URL:
-http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha>
+Quindi ora la QA umana è molto corta e mirata.
 
-Passaggio 1
-Dove:
-<luogo UI visibile>
-Azione:
-<cosa fare>
-Risultato atteso:
-<esito osservabile>
+Apri:
 
-Passaggio 2
-Dove:
-…
-Azione:
-…
-Risultato atteso:
+http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=<runtime-short-sha>&qa=human
+
+Verifica questi N casi:
+
+1. **<caso>**
+   - <azione>;
+   - <azione>;
+   - atteso: **<risultato osservabile>**.
+
+2. **<caso>**
+   - <azione>;
+   - atteso: **<risultato osservabile>**.
+
 …
 
-Quando hai finito, riporta in Cursor soltanto:
+Se tutti sono corretti, incolla in Cursor soltanto:
+
 QA <BLOCK-ID> PASS operatore
-oppure
-QA <BLOCK-ID> FAIL operatore — <errore e punto esatto>
+
+Quella riga può far partire la coda `finito` prevista dal workflow (Regola H). Non serve un secondo comando «finito».
+
+Se invece trovi un difetto, non dare PASS e usa:
+
+QA <BLOCK-ID> FAIL operatore — <errore preciso>
+
+Dopo la chiusura di questo gate, il prossimo blocco sarà: <NEXT>.
 ```
+
+Note URL: usare lo **short SHA runtime reale** del blocco (non inventare). Il parametro `qa=human` è un marker di cache/query opzionale solo se non interferisce col runtime; altrimenti usare solo `?v=<runtime-short-sha>`. La riga NEXT va omessa se non determinata dalle fonti vive.
 
 ## CARTO-UI-RESULTS-A (+ FIX1 + FIX2 + FIX3) — UI risultati IGM — CLOSED / PASS end-to-end
 
@@ -376,22 +378,22 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1f7c05f
 
 ## Formato legacy — QA minima narrativa (storico; non procedura viva)
 
-> **Storico.** Prima di **QA-CHATGPT-3LINE-HANDOFF-PREF** (2026-08-02) il formato predefinito era la «QA minima narrativa» spesso emessa da Cursor. **Procedura viva = sezione «Procedura canonica ChatGPT — tre righe per passaggio»** e OM §4 Regola D2. I template sotto restano solo come riferimento storico di struttura breve.
+> **Storico.** Prima di **QA-CHATGPT-3LINE-HANDOFF-PREF** (2026-08-02) il formato predefinito era la «QA minima narrativa» spesso emessa da Cursor. Il formato a tre etichette `Dove:` / `Azione:` / `Risultato atteso:` (**QA-CHATGPT-3LINE-HANDOFF-PREF**) è a sua volta **SUPERSEDED** (2026-08-13) da **`QA-HUMAN-SHORT-TARGETED`**. **Procedura viva = sezione «Procedura canonica ChatGPT — corta e mirata»** e OM §4 Regola D2. I template sotto restano solo come riferimento storico.
 
-Per **micro-fix UI** e blocchi di routine, lo **spirito** resta: breve, operativa, **in italiano**, limitata al blocco — ma l’**autore** è ChatGPT e ogni passaggio usa `Dove:` / `Azione:` / `Risultato atteso:`.
+Per **micro-fix UI** e blocchi di routine, lo **spirito** resta: breve, operativa, **in italiano**, limitata al blocco — ma l’**autore** è ChatGPT e il formato vivo è **corto e mirato** (`QA-HUMAN-SHORT-TARGETED`), non le tre etichette obbligatorie.
 
 **Non usare come formato ordinario:** tabelle; caselle `[ ]`; audit generale; percorsi UI con nomi tecnici non visibili.
 
-### Struttura canonica (storica — sostituita da Dove/Azione/Risultato atteso)
+### Struttura canonica (storica — sostituita prima da Dove/Azione/Risultato atteso, poi da QA-HUMAN-SHORT-TARGETED)
 
-> Non usare come procedura viva. Vedi **Procedura canonica ChatGPT — tre righe per passaggio**.
+> Non usare come procedura viva. Vedi **Procedura canonica ChatGPT — corta e mirata**.
 
 1. **Apertura:** `Il deploy tecnico di <BLOCK-ID> è PASS:`
 2. **Elenco breve** dei fatti tecnici già verificati.
 3. **Frase storica:** `Ora serve solo la QA operatore minima, senza Cursor.`
 4. **Sezione `Apri:`** URL VPS.
-5. **Sezione `Poi:`** passaggi (oggi: ogni passaggio = Dove/Azione/Risultato atteso).
-6. **Sezione `verifica che:`** esiti (oggi: dentro `Risultato atteso:`).
+5. **Sezione `Poi:`** passaggi (storico intermedio: ogni passaggio = Dove/Azione/Risultato atteso).
+6. **Sezione `verifica che:`** esiti (storico).
 7. **Chiusura:** riga `QA <BLOCK-ID> PASS operatore` da riportare in Cursor.
 
 ### Esempio generico (template)
@@ -1657,11 +1659,11 @@ Quando il deploy tecnico è **PASS** e la QA operatore è ancora **pending**, Cu
 - riportare i **risultati tecnici già verificati** (PASS tecnico);
 - riportare l’**URL** con runtime short SHA reale;
 - dichiarare il gate **`QA FINALE CHATGPT — PENDING`**;
-- **non** emettere istruzioni QA, template Dove/Azione/Risultato, né «QA minima narrativa»;
+- **non** emettere istruzioni QA, template umano, né «QA minima narrativa»;
 - **non** dichiarare PASS operatore;
 - attendere in sessione Cursor solo l’attestazione finale.
 
-**ChatGPT** (non Cursor) emette il messaggio QA unico a tre righe per passaggio.
+**ChatGPT** (non Cursor) emette il messaggio QA unico **corto e mirato** (`QA-HUMAN-SHORT-TARGETED` / OM §4 Regola D2).
 
 **Checklist estesa** (OPSEC/rete/cache/storage/migrazioni/alto rischio): solo da ChatGPT, un solo messaggio; Cursor non emette.
 

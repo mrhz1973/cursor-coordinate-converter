@@ -64,7 +64,7 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 - Nei blocchi non-bundle: `finito` **condizionale in coda** al prompt quando applicabile.
 - **Bundling di default (METHOD-BUNDLING-DEFAULT):** un bundle / un commit / una QA (≥5 item routine); gate solo a livello bundle; non frammentare micro-modifiche routine. Dettaglio: OM §4 Regola G.
 - **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** chiusura docs obbligatoria dopo QA PASS; cambia solo il trigger (automatico da attestazione). Dettaglio: OM §4 Regola H.
-- **QA ChatGPT a tre righe (Regola D2 + D2bis):** dopo deploy PASS → **Automated Browser QA** Cursor; solo se PASS/N/A → gate `QA FINALE CHATGPT — PENDING`; ChatGPT emette QA umana residua con `Dove:` / `Azione:` / `Risultato atteso:`; dubbi/FAIL con ChatGPT; in Cursor solo attestazione finale. Metodo: `AUTOMATED-BROWSER-QA-PREOP`.
+- **QA umana corta e mirata (`QA-HUMAN-SHORT-TARGETED`, Regola D2 + D2bis):** dopo deploy PASS → **Automated Browser QA** Cursor; solo se PASS/N/A → gate `QA FINALE CHATGPT — PENDING`; ChatGPT emette **una sola** QA residua breve (casi + `atteso:`); dubbi/FAIL con ChatGPT; in Cursor solo attestazione finale. Formato storico a tre etichette (`QA-CHATGPT-3LINE-HANDOFF-PREF`) = **SUPERSEDED**. Metodo browser: `AUTOMATED-BROWSER-QA-PREOP`.
 
 ---
 
@@ -155,8 +155,8 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | Display runtime | `D-FLIGHT-CDE · build 160` |
 | `APP_BUILD_ID` | `D-FLIGHT-CDE` |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
-| QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (QA via ChatGPT; Dove/Azione/Risultato atteso; Regola D2) |
-| QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate a Regola D2; no runtime) |
+| QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (2026-08-02); formato **SUPERSEDED** da `QA-HUMAN-SHORT-TARGETED` (Regola D2 viva) |
+| QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate allora a Regola D2 3-line; no runtime) |
 | Oggetti GIS / Workbench | **FROZEN** — resta in runtime; nessun ulteriore sviluppo autorizzato |
 | MAP-BOX-ZOOM-A (+ FIX1) | **CLOSED / PASS end-to-end** (box zoom; superseded live) |
 | CARTO-SEARCH-ENGINE-A | **CLOSED / PASS end-to-end** (motore IGM embedded; tip storico `c80129e` build 118; superseded live) |

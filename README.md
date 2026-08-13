@@ -27,6 +27,7 @@ Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte compl
 4. **Bundling di default (METHOD-BUNDLING-DEFAULT):** il default operativo è **un bundle** — raggruppare il lavoro routine in **un blocco / un commit / una QA** (target ≥5 item; 5–10+ è normale). **Non** proporre separazione per ogni micro-modifica routine. Gate (review, deploy, QA) **solo a livello bundle**. Le **categorie delicate** restano in **bundle propri**. Dettaglio: OM §4 Regola G.
 5. **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** nei prompt bundle runtime, la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** la coda `finito` pre-autorizzata (chiusura docs + autosync). Dettaglio: OM §4 Regola H.
 6. **CONTEXT-SAFE BOOTSTRAP:** all'apertura di una nuova chat/handoff la lettura deve essere **context-safe** — non caricare preventivamente interi documenti grandi, cronologia di blocchi CLOSED o il monolite se bastano sezioni/range/diff mirati. Dettaglio: OM §4 Regola I. **AUTO-VIA resta valida:** il prossimo passo tecnicamente determinato si esegue con acquisizione progressiva delle evidenze, senza un nuovo `vai` e senza fermarsi dopo la sola riconciliazione.
+7. **QA operatore corta e mirata (`QA-HUMAN-SHORT-TARGETED`):** dopo Automated Browser QA, ChatGPT emette **una sola** QA umana residua breve (casi operativi/percettivi). Dettaglio: OM §4 Regola D2 + [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md). Automated Browser QA fa il lavoro tecnico approfondito.
 
 Dettaglio completo: `docs/OPERATING_MEMORY.md` §4 — Handoff & Close Discipline.
 ---

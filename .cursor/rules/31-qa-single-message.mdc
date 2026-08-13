@@ -9,23 +9,40 @@ Questa regola rafforza `docs/QA-CHECKLIST.md` e prevale su qualunque preferenza 
 
 ## Regola vincolante
 
-Dopo che Cursor ha completato **Automated Browser QA PRE-OPERATORE** con esito PASS (o NOT APPLICABLE giustificato), ha dichiarato il deploy tecnico PASS e termina con `QA FINALE CHATGPT — PENDING`, ChatGPT deve emettere **una sola QA operatore completa** (umana residua), contenente fin dall'inizio **tutti i passaggi previsti** per il blocco.
+Dopo che Cursor ha completato **Automated Browser QA PRE-OPERATORE** con esito PASS (o NOT APPLICABLE giustificato), ha dichiarato il deploy tecnico PASS e termina con `QA FINALE CHATGPT — PENDING`, ChatGPT deve emettere **una sola QA operatore completa** (umana residua), contenente fin dall'inizio **tutti i casi previsti** per il blocco.
+
+Formato vivo: **`QA-HUMAN-SHORT-TARGETED`** (OM §4 Regola D2 + `docs/QA-CHECKLIST.md`). Il precedente obbligo `Dove:` / `Azione:` / `Risultato atteso:` (`QA-CHATGPT-3LINE-HANDOFF-PREF`) è **SUPERSEDED** per il formato.
 
 È vietato:
 
-- consegnare un solo passaggio e attendere l'esito prima di mostrare il successivo;
-- trasformare la QA in una sequenza di messaggi «Passaggio 1», «Passaggio 2», ecc.;
-- chiedere all'operatore di riportare l'esito di ogni singolo passaggio prima di conoscere il resto della procedura;
+- consegnare un solo caso e attendere l'esito prima di mostrare il successivo;
+- trasformare la QA in una sequenza di messaggi «Caso 1», «Caso 2», ecc.;
+- chiedere all'operatore di riportare l'esito di ogni singolo caso prima di conoscere il resto della procedura;
 - trattenere controlli già prevedibili per presentarli successivamente;
-- spezzare la QA perché durante l'esecuzione emerge un chiarimento o una diagnosi.
+- spezzare la QA perché durante l'esecuzione emerge un chiarimento o una diagnosi;
+- ripetere nella QA umana controlli già affidabilmente coperti da Automated Browser QA / smoke / Console / Network / DOM / hash, salvo residuo percettivo/operativo reale.
 
-Ogni passaggio deve rispettare il formato canonico:
+Struttura canonica tipica (un solo messaggio):
 
 ```text
-Dove:
-Azione:
-Risultato atteso:
+Quindi ora la QA umana è molto corta e mirata.
+
+Apri:
+
+<URL runtime esatto>
+
+Verifica questi N casi:
+
+1. **<titolo>**
+   - <azione>;
+   - atteso: **<risultato>**.
+
+…
+
+QA <BLOCK-ID> PASS operatore
 ```
+
+Normalmente **3–6** casi; etichette UI visibili; italiano (Regola D1).
 
 ## Condizioni e diramazioni
 
@@ -36,7 +53,7 @@ Se durante la QA emerge un errore o un dubbio:
 1. l'operatore lo riferisce a ChatGPT;
 2. ChatGPT esegue la diagnosi necessaria;
 3. dopo la risoluzione, ChatGPT richiama la QA completa originaria o ripubblica in un unico messaggio l'intera procedura residua;
-4. non riprende mai con una distribuzione incrementale dei singoli passaggi.
+4. non riprende mai con una distribuzione incrementale dei singoli casi.
 
 ## Chiusura
 
@@ -49,7 +66,7 @@ QA <BLOCK-ID> PASS operatore
 oppure:
 
 ```text
-QA <BLOCK-ID> FAIL operatore — <errore e passaggio esatto>
+QA <BLOCK-ID> FAIL operatore — <errore preciso>
 ```
 
-L'attestazione va riportata una sola volta. Cursor non deve emettere istruzioni QA e, dopo il PASS operatore, applica il normale auto-`finito` previsto dalle regole del repository.
+L'attestazione va riportata una sola volta. Cursor non deve emettere istruzioni QA e, dopo il PASS operatore, applica il normale auto-`finito` previsto dalle regole del repository (Regola H). Su FAIL non parte `finito`.
