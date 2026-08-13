@@ -9,10 +9,14 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-F-ATM09-HELPER-DEPLOY-A`** — helper produzione **0.1.3** deployato su `:8010`.  
-Smoke ATM09 tile/legend/info **PASS**; regressione NO_FLY_ZONE **OK**.  
-Automated Browser QA post-helper su FIX2/build **170** (`887d321`) **PASS** (expected=60 ok=60 err=0 ready=true; overlay ATM09 visibile; suppress NFZ).  
-**Monolite non toccato / non redeployato.**  
-**Gate:** `QA OPERATORE REQUIRED` — **NO FINITO**.
+2026-08-13 — **`DOCS-QA-HUMAN-SHORT-TARGETED-A` CLOSED / PASS docs-only**.  
+Metodo QA operatore vivo = **`QA-HUMAN-SHORT-TARGETED`** (OM §4 Regola D2 + `docs/QA-CHECKLIST.md`).  
+Precedente **`QA-CHATGPT-3LINE-HANDOFF-PREF`** = **SUPERSEDED** per il formato.  
+D1 / D2bis / H invariati. Nessun runtime / monolite / helper. **NO FINITO**.
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0226_d-flight-f-atm09-helper-deploy-a.md`](inbox/2026-08-13_0226_d-flight-f-atm09-helper-deploy-a.md).
+Task commit: `6ca86c84c451283ba267aa523048b672a70b5e9d`.  
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0238_docs-qa-human-short-targeted-a.md`](inbox/2026-08-13_0238_docs-qa-human-short-targeted-a.md).
+
+## Contesto runtime (invariato da questo blocco)
+
+Helper prod **0.1.3** live; GIS FIX2/170 `887d321` — QA operatore HELPER-DEPLOY ancora required se non chiusa altrove.
