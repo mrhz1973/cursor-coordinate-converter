@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX2 CLOSED / PASS` end-to-end** (Regola H auto-`finito` dopo `QA D-FLIGHT-PERF-VISUAL-READY-A-FIX2 PASS operatore`). LIVE build **179** / `52927c5`. Helper **0.1.3**. Task finito `381c490`. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_2250_riepilogo_finito-sessione.md`](inbox/2026-08-13_2250_riepilogo_finito-sessione.md). NEXT: scegliere prossimo blocco WU-0013 / backlog.
+2026-08-14 — **`DOCS-DFLIGHT-WU0013-PLAN-RECONCILE-A CLOSED / PASS DOCS-ONLY`**. WU-0013 §15 allineato a FIX2 CLOSED/PASS LIVE build **179** / `52927c5`. OM §7.1 invariato (già corretto). Roadmap già corretta. Task `aebe493`. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_0030_riepilogo_docs-dflight-wu0013-plan-reconcile-a.md`](inbox/2026-08-14_0030_riepilogo_docs-dflight-wu0013-plan-reconcile-a.md). NEXT: scegliere prossimo blocco WU-0013 / backlog.
