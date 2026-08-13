@@ -23303,10 +23303,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A";
-const APP_BUILD_DETAIL = "panel-open autoload + 30m update check + loading UX + legend polish";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX1";
+const APP_BUILD_DETAIL = "FIX1: sync selftest H — no async leak, timer restore, real autoload asserts";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 171;
+const APP_BUILD_NUM = 172;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38672,12 +38672,21 @@ function dflightSelfTestH(){
   function add(name, ok, detail){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   }
+  /** Thenable that never settles — keeps await suspended without scheduling fulfillment microtasks. */
+  function pendingThenable(){
+    const t = {
+      then: function(){ return t; },
+      catch: function(){ return t; }
+    };
+    return t;
+  }
   const prevSess = _dflightClientSession;
   const prevBusy = _dflightNetworkBusy;
   const prevPhase = _dflightUiPhase;
   const prevErr = _dflightInitialLoadError;
   const prevOpen = _dflightPanelOpen;
   const prevTimer = _dflightAutoRefreshTimer;
+  const hadLiveTimer = prevTimer != null;
   const prevFetch = _dflightFetchImpl;
   const prevBase = _dflightHelperBaseUrlOverride;
   const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
@@ -38719,39 +38728,28 @@ function dflightSelfTestH(){
     let getCount = 0;
     let postCount = 0;
     _dflightFetchImpl = function(url, init){
-      const u = String(url || "");
       const m = String((init && init.method) || "GET").toUpperCase();
       if (m === "POST") postCount++;
       else getCount++;
-      const body = (m === "POST")
-        ? JSON.stringify({ status: "READY_UNCHANGED", canonical_sha256: "abc" })
-        : JSON.stringify({ type: "FeatureCollection", features: [] });
-      return Promise.resolve({
-        ok: true,
-        status: 200,
-        text: function(){ return Promise.resolve(body); },
-        headers: { get: function(h){
-          const k = String(h || "").toLowerCase();
-          if (k === "x-goi-dflight-sha256") return "deadbeef";
-          if (k === "x-goi-dflight-feature-count") return "0";
-          if (k === "x-goi-dflight-fetched-at") return "2026-08-13T00:00:00Z";
-          return null;
-        } }
-      });
+      /* Never settle: prevents loadZones/helperFetch continuations after selfTest returns. */
+      return pendingThenable();
     };
 
     add("H_boot_zero_fetch_static", getCount === 0 && postCount === 0);
 
     _dflightPanelOpen = true;
     _dflightClientSession = null;
+    _dflightNetworkBusy = false;
     getCount = 0;
-    const p1 = dflightMaybeAutoloadOnPanelOpen();
-    add("H_autoload_starts_busy_or_fetch", _dflightNetworkBusy === true || getCount >= 0);
-    /* await via then sync check after microtask not available — use busy flag */
+    postCount = 0;
+    dflightMaybeAutoloadOnPanelOpen();
+    add("H_autoload_invokes_get", getCount === 1 && postCount === 0, "get=" + getCount + " post=" + postCount);
+    add("H_autoload_sets_busy", _dflightNetworkBusy === true);
     add("H_autoload_single_flight", (function(){
       const busyBefore = _dflightNetworkBusy;
+      const getsBefore = getCount;
       dflightMaybeAutoloadOnPanelOpen();
-      return busyBefore === true || _dflightNetworkBusy === true;
+      return busyBefore === true && _dflightNetworkBusy === true && getCount === getsBefore;
     })());
 
     if (typeof state !== "undefined"){
@@ -38760,7 +38758,7 @@ function dflightSelfTestH(){
       _dflightNetworkBusy = false;
       _dflightClientSession = null;
       dflightMaybeAutoloadOnPanelOpen();
-      add("H_autoload_gate_off_zero_get", getCount === 0);
+      add("H_autoload_gate_off_zero_get", getCount === 0 && postCount === 0);
       state.forceOffline = false;
     } else {
       add("H_autoload_gate_off_zero_get", true, "no state");
@@ -38808,13 +38806,14 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_171", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 171
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A");
+    add("H_build_172", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 172
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX1");
   } catch (e){
     add("selftest_h_exception", false, String(e && e.message ? e.message : e));
   } finally {
     try {
       dflightClearAutoRefreshTimer();
+      try { dflightAbortActiveHelperRequest("selftest_h_cleanup"); } catch(_){}
       _dflightClientSession = prevSess;
       _dflightNetworkBusy = prevBusy;
       _dflightUiPhase = prevPhase;
@@ -38822,11 +38821,16 @@ function dflightSelfTestH(){
       _dflightPanelOpen = prevOpen;
       _dflightFetchImpl = prevFetch;
       _dflightHelperBaseUrlOverride = prevBase;
-      if (prevTimer) { /* leave cleared */ }
       if (typeof state !== "undefined"){
         state.forceOffline = fo;
         state.opsecStrict = os;
       }
+      /* Re-arm live auto-refresh if the panel had an active timer before the selftest. */
+      if (hadLiveTimer){
+        dflightEnsureAutoRefreshTimer();
+      }
+      add("H_live_timer_preserved", !hadLiveTimer || _dflightAutoRefreshTimer != null,
+        hadLiveTimer ? ("timer=" + _dflightAutoRefreshTimer) : "no_preexisting_timer");
     } catch(_){}
   }
   return checks;
