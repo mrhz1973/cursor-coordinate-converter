@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`finito`** dopo `QA D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 PASS operatore` (Regola H). Task docs `c8eb7af` — H-FIX5 **CLOSED / PASS**. Runtime live monolite `fb773c9` / build **176**; helper **0.1.3** invariato. Working tree post-task pre-autosync: pulito. Monolite **non** nel commit task (già live). Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1525_riepilogo_finito-sessione.md`](inbox/2026-08-13_1525_riepilogo_finito-sessione.md). NEXT: da scegliere su prompt esplicito.
+2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A` IMPLEMENTED** (build **177**). Candidate task `f7a467e` (monolite). Helper **0.1.3** invariato. **NON** deployato. Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. Working tree post-task pre-autosync: pulito. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1645_riepilogo_dflight-perf-visual-ready-a.md`](inbox/2026-08-13_1645_riepilogo_dflight-perf-visual-ready-a.md). NEXT: review GPT sostitutiva → eventuale deploy/QA solo su ok.
