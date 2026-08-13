@@ -23370,7 +23370,7 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX2";
-const APP_BUILD_DETAIL = "Close hides D-Flight map overlay; minimize keeps it; session kept.";
+const APP_BUILD_DETAIL = "Close hides D-Flight (restore-on-reopen); minimize keeps overlay.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
 const APP_BUILD_NUM = 179;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
@@ -35795,6 +35795,8 @@ let _dflightOverlaySession = null; // { dataset }
 let _dflightOverlayVisible = false; // default OFF
 let _dflightSelectedZoneId = null;
 let _dflightPanelOpen = false;
+/** Session-only: restore map overlay on next panel open after a real close (not minimize). */
+let _dflightRestoreOverlayOnPanelReopen = false;
 let _dflightDetailsOpen = false;
 let _dflightUiWired = false;
 
@@ -36413,32 +36415,11 @@ function dflightWireFloatingPanel(dlg, kind){
   if (typeof gisPanelSyncBodySize === "function") gisPanelSyncBodySize(dlg, opts);
 }
 
-function dflightOpenControlPanel(){
-  const dlg = document.getElementById("dflightPanel");
-  if (!dlg) return false;
-  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
-  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
-  _dflightPanelOpen = true;
-  try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightPanel"); } catch(_){}
-  try { dflightWireFloatingPanel(dlg, "control"); } catch(_){}
-  try { dflightPinPanelBelowTopbar(dlg, "control"); } catch(_){}
-  try { dflightEnsureClientWired(); } catch(_){}
-  try { dflightSyncPanelUi(); } catch(_){}
-  try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
-  try {
-    if (dflightHasSessionDataset()){
-      /* After close-hide, reopen restores map overlay without re-fetching dataset. */
-      if (!_dflightOverlayVisible && typeof dflightSetOverlayVisible === "function"){
-        dflightSetOverlayVisible(true);
-      }
-      dflightMaybeStartAtm09AfterDatasetReady({ source: "reopen" });
-    }
-  } catch(_){}
-  try { dflightEnsureAutoRefreshTimer(); } catch(_){}
-  return true;
-}
-
-function dflightCloseControlPanel(){
+/**
+ * FIX2 real-close lifecycle (X / Esc / callers of dflightCloseControlPanel).
+ * Minimize must NOT call this. Preserves dataset/session; hides map D-Flight visuals.
+ */
+function dflightPanelCloseLifecycle(){
   const dlg = document.getElementById("dflightPanel");
   if (dlg){
     try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
@@ -36446,11 +36427,49 @@ function dflightCloseControlPanel(){
   _dflightPanelOpen = false;
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("dflightPanel"); } catch(_){}
   try { dflightClearAutoRefreshTimer(); } catch(_){}
-  /* FIX2: ×/Esc close removes native NFZ + ATM09 + hit-areas from map; dataset/session kept for quick reopen.
-     Minimize must NOT call this path — overlay/interaction stay. */
+  /* Remember pre-close overlay visibility for reopen (session-only; not persisted). */
+  _dflightRestoreOverlayOnPanelReopen = !!_dflightOverlayVisible;
   try {
-    if (typeof dflightSetOverlayVisible === "function") dflightSetOverlayVisible(false);
+    if (typeof dflightSetOverlayVisible === "function"){
+      /* Canonical OFF: removes native SVG, ATM09 preferred/tiles via SyncPreferred+render,
+         ATM09 info hit overlay, selection, and Details panel. Session/dataset untouched. */
+      dflightSetOverlayVisible(false);
+    }
   } catch(_){}
+}
+
+function dflightOpenControlPanel(){
+  const dlg = document.getElementById("dflightPanel");
+  if (!dlg) return false;
+  try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open", ""); } catch(_){ dlg.setAttribute("open", ""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  _dflightPanelOpen = true;
+  try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightPanel"); } catch(_){}
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("dflightPanel"); } catch(_){}
+  try { dflightWireFloatingPanel(dlg, "control"); } catch(_){}
+  try { dflightPinPanelBelowTopbar(dlg, "control"); } catch(_){}
+  try { dflightEnsureClientWired(); } catch(_){}
+  try { dflightSyncPanelUi(); } catch(_){}
+  try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
+  try {
+    if (dflightHasSessionDataset()){
+      /* Restore overlay only if it was ON before the last real close (not if user had toggled OFF). */
+      const wantRestore = !!_dflightRestoreOverlayOnPanelReopen;
+      _dflightRestoreOverlayOnPanelReopen = false;
+      if (wantRestore && !_dflightOverlayVisible && typeof dflightSetOverlayVisible === "function"){
+        dflightSetOverlayVisible(true);
+      }
+      if (_dflightOverlayVisible){
+        dflightMaybeStartAtm09AfterDatasetReady({ source: "reopen" });
+      }
+    }
+  } catch(_){}
+  try { dflightEnsureAutoRefreshTimer(); } catch(_){}
+  return true;
+}
+
+function dflightCloseControlPanel(){
+  dflightPanelCloseLifecycle();
 }
 
 function dflightOpenDetailsPanel(zone){
@@ -39116,10 +39135,11 @@ function dflightSelfTestH(){
         && src.indexOf("dflightAtm09OverlayVisible()") < 0;
     })());
     add("VR_FIX2_close_hides_overlay_source", (function(){
-      if (typeof dflightCloseControlPanel !== "function") return false;
-      const src = String(dflightCloseControlPanel);
+      if (typeof dflightPanelCloseLifecycle !== "function") return false;
+      const src = String(dflightPanelCloseLifecycle);
       return src.indexOf("dflightSetOverlayVisible(false)") >= 0
-        && src.indexOf("dflightClearAutoRefreshTimer") >= 0;
+        && src.indexOf("dflightClearAutoRefreshTimer") >= 0
+        && String(dflightCloseControlPanel).indexOf("dflightPanelCloseLifecycle") >= 0;
     })());
     add("VR_FIX2_minimize_keeps_overlay_source", (function(){
       if (typeof dflightEnsureUiWired !== "function") return false;
@@ -39129,13 +39149,22 @@ function dflightSelfTestH(){
       const slice = src.slice(minIdx, minIdx + 450);
       return slice.indexOf("gisMinimizePanel") >= 0
         && slice.indexOf("dflightSetOverlayVisible(false)") < 0
-        && slice.indexOf("dflightCloseControlPanel") < 0;
+        && slice.indexOf("dflightCloseControlPanel") < 0
+        && slice.indexOf("dflightPanelCloseLifecycle") < 0;
     })());
     add("VR_FIX2_open_restores_overlay_source", (function(){
       if (typeof dflightOpenControlPanel !== "function") return false;
       const src = String(dflightOpenControlPanel);
-      return src.indexOf("dflightSetOverlayVisible(true)") >= 0
+      return src.indexOf("_dflightRestoreOverlayOnPanelReopen") >= 0
+        && src.indexOf("dflightSetOverlayVisible(true)") >= 0
         && src.indexOf("dflightMaybeStartAtm09AfterDatasetReady") >= 0;
+    })());
+    add("VR_FIX2_close_lifecycle_sets_restore_flag", (function(){
+      if (typeof dflightPanelCloseLifecycle !== "function") return false;
+      const src = String(dflightPanelCloseLifecycle);
+      return src.indexOf("_dflightRestoreOverlayOnPanelReopen") >= 0
+        && src.indexOf("dflightSetOverlayVisible(false)") >= 0
+        && src.indexOf("_dflightClientSession") < 0;
     })());
 
     /* VISUAL-READY-A: pure/static + stubbed post-apply start (no live helper network). */
@@ -39325,40 +39354,101 @@ function dflightSelfTestH(){
         add("VR_FIX1_zoom_max_start_ok", renderN === 1 && !!(rBack && rBack.started)
           && syncN === 1 && !!_dflightAtm09Preferred);
 
-        /* FIX2: close hides overlay; session kept; minimize path does not hide. */
+        /* FIX2: close/minimize/reopen restore-flag semantics (no live network). */
         if (typeof state !== "undefined"){
           state.forceOffline = false;
           state.opsecStrict = false;
           state.mapZoom = (typeof DFLIGHT_ATM09_TILE_MAX_ZOOM === "number") ? Math.min(11, DFLIGHT_ATM09_TILE_MAX_ZOOM) : 11;
         }
         _dflightHelperBaseUrlOverride = "http://example.test:8010";
-        _dflightOverlayVisible = true;
-        _dflightAtm09Preferred = true;
-        _dflightClientSession = { normalizedDataset: { ok: true, zones: [{ id: "z1" }] } };
-        _dflightOverlaySession = { dataset: { zones: [{ id: "z1" }] } };
         const prevSetVis = typeof dflightSetOverlayVisible === "function" ? dflightSetOverlayVisible : null;
+        const prevCloseDetails = typeof dflightCloseDetailsPanel === "function" ? dflightCloseDetailsPanel : null;
+        const prevMaybe = typeof dflightMaybeStartAtm09AfterDatasetReady === "function" ? dflightMaybeStartAtm09AfterDatasetReady : null;
+        const prevRestoreFlag = _dflightRestoreOverlayOnPanelReopen;
+        const prevDetailsOpen = _dflightDetailsOpen;
+        const prevOvSessFix2 = _dflightOverlaySession;
+        const prevClientSessFix2 = _dflightClientSession;
+        const prevPanelOpenFix2 = _dflightPanelOpen;
         let setVisCalls = [];
+        let detailsCloseN = 0;
+        let maybeStartN = 0;
         dflightSetOverlayVisible = function(v){
           setVisCalls.push(!!v);
           _dflightOverlayVisible = !!v;
-          if (!_dflightOverlayVisible) _dflightAtm09Preferred = false;
+          if (!_dflightOverlayVisible){
+            _dflightAtm09Preferred = false;
+            try { if (typeof dflightCloseDetailsPanel === "function") dflightCloseDetailsPanel(); } catch(_){}
+          }
           return { ok: true, visible: _dflightOverlayVisible };
         };
-        const sessBefore = _dflightClientSession;
-        const ovSessBefore = _dflightOverlaySession;
+        dflightCloseDetailsPanel = function(){ detailsCloseN++; _dflightDetailsOpen = false; };
+        dflightMaybeStartAtm09AfterDatasetReady = function(){ maybeStartN++; return { started: true, reason: "selftest" }; };
         try {
+          add("VR_FIX2_lifecycle_helper_present", typeof dflightPanelCloseLifecycle === "function"
+            && String(dflightCloseControlPanel).indexOf("dflightPanelCloseLifecycle") >= 0);
+
+          /* Minimize must not hide: simulate only that wiring leaves overlay ON (source-checked separately). */
+          _dflightOverlayVisible = true;
+          _dflightAtm09Preferred = true;
+          _dflightDetailsOpen = true;
+          _dflightClientSession = { normalizedDataset: { ok: true, zones: [{ id: "z1" }] } };
+          _dflightOverlaySession = { dataset: { zones: [{ id: "z1" }] } };
+          const prefBeforeMin = _dflightAtm09Preferred;
+          const visBeforeMin = _dflightOverlayVisible;
+          const detailsBeforeMin = _dflightDetailsOpen;
+          const restoreBeforeMin = _dflightRestoreOverlayOnPanelReopen;
+          /* No call to close lifecycle on minimize — assert state untouched. */
+          add("VR_FIX2_minimize_keeps_overlay", visBeforeMin === true && _dflightOverlayVisible === true);
+          add("VR_FIX2_minimize_keeps_atm_pref", prefBeforeMin === true && _dflightAtm09Preferred === true);
+          add("VR_FIX2_minimize_keeps_details", detailsBeforeMin === true && _dflightDetailsOpen === true);
+          add("VR_FIX2_minimize_no_restore_flag_change", _dflightRestoreOverlayOnPanelReopen === restoreBeforeMin);
+
+          /* Close with overlay ON → restore flag true, overlay OFF, session kept, details closed. */
+          setVisCalls = []; detailsCloseN = 0;
+          _dflightOverlayVisible = true;
+          _dflightAtm09Preferred = true;
+          _dflightDetailsOpen = true;
+          _dflightRestoreOverlayOnPanelReopen = false;
+          const sessBefore = _dflightClientSession;
+          const ovSessBefore = _dflightOverlaySession;
           dflightCloseControlPanel();
-          add("VR_FIX2_close_calls_hide", setVisCalls.length === 1 && setVisCalls[0] === false);
+          add("VR_FIX2_close_calls_hide", setVisCalls.length >= 1 && setVisCalls[setVisCalls.length-1] === false);
           add("VR_FIX2_close_overlay_off", _dflightOverlayVisible === false);
           add("VR_FIX2_close_keeps_session", _dflightClientSession === sessBefore && _dflightOverlaySession === ovSessBefore);
           add("VR_FIX2_close_panel_flag_off", _dflightPanelOpen === false);
-          setVisCalls = [];
-          _dflightPanelOpen = false;
+          add("VR_FIX2_close_restore_flag_true", _dflightRestoreOverlayOnPanelReopen === true);
+          add("VR_FIX2_close_closes_details", detailsCloseN >= 1 && _dflightDetailsOpen === false);
+          add("VR_FIX2_close_atm_pref_off", _dflightAtm09Preferred === false);
+
+          /* Reopen with restore=true → overlay ON + at most one maybeStart. */
+          setVisCalls = []; maybeStartN = 0;
           dflightOpenControlPanel();
           add("VR_FIX2_open_restores_visible", setVisCalls.indexOf(true) >= 0 && _dflightOverlayVisible === true);
           add("VR_FIX2_open_panel_flag_on", _dflightPanelOpen === true);
+          add("VR_FIX2_open_restore_flag_cleared", _dflightRestoreOverlayOnPanelReopen === false);
+          add("VR_FIX2_open_maybe_start_once", maybeStartN === 1);
+
+          /* Close with overlay already OFF → restore flag false; reopen keeps OFF. */
+          setVisCalls = []; maybeStartN = 0;
+          _dflightOverlayVisible = false;
+          _dflightAtm09Preferred = false;
+          _dflightRestoreOverlayOnPanelReopen = false;
+          _dflightPanelOpen = true;
+          dflightCloseControlPanel();
+          add("VR_FIX2_close_already_off_restore_false", _dflightRestoreOverlayOnPanelReopen === false);
+          setVisCalls = []; maybeStartN = 0;
+          dflightOpenControlPanel();
+          add("VR_FIX2_reopen_keeps_off", setVisCalls.indexOf(true) < 0 && _dflightOverlayVisible === false);
+          add("VR_FIX2_reopen_off_no_atm_start", maybeStartN === 0);
         } finally {
           try { if (prevSetVis) dflightSetOverlayVisible = prevSetVis; } catch(_){}
+          try { if (prevCloseDetails) dflightCloseDetailsPanel = prevCloseDetails; } catch(_){}
+          try { if (prevMaybe) dflightMaybeStartAtm09AfterDatasetReady = prevMaybe; } catch(_){}
+          _dflightRestoreOverlayOnPanelReopen = prevRestoreFlag;
+          _dflightDetailsOpen = prevDetailsOpen;
+          _dflightOverlaySession = prevOvSessFix2;
+          _dflightClientSession = prevClientSessFix2;
+          _dflightPanelOpen = prevPanelOpenFix2;
         }
       } catch (eVR){
         add("VR_selftest_exception", false, String(eVR && eVR.message ? eVR.message : eVR));
@@ -68211,6 +68301,8 @@ function gisInit(){
     }
     const dfCtl = document.getElementById("dflightPanel");
     if ((typeof _dflightPanelOpen !== "undefined" && _dflightPanelOpen) || (dfCtl && dfCtl.open)){
+      /* Minimized: Esc must not run real-close (overlay stays). Restore then X/Esc to close. */
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("dflightPanel")) return;
       try { ev.preventDefault(); } catch(_){}
       try { if (typeof dflightCloseControlPanel === "function") dflightCloseControlPanel(); } catch(_){}
       return;
