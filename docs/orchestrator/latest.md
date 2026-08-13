@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX2` IMPLEMENTED** (build **179**) dopo `QA … FIX1 FAIL operatore` (close vs minimize overlay). Candidate `58ade6c`. Live resta FIX1 **178** / `12fcba5` finché non deploy. Helper **0.1.3** invariato. Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1757_riepilogo_dflight-perf-visual-ready-a-fix2.md`](inbox/2026-08-13_1757_riepilogo_dflight-perf-visual-ready-a-fix2.md).
+2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX2` IMPLEMENTED** (build **179**, refine restore-flag). Candidate task `52927c5` (supersede refine su `58ade6c`). Live resta FIX1 **178**. Helper **0.1.3** invariato. Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md`](inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md).
