@@ -5,7 +5,7 @@
 # GIS Tool — OPERATING_MEMORY
 
 > Gli agenti devono leggere questo file prima di modificare il GIS Tool.  
-> Read-set operativo: `README.md` (bootloader) → `docs/OPERATING_MEMORY.md` (§7 stato vivo) → `docs/work-units/WU-0005-0009-roadmap.md` (piano/backlog).  
+> **CORE BOOT:** `git ls-remote` → `README.md` blocco `AI-BOOT` → OM **§7.1** → hot-header WU attiva. Resto on demand (Regola I).  
 > Questo file riguarda il **GIS monolite**, non il control-plane e non Planet-Clone.
 
 ---
@@ -37,7 +37,7 @@
 
 **Read-set corrente (wiki-LLM lean):** gli agenti devono leggere, in ordine:
 
-1. `README.md` — bootloader e regole di lettura; **non** stato operativo vivo.
+1. `README.md` — blocco **AI-BOOT** (INDEX/BOOTLOADER); **non** stato operativo vivo; resto README = docs prodotto on-demand.
 2. `docs/OPERATING_MEMORY.md` — stato operativo vivo, soprattutto **§7**.
 3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
 
@@ -51,7 +51,7 @@
 
 ## 4. Protocollo orchestratore minimo
 
-- ChatGPT e Cursor usano lo stesso read-set target: README (bootloader) → OPERATING_MEMORY §7 → WU-0005-0009-roadmap.
+- ChatGPT e Cursor usano lo stesso **CORE BOOT**: README `AI-BOOT` → OPERATING_MEMORY §7.1 → hot-header WU attiva; roadmap/WU body/QA/HANDOFF solo on demand.
 - Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
 - Procedere per **bundle** coerenti (default METHOD-BUNDLING-DEFAULT); non frammentare il lavoro routine in micro-blocchi separati salvo categorie delicate (OM §4 Regola G).
 - Non toccare aree non correlate.
@@ -106,7 +106,7 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 3. **Quando Cursor riceve quella riga**, se il prompt bundle prevedeva la coda, il **deploy tecnico è PASS**, nessuna eccezione attiva (Regola A) e la review richiesta (se bundle delicato) è già completata e loggata, Cursor **esegue automaticamente** senza chiedere un comando separato:
    - chiusura docs `OPERATING_MEMORY.md` §7;
    - aggiornamento roadmap/work-unit se previsto;
-   - aggiornamento `docs/QA-CHECKLIST.md` / `docs/HANDOFF.md` se previsto;
+   - aggiornamento `docs/QA-CHECKLIST.md` solo se il metodo del blocco lo richiede; **`docs/HANDOFF.md` non** si aggiorna a ogni `finito` (seed stabile);
    - autosync orchestratore (`latest.md` + `inbox` + `LAST_CURSOR_REPORT.md` se task reale);
    - commit/push selettivi;
    - verifica `HEAD` = `origin/main` = `git ls-remote origin main`;
@@ -161,21 +161,31 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 10. Restano invariati: fail-closed; PASS tecnico ≠ Automated Browser QA ≠ PASS operatore; IT (D1); etichette UI visibili; verifica monolite prima dei percorsi UI; URL runtime reale; divieto di inventare PASS operatore.
 **Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza Claude → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
 
-**Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in un fenced code block:
+**Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in chat (fenced) un seed **piccolissimo**, tipicamente:
 
-> `HEAD verificato (ls-remote) @ <timestamp> = <full-sha-post-finito> · frontiera = <block-id> (<data>)`
+```text
+repo: mrhz1973/cursor-coordinate-converter
+HEAD verificato (ls-remote) @ <timestamp> = <full-sha-post-finito>
+frontiera: <block-id> (<data>)
+CORE BOOT: README AI-BOOT → OM §7.1 → WU hot-header
+```
 
-con anche un pointer sintetico al read-set del README. `git ls-remote origin main` è **autorità finale**; RAW main, blob/main e snapshot connector sono secondari e possono essere stale; il blob SHA di un singolo file **non** prova HEAD. Il lettore successivo legge il read-set pinnato allo SHA del seed; mismatch tra frontiera dichiarata e frontiera letta → **STOP fail-closed**. Un handoff prodotto da un attore non capace di verificare `ls-remote` è provvisorio e non azionabile. Le procedure complete vivono nel repository e non vanno reincollate integralmente tra chat; il seed post-push usa il **nuovo** SHA verificato sul remoto, mai automaticamente lo SHA iniziale del task.
+`git ls-remote origin refs/heads/main` è **autorità finale**; RAW/CDN secondari (possono essere stale); il blob SHA di un file **non** prova HEAD. Il lettore successivo esegue il **CORE BOOT** pinnato allo SHA del seed; mismatch frontiera dichiarata vs frontiera letta → **STOP fail-closed**. Un handoff da attore non capace di `ls-remote` è provvisorio e non azionabile. **Non** ricopiare nel seed Regole F/G/H/I, review/QA policy, `finito`, roadmap, WU body o stato dettagliato — vivono nel repository. Il seed **non** si persiste come current-state in `docs/HANDOFF.md` (file stabile/pointer). Seed post-push = **nuovo** SHA remoto verificato, mai automaticamente lo SHA iniziale del task.
 
 **Regola I — CONTEXT-SAFE BOOTSTRAP (METHOD-CONTEXT-SAFE-BOOTSTRAP).** Disciplina di apertura/handoff per evitare consumo eccessivo di contesto **senza** introdurre un nuovo gate e **senza** indebolire AUTO-VIA.
 
-1. **Bootstrap minimo.** All'apertura: verificare HEAD remoto (`git ls-remote origin refs/heads/main`); identificare stato vivo, blocco corrente e gate; leggere **solo** le porzioni del read-set necessarie a tale identificazione (tipicamente OM §7, sezione pertinente della roadmap/WU, non l'intero storico).
-2. **No front-loading.** Non caricare preventivamente interi README/OM/roadmap/WU/log/monolite se sono disponibili letture mirate; non ricostruire la cronologia dei blocchi CLOSED se non serve al gate corrente; non riversare nella risposta iniziale il materiale letto.
-3. **Strumenti preferiti.** Per file grandi o review runtime preferire: ricerca per simbolo/testo; range di linee; `compare_commits`; diff/patch del commit; blob/file pinnati a FULL SHA; aperture successive mirate. Evitare il fetch integrale del monolite salvo necessità reale dimostrata dallo scope.
-4. **AUTO-VIA preservata.** Questa regola **non** introduce un nuovo gate; **non** richiede un nuovo `vai`; **non** obbliga a fermarsi dopo la sola riconciliazione di apertura. Se il prossimo passo è tecnicamente determinato, AUTO-VIA resta applicabile; l'esecuzione prosegue tramite **acquisizione progressiva** delle evidenze, non caricando tutto il materiale disponibile all'inizio.
-5. **Review DELICATE.** La riduzione del contesto in bootstrap **non** riduce checklist né profondità della review. Completezza del gate invariata; le evidenze si acquisiscono progressivamente da FULL SHA/diff e dalle sole sezioni contrattuali necessarie. **Vietato** dichiarare PASS per il solo fatto di aver ridotto le letture iniziali.
-6. **Handoff.** Un handoff resta un **seed** di continuità; non deve duplicare grandi quantità di stato già canonico nel repository. Dopo la riconciliazione, GitHub e i documenti vivi del read-set **prevalgono** sul seed (cfr. Regola F).
-7. **Output iniziale.** La riconciliazione di apertura resta **sintetica**: HEAD remoto; blocco corrente; gate; prossimo passo; eventuali conflitti reali. Poi, se AUTO-VIA applicabile, procedere al passo successivo senza attendere un nuovo `vai`.
+1. **CORE BOOT (percorso standard).** All'apertura, in ordine:
+   1. `git ls-remote origin refs/heads/main`;
+   2. `README.md` — **solo** blocco `<!-- AI-BOOT: START -->` … `<!-- AI-BOOT: END -->`;
+   3. OM **§7.1 FRONTIER**;
+   4. hot-header (`<!-- WU-HOT-HEADER -->`) della WU attiva indicata da §7.1.
+   Con questi quattro passi si determinano workstream, blocco, stato, gate, SHA semantiche applicabili, NEXT. **§7.2 e §7.3 non** sono lettura bootstrap obbligatoria.
+2. **No front-loading.** **Non** leggere integralmente OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite in bootstrap. OM §4 = sola Regola necessaria al gate/task. Roadmap **non** obbligatoria se §7.1 + hot-header determinano già il gate. HANDOFF **non** è seconda memoria. QA-CHECKLIST solo al gate QA. WU body solo nelle sezioni necessarie dopo l’hot-header.
+3. **Strumenti preferiti.** Per file grandi o review runtime: ricerca per simbolo/testo; range di linee; `compare_commits`; diff/patch; blob pinnati a FULL SHA. **Mai** preload del monolite.
+4. **AUTO-VIA preservata.** Questa regola **non** introduce un nuovo gate; **non** richiede un nuovo `vai`; **non** obbliga a fermarsi dopo la sola riconciliazione. Passo tecnicamente determinato → **acquisizione progressiva** delle evidenze ed esecuzione.
+5. **Review DELICATE.** Ridurre il contesto in bootstrap **non** riduce checklist né profondità della review. **Vietato** dichiarare PASS per il solo fatto di aver ridotto le letture iniziali.
+6. **Handoff.** Seed di continuità (Regola F); dopo riconciliazione, documenti vivi **prevalgono** sul seed. `docs/HANDOFF.md` = protocollo stabile, non current-state.
+7. **Output iniziale.** Sintesi: HEAD remoto; blocco; gate; NEXT; conflitti reali. Poi, se AUTO-VIA, procedere senza nuovo `vai`.
 
 ### Chiusura blocco (dopo l'esecuzione Cursor)
 
@@ -186,9 +196,10 @@ con anche un pointer sintetico al read-set del README. `git ls-remote origin mai
   - commit codice/runtime se il monolite o altri file operativi sono
     stati modificati;
   - commit docs operative se OPERATING_MEMORY §7 o roadmap cambiano stato/piano;
-  - commit README **solo** se cambia read-set/boot procedure (non a ogni blocco runtime);
+  - commit README **solo** se cambia AI-BOOT / CORE BOOT / precedenza (non a ogni blocco/gate/runtime);
+  - **non** aggiornare `docs/HANDOFF.md` come current-state rolling (seed stabile; seed dinamico in chat Regola F);
   - commit autosync memoria orchestratore per latest.md + inbox/.
-- Aggiornare OPERATING_MEMORY §7 quando cambia lo stato operativo; roadmap quando cambia piano/backlog; README solo se cambia boot/read-set.
+- Aggiornare OPERATING_MEMORY §7 quando cambia lo stato operativo; roadmap quando cambia piano/backlog; README solo se cambia boot/AI-BOOT.
 - Nessun blocco operativo è chiuso finché non risulta pubblicato
   l'autosync orchestratore pertinente.
 - "Pubblicato" significa pushato su `origin` e verificato sul remoto,
@@ -279,7 +290,7 @@ Non preparare e non emettere istruzioni QA operatore (Regola D2 — ChatGPT emet
 Quando l'operatore (via ChatGPT) attesta esattamente in Cursor:
 QA <BLOCK-ID> PASS operatore
 esegui automaticamente la coda finito già autorizzata:
-chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
+chiusura docs OM §7 (+ roadmap/checklist solo se previsti; HANDOFF non rolling) + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
 Non chiedere un comando separato «finito» né attendere un secondo messaggio.
 Se QA operatore fallisce o deploy/smoke non PASS o Automated Browser QA non PASS, NON eseguire finito.
 Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
@@ -303,11 +314,11 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 - Sul **control-plane** si usa **`aggio control`**.
 - **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto.
 - **`aggio` scoped GIS-only:** in questo repo `aggio`/`aggio gis` non significano «tutti i repo» (semantica dev-method storica); coerente con control-plane scoped `aggio control`.
-- Read-set: `README.md` → `docs/OPERATING_MEMORY.md` §7 → `docs/work-units/WU-0005-0009-roadmap.md`.
+- CORE BOOT: `README.md` AI-BOOT → `docs/OPERATING_MEMORY.md` §7.1 → WU hot-header; roadmap on demand.
 
 **Flusso `aggio` / `aggio gis` (attivo da Fase 3):** legge/aggiorna, quando necessario:
 
-- `README.md` solo se cambia read-set, boot procedure o regole di precedenza;
+- `README.md` solo se cambia AI-BOOT / CORE BOOT / precedenza / navigazione (non a ogni gate/runtime);
 - `docs/OPERATING_MEMORY.md` §7 quando cambia lo stato operativo;
 - `docs/work-units/WU-0005-0009-roadmap.md` quando cambia piano/backlog/workstream;
 - eventuale autosync/inbox se il workflow lo richiede.
@@ -332,16 +343,17 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | **NEXT** | GPT review FULL SHA `52927c5…` → se PASS: deploy GIS-only → Automated Browser QA → QA operatore residuale → Regola H `finito` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
-> Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README + Regola I). **Non** memorizzare HEAD remota in §7.
+> Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
 > Catena VISUAL-READY: **A** → **FIX1** (review PASS · deployed · Automated Browser QA PASS · QA operatore **FAIL** lifecycle close/minimize) → **FIX2** (IMPLEMENTED, gate review). Helper **0.1.3** invariato.
+> Docs lean Blocco 2 `DOCS-LEAN-README-HANDOFF-A` = CLOSED (non altera questo gate runtime).
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED (build **179** / `52927c5`; `58ade6c` first draft SUPERSEDED) — WU-0013 · [`inbox/2026-08-13_1802`](orchestrator/inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md)
-2. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — live build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize lifecycle) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
-3. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
-4. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
-5. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
+1. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile + `finito` anti-ricrescita — metodo wiki-LLM Blocco 2
+2. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED (build **179** / `52927c5`; `58ade6c` first draft SUPERSEDED) — WU-0013 · [`inbox/2026-08-13_1802`](orchestrator/inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md)
+3. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — live build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize lifecycle) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
+4. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
+5. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

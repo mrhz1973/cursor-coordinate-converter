@@ -138,7 +138,7 @@ Cursor applica il **bundle di default**; **non** propone separazione per ogni mi
 Nei **prompt bundle runtime** con coda `finito` pre-autorizzata (OM §4 Regola H; template in [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md)):
 
 - **Trigger:** riga esatta `QA <BLOCK-ID> PASS operatore` dall'operatore/orchestratore.
-- **Azione:** Cursor esegue **automaticamente** il workflow `finito` (chiusura docs OM §7, roadmap/WU, QA-CHECKLIST/HANDOFF se previsti, autosync orchestratore, commit/push, verifica `HEAD` = `origin/main` = `git ls-remote`, workspace pulito) **senza** chiedere un secondo messaggio «finito» / «ora esegui finito» / «ora fai la chiusura docs».
+- **Azione:** Cursor esegue **automaticamente** il workflow `finito` (chiusura docs OM §7, roadmap/WU se previsti, QA-CHECKLIST solo se richiesto dal metodo; **non** ricrescita rolling di HANDOFF/README per gate/runtime; autosync orchestratore, commit/push, verifica `HEAD` = `origin/main` = `git ls-remote`, workspace pulito) **senza** chiedere un secondo messaggio «finito» / «ora esegui finito» / «ora fai la chiusura docs».
 - **Non** significa saltare la chiusura: OM §7 stale dopo QA PASS senza `finito` = errore di metodo.
 - **Non auto-innescare** se: deploy/smoke non PASS; workspace sporco; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; prompt senza coda pre-autorizzata; read-only/diagnosi; errori; scope drift.
 - **GPT/orchestratore:** non emettere passaggi separati «ora lancia finito» dopo QA PASS di bundle autorizzato.
@@ -180,12 +180,13 @@ Se i **test browser automatici post-deploy** **non** sono stati eseguiti quando 
 
 ## README / OPERATING_MEMORY / roadmap sync
 
-- `README.md` è bootloader quasi statico: aggiornarlo solo quando cambia il read-set, la procedura di boot AI, i puntatori ai documenti vivi o le regole di precedenza.
-- Non aggiornare `README.md` a ogni commit runtime solo per indicare ultimo blocco, hash o prossima micro-patch.
+- `README.md` è bootloader quasi statico: aggiornare il blocco **AI-BOOT** solo quando cambiano bootstrap, CORE BOOT, precedenza o navigazione.
+- **Non** aggiornare `README.md` a ogni commit runtime / cambio blocco / gate / runtime SHA / QA / deploy — quelle info stanno in OM §7.1.
+- `docs/HANDOFF.md` è seed/pointer **stabile**: **non** aggiornarlo a ogni `finito` con stato fresco, runtime live, candidate, ultimo blocco, gate o history. Il seed dinamico si emette in chat (OM §4 Regola F).
 - Lo stato operativo vivo va aggiornato in `docs/OPERATING_MEMORY.md`, soprattutto §7.
-- Il piano/backlog/workstream va aggiornato in `docs/work-units/WU-0005-0009-roadmap.md`.
+- Il piano/backlog/workstream va aggiornato in `docs/work-units/WU-0005-0009-roadmap.md` (e WU attiva).
 - Evitare duplicazioni tra README, OPERATING_MEMORY e roadmap.
-- Se durante il riepilogo finale emerge che il README punta a una WU vecchia o a uno stato stale, correggere il README prima del commit finale.
+- Se durante il riepilogo finale emerge che l’AI-BOOT punta a un percorso bootstrap obsoleto, correggere il README prima del commit finale (non “riallineare” gate/runtime nel README).
 
 ## Session / repo guard
 
@@ -523,21 +524,21 @@ Dopo **ogni** intervento operativo che cambia stato, **sempre** in chiusura d’
 
 **Scoped alias (repo GIS):** sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti** — entrambi aggiornano/leggono la memoria operativa del repo GIS. Sul **control-plane** si usa **`aggio control`**. **Trade-off:** `aggio` secco non identifica il repo; la responsabilità di lanciarlo nel contesto/chat corretto è dell’operatore.
 
-**Read-set operativo GIS (wiki-LLM):** `README.md` (bootloader) → `docs/OPERATING_MEMORY.md` (§7 stato vivo) → `docs/work-units/WU-0005-0009-roadmap.md` (piano/backlog). `docs/orchestrator/chatgpt-checkpoint.md` resta **legacy** — non fonte primaria.
+**Read-set operativo GIS (wiki-LLM):** CORE BOOT = `README.md` AI-BOOT → `docs/OPERATING_MEMORY.md` §7.1 → WU hot-header; roadmap / body / QA / HANDOFF on demand. `docs/orchestrator/chatgpt-checkpoint.md` resta **legacy** — non fonte primaria.
 
-1. **`aggio`** / **`aggio gis`** / **«aggiornati» in Cursor** (repo GIS) = **pubblica/aggiorna memoria operativa GIS**: allinea `docs/OPERATING_MEMORY.md` §7 (se cambia stato), `docs/work-units/WU-0005-0009-roadmap.md` (se cambia piano/backlog), `README.md` **solo** se cambia read-set/boot (non a ogni commit runtime); ed eventuale autosync/inbox (`docs/orchestrator/**`) se il workflow lo richiede; **commit/push** coerenti con il modello lean. Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento quando applicabile.
-2. **`aggio`** / **`aggio gis`** / **«aggiornati» in ChatGPT** (repo GIS) = **leggi memoria operativa GIS da GitHub**, in ordine:
-   - `README.md`;
-   - `docs/OPERATING_MEMORY.md` (§7);
-   - `docs/work-units/WU-0005-0009-roadmap.md`.
-   **Non** usare `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria. È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo GIS: **manuale**, non automatico.
+1. **`aggio`** / **`aggio gis`** / **«aggiornati» in Cursor** (repo GIS) = **pubblica/aggiorna memoria operativa GIS**: allinea `docs/OPERATING_MEMORY.md` §7 (se cambia stato), `docs/work-units/` / roadmap (se cambia piano/backlog), `README.md` **solo** se cambia AI-BOOT/CORE BOOT (non a ogni commit runtime); **non** aggiornare HANDOFF come current-state; ed eventuale autosync/inbox (`docs/orchestrator/**`) se il workflow lo richiede; **commit/push** coerenti con il modello lean. Può servire anche come **ripubblicazione** o recupero se qualcosa è saltato; **non** sostituisce l’autosync obbligatorio di fine intervento quando applicabile.
+2. **`aggio`** / **`aggio gis`** / **«aggiornati» in ChatGPT** (repo GIS) = **leggi memoria operativa GIS da GitHub**, in ordine CORE BOOT:
+   - `README.md` (AI-BOOT);
+   - `docs/OPERATING_MEMORY.md` (§7.1);
+   - hot-header WU attiva.
+   Resto on demand. **Non** usare `docs/orchestrator/chatgpt-checkpoint.md` come fonte primaria. È l’**unico** trigger normale oggi per far sì che **ChatGPT** si allinei al repo GIS: **manuale**, non automatico.
 
 **Non** richiedere riepiloghi `/tmp/...` in ChatGPT se l’equivalente è già in `inbox/` o `latest.md`.
 
 ### Confronto con chiusura ufficiale: `finito`
 
 - **Autosync orchestratore** = pubblicazione **obbligatoria** della memoria operativa dopo ogni intervento che cambia stato; **non** è chiusura ufficiale di sessione.
-- **`finito`** (sempre **minuscolo**, backtick) = **chiusura ufficiale** secondo modello lean: `docs/OPERATING_MEMORY.md`, WU corrente, README snapshot se necessario, `git add` / commit / push secondo workflow, eventuale autosync/inbox se previsto — come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc). `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md` restano **legacy/storico**, non memoria corrente primaria; possono restare append storico/audit nel flusso **`finito`**. In conflitto con OM §7 o roadmap → segnalare nel RIEPILOGO, precedenza documenti vivi; non riscrivere log pushati salvo richiesta esplicita. **Dopo** il `git commit`/`git push` principale del `finito`, è obbligatoria la **riconciliazione orchestratore** (`docs/orchestrator/latest.md` + `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così la memoria pubblicata resta coerente con il monolite versionato. **Non** confondere autosync e `finito`.
+- **`finito`** (sempre **minuscolo**, backtick) = **chiusura ufficiale** secondo modello lean: `docs/OPERATING_MEMORY.md` §7, WU hot-header, README **solo** se cambia AI-BOOT, **non** HANDOFF rolling; `git add` / commit / push secondo workflow, eventuale autosync/inbox se previsto — come in [`.cursor/rules/00-project-core.mdc`](00-project-core.mdc). `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md` restano **legacy/storico**, non memoria corrente primaria; possono restare append storico/audit nel flusso **`finito`**. In conflitto con OM §7 o roadmap → segnalare nel RIEPILOGO, precedenza documenti vivi; non riscrivere log pushati salvo richiesta esplicita. **Dopo** il `git commit`/`git push` principale del `finito`, è obbligatoria la **riconciliazione orchestratore** (`docs/orchestrator/latest.md` + `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` + commit/push dedicato), così la memoria pubblicata resta coerente con il monolite versionato. **Non** confondere autosync e `finito`.
 
 ### Coerenza OM §7.2 ↔ orchestrator inbox (lean frontier)
 

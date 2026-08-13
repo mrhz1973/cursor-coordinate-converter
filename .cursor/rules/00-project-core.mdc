@@ -31,12 +31,13 @@ Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), n
 
 - **`docs/OPERATING_MEMORY.md`** — solo se cambia lo stato corrente;
 - **WU corrente** in `docs/work-units/`;
-- **`README.md`** — sezione snapshot operativo, solo se cambia lo snapshot;
+- **`README.md`** — blocco AI-BOOT / boot procedure **solo** se cambia bootstrap, CORE BOOT, precedenza o navigazione (non a ogni cambio di blocco/gate/runtime);
 - eventuale **autosync/inbox** (`docs/orchestrator/**`) solo se il workflow lo richiede.
 
-**Read-set operativo:** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
+**CORE BOOT:** `README.md` AI-BOOT → `docs/OPERATING_MEMORY.md` §7.1 → hot-header WU attiva. Resto on demand.
 
 **Legacy (non memoria corrente primaria):** `docs/checkpoint.md` (legacy/storico) e `docs/session-geolocalizzazione-e-mappa.md` (storico lungo) — **non** aggiornarli come memoria corrente; restano conservati per audit.
+`docs/HANDOFF.md` = seed/pointer **stabile** — **non** current-state rolling.
 
 ## Session close trigger («Finito»)
 Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase breve tipo «ok finito», «per oggi finito»), eseguire in sequenza **senza chiedere conferma intermedia**:
@@ -48,9 +49,10 @@ Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase br
    - **`docs/OPERATING_MEMORY.md` §7.3 HISTORY** — solo pointer compatti; **non** aggiungere nuovi lunghi bullet CLOSED inline in §7;
    - **SHA semantiche (obbligatorio):** `REVIEW BASE` (baseline diff review) ≠ `CANDIDATE RUNTIME` (implementato, non necessariamente live) ≠ `RUNTIME LIVE` (deployato); candidate pre-deploy **non** è live; post-deploy verificato il candidate può diventare `RUNTIME LIVE` e il candidate può essere omesso; **non** usare SHA docs/autosync come `REVIEW BASE` runtime;
    - **Anti-self-reference OM §7.1:** **non** scrivere HEAD remota finale del commit corrente, SHA autosync corrente come frontier, né altri campi che richiedano conoscenza del commit prodotto dalla stessa operazione; HEAD finale = verifica esterna (`git ls-remote`, Regola F, F3 `EXTERNAL_ONLY`) — invariati `PENDING_SELF_REFERENCE`, `published = immutable`, anti-terzo-commit;
-   - **`README.md`** snapshot operativo solo se necessario;
+   - **`README.md`:** aggiornare AI-BOOT **solo** se cambiano bootstrap / CORE BOOT / precedenza / navigazione — **non** a ogni cambio di blocco/gate/runtime SHA (quelli stanno in OM §7.1);
+   - **`docs/HANDOFF.md`:** **non** aggiornare a ogni `finito` con stato fresco / runtime / candidate / gate / history — file seed/pointer stabile; il seed dinamico si **emette in chat** (Regola F);
    - eventuale **autosync/inbox** se previsto dal workflow.
-   **Non** scrivere `docs/checkpoint.md` né `docs/session-geolocalizzazione-e-mappa.md` come azione primaria di memoria corrente (restano legacy/storico). **Read-set operativo:** `README.md` + `docs/OPERATING_MEMORY.md` + WU corrente.
+   **Non** scrivere `docs/checkpoint.md` né `docs/session-geolocalizzazione-e-mappa.md` come azione primaria di memoria corrente (restano legacy/storico). **CORE BOOT:** README AI-BOOT → OM §7.1 → WU hot-header.
 2. Nel terminale, dalla root del repo, in ordine:
    - `git add .`
    - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`. Se non c’è nulla da committare, **saltare** il `commit` ma eseguire comunque `git push` se ci sono commit locali non pubblicati; altrimenti documentare in step 3.
@@ -66,7 +68,7 @@ Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase br
 4. Confermare all’utente con: **hash commit** (short; se due commit consecutivi `finito` + orchestratore, indicarli entrambi o l’HEAD finale), **elenco file modificati** (da `git show --stat HEAD` e, se utile, commit precedente), **stato push** (successo / errore + messaggio testuale) **per ogni** push eseguito.
 
 Vincoli operativi:
-- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai file doc dello **step 1** (`docs/OPERATING_MEMORY.md`, WU corrente in `docs/work-units/`, `README.md` snapshot se toccato), ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
+- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai file doc dello **step 1** (`docs/OPERATING_MEMORY.md`, WU corrente in `docs/work-units/`, `README.md` **solo** se cambia AI-BOOT/boot — non HANDOFF rolling), ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
 - **Non** usare lo step 3 per sostituire l’**autosync** di fine intervento: resta obbligatorio come da [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc); lo step 3 **chiude il gap** tra stato reale post-`finito` e ciò che ChatGPT legge con **`aggio`** / **«aggiornati»**.
 - **Disciplina F3 anti-terzo-commit (home canonica [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc)):** la chiusura ordinaria produce **esattamente due** commit — (1) task/step 2, (2) autosync/step 3 — e **nessun** terzo commit «completa inbox» o «finalize autosync». Gli artefatti del commit autosync (`docs/orchestrator/latest.md`, `docs/orchestrator/inbox/**`) **non** devono autorare fatti del **proprio** container (SHA autosync corrente, suo push, HEAD finale post-push, `git status` finale post-autosync, `git ls-remote` del container corrente): sono **`EXTERNAL_ONLY`** e compaiono **solo** nello **step 4** (conferma esterna all’utente), nel **seed Regola F**, o come storia precedente in un intervento futuro. *Published = immutable*: dopo il push dell’autosync i suoi artefatti non si riscrivono nella stessa sessione.
 - Se lo step 1 fallisce (file non scrivibile, conflitto), **fermarsi**, riportare l’errore, non procedere con git.

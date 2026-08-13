@@ -4,60 +4,48 @@
 
 # GOI GIS Tool
 
-## Snapshot (bootloader)
+<!-- AI-BOOT: START -->
+## AI BOOT (agenti — fermarsi qui per lo stato operativo)
 
-| Campo | Stato |
+**Repo:** `mrhz1973/cursor-coordinate-converter` · **File operativo:** `coordinate_converter Claude.html` (HTML standalone, vanilla JS; no framework/npm/bundler).
+
+### Autorità remota
+`git ls-remote origin refs/heads/main` = autorità **finale** su HEAD. Lo stato operativo è nei documenti **pinnati a quella HEAD**, non nella memoria dell’agente. RAW/CDN possono essere stale.
+
+### CORE BOOT (obbligatorio; tipicamente ≤ ~100 righe totali)
+1. `git ls-remote origin refs/heads/main`
+2. **Solo questo blocco** `AI-BOOT` del `README.md` (non il resto del README)
+3. [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) **§7.1 FRONTIER**
+4. Hot-header (`<!-- WU-HOT-HEADER -->`) della WU indicata come attiva da §7.1
+
+Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, REVIEW BASE / CANDIDATE RUNTIME / RUNTIME LIVE (se applicabili), NEXT.
+
+### Principi
+- **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
+- **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
+- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (header sopra).
+- **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
+
+### Precedenza
+GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conflitto: documento più specifico e più recente (di solito OM §7.1). Classificazione: README AI BOOT = INDEX/BOOTLOADER · OM §4 = METHOD · OM §7.1 = LIVE STATE · WU hot-header = LOCAL WU INDEX · roadmap = PLAN/BACKLOG · HANDOFF = STABLE SEED · LAST_CURSOR_REPORT / inbox = EVIDENCE · monolite = RUNTIME.
+
+### ON DEMAND (aprire solo se il gate/task lo richiede)
+| Fonte | Quando |
 | --- | --- |
-| File operativo | `coordinate_converter Claude.html` |
-| Architettura | HTML standalone, vanilla JS, no framework/npm/bundler |
-| Memoria agenti | [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) — stato vivo in **§7** |
-| Piano / backlog WU | [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md) |
-| QA / handoff | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) + [`docs/HANDOFF.md`](docs/HANDOFF.md) + [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) §4 |
+| OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/…) |
+| Roadmap / WU body | pianificazione/backlog, o se §7.1 non basta |
+| [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) | solo al gate QA |
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se il seed chat è già fornito |
+| [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md), orchestrator inbox/latest | evidence/history |
+| Monolite | solo task runtime/review; symbol/range/diff/FULL SHA — **mai** preload |
 
-## AI boot / stato operativo
-
-Questo README è un bootloader per nuove chat e agenti AI. Non è la fonte completa dello stato operativo.
+### Manutenzione di questo blocco
+Aggiornare `AI-BOOT` **solo** se cambiano bootstrap, CORE BOOT, precedenza o navigazione. **Non** aggiornare a ogni cambio di blocco/gate/runtime SHA — quelli stanno in OM §7.1.
+<!-- AI-BOOT: END -->
 
 ---
-**Agente AI — prima di rispondere (vale per GPT, Claude, Cursor):**
 
-1. Esegui `git ls-remote origin refs/heads/main` (autorità finale su HEAD) e leggi il read-set **pinnato a quella HEAD**. Lo stato è il read-set, **non** la memoria o la narrazione dell'agente: se una cosa non è qui o in OM §7, non è stato — è ciò che `finito` deve scrivere.
-2. `finito` è un workflow **interno a Cursor**: nei prompt **bundle** runtime la coda `finito` è **pre-autorizzata** e si **innesca automaticamente** dalla riga `QA <BLOCK-ID> PASS operatore` (OM §4 Regola H) — **mai** chiesto all'operatore come passo separato «ora lancia finito». Consegna all'operatore **un solo blocco incollabile**; niente babysitting passo-passo (OM §4 Regola E).
-3. Cursor write+commit = **sempre Agent+Auto** (Plan solo per diagnosi pura read-only).
-4. **Bundling di default (METHOD-BUNDLING-DEFAULT):** il default operativo è **un bundle** — raggruppare il lavoro routine in **un blocco / un commit / una QA** (target ≥5 item; 5–10+ è normale). **Non** proporre separazione per ogni micro-modifica routine. Gate (review, deploy, QA) **solo a livello bundle**. Le **categorie delicate** restano in **bundle propri**. Dettaglio: OM §4 Regola G.
-5. **QA-PASS auto-finito (METHOD-QA-PASS-AUTO-FINITO):** nei prompt bundle runtime, la riga `QA <BLOCK-ID> PASS operatore` **innesca automaticamente** la coda `finito` pre-autorizzata (chiusura docs + autosync). Dettaglio: OM §4 Regola H.
-6. **CONTEXT-SAFE BOOTSTRAP:** all'apertura di una nuova chat/handoff la lettura deve essere **context-safe** — non caricare preventivamente interi documenti grandi, cronologia di blocchi CLOSED o il monolite se bastano sezioni/range/diff mirati. Dettaglio: OM §4 Regola I. **AUTO-VIA resta valida:** il prossimo passo tecnicamente determinato si esegue con acquisizione progressiva delle evidenze, senza un nuovo `vai` e senza fermarsi dopo la sola riconciliazione.
-7. **QA operatore corta e mirata (`QA-HUMAN-SHORT-TARGETED`):** dopo Automated Browser QA, ChatGPT emette **una sola** QA umana residua breve (casi operativi/percettivi). Dettaglio: OM §4 Regola D2 + [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md). Automated Browser QA fa il lavoro tecnico approfondito.
-
-Dettaglio completo: `docs/OPERATING_MEMORY.md` §4 — Handoff & Close Discipline.
----
-
-Read-set corrente, in ordine:
-
-1. `README.md` — bootloader e regole di lettura.
-2. `docs/OPERATING_MEMORY.md` — protocollo operativo §4 e stato vivo §7.
-3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
-4. `docs/QA-CHECKLIST.md` — procedura/template della checklist QA unica.
-5. `docs/HANDOFF.md` — handoff canonico breve (seed operativo; non sostituisce OM §7).
-6. `coordinate_converter Claude.html` — file operativo principale; leggerlo **solo quando serve** codice/runtime, con ricerca/range/diff mirati (OM §4 Regola I), non per intero in bootstrap.
-
-Regola di precedenza:
-
-- `README.md` definisce cosa leggere, non la WU corrente.
-- Lo stato operativo vivo sta in `docs/OPERATING_MEMORY.md` §7.
-- Il piano/backlog sta in `docs/work-units/WU-0005-0009-roadmap.md`.
-- `docs/QA-CHECKLIST.md` fa parte del read-set ma è una procedura/template, non lo stato vivo; lo stato operativo corrente resta `docs/OPERATING_MEMORY.md` §7.
-- `docs/HANDOFF.md` è seed handoff sintetico nel read-set; **non** sostituisce OM §7.
-- `docs/OPERATING_MEMORY.md` **§4 — Handoff & Close Discipline** governa handoff, review tiered, disciplina `finito`, checklist QA unica e minimizzazione del copia-incolla.
-- Se README, OPERATING_MEMORY e roadmap confliggono, segnalare il conflitto e usare come fonte operativa il documento più specifico e più recente.
-
-Legacy da non usare come stato corrente primario:
-
-- `checkpoint.md`
-- `session-*.md`
-- `latest.md`
-- `chatgpt-checkpoint.md`
-- vecchie WU chiuse, salvo richiamo esplicito dalla roadmap viva
+## Documentazione prodotto (umani / on-demand)
 
 **GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
@@ -108,13 +96,9 @@ Geocoding support with OPSEC-aware controls and offline fallback behavior where 
 Map basemaps: **OSM HOT**, **OpenStreetMap** standard (online-only, no bulk offline), **CyclOSM**, **CARTO Voyager**, **OpenTopoMap**, **Esri** satellite, **Navionics** nautical charts (tailnet proxy), **SonarChart** overlay (tailnet proxy, default off), and **OpenSeaMap** seamark overlay — each layer follows the monolite gates (forced-offline, OPSEC strict, cache/offline where applicable).
 Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
-Current project status
 
-Latest agent memory: [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) (§7 = stato vivo). Piano/backlog: [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md). OPSEC strict cycle closed (PASS — WU-0001). Memory standardization wiki-LLM **completed** (WU-0002, Fasi 1–5 PASS).
+Operational live state (agents): see **OM §7.1** — not duplicated here. Legacy/historical (not live state): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
 
-Recent work: graduated OPSEC strict on the monolite (Steps 1–4), tailnet VPS deploy for GIS + Navionics proxy, SonarChart overlay integrated in the GIS monolite (tailnet proxy `/sonar/`, default off, independent from Navionics base).
-
-Legacy/historical (not current read-set): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
 Repository structure
 .
 ├── coordinate_converter Claude.html       # Main standalone app
