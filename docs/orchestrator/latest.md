@@ -9,11 +9,10 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX2`** candidate **IMPLEMENTATO / PRE-DEPLOY**.  
-Task **`887d321944b941af06ff6091b0fb2bc19df4c065`**. Monolite build **170**. Helper **byte-invariato**.  
-Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**.  
-Readiness **generation-complete** (expected/loaded/errors) + **settle-once** per img; MultiPolygon Esito B (fix client minimo).
+2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX2`** **DEPLOY GIS PASS** + **Automated Browser QA PASS**.  
+Runtime live: **`887d3219`** / build **170**. Helper: **NO REDEPLOY** (byte-invariato; service active).  
+Gate: **`QA FINALE CHATGPT — PENDING`**.
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0155_riepilogo_d-flight-f-atm09-arch-a-fix2-candidate.md`](inbox/2026-08-13_0155_riepilogo_d-flight-f-atm09-arch-a-fix2-candidate.md).
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0210_riepilogo_d-flight-f-atm09-arch-a-fix2-deploy-browser-qa.md`](inbox/2026-08-13_0210_riepilogo_d-flight-f-atm09-arch-a-fix2-deploy-browser-qa.md).
 
-Runtime live **invariato**: `42edb6f` / build **167**. **Nessun deploy.**
+URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=887d3219`
