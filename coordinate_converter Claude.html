@@ -23368,10 +23368,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX3";
-const APP_BUILD_DETAIL = "FIX3: ATM09 legend visibility + details floating + resize handles";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX4";
+const APP_BUILD_DETAIL = "FIX4: isolate FIX3 selftests — no network, no live details panel mutation";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 174;
+const APP_BUILD_NUM = 175;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38893,15 +38893,16 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_174", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 174
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX3");
+    add("H_build_175", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 175
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX4");
 
-    /* FIX3 D2 legend wrap visibility lifecycle */
-    add("FIX3_D2_legend_wrap_lifecycle", (function(){
+    /* FIX4 D2: legend wrap lifecycle — network-free (stub LegendUrl → data: PNG). */
+    add("FIX4_D2_legend_wrap_lifecycle", (function(){
       const details = document.getElementById("dflightAtm09LegendDetails");
       const wrap = document.getElementById("dflightAtm09LegendWrap");
       const img = document.getElementById("dflightAtm09LegendImg");
       if (!details || !wrap || !img) return false;
+      const DATA_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
       const prevSrc = img.getAttribute("src");
       const prevOpen = !!details.open;
       const prevWrapHidden = !!wrap.hidden;
@@ -38909,12 +38910,14 @@ function dflightSelfTestH(){
       const prevPref = _dflightAtm09Preferred;
       const prevVis = _dflightOverlayVisible;
       const prevLoaded = _dflightAtm09LegendLoaded;
-      const prevBase = _dflightHelperBaseUrlOverride;
       const prevFo = (typeof state !== "undefined") ? !!state.forceOffline : false;
+      const prevLegendUrl = dflightAtm09LegendUrl;
+      const prevOnLoad = img.onload;
+      const prevOnError = img.onerror;
       try {
         if (typeof state !== "undefined") state.forceOffline = false;
-        _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
         _dflightOverlayVisible = true;
+        dflightAtm09LegendUrl = function(){ return DATA_PNG; };
 
         _dflightAtm09Preferred = false;
         details.open = false;
@@ -38935,7 +38938,8 @@ function dflightSelfTestH(){
         dflightAtm09EnsureLegend(true);
         if (wrap.hidden) return false;
         const src = img.getAttribute("src") || "";
-        if (src.indexOf("/atm09/legend.png") < 0) return false;
+        if (src.indexOf("data:image/png") !== 0) return false;
+        if (/^https?:/i.test(src) || src.indexOf("127.0.0.1") >= 0 || src.indexOf("localhost") >= 0) return false;
 
         _dflightAtm09Preferred = false;
         dflightAtm09EnsureLegend(true);
@@ -38948,10 +38952,12 @@ function dflightSelfTestH(){
         return true;
       } finally {
         try {
+          dflightAtm09LegendUrl = prevLegendUrl;
+          img.onload = prevOnLoad;
+          img.onerror = prevOnError;
           _dflightAtm09Preferred = prevPref;
           _dflightOverlayVisible = prevVis;
           _dflightAtm09LegendLoaded = prevLoaded;
-          _dflightHelperBaseUrlOverride = prevBase;
           if (typeof state !== "undefined") state.forceOffline = prevFo;
           details.open = prevOpen;
           details.hidden = prevDetHidden;
@@ -38962,39 +38968,13 @@ function dflightSelfTestH(){
       }
     })());
 
-    /* FIX3 D3 ATM09 details floating/pin inside viewport */
-    add("FIX3_D3_atm09_details_floating", (function(){
-      const dlg = document.getElementById("dflightDetailsPanel");
-      if (!dlg || typeof dflightAtm09OpenDetails !== "function") return false;
-      const prevOpen = !!dlg.open;
-      try {
-        try { dflightCloseDetailsPanel(); } catch(_){}
-        try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
-        const feat = {
-          type: "Feature",
-          id: "fix3-atm09",
-          properties: { id: "fix3-atm09", name: "FIX3 ATM09 Details" },
-          geometry: null
-        };
-        dflightAtm09OpenDetails(feat);
-        if (!dlg.open) return false;
-        if (!dlg.classList.contains("gis-panel-floating")) return false;
-        if (!dlg._gisPanelDragInstalled) return false;
-        const r = dlg.getBoundingClientRect();
-        const vh = window.innerHeight || 800;
-        const vw = window.innerWidth || 1200;
-        if (!(r.width > 40 && r.height > 40)) return false;
-        if (!(r.top >= 0 && r.top < vh - 48)) return false;
-        if (!(r.left >= 0 && r.left < vw - 48)) return false;
-        const visibleH = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
-        if (visibleH < Math.min(120, r.height * 0.35)) return false;
-        return true;
-      } finally {
-        try { dflightCloseDetailsPanel(); } catch(_){}
-        if (prevOpen){
-          try { dlg.setAttribute("open", ""); } catch(_){}
-        }
-      }
+    /* FIX4 D3: static source check only — no live #dflightDetailsPanel mutation (browser QA covers viewport/drag). */
+    add("FIX4_D3_atm09_open_source_wires", (function(){
+      if (typeof dflightAtm09OpenDetails !== "function") return false;
+      const src = String(dflightAtm09OpenDetails);
+      return src.indexOf("dflightWireFloatingPanel") >= 0
+        && src.indexOf("dflightPinPanelBelowTopbar") >= 0
+        && src.indexOf('"details"') >= 0;
     })());
 
     /* FIX3 D4 resize handle CSS anchors distinct */
