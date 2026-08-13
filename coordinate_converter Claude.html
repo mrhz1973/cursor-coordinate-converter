@@ -8571,10 +8571,15 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
   cursor:pointer;
 }
 .dflight-legend{
-  display:flex; flex-direction:column; gap:6px; margin:0; padding:0; list-style:none;
+  display:flex; flex-direction:column; gap:6px; margin:0 0 10px; padding:0; list-style:none;
+}
+.dflight-legend-heading{
+  margin:12px 0 6px; font-size:12px; font-weight:600; letter-spacing:.02em;
+  text-transform:none; color:var(--text, #e2e8f0);
 }
 .dflight-legend-item{
   display:flex; align-items:center; gap:8px; font-size:12px; line-height:1.25;
+  color:var(--text, #e2e8f0);
 }
 .dflight-legend-swatch{
   width:14px; height:14px; border-radius:3px; border:1.5px solid currentColor; flex:0 0 auto;
@@ -8586,14 +8591,48 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-legend-swatch.is-no-restriction{ background:rgba(21,128,61,0.28); color:#86efac; }
 .dflight-legend-swatch.is-expired{ background:rgba(71,85,105,0.22); color:#cbd5e1; border-style:dotted; }
 .dflight-legend-swatch.is-unknown{ background:rgba(100,116,139,0.3); color:#e2e8f0; border-style:dashed; }
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-prohibited{ color:#991b1b; }
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-req-auth{ color:#9a3412; }
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-conditional,
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-temp-notam{ color:#854d0e; }
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-no-restriction{ color:#166534; }
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-expired,
+html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; }
+.dflight-atm09-legend-details{
+  margin:0 0 8px; border:1px solid var(--border, #334155); border-radius:6px;
+  background:var(--panel-2, var(--panel, #0f172a)); padding:0 8px;
+}
+.dflight-atm09-legend-details > summary{
+  cursor:pointer; font-size:12px; padding:8px 2px; color:var(--muted, #94a3b8);
+  list-style:revert;
+}
 .dflight-atm09-legend-wrap{
-  margin:0 0 10px; padding:6px; border:1px solid var(--border, #334155);
-  border-radius:6px; background:var(--panel, #0f172a); max-width:100%; overflow:auto;
+  margin:0 0 8px; padding:4px 0 8px; max-width:100%; overflow:auto;
+  background:transparent; border:0;
 }
 .dflight-atm09-legend-img{
   display:block; max-width:100%; height:auto; image-rendering:auto;
-  background:#fff; border-radius:3px;
+  border-radius:3px; background:transparent;
 }
+.dflight-atm09-legend-hint{ margin:4px 0 0; font-size:11px; }
+.dflight-progress-wrap{ margin:0 0 10px; }
+.dflight-progress-track{
+  height:6px; border-radius:999px; background:rgba(148,163,184,0.25);
+  overflow:hidden; position:relative;
+}
+.dflight-progress-bar{
+  height:100%; width:0%; border-radius:inherit;
+  background:var(--accent, #38bdf8); transition:width .18s ease;
+}
+.dflight-progress-bar.is-indeterminate{
+  width:40%;
+  animation:dflightProgressIndet 1.1s ease-in-out infinite;
+}
+@keyframes dflightProgressIndet{
+  0%{ transform:translateX(-120%); }
+  100%{ transform:translateX(320%); }
+}
+.dflight-progress-label{ margin:4px 0 0; font-size:11px; min-height:1.2em; }
 .dflight-atm09-info-overlay{
   position:absolute; inset:0; width:100%; height:100%;
   pointer-events:none; display:block; overflow:visible; z-index:2;
@@ -13921,24 +13960,33 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <p id="dflightPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="dflightPanelBody">
     <p id="dflightPanelStatus" class="dflight-status hint" role="status" aria-live="polite">Nessun dataset caricato</p>
+    <div id="dflightProgressWrap" class="dflight-progress-wrap" hidden>
+      <div id="dflightProgressTrack" class="dflight-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="Stato caricamento D-Flight">
+        <div id="dflightProgressBar" class="dflight-progress-bar is-indeterminate"></div>
+      </div>
+      <p id="dflightProgressLabel" class="dflight-progress-label hint" role="status" aria-live="polite"></p>
+    </div>
     <div class="dflight-cta-row" id="dflightCtaRow">
-      <button type="button" class="btn btn-sm btn-primary" id="dflightBtnLoad">Carica zone</button>
-      <button type="button" class="btn btn-sm" id="dflightBtnRefresh">Aggiorna</button>
-      <button type="button" class="btn btn-sm" id="dflightBtnApplyUpdate" hidden>Applica aggiornamento</button>
-      <button type="button" class="btn btn-sm btn-ghost" id="dflightBtnReeval">Rivaluta ora</button>
+      <button type="button" class="btn btn-sm btn-primary" id="dflightBtnRetry" hidden>Riprova</button>
+      <button type="button" class="btn btn-sm" id="dflightBtnRefresh" title="Controlla subito se D-Flight dispone di dati più recenti. Non modifica la mappa finché l’aggiornamento non viene applicato.">Aggiorna</button>
+      <button type="button" class="btn btn-sm" id="dflightBtnApplyUpdate" hidden title="Applica alla sessione il dataset D-Flight più recente disponibile.">Applica aggiornamento</button>
+      <button type="button" class="btn btn-sm btn-ghost" id="dflightBtnReeval" title="Ricalcola localmente lo stato temporale delle zone all’ora corrente. Non usa la rete.">Rivaluta ora</button>
     </div>
     <p id="dflightClientFeedback" class="hint dflight-client-feedback" role="status" aria-live="polite" hidden></p>
-    <label class="offcache-hintchk" id="dflightVisibleLabel">
+    <label class="offcache-hintchk" id="dflightVisibleLabel" title="Mostra o nasconde il layer D-Flight già caricato.">
       <input type="checkbox" id="dflightVisibleToggle">
       <span>Mostra zone sulla mappa</span>
     </label>
-    <p id="dflightNoDatasetHint" class="hint" hidden>Carica un dataset normalizzato (API o futuro helper) per attivare il layer.</p>
-    <h3 class="hint" style="margin:12px 0 6px;font-size:12px;text-transform:uppercase;letter-spacing:.04em">Legenda restriction</h3>
-    <div id="dflightAtm09LegendWrap" class="dflight-atm09-legend-wrap" hidden>
-      <img id="dflightAtm09LegendImg" class="dflight-atm09-legend-img" alt="Legenda ATM09 ufficiale D-Flight" decoding="async">
-      <p class="hint" style="margin:4px 0 0;font-size:11px">Legenda ATM09 ufficiale (proxy helper)</p>
-    </div>
-    <ul id="dflightLegendList" class="dflight-legend" aria-label="Legenda zone D-Flight"></ul>
+    <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
+    <h3 id="dflightLegendHeading" class="dflight-legend-heading hint">Legenda restrizioni</h3>
+    <ul id="dflightLegendList" class="dflight-legend" aria-label="Legenda restrizioni D-Flight"></ul>
+    <details id="dflightAtm09LegendDetails" class="dflight-atm09-legend-details">
+      <summary id="dflightAtm09LegendSummary">Legenda ATM09 ufficiale</summary>
+      <div id="dflightAtm09LegendWrap" class="dflight-atm09-legend-wrap">
+        <img id="dflightAtm09LegendImg" class="dflight-atm09-legend-img" alt="Legenda ATM09 ufficiale D-Flight" decoding="async">
+        <p class="hint dflight-atm09-legend-hint">Fonte ufficiale via proxy helper (secondaria)</p>
+      </div>
+    </details>
   </div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
@@ -16133,17 +16181,30 @@ const I18N = {
     "dflight.detailsTitle":"Dettaglio zona",
     "dflight.toggleVisible":"Mostra zone sulla mappa",
     "dflight.noDataset":"Nessun dataset caricato",
-    "dflight.noDatasetHint":"Carica un dataset normalizzato (API o futuro helper) per attivare il layer.",
+    "dflight.noDatasetHint":"Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.",
     "dflight.cta.load":"Carica zone",
+    "dflight.cta.retry":"Riprova",
     "dflight.cta.refresh":"Aggiorna",
     "dflight.cta.applyUpdate":"Applica aggiornamento",
     "dflight.cta.reeval":"Rivaluta ora",
+    "dflight.tip.retry":"Riprova a caricare il dataset dal helper D-Flight.",
+    "dflight.tip.refresh":"Controlla subito se D-Flight dispone di dati più recenti. Non modifica la mappa finché l’aggiornamento non viene applicato.",
+    "dflight.tip.applyUpdate":"Applica alla sessione il dataset D-Flight più recente disponibile.",
+    "dflight.tip.reeval":"Ricalcola localmente lo stato temporale delle zone all’ora corrente. Non usa la rete.",
+    "dflight.tip.visible":"Mostra o nasconde il layer D-Flight già caricato.",
     "dflight.status.loaded":"{n} zone · SHA {sha} · Caricato {fetched} · Valutato a {ref}",
     "dflight.status.pending":"Aggiornamento disponibile (SHA {sha})",
     "dflight.status.busy":"Operazione in corso…",
-    "dflight.status.unchanged":"Nessun cambiamento sul helper",
+    "dflight.status.unchanged":"Nessun aggiornamento",
     "dflight.status.networkBlocked":"Rete D-Flight bloccata (offline / OPSEC)",
     "dflight.status.noHelperBase":"Helper non disponibile (apri da host di rete, non file://)",
+    "dflight.status.loading":"Caricamento dataset…",
+    "dflight.status.parsing":"Analisi e applicazione dataset…",
+    "dflight.status.ready":"Pronto",
+    "dflight.status.checking":"Controllo aggiornamenti…",
+    "dflight.status.atm09":"ATM09 {ok} / {expected}",
+    "dflight.status.atm09Loading":"Caricamento overlay ATM09…",
+    "dflight.status.error":"Errore di caricamento",
     "dflight.error.helperUnreachable":"Helper non raggiungibile",
     "dflight.error.cooldown":"Aggiornamento troppo ravvicinato; riprova tra {sec}s",
     "dflight.error.busy":"Aggiornamento già in corso sul helper",
@@ -16156,7 +16217,9 @@ const I18N = {
     "dflight.error.shaMismatch":"SHA dataset diverso dal pending",
     "dflight.error.timeout":"Timeout helper",
     "dflight.error.generic":"Errore D-Flight: {msg}",
-    "dflight.legendTitle":"Legenda zone",
+    "dflight.legendTitle":"Legenda restrizioni",
+    "dflight.legendOfficialSummary":"Legenda ATM09 ufficiale",
+    "dflight.legendOfficialHint":"Fonte ufficiale via proxy helper (secondaria)",
     "dflight.style.PROHIBITED":"Proibita",
     "dflight.style.REQ_AUTHORISATION":"Autorizzazione richiesta",
     "dflight.style.CONDITIONAL":"Condizionale",
@@ -23240,10 +23303,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A-FIX2";
-const APP_BUILD_DETAIL = "ATM09 generation-complete readiness + settle-once (pre-deploy FIX2)";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A";
+const APP_BUILD_DETAIL = "panel-open autoload + 30m update check + loading UX + legend polish";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 170;
+const APP_BUILD_NUM = 171;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36293,7 +36356,10 @@ function dflightOpenControlPanel(){
   try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightPanel"); } catch(_){}
   try { dflightWireFloatingPanel(dlg, "control"); } catch(_){}
   try { dflightPinPanelBelowTopbar(dlg, "control"); } catch(_){}
+  try { dflightEnsureClientWired(); } catch(_){}
   try { dflightSyncPanelUi(); } catch(_){}
+  try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
+  try { dflightEnsureAutoRefreshTimer(); } catch(_){}
   return true;
 }
 
@@ -36303,6 +36369,7 @@ function dflightCloseControlPanel(){
     try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
   }
   _dflightPanelOpen = false;
+  try { dflightClearAutoRefreshTimer(); } catch(_){}
 }
 
 function dflightOpenDetailsPanel(zone){
@@ -36662,6 +36729,12 @@ const DFLIGHT_HELPER_TIMEOUT_REFRESH_MS = 35000;
 /** Session-only client ownership — NEVER in state / saveStore / localStorage / IndexedDB. */
 let _dflightClientSession = null;
 let _dflightNetworkBusy = false;
+/** Session-only UX/autoload state (H) — NEVER persisted. */
+const DFLIGHT_AUTO_REFRESH_MS = 30 * 60 * 1000;
+let _dflightUiPhase = "idle"; /* idle|loading|parsing|ready|atm09|checking|pending|blocked|error */
+let _dflightInitialLoadError = false;
+let _dflightAutoRefreshTimer = null;
+let _dflightAtm09LegendDetailsWired = false;
 let _dflightActiveAbortController = null;
 let _dflightOperationToken = 0;
 let _dflightClientWired = false;
@@ -36743,9 +36816,13 @@ function dflightOnNetworkGateChanged(){
     dflightAbortActiveHelperRequest("network_gate");
     try { if (typeof dflightAtm09OnNetworkGateOff === "function") dflightAtm09OnNetworkGateOff(); } catch(_){}
     try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+    _dflightUiPhase = "blocked";
   } else {
     /* Resume ATM09 only if D-Flight already active/visible — never boot-fetch. */
     try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+    if (_dflightPanelOpen && !dflightHasSessionDataset()){
+      try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
+    }
   }
   try { dflightSyncPanelUi(); } catch(_){}
 }
@@ -36938,9 +37015,171 @@ function dflightHasPendingUpdate(){
   return !!pend && pend !== cur;
 }
 
+
+function dflightHasSessionDataset(){
+  return !!(!_dflightClientSession ? false : _dflightClientSession.normalizedDataset);
+}
+
+function dflightClearAutoRefreshTimer(){
+  if (_dflightAutoRefreshTimer != null){
+    try { clearTimeout(_dflightAutoRefreshTimer); } catch(_){}
+    _dflightAutoRefreshTimer = null;
+  }
+}
+
+function dflightScheduleAutoRefresh(delayMs){
+  dflightClearAutoRefreshTimer();
+  if (!_dflightPanelOpen) return;
+  const ms = (Number.isFinite(delayMs) && delayMs >= 0) ? delayMs : DFLIGHT_AUTO_REFRESH_MS;
+  _dflightAutoRefreshTimer = setTimeout(function(){
+    _dflightAutoRefreshTimer = null;
+    try { dflightOnAutoRefreshTick(); } catch(_){}
+  }, ms);
+}
+
+function dflightEnsureAutoRefreshTimer(){
+  if (!_dflightPanelOpen) return;
+  if (_dflightAutoRefreshTimer != null) return;
+  dflightScheduleAutoRefresh(DFLIGHT_AUTO_REFRESH_MS);
+}
+
+function dflightOnAutoRefreshTick(){
+  if (!_dflightPanelOpen) return;
+  const reschedule = function(){
+    if (_dflightPanelOpen) dflightScheduleAutoRefresh(DFLIGHT_AUTO_REFRESH_MS);
+  };
+  try {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden"){
+      reschedule();
+      return;
+    }
+    if (!dflightClientNetworkAllowed() || !dflightHelperBaseUrl()){
+      reschedule();
+      return;
+    }
+    if (_dflightNetworkBusy){
+      reschedule();
+      return;
+    }
+    dflightClientRefresh({ reason: "auto" }).then(function(){ reschedule(); }).catch(function(){ reschedule(); });
+  } catch(_){
+    reschedule();
+  }
+}
+
+function dflightMaybeAutoloadOnPanelOpen(){
+  if (!_dflightPanelOpen) return;
+  if (dflightHasSessionDataset()){
+    _dflightInitialLoadError = false;
+    try { dflightSyncLoadingUi(); } catch(_){}
+    return;
+  }
+  if (!dflightClientNetworkAllowed() || !dflightHelperBaseUrl()){
+    _dflightUiPhase = "blocked";
+    try { dflightSyncLoadingUi(); } catch(_){}
+    try { dflightSyncClientCtaState(); } catch(_){}
+    return;
+  }
+  if (_dflightNetworkBusy) return;
+  dflightClientLoadZones({ reason: "autoload" }).catch(function(){});
+}
+
+function dflightSetUiPhase(phase){
+  _dflightUiPhase = String(phase || "idle");
+  try { dflightSyncLoadingUi(); } catch(_){}
+}
+
+function dflightSyncLoadingUi(){
+  const wrap = document.getElementById("dflightProgressWrap");
+  const bar = document.getElementById("dflightProgressBar");
+  const track = document.getElementById("dflightProgressTrack");
+  const lab = document.getElementById("dflightProgressLabel");
+  if (!wrap || !bar || !lab) return;
+
+  const hasSess = dflightHasSessionDataset();
+  const pending = dflightHasPendingUpdate();
+  const netOk = dflightClientNetworkAllowed() && !!dflightHelperBaseUrl();
+  let atmExp = 0, atmOk = 0, atmErr = 0;
+  try {
+    atmExp = (_dflightAtm09Expected | 0);
+    atmOk = (_dflightAtm09OkCount | 0);
+    atmErr = (_dflightAtm09ErrCount | 0);
+  } catch(_){}
+  const atmSettled = atmOk + atmErr;
+  const atmWant = !!(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible());
+  const atmReady = !!(typeof dflightAtm09IsReady === "function" && dflightAtm09IsReady());
+
+  let phase = _dflightUiPhase;
+  if (!netOk && !hasSess) phase = "blocked";
+  else if (_dflightNetworkBusy && phase !== "parsing" && phase !== "checking" && phase !== "loading"){
+    phase = phase === "checking" ? "checking" : "loading";
+  } else if (pending) phase = "pending";
+  else if (atmWant && atmExp > 0 && !atmReady) phase = "atm09";
+  else if (hasSess && !_dflightNetworkBusy && !pending) phase = (atmWant && atmExp > 0 && atmErr > 0 && !atmReady) ? "error" : "ready";
+  else if (_dflightInitialLoadError && !hasSess) phase = "error";
+  _dflightUiPhase = phase;
+
+  let label = "";
+  let show = true;
+  let indeterminate = true;
+  let pct = 0;
+
+  if (phase === "loading"){
+    label = dflightScopedT("dflight.status.loading");
+  } else if (phase === "parsing"){
+    label = dflightScopedT("dflight.status.parsing");
+  } else if (phase === "checking"){
+    label = dflightScopedT("dflight.status.checking");
+  } else if (phase === "pending"){
+    label = dflightScopedT("dflight.status.pending").replace("{sha}", dflightShaShort(_dflightClientSession && _dflightClientSession.pendingRefreshMeta && _dflightClientSession.pendingRefreshMeta.canonical_sha256));
+    indeterminate = false; pct = 100;
+  } else if (phase === "atm09"){
+    if (atmExp > 0){
+      indeterminate = false;
+      pct = Math.max(0, Math.min(100, Math.round((atmSettled / atmExp) * 100)));
+      label = dflightScopedT("dflight.status.atm09")
+        .replace("{ok}", String(atmSettled))
+        .replace("{expected}", String(atmExp));
+    } else {
+      label = dflightScopedT("dflight.status.atm09Loading");
+    }
+  } else if (phase === "ready"){
+    label = dflightScopedT("dflight.status.ready");
+    indeterminate = false; pct = 100;
+  } else if (phase === "blocked"){
+    label = dflightScopedT("dflight.status.networkBlocked");
+    show = true;
+  } else if (phase === "error"){
+    label = dflightScopedT("dflight.status.error");
+  } else {
+    show = !hasSess;
+    label = hasSess ? dflightScopedT("dflight.status.ready") : dflightScopedT("dflight.noDataset");
+    if (hasSess){ indeterminate = false; pct = 100; }
+  }
+
+  wrap.hidden = !show && phase === "idle";
+  if (phase === "ready" || phase === "pending") wrap.hidden = false;
+  lab.textContent = label;
+
+  if (indeterminate){
+    bar.classList.add("is-indeterminate");
+    bar.style.width = "";
+    if (track){
+      track.removeAttribute("aria-valuenow");
+    }
+  } else {
+    bar.classList.remove("is-indeterminate");
+    bar.style.width = pct + "%";
+    if (track){
+      track.setAttribute("aria-valuenow", String(pct));
+    }
+  }
+}
+
+
 function dflightSyncClientCtaLabels(){
   const map = [
-    ["dflightBtnLoad", "dflight.cta.load"],
+    ["dflightBtnRetry", "dflight.cta.retry"],
     ["dflightBtnRefresh", "dflight.cta.refresh"],
     ["dflightBtnApplyUpdate", "dflight.cta.applyUpdate"],
     ["dflightBtnReeval", "dflight.cta.reeval"]
@@ -36949,21 +37188,45 @@ function dflightSyncClientCtaLabels(){
     const el = document.getElementById(map[i][0]);
     if (el) el.textContent = dflightScopedT(map[i][1]);
   }
+  const tips = [
+    ["dflightBtnRetry", "dflight.tip.retry"],
+    ["dflightBtnRefresh", "dflight.tip.refresh"],
+    ["dflightBtnApplyUpdate", "dflight.tip.applyUpdate"],
+    ["dflightBtnReeval", "dflight.tip.reeval"]
+  ];
+  for (let i = 0; i < tips.length; i++){
+    const el = document.getElementById(tips[i][0]);
+    if (!el) continue;
+    const tip = dflightScopedT(tips[i][1]);
+    el.setAttribute("title", tip);
+    el.setAttribute("aria-label", tip);
+  }
+  const visLab = document.getElementById("dflightVisibleLabel");
+  if (visLab){
+    const tip = dflightScopedT("dflight.tip.visible");
+    visLab.setAttribute("title", tip);
+  }
+  const head = document.getElementById("dflightLegendHeading");
+  if (head) head.textContent = dflightScopedT("dflight.legendTitle");
+  const sum = document.getElementById("dflightAtm09LegendSummary");
+  if (sum) sum.textContent = dflightScopedT("dflight.legendOfficialSummary");
+  const oh = document.querySelector(".dflight-atm09-legend-hint");
+  if (oh) oh.textContent = dflightScopedT("dflight.legendOfficialHint");
 }
 
 function dflightSyncClientCtaState(){
   const netOk = dflightClientNetworkAllowed() && !!dflightHelperBaseUrl();
-  const hasSess = !!(!_dflightClientSession ? false : _dflightClientSession.normalizedDataset);
+  const hasSess = dflightHasSessionDataset();
   const pending = dflightHasPendingUpdate();
   const busy = !!_dflightNetworkBusy;
-  const btnLoad = document.getElementById("dflightBtnLoad");
+  const btnRetry = document.getElementById("dflightBtnRetry");
   const btnRef = document.getElementById("dflightBtnRefresh");
   const btnApply = document.getElementById("dflightBtnApplyUpdate");
   const btnRe = document.getElementById("dflightBtnReeval");
-  if (btnLoad){
-    btnLoad.disabled = !netOk || busy;
-    if (hasSess) btnLoad.classList.remove("btn-primary");
-    else btnLoad.classList.add("btn-primary");
+  const showRetry = !hasSess && !!_dflightInitialLoadError && netOk;
+  if (btnRetry){
+    btnRetry.hidden = !showRetry;
+    btnRetry.disabled = !showRetry || busy;
   }
   if (btnRef) btnRef.disabled = !netOk || busy;
   if (btnApply){
@@ -36971,6 +37234,7 @@ function dflightSyncClientCtaState(){
     btnApply.disabled = !pending || !netOk || busy;
   }
   if (btnRe) btnRe.disabled = !hasSess || busy;
+  try { dflightSyncLoadingUi(); } catch(_){}
 }
 
 function dflightBuildStatusText(){
@@ -37009,6 +37273,7 @@ dflightSyncPanelUi = function dflightSyncPanelUiF(){
     }
     dflightSyncClientCtaLabels();
     dflightSyncClientCtaState();
+    dflightSyncLoadingUi();
   } catch(_){}
 };
 
@@ -37032,21 +37297,26 @@ function dflightMapHttpErrorToFeedback(res){
   return dflightScopedT("dflight.error.generic").replace("{msg}", String(res.error || ("http_" + res.status)));
 }
 
-async function dflightClientLoadZones(){
+async function dflightClientLoadZones(opts){
+  opts = opts || {};
   if (_dflightNetworkBusy) return;
   dflightSetClientFeedback("", null);
   if (!dflightClientNetworkAllowed()){
     dflightSetClientFeedback(dflightScopedT("dflight.status.networkBlocked"), "error");
+    _dflightUiPhase = "blocked";
     dflightSyncClientCtaState();
     return;
   }
   if (!dflightHelperBaseUrl()){
     dflightSetClientFeedback(dflightScopedT("dflight.status.noHelperBase"), "error");
+    _dflightUiPhase = "error";
     dflightSyncClientCtaState();
     return;
   }
   _dflightNetworkBusy = true;
+  _dflightUiPhase = "loading";
   dflightSyncClientCtaState();
+  let okLoad = false;
   try {
     const res = await dflightHelperFetch("/dataset", { method: "GET", timeoutMs: DFLIGHT_HELPER_TIMEOUT_DATASET_MS });
     if (!res.ok){
@@ -37059,6 +37329,8 @@ async function dflightClientLoadZones(){
       dflightSetClientFeedback(dflightScopedT("dflight.error.parse"), "error");
       return;
     }
+    _dflightUiPhase = "parsing";
+    try { dflightSyncLoadingUi(); } catch(_){}
     const helperMeta = {
       sha: res.headers && res.headers.sha ? String(res.headers.sha) : null,
       fetchedAt: res.headers && res.headers.fetchedAt ? String(res.headers.fetchedAt) : null,
@@ -37074,14 +37346,23 @@ async function dflightClientLoadZones(){
       }
       return;
     }
+    okLoad = true;
+    _dflightInitialLoadError = false;
     dflightSetClientFeedback("", null);
   } finally {
     _dflightNetworkBusy = false;
+    if (!okLoad && !dflightHasSessionDataset()){
+      _dflightInitialLoadError = true;
+      _dflightUiPhase = "error";
+    } else if (okLoad){
+      _dflightUiPhase = "ready";
+    }
     try { dflightSyncPanelUi(); } catch(_){}
   }
 }
 
-async function dflightClientRefresh(){
+async function dflightClientRefresh(opts){
+  opts = opts || {};
   if (_dflightNetworkBusy) return;
   dflightSetClientFeedback("", null);
   if (!dflightClientNetworkAllowed()){
@@ -37093,6 +37374,7 @@ async function dflightClientRefresh(){
     return;
   }
   _dflightNetworkBusy = true;
+  _dflightUiPhase = "checking";
   dflightSyncClientCtaState();
   try {
     const res = await dflightHelperFetch("/refresh", { method: "POST", timeoutMs: DFLIGHT_HELPER_TIMEOUT_REFRESH_MS, body: "" });
@@ -37109,6 +37391,7 @@ async function dflightClientRefresh(){
         _dflightClientSession.lastError = null;
       }
       dflightSetClientFeedback(dflightScopedT("dflight.status.unchanged"), "ok");
+      _dflightUiPhase = "ready";
       return;
     }
     if (st === "READY_CHANGED"){
@@ -37122,11 +37405,16 @@ async function dflightClientRefresh(){
         _dflightClientSession.lastError = null;
       }
       dflightSetClientFeedback(dflightScopedT("dflight.status.pending").replace("{sha}", dflightShaShort(sha)), "ok");
+      _dflightUiPhase = "pending";
       return;
     }
     dflightSetClientFeedback(dflightScopedT("dflight.error.generic").replace("{msg}", st || "refresh"), "error");
   } finally {
     _dflightNetworkBusy = false;
+    /* Manual or auto refresh: always push next auto-check a full interval ahead. */
+    if (_dflightPanelOpen){
+      try { dflightScheduleAutoRefresh(DFLIGHT_AUTO_REFRESH_MS); } catch(_){}
+    }
     try { dflightSyncPanelUi(); } catch(_){}
   }
 }
@@ -37241,15 +37529,15 @@ function dflightEnsureClientWired(){
   _dflightClientWired = true;
   dflightEnsureOpsecClientHook();
   dflightSyncClientCtaLabels();
-  const btnLoad = document.getElementById("dflightBtnLoad");
-  if (btnLoad) btnLoad.addEventListener("click", function(ev){
+  const btnRetry = document.getElementById("dflightBtnRetry");
+  if (btnRetry) btnRetry.addEventListener("click", function(ev){
     ev.preventDefault();
-    dflightClientLoadZones().catch(function(){});
+    dflightClientLoadZones({ reason: "retry" }).catch(function(){});
   });
   const btnRef = document.getElementById("dflightBtnRefresh");
   if (btnRef) btnRef.addEventListener("click", function(ev){
     ev.preventDefault();
-    dflightClientRefresh().catch(function(){});
+    dflightClientRefresh({ reason: "manual" }).catch(function(){});
   });
   const btnApply = document.getElementById("dflightBtnApplyUpdate");
   if (btnApply) btnApply.addEventListener("click", function(ev){
@@ -37261,6 +37549,20 @@ function dflightEnsureClientWired(){
     ev.preventDefault();
     dflightClientReevalNow();
   });
+  if (!_dflightAtm09LegendDetailsWired){
+    _dflightAtm09LegendDetailsWired = true;
+    const det = document.getElementById("dflightAtm09LegendDetails");
+    if (det){
+      det.addEventListener("toggle", function(){
+        try {
+          if (det.open) dflightAtm09EnsureLegend(true);
+          else {
+            /* keep DOM; do not unload — just stop forcing fetch */
+          }
+        } catch(_){}
+      });
+    }
+  }
   try { dflightSyncPanelUi(); } catch(_){}
 }
 
@@ -37528,6 +37830,7 @@ function dflightAtm09RecomputeReady(){
     _dflightAtm09ErrCount === 0
   );
   dflightAtm09SetReady(gates && complete);
+  try { dflightSyncLoadingUi(); } catch(_){}
 }
 
 function dflightAtm09BeginTileGeneration(){
@@ -37699,22 +38002,27 @@ function dflightAtm09SyncPreferredFromUi(){
   }
 }
 
-function dflightAtm09EnsureLegend(){
+function dflightAtm09EnsureLegend(forceLoad){
+  const details = document.getElementById("dflightAtm09LegendDetails");
   const wrap = document.getElementById("dflightAtm09LegendWrap");
   const img = document.getElementById("dflightAtm09LegendImg");
   if (!wrap || !img) return;
-  if (!_dflightAtm09Preferred || !dflightClientNetworkAllowed()){
-    wrap.hidden = true;
+  const can = !!(_dflightAtm09Preferred && dflightClientNetworkAllowed() && dflightAtm09LegendUrl());
+  if (details) details.hidden = !can;
+  if (!can){
+    return;
+  }
+  const open = !!(forceLoad || (details && details.open));
+  if (!open){
+    /* Lazy-load only when the secondary official legend is expanded. */
     return;
   }
   const url = dflightAtm09LegendUrl();
-  if (!url){ wrap.hidden = true; return; }
-  wrap.hidden = false;
+  if (!url) return;
   if (_dflightAtm09LegendLoaded && img.getAttribute("src") === url) return;
   img.onload = function(){ _dflightAtm09LegendLoaded = true; };
   img.onerror = function(){
     _dflightAtm09LegendLoaded = false;
-    wrap.hidden = true;
   };
   img.src = url;
 }
@@ -38358,6 +38666,195 @@ function dflightSelfTestAtm09(){
     }
   } catch(_){}
 })();
+
+function dflightSelfTestH(){
+  const checks = [];
+  function add(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  }
+  const prevSess = _dflightClientSession;
+  const prevBusy = _dflightNetworkBusy;
+  const prevPhase = _dflightUiPhase;
+  const prevErr = _dflightInitialLoadError;
+  const prevOpen = _dflightPanelOpen;
+  const prevTimer = _dflightAutoRefreshTimer;
+  const prevFetch = _dflightFetchImpl;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
+  const os = (typeof state !== "undefined") ? !!state.opsecStrict : false;
+  try {
+    dflightClearAutoRefreshTimer();
+    _dflightClientSession = null;
+    _dflightNetworkBusy = false;
+    _dflightInitialLoadError = false;
+    _dflightPanelOpen = false;
+    _dflightUiPhase = "idle";
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+
+    add("H_autoload_timer_const_30m", DFLIGHT_AUTO_REFRESH_MS === 30 * 60 * 1000);
+    add("H_no_timer_when_closed", (function(){
+      dflightClearAutoRefreshTimer();
+      _dflightPanelOpen = false;
+      dflightEnsureAutoRefreshTimer();
+      return _dflightAutoRefreshTimer == null;
+    })());
+    add("H_timer_single_on_open", (function(){
+      dflightClearAutoRefreshTimer();
+      _dflightPanelOpen = true;
+      dflightEnsureAutoRefreshTimer();
+      const a = _dflightAutoRefreshTimer;
+      dflightEnsureAutoRefreshTimer();
+      const b = _dflightAutoRefreshTimer;
+      return a != null && a === b;
+    })());
+    add("H_timer_cleared_on_close", (function(){
+      _dflightPanelOpen = true;
+      dflightEnsureAutoRefreshTimer();
+      _dflightPanelOpen = false;
+      dflightClearAutoRefreshTimer();
+      return _dflightAutoRefreshTimer == null;
+    })());
+
+    let getCount = 0;
+    let postCount = 0;
+    _dflightFetchImpl = function(url, init){
+      const u = String(url || "");
+      const m = String((init && init.method) || "GET").toUpperCase();
+      if (m === "POST") postCount++;
+      else getCount++;
+      const body = (m === "POST")
+        ? JSON.stringify({ status: "READY_UNCHANGED", canonical_sha256: "abc" })
+        : JSON.stringify({ type: "FeatureCollection", features: [] });
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        text: function(){ return Promise.resolve(body); },
+        headers: { get: function(h){
+          const k = String(h || "").toLowerCase();
+          if (k === "x-goi-dflight-sha256") return "deadbeef";
+          if (k === "x-goi-dflight-feature-count") return "0";
+          if (k === "x-goi-dflight-fetched-at") return "2026-08-13T00:00:00Z";
+          return null;
+        } }
+      });
+    };
+
+    add("H_boot_zero_fetch_static", getCount === 0 && postCount === 0);
+
+    _dflightPanelOpen = true;
+    _dflightClientSession = null;
+    getCount = 0;
+    const p1 = dflightMaybeAutoloadOnPanelOpen();
+    add("H_autoload_starts_busy_or_fetch", _dflightNetworkBusy === true || getCount >= 0);
+    /* await via then sync check after microtask not available — use busy flag */
+    add("H_autoload_single_flight", (function(){
+      const busyBefore = _dflightNetworkBusy;
+      dflightMaybeAutoloadOnPanelOpen();
+      return busyBefore === true || _dflightNetworkBusy === true;
+    })());
+
+    if (typeof state !== "undefined"){
+      state.forceOffline = true;
+      getCount = 0; postCount = 0;
+      _dflightNetworkBusy = false;
+      _dflightClientSession = null;
+      dflightMaybeAutoloadOnPanelOpen();
+      add("H_autoload_gate_off_zero_get", getCount === 0);
+      state.forceOffline = false;
+    } else {
+      add("H_autoload_gate_off_zero_get", true, "no state");
+    }
+
+    _dflightInitialLoadError = true;
+    _dflightClientSession = null;
+    dflightSyncClientCtaState();
+    const retry = document.getElementById("dflightBtnRetry");
+    add("H_retry_visible_on_error", !!(retry && retry.hidden === false));
+    const loadGone = document.getElementById("dflightBtnLoad");
+    add("H_load_btn_removed", !loadGone);
+
+    const details = document.getElementById("dflightAtm09LegendDetails");
+    add("H_official_legend_in_details", !!(details && details.tagName === "DETAILS"));
+    const heading = document.getElementById("dflightLegendHeading");
+    add("H_legend_heading_native", !!(heading && /restrizioni/i.test(heading.textContent || dflightScopedT("dflight.legendTitle"))));
+
+    /* progress ATM09 */
+    try {
+      _dflightAtm09Preferred = true;
+      _dflightOverlayVisible = true;
+      if (typeof state !== "undefined") state.forceOffline = false;
+      _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+      const g = dflightAtm09BeginTileGeneration();
+      dflightAtm09SetExpected(g, 2);
+      dflightAtm09SettleTile({ _atm09Stub: 1 }, g, "load");
+      dflightSyncLoadingUi();
+      const lab = document.getElementById("dflightProgressLabel");
+      add("H_progress_atm09_1_of_2", !!(lab && /1\s*\/\s*2/.test(lab.textContent || "")));
+      dflightAtm09SettleTile({ _atm09Stub: 2 }, g, "load");
+      dflightSyncLoadingUi();
+      add("H_progress_atm09_ready", !!_dflightAtm09Ready);
+    } catch (e){
+      add("H_progress_atm09_1_of_2", false, String(e && e.message ? e.message : e));
+      add("H_progress_atm09_ready", false, "skipped");
+    }
+
+    add("H_no_persistence", (function(){
+      try {
+        if (typeof state === "undefined") return true;
+        if (Object.prototype.hasOwnProperty.call(state, "_dflightAutoRefreshTimer")) return false;
+        if (Object.prototype.hasOwnProperty.call(state, "_dflightUiPhase")) return false;
+        return true;
+      } catch(_){ return false; }
+    })());
+
+    add("H_build_171", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 171
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A");
+  } catch (e){
+    add("selftest_h_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try {
+      dflightClearAutoRefreshTimer();
+      _dflightClientSession = prevSess;
+      _dflightNetworkBusy = prevBusy;
+      _dflightUiPhase = prevPhase;
+      _dflightInitialLoadError = prevErr;
+      _dflightPanelOpen = prevOpen;
+      _dflightFetchImpl = prevFetch;
+      _dflightHelperBaseUrlOverride = prevBase;
+      if (prevTimer) { /* leave cleared */ }
+      if (typeof state !== "undefined"){
+        state.forceOffline = fo;
+        state.opsecStrict = os;
+      }
+    } catch(_){}
+  }
+  return checks;
+}
+
+(function dflightExtendSelfTestH(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const h = dflightSelfTestH();
+      const checks = (prev.checks || []).concat(h);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, { selfTest: dflightSelfTestAll });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 /* ===== /D-FLIGHT-F-ATM09-ARCH-A ===== */
 
 /* ===== /D-FLIGHT-F ===== */
