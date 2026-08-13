@@ -5,16 +5,16 @@
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 IN-FLIGHT / HELPER 0.1.3 LIVE
-**ACTIVE BLOCK:** D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED
-**CURRENT GATE:** review GPT sostitutiva su FULL SHA `52927c565d5301870a82d688c899024d8d499aee`
-**REVIEW BASE:** `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 live / build 178)
-**CANDIDATE RUNTIME:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · **NON LIVE** (`58ade6c` first draft SUPERSEDED)
-**RUNTIME LIVE:** monolite `12fcba580391e456cd1d9984f340355707a7ecc2` · build **178** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX1` · helper **0.1.3**
-**NEXT:** GPT review → se PASS deploy GIS-only → Automated Browser QA → QA operatore residuale → Regola H `finito`
+**STATUS:** OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 DEPLOYED QA-PENDING / HELPER 0.1.3 LIVE
+**ACTIVE BLOCK:** D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — DEPLOYED / Automated Browser QA PASS / QA operatore PENDING
+**CURRENT GATE:** `QA FINALE CHATGPT — PENDING`
+**REVIEW BASE:** `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 / build 178 — baseline review)
+**CANDIDATE RUNTIME:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · review **PASS** · **ora LIVE**
+**RUNTIME LIVE:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper **0.1.3**
+**NEXT:** QA operatore residuale ChatGPT → se PASS Regola H auto-`finito`
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 IN-FLIGHT / HELPER 0.1.3 LIVE`
+**Stato:** `OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 DEPLOYED QA-PENDING / HELPER 0.1.3 LIVE`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
@@ -27,11 +27,11 @@
 **Blocco rete client / ATM09:** `D-FLIGHT-F` → serie **ATM09-ARCH-A** (+FIX1/FIX2) + **`D-FLIGHT-F-ATM09-HELPER-DEPLOY-A`** — **CLOSED / PASS end-to-end** (2026-08-13) — monolite tip `887d321` · build **170** · helper prod **0.1.3** · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore`). FAIL operatore iniziale (helper 0.1.2 senza `/atm09`) **superseduto** dal deploy helper.
 **Blocco UI overlay polish:** `D-FLIGHT-G-UI-OVERLAY-A` (+ FIX1 FAIL → **FIX2 PASS**) — **CLOSED / PASS end-to-end** (2026-08-13) — tip `42edb6f` · build **167** · pan-sync SVG + stile WFS + wheel isolation + Layer menu safeTop · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore`)
 **Blocco autoload UX:** `D-FLIGHT-H-AUTOLOAD-UX-A` (+ FIX1–FIX4 → **FIX5 PASS**) — **CLOSED / PASS end-to-end** (2026-08-13) — tip monolite `fb773c9` · build **176** · panel-open autoload `/dataset` · refresh 30 min · legenda ATM09/native · selftest isolation FIX5 · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 PASS operatore`). Helper **invariato** 0.1.3.
-**Blocco VISUAL READY / panel lifecycle:** `D-FLIGHT-PERF-VISUAL-READY-A` (+ **FIX1** live → **FIX2** in-flight) — **IN-FLIGHT** (2026-08-13). **FIX1** `12fcba5` / build **178**: review GPT sostitutiva **PASS** · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **FAIL** esclusivamente su lifecycle pannello (minimize doveva mantenere overlay/interazioni; real close doveva rimuoverli; sessione per riapertura rapida). **FIX2** candidate `52927c5` / build **179**: IMPLEMENTED · **NON LIVE** · REVIEW GPT-SOSTITUTIVA REQUIRED · selftest **208/208** · QA operatore FIX2 **non** eseguita · `finito` **non** eseguito. First draft `58ade6c` = **SUPERSEDED** da `52927c5` (restore-flag). Helper **invariato** 0.1.3.
+**Blocco VISUAL READY / panel lifecycle:** `D-FLIGHT-PERF-VISUAL-READY-A` (+ **FIX1** → **FIX2** LIVE QA-PENDING) — **IN-FLIGHT** (2026-08-13). **FIX1** `12fcba5` / build **178**: review PASS · deploy PASS · Automated Browser QA PASS · QA operatore **FAIL** lifecycle (close/minimize). **FIX2** `52927c5` / build **179**: review GPT sostitutiva **PASS** · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **PENDING** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper **0.1.3** invariato. First draft `58ade6c` = **SUPERSEDED**.
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
-**Runtime live (GIS tip):** `12fcba580391e456cd1d9984f340355707a7ecc2` · `APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX1"` · `APP_BUILD_NUM = 178`
-**Candidate (NON LIVE):** `52927c565d5301870a82d688c899024d8d499aee` · `APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX2"` · `APP_BUILD_NUM = 179`
+**Runtime live (GIS tip):** `52927c565d5301870a82d688c899024d8d499aee` · `APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX2"` · `APP_BUILD_NUM = 179`
+**Candidate (LIVE / QA PENDING):** stesso SHA `52927c5…` / build **179** — review PASS, Automated Browser QA PASS, QA operatore PENDING
 **Monolite in WU-0013:** **modificato** in A+B+CDE+G+F-ATM09+H+VISUAL-READY (parser + normalize + overlay/UI + ATM09 + autoload UX + visual ready/lifecycle). Helper VPS **0.1.3** (ATM09 routes) live.
 **Helper VPS:** **LIVE 0.1.3** — `/opt/goi-dflight-helper/current/` · `:8010` · `NO_FLY_ZONE` + **`/atm09/*`**. **Client GIS:** overlay/UI **CLOSED** (CDE+G); rete/ATM09 **CLOSED** (HELPER-DEPLOY PASS); autoload UX **CLOSED** (H-FIX5 PASS); VISUAL-READY **FIX1 LIVE** / **FIX2 IN-FLIGHT**.
 
