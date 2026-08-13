@@ -573,7 +573,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **CLOSED / PASS end-to-end** (scope H2+overlay completato) — chiusura formale `DOCS-DFLIGHT-WU0013-CLOSE-A` (2026-08-14). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). Runtime live monolite: **`52927c5` / build 179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2`. Residui = **BACKLOG / NOT OPENED** (filtri UI, search, persist opt-in, export vettoriale, import file UI, NOTAM, parity ED-269, ecc. — WU §23). **Nessun** NEXT runtime D-Flight obbligatorio.
+**Stato:** **CLOSED / PASS end-to-end** (scope H2+overlay completato) — chiusura formale `DOCS-DFLIGHT-WU0013-CLOSE-A` (2026-08-14). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). Runtime live monolite: **`52927c5` / build 179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2`. Residui = backlog §23 (**NOT OPENED**, salvo filtro temporale **promosso** a [`WU-0014`](WU-0014-dflight-temporal-filter.md)). **Nessun** NEXT runtime obbligatorio **dentro** WU-0013.
 
 **Ambito (chiuso):** layer operativo UAS — helper H2 + parser/normalize + overlay/details + ATM09 + refresh/apply/reeval + autoload UX + VISUAL READY. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012).
 
@@ -595,6 +595,22 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 **Automated Browser QA:** obbligatoria sui blocchi con UI browser; A/B/CDE/G-FIX2/H-FIX5/VISUAL-READY-FIX1/FIX2 = PASS.
 
 Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 (solo cross-reference).
+
+### WU-0014 — D-FLIGHT-TEMPORAL-FILTER — Filtro UI stato temporale
+
+**Stato:** **OPEN** — apertura `DOCS-DFLIGHT-WU0014-OPEN-A` (2026-08-14). Work Unit: [`WU-0014-dflight-temporal-filter.md`](WU-0014-dflight-temporal-filter.md).
+
+**Origine:** backlog post-chiusura WU-0013 §23 (`D-FLIGHT-TEMPORAL-FILTER-UI-A`). WU-0013 resta **CLOSED / PASS**.
+
+**Primo blocco:** **`D-FLIGHT-TEMPORAL-FILTER-UI-A`** — **READY / NOT IMPLEMENTED** · categoria preliminare **ROUTINE**.
+
+**Scopo:** filtro di **visualizzazione** basato sul temporal state già calcolato (core WU-0013); session-only; default mostra-tutto (parità build **179**); nessuna rete/helper/storage/normalize.
+
+**Dipendenza:** WU-0013 CLOSED/PASS · runtime live `52927c5` / build **179** / helper **0.1.3**.
+
+**Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
+
+**QA prevista (blocco UI):** Automated Browser QA + QA operatore.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 

@@ -590,7 +590,7 @@ Residui dal gap audit `D-FLIGHT-BACKLOG-GAP-AUDIT-A` (2026-08-14). **Non** apert
 
 | Item | Note | Candidato (NOT OPENED) |
 | --- | --- | --- |
-| Filtro UI temporal state | Core `temporal_state` già live | `D-FLIGHT-TEMPORAL-FILTER-UI-A` |
+| Filtro UI temporal state | Core `temporal_state` già live → **promosso/aperto** in [`WU-0014`](WU-0014-dflight-temporal-filter.md) | `D-FLIGHT-TEMPORAL-FILTER-UI-A` (**OPEN in WU-0014** / NOT IMPLEMENTED) |
 | Filtro restriction | UI assente; dati WFS spesso euristici | `D-FLIGHT-RESTRICTION-FILTER-UI-A` |
 | Filtro reason | Qualità reasons WFS debole (`[]` tipico h2-wfs) | — |
 | Ricerca zona id/nome | UI assente | — |

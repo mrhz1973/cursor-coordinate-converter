@@ -333,31 +333,32 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | nessuno — WU-0013 **CLOSED / PASS end-to-end** (scope H2+overlay; chiusura `DOCS-DFLIGHT-WU0013-CLOSE-A` 2026-08-14) |
-| **BLOCCO ATTIVO** | — |
-| **STATO BLOCCO** | — |
-| **GATE CORRENTE** | nessuno |
-| **CANDIDATE RUNTIME** | *(omesso)* |
+| **WORKSTREAM ATTIVO** | WU-0014 — [`D-FLIGHT-TEMPORAL-FILTER`](work-units/WU-0014-dflight-temporal-filter.md) |
+| **BLOCCO ATTIVO** | D-FLIGHT-TEMPORAL-FILTER-UI-A — **READY FOR PLAN/IMPLEMENTATION** |
+| **STATO BLOCCO** | READY / NOT IMPLEMENTED — apertura docs `DOCS-DFLIGHT-WU0014-OPEN-A` |
+| **GATE CORRENTE** | nessuno fallito; plan/runtime implementation non ancora eseguita |
+| **CANDIDATE RUNTIME** | *(omesso — runtime non ancora implementato)* |
 | **RUNTIME LIVE** | monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | Scegliere prossimo workstream / backlog (decisione operatore; nessun blocco D-Flight auto-aperto) |
+| **NEXT** | D-FLIGHT-TEMPORAL-FILTER-UI-A — pianificazione runtime mirata / implementazione |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0013 scope H2+overlay chiuso; residui = backlog NOT OPENED (WU §23). Runtime live invariato (build **179** / helper **0.1.3**).
-> **Non** attivare automaticamente WU-0012 o WU-0010.
+> WU-0014 = follow-up filtro UI temporale (core già in WU-0013). Runtime live invariato build **179** / helper **0.1.3**.
+> WU-0013 resta CLOSED; altri workstream non riattivati arbitrariamente.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay) · backlog residuo NOT OPENED
-2. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 (2026-08-14)
-3. **DOCS-DFLIGHT-WU0013-PLAN-RECONCILE-A** — CLOSED / PASS DOCS-ONLY — §15 piano allineato a FIX2 CLOSED/PASS LIVE 179
-4. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
-5. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
+1. **DOCS-DFLIGHT-WU0014-OPEN-A** — CLOSED / PASS DOCS-ONLY — WU-0014 OPEN · `D-FLIGHT-TEMPORAL-FILTER-UI-A` READY / NOT IMPLEMENTED
+2. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay)
+3. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 / aprire follow-up temporale
+4. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE)
+5. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
 - **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** — [`work-units/`](work-units/)
-- **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md), [`WU-0012`](work-units/WU-0012-carto-index-federated.md), [`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md) e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
+- **WU open:** WU-0014 (temporal filter UI) · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
