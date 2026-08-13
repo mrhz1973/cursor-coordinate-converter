@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX1` IMPLEMENTED** (build **178**). Candidate task `12fcba5` (monolite). Corrige review FAIL su `f7a467e` (zoom-aware loading UI). Helper **0.1.3** invariato. **NON** deployato. Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1705_riepilogo_dflight-perf-visual-ready-a-fix1.md`](inbox/2026-08-13_1705_riepilogo_dflight-perf-visual-ready-a-fix1.md). NEXT: review GPT sostitutiva → eventuale deploy solo su ok.
+2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX1` DEPLOYED** + **AUTOMATED BROWSER QA PASS**. Runtime live `12fcba5` / tip docs `e0c25ca` / build **178**. Helper **0.1.3** PID invariato. Gate: **QA OPERATORE REQUIRED** / `QA FINALE CHATGPT — PENDING`. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md`](inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md). NEXT: QA umana ChatGPT (no OPSEC manuale).
