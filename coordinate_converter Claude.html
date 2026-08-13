@@ -16269,6 +16269,7 @@ const I18N = {
     "dflight.status.checking":"Controllo aggiornamenti…",
     "dflight.status.atm09":"ATM09 {ok} / {expected}",
     "dflight.status.atm09Loading":"Caricamento overlay ATM09…",
+    "dflight.status.atm09Preparing":"Preparazione ATM09…",
     "dflight.status.error":"Errore di caricamento",
     "dflight.error.helperUnreachable":"Helper non raggiungibile",
     "dflight.error.cooldown":"Aggiornamento troppo ravvicinato; riprova tra {sec}s",
@@ -23368,10 +23369,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX5";
-const APP_BUILD_DETAIL = "FIX5 selftest legend pure/static — no live DOM/toggle/network.";
+const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A";
+const APP_BUILD_DETAIL = "Post-apply ATM09 start + true VISUAL READY (no premature Pronto).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 176;
+const APP_BUILD_NUM = 177;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36424,6 +36425,11 @@ function dflightOpenControlPanel(){
   try { dflightEnsureClientWired(); } catch(_){}
   try { dflightSyncPanelUi(); } catch(_){}
   try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
+  try {
+    if (dflightHasSessionDataset()){
+      dflightMaybeStartAtm09AfterDatasetReady({ source: "reopen" });
+    }
+  } catch(_){}
   try { dflightEnsureAutoRefreshTimer(); } catch(_){}
   return true;
 }
@@ -37036,6 +37042,7 @@ function dflightApplyDatasetFromParsed(parseResult, helperMeta, options){
       return { ok: false, stage: "render", error: report, prev: prev };
     }
     try { dflightSyncPanelUi(); } catch(_){}
+    try { dflightMaybeStartAtm09AfterDatasetReady({ source: "apply" }); } catch(_){}
     return { ok: true, prev: prev, session: next };
   } catch (e){
     _dflightClientSession = prev;
@@ -37171,16 +37178,28 @@ function dflightSyncLoadingUi(){
     atmErr = (_dflightAtm09ErrCount | 0);
   } catch(_){}
   const atmSettled = atmOk + atmErr;
+  const atmEligible = !!(typeof dflightAtm09IsEligibleForStart === "function" && dflightAtm09IsEligibleForStart());
   const atmWant = !!(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible());
   const atmReady = !!(typeof dflightAtm09IsReady === "function" && dflightAtm09IsReady());
+  const atmPreparing = !!(
+    hasSess &&
+    !_dflightNetworkBusy &&
+    !pending &&
+    (atmWant || atmEligible) &&
+    !atmReady &&
+    atmExp === 0 &&
+    (_dflightAtm09StartPending || _dflightAtm09Preferred || atmWant)
+  );
 
   let phase = _dflightUiPhase;
   if (!netOk && !hasSess) phase = "blocked";
   else if (_dflightNetworkBusy && phase !== "parsing" && phase !== "checking" && phase !== "loading"){
     phase = phase === "checking" ? "checking" : "loading";
   } else if (pending) phase = "pending";
-  else if (atmWant && atmExp > 0 && !atmReady) phase = "atm09";
-  else if (hasSess && !_dflightNetworkBusy && !pending) phase = (atmWant && atmExp > 0 && atmErr > 0 && !atmReady) ? "error" : "ready";
+  else if (atmWant && atmExp > 0 && atmSettled >= atmExp && atmErr > 0 && !atmReady) phase = "error";
+  else if ((atmWant || atmPreparing) && atmExp > 0 && !atmReady) phase = "atm09";
+  else if (atmPreparing) phase = "atm09";
+  else if (hasSess && !_dflightNetworkBusy && !pending) phase = "ready";
   else if (_dflightInitialLoadError && !hasSess) phase = "error";
   _dflightUiPhase = phase;
 
@@ -37206,7 +37225,7 @@ function dflightSyncLoadingUi(){
         .replace("{ok}", String(atmSettled))
         .replace("{expected}", String(atmExp));
     } else {
-      label = dflightScopedT("dflight.status.atm09Loading");
+      label = dflightScopedT("dflight.status.atm09Preparing") || dflightScopedT("dflight.status.atm09Loading");
     }
   } else if (phase === "ready"){
     label = dflightScopedT("dflight.status.ready");
@@ -37419,9 +37438,8 @@ async function dflightClientLoadZones(opts){
     if (!okLoad && !dflightHasSessionDataset()){
       _dflightInitialLoadError = true;
       _dflightUiPhase = "error";
-    } else if (okLoad){
-      _dflightUiPhase = "ready";
     }
+    /* okLoad: do not force phase=ready — SyncLoadingUi / ATM09 pending owns VISUAL READY. */
     try { dflightSyncPanelUi(); } catch(_){}
   }
 }
@@ -37885,9 +37903,92 @@ let _dflightAtm09InfoLastBboxKey = null;
 let _dflightAtm09LegendLoaded = false;
 let _dflightAtm09SelectedId = null;
 let _dflightAtm09RedrawScheduled = false;
+/** True between post-apply ATM09 arming and first generation expected>0 (UI: not Pronto yet). */
+let _dflightAtm09StartPending = false;
+/** Re-entrancy guard for post-apply map redraw (one shot). */
+let _dflightAtm09PostApplyRenderScheduled = false;
 
 function dflightAtm09IsReady(){
   return !!_dflightAtm09Ready;
+}
+
+/** Eligible for ATM09 regardless of preferred sync — gates only (no preferred). */
+function dflightAtm09IsEligibleForStart(zoom){
+  if (!_dflightOverlayVisible) return false;
+  if (!dflightClientNetworkAllowed()) return false;
+  if (!dflightHelperBaseUrl()) return false;
+  let z = Number(zoom);
+  if (!Number.isFinite(z) && typeof state !== "undefined"){
+    try { z = Number(state.mapZoom); } catch(_){ z = NaN; }
+  }
+  if (Number.isFinite(z) && z > DFLIGHT_ATM09_TILE_MAX_ZOOM) return false;
+  return true;
+}
+
+/**
+ * Canonical D-Flight map redraw — same entry as dflightSetOverlayVisible
+ * (direct renderTileMap with viewCenter). Prefer this over inventing a new loop.
+ */
+function dflightRequestMapRedrawForDflight(_reason){
+  try {
+    if (typeof renderTileMap !== "function" || typeof state === "undefined") return false;
+    const lat = (state.viewCenter && state.viewCenter.lat) || state.mapCenterLat || (state.lastPoint && state.lastPoint.lat);
+    const lon = (state.viewCenter && state.viewCenter.lon) || state.mapCenterLon || (state.lastPoint && state.lastPoint.lon);
+    const z = state.mapZoom || 11;
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+    renderTileMap(lat, lon, z);
+    return true;
+  } catch(_){
+    return false;
+  }
+}
+
+/**
+ * After dataset apply / reopen: SyncPreferred (canonical) then at most one map redraw
+ * so ATM09 tiles inject at renderTileMap start. No boot path. No pan required.
+ */
+function dflightMaybeStartAtm09AfterDatasetReady(opts){
+  opts = opts || {};
+  if (!_dflightOverlayVisible){
+    _dflightAtm09StartPending = false;
+    return { started: false, reason: "overlay_hidden" };
+  }
+  if (!dflightAtm09IsEligibleForStart()){
+    _dflightAtm09StartPending = false;
+    try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+    return { started: false, reason: "not_eligible" };
+  }
+  try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+  const z = (typeof state !== "undefined") ? state.mapZoom : NaN;
+  if (!_dflightAtm09Preferred || !(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible(z))){
+    _dflightAtm09StartPending = false;
+    return { started: false, reason: "not_wanted_after_sync" };
+  }
+  if (!opts.forceRedraw){
+    if (_dflightAtm09Ready && (_dflightAtm09Expected | 0) > 0){
+      _dflightAtm09StartPending = false;
+      return { started: false, reason: "already_ready" };
+    }
+    if ((_dflightAtm09Expected | 0) > 0 && !_dflightAtm09Ready){
+      _dflightAtm09StartPending = false;
+      return { started: false, reason: "generation_in_progress" };
+    }
+  }
+  if (_dflightAtm09PostApplyRenderScheduled){
+    return { started: false, reason: "render_already_scheduled" };
+  }
+  _dflightAtm09StartPending = true;
+  _dflightAtm09PostApplyRenderScheduled = true;
+  try { if (typeof dflightSyncLoadingUi === "function") dflightSyncLoadingUi(); } catch(_){}
+  let did = false;
+  try {
+    did = dflightRequestMapRedrawForDflight(opts.source || "post_apply_atm09");
+  } finally {
+    _dflightAtm09PostApplyRenderScheduled = false;
+  }
+  if ((_dflightAtm09Expected | 0) > 0) _dflightAtm09StartPending = false;
+  try { if (typeof dflightSyncLoadingUi === "function") dflightSyncLoadingUi(); } catch(_){}
+  return { started: !!did, reason: did ? "render" : "no_render" };
 }
 
 function dflightAtm09ScheduleNfzRedraw(){
@@ -37935,6 +38036,7 @@ function dflightAtm09RecomputeReady(){
 }
 
 function dflightAtm09BeginTileGeneration(){
+  _dflightAtm09StartPending = false;
   _dflightAtm09TileGen = (_dflightAtm09TileGen | 0) + 1;
   _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
@@ -37947,6 +38049,7 @@ function dflightAtm09SetExpected(gen, n){
   if ((gen | 0) !== (_dflightAtm09TileGen | 0)) return;
   const v = Number(n);
   _dflightAtm09Expected = (Number.isFinite(v) && v > 0) ? (v | 0) : 0;
+  if (_dflightAtm09Expected > 0) _dflightAtm09StartPending = false;
   dflightAtm09RecomputeReady();
 }
 
@@ -38080,6 +38183,7 @@ function dflightAtm09LegendUrl(){
 function dflightAtm09SetPreferred(on){
   _dflightAtm09Preferred = !!on;
   if (!_dflightAtm09Preferred){
+    _dflightAtm09StartPending = false;
     dflightAtm09ClearInfo();
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
@@ -38986,8 +39090,159 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_176", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 176
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX5");
+    add("H_build_177", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 177
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A");
+
+    /* VISUAL-READY-A: pure/static + stubbed post-apply start (no live helper network). */
+    add("VR_helpers_present", typeof dflightMaybeStartAtm09AfterDatasetReady === "function"
+      && typeof dflightAtm09IsEligibleForStart === "function"
+      && typeof dflightRequestMapRedrawForDflight === "function");
+    add("VR_i18n_preparing", dflightScopedT("dflight.status.atm09Preparing") === "Preparazione ATM09…");
+    add("VR_post_apply_source_wires", (function(){
+      if (typeof dflightMaybeStartAtm09AfterDatasetReady !== "function") return false;
+      const src = String(dflightMaybeStartAtm09AfterDatasetReady);
+      return src.indexOf("dflightAtm09SyncPreferredFromUi") >= 0
+        && src.indexOf("dflightRequestMapRedrawForDflight") >= 0
+        && src.indexOf("generation_in_progress") >= 0
+        && src.indexOf("render_already_scheduled") >= 0;
+    })());
+    add("VR_apply_calls_maybe_start", (function(){
+      if (typeof dflightApplyDatasetFromParsed !== "function") return false;
+      return String(dflightApplyDatasetFromParsed).indexOf("dflightMaybeStartAtm09AfterDatasetReady") >= 0;
+    })());
+    add("VR_open_panel_reopen_wires", (function(){
+      if (typeof dflightOpenControlPanel !== "function") return false;
+      return String(dflightOpenControlPanel).indexOf("dflightMaybeStartAtm09AfterDatasetReady") >= 0;
+    })());
+
+    (function(){
+      const prevRT = typeof renderTileMap === "function" ? renderTileMap : null;
+      const prevSync = typeof dflightAtm09SyncPreferredFromUi === "function" ? dflightAtm09SyncPreferredFromUi : null;
+      const prevPref = _dflightAtm09Preferred;
+      const prevVis = _dflightOverlayVisible;
+      const prevReady = _dflightAtm09Ready;
+      const prevExp = _dflightAtm09Expected;
+      const prevOk = _dflightAtm09OkCount;
+      const prevErr = _dflightAtm09ErrCount;
+      const prevPending = _dflightAtm09StartPending;
+      const prevSched = _dflightAtm09PostApplyRenderScheduled;
+      const prevSessVR = _dflightClientSession;
+      const prevBusyVR = _dflightNetworkBusy;
+      const prevPhaseVR = _dflightUiPhase;
+      const prevBaseVR = _dflightHelperBaseUrlOverride;
+      const foVR = (typeof state !== "undefined") ? !!state.forceOffline : false;
+      const osVR = (typeof state !== "undefined") ? !!state.opsecStrict : false;
+      let syncN = 0, renderN = 0;
+      try {
+        _dflightHelperBaseUrlOverride = "http://example.test:8010";
+        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = false;
+        _dflightAtm09Ready = false;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09OkCount = 0;
+        _dflightAtm09ErrCount = 0;
+        _dflightAtm09StartPending = false;
+        _dflightAtm09PostApplyRenderScheduled = false;
+        _dflightNetworkBusy = false;
+        _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+        dflightAtm09SyncPreferredFromUi = function(){
+          syncN++;
+          _dflightAtm09Preferred = !!( _dflightOverlayVisible && dflightClientNetworkAllowed() && dflightHelperBaseUrl() );
+        };
+        renderTileMap = function(){ renderN++; };
+        const r1 = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_post_apply_sync_once", syncN === 1 && !!_dflightAtm09Preferred);
+        add("VR_post_apply_render_once", renderN === 1 && !!(r1 && r1.started));
+        _dflightAtm09Expected = 4;
+        _dflightAtm09Ready = false;
+        const beforeDup = renderN;
+        const rDup = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_no_dup_initial_render", beforeDup === renderN && !!(rDup && rDup.reason === "generation_in_progress"));
+
+        syncN = 0; renderN = 0;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Preferred = false;
+        _dflightAtm09StartPending = false;
+        if (typeof state !== "undefined") state.forceOffline = true;
+        const rOff = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_forceOffline_zero_start", renderN === 0 && !!(rOff && rOff.reason === "not_eligible"));
+
+        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = true; }
+        syncN = 0; renderN = 0;
+        _dflightAtm09Preferred = false;
+        const rOp = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_opsec_zero_start", renderN === 0 && !!(rOp && rOp.reason === "not_eligible"));
+
+        if (typeof state !== "undefined"){ state.opsecStrict = false; }
+        _dflightHelperBaseUrlOverride = "";
+        syncN = 0; renderN = 0;
+        const rHb = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
+        add("VR_helper_missing_zero_start", renderN === 0 && !!(rHb && (rHb.reason === "not_eligible" || rHb.reason === "not_wanted_after_sync")));
+
+        _dflightHelperBaseUrlOverride = "http://example.test:8010";
+        if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09StartPending = true;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Ready = false;
+        _dflightNetworkBusy = false;
+        dflightSyncLoadingUi();
+        const labPrep = document.getElementById("dflightProgressLabel");
+        const prepTxt = labPrep ? String(labPrep.textContent || "") : "";
+        add("VR_ui_not_pronto_while_preparing", prepTxt.indexOf("Pronto") < 0 && (prepTxt.indexOf("ATM09") >= 0 || prepTxt.indexOf("Preparazione") >= 0 || prepTxt.indexOf("Caricamento") >= 0));
+
+        _dflightAtm09StartPending = false;
+        _dflightAtm09Expected = 2;
+        _dflightAtm09OkCount = 1;
+        _dflightAtm09ErrCount = 0;
+        _dflightAtm09Ready = false;
+        dflightSyncLoadingUi();
+        const labProg = document.getElementById("dflightProgressLabel");
+        add("VR_ui_atm09_progress", !!(labProg && /1\s*\/\s*2/.test(labProg.textContent || "")));
+
+        _dflightAtm09Expected = 2;
+        _dflightAtm09OkCount = 2;
+        _dflightAtm09ErrCount = 0;
+        _dflightAtm09Ready = true;
+        _dflightAtm09StartPending = false;
+        dflightSyncLoadingUi();
+        const labReady = document.getElementById("dflightProgressLabel");
+        add("VR_ui_full_ready_pronto", !!(labReady && labReady.textContent === dflightScopedT("dflight.status.ready")));
+
+        _dflightAtm09Preferred = false;
+        _dflightAtm09StartPending = false;
+        _dflightAtm09Expected = 0;
+        _dflightAtm09Ready = false;
+        _dflightOverlayVisible = true;
+        if (typeof state !== "undefined") state.forceOffline = true;
+        dflightSyncLoadingUi();
+        const labNat = document.getElementById("dflightProgressLabel");
+        add("VR_ui_native_pronto_when_atm09_off", !!(labNat && labNat.textContent === dflightScopedT("dflight.status.ready")));
+      } catch (eVR){
+        add("VR_selftest_exception", false, String(eVR && eVR.message ? eVR.message : eVR));
+      } finally {
+        try { if (prevRT) renderTileMap = prevRT; } catch(_){}
+        try { if (prevSync) dflightAtm09SyncPreferredFromUi = prevSync; } catch(_){}
+        _dflightAtm09Preferred = prevPref;
+        _dflightOverlayVisible = prevVis;
+        _dflightAtm09Ready = prevReady;
+        _dflightAtm09Expected = prevExp;
+        _dflightAtm09OkCount = prevOk;
+        _dflightAtm09ErrCount = prevErr;
+        _dflightAtm09StartPending = prevPending;
+        _dflightAtm09PostApplyRenderScheduled = prevSched;
+        _dflightClientSession = prevSessVR;
+        _dflightNetworkBusy = prevBusyVR;
+        _dflightUiPhase = prevPhaseVR;
+        _dflightHelperBaseUrlOverride = prevBaseVR;
+        if (typeof state !== "undefined"){
+          state.forceOffline = foVR;
+          state.opsecStrict = osVR;
+        }
+      }
+    })();
 
     /* FIX5 D2: pure/static source check of EnsureLegend — no live legend DOM / toggle / network. */
     add("FIX5_D2_ensure_legend_source_pure", (function(){
