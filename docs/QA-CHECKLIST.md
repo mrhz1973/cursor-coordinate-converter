@@ -4,12 +4,20 @@
 
 # GOI GIS Tool — QA operatore
 
+## D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — CLOSED / PASS (2026-08-13)
+
+- Helper prod **0.1.3** deployato; smoke ATM09 tile/legend/info PASS; regressione NO_FLY_ZONE OK.
+- Automated Browser QA post-helper **PASS** (FIX2/build 170; expected=60 ok=60 ready=true).
+- Attestazione operatore: `QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore` → auto-`finito` Regola H.
+- Catena: ARCH-A → FIX1 → FIX2 → QA FAIL (helper 0.1.2) → **HELPER-DEPLOY PASS**.
+- Runtime tip monolite: `887d321` / build 170; helper `:8010` = 0.1.3.
+
 ## D-FLIGHT-G-UI-OVERLAY-A-FIX2 — CLOSED / PASS (2026-08-13)
 
 - Automated Browser QA **PASS** (pre-operatore; wheel pannelli + Layer menu + safeTop).
 - Attestazione operatore: `QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore` → auto-`finito` Regola H.
-- Catena: G FAIL → FIX1 FAIL → **FIX2 PASS**. `D-FLIGHT-F` resta **FAIL** storico (non CLOSED).
-- Runtime tip: `42edb6f` / build 167.
+- Catena: G FAIL → FIX1 FAIL → **FIX2 PASS**.
+- Runtime tip: `42edb6f` / build 167 (superseded live da ATM09 FIX2/`887d321`).
 
 ## D-FLIGHT-CDE — CLOSED / PASS (2026-08-12)
 

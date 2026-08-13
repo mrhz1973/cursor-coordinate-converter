@@ -5,15 +5,15 @@
 # WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE — D-FLIGHT-F FAIL (non CLOSED)
-**ACTIVE BLOCK:** D-FLIGHT-G-UI-OVERLAY-A — CLOSED su FIX2
-**CURRENT GATE:** nessuno su G; ripresa F solo con prompt esplicito
-**REVIEW BASE:** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2`
-**RUNTIME LIVE:** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · build 167 · `APP_BUILD_ID=D-FLIGHT-G-UI-OVERLAY-A-FIX2`
-**NEXT:** ripresa D-FLIGHT-F (FAIL operatore storico — **non** PASS) su prompt esplicito
+**STATUS:** OPEN / A+B+CDE+G+F-ATM09 CLOSED / HELPER 0.1.3 LIVE
+**ACTIVE BLOCK:** D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — CLOSED / PASS
+**CURRENT GATE:** nessuno — NEXT su prompt esplicito
+**REVIEW BASE:** `887d321944b941af06ff6091b0fb2bc19df4c065`
+**RUNTIME LIVE:** monolite `887d321944b941af06ff6091b0fb2bc19df4c065` · build 170 · `APP_BUILD_ID=D-FLIGHT-F-ATM09-ARCH-A-FIX2` · helper **0.1.3**
+**NEXT:** da scegliere su prompt esplicito (follow-up LATER WU-0013 o altro workstream)
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE — D-FLIGHT-F FAIL (non CLOSED)`
+**Stato:** `OPEN / A+B+CDE+G+F-ATM09 CLOSED / HELPER 0.1.3 LIVE`
 **Blocco discovery:** `CARTO-DFLIGHT-DISCOVERY-A` — **DIAGNOSTIC COMPLETE — TECHNICAL PLAN READY** (2026-08-11, read-only)
 **Blocco apertura WU:** `DOCS-DFLIGHT-WU-0013-OPEN-A` — **CLOSED / PASS DOCS-ONLY** (2026-08-11)
 **Blocco validate:** `DFLIGHT-REAL-DATA-VALIDATE-A` — **PARTIAL — OPERATOR AUTH CAPTURE REQUIRED** (2026-08-11, diagnostic; gate intermedio **superato** da AUTH-CAPTURE)
@@ -23,13 +23,13 @@
 **Blocco client parser:** `D-FLIGHT-A` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `d52367b` · build **158** · A3-light · `window.GOIDflight` · Automated Browser QA **PASS** · QA operatore **PASS**
 **Blocco normalized model:** `D-FLIGHT-B` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `4fc7ee3` · build **159** · `GOIDflight.normalize` · Automated Browser QA **PASS** · QA operatore **PASS**
 **Blocco overlay+UI:** `D-FLIGHT-CDE` — **CLOSED / PASS end-to-end** (2026-08-12) — tip `a37b912` · build **160** · SVG+toggle/legend+details · Automated Browser QA **PASS** · QA operatore **PASS**
-**Blocco rete client:** `D-FLIGHT-F` — **FAIL operatore** (storico; **non** CLOSED/PASS) — tip candidato storico `5270342`/161 superseduto dal tip live G
+**Blocco rete client / ATM09:** `D-FLIGHT-F` → serie **ATM09-ARCH-A** (+FIX1/FIX2) + **`D-FLIGHT-F-ATM09-HELPER-DEPLOY-A`** — **CLOSED / PASS end-to-end** (2026-08-13) — monolite tip `887d321` · build **170** · helper prod **0.1.3** · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore`). FAIL operatore iniziale (helper 0.1.2 senza `/atm09`) **superseduto** dal deploy helper.
 **Blocco UI overlay polish:** `D-FLIGHT-G-UI-OVERLAY-A` (+ FIX1 FAIL → **FIX2 PASS**) — **CLOSED / PASS end-to-end** (2026-08-13) — tip `42edb6f` · build **167** · pan-sync SVG + stile WFS + wheel isolation + Layer menu safeTop · Automated Browser QA **PASS** · QA operatore **PASS** (`QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore`)
 **Tipo:** macro-feature separata — layer operativo UAS / spazio aereo (non carta cartografica statica)
 **Data apertura:** 2026-08-11
-**Runtime live (GIS tip):** `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · `APP_BUILD_ID = "D-FLIGHT-G-UI-OVERLAY-A-FIX2"` · `APP_BUILD_NUM = 167`
-**Monolite in WU-0013:** **modificato** in A+B+CDE+G (parser + normalize + overlay/UI polish; rete helper F **non** CLOSED). Helper VPS **invariato** in G.
-**Helper VPS:** **IMPLEMENTATO E DEPLOYATO** — `infra/dflight-helper/` @ `bc806049c887417eea195da11b00b9c588bc05ea`; live `READY` · `NO_FLY_ZONE` · features **849** · sha `88d564a65152…`. **Client GIS:** overlay/UI **CLOSED** (CDE+G); integrazione rete — **D-FLIGHT-F FAIL** da riprendere su prompt.
+**Runtime live (GIS tip):** `887d321944b941af06ff6091b0fb2bc19df4c065` · `APP_BUILD_ID = "D-FLIGHT-F-ATM09-ARCH-A-FIX2"` · `APP_BUILD_NUM = 170`
+**Monolite in WU-0013:** **modificato** in A+B+CDE+G+F-ATM09 (parser + normalize + overlay/UI + ATM09 overlay). Helper VPS **0.1.3** (ATM09 routes) live.
+**Helper VPS:** **LIVE 0.1.3** — `/opt/goi-dflight-helper/current/` · `:8010` · `NO_FLY_ZONE` + **`/atm09/*`**. **Client GIS:** overlay/UI **CLOSED** (CDE+G); rete/ATM09 **CLOSED** (HELPER-DEPLOY PASS).
 
 > Relazione roadmap: sezione **WU-0013 — UAS-GEOZONE-DFLIGHT** in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md).
 > Relazione WU-0012: D-Flight è semanticamente diverso da IGM/IIM/CIGA/UKHO (carte cartografiche statiche a scala definita). Condivide con [`WU-0012`](WU-0012-carto-index-federated.md) solo il **pattern architetturale overlay** (SVG, layer menu, helper coordinate, sanitizer) — **non** il modello dati. Riferimento incrociato in WU-0012 §*Collegamento a WU-0013*.
@@ -363,14 +363,14 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **D-FLIGHT-A** | parser/adapter client | **CLOSED / PASS end-to-end** — tip `d52367b` / build 158 | ROUTINE |
 | **D-FLIGHT-B** | normalized model | **CLOSED / PASS end-to-end** — tip `4fc7ee3` / build 159 | ROUTINE |
 | **D-FLIGHT-CDE** | overlay SVG + toggle/legend + details | **CLOSED / PASS end-to-end** — tip `a37b912` / build 160 | ROUTINE |
-| **D-FLIGHT-F** | client helper integration / persistence / OPSEC | **FAIL operatore** (storico; **non** CLOSED/PASS); ripresa su prompt | DELICATO |
+| **D-FLIGHT-F** (+ ATM09-ARCH-A/FIX1/FIX2 + HELPER-DEPLOY-A) | client helper / ATM09 overlay / OPSEC | **CLOSED / PASS** su **HELPER-DEPLOY-A** — monolite `887d321`/170 · helper **0.1.3**; FAIL iniziale (0.1.2) superseduto | DELICATO |
 | **D-FLIGHT-G-UI-OVERLAY-A** (+FIX1/FIX2) | pan-sync SVG, stile WFS, pannelli GIS, wheel, Layer menu | **CLOSED / PASS** su **FIX2** — tip `42edb6f` / build 167; G FAIL → FIX1 FAIL → FIX2 PASS | ROUTINE |
 
-**NEXT univoco:** ripresa **`D-FLIGHT-F`** (FAIL storico — **non** PASS; helper client / rete / OPSEC / cache — **non** auto-aperto). Helper H2 **CLOSED**. `D-FLIGHT-A`+`B`+`CDE`+`G-UI-OVERLAY` **CLOSED**.
+**NEXT univoco:** da scegliere su prompt esplicito (follow-up **LATER** §12 o altro workstream — **non** auto-aperto). Helper **0.1.3** LIVE. `D-FLIGHT-A`+`B`+`CDE`+`G`+`F-ATM09` **CLOSED**.
 
-**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE = PASS; G/FIX1/FIX2 Automated = PASS (FIX1 FAIL solo operatore).
+**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE/G/ATM09-HELPER-DEPLOY Automated = PASS.
 
-**Helper VPS:** implementato + deployato. **Client GIS overlay/UI:** CLOSED (CDE + G-FIX2).
+**Helper VPS:** **0.1.3** live (`/atm09/*` + NO_FLY_ZONE). **Client GIS overlay/UI + ATM09:** CLOSED.
 
 ---
 

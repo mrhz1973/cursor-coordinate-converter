@@ -323,23 +323,23 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-G-UI-OVERLAY-A (serie) — **CLOSED** su FIX2 |
-| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-G-UI-OVERLAY-A-FIX2 PASS operatore`) |
-| **GATE CORRENTE** | nessuno sul blocco G; attesa prompt esplicito per ripresa **D-FLIGHT-F** (FAIL storico — **non** PASS) |
-| **REVIEW BASE** | `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` (runtime tip post G-FIX2; baseline diff successivi) |
-| **RUNTIME LIVE** | `42edb6fb86b98ccf5e2636884d748c043cd6b7c2` · build **167** · `APP_BUILD_ID=D-FLIGHT-G-UI-OVERLAY-A-FIX2` |
-| **NEXT** | ripresa **D-FLIGHT-F** (FAIL operatore registrato; CORS/helper/OPSEC) solo con prompt esplicito — **non** auto-aprire |
+| **BLOCCO ATTIVO** | D-FLIGHT-F-ATM09-HELPER-DEPLOY-A — **CLOSED** / PASS |
+| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore`) |
+| **GATE CORRENTE** | nessuno — attesa prompt esplicito per prossimo blocco |
+| **REVIEW BASE** | `887d321944b941af06ff6091b0fb2bc19df4c065` (ATM09 FIX2 monolite / build 170) |
+| **RUNTIME LIVE** | monolite `887d321944b941af06ff6091b0fb2bc19df4c065` · build **170** · `APP_BUILD_ID=D-FLIGHT-F-ATM09-ARCH-A-FIX2` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | da scegliere su prompt esplicito (follow-up WU-0013 LATER o altro workstream) — **non** auto-aprire |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README + Regola I). **Non** memorizzare HEAD remota in §7.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS end-to-end (`42edb6f` build 167) — WU-0013 · wheel+Layer menu · [`inbox/2026-08-13_0008`](orchestrator/inbox/2026-08-13_0008_riepilogo_d-flight-g-ui-overlay-a-fix2.md)
-2. **D-FLIGHT-G-UI-OVERLAY-A-FIX1** — FAIL operatore (wheel incompleto) — tip `ddf84f3`/166 · non PASS
-3. **D-FLIGHT-G-UI-OVERLAY-A** — FAIL operatore (colori/pannelli/tooltip) → catena FIX · tip `457984b`/163
-4. **D-FLIGHT-F** — FAIL operatore (storico; **non** CLOSED/PASS) — WU-0013
-5. **D-FLIGHT-CDE** — CLOSED / PASS end-to-end (`a37b912` build 160) — WU-0013
+1. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013 · [`inbox/2026-08-13_0226`](orchestrator/inbox/2026-08-13_0226_d-flight-f-atm09-helper-deploy-a.md)
+2. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
+3. **D-FLIGHT-F-ATM09-ARCH-A-FIX2** — monolite build 170 `887d321` (generation-complete) — WU-0013
+4. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS (`42edb6f` build 167) — WU-0013
+5. **D-FLIGHT-CDE** — CLOSED / PASS (`a37b912` build 160) — WU-0013
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

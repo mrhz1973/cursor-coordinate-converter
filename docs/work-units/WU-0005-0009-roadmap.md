@@ -573,7 +573,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### WU-0013 — UAS-GEOZONE-DFLIGHT — Zone Geografiche UAS italiane (D-Flight ED-269/ED-318)
 
-**Stato:** **OPEN / A+B+CDE+G-UI-OVERLAY CLOSED / HELPER H2 LIVE — D-FLIGHT-F FAIL (non CLOSED)** (2026-08-13). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper CLOSED. **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED (`a37b912`/160). **G-UI-OVERLAY** CLOSED / PASS su **FIX2** — tip **`42edb6f` / build 167**. **F** = FAIL operatore storico (**non** PASS). Runtime monolite: **`42edb6f` / build 167**.
+**Stato:** **OPEN / A+B+CDE+G+F-ATM09 CLOSED / HELPER 0.1.3 LIVE** (2026-08-13). Work Unit: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md). Helper **0.1.3** LIVE (`/atm09/*`). **A** CLOSED (`d52367b`/158). **B** CLOSED (`4fc7ee3`/159). **CDE** CLOSED (`a37b912`/160). **G-UI-OVERLAY** CLOSED / PASS su **FIX2** — tip **`42edb6f` / build 167**. **F-ATM09** CLOSED / PASS su **HELPER-DEPLOY-A** — monolite **`887d321` / build 170** + helper 0.1.3. Runtime monolite: **`887d321` / build 170**.
 
 **Ambito:** layer operativo UAS — zone geografiche italiane D-Flight. Semanticamente distinto da IGM/IIM/CIGA/UKHO (WU-0012). Condivide solo pattern overlay SVG.
 
@@ -587,7 +587,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 | **D-FLIGHT-A** | ROUTINE | **CLOSED / PASS** — tip `d52367b` / build 158 · A3-light · `GOIDflight` |
 | **D-FLIGHT-B** | ROUTINE | **CLOSED / PASS** — tip `4fc7ee3` / build 159 · normalize |
 | **D-FLIGHT-CDE** | ROUTINE | **CLOSED / PASS** — tip `a37b912` / build 160 · overlay+UI |
-| **D-FLIGHT-F** | DELICATO | **FAIL operatore** (storico; non CLOSED) — ripresa su prompt |
+| **D-FLIGHT-F** (+ATM09+HELPER-DEPLOY) | DELICATO | **CLOSED / PASS HELPER-DEPLOY-A** — `887d321`/170 · helper 0.1.3 |
 | **D-FLIGHT-G-UI-OVERLAY-A** (+FIX1/FIX2) | ROUTINE | **CLOSED / PASS FIX2** — tip `42edb6f` / build 167 |
 
 **Automated Browser QA:** obbligatoria sui blocchi con UI browser; A/B/CDE/G-FIX2 = PASS; H2-A = N/A.
