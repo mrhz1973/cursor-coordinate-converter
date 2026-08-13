@@ -9,10 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`finito`** — `QA D-FLIGHT-F-ATM09-HELPER-DEPLOY-A PASS operatore` → auto-chiusura Regola H.  
-**D-FLIGHT-F-ATM09** CLOSED / PASS end-to-end.  
-Runtime: monolite `887d321` / build **170**; helper prod **0.1.3**.  
-Task commit finito: `fdd8803d61438d8fbfd08f6477a84bb1bc7c5032`.  
-NEXT: da scegliere su prompt esplicito.
+2026-08-13 — **`D-FLIGHT-H-AUTOLOAD-UX-A` IMPLEMENTED** — candidate runtime su `main`.  
+FULL SHA: `ad4882b5b378a8f014178dbad7ff3f5941e5873b` · build **171**.  
+Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED** (prima del deploy).  
+**NO DEPLOY / NO FINITO / NO QA operatore.** Helper 0.1.3 invariato.
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0245_riepilogo_finito-sessione.md`](inbox/2026-08-13_0245_riepilogo_finito-sessione.md).
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0306_d-flight-h-autoload-ux-a-candidate.md`](inbox/2026-08-13_0306_d-flight-h-autoload-ux-a-candidate.md).
