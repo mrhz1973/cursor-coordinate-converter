@@ -10342,6 +10342,8 @@ dialog.track-modal.app-modal{
 #cartoIgmPanel .gis-panel-resize-handle[data-handle="e"],
 #helpOverlay .gis-panel-resize-handle[data-handle="e"],
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"],
+#dflightPanel .gis-panel-resize-handle[data-handle="e"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="e"],
 #waypointModal .gis-panel-resize-handle[data-handle="e"]{
   right:0; top:50%; transform:translateY(-50%);
   width:16px; height:52px; cursor:ew-resize;
@@ -10357,6 +10359,8 @@ dialog.track-modal.app-modal{
 #cartoIgmPanel .gis-panel-resize-handle[data-handle="w"],
 #helpOverlay .gis-panel-resize-handle[data-handle="w"],
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"],
+#dflightPanel .gis-panel-resize-handle[data-handle="w"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="w"],
 #waypointModal .gis-panel-resize-handle[data-handle="w"]{
   left:0; top:50%; transform:translateY(-50%);
   width:16px; height:52px; cursor:ew-resize;
@@ -10382,6 +10386,10 @@ dialog.track-modal.app-modal{
 #helpOverlay .gis-panel-resize-handle[data-handle="w"]::after,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"]::after,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#dflightPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#dflightPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="w"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="e"]::after,
 #waypointModal .gis-panel-resize-handle[data-handle="w"]::after{
   content:""; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -10409,6 +10417,10 @@ dialog.track-modal.app-modal{
 #helpOverlay .gis-panel-resize-handle[data-handle="w"]:hover,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"]:hover,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#dflightPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#dflightPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="w"]:hover,
 #waypointModal .gis-panel-resize-handle[data-handle="e"]:hover,
 #waypointModal .gis-panel-resize-handle[data-handle="w"]:hover{
   background:color-mix(in srgb, var(--accent) 14%, transparent);
@@ -10424,6 +10436,8 @@ dialog.track-modal.app-modal{
   #cartoIgmPanel .gis-panel-resize-handle[data-handle="e"],
   #helpOverlay .gis-panel-resize-handle[data-handle="e"],
   #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="e"],
+  #dflightPanel .gis-panel-resize-handle[data-handle="e"],
+  #dflightDetailsPanel .gis-panel-resize-handle[data-handle="e"],
   #waypointModal .gis-panel-resize-handle[data-handle="e"],
   #favoritesPanel .gis-panel-resize-handle[data-handle="w"],
   #polygonPanel .gis-panel-resize-handle[data-handle="w"],
@@ -10435,6 +10449,8 @@ dialog.track-modal.app-modal{
   #cartoIgmPanel .gis-panel-resize-handle[data-handle="w"],
   #helpOverlay .gis-panel-resize-handle[data-handle="w"],
   #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="w"],
+  #dflightPanel .gis-panel-resize-handle[data-handle="w"],
+  #dflightDetailsPanel .gis-panel-resize-handle[data-handle="w"],
   #waypointModal .gis-panel-resize-handle[data-handle="w"]{
     width:20px; height:60px;
   }
@@ -10447,6 +10463,8 @@ body.gis-mode #searchPanel.is-panel-resizing,
 body.gis-mode #rangeRingsPanel.is-panel-resizing,
 body.gis-mode #measurePanel.is-panel-resizing,
 body.gis-mode #helpOverlay.is-panel-resizing,
+body.gis-mode #dflightPanel.is-panel-resizing,
+body.gis-mode #dflightDetailsPanel.is-panel-resizing,
 body.gis-mode #waypointModal.is-panel-resizing,
 body.gis-mode #trackModal.is-panel-resizing{
   box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 55%, transparent),
@@ -10665,6 +10683,53 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
   visibility:hidden !important;
 }
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="sw"]::after{
+  left:0;
+  bottom:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-left-radius:var(--radius-card, 12px);
+}
+
+/* #dflightPanel / #dflightDetailsPanel (FIX3 D4): anchor resize handles — DOM+JS existed; CSS anchors were missing. */
+#dflightPanel .gis-panel-resize-handle[data-handle="se"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
+#dflightPanel .gis-panel-resize-handle[data-handle="nw"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
+#dflightPanel .gis-panel-resize-handle[data-handle="ne"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
+#dflightPanel .gis-panel-resize-handle[data-handle="sw"],
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
+#dflightPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#dflightPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
+  background:transparent;
+}
+#dflightPanel .gis-panel-resize-handle[data-handle="se"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="se"]::after{
+  right:0;
+  bottom:0;
+  border-right:1.5px solid var(--gis-grip-stroke);
+  border-bottom:1.5px solid var(--gis-grip-stroke);
+  border-bottom-right-radius:var(--radius-card, 12px);
+}
+#dflightPanel .gis-panel-resize-handle[data-handle="nw"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="nw"]::after{
+  left:0;
+  top:0;
+  border-left:1.5px solid var(--gis-grip-stroke);
+  border-top:1.5px solid var(--gis-grip-stroke);
+  border-top-left-radius:var(--radius-card, 12px);
+}
+#dflightPanel .gis-panel-resize-handle[data-handle="ne"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="ne"]::after{
+  display:none !important;
+  content:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+}
+#dflightPanel .gis-panel-resize-handle[data-handle="sw"]::after,
+#dflightDetailsPanel .gis-panel-resize-handle[data-handle="sw"]::after{
   left:0;
   bottom:0;
   border-left:1.5px solid var(--gis-grip-stroke);
@@ -23303,10 +23368,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX2";
-const APP_BUILD_DETAIL = "FIX2: selftest stubs loadZones — no helperFetch / abort / token side effects";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX3";
+const APP_BUILD_DETAIL = "FIX3: ATM09 legend visibility + details floating + resize handles";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 173;
+const APP_BUILD_NUM = 174;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38010,8 +38075,11 @@ function dflightAtm09EnsureLegend(forceLoad){
   const can = !!(_dflightAtm09Preferred && dflightClientNetworkAllowed() && dflightAtm09LegendUrl());
   if (details) details.hidden = !can;
   if (!can){
+    try { wrap.hidden = true; } catch(_){}
     return;
   }
+  /* FIX3 D2: clear residual wrap.hidden from gate-off / preferred-off so expand can paint. */
+  try { wrap.hidden = false; } catch(_){}
   const open = !!(forceLoad || (details && details.open));
   if (!open){
     /* Lazy-load only when the secondary official legend is expanded. */
@@ -38263,6 +38331,12 @@ function dflightAtm09OpenDetails(feat){
   } catch(_){
     try { dlg.setAttribute("open", ""); } catch(__){}
   }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  _dflightDetailsOpen = true;
+  try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightDetailsPanel"); } catch(_){}
+  /* FIX3 D3: same floating/pin lifecycle as native dflightOpenDetailsPanel. */
+  try { dflightWireFloatingPanel(dlg, "details"); } catch(_){}
+  try { dflightPinPanelBelowTopbar(dlg, "details"); } catch(_){}
 }
 
 function dflightAtm09AttachInteraction(tileMap){
@@ -38819,8 +38893,136 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_173", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 173
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX2");
+    add("H_build_174", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 174
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX3");
+
+    /* FIX3 D2 legend wrap visibility lifecycle */
+    add("FIX3_D2_legend_wrap_lifecycle", (function(){
+      const details = document.getElementById("dflightAtm09LegendDetails");
+      const wrap = document.getElementById("dflightAtm09LegendWrap");
+      const img = document.getElementById("dflightAtm09LegendImg");
+      if (!details || !wrap || !img) return false;
+      const prevSrc = img.getAttribute("src");
+      const prevOpen = !!details.open;
+      const prevWrapHidden = !!wrap.hidden;
+      const prevDetHidden = !!details.hidden;
+      const prevPref = _dflightAtm09Preferred;
+      const prevVis = _dflightOverlayVisible;
+      const prevLoaded = _dflightAtm09LegendLoaded;
+      const prevBase = _dflightHelperBaseUrlOverride;
+      const prevFo = (typeof state !== "undefined") ? !!state.forceOffline : false;
+      try {
+        if (typeof state !== "undefined") state.forceOffline = false;
+        _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+        _dflightOverlayVisible = true;
+
+        _dflightAtm09Preferred = false;
+        details.open = false;
+        try { img.removeAttribute("src"); } catch(_){}
+        _dflightAtm09LegendLoaded = false;
+        dflightAtm09EnsureLegend(true);
+        if (!wrap.hidden) return false;
+
+        _dflightAtm09Preferred = true;
+        details.open = false;
+        try { img.removeAttribute("src"); } catch(_){}
+        _dflightAtm09LegendLoaded = false;
+        dflightAtm09EnsureLegend(false);
+        if (wrap.hidden) return false;
+        if (img.getAttribute("src")) return false;
+
+        details.open = true;
+        dflightAtm09EnsureLegend(true);
+        if (wrap.hidden) return false;
+        const src = img.getAttribute("src") || "";
+        if (src.indexOf("/atm09/legend.png") < 0) return false;
+
+        _dflightAtm09Preferred = false;
+        dflightAtm09EnsureLegend(true);
+        if (!wrap.hidden) return false;
+
+        _dflightAtm09Preferred = true;
+        details.open = true;
+        dflightAtm09EnsureLegend(true);
+        if (wrap.hidden) return false;
+        return true;
+      } finally {
+        try {
+          _dflightAtm09Preferred = prevPref;
+          _dflightOverlayVisible = prevVis;
+          _dflightAtm09LegendLoaded = prevLoaded;
+          _dflightHelperBaseUrlOverride = prevBase;
+          if (typeof state !== "undefined") state.forceOffline = prevFo;
+          details.open = prevOpen;
+          details.hidden = prevDetHidden;
+          wrap.hidden = prevWrapHidden;
+          if (prevSrc) img.setAttribute("src", prevSrc);
+          else img.removeAttribute("src");
+        } catch(_){}
+      }
+    })());
+
+    /* FIX3 D3 ATM09 details floating/pin inside viewport */
+    add("FIX3_D3_atm09_details_floating", (function(){
+      const dlg = document.getElementById("dflightDetailsPanel");
+      if (!dlg || typeof dflightAtm09OpenDetails !== "function") return false;
+      const prevOpen = !!dlg.open;
+      try {
+        try { dflightCloseDetailsPanel(); } catch(_){}
+        try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+        const feat = {
+          type: "Feature",
+          id: "fix3-atm09",
+          properties: { id: "fix3-atm09", name: "FIX3 ATM09 Details" },
+          geometry: null
+        };
+        dflightAtm09OpenDetails(feat);
+        if (!dlg.open) return false;
+        if (!dlg.classList.contains("gis-panel-floating")) return false;
+        if (!dlg._gisPanelDragInstalled) return false;
+        const r = dlg.getBoundingClientRect();
+        const vh = window.innerHeight || 800;
+        const vw = window.innerWidth || 1200;
+        if (!(r.width > 40 && r.height > 40)) return false;
+        if (!(r.top >= 0 && r.top < vh - 48)) return false;
+        if (!(r.left >= 0 && r.left < vw - 48)) return false;
+        const visibleH = Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+        if (visibleH < Math.min(120, r.height * 0.35)) return false;
+        return true;
+      } finally {
+        try { dflightCloseDetailsPanel(); } catch(_){}
+        if (prevOpen){
+          try { dlg.setAttribute("open", ""); } catch(_){}
+        }
+      }
+    })());
+
+    /* FIX3 D4 resize handle CSS anchors distinct */
+    add("FIX3_D4_resize_handles_anchored", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      if (!dlg) return false;
+      const se = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="se"]');
+      const nw = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="nw"]');
+      const ne = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="ne"]');
+      const sw = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="sw"]');
+      const ee = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="e"]');
+      const ww = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="w"]');
+      if (!se || !nw || !ne || !sw || !ee || !ww) return false;
+      const csSe = getComputedStyle(se), csNw = getComputedStyle(nw);
+      const csNe = getComputedStyle(ne), csSw = getComputedStyle(sw);
+      const csE = getComputedStyle(ee), csW = getComputedStyle(ww);
+      if (!(csSe.right === "0px" && csSe.bottom === "0px")) return false;
+      if (!(csNw.left === "0px" && csNw.top === "0px")) return false;
+      if (!(csSw.left === "0px" && csSw.bottom === "0px")) return false;
+      if (!(csNe.top === "0px" && csNe.right === "42px")) return false;
+      if (!(csE.right === "0px" && csW.left === "0px")) return false;
+      const det = document.getElementById("dflightDetailsPanel");
+      if (!det) return false;
+      const dSe = det.querySelector('[data-role="gis-panel-resize"][data-handle="se"]');
+      if (!dSe) return false;
+      const csDse = getComputedStyle(dSe);
+      return csDse.right === "0px" && csDse.bottom === "0px";
+    })());
   } catch (e){
     add("selftest_h_exception", false, String(e && e.message ? e.message : e));
   } finally {
