@@ -349,11 +349,11 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
-2. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
-3. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
-4. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
-5. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
+1. **DOCS-DFLIGHT-WU0013-PLAN-RECONCILE-A** — CLOSED / PASS DOCS-ONLY — §15 piano allineato a FIX2 CLOSED/PASS LIVE 179
+2. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5` LIVE) — WU-0013 · QA operatore PASS 2026-08-13
+3. **DOCS-LEAN-README-HANDOFF-A** — CLOSED / PASS DOCS-ONLY — AI-BOOT minimale + HANDOFF seed stabile — metodo wiki-LLM Blocco 2
+4. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
+5. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

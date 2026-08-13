@@ -369,13 +369,13 @@ Allineato al pattern esistente (`drawCartoIgmOverlay` + `cartoGeomToSvgPathD`); 
 | **D-FLIGHT-F** (+ ATM09-ARCH-A/FIX1/FIX2 + HELPER-DEPLOY-A) | client helper / ATM09 overlay / OPSEC | **CLOSED / PASS** su **HELPER-DEPLOY-A** — monolite `887d321`/170 · helper **0.1.3**; FAIL iniziale (0.1.2) superseduto | DELICATO |
 | **D-FLIGHT-G-UI-OVERLAY-A** (+FIX1/FIX2) | pan-sync SVG, stile WFS, pannelli GIS, wheel, Layer menu | **CLOSED / PASS** su **FIX2** — tip `42edb6f` / build 167; G FAIL → FIX1 FAIL → FIX2 PASS | ROUTINE |
 | **D-FLIGHT-H-AUTOLOAD-UX-A** (+FIX1–FIX5) | panel-open autoload, refresh 30m, legenda ATM09/native, selftest isolation | **CLOSED / PASS** su **FIX5** — tip `fb773c9` / build 176; H→FIX4 FAIL Caso 5 → FIX5 PASS | DELICATO |
-| **D-FLIGHT-PERF-VISUAL-READY-A** (+FIX1/FIX2) | post-apply ATM09 start + true VISUAL READY; FIX1 zoom-aware; FIX2 close/minimize lifecycle | **IN-FLIGHT** su **FIX2** — live FIX1 `12fcba5`/178; candidate FIX2 `52927c5`/179 NON LIVE; FIX1 QA operatore FAIL lifecycle → FIX2; `58ade6c` SUPERSEDED | DELICATO |
+| **D-FLIGHT-PERF-VISUAL-READY-A** (+FIX1/FIX2) | post-apply ATM09 start + true VISUAL READY; FIX1 zoom-aware; FIX2 close/minimize lifecycle | **CLOSED / PASS** su **FIX2** — tip `52927c5` / build **179** LIVE · review GPT sostitutiva PASS · deploy GIS-only PASS · Automated Browser QA PASS · QA operatore PASS; FIX1 QA operatore FAIL lifecycle → FIX2; `58ade6c` SUPERSEDED; helper **0.1.3** invariato | DELICATO |
 
-**NEXT univoco:** review GPT sostitutiva su FULL SHA `52927c565d5301870a82d688c899024d8d499aee` (FIX2) → se PASS: deploy GIS-only → Automated Browser QA → QA operatore residuale → Regola H `finito`. Helper **0.1.3** LIVE. `D-FLIGHT-A`+`B`+`CDE`+`G`+`F-ATM09`+`H` **CLOSED**; VISUAL-READY **FIX1 LIVE** / **FIX2 IN-FLIGHT**.
+**NEXT:** Scegliere prossimo blocco WU-0013 / backlog. Helper **0.1.3** LIVE. `D-FLIGHT-A`+`B`+`CDE`+`G`+`F-ATM09`+`H`+`VISUAL-READY` **CLOSED**.
 
-**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE/G/ATM09-HELPER-DEPLOY/H-FIX5/VISUAL-READY-FIX1 Automated = PASS; FIX2 Automated = **pending** (pre-deploy).
+**Automated Browser QA (`AUTOMATED-BROWSER-QA-PREOP`):** obbligatoria sui blocchi D-Flight con superficie browser (`D-FLIGHT-A`+). Per `DFLIGHT-HELPER-H2-A`: **NOT APPLICABLE** (backend-only) — attestato in deploy. CDE/G/ATM09-HELPER-DEPLOY/H-FIX5/VISUAL-READY-FIX1/FIX2 Automated = PASS.
 
-**Helper VPS:** **0.1.3** live (`/atm09/*` + NO_FLY_ZONE). **Client GIS overlay/UI + ATM09 + H autoload UX:** CLOSED. **VISUAL-READY:** FIX1 live / FIX2 review gate.
+**Helper VPS:** **0.1.3** live (`/atm09/*` + NO_FLY_ZONE). **Client GIS overlay/UI + ATM09 + H autoload UX + VISUAL-READY:** CLOSED.
 
 ---
 
