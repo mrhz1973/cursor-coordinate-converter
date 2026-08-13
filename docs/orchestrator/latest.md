@@ -9,4 +9,4 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-PERF-VISUAL-READY-A-FIX2` IMPLEMENTED** (build **179**, refine restore-flag). Candidate task `52927c5` (supersede refine su `58ade6c`). Live resta FIX1 **178**. Helper **0.1.3** invariato. Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md`](inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md).
+2026-08-13 — **`DOCS-DFLIGHT-VISUAL-READY-FIX2-RECONCILE-A` CLOSED / PASS DOCS-ONLY**. OM §7 + WU-0013 + roadmap + HANDOFF allineati allo stato in-flight. Task docs `7189a04`. **RUNTIME GATE STILL OPEN** — FIX2 `52927c5` / build **179** · REVIEW GPT-SOSTITUTIVA REQUIRED. Live FIX1 `12fcba5` / **178**. Helper **0.1.3**. Dettaglio: [`docs/orchestrator/inbox/2026-08-13_1828_riepilogo_docs-dflight-visual-ready-fix2-reconcile-a.md`](inbox/2026-08-13_1828_riepilogo_docs-dflight-visual-ready-fix2-reconcile-a.md). NEXT: review GPT su FULL SHA `52927c5…`.
