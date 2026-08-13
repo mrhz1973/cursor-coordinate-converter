@@ -2,53 +2,46 @@
 
 ## LATEST
 
-* real_task_commit: `6780c8bccddcd21b4ae4cfdf828f0c3932ca75a3` — verify short `6780c8b`
-* real_task_subject: fix(dflight): FIX4 isolate FIX3 selftests from network and live panel
-* report_generated_at: 2026-08-13T12:52:00+02:00
+* real_task_commit: `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` — verify short `fb773c9`
+* real_task_subject: fix(dflight): FIX5 selftest legend pure/static — no live DOM side-effects
+* report_generated_at: 2026-08-13T13:13:00+02:00
 * branch: main
-* remote_head_after_task_push: `1be9359e1775bdb8b4f49a6729d138db59711df6` (tip docs; monolite = candidate)
-* previous_report_container: `1be9359e1775bdb8b4f49a6729d138db59711df6`
+* remote_head_after_task_push: `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e`
+* previous_report_container: `34ffec2534d1e741bde268a8786cae9a2c74de06`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: solo autosync memoria in questo commit
-* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente); deploy VPS verificato su tip `1be9359` pre-autosync
-* result_cursor: Deploy GIS-only PASS; Automated Browser QA **FAIL** Caso 5 (example.test legend + handlers) — DIAG REQUIRED
+* pass_tecnico_remoto: EXTERNAL_ONLY (container corrente)
+* result_cursor: FIX5 selftest isolation PASS; Caso5 open+closed zero-net PASS; runtime D2/D3/D4 frozen; **NO deploy**; STOP review GPT-sostitutiva
 * pass_operatore: non-attestato — **non** inferito
-* result_runtime: live build 175 / FIX4 su VPS `1be9359` (blob monolite = `6780c8b`)
-* qa_attestation_source: Automated Browser QA casi 1–4 PASS; Caso 5 FAIL; Caso 6/7 measure; no QA operatore
-* notes: helper 0.1.3 PID 2645184 invariato; no patch; no finito; monolite escluso da autosync
+* result_runtime: candidate `fb773c9` / D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 / build 176 (non live)
+* qa_attestation_source: node --check PASS; selfTest 165/165; Caso5 probes PASS; browser A/C PASS locale
+* notes: helper/D1 invariati; no finito; no deploy
 
 ## OUTPUT VERBATIM
 
 ```text
-candidate 6780c8bccddcd21b4ae4cfdf828f0c3932ca75a3
-deployed_tip 1be9359e1775bdb8b4f49a6729d138db59711df6
-VPS_PRE 5183c41f519186c192379c3952070f3b347477dd
-VPS_POST 1be9359e1775bdb8b4f49a6729d138db59711df6
-HTTP 200 bytes 10033220 sha256 304a6500f3353835c4737b4d3ec4d99afc577bb34c71384ca6dd8a81fead3dd8 CMP_PASS=yes
-helper 0.1.3 READY pid 2645184 unchanged
-case1 PASS 165/165 zero-net
-case2 PASS legend 181x189
-case3 PASS ATM09 details floating in-viewport
-case4 PASS resize 6 handles
-case5 FAIL example.test:8010/atm09/legend.png + handlers mutated
-case6 reopen loadCalls=0 (retest)
-case7 dataset Content-Length 7654107 (backlog D1)
-GATE: AUTOMATED BROWSER QA FAIL — DIAG REQUIRED
+baseline 34ffec2534d1e741bde268a8786cae9a2c74de06
+task HEAD fb773c94088d7dbe6c672a104f1fdcb797ca6a6e
+selfTest 165/165 PASS FIX5_D2 ok
+case5open zeroNet+DOM preserved PASS
+case5closed PASS
+browserA legend 181x189 PASS
+GATE: REVIEW GPT-SOSTITUTIVA REQUIRED
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `1be9359e1775bdb8b4f49a6729d138db59711df6` — docs: orchestratore — D-FLIGHT-H-AUTOLOAD-UX-A-FIX4 pre-review
-* `6780c8bccddcd21b4ae4cfdf828f0c3932ca75a3` — fix(dflight): FIX4 isolate FIX3 selftests (task)
-* `ab8c86039bc38eccb949a22f2c9869ab03e1c7d7` — docs: orchestratore — D-FLIGHT-H-AUTOLOAD-UX-A-FIX3 pre-review
-* `cacfa72de5c252686d0dd44c27b86c848e610075` — fix(dflight): FIX3 ATM09 legend visibility, details floating, resize handles
+* `34ffec2534d1e741bde268a8786cae9a2c74de06` — docs: orchestratore — FIX4 deploy + Automated Browser QA FAIL Caso 5
+* `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` — fix(dflight): FIX5 selftest legend pure/static (task; container report = PENDING)
+* `6780c8bccddcd21b4ae4cfdf828f0c3932ca75a3` — fix(dflight): FIX4 isolate FIX3 selftests
+* `1be9359e1775bdb8b4f49a6729d138db59711df6` — docs: orchestratore — FIX4 pre-review
 
 ## LIMITI
 
-* Automated Browser QA FAIL su Caso 5 — isolation live-state incompleta.
-* QA operatore non eseguita / non attestata.
-* NO finito.
+* NO deploy.
+* Review GPT-sostitutiva richiesta.
+* QA operatore non eseguita.
 * SHA autosync corrente = EXTERNAL_ONLY.
