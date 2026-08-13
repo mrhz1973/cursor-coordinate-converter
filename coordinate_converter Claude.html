@@ -23369,10 +23369,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX1";
-const APP_BUILD_DETAIL = "Zoom-aware VISUAL READY (no ATM09 preparing above max zoom).";
+const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX2";
+const APP_BUILD_DETAIL = "Close hides D-Flight map overlay; minimize keeps it; session kept.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 178;
+const APP_BUILD_NUM = 179;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36427,6 +36427,10 @@ function dflightOpenControlPanel(){
   try { dflightMaybeAutoloadOnPanelOpen(); } catch(_){}
   try {
     if (dflightHasSessionDataset()){
+      /* After close-hide, reopen restores map overlay without re-fetching dataset. */
+      if (!_dflightOverlayVisible && typeof dflightSetOverlayVisible === "function"){
+        dflightSetOverlayVisible(true);
+      }
       dflightMaybeStartAtm09AfterDatasetReady({ source: "reopen" });
     }
   } catch(_){}
@@ -36440,7 +36444,13 @@ function dflightCloseControlPanel(){
     try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
   }
   _dflightPanelOpen = false;
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("dflightPanel"); } catch(_){}
   try { dflightClearAutoRefreshTimer(); } catch(_){}
+  /* FIX2: ×/Esc close removes native NFZ + ATM09 + hit-areas from map; dataset/session kept for quick reopen.
+     Minimize must NOT call this path — overlay/interaction stay. */
+  try {
+    if (typeof dflightSetOverlayVisible === "function") dflightSetOverlayVisible(false);
+  } catch(_){}
 }
 
 function dflightOpenDetailsPanel(zone){
@@ -39096,14 +39106,36 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_178", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 178
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A-FIX1");
+    add("H_build_179", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 179
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A-FIX2");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
       return src.indexOf("dflightAtm09IsEligibleForStart(atmZoom)") >= 0
         && src.indexOf("dflightAtm09OverlayVisible(atmZoom)") >= 0
         && src.indexOf("dflightAtm09OverlayVisible()") < 0;
+    })());
+    add("VR_FIX2_close_hides_overlay_source", (function(){
+      if (typeof dflightCloseControlPanel !== "function") return false;
+      const src = String(dflightCloseControlPanel);
+      return src.indexOf("dflightSetOverlayVisible(false)") >= 0
+        && src.indexOf("dflightClearAutoRefreshTimer") >= 0;
+    })());
+    add("VR_FIX2_minimize_keeps_overlay_source", (function(){
+      if (typeof dflightEnsureUiWired !== "function") return false;
+      const src = String(dflightEnsureUiWired);
+      const minIdx = src.indexOf("dflightpanel-minimize");
+      if (minIdx < 0) return false;
+      const slice = src.slice(minIdx, minIdx + 450);
+      return slice.indexOf("gisMinimizePanel") >= 0
+        && slice.indexOf("dflightSetOverlayVisible(false)") < 0
+        && slice.indexOf("dflightCloseControlPanel") < 0;
+    })());
+    add("VR_FIX2_open_restores_overlay_source", (function(){
+      if (typeof dflightOpenControlPanel !== "function") return false;
+      const src = String(dflightOpenControlPanel);
+      return src.indexOf("dflightSetOverlayVisible(true)") >= 0
+        && src.indexOf("dflightMaybeStartAtm09AfterDatasetReady") >= 0;
     })());
 
     /* VISUAL-READY-A: pure/static + stubbed post-apply start (no live helper network). */
@@ -39292,6 +39324,42 @@ function dflightSelfTestH(){
         const rBack = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
         add("VR_FIX1_zoom_max_start_ok", renderN === 1 && !!(rBack && rBack.started)
           && syncN === 1 && !!_dflightAtm09Preferred);
+
+        /* FIX2: close hides overlay; session kept; minimize path does not hide. */
+        if (typeof state !== "undefined"){
+          state.forceOffline = false;
+          state.opsecStrict = false;
+          state.mapZoom = (typeof DFLIGHT_ATM09_TILE_MAX_ZOOM === "number") ? Math.min(11, DFLIGHT_ATM09_TILE_MAX_ZOOM) : 11;
+        }
+        _dflightHelperBaseUrlOverride = "http://example.test:8010";
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightClientSession = { normalizedDataset: { ok: true, zones: [{ id: "z1" }] } };
+        _dflightOverlaySession = { dataset: { zones: [{ id: "z1" }] } };
+        const prevSetVis = typeof dflightSetOverlayVisible === "function" ? dflightSetOverlayVisible : null;
+        let setVisCalls = [];
+        dflightSetOverlayVisible = function(v){
+          setVisCalls.push(!!v);
+          _dflightOverlayVisible = !!v;
+          if (!_dflightOverlayVisible) _dflightAtm09Preferred = false;
+          return { ok: true, visible: _dflightOverlayVisible };
+        };
+        const sessBefore = _dflightClientSession;
+        const ovSessBefore = _dflightOverlaySession;
+        try {
+          dflightCloseControlPanel();
+          add("VR_FIX2_close_calls_hide", setVisCalls.length === 1 && setVisCalls[0] === false);
+          add("VR_FIX2_close_overlay_off", _dflightOverlayVisible === false);
+          add("VR_FIX2_close_keeps_session", _dflightClientSession === sessBefore && _dflightOverlaySession === ovSessBefore);
+          add("VR_FIX2_close_panel_flag_off", _dflightPanelOpen === false);
+          setVisCalls = [];
+          _dflightPanelOpen = false;
+          dflightOpenControlPanel();
+          add("VR_FIX2_open_restores_visible", setVisCalls.indexOf(true) >= 0 && _dflightOverlayVisible === true);
+          add("VR_FIX2_open_panel_flag_on", _dflightPanelOpen === true);
+        } finally {
+          try { if (prevSetVis) dflightSetOverlayVisible = prevSetVis; } catch(_){}
+        }
       } catch (eVR){
         add("VR_selftest_exception", false, String(eVR && eVR.message ? eVR.message : eVR));
       } finally {
