@@ -135,11 +135,12 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 
 | Campo | Valore |
 | --- | --- |
-| HEAD documentale (pre-autosync) | tip chiusura `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` (verificare `git ls-remote` post-finito) |
-| Runtime live / commit monolite | tip **`fb773c94088d7dbe6c672a104f1fdcb797ca6a6e`** (`fb773c9`) build **176** — deploy GIS-only PASS |
-| Ultimo blocco chiuso | **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — **CLOSED / PASS end-to-end** (autoload UX + selftest isolation; QA PASS) |
-| Ultimo blocco runtime monolite | **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — tip `fb773c9` build 176 |
-| Task aperto corrente | **WU-0013** OPEN / A+B+CDE+G+F-ATM09+H CLOSED / HELPER 0.1.3 LIVE — NEXT su prompt esplicito ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); WU-0012 OPEN — NEXT PROVIDER |
+| HEAD documentale (pre-autosync) | tip docs reconcile VISUAL-READY-FIX2 (verificare `git ls-remote`) |
+| Runtime live / commit monolite | tip **`12fcba580391e456cd1d9984f340355707a7ecc2`** (`12fcba5`) build **178** — FIX1 · deploy GIS-only PASS |
+| Candidate runtime (NON LIVE) | tip **`52927c565d5301870a82d688c899024d8d499aee`** (`52927c5`) build **179** — FIX2 · REVIEW GPT-SOSTITUTIVA REQUIRED (`58ade6c` first draft SUPERSEDED) |
+| Ultimo blocco chiuso (end-to-end) | **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — **CLOSED / PASS** (storico); FIX1 live con QA operatore **FAIL** lifecycle → FIX2 in-flight |
+| Ultimo blocco runtime monolite live | **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — tip `12fcba5` build 178 |
+| Task aperto corrente | **WU-0013** OPEN / VISUAL-READY-A-FIX2 **IN-FLIGHT** — gate review GPT su FULL SHA `52927c5…` ([`WU-0013`](work-units/WU-0013-uas-geozone-dflight.md)); OM §7 + WU-0013 **riconciliati** (docs-only); WU-0012 OPEN — NEXT PROVIDER |
 | Helper D-Flight VPS | **live** `goi-dflight-helper` @ `100.114.7.53:8010` · **0.1.3** · READY · ~846 NFZ |
 | L10N-EN-FR-FREEZE-A | **CLOSED / PASS docs-only** — IT nuove stringhe; EN/FR frozen; i18n esistente preservato; FR deprecato (target futuro IT/EN) |
 | ROUTING-PROFILE-EDIT-A | **SUPERSEDED / RENAMED — NO RUNTIME** (residuo → ROUTING-POINT-COORD-EDIT-A **CLOSED**) |
@@ -147,13 +148,12 @@ In conflitto: segnalare e preferire il documento **più specifico e più recente
 | WU infrastruttura corrente | **WU-0011 / INFRA-GH-1A + INFRA-GH-1B + INFRA-GH-1D — CLOSED / PASS end-to-end** — [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.md), [`INFRA_VPS.md`](INFRA_VPS.md) |
 | Endpoint GraphHopper | VPS **`http://100.114.7.53:8989`** (Tailscale); Local **`http://127.0.0.1:8989`** (PoC); admin VPS **`127.0.0.1:8990`** |
 | Metodo vivo | **METHOD-BUNDLING-DEFAULT** + **METHOD-QA-PASS-AUTO-FINITO** + **AUTOMATED-BROWSER-QA-PREOP** (OM §4 Regole G + H + D2bis) |
-| Runtime Git / atteso VPS | `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` (deploy GIS-only PASS; tip docs deploy `a61c9aa`; `?v=fb773c9-fix5-qa`) |
-| Blob monolite (git) | `a93236f39f257e972ca6d279ba960ea8fb368962` |
-| Byte monolite (git LF) | `10036257` |
-| SHA-256 monolite (git LF) | `babde9d2c54ee028b077ea8fc1a69f312686ead31242b658a376f677a2d3a621` |
-| `APP_BUILD_NUM` | **176** |
-| Display runtime | `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 · build 176` |
-| `APP_BUILD_ID` | `D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` |
+| Runtime Git / atteso VPS | `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 live; FIX2 non deployato) |
+| `APP_BUILD_NUM` live | **178** |
+| Display runtime live | `D-FLIGHT-PERF-VISUAL-READY-A-FIX1 · build 178` |
+| `APP_BUILD_ID` live | `D-FLIGHT-PERF-VISUAL-READY-A-FIX1` |
+| Candidate display | `D-FLIGHT-PERF-VISUAL-READY-A-FIX2 · build 179` (**NON LIVE**) |
+| Next action (tecnicamente determinata) | **REVIEW GPT-SOSTITUTIVA** su FULL SHA `52927c565d5301870a82d688c899024d8d499aee` — nessuna nuova pianificazione prima della review |
 | QA-OPERATOR-IT-ONLY-PREF | **CLOSED / PASS docs-only** (QA IT + etichette UI visibili; Regola D1) |
 | QA-CHATGPT-3LINE-HANDOFF-PREF | **CLOSED / PASS docs-only** (2026-08-02); formato **SUPERSEDED** da `QA-HUMAN-SHORT-TARGETED` (Regola D2 viva) |
 | QA-CHATGPT-3LINE-CURSOR-RULES-A | **CLOSED / PASS docs-only** (`.cursor/rules` allineate allora a Regola D2 3-line; no runtime) |

@@ -323,23 +323,25 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0013 — [`UAS-GEOZONE-DFLIGHT`](work-units/WU-0013-uas-geozone-dflight.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 — **CLOSED** / PASS |
-| **STATO BLOCCO** | CLOSED / PASS end-to-end (`QA D-FLIGHT-H-AUTOLOAD-UX-A-FIX5 PASS operatore`) |
-| **GATE CORRENTE** | nessuno — attesa prompt esplicito per prossimo blocco |
-| **REVIEW BASE** | `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` (H-FIX5 monolite / build 176) |
-| **RUNTIME LIVE** | monolite `fb773c94088d7dbe6c672a104f1fdcb797ca6a6e` · build **176** · `APP_BUILD_ID=D-FLIGHT-H-AUTOLOAD-UX-A-FIX5` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | da scegliere su prompt esplicito (follow-up WU-0013 LATER o altro workstream) — **non** auto-aprire |
+| **BLOCCO ATTIVO** | D-FLIGHT-PERF-VISUAL-READY-A-FIX2 — **IMPLEMENTED** / REVIEW GPT-SOSTITUTIVA REQUIRED |
+| **STATO BLOCCO** | IN-FLIGHT — candidate `52927c5` / build **179** · **NON LIVE** · non deployato · QA operatore FIX2 non eseguita · `finito` non eseguito |
+| **GATE CORRENTE** | review GPT sostitutiva su FULL SHA `52927c565d5301870a82d688c899024d8d499aee` |
+| **REVIEW BASE** | `12fcba580391e456cd1d9984f340355707a7ecc2` (FIX1 live / build 178) |
+| **CANDIDATE RUNTIME** | monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · **NON LIVE** (`58ade6c` = first draft SUPERSEDED) |
+| **RUNTIME LIVE** | monolite `12fcba580391e456cd1d9984f340355707a7ecc2` · build **178** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX1` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | GPT review FULL SHA `52927c5…` → se PASS: deploy GIS-only → Automated Browser QA → QA operatore residuale → Regola H `finito` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README + Regola I). **Non** memorizzare HEAD remota in §7.
+> Catena VISUAL-READY: **A** → **FIX1** (review PASS · deployed · Automated Browser QA PASS · QA operatore **FAIL** lifecycle close/minimize) → **FIX2** (IMPLEMENTED, gate review). Helper **0.1.3** invariato.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`; catena H→FIX5) — WU-0013 · [`inbox/2026-08-13_1330`](orchestrator/inbox/2026-08-13_1330_riepilogo_d-flight-h-autoload-ux-a-fix5-deploy-qa.md)
-2. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
-3. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
-4. **D-FLIGHT-F-ATM09-ARCH-A-FIX2** — monolite build 170 `887d321` (generation-complete) — WU-0013
-5. **D-FLIGHT-G-UI-OVERLAY-A-FIX2** — CLOSED / PASS (`42edb6f` build 167) — WU-0013
+1. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED (build **179** / `52927c5`; `58ade6c` first draft SUPERSEDED) — WU-0013 · [`inbox/2026-08-13_1802`](orchestrator/inbox/2026-08-13_1802_riepilogo_dflight-perf-visual-ready-a-fix2.md)
+2. **D-FLIGHT-PERF-VISUAL-READY-A-FIX1** — live build **178** / `12fcba5` · Automated Browser QA PASS · QA operatore **FAIL** (close/minimize lifecycle) — WU-0013 · [`inbox/2026-08-13_1743`](orchestrator/inbox/2026-08-13_1743_riepilogo_dflight-perf-visual-ready-a-fix1-deploy-qa.md)
+3. **D-FLIGHT-H-AUTOLOAD-UX-A-FIX5** — CLOSED / PASS end-to-end (build **176** / `fb773c9`) — WU-0013
+4. **D-FLIGHT-F-ATM09-HELPER-DEPLOY-A** — CLOSED / PASS end-to-end (helper **0.1.3** + FIX2/170) — WU-0013
+5. **DOCS-QA-HUMAN-SHORT-TARGETED-A** — CLOSED / PASS docs-only (`QA-HUMAN-SHORT-TARGETED`) — metodo
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
@@ -371,7 +373,7 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | WU-0010 | OPEN | Outdoor Routing GraphHopper (B1a–E + REVERSE-A CLOSED; F futuro) |
 | WU-0011 | CLOSED / PASS | INFRA-GH-1A+1B GraphHopper PoC locale + VPS |
 | WU-0012 | OPEN / NEXT PROVIDER | CARTO-INDEX-FEDERATED — provider IIM/CIGA/UKHO / online update |
-| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H CLOSED / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — NEXT su prompt esplicito |
+| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H CLOSED / VISUAL-READY-A-FIX2 IN-FLIGHT / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — gate review GPT su FIX2 `52927c5` |
 
 ---
 
