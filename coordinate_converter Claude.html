@@ -23303,10 +23303,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX1";
-const APP_BUILD_DETAIL = "FIX1: sync selftest H — no async leak, timer restore, real autoload asserts";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX2";
+const APP_BUILD_DETAIL = "FIX2: selftest stubs loadZones — no helperFetch / abort / token side effects";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 172;
+const APP_BUILD_NUM = 173;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38672,13 +38672,13 @@ function dflightSelfTestH(){
   function add(name, ok, detail){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   }
-  /** Thenable that never settles — keeps await suspended without scheduling fulfillment microtasks. */
-  function pendingThenable(){
-    const t = {
-      then: function(){ return t; },
-      catch: function(){ return t; }
+  /** Sync catchable handle — satisfies `.catch()` without Promise/microtasks. */
+  function syncCatchable(){
+    const h = {
+      then: function(){ return h; },
+      catch: function(){ return h; }
     };
-    return t;
+    return h;
   }
   const prevSess = _dflightClientSession;
   const prevBusy = _dflightNetworkBusy;
@@ -38689,8 +38689,12 @@ function dflightSelfTestH(){
   const hadLiveTimer = prevTimer != null;
   const prevFetch = _dflightFetchImpl;
   const prevBase = _dflightHelperBaseUrlOverride;
+  const prevCtl = _dflightActiveAbortController;
+  const prevTok = _dflightOperationToken;
+  const prevLoadZones = dflightClientLoadZones;
   const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
   const os = (typeof state !== "undefined") ? !!state.opsecStrict : false;
+  let loadCount = 0;
   try {
     dflightClearAutoRefreshTimer();
     _dflightClientSession = null;
@@ -38700,6 +38704,14 @@ function dflightSelfTestH(){
     _dflightUiPhase = "idle";
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+
+    /* Isolate before helper pipeline: never enter dflightHelperFetch / AbortController / token. */
+    dflightClientLoadZones = function(opts){
+      loadCount++;
+      if (_dflightNetworkBusy) return syncCatchable();
+      _dflightNetworkBusy = true;
+      return syncCatchable();
+    };
 
     add("H_autoload_timer_const_30m", DFLIGHT_AUTO_REFRESH_MS === 30 * 60 * 1000);
     add("H_no_timer_when_closed", (function(){
@@ -38725,44 +38737,45 @@ function dflightSelfTestH(){
       return _dflightAutoRefreshTimer == null;
     })());
 
-    let getCount = 0;
-    let postCount = 0;
-    _dflightFetchImpl = function(url, init){
-      const m = String((init && init.method) || "GET").toUpperCase();
-      if (m === "POST") postCount++;
-      else getCount++;
-      /* Never settle: prevents loadZones/helperFetch continuations after selfTest returns. */
-      return pendingThenable();
-    };
-
-    add("H_boot_zero_fetch_static", getCount === 0 && postCount === 0);
+    add("H_boot_zero_load_static", loadCount === 0);
 
     _dflightPanelOpen = true;
     _dflightClientSession = null;
     _dflightNetworkBusy = false;
-    getCount = 0;
-    postCount = 0;
+    loadCount = 0;
     dflightMaybeAutoloadOnPanelOpen();
-    add("H_autoload_invokes_get", getCount === 1 && postCount === 0, "get=" + getCount + " post=" + postCount);
+    add("H_autoload_invokes_load", loadCount === 1, "load=" + loadCount);
     add("H_autoload_sets_busy", _dflightNetworkBusy === true);
     add("H_autoload_single_flight", (function(){
       const busyBefore = _dflightNetworkBusy;
-      const getsBefore = getCount;
+      const loadsBefore = loadCount;
       dflightMaybeAutoloadOnPanelOpen();
-      return busyBefore === true && _dflightNetworkBusy === true && getCount === getsBefore;
+      return busyBefore === true && _dflightNetworkBusy === true && loadCount === loadsBefore;
     })());
 
     if (typeof state !== "undefined"){
       state.forceOffline = true;
-      getCount = 0; postCount = 0;
+      loadCount = 0;
       _dflightNetworkBusy = false;
       _dflightClientSession = null;
       dflightMaybeAutoloadOnPanelOpen();
-      add("H_autoload_gate_off_zero_get", getCount === 0 && postCount === 0);
+      add("H_autoload_gate_off_zero_load", loadCount === 0);
       state.forceOffline = false;
+
+      state.opsecStrict = true;
+      loadCount = 0;
+      _dflightNetworkBusy = false;
+      _dflightClientSession = null;
+      dflightMaybeAutoloadOnPanelOpen();
+      add("H_autoload_gate_opsec_zero_load", loadCount === 0);
+      state.opsecStrict = false;
     } else {
-      add("H_autoload_gate_off_zero_get", true, "no state");
+      add("H_autoload_gate_off_zero_load", true, "no state");
+      add("H_autoload_gate_opsec_zero_load", true, "no state");
     }
+
+    add("H_live_helper_controller_untouched", _dflightActiveAbortController === prevCtl);
+    add("H_live_helper_token_untouched", _dflightOperationToken === prevTok);
 
     _dflightInitialLoadError = true;
     _dflightClientSession = null;
@@ -38806,14 +38819,14 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_172", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 172
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX1");
+    add("H_build_173", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 173
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX2");
   } catch (e){
     add("selftest_h_exception", false, String(e && e.message ? e.message : e));
   } finally {
     try {
       dflightClearAutoRefreshTimer();
-      try { dflightAbortActiveHelperRequest("selftest_h_cleanup"); } catch(_){}
+      dflightClientLoadZones = prevLoadZones;
       _dflightClientSession = prevSess;
       _dflightNetworkBusy = prevBusy;
       _dflightUiPhase = prevPhase;
@@ -38821,6 +38834,8 @@ function dflightSelfTestH(){
       _dflightPanelOpen = prevOpen;
       _dflightFetchImpl = prevFetch;
       _dflightHelperBaseUrlOverride = prevBase;
+      _dflightActiveAbortController = prevCtl;
+      _dflightOperationToken = prevTok;
       if (typeof state !== "undefined"){
         state.forceOffline = fo;
         state.opsecStrict = os;
@@ -38831,6 +38846,7 @@ function dflightSelfTestH(){
       }
       add("H_live_timer_preserved", !hadLiveTimer || _dflightAutoRefreshTimer != null,
         hadLiveTimer ? ("timer=" + _dflightAutoRefreshTimer) : "no_preexisting_timer");
+      add("H_live_helper_restored", _dflightActiveAbortController === prevCtl && _dflightOperationToken === prevTok);
     } catch(_){}
   }
   return checks;
