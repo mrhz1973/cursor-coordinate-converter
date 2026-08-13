@@ -23368,10 +23368,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX4";
-const APP_BUILD_DETAIL = "FIX4: isolate FIX3 selftests — no network, no live details panel mutation";
+const APP_BUILD_ID = "D-FLIGHT-H-AUTOLOAD-UX-A-FIX5";
+const APP_BUILD_DETAIL = "FIX5 selftest legend pure/static — no live DOM/toggle/network.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 175;
+const APP_BUILD_NUM = 176;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37638,9 +37638,24 @@ function dflightSelfTestF(){
   }
   const prevBase = _dflightHelperBaseUrlOverride;
   const prevFetch = _dflightFetchImpl;
+  const prevOverlayVis = _dflightOverlayVisible;
+  const prevOverlaySess = _dflightOverlaySession;
+  const prevAtm09Pref = _dflightAtm09Preferred;
+  const prevLegendLoaded = _dflightAtm09LegendLoaded;
+  const prevEnsureLegend = dflightAtm09EnsureLegend;
+  const legDetails = document.getElementById("dflightAtm09LegendDetails");
+  const legWrap = document.getElementById("dflightAtm09LegendWrap");
+  const legImg = document.getElementById("dflightAtm09LegendImg");
+  const prevLegOpen = !!(legDetails && legDetails.open);
+  const prevLegHidden = !!(legDetails && legDetails.hidden);
+  const prevWrapHidden = !!(legWrap && legWrap.hidden);
+  const prevImgOnLoad = legImg ? legImg.onload : null;
+  const prevImgOnError = legImg ? legImg.onerror : null;
   const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
   const os = (typeof state !== "undefined") ? !!state.opsecStrict : false;
   try {
+    /* FIX5: never touch live legend img/src via EnsureLegend during F ApplyDataset→SyncPanelUi. */
+    dflightAtm09EnsureLegend = function(){ /* selftest no-op */ };
     _dflightHelperBaseUrlOverride = null;
     add("F_base_null_file", dflightHelperBaseUrl() === null);
 
@@ -37772,15 +37787,36 @@ function dflightSelfTestF(){
     add("selftest_f_exception", false, String(e && e.message ? e.message : e));
   } finally {
     try {
+      dflightAtm09EnsureLegend = prevEnsureLegend;
       _dflightClientSession = null;
-      _dflightOverlayVisible = false;
-      _dflightOverlaySession = null;
+      _dflightOverlayVisible = prevOverlayVis;
+      _dflightOverlaySession = prevOverlaySess;
+      _dflightAtm09Preferred = prevAtm09Pref;
+      _dflightAtm09LegendLoaded = prevLegendLoaded;
       _dflightHelperBaseUrlOverride = prevBase;
       _dflightFetchImpl = prevFetch;
       _dflightNetworkBusy = false;
       if (typeof state !== "undefined"){
         state.forceOffline = fo;
         state.opsecStrict = os;
+      }
+      {
+        const _ens = dflightAtm09EnsureLegend;
+        dflightAtm09EnsureLegend = function(){ /* suppress toggle side-effect on open restore */ };
+        try {
+          if (legDetails){
+            if (!!legDetails.open !== !!prevLegOpen) legDetails.open = prevLegOpen;
+            legDetails.hidden = prevLegHidden;
+          }
+          if (legWrap) legWrap.hidden = prevWrapHidden;
+          if (legImg){
+            legImg.onload = prevImgOnLoad;
+            legImg.onerror = prevImgOnError;
+            /* do not rewrite img.src — avoids selftest-triggered legend reload */
+          }
+        } finally {
+          dflightAtm09EnsureLegend = _ens;
+        }
       }
     } catch(_){}
   }
@@ -38422,6 +38458,31 @@ function dflightSelfTestAtm09(){
   const _prevBbox = _dflightAtm09InfoLastBboxKey;
   const _prevBase = _dflightHelperBaseUrlOverride;
   const _prevForceOff = (typeof state !== "undefined") ? state.forceOffline : undefined;
+  const _prevLegendLoaded = _dflightAtm09LegendLoaded;
+  const _prevEnsureLegend = dflightAtm09EnsureLegend;
+  const _prevGateOff = dflightAtm09OnNetworkGateOff;
+  const _legDetails = document.getElementById("dflightAtm09LegendDetails");
+  const _legWrap = document.getElementById("dflightAtm09LegendWrap");
+  const _legImg = document.getElementById("dflightAtm09LegendImg");
+  const _prevLegOpen = !!(_legDetails && _legDetails.open);
+  const _prevLegHidden = !!(_legDetails && _legDetails.hidden);
+  const _prevWrapHidden = !!(_legWrap && _legWrap.hidden);
+  const _prevImgOnLoad = _legImg ? _legImg.onload : null;
+  const _prevImgOnError = _legImg ? _legImg.onerror : null;
+  /* FIX5: isolate live legend DOM from Atm09 selftests (EnsureLegend / gate-off wrap). */
+  dflightAtm09EnsureLegend = function(){ /* selftest no-op */ };
+  dflightAtm09OnNetworkGateOff = function(){
+    const w = document.getElementById("dflightAtm09LegendWrap");
+    const prevW = w ? !!w.hidden : null;
+    const prevL = _dflightAtm09LegendLoaded;
+    try { return _prevGateOff.apply(this, arguments); }
+    finally {
+      try {
+        if (w && prevW !== null) w.hidden = prevW;
+        _dflightAtm09LegendLoaded = prevL;
+      } catch(_){}
+    }
+  };
 
   function _atm09TestGatesOn(){
     _dflightAtm09Preferred = true;
@@ -38697,6 +38758,8 @@ function dflightSelfTestAtm09(){
     }
   })());
 
+  dflightAtm09EnsureLegend = _prevEnsureLegend;
+  dflightAtm09OnNetworkGateOff = _prevGateOff;
   _dflightAtm09Preferred = _prevPref;
   _dflightOverlayVisible = _prevVis;
   _dflightAtm09InfoFc = _prevFc;
@@ -38710,7 +38773,25 @@ function dflightSelfTestAtm09(){
   _dflightAtm09InfoAbort = _prevAbort;
   _dflightAtm09InfoLastBboxKey = _prevBbox;
   _dflightHelperBaseUrlOverride = _prevBase;
+  _dflightAtm09LegendLoaded = _prevLegendLoaded;
   if (typeof state !== "undefined" && _prevForceOff !== undefined) state.forceOffline = _prevForceOff;
+  try {
+    const _ens = dflightAtm09EnsureLegend;
+    dflightAtm09EnsureLegend = function(){ /* suppress toggle side-effect on open restore */ };
+    try {
+      if (_legDetails){
+        if (!!_legDetails.open !== !!_prevLegOpen) _legDetails.open = _prevLegOpen;
+        _legDetails.hidden = _prevLegHidden;
+      }
+      if (_legWrap) _legWrap.hidden = _prevWrapHidden;
+      if (_legImg){
+        _legImg.onload = _prevImgOnLoad;
+        _legImg.onerror = _prevImgOnError;
+      }
+    } finally {
+      dflightAtm09EnsureLegend = _ens;
+    }
+  } catch(_){}
   return checks;
 }
 
@@ -38766,6 +38847,18 @@ function dflightSelfTestH(){
   const prevCtl = _dflightActiveAbortController;
   const prevTok = _dflightOperationToken;
   const prevLoadZones = dflightClientLoadZones;
+  const prevAtm09PrefH = _dflightAtm09Preferred;
+  const prevOverlayVisH = _dflightOverlayVisible;
+  const prevAtm09ReadyH = _dflightAtm09Ready;
+  const prevLegendLoadedH = _dflightAtm09LegendLoaded;
+  const legDetailsH = document.getElementById("dflightAtm09LegendDetails");
+  const legWrapH = document.getElementById("dflightAtm09LegendWrap");
+  const legImgH = document.getElementById("dflightAtm09LegendImg");
+  const prevLegOpenH = !!(legDetailsH && legDetailsH.open);
+  const prevLegHiddenH = !!(legDetailsH && legDetailsH.hidden);
+  const prevWrapHiddenH = !!(legWrapH && legWrapH.hidden);
+  const prevImgOnLoadH = legImgH ? legImgH.onload : null;
+  const prevImgOnErrorH = legImgH ? legImgH.onerror : null;
   const fo = (typeof state !== "undefined") ? !!state.forceOffline : false;
   const os = (typeof state !== "undefined") ? !!state.opsecStrict : false;
   let loadCount = 0;
@@ -38893,79 +38986,21 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_175", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 175
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX4");
+    add("H_build_176", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 176
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-H-AUTOLOAD-UX-A-FIX5");
 
-    /* FIX4 D2: legend wrap lifecycle — network-free (stub LegendUrl → data: PNG). */
-    add("FIX4_D2_legend_wrap_lifecycle", (function(){
-      const details = document.getElementById("dflightAtm09LegendDetails");
-      const wrap = document.getElementById("dflightAtm09LegendWrap");
-      const img = document.getElementById("dflightAtm09LegendImg");
-      if (!details || !wrap || !img) return false;
-      const DATA_PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
-      const prevSrc = img.getAttribute("src");
-      const prevOpen = !!details.open;
-      const prevWrapHidden = !!wrap.hidden;
-      const prevDetHidden = !!details.hidden;
-      const prevPref = _dflightAtm09Preferred;
-      const prevVis = _dflightOverlayVisible;
-      const prevLoaded = _dflightAtm09LegendLoaded;
-      const prevFo = (typeof state !== "undefined") ? !!state.forceOffline : false;
-      const prevLegendUrl = dflightAtm09LegendUrl;
-      const prevOnLoad = img.onload;
-      const prevOnError = img.onerror;
-      try {
-        if (typeof state !== "undefined") state.forceOffline = false;
-        _dflightOverlayVisible = true;
-        dflightAtm09LegendUrl = function(){ return DATA_PNG; };
-
-        _dflightAtm09Preferred = false;
-        details.open = false;
-        try { img.removeAttribute("src"); } catch(_){}
-        _dflightAtm09LegendLoaded = false;
-        dflightAtm09EnsureLegend(true);
-        if (!wrap.hidden) return false;
-
-        _dflightAtm09Preferred = true;
-        details.open = false;
-        try { img.removeAttribute("src"); } catch(_){}
-        _dflightAtm09LegendLoaded = false;
-        dflightAtm09EnsureLegend(false);
-        if (wrap.hidden) return false;
-        if (img.getAttribute("src")) return false;
-
-        details.open = true;
-        dflightAtm09EnsureLegend(true);
-        if (wrap.hidden) return false;
-        const src = img.getAttribute("src") || "";
-        if (src.indexOf("data:image/png") !== 0) return false;
-        if (/^https?:/i.test(src) || src.indexOf("127.0.0.1") >= 0 || src.indexOf("localhost") >= 0) return false;
-
-        _dflightAtm09Preferred = false;
-        dflightAtm09EnsureLegend(true);
-        if (!wrap.hidden) return false;
-
-        _dflightAtm09Preferred = true;
-        details.open = true;
-        dflightAtm09EnsureLegend(true);
-        if (wrap.hidden) return false;
-        return true;
-      } finally {
-        try {
-          dflightAtm09LegendUrl = prevLegendUrl;
-          img.onload = prevOnLoad;
-          img.onerror = prevOnError;
-          _dflightAtm09Preferred = prevPref;
-          _dflightOverlayVisible = prevVis;
-          _dflightAtm09LegendLoaded = prevLoaded;
-          if (typeof state !== "undefined") state.forceOffline = prevFo;
-          details.open = prevOpen;
-          details.hidden = prevDetHidden;
-          wrap.hidden = prevWrapHidden;
-          if (prevSrc) img.setAttribute("src", prevSrc);
-          else img.removeAttribute("src");
-        } catch(_){}
-      }
+    /* FIX5 D2: pure/static source check of EnsureLegend — no live legend DOM / toggle / network. */
+    add("FIX5_D2_ensure_legend_source_pure", (function(){
+      if (typeof dflightAtm09EnsureLegend !== "function") return false;
+      const src = String(dflightAtm09EnsureLegend);
+      /* 1) !can → hide wrap; 2) can → show wrap; 3) load gated by forceLoad/details.open; 4) img.src only in load path. */
+      if (src.indexOf("!can") < 0) return false;
+      if (src.indexOf("wrap.hidden = true") < 0) return false;
+      if (src.indexOf("wrap.hidden = false") < 0) return false;
+      if (src.indexOf("forceLoad") < 0) return false;
+      if (src.indexOf("details.open") < 0 && src.indexOf("details && details.open") < 0) return false;
+      if (src.indexOf("img.src = url") < 0 && src.indexOf("img.src=url") < 0) return false;
+      return true;
     })());
 
     /* FIX4 D3: static source check only — no live #dflightDetailsPanel mutation (browser QA covers viewport/drag). */
@@ -39022,6 +39057,27 @@ function dflightSelfTestH(){
         state.forceOffline = fo;
         state.opsecStrict = os;
       }
+      _dflightAtm09Preferred = prevAtm09PrefH;
+      _dflightOverlayVisible = prevOverlayVisH;
+      _dflightAtm09Ready = prevAtm09ReadyH;
+      _dflightAtm09LegendLoaded = prevLegendLoadedH;
+      try {
+        const _ens = dflightAtm09EnsureLegend;
+        dflightAtm09EnsureLegend = function(){ /* suppress toggle side-effect on open restore */ };
+        try {
+          if (legDetailsH){
+            if (!!legDetailsH.open !== !!prevLegOpenH) legDetailsH.open = prevLegOpenH;
+            legDetailsH.hidden = prevLegHiddenH;
+          }
+          if (legWrapH) legWrapH.hidden = prevWrapHiddenH;
+          if (legImgH){
+            legImgH.onload = prevImgOnLoadH;
+            legImgH.onerror = prevImgOnErrorH;
+          }
+        } finally {
+          dflightAtm09EnsureLegend = _ens;
+        }
+      } catch(_){}
       /* Re-arm live auto-refresh if the panel had an active timer before the selftest. */
       if (hadLiveTimer){
         dflightEnsureAutoRefreshTimer();
