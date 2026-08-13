@@ -9,10 +9,9 @@ Ingresso breve per **ChatGPT**; i dettagli in **`docs/orchestrator/inbox/`**. **
 
 ## Ultimo aggiornamento
 
-2026-08-13 — **`D-FLIGHT-F-ATM09-ARCH-A-FIX2`** **DEPLOY GIS PASS** + **Automated Browser QA PASS**.  
-Runtime live: **`887d3219`** / build **170**. Helper: **NO REDEPLOY** (byte-invariato; service active).  
-Gate: **`QA FINALE CHATGPT — PENDING`**.
+2026-08-13 — **`QA D-FLIGHT-F-ATM09-ARCH-A-FIX2 FAIL operatore`** — diagnosi LIVE.  
+**Root cause:** helper produzione **0.1.2** senza route `/atm09/*` → browser riceve **404** JSON; `ready=false`; NFZ resta (fail-closed corretto).  
+Monolite FIX2/170 funziona; **manca deploy helper 0.1.3** (ATM09 mai andato in prod).  
+**Nessuna patch / nessun redeploy** in questo step.
 
-Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0210_riepilogo_d-flight-f-atm09-arch-a-fix2-deploy-browser-qa.md`](inbox/2026-08-13_0210_riepilogo_d-flight-f-atm09-arch-a-fix2-deploy-browser-qa.md).
-
-URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=887d3219`
+Dettaglio: [`docs/orchestrator/inbox/2026-08-13_0218_diag_d-flight-f-atm09-arch-a-fix2-qa-fail.md`](inbox/2026-08-13_0218_diag_d-flight-f-atm09-arch-a-fix2-qa-fail.md).
