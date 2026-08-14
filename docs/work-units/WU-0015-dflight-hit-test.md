@@ -5,11 +5,11 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / D-FLIGHT-HIT-TEST-DIAG-A DIAGNOSTIC COMPLETE
-**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-DIAG-A
-**CURRENT GATE:** ROOT CAUSE CONFIRMED — FIX PLAN REQUIRED
+**STATUS:** OPEN / DIAG-A COMPLETE / FIX-A FIX PLAN COMPLETE — NOT IMPLEMENTED
+**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-FIX-A (pianificato)
+**CURRENT GATE:** PLAN COMPLETE — READY FOR IMPLEMENTATION
 **RUNTIME LIVE:** monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper **0.1.3**
-**NEXT:** FIX PLAN (`D-FLIGHT-HIT-TEST-FIX-A`) — **non** implementato in DIAG-A
+**NEXT:** implementazione `D-FLIGHT-HIT-TEST-FIX-A` (build futura 184) — piano: [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md)
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
@@ -79,8 +79,8 @@ Catena causale:
 | Blocco | Scope | Stato |
 | --- | --- | --- |
 | **D-FLIGHT-HIT-TEST-DIAG-A** | Diagnosi read-only | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
-| **D-FLIGHT-HIT-TEST-FIX-A** | Fix plan + implementazione | **NON APERTO** — richiede FIX PLAN |
+| **D-FLIGHT-HIT-TEST-FIX-A** | Fix plan + implementazione | **FIX PLAN COMPLETE — NOT IMPLEMENTED** (2026-08-14; piano in [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md)) |
 
-## 9. NEXT (non implementato qui)
+## 9. NEXT
 
-FIX PLAN futuro (direzioni, non patch): non sopprimere i vettori NFZ quando INFO non è disponibile; gestire 502 cap (bbox più stretto / last-good overlay / feedback); eventuale cap helper. Categoria da rivalutare (overlay/hit-test può essere **DELICATO**).
+**Implementazione `D-FLIGHT-HIT-TEST-FIX-A`** — piano completo in [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md) (interaction-only vector hit layer + rebind idempotente listener + INFO error lifecycle; client-only; **DELICATO**; build futura 184). **Non** implementato.
