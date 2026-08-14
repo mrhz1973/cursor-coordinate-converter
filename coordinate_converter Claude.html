@@ -1977,11 +1977,12 @@ html[data-theme="dark"] .bbox-overlay{
 html[data-theme="dark"] .tile-wrap .tile.tile-atm09{
   opacity:1;
 }
-/* D-FLIGHT-HIT-TEST-OPTION-B TEMP-B: dim official ATM09 raster when temporal filter is restrictive. */
-.tile-wrap .tile-map.atm09-temporal-dim .tile.tile-atm09{
+/* D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1 TEMP-B: dim ATM09 raster; selector follows real DOM
+ * (.tile-map.atm09-temporal-dim > .tile-layer > .tile-wrap > img.tile.tile-atm09). */
+.tile-map.atm09-temporal-dim .tile-wrap .tile.tile-atm09{
   opacity:0.35;
 }
-html[data-theme="dark"] .tile-wrap .tile-map.atm09-temporal-dim .tile.tile-atm09{
+html[data-theme="dark"] .tile-map.atm09-temporal-dim .tile-wrap .tile.tile-atm09{
   opacity:0.35;
 }
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
@@ -23448,10 +23449,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A";
-const APP_BUILD_DETAIL = "adaptive ATM09 INFO subdivision + raster temporal context dim.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1";
+const APP_BUILD_DETAIL = "TEMP-B ATM09 dim selector aligned to actual tile DOM.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 187;
+const APP_BUILD_NUM = 188;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39216,9 +39217,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_187",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
+    add("Tf_build_188",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 188
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -40922,8 +40923,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_187", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
+    add("H_build_188", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 188
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41417,9 +41418,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_187",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
+    add("HitA_build_188",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 188
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42430,9 +42431,9 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFetchStats = null;
     _dflightAtm09InfoLastFailReason = null;
 
-    add("OptB_build_187",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
+    add("OptB_build_188",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 188
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -42522,12 +42523,62 @@ function dflightSelfTestOptB(){
       const tm = root && root.querySelector(".tile-map");
       const hint = document.getElementById("dflightTemporalAtm09Hint");
       if (!tm) return true;
-      const offOk = !tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden);
-      dflightSetTemporalFilter("FUTURE", false);
-      const onOk = tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden === false);
-      dflightSetTemporalFilter("FUTURE", true);
-      const backOk = !tm.classList.contains("atm09-temporal-dim");
-      return !!(offOk && onOk && backOk && dflightTemporalFilterIsRestrictive() === false);
+      let fixture = null;
+      let img = tm.querySelector(".tile-wrap .tile.tile-atm09");
+      if (!img){
+        fixture = document.createElement("div");
+        fixture.className = "tile-wrap";
+        fixture.setAttribute("data-optb-tempb-fixture", "1");
+        img = document.createElement("img");
+        img.className = "tile tile-atm09";
+        img.alt = "";
+        fixture.appendChild(img);
+        tm.appendChild(fixture);
+      }
+      function opacityOf(el){
+        try { return parseFloat(getComputedStyle(el).opacity); } catch (_){ return NaN; }
+      }
+      function near(a, b, eps){
+        return Number.isFinite(a) && Math.abs(a - b) <= (eps == null ? 0.02 : eps);
+      }
+      // Fail closed on inverted ancestor order (.tile-wrap .tile-map…): that cannot match real DOM.
+      let hasInvertedCss = false;
+      let hasAlignedCss = false;
+      try {
+        const sheets = document.styleSheets;
+        for (let si = 0; si < sheets.length; si++){
+          let rules;
+          try { rules = sheets[si].cssRules; } catch (_){ continue; }
+          if (!rules) continue;
+          for (let ri = 0; ri < rules.length; ri++){
+            const sel = rules[ri].selectorText || "";
+            if (sel.indexOf("atm09-temporal-dim") < 0 || sel.indexOf("tile-atm09") < 0) continue;
+            if (/\.tile-wrap\s+\.tile-map\.atm09-temporal-dim/.test(sel)) hasInvertedCss = true;
+            if (/\.tile-map\.atm09-temporal-dim\s+\.tile-wrap\s+\.tile\.tile-atm09/.test(sel)){
+              hasAlignedCss = true;
+            }
+          }
+        }
+      } catch (_){}
+      const nestedOk = !!(tm.querySelector(".tile-wrap .tile.tile-atm09"));
+      const wrapNotAncestorOfMap = !document.querySelector(".tile-wrap .tile-map");
+      try {
+        const opA = opacityOf(img);
+        const offOk = !tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden) && near(opA, 1);
+        dflightSetTemporalFilter("FUTURE", false);
+        dflightAtm09SyncTemporalContextUi();
+        const opB = opacityOf(img);
+        const onOk = tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden === false) && near(opB, 0.35);
+        dflightSetTemporalFilter("FUTURE", true);
+        dflightAtm09SyncTemporalContextUi();
+        const opC = opacityOf(img);
+        const backOk = !tm.classList.contains("atm09-temporal-dim") && near(opC, 1)
+          && dflightTemporalFilterIsRestrictive() === false;
+        return !!(nestedOk && wrapNotAncestorOfMap && hasAlignedCss && !hasInvertedCss
+          && offOk && onOk && backOk);
+      } finally {
+        if (fixture && fixture.parentNode) fixture.parentNode.removeChild(fixture);
+      }
     })());
 
     add("OptB_i18n_atm09_hint_it_en_fr", (function(){
