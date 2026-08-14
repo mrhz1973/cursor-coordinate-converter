@@ -608,21 +608,21 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
 
-**Backlog QA build 183 (2026-08-14):** registrato sotto — *D-Flight — backlog emerso QA build 183 — 2026-08-14*. **Non** è FAIL della QA FIX3 (PASS operatore). Candidati A–H restano **NOT OPENED**.
+**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** aperto in [`WU-0015`](WU-0015-dflight-hit-test.md). B–H restano **NOT OPENED**.
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
 **Stato:** **BACKLOG / NOT OPENED** (docs-only). Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS** (`QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore`, 2026-08-14); WU-0014 **CLOSED**. I punti sotto restano **follow-up futuri NOT OPENED**. Diagnosi: filtro FUTURE non invertito (ricomparsa vettori NON-FUTURE per bypass suppress ATM09); HTML «Messaggio» = `properties.note` escaped (leggibilità).
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**. Candidato **A** è in WU-0015. B–H restano **NOT OPENED**.
 
-**Non aperti:** nessun nuovo blocco OPEN, nessuna nuova WU, nessun runtime/helper/deploy da questa registrazione.
+**Candidato A:** **OPENED** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md) (`D-FLIGHT-HIT-TEST-DIAG-A` DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED). B–H restano **NOT OPENED**. WU-0014 resta **CLOSED / PASS**.
 
-#### Ordine consigliato (candidati, non OPEN)
+#### Ordine consigliato (candidati)
 
 | Ordine | Candidato | Note |
 | --- | --- | --- |
-| **A** | BUG hit-test / click D-Flight intermittente | priorità alta |
+| **A** | BUG hit-test / click D-Flight intermittente | **OPENED** WU-0015 DIAG-A COMPLETE; NEXT = FIX PLAN |
 | **B** | D-Flight UX coherence | Aggiorna unico; master D-Flight; master ATM09; Seleziona/Deseleziona tutte; pulse; legende contestuali |
 | **C** | ATM09 VISUAL PARITY AUDIT | priorità alta; **non** restyle cosmetico |
 | **D** | Legenda ATM09 esterna | swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
@@ -709,9 +709,7 @@ Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolb
 
 #### 9. BUG intermittente hit-test / «manina» (priorità alta)
 
-Dopo uso prolungato può scomparire il click sulle zone D-Flight / il cursore-manina, osservato soprattutto a zoom circa **z8**. Inizialmente funziona; poi smette; **reload pagina ripristina**.
-
-**Non** inventare root cause. Audit futuro: pointer-events; hit-testing SVG; stacking/z-index; overlay DOM stale; lifecycle redraw; listener; temporal filter; ATM09 interaction; zoom; close/reopen pannelli; refresh; resize; nodi overlay sovrapposti invisibili. Il reload che risolve è evidenza da preservare.
+**Stato:** **OPENED** in [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). Diagnosi DIAG-A: **ROOT CAUSE CONFIRMED** (z8: ATM09_INFO HTTP 502 `cap` + suppress NFZ → zero hittable; reload a zoom default ripristina). NEXT = FIX PLAN, **non** implementato in DIAG-A.
 
 #### 10. Pannello D-Flight + Dettagli affiancati
 

@@ -333,31 +333,31 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | *(nessuno — WU-0014 CLOSED / PASS)* |
-| **BLOCCO ATTIVO** | — |
-| **STATO BLOCCO** | **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 CLOSED / PASS end-to-end** |
-| **GATE CORRENTE** | — |
-| **REVIEW BASE** | `7f35382c7e04876428b3c5d4bd45fafff308486d` (FIX2 / build 182) |
+| **WORKSTREAM ATTIVO** | WU-0015 — [`D-FLIGHT-HIT-TEST`](work-units/WU-0015-dflight-hit-test.md) |
+| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-DIAG-A |
+| **STATO BLOCCO** | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
+| **GATE CORRENTE** | FIX PLAN REQUIRED (`D-FLIGHT-HIT-TEST-FIX-A` **non** aperto) |
+| **REVIEW BASE** | monolite live `20b1b494238f8dd483b3eb739f42dbf1194ab727` (build 183) |
 | **RUNTIME LIVE** | monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | da scegliere — backlog D-Flight QA 183 **NOT OPENED** (A–H); nessun blocco autorizzato |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **NEXT** | FIX PLAN hit-test — **non** implementare in DIAG-A |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0014 filtro UI temporale **CLOSED / PASS** (tip live `20b1b49` / 183). Helper **0.1.3** invariato.
-> Residui = backlog roadmap *D-Flight — backlog emerso QA build 183* (**NOT OPENED**).
+> WU-0015 DIAG-A: a z8 ATM09_INFO 502 cap + suppress NFZ → zero hittable. Runtime live invariato `20b1b49` / 183. Helper **0.1.3** invariato.
+> WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3** — CLOSED / PASS end-to-end (build **183** / `20b1b49` LIVE) — WU-0014 CLOSED
-2. **DOCS-DFLIGHT-WU0014-OPEN-A** — CLOSED / PASS DOCS-ONLY — apertura WU-0014
-3. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay)
-4. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 / aprire follow-up temporale
-5. **D-FLIGHT-PERF-VISUAL-READY-A-FIX2** — CLOSED / PASS end-to-end (build **179** / `52927c5`)
+1. **D-FLIGHT-HIT-TEST-DIAG-A** — DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED — WU-0015 OPEN (live `20b1b49` / 183)
+2. **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3** — CLOSED / PASS end-to-end (build **183** / `20b1b49` LIVE) — WU-0014 CLOSED
+3. **DOCS-DFLIGHT-WU0014-OPEN-A** — CLOSED / PASS DOCS-ONLY — apertura WU-0014
+4. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay)
+5. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 / aprire follow-up temporale
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
 - **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** · **WU-0014 (D-FLIGHT-TEMPORAL-FILTER, UI-A+FIX1–3)** — [`work-units/`](work-units/)
-- **WU open:** WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **WU open:** WU-0015 (hit-test DIAG-A) · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
 - **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
