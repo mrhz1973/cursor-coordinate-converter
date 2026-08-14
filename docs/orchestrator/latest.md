@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-14 — chiusura `finito` dopo **`QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore`**. Task `987ab37` (`docs: close D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 after QA PASS`). WU-0014 **CLOSED / PASS**. Runtime live invariato `20b1b49` / build **183**. Monolite **già versionato** nel ciclo runtime FIX3 (non in questo commit docs). Working tree pre-autosync: pulito. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_1148_riepilogo_finito-sessione.md`](inbox/2026-08-14_1148_riepilogo_finito-sessione.md).
+2026-08-14 — **WU-0015 OPEN** · `D-FLIGHT-HIT-TEST-DIAG-A` DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED. Task `8be4adc`. Runtime live **invariato** `20b1b49` / build **183**. Monolite **non** toccato. NON finito, NON QA operatore. NEXT = FIX PLAN (non aperto). Dettaglio: [`docs/orchestrator/inbox/2026-08-14_1215_riepilogo_dflight-hit-test-diag-a.md`](inbox/2026-08-14_1215_riepilogo_dflight-hit-test-diag-a.md).
