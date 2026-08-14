@@ -5,13 +5,13 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / FIX-A-FIX2 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED
+**STATUS:** OPEN / FIX-A-FIX2 DEPLOYED — QA FINALE CHATGPT PENDING
 **ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-FIX-A-FIX2
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA REQUIRED (pre-deploy)
-**CANDIDATE RUNTIME:** monolite `7501d0f7f24957f17497357230baebe36b11f298` · build **186** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX2`
-**RUNTIME LIVE:** monolite `488b6c0559810f19bf75aa37d727902b57b9c2b2` · build **185** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX1` · helper **0.1.3** (invariato)
-**SUPERSEDED:** FIX1 QA FAIL operatore; FIX-A `62de84e` / 184 REVIEW FAIL (non deployato)
-**NEXT:** REVIEW GPT-sostitutiva su FULL SHA FIX2 → deploy solo dopo PASS review — **no** deploy / **no** `finito` ora
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**RUNTIME LIVE:** monolite `7501d0f7f24957f17497357230baebe36b11f298` · build **186** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX2` · helper **0.1.3**
+**REVIEW:** GPT-SOSTITUTIVA PASS su FULL SHA `7501d0f…` — READY FOR DEPLOY
+**SUPERSEDED:** FIX1 QA FAIL operatore (185); FIX-A `62de84e` / 184 REVIEW FAIL
+**NEXT:** QA umana residua (ChatGPT) → `QA D-FLIGHT-HIT-TEST-FIX-A-FIX2 PASS operatore` → auto-`finito`
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
@@ -82,8 +82,8 @@ Catena causale:
 | --- | --- | --- |
 | **D-FLIGHT-HIT-TEST-DIAG-A** | Diagnosi read-only | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
 | **D-FLIGHT-HIT-TEST-FIX-A** | Fix client-only hit-layer | **REVIEW FAIL / BLOCKING** — candidate `62de84e` / 184 superseded (non deployato) |
-| **D-FLIGHT-HIT-TEST-FIX-A-FIX1** | Precedenza INFO vs hit-layer | **QA OPERATORE FAIL** — LIVE `488b6c0` / build **185** (hitOnly invisibile dopo 502 cap) |
-| **D-FLIGHT-HIT-TEST-FIX-A-FIX2** | Visible NFZ fallback su INFO unavailable | **IMPLEMENTED** — candidate `7501d0f` / build **186** — REVIEW GPT-SOSTITUTIVA REQUIRED |
+| **D-FLIGHT-HIT-TEST-FIX-A-FIX1** | Precedenza INFO vs hit-layer | **QA OPERATORE FAIL** — superseded (build 185) |
+| **D-FLIGHT-HIT-TEST-FIX-A-FIX2** | Visible NFZ fallback su INFO unavailable | **DEPLOYED** — LIVE `7501d0f` / build **186** — REVIEW GPT-SOSTITUTIVA PASS — Automated Browser QA PASS — QA FINALE PENDING |
 
 ## 8b. FIX2 — visible fallback (post FAIL operatore FIX1)
 
@@ -97,8 +97,8 @@ Catena causale:
 - Success INFO 200 → `dflightAtm09ApplyInfoSuccess` (exit fallback + hitlayer z2 + INFO z3 + single-dispatch).
 - Reset unavailable solo su: success corrente; preferred OFF; network gate OFF; sessione overlay nullata. **Non** in `dflightAtm09ClearInfo` né su reapply preferred ON.
 
-**Validazione pre-review locale:** CDP async reale `fetch→502→visible→FUTURE off/on→200 recovery` PASS; `GOIDflight.selfTest` 276/276; `selfTestAsync` 278/278. Helper 0.1.3 invariato. **Nessun deploy.**
+**Deploy + Automated Browser QA (2026-08-14):** LIVE blob `a421a620…` = candidate. Helper 0.1.3. QA con **502 reale** (body `{"error":"cap"}`), visible fallback (325 volumes), FUTURE×2, redraw, recovery 200, single-dispatch, selftest 276/276+278/278.
 
 ## 9. NEXT
 
-**REVIEW GPT-SOSTITUTIVA REQUIRED** su FULL SHA `7501d0f7f24957f17497357230baebe36b11f298` (build 186). Deploy solo dopo PASS review. Backlog B–H NOT OPENED.
+**QA FINALE CHATGPT — PENDING.** Attestazione operatore `QA D-FLIGHT-HIT-TEST-FIX-A-FIX2 PASS operatore` → auto-`finito`. Backlog B–H NOT OPENED.

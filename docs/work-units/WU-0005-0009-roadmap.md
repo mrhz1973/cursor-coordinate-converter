@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 | Ordine | Candidato | Note |
 | --- | --- | --- |
-| **A** | BUG hit-test / click D-Flight intermittente | **OPENED** WU-0015 — FIX2 candidate `7501d0f` / 186 REVIEW REQUIRED; LIVE FIX1 FAIL QA |
+| **A** | BUG hit-test / click D-Flight intermittente | **OPENED** WU-0015 — FIX2 LIVE `7501d0f` / 186 DEPLOY+Automated QA PASS; QA FINALE PENDING |
 | **B** | D-Flight UX coherence | Aggiorna unico; master D-Flight; master ATM09; Seleziona/Deseleziona tutte; pulse; legende contestuali |
 | **C** | ATM09 VISUAL PARITY AUDIT | priorità alta; **non** restyle cosmetico |
 | **D** | Legenda ATM09 esterna | swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
@@ -709,7 +709,7 @@ Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolb
 
 #### 9. BUG intermittente hit-test / «manina» (priorità alta)
 
-**Stato:** **OPENED** in [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). Diagnosi DIAG-A: **ROOT CAUSE CONFIRMED**. FIX1 LIVE `488b6c0`/185 **QA OPERATORE FAIL** (hitOnly invisibile post-502). FIX2 candidate `7501d0f`/186 (**IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED**): visible NFZ fallback su INFO unavailable + recovery INFO 200. Nessun deploy FIX2.
+**Stato:** **OPENED** in [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). Diagnosi DIAG-A: **ROOT CAUSE CONFIRMED**. FIX1 QA OPERATORE FAIL. FIX2 LIVE `7501d0f`/186: REVIEW GPT-SOSTITUTIVA PASS + DEPLOY + Automated Browser QA PASS (502 reale) — **QA FINALE CHATGPT PENDING**.
 
 #### 10. Pannello D-Flight + Dettagli affiancati
 
