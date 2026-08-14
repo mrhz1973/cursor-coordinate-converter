@@ -5,20 +5,20 @@
 # WU-0014 — D-FLIGHT-TEMPORAL-FILTER — Filtro UI stato temporale zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / D-FLIGHT-TEMPORAL-FILTER-UI-A READY
-**ACTIVE BLOCK:** D-FLIGHT-TEMPORAL-FILTER-UI-A — READY FOR PLAN/IMPLEMENTATION
-**CURRENT GATE:** plan/runtime implementation non ancora eseguita
-**RUNTIME LIVE:** monolite `52927c565d5301870a82d688c899024d8d499aee` · build **179** · `APP_BUILD_ID=D-FLIGHT-PERF-VISUAL-READY-A-FIX2` · helper **0.1.3**
-**NEXT:** pianificare/implementare D-FLIGHT-TEMPORAL-FILTER-UI-A
+**STATUS:** CLOSED / PASS end-to-end
+**ACTIVE BLOCK:** —
+**CURRENT GATE:** —
+**RUNTIME LIVE:** monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper **0.1.3**
+**NEXT:** nessuno — WU chiusa; residui in backlog NOT OPENED; riapertura/nuovo blocco solo con decisione di prodotto
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / D-FLIGHT-TEMPORAL-FILTER-UI-A READY` — apertura formale `DOCS-DFLIGHT-WU0014-OPEN-A` (2026-08-14)
-**Blocco autorizzato:** `D-FLIGHT-TEMPORAL-FILTER-UI-A` — **READY / NOT IMPLEMENTED**
-**Categoria preliminare:** **ROUTINE** (salvo finding runtime che tocchi categorie delicate)
+**Stato:** **CLOSED / PASS end-to-end** — chiusura `finito` dopo `QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore` (2026-08-14)
+**Blocco chiuso:** `D-FLIGHT-TEMPORAL-FILTER-UI-A` (+ FIX1–FIX3)
+**Categoria:** **ROUTINE** (FIX1–FIX3 geometria/redraw/review hardening)
 **Tipo:** follow-up UI client-side sul layer D-Flight (non nuova pipeline dati)
 **Data apertura:** 2026-08-14
-**Runtime live (invariato):** `52927c565d5301870a82d688c899024d8d499aee` · build **179** · helper **0.1.3**
-**Monolite in questa WU (apertura):** **non** modificato (docs-only open)
+**Data chiusura:** 2026-08-14
+**Runtime live:** `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3`
 **Helper VPS:** **invariato** 0.1.3
 
 > Origine: backlog post-chiusura [`WU-0013`](WU-0013-uas-geozone-dflight.md) §23 — `D-FLIGHT-TEMPORAL-FILTER-UI-A`.  
@@ -130,10 +130,13 @@ Stati concettuali da riusare (nomi runtime esatti da validare nel monolite in fa
 
 | Blocco | Scope | Stato | Categoria |
 | --- | --- | --- | --- |
-| **DOCS-DFLIGHT-WU0014-OPEN-A** | Apertura WU + OM/roadmap | **CLOSED / PASS DOCS-ONLY** (questo task) | DOCS |
-| **D-FLIGHT-TEMPORAL-FILTER-UI-A** | Filtro UI temporal state | **READY / NOT IMPLEMENTED** | ROUTINE (preliminare) |
+| **DOCS-DFLIGHT-WU0014-OPEN-A** | Apertura WU + OM/roadmap | **CLOSED / PASS DOCS-ONLY** | DOCS |
+| **D-FLIGHT-TEMPORAL-FILTER-UI-A** | Filtro UI temporal state | **CLOSED / PASS** · `6c9c697` · build **180** | ROUTINE |
+| **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1** | Redraw immediato + pannelli adattivi | **CLOSED / PASS** · `b504c02` · build **181** | ROUTINE |
+| **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2** | Review hardening | **CLOSED / PASS** · `7f35382` · build **182** | ROUTINE |
+| **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3** | Clamp resize su top reale | **CLOSED / PASS** · `20b1b49` · build **183** | ROUTINE |
 
-**NEXT:** pianificazione runtime mirata / implementazione `D-FLIGHT-TEMPORAL-FILTER-UI-A`.
+**NEXT:** nessuno — WU chiusa. Residui in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183* (**NOT OPENED**).
 
 ---
 
@@ -141,4 +144,14 @@ Stati concettuali da riusare (nomi runtime esatti da validare nel monolite in fa
 
 Registrazione **docs-only** 2026-08-14 in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — sezione *D-Flight — backlog emerso QA build 183 — 2026-08-14* (Aggiorna unificato, master visibility, ATM09 VISUAL PARITY AUDIT, hit-test, branding TMART, ecc.).
 
-**Non** è attestazione QA FIX3 PASS/FAIL operatore. Il gate FIX3 resta separato (deploy PASS · Automated Browser QA PASS · QA FINALE CHATGPT PENDING). **Nessun** nuovo blocco OPEN da questa nota. Hot-header STATUS / CURRENT GATE / NEXT **invariati**.
+Il gate FIX3 è **CLOSED / PASS** (deploy PASS · Automated Browser QA PASS · `QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore` 2026-08-14). I punti A–H restano **BACKLOG / NOT OPENED**. Diagnosi read-only: filtro FUTURE **non** invertito (B+C ATM09 suppress bypass); HTML in «Messaggio» = `properties.note` escaped (leggibilità, non XSS). **Nessun** nuovo blocco OPEN da questa nota.
+
+---
+
+## 11. Chiusura
+
+Catena runtime: `6c9c697` (180) → `b504c02` (181 FIX1) → `7f35382` (182 FIX2) → tip live `20b1b49` (183 FIX3).
+
+Gate: deploy GIS-only PASS · Automated Browser QA PASS · QA operatore PASS (`QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore`, 2026-08-14). Helper **0.1.3** invariato.
+
+Residui prodotto/UX restano backlog roadmap *D-Flight — backlog emerso QA build 183* (**NOT OPENED**). WU-0013 resta CLOSED.

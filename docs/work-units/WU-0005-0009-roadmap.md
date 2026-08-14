@@ -598,27 +598,23 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 ### WU-0014 — D-FLIGHT-TEMPORAL-FILTER — Filtro UI stato temporale
 
-**Stato:** **OPEN** — apertura `DOCS-DFLIGHT-WU0014-OPEN-A` (2026-08-14). Work Unit: [`WU-0014-dflight-temporal-filter.md`](WU-0014-dflight-temporal-filter.md).
+**Stato:** **CLOSED / PASS end-to-end** (2026-08-14). Work Unit: [`WU-0014-dflight-temporal-filter.md`](WU-0014-dflight-temporal-filter.md).
 
 **Origine:** backlog post-chiusura WU-0013 §23 (`D-FLIGHT-TEMPORAL-FILTER-UI-A`). WU-0013 resta **CLOSED / PASS**.
 
-**Primo blocco:** **`D-FLIGHT-TEMPORAL-FILTER-UI-A`** — **READY / NOT IMPLEMENTED** · categoria preliminare **ROUTINE**.
+**Catena:** `6c9c697` (180 UI-A) → `b504c02` (181 FIX1) → `7f35382` (182 FIX2) → tip live **`20b1b49` / build 183 / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3`**. Helper **0.1.3** invariato.
 
-**Scopo:** filtro di **visualizzazione** basato sul temporal state già calcolato (core WU-0013); session-only; default mostra-tutto (parità build **179**); nessuna rete/helper/storage/normalize.
-
-**Dipendenza:** WU-0013 CLOSED/PASS · runtime live `52927c5` / build **179** / helper **0.1.3**.
+**Gate:** deploy GIS-only PASS · Automated Browser QA PASS · attestazione **`QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore`** (2026-08-14) → auto-`finito` Regola H.
 
 **Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
 
-**QA prevista (blocco UI):** Automated Browser QA + QA operatore.
-
-**Backlog QA build 183 (2026-08-14):** registrato sotto — *D-Flight — backlog emerso QA build 183 — 2026-08-14*. **Non** è FAIL della QA FIX3 corrente; **non** apre nuovi blocchi/WU.
+**Backlog QA build 183 (2026-08-14):** registrato sotto — *D-Flight — backlog emerso QA build 183 — 2026-08-14*. **Non** è FAIL della QA FIX3 (PASS operatore). Candidati A–H restano **NOT OPENED**.
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
 **Stato:** **BACKLOG / NOT OPENED** (docs-only). Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate corrente:** il runtime FIX3 ha già deploy GIS-only **PASS** e Automated Browser QA **PASS**; QA finale ChatGPT **PENDING**; QA operatore **non attestata**. WU-0014 resta **OPEN**. Questa sezione **non** trasforma i punti sotto in `QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 FAIL operatore`. Sono **follow-up futuri**, salvo un finding successivo classificato esplicitamente come bug del runtime 183.
+**Distinzione gate:** FIX3 è **CLOSED / PASS** (`QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 PASS operatore`, 2026-08-14); WU-0014 **CLOSED**. I punti sotto restano **follow-up futuri NOT OPENED**. Diagnosi: filtro FUTURE non invertito (ricomparsa vettori NON-FUTURE per bypass suppress ATM09); HTML «Messaggio» = `properties.note` escaped (leggibilità).
 
 **Non aperti:** nessun nuovo blocco OPEN, nessuna nuova WU, nessun runtime/helper/deploy da questa registrazione.
 
