@@ -8598,6 +8598,17 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-temp-notam{ color:#854d0
 html:not([data-theme="dark"]) .dflight-legend-swatch.is-no-restriction{ color:#166534; }
 html:not([data-theme="dark"]) .dflight-legend-swatch.is-expired,
 html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; }
+.dflight-temporal-filters{
+  display:flex; flex-direction:column; gap:6px; margin:8px 0 10px 1.25rem; font-size:.82rem;
+}
+.dflight-temporal-filters[hidden]{ display:none; }
+.dflight-temporal-filters .dflight-legend-heading{ margin:0 0 2px; }
+.dflight-temporal-filters-item{
+  display:flex; align-items:center; gap:8px; margin:0; cursor:pointer;
+}
+.dflight-temporal-filters-item input{ accent-color:var(--accent); }
+.dflight-temporal-filters-item input:disabled{ cursor:not-allowed; }
+.dflight-temporal-filters.is-disabled{ opacity:.55; }
 .dflight-atm09-legend-details{
   margin:0 0 8px; border:1px solid var(--border, #334155); border-radius:6px;
   background:var(--panel-2, var(--panel, #0f172a)); padding:0 8px;
@@ -14042,6 +14053,29 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="checkbox" id="dflightVisibleToggle">
       <span>Mostra zone sulla mappa</span>
     </label>
+    <div id="dflightTemporalFilterGroup" class="dflight-temporal-filters" role="group" aria-labelledby="dflightTemporalFilterTitle" hidden>
+      <h3 id="dflightTemporalFilterTitle" class="dflight-legend-heading hint" data-i18n="dflight.filter.temporal.title">Filtra per stato temporale</h3>
+      <label class="dflight-temporal-filters-item">
+        <input type="checkbox" id="dflightTfActiveNow" checked>
+        <span data-i18n="dflight.temporal.ACTIVE_NOW">Attiva ora</span>
+      </label>
+      <label class="dflight-temporal-filters-item">
+        <input type="checkbox" id="dflightTfAlwaysActive" checked>
+        <span data-i18n="dflight.temporal.ALWAYS_ACTIVE">Sempre attiva</span>
+      </label>
+      <label class="dflight-temporal-filters-item">
+        <input type="checkbox" id="dflightTfFuture" checked>
+        <span data-i18n="dflight.temporal.FUTURE">Futura</span>
+      </label>
+      <label class="dflight-temporal-filters-item">
+        <input type="checkbox" id="dflightTfExpired" checked>
+        <span data-i18n="dflight.temporal.EXPIRED">Scaduta</span>
+      </label>
+      <label class="dflight-temporal-filters-item">
+        <input type="checkbox" id="dflightTfUnknown" checked>
+        <span data-i18n="dflight.temporal.UNKNOWN">Stato sconosciuto</span>
+      </label>
+    </div>
     <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
     <h3 id="dflightLegendHeading" class="dflight-legend-heading hint">Legenda restrizioni</h3>
     <ul id="dflightLegendList" class="dflight-legend" aria-label="Legenda restrizioni D-Flight"></ul>
@@ -16308,6 +16342,7 @@ const I18N = {
     "dflight.temporal.FUTURE":"Futura",
     "dflight.temporal.EXPIRED":"Scaduta",
     "dflight.temporal.UNKNOWN":"Stato sconosciuto",
+    "dflight.filter.temporal.title":"Filtra per stato temporale",
     "dflight.field.name":"Nome",
     "dflight.field.zoneId":"ID zona",
     "dflight.field.restriction":"Restriction",
@@ -23369,10 +23404,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-PERF-VISUAL-READY-A-FIX2";
-const APP_BUILD_DETAIL = "Close hides D-Flight (restore-on-reopen); minimize keeps overlay.";
+const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A";
+const APP_BUILD_DETAIL = "Temporal state visibility filter (session-only; default mostra-tutto).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 179;
+const APP_BUILD_NUM = 180;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35797,6 +35832,28 @@ let _dflightSelectedZoneId = null;
 let _dflightPanelOpen = false;
 /** Session-only: restore map overlay on next panel open after a real close (not minimize). */
 let _dflightRestoreOverlayOnPanelReopen = false;
+/** Session-only temporal visibility filter (default = mostra tutto; not persisted). */
+const DFLIGHT_TEMPORAL_STATES = ["ACTIVE_NOW", "ALWAYS_ACTIVE", "FUTURE", "EXPIRED", "UNKNOWN"];
+let _dflightTemporalFilter = {
+  "ACTIVE_NOW": true,
+  "ALWAYS_ACTIVE": true,
+  "FUTURE": true,
+  "EXPIRED": true,
+  "UNKNOWN": true
+};
+function dflightTemporalFilterAllows(zone){
+  const raw = (zone && zone.temporal_state != null && zone.temporal_state !== "")
+    ? String(zone.temporal_state)
+    : "UNKNOWN";
+  const ts = Object.prototype.hasOwnProperty.call(_dflightTemporalFilter, raw) ? raw : "UNKNOWN";
+  return _dflightTemporalFilter[ts] === true;
+}
+function dflightSetTemporalFilter(state, enabled){
+  const s = String(state || "");
+  if (DFLIGHT_TEMPORAL_STATES.indexOf(s) === -1) return false;
+  _dflightTemporalFilter[s] = !!enabled;
+  return true;
+}
 let _dflightDetailsOpen = false;
 let _dflightUiWired = false;
 
@@ -35972,7 +36029,8 @@ function dflightDrawOverlayDom(tileMap, dataset){
     zone_count_in: 0,
     zone_count_drawn: 0,
     culled: 0,
-    skipped: 0
+    skipped: 0,
+    filtered_temporal: 0
   };
   if (!tileMap){
     report.ok = false;
@@ -36025,13 +36083,17 @@ function dflightDrawOverlayDom(tileMap, dataset){
   for (let zi = 0; zi < zones.length; zi++){
     const zone = zones[zi];
     if (!zone){ report.skipped++; continue; }
+    const vols = Array.isArray(zone.volumes) ? zone.volumes : [];
+    if (!vols.length){ report.skipped++; continue; }
+    if (!dflightTemporalFilterAllows(zone)){
+      report.filtered_temporal = (report.filtered_temporal || 0) + 1;
+      continue;
+    }
     const zb = Array.isArray(zone.bbox) ? zone.bbox : null;
     if (viewBbox && zb && !dflightBboxOverlaps(zb, viewBbox)){
       report.culled++;
       continue;
     }
-    const vols = Array.isArray(zone.volumes) ? zone.volumes : [];
-    if (!vols.length){ report.skipped++; continue; }
     const g = document.createElementNS(ns, "g");
     g.setAttribute("class", "dflight-zone" + (String(zone.zone_id) === String(_dflightSelectedZoneId) ? " is-selected" : ""));
     if (zone.zone_id != null) g.setAttribute("data-zone-id", String(zone.zone_id));
@@ -36533,6 +36595,26 @@ function dflightSyncPanelUi(){
   if (tog){
     tog.disabled = !hasDs;
     tog.checked = !!(hasDs && _dflightOverlayVisible);
+  }
+  const tfGrp = document.getElementById("dflightTemporalFilterGroup");
+  if (tfGrp){
+    tfGrp.hidden = !hasDs;
+    const tfIds = {
+      "dflightTfActiveNow": "ACTIVE_NOW",
+      "dflightTfAlwaysActive": "ALWAYS_ACTIVE",
+      "dflightTfFuture": "FUTURE",
+      "dflightTfExpired": "EXPIRED",
+      "dflightTfUnknown": "UNKNOWN"
+    };
+    for (const k in tfIds){
+      if (!Object.prototype.hasOwnProperty.call(tfIds, k)) continue;
+      const cb = document.getElementById(k);
+      if (!cb) continue;
+      cb.disabled = !hasDs;
+      cb.checked = !!_dflightTemporalFilter[tfIds[k]];
+    }
+    if (hasDs) tfGrp.classList.remove("is-disabled");
+    else tfGrp.classList.add("is-disabled");
   }
   if (list){
     list.innerHTML = "";
@@ -37667,6 +37749,31 @@ function dflightEnsureClientWired(){
     ev.preventDefault();
     dflightClientReevalNow();
   });
+  const tfIdsWire = {
+    "dflightTfActiveNow": "ACTIVE_NOW",
+    "dflightTfAlwaysActive": "ALWAYS_ACTIVE",
+    "dflightTfFuture": "FUTURE",
+    "dflightTfExpired": "EXPIRED",
+    "dflightTfUnknown": "UNKNOWN"
+  };
+  for (const k in tfIdsWire){
+    if (!Object.prototype.hasOwnProperty.call(tfIdsWire, k)) continue;
+    (function(id, st){
+      const cb = document.getElementById(id);
+      if (!cb) return;
+      cb.addEventListener("change", function(){
+        dflightSetTemporalFilter(st, !!cb.checked);
+        if (!_dflightOverlayVisible) return;
+        try {
+          const root = document.getElementById("miniMap");
+          const tm = root && root.querySelector(".tile-map");
+          if (tm && _dflightOverlaySession && _dflightOverlaySession.dataset){
+            dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+          }
+        } catch(_){}
+      });
+    })(k, tfIdsWire[k]);
+  }
   if (!_dflightAtm09LegendDetailsWired){
     _dflightAtm09LegendDetailsWired = true;
     const det = document.getElementById("dflightAtm09LegendDetails");
@@ -37876,11 +37983,145 @@ function dflightSelfTestF(){
   return checks;
 }
 
+function dflightSelfTestTf(){
+  const checks = [];
+  function add(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  }
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    const s = DFLIGHT_TEMPORAL_STATES[i];
+    prevFilter[s] = _dflightTemporalFilter[s] === true;
+  }
+  try {
+    add("Tf_canonical_states",
+      Array.isArray(DFLIGHT_TEMPORAL_STATES)
+      && DFLIGHT_TEMPORAL_STATES.length === 5
+      && DFLIGHT_TEMPORAL_STATES.indexOf("ACTIVE_NOW") >= 0
+      && DFLIGHT_TEMPORAL_STATES.indexOf("ALWAYS_ACTIVE") >= 0
+      && DFLIGHT_TEMPORAL_STATES.indexOf("FUTURE") >= 0
+      && DFLIGHT_TEMPORAL_STATES.indexOf("EXPIRED") >= 0
+      && DFLIGHT_TEMPORAL_STATES.indexOf("UNKNOWN") >= 0);
+
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+    }
+    add("Tf_default_all_visible",
+      DFLIGHT_TEMPORAL_STATES.every(function(s){ return _dflightTemporalFilter[s] === true; }));
+
+    const zFut = { temporal_state: "FUTURE" };
+    const zAct = { temporal_state: "ACTIVE_NOW" };
+    dflightSetTemporalFilter("FUTURE", false);
+    add("Tf_selective_filter",
+      dflightTemporalFilterAllows(zFut) === false && dflightTemporalFilterAllows(zAct) === true);
+    dflightSetTemporalFilter("FUTURE", true);
+    add("Tf_selective_filter_restore", dflightTemporalFilterAllows(zFut) === true);
+
+    dflightSetTemporalFilter("UNKNOWN", false);
+    add("Tf_unknown_fallback",
+      dflightTemporalFilterAllows({}) === false
+      && dflightTemporalFilterAllows({ temporal_state: null }) === false
+      && dflightTemporalFilterAllows({ temporal_state: "NOT_A_REAL_STATE" }) === false);
+    dflightSetTemporalFilter("UNKNOWN", true);
+    add("Tf_unknown_fallback_on",
+      dflightTemporalFilterAllows({}) === true
+      && dflightTemporalFilterAllows({ temporal_state: "WEIRD" }) === true);
+
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+    }
+    const poly = {
+      type: "Polygon",
+      coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+    };
+    const ds = {
+      ok: true,
+      zones: [
+        {
+          zone_id: "tf:1",
+          name: "A",
+          temporal_state: "ACTIVE_NOW",
+          bbox: null,
+          volumes: [{ volume_index: 0, geometry: poly }]
+        },
+        {
+          zone_id: "tf:2",
+          name: "F",
+          temporal_state: "FUTURE",
+          bbox: null,
+          volumes: [{ volume_index: 0, geometry: poly }]
+        }
+      ]
+    };
+    const lenBefore = ds.zones.length;
+    const tsBefore = ds.zones.map(function(z){ return z.temporal_state; }).join(",");
+    const vol0 = ds.zones[0].volumes;
+    const zonesRef = ds.zones;
+    dflightSetTemporalFilter("FUTURE", false);
+    dflightTemporalFilterAllows(ds.zones[1]);
+    add("Tf_no_dataset_mutation",
+      ds.zones.length === lenBefore
+      && ds.zones.map(function(z){ return z.temporal_state; }).join(",") === tsBefore
+      && ds.zones[0].volumes === vol0
+      && ds.zones === zonesRef);
+
+    dflightSetTemporalFilter("EXPIRED", false);
+    const expiredOff = _dflightTemporalFilter.EXPIRED === false;
+    dflightTemporalFilterAllows({ temporal_state: "EXPIRED" });
+    add("Tf_session_semantics", expiredOff && _dflightTemporalFilter.EXPIRED === false);
+
+    add("Tf_render_skips_disabled", (function(){
+      const src = String(dflightDrawOverlayDom);
+      if (src.indexOf("filtered_temporal") < 0 || src.indexOf("dflightTemporalFilterAllows") < 0) return false;
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      const layer = tm && tm.querySelector(".tile-layer");
+      if (!root || !tm || !layer){
+        return true;
+      }
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      dflightSetTemporalFilter("FUTURE", false);
+      const prevSuppress = (typeof dflightAtm09ShouldSuppressNfzColors === "function")
+        ? dflightAtm09ShouldSuppressNfzColors
+        : null;
+      try {
+        if (prevSuppress){
+          dflightAtm09ShouldSuppressNfzColors = function(){ return false; };
+        }
+        const report = dflightDrawOverlayDom(tm, ds);
+        const gFut = tm.querySelector('.dflight-zone[data-zone-id="tf:2"]');
+        const gAct = tm.querySelector('.dflight-zone[data-zone-id="tf:1"]');
+        const ft = report && (report.filtered_temporal || 0);
+        return !!(report && report.ok && ft >= 1 && !gFut && !!gAct && (report.culled === 0) && (report.skipped === 0));
+      } finally {
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("Tf_set_rejects_unknown_state", dflightSetTemporalFilter("NOT_REAL", false) === false);
+    add("Tf_build_180",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 180
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A");
+  } catch (e){
+    add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      const s = DFLIGHT_TEMPORAL_STATES[i];
+      _dflightTemporalFilter[s] = prevFilter[s] === true;
+    }
+  }
+  return checks;
+}
+
 const _dflightSelfTestCDEFn = dflightSelfTestAll;
 function dflightSelfTestAllF(){
   const prev = _dflightSelfTestCDEFn();
   const fChecks = dflightSelfTestF();
-  const checks = (prev.checks || []).concat(fChecks);
+  const tfChecks = dflightSelfTestTf();
+  const checks = (prev.checks || []).concat(fChecks).concat(tfChecks);
   const pass = checks.every(function(c){ return c.ok; });
   return Object.freeze({
     ok: pass,
@@ -39125,8 +39366,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_179", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 179
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PERF-VISUAL-READY-A-FIX2");
+    add("H_build_180", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 180
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
