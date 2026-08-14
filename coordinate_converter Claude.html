@@ -1977,6 +1977,13 @@ html[data-theme="dark"] .bbox-overlay{
 html[data-theme="dark"] .tile-wrap .tile.tile-atm09{
   opacity:1;
 }
+/* D-FLIGHT-HIT-TEST-OPTION-B TEMP-B: dim official ATM09 raster when temporal filter is restrictive. */
+.tile-wrap .tile-map.atm09-temporal-dim .tile.tile-atm09{
+  opacity:0.35;
+}
+html[data-theme="dark"] .tile-wrap .tile-map.atm09-temporal-dim .tile.tile-atm09{
+  opacity:0.35;
+}
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
   opacity:.95;
   mix-blend-mode:screen;
@@ -14108,6 +14115,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <input type="checkbox" id="dflightTfUnknown" checked>
         <span data-i18n="dflight.temporal.UNKNOWN">Stato sconosciuto</span>
       </label>
+      <p id="dflightTemporalAtm09Hint" class="hint dflight-temporal-atm09-hint" data-i18n="dflight.filter.temporal.atm09DimHint" hidden>Filtro temporale attivo: ATM09 resta visibile come contesto ufficiale attenuato.</p>
     </div>
     <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
     <h3 id="dflightLegendHeading" class="dflight-legend-heading hint">Legenda restrizioni</h3>
@@ -16376,6 +16384,7 @@ const I18N = {
     "dflight.temporal.EXPIRED":"Scaduta",
     "dflight.temporal.UNKNOWN":"Stato sconosciuto",
     "dflight.filter.temporal.title":"Filtra per stato temporale",
+    "dflight.filter.temporal.atm09DimHint":"Filtro temporale attivo: ATM09 resta visibile come contesto ufficiale attenuato.",
     "dflight.field.name":"Nome",
     "dflight.field.zoneId":"ID zona",
     "dflight.field.restriction":"Restriction",
@@ -19932,7 +19941,8 @@ const I18N = {
     "set.geo.dsCleared":"Dataset cleared",
     "batch.th.loc":"Locality",
     "batch.locCol":"Add Locality column (reverse geocoding, 1 req/s)",
-    "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy."
+    "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy.",
+    "dflight.filter.temporal.atm09DimHint":"Temporal filter active: ATM09 remains visible as dimmed official context."
   },
   fr: {
     "app.title":"GOI GIS Tool by Marty",
@@ -21895,7 +21905,8 @@ const I18N = {
     "routing.saveAsTrackNameRequired":"Le nom de la trace est obligatoire",
     "routing.routeTooLong":"Itinéraire trop long (maximum 2000 points).",
     "routing.routeTooShort":"Itinéraire trop court (minimum 2 points).",
-    "routing.archiveFull":"Archive de traces pleine (maximum 50)."
+    "routing.archiveFull":"Archive de traces pleine (maximum 50).",
+    "dflight.filter.temporal.atm09DimHint":"Filtre temporel actif : ATM09 reste visible comme contexte officiel atténué."
   }
 };
 
@@ -23437,10 +23448,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-FIX-A-FIX2";
-const APP_BUILD_DETAIL = "ATM09 INFO unavailable → visible NFZ vector fallback; auto-recovery on INFO 200.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A";
+const APP_BUILD_DETAIL = "adaptive ATM09 INFO subdivision + raster temporal context dim.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 186;
+const APP_BUILD_NUM = 187;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35892,7 +35903,34 @@ function dflightSetTemporalFilter(state, enabled){
   const s = String(state || "");
   if (DFLIGHT_TEMPORAL_STATES.indexOf(s) === -1) return false;
   _dflightTemporalFilter[s] = !!enabled;
+  try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
   return true;
+}
+/** TEMP-B: dim ATM09 raster + show temporal context hint when filter is restrictive. */
+function dflightAtm09SyncTemporalContextUi(){
+  const restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
+    ? !!dflightTemporalFilterIsRestrictive() : false;
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm){
+      if (restrictive) tm.classList.add("atm09-temporal-dim");
+      else tm.classList.remove("atm09-temporal-dim");
+    }
+  } catch(_){}
+  try {
+    const hint = document.getElementById("dflightTemporalAtm09Hint");
+    if (hint){
+      hint.hidden = !restrictive;
+      if (restrictive){
+        try {
+          const txt = (typeof t === "function") ? t("dflight.filter.temporal.atm09DimHint") : "";
+          if (txt && txt !== "dflight.filter.temporal.atm09DimHint") hint.textContent = txt;
+          else if (typeof tIt === "function") hint.textContent = tIt("dflight.filter.temporal.atm09DimHint");
+        } catch(_){}
+      }
+    }
+  } catch(_){}
 }
 let _dflightDetailsOpen = false;
 let _dflightUiWired = false;
@@ -36867,6 +36905,7 @@ function dflightSyncPanelUi(){
     if (hasDs) tfGrp.classList.remove("is-disabled");
     else tfGrp.classList.add("is-disabled");
   }
+  try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
   if (list){
     list.innerHTML = "";
     if (hasDs){
@@ -39177,9 +39216,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_186",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
+    add("Tf_build_187",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39260,6 +39299,21 @@ let _dflightAtm09RedrawScheduled = false;
 let _dflightAtm09StartPending = false;
 /** Re-entrancy guard for post-apply map redraw (one shot). */
 let _dflightAtm09PostApplyRenderScheduled = false;
+
+/* ===== D-FLIGHT-HIT-TEST-OPTION-B — adaptive ATM09 INFO subdivision + TEMP-B ===== */
+const DFLIGHT_ATM09_SUBDIV_MAX_DEPTH = 2;
+const DFLIGHT_ATM09_SUBDIV_MAX_REQUESTS = 21;
+const DFLIGHT_ATM09_SUBDIV_CONCURRENCY = 3;
+const DFLIGHT_ATM09_INFO_AGG_CAP = 4000;
+const DFLIGHT_ATM09_INFO_TRUNCATE_HINT = 1000;
+const DFLIGHT_ATM09_SUBDIV_CACHE_MAX = 32;
+const DFLIGHT_ATM09_SUBDIV_CACHE_TTL_MS = 60000;
+/** Session-only LRU of complete INFO cells — NEVER persisted. */
+let _dflightAtm09SubdivCache = [];
+/** Session-only last INFO fetch stats (tests/QA observability). */
+let _dflightAtm09InfoLastFetchStats = null;
+/** Session-only last incomplete/unavailable reason for subdivision path. */
+let _dflightAtm09InfoLastFailReason = null;
 
 function dflightAtm09IsReady(){
   return !!_dflightAtm09Ready;
@@ -39498,6 +39552,7 @@ function dflightAtm09OnNetworkGateOff(){
   _dflightAtm09InfoLastBboxKey = null;
   _dflightAtm09InfoUnavailable = false;
   _dflightAtm09LegendLoaded = false;
+  try { dflightAtm09SubdivCacheClear(); } catch(_){}
   try {
     const wrap = document.getElementById("dflightAtm09LegendWrap");
     if (wrap) wrap.hidden = true;
@@ -39540,6 +39595,7 @@ function dflightAtm09SetPreferred(on){
     _dflightAtm09StartPending = false;
     /* FIX2: preferred OFF invalidates failure context; reapply with preferred ON must NOT clear unavailable. */
     _dflightAtm09InfoUnavailable = false;
+    try { dflightAtm09SubdivCacheClear(); } catch(_){}
     dflightAtm09ClearInfo();
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
@@ -39704,25 +39760,190 @@ function dflightAtm09ApplyInfoSuccess(fc, bboxKey){
   } catch(_){}
 }
 
-async function dflightAtm09FetchInfoForViewport(){
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
-  if (!dflightClientNetworkAllowed()) return;
-  const base = dflightHelperBaseUrl();
-  if (!base) return;
-  const bbox = dflightAtm09ViewportBboxWithMargin();
-  if (!bbox) return;
-  const bboxStr = bbox[0].toFixed(6) + "," + bbox[1].toFixed(6) + "," + bbox[2].toFixed(6) + "," + bbox[3].toFixed(6);
-  if (_dflightAtm09InfoLastBboxKey === bboxStr && _dflightAtm09InfoFc) return;
-  const token = ++_dflightAtm09InfoToken;
-  if (_dflightAtm09InfoAbort){
-    try { _dflightAtm09InfoAbort.abort("supersede"); } catch(_){}
+function dflightAtm09FormatBboxKey(bbox){
+  if (!bbox || bbox.length < 4) return "";
+  return bbox[0].toFixed(6) + "," + bbox[1].toFixed(6) + "," + bbox[2].toFixed(6) + "," + bbox[3].toFixed(6);
+}
+
+function dflightAtm09UtcMinuteBucket(nowMs){
+  const t = (nowMs != null && Number.isFinite(Number(nowMs))) ? Number(nowMs) : Date.now();
+  return Math.floor(t / 60000);
+}
+
+function dflightAtm09SubdivCacheClear(){
+  _dflightAtm09SubdivCache = [];
+}
+
+function dflightAtm09SubdivCacheKey(bbox, nowMs){
+  return dflightAtm09UtcMinuteBucket(nowMs) + "|" + dflightAtm09FormatBboxKey(bbox);
+}
+
+function dflightAtm09SubdivCacheGet(bbox, nowMs){
+  const key = dflightAtm09SubdivCacheKey(bbox, nowMs);
+  const now = (nowMs != null && Number.isFinite(Number(nowMs))) ? Number(nowMs) : Date.now();
+  for (let i = 0; i < _dflightAtm09SubdivCache.length; i++){
+    const e = _dflightAtm09SubdivCache[i];
+    if (!e || e.key !== key) continue;
+    if ((now - e.ts) > DFLIGHT_ATM09_SUBDIV_CACHE_TTL_MS){
+      _dflightAtm09SubdivCache.splice(i, 1);
+      return null;
+    }
+    if (i > 0){
+      _dflightAtm09SubdivCache.splice(i, 1);
+      _dflightAtm09SubdivCache.unshift(e);
+    }
+    return e.fc;
   }
-  const ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
-  _dflightAtm09InfoAbort = ctl;
+  return null;
+}
+
+function dflightAtm09SubdivCacheSet(bbox, fc, nowMs){
+  if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)) return;
+  if (fc.features.length >= DFLIGHT_ATM09_INFO_TRUNCATE_HINT) return;
+  const key = dflightAtm09SubdivCacheKey(bbox, nowMs);
+  const now = (nowMs != null && Number.isFinite(Number(nowMs))) ? Number(nowMs) : Date.now();
+  for (let i = _dflightAtm09SubdivCache.length - 1; i >= 0; i--){
+    if (_dflightAtm09SubdivCache[i] && _dflightAtm09SubdivCache[i].key === key){
+      _dflightAtm09SubdivCache.splice(i, 1);
+    }
+  }
+  _dflightAtm09SubdivCache.unshift({ key: key, ts: now, fc: fc });
+  while (_dflightAtm09SubdivCache.length > DFLIGHT_ATM09_SUBDIV_CACHE_MAX){
+    _dflightAtm09SubdivCache.pop();
+  }
+}
+
+function dflightAtm09QuadSplit(bbox){
+  const lonMin = bbox[0], latMin = bbox[1], lonMax = bbox[2], latMax = bbox[3];
+  const lonMid = (lonMin + lonMax) / 2;
+  const latMid = (latMin + latMax) / 2;
+  return [
+    [lonMin, latMin, lonMid, latMid],
+    [lonMid, latMin, lonMax, latMid],
+    [lonMin, latMid, lonMid, latMax],
+    [lonMid, latMid, lonMax, latMax]
+  ];
+}
+
+function dflightAtm09BodyIsCap(body){
+  if (!body || typeof body !== "object") return false;
+  if (body.error === "cap") return true;
+  if (body.error_category === "cap") return true;
+  return false;
+}
+
+async function dflightAtm09TryReadJsonBody(resp){
+  try {
+    if (!resp || typeof resp.json !== "function") return null;
+    return await resp.json();
+  } catch(_){
+    return null;
+  }
+}
+
+function dflightAtm09FcLooksValid(fc){
+  return !!(fc && fc.type === "FeatureCollection" && Array.isArray(fc.features));
+}
+
+function dflightAtm09FcIsSuspectedTruncation(fc){
+  return !!(dflightAtm09FcLooksValid(fc) && fc.features.length >= DFLIGHT_ATM09_INFO_TRUNCATE_HINT);
+}
+
+function dflightAtm09FeatureDedupKey(feat, idx){
+  const p = (feat && feat.properties && typeof feat.properties === "object") ? feat.properties : null;
+  if (p && p.id != null && String(p.id) !== "") return "id:" + String(p.id);
+  const name = p && p.name != null ? String(p.name) : "";
+  const typ = p && p.type != null ? String(p.type) : "";
+  let coordHint = "";
+  try {
+    const g = feat && feat.geometry;
+    if (g && g.type === "Polygon" && g.coordinates && g.coordinates[0] && g.coordinates[0][0]){
+      coordHint = String(g.coordinates[0][0][0]) + "," + String(g.coordinates[0][0][1]);
+    } else if (g && g.type === "MultiPolygon" && g.coordinates && g.coordinates[0]
+        && g.coordinates[0][0] && g.coordinates[0][0][0]){
+      coordHint = String(g.coordinates[0][0][0][0]) + "," + String(g.coordinates[0][0][0][1]);
+    }
+  } catch(_){}
+  return "syn:" + name + "|" + typ + "|" + coordHint + "|" + String(idx);
+}
+
+function dflightAtm09MergeFeatureCollections(fcs){
+  const out = [];
+  const seen = Object.create(null);
+  let synIdx = 0;
+  for (let i = 0; i < fcs.length; i++){
+    const fc = fcs[i];
+    if (!dflightAtm09FcLooksValid(fc)) continue;
+    for (let j = 0; j < fc.features.length; j++){
+      const feat = fc.features[j];
+      if (!feat) continue;
+      const key = dflightAtm09FeatureDedupKey(feat, synIdx++);
+      if (seen[key]) continue;
+      seen[key] = true;
+      out.push(feat);
+    }
+  }
+  return { type: "FeatureCollection", features: out };
+}
+
+function dflightAtm09GeomBbox(geom){
+  if (!geom || !geom.type) return null;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const eat = function(c){
+    if (!c || c.length < 2) return;
+    const x = Number(c[0]), y = Number(c[1]);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+    if (x < minX) minX = x;
+    if (y < minY) minY = y;
+    if (x > maxX) maxX = x;
+    if (y > maxY) maxY = y;
+  };
+  const walkRing = function(ring){
+    if (!Array.isArray(ring)) return;
+    for (let i = 0; i < ring.length; i++) eat(ring[i]);
+  };
+  try {
+    if (geom.type === "Polygon" && Array.isArray(geom.coordinates)){
+      for (let i = 0; i < geom.coordinates.length; i++) walkRing(geom.coordinates[i]);
+    } else if (geom.type === "MultiPolygon" && Array.isArray(geom.coordinates)){
+      for (let i = 0; i < geom.coordinates.length; i++){
+        const poly = geom.coordinates[i];
+        if (!Array.isArray(poly)) continue;
+        for (let j = 0; j < poly.length; j++) walkRing(poly[j]);
+      }
+    } else {
+      return null;
+    }
+  } catch(_){ return null; }
+  if (!(minX <= maxX && minY <= maxY)) return null;
+  return [minX, minY, maxX, maxY];
+}
+
+function dflightAtm09BboxesOverlap(a, b){
+  if (!a || !b || a.length < 4 || b.length < 4) return false;
+  return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1];
+}
+
+function dflightAtm09FilterFeaturesToBbox(features, bbox){
+  if (!Array.isArray(features)) return [];
+  if (!bbox || bbox.length < 4) return features.slice();
+  const out = [];
+  for (let i = 0; i < features.length; i++){
+    const feat = features[i];
+    if (!feat) continue;
+    const gb = dflightAtm09GeomBbox(feat.geometry);
+    if (!gb || dflightAtm09BboxesOverlap(gb, bbox)) out.push(feat);
+  }
+  return out;
+}
+
+async function dflightAtm09FetchInfoCellRaw(bboxStr, ctl, token){
+  if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
+  if (!dflightClientNetworkAllowed()) return { kind: "gate" };
+  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return { kind: "gate" };
+  const base = dflightHelperBaseUrl();
+  if (!base) return { kind: "error" };
   const url = base + "/atm09/info?bbox=" + encodeURIComponent(bboxStr);
-  const timer = setTimeout(function(){
-    try { if (ctl) ctl.abort("timeout"); } catch(_){}
-  }, DFLIGHT_ATM09_INFO_TIMEOUT_MS);
   try {
     const fetchFn = (typeof _dflightFetchImpl === "function") ? _dflightFetchImpl : fetch;
     const init = {
@@ -39735,25 +39956,219 @@ async function dflightAtm09FetchInfoForViewport(){
     };
     if (ctl) init.signal = ctl.signal;
     const resp = await fetchFn(url, init);
-    if (token !== _dflightAtm09InfoToken) return;
+    if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
     if (!resp.ok){
-      dflightAtm09MarkInfoUnavailable();
-      return;
+      const body = await dflightAtm09TryReadJsonBody(resp);
+      if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
+      if (dflightAtm09BodyIsCap(body)) return { kind: "cap", body: body, status: resp.status };
+      return { kind: "error", body: body, status: resp.status };
     }
-    const fc = await resp.json();
+    const fc = await dflightAtm09TryReadJsonBody(resp);
+    if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
+    if (!dflightAtm09FcLooksValid(fc)) return { kind: "invalid" };
+    if (dflightAtm09FcIsSuspectedTruncation(fc)) return { kind: "truncated", fc: fc };
+    return { kind: "ok", fc: fc };
+  } catch(e){
+    if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
+    const name = e && e.name ? String(e.name) : "";
+    if (name === "AbortError" || (ctl && ctl.signal && ctl.signal.aborted)) return { kind: "aborted" };
+    return { kind: "error" };
+  }
+}
+
+/**
+ * Adaptive subdivision after an initial viewport response that is cap or suspected truncation.
+ * Budget includes the initial request already counted in stats.networkRequests.
+ */
+async function dflightAtm09FetchInfoSubdivide(rootBbox, token, ctl, stats, seedDepth){
+  const pending = [];
+  const kids0 = dflightAtm09QuadSplit(rootBbox);
+  const depth0 = (seedDepth == null) ? 1 : (seedDepth | 0);
+  for (let i = 0; i < kids0.length; i++) pending.push({ bbox: kids0[i], depth: depth0 });
+  stats.subdivided = true;
+
+  const cellFcs = [];
+  let fatal = false;
+  let inFlight = 0;
+  const waiters = [];
+  const bump = function(){
+    while (waiters.length){
+      const w = waiters.shift();
+      try { w(); } catch(_){}
+    }
+  };
+  const wait = function(){
+    return new Promise(function(resolve){ waiters.push(resolve); });
+  };
+
+  async function processOne(item){
     if (token !== _dflightAtm09InfoToken) return;
-    if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)){
-      dflightAtm09MarkInfoUnavailable();
+    if (fatal) return;
+    if (!dflightClientNetworkAllowed() || !_dflightAtm09Preferred || !_dflightOverlayVisible){
+      fatal = true;
+      stats.reason = "gate_off";
       return;
     }
-    dflightAtm09ApplyInfoSuccess(fc, bboxStr);
+    const cached = dflightAtm09SubdivCacheGet(item.bbox);
+    if (cached){
+      stats.cacheHits++;
+      cellFcs.push(cached);
+      return;
+    }
+    if (stats.networkRequests >= DFLIGHT_ATM09_SUBDIV_MAX_REQUESTS){
+      stats.incomplete = true;
+      stats.reason = "budget";
+      return;
+    }
+    stats.networkRequests++;
+    const bkey = dflightAtm09FormatBboxKey(item.bbox);
+    const result = await dflightAtm09FetchInfoCellRaw(bkey, ctl, token);
+    if (token !== _dflightAtm09InfoToken) return;
+    if (result.kind === "stale" || result.kind === "aborted") return;
+    if (result.kind === "ok"){
+      dflightAtm09SubdivCacheSet(item.bbox, result.fc);
+      cellFcs.push(result.fc);
+      return;
+    }
+    if (result.kind === "cap" || result.kind === "truncated"){
+      if (item.depth < DFLIGHT_ATM09_SUBDIV_MAX_DEPTH){
+        const kids = dflightAtm09QuadSplit(item.bbox);
+        for (let k = 0; k < kids.length; k++) pending.push({ bbox: kids[k], depth: item.depth + 1 });
+      } else {
+        stats.incomplete = true;
+        stats.reason = (result.kind === "cap") ? "cap_max_depth" : "truncated_max_depth";
+      }
+      return;
+    }
+    if (result.kind === "gate"){
+      fatal = true;
+      stats.reason = "gate_off";
+      return;
+    }
+    fatal = true;
+    stats.reason = result.kind || "error";
+  }
+
+  async function pump(){
+    while (true){
+      if (token !== _dflightAtm09InfoToken) return;
+      if (fatal) return;
+      if (!pending.length && inFlight === 0) return;
+      if (!pending.length){
+        await wait();
+        continue;
+      }
+      if (inFlight >= DFLIGHT_ATM09_SUBDIV_CONCURRENCY){
+        await wait();
+        continue;
+      }
+      const item = pending.shift();
+      inFlight++;
+      if (inFlight > stats.maxInFlight) stats.maxInFlight = inFlight;
+      try {
+        await processOne(item);
+      } finally {
+        inFlight--;
+        bump();
+      }
+    }
+  }
+
+  const pumps = [];
+  for (let p = 0; p < DFLIGHT_ATM09_SUBDIV_CONCURRENCY; p++) pumps.push(pump());
+  await Promise.all(pumps);
+  if (token !== _dflightAtm09InfoToken) return { stale: true };
+  if (fatal || stats.incomplete) return { ok: false, cellFcs: cellFcs };
+  return { ok: true, cellFcs: cellFcs };
+}
+
+async function dflightAtm09FetchInfoForViewport(){
+  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+  if (!dflightClientNetworkAllowed()) return;
+  const base = dflightHelperBaseUrl();
+  if (!base) return;
+  const bbox = dflightAtm09ViewportBboxWithMargin();
+  if (!bbox) return;
+  const bboxStr = dflightAtm09FormatBboxKey(bbox);
+  if (_dflightAtm09InfoLastBboxKey === bboxStr && _dflightAtm09InfoFc) return;
+  const token = ++_dflightAtm09InfoToken;
+  if (_dflightAtm09InfoAbort){
+    try { _dflightAtm09InfoAbort.abort("supersede"); } catch(_){}
+  }
+  const ctl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  _dflightAtm09InfoAbort = ctl;
+  const timer = setTimeout(function(){
+    try { if (ctl) ctl.abort("timeout"); } catch(_){}
+  }, DFLIGHT_ATM09_INFO_TIMEOUT_MS);
+  const stats = {
+    networkRequests: 0,
+    cacheHits: 0,
+    subdivided: false,
+    incomplete: false,
+    reason: null,
+    maxInFlight: 0
+  };
+  _dflightAtm09InfoLastFetchStats = stats;
+  _dflightAtm09InfoLastFailReason = null;
+  try {
+    const cachedRoot = dflightAtm09SubdivCacheGet(bbox);
+    if (cachedRoot){
+      stats.cacheHits++;
+      if (token !== _dflightAtm09InfoToken) return;
+      dflightAtm09ApplyInfoSuccess(cachedRoot, bboxStr);
+      return;
+    }
+
+    stats.networkRequests++;
+    const first = await dflightAtm09FetchInfoCellRaw(bboxStr, ctl, token);
+    if (token !== _dflightAtm09InfoToken) return;
+    if (first.kind === "stale" || first.kind === "aborted") return;
+
+    if (first.kind === "ok"){
+      dflightAtm09SubdivCacheSet(bbox, first.fc);
+      dflightAtm09ApplyInfoSuccess(first.fc, bboxStr);
+      return;
+    }
+
+    if (first.kind === "cap" || first.kind === "truncated"){
+      const seedDepth = 1;
+      const sub = await dflightAtm09FetchInfoSubdivide(bbox, token, ctl, stats, seedDepth);
+      if (token !== _dflightAtm09InfoToken) return;
+      if (!sub || sub.stale) return;
+      if (!sub.ok){
+        _dflightAtm09InfoLastFailReason = stats.reason || "subdiv_incomplete";
+        dflightAtm09MarkInfoUnavailable();
+        return;
+      }
+      const merged = dflightAtm09MergeFeatureCollections(sub.cellFcs || []);
+      const filtered = dflightAtm09FilterFeaturesToBbox(merged.features, bbox);
+      if (filtered.length > DFLIGHT_ATM09_INFO_AGG_CAP){
+        stats.incomplete = true;
+        stats.reason = "agg_cap";
+        _dflightAtm09InfoLastFailReason = "agg_cap";
+        dflightAtm09MarkInfoUnavailable();
+        return;
+      }
+      const fcOut = { type: "FeatureCollection", features: filtered };
+      dflightAtm09SubdivCacheSet(bbox, fcOut);
+      dflightAtm09ApplyInfoSuccess(fcOut, bboxStr);
+      return;
+    }
+
+    /* Generic non-cap failure / invalid — FIX2 unavailable fallback (no subdivision). */
+    _dflightAtm09InfoLastFailReason = first.kind || "error";
+    dflightAtm09MarkInfoUnavailable();
   } catch(_){
-    if (token === _dflightAtm09InfoToken) dflightAtm09MarkInfoUnavailable();
+    if (token === _dflightAtm09InfoToken){
+      _dflightAtm09InfoLastFailReason = "exception";
+      dflightAtm09MarkInfoUnavailable();
+    }
   } finally {
     try { clearTimeout(timer); } catch(_){}
     if (_dflightAtm09InfoAbort === ctl) _dflightAtm09InfoAbort = null;
   }
 }
+
 
 function dflightAtm09GeomToSvgPathD(geom, root, tx, ty){
   if (!geom || typeof dflightGeomPolygonToSvgPathD !== "function") return "";
@@ -40507,8 +40922,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_186", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
+    add("H_build_187", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41002,9 +41417,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_186",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
+    add("HitA_build_187",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -41081,9 +41496,9 @@ function dflightSelfTestHitFixA(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
         _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
       }
-      const srcFn = String(dflightAtm09FetchInfoForViewport);
+      const srcFn = String(dflightAtm09FetchInfoForViewport) + String(dflightAtm09FetchInfoCellRaw);
       const hasMark = srcFn.indexOf("dflightAtm09MarkInfoUnavailable") >= 0
-        && srcFn.indexOf("!resp.ok") >= 0;
+        && (srcFn.indexOf("!resp.ok") >= 0 || srcFn.indexOf("dflightAtm09BodyIsCap") >= 0);
       try {
         _dflightOverlayVisible = true;
         _dflightAtm09Preferred = true;
@@ -41470,11 +41885,13 @@ function dflightSelfTestHitFixA(){
 
     add("HitA_FIX2_stale_token_source_guard", (function(){
       const src = String(dflightAtm09FetchInfoForViewport);
-      const idxTok1 = src.indexOf("token !== _dflightAtm09InfoToken");
-      const idxMark = src.indexOf("dflightAtm09MarkInfoUnavailable");
-      const idxTok2 = src.lastIndexOf("token !== _dflightAtm09InfoToken");
-      const idxApply = src.indexOf("dflightAtm09ApplyInfoSuccess");
-      return idxTok1 >= 0 && idxMark > idxTok1 && idxTok2 >= 0 && idxApply > idxTok2;
+      const cell = String(dflightAtm09FetchInfoCellRaw);
+      const hasTok = src.indexOf("token !== _dflightAtm09InfoToken") >= 0
+        && cell.indexOf("token !== _dflightAtm09InfoToken") >= 0;
+      const hasMark = src.indexOf("dflightAtm09MarkInfoUnavailable") >= 0;
+      const hasApply = src.indexOf("dflightAtm09ApplyInfoSuccess") >= 0;
+      const hasCapGate = cell.indexOf("!resp.ok") >= 0 && cell.indexOf("dflightAtm09BodyIsCap") >= 0;
+      return hasTok && hasMark && hasApply && hasCapGate;
     })());
 
     add("HitA_FIX2_fail_marks_unavailable_visible", (function(){
@@ -41876,6 +42293,7 @@ async function dflightSelfTestHitFixAAsync(){
         _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
       }
       try {
+        try { dflightAtm09SubdivCacheClear(); } catch(_){}
         _dflightOverlayVisible = true;
         _dflightAtm09Preferred = true;
         _dflightAtm09Ready = true;
@@ -41894,7 +42312,7 @@ async function dflightSelfTestHitFixAAsync(){
           return Promise.resolve({
             ok: false,
             status: 502,
-            json: function(){ return Promise.resolve({ error: "cap" }); }
+            json: function(){ return Promise.resolve({ error: "upstream", error_category: "http" }); }
           });
         };
         await dflightAtm09FetchInfoForViewport();
@@ -41902,8 +42320,10 @@ async function dflightSelfTestHitFixAAsync(){
         const vols = tm.querySelectorAll(".dflight-volume");
         const hits = tm.querySelectorAll(".dflight-zone-hitlayer");
         const info = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        const stats = _dflightAtm09InfoLastFetchStats;
         return !!( _dflightAtm09InfoUnavailable === true
           && _dflightAtm09InfoFc == null
+          && (!stats || stats.subdivided !== true)
           && ov.length === 1 && vols.length > 0 && hits.length === 0 && info.length === 0);
       } finally {
         try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
@@ -41970,6 +42390,558 @@ async function dflightSelfTestHitFixAAsync(){
           selfTest: dflightSelfTestAll,
           selfTestAsync: dflightSelfTestAllAsync,
           selfTestHitFixAAsync: dflightSelfTestHitFixAAsync
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
+function dflightSelfTestOptB(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    const s0 = DFLIGHT_TEMPORAL_STATES[i];
+    prevFilter[s0] = _dflightTemporalFilter[s0] === true;
+  }
+  const prevCache = _dflightAtm09SubdivCache;
+  const prevStats = _dflightAtm09InfoLastFetchStats;
+  const prevFail = _dflightAtm09InfoLastFailReason;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevFc = _dflightAtm09InfoFc;
+  const prevBbox = _dflightAtm09InfoLastBboxKey;
+  const prevPref = _dflightAtm09Preferred;
+  const prevVis = _dflightOverlayVisible;
+  const prevTok = _dflightAtm09InfoToken;
+  let prevForce = null;
+  let prevOpsec = null;
+  try {
+    if (typeof state !== "undefined"){
+      prevForce = state.forceOffline;
+      prevOpsec = state.opsecStrict;
+      state.forceOffline = false;
+      state.opsecStrict = false;
+    }
+    _dflightAtm09SubdivCache = [];
+    _dflightAtm09InfoLastFetchStats = null;
+    _dflightAtm09InfoLastFailReason = null;
+
+    add("OptB_build_187",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 187
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A");
+
+    add("OptB_constants",
+      DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
+      && DFLIGHT_ATM09_SUBDIV_MAX_REQUESTS === 21
+      && DFLIGHT_ATM09_SUBDIV_CONCURRENCY === 3
+      && DFLIGHT_ATM09_INFO_AGG_CAP === 4000
+      && DFLIGHT_ATM09_INFO_TRUNCATE_HINT === 1000);
+
+    add("OptB_body_is_cap",
+      dflightAtm09BodyIsCap({ error: "cap" }) === true
+      && dflightAtm09BodyIsCap({ error_category: "cap" }) === true
+      && dflightAtm09BodyIsCap({ error: "upstream" }) === false
+      && dflightAtm09BodyIsCap(null) === false);
+
+    add("OptB_quad_split", (function(){
+      const kids = dflightAtm09QuadSplit([0, 0, 4, 4]);
+      return kids.length === 4
+        && kids[0][0] === 0 && kids[0][1] === 0 && kids[0][2] === 2 && kids[0][3] === 2
+        && kids[3][0] === 2 && kids[3][1] === 2 && kids[3][2] === 4 && kids[3][3] === 4;
+    })());
+
+    add("OptB_merge_dedup_id", (function(){
+      const poly = { type: "Polygon", coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
+      const a = { type: "FeatureCollection", features: [
+        { type: "Feature", properties: { id: "A" }, geometry: poly },
+        { type: "Feature", properties: { id: "B" }, geometry: poly }
+      ]};
+      const b = { type: "FeatureCollection", features: [
+        { type: "Feature", properties: { id: "A" }, geometry: poly },
+        { type: "Feature", properties: { id: "C" }, geometry: poly }
+      ]};
+      const m = dflightAtm09MergeFeatureCollections([a, b]);
+      return m.features.length === 3;
+    })());
+
+    add("OptB_merge_idless_no_collapse", (function(){
+      const poly1 = { type: "Polygon", coordinates: [[[0,0],[1,0],[1,1],[0,0]]] };
+      const poly2 = { type: "Polygon", coordinates: [[[2,2],[3,2],[3,3],[2,2]]] };
+      const a = { type: "FeatureCollection", features: [
+        { type: "Feature", properties: { name: "X" }, geometry: poly1 },
+        { type: "Feature", properties: { name: "Y" }, geometry: poly2 }
+      ]};
+      const m = dflightAtm09MergeFeatureCollections([a]);
+      return m.features.length === 2;
+    })());
+
+    add("OptB_truncation_hint",
+      dflightAtm09FcIsSuspectedTruncation({ type: "FeatureCollection", features: new Array(1000).fill(0).map(function(_,i){ return { type:"Feature", properties:{id:String(i)}, geometry:null }; }) }) === true
+      && dflightAtm09FcIsSuspectedTruncation({ type: "FeatureCollection", features: new Array(999).fill(0).map(function(_,i){ return { type:"Feature", properties:{id:String(i)}, geometry:null }; }) }) === false);
+
+    add("OptB_cache_hit_session", (function(){
+      dflightAtm09SubdivCacheClear();
+      const bbox = [9.0, 44.0, 9.2, 44.2];
+      const fc = { type: "FeatureCollection", features: [{ type: "Feature", properties: { id: "c1" }, geometry: null }] };
+      const now = Date.now();
+      dflightAtm09SubdivCacheSet(bbox, fc, now);
+      const hit = dflightAtm09SubdivCacheGet(bbox, now);
+      return !!(hit && hit.features && hit.features[0] && hit.features[0].properties.id === "c1");
+    })());
+
+    add("OptB_cache_ttl_bucket", (function(){
+      dflightAtm09SubdivCacheClear();
+      const bbox = [9.0, 44.0, 9.2, 44.2];
+      const fc = { type: "FeatureCollection", features: [{ type: "Feature", properties: { id: "old" }, geometry: null }] };
+      const t0 = Date.now();
+      dflightAtm09SubdivCacheSet(bbox, fc, t0);
+      const staleTtl = dflightAtm09SubdivCacheGet(bbox, t0 + DFLIGHT_ATM09_SUBDIV_CACHE_TTL_MS + 1);
+      dflightAtm09SubdivCacheClear();
+      dflightAtm09SubdivCacheSet(bbox, fc, t0);
+      const otherMinute = dflightAtm09SubdivCacheGet(bbox, t0 + 60000);
+      return staleTtl == null && otherMinute == null;
+    })());
+
+    add("OptB_cache_rejects_truncated", (function(){
+      dflightAtm09SubdivCacheClear();
+      const bbox = [1, 1, 2, 2];
+      const feats = [];
+      for (let i = 0; i < 1000; i++) feats.push({ type: "Feature", properties: { id: "t"+i }, geometry: null });
+      dflightAtm09SubdivCacheSet(bbox, { type: "FeatureCollection", features: feats }, Date.now());
+      return dflightAtm09SubdivCacheGet(bbox) == null && _dflightAtm09SubdivCache.length === 0;
+    })());
+
+    add("OptB_TEMPB_dim_on_off", (function(){
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      dflightAtm09SyncTemporalContextUi();
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      const hint = document.getElementById("dflightTemporalAtm09Hint");
+      if (!tm) return true;
+      const offOk = !tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden);
+      dflightSetTemporalFilter("FUTURE", false);
+      const onOk = tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden === false);
+      dflightSetTemporalFilter("FUTURE", true);
+      const backOk = !tm.classList.contains("atm09-temporal-dim");
+      return !!(offOk && onOk && backOk && dflightTemporalFilterIsRestrictive() === false);
+    })());
+
+    add("OptB_i18n_atm09_hint_it_en_fr", (function(){
+      const it = I18N && I18N.it && I18N.it["dflight.filter.temporal.atm09DimHint"];
+      const en = I18N && I18N.en && I18N.en["dflight.filter.temporal.atm09DimHint"];
+      const fr = I18N && I18N.fr && I18N.fr["dflight.filter.temporal.atm09DimHint"];
+      return !!(it && en && fr && it.indexOf("ATM09") >= 0 && en.indexOf("ATM09") >= 0 && fr.indexOf("ATM09") >= 0);
+    })());
+
+    add("OptB_preferred_off_clears_cache", (function(){
+      dflightAtm09SubdivCacheClear();
+      dflightAtm09SubdivCacheSet([1,1,2,2], { type:"FeatureCollection", features:[{type:"Feature",properties:{id:"z"},geometry:null}] }, Date.now());
+      const was = _dflightAtm09Preferred;
+      try {
+        _dflightAtm09Preferred = true;
+        dflightAtm09SetPreferred(false);
+        return _dflightAtm09SubdivCache.length === 0;
+      } finally {
+        _dflightAtm09Preferred = was;
+      }
+    })());
+
+  } catch (e){
+    add("OptB_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      const s0 = DFLIGHT_TEMPORAL_STATES[i];
+      _dflightTemporalFilter[s0] = prevFilter[s0] === true;
+    }
+    try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
+    _dflightAtm09SubdivCache = prevCache;
+    _dflightAtm09InfoLastFetchStats = prevStats;
+    _dflightAtm09InfoLastFailReason = prevFail;
+    _dflightAtm09InfoUnavailable = prevUnavail;
+    _dflightAtm09InfoFc = prevFc;
+    _dflightAtm09InfoLastBboxKey = prevBbox;
+    _dflightAtm09Preferred = prevPref;
+    _dflightOverlayVisible = prevVis;
+    _dflightAtm09InfoToken = prevTok;
+    if (typeof state !== "undefined"){
+      if (prevForce !== null) state.forceOffline = prevForce;
+      if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+    }
+  }
+  return checks;
+}
+
+async function dflightSelfTestOptBAsync(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    prevFilter[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+  }
+  const prevFetch = _dflightFetchImpl;
+  const prevPref = _dflightAtm09Preferred;
+  const prevVis = _dflightOverlayVisible;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevFc = _dflightAtm09InfoFc;
+  const prevBbox = _dflightAtm09InfoLastBboxKey;
+  const prevTok = _dflightAtm09InfoToken;
+  const prevCache = _dflightAtm09SubdivCache;
+  const prevStats = _dflightAtm09InfoLastFetchStats;
+  const prevFail = _dflightAtm09InfoLastFailReason;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevReady = _dflightAtm09Ready;
+  const prevSess = _dflightOverlaySession;
+  const prevApply = dflightAtm09ApplyInfoSuccess;
+  let prevForce = null;
+  let prevOpsec = null;
+  const poly = {
+    type: "Polygon",
+    coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+  };
+  function mkFc(ids){
+    return {
+      type: "FeatureCollection",
+      features: ids.map(function(id){
+        return { type: "Feature", properties: { id: id, name: String(id) }, geometry: poly };
+      })
+    };
+  }
+  function mkCap(){
+    return { ok: false, status: 502, json: function(){ return Promise.resolve({ error: "cap" }); } };
+  }
+  function mkOk(fc){
+    return { ok: true, status: 200, json: function(){ return Promise.resolve(fc); } };
+  }
+  try {
+    if (typeof state !== "undefined"){
+      prevForce = state.forceOffline;
+      prevOpsec = state.opsecStrict;
+      state.forceOffline = false;
+      state.opsecStrict = false;
+    }
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+    _dflightAtm09SubdivCache = [];
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    _dflightOverlayVisible = true;
+    _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = true;
+    _dflightAtm09InfoUnavailable = false;
+    _dflightAtm09InfoFc = null;
+    _dflightAtm09InfoLastBboxKey = null;
+
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const mapReady = !!(root && tm && typeof dflightAtm09ViewportBboxWithMargin === "function" && dflightAtm09ViewportBboxWithMargin());
+
+    add("OptB_async_direct_200_no_subdiv", await (async function(){
+      if (!mapReady) return true;
+      let calls = 0;
+      let applyN = 0;
+      const fc = mkFc(["d1"]);
+      dflightAtm09ApplyInfoSuccess = function(){ applyN++; return prevApply.apply(this, arguments); };
+      _dflightFetchImpl = function(){ calls++; return Promise.resolve(mkOk(fc)); };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(applyN === 1 && calls === 1 && st && st.subdivided === false && st.networkRequests === 1
+        && _dflightAtm09InfoUnavailable === false && _dflightAtm09InfoFc === fc);
+    })());
+
+    add("OptB_async_cap_subdivides", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      let applyN = 0;
+      dflightAtm09ApplyInfoSuccess = function(fc){ applyN++; return prevApply.apply(this, arguments); };
+      _dflightFetchImpl = function(){
+        calls++;
+        if (calls === 1) return Promise.resolve(mkCap());
+        return Promise.resolve(mkOk(mkFc(["cell"+calls])));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && st.subdivided === true && calls >= 5 && calls <= 21
+        && applyN === 1 && _dflightAtm09InfoUnavailable === false
+        && st.networkRequests === calls && st.maxInFlight <= 3);
+    })());
+
+    add("OptB_async_generic_502_no_subdiv", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        return Promise.resolve({
+          ok: false, status: 502,
+          json: function(){ return Promise.resolve({ error: "boom" }); }
+        });
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(calls === 1 && st && st.subdivided === false && _dflightAtm09InfoUnavailable === true);
+    })());
+
+    add("OptB_async_invalid_body_no_subdiv", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: function(){ return Promise.resolve({ not: "a-fc" }); }
+        });
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(calls === 1 && st && st.subdivided === false && _dflightAtm09InfoUnavailable === true);
+    })());
+
+    add("OptB_async_depth1_only_capped_resplit", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        if (calls === 1) return Promise.resolve(mkCap());
+        if (calls === 2) return Promise.resolve(mkCap());
+        if (calls >= 3 && calls <= 5) return Promise.resolve(mkOk(mkFc(["ok"+calls])));
+        return Promise.resolve(mkOk(mkFc(["d2_"+calls])));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && st.subdivided && calls === 9 && st.networkRequests === 9
+        && _dflightAtm09InfoUnavailable === false);
+    })());
+
+    add("OptB_async_truncation_1000_subdiv", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      const big = mkFc([]);
+      for (let i = 0; i < 1000; i++) big.features.push({ type:"Feature", properties:{id:"t"+i}, geometry: poly });
+      _dflightFetchImpl = function(){
+        calls++;
+        if (calls === 1) return Promise.resolve(mkOk(big));
+        return Promise.resolve(mkOk(mkFc(["s"+calls])));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && st.subdivided === true && calls >= 5 && _dflightAtm09InfoUnavailable === false);
+    })());
+
+    add("OptB_async_budget_hard_cap", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      let inFlight = 0;
+      let maxInFlight = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        inFlight++;
+        if (inFlight > maxInFlight) maxInFlight = inFlight;
+        return new Promise(function(res){
+          setTimeout(function(){
+            inFlight--;
+            res(mkCap());
+          }, 0);
+        });
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && st.networkRequests <= 21 && calls <= 21 && maxInFlight <= 3
+        && _dflightAtm09InfoUnavailable === true);
+    })());
+
+    add("OptB_async_cache_second_pass", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        return Promise.resolve(mkOk(mkFc(["cached"])));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const c1 = calls;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(c1 === 1 && calls === 1 && st && st.cacheHits >= 1 && st.networkRequests === 0);
+    })());
+
+    add("OptB_async_gate_off_mid_subdiv", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      _dflightFetchImpl = function(){
+        calls++;
+        if (calls === 1) return Promise.resolve(mkCap());
+        if (typeof state !== "undefined") state.forceOffline = true;
+        return Promise.resolve(mkOk(mkFc(["late"+calls])));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      if (typeof state !== "undefined") state.forceOffline = false;
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && (st.reason === "gate_off" || _dflightAtm09InfoUnavailable === true) && calls >= 1);
+    })());
+
+    add("OptB_async_agg_cap_unavailable", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let calls = 0;
+      const rootBb = dflightAtm09ViewportBboxWithMargin();
+      if (!rootBb) return true;
+      const rootKey = dflightAtm09FormatBboxKey(rootBb);
+      const rootW = rootBb[2] - rootBb[0];
+      let depth1CapDone = false;
+      _dflightFetchImpl = function(url){
+        calls++;
+        const m = String(url || "").match(/bbox=([^&]+)/);
+        const bboxStr = m ? decodeURIComponent(m[1]) : "";
+        const parts = bboxStr ? bboxStr.split(",").map(Number) : null;
+        const w = (parts && parts.length >= 4) ? (parts[2] - parts[0]) : 0;
+        if (bboxStr === rootKey) return Promise.resolve(mkCap());
+        /* One depth-1 cell (half-width of root) caps to force 4 extra complete leaves. */
+        if (!depth1CapDone && Math.abs(w - rootW / 2) < 1e-5){
+          depth1CapDone = true;
+          return Promise.resolve(mkCap());
+        }
+        /* Complete cells must stay < truncate hint (1000); null geom bypasses viewport filter. */
+        const feats = [];
+        for (let i = 0; i < 999; i++){
+          feats.push({
+            type: "Feature",
+            properties: { id: "agg"+calls+"_"+i },
+            geometry: null
+          });
+        }
+        return Promise.resolve(mkOk({ type: "FeatureCollection", features: feats }));
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const st = _dflightAtm09InfoLastFetchStats;
+      return !!(st && st.reason === "agg_cap" && _dflightAtm09InfoUnavailable === true
+        && _dflightAtm09InfoLastFailReason === "agg_cap");
+    })());
+
+    add("OptB_async_stale_supersede", await (async function(){
+      if (!mapReady) return true;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      let resolveA = null;
+      let calls = 0;
+      const fcB = mkFc(["B"]);
+      _dflightFetchImpl = function(){
+        calls++;
+        if (calls === 1){
+          return new Promise(function(res){ resolveA = res; });
+        }
+        return Promise.resolve(mkOk(fcB));
+      };
+      const pA = dflightAtm09FetchInfoForViewport();
+      await Promise.resolve();
+      if (!resolveA) return false;
+      await dflightAtm09FetchInfoForViewport();
+      const afterB = { u: _dflightAtm09InfoUnavailable, fc: _dflightAtm09InfoFc };
+      resolveA(mkCap());
+      await pA;
+      return !!(afterB.u === false && afterB.fc === fcB
+        && _dflightAtm09InfoUnavailable === afterB.u
+        && _dflightAtm09InfoFc === afterB.fc);
+    })());
+
+  } catch (e){
+    add("OptB_async_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    dflightAtm09ApplyInfoSuccess = prevApply;
+    _dflightFetchImpl = prevFetch;
+    _dflightAtm09Preferred = prevPref;
+    _dflightOverlayVisible = prevVis;
+    _dflightAtm09InfoUnavailable = prevUnavail;
+    _dflightAtm09InfoFc = prevFc;
+    _dflightAtm09InfoLastBboxKey = prevBbox;
+    _dflightAtm09InfoToken = prevTok;
+    _dflightAtm09SubdivCache = prevCache;
+    _dflightAtm09InfoLastFetchStats = prevStats;
+    _dflightAtm09InfoLastFailReason = prevFail;
+    _dflightHelperBaseUrlOverride = prevBase;
+    _dflightAtm09Ready = prevReady;
+    _dflightOverlaySession = prevSess;
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prevFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+    }
+    if (typeof state !== "undefined"){
+      if (prevForce !== null) state.forceOffline = prevForce;
+      if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+    }
+    try {
+      const r = document.getElementById("miniMap");
+      const t = r && r.querySelector(".tile-map");
+      if (t){
+        if (typeof dflightRemoveOverlayDom === "function") dflightRemoveOverlayDom(t);
+        if (typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(t);
+      }
+    } catch(_){}
+  }
+  return checks;
+}
+
+(function dflightExtendSelfTestOptB(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const opt = dflightSelfTestOptB();
+      const checks = (prev.checks || []).concat(opt);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    const prevAsync = (window.GOIDflight && typeof window.GOIDflight.selfTestAsync === "function")
+      ? window.GOIDflight.selfTestAsync : null;
+    async function dflightSelfTestAllAsyncOptB(){
+      const base = prevAsync ? await prevAsync() : ((typeof dflightSelfTestAll === "function") ? dflightSelfTestAll() : { ok: true, checks: [] });
+      const extra = await dflightSelfTestOptBAsync();
+      const checks = (base.checks || []).concat(extra || []);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    }
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestAsync: dflightSelfTestAllAsyncOptB,
+          selfTestOptB: dflightSelfTestOptB,
+          selfTestOptBAsync: dflightSelfTestOptBAsync
         });
         Object.freeze(api);
         window.GOIDflight = api;
@@ -60897,7 +61869,9 @@ function renderTileMap(lat, lon, zoom){
   // keeps the viewport truly square after the W fix above.
   const mapBoxStyle = size === "small" ? "" : `height:${H}px`;
   const hintCls = (state.tilePackHints !== false) ? " tile-hints-on" : "";
-  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
+  const atm09DimCls = (typeof dflightTemporalFilterIsRestrictive === "function" && dflightTemporalFilterIsRestrictive())
+    ? " atm09-temporal-dim" : "";
+  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}${atm09DimCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
 
   // Panning layer: everything geo-anchored (tiles + marker + grid) lives
   // here so we can translate it as a single group during a drag gesture.
