@@ -23437,10 +23437,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-FIX-A-FIX1";
-const APP_BUILD_DETAIL = "ATM09_INFO stays above interaction-only hit-layer after temporal redraw.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-FIX-A-FIX2";
+const APP_BUILD_DETAIL = "ATM09 INFO unavailable → visible NFZ vector fallback; auto-recovery on INFO 200.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 185;
+const APP_BUILD_NUM = 186;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36094,10 +36094,14 @@ function dflightDrawOverlayDom(tileMap, dataset){
   // ATM09 visual preferred: skip colored NO_FLY_ZONE SVG (tiles provide paint).
   // FIX1: when temporal filter is restrictive, bypass suppress so filtered vectors paint immediately.
   // HIT-TEST-FIX-A: when suppress, draw interaction-only hit layer (selezione non dipende da /atm09/info).
-  const hitOnly = (typeof dflightAtm09ShouldSuppressNfzColors === "function"
-      && dflightAtm09ShouldSuppressNfzColors()
-      && !dflightTemporalFilterIsRestrictive());
+  // FIX2: INFO unavailable → visible NFZ vector fallback (never hitOnly-invisible alone).
+  const atm09Suppress = (typeof dflightAtm09ShouldSuppressNfzColors === "function"
+      && dflightAtm09ShouldSuppressNfzColors());
+  const hitOnly = (atm09Suppress
+      && !dflightTemporalFilterIsRestrictive()
+      && !_dflightAtm09InfoUnavailable);
   if (hitOnly) report.suppressed_for_atm09 = true;
+  else if (atm09Suppress && _dflightAtm09InfoUnavailable) report.atm09_info_visible_fallback = true;
   const root = document.getElementById("miniMap");
   if (!root){
     report.ok = false;
@@ -36182,6 +36186,7 @@ function dflightRenderOverlay(tileMap, dataset, options){
   options = options || {};
   if (dataset == null){
     _dflightOverlaySession = null;
+    _dflightAtm09InfoUnavailable = false;
     _dflightSelectedZoneId = null;
     dflightRemoveOverlayDom(tileMap);
     try { dflightCloseDetailsPanel(); } catch(_){}
@@ -36190,6 +36195,7 @@ function dflightRenderOverlay(tileMap, dataset, options){
   }
   if (!dataset || dataset.ok === false){
     _dflightOverlaySession = null;
+    _dflightAtm09InfoUnavailable = false;
     dflightRemoveOverlayDom(tileMap);
     try { dflightSyncPanelUi(); } catch(_){}
     return {
@@ -39171,9 +39177,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_185",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 185
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX1");
+    add("Tf_build_186",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39245,6 +39251,8 @@ let _dflightAtm09InfoTimer = null;
 let _dflightAtm09InfoToken = 0;
 /** Session-only last successful ATM09_INFO bbox key (dedup). */
 let _dflightAtm09InfoLastBboxKey = null;
+/** FIX2: session-only — ATM09 INFO unavailable for current request/viewport (visible NFZ fallback). */
+let _dflightAtm09InfoUnavailable = false;
 let _dflightAtm09LegendLoaded = false;
 let _dflightAtm09SelectedId = null;
 let _dflightAtm09RedrawScheduled = false;
@@ -39488,6 +39496,7 @@ function dflightAtm09OnNetworkGateOff(){
   _dflightAtm09InfoToken++;
   _dflightAtm09InfoFc = null;
   _dflightAtm09InfoLastBboxKey = null;
+  _dflightAtm09InfoUnavailable = false;
   _dflightAtm09LegendLoaded = false;
   try {
     const wrap = document.getElementById("dflightAtm09LegendWrap");
@@ -39529,6 +39538,8 @@ function dflightAtm09SetPreferred(on){
   _dflightAtm09Preferred = !!on;
   if (!_dflightAtm09Preferred){
     _dflightAtm09StartPending = false;
+    /* FIX2: preferred OFF invalidates failure context; reapply with preferred ON must NOT clear unavailable. */
+    _dflightAtm09InfoUnavailable = false;
     dflightAtm09ClearInfo();
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
@@ -39650,13 +39661,46 @@ function dflightAtm09ViewportBboxWithMargin(){
 }
 
 function dflightAtm09ClearStaleInfoKeepHit(){
-  /* HIT-TEST-FIX-A: INFO failure must not leave stale hit overlay; vector hit-layer stays authoritative. */
+  /* HIT-TEST-FIX-A: INFO failure must not leave stale hit overlay; vector hit-layer stays authoritative.
+     FIX2: clears INFO DOM/FC only — does NOT touch _dflightAtm09InfoUnavailable (failure state is separate). */
   _dflightAtm09InfoFc = null;
   _dflightAtm09InfoLastBboxKey = null;
   try {
     const root = document.getElementById("miniMap");
     const tm = root && root.querySelector(".tile-map");
     if (tm && typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(tm);
+  } catch(_){}
+}
+
+/** FIX2: mark INFO unavailable for current viewport and redraw visible NFZ vector overlay. */
+function dflightAtm09MarkInfoUnavailable(){
+  _dflightAtm09InfoUnavailable = true;
+  dflightAtm09ClearStaleInfoKeepHit();
+  try {
+    if (_dflightOverlayVisible && _dflightOverlaySession && _dflightOverlaySession.dataset
+        && _dflightOverlaySession.dataset.ok !== false){
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm) dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+    }
+  } catch(_){}
+}
+
+/** FIX2: apply valid INFO success; auto-exit visible fallback when recovering. */
+function dflightAtm09ApplyInfoSuccess(fc, bboxKey){
+  const wasUnavailable = !!_dflightAtm09InfoUnavailable;
+  _dflightAtm09InfoUnavailable = false;
+  _dflightAtm09InfoFc = fc;
+  _dflightAtm09InfoLastBboxKey = bboxKey;
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (!tm) return;
+    if (wasUnavailable && _dflightOverlayVisible && _dflightOverlaySession && _dflightOverlaySession.dataset
+        && _dflightOverlaySession.dataset.ok !== false){
+      dflightDrawOverlayDom(tm, _dflightOverlaySession.dataset);
+    }
+    dflightAtm09DrawInfoHitOverlay(tm, fc);
   } catch(_){}
 }
 
@@ -39693,22 +39737,18 @@ async function dflightAtm09FetchInfoForViewport(){
     const resp = await fetchFn(url, init);
     if (token !== _dflightAtm09InfoToken) return;
     if (!resp.ok){
-      dflightAtm09ClearStaleInfoKeepHit();
+      dflightAtm09MarkInfoUnavailable();
       return;
     }
     const fc = await resp.json();
     if (token !== _dflightAtm09InfoToken) return;
     if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)){
-      dflightAtm09ClearStaleInfoKeepHit();
+      dflightAtm09MarkInfoUnavailable();
       return;
     }
-    _dflightAtm09InfoFc = fc;
-    _dflightAtm09InfoLastBboxKey = bboxStr;
-    const root = document.getElementById("miniMap");
-    const tm = root && root.querySelector(".tile-map");
-    if (tm) dflightAtm09DrawInfoHitOverlay(tm, fc);
+    dflightAtm09ApplyInfoSuccess(fc, bboxStr);
   } catch(_){
-    if (token === _dflightAtm09InfoToken) dflightAtm09ClearStaleInfoKeepHit();
+    if (token === _dflightAtm09InfoToken) dflightAtm09MarkInfoUnavailable();
   } finally {
     try { clearTimeout(timer); } catch(_){}
     if (_dflightAtm09InfoAbort === ctl) _dflightAtm09InfoAbort = null;
@@ -40467,8 +40507,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_185", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 185
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX1");
+    add("H_build_186", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -40959,10 +40999,12 @@ function dflightSelfTestHitFixA(){
   const prevBbox = _dflightAtm09InfoLastBboxKey;
   const prevFetch = _dflightFetchImpl;
   const prevAtm09Pref = _dflightAtm09Preferred;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_185",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 185
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX1");
+    add("HitA_build_186",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 186
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A-FIX2");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -41021,6 +41063,7 @@ function dflightSelfTestHitFixA(){
       try {
         _dflightOverlayVisible = true;
         _dflightAtm09InfoFc = null;
+        _dflightAtm09InfoUnavailable = false;
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         const report = dflightDrawOverlayDom(tm, ds);
         const hits = tm.querySelectorAll(".dflight-volume-hit");
@@ -41039,11 +41082,12 @@ function dflightSelfTestHitFixA(){
         _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
       }
       const srcFn = String(dflightAtm09FetchInfoForViewport);
-      const hasClear = srcFn.indexOf("dflightAtm09ClearStaleInfoKeepHit") >= 0
+      const hasMark = srcFn.indexOf("dflightAtm09MarkInfoUnavailable") >= 0
         && srcFn.indexOf("!resp.ok") >= 0;
       try {
         _dflightOverlayVisible = true;
         _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = false;
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         dflightDrawOverlayDom(tm, ds);
         const before = tm.querySelectorAll(".dflight-volume-hit").length;
@@ -41054,28 +41098,16 @@ function dflightSelfTestHitFixA(){
         _dflightAtm09InfoFc = fcStale;
         _dflightAtm09InfoLastBboxKey = "9,44,10,45";
         dflightAtm09DrawInfoHitOverlay(tm, fcStale);
-        let fetchHit = false;
-        _dflightFetchImpl = function(){
-          fetchHit = true;
-          return Promise.resolve({
-            ok: false,
-            status: 502,
-            json: function(){ return Promise.resolve({ error: "cap" }); }
-          });
-        };
-        _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
-        if (typeof state !== "undefined") state.forceOffline = false;
-        /* Drive !resp.ok branch synchronously via named clear (same as fetch failure path). */
+        /* clearStaleInfoKeepHit alone: clears INFO, does NOT flip unavailable / redraw. */
         dflightAtm09ClearStaleInfoKeepHit();
         const after = tm.querySelectorAll(".dflight-volume-hit").length;
         const infoGone = tm.querySelectorAll(".dflight-atm09-info-hit").length === 0;
         const fcCleared = _dflightAtm09InfoFc == null && _dflightAtm09InfoLastBboxKey == null;
-        /* Also assert fetchImpl wiring is used by source + helper present. */
-        void fetchHit;
-        return !!(hasClear && before > 0 && after === before && infoGone && fcCleared
-          && typeof dflightAtm09ClearStaleInfoKeepHit === "function");
+        return !!(hasMark && before > 0 && after === before && infoGone && fcCleared
+          && _dflightAtm09InfoUnavailable === false
+          && typeof dflightAtm09ClearStaleInfoKeepHit === "function"
+          && typeof dflightAtm09MarkInfoUnavailable === "function");
       } finally {
-        _dflightFetchImpl = prevFetch;
         try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
         try { dflightRemoveOverlayDom(tm); } catch(_){}
       }
@@ -41429,9 +41461,264 @@ function dflightSelfTestHitFixA(){
       && String(dflightAttachHoverHandler).indexOf("dflight-volume-hit") >= 0);
 
     add("HitA_info_fetch_clears_stale",
-      String(dflightAtm09FetchInfoForViewport).indexOf("dflightAtm09ClearStaleInfoKeepHit") >= 0
+      String(dflightAtm09FetchInfoForViewport).indexOf("dflightAtm09MarkInfoUnavailable") >= 0
+      && String(dflightAtm09FetchInfoForViewport).indexOf("dflightAtm09ApplyInfoSuccess") >= 0
       && typeof dflightAtm09ClearStaleInfoKeepHit === "function"
+      && typeof dflightAtm09MarkInfoUnavailable === "function"
+      && typeof dflightAtm09ApplyInfoSuccess === "function"
       && typeof dflightAtm09EnsureInfoAboveHitLayer === "function");
+
+    add("HitA_FIX2_stale_token_source_guard", (function(){
+      const src = String(dflightAtm09FetchInfoForViewport);
+      const idxTok1 = src.indexOf("token !== _dflightAtm09InfoToken");
+      const idxMark = src.indexOf("dflightAtm09MarkInfoUnavailable");
+      const idxTok2 = src.lastIndexOf("token !== _dflightAtm09InfoToken");
+      const idxApply = src.indexOf("dflightAtm09ApplyInfoSuccess");
+      return idxTok1 >= 0 && idxMark > idxTok1 && idxTok2 >= 0 && idxApply > idxTok2;
+    })());
+
+    add("HitA_FIX2_fail_marks_unavailable_visible", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      const prevSessLocal = _dflightOverlaySession;
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = false;
+        _dflightOverlaySession = { dataset: ds };
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        const fcStale = {
+          type: "FeatureCollection",
+          features: [{ type: "Feature", id: "stale2", properties: { id: "stale2" }, geometry: poly }]
+        };
+        _dflightAtm09InfoFc = fcStale;
+        _dflightAtm09InfoLastBboxKey = "1,2,3,4";
+        dflightAtm09DrawInfoHitOverlay(tm, fcStale);
+        dflightAtm09MarkInfoUnavailable();
+        const ov = tm.querySelectorAll(".dflight-zone-overlay");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        const hits = tm.querySelectorAll(".dflight-zone-hitlayer");
+        const info = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        return !!( _dflightAtm09InfoUnavailable === true
+          && _dflightAtm09InfoFc == null && _dflightAtm09InfoLastBboxKey == null
+          && ov.length === 1 && vols.length > 0 && hits.length === 0 && info.length === 0
+          && tm._dflightClickBound === true);
+      } finally {
+        _dflightOverlaySession = prevSessLocal;
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_future_cycle_during_failure", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      const prevSessLocal = _dflightOverlaySession;
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = true;
+        _dflightOverlaySession = { dataset: ds };
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        dflightSetTemporalFilter("FUTURE", false);
+        dflightRedrawOverlayFromSession(tm);
+        dflightSetTemporalFilter("FUTURE", true);
+        dflightRedrawOverlayFromSession(tm);
+        const ov = tm.querySelectorAll(".dflight-zone-overlay");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        const hits = tm.querySelectorAll(".dflight-zone-hitlayer");
+        return !!(ov.length === 1 && vols.length > 0 && hits.length === 0
+          && _dflightAtm09InfoUnavailable === true);
+      } finally {
+        _dflightOverlaySession = prevSessLocal;
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_recovery_restores_atm09", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      const prevSessLocal = _dflightOverlaySession;
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = true;
+        _dflightOverlaySession = { dataset: ds };
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        const fc = {
+          type: "FeatureCollection",
+          features: [{ type: "Feature", id: "atm-rec", properties: { id: "atm-rec", name: "ATM Rec" }, geometry: poly }]
+        };
+        dflightAtm09ApplyInfoSuccess(fc, "9.000000,44.000000,9.200000,44.200000");
+        const hitSvg = tm.querySelectorAll(".dflight-zone-hitlayer");
+        const ovSvg = tm.querySelectorAll(".dflight-zone-overlay");
+        const infoSvg = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        const infoEl = tm.querySelector(".dflight-atm09-info-overlay");
+        const hitEl = tm.querySelector(".dflight-zone-hitlayer");
+        const zOk = !!(infoEl && hitEl
+          && (parseInt(infoEl.style.zIndex || "0", 10) >= 3)
+          && (parseInt(hitEl.style.zIndex || "0", 10) === 2 || (hitEl.style.zIndex || "2") === "2")
+          && (infoEl.compareDocumentPosition(hitEl) & Node.DOCUMENT_POSITION_PRECEDING));
+        return !!( _dflightAtm09InfoUnavailable === false
+          && _dflightAtm09InfoFc === fc
+          && hitSvg.length === 1 && ovSvg.length === 0 && infoSvg.length === 1 && zOk);
+      } finally {
+        _dflightOverlaySession = prevSessLocal;
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_recovery_single_dispatch", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      const prevSessLocal = _dflightOverlaySession;
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = true;
+        _dflightOverlaySession = { dataset: ds };
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        const fc = {
+          type: "FeatureCollection",
+          features: [{ type: "Feature", id: "atm-clk2", properties: { id: "atm-clk2", name: "ATM Clk2" }, geometry: poly }]
+        };
+        dflightAtm09ApplyInfoSuccess(fc, "9.000000,44.000000,9.200000,44.200000");
+        const hitSvg = tm.querySelector(".dflight-zone-hitlayer");
+        const infoSvg = tm.querySelector(".dflight-atm09-info-overlay");
+        const hitP = tm.querySelector(".dflight-volume-hit");
+        const infoP = tm.querySelector(".dflight-atm09-info-hit");
+        if (!hitSvg || !infoSvg || !hitP || !infoP) return false;
+        const mapBr2 = root.getBoundingClientRect();
+        const left2 = Math.max(8, mapBr2.left + Math.floor(mapBr2.width / 2) - 100);
+        const top2 = Math.max(8, mapBr2.top + Math.floor(mapBr2.height / 2) - 100);
+        [hitSvg, infoSvg].forEach(function(svg){
+          svg.setAttribute("width", "200");
+          svg.setAttribute("height", "200");
+          svg.setAttribute("viewBox", "0 0 200 200");
+          svg.style.position = "fixed";
+          svg.style.left = left2 + "px";
+          svg.style.top = top2 + "px";
+          svg.style.width = "200px";
+          svg.style.height = "200px";
+          svg.style.pointerEvents = "none";
+          svg.style.display = "block";
+        });
+        hitP.setAttribute("d", "M40 40L120 40L120 120L40 120Z");
+        infoP.setAttribute("d", "M60 60L140 60L140 140L60 140Z");
+        dflightAtm09EnsureInfoAboveHitLayer(tm);
+        hitSvg.style.zIndex = "2147483000";
+        infoSvg.style.zIndex = "2147483001";
+        let selectN = 0, atmN = 0;
+        const prevSelect = dflightSelectZone;
+        const prevOpen = dflightAtm09OpenDetails;
+        dflightSelectZone = function(){ selectN++; };
+        dflightAtm09OpenDetails = function(){ atmN++; };
+        const br = hitSvg.getBoundingClientRect();
+        const x = br.left + 90, y = br.top + 90;
+        const el = document.elementFromPoint(x, y);
+        if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
+        dflightSelectZone = prevSelect;
+        dflightAtm09OpenDetails = prevOpen;
+        return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit")
+          && atmN === 1 && selectN === 0
+          && tm.querySelectorAll(".dflight-zone-hitlayer").length === 1
+          && tm.querySelectorAll(".dflight-atm09-info-overlay").length === 1);
+      } finally {
+        _dflightOverlaySession = prevSessLocal;
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_all_off_with_failure", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09InfoUnavailable = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        const report = dflightDrawOverlayDom(tm, ds);
+        const hits = tm.querySelectorAll(".dflight-volume-hit");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        return !!(report && hits.length === 0 && vols.length === 0
+          && (report.filtered_temporal || 0) >= ds.zones.length);
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_no_duplicate_on_fallback_redraw", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09InfoUnavailable = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        dflightDrawOverlayDom(tm, ds);
+        return tm.querySelectorAll(".dflight-zone-overlay").length === 1
+          && tm.querySelectorAll(".dflight-zone-hitlayer").length === 0
+          && tm._dflightClickBound === true;
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_preferred_on_reapply_keeps_unavailable", (function(){
+      const was = _dflightAtm09InfoUnavailable;
+      const wasPref = _dflightAtm09Preferred;
+      try {
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = true;
+        dflightAtm09SetPreferred(true);
+        return _dflightAtm09InfoUnavailable === true && _dflightAtm09Preferred === true;
+      } finally {
+        _dflightAtm09InfoUnavailable = was;
+        _dflightAtm09Preferred = wasPref;
+      }
+    })());
+
+    add("HitA_FIX2_preferred_off_clears_unavailable", (function(){
+      const was = _dflightAtm09InfoUnavailable;
+      const wasPref = _dflightAtm09Preferred;
+      try {
+        _dflightAtm09Preferred = true;
+        _dflightAtm09InfoUnavailable = true;
+        dflightAtm09SetPreferred(false);
+        return _dflightAtm09InfoUnavailable === false && _dflightAtm09Preferred === false;
+      } finally {
+        _dflightAtm09InfoUnavailable = was;
+        _dflightAtm09Preferred = wasPref;
+      }
+    })());
+
+    add("HitA_FIX2_clearInfo_preserves_unavailable", (function(){
+      const was = _dflightAtm09InfoUnavailable;
+      try {
+        _dflightAtm09InfoUnavailable = true;
+        dflightAtm09ClearInfo();
+        return _dflightAtm09InfoUnavailable === true;
+      } finally {
+        _dflightAtm09InfoUnavailable = was;
+      }
+    })());
   } catch (e){
     add("HitA_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41445,6 +41732,8 @@ function dflightSelfTestHitFixA(){
     _dflightAtm09InfoFc = prevFc;
     _dflightAtm09InfoLastBboxKey = prevBbox;
     _dflightAtm09Preferred = prevAtm09Pref;
+    _dflightAtm09InfoUnavailable = prevUnavail;
+    _dflightHelperBaseUrlOverride = prevBase;
     _dflightFetchImpl = prevFetch;
     try {
       const r = document.getElementById("miniMap");
@@ -41457,6 +41746,196 @@ function dflightSelfTestHitFixA(){
     try {
       const probe = document.querySelector("[data-hita-svg-probe]");
       if (probe) probe.remove();
+    } catch(_){}
+  }
+  return checks;
+}
+
+async function dflightSelfTestHitFixAAsync(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    const s = DFLIGHT_TEMPORAL_STATES[i];
+    prevFilter[s] = _dflightTemporalFilter[s] === true;
+  }
+  const prevSuppress = (typeof dflightAtm09ShouldSuppressNfzColors === "function")
+    ? dflightAtm09ShouldSuppressNfzColors : null;
+  const prevVis = _dflightOverlayVisible;
+  const prevSess = _dflightOverlaySession;
+  const prevFc = _dflightAtm09InfoFc;
+  const prevBbox = _dflightAtm09InfoLastBboxKey;
+  const prevFetch = _dflightFetchImpl;
+  const prevAtm09Pref = _dflightAtm09Preferred;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevTok = _dflightAtm09InfoToken;
+  const prevReady = _dflightAtm09Ready;
+  let prevForceOffline = null;
+  try {
+    if (typeof state !== "undefined"){
+      prevForceOffline = state.forceOffline;
+      state.forceOffline = false;
+    }
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const layer = tm && tm.querySelector(".tile-layer");
+    const mapReady = !!(root && tm && layer);
+    const poly = {
+      type: "Polygon",
+      coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+    };
+    const ds = {
+      ok: true,
+      zones: [{
+        zone_id: "hita-async:1",
+        name: "HitA Async",
+        temporal_state: "ACTIVE_NOW",
+        bbox: null,
+        volumes: [{ volume_index: 0, geometry: poly }]
+      }]
+    };
+
+    add("HitA_FIX2_stale_async_concurrency", await (async function(){
+      if (!mapReady) return true;
+      if (typeof dflightAtm09ViewportBboxWithMargin !== "function") return false;
+      const bbox = dflightAtm09ViewportBboxWithMargin();
+      if (!bbox) return true; /* viewport not ready — skip without fail */
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      let resolveA = null;
+      let callN = 0;
+      const fcB = {
+        type: "FeatureCollection",
+        features: [{ type: "Feature", id: "b-ok", properties: { id: "b-ok", name: "B" }, geometry: poly }]
+      };
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09Ready = true;
+        _dflightAtm09InfoUnavailable = false;
+        _dflightAtm09InfoFc = null;
+        _dflightAtm09InfoLastBboxKey = null;
+        _dflightOverlaySession = { dataset: ds };
+        _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        _dflightFetchImpl = function(){
+          callN++;
+          if (callN === 1){
+            return new Promise(function(res){ resolveA = res; });
+          }
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: function(){ return Promise.resolve(fcB); }
+          });
+        };
+        const pA = dflightAtm09FetchInfoForViewport();
+        await Promise.resolve();
+        if (!resolveA) return false;
+        const snapTok = _dflightAtm09InfoToken;
+        const pB = dflightAtm09FetchInfoForViewport();
+        await pB;
+        const afterB_unavail = _dflightAtm09InfoUnavailable;
+        const afterB_fc = _dflightAtm09InfoFc;
+        const afterB_bbox = _dflightAtm09InfoLastBboxKey;
+        const afterB_hit = tm.querySelectorAll(".dflight-zone-hitlayer").length;
+        const afterB_info = tm.querySelectorAll(".dflight-atm09-info-overlay").length;
+        const afterB_ov = tm.querySelectorAll(".dflight-zone-overlay").length;
+        /* A terminates late with failure — must not mutate current viewport. */
+        resolveA({
+          ok: false,
+          status: 502,
+          json: function(){ return Promise.resolve({ error: "cap" }); }
+        });
+        await pA;
+        const staleOk = (_dflightAtm09InfoUnavailable === afterB_unavail)
+          && (_dflightAtm09InfoFc === afterB_fc)
+          && (_dflightAtm09InfoLastBboxKey === afterB_bbox)
+          && (tm.querySelectorAll(".dflight-zone-hitlayer").length === afterB_hit)
+          && (tm.querySelectorAll(".dflight-atm09-info-overlay").length === afterB_info)
+          && (tm.querySelectorAll(".dflight-zone-overlay").length === afterB_ov)
+          && (_dflightAtm09InfoToken !== snapTok || true);
+        const bOk = (afterB_unavail === false && afterB_fc === fcB && afterB_info === 1);
+        return !!(staleOk && bOk && callN >= 2);
+      } finally {
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_FIX2_async_502_visible_fallback", await (async function(){
+      if (!mapReady) return true;
+      const bbox = dflightAtm09ViewportBboxWithMargin();
+      if (!bbox) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        _dflightAtm09Ready = true;
+        _dflightAtm09InfoUnavailable = false;
+        _dflightAtm09InfoFc = {
+          type: "FeatureCollection",
+          features: [{ type: "Feature", id: "pre", properties: { id: "pre" }, geometry: poly }]
+        };
+        _dflightAtm09InfoLastBboxKey = "old-key";
+        _dflightOverlaySession = { dataset: ds };
+        _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        dflightAtm09DrawInfoHitOverlay(tm, _dflightAtm09InfoFc);
+        _dflightFetchImpl = function(){
+          return Promise.resolve({
+            ok: false,
+            status: 502,
+            json: function(){ return Promise.resolve({ error: "cap" }); }
+          });
+        };
+        await dflightAtm09FetchInfoForViewport();
+        const ov = tm.querySelectorAll(".dflight-zone-overlay");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        const hits = tm.querySelectorAll(".dflight-zone-hitlayer");
+        const info = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        return !!( _dflightAtm09InfoUnavailable === true
+          && _dflightAtm09InfoFc == null
+          && ov.length === 1 && vols.length > 0 && hits.length === 0 && info.length === 0);
+      } finally {
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+  } catch (e){
+    add("HitA_FIX2_async_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      const s = DFLIGHT_TEMPORAL_STATES[i];
+      _dflightTemporalFilter[s] = prevFilter[s] === true;
+    }
+    if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
+    _dflightOverlayVisible = prevVis;
+    _dflightOverlaySession = prevSess;
+    _dflightAtm09InfoFc = prevFc;
+    _dflightAtm09InfoLastBboxKey = prevBbox;
+    _dflightAtm09Preferred = prevAtm09Pref;
+    _dflightAtm09InfoUnavailable = prevUnavail;
+    _dflightHelperBaseUrlOverride = prevBase;
+    _dflightFetchImpl = prevFetch;
+    _dflightAtm09InfoToken = prevTok;
+    _dflightAtm09Ready = prevReady;
+    if (typeof state !== "undefined" && prevForceOffline !== null) state.forceOffline = prevForceOffline;
+    try {
+      const r = document.getElementById("miniMap");
+      const t = r && r.querySelector(".tile-map");
+      if (t){
+        dflightRemoveOverlayDom(t);
+        if (typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(t);
+      }
     } catch(_){}
   }
   return checks;
@@ -41475,9 +41954,23 @@ function dflightSelfTestHitFixA(){
         checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
       });
     };
+    async function dflightSelfTestAllAsync(){
+      const sync = (typeof dflightSelfTestAll === "function") ? dflightSelfTestAll() : { ok: true, checks: [] };
+      const asyncChecks = await dflightSelfTestHitFixAAsync();
+      const checks = (sync.checks || []).concat(asyncChecks || []);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    }
     if (window.GOIDflight){
       try {
-        const api = Object.assign({}, window.GOIDflight, { selfTest: dflightSelfTestAll });
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestAsync: dflightSelfTestAllAsync,
+          selfTestHitFixAAsync: dflightSelfTestHitFixAAsync
+        });
         Object.freeze(api);
         window.GOIDflight = api;
       } catch(_){}
