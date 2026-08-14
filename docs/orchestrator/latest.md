@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1` **IMPLEMENTED** — **REVIEW GPT-SOSTITUTIVA REQUIRED**. Candidate `4a6608413eab4ec47012fa2626f0614e1ff7c232` · build **188**. LIVE resta `c3007f5` / **187**. Helper **0.1.3**. Nessun deploy FIX1. Parent Automated Browser QA FAIL = TEMP-B CSS. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0038_riepilogo_dflight-option-b-impl-a-fix1.md`](inbox/2026-08-15_0038_riepilogo_dflight-option-b-impl-a-fix1.md).
+2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1` **DEPLOYED** — **Automated Browser QA PASS** (I/J). LIVE `4a66084` / build **188**. Helper **0.1.3**. **REVIEW GPT-SOSTITUTIVA PASS** su `4a66084…` (non Claude). Gate: **QA FINALE CHATGPT — PENDING**. QA operatore **non** attestata. Nessun `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0109_riepilogo_dflight-option-b-impl-a-fix1-deploy-qa.md`](inbox/2026-08-15_0109_riepilogo_dflight-option-b-impl-a-fix1-deploy-qa.md).
