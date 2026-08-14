@@ -23424,10 +23424,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2";
-const APP_BUILD_DETAIL = "Review hardening: non-destructive selftests + safe dialog open state + geometry clamp.";
+const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3";
+const APP_BUILD_DETAIL = "Resize top/height clamp inside usable map rect.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 182;
+const APP_BUILD_NUM = 183;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36389,30 +36389,81 @@ function dflightComputePanelSafeTop(opts){
   }
   return topY;
 }
-/** FIX2: HARD usable max height (never inflated by minH). */
-function dflightComputePanelAvailableHeight(opts){
+/**
+ * FIX3: usable map/viewport rect. bottom never exceeds viewport.
+ * { top: safeTop, bottom, pad, height: max(0, bottom - safeTop - pad) }
+ */
+function dflightComputePanelUsableRect(opts){
   opts = opts || {};
   const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
   const safeTop = dflightComputePanelSafeTop(opts);
-  let bottom = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+  let vh = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+  let bottom = vh;
   try {
     const map = document.getElementById("gisMapMount") || document.getElementById("miniMap");
     if (map){
       const br = map.getBoundingClientRect();
-      if (Number.isFinite(br.bottom) && br.bottom > safeTop) bottom = br.bottom;
+      if (Number.isFinite(br.bottom) && br.bottom > safeTop){
+        bottom = Math.min(br.bottom, vh);
+      }
     }
   } catch(_){}
-  return Math.max(0, Math.floor(bottom - safeTop - pad));
+  return {
+    top: safeTop,
+    bottom: bottom,
+    pad: pad,
+    height: Math.max(0, Math.floor(bottom - safeTop - pad))
+  };
+}
+/** FIX2/FIX3: HARD usable max from safeTop (never inflated by minH). */
+function dflightComputePanelAvailableHeight(opts){
+  return dflightComputePanelUsableRect(opts).height;
+}
+/** Clamp current dialog Y into [safeTop, maxAllowedTop]; do not snap valid tops to safeTop. */
+function dflightClampPanelTop(currentTop, rect, opts){
+  opts = opts || {};
+  rect = rect || dflightComputePanelUsableRect(opts);
+  const safeTop = rect.top;
+  const usableBottom = rect.bottom;
+  const pad = rect.pad;
+  const totalAvailable = Math.max(0, usableBottom - safeTop - pad);
+  const minH = Number.isFinite(opts.minH) ? opts.minH : 180;
+  const preferredMin = Math.min(Math.max(0, minH), totalAvailable);
+  const maxAllowedTop = Math.max(safeTop, usableBottom - pad - preferredMin);
+  let y = Number.isFinite(currentTop) ? currentTop : safeTop;
+  if (y < safeTop) y = safeTop;
+  if (y > maxAllowedTop) y = maxAllowedTop;
+  return y;
 }
 /**
  * FIX1: natural content height + dynamic max-height from usable map space.
- * No fixed fill-to-available height; body overflow only when content exceeds.
  * FIX2: available = physical usable space (not minH).
+ * FIX3: clamp current top, then HARD max-height from clamped top (not from safeTop).
  */
 function dflightSyncAdaptivePanelGeometry(dlg, kind){
   if (!dlg || (dlg.classList && dlg.classList.contains("gis-panel-minimized"))) return;
   const opts = _dflightPanelLayoutOpts(kind);
-  const available = dflightComputePanelAvailableHeight(opts);
+  const rect = dflightComputePanelUsableRect(opts);
+  let currentTop = rect.top;
+  try {
+    const br0 = dlg.getBoundingClientRect();
+    if (Number.isFinite(br0.top)) currentTop = br0.top;
+  } catch(_){}
+  const clampedTop = dflightClampPanelTop(currentTop, rect, opts);
+  if (Math.abs(clampedTop - currentTop) > 0.5){
+    try {
+      dlg.style.top = clampedTop + "px";
+      dlg.style.bottom = "auto";
+      dlg.style.transform = "none";
+    } catch(_){}
+  }
+  let available = Math.max(0, Math.floor(rect.bottom - clampedTop - rect.pad));
+  try {
+    if (typeof dflightComputePanelAvailableHeight === "function"){
+      const cap = dflightComputePanelAvailableHeight(opts);
+      if (Number.isFinite(cap)) available = Math.min(available, cap);
+    }
+  } catch(_){}
   const body = (opts.bodyId && document.getElementById(opts.bodyId)) || dlg.querySelector(".app-modal-body");
   /* Measure natural height without max-height cap (cap would hide overflow need). */
   try {
@@ -36455,7 +36506,7 @@ function dflightSyncAdaptivePanelGeometry(dlg, kind){
     if (typeof gisPanelSetLayout === "function"){
       gisPanelSetLayout(opts.key, {
         left: Number.isFinite(br.left) ? br.left : cur.left,
-        top: Number.isFinite(br.top) ? br.top : cur.top,
+        top: Number.isFinite(br.top) ? br.top : clampedTop,
         w: Number.isFinite(br.width) ? br.width : cur.w,
         h: Number.isFinite(br.height) ? br.height : cur.h,
         touched: !!cur.touched
@@ -38722,9 +38773,385 @@ function dflightSelfTestTf(){
       }
     })());
 
-    add("Tf_build_182",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 182
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2");
+
+    add("Tf_FIX3_actual_top_available_height", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || !body || typeof dflightComputePanelUsableRect !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix3-probe", "actual-top");
+      probe.style.height = "800px";
+      probe.style.flexShrink = "0";
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelUsableRect = function(){
+          return { top: 94, bottom: 638, pad: 12, height: 532 };
+        };
+        dlg.style.left = "48px";
+        dlg.style.top = "287px";
+        body.appendChild(probe);
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const mh = parseFloat(dlg.style.maxHeight) || 0;
+        const br = dlg.getBoundingClientRect();
+        const fromSafe = 638 - 94 - 12;
+        const fromActual = 638 - 287 - 12;
+        return mh <= fromActual + 1.5
+          && mh < fromSafe - 80
+          && br.bottom <= 638 - 12 + 2
+          && Math.abs(br.top - 287) <= 2
+          && dlg.style.left === "48px";
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_valid_dragged_top_preserved", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || typeof dflightSyncAdaptivePanelGeometry !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelUsableRect = function(){
+          return { top: 100, bottom: 1000, pad: 12, height: 888 };
+        };
+        dlg.style.left = "77px";
+        dlg.style.top = "250px";
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const br = dlg.getBoundingClientRect();
+        const topPx = parseFloat(dlg.style.top);
+        const safe = 100;
+        return Math.abs(br.top - 250) <= 2
+          && Math.abs(topPx - 250) <= 2
+          && Math.abs(br.top - safe) > 20
+          && dlg.style.left === "77px";
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_low_top_clamped_upward", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || typeof dflightClampPanelTop !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        const rect = { top: 100, bottom: 400, pad: 12, height: 288 };
+        dflightComputePanelUsableRect = function(){ return rect; };
+        const opts = _dflightPanelLayoutOpts("control");
+        const expected = dflightClampPanelTop(350, rect, opts);
+        dlg.style.top = "350px";
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const br = dlg.getBoundingClientRect();
+        return expected <= 208.5
+          && Math.abs(br.top - expected) <= 2
+          && br.top < 350 - 20
+          && br.bottom <= 400 - 12 + 2;
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_bottom_invariant", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg) return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix3-probe", "bottom");
+      probe.style.height = "900px";
+      probe.style.flexShrink = "0";
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelUsableRect = function(){
+          return { top: 94, bottom: 638, pad: 12, height: 532 };
+        };
+        dlg.style.top = "287px";
+        body.appendChild(probe);
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const br = dlg.getBoundingClientRect();
+        return br.bottom <= 638 - 12 + 2;
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_short_viewport_no_overflow", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || !body) return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix3-probe", "short");
+      probe.style.height = "800px";
+      probe.style.flexShrink = "0";
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelUsableRect = function(){
+          return { top: 94, bottom: 400, pad: 12, height: 294 };
+        };
+        dlg.style.top = "94px";
+        body.appendChild(probe);
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const br = dlg.getBoundingClientRect();
+        const ov = String(body.style.overflowY || "");
+        return br.bottom <= 400 - 12 + 2
+          && ov === "auto"
+          && (parseFloat(dlg.style.maxHeight) || 0) <= 294 + 1;
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_high_low_high", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || !body) return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix3-probe", "hlh");
+      probe.style.height = "250px";
+      probe.style.flexShrink = "0";
+      function setRect(r){ dflightComputePanelUsableRect = function(){ return r; }; }
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        body.appendChild(probe);
+        dlg.style.left = "64px";
+        dlg.style.top = "287px";
+        setRect({ top: 94, bottom: 2500, pad: 12, height: 2394 });
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const high1 = dlg.getBoundingClientRect();
+        const ov1 = String(body.style.overflowY || "");
+        const h1ok = Math.abs(high1.top - 287) <= 2
+          && high1.bottom <= 2500 - 12 + 2
+          && ov1 !== "auto"
+          && dlg.style.height === "auto"
+          && dlg.style.left === "64px";
+        setRect({ top: 94, bottom: 400, pad: 12, height: 294 });
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const low = dlg.getBoundingClientRect();
+        const ovLow = String(body.style.overflowY || "");
+        const lowOk = low.bottom <= 400 - 12 + 2
+          && ovLow === "auto"
+          && low.top <= 208 + 2;
+        setRect({ top: 94, bottom: 2500, pad: 12, height: 2394 });
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const high2 = dlg.getBoundingClientRect();
+        const ov2 = String(body.style.overflowY || "");
+        const h2ok = high2.bottom <= 2500 - 12 + 2
+          && ov2 !== "auto"
+          && dlg.style.height === "auto"
+          && dlg.style.left === "64px";
+        return h1ok && lowOk && h2ok;
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_details_same_invariants", (function(){
+      const dlg = document.getElementById("dflightDetailsPanel");
+      const body = document.getElementById("dflightDetailsPanelBody");
+      if (!dlg || !body) return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevRect = dflightComputePanelUsableRect;
+      const key = "dflightDetailsPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix3-probe", "details");
+      probe.style.height = "800px";
+      probe.style.flexShrink = "0";
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelUsableRect = function(){
+          return { top: 94, bottom: 638, pad: 12, height: 532 };
+        };
+        dlg.style.left = "90px";
+        dlg.style.top = "287px";
+        body.appendChild(probe);
+        dflightSyncAdaptivePanelGeometry(dlg, "details");
+        const br = dlg.getBoundingClientRect();
+        const mh = parseFloat(dlg.style.maxHeight) || 0;
+        const preserved = Math.abs(br.top - 287) <= 2 && dlg.style.left === "90px" && mh <= (638 - 287 - 12) + 1.5 && br.bottom <= 638 - 12 + 2;
+        dlg.style.top = "350px";
+        dflightComputePanelUsableRect = function(){
+          return { top: 100, bottom: 400, pad: 12, height: 288 };
+        };
+        dflightSyncAdaptivePanelGeometry(dlg, "details");
+        const low = dlg.getBoundingClientRect();
+        const clamped = low.top < 330 && low.bottom <= 400 - 12 + 2;
+        return preserved && clamped && String(body.style.overflowY || "") === "auto";
+      } finally {
+        try {
+          dflightComputePanelUsableRect = prevRect;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelUsableRect = prevRect; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX3_restore_maximize_safeTop", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || typeof dflightRestorePanelToSafeTop !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dlg.style.top = "287px";
+        dlg.style.left = "55px";
+        dflightRestorePanelToSafeTop(dlg, "control");
+        const safe = dflightComputePanelSafeTop(_dflightPanelLayoutOpts("control"));
+        const topPx = parseFloat(dlg.style.top);
+        const br = dlg.getBoundingClientRect();
+        return Number.isFinite(topPx) && Math.abs(topPx - safe) <= 1 && Math.abs(br.top - safe) <= 2;
+      } finally {
+        try {
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX3_details_restore_safeTop", (function(){
+      const dlg = document.getElementById("dflightDetailsPanel");
+      const body = document.getElementById("dflightDetailsPanelBody");
+      if (!dlg || typeof dflightRestorePanelToSafeTop !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const key = "dflightDetailsPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dlg.style.top = "300px";
+        dflightRestorePanelToSafeTop(dlg, "details");
+        const safe = dflightComputePanelSafeTop(_dflightPanelLayoutOpts("details"));
+        const topPx = parseFloat(dlg.style.top);
+        const br = dlg.getBoundingClientRect();
+        return Number.isFinite(topPx) && Math.abs(topPx - safe) <= 1 && Math.abs(br.top - safe) <= 2;
+      } finally {
+        try {
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX3_sync_uses_clamped_top",
+      String(dflightSyncAdaptivePanelGeometry).indexOf("dflightClampPanelTop") >= 0
+      && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
+      && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
+
+    add("Tf_build_183",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 183
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39986,8 +40413,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_182", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 182
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2");
+    add("H_build_183", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 183
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
