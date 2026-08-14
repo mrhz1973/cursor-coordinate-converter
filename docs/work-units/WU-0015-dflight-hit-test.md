@@ -5,14 +5,14 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / OPTION-B-IMPL-A IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED
+**STATUS:** OPEN / OPTION-B-IMPL-A DEPLOYED — AUTOMATED BROWSER QA FAIL
 **ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA REQUIRED (candidate build 187 — no deploy)
-**CANDIDATE RUNTIME:** monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A`
-**RUNTIME LIVE:** monolite `7501d0f7f24957f17497357230baebe36b11f298` · build **186** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX2` · helper **0.1.3**
-**REVIEW:** GPT-SOSTITUTIVA REQUIRED su FULL SHA `c3007f5…`
+**CURRENT GATE:** FIX TEMP-B CSS opacity → re-QA Automated Browser (no human QA)
+**REVIEW BASE:** monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187** — **REVIEW GPT-SOSTITUTIVA PASS**
+**RUNTIME LIVE:** monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A` · helper **0.1.3**
+**REVIEW:** GPT-SOSTITUTIVA PASS (pre-deploy) — non Claude
 **SUPERSEDED path:** FIX2 QA FAIL operatore → DIAG-B COMPLETE → OPTION B scelta
-**NEXT:** REVIEW GPT-SOSTITUTIVA → deploy GIS-only + Automated Browser QA z8 → QA umana
+**NEXT:** FIX selettore `.tile-wrap .tile-map.atm09-temporal-dim …` (DOM reale: map⊃wrap⊃img) → rebuild → Automated Browser QA casi I/J
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)

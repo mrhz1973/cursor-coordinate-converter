@@ -335,25 +335,24 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0015 — [`D-FLIGHT-HIT-TEST`](work-units/WU-0015-dflight-hit-test.md) |
 | **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A |
-| **STATO BLOCCO** | **IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED** |
-| **GATE CORRENTE** | REVIEW GPT-SOSTITUTIVA sul candidate build **187** (nessun deploy) |
-| **REVIEW BASE** | monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` (build 187) — review pendente |
-| **CANDIDATE RUNTIME** | monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A` |
-| **RUNTIME LIVE** | monolite `7501d0f7f24957f17497357230baebe36b11f298` · build **186** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX2` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | REVIEW GPT-SOSTITUTIVA → se PASS: deploy GIS-only + Automated Browser QA z8 → QA umana |
+| **STATO BLOCCO** | **DEPLOYED — AUTOMATED BROWSER QA FAIL** |
+| **GATE CORRENTE** | FIX TEMP-B CSS (opacity ATM09) → re-QA Automated Browser — **non** QA umana |
+| **REVIEW BASE** | monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` (build 187) — **REVIEW GPT-SOSTITUTIVA PASS** |
+| **RUNTIME LIVE** | monolite `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | FIX selettore TEMP-B (DOM: `.tile-map > … > .tile-wrap > img.tile-atm09`) → rebuild/deploy → Automated Browser QA I/J |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0015 OPTION-B candidate `c3007f5` / **187** su `origin/main` — **non deployato**. LIVE resta `7501d0f` / **186**. Helper **0.1.3**. DIAG-B → OPTION B.
+> WU-0015 OPTION-B LIVE `c3007f5` / **187** — deploy GIS-only PASS; **Automated Browser QA FAIL** (TEMP-B opacity). Helper **0.1.3**. QA operatore **non** attestata. **Nessun** `QA FINALE CHATGPT — PENDING`.
 > WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A** — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA REQUIRED — candidate `c3007f5` / **187** — LIVE ancora **186** — no deploy
-2. **D-FLIGHT-HIT-TEST-FIX-A-FIX2** — DEPLOY PASS + Automated Browser QA PASS — LIVE `7501d0f` / **186** — QA operatore FAIL (DIAG-B) → OPTION B
-3. **D-FLIGHT-HIT-TEST-FIX-A-FIX1** — QA OPERATORE FAIL — superseded (build 185)
-4. **D-FLIGHT-HIT-TEST-FIX-A** — REVIEW FAIL / BLOCKING — `62de84e` / 184 superseded (non deployato)
-5. **D-FLIGHT-HIT-TEST-DIAG-A** — DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED — WU-0015 OPEN
+1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A** — DEPLOY PASS + **Automated Browser QA FAIL** — LIVE `c3007f5` / **187** — TEMP-B CSS selector vs DOM
+2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A** — IMPLEMENTED / REVIEW GPT-SOSTITUTIVA PASS (pre-deploy)
+3. **D-FLIGHT-HIT-TEST-FIX-A-FIX2** — DEPLOY PASS + Automated Browser QA PASS — QA operatore FAIL (DIAG-B) → OPTION B
+4. **D-FLIGHT-HIT-TEST-FIX-A-FIX1** — QA OPERATORE FAIL — superseded (build 185)
+5. **D-FLIGHT-HIT-TEST-FIX-A** — REVIEW FAIL / BLOCKING — `62de84e` / 184 superseded (non deployato)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

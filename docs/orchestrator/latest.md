@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-14 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A` **IMPLEMENTED** — **REVIEW GPT-SOSTITUTIVA REQUIRED**. Candidate runtime `c3007f5edab32c30767a83229872e8790bcbaaa2` · build **187**. Runtime LIVE ancora build **186** / `7501d0f…` (nessun deploy). Helper **0.1.3**. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_2355_riepilogo_dflight-hit-test-option-b-impl-a.md`](inbox/2026-08-14_2355_riepilogo_dflight-hit-test-option-b-impl-a.md).
+2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A` **DEPLOYED** — **Automated Browser QA FAIL**. LIVE `c3007f5` / build **187**. Helper **0.1.3**. **REVIEW GPT-SOSTITUTIVA PASS** (pre-deploy). Finding: TEMP-B CSS selector non matcha DOM → `img.tile-atm09` opacity resta `1` (atteso ~0.35). **Nessun** `QA FINALE CHATGPT — PENDING`. QA operatore **non** attestata. Nessun `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0025_riepilogo_dflight-option-b-impl-a-deploy-qa-fail.md`](inbox/2026-08-15_0025_riepilogo_dflight-option-b-impl-a-deploy-qa-fail.md).
