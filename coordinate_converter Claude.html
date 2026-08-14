@@ -8688,11 +8688,15 @@ body.gis-mode dialog.app-modal.gis-panel-floating[open]{
 .dflight-volume-list{ margin:6px 0 0; padding-left:1.1rem; font-size:12px; }
 .dflight-volume-list li{ margin:0 0 4px; }
 .dflight-details-warnings{ margin-top:8px; font-size:12px; color:#b45309; }
-body.gis-mode dialog#dflightPanel.dflight-panel,
-body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel{
+body.gis-mode dialog#dflightPanel.dflight-panel:not([open]),
+body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel:not([open]){
+  display:none;
+}
+body.gis-mode dialog#dflightPanel.dflight-panel[open],
+body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel[open]{
   width:min(400px, 94vw);
   height:auto;
-  /* FIX1: JS dflightSyncAdaptivePanelGeometry sets max-height from usable map space */
+  /* FIX1/FIX2: JS dflightSyncAdaptivePanelGeometry sets max-height from usable map space */
   max-height:none;
   display:flex;
   flex-direction:column;
@@ -23420,10 +23424,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1";
-const APP_BUILD_DETAIL = "Immediate temporal redraw + tooltips + adaptive D-Flight panel/details geometry.";
+const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2";
+const APP_BUILD_DETAIL = "Review hardening: non-destructive selftests + safe dialog open state + geometry clamp.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 181;
+const APP_BUILD_NUM = 182;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36385,18 +36389,30 @@ function dflightComputePanelSafeTop(opts){
   }
   return topY;
 }
+/** FIX2: HARD usable max height (never inflated by minH). */
+function dflightComputePanelAvailableHeight(opts){
+  opts = opts || {};
+  const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
+  const safeTop = dflightComputePanelSafeTop(opts);
+  let bottom = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
+  try {
+    const map = document.getElementById("gisMapMount") || document.getElementById("miniMap");
+    if (map){
+      const br = map.getBoundingClientRect();
+      if (Number.isFinite(br.bottom) && br.bottom > safeTop) bottom = br.bottom;
+    }
+  } catch(_){}
+  return Math.max(0, Math.floor(bottom - safeTop - pad));
+}
 /**
  * FIX1: natural content height + dynamic max-height from usable map space.
  * No fixed fill-to-available height; body overflow only when content exceeds.
+ * FIX2: available = physical usable space (not minH).
  */
 function dflightSyncAdaptivePanelGeometry(dlg, kind){
   if (!dlg || (dlg.classList && dlg.classList.contains("gis-panel-minimized"))) return;
   const opts = _dflightPanelLayoutOpts(kind);
-  const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
-  const minH = Number.isFinite(opts.minH) ? opts.minH : 180;
-  const safeTop = dflightComputePanelSafeTop(opts);
-  const vh = window.innerHeight || (document.documentElement && document.documentElement.clientHeight) || 0;
-  const available = Math.max(minH, Math.floor(vh - safeTop - pad));
+  const available = dflightComputePanelAvailableHeight(opts);
   const body = (opts.bodyId && document.getElementById(opts.bodyId)) || dlg.querySelector(".app-modal-body");
   /* Measure natural height without max-height cap (cap would hide overflow need). */
   try {
@@ -38145,11 +38161,50 @@ function dflightSelfTestTf(){
   function add(name, ok, detail){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   }
+  function tfSnapDlgGeom(dlg, body){
+    return {
+      open: !!(dlg && dlg.open),
+      top: dlg ? dlg.style.top : "",
+      left: dlg ? dlg.style.left : "",
+      right: dlg ? dlg.style.right : "",
+      bottom: dlg ? dlg.style.bottom : "",
+      transform: dlg ? dlg.style.transform : "",
+      height: dlg ? dlg.style.height : "",
+      maxHeight: dlg ? dlg.style.maxHeight : "",
+      bodyMaxHeight: body ? body.style.maxHeight : "",
+      bodyOverflowY: body ? body.style.overflowY : ""
+    };
+  }
+  function tfRestoreDlgGeom(dlg, body, snap){
+    if (!dlg || !snap) return;
+    dlg.style.top = snap.top;
+    dlg.style.left = snap.left;
+    dlg.style.right = snap.right;
+    dlg.style.bottom = snap.bottom;
+    dlg.style.transform = snap.transform;
+    dlg.style.height = snap.height;
+    dlg.style.maxHeight = snap.maxHeight;
+    if (body){
+      body.style.maxHeight = snap.bodyMaxHeight;
+      body.style.overflowY = snap.bodyOverflowY;
+    }
+    try {
+      if (snap.open){
+        if (!dlg.open){
+          if (typeof dlg.show === "function") dlg.show();
+          else dlg.setAttribute("open", "");
+        }
+      } else if (dlg.open){
+        try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+      }
+    } catch(_){}
+  }
   const prevFilter = {};
   for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
     const s = DFLIGHT_TEMPORAL_STATES[i];
     prevFilter[s] = _dflightTemporalFilter[s] === true;
   }
+  const liveCbRef = document.getElementById("dflightTfFuture");
   try {
     add("Tf_canonical_states",
       Array.isArray(DFLIGHT_TEMPORAL_STATES)
@@ -38380,36 +38435,28 @@ function dflightSelfTestTf(){
       const dlg = document.getElementById("dflightPanel");
       const body = document.getElementById("dflightPanelBody");
       if (!dlg || !body) return true;
-      const prevOpen = !!dlg.open;
-      const prevH = dlg.style.height;
-      const prevMH = dlg.style.maxHeight;
-      const prevBMH = body.style.maxHeight;
-      const prevBO = body.style.overflowY;
-      const prevHTML = body.innerHTML;
-      const prevTop = dlg.style.top;
-      const prevLeft = dlg.style.left;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const kids = Array.prototype.slice.call(body.children);
+      const prevDisp = kids.map(function(el){ return el.style.display; });
+      const probe = document.createElement("p");
+      probe.setAttribute("data-tf-fix2-probe", "fit");
+      probe.textContent = "FIX2 fit probe";
       try {
         if (!dlg.open){
           try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
         }
         dlg.style.height = "auto";
-        body.innerHTML = "<p>FIX1 fit probe</p>";
+        for (let i = 0; i < kids.length; i++) kids[i].style.display = "none";
+        body.appendChild(probe);
         dflightSyncAdaptivePanelGeometry(dlg, "control");
         const ov = String(body.style.overflowY || "");
         const mh = parseFloat(dlg.style.maxHeight) || 0;
         return (ov === "hidden" || ov === "clip") && mh > 0;
       } finally {
         try {
-          body.innerHTML = prevHTML;
-          body.style.maxHeight = prevBMH;
-          body.style.overflowY = prevBO;
-          dlg.style.height = prevH;
-          dlg.style.maxHeight = prevMH;
-          dlg.style.top = prevTop;
-          dlg.style.left = prevLeft;
-          if (!prevOpen){
-            try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
-          }
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          for (let i = 0; i < kids.length; i++) kids[i].style.display = prevDisp[i];
+          tfRestoreDlgGeom(dlg, body, snap);
         } catch(_){}
       }
     })());
@@ -38418,45 +38465,31 @@ function dflightSelfTestTf(){
       const dlg = document.getElementById("dflightPanel");
       const body = document.getElementById("dflightPanelBody");
       if (!dlg || !body) return true;
-      const prevOpen = !!dlg.open;
-      const prevH = dlg.style.height;
-      const prevMH = dlg.style.maxHeight;
-      const prevBMH = body.style.maxHeight;
-      const prevBO = body.style.overflowY;
-      const prevHTML = body.innerHTML;
-      const prevTop = dlg.style.top;
-      const prevLeft = dlg.style.left;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix2-probe", "overflow");
+      probe.style.height = "4000px";
+      probe.style.flexShrink = "0";
       try {
         if (!dlg.open){
           try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
         }
-        let huge = "";
-        for (let i = 0; i < 120; i++) huge += "<p>FIX1 overflow probe line " + i + "</p>";
-        body.innerHTML = huge;
+        body.appendChild(probe);
         dflightSyncAdaptivePanelGeometry(dlg, "control");
         return String(body.style.overflowY || "") === "auto";
       } finally {
         try {
-          body.innerHTML = prevHTML;
-          body.style.maxHeight = prevBMH;
-          body.style.overflowY = prevBO;
-          dlg.style.height = prevH;
-          dlg.style.maxHeight = prevMH;
-          dlg.style.top = prevTop;
-          dlg.style.left = prevLeft;
-          if (!prevOpen){
-            try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
-          }
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          tfRestoreDlgGeom(dlg, body, snap);
         } catch(_){}
       }
     })());
 
     add("Tf_FIX1_restore_safeTop", (function(){
       const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
       if (!dlg || typeof dflightRestorePanelToSafeTop !== "function") return true;
-      const prevOpen = !!dlg.open;
-      const prevTop = dlg.style.top;
-      const prevLeft = dlg.style.left;
+      const snap = tfSnapDlgGeom(dlg, body);
       const key = "dflightPanel";
       const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
       try {
@@ -38473,25 +38506,20 @@ function dflightSelfTestTf(){
         return Number.isFinite(topPx) && Math.abs(topPx - safe) <= 1;
       } finally {
         try {
-          dlg.style.top = prevTop;
-          dlg.style.left = prevLeft;
           if (typeof gPanelLayouts === "object" && gPanelLayouts){
             if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
             else delete gPanelLayouts[key];
           }
-          if (!prevOpen){
-            try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
-          }
+          tfRestoreDlgGeom(dlg, body, snap);
         } catch(_){}
       }
     })());
 
     add("Tf_FIX1_details_restore_safeTop", (function(){
       const dlg = document.getElementById("dflightDetailsPanel");
+      const body = document.getElementById("dflightDetailsPanelBody");
       if (!dlg || typeof dflightRestorePanelToSafeTop !== "function") return true;
-      const prevOpen = !!dlg.open;
-      const prevTop = dlg.style.top;
-      const prevLeft = dlg.style.left;
+      const snap = tfSnapDlgGeom(dlg, body);
       const key = "dflightDetailsPanel";
       const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
       try {
@@ -38508,22 +38536,195 @@ function dflightSelfTestTf(){
         return Number.isFinite(topPx) && Math.abs(topPx - safe) <= 1;
       } finally {
         try {
-          dlg.style.top = prevTop;
-          dlg.style.left = prevLeft;
           if (typeof gPanelLayouts === "object" && gPanelLayouts){
             if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
             else delete gPanelLayouts[key];
           }
-          if (!prevOpen){
-            try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
-          }
+          tfRestoreDlgGeom(dlg, body, snap);
         } catch(_){}
       }
     })());
 
-    add("Tf_build_181",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 181
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1");
+    add("Tf_FIX2_no_innerhtml_geometry_tests", (function(){
+      const src = String(dflightSelfTestTf);
+      const gFit = src.indexOf("Tf_FIX1_geometry_content_fit_no_overflow");
+      const gOv = src.indexOf("Tf_FIX1_geometry_overflow_auto");
+      const gEnd = src.indexOf("Tf_FIX2_no_innerhtml_geometry_tests");
+      if (gFit < 0 || gOv < 0 || gEnd < 0) return false;
+      const slice = src.slice(gFit, gEnd);
+      return slice.indexOf("innerHTML") < 0;
+    })());
+
+    add("Tf_FIX2_checkbox_dom_identity",
+      !!(liveCbRef && liveCbRef === document.getElementById("dflightTfFuture")));
+
+    add("Tf_FIX2_checkbox_listener_alive", (function(){
+      const cb = document.getElementById("dflightTfFuture");
+      if (!cb) return true;
+      if (liveCbRef && cb !== liveCbRef) return false;
+      const prevChecked = !!cb.checked;
+      const prevFilt = _dflightTemporalFilter.FUTURE === true;
+      const prevVis = _dflightOverlayVisible;
+      try {
+        _dflightOverlayVisible = false;
+        const want = !prevFilt;
+        cb.checked = want;
+        cb.dispatchEvent(new Event("change", { bubbles: true }));
+        return _dflightTemporalFilter.FUTURE === want;
+      } finally {
+        try {
+          cb.checked = prevChecked;
+          dflightSetTemporalFilter("FUTURE", prevFilt);
+          _dflightOverlayVisible = prevVis;
+        } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX2_closed_panel_display_none", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      if (!dlg) return true;
+      const body = document.getElementById("dflightPanelBody");
+      const snap = tfSnapDlgGeom(dlg, body);
+      try {
+        if (dlg.open){
+          try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+        }
+        const cs = window.getComputedStyle(dlg);
+        return dlg.open === false && String(cs.display) === "none";
+      } finally {
+        try { tfRestoreDlgGeom(dlg, body, snap); } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX2_closed_details_display_none", (function(){
+      const dlg = document.getElementById("dflightDetailsPanel");
+      if (!dlg) return true;
+      const body = document.getElementById("dflightDetailsPanelBody");
+      const snap = tfSnapDlgGeom(dlg, body);
+      try {
+        if (dlg.open){
+          try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+        }
+        const cs = window.getComputedStyle(dlg);
+        return dlg.open === false && String(cs.display) === "none";
+      } finally {
+        try { tfRestoreDlgGeom(dlg, body, snap); } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX2_open_panel_flex", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      if (!dlg) return true;
+      const body = document.getElementById("dflightPanelBody");
+      const snap = tfSnapDlgGeom(dlg, body);
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const cs = window.getComputedStyle(dlg);
+        return dlg.open === true && String(cs.display) === "flex";
+      } finally {
+        try { tfRestoreDlgGeom(dlg, body, snap); } catch(_){}
+      }
+    })());
+
+    add("Tf_FIX2_available_hard_max", (function(){
+      if (typeof dflightComputePanelAvailableHeight !== "function") return false;
+      const opts = _dflightPanelLayoutOpts("control");
+      const avail = dflightComputePanelAvailableHeight(opts);
+      const safe = dflightComputePanelSafeTop(opts);
+      const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
+      const vh = window.innerHeight || 0;
+      const physical = Math.max(0, Math.floor(vh - safe - pad));
+      const src = String(dflightSyncAdaptivePanelGeometry);
+      return avail <= physical + 1
+        && src.indexOf("dflightComputePanelAvailableHeight") >= 0
+        && src.indexOf("Math.max(minH") < 0;
+    })());
+
+    add("Tf_FIX2_short_space_scrolls_body", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || !body || typeof dflightComputePanelAvailableHeight !== "function") return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const prevFn = dflightComputePanelAvailableHeight;
+      const probe = document.createElement("div");
+      probe.setAttribute("data-tf-fix2-probe", "short");
+      probe.style.height = "800px";
+      probe.style.flexShrink = "0";
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dflightComputePanelAvailableHeight = function(){ return 80; };
+        body.appendChild(probe);
+        dflightSyncAdaptivePanelGeometry(dlg, "control");
+        const mh = parseFloat(dlg.style.maxHeight) || 0;
+        const br = dlg.getBoundingClientRect();
+        const ov = String(body.style.overflowY || "");
+        return mh <= 80.5 && ov === "auto" && br.height <= 81;
+      } finally {
+        try {
+          dflightComputePanelAvailableHeight = prevFn;
+          if (probe.parentNode) probe.parentNode.removeChild(probe);
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){
+          try { dflightComputePanelAvailableHeight = prevFn; } catch(__){}
+        }
+      }
+    })());
+
+    add("Tf_FIX2_restore_isolates_inline", (function(){
+      const dlg = document.getElementById("dflightPanel");
+      const body = document.getElementById("dflightPanelBody");
+      if (!dlg || !body) return true;
+      const snap = tfSnapDlgGeom(dlg, body);
+      const key = "dflightPanel";
+      const prevLay = (typeof gPanelLayouts === "object" && gPanelLayouts) ? Object.assign({}, gPanelLayouts[key] || {}) : null;
+      try {
+        if (!dlg.open){
+          try { if (typeof dlg.show === "function") dlg.show(); else dlg.setAttribute("open",""); } catch(_){}
+        }
+        dlg.style.top = "123px";
+        dlg.style.left = "77px";
+        dlg.style.height = "333px";
+        dlg.style.maxHeight = "444px";
+        body.style.maxHeight = "200px";
+        body.style.overflowY = "scroll";
+        if (typeof gPanelLayouts === "object" && gPanelLayouts){
+          gPanelLayouts[key] = { left: 11, top: 22, w: 100, h: 100, touched: true };
+        }
+        if (typeof gPanelLayouts === "object" && gPanelLayouts){
+          if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+          else delete gPanelLayouts[key];
+        }
+        tfRestoreDlgGeom(dlg, body, snap);
+        const after = tfSnapDlgGeom(dlg, body);
+        return after.open === snap.open
+          && after.top === snap.top
+          && after.left === snap.left
+          && after.right === snap.right
+          && after.bottom === snap.bottom
+          && after.transform === snap.transform
+          && after.height === snap.height
+          && after.maxHeight === snap.maxHeight
+          && after.bodyMaxHeight === snap.bodyMaxHeight
+          && after.bodyOverflowY === snap.bodyOverflowY;
+      } finally {
+        try {
+          if (typeof gPanelLayouts === "object" && gPanelLayouts){
+            if (prevLay && Object.keys(prevLay).length) gPanelLayouts[key] = prevLay;
+            else delete gPanelLayouts[key];
+          }
+          tfRestoreDlgGeom(dlg, body, snap);
+        } catch(_){}
+      }
+    })());
+
+    add("Tf_build_182",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 182
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39785,8 +39986,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_181", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 181
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1");
+    add("H_build_182", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 182
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
