@@ -134,3 +134,11 @@ Stati concettuali da riusare (nomi runtime esatti da validare nel monolite in fa
 | **D-FLIGHT-TEMPORAL-FILTER-UI-A** | Filtro UI temporal state | **READY / NOT IMPLEMENTED** | ROUTINE (preliminare) |
 
 **NEXT:** pianificazione runtime mirata / implementazione `D-FLIGHT-TEMPORAL-FILTER-UI-A`.
+
+---
+
+## 10. Backlog follow-up QA build 183 (pointer)
+
+Registrazione **docs-only** 2026-08-14 in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — sezione *D-Flight — backlog emerso QA build 183 — 2026-08-14* (Aggiorna unificato, master visibility, ATM09 VISUAL PARITY AUDIT, hit-test, branding TMART, ecc.).
+
+**Non** è attestazione QA FIX3 PASS/FAIL operatore. Il gate FIX3 resta separato (deploy PASS · Automated Browser QA PASS · QA FINALE CHATGPT PENDING). **Nessun** nuovo blocco OPEN da questa nota. Hot-header STATUS / CURRENT GATE / NEXT **invariati**.

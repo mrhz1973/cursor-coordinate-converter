@@ -612,6 +612,129 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **QA prevista (blocco UI):** Automated Browser QA + QA operatore.
 
+**Backlog QA build 183 (2026-08-14):** registrato sotto — *D-Flight — backlog emerso QA build 183 — 2026-08-14*. **Non** è FAIL della QA FIX3 corrente; **non** apre nuovi blocchi/WU.
+
+### D-Flight — backlog emerso QA build 183 — 2026-08-14
+
+**Stato:** **BACKLOG / NOT OPENED** (docs-only). Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+
+**Distinzione gate corrente:** il runtime FIX3 ha già deploy GIS-only **PASS** e Automated Browser QA **PASS**; QA finale ChatGPT **PENDING**; QA operatore **non attestata**. WU-0014 resta **OPEN**. Questa sezione **non** trasforma i punti sotto in `QA D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3 FAIL operatore`. Sono **follow-up futuri**, salvo un finding successivo classificato esplicitamente come bug del runtime 183.
+
+**Non aperti:** nessun nuovo blocco OPEN, nessuna nuova WU, nessun runtime/helper/deploy da questa registrazione.
+
+#### Ordine consigliato (candidati, non OPEN)
+
+| Ordine | Candidato | Note |
+| --- | --- | --- |
+| **A** | BUG hit-test / click D-Flight intermittente | priorità alta |
+| **B** | D-Flight UX coherence | Aggiorna unico; master D-Flight; master ATM09; Seleziona/Deseleziona tutte; pulse; legende contestuali |
+| **C** | ATM09 VISUAL PARITY AUDIT | priorità alta; **non** restyle cosmetico |
+| **D** | Legenda ATM09 esterna | swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
+| **E** | Layout affiancato Zone D-Flight / Dettagli | futura categoria **DELICATO** (lifecycle/layout dialog) |
+| **F** | Workspace due legende a destra | pannelli distinti, trascinabili |
+| **G** | Global minimized-panel dock / modal layout manager | trasversale, non solo D-Flight |
+| **H** | Branding TMART GIS tool | filename monolite **non** rinomina automatica |
+
+#### 1. Azione «Aggiorna» unificata
+
+Eliminare in futuro la distinzione UI tra **Aggiorna** e **Rivaluta ora**. Unico pulsante: **Aggiorna**.
+
+Semantica futura:
+
+1. tenta di verificare/caricare un dataset D-Flight più recente usando **esclusivamente** rete/helper/gate già esistenti;
+2. indipendentemente dall’esito remoto, **rivaluta localmente** gli stati temporali sul dataset disponibile;
+3. se rete, offline, OPSEC o server impediscono dati nuovi: la rivalutazione locale **si esegue comunque**;
+4. **nessun** indebolimento OPSEC;
+5. **nessuna** nuova rete implicita oltre alla semantica già autorizzata.
+
+Tooltip prodotto deciso: «Controlla e carica un dataset D-Flight più recente se disponibile, poi ricalcola gli stati temporali in base all’ora corrente. Se l’aggiornamento dati non è disponibile, rivaluta comunque le zone già caricate.»
+
+#### 2. Master visibility distinti
+
+Due master indipendenti:
+
+- **Mostra zone D-Flight** — layer vettoriale D-Flight; master delle geometrie su cui agiscono i filtri temporali.
+- **Mostra overlay ATM09 ufficiale** — raster/tile ATM09 ufficiale; **non** dipende dalle cinque categorie temporali.
+
+Se entrambi sono OFF: **non** deve restare visibile alcun contenuto riconducibile alla superficie D-Flight / ATM09. Se un audit futuro trova residui visibili: identificare la sorgente, classificarla, decidere se serve un **terzo controllo esplicito**; non lasciarla implicitamente sempre visibile.
+
+#### 3. Seleziona tutte / Deseleziona tutte (temporal)
+
+Futuri comandi sui cinque stati (`ACTIVE_NOW`, `ALWAYS_ACTIVE`, `FUTURE`, `EXPIRED`, `UNKNOWN`), con tooltip. **Non** sostituiscono i due master. Gerarchia: master D-Flight → filtri temporal; master ATM09 → raster ATM09.
+
+#### 4. Feedback visivo al click (temporal / ATM09)
+
+Checkbox temporal — feedback immediato sui **vettori D-Flight**:
+
+- ON: pulse morbido delle zone appena mostrate;
+- OFF: breve highlight/fade prima della scomparsa.
+
+Preferenza: 2–3 pulsazioni; durata complessiva circa 1.5–2 s; niente strobo né animazioni aggressive.
+
+ATM09 è raster/tile: **non** promettere highlight per-singola-zona se il runtime non ha geometrie ATM09 individualmente indirizzabili. All’attivazione di **Mostra overlay ATM09 ufficiale** è ammesso un breve fade/pulse dell’**intero** overlay. Feedback granulare per zona ATM09 solo se in futuro esiste geometria vettoriale coerente e affidabile.
+
+#### 5. Legende contestuali
+
+- **Legenda ATM09:** visibile **solo** con master ATM09 ON; all’attivazione si apre/espande automaticamente; OFF → non occupa spazio.
+- **Legenda D-Flight:** visibile solo quando il layer D-Flight è attivo e utile; evitare legenda permanente senza vettori da interpretare.
+
+#### 6. ATM09 VISUAL PARITY AUDIT (obbligatorio, priorità alta)
+
+Finding operatore: confrontando (A) legenda/visualizzazione ufficiale D-Flight ATM09 e (B) resa corrente GOI GIS Tool restano differenze visibili in colori e/o pattern.
+
+**Non** trattare il lavoro futuro come restyle cosmetico. Prima di qualsiasi patch runtime serve un **ATM09 VISUAL PARITY AUDIT** categoria per categoria:
+
+- colore; opacity; outline; fill; pattern/retino; angolo/densità del retino; categoria associata; ordine della legenda; label; corrispondenza mappa ↔ legenda.
+
+Riferimento prodotto: resa ufficiale D-Flight / ATM09 negli screenshot operatore. **Non** assumere corretti i colori attuali dell’app solo perché semanticamente simili. **Non** inventare valori RGB/HEX in questo backlog.
+
+Nel blocco futuro: estrarre/validare i valori dalla fonte runtime ufficiale disponibile **oppure** dalla reverse engineering già documentata, se autorevole; usare gli screenshot operatore come controllo visivo supplementare; documentare categorie non riproducibili esattamente.
+
+Obiettivo: lettura visiva ATM09 il più possibile coerente con l’ufficiale, senza colori arbitrariamente reinterpretati.
+
+#### 7. Legenda ATM09 esterna — stile futuro
+
+Quando la legenda ATM09 verrà estratta dal pannello D-Flight: **non** mantenere la legenda piccola/compressa attuale.
+
+- swatch/quadratini **sensibilmente più grandi** (dimensione esatta nel futuro blocco UI via QA visiva, non fissata qui);
+- pattern chiaramente leggibili (colori pieni, tratteggi, retini, categorie simili);
+- testo a colpo d’occhio;
+- ordine coerente con ATM09 ufficiale;
+- stile ispirato alla legenda ufficiale D-Flight;
+- base **trasparente o fortemente semitrasparente**; evitare la card scura opaca attuale; cartografia visibile dietro; contrasto sufficiente per testo e swatch.
+
+Ammessi se servono alla leggibilità: lieve backdrop; text-shadow/outline leggero; bordo minimo; micro-background solo dietro testo o campione. **Non** un grande pannello opaco.
+
+#### 8. Workspace futuro delle due legende
+
+Backlog UI dedicato. Legenda D-Flight e legenda ATM09: pannelli/overlay **distinti**; affiancati quando entrambe visibili; trascinabili; **non** incorporate obbligatoriamente nel pannello Zone D-Flight; non devono coprirsi.
+
+Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolbar verticale destra e area coordinate/riga posizione in basso. Leggibili, poco invasive, GIS-first, compatibili con resize. Una sola necessaria → mostrare solo quella.
+
+#### 9. BUG intermittente hit-test / «manina» (priorità alta)
+
+Dopo uso prolungato può scomparire il click sulle zone D-Flight / il cursore-manina, osservato soprattutto a zoom circa **z8**. Inizialmente funziona; poi smette; **reload pagina ripristina**.
+
+**Non** inventare root cause. Audit futuro: pointer-events; hit-testing SVG; stacking/z-index; overlay DOM stale; lifecycle redraw; listener; temporal filter; ATM09 interaction; zoom; close/reopen pannelli; refresh; resize; nodi overlay sovrapposti invisibili. Il reload che risolve è evidenza da preservare.
+
+#### 10. Pannello D-Flight + Dettagli affiancati
+
+Quando **Zone D-Flight (UAS)** e **Dettagli zona** sono aperti insieme: preferire disposizione **affiancata** se lo spazio mappa lo consente; non sovrapporli inutilmente. Fallback se spazio insufficiente: clamp coerente, entrambi raggiungibili, niente contenuto perso. Categoria futura: **DELICATO** (lifecycle/layout dialog).
+
+#### 11. Global modal / minimized dock
+
+Finding trasversale: una modal/pannello aperto può coprire le etichette dei pannelli minimizzati. **Non** limitare la soluzione a D-Flight.
+
+Futuro: modal aperte preferibilmente in alto nell’area mappa; etichette minimizzate non sotto le modal; trasferimento progressivo delle etichette nella **barra superiore nera**, spazio libero a destra e a sinistra del titolo finché c’è spazio; comportamento responsive a spazio esaurito.
+
+Serve un futuro **GLOBAL GIS PANEL/MINIMIZED DOCK MANAGER** (o equivalente). Non implementare ora.
+
+#### 12. Branding — TMART GIS tool
+
+Nuovo nome applicazione: **TMART GIS tool**. Audit futuro prima della patch: header/titolo visibile; `document.title`; splash/about; stringhe UI; riferimenti runtime pertinenti; docs prodotto rilevanti.
+
+**Non** rinominare automaticamente `coordinate_converter Claude.html`. Il deliverable resta il monolite standalone finché non c’è una decisione **separata** sul filename.
+
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
 **Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.
