@@ -8570,6 +8570,18 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
   pointer-events:visiblePainted;
   cursor:pointer;
 }
+/* HIT-TEST-FIX-A: invisible interaction-only layer when ATM09 suppresses NFZ colors.
+   Transparent fill + pointer-events:fill keeps holes (evenodd) and avoids visiblePainted+fill:none dead zones. */
+.dflight-zone-hitlayer{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none; display:block; overflow:visible; z-index:2;
+}
+.dflight-zone-hitlayer.is-interactive .dflight-volume-hit{
+  pointer-events:fill;
+  cursor:pointer;
+  fill:rgba(0,0,0,0);
+  stroke:none;
+}
 .dflight-legend{
   display:flex; flex-direction:column; gap:6px; margin:0 0 10px; padding:0; list-style:none;
 }
@@ -23424,10 +23436,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3";
-const APP_BUILD_DETAIL = "Resize top/height clamp inside usable map rect.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-FIX-A";
+const APP_BUILD_DETAIL = "ATM09 suppress keeps interaction-only NFZ hit layer; INFO failure no longer blanks click.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 183;
+const APP_BUILD_NUM = 184;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -36036,6 +36048,10 @@ function dflightRemoveOverlayDom(tileMap){
     const old = tileMap.querySelector(".dflight-zone-overlay");
     if (old) old.remove();
   } catch(_){}
+  try {
+    const hit = tileMap.querySelector(".dflight-zone-hitlayer");
+    if (hit) hit.remove();
+  } catch(_){}
   try { dflightHideHoverHint(); } catch(_){}
 }
 
@@ -36076,12 +36092,11 @@ function dflightDrawOverlayDom(tileMap, dataset){
   report.zone_count_in = zones.length;
   // ATM09 visual preferred: skip colored NO_FLY_ZONE SVG (tiles provide paint).
   // FIX1: when temporal filter is restrictive, bypass suppress so filtered vectors paint immediately.
-  if (typeof dflightAtm09ShouldSuppressNfzColors === "function"
+  // HIT-TEST-FIX-A: when suppress, draw interaction-only hit layer (selezione non dipende da /atm09/info).
+  const hitOnly = (typeof dflightAtm09ShouldSuppressNfzColors === "function"
       && dflightAtm09ShouldSuppressNfzColors()
-      && !dflightTemporalFilterIsRestrictive()){
-    report.suppressed_for_atm09 = true;
-    return report;
-  }
+      && !dflightTemporalFilterIsRestrictive());
+  if (hitOnly) report.suppressed_for_atm09 = true;
   const root = document.getElementById("miniMap");
   if (!root){
     report.ok = false;
@@ -36103,11 +36118,12 @@ function dflightDrawOverlayDom(tileMap, dataset){
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("xmlns", ns);
-  svg.setAttribute("class", "dflight-zone-overlay" + (_dflightOverlayVisible ? " is-interactive" : ""));
+  svg.setAttribute("class", (hitOnly ? "dflight-zone-hitlayer" : "dflight-zone-overlay") + (_dflightOverlayVisible ? " is-interactive" : ""));
   svg.setAttribute("width", String(W));
   svg.setAttribute("height", String(H));
   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
   svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
+  if (hitOnly) report.hit_only = true;
 
   const frag = document.createDocumentFragment();
   for (let zi = 0; zi < zones.length; zi++){
@@ -36125,10 +36141,10 @@ function dflightDrawOverlayDom(tileMap, dataset){
       continue;
     }
     const g = document.createElementNS(ns, "g");
-    g.setAttribute("class", "dflight-zone" + (String(zone.zone_id) === String(_dflightSelectedZoneId) ? " is-selected" : ""));
+    g.setAttribute("class", (hitOnly ? "dflight-zone-hit" : "dflight-zone") + (String(zone.zone_id) === String(_dflightSelectedZoneId) ? " is-selected" : ""));
     if (zone.zone_id != null) g.setAttribute("data-zone-id", String(zone.zone_id));
     if (zone.temporal_state) g.setAttribute("data-temporal-state", String(zone.temporal_state));
-    const rClass = dflightStyleCssClass(dflightZoneStyleKey(zone));
+    const rClass = hitOnly ? "" : dflightStyleCssClass(dflightZoneStyleKey(zone));
     let drew = 0;
     for (let vi = 0; vi < vols.length; vi++){
       const vol = vols[vi];
@@ -36137,10 +36153,11 @@ function dflightDrawOverlayDom(tileMap, dataset){
       if (!d){ report.skipped++; continue; }
       const path = document.createElementNS(ns, "path");
       path.setAttribute("d", d);
-      path.setAttribute("class", "dflight-volume " + rClass);
+      path.setAttribute("class", hitOnly ? "dflight-volume-hit" : ("dflight-volume " + rClass));
       path.setAttribute("fill-rule", "evenodd");
       if (zone.zone_id != null) path.setAttribute("data-zone-id", String(zone.zone_id));
       path.setAttribute("data-volume-index", String(vol.volume_index != null ? vol.volume_index : vi));
+      if (zone.temporal_state) path.setAttribute("data-temporal-state", String(zone.temporal_state));
       g.appendChild(path);
       report.path_count++;
       drew++;
@@ -36869,7 +36886,7 @@ function dflightAttachClickHandler(tileMap){
   tileMap._dflightClickBound = true;
   tileMap.addEventListener("click", function(ev){
     if (!_dflightOverlayVisible || !_dflightOverlaySession) return;
-    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id], .dflight-volume-hit[data-zone-id]");
     if (!path) return;
     try { ev.stopPropagation(); } catch(_){}
     try { dflightHideHoverHint(); } catch(_){}
@@ -36912,7 +36929,7 @@ function dflightAttachHoverHandler(tileMap){
   };
   tileMap.addEventListener("pointerover", function(ev){
     if (!_dflightOverlayVisible || !_dflightOverlaySession) return;
-    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id], .dflight-volume-hit[data-zone-id]");
     if (!path) return;
     const zoneId = path.getAttribute("data-zone-id");
     const zone = dflightFindZoneById(_dflightOverlaySession.dataset, zoneId);
@@ -36932,11 +36949,11 @@ function dflightAttachHoverHandler(tileMap){
     }, 320);
   }, true);
   tileMap.addEventListener("pointerout", function(ev){
-    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id]");
+    const path = ev.target && ev.target.closest && ev.target.closest(".dflight-volume[data-zone-id], .dflight-volume-hit[data-zone-id]");
     if (!path) return;
     const related = ev.relatedTarget;
     if (related && related.closest){
-      const relPath = related.closest(".dflight-volume[data-zone-id]");
+      const relPath = related.closest(".dflight-volume[data-zone-id], .dflight-volume-hit[data-zone-id]");
       if (relPath && relPath.getAttribute("data-zone-id") === path.getAttribute("data-zone-id")) return;
     }
     clearT();
@@ -38393,7 +38410,10 @@ function dflightSelfTestTf(){
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         const report = dflightDrawOverlayDom(tm, ds);
         const paths = tm.querySelectorAll(".dflight-zone-overlay .dflight-volume");
-        return !!(report && report.suppressed_for_atm09 === true && paths.length === 0);
+        const hits = tm.querySelectorAll(".dflight-zone-hitlayer .dflight-volume-hit");
+        /* HIT-TEST-FIX-A: colored NFZ still suppressed; interaction-only hits must exist. */
+        return !!(report && report.suppressed_for_atm09 === true && report.hit_only === true
+          && paths.length === 0 && hits.length > 0);
       } finally {
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
         _dflightOverlayVisible = prevVis;
@@ -39149,9 +39169,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_183",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 183
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3");
+    add("Tf_build_184",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 184
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39633,6 +39653,16 @@ async function dflightAtm09FetchInfoForViewport(){
   const timer = setTimeout(function(){
     try { if (ctl) ctl.abort("timeout"); } catch(_){}
   }, DFLIGHT_ATM09_INFO_TIMEOUT_MS);
+  const clearStaleInfoKeepHit = function(){
+    /* HIT-TEST-FIX-A: INFO failure must not leave stale hit overlay; vector hit-layer stays authoritative. */
+    _dflightAtm09InfoFc = null;
+    _dflightAtm09InfoLastBboxKey = null;
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm && typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(tm);
+    } catch(_){}
+  };
   try {
     const fetchFn = (typeof _dflightFetchImpl === "function") ? _dflightFetchImpl : fetch;
     const init = {
@@ -39646,16 +39676,23 @@ async function dflightAtm09FetchInfoForViewport(){
     if (ctl) init.signal = ctl.signal;
     const resp = await fetchFn(url, init);
     if (token !== _dflightAtm09InfoToken) return;
-    if (!resp.ok) return;
+    if (!resp.ok){
+      clearStaleInfoKeepHit();
+      return;
+    }
     const fc = await resp.json();
     if (token !== _dflightAtm09InfoToken) return;
-    if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)) return;
+    if (!fc || fc.type !== "FeatureCollection" || !Array.isArray(fc.features)){
+      clearStaleInfoKeepHit();
+      return;
+    }
     _dflightAtm09InfoFc = fc;
     _dflightAtm09InfoLastBboxKey = bboxStr;
     const root = document.getElementById("miniMap");
     const tm = root && root.querySelector(".tile-map");
     if (tm) dflightAtm09DrawInfoHitOverlay(tm, fc);
   } catch(_){
+    if (token === _dflightAtm09InfoToken) clearStaleInfoKeepHit();
   } finally {
     try { clearTimeout(timer); } catch(_){}
     if (_dflightAtm09InfoAbort === ctl) _dflightAtm09InfoAbort = null;
@@ -40413,8 +40450,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_183", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 183
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3");
+    add("H_build_184", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 184
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -40886,6 +40923,349 @@ function dflightSelfTestH(){
     }
   } catch(_){}
 })();
+
+function dflightSelfTestHitFixA(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    const s = DFLIGHT_TEMPORAL_STATES[i];
+    prevFilter[s] = _dflightTemporalFilter[s] === true;
+  }
+  const prevSuppress = (typeof dflightAtm09ShouldSuppressNfzColors === "function")
+    ? dflightAtm09ShouldSuppressNfzColors : null;
+  const prevVis = _dflightOverlayVisible;
+  const prevSess = _dflightOverlaySession;
+  const prevFc = _dflightAtm09InfoFc;
+  const prevBbox = _dflightAtm09InfoLastBboxKey;
+  const prevFetch = _dflightFetchImpl;
+  const prevAtm09Pref = _dflightAtm09Preferred;
+  try {
+    add("HitA_build_184",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 184
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-FIX-A");
+
+    add("HitA_css_hit_fill", (function(){
+      const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
+      return srcFn.indexOf("dflight-volume-hit") >= 0
+        && srcFn.indexOf("dflight-zone-hitlayer") >= 0;
+    })());
+
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const layer = tm && tm.querySelector(".tile-layer");
+    const mapReady = !!(root && tm && layer);
+
+    const poly = {
+      type: "Polygon",
+      coordinates: [[[9.0, 44.0], [9.1, 44.0], [9.1, 44.1], [9.0, 44.1], [9.0, 44.0]]]
+    };
+    const polyHole = {
+      type: "Polygon",
+      coordinates: [
+        [[9.0, 44.0], [9.2, 44.0], [9.2, 44.2], [9.0, 44.2], [9.0, 44.0]],
+        [[9.05, 44.05], [9.15, 44.05], [9.15, 44.15], [9.05, 44.15], [9.05, 44.05]]
+      ]
+    };
+    const ds = {
+      ok: true,
+      zones: [
+        {
+          zone_id: "hita:1",
+          name: "HitA Active",
+          temporal_state: "ACTIVE_NOW",
+          bbox: null,
+          volumes: [{ volume_index: 0, geometry: poly }]
+        },
+        {
+          zone_id: "hita:2",
+          name: "HitA Future",
+          temporal_state: "FUTURE",
+          bbox: null,
+          volumes: [{ volume_index: 0, geometry: poly }]
+        },
+        {
+          zone_id: "hita:hole",
+          name: "HitA Hole",
+          temporal_state: "ACTIVE_NOW",
+          bbox: null,
+          volumes: [{ volume_index: 0, geometry: polyHole }]
+        }
+      ]
+    };
+
+    add("HitA_suppress_info_absent_hitlayer", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09InfoFc = null;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        const report = dflightDrawOverlayDom(tm, ds);
+        const hits = tm.querySelectorAll(".dflight-volume-hit");
+        const colored = tm.querySelectorAll(".dflight-zone-overlay .dflight-volume");
+        const layers = tm.querySelectorAll(".dflight-zone-hitlayer");
+        return !!(report && report.suppressed_for_atm09 && report.hit_only
+          && hits.length >= 2 && colored.length === 0 && layers.length === 1);
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_info_502_keeps_hit", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      const srcFn = String(dflightAtm09FetchInfoForViewport);
+      const hasClear = srcFn.indexOf("clearStaleInfoKeepHit") >= 0;
+      try {
+        _dflightOverlayVisible = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        const before = tm.querySelectorAll(".dflight-volume-hit").length;
+        _dflightAtm09InfoFc = { type: "FeatureCollection", features: [{ id: "stale" }] };
+        _dflightAtm09InfoLastBboxKey = "stale-key";
+        _dflightAtm09InfoFc = null;
+        _dflightAtm09InfoLastBboxKey = null;
+        try { if (typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        const after = tm.querySelectorAll(".dflight-volume-hit").length;
+        return !!(hasClear && before > 0 && after === before
+          && tm.querySelectorAll(".dflight-atm09-info-hit").length === 0);
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_info_200_coexist", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        _dflightAtm09Preferred = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        const fc = {
+          type: "FeatureCollection",
+          features: [{
+            type: "Feature",
+            id: "atm09-hita",
+            properties: { id: "atm09-hita", name: "ATM09 HitA" },
+            geometry: poly
+          }]
+        };
+        dflightAtm09DrawInfoHitOverlay(tm, fc);
+        const hits = tm.querySelectorAll(".dflight-volume-hit").length;
+        const info = tm.querySelectorAll(".dflight-atm09-info-hit").length;
+        const clickSrc = String(dflightAttachClickHandler) + String(dflightAtm09AttachInteraction);
+        const dualSelectors = clickSrc.indexOf("dflight-volume-hit") >= 0
+          && clickSrc.indexOf("dflight-atm09-info-hit") >= 0;
+        return hits > 0 && info > 0 && dualSelectors;
+      } finally {
+        try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_temporal_restrictive", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      dflightSetTemporalFilter("FUTURE", false);
+      try {
+        _dflightOverlayVisible = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        const report = dflightDrawOverlayDom(tm, ds);
+        const gFut = tm.querySelector('[data-zone-id="hita:2"]');
+        const gAct = tm.querySelector('[data-zone-id="hita:1"]');
+        const hitOnly = tm.querySelectorAll(".dflight-zone-hitlayer").length;
+        return !!(report && report.ok && report.suppressed_for_atm09 !== true
+          && !gFut && !!gAct && hitOnly === 0);
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_all_off_zero_hits", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        const report = dflightDrawOverlayDom(tm, ds);
+        const hits = tm.querySelectorAll(".dflight-volume-hit");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        /* ALL OFF => restrictive: may use colored path, but zero selectable geometries. */
+        return !!(report && hits.length === 0 && vols.length === 0
+          && (report.filtered_temporal || 0) >= ds.zones.length);
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_tilemap_rebind", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      let clone = null;
+      try {
+        _dflightOverlayVisible = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        if (!(tm._dflightClickBound && tm._dflightHoverBound)) return false;
+        clone = tm.cloneNode(false);
+        clone.className = tm.className;
+        const tl = document.createElement("div");
+        tl.className = "tile-layer";
+        clone.appendChild(tl);
+        const parent = tm.parentNode;
+        if (!parent) return true;
+        parent.replaceChild(clone, tm);
+        dflightDrawOverlayDom(clone, ds);
+        const ok = !!(clone._dflightClickBound && clone._dflightHoverBound
+          && clone.querySelectorAll(".dflight-volume-hit").length > 0);
+        parent.replaceChild(tm, clone);
+        clone = null;
+        return ok;
+      } catch (e){
+        return false;
+      } finally {
+        try {
+          if (clone && clone.parentNode){
+            clone.parentNode.replaceChild(tm, clone);
+          }
+        } catch(_){}
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_no_duplicate_hitlayer", (function(){
+      if (!mapReady) return true;
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+      }
+      try {
+        _dflightOverlayVisible = true;
+        if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
+        dflightDrawOverlayDom(tm, ds);
+        dflightDrawOverlayDom(tm, ds);
+        dflightDrawOverlayDom(tm, ds);
+        return tm.querySelectorAll(".dflight-zone-hitlayer").length === 1
+          && tm._dflightClickBound === true;
+      } finally {
+        try { dflightRemoveOverlayDom(tm); } catch(_){}
+      }
+    })());
+
+    add("HitA_svg_elementFromPoint", (function(){
+      const host = document.createElement("div");
+      host.setAttribute("data-hita-svg-probe", "1");
+      host.style.cssText = "position:fixed;left:8px;top:8px;width:120px;height:120px;z-index:2147483000;pointer-events:auto;";
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "dflight-zone-hitlayer is-interactive");
+      svg.setAttribute("width", "120");
+      svg.setAttribute("height", "120");
+      svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;";
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", "M10 10L110 10L110 110L10 110Z M40 40L80 40L80 80L40 80Z");
+      path.setAttribute("class", "dflight-volume-hit");
+      path.setAttribute("fill-rule", "evenodd");
+      path.setAttribute("data-zone-id", "hita:svg");
+      path.style.cssText = "pointer-events:fill;cursor:pointer;fill:rgba(0,0,0,0);stroke:none;";
+      svg.appendChild(path);
+      host.appendChild(svg);
+      document.body.appendChild(host);
+      try {
+        const br = host.getBoundingClientRect();
+        const inside = document.elementFromPoint(br.left + 20, br.top + 20);
+        const hole = document.elementFromPoint(br.left + 60, br.top + 60);
+        const outside = document.elementFromPoint(br.left + 2, br.top + 2);
+        const hitOk = !!(inside && inside.classList && inside.classList.contains("dflight-volume-hit"));
+        const holeOk = !(hole && hole.classList && hole.classList.contains("dflight-volume-hit"));
+        const outOk = !(outside && outside.classList && outside.classList.contains("dflight-volume-hit"));
+        const invis = (function(){
+          const cs = window.getComputedStyle(path);
+          const fill = (cs.fill || "").toLowerCase();
+          const stroke = (cs.stroke || "").toLowerCase();
+          return (fill.indexOf("rgba(0, 0, 0, 0)") >= 0 || fill === "transparent" || fill === "rgba(0,0,0,0)" || fill === "none")
+            && (stroke === "none" || stroke.indexOf("rgba(0, 0, 0, 0)") >= 0 || stroke === "");
+        })();
+        return hitOk && holeOk && outOk && invis;
+      } finally {
+        try { host.remove(); } catch(_){}
+      }
+    })());
+
+    add("HitA_handlers_accept_hit_class",
+      String(dflightAttachClickHandler).indexOf("dflight-volume-hit") >= 0
+      && String(dflightAttachHoverHandler).indexOf("dflight-volume-hit") >= 0);
+
+    add("HitA_info_fetch_clears_stale",
+      String(dflightAtm09FetchInfoForViewport).indexOf("clearStaleInfoKeepHit") >= 0);
+  } catch (e){
+    add("HitA_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      const s = DFLIGHT_TEMPORAL_STATES[i];
+      _dflightTemporalFilter[s] = prevFilter[s] === true;
+    }
+    if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
+    _dflightOverlayVisible = prevVis;
+    _dflightOverlaySession = prevSess;
+    _dflightAtm09InfoFc = prevFc;
+    _dflightAtm09InfoLastBboxKey = prevBbox;
+    _dflightAtm09Preferred = prevAtm09Pref;
+    _dflightFetchImpl = prevFetch;
+    try {
+      const r = document.getElementById("miniMap");
+      const t = r && r.querySelector(".tile-map");
+      if (t){
+        dflightRemoveOverlayDom(t);
+        if (typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(t);
+      }
+    } catch(_){}
+    try {
+      const probe = document.querySelector("[data-hita-svg-probe]");
+      if (probe) probe.remove();
+    } catch(_){}
+  }
+  return checks;
+}
+
+(function dflightExtendSelfTestHitFixA(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const hit = dflightSelfTestHitFixA();
+      const checks = (prev.checks || []).concat(hit);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, { selfTest: dflightSelfTestAll });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 
 /* ===== /D-FLIGHT-F-ATM09-ARCH-A ===== */
 
