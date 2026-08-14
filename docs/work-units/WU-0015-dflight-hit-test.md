@@ -5,13 +5,12 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / FIX-A-FIX1 IMPLEMENTED — REVIEW REQUIRED
+**STATUS:** OPEN / FIX-A-FIX1 DEPLOYED — QA FINALE CHATGPT PENDING
 **ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-FIX-A-FIX1
-**CURRENT GATE:** IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED (pre-deploy; no deploy)
-**CANDIDATE RUNTIME:** monolite `488b6c0559810f19bf75aa37d727902b57b9c2b2` · build **185** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX1`
-**SUPERSEDED CANDIDATE:** `62de84ea61d52c4c10460c755c7bb20ef36bc1c7` · build **184** · FIX-A — **REVIEW FAIL / BLOCKING** — non deployato
-**RUNTIME LIVE:** monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper **0.1.3**
-**NEXT:** REVIEW PRE-DEPLOY sul FULL SHA FIX1 — **non** deployare fino a review PASS
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**RUNTIME LIVE:** monolite `488b6c0559810f19bf75aa37d727902b57b9c2b2` · build **185** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A-FIX1` · helper **0.1.3**
+**SUPERSEDED CANDIDATE:** `62de84ea61d52c4c10460c755c7bb20ef36bc1c7` · build **184** · FIX-A — REVIEW FAIL (non deployato)
+**NEXT:** QA umana residua (ChatGPT) → attestazione `QA D-FLIGHT-HIT-TEST-FIX-A-FIX1 PASS operatore` → auto-`finito`
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
@@ -82,8 +81,8 @@ Catena causale:
 | --- | --- | --- |
 | **D-FLIGHT-HIT-TEST-DIAG-A** | Diagnosi read-only | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
 | **D-FLIGHT-HIT-TEST-FIX-A** | Fix client-only hit-layer | **REVIEW FAIL / BLOCKING** — candidate `62de84e` / 184 superseded (non deployato) |
-| **D-FLIGHT-HIT-TEST-FIX-A-FIX1** | Precedenza INFO vs hit-layer | **IMPLEMENTED — REVIEW REQUIRED** — candidate `488b6c0559810f19bf75aa37d727902b57b9c2b2` / build **185** |
+| **D-FLIGHT-HIT-TEST-FIX-A-FIX1** | Precedenza INFO vs hit-layer | **DEPLOYED** — LIVE `488b6c0` / build **185** — Automated Browser QA PASS — QA FINALE PENDING |
 
 ## 9. NEXT
 
-**REVIEW PRE-DEPLOY** sul FULL SHA FIX1 (`488b6c0`). **Non** deployare. WU-0015 resta OPEN. Backlog B–H NOT OPENED.
+**QA FINALE CHATGPT — PENDING.** Attestazione operatore `QA D-FLIGHT-HIT-TEST-FIX-A-FIX1 PASS operatore` → auto-`finito`. Backlog B–H NOT OPENED.
