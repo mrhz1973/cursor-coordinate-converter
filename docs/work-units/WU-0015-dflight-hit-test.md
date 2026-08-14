@@ -5,14 +5,15 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / OPTION-B-IMPL-A-FIX1 DEPLOYED — AUTOMATED BROWSER QA PASS
+**STATUS:** OPEN / OPTION-B-IMPL-A-FIX1 DEPLOYED — QA OPERATORE FAIL
 **ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**CURRENT GATE:** Decisione prodotto ALL OFF hit-test (operatore vs OPTION B)
 **REVIEW BASE:** monolite `4a6608413eab4ec47012fa2626f0614e1ff7c232` · build **188** — **REVIEW GPT-SOSTITUTIVA PASS**
 **RUNTIME LIVE:** monolite `4a6608413eab4ec47012fa2626f0614e1ff7c232` · build **188** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1` · helper **0.1.3**
 **REVIEW:** GPT-SOSTITUTIVA PASS (pre-deploy) — non Claude
-**SUPERSEDED path:** OPTION-B Automated Browser QA FAIL (TEMP-B CSS) → FIX1
-**NEXT:** QA umana residua ChatGPT → `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1 PASS operatore` → auto-`finito`
+**QA OPERATORE:** FAIL — ALL OFF: manina/hit-test attiva; atteso hit-test D-Flight inattivo
+**SUPERSEDED path:** OPTION-B Automated Browser QA FAIL (TEMP-B CSS) → FIX1 → QA FAIL ALL OFF
+**NEXT:** Decisione prodotto → FIX runtime se si richiede hit-test spento in ALL OFF; **no** `finito`
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
