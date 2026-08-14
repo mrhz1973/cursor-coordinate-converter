@@ -5,15 +5,13 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / OPTION-B-IMPL-A-FIX1 DEPLOYED — QA OPERATORE FAIL
-**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1
-**CURRENT GATE:** Decisione prodotto ALL OFF hit-test (operatore vs OPTION B)
-**REVIEW BASE:** monolite `4a6608413eab4ec47012fa2626f0614e1ff7c232` · build **188** — **REVIEW GPT-SOSTITUTIVA PASS**
-**RUNTIME LIVE:** monolite `4a6608413eab4ec47012fa2626f0614e1ff7c232` · build **188** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1` · helper **0.1.3**
-**REVIEW:** GPT-SOSTITUTIVA PASS (pre-deploy) — non Claude
-**QA OPERATORE:** FAIL — ALL OFF: manina/hit-test attiva; atteso hit-test D-Flight inattivo
-**SUPERSEDED path:** OPTION-B Automated Browser QA FAIL (TEMP-B CSS) → FIX1 → QA FAIL ALL OFF
-**NEXT:** Decisione prodotto → FIX runtime se si richiede hit-test spento in ALL OFF; **no** `finito`
+**STATUS:** OPEN / OPTION-B-IMPL-A-FIX2 DEPLOYED — AUTOMATED BROWSER QA PASS
+**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**RUNTIME LIVE:** monolite `0a4a505ba353b51a60d843176d1e6b15f0ce1383` · build **189** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2` · helper **0.1.3**
+**FEATURE COMMIT:** `1257ad98a1e08b40bee0d8bd464ba605176451d9` (FIX2 logic) + `0a4a505` (selftest harden)
+**SUPERSEDED path:** FIX1 QA OPERATORE FAIL (ALL OFF hit) → FIX2
+**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2 PASS operatore` → auto-`finito`
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
