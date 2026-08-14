@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-14 — **FIX2 deploy PASS** · runtime live `7f35382`/182 · helper 0.1.3. **Automated Browser QA FAIL caso 8** (resize: top non clampata, pannello sfora bottom mappa/viewport). Casi 1–7 e 9–13 PASS. **NON** QA FINALE CHATGPT PENDING. WU-0014 **OPEN**. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_0928_riepilogo_dflight-temporal-filter-ui-a-fix2-deploy-qa.md`](inbox/2026-08-14_0928_riepilogo_dflight-temporal-filter-ui-a-fix2-deploy-qa.md). NEXT: FIX3 clamp top+height su resize.
+2026-08-14 — **FIX3 implementato, NON deployato.** Task `20b1b49` / build **183** `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3`. Parent runtime `7f35382` / 182 resta **live**. Selftest **250/250**. Harness locale 1280×700: finding FIX2 corretto (bottom 626 ≤ map 638). Gate: **REVIEW GPT-SOSTITUTIVA REQUIRED**. WU-0014 **OPEN**. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_0941_riepilogo_dflight-temporal-filter-ui-a-fix3.md`](inbox/2026-08-14_0941_riepilogo_dflight-temporal-filter-ui-a-fix3.md). NEXT: review GPT-sostitutiva; **non** deployare 183 finché non autorizzato.
