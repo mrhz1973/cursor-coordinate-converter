@@ -334,25 +334,26 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0015 — [`D-FLIGHT-HIT-TEST`](work-units/WU-0015-dflight-hit-test.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-DIAG-A |
-| **STATO BLOCCO** | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
-| **GATE CORRENTE** | FIX PLAN REQUIRED (`D-FLIGHT-HIT-TEST-FIX-A` **non** aperto) |
+| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-FIX-A |
+| **STATO BLOCCO** | **IMPLEMENTED — REVIEW REQUIRED** |
+| **GATE CORRENTE** | REVIEW GPT-SOSTITUTIVA REQUIRED (pre-deploy; **no** deploy in questo intervento) |
 | **REVIEW BASE** | monolite live `20b1b494238f8dd483b3eb739f42dbf1194ab727` (build 183) |
+| **CANDIDATE RUNTIME** | monolite `62de84ea61d52c4c10460c755c7bb20ef36bc1c7` · build **184** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A` |
 | **RUNTIME LIVE** | monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | FIX PLAN hit-test — **non** implementare in DIAG-A |
+| **NEXT** | REVIEW PRE-DEPLOY — poi eventuale deploy (fuori da questo intervento) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0015 DIAG-A: a z8 ATM09_INFO 502 cap + suppress NFZ → zero hittable. Runtime live invariato `20b1b49` / 183. Helper **0.1.3** invariato.
+> WU-0015 FIX-A: candidate `62de84e` / build **184** pushato; LIVE resta **183** fino a deploy post-review. Helper **0.1.3** invariato.
 > WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-HIT-TEST-DIAG-A** — DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED — WU-0015 OPEN (live `20b1b49` / 183)
-2. **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3** — CLOSED / PASS end-to-end (build **183** / `20b1b49` LIVE) — WU-0014 CLOSED
-3. **DOCS-DFLIGHT-WU0014-OPEN-A** — CLOSED / PASS DOCS-ONLY — apertura WU-0014
-4. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay)
-5. **D-FLIGHT-BACKLOG-GAP-AUDIT-A** — DIAGNOSTIC COMPLETE — PRODUCT DECISION → chiudere WU-0013 / aprire follow-up temporale
+1. **D-FLIGHT-HIT-TEST-FIX-A** — IMPLEMENTED — REVIEW REQUIRED — candidate `62de84e` / build **184** (LIVE resta 183)
+2. **D-FLIGHT-HIT-TEST-DIAG-A** — DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED — WU-0015 OPEN (live `20b1b49` / 183)
+3. **D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3** — CLOSED / PASS end-to-end (build **183** / `20b1b49` LIVE) — WU-0014 CLOSED
+4. **DOCS-DFLIGHT-WU0014-OPEN-A** — CLOSED / PASS DOCS-ONLY — apertura WU-0014
+5. **DOCS-DFLIGHT-WU0013-CLOSE-A** — CLOSED / PASS DOCS-ONLY — WU-0013 CLOSED / PASS end-to-end (scope H2+overlay)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

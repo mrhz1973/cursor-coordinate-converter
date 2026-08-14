@@ -5,11 +5,12 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / DIAG-A COMPLETE / FIX-A FIX PLAN COMPLETE — NOT IMPLEMENTED
-**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-FIX-A (pianificato)
-**CURRENT GATE:** PLAN COMPLETE — READY FOR IMPLEMENTATION
+**STATUS:** OPEN / FIX-A IMPLEMENTED — REVIEW REQUIRED
+**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-FIX-A
+**CURRENT GATE:** IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED (pre-deploy; no deploy)
+**CANDIDATE RUNTIME:** monolite `62de84ea61d52c4c10460c755c7bb20ef36bc1c7` · build **184** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-FIX-A`
 **RUNTIME LIVE:** monolite `20b1b494238f8dd483b3eb739f42dbf1194ab727` · build **183** · `APP_BUILD_ID=D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` · helper **0.1.3**
-**NEXT:** implementazione `D-FLIGHT-HIT-TEST-FIX-A` (build futura 184) — piano: [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md)
+**NEXT:** REVIEW PRE-DEPLOY (Claude se disponibile, altrimenti GPT-sostitutiva) — **non** deployare fino a review PASS
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
@@ -79,8 +80,8 @@ Catena causale:
 | Blocco | Scope | Stato |
 | --- | --- | --- |
 | **D-FLIGHT-HIT-TEST-DIAG-A** | Diagnosi read-only | **DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED** |
-| **D-FLIGHT-HIT-TEST-FIX-A** | Fix plan + implementazione | **FIX PLAN COMPLETE — NOT IMPLEMENTED** (2026-08-14; piano in [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md)) |
+| **D-FLIGHT-HIT-TEST-FIX-A** | Fix client-only hit-layer | **IMPLEMENTED — REVIEW REQUIRED** — candidate `62de84ea61d52c4c10460c755c7bb20ef36bc1c7` / build **184** (LIVE resta 183) |
 
 ## 9. NEXT
 
-**Implementazione `D-FLIGHT-HIT-TEST-FIX-A`** — piano completo in [`docs/orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md`](../orchestrator/inbox/2026-08-14_1216_plan_dflight-hit-test-fix-a.md) (interaction-only vector hit layer + rebind idempotente listener + INFO error lifecycle; client-only; **DELICATO**; build futura 184). **Non** implementato.
+**REVIEW PRE-DEPLOY** (GPT-sostitutiva / Claude se disponibile). **Non** deployare finché review PASS. WU-0015 resta OPEN. Backlog B–H NOT OPENED.
