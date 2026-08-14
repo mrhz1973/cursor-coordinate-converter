@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-14 — **`DOCS-DFLIGHT-WU0014-OPEN-A CLOSED / PASS DOCS-ONLY`**. WU-0014 **OPEN** · blocco `D-FLIGHT-TEMPORAL-FILTER-UI-A` **READY / NOT IMPLEMENTED**. WU-0013 resta **CLOSED / PASS**. Runtime live invariato `52927c5`/179 · helper 0.1.3. Task `a5eff81`. Monolite **non** nel commit. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_0108_riepilogo_docs-dflight-wu0014-open-a.md`](inbox/2026-08-14_0108_riepilogo_docs-dflight-wu0014-open-a.md). NEXT: pianificare/implementare `D-FLIGHT-TEMPORAL-FILTER-UI-A`.
+2026-08-14 — **`D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1 IMPLEMENTED — REVIEW GPT-SOSTITUTIVA REQUIRED`**. Task runtime `b504c02` (parent `6c9c697`/180) · build **181**. Fix: redraw immediato filtro temporale (bypass ATM09-suppress se restrittivo), tooltip IT, geometry adattiva + restore-safeTop su `#dflightPanel` / `#dflightDetailsPanel`. Selftest **231/231**. **NON** deploy · **NON** finito · WU-0014 **OPEN**. Dettaglio: [`docs/orchestrator/inbox/2026-08-14_0856_riepilogo_dflight-temporal-filter-ui-a-fix1.md`](inbox/2026-08-14_0856_riepilogo_dflight-temporal-filter-ui-a-fix1.md). NEXT: review GPT-sostitutiva → deploy.
