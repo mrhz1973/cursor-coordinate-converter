@@ -42679,9 +42679,17 @@ function dflightSelfTestOptB(){
       const prevPref = _dflightAtm09Preferred;
       const prevVis = _dflightOverlayVisible;
       let fixtureSvg = null;
+      const parked = [];
       try {
         _dflightAtm09Preferred = true;
         _dflightOverlayVisible = true;
+        // Isolate from live overlays so SyncInfoHitInteractivity targets the fixture.
+        const existing = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        for (let i = 0; i < existing.length; i++){
+          const el = existing[i];
+          parked.push({ el: el, parent: el.parentNode, next: el.nextSibling });
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
         dflightAtm09SyncTemporalContextUi();
         const ns = "http://www.w3.org/2000/svg";
@@ -42703,8 +42711,14 @@ function dflightSelfTestOptB(){
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
         _dflightAtm09Preferred = prevPref;
         _dflightOverlayVisible = prevVis;
-        try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
         if (fixtureSvg && fixtureSvg.parentNode) fixtureSvg.parentNode.removeChild(fixtureSvg);
+        for (let i = 0; i < parked.length; i++){
+          const p = parked[i];
+          if (!p.parent) continue;
+          if (p.next && p.next.parentNode === p.parent) p.parent.insertBefore(p.el, p.next);
+          else p.parent.appendChild(p.el);
+        }
+        try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
       }
     })());
 
