@@ -346,24 +346,24 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-OPEN-A (**CLOSED / PASS** docs-only) |
-| **STATO BLOCCO** | **CLOSED / PASS** (docs-only — apertura WU-0016) |
-| **GATE CORRENTE** | **none** |
-| **REVIEW BASE** | monolite tip LIVE invariato `02be3a5a230c659c94481738af537caac1ecde38` (nessun candidate runtime; docs-only) |
-| **RUNTIME LIVE** | monolite tip `02be3a5a230c659c94481738af537caac1ecde38` (feature `eb307db`) · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** (ROUTINE) |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A |
+| **STATO BLOCCO** | Deploy tecnico PASS · Automated Browser QA PASS · **QA FINALE CHATGPT — PENDING** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **REVIEW BASE** | monolite tip pre-B1 `02be3a5a230c659c94481738af537caac1ecde38` (build **192** / FIX5) |
+| **RUNTIME LIVE** | monolite tip `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` · build **193** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | QA umana ChatGPT → `QA D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A PASS operatore` → auto-`finito`; poi **LEGEND-ATM09-UX-A** |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0016 aperta (candidato B UX coherence). `OPEN-A` CLOSED/PASS docs-only. LIVE tip `02be3a5` / **192** invariato. Helper **0.1.3**. Monolite non toccato. NEXT: **TEMPORAL-UX-A**.
+> B1 TEMPORAL-UX-A: select-all/none + pulse/fade + legenda D-Flight contestuale. LIVE `aa6e3ce` / **193**. Helper **0.1.3**. FIX5 preservato. QA umana PENDING (Cursor non emette istruzioni).
 > WU-0015 CLOSED / PASS. Candidati C–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta — NEXT TEMPORAL-UX-A
-2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — LIVE tip `02be3a5` / **192**
-3. **CONTEXT-BUDGET-GUARD** — docs-only PASS (AI-BOOT + OM §4)
-4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — DEPLOY PASS + Automated Browser QA PASS
+1. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — deploy PASS · Automated Browser QA PASS · QA FINALE CHATGPT — PENDING — LIVE `aa6e3ce` / **193**
+2. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
+3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — tip `02be3a5` / **192**
+4. **CONTEXT-BUDGET-GUARD** — docs-only PASS (AI-BOOT + OM §4)
 5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — QA OPERATORE FAIL — geometrie nere INFO (superseded by FIX5)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
