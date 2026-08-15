@@ -11,6 +11,7 @@
 
 - **Repo:** `mrhz1973/cursor-coordinate-converter`
 - **File operativo:** `coordinate_converter Claude.html`
+- **Nota filename:** il termine *Claude* nel filename runtime è **legacy** e **non** identifica il reviewer AI del workflow; una eventuale rinomina del monolite è migrazione separata.
 - **Tipo:** app GIS tattica leggera, offline-first, OPSEC-aware
 
 ---
@@ -76,21 +77,21 @@ Metodo di esecuzione Cursor (RIEPILOGO, prompt autosufficienti, autosync sequenz
 
 ### Handoff & Close Discipline — minimizzazione copia-incolla
 
-Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla manuale tra Cursor, GPT e Claude. Sostituisce integralmente ogni precedente catena fissa di revisione tra GPT, Claude e Cursor.
+Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla manuale tra Cursor, GPT e il **reviewer AI esterno** (quando previsto). Sostituisce integralmente ogni precedente catena fissa di revisione nominale tra modelli specifici e Cursor. La governance review è **model-agnostic**: non dipende dal nome/provider del reviewer.
 
 **Regola A — `finito` condizionale nel prompt (bundle: pre-autorizzato).** Ogni prompt Cursor **bundle runtime** già approvato include in coda la clausola `finito` **pre-autorizzata** (vedi **Regola H** e *Template coda prompt bundle* sotto). Per blocchi non-bundle o senza deploy/QA bundle, la clausola classica resta:
 
 > Se tutti i controlli statici risultano PASS e il diff resta nello scope dichiarato, esegui il workflow `finito`. Se un controllo fallisce o il diff esce dallo scope, NON eseguire `finito`: fermati e riporta il problema.
 
-Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività read-only; blocchi delicati in attesa di review byte Claude (se richiesta e non ancora completata); review sostitutiva GPT non ancora loggata (bundle delicato); QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti; **deploy non eseguito**; **smoke fallito**; prompt che **non** ha autorizzato esplicitamente la coda `finito`. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore — e **non** un secondo giro separato dopo QA PASS di un bundle autorizzato.
+Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività read-only; blocchi delicati in attesa di **review esterna** (se richiesta e non ancora completata); **REVIEW GPT-SOSTITUTIVA** non ancora loggata (bundle delicato); QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti; **deploy non eseguito**; **smoke fallito**; prompt che **non** ha autorizzato esplicitamente la coda `finito`. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore — e **non** un secondo giro separato dopo QA PASS di un bundle autorizzato.
 
-**Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**.
+**Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**. Il reviewer esterno, quando usato, è il **reviewer AI esterno** (seconda AI disponibile) — **mai** hardcodato per nome/modello/provider nella regola.
 
-- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → Automated Browser QA PRE-OPERATORE (Regola D2bis) → solo se PASS/N/A: ChatGPT emette QA umana residua (Regola D2) → attestazione QA PASS operatore in Cursor → finito automatico` (Regola H). **Nessun hop Claude in nessun caso** — vai sempre, zero attese.
-- **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine): Claude **upstream** (sostanza, rischi, gate) → GPT redige prompt → Cursor implementa → Claude **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy, se Claude **disponibile**.
-- **Bundle DELICATO, Claude NON disponibile** (limite token / attesa inaccettabile): il deploy **non** si blocca. Procedere con **review sostitutiva GPT** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + review byte Claude **post-hoc** come backstop (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «review sostitutiva GPT», **mai** «Claude», e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
+- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → Automated Browser QA PRE-OPERATORE (Regola D2bis) → solo se PASS/N/A: ChatGPT emette QA umana residua (Regola D2) → attestazione QA PASS operatore in Cursor → finito automatico` (Regola H). **Nessun reviewer AI esterno richiesto** — vai sempre, zero attese.
+- **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine), **quando un reviewer AI esterno è disponibile:** reviewer AI esterno **upstream** (sostanza, rischi, gate; **non** scrive il prompt Cursor) → GPT redige prompt → Cursor implementa → reviewer AI esterno **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy.
+- **Bundle DELICATO, reviewer AI esterno NON disponibile** (limite token / attesa inaccettabile / seconda AI assente): il deploy **non** si blocca. Procedere con **REVIEW GPT-SOSTITUTIVA** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + **review esterna post-hoc** come backstop quando il reviewer AI esterno torna disponibile (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «REVIEW GPT-SOSTITUTIVA», **mai** attribuire la review a un reviewer che non l’ha eseguita, e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
 
-In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor resta responsabilità di GPT.
+In entrambi i tier: il **reviewer AI esterno non scrive** il prompt Cursor; il prompt Cursor resta responsabilità di GPT.
 
 **Regola G — Bundling di default (METHOD-BUNDLING-DEFAULT).** Sostituisce ogni default precedente di separazione per-blocco/micro-blocco.
 
@@ -102,10 +103,10 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 
 4. **Precedenza:** questa regola sostituisce ogni default precedente di separazione per-blocco. Separare resta consigliato **solo** per le categorie delicate elencate. Per routine UI/CSS/HTML/i18n/cosmetica/JS basso rischio, default = **bundling**.
 
-**Checklist sostitutiva GPT obbligatoria** (da `raw@FULL_SHA`, bundle delicato, Claude non disponibile):
+**Checklist REVIEW GPT-SOSTITUTIVA obbligatoria** (da `raw@FULL_SHA`, bundle delicato, reviewer AI esterno non disponibile):
 
 - **Lifecycle modale/dialog (−/×):** apertura context-aware per **ogni** dialog toccato `[if(isGis)dlg.show();else dlg.showModal();` + `aria-modal=isGis?"false":"true"`]; close per-dialog con id specifici, **nessun** `querySelectorAll` globale; markup close = `.app-modal-close` esistente (`type="button"`, glifo via `::before`, niente SVG/formmethod); CSS legacy non rimossa se condivisa; QA: ogni modale in GIS (mappa/pannelli interattivi, niente inert, −/×/minimize/modal vertice ok) + fuori GIS (backdrop).
-- **Sanitizer/whitelist, nuovo campo persistito, nuovo create-path, storage:** estensione whitelist scoped (quali kind); nessun type-check allentato (`typeof x==="number"&&isFinite`, mai coercion lasca); il dato passa **sempre** dal sanitizer esistente, nessuna scrittura diretta; regressione round-trip **obbligatoria** save→reload→export→import su Tracce **e** poligoni. Bug **silenti** (non visibili in QA, corrompono dati/export) → categoria più rischiosa da sostituire: se grosso/dubbio preferire attesa Claude; se piccolo e checklist pulita, procedere.
+- **Sanitizer/whitelist, nuovo campo persistito, nuovo create-path, storage:** estensione whitelist scoped (quali kind); nessun type-check allentato (`typeof x==="number"&&isFinite`, mai coercion lasca); il dato passa **sempre** dal sanitizer esistente, nessuna scrittura diretta; regressione round-trip **obbligatoria** save→reload→export→import su Tracce **e** poligoni. Bug **silenti** (non visibili in QA, corrompono dati/export) → categoria più rischiosa da sostituire: se grosso/dubbio preferire attesa del reviewer AI esterno; se piccolo e checklist pulita, procedere.
 - **Rete/tile/proxy/OPSEC:** nessun endpoint/chiamata esterna nuova; offline ancora funzionante. OPSEC = massima cautela, preferire attesa se non banale.
 
 **Regola H — QA-PASS AUTO-INNESCA FINITO (METHOD-QA-PASS-AUTO-FINITO).** Elimina il giro separato «QA PASS → ChatGPT dice ora lancia finito».
@@ -123,10 +124,10 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
    - conferma monolite invariato se la chiusura è docs-only.
 4. **Non significa saltare la chiusura.** La chiusura docs resta **obbligatoria**. OM §7 deve restare fresco per la chat successiva. Saltare la chiusura dopo QA PASS = OM §7 stale = **errore di metodo**.
 5. **GPT / orchestratore:** **non** emettere messaggi separati del tipo «ora esegui finito», «ora fai la chiusura docs», «ora lancia finito» dopo QA PASS di un bundle con coda pre-autorizzata.
-6. **Bundle ROUTINE:** regola applicata normalmente; un solo gate; nessun hop Claude.
-7. **Bundle DELICATO:** **non** auto-innescare `finito` prima della review byte Claude se richiesta; se Claude non disponibile e il metodo consente review sostitutiva GPT → applicare solo **dopo** review sostitutiva completata e loggata, deploy PASS e QA operatore PASS della categoria.
+6. **Bundle ROUTINE:** regola applicata normalmente; un solo gate; nessun reviewer AI esterno richiesto.
+7. **Bundle DELICATO:** **non** auto-innescare `finito` prima della review esterna se richiesta; se il reviewer AI esterno non è disponibile e il metodo consente REVIEW GPT-SOSTITUTIVA → applicare solo **dopo** review sostitutiva completata e loggata, deploy PASS e QA operatore PASS della categoria.
 
-**Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato a **Claude**; blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, Claude e Cursor salvo escalation reale.
+**Regola C — Report a un solo destinatario.** Blocco delicato → report Cursor destinato al **reviewer AI esterno** previsto dal gate (se disponibile); se non disponibile → report nel flusso **REVIEW GPT-SOSTITUTIVA** previsto dal metodo. Blocco di routine → report nel flusso Cursor/GPT. Il destinatario va **dichiarato nel prompt**. Non duplicare lo stesso report verso più destinatari; l'operatore non ricopia lo stesso riepilogo tra GPT, reviewer AI esterno e Cursor salvo escalation reale.
 
 **Regola D — QA operatore unica (superseded nel formato vivo da Regola D2 + D2bis).** Resta valido: **un'unica** QA umana per blocco; risposta operatore **una sola volta** come attestazione finale; **fail-closed** senza attestazione; URL con runtime short SHA; distinzione PASS tecnico / Automated Browser QA / PASS operatore; Cursor **non** attesta la QA umana/percettiva. Il **formato vivo** delle istruzioni QA umane è Regola **D2**; il gate browser automatico pre-operatore è Regola **D2bis**. Checklist estesa: solo OPSEC/rete/cache/storage/migrazioni/alto rischio — sempre emessa da **ChatGPT**, non da Cursor — vedi [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 
@@ -168,7 +169,7 @@ In entrambi i tier: Claude **non** scrive il prompt Cursor; il prompt Cursor res
 8. La riga PASS continua a innescare **automaticamente** `finito` (Regola H); **non** è richiesto un secondo comando `finito`. ChatGPT lo spiega in sintesi dopo la riga PASS.
 9. Se noto dalle fonti vive, una sola frase di chiusura sul prossimo blocco (`Dopo la chiusura di questo gate, il prossimo blocco sarà: <NEXT>.`); **non** inventare NEXT.
 10. Restano invariati: fail-closed; PASS tecnico ≠ Automated Browser QA ≠ PASS operatore; IT (D1); etichette UI visibili; verifica monolite prima dei percorsi UI; URL runtime reale; divieto di inventare PASS operatore.
-**Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza Claude → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
+**Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza reviewer AI esterno → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
 
 **Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in chat (fenced) un seed **piccolissimo**, tipicamente:
 
@@ -264,12 +265,13 @@ Principio in dubbio: **meno fonti, più specifiche, una sola volta, on-demand.**
 
 **Nota chiave:** push su GitHub ≠ app aggiornata. `:8000` mostra solo ciò che il clone VPS ha pullato.
 
-### Ruolo Claude (consigliere) — limiti
+### Ruolo reviewer AI esterno (consigliere) — limiti
 
-- Claude NON scrive prompt per Cursor. Mai. Nemmeno comandi git, nemmeno "una riga".
-- Claude lavora solo a monte (imposta i task per GPT) e a valle (legge gli esiti su origin e dà verdetti/critiche).
+- Il **reviewer AI esterno** NON scrive prompt per Cursor. Mai. Nemmeno comandi git, nemmeno "una riga".
+- Lavora solo a monte (**upstream**: sostanza, rischi, gate per GPT) e a valle (**downstream**: legge gli esiti su origin / diff da FULL SHA e dà verdetti).
 - I prompt per Cursor li scrive sempre GPT.
-- Se Claude sta per produrre testo destinato a Cursor, deve fermarsi e passare la sostanza a GPT, non il prompt.
+- Se il reviewer AI esterno sta per produrre testo destinato a Cursor, deve fermarsi e passare la sostanza a GPT, non il prompt.
+- Non attribuire una review a un reviewer/modello che non l’ha realmente eseguita.
 
 ### Comandi all'operatore — uno alla volta
 
@@ -302,7 +304,7 @@ Le meta-istruzioni per l'operatore devono restare fuori dal blocco, sopra o sott
 
 L'operatore deve poter selezionare l'intero blocco e incollarlo in Cursor senza tagliare parti utili e senza includere testo estraneo.
 
-Lo stesso formato vale per la "sostanza" che Claude passa a GPT: blocco unico, delimitato, copiabile, senza testo estraneo dentro il blocco.
+Lo stesso formato vale per la "sostanza" che il reviewer AI esterno passa a GPT: blocco unico, delimitato, copiabile, senza testo estraneo dentro il blocco.
 
 ### Template coda prompt bundle runtime (canonico)
 
@@ -321,7 +323,7 @@ esegui automaticamente la coda finito già autorizzata:
 chiusura docs OM §7 (+ roadmap/checklist solo se previsti; HANDOFF non rolling) + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
 Non chiedere un comando separato «finito» né attendere un secondo messaggio.
 Se QA operatore fallisce o deploy/smoke non PASS o Automated Browser QA non PASS, NON eseguire finito.
-Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review sostitutiva GPT non loggata; workspace sporco; scope drift.
+Eccezioni: diagnosi/read-only; review esterna pendente (bundle delicato); REVIEW GPT-SOSTITUTIVA non loggata; workspace sporco; scope drift.
 ````
 
 Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`).
@@ -367,8 +369,8 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A (**CLOSED / PASS**) |
-| **STATO BLOCCO** | **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito) |
+| **BLOCCO ATTIVO** | METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A (**CLOSED / PASS** docs-only) |
+| **STATO BLOCCO** | **CLOSED / PASS** (docs-only · no deploy · Automated Browser QA N/A · monolite invariato) |
 | **GATE CORRENTE** | **none** |
 | **REVIEW BASE** | monolite tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build **193** / TEMPORAL-UX-A) |
 | **RUNTIME LIVE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper prod **0.1.3** (`:8010`) |
@@ -376,16 +378,16 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> B2 LEGEND-ATM09-UX-A **CLOSED / PASS**. LIVE `0c0f97d` / **194**. Helper **0.1.3**. NEXT: **AGGIORNA-A**.
-> WU-0015 CLOSED / PASS. Candidati C–H restano NOT OPENED.
+> METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A **CLOSED / PASS** docs-only. Governance review **model-agnostic** (`reviewer AI esterno` / `REVIEW GPT-SOSTITUTIVA`). LIVE invariato `0c0f97d` / **194**. NEXT: **AGGIORNA-A**.
+> B2 LEGEND-ATM09-UX-A resta **CLOSED / PASS**. WU-0016 **OPEN**.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
-2. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
-3. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
-4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — tip `02be3a5` / **192**
-5. **WIKI-LLM-LEAN-CONSOLIDATION-A** — docs-only (rules stub / OM) — tip `f78355b`
+1. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
+2. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
+3. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
+4. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
+5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — tip `02be3a5` / **192**
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

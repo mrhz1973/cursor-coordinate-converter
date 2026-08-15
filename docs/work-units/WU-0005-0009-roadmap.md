@@ -28,7 +28,7 @@ Il piano rispetta i vincoli del GIS Tool:
 - nessun live tracking GPS senza decisione esplicita;
 - OPSEC strict e forced-offline restano gate di rete;
 - `state.mapWaypoints[]` resta fonte canonica dei waypoint;
-- i prompt Cursor vengono scritti da GPT, non da Claude;
+- i prompt Cursor vengono scritti da GPT, non dal reviewer AI esterno;
 - i comandi manuali all'operatore vanno dati uno alla volta;
 - i prompt-task per Cursor restano completi.
 
@@ -403,7 +403,7 @@ Blocco più semplice: **solo** show/hide degli overlay HUD.
 - sanitizer dedicato;
 - pattern di riferimento: `settings.rangeRingsLastStyle` / `sanitizeRangeRingsLastStyle`;
 - la parte schema, hydration, sanitizer e persistenza costituisce un **CONTRATTO DATI**;
-- quando HUD-VIS verrà aperto come blocco runtime, la costruzione del contratto dati richiederà **hop/review Claude**.
+- quando HUD-VIS verrà aperto come blocco runtime, la costruzione del contratto dati richiederà **review DELICATA** (reviewer AI esterno se disponibile, altrimenti REVIEW GPT-SOSTITUTIVA per metodo).
 
 **Distinzione obbligatoria:**
 - **HUD-VIS** stabilisce cosa è visibile durante l'uso live;
@@ -954,7 +954,7 @@ Sostituisce per i **nuovi** blocchi il precedente requisito operativo di aggiorn
 
 **P5 complessivo:** **CLOSED / PASS end-to-end** (B1…B2-G covered).
 
-**Backlog tecnico separato (non bloccante, NON landed):** micro-fix multi-touch P2 — guardia `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return`; finding review P4-B1; futuro blocco runtime Ramo B + review byte Claude prima deploy. **Non** parte di P5-B2-F.
+**Backlog tecnico separato (non bloccante, NON landed):** micro-fix multi-touch P2 — guardia `if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return`; finding review P4-B1; futuro blocco runtime Ramo B + review esterna (DELICATO) prima del deploy. **Non** parte di P5-B2-F.
 
 **Invariati:** P1–P4/P7/A1/A2 CLOSED; P2/P3/P3-ADD/P4 pipeline; sanitizer; storage; import/export; **`APP_BUILD_ID` `B5.5Z`**.
 

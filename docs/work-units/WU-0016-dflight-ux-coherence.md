@@ -8,7 +8,7 @@
 **RUNTIME LIVE:** monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper **0.1.3** (invariato)
 **REVIEW BASE:** tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build 193 / TEMPORAL-UX-A)
 **NEXT:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A
-**NOTE:** B2 CLOSED/PASS 2026-08-15 · QA operatore PASS · finito eseguito · LIVE `0c0f97d` / 194
+**NOTE:** METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A CLOSED/PASS docs-only 2026-08-15 · B2 CLOSED/PASS · LIVE `0c0f97d` / 194 · NEXT AGGIORNA-A
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito).
