@@ -5,14 +5,14 @@
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / OPTION-B-IMPL-A-FIX5 DEPLOYED — AUTOMATED BROWSER QA PASS
-**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**STATUS:** OPEN / OPTION-B-IMPL-A-FIX5 CLOSED / PASS
+**ACTIVE BLOCK:** D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 (CLOSED / PASS)
+**CURRENT GATE:** none
 **RUNTIME LIVE:** monolite tip `02be3a5a230c659c94481738af537caac1ecde38` · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper **0.1.3**
 **FEATURE COMMIT:** `eb307dba753017eb91819561275ed1dd35b10687`
 **SUPERSEDED path:** FIX4 QA OPERATORE FAIL (INFO black fill) → FIX5
-**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 PASS operatore` → auto-`finito`
-**NOTE:** DEPLOY PASS · Automated Browser QA PASS (tip harden) · OptB 23/23+11/11 · finito NON eseguito
+**NEXT:** da scegliere (prossimo blocco WU-0015 / backlog)
+**NOTE:** QA operatore PASS 2026-08-15 · Automated Browser QA PASS · OptB 23/23+11/11 · `finito` in chiusura
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** OPEN — diagnosi `D-FLIGHT-HIT-TEST-DIAG-A` **COMPLETE** (2026-08-14)
