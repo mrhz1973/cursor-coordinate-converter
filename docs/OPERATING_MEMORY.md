@@ -369,25 +369,26 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A (**CLOSED / PASS** docs-only) |
-| **STATO BLOCCO** | **CLOSED / PASS** (docs-only · no deploy · Automated Browser QA N/A · monolite invariato) |
-| **GATE CORRENTE** | **none** |
-| **REVIEW BASE** | monolite tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build **193** / TEMPORAL-UX-A) |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-AGGIORNA-A (**IMPLEMENTED / STATIC PASS**) |
+| **STATO BLOCCO** | **IMPLEMENTED / STATIC PASS** — **REVIEW ESTERNA DOWNSTREAM — PENDING** · deploy **NON** eseguito |
+| **GATE CORRENTE** | **REVIEW ESTERNA DOWNSTREAM — PENDING** |
+| **REVIEW BASE** | monolite tip LIVE `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build **194** / LEGEND-ATM09-UX-A) |
+| **CANDIDATE RUNTIME** | monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · blob `b23f3132752779df89a75ddcd07610c3f3ddf5d0` |
 | **RUNTIME LIVE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** (DELICATO) |
+| **NEXT** | review downstream → deploy → Automated Browser QA → QA operatore → finito |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A **CLOSED / PASS** docs-only. Governance review **model-agnostic** (`reviewer AI esterno` / `REVIEW GPT-SOSTITUTIVA`). LIVE invariato `0c0f97d` / **194**. NEXT: **AGGIORNA-A**.
-> B2 LEGEND-ATM09-UX-A resta **CLOSED / PASS**. WU-0016 **OPEN**.
+> AGGIORNA-A **IMPLEMENTED / STATIC PASS**. Candidate `2574250` / **195**. LIVE resta `0c0f97d` / **194** (nessun deploy). Gate: **REVIEW ESTERNA DOWNSTREAM — PENDING**.
+> WU-0016 **OPEN**.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
-2. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
-3. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
-4. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
-5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — tip `02be3a5` / **192**
+1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — IMPLEMENTED / STATIC PASS — candidate `2574250` / **195** — REVIEW ESTERNA DOWNSTREAM PENDING
+2. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
+3. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
+4. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
+5. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

@@ -3,15 +3,16 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A (CLOSED / PASS)
-**CURRENT GATE:** none
+**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A (IMPLEMENTED / STATIC PASS)
+**CURRENT GATE:** REVIEW ESTERNA DOWNSTREAM — PENDING
+**CANDIDATE RUNTIME:** monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · blob `b23f3132752779df89a75ddcd07610c3f3ddf5d0`
 **RUNTIME LIVE:** monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper **0.1.3** (invariato)
-**REVIEW BASE:** tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build 193 / TEMPORAL-UX-A)
-**NEXT:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A
-**NOTE:** METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A CLOSED/PASS docs-only 2026-08-15 · B2 CLOSED/PASS · LIVE `0c0f97d` / 194 · NEXT AGGIORNA-A
+**REVIEW BASE:** tip LIVE `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build 194 / LEGEND-ATM09-UX-A)
+**NEXT:** review downstream → deploy → Automated Browser QA → QA operatore → finito
+**NOTE:** AGGIORNA-A candidate pushed 2026-08-15 · STATIC PASS (selfTest 312 · OptB 23/23 · OptB async 11/11) · deploy NON eseguito · LIVE resta 194
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito).
+**Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` **IMPLEMENTED / STATIC PASS** — gate **REVIEW ESTERNA DOWNSTREAM — PENDING**. Runtime LIVE ancora build **194**.
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
 **Workstream precedente:** [`WU-0015`](WU-0015-dflight-hit-test.md) **CLOSED / PASS** (OPTION-B-IMPL-A-FIX5).
 

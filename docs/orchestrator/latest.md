@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** **CLOSED / PASS** docs-only. Task `8153715`. Governance review **model-agnostic** (`reviewer AI esterno` / `REVIEW GPT-SOSTITUTIVA`). Monolite **non** toccato; RUNTIME LIVE resta `0c0f97d` / build **194**. WU-0016 **OPEN**. NEXT: **`D-FLIGHT-UX-COHERENCE-AGGIORNA-A`**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0925_riepilogo_method-external-ai-reviewer-model-agnostic-a.md`](inbox/2026-08-15_0925_riepilogo_method-external-ai-reviewer-model-agnostic-a.md).
+2026-08-15 — **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** **IMPLEMENTED / STATIC PASS**. Candidate runtime `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195**. Gate: **REVIEW ESTERNA DOWNSTREAM — PENDING**. Deploy **NON** eseguito. RUNTIME LIVE resta `0c0f97d` / **194**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0955_riepilogo_dflight-ux-coherence-aggiorna-a.md`](inbox/2026-08-15_0955_riepilogo_dflight-ux-coherence-aggiorna-a.md).
