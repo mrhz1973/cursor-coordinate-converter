@@ -1977,19 +1977,11 @@ html[data-theme="dark"] .bbox-overlay{
 html[data-theme="dark"] .tile-wrap .tile.tile-atm09{
   opacity:1;
 }
-/* D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1 TEMP-B: dim ATM09 raster; selector follows real DOM
- * (.tile-map.atm09-temporal-dim > .tile-layer > .tile-wrap > img.tile.tile-atm09). */
-.tile-map.atm09-temporal-dim .tile-wrap .tile.tile-atm09{
-  opacity:0.35;
-}
-html[data-theme="dark"] .tile-map.atm09-temporal-dim .tile-wrap .tile.tile-atm09{
-  opacity:0.35;
-}
-/* FIX3: ALL OFF — hide ATM09 raster so temporal filter remains readable (no dominant black zones). */
-.tile-map.atm09-temporal-all-off .tile-wrap .tile.tile-atm09{
+/* FIX4: any restrictive temporal filter hides ATM09 raster (official tiles not temporally filterable). */
+.tile-map.atm09-temporal-hidden .tile-wrap .tile.tile-atm09{
   opacity:0;
 }
-html[data-theme="dark"] .tile-map.atm09-temporal-all-off .tile-wrap .tile.tile-atm09{
+html[data-theme="dark"] .tile-map.atm09-temporal-hidden .tile-wrap .tile.tile-atm09{
   opacity:0;
 }
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
@@ -14123,7 +14115,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <input type="checkbox" id="dflightTfUnknown" checked>
         <span data-i18n="dflight.temporal.UNKNOWN">Stato sconosciuto</span>
       </label>
-      <p id="dflightTemporalAtm09Hint" class="hint dflight-temporal-atm09-hint" data-i18n="dflight.filter.temporal.atm09DimHint" hidden>Filtro temporale attivo: ATM09 resta visibile come contesto ufficiale attenuato.</p>
+      <p id="dflightTemporalAtm09Hint" class="hint dflight-temporal-atm09-hint" data-i18n="dflight.filter.temporal.atm09DimHint" hidden>Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.</p>
     </div>
     <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
     <h3 id="dflightLegendHeading" class="dflight-legend-heading hint">Legenda restrizioni</h3>
@@ -16392,7 +16384,7 @@ const I18N = {
     "dflight.temporal.EXPIRED":"Scaduta",
     "dflight.temporal.UNKNOWN":"Stato sconosciuto",
     "dflight.filter.temporal.title":"Filtra per stato temporale",
-    "dflight.filter.temporal.atm09DimHint":"Filtro temporale attivo: ATM09 resta visibile come contesto ufficiale attenuato (raster non filtrabile per stato).",
+    "dflight.filter.temporal.atm09DimHint":"Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.",
     "dflight.filter.temporal.atm09AllOffHint":"Tutti i filtri temporali disattivati: ATM09 nascosto; nessuna zona selezionabile.",
     "dflight.field.name":"Nome",
     "dflight.field.zoneId":"ID zona",
@@ -19951,7 +19943,7 @@ const I18N = {
     "batch.th.loc":"Locality",
     "batch.locCol":"Add Locality column (reverse geocoding, 1 req/s)",
     "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy.",
-    "dflight.filter.temporal.atm09DimHint":"Temporal filter active: ATM09 remains visible as dimmed official context."
+    "dflight.filter.temporal.atm09DimHint":"Temporal filter active: official ATM09 raster hidden because it cannot be filtered by state."
   },
   fr: {
     "app.title":"GOI GIS Tool by Marty",
@@ -21915,7 +21907,7 @@ const I18N = {
     "routing.routeTooLong":"Itinéraire trop long (maximum 2000 points).",
     "routing.routeTooShort":"Itinéraire trop court (minimum 2 points).",
     "routing.archiveFull":"Archive de traces pleine (maximum 50).",
-    "dflight.filter.temporal.atm09DimHint":"Filtre temporel actif : ATM09 reste visible comme contexte officiel atténué."
+    "dflight.filter.temporal.atm09DimHint":"Filtre temporel actif : raster ATM09 officiel masqué car non filtrable par état."
   }
 };
 
@@ -23457,10 +23449,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3";
-const APP_BUILD_DETAIL = "ALL OFF hides ATM09 raster; hit-test stays off.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4";
+const APP_BUILD_DETAIL = "Restrictive temporal filter hides ATM09; INFO hit only when ALL ON.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 190;
+const APP_BUILD_NUM = 191;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35915,11 +35907,11 @@ function dflightTemporalFilterAnyEnabled(){
   }
   return false;
 }
-/** ATM09 INFO hit-test allowed only when overlay preferred+visible and any temporal ON. */
+/** ATM09 INFO hit-test only when preferred+visible and temporal filter is NOT restrictive (ALL ON). */
 function dflightAtm09InfoHitInteractiveAllowed(){
-  return !!(_dflightAtm09Preferred && _dflightOverlayVisible
-    && typeof dflightTemporalFilterAnyEnabled === "function"
-    && dflightTemporalFilterAnyEnabled());
+  const notRestrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
+    ? !dflightTemporalFilterIsRestrictive() : true;
+  return !!(_dflightAtm09Preferred && _dflightOverlayVisible && notRestrictive);
 }
 /** Toggle .is-interactive on existing ATM09 INFO overlay without refetch/redraw of FC. */
 function dflightAtm09SyncInfoHitInteractivity(){
@@ -35945,42 +35937,31 @@ function dflightSetTemporalFilter(state, enabled){
   try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
   return true;
 }
-/** TEMP-B / FIX3: dim ATM09 when partially restrictive; hide ATM09 when ALL OFF. */
+/** FIX4: hide ATM09 raster whenever temporal filter is restrictive; INFO interactive only when ALL ON. */
 function dflightAtm09SyncTemporalContextUi(){
-  const anyOn = (typeof dflightTemporalFilterAnyEnabled === "function")
-    ? !!dflightTemporalFilterAnyEnabled() : true;
   const restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
     ? !!dflightTemporalFilterIsRestrictive() : false;
-  const allOff = !anyOn;
-  const partialDim = anyOn && restrictive;
   try {
     const root = document.getElementById("miniMap");
     const tm = root && root.querySelector(".tile-map");
     if (tm){
-      if (allOff){
-        tm.classList.add("atm09-temporal-all-off");
-        tm.classList.remove("atm09-temporal-dim");
-      } else if (partialDim){
-        tm.classList.add("atm09-temporal-dim");
-        tm.classList.remove("atm09-temporal-all-off");
-      } else {
-        tm.classList.remove("atm09-temporal-dim");
-        tm.classList.remove("atm09-temporal-all-off");
-      }
+      // Drop legacy FIX1/FIX3 classes if present on a long-lived tile-map.
+      tm.classList.remove("atm09-temporal-dim");
+      tm.classList.remove("atm09-temporal-all-off");
+      if (restrictive) tm.classList.add("atm09-temporal-hidden");
+      else tm.classList.remove("atm09-temporal-hidden");
     }
   } catch(_){}
   try {
     const hint = document.getElementById("dflightTemporalAtm09Hint");
     if (hint){
-      hint.hidden = !(allOff || partialDim);
-      if (allOff || partialDim){
+      hint.hidden = !restrictive;
+      if (restrictive){
         try {
-          const key = allOff
-            ? "dflight.filter.temporal.atm09AllOffHint"
-            : "dflight.filter.temporal.atm09DimHint";
+          const key = "dflight.filter.temporal.atm09DimHint";
           let txt = "";
-          if (typeof tIt === "function") txt = tIt(key);
-          if ((!txt || txt === key) && typeof t === "function") txt = t(key);
+          if (typeof t === "function") txt = t(key);
+          if ((!txt || txt === key) && typeof tIt === "function") txt = tIt(key);
           if (txt && txt !== key) hint.textContent = txt;
         } catch(_){}
       }
@@ -39273,8 +39254,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 190
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -40983,8 +40964,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_190", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 190
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3");
+    add("H_build_191", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41479,8 +41460,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 190
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42492,8 +42473,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 190
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -42576,19 +42557,17 @@ function dflightSelfTestOptB(){
       return dflightAtm09SubdivCacheGet(bbox) == null && _dflightAtm09SubdivCache.length === 0;
     })());
 
-    add("OptB_TEMPB_dim_on_off", (function(){
-      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
-      dflightAtm09SyncTemporalContextUi();
+
+    add("OptB_FIX4_restrictive_hides_atm09_and_info", (function(){
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
-      const hint = document.getElementById("dflightTemporalAtm09Hint");
       if (!tm) return true;
       let fixture = null;
       let img = tm.querySelector(".tile-wrap .tile.tile-atm09");
       if (!img){
         fixture = document.createElement("div");
         fixture.className = "tile-wrap";
-        fixture.setAttribute("data-optb-tempb-fixture", "1");
+        fixture.setAttribute("data-optb-fix4-fixture", "1");
         img = document.createElement("img");
         img.className = "tile tile-atm09";
         img.alt = "";
@@ -42601,89 +42580,90 @@ function dflightSelfTestOptB(){
       function near(a, b, eps){
         return Number.isFinite(a) && Math.abs(a - b) <= (eps == null ? 0.02 : eps);
       }
-      // Fail closed on inverted ancestor order (.tile-wrap .tile-map…): that cannot match real DOM.
-      let hasInvertedCss = false;
-      let hasAlignedCss = false;
-      try {
-        const sheets = document.styleSheets;
-        for (let si = 0; si < sheets.length; si++){
-          let rules;
-          try { rules = sheets[si].cssRules; } catch (_){ continue; }
-          if (!rules) continue;
-          for (let ri = 0; ri < rules.length; ri++){
-            const sel = rules[ri].selectorText || "";
-            if (sel.indexOf("atm09-temporal-dim") < 0 || sel.indexOf("tile-atm09") < 0) continue;
-            if (/\.tile-wrap\s+\.tile-map\.atm09-temporal-dim/.test(sel)) hasInvertedCss = true;
-            if (/\.tile-map\.atm09-temporal-dim\s+\.tile-wrap\s+\.tile\.tile-atm09/.test(sel)){
-              hasAlignedCss = true;
-            }
-          }
-        }
-      } catch (_){}
-      const nestedOk = !!(tm.querySelector(".tile-wrap .tile.tile-atm09"));
-      const wrapNotAncestorOfMap = !document.querySelector(".tile-wrap .tile-map");
-      try {
-        const opA = opacityOf(img);
-        const offOk = !tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden) && near(opA, 1);
-        dflightSetTemporalFilter("FUTURE", false);
-        dflightAtm09SyncTemporalContextUi();
-        const opB = opacityOf(img);
-        const onOk = tm.classList.contains("atm09-temporal-dim") && (!hint || hint.hidden === false) && near(opB, 0.35);
-        dflightSetTemporalFilter("FUTURE", true);
-        dflightAtm09SyncTemporalContextUi();
-        const opC = opacityOf(img);
-        const backOk = !tm.classList.contains("atm09-temporal-dim") && near(opC, 1)
-          && dflightTemporalFilterIsRestrictive() === false;
-        return !!(nestedOk && wrapNotAncestorOfMap && hasAlignedCss && !hasInvertedCss
-          && offOk && onOk && backOk);
-      } finally {
-        if (fixture && fixture.parentNode) fixture.parentNode.removeChild(fixture);
-      }
-    })());
-
-
-    add("OptB_FIX3_all_off_hides_atm09", (function(){
-      const root = document.getElementById("miniMap");
-      const tm = root && root.querySelector(".tile-map");
-      if (!tm) return true;
-      let fixture = null;
-      let img = tm.querySelector(".tile-wrap .tile.tile-atm09");
-      if (!img){
-        fixture = document.createElement("div");
-        fixture.className = "tile-wrap";
-        fixture.setAttribute("data-optb-fix3-fixture", "1");
-        img = document.createElement("img");
-        img.className = "tile tile-atm09";
-        img.alt = "";
-        fixture.appendChild(img);
-        tm.appendChild(fixture);
-      }
-      function opacityOf(el){
-        try { return parseFloat(getComputedStyle(el).opacity); } catch (_){ return NaN; }
-      }
-      function near(a, b, eps){
-        return Number.isFinite(a) && Math.abs(a - b) <= (eps == null ? 0.02 : eps);
-      }
+      const prevPref = _dflightAtm09Preferred;
+      const prevVis = _dflightOverlayVisible;
       const prev = {};
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
         const st = DFLIGHT_TEMPORAL_STATES[i];
         prev[st] = _dflightTemporalFilter[st] === true;
       }
+      let fixtureSvg = null;
+      const parked = [];
       try {
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        _dflightAtm09Preferred = true;
+        _dflightOverlayVisible = true;
+        const existing = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        for (let i = 0; i < existing.length; i++){
+          const el = existing[i];
+          parked.push({ el: el, parent: el.parentNode, next: el.nextSibling });
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+        const ns = "http://www.w3.org/2000/svg";
+        fixtureSvg = document.createElementNS(ns, "svg");
+        fixtureSvg.setAttribute("class", "dflight-atm09-info-overlay");
+        fixtureSvg.setAttribute("data-optb-fix4-fixture", "1");
+        (tm.querySelector(".tile-layer") || tm).appendChild(fixtureSvg);
+
+        function setAll(on){
+          for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+            _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = !!on;
+        }
+        // 5/5 ON
+        setAll(true);
         dflightAtm09SyncTemporalContextUi();
-        const allOnOk = !tm.classList.contains("atm09-temporal-all-off")
-          && !tm.classList.contains("atm09-temporal-dim") && near(opacityOf(img), 1);
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        const allOnOk = dflightTemporalFilterIsRestrictive() === false
+          && !tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 1)
+          && fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === true;
+
+        // 4/5 ON (FUTURE off)
+        _dflightTemporalFilter.FUTURE = false;
         dflightAtm09SyncTemporalContextUi();
-        const allOffOk = tm.classList.contains("atm09-temporal-all-off")
-          && !tm.classList.contains("atm09-temporal-dim") && near(opacityOf(img), 0);
+        const fourOk = dflightTemporalFilterIsRestrictive() === true
+          && tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 0)
+          && !fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === false
+          && !tm.classList.contains("atm09-temporal-dim");
+
+        // 1/5 ON
+        setAll(false);
         _dflightTemporalFilter.ACTIVE_NOW = true;
         dflightAtm09SyncTemporalContextUi();
-        const oneOnOk = !tm.classList.contains("atm09-temporal-all-off")
-          && tm.classList.contains("atm09-temporal-dim") && near(opacityOf(img), 0.35);
-        let hasAlignedAllOff = false;
-        let hasInvertedAllOff = false;
+        const oneOk = dflightTemporalFilterIsRestrictive() === true
+          && tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 0)
+          && !fixtureSvg.classList.contains("is-interactive");
+
+        // 0/5 ON
+        setAll(false);
+        dflightAtm09SyncTemporalContextUi();
+        const vols = document.querySelectorAll(".dflight-volume-hit, .dflight-volume").length;
+        // If live overlay present, force redraw under ALL OFF; else volumes may be 0 already.
+        try {
+          if (typeof dflightRedrawOverlayFromSession === "function")
+            dflightRedrawOverlayFromSession(tm);
+        } catch(_){}
+        const vols2 = document.querySelectorAll(".dflight-volume-hit, .dflight-volume").length;
+        const zeroOk = near(opacityOf(img), 0)
+          && !fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === false
+          && vols2 === 0;
+
+        // back to 5/5 without refetch (same SVG node)
+        const sameSvg = fixtureSvg;
+        setAll(true);
+        dflightAtm09SyncTemporalContextUi();
+        const backOk = fixtureSvg === sameSvg
+          && near(opacityOf(img), 1)
+          && fixtureSvg.classList.contains("is-interactive")
+          && dflightTemporalFilterIsRestrictive() === false;
+
+        // CSS: no 0.35 dim rules; aligned hidden selector
+        let hasDim035 = false;
+        let hasAlignedHidden = false;
+        let hasInvertedHidden = false;
         try {
           const sheets = document.styleSheets;
           for (let si = 0; si < sheets.length; si++){
@@ -42691,26 +42671,92 @@ function dflightSelfTestOptB(){
             try { rules = sheets[si].cssRules; } catch (_){ continue; }
             if (!rules) continue;
             for (let ri = 0; ri < rules.length; ri++){
-              const sel = rules[ri].selectorText || "";
-              if (sel.indexOf("atm09-temporal-all-off") < 0 || sel.indexOf("tile-atm09") < 0) continue;
-              if (/\.tile-wrap\s+\.tile-map\.atm09-temporal-all-off/.test(sel)) hasInvertedAllOff = true;
-              if (/\.tile-map\.atm09-temporal-all-off\s+\.tile-wrap\s+\.tile\.tile-atm09/.test(sel)) hasAlignedAllOff = true;
+              const rule = rules[ri];
+              const sel = rule.selectorText || "";
+              if (sel.indexOf("tile-atm09") >= 0 && sel.indexOf("atm09-temporal-dim") >= 0) hasDim035 = true;
+              if (sel.indexOf("atm09-temporal-hidden") >= 0 && sel.indexOf("tile-atm09") >= 0){
+                if (/\.tile-wrap\s+\.tile-map\.atm09-temporal-hidden/.test(sel)) hasInvertedHidden = true;
+                if (/\.tile-map\.atm09-temporal-hidden\s+\.tile-wrap\s+\.tile\.tile-atm09/.test(sel)) hasAlignedHidden = true;
+                try {
+                  if (rule.style && String(rule.style.opacity) === "0.35") hasDim035 = true;
+                } catch(_){}
+              }
             }
           }
         } catch (_){}
-        return !!(allOnOk && allOffOk && oneOnOk && hasAlignedAllOff && !hasInvertedAllOff);
+
+        return !!(allOnOk && fourOk && oneOk && zeroOk && backOk
+          && hasAlignedHidden && !hasInvertedHidden && !hasDim035);
       } finally {
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
           const st = DFLIGHT_TEMPORAL_STATES[i];
           _dflightTemporalFilter[st] = prev[st] === true;
         }
-        try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
+        _dflightAtm09Preferred = prevPref;
+        _dflightOverlayVisible = prevVis;
+        if (fixtureSvg && fixtureSvg.parentNode) fixtureSvg.parentNode.removeChild(fixtureSvg);
+        for (let i = 0; i < parked.length; i++){
+          const p = parked[i];
+          if (!p.parent) continue;
+          if (p.next && p.next.parentNode === p.parent) p.parent.insertBefore(p.el, p.next);
+          else p.parent.appendChild(p.el);
+        }
         if (fixture && fixture.parentNode) fixture.parentNode.removeChild(fixture);
+        try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
       }
     })());
 
-    add("OptB_FIX3_build_190", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 190
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3");
+    add("OptB_FIX4_partial_vectors_only_enabled_states", (function(){
+      let allowsInDraw = false;
+      try {
+        const names = Object.getOwnPropertyNames(window).filter(function(n){
+          return /^dflight/i.test(n) && typeof window[n] === "function";
+        });
+        for (let i = 0; i < names.length; i++){
+          let body = "";
+          try { body = Function.prototype.toString.call(window[names[i]]); } catch(_){ continue; }
+          if (body.indexOf("dflightTemporalFilterAllows") >= 0 && body.indexOf("filtered_temporal") >= 0){
+            allowsInDraw = true;
+            break;
+          }
+        }
+      } catch(_){}
+      const prev = {};
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        prev[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+      }
+      try {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        _dflightTemporalFilter.ACTIVE_NOW = true;
+        const okAllows = dflightTemporalFilterAllows({ temporal_state: "ACTIVE_NOW" }) === true
+          && dflightTemporalFilterAllows({ temporal_state: "FUTURE" }) === false
+          && dflightTemporalFilterAllows({ temporal_state: "EXPIRED" }) === false;
+        // If live volumes exist after redraw, assert data-temporal-state whitelist.
+        let domOk = true;
+        try {
+          const tm = document.querySelector(".tile-map");
+          if (tm && typeof dflightRedrawOverlayFromSession === "function"){
+            dflightRedrawOverlayFromSession(tm);
+            const nodes = tm.querySelectorAll(".dflight-volume-hit[data-temporal-state], .dflight-volume[data-temporal-state]");
+            for (let i = 0; i < nodes.length; i++){
+              const ts = nodes[i].getAttribute("data-temporal-state");
+              if (ts && ts !== "ACTIVE_NOW"){ domOk = false; break; }
+            }
+          }
+        } catch(_){}
+        return !!(allowsInDraw && okAllows && domOk);
+      } finally {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+          _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prev[DFLIGHT_TEMPORAL_STATES[i]] === true;
+        try {
+          const tm = document.querySelector(".tile-map");
+          if (tm && typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tm);
+        } catch(_){}
+      }
+    })());
+
+    add("OptB_FIX4_build_191", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -42796,12 +42842,18 @@ function dflightSelfTestOptB(){
         dflightAtm09SyncInfoHitInteractivity();
         const offOk = !fixtureSvg.classList.contains("is-interactive");
         const sameNodeBefore = fixtureSvg;
+        // FIX4: partial (1/5) remains restrictive → INFO stays non-interactive
         _dflightTemporalFilter.ACTIVE_NOW = true;
         dflightAtm09SyncTemporalContextUi();
-        const onOk = fixtureSvg.classList.contains("is-interactive")
+        const partialStillOff = !fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === false
+          && fixtureSvg === sameNodeBefore;
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        dflightAtm09SyncTemporalContextUi();
+        const allOnOk = fixtureSvg.classList.contains("is-interactive")
           && fixtureSvg === sameNodeBefore
           && dflightAtm09InfoHitInteractiveAllowed() === true;
-        return !!(offOk && onOk);
+        return !!(offOk && partialStillOff && allOnOk);
       } finally {
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
         _dflightAtm09Preferred = prevPref;
@@ -42830,7 +42882,12 @@ function dflightSelfTestOptB(){
       const it = I18N && I18N.it && I18N.it["dflight.filter.temporal.atm09DimHint"];
       const en = I18N && I18N.en && I18N.en["dflight.filter.temporal.atm09DimHint"];
       const fr = I18N && I18N.fr && I18N.fr["dflight.filter.temporal.atm09DimHint"];
-      return !!(it && en && fr && it.indexOf("ATM09") >= 0 && en.indexOf("ATM09") >= 0 && fr.indexOf("ATM09") >= 0);
+      const noDim = !!(it && en && fr)
+        && it.indexOf("attenuat") < 0 && en.toLowerCase().indexOf("dimmed") < 0 && fr.indexOf("atténu") < 0
+        && (it.indexOf("nascosto") >= 0 || it.indexOf("nascost") >= 0)
+        && en.toLowerCase().indexOf("hidden") >= 0
+        && (fr.indexOf("masqué") >= 0 || fr.indexOf("masque") >= 0);
+      return !!(noDim && it.indexOf("ATM09") >= 0 && en.indexOf("ATM09") >= 0 && fr.indexOf("ATM09") >= 0);
     })());
 
     add("OptB_preferred_off_clears_cache", (function(){
@@ -62165,13 +62222,9 @@ function renderTileMap(lat, lon, zoom){
   // keeps the viewport truly square after the W fix above.
   const mapBoxStyle = size === "small" ? "" : `height:${H}px`;
   const hintCls = (state.tilePackHints !== false) ? " tile-hints-on" : "";
-  const atm09AnyOn = (typeof dflightTemporalFilterAnyEnabled === "function")
-    ? !!dflightTemporalFilterAnyEnabled() : true;
   const atm09Restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
     && dflightTemporalFilterIsRestrictive();
-  const atm09DimCls = !atm09AnyOn
-    ? " atm09-temporal-all-off"
-    : (atm09Restrictive ? " atm09-temporal-dim" : "");
+  const atm09DimCls = atm09Restrictive ? " atm09-temporal-hidden" : "";
   let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}${atm09DimCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
 
   // Panning layer: everything geo-anchored (tiles + marker + grid) lives
