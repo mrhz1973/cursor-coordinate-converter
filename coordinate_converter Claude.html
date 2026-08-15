@@ -8561,6 +8561,33 @@ body.gis-mode #cartoIgmClearBtn{ display:none !important; }
 .dflight-zone-overlay .dflight-volume.is-unknown{
   fill:rgba(100,116,139,0.3); stroke:#e2e8f0; stroke-dasharray:2 6;
 }
+@keyframes dflightTemporalPulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:0.38; }
+}
+.dflight-zone-overlay .dflight-volume.is-temporal-pulse{
+  animation:dflightTemporalPulse 0.55s ease-in-out 3;
+}
+@keyframes dflightTemporalFadeOut{
+  from{ opacity:1; }
+  to{ opacity:0; }
+}
+.dflight-temporal-fx-layer{
+  position:absolute; inset:0; width:100%; height:100%;
+  pointer-events:none !important; display:block; overflow:visible; z-index:2;
+}
+.dflight-temporal-fx-layer .dflight-volume-fx{
+  pointer-events:none !important;
+  animation:dflightTemporalFadeOut 0.75s ease-out forwards;
+}
+.dflight-temporal-bulk{
+  display:flex; flex-wrap:wrap; gap:0.35rem; margin:0.35rem 0 0.15rem;
+}
+.dflight-temporal-bulk .btn{ font-size:0.72rem; padding:0.2rem 0.55rem; }
+#dflightLegendHeading[hidden],
+#dflightLegendList[hidden]{
+  display:none !important;
+}
 .dflight-map-hover-hint{
   position:fixed; z-index:9200; pointer-events:none; max-width:280px;
   padding:5px 10px; border-radius:8px; font-size:.74rem; font-weight:600; line-height:1.25;
@@ -14118,6 +14145,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <input type="checkbox" id="dflightTfUnknown" checked>
         <span data-i18n="dflight.temporal.UNKNOWN">Stato sconosciuto</span>
       </label>
+      <div class="dflight-temporal-bulk" role="group" aria-label="Comandi filtro temporale">
+        <button type="button" class="btn btn-sm" id="dflightTfSelectAll" data-i18n="dflight.filter.temporal.selectAll" data-i18n-tip="dflight.filter.temporal.selectAllTip" title="Imposta ON tutti e cinque i filtri temporali.">Seleziona tutte</button>
+        <button type="button" class="btn btn-sm" id="dflightTfDeselectAll" data-i18n="dflight.filter.temporal.deselectAll" data-i18n-tip="dflight.filter.temporal.deselectAllTip" title="Imposta OFF tutti e cinque i filtri temporali.">Deseleziona tutte</button>
+      </div>
       <p id="dflightTemporalAtm09Hint" class="hint dflight-temporal-atm09-hint" data-i18n="dflight.filter.temporal.atm09DimHint" hidden>Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.</p>
     </div>
     <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
@@ -16387,6 +16418,10 @@ const I18N = {
     "dflight.temporal.EXPIRED":"Scaduta",
     "dflight.temporal.UNKNOWN":"Stato sconosciuto",
     "dflight.filter.temporal.title":"Filtra per stato temporale",
+    "dflight.filter.temporal.selectAll":"Seleziona tutte",
+    "dflight.filter.temporal.deselectAll":"Deseleziona tutte",
+    "dflight.filter.temporal.selectAllTip":"Imposta ON tutti e cinque i filtri temporali.",
+    "dflight.filter.temporal.deselectAllTip":"Imposta OFF tutti e cinque i filtri temporali.",
     "dflight.filter.temporal.atm09DimHint":"Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.",
     "dflight.filter.temporal.atm09AllOffHint":"Tutti i filtri temporali disattivati: ATM09 nascosto; nessuna zona selezionabile.",
     "dflight.field.name":"Nome",
@@ -23452,10 +23487,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5";
-const APP_BUILD_DETAIL = "ATM09 INFO hits stay transparent when non-interactive.";
+const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A";
+const APP_BUILD_DETAIL = "Temporal select-all/none + pulse/fade + contextual D-Flight legend.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 192;
+const APP_BUILD_NUM = 193;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35940,6 +35975,133 @@ function dflightSetTemporalFilter(state, enabled){
   try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
   return true;
 }
+let _dflightTemporalFxTimer = null;
+function dflightGetDflightTileMap(){
+  try {
+    const root = document.getElementById("miniMap");
+    return root && root.querySelector(".tile-map");
+  } catch(_){ return null; }
+}
+function dflightClearTemporalVisualFx(tileMap){
+  if (_dflightTemporalFxTimer){
+    try { clearTimeout(_dflightTemporalFxTimer); } catch(_){}
+    _dflightTemporalFxTimer = null;
+  }
+  const tm = tileMap || dflightGetDflightTileMap();
+  if (!tm) return;
+  try {
+    const fx = tm.querySelector(".dflight-temporal-fx-layer");
+    if (fx && fx.parentNode) fx.parentNode.removeChild(fx);
+  } catch(_){}
+  try {
+    const pulsing = tm.querySelectorAll(".dflight-volume.is-temporal-pulse");
+    for (let i = 0; i < pulsing.length; i++) pulsing[i].classList.remove("is-temporal-pulse");
+  } catch(_){}
+}
+function dflightCaptureVisibleVolumeSnapshots(tm){
+  const out = [];
+  if (!tm) return out;
+  try {
+    const paths = tm.querySelectorAll(".dflight-zone-overlay .dflight-volume[data-zone-id]");
+    for (let i = 0; i < paths.length; i++){
+      const p = paths[i];
+      out.push({
+        d: p.getAttribute("d") || "",
+        cls: p.getAttribute("class") || "dflight-volume",
+        zid: p.getAttribute("data-zone-id") || "",
+        ts: p.getAttribute("data-temporal-state") || ""
+      });
+    }
+  } catch(_){}
+  return out;
+}
+function dflightMountTemporalOffFade(tm, snapshots){
+  if (!tm || !snapshots || !snapshots.length) return;
+  try {
+    const tileLayer = tm.querySelector(".tile-layer");
+    if (!tileLayer) return;
+    const ns = "http://www.w3.org/2000/svg";
+    const W = tm.clientWidth || 400;
+    const H = tm.clientHeight || W;
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("class", "dflight-temporal-fx-layer");
+    svg.setAttribute("width", String(W));
+    svg.setAttribute("height", String(H));
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:2";
+    for (let i = 0; i < snapshots.length; i++){
+      const s = snapshots[i];
+      if (!s || !s.d) continue;
+      let cls = String(s.cls || "dflight-volume");
+      cls = cls.split(/\s+/).filter(function(c){ return c && c !== "is-temporal-pulse"; }).join(" ");
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("d", s.d);
+      path.setAttribute("class", cls + " dflight-volume-fx");
+      path.setAttribute("fill-rule", "evenodd");
+      path.setAttribute("pointer-events", "none");
+      if (s.zid) path.setAttribute("data-zone-id", s.zid);
+      if (s.ts) path.setAttribute("data-temporal-state", s.ts);
+      svg.appendChild(path);
+    }
+    tileLayer.appendChild(svg);
+  } catch(_){}
+}
+function dflightApplyTemporalFilterChange(opts){
+  opts = opts || {};
+  const newlyOn = Array.isArray(opts.newlyOn) ? opts.newlyOn : [];
+  const newlyOff = Array.isArray(opts.newlyOff) ? opts.newlyOff : [];
+  const tm = dflightGetDflightTileMap();
+  let snaps = [];
+  if (newlyOff.length && tm && _dflightOverlayVisible){
+    snaps = dflightCaptureVisibleVolumeSnapshots(tm);
+    if (newlyOff.length < DFLIGHT_TEMPORAL_STATES.length){
+      snaps = snaps.filter(function(s){ return newlyOff.indexOf(s.ts) >= 0; });
+    }
+  }
+  try { if (typeof dflightSyncPanelUi === "function") dflightSyncPanelUi(); } catch(_){}
+  if (!_dflightOverlayVisible){
+    try { dflightClearTemporalVisualFx(tm); } catch(_){}
+    return;
+  }
+  if (!tm) return;
+  try { dflightClearTemporalVisualFx(tm); } catch(_){}
+  try { dflightRedrawOverlayFromSession(tm); } catch(_){}
+  if (snaps.length){
+    try { dflightMountTemporalOffFade(tm, snaps); } catch(_){}
+  }
+  if (newlyOn.length){
+    try {
+      const paths = tm.querySelectorAll(".dflight-zone-overlay .dflight-volume[data-temporal-state]");
+      for (let i = 0; i < paths.length; i++){
+        const p = paths[i];
+        const ts = p.getAttribute("data-temporal-state") || "";
+        if (newlyOn.indexOf(ts) >= 0) p.classList.add("is-temporal-pulse");
+      }
+    } catch(_){}
+  }
+  if (snaps.length || newlyOn.length){
+    _dflightTemporalFxTimer = setTimeout(function(){
+      _dflightTemporalFxTimer = null;
+      try { dflightClearTemporalVisualFx(tm); } catch(_){}
+    }, 2000);
+  }
+}
+function dflightSetAllTemporalFilters(enabled){
+  const next = !!enabled;
+  const newlyOn = [];
+  const newlyOff = [];
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    const s = DFLIGHT_TEMPORAL_STATES[i];
+    const prev = !!_dflightTemporalFilter[s];
+    if (prev === next) continue;
+    _dflightTemporalFilter[s] = next;
+    if (next) newlyOn.push(s);
+    else newlyOff.push(s);
+  }
+  try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+  dflightApplyTemporalFilterChange({ newlyOn: newlyOn, newlyOff: newlyOff, batch: true });
+  return { ok: true, newlyOn: newlyOn, newlyOff: newlyOff };
+}
 /** FIX4: hide ATM09 raster whenever temporal filter is restrictive; INFO interactive only when ALL ON. */
 function dflightAtm09SyncTemporalContextUi(){
   const restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
@@ -36123,6 +36285,7 @@ function dflightBboxOverlaps(a, b){
 
 function dflightRemoveOverlayDom(tileMap){
   if (!tileMap) return;
+  try { if (typeof dflightClearTemporalVisualFx === "function") dflightClearTemporalVisualFx(tileMap); } catch(_){}
   try {
     const old = tileMap.querySelector(".dflight-zone-overlay");
     if (old) old.remove();
@@ -36130,6 +36293,10 @@ function dflightRemoveOverlayDom(tileMap){
   try {
     const hit = tileMap.querySelector(".dflight-zone-hitlayer");
     if (hit) hit.remove();
+  } catch(_){}
+  try {
+    const fx = tileMap.querySelector(".dflight-temporal-fx-layer");
+    if (fx) fx.remove();
   } catch(_){}
   try { dflightHideHoverHint(); } catch(_){}
 }
@@ -36944,12 +37111,21 @@ function dflightSyncPanelUi(){
     }
     if (hasDs) tfGrp.classList.remove("is-disabled");
     else tfGrp.classList.add("is-disabled");
+    const btnAll = document.getElementById("dflightTfSelectAll");
+    const btnNone = document.getElementById("dflightTfDeselectAll");
+    if (btnAll) btnAll.disabled = !hasDs;
+    if (btnNone) btnNone.disabled = !hasDs;
   }
   try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+  const legendHead = document.getElementById("dflightLegendHeading");
   if (list){
     list.innerHTML = "";
-    if (hasDs){
-      const cats = dflightCollectLegendCategories(ds);
+    let cats = [];
+    if (hasDs) cats = dflightCollectLegendCategories(ds);
+    const legendUseful = !!(hasDs && _dflightOverlayVisible && cats.length);
+    if (legendHead) legendHead.hidden = !legendUseful;
+    list.hidden = !legendUseful;
+    if (legendUseful){
       for (let i = 0; i < cats.length; i++){
         const cat = cats[i];
         const li = document.createElement("li");
@@ -36964,6 +37140,8 @@ function dflightSyncPanelUi(){
         list.appendChild(li);
       }
     }
+  } else if (legendHead){
+    legendHead.hidden = true;
   }
   try { if (typeof dflightAtm09EnsureLegend === "function") dflightAtm09EnsureLegend(); } catch(_){}
 }
@@ -38092,15 +38270,32 @@ function dflightEnsureClientWired(){
       const cb = document.getElementById(id);
       if (!cb) return;
       cb.addEventListener("change", function(){
-        dflightSetTemporalFilter(st, !!cb.checked);
-        if (!_dflightOverlayVisible) return;
-        try {
-          const root = document.getElementById("miniMap");
-          const tm = root && root.querySelector(".tile-map");
-          if (tm) dflightRedrawOverlayFromSession(tm);
-        } catch(_){}
+        const prev = !!_dflightTemporalFilter[st];
+        const next = !!cb.checked;
+        if (prev === next) return;
+        dflightSetTemporalFilter(st, next);
+        dflightApplyTemporalFilterChange({
+          newlyOn: next ? [st] : [],
+          newlyOff: (!next) ? [st] : []
+        });
       });
     })(k, tfIdsWire[k]);
+  }
+  const btnTfAll = document.getElementById("dflightTfSelectAll");
+  if (btnTfAll && !btnTfAll._dflightBulkWired){
+    btnTfAll._dflightBulkWired = true;
+    btnTfAll.addEventListener("click", function(ev){
+      try { ev.preventDefault(); } catch(_){}
+      dflightSetAllTemporalFilters(true);
+    });
+  }
+  const btnTfNone = document.getElementById("dflightTfDeselectAll");
+  if (btnTfNone && !btnTfNone._dflightBulkWired){
+    btnTfNone._dflightBulkWired = true;
+    btnTfNone.addEventListener("click", function(ev){
+      try { ev.preventDefault(); } catch(_){}
+      dflightSetAllTemporalFilters(false);
+    });
   }
   if (!_dflightAtm09LegendDetailsWired){
     _dflightAtm09LegendDetailsWired = true;
@@ -38375,6 +38570,21 @@ function dflightSelfTestTf(){
     }
     add("Tf_default_all_visible",
       DFLIGHT_TEMPORAL_STATES.every(function(s){ return _dflightTemporalFilter[s] === true; }));
+    add("Tf_B1_bulk_api",
+      typeof dflightSetAllTemporalFilters === "function"
+      && typeof dflightApplyTemporalFilterChange === "function"
+      && typeof dflightClearTemporalVisualFx === "function");
+    try {
+      dflightSetAllTemporalFilters(false);
+      add("Tf_B1_deselect_all",
+        DFLIGHT_TEMPORAL_STATES.every(function(s){ return _dflightTemporalFilter[s] === false; }));
+      dflightSetAllTemporalFilters(true);
+      add("Tf_B1_select_all",
+        DFLIGHT_TEMPORAL_STATES.every(function(s){ return _dflightTemporalFilter[s] === true; }));
+    } catch (eB1){
+      add("Tf_B1_select_all", false, String(eB1 && eB1.message || eB1));
+      add("Tf_B1_deselect_all", false, String(eB1 && eB1.message || eB1));
+    }
 
     const zFut = { temporal_state: "FUTURE" };
     const zAct = { temporal_state: "ACTIVE_NOW" };
@@ -38569,7 +38779,8 @@ function dflightSelfTestTf(){
 
     add("Tf_FIX1_redraw_canonical_wired", (function(){
       const src = String(dflightEnsureClientWired);
-      return src.indexOf("dflightRedrawOverlayFromSession") >= 0
+      return (src.indexOf("dflightApplyTemporalFilterChange") >= 0
+          || src.indexOf("dflightRedrawOverlayFromSession") >= 0)
         && src.indexOf("dflightSetTemporalFilter") >= 0;
     })());
 
@@ -39256,9 +39467,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
+    add("Tf_build_193",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -40967,8 +41178,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_192", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
+    add("H_build_193", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41462,9 +41673,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
+    add("HitA_build_193",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42475,9 +42686,9 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFetchStats = null;
     _dflightAtm09InfoLastFailReason = null;
 
-    add("OptB_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
+    add("OptB_build_193",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -42941,8 +43152,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_192", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
+    add("OptB_FIX5_build_193", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
