@@ -1,5 +1,7 @@
 # Cursor Workflow — How to Use `docs/roadmap.md`
 
+> **STATO: STORICO.** Il workflow vivo è [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) §4 + [`.cursor/rules/`](../.cursor/rules/). Questo companion resta per riferimento; non è fonte primaria.
+
 **Companion document to**: `docs/roadmap.md` rev. 2
 **Purpose**: operational guidance for leveraging the strategic roadmap in daily Cursor work without wasting tokens or introducing noise.
 **Audience**: you (the user), for reference; also readable by AI assistants if attached.

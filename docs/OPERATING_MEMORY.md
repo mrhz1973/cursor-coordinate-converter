@@ -1,6 +1,3 @@
-<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
-> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
-<!-- /AUTO-VIA-HEADER -->
 
 # GIS Tool — OPERATING_MEMORY
 
@@ -35,17 +32,11 @@
 
 ## 3. Read-set operativo
 
-**Read-set corrente (wiki-LLM lean):** gli agenti devono leggere, in ordine:
+**CORE BOOT e precedenza fonti:** casa canonica = blocco [`AI-BOOT`](../README.md) del `README.md` (classificazione BOOT / METHOD / LIVE / PLAN / EVIDENCE e tabella ON DEMAND). Piano/backlog: [`work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md).
 
-1. `README.md` — blocco **AI-BOOT** (INDEX/BOOTLOADER); **non** stato operativo vivo; resto README = docs prodotto on-demand.
-2. `docs/OPERATING_MEMORY.md` — stato operativo vivo, soprattutto **§7**.
-3. `docs/work-units/WU-0005-0009-roadmap.md` — piano, backlog e workstream WU-0005→0009.
+**Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md` e WU chiuse — audit only (puntatori in §7.3). In conflitto con §7: prevalgono i documenti vivi; non riscrivere log storici già pushati salvo richiesta esplicita.
 
-**Precedenza:** se README, OPERATING_MEMORY e roadmap confliggono, segnalare il conflitto e usare il documento più specifico e più recente.
-
-**Legacy (non memoria corrente):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/latest.md`, `docs/orchestrator/chatgpt-checkpoint.md` e WU chiuse (WU-0001→0004 salvo richiamo esplicito dalla roadmap viva) — consultabili per audit, **non** come current-state primario. Il **`finito`** può continuare ad appendere checkpoint/session come storico/audit. In conflitto con OM §7 o roadmap → segnalare e dare precedenza ai documenti vivi; **non** riscrivere log storici già pushati salvo richiesta esplicita.
-
-**Verifica remoto / cache RAW:** dopo un push, `raw.githubusercontent.com` può servire contenuto cache per alcuni minuti. Per verifiche immediate usare `git fetch && git log origin/main`, oppure URL RAW con query cache-bust, oppure attendere propagazione. Non considerare una singola lettura RAW immediata come prova negativa definitiva se `git log origin/main` mostra il commit atteso.
+**Cache RAW:** una singola lettura `raw.githubusercontent.com` immediata non è prova (CDN può servire cache minuti); per verifiche immediate usare `git fetch && git log origin/main` o cache-bust. Autorità finale su HEAD: `git ls-remote` (README AI-BOOT).
 
 ---
 
@@ -63,7 +54,25 @@
 - **Session / repo guard:** prima di patch non read-only, verificare repo root, branch e `git status --short`; se workspace atteso pulito risulta sporco all’avvio o repo/cartella non coerenti, fermarsi e riportare lo stato. Cursor non decide autonomamente se procedere; la decisione spetta alla review.
 - **Remote hash / PASS tecnico:** dopo push, il PASS remoto richiede output verbatim coerente di `HEAD`, tracking locale `origin/main` e `git ls-remote origin main`; l’autorità finale è `git ls-remote`, mentre RAW GitHub è secondario/best-effort e può essere stale. Se `origin/main` locale diverge da `ls-remote`, non è PASS. Se gli output mancano o sono ambigui, prima prompt Cursor verify-only; shell manuale utente solo fallback finale. Distinto da PASS operatore / QA runtime.
 - **QA evidence / tre gate distinti:** (1) **PASS tecnico remoto** (hash/deploy/`ls-remote`); (2) **`AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`** — attestabile da Cursor dopo prove browser automatiche realmente eseguite (metodo **`AUTOMATED-BROWSER-QA-PREOP`**, Regola D2bis); (3) **PASS operatore** — attestazione umana esplicita `QA <BLOCK-ID> PASS operatore`. Cursor **non** può inferire PASS operatore da PASS tecnico, Automated Browser QA PASS, diff pulito o `node --check`. In assenza di attestazione umana, default fail-closed: QA operatore non eseguita/non attestata.
-- **LAST_CURSOR_REPORT (Fase F3):** da Fase F3 `docs/runtime/LAST_CURSOR_REPORT.md` è **obbligatorio** post-push per task reale GIS-only; non per read-only/plan/review diff senza commit; evidenza rolling post-push, non fonte viva primaria — OM §7 e roadmap restano primari; mapping: commit principale = task, autosync = report, nessun terzo commit/finalize-hash. **Home canonica dettagliata:** `.cursor/rules/30-output-workflow.mdc` e `docs/runtime/LAST_CURSOR_REPORT.template.md`. **`real_task_commit`** = anchor stabile del blocco; il container corrente resta **`PENDING_SELF_REFERENCE`** (non sostituirlo nel commit corrente); il report **non** attesta il proprio HEAD finale — HEAD e PASS remoto si provano **esternamente** con `git ls-remote origin main` e seed Regola F; **vietati** amend self-reference, terzo commit e finalize-hash; backfill dei container precedenti **solo** in HISTORY di un report successivo. **Ambito esteso:** la stessa disciplina F3 (container corrente, HEAD finale esterno, anti-ricorsione, anti-terzo-commit, backfill differito) vale anche per `docs/orchestrator/inbox/**` e `docs/orchestrator/latest.md` contenuti nel **commit autosync corrente**: lo SHA dell’autosync corrente, l’esito del suo push e l’HEAD finale sono **`EXTERNAL_ONLY`**; **non** autorare campi post-push «da creare/da verificare» destinati a un terzo commit; **vietati** i commit «completa inbox» e «finalize autosync»; *published = immutable* per l’intervento corrente. Home canonica dettagliata: `.cursor/rules/30-output-workflow.mdc`.
+- **LAST_CURSOR_REPORT (Fase F3):** da Fase F3 `docs/runtime/LAST_CURSOR_REPORT.md` è **obbligatorio** post-push per task reale GIS-only; non per read-only/plan/review diff senza commit; evidenza rolling post-push, non fonte viva primaria — OM §7 e roadmap restano primari; mapping: commit principale = task, autosync = report, nessun terzo commit/finalize-hash. **Home canonica dettagliata:** questa sezione (§4) e `docs/runtime/LAST_CURSOR_REPORT.template.md`. **`real_task_commit`** = anchor stabile del blocco; il container corrente resta **`PENDING_SELF_REFERENCE`** (non sostituirlo nel commit corrente); il report **non** attesta il proprio HEAD finale — HEAD e PASS remoto si provano **esternamente** con `git ls-remote origin main` e seed Regola F; **vietati** amend self-reference, terzo commit e finalize-hash; backfill dei container precedenti **solo** in HISTORY di un report successivo. **Ambito esteso:** la stessa disciplina F3 (container corrente, HEAD finale esterno, anti-ricorsione, anti-terzo-commit, backfill differito) vale anche per `docs/orchestrator/inbox/**` e `docs/orchestrator/latest.md` contenuti nel **commit autosync corrente**: lo SHA dell’autosync corrente, l’esito del suo push e l’HEAD finale sono **`EXTERNAL_ONLY`**; **non** autorare campi post-push «da creare/da verificare» destinati a un terzo commit; **vietati** i commit «completa inbox» e «finalize autosync»; *published = immutable* per l’intervento corrente.
+
+### Indice regole §4 (una riga per regola — caricare on-demand solo quella richiesta dal gate)
+
+| Regola | ID metodo | Scope |
+| --- | --- | --- |
+| A | `finito` condizionale (bundle pre-autorizzato) | quando parte/non parte `finito` |
+| B | Review tiered ROUTINE/DELICATO | chi reviewa e quando |
+| C | Report a un solo destinatario | routing report |
+| D / D1 / D2 / D2bis | QA operatore IT + tre gate + Automated Browser QA | catena QA post-deploy |
+| E | Tutto copiabile e fenced | formato prompt/artefatti |
+| F | Seed handoff minimo | continuità tra chat |
+| G | Bundling di default (`METHOD-BUNDLING-DEFAULT`) | un bundle / un commit / una QA |
+| H | QA-PASS auto-innesca `finito` (`METHOD-QA-PASS-AUTO-FINITO`) | trigger chiusura |
+| I | Context-safe bootstrap (`METHOD-CONTEXT-SAFE-BOOTSTRAP`) | CORE BOOT / no front-loading |
+| CBG | `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` | budget contesto in sessione |
+| Mini-regole | L10N-FREEZE · QA-HUMAN-NO-OPSEC | governance trasversale |
+
+Metodo di esecuzione Cursor (RIEPILOGO, prompt autosufficienti, autosync sequenza, `finito` comandi, session guard): [`.cursor/rules/00-project-core.mdc`](../.cursor/rules/00-project-core.mdc) e [`.cursor/rules/30-output-workflow.mdc`](../.cursor/rules/30-output-workflow.mdc) (stub puntatori a questa sezione). Template QA: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 
 ### Handoff & Close Discipline — minimizzazione copia-incolla
 
@@ -199,6 +208,13 @@ Principio in dubbio: **meno fonti, più specifiche, una sola volta, on-demand.**
 6. **Chiusura chat.** Quando un gate sostanziale è concluso e la conversazione è diventata pesante: assicurarsi che lo stato sia **persistito su GitHub**, poi aprire una **nuova** chat. La nuova chat riparte **esclusivamente** dal CORE BOOT. **Nessun** mega-handoff / chat dump: lo stato corrente deve essere ricostruibile da `origin/main` + AI-BOOT + OM §7.1 + WU hot-header (seed Regola F se utile).
 7. **Precedenza.** Integra, **non** sostituisce, CORE BOOT, wiki-LLM lean, Regola I e lettura progressiva. In conflitto di metodo sul budget contesto, prevale questa regola sul «rileggi per sicurezza»; restano invariati AUTO-VIA, gate di review/QA e fail-closed.
 
+**Estensione CONNECTOR-SCHEMA-GUARD (parte integrante di `CONTEXT-BUDGET-GUARD`).** Governa il costo di schema e payload dei connector:
+
+1. Uno schema tool caricato in sessione **non si ricarica**: riusarlo. Discovery generiche ampie (query tipo "search/fetch/file/commit/branch") **vietate** se un tool già noto basta; caricare decine di definizioni per una singola funzione = violazione.
+2. `list_resources` per la stessa capability **al massimo una volta** per sessione, e solo se necessario.
+3. Payload GitHub: preferire range di righe, `compare` compatto o blob SHA-pinnati; **mai** payload «per completezza» quando un range basta. Se una risposta restituisce accidentalmente un documento intero, è **già acquisito**: non rileggerlo.
+4. Il costo di schemi e payload è **reale** anche se non mostrati all'operatore: ogni chiamata deve avere una motivazione legata al gate corrente.
+
 ### Chiusura blocco (dopo l'esecuzione Cursor)
 
 - Verifica esito: diff, controlli automatici pertinenti e gate OPSEC
@@ -310,6 +326,11 @@ Eccezioni: diagnosi/read-only; review Claude pendente (bundle delicato); review 
 
 Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`).
 
+**Mini-regole di governance trasversale (casa canonica qui; le rules `.cursor` ne sono puntatori):**
+
+- **L10N-FREEZE (`L10N-EN-FR-FREEZE-A`):** l'italiano è la lingua attiva per nuove stringhe UI; espansione e manutenzione evolutiva EN/FR congelate; dizionari/selettore/meccanismi i18n esistenti preservati in runtime; backfill/traduzioni fittizie vietati; unfreeze solo con decisione esplicita dell'operatore. Prevalenza su ogni richiesta di parità IT/EN/FR per nuove feature.
+- **QA-HUMAN-NO-OPSEC:** la QA operatore **non include** test OPSEC/offline/rete: quelle verifiche sono coperte **prima**, tecnicamente (Automated Browser QA, selftest, Console/Network, review). Se una proprietà OPSEC non è tecnicamente verificabile con affidabilità, il gate resta `BLOCKED` / `FAIL` / `INCOMPLETE` — non diventa mai un caso QA umano. La QA operatore resta il residuo percettivo/operativo (UX visiva, leggibilità, interazioni, performance percepita).
+
 ---
 
 ## 5. Modalità Cursor consigliata
@@ -388,29 +409,8 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 ## 8. Work unit
 
-| WU | Stato | Scopo |
-| --- | --- | --- |
-| WU-0001 | PASS | OPSEC strict cycle |
-| WU-0002 | PASS | Memory standardization (CLOSED) |
-| WU-0003 | CLOSED | SonarChart overlay |
-| WU-0004 | CLOSED | Basemap / SonarChart indipendenti; B2 rimosso per decisione |
-| WU-0010 | OPEN | Outdoor Routing GraphHopper (B1a–E + REVERSE-A CLOSED; F futuro) |
-| WU-0011 | CLOSED / PASS | INFRA-GH-1A+1B GraphHopper PoC locale + VPS |
-| WU-0012 | OPEN / NEXT PROVIDER | CARTO-INDEX-FEDERATED — provider IIM/CIGA/UKHO / online update |
-| WU-0013 | OPEN / A+B+CDE+G+F-ATM09+H+VISUAL-READY CLOSED / HELPER 0.1.3 LIVE | UAS-GEOZONE-DFLIGHT — FIX2 `52927c5`/179 LIVE · CLOSED/PASS |
+Stato vivo WU: **§7.1** (campo *ALTRI WORKSTREAM*) + hot-header delle singole WU in [`work-units/`](work-units/). Piano/ordine/backlog: [`work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md). Nessuna tabella duplicata qui (evita deriva/stale).
 
----
+## 9. Pattern nomi inbox orchestratore
 
-## Pattern nomi inbox orchestratore
-
-- **Pattern ufficiale:** `AAAA-MM-GG_HHMM_<tipo>_<slug>.md`
-- **Tipi comuni:** `plan`, `riepilogo`, `handoff`, `qa`
-- **Regole pratiche:**
-  - non usare doppio underscore;
-  - includere sempre `HHMM`;
-  - includere sempre il segmento `<tipo>`;
-  - usare slug descrittivo in kebab-case.
-- **Esempio valido:** `2026-06-14_0102_riepilogo_memory-standardization-final-autosync.md`
-<!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
-> **PROMEMORIA FINALE — AUTO-VIA.** In assenza di una decisione reale da sottoporre all’operatore, procedere direttamente al passo successivo senza chiedere conferme. Non trasformare raccomandazioni tecniche, preferenze già ratificate o gate già risolti in false scelte utente. Il nuovo `vai` si chiede soltanto quando esistono alternative sostanziali che richiedono davvero la scelta dell’operatore.
-<!-- /AUTO-VIA-FOOTER -->
+Pattern `AAAA-MM-GG_HHMM_<tipo>_<slug>.md` (`tipo` = `plan`/`riepilogo`/`handoff`/`qa`; slug kebab-case; sempre `HHMM`; niente doppio underscore). Template: [`orchestrator/templates/`](orchestrator/templates/). Esecuzione autosync: [`.cursor/rules/30-output-workflow.mdc`](../.cursor/rules/30-output-workflow.mdc).

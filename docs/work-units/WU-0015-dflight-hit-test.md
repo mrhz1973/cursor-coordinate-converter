@@ -1,6 +1,3 @@
-<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
-> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
-<!-- /AUTO-VIA-HEADER -->
 
 # WU-0015 — D-FLIGHT-HIT-TEST — Hit-test / click zone D-Flight
 

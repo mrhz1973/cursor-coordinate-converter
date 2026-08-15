@@ -1,103 +1,43 @@
 ---
-description: "GOI GIS Tool core constraints + communication style (always on)."
+description: "GOI GIS Tool core: identità, invarianti, bootstrap, finito."
 alwaysApply: true
 ---
 
 # GOI GIS Tool — Core
 
-## Non-negotiable constraints
-- Vanilla JavaScript only. No framework (no React/Vue/Svelte), no TypeScript.
-- Prefer **single-file HTML**: HTML + CSS + JS inline.
-- No build step, bundler, transpiler.
-- Offline-first where possible (localStorage + IndexedDB).
-- Do not add new dependencies (CDN or otherwise) unless explicitly requested.
+## Identità e invarianti non negoziabili
 
-## UI/UX — standard GIS (modali, tabelle, map-first)
+- Repo canonico `mrhz1973/cursor-coordinate-converter`; runtime = monolite **`coordinate_converter Claude.html`** (HTML standalone, vanilla JS).
+- **origin/main = unica memoria persistente e fonte di verità operativa**; le chat precedenti sono solo storico, mai stato corrente.
+- Vanilla JavaScript only: no framework (React/Vue/Svelte), no TypeScript, no build step/bundler/transpiler, no ES modules, no split operativo, no npm/`package.json`. Offline-first (localStorage + IndexedDB); nessuna nuova dipendenza (CDN o altro) senza richiesta esplicita.
+- **OPSEC:** nessuna chiamata di rete in background senza azione esplicita dell'utente; posizione/testi incollati = potenzialmente sensibili. Nessun GPS silenzioso all'avvio; geoloc **opt-in single-shot**; nessuna `watchPosition`.
+- **Editing:** patch mirate, mai riscrittura file interi; refactor >50 righe → piano approvato prima; cambi >20 righe → mostrare diff; non modificare file fuori scope del prompt. UI/UX standard GIS: casa canonica [`.cursor/rules/10-html-architecture.mdc`](10-html-architecture.mdc) §*GIS & tools UI/UX standards*.
 
-Linee guida **operative** (tabelle con colonne ridimensionabili, preset vicino agli input tecnici, gerarchia pulsanti, flussi map-first, **notifiche interne** ai modali/pannelli operativi, **Import/Export** coerenti e visibili per collezioni serializzabili, azione **«Modifica»** nelle liste quando l’oggetto ha proprietà editabili, **conferme in-pannello** per eliminazioni) sono definite in [`.cursor/rules/10-html-architecture.mdc`](10-html-architecture.mdc) nella sezione **«GIS & tools UI/UX standards»**. In ogni intervento su **nuovo** modal, pannello floating/drawer, tabella operativa o strumento map-centrico, **verificare esplicitamente** quel blocco **prima** di proporre o implementare la UI. Non sostituisce né attenua: OPSEC, offline-first, geoloc opt-in, vincoli single-file o *Rejected patterns* in `docs/roadmap.md`.
+## Bootstrap
 
-## Safety / privacy (OPSEC-aware)
-- Treat user location and pasted text as potentially sensitive.
-- Do not introduce background network calls without explicit user action.
+- Ogni sessione parte dal **CORE BOOT** (README AI-BOOT): `git ls-remote origin refs/heads/main` → solo blocco `AI-BOOT` di `README.md` → OM §7.1 FRONTIER → hot-header WU attiva. **STOP**; tutto il resto on-demand.
+- **AUTO-VIA** (dettaglio in README AI-BOOT): passo tecnicamente determinato → procedere senza nuovi `vai`; fermarsi solo davanti a una decisione reale (prodotto, scope ambiguo, rischio non autorizzato, conflitto).
+- **Metodo operativo completo** (bundle ROUTINE/DELICATO, review tier, QA tre gate D/D1/D2/D2bis, `finito` auto-trigger H, seed F, autosync, F3/LAST_CURSOR_REPORT, `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD`, L10N-FREEZE, QA-HUMAN-NO-OPSEC): [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) **§4** — caricare on-demand **solo la regola richiesta dal gate corrente**. Template QA: [`docs/QA-CHECKLIST.md`](../../docs/QA-CHECKLIST.md). Esecuzione lato Cursor: [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc).
 
-## Editing rules (token-efficient workflow)
-- Do **not** rewrite the whole file. Provide targeted patches.
-- If a refactor touches > 50 lines, propose a plan first and wait for approval.
-- For changes > 20 lines, show a diff (not the full file).
-- Do not modify any non-rule files unless the user explicitly asks for it. If the user only asked about rules, limit edits to `.cursor/rules/` only.
+## Trigger «Checkpoint md»
 
-## Documentation checkpoints (trigger confermato dall’utente)
-Quando l’utente scrive **«Checkpoint md»** (o equivalente inequivocabile), nella **stessa risposta** aggiornare la **memoria operativa corrente** del GIS secondo il modello wiki-LLM lean:
+Aggiornare la memoria operativa lean: OM §7 (solo se cambia stato), WU corrente hot-header, README solo se cambia AI-BOOT/CORE BOOT/precedenza/navigazione; eventuale autosync orchestratore. `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md` = legacy/storico, non memoria corrente. `docs/HANDOFF.md` = seed stabile, non current-state rolling. Dettaglio: OM §4.
 
-- **`docs/OPERATING_MEMORY.md`** — solo se cambia lo stato corrente;
-- **WU corrente** in `docs/work-units/`;
-- **`README.md`** — blocco AI-BOOT / boot procedure **solo** se cambia bootstrap, CORE BOOT, precedenza o navigazione (non a ogni cambio di blocco/gate/runtime);
-- eventuale **autosync/inbox** (`docs/orchestrator/**`) solo se il workflow lo richiede.
+## Trigger «Finito»
 
-**CORE BOOT:** `README.md` AI-BOOT → `docs/OPERATING_MEMORY.md` §7.1 → hot-header WU attiva. Resto on demand.
+Quando l'utente scrive «Finito» (case-insensitive, da solo o in frase breve), eseguire in sequenza **senza conferme intermedie**:
 
-**Legacy (non memoria corrente primaria):** `docs/checkpoint.md` (legacy/storico) e `docs/session-geolocalizzazione-e-mappa.md` (storico lungo) — **non** aggiornarli come memoria corrente; restano conservati per audit.
-`docs/HANDOFF.md` = seed/pointer **stabile** — **non** current-state rolling.
+1. **Memoria lean:** WU corrente hot-header (`STATUS`, `ACTIVE BLOCK`, `CURRENT GATE`, `REVIEW BASE` / `CANDIDATE RUNTIME` / `RUNTIME LIVE` condizionali, `NEXT`); OM §7.1 FRONTIER (SHA semantiche distinte; mai HEAD remota persistita; anti-self-reference); OM §7.2 rolling max ~5; §7.3 solo pointer; README solo se cambia AI-BOOT; HANDOFF non rolling.
+2. **Git** (root repo): `git add .`; `git commit -m "<tipo>: <sintesi sessione>"` (Conventional Commits; prefisso dominante, parità → `chore:`; skip se vuoto, ma push se commit pendenti); `git push`.
+3. **Riconciliazione orchestratore:** aggiornare `docs/orchestrator/latest.md` (breve; fatti del corrente autosync = `EXTERNAL_ONLY`, mai autorati) + creare `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` (fatti stabili pre-autosync: hash e subject del commit task, esito push task, status/diff pre-autosync, file toccati, monolite incluso o no, QA/deploy noti, prossimo passo, limiti) + `git add` selettivo + `git commit -m "docs: orchestratore — riconciliazione finito sessione"` + `git push`.
+4. **Conferma all'utente:** hash commit (entrambi se due), file modificati (`git show --stat`), esito di ogni push.
 
-## Session close trigger («Finito»)
-Quando l’utente scrive **«Finito»** (case-insensitive, da solo o in frase breve tipo «ok finito», «per oggi finito»), eseguire in sequenza **senza chiedere conferma intermedia**:
-
-1. **Memoria lean (wiki-LLM):** verificare e aggiornare secondo modello lean:
-   - **WU corrente** in `docs/work-units/` — hot-header (`<!-- WU-HOT-HEADER -->`) con `STATUS`, `ACTIVE BLOCK`, `CURRENT GATE`, `REVIEW BASE` / `CANDIDATE RUNTIME` / `RUNTIME LIVE` (campi condizionali omessi se N/A), `NEXT`;
-   - **`docs/OPERATING_MEMORY.md` §7.1 FRONTIER** quando cambia lo stato operativo (workstream, blocco, gate, SHA semantiche distinte, next; **mai** HEAD remota persistita);
-   - **`docs/OPERATING_MEMORY.md` §7.2 RECENT / POINTERS** — rolling max ~5 chiusure recenti; FIFO; pointer brevi, nessun report inline;
-   - **`docs/OPERATING_MEMORY.md` §7.3 HISTORY** — solo pointer compatti; **non** aggiungere nuovi lunghi bullet CLOSED inline in §7;
-   - **SHA semantiche (obbligatorio):** `REVIEW BASE` (baseline diff review) ≠ `CANDIDATE RUNTIME` (implementato, non necessariamente live) ≠ `RUNTIME LIVE` (deployato); candidate pre-deploy **non** è live; post-deploy verificato il candidate può diventare `RUNTIME LIVE` e il candidate può essere omesso; **non** usare SHA docs/autosync come `REVIEW BASE` runtime;
-   - **Anti-self-reference OM §7.1:** **non** scrivere HEAD remota finale del commit corrente, SHA autosync corrente come frontier, né altri campi che richiedano conoscenza del commit prodotto dalla stessa operazione; HEAD finale = verifica esterna (`git ls-remote`, Regola F, F3 `EXTERNAL_ONLY`) — invariati `PENDING_SELF_REFERENCE`, `published = immutable`, anti-terzo-commit;
-   - **`README.md`:** aggiornare AI-BOOT **solo** se cambiano bootstrap / CORE BOOT / precedenza / navigazione — **non** a ogni cambio di blocco/gate/runtime SHA (quelli stanno in OM §7.1);
-   - **`docs/HANDOFF.md`:** **non** aggiornare a ogni `finito` con stato fresco / runtime / candidate / gate / history — file seed/pointer stabile; il seed dinamico si **emette in chat** (Regola F);
-   - eventuale **autosync/inbox** se previsto dal workflow.
-   **Non** scrivere `docs/checkpoint.md` né `docs/session-geolocalizzazione-e-mappa.md` come azione primaria di memoria corrente (restano legacy/storico). **CORE BOOT:** README AI-BOOT → OM §7.1 → WU hot-header.
-2. Nel terminale, dalla root del repo, in ordine:
-   - `git add .`
-   - `git commit -m "<tipo>: <sintesi sessione>"` — messaggio **auto-generato** dal lavoro effettivo della sessione, con prefisso Conventional Commits appropriato (`feat:` / `fix:` / `docs:` / `refactor:` / `chore:`). Se la sessione tocca più ambiti, usare il prefisso dominante; in caso di parità, `chore:`. Se non c’è nulla da committare, **saltare** il `commit` ma eseguire comunque `git push` se ci sono commit locali non pubblicati; altrimenti documentare in step 3.
-   - `git push`
-3. **Riconciliazione memoria orchestratore (obbligatoria dopo `finito`):** evita che `docs/orchestrator/latest.md` resti su uno stato obsoleto (es. «monolite non in autosync») dopo che il monolite è stato incluso nel commit/push di chiusura. **Dopo** il tentativo di `git push` dello step 2 (esito qualsiasi, salvo blocco totale prima del commit):
-   - Aggiornare **`docs/orchestrator/latest.md`** in forma **breve**: data, chiusura sessione `finito`, **working tree pre-autosync** (`git status --short` come rilevato **dopo il commit/push del task (step 2)** e **prima** della creazione dell’autosync), **se il monolite è nel commit task appena pushato** (o nell’ultimo commit locale se push fallito), correzione esplicita se in precedenza la memoria diceva che il monolite era escluso dagli autosync ma **ora** risulta versionato nel ciclo `finito`, esito push **del commit task (step 2)**, puntatore al file inbox creato sotto. I fatti del **commit autosync corrente** (suo SHA, suo push, HEAD finale, `git status` finale post-autosync, `git ls-remote` del container corrente) sono **`EXTERNAL_ONLY`** come da [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc) e **non** vanno autorati in `latest.md`.
-   - Creare **un** file in **`docs/orchestrator/inbox/`** con nome  
-     **`YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md`**  
-     usando timestamp locale coerente (stesso giorno della chiusura se possibile). Il contenuto deve includere almeno fatti **stabili noti pre-autosync**: **hash del commit TASK reale (step 2)** e suo subject — **non** autorare lo SHA del corrente commit autosync, che è **`EXTERNAL_ONLY`** (vedi [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc)); **push del commit task (step 2)** riuscito o meno (+ messaggio se fallito); **`git status --short`** come rilevato **dopo il commit/push del task e prima dell’autosync** (lo stato finale post-autosync appartiene al **report Cursor esterno**, step 4); **`git diff --stat`** o nota «nessun diff» se albero pulito; **file principali** toccati nel commit task; **se `coordinate_converter Claude.html` è incluso** nel commit task (step 2) o solo nei commit precedenti; **QA** e deploy/smoke già avvenuti se noti; **prossimo passo** consigliato breve e **limiti**.
-   - Dal terminale: `git add docs/orchestrator/latest.md docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` (path reale), poi  
-     `git commit -m "docs: orchestratore — riconciliazione finito sessione"`  
-     e **`git push`**. Se questo push fallisce, riportarlo all’utente: la memoria locale è aggiornata ma ChatGPT non vede il remoto finché non si ripubblica.
-4. Confermare all’utente con: **hash commit** (short; se due commit consecutivi `finito` + orchestratore, indicarli entrambi o l’HEAD finale), **elenco file modificati** (da `git show --stat HEAD` e, se utile, commit precedente), **stato push** (successo / errore + messaggio testuale) **per ogni** push eseguito.
-
-Vincoli operativi:
-- Il trigger «Finito» **autorizza esplicitamente** l’intera sequenza: bypassa la regola generica «non modificare file non-rule senza permesso» (sez. Editing rules) limitatamente ai file doc dello **step 1** (`docs/OPERATING_MEMORY.md`, WU corrente in `docs/work-units/`, `README.md` **solo** se cambia AI-BOOT/boot — non HANDOFF rolling), ai file **`docs/orchestrator/latest.md`** e **`docs/orchestrator/inbox/*_riepilogo_finito-sessione.md`** dello **step 3**, e alle operazioni **git** degli step **2 e 4**.
-- **Non** usare lo step 3 per sostituire l’**autosync** di fine intervento: resta obbligatorio come da [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc); lo step 3 **chiude il gap** tra stato reale post-`finito` e ciò che ChatGPT legge con **`aggio`** / **«aggiornati»**.
-- **Disciplina F3 anti-terzo-commit (home canonica [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc)):** la chiusura ordinaria produce **esattamente due** commit — (1) task/step 2, (2) autosync/step 3 — e **nessun** terzo commit «completa inbox» o «finalize autosync». Gli artefatti del commit autosync (`docs/orchestrator/latest.md`, `docs/orchestrator/inbox/**`) **non** devono autorare fatti del **proprio** container (SHA autosync corrente, suo push, HEAD finale post-push, `git status` finale post-autosync, `git ls-remote` del container corrente): sono **`EXTERNAL_ONLY`** e compaiono **solo** nello **step 4** (conferma esterna all’utente), nel **seed Regola F**, o come storia precedente in un intervento futuro. *Published = immutable*: dopo il push dell’autosync i suoi artefatti non si riscrivono nella stessa sessione.
-- Se lo step 1 fallisce (file non scrivibile, conflitto), **fermarsi**, riportare l’errore, non procedere con git.
-- Se lo step 2 fallisce (pre-commit hook rifiuta, push rejected, conflitto remoto), riportare l’errore testualmente e **non** tentare `--force`, `--amend`, né hard reset senza nuova istruzione esplicita; eseguire comunque lo **step 3** aggiornando `latest.md` e l’inbox con **esito parziale** (commit locale riuscito ma push fallito, ecc.) **salvo** impossibilità di scrivere i file.
-- Se lo step 4 fallisce, `latest.md` + inbox possono essere **solo locali**: riportare errore push e che ChatGPT non è allineato finché non si ripete push o `aggio` in Cursor.
-- Non modificare mai la git config. Non saltare hook (`--no-verify`).
+**Vincoli:** chiusura ordinaria = **esattamente due commit** (task + autosync), nessun terzo commit «completa inbox»/«finalize»; published = immutable; mai `--force`/`--amend`/`--no-verify`; mai modificare git config; step 1 fallito → fermarsi; step 2 fallito → riportare l'errore, non forzare, eseguire comunque step 3 con esito parziale; step 3/4 fallito → memoria solo locale, riportare. Il trigger autorizza i file doc degli step 1/3 e le operazioni git 2/4.
 
 ## Response style
-- Reply in Italian.
-- Be direct: no long preambles.
-- When discussing code, cite function names and line numbers.
+
+- Reply in Italian; diretti, senza preamboli lunghi; citare nomi funzione e numeri di riga.
 
 ## Mirror notice
-This file duplicates by design the "Notice to AI Assistants" block of `docs/roadmap.md` (rev. 2, §Notice). When either document is modified, update the other in the same change. Authority is joint: a divergence between the two is a bug, not a valid state.
 
-## Rejected patterns (mirror of roadmap §Notice)
-Authoritative list: `docs/roadmap.md` → Notice to AI Assistants → "Rejected patterns (non-exhaustive)".
-
-Underlying principle: any pattern that (a) breaks single-file deployability, (b) introduces a build step, (c) requires runtime network access outside opt-in tile fetching, or (d) restructures centralized `state` without explicit strategic decision, is rejected by default.
-
-Known examples include: ES Modules, UI frameworks (React/Vue/Svelte/Lit), TypeScript, bundlers, transpilers, CSS preprocessors, centralized-store refactors, global event-delegation refactors, architectural rewrites, refactors > 50 lines without prior approval, NPM/package.json introduction. For the full table and future additions, consult the roadmap.
-
-## Disagreement protocol
-You may disagree with an architectural decision. Protocol is strict:
-
-- One strategic concern per turn, maximum. A turn is one response unit (Plan, Chat, or Agent). A concern raised in Plan mode counts as raised for the entire planning→execution cycle; do not repeat in Agent mode.
-- Format: prefix the response with a single block:
-  > Strategic concern: [specific principle] appears to conflict with [specific goal] because [concise reasoning]. Proceeding per §[N].
-- After the block, execute the requested work fully aligned with the roadmap. The concern is registered, not acted upon.
-- Do not: lecture, repeat the concern across turns, propose a rejected pattern as "just an alternative to consider", or include a rejected pattern in code samples as illustration.
-
-The user decides whether a concern warrants a revision. Register concerns; do not re-open decisions.
+Questo file duplica volutamente il blocco «Notice to AI Assistants» di [`docs/roadmap.md`](../../docs/roadmap.md) (§Notice). Le modifiche vanno fatte in entrambi nella stessa change; una divergenza è un bug. Lista autorevole **Rejected patterns**: `docs/roadmap.md` §Notice (principio: pattern che spezza single-file deployability, introduce build step, richiede rete runtime fuori tile opt-in, o ristruttura `state` centralizzato senza decisione strategica = rifiutato; esempi: ES Modules, framework UI, TypeScript, bundler, transpiler, CSS preprocessor, refactor centralized-store, global event delegation, rewrite architetturali, refactor >50 righe senza approvazione, NPM/package.json). **Disagreement protocol:** max una strategic concern per turno, nel formato blocco `> Strategic concern: …`, poi eseguire comunque il lavoro allineato alla roadmap; non ripetere, non riaprire decisioni.

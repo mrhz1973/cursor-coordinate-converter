@@ -1,27 +1,10 @@
 ---
-description: QA umana residua senza test OPSEC
+description: QA-HUMAN-NO-OPSEC
 alwaysApply: true
 ---
 
-# QA-HUMAN-NO-OPSEC
+# QA-HUMAN-NO-OPSEC (stub → OM §4)
 
-Decisione operatore del 2026-08-13: **la QA operatore non deve più includere test OPSEC**.
+Casa canonica: [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) §4 **mini-regola QA-HUMAN-NO-OPSEC**.
 
-## Regola vincolante
-
-Quando viene preparata o richiesta la QA umana finale (`QA <BLOCK-ID> PASS|FAIL operatore`):
-
-- **NON** chiedere all'operatore di attivare/disattivare `OPSEC strict`;
-- **NON** chiedere all'operatore di attivare/disattivare `force offline` / modalità offline come prova di sicurezza;
-- **NON** chiedere all'operatore di verificare network gate, assenza/presenza di fetch, endpoint, richieste helper, CORS, firewall o altri aspetti di rete/OPSEC tramite osservazione manuale;
-- **NON** spostare sulla persona verifiche OPSEC che possono essere coperte tecnicamente.
-
-Le verifiche OPSEC/rete restano obbligatorie quando pertinenti, ma devono essere coperte **prima della QA umana** tramite review tecnica, selftest, Automated Browser QA, Console/Network instrumentation, smoke/API o altri controlli automatici appropriati.
-
-Se una proprietà OPSEC necessaria non può essere verificata tecnicamente con affidabilità sufficiente, il gate resta `BLOCKED` / `FAIL` / `INCOMPLETE`: **non** trasformarla in un caso QA operatore.
-
-La QA operatore resta corta e mirata al residuo umano: UX visiva, leggibilità, ergonomia, interazioni, comportamento percepito, click/drag/resize, sovrapposizioni, tooltip/pannelli e performance percepita quando non già determinabile automaticamente.
-
-Un eventuale problema OPSEC osservato incidentalmente dall'operatore va comunque riportato come finding, ma non va richiesto come test umano.
-
-Questa regola integra `QA-HUMAN-SHORT-TARGETED` e prevale su template o esempi storici che includano OPSEC/offline nella QA operatore.
+Sintesi vincolante: la QA operatore **non include** test OPSEC/offline/rete — niente toggle `OPSEC strict`, niente prove `force offline`, niente verifica manuale di network gate/fetch/endpoint/CORS/firewall. Le verifiche OPSEC/rete restano obbligatorie ma sono coperte **prima**, tecnicamente (review, selftest, Automated Browser QA, Console/Network instrumentation). Se una proprietà OPSEC non è tecnicamente verificabile con affidabilità → gate `BLOCKED` / `FAIL` / `INCOMPLETE`, **mai** un caso QA umano. Problem OPSEC osservati incidentalmente dall'operatore restano finding. QA operatore = solo residuo umano percettivo/operativo.

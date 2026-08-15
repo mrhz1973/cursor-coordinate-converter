@@ -1,5 +1,7 @@
 # GIS Tool — Project Method Overlay
 
+> **STATO: STORICO.** Il metodo vivo è [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) §4 (indice regole + esecuzione in `.cursor/rules/`). Questo file resta come overlay dev-method per audit; non è fonte primaria.
+
 ## Method source
 
 - Method repository: `mrhz1973/dev-method`

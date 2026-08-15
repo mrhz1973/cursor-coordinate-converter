@@ -1,6 +1,3 @@
-<!-- AUTO-VIA-HEADER: NON RIMUOVERE -->
-> **REGOLA OPERATIVA VINCOLANTE — AUTO-VIA.** Se il prossimo passo non richiede una decisione reale dell’operatore — scelta di prodotto, scope ambiguo, rischio non autorizzato o conflitto non risolvibile — l’assistente deve considerare il `vai` già concesso e procedere autonomamente. È vietato chiedere conferme, autorizzazioni o un nuovo `vai` per attività già approvate, programmi già autorizzati o passaggi tecnicamente determinati. Un programma esplicitamente autorizzato resta autorizzato per i blocchi successivi finché non emerge una scelta reale o un gate fallito. Fermarsi soltanto davanti a una decisione effettiva che può cambiare il risultato.
-<!-- /AUTO-VIA-HEADER -->
 
 # GOI GIS Tool
 
@@ -23,8 +20,8 @@ Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, 
 ### Principi
 - **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
 - **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
-- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD`).
-- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (header sopra).
+- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD`: uno schema/payload acquisito non si riacquisisce; discovery generica vietata se un tool noto basta).
+- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (unica copia canonica: questo blocco).
 - **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
 
 ### Precedenza
