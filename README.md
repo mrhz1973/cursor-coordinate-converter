@@ -23,6 +23,7 @@ Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, 
 ### Principi
 - **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
 - **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
+- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD`).
 - **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (header sopra).
 - **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
 
@@ -32,7 +33,7 @@ GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conf
 ### ON DEMAND (aprire solo se il gate/task lo richiede)
 | Fonte | Quando |
 | --- | --- |
-| OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/…) |
+| OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/… / `CONTEXT-BUDGET-GUARD`) |
 | Roadmap / WU body | pianificazione/backlog, o se §7.1 non basta |
 | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) | solo al gate QA |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se il seed chat è già fornito |

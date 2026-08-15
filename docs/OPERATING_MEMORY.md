@@ -181,11 +181,23 @@ CORE BOOT: README AI-BOOT → OM §7.1 → WU hot-header
    4. hot-header (`<!-- WU-HOT-HEADER -->`) della WU attiva indicata da §7.1.
    Con questi quattro passi si determinano workstream, blocco, stato, gate, SHA semantiche applicabili, NEXT. **§7.2 e §7.3 non** sono lettura bootstrap obbligatoria.
 2. **No front-loading.** **Non** leggere integralmente OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite in bootstrap. OM §4 = sola Regola necessaria al gate/task. Roadmap **non** obbligatoria se §7.1 + hot-header determinano già il gate. HANDOFF **non** è seconda memoria. QA-CHECKLIST solo al gate QA. WU body solo nelle sezioni necessarie dopo l’hot-header.
-3. **Strumenti preferiti.** Per file grandi o review runtime: ricerca per simbolo/testo; range di linee; `compare_commits`; diff/patch; blob pinnati a FULL SHA. **Mai** preload del monolite.
+3. **Strumenti preferiti.** Per file grandi o review runtime: ricerca per simbolo/testo; range di linee; `compare_commits`; diff/patch; blob pinnati a FULL SHA. **Mai** preload del monolite. Estensione operativa in sessione: **`CONTEXT-BUDGET-GUARD`** sotto.
 4. **AUTO-VIA preservata.** Questa regola **non** introduce un nuovo gate; **non** richiede un nuovo `vai`; **non** obbliga a fermarsi dopo la sola riconciliazione. Passo tecnicamente determinato → **acquisizione progressiva** delle evidenze ed esecuzione.
 5. **Review DELICATE.** Ridurre il contesto in bootstrap **non** riduce checklist né profondità della review. **Vietato** dichiarare PASS per il solo fatto di aver ridotto le letture iniziali.
 6. **Handoff.** Seed di continuità (Regola F); dopo riconciliazione, documenti vivi **prevalgono** sul seed. `docs/HANDOFF.md` = protocollo stabile, non current-state.
 7. **Output iniziale.** Sintesi: HEAD remoto; blocco; gate; NEXT; conflitti reali. Poi, se AUTO-VIA, procedere senza nuovo `vai`.
+
+**Regola CONTEXT-BUDGET-GUARD (`METHOD-CONTEXT-BUDGET-GUARD`).** Disciplina di **contenimento del contesto** nelle chat operative ChatGPT/Cursor. Integra Regola I (bootstrap lean) e la lettura progressiva wiki-LLM: qui si governa ciò che avviene **durante** la sessione, non solo all’apertura. **Non** introduce un nuovo gate prodotto e **non** indebolisce AUTO-VIA.
+
+Principio in dubbio: **meno fonti, più specifiche, una sola volta, on-demand.**
+
+1. **Tool discovery.** Scoprire schema/capability di un connector **solo** quando necessario. Una volta disponibile nella sessione, **riusarlo**. **Non** ripetere `list_resources`/discovery per la stessa capability «per sicurezza». Evitare discovery ampie se basta un tool già noto o una query più stretta.
+2. **Letture documentali.** **Mai** leggere un file intero quando marker, sezione o range mirato sono sufficienti. Se un connector restituisce accidentalmente un documento intero o un payload molto ampio, considerarlo **già acquisito** e non rileggerlo. **Non** leggere due volte la stessa fonte per mera conferma quando il gate è già determinato.
+3. **Monolite / review.** Ordine preferito: `compare` commit → diff candidate → ricerca simboli → range mirati. **Non** recuperare lo stesso diff ripetutamente in forme sovrapposte. Lettura ampia del monolite **solo** come ultima risorsa (coerente con Regola I §3).
+4. **Fonti storiche.** Niente inbox / `latest` / report / checkpoint / session / HANDOFF / roadmap / WU body salvo **necessità esplicita** del gate corrente. **Non** usare lo storico per confermare uno stato già determinato da CORE BOOT / fonti vive (§7.1 + hot-header).
+5. **Output connector.** Schema tool, payload JSON, diff e documenti recuperati **consumano contesto** anche se non sono mostrati integralmente all’operatore. Preferire output stretti e mirati; **non** accumulare grandi payload non necessari.
+6. **Chiusura chat.** Quando un gate sostanziale è concluso e la conversazione è diventata pesante: assicurarsi che lo stato sia **persistito su GitHub**, poi aprire una **nuova** chat. La nuova chat riparte **esclusivamente** dal CORE BOOT. **Nessun** mega-handoff / chat dump: lo stato corrente deve essere ricostruibile da `origin/main` + AI-BOOT + OM §7.1 + WU hot-header (seed Regola F se utile).
+7. **Precedenza.** Integra, **non** sostituisce, CORE BOOT, wiki-LLM lean, Regola I e lettura progressiva. In conflitto di metodo sul budget contesto, prevale questa regola sul «rileggi per sicurezza»; restano invariati AUTO-VIA, gate di review/QA e fail-closed.
 
 ### Chiusura blocco (dopo l'esecuzione Cursor)
 
