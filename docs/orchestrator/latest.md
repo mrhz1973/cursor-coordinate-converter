@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** LIVE `d2d3ab3` / build **197** · deploy GIS-only PASS · Automated Browser QA PASS · gate **QA FINALE CHATGPT — PENDING**. Helper **0.1.3** invariato. Dettaglio: [`docs/orchestrator/inbox/2026-08-16_0045_riepilogo_dflight-atm09-visual-parity-impl-a-deploy-qa.md`](inbox/2026-08-16_0045_riepilogo_dflight-atm09-visual-parity-impl-a-deploy-qa.md).
+2026-08-16 — **DOCS-PROMPT-MODE-EXPLICIT-A** (governance): OM §4 Regola E — modalità Cursor esplicita PLAN/AGENT. §7.1 **invariato** (IMPL-A `d2d3ab3`/197 · **QA FINALE CHATGPT — PENDING**). Dettaglio: [`docs/orchestrator/inbox/2026-08-16_0050_riepilogo_docs-prompt-mode-explicit-a.md`](inbox/2026-08-16_0050_riepilogo_docs-prompt-mode-explicit-a.md).

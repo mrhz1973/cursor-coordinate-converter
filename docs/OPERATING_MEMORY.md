@@ -171,6 +171,23 @@ In entrambi i tier: il **reviewer AI esterno non scrive** il prompt Cursor; il p
 10. Restano invariati: fail-closed; PASS tecnico ≠ Automated Browser QA ≠ PASS operatore; IT (D1); etichette UI visibili; verifica monolite prima dei percorsi UI; URL runtime reale; divieto di inventare PASS operatore.
 **Regola E — Tutto copiabile e fenced.** Questi artefatti vanno forniti ciascuno dentro **un unico fenced code block** contiguo: prompt Cursor; workflow/comando `finito` quando fornito separatamente; URL QA; checklist QA; seed handoff; sostanza reviewer AI esterno → GPT. Ogni blocco: completo; selezionabile in un'unica operazione; senza testo estraneo all'interno; non frammentato inutilmente. I prompt Cursor usano i delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`. Le indicazioni per l'operatore (modalità Cursor, AI consigliata, documenti da allegare, azioni successive) restano **fuori** dal prompt.
 
+**Modalità Cursor esplicita — PLAN / AGENT.** Ogni prompt Cursor emesso dall'orchestratore deve essere preceduto, **fuori** dal fenced code block del prompt (e fuori dai delimitatori `=== INIZIO PROMPT CURSOR ===` / `=== FINE PROMPT CURSOR ===`), da un'indicazione esplicita:
+
+```text
+MODALITÀ CURSOR: PLAN
+```
+
+oppure:
+
+```text
+MODALITÀ CURSOR: AGENT
+```
+
+- **PLAN:** usare esclusivamente quando l'obiettivo richiesto a Cursor è produrre un piano / analisi di pianificazione e **non** deve eseguire modifiche a file/repository/runtime, commit/push, deploy o QA.
+- **AGENT:** usare per ogni intervento operativo/esecutivo, incluso: audit o diagnosi operativa; lettura/esecuzione di comandi sul repository; modifica file; aggiornamento docs persistente; implementazione runtime; commit/push; deploy; Automated Browser QA; verifiche operative richieste dal task.
+- Se esiste già un piano approvato e Cursor deve eseguirlo: modalità = **AGENT**.
+- L'indicazione PLAN/AGENT è istruzione per l'operatore; coerente con questa Regola E resta **fuori** dai delimitatori del prompt.
+- ChatGPT/orchestratore **non** lascia implicita la modalità: ogni prompt Cursor operativo futuro la dichiara.
 **Regola F — Seed handoff minimo e freschezza.** Dopo la pubblicazione, `finito` emette in chat (fenced) un seed **piccolissimo**, tipicamente:
 
 ```text
