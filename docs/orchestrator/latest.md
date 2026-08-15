@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **WU-0017 D-FLIGHT-ATM09-VISUAL-PARITY OPEN** (AUDIT-A docs/read-only). Commit task `288968c`. LIVE invariato `c7d1734` / **196** · helper **0.1.3**. Gate: **OFFICIAL VISUAL REFERENCE REQUIRED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_2355_riepilogo_dflight-atm09-visual-parity-audit-a.md`](inbox/2026-08-15_2355_riepilogo_dflight-atm09-visual-parity-audit-a.md).
+2026-08-16 — **WU-0017 REFERENCE-A CLOSED/PASS docs** · gate **IMPL-A READY** · decisione `D-FLIGHT-FAMILIARITY-FIRST` · matrice legenda A–E. Commit task `27d7a9b`. LIVE invariato `c7d1734` / **196** · helper **0.1.3**. NEXT: `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (non implementato). Dettaglio: [`docs/orchestrator/inbox/2026-08-16_0030_riepilogo_dflight-atm09-visual-parity-reference-a.md`](inbox/2026-08-16_0030_riepilogo_dflight-atm09-visual-parity-reference-a.md).

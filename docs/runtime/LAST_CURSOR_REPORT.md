@@ -2,42 +2,40 @@
 
 ## LATEST
 
-* real_task_commit: `288968c2964cd3b4275571e4c1e914df611c99e8` — verify short `288968c`
-* real_task_subject: docs: open WU-0017 ATM09 visual parity audit (candidato C)
-* report_generated_at: 2026-08-15T23:55:00+02:00
+* real_task_commit: `27d7a9b2508cb7c25700fafaaa21414e815a6d29` — verify short `27d7a9b`
+* real_task_subject: docs: WU-0017 REFERENCE-A — IMPL-A READY (familiarity-first legends)
+* report_generated_at: 2026-08-16T00:30:00+02:00
 * branch: main
-* remote_head_after_task_push: `288968c2964cd3b4275571e4c1e914df611c99e8`
-* previous_report_container: `22342d1c9b3278da0fcb33556fa975320b8735ca`
+* remote_head_after_task_push: `27d7a9b2508cb7c25700fafaaa21414e815a6d29`
+* previous_report_container: `2e1b2f676ddd12a10d67c941c97dd87d2e95d0e5`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: solo autosync memoria/report (pre-autosync)
-* pass_tecnico_remoto: task `288968c` verificato post-push pre-report · container corrente EXTERNAL_ONLY
-* result_cursor: WU-0017 **OPEN** · AUDIT-A complete · gate **OFFICIAL VISUAL REFERENCE REQUIRED** · monolite/helper **invariati** · LIVE 196
-* pass_operatore: **N/A** (docs/audit; QA operatore runtime non richiesta in questa fase)
+* pass_tecnico_remoto: task `27d7a9b` verificato post-push pre-report · container corrente EXTERNAL_ONLY
+* result_cursor: REFERENCE-A **PASS** · OFFICIAL VISUAL REFERENCE **soddisfatto** · gate **IMPL-A READY** · monolite/helper invariati
+* pass_operatore: **N/A** (docs adjudication; evidenza già fornita all’orchestratore)
 * result_runtime: LIVE tip `c7d1734` / build **196** (invariato) · helper **0.1.3**
-* qa_attestation_source: audit read-only helper+monolite · smoke `/atm09/legend.png` + tile via helper Tailnet · nessun Automated Browser QA (no UI change)
-* notes: visual parity non dichiarata · IMPL-A non aperto · D–H NOT OPENED · finito WU non eseguito
+* qa_attestation_source: reference adjudication ChatGPT+operatore · no Automated Browser QA (no UI change)
+* notes: WU-0017 OPEN · NEXT IMPL-A non implementato · D–H NOT OPENED · no HEX inventati · no raster restyle
 
 ## OUTPUT VERBATIM
 
 ```text
 git ls-remote origin refs/heads/main   (post push task, pre commit report)
-288968c2964cd3b4275571e4c1e914df611c99e8	refs/heads/main
+27d7a9b2508cb7c25700fafaaa21414e815a6d29	refs/heads/main
 
-APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (LIVE invariato)
-APP_BUILD_NUM=196
-HELPER=0.1.3
-
-GATE: OFFICIAL VISUAL REFERENCE REQUIRED
+GATE: IMPL-A READY
+NEXT: D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A
+EVIDENCE: official visual reference supplied by operator to orchestrator (not in repo)
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `22342d1` — MASTER-VIS-A / WU-0016 finito autosync
-* `38a7eb6` — MASTER-VIS-A + WU-0016 CLOSED
-* `0b3f6d0` — MASTER-VIS-A deploy/AB QA
+* `2e1b2f6` — WU-0017 AUDIT-A autosync
+* `288968c` — WU-0017 OPEN AUDIT-A
+* `22342d1` — MASTER-VIS-A / WU-0016 finito
 * `c7d1734` — MASTER-VIS-A runtime LIVE
 
 ## LIMITI
