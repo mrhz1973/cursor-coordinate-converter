@@ -685,7 +685,7 @@ Nel blocco futuro: estrarre/validare i valori dalla fonte runtime ufficiale disp
 
 Obiettivo: lettura visiva ATM09 il più possibile coerente con l’ufficiale, senza colori arbitrariamente reinterpretati.
 
-**Integrazione operatore 2026-08-15 / REFERENCE-A 2026-08-16:** confronto screenshot ufficiale vs GOI 196 (evidenza *supplied by operator to orchestrator*, non in repo). Raster ATM09 materialmente coerente → **no** restyle WMS. Gap UX = doppia legenda + label tecniche GetLegendGraphic. Decisione `D-FLIGHT-FAMILIARITY-FIRST` · una sola legenda contestuale · IMPL-A = arbitration visibility. Label user-facing ATM09 → backlog **D**. Candidato **C** **OPEN** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) (gate **IMPL-A READY**).
+**Integrazione operatore 2026-08-15 / REFERENCE-A 2026-08-16:** confronto screenshot ufficiale vs GOI 196 (evidenza *supplied by operator to orchestrator*, non in repo). Raster ATM09 materialmente coerente → **no** restyle WMS. Gap UX = doppia legenda + label tecniche GetLegendGraphic. Decisione `D-FLIGHT-FAMILIARITY-FIRST` · una sola legenda contestuale · IMPL-A = arbitration visibility. Label user-facing ATM09 → backlog **D**. Candidato **C** **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197).
 
 #### 7. Legenda ATM09 esterna — stile futuro
 
