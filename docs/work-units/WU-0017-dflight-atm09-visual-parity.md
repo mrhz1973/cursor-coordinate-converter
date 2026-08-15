@@ -1,14 +1,14 @@
 # WU-0017 — D-FLIGHT-ATM09-VISUAL-PARITY
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A (DEPLOYED / AB QA PASS)
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
-**RUNTIME BASELINE / LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3** (invariato)
+**STATUS:** CLOSED / PASS
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A (CLOSED / PASS)
+**CURRENT GATE:** none
+**RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
 **CATEGORIA:** ROUTINE (UI + JS a basso rischio)
 **ORIGINE:** backlog QA build 183 candidato **C** — ATM09 VISUAL PARITY
-**NEXT:** QA operatore → auto-`finito` (Regola H) alla riga `QA D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A PASS operatore`
-**NOTE:** 2026-08-16 IMPL-A · paint-driven legend arbitration · selftest LIVE sync 340/340 + async 356/356 · deploy+AB QA PASS · no raster/helper change
+**NEXT:** backlog D–H **NOT OPENED** (prossimo naturale: **D** Legenda ATM09 esterna / label user-facing)
+**NOTE:** WU CLOSED 2026-08-16 · AUDIT-A + REFERENCE-A + IMPL-A PASS · QA operatore PASS · finito Regola H · LIVE `d2d3ab3` / 197
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0016`](WU-0016-dflight-ux-coherence.md) **CLOSED / PASS** (MASTER-VIS-A / build 196).
@@ -220,10 +220,10 @@ La legenda descrive il **paint realmente visibile**, non solo lo stato teorico d
 | Voce | Valore |
 | --- | --- |
 | Gate precedente | OFFICIAL VISUAL REFERENCE REQUIRED → **soddisfatto** (REFERENCE-A) |
-| IMPL-A | **DEPLOYED** tip `d2d3ab3` / build **197** · Automated Browser QA **PASS** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
-| **NEXT** | QA operatore → auto-`finito` Regola H |
-| WU-0017 | resta **OPEN** fino a finito |
+| IMPL-A | **CLOSED / PASS** tip `d2d3ab3` / build **197** · deploy · AB QA · QA operatore · finito |
+| **GATE CORRENTE** | **none** |
+| **NEXT** | backlog D–H **NOT OPENED** (prossimo naturale: D Legenda ATM09 esterna) |
+| WU-0017 | **CLOSED / PASS** |
 | Runtime / helper | LIVE **197** · helper **0.1.3** invariato |
 
 ### 9.1 IMPL-A implementato (2026-08-16)
@@ -232,6 +232,7 @@ La legenda descrive il **paint realmente visibile**, non solo lo stato teorico d
 - Hook: `dflightSyncPanelUi`, `dflightAtm09EnsureLegend` (eligibility), `dflightAtm09SetReady`, `dflightAtm09MarkInfoUnavailable`, `dflightAtm09ApplyInfoSuccess`
 - Selftest: `dflightSelfTestIMPLA` (A–E)
 - **Non** toccati: raster/style/helper/endpoint/FIX5/temporal/master semantics/label PNG
+- Chiusura: `QA D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A PASS operatore` → finito Regola H
 
 
 ---
