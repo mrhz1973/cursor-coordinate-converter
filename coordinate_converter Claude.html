@@ -42854,6 +42854,93 @@ function dflightSelfTestOptB(){
       }
     })());
 
+
+    add("OptB_FIX5_partial_no_black_vectors", (function(){
+      const tm = document.querySelector(".tile-map");
+      if (!tm) return true;
+      function fillOf(el){
+        try { return String(getComputedStyle(el).fill || "").toLowerCase().replace(/\s+/g, ""); } catch (_){ return ""; }
+      }
+      function isBlack(f){
+        return f === "#000" || f === "#000000" || f === "rgb(0,0,0)" || f === "black"
+          || /^rgba\(0,0,0,1(\.0*)?\)$/.test(f);
+      }
+      function isTransparent(f){
+        return f === "rgba(0,0,0,0)" || f === "transparent" || f === "none" || f.indexOf("rgba(0,0,0,0)") === 0;
+      }
+      const prev = {};
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+        prev[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+      const prevPref = _dflightAtm09Preferred;
+      const prevVis = _dflightOverlayVisible;
+      try {
+        _dflightAtm09Preferred = true;
+        _dflightOverlayVisible = true;
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        _dflightTemporalFilter.FUTURE = false;
+        try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+        try { if (typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tm); } catch(_){}
+
+        const vols = tm.querySelectorAll(".dflight-volume");
+        const hits = tm.querySelectorAll(".dflight-volume-hit");
+        let blackVol = false;
+        let offStateRendered = false;
+        let nonInteractiveVisible = false;
+        for (let i = 0; i < vols.length; i++){
+          const el = vols[i];
+          const f = fillOf(el);
+          if (isBlack(f)) blackVol = true;
+          const ts = el.getAttribute("data-temporal-state");
+          if (ts === "FUTURE") offStateRendered = true;
+          const pe = String(getComputedStyle(el).pointerEvents || "").toLowerCase();
+          const cur = String(getComputedStyle(el).cursor || "");
+          if (!isTransparent(f) && (pe === "none" || (cur && cur.indexOf("pointer") < 0 && cur !== "pointer"))){
+            // visible painted volume must remain interrogable under overlay is-interactive
+            const ov = tm.querySelector(".dflight-zone-overlay");
+            if (ov && ov.classList.contains("is-interactive") && pe === "none") nonInteractiveVisible = true;
+          }
+        }
+        let visibleHit = false;
+        for (let i = 0; i < hits.length; i++){
+          if (!isTransparent(fillOf(hits[i]))) visibleHit = true;
+        }
+        const infos = tm.querySelectorAll(".dflight-atm09-info-hit");
+        let blackInfo = false;
+        for (let i = 0; i < infos.length; i++){
+          if (isBlack(fillOf(infos[i]))) blackInfo = true;
+        }
+        return !blackVol && !blackInfo && !offStateRendered && !visibleHit && !nonInteractiveVisible;
+      } finally {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+          _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prev[DFLIGHT_TEMPORAL_STATES[i]] === true;
+        _dflightAtm09Preferred = prevPref;
+        _dflightOverlayVisible = prevVis;
+        try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+        try { if (typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tm); } catch(_){}
+      }
+    })());
+
+    add("OptB_FIX5_all_off_zero_vector_paths", (function(){
+      const tm = document.querySelector(".tile-map");
+      if (!tm) return true;
+      const prev = {};
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+        prev[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+      try {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+        try { if (typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tm); } catch(_){}
+        const vols = tm.querySelectorAll(".dflight-volume, .dflight-volume-hit").length;
+        const infoInter = !!(tm.querySelector(".dflight-atm09-info-overlay.is-interactive"));
+        return vols === 0 && infoInter === false;
+      } finally {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+          _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prev[DFLIGHT_TEMPORAL_STATES[i]] === true;
+        try { if (typeof dflightAtm09SyncTemporalContextUi === "function") dflightAtm09SyncTemporalContextUi(); } catch(_){}
+        try { if (typeof dflightRedrawOverlayFromSession === "function") dflightRedrawOverlayFromSession(tm); } catch(_){}
+      }
+    })());
+
     add("OptB_FIX5_build_192", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
       && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
 
