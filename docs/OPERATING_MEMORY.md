@@ -368,28 +368,27 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (**DELICATO**) |
-| **STATO BLOCCO** | **DEPLOYED / AB QA PASS** — REVIEW GPT-SOSTITUTIVA PASS · deploy GIS-only PASS · Automated Browser QA MASTER-VIS-A PASS · QA operatore / finito **pending** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) (**CLOSED / PASS**) |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (**CLOSED / PASS**) |
+| **STATO BLOCCO** | **CLOSED / PASS** (REVIEW GPT-SOSTITUTIVA · deploy · Automated Browser QA · QA operatore · finito) |
+| **GATE CORRENTE** | **none** |
 | **REVIEW BASE** | monolite tip `2917ed207a56df7d54abd4f6923d1d2d0e6903a3` (pre-candidate; AGGIORNA-A docs tip) |
-| **RUNTIME CANDIDATE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper prod **0.1.3** (invariato) |
 | **RUNTIME LIVE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | QA operatore → auto-`finito` (Regola H) alla riga esatta `QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore` |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **NEXT** | backlog D-Flight C–H **NOT OPENED** (prossimo naturale: **C** ATM09 VISUAL PARITY AUDIT) |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — LIVE `c7d1734` / **196** · deploy+AB QA PASS · **QA FINALE CHATGPT — PENDING**
-2. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS (QA operatore + finito) — tip `2574250` / **195**
-3. **WIKI-LLM-LEAN-CONSOLIDATION-B** — CLOSED / PASS docs-only — governance SSOT lean cleanup
-4. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — tip `0c0f97d` / **194**
-5. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — tip `aa6e3ce` / **193**
+1. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — CLOSED / PASS (QA operatore + finito) — LIVE `c7d1734` / **196**
+2. **WU-0016 (D-FLIGHT-UX-COHERENCE)** — CLOSED / PASS (B0–B4)
+3. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS (QA operatore + finito) — tip `2574250` / **195**
+4. **WIKI-LLM-LEAN-CONSOLIDATION-B** — CLOSED / PASS docs-only — governance SSOT lean cleanup
+5. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — tip `0c0f97d` / **194**
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
-- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** · **WU-0014 (D-FLIGHT-TEMPORAL-FILTER, UI-A+FIX1–3)** · **WU-0015 (D-FLIGHT-HIT-TEST, OPTION-B-FIX5)** — [`work-units/`](work-units/)
-- **WU open:** **WU-0016 (D-FLIGHT-UX-COHERENCE)** · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** · **WU-0014 (D-FLIGHT-TEMPORAL-FILTER, UI-A+FIX1–3)** · **WU-0015 (D-FLIGHT-HIT-TEST, OPTION-B-FIX5)** · **WU-0016 (D-FLIGHT-UX-COHERENCE, B0–B4)** — [`work-units/`](work-units/)
+- **WU open:** WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
 - **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`

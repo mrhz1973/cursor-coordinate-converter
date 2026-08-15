@@ -605,22 +605,22 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
 
-**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** CLOSED in [`WU-0015`](WU-0015-dflight-hit-test.md). Candidato **B** **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
+**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** CLOSED in [`WU-0015`](WU-0015-dflight-hit-test.md). Candidato **B** **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** candidato **B** **OPENED** (WU-0016). C–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **B** **CLOSED / PASS** (WU-0016 B0–B4). C–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS** (OPTION-B-FIX5). Candidato **B** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS** (OPTION-B-FIX5). Candidato **B** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) **CLOSED / PASS**. C–H restano **NOT OPENED**.
 
-**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **OPENED** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (`OPEN-A` CLOSED docs-only; `TEMPORAL-UX-A` CLOSED/PASS LIVE `aa6e3ce`/193; `LEGEND-ATM09-UX-A` CLOSED/PASS LIVE `0c0f97d`/194; `AGGIORNA-A` CLOSED/PASS LIVE `2574250`/195; NEXT `MASTER-VIS-A`). C–H restano **NOT OPENED**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (`OPEN-A` … `MASTER-VIS-A` CLOSED/PASS LIVE `c7d1734`/196). C–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
 | Ordine | Candidato | Note |
 | --- | --- | --- |
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
-| **B** | D-Flight UX coherence | **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B1+B2+B3 CLOSED/PASS; NEXT `MASTER-VIS-A` |
+| **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **NOT OPENED** — priorità alta; **non** restyle cosmetico. Richiesta operatore (2026-08-15): valutare zone proibite/no-fly per resa a **righe/tratteggio** coerente con D-Flight ufficiale; prima audit visuale comparativo; **nessuna** patch “a occhio”; pattern/colore/opacità/layering da determinare in candidato C |
 | **D** | Legenda ATM09 esterna | **NOT OPENED** — swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
