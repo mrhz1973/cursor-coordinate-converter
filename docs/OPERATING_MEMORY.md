@@ -369,22 +369,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-AGGIORNA-A (**IMPLEMENTED / STATIC PASS**) |
-| **STATO BLOCCO** | **IMPLEMENTED / STATIC PASS** — **REVIEW ESTERNA DOWNSTREAM — PENDING** · deploy **NON** eseguito |
-| **GATE CORRENTE** | **REVIEW ESTERNA DOWNSTREAM — PENDING** |
-| **REVIEW BASE** | monolite tip LIVE `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build **194** / LEGEND-ATM09-UX-A) |
-| **CANDIDATE RUNTIME** | monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · blob `b23f3132752779df89a75ddcd07610c3f3ddf5d0` |
-| **RUNTIME LIVE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | review downstream → deploy → Automated Browser QA → QA operatore → finito |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-AGGIORNA-A (**DEPLOYED · Automated Browser QA PASS**) |
+| **STATO BLOCCO** | REVIEW GPT-SOSTITUTIVA **PASS** (rete/OPSEC) · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **pending** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **REVIEW BASE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build **194** / LEGEND-ATM09-UX-A) |
+| **RUNTIME LIVE** | monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | QA operatore → auto-`finito` (Regola H) su riga esatta `QA D-FLIGHT-UX-COHERENCE-AGGIORNA-A PASS operatore` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> AGGIORNA-A **IMPLEMENTED / STATIC PASS**. Candidate `2574250` / **195**. LIVE resta `0c0f97d` / **194** (nessun deploy). Gate: **REVIEW ESTERNA DOWNSTREAM — PENDING**.
-> WU-0016 **OPEN**.
+> AGGIORNA-A: REVIEW GPT-SOSTITUTIVA **PASS** (rete/OPSEC; fallback: reviewer AI esterno non usato per vincolo operativo/token) · deploy GIS-only **PASS** · Automated Browser QA **PASS**. LIVE `2574250` / **195**. Gate: **QA FINALE CHATGPT — PENDING**.
+> WU-0016 **OPEN**. B2 resta CLOSED/PASS.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — IMPLEMENTED / STATIC PASS — candidate `2574250` / **195** — REVIEW ESTERNA DOWNSTREAM PENDING
+1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — REVIEW GPT-SOSTITUTIVA PASS · deploy · Automated Browser QA PASS — LIVE `2574250` / **195** — QA operatore pending
 2. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
 3. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
 4. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**

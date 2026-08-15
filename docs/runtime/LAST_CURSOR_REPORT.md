@@ -12,11 +12,11 @@
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: solo autosync memoria/report (pre-autosync)
 * pass_tecnico_remoto: task runtime `2574250` verificato pre-autosync · LIVE ancora `0c0f97d` / 194 · container corrente EXTERNAL_ONLY
-* result_cursor: AGGIORNA-A IMPLEMENTED / STATIC PASS — REVIEW ESTERNA DOWNSTREAM PENDING
-* pass_operatore: **N/A** (pre-deploy · no Automated Browser QA · no QA operatore)
-* result_runtime: candidate tip `2574250` / build **195** · LIVE resta tip `0c0f97d` / **194** · helper **0.1.3**
-* qa_attestation_source: N/A
-* notes: deploy NON eseguito · SCELTA A feedback · zero nuovi endpoint
+* result_cursor: AGGIORNA-A DEPLOYED · Automated Browser QA PASS — QA FINALE CHATGPT PENDING
+* pass_operatore: **N/A** (QA operatore pending)
+* result_runtime: LIVE tip `2574250` / build **195** (deploy 2026-08-15) · helper **0.1.3** (invariato)
+* qa_attestation_source: Automated Browser QA scoped A–L (Cursor browser instrumentation, LIVE URL)
+* notes: REVIEW GPT-SOSTITUTIVA PASS (rete/OPSEC; fallback vincolo operativo/token) · deploy GIS-only PASS (LF 10249369 / SHA-256 `0c1393db…`) · SCELTA A feedback · zero nuovi endpoint · monolite non toccato in fase review/deploy/QA
 
 ## OUTPUT VERBATIM
 
@@ -26,14 +26,16 @@ real_task_commit
 blob
 b23f3132752779df89a75ddcd07610c3f3ddf5d0
 
-selfTestAll 312/312 PASS
-OptB 23/23 PASS
-OptB async 11/11 PASS
+REVIEW GPT-SOSTITUTIVA D-FLIGHT-UX-COHERENCE-AGGIORNA-A
+PASS (rete/OPSEC · fallback vincolo operativo/token)
 
-IMPLEMENTAZIONE D-FLIGHT-UX-COHERENCE-AGGIORNA-A
-STATIC PASS
-REVIEW ESTERNA DOWNSTREAM — PENDING
-DEPLOY NON ESEGUITO
+DEPLOY GIS-ONLY
+PASS — LIVE 2574250 / build 195 — HTTP 200 — byte-match 0c1393db… — helper 0.1.3
+
+AUTOMATED BROWSER QA D-FLIGHT-UX-COHERENCE-AGGIORNA-A PASS
+(A–L · selfTestAll 312/312 · OptB 23/23 · OptB async 11/11 su LIVE)
+
+QA FINALE CHATGPT — PENDING
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
