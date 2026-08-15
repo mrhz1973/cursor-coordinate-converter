@@ -370,21 +370,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
 | **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (**DELICATO**) |
-| **STATO BLOCCO** | **CANDIDATE / REVIEW PENDING** — runtime candidate pushato; deploy / AB QA / QA operatore / finito **non** eseguiti |
-| **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **STATO BLOCCO** | **DEPLOYED / AB QA PASS** — REVIEW GPT-SOSTITUTIVA PASS · deploy GIS-only PASS · Automated Browser QA MASTER-VIS-A PASS · QA operatore / finito **pending** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
 | **REVIEW BASE** | monolite tip `2917ed207a56df7d54abd4f6923d1d2d0e6903a3` (pre-candidate; AGGIORNA-A docs tip) |
 | **RUNTIME CANDIDATE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper prod **0.1.3** (invariato) |
-| **RUNTIME LIVE** | monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · helper prod **0.1.3** (`:8010`) — **invariato** fino a review+deploy |
-| **NEXT** | dopo review PASS: deploy GIS-only → Automated Browser QA → QA operatore |
+| **RUNTIME LIVE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | QA operatore → auto-`finito` (Regola H) alla riga esatta `QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — CANDIDATE `c7d1734` / **196** · REVIEW GPT-SOSTITUTIVA PENDING
-2. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS (QA operatore + finito) — LIVE `2574250` / **195**
+1. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — LIVE `c7d1734` / **196** · deploy+AB QA PASS · **QA FINALE CHATGPT — PENDING**
+2. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS (QA operatore + finito) — tip `2574250` / **195**
 3. **WIKI-LLM-LEAN-CONSOLIDATION-B** — CLOSED / PASS docs-only — governance SSOT lean cleanup
-4. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
-5. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
+4. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — tip `0c0f97d` / **194**
+5. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — tip `aa6e3ce` / **193**
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

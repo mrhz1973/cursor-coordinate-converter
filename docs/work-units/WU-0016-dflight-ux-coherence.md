@@ -3,13 +3,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (CANDIDATE / REVIEW PENDING)
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (DEPLOYED / AB QA PASS)
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **RUNTIME CANDIDATE:** monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper **0.1.3** (invariato)
-**RUNTIME LIVE:** monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · helper **0.1.3** (invariato fino a review+deploy)
+**RUNTIME LIVE:** monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper **0.1.3**
 **REVIEW BASE:** tip `2917ed207a56df7d54abd4f6923d1d2d0e6903a3` (pre-candidate)
-**NEXT:** dopo REVIEW GPT-SOSTITUTIVA PASS → deploy → Automated Browser QA → QA operatore
-**NOTE:** B4 candidate 2026-08-15 · selftest sync 332/332 + async 348/348 PASS · deploy/AB QA/QA/finito **non** eseguiti
+**NEXT:** QA operatore → auto-`finito` (Regola H) alla riga `QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore`
+**NOTE:** B4 LIVE 2026-08-15 · REVIEW GPT-SOSTITUTIVA PASS · deploy GIS-only PASS · Automated Browser QA PASS · selftest LIVE sync 332/332 + async 348/348 · QA operatore/finito pending
 <!-- /WU-HOT-HEADER -->
 
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
@@ -70,7 +70,7 @@ Quindi la **separazione dei master è DELICATA** e **non** deve essere implement
 | **B1** | `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` | **ROUTINE** | **CLOSED / PASS** — Seleziona/Deseleziona tutte; pulse/fade; legenda D-Flight contestuale · LIVE `aa6e3ce` / **193** |
 | **B2** | `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` | **ROUTINE** | **CLOSED / PASS** — legenda ATM09 contestuale + pulse raster + scroll pannello · LIVE `0c0f97d` / **194** |
 | **B3** | `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` | **DELICATO** | **CLOSED / PASS** — CTA Aggiorna unificata; refresh path/gate esistenti; reeval locale sempre · LIVE `2574250` / **195** |
-| **B4** | `D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` | **DELICATO** | **CANDIDATE** `c7d1734` / **196** · REVIEW GPT-SOSTITUTIVA PENDING — due master indipendenti; decoupling ATM09 ↔ cinque temporal; lifecycle preferred/fetch/tiles/INFO solo da master ATM09 + gate; FIX5 preservato |
+| **B4** | `D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` | **DELICATO** | **LIVE** `c7d1734` / **196** · REVIEW GPT-SOSTITUTIVA PASS · deploy+AB QA PASS · **QA FINALE CHATGPT — PENDING** — due master indipendenti; decoupling ATM09 ↔ cinque temporal; lifecycle preferred/fetch/tiles/INFO solo da master ATM09 + gate; FIX5 preservato |
 
 Ordine runtime consigliato: **B1 → B2 → B3 → B4** (ROUTINE prima; mai ROUTINE+DELICATO nello stesso bundle).
 
