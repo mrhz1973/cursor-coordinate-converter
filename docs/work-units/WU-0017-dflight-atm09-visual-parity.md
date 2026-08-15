@@ -2,13 +2,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-REFERENCE-A (CLOSED / PASS docs) · NEXT IMPL-A
-**CURRENT GATE:** **IMPL-A READY**
-**RUNTIME BASELINE / LIVE:** monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper **0.1.3** (invariato)
-**CATEGORIA:** DOCS-ONLY / REFERENCE ADJUDICATION (nessuna patch runtime)
-**ORIGINE:** backlog QA build 183 candidato **C** — ATM09 VISUAL PARITY AUDIT
-**NEXT:** `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (ROUTINE attesa — arbitration legende; **non** implementato in questo giro)
-**NOTE:** 2026-08-16 REFERENCE-A · evidenza = *official visual reference supplied by operator to orchestrator* (non in repo) · gate OFFICIAL VISUAL REFERENCE REQUIRED **soddisfatto** · WU resta OPEN · finito WU **non** eseguito
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A (DEPLOYED / AB QA PASS)
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**RUNTIME BASELINE / LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3** (invariato)
+**CATEGORIA:** ROUTINE (UI + JS a basso rischio)
+**ORIGINE:** backlog QA build 183 candidato **C** — ATM09 VISUAL PARITY
+**NEXT:** QA operatore → auto-`finito` (Regola H) alla riga `QA D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A PASS operatore`
+**NOTE:** 2026-08-16 IMPL-A · paint-driven legend arbitration · selftest LIVE sync 340/340 + async 356/356 · deploy+AB QA PASS · no raster/helper change
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0016`](WU-0016-dflight-ux-coherence.md) **CLOSED / PASS** (MASTER-VIS-A / build 196).
@@ -219,12 +219,20 @@ La legenda descrive il **paint realmente visibile**, non solo lo stato teorico d
 
 | Voce | Valore |
 | --- | --- |
-| Gate precedente | OFFICIAL VISUAL REFERENCE REQUIRED → **soddisfatto** |
-| **GATE CORRENTE** | **IMPL-A READY** |
-| **NEXT** | `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` |
-| WU-0017 | resta **OPEN** |
-| Finito WU | **non** in questo giro |
-| Runtime / helper | **invariati** |
+| Gate precedente | OFFICIAL VISUAL REFERENCE REQUIRED → **soddisfatto** (REFERENCE-A) |
+| IMPL-A | **DEPLOYED** tip `d2d3ab3` / build **197** · Automated Browser QA **PASS** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **NEXT** | QA operatore → auto-`finito` Regola H |
+| WU-0017 | resta **OPEN** fino a finito |
+| Runtime / helper | LIVE **197** · helper **0.1.3** invariato |
+
+### 9.1 IMPL-A implementato (2026-08-16)
+
+- Helper: `dflightLegendPaintMode()` + `dflightSyncContextualLegends()`
+- Hook: `dflightSyncPanelUi`, `dflightAtm09EnsureLegend` (eligibility), `dflightAtm09SetReady`, `dflightAtm09MarkInfoUnavailable`, `dflightAtm09ApplyInfoSuccess`
+- Selftest: `dflightSelfTestIMPLA` (A–E)
+- **Non** toccati: raster/style/helper/endpoint/FIX5/temporal/master semantics/label PNG
+
 
 ---
 

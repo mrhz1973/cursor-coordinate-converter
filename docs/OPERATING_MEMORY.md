@@ -369,21 +369,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0017 — [`D-FLIGHT-ATM09-VISUAL-PARITY`](work-units/WU-0017-dflight-atm09-visual-parity.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-VISUAL-PARITY-REFERENCE-A (**CLOSED / PASS docs**) · NEXT IMPL-A |
-| **STATO BLOCCO** | **REFERENCE ADJUDICATION PASS** — evidenza operatore via orchestratore · `D-FLIGHT-FAMILIARITY-FIRST` · matrice legenda A–E · **nessuna** patch runtime |
-| **GATE CORRENTE** | **IMPL-A READY** |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A (**ROUTINE**) |
+| **STATO BLOCCO** | **DEPLOYED / AB QA PASS** — paint-driven single legend · REVIEW N/A (ROUTINE) · deploy GIS-only PASS · Automated Browser QA PASS · QA operatore **pending** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
 | **REVIEW BASE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` (build **196** / MASTER-VIS-A) |
-| **RUNTIME LIVE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper prod **0.1.3** (`:8010`) — **invariato** |
-| **NEXT** | `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (ROUTINE attesa — arbitration legende; non implementato) |
+| **RUNTIME LIVE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | QA operatore → auto-`finito` (Regola H) alla riga `QA D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A PASS operatore` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0017 **OPEN** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **WU-0017 REFERENCE-A** — CLOSED/PASS docs · gate **IMPL-A READY** · LIVE `c7d1734` / **196**
-2. **WU-0017 AUDIT-A** — complete (pipeline helper+monolite)
-3. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — CLOSED / PASS — LIVE `c7d1734` / **196**
-4. **WU-0016 (D-FLIGHT-UX-COHERENCE)** — CLOSED / PASS (B0–B4)
-5. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS — tip `2574250` / **195**
+1. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — LIVE `d2d3ab3` / **197** · deploy+AB QA PASS · **QA FINALE CHATGPT — PENDING**
+2. **WU-0017 REFERENCE-A** — CLOSED/PASS docs · familiarity-first
+3. **WU-0017 AUDIT-A** — complete (pipeline helper+monolite)
+4. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — CLOSED / PASS — tip `c7d1734` / **196**
+5. **WU-0016 (D-FLIGHT-UX-COHERENCE)** — CLOSED / PASS (B0–B4)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

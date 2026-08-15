@@ -609,11 +609,11 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** candidato **C** **OPEN** (WU-0017 · REFERENCE-A PASS · **IMPL-A READY**). D–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **C** **OPEN** (WU-0017 · IMPL-A LIVE **197** · **QA FINALE CHATGPT — PENDING**). D–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**. Candidato **C** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (gate **IMPL-A READY**). D–H restano **NOT OPENED**.
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**. Candidato **C** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md). D–H restano **NOT OPENED**.
 
-**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (LIVE `c7d1734`/196). **Candidato C:** **OPEN** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (AUDIT-A + REFERENCE-A · gate **IMPL-A READY** · NEXT `IMPL-A`). D–H restano **NOT OPENED**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (tip `c7d1734`/196). **Candidato C:** **OPEN** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197 · **QA FINALE CHATGPT — PENDING**). D–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
@@ -621,7 +621,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | --- | --- | --- |
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
-| **C** | ATM09 VISUAL PARITY AUDIT | **OPEN** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — REFERENCE-A PASS; gate **IMPL-A READY**; NEXT `IMPL-A` (arbitration legende; no raster restyle) |
+| **C** | ATM09 VISUAL PARITY AUDIT | **OPEN** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** · gate **QA FINALE CHATGPT — PENDING** |
 | **D** | Legenda ATM09 esterna | **NOT OPENED** — swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
