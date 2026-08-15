@@ -369,21 +369,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-AGGIORNA-A (**DEPLOYED · Automated Browser QA PASS**) |
-| **STATO BLOCCO** | REVIEW GPT-SOSTITUTIVA **PASS** (rete/OPSEC) · deploy GIS-only **PASS** · Automated Browser QA **PASS** · QA operatore **pending** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-AGGIORNA-A (**CLOSED / PASS**) |
+| **STATO BLOCCO** | **CLOSED / PASS** (REVIEW GPT-SOSTITUTIVA · deploy · Automated Browser QA · QA operatore · finito) |
+| **GATE CORRENTE** | **none** |
 | **REVIEW BASE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build **194** / LEGEND-ATM09-UX-A) |
 | **RUNTIME LIVE** | monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | QA operatore → auto-`finito` (Regola H) su riga esatta `QA D-FLIGHT-UX-COHERENCE-AGGIORNA-A PASS operatore` |
+| **NEXT** | **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** (DELICATO) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — REVIEW GPT-SOSTITUTIVA PASS · deploy · Automated Browser QA PASS — LIVE `2574250` / **195** — QA operatore pending
-2. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
+1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — CLOSED / PASS (QA operatore + finito) — LIVE `2574250` / **195**
+2. **WIKI-LLM-LEAN-CONSOLIDATION-B** — CLOSED / PASS docs-only — governance SSOT lean cleanup
 3. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
 4. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
-5. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
+5. **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** — CLOSED / PASS docs-only — governance review model-agnostic
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

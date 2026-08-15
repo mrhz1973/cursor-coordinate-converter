@@ -3,12 +3,12 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A (DEPLOYED · Automated Browser QA PASS)
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A (CLOSED / PASS)
+**CURRENT GATE:** none
 **RUNTIME LIVE:** monolite tip `25742502b2a0cde1e28ab108cc8f3ece41c7df9a` · build **195** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-AGGIORNA-A` · helper **0.1.3** (invariato)
 **REVIEW BASE:** tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` (build 194 / LEGEND-ATM09-UX-A)
-**NEXT:** QA operatore → auto-`finito` (Regola H) su riga esatta `QA D-FLIGHT-UX-COHERENCE-AGGIORNA-A PASS operatore`
-**NOTE:** 2026-08-15 REVIEW GPT-SOSTITUTIVA PASS (rete/OPSEC; reviewer AI esterno non usato per vincolo operativo/token) · deploy GIS-only PASS (LF byte 10249369 / SHA-256 `0c1393db…`) · Automated Browser QA PASS (A–L) · LIVE 195
+**NEXT:** D-FLIGHT-UX-COHERENCE-MASTER-VIS-A
+**NOTE:** B3 CLOSED/PASS 2026-08-15 · QA operatore PASS · finito eseguito · LIVE `2574250` / 195
 <!-- /WU-HOT-HEADER -->
 
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
@@ -68,7 +68,7 @@ Quindi la **separazione dei master è DELICATA** e **non** deve essere implement
 | **B0** | `D-FLIGHT-UX-COHERENCE-OPEN-A` | docs-only | Apertura WU — **CLOSED / PASS** con questo task |
 | **B1** | `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` | **ROUTINE** | **CLOSED / PASS** — Seleziona/Deseleziona tutte; pulse/fade; legenda D-Flight contestuale · LIVE `aa6e3ce` / **193** |
 | **B2** | `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` | **ROUTINE** | **CLOSED / PASS** — legenda ATM09 contestuale + pulse raster + scroll pannello · LIVE `0c0f97d` / **194** |
-| **B3** | `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` | **DELICATO** | CTA Aggiorna unificata; refresh path/gate esistenti; reeval locale sempre; nessun nuovo endpoint; Apply Update separato. Review DELICATA rete/OPSEC |
+| **B3** | `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` | **DELICATO** | **CLOSED / PASS** — CTA Aggiorna unificata; refresh path/gate esistenti; reeval locale sempre · LIVE `2574250` / **195** |
 | **B4** | `D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` | **DELICATO** | Due master indipendenti; decoupling ATM09 ↔ cinque temporal; lifecycle preferred/fetch/tiles/INFO solo da master ATM09 + gate; preservare FIX5. Blocco **più rischioso** |
 
 Ordine runtime consigliato: **B1 → B2 → B3 → B4** (ROUTINE prima; mai ROUTINE+DELICATO nello stesso bundle).
