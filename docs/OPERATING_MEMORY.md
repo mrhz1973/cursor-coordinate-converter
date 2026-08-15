@@ -334,25 +334,26 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0015 — [`D-FLIGHT-HIT-TEST`](work-units/WU-0015-dflight-hit-test.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3 |
-| **STATO BLOCCO** | **DEPLOYED — AUTOMATED BROWSER QA PASS** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
-| **REVIEW BASE** | monolite `99db9a94ee23ac4949123efa8156f14c77a1c63b` (build 190 FIX3) |
-| **RUNTIME LIVE** | monolite `99db9a94ee23ac4949123efa8156f14c77a1c63b` · build **190** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | QA umana residua (ChatGPT) → `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3 PASS operatore` → auto-`finito` |
+| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4 |
+| **STATO BLOCCO** | **IMPLEMENTED — REVIEW REQUIRED** |
+| **GATE CORRENTE** | **REVIEW REQUIRED** (pre-deploy) |
+| **REVIEW BASE** | monolite LIVE FIX3 `99db9a94ee23ac4949123efa8156f14c77a1c63b` (build 190) |
+| **CANDIDATE RUNTIME** | monolite `c3061a2983f46bf317f292426509563746c40378` · build **191** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4` |
+| **RUNTIME LIVE** | ancora FIX3 `99db9a9` / **190** — candidate **non** deployata |
+| **NEXT** | REVIEW → deploy GIS-only + Automated Browser QA FIX4 → QA umana |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0015 OPTION-B-FIX3 LIVE `99db9a9` / **190** — ALL OFF nasconde raster ATM09 (opacity 0) + hit-test off. Parent FIX2 QA OPERATORE FAIL. Deploy + Automated Browser QA PASS. Helper **0.1.3**. QA operatore **non** attestata. Gate: **QA FINALE CHATGPT — PENDING**. Nessun `finito`.
+> WU-0015 OPTION-B-FIX4 candidate `c3061a2` / **191** — restrictive nasconde ATM09 + INFO off. **DEPLOY NON ESEGUITO**. Helper **0.1.3**. Nessun `finito`.
 > WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3** — DEPLOY PASS + Automated Browser QA PASS — LIVE `99db9a9` / **190** — QA FINALE CHATGPT PENDING
-2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2** — QA OPERATORE FAIL — ATM09 dominante ALL OFF (superseded by FIX3)
-3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2** — DEPLOY PASS + Automated Browser QA PASS
-4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1** — QA OPERATORE FAIL — ALL OFF hit-test
-5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A** — DEPLOY PASS + Automated Browser QA FAIL — TEMP-B CSS
+1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — IMPLEMENTED REVIEW REQUIRED — candidate `c3061a2` / **191** — DEPLOY NON ESEGUITO
+2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3** — DEPLOY PASS + Automated Browser QA PASS — LIVE `99db9a9` / **190**
+3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2** — QA OPERATORE FAIL — ATM09 dominante ALL OFF
+4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2** — DEPLOY PASS + Automated Browser QA PASS
+5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1** — QA OPERATORE FAIL — ALL OFF hit-test
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
