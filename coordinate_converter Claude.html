@@ -14131,9 +14131,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
     <div class="dflight-cta-row" id="dflightCtaRow">
       <button type="button" class="btn btn-sm btn-primary" id="dflightBtnRetry" hidden>Riprova</button>
-      <button type="button" class="btn btn-sm" id="dflightBtnRefresh" title="Controlla subito se D-Flight dispone di dati più recenti. Non modifica la mappa finché l’aggiornamento non viene applicato.">Aggiorna</button>
+      <button type="button" class="btn btn-sm" id="dflightBtnRefresh" title="Controlla e carica un dataset D-Flight più recente se disponibile, poi ricalcola gli stati temporali in base all’ora corrente. Se l’aggiornamento dati non è disponibile, rivaluta comunque le zone già caricate.">Aggiorna</button>
       <button type="button" class="btn btn-sm" id="dflightBtnApplyUpdate" hidden title="Applica alla sessione il dataset D-Flight più recente disponibile.">Applica aggiornamento</button>
-      <button type="button" class="btn btn-sm btn-ghost" id="dflightBtnReeval" title="Ricalcola localmente lo stato temporale delle zone all’ora corrente. Non usa la rete.">Rivaluta ora</button>
     </div>
     <p id="dflightClientFeedback" class="hint dflight-client-feedback" role="status" aria-live="polite" hidden></p>
     <label class="offcache-hintchk" id="dflightVisibleLabel" title="Mostra o nasconde il layer D-Flight già caricato.">
@@ -16377,11 +16376,9 @@ const I18N = {
     "dflight.cta.retry":"Riprova",
     "dflight.cta.refresh":"Aggiorna",
     "dflight.cta.applyUpdate":"Applica aggiornamento",
-    "dflight.cta.reeval":"Rivaluta ora",
     "dflight.tip.retry":"Riprova a caricare il dataset dal helper D-Flight.",
-    "dflight.tip.refresh":"Controlla subito se D-Flight dispone di dati più recenti. Non modifica la mappa finché l’aggiornamento non viene applicato.",
+    "dflight.tip.refresh":"Controlla e carica un dataset D-Flight più recente se disponibile, poi ricalcola gli stati temporali in base all’ora corrente. Se l’aggiornamento dati non è disponibile, rivaluta comunque le zone già caricate.",
     "dflight.tip.applyUpdate":"Applica alla sessione il dataset D-Flight più recente disponibile.",
-    "dflight.tip.reeval":"Ricalcola localmente lo stato temporale delle zone all’ora corrente. Non usa la rete.",
     "dflight.tip.visible":"Mostra o nasconde il layer D-Flight già caricato.",
     "dflight.status.loaded":"{n} zone · SHA {sha} · Caricato {fetched} · Valutato a {ref}",
     "dflight.status.pending":"Aggiornamento disponibile (SHA {sha})",
@@ -23504,10 +23501,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A";
-const APP_BUILD_DETAIL = "ATM09 contextual legend + overlay pulse + D-Flight panel scroll.";
+const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-AGGIORNA-A";
+const APP_BUILD_DETAIL = "Unified Aggiorna: gated remote refresh + always local temporal reeval.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 194;
+const APP_BUILD_NUM = 195;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37907,8 +37904,7 @@ function dflightSyncClientCtaLabels(){
   const map = [
     ["dflightBtnRetry", "dflight.cta.retry"],
     ["dflightBtnRefresh", "dflight.cta.refresh"],
-    ["dflightBtnApplyUpdate", "dflight.cta.applyUpdate"],
-    ["dflightBtnReeval", "dflight.cta.reeval"]
+    ["dflightBtnApplyUpdate", "dflight.cta.applyUpdate"]
   ];
   for (let i = 0; i < map.length; i++){
     const el = document.getElementById(map[i][0]);
@@ -37917,8 +37913,7 @@ function dflightSyncClientCtaLabels(){
   const tips = [
     ["dflightBtnRetry", "dflight.tip.retry"],
     ["dflightBtnRefresh", "dflight.tip.refresh"],
-    ["dflightBtnApplyUpdate", "dflight.tip.applyUpdate"],
-    ["dflightBtnReeval", "dflight.tip.reeval"]
+    ["dflightBtnApplyUpdate", "dflight.tip.applyUpdate"]
   ];
   for (let i = 0; i < tips.length; i++){
     const el = document.getElementById(tips[i][0]);
@@ -37948,18 +37943,17 @@ function dflightSyncClientCtaState(){
   const btnRetry = document.getElementById("dflightBtnRetry");
   const btnRef = document.getElementById("dflightBtnRefresh");
   const btnApply = document.getElementById("dflightBtnApplyUpdate");
-  const btnRe = document.getElementById("dflightBtnReeval");
   const showRetry = !hasSess && !!_dflightInitialLoadError && netOk;
   if (btnRetry){
     btnRetry.hidden = !showRetry;
     btnRetry.disabled = !showRetry || busy;
   }
-  if (btnRef) btnRef.disabled = !netOk || busy;
+  /* Manual Aggiorna must stay clickable offline/OPSEC so local reeval can run. */
+  if (btnRef) btnRef.disabled = busy;
   if (btnApply){
     btnApply.hidden = !pending;
     btnApply.disabled = !pending || !netOk || busy;
   }
-  if (btnRe) btnRe.disabled = !hasSess || busy;
   try { dflightSyncLoadingUi(); } catch(_){}
 }
 
@@ -38206,7 +38200,9 @@ function dflightClientPendingShaMatches(expectedSha, helperSha){
   return String(helperSha) === String(expectedSha);
 }
 
-function dflightClientReevalNow(){
+function dflightClientReevalNow(opts){
+  opts = opts || {};
+  const preserveFeedbackOnSuccess = !!(opts && opts.preserveFeedbackOnSuccess);
   const s = _dflightClientSession;
   if (!s || !s.parseResult || s.parseResult.ok !== true){
     dflightSetClientFeedback(dflightScopedT("dflight.noDataset"), "error");
@@ -38241,11 +38237,26 @@ function dflightClientReevalNow(){
       dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
       return;
     }
-    dflightSetClientFeedback("", null);
+    if (!preserveFeedbackOnSuccess){
+      dflightSetClientFeedback("", null);
+    }
     dflightSyncPanelUi();
   } catch (e){
     _dflightClientSession = prev;
     dflightSetClientFeedback(dflightScopedT("dflight.error.normalize"), "error");
+  }
+}
+
+/** Manual Aggiorna only: one gated refresh then always one local reeval (SCELTA A feedback). */
+async function dflightClientUpdateAndReeval(){
+  try {
+    await dflightClientRefresh({ reason: "manual" });
+  } catch(_){
+    /* keep existing refresh error path; avoid unhandled rejection */
+  } finally {
+    try {
+      dflightClientReevalNow({ preserveFeedbackOnSuccess: true });
+    } catch(_){}
   }
 }
 
@@ -38262,17 +38273,12 @@ function dflightEnsureClientWired(){
   const btnRef = document.getElementById("dflightBtnRefresh");
   if (btnRef) btnRef.addEventListener("click", function(ev){
     ev.preventDefault();
-    dflightClientRefresh({ reason: "manual" }).catch(function(){});
+    dflightClientUpdateAndReeval().catch(function(){});
   });
   const btnApply = document.getElementById("dflightBtnApplyUpdate");
   if (btnApply) btnApply.addEventListener("click", function(ev){
     ev.preventDefault();
     dflightClientApplyUpdate().catch(function(){});
-  });
-  const btnRe = document.getElementById("dflightBtnReeval");
-  if (btnRe) btnRe.addEventListener("click", function(ev){
-    ev.preventDefault();
-    dflightClientReevalNow();
   });
   const tfIdsWire = {
     "dflightTfActiveNow": "ACTIVE_NOW",
@@ -38473,6 +38479,77 @@ function dflightSelfTestF(){
     dflightClientReevalNow();
     add("F_reeval_local_no_network", fetchCalled === false && parseOkBefore && _dflightClientSession.referenceTime !== beforeRef,
       "fetch=" + fetchCalled + " parseOkBefore=" + parseOkBefore + " before=" + beforeRef + " after=" + (_dflightClientSession && _dflightClientSession.referenceTime));
+
+    /* AGGIORNA-A: preserveFeedbackOnSuccess + wrapper wiring (no network). */
+    (function(){
+      const fb = document.getElementById("dflightClientFeedback");
+      const marker = "AGGIORNA-A remote feedback keep";
+      dflightSetClientFeedback(marker, "ok");
+      const beforeKeep = fb ? String(fb.textContent || "") : "";
+      dflightClientReevalNow({ preserveFeedbackOnSuccess: true });
+      const afterKeep = fb ? String(fb.textContent || "") : "";
+      add("F_aggiorna_preserve_feedback_on_success",
+        fetchCalled === false && beforeKeep === marker && afterKeep === marker);
+
+      const prevParse = _dflightClientSession && _dflightClientSession.parseResult;
+      if (_dflightClientSession) _dflightClientSession.parseResult = { ok: false };
+      dflightSetClientFeedback(marker, "ok");
+      dflightClientReevalNow({ preserveFeedbackOnSuccess: true });
+      const afterFail = fb ? String(fb.textContent || "") : "";
+      const failKind = fb && fb.classList.contains("is-error");
+      add("F_aggiorna_reeval_fail_prevails",
+        afterFail !== marker && failKind === true);
+      if (_dflightClientSession) _dflightClientSession.parseResult = prevParse;
+
+      dflightSetClientFeedback(marker, "ok");
+      dflightClientReevalNow();
+      const afterDefault = fb ? String(fb.textContent || "").trim() : "";
+      add("F_aggiorna_reeval_default_clears_feedback", afterDefault === "");
+    })();
+
+    add("F_aggiorna_wrapper_src", (function(){
+      if (typeof dflightClientUpdateAndReeval !== "function") return false;
+      const src = String(dflightClientUpdateAndReeval);
+      return src.indexOf('dflightClientRefresh({ reason: "manual" })') >= 0
+        && src.indexOf("preserveFeedbackOnSuccess") >= 0
+        && src.indexOf("dflightClientReevalNow") >= 0
+        && src.indexOf("finally") >= 0;
+    })());
+
+    add("F_aggiorna_auto_not_wrapper", (function(){
+      const autoSrc = String(dflightOnAutoRefreshTick);
+      const wireSrc = String(dflightEnsureClientWired);
+      return autoSrc.indexOf("dflightClientUpdateAndReeval") < 0
+        && autoSrc.indexOf('dflightClientRefresh({ reason: "auto" })') >= 0
+        && wireSrc.indexOf("dflightClientUpdateAndReeval") >= 0
+        && wireSrc.indexOf("dflightBtnReeval") < 0;
+    })());
+
+    add("F_aggiorna_btn_reeval_absent", !document.getElementById("dflightBtnReeval"));
+
+    add("F_aggiorna_refresh_enabled_when_offline", (function(){
+      const btn = document.getElementById("dflightBtnRefresh");
+      if (!btn) return false;
+      const prevBusy = _dflightNetworkBusy;
+      const prevFo = (typeof state !== "undefined") ? !!state.forceOffline : false;
+      try {
+        _dflightNetworkBusy = false;
+        if (typeof state !== "undefined") state.forceOffline = true;
+        dflightSyncClientCtaState();
+        const src = String(dflightSyncClientCtaState);
+        return btn.disabled === false
+          && src.indexOf("btnRef.disabled = busy") >= 0
+          && src.indexOf("btnRef.disabled = !netOk") < 0;
+      } finally {
+        _dflightNetworkBusy = prevBusy;
+        if (typeof state !== "undefined") state.forceOffline = prevFo;
+        try { dflightSyncClientCtaState(); } catch(_){}
+      }
+    })());
+
+    add("F_aggiorna_build_195",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39491,9 +39568,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_194",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
+    add("Tf_build_195",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41276,8 +41353,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_194", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
+    add("H_build_195", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41771,9 +41848,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_194",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
+    add("HitA_build_195",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42784,9 +42861,9 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFetchStats = null;
     _dflightAtm09InfoLastFailReason = null;
 
-    add("OptB_build_194",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
+    add("OptB_build_195",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43250,8 +43327,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_194", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
+    add("OptB_FIX5_build_195", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
