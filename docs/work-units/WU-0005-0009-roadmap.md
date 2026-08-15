@@ -624,7 +624,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | --- | --- | --- |
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B1 TEMPORAL CLOSED/PASS; NEXT `LEGEND-ATM09-UX-A` |
-| **C** | ATM09 VISUAL PARITY AUDIT | **NOT OPENED** — priorità alta; **non** restyle cosmetico |
+| **C** | ATM09 VISUAL PARITY AUDIT | **NOT OPENED** — priorità alta; **non** restyle cosmetico. Richiesta operatore (2026-08-15): valutare zone proibite/no-fly per resa a **righe/tratteggio** coerente con D-Flight ufficiale; prima audit visuale comparativo; **nessuna** patch “a occhio”; pattern/colore/opacità/layering da determinare in candidato C |
 | **D** | Legenda ATM09 esterna | **NOT OPENED** — swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
@@ -687,6 +687,8 @@ Riferimento prodotto: resa ufficiale D-Flight / ATM09 negli screenshot operatore
 Nel blocco futuro: estrarre/validare i valori dalla fonte runtime ufficiale disponibile **oppure** dalla reverse engineering già documentata, se autorevole; usare gli screenshot operatore come controllo visivo supplementare; documentare categorie non riproducibili esattamente.
 
 Obiettivo: lettura visiva ATM09 il più possibile coerente con l’ufficiale, senza colori arbitrariamente reinterpretati.
+
+**Integrazione operatore 2026-08-15 (persistita, non implementata):** le zone proibite/no-fly devono essere valutate per resa a **righe/tratteggio** coerente con la rappresentazione D-Flight ufficiale. Vincoli: (1) prima audit visuale comparativo; (2) nessuna patch di parity «a occhio»; (3) pattern, colore, opacità e layering da determinare nel candidato C; (4) candidato C resta **NOT OPENED** finché WU-0016 non lo rende NEXT.
 
 #### 7. Legenda ATM09 esterna — stile futuro
 

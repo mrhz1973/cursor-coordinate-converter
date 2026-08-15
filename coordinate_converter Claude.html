@@ -8659,6 +8659,10 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   margin:0 0 8px; border:1px solid var(--border, #334155); border-radius:6px;
   background:var(--panel-2, var(--panel, #0f172a)); padding:0 8px;
 }
+#dflightAtm09LegendDetails[hidden],
+#dflightAtm09LegendWrap[hidden]{
+  display:none !important;
+}
 .dflight-atm09-legend-details > summary{
   cursor:pointer; font-size:12px; padding:8px 2px; color:var(--muted, #94a3b8);
   list-style:revert;
@@ -8672,6 +8676,14 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   border-radius:3px; background:transparent;
 }
 .dflight-atm09-legend-hint{ margin:4px 0 0; font-size:11px; }
+@keyframes dflightAtm09OverlayPulse{
+  0%,100%{ opacity:1; }
+  50%{ opacity:0.42; }
+}
+.tile-map.is-atm09-overlay-pulse .tile-wrap .tile.tile-atm09{
+  animation:dflightAtm09OverlayPulse 0.5s ease-in-out 2;
+  pointer-events:none;
+}
 .dflight-progress-wrap{ margin:0 0 10px; }
 .dflight-progress-track{
   height:6px; border-radius:999px; background:rgba(148,163,184,0.25);
@@ -8762,6 +8774,11 @@ body.gis-mode dialog#dflightPanel.dflight-panel > .app-modal-body,
 body.gis-mode dialog#dflightDetailsPanel.dflight-details-panel > .app-modal-body{
   flex:1 1 auto;
   min-height:0;
+}
+/* B2: scroll scoped — overflow-y toggled by dflightSyncAdaptivePanelGeometry; never force permanent bar. */
+body.gis-mode dialog#dflightPanel.dflight-panel > #dflightPanelBody{
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
 }
 
 /* Series colors applied inline from CARTO_IGM_SERIES_VISUAL (UX1); CSS = fallback only */
@@ -23487,10 +23504,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A";
-const APP_BUILD_DETAIL = "Temporal select-all/none + pulse/fade + contextual D-Flight legend.";
+const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A";
+const APP_BUILD_DETAIL = "ATM09 contextual legend + overlay pulse + D-Flight panel scroll.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 193;
+const APP_BUILD_NUM = 194;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38574,6 +38591,13 @@ function dflightSelfTestTf(){
       typeof dflightSetAllTemporalFilters === "function"
       && typeof dflightApplyTemporalFilterChange === "function"
       && typeof dflightClearTemporalVisualFx === "function");
+    add("Tf_B2_atm09_legend_api",
+      typeof dflightAtm09EnsureLegend === "function"
+      && typeof dflightAtm09ClearOverlayFx === "function"
+      && typeof dflightAtm09PulseOverlayFx === "function");
+    add("Tf_B2_panel_scroll_helper",
+      typeof dflightSyncAdaptivePanelGeometry === "function"
+      && String(dflightSyncAdaptivePanelGeometry).indexOf("overflowY") >= 0);
     try {
       dflightSetAllTemporalFilters(false);
       add("Tf_B1_deselect_all",
@@ -39467,9 +39491,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_193",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
+    add("Tf_build_194",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39544,6 +39568,9 @@ let _dflightAtm09InfoLastBboxKey = null;
 /** FIX2: session-only — ATM09 INFO unavailable for current request/viewport (visible NFZ fallback). */
 let _dflightAtm09InfoUnavailable = false;
 let _dflightAtm09LegendLoaded = false;
+/** Session-only: last EnsureLegend eligibility — drives one-shot auto-expand on OFF→ON. */
+let _dflightAtm09LegendWasEligible = false;
+let _dflightAtm09OverlayFxTimer = null;
 let _dflightAtm09SelectedId = null;
 let _dflightAtm09RedrawScheduled = false;
 /** True between post-apply ATM09 arming and first generation expected>0 (UI: not Pronto yet). */
@@ -39840,7 +39867,44 @@ function dflightAtm09LegendUrl(){
   return base + "/atm09/legend.png";
 }
 
+function dflightAtm09ClearOverlayFx(){
+  if (_dflightAtm09OverlayFxTimer){
+    try { clearTimeout(_dflightAtm09OverlayFxTimer); } catch(_){}
+    _dflightAtm09OverlayFxTimer = null;
+  }
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm) tm.classList.remove("is-atm09-overlay-pulse");
+  } catch(_){}
+}
+function dflightAtm09PulseOverlayFx(){
+  try { dflightAtm09ClearOverlayFx(); } catch(_){}
+  if (!_dflightAtm09Preferred) return;
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (!tm) return;
+    if (tm.classList.contains("atm09-temporal-hidden")) return;
+    const tiles = tm.querySelectorAll(".tile-wrap .tile.tile-atm09");
+    if (!tiles || !tiles.length) return;
+    tm.classList.add("is-atm09-overlay-pulse");
+    _dflightAtm09OverlayFxTimer = setTimeout(function(){
+      _dflightAtm09OverlayFxTimer = null;
+      try { dflightAtm09ClearOverlayFx(); } catch(_){}
+    }, 1200);
+  } catch(_){}
+}
+function dflightAtm09SyncPanelGeometryAfterLegend(){
+  try {
+    const dlg = document.getElementById("dflightPanel");
+    if (dlg && dlg.open && typeof dflightSyncAdaptivePanelGeometry === "function"){
+      dflightSyncAdaptivePanelGeometry(dlg, "control");
+    }
+  } catch(_){}
+}
 function dflightAtm09SetPreferred(on){
+  const prev = !!_dflightAtm09Preferred;
   _dflightAtm09Preferred = !!on;
   if (!_dflightAtm09Preferred){
     _dflightAtm09StartPending = false;
@@ -39851,13 +39915,20 @@ function dflightAtm09SetPreferred(on){
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
     dflightAtm09SetReady(false);
+    try { dflightAtm09ClearOverlayFx(); } catch(_){}
     try {
       const wrap = document.getElementById("dflightAtm09LegendWrap");
       if (wrap) wrap.hidden = true;
     } catch(_){}
+    try { dflightAtm09EnsureLegend(); } catch(_){}
+    try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
   } else {
     try { dflightAtm09EnsureLegend(); } catch(_){}
     try { dflightAtm09ScheduleInfoFetch(); } catch(_){}
+    if (!prev){
+      try { dflightAtm09PulseOverlayFx(); } catch(_){}
+    }
+    try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
   }
 }
 
@@ -39876,10 +39947,26 @@ function dflightAtm09EnsureLegend(forceLoad){
   const img = document.getElementById("dflightAtm09LegendImg");
   if (!wrap || !img) return;
   const can = !!(_dflightAtm09Preferred && dflightClientNetworkAllowed() && dflightAtm09LegendUrl());
-  if (details) details.hidden = !can;
+  const wasEligible = !!_dflightAtm09LegendWasEligible;
+  _dflightAtm09LegendWasEligible = !!can;
   if (!can){
+    if (details){
+      try { details.hidden = true; } catch(_){}
+      try { details.open = false; } catch(_){}
+    }
     try { wrap.hidden = true; } catch(_){}
+    if (wasEligible){
+      try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
+    }
     return;
+  }
+  if (details){
+    try { details.hidden = false; } catch(_){}
+    /* B2: auto-expand once on OFF→ON eligibility; manual collapse while ON remains respected. */
+    if (!wasEligible){
+      try { details.open = true; } catch(_){}
+      forceLoad = true;
+    }
   }
   /* FIX3 D2: clear residual wrap.hidden from gate-off / preferred-off so expand can paint. */
   try { wrap.hidden = false; } catch(_){}
@@ -39890,12 +39977,23 @@ function dflightAtm09EnsureLegend(forceLoad){
   }
   const url = dflightAtm09LegendUrl();
   if (!url) return;
-  if (_dflightAtm09LegendLoaded && img.getAttribute("src") === url) return;
-  img.onload = function(){ _dflightAtm09LegendLoaded = true; };
+  if (_dflightAtm09LegendLoaded && img.getAttribute("src") === url){
+    if (!wasEligible){
+      try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
+    }
+    return;
+  }
+  img.onload = function(){
+    _dflightAtm09LegendLoaded = true;
+    try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
+  };
   img.onerror = function(){
     _dflightAtm09LegendLoaded = false;
   };
   img.src = url;
+  if (!wasEligible){
+    try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
+  }
 }
 
 function dflightAtm09ClearInfo(){
@@ -41178,8 +41276,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_193", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
+    add("H_build_194", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41673,9 +41771,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_193",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
+    add("HitA_build_194",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42686,9 +42784,9 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFetchStats = null;
     _dflightAtm09InfoLastFailReason = null;
 
-    add("OptB_build_193",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
+    add("OptB_build_194",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43152,8 +43250,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_193", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 193
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A");
+    add("OptB_FIX5_build_194", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 194
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
