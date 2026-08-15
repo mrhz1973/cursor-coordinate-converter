@@ -8668,9 +8668,12 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   /* FIX-A-FIX1: above .dflight-zone-hitlayer (z-index:2) so temporal redraw cannot bury INFO. */
   pointer-events:none; display:block; overflow:visible; z-index:3;
 }
+/* FIX5: INFO hits always paint transparent — SVG default fill is black when not .is-interactive. */
+.dflight-atm09-info-overlay .dflight-atm09-info-hit{
+  fill:rgba(0,0,0,0); stroke:none; pointer-events:none;
+}
 .dflight-atm09-info-overlay.is-interactive .dflight-atm09-info-hit{
   pointer-events:visiblePainted; cursor:pointer;
-  fill:rgba(0,0,0,0); stroke:none;
 }
 .dflight-atm09-info-overlay .dflight-atm09-info-hit.is-selected{
   stroke:#38bdf8; stroke-width:2; fill:rgba(56,189,248,0.08);
@@ -23449,10 +23452,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4";
-const APP_BUILD_DETAIL = "Restrictive temporal filter hides ATM09; INFO hit only when ALL ON.";
+const APP_BUILD_ID = "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5";
+const APP_BUILD_DETAIL = "ATM09 INFO hits stay transparent when non-interactive.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 191;
+const APP_BUILD_NUM = 192;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39254,8 +39257,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -40964,8 +40967,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_191", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
+    add("H_build_192", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41460,8 +41463,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42473,8 +42476,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_189",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -42755,8 +42758,104 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX4_build_191", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 191
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4");
+
+    add("OptB_FIX5_info_fill_transparent_when_restrictive", (function(){
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (!tm) return true;
+      const prevPref = _dflightAtm09Preferred;
+      const prevVis = _dflightOverlayVisible;
+      const prev = {};
+      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+        prev[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+      }
+      let fixtureSvg = null;
+      const parked = [];
+      function fillOf(el){
+        try { return String(getComputedStyle(el).fill || ""); } catch (_){ return ""; }
+      }
+      function isTransparentFill(f){
+        const s = String(f || "").toLowerCase().replace(/\s+/g, "");
+        return s === "rgba(0,0,0,0)" || s === "transparent" || s === "none"
+          || /^rgba\(0,0,0,0\.?0*\)$/.test(s) || s.indexOf("rgba(0,0,0,0)") === 0;
+      }
+      try {
+        _dflightAtm09Preferred = true;
+        _dflightOverlayVisible = true;
+        const existing = tm.querySelectorAll(".dflight-atm09-info-overlay");
+        for (let i = 0; i < existing.length; i++){
+          const el = existing[i];
+          parked.push({ el: el, parent: el.parentNode, next: el.nextSibling });
+          if (el.parentNode) el.parentNode.removeChild(el);
+        }
+        const ns = "http://www.w3.org/2000/svg";
+        fixtureSvg = document.createElementNS(ns, "svg");
+        fixtureSvg.setAttribute("class", "dflight-atm09-info-overlay");
+        fixtureSvg.setAttribute("data-optb-fix5-fixture", "1");
+        const path = document.createElementNS(ns, "path");
+        path.setAttribute("class", "dflight-atm09-info-hit");
+        path.setAttribute("d", "M0 0 H10 V10 H0 Z");
+        path.setAttribute("data-zone-id", "fix5");
+        fixtureSvg.appendChild(path);
+        (tm.querySelector(".tile-layer") || tm).appendChild(fixtureSvg);
+
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        dflightAtm09SyncTemporalContextUi();
+        const onOk = fixtureSvg.classList.contains("is-interactive") && isTransparentFill(fillOf(path));
+
+        _dflightTemporalFilter.FUTURE = false;
+        dflightAtm09SyncTemporalContextUi();
+        const offOk = !fixtureSvg.classList.contains("is-interactive")
+          && isTransparentFill(fillOf(path))
+          && String(getComputedStyle(path).pointerEvents).toLowerCase() === "none";
+
+        // CSS source: base rule must set transparent fill outside .is-interactive
+        let hasBaseTransparent = false;
+        let interactiveOnlyFill = false;
+        try {
+          const sheets = document.styleSheets;
+          for (let si = 0; si < sheets.length; si++){
+            let rules;
+            try { rules = sheets[si].cssRules; } catch (_){ continue; }
+            if (!rules) continue;
+            for (let ri = 0; ri < rules.length; ri++){
+              const rule = rules[ri];
+              const sel = rule.selectorText || "";
+              if (sel.indexOf("dflight-atm09-info-hit") < 0) continue;
+              if (/\.is-interactive\s+\.dflight-atm09-info-hit/.test(sel)){
+                /* interactive rule may omit fill now */
+              } else if (/\.dflight-atm09-info-overlay\s+\.dflight-atm09-info-hit/.test(sel)
+                && sel.indexOf("is-interactive") < 0 && sel.indexOf("is-selected") < 0){
+                const op = (rule.style && String(rule.style.fill || "")).toLowerCase().replace(/\s+/g, "");
+                if (op.indexOf("rgba(0,0,0,0)") >= 0 || op === "transparent" || op === "none") hasBaseTransparent = true;
+              }
+              if (/\.is-interactive\s+\.dflight-atm09-info-hit/.test(sel)){
+                const op2 = rule.style && String(rule.style.fill || "");
+                if (op2 && sel.indexOf("is-selected") < 0) interactiveOnlyFill = true;
+              }
+            }
+          }
+        } catch (_){}
+        // Prefer base transparent; interactive-only fill without base is FAIL (the FIX4 bug).
+        return !!(onOk && offOk && hasBaseTransparent);
+      } finally {
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
+          _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prev[DFLIGHT_TEMPORAL_STATES[i]] === true;
+        _dflightAtm09Preferred = prevPref;
+        _dflightOverlayVisible = prevVis;
+        if (fixtureSvg && fixtureSvg.parentNode) fixtureSvg.parentNode.removeChild(fixtureSvg);
+        for (let i = 0; i < parked.length; i++){
+          const p = parked[i];
+          if (!p.parent) continue;
+          if (p.next && p.next.parentNode === p.parent) p.parent.insertBefore(p.el, p.next);
+          else p.parent.appendChild(p.el);
+        }
+        try { dflightAtm09SyncTemporalContextUi(); } catch(_){}
+      }
+    })());
+
+    add("OptB_FIX5_build_192", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 192
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
