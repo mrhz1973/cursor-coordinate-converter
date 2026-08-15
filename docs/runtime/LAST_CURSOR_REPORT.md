@@ -2,48 +2,43 @@
 
 ## LATEST
 
-* real_task_commit: `38a7eb6bce0bc494047908bdd0ff03ed34b29cc5` — verify short `38a7eb6`
-* real_task_subject: docs: chiudi MASTER-VIS-A + WU-0016 CLOSED/PASS (QA operatore + finito)
-* report_generated_at: 2026-08-15T23:35:00+02:00
+* real_task_commit: `288968c2964cd3b4275571e4c1e914df611c99e8` — verify short `288968c`
+* real_task_subject: docs: open WU-0017 ATM09 visual parity audit (candidato C)
+* report_generated_at: 2026-08-15T23:55:00+02:00
 * branch: main
-* remote_head_after_task_push: `38a7eb6bce0bc494047908bdd0ff03ed34b29cc5`
-* previous_report_container: `0b3f6d059ec7e2160c3fae17a69583e17231dfea`
+* remote_head_after_task_push: `288968c2964cd3b4275571e4c1e914df611c99e8`
+* previous_report_container: `22342d1c9b3278da0fcb33556fa975320b8735ca`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: solo autosync memoria/report (pre-autosync)
-* pass_tecnico_remoto: task `38a7eb6` verificato post-push pre-report (HEAD = origin/main = ls-remote) · container corrente EXTERNAL_ONLY
-* result_cursor: D-FLIGHT-UX-COHERENCE-MASTER-VIS-A **CLOSED / PASS** · WU-0016 **CLOSED / PASS** (QA operatore + auto-finito Regola H) · monolite invariato LIVE 196
-* pass_operatore: **PASS** — attestazione esatta `QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore`
-* result_runtime: LIVE tip `c7d1734` / build **196** (invariato; chiusura docs-only) · helper **0.1.3**
-* qa_attestation_source: QA operatore PASS (trigger Regola H) · Automated Browser QA PASS (pregresso) · deploy GIS-only PASS (pregresso)
-* notes: B4 CLOSED · WU-0016 CLOSED · NEXT backlog C–H NOT OPENED · nessuna modifica runtime
+* pass_tecnico_remoto: task `288968c` verificato post-push pre-report · container corrente EXTERNAL_ONLY
+* result_cursor: WU-0017 **OPEN** · AUDIT-A complete · gate **OFFICIAL VISUAL REFERENCE REQUIRED** · monolite/helper **invariati** · LIVE 196
+* pass_operatore: **N/A** (docs/audit; QA operatore runtime non richiesta in questa fase)
+* result_runtime: LIVE tip `c7d1734` / build **196** (invariato) · helper **0.1.3**
+* qa_attestation_source: audit read-only helper+monolite · smoke `/atm09/legend.png` + tile via helper Tailnet · nessun Automated Browser QA (no UI change)
+* notes: visual parity non dichiarata · IMPL-A non aperto · D–H NOT OPENED · finito WU non eseguito
 
 ## OUTPUT VERBATIM
 
 ```text
-QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore
-
 git ls-remote origin refs/heads/main   (post push task, pre commit report)
-38a7eb6bce0bc494047908bdd0ff03ed34b29cc5	refs/heads/main
+288968c2964cd3b4275571e4c1e914df611c99e8	refs/heads/main
 
-git rev-parse HEAD = git rev-parse origin/main = 38a7eb6bce0bc494047908bdd0ff03ed34b29cc5
+APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A (LIVE invariato)
+APP_BUILD_NUM=196
+HELPER=0.1.3
 
-git diff --stat (task, pre-commit)
- docs/OPERATING_MEMORY.md                        | 24 ++++++++++++------------
- docs/work-units/WU-0005-0009-roadmap.md         | 12 ++++++------
- docs/work-units/WU-0016-dflight-ux-coherence.md | 14 +++++++-------
- 3 files changed, 24 insertions(+), 26 deletions(-)
+GATE: OFFICIAL VISUAL REFERENCE REQUIRED
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `0b3f6d0` — MASTER-VIS-A review/deploy/AB QA (QA FINALE PENDING)
-* `fc4419d` — MASTER-VIS-A candidate (REVIEW PENDING)
-* `6344664` — AGGIORNA-A CLOSED/PASS (QA + finito)
-* `c7d1734` — MASTER-VIS-A runtime LIVE (real_task runtime)
-* `2917ed2` — AGGIORNA-A finito autosync
+* `22342d1` — MASTER-VIS-A / WU-0016 finito autosync
+* `38a7eb6` — MASTER-VIS-A + WU-0016 CLOSED
+* `0b3f6d0` — MASTER-VIS-A deploy/AB QA
+* `c7d1734` — MASTER-VIS-A runtime LIVE
 
 ## LIMITI
 
