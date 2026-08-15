@@ -6,15 +6,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A (CLOSED / PASS)
+**CURRENT GATE:** none
 **RUNTIME LIVE:** monolite tip `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` · build **193** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` · helper **0.1.3** (invariato)
 **REVIEW BASE:** tip pre-B1 `02be3a5a230c659c94481738af537caac1ecde38` (build 192 / FIX5)
-**NEXT:** D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A (dopo PASS operatore + finito B1)
-**NOTE:** B1 deploy + Automated Browser QA PASS · QA umana PENDING · finito NON eseguito
+**NEXT:** D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A
+**NOTE:** B1 CLOSED/PASS 2026-08-15 · QA operatore PASS · finito eseguito · LIVE `aa6e3ce` / 193
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** OPEN — blocco `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` in gate **QA FINALE CHATGPT — PENDING** (deploy tecnico PASS · Automated Browser QA PASS).
+**Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito).
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
 **Workstream precedente:** [`WU-0015`](WU-0015-dflight-hit-test.md) **CLOSED / PASS** (OPTION-B-IMPL-A-FIX5).
 

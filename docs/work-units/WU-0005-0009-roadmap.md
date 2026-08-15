@@ -616,7 +616,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS** (OPTION-B-FIX5). Candidato **B** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
 
-**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **OPENED** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (`OPEN-A` CLOSED docs-only; NEXT `TEMPORAL-UX-A`). C–H restano **NOT OPENED**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **OPENED** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (`OPEN-A` CLOSED docs-only; `TEMPORAL-UX-A` CLOSED/PASS LIVE `aa6e3ce`/193; NEXT `LEGEND-ATM09-UX-A`). C–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
