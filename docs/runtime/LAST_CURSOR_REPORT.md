@@ -2,55 +2,49 @@
 
 ## LATEST
 
-* real_task_commit: `c7d1734a488d59def2237fc42648f7c9020758bb` — verify short `c7d1734`
-* real_task_subject: D-FLIGHT-UX-COHERENCE-MASTER-VIS-A: independent D-Flight / ATM09 masters (build 196) — review/deploy/AB QA
-* report_generated_at: 2026-08-15T23:30:00+02:00
+* real_task_commit: `38a7eb6bce0bc494047908bdd0ff03ed34b29cc5` — verify short `38a7eb6`
+* real_task_subject: docs: chiudi MASTER-VIS-A + WU-0016 CLOSED/PASS (QA operatore + finito)
+* report_generated_at: 2026-08-15T23:35:00+02:00
 * branch: main
-* remote_head_after_task_push: `c7d1734a488d59def2237fc42648f7c9020758bb`
-* previous_report_container: `fc4419dc2eef114710c2195d3a41a3de14e9078c`
+* remote_head_after_task_push: `38a7eb6bce0bc494047908bdd0ff03ed34b29cc5`
+* previous_report_container: `0b3f6d059ec7e2160c3fae17a69583e17231dfea`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
 * working_tree_status: solo autosync memoria/report (pre-autosync)
-* pass_tecnico_remoto: runtime candidate già su main; deploy VPS PASS; container corrente EXTERNAL_ONLY
-* result_cursor: REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS-only **PASS** · Automated Browser QA MASTER-VIS-A **PASS** · selftest LIVE sync 332/332 + async 348/348 · gate **QA FINALE CHATGPT — PENDING** · QA operatore/finito **non** eseguiti
-* pass_operatore: **non eseguito** (atteso ChatGPT → operatore)
-* result_runtime: LIVE tip `c7d1734` / build **196** · helper **0.1.3** · URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c7d1734`
-* qa_attestation_source: REVIEW GPT-SOSTITUTIVA PASS (rete/OPSEC) · deploy byte/hash PASS · Automated Browser QA A–J PASS · selftest LIVE PASS
-* notes: WU-0016 resta OPEN · B4 LIVE pending QA operatore · monolite non modificato in questo giro
+* pass_tecnico_remoto: task `38a7eb6` verificato post-push pre-report (HEAD = origin/main = ls-remote) · container corrente EXTERNAL_ONLY
+* result_cursor: D-FLIGHT-UX-COHERENCE-MASTER-VIS-A **CLOSED / PASS** · WU-0016 **CLOSED / PASS** (QA operatore + auto-finito Regola H) · monolite invariato LIVE 196
+* pass_operatore: **PASS** — attestazione esatta `QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore`
+* result_runtime: LIVE tip `c7d1734` / build **196** (invariato; chiusura docs-only) · helper **0.1.3**
+* qa_attestation_source: QA operatore PASS (trigger Regola H) · Automated Browser QA PASS (pregresso) · deploy GIS-only PASS (pregresso)
+* notes: B4 CLOSED · WU-0016 CLOSED · NEXT backlog C–H NOT OPENED · nessuna modifica runtime
 
 ## OUTPUT VERBATIM
 
 ```text
-candidate / LIVE FULL SHA:
-c7d1734a488d59def2237fc42648f7c9020758bb
+QA D-FLIGHT-UX-COHERENCE-MASTER-VIS-A PASS operatore
 
-APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A
-APP_BUILD_NUM=196
+git ls-remote origin refs/heads/main   (post push task, pre commit report)
+38a7eb6bce0bc494047908bdd0ff03ed34b29cc5	refs/heads/main
 
-Deploy: HTTP 200 · bytes 10266424 · SHA-256 LF
-ecf20ddb9a0c398527dd94af2f280d4cad9f4909390ecb45b0386577ae15be77
+git rev-parse HEAD = git rev-parse origin/main = 38a7eb6bce0bc494047908bdd0ff03ed34b29cc5
 
-URL:
-http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c7d1734
-
-Automated Browser QA MASTER-VIS-A: PASS (A–J)
-selfTest LIVE sync: ok=true total=332 failCount=0
-selfTest LIVE async: ok=true total=348 failCount=0
-
-GATE: QA FINALE CHATGPT — PENDING
+git diff --stat (task, pre-commit)
+ docs/OPERATING_MEMORY.md                        | 24 ++++++++++++------------
+ docs/work-units/WU-0005-0009-roadmap.md         | 12 ++++++------
+ docs/work-units/WU-0016-dflight-ux-coherence.md | 14 +++++++-------
+ 3 files changed, 24 insertions(+), 26 deletions(-)
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
+* `0b3f6d0` — MASTER-VIS-A review/deploy/AB QA (QA FINALE PENDING)
 * `fc4419d` — MASTER-VIS-A candidate (REVIEW PENDING)
 * `6344664` — AGGIORNA-A CLOSED/PASS (QA + finito)
-* `c71b961` — WIKI-LLM-LEAN-CONSOLIDATION-B autosync
-* `b90217b` — WIKI-LLM-LEAN-CONSOLIDATION-B task docs
-* `c2ac6b8` — AGGIORNA-A review/deploy/AB QA
-* `2574250` — AGGIORNA-A runtime (precedente LIVE)
+* `c7d1734` — MASTER-VIS-A runtime LIVE (real_task runtime)
+* `2917ed2` — AGGIORNA-A finito autosync
 
 ## LIMITI
 
-Autosync SHA corrente non autorato qui. QA operatore / finito fuori scope di questo giro (Regola H: auto-finito solo dopo attestazione esatta operatore).
+Autosync SHA corrente non autorato qui.

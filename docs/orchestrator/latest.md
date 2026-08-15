@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** · REVIEW GPT-SOSTITUTIVA PASS · deploy GIS-only PASS · Automated Browser QA PASS · LIVE `c7d1734` / build **196**. Gate: **QA FINALE CHATGPT — PENDING**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_2330_riepilogo_dflight-ux-coherence-master-vis-a-deploy-qa.md`](inbox/2026-08-15_2330_riepilogo_dflight-ux-coherence-master-vis-a-deploy-qa.md).
+2026-08-15 — **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A CLOSED / PASS** + **WU-0016 CLOSED / PASS** (QA operatore + auto-`finito` Regola H). Commit chiusura `38a7eb6`. RUNTIME LIVE invariato `c7d1734a488d59def2237fc42648f7c9020758bb` / build **196** · helper **0.1.3**. NEXT: backlog C–H **NOT OPENED**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_2335_riepilogo_finito-sessione.md`](inbox/2026-08-15_2335_riepilogo_finito-sessione.md).
