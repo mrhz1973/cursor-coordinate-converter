@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **runtime** `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A`: deploy tecnico PASS · Automated Browser QA PASS · gate **QA FINALE CHATGPT — PENDING**. Task `aa6e3ce` · build **193**. LIVE URL `?v=aa6e3ce`. Helper **0.1.3** invariato. FIX5 preservato. `finito` NON eseguito. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0335_riepilogo_dflight-temporal-ux-a.md`](inbox/2026-08-15_0335_riepilogo_dflight-temporal-ux-a.md).
+2026-08-15 — **finito** `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` **CLOSED / PASS**. QA operatore PASS. Task runtime `aa6e3ce` · chiusura docs `ef2e00d`. LIVE build **193**. NEXT: **`D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A`**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0342_riepilogo_finito-sessione.md`](inbox/2026-08-15_0342_riepilogo_finito-sessione.md).

@@ -623,7 +623,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | Ordine | Candidato | Note |
 | --- | --- | --- |
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
-| **B** | D-Flight UX coherence | **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — NEXT `TEMPORAL-UX-A` |
+| **B** | D-Flight UX coherence | **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B1 TEMPORAL CLOSED/PASS; NEXT `LEGEND-ATM09-UX-A` |
 | **C** | ATM09 VISUAL PARITY AUDIT | **NOT OPENED** — priorità alta; **non** restyle cosmetico |
 | **D** | Legenda ATM09 esterna | **NOT OPENED** — swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |

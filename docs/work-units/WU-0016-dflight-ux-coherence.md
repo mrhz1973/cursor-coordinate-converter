@@ -70,7 +70,7 @@ Quindi la **separazione dei master è DELICATA** e **non** deve essere implement
 | ID | BLOCK-ID | Categoria | Note |
 | --- | --- | --- | --- |
 | **B0** | `D-FLIGHT-UX-COHERENCE-OPEN-A` | docs-only | Apertura WU — **CLOSED / PASS** con questo task |
-| **B1** | `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` | **ROUTINE** | Seleziona/Deseleziona tutte; pulse/fade temporal; legenda D-Flight contestuale. **Nessuna** rete/helper/OPSEC/master ATM09 |
+| **B1** | `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` | **ROUTINE** | **CLOSED / PASS** — Seleziona/Deseleziona tutte; pulse/fade; legenda D-Flight contestuale · LIVE `aa6e3ce` / **193** |
 | **B2** | `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` | **ROUTINE** | Legenda ATM09 contestuale; eventuale fade/pulse intero overlay; **nessuna** modifica preferred/fetch/gate. Riesaminabile per bundling con B1 solo se resta ROUTINE e coerente con Regola G |
 | **B3** | `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` | **DELICATO** | CTA Aggiorna unificata; refresh path/gate esistenti; reeval locale sempre; nessun nuovo endpoint; Apply Update separato. Review DELICATA rete/OPSEC |
 | **B4** | `D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` | **DELICATO** | Due master indipendenti; decoupling ATM09 ↔ cinque temporal; lifecycle preferred/fetch/tiles/INFO solo da master ATM09 + gate; preservare FIX5. Blocco **più rischioso** |
