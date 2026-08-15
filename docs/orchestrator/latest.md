@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` **DEPLOYED** — **Automated Browser QA PASS** (ri-verifica tip harden). LIVE tip `02be3a5` / build **192** (feature `eb307db` + selftest harden). Causa FIX4: fill SVG default nero su `.dflight-atm09-info-hit` senza `.is-interactive`. Helper **0.1.3**. Gate: **QA FINALE CHATGPT — PENDING**. QA operatore **non** attestata. Nessun `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0254_riepilogo_dflight-option-b-fix5-browser-qa-tip.md`](inbox/2026-08-15_0254_riepilogo_dflight-option-b-fix5-browser-qa-tip.md).
+2026-08-15 — **`finito`** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` **CLOSED / PASS**. Attestazione operatore ricevuta. Commit task chiusura: `1568560` (`docs: chiusura finito OPTION-B-FIX5 PASS operatore`). Working tree pre-autosync: pulito. Monolite già versionato in tip LIVE `02be3a5` (feature `eb307db` / build **192**). Helper **0.1.3**. NEXT: da scegliere. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0259_riepilogo_finito-sessione.md`](inbox/2026-08-15_0259_riepilogo_finito-sessione.md).
