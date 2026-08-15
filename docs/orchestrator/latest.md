@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **`finito`** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` **CLOSED / PASS**. Attestazione operatore ricevuta. Commit task chiusura: `1568560` (`docs: chiusura finito OPTION-B-FIX5 PASS operatore`). Working tree pre-autosync: pulito. Monolite già versionato in tip LIVE `02be3a5` (feature `eb307db` / build **192**). Helper **0.1.3**. NEXT: da scegliere. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0259_riepilogo_finito-sessione.md`](inbox/2026-08-15_0259_riepilogo_finito-sessione.md).
+2026-08-15 — **docs-only** `CONTEXT-BUDGET-GUARD` pubblicato. Task `2ab5376` — AI-BOOT pointer + OM §4 regola completa (post Regola I). Monolite **non** toccato. Automated Browser QA **NOT APPLICABLE**. Nessuna QA operatore runtime. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0305_riepilogo_context-budget-guard.md`](inbox/2026-08-15_0305_riepilogo_context-budget-guard.md).
