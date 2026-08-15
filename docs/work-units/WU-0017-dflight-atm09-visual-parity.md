@@ -2,13 +2,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-AUDIT-A (AUDIT COMPLETE · GATE BLOCKED)
-**CURRENT GATE:** **OFFICIAL VISUAL REFERENCE REQUIRED**
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-VISUAL-PARITY-REFERENCE-A (CLOSED / PASS docs) · NEXT IMPL-A
+**CURRENT GATE:** **IMPL-A READY**
 **RUNTIME BASELINE / LIVE:** monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper **0.1.3** (invariato)
-**CATEGORIA:** AUDIT / READ-ONLY (docs-first)
+**CATEGORIA:** DOCS-ONLY / REFERENCE ADJUDICATION (nessuna patch runtime)
 **ORIGINE:** backlog QA build 183 candidato **C** — ATM09 VISUAL PARITY AUDIT
-**NEXT:** fornire screenshot/evidenza ufficiale D-Flight ATM09 (operatore) → riesame matrice → eventuale `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (non aperto)
-**NOTE:** 2026-08-15 audit deterministico PASS (helper+monolite) · **nessuna** patch runtime · **nessun** HEX/pattern inventato · visual parity **non** dichiarata
+**NEXT:** `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (ROUTINE attesa — arbitration legende; **non** implementato in questo giro)
+**NOTE:** 2026-08-16 REFERENCE-A · evidenza = *official visual reference supplied by operator to orchestrator* (non in repo) · gate OFFICIAL VISUAL REFERENCE REQUIRED **soddisfatto** · WU resta OPEN · finito WU **non** eseguito
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0016`](WU-0016-dflight-ux-coherence.md) **CLOSED / PASS** (MASTER-VIS-A / build 196).
@@ -114,100 +114,154 @@ Confermato invariato a livello struttuale:
 
 ## 4. Riferimento screenshot operatore
 
-**Esito ricerca:** **assente** dal repository (zero asset `.png`/`.jpg` di riferimento ATM09 ufficiale; nessuna evidenza allegata in docs/orchestrator oltre descrizioni testuali roadmap).
+### 4.1 Stato asset repo
 
-Gate esplicito:
+Le immagini **non** sono presenti nel repository. **Non** esistono asset `.png`/`.jpg` di riferimento ATM09 committati.
 
-### OFFICIAL VISUAL REFERENCE REQUIRED
+### 4.2 Evidenza orchestratore (REFERENCE-A — 2026-08-16)
 
-Manca almeno **una** evidenza ufficiale riprodibile, ad esempio:
+**Registrazione formale:** *official visual reference supplied by operator to orchestrator*.
 
-1. screenshot D-Flight web ufficiale della mappa ATM09 (stesso / analogo viewport);
-2. e/o screenshot ufficiale della legenda ATM09 / categorie (in particolare zone proibite / no-fly a **righe/tratteggio** citate dall’operatore 2026-08-15).
+ChatGPT (orchestratore) ha ricevuto e analizzato due screenshot forniti direttamente dall’operatore:
 
-Senza questi, **non** si dichiara visual parity e **non** si apre IMPL con valori colore/pattern.
+- **(A)** screenshot UI D-Flight ufficiale;
+- **(B)** screenshot GOI GIS Tool LIVE build **196** sul medesimo settore geografico.
 
----
+Gate precedente:
 
-## 5. Matrice visual parity
+### OFFICIAL VISUAL REFERENCE REQUIRED → **SODDISFATTO**
 
-Separazione colonne: (1) pixel/stile upstream WMS · (2) compositing GOI · (3) fallback SVG NFZ · (4) INFO-hit invisibile.
-
-| Aspetto | Ufficiale / evidenza | GOI corrente | Match | Note |
-| --- | --- | --- | --- | --- |
-| colore | PNG GetMap stile `atm09_style` (bytes proxy) | stesso PNG a opacity 1 | **ND** vs UI D-Flight | serve screenshot ufficiale |
-| opacity | WMS `transparent=true` + alpha tile | CSS opacity **1**, no blend | **OK (GOI non attenua)** | compositing neutro sul raster |
-| outline | nello stile WMS (non ispezionato pixel) | non ridisegnato da GOI sul raster | **ND** | |
-| fill | nello stile WMS | non ridisegnato da GOI sul raster | **ND** | |
-| pattern/retino | atteso ufficiale = tratteggio (claim operatore) | raster = pixel WMS; NFZ fallback = **fill solido** | **ND / rischio C** | se ATM09 non ready → NFZ solido ≠ hatch |
-| angolo retino | upstream / screenshot | GOI non genera hatch ATM09 | **ND** | |
-| densità retino | upstream / screenshot | idem | **ND** | |
-| categoria | legenda GetLegendGraphic stesso style | PNG legenda 181×189 via helper | **parziale** | stesso style; layout legenda WMS params 20×20 |
-| ordine legenda | GetLegendGraphic | immagine intera, nessun riordino client | **OK (passthrough)** | |
-| label | nel PNG legenda | nessuna overlay testo GOI sulle categorie ATM09 | **OK** | |
-| mappa ↔ legenda | stesso LAYER+STYLE | tile GetMap + legend GetLegendGraphic | **OK strutturalmente** | differenza solo params legend_options |
-| compositing/layering | n/a | opacity1; panel bg su legenda; pulse temp; NFZ suppress | **parziale** | panel-2 può alterare percezione legenda |
+(evidenza operatore via orchestratore; **non** asset repo).
 
 ---
 
-## 6. Finding classificati (A–F)
+## 5. Finding visivi ratificati (REFERENCE-R1 … R6)
 
-| ID | Finding | Classe |
-| --- | --- | --- |
-| F1 | Helper passa PNG ATM09 senza recolor/pattern; layer+style unici per tile e legend | **A** UPSTREAM (+ conferma proxy fedele) |
-| F2 | GetLegendGraphic usa `width/height=20` + `legend_options`; output 181×189 ≠ tile 256 | **A** UPSTREAM (parametri legend) — non secondo stile |
-| F3 | GOI raster ATM09: opacity 1, no mix-blend, image-rendering auto | **B** GOI COMPOSITING — **neutro** (non altera colore intenzionalmente) |
-| F4 | Contenitore legenda con `background: var(--panel-2)` può cambiare percezione PNG | **D** LEGEND PRESENTATION — candidato CSS futuro se confermato da screenshot |
-| F5 | Pulse overlay temporaneo altera opacity solo durante FX | **B** — effimero; fuori parity statica |
-| F6 | NFZ SVG fallback / pre-ready: fill solidi (`is-prohibited`…) senza hatch | **C** FALLBACK VECTOR — possibile causa del gap «tratteggio» se confrontato con UI ufficiale mentre ATM09 non suppress |
-| F7 | Con ATM09 ready: NFZ color suppress; paint = raster WMS | **A** (+ **B** neutro) — parity dipende dai pixel upstream |
-| F8 | INFO-hit trasparente (FIX5) | **B** — corretto / non contribuisce al colore zona |
-| F9 | MASTER-VIS-A: temporal non dimmano/nascondono ATM09 | **B** — invariante prodotto rispettata |
-| F10 | Screenshot ufficiali operatore assenti in repo | **F** NON DETERMINABILE — **gate bloccante** |
-| F11 | i18n stale `atm09AllOffHint` («ATM09 nascosto») | fuori matrice pixel — nota copy; non causa resa mappa |
-
----
-
-## 7. Cosa è già determinato vs cosa richiede confronto umano
-
-**Determinato senza screenshot ufficiale:**
-
-- pipeline helper e monolite;
-- stessa style key tile/legend;
-- assenza di recolor GOI sul raster;
-- layering FIX5;
-- decoupling temporal;
-- esistenza di un percorso fallback NFZ a fill solido.
-
-**Richiede evidenza ufficiale / giudizio umano:**
-
-- se i pixel WMS `atm09_style` coincidono con la UI D-Flight vista dall’operatore;
-- se il «tratteggio» no-fly è già nel raster upstream o solo nella UI ufficiale diversa;
-- se il panel background della legenda GOI è un problema percettivo reale;
-- ogni valore RGB/HEX/angolo/densità pattern.
-
----
-
-## 8. Piano successivo (non implementato)
-
-Candidato futuro (solo dopo sblocco gate + finding stabili):
-
-**`D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A`**
-
-Scope **esclusivamente** dai finding post-riferimento. Classificazione attesa:
-
-| Se i finding stabilizzati toccano… | Categoria |
+| ID | Finding ratificato |
 | --- | --- |
-| solo CSS presentazione legenda / panel / scaling (es. F4) | potenzialmente **ROUTINE** |
-| helper `ATM09_STYLE` / GetMap params / rete / proxy / lifecycle tile | **DELICATO** |
-| solo fallback SVG NFZ hatch quando ATM09 OFF (F6) | da rivalutare (ROUTINE CSS vs DELICATO se tocca hit-test/FIX5) |
+| **REFERENCE-R1** | La UI D-Flight ufficiale mostra **UNA sola** legenda ATM09 contestuale. |
+| **REFERENCE-R2** | La legenda ufficiale D-Flight usa label operative/user-facing, tra cui: Height 0 / 25 / 45 / 60 / 120 meters AGL; Dangerous Area. Sono visibili almeno: rosso pieno; rosso a righe diagonali; arancio; arancio a righe diagonali sulla mappa; giallo; azzurro/ciano; verde; ulteriori simbologie ATM09. **Non** ricavare/inventare HEX dai soli screenshot. |
+| **REFERENCE-R3** | Nel GOI build **196** il raster ATM09 mostra già pattern visuali **materialmente coerenti** con il riferimento ufficiale (rosso pieno, rosso tratteggiato, arancio tratteggiato, altre campiture). **Nessuna evidenza** per autorizzare un restyle del raster WMS in questo momento. |
+| **REFERENCE-R4** | Mismatch UX principale: **doppia legenda** GOI contemporanea — «Legenda restrizioni» + «Legenda ATM09 ufficiale». |
+| **REFERENCE-R5** | La legenda ATM09 GOI (GetLegendGraphic) mostra label **tecniche** WMS (es. `geometrie_rosse_scure`, `geometrie_rosse_piene`, `geometrie_verdi`, …). Sorgente ufficiale WMS, ma **non** la stessa presentazione user-facing della UI D-Flight. |
+| **REFERENCE-R6** | Il finding audit **F6** (fallback NFZ fill solido) resta reale, ma va distinto dallo stato ATM09 **READY**: READY → paint primario = raster WMS ufficiale; fallback NFZ = modalità degradata GOI — **non** prova che il raster ufficiale sia visualmente errato. |
+
+### Aggiornamento finding audit precedenti
+
+| ID audit | Stato post-REFERENCE |
+| --- | --- |
+| F10 (screenshot assenti → gate bloccante) | **SUPERSEDED** — riferimento soddisfatto via orchestratore (non via asset repo) |
+| F6 | **CONFERMATO** ma **declassato** rispetto al percorso IMPL-A: non giustifica restyle raster; rilevante solo in fallback |
+| F4 / label GetLegendGraphic | Affinato da **R5**: label tecniche vs user-facing → backlog **D** (non IMPL-A) |
+| Matrice § precedente (celle ND colore/pattern) | Per raster READY: **coerenza materiale** ratificata (**R3**); HEX ancora vietati |
+
+---
+
+## 6. Decisione prodotto ratificata — `D-FLIGHT-FAMILIARITY-FIRST`
+
+Utenti target provenienti da D-Flight. La UI GOI deve preservare per quanto possibile il **modello mentale D-Flight** senza sacrificare la separazione tecnica interna.
+
+**Principio:** separazione tecnica interna ≠ duplicazione UX obbligatoria.
+
+**Mantenere invariati (non negoziabili in IMPL-A):**
+
+- due master indipendenti;
+- raster ATM09;
+- NFZ / fallback;
+- INFO-hit;
+- FIX5;
+- temporal;
+- gate rete / OPSEC / offline;
+- helper **0.1.3**.
+
+**Obbligo UX:** mostrare **UNA SOLA LEGENDA CONTESTUALE ALLA VOLTA**.
+
+---
+
+## 7. Matrice legenda ratificata (paint-driven)
+
+La legenda descrive il **paint realmente visibile**, non solo lo stato teorico dei checkbox.
+
+| Caso | Master D | Master ATM09 | Condizione paint | Legenda mostrata | Legenda nascosta |
+| --- | --- | --- | --- | --- | --- |
+| **A** | ON | OFF | zone D / NFZ (se applicabile) | **Legenda restrizioni** | Legenda ATM09 |
+| **B** | OFF | ON | ATM09 raster READY/visibile | **Legenda ATM09** | Legenda restrizioni |
+| **C** | ON | ON | ATM09 raster READY/visibile | **SOLO Legenda ATM09** | Legenda restrizioni (non compete) |
+| **D** | * | ON | ATM09 non disponibile / fallback NFZ colorato **realmente attivo** | **Legenda restrizioni** (paint effettivo) | non presentare Legenda ATM09 come se il raster fosse attivo |
+| **E** | OFF | OFF | nessuno | **nessuna** legenda visuale occupa spazio | entrambe |
+
+---
+
+## 8. Scope futuro — `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` (**non implementato**)
+
+**Classificazione attesa:** **ROUTINE** (UI + JS a basso rischio), salvo finding tecnico contrario in pre-implementazione.
+
+### In scope
+
+- sola **arbitration / visibility contestuale** delle due legende secondo la matrice §7 A–E;
+- allineamento a `D-FLIGHT-FAMILIARITY-FIRST`.
+
+### Fuori scope (esplicito)
+
+- nessun cambio colori / pattern / raster;
+- nessun cambio `ATM09_STYLE`;
+- nessun cambio helper / endpoints;
+- nessun cambio lifecycle rete;
+- nessun cambio hit-test / FIX5;
+- nessun cambio temporal / master semantics;
+- miglioramento resa/label ATM09 verso pannello D-Flight user-facing → resta backlog **D** «Legenda ATM09 esterna» — **non** inglobare silenziosamente in IMPL-A.
 
 **Non** aprire automaticamente candidati D–H.
 
 ---
 
-## 9. Riferimenti
+## 9. Gate e NEXT
 
-- Roadmap backlog 183 § candidato C / §6 VISUAL PARITY AUDIT — [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md)
+| Voce | Valore |
+| --- | --- |
+| Gate precedente | OFFICIAL VISUAL REFERENCE REQUIRED → **soddisfatto** |
+| **GATE CORRENTE** | **IMPL-A READY** |
+| **NEXT** | `D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` |
+| WU-0017 | resta **OPEN** |
+| Finito WU | **non** in questo giro |
+| Runtime / helper | **invariati** |
+
+---
+
+## 10. Appendice — audit deterministico precedente (AUDIT-A, storico)
+
+Sezioni storiche sotto restano evidenza tecnica di pipeline; le decisioni operative prevalgono da §4–§9 (REFERENCE-A).
+
+### 10.1 Matrice visual parity (pre-REFERENCE; celle ND supersedute dove indicato)
+
+Separazione colonne: (1) pixel/stile upstream WMS · (2) compositing GOI · (3) fallback SVG NFZ · (4) INFO-hit invisibile.
+
+| Aspetto | Ufficiale / evidenza | GOI corrente | Match post-REFERENCE | Note |
+| --- | --- | --- | --- | --- |
+| colore / pattern raster READY | UI D-Flight (A) + WMS | raster GOI (B) | **coerenza materiale (R3)** | no HEX; no restyle autorizzato |
+| opacity | WMS transparent | CSS opacity **1** | **OK** | |
+| doppia legenda | una sola (R1) | due contemporanee (R4) | **MISMATCH UX** → IMPL-A | |
+| label legenda ATM09 | user-facing (R2) | tecniche WMS (R5) | **diverso** | backlog **D**, non IMPL-A |
+| fallback NFZ fill solido | n/a | F6 / R6 | degrado GOI | distinto da READY |
+
+### 10.2 Finding audit A–F (storico)
+
+| ID | Finding | Classe | Post-REFERENCE |
+| --- | --- | --- | --- |
+| F1–F3, F5, F7–F9, F11 | come AUDIT-A | A/B | invariati / contesto |
+| F4 | panel legenda | D | residuale; non prioritario vs R4 |
+| F6 | NFZ solid fallback | C | **R6** — distinto da READY |
+| F10 | screenshot assenti | F | **SUPERSEDED** |
+
+### 10.3 Pipeline helper / monolite
+
+Vedi §2 e §3 sopra (invariate; helper 0.1.3; monolite build 196).
+
+---
+
+## 11. Riferimenti
+
+- Roadmap backlog 183 § candidato C — [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md)
 - WU-0016 MASTER-VIS-A — [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md)
 - Helper ATM09 ARCH — `infra/dflight-helper/goi_dflight_helper.py`
+- Evidenza: *official visual reference supplied by operator to orchestrator* (non in repo)
