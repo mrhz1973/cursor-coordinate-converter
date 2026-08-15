@@ -345,31 +345,31 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | WU-0015 — [`D-FLIGHT-HIT-TEST`](work-units/WU-0015-dflight-hit-test.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 (**CLOSED / PASS**) |
-| **STATO BLOCCO** | **CLOSED / PASS** (deploy + Automated Browser QA + QA operatore) |
-| **GATE CORRENTE** | **none** (blocco chiuso) |
-| **REVIEW BASE** | monolite `eb307dba753017eb91819561275ed1dd35b10687` (build 192 FIX5 feature) |
-| **RUNTIME LIVE** | monolite tip `02be3a5a230c659c94481738af537caac1ecde38` (feature `eb307db` + OptB selftest harden) · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | da scegliere (prossimo blocco WU-0015 / backlog) |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-OPEN-A (**CLOSED / PASS** docs-only) |
+| **STATO BLOCCO** | **CLOSED / PASS** (docs-only — apertura WU-0016) |
+| **GATE CORRENTE** | **none** |
+| **REVIEW BASE** | monolite tip LIVE invariato `02be3a5a230c659c94481738af537caac1ecde38` (nessun candidate runtime; docs-only) |
+| **RUNTIME LIVE** | monolite tip `02be3a5a230c659c94481738af537caac1ecde38` (feature `eb307db`) · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** (ROUTINE) |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0015 OPTION-B-FIX5 **CLOSED / PASS** — LIVE tip `02be3a5` / **192**. Attestazione: `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 PASS operatore` (2026-08-15). Helper **0.1.3**. Chiusura `finito` in corso.
-> WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
+> WU-0016 aperta (candidato B UX coherence). `OPEN-A` CLOSED/PASS docs-only. LIVE tip `02be3a5` / **192** invariato. Helper **0.1.3**. Monolite non toccato. NEXT: **TEMPORAL-UX-A**.
+> WU-0015 CLOSED / PASS. Candidati C–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — LIVE tip `02be3a5` / **192**
-2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — DEPLOY PASS + Automated Browser QA PASS
-3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — selftest harden OptB (`02be3a5`)
-4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — QA OPERATORE FAIL — geometrie nere INFO (superseded by FIX5)
-5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — DEPLOY PASS + Automated Browser QA PASS
+1. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta — NEXT TEMPORAL-UX-A
+2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — LIVE tip `02be3a5` / **192**
+3. **CONTEXT-BUDGET-GUARD** — docs-only PASS (AI-BOOT + OM §4)
+4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — DEPLOY PASS + Automated Browser QA PASS
+5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — QA OPERATORE FAIL — geometrie nere INFO (superseded by FIX5)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
-- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** · **WU-0014 (D-FLIGHT-TEMPORAL-FILTER, UI-A+FIX1–3)** — [`work-units/`](work-units/)
-- **WU open:** WU-0015 (hit-test DIAG-A) · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013 (UAS-GEOZONE-DFLIGHT, scope H2+overlay)** · **WU-0014 (D-FLIGHT-TEMPORAL-FILTER, UI-A+FIX1–3)** · **WU-0015 (D-FLIGHT-HIT-TEST, OPTION-B-FIX5)** — [`work-units/`](work-units/)
+- **WU open:** **WU-0016 (D-FLIGHT-UX-COHERENCE)** · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
 - **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`

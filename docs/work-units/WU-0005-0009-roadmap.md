@@ -608,28 +608,28 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
 
-**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** aperto in [`WU-0015`](WU-0015-dflight-hit-test.md). B–H restano **NOT OPENED**.
+**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** CLOSED in [`WU-0015`](WU-0015-dflight-hit-test.md). Candidato **B** **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** **BACKLOG / NOT OPENED** (docs-only). Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **B** **OPENED** (WU-0016). C–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**. Candidato **A** è in WU-0015. B–H restano **NOT OPENED**.
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS** (OPTION-B-FIX5). Candidato **B** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md). C–H restano **NOT OPENED**.
 
-**Candidato A:** **OPENED** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md) (`D-FLIGHT-HIT-TEST-DIAG-A` DIAGNOSTIC COMPLETE — ROOT CAUSE CONFIRMED). B–H restano **NOT OPENED**. WU-0014 resta **CLOSED / PASS**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **OPENED** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (`OPEN-A` CLOSED docs-only; NEXT `TEMPORAL-UX-A`). C–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
 | Ordine | Candidato | Note |
 | --- | --- | --- |
-| **A** | BUG hit-test / click D-Flight intermittente | **OPENED** WU-0015 — FIX2 LIVE `7501d0f` / 186 DEPLOY+Automated QA PASS; QA FINALE PENDING |
-| **B** | D-Flight UX coherence | Aggiorna unico; master D-Flight; master ATM09; Seleziona/Deseleziona tutte; pulse; legende contestuali |
-| **C** | ATM09 VISUAL PARITY AUDIT | priorità alta; **non** restyle cosmetico |
-| **D** | Legenda ATM09 esterna | swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
-| **E** | Layout affiancato Zone D-Flight / Dettagli | futura categoria **DELICATO** (lifecycle/layout dialog) |
-| **F** | Workspace due legende a destra | pannelli distinti, trascinabili |
-| **G** | Global minimized-panel dock / modal layout manager | trasversale, non solo D-Flight |
-| **H** | Branding TMART GIS tool | filename monolite **non** rinomina automatica |
+| **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
+| **B** | D-Flight UX coherence | **OPENED** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — NEXT `TEMPORAL-UX-A` |
+| **C** | ATM09 VISUAL PARITY AUDIT | **NOT OPENED** — priorità alta; **non** restyle cosmetico |
+| **D** | Legenda ATM09 esterna | **NOT OPENED** — swatch maggiori; pattern leggibili; stile D-Flight; fondo trasparente/semitrasparente |
+| **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
+| **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
+| **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
+| **H** | Branding TMART GIS tool | **NOT OPENED** — filename monolite **non** rinomina automatica |
 
 #### 1. Azione «Aggiorna» unificata
 
