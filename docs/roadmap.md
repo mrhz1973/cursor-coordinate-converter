@@ -9,9 +9,9 @@
 
 ## Notice to AI Assistants
 
-> **Scope of this notice**: this is a meta-instruction, not document content. It governs how you read the rest of this file. Read it in full before responding to any request that touches this project.
+> **Reading model — strategic reference on-demand.** `docs/roadmap.md` is a STRATEGIC REFERENCE consulted when the task requires §3 Distribution Strategy, §4 Architectural Principles, §8 Out of Scope, product strategy, or planning/backlog. It is **not** part of the CORE BOOT and is not loaded at bootstrap. Bootstrap/navigation: `README.md` AI-BOOT. Method: `docs/OPERATING_MEMORY.md` §4. Live state: `docs/OPERATING_MEMORY.md` §7.1.
 >
-> **Mirror notice**: this section deliberately duplicates constraints present in `.cursor/rules/00-project-core.mdc`. The duplication is intentional — both documents are authoritative. When either is modified, the other must be updated in the same change.
+> **Scope of this notice**: meta-instruction on how to read this file when it is consulted — not a mandate to read it before every request.
 
 ### Authority of sections
 
@@ -70,29 +70,31 @@ You may disagree with an architectural decision. The protocol is strict:
 
 The user decides whether a strategic concern warrants a revision. You register concerns; you do not re-open decisions.
 
-### Reading order for new requests
+### How to consult this document
 
-1. This Notice (always)
-2. The specific user request
-3. `.cursor/rules/00-project-core.mdc` (if auto-loaded by Cursor; otherwise assume mirrored here)
-4. §3 Distribution Strategy — identify which scenario governs the current task
-5. §4 Architectural Principles — identify active constraints
-6. §8 Out of Scope — identify forbidden directions
-7. Remaining sections as needed
+When the task requires this roadmap (distribution scenario, architectural principle, out-of-scope boundary, strategic planning):
 
-Only after this reading should you formulate a response.
+1. This Notice — understand reading model and precedence
+2. §3 Distribution Strategy — identify which scenario governs the current task
+3. §4 Architectural Principles — identify active constraints
+4. §8 Out of Scope — identify forbidden directions
+5. Remaining sections as needed
 
 ---
 
 ## 1. Document Purpose
 
-Forward-looking strategic reference. Complements:
+Forward-looking strategic reference (STRATEGY / PLAN / BACKLOG — on-demand, not live state). Reading model of the project's living documentation:
 
-- `checkpoint.md` — short index for fast @-mention lookup
-- `docs/session-geolocalizzazione-e-mappa.md` — operational history, living backlog, decision log
-- `.cursor/rules/99-known-state.mdc` — invariants ("do not break this")
+- `README.md` AI-BOOT — INDEX / BOOT (bootstrap + navigation)
+- `docs/OPERATING_MEMORY.md` §4 — METHOD
+- `docs/OPERATING_MEMORY.md` §7.1 — LIVE STATE
+- WU hot-header (`docs/work-units/`) — LOCAL WU INDEX
+- This roadmap + work-unit roadmap — STRATEGY / PLAN / BACKLOG
+- `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md` — LEGACY / HISTORY (audit only)
+- `.cursor/rules/*.mdc` — execution guards / pointers, not a second canonical memory
 
-This document answers: **where is the product going, within what boundaries, against which references**. It does not track daily tasks (that belongs in `session.md`) and does not restate implementation invariants (those belong in `99-known-state.mdc`).
+This document answers: **where is the product going, within what boundaries, against which references**. It does not track daily tasks or live state (OM §7.1 + WU hot-headers) and does not restate implementation invariants (`.cursor/rules/99-known-state.mdc`, on request).
 
 Consult via `@docs/roadmap.md` when planning a new feature, scoping a work package, or deciding whether a request falls inside or outside product boundaries.
 
@@ -505,7 +507,7 @@ This document is **stable**. Update triggers:
 - Tier list restructured after dedicated analysis session (pending — flagged in §5)
 - New target platform / format added to interop matrix (§6)
 - New doctrinal reference incorporated into design decisions (§7)
-- Notice to AI Assistants updated — **must be mirrored in `.cursor/rules/00-project-core.mdc`**
+- Notice to AI Assistants updated (single strategic home: this file; no mirror obligation — `.cursor/rules/00-project-core.mdc` holds only minimal invariants)
 
 **Not** update triggers (these go in `session.md`):
 
@@ -538,7 +540,7 @@ Flagged for a dedicated future analysis session:
 
 6. **Export product templates** (T4.6 - IPB deliverable): output format and layout to be defined with reference to STANAG 2014.
 
-7. **Reading Protocol evolution** (Notice at top): the rejected-patterns list is non-exhaustive by design. Periodic review required as new anti-patterns emerge from actual Cursor sessions. Update trigger: when an AI assistant bypasses current list with a novel violation, add it and mirror to `00-project-core.mdc`.
+7. **Reading Protocol evolution** (Notice at top): the rejected-patterns list is non-exhaustive by design. Periodic review required as new anti-patterns emerge from actual Cursor sessions. Update trigger: when an AI assistant bypasses current list with a novel violation, add it to this roadmap (single strategic home).
 
 8. **PWA preclusivity in Tier 3 features** (§5.3): some Tier 3 features (T3.1 image overlay, T3.4 swipe slider) may use patterns that fail scenario (c) preclusivity tests. Review before implementation if scenario (c) is on the active horizon.
 

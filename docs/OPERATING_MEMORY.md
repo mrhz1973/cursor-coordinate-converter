@@ -377,10 +377,6 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | **NEXT** | QA operatore → auto-`finito` (Regola H) su riga esatta `QA D-FLIGHT-UX-COHERENCE-AGGIORNA-A PASS operatore` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
-> Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> AGGIORNA-A: REVIEW GPT-SOSTITUTIVA **PASS** (rete/OPSEC; fallback: reviewer AI esterno non usato per vincolo operativo/token) · deploy GIS-only **PASS** · Automated Browser QA **PASS**. LIVE `2574250` / **195**. Gate: **QA FINALE CHATGPT — PENDING**.
-> WU-0016 **OPEN**. B2 resta CLOSED/PASS.
-
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
 1. **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** — REVIEW GPT-SOSTITUTIVA PASS · deploy · Automated Browser QA PASS — LIVE `2574250` / **195** — QA operatore pending

@@ -1,43 +1,24 @@
 ---
-description: "GOI GIS Tool core: identità, invarianti, bootstrap, finito."
+description: "GOI GIS Tool core guard: identità, invarianti minimi, pointer a CORE BOOT/metodo/esecuzione."
 alwaysApply: true
 ---
 
-# GOI GIS Tool — Core
+# GOI GIS Tool — Core (guard)
 
 ## Identità e invarianti non negoziabili
 
 - Repo canonico `mrhz1973/cursor-coordinate-converter`; runtime = monolite **`coordinate_converter Claude.html`** (HTML standalone, vanilla JS).
-- **origin/main = unica memoria persistente e fonte di verità operativa**; le chat precedenti sono solo storico, mai stato corrente.
-- Vanilla JavaScript only: no framework (React/Vue/Svelte), no TypeScript, no build step/bundler/transpiler, no ES modules, no split operativo, no npm/`package.json`. Offline-first (localStorage + IndexedDB); nessuna nuova dipendenza (CDN o altro) senza richiesta esplicita.
-- **OPSEC:** nessuna chiamata di rete in background senza azione esplicita dell'utente; posizione/testi incollati = potenzialmente sensibili. Nessun GPS silenzioso all'avvio; geoloc **opt-in single-shot**; nessuna `watchPosition`.
-- **Editing:** patch mirate, mai riscrittura file interi; refactor >50 righe → piano approvato prima; cambi >20 righe → mostrare diff; non modificare file fuori scope del prompt. UI/UX standard GIS: casa canonica [`.cursor/rules/10-html-architecture.mdc`](10-html-architecture.mdc) §*GIS & tools UI/UX standards*.
+- **origin/main = unica memoria persistente e fonte di verità operativa**; le chat precedenti sono solo storico.
+- Single-file / vanilla JS: no framework (React/Vue/Svelte), no TypeScript, no build step/bundler/transpiler, no ES modules, no npm/`package.json`; nessuna nuova dipendenza (CDN o altro) senza richiesta esplicita. Lista strategica completa **Rejected patterns**: [`docs/roadmap.md`](../../docs/roadmap.md) §Notice (on-demand).
+- **OPSEC/offline-first:** nessuna chiamata di rete in background senza azione esplicita dell'utente; nessun GPS silenzioso all'avvio; geoloc opt-in single-shot; nessuna `watchPosition`; posizione/testi incollati = potenzialmente sensibili.
+- **Patch scoped:** modifiche mirate, mai riscrittura file interi; non toccare aree non correlate allo scope del prompt.
 
-## Bootstrap
+## Pointer
 
-- Ogni sessione parte dal **CORE BOOT** (README AI-BOOT): `git ls-remote origin refs/heads/main` → solo blocco `AI-BOOT` di `README.md` → OM §7.1 FRONTIER → hot-header WU attiva. **STOP**; tutto il resto on-demand.
-- **AUTO-VIA** (dettaglio in README AI-BOOT): passo tecnicamente determinato → procedere senza nuovi `vai`; fermarsi solo davanti a una decisione reale (prodotto, scope ambiguo, rischio non autorizzato, conflitto).
-- **Metodo operativo completo** (bundle ROUTINE/DELICATO, review tier, QA tre gate D/D1/D2/D2bis, `finito` auto-trigger H, seed F, autosync, F3/LAST_CURSOR_REPORT, `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD`, L10N-FREEZE, QA-HUMAN-NO-OPSEC): [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) **§4** — caricare on-demand **solo la regola richiesta dal gate corrente**. Template QA: [`docs/QA-CHECKLIST.md`](../../docs/QA-CHECKLIST.md). Esecuzione lato Cursor: [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc).
-
-## Trigger «Checkpoint md»
-
-Aggiornare la memoria operativa lean: OM §7 (solo se cambia stato), WU corrente hot-header, README solo se cambia AI-BOOT/CORE BOOT/precedenza/navigazione; eventuale autosync orchestratore. `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md` = legacy/storico, non memoria corrente. `docs/HANDOFF.md` = seed stabile, non current-state rolling. Dettaglio: OM §4.
-
-## Trigger «Finito»
-
-Quando l'utente scrive «Finito» (case-insensitive, da solo o in frase breve), eseguire in sequenza **senza conferme intermedie**:
-
-1. **Memoria lean:** WU corrente hot-header (`STATUS`, `ACTIVE BLOCK`, `CURRENT GATE`, `REVIEW BASE` / `CANDIDATE RUNTIME` / `RUNTIME LIVE` condizionali, `NEXT`); OM §7.1 FRONTIER (SHA semantiche distinte; mai HEAD remota persistita; anti-self-reference); OM §7.2 rolling max ~5; §7.3 solo pointer; README solo se cambia AI-BOOT; HANDOFF non rolling.
-2. **Git** (root repo): `git add .`; `git commit -m "<tipo>: <sintesi sessione>"` (Conventional Commits; prefisso dominante, parità → `chore:`; skip se vuoto, ma push se commit pendenti); `git push`.
-3. **Riconciliazione orchestratore:** aggiornare `docs/orchestrator/latest.md` (breve; fatti del corrente autosync = `EXTERNAL_ONLY`, mai autorati) + creare `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_riepilogo_finito-sessione.md` (fatti stabili pre-autosync: hash e subject del commit task, esito push task, status/diff pre-autosync, file toccati, monolite incluso o no, QA/deploy noti, prossimo passo, limiti) + `git add` selettivo + `git commit -m "docs: orchestratore — riconciliazione finito sessione"` + `git push`.
-4. **Conferma all'utente:** hash commit (entrambi se due), file modificati (`git show --stat`), esito di ogni push.
-
-**Vincoli:** chiusura ordinaria = **esattamente due commit** (task + autosync), nessun terzo commit «completa inbox»/«finalize»; published = immutable; mai `--force`/`--amend`/`--no-verify`; mai modificare git config; step 1 fallito → fermarsi; step 2 fallito → riportare l'errore, non forzare, eseguire comunque step 3 con esito parziale; step 3/4 fallito → memoria solo locale, riportare. Il trigger autorizza i file doc degli step 1/3 e le operazioni git 2/4.
+- **CORE BOOT / navigazione / AUTO-VIA (scope-bound):** README `AI-BOOT` — case canonica unica. Metodo operativo: [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) §4 (regola per regola, on-demand). Template QA: [`docs/QA-CHECKLIST.md`](../../docs/QA-CHECKLIST.md).
+- **Esecuzione Cursor** (RIEPILOGO, autosync, session guard): [`.cursor/rules/30-output-workflow.mdc`](30-output-workflow.mdc). Architettura HTML/monolite + standard UI/UX GIS: [`.cursor/rules/10-html-architecture.mdc`](10-html-architecture.mdc).
+- **Checkpoint/Finito:** metodo canonico OM §4; esecuzione Cursor rule 30.
 
 ## Response style
 
-- Reply in Italian; diretti, senza preamboli lunghi; citare nomi funzione e numeri di riga.
-
-## Mirror notice
-
-Questo file duplica volutamente il blocco «Notice to AI Assistants» di [`docs/roadmap.md`](../../docs/roadmap.md) (§Notice). Le modifiche vanno fatte in entrambi nella stessa change; una divergenza è un bug. Lista autorevole **Rejected patterns**: `docs/roadmap.md` §Notice (principio: pattern che spezza single-file deployability, introduce build step, richiede rete runtime fuori tile opt-in, o ristruttura `state` centralizzato senza decisione strategica = rifiutato; esempi: ES Modules, framework UI, TypeScript, bundler, transpiler, CSS preprocessor, refactor centralized-store, global event delegation, rewrite architetturali, refactor >50 righe senza approvazione, NPM/package.json). **Disagreement protocol:** max una strategic concern per turno, nel formato blocco `> Strategic concern: …`, poi eseguire comunque il lavoro allineato alla roadmap; non ripetere, non riaprire decisioni.
+- Italiano; diretti, senza preamboli; citare nomi funzione e numeri di riga.

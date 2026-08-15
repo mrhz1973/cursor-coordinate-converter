@@ -21,7 +21,7 @@ Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, 
 - **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
 - **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
 - **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD`: uno schema/payload acquisito non si riacquisisce; discovery generica vietata se un tool noto basta).
-- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (unica copia canonica: questo blocco).
+- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope assegnato**: un NEXT appartenente a un'altra chat/task/workstream si riconosce come stato ma **non si prende in carico**.
 - **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
 
 ### Precedenza
@@ -31,7 +31,7 @@ GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conf
 | Fonte | Quando |
 | --- | --- |
 | OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/… / `CONTEXT-BUDGET-GUARD`) |
-| Roadmap / WU body | pianificazione/backlog, o se §7.1 non basta |
+| Roadmap / WU body | roadmap: strategia prodotto/architettura, planning/backlog, distribution/out-of-scope — **mai** nel CORE BOOT ordinario · WU body: spec/acceptance del blocco |
 | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) | solo al gate QA |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se il seed chat è già fornito |
 | [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md), orchestrator inbox/latest | evidence/history |

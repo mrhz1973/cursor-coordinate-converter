@@ -11,7 +11,6 @@
 **NOTE:** 2026-08-15 REVIEW GPT-SOSTITUTIVA PASS (rete/OPSEC; reviewer AI esterno non usato per vincolo operativo/token) · deploy GIS-only PASS (LF byte 10249369 / SHA-256 `0c1393db…`) · Automated Browser QA PASS (A–L) · LIVE 195
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` **IMPLEMENTED / STATIC PASS** — gate **REVIEW ESTERNA DOWNSTREAM — PENDING**. Runtime LIVE ancora build **194**.
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
 **Workstream precedente:** [`WU-0015`](WU-0015-dflight-hit-test.md) **CLOSED / PASS** (OPTION-B-IMPL-A-FIX5).
 
