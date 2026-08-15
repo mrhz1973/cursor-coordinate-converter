@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` **DEPLOYED** — **Automated Browser QA PASS**. LIVE `eb307db` / build **192**. Parent FIX4 QA operatore FAIL (geometrie nere = fill SVG default su INFO non interattiva) → FIX5 fill sempre trasparente. Helper **0.1.3**. Gate: **QA FINALE CHATGPT — PENDING**. QA operatore **non** attestata. Nessun `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0248_riepilogo_dflight-option-b-fix5-deploy-qa.md`](inbox/2026-08-15_0248_riepilogo_dflight-option-b-fix5-deploy-qa.md).
+2026-08-15 — **WU-0015** · `D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` **DEPLOYED** — **Automated Browser QA PASS** (ri-verifica tip harden). LIVE tip `02be3a5` / build **192** (feature `eb307db` + selftest harden). Causa FIX4: fill SVG default nero su `.dflight-atm09-info-hit` senza `.is-interactive`. Helper **0.1.3**. Gate: **QA FINALE CHATGPT — PENDING**. QA operatore **non** attestata. Nessun `finito`. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0254_riepilogo_dflight-option-b-fix5-browser-qa-tip.md`](inbox/2026-08-15_0254_riepilogo_dflight-option-b-fix5-browser-qa-tip.md).

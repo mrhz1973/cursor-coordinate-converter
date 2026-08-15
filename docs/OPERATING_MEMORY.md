@@ -337,21 +337,21 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | **BLOCCO ATTIVO** | D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 |
 | **STATO BLOCCO** | **DEPLOYED — AUTOMATED BROWSER QA PASS** |
 | **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
-| **REVIEW BASE** | monolite `eb307dba753017eb91819561275ed1dd35b10687` (build 192 FIX5) |
-| **RUNTIME LIVE** | monolite `eb307dba753017eb91819561275ed1dd35b10687` · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper prod **0.1.3** (`:8010`) |
+| **REVIEW BASE** | monolite `eb307dba753017eb91819561275ed1dd35b10687` (build 192 FIX5 feature) |
+| **RUNTIME LIVE** | monolite tip `02be3a5a230c659c94481738af537caac1ecde38` (feature `eb307db` + OptB selftest harden) · build **192** · `APP_BUILD_ID=D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5` · helper prod **0.1.3** (`:8010`) |
 | **NEXT** | QA umana residua (ChatGPT) → `QA D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5 PASS operatore` → auto-`finito` |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0015 **OPEN** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> WU-0015 OPTION-B-FIX5 LIVE `eb307db` / **192** — INFO hits always transparent. Parent FIX4 QA FAIL (black geometries). Deploy + Automated Browser QA PASS. Helper **0.1.3**. QA operatore **non** attestata. Gate: **QA FINALE CHATGPT — PENDING**. Nessun `finito`.
+> WU-0015 OPTION-B-FIX5 LIVE tip `02be3a5` / **192** — INFO hits always transparent. Parent FIX4 QA FAIL (black geometries). Deploy + Automated Browser QA PASS (ri-verifica tip). Helper **0.1.3**. QA operatore **non** attestata. Gate: **QA FINALE CHATGPT — PENDING**. Nessun `finito`.
 > WU-0014 resta CLOSED / PASS. Backlog B–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — DEPLOY PASS + Automated Browser QA PASS — LIVE `eb307db` / **192** — QA FINALE CHATGPT PENDING
-2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — QA OPERATORE FAIL — geometrie nere INFO (superseded by FIX5)
-3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — DEPLOY PASS + Automated Browser QA PASS
-4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — IMPLEMENTED REVIEW REQUIRED
+1. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — DEPLOY PASS + Automated Browser QA PASS — LIVE tip `02be3a5` / **192** — QA FINALE CHATGPT PENDING
+2. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — selftest harden OptB black-vector guards (`02be3a5`)
+3. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — QA OPERATORE FAIL — geometrie nere INFO (superseded by FIX5)
+4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4** — DEPLOY PASS + Automated Browser QA PASS
 5. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3** — DEPLOY PASS + Automated Browser QA PASS
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
