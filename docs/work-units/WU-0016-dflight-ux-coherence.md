@@ -7,8 +7,8 @@
 **CURRENT GATE:** none
 **RUNTIME LIVE:** monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` · build **196** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` · helper **0.1.3**
 **REVIEW BASE:** tip `2917ed207a56df7d54abd4f6923d1d2d0e6903a3` (pre-candidate)
-**NEXT:** backlog D-Flight C–H **NOT OPENED** (prossimo naturale: C ATM09 VISUAL PARITY AUDIT)
-**NOTE:** WU CLOSED 2026-08-15 · B0–B4 PASS · B4 QA operatore PASS · finito Regola H · LIVE `c7d1734` / 196
+**NEXT:** WU-0017 — D-FLIGHT-ATM09-VISUAL-PARITY (candidato C OPEN)
+**NOTE:** WU CLOSED 2026-08-15 · B0–B4 PASS · B4 QA operatore PASS · finito Regola H · LIVE `c7d1734` / 196 · successore C → WU-0017
 <!-- /WU-HOT-HEADER -->
 
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
