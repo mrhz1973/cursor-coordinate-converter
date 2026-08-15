@@ -367,25 +367,25 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0016 — [`D-FLIGHT-UX-COHERENCE`](work-units/WU-0016-dflight-ux-coherence.md) |
-| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A |
-| **STATO BLOCCO** | Deploy tecnico PASS · Automated Browser QA PASS · **QA FINALE CHATGPT — PENDING** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **BLOCCO ATTIVO** | D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A (**CLOSED / PASS**) |
+| **STATO BLOCCO** | **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito) |
+| **GATE CORRENTE** | **none** |
 | **REVIEW BASE** | monolite tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build **193** / TEMPORAL-UX-A) |
 | **RUNTIME LIVE** | monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | QA umana ChatGPT → `QA D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A PASS operatore` → auto-`finito`; poi **AGGIORNA-A** |
+| **NEXT** | **D-FLIGHT-UX-COHERENCE-AGGIORNA-A** (DELICATO) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0016 **OPEN** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 > Bootstrap: `git ls-remote origin refs/heads/main` = verifica **live esterna** (README AI-BOOT + Regola I). **Non** memorizzare HEAD remota in §7.
-> B2 LEGEND-ATM09-UX-A: legenda ATM09 contestuale + pulse raster + scroll pannello. LIVE `0c0f97d` / **194**. Helper **0.1.3**. Preferred/fetch/gate invariati. QA umana PENDING.
+> B2 LEGEND-ATM09-UX-A **CLOSED / PASS**. LIVE `0c0f97d` / **194**. Helper **0.1.3**. NEXT: **AGGIORNA-A**.
 > WU-0015 CLOSED / PASS. Candidati C–H restano NOT OPENED.
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — deploy PASS · Automated Browser QA PASS · QA FINALE CHATGPT — PENDING — LIVE `0c0f97d` / **194**
+1. **D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `0c0f97d` / **194**
 2. **D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A** — CLOSED / PASS (QA operatore + finito) — LIVE `aa6e3ce` / **193**
 3. **D-FLIGHT-UX-COHERENCE-OPEN-A** — CLOSED / PASS docs-only — WU-0016 aperta
 4. **D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5** — CLOSED / PASS (QA operatore + finito) — tip `02be3a5` / **192**
-5. **CONTEXT-BUDGET-GUARD** — docs-only PASS (AI-BOOT + OM §4)
+5. **WIKI-LLM-LEAN-CONSOLIDATION-A** — docs-only (rules stub / OM) — tip `f78355b`
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

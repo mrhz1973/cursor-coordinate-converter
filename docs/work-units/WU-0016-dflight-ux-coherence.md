@@ -3,15 +3,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A (CLOSED / PASS)
+**CURRENT GATE:** none
 **RUNTIME LIVE:** monolite tip `0c0f97d924ae817dc057b2bd384bfb6336435c98` · build **194** · `APP_BUILD_ID=D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` · helper **0.1.3** (invariato)
 **REVIEW BASE:** tip pre-B2 `aa6e3cebf8ca1057ae83545fdca42dbc7cbdc33c` (build 193 / TEMPORAL-UX-A)
-**NEXT:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A (dopo PASS operatore + finito B2)
-**NOTE:** B2 deploy + Automated Browser QA PASS · QA umana PENDING · finito NON eseguito
+**NEXT:** D-FLIGHT-UX-COHERENCE-AGGIORNA-A
+**NOTE:** B2 CLOSED/PASS 2026-08-15 · QA operatore PASS · finito eseguito · LIVE `0c0f97d` / 194
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** OPEN — blocco `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` in gate **QA FINALE CHATGPT — PENDING** (deploy tecnico PASS · Automated Browser QA PASS).
+**Stato:** OPEN (WU) — blocco `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito).
 **Origine:** candidato **B** del backlog D-Flight emerso dalla QA build **183** (registrato in [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — *D-Flight — backlog emerso QA build 183*).
 **Workstream precedente:** [`WU-0015`](WU-0015-dflight-hit-test.md) **CLOSED / PASS** (OPTION-B-IMPL-A-FIX5).
 
@@ -68,7 +68,7 @@ Quindi la **separazione dei master è DELICATA** e **non** deve essere implement
 | --- | --- | --- | --- |
 | **B0** | `D-FLIGHT-UX-COHERENCE-OPEN-A` | docs-only | Apertura WU — **CLOSED / PASS** con questo task |
 | **B1** | `D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A` | **ROUTINE** | **CLOSED / PASS** — Seleziona/Deseleziona tutte; pulse/fade; legenda D-Flight contestuale · LIVE `aa6e3ce` / **193** |
-| **B2** | `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` | **ROUTINE** | Deploy + Automated Browser QA PASS · gate **QA FINALE CHATGPT — PENDING** · LIVE `0c0f97d` / **194** |
+| **B2** | `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` | **ROUTINE** | **CLOSED / PASS** — legenda ATM09 contestuale + pulse raster + scroll pannello · LIVE `0c0f97d` / **194** |
 | **B3** | `D-FLIGHT-UX-COHERENCE-AGGIORNA-A` | **DELICATO** | CTA Aggiorna unificata; refresh path/gate esistenti; reeval locale sempre; nessun nuovo endpoint; Apply Update separato. Review DELICATA rete/OPSEC |
 | **B4** | `D-FLIGHT-UX-COHERENCE-MASTER-VIS-A` | **DELICATO** | Due master indipendenti; decoupling ATM09 ↔ cinque temporal; lifecycle preferred/fetch/tiles/INFO solo da master ATM09 + gate; preservare FIX5. Blocco **più rischioso** |
 
