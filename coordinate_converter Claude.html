@@ -1977,13 +1977,6 @@ html[data-theme="dark"] .bbox-overlay{
 html[data-theme="dark"] .tile-wrap .tile.tile-atm09{
   opacity:1;
 }
-/* FIX4: any restrictive temporal filter hides ATM09 raster (official tiles not temporally filterable). */
-.tile-map.atm09-temporal-hidden .tile-wrap .tile.tile-atm09{
-  opacity:0;
-}
-html[data-theme="dark"] .tile-map.atm09-temporal-hidden .tile-wrap .tile.tile-atm09{
-  opacity:0;
-}
 html[data-theme="dark"] .tile-wrap .tile.tile-seamark{
   opacity:.95;
   mix-blend-mode:screen;
@@ -14139,6 +14132,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <input type="checkbox" id="dflightVisibleToggle">
       <span>Mostra zone sulla mappa</span>
     </label>
+    <label class="offcache-hintchk" id="dflightAtm09MasterLabel" title="Attiva o disattiva l’overlay raster ATM09 ufficiale e il relativo strato informativo, in modo indipendente dalle zone D-Flight.">
+      <input type="checkbox" id="dflightAtm09MasterToggle">
+      <span>Mostra overlay ATM09 ufficiale</span>
+    </label>
     <div id="dflightTemporalFilterGroup" class="dflight-temporal-filters" role="group" aria-labelledby="dflightTemporalFilterTitle" hidden>
       <h3 id="dflightTemporalFilterTitle" class="dflight-legend-heading hint" data-i18n="dflight.filter.temporal.title">Filtra per stato temporale</h3>
       <label class="dflight-temporal-filters-item" title="Mostra o nasconde le zone attive in questo momento.">
@@ -14165,7 +14162,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="btn btn-sm" id="dflightTfSelectAll" data-i18n="dflight.filter.temporal.selectAll" data-i18n-tip="dflight.filter.temporal.selectAllTip" title="Imposta ON tutti e cinque i filtri temporali.">Seleziona tutte</button>
         <button type="button" class="btn btn-sm" id="dflightTfDeselectAll" data-i18n="dflight.filter.temporal.deselectAll" data-i18n-tip="dflight.filter.temporal.deselectAllTip" title="Imposta OFF tutti e cinque i filtri temporali.">Deseleziona tutte</button>
       </div>
-      <p id="dflightTemporalAtm09Hint" class="hint dflight-temporal-atm09-hint" data-i18n="dflight.filter.temporal.atm09DimHint" hidden>Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.</p>
     </div>
     <p id="dflightNoDatasetHint" class="hint" hidden>Apri il pannello con rete consentita per caricare automaticamente le zone dal helper.</p>
     <h3 id="dflightLegendHeading" class="dflight-legend-heading hint">Legenda restrizioni</h3>
@@ -16436,7 +16432,6 @@ const I18N = {
     "dflight.filter.temporal.deselectAll":"Deseleziona tutte",
     "dflight.filter.temporal.selectAllTip":"Imposta ON tutti e cinque i filtri temporali.",
     "dflight.filter.temporal.deselectAllTip":"Imposta OFF tutti e cinque i filtri temporali.",
-    "dflight.filter.temporal.atm09DimHint":"Filtro temporale attivo: raster ATM09 ufficiale nascosto perché non filtrabile per stato.",
     "dflight.filter.temporal.atm09AllOffHint":"Tutti i filtri temporali disattivati: ATM09 nascosto; nessuna zona selezionabile.",
     "dflight.field.name":"Nome",
     "dflight.field.zoneId":"ID zona",
@@ -19995,7 +19990,6 @@ const I18N = {
     "batch.th.loc":"Locality",
     "batch.locCol":"Add Locality column (reverse geocoding, 1 req/s)",
     "batch.locTip":"Each valid row sends a query to Nominatim (~1/sec). Respects the usage policy.",
-    "dflight.filter.temporal.atm09DimHint":"Temporal filter active: official ATM09 raster hidden because it cannot be filtered by state."
   },
   fr: {
     "app.title":"GOI GIS Tool by Marty",
@@ -21959,7 +21953,6 @@ const I18N = {
     "routing.routeTooLong":"Itinéraire trop long (maximum 2000 points).",
     "routing.routeTooShort":"Itinéraire trop court (minimum 2 points).",
     "routing.archiveFull":"Archive de traces pleine (maximum 50).",
-    "dflight.filter.temporal.atm09DimHint":"Filtre temporel actif : raster ATM09 officiel masqué car non filtrable par état."
   }
 };
 
@@ -23501,10 +23494,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-AGGIORNA-A";
-const APP_BUILD_DETAIL = "Unified Aggiorna: gated remote refresh + always local temporal reeval.";
+const APP_BUILD_ID = "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A";
+const APP_BUILD_DETAIL = "Independent masters: D-Flight zones vs ATM09 overlay; ATM09 decoupled from temporal filters.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 195;
+const APP_BUILD_NUM = 196;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -35959,11 +35952,9 @@ function dflightTemporalFilterAnyEnabled(){
   }
   return false;
 }
-/** ATM09 INFO hit-test only when preferred+visible and temporal filter is NOT restrictive (ALL ON). */
+/** MASTER-VIS-A: ATM09 INFO hit-test follows the ATM09 master (preferred) only — D-Flight overlay and temporal filters are irrelevant. */
 function dflightAtm09InfoHitInteractiveAllowed(){
-  const notRestrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
-    ? !dflightTemporalFilterIsRestrictive() : true;
-  return !!(_dflightAtm09Preferred && _dflightOverlayVisible && notRestrictive);
+  return !!_dflightAtm09Preferred;
 }
 /** Toggle .is-interactive on existing ATM09 INFO overlay without refetch/redraw of FC. */
 function dflightAtm09SyncInfoHitInteractivity(){
@@ -36116,36 +36107,9 @@ function dflightSetAllTemporalFilters(enabled){
   dflightApplyTemporalFilterChange({ newlyOn: newlyOn, newlyOff: newlyOff, batch: true });
   return { ok: true, newlyOn: newlyOn, newlyOff: newlyOff };
 }
-/** FIX4: hide ATM09 raster whenever temporal filter is restrictive; INFO interactive only when ALL ON. */
+/** MASTER-VIS-A (WU-0016 §1.6): temporal filters no longer touch ATM09 in any way.
+    Kept as a no-side-effect sync hook for INFO interactivity only. */
 function dflightAtm09SyncTemporalContextUi(){
-  const restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
-    ? !!dflightTemporalFilterIsRestrictive() : false;
-  try {
-    const root = document.getElementById("miniMap");
-    const tm = root && root.querySelector(".tile-map");
-    if (tm){
-      // Drop legacy FIX1/FIX3 classes if present on a long-lived tile-map.
-      tm.classList.remove("atm09-temporal-dim");
-      tm.classList.remove("atm09-temporal-all-off");
-      if (restrictive) tm.classList.add("atm09-temporal-hidden");
-      else tm.classList.remove("atm09-temporal-hidden");
-    }
-  } catch(_){}
-  try {
-    const hint = document.getElementById("dflightTemporalAtm09Hint");
-    if (hint){
-      hint.hidden = !restrictive;
-      if (restrictive){
-        try {
-          const key = "dflight.filter.temporal.atm09DimHint";
-          let txt = "";
-          if (typeof t === "function") txt = t(key);
-          if ((!txt || txt === key) && typeof tIt === "function") txt = tIt(key);
-          if (txt && txt !== key) hint.textContent = txt;
-        } catch(_){}
-      }
-    }
-  } catch(_){}
   try { if (typeof dflightAtm09SyncInfoHitInteractivity === "function") dflightAtm09SyncInfoHitInteractivity(); } catch(_){}
 }
 let _dflightDetailsOpen = false;
@@ -36351,14 +36315,12 @@ function dflightDrawOverlayDom(tileMap, dataset){
   const zones = Array.isArray(dataset.zones) ? dataset.zones : [];
   report.zone_count_in = zones.length;
   // ATM09 visual preferred: skip colored NO_FLY_ZONE SVG (tiles provide paint).
-  // FIX1: when temporal filter is restrictive, bypass suppress so filtered vectors paint immediately.
+  // MASTER-VIS-A: temporal filters no longer bypass suppress (ATM09 decoupled from them).
   // HIT-TEST-FIX-A: when suppress, draw interaction-only hit layer (selezione non dipende da /atm09/info).
   // FIX2: INFO unavailable → visible NFZ vector fallback (never hitOnly-invisible alone).
   const atm09Suppress = (typeof dflightAtm09ShouldSuppressNfzColors === "function"
       && dflightAtm09ShouldSuppressNfzColors());
-  const hitOnly = (atm09Suppress
-      && !dflightTemporalFilterIsRestrictive()
-      && !_dflightAtm09InfoUnavailable);
+  const hitOnly = (atm09Suppress && !_dflightAtm09InfoUnavailable);
   if (hitOnly) report.suppressed_for_atm09 = true;
   else if (atm09Suppress && _dflightAtm09InfoUnavailable) report.atm09_info_visible_fallback = true;
   const root = document.getElementById("miniMap");
@@ -36508,12 +36470,10 @@ function dflightSetOverlayVisible(visible){
     return { ok: false, visible: false, error_message: "no_dataset" };
   }
   _dflightOverlayVisible = next;
-  try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
   const root = document.getElementById("miniMap");
   const tm = root && root.querySelector(".tile-map");
   if (!_dflightOverlayVisible){
     dflightRemoveOverlayDom(tm);
-    try { if (typeof dflightAtm09RemoveInfoOverlayDom === "function") dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
     _dflightSelectedZoneId = null;
     try { dflightCloseDetailsPanel(); } catch(_){}
   } else if (tm && _dflightOverlaySession){
@@ -37031,7 +36991,7 @@ function dflightOpenControlPanel(){
       if (wantRestore && !_dflightOverlayVisible && typeof dflightSetOverlayVisible === "function"){
         dflightSetOverlayVisible(true);
       }
-      if (_dflightOverlayVisible){
+      if (_dflightOverlayVisible || _dflightAtm09Preferred || _dflightAtm09MasterUi){
         dflightMaybeStartAtm09AfterDatasetReady({ source: "reopen" });
       }
     }
@@ -37105,6 +37065,11 @@ function dflightSyncPanelUi(){
   if (tog){
     tog.disabled = !hasDs;
     tog.checked = !!(hasDs && _dflightOverlayVisible);
+  }
+  const atmMaster = document.getElementById("dflightAtm09MasterToggle");
+  if (atmMaster){
+    atmMaster.disabled = !hasDs;
+    atmMaster.checked = !!(hasDs && _dflightAtm09MasterUi);
   }
   const tfGrp = document.getElementById("dflightTemporalFilterGroup");
   if (tfGrp){
@@ -37289,6 +37254,17 @@ function dflightEnsureUiWired(){
       }
     } catch(_){}
   });
+  const atmM = document.getElementById("dflightAtm09MasterToggle");
+  if (atmM && !atmM._dflightAtm09MasterBound){
+    atmM._dflightAtm09MasterBound = true;
+    atmM.addEventListener("change", function(){
+      _dflightAtm09MasterUi = !!atmM.checked;
+      try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
+      /* Canonical redraw (same entry as the D-Flight toggle) so ATM09 tiles appear/disappear with the master. */
+      try { if (typeof dflightRequestMapRedrawForDflight === "function") dflightRequestMapRedrawForDflight("atm09_master_toggle"); } catch(_){}
+      try { dflightSyncPanelUi(); } catch(_){}
+    });
+  }
 }
 
 function dflightSelfTestCDE(){
@@ -38547,9 +38523,9 @@ function dflightSelfTestF(){
       }
     })());
 
-    add("F_aggiorna_build_195",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("F_mvisa_build_196",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -38819,7 +38795,7 @@ function dflightSelfTestTf(){
       }
     })());
 
-    add("Tf_FIX1_atm09_restrictive_runs_filter", (function(){
+    add("Tf_MVISA_atm09_suppress_respects_filters", (function(){
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
       const layer = tm && tm.querySelector(".tile-layer");
@@ -38835,11 +38811,11 @@ function dflightSelfTestTf(){
         _dflightOverlayVisible = true;
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         const report = dflightDrawOverlayDom(tm, ds);
-        const gFut = tm.querySelector('.dflight-zone[data-zone-id="tf:2"]');
-        const gAct = tm.querySelector('.dflight-zone[data-zone-id="tf:1"]');
+        const gFut = tm.querySelector('[data-zone-id="tf:2"]');
+        const gAct = tm.querySelector('.dflight-zone-hit[data-zone-id="tf:1"]');
         const ft = report && (report.filtered_temporal || 0);
-        return !!(report && report.ok && report.suppressed_for_atm09 !== true
-          && ft >= 1 && !gFut && !!gAct);
+        return !!(report && report.ok && report.suppressed_for_atm09 === true
+          && report.hit_only === true && ft >= 1 && !gFut && !!gAct);
       } finally {
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
         _dflightOverlayVisible = prevVis;
@@ -38848,7 +38824,7 @@ function dflightSelfTestTf(){
       }
     })());
 
-    add("Tf_FIX1_all_off_zero_vectors", (function(){
+    add("Tf_MVISA_all_off_zero_hits", (function(){
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
       const layer = tm && tm.querySelector(".tile-layer");
@@ -38863,10 +38839,11 @@ function dflightSelfTestTf(){
         _dflightOverlayVisible = true;
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         const report = dflightDrawOverlayDom(tm, ds);
-        const paths = tm.querySelectorAll(".dflight-zone-overlay path.dflight-volume");
-        const groups = tm.querySelectorAll(".dflight-zone-overlay .dflight-zone");
-        return !!(report && report.ok && report.suppressed_for_atm09 !== true
-          && (report.path_count || 0) === 0 && paths.length === 0 && groups.length === 0
+        const hits = tm.querySelectorAll(".dflight-volume-hit");
+        const vols = tm.querySelectorAll(".dflight-volume");
+        return !!(report && report.ok && report.suppressed_for_atm09 === true
+          && report.hit_only === true
+          && (report.path_count || 0) === 0 && hits.length === 0 && vols.length === 0
           && (report.filtered_temporal || 0) >= 2);
       } finally {
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = prevSuppress;
@@ -39568,9 +39545,9 @@ function dflightSelfTestTf(){
       && String(dflightSyncAdaptivePanelGeometry).indexOf("dflightComputePanelUsableRect") >= 0
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
-    add("Tf_build_195",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("Tf_build_196",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39630,6 +39607,8 @@ const DFLIGHT_ATM09_INFO_VIEWPORT_MARGIN = 0.08;
 const DFLIGHT_ATM09_INFO_TIMEOUT_MS = 20000;
 /** Session-only ATM09 state — NEVER persisted. */
 let _dflightAtm09Preferred = false;
+/** MASTER-VIS-A: session-only UI intent for the ATM09 master — NEVER persisted. */
+let _dflightAtm09MasterUi = true;
 /** True only when ALL expected ATM09 tiles of the current gen loaded with zero errors. */
 let _dflightAtm09Ready = false;
 let _dflightAtm09TileGen = 0;
@@ -39676,7 +39655,6 @@ function dflightAtm09IsReady(){
 
 /** Eligible for ATM09 regardless of preferred sync — gates only (no preferred). */
 function dflightAtm09IsEligibleForStart(zoom){
-  if (!_dflightOverlayVisible) return false;
   if (!dflightClientNetworkAllowed()) return false;
   if (!dflightHelperBaseUrl()) return false;
   let z = Number(zoom);
@@ -39711,10 +39689,6 @@ function dflightRequestMapRedrawForDflight(_reason){
  */
 function dflightMaybeStartAtm09AfterDatasetReady(opts){
   opts = opts || {};
-  if (!_dflightOverlayVisible){
-    _dflightAtm09StartPending = false;
-    return { started: false, reason: "overlay_hidden" };
-  }
   if (!dflightAtm09IsEligibleForStart()){
     _dflightAtm09StartPending = false;
     try { if (typeof dflightAtm09SyncPreferredFromUi === "function") dflightAtm09SyncPreferredFromUi(); } catch(_){}
@@ -39784,7 +39758,6 @@ function dflightAtm09SetReady(next){
 function dflightAtm09RecomputeReady(){
   const gates = !!(
     _dflightAtm09Preferred &&
-    _dflightOverlayVisible &&
     dflightClientNetworkAllowed() &&
     dflightHelperBaseUrl()
   );
@@ -39921,7 +39894,6 @@ function dflightAtm09OnNetworkGateOff(){
 }
 
 function dflightAtm09OverlayVisible(zoom){
-  if (!_dflightOverlayVisible) return false;
   if (!_dflightAtm09Preferred) return false;
   if (!dflightClientNetworkAllowed()) return false;
   if (!dflightHelperBaseUrl()) return false;
@@ -39962,7 +39934,6 @@ function dflightAtm09PulseOverlayFx(){
     const root = document.getElementById("miniMap");
     const tm = root && root.querySelector(".tile-map");
     if (!tm) return;
-    if (tm.classList.contains("atm09-temporal-hidden")) return;
     const tiles = tm.querySelectorAll(".tile-wrap .tile.tile-atm09");
     if (!tiles || !tiles.length) return;
     tm.classList.add("is-atm09-overlay-pulse");
@@ -40009,8 +39980,14 @@ function dflightAtm09SetPreferred(on){
   }
 }
 
+/* MASTER-VIS-A: preferred depends ONLY on the ATM09 master + existing gates (network/OPSEC/offline,
+   helper availability, session dataset). Never on the D-Flight overlay (_dflightOverlayVisible)
+   nor on the temporal filters. An ON master never authorizes network when gates forbid it. */
 function dflightAtm09SyncPreferredFromUi(){
-  const want = !!(_dflightOverlayVisible && dflightClientNetworkAllowed() && dflightHelperBaseUrl());
+  const want = !!(_dflightAtm09MasterUi
+    && dflightHasSessionDataset()
+    && dflightClientNetworkAllowed()
+    && dflightHelperBaseUrl());
   if (want !== _dflightAtm09Preferred) dflightAtm09SetPreferred(want);
   else if (want){
     try { dflightAtm09EnsureLegend(); } catch(_){}
@@ -40114,7 +40091,7 @@ function dflightAtm09EnsureInfoAboveHitLayer(tileMap){
 }
 
 function dflightAtm09ScheduleInfoFetch(){
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+  if (!_dflightAtm09Preferred) return;
   if (!dflightClientNetworkAllowed()) return;
   if (_dflightAtm09InfoTimer){
     try { clearTimeout(_dflightAtm09InfoTimer); } catch(_){}
@@ -40366,7 +40343,7 @@ function dflightAtm09FilterFeaturesToBbox(features, bbox){
 async function dflightAtm09FetchInfoCellRaw(bboxStr, ctl, token){
   if (token !== _dflightAtm09InfoToken) return { kind: "stale" };
   if (!dflightClientNetworkAllowed()) return { kind: "gate" };
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return { kind: "gate" };
+  if (!_dflightAtm09Preferred) return { kind: "gate" };
   const base = dflightHelperBaseUrl();
   if (!base) return { kind: "error" };
   const url = base + "/atm09/info?bbox=" + encodeURIComponent(bboxStr);
@@ -40430,7 +40407,7 @@ async function dflightAtm09FetchInfoSubdivide(rootBbox, token, ctl, stats, seedD
   async function processOne(item){
     if (token !== _dflightAtm09InfoToken) return;
     if (fatal) return;
-    if (!dflightClientNetworkAllowed() || !_dflightAtm09Preferred || !_dflightOverlayVisible){
+    if (!dflightClientNetworkAllowed() || !_dflightAtm09Preferred){
       fatal = true;
       stats.reason = "gate_off";
       return;
@@ -40509,7 +40486,7 @@ async function dflightAtm09FetchInfoSubdivide(rootBbox, token, ctl, stats, seedD
 }
 
 async function dflightAtm09FetchInfoForViewport(){
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+  if (!_dflightAtm09Preferred) return;
   if (!dflightClientNetworkAllowed()) return;
   const base = dflightHelperBaseUrl();
   if (!base) return;
@@ -40632,7 +40609,7 @@ function dflightAtm09DrawInfoHitOverlay(tileMap, fc){
   if (!tileMap) return;
   dflightAtm09RemoveInfoOverlayDom(tileMap);
   if (!fc || !Array.isArray(fc.features) || !fc.features.length) return;
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+  if (!_dflightAtm09Preferred) return;
   const root = document.getElementById("miniMap");
   if (!root) return;
   const tileLayer = tileMap.querySelector(".tile-layer");
@@ -40745,7 +40722,7 @@ function dflightAtm09AttachInteraction(tileMap){
     if (hoverTimer){ try { clearTimeout(hoverTimer); } catch(_){} hoverTimer = null; }
   };
   tileMap.addEventListener("click", function(ev){
-    if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+    if (!_dflightAtm09Preferred) return;
     if (typeof dflightAtm09InfoHitInteractiveAllowed === "function" && !dflightAtm09InfoHitInteractiveAllowed()) return;
     const path = ev.target && ev.target.closest && ev.target.closest(".dflight-atm09-info-hit[data-zone-id]");
     if (!path) return;
@@ -40763,7 +40740,7 @@ function dflightAtm09AttachInteraction(tileMap){
     }
   }, true);
   tileMap.addEventListener("pointerover", function(ev){
-    if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return;
+    if (!_dflightAtm09Preferred) return;
     if (typeof dflightAtm09InfoHitInteractiveAllowed === "function" && !dflightAtm09InfoHitInteractiveAllowed()){
       try { if (typeof dflightHideHoverHint === "function") dflightHideHoverHint(); } catch(_){}
       return;
@@ -40796,7 +40773,7 @@ function dflightAtm09AttachInteraction(tileMap){
 }
 
 function dflightAtm09ShouldSuppressNfzColors(){
-  if (!_dflightAtm09Preferred || !_dflightOverlayVisible) return false;
+  if (!_dflightAtm09Preferred) return false;
   if (!dflightClientNetworkAllowed() || !dflightHelperBaseUrl()) return false;
   if (!_dflightAtm09Ready) return false;
   try {
@@ -40878,12 +40855,32 @@ function dflightSelfTestAtm09(){
     const u = dflightAtm09LegendUrl();
     return u === "http://127.0.0.1:8010/atm09/legend.png";
   })());
-  add("ATM09_preferred_only_with_overlay", !_dflightAtm09Preferred || !!_dflightOverlayVisible);
   add("ATM09_no_boot_info_fc", _dflightAtm09InfoFc == null);
-  add("ATM09_visible_requires_overlay", (function(){
+  add("ATM09_preferred_independent_of_overlay", (function(){
+    const prevMaster = _dflightAtm09MasterUi;
+    const prevSess = _dflightClientSession;
+    try {
+      _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+      if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
+      _dflightAtm09MasterUi = true;
+      _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+      _dflightOverlayVisible = false;
+      dflightAtm09SyncPreferredFromUi();
+      return _dflightAtm09Preferred === true;
+    } finally {
+      _dflightAtm09MasterUi = false;
+      try { dflightAtm09SyncPreferredFromUi(); } catch(_){}
+      if (_dflightAtm09InfoTimer){ try { clearTimeout(_dflightAtm09InfoTimer); } catch(_){} _dflightAtm09InfoTimer = null; }
+      _dflightAtm09MasterUi = prevMaster;
+      _dflightClientSession = prevSess;
+    }
+  })());
+  add("ATM09_visible_with_master_only", (function(){
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
     _dflightOverlayVisible = false;
     _dflightAtm09Preferred = true;
-    return dflightAtm09OverlayVisible(11) === false;
+    return dflightAtm09OverlayVisible(11) === true;
   })());
   add("ATM09_no_dflight_it_in_urls", (function(){
     _dflightHelperBaseUrlOverride = "http://100.114.7.53:8010";
@@ -40941,16 +40938,25 @@ function dflightSelfTestAtm09(){
     if (typeof state !== "undefined") state.forceOffline = false;
     return noTimer && _dflightAtm09InfoToken === tok0;
   })());
-  add("FIX1_G_gate_true_without_overlay_no_auto_fetch", (function(){
+  add("FIX1_G_master_off_no_auto_fetch", (function(){
     if (typeof state !== "undefined") state.forceOffline = false;
-    _dflightOverlayVisible = false;
-    _dflightAtm09Preferred = false;
-    _dflightAtm09InfoTimer = null;
-    const tok0 = _dflightAtm09InfoToken;
-    dflightAtm09SyncPreferredFromUi();
-    return _dflightAtm09Preferred === false
-      && _dflightAtm09InfoTimer == null
-      && _dflightAtm09InfoToken === tok0;
+    const prevMaster = _dflightAtm09MasterUi;
+    const prevSess = _dflightClientSession;
+    try {
+      _dflightOverlayVisible = false;
+      _dflightAtm09Preferred = false;
+      _dflightAtm09MasterUi = false;
+      _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+      _dflightAtm09InfoTimer = null;
+      const tok0 = _dflightAtm09InfoToken;
+      dflightAtm09SyncPreferredFromUi();
+      return _dflightAtm09Preferred === false
+        && _dflightAtm09InfoTimer == null
+        && _dflightAtm09InfoToken === tok0;
+    } finally {
+      _dflightAtm09MasterUi = prevMaster;
+      _dflightClientSession = prevSess;
+    }
   })());
   add("FIX1_H_boot_zero_atm09_fetch_state", _dflightAtm09InfoFc == null && typeof dflightAtm09ScheduleInfoFetch === "function");
   add("FIX1_I_zero_direct_dflight_it", (function(){
@@ -41353,8 +41359,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_195", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("H_build_196", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41455,7 +41461,7 @@ function dflightSelfTestH(){
         _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
         dflightAtm09SyncPreferredFromUi = function(){
           syncN++;
-          _dflightAtm09Preferred = !!( _dflightOverlayVisible && dflightClientNetworkAllowed() && dflightHelperBaseUrl() );
+          _dflightAtm09Preferred = !!( _dflightAtm09MasterUi && dflightClientNetworkAllowed() && dflightHelperBaseUrl() );
         };
         renderTileMap = function(){ renderN++; };
         const r1 = dflightMaybeStartAtm09AfterDatasetReady({ source: "selftest" });
@@ -41593,6 +41599,7 @@ function dflightSelfTestH(){
         const prevCloseDetails = typeof dflightCloseDetailsPanel === "function" ? dflightCloseDetailsPanel : null;
         const prevMaybe = typeof dflightMaybeStartAtm09AfterDatasetReady === "function" ? dflightMaybeStartAtm09AfterDatasetReady : null;
         const prevRestoreFlag = _dflightRestoreOverlayOnPanelReopen;
+        const prevMasterFix2 = _dflightAtm09MasterUi;
         const prevDetailsOpen = _dflightDetailsOpen;
         const prevOvSessFix2 = _dflightOverlaySession;
         const prevClientSessFix2 = _dflightClientSession;
@@ -41660,6 +41667,7 @@ function dflightSelfTestH(){
           setVisCalls = []; maybeStartN = 0;
           _dflightOverlayVisible = false;
           _dflightAtm09Preferred = false;
+          _dflightAtm09MasterUi = false;
           _dflightRestoreOverlayOnPanelReopen = false;
           _dflightPanelOpen = true;
           dflightCloseControlPanel();
@@ -41673,6 +41681,7 @@ function dflightSelfTestH(){
           try { if (prevCloseDetails) dflightCloseDetailsPanel = prevCloseDetails; } catch(_){}
           try { if (prevMaybe) dflightMaybeStartAtm09AfterDatasetReady = prevMaybe; } catch(_){}
           _dflightRestoreOverlayOnPanelReopen = prevRestoreFlag;
+          _dflightAtm09MasterUi = prevMasterFix2;
           _dflightDetailsOpen = prevDetailsOpen;
           _dflightOverlaySession = prevOvSessFix2;
           _dflightClientSession = prevClientSessFix2;
@@ -41848,9 +41857,9 @@ function dflightSelfTestHitFixA(){
   const prevUnavail = _dflightAtm09InfoUnavailable;
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
-    add("HitA_build_195",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("HitA_build_196",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42168,7 +42177,7 @@ function dflightSelfTestHitFixA(){
       }
     })());
 
-    add("HitA_temporal_restrictive", (function(){
+    add("HitA_MVISA_suppress_respects_filters", (function(){
       if (!mapReady) return true;
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
         _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -42179,12 +42188,13 @@ function dflightSelfTestHitFixA(){
         if (prevSuppress) dflightAtm09ShouldSuppressNfzColors = function(){ return true; };
         const report = dflightDrawOverlayDom(tm, ds);
         const gFut = tm.querySelector('[data-zone-id="hita:2"]');
-        const gAct = tm.querySelector('[data-zone-id="hita:1"]');
-        const hitOnly = tm.querySelectorAll(".dflight-zone-hitlayer").length;
-        return !!(report && report.ok && report.suppressed_for_atm09 !== true
-          && !gFut && !!gAct && hitOnly === 0);
+        const gAct = tm.querySelector('.dflight-zone-hit[data-zone-id="hita:1"]');
+        const hitLayers = tm.querySelectorAll(".dflight-zone-hitlayer").length;
+        return !!(report && report.ok && report.suppressed_for_atm09 === true
+          && report.hit_only === true && !gFut && !!gAct && hitLayers === 1);
       } finally {
         try { dflightRemoveOverlayDom(tm); } catch(_){}
+        dflightSetTemporalFilter("FUTURE", true);
       }
     })());
 
@@ -42861,9 +42871,9 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFetchStats = null;
     _dflightAtm09InfoLastFailReason = null;
 
-    add("OptB_build_195",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("OptB_build_196",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -42947,7 +42957,7 @@ function dflightSelfTestOptB(){
     })());
 
 
-    add("OptB_FIX4_restrictive_hides_atm09_and_info", (function(){
+    add("OptB_MVISA_atm09_independent_of_filters", (function(){
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
       if (!tm) return true;
@@ -42956,7 +42966,7 @@ function dflightSelfTestOptB(){
       if (!img){
         fixture = document.createElement("div");
         fixture.className = "tile-wrap";
-        fixture.setAttribute("data-optb-fix4-fixture", "1");
+        fixture.setAttribute("data-optb-mvisa-fixture", "1");
         img = document.createElement("img");
         img.className = "tile tile-atm09";
         img.alt = "";
@@ -42990,7 +43000,7 @@ function dflightSelfTestOptB(){
         const ns = "http://www.w3.org/2000/svg";
         fixtureSvg = document.createElementNS(ns, "svg");
         fixtureSvg.setAttribute("class", "dflight-atm09-info-overlay");
-        fixtureSvg.setAttribute("data-optb-fix4-fixture", "1");
+        fixtureSvg.setAttribute("data-optb-mvisa-fixture", "1");
         (tm.querySelector(".tile-layer") || tm).appendChild(fixtureSvg);
 
         function setAll(on){
@@ -43001,44 +43011,35 @@ function dflightSelfTestOptB(){
         setAll(true);
         dflightAtm09SyncTemporalContextUi();
         const allOnOk = dflightTemporalFilterIsRestrictive() === false
-          && !tm.classList.contains("atm09-temporal-hidden")
           && near(opacityOf(img), 1)
           && fixtureSvg.classList.contains("is-interactive")
           && dflightAtm09InfoHitInteractiveAllowed() === true;
 
-        // 4/5 ON (FUTURE off)
+        // 4/5 ON (FUTURE off): ATM09 must stay fully on
         _dflightTemporalFilter.FUTURE = false;
         dflightAtm09SyncTemporalContextUi();
         const fourOk = dflightTemporalFilterIsRestrictive() === true
-          && tm.classList.contains("atm09-temporal-hidden")
-          && near(opacityOf(img), 0)
-          && !fixtureSvg.classList.contains("is-interactive")
-          && dflightAtm09InfoHitInteractiveAllowed() === false
-          && !tm.classList.contains("atm09-temporal-dim");
+          && !tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 1)
+          && fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === true;
 
         // 1/5 ON
         setAll(false);
         _dflightTemporalFilter.ACTIVE_NOW = true;
         dflightAtm09SyncTemporalContextUi();
         const oneOk = dflightTemporalFilterIsRestrictive() === true
-          && tm.classList.contains("atm09-temporal-hidden")
-          && near(opacityOf(img), 0)
-          && !fixtureSvg.classList.contains("is-interactive");
+          && !tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 1)
+          && fixtureSvg.classList.contains("is-interactive");
 
         // 0/5 ON
         setAll(false);
         dflightAtm09SyncTemporalContextUi();
-        const vols = document.querySelectorAll(".dflight-volume-hit, .dflight-volume").length;
-        // If live overlay present, force redraw under ALL OFF; else volumes may be 0 already.
-        try {
-          if (typeof dflightRedrawOverlayFromSession === "function")
-            dflightRedrawOverlayFromSession(tm);
-        } catch(_){}
-        const vols2 = document.querySelectorAll(".dflight-volume-hit, .dflight-volume").length;
-        const zeroOk = near(opacityOf(img), 0)
-          && !fixtureSvg.classList.contains("is-interactive")
-          && dflightAtm09InfoHitInteractiveAllowed() === false
-          && vols2 === 0;
+        const zeroOk = !tm.classList.contains("atm09-temporal-hidden")
+          && near(opacityOf(img), 1)
+          && fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === true;
 
         // back to 5/5 without refetch (same SVG node)
         const sameSvg = fixtureSvg;
@@ -43046,13 +43047,10 @@ function dflightSelfTestOptB(){
         dflightAtm09SyncTemporalContextUi();
         const backOk = fixtureSvg === sameSvg
           && near(opacityOf(img), 1)
-          && fixtureSvg.classList.contains("is-interactive")
           && dflightTemporalFilterIsRestrictive() === false;
 
-        // CSS: no 0.35 dim rules; aligned hidden selector
-        let hasDim035 = false;
-        let hasAlignedHidden = false;
-        let hasInvertedHidden = false;
+        // CSS: FIX4 hidden/dim rules fully removed
+        let hasAnyHidden = false;
         try {
           const sheets = document.styleSheets;
           for (let si = 0; si < sheets.length; si++){
@@ -43060,22 +43058,19 @@ function dflightSelfTestOptB(){
             try { rules = sheets[si].cssRules; } catch (_){ continue; }
             if (!rules) continue;
             for (let ri = 0; ri < rules.length; ri++){
-              const rule = rules[ri];
-              const sel = rule.selectorText || "";
-              if (sel.indexOf("tile-atm09") >= 0 && sel.indexOf("atm09-temporal-dim") >= 0) hasDim035 = true;
-              if (sel.indexOf("atm09-temporal-hidden") >= 0 && sel.indexOf("tile-atm09") >= 0){
-                if (/\.tile-wrap\s+\.tile-map\.atm09-temporal-hidden/.test(sel)) hasInvertedHidden = true;
-                if (/\.tile-map\.atm09-temporal-hidden\s+\.tile-wrap\s+\.tile\.tile-atm09/.test(sel)) hasAlignedHidden = true;
-                try {
-                  if (rule.style && String(rule.style.opacity) === "0.35") hasDim035 = true;
-                } catch(_){}
-              }
+              const sel = rules[ri].selectorText || "";
+              if (sel.indexOf("atm09-temporal-hidden") >= 0) hasAnyHidden = true;
             }
           }
         } catch (_){}
+        // Source: no residual class writes (idempotent removes are tolerated in SyncTemporalContextUi)
+        const srcSync = String(dflightAtm09SyncTemporalContextUi);
+        const noHiddenWrite = srcSync.indexOf('classList.add("atm09-temporal-hidden")') < 0
+          && srcSync.indexOf("atm09-temporal-dim") < 0
+          && srcSync.indexOf("atm09-temporal-all-off") < 0;
 
         return !!(allOnOk && fourOk && oneOk && zeroOk && backOk
-          && hasAlignedHidden && !hasInvertedHidden && !hasDim035);
+          && !hasAnyHidden && noHiddenWrite);
       } finally {
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
           const st = DFLIGHT_TEMPORAL_STATES[i];
@@ -43145,16 +43140,12 @@ function dflightSelfTestOptB(){
     })());
 
 
-    add("OptB_FIX5_info_fill_transparent_when_restrictive", (function(){
+    add("OptB_FIX5_info_fill_transparent", (function(){
       const root = document.getElementById("miniMap");
       const tm = root && root.querySelector(".tile-map");
       if (!tm) return true;
       const prevPref = _dflightAtm09Preferred;
       const prevVis = _dflightOverlayVisible;
-      const prev = {};
-      for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
-        prev[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
-      }
       let fixtureSvg = null;
       const parked = [];
       function fillOf(el){
@@ -43185,11 +43176,11 @@ function dflightSelfTestOptB(){
         fixtureSvg.appendChild(path);
         (tm.querySelector(".tile-layer") || tm).appendChild(fixtureSvg);
 
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        // MASTER-VIS-A: interactive when preferred, transparent always (FIX5)
         dflightAtm09SyncTemporalContextUi();
         const onOk = fixtureSvg.classList.contains("is-interactive") && isTransparentFill(fillOf(path));
 
-        _dflightTemporalFilter.FUTURE = false;
+        _dflightAtm09Preferred = false;
         dflightAtm09SyncTemporalContextUi();
         const offOk = !fixtureSvg.classList.contains("is-interactive")
           && isTransparentFill(fillOf(path))
@@ -43197,7 +43188,6 @@ function dflightSelfTestOptB(){
 
         // CSS source: base rule must set transparent fill outside .is-interactive
         let hasBaseTransparent = false;
-        let interactiveOnlyFill = false;
         try {
           const sheets = document.styleSheets;
           for (let si = 0; si < sheets.length; si++){
@@ -43215,18 +43205,11 @@ function dflightSelfTestOptB(){
                 const op = (rule.style && String(rule.style.fill || "")).toLowerCase().replace(/\s+/g, "");
                 if (op.indexOf("rgba(0,0,0,0)") >= 0 || op === "transparent" || op === "none") hasBaseTransparent = true;
               }
-              if (/\.is-interactive\s+\.dflight-atm09-info-hit/.test(sel)){
-                const op2 = rule.style && String(rule.style.fill || "");
-                if (op2 && sel.indexOf("is-selected") < 0) interactiveOnlyFill = true;
-              }
             }
           }
         } catch (_){}
-        // Prefer base transparent; interactive-only fill without base is FAIL (the FIX4 bug).
         return !!(onOk && offOk && hasBaseTransparent);
       } finally {
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++)
-          _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prev[DFLIGHT_TEMPORAL_STATES[i]] === true;
         _dflightAtm09Preferred = prevPref;
         _dflightOverlayVisible = prevVis;
         if (fixtureSvg && fixtureSvg.parentNode) fixtureSvg.parentNode.removeChild(fixtureSvg);
@@ -43327,8 +43310,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_195", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 195
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-AGGIORNA-A");
+    add("OptB_FIX5_build_196", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -43370,11 +43353,18 @@ function dflightSelfTestOptB(){
           svg = fixtureSvg;
         }
         const onOk = svg.classList.contains("is-interactive");
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        // MASTER-VIS-A: preferred OFF (not temporal filters) gates interactivity.
+        _dflightAtm09Preferred = false;
         dflightAtm09SyncTemporalContextUi();
         const offOk = !svg.classList.contains("is-interactive")
           && dflightAtm09InfoHitInteractiveAllowed() === false;
-        return !!(onOk && offOk);
+        // Filters OFF alone must NOT deactivate INFO when preferred stays ON.
+        _dflightAtm09Preferred = true;
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        dflightAtm09SyncTemporalContextUi();
+        const filtersOffStillOn = svg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === true;
+        return !!(onOk && offOk && filtersOffStillOn);
       } finally {
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
         _dflightAtm09Preferred = prevPref;
@@ -43394,7 +43384,7 @@ function dflightSelfTestOptB(){
       let fixtureSvg = null;
       const parked = [];
       try {
-        _dflightAtm09Preferred = true;
+        _dflightAtm09Preferred = false;
         _dflightOverlayVisible = true;
         // Isolate from live overlays so SyncInfoHitInteractivity targets the fixture.
         const existing = tm.querySelectorAll(".dflight-atm09-info-overlay");
@@ -43403,7 +43393,7 @@ function dflightSelfTestOptB(){
           parked.push({ el: el, parent: el.parentNode, next: el.nextSibling });
           if (el.parentNode) el.parentNode.removeChild(el);
         }
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
         dflightAtm09SyncTemporalContextUi();
         const ns = "http://www.w3.org/2000/svg";
         fixtureSvg = document.createElementNS(ns, "svg");
@@ -43414,18 +43404,23 @@ function dflightSelfTestOptB(){
         dflightAtm09SyncInfoHitInteractivity();
         const offOk = !fixtureSvg.classList.contains("is-interactive");
         const sameNodeBefore = fixtureSvg;
-        // FIX4: partial (1/5) remains restrictive → INFO stays non-interactive
-        _dflightTemporalFilter.ACTIVE_NOW = true;
+        // MASTER-VIS-A: master ON reactivates interactivity (same SVG node, no refetch)
+        _dflightAtm09Preferred = true;
         dflightAtm09SyncTemporalContextUi();
-        const partialStillOff = !fixtureSvg.classList.contains("is-interactive")
-          && dflightAtm09InfoHitInteractiveAllowed() === false
+        const masterOnOk = fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === true
           && fixtureSvg === sameNodeBefore;
-        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
+        // Temporal filters OFF must NOT deactivate INFO while master ON
+        for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = false;
         dflightAtm09SyncTemporalContextUi();
-        const allOnOk = fixtureSvg.classList.contains("is-interactive")
-          && fixtureSvg === sameNodeBefore
+        const filtersOffStillInteractive = fixtureSvg.classList.contains("is-interactive")
           && dflightAtm09InfoHitInteractiveAllowed() === true;
-        return !!(offOk && partialStillOff && allOnOk);
+        // Master OFF again
+        _dflightAtm09Preferred = false;
+        dflightAtm09SyncTemporalContextUi();
+        const masterOffOk = !fixtureSvg.classList.contains("is-interactive")
+          && dflightAtm09InfoHitInteractiveAllowed() === false;
+        return !!(offOk && masterOnOk && filtersOffStillInteractive && masterOffOk);
       } finally {
         for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
         _dflightAtm09Preferred = prevPref;
@@ -43450,16 +43445,13 @@ function dflightSelfTestOptB(){
       } catch (_){ return false; }
     })());
 
-    add("OptB_i18n_atm09_hint_it_en_fr", (function(){
-      const it = I18N && I18N.it && I18N.it["dflight.filter.temporal.atm09DimHint"];
-      const en = I18N && I18N.en && I18N.en["dflight.filter.temporal.atm09DimHint"];
-      const fr = I18N && I18N.fr && I18N.fr["dflight.filter.temporal.atm09DimHint"];
-      const noDim = !!(it && en && fr)
-        && it.indexOf("attenuat") < 0 && en.toLowerCase().indexOf("dimmed") < 0 && fr.indexOf("atténu") < 0
-        && (it.indexOf("nascosto") >= 0 || it.indexOf("nascost") >= 0)
-        && en.toLowerCase().indexOf("hidden") >= 0
-        && (fr.indexOf("masqué") >= 0 || fr.indexOf("masque") >= 0);
-      return !!(noDim && it.indexOf("ATM09") >= 0 && en.indexOf("ATM09") >= 0 && fr.indexOf("ATM09") >= 0);
+    add("OptB_MVISA_hint_key_removed", (function(){
+      /* WU-0016 §1.6: the FIX4 ATM09-dim hint no longer exists in any locale. */
+      const it = I18N && I18N.it ? I18N.it["dflight.filter.temporal.atm09DimHint"] : undefined;
+      const en = I18N && I18N.en ? I18N.en["dflight.filter.temporal.atm09DimHint"] : undefined;
+      const fr = I18N && I18N.fr ? I18N.fr["dflight.filter.temporal.atm09DimHint"] : undefined;
+      return it === undefined && en === undefined && fr === undefined
+        && !document.getElementById("dflightTemporalAtm09Hint");
     })());
 
     add("OptB_preferred_off_clears_cache", (function(){
@@ -43875,6 +43867,430 @@ async function dflightSelfTestOptBAsync(){
   } catch(_){}
 })();
 
+
+/* ===== D-FLIGHT-UX-COHERENCE-MASTER-VIS-A — scoped selftests ===== */
+function dflightSelfTestMVISA(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevMaster = _dflightAtm09MasterUi;
+  const prevPref = _dflightAtm09Preferred;
+  const prevVis = _dflightOverlayVisible;
+  const prevSess = _dflightClientSession;
+  const prevOvSess = _dflightOverlaySession;
+  const prevTimer = _dflightAtm09InfoTimer;
+  const prevTok = _dflightAtm09InfoToken;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevFilter = {};
+  for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+    prevFilter[DFLIGHT_TEMPORAL_STATES[i]] = _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+  }
+  const prevEnsureLegend = dflightAtm09EnsureLegend;
+  let prevForce = null;
+  let prevOpsec = null;
+  try {
+    if (typeof state !== "undefined"){
+      prevForce = state.forceOffline;
+      prevOpsec = state.opsecStrict;
+      state.forceOffline = false;
+      state.opsecStrict = false;
+    }
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    dflightAtm09EnsureLegend = function(){ /* MVISA selftest no-op */ };
+    _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+    _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
+
+    add("MVISA_build_196",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 196
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-UX-COHERENCE-MASTER-VIS-A");
+
+    add("MVISA_ui_label_exact", (function(){
+      const lbl = document.getElementById("dflightAtm09MasterLabel");
+      const tgl = document.getElementById("dflightAtm09MasterToggle");
+      return !!(tgl && lbl && lbl.textContent.replace(/\s+/g, " ").trim() === "Mostra overlay ATM09 ufficiale"
+        && tgl.type === "checkbox");
+    })());
+
+    add("MVISA_ui_wired", (function(){
+      try {
+        const src = String(dflightEnsureUiWired);
+        return src.indexOf("dflightAtm09MasterToggle") >= 0
+          && src.indexOf("_dflightAtm09MasterUi") >= 0;
+      } catch(_){ return false; }
+    })());
+
+    add("MVISA_no_persistence_master", (function(){
+      try {
+        if (typeof state === "undefined") return true;
+        if (Object.prototype.hasOwnProperty.call(state, "_dflightAtm09MasterUi")) return false;
+        if (Object.prototype.hasOwnProperty.call(state, "dflightAtm09Master")) return false;
+        return true;
+      } catch(_){ return false; }
+    })());
+
+    /* Matrix — D ON / A ON */
+    add("MVISA_matrix_D_on_A_on", (function(){
+      _dflightAtm09MasterUi = true;
+      _dflightOverlayVisible = true;
+      dflightAtm09SyncPreferredFromUi();
+      return _dflightAtm09Preferred === true && dflightAtm09OverlayVisible(11) === true;
+    })());
+
+    /* Matrix — D ON / A OFF */
+    add("MVISA_matrix_D_on_A_off", (function(){
+      _dflightAtm09MasterUi = false;
+      _dflightOverlayVisible = true;
+      dflightAtm09SyncPreferredFromUi();
+      return _dflightAtm09Preferred === false && dflightAtm09OverlayVisible(11) === false;
+    })());
+
+    /* Matrix — D OFF / A ON: ATM09 stays available; D-Flight hidden */
+    add("MVISA_matrix_D_off_A_on", (function(){
+      _dflightAtm09MasterUi = true;
+      _dflightOverlayVisible = true;
+      dflightAtm09SyncPreferredFromUi();
+      /* Canonical D-Flight OFF must NOT touch ATM09 preferred/lifecycle. */
+      const r = dflightSetOverlayVisible(false);
+      return !!(r && r.ok === true && _dflightOverlayVisible === false
+        && _dflightAtm09Preferred === true && dflightAtm09OverlayVisible(11) === true);
+    })());
+
+    /* Matrix — D OFF / A OFF */
+    add("MVISA_matrix_D_off_A_off", (function(){
+      _dflightAtm09MasterUi = false;
+      _dflightOverlayVisible = false;
+      dflightAtm09SyncPreferredFromUi();
+      return _dflightAtm09Preferred === false && dflightAtm09OverlayVisible(11) === false;
+    })());
+
+    /* B — temporal filters never touch ATM09 */
+    add("MVISA_filters_do_not_touch_atm09", (function(){
+      _dflightAtm09MasterUi = true;
+      _dflightOverlayVisible = true;
+      dflightAtm09SyncPreferredFromUi();
+      const prefOn = _dflightAtm09Preferred;
+      dflightSetTemporalFilter("FUTURE", false);
+      const afterSingle = _dflightAtm09Preferred === prefOn;
+      dflightSetAllTemporalFilters(false);
+      const afterNone = _dflightAtm09Preferred === prefOn;
+      dflightSetAllTemporalFilters(true);
+      const afterAll = _dflightAtm09Preferred === prefOn;
+      return !!(prefOn && afterSingle && afterNone && afterAll);
+    })());
+
+    /* B — D-Flight OFF/ON preserves filter selections */
+    add("MVISA_master_off_on_preserves_filters", (function(){
+      _dflightTemporalFilter.FUTURE = false;
+      _dflightTemporalFilter.EXPIRED = false;
+      _dflightOverlayVisible = true;
+      dflightSetOverlayVisible(false);
+      dflightSetOverlayVisible(true);
+      const kept = _dflightTemporalFilter.FUTURE === false && _dflightTemporalFilter.EXPIRED === false
+        && _dflightTemporalFilter.ACTIVE_NOW === true;
+      /* restore */
+      _dflightTemporalFilter.FUTURE = true;
+      _dflightTemporalFilter.EXPIRED = true;
+      return kept;
+    })());
+
+    /* C — master OFF: no INFO schedule from the sync path */
+    add("MVISA_master_off_no_schedule", (function(){
+      _dflightAtm09MasterUi = false;
+      dflightAtm09SyncPreferredFromUi();
+      _dflightAtm09InfoTimer = null;
+      const tok0 = _dflightAtm09InfoToken;
+      dflightAtm09ScheduleInfoFetch();
+      return _dflightAtm09InfoTimer == null && _dflightAtm09InfoToken === tok0;
+    })());
+
+    /* C — master ON + forceOffline → zero request */
+    add("MVISA_master_on_forceoffline_zero", (function(){
+      _dflightAtm09MasterUi = true;
+      if (typeof state !== "undefined") state.forceOffline = true;
+      dflightAtm09SyncPreferredFromUi();
+      const ok = _dflightAtm09Preferred === false;
+      if (typeof state !== "undefined") state.forceOffline = false;
+      return ok;
+    })());
+
+    /* C — master ON + opsecStrict → zero request */
+    add("MVISA_master_on_opsec_zero", (function(){
+      _dflightAtm09MasterUi = true;
+      if (typeof state !== "undefined") state.opsecStrict = true;
+      dflightAtm09SyncPreferredFromUi();
+      const ok = _dflightAtm09Preferred === false;
+      if (typeof state !== "undefined") state.opsecStrict = false;
+      return ok;
+    })());
+
+    /* C — master ON + no session dataset → no preferred (boot-safe) */
+    add("MVISA_master_on_no_dataset_no_pref", (function(){
+      _dflightAtm09MasterUi = true;
+      const keepSess = _dflightClientSession;
+      _dflightClientSession = null;
+      try {
+        dflightAtm09SyncPreferredFromUi();
+        return _dflightAtm09Preferred === false;
+      } finally {
+        _dflightClientSession = keepSess;
+      }
+    })());
+
+    /* F — endpoints: only existing helper paths; zero new fetch classes */
+    add("MVISA_endpoints_unchanged", (function(){
+      _dflightHelperBaseUrlOverride = "http://example.test:8010";
+      const tile = dflightAtm09TileUrl(11, 1, 1);
+      const legend = dflightAtm09LegendUrl();
+      const infoOk = String(dflightAtm09FetchInfoCellRaw).indexOf('"/atm09/info?bbox="') >= 0
+        || String(dflightAtm09FetchInfoCellRaw).indexOf("/atm09/info?bbox=") >= 0;
+      return tile === "http://example.test:8010/atm09/tile/11/1/1.png"
+        && legend === "http://example.test:8010/atm09/legend.png"
+        && infoOk
+        && (tile + legend).indexOf("d-flight.it") < 0;
+    })());
+
+    add("MVISA_fetch_impl_only_existing", (function(){
+      const cellSrc = String(dflightAtm09FetchInfoCellRaw);
+      return cellSrc.indexOf("_dflightFetchImpl") >= 0
+        && String(dflightClientLoadZones).indexOf("dflightHelperFetch") >= 0
+        && String(dflightHelperFetch).indexOf("dflightClientNetworkAllowed") >= 0;
+    })());
+
+    /* D — FIX5: INFO-hit stays transparent + no SVG NFZ coupling */
+    add("MVISA_fix5_info_hit_transparent", (function(){
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (!tm) return true;
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "dflight-atm09-info-overlay");
+      svg.setAttribute("data-mvisa-fixture", "1");
+      const path = document.createElementNS(ns, "path");
+      path.setAttribute("class", "dflight-atm09-info-hit");
+      path.setAttribute("d", "M0 0 H10 V10 H0 Z");
+      path.setAttribute("data-zone-id", "mvisa5");
+      svg.appendChild(path);
+      (tm.querySelector(".tile-layer") || tm).appendChild(svg);
+      let ok = false;
+      try {
+        const f = String(getComputedStyle(path).fill || "").toLowerCase().replace(/\s+/g, "");
+        ok = f === "rgba(0,0,0,0)" || f === "transparent" || f === "none";
+        ok = ok && !svg.classList.contains("dflight-zone-overlay")
+          && !svg.classList.contains("dflight-zone-hitlayer");
+      } finally {
+        if (svg.parentNode) svg.parentNode.removeChild(svg);
+      }
+      return ok;
+    })());
+
+    /* D — FIX5: suppression (hitOnly) still separates raster/NFZ/INFO layers */
+    add("MVISA_fix5_layer_separation_source", (function(){
+      const drawSrc = String(dflightDrawOverlayDom);
+      return drawSrc.indexOf("dflight-zone-hitlayer") >= 0
+        && String(dflightAtm09DrawInfoHitOverlay).indexOf("dflight-atm09-info-overlay") >= 0
+        && String(dflightAtm09DrawInfoHitOverlay).indexOf("dflight-zone-overlay") < 0;
+    })());
+
+    /* D — FIX2 fallback preserved: INFO unavailable → visible NFZ fallback */
+    add("MVISA_fix2_fallback_preserved", (function(){
+      const drawSrc = String(dflightDrawOverlayDom);
+      return drawSrc.indexOf("_dflightAtm09InfoUnavailable") >= 0
+        && drawSrc.indexOf("atm09_info_visible_fallback") >= 0;
+    })());
+
+    /* AGGIORNA-A non-regression: sources intact */
+    add("MVISA_aggiorna_sources_intact", (function(){
+      const clientSrc = String(dflightEnsureClientWired);
+      const hasAggiorna = !!document.getElementById("dflightBtnRefresh");
+      const hasApply = !!document.getElementById("dflightBtnApplyUpdate");
+      const refreshGated = clientSrc.indexOf("dflightBtnRefresh") >= 0;
+      const applySeparate = clientSrc.indexOf("dflightBtnApplyUpdate") >= 0;
+      return !!(hasAggiorna && hasApply && refreshGated && applySeparate);
+    })());
+
+  } catch (e){
+    add("MVISA_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    dflightAtm09EnsureLegend = prevEnsureLegend;
+    _dflightAtm09MasterUi = prevMaster;
+    _dflightAtm09Preferred = prevPref;
+    _dflightOverlayVisible = prevVis;
+    _dflightClientSession = prevSess;
+    _dflightOverlaySession = prevOvSess;
+    if (_dflightAtm09InfoTimer && _dflightAtm09InfoTimer !== prevTimer){
+      try { clearTimeout(_dflightAtm09InfoTimer); } catch(_){}
+      _dflightAtm09InfoTimer = prevTimer;
+    }
+    _dflightAtm09InfoToken = prevTok;
+    _dflightHelperBaseUrlOverride = prevBase;
+    for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++){
+      _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = prevFilter[DFLIGHT_TEMPORAL_STATES[i]] === true;
+    }
+    if (typeof state !== "undefined"){
+      if (prevForce !== null) state.forceOffline = prevForce;
+      if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+    }
+    try {
+      const root = document.getElementById("miniMap");
+      const tm = root && root.querySelector(".tile-map");
+      if (tm){
+        const fx = tm.querySelector('[data-mvisa-fixture="1"]');
+        if (fx && fx.parentNode) fx.parentNode.removeChild(fx);
+      }
+    } catch(_){}
+  }
+  return checks;
+}
+
+async function dflightSelfTestMVISAAsync(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevMaster = _dflightAtm09MasterUi;
+  const prevPref = _dflightAtm09Preferred;
+  const prevVis = _dflightOverlayVisible;
+  const prevSess = _dflightClientSession;
+  const prevOvSess = _dflightOverlaySession;
+  const prevFetch = _dflightFetchImpl;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevFc = _dflightAtm09InfoFc;
+  const prevBbox = _dflightAtm09InfoLastBboxKey;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevCache = _dflightAtm09SubdivCache;
+  let prevForce = null;
+  let prevOpsec = null;
+  try {
+    if (typeof state !== "undefined"){
+      prevForce = state.forceOffline;
+      prevOpsec = state.opsecStrict;
+      state.forceOffline = false;
+      state.opsecStrict = false;
+    }
+    _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
+    _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
+    _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
+    _dflightAtm09SubdivCache = [];
+    _dflightAtm09InfoFc = null;
+    _dflightAtm09InfoLastBboxKey = null;
+    _dflightAtm09InfoUnavailable = false;
+
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    const mapReady = !!(root && tm && typeof dflightAtm09ViewportBboxWithMargin === "function" && dflightAtm09ViewportBboxWithMargin());
+
+    /* C — master ON + network allowed → existing path only (helper URL shape) */
+    add("MVISA_async_master_on_existing_path_only", await (async function(){
+      if (!mapReady) return true;
+      let calls = 0;
+      let sawUrl = "";
+      _dflightAtm09MasterUi = true;
+      _dflightOverlayVisible = false; /* D-Flight OFF — ATM09 must still fetch via existing path */
+      dflightAtm09SyncPreferredFromUi();
+      _dflightFetchImpl = function(url){
+        calls++;
+        sawUrl = String(url || "");
+        return Promise.resolve({
+          ok: true, status: 200,
+          json: function(){ return Promise.resolve({ type: "FeatureCollection", features: [] }); }
+        });
+      };
+      await dflightAtm09FetchInfoForViewport();
+      const okPath = sawUrl.indexOf("http://127.0.0.1:8010/atm09/info?bbox=") === 0;
+      return !!(calls >= 1 && okPath && _dflightAtm09Preferred === true);
+    })());
+
+    /* C — master OFF mid-flight → gate aborts, no further requests */
+    add("MVISA_async_master_off_zero_requests", await (async function(){
+      if (!mapReady) return true;
+      let calls = 0;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      dflightAtm09SubdivCacheClear();
+      _dflightAtm09MasterUi = false;
+      dflightAtm09SyncPreferredFromUi();
+      _dflightFetchImpl = function(){ calls++; return Promise.resolve({ ok: true, status: 200, json: function(){ return Promise.resolve({}); } }); };
+      await dflightAtm09FetchInfoForViewport();
+      return calls === 0 && _dflightAtm09Preferred === false;
+    })());
+
+    /* C — master ON + forceOffline → zero requests through the viewport path */
+    add("MVISA_async_forceoffline_zero", await (async function(){
+      if (!mapReady) return true;
+      let calls = 0;
+      _dflightAtm09InfoFc = null;
+      _dflightAtm09InfoLastBboxKey = null;
+      _dflightAtm09MasterUi = true;
+      if (typeof state !== "undefined") state.forceOffline = true;
+      dflightAtm09SyncPreferredFromUi();
+      _dflightFetchImpl = function(){ calls++; return Promise.resolve({ ok: true, status: 200, json: function(){ return Promise.resolve({}); } }); };
+      await dflightAtm09FetchInfoForViewport();
+      if (typeof state !== "undefined") state.forceOffline = false;
+      return calls === 0 && _dflightAtm09Preferred === false;
+    })());
+
+  } catch (e){
+    add("MVISA_async_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    _dflightFetchImpl = prevFetch;
+    _dflightAtm09MasterUi = prevMaster;
+    _dflightAtm09Preferred = prevPref;
+    _dflightOverlayVisible = prevVis;
+    _dflightClientSession = prevSess;
+    _dflightOverlaySession = prevOvSess;
+    _dflightAtm09InfoFc = prevFc;
+    _dflightAtm09InfoLastBboxKey = prevBbox;
+    _dflightAtm09InfoUnavailable = prevUnavail;
+    _dflightAtm09SubdivCache = prevCache;
+    _dflightHelperBaseUrlOverride = prevBase;
+    if (typeof state !== "undefined"){
+      if (prevForce !== null) state.forceOffline = prevForce;
+      if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+    }
+  }
+  return checks;
+}
+
+(function dflightExtendSelfTestMVISA(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const mvisa = dflightSelfTestMVISA();
+      const checks = (prev.checks || []).concat(mvisa);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    const prevAsync = (window.GOIDflight && typeof window.GOIDflight.selfTestAsync === "function")
+      ? window.GOIDflight.selfTestAsync : null;
+    async function dflightSelfTestAllAsyncMVISA(){
+      const base = prevAsync ? await prevAsync() : ((typeof dflightSelfTestAll === "function") ? dflightSelfTestAll() : { ok: true, checks: [] });
+      const extra = await dflightSelfTestMVISAAsync();
+      const checks = (base.checks || []).concat(extra || []);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    }
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestAsync: dflightSelfTestAllAsyncMVISA,
+          selfTestMVISA: dflightSelfTestMVISA,
+          selfTestMVISAAsync: dflightSelfTestMVISAAsync
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
 
 /* ===== /D-FLIGHT-F-ATM09-ARCH-A ===== */
 
@@ -62794,10 +63210,7 @@ function renderTileMap(lat, lon, zoom){
   // keeps the viewport truly square after the W fix above.
   const mapBoxStyle = size === "small" ? "" : `height:${H}px`;
   const hintCls = (state.tilePackHints !== false) ? " tile-hints-on" : "";
-  const atm09Restrictive = (typeof dflightTemporalFilterIsRestrictive === "function")
-    && dflightTemporalFilterIsRestrictive();
-  const atm09DimCls = atm09Restrictive ? " atm09-temporal-hidden" : "";
-  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}${atm09DimCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
+  let html = `<div class="tile-map ${isEnlarged ? "tm-enlarged" : ""} size-${size}${hintCls}"${mapBoxStyle ? ` style="${mapBoxStyle}"` : ""}>`;
 
   // Panning layer: everything geo-anchored (tiles + marker + grid) lives
   // here so we can translate it as a single group during a drag gesture.
