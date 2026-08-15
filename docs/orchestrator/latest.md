@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-15 — **finito** `D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A` **CLOSED / PASS**. QA operatore PASS. Task runtime `0c0f97d` · chiusura docs `440396d`. LIVE build **194**. NEXT: **`D-FLIGHT-UX-COHERENCE-AGGIORNA-A`**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0906_riepilogo_finito-sessione.md`](inbox/2026-08-15_0906_riepilogo_finito-sessione.md).
+2026-08-15 — **METHOD-EXTERNAL-AI-REVIEWER-MODEL-AGNOSTIC-A** **CLOSED / PASS** docs-only. Task `8153715`. Governance review **model-agnostic** (`reviewer AI esterno` / `REVIEW GPT-SOSTITUTIVA`). Monolite **non** toccato; RUNTIME LIVE resta `0c0f97d` / build **194**. WU-0016 **OPEN**. NEXT: **`D-FLIGHT-UX-COHERENCE-AGGIORNA-A`**. Dettaglio: [`docs/orchestrator/inbox/2026-08-15_0925_riepilogo_method-external-ai-reviewer-model-agnostic-a.md`](inbox/2026-08-15_0925_riepilogo_method-external-ai-reviewer-model-agnostic-a.md).
