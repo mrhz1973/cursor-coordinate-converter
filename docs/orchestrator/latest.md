@@ -1,17 +1,9 @@
-# Orchestrator — latest
+> **AUTOSYNC NON AUTORITATIVO.**  
+> Stato corrente: CORE BOOT = `README.md` AI-BOOT → [`docs/FRONTIER.md`](../FRONTIER.md) → WU hot-header.  
+> Non usare questo file come current-state primario.
 
-Aggiornato: 2026-08-16 (D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A · REVIEW PENDING)
+# Stato operativo (sintetico)
 
-## Sintesi
+## Ultimo aggiornamento
 
-- **WU-0019** OPEN · **IMPL-A** IMPLEMENTED / selftest 404/404 / **REVIEW GPT-SOSTITUTIVA — PENDING**.
-- Runtime candidate: `a689fe81d7f8722ef5e58077be639d00d13523b7` · build **201** · `D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A`.
-- LIVE resta `67d9cc7` / **200** (no deploy in questo pass).
-- Pair: `dflightEnsurePairLayout` · Zone sinistra / Details destra · touched rispettato · stack fallback narrow.
-- GPT AUDIT REVIEW: **PASS**. Deploy/ABQA/QA/finito: **NO** finché review PASS.
-
-## Puntatori
-
-- WU: `docs/work-units/WU-0019-dflight-panel-side-by-side.md`
-- Inbox: `docs/orchestrator/inbox/2026-08-16_1345_riepilogo_dflight-panel-sidebyside-impl-a.md`
-- Report: `docs/runtime/LAST_CURSOR_REPORT.md`
+2026-08-16 — **WIKI-LLM-LEAN-CONSOLIDATION-D** (docs-only, commit `cb0bd07`): LIVE STATE estratto in [`docs/FRONTIER.md`](../FRONTIER.md); OM §7.1 = pointer; CORE BOOT fail-closed (discovery `omitted` / TOOL-PAYLOAD). Gate APP GIS **invariato** (SIDEBYSIDE REVIEW PENDING). Dettaglio: [`docs/orchestrator/inbox/2026-08-16_1429_riepilogo_wiki-llm-lean-consolidation-d.md`](inbox/2026-08-16_1429_riepilogo_wiki-llm-lean-consolidation-d.md).
