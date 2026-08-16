@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / DEPLOYED
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
-**REVIEW:** PASS su `525e7df50cb4edf768b0da7f59e7414dd79d56de`
+**STATUS:** OPEN / G-A1 CLOSED
+**ACTIVE BLOCK:** *(none)*
+**LAST CLOSED BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2 **CLOSED / PASS**
+**CURRENT GATE:** **none**
 **RUNTIME LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
 **CATEGORIA:** **DELICATO**
-**NEXT:** QA FINALE CHATGPT; G-B/C/D NOT OPENED; **F NOT OPENED**
-**NOTE:** Deploy+ABQA 2026-08-17 · 39/39 · HTTP MATCH · helper 0.1.3 · no patch runtime in deploy pass
+**NEXT:** **G-B NOT OPENED** · G-C/G-D NOT OPENED · **F NOT OPENED**
+**NOTE:** QA operatore PASS 2026-08-17 · finito Regola H · no patch · monolite invariato in chiusura
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -435,3 +435,27 @@ Evidence-only. Candidato **invariato** `c122fd4…` / 209.
 **Hunk:** 18 · **+217/−40** · **OTHER=0**. FINDING: dock row absolute può eccedere header.bottom (hit @360+3chip).
 
 **Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · no verdetto · no patch/deploy.
+
+## 24. G-A1-FIX2 + DEPLOY + ABQA + QA PASS (2026-08-17)
+
+REVIEW FAIL FIX1 → FIX2: `gisPanelSafeTop` usa `max(header.bottom, dock.bottom)`.
+
+**LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` / build **210** / blob `9aa5441d…`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md`](../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md) · deploy+ABQA [`../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md)
+
+**ABQA:** 39/39 PASS · **QA operatore:** PASS · **finito** Regola H.
+
+**STATUS blocco G-A1-FIX2:** **CLOSED / PASS** · G-B/C/D **NOT OPENED** · F **NOT OPENED** · WU-0021 resta **OPEN**.
+
+## 24. G-A1-FIX2 + DEPLOY + ABQA + QA PASS (2026-08-17)
+
+REVIEW FAIL FIX1 → FIX2: `gisPanelSafeTop` usa `max(header.bottom, dock.bottom)`.
+
+**LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` / build **210** / blob `9aa5441d…`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md`](../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md) · deploy+ABQA [`../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md)
+
+**ABQA:** 39/39 PASS · **QA operatore:** PASS · **finito** Regola H.
+
+**STATUS blocco G-A1-FIX2:** **CLOSED / PASS** · G-B/C/D **NOT OPENED** · F **NOT OPENED** · WU-0021 resta **OPEN**.
