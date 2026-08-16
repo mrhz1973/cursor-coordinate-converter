@@ -6,6 +6,6 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2**: candidato `a40d216` / build **203** · fallback verticale simmetrico + partial_visible · selftest PASS · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE **200** invariato. Evidence: [`inbox/2026-08-16_1815_…fix2-evidence.md`](inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md).
+2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2** REVIEW GPT-SOSTITUTIVA **PASS** · deploy LIVE `a40d216` / **203** · **AUTOMATED BROWSER QA PASS** · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-16_1830_…fix2-deploy-qa.md`](inbox/2026-08-16_1830_dflight-panel-sidebyside-impl-a-fix2-deploy-qa.md).
 
-Precedente: FIX1 FAIL → [`inbox/2026-08-16_1805_…fix1-evidence.md`](inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md).
+Precedente: evidence FIX2 — [`inbox/2026-08-16_1815_…fix2-evidence.md`](inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md).

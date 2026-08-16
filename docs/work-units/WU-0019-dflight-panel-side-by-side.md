@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2 (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2 (**DEPLOYED / ABQA PASS / QA FINALE CHATGPT — PENDING**)
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
 **RUNTIME CANDIDATE:** `a40d216300deefa2c23f6b20585f9543c6ee024c` · build **203** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2` · FIX1 FAIL `ff4fa64…`/202
-**RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (**non** redeployato in questo pass)
+**RUNTIME LIVE:** monolite tip `a40d216300deefa2c23f6b20585f9543c6ee024c` · build **203** · helper **0.1.3**
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** REVIEW GPT-SOSTITUTIVA FIX2 (evidence: [`2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md`](../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md)) → solo dopo PASS: deploy + ABQA
-**NOTE:** FIX1 **FAIL** (Details-touched stack overlap + selftest C permissivo) → FIX2 · gate PENDING · no deploy / no ABQA / no finito · F/G/H **non** aperti
+**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2 PASS operatore` → auto-`finito`
+**NOTE:** REVIEW GPT-SOSTITUTIVA **PASS** · deploy+ABQA PASS · gate QA FINALE PENDING · no finito · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
@@ -363,3 +363,13 @@ Fermarsi / non dichiarare READY se:
 **Fix:** one-touched right/left/below/above post-clamp full separation; `partial_visible_*` se impossibile; skipSync su place geometrico; selftest A–L senza `|| true`.
 
 **Evidence:** [`../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md`](../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md)
+
+## IMPL-A-FIX2 — DEPLOY + ABQA (2026-08-16)
+
+**REVIEW GPT-SOSTITUTIVA:** PASS su `a40d216300deefa2c23f6b20585f9543c6ee024c`
+
+**Deploy:** GIS-only PASS · URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=a40d216`
+
+**Automated Browser QA:** PASS
+
+**Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
