@@ -23572,10 +23572,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1";
-const APP_BUILD_DETAIL = "ATM09 user legend adaptive layout: left of right controls, above coordinate readout; static non-draggable; 8-row topology unchanged.";
+const APP_BUILD_ID = "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2";
+const APP_BUILD_DETAIL = "legend presentation remains stable across transient ATM09 tile reload after pan; real fallback/off still clears it.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 199;
+const APP_BUILD_NUM = 200;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37179,8 +37179,10 @@ function dflightSyncPanelUi(){
     list.innerHTML = "";
     let cats = [];
     if (hasDs) cats = dflightCollectLegendCategories(ds);
-    /* IMPL-A: restrictions legend only when paint mode is restrictions (not when ATM09 raster owns paint). */
-    const paintMode = (typeof dflightLegendPaintMode === "function") ? dflightLegendPaintMode() : "none";
+    /* IMPL-A + LEGEND-UX-FIX2: restrictions legend follows presentation (no flash during ATM09 tile reload). */
+    const paintMode = (typeof dflightLegendPresentationMode === "function")
+      ? dflightLegendPresentationMode()
+      : ((typeof dflightLegendPaintMode === "function") ? dflightLegendPaintMode() : "none");
     const legendUseful = !!(paintMode === "restrictions" && hasDs && _dflightOverlayVisible && cats.length);
     if (legendHead) legendHead.hidden = !legendUseful;
     list.hidden = !legendUseful;
@@ -38605,8 +38607,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39627,8 +39629,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39725,6 +39727,10 @@ let _dflightAtm09RedrawScheduled = false;
 let _dflightAtm09StartPending = false;
 /** Re-entrancy guard for post-apply map redraw (one shot). */
 let _dflightAtm09PostApplyRenderScheduled = false;
+/** LEGEND-UX-FIX2: session-only — user legend presented after first real ATM09 READY. NEVER persisted. */
+let _dflightAtm09UserLegendLatched = false;
+/** LEGEND-UX-FIX2: session-only — true while a post-READY tile generation reload is in flight. NEVER persisted. */
+let _dflightAtm09TileReloadActive = false;
 
 /* ===== D-FLIGHT-HIT-TEST-OPTION-B — adaptive ATM09 INFO subdivision + TEMP-B ===== */
 const DFLIGHT_ATM09_SUBDIV_MAX_DEPTH = 2;
@@ -39743,6 +39749,12 @@ let _dflightAtm09InfoLastFailReason = null;
 
 function dflightAtm09IsReady(){
   return !!_dflightAtm09Ready;
+}
+
+/** LEGEND-UX-FIX2: clear session-only user-legend presentation latch (RAM only). */
+function dflightAtm09ClearUserLegendPresentation(){
+  _dflightAtm09UserLegendLatched = false;
+  _dflightAtm09TileReloadActive = false;
 }
 
 /** Eligible for ATM09 regardless of preferred sync — gates only (no preferred). */
@@ -39842,6 +39854,8 @@ function dflightAtm09ScheduleNfzRedraw(){
 
 function dflightAtm09SetReady(next){
   const v = !!next;
+  /* LEGEND-UX-FIX2: READY recovery ends transient tile-reload window. */
+  if (v) _dflightAtm09TileReloadActive = false;
   if (_dflightAtm09Ready === v) return;
   _dflightAtm09Ready = v;
   dflightAtm09ScheduleNfzRedraw();
@@ -39860,12 +39874,24 @@ function dflightAtm09RecomputeReady(){
     _dflightAtm09OkCount === _dflightAtm09Expected &&
     _dflightAtm09ErrCount === 0
   );
+  const settled = (
+    _dflightAtm09Expected > 0 &&
+    (_dflightAtm09OkCount + _dflightAtm09ErrCount) >= _dflightAtm09Expected
+  );
+  /* LEGEND-UX-FIX2: terminal tile failure (settled with errors) is not a transient reload. */
+  if (settled && !complete){
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+  }
   dflightAtm09SetReady(gates && complete);
   try { dflightSyncLoadingUi(); } catch(_){}
 }
 
 function dflightAtm09BeginTileGeneration(){
   _dflightAtm09StartPending = false;
+  /* LEGEND-UX-FIX2: mark transient reload BEFORE READY→false sync so presentation can hold. */
+  if (_dflightAtm09UserLegendLatched && _dflightAtm09Preferred){
+    _dflightAtm09TileReloadActive = true;
+  }
   _dflightAtm09TileGen = (_dflightAtm09TileGen | 0) + 1;
   _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
@@ -39883,6 +39909,7 @@ function dflightAtm09SetExpected(gen, n){
 }
 
 function dflightAtm09InvalidateVisual(){
+  try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
   _dflightAtm09Expected = 0;
   _dflightAtm09OkCount = 0;
   _dflightAtm09ErrCount = 0;
@@ -40050,6 +40077,7 @@ function dflightAtm09SetPreferred(on){
   _dflightAtm09Preferred = !!on;
   if (!_dflightAtm09Preferred){
     _dflightAtm09StartPending = false;
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
     /* FIX2: preferred OFF invalidates failure context; reapply with preferred ON must NOT clear unavailable. */
     _dflightAtm09InfoUnavailable = false;
     try { dflightAtm09SubdivCacheClear(); } catch(_){}
@@ -40089,6 +40117,40 @@ function dflightAtm09SyncPreferredFromUi(){
   }
 }
 
+/** LEGEND-UX-FIX2: legend *presentation* (may hold ATM09 across transient tile reload).
+ *  Distinct from dflightLegendPaintMode() which describes effective paint only. */
+function dflightLegendPresentationMode(){
+  try {
+    const paint = (typeof dflightLegendPaintMode === "function") ? dflightLegendPaintMode() : "none";
+    if (paint === "atm09"){
+      _dflightAtm09UserLegendLatched = true;
+      _dflightAtm09TileReloadActive = false;
+      return "atm09";
+    }
+    if (!_dflightAtm09Preferred){
+      try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+      return paint;
+    }
+    /* Real INFO-unavailable + D overlay fallback — not a transient reload. */
+    if (_dflightAtm09InfoUnavailable && _dflightOverlayVisible){
+      try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+      return paint;
+    }
+    const zoom = (typeof state !== "undefined" && state.mapZoom != null) ? Number(state.mapZoom) : NaN;
+    const eligible = !!(typeof dflightAtm09OverlayVisible === "function" && dflightAtm09OverlayVisible(zoom));
+    if (!eligible){
+      try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+      return paint;
+    }
+    if (_dflightAtm09UserLegendLatched && _dflightAtm09TileReloadActive){
+      return "atm09";
+    }
+    return paint;
+  } catch(_){
+    return "none";
+  }
+}
+
 /** IMPL-A: paint-driven legend mode — "atm09" | "restrictions" | "none". Session-only; never persisted. */
 function dflightLegendPaintMode(){
   try {
@@ -40113,7 +40175,10 @@ function dflightLegendPaintMode(){
 /** IMPL-A: single contextual legend; no layout hole (hidden); preserves ATM09 expand/lazy via EnsureLegend. */
 function dflightSyncContextualLegends(forceAtm09Load){
   try {
-    const mode = dflightLegendPaintMode();
+    /* LEGEND-UX-FIX2: presentation mode (holds ATM09 across transient reload); paint mode unchanged. */
+    const mode = (typeof dflightLegendPresentationMode === "function")
+      ? dflightLegendPresentationMode()
+      : dflightLegendPaintMode();
     const legendHead = document.getElementById("dflightLegendHeading");
     const list = document.getElementById("dflightLegendList");
     const showRestr = (mode === "restrictions");
@@ -41490,8 +41555,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_199", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+    add("H_build_200", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41991,8 +42056,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43005,8 +43070,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43443,8 +43508,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_199", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+    add("OptB_FIX5_build_200", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44035,8 +44100,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44587,7 +44652,7 @@ function dflightEnsureAtm09UserLegend(){
     }
     _dflightAtm09UserLegendBuilt = true;
     try { dflightWireAtm09UserLegendPositioning(); } catch(_){}
-    /* Visibility is owned exclusively by dflightSyncContextualLegends (paint mode). */
+    /* Visibility is owned exclusively by dflightSyncContextualLegends (presentation mode). */
     try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
     try { dflightPositionAtm09UserLegend(); } catch(_){}
     return el;
@@ -44598,6 +44663,7 @@ try {
   const _apiLegendUx = Object.assign({}, window.GOIDflight, {
     ensureAtm09UserLegend: dflightEnsureAtm09UserLegend,
     positionAtm09UserLegend: dflightPositionAtm09UserLegend,
+    legendPresentationMode: dflightLegendPresentationMode,
     ATM09_USER_LEGEND_ROWS: DFLIGHT_ATM09_USER_LEGEND_ROWS
   });
   window.GOIDflight = _apiLegendUx;
@@ -44669,8 +44735,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -44825,9 +44891,9 @@ function dflightSelfTestLEGENDUX(){
     _dflightAtm09InfoUnavailable = false;
     dflightEnsureAtm09UserLegend();
 
-    add("LEGENDUX_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 199
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1");
+    add("LEGENDUX_build_200",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 200
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -44898,11 +44964,16 @@ function dflightSelfTestLEGENDUX(){
     } catch(_){ l10nOk = false; }
     add("LEGENDUX_l10n_freeze_safe", l10nOk);
 
-    /* SELFTEST 14: not-READY must not show user legend as active paint */
+    /* SELFTEST 14: not-READY without prior latch/reload must not show user legend.
+     * LEGEND-UX-FIX2: clear presentation first — a prior READY in this suite (or a
+     * redraw side-effect) may have latched; this asserts the cold/not-ready path. */
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
     _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
     _dflightAtm09Ready = false; _dflightOverlayVisible = false;
+    _dflightAtm09TileReloadActive = false;
     dflightSyncContextualLegends();
-    add("LEGENDUX_not_ready_hidden", dflightLegendPaintMode() !== "atm09" && !userShown());
+    add("LEGENDUX_not_ready_hidden", dflightLegendPaintMode() !== "atm09"
+      && dflightLegendPresentationMode() !== "atm09" && !userShown());
 
     /* topology guards: no ninth row, no tech names, default row inline crop */
     add("LEGENDUX_no_extra_costa_row", rows.length === 8 && gotLabels.indexOf("costa") === -1 && gotLabels.indexOf("geometrie_rosse_schure") === -1);
@@ -44933,6 +45004,134 @@ function dflightSelfTestLEGENDUX(){
       try { dflightPositionAtm09UserLegend(); } catch(_){}
       return el.style.left !== "" && el.style.top !== "" && el.style.right === "auto" && el.style.bottom === "auto";
     })());
+
+    /* ===== LEGEND-UX-FIX2 — presentation latch / transient reload (L1–L10) ===== */
+    add("LEGENDUX_FIX2_presentation_fn", typeof dflightLegendPresentationMode === "function");
+    add("LEGENDUX_FIX2_no_setTimeout_in_presentation", (function(){
+      const src = String(dflightLegendPresentationMode) + String(dflightAtm09BeginTileGeneration)
+        + String(dflightAtm09ClearUserLegendPresentation) + String(dflightSyncContextualLegends);
+      return src.indexOf("setTimeout") < 0 && src.indexOf("setInterval") < 0;
+    })());
+
+    /* L1 INITIAL: never READY → user legend not shown prematurely */
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = false; _dflightOverlayVisible = false; _dflightAtm09InfoUnavailable = false;
+    _dflightAtm09TileReloadActive = false;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L1_initial_hidden",
+      dflightLegendPaintMode() !== "atm09"
+      && dflightLegendPresentationMode() !== "atm09"
+      && !userShown()
+      && !_dflightAtm09UserLegendLatched);
+
+    /* L2 READY: latch + visible */
+    _dflightAtm09Ready = true;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L2_ready_visible",
+      dflightLegendPaintMode() === "atm09"
+      && dflightLegendPresentationMode() === "atm09"
+      && userShown()
+      && !!_dflightAtm09UserLegendLatched);
+
+    /* L3 TRANSIENT RELOAD: BeginTileGeneration → READY false; legend stays */
+    const prevHeadHiddenL3 = head ? !!head.hidden : true;
+    const prevListHiddenL3 = list ? !!list.hidden : true;
+    dflightAtm09BeginTileGeneration();
+    /* Begin→SetReady(false) already synced; reaffirm */
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L3_transient_reload_visible",
+      dflightLegendPaintMode() !== "atm09"
+      && dflightLegendPresentationMode() === "atm09"
+      && userShown()
+      && !!_dflightAtm09TileReloadActive
+      && !!_dflightAtm09UserLegendLatched);
+
+    /* L4 NO RESTRICTIONS FLASH during same transient with D overlay ON */
+    _dflightOverlayVisible = true;
+    dflightSyncPanelUi();
+    add("LEGENDUX_FIX2_L4_no_restrictions_flash",
+      dflightLegendPresentationMode() === "atm09"
+      && userShown()
+      && (!!head ? head.hidden === true : true)
+      && (!!list ? list.hidden === true : true));
+
+    /* L5 RECOVERY: READY true again — still visible, reload cleared */
+    _dflightOverlayVisible = false;
+    dflightAtm09SetReady(true);
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L5_recovery_visible",
+      dflightLegendPaintMode() === "atm09"
+      && dflightLegendPresentationMode() === "atm09"
+      && userShown()
+      && !_dflightAtm09TileReloadActive
+      && !!_dflightAtm09UserLegendLatched);
+
+    /* L6 MASTER OFF */
+    _dflightAtm09MasterUi = false; _dflightAtm09Preferred = false;
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+    _dflightAtm09Ready = false;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L6_master_off",
+      dflightLegendPresentationMode() !== "atm09"
+      && !userShown()
+      && !_dflightAtm09UserLegendLatched);
+
+    /* L7 REAL FALLBACK: INFO unavailable + D overlay */
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = true; _dflightOverlayVisible = true; _dflightAtm09InfoUnavailable = true;
+    try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
+    dflightSyncPanelUi();
+    add("LEGENDUX_FIX2_L7_real_fallback",
+      dflightLegendPaintMode() === "restrictions"
+      && dflightLegendPresentationMode() === "restrictions"
+      && !userShown()
+      && (!_dflightAtm09UserLegendLatched)
+      && (!!list ? list.hidden === false : true));
+
+    /* L8 OFFLINE / INELIGIBLE */
+    _dflightAtm09InfoUnavailable = false; _dflightOverlayVisible = false;
+    _dflightAtm09Ready = true;
+    dflightSyncContextualLegends(); /* latch via real atm09 paint */
+    add("LEGENDUX_FIX2_L8_pre_latched", !!_dflightAtm09UserLegendLatched && userShown());
+    if (typeof state !== "undefined") state.forceOffline = true;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L8_offline_reset",
+      dflightLegendPresentationMode() !== "atm09"
+      && !userShown()
+      && !_dflightAtm09UserLegendLatched);
+    if (typeof state !== "undefined") state.forceOffline = false;
+    /* ineligible zoom */
+    _dflightAtm09Ready = true;
+    dflightSyncContextualLegends();
+    if (typeof state !== "undefined") state.mapZoom = DFLIGHT_ATM09_TILE_MAX_ZOOM + 1;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_FIX2_L8_zoom_ineligible",
+      dflightLegendPresentationMode() !== "atm09"
+      && !userShown()
+      && !_dflightAtm09UserLegendLatched);
+    if (typeof state !== "undefined") state.mapZoom = 11;
+
+    /* L9 FIX1 positioning still present */
+    add("LEGENDUX_FIX2_L9_position_fn", typeof dflightPositionAtm09UserLegend === "function");
+    add("LEGENDUX_FIX2_L9_anchors", (function(){
+      const src = String(dflightPositionAtm09UserLegend);
+      return src.indexOf(".tile-ctrls") >= 0 && src.indexOf(".trp-point") >= 0
+        && src.indexOf(".trp-cursor") >= 0 && src.indexOf("cr.left") >= 0;
+    })());
+
+    /* L10 topology unchanged */
+    const rowsL10 = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
+    let swInlineL10 = true;
+    Array.prototype.forEach.call(ulRoot ? ulRoot.querySelectorAll("img.dflight-atm09-ul-swatch") : [], function(img){
+      const src = img.getAttribute("src") || "";
+      if (src.indexOf("data:image/png;base64,") !== 0) swInlineL10 = false;
+    });
+    add("LEGENDUX_FIX2_L10_topology",
+      rowsL10.length === 8 && swInlineL10 && DFLIGHT_ATM09_USER_LEGEND_ROWS.length === 8);
+
+    if (head) head.hidden = prevHeadHiddenL3;
+    if (list) list.hidden = prevListHiddenL3;
   } catch (e){
     add("LEGENDUX_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -44956,6 +45155,7 @@ function dflightSelfTestLEGENDUX(){
       if (det && prevDetH !== null) det.hidden = prevDetH;
       if (det && prevDetOpen !== null) det.open = prevDetOpen;
       if (ulRoot && prevUlH !== null) ulRoot.hidden = prevUlH;
+      try { dflightAtm09ClearUserLegendPresentation(); } catch(_){}
       try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
     } catch(_){}
   }
