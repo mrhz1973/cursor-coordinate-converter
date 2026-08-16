@@ -5,13 +5,26 @@ alwaysApply: true
 
 # Output workflow
 
-**Casa canonica del metodo:** [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) §4 — indice regole (A/B/C/D/D1/D2/D2bis/E/F/G/H/I + `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + mini-regole L10N-FREEZE / QA-HUMAN-NO-OPSEC). Template QA: [`docs/QA-CHECKLIST.md`](../../docs/QA-CHECKLIST.md).
+**Casa canonica del metodo:** [`docs/OPERATING_MEMORY.md`](../../docs/OPERATING_MEMORY.md) §4 — indice regole (A/B/C/D/D1/D2/D2bis/E/F/G/H/I + DELTA/`CURSOR-PROMPT-DELTA` + CBG/`CONTEXT-BUDGET-GUARD`+`CONNECTOR-SCHEMA-GUARD`+`TOOL-PAYLOAD-GUARD` + `agg` + mini-regole L10N-FREEZE / QA-HUMAN-NO-OPSEC). Template QA: [`docs/QA-CHECKLIST.md`](../../docs/QA-CHECKLIST.md).
 
-Questa rule contiene **solo** l'esecuzione lato Cursor (non il metodo orchestratore). Regola generale: prompt operativi **autosufficienti** — implementazione, verifiche standard, memoria orchestratore e RIEPILOGO nello stesso intervento; nessun pass separato di sola verifica salvo output mancante/contraddittorio, test fallito, rischio concreto, richiesta esplicita utente, o task dichiaratamente audit.
+Questa rule contiene **solo** l'esecuzione lato Cursor (non il metodo orchestratore).
+
+## Ricezione prompt — TASK DELTA (default)
+
+Default corrente: i prompt operativi GPT → Cursor sono **TASK DELTA** (`METHOD-CURSOR-PROMPT-DELTA`).
+
+- L'assenza del boilerplate standard (session guard, git, remote PASS, deploy, ABQA generica, autosync, F3, `/tmp`, RIEPILOGO, coda finito) **non** rende il prompt incompleto.
+- Cursor applica automaticamente il metodo stabile da OM §4 + questa rule (incluso profilo `CLOSURE: STANDARD_RUNTIME_BUNDLE` quando dichiarato o implicito per bundle runtime standard).
+- Cursor **non** inventa scope/acceptance task-specific mancanti.
+- Se manca un'informazione **realmente decisionale** (scope, acceptance, rischio, stop, FULL SHA necessari) → **STOP**.
+- Se manca soltanto boilerplate canonico → applicare il repository method.
+- Un intervento operativo resta **autosufficiente in esecuzione**: implementazione, verifiche standard, memoria orchestratore e RIEPILOGO nello stesso pass; nessun pass separato di sola verifica salvo output mancante/contraddittorio, test fallito, rischio concreto, richiesta esplicita utente, o task dichiaratamente audit.
 
 ## RIEPILOGO
 
 A fine intervento, riepilogo numerato (`1.`, `2.`, …) con, quando applicabile: autosync orchestratore (eseguito sì/no, file memoria, hash commit, esito push, conferma monolite **escluso** o motivo, motivi di mancato autosync); `git status --short`; `git diff --stat`; file modificati; regioni toccate; cosa fatto/rimosso; funzioni; chiavi i18n; cosa non toccato; lint/check; se l'intervento non richiedeva commit; limiti/backlog.
+
+Il RIEPILOGO resta evidence utile in Cursor e su GitHub. Il workflow umano standard verso ChatGPT è: persistenza su GitHub → operatore scrive **`agg`** (non paste del riepilogo 20–40 punti), salvo FAIL / evidence mancante / contraddizione / debug / richiesta esplicita.
 
 ### STATO FRESCO DA CURSOR
 
@@ -43,7 +56,7 @@ Metodo e motivazioni: OM §4. Sequenza operativa a fine intervento (salvo eccezi
 3. Commit/push selettivi di sola memoria orchestratore (`docs/orchestrator/**`) + `.cursor/rules/**` pertinenti se toccate. **Mai** `coordinate_converter Claude.html` nell'autosync salvo richiesta esplicita; se modificato ma fuori commit, descriverlo nell'inbox.
 4. `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md`: legacy, non toccare nell'autosync. `docs/roadmap.md` fuori dall'autosync salvo richiesta esplicita.
 
-Alias **`aggio`** / **«aggiornati»**: in Cursor = pubblica memoria GIS; in ChatGPT = legge da GitHub (mai automatico). Sul repo GIS `aggio` = `aggio gis`; control-plane = `aggio control`.
+Alias **`aggio`** / **«aggiornati»**: in Cursor = pubblica memoria GIS; in ChatGPT = legge da GitHub (mai automatico). Sul repo GIS `aggio` = `aggio gis`; control-plane = `aggio control`. Alias **`agg`** (≠ `aggio`): in ChatGPT = reacquire/continue da `origin/main` dopo pass Cursor — semantica completa in OM §4 / §6.
 
 ## Session guard / PASS tecnico remoto
 

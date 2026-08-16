@@ -44,10 +44,10 @@
 ## 4. Protocollo orchestratore minimo
 
 - ChatGPT e Cursor usano lo stesso **CORE BOOT**: README `AI-BOOT` → OPERATING_MEMORY §7.1 → hot-header WU attiva; roadmap/WU body/QA/HANDOFF solo on demand.
-- Prompt Cursor: istruzioni esterne fuori dal prompt; blocco operativo pulito dentro il prompt.
+- Prompt Cursor = **TASK DELTA** (`METHOD-CURSOR-PROMPT-DELTA`): istruzioni esterne fuori dal prompt; nel prompt solo scope/acceptance/rischio task-specific + profilo di chiusura breve (es. `CLOSURE: STANDARD_RUNTIME_BUNDLE`). Il metodo stabile (session guard, deploy, ABQA, autosync, F3, finito) resta nel repo — Cursor lo applica da OM §4 / rule 30; **non** va ricopiato nel prompt.
 - Procedere per **bundle** coerenti (default METHOD-BUNDLING-DEFAULT); non frammentare il lavoro routine in micro-blocchi separati salvo categorie delicate (OM §4 Regola G).
 - Non toccare aree non correlate.
-- `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei prompt **bundle** runtime la coda `finito` è **pre-autorizzata** e si **innesca automaticamente** dalla riga `QA <BLOCK-ID> PASS operatore` (Regola H); resta manuale/non automatico per eccezioni in Regola A.
+- `finito` è un workflow interno a Cursor, **non** un comando PowerShell che l'operatore esegue a mano; nei bundle runtime con profilo `CLOSURE: STANDARD_RUNTIME_BUNDLE` (o equivalente) la coda `finito` è **pre-autorizzata dal metodo** e si **innesca automaticamente** dalla riga `QA <BLOCK-ID> PASS operatore` (Regola H); resta manuale/non automatico per eccezioni in Regola A. GPT **non** reinietta la coda nel prompt.
 - Nessun GPS silenzioso.
 - Nessun live tracking GPS senza decisione esplicita.
 - Modifiche runtime: commit separati — codice / docs operative / autosync.
@@ -70,24 +70,45 @@
 | G | Bundling di default (`METHOD-BUNDLING-DEFAULT`) | un bundle / un commit / una QA |
 | H | QA-PASS auto-innesca `finito` (`METHOD-QA-PASS-AUTO-FINITO`) | trigger chiusura |
 | I | Context-safe bootstrap (`METHOD-CONTEXT-SAFE-BOOTSTRAP`) | CORE BOOT / no front-loading |
-| CBG | `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` | budget contesto in sessione |
+| DELTA | `METHOD-CURSOR-PROMPT-DELTA` | prompt GPT→Cursor = task delta + profilo chiusura |
+| CBG | `CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `TOOL-PAYLOAD-GUARD` | budget contesto / connector / tool payload |
+| AGG | alias `agg` (reacquire post-Cursor) | distinto da `aggio` |
 | Mini-regole | L10N-FREEZE · QA-HUMAN-NO-OPSEC | governance trasversale |
 
-Metodo di esecuzione Cursor (RIEPILOGO, prompt autosufficienti, autosync sequenza, `finito` comandi, session guard): [`.cursor/rules/00-project-core.mdc`](../.cursor/rules/00-project-core.mdc) e [`.cursor/rules/30-output-workflow.mdc`](../.cursor/rules/30-output-workflow.mdc) (stub puntatori a questa sezione). Template QA: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
+Metodo di esecuzione Cursor (RIEPILOGO, ricezione TASK DELTA, autosync sequenza, session guard, remote PASS): [`.cursor/rules/00-project-core.mdc`](../.cursor/rules/00-project-core.mdc) e [`.cursor/rules/30-output-workflow.mdc`](../.cursor/rules/30-output-workflow.mdc) (stub puntatori a questa sezione). Template QA: [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md).
 
 ### Handoff & Close Discipline — minimizzazione copia-incolla
 
 Disciplina di handoff e chiusura blocco orientata a ridurre il copia-incolla manuale tra Cursor, GPT e il **reviewer AI esterno** (quando previsto). Sostituisce integralmente ogni precedente catena fissa di revisione nominale tra modelli specifici e Cursor. La governance review è **model-agnostic**: non dipende dal nome/provider del reviewer.
 
-**Regola A — `finito` condizionale nel prompt (bundle: pre-autorizzato).** Ogni prompt Cursor **bundle runtime** già approvato include in coda la clausola `finito` **pre-autorizzata** (vedi **Regola H** e *Template coda prompt bundle* sotto). Per blocchi non-bundle o senza deploy/QA bundle, la clausola classica resta:
+**Regola DELTA — CURSOR-PROMPT-DELTA (`METHOD-CURSOR-PROMPT-DELTA`).** I prompt GPT → Cursor **non** ricopiano il metodo stabile già nel repository.
+
+Modello:
+- GPT → Cursor = **TASK DELTA**
+- Repo / rules → Cursor = **METODO STABILE**
+- Cursor → GitHub = **EVIDENCE PERSISTENTE**
+- operatore → GPT dopo Cursor = **`agg`**
+- GPT → GitHub = reacquire minimo on-demand
+
+Un prompt operativo è completo se contiene il **delta** del task. Campi minimi quando applicabili: `BLOCK-ID`; categoria (`ROUTINE` / `DELICATO` / `DIAGNOSTIC` / `DOCS`); BASE / candidate solo se necessari; `OBIETTIVO`; `SCOPE` specifico; invarianti specifici; `ACCEPTANCE` specifica; `STOP` conditions specifiche; profilo di chiusura (es. `CLOSURE: STANDARD_RUNTIME_BUNDLE`).
+
+**`CLOSURE: STANDARD_RUNTIME_BUNDLE`** (profilo canonico breve) significa: applicare Regola H; deploy standard se previsto; Automated Browser QA pre-operatore se applicabile; fermarsi a `QA FINALE CHATGPT — PENDING` dopo ABQA PASS; QA umana resta ChatGPT; riga QA operatore PASS → auto-`finito` quando autorizzato; autosync / F3 / remote PASS secondo metodo; eccezioni fail-closed esistenti restano valide. Per blocco delicato: review richiesta completata/loggata prima delle fasi che la richiedono.
+
+Il prompt **non** ricopia, salvo override realmente specifico: session guard; comandi git; remote PASS; deploy GIS; ABQA generica; autosync; F3; LAST_CURSOR_REPORT; `/tmp`; formato RIEPILOGO; procedura/`coda` finito completa; boilerplate già in OM §4 / rule 30. Cursor li applica dalle case canoniche del repo.
+
+**Delta ≠ ambiguo.** Scope, acceptance, rischio, finding, decisioni prodotto, FULL SHA necessari e stop condition restano espliciti. Override del metodo standard → scritto nel prompt. Assenza di boilerplate canonico **non** rende il prompt incompleto; assenza di informazione **decisionale** task-specific → STOP.
+
+Ritorno Cursor → GPT (workflow umano standard): Cursor termina → persiste evidence su GitHub → operatore scrive solo `agg` in ChatGPT → GPT legge `origin/main`. **Non** è più standard incollare in ChatGPT il RIEPILOGO Cursor da 20–40 punti. Paste manuale completo solo su FAIL, evidence GitHub mancante/contraddittoria, debugging specifico, o richiesta esplicita.
+
+**Regola A — `finito` condizionale (bundle: pre-autorizzato dal metodo).** Ogni prompt Cursor **bundle runtime** con profilo `CLOSURE: STANDARD_RUNTIME_BUNDLE` (o equivalente) attiva la coda `finito` **pre-autorizzata** definita una sola volta in *Template coda prompt bundle runtime* sotto (vedi **Regola H**). GPT **non** copia la coda nel prompt: dichiara solo il profilo. Per blocchi non-bundle o senza profilo di chiusura runtime, la clausola classica resta:
 
 > Se tutti i controlli statici risultano PASS e il diff resta nello scope dichiarato, esegui il workflow `finito`. Se un controllo fallisce o il diff esce dallo scope, NON eseguire `finito`: fermati e riporta il problema.
 
-Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività read-only; blocchi delicati in attesa di **review esterna** (se richiesta e non ancora completata); **REVIEW GPT-SOSTITUTIVA** non ancora loggata (bundle delicato); QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti; **deploy non eseguito**; **smoke fallito**; prompt che **non** ha autorizzato esplicitamente la coda `finito`. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore — e **non** un secondo giro separato dopo QA PASS di un bundle autorizzato.
+Il workflow `finito` resta **manuale o non automatico** per: diagnosi; attività read-only; blocchi delicati in attesa di **review esterna** (se richiesta e non ancora completata); **REVIEW GPT-SOSTITUTIVA** non ancora loggata (bundle delicato); QA visiva pre-registrazione; errori; scope drift; workspace sporco; repository o branch incoerenti; **deploy non eseguito**; **smoke fallito**; prompt che **non** ha dichiarato un profilo di chiusura che autorizza la coda `finito`. `finito` è un workflow interno a Cursor, **non** un comando PowerShell da far eseguire all'operatore — e **non** un secondo giro separato dopo QA PASS di un bundle autorizzato.
 
 **Regola B — Review tiered (a livello BUNDLE).** La review graduata sostituisce integralmente la disciplina precedente. Il gate (review, deploy, QA) vale per **intero bundle**, mai per singolo item. Vedi anche **Regola G — Bundling di default**. Il reviewer esterno, quando usato, è il **reviewer AI esterno** (seconda AI disponibile) — **mai** hardcodato per nome/modello/provider nella regola.
 
-- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT prepara il prompt completo → Cursor esegue → controlli statici → deploy → Automated Browser QA PRE-OPERATORE (Regola D2bis) → solo se PASS/N/A: ChatGPT emette QA umana residua (Regola D2) → attestazione QA PASS operatore in Cursor → finito automatico` (Regola H). **Nessun reviewer AI esterno richiesto** — vai sempre, zero attese.
+- **Bundle ROUTINE** (mega-bundle: CSS, HTML, attributi, i18n, UI, cosmetico, Ramo A, JS a basso rischio che **non** tocca categorie delicate): flusso `GPT emette prompt TASK DELTA (Regola DELTA) → Cursor esegue + metodo stabile da repo → controlli statici → deploy → Automated Browser QA PRE-OPERATORE (Regola D2bis) → solo se PASS/N/A: ChatGPT emette QA umana residua (Regola D2) → attestazione QA PASS operatore in Cursor → finito automatico` (Regola H). **Nessun reviewer AI esterno richiesto** — vai sempre, zero attese.
 - **Bundle DELICATO** (sanitizer/whitelist, OPSEC, rete/tile/proxy, cache/storage, nuovo campo persistito, nuovo create-path, lifecycle modale/dialog area −/× — possono stare insieme tra loro, **mai** nel bundle routine), **quando un reviewer AI esterno è disponibile:** reviewer AI esterno **upstream** (sostanza, rischi, gate; **non** scrive il prompt Cursor) → GPT redige prompt → Cursor implementa → reviewer AI esterno **downstream** verifica diff **intero bundle** da `raw@FULL_SHA` (**una** review) **prima** del deploy.
 - **Bundle DELICATO, reviewer AI esterno NON disponibile** (limite token / attesa inaccettabile / seconda AI assente): il deploy **non** si blocca. Procedere con **REVIEW GPT-SOSTITUTIVA** — valida **solo** se esegue esplicitamente la checklist per-categoria da `raw@FULL_SHA` (non un «PASS» a occhio) + QA operatore della categoria + **review esterna post-hoc** come backstop quando il reviewer AI esterno torna disponibile (rollback/fix-forward se finding; build bump + git rendono il rollback pulito). Etichettare «REVIEW GPT-SOSTITUTIVA», **mai** attribuire la review a un reviewer che non l’ha eseguita, e loggarla nel report. Una sostitutiva dichiarata senza eseguire i check è errore di gate documentato (es. Help/QR).
 
@@ -111,9 +132,9 @@ In entrambi i tier: il **reviewer AI esterno non scrive** il prompt Cursor; il p
 
 **Regola H — QA-PASS AUTO-INNESCA FINITO (METHOD-QA-PASS-AUTO-FINITO).** Elimina il giro separato «QA PASS → ChatGPT dice ora lancia finito».
 
-1. **Nei prompt bundle runtime**, la coda `finito` è **pre-autorizzata** nel prompt stesso (template *Coda prompt bundle* sotto).
+1. **Nei prompt bundle runtime**, il profilo `CLOSURE: STANDARD_RUNTIME_BUNDLE` (o equivalente) **pre-autorizza** la coda `finito` definita in *Template coda* sotto — GPT **non** reinietta la coda nel prompt.
 2. **Trigger:** la riga di attestazione operatore esatta `QA <BLOCK-ID> PASS operatore` (stesso `<BLOCK-ID>` del bundle).
-3. **Quando Cursor riceve quella riga**, se il prompt bundle prevedeva la coda, il **deploy tecnico è PASS**, nessuna eccezione attiva (Regola A) e la review richiesta (se bundle delicato) è già completata e loggata, Cursor **esegue automaticamente** senza chiedere un comando separato:
+3. **Quando Cursor riceve quella riga**, se il profilo di chiusura era dichiarato (o implicito per bundle runtime standard), il **deploy tecnico è PASS**, nessuna eccezione attiva (Regola A) e la review richiesta (se bundle delicato) è già completata e loggata, Cursor **esegue automaticamente** senza chiedere un comando separato:
    - chiusura docs `OPERATING_MEMORY.md` §7;
    - aggiornamento roadmap/work-unit se previsto;
    - aggiornamento `docs/QA-CHECKLIST.md` solo se il metodo del blocco lo richiede; **`docs/HANDOFF.md` non** si aggiorna a ogni `finito` (seed stabile);
@@ -233,6 +254,22 @@ Principio in dubbio: **meno fonti, più specifiche, una sola volta, on-demand.**
 3. Payload GitHub: preferire range di righe, `compare` compatto o blob SHA-pinnati; **mai** payload «per completezza» quando un range basta. Se una risposta restituisce accidentalmente un documento intero, è **già acquisito**: non rileggerlo.
 4. Il costo di schemi e payload è **reale** anche se non mostrati all'operatore: ogni chiamata deve avere una motivazione legata al gate corrente.
 
+**Estensione TOOL-PAYLOAD-GUARD (parte integrante di `CONTEXT-BUDGET-GUARD`).** Governa il costo di chiamate tool e payload grandi (GitHub, web, search, compare, open/fetch):
+
+1. Known path + ref + range → **direct fetch**.
+2. Known commit pair → **compact compare** prima di diff completo.
+3. Known symbol → targeted symbol/search/range.
+4. Search → **top-N** minimo sufficiente.
+5. Open/fetch → solo risultati necessari al gate.
+6. Schema/tool già acquisito → **mai** rediscovery nella stessa sessione.
+7. Payload già acquisito → **mai** refetch «per sicurezza».
+8. Se un tool restituisce accidentalmente un payload molto più ampio del necessario: considerarlo già acquisito; **non** ripeterlo; cambiare strategia nelle chiamate successive.
+9. Generic discovery / namespace expansion → **ultima risorsa**.
+10. Tool output grande → **non** copiarlo integralmente nella risposta GPT e **non** copiarlo nel prompt Cursor se basta conclusione / pointer / FULL SHA.
+11. Evidence già persistita su GitHub → leggere la conclusione canonica/pointer; **non** ricostruire automaticamente tutta la catena web/tool precedente.
+12. Web/research già conclusa e canonizzata su GitHub → **non** riaprire le fonti esterne nei turni successivi salvo gate che richieda nuova verifica.
+13. Budget conversazione → valutare schema + payload + risultati tool come **costo reale**, non soltanto righe documentali visibili.
+
 ### Chiusura blocco (dopo l'esecuzione Cursor)
 
 - Verifica esito: diff, controlli automatici pertinenti e gate OPSEC
@@ -325,10 +362,10 @@ Lo stesso formato vale per la "sostanza" che il reviewer AI esterno passa a GPT:
 
 ### Template coda prompt bundle runtime (canonico)
 
-**Home:** questa sezione + [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) § *Template coda prompt bundle runtime*. GPT incolla la coda in ogni prompt bundle runtime.
+**Home:** questa sezione (comportamento normativo **una sola volta**) + [`docs/QA-CHECKLIST.md`](QA-CHECKLIST.md) § *Template coda prompt bundle runtime* se presente. **GPT non incolla** questa coda nei prompt ordinari: dichiara `CLOSURE: STANDARD_RUNTIME_BUNDLE` (Regola DELTA); **Cursor** applica la coda da qui.
 
 ````text
-GATE / CHIUSURA (coda finito pre-autorizzata):
+GATE / CHIUSURA (coda finito pre-autorizzata — applicata da Cursor, non reiniettata da GPT):
 Dopo deploy tecnico PASS, esegui AUTOMATED BROWSER QA PRE-OPERATORE (Regola D2bis / AUTOMATED-BROWSER-QA-PREOP).
 Se Automated Browser QA = FAIL o BLOCKED/INCOMPLETE: NON dichiarare QA FINALE CHATGPT — PENDING; riporta finding; NON eseguire finito.
 Solo se Automated Browser QA = PASS (o NOT APPLICABLE giustificato), fermati e riporta:
@@ -343,7 +380,7 @@ Se QA operatore fallisce o deploy/smoke non PASS o Automated Browser QA non PASS
 Eccezioni: diagnosi/read-only; review esterna pendente (bundle delicato); REVIEW GPT-SOSTITUTIVA non loggata; workspace sporco; scope drift.
 ````
 
-Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`).
+Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`) — nel prompt delta basta il campo `BLOCK-ID`; Cursor lo collega a questa coda.
 
 **Mini-regole di governance trasversale (casa canonica qui; le rules `.cursor` ne sono puntatori):**
 
@@ -361,6 +398,26 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 ---
 
 ## 6. Alias scoped memoria GIS
+
+### Alias `agg` — reacquire / continue dopo pass Cursor (≠ `aggio`)
+
+Trigger: l'operatore scrive esattamente **`agg`** (case-insensitive, da solo).
+
+Significato: «Cursor ha terminato il pass corrente. Verifica e continua da GitHub.»
+
+GPT deve:
+1. verificare `origin/main` (`git ls-remote` / autorità remota);
+2. riacquisire stato vivo minimo: OM §7.1 · WU hot-header attiva · README AI-BOOT solo se non già acquisito / nuovo boot;
+3. determinare gate / NEXT;
+4. aprire **solo** l'evidence richiesta da quel gate;
+5. **non** chiedere all'utente di incollare il RIEPILOGO Cursor se GitHub contiene già evidence sufficiente;
+6. seguire AUTO-VIA entro lo scope della chat.
+
+Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottenere soltanto l'output mancante necessario.
+
+**`agg` ≠ `aggio` ≠ `aggio gis`.** `agg` = reacquire/continue post-Cursor. `aggio` / `aggio gis` = aggiornamento memoria GIS (semantica sotto).
+
+### Alias `aggio` / `aggio gis` — aggiornamento memoria GIS
 
 - Sul repo **GIS**, **`aggio`** e **`aggio gis`** sono **equivalenti**: entrambi aggiornano la memoria operativa del repo GIS.
 - Sul **control-plane** si usa **`aggio control`**.

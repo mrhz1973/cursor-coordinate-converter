@@ -20,8 +20,9 @@ Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, 
 ### Principi
 - **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
 - **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
-- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD`: uno schema/payload acquisito non si riacquisisce; discovery generica vietata se un tool noto basta).
+- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `TOOL-PAYLOAD-GUARD`: uno schema/payload acquisito non si riacquisisce; discovery generica vietata se un tool noto basta).
 - **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope assegnato**: un NEXT appartenente a un'altra chat/task/workstream si riconosce come stato ma **non si prende in carico**.
+- **`agg`:** Cursor ha concluso il pass corrente → GPT riacquisisce da `origin/main` solo stato/evidence necessari al gate e prosegue; **non** chiedere il RIEPILOGO completo se GitHub è sufficiente. **`agg` ≠ `aggio`** (`aggio` = aggiornamento memoria GIS).
 - **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
 
 ### Precedenza
