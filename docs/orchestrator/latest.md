@@ -1,16 +1,17 @@
 # Orchestrator — latest
 
-Aggiornato: 2026-08-16 (finito IMPL-A + WU-0017 CLOSED/PASS)
+Aggiornato: 2026-08-16 (AUDIT-A WU-0018 ATM09 legend UX)
 
 ## Sintesi
 
-- **WU-0017** / **IMPL-A**: **CLOSED / PASS** (QA D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A PASS operatore + auto-finito Regola H).
-- LIVE invariato: `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A`.
-- Commit chiusura: `8958d29` (docs). Autosync: vedere inbox finito + `LAST_CURSOR_REPORT.md`.
-- **NEXT:** backlog **D–H NOT OPENED** (naturale: **D** Legenda ATM09 esterna / user-facing labels). Gate: **none**.
+- **WU-0018** OPEN · blocco **D-FLIGHT-ATM09-LEGEND-UX-AUDIT-A** **CLOSED / PASS** (docs-only).
+- Gate: **OFFICIAL LABEL↔STYLE MAPPING REQUIRED**.
+- NEXT: evidenza autorevole mapping label ↔ swatch ↔ significato (NON IMPL-A).
+- LIVE invariato: `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · helper **0.1.3**.
+- Task commit: `c6d451e` · monolite/helper esclusi.
 
 ## Puntatore
 
-- Inbox: `docs/orchestrator/inbox/2026-08-16_0055_riepilogo_finito-sessione.md`
-- WU: `docs/work-units/WU-0017-dflight-atm09-visual-parity.md`
+- Inbox: `docs/orchestrator/inbox/2026-08-16_0941_riepilogo_dflight-atm09-legend-ux-audit-a.md`
+- WU: `docs/work-units/WU-0018-dflight-atm09-legend-ux.md`
 - Runtime: `docs/runtime/LAST_CURSOR_REPORT.md`
