@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **GIS-PANEL-DOCK-MGR-AUDIT-A** aperto · WU-0021 (candidato **G**) · gate **REVIEW PENDING** · docs-only · LIVE `508dd03` / **207** invariato · monolite escluso · F NOT OPENED · H CLOSED. [`inbox/2026-08-16_2225_riepilogo_gis-panel-dock-mgr-audit-a.md`](inbox/2026-08-16_2225_riepilogo_gis-panel-dock-mgr-audit-a.md).
+2026-08-16 — **GIS-PANEL-DOCK-MGR-AUDIT-A-EVIDENCE-B** · WU-0021 · gate **REVIEW PENDING** · probe LIVE 207 · root cause CONFIRMED · G-A1 · monolite escluso · F NOT OPENED. [`inbox/2026-08-16_2240_gis-panel-dock-mgr-audit-a-evidence-b.md`](inbox/2026-08-16_2240_gis-panel-dock-mgr-audit-a-evidence-b.md).

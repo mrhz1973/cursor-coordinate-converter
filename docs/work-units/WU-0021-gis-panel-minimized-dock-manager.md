@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / AUDIT
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-AUDIT-A
-**CURRENT GATE:** **REVIEW PENDING** (audit docs-only)
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-AUDIT-A-EVIDENCE-B
+**CURRENT GATE:** **REVIEW PENDING** (audit + evidence-B docs-only)
 **REVIEW BASE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
 **RUNTIME CANDIDATE:** —
 **RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3**
 **CATEGORIA:** **DELICATO** — layout/lifecycle trasversale multi-pannello
 **ORIGINE:** backlog QA build 183 candidato **G** — Global minimized-panel dock / modal layout manager
-**NEXT:** REVIEW audit → (futuro) IMPL micro-blocchi G-A…; **F NOT OPENED**; H CLOSED (WU-0020); WU-0012 invariata
-**NOTE:** AUDIT-A 2026-08-16 · docs-only · monolite byte-invariato · brand LIVE `TMART GIS tool` · no deploy/ABQA/QA/finito
+**NEXT:** REVIEW audit+evidence → (futuro) G-A1 thin coordinator; **F NOT OPENED**; H CLOSED; WU-0012 invariata
+**NOTE:** EVIDENCE-B 2026-08-16 · root cause z22 below panels CONFIRMED · G-A1 shared host · z strategy 29/28/30 · workbench=G-B · monolite invariato
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -338,10 +338,10 @@ Derivata da geometria LIVE + vincoli prodotto:
 
 | Blocco | Scope | Note |
 | --- | --- | --- |
-| **G-A** | Foundation coordinator + dock host header + z-fix + **1–2 pannelli pilota** (es. `favoritesPanel` + `measurePanel`) | DELICATO; no big-bang |
-| **G-B** | Estensione pannelli ordinari già in whitelist (track, waypoint, layers, astro, RR, polygon, help, routing, carto) + fix **workbench** whitelist | |
-| **G-C** | Eccezioni lifecycle (D-Flight pair, auto-min bbox/draw/pick, carto `_cartoUi`) — solo integrazione reflow, **no** cambio semantica | |
-| **G-D** | Responsive/polish: overflow +N, wrap brand, mobile header budget, optional untouched pin-high | |
+| **G-A** | Foundation coordinator **G-A1** (shared host/reflow per tutti i minimized già supportati) + z 29/28/30 + acceptance pilota `favoritesPanel`+`measurePanel` | DELICATO; no big-bang; no workbench fix |
+| **G-B** | Estensione certificazione pannelli ordinari + **fix whitelist workbench** | |
+| **G-C** | Eccezioni lifecycle (D-Flight pair, auto-min bbox/draw/pick, carto) — solo integrazione reflow | |
+| **G-D** | Responsive/polish: overflow +N, wrap brand, mobile topbar↔dock | |
 
 **Non** aprire F in questi blocchi.
 
@@ -362,3 +362,28 @@ Derivata da geometria LIVE + vincoli prodotto:
 ## 17. File toccati da AUDIT-A
 
 Solo memoria/docs: questo WU, `FRONTIER.md`, OM §7.2, roadmap candidato G, inbox/latest, LAST_CURSOR_REPORT. **Monolite non toccato.**
+
+## 18. EVIDENCE-B (2026-08-16) — runtime probe LIVE 207
+
+**Blocco:** `GIS-PANEL-DOCK-MGR-AUDIT-A-EVIDENCE-B` · docs-only · monolite blob `09fe2b4ac405f874866b19898ee844fe52ea1d8f` invariato.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2240_gis-panel-dock-mgr-audit-a-evidence-b.md`](../orchestrator/inbox/2026-08-16_2240_gis-panel-dock-mgr-audit-a-evidence-b.md) + JSON raw sibling.
+
+### Decisioni chiuse da evidence
+
+| Tema | Decisione |
+| --- | --- |
+| Root cause | **CONFIRMED** — dock z=22 sotto panels 24–29; overlap top-left riprodotto (astro/convert) |
+| Stacking header | `header` sticky z=10 crea context → mount dock *solo* in header **non** alza chip sopra panels |
+| Strategia z | interi: panels **maxZ 28**, dock/header chrome **29**, tabDrawer **30**, tools backdrop **990** |
+| G-A host | **OPTION G-A1** — shared `_gisMinimizedPanels` + un solo dock render; pilot acceptance favorites+measure |
+| G-A2 | **non raccomandata** (rischio doppio dock / branching) |
+| Workbench gap | bug preesistente → **G-B** (non G-A) |
+| Capacity | 1400: L586/R227; 900: R0; 360: L115/R0 + roomBelowBrand 115 → narrow = riga dedicata |
+| WU-0019 / touched | invariati |
+
+### Policy / piano
+
+Policy dock revisionata in evidence §6. Micro-blocchi: G-A = thin coordinator shared host; G-B = ordinari+workbench; G-C = eccezioni; G-D = polish.
+
+**Gate:** resta **REVIEW PENDING**. No IMPL / deploy / ABQA / QA / finito.
