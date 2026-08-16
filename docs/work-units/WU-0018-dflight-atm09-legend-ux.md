@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B (**CLOSED / PASS** diagnostico — Caso **B-P2**)
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A (**CLOSED / PASS** diagnostico — Caso **M2**)
 **CURRENT GATE:** ATM09 STYLE METADATA SOURCE REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** RULE-META probe = **DELICATO** (eseguito) · IMPL-A = non aperta
+**CATEGORIA:** STYLE-META-CLOSE = **DELICATO** (eseguito) · IMPL-A = non aperta
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** chiudere associazioni mancanti (scure/costa; secondo Max 120) con fonte metadata / Probe2 mirato — NON endpoint automatico; NON IMPL-A finché triple necessarie non PROVEN
-**NOTE:** JSON_CAPABILITY **SUPPORTED** (VPS transient + LoadCredential) · TECH↔RULE **9/9** · triple implementative **incomplete** · credential exposure **NO** · runtime/helper **invariati**
+**NEXT:** residui ancora non PROVEN: (1) `costa`/`scure` user-facing join; (2) secondo Max 120 — fonte metadata diversa da `italia` RULE-PNG vuoto — NON endpoint; NON IMPL-A
+**NOTE:** COSTA_STYLE_EQUIVALENCE **IDENTICAL** · ATM09_INFO CQL `costa`/`italia` feature_count **0** · `italia` RULE-PNG senza pixel visibili · user-facing **7/8** · credential exposure **NO**
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -429,10 +429,87 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | RULE-META-DESIGN-A | **CLOSED / PASS** |
 | RULE-META-PROBE-A | **BLOCKED** (Caso P4) — superseduto da VPS-B |
 | RULE-META-PROBE-VPS-B | **CLOSED / PASS** diagnostico (Caso **B-P2**) |
+| STYLE-META-CLOSE-A | **CLOSED / PASS** diagnostico (Caso **M2**) |
 | CURRENT GATE | **ATM09 STYLE METADATA SOURCE REQUIRED** |
-| NEXT | elencare/chiudere associazioni mancanti sotto; NON endpoint automatico; NON IMPL-A |
+| NEXT | solo residui sotto STYLE-META-CLOSE-A; NON endpoint; NON IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
+
+---
+
+## STYLE-META-CLOSE-A
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A` · **CLOSED / PASS** diagnostico · 2026-08-16 · Caso **M2**.
+
+### Review
+
+**REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS** (autorizzazione probe mirato costa/italia + ATM09_INFO CQL chiuso).
+
+### Contesto
+
+| Voce | Valore |
+| --- | --- |
+| SSH | Host **`ionos-n8n`** |
+| Transient | `systemd-run --wait --collect` + LoadCredential (contratto live) |
+| Script TEMP | creato via **scp** (no quoting PowerShell→Python) · 0600 · owner `goi-dflight` |
+| Credential exposure | **NO** |
+| TEMP CLEANUP | **PASS** |
+| Helper live post | **active** |
+
+### Probe A — full symbolizer JSON (re-probe)
+
+| Voce | Valore |
+| --- | --- |
+| HTTP / MIME / bytes | **200** / `application/json` / **2828** |
+| Rule count | **9** |
+| `costa` symbolizers (canon) | `[{"Polygon":{"fill":"#FF0000","fill-opacity":"0.3"}}]` |
+| `rosso` symbolizers (canon) | `[{"Polygon":{"fill":"#FF0000","fill-opacity":"0.3"}}]` |
+| `italia` symbolizers (canon) | `[{"Polygon":{"fill":"#FF9900","fill-opacity":"0.0"}}]` |
+| **COSTA_STYLE_EQUIVALENCE** | **IDENTICAL** |
+
+(Hex = evidenza upstream, non CSS GOI.)
+
+### Probe B — RULE-specific PNG (Name allowlist)
+
+| RULE (Name) | HTTP | MIME | bytes | size | Finding |
+| --- | --- | --- | --- | --- | --- |
+| `geometrie_rosse_schure` | 200 | image/png | 120 | 21×21 RGB | pixel non-bianchi presenti; coerenza con fill rosso pieno; **nessun** pattern distinto vs equivalenza JSON |
+| `geometrie_italia` | 200 | image/png | 88 | 21×21 RGB | **nessun** pixel non-bianco; **nessun** stroke/bordo visibile; coerente con fill-opacity 0.0; **non** coerente con swatch ufficiale «chiaro/bordato» |
+
+### Probe C — ATM09_INFO WFS (CQL chiuso)
+
+| Query | HTTP | MIME | feature_count | Distinct allowlisted |
+| --- | --- | --- | --- | --- |
+| `type='costa'` | 200 | application/json | **0** | tutti i campi distinct **vuoti** |
+| `type='italia'` | 200 | application/json | **0** | tutti i campi distinct **vuoti** |
+
+`viewparams=build_viewparams()` · `maxFeatures=50` · `propertyName` allowlist · typename `D-FLIGHT:ATM09_INFO`. Nessun raw persistito.
+
+### Mapping finale residui
+
+| Target | Esito | Motivo fail-closed |
+| --- | --- | --- |
+| `costa` / `geometrie_rosse_schure` → Max 0 | **PARTIAL** | COSTA-C1 **A** soddisfatto (symbolizer ≡ `rosso`); **B** fallisce (INFO feature_count 0 → nessuna quota/regola). COSTA-C2 non applicabile (nessuna metadata «interna»). |
+| Secondo Max 120 ↔ `geometrie_italia` | **NOT PROVEN** | INFO feature_count 0; RULE-PNG senza bordo/pixel → **non** soddisfa criterio C (coerenza chiaro/bordato). |
+| Funzione `geometrie_italia` | **PARTIAL (tecnica)** | Rule TECH con fill invisibile; non classificata INTERNAL PROVEN (manca metadata strutturata); **esclusa** come fonte del secondo Max 120 su base PNG. |
+
+### Contatori
+
+| Livello | Stato |
+| --- | --- |
+| SEMANTICA NORMATIVA | PROVEN **4** (invariato REFERENCE-B) |
+| SWATCH↔USER-FACING | PROVEN **8** (invariato REFERENCE-C) |
+| TECH↔RULE/SYMBOLIZER | PROVEN **9 / 9** |
+| USER-FACING IMPLEMENTATIVE MAPPING | PROVEN **7 / 8** |
+| Residui | (1) `costa`/`scure` user-facing; (2) secondo Max 120 (fonte ≠ `italia` PNG) |
+
+### Gate / NEXT
+
+| Campo | Valore |
+| --- | --- |
+| STYLE-META-CLOSE-A | **PASS** diagnostico (Caso **M2**) |
+| CURRENT GATE | **ATM09 STYLE METADATA SOURCE REQUIRED** |
+| NEXT | solo i due residui sopra — NON endpoint automatico; NON IMPL-A |
 
 ---
 
