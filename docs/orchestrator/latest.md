@@ -1,16 +1,9 @@
-# Orchestrator — latest
+> **AUTOSYNC NON AUTORITATIVO.**  
+> Stato corrente: CORE BOOT = `README.md` AI-BOOT → [`docs/OPERATING_MEMORY.md`](../OPERATING_MEMORY.md) §7.1 → WU hot-header.  
+> Non usare questo file come current-state primario.
 
-Aggiornato: 2026-08-16 (ATM09-LEGEND-UX-IMPL-A · AB QA PASS · QA PENDING)
+# Stato operativo (sintetico)
 
-## Sintesi
+## Ultimo aggiornamento
 
-- **WU-0018** OPEN · **IMPL-A** IMPLEMENTED / DEPLOY PASS / AB QA PASS / QA OPERATORE PENDING.
-- LIVE `016be9e` / build **198** / `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · helper **0.1.3**.
-- Gate: **QA FINALE CHATGPT — PENDING** (coda `finito` pre-autorizzata).
-- Task: `016be9e`.
-
-## Puntatore
-
-- Inbox: `docs/orchestrator/inbox/2026-08-16_1200_riepilogo_dflight-atm09-legend-ux-impl-a.md`
-- WU: `docs/work-units/WU-0018-dflight-atm09-legend-ux.md`
-- Runtime: `docs/runtime/LAST_CURSOR_REPORT.md`
+2026-08-16 — **WIKI-LLM-LEAN-CONSOLIDATION-C** (governance docs-only, commit `1f2e8b0`): `METHOD-CURSOR-PROMPT-DELTA` + `CLOSURE: STANDARD_RUNTIME_BUNDLE` + `TOOL-PAYLOAD-GUARD` + alias `agg` (≠ `aggio`). Coda runtime preservata (applicata da Cursor, non reiniettata da GPT). Gate APP GIS **invariato**. Dettaglio: [`docs/orchestrator/inbox/2026-08-16_1220_riepilogo_wiki-llm-lean-consolidation-c.md`](inbox/2026-08-16_1220_riepilogo_wiki-llm-lean-consolidation-c.md).
