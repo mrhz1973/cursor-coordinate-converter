@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3 (**DEPLOYED / ABQA PASS / QA FINALE CHATGPT — PENDING**)
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 (**REVIEW GPT-SOSTITUTIVA — PENDING**)
+**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
-**RUNTIME CANDIDATE:** `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3`
-**RUNTIME LIVE:** monolite tip `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · helper **0.1.3**
+**RUNTIME CANDIDATE:** `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4`
+**RUNTIME LIVE:** monolite tip `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · helper **0.1.3** (FIX3; FIX4 non deployato)
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3 PASS operatore` → auto-`finito`
-**NOTE:** REVIEW GPT-SOSTITUTIVA **PASS** · deploy+ABQA PASS (Atm09+drag reale) · gate QA FINALE PENDING · no finito · F/G/H **non** aperti
+**NEXT:** REVIEW GPT-SOSTITUTIVA su FIX4 → (se PASS) deploy → ABQA → QA FINALE
+**NOTE:** FIX4 = no sibling re-pair on drag-end (decisione prodotto) · no finito · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
