@@ -1,12 +1,12 @@
 # LAST_CURSOR_REPORT
 
-**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A)
+**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A)
 
 ## Disciplina F3
 
 | Campo | Valore |
 |-------|--------|
-| `real_task_commit` | `9db8c19ae0bfd932663e2169cf203395300c8912` |
+| `real_task_commit` | `4670abf7022569738f493b5d2116fc67c86be26b` |
 | Container corrente | `PENDING_SELF_REFERENCE` |
 | Fatti autosync proprio | `EXTERNAL_ONLY` |
 | Terzo commit | **vietato** |
@@ -26,10 +26,10 @@
 | Campo | Valore |
 |-------|--------|
 | WORKSTREAM | WU-0018 OPEN |
-| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A **CLOSED / PASS** (M2) |
-| GATE | ATM09 STYLE METADATA SOURCE REQUIRED |
-| NEXT | residui costa/scure + secondo Max 120 |
-| User-facing mapping | **7/8** |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A **CLOSED / PASS** (T1) |
+| GATE | READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A |
+| NEXT | IMPL-A ROUTINE (no helper patch) — **not opened here** |
+| USER-FACING SOURCE | **8/8** |
 | Runtime/helper patch | **NO** |
 | Deploy | **NO** |
 | Finito | **NO** |
