@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3 (**REVIEW GPT-SOSTITUTIVA — PENDING**)
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3 (**DEPLOYED / ABQA PASS / QA FINALE CHATGPT — PENDING**)
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
-**RUNTIME CANDIDATE:** `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3` · FAIL QA su FIX2 `a40d216…`/203
-**RUNTIME LIVE:** monolite tip `a40d216300deefa2c23f6b20585f9543c6ee024c` · build **203** · helper **0.1.3** (**QA FAIL operatore**; FIX3 non deployato)
+**RUNTIME CANDIDATE:** `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3`
+**RUNTIME LIVE:** monolite tip `9643ca0839878b154e68ffa003aa94570375d111` · build **204** · helper **0.1.3**
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** REVIEW GPT-SOSTITUTIVA su FIX3 → (se PASS) deploy → ABQA → QA FINALE
-**NOTE:** Root cause FIX3: Atm09 open senza EnsurePairLayout + no re-pair su drag-end; legend z↓ · no finito · F/G/H **non** aperti
+**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3 PASS operatore` → auto-`finito`
+**NOTE:** REVIEW GPT-SOSTITUTIVA **PASS** · deploy+ABQA PASS (Atm09+drag reale) · gate QA FINALE PENDING · no finito · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
