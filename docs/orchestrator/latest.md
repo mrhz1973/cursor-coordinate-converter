@@ -1,17 +1,17 @@
 # Orchestrator — latest
 
-Aggiornato: 2026-08-16 (REFERENCE-C WU-0018 ATM09 legend UX)
+Aggiornato: 2026-08-16 (RULE-META-DESIGN-A WU-0018)
 
 ## Sintesi
 
-- **WU-0018** OPEN · **REFERENCE-C** **CLOSED / PASS**.
-- SWATCH↔USER-FACING **PROVEN (8)** da asset ufficiale D-Flight (2024-08-02).
-- GetLegendGraphic LIVE `http://100.114.7.53:8010` HTTP 200; TECH↔SWATCH riga GLG acquisito; **triple 0** (rossi GLG identici).
-- Gate: **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** (Caso C2).
-- LIVE `d2d3ab3` / **197** · helper **0.1.3** · task `36ec44a`.
+- **WU-0018** OPEN · **RULE-META-DESIGN-A** **CLOSED / PASS** (design-only).
+- PNG GLG insufficiente per regole rosse; query `/atm09/legend.png?...` **non** forwarded.
+- Raccomandato: **ONE-SHOT RULE-META PROBE** (GetLegendGraphic JSON) · categoria **DELICATO**.
+- Gate: **DELICATE RULE-META PROBE REVIEW REQUIRED**.
+- LIVE `d2d3ab3` / **197** · helper **0.1.3** invariati · task `6652b07`.
 
 ## Puntatore
 
-- Inbox: `docs/orchestrator/inbox/2026-08-16_1002_riepilogo_dflight-atm09-legend-ux-reference-c.md`
+- Inbox: `docs/orchestrator/inbox/2026-08-16_1013_riepilogo_dflight-atm09-legend-ux-rule-meta-design-a.md`
 - WU: `docs/work-units/WU-0018-dflight-atm09-legend-ux.md`
 - Runtime: `docs/runtime/LAST_CURSOR_REPORT.md`
