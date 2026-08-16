@@ -1,6 +1,6 @@
 # LAST_CURSOR_REPORT
 
-**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2)
+**Aggiornato:** 2026-08-16 (finito D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 + WU-0018 CLOSED/PASS)
 
 ## Disciplina F3
 
@@ -27,10 +27,12 @@
 
 | Campo | Valore |
 |-------|--------|
-| WORKSTREAM | WU-0018 OPEN |
-| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 **IMPLEMENTED / DEPLOY PASS / AB QA PASS / QA OPERATORE PENDING** |
-| GATE | QA FINALE CHATGPT — PENDING (FIX2 PAN STABILITY) |
-| Automated Browser QA | **PASS** |
+| WORKSTREAM | WU-0018 **CLOSED / PASS** |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 **CLOSED / PASS** |
+| GATE | **none** |
+| Automated Browser QA | **PASS** (pregresso) |
+| QA operatore | **PASS** |
 | Helper patch | **NO** |
 | Nuovo endpoint | **NO** |
-| Finito | **NO** (pre-QA FIX2) |
+| Finito | **SÌ** (Regola H) |
+| NEXT | backlog E–H **NOT OPENED** |
