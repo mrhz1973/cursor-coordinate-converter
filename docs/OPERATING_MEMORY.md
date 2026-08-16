@@ -442,27 +442,27 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | nessuno D-Flight aperto — backlog E–H **NOT OPENED** |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 (**CLOSED / PASS**) |
-| **STATO BLOCCO** | WU-0018 **CLOSED / PASS** · LIVE build **200** invariato · helper **0.1.3** |
-| **GATE CORRENTE** | **none** |
+| **WORKSTREAM ATTIVO** | WU-0019 — [`D-FLIGHT-PANEL-SIDE-BY-SIDE`](work-units/WU-0019-dflight-panel-side-by-side.md) (**OPEN**) |
+| **BLOCCO ATTIVO** | D-FLIGHT-PANEL-SIDEBYSIDE-AUDIT-A (**AUDIT COMPLETE / EVIDENCE PERSISTED**) |
+| **STATO BLOCCO** | audit completato · root cause = pin default identico (`left=pad`, stesso safeTop) · raccomandazione B (policy locale + `gisPanel*`) |
+| **GATE CORRENTE** | **GPT AUDIT REVIEW — PENDING** |
 | **REVIEW BASE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` (build **200** / FIX2) |
 | **RUNTIME LIVE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
-| **NEXT** | backlog E–H **NOT OPENED** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **CLOSED / PASS** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **NEXT** | review GPT dell’audit → solo dopo PASS definire `D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A` |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0019 **OPEN** · WU-0018 **CLOSED / PASS** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS (QA operatore + finito) — LIVE `67d9cc7` / **200**
-2. **WU-0018 (ATM09 LEGEND UX)** — CLOSED / PASS (IMPL-A + FIX1 + FIX2)
-3. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — CLOSED / PASS — LIVE `d2d3ab3` / **197**
-4. **WU-0017 (ATM09 VISUAL PARITY)** — CLOSED / PASS
-5. **D-FLIGHT-UX-COHERENCE-MASTER-VIS-A** — CLOSED / PASS — tip `c7d1734` / **196**
+1. **D-FLIGHT-PANEL-SIDEBYSIDE-AUDIT-A** — AUDIT COMPLETE · gate GPT AUDIT REVIEW — PENDING · WU-0019
+2. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS — LIVE `67d9cc7` / **200**
+3. **WU-0018 (ATM09 LEGEND UX)** — CLOSED / PASS
+4. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — CLOSED / PASS — LIVE `d2d3ab3` / **197**
+5. **WU-0017 (ATM09 VISUAL PARITY)** — CLOSED / PASS
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
 - **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013** · **WU-0014** · **WU-0015** · **WU-0016** · **WU-0017 (ATM09 VISUAL PARITY)** · **WU-0018 (ATM09 LEGEND UX)** — [`work-units/`](work-units/)
-- **WU open:** WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **WU open:** WU-0019 · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
 - **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`

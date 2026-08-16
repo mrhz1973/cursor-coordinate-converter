@@ -623,7 +623,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
 | **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
-| **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
+| **E** | Layout affiancato Zone D-Flight / Dettagli | **OPEN** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — AUDIT-A **COMPLETE** · gate **GPT AUDIT REVIEW — PENDING** · DELICATO (lifecycle/layout dialog) · F–H **NOT OPENED** |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
 | **H** | Branding TMART GIS tool | **NOT OPENED** — filename monolite **non** rinomina automatica |
@@ -712,7 +712,9 @@ Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolb
 
 #### 10. Pannello D-Flight + Dettagli affiancati
 
-Quando **Zone D-Flight (UAS)** e **Dettagli zona** sono aperti insieme: preferire disposizione **affiancata** se lo spazio mappa lo consente; non sovrapporli inutilmente. Fallback se spazio insufficiente: clamp coerente, entrambi raggiungibili, niente contenuto perso. Categoria futura: **DELICATO** (lifecycle/layout dialog).
+**Stato:** **OPENED** in [`WU-0019-dflight-panel-side-by-side.md`](WU-0019-dflight-panel-side-by-side.md) — blocco `D-FLIGHT-PANEL-SIDEBYSIDE-AUDIT-A` **AUDIT COMPLETE** · gate **GPT AUDIT REVIEW — PENDING**.
+
+Quando **Zone D-Flight (UAS)** e **Dettagli zona** sono aperti insieme: preferire disposizione **affiancata** se lo spazio mappa lo consente; non sovrapporli inutilmente. Fallback se spazio insufficiente: clamp coerente, entrambi raggiungibili, niente contenuto perso. Categoria futura IMPL: **DELICATO** (lifecycle/layout dialog). Root cause audit: pin default identico (`left=pad`, stesso safeTop) in `dflightPinPanelBelowTopbar`.
 
 #### 11. Global modal / minimized dock
 
