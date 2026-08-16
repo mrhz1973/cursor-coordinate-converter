@@ -40132,55 +40132,30 @@ function dflightAtm09EnsureLegend(forceLoad){
   const wrap = document.getElementById("dflightAtm09LegendWrap");
   const img = document.getElementById("dflightAtm09LegendImg");
   if (!wrap || !img) return;
-  /* IMPL-A: show ATM09 legend only when paint mode is atm09 (not preferred-alone). */
+  /* IMPL-A: eligibility still paint-mode gated (not preferred-alone).
+   * LEGEND-UX-IMPL-A: the external user-facing legend is the ordinary UI
+   * presentation. Keep the technical GetLegendGraphic <details>/PNG hidden
+   * and non-competitive; retain URL/API helpers for diagnostics only. */
   const can = !!(dflightLegendPaintMode() === "atm09" && dflightClientNetworkAllowed() && dflightAtm09LegendUrl());
   const wasEligible = !!_dflightAtm09LegendWasEligible;
   _dflightAtm09LegendWasEligible = !!can;
+  if (details){
+    try { details.hidden = true; } catch(_){}
+    try { details.open = false; } catch(_){}
+  }
+  try { wrap.hidden = true; } catch(_){}
   if (!can){
-    if (details){
-      try { details.hidden = true; } catch(_){}
-      try { details.open = false; } catch(_){}
-    }
-    try { wrap.hidden = true; } catch(_){}
     if (wasEligible){
       try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
     }
     return;
   }
-  if (details){
-    try { details.hidden = false; } catch(_){}
-    /* B2: auto-expand once on OFF→ON eligibility; manual collapse while ON remains respected. */
-    if (!wasEligible){
-      try { details.open = true; } catch(_){}
-      forceLoad = true;
-    }
-  }
-  /* FIX3 D2: clear residual wrap.hidden from gate-off / preferred-off so expand can paint. */
-  try { wrap.hidden = false; } catch(_){}
-  const open = !!(forceLoad || (details && details.open));
-  if (!open){
-    /* Lazy-load only when the secondary official legend is expanded. */
-    return;
-  }
-  const url = dflightAtm09LegendUrl();
-  if (!url) return;
-  if (_dflightAtm09LegendLoaded && img.getAttribute("src") === url){
-    if (!wasEligible){
-      try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
-    }
-    return;
-  }
-  img.onload = function(){
-    _dflightAtm09LegendLoaded = true;
-    try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
-  };
-  img.onerror = function(){
-    _dflightAtm09LegendLoaded = false;
-  };
-  img.src = url;
-  if (!wasEligible){
+  /* Technical PNG is not loaded in the ordinary ATM09 paint path. */
+  if (wasEligible === false){
     try { dflightAtm09SyncPanelGeometryAfterLegend(); } catch(_){}
   }
+  /* forceLoad retained for API compatibility; no UI expand / no network legend fetch. */
+  void forceLoad;
 }
 
 function dflightAtm09ClearInfo(){
@@ -41852,17 +41827,19 @@ function dflightSelfTestH(){
       }
     })();
 
-    /* FIX5 D2: pure/static source check of EnsureLegend — no live legend DOM / toggle / network. */
+    /* FIX5 D2 + LEGEND-UX: EnsureLegend keeps technical WMS legend non-competitive.
+     * Ordinary ATM09 paint uses the external user legend; technical details/wrap stay hidden;
+     * no ordinary GetLegendGraphic fetch. forceLoad retained for API compatibility. */
     add("FIX5_D2_ensure_legend_source_pure", (function(){
       if (typeof dflightAtm09EnsureLegend !== "function") return false;
       const src = String(dflightAtm09EnsureLegend);
-      /* 1) !can → hide wrap; 2) can → show wrap; 3) load gated by forceLoad/details.open; 4) img.src only in load path. */
       if (src.indexOf("!can") < 0) return false;
       if (src.indexOf("wrap.hidden = true") < 0) return false;
-      if (src.indexOf("wrap.hidden = false") < 0) return false;
+      if (src.indexOf("details.hidden = true") < 0) return false;
       if (src.indexOf("forceLoad") < 0) return false;
-      if (src.indexOf("details.open") < 0 && src.indexOf("details && details.open") < 0) return false;
-      if (src.indexOf("img.src = url") < 0 && src.indexOf("img.src=url") < 0) return false;
+      /* Ordinary path must NOT re-show / fetch the technical PNG. */
+      if (src.indexOf("wrap.hidden = false") >= 0) return false;
+      if (src.indexOf("img.src = url") >= 0 || src.indexOf("img.src=url") >= 0) return false;
       return true;
     })());
 
