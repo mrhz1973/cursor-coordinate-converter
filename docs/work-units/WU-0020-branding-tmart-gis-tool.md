@@ -1,16 +1,16 @@
 # WU-0020 — BRANDING — TMART GIS tool
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / DEPLOYED
-**ACTIVE BLOCK:** BRANDING-TMART-IMPL-A
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
-**REVIEW BASE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4`
-**RUNTIME CANDIDATE:** `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A` · **REVIEW PASS**
-**RUNTIME LIVE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · helper **0.1.3**
+**STATUS:** OPEN / FIX1
+**ACTIVE BLOCK:** BRANDING-TMART-IMPL-A-FIX1
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**REVIEW BASE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
+**RUNTIME CANDIDATE:** `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
+**RUNTIME LIVE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · helper **0.1.3** (no deploy FIX1)
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
-**NEXT:** QA FINALE operatore · candidato **G** **NOT OPENED** fino a chiusura H
-**NOTE:** REVIEW PASS · deploy+ABQA PASS 2026-08-16 · LIVE `1abc247`/206 · blob `f0f9d265…` · G NOT OPENED
+**NEXT:** dopo PASS review FIX1 → deploy/ABQA · **G NOT OPENED**
+**NOTE:** FIX1 rimuove header `by Marty` · footer T.M. preservato · selftest 422/422 · CSS style identical vs 206
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -282,4 +282,20 @@ Sintesi: 32 hunk · +178/−53 riconciliati · OTHER=0 · residue A=0 · CSS SHA
 **Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
 
 **Evidence:** [../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md](../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md)
+
+## 15. IMPL-A-FIX1 (2026-08-16)
+
+**STATUS:** IMPLEMENTED · selftest **422/422** PASS · **REVIEW GPT-SOSTITUTIVA — PENDING**
+
+| Voce | Valore |
+| --- | --- |
+| FULL SHA | 508dd039981b1878e427c9440033fcad854351b1 |
+| Build | **207** · BRANDING-TMART-IMPL-A-FIX1 |
+| BASE | 1abc247 / 206 |
+| Change | header solo TMART GIS tool; rimossi .brand-by / .brand-signature; i18n pp.title* brand-only; footer T.M. invariato |
+| CSS | style block identical vs 206 |
+
+**Evidence:** [../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md](../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md)
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — no deploy fino a PASS review.
 
