@@ -1,12 +1,12 @@
 # LAST_CURSOR_REPORT
 
-**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B)
+**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A)
 
 ## Disciplina F3
 
 | Campo | Valore |
 |-------|--------|
-| `real_task_commit` | `35596e6bfdb2931c7b1479bec8387cce08ae1fc8` |
+| `real_task_commit` | `9db8c19ae0bfd932663e2169cf203395300c8912` |
 | Container corrente | `PENDING_SELF_REFERENCE` |
 | Fatti autosync proprio | `EXTERNAL_ONLY` |
 | Terzo commit | **vietato** |
@@ -26,11 +26,10 @@
 | Campo | Valore |
 |-------|--------|
 | WORKSTREAM | WU-0018 OPEN |
-| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B **CLOSED / PASS** (B-P2) |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A **CLOSED / PASS** (M2) |
 | GATE | ATM09 STYLE METADATA SOURCE REQUIRED |
-| NEXT | chiudere scure/costa + secondo Max 120 |
-| JSON_CAPABILITY | **SUPPORTED** (9 rules) |
-| Upstream JSON probe | **EXECUTED** (VPS LoadCredential) |
+| NEXT | residui costa/scure + secondo Max 120 |
+| User-facing mapping | **7/8** |
 | Runtime/helper patch | **NO** |
 | Deploy | **NO** |
 | Finito | **NO** |
