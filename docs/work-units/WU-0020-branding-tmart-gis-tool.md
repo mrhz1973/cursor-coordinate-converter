@@ -1,16 +1,16 @@
 # WU-0020 — BRANDING — TMART GIS tool
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / AUDIT
-**ACTIVE BLOCK:** BRANDING-TMART-AUDIT-A
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING** (audit docs-only)
+**STATUS:** OPEN / IMPL
+**ACTIVE BLOCK:** BRANDING-TMART-IMPL-A
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **REVIEW BASE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4`
-**RUNTIME CANDIDATE:** — (nessun candididate runtime in questo pass)
-**RUNTIME LIVE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · helper **0.1.3**
+**RUNTIME CANDIDATE:** `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
+**RUNTIME LIVE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · helper **0.1.3** (no deploy in this pass)
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
-**NEXT:** dopo PASS review audit → `BRANDING-TMART-IMPL-A` (un solo pass stringhe) · candidato **G** **NOT OPENED** fino a chiusura H
-**NOTE:** AUDIT 2026-08-16 · no runtime · no bump · no deploy · filename monolite **invariato** · brand canonico esatto: `TMART GIS tool`
+**NEXT:** dopo PASS review → deploy/ABQA · candidato **G** **NOT OPENED** fino a chiusura H
+**NOTE:** IMPL-A 2026-08-16 · brand `TMART GIS tool` · selftest 421/421 · CSS style block identical vs BASE · filename invariato · G NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -239,3 +239,23 @@ Nessun refactor layout; nessun cambio architetturale.
 **STATUS blocco:** AUDIT documentato / **REVIEW GPT-SOSTITUTIVA — PENDING**  
 **Raccomandazione:** procedere a `BRANDING-TMART-IMPL-A` single-pass stringhe dopo PASS review.  
 **Refactor layout:** **non necessario** in base all’evidenza attuale.
+
+## 12. IMPL-A — BRANDING-TMART-IMPL-A (2026-08-16)
+
+**STATUS:** IMPLEMENTED · selftest **421/421** PASS · **REVIEW GPT-SOSTITUTIVA — PENDING**
+
+| Voce | Valore |
+| --- | --- |
+| FULL SHA candidato | 1abc247fd783526531307c7a6997292f103b986d |
+| Blob monolite | 0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef |
+| SHA-256 (LF) | df4f770c1bdda487ff7c2be29704b0b28d314e19ef5eccad09c475a21e8608d |
+| Build | **206** · APP_BUILD_ID=BRANDING-TMART-IMPL-A |
+| REVIEW BASE | 9820c8ab9cb0d2103adf955ba3b873bca4c89e08 / 205 |
+| CSS <style> vs BASE | **identical** (no CSS hunk) |
+| Filename | coordinate_converter Claude.html invariato |
+| Helper | 0.1.3 invariato |
+| Deploy | **NO** (gate STOP) |
+
+**Evidence:** [../orchestrator/inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md](../orchestrator/inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md)
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — no deploy / ABQA / QA / finito / G.

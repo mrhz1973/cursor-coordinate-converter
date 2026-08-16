@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **BRANDING-TMART-AUDIT-A** aperto · WU-0020 · candidato **H** · AUDIT docs-only (matrice A/B/C + piano IMPL-A single-pass) · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · monolite **non** toccato · LIVE `9820c8a` / **205** · G **NOT OPENED**. [`inbox/2026-08-16_2110_riepilogo_branding-tmart-audit-a.md`](inbox/2026-08-16_2110_riepilogo_branding-tmart-audit-a.md).
+2026-08-16 — **BRANDING-TMART-IMPL-A** IMPLEMENTED · candidato `1abc247` / build **206** · selftest **421/421** PASS · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · G NOT OPENED. Evidence: [`inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md`](inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md).

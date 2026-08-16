@@ -2,29 +2,32 @@
 
 ## LATEST
 
-* real_task_commit: `PENDING_SELF_REFERENCE` — docs-only AUDIT (container = questo push)
-* real_task_subject: docs: open WU-0020 BRANDING-TMART-AUDIT-A
-* report_generated_at: 2026-08-16T21:10:00+02:00
+* real_task_commit: `1abc247fd783526531307c7a6997292f103b986d` — verify short `1abc247`
+* real_task_subject: feat(branding): TMART GIS tool user-facing rename (IMPL-A)
+* report_generated_at: 2026-08-16T21:30:00+02:00
 * branch: main
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `11865691bb98e6b080fae29c3e721fdf9b118f8b`
+* previous_report_container: `5051b48da45186c936da0b4efbac59893e612ad5`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: solo autosync memoria/docs (pre-push)
-* pass_tecnico_remoto: no runtime patch · LIVE tip `9820c8a` invariato · monolite blob `689c831d902749d86d12667b18eab2bd84390662`
-* result_cursor: WU-0020 aperto · AUDIT branding completo · gate REVIEW GPT-SOSTITUTIVA PENDING
-* pass_operatore: N/A (audit; no QA)
-* result_runtime: LIVE `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` / build **205** (invariato)
-* qa_attestation_source: N/A
-* notes: G not opened; no deploy; no IMPL; F3 EXTERNAL_ONLY
+* working_tree_status: autosync memoria post-task (pre-push docs)
+* pass_tecnico_remoto: no deploy · LIVE ancora BASE `9820c8a`/205 · candidato `1abc247`/206 pending review
+* result_cursor: IMPL-A brand TMART · selftest 421/421 PASS · gate REVIEW PENDING
+* pass_operatore: N/A
+* result_runtime: CANDIDATE `1abc247fd783526531307c7a6997292f103b986d` / build **206** / `APP_BUILD_ID=BRANDING-TMART-IMPL-A` · LIVE unchanged
+* qa_attestation_source: selftest locale 421/421 + branding 17/17
+* notes: no CSS hunk; filename/storage/X-Client/mapWaypoints/helper invariati; G not opened; F3 EXTERNAL_ONLY
 
 ## OUTPUT VERBATIM
 
 ```text
-BRANDING-TMART-AUDIT-A
-WU-0020 OPEN / AUDIT
+BRANDING-TMART-IMPL-A
+CANDIDATE 1abc247fd783526531307c7a6997292f103b986d
+BUILD 206
+BLOB f0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef
+SELFTEST 421/421 PASS
 GATE REVIEW GPT-SOSTITUTIVA — PENDING
-LIVE 9820c8a / 205 UNCHANGED
+NO DEPLOY
 G NOT OPENED
 ```
 
@@ -32,8 +35,9 @@ PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `1186569` — finito SIDEBYSIDE FIX4 / WU-0019 CLOSED
-* `9820c8a` — SIDEBYSIDE-FIX4 runtime (LIVE)
+* `5051b48` — open WU-0020 AUDIT-A
+* `1abc247` — BRANDING-TMART-IMPL-A runtime
+* `9820c8a` — LIVE SIDEBYSIDE-FIX4 (still live until deploy)
 
 ## LIMITI
 
