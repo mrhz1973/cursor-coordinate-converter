@@ -462,8 +462,8 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **GIS-PANEL-DOCK-MGR-G-A1-FIX1** — OPEN · WU-0021 · candidate `c122fd4` / **209** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE ancora `7a5c42f`/208
-2. **GIS-PANEL-DOCK-MGR-G-A1** — LIVE `7a5c42f` / **208** · QA FAIL circoscritto → FIX1
+1. **GIS-PANEL-DOCK-MGR-G-A1-FIX1-REVIEW-EVIDENCE-B** — OPEN · WU-0021 · candidate `c122fd4` / **209** invariato · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · OTHER=0
+2. **GIS-PANEL-DOCK-MGR-G-A1** — LIVE `7a5c42f` / **208** · (FIX1 non ancora LIVE)
 3. **BRANDING-TMART-IMPL-A-FIX1** — CLOSED / PASS · WU-0020 CLOSED
 4. **WU-0012 (CARTO INDEX)** — OPEN / NEXT PROVIDER (NO PROVIDER READY)
 5. **WU-0010** — OPEN (Bundle F futuro)

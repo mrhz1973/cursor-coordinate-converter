@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX1
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX1-REVIEW-EVIDENCE-B
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
-**REVIEW BASE / LIVE pre-FIX:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `GIS-PANEL-DOCK-MGR-G-A1`
-**RUNTIME CANDIDATE:** `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` · build **209** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1-FIX1` · blob `278421cc4fd4e3b57965ff717f5fc3cf7e20b4a1`
-**RUNTIME LIVE:** ancora `7a5c42f…` / **208** (FIX1 **non** deployato)
+**REVIEW BASE / LIVE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `GIS-PANEL-DOCK-MGR-G-A1`
+**RUNTIME CANDIDATE:** `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` · build **209** · `GIS-PANEL-DOCK-MGR-G-A1-FIX1` · blob `278421cc4fd4e3b57965ff717f5fc3cf7e20b4a1` · **invariato**
+**RUNTIME LIVE:** `7a5c42f…` / **208** (FIX1 non deployato)
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
-**NOTE:** QA FAIL circoscritto (handle dietro header) → FIX1 safeTop; selftest 454/454; no deploy
+**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; G-B/C/D NOT OPENED; **F NOT OPENED**
+**NOTE:** REVIEW-EVIDENCE-B 2026-08-17 · 18 hunk · +217/−40 · OTHER=0 · FINDING dock-row vs header.bottom · no verdetto
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -426,3 +426,13 @@ QA operatore FAIL circoscritto: drag troppo alto → title bar dietro header z29
 **Ship:** `gisPanelSafeTop` + clamp/drag/resize nudge. Z-order G-A1 invariato. WU-0019 invariato.
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy.
+
+## 23. G-A1-FIX1 REVIEW-EVIDENCE-B (2026-08-17)
+
+Evidence-only. Candidato **invariato** `c122fd4…` / 209.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0050_gis-panel-dock-mgr-g-a1-fix1-review-evidence-b.md`](../orchestrator/inbox/2026-08-17_0050_gis-panel-dock-mgr-g-a1-fix1-review-evidence-b.md)
+
+**Hunk:** 18 · **+217/−40** · **OTHER=0**. FINDING: dock row absolute può eccedere header.bottom (hit @360+3chip).
+
+**Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · no verdetto · no patch/deploy.
