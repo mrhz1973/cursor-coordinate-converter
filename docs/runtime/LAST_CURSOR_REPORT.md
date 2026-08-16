@@ -4,40 +4,38 @@
 
 * real_task_commit: `1abc247fd783526531307c7a6997292f103b986d` — verify short `1abc247`
 * real_task_subject: feat(branding): TMART GIS tool user-facing rename (IMPL-A)
-* report_generated_at: 2026-08-16T21:35:00+02:00
+* report_generated_at: 2026-08-16T21:40:00+02:00
 * branch: main
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `c4cba4087464a227957500c64fc4454a2783914e`
+* previous_report_container: `f872e77ed0ad374e65168860bff7bfdfdfead22e`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: solo autosync evidence docs (REVIEW-EVIDENCE-B)
-* pass_tecnico_remoto: no runtime change · candidate tip invariato · LIVE still BASE
-* result_cursor: evidence B materializzata · hunk 32 · OTHER=0 · residue A=0 · CSS identical
-* pass_operatore: N/A
-* result_runtime: CANDIDATE `1abc247` / 206 invariato · LIVE `9820c8a` / 205
-* qa_attestation_source: evidence-only (selftest counts da IMPL)
-* notes: no review verdict; gate REVIEW PENDING; G not opened; F3 EXTERNAL_ONLY
+* working_tree_status: solo autosync memoria (deploy+ABQA docs)
+* pass_tecnico_remoto: deploy VPS blob `f0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef` ≡ candidato · HTTP 200 · SHA match
+* result_cursor: REVIEW PASS · deploy GIS-only PASS · AUTOMATED BROWSER QA BRANDING-TMART-IMPL-A PASS
+* pass_operatore: **PENDING** (QA FINALE CHATGPT)
+* result_runtime: LIVE `1abc247fd783526531307c7a6997292f103b986d` / build **206** / `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
+* qa_attestation_source: ABQA PASS (33 checks) + smoke VPS
+* notes: no monolite patch in deploy pass; no finito; G not opened; helper 0.1.3; F3 EXTERNAL_ONLY
 
 ## OUTPUT VERBATIM
 
 ```text
-BRANDING-TMART-IMPL-A-REVIEW-EVIDENCE-B
-CANDIDATE 1abc247fd783526531307c7a6997292f103b986d UNCHANGED
-HUNKS 32 +178/-53 RECONCILED
-OTHER 0
-RESIDUE_A 0
-CSS IDENTICAL
-GATE REVIEW GPT-SOSTITUTIVA — PENDING
-NO VERDICT
+APPROVED 1abc247fd783526531307c7a6997292f103b986d
+BLOB f0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef
+DEPLOY_PASS HTTP 200 SHA MATCH
+URL http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1abc247
+AUTOMATED BROWSER QA BRANDING-TMART-IMPL-A PASS (33/33)
+QA FINALE CHATGPT — PENDING
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `c4cba40` — IMPL-A evidence + gate PENDING
-* `1abc247` — BRANDING-TMART-IMPL-A runtime
-* `5051b48` — AUDIT-A open
+* `f872e77` — REVIEW-EVIDENCE-B
+* `1abc247` — BRANDING-TMART-IMPL-A runtime (LIVE)
+* deploy+ABQA questo report
 
 ## LIMITI
 

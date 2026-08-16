@@ -1,16 +1,16 @@
 # WU-0020 — BRANDING — TMART GIS tool
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / IMPL
+**STATUS:** OPEN / DEPLOYED
 **ACTIVE BLOCK:** BRANDING-TMART-IMPL-A
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
 **REVIEW BASE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4`
-**RUNTIME CANDIDATE:** `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
-**RUNTIME LIVE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · helper **0.1.3** (no deploy in this pass)
+**RUNTIME CANDIDATE:** `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A` · **REVIEW PASS**
+**RUNTIME LIVE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · helper **0.1.3**
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
-**NEXT:** dopo PASS review → deploy/ABQA · candidato **G** **NOT OPENED** fino a chiusura H
-**NOTE:** IMPL-A 2026-08-16 · brand `TMART GIS tool` · selftest 421/421 · CSS identical vs BASE · filename invariato · G NOT OPENED · evidence B `2026-08-16_2135_…review-evidence-b.md` (hunk account 32; no OTHER)
+**NEXT:** QA FINALE operatore · candidato **G** **NOT OPENED** fino a chiusura H
+**NOTE:** REVIEW PASS · deploy+ABQA PASS 2026-08-16 · LIVE `1abc247`/206 · blob `f0f9d265…` · G NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -270,4 +270,16 @@ Nessun refactor layout; nessun cambio architetturale.
 **Evidence:** [../orchestrator/inbox/2026-08-16_2135_branding-tmart-impl-a-review-evidence-b.md](../orchestrator/inbox/2026-08-16_2135_branding-tmart-impl-a-review-evidence-b.md)
 
 Sintesi: 32 hunk · +178/−53 riconciliati · OTHER=0 · residue A=0 · CSS SHA identical · selftest branding 17 in totale 421.
+
+## 14. REVIEW PASS + DEPLOY + ABQA (2026-08-16)
+
+**REVIEW GPT-SOSTITUTIVA:** PASS su 1abc247fd783526531307c7a6997292f103b986d
+
+**Deploy:** GIS-only PASS · blob 0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef · SHA-256 df4f770… · bytes 10352377 · URL ?v=1abc247
+
+**Automated Browser QA:** PASS (33/33)
+
+**Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
+
+**Evidence:** [../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md](../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md)
 
