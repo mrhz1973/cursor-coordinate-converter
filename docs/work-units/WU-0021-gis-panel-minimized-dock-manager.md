@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX1-REVIEW-EVIDENCE-B
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **REVIEW BASE / LIVE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `GIS-PANEL-DOCK-MGR-G-A1`
-**RUNTIME CANDIDATE:** `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` · build **209** · `GIS-PANEL-DOCK-MGR-G-A1-FIX1` · blob `278421cc4fd4e3b57965ff717f5fc3cf7e20b4a1` · **invariato**
-**RUNTIME LIVE:** `7a5c42f…` / **208** (FIX1 non deployato)
+**RUNTIME CANDIDATE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
+**RUNTIME LIVE:** `7a5c42f…` / **208** (FIX2 non deployato)
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; G-B/C/D NOT OPENED; **F NOT OPENED**
-**NOTE:** REVIEW-EVIDENCE-B 2026-08-17 · 18 hunk · +217/−40 · OTHER=0 · FINDING dock-row vs header.bottom · no verdetto
+**NEXT:** REVIEW GPT-SOSTITUTIVA; G-B/C/D NOT OPENED; **F NOT OPENED**
+**NOTE:** FIX2 2026-08-17 · safeTop max(header,dock)+gap · 21 hunk +292/−50 OTHER=0 · selftest 468/468 · 360×640/3chip PASS · no deploy
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
