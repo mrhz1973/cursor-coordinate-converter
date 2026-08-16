@@ -8669,6 +8669,72 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   border-radius:3px; background:transparent;
 }
 .dflight-atm09-legend-hint{ margin:4px 0 0; font-size:11px; }
+/* ===== D-FLIGHT-ATM09-LEGEND-UX-IMPL-A — external user-facing ATM09 legend ===== */
+#dflightAtm09UserLegend{
+  position:absolute;
+  /* Anchor bottom-right: away from the right controls stack (top) and the
+   * bottom-left scale/attribution cluster; safe insets for notches. */
+  right:max(10px, calc(env(safe-area-inset-right, 0px) + 10px));
+  bottom:max(10px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+  z-index:40; /* above tiles/readout (5), below .tile-ctrls (60) */
+  max-width:min(210px, 46vw);
+  margin:0;
+  padding:8px 10px 9px;
+  border:1px solid var(--border, #334155);
+  border-radius:8px;
+  background:color-mix(in srgb, var(--panel-2, var(--panel, #0f172a)) 84%, transparent);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
+  font-size:12px;
+  pointer-events:none; /* static overlay: never intercept map pan/zoom/click */
+}
+#dflightAtm09UserLegend[hidden]{ display:none !important; }
+#dflightAtm09UserLegend .dflight-atm09-ul-title{
+  margin:0 0 6px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text, #e2e8f0);
+  letter-spacing:.01em;
+}
+#dflightAtm09UserLegend ul{
+  list-style:none;
+  margin:0; padding:0;
+  display:flex; flex-direction:column; gap:4px;
+}
+#dflightAtm09UserLegend li{
+  display:flex; align-items:center; gap:8px;
+  margin:0; padding:0;
+  color:var(--text, #e2e8f0);
+  line-height:1.2;
+  white-space:nowrap;
+}
+#dflightAtm09UserLegend .dflight-atm09-ul-swatch{
+  flex:0 0 auto;
+  width:24px; height:24px;
+  min-width:24px; min-height:24px;
+  display:block;
+  object-fit:contain;
+  image-rendering:auto;
+  border-radius:3px;
+  background:transparent;
+  /* Official D-Flight crop pixels only — no filters/tint/opacity/borders. */
+  filter:none; opacity:1; mix-blend-mode:normal;
+}
+@media (max-width:560px){
+  #dflightAtm09UserLegend{
+    max-width:min(180px, 52vw);
+    padding:6px 8px 7px;
+    font-size:11px;
+  }
+  #dflightAtm09UserLegend .dflight-atm09-ul-swatch{
+    width:20px; height:20px; min-width:20px; min-height:20px;
+  }
+  #dflightAtm09UserLegend li{ gap:6px; }
+  #dflightAtm09UserLegend ul{ gap:3px; }
+}
+@media (max-height:560px) and (orientation:landscape){
+  #dflightAtm09UserLegend{ max-height:52vh; overflow:auto; }
+}
 @keyframes dflightAtm09OverlayPulse{
   0%,100%{ opacity:1; }
   50%{ opacity:0.42; }
@@ -23494,10 +23560,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A";
-const APP_BUILD_DETAIL = "Contextual single legend arbitration (paint-driven); D-FLIGHT-FAMILIARITY-FIRST; no raster restyle.";
+const APP_BUILD_ID = "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A";
+const APP_BUILD_DETAIL = "User-facing external ATM09 legend (8 rows, official D-Flight swatch pixels, inline data-URI); technical WMS legend hidden in normal paint; arbitration build 197 preserved.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 197;
+const APP_BUILD_NUM = 198;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38526,9 +38592,9 @@ function dflightSelfTestF(){
       }
     })());
 
-    add("F_mvisa_build_197",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+    add("F_mvisa_build_198",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39549,8 +39615,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -39600,6 +39666,17 @@ try {
     document.addEventListener("DOMContentLoaded", function(){ try { dflightEnsureClientWired(); } catch(_){} });
   } else {
     dflightEnsureClientWired();
+  }
+} catch(_){}
+try {
+  /* LEGEND-UX-IMPL-A: build the external user-facing ATM09 legend once at boot
+   * (idempotent; injected into the live mount so it survives the
+   * #miniMap -> #gisMapMount reparent). Visibility stays paint-mode driven. */
+  const _bootUserLegend = function(){ try { dflightEnsureAtm09UserLegend(); } catch(_){} };
+  if (document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", _bootUserLegend);
+  } else {
+    _bootUserLegend();
   }
 } catch(_){}
 
@@ -40032,6 +40109,16 @@ function dflightSyncContextualLegends(forceAtm09Load){
     if (!showRestr){
       if (legendHead) try { legendHead.hidden = true; } catch(_){}
       if (list) try { list.hidden = true; } catch(_){}
+    }
+    /* LEGEND-UX-IMPL-A: external user-facing legend replaces the technical
+     * GetLegendGraphic presentation in the normal atm09 paint. The technical
+     * details/PNG are kept (API + diagnostics) but never compete visually. */
+    const userLegend = document.getElementById("dflightAtm09UserLegend");
+    const techDetails = document.getElementById("dflightAtm09LegendDetails");
+    const showUser = (mode === "atm09");
+    if (userLegend) try { userLegend.hidden = !showUser; } catch(_){}
+    if (showUser && techDetails){
+      try { techDetails.hidden = true; techDetails.open = false; } catch(_){}
     }
     /* ATM09 legend eligibility is paint-mode gated inside EnsureLegend. */
     if (typeof dflightAtm09EnsureLegend === "function"){
@@ -41412,8 +41499,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_197", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+    add("H_build_198", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -41911,8 +41998,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -42925,8 +43012,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43363,8 +43450,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_197", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+    add("OptB_FIX5_build_198", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -43954,9 +44041,9 @@ function dflightSelfTestMVISA(){
     _dflightClientSession = { normalizedDataset: { ok: true, zones: [] } };
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
-    add("MVISA_build_197",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+    add("MVISA_build_198",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44344,6 +44431,96 @@ async function dflightSelfTestMVISAAsync(){
     }
   } catch(_){}
 })();
+/* ===== D-FLIGHT-ATM09-LEGEND-UX-IMPL-A — external user-facing legend ===== */
+/* Topology PROVEN in WU-0018 (TOPOLOGY-ADJUDICATION-A, T1): 8 user rows.
+ * Row 1 groups type='rosso' + type='costa' (RED-0-SOLID equivalence class —
+ * costa adds NO ninth row). Row 7 is the DEFAULT/non-restricted 120 class with
+ * NO WMS rule (NOT geometrie_italia — invisible/non-legend). Swatches are the
+ * official D-Flight asset crops (WU-0018 REFERENCE-C, TEMP acquisition only),
+ * embedded inline as data URIs: no runtime network, no restyle. */
+const DFLIGHT_ATM09_USER_LEGEND_ROWS = Object.freeze([
+  Object.freeze({ id: "red0solid",  label: "Max 0 metri AGL",   sw: "1_red0" }),
+  Object.freeze({ id: "red0diag",   label: "Max 0 metri AGL",   sw: "2_reddiag" }),
+  Object.freeze({ id: "orange25",   label: "Max 25 metri AGL",  sw: "3_orange" }),
+  Object.freeze({ id: "yellow45",   label: "Max 45 metri AGL",  sw: "4_yellow" }),
+  Object.freeze({ id: "cyan60",     label: "Max 60 metri AGL",  sw: "5_cyan" }),
+  Object.freeze({ id: "green120",   label: "Max 120 metri AGL", sw: "6_green" }),
+  Object.freeze({ id: "default120", label: "Max 120 metri AGL", sw: "7_default" }),
+  Object.freeze({ id: "danger",     label: "Area pericolosa",   sw: "8_danger" })
+]);
+/* Official crop pixels (asset 960x422 RGB; bboxes half-open):
+ * 1_red0 [267,153,280,165) · 2_reddiag [267,171,280,184) · 3_orange [267,190,280,203)
+ * 4_yellow [267,209,280,222) · 5_cyan [267,227,280,241) · 6_green [268,247,279,259)
+ * 7_default [268,266,280,278) · 8_danger [267,284,280,298) */
+const DFLIGHT_ATM09_SWATCH_B64 = Object.freeze({
+  "1_red0": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAAMCAIAAAA21aCOAAAAYklEQVR42o3LwQmAMAyF4ddXafEkbqCreXBB9+kK4rEpNB5EL4rNTwgEvmBbVgX+J00zd8m474rvjhBYiqCVVmWpue0ARvYwRJA2p2pztszOGZADSO/bjq4bY7w+nv1uEDkBMr4ipvBwOGAAAAAASUVORK5CYII=",
+  "2_reddiag": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAIAAAD9iXMrAAACAUlEQVR42gXBT0jTURwA8Pfn+97b+m25UUpNyNMyaJlFl2qzGlPp1EHCg/0hQqr1B7IIugySjS79P3SKcOk6dCmqg5AEEWbQ3KgYjMhNskuTik1zv73f773X54Nzk9kN5fdr0kVKEcdGFDRwZAx1bEOoZoJTqjrDwL9+GGx+cREggpf6jnkatc35lwr4Uuy4aCxvKrzCyi26ddJaWVOUSYTzw/cqu4cChWmbsrlzT77vGwkUp5vcqiRGnVYTdNM2gnzrPslKC7GJUQ1i9shdt67id/oUEx+P3m9brWEpCQHUaI/oQPv24i0FonA441rB+ONhzfjc0AOpWO+L6w54ADEu5J/uT7c1YYv7LwvL2jM1ooDnk1PIH4zfHESYYMGJwcT79wdWbjU25nJf5FlSY5a/kJP+YDSdcLi1eOgUkTbBxmgC1diYAmvrTMpg9vnEQ+kLxtIJBWI+mW109RLlEKPUSminIwLhmZSmUDlwlbRUNN2vQOQv5hyvv2fikuvxgTaUr9bCb28YwqqxK5pbPU/PKCbmz09KKxDNDCBKEcIEA/XUfxpMFw5eU7Au/Calua94+pH0BaOZgdb6jkr/Wera4AVGjSNDuzbWSh3l1xhoPbSjs/xuy2wWA/zetjewXPlHCH4+Pu7/VWpKG2tHA0cIE+UghGRb0GBKleSUOF2R/5kD46swT45LAAAAAElFTkSuQmCC",
+  "3_orange": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAIAAAD9iXMrAAAAo0lEQVR42q2ROQpCUQxFT/Ie3+EXCuIKLK3s3ZdrcD2WttZ24gIEKxG0cPj4EhsHnH/hIUWKQwL3ymg4aG7HuwJ3A8xEg+MAqJ7yPMtC0e5F28z6rSk35L7il5mvFnF/TIAbgDuqPCMcUlTD+IXjKg+fPqKU47+el/PETK+ZfvVSUv15UlCzWKsEQPTaxbuUqiFFbXQn6+WuwNxeNRHJgnq9cwYSHThceoL6aQAAAABJRU5ErkJggg==",
+  "4_yellow": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAIAAAD9iXMrAAAAg0lEQVR42q2RMRIBQRREu78pszInkKpyBrErOYxjyEjFIhIHEDjA7lK13TIlwEzgxa9e0M3tZj2d7dsWkgCQeIdkHnPo50n5vFwd8ZPL6RZdNwCwYUP67N37CFkoITsIooJAHXWe4789KgxX9YLlZJBp0oxed/HLRLlR4mNx2F2L/z4B2qwwPnrmybcAAAAASUVORK5CYII=",
+  "5_cyan": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAIAAAB7HQGFAAAAlUlEQVR42s3QMQrCQBAF0P9nd7NEEAtL0d7W+3gmK28h2CvexFh4ABPQLUJkxkawiJgtfQxTfD5TDI+bbX2p7impKnpEWMY4nc2x3u1h9nsW50raWw3gHX07CaBoGlF9YoipioEYRkGeP++ZMKsGyXmLBed9OQIA8rN7uvHEr9ruejghPcwUahCaDxqCOm8iJBmLJd0LNypJ+Xz7n1kAAAAASUVORK5CYII=",
+  "6_green": "iVBORw0KGgoAAAANSUhEUgAAAAsAAAAMCAIAAAA7y9DJAAAASUlEQVR42mMUSpfiYuNmwAF+//3Jws8hwM7MiUvFH+bfTAwMjAx4ACMjEwMhQB0VjFQw4z81XIrXkP//WT7++MDF9htnqP/5BQAF4RDEz7Nl0QAAAABJRU5ErkJggg==",
+  "7_default": "iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAIAAADZF8uwAAAAe0lEQVR42mNgIARkFBSZrN08n/7/f/XH/6s//l//+f8aErr//3/3opVfv35h+fH924v3Pz++f/f//38mJiZkMzg4uT6+f/f/738mgtYxMhKhiIGBYWgq+v+fkYWDk0tCkJ2DS5KBgYGJkeE/kjQnGwO/oBAjMyMDMdECALSyNdhtjM3IAAAAAElFTkSuQmCC",
+  "8_danger": "iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAIAAAB7HQGFAAABkElEQVR42nWRv2sTcRiHn/fSu17o0lSKFUmT86JOYmxnwaKLrUsjhFJSii3ooqKdBRV010HcdJSqnfwbHItbHaxChDbBcpdryN3Ru8t9HS7+IvjyGT7T83nglTfPXx5/vxmg0lRJ2tfiODVNQPqpxJEy84ZIVL3A5soNBYOMjTnX68N955SthUkMKPi+fivS9cLWW6BVq8ejo4Wtd0D34qUoSTSlAPwzZ39cvWZ4noBvV/Ybq7rrCiooW83b9yQMeb3UUBBMTSlIoVWrR+Pj2dzB3JWoUFCwbZ/WACDfbgO+XdlrrOqeBwSW1by7oXc6ACIDXgp7tfrREElBcO78p1J5wPPtyv7yijFECoul3QePc0Hw2+/EX6SJrHvVmaOJY//4me3WL9J9veMC4XRp9+ETw3UyP00AEDiYuzziHc4uLgCH1Zmc35tdnAeSk0UtSTQtlwN6dqV5Z8PouEBQtr48emo4Tub3+dmLkdDnw9rNP3/7T76VLXn1cfur6/S63bTfRwTJRAYnImY+X5yc/AmD6ckC0sQpEAAAAABJRU5ErkJggg=="
+});
+let _dflightAtm09UserLegendBuilt = false;
+function dflightAtm09UserLegendSwatchUri(key){
+  const b64 = Object.prototype.hasOwnProperty.call(DFLIGHT_ATM09_SWATCH_B64, key) ? DFLIGHT_ATM09_SWATCH_B64[key] : "";
+  return b64 ? ("data:image/png;base64," + b64) : "";
+}
+/** Build (once) the external user-facing ATM09 legend inside the map mount.
+ *  Static overlay: no dialog, no drag, no persistence, pointer-events:none. */
+function dflightEnsureAtm09UserLegend(){
+  try {
+    let el = document.getElementById("dflightAtm09UserLegend");
+    if (el && _dflightAtm09UserLegendBuilt) return el;
+    if (!el){
+      el = document.createElement("div");
+      el.id = "dflightAtm09UserLegend";
+      el.className = "dflight-atm09-user-legend";
+      el.hidden = true;
+      const title = document.createElement("p");
+      title.className = "dflight-atm09-ul-title";
+      title.textContent = "Legenda ATM09";
+      const ul = document.createElement("ul");
+      ul.setAttribute("aria-label", "Legenda ATM09");
+      DFLIGHT_ATM09_USER_LEGEND_ROWS.forEach(function(row){
+        const li = document.createElement("li");
+        const img = document.createElement("img");
+        img.className = "dflight-atm09-ul-swatch";
+        img.src = dflightAtm09UserLegendSwatchUri(row.sw);
+        img.alt = "";
+        img.setAttribute("aria-hidden", "true");
+        img.decoding = "async";
+        img.draggable = false;
+        const span = document.createElement("span");
+        span.className = "dflight-atm09-ul-label";
+        /* L10N-FREEZE: IT-only strings by design; no data-i18n key (no EN/FR). */
+        span.textContent = row.label;
+        li.appendChild(img);
+        li.appendChild(span);
+        ul.appendChild(li);
+      });
+      el.appendChild(title);
+      el.appendChild(ul);
+      const mount = document.getElementById("gisMapMount") || document.getElementById("miniMap");
+      if (!mount) return null;
+      mount.appendChild(el);
+    }
+    _dflightAtm09UserLegendBuilt = true;
+    /* Visibility is owned exclusively by dflightSyncContextualLegends (paint mode). */
+    try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
+    return el;
+  } catch(_){ return null; }
+}
+if (typeof window.GOIDflight === "undefined") window.GOIDflight = {};
+try {
+  const _apiLegendUx = Object.assign({}, window.GOIDflight, {
+    ensureAtm09UserLegend: dflightEnsureAtm09UserLegend,
+    ATM09_USER_LEGEND_ROWS: DFLIGHT_ATM09_USER_LEGEND_ROWS
+  });
+  window.GOIDflight = _apiLegendUx;
+} catch(_){}
+
 /* ===== D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A — legend arbitration selftests ===== */
 function dflightSelfTestIMPLA(){
   const checks = [];
@@ -44366,6 +44543,8 @@ function dflightSelfTestIMPLA(){
   const list = document.getElementById("dflightLegendList");
   const det = document.getElementById("dflightAtm09LegendDetails");
   const wrap = document.getElementById("dflightAtm09LegendWrap");
+  const ulEl = document.getElementById("dflightAtm09UserLegend");
+  const prevUlH = ulEl ? !!ulEl.hidden : null;
   const prevHeadH = head ? !!head.hidden : null;
   const prevListH = list ? !!list.hidden : null;
   const prevDetH = det ? !!det.hidden : null;
@@ -44384,26 +44563,32 @@ function dflightSelfTestIMPLA(){
       const w = document.getElementById("dflightAtm09LegendWrap");
       const can = !!(dflightLegendPaintMode() === "atm09" && dflightClientNetworkAllowed() && dflightAtm09LegendUrl());
       _dflightAtm09LegendWasEligible = !!can;
+      /* LEGEND-UX-IMPL-A: in atm09 paint the user-facing external legend is the
+       * contextual legend; the technical details stay hidden (non-competitive). */
+      const userLegend = document.getElementById("dflightAtm09UserLegend");
+      if (userLegend) userLegend.hidden = (dflightLegendPaintMode() !== "atm09");
       if (!can){
         if (details){ details.hidden = true; details.open = false; }
         if (w) w.hidden = true;
         return;
       }
       if (details){
-        details.hidden = false;
-        if (forceLoad) details.open = true;
+        details.hidden = true;
+        details.open = false;
       }
-      if (w) w.hidden = false;
+      if (w) w.hidden = true;
     };
     const ds = { ok: true, zones: [{ id: "z1", restriction: "PROHIBITED", volumes: [] }] };
     _dflightClientSession = { normalizedDataset: ds };
     _dflightOverlaySession = { dataset: ds };
     _dflightAtm09InfoUnavailable = false;
+    /* Ensure the external user legend DOM exists before arbitration checks. */
+    try { dflightEnsureAtm09UserLegend(); } catch(_){}
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
-    add("IMPLA_build_197",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 197
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A");
+    add("IMPLA_build_198",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -44429,8 +44614,9 @@ function dflightSelfTestIMPLA(){
       dflightSyncPanelUi();
       const mode = dflightLegendPaintMode();
       const restrHidden = (!head || head.hidden === true) && (!list || list.hidden === true);
-      const atmShown = det && det.hidden === false;
-      return mode === "atm09" && restrHidden && atmShown;
+      const userShown = ulEl && ulEl.hidden === false;
+      const techHidden = !det || det.hidden === true;
+      return mode === "atm09" && restrHidden && userShown && techHidden;
     })());
 
     /* C: D ON / ATM ON + READY → ATM09 only */
@@ -44443,8 +44629,9 @@ function dflightSelfTestIMPLA(){
       dflightSyncPanelUi();
       const mode = dflightLegendPaintMode();
       const restrHidden = (!head || head.hidden === true) && (!list || list.hidden === true);
-      const atmShown = det && det.hidden === false;
-      return mode === "atm09" && restrHidden && atmShown;
+      const userShown = ulEl && ulEl.hidden === false;
+      const techHidden = !det || det.hidden === true;
+      return mode === "atm09" && restrHidden && userShown && techHidden;
     })());
 
     /* D: ATM ON + READY + INFO unavailable + D ON → restrictions */
@@ -44506,11 +44693,168 @@ function dflightSelfTestIMPLA(){
       if (det && prevDetH !== null) det.hidden = prevDetH;
       if (det && prevDetOpen !== null) det.open = prevDetOpen;
       if (wrap && prevWrapH !== null) wrap.hidden = prevWrapH;
+      if (ulEl && prevUlH !== null) ulEl.hidden = prevUlH;
+      try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
     } catch(_){}
   }
   return checks;
 }
 
+/* ===== D-FLIGHT-ATM09-LEGEND-UX-IMPL-A — external user legend selftests ===== */
+function dflightSelfTestLEGENDUX(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevMaster = _dflightAtm09MasterUi;
+  const prevPref = _dflightAtm09Preferred;
+  const prevVis = _dflightOverlayVisible;
+  const prevReady = _dflightAtm09Ready;
+  const prevUnavail = _dflightAtm09InfoUnavailable;
+  const prevSess = _dflightClientSession;
+  const prevOvSess = _dflightOverlaySession;
+  const prevBase = _dflightHelperBaseUrlOverride;
+  const prevEnsure = dflightAtm09EnsureLegend;
+  const prevForce = (typeof state !== "undefined") ? state.forceOffline : null;
+  const prevOpsec = (typeof state !== "undefined") ? state.opsecStrict : null;
+  const prevZoom = (typeof state !== "undefined") ? state.mapZoom : null;
+  const head = document.getElementById("dflightLegendHeading");
+  const list = document.getElementById("dflightLegendList");
+  const det = document.getElementById("dflightAtm09LegendDetails");
+  const ulRoot = document.getElementById("dflightAtm09UserLegend");
+  const prevHeadH = head ? !!head.hidden : null;
+  const prevListH = list ? !!list.hidden : null;
+  const prevDetH = det ? !!det.hidden : null;
+  const prevDetOpen = det ? !!det.open : null;
+  const prevUlH = ulRoot ? !!ulRoot.hidden : null;
+  try {
+    if (typeof state !== "undefined"){
+      state.forceOffline = false;
+      state.opsecStrict = false;
+      state.mapZoom = 11;
+    }
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    dflightAtm09EnsureLegend = function(){
+      /* no-op fixture: user legend arbitration is exercised via SyncContextualLegends */
+    };
+    const ds = { ok: true, zones: [{ id: "z1", restriction: "PROHIBITED", volumes: [] }] };
+    _dflightClientSession = { normalizedDataset: ds };
+    _dflightOverlaySession = { dataset: ds };
+    _dflightAtm09InfoUnavailable = false;
+    dflightEnsureAtm09UserLegend();
+
+    add("LEGENDUX_build_198",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 198
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-ATM09-LEGEND-UX-IMPL-A");
+
+    /* SELFTEST 1+2: row count and canonical order */
+    const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
+    add("LEGENDUX_row_count_8", rows.length === 8, "rows=" + rows.length);
+    const wantLabels = DFLIGHT_ATM09_USER_LEGEND_ROWS.map(function(r){ return r.label; });
+    const gotLabels = Array.prototype.map.call(rows, function(li){
+      const sp = li.querySelector(".dflight-atm09-ul-label");
+      return sp ? (sp.textContent || "") : "";
+    });
+    add("LEGENDUX_order_canonical", gotLabels.join("|") === wantLabels.join("|"), gotLabels.join("|"));
+
+    /* SELFTEST 3+4+5: duplicates and Area pericolosa */
+    const c0 = gotLabels.filter(function(t){ return t === "Max 0 metri AGL"; }).length;
+    const c120 = gotLabels.filter(function(t){ return t === "Max 120 metri AGL"; }).length;
+    const cDanger = gotLabels.filter(function(t){ return t === "Area pericolosa"; }).length;
+    add("LEGENDUX_two_max0", c0 === 2, "n=" + c0);
+    add("LEGENDUX_two_max120", c120 === 2, "n=" + c120);
+    add("LEGENDUX_area_pericolosa", cDanger === 1, "n=" + cDanger);
+
+    /* SELFTEST 6+7: all swatches inline data URIs, none points to d-flight.it */
+    let allInline = true, noExternal = true, swatchCount = 0;
+    Array.prototype.forEach.call(ulRoot.querySelectorAll("img.dflight-atm09-ul-swatch"), function(img){
+      swatchCount++;
+      const src = img.getAttribute("src") || "";
+      if (src.indexOf("data:image/png;base64,") !== 0) allInline = false;
+      if (/d-flight\.it/i.test(src)) noExternal = false;
+    });
+    add("LEGENDUX_swatches_inline", allInline && swatchCount === 8, "n=" + swatchCount);
+    add("LEGENDUX_no_dflight_runtime_src", noExternal);
+
+    /* SELFTEST 8/9/10: paint-mode arbitration */
+    const userShown = function(){ return ulRoot && ulRoot.hidden === false; };
+    const techHidden = function(){ return !det || det.hidden === true; };
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = false; _dflightAtm09Ready = true; _dflightAtm09InfoUnavailable = false;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_atm09_visible", dflightLegendPaintMode() === "atm09" && userShown() && techHidden());
+    _dflightOverlayVisible = true; _dflightAtm09InfoUnavailable = true;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_restrictions_hidden_user", dflightLegendPaintMode() === "restrictions" && !userShown() && techHidden());
+    _dflightAtm09MasterUi = false; _dflightAtm09Preferred = false;
+    _dflightOverlayVisible = false; _dflightAtm09Ready = false; _dflightAtm09InfoUnavailable = false;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_none_hidden_user", dflightLegendPaintMode() === "none" && !userShown() && techHidden());
+
+    /* SELFTEST 11: technical legend never competes while user legend shown */
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = false; _dflightAtm09Ready = true; _dflightAtm09InfoUnavailable = false;
+    dflightSyncContextualLegends(true);
+    add("LEGENDUX_tech_non_competitive", userShown() && techHidden() && (!det || det.open === false));
+
+    /* SELFTEST 12: static IT labels survive language switch (no raw keys, no blanks) */
+    let l10nOk = true;
+    try {
+      if (typeof applyLanguage === "function"){
+        const prevLang = (typeof state !== "undefined") ? state.lang : null;
+        ["en", "fr", "it"].forEach(function(l){
+          try { applyLanguage(l); } catch(_){}
+          const labels = ulRoot.querySelectorAll(".dflight-atm09-ul-label");
+          if (labels.length !== 8) l10nOk = false;
+          Array.prototype.forEach.call(labels, function(sp){
+            const t = sp.textContent || "";
+            if (!t || t.indexOf("dflight.") === 0 || t.indexOf(" ") === -1) l10nOk = false;
+          });
+        });
+        if (prevLang && typeof applyLanguage === "function") try { applyLanguage(prevLang); } catch(_){}
+      }
+    } catch(_){ l10nOk = false; }
+    add("LEGENDUX_l10n_freeze_safe", l10nOk);
+
+    /* SELFTEST 14: not-READY must not show user legend as active paint */
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightAtm09Ready = false; _dflightOverlayVisible = false;
+    dflightSyncContextualLegends();
+    add("LEGENDUX_not_ready_hidden", dflightLegendPaintMode() !== "atm09" && !userShown());
+
+    /* topology guards: no ninth row, no tech names, default row inline crop */
+    add("LEGENDUX_no_extra_costa_row", rows.length === 8 && gotLabels.indexOf("costa") === -1 && gotLabels.indexOf("geometrie_rosse_schure") === -1);
+    const defaultRow = rows[6];
+    const defaultSw = defaultRow ? defaultRow.querySelector("img.dflight-atm09-ul-swatch") : null;
+    add("LEGENDUX_default120_inline_crop", !!defaultSw && (defaultSw.getAttribute("src") || "").indexOf("data:image/png;base64,") === 0);
+  } catch (e){
+    add("LEGENDUX_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try {
+      dflightAtm09EnsureLegend = prevEnsure;
+      _dflightAtm09MasterUi = prevMaster;
+      _dflightAtm09Preferred = prevPref;
+      _dflightOverlayVisible = prevVis;
+      _dflightAtm09Ready = prevReady;
+      _dflightAtm09InfoUnavailable = prevUnavail;
+      _dflightClientSession = prevSess;
+      _dflightOverlaySession = prevOvSess;
+      _dflightHelperBaseUrlOverride = prevBase;
+      if (typeof state !== "undefined"){
+        if (prevForce !== null) state.forceOffline = prevForce;
+        if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+        if (prevZoom !== null) state.mapZoom = prevZoom;
+      }
+      if (head && prevHeadH !== null) head.hidden = prevHeadH;
+      if (list && prevListH !== null) list.hidden = prevListH;
+      if (det && prevDetH !== null) det.hidden = prevDetH;
+      if (det && prevDetOpen !== null) det.open = prevDetOpen;
+      if (ulRoot && prevUlH !== null) ulRoot.hidden = prevUlH;
+      try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
+    } catch(_){}
+  }
+  return checks;
+}
 (function dflightExtendSelfTestIMPLA(){
   try {
     const prevAll = dflightSelfTestAll;
@@ -44528,7 +44872,34 @@ function dflightSelfTestIMPLA(){
       try {
         const api = Object.assign({}, window.GOIDflight, {
           selfTest: dflightSelfTestAll,
-          selfTestIMPLA: dflightSelfTestIMPLA
+          selfTestIMPLA: dflightSelfTestIMPLA,
+          selfTestLEGENDUX: dflightSelfTestLEGENDUX
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
+(function dflightExtendSelfTestLEGENDUX(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = dflightSelfTestLEGENDUX();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestLEGENDUX: dflightSelfTestLEGENDUX
         });
         Object.freeze(api);
         window.GOIDflight = api;
