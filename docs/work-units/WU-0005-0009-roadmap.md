@@ -625,7 +625,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **CLOSED / PASS** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — FIX4 LIVE `9820c8a` / **205** · QA operatore PASS · finito Regola H · F–H **NOT OPENED** |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
-| **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
+| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — AUDIT-A · gate **REVIEW PENDING** · LIVE `508dd03` / **207** · F **NOT OPENED** |
 | **H** | Branding TMART GIS tool | **CLOSED / PASS** → [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) — FIX1 LIVE `508dd03` / **207** · QA operatore PASS · finito Regola H · G **NOT OPENED** |
 
 #### 1. Azione «Aggiorna» unificata
@@ -722,13 +722,13 @@ Finding trasversale: una modal/pannello aperto può coprire le etichette dei pan
 
 Futuro: modal aperte preferibilmente in alto nell’area mappa; etichette minimizzate non sotto le modal; trasferimento progressivo delle etichette nella **barra superiore nera**, spazio libero a destra e a sinistra del titolo finché c’è spazio; comportamento responsive a spazio esaurito.
 
-Serve un futuro **GLOBAL GIS PANEL/MINIMIZED DOCK MANAGER** (o equivalente). Non implementare ora.
+**Stato:** **OPEN** in [`WU-0021-gis-panel-minimized-dock-manager.md`](WU-0021-gis-panel-minimized-dock-manager.md) — blocco `GIS-PANEL-DOCK-MGR-AUDIT-A` · LIVE `508dd03` / build **207** · gate **REVIEW PENDING** (2026-08-16). Categoria **DELICATO**. Raccomandazione audit: thin coordinator (OPTION A). **F** resta **NOT OPENED**.
 
 #### 12. Branding — TMART GIS tool
 
 Nuovo nome applicazione: **TMART GIS tool**.
 
-**Stato:** **CLOSED / PASS** in [`WU-0020-branding-tmart-gis-tool.md`](WU-0020-branding-tmart-gis-tool.md) — blocco `BRANDING-TMART-IMPL-A-FIX1` · LIVE `508dd03` / build **207** · QA operatore PASS · finito Regola H (2026-08-16). Filename monolite **non** rinomina. Candidato **G** autorizzato **NOT OPENED**.
+**Stato:** **CLOSED / PASS** in [`WU-0020-branding-tmart-gis-tool.md`](WU-0020-branding-tmart-gis-tool.md) — blocco `BRANDING-TMART-IMPL-A-FIX1` · LIVE `508dd03` / build **207** · QA operatore PASS · finito Regola H (2026-08-16). Filename monolite **non** rinomina. Candidato **G** aperto in WU-0021 (AUDIT).
 
 **Non** rinominare automaticamente `coordinate_converter Claude.html`. Il deliverable resta il monolite standalone finché non c’è una decisione **separata** sul filename.
 

@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **BRANDING-TMART-IMPL-A-FIX1** **CLOSED / PASS** · QA operatore PASS · finito Regola H · WU-0020 CLOSED · LIVE `508dd03` / **207** invariato · monolite escluso · gate **none** · NEXT candidato **G** autorizzato NOT OPENED. [`inbox/2026-08-16_2210_riepilogo_finito-branding-fix1.md`](inbox/2026-08-16_2210_riepilogo_finito-branding-fix1.md).
+2026-08-16 — **GIS-PANEL-DOCK-MGR-AUDIT-A** aperto · WU-0021 (candidato **G**) · gate **REVIEW PENDING** · docs-only · LIVE `508dd03` / **207** invariato · monolite escluso · F NOT OPENED · H CLOSED. [`inbox/2026-08-16_2225_riepilogo_gis-panel-dock-mgr-audit-a.md`](inbox/2026-08-16_2225_riepilogo_gis-panel-dock-mgr-audit-a.md).
