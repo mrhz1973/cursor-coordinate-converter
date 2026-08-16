@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1 (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2 (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
 **CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
-**RUNTIME CANDIDATE:** `ff4fa64a0686ffcaada0d3d18e3a0e74d7ba3be6` · build **202** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1` · FAIL prior `a689fe81…`/201
+**RUNTIME CANDIDATE:** `a40d216300deefa2c23f6b20585f9543c6ee024c` · build **203** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2` · FIX1 FAIL `ff4fa64…`/202
 **RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (**non** redeployato in questo pass)
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** REVIEW GPT-SOSTITUTIVA FIX1 (evidence: [`2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md`](../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md)) → solo dopo PASS: deploy + ABQA
-**NOTE:** REVIEW IMPL-A **FAIL** (one-touched overlap) → FIX1 · gate resta PENDING · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
+**NEXT:** REVIEW GPT-SOSTITUTIVA FIX2 (evidence: [`2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md`](../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md)) → solo dopo PASS: deploy + ABQA
+**NOTE:** FIX1 **FAIL** (Details-touched stack overlap + selftest C permissivo) → FIX2 · gate PENDING · no deploy / no ABQA / no finito · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
@@ -353,3 +353,13 @@ Fermarsi / non dichiarare READY se:
 **Evidence:** [`../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md`](../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md)
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — deploy solo dopo PASS review.
+
+## IMPL-A-FIX2 — SIDEBYSIDE (2026-08-16)
+
+**STATUS:** IMPLEMENTED / selftest PASS / **REVIEW GPT-SOSTITUTIVA — PENDING**
+
+**Runtime candidate:** `a40d216300deefa2c23f6b20585f9543c6ee024c` · build **203** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2`
+
+**Fix:** one-touched right/left/below/above post-clamp full separation; `partial_visible_*` se impossibile; skipSync su place geometrico; selftest A–L senza `|| true`.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md`](../orchestrator/inbox/2026-08-16_1815_dflight-panel-sidebyside-impl-a-fix2-evidence.md)
