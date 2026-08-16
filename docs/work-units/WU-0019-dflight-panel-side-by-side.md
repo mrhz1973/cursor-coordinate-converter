@@ -9,8 +9,8 @@
 **RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (**non** redeployato in questo pass)
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** REVIEW GPT-SOSTITUTIVA del diff FULL SHA → solo dopo PASS: deploy + ABQA
-**NOTE:** GPT AUDIT REVIEW **PASS** · IMPL-A option B · `dflightEnsurePairLayout` · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
+**NEXT:** REVIEW GPT-SOSTITUTIVA del diff FULL SHA (evidence: [`2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md`](../orchestrator/inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md)) → solo dopo PASS: deploy + ABQA
+**NOTE:** GPT AUDIT REVIEW **PASS** · IMPL-A option B · `dflightEnsurePairLayout` · evidence-A docs-only · gate resta PENDING · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).

@@ -10,5 +10,5 @@
 | **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
 | **REVIEW BASE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` (build **200** / FIX2) |
 | **RUNTIME LIVE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
-| **NEXT** | REVIEW GPT-SOSTITUTIVA del FULL SHA candidato → solo dopo PASS: deploy GIS + ABQA |
+| **NEXT** | REVIEW GPT-SOSTITUTIVA sul FULL SHA candidato — evidence [`inbox/2026-08-16_1745_…review-evidence-a.md`](orchestrator/inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md) → solo dopo PASS: deploy GIS + ABQA |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0019 **OPEN** · WU-0018 **CLOSED / PASS** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |

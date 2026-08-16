@@ -462,11 +462,11 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A** — IMPLEMENTED · gate REVIEW GPT-SOSTITUTIVA — PENDING · build **201** candidato · WU-0019
-2. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS — LIVE `67d9cc7` / **200**
-3. **WU-0018 (ATM09 LEGEND UX)** — CLOSED / PASS
-4. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — CLOSED / PASS — LIVE `d2d3ab3` / **197**
-5. **WU-0017 (ATM09 VISUAL PARITY)** — CLOSED / PASS
+1. **D-FLIGHT-PANEL-SIDEBYSIDE-REVIEW-EVIDENCE-A** — docs evidence BASE↔CANDIDATE · gate REVIEW GPT-SOSTITUTIVA — PENDING (invariato)
+2. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A** — IMPLEMENTED · build **201** candidato `a689fe81` · WU-0019
+3. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS — LIVE `67d9cc7` / **200**
+4. **WU-0018 (ATM09 LEGEND UX)** — CLOSED / PASS
+5. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — CLOSED / PASS — LIVE `d2d3ab3` / **197**
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
