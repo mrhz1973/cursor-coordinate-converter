@@ -6,6 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4** REVIEW GPT-SOSTITUTIVA **PASS** · deploy LIVE `9820c8a` / **205** · **AUTOMATED BROWSER QA PASS** (35 checks; drag sibling invariant) · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-16_2015_…fix4-deploy-qa.md`](inbox/2026-08-16_2015_dflight-panel-sidebyside-impl-a-fix4-deploy-qa.md).
-
-Precedente evidence FIX4: [`inbox/2026-08-16_2000_…fix4-evidence.md`](inbox/2026-08-16_2000_dflight-panel-sidebyside-impl-a-fix4-evidence.md).
+2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4** **CLOSED / PASS** · QA operatore PASS · finito Regola H · WU-0019 CLOSED · LIVE `9820c8a` / **205** invariato · monolite escluso · gate **none** · NEXT backlog F/G/H NOT OPENED + WU-0012. [`inbox/2026-08-16_2045_riepilogo_finito-sidebyside-fix4.md`](inbox/2026-08-16_2045_riepilogo_finito-sidebyside-fix4.md).

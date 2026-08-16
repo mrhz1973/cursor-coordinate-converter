@@ -4,11 +4,11 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | WU-0019 — [`D-FLIGHT-PANEL-SIDE-BY-SIDE`](work-units/WU-0019-dflight-panel-side-by-side.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 (**DEPLOYED / ABQA PASS / QA FINALE CHATGPT — PENDING**) |
-| **STATO BLOCCO** | LIVE `9820c8a` / build **205** · no drag-end sibling re-pair · ABQA PASS · helper **0.1.3** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
-| **REVIEW BASE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` (build **200** / FIX2) |
+| **WORKSTREAM ATTIVO** | *(nessun WU D-Flight attivo)* — WU-0019 **CLOSED / PASS** |
+| **BLOCCO ATTIVO** | D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 (**CLOSED / PASS**) |
+| **STATO BLOCCO** | LIVE `9820c8a` / build **205** · QA operatore PASS · finito Regola H · helper **0.1.3** |
+| **GATE CORRENTE** | **none** |
+| **REVIEW BASE** | — |
 | **RUNTIME LIVE** | monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4` · helper prod **0.1.3** |
-| **NEXT** | QA umana residua ChatGPT → attestazione `QA D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 PASS operatore` → auto-`finito` |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0019 **OPEN** · WU-0018 **CLOSED / PASS** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **NEXT** | backlog D-Flight **F/G/H NOT OPENED** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0019 **CLOSED / PASS** · WU-0018 **CLOSED / PASS** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |

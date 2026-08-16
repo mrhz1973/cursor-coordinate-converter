@@ -1,16 +1,16 @@
 # WU-0019 — D-FLIGHT-PANEL-SIDE-BY-SIDE
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 (**DEPLOYED / ABQA PASS / QA FINALE CHATGPT — PENDING**)
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
+**STATUS:** CLOSED / PASS
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 (**CLOSED / PASS**)
+**CURRENT GATE:** none
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
 **RUNTIME CANDIDATE:** `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4`
 **RUNTIME LIVE:** monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · helper **0.1.3**
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** QA umana ChatGPT → `QA D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4 PASS operatore` → auto-`finito`
-**NOTE:** REVIEW GPT-SOSTITUTIVA **PASS** · deploy+ABQA PASS (drag sibling invariant) · gate QA FINALE PENDING · no finito · F/G/H **non** aperti
+**NEXT:** — (WU CLOSED; backlog F/G/H NOT OPENED)
+**NOTE:** WU CLOSED 2026-08-16 · AUDIT→IMPL-A + FIX1–FIX4 PASS · QA operatore PASS · finito Regola H · LIVE `9820c8a` / 205 · drag: no sibling auto-re-pair (prodotto)
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
@@ -373,3 +373,13 @@ Fermarsi / non dichiarare READY se:
 **Automated Browser QA:** PASS
 
 **Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
+
+## IMPL-A-FIX4 — CLOSED / PASS (2026-08-16)
+
+**Runtime tip:** `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** · blob monolite `689c831d902749d86d12667b18eab2bd84390662` · URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=9820c8a`
+
+**QA operatore:** PASS · Regola H auto-finito · no runtime patch in finito · monolite immutabile
+
+**Evidence deploy/ABQA:** [`../orchestrator/inbox/2026-08-16_2015_dflight-panel-sidebyside-impl-a-fix4-deploy-qa.md`](../orchestrator/inbox/2026-08-16_2015_dflight-panel-sidebyside-impl-a-fix4-deploy-qa.md)
+
+**Decision product FIX4:** drag manuale → sibling non riposiziona; overlap intenzionale OK; resize-end mantiene pair.
