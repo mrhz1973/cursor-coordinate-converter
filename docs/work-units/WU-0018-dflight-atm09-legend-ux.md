@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A (**BLOCKED**)
-**CURRENT GATE:** DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B (**CLOSED / PASS** diagnostico — Caso **B-P2**)
+**CURRENT GATE:** ATM09 STYLE METADATA SOURCE REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** RULE-META probe = **DELICATO** · IMPL-A = non aperta
+**CATEGORIA:** RULE-META probe = **DELICATO** (eseguito) · IMPL-A = non aperta
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** eseguire lo stesso one-shot RULE-META PROBE **sul VPS** nel contesto credential già usato dal servizio helper (LoadCredential + `/etc/goi-dflight/config.toml`) — senza copiare secret in Cursor; poi persistare solo evidenza sanitizzata — NON endpoint; NON IMPL-A
-**NOTE:** REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS · probe **non** eseguito (auth context assente in sessione Cursor; SSH `:22` timeout; helper `:8010` PNG-only)
+**NEXT:** chiudere associazioni mancanti (scure/costa; secondo Max 120) con fonte metadata / Probe2 mirato — NON endpoint automatico; NON IMPL-A finché triple necessarie non PROVEN
+**NOTE:** JSON_CAPABILITY **SUPPORTED** (VPS transient + LoadCredential) · TECH↔RULE **9/9** · triple implementative **incomplete** · credential exposure **NO** · runtime/helper **invariati**
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -427,11 +427,107 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | REFERENCE-B | **CLOSED / PASS** |
 | REFERENCE-C | **CLOSED / PASS** |
 | RULE-META-DESIGN-A | **CLOSED / PASS** |
-| RULE-META-PROBE-A | **BLOCKED** (Caso P4) |
-| CURRENT GATE | **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** |
-| NEXT | one-shot probe sul VPS nel contesto LoadCredential del helper — senza secret in Cursor; NON endpoint; NON IMPL-A |
+| RULE-META-PROBE-A | **BLOCKED** (Caso P4) — superseduto da VPS-B |
+| RULE-META-PROBE-VPS-B | **CLOSED / PASS** diagnostico (Caso **B-P2**) |
+| CURRENT GATE | **ATM09 STYLE METADATA SOURCE REQUIRED** |
+| NEXT | elencare/chiudere associazioni mancanti sotto; NON endpoint automatico; NON IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
+
+---
+
+## RULE-META-PROBE-VPS-B
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B` · **CLOSED / PASS** diagnostico · 2026-08-16 · Caso **B-P2**.
+
+### Contesto esecuzione
+
+| Voce | Valore |
+| --- | --- |
+| Sessione Cursor iniziale | Windows (AsusDesktop) — **normale** prima del SSH |
+| Connessione VPS canonica | Host SSH **`ionos-n8n`** (già configurato; nessun IP/porta hardcodati nel probe) |
+| VPS context | Linux · helper `/opt/goi-dflight-helper/current/goi_dflight_helper.py` · `/etc/goi-dflight/config.toml` · `goi-dflight-helper.service` **active** |
+| Unit contract live | `User`/`Group=goi-dflight` · `WorkingDirectory=/opt/goi-dflight-helper/current` · `GOI_DFLIGHT_CONFIG=/etc/goi-dflight/config.toml` · `LoadCredential` username+password paths attesi — **coerente** |
+| Transient | `systemd-run --wait --collect` · User/Group helper · stessi LoadCredential · hardening compatibile · **nessun** restart/enable/daemon-reload del live |
+| Credential exposure | **NO** (nessun cat credential / environ / token stampato) |
+| Helper live post-probe | **active** (invariato) |
+| TEMP CLEANUP | **PASS** |
+
+### Probe 1 — GetLegendGraphic JSON
+
+| Voce | Valore |
+| --- | --- |
+| JSON_CAPABILITY | **SUPPORTED** |
+| HTTP | **200** |
+| MIME | `application/json` |
+| Byte count | **2828** |
+| Legend count | **1** |
+| Rule count | **9** |
+| Auth | `ensure_access_token` via LoadCredential; `cred_dir_present=true` (path non stampato) |
+| 401 / reauth | non richiesto (primo GET 200) |
+
+### Rules sanitizzate (evidenza upstream — non CSS GOI)
+
+| # | Name | Title | Filter | Symbolizer (sintesi) |
+| --- | --- | --- | --- | --- |
+| 0 | `geometrie_rosse_schure` (**typo Name** vs title) | `geometrie_rosse_scure` | `[type = 'costa']` | Polygon fill `#FF0000` opacity **0.3** |
+| 1 | `geometrie_rosse_piene` | `geometrie_rosse_piene` | `[type = 'rosso']` | Polygon fill `#FF0000` opacity **0.3** |
+| 2 | `geometrie_rosse_piene` (title duplicato) | `geometrie_rosse_piene` | `[type = 'rosso_righe']` | Polygon fill `#FF0000` opacity **0.3** — **duplicato spiegato dal filter diverso** |
+| 3 | `geometrie_verdi` | `geometrie_verdi` | `[type = 'verde']` | Polygon fill `#287233` opacity **0.3** |
+| 4 | `geometrie_rosse_quadri` | `geometrie_rosse_quadri` | `[type = 'rosso_quadri']` | stroke + **graphic-fill** mark `shape://times` |
+| 5 | `geometrie_arancioni` | `geometrie_arancioni` | `[type = 'arancione']` | Polygon fill `#FF6F00` opacity **0.3** |
+| 6 | `geometrie_gialle` | `geometrie_gialle` | `[type = 'giallo']` | Polygon fill `#FFF200` opacity **0.3** |
+| 7 | `geometrie_azzurre` | `geometrie_azzurre` | `[type = 'azzurra']` | Polygon fill `#00FFFF` opacity **0.3** |
+| 8 | `geometrie_italia` | `geometrie_italia` | `[type = 'italia']` | Polygon fill `#FF9900` opacity **0.0** → spiega assenza swatch GLG |
+
+Hex/fill = **EVIDENZA UPSTREAM**, non restyle GOI. Nessun raw JSON / URL autenticato / Authorization persistiti.
+
+### Probe 2 — RULE-specific
+
+| Voce | Valore |
+| --- | --- |
+| Eseguito con evidenza | **NO** (tentativo su allowlist `geometrie_italia` fallito: script TEMP corrotto da quoting → `SyntaxError`; nessun PNG validato) |
+| Cleanup TEMP / PNG | **PASS** (dir `/tmp/atm09-rulemeta.*` rimossa) |
+
+### Mapping fail-closed (join TECH / rule / user)
+
+| Target | Esito | Note |
+| --- | --- | --- |
+| A. `geometrie_rosse_scure` | **UNKNOWN / PARTIAL** | Filter `costa` — non label quota user-facing; Name typo `schure` |
+| B. due `geometrie_rosse_piene` | **PROVEN (perché duplicate)** | Stesso Title/Name; filter `rosso` vs `rosso_righe` |
+| B. Max 0 pieno ↔ `type='rosso'` | **PROVEN (join)** | Filter + Title TECH + SWATCH↔USER Max 0 pieno (REFERENCE-C) |
+| B. Max 0 diagonale ↔ `type='rosso_righe'` | **PROVEN (join)** | Filter semantico `righe` + dual Max 0 ufficiale |
+| C. `geometrie_rosse_quadri` ↔ Area pericolosa | **PROVEN** | `shape://times` univoco + prior swatch Area pericolosa |
+| D. arancioni ↔ Max 25 | **PROVEN (join)** | `type='arancione'` + SWATCH↔USER |
+| E. gialle ↔ Max 45 | **PROVEN (join)** | `type='giallo'` + SWATCH↔USER |
+| F. azzurre ↔ Max 60 | **PROVEN (join)** | `type='azzurra'` + SWATCH↔USER |
+| G. verdi ↔ Max 120 | **PROVEN (join)** | `type='verde'` + SWATCH↔USER |
+| H. secondo Max 120 chiaro/bordato | **PARTIAL** | Candidato `italia` (opacity 0 / no swatch) — **non** PROVEN senza metadata/RULE-PNG |
+| I. `geometrie_italia` | **PARTIAL** | Funzione: layer `italia`, fill invisibile (opacity 0); motivo no-swatch **PROVEN**; semantica user-facing **non** chiusa |
+
+### Contatori
+
+| Livello | Stato |
+| --- | --- |
+| JSON_CAPABILITY | **SUPPORTED** |
+| SEMANTICA (REFERENCE-B) | PROVEN **4** (invariato) |
+| SWATCH↔USER-FACING (REFERENCE-C) | PROVEN **8** (invariato) |
+| TECH↔RULE/SYMBOLIZER | **PROVEN 9 / 9** (Name/Title/Filter/Symbolizer presenti) |
+| TRIPLE IMPLEMENTATIVE necessarie | **incomplete** — mancano scure/costa + secondo Max 120 |
+| Probe 2 RULE | **non conclusivo** |
+
+### Associazioni mancanti (gate B-P2)
+
+1. `geometrie_rosse_scure` / `type='costa'` ↔ label user-facing ufficiale (se esiste).
+2. Secondo Max 120 chiaro/bordato ↔ rule TECH esatta (`italia` resta solo candidato).
+
+### Gate / NEXT
+
+| Campo | Valore |
+| --- | --- |
+| RULE-META-PROBE | **PASS** (diagnostico; Caso B-P2) |
+| CURRENT GATE | **ATM09 STYLE METADATA SOURCE REQUIRED** |
+| NEXT | fonte metadata / Probe2 mirato sulle sole ambiguità residue — NON endpoint automatico; NON IMPL-A |
 
 ---
 

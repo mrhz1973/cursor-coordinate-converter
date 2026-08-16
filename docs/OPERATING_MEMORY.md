@@ -386,12 +386,12 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0018 — [`D-FLIGHT-ATM09-LEGEND-UX`](work-units/WU-0018-dflight-atm09-legend-ux.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A (**BLOCKED**) |
-| **STATO BLOCCO** | **BLOCKED** — Caso P4; review upstream PASS; nessuna request upstream; nessun patch |
-| **GATE CORRENTE** | **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B (**CLOSED / PASS** diagnostico — Caso **B-P2**) |
+| **STATO BLOCCO** | JSON GetLegendGraphic **SUPPORTED** (9 rules) · TECH↔RULE **9/9** · triple incomplete (scure/costa; secondo Max 120) · nessun patch |
+| **GATE CORRENTE** | **ATM09 STYLE METADATA SOURCE REQUIRED** |
 | **REVIEW BASE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` (build **197** / IMPL-A visual parity) |
 | **RUNTIME LIVE** | **INVARIATO** · monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
-| **NEXT** | rieseguire one-shot RULE-META PROBE sul VPS nel contesto LoadCredential del helper (senza secret in Cursor) — NON endpoint; NON IMPL-A |
+| **NEXT** | chiudere associazioni mancanti (scure/costa; secondo Max 120) — NON endpoint automatico; NON IMPL-A |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **OPEN** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)

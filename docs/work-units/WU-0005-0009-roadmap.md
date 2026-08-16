@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
-| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — RULE-META-PROBE-A **BLOCKED** (P4: execution context) · SWATCH↔USER-FACING **PROVEN (8)** · triple **0** · gate **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** · NEXT = probe sul VPS (LoadCredential) |
+| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — RULE-META-PROBE-VPS-B **CLOSED/PASS** (B-P2) · JSON **SUPPORTED** · TECH↔RULE **9/9** · SWATCH↔USER **8** · triple incomplete · gate **ATM09 STYLE METADATA SOURCE REQUIRED** · NEXT = chiudere scure/costa + secondo Max 120 |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
