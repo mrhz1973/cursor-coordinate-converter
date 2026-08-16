@@ -1,16 +1,21 @@
 # LAST_CURSOR_REPORT
 
-**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-RULE-META-DESIGN-A)
+**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A)
 
 ## Disciplina F3
 
 | Campo | Valore |
 |-------|--------|
-| `real_task_commit` | `6652b07514223517b39c7c71f70c6baf5ad5786b` |
+| `real_task_commit` | `646567aa9ec2a02c725217353ada5abc25311492` |
 | Container corrente | `PENDING_SELF_REFERENCE` |
 | Fatti autosync proprio | `EXTERNAL_ONLY` |
 | Terzo commit | **vietato** |
 | Published | immutable |
+
+## Review
+
+**REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS**  
+Checklist rete/proxy/auth/OPSEC DELICATO: registrata in WU-0018 § RULE-META-PROBE-A.
 
 ## LIVE (invariato)
 
@@ -26,10 +31,10 @@
 | Campo | Valore |
 |-------|--------|
 | WORKSTREAM | WU-0018 OPEN |
-| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-DESIGN-A CLOSED / PASS |
-| GATE | DELICATE RULE-META PROBE REVIEW REQUIRED |
-| NEXT | specifica probe DELICATO + review prima esecuzione |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A **BLOCKED** |
+| GATE | DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED |
+| NEXT | probe sul VPS (LoadCredential) |
+| Upstream JSON probe | **NOT EXECUTED** |
 | Runtime/helper patch | **NO** |
-| Probe upstream | **NO** |
 | Deploy | **NO** |
 | Finito | **NO** |
