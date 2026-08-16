@@ -2,15 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
-**REVIEW BASE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
-**RUNTIME CANDIDATE / LIVE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16`
-**RUNTIME LIVE:** stesso SHA · deploy PASS · helper **0.1.3**
-**CATEGORIA:** **DELICATO** — layout/lifecycle trasversale multi-pannello
-**ORIGINE:** backlog QA build 183 candidato **G** — Global minimized-panel dock / modal layout manager
-**NEXT:** QA FINALE CHATGPT; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
-**NOTE:** REVIEW GPT-SOSTITUTIVA PASS · deploy+ABQA 30/30 PASS · no finito · no QA istruzioni Cursor
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX1
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**REVIEW BASE / LIVE pre-FIX:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `GIS-PANEL-DOCK-MGR-G-A1`
+**RUNTIME CANDIDATE:** `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` · build **209** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1-FIX1` · blob `278421cc4fd4e3b57965ff717f5fc3cf7e20b4a1`
+**RUNTIME LIVE:** ancora `7a5c42f…` / **208** (FIX1 **non** deployato)
+**CATEGORIA:** **DELICATO**
+**NEXT:** REVIEW GPT-SOSTITUTIVA; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
+**NOTE:** QA FAIL circoscritto (handle dietro header) → FIX1 safeTop; selftest 454/454; no deploy
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -415,3 +414,15 @@ REVIEW GPT-SOSTITUTIVA **PASS** su `7a5c42f…`. Deploy GIS-only PASS. ABQA **30
 **Evidence:** [`../orchestrator/inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md)
 
 **Gate:** **QA FINALE CHATGPT — PENDING** · no finito · G-B/C/D NOT OPENED · F NOT OPENED.
+
+## 22. G-A1-FIX1 (2026-08-17) — REVIEW PENDING
+
+QA operatore FAIL circoscritto: drag troppo alto → title bar dietro header z29.
+
+**Candidate:** `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` / build **209** / blob `278421cc…`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0035_gis-panel-dock-mgr-g-a1-fix1-evidence.md`](../orchestrator/inbox/2026-08-17_0035_gis-panel-dock-mgr-g-a1-fix1-evidence.md)
+
+**Ship:** `gisPanelSafeTop` + clamp/drag/resize nudge. Z-order G-A1 invariato. WU-0019 invariato.
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy.

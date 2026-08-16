@@ -2,39 +2,40 @@
 
 ## LATEST
 
-* real_task_commit: `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` — verify short `7a5c42f` (runtime LIVE; questo pass = REVIEW PASS + deploy + ABQA docs)
-* real_task_subject: docs(WU-0021): G-A1 REVIEW PASS deploy ABQA QA FINALE PENDING
-* report_generated_at: 2026-08-17T00:15:00+02:00
+* real_task_commit: `c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6` — verify short `c122fd4`
+* real_task_subject: fix(dock): G-A1-FIX1 dynamic safeTop so drag handle stays below header
+* report_generated_at: 2026-08-17T00:40:00+02:00
 * branch: main
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `20708cfc02a2138bb84aaef104b3f554b695fc80`
+* previous_report_container: `3106e0d6b979e8f8beb3ffbcddd4f6ddeebb307b`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: solo autosync memoria
-* pass_tecnico_remoto: LIVE blob `d57ead862ef65e894cb637b590650912ff261a16` ≡ candidato · HTTP MATCH · helper 0.1.3
-* result_cursor: REVIEW PASS · deploy PASS · ABQA 30/30 PASS · gate QA FINALE PENDING
-* pass_operatore: n/a (Cursor non emette QA)
-* result_runtime: LIVE `7a5c42f` / 208
-* qa_attestation_source: ABQA Playwright LIVE 30/30
-* notes: F NOT OPENED; G-B/C/D NOT OPENED; no patch
+* working_tree_status: autosync memoria dopo runtime
+* pass_tecnico_remoto: candidate blob `278421cc4fd4e3b57965ff717f5fc3cf7e20b4a1` · no deploy
+* result_cursor: FIX1 implemented · selftest 454/454 · gate REVIEW PENDING
+* pass_operatore: n/a
+* result_runtime: LIVE ancora `7a5c42f` / 208
+* qa_attestation_source: selftest + Playwright probe locale
+* notes: F NOT OPENED; G-B/C/D NOT OPENED; no deploy
 
 ## OUTPUT VERBATIM
 
 ```text
-GIS-PANEL-DOCK-MGR-G-A1
-REVIEW GPT-SOSTITUTIVA PASS
-DEPLOY PASS blob d57ead862ef65e894cb637b590650912ff261a16
-ABQA 30/30 PASS
-GATE QA FINALE CHATGPT PENDING
-NO FINITO NO OPERATOR QA
+GIS-PANEL-DOCK-MGR-G-A1-FIX1
+CANDIDATE c122fd49c7046a8a3ef98f08d9d94d1e6b4676a6
+BUILD 209
+SELFTEST 454/454
+GATE REVIEW GPT-SOSTITUTIVA PENDING
+NO DEPLOY
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
-* `20708cf` — REVIEW-EVIDENCE-B
-* `7a5c42f` — G-A1 runtime candidate → LIVE
+* `c122fd4` — G-A1-FIX1 runtime
+* `3106e0d` — G-A1 deploy+ABQA docs
+* `7a5c42f` — G-A1 runtime LIVE
 
 ## LIMITI
 

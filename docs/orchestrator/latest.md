@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-A1** · REVIEW PASS · LIVE `7a5c42f` / **208** · deploy+ABQA **30/30** PASS · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md`](inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md).
+2026-08-17 — **GIS-PANEL-DOCK-MGR-G-A1-FIX1** · candidate `c122fd4` / **209** · safeTop clamp · selftest 454/454 · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy. [`inbox/2026-08-17_0035_gis-panel-dock-mgr-g-a1-fix1-evidence.md`](inbox/2026-08-17_0035_gis-panel-dock-mgr-g-a1-fix1-evidence.md).
