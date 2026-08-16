@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-REVIEW-EVIDENCE-B
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **REVIEW BASE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
-**RUNTIME CANDIDATE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16`
+**RUNTIME CANDIDATE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16` · **invariato**
 **RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3** (G-A1 non deployato)
 **CATEGORIA:** **DELICATO** — layout/lifecycle trasversale multi-pannello
 **ORIGINE:** backlog QA build 183 candidato **G** — Global minimized-panel dock / modal layout manager
-**NEXT:** REVIEW G-A1 → deploy/ABQA se PASS; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
-**NOTE:** G-A1 2026-08-16 · thin coordinator + header host · z 29/28/30 · selftest 444/444 · no deploy
+**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
+**NOTE:** REVIEW-EVIDENCE-B 2026-08-16 · 17 hunk · +352/−30 · OTHER=0 · candidato invariato · no verdetto
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -397,3 +397,13 @@ Policy dock revisionata in evidence §6. Micro-blocchi: G-A = thin coordinator s
 **Ship:** `gisDockReflow` + header host `#gisMinimizedDock` + maxZ 28 + CSS z 29. Shared `_gisMinimizedPanels`. Workbench/WU-0019/lifecycle invariati.
 
 **Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · no deploy.
+
+## 20. G-A1 REVIEW-EVIDENCE-B (2026-08-16)
+
+Evidence-only per review indipendente. Candidato **invariato** `7a5c42f…` / 208.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2350_gis-panel-dock-mgr-g-a1-review-evidence-b.md`](../orchestrator/inbox/2026-08-16_2350_gis-panel-dock-mgr-g-a1-review-evidence-b.md) · hunk account JSON sibling · rects JSON sibling.
+
+**Hunk:** 17 · **+352/−30** riconciliato · **OTHER=0**.
+
+**Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · nessun verdetto in questo pass · no patch/deploy.

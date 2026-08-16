@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **GIS-PANEL-DOCK-MGR-G-A1** · candidate `7a5c42f` / build **208** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · selftest 444/444 · **no deploy** · LIVE resta `508dd03`/207 · F NOT OPENED. [`inbox/2026-08-16_2255_gis-panel-dock-mgr-g-a1-evidence.md`](inbox/2026-08-16_2255_gis-panel-dock-mgr-g-a1-evidence.md).
+2026-08-16 — **GIS-PANEL-DOCK-MGR-G-A1-REVIEW-EVIDENCE-B** · candidate `7a5c42f` / **208** invariato · 17 hunk +352/−30 OTHER=0 · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · nessun verdetto · no patch/deploy. [`inbox/2026-08-16_2350_gis-panel-dock-mgr-g-a1-review-evidence-b.md`](inbox/2026-08-16_2350_gis-panel-dock-mgr-g-a1-review-evidence-b.md).
