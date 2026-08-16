@@ -386,12 +386,12 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0018 — [`D-FLIGHT-ATM09-LEGEND-UX`](work-units/WU-0018-dflight-atm09-legend-ux.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-AUDIT-A (**CLOSED / PASS**) |
-| **STATO BLOCCO** | **CLOSED / PASS** — audit/docs-only; nessuna patch runtime |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-B (**CLOSED / PASS**) |
+| **STATO BLOCCO** | **CLOSED / PASS** — evidence/docs-only; nessuna patch runtime |
 | **GATE CORRENTE** | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
 | **REVIEW BASE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` (build **197** / IMPL-A visual parity) |
 | **RUNTIME LIVE** | **INVARIATO** · monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | acquisire evidenza autorevole mancante per matrice label ↔ swatch ↔ significato (NON aprire IMPL-A) |
+| **NEXT** | GetLegendGraphic TECH↔swatch; `geometrie_rosse_scure` vs `geometrie_rosse_piene` ↔ Height 0 / Dangerous Area; split UI 60 vs 120; Dangerous Area esplicito (NON IMPL-A) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **OPEN** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)

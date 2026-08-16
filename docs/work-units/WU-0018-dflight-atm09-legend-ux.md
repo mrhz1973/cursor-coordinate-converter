@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-AUDIT-A (CLOSED / PASS)
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-B (CLOSED / PASS)
 **CURRENT GATE:** OFFICIAL LABEL↔STYLE MAPPING REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** AUDIT-A = DOCS-ONLY / READ-ONLY RUNTIME · IMPL-A futura = **condizionata** (preferenza **E ibrida** → ROUTINE se mapping PROVEN + crop stabile; altrimenti endpoint helper → DELICATO)
+**CATEGORIA:** AUDIT-A + REFERENCE-B = DOCS-ONLY · IMPL-A futura = **condizionata** (E ibrida → ROUTINE se triple PROVEN + crop; altrimenti helper → DELICATO)
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** acquisire esclusivamente evidenza autorevole mancante per completare la matrice label ↔ swatch ↔ significato (NON aprire IMPL-A)
-**NOTE:** AUDIT-A CLOSED / PASS 2026-08-16 · helper legend endpoint non raggiungibile in sessione (`HELPER LEGEND EVIDENCE UNAVAILABLE`) · smoke dimensioni da WU-0017 (repo)
+**NEXT:** (1) via helper GetLegendGraphic: TECH WMS ↔ swatch pieno/hatch per ogni riga; (2) quale tra `geometrie_rosse_scure` / `geometrie_rosse_piene` (e hatch) ↔ Height 0 / Dangerous Area; (3) split UI 60 vs 120 rispetto al blu esterno Allegato A; (4) Dangerous Area ↔ riga legenda esplicita — NON IMPL-A
+**NOTE:** REFERENCE-B CLOSED / PASS 2026-08-16 · semantica colore↔quota ENAC/ATM-09A **PROVEN** · triple TECH↔SWATCH↔USER-FACING ancora **0** · helper `:8010` non raggiungibile da sessione Cursor
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -142,32 +142,45 @@ Nessuna chiamata diretta a d-flight.it. Nessun secret. Nessun PNG committato.
 
 ---
 
-## 6. Matrice label ↔ swatch ↔ significato (AUDIT C)
+## 6. Matrice label ↔ swatch ↔ significato
 
 Stati ammessi: **PROVEN** | **PARTIAL** | **UNKNOWN**. Fail-closed.
+**PROVEN** = associazione **implementativa** deterministica (tripla necessaria). Semantica normativa senza TECH/SWATCH → **non** conta come PROVEN implementativo (vedi §6.1).
 
-| TECHNICAL WMS LABEL | OFFICIAL USER-FACING LABEL | SWATCH / PATTERN | EVIDENZA | STATO | NOTE |
-| --- | --- | --- | --- | --- | --- |
-| `geometrie_rosse_scure` | — | — | R5 (esempio tecnico) | **UNKNOWN** | nessuna associazione user-facing |
-| `geometrie_rosse_piene` | — | — | R5 | **UNKNOWN** | idem |
-| `geometrie_verdi` | — | — | R5 | **UNKNOWN** | idem |
-| — | Height 0 meters AGL | — | R2 | **PARTIAL** | label user-facing ratificata; manca tech + swatch |
-| — | Height 25 meters AGL | — | R2 | **PARTIAL** | idem |
-| — | Height 45 meters AGL | — | R2 | **PARTIAL** | idem |
-| — | Height 60 meters AGL | — | R2 | **PARTIAL** | idem |
-| — | Height 120 meters AGL | — | R2 | **PARTIAL** | idem |
-| — | Dangerous Area | — | R2 | **PARTIAL** | idem |
-| *(ulteriori entry GetLegendGraphic)* | *(eventuali altre label ufficiali)* | rosso pieno / hatch / arancio / … (R2) | R2 + R5 | **UNKNOWN** | elenco user-facing **non** esaustivo; pattern osservati senza HEX e senza pairing |
+### 6.1 Semantica normativa colore ↔ quota (REFERENCE-B1) — PROVEN
 
-**Conteggi:**
+| COLORE (famiglia; no HEX) | SEMANTICA UFFICIALE | EVIDENZA | STATO |
+| --- | --- | --- | --- |
+| Rosso | AREA ROSSA = restrizione dal suolo / **0 m AGL** | ENAC pagina (es. «zona rossa» 0 mt) · ATM-09A §6.8–6.11 AREA ROSSA · Allegato A fig. A.1–A.4 | **PROVEN** (solo semantica) |
+| Arancione | AREA ARANCIONE = da **25 m AGL** | ENAC («zona arancione» 25 mt) · §6.8–6.11 · Allegato A label «25 m (85 ft) AGL» | **PROVEN** (solo semantica) |
+| Giallo | AREA GIALLA = da **45 m AGL** | §6.8–6.11 · Allegato A label «45 m (150 ft) AGL» | **PROVEN** (solo semantica) |
+| Azzurro/blu esterno (figure Allegato A) | **60 m AGL** se ATZ/CTR · **oppure 120 m AGL** fuori spazi controllati | §6.8d/6.9d/6.10d/6.11d · Allegato A text box esterno | **PROVEN** (solo semantica; **una** regola duale — non prova lo split UI in due entry) |
+
+Conteggio semantica: **PROVEN = 4**. Distinto dalle triple implementative sotto.
+
+### 6.2 Matrice implementativa (TECH ↔ SWATCH ↔ USER-FACING)
+
+| TECHNICAL WMS LABEL | SWATCH / PATTERN | SEMANTICA UFFICIALE | OFFICIAL USER-FACING LABEL | EVIDENZA | STATO | NOTE |
+| --- | --- | --- | --- | --- | --- | --- |
+| `geometrie_rosse_scure` | — | — | — | R5 | **UNKNOWN** | manca TECH↔SWATCH osservato |
+| `geometrie_rosse_piene` | — | — | — | R5 | **UNKNOWN** | idem |
+| `geometrie_verdi` | — | — | — | R5 | **UNKNOWN** | verde **assente** da Allegato A / ENAC safety rings |
+| — | rosso pieno / rosso hatch (R2) | AREA ROSSA / 0 m (§6.1) | Height 0 meters AGL (R2) | R2+B1 | **PARTIAL** | semantica 0 m PROVEN; quale TECH + pieno vs hatch **non** provato |
+| — | arancione pieno / hatch (R2) | AREA ARANCIONE / 25 m | Height 25 meters AGL (R2) | R2+B1 | **PARTIAL** | idem |
+| — | giallo (R2) | AREA GIALLA / 45 m | Height 45 meters AGL (R2) | R2+B1 | **PARTIAL** | idem |
+| — | azzurro/ciano (R2) | 60 **o** 120 (§6.1 duale) | Height 60 / Height 120 (R2, due entry) | R2+B1 | **PARTIAL** | semantica duale PROVEN; **split UI** 60 vs 120 **non** provato da fonte pubblica |
+| — | — | zona D AIP «pericolosa» (§4 def. ATM-09A; layer distinto da ATM-09 su d-flight servizi) | Dangerous Area (R2) | R2+B1+B2 | **PARTIAL** | **nessun** link esplicito simbolo ATM09 ↔ Dangerous Area |
+| *(altre righe GetLegendGraphic)* | pattern residuali (R2) | — | — | R5+helper down | **UNKNOWN** | ordine/OCR non acquisiti in REFERENCE-B |
+
+**Conteggi implementativi (triple / righe matrice §6.2):**
 
 | STATO | N |
 | --- | ---: |
 | **PROVEN** | **0** |
-| **PARTIAL** | **6** |
-| **UNKNOWN** | **≥3** (label tecniche esemplificate) + residuali non enumerati |
+| **PARTIAL** | **6** (Height 0/25/45/60·120 + Dangerous Area) |
+| **UNKNOWN** | **≥3** TECH esemplificati + residuali |
 
-Una matrice incompleta **non** fallisce AUDIT-A: è il finding che determina il gate (Caso 2).
+Gate resta **Caso B2** (matrice migliorata, ancora incompleta per IMPL-A).
 
 ---
 
@@ -223,15 +236,72 @@ Una matrice incompleta **non** fallisce AUDIT-A: è il finding che determina il 
 
 ## 8. Decisione tecnica
 
-**Caso 2** — mapping label ↔ stile **non** completamente provato (PROVEN = 0).
+**Caso B2** (REFERENCE-B) — semantica colore↔quota **PROVEN**; triple TECH↔SWATCH↔USER-FACING ancora **0 PROVEN**.
 
 | Campo | Valore |
 | --- | --- |
 | CURRENT GATE | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
-| NEXT | acquisire **solo** evidenza autorevole mancante per completare la matrice (fonte ufficiale / SLD / documentazione D-Flight / pairing operator-proven) — **senza** aprire IMPL-A |
-| Architettura raccomandata (post-gate) | **E ibrida** |
-| Categoria IMPL-A | **condizionata** (ROUTINE se E fattibile; DELICATO se serve endpoint) |
-| Runtime / helper | **invariati** in AUDIT-A |
+| NEXT | (1) GetLegendGraphic via helper: TECH↔swatch per riga; (2) `geometrie_rosse_scure` vs `geometrie_rosse_piene` (e hatch) ↔ Height 0 e/o Dangerous Area; (3) prova split UI Height 60 vs 120; (4) Dangerous Area ↔ riga esplicita — **NON** IMPL-A |
+| Architettura raccomandata (post-gate) | **E ibrida** (invariata) |
+| Categoria IMPL-A | **condizionata** |
+| Runtime / helper | **invariati** in REFERENCE-B |
+
+---
+
+## 8bis. REFERENCE-B — official semantic mapping evidence
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-B` · **CLOSED / PASS** · 2026-08-16 · docs-only.
+
+### B1 — ENAC pagina ufficiale
+
+URL: https://www.enac.gov.it/sicurezza-aerea/droni/zone-geografiche-space/voli-con-droni-uas-limitazioni-riserve-dello/
+
+Citazione verificata (safety su d-flight): le zone sono «rappresentate su d-flight con colori diversi»; «in funzione del colore, la zona geografica inizia a una altezza diversa (es: "zona rossa" 0 mt, "zona arancione" 25 mt, etc)».
+
+| ID | Semantica registrata |
+| --- | --- |
+| **REFERENCE-B1-RED** | AREA ROSSA / zona rossa ↔ **0 m AGL** (dal suolo) |
+| **REFERENCE-B1-ORANGE** | AREA ARANCIONE / zona arancione ↔ **25 m AGL** |
+| **REFERENCE-B1-YELLOW** | AREA GIALLA ↔ **45 m AGL** (da ATM-09A §6.8–6.11 + Allegato A; ENAC pagina usa «etc» dopo 25 mt) |
+| **REFERENCE-B1-OUTER** | area esterna azzurro/blu nelle figure Allegato A ↔ **60 m AGL** in ATZ/CTR **oppure 120 m AGL** fuori spazi controllati |
+
+Distinzione obbligatoria: **SEMANTICA NORMATIVA PROVATA** ≠ **LABEL UI D-FLIGHT ESATTA PROVATA** (stringhe «Height N meters AGL» restano da R2 / UI, non da ENAC).
+
+### B1 — Circolare ATM-09A
+
+URL: https://www.enac.gov.it/app/uploads/2024/04/ATM-09A.pdf (TEMP locale; **non** in repo).
+
+- **§6.8–6.11:** AREA ROSSA (verticale fino a UNL dal suolo); AREA ARANCIONE da 25 m AGL; AREA GIALLA da 45 m AGL; fascia esterna da 60 m (ATZ/CTR) oppure 120 m (fuori controllati).
+- **Allegato A pp. 17–18:** figure A.1–A.4 con anelli rosso/arancio/giallo e fondo azzurro/blu etichettato 60/120; **nessun HEX** estratto; PDF figure analizzate solo visualmente (TEMP PNG).
+- **Zone D:** definizione «zona D: pericolosa» (§4) e divieto UAS su P/D (§5.3) — **non** identifica un pattern della legenda raster ATM09.
+
+### B2 — D-Flight pagina pubblica Servizi
+
+URL: https://www.d-flight.it/new_portal/servizi-d-flight/
+
+- Tabella geo-consapevolezza: riga **ATM-09** = «Elaborazione d-flight della circolare a partire dai dati riportati sopra» → ATM-09 = elaborazione D-Flight di ATM-09A (**PROVEN** come provenance layer).
+- Zone Pericolose (D) elencate come elemento cartografico **separato** (AIP ENR 5.1.3), non come voce della legenda ATM-09.
+- **Nessuna** legenda pubblica / manuale / screenshot con label «Height … AGL» o pairing pattern↔label.
+
+**PUBLIC D-FLIGHT LABEL EVIDENCE NOT FOUND** (per label UI esatte e Dangerous Area↔swatch).
+
+### B3 — GetLegendGraphic helper
+
+Tentativo `http://127.0.0.1:8010/atm09/legend.png` e `localhost:8010`: connessione rifiutata / timeout.
+
+Classificazione: **helper non raggiungibile dalla sessione Cursor** (non prova che il servizio prod sia globalmente down). **HELPER LEGEND EVIDENCE UNAVAILABLE**. Nessun WMS diretto; nessun secret. Smoke dimensionale resta quello WU-0017 (181×189 / 3378 B).
+
+### Esito mapping
+
+| Classe | Esito |
+| --- | --- |
+| Semantica colore↔quota | **PROVEN = 4** (§6.1) |
+| TECH↔SWATCH | **0 PROVEN** (helper down) |
+| Triple TECH↔SWATCH↔USER-FACING | **0 PROVEN** |
+| Dangerous Area | **PARTIAL** |
+| Pattern pieno vs tratteggiato | **UNKNOWN** / non discriminato |
+
+**Gate:** Caso **B2** — resta `OFFICIAL LABEL↔STYLE MAPPING REQUIRED`.
 
 ---
 
@@ -272,9 +342,10 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 
 | Voce | Valore |
 | --- | --- |
-| AUDIT-A | **CLOSED / PASS** (docs-only) |
+| AUDIT-A | **CLOSED / PASS** |
+| REFERENCE-B | **CLOSED / PASS** |
 | CURRENT GATE | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
-| NEXT | evidenza autorevole per matrice completa — **NON** `…-IMPL-A` |
+| NEXT | TECH↔swatch via helper; rosse_scure vs rosse_piene ↔ Height 0 / Dangerous Area; split UI 60 vs 120; Dangerous Area esplicito — **NON** IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
 

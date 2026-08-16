@@ -609,11 +609,11 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (AUDIT-A CLOSED / PASS). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (AUDIT-A + REFERENCE-B CLOSED / PASS). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**; WU-0017 **CLOSED / PASS**; WU-0018 **OPEN** (AUDIT-A PASS · gate mapping). E–H restano **NOT OPENED**.
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**; WU-0017 **CLOSED / PASS**; WU-0018 **OPEN** (REFERENCE-B PASS · semantica ENAC PROVEN · gate mapping TECH↔swatch). E–H restano **NOT OPENED**.
 
-**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (tip `c7d1734`/196). **Candidato C:** **CLOSED / PASS** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197). **Candidato D:** **OPEN** → [`WU-0018-dflight-atm09-legend-ux.md`](WU-0018-dflight-atm09-legend-ux.md) (AUDIT-A · gate **OFFICIAL LABEL↔STYLE MAPPING REQUIRED**). E–H restano **NOT OPENED**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (tip `c7d1734`/196). **Candidato C:** **CLOSED / PASS** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197). **Candidato D:** **OPEN** → [`WU-0018-dflight-atm09-legend-ux.md`](WU-0018-dflight-atm09-legend-ux.md) (REFERENCE-B · gate **OFFICIAL LABEL↔STYLE MAPPING REQUIRED**). E–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
-| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — AUDIT-A **CLOSED / PASS** · gate **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** · NEXT = evidenza mapping (NON IMPL-A) |
+| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — AUDIT-A + REFERENCE-B **CLOSED / PASS** · semantica colore↔quota PROVEN · gate **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** · NEXT = TECH↔swatch + Dangerous Area + split 60/120 (NON IMPL-A) |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
