@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / G-A1 CLOSED
-**ACTIVE BLOCK:** *(none)*
-**LAST CLOSED BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2 **CLOSED / PASS**
-**CURRENT GATE:** **none**
+**STATUS:** OPEN / AUDIT
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B-AUDIT-A
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**LAST CLOSED BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2 **CLOSED / PASS** (non riaperto)
 **RUNTIME LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
 **CATEGORIA:** **DELICATO**
-**NEXT:** **G-B NOT OPENED** · G-C/G-D NOT OPENED · **F NOT OPENED**
-**NOTE:** QA operatore PASS 2026-08-17 · finito Regola H · no patch · monolite invariato in chiusura
+**NEXT:** REVIEW audit G-B → (se PASS) IMPL G-B; **G-C/G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** Audit 2026-08-17 · G_B_ORDINARY_IDS + workbench whitelist gap · monolite invariato · no patch
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -448,14 +448,15 @@ REVIEW FAIL FIX1 → FIX2: `gisPanelSafeTop` usa `max(header.bottom, dock.bottom
 
 **STATUS blocco G-A1-FIX2:** **CLOSED / PASS** · G-B/C/D **NOT OPENED** · F **NOT OPENED** · WU-0021 resta **OPEN**.
 
-## 24. G-A1-FIX2 + DEPLOY + ABQA + QA PASS (2026-08-17)
+## 25. G-B-AUDIT-A (2026-08-17) — REVIEW PENDING
 
-REVIEW FAIL FIX1 → FIX2: `gisPanelSafeTop` usa `max(header.bottom, dock.bottom)`.
+Audit docs-only. G-A1-FIX2 **non** riaperto. Monolite **invariato**.
 
-**LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` / build **210** / blob `9aa5441d…`
+**Evidence:** [../orchestrator/inbox/2026-08-17_0150_gis-panel-dock-mgr-g-b-audit-a-evidence.md](../orchestrator/inbox/2026-08-17_0150_gis-panel-dock-mgr-g-b-audit-a-evidence.md)
 
-**Evidence:** [`../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md`](../orchestrator/inbox/2026-08-17_0115_gis-panel-dock-mgr-g-a1-fix2-evidence.md) · deploy+ABQA [`../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0130_gis-panel-dock-mgr-g-a1-fix2-deploy-qa.md)
+**Determinato:**
+- G_B_ORDINARY_IDS (11 id, incluso workbench post-fix)
+- G_C_RESERVED_IDS/STATES (D-Flight pair, carto _cartoUi, auto-min bbox/draw/pick, …)
+- Workbench gap = **solo** branch assente in gisMinimizePanel (infra già completa; i18n gis.minimized.workbench già presente)
 
-**ABQA:** 39/39 PASS · **QA operatore:** PASS · **finito** Regola H.
-
-**STATUS blocco G-A1-FIX2:** **CLOSED / PASS** · G-B/C/D **NOT OPENED** · F **NOT OPENED** · WU-0021 resta **OPEN**.
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no patch/deploy · G-C/G-D/F NOT OPENED.
