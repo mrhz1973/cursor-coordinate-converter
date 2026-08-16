@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **BRANDING-TMART-IMPL-A-FIX1** — OPEN · candidato `508dd03` / **207** · gate REVIEW PENDING · LIVE ancora `1abc247` / **206**
+1. **BRANDING-TMART-IMPL-A-FIX1** — LIVE `508dd03` / **207** · REVIEW PASS · deploy+ABQA PASS · gate QA FINALE PENDING · WU-0020
 2. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4** — CLOSED / PASS · LIVE `9820c8a` / **205** · WU-0019 CLOSED
 3. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS · LIVE `67d9cc7` / **200** · WU-0018
 4. **WU-0012 (CARTO INDEX)** — OPEN / NEXT PROVIDER (NO PROVIDER READY)

@@ -1,16 +1,16 @@
 # WU-0020 — BRANDING — TMART GIS tool
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / FIX1
+**STATUS:** OPEN / DEPLOYED
 **ACTIVE BLOCK:** BRANDING-TMART-IMPL-A-FIX1
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
 **REVIEW BASE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
-**RUNTIME CANDIDATE:** `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
-**RUNTIME LIVE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · helper **0.1.3** (no deploy FIX1)
+**RUNTIME CANDIDATE:** `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1` · **REVIEW PASS**
+**RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3**
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
-**NEXT:** dopo PASS review FIX1 → deploy/ABQA · **G NOT OPENED**
-**NOTE:** FIX1 rimuove header `by Marty` · footer T.M. preservato · selftest 422/422 · CSS style identical vs 206
+**NEXT:** QA FINALE operatore · **G NOT OPENED**
+**NOTE:** FIX1 REVIEW+deploy+ABQA PASS 2026-08-16 · LIVE `508dd03`/207 · header brand-only · footer T.M. · G NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -273,29 +273,38 @@ Sintesi: 32 hunk · +178/−53 riconciliati · OTHER=0 · residue A=0 · CSS SHA
 
 ## 14. REVIEW PASS + DEPLOY + ABQA (2026-08-16)
 
-**REVIEW GPT-SOSTITUTIVA:** PASS su 1abc247fd783526531307c7a6997292f103b986d
+**REVIEW GPT-SOSTITUTIVA:** PASS su `1abc247fd783526531307c7a6997292f103b986d`
 
-**Deploy:** GIS-only PASS · blob 0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef · SHA-256 df4f770… · bytes 10352377 · URL ?v=1abc247
+**Deploy:** GIS-only PASS · blob `f0f9d265bd368a62dfb6efc2dc32b4fbe31b51ef` · SHA-256 `fdf4f770…` · bytes `10352377` · URL `?v=1abc247`
 
 **Automated Browser QA:** PASS (33/33)
 
-**Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
+**Gate:** superseduto da FIX1 (vedi §16).
 
-**Evidence:** [../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md](../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md)
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md`](../orchestrator/inbox/2026-08-16_2140_branding-tmart-impl-a-deploy-qa.md)
 
 ## 15. IMPL-A-FIX1 (2026-08-16)
 
-**STATUS:** IMPLEMENTED · selftest **422/422** PASS · **REVIEW GPT-SOSTITUTIVA — PENDING**
+**STATUS:** IMPLEMENTED · selftest **422/422** PASS · REVIEW PASS → deploy (vedi §16)
 
 | Voce | Valore |
 | --- | --- |
-| FULL SHA | 508dd039981b1878e427c9440033fcad854351b1 |
-| Build | **207** · BRANDING-TMART-IMPL-A-FIX1 |
-| BASE | 1abc247 / 206 |
-| Change | header solo TMART GIS tool; rimossi .brand-by / .brand-signature; i18n pp.title* brand-only; footer T.M. invariato |
+| FULL SHA | `508dd039981b1878e427c9440033fcad854351b1` |
+| Build | **207** · `BRANDING-TMART-IMPL-A-FIX1` |
+| BASE | `1abc247` / 206 |
+| Change | header solo `TMART GIS tool`; rimossi `.brand-by` / `.brand-signature`; i18n `app.title*` brand-only; footer T.M. invariato |
 | CSS | style block identical vs 206 |
 
-**Evidence:** [../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md](../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md)
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md`](../orchestrator/inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md)
 
-**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — no deploy fino a PASS review.
+## 16. FIX1 — REVIEW PASS + DEPLOY + ABQA (2026-08-16)
 
+**REVIEW GPT-SOSTITUTIVA:** PASS su `508dd039981b1878e427c9440033fcad854351b1`
+
+**Deploy:** GIS-only PASS · blob `09fe2b4ac405f874866b19898ee844fe52ea1d8f` · SHA-256 `9b5ce67…` · bytes `10352304` · URL `?v=508dd03`
+
+**Automated Browser QA:** PASS (30/30)
+
+**Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2200_branding-tmart-impl-a-fix1-deploy-qa.md`](../orchestrator/inbox/2026-08-16_2200_branding-tmart-impl-a-fix1-deploy-qa.md)

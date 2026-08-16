@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **BRANDING-TMART-IMPL-A-FIX1** IMPLEMENTED · candidato `508dd03` / build **207** · selftest **422/422** PASS · header senza `by Marty` · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE ancora `1abc247`/206 · G NOT OPENED. [`inbox/2026-08-16_2150_…fix1-evidence.md`](inbox/2026-08-16_2150_branding-tmart-impl-a-fix1-evidence.md).
+2026-08-16 — **BRANDING-TMART-IMPL-A-FIX1** REVIEW **PASS** · deploy LIVE `508dd03` / **207** · **AUTOMATED BROWSER QA PASS** (30 checks) · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-16_2200_…fix1-deploy-qa.md`](inbox/2026-08-16_2200_branding-tmart-impl-a-fix1-deploy-qa.md).
