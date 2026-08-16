@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-DESIGN-A (CLOSED / PASS)
-**CURRENT GATE:** DELICATE RULE-META PROBE REVIEW REQUIRED
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A (**BLOCKED**)
+**CURRENT GATE:** DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** AUDIT-A + REFERENCE-B/C + RULE-META-DESIGN-A = DOCS-ONLY · RULE-META futuro = **DELICATO** · IMPL-A = condizionata post-mapping
+**CATEGORIA:** RULE-META probe = **DELICATO** · IMPL-A = non aperta
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** preparare specifica/prompt di esecuzione del **one-shot RULE-META PROBE** DELICATO e sottoporlo al gate review canonico (OM §4 Regola B) **PRIMA** dell’esecuzione — NON eseguire probe in DESIGN-A; NON IMPL-A
-**NOTE:** PNG composito insufficiente per discriminare regole rosse · GeoServer JSON/RULE = CAPABILITY CANDIDATE · query client su `/atm09/legend.png` **non** inoltrate upstream
+**NEXT:** eseguire lo stesso one-shot RULE-META PROBE **sul VPS** nel contesto credential già usato dal servizio helper (LoadCredential + `/etc/goi-dflight/config.toml`) — senza copiare secret in Cursor; poi persistare solo evidenza sanitizzata — NON endpoint; NON IMPL-A
+**NOTE:** REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS · probe **non** eseguito (auth context assente in sessione Cursor; SSH `:22` timeout; helper `:8010` PNG-only)
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -427,11 +427,68 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | REFERENCE-B | **CLOSED / PASS** |
 | REFERENCE-C | **CLOSED / PASS** |
 | RULE-META-DESIGN-A | **CLOSED / PASS** |
-| CURRENT GATE | **DELICATE RULE-META PROBE REVIEW REQUIRED** |
-| RECOMMENDED | **ONE-SHOT RULE-META PROBE** (Caso D1) |
-| NEXT | specifica/prompt probe DELICATO → review canonica OM §4 Regola B **prima** esecuzione — **NON** eseguire ora; **NON** IMPL-A |
+| RULE-META-PROBE-A | **BLOCKED** (Caso P4) |
+| CURRENT GATE | **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** |
+| NEXT | one-shot probe sul VPS nel contesto LoadCredential del helper — senza secret in Cursor; NON endpoint; NON IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
+
+---
+
+## RULE-META-PROBE-A
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A` · **BLOCKED** · 2026-08-16 · Caso **P4**.
+
+### Review
+
+**REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS**
+
+Categoria: RETE / PROXY / AUTH / OPSEC — DELICATO.
+
+Checklist (approvata prima dell’esecuzione): nessuna nuova destinazione runtime; nessun endpoint locale; nessuna modifica `/atm09/legend.png`; nessun bind/CORS; nessun deploy/restart; nessuna credential nel monolite/docs/stdout; request ATM09 hard-coded; Probe 1 `format=application/json` hard-coded; nessun parametro client arbitrario; Probe 2 solo allowlist da Probe 1; timeout/byte cap/MIME fail-closed; output TEMP; helper 0.1.3 invariato; STOP su dubbio auth.
+
+Questo verdetto autorizza **solo** il probe specificato — non patch/deploy/IMPL-A.
+
+### Metodo tentato
+
+One-shot TEMP riusando primitive helper (`load_config` / `AuthClient` / `http_get_bytes_capped` / `build_atm09_legend_url` variant JSON) **senza** patch repo.
+
+### Esito esecuzione
+
+| Check | Risultato |
+| --- | --- |
+| Config locale (`GOI_DFLIGHT_CONFIG` / `/etc/goi-dflight/config.toml`) | **assente** in sessione Cursor Windows |
+| `CREDENTIALS_DIRECTORY` / credential files | **assente** |
+| Helper Tailnet `http://100.114.7.53:8010/status` | HTTP **200** (servizio vivo) |
+| Route helper JSON | **inesistente** (PNG chiuso; query non forwarded — DESIGN-A) |
+| SSH VPS `100.114.7.53:22` | **timeout** (BatchMode) |
+| Request upstream GetLegendGraphic JSON | **NON ESEGUITA** |
+| Credential exposure | **NO** |
+
+**ONE-SHOT EXECUTION CONTEXT BLOCKED**
+
+Requisito operativo mancante (senza chiedere secret):
+
+> Contesto di esecuzione sul **VPS Tailnet** dove il servizio helper ha già `config.toml` + systemd `LoadCredential` (`CREDENTIALS_DIRECTORY`), tale da poter costruire la request chiusa GetLegendGraphic `format=application/json` con le stesse primitive auth del helper, scrivere solo output TEMP sanitizzato, e riportare l’evidenza in docs — **senza** copiare username/password/token verso Cursor.
+
+### Capability / mapping
+
+| Livello | Stato |
+| --- | --- |
+| JSON_CAPABILITY | **INCONCLUSIVE** (probe non eseguito) |
+| SEMANTICA | PROVEN **4** (invariato REFERENCE-B) |
+| SWATCH↔USER-FACING | PROVEN **8** (invariato REFERENCE-C) |
+| TECH↔RULE/SYMBOLIZER | PROVEN **0** / PARTIAL **0** / UNKNOWN **n** (non acquisito) |
+| TRIPLE IMPLEMENTATIVE | PROVEN **0** (invariato) |
+| Probe 2 RULE | **non eseguito** (Probe 1 non avviato) |
+| TEMP CLEANUP | **N/A** (nessun raw creato) |
+
+### Gate / NEXT
+
+| Campo | Valore |
+| --- | --- |
+| CURRENT GATE | **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** |
+| NEXT | rieseguire RULE-META-PROBE-A sul VPS in credential context; NON aprire endpoint permanente automaticamente |
 
 ---
 

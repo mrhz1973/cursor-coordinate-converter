@@ -609,11 +609,11 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (REFERENCE-C + RULE-META-DESIGN-A CLOSED / PASS). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (RULE-META-PROBE-A **BLOCKED**). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
-**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**; WU-0017 **CLOSED / PASS**; WU-0018 **OPEN** (RULE-META-DESIGN-A · gate **DELICATE RULE-META PROBE REVIEW REQUIRED**). E–H restano **NOT OPENED**.
+**Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**; WU-0017 **CLOSED / PASS**; WU-0018 **OPEN** (RULE-META-PROBE-A BLOCKED · gate **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED**). E–H restano **NOT OPENED**.
 
-**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (tip `c7d1734`/196). **Candidato C:** **CLOSED / PASS** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197). **Candidato D:** **OPEN** → [`WU-0018-dflight-atm09-legend-ux.md`](WU-0018-dflight-atm09-legend-ux.md) (RULE-META-DESIGN-A · gate **DELICATE RULE-META PROBE REVIEW REQUIRED**). E–H restano **NOT OPENED**.
+**Candidato A:** **CLOSED / PASS** → [`WU-0015-dflight-hit-test.md`](WU-0015-dflight-hit-test.md). **Candidato B:** **CLOSED / PASS** → [`WU-0016-dflight-ux-coherence.md`](WU-0016-dflight-ux-coherence.md) (tip `c7d1734`/196). **Candidato C:** **CLOSED / PASS** → [`WU-0017-dflight-atm09-visual-parity.md`](WU-0017-dflight-atm09-visual-parity.md) (IMPL-A LIVE `d2d3ab3`/197). **Candidato D:** **OPEN** → [`WU-0018-dflight-atm09-legend-ux.md`](WU-0018-dflight-atm09-legend-ux.md) (PROBE-A BLOCKED · gate **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED**). E–H restano **NOT OPENED**.
 
 #### Ordine consigliato (candidati)
 
@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
-| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — REF-C **CLOSED** · SWATCH↔USER-FACING **PROVEN (8)** · PNG GLG insufficiente per triple · RULE-META-DESIGN-A **CLOSED / PASS** · gate **DELICATE RULE-META PROBE REVIEW REQUIRED** · NEXT = one-shot probe DELICATO (review prima di esecuzione) |
+| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — RULE-META-PROBE-A **BLOCKED** (P4: execution context) · SWATCH↔USER-FACING **PROVEN (8)** · triple **0** · gate **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED** · NEXT = probe sul VPS (LoadCredential) |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
