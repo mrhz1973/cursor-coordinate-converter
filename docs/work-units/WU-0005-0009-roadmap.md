@@ -626,7 +626,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **CLOSED / PASS** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — FIX4 LIVE `9820c8a` / **205** · QA operatore PASS · finito Regola H · F–H **NOT OPENED** |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |
-| **H** | Branding TMART GIS tool | **NOT OPENED** — filename monolite **non** rinomina automatica |
+| **H** | Branding TMART GIS tool | **OPEN** → [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) — AUDIT-A · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · filename monolite **non** rinomina · G **NOT OPENED** |
 
 #### 1. Azione «Aggiorna» unificata
 
@@ -726,7 +726,9 @@ Serve un futuro **GLOBAL GIS PANEL/MINIMIZED DOCK MANAGER** (o equivalente). Non
 
 #### 12. Branding — TMART GIS tool
 
-Nuovo nome applicazione: **TMART GIS tool**. Audit futuro prima della patch: header/titolo visibile; `document.title`; splash/about; stringhe UI; riferimenti runtime pertinenti; docs prodotto rilevanti.
+Nuovo nome applicazione: **TMART GIS tool**.
+
+**Stato:** **OPEN** in [`WU-0020-branding-tmart-gis-tool.md`](WU-0020-branding-tmart-gis-tool.md) — blocco `BRANDING-TMART-AUDIT-A` · gate **REVIEW GPT-SOSTITUTIVA — PENDING** (2026-08-16). Inventario A/B/C + piano `BRANDING-TMART-IMPL-A` single-pass stringhe. Filename monolite **non** rinomina. Candidato **G** resta **NOT OPENED** fino a chiusura H.
 
 **Non** rinominare automaticamente `coordinate_converter Claude.html`. Il deliverable resta il monolite standalone finché non c’è una decisione **separata** sul filename.
 
