@@ -443,12 +443,12 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0018 — [`D-FLIGHT-ATM09-LEGEND-UX`](work-units/WU-0018-dflight-atm09-legend-ux.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1 (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**) |
-| **STATO BLOCCO** | Layout adattivo LIVE build **199**; left of `.tile-ctrls` / above coordinate rows; QA umana pending |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** (layout FIX1) |
-| **REVIEW BASE** | monolite tip `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` (build **198** / IMPL-A) |
-| **RUNTIME LIVE** | monolite tip `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` · build **199** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
-| **NEXT** | QA FINALE CHATGPT — PENDING (coda `finito` pre-autorizzata Regola H sul PASS operatore FIX1) |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**) |
+| **STATO BLOCCO** | Presentation latch LIVE build **200**; legend stable across transient ATM09 tile reload; FIX1 layout PASS operatore; QA umana FIX2 PAN pending |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** (FIX2 PAN STABILITY) |
+| **REVIEW BASE** | monolite tip `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` (build **199** / FIX1) |
+| **RUNTIME LIVE** | monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
+| **NEXT** | QA operatore FIX2 (PAN stability) — **NO finito** finché pending |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **OPEN** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
