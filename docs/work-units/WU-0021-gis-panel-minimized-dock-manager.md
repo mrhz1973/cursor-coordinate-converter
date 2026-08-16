@@ -1,15 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / IMPL
+**STATUS:** OPEN / DEPLOYED
 **ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
-**REVIEW BASE / LIVE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `GIS-PANEL-DOCK-MGR-G-A1`
-**RUNTIME CANDIDATE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
-**RUNTIME LIVE:** `7a5c42f…` / **208** (FIX2 non deployato)
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**REVIEW:** PASS su `525e7df50cb4edf768b0da7f59e7414dd79d56de`
+**RUNTIME LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA; G-B/C/D NOT OPENED; **F NOT OPENED**
-**NOTE:** FIX2 2026-08-17 · safeTop max(header,dock)+gap · 21 hunk +292/−50 OTHER=0 · selftest 468/468 · 360×640/3chip PASS · no deploy
+**NEXT:** QA FINALE CHATGPT; G-B/C/D NOT OPENED; **F NOT OPENED**
+**NOTE:** Deploy+ABQA 2026-08-17 · 39/39 · HTTP MATCH · helper 0.1.3 · no patch runtime in deploy pass
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.

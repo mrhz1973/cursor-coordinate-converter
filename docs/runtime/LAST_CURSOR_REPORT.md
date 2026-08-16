@@ -2,42 +2,40 @@
 
 ## LATEST
 
-* real_task_commit: `525e7df50cb4edf768b0da7f59e7414dd79d56de` — verify short `525e7df`
-* real_task_subject: fix(dock): G-A1-FIX2 safeTop uses real chrome bottom including dock
-* report_generated_at: 2026-08-17T01:15:00+02:00
+* real_task_commit: `525e7df50cb4edf768b0da7f59e7414dd79d56de` — verify short `525e7df` (runtime; questo pass = deploy+ABQA docs-only)
+* real_task_subject: docs(WU-0021): G-A1-FIX2 REVIEW PASS deploy ABQA QA FINALE PENDING
+* report_generated_at: 2026-08-17T01:30:00+02:00
 * branch: main
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `988ae839dfd5db08a5ac8151905bd015279a383f`
+* previous_report_container: `b6c005dfa07e22dcffadc748b182ae78c8c078c9`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: autosync memoria dopo task
-* pass_tecnico_remoto: candidate blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d` · no deploy
-* result_cursor: FIX2 implemented · safeTop chromeBottom · 21 hunk +292/−50 OTHER=0 · selftest 468/468 · primary 360/3 PASS · gate REVIEW PENDING
-* pass_operatore: n/a
-* result_runtime: candidate `525e7df` / 210 · LIVE ancora `7a5c42f` / 208
-* qa_attestation_source: selftest 468/468 + Playwright matrix (verify.json)
-* notes: F NOT OPENED; G-B/C/D NOT OPENED; z-order G-A1 invariato
+* working_tree_status: solo autosync memoria
+* pass_tecnico_remoto: LIVE blob `9aa5441d…` ≡ candidate · HTTP MATCH · helper 0.1.3
+* result_cursor: REVIEW PASS persisted · deploy PASS · ABQA 39/39 · gate QA FINALE PENDING · no patch runtime · no finito
+* pass_operatore: n/a (ChatGPT emette QA)
+* result_runtime: LIVE `525e7df` / 210 FIX2
+* qa_attestation_source: ABQA LIVE 39/39 + deploy-out
+* notes: F NOT OPENED; G-B/C/D NOT OPENED; Cursor non emette QA operatore
 
 ## OUTPUT VERBATIM
 
 ```text
-GIS-PANEL-DOCK-MGR-G-A1-FIX2
-CANDIDATE 525e7df50cb4edf768b0da7f59e7414dd79d56de
-BUILD 210 APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1-FIX2
-BLOB 9aa5441d48b89968cb388e3a7c61ee6d063a964d
-SELFTEST 468/468
-PRIMARY 360x640 3chip PASS safe=215 dockBottom=205
-GATE REVIEW GPT-SOSTITUTIVA PENDING
-NO DEPLOY NO ABQA NO QA NO FINITO
+GIS-PANEL-DOCK-MGR-G-A1-FIX2 DEPLOYED
+LIVE 525e7df50cb4edf768b0da7f59e7414dd79d56de BUILD 210
+BLOB 9aa5441d48b89968cb388e3a7c61ee6d063a964d HTTP MATCH
+ABQA 39/39 PASS
+GATE QA FINALE CHATGPT PENDING
+NO FINITO NO OPERATOR QA FROM CURSOR
 ```
 
 PASS remoto container corrente: **EXTERNAL_ONLY**.
 
 ## HISTORY
 
+* deploy FIX2 — LIVE = candidate
 * `525e7df` — FIX2 runtime candidate
-* `988ae83` — FIX1 REVIEW-EVIDENCE-B
-* `c122fd4` — FIX1 runtime (BASE FAIL finding)
+* `b6c005d` — FIX2 evidence tip pre-deploy
 
 ## LIMITI
 
