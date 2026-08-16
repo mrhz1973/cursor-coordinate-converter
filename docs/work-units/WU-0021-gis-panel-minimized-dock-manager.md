@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-REVIEW-EVIDENCE-B
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
 **REVIEW BASE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
-**RUNTIME CANDIDATE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16` · **invariato**
-**RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3** (G-A1 non deployato)
+**RUNTIME CANDIDATE / LIVE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16`
+**RUNTIME LIVE:** stesso SHA · deploy PASS · helper **0.1.3**
 **CATEGORIA:** **DELICATO** — layout/lifecycle trasversale multi-pannello
 **ORIGINE:** backlog QA build 183 candidato **G** — Global minimized-panel dock / modal layout manager
-**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
-**NOTE:** REVIEW-EVIDENCE-B 2026-08-16 · 17 hunk · +352/−30 · OTHER=0 · candidato invariato · no verdetto
+**NEXT:** QA FINALE CHATGPT; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
+**NOTE:** REVIEW GPT-SOSTITUTIVA PASS · deploy+ABQA 30/30 PASS · no finito · no QA istruzioni Cursor
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -407,3 +407,11 @@ Evidence-only per review indipendente. Candidato **invariato** `7a5c42f…` / 20
 **Hunk:** 17 · **+352/−30** riconciliato · **OTHER=0**.
 
 **Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · nessun verdetto in questo pass · no patch/deploy.
+
+## 21. G-A1 DEPLOY + ABQA (2026-08-17)
+
+REVIEW GPT-SOSTITUTIVA **PASS** su `7a5c42f…`. Deploy GIS-only PASS. ABQA **30/30** PASS.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0015_gis-panel-dock-mgr-g-a1-deploy-qa.md)
+
+**Gate:** **QA FINALE CHATGPT — PENDING** · no finito · G-B/C/D NOT OPENED · F NOT OPENED.
