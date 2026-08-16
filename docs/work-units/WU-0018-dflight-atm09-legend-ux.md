@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-B (CLOSED / PASS)
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-C (CLOSED / PASS)
 **CURRENT GATE:** OFFICIAL LABEL↔STYLE MAPPING REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** AUDIT-A + REFERENCE-B = DOCS-ONLY · IMPL-A futura = **condizionata** (E ibrida → ROUTINE se triple PROVEN + crop; altrimenti helper → DELICATO)
+**CATEGORIA:** AUDIT-A + REFERENCE-B/C = DOCS-ONLY · IMPL-A futura = **condizionata** (E ibrida → ROUTINE se triple PROVEN; altrimenti DELICATO)
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** (1) via helper GetLegendGraphic: TECH WMS ↔ swatch pieno/hatch per ogni riga; (2) quale tra `geometrie_rosse_scure` / `geometrie_rosse_piene` (e hatch) ↔ Height 0 / Dangerous Area; (3) split UI 60 vs 120 rispetto al blu esterno Allegato A; (4) Dangerous Area ↔ riga legenda esplicita — NON IMPL-A
-**NOTE:** REFERENCE-B CLOSED / PASS 2026-08-16 · semantica colore↔quota ENAC/ATM-09A **PROVEN** · triple TECH↔SWATCH↔USER-FACING ancora **0** · helper `:8010` non raggiungibile da sessione Cursor
+**NEXT:** chiudere join **TECH↔pattern UI ufficiale** (fail-closed): discriminare `geometrie_rosse_scure` / `geometrie_rosse_piene` (swatch GLG **identici**) vs Max 0 pieno / Max 0 diagonale / Area pericolosa; confermare se `geometrie_rosse_quadri` (X rosso) = Area pericolosa; mappare secondo 120 chiaro/bordato e eventuale `geometrie_italia` — **NON IMPL-A**
+**NOTE:** REFERENCE-C CLOSED / PASS 2026-08-16 · asset ufficiale D-Flight SWATCH↔USER-FACING **PROVEN (8)** · GetLegendGraphic Tailnet `http://100.114.7.53:8010` HTTP 200 · triple implementative ancora **0**
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -144,43 +144,73 @@ Nessuna chiamata diretta a d-flight.it. Nessun secret. Nessun PNG committato.
 
 ## 6. Matrice label ↔ swatch ↔ significato
 
-Stati ammessi: **PROVEN** | **PARTIAL** | **UNKNOWN**. Fail-closed.
-**PROVEN** = associazione **implementativa** deterministica (tripla necessaria). Semantica normativa senza TECH/SWATCH → **non** conta come PROVEN implementativo (vedi §6.1).
+Stati: **PROVEN** | **PARTIAL** | **UNKNOWN**. Fail-closed. Tre livelli distinti obbligatori.
 
-### 6.1 Semantica normativa colore ↔ quota (REFERENCE-B1) — PROVEN
+### 6.1 Semantica normativa colore ↔ quota (REFERENCE-B) — PROVEN = 4
 
-| COLORE (famiglia; no HEX) | SEMANTICA UFFICIALE | EVIDENZA | STATO |
+Invariata da REFERENCE-B (§ precedente): rosso/0 · arancione/25 · giallo/45 · esterno azzurro 60\|120.
+
+### 6.2 SWATCH / PATTERN ↔ USER-FACING (REFERENCE-C1/C2) — da asset ufficiale D-Flight
+
+Fonte: screenshot web-app D-Flight ufficiale (legenda intestata **ATM09**), asset pubblico 2024-08-02. Label IT osservate; R2 EN restano localizzazione alternativa (non contraddicono la semantica).
+
+| # | SWATCH / PATTERN (descrizione visiva; no HEX) | USER-FACING (IT ufficiale) | STATO |
 | --- | --- | --- | --- |
-| Rosso | AREA ROSSA = restrizione dal suolo / **0 m AGL** | ENAC pagina (es. «zona rossa» 0 mt) · ATM-09A §6.8–6.11 AREA ROSSA · Allegato A fig. A.1–A.4 | **PROVEN** (solo semantica) |
-| Arancione | AREA ARANCIONE = da **25 m AGL** | ENAC («zona arancione» 25 mt) · §6.8–6.11 · Allegato A label «25 m (85 ft) AGL» | **PROVEN** (solo semantica) |
-| Giallo | AREA GIALLA = da **45 m AGL** | §6.8–6.11 · Allegato A label «45 m (150 ft) AGL» | **PROVEN** (solo semantica) |
-| Azzurro/blu esterno (figure Allegato A) | **60 m AGL** se ATZ/CTR · **oppure 120 m AGL** fuori spazi controllati | §6.8d/6.9d/6.10d/6.11d · Allegato A text box esterno | **PROVEN** (solo semantica; **una** regola duale — non prova lo split UI in due entry) |
+| 1 | Rosso **pieno** | Max 0 metri AGL | **PROVEN** |
+| 2 | Rosso con **righe diagonali** (fondo rosso / bande chiare) | Max 0 metri AGL | **PROVEN** |
+| 3 | Arancione **pieno** | Max 25 metri AGL | **PROVEN** |
+| 4 | Giallo **pieno** | Max 45 metri AGL | **PROVEN** |
+| 5 | Azzurro/ciano **pieno** | Max 60 metri AGL | **PROVEN** |
+| 6 | Verde **pieno** | Max 120 metri AGL | **PROVEN** |
+| 7 | Chiaro/bianco-azzurro con **bordo** sottile | Max 120 metri AGL | **PROVEN** |
+| 8 | Rosso con **pattern denso** dedicato (Area pericolosa) | Area pericolosa | **PROVEN** |
 
-Conteggio semantica: **PROVEN = 4**. Distinto dalle triple implementative sotto.
-
-### 6.2 Matrice implementativa (TECH ↔ SWATCH ↔ USER-FACING)
-
-| TECHNICAL WMS LABEL | SWATCH / PATTERN | SEMANTICA UFFICIALE | OFFICIAL USER-FACING LABEL | EVIDENZA | STATO | NOTE |
-| --- | --- | --- | --- | --- | --- | --- |
-| `geometrie_rosse_scure` | — | — | — | R5 | **UNKNOWN** | manca TECH↔SWATCH osservato |
-| `geometrie_rosse_piene` | — | — | — | R5 | **UNKNOWN** | idem |
-| `geometrie_verdi` | — | — | — | R5 | **UNKNOWN** | verde **assente** da Allegato A / ENAC safety rings |
-| — | rosso pieno / rosso hatch (R2) | AREA ROSSA / 0 m (§6.1) | Height 0 meters AGL (R2) | R2+B1 | **PARTIAL** | semantica 0 m PROVEN; quale TECH + pieno vs hatch **non** provato |
-| — | arancione pieno / hatch (R2) | AREA ARANCIONE / 25 m | Height 25 meters AGL (R2) | R2+B1 | **PARTIAL** | idem |
-| — | giallo (R2) | AREA GIALLA / 45 m | Height 45 meters AGL (R2) | R2+B1 | **PARTIAL** | idem |
-| — | azzurro/ciano (R2) | 60 **o** 120 (§6.1 duale) | Height 60 / Height 120 (R2, due entry) | R2+B1 | **PARTIAL** | semantica duale PROVEN; **split UI** 60 vs 120 **non** provato da fonte pubblica |
-| — | — | zona D AIP «pericolosa» (§4 def. ATM-09A; layer distinto da ATM-09 su d-flight servizi) | Dangerous Area (R2) | R2+B1+B2 | **PARTIAL** | **nessun** link esplicito simbolo ATM09 ↔ Dangerous Area |
-| *(altre righe GetLegendGraphic)* | pattern residuali (R2) | — | — | R5+helper down | **UNKNOWN** | ordine/OCR non acquisiti in REFERENCE-B |
-
-**Conteggi implementativi (triple / righe matrice §6.2):**
-
-| STATO | N |
+| Conteggio SWATCH↔USER-FACING | N |
 | --- | ---: |
-| **PROVEN** | **0** |
-| **PARTIAL** | **6** (Height 0/25/45/60·120 + Dangerous Area) |
-| **UNKNOWN** | **≥3** TECH esemplificati + residuali |
+| **PROVEN** | **8** |
+| **PARTIAL** | **0** |
+| **UNKNOWN** | **0** (sulle 8 righe legenda ATM09 dell’asset) |
 
-Gate resta **Caso B2** (matrice migliorata, ancora incompleta per IMPL-A).
+**Risoluzioni UX:** split 60 vs 120 **PROVEN** (ciano vs verde + secondo 120 bordato) · doppio 0 **PROVEN** · Area pericolosa **PROVEN** (swatch dedicato).
+
+### 6.3 TECH WMS ↔ SWATCH GetLegendGraphic (REFERENCE-C4) — stessa riga PNG helper
+
+Helper LIVE effettivo: `http://100.114.7.53:8010/atm09/legend.png` · HTTP **200** · `image/png` · **3378** B · **181×189** · 9 bande contenuto.
+
+| # | TECHNICAL WMS LABEL | SWATCH GLG (stessa riga) | STATO TECH↔SWATCH | NOTE JOIN vs UI ufficiale |
+| --- | --- | --- | --- | --- |
+| 1 | `geometrie_rosse_scure` | rosso/rosa pieno pastello | **PROVEN** (riga GLG) | pixel **identici** a #2/#3 → **non** discrimina pieno vs diagonale UI |
+| 2 | `geometrie_rosse_piene` | rosso/rosa pieno pastello | **PROVEN** (riga GLG) | identico a #1 |
+| 3 | `geometrie_rosse_piene` | rosso/rosa pieno pastello | **PROVEN** (riga GLG) | **duplicato** label+#2; quirk GeoServer |
+| 4 | `geometrie_verdi` | verde pastello pieno | **PROVEN** (riga GLG) | join a Max 120 verde UI = **PARTIAL** (colore nominale; rendering diverso) |
+| 5 | `geometrie_rosse_quadri` | bianco + bordo rosso + **X** diagonale | **PROVEN** (riga GLG) | candidato Area pericolosa / diagonale 0 = **PARTIAL** (pattern non identico all’UI) |
+| 6 | `geometrie_arancioni` | arancione pastello pieno | **PROVEN** (riga GLG) | join Max 25 = **PARTIAL** (no HEX; pastello vs UI) |
+| 7 | `geometrie_gialle` | giallo pastello pieno | **PROVEN** (riga GLG) | join Max 45 = **PARTIAL** |
+| 8 | `geometrie_azzurre` | ciano pastello pieno | **PROVEN** (riga GLG) | join Max 60 = **PARTIAL** |
+| 9 | `geometrie_italia` | **nessuno** | **PARTIAL** | label senza swatch |
+
+### 6.4 Triple implementative TECH ↔ SWATCH ↔ USER-FACING
+
+Fail-closed: vietato ordine-solo, colore-nominale-solo, intuizione su `scure`/`piene`.
+
+| STATO | N | Motivo |
+| --- | ---: | --- |
+| **PROVEN** | **0** | nessuna tripla con swatch GLG **distintivo** e match affidabile allo swatch UI ufficiale |
+| **PARTIAL** | **8** | coppie SWATCH↔USER-FACING PROVEN + TECH GLG noti, ma join ambiguo |
+| **UNKNOWN** | residui | secondo 120 bordato / diagonale 0 senza controparte GLG distinta; `geometrie_italia` |
+
+Gate: **Caso C2**.
+
+### 6.5 CROP SPEC (diagnostica GLG)
+
+| Voce | Valore |
+| --- | --- |
+| PNG | 181×189 · 3378 B |
+| Bande y (contenuto) | 3–18, 24–39, 45–60, 66–81, 87–102, 108–123, 129–144, 150–165, 172–186 |
+| Altezza riga tipica | **15** px (ultima 14) |
+| Gap tipico | **6** px |
+| Colonna swatch | circa x0–24 |
+| **CROP SPEC** | **PROVEN** (geometria GLG misurata) — **non** sblocca triple |
 
 ---
 
@@ -236,15 +266,66 @@ Gate resta **Caso B2** (matrice migliorata, ancora incompleta per IMPL-A).
 
 ## 8. Decisione tecnica
 
-**Caso B2** (REFERENCE-B) — semantica colore↔quota **PROVEN**; triple TECH↔SWATCH↔USER-FACING ancora **0 PROVEN**.
+**Caso C2** (REFERENCE-C) — SWATCH↔USER-FACING **PROVEN (8)**; TECH↔SWATCH GLG acquisito; **triple implementative 0 PROVEN** (join ambiguo, soprattutto rossi identici).
 
 | Campo | Valore |
 | --- | --- |
 | CURRENT GATE | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
-| NEXT | (1) GetLegendGraphic via helper: TECH↔swatch per riga; (2) `geometrie_rosse_scure` vs `geometrie_rosse_piene` (e hatch) ↔ Height 0 e/o Dangerous Area; (3) prova split UI Height 60 vs 120; (4) Dangerous Area ↔ riga esplicita — **NON** IMPL-A |
-| Architettura raccomandata (post-gate) | **E ibrida** (invariata) |
-| Categoria IMPL-A | **condizionata** |
-| Runtime / helper | **invariati** in REFERENCE-B |
+| NEXT | chiudere join TECH↔pattern UI: `geometrie_rosse_scure` vs `geometrie_rosse_piene` (GLG identici) ↔ Max 0 pieno / Max 0 diagonale / Area pericolosa; verificare `geometrie_rosse_quadri` ↔ Area pericolosa; secondo 120 bordato / `geometrie_italia` — **NON IMPL-A** |
+| HELPER BASE EFFECTIVE | `http://100.114.7.53:8010` (`dflightHelperBaseUrl` = `location.hostname:8010`; LIVE Tailnet da config/WU-0017) |
+| CROP SPEC | **PROVEN** (geometria GLG) |
+| Architettura post-gate | **E ibrida** (invariata) |
+| Runtime / helper | **invariati** |
+
+---
+
+## 8ter. REFERENCE-C — official D-Flight legend asset
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-C` · **CLOSED / PASS** · 2026-08-16 · docs-only.
+
+### C1 — Pagina + asset
+
+| Voce | Valore |
+| --- | --- |
+| Pagina | https://www.d-flight.it/new_portal/d-flight-disponibili-le-zone-geografiche-uas-nel-formato-standard-comunitario/ |
+| Data | **2 agosto 2024** |
+| Asset | https://www.d-flight.it/new_portal/wp-content/uploads/2024/08/d-flight-download-GeoUAS.png |
+| Dominio | `d-flight.it` · asset **collegato** nella pagina |
+| Immagine | 960×422 RGB · web-app D-Flight · legenda **ATM09** visibile |
+| TEMP | `%TEMP%\atm09-ref-c\` — **non** in repo |
+
+### C2 — SWATCH ↔ USER-FACING
+
+Otto righe PROVEN (§6.2). Localizzazione: IT «Max N metri AGL» / «Area pericolosa» vs R2 EN «Height N meters AGL» / «Dangerous Area» — semantica allineata; stringa non congelata cross-locale. L10N-FREEZE: nessuna nuova EN/FR in questo blocco.
+
+### C3 — Helper base effettivo
+
+| Voce | Valore |
+| --- | --- |
+| Runtime | `dflightHelperBaseUrl()` → `{protocol}//{location.hostname}:8010` · `DFLIGHT_HELPER_PORT=8010` |
+| Config esempio / smoke LIVE | host Tailnet **`100.114.7.53`** |
+| **HELPER BASE EFFECTIVE** | **`http://100.114.7.53:8010`** |
+| `127.0.0.1:8010` / `localhost:8010` | **TCP_REFUSAL** (nessun listener locale) |
+
+### C4 — GetLegendGraphic
+
+| Voce | Valore |
+| --- | --- |
+| URL | `http://100.114.7.53:8010/atm09/legend.png` |
+| Esito | HTTP **200** · `image/png` · 3378 B · 181×189 |
+| Classificazione | **HTTP 200 valido** (Tailnet raggiungibile da questa sessione) |
+| TECH labels | §6.3 (incl. doppio `geometrie_rosse_piene`; `geometrie_italia` senza swatch) |
+
+### Esito livelli
+
+| Livello | Conteggio |
+| --- | --- |
+| SEMANTICA | PROVEN **4** |
+| SWATCH↔USER-FACING | PROVEN **8** / PARTIAL **0** / UNKNOWN **0** |
+| TRIPLE IMPLEMENTATIVE | PROVEN **0** / PARTIAL **8** / UNKNOWN residui |
+| CROP SPEC | **PROVEN** |
+
+**Gate:** Caso **C2**.
 
 ---
 
@@ -344,8 +425,9 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | --- | --- |
 | AUDIT-A | **CLOSED / PASS** |
 | REFERENCE-B | **CLOSED / PASS** |
+| REFERENCE-C | **CLOSED / PASS** |
 | CURRENT GATE | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
-| NEXT | TECH↔swatch via helper; rosse_scure vs rosse_piene ↔ Height 0 / Dangerous Area; split UI 60 vs 120; Dangerous Area esplicito — **NON** IMPL-A |
+| NEXT | join TECH↔pattern UI (rosse_scure/piene ambigue; rosse_quadri; 120 bordato; italia) — **NON** IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
 
