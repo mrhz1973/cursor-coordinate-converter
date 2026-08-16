@@ -57,7 +57,7 @@ This rule applies in addition to the dev-method core; it is not a substitute for
 
 ## Project goal
 
-GOI GIS Tool is a lightweight, offline-first GIS utility distributed as a single standalone HTML file. It covers coordinate conversion, waypoint management, track building, offline map areas, measurement tools, and field-oriented geospatial workflows.
+TMART GIS tool is a lightweight, offline-first GIS utility distributed as a single standalone HTML file. It covers coordinate conversion, waypoint management, track building, offline map areas, measurement tools, and field-oriented geospatial workflows.
 
 Development is:
 

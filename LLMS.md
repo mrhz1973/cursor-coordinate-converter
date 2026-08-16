@@ -2,7 +2,7 @@
 
 ## What this project is
 
-GOI GIS Tool is a single-file HTML GIS utility. The deliverable is `coordinate_converter Claude.html`. There is no build step and no bundler.
+TMART GIS tool is a single-file HTML GIS utility. The deliverable is `coordinate_converter Claude.html`. There is no build step and no bundler.
 
 ## Where to start
 

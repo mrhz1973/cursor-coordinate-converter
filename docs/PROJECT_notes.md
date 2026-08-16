@@ -12,7 +12,7 @@ Fonti usate per questa stesura: `coordinate_converter Claude.html`, `docs/sessio
 
 | Voce | Valore reale nel repo |
 |------|------------------------|
-| **Nome / brand (pagina)** | Dal `<title>`: *GOI GIS Tool* (rename 2026-04-24, cleanup pre-GIS). Header e footer UI uniformati a "GOI GIS Tool". |
+| **Nome / brand (pagina)** | **TMART GIS tool** (rename 2026-08-16, WU-0020 / BRANDING-TMART-IMPL-A). Precedente: *GOI GIS Tool* (2026-04-24 cleanup pre-GIS). Filename monolite invariato. |
 | **File principale (app canonica)** | `coordinate_converter Claude.html` — applicazione **single-file** (HTML + CSS + JS inline). |
 | **Righe attuali** | **37011** righe (`wc -l` e `awk 'END{print NR}'` su `coordinate_converter Claude.html`, concordi in Pass 1.5 — 2026-05-01). Aggiornamento PASS 1 numerico 2026-05-01; valore precedente in questo documento: **16317** (stale). |
 | **Dipendenze runtime** | **Nessun** `<script src="…">` esterno: un solo blocco `<script>` inline. In rete (solo con azione utente / contesto online): tile raster **Carto** (`*.basemaps.cartocdn.com`), geocoding **Nominatim** (default `nominatim.openstreetmap.org`; endpoint configurabile), link esterni mappa (Google Maps, OSM, ArcGIS Map Viewer / servizi Esri), e chiamate ausiliarie documentate in sessione (es. metadati immagine satellitare Esri). |

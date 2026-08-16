@@ -1,5 +1,5 @@
 
-# GOI GIS Tool
+# TMART GIS tool
 
 <!-- AI-BOOT: START -->
 ## AI BOOT (agenti — fermarsi qui per lo stato operativo)
@@ -61,7 +61,7 @@ Aggiornare `AI-BOOT` **solo** se cambiano bootstrap, CORE BOOT, precedenza, navi
 
 ## Documentazione prodotto (umani / on-demand)
 
-**GOI GIS Tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
+**TMART GIS tool** is a lightweight, offline-first GIS utility for coordinate conversion, map work, waypoint management, track building, offline map areas, and field-oriented geospatial workflows.
 
 The application is distributed as a **single standalone HTML file** (`coordinate_converter Claude.html`):
 
@@ -307,7 +307,7 @@ Add a LICENSE file before public distribution if this repository is intended to 
 
 Author
 
-GOI GIS Tool / GIS Tool Converter by Marty.
+TMART GIS tool / by Marty.
 
 
 <!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
