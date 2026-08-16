@@ -23575,10 +23575,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3";
-const APP_BUILD_DETAIL = "FIX3: Atm09 open + drag/resize-end pair-layout; legend stacking below floating modals; real-UI SBS_R proofs.";
+const APP_BUILD_ID = "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4";
+const APP_BUILD_DETAIL = "FIX4: no sibling re-pair on drag-end; resize-end/open/ATM09/resize-viewport pair-layout unchanged.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 204;
+const APP_BUILD_NUM = 205;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37227,15 +37227,16 @@ function dflightWireFloatingPanel(dlg, kind){
     const h = document.getElementById(opts.headId);
     if (h) h.classList.add("gis-panel-drag-head");
   } catch(_){}
-  const _dflightPairAfterUserGeom = function(){
+  /* FIX4 product: drag-end must NOT re-pair sibling; user leaves relative layout as-is.
+   * Resize-end still re-pairs (geometry change). Optional drag-end hook stays in gisPanelAttachDrag. */
+  const _dflightPairAfterResize = function(){
     try { if (typeof dflightEnsurePairLayout === "function") dflightEnsurePairLayout(); } catch(_){}
   };
   if (typeof gisPanelAttachDrag === "function"){
     gisPanelAttachDrag(dlg, Object.assign({}, opts, {
       threshold: 4,
       draggingClass: "dragging",
-      ignoreSelector: "#" + opts.closeId + ",.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]",
-      onDragEnd: _dflightPairAfterUserGeom
+      ignoreSelector: "#" + opts.closeId + ",.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
     }));
   }
   if (typeof gisPanelAttachResize === "function"){
@@ -37243,7 +37244,7 @@ function dflightWireFloatingPanel(dlg, kind){
     gisPanelAttachResize(dlg, Object.assign({}, opts, {
       handleEls: handles,
       threshold: 3,
-      onResizeEnd: _dflightPairAfterUserGeom
+      onResizeEnd: _dflightPairAfterResize
     }));
   }
   if (typeof gisPanelAttachBringToFront === "function") gisPanelAttachBringToFront(dlg, opts);
@@ -38839,8 +38840,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39861,8 +39862,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41789,8 +41790,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_204", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+    add("H_build_205", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42290,8 +42291,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43304,8 +43305,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43742,8 +43743,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_204", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+    add("OptB_FIX5_build_205", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44334,8 +44335,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44969,8 +44970,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -45126,8 +45127,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -45550,9 +45551,9 @@ function dflightSelfTestSideBySide(){
     geomStubbed = false;
   }
   try {
-    add("SBS_build_204",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
+    add("SBS_build_205",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 205
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -45718,11 +45719,13 @@ function dflightSelfTestSideBySide(){
     add("SBS_J_hooks_resize", String(dflightEnsurePanelGeometryResize).indexOf("dflightEnsurePairLayout") >= 0);
     add("SBS_J_hooks_restore", String(gisRestoreMinimizedPanel).indexOf("dflightEnsurePairLayout") >= 0);
 
-    /* R — FIX3 real-UI chain proofs (must FAIL on FIX2/203 Atm09 path; PASS on FIX3) */
+    /* R — FIX3 Atm09 + FIX4 no drag-end re-pair */
     add("SBS_R_hooks_atm09", String(dflightAtm09OpenDetails).indexOf("dflightEnsurePairLayout") >= 0);
-    add("SBS_R_hooks_drag_end",
-      String(gisPanelAttachDrag).indexOf("onDragEnd") >= 0
-      && String(dflightWireFloatingPanel).indexOf("onDragEnd") >= 0);
+    add("SBS_R_attach_drag_optional_onDragEnd", String(gisPanelAttachDrag).indexOf("onDragEnd") >= 0);
+    add("SBS_R_no_wire_drag_end_pair",
+      String(dflightWireFloatingPanel).indexOf("onDragEnd:") < 0
+      && String(dflightWireFloatingPanel).indexOf("onResizeEnd") >= 0
+      && String(dflightWireFloatingPanel).indexOf("dflightEnsurePairLayout") >= 0);
     add("SBS_R_hooks_resize_end",
       String(gisPanelAttachResize).indexOf("onResizeEnd") >= 0
       && String(dflightWireFloatingPanel).indexOf("onResizeEnd") >= 0);
@@ -45741,7 +45744,7 @@ function dflightSelfTestSideBySide(){
     unstubGeom();
     if (!stubViewport(1280, 900) || !stubGeom(60, 900)){
       add("SBS_R_atm09_chain_no_overlap", false, "stub wide failed");
-      add("SBS_R_drag_touched_sibling", false, "stub wide failed");
+      add("SBS_R_drag_sibling_invariant", false, "stub wide failed");
       add("SBS_R_legend_stack_runtime", false, "stub wide failed");
     } else {
       /* Real open chain: control open + Atm09 details (no direct EnsurePairLayout call). */
@@ -45773,18 +45776,59 @@ function dflightSelfTestSideBySide(){
           + " zt=" + Math.round(zrR.top) + " dt=" + Math.round(drR.top)
           + " zL=" + zone.style.left + " dL=" + det.style.left);
 
-      /* Touched Zone: sibling must relocate; Zone left/top preserved. */
-      prepFloating(340, 380, 280, 280);
-      setLay(280, 90, 340, 280, true, 12, 90, 380, 280, false);
-      const zBefore = { left: zone.style.left, top: zone.style.top };
-      const rDrag = (typeof dflightEnsurePairLayout === "function") ? dflightEnsurePairLayout() : null;
-      const zrD2 = zone.getBoundingClientRect();
-      const drD2 = det.getBoundingClientRect();
-      add("SBS_R_drag_touched_sibling",
-        !!(rDrag && rDrag.ok && zone.style.left === zBefore.left && zone.style.top === zBefore.top
-          && approx(zrD2.left, 280) && rectsSeparate(zrD2, drD2)),
-        "mode=" + (rDrag && rDrag.mode) + " zl=" + zone.style.left + " dl=" + Math.round(drD2.left)
-          + " sep=" + rectsSeparate(zrD2, drD2));
+      /* FIX4: real pointer drag Zone — sibling left/top must stay invariant; no EnsurePair from drag-end. */
+      (function(){
+        try {
+          /* Re-wire so drag uses FIX4 opts (no onDragEnd). Clear install flags first. */
+          try { zone._gisPanelDragInstalled = false; } catch(_){}
+          try { det._gisPanelDragInstalled = false; } catch(_){}
+          try { dflightWireFloatingPanel(zone, "control"); } catch(_){}
+          try { dflightWireFloatingPanel(det, "details"); } catch(_){}
+          const zHead = document.getElementById("dflightPanelHead") || zone.querySelector(".app-modal-head");
+          if (!zHead){
+            add("SBS_R_drag_sibling_invariant", false, "no zone head");
+            return;
+          }
+          const dBefore = { left: det.style.left, top: det.style.top, L: det.getBoundingClientRect().left, T: det.getBoundingClientRect().top };
+          const zBefore = { left: zone.style.left, top: zone.style.top, L: zone.getBoundingClientRect().left, T: zone.getBoundingClientRect().top };
+          let pairCalls = 0;
+          const prevPair = dflightEnsurePairLayout;
+          dflightEnsurePairLayout = function(){ pairCalls++; return prevPair.apply(this, arguments); };
+          const br = zone.getBoundingClientRect();
+          const sx = br.left + Math.min(40, br.width / 2);
+          const sy = br.top + 12;
+          const dx = 160, dy = 30;
+          function mk(type, x, y, buttons){
+            return new PointerEvent(type, {
+              bubbles: true, cancelable: true, composed: true,
+              pointerId: 41, pointerType: "mouse", isPrimary: true,
+              clientX: x, clientY: y, buttons: buttons, button: 0, view: window
+            });
+          }
+          zHead.dispatchEvent(mk("pointerdown", sx, sy, 1));
+          for (let i = 1; i <= 6; i++){
+            const x = sx + dx * (i / 6), y = sy + dy * (i / 6);
+            document.dispatchEvent(mk("pointermove", x, y, 1));
+          }
+          document.dispatchEvent(mk("pointerup", sx + dx, sy + dy, 0));
+          dflightEnsurePairLayout = prevPair;
+          const layZ = (typeof gisPanelGetLayout === "function")
+            ? (gisPanelGetLayout("dflightPanel", _dflightPanelLayoutOpts("control")) || {}) : {};
+          const zr = zone.getBoundingClientRect();
+          const dr = det.getBoundingClientRect();
+          const siblingSame = det.style.left === dBefore.left && det.style.top === dBefore.top
+            && Math.abs(dr.left - dBefore.L) < 2 && Math.abs(dr.top - dBefore.T) < 2;
+          const zoneMoved = Math.abs(zr.left - zBefore.L) > 40 || Math.abs(zr.top - zBefore.T) > 10;
+          add("SBS_R_drag_sibling_invariant",
+            !!(layZ.touched && zoneMoved && siblingSame && pairCalls === 0),
+            "touched=" + !!layZ.touched + " moved=" + zoneMoved + " sibSame=" + siblingSame
+              + " pairCalls=" + pairCalls
+              + " zl=" + Math.round(zr.left) + " dl=" + Math.round(dr.left)
+              + " dL=" + det.style.left + " dT=" + det.style.top);
+        } catch (eDrag){
+          add("SBS_R_drag_sibling_invariant", false, String(eDrag && eDrag.message ? eDrag.message : eDrag));
+        }
+      })();
 
       /* Legend stacking: panel z-index must exceed legend (runtime). */
       try {
