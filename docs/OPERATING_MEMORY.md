@@ -385,14 +385,14 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | WU-0017 — [`D-FLIGHT-ATM09-VISUAL-PARITY`](work-units/WU-0017-dflight-atm09-visual-parity.md) (**CLOSED / PASS**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A (**CLOSED / PASS**) |
-| **STATO BLOCCO** | **CLOSED / PASS** (deploy · Automated Browser QA · QA operatore · finito) |
-| **GATE CORRENTE** | **none** |
-| **REVIEW BASE** | monolite tip `c7d1734a488d59def2237fc42648f7c9020758bb` (build **196** / MASTER-VIS-A) |
-| **RUNTIME LIVE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`:8010`) |
-| **NEXT** | backlog D–H **NOT OPENED** (prossimo naturale: **D** Legenda ATM09 esterna / label user-facing) |
-| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
+| **WORKSTREAM ATTIVO** | WU-0018 — [`D-FLIGHT-ATM09-LEGEND-UX`](work-units/WU-0018-dflight-atm09-legend-ux.md) (**OPEN**) |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-AUDIT-A (**CLOSED / PASS**) |
+| **STATO BLOCCO** | **CLOSED / PASS** — audit/docs-only; nessuna patch runtime |
+| **GATE CORRENTE** | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
+| **REVIEW BASE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` (build **197** / IMPL-A visual parity) |
+| **RUNTIME LIVE** | **INVARIATO** · monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`:8010`) |
+| **NEXT** | acquisire evidenza autorevole mancante per matrice label ↔ swatch ↔ significato (NON aprire IMPL-A) |
+| **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **OPEN** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
