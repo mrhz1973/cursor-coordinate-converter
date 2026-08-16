@@ -2,15 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1 (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
 **CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
-**RUNTIME CANDIDATE:** `a689fe81d7f8722ef5e58077be639d00d13523b7` · build **201** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A`
+**RUNTIME CANDIDATE:** `ff4fa64a0686ffcaada0d3d18e3a0e74d7ba3be6` · build **202** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1` · FAIL prior `a689fe81…`/201
 **RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (**non** redeployato in questo pass)
 **CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** REVIEW GPT-SOSTITUTIVA del diff FULL SHA (evidence: [`2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md`](../orchestrator/inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md)) → solo dopo PASS: deploy + ABQA
-**NOTE:** GPT AUDIT REVIEW **PASS** · IMPL-A option B · `dflightEnsurePairLayout` · evidence-A docs-only · gate resta PENDING · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
+**NEXT:** REVIEW GPT-SOSTITUTIVA FIX1 (evidence: [`2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md`](../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md)) → solo dopo PASS: deploy + ABQA
+**NOTE:** REVIEW IMPL-A **FAIL** (one-touched overlap) → FIX1 · gate resta PENDING · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
@@ -341,3 +341,15 @@ Fermarsi / non dichiarare READY se:
 - Candidato G (non aprire): stesso file §11 Global modal / minimized dock
 - WU-0018 CLOSED: [`WU-0018-dflight-atm09-legend-ux.md`](WU-0018-dflight-atm09-legend-ux.md)
 - OM §4 Regola B (DELICATO) · §7.1 FRONTIER
+
+## IMPL-A-FIX1 — SIDEBYSIDE (2026-08-16)
+
+**STATUS blocco:** IMPLEMENTED / selftest PASS / **REVIEW GPT-SOSTITUTIVA — PENDING**
+
+**Runtime candidate FULL SHA:** `ff4fa64a0686ffcaada0d3d18e3a0e74d7ba3be6` · build **202** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1`
+
+**Finding corretto:** one-touched `canSide` globale senza posizione touched → overlap post-clamp; FIX1 valuta destra/sinistra post-clamp e stack se dead-zone.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md`](../orchestrator/inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md)
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — deploy solo dopo PASS review.

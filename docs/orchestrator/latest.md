@@ -6,6 +6,6 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-REVIEW-EVIDENCE-A** (docs-only): evidence BASE `67d9cc79…` ↔ CANDIDATE `a689fe81…` (16 hunk monolite, close lifecycle identico). Gate **REVIEW GPT-SOSTITUTIVA — PENDING** (nessun verdetto). Runtime/LIVE invariati. [`inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md`](inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md).
+2026-08-16 — **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1**: candidato `ff4fa64` / build **202** · finding one-touched post-clamp · selftest PASS · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE invariato **200**. Evidence: [`inbox/2026-08-16_1805_…fix1-evidence.md`](inbox/2026-08-16_1805_dflight-panel-sidebyside-impl-a-fix1-evidence.md).
 
-Precedente: **WIKI-LLM-LEAN-CONSOLIDATION-D** — [`inbox/2026-08-16_1429_riepilogo_wiki-llm-lean-consolidation-d.md`](inbox/2026-08-16_1429_riepilogo_wiki-llm-lean-consolidation-d.md).
+Precedente: **REVIEW-EVIDENCE-A** — [`inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md`](inbox/2026-08-16_1745_dflight-panel-sidebyside-review-evidence-a.md).

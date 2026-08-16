@@ -462,8 +462,8 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-PANEL-SIDEBYSIDE-REVIEW-EVIDENCE-A** — docs evidence BASE↔CANDIDATE · gate REVIEW GPT-SOSTITUTIVA — PENDING (invariato)
-2. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A** — IMPLEMENTED · build **201** candidato `a689fe81` · WU-0019
+1. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1** — IMPLEMENTED · build **202** candidato `ff4fa64` · gate REVIEW GPT-SOSTITUTIVA — PENDING · WU-0019
+2. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A** — FAIL review (one-touched) · superseduto da FIX1
 3. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS — LIVE `67d9cc7` / **200**
 4. **WU-0018 (ATM09 LEGEND UX)** — CLOSED / PASS
 5. **D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A** — CLOSED / PASS — LIVE `d2d3ab3` / **197**
