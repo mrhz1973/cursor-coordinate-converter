@@ -1,16 +1,16 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / AUDIT
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-AUDIT-A-EVIDENCE-B
-**CURRENT GATE:** **REVIEW PENDING** (audit + evidence-B docs-only)
+**STATUS:** OPEN / IMPL
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-A1
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **REVIEW BASE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1`
-**RUNTIME CANDIDATE:** —
-**RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3**
+**RUNTIME CANDIDATE:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` · build **208** · `APP_BUILD_ID=GIS-PANEL-DOCK-MGR-G-A1` · blob `d57ead862ef65e894cb637b590650912ff261a16`
+**RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3** (G-A1 non deployato)
 **CATEGORIA:** **DELICATO** — layout/lifecycle trasversale multi-pannello
 **ORIGINE:** backlog QA build 183 candidato **G** — Global minimized-panel dock / modal layout manager
-**NEXT:** REVIEW audit+evidence → (futuro) G-A1 thin coordinator; **F NOT OPENED**; H CLOSED; WU-0012 invariata
-**NOTE:** EVIDENCE-B 2026-08-16 · root cause z22 below panels CONFIRMED · G-A1 shared host · z strategy 29/28/30 · workbench=G-B · monolite invariato
+**NEXT:** REVIEW G-A1 → deploy/ABQA se PASS; G-B/C/D NOT OPENED; **F NOT OPENED**; WU-0012 invariata
+**NOTE:** G-A1 2026-08-16 · thin coordinator + header host · z 29/28/30 · selftest 444/444 · no deploy
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -387,3 +387,13 @@ Solo memoria/docs: questo WU, `FRONTIER.md`, OM §7.2, roadmap candidato G, inbo
 Policy dock revisionata in evidence §6. Micro-blocchi: G-A = thin coordinator shared host; G-B = ordinari+workbench; G-C = eccezioni; G-D = polish.
 
 **Gate:** resta **REVIEW PENDING**. No IMPL / deploy / ABQA / QA / finito.
+
+## 19. G-A1 IMPL (2026-08-16) — REVIEW PENDING
+
+**Candidate:** `7a5c42f3708cfa3dff3f7a7a7e1fdab5e470066c` / build **208** / blob `d57ead862ef65e894cb637b590650912ff261a16`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-16_2255_gis-panel-dock-mgr-g-a1-evidence.md`](../orchestrator/inbox/2026-08-16_2255_gis-panel-dock-mgr-g-a1-evidence.md)
+
+**Ship:** `gisDockReflow` + header host `#gisMinimizedDock` + maxZ 28 + CSS z 29. Shared `_gisMinimizedPanels`. Workbench/WU-0019/lifecycle invariati.
+
+**Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · no deploy.
