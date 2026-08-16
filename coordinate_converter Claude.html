@@ -7005,14 +7005,19 @@ html[data-theme="light"]{
 html[data-theme="light"] #cartoIgmPanelNotice.is-error{
   color:#991b1b;
 }
+/* G-A1: header stacking context raised so in-header dock can sit above floating panels (maxZ 28). */
+body.gis-mode > header{
+  z-index:29;
+  position:sticky; /* keep sticky; reinforce stacking with z-index */
+}
 .gis-minimized-dock{
-  position:fixed;
+  position:fixed; /* fallback before host attach */
   top:calc(env(safe-area-inset-top, 0px) + var(--gis-minimized-dock-offset, 78px));
   left:16px;
   right:auto;
   transform:none;
-  /* Sotto branding/header in flusso, sopra mappa; sotto dialog Converti/traccia (26–28). */
-  z-index:22;
+  /* G-A1: above floating panels (≤28), below tabDrawer (30) and tools backdrop (990). */
+  z-index:29;
   display:flex;
   flex-direction:row;
   flex-wrap:wrap;
@@ -7026,6 +7031,17 @@ html[data-theme="light"] #cartoIgmPanelNotice.is-error{
   background:color-mix(in srgb, var(--panel2) 86%, #000 14%);
   box-shadow:0 8px 28px rgba(0,0,0,.38);
   pointer-events:auto;
+  box-sizing:border-box;
+}
+body.gis-mode > header > #gisMinimizedDock.gis-minimized-dock{
+  position:absolute;
+  top:auto;
+  /* left/top/max-width applied by gisDockReflow */
+}
+body.gis-mode > header > #gisMinimizedDock.gis-minimized-dock.gis-dock-mode-row{
+  right:8px;
+  width:auto;
+  max-width:none;
 }
 @media (max-width:520px){
   .gis-minimized-dock{
@@ -23573,10 +23589,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "BRANDING-TMART-IMPL-A-FIX1";
-const APP_BUILD_DETAIL = "FIX1: remove header signature by Marty; app title strings brand-only; footer Realizzato da T.M. preserved.";
+const APP_BUILD_ID = "GIS-PANEL-DOCK-MGR-G-A1";
+const APP_BUILD_DETAIL = "G-A1: thin global minimized dock coordinator; header chrome host; z panels max 28 / dock+header 29 / drawer 30.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 207;
+const APP_BUILD_NUM = 208;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38838,8 +38854,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39860,8 +39876,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41788,8 +41804,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_207", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+    add("H_build_208", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42289,8 +42305,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43303,8 +43319,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43741,8 +43757,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_207", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+    add("OptB_FIX5_build_208", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44333,8 +44349,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44968,8 +44984,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -45125,8 +45141,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -45550,8 +45566,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_207",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -45938,9 +45954,9 @@ function brandingSelfTestTmartImplA(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("BRAND_build_207",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 207
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "BRANDING-TMART-IMPL-A-FIX1");
+    add("BRAND_build_208",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46058,6 +46074,183 @@ function brandingSelfTestTmartImplA(){
     }
   } catch(_){}
 })();
+
+/* ===== GIS-PANEL-DOCK-MGR-G-A1 — dock coordinator selftests ===== */
+function gisDockSelfTestGA1(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  try {
+    add("DOCK_GA1_build_208",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 208
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-A1");
+    add("DOCK_GA1_api",
+      typeof gisDockReflow === "function"
+      && typeof gisRenderMinimizedDock === "function"
+      && typeof gisMinimizePanel === "function"
+      && typeof gisRestoreMinimizedPanel === "function"
+      && Array.isArray(_gisMinimizedPanels));
+    add("DOCK_GA1_maxZ_default_28",
+      typeof gisPanelBringToFront === "function"
+      && String(gisPanelBringToFront).indexOf("opts.maxZ : 28") >= 0);
+    add("DOCK_GA1_single_array",
+      typeof _gisMinimizedPanels !== "undefined" && Array.isArray(_gisMinimizedPanels));
+
+    const prevMin = _gisMinimizedPanels.slice();
+    const restorePrev = function(){
+      _gisMinimizedPanels = prevMin.slice();
+      try { gisRenderMinimizedDock(); } catch(_){}
+    };
+
+    // Shared host + pilot favorites/measure + 3 chips + z
+    if (document.body.classList.contains("gis-mode")
+        && typeof openFavoritesPanel === "function"
+        && typeof openMeasureFloatingPanelGis === "function"
+        && typeof openLayersPanel === "function"){
+      try {
+        openFavoritesPanel();
+        gisMinimizePanel("favoritesPanel", "gis.minimized.favorites");
+        openMeasureFloatingPanelGis();
+        const meas = document.getElementById("measurePanel");
+        add("DOCK_GA1_pilot_measure_open", !!(meas && meas.open && !gisPanelIsMinimized("measurePanel")));
+        let docks = document.querySelectorAll("#gisMinimizedDock");
+        add("DOCK_GA1_single_dock_dom", docks.length === 1, "count=" + docks.length);
+        const dock = document.getElementById("gisMinimizedDock");
+        const header = document.querySelector("body.gis-mode > header");
+        add("DOCK_GA1_dock_in_header", !!(dock && header && dock.parentElement === header));
+        const dockZ = dock ? parseInt(getComputedStyle(dock).zIndex || "0", 10) : 0;
+        const headerZ = header ? parseInt(getComputedStyle(header).zIndex || "0", 10) : 0;
+        add("DOCK_GA1_z_dock_29", dockZ === 29, "dockZ=" + dockZ);
+        add("DOCK_GA1_z_header_29", headerZ === 29, "headerZ=" + headerZ);
+        const chipFav = dock && dock.querySelector('[data-gis-min-panel="favoritesPanel"]');
+        add("DOCK_GA1_pilot_chip_favorites", !!chipFav);
+        if (chipFav){
+          const r = chipFav.getBoundingClientRect();
+          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          add("DOCK_GA1_pilot_chip_reachable_vs_measure",
+            !!(hit && hit.closest && hit.closest("#gisMinimizedDock")),
+            hit ? (hit.id || hit.className || hit.tagName) : "null");
+        }
+        if (meas && meas.open){
+          const mz = parseInt(meas.style.zIndex || getComputedStyle(meas).zIndex || "0", 10);
+          add("DOCK_GA1_panel_z_le_28", Number.isFinite(mz) && mz <= 28, "measureZ=" + mz);
+        }
+        const drawer = document.getElementById("tabDrawer");
+        const dz = drawer ? parseInt(getComputedStyle(drawer).zIndex || "0", 10) : 0;
+        add("DOCK_GA1_drawer_z_30", dz === 30, "drawerZ=" + dz);
+
+        gisMinimizePanel("measurePanel", "gis.minimized.measure");
+        openLayersPanel();
+        gisMinimizePanel("layersPanel", "gis.minimized.layers");
+        const ids = (_gisMinimizedPanels || []).map(function(x){ return x.id; });
+        add("DOCK_GA1_fifo_3plus",
+          ids.indexOf("favoritesPanel") === 0
+          && ids.indexOf("measurePanel") === 1
+          && ids.indexOf("layersPanel") === 2
+          && ids.length >= 3,
+          ids.join(","));
+        docks = document.querySelectorAll("#gisMinimizedDock");
+        add("DOCK_GA1_still_single_dock", docks.length === 1);
+        const chips = dock ? dock.querySelectorAll(".gis-minimized-dock-chip") : [];
+        add("DOCK_GA1_all_chips_rendered", chips.length === ids.length, "chips=" + chips.length);
+
+        // Smoke whitelist (no deep lifecycle): restore/minimize roundtrip subset
+        const smokeIds = ["favoritesPanel", "measurePanel", "layersPanel", "helpOverlay", "astroPanel"];
+        let smokeOk = true;
+        const smokeDetail = [];
+        smokeIds.forEach(function(pid){
+          try {
+            if (pid === "helpOverlay" && typeof openHelp === "function") openHelp();
+            else if (pid === "astroPanel" && typeof openAstroFloatingPanelGis === "function") openAstroFloatingPanelGis();
+            const dlg = document.getElementById(pid);
+            if (!dlg || !dlg.open){ smokeDetail.push(pid + ":skip"); return; }
+            const key = (pid === "helpOverlay") ? "gis.minimized.help"
+              : (pid === "astroPanel") ? "gis.minimized.astro"
+              : (pid === "layersPanel") ? "gis.minimized.layers"
+              : (pid === "measurePanel") ? "gis.minimized.measure"
+              : "gis.minimized.favorites";
+            gisMinimizePanel(pid, key);
+            const minOk = gisPanelIsMinimized(pid);
+            if (minOk) gisRestoreMinimizedPanel(pid);
+            const restOk = dlg.open && !gisPanelIsMinimized(pid);
+            smokeOk = smokeOk && minOk && restOk;
+            smokeDetail.push(pid + ":" + (minOk && restOk ? "ok" : "fail"));
+            try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi(pid); } catch(_){}
+            try { if (dlg.open && pid === "helpOverlay") dlg.close(); } catch(_){}
+            try { if (dlg.open && pid === "astroPanel") dlg.close(); } catch(_){}
+          } catch(e){
+            smokeOk = false;
+            smokeDetail.push(pid + ":err");
+          }
+        });
+        add("DOCK_GA1_smoke_whitelist_subset", smokeOk, smokeDetail.join("|"));
+
+        // Negatives / invariants
+        add("DOCK_GA1_neg_pair_layout_src",
+          typeof dflightEnsurePairLayout === "function"
+          && String(gisDockReflow).indexOf("dflightEnsurePairLayout") < 0);
+        add("DOCK_GA1_neg_workbench_whitelist",
+          String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') < 0);
+        add("DOCK_GA1_session_only_minimized",
+          String(gisMinimizePanel).indexOf("localStorage") < 0
+          && String(gisRenderMinimizedDock).indexOf("localStorage") < 0);
+        add("DOCK_GA1_neg_mapWaypoints",
+          typeof state === "object" && state && Array.isArray(state.mapWaypoints));
+        add("DOCK_GA1_neg_storage_keys",
+          STORAGE_KEY === "coordconv_v2" && UI_STORAGE_KEY === "coordconv_ui_v1");
+      } finally {
+        try {
+          ["favoritesPanel","measurePanel","layersPanel","astroPanel","helpOverlay"].forEach(function(pid){
+            try { gisClearPanelMinimizeUi(pid); } catch(_){}
+            const d = document.getElementById(pid);
+            if (d && d.open){
+              try {
+                if (pid === "favoritesPanel" && typeof closeFavoritesPanel === "function") closeFavoritesPanel();
+                else if (pid === "measurePanel" && typeof closeMeasureFloatingPanelGis === "function") closeMeasureFloatingPanelGis();
+                else if (pid === "layersPanel" && typeof closeLayersPanel === "function") closeLayersPanel();
+                else d.close();
+              } catch(_){}
+            }
+          });
+        } catch(_){}
+        restorePrev();
+      }
+    } else {
+      add("DOCK_GA1_runtime_context", false, "gis-mode or openers missing");
+    }
+  } catch (e){
+    add("DOCK_GA1_selftest_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
+
+(function gisDockExtendSelfTestGA1(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = gisDockSelfTestGA1();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestDockGA1: gisDockSelfTestGA1
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 
 /* ===== /D-FLIGHT-F-ATM09-ARCH-A ===== */
 
@@ -75147,7 +75340,7 @@ function gisPanelBringToFront(root, opts){
   if (!root || !document.body.classList.contains("gis-mode")) return;
   // Keep floating panels below the tab drawer (z=30) and below global overlays.
   const baseZ = Number.isFinite(opts.baseZ) ? opts.baseZ : 24;
-  const maxZ = Number.isFinite(opts.maxZ) ? opts.maxZ : 29;
+  const maxZ = Number.isFinite(opts.maxZ) ? opts.maxZ : 28;
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
@@ -75276,6 +75469,113 @@ function gisRemoveFromMinimizedDock(panelId){
   _gisMinimizedPanels = _gisMinimizedPanels.filter(x => x.id !== panelId);
   gisRenderMinimizedDock();
 }
+/** G-A1 — ensure single dock host under GIS header (stacking z=29). */
+function gisDockEnsureHeaderHost(dock){
+  if (!dock || !document.body.classList.contains("gis-mode")) return null;
+  const header = document.querySelector("body.gis-mode > header") || document.querySelector("header");
+  if (!header) return null;
+  if (dock.parentElement !== header){
+    try { header.appendChild(dock); } catch(_){}
+  }
+  return header;
+}
+/**
+ * G-A1 thin coordinator: place #gisMinimizedDock in header chrome from live geometry.
+ * Does NOT move floating panels / touched layouts / D-Flight pair.
+ */
+function gisDockReflow(){
+  try {
+    if (!document.body.classList.contains("gis-mode")) return;
+    const dock = document.getElementById("gisMinimizedDock");
+    const header = document.querySelector("body.gis-mode > header") || document.querySelector("header");
+    if (!dock){
+      if (header) try { header.style.paddingBottom = ""; } catch(_){}
+      return;
+    }
+    if (!_gisMinimizedPanels.length || dock.hidden){
+      try {
+        dock.classList.remove("gis-dock-mode-left", "gis-dock-mode-right", "gis-dock-mode-row");
+        dock.style.left = "";
+        dock.style.top = "";
+        dock.style.right = "";
+        dock.style.width = "";
+        dock.style.maxWidth = "";
+      } catch(_){}
+      if (header) try { header.style.paddingBottom = ""; } catch(_){}
+      return;
+    }
+    const host = gisDockEnsureHeaderHost(dock) || header;
+    if (!host) return;
+    const brand = host.querySelector(".brand");
+    const ctrls = host.querySelector(".header-ctrls");
+    const topbar = document.getElementById("appTopbar");
+    const pad = 8;
+    try {
+      dock.classList.remove("gis-dock-mode-left", "gis-dock-mode-right", "gis-dock-mode-row");
+      dock.style.right = "auto";
+      dock.style.width = "";
+      dock.style.left = "0px";
+      dock.style.top = "0px";
+      dock.style.maxWidth = Math.min(560, Math.max(160, window.innerWidth - 24)) + "px";
+    } catch(_){}
+    const need = Math.max(120, Math.ceil(dock.scrollWidth || (_gisMinimizedPanels.length * 96)));
+    const hr = host.getBoundingClientRect();
+    const br = brand ? brand.getBoundingClientRect() : null;
+    const cr = ctrls ? ctrls.getBoundingClientRect() : null;
+    const tr = topbar ? topbar.getBoundingClientRect() : null;
+    /* Free left slot = between appTopbar (if left of brand) and brand — not raw header→brand. */
+    let leftSlotLeft = hr.left + pad;
+    if (tr && tr.width > 0 && br && tr.right < br.left){
+      leftSlotLeft = Math.max(leftSlotLeft, tr.right + pad);
+    }
+    const leftAvail = br ? Math.max(0, br.left - leftSlotLeft - pad) : 0;
+    const rightAvail = (br && cr) ? Math.max(0, cr.left - br.right - pad * 2) : 0;
+    let mode = "row";
+    if (leftAvail >= need) mode = "left";
+    else if (rightAvail >= need) mode = "right";
+    try {
+      dock.classList.add("gis-dock-mode-" + mode);
+      const dockH = Math.max(38, dock.offsetHeight || 58);
+      if (mode === "left" && br){
+        const top = Math.max(pad, (br.top - hr.top) + (br.height - dockH) / 2);
+        dock.style.left = Math.round(leftSlotLeft - hr.left) + "px";
+        dock.style.top = Math.round(top) + "px";
+        dock.style.right = "auto";
+        dock.style.maxWidth = Math.floor(leftAvail) + "px";
+        host.style.paddingBottom = "";
+      } else if (mode === "right" && br){
+        const top = Math.max(pad, (br.top - hr.top) + (br.height - dockH) / 2);
+        dock.style.left = Math.round(br.right - hr.left + pad) + "px";
+        dock.style.top = Math.round(top) + "px";
+        dock.style.right = "auto";
+        dock.style.maxWidth = Math.floor(rightAvail) + "px";
+        host.style.paddingBottom = "";
+      } else {
+        const contentBottom = Math.max(
+          br ? br.bottom : hr.top,
+          cr ? cr.bottom : hr.top,
+          tr ? tr.bottom : hr.top
+        );
+        const top = Math.max(pad, contentBottom - hr.top + pad);
+        dock.style.left = pad + "px";
+        dock.style.right = pad + "px";
+        dock.style.width = "auto";
+        dock.style.maxWidth = "none";
+        dock.style.top = Math.round(top) + "px";
+        const needPb = Math.ceil(top + dockH + pad - hr.height);
+        host.style.paddingBottom = needPb > 0 ? (needPb + "px") : "";
+      }
+    } catch(_){}
+  } catch(_){}
+}
+var _gisDockResizeWired = false;
+function gisDockWireResizeOnce(){
+  if (_gisDockResizeWired) return;
+  _gisDockResizeWired = true;
+  window.addEventListener("resize", function(){
+    try { gisDockReflow(); } catch(_){}
+  }, { passive: true });
+}
 function gisRenderMinimizedDock(){
   let dock = document.getElementById("gisMinimizedDock");
   if (!_gisMinimizedPanels.length){
@@ -75283,7 +75583,19 @@ function gisRenderMinimizedDock(){
       dock.innerHTML = "";
       dock.hidden = true;
       dock.setAttribute("aria-hidden", "true");
+      try {
+        dock.classList.remove("gis-dock-mode-left", "gis-dock-mode-right", "gis-dock-mode-row");
+        dock.style.left = "";
+        dock.style.top = "";
+        dock.style.right = "";
+        dock.style.width = "";
+        dock.style.maxWidth = "";
+      } catch(_){}
     }
+    try {
+      const header = document.querySelector("body.gis-mode > header") || document.querySelector("header");
+      if (header) header.style.paddingBottom = "";
+    } catch(_){}
     return;
   }
   if (!dock){
@@ -75291,6 +75603,11 @@ function gisRenderMinimizedDock(){
     dock.id = "gisMinimizedDock";
     dock.className = "gis-minimized-dock";
     dock.setAttribute("role", "region");
+  }
+  // G-A1: single host under header when GIS mode; else body fallback.
+  if (document.body.classList.contains("gis-mode")){
+    gisDockEnsureHeaderHost(dock);
+  } else if (!dock.parentElement){
     document.body.appendChild(dock);
   }
   dock.hidden = false;
@@ -75317,6 +75634,11 @@ function gisRenderMinimizedDock(){
       }
     } catch(_){}
   }
+  try { gisDockWireResizeOnce(); } catch(_){}
+  try { gisDockReflow(); } catch(_){}
+  try {
+    requestAnimationFrame(function(){ try { gisDockReflow(); } catch(_){} });
+  } catch(_){}
 }
 function gisClearPanelMinimizeUi(panelId){
   const dlg = document.getElementById(panelId);
