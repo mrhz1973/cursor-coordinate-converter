@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-IMPL-A (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**)
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING
-**REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
-**RUNTIME LIVE:** monolite tip `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` · build **198** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** ROUTINE (UI/CSS/HTML + JS a basso rischio; no helper patch)
-**ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** QA FINALE CHATGPT — PENDING (coda `finito` pre-autorizzata Regola H)
-**NOTE:** 8-row user legend + official swatch inline · technical WMS non-competitive · `costa`∈RED-0-SOLID · italia esclusa · DEFAULT 120 no TECH · QA umana **non** ancora attestata
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1 (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**)
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING (layout FIX1)
+**REVIEW BASE:** monolite tip `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` · build **198**
+**RUNTIME LIVE:** monolite tip `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` · build **199** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1` · helper **0.1.3**
+**CATEGORIA:** ROUTINE FIX — layout/positioning responsive (no helper patch)
+**ORIGINE:** QA operatore FAIL layout su IMPL-A (legenda copriva mappa/controlli/coordinate)
+**NEXT:** QA FINALE CHATGPT — PENDING (coda `finito` pre-autorizzata Regola H sul PASS operatore FIX1)
+**NOTE:** adaptive `dflightPositionAtm09UserLegend` · left of `.tile-ctrls` · above `.trp-point`/`.trp-cursor` · 8-row/swatch invariati · technical non-competitive · QA umana **non** ancora attestata su FIX1
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -885,6 +885,14 @@ Asset ufficiale TEMP: `960×422` RGB · crop Pillow · inline `data:image/png;ba
 - Deploy GIS-only: HTTP 200 · bytes **10297343** · SHA-256 LF `cdbf06f065154f5e2dced0361cf0b7fab07a77321501abf4a32d65e921ba102e` byte-match  
 - Automated Browser QA: **PASS** (AB-1…AB-13 + SELFTEST_LIVE)  
 - QA umana: **NON** ancora attestata · WU resta **OPEN**
+
+### FIX1 — layout adaptive (IMPLEMENTED)
+
+**STATUS:** IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING  
+**RUNTIME LIVE:** `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` · build **199** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1`  
+**Fix:** `dflightPositionAtm09UserLegend()` — left of `.tile-ctrls`, above `.trp-point`/`.trp-cursor`, clamp to map, compact/`max-height` fallback; static non-draggable.  
+**Selftest LIVE:** **361/361** PASS · AB QA layout PASS · helper **0.1.3** invariato  
+**URL:** `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c1c1b85`
 
 ---
 
