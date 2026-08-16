@@ -1,16 +1,16 @@
 # WU-0020 — BRANDING — TMART GIS tool
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / DEPLOYED
-**ACTIVE BLOCK:** BRANDING-TMART-IMPL-A-FIX1
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**STATUS:** CLOSED / PASS
+**ACTIVE BLOCK:** BRANDING-TMART-IMPL-A-FIX1 (**CLOSED / PASS**)
+**CURRENT GATE:** none
 **REVIEW BASE:** monolite tip `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A`
-**RUNTIME CANDIDATE:** `508dd039981b1878e427c9440033fcad854351b1` · build **207** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A-FIX1` · **REVIEW PASS**
+**RUNTIME CANDIDATE:** —
 **RUNTIME LIVE:** monolite tip `508dd039981b1878e427c9440033fcad854351b1` · build **207** · helper **0.1.3**
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
-**NEXT:** QA FINALE operatore · **G NOT OPENED**
-**NOTE:** FIX1 REVIEW+deploy+ABQA PASS 2026-08-16 · LIVE `508dd03`/207 · header brand-only · footer T.M. · G NOT OPENED
+**NEXT:** — (WU CLOSED; candidato **G** autorizzato NOT OPENED; F NOT OPENED)
+**NOTE:** WU CLOSED 2026-08-16 · AUDIT→IMPL-A + FIX1 PASS · QA operatore PASS · finito Regola H · LIVE `508dd03` / 207 · header `TMART GIS tool` · footer T.M.
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -308,3 +308,11 @@ Sintesi: 32 hunk · +178/−53 riconciliati · OTHER=0 · residue A=0 · CSS SHA
 **Gate:** **QA FINALE CHATGPT — PENDING** — no finito fino a PASS operatore.
 
 **Evidence:** [`../orchestrator/inbox/2026-08-16_2200_branding-tmart-impl-a-fix1-deploy-qa.md`](../orchestrator/inbox/2026-08-16_2200_branding-tmart-impl-a-fix1-deploy-qa.md)
+
+## 17. CLOSED / PASS (2026-08-16)
+
+**QA operatore:** PASS (`QA BRANDING-TMART-IMPL-A-FIX1 PASS operatore`) · Regola H auto-finito · no runtime patch in finito · monolite immutabile
+
+**Runtime tip:** `508dd039981b1878e427c9440033fcad854351b1` · build **207** · blob `09fe2b4ac405f874866b19898ee844fe52ea1d8f` · URL `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=508dd03`
+
+**Candidato H:** CLOSED / PASS · NEXT G autorizzato NOT OPENED

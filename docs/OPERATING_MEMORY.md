@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **BRANDING-TMART-IMPL-A-FIX1** — LIVE `508dd03` / **207** · REVIEW PASS · deploy+ABQA PASS · gate QA FINALE PENDING · WU-0020
+1. **BRANDING-TMART-IMPL-A-FIX1** — CLOSED / PASS · LIVE `508dd03` / **207** · QA operatore PASS · finito Regola H · WU-0020 CLOSED
 2. **D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4** — CLOSED / PASS · LIVE `9820c8a` / **205** · WU-0019 CLOSED
 3. **D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2** — CLOSED / PASS · LIVE `67d9cc7` / **200** · WU-0018
 4. **WU-0012 (CARTO INDEX)** — OPEN / NEXT PROVIDER (NO PROVIDER READY)
@@ -470,8 +470,8 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
-- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013** · **WU-0014** · **WU-0015** · **WU-0016** · **WU-0017 (ATM09 VISUAL PARITY)** · **WU-0018 (ATM09 LEGEND UX)** · **WU-0019 (PANEL SIDE-BY-SIDE / candidato E)** — [`work-units/`](work-units/)
-- **WU open:** WU-0020 · WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
+- **WU chiuse (PASS/CLOSED):** WU-0001–0004 · WU-0011 (INFRA-GH-1A+1B) · **WU-0013** · **WU-0014** · **WU-0015** · **WU-0016** · **WU-0017 (ATM09 VISUAL PARITY)** · **WU-0018 (ATM09 LEGEND UX)** · **WU-0019 (PANEL SIDE-BY-SIDE / candidato E)** · **WU-0020 (BRANDING TMART / candidato H)** — [`work-units/`](work-units/)
+- **WU open:** WU-0012 · WU-0010 — dettaglio in [`work-units/`](work-units/)
 - **Blocchi runtime storici** (POLY-PARITY, TRACK-BRUSH, ROUTING-GH, CARTO-IGM, OFFLINE, D-Flight A–H/VISUAL-READY, …): dettaglio in WU e [`docs/orchestrator/inbox/`](orchestrator/inbox/)
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
