@@ -11,36 +11,51 @@
 
 ### CORE BOOT (obbligatorio; tipicamente ≤ ~100 righe totali)
 1. `git ls-remote origin refs/heads/main`
-2. **Solo questo blocco** `AI-BOOT` del `README.md` (non il resto del README)
-3. [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) **§7.1 FRONTIER**
-4. Hot-header (`<!-- WU-HOT-HEADER -->`) della WU indicata come attiva da §7.1
+2. **Solo questo blocco** `AI-BOOT` del `README.md` (GitHub.`fetch_file` **range** limitato a questo blocco — non il resto del README)
+3. [`docs/FRONTIER.md`](docs/FRONTIER.md) (file piccolo; lettura completa ammessa)
+4. Hot-header (`<!-- WU-HOT-HEADER -->` … `<!-- /WU-HOT-HEADER -->`) della WU indicata da FRONTIER — path **solo** da FRONTIER; `fetch_file` fino a `<!-- /WU-HOT-HEADER -->`
 
-Dopo questi quattro passi si devono conoscere: workstream, blocco, stato, gate, REVIEW BASE / CANDIDATE RUNTIME / RUNTIME LIVE (se applicabili), NEXT.
+Dopo questi passi: workstream, blocco, stato, gate, REVIEW BASE / CANDIDATE / RUNTIME LIVE (se applicabili), NEXT. Poi **STOP**.
+
+**Payload vietati in CORE BOOT:** directory listing (`docs/work-units`), `GitHub.search`, code search, roadmap, OM completo / OM §4 / §7.2–§7.3, WU body, report/inbox/latest, HANDOFF, monolite.
+
+### Connector discovery (fail-closed)
+**Precedenza:** se `GitHub.fetch_file` è **già** disponibile in sessione → usarlo direttamente; **discovery = 0**. Solo se **non** disponibile: unica discovery CORE BOOT = GitHub query **`omitted`**. PASS solo se **count = 1** e tool = `GitHub.fetch_file`. Se count ≠ 1 o tool diverso → **CONNECTOR-SCHEMA-GUARD FAIL → STOP** (niente query alternative, niente iterazioni, niente namespace-wide `list_resources`).
+
+| Discovery key | Tool | Expected count | Quando |
+| --- | --- | --- | --- |
+| `omitted` | GitHub.fetch_file | 1 | CORE BOOT fallback only |
+| `plain` | GitHub.search | 1 | ON-DEMAND only |
+| `thin` | GitHub.compare_commits | 1 | ON-DEMAND only |
+
+Vietate in CORE BOOT le discovery query: `fetch`, `file`, `code`, `search`, `branch`, `commit`, e nomi funzione usati come discovery generica. Registry completo = **solo questa tabella** (OM §4 = metodo, non seconda tabella).
 
 ### Principi
-- **OM §7.1** = unica fonte canonica dello **stato operativo vivo**. Non persistire HEAD remota in §7.
-- **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4 intero, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
-- **CONTEXT GUARD:** acquisizione lean; evitare discovery tool e letture duplicate; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `TOOL-PAYLOAD-GUARD`: uno schema/payload acquisito non si riacquisisce; discovery generica vietata se un tool noto basta).
-- **AUTO-VIA:** se il prossimo passo è tecnicamente determinato, procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope assegnato**: un NEXT appartenente a un'altra chat/task/workstream si riconosce come stato ma **non si prende in carico**.
-- **`agg`:** Cursor ha concluso il pass corrente → GPT riacquisisce da `origin/main` solo stato/evidence necessari al gate e prosegue; **non** chiedere il RIEPILOGO completo se GitHub è sufficiente. **`agg` ≠ `aggio`** (`aggio` = aggiornamento memoria GIS).
-- **§7.2 / §7.3:** on-demand (recent/history), **non** bootstrap obbligatorio.
+- **[`docs/FRONTIER.md`](docs/FRONTIER.md)** = unica fonte canonica **LIVE STATE**. Non persistire HEAD remota in FRONTIER.
+- **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
+- **CONTEXT GUARD:** lean; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `CONNECTOR-DISCOVERY-HARD-GUARD` + `TOOL-PAYLOAD-GUARD`).
+- **AUTO-VIA:** passo tecnicamente determinato → procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope**: un NEXT di altra chat/task/workstream si riconosce ma **non si prende in carico**.
+- **`agg`:** Cursor ha concluso → GPT refresh minimo HEAD + FRONTIER + WU hot-header (se AI-BOOT già acquisito: **non** rifare CORE BOOT completo); **non** chiedere RIEPILOGO completo se GitHub basta. **`agg` ≠ `aggio`**.
+- **§7.2 / §7.3** (OM): on-demand recent/history, **non** bootstrap.
 
 ### Precedenza
-GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conflitto: documento più specifico e più recente (di solito OM §7.1). Classificazione: README AI BOOT = INDEX/BOOTLOADER · OM §4 = METHOD · OM §7.1 = LIVE STATE · WU hot-header = LOCAL WU INDEX · roadmap = PLAN/BACKLOG · HANDOFF = STABLE SEED · LAST_CURSOR_REPORT / inbox = EVIDENCE · monolite = RUNTIME.
+GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conflitto: documento più specifico e più recente (di solito FRONTIER). Classificazione: README AI BOOT = INDEX/BOOTLOADER · OM §4 = METHOD · **docs/FRONTIER.md = LIVE STATE** · WU hot-header = LOCAL WU INDEX · roadmap = STRATEGY/PLAN/BACKLOG · HANDOFF = STABLE SEED · LAST_CURSOR_REPORT / inbox = EVIDENCE · monolite = RUNTIME.
 
 ### ON DEMAND (aprire solo se il gate/task lo richiede)
 | Fonte | Quando |
 | --- | --- |
-| OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/… / `CONTEXT-BUDGET-GUARD`) |
-| Roadmap / WU body | roadmap: strategia prodotto/architettura, planning/backlog, distribution/out-of-scope — **mai** nel CORE BOOT ordinario · WU body: spec/acceptance del blocco |
+| OM §4 — sola Regola necessaria | metodo del gate corrente (F/G/H/I/D2/… / CBG) |
+| Roadmap / WU body | strategia/planning/backlog/out-of-scope — **mai** CORE BOOT · WU body: spec/acceptance |
 | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) | solo al gate QA |
-| [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se il seed chat è già fornito |
+| [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se seed chat già fornito |
 | [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md), orchestrator inbox/latest | evidence/history |
 | Monolite | solo task runtime/review; symbol/range/diff/FULL SHA — **mai** preload |
+| `plain` / `thin` discovery | solo se search/compare necessari al gate (expected count = 1) |
 
 ### Manutenzione di questo blocco
-Aggiornare `AI-BOOT` **solo** se cambiano bootstrap, CORE BOOT, precedenza o navigazione. **Non** aggiornare a ogni cambio di blocco/gate/runtime SHA — quelli stanno in OM §7.1.
+Aggiornare `AI-BOOT` **solo** se cambiano bootstrap, CORE BOOT, precedenza, navigazione o **registry discovery**. Gate/block/runtime SHA/NEXT → [`docs/FRONTIER.md`](docs/FRONTIER.md).
 <!-- AI-BOOT: END -->
+
 
 ---
 
@@ -96,7 +111,7 @@ Map basemaps: **OSM HOT**, **OpenStreetMap** standard (online-only, no bulk offl
 Session/local storage for user-side persistence.
 IT / EN / FR interface via built-in i18n strings.
 
-Operational live state (agents): see **OM §7.1** — not duplicated here. Legacy/historical (not live state): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
+Operational live state (agents): see [`docs/FRONTIER.md`](docs/FRONTIER.md) — not duplicated here. Legacy/historical (not live state): `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`.
 
 Repository structure
 .
@@ -269,7 +284,8 @@ Offline maps use browser storage (IndexedDB). Online tiles and geocoding are ext
 
 | Documento | Ruolo |
 | --- | --- |
-| [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti corrente (§7 = stato vivo) |
+| [`docs/FRONTIER.md`](docs/FRONTIER.md) | LIVE STATE (stato operativo vivo) |
+| [`docs/OPERATING_MEMORY.md`](docs/OPERATING_MEMORY.md) | Memoria agenti / METHOD (§4) + RECENT/HISTORY (§7.2–§7.3) |
 | [`docs/work-units/WU-0005-0009-roadmap.md`](docs/work-units/WU-0005-0009-roadmap.md) | Piano, backlog e workstream WU-0005→0009 |
 | [`docs/work-units/WU-0001-opsec-strict-cycle.md`](docs/work-units/WU-0001-opsec-strict-cycle.md) | Semantica OPSEC implementativa |
 | [`docs/work-units/WU-0002-memory-standardization.md`](docs/work-units/WU-0002-memory-standardization.md) | Migrazione memoria wiki-LLM (chiusa) |
@@ -297,3 +313,4 @@ GOI GIS Tool / GIS Tool Converter by Marty.
 <!-- AUTO-VIA-FOOTER: NON RIMUOVERE -->
 > **PROMEMORIA FINALE — AUTO-VIA.** In assenza di una decisione reale da sottoporre all’operatore, procedere direttamente al passo successivo senza chiedere conferme. Non trasformare raccomandazioni tecniche, preferenze già ratificate o gate già risolti in false scelte utente. Il nuovo `vai` si chiede soltanto quando esistono alternative sostanziali che richiedono davvero la scelta dell’operatore.
 <!-- /AUTO-VIA-FOOTER -->
+
