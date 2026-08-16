@@ -605,11 +605,11 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 
 **Fuori scope WU-0014:** restriction/reason/quota filters, search, opacity, persistenza, export, import ED, NOTAM, parity ED-269 — restano backlog WU-0013 §23.
 
-**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** CLOSED in [`WU-0015`](WU-0015-dflight-hit-test.md). Candidato **B** **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md). Candidato **C** **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md). E–H restano **NOT OPENED**.
+**Backlog QA build 183 (2026-08-14):** registrato sotto. Candidato **A** CLOSED in [`WU-0015`](WU-0015-dflight-hit-test.md). Candidato **B** **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md). Candidato **C** **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md). Candidato **D** **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md). E–H restano **NOT OPENED**.
 
 ### D-Flight — backlog emerso QA build 183 — 2026-08-14
 
-**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (RULE-META-PROBE-A **BLOCKED**). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
+**Stato:** candidato **C** **CLOSED / PASS** (WU-0017). Candidato **D** **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) (RULE-META-PROBE-A **BLOCKED**). E–H **NOT OPENED**. Registrazione prodotto/UX emersa in QA umana sul runtime live **build 183** / `D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3` / task `20b1b49`.
 
 **Distinzione gate:** FIX3 è **CLOSED / PASS**; WU-0014 **CLOSED**; WU-0015 **CLOSED / PASS**; WU-0016 **CLOSED / PASS**; WU-0017 **CLOSED / PASS**; WU-0018 **OPEN** (RULE-META-PROBE-A BLOCKED · gate **DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED**). E–H restano **NOT OPENED**.
 
@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
-| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A-FIX2 **IMPLEMENTED / DEPLOY PASS / AB QA PASS** · LIVE `67d9cc7` / **200** · gate **QA FINALE CHATGPT — PENDING (FIX2 PAN STABILITY)** · E–H **NOT OPENED** |
+| **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |

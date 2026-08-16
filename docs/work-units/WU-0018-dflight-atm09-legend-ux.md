@@ -1,15 +1,15 @@
 # WU-0018 — D-FLIGHT-ATM09-LEGEND-UX
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**)
-**CURRENT GATE:** QA FINALE CHATGPT — PENDING (FIX2 PAN STABILITY)
+**STATUS:** CLOSED / PASS
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 (**CLOSED / PASS**)
+**CURRENT GATE:** none
 **REVIEW BASE:** monolite tip `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` · build **199** (FIX1)
 **RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2` · helper **0.1.3**
-**CATEGORIA:** ROUTINE FIX — legend presentation stability across transient ATM09 tile reload (no helper patch)
-**ORIGINE:** QA operatore — FIX1 layout/content PASS; residuo FAIL: legenda sparisce/ricompare al pan durante reload tile ATM09
-**NEXT:** QA operatore FIX2 (PAN stability) — **NO finito** in questo intervento
-**NOTE:** `dflightLegendPresentationMode` + session latch `_dflightAtm09UserLegendLatched` / `_dflightAtm09TileReloadActive` · paint mode invariato · FIX1 positioning invariato · 8-row/swatch invariati · QA umana FIX2 **PENDING**
+**CATEGORIA:** ROUTINE (legend UX esterna + FIX1 layout + FIX2 presentation)
+**ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna
+**NEXT:** backlog E–H **NOT OPENED**
+**NOTE:** WU CLOSED 2026-08-16 · AUDIT→TOPOLOGY→IMPL-A + FIX1 + FIX2 PASS · QA operatore PASS · finito Regola H · LIVE `67d9cc7` / 200
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -888,21 +888,21 @@ Asset ufficiale TEMP: `960×422` RGB · crop Pillow · inline `data:image/png;ba
 
 ### FIX1 — layout adaptive (IMPLEMENTED)
 
-**STATUS:** IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING  
+**STATUS:** CLOSED / PASS (layout; superato da FIX2)  
 **RUNTIME LIVE:** `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` · build **199** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1`  
 **Fix:** `dflightPositionAtm09UserLegend()` — left of `.tile-ctrls`, above `.trp-point`/`.trp-cursor`, clamp to map, compact/`max-height` fallback; static non-draggable.  
 **Selftest LIVE:** **361/361** PASS · AB QA layout PASS · helper **0.1.3** invariato  
 **URL:** `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c1c1b85`
 
-### FIX2 — presentation stability (IMPLEMENTED)
+### FIX2 — presentation stability (CLOSED / PASS)
 
-**STATUS:** IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING  
-**Feedback operatore:** FIX1 layout/content **PASS**; residuo FAIL = flicker legenda dopo pan (transient READY reset).  
+**STATUS:** CLOSED / PASS end-to-end  
+**Feedback operatore:** FIX1 layout/content **PASS**; FIX2 PAN stability **PASS** (`QA D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2 PASS operatore`).  
 **RUNTIME LIVE:** `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`  
 **Fix:** `dflightLegendPresentationMode()` + latch `_dflightAtm09UserLegendLatched` / `_dflightAtm09TileReloadActive` (set in `BeginTileGeneration`); paint mode invariato; no timer.  
 **Selftest LIVE:** **392/392** PASS · AB-PAN-STABILITY / FALLBACK / OFF / LAYOUT PASS · helper **0.1.3** invariato  
 **URL:** `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=67d9cc7`  
-**Gate:** QA FINALE CHATGPT — PENDING (FIX2 PAN STABILITY) · **NO finito**
+**Chiusura:** finito Regola H 2026-08-16 · WU-0018 **CLOSED / PASS** · candidato D **CLOSED / PASS**
 
 ---
 
