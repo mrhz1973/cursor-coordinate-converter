@@ -1435,25 +1435,9 @@ http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=0a51379
 
 ## Template coda prompt bundle runtime (canonico)
 
-**Home duplicata:** OM §4 *Template coda prompt bundle runtime*. GPT incolla questa coda in ogni prompt bundle runtime con deploy.
+**Casa canonica:** [`docs/OPERATING_MEMORY.md`](OPERATING_MEMORY.md) §4 — *Template coda prompt bundle runtime* (+ Regola DELTA / `METHOD-CURSOR-PROMPT-DELTA`, Regola H, D2, D2bis).
 
-````text
-GATE / CHIUSURA (coda finito pre-autorizzata):
-Dopo deploy tecnico PASS, esegui AUTOMATED BROWSER QA PRE-OPERATORE (Regola D2bis / AUTOMATED-BROWSER-QA-PREOP).
-Se Automated Browser QA = FAIL o BLOCKED/INCOMPLETE: NON dichiarare QA FINALE CHATGPT — PENDING; riporta finding; NON eseguire finito.
-Solo se Automated Browser QA = PASS (o NOT APPLICABLE giustificato), fermati e riporta:
-deploy PASS, URL runtime, Automated Browser QA PASS|N/A, gate «QA FINALE CHATGPT — PENDING».
-Non preparare e non emettere istruzioni QA operatore (Regola D2 — ChatGPT emette la QA umana residua).
-Quando l'operatore (via ChatGPT) attesta esattamente in Cursor:
-QA <BLOCK-ID> PASS operatore
-esegui automaticamente la coda finito già autorizzata:
-chiusura docs OM §7 + roadmap/checklist/HANDOFF se previsti + autosync orchestratore + commit/push + verifica HEAD = origin/main = ls-remote + workspace pulito + conferma monolite invariato se docs-only.
-Non chiedere un comando separato «finito» né attendere un secondo messaggio.
-Se QA operatore fallisce o deploy/smoke non PASS o Automated Browser QA non PASS, NON eseguire finito.
-Eccezioni: diagnosi/read-only; review esterna pendente (bundle delicato); REVIEW GPT-SOSTITUTIVA non loggata; workspace sporco; scope drift.
-````
-
-Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`). Dettaglio metodo: OM §4 Regola H + Regola D2 + Regola D2bis.
+Questo checklist **non** duplica la coda. Prompt GPT→Cursor: dichiarare `CLOSURE: STANDARD_RUNTIME_BUNDLE`. Cursor applica automaticamente closure/gate da OM §4 + [`.cursor/rules/30-output-workflow.mdc`](../.cursor/rules/30-output-workflow.mdc).
 
 ## TRACK-ELEVATION-PROFILE-A (+ FIX1 + FIX2 + FIX3) — CLOSED / PASS end-to-end
 
