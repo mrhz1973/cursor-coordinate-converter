@@ -1,21 +1,16 @@
 # LAST_CURSOR_REPORT
 
-**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A)
+**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B)
 
 ## Disciplina F3
 
 | Campo | Valore |
 |-------|--------|
-| `real_task_commit` | `646567aa9ec2a02c725217353ada5abc25311492` |
+| `real_task_commit` | `35596e6bfdb2931c7b1479bec8387cce08ae1fc8` |
 | Container corrente | `PENDING_SELF_REFERENCE` |
 | Fatti autosync proprio | `EXTERNAL_ONLY` |
 | Terzo commit | **vietato** |
 | Published | immutable |
-
-## Review
-
-**REVIEW GPT-SOSTITUTIVA UPSTREAM — PASS**  
-Checklist rete/proxy/auth/OPSEC DELICATO: registrata in WU-0018 § RULE-META-PROBE-A.
 
 ## LIVE (invariato)
 
@@ -31,10 +26,11 @@ Checklist rete/proxy/auth/OPSEC DELICATO: registrata in WU-0018 § RULE-META-PRO
 | Campo | Valore |
 |-------|--------|
 | WORKSTREAM | WU-0018 OPEN |
-| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-A **BLOCKED** |
-| GATE | DELICATE RULE-META PROBE EXECUTION CONTEXT REQUIRED |
-| NEXT | probe sul VPS (LoadCredential) |
-| Upstream JSON probe | **NOT EXECUTED** |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-RULE-META-PROBE-VPS-B **CLOSED / PASS** (B-P2) |
+| GATE | ATM09 STYLE METADATA SOURCE REQUIRED |
+| NEXT | chiudere scure/costa + secondo Max 120 |
+| JSON_CAPABILITY | **SUPPORTED** (9 rules) |
+| Upstream JSON probe | **EXECUTED** (VPS LoadCredential) |
 | Runtime/helper patch | **NO** |
 | Deploy | **NO** |
 | Finito | **NO** |
