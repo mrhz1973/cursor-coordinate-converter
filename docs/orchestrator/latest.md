@@ -1,17 +1,16 @@
 # Orchestrator — latest
 
-Aggiornato: 2026-08-16 (TOPOLOGY-ADJUDICATION-A CLOSED / PASS T1)
+Aggiornato: 2026-08-16 (ATM09-LEGEND-UX-IMPL-A · AB QA PASS · QA PENDING)
 
 ## Sintesi
 
-- **WU-0018** OPEN · **TOPOLOGY-ADJUDICATION-A** **CLOSED / PASS** (Caso **T1**).
-- `costa` ∈ RED-0-SOLID (no 9ª voce UI); secondo Max 120 = DEFAULT/NON-RESTRICTED; official crop `[268,266,280,278]`.
-- USER-FACING IMPLEMENTATIVE SOURCE **8/8**.
-- Gate: **READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A** (ROUTINE; no helper patch).
-- Task: `4670abf`.
+- **WU-0018** OPEN · **IMPL-A** IMPLEMENTED / DEPLOY PASS / AB QA PASS / QA OPERATORE PENDING.
+- LIVE `016be9e` / build **198** / `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · helper **0.1.3**.
+- Gate: **QA FINALE CHATGPT — PENDING** (coda `finito` pre-autorizzata).
+- Task: `016be9e`.
 
 ## Puntatore
 
-- Inbox: `docs/orchestrator/inbox/2026-08-16_1105_riepilogo_dflight-atm09-legend-ux-topology-adjudication-a.md`
+- Inbox: `docs/orchestrator/inbox/2026-08-16_1200_riepilogo_dflight-atm09-legend-ux-impl-a.md`
 - WU: `docs/work-units/WU-0018-dflight-atm09-legend-ux.md`
 - Runtime: `docs/runtime/LAST_CURSOR_REPORT.md`
