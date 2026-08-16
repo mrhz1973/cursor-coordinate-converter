@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-16 — **WIKI-LLM-LEAN-CONSOLIDATION-C** (governance docs-only, commit `1f2e8b0`): `METHOD-CURSOR-PROMPT-DELTA` + `CLOSURE: STANDARD_RUNTIME_BUNDLE` + `TOOL-PAYLOAD-GUARD` + alias `agg` (≠ `aggio`). Coda runtime preservata (applicata da Cursor, non reiniettata da GPT). Gate APP GIS **invariato**. Dettaglio: [`docs/orchestrator/inbox/2026-08-16_1220_riepilogo_wiki-llm-lean-consolidation-c.md`](inbox/2026-08-16_1220_riepilogo_wiki-llm-lean-consolidation-c.md).
+2026-08-16 — **WIKI-LLM-LEAN-CONSOLIDATION-C-QA-FIX1** (docs-only, commit `9dc83c4`): QA-CHECKLIST non duplica più la coda runtime; pointer a OM §4 + `CLOSURE: STANDARD_RUNTIME_BUNDLE`. Gate APP GIS invariato. Dettaglio: [`docs/orchestrator/inbox/2026-08-16_1230_riepilogo_wiki-llm-lean-consolidation-c-qa-fix1.md`](inbox/2026-08-16_1230_riepilogo_wiki-llm-lean-consolidation-c-qa-fix1.md).
