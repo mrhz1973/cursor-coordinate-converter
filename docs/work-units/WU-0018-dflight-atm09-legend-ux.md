@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-STYLE-META-CLOSE-A (**CLOSED / PASS** diagnostico — Caso **M2**)
-**CURRENT GATE:** ATM09 STYLE METADATA SOURCE REQUIRED
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A (**CLOSED / PASS** — Caso **T1**)
+**CURRENT GATE:** READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** STYLE-META-CLOSE = **DELICATO** (eseguito) · IMPL-A = non aperta
+**CATEGORIA:** TOPOLOGY-ADJUDICATION = docs-only · IMPL-A futura = **ROUTINE** (strategia E ibrida; no helper patch)
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** residui ancora non PROVEN: (1) `costa`/`scure` user-facing join; (2) secondo Max 120 — fonte metadata diversa da `italia` RULE-PNG vuoto — NON endpoint; NON IMPL-A
-**NOTE:** COSTA_STYLE_EQUIVALENCE **IDENTICAL** · ATM09_INFO CQL `costa`/`italia` feature_count **0** · `italia` RULE-PNG senza pixel visibili · user-facing **7/8** · credential exposure **NO**
+**NEXT:** `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` — NON implementare in questo blocco
+**NOTE:** `costa` ∈ RED-0-SOLID (no 9ª voce UI) · secondo Max 120 = DEFAULT/NON-RESTRICTED (no TECH rule) · official pixel crop misurato · USER-FACING SOURCE **8/8**
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -430,10 +430,107 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | RULE-META-PROBE-A | **BLOCKED** (Caso P4) — superseduto da VPS-B |
 | RULE-META-PROBE-VPS-B | **CLOSED / PASS** diagnostico (Caso **B-P2**) |
 | STYLE-META-CLOSE-A | **CLOSED / PASS** diagnostico (Caso **M2**) |
-| CURRENT GATE | **ATM09 STYLE METADATA SOURCE REQUIRED** |
-| NEXT | solo residui sotto STYLE-META-CLOSE-A; NON endpoint; NON IMPL-A |
+| TOPOLOGY-ADJUDICATION-A | **CLOSED / PASS** (Caso **T1**) |
+| CURRENT GATE | **READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A** |
+| NEXT | `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` (ROUTINE; no helper patch) — **NON** aperto qui |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
+
+---
+
+## TOPOLOGY-ADJUDICATION-A
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A` · **CLOSED / PASS** · 2026-08-16 · Caso **T1** · docs-only (+ misure asset TEMP).
+
+**Principio:** non richiedere 8 USER rows = 8 TECH rules. Ammesso: più TECH → una equivalence class UI; zero TECH → una classe DEFAULT — solo se dimostrato.
+
+### Fonti ufficiali (accesso 2026-08-16)
+
+| ID | Dominio / URL | Fatto pertinente |
+| --- | --- | --- |
+| **DF-AIRSPACE** | https://www.d-flight.it/new_portal/tipi-di-spazi-aerei/ · titolo **Tipi di Spazi aerei** | Sezione **«Spazi aerei non soggetti a restrizione»** → **Altezza Max (M) = 120m AGL** |
+| **DF-SERVICES** | https://www.d-flight.it/new_portal/servizi-d-flight/ · **Servizi d-flight** / geo-consapevolezza | **ATM-09** = «Elaborazione d-flight della circolare…»; pop-up mappa: **Altezza massima consentita**; «In caso di sovrapposizione di diverse regole viene applicata la **più restrittiva**» |
+| **ENAC-B1** | già REFERENCE-B · https://www.enac.gov.it/…/voli-con-droni-uas-limitazioni-riserve-dello/ + ATM-09A §6.8–6.11 | Rosso ↔ **0 m**; rimanente / fuori controllati ↔ soglia generale **120 m** (REFERENCE-B1-OUTER / circolare) |
+| **DF-ASSET** | https://www.d-flight.it/new_portal/wp-content/uploads/2024/08/d-flight-download-GeoUAS.png (REFERENCE-C) | SWATCH↔USER **8/8** già PROVEN; riusato solo per crop pixel DEFAULT |
+
+Nessun sito terzo. Nessun probe VPS/auth in questo blocco.
+
+### Adjudication `costa` → RED-0-SOLID
+
+| Check | Esito |
+| --- | --- |
+| C1 symbolizer `costa` ≡ `rosso` | **IDENTICAL** (STYLE-META-CLOSE-A) |
+| C2 RULE-PNG `geometrie_rosse_schure` | rosso pieno visibile (stesso tipo swatch) |
+| C3 semantica normativa rosso ↔ 0 m | **PROVEN** (REFERENCE-B) |
+| C4 UI ufficiale: **una** voce rosso pieno Max 0 (+ diagonale distinta) | **PROVEN** (REFERENCE-C) |
+| C5 assenza label «costa» in UI | **supporto** (non prova isolata) |
+| INFO feature_count=0 | **CURRENTLY NO FEATURES ≠ NO SEMANTICS** |
+
+**Verdetto:** TECH `geometrie_rosse_schure` / `type='costa'` → **IMPLEMENTATIVE CLASS RED-0-SOLID** → USER-FACING **Max 0 metri AGL** · **PROVEN AS EQUIVALENCE-CLASS MEMBER** · **non** genera voce UI separata.
+
+### Adjudication secondo Max 120 → DEFAULT / NON-RESTRICTED
+
+| Check | Esito |
+| --- | --- |
+| D1 seconda voce UI Max 120 chiaro/bordato | **PROVEN** (REFERENCE-C) |
+| D2 `geometrie_italia` esclusa | opacity 0 · RULE-PNG senza pixel/bordo (STYLE-META-CLOSE-A) |
+| D3 nessuna altra rule TECH fornisce quello swatch | **PROVEN** (9/9 JSON: sole alternative già mappate o invisibili) |
+| D4 spazio non soggetto a restrizione = **120m AGL** | **PROVEN** (DF-AIRSPACE) |
+| D5 mappa: altezza max + regola più restrittiva | **PROVEN** (DF-SERVICES) |
+| D6 ENAC soglia generale 120 nel rimanente | **PROVEN** (ENAC-B1 / ATM-09A) |
+
+**Verdetto:** seconda voce **Max 120 metri AGL** = classe **DEFAULT / NO ADDITIONAL ATM09 RESTRICTION** · **TECH SOURCE: NONE** · **PROVEN**.
+
+`geometrie_italia`: **TECH INVISIBLE / NON-LEGEND** — USER-FACING **NONE** (PROVEN non-source del secondo 120).
+
+### Official pixel source — crop DEFAULT 120
+
+Asset TEMP (non in repo): `d-flight-download-GeoUAS.png` · **960×422** · mode **RGB** (no alpha).
+
+| Voce | Valore |
+| --- | --- |
+| Voce | secondo Max 120 chiaro/bordato (riga 7 UI) |
+| **bbox crop** (xyxy, px) | **`[268, 266, 280, 278]`** |
+| Dimensioni crop | **12×12** |
+| Border | **sì** (dark_border_frac ≈ 0.53 sul perimetro) |
+| Fill chiaro/azzurro percepibile | **sì** (fill medio diagnostico chiaro-azzurro; **nessun HEX** usato come stile GOI) |
+| Alpha | **non disponibile** (RGB) |
+| Ruolo | **OFFICIAL PIXEL SOURCE** per IMPL (alternativa a GetLegendGraphic assente per questa voce) |
+
+**DEFAULT_SWATCH_BACKGROUND_CONSISTENCY:** **PARTIAL** — fill chiaro coerente con aree mappa poco/non colorate ATM09, ma non pixel-identico al basemap; supporto a D4–D6, non sostituto.
+
+### Topology table — 8 voci USER-FACING
+
+| # | USER-FACING | VISUAL SOURCE | TECH SOURCE / EQUIVALENCE CLASS | SEMANTIC SOURCE | IMPLEMENTATION SOURCE | STATUS |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Max 0 metri AGL (pieno) | official red-solid | **RED-0-SOLID** = `type='rosso'` + `type='costa'` (`geometrie_rosse_piene` + `geometrie_rosse_schure`) | ENAC/ATM-09A rosso↔0 | TECH class + label i18n | **PROVEN** |
+| 2 | Max 0 metri AGL (diagonale) | official red-diagonal | `type='rosso_righe'` | ENAC rosso↔0 | TECH + i18n | **PROVEN** |
+| 3 | Max 25 metri AGL | official orange | `type='arancione'` | ENAC/ATM-09A 25 | TECH + i18n | **PROVEN** |
+| 4 | Max 45 metri AGL | official yellow | `type='giallo'` | ATM-09A 45 | TECH + i18n | **PROVEN** |
+| 5 | Max 60 metri AGL | official cyan | `type='azzurra'` | ATM-09A 60 (controllati) | TECH + i18n | **PROVEN** |
+| 6 | Max 120 metri AGL (verde) | official green | `type='verde'` | ATM-09A / UI split 120 | TECH + i18n | **PROVEN** |
+| 7 | Max 120 metri AGL (chiaro/bordato) | **official asset crop** bbox sopra | **NONE / DEFAULT** | DF non-restricted 120 + ENAC 120 | official crop + i18n | **PROVEN** |
+| 8 | Area pericolosa | official pattern | `type='rosso_quadri'` (`shape://times`) | UI + AIP Zone D (contesto) | TECH + i18n | **PROVEN** |
+
+### Contatori
+
+| Livello | Stato |
+| --- | --- |
+| SEMANTICA NORMATIVA | PROVEN **4** |
+| SWATCH↔USER | PROVEN **8/8** |
+| TECH↔RULE | PROVEN **9/9** |
+| USER-FACING IMPLEMENTATIVE SOURCE | PROVEN **8/8** |
+| TECH RULE WITHOUT DISTINCT USER ROW | `costa` / `geometrie_rosse_schure` (∈ RED-0-SOLID); `italia` (invisible / non-legend) |
+| USER ROW WITHOUT TECH RULE | secondo Max 120 chiaro/bordato (**DEFAULT**) |
+
+### Gate / NEXT
+
+| Campo | Valore |
+| --- | --- |
+| TOPOLOGY-ADJUDICATION-A | **CLOSED / PASS** (Caso **T1**) |
+| CURRENT GATE | **READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A** |
+| NEXT | `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · categoria **ROUTINE** · no helper patch · **NON** implementare qui |
+| TEMP CLEANUP | **PASS** (asset/crop solo TEMP) |
 
 ---
 
