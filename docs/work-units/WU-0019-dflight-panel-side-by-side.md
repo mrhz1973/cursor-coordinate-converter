@@ -2,14 +2,15 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-AUDIT-A (**AUDIT COMPLETE / EVIDENCE PERSISTED**)
-**CURRENT GATE:** GPT AUDIT REVIEW — PENDING
+**ACTIVE BLOCK:** D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A (**IMPLEMENTED / SELFTEST PASS / REVIEW GPT-SOSTITUTIVA — PENDING**)
+**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
 **REVIEW BASE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2`
-**RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (invariato; audit docs-only)
-**CATEGORIA:** DIAGNOSTIC / pre-implementazione **DELICATO** (lifecycle/layout dialog)
+**RUNTIME CANDIDATE:** `a689fe81d7f8722ef5e58077be639d00d13523b7` · build **201** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A`
+**RUNTIME LIVE:** monolite tip `67d9cc79c4896adc39b7a38a6828bf4d31346305` · build **200** · helper **0.1.3** (**non** redeployato in questo pass)
+**CATEGORIA:** **DELICATO** — lifecycle/layout dialog
 **ORIGINE:** backlog QA build 183 candidato **E** — Layout affiancato Zone D-Flight / Dettagli
-**NEXT:** review GPT dell’audit → solo dopo PASS definire `D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A`
-**NOTE:** nessun patch monolite/helper in AUDIT-A · nessun deploy · nessun ABQA/QA operatore · F/G/H **non** aperti
+**NEXT:** REVIEW GPT-SOSTITUTIVA del diff FULL SHA → solo dopo PASS: deploy + ABQA
+**NOTE:** GPT AUDIT REVIEW **PASS** · IMPL-A option B · `dflightEnsurePairLayout` · no deploy / no ABQA / no finito · WU resta OPEN · F/G/H **non** aperti
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) **CLOSED / PASS** (candidato D).
@@ -306,6 +307,33 @@ Fermarsi / non dichiarare READY se:
 | Gate | **GPT AUDIT REVIEW — PENDING** |
 
 ---
+
+
+
+---
+
+## IMPL-A — SIDEBYSIDE (2026-08-16)
+
+**GPT AUDIT REVIEW:** **PASS** (gate precedente chiuso).
+
+**STATUS blocco:** IMPLEMENTED / selftest **404/404** PASS / **REVIEW GPT-SOSTITUTIVA — PENDING**
+
+**Runtime candidate FULL SHA:** `a689fe81d7f8722ef5e58077be639d00d13523b7` · build **201** · `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A`
+
+**Architettura:** opzione **B** — `dflightEnsurePairLayout()` policy locale + riuso `gisPanel*` / `dflightSyncAdaptivePanelGeometry`. Nessun global manager (G OUT OF SCOPE).
+
+**Simboli modificati / aggiunti:**
+- `dflightEnsurePairLayout` (+ `DFLIGHT_PAIR_GAP_PX`, `_dflightPairLayoutBusy`, `dflightPanelIsPairEligible`) — **nuovo**
+- Hook: `dflightOpenDetailsPanel`, `dflightOpenControlPanel`, `dflightEnsurePanelGeometryResize`, `gisRestoreMinimizedPanel` (branch D-Flight)
+- `dflightPanelCloseLifecycle` — **invariato** (nessun hook pair)
+- Build: `APP_BUILD_ID=D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A` · `APP_BUILD_NUM=201`
+- Selftest: `dflightSelfTestSideBySide` (SBS_*)
+
+**Deviazioni rispetto all’audit:** nessuna sostanziale. CSS/HTML dialog invariati (policy JS-only).
+
+**Selftest:** **404/404** PASS (locale). Deploy / ABQA / QA operatore: **non** eseguiti (override DELICATO).
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — deploy solo dopo PASS review sul FULL SHA candidato.
 
 ## 13. Riferimenti
 
