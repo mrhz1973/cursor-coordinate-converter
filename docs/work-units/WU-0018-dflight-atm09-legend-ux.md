@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-REFERENCE-C (CLOSED / PASS)
-**CURRENT GATE:** OFFICIAL LABEL↔STYLE MAPPING REQUIRED
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-RULE-META-DESIGN-A (CLOSED / PASS)
+**CURRENT GATE:** DELICATE RULE-META PROBE REVIEW REQUIRED
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
 **RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** AUDIT-A + REFERENCE-B/C = DOCS-ONLY · IMPL-A futura = **condizionata** (E ibrida → ROUTINE se triple PROVEN; altrimenti DELICATO)
+**CATEGORIA:** AUDIT-A + REFERENCE-B/C + RULE-META-DESIGN-A = DOCS-ONLY · RULE-META futuro = **DELICATO** · IMPL-A = condizionata post-mapping
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** chiudere join **TECH↔pattern UI ufficiale** (fail-closed): discriminare `geometrie_rosse_scure` / `geometrie_rosse_piene` (swatch GLG **identici**) vs Max 0 pieno / Max 0 diagonale / Area pericolosa; confermare se `geometrie_rosse_quadri` (X rosso) = Area pericolosa; mappare secondo 120 chiaro/bordato e eventuale `geometrie_italia` — **NON IMPL-A**
-**NOTE:** REFERENCE-C CLOSED / PASS 2026-08-16 · asset ufficiale D-Flight SWATCH↔USER-FACING **PROVEN (8)** · GetLegendGraphic Tailnet `http://100.114.7.53:8010` HTTP 200 · triple implementative ancora **0**
+**NEXT:** preparare specifica/prompt di esecuzione del **one-shot RULE-META PROBE** DELICATO e sottoporlo al gate review canonico (OM §4 Regola B) **PRIMA** dell’esecuzione — NON eseguire probe in DESIGN-A; NON IMPL-A
+**NOTE:** PNG composito insufficiente per discriminare regole rosse · GeoServer JSON/RULE = CAPABILITY CANDIDATE · query client su `/atm09/legend.png` **non** inoltrate upstream
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -426,10 +426,106 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 | AUDIT-A | **CLOSED / PASS** |
 | REFERENCE-B | **CLOSED / PASS** |
 | REFERENCE-C | **CLOSED / PASS** |
-| CURRENT GATE | **OFFICIAL LABEL↔STYLE MAPPING REQUIRED** |
-| NEXT | join TECH↔pattern UI (rosse_scure/piene ambigue; rosse_quadri; 120 bordato; italia) — **NON** IMPL-A |
+| RULE-META-DESIGN-A | **CLOSED / PASS** |
+| CURRENT GATE | **DELICATE RULE-META PROBE REVIEW REQUIRED** |
+| RECOMMENDED | **ONE-SHOT RULE-META PROBE** (Caso D1) |
+| NEXT | specifica/prompt probe DELICATO → review canonica OM §4 Regola B **prima** esecuzione — **NON** eseguire ora; **NON** IMPL-A |
 | WU-0018 | **OPEN** |
 | E–H | **NOT OPENED** |
+
+---
+
+## RULE-META-DESIGN-A
+
+**Blocco:** `D-FLIGHT-ATM09-LEGEND-UX-RULE-META-DESIGN-A` · **CLOSED / PASS** · 2026-08-16 · **DESIGN ONLY** (nessun probe, nessun patch helper/runtime).
+
+### 1. Finding helper corrente (0.1.3) — verificato nel codice
+
+| Voce | Evidenza |
+| --- | --- |
+| Layer/style hard-coded | `ATM09_LAYER` / `ATM09_STYLE` — `goi_dflight_helper.py` ~49–50 |
+| URL PNG chiuso | `build_atm09_legend_url()` ~600–621 forza: `service=WMS` · `version=1.1.1` · `request=GetLegendGraphic` · `layer`/`style` ATM09 · `format=image/png` · `width=20` · `height=20` · `legend_options=fontSize:12;dpi:96` |
+| Fetch | `fetch_atm09_legend()` ~1283–1311 — usa solo `build_atm09_legend_url`; `Accept: image/png,*/*`; MIME must contain `image/png`; byte cap `ATM09_LEGEND_BYTE_CAP` |
+| Route | `GET /atm09/legend.png` ~1572–1583: `path_only = self.path.split("?", 1)[0]` → **query client ignorata**; chiama `fetch_atm09_legend()` **senza** parametri client |
+| Conseguenza | client **non può** oggi ottenere `format=application/json` né `RULE=…` tramite helper |
+
+### 2. Capability GeoServer (documentazione primaria) — CAPABILITY CANDIDATE
+
+Fonte: [GetLegendGraphic](https://docs.geoserver.org/latest/en/user/services/wms/get_legend_graphic/) · [SLD Rules](https://docs.geoserver.org/stable/en/user/styling/sld/reference/rules/).
+
+| Voce | Stato |
+| --- | --- |
+| Parametro opzionale `RULE` | Documentato — singola rule dello style |
+| `format=application/json` | Documentato da GeoServer **≥ 2.15.0** |
+| JSON tipico | `Legend[]` → `rules[]` con `title`, `filter` (ECQL), `symbolizers` (Polygon/Line/… fill/stroke/…), eventuale `ElseFilter` |
+| SLD Rule | `Name` · `Title` (usato in legende) · `Filter` · Symbolizer(s) |
+| Supporto server D-Flight | **NON PROVATO** — resta CAPABILITY CANDIDATE finché probe DELICATO non conferma |
+
+Le stringhe PNG (`geometrie_rosse_*`, …) possono essere Title o Name: **non** assumere validità come `RULE=` senza metadata.
+
+### 3. Problema residuo (REFERENCE-C)
+
+PNG 181×189 · 9 bande · swatch #1/#2/#3 **pixel-identici** · `rosse_quadri` solo candidato · `italia` senza swatch · UI: due Max 0, due Max 120, Area pericolosa. **Ulteriore confronto grafico composito = vietato** come metodo di chiusura.
+
+### 4. Opzioni A–D
+
+| Opzione | Descrizione | GO / NO-GO | Note |
+| --- | --- | --- | --- |
+| **A — One-shot diagnostic** | Script/comando VPS o repo esplicito; riusa auth/config helper; GetLegendGraphic JSON hard-coded; output TEMP sanitizzato; **nessun** endpoint HTTP nuovo; **nessun** deploy helper live | **GO (raccomandata)** | Minimo privilegio per evidenza una tantum |
+| **B — Endpoint diagnostico chiuso** | es. `GET /atm09/legend-meta` hard-coded JSON; stessi gate bind/CORS; no-store | **GO condizionato** | Solo se A non operativa (service user / VPS) |
+| **C — Estensione `/atm09/legend.png?...`** | `?format=json` / `?rule=` inoltrati | **NO-GO** | Amplifica proxy; rompe contratto chiuso; parametri arbitrari |
+| **D — Endpoint runtime normalizzato** | entries per monolite futuro | **NO-GO ora** | Prematuro; valutare solo dopo mapping chiuso e bisogno runtime reale |
+
+### 5. Threat / risk matrix (A)
+
+| Rischio | Mitigazione design |
+| --- | --- |
+| Credential / auth upstream | Solo primitive helper esistenti; mai nel monolite; mai nei docs/report |
+| URL autenticato / token in log | Vietato; log solo status/MIME/byte count sanitizzati |
+| Superficie rete | Nessuna porta nuova; nessun endpoint; Tailnet bind invariato |
+| Proxy parametrico | Vietato; layer/style/request/format **hard-coded** |
+| RULE client | Solo allowlist da metadata già ottenuta — mai stringa arbitraria |
+| OPSEC | Stessi timeout/byte cap; MIME allowlist `application/json`; TEMP + cleanup |
+| Live helper 0.1.3 | **Invariato** in DESIGN-A e preferibilmente anche nel probe one-shot |
+
+### 6. Soluzione raccomandata — Caso **D1**
+
+**RECOMMENDED:** **ONE-SHOT RULE-META PROBE**
+
+**CURRENT GATE:** `DELICATE RULE-META PROBE REVIEW REQUIRED`
+
+Categoria: **DELICATO** (OM §4 Regola B — rete/tile/proxy + auth upstream). Review: reviewer AI esterno upstream **oppure** REVIEW GPT-SOSTITUTIVA con checklist rete/proxy/OPSEC **prima** di esecuzione.
+
+### 7. Probe futuro (NON eseguito in DESIGN-A)
+
+**Probe 1 — JSON GetLegendGraphic**
+
+- Costruire URL chiuso analogo a `build_atm09_legend_url` ma `format=application/json` (e Accept JSON).
+- Success: HTTP 200 · MIME JSON · `rules[]` con title/filter/symbolizers leggibili · nessuna secret · sufficiente a discriminare regole rosse (e correlati).
+- Failure: format unsupported · GeoServer &lt;2.15 · auth denied · schema inatteso · metadata insufficiente → fail-closed; non inventare join.
+
+**Probe 2 — RULE** (solo se Probe 1 passa e serve isolamento)
+
+- `RULE=` da **Name** (o identificatore documentato nel JSON), **allowlist** da Probe 1.
+- Success: simbolo/rule isolata con associazione deterministica.
+- Failure: stringhe PNG non sono RULE id → non forzare.
+
+**Fallback fail-closed:** se JSON assente/insufficiente → gate `ATM09 STYLE METADATA SOURCE REQUIRED` (Caso D3) senza promote a PROVEN.
+
+Hex/fill nel JSON = **evidenza diagnostica upstream**, non stile GOI.
+
+### 8. Review gate obbligatorio prima dell’esecuzione
+
+1. Specifica/prompt probe DELICATO completa (scope, comandi, TEMP, sanitizzazione, stop conditions).
+2. Review OM §4 Regola B (esterna o GPT-SOSTITUTIVA checklist rete/proxy).
+3. Solo dopo PASS review → esecuzione one-shot.
+4. Report sanitizzato → aggiornamento matrice WU-0018.
+5. **NON** patch helper/deploy salvo fallimento A e nuova decisione B.
+6. **NON** IMPL-A finché triple necessarie non sono PROVEN.
+
+### 9. NEXT
+
+Preparare specifica/prompt di esecuzione del probe DELICATO e sottoporla al gate review — **senza** eseguire il probe in questo blocco.
 
 ---
 
@@ -439,4 +535,5 @@ Roadmap stile futuro (§7 Legenda ATM09 esterna): swatch maggiori, pattern leggi
 - [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) — candidato D + §7 stile futuro
 - Monolite: `dflightAtm09LegendUrl`, `dflightAtm09EnsureLegend`, `dflightLegendPaintMode`, `dflightSyncContextualLegends` (tip LIVE `d2d3ab3`)
 - Helper: `build_atm09_legend_url`, `fetch_atm09_legend`, route `/atm09/legend.png` (0.1.3)
-- OM §7.1 FRONTIER (stato vivo)
+- GeoServer GetLegendGraphic JSON/RULE (docs ufficiali) — CAPABILITY CANDIDATE
+- OM §4 Regola B (DELICATO) · OM §7.1 FRONTIER (stato vivo)
