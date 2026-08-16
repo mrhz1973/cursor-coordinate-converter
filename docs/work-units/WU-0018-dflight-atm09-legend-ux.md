@@ -2,14 +2,14 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN
-**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A (**CLOSED / PASS** — Caso **T1**)
-**CURRENT GATE:** READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A
+**ACTIVE BLOCK:** D-FLIGHT-ATM09-LEGEND-UX-IMPL-A (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**)
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **REVIEW BASE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197**
-**RUNTIME LIVE:** monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper **0.1.3**
-**CATEGORIA:** TOPOLOGY-ADJUDICATION = docs-only · IMPL-A futura = **ROUTINE** (strategia E ibrida; no helper patch)
+**RUNTIME LIVE:** monolite tip `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` · build **198** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · helper **0.1.3**
+**CATEGORIA:** ROUTINE (UI/CSS/HTML + JS a basso rischio; no helper patch)
 **ORIGINE:** backlog QA build 183 candidato **D** — Legenda ATM09 esterna / label user-facing
-**NEXT:** `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` — NON implementare in questo blocco
-**NOTE:** `costa` ∈ RED-0-SOLID (no 9ª voce UI) · secondo Max 120 = DEFAULT/NON-RESTRICTED (no TECH rule) · official pixel crop misurato · USER-FACING SOURCE **8/8**
+**NEXT:** QA FINALE CHATGPT — PENDING (coda `finito` pre-autorizzata Regola H)
+**NOTE:** 8-row user legend + official swatch inline · technical WMS non-competitive · `costa`∈RED-0-SOLID · italia esclusa · DEFAULT 120 no TECH · QA umana **non** ancora attestata
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) **CLOSED / PASS** (IMPL-A / build 197 — arbitration legenda contestuale).
@@ -853,6 +853,38 @@ Hex/fill nel JSON = **evidenza diagnostica upstream**, non stile GOI.
 ### 9. NEXT
 
 Preparare specifica/prompt di esecuzione del probe DELICATO e sottoporla al gate review — **senza** eseguire il probe in questo blocco.
+
+---
+
+## IMPL-A — D-FLIGHT-ATM09-LEGEND-UX-IMPL-A (IMPLEMENTED)
+
+**STATUS blocco:** IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING  
+**RUNTIME LIVE:** `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` · build **198** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A`  
+**Catena runtime:** `469b685` (feat legend) → `016be9e` (fix technical non-competitive)  
+**Helper:** **0.1.3** invariato  
+**URL:** `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=016be9e`
+
+### Topology 8/8 implementata
+
+| # | Label IT | Swatch crop bbox (half-open) | Note |
+| --- | --- | --- | --- |
+| 1 | Max 0 metri AGL | `[267,153,280,165)` | RED-0-SOLID (`rosso`+`costa`) |
+| 2 | Max 0 metri AGL | `[267,171,280,184)` | `rosso_righe` |
+| 3 | Max 25 metri AGL | `[267,190,280,203)` | `arancione` |
+| 4 | Max 45 metri AGL | `[267,209,280,222)` | `giallo` |
+| 5 | Max 60 metri AGL | `[267,227,280,241)` | `azzurra` |
+| 6 | Max 120 metri AGL | `[268,247,279,259)` | `verde` |
+| 7 | Max 120 metri AGL | `[268,266,280,278)` | DEFAULT/NON-RESTRICTED · **no TECH** · non `italia` |
+| 8 | Area pericolosa | `[267,284,280,298)` | `rosso_quadri` |
+
+Asset ufficiale TEMP: `960×422` RGB · crop Pillow · inline `data:image/png;base64` (nessun fetch runtime a d-flight.it).
+
+### Verifiche
+
+- Static/source: PASS · selftest locale+LIVE **356/356** PASS  
+- Deploy GIS-only: HTTP 200 · bytes **10297343** · SHA-256 LF `cdbf06f065154f5e2dced0361cf0b7fab07a77321501abf4a32d65e921ba102e` byte-match  
+- Automated Browser QA: **PASS** (AB-1…AB-13 + SELFTEST_LIVE)  
+- QA umana: **NON** ancora attestata · WU resta **OPEN**
 
 ---
 

@@ -622,7 +622,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **A** | BUG hit-test / click D-Flight intermittente | **CLOSED / PASS** WU-0015 — FIX5 LIVE tip `02be3a5` / 192 |
 | **B** | D-Flight UX coherence | **CLOSED / PASS** → [`WU-0016`](WU-0016-dflight-ux-coherence.md) — B0–B4; LIVE `c7d1734` / **196** |
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
-| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — TOPOLOGY-ADJUDICATION-A **CLOSED/PASS** (T1) · USER-FACING SOURCE **8/8** · `costa`∈RED-0-SOLID · Max120 default **PROVEN** · gate **READY FOR …-IMPL-A** · NEXT = IMPL-A ROUTINE (no helper patch) |
+| **D** | Legenda ATM09 esterna | **OPEN** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A **IMPLEMENTED / DEPLOY PASS / AB QA PASS** · LIVE `016be9e` / **198** · gate **QA FINALE CHATGPT — PENDING** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **NOT OPENED** — futura categoria **DELICATO** (lifecycle/layout dialog) |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
 | **G** | Global minimized-panel dock / modal layout manager | **NOT OPENED** — trasversale, non solo D-Flight |

@@ -386,12 +386,12 @@ Sostituire `<BLOCK-ID>` con l'ID reale del bundle (es. `ROUTINE-CLEANUP-BUNDLE`)
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0018 — [`D-FLIGHT-ATM09-LEGEND-UX`](work-units/WU-0018-dflight-atm09-legend-ux.md) (**OPEN**) |
-| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-TOPOLOGY-ADJUDICATION-A (**CLOSED / PASS** — Caso **T1**) |
-| **STATO BLOCCO** | Topologia 8/8: `costa`∈RED-0-SOLID; secondo Max 120=DEFAULT; official crop misurato; no helper patch |
-| **GATE CORRENTE** | **READY FOR D-FLIGHT-ATM09-LEGEND-UX-IMPL-A** |
-| **REVIEW BASE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` (build **197** / IMPL-A visual parity) |
-| **RUNTIME LIVE** | **INVARIATO** · monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` · build **197** · `APP_BUILD_ID=D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
-| **NEXT** | `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` (ROUTINE) — NON aperto in questo blocco |
+| **BLOCCO ATTIVO** | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A (**IMPLEMENTED / DEPLOY PASS / AUTOMATED BROWSER QA PASS / QA OPERATORE PENDING**) |
+| **STATO BLOCCO** | User-facing 8-row ATM09 legend LIVE build **198**; technical WMS non-competitive; QA umana pending |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **REVIEW BASE** | monolite tip `d2d3ab34adf7e30e07771c0edcf0e2700e931715` (build **197** / visual parity) |
+| **RUNTIME LIVE** | monolite tip `016be9e58d33c233e7a2ef01757ee1840e3bc0bb` · build **198** · `APP_BUILD_ID=D-FLIGHT-ATM09-LEGEND-UX-IMPL-A` · helper prod **0.1.3** (`http://100.114.7.53:8010`) |
+| **NEXT** | QA FINALE CHATGPT — PENDING (coda `finito` pre-autorizzata Regola H) |
 | **ALTRI WORKSTREAM OPEN / READY / PARKED / FROZEN** | WU-0018 **OPEN** · WU-0017 **CLOSED / PASS** · WU-0016 **CLOSED / PASS** · WU-0015 **CLOSED / PASS** · WU-0014 **CLOSED / PASS** · WU-0013 **CLOSED / PASS** · WU-0012 OPEN / NEXT PROVIDER (NO PROVIDER READY) · WU-0010 OPEN (Bundle F futuro) · WU-0011 CLOSED/PASS (INFRA-GH-1A+1B) · Oggetti GIS **FROZEN** |
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
