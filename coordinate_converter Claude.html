@@ -8677,7 +8677,10 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
    * .trp-point / .trp-cursor (coordinate readout). */
   left:10px; top:10px;
   right:auto; bottom:auto;
-  z-index:40; /* above tiles; layout avoids overlap with .tile-ctrls (60) */
+  /* FIX3: keep map legend under ALL app modals/floating panels (gis baseZ 24–29).
+   * Mount may be #gisMapMount (sibling of dialogs), so high z competed with panels.
+   * Still above map tiles; below .tile-ctrls (60) by design. pointer-events:none unchanged. */
+  z-index:5;
   box-sizing:border-box;
   max-width:min(210px, 46vw);
   margin:0;
@@ -23572,10 +23575,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2";
-const APP_BUILD_DETAIL = "FIX2: one-touched symmetric right/left/below/above post-clamp separation; explicit partial_visible when impossible.";
+const APP_BUILD_ID = "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3";
+const APP_BUILD_DETAIL = "FIX3: Atm09 open + drag/resize-end pair-layout; legend stacking below floating modals; real-UI SBS_R proofs.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 203;
+const APP_BUILD_NUM = 204;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37224,16 +37227,24 @@ function dflightWireFloatingPanel(dlg, kind){
     const h = document.getElementById(opts.headId);
     if (h) h.classList.add("gis-panel-drag-head");
   } catch(_){}
+  const _dflightPairAfterUserGeom = function(){
+    try { if (typeof dflightEnsurePairLayout === "function") dflightEnsurePairLayout(); } catch(_){}
+  };
   if (typeof gisPanelAttachDrag === "function"){
     gisPanelAttachDrag(dlg, Object.assign({}, opts, {
       threshold: 4,
       draggingClass: "dragging",
-      ignoreSelector: "#" + opts.closeId + ",.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+      ignoreSelector: "#" + opts.closeId + ",.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]",
+      onDragEnd: _dflightPairAfterUserGeom
     }));
   }
   if (typeof gisPanelAttachResize === "function"){
     const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
-    gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+    gisPanelAttachResize(dlg, Object.assign({}, opts, {
+      handleEls: handles,
+      threshold: 3,
+      onResizeEnd: _dflightPairAfterUserGeom
+    }));
   }
   if (typeof gisPanelAttachBringToFront === "function") gisPanelAttachBringToFront(dlg, opts);
   if (typeof gisPanelBringToFront === "function") gisPanelBringToFront(dlg, opts);
@@ -38828,8 +38839,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39850,8 +39861,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41126,9 +41137,11 @@ function dflightAtm09OpenDetails(feat){
   try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
   _dflightDetailsOpen = true;
   try { if (typeof gisRemoveFromMinimizedDock === "function") gisRemoveFromMinimizedDock("dflightDetailsPanel"); } catch(_){}
-  /* FIX3 D3: same floating/pin lifecycle as native dflightOpenDetailsPanel. */
+  /* FIX3: same floating/pin/pair lifecycle as native dflightOpenDetailsPanel.
+   * FIX2 omitted EnsurePairLayout here → desktop overlap on map-zone click path. */
   try { dflightWireFloatingPanel(dlg, "details"); } catch(_){}
   try { dflightPinPanelBelowTopbar(dlg, "details"); } catch(_){}
+  try { if (typeof dflightEnsurePairLayout === "function") dflightEnsurePairLayout(); } catch(_){}
 }
 
 function dflightAtm09AttachInteraction(tileMap){
@@ -41776,8 +41789,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_203", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+    add("H_build_204", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42277,8 +42290,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43291,8 +43304,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43729,8 +43742,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_203", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+    add("OptB_FIX5_build_204", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44321,8 +44334,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44956,8 +44969,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -45113,8 +45126,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -45537,9 +45550,9 @@ function dflightSelfTestSideBySide(){
     geomStubbed = false;
   }
   try {
-    add("SBS_build_203",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 203
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2");
+    add("SBS_build_204",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 204
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -45704,6 +45717,94 @@ function dflightSelfTestSideBySide(){
     add("SBS_J_hooks_open_control", String(dflightOpenControlPanel).indexOf("dflightEnsurePairLayout") >= 0);
     add("SBS_J_hooks_resize", String(dflightEnsurePanelGeometryResize).indexOf("dflightEnsurePairLayout") >= 0);
     add("SBS_J_hooks_restore", String(gisRestoreMinimizedPanel).indexOf("dflightEnsurePairLayout") >= 0);
+
+    /* R — FIX3 real-UI chain proofs (must FAIL on FIX2/203 Atm09 path; PASS on FIX3) */
+    add("SBS_R_hooks_atm09", String(dflightAtm09OpenDetails).indexOf("dflightEnsurePairLayout") >= 0);
+    add("SBS_R_hooks_drag_end",
+      String(gisPanelAttachDrag).indexOf("onDragEnd") >= 0
+      && String(dflightWireFloatingPanel).indexOf("onDragEnd") >= 0);
+    add("SBS_R_hooks_resize_end",
+      String(gisPanelAttachResize).indexOf("onResizeEnd") >= 0
+      && String(dflightWireFloatingPanel).indexOf("onResizeEnd") >= 0);
+    add("SBS_R_legend_z_css", (function(){
+      try {
+        const css = Array.from(document.styleSheets || []).map(function(ss){
+          try { return Array.from(ss.cssRules || []).map(function(r){ return r.cssText || ""; }).join("\n"); }
+          catch(_){ return ""; }
+        }).join("\n");
+        const hit = css.indexOf("#dflightAtm09UserLegend") >= 0 && /#dflightAtm09UserLegend[^{]*\{[^}]*z-index:\s*5\b/.test(css);
+        return hit;
+      } catch(_){ return false; }
+    })());
+
+    unstubViewport();
+    unstubGeom();
+    if (!stubViewport(1280, 900) || !stubGeom(60, 900)){
+      add("SBS_R_atm09_chain_no_overlap", false, "stub wide failed");
+      add("SBS_R_drag_touched_sibling", false, "stub wide failed");
+      add("SBS_R_legend_stack_runtime", false, "stub wide failed");
+    } else {
+      /* Real open chain: control open + Atm09 details (no direct EnsurePairLayout call). */
+      try {
+        if (typeof gPanelLayouts === "object" && gPanelLayouts){
+          delete gPanelLayouts.dflightPanel;
+          delete gPanelLayouts.dflightDetailsPanel;
+        }
+      } catch(_){}
+      try { closeDlg(det); } catch(_){}
+      try { if (typeof dflightOpenControlPanel === "function") dflightOpenControlPanel(); } catch(_){}
+      try {
+        dflightAtm09OpenDetails({
+          id: "sbs-r-atm09",
+          properties: { id: "sbs-r-atm09", name: "SBS R ATM09", type: "TEST" }
+        });
+      } catch(eAtm){
+        add("SBS_R_atm09_chain_no_overlap", false, "atm09 throw: " + String(eAtm && eAtm.message ? eAtm.message : eAtm));
+      }
+      const zrR = zone.getBoundingClientRect();
+      const drR = det.getBoundingClientRect();
+      const sepR = rectsSeparate(zrR, drR);
+      const layZR = (typeof gisPanelGetLayout === "function") ? (gisPanelGetLayout("dflightPanel", _dflightPanelLayoutOpts("control")) || {}) : {};
+      const layDR = (typeof gisPanelGetLayout === "function") ? (gisPanelGetLayout("dflightDetailsPanel", _dflightPanelLayoutOpts("details")) || {}) : {};
+      add("SBS_R_atm09_chain_no_overlap",
+        !!(zone.open && det.open && sepR && !layZR.touched && !layDR.touched
+          && Math.round(drR.left) !== Math.round(zrR.left)),
+        "sep=" + sepR + " zl=" + Math.round(zrR.left) + " dl=" + Math.round(drR.left)
+          + " zt=" + Math.round(zrR.top) + " dt=" + Math.round(drR.top)
+          + " zL=" + zone.style.left + " dL=" + det.style.left);
+
+      /* Touched Zone: sibling must relocate; Zone left/top preserved. */
+      prepFloating(340, 380, 280, 280);
+      setLay(280, 90, 340, 280, true, 12, 90, 380, 280, false);
+      const zBefore = { left: zone.style.left, top: zone.style.top };
+      const rDrag = (typeof dflightEnsurePairLayout === "function") ? dflightEnsurePairLayout() : null;
+      const zrD2 = zone.getBoundingClientRect();
+      const drD2 = det.getBoundingClientRect();
+      add("SBS_R_drag_touched_sibling",
+        !!(rDrag && rDrag.ok && zone.style.left === zBefore.left && zone.style.top === zBefore.top
+          && approx(zrD2.left, 280) && rectsSeparate(zrD2, drD2)),
+        "mode=" + (rDrag && rDrag.mode) + " zl=" + zone.style.left + " dl=" + Math.round(drD2.left)
+          + " sep=" + rectsSeparate(zrD2, drD2));
+
+      /* Legend stacking: panel z-index must exceed legend (runtime). */
+      try {
+        let leg = document.getElementById("dflightAtm09UserLegend");
+        if (!leg && typeof dflightEnsureAtm09UserLegend === "function") leg = dflightEnsureAtm09UserLegend();
+        if (leg){
+          try { leg.hidden = false; } catch(_){}
+          try { if (typeof gisPanelBringToFront === "function") gisPanelBringToFront(zone, _dflightPanelLayoutOpts("control")); } catch(_){}
+          const zLeg = parseInt(window.getComputedStyle(leg).zIndex, 10);
+          const zPan = parseInt(window.getComputedStyle(zone).zIndex, 10);
+          add("SBS_R_legend_stack_runtime",
+            Number.isFinite(zLeg) && Number.isFinite(zPan) && zPan > zLeg,
+            "legendZ=" + zLeg + " panelZ=" + zPan);
+        } else {
+          add("SBS_R_legend_stack_runtime", false, "legend missing");
+        }
+      } catch(eLeg){
+        add("SBS_R_legend_stack_runtime", false, String(eLeg && eLeg.message ? eLeg.message : eLeg));
+      }
+    }
   } catch (e){
     add("SBS_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -75516,9 +75617,13 @@ function gisPanelAttachDrag(root, opts){
     try { head.classList.remove(opts.draggingClass || "dragging"); } catch(_){}
     try { if (head.releasePointerCapture) head.releasePointerCapture(ev.pointerId); } catch(_){}
     try { if (moved && typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
+    const didMove = moved;
     clean();
     down = null;
     moved = false;
+    if (didMove && typeof opts.onDragEnd === "function"){
+      try { opts.onDragEnd(root, opts); } catch(_){}
+    }
   }
   head.addEventListener("pointerdown", (ev) => {
     if (ev.pointerType === "mouse" && ev.button !== 0) return;
@@ -75631,9 +75736,13 @@ function gisPanelAttachResize(root, opts){
     if (!down || ev.pointerId !== down.pid) return;
     try { if (down.handleEl && down.handleEl.releasePointerCapture) down.handleEl.releasePointerCapture(ev.pointerId); } catch(_){}
     try { if (moved && typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
+    const didMove = moved;
     clean();
     down = null;
     moved = false;
+    if (didMove && typeof opts.onResizeEnd === "function"){
+      try { opts.onResizeEnd(root, opts); } catch(_){}
+    }
   }
   handles.forEach(h => {
     const handleId = (h.getAttribute("data-handle") || h.getAttribute("data-panel-resize") || "se");
