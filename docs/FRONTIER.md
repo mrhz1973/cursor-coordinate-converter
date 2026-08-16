@@ -6,7 +6,7 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | WU-0020 — Branding TMART GIS tool (candidato **H**) |
 | **BLOCCO ATTIVO** | BRANDING-TMART-IMPL-A |
-| **STATO BLOCCO** | IMPLEMENTED · selftest **421/421** PASS · candidato runtime pending review · helper **0.1.3** |
+| **STATO BLOCCO** | IMPLEMENTED · selftest **421/421** PASS · evidence B materializzata · helper **0.1.3** |
 | **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
 | **REVIEW BASE** | monolite tip `9820c8ab9cb0d2103adf955ba3b873bca4c89e08` · build **205** |
 | **RUNTIME CANDIDATE** | `1abc247fd783526531307c7a6997292f103b986d` · build **206** · `APP_BUILD_ID=BRANDING-TMART-IMPL-A` |

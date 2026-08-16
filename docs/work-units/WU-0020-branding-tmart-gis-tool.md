@@ -10,7 +10,7 @@
 **CATEGORIA:** ROUTINE (rename stringhe user-facing; layout risk basso)
 **ORIGINE:** backlog QA build 183 candidato **H** — Branding TMART GIS tool
 **NEXT:** dopo PASS review → deploy/ABQA · candidato **G** **NOT OPENED** fino a chiusura H
-**NOTE:** IMPL-A 2026-08-16 · brand `TMART GIS tool` · selftest 421/421 · CSS style block identical vs BASE · filename invariato · G NOT OPENED
+**NOTE:** IMPL-A 2026-08-16 · brand `TMART GIS tool` · selftest 421/421 · CSS identical vs BASE · filename invariato · G NOT OPENED · evidence B `2026-08-16_2135_…review-evidence-b.md` (hunk account 32; no OTHER)
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS** (candidato E).
@@ -259,3 +259,15 @@ Nessun refactor layout; nessun cambio architetturale.
 **Evidence:** [../orchestrator/inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md](../orchestrator/inbox/2026-08-16_2125_branding-tmart-impl-a-evidence.md)
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** — no deploy / ABQA / QA / finito / G.
+
+## 13. REVIEW-EVIDENCE-B (2026-08-16)
+
+**Blocco:** BRANDING-TMART-IMPL-A-REVIEW-EVIDENCE-B · DIAGNOSTIC/DOCS only  
+**Candidate:** 1abc247fd783526531307c7a6997292f103b986d (**invariato**)  
+**Monolite:** non modificato  
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** (verdetto non emesso)
+
+**Evidence:** [../orchestrator/inbox/2026-08-16_2135_branding-tmart-impl-a-review-evidence-b.md](../orchestrator/inbox/2026-08-16_2135_branding-tmart-impl-a-review-evidence-b.md)
+
+Sintesi: 32 hunk · +178/−53 riconciliati · OTHER=0 · residue A=0 · CSS SHA identical · selftest branding 17 in totale 421.
+
