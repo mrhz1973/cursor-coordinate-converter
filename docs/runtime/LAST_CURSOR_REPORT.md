@@ -1,42 +1,36 @@
 # LAST_CURSOR_REPORT
 
-## LATEST
+**Aggiornato:** 2026-08-16 (D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1)
 
-* real_task_commit: `9dc83c4f7dffa011a101e8ff81be207769018ef3` — verify short `9dc83c4`
-* real_task_subject: docs: remove duplicate runtime coda from QA-CHECKLIST
-* report_generated_at: 2026-08-16T12:30:00+02:00
-* branch: main
-* remote_head_after_task_push: `9dc83c4f7dffa011a101e8ff81be207769018ef3`
-* previous_report_container: `56287af526435d6590975e76167d51a546d7b840`
-* current_report_container: `PENDING_SELF_REFERENCE`
-* final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: solo autosync memoria/report (pre-autosync)
-* pass_tecnico_remoto: task `9dc83c4` verificato post-push pre-report · container corrente EXTERNAL_ONLY
-* result_cursor: WIKI-LLM-LEAN-CONSOLIDATION-C-QA-FIX1 — QA-CHECKLIST coda runtime sostituita da pointer a OM §4 + CLOSURE:STANDARD_RUNTIME_BUNDLE
-* pass_operatore: **N/A**
-* result_runtime: nessun runtime · OM §7 / WU / gate APP GIS invariati
-* qa_attestation_source: ABQA NOT APPLICABLE
-* notes: grep vivo — nessuna «GPT incolla» / «Home duplicata»; unica casa coda = OM §4
+## Disciplina F3
 
-## OUTPUT VERBATIM
+| Campo | Valore |
+|-------|--------|
+| `real_task_commit` | `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` |
+| Container corrente | `PENDING_SELF_REFERENCE` |
+| Fatti autosync proprio | `EXTERNAL_ONLY` |
+| Terzo commit | **vietato** |
+| Published | immutable |
 
-```text
-git ls-remote origin refs/heads/main
-9dc83c4f7dffa011a101e8ff81be207769018ef3	refs/heads/main
+## LIVE
 
-git diff --stat
- docs/QA-CHECKLIST.md | 22 +++-------------------
- 1 file changed, 3 insertions(+), 19 deletions(-)
-```
+| Campo | Valore |
+|-------|--------|
+| tip | `c1c1b85d8e58fd5e50f2bc590a4d383909faa424` |
+| build | **199** |
+| APP_BUILD_ID | `D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1` |
+| helper | 0.1.3 |
+| helper base | `http://100.114.7.53:8010` |
+| URL | `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=c1c1b85` |
 
-PASS remoto container corrente: **EXTERNAL_ONLY**.
+## Blocco
 
-## HISTORY
-
-* `56287af` — WIKI-LLM-LEAN-CONSOLIDATION-C autosync
-* `1f2e8b0` — WIKI-LLM-LEAN-CONSOLIDATION-C task
-* `9dc83c4` — QA-FIX1 (questo real_task)
-
-## LIMITI
-
-Autosync SHA corrente non autorato qui.
+| Campo | Valore |
+|-------|--------|
+| WORKSTREAM | WU-0018 OPEN |
+| BLOCK | D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1 **IMPLEMENTED / DEPLOY PASS / AB QA PASS / QA OPERATORE PENDING** |
+| GATE | QA FINALE CHATGPT — PENDING |
+| Automated Browser QA | **PASS** |
+| Helper patch | **NO** |
+| Nuovo endpoint | **NO** |
+| Finito | **NO** (pre-QA) |
