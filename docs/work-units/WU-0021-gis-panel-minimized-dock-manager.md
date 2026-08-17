@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / AUDIT
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B-AUDIT-A
+**STATUS:** OPEN / IMPL
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
-**LAST CLOSED BLOCK:** GIS-PANEL-DOCK-MGR-G-A1-FIX2 **CLOSED / PASS** (non riaperto)
-**RUNTIME LIVE:** `525e7df50cb4edf768b0da7f59e7414dd79d56de` · build **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2` · blob `9aa5441d48b89968cb388e3a7c61ee6d063a964d`
+**RUNTIME LIVE:** `525e7df…` / **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2`
+**RUNTIME CANDIDATE:** `361345d6d330347a0ced6cd57c4a3fcb7d7b173a` · build **211** · `GIS-PANEL-DOCK-MGR-G-B` · blob `a0b8661422d8646ee07ec7ff41ba25c7c67cbb42`
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW audit G-B → (se PASS) IMPL G-B; **G-C/G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** Audit 2026-08-17 · G_B_ORDINARY_IDS + workbench whitelist gap · monolite invariato · no patch
+**NEXT:** REVIEW GPT-SOSTITUTIVA; **G-C/G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** G-B 2026-08-17 · workbench whitelist + ordinary certification · selftest 486/486 · no deploy
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -460,3 +460,15 @@ Audit docs-only. G-A1-FIX2 **non** riaperto. Monolite **invariato**.
 - Workbench gap = **solo** branch assente in gisMinimizePanel (infra già completa; i18n gis.minimized.workbench già presente)
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no patch/deploy · G-C/G-D/F NOT OPENED.
+
+## 26. G-B IMPL (2026-08-17) — REVIEW PENDING
+
+Audit PASS → IMPL. Branch whitelist `gisWorkbenchPanel` in `gisMinimizePanel` + selftest `gisDockSelfTestGB`.
+
+**Candidate:** `361345d6d330347a0ced6cd57c4a3fcb7d7b173a` / build **211** / blob `a0b86614…`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0210_gis-panel-dock-mgr-g-b-evidence.md`](../orchestrator/inbox/2026-08-17_0210_gis-panel-dock-mgr-g-b-evidence.md)
+
+**Hunk:** 18 · **+340/−38** · **OTHER=0** · selftest **486/486**.
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · G-C/G-D/F NOT OPENED.
