@@ -2,13 +2,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B-REVIEW-EVIDENCE-B
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **RUNTIME LIVE:** `525e7df…` / **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2`
-**RUNTIME CANDIDATE:** `361345d6d330347a0ced6cd57c4a3fcb7d7b173a` · build **211** · `GIS-PANEL-DOCK-MGR-G-B` · blob `a0b8661422d8646ee07ec7ff41ba25c7c67cbb42`
+**RUNTIME CANDIDATE:** `361345d6d330347a0ced6cd57c4a3fcb7d7b173a` · build **211** · `GIS-PANEL-DOCK-MGR-G-B` · blob `a0b8661422d8646ee07ec7ff41ba25c7c67cbb42` · **invariato**
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA; **G-C/G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** G-B 2026-08-17 · workbench whitelist + ordinary certification · selftest 486/486 · no deploy
+**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; **G-C/G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** Evidence-B 2026-08-17 · blocked paths A–G PASS · selftest 486/486 · no patch · no verdetto
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -472,3 +472,13 @@ Audit PASS → IMPL. Branch whitelist `gisWorkbenchPanel` in `gisMinimizePanel` 
 **Hunk:** 18 · **+340/−38** · **OTHER=0** · selftest **486/486**.
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · G-C/G-D/F NOT OPENED.
+
+## 27. G-B REVIEW-EVIDENCE-B (2026-08-17)
+
+Evidence-only. Candidato **invariato** `361345d…` / 211.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md`](../orchestrator/inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md) · JSON blocked paths sibling.
+
+**Blocked A–G:** favorites / waypoint / astro / layers / rangeRings / polygon / track(subdialog) — **7/7 PASS** · post-unblock normal min+restore PASS · selftest **486/486**.
+
+**Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · nessun verdetto · no patch/deploy.

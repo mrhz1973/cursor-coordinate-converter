@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-B** · candidate `361345d` / build **211** · workbench whitelist + ordinary certification · selftest **486/486** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy. [`inbox/2026-08-17_0210_gis-panel-dock-mgr-g-b-evidence.md`](inbox/2026-08-17_0210_gis-panel-dock-mgr-g-b-evidence.md).
+2026-08-17 — **GIS-PANEL-DOCK-MGR-G-B-REVIEW-EVIDENCE-B** · candidate `361345d` / **211** invariato · blocked paths A–G **7/7 PASS** · selftest **486/486** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · nessun verdetto. [`inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md`](inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md).
