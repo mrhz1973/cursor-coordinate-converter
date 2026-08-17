@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **GIS-DIALOG-MINIMIZE-HISTORY-A** — candidate `7196b30` / **214** · REVIEW-EVIDENCE-B PASS · **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE invariato `7fb0c20` / **213**
+1. **GIS-DIALOG-MINIMIZE-HISTORY-A** — LIVE `7196b30` / **214** · deploy GIS-only PASS · ABQA 37/37 · **QA FINALE CHATGPT — PENDING**
 2. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — **CLOSED / PASS** · LIVE `7fb0c20` / **213** · QA operatore PASS (2026-08-17)
 3. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
 4. **GIS-PANEL-DOCK-MGR-G-B** — `361345d` / **211** (base batch; assorbito in G-BC)
