@@ -476,6 +476,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
+- **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A` (casa D-Flight: [`WU-0013` §23](work-units/WU-0013-uas-geozone-dflight.md)) — **non** aperti; gate LIVE invariato
 
 ---
 ## 7b. Workspace operativo unico

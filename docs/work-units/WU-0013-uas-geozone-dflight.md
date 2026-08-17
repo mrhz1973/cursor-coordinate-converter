@@ -599,6 +599,7 @@ Residui dal gap audit `D-FLIGHT-BACKLOG-GAP-AUDIT-A` (2026-08-14). **Non** apert
 | Parity completa ED-269 ↔ WFS | UNKNOWN non bloccante | — |
 | Filtro operativo quota/altitudine | Display vertical live; filtro no | — |
 | Douglas-Peucker / Canvas | **OPTIONAL LATER** — non requirement | — |
+| Pulizia contenuto descrittivo Dettagli | Markup HTML / entity / stringhe tecniche ancora visibili nella modal; testo utile e a-capo da conservare; rendering sicuro **senza** `innerHTML` non controllato; dato raw interno invariato se serve alla diagnostica. **Non** coperto da A–H WU-0015…0021. Casa generale: [roadmap Map UX + D-Flight details](WU-0005-0009-roadmap.md) | `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A` |
 
 **UNKNOWN non bloccanti (registrati, non aperti):**
 

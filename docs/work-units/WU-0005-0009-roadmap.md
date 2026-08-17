@@ -732,6 +732,61 @@ Nuovo nome applicazione: **TMART GIS tool**.
 
 **Non** rinominare automaticamente `coordinate_converter Claude.html`. Il deliverable resta il monolite standalone finché non c’è una decisione **separata** sul filename.
 
+### Map UX + D-Flight details — backlog 2026-08-17
+
+**Stato:** **BACKLOG / NOT OPENED**. Registrazione docs-only `BACKLOG-MAP-UX-DFLIGHT-CLEANUP-A`. **Non** aperti. **Non** bloccanti. **Non** cambiano il gate LIVE (`GIS-PANEL-DOCK-MGR-G-BC-BATCH1` / build **212** / **QA FINALE CHATGPT — PENDING**). **Non** toccano G-D, F, WU-0012, WU-0013 (chiusa), Oggetti GIS (**FROZEN A TEMPO INDETERMINATO**).
+
+Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). OM §7.3 = pointer soltanto.
+
+| Item | Titolo | Stato |
+| --- | --- | --- |
+| **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **BACKLOG / NOT OPENED** |
+| **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
+| **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
+| **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A** | Pulizia contenuto descrittivo Dettagli D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
+
+#### MAP-TARGET-SCALE-A
+
+Requisito: l’operatore può richiedere una scala (es. `1:25000`) e la mappa porta il viewport alla scala nominale corrispondente, mantenendo il centro corrente salvo scelta diversa.
+
+Note tecniche (da valutare all’apertura, non implementate):
+
+- distinguere scala nominale a schermo da scala fisica calibrata;
+- scala fisica realmente 1:N su display richiede DPI/dimensione fisica o calibrazione;
+- stampa/export può avere target fisico preciso;
+- nessun provider/layer deve essere automaticamente cambiato;
+- valutare comportamento a latitudini diverse / Web Mercator;
+- UI semplice, GIS-first.
+
+#### MAP-FRACTIONAL-ZOOM-A
+
+Requisito: per layer compatibili, consentire zoom visivamente fluido invece del solo salto tra zoom interi XYZ/TMS (es. z 0…20).
+
+Principio:
+
+- le tile sorgente possono restare a zoom interi;
+- durante wheel/pinch il renderer può applicare una scala continua;
+- cambio tile-level solo quando necessario;
+- comportamento eventualmente configurabile per layer.
+
+Audit futuro deve distinguere almeno: XYZ/TMS raster; WMS; overlay vettoriali; D-Flight; waypoint/tracce/poligoni; hit-test e coordinate durante transform; qualità/interpolazione raster.
+
+**Non** promettere supporto uniforme su ogni layer prima dell’audit.
+
+#### MAP-PAN-TILE-OVERSCAN-A
+
+Requisito: durante il pan non mostrare area nera/vuota ai bordi se la zona interessata è già disponibile nella cache/offline.
+
+Strategie da valutare: tile overscan oltre viewport; preload della corona di tile adiacenti dalla cache; retention del frame/tile precedente finché il nuovo set è pronto; scheduling render/cache più anticipato; background neutro come fallback per tile realmente assenti.
+
+Acceptance futura primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici.
+
+#### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A
+
+Finding operatore: nella descrizione delle aree D-Flight restano visibili markup HTML, entity/codici o stringhe tecniche incomprensibili nella modal Dettagli.
+
+**Non** coperto dal backlog D-Flight A–H corrente. Testo completo e requirement: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
 **Stato:** **review byte PASS** (base `9bd2e4c` + micro-fix `0e23b42`); **nessun deploy**; fondazione assorbita in catena POLY-EDIT.
