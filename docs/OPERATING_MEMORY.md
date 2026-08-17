@@ -462,8 +462,8 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217** · QA operatore PASS (2026-08-18)
-2. **GIS-DIALOG-MINIMIZE-HISTORY-A** — **CLOSED / PASS** · LIVE `7196b30` / **214** · QA operatore PASS (2026-08-17)
+1. **OUTDOOR-ROUTING-F-AVOID-AREAS-A** — candidate build **218** · REVIEW GPT-SOSTITUTIVA — PENDING
+2. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217**
 3. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — **CLOSED / PASS** · LIVE `7fb0c20` / **213** · QA operatore PASS (2026-08-17)
 4. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
 5. **GIS-PANEL-DOCK-MGR-G-B** — `361345d` / **211** (base batch; assorbito in G-BC)

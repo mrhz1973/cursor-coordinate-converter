@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A **CLOSED / PASS**; F aperto altrove)
-**ACTIVE BLOCK:** none (F **CLOSED / PASS**)
+**STATUS:** **CLOSED / PASS**
+**ACTIVE BLOCK:** none
 **CURRENT GATE:** **none**
 **RUNTIME LIVE:** `1e37e56f04ddb9e7aec2598b398739e7772cec6f` · build **217** · `GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2` · blob `9671461…`
-**RUNTIME CANDIDATE:** none
+**RUNTIME CANDIDATE:** none (avoid-areas candidate lives in WU-0010)
 **CATEGORIA:** **DELICATO** (questo WU)
-**NEXT:** prossimo blocco da backlog/roadmap · **non** aprire altri blocchi G senza decisione
-**NOTE:** F chiuso end-to-end · helper 0.1.3 · Oggetti GIS FROZEN
+**NEXT:** **none** — WU closed
+**NOTE:** G-A…G-D + HISTORY-A PASS · F workspace legende CLOSED altrove · Oggetti GIS FROZEN · nessun blocco G autorizzato
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.

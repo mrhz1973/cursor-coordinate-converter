@@ -2,23 +2,23 @@
 
 ## LATEST
 
-* real_task_commit: `1e37e56f04ddb9e7aec2598b398739e7772cec6f` — `fix(gis): GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 solo D-Flight snap from none`
+* real_task_commit: `12a7477414a311b1650e9b575c89cab6966e240e` — `feat(routing): OUTDOOR-ROUTING-F-AVOID-AREAS-A transient avoid polygons`
 * branch: main
-* result_cursor: FIX2 chiuso end-to-end dopo QA operatore PASS
-* pass_operatore: **QA GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 PASS operatore** (2026-08-18)
-* result_runtime: LIVE `1e37e56` / 217 · blob `9671461…` · helper 0.1.3
-* notes: finito Regola H · docs-only close · monolite invariato
+* result_cursor: candidate build 218 pushed · GH capability PASS · selftest 644/644
+* pass_operatore: non attestato (gate REVIEW pending)
+* result_runtime: LIVE `1e37e56` / 217 · CANDIDATE `12a7477` / 218
+* notes: WU-0021 CLOSED docs · no deploy · Oggetti GIS untouched
 
 ## OUTPUT VERBATIM
 
 ```text
-QA GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 PASS operatore
-GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 CLOSED / PASS
-LIVE 1e37e56f04ddb9e7aec2598b398739e7772cec6f / 217
-URL http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=1e37e56
-finito
+OUTDOOR-ROUTING-F-AVOID-AREAS-A CANDIDATE 12a7477414a311b1650e9b575c89cab6966e240e / 218
+GH custom_model avoid areas capability PASS
+selftest 644/644
+REVIEW GPT-SOSTITUTIVA — PENDING
+NO DEPLOY
 ```
 
 ## LIMITI
 
-Nessun redeploy in questo pass.
+Deploy / ABQA / QA operatore non eseguiti in questo pass.
