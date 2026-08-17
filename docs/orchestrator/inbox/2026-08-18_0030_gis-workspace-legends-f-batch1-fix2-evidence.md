@@ -46,4 +46,8 @@ VPS FF `f1dd580`→`1e37e56` · blob ≡ candidato · `goi-gis-app` PID `2758269
 
 Oggetti GIS FROZEN · no rete/storage/GPS · helper 0.1.3 · G-D + HISTORY-A invariati.
 
-**NON** QA operatore · **NON** finito.
+**NON** finito prima di questo pass.
+
+## Chiusura operatore (2026-08-18)
+
+**QA GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 PASS operatore** → blocco **CLOSED / PASS** · finito Regola H.
