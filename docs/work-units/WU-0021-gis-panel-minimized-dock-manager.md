@@ -5,7 +5,7 @@
 **ACTIVE BLOCK:** none
 **CURRENT GATE:** **none**
 **RUNTIME LIVE:** `1e37e56f04ddb9e7aec2598b398739e7772cec6f` · build **217** · `GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2` · blob `9671461…`
-**RUNTIME CANDIDATE:** none (avoid-areas candidate lives in WU-0010)
+**RUNTIME CANDIDATE:** none
 **CATEGORIA:** **DELICATO** (questo WU)
 **NEXT:** **none** — WU closed
 **NOTE:** G-A…G-D + HISTORY-A PASS · F workspace legende CLOSED altrove · Oggetti GIS FROZEN · nessun blocco G autorizzato

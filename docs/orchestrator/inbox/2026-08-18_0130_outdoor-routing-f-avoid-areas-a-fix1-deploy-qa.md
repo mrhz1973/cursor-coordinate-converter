@@ -45,6 +45,4 @@ Viewport: desktop **1920×900** · mobile **360×740**.
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
-
-**NON** QA operatore · **NON** finito
+**QA OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1 PASS operatore** (2026-08-18) → **CLOSED / PASS** · Regola H finito
