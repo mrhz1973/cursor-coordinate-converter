@@ -8,7 +8,7 @@
 **RUNTIME CANDIDATE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
 **CATEGORIA:** **DELICATO**
 **NEXT:** Review GPT-sostitutiva su FULL SHA candidato; **non** deployare; **F NOT OPENED**
-**NOTE:** G-D-BATCH1 10-task bundle · selftest 564/564 · 4→5 @1920 PASS · **no deploy**
+**NOTE:** G-D-BATCH1 10-task bundle · selftest 564/564 · 4→5 @1920 PASS · **no deploy** · REVIEW-EVIDENCE-B verify-only A/B/C/D **PASS** (2026-08-17 12:15)
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -506,6 +506,18 @@ REVIEW PASS → deploy GIS-only + ABQA batch unica.
 **QA operatore:** **PASS** — attestazione `QA GIS-PANEL-DOCK-MGR-G-BC-BATCH1 PASS operatore` (2026-08-17) → auto-`finito` Regola H.
 
 **STATUS blocco G-BC-BATCH1:** **CLOSED / PASS** · **F NOT OPENED** · WU-0021 resta **OPEN**.
+
+## 31. G-D-BATCH1 REVIEW-EVIDENCE-B (2026-08-17) — verify-only
+
+Gap evidenza della REVIEW chiuso su candidate **immutabile** `7fb0c20` / **213** (blob `bbc9a5c8…` invariato).
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_1215_gis-panel-dock-mgr-g-d-batch1-review-evidence-b.md`](../orchestrator/inbox/2026-08-17_1215_gis-panel-dock-mgr-g-d-batch1-review-evidence-b.md) + JSON raw sibling.
+
+**Esiti:** A restore slot sinistro (click reale @1920, 4 right + 1 left, n 5→4, no ghost, destra stabile) **PASS** · B restore reale da `+N` (mouse @360, «Altri 9»→«Altri 8», n 11→10) **PASS** · C accessibilità keyboard (Enter apre menu + focus item + Enter ripristina, n 9→8, «Altri 7»→«Altri 6») **PASS** · D regressione (4→5 stabile, resize senza duplicati, spy `dflightEnsurePairLayout`=0, workbench non toccato, selftest 564/564) **PASS**.
+
+Nota metodo: primo tentativo C con evento sintetico `rawKeyDown` senza `text` non attivava il button (artefatto strumento); re-run con `keyDown`+`text="\r"` PASS. Nessun finding prodotto.
+
+**Gate:** resta **REVIEW GPT-SOSTITUTIVA — PENDING** (verdetto ChatGPT) · **no patch** · **no bump** · **no deploy** · F NOT OPENED · Oggetti GIS FROZEN/UNTOUCHED.
 
 ## 30. G-D-BATCH1 CANDIDATE (2026-08-17)
 
