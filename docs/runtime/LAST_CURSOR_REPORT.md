@@ -4,21 +4,21 @@
 
 * real_task_commit: `5477a5e0d8d9a5681dbfab37b3c39e182306fc79` — `fix(routing): OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1 preserve algorithm with avoid`
 * branch: main
-* result_cursor: candidate build 219 pushed · GH capability A+B PASS · selftest 647/647
-* pass_operatore: non attestato (gate REVIEW pending)
-* result_runtime: LIVE `1e37e56` / 217 · CANDIDATE `5477a5e` / 219
-* notes: FIX1 preserve alternative_route+round_trip with avoid · no deploy · Oggetti GIS untouched
+* result_cursor: REVIEW PASS · deploy GIS-only PASS · ABQA PASS · LIVE build 219
+* pass_operatore: non attestato (gate QA FINALE CHATGPT pending)
+* result_runtime: LIVE `5477a5e` / 219 @ `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=5477a5e`
+* notes: REVIEW GPT-SOSTITUTIVA PASS on candidate 5477a5e · no runtime patch this pass
 
 ## OUTPUT VERBATIM
 
 ```text
-OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1 CANDIDATE 5477a5e0d8d9a5681dbfab37b3c39e182306fc79 / 219
-GH alternative_route+avoid HTTP 200 · round_trip+avoid HTTP 200
-selftest 647/647 (+10 RAA_*)
-REVIEW GPT-SOSTITUTIVA — PENDING
-NO DEPLOY
+REVIEW GPT-SOSTITUTIVA PASS — candidate 5477a5e0d8d9a5681dbfab37b3c39e182306fc79 build 219
+DEPLOY GIS-only PASS
+AUTOMATED BROWSER QA OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1 PASS
+QA FINALE CHATGPT — PENDING
+NO finito
 ```
 
 ## LIMITI
 
-Deploy / ABQA / QA operatore non eseguiti in questo pass.
+QA operatore non eseguita in questo pass.

@@ -3,7 +3,18 @@
 **BLOCK-ID:** `OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1`  
 **Categoria:** DELICATO  
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING**  
-**Deploy / ABQA / QA operatore:** **NOT EXECUTED**
+**Deploy / ABQA / QA operatore:** deploy+ABQA PASS · QA operatore **NOT EXECUTED**
+
+## REVIEW GPT-SOSTITUTIVA (log)
+
+| Campo | Valore |
+| --- | --- |
+| Candidate FULL SHA | `5477a5e0d8d9a5681dbfab37b3c39e182306fc79` |
+| Build / ID | **219** / `OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1` |
+| Verdetto | **PASS** |
+| Promoted LIVE | sì (post ABQA) |
+
+Deploy+ABQA: [`2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md`](2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md)
 
 ## BASE → CANDIDATE
 
