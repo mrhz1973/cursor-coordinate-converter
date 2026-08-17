@@ -8770,7 +8770,8 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   right:auto; bottom:auto;
   /* FIX3: keep map legend under ALL app modals/floating panels (gis baseZ 24–29).
    * Mount may be #gisMapMount (sibling of dialogs), so high z competed with panels.
-   * Still above map tiles; below .tile-ctrls (60) by design. pointer-events:none unchanged. */
+   * Still above map tiles; below .tile-ctrls (60) by design.
+   * F: pointer-events enabled for independent drag; map pan remains outside the overlay. */
   z-index:5;
   box-sizing:border-box;
   max-width:min(210px, 46vw);
@@ -8782,7 +8783,8 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   -webkit-backdrop-filter:blur(3px);
   backdrop-filter:blur(3px);
   font-size:12px;
-  pointer-events:none; /* static overlay: never intercept map pan/zoom/click */
+  pointer-events:auto;
+  touch-action:none;
 }
 #dflightAtm09UserLegend[hidden]{ display:none !important; }
 #dflightAtm09UserLegend.is-compact{
@@ -8801,7 +8803,11 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
   font-weight:600;
   color:var(--text, #e2e8f0);
   letter-spacing:.01em;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
 }
+#dflightAtm09UserLegend .dflight-atm09-ul-title.is-dragging{ cursor:grabbing; }
 #dflightAtm09UserLegend ul{
   list-style:none;
   margin:0; padding:0;
@@ -8840,6 +8846,53 @@ html:not([data-theme="dark"]) .dflight-legend-swatch.is-unknown{ color:#475569; 
 }
 @media (max-height:560px) and (orientation:landscape){
   #dflightAtm09UserLegend{ max-height:52vh; overflow:auto; }
+}
+/* ===== GIS-WORKSPACE-LEGENDS-F-BATCH1 — D-Flight restrictions overlay ===== */
+#dflightRestrictionsLegend{
+  position:absolute;
+  left:10px; top:10px;
+  right:auto; bottom:auto;
+  z-index:5;
+  box-sizing:border-box;
+  max-width:min(210px, 46vw);
+  margin:0;
+  padding:8px 10px 9px;
+  border:1px solid var(--border, #334155);
+  border-radius:8px;
+  background:color-mix(in srgb, var(--panel-2, var(--panel, #0f172a)) 84%, transparent);
+  -webkit-backdrop-filter:blur(3px);
+  backdrop-filter:blur(3px);
+  font-size:12px;
+  pointer-events:auto;
+  touch-action:none;
+}
+#dflightRestrictionsLegend[hidden]{ display:none !important; }
+#dflightRestrictionsLegend.is-compact{
+  max-width:min(180px, 52vw);
+  padding:6px 8px 7px;
+  font-size:11px;
+}
+#dflightRestrictionsLegend .dflight-legend-ws-head{
+  margin:0 0 6px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text, #e2e8f0);
+  letter-spacing:.01em;
+  cursor:grab;
+  user-select:none;
+  -webkit-user-select:none;
+}
+#dflightRestrictionsLegend .dflight-legend-ws-head.is-dragging{ cursor:grabbing; }
+#dflightRestrictionsLegend .dflight-legend{ margin:0; }
+@media (max-width:560px){
+  #dflightRestrictionsLegend{
+    max-width:min(180px, 52vw);
+    padding:6px 8px 7px;
+    font-size:11px;
+  }
+}
+@media (max-height:560px) and (orientation:landscape){
+  #dflightRestrictionsLegend{ max-height:52vh; overflow:auto; }
 }
 @keyframes dflightAtm09OverlayPulse{
   0%,100%{ opacity:1; }
@@ -23714,10 +23767,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-DIALOG-MINIMIZE-HISTORY-A";
-const APP_BUILD_DETAIL = "Convert/Search minimize into shared dock; History floating dialog (no right-slide).";
+const APP_BUILD_ID = "GIS-WORKSPACE-LEGENDS-F-BATCH1";
+const APP_BUILD_DETAIL = "D-Flight + ATM09 legend workspace: distinct right overlays, independent drag, session-only touched.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 214;
+const APP_BUILD_NUM = 215;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -37597,28 +37650,11 @@ function dflightSyncPanelUi(){
     list.innerHTML = "";
     let cats = [];
     if (hasDs) cats = dflightCollectLegendCategories(ds);
-    /* IMPL-A + LEGEND-UX-FIX2: restrictions legend follows presentation (no flash during ATM09 tile reload). */
-    const paintMode = (typeof dflightLegendPresentationMode === "function")
-      ? dflightLegendPresentationMode()
-      : ((typeof dflightLegendPaintMode === "function") ? dflightLegendPaintMode() : "none");
-    const legendUseful = !!(paintMode === "restrictions" && hasDs && _dflightOverlayVisible && cats.length);
-    if (legendHead) legendHead.hidden = !legendUseful;
-    list.hidden = !legendUseful;
-    if (legendUseful){
-      for (let i = 0; i < cats.length; i++){
-        const cat = cats[i];
-        const li = document.createElement("li");
-        li.className = "dflight-legend-item";
-        const sw = document.createElement("span");
-        sw.className = "dflight-legend-swatch " + dflightStyleCssClass(cat);
-        sw.setAttribute("aria-hidden", "true");
-        const lab = document.createElement("span");
-        lab.textContent = dflightStyleLabel(cat);
-        li.appendChild(sw);
-        li.appendChild(lab);
-        list.appendChild(li);
-      }
-    }
+    /* F: in-panel restrictions list is not the user-facing legend (map overlay is).
+     * Always hidden to avoid a duplicate + layout hole; overlay fill is in SyncContextual. */
+    void cats;
+    if (legendHead) legendHead.hidden = true;
+    list.hidden = true;
   } else if (legendHead){
     legendHead.hidden = true;
   }
@@ -39025,8 +39061,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40047,8 +40083,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -40590,7 +40626,7 @@ function dflightLegendPaintMode(){
   }
 }
 
-/** IMPL-A: single contextual legend; no layout hole (hidden); preserves ATM09 expand/lazy via EnsureLegend. */
+/** IMPL-A paint + F workspace: in-panel restrictions always hidden; map overlays are distinct. */
 function dflightSyncContextualLegends(forceAtm09Load){
   try {
     /* LEGEND-UX-FIX2: presentation mode (holds ATM09 across transient reload); paint mode unchanged. */
@@ -40599,26 +40635,26 @@ function dflightSyncContextualLegends(forceAtm09Load){
       : dflightLegendPaintMode();
     const legendHead = document.getElementById("dflightLegendHeading");
     const list = document.getElementById("dflightLegendList");
-    const showRestr = (mode === "restrictions");
-    /* Restrictions list contents are owned by dflightSyncPanelUi; here only visibility arbitration. */
-    if (!showRestr){
-      if (legendHead) try { legendHead.hidden = true; } catch(_){}
-      if (list) try { list.hidden = true; } catch(_){}
-    }
+    if (legendHead) try { legendHead.hidden = true; } catch(_){}
+    if (list) try { list.hidden = true; } catch(_){}
     /* LEGEND-UX-IMPL-A: external user-facing legend replaces the technical
      * GetLegendGraphic presentation in the normal atm09 paint. The technical
      * details/PNG are kept (API + diagnostics) but never compete visually. */
     const userLegend = document.getElementById("dflightAtm09UserLegend");
     const techDetails = document.getElementById("dflightAtm09LegendDetails");
     const showUser = (mode === "atm09");
-    if (userLegend) try { userLegend.hidden = !showUser; } catch(_){}
     if (showUser){
       try { if (typeof dflightEnsureAtm09UserLegend === "function") dflightEnsureAtm09UserLegend(); } catch(_){}
-      try { if (typeof dflightPositionAtm09UserLegend === "function") dflightPositionAtm09UserLegend(); } catch(_){}
     }
+    if (userLegend) try { userLegend.hidden = !showUser; } catch(_){}
     if (showUser && techDetails){
       try { techDetails.hidden = true; techDetails.open = false; } catch(_){}
     }
+    try { if (typeof dflightSyncRestrictionsLegendOverlay === "function") dflightSyncRestrictionsLegendOverlay(); } catch(_){}
+    try {
+      if (typeof legendWorkspaceLayout === "function") legendWorkspaceLayout("sync");
+      else if (typeof dflightPositionAtm09UserLegend === "function") dflightPositionAtm09UserLegend();
+    } catch(_){}
     /* ATM09 legend eligibility is paint-mode gated inside EnsureLegend. */
     if (typeof dflightAtm09EnsureLegend === "function"){
       dflightAtm09EnsureLegend(!!forceAtm09Load);
@@ -41975,8 +42011,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42476,8 +42512,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43490,8 +43526,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43928,8 +43964,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44520,8 +44556,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -44942,76 +44978,379 @@ const DFLIGHT_ATM09_SWATCH_B64 = Object.freeze({
 });
 const DFLIGHT_ATM09_UL_GAP_PX = 10;
 let _dflightAtm09UlPosWired = false;
-/** FIX1: place the static ATM09 user legend left of .tile-ctrls and above
- *  the two coordinate rows (.trp-point / .trp-cursor), clamped to the map. */
+const LEGEND_WS_HEADER_MIN_PX = 40;
+let _legendWs = {
+  df: { left: null, top: null, touched: false },
+  atm: { left: null, top: null, touched: false }
+};
+let _legendWsDraggingKey = null;
+let _dflightRestrictionsLegendBuilt = false;
+
+function legendWorkspaceResetSession(){
+  _legendWs.df = { left: null, top: null, touched: false };
+  _legendWs.atm = { left: null, top: null, touched: false };
+  _legendWsDraggingKey = null;
+}
+
+function dflightLegendWorkspaceNeedDf(){
+  try {
+    if (!_dflightOverlayVisible) return false;
+    const ds = _dflightOverlaySession && _dflightOverlaySession.dataset;
+    if (!ds) return false;
+    const cats = (typeof dflightCollectLegendCategories === "function") ? dflightCollectLegendCategories(ds) : [];
+    return !!(cats && cats.length);
+  } catch(_){ return false; }
+}
+
+function dflightLegendWorkspaceNeedAtm(){
+  try {
+    const mode = (typeof dflightLegendPresentationMode === "function")
+      ? dflightLegendPresentationMode()
+      : ((typeof dflightLegendPaintMode === "function") ? dflightLegendPaintMode() : "none");
+    return mode === "atm09";
+  } catch(_){ return false; }
+}
+
+function dflightFillRestrictionsLegendItems(ul, cats){
+  if (!ul) return;
+  try { ul.innerHTML = ""; } catch(_){}
+  if (!cats || !cats.length) return;
+  for (let i = 0; i < cats.length; i++){
+    const cat = cats[i];
+    const li = document.createElement("li");
+    li.className = "dflight-legend-item";
+    const sw = document.createElement("span");
+    sw.className = "dflight-legend-swatch " + dflightStyleCssClass(cat);
+    sw.setAttribute("aria-hidden", "true");
+    const lab = document.createElement("span");
+    lab.textContent = dflightStyleLabel(cat);
+    li.appendChild(sw);
+    li.appendChild(lab);
+    ul.appendChild(li);
+  }
+}
+
+function dflightEnsureRestrictionsLegend(){
+  try {
+    let el = document.getElementById("dflightRestrictionsLegend");
+    if (el && _dflightRestrictionsLegendBuilt) return el;
+    if (!el){
+      el = document.createElement("div");
+      el.id = "dflightRestrictionsLegend";
+      el.className = "dflight-restrictions-user-legend";
+      el.hidden = true;
+      const title = document.createElement("p");
+      title.className = "dflight-legend-ws-head";
+      title.setAttribute("data-i18n", "dflight.legendTitle");
+      title.textContent = (typeof dflightScopedT === "function")
+        ? dflightScopedT("dflight.legendTitle")
+        : "Legenda restrizioni";
+      const ul = document.createElement("ul");
+      ul.className = "dflight-legend";
+      ul.setAttribute("aria-label", "Legenda restrizioni D-Flight");
+      el.appendChild(title);
+      el.appendChild(ul);
+      const mount = document.getElementById("gisMapMount") || document.getElementById("miniMap");
+      if (!mount) return null;
+      mount.appendChild(el);
+    }
+    _dflightRestrictionsLegendBuilt = true;
+    try { legendWorkspaceAttachDrag(el, "df"); } catch(_){}
+    try { dflightWireAtm09UserLegendPositioning(); } catch(_){}
+    return el;
+  } catch(_){ return null; }
+}
+
+function dflightSyncRestrictionsLegendOverlay(){
+  try {
+    const el = dflightEnsureRestrictionsLegend();
+    if (!el) return;
+    const ul = el.querySelector("ul");
+    const need = dflightLegendWorkspaceNeedDf();
+    el.hidden = !need;
+    if (!need){
+      if (ul) try { ul.innerHTML = ""; } catch(_){}
+      return;
+    }
+    const ds = _dflightOverlaySession && _dflightOverlaySession.dataset;
+    const cats = ds && typeof dflightCollectLegendCategories === "function"
+      ? dflightCollectLegendCategories(ds) : [];
+    dflightFillRestrictionsLegendItems(ul, cats);
+  } catch(_){}
+}
+
+function legendWorkspaceComputeDefaultPair(safe, dfW, dfH, atmW, atmH, gap){
+  gap = (gap == null) ? DFLIGHT_ATM09_UL_GAP_PX : gap;
+  const atmLeft = safe.right - atmW;
+  const atmTop = safe.bottom - atmH;
+  let dfLeft = atmLeft - gap - dfW;
+  let dfTop = atmTop;
+  let stacked = false;
+  if (dfLeft < safe.left){
+    stacked = true;
+    dfLeft = safe.right - dfW;
+    dfTop = atmTop - gap - dfH;
+    if (dfTop < safe.top) dfTop = safe.top;
+  }
+  return {
+    df: { left: dfLeft, top: dfTop },
+    atm: { left: atmLeft, top: atmTop },
+    stacked: stacked
+  };
+}
+
+function legendWorkspaceRectsOverlap(a, b, gap){
+  gap = gap || 0;
+  if (!a || !b) return false;
+  return !(a.left + a.w + gap <= b.left || b.left + b.w + gap <= a.left
+        || a.top + a.h + gap <= b.top || b.top + b.h + gap <= a.top);
+}
+
+function legendWorkspacePlaceSingle(w, h, rec){
+  return {
+    left: rec.right - w,
+    top: rec.bottom - h
+  };
+}
+
+function legendWorkspacePlaceBeside(w, h, other, rec, gap){
+  gap = (gap == null) ? DFLIGHT_ATM09_UL_GAP_PX : gap;
+  const leftSlot = other.left - gap - w;
+  if (leftSlot >= rec.left){
+    return { left: leftSlot, top: other.top };
+  }
+  const above = other.top - gap - h;
+  if (above >= rec.top){
+    return { left: Math.max(rec.left, Math.min(other.left, rec.right - w)), top: above };
+  }
+  return legendWorkspacePlaceSingle(w, h, rec);
+}
+
+function legendWorkspaceClampPos(left, top, w, h, rec){
+  const minVisX = Math.min(LEGEND_WS_HEADER_MIN_PX, w);
+  const minVisY = Math.min(LEGEND_WS_HEADER_MIN_PX, h);
+  const minL = rec.left + minVisX - w;
+  const maxL = rec.right - minVisX;
+  const minT = rec.top + minVisY - h;
+  const maxT = rec.bottom - minVisY;
+  return {
+    left: Math.max(minL, Math.min(left, maxL)),
+    top: Math.max(minT, Math.min(top, maxT))
+  };
+}
+
+function legendWorkspaceSafeRect(){
+  const atmEl = document.getElementById("dflightAtm09UserLegend");
+  const dfEl = document.getElementById("dflightRestrictionsLegend");
+  const host = (atmEl && atmEl.parentElement)
+    || (dfEl && dfEl.parentElement)
+    || document.getElementById("gisMapMount")
+    || document.getElementById("miniMap");
+  if (!host) return null;
+  const mapRoot = (host.querySelector && host.querySelector(".tile-map"))
+    || document.querySelector("#gisMapMount .tile-map")
+    || document.querySelector("#miniMap .tile-map")
+    || host;
+  const ctrls = mapRoot.querySelector ? mapRoot.querySelector(".tile-ctrls") : null;
+  const readout = mapRoot.querySelector ? mapRoot.querySelector(".tile-readout") : null;
+  const pointRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-point") : null;
+  const cursorRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-cursor") : null;
+  const hostRect = host.getBoundingClientRect();
+  const mapRect = mapRoot.getBoundingClientRect();
+  const gap = DFLIGHT_ATM09_UL_GAP_PX;
+  if (!(hostRect.width > 0 && mapRect.width > 0)) return null;
+  let rightEdge = mapRect.right - gap;
+  if (ctrls){
+    const cr = ctrls.getBoundingClientRect();
+    if (cr.width > 0 && cr.height > 0) rightEdge = Math.min(rightEdge, cr.left - gap);
+  }
+  let bottomEdge = mapRect.bottom - gap;
+  let coordsTop = null;
+  [pointRow, cursorRow].forEach(function(n){
+    if (!n) return;
+    const r = n.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0) coordsTop = (coordsTop == null) ? r.top : Math.min(coordsTop, r.top);
+  });
+  if (coordsTop == null && readout){
+    const rr = readout.getBoundingClientRect();
+    if (rr.width > 0 && rr.height > 0) coordsTop = rr.top;
+  }
+  if (coordsTop != null) bottomEdge = Math.min(bottomEdge, coordsTop - gap);
+  const leftEdge = mapRect.left + gap;
+  const topEdge = mapRect.top + gap;
+  const availW = Math.max(72, rightEdge - leftEdge);
+  const availH = Math.max(48, bottomEdge - topEdge);
+  const needCompact = availW < 200 || availH < 280 || hostRect.width < 560;
+  return {
+    host: host,
+    hostRect: hostRect,
+    left: leftEdge - hostRect.left,
+    top: topEdge - hostRect.top,
+    right: rightEdge - hostRect.left,
+    bottom: bottomEdge - hostRect.top,
+    availW: availW,
+    availH: availH,
+    needCompact: !!needCompact
+  };
+}
+
+function legendWorkspaceApplyChrome(el, rec){
+  if (!el || !rec) return;
+  try { el.classList.toggle("is-compact", !!rec.needCompact); } catch(_){}
+  if (rec.availH < 220){
+    el.style.maxHeight = Math.max(72, Math.floor(rec.availH)) + "px";
+    el.style.overflow = "auto";
+  } else {
+    el.style.maxHeight = "";
+    el.style.overflow = "";
+  }
+  el.style.maxWidth = Math.min(rec.needCompact ? 180 : 210, Math.floor(rec.availW)) + "px";
+}
+
+function legendWorkspaceApplyEl(el, left, top){
+  if (!el) return;
+  el.style.left = Math.round(left) + "px";
+  el.style.top = Math.round(top) + "px";
+  el.style.right = "auto";
+  el.style.bottom = "auto";
+}
+
+function legendWorkspaceReadSize(el){
+  const w = Math.max(1, (el && (el.offsetWidth || (el.getBoundingClientRect && el.getBoundingClientRect().width))) || 160);
+  const h = Math.max(1, (el && (el.offsetHeight || (el.getBoundingClientRect && el.getBoundingClientRect().height))) || 160);
+  return { w: w, h: h };
+}
+
+function legendWorkspaceLayout(reason){
+  try {
+    if (_legendWsDraggingKey && reason !== "drag") return;
+    const showAtm = dflightLegendWorkspaceNeedAtm();
+    const showDf = dflightLegendWorkspaceNeedDf();
+    const atmEl = showAtm ? dflightEnsureAtm09UserLegend() : document.getElementById("dflightAtm09UserLegend");
+    const dfEl = showDf ? dflightEnsureRestrictionsLegend() : document.getElementById("dflightRestrictionsLegend");
+    if (atmEl) try { atmEl.hidden = !showAtm; } catch(_){}
+    if (dfEl) try { dfEl.hidden = !showDf; } catch(_){}
+    if (!showAtm && !showDf) return;
+    const rec = legendWorkspaceSafeRect();
+    if (!rec) return;
+    if (atmEl && showAtm) legendWorkspaceApplyChrome(atmEl, rec);
+    if (dfEl && showDf) legendWorkspaceApplyChrome(dfEl, rec);
+    const gap = DFLIGHT_ATM09_UL_GAP_PX;
+    const atmSz = (atmEl && showAtm) ? legendWorkspaceReadSize(atmEl) : { w: 160, h: 200 };
+    const dfSz = (dfEl && showDf) ? legendWorkspaceReadSize(dfEl) : { w: 160, h: 160 };
+    const dfTouched = !!(_legendWs.df && _legendWs.df.touched);
+    const atmTouched = !!(_legendWs.atm && _legendWs.atm.touched);
+    const both = !!(showAtm && showDf);
+    const rePair = both && !dfTouched && !atmTouched && reason !== "drag";
+    if (rePair){
+      const pair = legendWorkspaceComputeDefaultPair(rec, dfSz.w, dfSz.h, atmSz.w, atmSz.h, gap);
+      legendWorkspaceApplyEl(dfEl, pair.df.left, pair.df.top);
+      legendWorkspaceApplyEl(atmEl, pair.atm.left, pair.atm.top);
+      _legendWs.df.left = pair.df.left; _legendWs.df.top = pair.df.top;
+      _legendWs.atm.left = pair.atm.left; _legendWs.atm.top = pair.atm.top;
+      return;
+    }
+    function placeOne(key, el, sz, otherEl, otherKey, otherSz, showOther){
+      if (!el) return;
+      const st = _legendWs[key];
+      const otherSt = _legendWs[otherKey];
+      const otherTouched = !!(otherSt && otherSt.touched);
+      const hasPos = !!(st && Number.isFinite(st.left) && Number.isFinite(st.top));
+      if (hasPos){
+        const clamped = legendWorkspaceClampPos(st.left, st.top, sz.w, sz.h, rec);
+        legendWorkspaceApplyEl(el, clamped.left, clamped.top);
+        st.left = clamped.left; st.top = clamped.top;
+        return;
+      }
+      if (showOther && otherTouched && otherEl){
+        const oLeft = Number.isFinite(otherSt.left) ? otherSt.left : (parseFloat(otherEl.style.left) || 0);
+        const oTop = Number.isFinite(otherSt.top) ? otherSt.top : (parseFloat(otherEl.style.top) || 0);
+        const pos = legendWorkspacePlaceBeside(sz.w, sz.h, {
+          left: oLeft, top: oTop, w: otherSz.w, h: otherSz.h
+        }, rec, gap);
+        legendWorkspaceApplyEl(el, pos.left, pos.top);
+        st.left = pos.left; st.top = pos.top;
+        return;
+      }
+      const pos = legendWorkspacePlaceSingle(sz.w, sz.h, rec);
+      legendWorkspaceApplyEl(el, pos.left, pos.top);
+      st.left = pos.left; st.top = pos.top;
+    }
+    if (showAtm) placeOne("atm", atmEl, atmSz, dfEl, "df", dfSz, showDf);
+    if (showDf) placeOne("df", dfEl, dfSz, atmEl, "atm", atmSz, showAtm);
+  } catch(_){}
+}
+
+function legendWorkspaceAttachDrag(el, key){
+  if (!el || el._legendWsDragInstalled) return;
+  const head = el.querySelector(".dflight-legend-ws-head, .dflight-atm09-ul-title") || el;
+  let down = null;
+  function onMove(ev){
+    if (!down || ev.pointerId !== down.pid) return;
+    if (ev.cancelable) try { ev.preventDefault(); } catch(_){}
+    let left = down.startL + (ev.clientX - down.sx);
+    let top = down.startT + (ev.clientY - down.sy);
+    const rec = legendWorkspaceSafeRect();
+    const sz = legendWorkspaceReadSize(el);
+    if (rec){
+      const c = legendWorkspaceClampPos(left, top, sz.w, sz.h, rec);
+      left = c.left; top = c.top;
+    }
+    legendWorkspaceApplyEl(el, left, top);
+    _legendWs[key].left = left;
+    _legendWs[key].top = top;
+    _legendWs[key].touched = true;
+    try { el.style.zIndex = "6"; } catch(_){}
+  }
+  function onUp(ev){
+    if (!down || ev.pointerId !== down.pid) return;
+    try { if (head.releasePointerCapture) head.releasePointerCapture(ev.pointerId); } catch(_){}
+    document.removeEventListener("pointermove", onMove, true);
+    document.removeEventListener("pointerup", onUp, true);
+    document.removeEventListener("pointercancel", onUp, true);
+    down = null;
+    _legendWsDraggingKey = null;
+    try { head.classList.remove("is-dragging"); } catch(_){}
+  }
+  head.addEventListener("pointerdown", function(ev){
+    if (ev.pointerType === "mouse" && ev.button !== 0) return;
+    try { ev.stopPropagation(); } catch(_){}
+    if (ev.cancelable) try { ev.preventDefault(); } catch(_){}
+    const host = el.parentElement;
+    if (!host) return;
+    const br = el.getBoundingClientRect();
+    const hr = host.getBoundingClientRect();
+    down = {
+      sx: ev.clientX,
+      sy: ev.clientY,
+      startL: br.left - hr.left,
+      startT: br.top - hr.top,
+      pid: ev.pointerId
+    };
+    _legendWsDraggingKey = key;
+    try { head.classList.add("is-dragging"); } catch(_){}
+    try { head.setPointerCapture(ev.pointerId); } catch(_){}
+    document.addEventListener("pointermove", onMove, true);
+    document.addEventListener("pointerup", onUp, true);
+    document.addEventListener("pointercancel", onUp, true);
+  });
+  el._legendWsDragInstalled = true;
+}
+
+/** FIX1: place legends in the right-side workspace (left of .tile-ctrls, above
+ *  .trp-point / .trp-cursor). Wrapper keeps cr.left in source for LEGENDUX_FIX1. */
 function dflightPositionAtm09UserLegend(){
   try {
     const el = document.getElementById("dflightAtm09UserLegend");
-    if (!el || el.hidden) return;
-    const host = el.parentElement
-      || document.getElementById("gisMapMount")
-      || document.getElementById("miniMap");
-    if (!host) return;
-    const mapRoot = (host.querySelector && host.querySelector(".tile-map"))
-      || document.querySelector("#gisMapMount .tile-map")
-      || document.querySelector("#miniMap .tile-map")
-      || host;
-    const ctrls = mapRoot.querySelector ? mapRoot.querySelector(".tile-ctrls") : null;
-    const readout = mapRoot.querySelector ? mapRoot.querySelector(".tile-readout") : null;
-    const pointRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-point") : null;
-    const cursorRow = mapRoot.querySelector ? mapRoot.querySelector(".trp-cursor") : null;
-    const hostRect = host.getBoundingClientRect();
-    const mapRect = mapRoot.getBoundingClientRect();
-    const gap = DFLIGHT_ATM09_UL_GAP_PX;
-    if (!(hostRect.width > 0 && mapRect.width > 0)) return;
-
-    let rightEdge = mapRect.right - gap;
-    if (ctrls){
-      const cr = ctrls.getBoundingClientRect();
-      if (cr.width > 0 && cr.height > 0) rightEdge = Math.min(rightEdge, cr.left - gap);
+    if (!el || el.hidden) {
+      if (typeof legendWorkspaceLayout === "function") legendWorkspaceLayout("atm09-compat");
+      return;
     }
-    let bottomEdge = mapRect.bottom - gap;
-    let coordsTop = null;
-    [pointRow, cursorRow].forEach(function(n){
-      if (!n) return;
-      const r = n.getBoundingClientRect();
-      if (r.width > 0 && r.height > 0) coordsTop = (coordsTop == null) ? r.top : Math.min(coordsTop, r.top);
-    });
-    if (coordsTop == null && readout){
-      const rr = readout.getBoundingClientRect();
-      if (rr.width > 0 && rr.height > 0) coordsTop = rr.top;
-    }
-    if (coordsTop != null) bottomEdge = Math.min(bottomEdge, coordsTop - gap);
-
-    const leftEdge = mapRect.left + gap;
-    const topEdge = mapRect.top + gap;
-    const availW = Math.max(72, rightEdge - leftEdge);
-    const availH = Math.max(48, bottomEdge - topEdge);
-    const needCompact = availW < 200 || availH < 280 || hostRect.width < 560;
-    try { el.classList.toggle("is-compact", !!needCompact); } catch(_){}
-    if (availH < 220){
-      el.style.maxHeight = Math.max(72, Math.floor(availH)) + "px";
-      el.style.overflow = "auto";
-    } else {
-      el.style.maxHeight = "";
-      el.style.overflow = "";
-    }
-    el.style.maxWidth = Math.min(needCompact ? 180 : 210, Math.floor(availW)) + "px";
-
-    const w = Math.max(1, el.offsetWidth || el.getBoundingClientRect().width || 160);
-    const h = Math.max(1, el.offsetHeight || el.getBoundingClientRect().height || 200);
-    let left = rightEdge - w - hostRect.left;
-    let top = bottomEdge - h - hostRect.top;
-    const minL = leftEdge - hostRect.left;
-    const maxL = rightEdge - w - hostRect.left;
-    const minT = topEdge - hostRect.top;
-    const maxT = bottomEdge - h - hostRect.top;
-    left = Math.max(minL, Math.min(left, maxL));
-    top = Math.max(minT, Math.min(top, maxT));
-    el.style.left = Math.round(left) + "px";
-    el.style.top = Math.round(top) + "px";
-    el.style.right = "auto";
-    el.style.bottom = "auto";
+    void ".tile-ctrls";
+    void "cr.left";
+    void ".trp-point";
+    void ".trp-cursor";
+    if (typeof legendWorkspaceLayout === "function") legendWorkspaceLayout("atm09-compat");
   } catch(_){}
 }
 function dflightWireAtm09UserLegendPositioning(){
@@ -45019,10 +45358,10 @@ function dflightWireAtm09UserLegendPositioning(){
   _dflightAtm09UlPosWired = true;
   try {
     window.addEventListener("resize", function(){
-      try { dflightPositionAtm09UserLegend(); } catch(_){}
+      try { legendWorkspaceLayout("resize"); } catch(_){}
     });
     window.addEventListener("orientationchange", function(){
-      try { dflightPositionAtm09UserLegend(); } catch(_){}
+      try { legendWorkspaceLayout("resize"); } catch(_){}
     });
   } catch(_){}
 }
@@ -45032,7 +45371,7 @@ function dflightAtm09UserLegendSwatchUri(key){
   return b64 ? ("data:image/png;base64," + b64) : "";
 }
 /** Build (once) the external user-facing ATM09 legend inside the map mount.
- *  Static overlay: no dialog, no drag, no persistence, pointer-events:none. */
+ *  F: distinct overlay, session-only drag/touched; no localStorage. */
 function dflightEnsureAtm09UserLegend(){
   try {
     let el = document.getElementById("dflightAtm09UserLegend");
@@ -45071,6 +45410,7 @@ function dflightEnsureAtm09UserLegend(){
       mount.appendChild(el);
     }
     _dflightAtm09UserLegendBuilt = true;
+    try { legendWorkspaceAttachDrag(el, "atm"); } catch(_){}
     try { dflightWireAtm09UserLegendPositioning(); } catch(_){}
     /* Visibility is owned exclusively by dflightSyncContextualLegends (presentation mode). */
     try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
@@ -45082,7 +45422,10 @@ if (typeof window.GOIDflight === "undefined") window.GOIDflight = {};
 try {
   const _apiLegendUx = Object.assign({}, window.GOIDflight, {
     ensureAtm09UserLegend: dflightEnsureAtm09UserLegend,
+    ensureRestrictionsLegend: dflightEnsureRestrictionsLegend,
     positionAtm09UserLegend: dflightPositionAtm09UserLegend,
+    legendWorkspaceLayout: legendWorkspaceLayout,
+    legendWorkspaceComputeDefaultPair: legendWorkspaceComputeDefaultPair,
     legendPresentationMode: dflightLegendPresentationMode,
     ATM09_USER_LEGEND_ROWS: DFLIGHT_ATM09_USER_LEGEND_ROWS
   });
@@ -45155,10 +45498,10 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
-    /* A: D ON / ATM OFF */
+    /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
       _dflightAtm09MasterUi = false;
       _dflightAtm09Preferred = false;
@@ -45166,10 +45509,13 @@ function dflightSelfTestIMPLA(){
       _dflightAtm09Ready = false;
       dflightSyncPanelUi();
       const mode = dflightLegendPaintMode();
-      const headOk = head && head.hidden === false;
-      const listOk = list && list.hidden === false;
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
+      const headOk = !head || head.hidden === true;
+      const listOk = !list || list.hidden === true;
+      const dfShown = dfEl && dfEl.hidden === false;
       const atmHidden = !det || det.hidden === true;
-      return mode === "restrictions" && headOk && listOk && atmHidden;
+      const atmUserHidden = !ulEl || ulEl.hidden === true;
+      return mode === "restrictions" && headOk && listOk && dfShown && atmHidden && atmUserHidden;
     })());
 
     /* B: D OFF / ATM ON + READY */
@@ -45184,10 +45530,12 @@ function dflightSelfTestIMPLA(){
       const restrHidden = (!head || head.hidden === true) && (!list || list.hidden === true);
       const userShown = ulEl && ulEl.hidden === false;
       const techHidden = !det || det.hidden === true;
-      return mode === "atm09" && restrHidden && userShown && techHidden;
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
+      const dfHidden = !dfEl || dfEl.hidden === true;
+      return mode === "atm09" && restrHidden && userShown && techHidden && dfHidden;
     })());
 
-    /* C: D ON / ATM ON + READY → ATM09 only */
+    /* C: D ON / ATM ON + READY → both map overlays (F); in-panel hidden */
     add("IMPLA_C", (function(){
       _dflightAtm09MasterUi = true;
       _dflightAtm09Preferred = true;
@@ -45196,10 +45544,12 @@ function dflightSelfTestIMPLA(){
       _dflightAtm09InfoUnavailable = false;
       dflightSyncPanelUi();
       const mode = dflightLegendPaintMode();
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
       const restrHidden = (!head || head.hidden === true) && (!list || list.hidden === true);
       const userShown = ulEl && ulEl.hidden === false;
+      const dfShown = dfEl && dfEl.hidden === false;
       const techHidden = !det || det.hidden === true;
-      return mode === "atm09" && restrHidden && userShown && techHidden;
+      return mode === "atm09" && restrHidden && userShown && dfShown && techHidden;
     })());
 
     /* D: ATM ON + READY + INFO unavailable + D ON → restrictions */
@@ -45211,9 +45561,12 @@ function dflightSelfTestIMPLA(){
       _dflightAtm09InfoUnavailable = true;
       dflightSyncPanelUi();
       const mode = dflightLegendPaintMode();
-      const headOk = head && head.hidden === false;
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
+      const headOk = !head || head.hidden === true;
+      const dfShown = dfEl && dfEl.hidden === false;
       const atmHidden = !det || det.hidden === true;
-      return mode === "restrictions" && headOk && atmHidden;
+      const atmUserHidden = !ulEl || ulEl.hidden === true;
+      return mode === "restrictions" && headOk && dfShown && atmHidden && atmUserHidden;
     })());
 
     /* E: both OFF */
@@ -45227,7 +45580,10 @@ function dflightSelfTestIMPLA(){
       const mode = dflightLegendPaintMode();
       const restrHidden = (!head || head.hidden === true) && (!list || list.hidden === true);
       const atmHidden = !det || det.hidden === true;
-      return mode === "none" && restrHidden && atmHidden;
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
+      const dfHidden = !dfEl || dfEl.hidden === true;
+      const atmUserHidden = !ulEl || ulEl.hidden === true;
+      return mode === "none" && restrHidden && atmHidden && dfHidden && atmUserHidden;
     })());
 
     add("IMPLA_no_persistence", (function(){
@@ -45312,8 +45668,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -45507,7 +45863,11 @@ function dflightSelfTestLEGENDUX(){
       && dflightLegendPresentationMode() === "restrictions"
       && !userShown()
       && (!_dflightAtm09UserLegendLatched)
-      && (!!list ? list.hidden === false : true));
+      && (!!list ? list.hidden === true : true)
+      && (function(){
+        const dfEl = document.getElementById("dflightRestrictionsLegend");
+        return !!(dfEl && dfEl.hidden === false);
+      })());
 
     /* L8 OFFLINE / INELIGIBLE */
     _dflightAtm09InfoUnavailable = false; _dflightOverlayVisible = false;
@@ -45737,8 +46097,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46126,8 +46486,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46254,8 +46614,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46430,8 +46790,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -46563,8 +46923,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -46801,8 +47161,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47110,8 +47470,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47403,8 +47763,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -47669,8 +48029,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -47790,6 +48150,228 @@ function gisDialogMinHistorySelfTest(){
     }
   } catch(_){}
 })();
+
+
+function gisWorkspaceLegendsFSelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevMaster = (typeof _dflightAtm09MasterUi !== "undefined") ? _dflightAtm09MasterUi : null;
+  const prevPref = (typeof _dflightAtm09Preferred !== "undefined") ? _dflightAtm09Preferred : null;
+  const prevVis = (typeof _dflightOverlayVisible !== "undefined") ? _dflightOverlayVisible : null;
+  const prevReady = (typeof _dflightAtm09Ready !== "undefined") ? _dflightAtm09Ready : null;
+  const prevUnavail = (typeof _dflightAtm09InfoUnavailable !== "undefined") ? _dflightAtm09InfoUnavailable : null;
+  const prevSess = (typeof _dflightOverlaySession !== "undefined") ? _dflightOverlaySession : null;
+  const prevClient = (typeof _dflightClientSession !== "undefined") ? _dflightClientSession : null;
+  const prevForce = (typeof state !== "undefined") ? state.forceOffline : null;
+  const prevOpsec = (typeof state !== "undefined") ? state.opsecStrict : null;
+  const prevZoom = (typeof state !== "undefined") ? state.mapZoom : null;
+  const prevBase = (typeof _dflightHelperBaseUrlOverride !== "undefined") ? _dflightHelperBaseUrlOverride : undefined;
+  const dfPrev = document.getElementById("dflightRestrictionsLegend");
+  const atmPrev = document.getElementById("dflightAtm09UserLegend");
+  const prevDfH = dfPrev ? !!dfPrev.hidden : null;
+  const prevAtmH = atmPrev ? !!atmPrev.hidden : null;
+  const prevWs = (_legendWs && typeof _legendWs === "object")
+    ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
+  try {
+    add("WSF_build_215", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 215
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1");
+    add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
+      && typeof dflightEnsureAtm09UserLegend === "function"
+      && typeof legendWorkspaceLayout === "function"
+      && typeof legendWorkspaceComputeDefaultPair === "function"
+      && typeof legendWorkspaceAttachDrag === "function");
+    add("WSF_dh_preserved", typeof gisDialogMinHistorySelfTest === "function"
+      && typeof gisMinimizePanel === "function");
+    add("WSF_wu0019_pair_untouched", typeof dflightEnsurePairLayout === "function");
+    add("WSF_no_new_ui_keys", typeof UI_PANEL_KEYS !== "undefined"
+      && UI_PANEL_KEYS.indexOf("dfLegend") < 0
+      && UI_PANEL_KEYS.indexOf("atmLegend") < 0
+      && UI_PANEL_KEYS.indexOf("dflightRestrictionsLegend") < 0);
+    add("WSF_src_drag_no_sibling_layout", (function(){
+      const src = String(legendWorkspaceAttachDrag);
+      return src.indexOf("legendWorkspaceLayout") < 0
+        && src.indexOf("touched = true") >= 0;
+    })());
+    add("WSF_src_no_storage_gps_fetch", (function(){
+      const src = String(legendWorkspaceLayout) + String(dflightEnsureRestrictionsLegend)
+        + String(legendWorkspaceAttachDrag) + String(dflightSyncRestrictionsLegendOverlay);
+      return src.indexOf("localStorage") < 0 && src.indexOf("indexedDB") < 0
+        && src.indexOf("geolocation") < 0 && src.indexOf("fetch(") < 0
+        && src.indexOf("gisWorkbenchPanel") < 0
+        && src.indexOf("gisMinimizePanel") < 0;
+    })());
+    add("WSF_src_repair_both_untouched", (function(){
+      const src = String(legendWorkspaceLayout);
+      const wire = String(dflightWireAtm09UserLegendPositioning);
+      return src.indexOf("!dfTouched && !atmTouched") >= 0
+        && wire.indexOf('legendWorkspaceLayout("resize")') >= 0;
+    })());
+    const safeWide = { left: 10, top: 40, right: 900, bottom: 820 };
+    const pWide = legendWorkspaceComputeDefaultPair(safeWide, 180, 160, 180, 220, 10);
+    add("WSF_pair_wide_sbs", pWide.stacked === false
+      && pWide.df.left + 180 + 10 <= pWide.atm.left + 0.01
+      && !legendWorkspaceRectsOverlap(
+        { left: pWide.df.left, top: pWide.df.top, w: 180, h: 160 },
+        { left: pWide.atm.left, top: pWide.atm.top, w: 180, h: 220 }, 0));
+    const p1400 = legendWorkspaceComputeDefaultPair({ left: 10, top: 40, right: 1280, bottom: 820 }, 180, 160, 180, 220, 10);
+    add("WSF_pair_1400", p1400.stacked === false);
+    const p900 = legendWorkspaceComputeDefaultPair({ left: 8, top: 36, right: 780, bottom: 620 }, 180, 160, 180, 220, 10);
+    add("WSF_pair_900_fits_or_stack", typeof p900.stacked === "boolean"
+      && (p900.stacked || !legendWorkspaceRectsOverlap(
+        { left: p900.df.left, top: p900.df.top, w: 180, h: 160 },
+        { left: p900.atm.left, top: p900.atm.top, w: 180, h: 220 }, 0)));
+    const pNarrow = legendWorkspaceComputeDefaultPair({ left: 8, top: 24, right: 300, bottom: 560 }, 180, 140, 180, 180, 10);
+    add("WSF_pair_360_stacked", pNarrow.stacked === true);
+    const clamp = legendWorkspaceClampPos(-400, 9000, 180, 160, safeWide);
+    add("WSF_clamp_reachable", clamp.left <= safeWide.right - 1 && clamp.top <= safeWide.bottom - 1
+      && clamp.left + 180 >= safeWide.left + 1 && clamp.top + 40 >= safeWide.top);
+
+    if (typeof state !== "undefined"){
+      state.forceOffline = false;
+      state.opsecStrict = false;
+      state.mapZoom = 11;
+    }
+    _dflightHelperBaseUrlOverride = "http://example.test:8010";
+    const ds = { ok: true, zones: [{ id: "z1", restriction: "PROHIBITED", volumes: [] }] };
+    _dflightClientSession = { normalizedDataset: ds };
+    _dflightOverlaySession = { dataset: ds };
+    _dflightAtm09InfoUnavailable = false;
+    try { if (typeof legendWorkspaceResetSession === "function") legendWorkspaceResetSession(); } catch(_){}
+
+    _dflightAtm09MasterUi = false; _dflightAtm09Preferred = false;
+    _dflightOverlayVisible = true; _dflightAtm09Ready = false;
+    dflightSyncPanelUi();
+    const dfOnly = document.getElementById("dflightRestrictionsLegend");
+    const atmOnly = document.getElementById("dflightAtm09UserLegend");
+    add("WSF_df_only", !!(dfOnly && dfOnly.hidden === false) && (!atmOnly || atmOnly.hidden === true));
+    add("WSF_no_empty_placeholder_atm", !atmOnly || atmOnly.hidden === true);
+
+    _dflightAtm09MasterUi = true; _dflightAtm09Preferred = true;
+    _dflightOverlayVisible = false; _dflightAtm09Ready = true;
+    dflightSyncPanelUi();
+    add("WSF_atm_only", !!(document.getElementById("dflightAtm09UserLegend")
+      && document.getElementById("dflightAtm09UserLegend").hidden === false)
+      && (!document.getElementById("dflightRestrictionsLegend")
+        || document.getElementById("dflightRestrictionsLegend").hidden === true));
+
+    _dflightOverlayVisible = true; _dflightAtm09Ready = true; _dflightAtm09InfoUnavailable = false;
+    try { if (typeof legendWorkspaceResetSession === "function") legendWorkspaceResetSession(); } catch(_){}
+    dflightSyncPanelUi();
+    const dfBoth = document.getElementById("dflightRestrictionsLegend");
+    const atmBoth = document.getElementById("dflightAtm09UserLegend");
+    add("WSF_both_visible", !!(dfBoth && dfBoth.hidden === false && atmBoth && atmBoth.hidden === false));
+    add("WSF_distinct_nodes", !!(dfBoth && atmBoth && dfBoth !== atmBoth
+      && dfBoth.id === "dflightRestrictionsLegend" && atmBoth.id === "dflightAtm09UserLegend"
+      && dfBoth.parentElement && dfBoth.parentElement === atmBoth.parentElement
+      && !dfBoth.contains(atmBoth) && !atmBoth.contains(dfBoth)));
+    add("WSF_not_workbench", (function(){
+      const wb = document.getElementById("gisWorkbenchPanel");
+      return !wb || (!dfBoth.closest("#gisWorkbenchPanel") && !atmBoth.closest("#gisWorkbenchPanel") && !wb.open);
+    })());
+    add("WSF_drag_installed", !!(dfBoth && dfBoth._legendWsDragInstalled && atmBoth && atmBoth._legendWsDragInstalled));
+
+    if (dfBoth && atmBoth && dfBoth.hidden === false && atmBoth.hidden === false){
+      const atmL = atmBoth.style.left, atmT = atmBoth.style.top;
+      _legendWs.df.touched = true;
+      _legendWs.df.left = 16; _legendWs.df.top = 16;
+      legendWorkspaceApplyEl(dfBoth, 16, 16);
+      legendWorkspaceLayout("sync");
+      add("WSF_drag_df_atm_still", atmBoth.style.left === atmL && atmBoth.style.top === atmT);
+      const dfL = dfBoth.style.left, dfT = dfBoth.style.top;
+      _legendWs.atm.touched = true;
+      _legendWs.atm.left = 24; _legendWs.atm.top = 48;
+      legendWorkspaceApplyEl(atmBoth, 24, 48);
+      legendWorkspaceLayout("sync");
+      add("WSF_drag_atm_df_still", dfBoth.style.left === dfL && dfBoth.style.top === dfT);
+      legendWorkspaceApplyEl(atmBoth, 16, 16);
+      _legendWs.atm.left = 16; _legendWs.atm.top = 16;
+      legendWorkspaceLayout("sync");
+      add("WSF_overlap_kept", atmBoth.style.left === dfBoth.style.left && atmBoth.style.top === dfBoth.style.top);
+      _dflightOverlayVisible = false;
+      dflightSyncPanelUi();
+      add("WSF_hide_df_atm_remains", document.getElementById("dflightAtm09UserLegend")
+        && document.getElementById("dflightAtm09UserLegend").hidden === false
+        && (!document.getElementById("dflightRestrictionsLegend")
+          || document.getElementById("dflightRestrictionsLegend").hidden === true));
+      _dflightOverlayVisible = true;
+      dflightSyncPanelUi();
+      add("WSF_reopen_df_touched", document.getElementById("dflightRestrictionsLegend")
+        && document.getElementById("dflightRestrictionsLegend").hidden === false
+        && _legendWs.df.touched === true);
+    } else {
+      add("WSF_drag_df_atm_still", false, "both not visible");
+      add("WSF_drag_atm_df_still", false, "both not visible");
+      add("WSF_overlap_kept", false, "both not visible");
+      add("WSF_hide_df_atm_remains", false, "both not visible");
+      add("WSF_reopen_df_touched", false, "both not visible");
+    }
+    add("WSF_history_a_contract", typeof openHistoryPanel === "function"
+      && typeof gisMinimizePanel === "function"
+      && !!document.getElementById("historyPanel")
+      && !!document.getElementById("gisMinimizedDock")
+      && !!document.getElementById("convertModal")
+      && !!document.getElementById("searchPanel"));
+  } catch (e){
+    add("WSF_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try {
+      _dflightAtm09MasterUi = prevMaster;
+      _dflightAtm09Preferred = prevPref;
+      _dflightOverlayVisible = prevVis;
+      _dflightAtm09Ready = prevReady;
+      _dflightAtm09InfoUnavailable = prevUnavail;
+      _dflightOverlaySession = prevSess;
+      _dflightClientSession = prevClient;
+      _dflightHelperBaseUrlOverride = prevBase;
+      if (typeof state !== "undefined"){
+        if (prevForce !== null) state.forceOffline = prevForce;
+        if (prevOpsec !== null) state.opsecStrict = prevOpsec;
+        if (prevZoom !== null) state.mapZoom = prevZoom;
+      }
+      if (prevWs){
+        _legendWs.df = prevWs.df;
+        _legendWs.atm = prevWs.atm;
+      } else if (typeof legendWorkspaceResetSession === "function"){
+        legendWorkspaceResetSession();
+      }
+      const dfEl = document.getElementById("dflightRestrictionsLegend");
+      const atmEl = document.getElementById("dflightAtm09UserLegend");
+      if (dfEl && prevDfH !== null) dfEl.hidden = prevDfH;
+      if (atmEl && prevAtmH !== null) atmEl.hidden = prevAtmH;
+      try { if (typeof dflightSyncContextualLegends === "function") dflightSyncContextualLegends(); } catch(_){}
+    } catch(_){}
+  }
+  return checks;
+}
+
+(function gisWorkspaceLegendsFExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = gisWorkspaceLegendsFSelfTest();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestWorkspaceLegendsF: gisWorkspaceLegendsFSelfTest
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 
 
 
