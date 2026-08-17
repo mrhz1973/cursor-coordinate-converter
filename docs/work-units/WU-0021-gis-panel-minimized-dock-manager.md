@@ -2,13 +2,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A **CLOSED / PASS**; F aperto altrove)
-**ACTIVE BLOCK:** none in questo WU (F vive nel backlog D-Flight: `GIS-WORKSPACE-LEGENDS-F-BATCH1`)
-**CURRENT GATE:** **none** (F: **QA FINALE CHATGPT — PENDING**)
-**RUNTIME LIVE:** `7ef5c83351d76c941655d82cc8f8b2fdc0029b75` · build **215** · `GIS-WORKSPACE-LEGENDS-F-BATCH1` · blob `5fafd7d…`
+**ACTIVE BLOCK:** none in questo WU (F vive nel backlog D-Flight: `GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX1`)
+**CURRENT GATE:** **none** (F-FIX1: **QA FINALE CHATGPT — PENDING**)
+**RUNTIME LIVE:** `f1dd5800660017e2ea85975db978498b6727da6c` · build **216** · `GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX1` · blob `fe69bed…`
 **RUNTIME CANDIDATE:** none
-**CATEGORIA:** **DELICATO** (questo WU); F-BATCH1 = **ROUTINE**
-**NEXT:** QA F · **non** aprire altri blocchi G
-**NOTE:** HISTORY-A CLOSED / PASS · F-BATCH1 LIVE 215 ABQA PASS · helper 0.1.3 · Oggetti GIS FROZEN
+**CATEGORIA:** **DELICATO** (questo WU); F-FIX1 = **ROUTINE**
+**NEXT:** QA F-FIX1 · **non** aprire altri blocchi G
+**NOTE:** FIX1 ABQA PASS · helper 0.1.3 · Oggetti GIS FROZEN
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
