@@ -11,7 +11,9 @@
 | --- | --- |
 | BASE LIVE | `1e37e56f04ddb9e2ea85975db978498b6727da6c` · build **217** · `GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2` |
 | FULL SHA (candidate) | `12a7477414a311b1650e9b575c89cab6966e240e` |
+| Build / ID | **218** / `OUTDOOR-ROUTING-F-AVOID-AREAS-A` |
 | Blob git | `5c25a1fa923fb41f9a82e9cecb9108fa61ba681a` |
+| Bytes LF | `10534980` |
 | SHA-256 LF | `872503b6c77fefa83534e2820a3d301dcc57c8aa0ccdc8d755c8918b09185d42` |
 
 ## GraphHopper capability (pre-patch probe)
