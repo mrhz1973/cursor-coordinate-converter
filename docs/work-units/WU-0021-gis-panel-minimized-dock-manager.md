@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-D CLOSED / PASS)
-**ACTIVE BLOCK:** none (ultimo: `GIS-PANEL-DOCK-MGR-G-D-BATCH1` **CLOSED / PASS**)
-**CURRENT GATE:** **none**
+**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A in review)
+**ACTIVE BLOCK:** `GIS-DIALOG-MINIMIZE-HISTORY-A`
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **RUNTIME LIVE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
-**RUNTIME CANDIDATE:** none
+**RUNTIME CANDIDATE:** `7196b30fe0c89acf2bd538640eb2076f012b6380` · build **214** · `GIS-DIALOG-MINIMIZE-HISTORY-A` · blob `d425ec9a…`
 **CATEGORIA:** **DELICATO**
-**NEXT:** **F NOT OPENED** · da scegliere da roadmap/backlog
-**NOTE:** G-D-BATCH1 QA operatore PASS (2026-08-17) → auto-`finito` Regola H · helper 0.1.3 · F NOT OPENED
+**NEXT:** attesa REVIEW su **214** · **non** deploy · **F NOT OPENED**
+**NOTE:** HISTORY-A candidate 214 · selftest 592/592 · G-D resta CLOSED/PASS · helper 0.1.3 · F NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -78,8 +78,9 @@ Whitelist effettiva in `gisMinimizePanel` (~75328): solo i branch espliciti; ogn
 | id | Floating / z-order | Minimize whitelist | Nota audit |
 | --- | --- | --- | --- |
 | `gisWorkbenchPanel` | sì; in `GIS_MIN_FOCUS_MAP` / blocked map / restore branch | **NO** (cade in `else return`) | Handler minimize (~88281) chiama `gisMinimizePanel` ma **non ha effetto** — gap infrastrutturale |
-| `searchPanel` | sì; in `gisPanelBringToFront` ids | no | floating ma senza chip dock |
-| `convertModal` | sì (z CSS ~28 area) | no | modal “pesante” con `::backdrop`; Esc chiude (non minimize) |
+| `searchPanel` | sì; in `gisPanelBringToFront` ids | **sì** (HISTORY-A / 214) | `−` + dock condiviso; close ≠ minimize |
+| `convertModal` | sì (z CSS ~28 area) | **sì** in GIS (HISTORY-A / 214) | GIS floating `aria-modal=false`; fuori GIS modal classica, `−` nascosto |
+| `historyPanel` | sì (HISTORY-A) | **sì** | dialog floating; **non** più `#tabDrawer` / right-slide |
 | `qrModal` / help-like | overlay alto | no (help sì; qr no) | fuori dock |
 | Subdialog (`waypointImportDialog`, `trackExportDialog`, `rrSourcePickerDialog`, …) | app-modal | no | bloccano minimize del parent dove previsto |
 | `#tabDrawer` | z=30 | n/a | non è floating minimize |
@@ -546,5 +547,18 @@ Bundle unico 10 task — dual-side header dock, no 5th-chip jump, header-budget 
 **Evidence:** [`../orchestrator/inbox/2026-08-17_1054_gis-panel-dock-mgr-g-d-batch1-evidence.md`](../orchestrator/inbox/2026-08-17_1054_gis-panel-dock-mgr-g-d-batch1-evidence.md)
 
 **Selftest:** **564/564** · planner 4-right+1-left · 1920 4→5 = 4 right + 1 left · 360 `+N` Altri 7
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
+
+## 33. GIS-DIALOG-MINIMIZE-HISTORY-A CANDIDATE (2026-08-17)
+
+Bundle unico: `−` Converti + `−` Cerca nel dock condiviso; Cronologia da drawer destro a `<dialog id="historyPanel">` floating GIS.
+
+**Candidato:** `7196b30fe0c89acf2bd538640eb2076f012b6380` / **214** / blob `d425ec9a6c0fe4dc9e8f3a7445e6a1f6f6686f9f`  
+**LIVE:** invariato `7fb0c20` / **213** (**no deploy**)
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_2235_gis-dialog-minimize-history-a-evidence.md`](../orchestrator/inbox/2026-08-17_2235_gis-dialog-minimize-history-a-evidence.md)
+
+**Selftest:** **592/592** · `DH_*` 28/28 · `DOCK_GD_*` 40/40 · hunks 70 · OTHER=0 · i18n IT-only
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.

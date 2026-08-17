@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-D-BATCH1 CLOSED / PASS** · QA operatore PASS → auto-`finito` (Regola H) · LIVE `7fb0c20` / **213** · blob `bbc9a5c8…` · gate **none** · F NOT OPENED · Oggetti GIS FROZEN. Evidence: [`inbox/2026-08-17_1400_riepilogo_finito-g-d-batch1.md`](inbox/2026-08-17_1400_riepilogo_finito-g-d-batch1.md). Task `7fb0c20`.
+2026-08-17 — **GIS-DIALOG-MINIMIZE-HISTORY-A** candidate `7196b30` / **214** · blob `d425ec9a…` · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE invariato `7fb0c20` / **213** · no deploy · F NOT OPENED · Oggetti GIS FROZEN. Evidence: [`inbox/2026-08-17_2235_gis-dialog-minimize-history-a-evidence.md`](inbox/2026-08-17_2235_gis-dialog-minimize-history-a-evidence.md). Task `7196b30`.
