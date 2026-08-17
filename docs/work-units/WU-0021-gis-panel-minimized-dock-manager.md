@@ -8,7 +8,7 @@
 **RUNTIME CANDIDATE:** `7196b30fe0c89acf2bd538640eb2076f012b6380` · build **214** · `GIS-DIALOG-MINIMIZE-HISTORY-A` · blob `d425ec9a…`
 **CATEGORIA:** **DELICATO**
 **NEXT:** attesa REVIEW su **214** · **non** deploy · **F NOT OPENED**
-**NOTE:** HISTORY-A candidate 214 · selftest 592/592 · G-D resta CLOSED/PASS · helper 0.1.3 · F NOT OPENED
+**NOTE:** HISTORY-A candidate 214 · REVIEW-EVIDENCE-B 57/57 PASS · gate resta PENDING · helper 0.1.3 · F NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -562,3 +562,13 @@ Bundle unico: `−` Converti + `−` Cerca nel dock condiviso; Cronologia da dra
 **Selftest:** **592/592** · `DH_*` 28/28 · `DOCK_GD_*` 40/40 · hunks 70 · OTHER=0 · i18n IT-only
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
+
+## 34. GIS-DIALOG-MINIMIZE-HISTORY-A REVIEW-EVIDENCE-B (2026-08-17) — verify-only
+
+Evidence-only. Candidato **invariato** `7196b30…` / **214** (blob `d425ec9a…` invariato).
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_2240_gis-dialog-minimize-history-a-review-evidence-b.md`](../orchestrator/inbox/2026-08-17_2240_gis-dialog-minimize-history-a-review-evidence-b.md) + JSON raw sibling.
+
+**Esiti:** A context-aware GIS+fuori GIS **PASS** · B −/× handler specifici **PASS** · C backdrop/inert **PASS** · D Cronologia dialog, no tabDrawer/right-slide, CSS drawer condiviso conservato **PASS** · E selftest 592/592, DOCK_GD 40/40, Oggetti GIS untouched **PASS**. Live 57/57.
+
+**Gate:** resta **REVIEW GPT-SOSTITUTIVA — PENDING** (verdetto ChatGPT) · **no patch** · **no bump** · **no deploy** · F NOT OPENED · Oggetti GIS FROZEN/UNTOUCHED.
