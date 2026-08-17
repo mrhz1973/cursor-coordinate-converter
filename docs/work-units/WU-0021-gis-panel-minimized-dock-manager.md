@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A **CLOSED / PASS**)
-**ACTIVE BLOCK:** none (ultimo: `GIS-DIALOG-MINIMIZE-HISTORY-A` **CLOSED / PASS**)
-**CURRENT GATE:** **none**
-**RUNTIME LIVE:** `7196b30fe0c89acf2bd538640eb2076f012b6380` · build **214** · `GIS-DIALOG-MINIMIZE-HISTORY-A` · blob `d425ec9a…`
+**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A **CLOSED / PASS**; F aperto altrove)
+**ACTIVE BLOCK:** none in questo WU (F vive nel backlog D-Flight: `GIS-WORKSPACE-LEGENDS-F-BATCH1`)
+**CURRENT GATE:** **none** (F: **QA FINALE CHATGPT — PENDING**)
+**RUNTIME LIVE:** `7ef5c83351d76c941655d82cc8f8b2fdc0029b75` · build **215** · `GIS-WORKSPACE-LEGENDS-F-BATCH1` · blob `5fafd7d…`
 **RUNTIME CANDIDATE:** none
-**CATEGORIA:** **DELICATO**
-**NEXT:** **F NOT OPENED** · da scegliere da roadmap/backlog
-**NOTE:** HISTORY-A QA operatore PASS (2026-08-17) → auto-`finito` Regola H · helper 0.1.3 · F NOT OPENED
+**CATEGORIA:** **DELICATO** (questo WU); F-BATCH1 = **ROUTINE**
+**NEXT:** QA F · **non** aprire altri blocchi G
+**NOTE:** HISTORY-A CLOSED / PASS · F-BATCH1 LIVE 215 ABQA PASS · helper 0.1.3 · Oggetti GIS FROZEN
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.

@@ -624,8 +624,8 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **C** | ATM09 VISUAL PARITY AUDIT | **CLOSED / PASS** → [`WU-0017`](WU-0017-dflight-atm09-visual-parity.md) — IMPL-A LIVE `d2d3ab3` / **197** |
 | **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **CLOSED / PASS** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — FIX4 LIVE `9820c8a` / **205** · QA operatore PASS · finito Regola H · F–H **NOT OPENED** |
-| **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
-| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A…G-D + HISTORY-A **CLOSED / PASS** · LIVE `7196b30` / **214** · F **NOT OPENED** |
+| **F** | Workspace due legende a destra | **OPEN** → blocco `GIS-WORKSPACE-LEGENDS-F-BATCH1` · LIVE `7ef5c83` / **215** · ABQA PASS · gate **QA FINALE CHATGPT — PENDING** |
+| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A…G-D + HISTORY-A **CLOSED / PASS** · LIVE `7196b30` / **214** |
 | **H** | Branding TMART GIS tool | **CLOSED / PASS** → [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) — FIX1 LIVE `508dd03` / **207** · QA operatore PASS · finito Regola H · G **NOT OPENED** |
 
 #### 1. Azione «Aggiorna» unificata
@@ -702,7 +702,9 @@ Ammessi se servono alla leggibilità: lieve backdrop; text-shadow/outline legger
 
 #### 8. Workspace futuro delle due legende
 
-Backlog UI dedicato. Legenda D-Flight e legenda ATM09: pannelli/overlay **distinti**; affiancati quando entrambe visibili; trascinabili; **non** incorporate obbligatoriamente nel pannello Zone D-Flight; non devono coprirsi.
+**Stato:** **OPEN** nel blocco `GIS-WORKSPACE-LEGENDS-F-BATCH1` · LIVE `7ef5c83` / build **215** · Automated Browser QA PASS · gate **QA FINALE CHATGPT — PENDING**.
+
+Legenda D-Flight e legenda ATM09: pannelli/overlay **distinti**; affiancati quando entrambe visibili; trascinabili; **non** incorporate obbligatoriamente nel pannello Zone D-Flight; overlap solo se l’operatore lo sceglie (touched).
 
 Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolbar verticale destra e area coordinate/riga posizione in basso. Leggibili, poco invasive, GIS-first, compatibili con resize. Una sola necessaria → mostrare solo quella.
 
@@ -722,7 +724,7 @@ Finding trasversale: una modal/pannello aperto può coprire le etichette dei pan
 
 Futuro: modal aperte preferibilmente in alto nell’area mappa; etichette minimizzate non sotto le modal; trasferimento progressivo delle etichette nella **barra superiore nera**, spazio libero a destra e a sinistra del titolo finché c’è spazio; comportamento responsive a spazio esaurito.
 
-**Stato:** **OPEN** in [`WU-0021-gis-panel-minimized-dock-manager.md`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A1…G-D-BATCH1 + `GIS-DIALOG-MINIMIZE-HISTORY-A` **CLOSED / PASS** · LIVE `7196b30` / **214** · QA operatore PASS (2026-08-17). **F** resta **NOT OPENED**.
+**Stato:** **OPEN** in [`WU-0021-gis-panel-minimized-dock-manager.md`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A1…G-D-BATCH1 + `GIS-DIALOG-MINIMIZE-HISTORY-A` **CLOSED / PASS** · LIVE `7196b30` / **214** · QA operatore PASS (2026-08-17). Candidato **F** aperto in `GIS-WORKSPACE-LEGENDS-F-BATCH1` (LIVE `7ef5c83` / **215** · ABQA PASS · QA FINALE PENDING).
 
 #### 12. Branding — TMART GIS tool
 
