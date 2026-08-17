@@ -9813,6 +9813,23 @@ dialog.track-modal.app-modal{
 .routing-panel-status:empty{ display:none; }
 .routing-panel-status{ margin:0; font-size:.85rem; color:var(--muted); }
 .routing-panel-status.is-err{ color:var(--danger, #b91c1c); font-weight:600; }
+.routing-avoid-areas-section{
+  display:flex; flex-direction:column; gap:6px;
+  padding:8px; border:1px solid var(--border, rgba(127,127,127,.35));
+  border-radius:8px; background:color-mix(in srgb, var(--panel, #fff) 94%, transparent);
+}
+.routing-avoid-head{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
+.routing-avoid-title{ font-size:.85rem; font-weight:600; }
+.routing-avoid-areas-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; max-height:160px; overflow:auto; }
+.routing-avoid-area-row{ display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:.82rem; }
+.routing-avoid-area-label{ flex:1 1 120px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.routing-avoid-draft-actions{ display:flex; flex-wrap:wrap; gap:4px; }
+.routing-avoid-feedback.is-err{ color:var(--danger, #b91c1c); font-weight:600; }
+.routing-avoid-areas-overlay{ position:absolute; inset:0; pointer-events:none; z-index:14; }
+.routing-avoid-poly{ fill:rgba(220,38,38,.18); stroke:#dc2626; stroke-width:2; }
+.routing-avoid-poly.is-draft{ fill:rgba(234,88,12,.12); stroke:#ea580c; stroke-dasharray:6 4; }
+.tile-map.routing-avoid-drawing{ cursor:crosshair; }
+
 .routing-panel-note{ margin:0; font-size:.8rem; }
 .routing-points-list{ display:flex; flex-direction:column; gap:6px; }
 .routing-point-row{
@@ -15140,6 +15157,22 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <p class="routing-ascent-detail-note hint" id="routingAscentDetailNote" hidden></p>
       </details>
     </div>
+
+    <section id="routingAvoidAreasSection" class="routing-avoid-areas-section" aria-labelledby="routingAvoidAreasTitle">
+      <div class="routing-avoid-head">
+        <span id="routingAvoidAreasTitle" class="routing-avoid-title" data-i18n="routing.avoidAreasTitle">Aree da evitare</span>
+        <button type="button" id="routingAvoidDrawBtn" class="btn btn-sm" data-i18n="routing.avoidDraw">Disegna area</button>
+      </div>
+      <p id="routingAvoidDraftRow" class="routing-avoid-draft hint" role="status" aria-live="polite" hidden></p>
+      <div class="routing-avoid-draft-actions" id="routingAvoidDraftActions">
+        <button type="button" id="routingAvoidUndoVertBtn" class="btn btn-sm btn-ghost" hidden data-i18n="routing.avoidUndoVert">Annulla ultimo vertice</button>
+        <button type="button" id="routingAvoidConfirmBtn" class="btn btn-sm btn-primary" hidden data-i18n="routing.avoidConfirm">Conferma area</button>
+        <button type="button" id="routingAvoidCancelDrawBtn" class="btn btn-sm" hidden data-i18n="routing.avoidCancelDraw">Annulla disegno</button>
+      </div>
+      <ul id="routingAvoidAreasList" class="routing-avoid-areas-list" role="list"></ul>
+      <button type="button" id="routingAvoidClearAllBtn" class="btn btn-sm btn-danger-subtle routing-avoid-clear-all" hidden data-i18n="routing.avoidClearAll">Elimina tutte</button>
+      <p id="routingAvoidFeedback" class="routing-avoid-feedback hint" role="status" aria-live="polite" hidden></p>
+    </section>
     <div class="routing-units-row" id="routingUnitsRow">
       <span class="export-group-label" data-i18n="routing.unitsLabel">Unità</span>
       <span class="routing-units-group" role="group" aria-labelledby="routingUnitsDistLabel">
@@ -17647,6 +17680,27 @@ const I18N = {
     "routing.snapStale":"Verifica copertura da rifare.",
     "routing.snapBlocked":"Calcolo bloccato: verifica i punti evidenziati.",
     "routing.snapVerifying":"Verifica copertura punti…",
+
+    "routing.avoidAreasTitle":"Aree da evitare",
+    "routing.avoidDraw":"Disegna area",
+    "routing.avoidUndoVert":"Annulla ultimo vertice",
+    "routing.avoidConfirm":"Conferma area",
+    "routing.avoidCancelDraw":"Annulla disegno",
+    "routing.avoidClearAll":"Elimina tutte",
+    "routing.avoidEnable":"Attiva",
+    "routing.avoidDisable":"Disattiva",
+    "routing.avoidDelete":"Elimina",
+    "routing.avoidCenter":"Centra",
+    "routing.avoidDrawInstruction":"Clicca la mappa per aggiungere vertici. Conferma o Esc per annullare.",
+    "routing.avoidDrawCancelled":"Bozza area annullata.",
+    "routing.avoidAreaAdded":"Area da evitare aggiunta.",
+    "routing.avoidAreaLabel":"Area {0}",
+    "routing.avoidDraftVerts":"Vertici bozza: {0}",
+    "routing.avoidInvalidGeometry":"Geometria area non valida.",
+    "routing.avoidNeedMinVerts":"Servono almeno 3 vertici distinti.",
+    "routing.avoidTooManyVerts":"Troppi vertici per l'area.",
+    "routing.avoidMaxAreas":"Numero massimo aree raggiunto.",
+    "routing.avoidAntimeridian":"Area non valida (antimeridiano).",
     "routing.alternativesLabel":"Percorsi alternativi",
     "routing.alternativeN":"Percorso {0}",
     "routing.alternativesUnavailable":"Alternative non disponibili su questo provider; percorso singolo.",
@@ -19856,6 +19910,27 @@ const I18N = {
     "routing.errorInvalidResponse":"Invalid router response.",
     "routing.errorCors":"CORS / network error while calculating the route.",
     "routing.errorGeneric":"Router request failed.",
+
+    "routing.avoidAreasTitle":"Areas to avoid",
+    "routing.avoidDraw":"Draw area",
+    "routing.avoidUndoVert":"Undo last vertex",
+    "routing.avoidConfirm":"Confirm area",
+    "routing.avoidCancelDraw":"Cancel draw",
+    "routing.avoidClearAll":"Delete all",
+    "routing.avoidEnable":"Enable",
+    "routing.avoidDisable":"Disable",
+    "routing.avoidDelete":"Delete",
+    "routing.avoidCenter":"Center",
+    "routing.avoidDrawInstruction":"Click the map to add vertices. Confirm or Esc to cancel.",
+    "routing.avoidDrawCancelled":"Area draft cancelled.",
+    "routing.avoidAreaAdded":"Avoid area added.",
+    "routing.avoidAreaLabel":"Area {0}",
+    "routing.avoidDraftVerts":"Draft vertices: {0}",
+    "routing.avoidInvalidGeometry":"Invalid area geometry.",
+    "routing.avoidNeedMinVerts":"At least 3 distinct vertices required.",
+    "routing.avoidTooManyVerts":"Too many vertices for the area.",
+    "routing.avoidMaxAreas":"Maximum number of areas reached.",
+    "routing.avoidAntimeridian":"Invalid area (antimeridian).",
     "routing.alternativesLabel":"Alternative routes",
     "routing.alternativeN":"Route {0}",
     "routing.alternativesUnavailable":"Alternatives unavailable on this provider; single route.",
@@ -23767,10 +23842,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2";
-const APP_BUILD_DETAIL = "Solo D-Flight legend auto-snaps right on any enter-solo transition; dual/touched contract unchanged.";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-F-AVOID-AREAS-A";
+const APP_BUILD_DETAIL = "Routing transient avoid areas: draw, list, GraphHopper custom_model session-only.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 217;
+const APP_BUILD_NUM = 218;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39061,8 +39136,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40083,8 +40158,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42011,8 +42086,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42512,8 +42587,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43526,8 +43601,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43964,8 +44039,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44556,8 +44631,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45523,8 +45598,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -45693,8 +45768,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46122,8 +46197,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46511,8 +46586,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46639,8 +46714,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46815,8 +46890,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -46948,8 +47023,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47186,8 +47261,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47495,8 +47570,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47788,8 +47863,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48054,8 +48129,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48200,8 +48275,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48416,8 +48491,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48527,8 +48602,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 217
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -68838,6 +68913,7 @@ function renderTileMap(lat, lon, zoom){
       try { renderGisMapGpsOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof renderRoutingMarkers === "function") renderRoutingMarkers(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof renderRoutingRoutePreviewOverlay === "function") renderRoutingRoutePreviewOverlay(tileMap, lat, lon, zoom); } catch(_){}
+      try { if (typeof routingSyncAvoidAreasOverlay === "function") routingSyncAvoidAreasOverlay(tileMap, lat, lon, zoom); } catch(_){}
       try { if (typeof trackBrushOnMapRender === "function") trackBrushOnMapRender(); } catch(_){}
       try { if (typeof drawCartoIgmOverlay === "function") drawCartoIgmOverlay(tileMap); } catch(_){}
       try { if (typeof cartoIgmRearmAfterRender === "function") cartoIgmRearmAfterRender(); } catch(_){}
@@ -69382,7 +69458,21 @@ function attachPanHandlers(root, lat, lon, zoom){
         }
         return;
       }
-      if (state._routing && state._routing.pickMode && state._routing.pickTargetId && !drag.moved && cx != null && cy != null){
+      if (_routingAvoidSession && _routingAvoidSession.drawActive && !drag.moved && cx != null && cy != null){
+        if (state._bboxSelecting) return;
+        if (ev.target && ev.target.closest && ev.target.closest(CTRL_SEL)) return;
+        const zAv = state.mapZoom || zoom;
+        const pickAv = mapClientToLatLonMap(root, lat, lon, zAv, cx, cy);
+        if (pickAv && Number.isFinite(pickAv.lat) && Number.isFinite(pickAv.lon) && Math.abs(pickAv.lat) <= 90){
+          try {
+            if (typeof routingAvoidApplyMapClick === "function") routingAvoidApplyMapClick(pickAv.lat, pickAv.lon);
+          } catch(_){}
+          if (ev.cancelable) ev.preventDefault();
+          try { ev.stopPropagation(); } catch(_){}
+        }
+        return;
+      }
+            if (state._routing && state._routing.pickMode && state._routing.pickTargetId && !drag.moved && cx != null && cy != null){
         try {
           if (typeof trackBrushYieldsPan === "function" && trackBrushYieldsPan()) return;
         } catch(_){}
@@ -83237,6 +83327,7 @@ function routingEnsureState(){
     if (!r.search || typeof r.search !== "object") r.search = Object.create(null);
     if (!Array.isArray(r.searchHistory)) r.searchHistory = [];
     if (!r.infoCache || typeof r.infoCache !== "object") r.infoCache = { bbox: null, profiles: null, fetchedAt: null, provider: null };
+    try { routingAvoidEnsureSessionFields(r); } catch(_){}
     try { routingNormalizeAllPointSnapFields(r); } catch(_){}
     try { routingEnsureAbPoints(r); } catch(_){}
     return r;
@@ -83289,8 +83380,12 @@ function routingEnsureState(){
     roundTripWarnKey: "",
     search: Object.create(null),
     searchHistory: [],
-    infoCache: { bbox: null, profiles: null, fetchedAt: null, provider: null }
+    infoCache: { bbox: null, profiles: null, fetchedAt: null, provider: null },
+    avoidAreas: _routingAvoidSession.areas,
+    avoidDrawActive: !!_routingAvoidSession.drawActive,
+    avoidDraft: _routingAvoidSession.draft
   };
+  try { routingAvoidEnsureSessionFields(state._routing); } catch(_){}
   try { routingEnsureAbPoints(state._routing); } catch(_){}
   return state._routing;
 }
@@ -84154,6 +84249,7 @@ function routingDisarmOtherMapPicks(){
     if (state._bboxSelecting && typeof cancelBboxSelection === "function")
       cancelBboxSelection();
   } catch(_){}
+  try { if (typeof routingAvoidExitDrawMode === "function") routingAvoidExitDrawMode({ silent: true }); } catch(_){}
 }
 function routingExitPickMode(options){
   options = options || {};
@@ -84433,6 +84529,7 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
   tileLayer.appendChild(wrap);
 }
 function routingFullCleanup(){
+  try { if (typeof routingAvoidExitDrawMode === "function") routingAvoidExitDrawMode({ silent: true }); } catch(_){}
   try { routingCloseSaveAsTrackPrompt({ force: true }); } catch(_){}
   try { if (typeof routingDisconnectAltitudeResizeObserver === "function") routingDisconnectAltitudeResizeObserver(); } catch(_){}
   try { mapRoutingMarkerDocDragCleanup(); } catch(_){}
@@ -86005,8 +86102,503 @@ function routingRoundTripSeedBatch(baseSeed){
   }
   return out;
 }
+/* ===== OUTDOOR-ROUTING-F-AVOID-AREAS-A — transient avoid polygons (session-only) ===== */
+const ROUTING_AVOID_MAX_AREAS = 8;
+const ROUTING_AVOID_MAX_VERTS = 24;
+const ROUTING_AVOID_MIN_VERTS = 3;
+var _routingAvoidSession = { areas: [], drawActive: false, draft: null, _seq: 0 };
+function routingAvoidUid(){
+  _routingAvoidSession._seq = (_routingAvoidSession._seq || 0) + 1;
+  return "ra" + Date.now().toString(36) + _routingAvoidSession._seq.toString(36);
+}
+function routingAvoidEnsureSessionFields(r){
+  if (!r) return;
+  if (!Array.isArray(_routingAvoidSession.areas)) _routingAvoidSession.areas = [];
+  r.avoidAreas = _routingAvoidSession.areas;
+  r.avoidDrawActive = !!_routingAvoidSession.drawActive;
+  r.avoidDraft = _routingAvoidSession.draft;
+}
+function routingAvoidActiveAreas(){
+  const arr = _routingAvoidSession.areas || [];
+  return arr.filter(function(a){ return a && a.enabled !== false && Array.isArray(a.vertices) && a.vertices.length >= ROUTING_AVOID_MIN_VERTS; });
+}
+function routingHasActiveAvoidAreas(){
+  return routingAvoidActiveAreas().length > 0;
+}
+function routingAvoidNormalizeVertex(v){
+  if (!v || typeof v !== "object") return null;
+  const lat = Number(v.lat);
+  let lon = Number(v.lon);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return null;
+  return { lat: lat, lon: normalizeLon(lon) };
+}
+function routingAvoidDistinctCount(verts){
+  const seen = Object.create(null);
+  let n = 0;
+  for (let i = 0; i < verts.length; i++){
+    const v = verts[i];
+    if (!v) continue;
+    const k = v.lat.toFixed(6) + "," + v.lon.toFixed(6);
+    if (seen[k]) continue;
+    seen[k] = 1;
+    n++;
+  }
+  return n;
+}
+function routingAvoidValidateVertices(vertices, opts){
+  opts = opts || {};
+  if (!Array.isArray(vertices)) return { ok: false, key: "routing.avoidInvalidGeometry" };
+  if (vertices.length < ROUTING_AVOID_MIN_VERTS) return { ok: false, key: "routing.avoidNeedMinVerts" };
+  if (vertices.length > ROUTING_AVOID_MAX_VERTS) return { ok: false, key: "routing.avoidTooManyVerts" };
+  const norm = [];
+  for (let i = 0; i < vertices.length; i++){
+    const nv = routingAvoidNormalizeVertex(vertices[i]);
+    if (!nv) return { ok: false, key: "routing.avoidInvalidGeometry" };
+    norm.push(nv);
+  }
+  if (routingAvoidDistinctCount(norm) < ROUTING_AVOID_MIN_VERTS)
+    return { ok: false, key: "routing.avoidNeedMinVerts" };
+  let minLon = Infinity, maxLon = -Infinity;
+  for (let j = 0; j < norm.length; j++){
+    const lo = norm[j].lon;
+    if (lo < minLon) minLon = lo;
+    if (lo > maxLon) maxLon = lo;
+  }
+  if (maxLon - minLon > 180) return { ok: false, key: "routing.avoidAntimeridian" };
+  return { ok: true, vertices: norm };
+}
+function routingAvoidClosedRingLonLat(vertices){
+  const ring = [];
+  for (let i = 0; i < vertices.length; i++){
+    ring.push([vertices[i].lon, vertices[i].lat]);
+  }
+  if (ring.length && (ring[0][0] !== ring[ring.length - 1][0] || ring[0][1] !== ring[ring.length - 1][1]))
+    ring.push([ring[0][0], ring[0][1]]);
+  return ring;
+}
+function routingBuildAvoidAreasCustomModel(){
+  const active = routingAvoidActiveAreas();
+  if (!active.length) return null;
+  const areas = Object.create(null);
+  const priority = [];
+  for (let i = 0; i < active.length; i++){
+    const a = active[i];
+    const val = routingAvoidValidateVertices(a.vertices, { forSend: true });
+    if (!val.ok) continue;
+    const areaId = "avoid_" + String(a.id || i).replace(/[^a-zA-Z0-9_]/g, "_").slice(0, 24);
+    areas[areaId] = {
+      type: "Feature",
+      properties: {},
+      geometry: { type: "Polygon", coordinates: [routingAvoidClosedRingLonLat(val.vertices)] }
+    };
+    priority.push({ if: "in_" + areaId, multiply_by: "0" });
+  }
+  if (!priority.length) return null;
+  return { custom_model: { areas: areas, priority: priority } };
+}
+function routingApplyAvoidPayloadToBody(body){
+  if (!body || typeof body !== "object") return body;
+  const payload = routingBuildAvoidAreasCustomModel();
+  if (!payload) return body;
+  body.custom_model = payload.custom_model;
+  body["ch.disable"] = true;
+  delete body.algorithm;
+  delete body["alternative_route.max_paths"];
+  delete body["alternative_route.max_weight_factor"];
+  delete body["alternative_route.max_share_factor"];
+  return body;
+}
+function routingAvoidTouchInvalidatePreview(){
+  try { routingInvalidateRoutePreview(); } catch(_){}
+  try { routingSyncAvoidAreasUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+function routingAvoidSetFeedback(key, isErr){
+  const el = document.getElementById("routingAvoidFeedback");
+  if (!el) return;
+  if (!key){
+    el.textContent = "";
+    el.hidden = true;
+    el.classList.remove("is-err");
+    return;
+  }
+  el.textContent = routingT(key, key);
+  el.hidden = false;
+  el.classList.toggle("is-err", !!isErr);
+}
+function routingAvoidExitDrawMode(opts){
+  opts = opts || {};
+  if (!_routingAvoidSession.drawActive && !_routingAvoidSession.draft) return;
+  _routingAvoidSession.drawActive = false;
+  _routingAvoidSession.draft = null;
+  if (state._routing){
+    state._routing.avoidDrawActive = false;
+    state._routing.avoidDraft = null;
+  }
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm) tm.classList.remove("routing-avoid-drawing");
+  } catch(_){}
+  try { mapToolDeactivate("routing-avoid-draw"); } catch(_){}
+  if (!opts.silent)
+    routingSetStatus(routingT("routing.avoidDrawCancelled", "Area draft cancelled."), false);
+  try { routingSyncAvoidAreasUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+}
+function routingAvoidEnterDrawMode(){
+  const r = routingEnsureState();
+  try { routingExitPickMode({ silent: true }); } catch(_){}
+  try { routingDisarmOtherMapPicks(); } catch(_){}
+  routingAvoidExitDrawMode({ silent: true });
+  _routingAvoidSession.drawActive = true;
+  _routingAvoidSession.draft = { vertices: [] };
+  r.avoidDrawActive = true;
+  r.avoidDraft = _routingAvoidSession.draft;
+  routingAvoidSetFeedback("", false);
+  routingSetStatus(routingT("routing.avoidDrawInstruction", "Click the map to add vertices. Confirm or Esc to cancel."), false);
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (tm) tm.classList.add("routing-avoid-drawing");
+  } catch(_){}
+  try {
+    mapToolActivate("routing-avoid-draw", function(){
+      try { routingAvoidExitDrawMode({ silent: true }); } catch(_){}
+    });
+  } catch(_){}
+  try { routingSyncAvoidAreasUi(); } catch(_){}
+}
+function routingAvoidAddDraftVertex(lat, lon){
+  if (!_routingAvoidSession.drawActive || !_routingAvoidSession.draft) return false;
+  const nv = routingAvoidNormalizeVertex({ lat: lat, lon: lon });
+  if (!nv) return false;
+  const verts = _routingAvoidSession.draft.vertices;
+  if (verts.length >= ROUTING_AVOID_MAX_VERTS){
+    routingAvoidSetFeedback("routing.avoidTooManyVerts", true);
+    return false;
+  }
+  verts.push(nv);
+  routingAvoidSetFeedback("", false);
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { routingSyncAvoidAreasUi(); } catch(_){}
+  return true;
+}
+function routingAvoidUndoDraftVertex(){
+  if (!_routingAvoidSession.draft || !_routingAvoidSession.draft.vertices.length) return;
+  _routingAvoidSession.draft.vertices.pop();
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { routingSyncAvoidAreasUi(); } catch(_){}
+}
+function routingAvoidConfirmDraft(){
+  if (!_routingAvoidSession.drawActive || !_routingAvoidSession.draft) return false;
+  const val = routingAvoidValidateVertices(_routingAvoidSession.draft.vertices);
+  if (!val.ok){
+    routingAvoidSetFeedback(val.key, true);
+    return false;
+  }
+  if ((_routingAvoidSession.areas || []).length >= ROUTING_AVOID_MAX_AREAS){
+    routingAvoidSetFeedback("routing.avoidMaxAreas", true);
+    return false;
+  }
+  const n = (_routingAvoidSession.areas || []).length + 1;
+  _routingAvoidSession.areas.push({
+    id: routingAvoidUid(),
+    label: routingT("routing.avoidAreaLabel", "Avoid area {0}").replace("{0}", String(n)),
+    enabled: true,
+    vertices: val.vertices.slice()
+  });
+  routingAvoidExitDrawMode({ silent: true });
+  routingSetStatus(routingT("routing.avoidAreaAdded", "Avoid area added."), false);
+  routingAvoidTouchInvalidatePreview();
+  return true;
+}
+function routingAvoidApplyMapClick(lat, lon){
+  if (!_routingAvoidSession.drawActive) return false;
+  return routingAvoidAddDraftVertex(lat, lon);
+}
+function routingAvoidDeleteArea(id){
+  const arr = _routingAvoidSession.areas || [];
+  const idx = arr.findIndex(function(a){ return a && a.id === id; });
+  if (idx < 0) return;
+  arr.splice(idx, 1);
+  routingAvoidTouchInvalidatePreview();
+}
+function routingAvoidToggleArea(id){
+  const a = (_routingAvoidSession.areas || []).find(function(x){ return x && x.id === id; });
+  if (!a) return;
+  a.enabled = !(a.enabled !== false);
+  routingAvoidTouchInvalidatePreview();
+}
+function routingAvoidClearAll(){
+  if (!_routingAvoidSession.areas.length) return;
+  _routingAvoidSession.areas.length = 0;
+  routingAvoidTouchInvalidatePreview();
+}
+function routingAvoidCenterArea(id){
+  const a = (_routingAvoidSession.areas || []).find(function(x){ return x && x.id === id; });
+  if (!a || !Array.isArray(a.vertices) || !a.vertices.length) return;
+  let minLat = 90, maxLat = -90, minLon = 180, maxLon = -180;
+  for (let i = 0; i < a.vertices.length; i++){
+    const v = a.vertices[i];
+    if (!v) continue;
+    if (v.lat < minLat) minLat = v.lat;
+    if (v.lat > maxLat) maxLat = v.lat;
+    if (v.lon < minLon) minLon = v.lon;
+    if (v.lon > maxLon) maxLon = v.lon;
+  }
+  const clat = (minLat + maxLat) / 2;
+  const clon = (minLon + maxLon) / 2;
+  try {
+    if (typeof routingCenterMapOnLatLon === "function") routingCenterMapOnLatLon(clat, clon);
+    else {
+      state.viewCenter = { lat: clat, lon: clon };
+      renderTileMap(clat, clon, state.mapZoom || 11);
+    }
+  } catch(_){}
+}
+function routingSyncAvoidAreasUi(){
+  const sec = document.getElementById("routingAvoidAreasSection");
+  const list = document.getElementById("routingAvoidAreasList");
+  const drawBtn = document.getElementById("routingAvoidDrawBtn");
+  const undoBtn = document.getElementById("routingAvoidUndoVertBtn");
+  const confirmBtn = document.getElementById("routingAvoidConfirmBtn");
+  const cancelBtn = document.getElementById("routingAvoidCancelDrawBtn");
+  const clearAllBtn = document.getElementById("routingAvoidClearAllBtn");
+  const draftRow = document.getElementById("routingAvoidDraftRow");
+  const areas = _routingAvoidSession.areas || [];
+  const drafting = !!_routingAvoidSession.drawActive;
+  const draftN = (_routingAvoidSession.draft && _routingAvoidSession.draft.vertices) ? _routingAvoidSession.draft.vertices.length : 0;
+  if (sec) sec.hidden = false;
+  if (drawBtn) drawBtn.disabled = drafting || areas.length >= ROUTING_AVOID_MAX_AREAS;
+  if (undoBtn) undoBtn.hidden = !drafting;
+  if (confirmBtn) confirmBtn.hidden = !drafting;
+  if (cancelBtn) cancelBtn.hidden = !drafting;
+  if (draftRow) {
+    draftRow.hidden = !drafting;
+    draftRow.textContent = drafting
+      ? routingT("routing.avoidDraftVerts", "Draft vertices: {0}").replace("{0}", String(draftN))
+      : "";
+  }
+  if (clearAllBtn) clearAllBtn.hidden = areas.length === 0;
+  if (!list) return;
+  list.innerHTML = "";
+  for (let i = 0; i < areas.length; i++){
+    const a = areas[i];
+    if (!a) continue;
+    const li = document.createElement("li");
+    li.className = "routing-avoid-area-row";
+    const lab = document.createElement("span");
+    lab.className = "routing-avoid-area-label";
+    lab.textContent = a.label || ("Area " + (i + 1));
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "btn btn-sm routing-avoid-toggle";
+    toggle.textContent = a.enabled === false
+      ? routingT("routing.avoidEnable", "Enable")
+      : routingT("routing.avoidDisable", "Disable");
+    toggle.addEventListener("click", function(ev){
+      ev.preventDefault();
+      routingAvoidToggleArea(a.id);
+    });
+    const center = document.createElement("button");
+    center.type = "button";
+    center.className = "btn btn-sm btn-ghost routing-avoid-center";
+    center.textContent = routingT("routing.avoidCenter", "Center");
+    center.addEventListener("click", function(ev){
+      ev.preventDefault();
+      routingAvoidCenterArea(a.id);
+    });
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "btn btn-sm btn-danger-subtle routing-avoid-delete";
+    del.textContent = routingT("routing.avoidDelete", "Delete");
+    del.addEventListener("click", function(ev){
+      ev.preventDefault();
+      routingAvoidDeleteArea(a.id);
+    });
+    li.appendChild(lab);
+    li.appendChild(toggle);
+    li.appendChild(center);
+    li.appendChild(del);
+    list.appendChild(li);
+  }
+}
+function routingRemoveAvoidAreasOverlay(){
+  try {
+    const root = document.getElementById("miniMap");
+    const tm = root && root.querySelector(".tile-map");
+    if (!tm) return;
+    const old = tm.querySelector(".routing-avoid-areas-overlay");
+    if (old) old.remove();
+  } catch(_){}
+}
+function routingSyncAvoidAreasOverlay(tileMap, markerLat, markerLon, zoom){
+  if (!tileMap) return;
+  routingRemoveAvoidAreasOverlay();
+  const areas = _routingAvoidSession.areas || [];
+  const drafting = _routingAvoidSession.drawActive && _routingAvoidSession.draft;
+  if (!areas.length && !drafting) return;
+  const root = document.getElementById("miniMap");
+  if (!root) return;
+  const tileLayer = tileMap.querySelector(".tile-layer");
+  if (!tileLayer) return;
+  const W = tileMap.clientWidth || root.clientWidth || 400;
+  const H = tileMap.clientHeight || root.clientHeight || W;
+  const z = state.mapZoom || zoom || 11;
+  const ns = "http://www.w3.org/2000/svg";
+  const wrap = document.createElement("div");
+  wrap.className = "routing-avoid-areas-overlay";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("width", String(W));
+  svg.setAttribute("height", String(H));
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;";
+  function drawRing(vertices, cls){
+    if (!vertices || vertices.length < 2) return;
+    const pts = [];
+    for (let i = 0; i < vertices.length; i++){
+      const v = vertices[i];
+      const c = tileMapLatLonToPx(root, v.lat, v.lon);
+      if (!c || !Number.isFinite(c.x) || !Number.isFinite(c.y)) return;
+      pts.push(c.x + "," + c.y);
+    }
+    if (pts.length >= 2 && vertices.length >= 3){
+      const c0 = tileMapLatLonToPx(root, vertices[0].lat, vertices[0].lon);
+      if (c0) pts.push(c0.x + "," + c0.y);
+    }
+    const poly = document.createElementNS(ns, "polygon");
+    poly.setAttribute("class", cls);
+    poly.setAttribute("points", pts.join(" "));
+    svg.appendChild(poly);
+  }
+  for (let i = 0; i < areas.length; i++){
+    const a = areas[i];
+    if (!a || a.enabled === false || !a.vertices || !a.vertices.length) continue;
+    drawRing(a.vertices, "routing-avoid-poly");
+  }
+  if (drafting && _routingAvoidSession.draft.vertices.length)
+    drawRing(_routingAvoidSession.draft.vertices, "routing-avoid-poly is-draft");
+  wrap.appendChild(svg);
+  tileLayer.appendChild(wrap);
+}
+function routingWireAvoidAreasOnce(){
+  if (routingWireAvoidAreasOnce._done) return;
+  routingWireAvoidAreasOnce._done = true;
+  const drawBtn = document.getElementById("routingAvoidDrawBtn");
+  if (drawBtn) drawBtn.addEventListener("click", function(ev){
+    ev.preventDefault();
+    routingAvoidEnterDrawMode();
+  });
+  const undoBtn = document.getElementById("routingAvoidUndoVertBtn");
+  if (undoBtn) undoBtn.addEventListener("click", function(ev){
+    ev.preventDefault();
+    routingAvoidUndoDraftVertex();
+  });
+  const confirmBtn = document.getElementById("routingAvoidConfirmBtn");
+  if (confirmBtn) confirmBtn.addEventListener("click", function(ev){
+    ev.preventDefault();
+    routingAvoidConfirmDraft();
+  });
+  const cancelBtn = document.getElementById("routingAvoidCancelDrawBtn");
+  if (cancelBtn) cancelBtn.addEventListener("click", function(ev){
+    ev.preventDefault();
+    routingAvoidExitDrawMode({});
+  });
+  const clearAllBtn = document.getElementById("routingAvoidClearAllBtn");
+  if (clearAllBtn) clearAllBtn.addEventListener("click", function(ev){
+    ev.preventDefault();
+    routingAvoidClearAll();
+  });
+  if (!routingWireAvoidAreasOnce._escBound){
+    routingWireAvoidAreasOnce._escBound = true;
+    document.addEventListener("keydown", function(ev){
+      if (ev.key !== "Escape" && ev.key !== "Esc") return;
+      if (!_routingAvoidSession.drawActive) return;
+      ev.preventDefault();
+      routingAvoidExitDrawMode({});
+    }, true);
+  }
+}
+function routingAvoidAreasSelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const prevAreas = (_routingAvoidSession.areas || []).slice();
+  const prevDraw = _routingAvoidSession.drawActive;
+  const prevDraft = _routingAvoidSession.draft;
+  try {
+    add("RAA_build_218", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("RAA_validate_min", (function(){
+      const v = routingAvoidValidateVertices([{ lat: 44.1, lon: 9.8 }, { lat: 44.11, lon: 9.81 }]);
+      return v.ok === false;
+    })());
+    add("RAA_validate_ok", (function(){
+      const v = routingAvoidValidateVertices([
+        { lat: 44.1, lon: 9.8 }, { lat: 44.11, lon: 9.81 }, { lat: 44.105, lon: 9.805 }
+      ]);
+      return v.ok === true && v.vertices.length === 3;
+    })());
+    add("RAA_antimeridian_fail", (function(){
+      const v = routingAvoidValidateVertices([
+        { lat: 44, lon: -179 }, { lat: 44, lon: 179 }, { lat: 45, lon: 0 }
+      ]);
+      return v.ok === false && v.key === "routing.avoidAntimeridian";
+    })());
+    _routingAvoidSession.areas = [{
+      id: "t1", label: "T", enabled: true,
+      vertices: [{ lat: 44.10, lon: 9.82 }, { lat: 44.11, lon: 9.83 }, { lat: 44.105, lon: 9.825 }]
+    }];
+    const body = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
+    routingApplyAvoidPayloadToBody(body);
+    add("RAA_payload_custom_model", !!(body.custom_model && body.custom_model.areas && body["ch.disable"] === true && !body.algorithm));
+    add("RAA_payload_no_avoid_clean", (function(){
+      _routingAvoidSession.areas = [];
+      const b2 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
+      routingApplyAvoidPayloadToBody(b2);
+      return !b2.custom_model && b2.algorithm === "alternative_route";
+    })());
+    add("RAA_gis_polygons_untouched", Array.isArray(state.gisPolygons));
+  } catch (e){
+    add("RAA_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    _routingAvoidSession.areas = prevAreas;
+    _routingAvoidSession.drawActive = prevDraw;
+    _routingAvoidSession.draft = prevDraft;
+  }
+  return checks;
+}
+(function routingAvoidAreasExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = routingAvoidAreasSelfTest();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestRoutingAvoidAreas: routingAvoidAreasSelfTest
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 function routingBuildGraphhopperRoundTripBody(profile, pointLonLat, distanceM, seed){
-  return {
+  const body = {
     profile: profile,
     points: [pointLonLat],
     algorithm: "round_trip",
@@ -86017,6 +86609,7 @@ function routingBuildGraphhopperRoundTripBody(profile, pointLonLat, distanceM, s
     points_encoded: false,
     instructions: false
   };
+  return routingApplyAvoidPayloadToBody(body);
 }
 /** Shortest-wrap longitude relative to lonFrom (degrees); does not mutate inputs. */
 function routingShortestWrappedLonDeg(lonFrom, lonTo){
@@ -86791,7 +87384,7 @@ function routingBuildGraphhopperRouteBody(profile, pointsLonLat, opts){
     body["alternative_route.max_weight_factor"] = ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR;
     body["alternative_route.max_share_factor"] = ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR;
   }
-  return body;
+  return routingApplyAvoidPayloadToBody(body);
 }
 function routingFmtDurationMs(ms){
   const v = Number(ms);
@@ -87454,7 +88047,7 @@ async function routingCalculateRouteGraphhopper(){
 
   const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
   const bodyPrimary = routingBuildGraphhopperRouteBody(profile, snapPts.pointsLonLat, {
-    withAlternatives: !isOutAndBack
+    withAlternatives: !isOutAndBack && !routingHasActiveAvoidAreas()
   });
 
   let timedOut = false;
@@ -90239,6 +90832,8 @@ function openRoutingPlannerPanel(service){
   try { routingWireUnitsRowOnce(); } catch(_){}
   try { routingWireModeRowOnce(); } catch(_){}
   try { routingWireRoundTripControlsOnce(); } catch(_){}
+  try { routingWireAvoidAreasOnce(); } catch(_){}
+  try { routingSyncAvoidAreasUi(); } catch(_){}
   try { routingSyncModeRowUi(); } catch(_){}
   try { refreshTileMapForTrackUi(); } catch(_){}
   try { if (typeof applyLanguage === "function") applyLanguage(state.lang); } catch(_){}
@@ -90329,7 +90924,8 @@ function wireRoutingPlannerOnce(){
   const minBtn = document.querySelector('#routingPlannerPanel [data-role="routingpanel-minimize"]');
   if (minBtn) minBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
-    try { routingExitPickMode({ silent: true }); } catch(_){}
+    try { routingExitPickMode({ silent: true });
+    try { routingAvoidExitDrawMode({ silent: true }); } catch(_){} } catch(_){}
     try { routingCancelMarkerDrag({ rollback: true }); } catch(_){}
     if (typeof gisMinimizePanel === "function")
       gisMinimizePanel("routingPlannerPanel", "gis.minimized.routing");
