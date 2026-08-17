@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-BC-BATCH1
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D NOT OPENED)
+**ACTIVE BLOCK:** —
+**CURRENT GATE:** —
 **RUNTIME LIVE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851…`
-**RUNTIME CANDIDATE:** = LIVE (post-deploy)
+**RUNTIME CANDIDATE:** = LIVE
 **CATEGORIA:** **DELICATO**
-**NEXT:** QA FINALE CHATGPT; **G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** Deploy+ABQA 2026-08-17 · 78/78 PASS · selftest 524/524 · no patch · no finito
+**NEXT:** **G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** `QA GIS-PANEL-DOCK-MGR-G-BC-BATCH1 PASS operatore` (2026-08-17) → `finito` Regola H · ABQA 78/78 · selftest 524/524
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -503,4 +503,6 @@ REVIEW PASS → deploy GIS-only + ABQA batch unica.
 
 **ABQA:** **78/78 PASS** · selftest **524/524** · helper **0.1.3** invariato.
 
-**Gate:** **QA FINALE CHATGPT — PENDING** · no finito · no istruzioni QA operatore · G-D/F NOT OPENED.
+**QA operatore:** **PASS** — attestazione `QA GIS-PANEL-DOCK-MGR-G-BC-BATCH1 PASS operatore` (2026-08-17) → auto-`finito` Regola H.
+
+**STATUS blocco G-BC-BATCH1:** **CLOSED / PASS** · **G-D NOT OPENED** · **F NOT OPENED** · WU-0021 resta **OPEN**.
