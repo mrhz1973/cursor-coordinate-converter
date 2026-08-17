@@ -17701,6 +17701,8 @@ const I18N = {
     "routing.avoidTooManyVerts":"Troppi vertici per l'area.",
     "routing.avoidMaxAreas":"Numero massimo aree raggiunto.",
     "routing.avoidAntimeridian":"Area non valida (antimeridiano).",
+    "routing.avoidAltUnsupported":"Alternative con aree da evitare non supportate su questo server.",
+    "routing.avoidRoundTripUnsupported":"Anello con aree da evitare non supportato su questo server.",
     "routing.alternativesLabel":"Percorsi alternativi",
     "routing.alternativeN":"Percorso {0}",
     "routing.alternativesUnavailable":"Alternative non disponibili su questo provider; percorso singolo.",
@@ -23842,10 +23844,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "OUTDOOR-ROUTING-F-AVOID-AREAS-A";
-const APP_BUILD_DETAIL = "Routing transient avoid areas: draw, list, GraphHopper custom_model session-only.";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1";
+const APP_BUILD_DETAIL = "Avoid areas FIX1: preserve alternative_route and round_trip with custom_model.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 218;
+const APP_BUILD_NUM = 219;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39136,8 +39138,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40158,8 +40160,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42086,8 +42088,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42587,8 +42589,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43601,8 +43603,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44039,8 +44041,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44631,8 +44633,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45598,8 +45600,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -45768,8 +45770,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46197,8 +46199,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46586,8 +46588,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46714,8 +46716,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46890,8 +46892,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47023,8 +47025,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47261,8 +47263,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47570,8 +47572,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47863,8 +47865,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48129,8 +48131,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48275,8 +48277,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48491,8 +48493,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48602,8 +48604,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -86197,16 +86199,24 @@ function routingBuildAvoidAreasCustomModel(){
   if (!priority.length) return null;
   return { custom_model: { areas: areas, priority: priority } };
 }
+/** GraphHopper 11 probe INFRA-GH-1D 2026-08-18: avoid + algorithm on same /route. */
+const ROUTING_AVOID_GH_ALT_WITH_AVOID = true;
+const ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID = true;
+function routingAvoidPreflightBlock(opts){
+  opts = opts || {};
+  if (!routingHasActiveAvoidAreas()) return null;
+  if (opts.roundTrip && !ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID)
+    return "routing.avoidRoundTripUnsupported";
+  if (opts.withAlternatives && !ROUTING_AVOID_GH_ALT_WITH_AVOID)
+    return "routing.avoidAltUnsupported";
+  return null;
+}
 function routingApplyAvoidPayloadToBody(body){
   if (!body || typeof body !== "object") return body;
   const payload = routingBuildAvoidAreasCustomModel();
   if (!payload) return body;
   body.custom_model = payload.custom_model;
   body["ch.disable"] = true;
-  delete body.algorithm;
-  delete body["alternative_route.max_paths"];
-  delete body["alternative_route.max_weight_factor"];
-  delete body["alternative_route.max_share_factor"];
   return body;
 }
 function routingAvoidTouchInvalidatePreview(){
@@ -86530,8 +86540,9 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_218", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 218
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A");
+    add("RAA_build_219", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
     add("RAA_validate_min", (function(){
       const v = routingAvoidValidateVertices([{ lat: 44.1, lon: 9.8 }, { lat: 44.11, lon: 9.81 }]);
       return v.ok === false;
@@ -86552,14 +86563,31 @@ function routingAvoidAreasSelfTest(){
       id: "t1", label: "T", enabled: true,
       vertices: [{ lat: 44.10, lon: 9.82 }, { lat: 44.11, lon: 9.83 }, { lat: 44.105, lon: 9.825 }]
     }];
-    const body = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
-    routingApplyAvoidPayloadToBody(body);
-    add("RAA_payload_custom_model", !!(body.custom_model && body.custom_model.areas && body["ch.disable"] === true && !body.algorithm));
-    add("RAA_payload_no_avoid_clean", (function(){
+    const bodyAlt = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
+    routingApplyAvoidPayloadToBody(bodyAlt);
+    add("RAA_payload_alt_preserve", !!(
+      bodyAlt.custom_model && bodyAlt.custom_model.areas && bodyAlt["ch.disable"] === true
+      && bodyAlt.algorithm === "alternative_route"
+      && bodyAlt["alternative_route.max_paths"] === ROUTING_ALTERNATIVE_MAX_PATHS
+    ));
+    const bodyRt = routingBuildGraphhopperRoundTripBody("hiking", [9.82, 44.10], 8000, 1);
+    routingApplyAvoidPayloadToBody(bodyRt);
+    add("RAA_payload_round_trip_preserve", !!(
+      bodyRt.custom_model && bodyRt.custom_model.areas && bodyRt["ch.disable"] === true
+      && bodyRt.algorithm === "round_trip"
+      && bodyRt["round_trip.distance"] === 8000
+    ));
+    add("RAA_payload_normal_clean", (function(){
       _routingAvoidSession.areas = [];
-      const b2 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
+      const b2 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: false });
       routingApplyAvoidPayloadToBody(b2);
-      return !b2.custom_model && b2.algorithm === "alternative_route";
+      return !b2.custom_model && !("ch.disable" in b2) && !b2.algorithm;
+    })());
+    add("RAA_payload_no_avoid_alt", (function(){
+      _routingAvoidSession.areas = [];
+      const b3 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
+      routingApplyAvoidPayloadToBody(b3);
+      return !b3.custom_model && b3.algorithm === "alternative_route";
     })());
     add("RAA_gis_polygons_untouched", Array.isArray(state.gisPolygons));
   } catch (e){
@@ -86873,6 +86901,15 @@ async function routingCalculateRoundTripGraphhopper(){
     r.routeError = "routing.roundTripDistanceInvalid";
     routingSetStatus(routingT("routing.roundTripDistanceInvalid", "Distanza anello non valida (2–40 km)."), true);
     routingSetRoundTripFeedback(routingT("routing.roundTripDistanceInvalid", "Distanza anello non valida (2–40 km)."), "err");
+    routingSyncCalculateBtnUi();
+    return;
+  }
+
+  const rtAvoidBlock = routingAvoidPreflightBlock({ roundTrip: true });
+  if (rtAvoidBlock){
+    r.routeError = rtAvoidBlock;
+    routingSetStatus(routingT(rtAvoidBlock, rtAvoidBlock), true);
+    routingSetRoundTripFeedback(routingT(rtAvoidBlock, rtAvoidBlock), "err");
     routingSyncCalculateBtnUi();
     return;
   }
@@ -88046,8 +88083,21 @@ async function routingCalculateRouteGraphhopper(){
   try { routingRenderList(); } catch(_){}
 
   const url = routeEndpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
+  const avoidPreflight = routingAvoidPreflightBlock({ withAlternatives: !isOutAndBack });
+  if (avoidPreflight){
+    r.routeError = avoidPreflight;
+    routingSetStatus(routingT(avoidPreflight, avoidPreflight), true);
+    if (state._routing && state._routing.requestSequence === reqSeq && state._routing.requestController === controller){
+      state._routing.requestLoading = false;
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+      routingSyncCalculateBtnUi();
+    }
+    return;
+  }
+
   const bodyPrimary = routingBuildGraphhopperRouteBody(profile, snapPts.pointsLonLat, {
-    withAlternatives: !isOutAndBack && !routingHasActiveAvoidAreas()
+    withAlternatives: !isOutAndBack
   });
 
   let timedOut = false;
