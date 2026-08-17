@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-D-BATCH1-REVIEW-EVIDENCE-B** verify-only **PASS** (A/B/C/D) su candidato immutabile `7fb0c20` / **213** · LIVE invariato `7e984df` / **212** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · **no patch/no deploy** · F NOT OPENED · Oggetti GIS FROZEN. Evidence: [`inbox/2026-08-17_1215_gis-panel-dock-mgr-g-d-batch1-review-evidence-b.md`](inbox/2026-08-17_1215_gis-panel-dock-mgr-g-d-batch1-review-evidence-b.md). Task `7fb0c20`.
+2026-08-17 — **GIS-PANEL-DOCK-MGR-G-D-BATCH1** deploy GIS-only **PASS** + ABQA **32/32** (selftest 564/564) su LIVE `7fb0c20` / **213** · blob `bbc9a5c8…` · gate **QA FINALE CHATGPT — PENDING** · **no finito** · F NOT OPENED · Oggetti GIS FROZEN. Evidence: [`inbox/2026-08-17_1343_gis-panel-dock-mgr-g-d-batch1-deploy-qa.md`](inbox/2026-08-17_1343_gis-panel-dock-mgr-g-d-batch1-deploy-qa.md). Task `7fb0c20`.

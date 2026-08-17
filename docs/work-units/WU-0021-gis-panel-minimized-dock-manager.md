@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D REVIEW PENDING)
+**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D deploy+ABQA PASS, QA FINALE PENDING)
 **ACTIVE BLOCK:** `GIS-PANEL-DOCK-MGR-G-D-BATCH1`
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
-**RUNTIME LIVE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851…`
-**RUNTIME CANDIDATE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**RUNTIME LIVE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
+**RUNTIME CANDIDATE:** LIVE (`7fb0c20` / **213** / blob `bbc9a5c8…`)
 **CATEGORIA:** **DELICATO**
-**NEXT:** Review GPT-sostitutiva su FULL SHA candidato; **non** deployare; **F NOT OPENED**
-**NOTE:** G-D-BATCH1 10-task bundle · selftest 564/564 · 4→5 @1920 PASS · **no deploy** · REVIEW-EVIDENCE-B verify-only A/B/C/D **PASS** (2026-08-17 12:15)
+**NEXT:** QA operatore (ChatGPT scrive i casi); **non** `finito`; **F NOT OPENED**
+**NOTE:** G-D-BATCH1 deploy GIS-only PASS · ABQA 32/32 · selftest 564/564 · helper 0.1.3 invariato · F NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -518,6 +518,19 @@ Gap evidenza della REVIEW chiuso su candidate **immutabile** `7fb0c20` / **213**
 Nota metodo: primo tentativo C con evento sintetico `rawKeyDown` senza `text` non attivava il button (artefatto strumento); re-run con `keyDown`+`text="\r"` PASS. Nessun finding prodotto.
 
 **Gate:** resta **REVIEW GPT-SOSTITUTIVA — PENDING** (verdetto ChatGPT) · **no patch** · **no bump** · **no deploy** · F NOT OPENED · Oggetti GIS FROZEN/UNTOUCHED.
+
+## 32. G-D-BATCH1 DEPLOY + ABQA (2026-08-17)
+
+REVIEW GPT-SOSTITUTIVA **PASS** su `7fb0c20…`. Deploy GIS-only PASS. ABQA **32/32** PASS · selftest **564/564**.
+
+**LIVE:** `7fb0c202378966a412e454459f2fdf278e14ccee` / **213** / blob `bbc9a5c88888b9d0a79fcef2374a252aaf9893b7`  
+**CANDIDATE:** LIVE
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_1343_gis-panel-dock-mgr-g-d-batch1-deploy-qa.md`](../orchestrator/inbox/2026-08-17_1343_gis-panel-dock-mgr-g-d-batch1-deploy-qa.md)
+
+**Helper:** **0.1.3** invariato · proxy/GH PID invariati · GIS PID `2738253`→`2746464`
+
+**Gate:** **QA FINALE CHATGPT — PENDING** · no finito · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
 
 ## 30. G-D-BATCH1 CANDIDATE (2026-08-17)
 
