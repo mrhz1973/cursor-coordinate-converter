@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-B-REVIEW-EVIDENCE-B** · candidate `361345d` / **211** invariato · blocked paths A–G **7/7 PASS** · selftest **486/486** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · nessun verdetto. [`inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md`](inbox/2026-08-17_0220_gis-panel-dock-mgr-g-b-review-evidence-b.md).
+2026-08-17 — **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** · candidate `7e984df` / **212** · 5 lane · selftest **524/524** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy. [`inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md`](inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md).

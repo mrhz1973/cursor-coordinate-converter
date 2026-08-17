@@ -2,13 +2,13 @@
 
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
-**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-B-REVIEW-EVIDENCE-B
+**ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-BC-BATCH1
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **RUNTIME LIVE:** `525e7df…` / **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2`
-**RUNTIME CANDIDATE:** `361345d6d330347a0ced6cd57c4a3fcb7d7b173a` · build **211** · `GIS-PANEL-DOCK-MGR-G-B` · blob `a0b8661422d8646ee07ec7ff41ba25c7c67cbb42` · **invariato**
+**RUNTIME CANDIDATE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851a867e7b72c06e9115000c8c0f7cb960f`
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence-B; **G-C/G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** Evidence-B 2026-08-17 · blocked paths A–G PASS · selftest 486/486 · no patch · no verdetto
+**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence batch; **G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** G-BC-BATCH1 2026-08-17 · 5 lane · selftest 524/524 · no deploy · no verdetto
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -482,3 +482,13 @@ Evidence-only. Candidato **invariato** `361345d…` / 211.
 **Blocked A–G:** favorites / waypoint / astro / layers / rangeRings / polygon / track(subdialog) — **7/7 PASS** · post-unblock normal min+restore PASS · selftest **486/486**.
 
 **Gate:** REVIEW GPT-SOSTITUTIVA — PENDING · nessun verdetto · no patch/deploy.
+
+## 28. G-BC-BATCH1 (2026-08-17) — REVIEW PENDING
+
+Batch 5 lane su base G-B `361345d` / 211 → candidate **212** `7e984df…` / `GIS-PANEL-DOCK-MGR-G-BC-BATCH1`.
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md`](../orchestrator/inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md)
+
+**Lane:** L1 CERTIFIED · L2–L4 CERTIFIED/NO CHANGE · L5 PATCHED (carto sync+export) · hunks 21 · OTHER=0 · selftest **524/524**.
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · G-D/F NOT OPENED.
