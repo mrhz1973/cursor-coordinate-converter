@@ -8290,8 +8290,10 @@ body.gis-mode dialog#convertModal.convert-modal{
 }
 
 /* GIS: Cerca + Favoriti floating panels (Phase B2) */
+body:not(.gis-mode) [data-role="convertmodal-minimize"]{ display:none !important; }
 body.gis-mode dialog#searchPanel.search-panel,
-body.gis-mode dialog#favoritesPanel.favorites-panel{
+body.gis-mode dialog#favoritesPanel.favorites-panel,
+body.gis-mode dialog#historyPanel.history-panel{
   position:fixed;
   margin:0;
   transform:none;
@@ -10571,29 +10573,34 @@ dialog.track-modal.app-modal{
 #waypointModal .gis-panel-resize-handle[data-handle="se"],
 #convertModal .gis-panel-resize-handle[data-handle="se"],
 #searchPanel .gis-panel-resize-handle[data-handle="se"],
-#favoritesPanel .gis-panel-resize-handle[data-handle="se"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="se"],
 #layersPanel .gis-panel-resize-handle[data-handle="se"]{ right:0; bottom:0; cursor:nwse-resize; }
 #trackModal .track-resize-handle[data-handle="nw"],
 #waypointModal .gis-panel-resize-handle[data-handle="nw"],
 #convertModal .gis-panel-resize-handle[data-handle="nw"],
 #searchPanel .gis-panel-resize-handle[data-handle="nw"],
-#favoritesPanel .gis-panel-resize-handle[data-handle="nw"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="nw"],
 #layersPanel .gis-panel-resize-handle[data-handle="nw"]{ left:0; top:0; cursor:nwse-resize; }
 /* NE: offset from corner so resize does not grab the Mac-style close chip */
 #trackModal .track-resize-handle[data-handle="ne"],
 #waypointModal .gis-panel-resize-handle[data-handle="ne"],
 #convertModal .gis-panel-resize-handle[data-handle="ne"],
 #searchPanel .gis-panel-resize-handle[data-handle="ne"],
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="ne"],
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]{ right:42px; top:0; cursor:nesw-resize; }
 #trackModal .track-resize-handle[data-handle="sw"],
 #waypointModal .gis-panel-resize-handle[data-handle="sw"],
 #convertModal .gis-panel-resize-handle[data-handle="sw"],
 #searchPanel .gis-panel-resize-handle[data-handle="sw"],
-#favoritesPanel .gis-panel-resize-handle[data-handle="sw"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="sw"],
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]{ left:0; bottom:0; cursor:nesw-resize; }
 /* UX-NEXT-RUNTIME-BUNDLE-A/B/C/D: lateral width resize (e/w) — shared helper gisPanelAttachResize. */
-#favoritesPanel .gis-panel-resize-handle[data-handle="e"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="e"],
 #polygonPanel .gis-panel-resize-handle[data-handle="e"],
 #layersPanel .gis-panel-resize-handle[data-handle="e"],
 #searchPanel .gis-panel-resize-handle[data-handle="e"],
@@ -10610,7 +10617,8 @@ dialog.track-modal.app-modal{
   width:16px; height:52px; cursor:ew-resize;
   z-index:2; touch-action:none;
 }
-#favoritesPanel .gis-panel-resize-handle[data-handle="w"],
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="w"],
 #polygonPanel .gis-panel-resize-handle[data-handle="w"],
 #layersPanel .gis-panel-resize-handle[data-handle="w"],
 #searchPanel .gis-panel-resize-handle[data-handle="w"],
@@ -10627,8 +10635,10 @@ dialog.track-modal.app-modal{
   width:16px; height:52px; cursor:ew-resize;
   z-index:2; touch-action:none;
 }
-#favoritesPanel .gis-panel-resize-handle[data-handle="e"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="w"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="e"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="w"]::after,
 #polygonPanel .gis-panel-resize-handle[data-handle="e"]::after,
 #polygonPanel .gis-panel-resize-handle[data-handle="w"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="e"]::after,
@@ -10658,8 +10668,10 @@ dialog.track-modal.app-modal{
   background:var(--gis-grip-stroke, rgba(255,255,255,.78));
   box-shadow:0 0 0 1px rgba(0,0,0,.22);
 }
-#favoritesPanel .gis-panel-resize-handle[data-handle="e"]:hover,
-#favoritesPanel .gis-panel-resize-handle[data-handle="w"]:hover,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="e"]:hover,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="w"]:hover,
 #polygonPanel .gis-panel-resize-handle[data-handle="e"]:hover,
 #polygonPanel .gis-panel-resize-handle[data-handle="w"]:hover,
 #layersPanel .gis-panel-resize-handle[data-handle="e"]:hover,
@@ -10687,7 +10699,8 @@ dialog.track-modal.app-modal{
   background:color-mix(in srgb, var(--accent) 14%, transparent);
 }
 @media (max-width:600px){
-  #favoritesPanel .gis-panel-resize-handle[data-handle="e"],
+  #favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="e"],
   #polygonPanel .gis-panel-resize-handle[data-handle="e"],
   #layersPanel .gis-panel-resize-handle[data-handle="e"],
   #searchPanel .gis-panel-resize-handle[data-handle="e"],
@@ -10700,7 +10713,8 @@ dialog.track-modal.app-modal{
   #dflightPanel .gis-panel-resize-handle[data-handle="e"],
   #dflightDetailsPanel .gis-panel-resize-handle[data-handle="e"],
   #waypointModal .gis-panel-resize-handle[data-handle="e"],
-  #favoritesPanel .gis-panel-resize-handle[data-handle="w"],
+  #favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="w"],
   #polygonPanel .gis-panel-resize-handle[data-handle="w"],
   #layersPanel .gis-panel-resize-handle[data-handle="w"],
   #searchPanel .gis-panel-resize-handle[data-handle="w"],
@@ -10754,14 +10768,16 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #waypointModal .gis-panel-resize-handle[data-handle="ne"]:hover,
 #convertModal .gis-panel-resize-handle[data-handle="ne"]:hover,
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:hover,
 #trackModal .track-resize-handle[data-handle="ne"]:focus-visible,
 #waypointModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #convertModal .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible,
 #gisWorkbenchPanel .gis-panel-resize-handle[data-handle="ne"]:focus-visible{
   background:transparent;
@@ -10788,7 +10804,8 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #waypointModal .gis-panel-resize-handle[data-handle="se"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="se"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="se"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="se"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="se"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="se"]::after{
   right:0;
   bottom:0;
@@ -10800,7 +10817,8 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #waypointModal .gis-panel-resize-handle[data-handle="nw"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="nw"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="nw"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="nw"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="nw"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="nw"]::after{
   left:0;
   top:0;
@@ -10813,7 +10831,8 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #waypointModal .gis-panel-resize-handle[data-handle="ne"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="ne"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="ne"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="ne"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="ne"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="ne"]::after{
   display:none !important;
   content:none !important;
@@ -10824,7 +10843,8 @@ body.gis-mode #rangeRingsPanel .app-modal-body{
 #waypointModal .gis-panel-resize-handle[data-handle="sw"]::after,
 #convertModal .gis-panel-resize-handle[data-handle="sw"]::after,
 #searchPanel .gis-panel-resize-handle[data-handle="sw"]::after,
-#favoritesPanel .gis-panel-resize-handle[data-handle="sw"]::after,
+#favoritesPanel .gis-panel-resize-handle,
+#historyPanel .gis-panel-resize-handle[data-handle="sw"]::after,
 #layersPanel .gis-panel-resize-handle[data-handle="sw"]::after{
   left:0;
   bottom:0;
@@ -13783,8 +13803,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <dialog id="convertModal" class="app-modal convert-modal">
   <div class="app-modal-head" id="convertModalHead">
     <h2 class="app-modal-title" data-i18n="convert.title">Convertitore — inserisci coordinate</h2>
-    <button type="button" class="app-modal-close" id="convertModalClose"
-            data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="convertmodal-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="convertModalClose"
+              data-i18n-tip="tip.modalClose" data-i18n-aria="tip.modalClose">×</button>
+    </div>
   </div>
   <div class="app-modal-body" id="convertModalBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
@@ -14088,10 +14112,32 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <dialog id="searchPanel" class="app-modal search-panel" aria-labelledby="searchPanelTitle" aria-modal="false">
   <div class="app-modal-head" id="searchPanelHead">
     <h2 id="searchPanelTitle" class="app-modal-title" data-i18n="tabs.geocoding">Cerca</h2>
-    <button type="button" class="app-modal-close" id="searchPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="searchpanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="searchPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    </div>
   </div>
   <p class="gis-panel-microhelp search-panel-microhelp" data-i18n="search.panelHint"></p>
   <div class="app-modal-body" id="searchPanelBody"></div>
+  <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+  <div class="gis-panel-resize-handle h-w" data-role="gis-panel-resize" data-handle="w" data-i18n-aria="tip.panelResizeEW"></div>
+  <div class="gis-panel-resize-handle h-e" data-role="gis-panel-resize" data-handle="e" data-i18n-aria="tip.panelResizeEW"></div>
+</dialog>
+
+<dialog id="historyPanel" class="app-modal history-panel" aria-labelledby="historyPanelTitle" aria-modal="false">
+  <div class="app-modal-head" id="historyPanelHead">
+    <h2 id="historyPanelTitle" class="app-modal-title" data-i18n="tabs.history">Cronologia</h2>
+    <div class="app-modal-head-actions">
+      <button type="button" data-role="historypanel-minimize" class="app-modal-min-btn"
+              data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="app-modal-close" id="historyPanelClose" data-i18n-tip="tip.modalClosePanelEsc" data-i18n-aria="tip.modalClosePanelEsc">×</button>
+    </div>
+  </div>
+  <div class="app-modal-body" id="historyPanelBody"></div>
   <div class="gis-panel-resize-handle h-nw" data-role="gis-panel-resize" data-handle="nw" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-ne" data-role="gis-panel-resize" data-handle="ne" data-i18n-aria="tip.panelResize"></div>
   <div class="gis-panel-resize-handle h-sw" data-role="gis-panel-resize" data-handle="sw" data-i18n-aria="tip.panelResize"></div>
@@ -17682,6 +17728,9 @@ const I18N = {
     "gis.minimized.routing":"Pianifica percorso",
     "workbenchPanel.minimizeBlockedSubdialog":"Operazione in corso: attendi o chiudi i dialoghi aperti prima di minimizzare.",
     "gis.minimized.workbench":"Oggetti GIS",
+    "gis.minimized.convert":"Converti",
+    "gis.minimized.search":"Cerca",
+    "gis.minimized.history":"Cronologia",
     "tip.workbenchPanel":"Catalogo oggetti GIS (waypoint, tracce, poligoni)",
     "sec.astro":"Alba / tramonto / luna (locale)",
     "astro.hint":"Orari del Sole (cielo scuro) e della Luna, senza rete. LMT* = semplice correzione con longitudine/15°.",
@@ -22378,6 +22427,7 @@ const state = {
   /** Transient: map one-shot pick for Convert coordinate source (CONVERT-SOURCE-PICKER). */
   convertSourcePickMode: false,
   searchPanelOpen: false, // transient: floating Cerca panel visibility (GIS)
+  historyPanelOpen: false, // transient: floating Cronologia panel (GIS); not persisted
   favoritesPanelOpen: false, // transient: floating Favoriti panel visibility (GIS)
   layersPanelOpen: false, // transient: floating Mappa/Offline panel visibility (GIS)
   rangeRingsPanelOpen: false, // transient: floating Range Rings panel (GIS 5A-bis; on-map button)
@@ -23664,10 +23714,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-PANEL-DOCK-MGR-G-D-BATCH1";
-const APP_BUILD_DETAIL = "G-D-BATCH1: dual-side minimized dock, no 5th-chip jump, header-budget +N.";
+const APP_BUILD_ID = "GIS-DIALOG-MINIMIZE-HISTORY-A";
+const APP_BUILD_DETAIL = "Convert/Search minimize into shared dock; History floating dialog (no right-slide).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 213;
+const APP_BUILD_NUM = 214;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -26432,7 +26482,7 @@ function clearStore(){
   try { localStorage.removeItem(UI_STORAGE_KEY); } catch(_){}
 }
 
-const UI_PANEL_KEYS = Object.freeze(["track","waypoint","convert","search","favorites","layers"]);
+const UI_PANEL_KEYS = Object.freeze(["track","waypoint","convert","search","favorites","layers","history"]);
 let _uiSaveDebounceTimer = null;
 
 function _uiPanelLayoutOptsForKey(key){
@@ -26443,6 +26493,7 @@ function _uiPanelLayoutOptsForKey(key){
     if (key === "search"   && typeof _searchPanelLayoutOpts === "function") return _searchPanelLayoutOpts();
     if (key === "favorites"&& typeof _favoritesPanelLayoutOpts === "function") return _favoritesPanelLayoutOpts();
     if (key === "layers"   && typeof _layersPanelLayoutOpts === "function") return _layersPanelLayoutOpts();
+    if (key === "history" && typeof _historyPanelLayoutOpts === "function") return _historyPanelLayoutOpts();
   } catch(_){}
   return { key };
 }
@@ -38974,8 +39025,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -39996,8 +40047,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41924,8 +41975,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_213", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42425,8 +42476,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43439,8 +43490,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -43877,8 +43928,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_213", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44469,8 +44520,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45104,8 +45155,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     /* A: D ON / ATM OFF */
     add("IMPLA_A", (function(){
@@ -45261,8 +45312,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -45685,9 +45736,9 @@ function dflightSelfTestSideBySide(){
     geomStubbed = false;
   }
   try {
-    add("SBS_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("SBS_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46074,9 +46125,9 @@ function brandingSelfTestTmartImplA(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("BRAND_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("BRAND_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46202,9 +46253,9 @@ function gisDockSelfTestGA1(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("DOCK_GA1_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("DOCK_GA1_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46378,9 +46429,9 @@ function gisPanelSafeTopSelfTestFix1(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("SAFE_TOP_FIX1_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("SAFE_TOP_FIX1_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -46511,9 +46562,9 @@ function gisPanelSafeTopSelfTestFix2(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("SAFE_TOP_FIX2_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("SAFE_TOP_FIX2_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -46749,9 +46800,9 @@ function gisDockSelfTestGB(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("DOCK_GB_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("DOCK_GB_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47058,9 +47109,9 @@ function gisDockSelfTestGC(){
     } catch(_){}
   };
   try {
-    add("DOCK_GC_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("DOCK_GC_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47351,9 +47402,9 @@ function gisDockSelfTestGD(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("DOCK_GD_build_213",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 213
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-PANEL-DOCK-MGR-G-D-BATCH1");
+    add("DOCK_GD_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -47606,6 +47657,140 @@ function gisDockSelfTestGD(){
     }
   } catch(_){}
 })();
+
+/* ===== GIS-DIALOG-MINIMIZE-HISTORY-A — convert/search dock + history dialog ===== */
+function gisDialogMinHistorySelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const chip = function(pid){
+    return !!document.querySelector('#gisMinimizedDock [data-gis-min-panel="' + pid + '"]');
+  };
+  try {
+    add("DH_build_214",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 214
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-DIALOG-MINIMIZE-HISTORY-A");
+    add("DH_whitelist",
+      String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
+      && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
+      && String(gisMinimizePanel).indexOf('panelId === "historyPanel"') >= 0);
+    add("DH_history_not_valid_tab",
+      Array.isArray(GIS_VALID_TABS) && GIS_VALID_TABS.indexOf("history") < 0);
+    add("DH_history_dialog", !!document.getElementById("historyPanel"));
+    add("DH_no_second_dock",
+      typeof _gisMinimizedPanels !== "undefined" && Array.isArray(_gisMinimizedPanels));
+    add("DH_i18n_it_only_new",
+      !!(I18N && I18N.it && I18N.it["gis.minimized.convert"] && I18N.it["gis.minimized.search"] && I18N.it["gis.minimized.history"])
+      && !(I18N.en && Object.prototype.hasOwnProperty.call(I18N.en, "gis.minimized.convert"))
+      && !(I18N.fr && Object.prototype.hasOwnProperty.call(I18N.fr, "gis.minimized.convert")));
+    add("DH_gd_symbols",
+      typeof gisDockReflow === "function"
+      && String(gisDockReflow).indexOf("dflightEnsurePairLayout") < 0);
+
+    if (!(document.body.classList.contains("gis-mode"))){
+      add("DH_runtime_context", false, "gis-mode missing");
+      return checks;
+    }
+
+    const prevMin = (_gisMinimizedPanels || []).slice();
+    const restoreMin = function(){
+      _gisMinimizedPanels = prevMin.slice();
+      try { gisRenderMinimizedDock(); } catch(_){}
+    };
+
+    try {
+      if (typeof openConvertModal === "function") openConvertModal();
+      const cd = document.getElementById("convertModal");
+      add("DH_convert_open", !!(cd && cd.open && state.convertOpen));
+      add("DH_convert_no_modal_gis", cd && cd.getAttribute("aria-modal") === "false");
+      const n0 = (_gisMinimizedPanels || []).length;
+      gisMinimizePanel("convertModal", "gis.minimized.convert");
+      add("DH_convert_min", gisPanelIsMinimized("convertModal") && chip("convertModal") && (_gisMinimizedPanels || []).length === n0 + 1);
+      add("DH_convert_still_open", !!(cd && cd.open && state.convertOpen));
+      add("DH_convert_no_inert", !cd.inert && !document.documentElement.hasAttribute("inert"));
+      add("DH_convert_docks", document.querySelectorAll("#gisMinimizedDock").length === 1);
+      gisRestoreMinimizedPanel("convertModal");
+      add("DH_convert_restore", !gisPanelIsMinimized("convertModal") && !chip("convertModal") && !!(cd && cd.open));
+      closeConvertModal();
+      add("DH_convert_close_clears", !chip("convertModal") && !gisPanelIsMinimized("convertModal") && !state.convertOpen);
+
+      if (typeof openSearchPanel === "function") openSearchPanel();
+      const sd = document.getElementById("searchPanel");
+      add("DH_search_open", !!(sd && sd.open && state.searchPanelOpen));
+      const n1 = (_gisMinimizedPanels || []).length;
+      gisMinimizePanel("searchPanel", "gis.minimized.search");
+      add("DH_search_min", gisPanelIsMinimized("searchPanel") && chip("searchPanel") && (_gisMinimizedPanels || []).length === n1 + 1);
+      add("DH_search_no_inert", !sd.inert);
+      gisRestoreMinimizedPanel("searchPanel");
+      add("DH_search_restore", !gisPanelIsMinimized("searchPanel") && !chip("searchPanel"));
+      closeSearchPanel();
+      add("DH_search_close_clears", !chip("searchPanel") && !state.searchPanelOpen);
+
+      if (typeof openHistoryPanel === "function") openHistoryPanel();
+      const hd = document.getElementById("historyPanel");
+      const drawer = document.getElementById("tabDrawer");
+      add("DH_history_open_dialog", !!(hd && hd.open && state.historyPanelOpen));
+      add("DH_history_not_in_drawer",
+        !(drawer && drawer.classList.contains("is-open") && state.activeTab === "history"));
+      add("DH_history_sec_in_panel",
+        !!(document.getElementById("sec-history") && document.getElementById("historyPanelBody")
+          && document.getElementById("historyPanelBody").contains(document.getElementById("sec-history"))));
+      add("DH_history_no_translate_class",
+        String(openHistoryPanel).indexOf("translateX") < 0
+        && String(openHistoryPanel).indexOf("tabDrawer") < 0);
+      const n2 = (_gisMinimizedPanels || []).length;
+      gisMinimizePanel("historyPanel", "gis.minimized.history");
+      add("DH_history_min", gisPanelIsMinimized("historyPanel") && chip("historyPanel") && (_gisMinimizedPanels || []).length === n2 + 1);
+      gisRestoreMinimizedPanel("historyPanel");
+      add("DH_history_restore", !gisPanelIsMinimized("historyPanel") && !chip("historyPanel"));
+      closeHistoryPanel();
+      add("DH_history_close_clears", !chip("historyPanel") && !state.historyPanelOpen
+        && !!(document.getElementById("sec-history")));
+      add("DH_single_sot", document.querySelectorAll("#gisMinimizedDock").length <= 1);
+    } finally {
+      try { if (typeof closeConvertModal === "function") closeConvertModal(); } catch(_){}
+      try { if (typeof closeSearchPanel === "function") closeSearchPanel(); } catch(_){}
+      try { if (typeof closeHistoryPanel === "function") closeHistoryPanel(); } catch(_){}
+      try { if (typeof gisClearPanelMinimizeUi === "function"){
+        gisClearPanelMinimizeUi("convertModal");
+        gisClearPanelMinimizeUi("searchPanel");
+        gisClearPanelMinimizeUi("historyPanel");
+      } } catch(_){}
+      restoreMin();
+    }
+  } catch (e){
+    add("DH_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
+
+(function gisDialogMinHistoryExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = gisDialogMinHistorySelfTest();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestDialogMinHistory: gisDialogMinHistorySelfTest
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 
 
 
@@ -54056,7 +54241,7 @@ function gisMapTileMathViewport(root){
 }
 
 /* MAP-CENTER-VIEWPORT-AWARE-A: usable rect + pure camera math (no temp state). */
-const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze(["trackModal","waypointModal","convertModal","searchPanel","favoritesPanel","layersPanel","measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel","routingPlannerPanel","cartoIgmPanel","helpOverlay","qrModal","gisMinimizedDock"]);
+const GIS_MAP_FLOATING_OCCLUDER_IDS = Object.freeze(["trackModal","waypointModal","convertModal","searchPanel","historyPanel","favoritesPanel","layersPanel","measurePanel","gisWorkbenchPanel","rangeRingsPanel","polygonPanel","astroPanel","routingPlannerPanel","cartoIgmPanel","helpOverlay","qrModal","gisMinimizedDock"]);
 const GIS_MAP_USABLE_MIN_W = 120, GIS_MAP_USABLE_MIN_H = 120, GIS_MAP_USABLE_MIN_AREA_FRAC = 0.18;
 const GIS_MAP_OCCLUDER_MIN_EDGE = 24, GIS_MAP_FIT_EDGE_PAD = 8;
 
@@ -75450,7 +75635,7 @@ const GIS_TAB_SECTIONS = Object.freeze({
   layers:    "offlineTilePanel"
 });
 /** Topbar tabs only — waypoint, traccia e misura: pannelli floating dedicati (non drawer). */
-const GIS_VALID_TABS = Object.freeze(Object.keys(GIS_TAB_SECTIONS).filter(k => k !== "waypoints" && k !== "track" && k !== "measure"));
+const GIS_VALID_TABS = Object.freeze(Object.keys(GIS_TAB_SECTIONS).filter(k => k !== "waypoints" && k !== "track" && k !== "measure" && k !== "history"));
 
 /** Allowed tool keys for the GIS inline panel inside #toolsDrawer. */
 const GIS_TOOL_SECTIONS = Object.freeze({
@@ -75615,8 +75800,11 @@ function gisInit(){
   if (btnConvert) btnConvert.addEventListener("click", (ev) => {
     ev.preventDefault();
     const dlg = document.getElementById("convertModal");
-    if (state.convertOpen || (dlg && dlg.open)) closeConvertModal();
-    else openConvertModal();
+    if (state.convertOpen || (dlg && dlg.open)){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("convertModal")){
+        try { gisRestoreMinimizedPanel("convertModal"); } catch(_){}
+      } else closeConvertModal();
+    } else openConvertModal();
   });
   document.querySelectorAll("#appTopbar .app-tab").forEach(btn => {
     btn.addEventListener("click", (ev) => {
@@ -75633,6 +75821,10 @@ function gisInit(){
       }
       if (document.body.classList.contains("gis-mode") && tab === "layers"){
         toggleLayersPanel();
+        return;
+      }
+      if (document.body.classList.contains("gis-mode") && tab === "history"){
+        toggleHistoryPanel();
         return;
       }
       if (document.body.classList.contains("gis-mode") && tab === "measure"){
@@ -75660,6 +75852,14 @@ function gisInit(){
     cm.addEventListener("cancel", (ev) => { ev.preventDefault(); closeConvertModal(); });
     cm.addEventListener("click", (ev) => {
       if (ev.target === cm) closeConvertModal();
+    });
+  }
+  const cmMin = document.querySelector('[data-role="convertmodal-minimize"]');
+  if (cmMin && !cmMin._gisCmMinBtnBound){
+    cmMin._gisCmMinBtnBound = true;
+    cmMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("convertModal", "gis.minimized.convert");
     });
   }
 
@@ -75696,6 +75896,14 @@ function gisInit(){
   if (sp){
     sp.addEventListener("cancel", (ev) => { ev.preventDefault(); handleSpClose(); });
     sp.addEventListener("click", (ev) => { if (ev.target === sp) handleSpClose(); });
+  }
+  const spMin = document.querySelector('[data-role="searchpanel-minimize"]');
+  if (spMin && !spMin._gisSpMinBtnBound){
+    spMin._gisSpMinBtnBound = true;
+    spMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("searchPanel", "gis.minimized.search");
+    });
   }
   // Favorites panel close (GIS floating)
   const fpClose = document.getElementById("favoritesPanelClose");
@@ -75803,6 +76011,22 @@ function gisInit(){
     });
   }
 
+  const hpClose = document.getElementById("historyPanelClose");
+  const hp = document.getElementById("historyPanel");
+  const handleHpClose = () => { if (typeof closeHistoryPanel === "function") closeHistoryPanel(); };
+  if (hpClose) hpClose.addEventListener("click", (ev) => { ev.preventDefault(); handleHpClose(); });
+  if (hp){
+    hp.addEventListener("cancel", (ev) => { ev.preventDefault(); handleHpClose(); });
+    hp.addEventListener("click", (ev) => { if (ev.target === hp) handleHpClose(); });
+  }
+  const hpMin = document.querySelector('[data-role="historypanel-minimize"]');
+  if (hpMin && !hpMin._gisHpMinBtnBound){
+    hpMin._gisHpMinBtnBound = true;
+    hpMin.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      if (typeof gisMinimizePanel === "function") gisMinimizePanel("historyPanel", "gis.minimized.history");
+    });
+  }
   const favMin = document.querySelector('[data-role="favoritespanel-minimize"]');
   if (favMin && !favMin._gisFavMinBtnBound){
     favMin._gisFavMinBtnBound = true;
@@ -76243,11 +76467,22 @@ function gisInit(){
       if (typeof closeTrackUnsavedCloseDialog === "function") closeTrackUnsavedCloseDialog();
       return;
     }
-    if (state.convertOpen){ closeConvertModal(); return; }
+    if (state.convertOpen){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("convertModal")) return;
+      closeConvertModal(); return;
+    }
     if (state.toolsMenuOpen !== null){ closeToolsModal(); return; }
     const spd = document.getElementById("searchPanel");
     if (state.searchPanelOpen || (spd && spd.open)){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel")) return;
       closeSearchPanel();
+      return;
+    }
+    const hpd = document.getElementById("historyPanel");
+    if (state.historyPanelOpen || (hpd && hpd.open)){
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel")) return;
+      ev.preventDefault();
+      if (typeof closeHistoryPanel === "function") closeHistoryPanel();
       return;
     }
     const fpd = document.getElementById("favoritesPanel");
@@ -76569,7 +76804,10 @@ function gisInit(){
   });
 
   // Restore persisted active tab (if any)
-  if (GIS_VALID_TABS.includes(state.activeTab)){
+  if (state.activeTab === "history"){
+    state.activeTab = null;
+    try { if (typeof openHistoryPanel === "function") openHistoryPanel(); } catch(_){}
+  } else if (GIS_VALID_TABS.includes(state.activeTab)){
     const want = state.activeTab;
     state.activeTab = null; // so activateTab does the move
     activateTab(want);
@@ -76607,6 +76845,10 @@ function gisInit(){
       const sp = document.getElementById("searchPanel");
       if (state.searchPanelOpen && sp && sp.open && document.body.classList.contains("gis-mode")){
         try { clampSearchPanelRect(sp); gisPanelSyncBodySize(sp, _searchPanelLayoutOpts()); } catch(_){}
+      }
+      const hpR = document.getElementById("historyPanel");
+      if (state.historyPanelOpen && hpR && hpR.open && document.body.classList.contains("gis-mode")){
+        try { clampHistoryPanelRect(hpR); gisPanelSyncBodySize(hpR, _historyPanelLayoutOpts()); } catch(_){}
       }
       const fp = document.getElementById("favoritesPanel");
       if (state.favoritesPanelOpen && fp && fp.open && document.body.classList.contains("gis-mode")){
@@ -76705,7 +76947,7 @@ function gisPanelBringToFront(root, opts){
   // When counter overflows, re-pack open panels into the allowed range.
   if (!Number.isFinite(gPanelZCounter) || gPanelZCounter < baseZ) gPanelZCounter = baseZ;
   if (gPanelZCounter >= maxZ){
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal","dflightPanel","dflightDetailsPanel","cartoIgmPanel"];
+    const ids = ["convertModal","waypointModal","searchPanel","historyPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal","dflightPanel","dflightDetailsPanel","cartoIgmPanel"];
     const open = [];
     for (const id of ids){
       const el = document.getElementById(id);
@@ -76805,7 +77047,10 @@ const GIS_MIN_FOCUS_MAP = {
   routingPlannerPanel: { headId: "routingPlannerPanelHead", minSel: '[data-role="routingpanel-minimize"]' },
   cartoIgmPanel: { headId: "cartoIgmPanelHead", minSel: '[data-role="cartoigm-minimize"]' },
   dflightPanel: { headId: "dflightPanelHead", minSel: '[data-role="dflightpanel-minimize"]' },
-  dflightDetailsPanel: { headId: "dflightDetailsPanelHead", minSel: '[data-role="dflightdetailspanel-minimize"]' }
+  dflightDetailsPanel: { headId: "dflightDetailsPanelHead", minSel: '[data-role="dflightdetailspanel-minimize"]' },
+  convertModal: { headId: "convertModalHead", minSel: '[data-role="convertmodal-minimize"]' },
+  searchPanel: { headId: "searchPanelHead", minSel: '[data-role="searchpanel-minimize"]' },
+  historyPanel: { headId: "historyPanelHead", minSel: '[data-role="historypanel-minimize"]' }
 };
 function gisFlashMinimizeBlockedNotice(panelId){
   const cfg = GIS_MIN_BLOCKED_MAP[panelId];
@@ -77073,8 +77318,8 @@ function gisDockMakeChip(row){
   b.type = "button";
   b.className = "gis-minimized-dock-chip btn btn-sm";
   b.setAttribute("data-gis-min-panel", row.id);
-  const name = (typeof t === "function") ? (t(row.labelKey) || row.id) : row.id;
-  const restore = (typeof t === "function") ? (t("tip.panelRestore") || "") : "";
+  const name = (typeof tIt === "function") ? (tIt(row.labelKey) || row.id) : ((typeof t === "function") ? (t(row.labelKey) || row.id) : row.id);
+  const restore = (typeof tIt === "function") ? (tIt("tip.panelRestore") || "") : ((typeof t === "function") ? (t("tip.panelRestore") || "") : "");
   b.setAttribute("aria-label", restore ? (restore + " — " + name) : name);
   b.textContent = name;
   b.addEventListener("click", function(ev){
@@ -77272,7 +77517,7 @@ function gisPanelNudgeOpenPanelsToSafeTop(){
   try {
     if (!document.body.classList.contains("gis-mode")) return;
     const safe = (typeof gisPanelSafeTop === "function") ? gisPanelSafeTop({}) : 12;
-    const ids = ["convertModal","waypointModal","searchPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal","dflightPanel","dflightDetailsPanel","cartoIgmPanel"];
+    const ids = ["convertModal","waypointModal","searchPanel","historyPanel","favoritesPanel","trackModal","layersPanel","measurePanel","rangeRingsPanel","astroPanel","polygonPanel","gisWorkbenchPanel","routingPlannerPanel","astroWaypointPicker","astroFavoritePicker","helpOverlay","qrModal","dflightPanel","dflightDetailsPanel","cartoIgmPanel"];
     for (let i = 0; i < ids.length; i++){
       const id = ids[i];
       const el = document.getElementById(id);
@@ -77416,6 +77661,12 @@ function gisMinimizePanel(panelId, labelKey, opts){
     try { if (typeof routingCancelMarkerDrag === "function") routingCancelMarkerDrag({ rollback: true }); } catch(_){}
   } else if (panelId === "gisWorkbenchPanel"){
     /* G-B: ordinary workbench minimize — reuse existing focus/restore/i18n infra. */
+  } else if (panelId === "convertModal"){
+    /* GIS-DIALOG-MINIMIZE-HISTORY-A: Converti — GIS floating, no extra block. */
+  } else if (panelId === "searchPanel"){
+    /* GIS-DIALOG-MINIMIZE-HISTORY-A: Cerca — GIS floating. */
+  } else if (panelId === "historyPanel"){
+    /* GIS-DIALOG-MINIMIZE-HISTORY-A: Cronologia floating dialog. */
   } else if (panelId === "cartoIgmPanel"){
     /* Indice IGM: minimize during area-pick / map-first flows (FIX3 QA §14). */
   } else if (panelId === "dflightPanel" || panelId === "dflightDetailsPanel"){
@@ -77549,6 +77800,24 @@ function gisRestoreMinimizedPanel(panelId){
       gisPanelApplyLayout(dlg, o);
       positionHelpPanelDefaultGis(dlg, o);
       clampHelpPanelRect(dlg);
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "convertModal"){
+      const o = _convertPanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      try { wireConvertModalFloatingGis(dlg); } catch(_){}
+      try { clampConvertModalRect(dlg); } catch(_){}
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "searchPanel"){
+      const o = _searchPanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      try { wireSearchPanelFloatingGis(dlg); } catch(_){}
+      try { clampSearchPanelRect(dlg); } catch(_){}
+      gisPanelSyncBodySize(dlg, o);
+    } else if (panelId === "historyPanel"){
+      const o = _historyPanelLayoutOpts();
+      gisPanelBringToFront(dlg, o);
+      try { wireHistoryPanelFloatingGis(dlg); } catch(_){}
+      try { clampHistoryPanelRect(dlg); } catch(_){}
       gisPanelSyncBodySize(dlg, o);
     } else if (panelId === "routingPlannerPanel"){
       const o = _routingPanelLayoutOpts();
@@ -78218,6 +78487,7 @@ function openConvertModal(){
 function closeConvertModal(){
   const dlg = document.getElementById("convertModal");
   if (!dlg || !state.convertOpen) return;
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("convertModal"); } catch(_){}
   const pw = document.getElementById("hdrPrimaryWrap");
   const pslot = GIS_HOME_SLOTS.get("__hdrPrimary");
   const cmb = document.getElementById("convertModalBody");
@@ -79298,7 +79568,7 @@ function attachConvertModalFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#convertModalClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close"
+    ignoreSelector: "#convertModalClose,[data-role=\"convertmodal-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
@@ -79421,7 +79691,7 @@ function attachSearchPanelFloatingGis(dlg){
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
-    ignoreSelector: "#searchPanelClose,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+    ignoreSelector: "#searchPanelClose,[data-role=\"searchpanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
@@ -91167,6 +91437,15 @@ function openSearchPanel(){
   const dlg = document.getElementById("searchPanel");
   const body = document.getElementById("searchPanelBody");
   if (!dlg || !body) return;
+  if (state.searchPanelOpen && dlg.open){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel")){
+      try { gisRestoreMinimizedPanel("searchPanel"); } catch(_){}
+      try { wireSearchPanelFloatingGis(dlg); } catch(_){}
+      gisSetTopbarTabActive("geocoding", true);
+      try { trackSyncPickModeUi(); } catch(_){}
+      return;
+    }
+  }
   // If drawer is showing geocoding, close it first so ownership is singular.
   if (state.activeTab === "geocoding") deactivateTab();
   // Ensure no convert-owned geocodeCard remains inside Convert: move it here first.
@@ -91186,6 +91465,7 @@ function openSearchPanel(){
 function closeSearchPanel(){
   const dlg = document.getElementById("searchPanel");
   if (!state.searchPanelOpen && !(dlg && dlg.open)) return;
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("searchPanel"); } catch(_){}
   const geo = document.getElementById("geocodeCard");
   // Restore geocodeCard to its home slot when closing (unless Convert will re-adopt later).
   try { if (geo) gisRestoreSection("geocodeCard"); } catch(_){}
@@ -91202,8 +91482,132 @@ function closeSearchPanel(){
 }
 function toggleSearchPanel(){
   const dlg = document.getElementById("searchPanel");
-  if (state.searchPanelOpen || (dlg && dlg.open)) closeSearchPanel();
-  else openSearchPanel();
+  if (state.searchPanelOpen || (dlg && dlg.open)){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("searchPanel")){
+      try { gisRestoreMinimizedPanel("searchPanel"); } catch(_){}
+      try { wireSearchPanelFloatingGis(dlg); } catch(_){}
+      gisSetTopbarTabActive("geocoding", true);
+    } else closeSearchPanel();
+  } else openSearchPanel();
+}
+
+function _historyPanelLayoutOpts(){
+  return {
+    key: "history",
+    pad: 12,
+    minW: 360,
+    minH: 240,
+    defaultW: 480,
+    defaultH: null,
+    defaultHeightFraction: 0.72,
+    defaultHeightCap: 720,
+    topbarReserve: 100,
+    partialMinVisible: 72,
+    bodyMinH: 120,
+    bodyId: "historyPanelBody",
+    headId: "historyPanelHead",
+    closeId: "historyPanelClose"
+  };
+}
+function attachHistoryPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  const opts = _historyPanelLayoutOpts();
+  gisPanelAttachDrag(dlg, Object.assign({}, opts, {
+    threshold: 4,
+    draggingClass: "dragging",
+    ignoreSelector: "#historyPanelClose,[data-role=\"historypanel-minimize\"],.app-modal-min-btn,button,input,select,textarea,label,a,[data-no-drag],.app-modal-close,[data-role=\"gis-panel-resize\"]"
+  }));
+  const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
+  gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
+}
+function clampHistoryPanelRect(dlg){
+  if (!dlg || !dlg.open || !document.body.classList.contains("gis-mode")) return;
+  const opts = _historyPanelLayoutOpts();
+  const br = dlg.getBoundingClientRect();
+  const w = Math.max(0, br.width), h = Math.max(0, br.height);
+  if (!dlg.style.left && !dlg.style.top) return;
+  const L0 = parseFloat(dlg.style.left) || br.left;
+  const T0 = parseFloat(dlg.style.top) || br.top;
+  const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
+}
+function wireHistoryPanelFloatingGis(dlg){
+  if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  dlg.classList.add("gis-panel-floating");
+  dlg.style.position = "fixed";
+  dlg.style.margin = "0";
+  dlg.style.transform = "none";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  try {
+    const h = document.getElementById("historyPanelHead");
+    if (h) h.classList.add("gis-panel-drag-head");
+  } catch(_){}
+  attachHistoryPanelFloatingGis(dlg);
+  gisPanelAttachBringToFront(dlg, _historyPanelLayoutOpts());
+  gisPanelBringToFront(dlg, _historyPanelLayoutOpts());
+  gisPanelApplyLayout(dlg, _historyPanelLayoutOpts());
+  clampHistoryPanelRect(dlg);
+  gisPanelSyncBodySize(dlg, _historyPanelLayoutOpts());
+}
+function openHistoryPanel(){
+  if (!document.body.classList.contains("gis-mode")) return;
+  const dlg = document.getElementById("historyPanel");
+  const body = document.getElementById("historyPanelBody");
+  if (!dlg || !body) return;
+  if (state.historyPanelOpen && dlg.open){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel")){
+      try { gisRestoreMinimizedPanel("historyPanel"); } catch(_){}
+      try { wireHistoryPanelFloatingGis(dlg); } catch(_){}
+      try { if (typeof renderHistory === "function") renderHistory(); } catch(_){}
+      gisSetTopbarTabActive("history", true);
+      return;
+    }
+    return;
+  }
+  if (state.activeTab === "history") deactivateTab();
+  state.historyPanelOpen = true;
+  try {
+    const sec = document.getElementById("sec-history");
+    if (sec) sec.open = true;
+  } catch(_){}
+  gisMoveSectionTo("sec-history", body);
+  try { dlg.show(); } catch(_){ dlg.setAttribute("open",""); }
+  try { dlg.setAttribute("aria-modal", "false"); } catch(_){}
+  wireHistoryPanelFloatingGis(dlg);
+  gisSetTopbarTabActive("history", true);
+  try { if (typeof renderHistory === "function") renderHistory(); } catch(_){}
+}
+function closeHistoryPanel(){
+  const dlg = document.getElementById("historyPanel");
+  if (!state.historyPanelOpen && !(dlg && dlg.open)) return;
+  try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("historyPanel"); } catch(_){}
+  try { gisRestoreSection("sec-history"); } catch(_){}
+  state.historyPanelOpen = false;
+  if (dlg){
+    try { dlg.classList.remove("gis-panel-floating"); } catch(_){}
+    try {
+      const h = document.getElementById("historyPanelHead");
+      if (h) h.classList.remove("gis-panel-drag-head");
+    } catch(_){}
+    try { if (dlg.open) dlg.close(); } catch(_){}
+    try { dlg.removeAttribute("open"); } catch(_){}
+  }
+  gisSetTopbarTabActive("history", false);
+}
+function toggleHistoryPanel(){
+  const dlg = document.getElementById("historyPanel");
+  if (state.historyPanelOpen || (dlg && dlg.open)){
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("historyPanel")){
+      try { gisRestoreMinimizedPanel("historyPanel"); } catch(_){}
+      try { wireHistoryPanelFloatingGis(dlg); } catch(_){}
+      gisSetTopbarTabActive("history", true);
+    } else closeHistoryPanel();
+  } else openHistoryPanel();
 }
 
 function openFavoritesPanel(){
@@ -93709,6 +94113,18 @@ function gisNavigateToolTarget(targetId, i18nKey){
     }
     if (tabKey === "measure"){
       if (typeof openMeasureFloatingPanelGis === "function") openMeasureFloatingPanelGis();
+      return true;
+    }
+    if (tabKey === "history"){
+      if (typeof openHistoryPanel === "function") openHistoryPanel();
+      return true;
+    }
+    if (tabKey === "favorites"){
+      if (typeof openFavoritesPanel === "function") openFavoritesPanel();
+      return true;
+    }
+    if (tabKey === "geocoding"){
+      if (typeof openSearchPanel === "function") openSearchPanel();
       return true;
     }
     activateTab(tabKey);
