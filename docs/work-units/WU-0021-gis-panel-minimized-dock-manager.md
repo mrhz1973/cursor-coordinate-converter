@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A in QA finale)
-**ACTIVE BLOCK:** `GIS-DIALOG-MINIMIZE-HISTORY-A`
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**STATUS:** OPEN (G-A…G-D CLOSED / PASS; HISTORY-A **CLOSED / PASS**)
+**ACTIVE BLOCK:** none (ultimo: `GIS-DIALOG-MINIMIZE-HISTORY-A` **CLOSED / PASS**)
+**CURRENT GATE:** **none**
 **RUNTIME LIVE:** `7196b30fe0c89acf2bd538640eb2076f012b6380` · build **214** · `GIS-DIALOG-MINIMIZE-HISTORY-A` · blob `d425ec9a…`
-**RUNTIME CANDIDATE:** LIVE
+**RUNTIME CANDIDATE:** none
 **CATEGORIA:** **DELICATO**
-**NEXT:** QA operatore ChatGPT sul LIVE **214** · **non** finito · **F NOT OPENED**
-**NOTE:** HISTORY-A deploy GIS-only PASS · ABQA 37/37 · helper 0.1.3 · F NOT OPENED
+**NEXT:** **F NOT OPENED** · da scegliere da roadmap/backlog
+**NOTE:** HISTORY-A QA operatore PASS (2026-08-17) → auto-`finito` Regola H · helper 0.1.3 · F NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -586,3 +586,7 @@ REVIEW GPT-SOSTITUTIVA **PASS** su `7196b30…`. Deploy GIS-only PASS. ABQA **37
 **Helper:** **0.1.3** invariato · proxy/GH PID invariati · GIS PID `2746464`→`2755555`
 
 **Gate:** **QA FINALE CHATGPT — PENDING** · no finito · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
+
+**QA operatore:** **PASS** — attestazione `QA GIS-DIALOG-MINIMIZE-HISTORY-A PASS operatore` (2026-08-17) → auto-`finito` Regola H.
+
+**STATUS blocco GIS-DIALOG-MINIMIZE-HISTORY-A:** **CLOSED / PASS** · **F NOT OPENED** · WU-0021 resta **OPEN**.
