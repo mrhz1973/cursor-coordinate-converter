@@ -462,11 +462,11 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · WU-0021 OPEN · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
-2. **GIS-PANEL-DOCK-MGR-G-B** — `361345d` / **211** (base batch; assorbito in G-BC)
-3. **GIS-PANEL-DOCK-MGR-G-A1-FIX2** — CLOSED / PASS
-4. **WU-0012 (CARTO INDEX)** — OPEN / NEXT PROVIDER (NO PROVIDER READY)
-5. **WU-0010** — OPEN (Bundle F futuro)
+1. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — candidato `7fb0c20` / **213** · LIVE `7e984df` / **212** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy
+2. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
+3. **GIS-PANEL-DOCK-MGR-G-B** — `361345d` / **211** (base batch; assorbito in G-BC)
+4. **GIS-PANEL-DOCK-MGR-G-A1-FIX2** — CLOSED / PASS
+5. **WU-0012 (CARTO INDEX)** — OPEN / NEXT PROVIDER (NO PROVIDER READY)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

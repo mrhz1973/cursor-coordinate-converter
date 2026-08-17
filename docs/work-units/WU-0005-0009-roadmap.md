@@ -625,7 +625,7 @@ Workbench/Oggetti GIS **FROZEN**. **Nessuna** duplicazione del piano in WU-0012 
 | **D** | Legenda ATM09 esterna | **CLOSED / PASS** → [`WU-0018`](WU-0018-dflight-atm09-legend-ux.md) — IMPL-A + FIX1 + FIX2 · LIVE `67d9cc7` / **200** · E–H **NOT OPENED** |
 | **E** | Layout affiancato Zone D-Flight / Dettagli | **CLOSED / PASS** → [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) — FIX4 LIVE `9820c8a` / **205** · QA operatore PASS · finito Regola H · F–H **NOT OPENED** |
 | **F** | Workspace due legende a destra | **NOT OPENED** — pannelli distinti, trascinabili |
-| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A…G-C **CLOSED / PASS** · LIVE `7e984df` / **212** · **G-D NOT OPENED** · F **NOT OPENED** |
+| **G** | Global minimized-panel dock / modal layout manager | **OPEN** → [`WU-0021`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A…G-C **CLOSED / PASS** · G-D candidato `7fb0c20` / **213** · LIVE `7e984df` / **212** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · F **NOT OPENED** |
 | **H** | Branding TMART GIS tool | **CLOSED / PASS** → [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) — FIX1 LIVE `508dd03` / **207** · QA operatore PASS · finito Regola H · G **NOT OPENED** |
 
 #### 1. Azione «Aggiorna» unificata
@@ -722,7 +722,7 @@ Finding trasversale: una modal/pannello aperto può coprire le etichette dei pan
 
 Futuro: modal aperte preferibilmente in alto nell’area mappa; etichette minimizzate non sotto le modal; trasferimento progressivo delle etichette nella **barra superiore nera**, spazio libero a destra e a sinistra del titolo finché c’è spazio; comportamento responsive a spazio esaurito.
 
-**Stato:** **OPEN** in [`WU-0021-gis-panel-minimized-dock-manager.md`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A1…G-BC-BATCH1 **CLOSED / PASS** · LIVE `7e984df` / build **212** · QA operatore PASS (2026-08-17) · `finito` Regola H. **G-D NOT OPENED**. **F** resta **NOT OPENED**.
+**Stato:** **OPEN** in [`WU-0021-gis-panel-minimized-dock-manager.md`](WU-0021-gis-panel-minimized-dock-manager.md) — G-A1…G-BC-BATCH1 **CLOSED / PASS** · G-D-BATCH1 candidato `7fb0c20` / **213** · LIVE `7e984df` / **212** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · **no deploy**. **F** resta **NOT OPENED**.
 
 #### 12. Branding — TMART GIS tool
 

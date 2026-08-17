@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D NOT OPENED)
-**ACTIVE BLOCK:** —
-**CURRENT GATE:** —
+**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D REVIEW PENDING)
+**ACTIVE BLOCK:** `GIS-PANEL-DOCK-MGR-G-D-BATCH1`
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **RUNTIME LIVE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851…`
-**RUNTIME CANDIDATE:** = LIVE
+**RUNTIME CANDIDATE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
 **CATEGORIA:** **DELICATO**
-**NEXT:** **G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** `QA GIS-PANEL-DOCK-MGR-G-BC-BATCH1 PASS operatore` (2026-08-17) → `finito` Regola H · ABQA 78/78 · selftest 524/524
+**NEXT:** Review GPT-sostitutiva su FULL SHA candidato; **non** deployare; **F NOT OPENED**
+**NOTE:** G-D-BATCH1 10-task bundle · selftest 564/564 · 4→5 @1920 PASS · **no deploy**
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -505,4 +505,17 @@ REVIEW PASS → deploy GIS-only + ABQA batch unica.
 
 **QA operatore:** **PASS** — attestazione `QA GIS-PANEL-DOCK-MGR-G-BC-BATCH1 PASS operatore` (2026-08-17) → auto-`finito` Regola H.
 
-**STATUS blocco G-BC-BATCH1:** **CLOSED / PASS** · **G-D NOT OPENED** · **F NOT OPENED** · WU-0021 resta **OPEN**.
+**STATUS blocco G-BC-BATCH1:** **CLOSED / PASS** · **F NOT OPENED** · WU-0021 resta **OPEN**.
+
+## 30. G-D-BATCH1 CANDIDATE (2026-08-17)
+
+Bundle unico 10 task — dual-side header dock, no 5th-chip jump, header-budget `+N`.
+
+**Candidato:** `7fb0c202378966a412e454459f2fdf278e14ccee` / **213** / blob `bbc9a5c88888b9d0a79fcef2374a252aaf9893b7`  
+**LIVE:** invariato `7e984df` / **212** (**no deploy**)
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_1054_gis-panel-dock-mgr-g-d-batch1-evidence.md`](../orchestrator/inbox/2026-08-17_1054_gis-panel-dock-mgr-g-d-batch1-evidence.md)
+
+**Selftest:** **564/564** · planner 4-right+1-left · 1920 4→5 = 4 right + 1 left · 360 `+N` Altri 7
+
+**Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
