@@ -6,4 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** · candidate `7e984df` / **212** · 5 lane · selftest **524/524** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy. [`inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md`](inbox/2026-08-17_0235_gis-panel-dock-mgr-g-bc-batch1-evidence.md).
+2026-08-17 — **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** · LIVE `7e984df` / **212** · deploy+ABQA **78/78 PASS** · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md`](inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md).

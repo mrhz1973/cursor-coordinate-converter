@@ -3,12 +3,12 @@
 <!-- WU-HOT-HEADER: do not remove -->
 **STATUS:** OPEN / IMPL
 **ACTIVE BLOCK:** GIS-PANEL-DOCK-MGR-G-BC-BATCH1
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
-**RUNTIME LIVE:** `525e7df…` / **210** · `GIS-PANEL-DOCK-MGR-G-A1-FIX2`
-**RUNTIME CANDIDATE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851a867e7b72c06e9115000c8c0f7cb960f`
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**RUNTIME LIVE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` · build **212** · `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · blob `b7919851…`
+**RUNTIME CANDIDATE:** = LIVE (post-deploy)
 **CATEGORIA:** **DELICATO**
-**NEXT:** REVIEW GPT-SOSTITUTIVA su evidence batch; **G-D NOT OPENED**; **F NOT OPENED**
-**NOTE:** G-BC-BATCH1 2026-08-17 · 5 lane · selftest 524/524 · no deploy · no verdetto
+**NEXT:** QA FINALE CHATGPT; **G-D NOT OPENED**; **F NOT OPENED**
+**NOTE:** Deploy+ABQA 2026-08-17 · 78/78 PASS · selftest 524/524 · no patch · no finito
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -492,3 +492,15 @@ Batch 5 lane su base G-B `361345d` / 211 → candidate **212** `7e984df…` / `G
 **Lane:** L1 CERTIFIED · L2–L4 CERTIFIED/NO CHANGE · L5 PATCHED (carto sync+export) · hunks 21 · OTHER=0 · selftest **524/524**.
 
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy · G-D/F NOT OPENED.
+
+## 29. G-BC-BATCH1 DEPLOY + ABQA (2026-08-17)
+
+REVIEW PASS → deploy GIS-only + ABQA batch unica.
+
+**LIVE:** `7e984dff49bd7a0a2396f11b028f4f264c90fe52` / **212** / blob `b7919851…`
+
+**Evidence:** [`../orchestrator/inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md`](../orchestrator/inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md)
+
+**ABQA:** **78/78 PASS** · selftest **524/524** · helper **0.1.3** invariato.
+
+**Gate:** **QA FINALE CHATGPT — PENDING** · no finito · no istruzioni QA operatore · G-D/F NOT OPENED.
