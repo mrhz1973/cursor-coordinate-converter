@@ -1,14 +1,14 @@
 # WU-0021 — GLOBAL GIS PANEL / MINIMIZED DOCK MANAGER
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN (G-A…G-C CLOSED / PASS; G-D deploy+ABQA PASS, QA FINALE PENDING)
-**ACTIVE BLOCK:** `GIS-PANEL-DOCK-MGR-G-D-BATCH1`
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**STATUS:** OPEN (G-A…G-D CLOSED / PASS)
+**ACTIVE BLOCK:** none (ultimo: `GIS-PANEL-DOCK-MGR-G-D-BATCH1` **CLOSED / PASS**)
+**CURRENT GATE:** **none**
 **RUNTIME LIVE:** `7fb0c202378966a412e454459f2fdf278e14ccee` · build **213** · `GIS-PANEL-DOCK-MGR-G-D-BATCH1` · blob `bbc9a5c8…`
-**RUNTIME CANDIDATE:** LIVE (`7fb0c20` / **213** / blob `bbc9a5c8…`)
+**RUNTIME CANDIDATE:** none
 **CATEGORIA:** **DELICATO**
-**NEXT:** QA operatore (ChatGPT scrive i casi); **non** `finito`; **F NOT OPENED**
-**NOTE:** G-D-BATCH1 deploy GIS-only PASS · ABQA 32/32 · selftest 564/564 · helper 0.1.3 invariato · F NOT OPENED
+**NEXT:** **F NOT OPENED** · da scegliere da roadmap/backlog
+**NOTE:** G-D-BATCH1 QA operatore PASS (2026-08-17) → auto-`finito` Regola H · helper 0.1.3 · F NOT OPENED
 <!-- /WU-HOT-HEADER -->
 
 **Workstream precedente:** [`WU-0020`](WU-0020-branding-tmart-gis-tool.md) **CLOSED / PASS** (candidato H). Side-by-side D-Flight: [`WU-0019`](WU-0019-dflight-panel-side-by-side.md) **CLOSED / PASS**.
@@ -531,6 +531,10 @@ REVIEW GPT-SOSTITUTIVA **PASS** su `7fb0c20…`. Deploy GIS-only PASS. ABQA **32
 **Helper:** **0.1.3** invariato · proxy/GH PID invariati · GIS PID `2738253`→`2746464`
 
 **Gate:** **QA FINALE CHATGPT — PENDING** · no finito · **F NOT OPENED** · Oggetti GIS FROZEN/UNTOUCHED · WU-0012 invariata.
+
+**QA operatore:** **PASS** — attestazione `QA GIS-PANEL-DOCK-MGR-G-D-BATCH1 PASS operatore` (2026-08-17) → auto-`finito` Regola H.
+
+**STATUS blocco G-D-BATCH1:** **CLOSED / PASS** · **F NOT OPENED** · WU-0021 resta **OPEN**.
 
 ## 30. G-D-BATCH1 CANDIDATE (2026-08-17)
 
