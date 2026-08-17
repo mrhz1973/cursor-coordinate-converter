@@ -6,6 +6,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-17 — **BACKLOG-MAP-UX-DFLIGHT-CLEANUP-A** docs-only · 4 item **BACKLOG / NOT OPENED** · gate LIVE **invariato** (`GIS-PANEL-DOCK-MGR-G-BC-BATCH1` / **212** / **QA FINALE CHATGPT — PENDING**). [`inbox/2026-08-17_0905_riepilogo_backlog-map-ux-dflight-cleanup-a.md`](inbox/2026-08-17_0905_riepilogo_backlog-map-ux-dflight-cleanup-a.md).
-
-2026-08-17 — **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** · LIVE `7e984df` / **212** · deploy+ABQA **78/78 PASS** · gate **QA FINALE CHATGPT — PENDING**. [`inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md`](inbox/2026-08-17_0245_gis-panel-dock-mgr-g-bc-batch1-deploy-qa.md).
+2026-08-17 — **finito** `GIS-PANEL-DOCK-MGR-G-BC-BATCH1` · **CLOSED / PASS** · QA operatore PASS · LIVE `7e984df` / **212** · WU-0021 resta **OPEN** · **G-D NOT OPENED** · **F NOT OPENED**. Task `ae076a8`. [`inbox/2026-08-17_0953_riepilogo_finito-sessione.md`](inbox/2026-08-17_0953_riepilogo_finito-sessione.md).
