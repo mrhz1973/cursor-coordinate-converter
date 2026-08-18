@@ -1,0 +1,44 @@
+[Unit]
+Description=GOI openrouteservice directions gateway (loopback)
+Documentation=https://github.com/mrhz1973/cursor-coordinate-converter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=goi-ors
+Group=goi-ors
+WorkingDirectory=/opt/goi-ors-gateway/current
+ExecStart=/usr/bin/python3 /opt/goi-ors-gateway/current/goi_ors_gateway.py
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=20
+TimeoutStopSec=20
+MemoryHigh=64M
+MemoryMax=96M
+TasksMax=32
+LimitNOFILE=512
+OOMPolicy=stop
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectKernelLogs=true
+ProtectProc=invisible
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+PrivateDevices=true
+RemoveIPC=true
+SystemCallArchitectures=native
+ReadOnlyPaths=/opt/goi-ors-gateway/current /etc/systemd/ors-credentials
+# Optional later (do not enable until the credential file exists and is non-empty):
+# LoadCredential=ORS_API_KEY:/etc/systemd/ors-credentials/ORS_API_KEY
+
+[Install]
+WantedBy=multi-user.target
