@@ -4,31 +4,31 @@
 
 ## LATEST
 
-* real_task_commit: `f1d9fc0540f8073d5e79f59164237a951e80215c`
-* real_task_subject: FIX4 params layout, multi-trace colors, ring warn, build 225
-* report_generated_at: `2026-08-18T19:07:00+02:00`
+* real_task_commit: `2e616352042f63a650124efcabe704796e6042af`
+* real_task_subject: fix(routing): FIX4-FIX1 ring warn lifecycle reset on invalidate, build 226
+* report_generated_at: `2026-08-18T19:34:00+02:00`
 * branch: `main`
-* remote_head_after_task_push: `EXTERNAL_ONLY` — REVIEW-RAW-RECOVERY-FIX4 attestato `9b445f8` (REMOTE_HEAD_AT_EVIDENCE_TIME, pre-commit docs)
-* previous_report_container: `9b445f8bf7419f5b17679d137f18f0dd4ca66c1b`
+* remote_head_after_task_push: `EXTERNAL_ONLY` (runtime commit 2e61635 pushato insieme alla memoria; attestazione remota post-push nel riepilogo)
+* previous_report_container: `0c351098966a4945136bff0de12e6b9f39657e48`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * working_tree_status: helper `_*.py` / `tmp/` esclusi
-* result_cursor: REVIEW-RAW-RECOVERY-FIX4 PASS (evidence-only) · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · **NON** deploy · **NON** ABQA · **NON** QA operatore · **NON** finito
-* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · candidate **225** / `f1d9fc0` · blob `8f9a6abe…` (immutato)
-* notes: selftest 793/793 **non rieseguito** (candidate immutato) · VPS resta FIX3 224 deployato
+* result_cursor: candidate **226** persistito · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · **NON** deploy · **NON** ABQA · **NON** QA operatore · **NON** finito
+* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · candidate **226** / `2e61635` · blob `82ecf7d7…`
+* notes: FIX4 225 REVIEW FAIL SCOPED → FIX1 lifecycle warning anello · selftest 801/801 PASS (RWF1 8/8)
 
 ## OUTPUT VERBATIM (pre-autosync)
 
 ```text
 RUNTIME_CANDIDATE_SHA
-f1d9fc0540f8073d5e79f59164237a951e80215c
+2e616352042f63a650124efcabe704796e6042af
 BLOB
-8f9a6abe796adbfbab17d5ded1d9542efa70c306
+82ecf7d73527f12891f93cba55589c5e913cae2e
 BYTES_LF
-10682160
+10685767
 SHA256_LF
-800b4159897df1c425d0bee89c37fcce0a78f622c3b39ae3f2c54c7f80a48c21
+f82e56ae2f1e94da08a2320905c6958be2253aca0e512a9ea0ace1dc99706220
 SELFTEST
-793/793 PASS
+801/801 PASS (RWF1 8/8)
 DEPLOY
 NOT RUN
 ```
