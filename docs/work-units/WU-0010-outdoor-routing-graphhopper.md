@@ -2,12 +2,12 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1** **QA FINALE CHATGPT — PENDING**
 **ACTIVE BLOCK:** OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **RUNTIME LIVE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
-**RUNTIME CANDIDATE:** `2e616352042f63a650124efcabe704796e6042af` · build **226** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1` · blob `82ecf7d73527f12891f93cba55589c5e913cae2e` · NON deployato
-**NEXT:** review FIX4-FIX1 candidate 226
+**RUNTIME CANDIDATE:** `2e616352042f63a650124efcabe704796e6042af` · build **226** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1` · blob `82ecf7d73527f12891f93cba55589c5e913cae2e` · deployato GIS
+**NEXT:** QA FINALE CHATGPT candidate 226
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) + OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
@@ -31,7 +31,7 @@
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2:** **QA operatore FAIL SCOPED** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`4a6dca9` / **223** / blob `56163b6f…`) · ABQA desktop 130/130 + mobile 6/6 PASS · QA operatore FAIL UX/layout Routing + anello VIA + leggibilità compare → **FIX3**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1715_outdoor-routing-f-provider-compare-a-fix2-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_1715_outdoor-routing-f-provider-compare-a-fix2-deploy-abqa.md).
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3:** **QA operatore FAIL SCOPED** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`d455841` / **224** / blob `4a9565af…`) · ABQA desktop 172/172 + mobile 8/8 PASS · QA operatore FAIL UX/layout/semantica visuale → **FIX4**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md).
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4:** **REVIEW GPT-SOSTITUTIVA FAIL SCOPED** (2026-08-18) — candidate **225** `f1d9fc0` / blob `8f9a6abe…` · selftest 793/793 PASS · finding unico bloccante: `routingInvalidateRoutePreview()` non azzerava `ringSemanticWarn` (possibile warning anello residuo dopo modifica punti) → **FIX4-FIX1**. Evidence RAW: [`2026-08-18_1907_outdoor-routing-f-provider-compare-a-fix4-review-raw-recovery.md`](../orchestrator/inbox/2026-08-18_1907_outdoor-routing-f-provider-compare-a-fix4-review-raw-recovery.md).
-**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1:** **REVIEW GPT-SOSTITUTIVA — PENDING** (2026-08-18) — candidate **226** `2e61635` / blob `82ecf7d7…` · fix lifecycle warning anello: reset `ringSemanticWarn` + svuoto feedback su invalidate · selftest 801/801 PASS (RWF1 8/8) · **NON** deploy. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1934_outdoor-routing-f-provider-compare-a-fix4-fix1.md`](../orchestrator/inbox/2026-08-18_1934_outdoor-routing-f-provider-compare-a-fix4-fix1.md).
+**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1:** **QA FINALE CHATGPT — PENDING** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`2e61635` / **226** / blob `82ecf7d7…`) · ABQA desktop 207/207 + mobile 9/9 PASS · LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_2011_outdoor-routing-f-provider-compare-a-fix4-fix1-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_2011_outdoor-routing-f-provider-compare-a-fix4-fix1-deploy-abqa.md).
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
