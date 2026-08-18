@@ -218,11 +218,11 @@ Dettaglio WU: [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.m
 | TLS / reverse proxy | **nginx** `listen 100.114.7.53:443 ssl` — certificato Tailscale / Let's Encrypt (`/etc/goi-ors/tls/`) |
 | Profili whitelist | `foot-hiking`, `foot-walking`, `cycling-mountain` |
 | Upstream | hardcoded `https://api.openrouteservice.org` |
-| Secret | nome canonico **`ORS_API_KEY`** · path `/etc/systemd/ors-credentials/ORS_API_KEY` · **non valorizzato in INFRA1** |
+| Secret | nome canonico **`ORS_API_KEY`** · path `/etc/systemd/ors-credentials/ORS_API_KEY` · **PRESENT** (600 root:root + systemd `LoadCredential`) · valore **mai** in repo/docs |
 | Fail-closed | POST senza secret → `503 secret_not_configured`, **zero** chiamata upstream |
 | Helper D-Flight | **0.1.3 invariato** |
 | GIS monolite | **non collegato** (nessun build 220) |
 
-**ACL client:** lo storico grant Tailscale copre `tcp:8000`/`tcp:5000`/`tcp:8010`. Il listen `:443` è solo Tailscale IP (non `0.0.0.0`). Un client Windows può vedere timeout finché non esiste grant additivo `tcp:443` → `100.114.7.53/32` (stesso pattern di `:8010`). La verifica on-box VPS con `curl --resolve` è PASS.
+**ACL client:** grant storico `tcp:8000`/`tcp:5000`/`tcp:8010`. Listen `:443` solo Tailscale IP. **INFRA2 (2026-08-18):** dal client Windows `TcpTestSucceeded=False` su `:443` (ping OK) → gate **BLOCKED**. Serve grant additivo `tcp:443` → `100.114.7.53/32`. On-box `curl --resolve` PASS.
 
 **Sicurezza:** nessun valore di `ORS_API_KEY` in questo documento.

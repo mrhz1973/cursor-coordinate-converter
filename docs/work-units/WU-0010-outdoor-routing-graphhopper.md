@@ -2,12 +2,12 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-ORS-PROVIDER-A** INFRA1 HTTPS seat READY · secret **ABSENT**
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-ORS-PROVIDER-A** secret PRESENT · client HTTPS **BLOCKED**
 **ACTIVE BLOCK:** `OUTDOOR-ROUTING-ORS-PROVIDER-A`
-**CURRENT GATE:** **BLOCKED — ORS secret ABSENT**
+**CURRENT GATE:** **BLOCKED — HTTPS client unreachable** (ACL `tcp:443`)
 **RUNTIME LIVE:** `5477a5e0d8d9a5681dbfab37b3c39e182306fc79` · build **219** · `OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1` · blob `a823ae9b…`
 **RUNTIME CANDIDATE:** none (nessun build 220)
-**NEXT:** configurare ORS secret server-side e ripetere capability 1–10
+**NEXT:** grant ACL `tcp:443` · capability 1–10 · poi candidate
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
@@ -296,7 +296,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Questioni aperte prima di qualsiasi apertura:** provider; quota/costi; licenza/ToS; profili hiking/MTB; elevation/alternative; formato API; hosting; stack già sul VPS; auth/token app; rate-limit; anti-abuso; logging senza dati sensibili inutili; cache consentita; mobile; offline/fallback; dominio+certificato HTTPS.
 
-**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** tentativo runtime **STOP** al gate 0 — poi **INFRA1** ha predisposto la sede HTTPS (`goi-ors-gateway` + nginx `:443` Tailscale). Secret ORS resta **ABSENT**. Nessun candidate 220. Finding INFRA1: [`2026-08-18_0252_outdoor-routing-ors-provider-a-infra1.md`](../orchestrator/inbox/2026-08-18_0252_outdoor-routing-ors-provider-a-infra1.md). Monolite **non** collegato.
+**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** INFRA1 sede HTTPS READY · INFRA2 secret **PRESENT** (LoadCredential) · **STOP** reachability GIS client (ACL `tcp:443`). Nessun candidate 220. Finding: [`2026-08-18_0403_outdoor-routing-ors-provider-a-infra2-acl-443.md`](../orchestrator/inbox/2026-08-18_0403_outdoor-routing-ors-provider-a-infra2-acl-443.md).
 
 ### BUNDLE C — GraphHopper provider Local/VPS/Auto — **CLOSED / PASS end-to-end**
 

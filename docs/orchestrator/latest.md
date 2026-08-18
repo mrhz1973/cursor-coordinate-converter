@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-ORS-PROVIDER-A-INFRA1** sede HTTPS READY · secret ORS **ABSENT** · LIVE build **219** invariata. [`inbox/2026-08-18_0252_outdoor-routing-ors-provider-a-infra1.md`](inbox/2026-08-18_0252_outdoor-routing-ors-provider-a-infra1.md).
+2026-08-18 — **OUTDOOR-ROUTING-ORS-PROVIDER-A-INFRA2** secret **PRESENT** · client HTTPS **FAIL** (ACL tcp:443) · LIVE build **219**. [`inbox/2026-08-18_0403_outdoor-routing-ors-provider-a-infra2-acl-443.md`](inbox/2026-08-18_0403_outdoor-routing-ors-provider-a-infra2-acl-443.md).
