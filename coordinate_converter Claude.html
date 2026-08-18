@@ -9856,13 +9856,36 @@ dialog.track-modal.app-modal{
   box-sizing:border-box;
 }
 .routing-params-row .routing-profile-row,
-.routing-params-row .routing-speed-row,
-.routing-params-row .routing-mode-group{
+.routing-params-row .routing-speed-row{
   padding:0;
   margin:0;
   flex:0 0 auto;
   min-width:0;
   width:auto;
+}
+.routing-params-row .routing-mode-group,
+.routing-params-row #routingModeGroup{
+  padding:0;
+  margin:0;
+  flex:0 1 auto;
+  min-width:0;
+  max-width:100%;
+  width:auto;
+}
+.routing-params-row .routing-mode-chips{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:4px;
+  min-width:0;
+  max-width:100%;
+}
+.routing-params-row .routing-mode-chip{
+  flex:0 1 auto;
+  white-space:nowrap;
+  max-width:100%;
+  overflow:visible;
+  text-overflow:clip;
 }
 .routing-params-row .routing-profile-select,
 .routing-params-row .routing-speed-select,
@@ -9883,6 +9906,20 @@ dialog.track-modal.app-modal{
   .routing-params-row .routing-speed-select,
   .routing-params-row #routingProfileSelect,
   .routing-params-row #routingSpeedSelect{ max-width:100%; }
+  .routing-params-row .routing-mode-group,
+  .routing-params-row #routingModeGroup{
+    flex:1 1 100%;
+    width:100%;
+    max-width:100%;
+    min-width:0;
+  }
+  .routing-params-row .routing-mode-chips{
+    display:flex;
+    flex-wrap:wrap;
+    width:100%;
+    min-width:0;
+    max-width:100%;
+  }
 }
 .routing-route-options-zone{
   display:flex;
@@ -10405,10 +10442,12 @@ dialog.track-modal.app-modal{
   white-space:nowrap;
 }
 .routing-mode-chips{
-  display:inline-flex;
+  display:flex;
   flex-wrap:wrap;
   gap:4px;
   align-items:center;
+  min-width:0;
+  max-width:100%;
 }
 .routing-mode-chip{
   font-size:.78rem;
@@ -24138,10 +24177,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5";
-const APP_BUILD_DETAIL = "Compact params, track lifecycle, alt borders, ring+VIA alts (FIX5).";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6";
+const APP_BUILD_DETAIL = "Mobile Percorso chips wrap (FIX6).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 227;
+const APP_BUILD_NUM = 228;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39432,8 +39471,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40454,8 +40493,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42382,8 +42421,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42883,8 +42922,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43897,8 +43936,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44335,8 +44374,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44927,8 +44966,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45894,8 +45933,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -46064,8 +46103,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46493,8 +46532,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46882,8 +46921,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -47010,8 +47049,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -47186,8 +47225,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47319,8 +47358,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47557,8 +47596,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47866,8 +47905,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -48159,8 +48198,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48425,8 +48464,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48571,8 +48610,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48787,8 +48826,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48898,8 +48937,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -87202,8 +87241,8 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -89883,8 +89922,8 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -90015,10 +90054,10 @@ function routingCompareFix1SelfTest(){
   const prevOrs = _routingCompareSession.ors;
   const prevChosen = _routingCompareSession.chosen;
   try {
-    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
-    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5"
+    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
+    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6"
       && typeof routingAlternativesAllowed === "function");
     const cta = document.getElementById("routingCompareBtn");
     add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
@@ -90308,8 +90347,8 @@ function routingCompareFix3SelfTest(){
   const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
   const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
   try {
-    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     const ptsEl = document.getElementById("routingPointsList");
     const zone = document.getElementById("routingRouteOptionsZone");
     const cmp = document.getElementById("routingCompareSection");
@@ -90483,8 +90522,8 @@ function routingCompareFix4SelfTest(){
   const savedGh = _routingCompareSession.gh;
   const savedOrs = _routingCompareSession.ors;
   try {
-    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -90583,8 +90622,8 @@ function routingRingWarnFix1SelfTest(){
   const savedWarn = (typeof r.ringSemanticWarn === "boolean") ? r.ringSemanticWarn : null;
   const savedWarnKey = r.roundTripWarnKey || "";
   try {
-    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     try { routingSetRouteMode("round_trip"); } catch(_){}
     const oab = [];
     for (let i = 0; i < 10; i++) oab.push({ lat: 44.1, lon: 9.82 + i * 0.002 });
@@ -90637,6 +90676,131 @@ function routingRingWarnFix1SelfTest(){
   }
   return checks;
 }
+
+function routingCompareFix6SelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  try {
+    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
+    const params = document.getElementById("routingParamsRow");
+    const modeGroup = document.getElementById("routingModeGroup");
+    const modeRow = document.getElementById("routingModeRow");
+    const chipsHost = modeGroup ? modeGroup.querySelector(".routing-mode-chips") : null;
+    const chips = modeGroup ? modeGroup.querySelectorAll("[data-routing-mode]") : [];
+    add("RPCF6_three_chips", chips.length === 3, "n=" + chips.length);
+    add("RPCF6_no_dup", document.querySelectorAll("#routingPlannerPanel [data-routing-mode]").length === 3
+      && !!(modeRow && modeRow.querySelectorAll("[data-routing-mode]").length === 0), "");
+    const labels = Array.prototype.map.call(chips, function(b){ return String(b.textContent || "").replace(/\s+/g, " ").trim(); });
+    add("RPCF6_labels_complete", labels.indexOf("Solo andata") >= 0 && labels.indexOf("Andata e ritorno") >= 0 && labels.indexOf("Anello") >= 0, labels.join("|"));
+    add("RPCF6_no_ellipsis_css", (function(){
+      if (!chips.length) return false;
+      return Array.prototype.every.call(chips, function(b){
+        const cs = getComputedStyle(b);
+        return cs.textOverflow === "clip" || cs.textOverflow === "unset" || cs.textOverflow === "" || parseFloat(cs.fontSize) >= 11;
+      });
+    })(), "");
+    const csG = modeGroup ? getComputedStyle(modeGroup) : null;
+    add("RPCF6_group_min_width", !!(csG && (csG.minWidth === "0px" || parseFloat(csG.minWidth) === 0)), csG ? csG.minWidth : "missing");
+    const csC = chipsHost ? getComputedStyle(chipsHost) : null;
+    add("RPCF6_chips_flex_wrap", !!(csC && csC.flexWrap === "wrap"), csC ? (csC.display + "|" + csC.flexWrap) : "missing");
+    add("RPCF6_group_can_shrink", !!(csG && csG.flexShrink !== "0"), csG ? csG.flex : "missing");
+    add("RPCF6_desktop_select_not_full", (function(){
+      const prof = document.getElementById("routingProfileSelect");
+      if (!prof || window.innerWidth < 900) return true;
+      const cs = getComputedStyle(prof);
+      return cs.flexGrow === "0" && String(cs.width) !== "100%";
+    })(), "");
+    add("RPCF6_order_regression", (function(){
+      const prof = document.getElementById("routingProfileSelect");
+      const speed = document.getElementById("routingSpeedSelect");
+      const calc = document.getElementById("routingCalculateBtn");
+      if (!params || !prof || !modeGroup || !speed || !calc) return false;
+      const profRow = prof.closest(".routing-profile-row");
+      const speedRow = document.getElementById("routingSpeedRow");
+      const seq = [profRow, modeGroup, speedRow, calc];
+      for (let i = 0; i < seq.length - 1; i++){
+        if (!seq[i] || !seq[i+1]) return false;
+        if (!(seq[i].compareDocumentPosition(seq[i+1]) & Node.DOCUMENT_POSITION_FOLLOWING)) return false;
+      }
+      return true;
+    })(), "");
+    add("RPCF6_lifecycle_fns", typeof routingMarkPlannerCommit === "function" && typeof routingMaybeMinimizeTrackForPlanner === "function");
+    add("RPCF6_alt_guard", typeof routingAlternativesAllowed === "function" && routingAlternativesAllowed(2) === true && routingAlternativesAllowed(3) === false);
+    let mediaOk = false;
+    try {
+      const sheets = document.styleSheets;
+      for (let si = 0; si < sheets.length && !mediaOk; si++){
+        let rules;
+        try { rules = sheets[si].cssRules; } catch(_){ continue; }
+        if (!rules) continue;
+        for (let ri = 0; ri < rules.length; ri++){
+          const rule = rules[ri];
+          if (!rule || rule.type !== CSSRule.MEDIA_RULE) continue;
+          const mt = String(rule.conditionText || (rule.media && rule.media.mediaText) || "");
+          if (!/max-width:\s*480px/.test(mt)) continue;
+          const inner = String(rule.cssText || "");
+          if (inner.indexOf("routingModeGroup") >= 0 && inner.indexOf("flex-wrap") >= 0) mediaOk = true;
+        }
+      }
+    } catch(_){}
+    add("RPCF6_media_480_wrap", mediaOk, "");
+    const probe = document.createElement("div");
+    probe.setAttribute("data-fix6-probe", "1");
+    probe.style.cssText = "position:absolute;left:-9999px;top:0;width:296px;box-sizing:border-box;overflow:visible;";
+    if (modeGroup){
+      const clone = modeGroup.cloneNode(true);
+      clone.removeAttribute("id");
+      probe.appendChild(clone);
+      document.body.appendChild(probe);
+      const anello = Array.prototype.find.call(clone.querySelectorAll("[data-routing-mode]"), function(b){
+        return /Anello/.test(String(b.textContent || ""));
+      });
+      const pr = probe.getBoundingClientRect();
+      const ar = anello ? anello.getBoundingClientRect() : null;
+      add("RPCF6_probe_anello_visible", !!(anello && anello.offsetWidth > 8 && ar && ar.right <= pr.right + 2 && ar.left >= pr.left - 2), anello ? ("w=" + anello.offsetWidth + " right=" + (ar && Math.round(ar.right)) + " pr=" + Math.round(pr.right)) : "missing");
+      add("RPCF6_probe_all_visible", Array.prototype.every.call(clone.querySelectorAll("[data-routing-mode]"), function(b){ return b.offsetWidth > 8 && b.offsetHeight > 8; }), "");
+      add("RPCF6_probe_no_overflow", clone.scrollWidth <= probe.clientWidth + 8, "sw=" + clone.scrollWidth + " cw=" + probe.clientWidth);
+      probe.remove();
+    } else {
+      add("RPCF6_probe_anello_visible", false, "no-group");
+      add("RPCF6_probe_all_visible", false, "no-group");
+      add("RPCF6_probe_no_overflow", false, "no-group");
+    }
+    const bodyEl = document.getElementById("routingPlannerPanelBody");
+    const dlg = document.getElementById("routingPlannerPanel");
+    if (bodyEl && dlg && modeGroup){
+      const prevW = dlg.style.width;
+      const prevMax = dlg.style.maxWidth;
+      const opened = !!(dlg.open);
+      try {
+        if (!opened && typeof openRoutingPlannerPanel === "function") openRoutingPlannerPanel("graphhopper");
+        dlg.style.width = "320px";
+        dlg.style.maxWidth = "320px";
+        void dlg.offsetWidth;
+        add("RPCF6_narrow_planner_no_overflow", bodyEl.scrollWidth <= bodyEl.clientWidth + 8, "sw=" + bodyEl.scrollWidth + " cw=" + bodyEl.clientWidth);
+        const liveAnello = Array.prototype.find.call(modeGroup.querySelectorAll("[data-routing-mode]"), function(b){
+          return /Anello/.test(String(b.textContent || ""));
+        });
+        add("RPCF6_narrow_anello_visible", !!(liveAnello && liveAnello.offsetWidth > 8), liveAnello ? ("w=" + liveAnello.offsetWidth) : "missing");
+      } finally {
+        dlg.style.width = prevW;
+        dlg.style.maxWidth = prevMax;
+        if (!opened){
+          try { closeRoutingPlannerPanel(); } catch(_){}
+        }
+      }
+    } else {
+      add("RPCF6_narrow_planner_no_overflow", false, "missing-panel");
+      add("RPCF6_narrow_anello_visible", false, "missing-panel");
+    }
+  } catch(e){
+    add("RPCF6_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
 function routingCompareFix5SelfTest(){
   const checks = [];
   const add = function(name, ok, detail){
@@ -90655,8 +90819,8 @@ function routingCompareFix5SelfTest(){
   const savedProv = r.previewStyleProvider;
   const savedOverlay = r.activeOverlayKey;
   try {
-    add("RPCF5_build_227", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 228
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -90830,7 +90994,7 @@ function routingCompareFix5SelfTest(){
     const prevAll = dflightSelfTestAll;
     dflightSelfTestAll = function(){
       const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
-      const extra = routingCompareFix3SelfTest().concat(routingCompareFix4SelfTest()).concat(routingRingWarnFix1SelfTest()).concat(routingCompareFix5SelfTest());
+      const extra = routingCompareFix3SelfTest().concat(routingCompareFix4SelfTest()).concat(routingRingWarnFix1SelfTest()).concat(routingCompareFix5SelfTest()).concat(routingCompareFix6SelfTest());
       const checks = (prev.checks || []).concat(extra);
       const pass = checks.every(function(c){ return c.ok; });
       return Object.freeze({
@@ -90844,7 +91008,8 @@ function routingCompareFix5SelfTest(){
           selfTest: dflightSelfTestAll,
           selfTestRoutingCompareFix3: routingCompareFix3SelfTest,
           selfTestRingWarnFix1: routingRingWarnFix1SelfTest,
-          selfTestRoutingCompareFix5: routingCompareFix5SelfTest
+          selfTestRoutingCompareFix5: routingCompareFix5SelfTest,
+          selfTestRoutingCompareFix6: routingCompareFix6SelfTest
         });
         Object.freeze(api);
         window.GOIDflight = api;
