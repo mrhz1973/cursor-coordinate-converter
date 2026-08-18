@@ -1,48 +1,57 @@
 # LAST_CURSOR_REPORT template
 
-> **Fase F1 — spec preparatoria.** Copiare/istanziare come `LAST_CURSOR_REPORT.md` solo da Fase F2 (collaudo). Non fonte viva primaria.
+> Copiare/istanziare come `LAST_CURSOR_REPORT.md` a ogni autosync Cursor (contratto A/B/C). **Non** fonte viva primaria — prevale [`docs/FRONTIER.md`](../FRONTIER.md).
 >
-> **Home canonica dettagliata:** `.cursor/rules/30-output-workflow.mdc` (sezione LAST_CURSOR_REPORT Fase F3).
+> **Home canonica:** OM §4 (LAST_CURSOR_REPORT / `agg`) · [`.cursor/rules/30-output-workflow.mdc`](../../.cursor/rules/30-output-workflow.mdc).
 
-## LATEST
+## A. Header sintetico
 
-* real_task_commit: `<SHA commit task principale — anchor stabile>`
-* real_task_subject:
-* report_generated_at:
-* branch:
-* remote_head_after_task_push: `<SHA remoto verificato dopo push del task, prima del commit report>`
-* previous_report_container: `<SHA container autosync/report precedente, solo se già pubblicato e verificabile; altrimenti omettere>`
-* current_report_container: `PENDING_SELF_REFERENCE`
-* final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status:
-* pass_tecnico_remoto: `<non attestare PASS del container corrente nel file — verifica esterna post-push>`
-* result_cursor:
-* pass_operatore:
-* result_runtime:
-* qa_attestation_source:
-* notes:
+| Campo | Valore |
+| --- | --- |
+| **BLOCK** | |
+| **GATE** | |
+| **NEXT** | |
+| **Runtime LIVE** | |
+| **Candidate FULL SHA** | |
+| **Build / ID / blob** | |
+| **Deployed state** | |
+| **Result Cursor** | |
+| **Working tree** | |
 
-<!-- pass_* = esito sintetico: PASS / FAIL / non-attestato / EXTERNAL_ONLY. result_* = descrizione o evidenza sintetica. -->
+### Identità SHA (non autoreferenziali)
 
-### Nota operativa — container e self-reference
+| Nome | Valore |
+| --- | --- |
+| **RUNTIME_CANDIDATE_SHA** | `<SHA monolite/candidate, se applicabile>` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `<origin/main al momento della stesura, PRIMA del commit report>` |
+| **docs/report HEAD** | `PENDING_SELF_REFERENCE` |
+| **real_task_commit** | `<SHA commit task principale — anchor stabile>` |
+| **previous_report_container** | `<SHA container precedente già pubblicato, o omettere>` |
+| **current_report_container** | `PENDING_SELF_REFERENCE` |
+| **final_remote_head_after_report_push** | `EXTERNAL_ONLY` |
 
-- **`real_task_commit`** è l’anchor stabile: **non** sostituirlo con autosync, HEAD finale o blob SHA del report.
-- **`current_report_container`** resta **`PENDING_SELF_REFERENCE`** nel commit che contiene questo file — **non** sostituirlo nel commit corrente.
-- **Non** amendare il commit autosync/report per inserire il proprio SHA.
-- **Non** creare commit finalize-hash né terzo commit dedicato al backfill del container corrente.
-- Il **HEAD finale** post-push del container corrente va attestato nel **report Cursor esterno** e nel **seed handoff** (Regola F) — non nel file come fatto già verificato.
-- Un container precedente può essere backfillato in **HISTORY** soltanto da un report **successivo**, quando è esterno e verificabile.
+Evidence puntata (se il gate la richiede): `<path inbox>`
 
-## OUTPUT VERBATIM
+## B. RIEPILOGO COMPLETO
+
+Il testo completo mostrato all’operatore a fine pass (numerato), non una sintesi. Includere: autosync; git status; diff stat; file modificati; regioni; cosa fatto; funzioni; i18n; non toccato; lint/selftest/ABQA se applicabile; commit runtime/docs; evidence; limiti/backlog; `STATO FRESCO DA CURSOR`.
 
 ```text
-# Solo output effettivamente disponibile e verificabile PRIMA del commit container corrente.
-# Può includere: commit task, remote HEAD post-task-push, pre-flight follow-up, container precedenti esterni.
-# NON includere: SHA del commit report corrente non ancora creato; futuro HEAD post-push del report.
+STATO FRESCO DA CURSOR
+origin/main HEAD:
+working tree:
+ultimo blocco PASS:
+prossimo candidato:
+note operative:
+```
+
+## C. OUTPUT GIT (pre-container)
+
+```text
+# Solo output verificabile PRIMA del commit container corrente.
+# NON includere lo SHA del commit report corrente (non ancora creato).
 
 git log --oneline -5
-...
-git status --short
 ...
 git rev-parse HEAD
 ...
@@ -50,26 +59,30 @@ git rev-parse origin/main
 ...
 git branch --show-current
 ...
-git ls-remote origin main
+git ls-remote origin refs/heads/main
 ...
 ```
 
-PASS remoto del container corrente: **EXTERNAL_ONLY** — verificare post-push con `git ls-remote origin main` e seed Regola F.
+PASS remoto del container corrente: **EXTERNAL_ONLY** — `git ls-remote origin main` e seed Regola F.
+
+### Nota operativa — container e self-reference
+
+- **`real_task_commit`** è l’anchor stabile: **non** sostituirlo con autosync, HEAD finale o blob SHA del report.
+- **`current_report_container`** resta **`PENDING_SELF_REFERENCE`** nel commit che contiene questo file.
+- **Non** amendare il commit autosync/report per inserire il proprio SHA.
+- **Non** creare commit finalize-hash né terzo commit dedicato al backfill del container corrente.
+- Il **HEAD finale** post-push del container corrente va attestato nel **report Cursor in chat** e nel seed handoff (Regola F) — non nel file come fatto già verificato.
+- Un container precedente può essere backfillato in **HISTORY** soltanto da un report **successivo**.
 
 ## HISTORY
 
-<!--
-Le entry precedenti confluiscono qui.
-Quando una nuova entry LATEST sostituisce la precedente, i container con PENDING_SELF_REFERENCE risolti possono essere backfillati qui — solo se già pubblicati e verificabili dall'esterno.
-Non creare commit dedicati solo per finalize-hash.
-Non modificare retroattivamente commit container precedenti.
--->
+<!-- Entry precedenti. Backfill PENDING_SELF_REFERENCE solo se già pubblicati e verificabili. -->
 
 ## LIMITI
 
-* Non sostituisce OM §7 / roadmap / latest / inbox.
+* Non sostituisce FRONTIER / WU hot-header / roadmap.
 * Non certifica PASS operatore senza attestazione esplicita.
 * Non usa RAW GitHub come autorità finale.
 * Non richiede commit finalize-hash.
-* Non prova il proprio HEAD finale — verifica esterna obbligatoria.
-* In Fase F1 è solo template/spec, non report vivo.
+* Non prova il proprio HEAD finale.
+* Non è seconda LIVE STATE.

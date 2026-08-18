@@ -24,7 +24,24 @@ Default corrente: i prompt operativi GPT → Cursor sono **TASK DELTA** (`METHOD
 
 A fine intervento, riepilogo numerato (`1.`, `2.`, …) con, quando applicabile: autosync orchestratore (eseguito sì/no, file memoria, hash commit, esito push, conferma monolite **escluso** o motivo, motivi di mancato autosync); `git status --short`; `git diff --stat`; file modificati; regioni toccate; cosa fatto/rimosso; funzioni; chiavi i18n; cosa non toccato; lint/check; se l'intervento non richiedeva commit; limiti/backlog.
 
-Il RIEPILOGO resta evidence utile in Cursor e su GitHub. Il workflow umano standard verso ChatGPT è: persistenza su GitHub → operatore scrive **`agg`** (non paste del riepilogo 20–40 punti), salvo FAIL / evidence mancante / contraddizione / debug / richiesta esplicita.
+Il testo completo mostrato all’operatore a fine pass va persistito anche in [`docs/runtime/LAST_CURSOR_REPORT.md`](../../docs/runtime/LAST_CURSOR_REPORT.md) (salvo dati temporanei inutili). **Mai** chiedere all’operatore di copiare/incollare quel riepilogo in ChatGPT: l’operatore scrive **`agg`**. FAIL di prodotto non giustifica il paste se il report è su GitHub.
+
+### LAST_CURSOR_REPORT — contratto (esecuzione)
+
+Dopo ogni pass concluso e pushato, **sovrascrivere** `docs/runtime/LAST_CURSOR_REPORT.md` (file esistente; non crearne un secondo). FRONTIER resta l’unica LIVE STATE; il report è EVIDENCE/HANDOFF e **non prevale** su FRONTIER.
+
+**A. Header sintetico:** BLOCK, GATE, NEXT, runtime LIVE, candidate FULL SHA / build / blob / deployed state, result Cursor, working tree.
+
+**B. RIEPILOGO COMPLETO** (non abbreviato): autosync; `git status`; diff stat; file modificati; regioni; cosa fatto; funzioni; i18n; non toccato; lint/selftest/ABQA se applicabile; commit runtime/docs; evidence; limiti/backlog; `STATO FRESCO DA CURSOR`.
+
+**C. OUTPUT GIT** (verificabile **prima** del commit container): `git log --oneline -5`; `git rev-parse HEAD`; `git rev-parse origin/main`; `git branch --show-current`; `git ls-remote origin refs/heads/main`.
+
+Distinguere sempre:
+- `RUNTIME_CANDIDATE_SHA` (monolite / candidate vivo, se applicabile)
+- `REMOTE_HEAD_AT_EVIDENCE_TIME` (HEAD remoto al momento della stesura, prima del commit report)
+- docs/report HEAD = `PENDING_SELF_REFERENCE` / `EXTERNAL_ONLY`
+
+Non tentare di far coincidere in modo autoreferenziale il contenuto del file con il commit che lo contiene. Disciplina F3 invariata: `real_task_commit` = commit task; `current_report_container` = `PENDING_SELF_REFERENCE`; fatti del proprio autosync = `EXTERNAL_ONLY`; nessun terzo commit.
 
 ### STATO FRESCO DA CURSOR
 
@@ -52,7 +69,7 @@ Se un piano importante viene prodotto senza scrivere file sotto `docs/orchestrat
 Metodo e motivazioni: OM §4. Sequenza operativa a fine intervento (salvo eccezione esplicita utente «non aggiornare orchestratore» / «solo locale, non pubblicare memoria», da citare nel RIEPILOGO):
 
 1. Aggiornare `docs/orchestrator/latest.md` (sintesi breve; mai log esteso).
-2. Creare/aggiornare **un** file `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_<slug>.md` per l'intervento (non un file per micro-fix). Per task reale GIS-only: aggiornare anche `docs/runtime/LAST_CURSOR_REPORT.md` (disciplina F3: `real_task_commit` = commit task; container corrente `PENDING_SELF_REFERENCE`; fatti del proprio autosync = `EXTERNAL_ONLY`, omessi o sentinella terminale; **nessun terzo commit**; published = immutable).
+2. Creare/aggiornare **un** file `docs/orchestrator/inbox/YYYY-MM-DD_HHMM_<slug>.md` per l'intervento (non un file per micro-fix). Per task reale GIS-only **e** per pass docs/method con autosync: sovrascrivere `docs/runtime/LAST_CURSOR_REPORT.md` col contratto A/B/C sopra (disciplina F3: `real_task_commit` = commit task; container corrente `PENDING_SELF_REFERENCE`; fatti del proprio autosync = `EXTERNAL_ONLY`, omessi o sentinella terminale; **nessun terzo commit**; published = immutable).
 3. Commit/push selettivi di sola memoria orchestratore (`docs/orchestrator/**`) + `.cursor/rules/**` pertinenti se toccate. **Mai** `coordinate_converter Claude.html` nell'autosync salvo richiesta esplicita; se modificato ma fuori commit, descriverlo nell'inbox.
 4. `docs/checkpoint.md` e `docs/session-geolocalizzazione-e-mappa.md`: legacy, non toccare nell'autosync. `docs/roadmap.md` fuori dall'autosync salvo richiesta esplicita.
 

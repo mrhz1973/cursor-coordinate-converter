@@ -32,10 +32,11 @@ Vietate in CORE BOOT le discovery query: `fetch`, `file`, `code`, `search`, `bra
 
 ### Principi
 - **[`docs/FRONTIER.md`](docs/FRONTIER.md)** = unica fonte canonica **LIVE STATE**. Non persistire HEAD remota in FRONTIER.
-- **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite.
+- **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite. **CORE BOOT resta a 4 passi** (niente preload report).
 - **CONTEXT GUARD:** lean; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `CONNECTOR-DISCOVERY-HARD-GUARD` + `TOOL-PAYLOAD-GUARD`).
 - **AUTO-VIA:** passo tecnicamente determinato → procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope**: un NEXT di altra chat/task/workstream si riconosce ma **non si prende in carico**.
-- **`agg`:** Cursor ha concluso → GPT refresh minimo HEAD + FRONTIER + WU hot-header (se AI-BOOT già acquisito: **non** rifare CORE BOOT completo); **non** chiedere RIEPILOGO completo se GitHub basta. **`agg` ≠ `aggio`**.
+- **`agg`:** Cursor ha concluso → refresh minimo HEAD + FRONTIER + WU hot-header; poi [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md) **una sola volta**. Se BLOCK/CANDIDATE del report coincidono con FRONTIER → handoff completo dell’ultimo pass; se il gate serve RAW/review/deploy, leggere **solo** l’evidence puntata dal report; poi AUTO-VIA. **Mai** chiedere all’operatore di copiare/incollare il riepilogo Cursor se GitHub contiene il report. Se report e FRONTIER confliggono → **FRONTIER prevale**; dichiarare report stale/conflict; non inventare stato. **`agg` ≠ `aggio`**.
+- **Nuova chat:** dopo CORE BOOT, se il gate/NEXT dipende da un pass Cursor già completato, `LAST_CURSOR_REPORT` si può leggere **una volta**, on-demand, prima di agire. Niente preload sistematico, niente aumento stabile del context.
 - **§7.2 / §7.3** (OM): on-demand recent/history, **non** bootstrap.
 
 ### Precedenza
@@ -48,7 +49,7 @@ GitHub / documenti vivi pinnati allo SHA remoto **>** seed handoff chat. In conf
 | Roadmap / WU body | strategia/planning/backlog/out-of-scope — **mai** CORE BOOT · WU body: spec/acceptance |
 | [`docs/QA-CHECKLIST.md`](docs/QA-CHECKLIST.md) | solo al gate QA |
 | [`docs/HANDOFF.md`](docs/HANDOFF.md) | seed/protocollo; **non** bootstrap se seed chat già fornito |
-| [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md), orchestrator inbox/latest | evidence/history |
+| [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md) | **una volta**, on-demand: dopo CORE BOOT / in `agg`, se il gate/NEXT dipende dall’ultimo pass Cursor. Handoff completo **evidence** — **non** LIVE STATE (prevale FRONTIER). Inbox puntata dal report: solo se il gate lo richiede |
 | Monolite | solo task runtime/review; symbol/range/diff/FULL SHA — **mai** preload |
 | `plain` / `thin` discovery | solo se search/compare necessari al gate (expected count = 1) |
 
