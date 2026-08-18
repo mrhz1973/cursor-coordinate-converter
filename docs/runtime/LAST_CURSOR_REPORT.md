@@ -6,15 +6,15 @@
 
 * real_task_commit: `f1d9fc0540f8073d5e79f59164237a951e80215c`
 * real_task_subject: FIX4 params layout, multi-trace colors, ring warn, build 225
-* report_generated_at: `2026-08-18T18:53:00+02:00`
+* report_generated_at: `2026-08-18T19:07:00+02:00`
 * branch: `main`
-* remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `ffc6350ada08a54525c7f19ebcf87bebb247325b`
+* remote_head_after_task_push: `EXTERNAL_ONLY` — REVIEW-RAW-RECOVERY-FIX4 attestato `9b445f8` (REMOTE_HEAD_AT_EVIDENCE_TIME, pre-commit docs)
+* previous_report_container: `9b445f8bf7419f5b17679d137f18f0dd4ca66c1b`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * working_tree_status: helper `_*.py` / `tmp/` esclusi
-* result_cursor: candidate **225** persistito · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · **NON** deploy · **NON** ABQA · **NON** QA operatore · **NON** finito
-* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · candidate **225** / `f1d9fc0` · blob `8f9a6abe…`
-* notes: selftest 793/793 PASS · VPS resta FIX3 224 deployato
+* result_cursor: REVIEW-RAW-RECOVERY-FIX4 PASS (evidence-only) · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · **NON** deploy · **NON** ABQA · **NON** QA operatore · **NON** finito
+* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · candidate **225** / `f1d9fc0` · blob `8f9a6abe…` (immutato)
+* notes: selftest 793/793 **non rieseguito** (candidate immutato) · VPS resta FIX3 224 deployato
 
 ## OUTPUT VERBATIM (pre-autosync)
 
