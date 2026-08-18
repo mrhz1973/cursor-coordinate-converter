@@ -2,12 +2,12 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** **AUTOMATED BROWSER QA — FAIL**
 **ACTIVE BLOCK:** OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**CURRENT GATE:** AUTOMATED BROWSER QA — FAIL
 **RUNTIME LIVE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
-**RUNTIME CANDIDATE:** `105bedf3c0fa4f15f1be0edf4929d19e8842235b` · build **222** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1` · blob `99233802af29998ee3c0c659d72ffa9db6bbe100`
-**NEXT:** review FIX1 candidate 222
+**RUNTIME CANDIDATE:** `105bedf3c0fa4f15f1be0edf4929d19e8842235b` · build **222** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1` · blob `99233802af29998ee3c0c659d72ffa9db6bbe100` · DEPLOYED VPS · ABQA FAIL
+**NEXT:** FIX2 constrained-loop live HTTP (no alternatives on >2 points)
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) + OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
@@ -27,7 +27,7 @@
 **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-18) — catena `12a7477` build 218 → tip **`5477a5e`** FIX1 build 219; blob `a823ae9b…`; byte LF **10537443**; SHA-256 LF **`eb7a8aa0…`**; aree da evitare `custom_model` + draw lifecycle; FIX1 preserve `algorithm`/alternative/round_trip con avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md`](../orchestrator/inbox/2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md).
 **OUTDOOR-ROUTING-ORS-PROVIDER-A:** **CLOSED / PASS end-to-end** (2026-08-18) — catena `2687873` build 220 HTML → FIX1 infra **`cfee0e4`**; blob `23fe93aa…`; byte LF **10562488**; SHA-256 HTTP **`67d86081…`**; provider ORS opt-in (mai Auto); gateway HTTPS Tailscale; secret server-side; hiking/MTB/alternative/OOB/anello/avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md).
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A:** **QA operatore FAIL SCOPED** (2026-08-18) — candidate **221** `1a5e971` deploy+ABQA PASS; FAIL UX + Anello vincolato → **FIX1**.
-**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1:** **REVIEW GPT-SOSTITUTIVA — PENDING** (2026-08-18) — RUNTIME_CANDIDATE_SHA **`105bedf3c0fa4f15f1be0edf4929d19e8842235b`** · build **222** · blob `99233802…` · selftest 716/716 · LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1415_outdoor-routing-f-provider-compare-a-fix1.md`](../orchestrator/inbox/2026-08-18_1415_outdoor-routing-f-provider-compare-a-fix1.md).
+**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1:** **AUTOMATED BROWSER QA — FAIL** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`105bedf` / **222** / blob `99233802…`) · ABQA desktop 18 FAIL: anello con VIA live HTTP 400 (`alternative_route` / `alternative_routes` su >2 punti). LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1510_outdoor-routing-f-provider-compare-a-fix1-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_1510_outdoor-routing-f-provider-compare-a-fix1-deploy-abqa.md).
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
