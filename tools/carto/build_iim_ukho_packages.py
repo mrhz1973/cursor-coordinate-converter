@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Build offline IIM + UKHO CARTO packages and compact embed payloads.
 
-IIM geometry: official Interactive Sailing Map rectMaps (WGS84 rectangles).
-UKHO: Chart Availability List metadata only — no footprints.
+IIM: Interactive Sailing Map snapshot geometry (not a complete catalog).
+UKHO: Chart Availability List metadata tooling only — NOT OPENED FOR RUNTIME; 0 footprints.
 """
 from __future__ import annotations
 
@@ -130,15 +130,21 @@ def build_iim() -> dict:
     cat_meta = write_json(OUT_IIM / "catalog.json", {
         "schema": "carto-provider-catalog-v1",
         "provider_id": "iim",
+        "catalog_kind": "interactive_sailing_map_snapshot",
+        "not_complete_catalog": True,
         "records": records,
     })
     gj_meta = write_json(OUT_IIM / "footprints.geojson", gj)
     compact_obj = {
         "schema": "carto-igm-compact-v1",
-        "schema_version": "1.0.0-fed-iim",
+        "schema_version": "1.0.0-iim-snapshot",
         "provider_id": "iim",
+        "catalog_kind": "interactive_sailing_map_snapshot",
         "feature_count": len(compact),
-        "attribution": "© Istituto Idrografico della Marina — indice derivato dalla Interactive Sailing Map pubblica (rettangoli WGS84). Non affiliato.",
+        "attribution": (
+            "© Istituto Idrografico della Marina — snapshot Interactive Sailing Map "
+            "(180 carte osservate, NON catalogo completo). Rettangoli WGS84. Non affiliato."
+        ),
         "rights_status": "derived-public-interactive-map-index",
         "records": compact,
     }
@@ -160,10 +166,6 @@ def build_iim() -> dict:
          "point_inside": [15.0, 37.0], "point_outside": [0.0, 50.0], "class": "overview", "international_id": "302"},
         {"chart_id": "360", "title": "Mar Mediterraneo e Mar Nero", "scale": 4200000, "provider": "iim",
          "point_inside": [12.0, 42.0], "point_outside": [-20.0, 55.0], "class": "overview", "international_id": "300"},
-        {"chart_id": "2", "title_contains": "Imperia", "scale": 100000, "provider": "iim", "class": "coastal",
-         "optional": True},
-        {"chart_id": "326", "title_contains": "Bonifacio", "scale": 30000, "provider": "iim", "class": "coastal",
-         "optional": True},
     ]
     by_id = {r["chart_id"]: r for r in records}
     fx_report = []
@@ -182,7 +184,32 @@ def build_iim() -> dict:
             lon, lat = fx["point_outside"]
             ok = ok and not point_in_bbox(lon, lat, rec["bbox"])
         fx_report.append({**fx, "ok": ok, "bbox": rec.get("bbox"), "title_actual": rec.get("title")})
-    write_json(OUT_IIM / "fixtures.json", {"provider_id": "iim", "fixtures": fx_report})
+    findings = [
+        {
+            "chart_id": "2",
+            "title": "Da Imperia a Portofino",
+            "status": "missing_from_snapshot_present_in_shop",
+            "ok": False,
+            "counts_as_pass": False,
+            "note": "finding only; not a spatial fixture",
+        },
+        {
+            "chart_id": "326",
+            "title": "Bocche di Bonifacio",
+            "international_id": "3350",
+            "status": "missing_from_snapshot_present_in_shop",
+            "ok": False,
+            "counts_as_pass": False,
+            "note": "finding only; not a spatial fixture",
+        },
+    ]
+    write_json(OUT_IIM / "fixtures.json", {
+        "provider_id": "iim",
+        "catalog_kind": "interactive_sailing_map_snapshot",
+        "not_complete_catalog": True,
+        "fixtures": fx_report,
+        "completeness_findings": findings,
+    })
     val_report = {
         **val,
         "record_count": len(records),
@@ -190,7 +217,7 @@ def build_iim() -> dict:
         "metadata_only_count": parsed["metadata_only_count"],
         "quarantine_count": parsed["quarantine_count"],
         "panel_raw_values": parsed["panel_raw_values"],
-        "fixture_pass": all(x.get("ok") for x in fx_report if not x.get("optional")),
+        "fixture_pass": all(x.get("ok") for x in fx_report),
         "source_html_sha256": parsed["source_checksum"],
         "source_html_bytes": len(raw),
     }
@@ -217,6 +244,13 @@ def build_iim() -> dict:
         "output_files": [cat_meta, gj_meta, compact_meta],
         "rights_status": "derived-public-interactive-map-index",
         "geometry": "WGS84 GeoJSON lon/lat axis-aligned rectangles from rectMaps [S,N,W,E]",
+        "catalog_kind": "interactive_sailing_map_snapshot",
+        "not_complete_catalog": True,
+        "completeness_findings": [
+            {"chart_id": "2", "title": "Da Imperia a Portofino", "status": "missing_from_snapshot_present_in_shop"},
+            {"chart_id": "326", "title": "Bocche di Bonifacio INT3350", "status": "missing_from_snapshot_present_in_shop"},
+        ],
+        "edition_policy": "keep_interactive_map_values; shop edition mismatches are findings, not auto-corrected",
         "embedded_payload": compact_meta,
     }
     write_json(OUT_IIM / "manifest.json", manifest)
@@ -261,34 +295,49 @@ def build_ukho() -> dict:
         "records": compact,
     }
     compact_meta = write_json(OUT_UKHO / "compact-v1.json", compact_obj, pretty=False)
-    fixtures = [
-        {"chart_id": "2", "title": "United Kingdom and Ireland", "scale": 1500000, "provider": "ukho"},
-        {"chart_id": "1", "provider": "ukho", "optional": True},
-        {"chart_id": "100", "provider": "ukho", "optional": True},
-        {"chart_id": "1446", "provider": "ukho", "optional": True},
-        {"chart_id": "1780", "provider": "ukho", "optional": True},
-        {"chart_id": "2115", "provider": "ukho", "optional": True},
-        {"chart_id": "2649", "provider": "ukho", "optional": True},
-        {"chart_id": "3105", "provider": "ukho", "optional": True},
-        {"chart_id": "4000", "provider": "ukho", "optional": True},
-        {"chart_id": "4404", "provider": "ukho", "optional": True},
-        {"chart_id": "4801", "provider": "ukho", "optional": True},
-        {"chart_id": "Q6110", "provider": "ukho", "optional": True},
+    meta_ids = [
+        ("2", "United Kingdom and Ireland", 1500000),
+        ("100", None, None),
+        ("1446", None, None),
+        ("2115", None, None),
+        ("2649", None, None),
+        ("4000", None, None),
+        ("4404", None, None),
+        ("4801", None, None),
+        ("Q6110", None, None),
     ]
     by_id = {r["chart_id"]: r for r in records}
-    fx_report = []
-    for fx in fixtures:
-        rec = by_id.get(str(fx["chart_id"]).upper()) or by_id.get(str(fx["chart_id"]))
+    meta_fx = []
+    for cid, title, scale in meta_ids:
+        rec = by_id.get(cid)
         if not rec:
-            fx_report.append({**fx, "ok": bool(fx.get("optional")), "reason": "missing", "spatial": "n/a"})
-            continue
+            raise SystemExit("UKHO metadata fixture missing in catalog: " + cid)
         ok = rec.get("catalog_status") == "metadata_only" and not rec.get("footprints")
-        if fx.get("title"):
-            ok = ok and rec.get("title") == fx["title"]
-        if fx.get("scale"):
-            ok = ok and rec.get("scale_denominator") == fx["scale"]
-        fx_report.append({**fx, "ok": ok, "title_actual": rec.get("title"), "spatial": "n/a-metadata_only"})
-    write_json(OUT_UKHO / "fixtures.json", {"provider_id": "ukho", "fixtures": fx_report})
+        if title:
+            ok = ok and rec.get("title") == title
+        if scale:
+            ok = ok and rec.get("scale_denominator") == scale
+        meta_fx.append({
+            "kind": "metadata_parser",
+            "chart_id": cid,
+            "title_expected": title,
+            "scale_expected": scale,
+            "title_actual": rec.get("title"),
+            "scale_actual": rec.get("scale_denominator"),
+            "catalog_status": rec.get("catalog_status"),
+            "ok": ok,
+            "spatial": "NOT_AVAILABLE",
+        })
+    ukho_fx = {
+        "provider_id": "ukho",
+        "runtime_status": "NOT_OPENED_FOR_RUNTIME",
+        "footprint_status": "DISCOVERY_BLOCKED",
+        "blocker": "CAL has no bbox/polygon; ADC Paper Charts .7CB is proprietary SevenCs and is not parsed without a spec or official geometry artifact",
+        "footprint_count": 0,
+        "spatial_fixtures": "NOT_AVAILABLE",
+        "metadata_parser_fixtures": meta_fx,
+    }
+    write_json(OUT_UKHO / "fixtures.json", ukho_fx)
     val = {
         "ok": parsed["quarantine_count"] == 0 and len(records) > 1000,
         "record_count": len(records),
@@ -298,7 +347,9 @@ def build_ukho() -> dict:
         "headers": parsed["headers"],
         "duplicate_logical_keys": 0,
         "geometry": "none",
-        "fixture_pass": all(x.get("ok") for x in fx_report if not x.get("optional") or x.get("reason") != "missing"),
+        "spatial_fixtures": "NOT_AVAILABLE",
+        "runtime_status": "NOT_OPENED_FOR_RUNTIME",
+        "fixture_pass": all(x.get("ok") for x in meta_fx),
     }
     write_json(OUT_UKHO / "validation-report.json", val)
     manifest = {
@@ -319,14 +370,17 @@ def build_ukho() -> dict:
         "metadata_only_count": len(records),
         "output_files": [cat_meta, compact_meta],
         "rights_status": "derived-public-cal-metadata",
-        "embedded_payload": compact_meta,
+        "runtime_status": "NOT_OPENED_FOR_RUNTIME",
+        "footprint_status": "DISCOVERY_BLOCKED",
+        "spatial_fixtures": "NOT_AVAILABLE",
+        "tooling_payload": compact_meta,
     }
     write_json(OUT_UKHO / "manifest.json", manifest)
     mixed = {
         "point": [9.828, 44.107],
         "label": "La Spezia",
         "expect_providers": ["igm", "iim"],
-        "ukho_spatial": "not_applicable_metadata_only",
+        "ukho_spatial": "BLOCKED",
         "iim_chart_ids_expected": ["59", "60", "115", "3", "340", "360"],
     }
     write_json(ROOT / "data" / "carto" / "fixtures-mixed.json", mixed)
@@ -334,25 +388,38 @@ def build_ukho() -> dict:
             "validation": val, "compact": compact_obj, "manifest": manifest}
 
 
-NOTICE_IIM = """# NOTICE — indice IIM (carte nautiche)
+NOTICE_IIM = """# NOTICE — indice IIM (snapshot Interactive Sailing Map)
 
-I file in questa directory sono **metadati e impronte rettangolari derivate** dalla
-Interactive Sailing Map pubblica dell’Istituto Idrografico della Marina.
+I file in questa directory sono **metadati e impronte rettangolari** derivate da un
+**snapshot osservato** della Interactive Sailing Map pubblica dell’Istituto
+Idrografico della Marina. **Non** sono un catalogo IIM completo.
+
 Condizioni **separate** dalla licenza del codice.
 
 ## Fonte
 
 - POST `InteractiveSailingMap/myPathMaps.php` (flusso ufficiale della mappa pubblica)
-- Geometrie: `rectMaps` = rettangoli WGS84 `[south, north, west, east]` serviti dalla pagina
+- Query harvest: `drawRecs` world bbox, `selScala=tutte`
+- Geometrie: `rectMaps` = rettangoli WGS84 `[south, north, west, east]`
+- Conteggio snapshot: **180** carte / **180** footprint
 - Non è un quadro d’unione vettoriale ufficiale (SHP/GeoJSON IIM assente)
+
+## Completeness (finding, non correzione)
+
+Assenti dallo snapshot ma presenti nello shop Liguria (2026-08-18):
+
+- carta **2** — Da Imperia a Portofino
+- carta **326** — Bocche di Bonifacio (INT 3350)
+
+Le edizioni nello shop possono essere più fresche dei valori `mapInfoWin`.
+**Nessuna auto-correzione**: restano i valori della mappa interattiva.
 
 ## Diritti
 
 - Titolare delle carte: **Istituto Idrografico della Marina**
 - Questo pacchetto **non** include raster, PDF di carte, né contenuti editoriali
-- Indice derivato da lookup pubblico; redistribuzione nell’app richiesta dall’operatore per WU-0012
-- **Non affiliato** all’IIM; l’IIM non fornisce supporto per questo software
-- Autorizzazione formale analoga a IGM **non** è registrata: `rights_status = derived-public-interactive-map-index`
+- `rights_status = derived-public-interactive-map-index`
+- **Non affiliato** all’IIM
 
 ## Uso
 
@@ -360,17 +427,35 @@ Condizioni **separate** dalla licenza del codice.
 - Uso non commerciale del solo indice/impronte
 """
 
-NOTICE_UKHO = """# NOTICE — catalogo UKHO / ADMIRALTY (CAL)
+NOTICE_UKHO = """# NOTICE — catalogo UKHO / ADMIRALTY (CAL) — tooling only
 
 Metadati derivati dalla **Chart Availability List** pubblica (XLS settimanale).
-**Nessuna impronta**: il CAL non contiene bbox/polygon; ADC Paper Charts è binario SevenCs non parsato.
+
+## Runtime GIS
+
+**NOT OPENED FOR RUNTIME.** Questo pacchetto **non** è un provider cartografico spaziale.
+Non è embedded nel monolite. Non entra nella ricerca per punto/area.
+
+## Footprint
+
+**DISCOVERY BLOCKED.** `footprint_count = 0`.
+
+Blocker: il CAL non contiene bbox/polygon; ADC Paper Charts è binario SevenCs
+(`.7CB`, magic `SevenCs Hamburg`) **non parsato** senza specifica o artefatto
+geometrico ufficiale utilizzabile.
+
+**NON** inventare limiti di carta da scala o titolo.
+
+## Fixture
+
+- Parser metadati CAL: ammesse (chart id, titolo, scala, status)
+- Fixture spaziali: **NOT AVAILABLE / BLOCKED**
 
 ## Diritti
 
 - Titolare: UK Hydrographic Office / ADMIRALTY
-- Questo pacchetto non include carte, raster, ENC, né geometrie ADC
-- Licenza dell’indice derivato: **UNKNOWN** — snapshot richiesto dall’operatore per WU-0012
-- Non affiliato a UKHO/ADMIRALTY
+- Nessuna carta, raster, ENC, né geometria ADC
+- Licenza indice derivato: **UNKNOWN**
 - `catalog_status = metadata_only` su tutti i record
 """
 
@@ -393,7 +478,8 @@ def main() -> None:
         "ukho_records": ukho["validation"]["record_count"],
         "ukho_ok": ukho["validation"]["ok"],
         "iim_compact_bytes": iim["manifest"]["embedded_payload"]["bytes"],
-        "ukho_compact_bytes": ukho["manifest"]["embedded_payload"]["bytes"],
+        "ukho_compact_bytes": ukho["manifest"]["tooling_payload"]["bytes"],
+        "ukho_runtime": "NOT_OPENED_FOR_RUNTIME",
     }, indent=2))
 
 

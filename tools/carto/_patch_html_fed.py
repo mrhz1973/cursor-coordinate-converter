@@ -51,6 +51,10 @@ def split_igm(text: str) -> tuple[str, str, str]:
 
 
 def main() -> None:
+    raise SystemExit(
+        "SUPERSEDED: UKHO is NOT OPENED FOR RUNTIME. Use tools/carto/_patch_html_iim_split.py "
+        "(IIM snapshot only). Re-running this script would re-embed CAL as a spatial provider."
+    )
     raw = HTML.read_bytes()
     crlf = b"\r\n" in raw[:8000]
     text = raw.decode("utf-8").replace("\r\n", "\n")

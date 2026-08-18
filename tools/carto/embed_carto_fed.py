@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Embed IIM/UKHO compact payloads into the monolite after #cartoIgmEmbeddedData."""
+"""Embed IIM compact payload into the monolite after #cartoIgmEmbeddedData.
+
+UKHO is NOT OPENED FOR RUNTIME (DISCOVERY BLOCKED on footprints). Do not embed CAL.
+"""
 from __future__ import annotations
 
 import hashlib
@@ -8,7 +11,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 HTML = ROOT / "coordinate_converter Claude.html"
 IIM_COMPACT = ROOT / "data" / "carto" / "iim" / "compact-v1.json"
-UKHO_COMPACT = ROOT / "data" / "carto" / "ukho" / "compact-v1.json"
 START = "<!-- CARTO-FED-EMBED-START -->"
 END = "<!-- CARTO-FED-EMBED-END -->"
 
@@ -27,15 +29,11 @@ def tag_for(el_id: str, payload: str, provider: str, count: int) -> str:
 
 def main() -> None:
     iim = IIM_COMPACT.read_text(encoding="utf-8").strip()
-    ukho = UKHO_COMPACT.read_text(encoding="utf-8").strip()
     import json
     iim_n = json.loads(iim)["feature_count"]
-    ukho_n = json.loads(ukho)["feature_count"]
     block = (
         f"\n{START}\n"
         + tag_for("cartoIimEmbeddedData", iim, "iim", iim_n)
-        + "\n"
-        + tag_for("cartoUkhoEmbeddedData", ukho, "ukho", ukho_n)
         + f"\n{END}\n"
     )
     text = HTML.read_text(encoding="utf-8")
@@ -55,7 +53,7 @@ def main() -> None:
         insert_at = close + len("</script>")
         new = text[:insert_at] + block + text[insert_at:]
     HTML.write_text(new, encoding="utf-8", newline="\n")
-    print("embedded iim", iim_n, "ukho", ukho_n, "html_bytes", HTML.stat().st_size)
+    print("embedded iim", iim_n, "ukho_runtime", "NOT_OPENED", "html_bytes", HTML.stat().st_size)
 
 
 if __name__ == "__main__":
