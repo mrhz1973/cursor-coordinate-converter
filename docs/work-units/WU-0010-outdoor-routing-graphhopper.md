@@ -2,12 +2,12 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** **QA FINALE CHATGPT — PENDING**
 **ACTIVE BLOCK:** OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A
-**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
+**CURRENT GATE:** QA FINALE CHATGPT — PENDING
 **RUNTIME LIVE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
-**RUNTIME CANDIDATE:** `1a5e971459f13b12ed303f1e7105998db774b3bf` · build **221** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A` · blob `90c52d57f58ec49af91bf0364e2fe7c8aa5ece3b`
-**NEXT:** review candidate 221
+**RUNTIME CANDIDATE:** `1a5e971459f13b12ed303f1e7105998db774b3bf` · build **221** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A` · blob `90c52d57f58ec49af91bf0364e2fe7c8aa5ece3b` · **DEPLOYED**
+**NEXT:** QA FINALE CHATGPT candidate 221
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) + OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
@@ -26,7 +26,7 @@
 **ROUTING-ANELLO-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-03) — tip **`f718582`** build 115 / `ROUTING-ANELLO-A-FIX1`; catena `4135737` (114) → FIX1; blob `0ffb7b34…`; byte LF **3347642**; SHA-256 LF **`0513e768…`**; `round_trip` multi-seed + `ch.disable`; FIX1 re-gate/timeout/antimeridiano; DELICATO; review FIX1 PASS; deploy+QA PASS; Regola H.
 **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-18) — catena `12a7477` build 218 → tip **`5477a5e`** FIX1 build 219; blob `a823ae9b…`; byte LF **10537443**; SHA-256 LF **`eb7a8aa0…`**; aree da evitare `custom_model` + draw lifecycle; FIX1 preserve `algorithm`/alternative/round_trip con avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md`](../orchestrator/inbox/2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md).
 **OUTDOOR-ROUTING-ORS-PROVIDER-A:** **CLOSED / PASS end-to-end** (2026-08-18) — catena `2687873` build 220 HTML → FIX1 infra **`cfee0e4`**; blob `23fe93aa…`; byte LF **10562488**; SHA-256 HTTP **`67d86081…`**; provider ORS opt-in (mai Auto); gateway HTTPS Tailscale; secret server-side; hiking/MTB/alternative/OOB/anello/avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md).
-**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A:** **CANDIDATE / REVIEW GPT-SOSTITUTIVA — PENDING** (2026-08-18) — RUNTIME_CANDIDATE_SHA **`1a5e971459f13b12ed303f1e7105998db774b3bf`** · build **221** · blob `90c52d57…` · bytes LF **10605066** · SHA-256 LF **`72a8ed24…`**; confronto opt-in GH vs ORS; coppie `hiking`↔`foot-hiking` e `mtb_trail`↔`cycling-mountain`; `hiking_easy` / `mtb_touring` / `foot-walking` **non confrontabili**; LIVE resta **220**. Anchor+raw: [`2026-08-18_1320_outdoor-routing-f-provider-compare-a-review-anchor.md`](../orchestrator/inbox/2026-08-18_1320_outdoor-routing-f-provider-compare-a-review-anchor.md).
+**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A:** **DEPLOYED / QA FINALE CHATGPT — PENDING** (2026-08-18) — RUNTIME_CANDIDATE_SHA **`1a5e971459f13b12ed303f1e7105998db774b3bf`** · build **221** · blob `90c52d57…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS PASS · ABQA PASS · LIVE FRONTIER resta **220** fino a QA operatore. Evidence: [`2026-08-18_1335_outdoor-routing-f-provider-compare-a-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_1335_outdoor-routing-f-provider-compare-a-deploy-abqa.md).
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)

@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** — candidate `1a5e971` / **221** · **REVIEW GPT-SOSTITUTIVA — PENDING** · REVIEW-ANCHOR-AND-RAW-RECOVERY · LIVE resta **220** / `cfee0e4` · blob `90c52d57…` (2026-08-18)
+1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** — candidate `1a5e971` / **221** **DEPLOYED** · REVIEW PASS · ABQA PASS · GATE **QA FINALE CHATGPT — PENDING** · LIVE resta **220** / `cfee0e4` (2026-08-18)
 2. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — **CLOSED / PASS** · LIVE `cfee0e4` / **220** · blob `23fe93aa…` · QA operatore PASS (2026-08-18)
 3. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1)** — **CLOSED / PASS** · LIVE `5477a5e` / **219** · QA operatore PASS (2026-08-18)
 4. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217**
