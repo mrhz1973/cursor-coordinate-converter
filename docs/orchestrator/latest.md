@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **CARTO-IIM-UKHO-PROVIDERS-A** candidate **229** `a0e439e` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE **228** invariato · no deploy · evidence: [`inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md`](inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md)
+2026-08-19 — **CARTO-IIM-PROVIDER-A** candidate **230** `8d6e0b0` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE **228** invariato · UKHO **DISCOVERY BLOCKED / NOT OPENED** · no deploy · evidence: [`inbox/2026-08-19_0030_carto-iim-provider-a.md`](inbox/2026-08-19_0030_carto-iim-provider-a.md)
