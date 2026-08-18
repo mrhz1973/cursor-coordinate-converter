@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-ORS-PROVIDER-A** **CLOSED / PASS** · LIVE `cfee0e4` / build **220** · QA operatore PASS · GATE none. [`inbox/2026-08-18_0512_riepilogo_finito-ors-provider-a.md`](inbox/2026-08-18_0512_riepilogo_finito-ors-provider-a.md).
+2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** candidate build **221** · **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE resta build **220** / `cfee0e4`. [`inbox/2026-08-18_1259_outdoor-routing-f-provider-compare-a-evidence.md`](inbox/2026-08-18_1259_outdoor-routing-f-provider-compare-a-evidence.md).
