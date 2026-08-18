@@ -24186,10 +24186,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IIM-PROVIDER-A";
-const APP_BUILD_DETAIL = "IIM snapshot Interactive Sailing Map (180), federato IGM. UKHO non a runtime.";
+const APP_BUILD_ID = "CARTO-IIM-PROVIDER-A-FIX1";
+const APP_BUILD_DETAIL = "IIM snapshot Interactive Sailing Map (180), federato IGM. Filtro IIM deselezionabile. UKHO non a runtime.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 230;
+const APP_BUILD_NUM = 231;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -24766,6 +24766,28 @@ function cartoScopedT(key){
     add("no_auto_network", typeof cartoTryProviderRefresh === "function" && cartoTryProviderRefresh().blocked === true);
     add("no_wp_mut", (typeof state !== "undefined" && Array.isArray(state.mapWaypoints)) ? state.mapWaypoints.length === wp0 : true);
     add("no_poly_mut", (typeof state !== "undefined" && Array.isArray(state.gisPolygons)) ? state.gisPolygons.length === gp0 : true);
+    (function probeIimFilterUncheck(){
+      try { if (typeof initCartoUiResultsA === "function") initCartoUiResultsA(); } catch(_){}
+      const el = document.getElementById("cartoIimFilterPaper");
+      const igmEl = document.getElementById("cartoIgmFilter50");
+      if (!el) { add("filter_iim_uncheckable", false, "missing_checkbox"); add("filter_igm_uncheckable", false, "skipped"); return; }
+      const prevIim = !!el.checked;
+      el.checked = false;
+      try { el.dispatchEvent(new Event("change", { bubbles: true })); } catch(_){}
+      const series = (typeof state !== "undefined" && state._cartoUi && Array.isArray(state._cartoUi.selectedSeries))
+        ? state._cartoUi.selectedSeries : [];
+      add("filter_iim_uncheckable", el.checked === false && series.indexOf("paper") < 0,
+        { checked: el.checked, series: Array.isArray(series) ? series.slice() : series });
+      el.checked = prevIim;
+      try { el.dispatchEvent(new Event("change", { bubbles: true })); } catch(_){}
+      if (!igmEl) { add("filter_igm_uncheckable", true, "no_dom"); return; }
+      const prevIgm = !!igmEl.checked;
+      igmEl.checked = false;
+      try { igmEl.dispatchEvent(new Event("change", { bubbles: true })); } catch(_){}
+      add("filter_igm_uncheckable", igmEl.checked === false, igmEl.checked);
+      igmEl.checked = prevIgm;
+      try { igmEl.dispatchEvent(new Event("change", { bubbles: true })); } catch(_){}
+    })();
     const pass = checks.every(function(c){ return c.ok; });
     return Object.freeze({ ok: pass, checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); })) });
   }
@@ -24950,8 +24972,6 @@ function cartoScopedT(key){
         state._cartoUi.archiveEditor = null;
       if (!Object.prototype.hasOwnProperty.call(state._cartoUi, "_areaPickMinimizedByPicker"))
         state._cartoUi._areaPickMinimizedByPicker = false;
-      if (Array.isArray(state._cartoUi.selectedSeries) && state._cartoUi.selectedSeries.indexOf("paper") < 0)
-        state._cartoUi.selectedSeries.push("paper");
     }
     return state._cartoUi;
   }
@@ -39547,8 +39567,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40569,8 +40589,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42497,8 +42517,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42998,8 +43018,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -44012,8 +44032,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44450,8 +44470,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -45042,8 +45062,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -46009,8 +46029,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -46179,8 +46199,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46608,8 +46628,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46997,8 +47017,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -47125,8 +47145,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -47301,8 +47321,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47434,8 +47454,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47672,8 +47692,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47981,8 +48001,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -48274,8 +48294,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48540,8 +48560,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48686,8 +48706,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48902,8 +48922,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -49013,8 +49033,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -87317,8 +87337,8 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -89998,8 +90018,8 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -90130,10 +90150,10 @@ function routingCompareFix1SelfTest(){
   const prevOrs = _routingCompareSession.ors;
   const prevChosen = _routingCompareSession.chosen;
   try {
-    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
-    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A"
+    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1"
       && typeof routingAlternativesAllowed === "function");
     const cta = document.getElementById("routingCompareBtn");
     add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
@@ -90423,8 +90443,8 @@ function routingCompareFix3SelfTest(){
   const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
   const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
   try {
-    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     const ptsEl = document.getElementById("routingPointsList");
     const zone = document.getElementById("routingRouteOptionsZone");
     const cmp = document.getElementById("routingCompareSection");
@@ -90598,8 +90618,8 @@ function routingCompareFix4SelfTest(){
   const savedGh = _routingCompareSession.gh;
   const savedOrs = _routingCompareSession.ors;
   try {
-    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -90698,8 +90718,8 @@ function routingRingWarnFix1SelfTest(){
   const savedWarn = (typeof r.ringSemanticWarn === "boolean") ? r.ringSemanticWarn : null;
   const savedWarnKey = r.roundTripWarnKey || "";
   try {
-    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     try { routingSetRouteMode("round_trip"); } catch(_){}
     const oab = [];
     for (let i = 0; i < 10; i++) oab.push({ lat: 44.1, lon: 9.82 + i * 0.002 });
@@ -90759,8 +90779,8 @@ function routingCompareFix6SelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     const params = document.getElementById("routingParamsRow");
     const modeGroup = document.getElementById("routingModeGroup");
     const modeRow = document.getElementById("routingModeRow");
@@ -90895,8 +90915,8 @@ function routingCompareFix5SelfTest(){
   const savedProv = r.previewStyleProvider;
   const savedOverlay = r.activeOverlayKey;
   try {
-    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 230
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A");
+    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");

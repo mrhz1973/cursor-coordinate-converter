@@ -483,7 +483,7 @@ def main() -> None:
         state._cartoUi.selectedSeries.push("paper");
     }""",
         1,
-        "additive-paper",
+        "additive-paper",  # BUG: this re-forced paper on every getState; removed in CARTO-IIM-PROVIDER-A-FIX1
     )
 
     suffix = repl(
