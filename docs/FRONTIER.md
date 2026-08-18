@@ -5,10 +5,10 @@
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md) — Outdoor Routing GraphHopper |
-| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1` |
-| **STATO BLOCCO** | **AUTOMATED BROWSER QA — FAIL** |
-| **GATE CORRENTE** | **AUTOMATED BROWSER QA — FAIL** |
+| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2` |
+| **STATO BLOCCO** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
 | **RUNTIME LIVE** | `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · helper **0.1.3** · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1` |
-| **RUNTIME CANDIDATE** | `105bedf3c0fa4f15f1be0edf4929d19e8842235b` · build **222** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1` · blob `99233802af29998ee3c0c659d72ffa9db6bbe100` · **DEPLOYED** VPS · ABQA FAIL |
-| **NEXT** | FIX2 constrained-loop live HTTP (no alternatives on >2 points) |
-| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX1 ABQA FAIL** |
+| **RUNTIME CANDIDATE** | `4a6dca938057d2c1e2b0f0a2cdec1480c13f3d20` · build **223** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2` · blob `56163b6f4e43e1ea8eec837ba535cd62c4b6c38f` · **NON deployato** |
+| **NEXT** | review FIX2 candidate 223 |
+| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX2 review pending** (FIX1 ABQA FAIL su 222) |

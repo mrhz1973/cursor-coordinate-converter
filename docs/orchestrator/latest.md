@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** REVIEW **PASS** · deploy GIS **PASS** · **ABQA FAIL** (anello con VIA: GH/ORS 400 su alternatives >2 punti) · LIVE resta **220**. Evidence: [`inbox/2026-08-18_1510_outdoor-routing-f-provider-compare-a-fix1-deploy-abqa.md`](inbox/2026-08-18_1510_outdoor-routing-f-provider-compare-a-fix1-deploy-abqa.md).
+2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2** candidate `4a6dca9` / **223** · selftest 741/741 · live probes GH/ORS 28/28 HTTP 200 · **NON deploy** · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE resta **220**. Evidence: [`inbox/2026-08-18_1635_outdoor-routing-f-provider-compare-a-fix2.md`](inbox/2026-08-18_1635_outdoor-routing-f-provider-compare-a-fix2.md).

@@ -4,29 +4,31 @@
 
 ## LATEST
 
-* real_task_commit: `105bedf3c0fa4f15f1be0edf4929d19e8842235b`
-* real_task_subject: FIX1 compare UX + constrained Anello, build 222
-* report_generated_at: `2026-08-18T15:10:00+02:00`
+* real_task_commit: `4a6dca938057d2c1e2b0f0a2cdec1480c13f3d20`
+* real_task_subject: gate alternatives to exactly 2 points and fix VIA reorder, build 223
+* report_generated_at: `2026-08-18T16:35:00+02:00`
 * branch: `main`
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `452975d73aac23417472d15336e727335a871ab6`
+* previous_report_container: `1b1aed9076e1565c47d0a212a3b91593fe1860f9`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * working_tree_status: helper `_*.py` / `tmp/` esclusi
-* result_cursor: REVIEW PASS · deploy GIS PASS · **ABQA FAIL** · GATE AUTOMATED BROWSER QA — FAIL · **NON** QA operatore · **NON** finito
-* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · VPS serve candidate **222** / `105bedf` · blob `99233802…`
-* notes: finding anello VIA — GH 400 alternative_route only start+end; ORS 400 alternative_routes 3 pts; zero-VIA round_trip PASS
+* result_cursor: candidate **223** selftest PASS · live probes PASS · GATE REVIEW GPT-SOSTITUTIVA — PENDING · **NON** deploy · **NON** ABQA · **NON** QA operatore · **NON** finito
+* result_runtime: LIVE FRONTIER resta **220** / `cfee0e4` · candidate `4a6dca9` / blob `56163b6f…` **non** deployato; VPS resta **222**
+* notes: alternatives iff effectiveRoutePointCount===2; EnsureAbPoints compact in-place (reorder identity)
 
 ## OUTPUT VERBATIM (pre-autosync)
 
 ```text
 RUNTIME_CANDIDATE_SHA
-105bedf3c0fa4f15f1be0edf4929d19e8842235b
+4a6dca938057d2c1e2b0f0a2cdec1480c13f3d20
 BLOB
-99233802af29998ee3c0c659d72ffa9db6bbe100
-DEPLOY
-PASS URL http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=105bedf
-ABQA
-FAIL desktop 18/122
+56163b6f4e43e1ea8eec837ba535cd62c4b6c38f
+BUILD
+223 OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2
+SELFTEST
+741/741 PASS
+LIVE_PROBES
+28/28 PASS
 ```
 
 ## LIMITI
