@@ -4,29 +4,32 @@
 
 ## LATEST
 
-* real_task_commit: `PENDING_SELF_REFERENCE` (stesso container del candidate build 221)
-* real_task_subject: candidate `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A` build 221 — REVIEW GPT-SOSTITUTIVA PENDING
-* report_generated_at: `2026-08-18T12:59:00+02:00`
+* real_task_commit: `PENDING_SELF_REFERENCE` (docs-only REVIEW-ANCHOR-AND-RAW-RECOVERY)
+* real_task_subject: REVIEW-ANCHOR-AND-RAW-RECOVERY `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A` — SHA esatto + raw A–L
+* report_generated_at: `2026-08-18T13:22:00+02:00`
 * branch: `main`
 * remote_head_after_task_push: `EXTERNAL_ONLY`
-* previous_report_container: `9e811d58668067ae48ce40f44d9466a3953040e2`
+* previous_report_container: `1a5e971459f13b12ed303f1e7105998db774b3bf`
 * current_report_container: `PENDING_SELF_REFERENCE`
 * final_remote_head_after_report_push: `EXTERNAL_ONLY`
-* working_tree_status: helper locali `_*.py` / `tmp/` **esclusi**
-* pass_tecnico_remoto: da verificare dopo push (HEAD = origin/main = ls-remote)
-* result_cursor: candidate 221 pubblicato; GATE review PENDING; **NON** deploy / **NON** ABQA / **NON** QA operatore / **NON** finito
-* pass_operatore: n/a (non richiesto)
-* result_runtime: LIVE resta build **220** / `cfee0e4` · CANDIDATE blob `90c52d57…` build **221**
+* working_tree_status: helper locali `_*.py` / `tmp/` **esclusi**; monolite **non** modificato
+* pass_tecnico_remoto: da verificare dopo push
+* result_cursor: RUNTIME_CANDIDATE_SHA `1a5e971459f13b12ed303f1e7105998db774b3bf` registrato; GATE review PENDING; **NON** deploy / **NON** ABQA / **NON** QA / **NON** finito / **NON** build bump
+* pass_operatore: n/a
+* result_runtime: LIVE build **220** / `cfee0e4` · CANDIDATE `1a5e971` / **221** · blob `90c52d57…`
 * qa_attestation_source: n/a
-* notes: helper 0.1.3; secret/ACL invariati; mapping hiking/mtb_trail only; hiking_easy/mtb_touring/foot-walking non confrontabili.
+* notes: REMOTE_HEAD_AT_EVIDENCE_TIME (pre-docs) = `1a5e971459f13b12ed303f1e7105998db774b3bf`; helper 0.1.3.
 
 ## OUTPUT VERBATIM (pre-autosync)
 
 ```text
-git rev-parse HEAD (pre-candidate)
-9e811d58668067ae48ce40f44d9466a3953040e2
+git log -1 --format=%H -- "coordinate_converter Claude.html"
+1a5e971459f13b12ed303f1e7105998db774b3bf
 
-blob candidate 221
+git ls-remote origin refs/heads/main
+1a5e971459f13b12ed303f1e7105998db774b3bf	refs/heads/main
+
+blob
 90c52d57f58ec49af91bf0364e2fe7c8aa5ece3b
 ```
 
@@ -34,12 +37,12 @@ PASS remoto del container corrente: **EXTERNAL_ONLY** fino a `git ls-remote` pos
 
 ## HISTORY
 
+- `1a5e971459f13b12ed303f1e7105998db774b3bf` — runtime candidate build 221 (HTML)
 - `9e811d58668067ae48ce40f44d9466a3953040e2` — chiusura docs ORS-PROVIDER-A CLOSED/PASS
-- `c218000d1d2d47e210e7f4969126428efe56c2f6` — deploy+ABQA evidence, QA ChatGPT PENDING
-- `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` — infra LoadCredential drop-in (runtime HTML immutabile fino a 221)
-- `268787379f18f52bf2f6285d3e852f9770f260ed` — runtime candidate build 220
+- `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` — LIVE infra/runtime 220
 
 ## LIMITI
 
 * Non sostituisce FRONTIER.
 * Non prova il proprio HEAD finale.
+* Monolite non toccato in questo pass.

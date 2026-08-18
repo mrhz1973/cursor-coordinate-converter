@@ -1,5 +1,8 @@
 # OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A — evidence (candidate)
 
+> Recovery raw/anchor: [`2026-08-18_1320_outdoor-routing-f-provider-compare-a-review-anchor.md`](2026-08-18_1320_outdoor-routing-f-provider-compare-a-review-anchor.md).  
+> **RUNTIME_CANDIDATE_SHA** = `1a5e971459f13b12ed303f1e7105998db774b3bf` (non HEAD).
+
 **BLOCK-ID:** `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A`  
 **Categoria:** DELICATO  
 **Gate:** **REVIEW GPT-SOSTITUTIVA — PENDING**  
@@ -12,7 +15,7 @@
 | --- | --- |
 | BASE LIVE | `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` |
 | BASE REPO ATTESTATA (pre-task) | `9e811d58668067ae48ce40f44d9466a3953040e2` |
-| FULL SHA (candidate) | HEAD del commit runtime bundle che contiene questo file |
+| FULL SHA (candidate) | `1a5e971459f13b12ed303f1e7105998db774b3bf` |
 | Build / ID | **221** / `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A` |
 | Blob git | `90c52d57f58ec49af91bf0364e2fe7c8aa5ece3b` |
 | Bytes LF | `10605066` |
