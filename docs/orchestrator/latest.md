@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1)** **CLOSED / PASS** · LIVE build **219** · QA operatore PASS · Regola H finito. Evidence: [`inbox/2026-08-18_0151_riepilogo_finito-avoid-areas-a-fix1.md`](inbox/2026-08-18_0151_riepilogo_finito-avoid-areas-a-fix1.md). LIVE `5477a5e`.
+2026-08-18 — **OUTDOOR-ROUTING-ORS-PROVIDER-A** **INFRA/CAPABILITY GATE FAIL — STOP** · nessun candidate 220 · LIVE resta build **219**. Finding: [`inbox/2026-08-18_0244_outdoor-routing-ors-provider-a-infra-gate-fail.md`](inbox/2026-08-18_0244_outdoor-routing-ors-provider-a-infra-gate-fail.md).

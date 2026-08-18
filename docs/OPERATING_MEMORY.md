@@ -462,11 +462,11 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1)** — **CLOSED / PASS** · LIVE `5477a5e` / **219** · QA operatore PASS (2026-08-18)
-2. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217**
-3. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — **CLOSED / PASS** · LIVE `7fb0c20` / **213** · QA operatore PASS (2026-08-17)
-4. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
-5. **GIS-PANEL-DOCK-MGR-G-B** — `361345d` / **211** (base batch; assorbito in G-BC)
+1. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — **BLOCKED** · INFRA/CAPABILITY GATE FAIL (HTTPS assente · secret ORS ABSENT) · LIVE resta `5477a5e` / **219** (2026-08-18)
+2. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1)** — **CLOSED / PASS** · LIVE `5477a5e` / **219** · QA operatore PASS (2026-08-18)
+3. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217**
+4. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — **CLOSED / PASS** · LIVE `7fb0c20` / **213** · QA operatore PASS (2026-08-17)
+5. **GIS-PANEL-DOCK-MGR-G-BC-BATCH1** — **CLOSED / PASS** · LIVE `7e984df` / **212** · QA operatore PASS (2026-08-17)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
