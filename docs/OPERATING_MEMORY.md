@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — INFRA2 secret **PRESENT** · gate **BLOCKED — HTTPS client unreachable** (ACL `tcp:443`) · LIVE `5477a5e` / **219** (2026-08-18)
+1. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — candidate `2687873` / **220** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE `5477a5e` / **219** (2026-08-18)
 2. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1)** — **CLOSED / PASS** · LIVE `5477a5e` / **219** · QA operatore PASS (2026-08-18)
 3. **GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2** — **CLOSED / PASS** · LIVE `1e37e56` / **217**
 4. **GIS-PANEL-DOCK-MGR-G-D-BATCH1** — **CLOSED / PASS** · LIVE `7fb0c20` / **213** · QA operatore PASS (2026-08-17)
