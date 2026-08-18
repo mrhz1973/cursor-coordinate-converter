@@ -5,10 +5,10 @@
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md) — Outdoor Routing GraphHopper |
-| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5` |
-| **STATO BLOCCO** | **AUTOMATED BROWSER QA — FAIL** |
-| **GATE CORRENTE** | **AUTOMATED BROWSER QA — FAIL** |
+| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` |
+| **STATO BLOCCO** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
 | **RUNTIME LIVE** | `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · helper **0.1.3** · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1` |
-| **RUNTIME CANDIDATE** | `118dc9d511c547f5032a7d0fd2f81dc65091b72a` · build **227** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5` · blob `20c09c0c23ab338082abef3b661bb079e32559d9` · **deployato GIS** · ABQA FAIL |
-| **NEXT** | FIX6 overflow mobile Percorso/Anello (candidate 227 immutabile) |
-| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX5 227 ABQA FAIL** (overflow mobile chip Anello) · LIVE resta **220** |
+| **RUNTIME CANDIDATE** | `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` · blob `225b1a7b673bd0cfa6aa3b407993cc453402923b` · **NON deployato** |
+| **NEXT** | review FIX6 candidate 228 |
+| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX5 227 ABQA FAIL** → **FIX6 228** wrap mobile Percorso · LIVE resta **220** |

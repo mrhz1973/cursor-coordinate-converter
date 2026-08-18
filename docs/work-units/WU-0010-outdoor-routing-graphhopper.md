@@ -2,12 +2,12 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5** **AUTOMATED BROWSER QA — FAIL**
-**ACTIVE BLOCK:** OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5
-**CURRENT GATE:** AUTOMATED BROWSER QA — FAIL
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**ACTIVE BLOCK:** OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6
+**CURRENT GATE:** REVIEW GPT-SOSTITUTIVA — PENDING
 **RUNTIME LIVE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
-**RUNTIME CANDIDATE:** `118dc9d511c547f5032a7d0fd2f81dc65091b72a` · build **227** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5` · blob `20c09c0c23ab338082abef3b661bb079e32559d9` · **deployato GIS** · ABQA FAIL
-**NEXT:** FIX6 overflow mobile Percorso/Anello (candidate 227 immutabile)
+**RUNTIME CANDIDATE:** `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` · blob `225b1a7b673bd0cfa6aa3b407993cc453402923b` · **NON deployato**
+**NEXT:** review FIX6 candidate 228
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) + OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
@@ -32,7 +32,8 @@
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3:** **QA operatore FAIL SCOPED** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`d455841` / **224** / blob `4a9565af…`) · ABQA desktop 172/172 + mobile 8/8 PASS · QA operatore FAIL UX/layout/semantica visuale → **FIX4**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md).
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4:** **REVIEW GPT-SOSTITUTIVA FAIL SCOPED** (2026-08-18) — candidate **225** `f1d9fc0` / blob `8f9a6abe…` · selftest 793/793 PASS · finding unico bloccante: `routingInvalidateRoutePreview()` non azzerava `ringSemanticWarn` (possibile warning anello residuo dopo modifica punti) → **FIX4-FIX1**. Evidence RAW: [`2026-08-18_1907_outdoor-routing-f-provider-compare-a-fix4-review-raw-recovery.md`](../orchestrator/inbox/2026-08-18_1907_outdoor-routing-f-provider-compare-a-fix4-review-raw-recovery.md).
 **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1:** **QA operatore FAIL SCOPED** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`2e61635` / **226** / blob `82ecf7d7…`) · ABQA desktop 207/207 + mobile 9/9 PASS · QA FAIL su barra parametri / Percorso / lifecycle Traccia / bordi alternative / Anello+VIA → **FIX5**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_2011_outdoor-routing-f-provider-compare-a-fix4-fix1-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_2011_outdoor-routing-f-provider-compare-a-fix4-fix1-deploy-abqa.md).
-**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5:** **AUTOMATED BROWSER QA — FAIL** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`118dc9d` / **227** / blob `20c09c0c…`) · ABQA desktop 237/241 + mobile 8/9 · finding: overflow planner mobile, chip **Anello** tagliato. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_2112_outdoor-routing-f-provider-compare-a-fix5-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_2112_outdoor-routing-f-provider-compare-a-fix5-deploy-abqa.md).
+**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5:** **AUTOMATED BROWSER QA — FAIL** (2026-08-18) — REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS **PASS** (`118dc9d` / **227** / blob `20c09c0c…`) · ABQA desktop 237/241 + mobile 8/9 · finding: overflow planner mobile, chip **Anello** tagliato → **FIX6**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_2112_outdoor-routing-f-provider-compare-a-fix5-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_2112_outdoor-routing-f-provider-compare-a-fix5-deploy-abqa.md).
+**OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6:** **REVIEW GPT-SOSTITUTIVA — PENDING** (2026-08-18) — candidate **228** `c5bc4b1` / blob `225b1a7b…` · selftest **847/847 PASS** · wrap mobile chip Percorso · **NON deployato**. LIVE FRONTIER resta **220**. Evidence: [`2026-08-18_2140_outdoor-routing-f-provider-compare-a-fix6.md`](../orchestrator/inbox/2026-08-18_2140_outdoor-routing-f-provider-compare-a-fix6.md).
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
