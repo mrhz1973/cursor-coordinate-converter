@@ -464,11 +464,11 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1** — candidate `2e61635` / **226** **DEPLOYED** · REVIEW **PASS** · ABQA **PASS** · QA FINALE CHATGPT **PENDING** · LIVE resta **220** / `cfee0e4` (2026-08-18)
-2. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4** — candidate `f1d9fc0` / **225** · REVIEW **FAIL SCOPED** (lifecycle warning anello) → FIX1 · LIVE resta **220** / `cfee0e4` (2026-08-18)
-3. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3** — candidate `d455841` / **224** **DEPLOYED** · ABQA **PASS** · QA operatore **FAIL SCOPED** → FIX4 · LIVE resta **220** / `cfee0e4` (2026-08-18)
-4. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2** — candidate `4a6dca9` / **223** **DEPLOYED** · ABQA **PASS** · QA operatore **FAIL SCOPED** → FIX3 · LIVE resta **220** / `cfee0e4` (2026-08-18)
-5. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — **CLOSED / PASS** · LIVE `cfee0e4` / **220** · blob `23fe93aa…` · QA operatore PASS (2026-08-18)
+1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6** — **CLOSED / PASS** · LIVE `c5bc4b1` / **228** · blob `225b1a7b…` · QA operatore PASS · Regola H (2026-08-18)
+2. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5** — **ABQA FAIL** · candidate `118dc9d` / **227** · overflow mobile Percorso → FIX6 · LIVE era **220** (2026-08-18)
+3. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1** — candidate `2e61635` / **226** · QA operatore **FAIL SCOPED** → FIX5 (2026-08-18)
+4. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4** — candidate `f1d9fc0` / **225** · REVIEW **FAIL SCOPED** (lifecycle warning anello) → FIX1 (2026-08-18)
+5. **OUTDOOR-ROUTING-ORS-PROVIDER-A** — **CLOSED / PASS** · superseded live da **228** · tip storico `cfee0e4` / **220** (2026-08-18)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 

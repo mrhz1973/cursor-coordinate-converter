@@ -78,9 +78,8 @@ Selftest live: **ok=true n=847 fail=0** (RPCF6 18/18 · RPCF5 28/28 · RWF1 8/8)
 
 ## STOP
 
-**QA FINALE CHATGPT — PENDING**
+**QA OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6 PASS operatore** (2026-08-18) → **CLOSED / PASS** · Regola H finito
 
-- **NON** QA operatore
-- **NON** finito
-- LIVE FRONTIER resta **220**
-- GIS VPS serve il candidate **228** (`?v=c5bc4b1`)
+- LIVE FRONTIER = **228** / `c5bc4b1`
+- GIS VPS serve **228** (`?v=c5bc4b1`)
+- NEXT: resto Bundle F **NOT OPENED** / da scegliere
