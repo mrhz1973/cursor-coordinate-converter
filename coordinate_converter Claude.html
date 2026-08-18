@@ -9849,16 +9849,40 @@ dialog.track-modal.app-modal{
 .routing-params-row{
   display:flex;
   flex-wrap:wrap;
-  align-items:center;
-  gap:8px 10px;
+  align-items:flex-end;
+  gap:6px 10px;
   padding:4px 0 6px;
+  max-width:100%;
+  box-sizing:border-box;
 }
-.routing-params-row .routing-profile-row{ padding:0; flex:1 1 160px; min-width:0; }
-.routing-params-row .routing-speed-row{ margin:0; }
-.routing-params-row #routingCalculateBtn{ flex:0 0 auto; }
+.routing-params-row .routing-profile-row,
+.routing-params-row .routing-speed-row,
+.routing-params-row .routing-mode-group{
+  padding:0;
+  margin:0;
+  flex:0 0 auto;
+  min-width:0;
+  width:auto;
+}
+.routing-params-row .routing-profile-select,
+.routing-params-row .routing-speed-select,
+.routing-params-row #routingProfileSelect,
+.routing-params-row #routingSpeedSelect{
+  flex:0 0 auto;
+  width:max-content;
+  max-width:none;
+}
+.routing-params-row .routing-profile-select,
+.routing-params-row #routingProfileSelect{ min-width:11.5rem; }
+.routing-params-row .routing-speed-select,
+.routing-params-row #routingSpeedSelect{ min-width:16.5rem; }
+.routing-params-row #routingCalculateBtn{ flex:0 0 auto; align-self:flex-end; }
 @media (max-width:480px){
   .routing-params-row{ gap:6px; }
-  .routing-params-row .routing-profile-select{ max-width:100%; min-width:0; }
+  .routing-params-row .routing-profile-select,
+  .routing-params-row .routing-speed-select,
+  .routing-params-row #routingProfileSelect,
+  .routing-params-row #routingSpeedSelect{ max-width:100%; }
 }
 .routing-route-options-zone{
   display:flex;
@@ -9896,12 +9920,49 @@ dialog.track-modal.app-modal{
 .routing-compare-identity{ font-weight:600; }
 .routing-alt-group{ display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; width:100%; }
 .routing-alt-group-label{ font-size:.72rem; font-weight:700; min-width:4.5rem; }
-.routing-alt-chip.is-route-gh-0, .routing-alt-chip.is-style-gh-0{ background:#b91c1c; color:#fff; border-color:transparent; }
-.routing-alt-chip.is-route-gh-1, .routing-alt-chip.is-style-gh-1{ background:#c2410c; color:#fff; border-color:transparent; }
-.routing-alt-chip.is-route-gh-2, .routing-alt-chip.is-style-gh-2{ background:#9d174d; color:#fff; border-color:transparent; }
-.routing-alt-chip.is-route-ors-0, .routing-alt-chip.is-style-ors-0{ background:#1d4ed8; color:#fff; border-color:transparent; }
-.routing-alt-chip.is-route-ors-1, .routing-alt-chip.is-style-ors-1{ background:#0e7490; color:#fff; border-color:transparent; }
-.routing-alt-chip.is-route-ors-2, .routing-alt-chip.is-style-ors-2{ background:#0f766e; color:#fff; border-color:transparent; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-0,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-0{
+  background:#b91c1c; color:#fff; border:2px solid #ef4444;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-1,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-1{
+  background:#c2410c; color:#fff; border:2px solid #f97316;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-2,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-2{
+  background:#9d174d; color:#fff; border:2px solid #db2777;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-0,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-0{
+  background:#1d4ed8; color:#fff; border:2px solid #2563eb;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-1,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-1{
+  background:#0e7490; color:#fff; border:2px solid #06b6d4;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-2,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-2{
+  background:#0f766e; color:#fff; border:2px solid #0d9488;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-active{
+  border-width:3px;
+  box-shadow:0 0 0 2px color-mix(in srgb, currentColor 35%, transparent);
+  outline:2px solid rgba(255,255,255,.55);
+  outline-offset:1px;
+  font-weight:800;
+}
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-0.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-0.is-active{ outline-color:#ef4444; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-1.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-1.is-active{ outline-color:#f97316; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-0.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-0.is-active{ outline-color:#2563eb; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-1.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-1.is-active{ outline-color:#06b6d4; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-gh-2.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-gh-2.is-active{ outline-color:#db2777; }
+#routingPlannerPanel button.btn.routing-alt-chip.is-route-ors-2.is-active,
+#routingPlannerPanel button.btn.routing-alt-chip.is-style-ors-2.is-active{ outline-color:#0d9488; }
 .routing-compare-head{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
 .routing-compare-title{ font-size:.88rem; font-weight:700; color:var(--fg, inherit); }
 .routing-compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
@@ -10560,6 +10621,8 @@ dialog.track-modal.app-modal{
   display:flex; flex-direction:column; gap:4px;
 }
 .routing-alternatives-row[hidden]{ display:none !important; }
+.routing-alternatives-note{ margin:0; font-size:.78rem; max-width:100%; }
+.routing-alternatives-note[hidden]{ display:none !important; }
 .routing-alternatives-label{
   font-size:.75rem; color:var(--muted); line-height:1.25;
 }
@@ -15173,7 +15236,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <code id="routingEndpointValue" class="routing-endpoint-value"></code>
     </p>
     </details>
-    <div id="routingParamsRow" class="routing-params-row" role="group" data-i18n-aria="routing.paramsRowAria" aria-label="Profilo, velocità e calcolo">
+    <div id="routingParamsRow" class="routing-params-row" role="group" data-i18n-aria="routing.paramsRowAria" aria-label="Profilo, percorso, velocità e calcolo">
     <div class="routing-profile-row">
       <label class="routing-profile-label routing-section-heading" for="routingProfileSelect" data-i18n="routing.profile">Profilo</label>
       <select id="routingProfileSelect" class="routing-profile-select"
@@ -15185,6 +15248,17 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <option value="mtb_trail">mtb_trail</option>
       </select>
     </div>
+      <div class="routing-mode-group" id="routingModeGroup">
+        <span class="routing-mode-label routing-section-heading" data-i18n="routing.routeMode">Percorso</span>
+        <div class="routing-mode-chips" role="radiogroup" aria-label="Modalità percorso">
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="one_way"
+                  data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="out_and_back"
+                  data-i18n="routing.outAndBack" aria-pressed="false">Andata e ritorno</button>
+          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="round_trip"
+                  data-i18n="routing.roundTrip" aria-pressed="false">Anello</button>
+        </div>
+      </div>
       <div class="routing-speed-row" id="routingSpeedRow">
         <label for="routingSpeedSelect" data-i18n="routing.avgSpeed">Velocità media</label>
         <select id="routingSpeedSelect" class="routing-speed-select" data-i18n-aria="routing.avgSpeedAria" aria-label="Velocità media">
@@ -15209,6 +15283,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div id="routingAlternativesRow" class="routing-alternatives-row" hidden>
         <span id="routingAlternativesLabel" class="routing-alternatives-label" data-i18n="routing.alternativesLabel">Percorsi alternativi</span>
         <div id="routingAlternativesChips" class="routing-alternatives-chips" role="group" aria-labelledby="routingAlternativesLabel"></div>
+        <p id="routingAlternativesNote" class="hint routing-alternatives-note" role="status" aria-live="polite" hidden></p>
       </div>
     <section id="routingCompareSection" class="routing-compare-section" aria-labelledby="routingCompareTitle">
       <div class="routing-compare-head">
@@ -15253,17 +15328,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div class="routing-result-summary" id="routingResultSummary"></div>
     </section>
     <div class="routing-mode-row" id="routingModeRow">
-      <div class="routing-mode-group">
-        <span class="routing-mode-label routing-section-heading" data-i18n="routing.routeMode">Percorso</span>
-        <div class="routing-mode-chips" role="radiogroup" aria-label="Modalità percorso">
-          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="one_way"
-                  data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
-          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="out_and_back"
-                  data-i18n="routing.outAndBack" aria-pressed="false">Andata e ritorno</button>
-          <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="round_trip"
-                  data-i18n="routing.roundTrip" aria-pressed="false">Anello</button>
-        </div>
-      </div>
       <div class="routing-panel-actions">
         <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
                 data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
@@ -17940,7 +18004,8 @@ const I18N = {
     "routing.providerSettings":"Impostazioni GraphHopper",
     "routing.searchDismiss":"Chiudi risultati",
     "routing.searchDismissAria":"Nascondi elenco risultati senza cancellare il testo",
-    "routing.paramsRowAria":"Profilo, velocità media e calcolo percorso",
+    "routing.paramsRowAria":"Profilo, percorso, velocità media e calcolo percorso",
+    "routing.altConstrainedNoAlts":"Percorso Anello vincolato: {0} non offre alternative per questa configurazione.",
     "routing.altMain":"Principale",
     "routing.altNamed":"Alternativa {0}",
     "routing.compareSameMain":"GraphHopper e OpenRouteService propongono lo stesso percorso principale.",
@@ -24073,10 +24138,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1";
-const APP_BUILD_DETAIL = "Ring semantic warn lifecycle fix (FIX4-FIX1).";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5";
+const APP_BUILD_DETAIL = "Compact params, track lifecycle, alt borders, ring+VIA alts (FIX5).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 226;
+const APP_BUILD_NUM = 227;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39367,8 +39432,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40389,8 +40454,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42317,8 +42382,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42818,8 +42883,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43832,8 +43897,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44270,8 +44335,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44862,8 +44927,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45829,8 +45894,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -45999,8 +46064,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46428,8 +46493,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46817,8 +46882,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46945,8 +47010,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -47121,8 +47186,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47254,8 +47319,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47492,8 +47557,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47801,8 +47866,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -48094,8 +48159,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48360,8 +48425,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48506,8 +48571,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48722,8 +48787,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48833,8 +48898,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -83550,6 +83615,8 @@ function routingEnsureState(){
     if (!("activeOverlayKey" in r)) r.activeOverlayKey = null;
     if (!("previewStyleProvider" in r)) r.previewStyleProvider = null;
     if (typeof r.ringSemanticWarn !== "boolean") r.ringSemanticWarn = false;
+    if (typeof r._trackMinimizedByPlanner !== "boolean") r._trackMinimizedByPlanner = false;
+    if (typeof r._plannerCommitted !== "boolean") r._plannerCommitted = false;
     if (r.routeMode !== "one_way" && r.routeMode !== "out_and_back" && r.routeMode !== "round_trip") r.routeMode = "one_way";
     if (!Number.isFinite(Number(r.roundTripDistanceM))) r.roundTripDistanceM = ROUTING_ROUND_TRIP_DISTANCE_DEFAULT_M;
     else {
@@ -84291,6 +84358,7 @@ function routingPerformSaveAsTrack(explicitName){
     }
     routingCloseSaveAsTrackPrompt({ force: true, focusSaveBtn: true });
     routingSetStatus(routingFormatSaveAsTrackSuccess(res.track.name), false);
+    try { routingMarkPlannerCommit(); } catch(_){}
     okOut = true;
     return true;
   } catch(_){
@@ -87134,8 +87202,8 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -87931,8 +87999,13 @@ function routingSetRouteMode(mode){
   try { routingSyncCalculateBtnUi(); } catch(_){}
   return next;
 }
+function routingModeChipsHost(){
+  return document.getElementById("routingModeGroup")
+    || document.getElementById("routingParamsRow")
+    || document.getElementById("routingModeRow");
+}
 function routingSyncModeRowUi(){
-  const row = document.getElementById("routingModeRow");
+  const row = routingModeChipsHost();
   if (!row) return;
   const mode = routingGetRouteMode();
   const busy = !!(state._routing && (state._routing.requestLoading || state._routing.infoLoading));
@@ -87953,7 +88026,7 @@ function routingSyncModeRowUi(){
   try { routingSyncRoundTripControlsUi(); } catch(_){}
 }
 function routingWireModeRowOnce(){
-  const row = document.getElementById("routingModeRow");
+  const row = routingModeChipsHost();
   if (!row || row._routingModeWired) return;
   row._routingModeWired = true;
   row.addEventListener("click", (ev) => {
@@ -88348,14 +88421,23 @@ function routingAppendAltChip(host, provider, alt, idx, active, busy, baseline, 
   wrap.appendChild(centerBtn);
   host.appendChild(wrap);
 }
+function routingFmtConstrainedNoAltsNote(providerLabel){
+  return String(routingT("routing.altConstrainedNoAlts",
+    "Percorso Anello vincolato: {0} non offre alternative per questa configurazione."))
+    .replace("{0}", providerLabel || "");
+}
 function routingSyncAlternativesRowUi(){
   const row = document.getElementById("routingAlternativesRow");
   const chips = document.getElementById("routingAlternativesChips");
   const label = document.getElementById("routingAlternativesLabel");
+  const note = document.getElementById("routingAlternativesNote");
   if (!row || !chips) return;
   const r = state._routing;
   const busy = !!(r && (r.requestLoading || r.infoLoading));
   if (label) label.textContent = routingT("routing.alternativesLabel", "Percorsi alternativi");
+  if (note){ note.hidden = true; note.textContent = ""; }
+  const constrainedRt = (typeof routingGetRouteMode === "function" && routingGetRouteMode() === "round_trip"
+    && typeof routingRoundTripIsConstrained === "function" && routingRoundTripIsConstrained());
   const compareLive = !!( _routingCompareSession && !_routingCompareSession.chosen
     && ((_routingCompareSession.gh && _routingCompareSession.gh.status === "pass")
       || (_routingCompareSession.ors && _routingCompareSession.ors.status === "pass")));
@@ -88363,6 +88445,7 @@ function routingSyncAlternativesRowUi(){
   if (compareLive){
     row.hidden = false;
     const activeKey = (r && r.activeOverlayKey) || "";
+    const missingAlts = [];
     [["gh", _routingCompareSession.gh, routingT("routing.serviceGraphHopper", "GraphHopper")],
      ["ors", _routingCompareSession.ors, routingT("routing.serviceOrs", "OpenRouteService")]].forEach(function(entry){
       const pack = entry[1];
@@ -88380,11 +88463,35 @@ function routingSyncAlternativesRowUi(){
         routingAppendAltChip(grp, entry[0], alts[i], i, activeKey === (entry[0] + ":" + i), busy, base, entry[0] + ":" + i);
       }
       chips.appendChild(grp);
+      if (constrainedRt && showAlts < 2) missingAlts.push(entry[2]);
     });
+    if (note && constrainedRt && missingAlts.length){
+      note.hidden = false;
+      note.textContent = missingAlts.map(function(n){ return routingFmtConstrainedNoAltsNote(n); }).join(" ");
+    }
     if (!chips.children.length) row.hidden = true;
     return;
   }
   const alts = r && Array.isArray(r.alternatives) ? r.alternatives : [];
+  if (constrainedRt && r && r.routeMetrics){
+    row.hidden = false;
+    const provider = routingStyleProviderKey(r);
+    const baseline = (alts[0] && alts[0].previewCoordinates) ? alts[0]
+      : { previewCoordinates: r.previewCoordinates, metrics: r.routeMetrics };
+    const show = alts.length >= 1 ? alts : [baseline];
+    const sel = (r.selectedAlternative == null) ? 0 : Number(r.selectedAlternative);
+    for (let i = 0; i < show.length && i < 3; i++){
+      routingAppendAltChip(chips, provider, show[i], i, i === sel, busy, baseline, provider + ":" + i);
+    }
+    if (note && show.length < 2){
+      const pname = provider === "ors"
+        ? routingT("routing.serviceOrs", "OpenRouteService")
+        : routingT("routing.serviceGraphHopper", "GraphHopper");
+      note.hidden = false;
+      note.textContent = routingFmtConstrainedNoAltsNote(pname);
+    }
+    return;
+  }
   if (!r || routingGetRouteMode() === "round_trip" || !r.routeMetrics || alts.length < 2){
     row.hidden = true;
     return;
@@ -88419,6 +88526,9 @@ function routingSelectAlternativeAt(index, options){
     return true;
   }
   const ok = routingApplyAlternative(idx, { fitMap: wantFit, renderUi: true });
+  if (ok){
+    try { routingMarkPlannerCommit(); } catch(_){}
+  }
   if (ok && r.routeMetrics){
     try { routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false); } catch(_){}
   }
@@ -89735,6 +89845,7 @@ function routingCompareChoose(side){
   };
   routingApplyRouteResultFromValidated(r, validated, pack.profile);
   _routingCompareSession.chosen = side === "ors" ? "ors" : "gh";
+  try { routingMarkPlannerCommit(); } catch(_){}
   r.previewStyleProvider = _routingCompareSession.chosen;
   r.activeOverlayKey = _routingCompareSession.chosen + ":0";
   routingSyncCompareUi();
@@ -89772,8 +89883,8 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -89904,10 +90015,10 @@ function routingCompareFix1SelfTest(){
   const prevOrs = _routingCompareSession.ors;
   const prevChosen = _routingCompareSession.chosen;
   try {
-    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
-    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1"
+    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5"
       && typeof routingAlternativesAllowed === "function");
     const cta = document.getElementById("routingCompareBtn");
     add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
@@ -90197,8 +90308,8 @@ function routingCompareFix3SelfTest(){
   const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
   const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
   try {
-    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     const ptsEl = document.getElementById("routingPointsList");
     const zone = document.getElementById("routingRouteOptionsZone");
     const cmp = document.getElementById("routingCompareSection");
@@ -90372,8 +90483,8 @@ function routingCompareFix4SelfTest(){
   const savedGh = _routingCompareSession.gh;
   const savedOrs = _routingCompareSession.ors;
   try {
-    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -90472,8 +90583,8 @@ function routingRingWarnFix1SelfTest(){
   const savedWarn = (typeof r.ringSemanticWarn === "boolean") ? r.ringSemanticWarn : null;
   const savedWarnKey = r.roundTripWarnKey || "";
   try {
-    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 226
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1");
+    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
     try { routingSetRouteMode("round_trip"); } catch(_){}
     const oab = [];
     for (let i = 0; i < 10; i++) oab.push({ lat: 44.1, lon: 9.82 + i * 0.002 });
@@ -90526,12 +90637,200 @@ function routingRingWarnFix1SelfTest(){
   }
   return checks;
 }
+function routingCompareFix5SelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const r = routingEnsureState();
+  const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
+  const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
+  const savedMode = r.routeMode;
+  const savedPts = r.points;
+  const savedChosen = _routingCompareSession.chosen;
+  const savedGh = _routingCompareSession.gh;
+  const savedOrs = _routingCompareSession.ors;
+  const savedMetrics = r.routeMetrics;
+  const savedAlts = r.alternatives;
+  const savedProv = r.previewStyleProvider;
+  const savedOverlay = r.activeOverlayKey;
+  try {
+    add("RPCF5_build_227", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 227
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5");
+    const params = document.getElementById("routingParamsRow");
+    const prof = document.getElementById("routingProfileSelect");
+    const speed = document.getElementById("routingSpeedSelect");
+    const calc = document.getElementById("routingCalculateBtn");
+    const modeGroup = document.getElementById("routingModeGroup");
+    const modeRow = document.getElementById("routingModeRow");
+    add("RPCF5_params_has_all", !!(params && prof && speed && calc && modeGroup
+      && params.contains(prof) && params.contains(speed) && params.contains(calc) && params.contains(modeGroup)));
+    add("RPCF5_mode_in_params", !!(params && params.querySelectorAll("[data-routing-mode]").length === 3));
+    add("RPCF5_no_dup_mode_row", !!(modeRow && modeRow.querySelectorAll("[data-routing-mode]").length === 0));
+    add("RPCF5_actions_remain", !!(modeRow && document.getElementById("routingAddViaBtn") && modeRow.contains(document.getElementById("routingAddViaBtn"))));
+    add("RPCF5_select_no_grow", (function(){
+      try {
+        const csP = getComputedStyle(params.querySelector(".routing-profile-row"));
+        const csSel = getComputedStyle(prof);
+        return csP.flexGrow === "0" && csSel.flexGrow === "0" && String(csSel.width) !== "100%";
+      } catch(_){ return false; }
+    })(), (function(){
+      try {
+        const csP = getComputedStyle(params.querySelector(".routing-profile-row"));
+        const csSel = getComputedStyle(prof);
+        return [csP.flexGrow, csSel.flexGrow, csSel.width, csSel.maxWidth].join("|");
+      } catch(e){ return String(e && e.message ? e.message : e); }
+    })());
+    add("RPCF5_alt_allowed_2", routingAlternativesAllowed(2) === true);
+    add("RPCF5_alt_blocked_3", routingAlternativesAllowed(3) === false);
+    const two = [[9.82, 44.10], [9.85, 44.12]];
+    const closed = [[9.82, 44.10], [9.86, 44.12], [9.82, 44.10]];
+    const gh2 = routingBuildGraphhopperRouteBody("hiking", two, { withAlternatives: true });
+    const gh3 = routingBuildGraphhopperRouteBody("hiking", closed, { withAlternatives: true });
+    const ors2 = routingBuildOrsRouteBody(two, { withAlternatives: true });
+    const ors3 = routingBuildOrsRouteBody(closed, { withAlternatives: true });
+    add("RPCF5_gh_2pt_alt", !!(gh2 && gh2.algorithm === "alternative_route"));
+    add("RPCF5_gh_loop_no_alt", !!(gh3 && gh3.algorithm !== "alternative_route" && !gh3["alternative_route.max_paths"]));
+    add("RPCF5_ors_2pt_alt", !!(ors2 && ors2.alternative_routes));
+    add("RPCF5_ors_loop_no_alt", !!(ors3 && !ors3.alternative_routes));
+
+    const chips = document.getElementById("routingAlternativesChips");
+    const altRow = document.getElementById("routingAlternativesRow");
+    const note = document.getElementById("routingAlternativesNote");
+    add("RPCF5_note_el", !!note);
+    const palette = {
+      "gh-0": "rgb(239, 68, 68)",
+      "gh-1": "rgb(249, 115, 22)",
+      "gh-2": "rgb(219, 39, 119)",
+      "ors-0": "rgb(37, 99, 235)",
+      "ors-1": "rgb(6, 182, 212)",
+      "ors-2": "rgb(13, 148, 136)"
+    };
+    if (chips && altRow){
+      const prevHidden = altRow.hidden;
+      altRow.hidden = false;
+      chips.innerHTML = "";
+      const dummy = { previewCoordinates: [{ lat: 44.1, lon: 9.82 }, { lat: 44.11, lon: 9.83 }], metrics: { distanceM: 1000 } };
+      ["gh", "ors"].forEach(function(prov){
+        for (let i = 0; i < 3; i++){
+          routingAppendAltChip(chips, prov, dummy, i, i === 0 && prov === "gh", false, dummy, prov + ":" + i);
+        }
+      });
+      let bordersOk = true;
+      Object.keys(palette).forEach(function(k){
+        const btn = chips.querySelector(".is-route-" + k);
+        if (!btn){ bordersOk = false; return; }
+        let bc = "";
+        try { bc = getComputedStyle(btn).borderTopColor; } catch(_){ bordersOk = false; return; }
+        if (bc !== palette[k]) bordersOk = false;
+      });
+      add("RPCF5_chip_border_palette", bordersOk);
+      const active = chips.querySelector(".is-route-gh-0.is-active");
+      let activeOk = false;
+      try {
+        const csA = active ? getComputedStyle(active) : null;
+        activeOk = !!(csA && (parseFloat(csA.borderTopWidth) >= 2.5 || String(csA.outlineStyle) === "solid"));
+      } catch(_){}
+      add("RPCF5_chip_active_emphasis", activeOk);
+      chips.innerHTML = "";
+      altRow.hidden = prevHidden;
+    } else {
+      add("RPCF5_chip_border_palette", false);
+      add("RPCF5_chip_active_emphasis", false);
+    }
+
+    r.routeMode = "round_trip";
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    r.routeMetrics = { distanceM: 5000, durationMs: 3600000 };
+    r.previewCoordinates = [{ lat: 44.1, lon: 9.82 }, { lat: 44.12, lon: 9.86 }, { lat: 44.1, lon: 9.82 }];
+    r.alternatives = [];
+    r.previewStyleProvider = "gh";
+    r.service = "graphhopper";
+    _routingCompareSession.chosen = "gh";
+    _routingCompareSession.gh = null;
+    _routingCompareSession.ors = null;
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+    const noteTxt = note ? String(note.textContent || "") : "";
+    add("RPCF5_ring_via_explains", !!(note && !note.hidden && noteTxt.indexOf("Anello vincolato") >= 0 && noteTxt.indexOf("GraphHopper") >= 0));
+    add("RPCF5_ring_via_single_chip", !!(chips && chips.querySelectorAll(".routing-alt-chip").length === 1));
+
+    const line = [];
+    for (let i = 0; i < 8; i++) line.push({ lat: 44.1, lon: 9.82 + i * 0.001 });
+    const line2 = line.map(function(p){ return { lat: p.lat + 0.04, lon: p.lon }; });
+    _routingCompareSession.chosen = null;
+    _routingCompareSession.gh = { status: "pass", previewCoordinates: line.slice(), alternatives: [{ previewCoordinates: line.slice() }] };
+    _routingCompareSession.ors = { status: "pass", previewCoordinates: line2.slice(), alternatives: [{ previewCoordinates: line2.slice() }] };
+    r.activeOverlayKey = null;
+    const trBoth = routingCollectPreviewOverlayTracks();
+    add("RPCF5_compare_ring_both_mains", !!(trBoth.length === 2 && trBoth.some(function(x){ return x.provider === "gh"; }) && trBoth.some(function(x){ return x.provider === "ors"; })));
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+    add("RPCF5_compare_explains_both", !!(note && !note.hidden && String(note.textContent || "").indexOf("GraphHopper") >= 0 && String(note.textContent || "").indexOf("OpenRouteService") >= 0));
+
+    add("RPCF5_lifecycle_fns", typeof routingMarkPlannerCommit === "function" && typeof routingMaybeMinimizeTrackForPlanner === "function");
+    const gis = document.body.classList.contains("gis-mode");
+    if (gis && typeof openTrackModal === "function" && typeof closeTrackModal === "function"){
+      try {
+        openTrackModal();
+        const trackDlg = document.getElementById("trackModal");
+        add("RPCF5_track_started_open", !!(trackDlg && trackDlg.open && !gisPanelIsMinimized("trackModal")));
+        openRoutingPlannerPanel("graphhopper");
+        add("RPCF5_track_auto_min", !!(gisPanelIsMinimized("trackModal") && state._routing && state._routing._trackMinimizedByPlanner === true));
+        closeRoutingPlannerPanel();
+        add("RPCF5_track_restore_no_commit", !!(trackDlg && trackDlg.open && !gisPanelIsMinimized("trackModal")));
+
+        openTrackModal();
+        openRoutingPlannerPanel("graphhopper");
+        routingMarkPlannerCommit();
+        closeRoutingPlannerPanel();
+        add("RPCF5_track_no_restore_after_commit", gisPanelIsMinimized("trackModal") === true);
+
+        try { gisClearPanelMinimizeUi("trackModal"); } catch(_){}
+        try { closeTrackModal(); } catch(_){}
+        openTrackModal();
+        gisMinimizePanel("trackModal", "gis.minimized.track");
+        openRoutingPlannerPanel("graphhopper");
+        add("RPCF5_track_manual_min_flag_off", !(state._routing && state._routing._trackMinimizedByPlanner));
+        closeRoutingPlannerPanel();
+        add("RPCF5_track_manual_min_stays", gisPanelIsMinimized("trackModal") === true);
+      } catch(e){
+        add("RPCF5_track_lifecycle_exc", false, String(e && e.message ? e.message : e));
+      } finally {
+        try { closeRoutingPlannerPanel(); } catch(_){}
+        try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("trackModal"); } catch(_){}
+        try { closeTrackModal(); } catch(_){}
+      }
+    } else {
+      add("RPCF5_track_started_open", false, "not gis-mode");
+    }
+
+    add("RPCF5_wp_untouched", JSON.stringify(state.mapWaypoints) === JSON.stringify(wp0));
+    add("RPCF5_poly_untouched", JSON.stringify(state.gisPolygons) === JSON.stringify(poly0));
+  } catch(e){
+    add("RPCF5_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try { r.routeMode = savedMode; } catch(_){}
+    try { r.points = savedPts; } catch(_){}
+    try { r.routeMetrics = savedMetrics; } catch(_){}
+    try { r.alternatives = savedAlts; } catch(_){}
+    try { r.previewStyleProvider = savedProv; } catch(_){}
+    try { r.activeOverlayKey = savedOverlay; } catch(_){}
+    _routingCompareSession.chosen = savedChosen;
+    _routingCompareSession.gh = savedGh;
+    _routingCompareSession.ors = savedOrs;
+    try { routingSyncAlternativesRowUi(); } catch(_){}
+  }
+  return checks;
+}
 (function routingCompareFix3ExtendSelfTest(){
   try {
     const prevAll = dflightSelfTestAll;
     dflightSelfTestAll = function(){
       const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
-      const extra = routingCompareFix3SelfTest().concat(routingCompareFix4SelfTest()).concat(routingRingWarnFix1SelfTest());
+      const extra = routingCompareFix3SelfTest().concat(routingCompareFix4SelfTest()).concat(routingRingWarnFix1SelfTest()).concat(routingCompareFix5SelfTest());
       const checks = (prev.checks || []).concat(extra);
       const pass = checks.every(function(c){ return c.ok; });
       return Object.freeze({
@@ -90544,7 +90843,8 @@ function routingRingWarnFix1SelfTest(){
         const api = Object.assign({}, window.GOIDflight, {
           selfTest: dflightSelfTestAll,
           selfTestRoutingCompareFix3: routingCompareFix3SelfTest,
-          selfTestRingWarnFix1: routingRingWarnFix1SelfTest
+          selfTestRingWarnFix1: routingRingWarnFix1SelfTest,
+          selfTestRoutingCompareFix5: routingCompareFix5SelfTest
         });
         Object.freeze(api);
         window.GOIDflight = api;
@@ -93600,14 +93900,45 @@ function wireRoutingPanelFloating(dlg){
     routingApplyExpandedOpenLayout(dlg);
   }
 }
+function routingMarkPlannerCommit(){
+  try {
+    const r = routingEnsureState();
+    r._plannerCommitted = true;
+  } catch(_){}
+}
+function routingMaybeMinimizeTrackForPlanner(){
+  const r = routingEnsureState();
+  const trackDlg = document.getElementById("trackModal");
+  const trackOpen = !!(state.trackModalOpen && trackDlg && trackDlg.open);
+  if (!trackOpen) return;
+  let alreadyMin = false;
+  try { alreadyMin = !!(typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("trackModal")); } catch(_){}
+  if (alreadyMin) return;
+  try { gisMinimizePanel("trackModal", "gis.minimized.track"); } catch(_){}
+  try {
+    if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("trackModal"))
+      r._trackMinimizedByPlanner = true;
+  } catch(_){}
+}
 function closeRoutingPlannerPanel(){
   const dlg = document.getElementById("routingPlannerPanel");
+  let restoreTrack = false;
+  try {
+    const r = state._routing;
+    restoreTrack = !!(r && r._trackMinimizedByPlanner && !r._plannerCommitted);
+  } catch(_){}
   try { routingServiceMenuClose({ focusBtn: false }); } catch(_){}
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("routingPlannerPanel"); } catch(_){}
   routingClearOpenLayout();
   routingFullCleanup();
   if (dlg && dlg.open){
     try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+  }
+  if (restoreTrack){
+    try {
+      if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("trackModal"))
+        gisRestoreMinimizedPanel("trackModal");
+    } catch(_){}
   }
 }
 function openRoutingPlannerPanel(service){
@@ -93620,6 +93951,7 @@ function openRoutingPlannerPanel(service){
   try { if (typeof mapToolActiveId === "function" && mapToolActiveId()) mapToolDeactivateAll(); } catch(_){}
   const svc = service || "graphhopper";
   if (state._routing && state._routing.panelOpen && dlg.open){
+    try { routingMaybeMinimizeTrackForPlanner(); } catch(_){}
     state._routing.service = svc;
     if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("routingPlannerPanel")){
       try { gisRestoreMinimizedPanel("routingPlannerPanel"); } catch(_){}
@@ -93639,6 +93971,9 @@ function openRoutingPlannerPanel(service){
   state._routing.service = svc;
   if (!(state._routing.points && state._routing.points.length)) routingInitDefaultPoints();
   state._routing.panelOpen = true;
+  state._routing._plannerCommitted = false;
+  state._routing._trackMinimizedByPlanner = false;
+  try { routingMaybeMinimizeTrackForPlanner(); } catch(_){}
   try {
     if (typeof savedTrackRemoveElevationSyncMarker === "function") savedTrackRemoveElevationSyncMarker();
   } catch(_){}
