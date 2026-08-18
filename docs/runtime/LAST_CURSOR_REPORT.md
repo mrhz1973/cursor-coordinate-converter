@@ -1,28 +1,16 @@
-# LAST_CURSOR_REPORT
+# LAST CURSOR REPORT
 
-## LATEST
+**Block:** OUTDOOR-ROUTING-ORS-PROVIDER-A-INFRA3-RETRY  
+**Date:** 2026-08-18  
+**Outcome:** candidate build 220 · REVIEW GPT-SOSTITUTIVA PENDING
 
-* real_task_commit: `5477a5e0d8d9a5681dbfab37b3c39e182306fc79` — LIVE GIS invariato
-* branch: main
-* result_cursor: INFRA2 secret **PRESENT** · GIS client HTTPS **FAIL** (ACL tcp:443) · **STOP** no build 220
-* pass_operatore: n/a
-* result_runtime: LIVE `5477a5e` / 219
-* notes: LoadCredential only · file 600 root:root · journal leak NO · helper 0.1.3 invariato · monolite **UNTOUCHED**
+## Task commit
 
-## OUTPUT VERBATIM
+Pending — monolite build 220 patched locally; orchestrator inbox updated.
 
-```text
-OUTDOOR-ROUTING-ORS-PROVIDER-A-INFRA2
-ORS_API_KEY=PRESENT
-/ors/status on-box PASS
-JOURNAL_SECRET_LEAK NO
-GIS client tcp:443 TcpTestSucceeded=False (ping True)
-https://ubuntu.tailc01234.ts.net/ors/status timeout
-BLOCKED — HTTPS client unreachable
-no capability 1-10; no runtime patch; no build 220
-LIVE 5477a5e build 219
-```
+## Evidence summary
 
-## LIMITI
-
-Capability e candidate 220 bloccati da ACL Tailscale `tcp:443`. Nessun valore secret in questo report.
+- Client HTTPS ORS gateway PASS (ACL tcp:443 applied by operator)
+- Capability ORS 1–10 PASS via gateway
+- Runtime: ORS opt-in provider in routing planner; GraphHopper unchanged
+- No deploy / ABQA / QA / finito

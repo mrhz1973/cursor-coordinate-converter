@@ -13117,6 +13117,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <div id="routingServiceMenu" class="track-new-mode-menu routing-service-menu" role="menu" hidden>
               <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem"
                       data-routing-service="graphhopper" data-i18n="routing.serviceGraphHopper">GraphHopper</button>
+              <button type="button" class="btn btn-sm track-new-mode-item" role="menuitem"
+                      data-routing-service="ors" data-i18n="routing.serviceOrs">OpenRouteService</button>
             </div>
           </div>
           <button type="button" id="btnTrackAddCurrent" class="btn btn-sm" data-i18n="track.addCurrent" data-i18n-tip="tip.trackAddCurrent">➕ Aggiungi punto convertito</button>
@@ -15015,8 +15017,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <p id="routingPlannerPanelMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body" id="routingPlannerPanelBody">
     <div id="routingPlannerStatus" class="routing-panel-status hint" role="status" aria-live="polite"></div>
-    <p class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
-    <div class="routing-provider-row">
+    <p id="routingSelectedServiceNote" class="routing-panel-note hint" data-i18n="routing.selectedService">Servizio: GraphHopper</p>
+    <div id="routingGraphhopperProviderRow" class="routing-provider-row">
       <label class="routing-provider-label" for="routingProviderSelect" data-i18n="routing.providerLabel">Provider</label>
       <select id="routingProviderSelect" class="routing-provider-select"
               data-i18n-aria="tip.routingProvider" data-i18n-tip="tip.routingProvider"
@@ -15186,7 +15188,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="btn btn-sm routing-unit-chip" data-routing-unit-altitude="ft" aria-pressed="false">ft</button>
       </span>
     </div>
-    <div class="routing-loopback-opt">
+    <div id="routingLoopbackOpt" class="routing-loopback-opt">
       <label for="routingLoopbackConsent">
         <input type="checkbox" id="routingLoopbackConsent" />
         <span data-i18n="routing.loopbackConsent">Consenti GraphHopper locale in modalità offline</span>
@@ -17722,7 +17724,16 @@ const I18N = {
     "routing.dragHandle":"Trascina per riordinare",
     "routing.serviceMenu":"Scegli servizio di routing",
     "routing.serviceGraphHopper":"GraphHopper",
+    "routing.serviceOrs":"OpenRouteService",
+    "routing.selectedServiceGraphHopper":"Servizio: GraphHopper",
+    "routing.selectedServiceOrs":"Servizio: OpenRouteService",
     "routing.selectedService":"Servizio: GraphHopper",
+    "routing.orsProviderReady":"Gateway ORS pronto",
+    "routing.orsProviderUnavailable":"Gateway ORS non disponibile",
+    "routing.orsProfilesMissing":"Profili ORS non disponibili",
+    "routing.errorOrsHttp":"Errore gateway ORS",
+    "routing.errorOrsInvalidResponse":"Risposta ORS non valida",
+    "routing.errorOrsRoundTrip":"Calcolo anello ORS non riuscito",
     "routing.endpointLabel":"Endpoint",
     "routing.providerLabel":"Provider",
     "routing.providerVps":"VPS",
@@ -23844,10 +23855,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1";
-const APP_BUILD_DETAIL = "Avoid areas FIX1: preserve alternative_route and round_trip with custom_model.";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-ORS-PROVIDER-A";
+const APP_BUILD_DETAIL = "ORS provider opt-in via HTTPS gateway; GraphHopper unchanged.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 219;
+const APP_BUILD_NUM = 220;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39138,8 +39149,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40160,8 +40171,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42088,8 +42099,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42589,8 +42600,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43603,8 +43614,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44041,8 +44052,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44633,8 +44644,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45600,8 +45611,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -45770,8 +45781,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46199,8 +46210,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46588,8 +46599,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46716,8 +46727,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46892,8 +46903,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47025,8 +47036,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47263,8 +47274,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47572,8 +47583,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47865,8 +47876,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48131,8 +48142,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48277,8 +48288,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48493,8 +48504,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48604,8 +48615,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -83103,7 +83114,7 @@ const ROUTING_ROUND_TRIP_DELTA_WARN_PCT = 40;
 const ROUTING_ROUND_TRIP_SEED_STRIDES = Object.freeze([0, 7919, 104729]);
 const ROUTING_ROUND_TRIP_PRESET_KM = Object.freeze([5, 10, 15, 25]);
 /** Session-only prefs surviving panel close (not persisted; reset on page reload). */
-var _routingSessionPrefs = { provider: "vps", loopbackConsent: false, unitsDistance: "km", unitsAltitude: "m" };
+var _routingSessionPrefs = { provider: "vps", loopbackConsent: false, unitsDistance: "km", unitsAltitude: "m", ghProfile: "hiking", orsProfile: "foot-hiking" };
 function routingGetUnitsPrefs(){
   return {
     distance: (_routingSessionPrefs.unitsDistance === "mi") ? "mi" : "km",
@@ -83279,6 +83290,8 @@ function routingBuildCoordEditControls(p){
 function routingEnsureState(){
   if (state._routing && typeof state._routing === "object"){
     const r = state._routing;
+    if (typeof r.service !== "string") r.service = "graphhopper";
+    else r.service = routingNormalizeService(r.service);
     if (typeof r.pickMode !== "boolean") r.pickMode = false;
     if (!("pickTargetId" in r)) r.pickTargetId = null;
     if (!("markerDrag" in r)) r.markerDrag = null;
@@ -83341,7 +83354,7 @@ function routingEnsureState(){
     panelOpen: false,
     dirty: false,
     error: "",
-    service: null,
+    service: "graphhopper",
     pickMode: false,
     pickTargetId: null,
     markerDrag: null,
@@ -83691,8 +83704,8 @@ function routingSyncCalculateBtnUi(){
     try { routingSyncModeRowUi(); } catch(_){}
     return;
   }
-  const profile = routingGetSelectedGraphhopperProfile();
-  const profOk = routingGraphhopperProfileIsValid(profile);
+  const profile = routingGetSelectedRoutingProfile();
+  const profOk = routingProfileIsValidForService(profile);
   const mode = routingGetRouteMode();
   let ok = false;
   if (mode === "round_trip"){
@@ -84133,6 +84146,7 @@ function routingSetProviderStatus(key, isErr, opts){
   if (isErr && !opts.deferReveal) try { appRevealModalError(el); } catch(_){}
 }
 function routingSyncProviderUi(){
+  try { routingSyncServiceUi(); } catch(_){}
   const r = routingEnsureState();
   const sel = document.getElementById("routingProviderSelect");
   if (sel && sel.value !== r.provider) sel.value = r.provider;
@@ -84187,10 +84201,9 @@ function routingOnNetworkPolicyChange(){
   if (!state._routing) return;
   try { routingSearchResetAll(); } catch(_){}
   const r = state._routing;
-  const gate = routingNetworkGateGraphhopper({
-    provider: r.provider,
-    endpoint: r.resolvedEndpoint || null
-  });
+  const gate = routingIsOrsService()
+    ? routingNetworkGateOrs()
+    : routingNetworkGateGraphhopper({ provider: r.provider, endpoint: r.resolvedEndpoint || null });
   if (gate.ok) return;
   if (r.requestLoading || r.infoLoading || r.requestController)
     routingAbortActiveRequestForPolicy(gate.errKey);
@@ -86030,6 +86043,7 @@ async function routingResolveProvider(opts){
   return { ok: false, errKey: lastErr || "routing.noProviderAvailable" };
 }
 async function routingVerifyProvider(){
+  if (routingIsOrsService()) return routingVerifyOrsProvider();
   const r = routingEnsureState();
   if (r.requestLoading || r.infoLoading) return;
 
@@ -86205,9 +86219,10 @@ const ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID = true;
 function routingAvoidPreflightBlock(opts){
   opts = opts || {};
   if (!routingHasActiveAvoidAreas()) return null;
-  if (opts.roundTrip && !ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID)
+  const ors = routingIsOrsService();
+  if (opts.roundTrip && !(ors ? ROUTING_AVOID_ORS_ROUND_TRIP_WITH_AVOID : ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID))
     return "routing.avoidRoundTripUnsupported";
-  if (opts.withAlternatives && !ROUTING_AVOID_GH_ALT_WITH_AVOID)
+  if (opts.withAlternatives && !(ors ? ROUTING_AVOID_ORS_ALT_WITH_AVOID : ROUTING_AVOID_GH_ALT_WITH_AVOID))
     return "routing.avoidAltUnsupported";
   return null;
 }
@@ -86540,8 +86555,10 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_219", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 219
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 220
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-ORS-PROVIDER-A");
+    add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
+    add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
     add("RAA_validate_min", (function(){
       const v = routingAvoidValidateVertices([{ lat: 44.1, lon: 9.8 }, { lat: 44.11, lon: 9.81 }]);
@@ -87882,6 +87899,507 @@ function routingFitMapToRoutePreview(previewCoordinates){
   renderTileMap(cam.lat, cam.lon, z);
   return true;
 }
+
+const ROUTING_ORS_GATEWAY_BASE = "https://ubuntu.tailc01234.ts.net";
+const ROUTING_ORS_STATUS_PATH = "/ors/status";
+const ROUTING_ORS_DIRECTIONS_PATH = "/ors/v2/directions";
+const ROUTING_ORS_TIMEOUT_MS = 20000;
+const ROUTING_ORS_STATUS_TIMEOUT_MS = 5000;
+const ROUTING_ORS_PROFILES = Object.freeze(["foot-hiking", "foot-walking", "cycling-mountain"]);
+const ROUTING_AVOID_ORS_ALT_WITH_AVOID = true;
+const ROUTING_AVOID_ORS_ROUND_TRIP_WITH_AVOID = true;
+function routingNormalizeService(v){
+  const s = String(v || "").trim().toLowerCase();
+  return s === "ors" ? "ors" : "graphhopper";
+}
+function routingGetActiveService(){
+  const r = state._routing;
+  return routingNormalizeService(r && r.service);
+}
+function routingIsOrsService(){
+  return routingGetActiveService() === "ors";
+}
+function routingOrsEndpoint(){
+  return ROUTING_ORS_GATEWAY_BASE;
+}
+function routingOrsStatusUrl(){
+  return ROUTING_ORS_GATEWAY_BASE + ROUTING_ORS_STATUS_PATH;
+}
+function routingOrsDirectionsUrl(profile){
+  return ROUTING_ORS_GATEWAY_BASE + ROUTING_ORS_DIRECTIONS_PATH + "/" +
+    encodeURIComponent(String(profile || "")) + "/geojson";
+}
+function routingGetSelectedOrsProfile(){
+  const sel = document.getElementById("routingProfileSelect");
+  const v = sel && typeof sel.value === "string" ? sel.value : "foot-hiking";
+  return String(v);
+}
+function routingOrsProfileIsValid(profile){
+  return !!profile && ROUTING_ORS_PROFILES.indexOf(profile) >= 0;
+}
+function routingGetSelectedRoutingProfile(){
+  return routingIsOrsService() ? routingGetSelectedOrsProfile() : routingGetSelectedGraphhopperProfile();
+}
+function routingProfileIsValidForService(profile){
+  return routingIsOrsService() ? routingOrsProfileIsValid(profile) : routingGraphhopperProfileIsValid(profile);
+}
+function routingNetworkGateOrs(){
+  if (state.opsecStrict) return { ok: false, errKey: "routing.errorOpsec" };
+  if (state.forceOffline) return { ok: false, errKey: "routing.errorOffline" };
+  if (typeof navigator !== "undefined" && navigator.onLine === false)
+    return { ok: false, errKey: "routing.errorOffline" };
+  if (!isEffectivelyOnline()) return { ok: false, errKey: "routing.errorNetwork" };
+  return { ok: true };
+}
+function routingBuildOrsAvoidPolygons(){
+  const active = routingAvoidActiveAreas();
+  if (!active.length) return null;
+  const polys = [];
+  for (let i = 0; i < active.length; i++){
+    const val = routingAvoidValidateVertices(active[i].vertices, { forSend: true });
+    if (!val.ok) continue;
+    polys.push(routingAvoidClosedRingLonLat(val.vertices));
+  }
+  if (!polys.length) return null;
+  if (polys.length === 1) return { type: "Polygon", coordinates: [polys[0]] };
+  return { type: "MultiPolygon", coordinates: polys.map(function(ring){ return [ring]; }) };
+}
+function routingApplyAvoidPayloadToOrsBody(body){
+  if (!body || typeof body !== "object") return body;
+  const poly = routingBuildOrsAvoidPolygons();
+  if (!poly) return body;
+  if (!body.options || typeof body.options !== "object") body.options = {};
+  body.options.avoid_polygons = poly;
+  return body;
+}
+function routingBuildOrsRouteBody(pointsLonLat, opts){
+  opts = opts || {};
+  const body = { coordinates: pointsLonLat, elevation: true, instructions: false };
+  if (opts.withAlternatives){
+    body.alternative_routes = {
+      target_count: ROUTING_ALTERNATIVE_MAX_PATHS,
+      share_factor: ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR,
+      weight_factor: ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR
+    };
+  }
+  return routingApplyAvoidPayloadToOrsBody(body);
+}
+function routingBuildOrsRoundTripBody(pointLonLat, distanceM, seed){
+  const body = {
+    coordinates: [pointLonLat],
+    elevation: true,
+    instructions: false,
+    options: {
+      round_trip: {
+        length: Math.round(Number(distanceM)),
+        points: 3,
+        seed: (Number(seed) >>> 0) || 1
+      }
+    }
+  };
+  return routingApplyAvoidPayloadToOrsBody(body);
+}
+function routingParseOrsFeature(feature, originalIndex){
+  if (!feature || typeof feature !== "object") return null;
+  const geom = feature.geometry;
+  if (!geom || geom.type !== "LineString") return null;
+  const coords = Array.isArray(geom.coordinates) ? geom.coordinates : null;
+  if (!coords || coords.length < 2) return null;
+  const previewCoordinates = [];
+  const elevationCoordinates = [];
+  for (let i = 0; i < coords.length; i++){
+    const c = coords[i];
+    if (!Array.isArray(c) || c.length < 2) return null;
+    const lon = Number(c[0]);
+    const lat = Number(c[1]);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+    if (lon < -180 || lon > 180 || lat < -90 || lat > 90) return null;
+    const nLon = normalizeLon(lon);
+    previewCoordinates.push({ lat: lat, lon: nLon });
+    const ele = (c.length >= 3 && typeof c[2] === "number" && Number.isFinite(c[2])) ? c[2] : null;
+    elevationCoordinates.push({ lat: lat, lon: nLon, ele: ele });
+  }
+  const metrics = {};
+  const props = feature.properties && typeof feature.properties === "object" ? feature.properties : {};
+  const summ = props.summary && typeof props.summary === "object" ? props.summary : {};
+  const distanceM = Number(summ.distance);
+  if (Number.isFinite(distanceM) && distanceM >= 0) metrics.distanceM = distanceM;
+  const durS = Number(summ.duration);
+  if (Number.isFinite(durS) && durS >= 0) metrics.durationMs = durS * 1000;
+  const asc = Number(summ.ascent);
+  if (Number.isFinite(asc) && asc >= 0) metrics.ascentM = asc;
+  const des = Number(summ.descent);
+  if (Number.isFinite(des) && des >= 0) metrics.descentM = des;
+  return { originalIndex: originalIndex, previewCoordinates: previewCoordinates, elevationCoordinates: elevationCoordinates, metrics: metrics };
+}
+function routingValidateOrsResponse(data){
+  if (!data || typeof data !== "object" || data.type !== "FeatureCollection")
+    return { ok: false, errKey: "routing.errorOrsInvalidResponse" };
+  const features = Array.isArray(data.features) ? data.features : null;
+  if (!features || !features.length) return { ok: false, errKey: "routing.errorNoPath" };
+  const alternatives = [];
+  const maxScan = Math.min(features.length, ROUTING_ALTERNATIVE_MAX_PATHS);
+  for (let i = 0; i < maxScan; i++){
+    const alt = routingParseOrsFeature(features[i], i);
+    if (alt) alternatives.push(alt);
+  }
+  if (!alternatives.length) return { ok: false, errKey: "routing.errorNoPath" };
+  const primary = alternatives[0];
+  return { ok: true, alternatives: alternatives, previewCoordinates: primary.previewCoordinates, elevationCoordinates: primary.elevationCoordinates, metrics: primary.metrics };
+}
+async function routingOrsStatusCheck(parentSignal){
+  const localCtrl = new AbortController();
+  const onAbort = function(){ try { localCtrl.abort(); } catch(_){} };
+  if (parentSignal){
+    if (parentSignal.aborted) return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+    parentSignal.addEventListener("abort", onAbort, { once: true });
+  }
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    timeoutId = setTimeout(function(){ timedOut = true; try { localCtrl.abort(); } catch(_){} }, ROUTING_ORS_STATUS_TIMEOUT_MS);
+    const res = await fetch(routingOrsStatusUrl(), { method: "GET", signal: localCtrl.signal });
+    if (!res || !res.ok) return { ok: false, errKey: "routing.orsProviderUnavailable", status: res && res.status };
+    let data;
+    try { data = await res.json(); } catch(_){ return { ok: false, errKey: "routing.orsProviderUnavailable" }; }
+    if (!data || data.status !== "ready" || data.secret !== "PRESENT") return { ok: false, errKey: "routing.orsProviderUnavailable" };
+    const profiles = Array.isArray(data.profiles) ? data.profiles : [];
+    for (let i = 0; i < ROUTING_ORS_PROFILES.length; i++){
+      if (profiles.indexOf(ROUTING_ORS_PROFILES[i]) < 0) return { ok: false, errKey: "routing.orsProfilesMissing" };
+    }
+    return { ok: true, profiles: profiles };
+  } catch(e){
+    const isAbort = e && e.name === "AbortError";
+    if (isAbort && timedOut) return { ok: false, errKey: "routing.errorInfoTimeout" };
+    if (isAbort) return { ok: false, errKey: "routing.errorGeneric", aborted: true };
+    const msg = String(e && e.message ? e.message : e || "").toLowerCase();
+    if (msg.indexOf("cors") >= 0) return { ok: false, errKey: "routing.errorInfoCors" };
+    return { ok: false, errKey: "routing.errorInfoNetwork" };
+  } finally {
+    if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
+    if (parentSignal){ try { parentSignal.removeEventListener("abort", onAbort); } catch(_){} }
+  }
+}
+function routingApplyRouteResultFromValidated(r, validated, profile){
+  const chosen = validated.alternatives[0];
+  const elev = Array.isArray(chosen.elevationCoordinates) && chosen.elevationCoordinates.length
+    ? chosen.elevationCoordinates
+    : chosen.previewCoordinates.map(function(pt){ return { lat: pt.lat, lon: pt.lon, ele: null }; });
+  r.alternatives = validated.alternatives.slice();
+  r.selectedAlternative = 0;
+  r.previewCoordinates = chosen.previewCoordinates.slice();
+  r.elevationCoordinates = elev;
+  r.routeMetrics = chosen.metrics;
+  r.altitudeHover = null;
+  r._altitudeChartLayout = null;
+  r.routeError = "";
+  try {
+    r.elevationProfile = routingBuildElevationProfile(r.previewCoordinates, r.elevationCoordinates);
+    r._altitudeProfileGeneration = (r._altitudeProfileGeneration || 0) + 1;
+    try { if (typeof routingInvalidateAltitudeMapPixelCache === "function") routingInvalidateAltitudeMapPixelCache(); } catch(_){}
+    r.difficultySummary = routingComputeDifficulty(r.routeMetrics, r.elevationProfile, profile);
+  } catch(_){ r.elevationProfile = null; r.difficultySummary = null; }
+  try { routingRenderAltitudePanel({ preserveHover: false }); } catch(_){}
+  try { routingSyncAlternativesRowUi(); } catch(_){}
+  try { refreshTileMapForTrackUi(); } catch(_){}
+  try { routingSyncSaveAsTrackBtnUi(); } catch(_){}
+  try {
+    const okFit = routingFitMapToRoutePreview(r.previewCoordinates);
+    if (!okFit) refreshTileMapForTrackUi();
+  } catch(_){ try { refreshTileMapForTrackUi(); } catch(__){} }
+  routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
+  try { routingRenderList(); } catch(_){}
+  try { routingFocusResultAfterSuccess(); } catch(_){}
+}
+function routingSyncProfileSelectForService(){
+  const sel = document.getElementById("routingProfileSelect");
+  if (!sel) return;
+  const svc = routingGetActiveService();
+  const isOrs = svc === "ors";
+  if (!sel._routingProfileService || sel._routingProfileService !== svc){
+    const cur = sel.value;
+    if (sel._routingProfileService === "ors" && routingOrsProfileIsValid(cur)) _routingSessionPrefs.orsProfile = cur;
+    else if (sel._routingProfileService === "graphhopper" && routingGraphhopperProfileIsValid(cur)) _routingSessionPrefs.ghProfile = cur;
+    sel.innerHTML = "";
+    const list = isOrs ? ROUTING_ORS_PROFILES : ROUTING_GRAPHHOPPER_PROFILES;
+    const pref = isOrs ? (_routingSessionPrefs.orsProfile || "foot-hiking") : (_routingSessionPrefs.ghProfile || "hiking");
+    for (let i = 0; i < list.length; i++){
+      const opt = document.createElement("option");
+      opt.value = list[i];
+      opt.textContent = list[i];
+      sel.appendChild(opt);
+    }
+    sel.value = list.indexOf(pref) >= 0 ? pref : list[0];
+    sel._routingProfileService = svc;
+  }
+}
+function routingSyncServiceUi(){
+  const svc = routingGetActiveService();
+  const note = document.getElementById("routingSelectedServiceNote");
+  if (note){
+    note.textContent = routingT(
+      svc === "ors" ? "routing.selectedServiceOrs" : "routing.selectedServiceGraphHopper",
+      svc === "ors" ? "Servizio: OpenRouteService" : "Servizio: GraphHopper"
+    );
+  }
+  const ghRow = document.getElementById("routingGraphhopperProviderRow");
+  const loop = document.getElementById("routingLoopbackOpt");
+  const epRow = document.getElementById("routingEndpointRow");
+  const isOrs = svc === "ors";
+  if (ghRow) ghRow.hidden = isOrs;
+  if (loop) loop.hidden = isOrs;
+  if (epRow) epRow.hidden = !isOrs;
+  try { routingSyncProfileSelectForService(); } catch(_){}
+  const r = state._routing;
+  if (r){
+    if (isOrs){ r.resolvedProvider = "ors"; r.resolvedEndpoint = routingOrsEndpoint(); }
+    else if (r.provider !== "auto"){
+      r.resolvedProvider = routingProviderNormalize(r.provider);
+      r.resolvedEndpoint = routingEndpointForProvider(r.provider);
+    }
+    routingSyncEndpointUi();
+  }
+}
+async function routingVerifyOrsProvider(){
+  const r = routingEnsureState();
+  if (r.requestLoading || r.infoLoading) return;
+  const gate0 = routingNetworkGateOrs();
+  if (!gate0.ok){
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true, { deferReveal: true });
+    routingSetProviderStatus(gate0.errKey, true, { deferReveal: true });
+    try { routingRevealPanelErrors(); } catch(_){}
+    return;
+  }
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const seq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.infoLoading = true;
+  r.requestLoading = false;
+  routingSetStatus(routingT("routing.verifying", "Verifying…"), false);
+  routingSetProviderStatus("routing.verifying", false);
+  routingSyncCalculateBtnUi();
+  try {
+    const info = await routingOrsStatusCheck(controller.signal);
+    if (!state._routing || state._routing.requestSequence !== seq) return;
+    if (info.aborted) return;
+    if (!info.ok){
+      routingSetStatus(routingT(info.errKey || "routing.orsProviderUnavailable", "Unavailable"), true);
+      routingSetProviderStatus(info.errKey || "routing.orsProviderUnavailable", true);
+      return;
+    }
+    r.resolvedProvider = "ors";
+    r.resolvedEndpoint = routingOrsEndpoint();
+    r.providerStatusKey = "routing.orsProviderReady";
+    routingSyncEndpointUi();
+    routingSetProviderStatus(r.providerStatusKey, false);
+    routingSetStatus(routingT(r.providerStatusKey, "OK"), false);
+  } finally {
+    if (!state._routing || state._routing.requestSequence !== seq) return;
+    if (state._routing.requestController === controller){
+      state._routing.infoLoading = false;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+  }
+}
+async function routingPostOrsDirections(profile, bodyObj, controller){
+  const res = await fetch(routingOrsDirectionsUrl(profile), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(bodyObj),
+    signal: controller.signal
+  });
+  let rawText = "";
+  try { rawText = await res.text(); } catch(_){ rawText = ""; }
+  let data = null;
+  if (rawText){
+    try { data = JSON.parse(rawText); } catch(_){
+      if (!res || !res.ok) throw { kind: "http", status: res && res.status, bodyText: rawText, data: null };
+      throw { kind: "json" };
+    }
+  }
+  if (!res || !res.ok){
+    throw { kind: "http", status: res && res.status, bodyText: rawText, data: data };
+  }
+  if (!data || typeof data !== "object") throw { kind: "json" };
+  return data;
+}
+async function routingCalculateRoundTripOrs(){
+  const r = state._routing;
+  if (!r || r.requestLoading || r.infoLoading) return;
+  const profile = routingGetSelectedOrsProfile();
+  if (!routingOrsProfileIsValid(profile)){
+    r.routeError = "routing.errorInvalidProfile";
+    routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  if (!routingRoundTripStartIsReady()){
+    r.routeError = "routing.roundTripNeedStart";
+    routingSetStatus(routingT("routing.roundTripNeedStart", "Need start A."), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  r.roundTripDistanceM = routingClampRoundTripDistanceM(r.roundTripDistanceM);
+  const rtAvoidBlock = routingAvoidPreflightBlock({ roundTrip: true });
+  if (rtAvoidBlock){
+    r.routeError = rtAvoidBlock;
+    routingSetStatus(routingT(rtAvoidBlock, rtAvoidBlock), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  const gate0 = routingNetworkGateOrs();
+  if (!gate0.ok){
+    r.routeError = gate0.errKey;
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const reqSeq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.requestLoading = true;
+  r.previewCoordinates = null;
+  r.alternatives = [];
+  routingSetStatus(routingT("routing.calcRoundTrip", "Calcolo anello…"), false);
+  routingSyncCalculateBtnUi();
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    const p0 = routingGetRoundTripStartPoint();
+    const startLonLat = [Number(p0.lon), Number(p0.lat)];
+    if (r.roundTripSeed == null || !Number.isFinite(Number(r.roundTripSeed))) r.roundTripSeed = routingNewRoundTripSeed();
+    const seeds = routingRoundTripSeedBatch(r.roundTripSeed);
+    let best = null;
+    for (let si = 0; si < seeds.length; si++){
+      if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+      timeoutId = setTimeout(function(){ timedOut = true; try { controller.abort(); } catch(_){} }, ROUTING_ORS_TIMEOUT_MS);
+      const body = routingBuildOrsRoundTripBody(startLonLat, r.roundTripDistanceM, seeds[si]);
+      let data;
+      try { data = await routingPostOrsDirections(profile, body, controller); }
+      catch(e){ if (timedOut) throw e; continue; }
+      finally { if (timeoutId){ clearTimeout(timeoutId); timeoutId = null; } timedOut = false; }
+      const validated = routingValidateOrsResponse(data);
+      if (!validated.ok) continue;
+      const alt = validated.alternatives[0];
+      if (!routingRoundTripClosureOk(alt.previewCoordinates, ROUTING_ROUND_TRIP_CLOSE_TOL_M)) continue;
+      const score = routingScoreRoundTripCandidate(alt.metrics, r.roundTripDistanceM);
+      if (!best || score < best.score) best = { score: score, validated: validated, seed: seeds[si] };
+    }
+    if (!best){
+      r.routeError = "routing.roundTripNoCandidate";
+      routingSetStatus(routingT("routing.roundTripNoCandidate", "No loop."), true);
+      return;
+    }
+    r.roundTripSeed = best.seed;
+    routingApplyRouteResultFromValidated(r, best.validated, profile);
+  } catch(e){
+    if (timedOut) routingSetStatus(routingT("routing.errorTimeout", "Timeout"), true);
+    else routingSetStatus(routingT("routing.errorOrsRoundTrip", "ORS round trip failed"), true);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (state._routing && state._routing.requestSequence === reqSeq){
+      state._routing.requestLoading = false;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+  }
+}
+async function routingCalculateRouteOrs(){
+  const r = state._routing;
+  if (!r || r.requestLoading || r.infoLoading) return;
+  if (routingGetRouteMode() === "round_trip") return routingCalculateRoundTripOrs();
+  const profile = routingGetSelectedOrsProfile();
+  if (!routingOrsProfileIsValid(profile)){
+    routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
+    return;
+  }
+  const ptsRes = routingExtractValidGraphhopperPoints();
+  if (!ptsRes.ok){
+    routingSetStatus(routingT("routing.errorInvalidPoints", "Invalid points."), true);
+    return;
+  }
+  const gate0 = routingNetworkGateOrs();
+  if (!gate0.ok){
+    routingSetStatus(routingT(gate0.errKey, gate0.errKey), true);
+    return;
+  }
+  try { if (r.requestController) r.requestController.abort(); } catch(_){}
+  r.requestSequence = (r.requestSequence || 0) + 1;
+  const reqSeq = r.requestSequence;
+  const controller = new AbortController();
+  r.requestController = controller;
+  r.requestLoading = true;
+  r.previewCoordinates = null;
+  r.alternatives = [];
+  routingSetStatus(routingT("routing.calculating", "Calculating…"), false);
+  routingSyncCalculateBtnUi();
+  const isOutAndBack = routingGetRouteMode() === "out_and_back";
+  const avoidPreflight = routingAvoidPreflightBlock({ withAlternatives: !isOutAndBack });
+  if (avoidPreflight){
+    routingSetStatus(routingT(avoidPreflight, avoidPreflight), true);
+    r.requestLoading = false;
+    r.requestController = null;
+    routingSyncCalculateBtnUi();
+    return;
+  }
+  let timedOut = false;
+  let timeoutId = null;
+  try {
+    timeoutId = setTimeout(function(){ timedOut = true; try { controller.abort(); } catch(_){} }, ROUTING_ORS_TIMEOUT_MS);
+    if (isOutAndBack){
+      routingSetStatus(routingT("routing.calcOutbound", "Outbound…"), false);
+      const dataOut = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat, { withAlternatives: false }), controller);
+      const outVal = routingValidateOrsResponse(dataOut);
+      if (!outVal.ok) throw { kind: "ors", errKey: outVal.errKey };
+      routingSetStatus(routingT("routing.calcReturn", "Return…"), false);
+      const dataRet = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat.slice().reverse(), { withAlternatives: false }), controller);
+      const retVal = routingValidateOrsResponse(dataRet);
+      if (!retVal.ok) throw { kind: "ors", errKey: retVal.errKey };
+      const merged = routingMergeOutAndBackCoordinates(outVal.alternatives[0].previewCoordinates, retVal.alternatives[0].previewCoordinates);
+      if (!merged) throw { kind: "ors", errKey: "routing.errorNoPath" };
+      const mergedElev = routingMergeOutAndBackCoordinates(outVal.alternatives[0].elevationCoordinates, retVal.alternatives[0].elevationCoordinates);
+      r.alternatives = [];
+      r.selectedAlternative = null;
+      r.previewCoordinates = merged;
+      r.elevationCoordinates = mergedElev || merged.map(function(p){ return { lat: p.lat, lon: p.lon, ele: p.ele }; });
+      r.routeMetrics = routingAggregateOutAndBackMetrics(outVal.alternatives[0].metrics, retVal.alternatives[0].metrics);
+      r.routeError = "";
+      try {
+        r.elevationProfile = routingBuildElevationProfile(r.previewCoordinates, r.elevationCoordinates);
+        r.difficultySummary = routingComputeDifficulty(r.routeMetrics, r.elevationProfile, profile);
+      } catch(_){}
+      try { routingRenderAltitudePanel({ preserveHover: false }); } catch(_){}
+      try { refreshTileMapForTrackUi(); } catch(_){}
+      routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
+    } else {
+      const data = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat, { withAlternatives: true }), controller);
+      const validated = routingValidateOrsResponse(data);
+      if (!validated.ok) throw { kind: "ors", errKey: validated.errKey };
+      if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+      routingApplyRouteResultFromValidated(r, validated, profile);
+    }
+  } catch(e){
+    if (!timedOut && e && e.name === "AbortError") return;
+    routingSetStatus(routingT(timedOut ? "routing.errorTimeout" : "routing.errorOrsHttp", "Error"), true);
+  } finally {
+    if (timeoutId) clearTimeout(timeoutId);
+    if (state._routing && state._routing.requestSequence === reqSeq){
+      state._routing.requestLoading = false;
+      state._routing.requestController = null;
+    }
+    routingSyncCalculateBtnUi();
+  }
+}
+function routingCalculateRoute(){
+  if (routingIsOrsService()) return routingCalculateRouteOrs();
+  return routingCalculateRouteGraphhopper();
+}
+
 async function routingCalculateRouteGraphhopper(){
   const r = state._routing;
   if (!r || r.requestLoading || r.infoLoading) return;
@@ -90855,6 +91373,7 @@ function openRoutingPlannerPanel(service){
       try { gisRestoreMinimizedPanel("routingPlannerPanel"); } catch(_){}
     }
     try { gisPanelBringToFront(dlg, _routingPanelLayoutOpts()); } catch(_){}
+    try { routingSyncServiceUi(); } catch(_){}
     try { routingSyncProviderUi(); } catch(_){}
     try { routingRenderList(); } catch(_){}
     try { routingSyncUnitsRowUi(); } catch(_){}
@@ -90876,6 +91395,7 @@ function openRoutingPlannerPanel(service){
   } catch(_){ dlg.setAttribute("open", ""); }
   try { wireRoutingPanelFloating(dlg); } catch(_){}
   routingSetStatus("", false);
+  try { routingSyncServiceUi(); } catch(_){}
   try { routingSyncProviderUi(); } catch(_){}
   routingRenderList();
   try { routingSyncUnitsRowUi(); } catch(_){}
@@ -90948,6 +91468,8 @@ function wireRoutingPlannerOnce(){
       ev.preventDefault();
       const svc = item.getAttribute("data-routing-service") || "graphhopper";
       routingServiceMenuClose({ focusBtn: false });
+      routingEnsureState().service = routingNormalizeService(svc);
+      try { routingInvalidateRoutePreview(); } catch(_){}
       openRoutingPlannerPanel(svc);
     });
   }
@@ -91050,7 +91572,7 @@ function wireRoutingPlannerOnce(){
   if (calcBtn) calcBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
     if (calcBtn.disabled) return;
-    routingCalculateRouteGraphhopper();
+    routingCalculateRoute();
   });
   const undoBtn = document.getElementById("routingUndoLastPointBtn");
   if (undoBtn && !undoBtn._routingUndoBound){
