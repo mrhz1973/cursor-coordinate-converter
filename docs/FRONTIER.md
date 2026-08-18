@@ -5,10 +5,10 @@
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | [`WU-0010`](work-units/WU-0010-outdoor-routing-graphhopper.md) — Outdoor Routing GraphHopper |
-| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3` |
-| **STATO BLOCCO** | **QA FINALE CHATGPT — PENDING** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **BLOCCO ATTIVO** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4` |
+| **STATO BLOCCO** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **GATE CORRENTE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
 | **RUNTIME LIVE** | `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · helper **0.1.3** · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1` |
-| **RUNTIME CANDIDATE** | `d4558419c7139a4587389528d76bd82395ada100` · build **224** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3` · blob `4a9565af089bde990b9d9c64689164da21949273` · **DEPLOYED** GIS (`?v=d455841`) · ABQA **PASS** · QA operatore **non attestata** |
-| **NEXT** | QA finale ChatGPT (umana) su FIX3 candidate 224 deployato |
-| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX3 224 deploy+ABQA PASS** (FIX2 223 QA operatore FAIL SCOPED) |
+| **RUNTIME CANDIDATE** | `f1d9fc0540f8073d5e79f59164237a951e80215c` · build **225** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4` · blob `8f9a6abe796adbfbab17d5ded1d9542efa70c306` · **NON deployato** |
+| **NEXT** | review FIX4 candidate 225 |
+| **ALTRI WORKSTREAM** | WU-0021 **CLOSED / PASS** · WU-0012 **OPEN** / waiting provider · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · confronto provider **FIX4 candidate 225 review pending** (FIX3 224 QA operatore FAIL SCOPED) |

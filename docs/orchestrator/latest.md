@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3** **224** `d455841` **DEPLOYED** · REVIEW **PASS** · ABQA **PASS** (172+8) · GATE **QA FINALE CHATGPT — PENDING** · evidence: [`inbox/2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md`](inbox/2026-08-18_1816_outdoor-routing-f-provider-compare-a-fix3-deploy-abqa.md) · LIVE resta **220** · **NON** QA operatore · **NON** finito.
+2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4** candidate **225** `f1d9fc0` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · evidence: [`inbox/2026-08-18_1853_outdoor-routing-f-provider-compare-a-fix4.md`](inbox/2026-08-18_1853_outdoor-routing-f-provider-compare-a-fix4.md) · LIVE resta **220** · **NON** deploy.
