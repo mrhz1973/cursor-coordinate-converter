@@ -73,9 +73,4 @@ Selftest: **ok=true n=649** (RAA ORS tutti PASS).
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
-
-- LIVE = build **220** / `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a`
-- CANDIDATE = none
-- NEXT = QA finale ChatGPT
-- **Non** finito · **non** QA operatore attestata
+**QA OUTDOOR-ROUTING-ORS-PROVIDER-A PASS operatore** (2026-08-18) → **CLOSED / PASS** · Regola H finito

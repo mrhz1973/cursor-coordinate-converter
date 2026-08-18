@@ -2,15 +2,15 @@
 # WU-0010 — Outdoor Routing GraphHopper
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-ORS-PROVIDER-A** · QA FINALE CHATGPT — PENDING
-**ACTIVE BLOCK:** `OUTDOOR-ROUTING-ORS-PROVIDER-A`
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
+**STATUS:** OPEN / Bundle F — **OUTDOOR-ROUTING-ORS-PROVIDER-A** **CLOSED / PASS**
+**ACTIVE BLOCK:** none
+**CURRENT GATE:** none
 **RUNTIME LIVE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
 **RUNTIME CANDIDATE:** none
-**NEXT:** QA finale ChatGPT
+**NEXT:** resto Bundle F **NOT OPENED** / da scegliere
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
+**Stato:** **OPEN / B1a–E + REVERSE-A + ELEVATION-STYLE-A + TRACK-ELEVATION-PROFILE-A + TRACK-SAVE-AS-NAME-A + ROUTING-SUMMARY-DEDUP-A + ROUTING-UX-POLISH-BUNDLE-A (+ FIX1) + APP-BUILD-LABEL-UX-A (+ FIX1) + TRACK-PROFILE-POINTS-DISPLAY-A + MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3) + ROUTING-POINT-COORD-EDIT-A (+ FIX1) + ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) + ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) + ROUTING-GEOCODE-SNAP-A + UX-SEARCH-ERROR-FOCUS-A + ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) + UI-MODAL-ERROR-FOCUS-A-FIX1 (+ FIX2) + ROUTING-ANDATA-RITORNO-A + ROUTING-ACTION-ROW-UX-A + ROUTING-ANELLO-A (+ FIX1) + OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) + OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / resto Bundle F futuro / INFRA-GH-1D CLOSED**
 **Data pubblicazione piano:** 2026-07-24
 **Runtime autorevole attuale:** `f7185823af3028069ff24613151a6ef0209d0966` (`f718582`) — display **`ROUTING-ANELLO-A-FIX1 · build 115`**
 **MAJOR-3-b1:** CLOSED / PASS end-to-end (storico tip `1812010`)
@@ -25,6 +25,7 @@
 **ROUTING-ACTION-ROW-UX-A:** **CLOSED / PASS end-to-end** (2026-08-03) — tip storico **`dde5156`** build 113 / `ROUTING-ACTION-ROW-UX-A`; blob `e999cafe…`; byte LF **3309352**; SHA-256 LF **`53293444…`**; action strip unificata mode+actions; ROUTINE; harness 28/28; deploy+QA PASS; Regola H; **superseded live** da **ROUTING-ANELLO-A-FIX1**.
 **ROUTING-ANELLO-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-03) — tip **`f718582`** build 115 / `ROUTING-ANELLO-A-FIX1`; catena `4135737` (114) → FIX1; blob `0ffb7b34…`; byte LF **3347642**; SHA-256 LF **`0513e768…`**; `round_trip` multi-seed + `ch.disable`; FIX1 re-gate/timeout/antimeridiano; DELICATO; review FIX1 PASS; deploy+QA PASS; Regola H.
 **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-18) — catena `12a7477` build 218 → tip **`5477a5e`** FIX1 build 219; blob `a823ae9b…`; byte LF **10537443**; SHA-256 LF **`eb7a8aa0…`**; aree da evitare `custom_model` + draw lifecycle; FIX1 preserve `algorithm`/alternative/round_trip con avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md`](../orchestrator/inbox/2026-08-18_0130_outdoor-routing-f-avoid-areas-a-fix1-deploy-qa.md).
+**OUTDOOR-ROUTING-ORS-PROVIDER-A:** **CLOSED / PASS end-to-end** (2026-08-18) — catena `2687873` build 220 HTML → FIX1 infra **`cfee0e4`**; blob `23fe93aa…`; byte LF **10562488**; SHA-256 HTTP **`67d86081…`**; provider ORS opt-in (mai Auto); gateway HTTPS Tailscale; secret server-side; hiking/MTB/alternative/OOB/anello/avoid; DELICATO; REVIEW GPT-SOSTITUTIVA PASS; deploy+ABQA+QA operatore PASS; Regola H. Evidence: [`2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md).
 **Review upstream GLM:** **PASS CON CORREZIONI** — 3 correzioni bloccanti registrate qui sotto
 **B1a (+ FIX1 + FIX2):** **CLOSED / PASS end-to-end** (shell no-map; tip `d95f745` build 54)
 **B1b (+ FIX1):** **CLOSED / PASS end-to-end** (pick/marker/GPS + disarmo BBOX; tip `3a702e1` build 56)
@@ -45,7 +46,7 @@
 **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1–FIX3):** Centra viewport-aware (usable rect + costi normalizzati) — **CLOSED / PASS end-to-end** (tip storico `d0688ea` build 93 / `B6.2MCV-A-FIX3`; superseded live da **ROUTING-POINT-COORD-EDIT-A**).
 **ROUTING-PROFILE-EDIT-A:** **SUPERSEDED / RENAMED — NO RUNTIME** (2026-08-01) — discovery: editing base già presente; nessuna implementazione sotto questo ID; residuo → **ROUTING-POINT-COORD-EDIT-A**.
 **ROUTING-POINT-COORD-EDIT-A (+ FIX1):** **CLOSED / PASS end-to-end** (2026-08-01) — tip `6475804` build 95 / `B6.3RPC-A-FIX1`; blob `a87920fe…`; byte LF **3162728**; SHA-256 LF **`559795bf…`**; CTA «Modifica coordinate»; DD atomici; FIX1 clear feedback stale; review+deploy+QA PASS; Regola H. Piano: [`docs/orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md`](../orchestrator/inbox/2026-08-01_1724_plan_routing-point-coord-edit-a.md). Bundle F resta futuro e separato.
-**Backlog UX:** **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** (2026-08-01). **Oggetti GIS FROZEN**. **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED**. **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) CLOSED**. **ROUTING-GEOCODE-SNAP-A CLOSED**. **ROUTING-SEARCH-UX-A CLOSED** (nel bundle UX-SEARCH-ERROR-FOCUS-A). **UI-MODAL-ERROR-FOCUS-A CLOSED** + **FIX1/FIX2 CLOSED**. **UX-SEARCH-ERROR-FOCUS-A CLOSED / PASS end-to-end**. **ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) CLOSED / PASS end-to-end**. **ROUTING-ANDATA-RITORNO-A CLOSED / PASS end-to-end**. **ROUTING-ACTION-ROW-UX-A CLOSED / PASS end-to-end**. **ROUTING-ANELLO-A (+ FIX1) CLOSED / PASS end-to-end**. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) CLOSED / PASS end-to-end**. Resto Bundle F = backlog non aperto.
+**Backlog UX:** **QA-OPERATOR-IT-ONLY-PREF CLOSED / PASS docs-only** (2026-08-01). **Oggetti GIS FROZEN**. **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2) CLOSED**. **ROUTING-ALTERNATIVE-ROUTES-A (+ FIX1–FIX3) CLOSED**. **ROUTING-GEOCODE-SNAP-A CLOSED**. **ROUTING-SEARCH-UX-A CLOSED** (nel bundle UX-SEARCH-ERROR-FOCUS-A). **UI-MODAL-ERROR-FOCUS-A CLOSED** + **FIX1/FIX2 CLOSED**. **UX-SEARCH-ERROR-FOCUS-A CLOSED / PASS end-to-end**. **ROUTING-MODAL-OPEN-EXPANDED-A (+ FIX1) CLOSED / PASS end-to-end**. **ROUTING-ANDATA-RITORNO-A CLOSED / PASS end-to-end**. **ROUTING-ACTION-ROW-UX-A CLOSED / PASS end-to-end**. **ROUTING-ANELLO-A (+ FIX1) CLOSED / PASS end-to-end**. **OUTDOOR-ROUTING-F-AVOID-AREAS-A (+ FIX1) CLOSED / PASS end-to-end**. **OUTDOOR-ROUTING-ORS-PROVIDER-A CLOSED / PASS end-to-end**. Resto Bundle F = backlog non aperto.
 **Infrastruttura prerequisito:** [`WU-0011 — INFRA-GH-1A + INFRA-GH-1B`](WU-0011-infra-gh-1a-graphhopper-local-poc.md) — **CLOSED / PASS**; **INFRA-GH-1D** — **CLOSED / PASS** (vedi [`INFRA_VPS.md`](../INFRA_VPS.md)).
 **Nota numerazione storica:** la sezione §5 «BUNDLE B2 — Cerca/geocoding multi-riga» è una **numerazione storica superseded**. Il geocoding multi-riga è stato chiuso come **ROUTING-GEOCODING-MULTIROW-A (+ FIX1 + FIX2)** (tip `1f7c05f`). La modalità **Online/gateway** non è cancellata: è rinviata a **OUTDOOR-ROUTING-API-GATEWAY-A** (**BACKLOG / NON APERTO**, vedi §6) — nessuna WU numerata aperta per il gateway.
 
@@ -296,7 +297,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Questioni aperte prima di qualsiasi apertura:** provider; quota/costi; licenza/ToS; profili hiking/MTB; elevation/alternative; formato API; hosting; stack già sul VPS; auth/token app; rate-limit; anti-abuso; logging senza dati sensibili inutili; cache consentita; mobile; offline/fallback; dominio+certificato HTTPS.
 
-**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** candidate bundle FIX1 `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** HTML blob identico a `2687873` · LoadCredential drop-in canonico · **REVIEW GPT-SOSTITUTIVA — PENDING**. Evidence: [`2026-08-18_0445_outdoor-routing-ors-provider-a-fix1-credential-wiring.md`](../orchestrator/inbox/2026-08-18_0445_outdoor-routing-ors-provider-a-fix1-credential-wiring.md).
+**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** **CLOSED / PASS end-to-end** — tip LIVE **`cfee0e4`** build **220**; HTML `2687873` blob `23fe93aa…`; FIX1 infra LoadCredential; REVIEW GPT-SOSTITUTIVA PASS; deploy GIS-only + ABQA A–P + QA operatore PASS; Regola H. Evidence: [`2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md`](../orchestrator/inbox/2026-08-18_0508_outdoor-routing-ors-provider-a-deploy-abqa.md).
 
 ### BUNDLE C — GraphHopper provider Local/VPS/Auto — **CLOSED / PASS end-to-end**
 
