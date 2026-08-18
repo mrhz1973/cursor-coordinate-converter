@@ -8,89 +8,72 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` |
-| **GATE** | **none** (CLOSED / PASS) |
-| **NEXT** | resto Bundle F **NOT OPENED** / da scegliere |
+| **BLOCK** | `CARTO-IIM-UKHO-PROVIDERS-A` |
+| **GATE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **NEXT** | review candidate `CARTO-IIM-UKHO-PROVIDERS-A` |
 | **Runtime LIVE** | `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` · helper **0.1.3** · blob `225b1a7b673bd0cfa6aa3b407993cc453402923b` |
-| **Candidate FULL SHA** | — (LIVE = tip chiuso) |
-| **Build / ID / blob** | **228** / `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` / `225b1a7b673bd0cfa6aa3b407993cc453402923b` |
-| **Deployed state** | LIVE GIS **228** (`?v=c5bc4b1`) |
-| **Result Cursor** | QA operatore **PASS** → auto-`finito` Regola H · blocco **CLOSED / PASS** · monolite **escluso** |
-| **Working tree (pre-docs-container)** | helper `_*.py` / `tmp/` untracked; HTML = LIVE 228 pulito |
+| **Candidate FULL SHA** | `a0e439e059f32026ae381a56854ccf800b50548e` |
+| **Build / ID / blob** | **229** / `CARTO-IIM-UKHO-PROVIDERS-A` / `9cc2345fcb45fc45c727969df103f28ca801fd53` |
+| **Deployed state** | LIVE GIS **228** invariato (NON deploy) |
+| **Result Cursor** | candidate runtime **PASS** selftest · federation IIM geometrie + UKHO metadata_only · **no** ABQA · **no** QA · **no** finito |
+| **Working tree (pre-docs-container)** | HTML+data+tools committed `a0e439e`; docs FRONTIER/WU/inbox/report pending this container |
 
 ### Identità SHA (non autoreferenziali)
 
 | Nome | Valore |
 | --- | --- |
-| **RUNTIME_CANDIDATE_SHA** | `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` (ora LIVE) |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `71835f1e52ef74773389f086e20fc4e46eaf3efe` |
+| **RUNTIME_CANDIDATE_SHA** | `a0e439e059f32026ae381a56854ccf800b50548e` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `15e5fba2ff8587ea67dab67308b2232556c8e358` |
 | **docs/report HEAD** | `PENDING_SELF_REFERENCE` |
-| **real_task_commit** | `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` |
-| **previous_report_container** | `71835f1e52ef74773389f086e20fc4e46eaf3efe` |
+| **real_task_commit** | `a0e439e059f32026ae381a56854ccf800b50548e` |
+| **previous_report_container** | `15e5fba2ff8587ea67dab67308b2232556c8e358` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 | **final_remote_head_after_report_push** | `EXTERNAL_ONLY` |
 
-Evidence: [`docs/orchestrator/inbox/2026-08-18_2303_outdoor-routing-f-provider-compare-a-fix6-finito.md`](../orchestrator/inbox/2026-08-18_2303_outdoor-routing-f-provider-compare-a-fix6-finito.md)
+HTML candidate: bytes LF **11877183** · SHA-256 LF `f6994a11dde58b084ec70f57c514d20bb09ee5c540d4609782e1f01094601c54` · blob `9cc2345fcb45fc45c727969df103f28ca801fd53`
 
-## B. RIEPILOGO COMPLETO — finito FIX6
+Evidence: [`docs/orchestrator/inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md`](../orchestrator/inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md)
 
-Trigger: `QA OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6 PASS operatore`. Chiusura docs-only, nessun patch runtime, nessun redeploy.
+## B. RIEPILOGO COMPLETO
 
-1. Autosync orchestratore: **sì**. File: FRONTIER, OM §7.2, WU-0010, roadmap WU-0010 voce, latest, inbox 2203 (gate) + 2303 finito, LAST_CURSOR_REPORT. Commit docs **EXTERNAL_ONLY**. Push **EXTERNAL_ONLY**. Monolite **escluso**.
-2. `git status --short` (pre-docs): HTML pulito; helper `_*.py` / `tmp/` untracked.
-3. `git diff --stat` runtime: nessuno.
-4. File docs: FRONTIER, OPERATING_MEMORY §7.2, WU-0010, WU-0005-0009-roadmap (voce WU-0010), latest, inbox 2203+2303, LAST_CURSOR_REPORT.
-5. Regioni runtime: **non toccate**.
-6. Cosa fatto: LIVE 220→**228**; blocco COMPARE-A (+ FIX1–FIX6) **CLOSED / PASS**; GATE **none**; NEXT resto Bundle F **NOT OPENED**.
-7. Funzioni: nessuna.
-8. Chiavi i18n: nessuna.
-9. Non toccato: monolite, helper 0.1.3, VPS servizi, OPSEC, GPS, Oggetti GIS.
-10. Lint/selftest/ABQA: non rieseguiti (già PASS nel pass 2203). QA operatore **PASS**.
-11. Commit runtime: invariato `c5bc4b1`. Bytes LF `10710401`. Blob `225b1a7b673bd0cfa6aa3b407993cc453402923b`.
-12. Limiti: WU-0010 resta OPEN; prossimo blocco **non** scelto.
+1. Autosync orchestratore: **sì** (questo container). File: FRONTIER, WU-0012, latest, inbox 2355, LAST_CURSOR_REPORT. Monolite **escluso** dall’autosync (già in `real_task_commit`).
+2. `git status --short` (pre-docs): `M docs/FRONTIER.md` `M docs/orchestrator/latest.md` `M docs/work-units/WU-0012-carto-index-federated.md` `?? inbox/2026-08-18_2355_…` + helper `_*.py` / `tmp/` untracked.
+3. `git diff --stat` runtime: `a0e439e` — 38 files, +145643 / −97 (HTML + `data/carto/iim|ukho` + tools).
+4. File runtime: `coordinate_converter Claude.html`; `data/carto/iim/**`; `data/carto/ukho/**`; `data/carto/fixtures-mixed.json`; `tools/carto/*.py`.
+5. Regioni HTML: pannello CARTO filtri; I18N.it (`carto.title`, `carto.seriesIim*`, `carto.ukhoNote`); `APP_BUILD_*` 229; `cartoIndexExpandRecord` / `EnsureLoaded` / `SearchBbox` / `GetStats` / `cartoDiagSelfTest`; UI filtri/row/overlay `paper`; stub `cartoTryProviderRefresh`; embed `#cartoIimEmbeddedData` + `#cartoUkhoEmbeddedData`. Payload IGM **6.2 MB intatto**.
+6. Cosa fatto: WU-0012 aperto operativamente; discovery UKHO CAL/ADC e IIM Interactive Map; dataset statici; federazione nel motore CARTO esistente; selftest Python + Playwright PASS.
+7. Cosa rimosso: niente funzionale; nessun secondo motore.
+8. Funzioni: `cartoIndexExpandRecord`, `cartoIndexEnsureLoaded` (3 payload), `cartoIndexSearchBbox` (skip metadata_only + `providerIds`), `cartoDiagSelfTest` (additive IGM 8204), `cartoTryProviderRefresh`, `cartoUiSelectedSeriesFromDom` (+ paper).
+9. i18n: solo IT — `carto.seriesIim`, `carto.seriesIimTip`, `carto.ukhoNote`; `carto.title` aggiornato IT.
+10. Non toccato: Oggetti GIS; `state.mapWaypoints` / `gisPolygons` (selftest); Planet-Clone; helper 0.1.3; CIGA; deploy; ABQA; QA operatore; finito.
+11. Lint/selftest: `tools/carto/selftest_carto_providers.py` PASS; `GOICartoIndex.selfTest()` Playwright PASS (IGM 8204, IIM 180, UKHO 3912, mixed Spezia, UKHO spatial 0, OPSEC block refresh).
+12. Planet-Clone: **nessun commit**.
+13. Record: IIM 180/180 footprint/0 metadata_only/0 quarantine; UKHO 3912/0/3912/0; duplicate logical key 0.
+14. Limiti: UKHO geometria SevenCs STOP; IIM harvest 180 incompleto vs shop (2, 326); edizioni shop vs mappa discordanti non auto-corrette; II 3001 senza poligoni.
 
-```text
-STATO FRESCO DA CURSOR
-origin/main HEAD: 71835f1e52ef74773389f086e20fc4e46eaf3efe (REMOTE_HEAD_AT_EVIDENCE_TIME; docs/report HEAD = EXTERNAL_ONLY)
-working tree: helper _*.py / tmp/ untracked; HTML = LIVE 228 pulito
-ultimo blocco PASS: OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6 CLOSED / PASS
-prossimo candidato: resto Bundle F NOT OPENED / da scegliere
-note operative: LIVE 228; GATE none; monolite escluso; VPS già su 228
+## C. OUTPUT GIT (pre-docs-container / runtime)
+
 ```
-
-## C. OUTPUT GIT (pre-docs-container)
-
-```text
-git log --oneline -5
+a0e439e feat(carto): federate IIM footprints and UKHO CAL metadata, build 229
+15e5fba docs(orchestrator): FIX6 QA PASS operatore, CLOSED / PASS, LIVE 228
 71835f1 docs(orchestrator): FIX6 REVIEW PASS + GIS deploy + ABQA PASS
 f326552 docs(orchestrator): FIX6 candidate 228 review pending (no deploy)
 c5bc4b1 fix(routing): FIX6 mobile Percorso chips wrap, build 228
-1cb1e06 docs(method): LAST_CURSOR_REPORT full rolling handoff for agg
-d0e08bf docs(orchestrator): FIX5 REVIEW PASS + GIS deploy + ABQA FAIL
-
-git rev-parse HEAD
-71835f1e52ef74773389f086e20fc4e46eaf3efe
-
-git rev-parse origin/main
-71835f1e52ef74773389f086e20fc4e46eaf3efe
-
-git branch --show-current
-main
-
-git ls-remote origin refs/heads/main
-71835f1e52ef74773389f086e20fc4e46eaf3efe	refs/heads/main
 ```
 
-PASS remoto del container docs corrente: **EXTERNAL_ONLY**.
+- `git rev-parse HEAD` (runtime, pre-docs): `a0e439e059f32026ae381a56854ccf800b50548e`
+- `git rev-parse origin/main` (evidence time): `15e5fba2ff8587ea67dab67308b2232556c8e358`
+- `git branch --show-current`: `main`
+- HTML blob: `9cc2345fcb45fc45c727969df103f28ca801fd53`
+- `git ls-remote origin refs/heads/main`: **EXTERNAL_ONLY** (dopo push)
 
-## HISTORY
+## STATO FRESCO DA CURSOR
 
-- `71835f1e52ef74773389f086e20fc4e46eaf3efe` — FIX6 REVIEW PASS + GIS deploy + ABQA PASS.
-- `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` — runtime FIX6 build 228 (`real_task_commit`).
-
-## LIMITI
-
-* Non sostituisce FRONTIER.
-* Non sceglie il prossimo blocco Bundle F.
-* Non prova il proprio HEAD finale.
-* Monolite invariato.
+```
+STATO FRESCO DA CURSOR
+origin/main HEAD: EXTERNAL_ONLY (pre-push evidence 15e5fba; candidate runtime a0e439e)
+working tree: helper _*.py / tmp/ untracked; HTML in a0e439e
+ultimo blocco PASS: OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6 (LIVE 228)
+prossimo candidato: CARTO-IIM-UKHO-PROVIDERS-A 229 REVIEW PENDING
+note operative: NON deploy / NON ABQA / NON QA / NON finito
+```

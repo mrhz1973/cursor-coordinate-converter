@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6 CLOSED / PASS** · LIVE **228** `c5bc4b1` · QA operatore PASS · Regola H finito · resto Bundle F **NOT OPENED** · evidence: [`inbox/2026-08-18_2303_outdoor-routing-f-provider-compare-a-fix6-finito.md`](inbox/2026-08-18_2303_outdoor-routing-f-provider-compare-a-fix6-finito.md)
+2026-08-18 — **CARTO-IIM-UKHO-PROVIDERS-A** candidate **229** `a0e439e` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE **228** invariato · no deploy · evidence: [`inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md`](inbox/2026-08-18_2355_carto-iim-ukho-providers-a.md)

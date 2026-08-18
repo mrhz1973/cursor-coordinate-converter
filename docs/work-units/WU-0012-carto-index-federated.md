@@ -1,11 +1,12 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / SERIES+SEARCH+UI+ARCHIVE CLOSED — NEXT PROVIDER
-**ACTIVE BLOCK:** CARTO-PROVIDER-NEXT (NO PROVIDER READY)
-**CURRENT GATE:** nessun provider IIM/CIGA/UKHO pronto — attesa decisione operatore o nuova discovery
-**RUNTIME LIVE:** `a37b91265a927a8ddfa8325437f34867b9de0570` · build 160 · `APP_BUILD_ID=D-FLIGHT-CDE` (monolite live; feature carto tip storico `65c9ef8` build 150)
-**NEXT:** rivalutazione provider post CARTO-PROVIDER-NEXT-A diagnostic
+**STATUS:** OPEN / IIM+UKHO FEDERATED CANDIDATE 229 — REVIEW PENDING
+**ACTIVE BLOCK:** `CARTO-IIM-UKHO-PROVIDERS-A`
+**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**RUNTIME LIVE:** `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` (invariato)
+**RUNTIME CANDIDATE:** `a0e439e059f32026ae381a56854ccf800b50548e` · build **229** · blob `9cc2345fcb45fc45c727969df103f28ca801fd53`
+**NEXT:** review candidate `CARTO-IIM-UKHO-PROVIDERS-A` — NON deploy
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED / CRS AUDIT PARTIAL — NEXT PROVIDER`
@@ -224,9 +225,9 @@ Campione UKHO (metadati, fuori repo):
 | Provider | Fonte ufficiale | Impronte disponibili | Formato | CRS | Metadati | Aggiornamento | Accesso | Licenza indice derivato | Strategia proposta |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **IGM** | igmi.esercito.difesa.it quadri | **PROVATO** | SHP (+KML) | WGS84 / UTM / RDN2008 | **PROVATO** (SHEET, TITLE, SCALE, AIVABLE, …) | **UNKNOWN** | Libero download quadri | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Conversione offline autorizzata** (locale) + import pacchetto ufficiale; redistribuzione pubblica sospesa |
-| **IIM** | istitutoidrografico.it + marina.difesa.it II 3001 | **NON DISPONIBILE** (vettoriale) / **UNKNOWN** | PDF catalogo; shop | N/A | **PARZIALE** (PDF) | Parziale (Avvisi) | PDF libero; carte commerciali | **RICHIEDE AUTORIZZAZIONE** | **Provider sospeso** in attesa licenza/dati; digitalizzazione futura solo con auth |
-| **CIGA** | difesaservizi.it/ciga | **NON DISPONIBILE** / **UNKNOWN** | Catalogo commerciale / PDF-immagini probabili | **UNKNOWN** | **PARZIALE** | **UNKNOWN** | Commerciale | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Digitalizzazione futura previa autorizzazione** o sospeso |
-| **UKHO** | admiralty.co.uk CAL + ADC | **NON DISPONIBILE** nel CAL; ADC **UNKNOWN** | XLS CAL; ZIP ADC proprietario | **UNKNOWN** | **PROVATO** (lista disponibilità) | Weekly dichiarato | Catalogo pubblico; prodotti protetti | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Aggiornamento online esplicito** solo post-ToS; non MVP |
+| **IIM** | Interactive Sailing Map POST `myPathMaps.php` (2026-08-18) | **PROVATO** rettangoli WGS84 `rectMaps` (180 carte / 180 footprint; harvest world) | HTML+JS ufficiale | WGS84 | **PROVATO** (`mapInfoWin`: id, INT, titolo, scala, ed.) | Shop spesso più fresco dell’edizione in mappa | Lookup pubblico POST | **RICHIEDE AUTORIZZAZIONE** (`derived-public-interactive-map-index`) | Candidate **229** `CARTO-IIM-UKHO-PROVIDERS-A` — indice embedded offline |
+| **CIGA** | difesaservizi.it/ciga | **NON DISPONIBILE** / **UNKNOWN** | Catalogo commerciale / PDF-immagini probabili | **UNKNOWN** | **PARZIALE** | **UNKNOWN** | Commerciale | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Fuori da questo blocco** |
+| **UKHO** | admiralty.co.uk CAL XLS + ADC Catalogs ZIP | CAL **NON DISPONIBILE**; ADC Paper Charts `.7CB` SevenCs **NON PARSABILE** | XLS CAL; ZIP ADC proprietario | N/A (metadati) | **PROVATO** CAL 3912 record | Weekly dichiarato | Catalogo pubblico; geometria ADC chiusa | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | Candidate **229**: `metadata_only`, **nessun poligono inventato** |
 
 Valori conclusioni ammessi rispettati: PROVATO / PARZIALE / UNKNOWN / NON DISPONIBILE / RICHIEDE AUTORIZZAZIONE.
 
