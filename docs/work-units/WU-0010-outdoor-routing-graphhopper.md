@@ -6,7 +6,7 @@
 **ACTIVE BLOCK:** `OUTDOOR-ROUTING-ORS-PROVIDER-A`
 **CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
 **RUNTIME LIVE:** `5477a5e0d8d9a5681dbfab37b3c39e182306fc79` · build **219** · `OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1` · blob `a823ae9b5bb9bebb8606b4221221314186bc9370`
-**RUNTIME CANDIDATE:** `268787379f18f52bf2f6285d3e852f9770f260ed` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1`
+**RUNTIME CANDIDATE:** `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** · `OUTDOOR-ROUTING-ORS-PROVIDER-A` · blob `23fe93aae3c7c2c6f32dfdcaab90f2cc827e14a1` (HTML identico a `2687873`)
 **NEXT:** review candidate 220
 <!-- /WU-HOT-HEADER -->
 
@@ -296,7 +296,7 @@ Il precedente Bundle B viene **diviso**. La review GLM raccomanda fermamente **B
 
 **Questioni aperte prima di qualsiasi apertura:** provider; quota/costi; licenza/ToS; profili hiking/MTB; elevation/alternative; formato API; hosting; stack già sul VPS; auth/token app; rate-limit; anti-abuso; logging senza dati sensibili inutili; cache consentita; mobile; offline/fallback; dominio+certificato HTTPS.
 
-**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** INFRA1 sede HTTPS READY · INFRA2 secret **PRESENT** · INFRA3 ACL `tcp:443` applicata (operatore) · client HTTPS PASS · capability 1–10 PASS · **candidate build 220** `268787379f18f52bf2f6285d3e852f9770f260ed` · **REVIEW GPT-SOSTITUTIVA — PENDING**. Evidence: [`2026-08-18_0435_outdoor-routing-ors-provider-a-review-anchor.md`](../orchestrator/inbox/2026-08-18_0435_outdoor-routing-ors-provider-a-review-anchor.md).
+**OUTDOOR-ROUTING-ORS-PROVIDER-A (2026-08-18):** candidate bundle FIX1 `cfee0e4c1db5b6e55b07f4eda50ce085d261f54a` · build **220** HTML blob identico a `2687873` · LoadCredential drop-in canonico · **REVIEW GPT-SOSTITUTIVA — PENDING**. Evidence: [`2026-08-18_0445_outdoor-routing-ors-provider-a-fix1-credential-wiring.md`](../orchestrator/inbox/2026-08-18_0445_outdoor-routing-ors-provider-a-fix1-credential-wiring.md).
 
 ### BUNDLE C — GraphHopper provider Local/VPS/Auto — **CLOSED / PASS end-to-end**
 
