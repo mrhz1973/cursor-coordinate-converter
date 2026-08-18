@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** candidate `105bedf` / **222** · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE resta **220**. [`inbox/2026-08-18_1415_outdoor-routing-f-provider-compare-a-fix1.md`](inbox/2026-08-18_1415_outdoor-routing-f-provider-compare-a-fix1.md).
+2026-08-18 — **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** REVIEW-RAW-RECOVERY candidate `105bedf` / **222** · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · LIVE resta **220**. Evidence: [`inbox/2026-08-18_1440_outdoor-routing-f-provider-compare-a-fix1-review-raw-recovery.md`](inbox/2026-08-18_1440_outdoor-routing-f-provider-compare-a-fix1-review-raw-recovery.md).
