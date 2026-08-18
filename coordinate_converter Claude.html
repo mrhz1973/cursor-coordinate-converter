@@ -9819,7 +9819,9 @@ dialog.track-modal.app-modal{
   border-radius:8px; background:color-mix(in srgb, var(--panel, #fff) 94%, transparent);
 }
 .routing-avoid-head{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
-.routing-avoid-title{ font-size:.85rem; font-weight:600; }
+.routing-avoid-title-wrap{ display:inline-flex; align-items:center; gap:6px; min-width:0; }
+.routing-avoid-title{ font-size:.88rem; font-weight:700; color:var(--fg, inherit); }
+.routing-help-tip{ flex:0 0 auto; min-width:1.7rem; padding:2px 6px; font-weight:700; line-height:1.2; }
 .routing-avoid-areas-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:4px; max-height:160px; overflow:auto; }
 .routing-avoid-area-row{ display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:.82rem; }
 .routing-avoid-area-label{ flex:1 1 120px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -9835,14 +9837,52 @@ dialog.track-modal.app-modal{
   border-radius:8px; background:color-mix(in srgb, var(--panel, #fff) 94%, transparent);
 }
 .routing-compare-head{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
-.routing-compare-title{ font-size:.85rem; font-weight:600; }
-.routing-compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.routing-compare-title{ font-size:.88rem; font-weight:700; color:var(--fg, inherit); }
+.routing-compare-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 @media (max-width:480px){
   .routing-compare-grid{ grid-template-columns:1fr; }
 }
-.routing-compare-col{ font-size:.8rem; min-width:0; }
-.routing-compare-col strong{ display:block; margin-bottom:4px; }
+.routing-compare-col{ font-size:.8rem; min-width:0; overflow-x:hidden; }
+.routing-compare-provider-heading{
+  display:block; margin:0 0 6px; font-size:.86rem; font-weight:700; color:var(--fg, inherit);
+}
+.routing-compare-col.is-gh .routing-compare-provider-heading{ color:#b91c1c; }
+.routing-compare-col.is-ors .routing-compare-provider-heading{ color:#1d4ed8; }
+.routing-compare-metrics{ margin:0; display:flex; flex-direction:column; gap:4px; }
+.routing-compare-metric{ display:flex; flex-wrap:wrap; justify-content:space-between; gap:4px 10px; padding:2px 0; }
+.routing-compare-metric-label{ color:var(--muted); font-weight:500; }
+.routing-compare-metric-value{ font-weight:700; text-align:right; }
+.routing-compare-delta{ font-weight:600; }
 .routing-compare-actions{ display:flex; flex-wrap:wrap; gap:6px; }
+.routing-compare-legend-list{ list-style:none; margin:4px 0 0; padding:0; display:flex; flex-wrap:wrap; gap:10px 16px; }
+.routing-compare-legend-item{ display:inline-flex; align-items:center; gap:8px; min-width:0; }
+.routing-compare-legend-name{ font-weight:700; font-size:.84rem; }
+.routing-swatch{ display:inline-block; width:28px; height:0; border-top-width:3px; flex:0 0 auto; }
+.routing-swatch-gh{ border-top-style:solid; border-top-color:#ef4444; }
+.routing-swatch-ors{ border-top-style:dashed; border-top-color:#2563eb; }
+#routingCompareChooseGh.routing-compare-choose-gh{ background:#b91c1c; color:#fff; border-color:transparent; }
+#routingCompareChooseGh.routing-compare-choose-gh:hover:not(:disabled){ filter:brightness(1.08); color:#fff; }
+#routingCompareChooseGh.routing-compare-choose-gh:focus-visible{ outline:2px solid #7f1d1d; outline-offset:2px; }
+#routingCompareChooseOrs.routing-compare-choose-ors{ background:#1d4ed8; color:#fff; border-color:transparent; }
+#routingCompareChooseOrs.routing-compare-choose-ors:hover:not(:disabled){ filter:brightness(1.08); color:#fff; }
+#routingCompareChooseOrs.routing-compare-choose-ors:focus-visible{ outline:2px solid #1e3a8a; outline-offset:2px; }
+#routingCompareChooseGh:disabled, #routingCompareChooseOrs:disabled{ opacity:.55; }
+.routing-compare-map-legend{
+  position:absolute; right:8px; bottom:8px; z-index:16;
+  display:flex; flex-direction:column; gap:4px; padding:6px 8px; border-radius:8px;
+  background:color-mix(in srgb, var(--panel, #fff) 92%, transparent);
+  border:1px solid color-mix(in srgb, var(--border, #888) 80%, transparent);
+  box-shadow:0 2px 10px rgba(0,0,0,.22); font-size:.75rem; pointer-events:none; max-width:min(220px, 46vw);
+}
+.routing-compare-map-legend .routing-compare-legend-name{ font-size:.75rem; }
+#routingPlannerPanel .routing-section-heading{ font-size:.88rem; font-weight:700; color:var(--fg, inherit); }
+#routingPlannerPanel .routing-mode-label,
+#routingPlannerPanel .routing-profile-label,
+#routingPlannerPanel .routing-alternatives-label,
+#routingPlannerPanel .routing-difficulty-label,
+#routingPlannerPanel .routing-round-trip-label{
+  font-size:.86rem; font-weight:700; color:var(--fg, inherit);
+}
 .routing-route-preview-line.is-compare-gh{ stroke:#ef4444; stroke-width:3; stroke-dasharray:none; }
 .routing-route-preview-line.is-compare-ors{ stroke:#2563eb; stroke-width:3; stroke-dasharray:7 5; }
 .tile-map.routing-avoid-drawing{ cursor:crosshair; }
@@ -15053,7 +15093,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <code id="routingEndpointValue" class="routing-endpoint-value"></code>
     </p>
     <div class="routing-profile-row">
-      <label class="routing-profile-label" for="routingProfileSelect" data-i18n="routing.profile">Profilo</label>
+      <label class="routing-profile-label routing-section-heading" for="routingProfileSelect" data-i18n="routing.profile">Profilo</label>
       <select id="routingProfileSelect" class="routing-profile-select"
               data-i18n-aria="tip.routingProfile" data-i18n-tip="tip.routingProfile"
               aria-label="Profilo di routing GraphHopper">
@@ -15089,7 +15129,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </section>
     <div class="routing-mode-row" id="routingModeRow">
       <div class="routing-mode-group">
-        <span class="routing-mode-label" data-i18n="routing.routeMode">Percorso</span>
+        <span class="routing-mode-label routing-section-heading" data-i18n="routing.routeMode">Percorso</span>
         <div class="routing-mode-chips" role="radiogroup" aria-label="Modalità percorso">
           <button type="button" class="routing-mode-chip btn btn-sm" data-routing-mode="one_way"
                   data-i18n="routing.oneWay" aria-pressed="true">Solo andata</button>
@@ -15102,6 +15142,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <div class="routing-panel-actions">
         <button type="button" id="routingCalculateBtn" class="btn btn-sm btn-primary" disabled
                 data-i18n="routing.calculate" data-i18n-tip="tip.routingCalculate" data-i18n-aria="tip.routingCalculate">Calcola percorso</button>
+        <button type="button" id="routingCenterResultBtn" class="btn btn-sm" disabled
+                data-i18n="routing.centerResult" data-i18n-tip="tip.routingCenterResult" data-i18n-aria="tip.routingCenterResult">Centra risultato</button>
         <button type="button" id="routingUndoLastPointBtn" class="btn btn-sm btn-ghost" disabled
                 data-i18n="routing.undoLastPoint" data-i18n-tip="routing.undoLastPointTip" data-i18n-aria="routing.undoLastPointTip">Annulla ultima modifica</button>
         <button type="button" id="routingCoordEditBtn" class="btn btn-sm btn-ghost" aria-pressed="false"
@@ -15126,7 +15168,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="15">15 km</button>
         <button type="button" class="btn btn-sm routing-round-trip-preset" data-rt-preset-km="25">25 km</button>
       </div>
-      <p class="hint routing-round-trip-hint" data-i18n="routing.roundTripHint">Percorso circolare dalla partenza A. Non è un semplice andata e ritorno.</p>
+      <p class="hint routing-round-trip-hint" id="routingRoundTripHint" data-i18n="routing.roundTripHint">Percorso circolare dalla partenza A. Non è un semplice andata e ritorno.</p>
+      <p class="hint routing-round-trip-constrained-note" id="routingRoundTripConstrainedNote" hidden data-i18n="routing.roundTripConstrainedNote">L’anello verrà chiuso passando nell’ordine dai punti obbligati.</p>
       <button type="button" id="routingRoundTripRegenBtn" class="btn btn-sm" disabled
               data-i18n="routing.generateAnotherLoop" data-i18n-tip="tip.routingGenerateAnotherLoop"
               data-i18n-aria="tip.routingGenerateAnotherLoop">Genera un altro anello</button>
@@ -15179,7 +15222,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
     <section id="routingAvoidAreasSection" class="routing-avoid-areas-section" aria-labelledby="routingAvoidAreasTitle">
       <div class="routing-avoid-head">
-        <span id="routingAvoidAreasTitle" class="routing-avoid-title" data-i18n="routing.avoidAreasTitle">Aree da evitare</span>
+        <span class="routing-avoid-title-wrap">
+          <span id="routingAvoidAreasTitle" class="routing-avoid-title routing-section-heading" data-i18n="routing.avoidAreasTitle">Aree da evitare</span>
+          <button type="button" id="routingAvoidHelpBtn" class="btn btn-sm btn-ghost routing-help-tip"
+                  data-i18n-tip="tip.routingAvoidHelp" data-i18n-aria="tip.routingAvoidHelp"
+                  aria-label="Aiuto aree da evitare">?</button>
+        </span>
         <button type="button" id="routingAvoidDrawBtn" class="btn btn-sm" data-i18n="routing.avoidDraw">Disegna area</button>
       </div>
       <p id="routingAvoidDraftRow" class="routing-avoid-draft hint" role="status" aria-live="polite" hidden></p>
@@ -15194,30 +15242,39 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </section>
     <section id="routingCompareSection" class="routing-compare-section" aria-labelledby="routingCompareTitle">
       <div class="routing-compare-head">
-        <span id="routingCompareTitle" class="routing-compare-title" data-i18n="routing.compareTitle">Confronto provider</span>
-        <button type="button" id="routingCompareBtn" class="btn btn-sm" data-i18n="routing.compareRun"
+        <span id="routingCompareTitle" class="routing-compare-title routing-section-heading" data-i18n="routing.compareTitle">Confronto provider</span>
+        <button type="button" id="routingCompareBtn" class="btn btn-sm btn-primary" data-i18n="routing.compareRun"
                 data-i18n-tip="tip.routingCompare" data-i18n-aria="tip.routingCompare">Confronta GraphHopper e OpenRouteService</button>
       </div>
       <p id="routingComparePairNote" class="hint routing-compare-pair" role="status" aria-live="polite"></p>
       <p id="routingCompareStatus" class="hint routing-compare-status" role="status" aria-live="polite"></p>
       <div class="routing-compare-grid">
-        <div class="routing-compare-col">
-          <strong data-i18n="routing.serviceGraphHopper">GraphHopper</strong>
-          <p id="routingCompareGhBody" class="hint">—</p>
+        <div class="routing-compare-col is-gh">
+          <h3 class="routing-compare-provider-heading" data-i18n="routing.serviceGraphHopper">GraphHopper</h3>
+          <div id="routingCompareGhBody" class="routing-compare-metrics hint">—</div>
         </div>
-        <div class="routing-compare-col">
-          <strong data-i18n="routing.serviceOrs">OpenRouteService</strong>
-          <p id="routingCompareOrsBody" class="hint">—</p>
+        <div class="routing-compare-col is-ors">
+          <h3 class="routing-compare-provider-heading" data-i18n="routing.serviceOrs">OpenRouteService</h3>
+          <div id="routingCompareOrsBody" class="routing-compare-metrics hint">—</div>
         </div>
       </div>
       <p id="routingCompareDelta" class="hint routing-compare-delta" hidden></p>
       <div class="routing-compare-actions">
-        <button type="button" id="routingCompareChooseGh" class="btn btn-sm" disabled
+        <button type="button" id="routingCompareChooseGh" class="btn btn-sm routing-compare-choose-gh" disabled
                 data-i18n="routing.compareChooseGh">Usa risultato GraphHopper</button>
-        <button type="button" id="routingCompareChooseOrs" class="btn btn-sm" disabled
+        <button type="button" id="routingCompareChooseOrs" class="btn btn-sm routing-compare-choose-ors" disabled
                 data-i18n="routing.compareChooseOrs">Usa risultato OpenRouteService</button>
       </div>
-      <p class="hint routing-compare-legend" data-i18n="routing.compareLegend">GraphHopper: linea rossa continua · OpenRouteService: linea blu tratteggiata</p>
+      <ul id="routingCompareLegend" class="routing-compare-legend-list" data-i18n-aria="routing.compareLegendAria" aria-label="Legenda confronto">
+        <li class="routing-compare-legend-item">
+          <span class="routing-swatch routing-swatch-gh" aria-hidden="true"></span>
+          <span class="routing-compare-legend-name" data-i18n="routing.serviceGraphHopper">GraphHopper</span>
+        </li>
+        <li class="routing-compare-legend-item">
+          <span class="routing-swatch routing-swatch-ors" aria-hidden="true"></span>
+          <span class="routing-compare-legend-name" data-i18n="routing.serviceOrs">OpenRouteService</span>
+        </li>
+      </ul>
       <p class="hint" data-i18n="routing.compareNoRank">Il confronto non dichiara un provider migliore.</p>
     </section>
     <div class="routing-units-row" id="routingUnitsRow">
@@ -17795,6 +17852,12 @@ const I18N = {
     "routing.compareChooseOrs":"Usa risultato OpenRouteService",
     "routing.compareNoRank":"Il confronto non dichiara un provider migliore.",
     "routing.compareLegend":"GraphHopper: linea rossa continua · OpenRouteService: linea blu tratteggiata",
+    "routing.compareLegendAria":"Legenda confronto provider",
+    "routing.centerResult":"Centra risultato",
+    "tip.routingCenterResult":"Centra la mappa sul confronto o sul percorso calcolato",
+    "tip.routingAvoidHelp":"Attiva la funzione, disegna sulla mappa una o più aree da evitare: il percorso cercherà di non attraversarle. Puoi disattivare o eliminare le aree. Le aree sono usate solo quando la funzione è attiva.",
+    "routing.roundTripConstrainedNote":"L’anello verrà chiuso passando nell’ordine dai punti obbligati.",
+    "routing.roundTripDistanceNotApplicable":"Distanza e seed non si applicano con punti di passaggio obbligati.",
     "routing.endpointLabel":"Endpoint",
     "routing.providerLabel":"Provider",
     "routing.providerVps":"VPS",
@@ -23916,10 +23979,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A";
-const APP_BUILD_DETAIL = "Opt-in GraphHopper vs OpenRouteService comparison in Routing planner.";
+const APP_BUILD_ID = "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1";
+const APP_BUILD_DETAIL = "Compare UX polish + constrained Anello via waypoints (FIX1).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 221;
+const APP_BUILD_NUM = 222;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39210,8 +39273,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40232,8 +40295,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42160,8 +42223,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42661,8 +42724,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -43675,8 +43738,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44113,8 +44176,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -44705,8 +44768,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -45672,8 +45735,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -45842,8 +45905,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46271,8 +46334,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -46660,8 +46723,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -46788,8 +46851,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -46964,8 +47027,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47097,8 +47160,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47335,8 +47398,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -47644,8 +47707,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -47937,8 +48000,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48203,8 +48266,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48349,8 +48412,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48565,8 +48628,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -48676,8 +48739,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -83709,6 +83772,7 @@ function routingRemoveRoutePreviewOverlay(){
     const old = tm.querySelector(".routing-route-preview-overlay");
     if (old) old.remove();
   } catch(_){}
+  try { routingRemoveCompareMapLegend(); } catch(_){}
 }
 function routingGetSelectedGraphhopperProfile(){
   const sel = document.getElementById("routingProfileSelect");
@@ -83771,8 +83835,13 @@ function routingSyncCalculateBtnUi(){
   let ok = false;
   if (mode === "round_trip"){
     const startOk = routingRoundTripStartIsReady();
-    const distOk = routingRoundTripDistanceIsValid(state._routing && state._routing.roundTripDistanceM);
-    ok = profOk && startOk && distOk;
+    if (routingRoundTripIsConstrained()){
+      const loopRes = routingExtractClosedLoopPoints();
+      ok = profOk && startOk && !!loopRes.ok;
+    } else {
+      const distOk = routingRoundTripDistanceIsValid(state._routing && state._routing.roundTripDistanceM);
+      ok = profOk && startOk && distOk;
+    }
   } else {
     const ptsRes = routingExtractValidGraphhopperPoints();
     ok = profOk && !!ptsRes.ok && ptsRes.pointsLonLat.length >= 2;
@@ -83785,6 +83854,7 @@ function routingSyncCalculateBtnUi(){
   try { routingSyncAlternativesRowUi(); } catch(_){}
   try { routingSyncModeRowUi(); } catch(_){}
   try { routingSyncRoundTripRegenBtnUi(); } catch(_){}
+  try { routingSyncCenterResultBtnUi(); } catch(_){}
 }
 let _routingSaveBusy = false;
 function routingRoutePreviewIsValid(){
@@ -84543,7 +84613,7 @@ function renderRoutingMarkers(tileMap, markerLat, markerLon, zoom){
   const loRef = Number.isFinite(markerLon) ? markerLon : ((state.viewCenter && state.viewCenter.lon) || 0);
   const roundTripOnlyA = routingGetRouteMode() === "round_trip";
   for (let i = 0; i < n; i++){
-    if (roundTripOnlyA && i !== 0) continue;
+    if (roundTripOnlyA && i === n - 1) continue;
     const p = pts[i];
     if (!p || !Number.isFinite(p.lat) || !Number.isFinite(p.lon)) continue;
     const c = tileMapLatLonToPx(root, p.lat, p.lon);
@@ -85269,7 +85339,7 @@ function routingRenderList(){
   for (let i = 0; i < n; i++){
     const p = pts[i];
     if (!p) continue;
-    if (roundTripMode && i !== 0) continue;
+    if (roundTripMode && i === n - 1) continue;
     const kind = routingPointKind(i, n);
     const badge = routingPointBadge(i, n);
     const row = document.createElement("div");
@@ -85429,7 +85499,7 @@ function routingRenderList(){
   try { routingSyncCoordEditBtnUi(); } catch(_){}
   const addBtn = document.getElementById("routingAddViaBtn");
   if (addBtn){
-    if (routingGetRouteMode() === "round_trip" || n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
+    if (n >= ROUTING_MAX_POINTS) addBtn.setAttribute("aria-disabled", "true");
     else addBtn.removeAttribute("aria-disabled");
   }
   const calcBtn = document.getElementById("routingCalculateBtn");
@@ -85449,6 +85519,10 @@ function routingMovePoint(id, delta){
   if (ix < 0) return;
   const j = ix + delta;
   if (j < 0 || j >= pts.length) return;
+  if (routingGetRouteMode() === "round_trip"){
+    const last = pts.length - 1;
+    if (ix === 0 || j === 0 || ix === last || j === last) return;
+  }
   try { routingPushPointUndoSnapshot(); } catch(_){}
   const tmp = pts[ix];
   pts[ix] = pts[j];
@@ -85499,10 +85573,6 @@ function routingRemovePoint(id){
 }
 function routingAddVia(){
   const r = routingEnsureState();
-  if (routingGetRouteMode() === "round_trip"){
-    routingSetStatus(routingT("routing.roundTripHint", "Percorso circolare dalla partenza A."), true);
-    return;
-  }
   if ((r.points || []).length >= ROUTING_MAX_POINTS){
     routingSetStatus(routingT("routing.maxPoints", "Max 20"), true);
     return;
@@ -85894,6 +85964,7 @@ async function routingVerifyPointsAgainstNearest(endpoint, provider, profile, pa
       return { ok: false, aborted: true, errKey: "routing.errorGeneric", blocking: [] };
 
     const p = pts[i];
+    if (routingGetRouteMode() === "round_trip" && i === pts.length - 1) continue;
     if (!p || !routingPointIsPositioned(p)) continue;
 
     if (routingSnapIsReusable(p, profile, provider)) continue;
@@ -86169,6 +86240,76 @@ function routingGetRoundTripStartPoint(){
 }
 function routingRoundTripStartIsReady(){
   return routingPointIsPositioned(routingGetRoundTripStartPoint());
+}
+function routingRoundTripVisiblePoints(r){
+  const st = r || state._routing;
+  const pts = (st && Array.isArray(st.points)) ? st.points : [];
+  if (pts.length <= 1) return pts.slice();
+  return pts.slice(0, pts.length - 1);
+}
+function routingRoundTripIsConstrained(r){
+  if (routingGetRouteMode() !== "round_trip") return false;
+  return routingRoundTripVisiblePoints(r).length >= 2;
+}
+function routingClosedLoopLonLatFromOpen(openPts){
+  const out = [];
+  if (!Array.isArray(openPts)) return out;
+  for (let i = 0; i < openPts.length; i++){
+    const p = openPts[i];
+    if (!p) continue;
+    const lon = Number(p.lon);
+    const lat = Number(p.lat);
+    if (!Number.isFinite(lon) || !Number.isFinite(lat)) continue;
+    out.push([lon, lat]);
+  }
+  if (out.length) out.push([out[0][0], out[0][1]]);
+  return out;
+}
+function routingExtractClosedLoopPoints(){
+  const vis = routingRoundTripVisiblePoints();
+  if (vis.length < 2) return { ok: false, pointsLonLat: [], pointsLatLon: [], openLatLon: [] };
+  const pointsLonLat = [];
+  const pointsLatLon = [];
+  const openLatLon = [];
+  for (let i = 0; i < vis.length; i++){
+    const p = vis[i];
+    if (!p || !routingPointIsPositioned(p)) return { ok: false, pointsLonLat: [], pointsLatLon: [], openLatLon: [] };
+    const lat = Number(p.lat);
+    const lon = Number(p.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return { ok: false, pointsLonLat: [], pointsLatLon: [], openLatLon: [] };
+    const nLon = normalizeLon(lon);
+    pointsLonLat.push([nLon, lat]);
+    pointsLatLon.push({ lat: lat, lon: nLon });
+    openLatLon.push({ lat: lat, lon: nLon });
+  }
+  pointsLonLat.push([pointsLonLat[0][0], pointsLonLat[0][1]]);
+  pointsLatLon.push({ lat: pointsLatLon[0].lat, lon: pointsLatLon[0].lon });
+  return { ok: true, pointsLonLat: pointsLonLat, pointsLatLon: pointsLatLon, openLatLon: openLatLon };
+}
+function routingBuildClosedLoopLonLatFromSnap(){
+  const vis = routingRoundTripVisiblePoints();
+  if (vis.length < 2) return { ok: false, pointsLonLat: [], blocking: [] };
+  const pointsLonLat = [];
+  const blocking = [];
+  for (let i = 0; i < vis.length; i++){
+    const p = vis[i];
+    if (!p || !routingPointIsPositioned(p)) return { ok: false, pointsLonLat: [], blocking: [] };
+    const stt = p.snapStatus || "unverified";
+    if (routingSnapStatusIsBlocking(stt) || stt === "unverified" || stt === "stale"){
+      blocking.push({ index: i, id: p.id, status: stt });
+      continue;
+    }
+    if ((stt === "verified" || stt === "confirmed") &&
+        Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
+      pointsLonLat.push([Number(p.snapLon), Number(p.snapLat)]);
+    } else {
+      pointsLonLat.push([Number(p.lon), Number(p.lat)]);
+    }
+  }
+  if (blocking.length) return { ok: false, pointsLonLat: [], blocking: blocking };
+  if (pointsLonLat.length < 2) return { ok: false, pointsLonLat: [], blocking: [] };
+  pointsLonLat.push([pointsLonLat[0][0], pointsLonLat[0][1]]);
+  return { ok: true, pointsLonLat: pointsLonLat, blocking: [] };
 }
 function routingNewRoundTripSeed(){
   const n = (Date.now() ^ (Math.floor(Math.random() * 0x7fffffff))) >>> 0;
@@ -86619,8 +86760,8 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -86792,7 +86933,7 @@ function routingSyncRoundTripRegenBtnUi(){
   if (!btn) return;
   const r = state._routing;
   const busy = !!(r && (r.requestLoading || r.infoLoading));
-  const modeOk = routingGetRouteMode() === "round_trip";
+  const modeOk = routingGetRouteMode() === "round_trip" && !routingRoundTripIsConstrained();
   const previewOk = routingRoutePreviewIsValid();
   btn.disabled = !modeOk || busy || !previewOk;
 }
@@ -86840,9 +86981,16 @@ function routingSyncRoundTripControlsUi(){
     }
   }
   const busy = !!(r.requestLoading || r.infoLoading);
-  if (input) input.disabled = !!busy;
-  for (let i = 0; i < presets.length; i++) presets[i].disabled = !!busy;
-  if (r.roundTripWarnKey){
+  const constrained = routingRoundTripIsConstrained(r);
+  if (input) input.disabled = !!busy || constrained;
+  for (let i = 0; i < presets.length; i++) presets[i].disabled = !!busy || constrained;
+  const note = document.getElementById("routingRoundTripConstrainedNote");
+  if (note) note.hidden = !constrained;
+  const hint = document.getElementById("routingRoundTripHint");
+  if (hint) hint.hidden = !!constrained;
+  if (constrained){
+    routingSetRoundTripFeedback(routingT("routing.roundTripDistanceNotApplicable", "Distanza e seed non si applicano con punti di passaggio obbligati."), "");
+  } else if (r.roundTripWarnKey){
     routingSetRoundTripFeedback(routingT(r.roundTripWarnKey, r.roundTripWarnKey), "warn");
   } else {
     routingSetRoundTripFeedback("", "");
@@ -88376,13 +88524,15 @@ async function routingCalculateRoundTripOrs(){
 async function routingCalculateRouteOrs(){
   const r = state._routing;
   if (!r || r.requestLoading || r.infoLoading) return;
-  if (routingGetRouteMode() === "round_trip") return routingCalculateRoundTripOrs();
+  if (routingGetRouteMode() === "round_trip" && !routingRoundTripIsConstrained()) return routingCalculateRoundTripOrs();
   const profile = routingGetSelectedOrsProfile();
   if (!routingOrsProfileIsValid(profile)){
     routingSetStatus(routingT("routing.errorInvalidProfile", "Invalid profile."), true);
     return;
   }
-  const ptsRes = routingExtractValidGraphhopperPoints();
+  const ptsRes = routingRoundTripIsConstrained()
+    ? routingExtractClosedLoopPoints()
+    : routingExtractValidGraphhopperPoints();
   if (!ptsRes.ok){
     routingSetStatus(routingT("routing.errorInvalidPoints", "Invalid points."), true);
     return;
@@ -88508,6 +88658,8 @@ function routingCompareAbortInFlight(opts){
     _routingCompareSession.snapshot = null;
   }
   try { routingSyncCompareUi(); } catch(_){}
+  try { routingSyncCompareMapLegend(); } catch(_){}
+  try { routingSyncCenterResultBtnUi(); } catch(_){}
   try { refreshTileMapForTrackUi(); } catch(_){}
 }
 function routingComparePairForProfile(service, profile){
@@ -88534,6 +88686,18 @@ function routingCompareClonePointsForMode(mode){
   const pts = [];
   const src = (r && Array.isArray(r.points)) ? r.points : [];
   if (mode === "round_trip"){
+    if (routingRoundTripIsConstrained(r)){
+      const vis = routingRoundTripVisiblePoints(r);
+      for (let i = 0; i < vis.length; i++){
+        const p = vis[i];
+        if (!p) continue;
+        pts.push({
+          lat: Number.isFinite(Number(p.lat)) ? Number(p.lat) : null,
+          lon: Number.isFinite(Number(p.lon)) ? Number(p.lon) : null
+        });
+      }
+      return pts;
+    }
     const a = src[0];
     if (a && Number.isFinite(Number(a.lat)) && Number.isFinite(Number(a.lon)))
       pts.push({ lat: Number(a.lat), lon: Number(a.lon) });
@@ -88559,16 +88723,20 @@ function routingCompareCloneAvoid(){
 function routingCompareFingerprint(snap){
   if (!snap) return "";
   try {
-    return JSON.stringify({
+    const o = {
       mode: snap.mode,
       gh: snap.pair && snap.pair.gh,
       ors: snap.pair && snap.pair.ors,
-      dist: snap.roundTripDistanceM,
-      seed: snap.roundTripSeed,
       ghProvider: snap.ghProvider,
       pts: snap.points,
-      avoid: snap.avoid
-    });
+      avoid: snap.avoid,
+      constrainedLoop: !!snap.constrainedLoop
+    };
+    if (snap.mode === "round_trip" && !snap.constrainedLoop){
+      o.dist = snap.roundTripDistanceM;
+      o.seed = snap.roundTripSeed;
+    }
+    return JSON.stringify(o);
   } catch(_){ return ""; }
 }
 function routingCompareLiveFingerprint(){
@@ -88582,7 +88750,8 @@ function routingCompareLiveFingerprint(){
     roundTripSeed: r ? r.roundTripSeed : null,
     ghProvider: r ? routingProviderNormalize(r.provider) : "vps",
     points: routingCompareClonePointsForMode(mode),
-    avoid: routingCompareCloneAvoid()
+    avoid: routingCompareCloneAvoid(),
+    constrainedLoop: routingRoundTripIsConstrained()
   });
 }
 async function routingCompareWithAvoid(areas, fn){
@@ -88690,7 +88859,7 @@ async function routingCompareRunGh(snap, controller, seq){
   const profile = snap.pair.gh;
   const extra = { provider: resolved.provider, endpoint: resolved.endpoint, profile: profile };
   return await routingCompareWithAvoid(snap.avoid, async function(){
-      if (snap.mode === "round_trip"){
+      if (snap.mode === "round_trip" && !snap.constrainedLoop){
         const start = routingCompareLonLat(snap.points)[0];
         const seeds = routingRoundTripSeedBatch(snap.roundTripSeed);
         let best = null;
@@ -88710,7 +88879,9 @@ async function routingCompareRunGh(snap, controller, seq){
         if (!best) return routingComparePackFail("routing.roundTripNoCandidate");
         return routingComparePackFromValidated(best.validated, extra);
       }
-      const lonlat = routingCompareLonLat(snap.points);
+      const lonlat = snap.constrainedLoop
+        ? routingClosedLoopLonLatFromOpen(snap.points)
+        : routingCompareLonLat(snap.points);
       if (snap.mode === "out_and_back"){
         const bodyOut = routingBuildGraphhopperRouteBody(profile, lonlat, { withAlternatives: false });
         let dataOut;
@@ -88750,7 +88921,7 @@ async function routingCompareRunOrs(snap, controller, seq){
   if (!routingOrsProfileIsValid(profile)) return routingComparePackFail("routing.errorInvalidProfile");
   const extra = { provider: "ors", endpoint: routingOrsEndpoint(), profile: profile };
   return await routingCompareWithAvoid(snap.avoid, async function(){
-      if (snap.mode === "round_trip"){
+      if (snap.mode === "round_trip" && !snap.constrainedLoop){
         const start = routingCompareLonLat(snap.points)[0];
         const seeds = routingRoundTripSeedBatch(snap.roundTripSeed);
         let best = null;
@@ -88770,7 +88941,9 @@ async function routingCompareRunOrs(snap, controller, seq){
         if (!best) return routingComparePackFail("routing.roundTripNoCandidate");
         return routingComparePackFromValidated(best.validated, extra);
       }
-      const lonlat = routingCompareLonLat(snap.points);
+      const lonlat = snap.constrainedLoop
+        ? routingClosedLoopLonLatFromOpen(snap.points)
+        : routingCompareLonLat(snap.points);
       if (snap.mode === "out_and_back"){
         let dataOut;
         try { dataOut = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(lonlat, { withAlternatives: false }), controller); }
@@ -88815,6 +88988,123 @@ function routingCompareOverlayTracks(){
     out.push({ id: "ors", pts: _routingCompareSession.ors.previewCoordinates });
   return out.length ? out : null;
 }
+
+function routingCompareFillMetricsEl(el, pack, loading){
+  if (!el) return;
+  el.textContent = "";
+  if (loading && !pack){
+    el.textContent = routingT("routing.compareRunning", "Confronto in corso…");
+    return;
+  }
+  if (!pack){
+    el.textContent = "—";
+    return;
+  }
+  if (pack.status === "fail"){
+    el.textContent = routingT("routing.compareStatusFail", "Errore") + ": " + routingT(pack.errKey, pack.errKey);
+    return;
+  }
+  const m = pack.metrics || {};
+  const rows = [
+    [routingT("routing.compareStatusPass", "OK"), routingT("routing.providerLabel", "Provider") + ": " + (pack.provider || "—")],
+    [routingT("routing.distance", "Distanza"), routingFmtRouteDistanceForUnit(m.distanceM)],
+    [routingT("routing.duration", "Tempo stimato"), routingFmtDurationMs(m.durationMs)],
+    [routingT("routing.ascent", "Dislivello positivo"), Number.isFinite(m.ascentM) ? routingFmtAltitudeForUnit(m.ascentM) : "—"],
+    [routingT("routing.difficultyLabel", "Difficoltà stimata"), (pack.difficulty && pack.difficulty.level && pack.difficulty.level !== "unknown") ? String(pack.difficulty.level) : "—"]
+  ];
+  for (let i = 0; i < rows.length; i++){
+    const row = document.createElement("div");
+    row.className = "routing-compare-metric";
+    const lab = document.createElement("span");
+    lab.className = "routing-compare-metric-label";
+    lab.textContent = rows[i][0];
+    const val = document.createElement("span");
+    val.className = "routing-compare-metric-value";
+    val.textContent = rows[i][1];
+    row.appendChild(lab);
+    row.appendChild(val);
+    el.appendChild(row);
+  }
+}
+function routingRemoveCompareMapLegend(){
+  try {
+    const el = document.getElementById("routingCompareMapLegend");
+    if (el && el.parentNode) el.parentNode.removeChild(el);
+  } catch(_){}
+}
+function routingSyncCompareMapLegend(){
+  const tracks = (typeof routingCompareOverlayTracks === "function") ? routingCompareOverlayTracks() : null;
+  const show = !!(tracks && tracks.length);
+  if (!show){
+    routingRemoveCompareMapLegend();
+    return;
+  }
+  const host = document.querySelector("#miniMap .tile-map") || document.getElementById("miniMap");
+  if (!host){
+    routingRemoveCompareMapLegend();
+    return;
+  }
+  let el = document.getElementById("routingCompareMapLegend");
+  if (!el){
+    el = document.createElement("div");
+    el.id = "routingCompareMapLegend";
+    el.className = "routing-compare-map-legend";
+    el.setAttribute("data-routing-compare-legend", "1");
+    el.setAttribute("role", "note");
+    const mk = function(swClass, name){
+      const row = document.createElement("div");
+      row.className = "routing-compare-legend-item";
+      const sw = document.createElement("span");
+      sw.className = "routing-swatch " + swClass;
+      sw.setAttribute("aria-hidden", "true");
+      const nm = document.createElement("span");
+      nm.className = "routing-compare-legend-name";
+      nm.textContent = name;
+      row.appendChild(sw);
+      row.appendChild(nm);
+      return row;
+    };
+    el.appendChild(mk("routing-swatch-gh", routingT("routing.serviceGraphHopper", "GraphHopper")));
+    el.appendChild(mk("routing-swatch-ors", routingT("routing.serviceOrs", "OpenRouteService")));
+    host.appendChild(el);
+  }
+}
+function routingCompareCombinedPreviewCoordinates(){
+  const tracks = routingCompareOverlayTracks();
+  if (!tracks || !tracks.length) return null;
+  const all = [];
+  for (let i = 0; i < tracks.length; i++){
+    const pts = tracks[i] && tracks[i].pts;
+    if (!Array.isArray(pts)) continue;
+    for (let j = 0; j < pts.length; j++){
+      if (pts[j] && Number.isFinite(pts[j].lat) && Number.isFinite(pts[j].lon)) all.push(pts[j]);
+    }
+  }
+  return all.length >= 2 ? all : null;
+}
+function routingCenterResultHasGeometry(){
+  const combined = routingCompareCombinedPreviewCoordinates();
+  if (combined) return true;
+  const r = state._routing;
+  return !!(r && Array.isArray(r.previewCoordinates) && r.previewCoordinates.length >= 2);
+}
+function routingSyncCenterResultBtnUi(){
+  const btn = document.getElementById("routingCenterResultBtn");
+  if (!btn) return;
+  const busy = !!(state._routing && (state._routing.requestLoading || state._routing.infoLoading));
+  btn.disabled = busy || !routingCenterResultHasGeometry();
+}
+function routingCenterResultAction(){
+  const btn = document.getElementById("routingCenterResultBtn");
+  if (btn && btn.disabled) return false;
+  const combined = routingCompareCombinedPreviewCoordinates();
+  if (combined) return !!routingFitMapToRoutePreview(combined);
+  const r = state._routing;
+  if (r && Array.isArray(r.previewCoordinates) && r.previewCoordinates.length >= 2)
+    return !!routingFitMapToRoutePreview(r.previewCoordinates);
+  return false;
+}
+
 function routingCompareFmtPack(pack){
   if (!pack) return routingT("routing.comparePending", "In attesa");
   if (pack.status === "fail") return routingT(pack.errKey, pack.errKey);
@@ -88844,7 +89134,11 @@ function routingSyncCompareUi(){
   const r = state._routing;
   const mode = routingGetRouteMode();
   const pts = routingCompareClonePointsForMode(mode);
-  const pointsOk = mode === "round_trip" ? pts.length >= 1 : pts.length >= 2;
+  const constrained = routingRoundTripIsConstrained();
+  const pointsPos = pts.every(function(p){ return p && Number.isFinite(p.lat) && Number.isFinite(p.lon); });
+  const pointsOk = mode === "round_trip"
+    ? (constrained ? (pts.length >= 2 && pointsPos) : pts.length >= 1)
+    : pts.length >= 2;
   if (note){
     if (!pairRes.ok){
       note.textContent = routingT("routing.compareNotComparable", "Profilo non confrontabile fra GraphHopper e OpenRouteService.");
@@ -88859,23 +89153,9 @@ function routingSyncCompareUi(){
   }
   const gh = _routingCompareSession.gh;
   const ors = _routingCompareSession.ors;
-  if (ghEl){
-    ghEl.textContent = _routingCompareSession.loading && !gh
-      ? routingT("routing.compareRunning", "Confronto in corso…")
-      : (gh ? (gh.status === "pass"
-        ? (routingT("routing.compareStatusPass", "OK") + " · " + routingT("routing.providerLabel", "Provider") + ": " + (gh.provider || "graphhopper") + " · " + routingCompareFmtPack(gh))
-        : (routingT("routing.compareStatusFail", "Errore") + ": " + routingT(gh.errKey, gh.errKey)))
-        : "—");
-  }
-  if (orsEl){
-    orsEl.textContent = _routingCompareSession.loading && !ors
-      ? routingT("routing.compareRunning", "Confronto in corso…")
-      : (ors ? (ors.status === "pass"
-        ? (routingT("routing.compareStatusPass", "OK") + " · ORS · " + routingCompareFmtPack(ors))
-        : (routingT("routing.compareStatusFail", "Errore") + ": " + routingT(ors.errKey, ors.errKey)))
-        : "—");
-  }
-  if (status){
+  routingCompareFillMetricsEl(ghEl, gh, _routingCompareSession.loading);
+  routingCompareFillMetricsEl(orsEl, ors, _routingCompareSession.loading);
+    if (status){
     if (_routingCompareSession.loading) status.textContent = routingT("routing.compareRunning", "Confronto in corso…");
     else if (gh && ors && gh.status === "pass" && ors.status === "pass") status.textContent = routingT("routing.compareComplete", "Confronto completato (nessun provider dichiarato migliore).");
     else if ((gh && gh.status === "pass") || (ors && ors.status === "pass")) status.textContent = routingT("routing.comparePartial", "Confronto parziale: un provider non ha prodotto un percorso.");
@@ -88900,6 +89180,7 @@ function routingSyncCompareUi(){
   }
   if (btnGh) btnGh.disabled = !(gh && gh.status === "pass") || !!_routingCompareSession.loading;
   if (btnOrs) btnOrs.disabled = !(ors && ors.status === "pass") || !!_routingCompareSession.loading;
+  try { routingSyncCenterResultBtnUi(); } catch(_){}
 }
 async function routingCompareStart(){
   const r = routingEnsureState();
@@ -88912,7 +89193,9 @@ async function routingCompareStart(){
   const mode = routingGetRouteMode();
   const points = routingCompareClonePointsForMode(mode);
   if (mode === "round_trip"){
-    if (points.length < 1) return;
+    if (routingRoundTripIsConstrained()){
+      if (points.length < 2 || !points.every(function(pt){ return pt && Number.isFinite(pt.lat) && Number.isFinite(pt.lon); })) return;
+    } else if (points.length < 1) return;
   } else if (points.length < 2) return;
   if (r.roundTripSeed == null || !Number.isFinite(Number(r.roundTripSeed))) r.roundTripSeed = routingNewRoundTripSeed();
   routingCompareResetSession({ keepSnapshot: false });
@@ -88925,6 +89208,7 @@ async function routingCompareStart(){
     ghProvider: routingProviderNormalize(r.provider),
     points: points,
     avoid: routingCompareCloneAvoid(),
+    constrainedLoop: routingRoundTripIsConstrained(),
     fingerprint: ""
   };
   snap.fingerprint = routingCompareFingerprint(snap);
@@ -89022,8 +89306,8 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_221", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 221
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A");
+    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -89136,11 +89420,200 @@ function routingProviderCompareSelfTest(){
 })();
 
 
+function routingCompareFix1SelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  const r = routingEnsureState();
+  const saved = {
+    mode: r.routeMode,
+    points: r.points,
+    roundTripDistanceM: r.roundTripDistanceM,
+    roundTripSeed: r.roundTripSeed
+  };
+  const prevAvoid = _routingAvoidSession.areas;
+  const prevGh = _routingCompareSession.gh;
+  const prevOrs = _routingCompareSession.ors;
+  const prevChosen = _routingCompareSession.chosen;
+  try {
+    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 222
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1");
+    const cta = document.getElementById("routingCompareBtn");
+    add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
+    add("RPCF1_swatch_gh", !!document.querySelector("#routingCompareLegend .routing-swatch-gh"));
+    add("RPCF1_swatch_ors", !!document.querySelector("#routingCompareLegend .routing-swatch-ors"));
+    const btnGh = document.getElementById("routingCompareChooseGh");
+    const btnOrs = document.getElementById("routingCompareChooseOrs");
+    add("RPCF1_choose_gh_class", !!(btnGh && btnGh.classList.contains("routing-compare-choose-gh")));
+    add("RPCF1_choose_ors_class", !!(btnOrs && btnOrs.classList.contains("routing-compare-choose-ors")));
+    add("RPCF1_heading", !!(document.getElementById("routingCompareTitle") && document.getElementById("routingCompareTitle").classList.contains("routing-section-heading")));
+    const avoidHelp = document.getElementById("routingAvoidHelpBtn");
+    add("RPCF1_avoid_tooltip", !!(avoidHelp && avoidHelp.getAttribute("data-i18n-tip") === "tip.routingAvoidHelp"));
+    add("RPCF1_center_btn", typeof routingCenterResultAction === "function" && typeof routingFitMapToRoutePreview === "function" && !!document.getElementById("routingCenterResultBtn"));
+    add("RPCF1_legend_fn", typeof routingSyncCompareMapLegend === "function" && typeof routingRemoveCompareMapLegend === "function");
+
+    r.routeMode = "round_trip";
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, label: "A", snapStatus: "unverified" },
+      { id: "hid", label: "", snapStatus: "unverified" }
+    ];
+    add("RAC_zero_via_not_constrained", routingRoundTripIsConstrained() === false);
+    const bodyRt = routingBuildGraphhopperRoundTripBody("hiking", [9.82, 44.1], 8000, 1);
+    add("RAC_zero_via_gh_round_trip", !!(bodyRt && bodyRt.algorithm === "round_trip" && bodyRt["round_trip.distance"] === 8000));
+    const orsRt = routingBuildOrsRoundTripBody([9.82, 44.1], 8000, 1);
+    add("RAC_zero_via_ors_round_trip", !!(orsRt && orsRt.options && orsRt.options.round_trip));
+
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    add("RAC_one_via_constrained", routingRoundTripIsConstrained() === true);
+    const ext1 = routingExtractClosedLoopPoints();
+    add("RAC_one_via_start_via_start", !!(ext1.ok && ext1.pointsLonLat.length === 3
+      && ext1.pointsLonLat[0][0] === ext1.pointsLonLat[2][0]
+      && ext1.pointsLonLat[0][1] === ext1.pointsLonLat[2][1]
+      && Number(ext1.pointsLonLat[1][1]) === 44.12));
+    add("RAC_state_no_dup_start", r.points.filter(function(pt){ return pt && pt.id === "s"; }).length === 1 && r.points.length === 3);
+
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "v2", lat: 44.14, lon: 9.88, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    const ext2 = routingExtractClosedLoopPoints();
+    add("RAC_two_via_start_v1_v2_start", !!(ext2.ok && ext2.pointsLonLat.length === 4
+      && Number(ext2.pointsLonLat[2][1]) === 44.14
+      && ext2.pointsLonLat[0][0] === ext2.pointsLonLat[3][0]));
+
+    const ghBody = routingBuildGraphhopperRouteBody("hiking", ext2.pointsLonLat, { withAlternatives: true });
+    add("RAC_gh_constrained_no_round_trip", !!(ghBody && ghBody.algorithm !== "round_trip" && ghBody.algorithm === "alternative_route"));
+    const orsBody = routingBuildOrsRouteBody(ext2.pointsLonLat, { withAlternatives: true });
+    add("RAC_ors_constrained_no_round_trip", !!(orsBody && (!orsBody.options || !orsBody.options.round_trip)));
+
+    _routingAvoidSession.areas = [{
+      id: "a1", enabled: true, label: "x",
+      vertices: [{ lat: 44.0, lon: 9.0 }, { lat: 44.01, lon: 9.0 }, { lat: 44.0, lon: 9.01 }]
+    }];
+    const ghAv = routingBuildGraphhopperRouteBody("hiking", ext2.pointsLonLat, {});
+    add("RAC_gh_avoid_constrained", !!(ghAv && ghAv.custom_model));
+    const orsAv = routingBuildOrsRouteBody(ext2.pointsLonLat, {});
+    add("RAC_ors_avoid_constrained", !!(orsAv && orsAv.options && orsAv.options.avoid_polygons));
+    _routingAvoidSession.areas = prevAvoid;
+
+    const clone = routingCompareClonePointsForMode("round_trip");
+    add("RAC_compare_same_snapshot", clone.length === 3 && Number(clone[1].lat) === 44.12 && Number(clone[2].lat) === 44.14);
+    const closed = routingClosedLoopLonLatFromOpen(clone);
+    add("RAC_compare_closed", closed.length === 4 && closed[0][0] === closed[3][0]);
+    add("RAC_compare_run_uses_flag", String(routingCompareRunGh).indexOf("constrainedLoop") >= 0
+      && String(routingCompareRunOrs).indexOf("constrainedLoop") >= 0);
+
+    const extA = routingExtractClosedLoopPoints().pointsLonLat.slice();
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v2", lat: 44.14, lon: 9.88, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    const extB = routingExtractClosedLoopPoints().pointsLonLat.slice();
+    add("RAC_reorder_via", Number(extA[1][1]) === 44.12 && Number(extB[1][1]) === 44.14);
+
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    add("RAC_remove_via_before", routingRoundTripIsConstrained() === true);
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    add("RAC_remove_via_after", routingRoundTripIsConstrained() === false);
+
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "v1", lat: 44.12, lon: 9.86, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    const snapA = { mode: "round_trip", constrainedLoop: true, pair: { gh: "hiking", ors: "foot-hiking" }, roundTripDistanceM: 8000, roundTripSeed: 1, ghProvider: "vps", points: routingCompareClonePointsForMode("round_trip"), avoid: [] };
+    const snapB = { mode: "round_trip", constrainedLoop: true, pair: { gh: "hiking", ors: "foot-hiking" }, roundTripDistanceM: 25000, roundTripSeed: 99, ghProvider: "vps", points: snapA.points, avoid: [] };
+    add("RAC_distance_seed_ignored", routingCompareFingerprint(snapA) === routingCompareFingerprint(snapB));
+    r.points = [
+      { id: "s", lat: 44.1, lon: 9.82, snapStatus: "verified" },
+      { id: "hid", snapStatus: "unverified" }
+    ];
+    add("RAC_zero_via_regression", routingRoundTripIsConstrained() === false);
+    const bodyRt2 = routingBuildGraphhopperRoundTripBody("hiking", [9.82, 44.1], 8000, 1);
+    add("RAC_zero_via_builder_unchanged", bodyRt2.algorithm === "round_trip");
+
+    _routingCompareSession.chosen = null;
+    _routingCompareSession.gh = { status: "pass", previewCoordinates: [{ lat: 44, lon: 9 }, { lat: 44.1, lon: 9.1 }] };
+    _routingCompareSession.ors = { status: "pass", previewCoordinates: [{ lat: 44, lon: 9 }, { lat: 44.2, lon: 9.2 }] };
+    add("RPCF1_overlay_dual", ((routingCompareOverlayTracks() || []).length === 2));
+    const combined = routingCompareCombinedPreviewCoordinates();
+    add("RPCF1_center_combined", !!(combined && combined.length >= 4));
+    routingSyncCompareMapLegend();
+    add("RPCF1_legend_dom", !!document.getElementById("routingCompareMapLegend"));
+    _routingCompareSession.chosen = "gh";
+    routingSyncCompareMapLegend();
+    add("RPCF1_legend_choose_gone", !document.getElementById("routingCompareMapLegend"));
+    _routingCompareSession.chosen = null;
+    _routingCompareSession.ors = { status: "fail", errKey: "routing.errorOpsec" };
+    add("RPCF1_center_partial", ((routingCompareOverlayTracks() || []).length === 1));
+    routingSyncCompareMapLegend();
+    routingCompareAbortInFlight({ clearResults: true });
+    routingSyncCompareMapLegend();
+    add("RPCF1_legend_invalidate_gone", !document.getElementById("routingCompareMapLegend"));
+    add("RPCF1_choose_unchanged", String(routingCompareChoose).indexOf("routingApplyRouteResultFromValidated") >= 0);
+  } catch(e){
+    add("RPCF1_exception", false, String(e && e.message ? e.message : e));
+  } finally {
+    try { r.routeMode = saved.mode; } catch(_){}
+    try { r.points = saved.points; } catch(_){}
+    try { r.roundTripDistanceM = saved.roundTripDistanceM; } catch(_){}
+    try { r.roundTripSeed = saved.roundTripSeed; } catch(_){}
+    _routingAvoidSession.areas = prevAvoid;
+    _routingCompareSession.gh = prevGh;
+    _routingCompareSession.ors = prevOrs;
+    _routingCompareSession.chosen = prevChosen;
+    try { routingSyncCompareMapLegend(); } catch(_){}
+  }
+  return checks;
+}
+(function routingCompareFix1ExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = routingCompareFix1SelfTest();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestRoutingCompareFix1: routingCompareFix1SelfTest
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
+
 async function routingCalculateRouteGraphhopper(){
   const r = state._routing;
   if (!r || r.requestLoading || r.infoLoading) return;
   if (routingGetRouteMode() === "round_trip"){
-    return routingCalculateRoundTripGraphhopper();
+    if (!routingRoundTripIsConstrained()) return routingCalculateRoundTripGraphhopper();
   }
 
   const profile = routingGetSelectedGraphhopperProfile();
@@ -89151,7 +89624,9 @@ async function routingCalculateRouteGraphhopper(){
     return;
   }
 
-  const ptsRes = routingExtractValidGraphhopperPoints();
+  const ptsRes = routingRoundTripIsConstrained()
+    ? routingExtractClosedLoopPoints()
+    : routingExtractValidGraphhopperPoints();
   if (!ptsRes.ok){
     r.routeError = "routing.errorInvalidPoints";
     routingSetStatus(routingT("routing.errorInvalidPoints", "Invalid points."), true);
@@ -89297,7 +89772,9 @@ async function routingCalculateRouteGraphhopper(){
     return;
   }
 
-  const snapPts = routingBuildRoutePointsLonLatFromSnap();
+  const snapPts = routingRoundTripIsConstrained()
+    ? routingBuildClosedLoopLonLatFromSnap()
+    : routingBuildRoutePointsLonLatFromSnap();
   if (!snapPts.ok){
     const msgs = routingCollectSnapStatusMessages();
     r.routeError = "routing.snapBlocked";
@@ -89793,9 +90270,12 @@ function renderRoutingRoutePreviewOverlay(tileMap, markerLat, markerLon, zoom){
     }
     wrapC.appendChild(svgC);
     tileLayerC.appendChild(wrapC);
+    try { routingSyncCompareMapLegend(); } catch(_){}
+    try { routingSyncCenterResultBtnUi(); } catch(_){}
     return;
   }
 
+  try { routingRemoveCompareMapLegend(); } catch(_){}
   const r = state._routing;
   if (!r || !Array.isArray(r.previewCoordinates) || r.previewCoordinates.length < 2) return;
 
@@ -92016,6 +92496,10 @@ function routingAttachListDnd(list){
     dragId = null;
     r.listReorderDrag = null;
     if (from < 0 || to < 0 || from === to) return;
+    if (routingGetRouteMode() === "round_trip"){
+      const last = pts.length - 1;
+      if (from === 0 || to === 0 || from === last || to === last) return;
+    }
     try { routingPushPointUndoSnapshot(); } catch(_){}
     const item = pts.splice(from, 1)[0];
     pts.splice(to, 0, item);
@@ -92355,6 +92839,15 @@ function wireRoutingPlannerOnce(){
   try { routingWireRoundTripControlsOnce(); } catch(_){}
   try { routingWireAlternativesRowOnce(); } catch(_){}
   try { routingWireCompareOnce(); } catch(_){}
+  const centerBtn = document.getElementById("routingCenterResultBtn");
+  if (centerBtn && !centerBtn._routingCenterBound){
+    centerBtn._routingCenterBound = true;
+    centerBtn.addEventListener("click", function(ev){
+      ev.preventDefault();
+      if (centerBtn.disabled) return;
+      routingCenterResultAction();
+    });
+  }
   const calcBtn = document.getElementById("routingCalculateBtn");
   if (calcBtn) calcBtn.addEventListener("click", (ev) => {
     ev.preventDefault();
