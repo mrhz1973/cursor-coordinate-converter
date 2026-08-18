@@ -20,7 +20,7 @@ sleep 1
 PID_POST=$(systemctl show -p MainPID --value goi-ors-gateway)
 echo "ORS_PID_PRE=$PID_PRE ORS_PID_POST=$PID_POST ACTIVE=$(systemctl is-active goi-ors-gateway)"
 test "$(systemctl is-active goi-ors-gateway)" = "active"
-curl -fsS --resolve "${DOMAIN}:443:${TS_IP}" "https://${DOMAIN}/ors/status" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["secret"]=="ABSENT" and d["status"]=="ready"; print("RESTART_STATUS_OK")'
+curl -fsS --resolve "${DOMAIN}:443:${TS_IP}" "https://${DOMAIN}/ors/status" | python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["status"]=="ready" and d["secret"] in ("ABSENT","PRESENT"); print("RESTART_STATUS", d["secret"])'
 echo '=== OTHER SERVICES STILL ACTIVE ==='
 for s in goi-gis-app goi-nav-proxy goi-graphhopper goi-dflight-helper nginx; do
   test "$(systemctl is-active $s)" = "active"

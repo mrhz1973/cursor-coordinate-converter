@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Deploy ORS HTTPS gateway INFRA1. Does not restart GIS/GH/proxy/helper. Never writes ORS_API_KEY."""
+"""Deploy ORS HTTPS gateway. Idempotent for secret ABSENT or PRESENT.
+
+Does not restart GIS/GH/proxy/helper. Never writes ORS_API_KEY.
+When the secret file exists: install LoadCredential drop-in and skip 503 probe.
+When missing: omit drop-in so the unit starts and POST stays fail-closed 503.
+"""
 from __future__ import annotations
 
 import subprocess
@@ -8,6 +13,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 SRC = REPO / "infra" / "ors-gateway"
+DROPIN_SRC = SRC / "goi-ors-gateway.service.d" / "credential.conf"
+LOADCRED_LINE = "LoadCredential=ORS_API_KEY:/etc/systemd/ors-credentials/ORS_API_KEY"
 
 REMOTE = r"""
 set -euo pipefail
@@ -31,6 +38,28 @@ install -o root -g root -m 0755 /tmp/goi-ors-gw/goi-ors-renew-cert.sh /usr/local
 install -o root -g root -m 0644 /tmp/goi-ors-gw/goi-ors-cert-renew.service /etc/systemd/system/goi-ors-cert-renew.service
 install -o root -g root -m 0644 /tmp/goi-ors-gw/goi-ors-cert-renew.timer /etc/systemd/system/goi-ors-cert-renew.timer
 
+KEY=/etc/systemd/ors-credentials/ORS_API_KEY
+DROPDIR=/etc/systemd/system/goi-ors-gateway.service.d
+DROP="$DROPDIR/credential.conf"
+install -d -m 0755 "$DROPDIR"
+SECRET_STATE=ABSENT
+if [ -f "$KEY" ] && [ -s "$KEY" ]; then
+  SECRET_STATE=PRESENT
+  test -f /tmp/goi-ors-gw/credential.conf
+  install -o root -g root -m 0644 /tmp/goi-ors-gw/credential.conf "$DROP"
+  grep -q 'LoadCredential=ORS_API_KEY:/etc/systemd/ors-credentials/ORS_API_KEY' "$DROP"
+else
+  rm -f "$DROP"
+fi
+echo "SECRET_STATE=$SECRET_STATE"
+if [ -f "$KEY" ]; then
+  echo "SECRET_FILE_EXISTS=YES"
+  stat -c 'SECRET_MODE=%a SECRET_OWNER=%U SECRET_GROUP=%G' "$KEY"
+else
+  echo "SECRET_FILE_EXISTS=NO"
+fi
+if [ -f "$DROP" ]; then echo "DROPIN=INSTALLED"; else echo "DROPIN=OMITTED"; fi
+
 sed -e "s/__TS_IP__/${TS_IP}/g" -e "s/__TS_DOMAIN__/${DOMAIN}/g" \
   /tmp/goi-ors-gw/nginx-goi-ors-gateway.conf.tmpl \
   > /etc/nginx/sites-available/goi-ors-gateway
@@ -48,6 +77,7 @@ python3 -m py_compile /opt/goi-ors-gateway/current/goi_ors_gateway.py
 nginx -t
 systemctl daemon-reload
 systemctl enable --now goi-ors-gateway.service goi-ors-cert-renew.timer
+systemctl restart goi-ors-gateway.service
 systemctl reload nginx
 sleep 1
 systemctl is-active goi-ors-gateway.service
@@ -58,9 +88,6 @@ ss -ltn | awk '/:443/ {print}'
 
 echo '=== VERIFY HTTPS STATUS ==='
 curl -fsS --resolve "${DOMAIN}:443:${TS_IP}" "https://${DOMAIN}/ors/status" -o /tmp/ors_status.json
-echo -n 'STATUS_JSON='
-cat /tmp/ors_status.json
-echo
 python3 - <<'PY'
 import json
 d=json.load(open("/tmp/ors_status.json",encoding="utf-8"))
@@ -73,13 +100,32 @@ print("STATUS_SECRET", d.get("secret"))
 print("STATUS_OK")
 PY
 
-echo '=== VERIFY FAIL-CLOSED NO SECRET ==='
-CODE="$(curl -sS -o /tmp/ors_post.json -w '%{http_code}' --resolve "${DOMAIN}:443:${TS_IP}" \
-  -H 'Content-Type: application/json' \
-  -X POST "https://${DOMAIN}/ors/v2/directions/foot-hiking/geojson" \
-  --data '{"coordinates":[[9.83,44.11],[9.84,44.12]],"elevation":true}')"
-echo "POST_CODE=$CODE"
-python3 - <<'PY'
+python3 - <<PY
+import json
+d=json.load(open("/tmp/ors_status.json",encoding="utf-8"))
+expect="$SECRET_STATE"
+got=d.get("secret")
+print("EXPECT_SECRET", expect, "GOT", got)
+assert got==expect, "status secret mismatch"
+if expect=="PRESENT":
+    drop=open("/etc/systemd/system/goi-ors-gateway.service.d/credential.conf",encoding="utf-8").read()
+    assert "LoadCredential=ORS_API_KEY:/etc/systemd/ors-credentials/ORS_API_KEY" in drop
+    print("CREDENTIAL_WIRING_OK")
+else:
+    import os
+    assert not os.path.isfile("/etc/systemd/system/goi-ors-gateway.service.d/credential.conf")
+    print("CREDENTIAL_WIRING_OMITTED_OK")
+print("STATUS_SECRET_MATCH_OK")
+PY
+
+if [ "$SECRET_STATE" = "ABSENT" ]; then
+  echo '=== VERIFY FAIL-CLOSED NO SECRET ==='
+  CODE="$(curl -sS -o /tmp/ors_post.json -w '%{http_code}' --resolve "${DOMAIN}:443:${TS_IP}" \
+    -H 'Content-Type: application/json' \
+    -X POST "https://${DOMAIN}/ors/v2/directions/foot-hiking/geojson" \
+    --data '{"coordinates":[[9.83,44.11],[9.84,44.12]],"elevation":true}')"
+  echo "POST_CODE=$CODE"
+  python3 - <<'PY'
 import json
 d=json.load(open("/tmp/ors_post.json",encoding="utf-8"))
 print("POST_BODY_KEYS", sorted(d.keys()))
@@ -87,7 +133,11 @@ assert d.get("error")=="secret_not_configured"
 assert d.get("error_category")=="auth"
 print("FAIL_CLOSED_OK")
 PY
-test "$CODE" = "503"
+  test "$CODE" = "503"
+else
+  echo '=== SKIP FAIL-CLOSED 503 (secret PRESENT) ==='
+  echo 'NO_UPSTREAM_PROBE_ON_DEPLOY'
+fi
 
 echo '=== OPEN PROXY NEGATIVE ==='
 c_root="$(curl -sS -o /tmp/ors_root.json -w '%{http_code}' --resolve "${DOMAIN}:443:${TS_IP}" "https://${DOMAIN}/")"
@@ -113,16 +163,17 @@ fi
 echo "BIND_443_TAILNET_ONLY_OK"
 
 echo '=== JOURNAL SECRET SCAN ==='
-journalctl -u goi-ors-gateway -n 80 --no-pager | python3 - <<'PY'
-import sys,re
-txt=sys.stdin.read()
+journalctl -u goi-ors-gateway -n 80 --no-pager > /tmp/ors_journal.txt || true
+python3 - <<'PY'
+import re
+txt=open("/tmp/ors_journal.txt",encoding="utf-8",errors="replace").read()
 bad=False
 if "BEGIN " in txt and "PRIVATE KEY" in txt:
     bad=True
 if re.search(r"Authorization:\s+\S{8,}", txt, re.I):
     bad=True
 print("JOURNAL_SECRET_LEAK", "YES" if bad else "NO")
-sys.exit(1 if bad else 0)
+raise SystemExit(1 if bad else 0)
 PY
 
 echo '=== PID SNAPSHOT POST ==='
@@ -130,7 +181,7 @@ for s in nginx goi-gis-app goi-nav-proxy goi-graphhopper goi-dflight-helper; do
   echo "POST $s ACTIVE=$(systemctl is-active $s) PID=$(systemctl show -p MainPID --value $s)"
 done
 echo "ORS_ACTIVE=$(systemctl is-active goi-ors-gateway) ORS_PID=$(systemctl show -p MainPID --value goi-ors-gateway)"
-echo "INFRA1_DEPLOY_PASS"
+echo "INFRA_DEPLOY_PASS"
 echo "GATEWAY_URL=https://${DOMAIN}/ors/status"
 echo "DIRECTIONS_URL=https://${DOMAIN}/ors/v2/directions/{profile}/geojson"
 """
@@ -149,8 +200,14 @@ def main() -> None:
         p = SRC / fn
         if not p.is_file():
             raise SystemExit(f"missing {p}")
+    if not DROPIN_SRC.is_file():
+        raise SystemExit(f"missing {DROPIN_SRC}")
+    if LOADCRED_LINE not in DROPIN_SRC.read_text(encoding="utf-8"):
+        raise SystemExit("drop-in missing LoadCredential line")
+    if "SECRET_STATE=PRESENT" not in REMOTE or "SKIP FAIL-CLOSED" not in REMOTE:
+        raise SystemExit("deploy remote missing PRESENT/ABSENT branches")
     subprocess.run(["ssh", "ionos-n8n", "mkdir", "-p", "/tmp/goi-ors-gw"], check=True)
-    cmd = ["scp"] + [str(SRC / fn) for fn in files] + ["ionos-n8n:/tmp/goi-ors-gw/"]
+    cmd = ["scp"] + [str(SRC / fn) for fn in files] + [str(DROPIN_SRC), "ionos-n8n:/tmp/goi-ors-gw/"]
     subprocess.run(cmd, check=True)
     r = subprocess.run(["ssh", "ionos-n8n", "bash", "-s"], input=REMOTE.encode("utf-8"))
     raise SystemExit(r.returncode)

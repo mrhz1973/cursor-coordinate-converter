@@ -218,11 +218,13 @@ Dettaglio WU: [`WU-0011`](work-units/WU-0011-infra-gh-1a-graphhopper-local-poc.m
 | TLS / reverse proxy | **nginx** `listen 100.114.7.53:443 ssl` — certificato Tailscale / Let's Encrypt (`/etc/goi-ors/tls/`) |
 | Profili whitelist | `foot-hiking`, `foot-walking`, `cycling-mountain` |
 | Upstream | hardcoded `https://api.openrouteservice.org` |
-| Secret | nome canonico **`ORS_API_KEY`** · path `/etc/systemd/ors-credentials/ORS_API_KEY` · **PRESENT** (600 root:root + systemd `LoadCredential`) · valore **mai** in repo/docs |
-| Fail-closed | POST senza secret → `503 secret_not_configured`, **zero** chiamata upstream |
+| Secret | nome canonico **`ORS_API_KEY`** · path `/etc/systemd/ors-credentials/ORS_API_KEY` · **0600 root:root** · accesso applicativo **solo** via systemd `LoadCredential` (drop-in `goi-ors-gateway.service.d/credential.conf`, source `infra/ors-gateway/goi-ors-gateway.service.d/credential.conf`) · valore **mai** in repo/docs |
+| Fail-closed | file assente → drop-in omesso · POST `503 secret_not_configured` · **zero** upstream |
 | Helper D-Flight | **0.1.3 invariato** |
-| GIS monolite | **non collegato** (nessun build 220) |
+| GIS monolite | LIVE build **219** sul VPS; candidate build **220** in git **non deployato** |
 
-**ACL client:** grant storico `tcp:8000`/`tcp:5000`/`tcp:8010`. Listen `:443` solo Tailscale IP. **INFRA2 (2026-08-18):** dal client Windows `TcpTestSucceeded=False` su `:443` (ping OK) → gate **BLOCKED**. Serve grant additivo `tcp:443` → `100.114.7.53/32`. On-box `curl --resolve` PASS.
+**ACL client:** grant `tcp:8000`/`tcp:5000`/`tcp:8010`/`tcp:443` → `100.114.7.53/32`. Listen `:443` solo Tailscale IP.
+
+**Install/redeploy:** `python infra/ors-gateway/deploy_vps.py` (idempotente ABSENT/PRESENT) poi, se serve la key, `python infra/ors-gateway/install_secret.py`. Source of truth: [`infra/ors-gateway/README.md`](../infra/ors-gateway/README.md).
 
 **Sicurezza:** nessun valore di `ORS_API_KEY` in questo documento.

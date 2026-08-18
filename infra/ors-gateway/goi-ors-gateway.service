@@ -37,8 +37,11 @@ PrivateDevices=true
 RemoveIPC=true
 SystemCallArchitectures=native
 ReadOnlyPaths=/opt/goi-ors-gateway/current /etc/systemd/ors-credentials
-# Optional later (do not enable until the credential file exists and is non-empty):
-# LoadCredential=ORS_API_KEY:/etc/systemd/ors-credentials/ORS_API_KEY
+# Secret wiring is the dedicated drop-in:
+#   /etc/systemd/system/goi-ors-gateway.service.d/credential.conf
+#   (source: infra/ors-gateway/goi-ors-gateway.service.d/credential.conf)
+# Installed only when ORS_API_KEY file exists and is non-empty (0600 root:root).
+# Do not uncomment LoadCredential here.
 
 [Install]
 WantedBy=multi-user.target
