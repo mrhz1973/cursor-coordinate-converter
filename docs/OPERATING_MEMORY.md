@@ -462,7 +462,7 @@ Se evidence GitHub è mancante o contraddittoria: non inventare; chiedere/ottene
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3** — candidate `d455841` / **224** · REVIEW **PENDING** · **NON** deploy · LIVE resta **220** / `cfee0e4` (2026-08-18)
+1. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3** — candidate `d455841` / **224** **DEPLOYED** · REVIEW **PASS** · ABQA **PASS** · GATE **QA FINALE CHATGPT — PENDING** · LIVE resta **220** / `cfee0e4` (2026-08-18)
 2. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2** — candidate `4a6dca9` / **223** **DEPLOYED** · ABQA **PASS** · QA operatore **FAIL SCOPED** → FIX3 · LIVE resta **220** / `cfee0e4` (2026-08-18)
 3. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1** — candidate `105bedf` / **222** **DEPLOYED** · REVIEW **PASS** · ABQA **FAIL** (anello VIA + alternatives >2 punti) · LIVE resta **220** / `cfee0e4` (2026-08-18)
 4. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A** — candidate `1a5e971` / **221** **DEPLOYED** · QA operatore **FAIL SCOPED** → FIX1 (2026-08-18)
