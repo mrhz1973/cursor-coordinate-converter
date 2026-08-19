@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-19 — **CARTO-IIM-PROVIDER-A** candidate **230** `8d6e0b0` · REVIEW **PASS** · deploy GIS **PASS** · ABQA **PASS** · GATE **QA FINALE CHATGPT — PENDING** · LIVE **228** invariato · evidence: [`inbox/2026-08-19_0110_carto-iim-provider-a-deploy-abqa.md`](inbox/2026-08-19_0110_carto-iim-provider-a-deploy-abqa.md)
+2026-08-19 — **CARTO-IIM-PROVIDER-A-FIX1** candidate **231** `f90c503` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · 230 **QA FAIL operatore** (filtro IIM non deselezionabile) · LIVE **228** invariato · GIS VPS resta **230** · evidence: [`inbox/2026-08-19_0150_carto-iim-provider-a-fix1.md`](inbox/2026-08-19_0150_carto-iim-provider-a-fix1.md)
