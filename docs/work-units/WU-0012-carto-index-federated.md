@@ -1,13 +1,13 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / IIM 230 QA FAIL → FIX1 231 REVIEW PENDING
+**STATUS:** OPEN / IIM FIX1 231 DEPLOYED GIS — QA FINALE CHATGPT PENDING
 **ACTIVE BLOCK:** `CARTO-IIM-PROVIDER-A-FIX1`
-**CURRENT GATE:** **REVIEW GPT-SOSTITUTIVA — PENDING**
+**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
 **RUNTIME LIVE:** `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` (invariato fino a QA)
-**RUNTIME CANDIDATE:** `f90c503355d7c98eaf300f7f1afe647102a2330f` · build **231** · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` · **non deployato**
-**NEXT:** REVIEW GPT-SOSTITUTIVA candidate 231 — NON deploy · NON ABQA · NON QA operatore · NON finito
-**SPLIT:** `CARTO-IIM-UKHO-PROVIDERS-A` **FAIL / SPLIT** (229). `CARTO-IIM-PROVIDER-A` **230** **QA FAIL operatore** (filtro IIM non deselezionabile). `CARTO-UKHO-FOOTPRINT-A` **NOT OPENED / DISCOVERY BLOCKED**.
+**RUNTIME CANDIDATE:** `f90c503355d7c98eaf300f7f1afe647102a2330f` · build **231** · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` · **deployato GIS**
+**NEXT:** QA FINALE CHATGPT candidate 231 — NON QA operatore · NON finito
+**SPLIT:** `CARTO-IIM-UKHO-PROVIDERS-A` **FAIL / SPLIT** (229). `CARTO-IIM-PROVIDER-A` **230** **QA FAIL operatore** (filtro IIM). `CARTO-UKHO-FOOTPRINT-A` **NOT OPENED / DISCOVERY BLOCKED**.
 <!-- /WU-HOT-HEADER -->
 
 **Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED / CRS AUDIT PARTIAL — NEXT PROVIDER`
@@ -226,7 +226,7 @@ Campione UKHO (metadati, fuori repo):
 | Provider | Fonte ufficiale | Impronte disponibili | Formato | CRS | Metadati | Aggiornamento | Accesso | Licenza indice derivato | Strategia proposta |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **IGM** | igmi.esercito.difesa.it quadri | **PROVATO** | SHP (+KML) | WGS84 / UTM / RDN2008 | **PROVATO** (SHEET, TITLE, SCALE, AIVABLE, …) | **UNKNOWN** | Libero download quadri | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Conversione offline autorizzata** (locale) + import pacchetto ufficiale; redistribuzione pubblica sospesa |
-| **IIM** | Interactive Sailing Map POST `myPathMaps.php` (2026-08-18) | **PROVATO** rettangoli WGS84 `rectMaps` (**snapshot** 180 carte / 180 footprint; **NON** catalogo completo; finding shop Liguria **2** e **326** assenti) | HTML+JS ufficiale | WGS84 | **PROVATO** (`mapInfoWin`: id, INT, titolo, scala, ed.; edizioni shop discordanti = finding, no auto-fix) | Shop spesso più fresco dell’edizione in mappa | Lookup pubblico POST | **RICHIEDE AUTORIZZAZIONE** (`derived-public-interactive-map-index`) | Candidate **231** `CARTO-IIM-PROVIDER-A-FIX1` — **non deployato** · REVIEW PENDING (230 QA FAIL filtro IIM) |
+| **IIM** | Interactive Sailing Map POST `myPathMaps.php` (2026-08-18) | **PROVATO** rettangoli WGS84 `rectMaps` (**snapshot** 180 carte / 180 footprint; **NON** catalogo completo; finding shop Liguria **2** e **326** assenti) | HTML+JS ufficiale | WGS84 | **PROVATO** (`mapInfoWin`: id, INT, titolo, scala, ed.; edizioni shop discordanti = finding, no auto-fix) | Shop spesso più fresco dell’edizione in mappa | Lookup pubblico POST | **RICHIEDE AUTORIZZAZIONE** (`derived-public-interactive-map-index`) | Candidate **231** `CARTO-IIM-PROVIDER-A-FIX1` — **deployato GIS** · QA PENDING (230 QA FAIL filtro IIM) |
 | **CIGA** | difesaservizi.it/ciga | **NON DISPONIBILE** / **UNKNOWN** | Catalogo commerciale / PDF-immagini probabili | **UNKNOWN** | **PARZIALE** | **UNKNOWN** | Commerciale | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Fuori da questo blocco** |
 | **UKHO** | admiralty.co.uk CAL XLS + ADC Catalogs ZIP | CAL **NON DISPONIBILE**; ADC Paper Charts `.7CB` SevenCs **NON PARSABILE** | XLS CAL; ZIP ADC proprietario | N/A (metadati) | **PROVATO** CAL 3912 record (tooling only) | Weekly dichiarato | Catalogo pubblico; geometria ADC chiusa | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **`CARTO-UKHO-FOOTPRINT-A` NOT OPENED / DISCOVERY BLOCKED** — 0 footprint; **non** a runtime; **nessun poligono inventato** |
 
