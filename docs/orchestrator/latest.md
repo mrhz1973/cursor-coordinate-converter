@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-19 — **CARTO-IIM-PROVIDER-A-FIX1** **CLOSED / PASS** · LIVE `f90c503` / build **231** · QA operatore PASS · Regola H · WU-0012 resta OPEN · evidence: [`inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md`](inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md)
+2026-08-19 — **GLOBAL-MODAL-EDGE-RESIZE-A** candidato `942ab73` / **232** · LIVE `f90c503` / **231** · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · no deploy. Evidence: [`inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md`](inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md).

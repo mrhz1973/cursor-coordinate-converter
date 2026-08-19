@@ -371,19 +371,19 @@ Note operative:
   - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
   - **METHOD-QA-PASS-AUTO-FINITO — CLOSED / PASS docs-only (2026-06-28):** commit task **`78ea6c9`**, autosync **`bacabef`**; regola QA-PASS auto-innesca finito (OM §4 Regola H); template coda bundle; monolite invariato **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo bundle runtime con coda pre-autorizzata.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
-  - **GLOBAL-MODAL-EDGE-RESIZE-A** (NOT OPENED) — resize bordi/angoli senza handle visibile.
+  - **GLOBAL-MODAL-EDGE-RESIZE-A** (OPEN, candidato 232, REVIEW PENDING) — resize bordi/angoli senza handle visibile.
 
-### GLOBAL-MODAL-EDGE-RESIZE-A — **BACKLOG / NOT OPENED** (2026-08-19)
+### GLOBAL-MODAL-EDGE-RESIZE-A — **OPEN** (candidato 232, 2026-08-19)
 
-Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo. **Non** aperto. **Non** accorpare con CARTO search/filter né con D-Flight close-cleanup.
+Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo. **Non** accorpare con CARTO search/filter né con D-Flight close-cleanup.
 
-Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato (sinistro, destro, superiore, inferiore) e i quattro angoli.
+**Stato:** candidato runtime `942ab73e73fa61870ab85a72d871b35f0105e8f2` / build **232** · blob `ae5b4df6…` · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · **no deploy**. LIVE resta **231**.
 
-UX: nessuna handle visibile; hit-zone invisibili sui bordi; `ew-resize` verticali; `ns-resize` orizzontali; cursore diagonale sugli angoli; min width/height; contenimento viewport; header/controlli sempre raggiungibili. Preferenza futura: Pointer Events / edge hit-zones.
+Evidence: [`../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md`](../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md)
 
-Acceptance regressiva futura: non rompere drag, minimize, restore, dock, side-by-side, history/position restore, vincoli mobile/viewport.
+Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato e i quattro angoli (hit-zone invisibili, Pointer Events shared `gisPanelAttachResize`).
 
-**Non** implementato da questa registrazione.
+**Non** implementare in questo blocco: CARTO search/filter, D-Flight close-cleanup, UKHO.
 
 ### Backlog candidato — Personalizzazione HUD a schermo (visibilità + riposizionamento)
 

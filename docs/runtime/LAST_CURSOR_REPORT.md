@@ -8,74 +8,67 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `CARTO-IIM-PROVIDER-A-FIX1` |
-| **GATE** | **none** |
-| **NEXT** | WU-0012 resto **NOT OPENED** (UKHO DISCOVERY BLOCKED · CIGA · online update · backlog UX) |
+| **BLOCK** | `GLOBAL-MODAL-EDGE-RESIZE-A` |
+| **GATE** | **REVIEW GPT-SOSTITUTIVA — PENDING** |
+| **NEXT** | Review sul FULL SHA candidato; **non** deploy; CARTO search / D-Flight close-cleanup / UKHO **NOT OPENED** |
 | **Runtime LIVE** | `f90c503355d7c98eaf300f7f1afe647102a2330f` · build **231** · `CARTO-IIM-PROVIDER-A-FIX1` · helper **0.1.3** · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` |
-| **Candidate FULL SHA** | — |
-| **Build / ID / blob** | **231** / `CARTO-IIM-PROVIDER-A-FIX1` / `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` |
-| **Deployed state** | GIS VPS **231** `?v=f90c503` · LIVE FRONTIER = **231** |
-| **Result Cursor** | QA operatore **PASS** → auto-`finito` (Regola H) · docs-only · CLOSED / PASS |
-| **Working tree (pre-docs-container)** | HTML invariato `f90c503`; docs FRONTIER/WU/OM/roadmap/latest/inbox/report pending this container |
+| **Candidate FULL SHA** | `942ab73e73fa61870ab85a72d871b35f0105e8f2` |
+| **Build / ID / blob** | **232** / `GLOBAL-MODAL-EDGE-RESIZE-A` / `ae5b4df61f76b7b16d4e889a618abf7cf1010c80` |
+| **Deployed state** | GIS VPS resta **231** `?v=f90c503` · **no deploy** questo pass |
+| **Result Cursor** | candidate immutabile 232 · probe math A–E PASS · gate REVIEW PENDING |
+| **Working tree (pre-docs-container)** | HTML committed `942ab73`; docs pending this container |
 
 ### Identità SHA (non autoreferenziali)
 
 | Nome | Valore |
 | --- | --- |
-| **RUNTIME_CANDIDATE_SHA** | `f90c503355d7c98eaf300f7f1afe647102a2330f` (ora LIVE; immutato) |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `23b3098e70ecb5bb2efac2a41cf17bebd8e910c6` |
+| **RUNTIME_CANDIDATE_SHA** | `942ab73e73fa61870ab85a72d871b35f0105e8f2` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `942ab73e73fa61870ab85a72d871b35f0105e8f2` (pre-autosync docs) |
 | **docs/report HEAD** | `PENDING_SELF_REFERENCE` |
-| **real_task_commit** | `f90c503355d7c98eaf300f7f1afe647102a2330f` (runtime immutato; questo pass = chiusura docs `finito`) |
-| **previous_report_container** | `23b3098e70ecb5bb2efac2a41cf17bebd8e910c6` |
+| **real_task_commit** | `942ab73e73fa61870ab85a72d871b35f0105e8f2` |
+| **previous_report_container** | `c35e2f79f28ade1271cadb9608bc6022cb6ab431` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 | **final_remote_head_after_report_push** | `EXTERNAL_ONLY` |
 
-HTML LIVE: bytes LF **10796791** · SHA-256 LF `42b822cc05404443736b90cfe613c12731a020c3b44d29dad004c1c4fafb9280` · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038`
+HTML candidate: bytes LF **10807943** · SHA-256 LF `2fbfc107dcb370fd70cb68e792d5e517e5d7b48b376f1506cd86946ba13bbad9` · blob `ae5b4df61f76b7b16d4e889a618abf7cf1010c80`
 
-URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=f90c503`  
-Evidence finito: [`docs/orchestrator/inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md`](../orchestrator/inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md)  
-Evidence deploy/ABQA: [`docs/orchestrator/inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md`](../orchestrator/inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md)
+Evidence: [`docs/orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md`](../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md)
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync orchestratore: **sì** (questo container). File: FRONTIER, OM §7.2, WU-0012, roadmap CARTO-INDEX, latest, inbox 0627 finito + 0215 STOP, LAST_CURSOR_REPORT. Monolite **escluso** (identità 231 immutata).
-2. `git status --short` (pre-docs): docs FRONTIER/WU/OM/roadmap/latest/inbox dirty; HTML pulito `f90c503`. Helper/script untracked **non** in commit.
-3. `git diff --stat` runtime: **vuoto**.
-4. File docs: FRONTIER, OPERATING_MEMORY §7.2, WU-0012, WU-0005-0009-roadmap, latest, `inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md`, `inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md`, LAST_CURSOR_REPORT.
-5. Regioni HTML: **non toccate**.
-6. Cosa fatto: trigger `QA CARTO-IIM-PROVIDER-A-FIX1 PASS operatore` → coda `finito` Regola H. Promosso LIVE `f90c503` / **231**. GATE **none**. WU-0012 resta OPEN. §15k CLOSED end-to-end. Finding §15i risolto. OM §7.2 rotola FIX1 in testa (ORS esce dal rolling 5).
-7. Cosa rimosso: niente runtime. Da §7.2 rolling: riga ORS-PROVIDER-A (resta in HISTORY/WU-0010).
-8. Funzioni: nessuna patch.
-9. i18n: non toccato.
-10. Non toccato: monolite; helper 0.1.3; VPS redeploy; ABQA; build 232; HANDOFF.md; Oggetti GIS FROZEN; UKHO; backlog UX implementazione; Planet-Clone.
-11. Lint/selftest: **non** rieseguiti (docs-only; ABQA 56/56 già PASS sul candidate immutato).
-12. Planet-Clone: **nessun commit**.
-13. UKHO: NOT OPENED / DISCOVERY BLOCKED.
-14. Limiti: WU-0012 OPEN per CIGA/UKHO/online/backlog UX; finding shop 2/326 non-bloccante.
+1. Autosync orchestratore: **sì** (questo container docs). Task runtime già `942ab73`.
+2. `git status --short` pre-docs: HTML committed; docs FRONTIER/OM/roadmap/latest/inbox/report dirty.
+3. `git diff --stat` runtime: già in `942ab73` (`+315/−99`).
+4. File docs: FRONTIER, OM §7.2–7.3, roadmap GLOBAL-MODAL, latest, inbox 0920, LAST_CURSOR_REPORT.
+5. Regioni HTML (nel feat): CSS grip→hit-zone; `gisPanelEnsureEdgeResizeHandles` / `gisPanelResizeCompute` / `gisPanelAttachResize`; selftest EDGE_*; build 232.
+6. Cosa fatto: aperto backlog canonico `GLOBAL-MODAL-EDGE-RESIZE-A`; resize bordi/angoli senza handle visibile; probe math PASS.
+7. Cosa rimosso: visibilità `::after` grip (CSS override, markup handle restano come hit-zone).
+8. Funzioni: `gisPanelEnsureEdgeResizeHandles`, `gisPanelResizeCompute`, `gisPanelAttachResize`, `gisModalEdgeResizeSelfTest`.
+9. i18n: non toccato (L10N freeze).
+10. Non toccato: LIVE 231; helper; VPS; Oggetti GIS data; CARTO search; D-Flight close-cleanup; UKHO; GPS/OPSEC.
+11. Probe: Node A–E + min-width **PASS**. Selftest in-app agganciato (non eseguito in browser in questo pass).
+12. Planet-Clone: nessuno.
+13. Limiti: no deploy / no ABQA live / no QA / no finito.
 
 ## C. OUTPUT GIT (pre-docs-container)
 
 ```
-23b3098 docs(orchestrator): CARTO-IIM-PROVIDER-A-FIX1 REVIEW PASS, GIS deploy + ABQA PASS
-f58ea52 docs(orchestrator): register CARTO/D-Flight/modal UX backlog from IIM QA
-6a7073c docs(orchestrator): CARTO-IIM-PROVIDER-A-FIX1 candidate 231 review pending
-f90c503 feat(carto): allow unchecking IIM nautical chart filter, build 231
-dbdb008 docs(orchestrator): CARTO-IIM-PROVIDER-A REVIEW PASS, GIS deploy + ABQA PASS
+942ab73 feat(ui): global modal edge resize without visible grip, build 232
+c35e2f7 docs(orchestrator): CARTO-IIM-PROVIDER-A-FIX1 QA PASS operatore, CLOSED / PASS, LIVE 231
 ```
 
-- `git rev-parse HEAD` (pre-docs): `23b3098e70ecb5bb2efac2a41cf17bebd8e910c6`
-- `git rev-parse origin/main` (evidence time): `23b3098e70ecb5bb2efac2a41cf17bebd8e910c6`
+- `git rev-parse HEAD` (pre-docs): `942ab73e73fa61870ab85a72d871b35f0105e8f2`
 - `git branch --show-current`: `main`
-- HTML blob: `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038`
-- `git ls-remote origin refs/heads/main`: **EXTERNAL_ONLY** (dopo push)
+- HTML blob: `ae5b4df61f76b7b16d4e889a618abf7cf1010c80`
+- `git ls-remote origin refs/heads/main`: **EXTERNAL_ONLY** (dopo push docs)
 
 ## STATO FRESCO DA CURSOR
 
 ```
 STATO FRESCO DA CURSOR
-origin/main HEAD: EXTERNAL_ONLY (pre-push evidence 23b3098)
-working tree: helper untracked; HTML f90c503
-ultimo blocco PASS: CARTO-IIM-PROVIDER-A-FIX1 (LIVE 231)
-prossimo candidato: resto WU-0012 NOT OPENED (UKHO DISCOVERY BLOCKED)
-note operative: docs-only finito; nessun redeploy; UKHO DISCOVERY BLOCKED / NOT OPENED
+origin/main HEAD: EXTERNAL_ONLY (pre-push docs; feat 942ab73)
+working tree: docs pending container
+ultimo blocco: GLOBAL-MODAL-EDGE-RESIZE-A REVIEW PENDING (LIVE 231)
+prossimo candidato: review GPT-sostitutiva; no deploy
+note operative: FROZEN Oggetti GIS; UKHO NOT OPENED
 ```
