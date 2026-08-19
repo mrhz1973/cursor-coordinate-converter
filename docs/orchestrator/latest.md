@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-19 — **CARTO-IIM-PROVIDER-A-FIX1** candidate **231** `f90c503` · REVIEW **PASS** · deploy GIS **PASS** · ABQA **PASS** · GATE **QA FINALE CHATGPT — PENDING** · LIVE **228** invariato · evidence: [`inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md`](inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md)
+2026-08-19 — **CARTO-IIM-PROVIDER-A-FIX1** **CLOSED / PASS** · LIVE `f90c503` / build **231** · QA operatore PASS · Regola H · WU-0012 resta OPEN · evidence: [`inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md`](inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md)

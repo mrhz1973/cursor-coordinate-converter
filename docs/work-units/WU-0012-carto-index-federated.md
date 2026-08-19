@@ -1,16 +1,16 @@
 # WU-0012 — CARTO-INDEX-FEDERATED-A — Indice cartografico federato
 
 <!-- WU-HOT-HEADER: do not remove -->
-**STATUS:** OPEN / IIM FIX1 231 DEPLOYED GIS — QA FINALE CHATGPT PENDING
-**ACTIVE BLOCK:** `CARTO-IIM-PROVIDER-A-FIX1`
-**CURRENT GATE:** **QA FINALE CHATGPT — PENDING**
-**RUNTIME LIVE:** `c5bc4b11c4821e40fc6479b55a0c1ef0e90f40fc` · build **228** · `OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6` (invariato fino a QA)
-**RUNTIME CANDIDATE:** `f90c503355d7c98eaf300f7f1afe647102a2330f` · build **231** · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` · **deployato GIS**
-**NEXT:** QA FINALE CHATGPT candidate 231 — NON QA operatore · NON finito
-**SPLIT:** `CARTO-IIM-UKHO-PROVIDERS-A` **FAIL / SPLIT** (229). `CARTO-IIM-PROVIDER-A` **230** **QA FAIL operatore** (filtro IIM). `CARTO-UKHO-FOOTPRINT-A` **NOT OPENED / DISCOVERY BLOCKED**.
+**STATUS:** OPEN / **CARTO-IIM-PROVIDER-A-FIX1 CLOSED / PASS** · UKHO **NOT OPENED / DISCOVERY BLOCKED** · resto provider **NOT OPENED**
+**ACTIVE BLOCK:** —
+**CURRENT GATE:** none
+**RUNTIME LIVE:** `f90c503355d7c98eaf300f7f1afe647102a2330f` · build **231** · `CARTO-IIM-PROVIDER-A-FIX1` · blob `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038`
+**RUNTIME CANDIDATE:** —
+**NEXT:** `CARTO-UKHO-FOOTPRINT-A` **NOT OPENED / DISCOVERY BLOCKED** · CIGA fuori · `CARTO-ONLINE-UPDATE-A` **NOT OPENED** · `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED**
+**SPLIT:** `CARTO-IIM-UKHO-PROVIDERS-A` **FAIL / SPLIT** (229). `CARTO-IIM-PROVIDER-A` **230** **QA FAIL** → **FIX1 231 CLOSED / PASS**.
 <!-- /WU-HOT-HEADER -->
 
-**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED / CRS AUDIT PARTIAL — NEXT PROVIDER`
+**Stato:** `OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED / IIM SNAPSHOT CLOSED / CRS AUDIT PARTIAL — NEXT PROVIDER`
 **Blocco discovery:** `CARTO-INDEX-FEDERATED-A-DISCOVERY-1` — **COMPLETE / NO RUNTIME**
 **Blocco acquire:** `CARTO-IGM-ACQUIRE-A` — **COMPLETE / LOCAL PACKAGE VALIDATED / NO RUNTIME** (2026-08-05)
 **Blocco licenza:** autorizzazione IGM fornita dall’operatore e registrata con riferimento documentale — **Prot. IGM-2024-7891** (2024-05-24); sintesi pubblica [`docs/licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md`](../licenses/IGM-SERIES-50-100V-AUTHORIZATION-SUMMARY.md)
@@ -226,7 +226,7 @@ Campione UKHO (metadati, fuori repo):
 | Provider | Fonte ufficiale | Impronte disponibili | Formato | CRS | Metadati | Aggiornamento | Accesso | Licenza indice derivato | Strategia proposta |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | **IGM** | igmi.esercito.difesa.it quadri | **PROVATO** | SHP (+KML) | WGS84 / UTM / RDN2008 | **PROVATO** (SHEET, TITLE, SCALE, AIVABLE, …) | **UNKNOWN** | Libero download quadri | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Conversione offline autorizzata** (locale) + import pacchetto ufficiale; redistribuzione pubblica sospesa |
-| **IIM** | Interactive Sailing Map POST `myPathMaps.php` (2026-08-18) | **PROVATO** rettangoli WGS84 `rectMaps` (**snapshot** 180 carte / 180 footprint; **NON** catalogo completo; finding shop Liguria **2** e **326** assenti) | HTML+JS ufficiale | WGS84 | **PROVATO** (`mapInfoWin`: id, INT, titolo, scala, ed.; edizioni shop discordanti = finding, no auto-fix) | Shop spesso più fresco dell’edizione in mappa | Lookup pubblico POST | **RICHIEDE AUTORIZZAZIONE** (`derived-public-interactive-map-index`) | Candidate **231** `CARTO-IIM-PROVIDER-A-FIX1` — **deployato GIS** · QA PENDING (230 QA FAIL filtro IIM) |
+| **IIM** | Interactive Sailing Map POST `myPathMaps.php` (2026-08-18) | **PROVATO** rettangoli WGS84 `rectMaps` (**snapshot** 180 carte / 180 footprint; **NON** catalogo completo; finding shop Liguria **2** e **326** assenti) | HTML+JS ufficiale | WGS84 | **PROVATO** (`mapInfoWin`: id, INT, titolo, scala, ed.; edizioni shop discordanti = finding, no auto-fix) | Shop spesso più fresco dell’edizione in mappa | Lookup pubblico POST | **RICHIEDE AUTORIZZAZIONE** (`derived-public-interactive-map-index`) | Candidate **231** `CARTO-IIM-PROVIDER-A-FIX1` — **CLOSED / PASS** LIVE (`f90c503`) |
 | **CIGA** | difesaservizi.it/ciga | **NON DISPONIBILE** / **UNKNOWN** | Catalogo commerciale / PDF-immagini probabili | **UNKNOWN** | **PARZIALE** | **UNKNOWN** | Commerciale | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **Fuori da questo blocco** |
 | **UKHO** | admiralty.co.uk CAL XLS + ADC Catalogs ZIP | CAL **NON DISPONIBILE**; ADC Paper Charts `.7CB` SevenCs **NON PARSABILE** | XLS CAL; ZIP ADC proprietario | N/A (metadati) | **PROVATO** CAL 3912 record (tooling only) | Weekly dichiarato | Catalogo pubblico; geometria ADC chiusa | **UNKNOWN / RICHIEDE AUTORIZZAZIONE** | **`CARTO-UKHO-FOOTPRINT-A` NOT OPENED / DISCOVERY BLOCKED** — 0 footprint; **non** a runtime; **nessun poligono inventato** |
 
@@ -414,7 +414,7 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 4. **CARTO-UI-RESULTS-A** — UI risultati + overlay impronte.
 5. **CARTO-ARCHIVE-MATCH-A** — catalogo archivio personale (matching).
 6. **CARTO-IGM-SERIES-EXPAND-A** — 25/25DB + 25V (+ 25kauto con conversione RDN2008).
-7. **CARTO-PROVIDER-NEXT-A** — slot generico IIM/CIGA/UKHO (WU originaria). Split 2026-08-19: **`CARTO-IIM-PROVIDER-A`** = candidate geometrico IIM snapshot (build 230 **QA FAIL** → **`CARTO-IIM-PROVIDER-A-FIX1`** build 231); **`CARTO-UKHO-FOOTPRINT-A`** = **NOT OPENED / DISCOVERY BLOCKED** (CAL senza bbox; `.7CB` senza spec). CIGA resta fuori.
+7. **CARTO-PROVIDER-NEXT-A** — slot generico IIM/CIGA/UKHO (WU originaria). Split 2026-08-19: **`CARTO-IIM-PROVIDER-A-FIX1`** = IIM snapshot **CLOSED / PASS** LIVE build **231** `f90c503` (230 QA FAIL filtro IIM); **`CARTO-UKHO-FOOTPRINT-A`** = **NOT OPENED / DISCOVERY BLOCKED**. CIGA resta fuori.
 8. **CARTO-ONLINE-UPDATE-A** — aggiornamenti online espliciti (opt-in, OPSEC).
 
 **Nessun** blocco runtime aperto da questa discovery.
@@ -461,9 +461,9 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 **CARTO-SEARCH-ENGINE-A**, **CARTO-UI-RESULTS-A (+ FIX1–FIX3)**, **MAP-INTERACTION-CARTO-UX-BUNDLE-A (+ FIX1–FIX5)**, **CARTO-IGM-RESULTS-UX-BUNDLE-B (+ FIX1–FIX3)**, **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2)**, **CARTO-IGM-AREA-ESC-RESTORE-A**, **COORD-MODAL-FORMAT-COPY-A (+ FIX1)** e **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3)** CLOSED / PASS end-to-end. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL (vedi §15d). Prossimo ordine candidato (solo dopo decisione operatore; **nessun** runtime auto-aperto):
 
-1. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
+1. Provider CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti). **IIM snapshot** = **CLOSED / PASS** §15k.
 2. **MODAL-OPEN-TOP-ALIGN-A** — backlog UX (non aperto; non WU-0012 core)
-3. **CARTO-SEARCH-FILTER-LABEL-UX-A** — backlog UX QA IIM (non aperto; §15j). **Non** include il finding checkbox IIM (§15i).
+3. **CARTO-SEARCH-FILTER-LABEL-UX-A** — backlog UX QA IIM (non aperto; §15j). Finding checkbox IIM 230 **risolto** da FIX1 (§15i / §15k).
 
 **Nessun** auto-start. WU-0012 **resta OPEN** (provider). Runtime Git tip: **`65c9ef8`** / build **150**. Vedi §15h.
 
@@ -800,14 +800,13 @@ Assertion aggregate: **PASS**. Nessun servizio online.
 
 ## 15i. Finding QA corrente — filtro IIM non deselezionabile (candidate 230)
 
-**Non è backlog futuro.** Finding QA operatore su **`CARTO-IIM-PROVIDER-A`** candidate **230** (GIS deployato `8d6e0b0`).
+**Non è backlog futuro.** Finding QA operatore su **`CARTO-IIM-PROVIDER-A`** candidate **230** (GIS `8d6e0b0`).
 
 | Campo | Valore |
 | --- | --- |
-| Sintomo | Il filtro/checkbox «IIM carte nautiche» (`#cartoIimFilterPaper`) non si deseleziona: la spunta resta attiva |
-| Classe | **FINDING QA CORRENTE** del candidate 230 — distinto da §15j |
-| Questo pass | **docs-only** — **nessuna** correzione runtime |
-| Gate | **non** modificato da questa registrazione |
+| Sintomo | Il filtro/checkbox «IIM carte nautiche» (`#cartoIimFilterPaper`) non si deselezionava |
+| Classe | **FINDING QA** del candidate 230 — distinto da §15j |
+| Esito | **Risolto** da **`CARTO-IIM-PROVIDER-A-FIX1`** §15k **CLOSED / PASS** (build 231) |
 
 Distinguere da: ricerca carta/filtri/labelling (§15j), cleanup D-Flight, edge-resize globale. **Non** un mega-bundle.
 
@@ -861,6 +860,27 @@ L’esempio «Abidjan / Côte d'Ivoire» e il campo **Paese** non vivono nel pan
 
 ---
 
+## 15k. CARTO-IIM-PROVIDER-A-FIX1 — CLOSED / PASS end-to-end (2026-08-19)
+
+| Campo | Valore |
+| --- | --- |
+| Catena | `CARTO-IIM-PROVIDER-A` **230** `8d6e0b0` **QA FAIL** (filtro IIM non deselezionabile) → **FIX1 231** `f90c503` |
+| Build / ID | **231** / `CARTO-IIM-PROVIDER-A-FIX1` |
+| Tip runtime | `f90c503355d7c98eaf300f7f1afe647102a2330f` |
+| Blob / byte LF / SHA-256 LF | `52376f48e4f181939ee2ee3c1cdd88d1c2dd3038` / `10796791` / `42b822cc05404443736b90cfe613c12731a020c3b44d29dad004c1c4fafb9280` |
+| Finding | `cartoUiGetState()` re-pushava `"paper"` a ogni get; rimosso. Default init `"paper"` invariato. Selftest `filter_iim_uncheckable` / `filter_igm_uncheckable`. |
+| REVIEW GPT-SOSTITUTIVA | **PASS** |
+| Deploy GIS-only | **PASS** (`?v=f90c503`; PID `goi-gis-app` `2813762`→`2816693`) |
+| Automated Browser QA | **PASS** 56/56 · selftest live 24/24 · console rel 0 · zero fetch IIM/UKHO |
+| QA operatore | **PASS** (2026-08-19) |
+| Gate | **none** — Regola H `finito` |
+| WU | resta **OPEN** (CIGA / UKHO DISCOVERY BLOCKED / online update / backlog UX **NOT OPENED**) |
+| Evidence | [`2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md`](../orchestrator/inbox/2026-08-19_0215_carto-iim-provider-a-fix1-deploy-abqa.md) · finito: [`2026-08-19_0627_carto-iim-provider-a-fix1-finito.md`](../orchestrator/inbox/2026-08-19_0627_carto-iim-provider-a-fix1-finito.md) |
+
+UKHO: **NOT OPENED / DISCOVERY BLOCKED**. Nessun `#cartoUkhoEmbeddedData`. Finding shop Liguria 2/326 resta non-bloccante. Backlog UX §15j **non** aperto.
+
+---
+
 ## Collegamento a WU-0013 — UAS-GEOZONE-DFLIGHT
 
 **D-Flight (Zone Geografiche UAS italiane ED-269/ED-318)** ha ora una **WU dedicata**: [`WU-0013-uas-geozone-dflight.md`](WU-0013-uas-geozone-dflight.md).
@@ -872,6 +892,6 @@ L’esempio «Abidjan / Côte d'Ivoire» e il campo **Paese** non vivono nel pan
 - Il piano D-Flight (discovery `CARTO-DFLIGHT-DISCOVERY-A`, modello dati, schema ED-269/ED-318, pipeline, render, piano blocchi D-FLIGHT-A→F) è documentato **unicamente** in WU-0013.
 - WU-0012 **non** duplica quel contenuto.
 - Il NEXT WU-0013 è `DFLIGHT-REAL-DATA-VALIDATE-A` (diagnostic read-only).
-- WU-0012 resta **OPEN / NEXT PROVIDER** (IIM/CIGA/UKHO / online update).
+- WU-0012 resta **OPEN / NEXT PROVIDER** (IIM snapshot **CLOSED**; CIGA/UKHO / online update **NOT OPENED**).
 
 Nessuna modifica runtime; nessuna duplicazione di piano tra le due WU.

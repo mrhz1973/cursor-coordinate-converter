@@ -2,8 +2,8 @@
 
 **BLOCK-ID:** `CARTO-IIM-PROVIDER-A-FIX1`  
 **WU:** [`WU-0012`](../../work-units/WU-0012-carto-index-federated.md)  
-**GATE uscita:** **QA FINALE CHATGPT — PENDING**  
-**NON QA operatore · NON finito** · backlog UX futuro **non** implementato
+**GATE uscita:** **none** — **QA CARTO-IIM-PROVIDER-A-FIX1 PASS operatore** → CLOSED / PASS · Regola H `finito`  
+Backlog UX futuro **non** implementato
 
 ## REVIEW GPT-SOSTITUTIVA (candidate immutabile)
 
@@ -70,7 +70,8 @@ UKHO: **NOT OPENED / DISCOVERY BLOCKED** invariato. Nessuna geometria inventata.
 
 ## STOP
 
-- LIVE FRONTIER = **228** / `c5bc4b1` (invariato fino a QA)
+**QA CARTO-IIM-PROVIDER-A-FIX1 PASS operatore** (2026-08-19) → **CLOSED / PASS** · Regola H finito
+
+- LIVE FRONTIER = **231** / `f90c503`
 - GIS VPS serve **231** (`?v=f90c503`)
-- NEXT: **QA FINALE CHATGPT** candidate 231
-- NON QA operatore · NON finito
+- NEXT: resto WU-0012 **NOT OPENED** (UKHO DISCOVERY BLOCKED · CIGA · online update · backlog UX)
