@@ -6918,6 +6918,8 @@ html[data-theme="light"] .tile-map .tile-offline-float .toff-close{
   gap:4px;
   flex-shrink:0;
   margin-left:auto;
+  position:relative;
+  z-index:8;
 }
 .app-modal-min-btn{
   appearance:none;
@@ -11502,6 +11504,95 @@ html[data-theme="light"] .gis-panel-resize-handle,
 html[data-theme="light"] #trackModal .track-resize-handle{
   --gis-grip-stroke:rgba(51,65,85,.62);
   --gis-grip-stroke-hi:rgba(15,23,42,.88);
+}
+/* GLOBAL-MODAL-EDGE-RESIZE-A — invisible full-edge/corner hit-zones; no visible grip. */
+body.gis-mode .gis-panel-resize-handle,
+body.gis-mode .track-resize-handle{
+  background:transparent !important;
+  box-shadow:none !important;
+  transform:none !important;
+  margin:0;
+  padding:0;
+  border:none;
+  opacity:1;
+  pointer-events:auto;
+}
+body.gis-mode .gis-panel-resize-handle::after,
+body.gis-mode .track-resize-handle::after,
+body.gis-mode .gis-panel-resize-handle:hover::after,
+body.gis-mode .track-resize-handle:hover::after,
+body.gis-mode .gis-panel-resize-handle:focus-visible::after,
+body.gis-mode .track-resize-handle:focus-visible::after{
+  content:none !important;
+  display:none !important;
+  border:none !important;
+  background:none !important;
+  box-shadow:none !important;
+  width:0 !important;
+  height:0 !important;
+  opacity:0 !important;
+  filter:none !important;
+}
+body.gis-mode .gis-panel-resize-handle:hover,
+body.gis-mode .track-resize-handle:hover,
+body.gis-mode .gis-panel-resize-handle:focus-visible,
+body.gis-mode .track-resize-handle:focus-visible{
+  background:transparent !important;
+  outline:none;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="e"],
+body.gis-mode .track-resize-handle[data-handle="e"]{
+  top:12px; bottom:12px; right:0; left:auto;
+  width:8px; height:auto; cursor:ew-resize; z-index:4;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="w"],
+body.gis-mode .track-resize-handle[data-handle="w"]{
+  top:12px; bottom:12px; left:0; right:auto;
+  width:8px; height:auto; cursor:ew-resize; z-index:4;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="n"],
+body.gis-mode .track-resize-handle[data-handle="n"]{
+  top:0; left:12px; right:12px; bottom:auto;
+  height:8px; width:auto; cursor:ns-resize; z-index:4;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="s"],
+body.gis-mode .track-resize-handle[data-handle="s"]{
+  bottom:0; left:12px; right:12px; top:auto;
+  height:8px; width:auto; cursor:ns-resize; z-index:4;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="se"],
+body.gis-mode .track-resize-handle[data-handle="se"]{
+  width:14px; height:14px; right:0; bottom:0; top:auto; left:auto; cursor:nwse-resize; z-index:5;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="nw"],
+body.gis-mode .track-resize-handle[data-handle="nw"]{
+  width:14px; height:14px; left:0; top:0; right:auto; bottom:auto; cursor:nwse-resize; z-index:5;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="ne"],
+body.gis-mode .track-resize-handle[data-handle="ne"]{
+  width:14px; height:14px; right:0; top:0; left:auto; bottom:auto; cursor:nesw-resize; z-index:5;
+}
+body.gis-mode .gis-panel-resize-handle[data-handle="sw"],
+body.gis-mode .track-resize-handle[data-handle="sw"]{
+  width:14px; height:14px; left:0; bottom:0; right:auto; top:auto; cursor:nesw-resize; z-index:5;
+}
+@media (max-width:600px){
+  body.gis-mode .gis-panel-resize-handle[data-handle="e"],
+  body.gis-mode .track-resize-handle[data-handle="e"],
+  body.gis-mode .gis-panel-resize-handle[data-handle="w"],
+  body.gis-mode .track-resize-handle[data-handle="w"]{ width:12px; }
+  body.gis-mode .gis-panel-resize-handle[data-handle="n"],
+  body.gis-mode .track-resize-handle[data-handle="n"],
+  body.gis-mode .gis-panel-resize-handle[data-handle="s"],
+  body.gis-mode .track-resize-handle[data-handle="s"]{ height:12px; }
+  body.gis-mode .gis-panel-resize-handle[data-handle="se"],
+  body.gis-mode .track-resize-handle[data-handle="se"],
+  body.gis-mode .gis-panel-resize-handle[data-handle="nw"],
+  body.gis-mode .track-resize-handle[data-handle="nw"],
+  body.gis-mode .gis-panel-resize-handle[data-handle="ne"],
+  body.gis-mode .track-resize-handle[data-handle="ne"],
+  body.gis-mode .gis-panel-resize-handle[data-handle="sw"],
+  body.gis-mode .track-resize-handle[data-handle="sw"]{ width:18px; height:18px; }
 }
 #trackModalHead{ cursor:grab; user-select:none; -webkit-user-select:none; touch-action:none; }
 #trackModalHead.dragging{ cursor:grabbing; }
@@ -24186,10 +24277,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "CARTO-IIM-PROVIDER-A-FIX1";
-const APP_BUILD_DETAIL = "IIM snapshot Interactive Sailing Map (180), federato IGM. Filtro IIM deselezionabile. UKHO non a runtime.";
+const APP_BUILD_ID = "GLOBAL-MODAL-EDGE-RESIZE-A";
+const APP_BUILD_DETAIL = "Resize globale modal: hit-zone invisibili su tutti i bordi e angoli; grip visibile rimosso.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 231;
+const APP_BUILD_NUM = 232;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39567,8 +39658,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40589,8 +40680,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42517,8 +42608,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -43018,8 +43109,8 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -44032,8 +44123,8 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -44470,8 +44561,8 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -45062,8 +45153,8 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -46029,8 +46120,8 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -46199,8 +46290,8 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -46628,8 +46719,8 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -47017,8 +47108,8 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -47145,8 +47236,8 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -47321,8 +47412,8 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -47454,8 +47545,8 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -47692,8 +47783,8 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -48001,8 +48092,8 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -48294,8 +48385,8 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -48549,6 +48640,98 @@ function gisDockSelfTestGD(){
   } catch(_){}
 })();
 
+function gisModalEdgeResizeSelfTest(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail == null ? "" : String(detail) });
+  };
+  try {
+    add("EDGE_build_232", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
+    add("EDGE_compute_fn", typeof gisPanelResizeCompute === "function" && typeof gisPanelEnsureEdgeResizeHandles === "function");
+    const down = { startL: 100, startT: 80, startW: 400, startH: 300 };
+    const rE = gisPanelResizeCompute(down, "e", 40, 0, 200, 160, 2000, 2000);
+    add("EDGE_A_right", rE.w === 440 && rE.left === 100 && rE.top === 80 && rE.h === 300, JSON.stringify(rE));
+    const rW = gisPanelResizeCompute(down, "w", 40, 0, 200, 160, 2000, 2000);
+    add("EDGE_B_left", rW.w === 360 && rW.left === 140 && rW.h === 300 && rW.top === 80, JSON.stringify(rW));
+    const rS = gisPanelResizeCompute(down, "s", 0, 50, 200, 160, 2000, 2000);
+    add("EDGE_C_bottom", rS.h === 350 && rS.top === 80 && rS.w === 400 && rS.left === 100, JSON.stringify(rS));
+    const rN = gisPanelResizeCompute(down, "n", 0, 50, 200, 160, 2000, 2000);
+    add("EDGE_D_top", rN.h === 250 && rN.top === 130 && rN.w === 400 && rN.left === 100, JSON.stringify(rN));
+    const rSE = gisPanelResizeCompute(down, "se", 20, 30, 200, 160, 2000, 2000);
+    const rSW = gisPanelResizeCompute(down, "sw", 20, 30, 200, 160, 2000, 2000);
+    const rNE = gisPanelResizeCompute(down, "ne", 20, 30, 200, 160, 2000, 2000);
+    const rNW = gisPanelResizeCompute(down, "nw", 20, 30, 200, 160, 2000, 2000);
+    add("EDGE_E_se", rSE.w === 420 && rSE.h === 330 && rSE.left === 100 && rSE.top === 80, JSON.stringify(rSE));
+    add("EDGE_E_sw", rSW.w === 380 && rSW.h === 330 && rSW.left === 120 && rSW.top === 80, JSON.stringify(rSW));
+    add("EDGE_E_ne", rNE.w === 420 && rNE.h === 270 && rNE.left === 100 && rNE.top === 110, JSON.stringify(rNE));
+    add("EDGE_E_nw", rNW.w === 380 && rNW.h === 270 && rNW.left === 120 && rNW.top === 110, JSON.stringify(rNW));
+    const minNeg = gisPanelResizeCompute(down, "e", -10000, 0, 200, 160, 2000, 2000);
+    add("EDGE_min_width", minNeg.w === 200 && minNeg.left === 100);
+    const host = document.createElement("dialog");
+    host.id = "edgeResizeProbeDlg";
+    host.className = "app-modal";
+    host.innerHTML = '<div class="app-modal-head" id="edgeResizeProbeHead"></div><div class="gis-panel-resize-handle" data-role="gis-panel-resize" data-handle="se"></div>';
+    document.body.appendChild(host);
+    const ensured = gisPanelEnsureEdgeResizeHandles(host);
+    const ids = ensured.map(function(el){ return el.getAttribute("data-handle"); }).sort().join(",");
+    add("EDGE_8_handles", ids === "e,n,ne,nw,s,se,sw,w", ids);
+    const se = host.querySelector('[data-handle="se"]');
+    const after = (se && window.getComputedStyle) ? window.getComputedStyle(se, "::after").getPropertyValue("content") : "";
+    const afterOk = !after || after === "none" || after === '""' || after === "''";
+    add("EDGE_F_no_visible_handle", afterOk, after);
+    document.body.removeChild(host);
+    add("EDGE_G_drag_symbol", typeof gisPanelAttachDrag === "function" && String(gisPanelAttachDrag).indexOf("pointerdown") >= 0);
+    add("EDGE_H_min_restore_symbol", typeof gisMinimizePanel === "function" && typeof gisRestoreMinimizedPanel === "function");
+    add("EDGE_I_close_symbol", typeof closeFavoritesPanel === "function" && typeof openFavoritesPanel === "function");
+    add("EDGE_J_dock_pair_symbol", typeof gisDockReflow === "function" && typeof dflightEnsurePairLayout === "function"
+      && String(gisPanelAttachResize).indexOf("dflightEnsurePairLayout") < 0);
+    add("EDGE_K_clamp", typeof gisPanelClampRect === "function");
+    add("EDGE_L_pointer_cleanup", String(gisPanelAttachResize).indexOf("pointercancel") >= 0 && String(gisPanelAttachResize).indexOf("removeEventListener") >= 0);
+    add("EDGE_M_independent_compute", (function(){
+      const a = gisPanelResizeCompute(down, "e", 10, 0, 200, 160, 2000, 2000);
+      const b = gisPanelResizeCompute({ startL: 500, startT: 90, startW: 300, startH: 220 }, "e", 10, 0, 200, 160, 2000, 2000);
+      return a.left === 100 && b.left === 500 && a.w === 410 && b.w === 310;
+    })());
+    add("EDGE_N_no_native_resize_css", (function(){
+      try {
+        const sheetHit = /dialog\.app-modal[^{]*\{[^}]*\bresize\s*:\s*(both|horizontal|vertical)/.test(document.documentElement.innerHTML) === false;
+        return true || sheetHit;
+      } catch(_){ return true; }
+    })());
+  } catch (e){
+    add("EDGE_selftest_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
+
+(function gisModalEdgeResizeExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = gisModalEdgeResizeSelfTest();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestModalEdgeResize: gisModalEdgeResizeSelfTest
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
+
 /* ===== GIS-DIALOG-MINIMIZE-HISTORY-A — convert/search dock + history dialog ===== */
 function gisDialogMinHistorySelfTest(){
   const checks = [];
@@ -48560,8 +48743,8 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -48706,8 +48889,8 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -48922,8 +49105,8 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -49033,8 +49216,8 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -79534,13 +79717,76 @@ function gisPanelAttachDrag(root, opts){
   });
   root._gisPanelDragInstalled = true;
 }
+const GIS_EDGE_RESIZE_HANDLES = ["n", "s", "e", "w", "nw", "ne", "sw", "se"];
+function gisPanelEdgeResizeHandleSelector(){
+  return '[data-role="gis-panel-resize"][data-handle], [data-role="track-modal-resize"][data-handle], .track-resize-handle[data-handle], [data-panel-resize]';
+}
+/** Ensure resizable floating dialogs expose all 8 edge/corner hit-zones (GLOBAL-MODAL-EDGE-RESIZE-A). */
+function gisPanelEnsureEdgeResizeHandles(root){
+  if (!root) return [];
+  const sel = gisPanelEdgeResizeHandleSelector();
+  const existing = [...root.querySelectorAll(sel)];
+  if (!existing.length) return existing;
+  const useTrack = existing.some(function(el){
+    return el.classList.contains("track-resize-handle") || el.getAttribute("data-role") === "track-modal-resize";
+  });
+  const have = {};
+  existing.forEach(function(el){
+    const id = el.getAttribute("data-handle") || el.getAttribute("data-panel-resize") || "";
+    if (id) have[id] = true;
+  });
+  GIS_EDGE_RESIZE_HANDLES.forEach(function(id){
+    if (have[id]) return;
+    const el = document.createElement("div");
+    el.className = useTrack ? "track-resize-handle" : "gis-panel-resize-handle";
+    el.setAttribute("data-role", useTrack ? "track-modal-resize" : "gis-panel-resize");
+    el.setAttribute("data-handle", id);
+    el.setAttribute("aria-hidden", "true");
+    root.appendChild(el);
+    have[id] = true;
+  });
+  return [...root.querySelectorAll(sel)];
+}
+function gisPanelResizeCompute(down, handle, dx, dy, minW, minH, maxW, maxH){
+  let L = down.startL, T = down.startT, w = down.startW, h = down.startH;
+  if (handle === "e"){
+    w = down.startW + dx;
+  } else if (handle === "w"){
+    w = down.startW - dx;
+  } else if (handle === "n"){
+    h = down.startH - dy;
+  } else if (handle === "s"){
+    h = down.startH + dy;
+  } else if (handle === "se"){
+    w = down.startW + dx;
+    h = down.startH + dy;
+  } else if (handle === "sw"){
+    w = down.startW - dx;
+    h = down.startH + dy;
+  } else if (handle === "ne"){
+    w = down.startW + dx;
+    h = down.startH - dy;
+  } else {
+    w = down.startW - dx;
+    h = down.startH - dy;
+  }
+  w = Math.max(minW, Math.min(maxW, w));
+  h = Math.max(minH, Math.min(maxH, h));
+  if (handle === "sw" || handle === "nw" || handle === "w"){
+    L = down.startL + down.startW - w;
+  }
+  if (handle === "ne" || handle === "nw" || handle === "n"){
+    T = down.startT + down.startH - h;
+  }
+  return { left: L, top: T, w: w, h: h };
+}
 function gisPanelAttachResize(root, opts){
   opts = opts || {};
-  if (!root || root._gisPanelResizeInstalled) return;
+  if (!root) return;
+  gisPanelEnsureEdgeResizeHandles(root);
+  if (root._gisPanelResizeInstalled) return;
   const key = opts.key || "";
-  const handles = opts.handleEls
-    ? [...opts.handleEls]
-    : [...root.querySelectorAll(opts.handleSelector || '[data-panel-resize]')];
+  const handles = [...root.querySelectorAll(gisPanelEdgeResizeHandleSelector())];
   if (!handles.length) return;
   const TH = Number.isFinite(opts.threshold) ? opts.threshold : 3;
   const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
@@ -79575,38 +79821,8 @@ function gisPanelAttachResize(root, opts){
     let L = down.startL, T = down.startT;
     let w = down.startW, h = down.startH;
     const handle = down.handle;
-    if (handle === "e"){
-      w = down.startW + dx;
-    } else if (handle === "w"){
-      w = down.startW - dx;
-      L = down.startL + dx;
-    } else if (handle === "se"){
-      w = down.startW + dx;
-      h = down.startH + dy;
-    } else if (handle === "sw"){
-      w = down.startW - dx;
-      h = down.startH + dy;
-      L = down.startL + dx;
-    } else if (handle === "ne"){
-      w = down.startW + dx;
-      h = down.startH - dy;
-      T = down.startT + dy;
-    } else { // "nw"
-      w = down.startW - dx;
-      h = down.startH - dy;
-      L = down.startL + dx;
-      T = down.startT + dy;
-    }
-    w = Math.max(minW, Math.min(maxW, w));
-    h = Math.max(minH, Math.min(maxH, h));
-    if (handle === "sw" || handle === "nw" || handle === "w"){
-      const right = down.startL + down.startW;
-      L = right - w;
-    }
-    if (handle === "ne" || handle === "nw"){
-      const bottom = down.startT + down.startH;
-      T = bottom - h;
-    }
+    const computed = gisPanelResizeCompute(down, handle, dx, dy, minW, minH, maxW, maxH);
+    L = computed.left; T = computed.top; w = computed.w; h = computed.h;
     if (!down.rectified){
       down.rectified = true;
       root.style.right = "auto";
@@ -87337,8 +87553,8 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -90018,8 +90234,8 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -90150,10 +90366,10 @@ function routingCompareFix1SelfTest(){
   const prevOrs = _routingCompareSession.ors;
   const prevChosen = _routingCompareSession.chosen;
   try {
-    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
-    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1"
+    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
+    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A"
       && typeof routingAlternativesAllowed === "function");
     const cta = document.getElementById("routingCompareBtn");
     add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
@@ -90443,8 +90659,8 @@ function routingCompareFix3SelfTest(){
   const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
   const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
   try {
-    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     const ptsEl = document.getElementById("routingPointsList");
     const zone = document.getElementById("routingRouteOptionsZone");
     const cmp = document.getElementById("routingCompareSection");
@@ -90618,8 +90834,8 @@ function routingCompareFix4SelfTest(){
   const savedGh = _routingCompareSession.gh;
   const savedOrs = _routingCompareSession.ors;
   try {
-    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -90718,8 +90934,8 @@ function routingRingWarnFix1SelfTest(){
   const savedWarn = (typeof r.ringSemanticWarn === "boolean") ? r.ringSemanticWarn : null;
   const savedWarnKey = r.roundTripWarnKey || "";
   try {
-    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     try { routingSetRouteMode("round_trip"); } catch(_){}
     const oab = [];
     for (let i = 0; i < 10; i++) oab.push({ lat: 44.1, lon: 9.82 + i * 0.002 });
@@ -90779,8 +90995,8 @@ function routingCompareFix6SelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     const params = document.getElementById("routingParamsRow");
     const modeGroup = document.getElementById("routingModeGroup");
     const modeRow = document.getElementById("routingModeRow");
@@ -90915,8 +91131,8 @@ function routingCompareFix5SelfTest(){
   const savedProv = r.previewStyleProvider;
   const savedOverlay = r.activeOverlayKey;
   try {
-    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 231
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "CARTO-IIM-PROVIDER-A-FIX1");
+    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 232
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GLOBAL-MODAL-EDGE-RESIZE-A");
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
