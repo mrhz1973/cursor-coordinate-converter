@@ -15,7 +15,7 @@
 | **Candidate FULL SHA** | `942ab73e73fa61870ab85a72d871b35f0105e8f2` |
 | **Build / ID / blob** | **232** / `GLOBAL-MODAL-EDGE-RESIZE-A` / `ae5b4df61f76b7b16d4e889a618abf7cf1010c80` |
 | **Deployed state** | GIS VPS resta **231** `?v=f90c503` · **no deploy** questo pass |
-| **Result Cursor** | candidate immutabile 232 · probe math A–E PASS · gate REVIEW PENDING |
+| **Result Cursor** | candidate immutabile 232 · probe browser locale (A–N) eseguiti · gate REVIEW PENDING |
 | **Working tree (pre-docs-container)** | HTML committed `942ab73`; docs pending this container |
 
 ### Identità SHA (non autoreferenziali)
@@ -32,7 +32,7 @@
 
 HTML candidate: bytes LF **10807943** · SHA-256 LF `2fbfc107dcb370fd70cb68e792d5e517e5d7b48b376f1506cd86946ba13bbad9` · blob `ae5b4df61f76b7b16d4e889a618abf7cf1010c80`
 
-Evidence: [`docs/orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md`](../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md)
+Evidence: [`docs/orchestrator/inbox/2026-08-19_1235_global-modal-edge-resize-a_review-evidence-recovery.md`](../orchestrator/inbox/2026-08-19_1235_global-modal-edge-resize-a_review-evidence-recovery.md)
 
 ## B. RIEPILOGO COMPLETO
 
@@ -46,7 +46,11 @@ Evidence: [`docs/orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-e
 8. Funzioni: `gisPanelEnsureEdgeResizeHandles`, `gisPanelResizeCompute`, `gisPanelAttachResize`, `gisModalEdgeResizeSelfTest`.
 9. i18n: non toccato (L10N freeze).
 10. Non toccato: LIVE 231; helper; VPS; Oggetti GIS data; CARTO search; D-Flight close-cleanup; UKHO; GPS/OPSEC.
-11. Probe: Node A–E + min-width **PASS**. Selftest in-app agganciato (non eseguito in browser in questo pass).
+11. Probe browser locale (NON deploy / NON ABQA live):
+    - A–M: **PASS**
+    - N: `N_external_network_delta0` **FAIL** (externalResources prima/dopo: `beforeExt=2`, `afterExt=10` nel run)
+    - Selftest `gisModalEdgeResizeSelfTest`: **PASS** (21 check, fail=0)
+    - Selftest aggregato `GOIDflight.selfTest()`: **FAIL** (5 fail elencati nell’evidence)
 12. Planet-Clone: nessuno.
 13. Limiti: no deploy / no ABQA live / no QA / no finito.
 
