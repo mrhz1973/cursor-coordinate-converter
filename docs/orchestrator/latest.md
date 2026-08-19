@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-19 — **CARTO-IIM-PROVIDER-A-FIX1** candidate **231** `f90c503` · GATE **REVIEW GPT-SOSTITUTIVA — PENDING** · 230 **QA FAIL operatore** (filtro IIM non deselezionabile) · LIVE **228** invariato · GIS VPS resta **230** · evidence: [`inbox/2026-08-19_0150_carto-iim-provider-a-fix1.md`](inbox/2026-08-19_0150_carto-iim-provider-a-fix1.md)
+2026-08-19 — docs-only backlog QA CARTO-IIM: `CARTO-SEARCH-FILTER-LABEL-UX-A` · `D-FLIGHT-CLOSE-CLEANUP-A` · `GLOBAL-MODAL-EDGE-RESIZE-A` (**NOT OPENED**). Finding 230 filtro IIM: WU-0012 §15i (**non** backlog). FRONTIER **invariato** (FIX1 231 REVIEW PENDING). Evidence: [`inbox/2026-08-19_0205_backlog_carto-iim-qa-ux.md`](inbox/2026-08-19_0205_backlog_carto-iim-qa-ux.md)

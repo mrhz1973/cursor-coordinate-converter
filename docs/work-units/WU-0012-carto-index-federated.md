@@ -463,6 +463,7 @@ Classificazione runtime futuro: **DELICATO** (storage, import, rete, OPSEC).
 
 1. Provider IIM·CIGA·UKHO / **CARTO-ONLINE-UPDATE-A** (non aperti)
 2. **MODAL-OPEN-TOP-ALIGN-A** — backlog UX (non aperto; non WU-0012 core)
+3. **CARTO-SEARCH-FILTER-LABEL-UX-A** — backlog UX QA IIM (non aperto; §15j). **Non** include il finding checkbox IIM (§15i).
 
 **Nessun** auto-start. WU-0012 **resta OPEN** (provider). Runtime Git tip: **`65c9ef8`** / build **150**. Vedi §15h.
 
@@ -794,6 +795,69 @@ Assertion aggregate: **PASS**. Nessun servizio online.
 
 **Chiuso:** dataset serie 25/25V/25kauto (8204); colori/label; auto-refresh filtri; zero-serie clear; startup MAPPA; top-align pannello; reveal atomico GIS.  
 **Resta OPEN nella WU:** provider IIM/CIGA/UKHO, aggiornamento online, IndexedDB.
+
+---
+
+## 15i. Finding QA corrente — filtro IIM non deselezionabile (candidate 230)
+
+**Non è backlog futuro.** Finding QA operatore su **`CARTO-IIM-PROVIDER-A`** candidate **230** (GIS deployato `8d6e0b0`).
+
+| Campo | Valore |
+| --- | --- |
+| Sintomo | Il filtro/checkbox «IIM carte nautiche» (`#cartoIimFilterPaper`) non si deseleziona: la spunta resta attiva |
+| Classe | **FINDING QA CORRENTE** del candidate 230 — distinto da §15j |
+| Questo pass | **docs-only** — **nessuna** correzione runtime |
+| Gate | **non** modificato da questa registrazione |
+
+Distinguere da: ricerca carta/filtri/labelling (§15j), cleanup D-Flight, edge-resize globale. **Non** un mega-bundle.
+
+---
+
+## 15j. Backlog UX CARTO — `CARTO-SEARCH-FILTER-LABEL-UX-A` — **BACKLOG / NOT OPENED** (2026-08-19)
+
+Origine: QA umana `CARTO-IIM-PROVIDER-A`. **Non** aperto. **Non** bloccante. **Non** è un nuovo WU-ID. **Non** include il finding checkbox IIM (§15i).
+
+Casa canonica di questo scope: **questa sezione**. Pointer roadmap: [`WU-0005-0009-roadmap.md`](WU-0005-0009-roadmap.md) *CARTO-INDEX-FEDERATED-A*.
+
+### Ricerca carta / foglio (offline)
+
+Nel pannello CARTO, ricerca diretta su index già caricato (nessun fetch automatico):
+
+- numero carta/foglio; codice; INT / `international_id`; testo/titolo dove utile;
+- all’apertura del controllo: focus immediato sull’input (digitazione senza click extra);
+- match unico: selezionare il record, centrare/fitBounds sulla footprint, evidenziare carta/risultato;
+- match multipli: mostrare tutti i risultati coerenti, con provider, numero, titolo, tipo e scala chiaramente visibili.
+
+### Filtri ricerca (pannello CARTO)
+
+Minimo: **Provider**, **Tipo carta**, **Scala**. Provider in UI **solo** se presenti a runtime/index (oggi IGM + IIM). CIGA/UKHO/altri: **non** mostrarli finché non sono integrati.
+
+### Viewport containment (risultati da area/vista)
+
+Per fogli/carte derivati dall’area o dalla vista mappa: mostrare il record **solo se** la footprint è **interamente contenuta** nei bounds correnti — **non** `intersects(viewBounds)`. Scopo: evitare carte con copertura molto più estesa della vista. Al pan/zoom ricalcolare con la stessa regola.
+
+Geometrie multipannello: **non** deciso qui. Il futuro blocco implementation deve fissare se l’acceptance richiede tutti i pannelli contained oppure singole footprint/pannelli contained; non inventare la regola se il motore non la rende già canonica.
+
+### Provider / type labelling
+
+Linguaggio visivo provider-neutral, coerente tra selector → badge risultato → overlay mappa:
+
+| Provider | Tipo carta (quando integrato) |
+| --- | --- |
+| IIM | Carta Nautica |
+| IGM | Carta Topografica |
+| Altri | tipo specifico **solo** a integrazione avvenuta |
+
+Card/risultati possono restare su sfondo bianco; provider riconoscibile con badge/pill, bordo, testo o accento — **non** solo colore. Selector: preferire multi-selezione/pills (IGM e IIM contemporanei).
+
+### Esempio ricerca + campo Paese (controllo attuale = Cerca/geocoding)
+
+L’esempio «Abidjan / Côte d'Ivoire» e il campo **Paese** non vivono nel pannello indice CARTO: sono `geo.placeholder` e `geo.countryPh` del pannello **Cerca** / geocoding. Backlog correlato (stessa origine QA), **non** un secondo WU:
+
+- sostituire l’esempio con **«Monte Argentario»**, salvo convenzione UI canonica già presente;
+- rimuovere il filtro/campo **Paese**.
+
+**Non** aperti. Nessun runtime da questa voce.
 
 ---
 

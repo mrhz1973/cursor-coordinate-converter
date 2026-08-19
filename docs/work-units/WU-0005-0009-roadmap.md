@@ -303,7 +303,7 @@ Voci:
   - **Landed (2026-06-29):** **MAJOR-1** — pannello Diagnostica runtime read-only (`9b359b7`, build 23, QA PASS); programma major-feature avviato.
   - **Landed (2026-06-28):** **MODAL-STD-SEARCH-B1** — `#searchPanel` (`33c95ad`, build 10); **MODAL-STD-B2** — `#favoritesPanel` + Poligoni ESC (`06ed2a0`→`266b116`, build 11→13); **BUNDLE-BACKLOG-B3** — audit bundle + micro-fix (`709079c`, build 14); **ROUTINE-CLEANUP-BUNDLE** — primo bundle-first cleanup (`7b8cf04`, build 15, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-A** — resize pilota Preferiti + HUD + cleanup rename bar (`61bcda5`, build 16, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-B** — resize multi-pannello + HUD avanzato (`584135e`, build 17, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-C** — resize pannelli residui + HUD polish (`8f56566`, build 18, QA PASS); **UX-NEXT-RUNTIME-BUNDLE-D** — HUD/resize polish + wheel zoom (`ec86b62`→`5fec693` FIX1 FAIL→`19700b6` FIX2 PASS, build 19→21, QA PASS FIX2); **UX-NEXT-RUNTIME-BUNDLE-E** — consolidamento UX pannelli/mappa (`fb871b7`, build 22, QA PASS).
   - **Prossimi candidati audit:** titolo statico `<title>` allineamento build.
-- Resize laterale dai lati, non solo dagli angoli (backlog correlato).
+- ~~Resize laterale dai lati, non solo dagli angoli (backlog correlato).~~ → **GLOBAL-MODAL-EDGE-RESIZE-A** (sezione sotto *Estensione backlog*; **NOT OPENED**).
 
 Note operative:
 - Editing geometrie, vertici e drag poligono sono lavori non banali.
@@ -371,7 +371,19 @@ Note operative:
   - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
   - **METHOD-QA-PASS-AUTO-FINITO — CLOSED / PASS docs-only (2026-06-28):** commit task **`78ea6c9`**, autosync **`bacabef`**; regola QA-PASS auto-innesca finito (OM §4 Regola H); template coda bundle; monolite invariato **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo bundle runtime con coda pre-autorizzata.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
-  - resize laterale pannelli flottanti.
+  - **GLOBAL-MODAL-EDGE-RESIZE-A** (NOT OPENED) — resize bordi/angoli senza handle visibile.
+
+### GLOBAL-MODAL-EDGE-RESIZE-A — **BACKLOG / NOT OPENED** (2026-08-19)
+
+Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo. **Non** aperto. **Non** accorpare con CARTO search/filter né con D-Flight close-cleanup.
+
+Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato (sinistro, destro, superiore, inferiore) e i quattro angoli.
+
+UX: nessuna handle visibile; hit-zone invisibili sui bordi; `ew-resize` verticali; `ns-resize` orizzontali; cursore diagonale sugli angoli; min width/height; contenimento viewport; header/controlli sempre raggiungibili. Preferenza futura: Pointer Events / edge hit-zones.
+
+Acceptance regressiva futura: non rompere drag, minimize, restore, dock, side-by-side, history/position restore, vincoli mobile/viewport.
+
+**Non** implementato da questa registrazione.
 
 ### Backlog candidato — Personalizzazione HUD a schermo (visibilità + riposizionamento)
 
@@ -530,7 +542,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Stato:** **OPEN / SEARCH-ENGINE CLOSED / UI-RESULTS CLOSED / ARCHIVE CLOSED / ESC CLOSED / COORD CLOSED / SERIES CLOSED — NEXT PROVIDER** (2026-08-11). Work Unit: [`WU-0012-carto-index-federated.md`](WU-0012-carto-index-federated.md). Discovery-1 + ACQUIRE-A + licenza IGM (**Prot. IGM-2024-7891**) + SEARCH/UI/ARCHIVE/ESC/COORD CLOSED + **`CARTO-IGM-SERIES-EXPAND-A` (+ UX1–UX3-FIX3) CLOSED / PASS end-to-end** (tip storico `65c9ef8` / build 150). Macro-feature **non** CLOSED: restano provider successivi. Runtime live monolite: **`a37b912` / `D-FLIGHT-CDE · build 160`** (B tip storico `4fc7ee3` / 159 superseded). Sequenza interna WU **riprendibile** (provider).
 
-**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX). **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) CLOSED**. **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
+**Ordine candidato WU-0012 (riprendibile):** (1) provider successivi; (2) **MODAL-OPEN-TOP-ALIGN-A** (backlog UX); (3) **CARTO-SEARCH-FILTER-LABEL-UX-A** (backlog UX — **NOT OPENED**, casa [`WU-0012` §15j](WU-0012-carto-index-federated.md)). Finding QA 230 filtro IIM: [`WU-0012` §15i](WU-0012-carto-index-federated.md) — **non** backlog. **MAP-ZOOM-FOCUS-ANCHOR-A (+ FIX1) CLOSED**. **WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) CLOSED**. **CARTO-IGM-SERIES-EXPAND-A (+ UX1–UX3-FIX3) CLOSED**. **COORD-MODAL-FORMAT-COPY-A (+ FIX1) CLOSED**. **CARTO-IGM-AREA-ESC-RESTORE-A CLOSED**. **CARTO-ARCHIVE-MATCH-A (+ FIX1–FIX2) CLOSED**. **CARTO-IGM-CRS-AUDIT-A** = DIAGNOSTIC COMPLETE / CRS AUDIT PARTIAL.
 
 **Ambito:** macro-feature separata — indici, impronte e metadati cartografici; **non** incorporazione automatica di contenuti cartografici protetti.
 
@@ -748,6 +760,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A** | Pulizia contenuto descrittivo Dettagli D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
+| **D-FLIGHT-CLOSE-CLEANUP-A** | Close modal: spariscono legenda, zone e overlay D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
 
 #### MAP-TARGET-SCALE-A
 
@@ -790,6 +803,12 @@ Acceptance futura primaria: se tutte le tile necessarie al nuovo viewport sono g
 Finding operatore: nella descrizione delle aree D-Flight restano visibili markup HTML, entity/codici o stringhe tecniche incomprensibili nella modal Dettagli.
 
 **Non** coperto dal backlog D-Flight A–H corrente. Testo completo e requirement: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+
+#### D-FLIGHT-CLOSE-CLEANUP-A
+
+Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibile sulla mappa alcuna legenda D-Flight, zona, o overlay/geometria della sessione modal.
+
+**Non** modifica la semantica minimize/restore. Testo: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
