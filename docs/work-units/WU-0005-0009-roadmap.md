@@ -383,6 +383,20 @@ Evidence: [`../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evi
 
 Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato e i quattro angoli (hit-zone invisibili, Pointer Events shared `gisPanelAttachResize`).
 
+**Acceptance / residuo — FULL-PERIMETER EDGE RESIZE (operatore 2026-08-20):** il requisito corretto resta esplicito e **non** va dichiarato implementato/PASS finché la QA umana non lo conferma sui modal reali. Molti floating modal risultano ancora non ridimensionabili lungo l’intera lunghezza dei quattro lati.
+
+- **E** = resize attivo per **tutta** l’altezza del pannello;
+- **W** = resize attivo per **tutta** l’altezza;
+- **N** = resize attivo per **tutta** la larghezza;
+- **S** = resize attivo per **tutta** la larghezza;
+- **NW / NE / SW / SE** = resize diagonale;
+- nessuna zona morta lungo il perimetro;
+- nessun gap tra edge e corner;
+- nessun grip/handle visibile;
+- controlli header (close / minimize / actions) restano cliccabili e prioritari rispetto alle hit-zone.
+
+Residuo correlato first-open top-anchor: vedi **MODAL-OPEN-TOP-ALIGN-A** (sotto) — stessa casa globale modal; **non** apre un blocco runtime separato da questa voce.
+
 **Non** implementare in questo blocco: CARTO search/filter, D-Flight close-cleanup, UKHO.
 
 ### Backlog candidato — Personalizzazione HUD a schermo (visibilità + riposizionamento)
@@ -508,9 +522,20 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 **Stato:** **CLOSED / PASS end-to-end** (2026-08-07). Catena **`04c4d37`** (build 137) → tip **`a0a6816`** / build **138** / `COORD-MODAL-FORMAT-COPY-A-FIX1`. Formato + Copia liste Waypoint/Track/Preferiti; FIX1 select in editor + sync `#wpFieldCoord` / paste / Salva parse obbligatorio; session-only `_waypointListCoordFormat`. Attestazione «**QA COORD-MODAL-FORMAT-COPY-A-FIX1 PASS operatore**» (dopo QA A PARTIAL); finito Regola H. Deploy GIS-only PASS (`?v=a0a6816`). Bundle **DELICATO leggero**. **Backlog registrato:** **MODAL-OPEN-TOP-ALIGN-A** (non aperto).
 
-### MODAL-OPEN-TOP-ALIGN-A — Apertura modal dalla parte alta
+### MODAL-OPEN-TOP-ALIGN-A — First-open top anchor (globale)
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-07). Diagnosi futura: posizione viewport vs geometry ricordata vs scroll interno vs `scrollTop` all’apertura (es. Traccia). **Non** implementato in COORD-FIX1.
+**Stato:** **BACKLOG / NOT OPENED** (registrato 2026-08-07; acceptance rafforzata 2026-08-20). **Non** è un blocco runtime nuovo. Casa canonica globale modal / layout shared. Residuo di acceptance del backlog globale modal (correlato a **GLOBAL-MODAL-EDGE-RESIZE-A**). **Non** implementato in COORD-FIX1.
+
+**Requisito (first-open):** tutti i floating modal/panel gestiti dalla shared modal/layout infrastructure, al **primo** open e in assenza di posizione utente già **touched / salvata / restaurata**, devono aprirsi alla Y più alta consentita dalla UI:
+
+- immediatamente sotto top chrome/header;
+- con safe padding minimo derivato dalla geometria/chrome reale (helper condiviso / `gisPanelSafeTop` o equivalente);
+- responsive alla reale altezza della chrome (desktop, viewport stretto, variazioni header/dock);
+- **niente** coordinate monitor-specific hardcoded.
+
+**Persistenza — prevalenza utente:** una posizione già salvata / touched / restored **deve** prevalere. **Non** riportare automaticamente in alto il pannello dopo drag, dopo resize, o a ogni reopen.
+
+**Nota operatore (caso visibile):** il modal **Traccia** apre ancora troppo in basso — caso di riferimento per la diagnosi/acceptance, non unico target.
 
 ### WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) — Centra mappa + conversione editor waypoint
 
@@ -718,9 +743,27 @@ Ammessi se servono alla leggibilità: lieve backdrop; text-shadow/outline legger
 
 **Stato:** **CLOSED / PASS** — `GIS-WORKSPACE-LEGENDS-F-BATCH1` + **FIX1** + **FIX2** LIVE `1e37e56` / build **217** · QA operatore PASS (2026-08-18) · finito Regola H.
 
-Legenda D-Flight e legenda ATM09: pannelli/overlay **distinti**; affiancati quando entrambe visibili; trascinabili; **non** incorporate obbligatoriamente nel pannello Zone D-Flight; overlap solo se l’operatore lo sceglie (touched).
+Legenda D-Flight e legenda ATM09: pannelli/overlay **distinti**; affiancati quando entrambe visibili; trascinabili; **non** incorporate obbligatoriamente nel pannello Zone D-Flight.
+
+~~Overlap solo se l’operatore lo sceglie (touched).~~ → **SUPERSEDED** (2026-08-20) da **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** sotto: le barre/aree coordinate della mappa sono **HARD EXCLUSION ZONE**; nessuna eccezione «overlap se touched».
 
 Destinazione preferita: spazio libero sul **lato destro** della mappa, tra toolbar verticale destra e area coordinate/riga posizione in basso. Leggibili, poco invasive, GIS-first, compatibili con resize. Una sola necessaria → mostrare solo quella.
+
+##### GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A — Hard no-overlap con barre coordinate
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-20). Residuo futuro nella casa canonica roadmap (questa sezione). **Non** riaprire WU-0018. **Non** blocco runtime aperto.
+
+**SUPERSEDES** la regola F-BATCH1 che ammetteva overlap se touched.
+
+Requisito: legenda **D-Flight** e legenda **ATM09** **non** possono **mai** sovrapporsi alle due barre/aree coordinate della mappa. Vincolo valido:
+
+- a qualunque risoluzione;
+- durante resize viewport;
+- durante apertura automatica;
+- durante trascinamento manuale;
+- anche se l’utente tenta deliberatamente di trascinarle sopra le coordinate.
+
+Implementazione futura: clamp / collision avoidance — la legenda va respinta/riposizionata nell’area valida. Se lo spazio non basta: fallback compatto/clamp coerente, mantenere leggibilità, **non** invadere mai le coordinate.
 
 #### 9. BUG intermittente hit-test / «manina» (priorità alta)
 
@@ -759,6 +802,8 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **BACKLOG / NOT OPENED** |
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
+| **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
+| **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A** | Pulizia contenuto descrittivo Dettagli D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
 | **D-FLIGHT-CLOSE-CLEANUP-A** | Close modal: spariscono legenda, zone e overlay D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
 
@@ -797,6 +842,18 @@ Requisito: durante il pan non mostrare area nera/vuota ai bordi se la zona inter
 Strategie da valutare: tile overscan oltre viewport; preload della corona di tile adiacenti dalla cache; retention del frame/tile precedente finché il nuovo set è pronto; scheduling render/cache più anticipato; background neutro come fallback per tile realmente assenti.
 
 Acceptance futura primaria: se tutte le tile necessarie al nuovo viewport sono già disponibili offline/cache, il pan non deve mostrare bordi neri transitori. Se le tile **non** esistono offline/cache, il requisito **non** impone di inventare dati cartografici.
+
+#### MAP-RIGHT-TOOLBAR-TOOLTIPS-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-20). Candidato UX globale. **Non** aperto come blocco runtime.
+
+Requisito: tutti i pulsanti della toolbar verticale a destra della mappa devono avere tooltip:
+
+- su **tutti** i pulsanti;
+- immediato su hover (senza ritardo percepibile tipico del solo `title` browser);
+- disponibile anche via focus tastiera;
+- testo breve e comprensibile;
+- nessuna modifica funzionale alle azioni dei pulsanti.
 
 #### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A
 
