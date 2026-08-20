@@ -464,11 +464,11 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-CLOSE-CLEANUP-A** — LIVE `ea83704` / **234** · blob `7232d08…` · REVIEW PASS · deploy + ABQA PASS · gate **QA FINALE CHATGPT — PENDING** (2026-08-20)
-2. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** (superseded live da **234**) · QA operatore PASS · Regola H (2026-08-20)
-3. **CARTO-IIM-PROVIDER-A-FIX1** — **CLOSED / PASS** · tip storico `f90c503` / **231** · QA operatore PASS · Regola H (2026-08-19)
-4. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6** — **CLOSED / PASS** · tip storico `c5bc4b1` / **228** · QA operatore PASS · Regola H (2026-08-18)
-5. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5** — **ABQA FAIL** · candidate `118dc9d` / **227** · overflow mobile Percorso → FIX6 (2026-08-18)
+1. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · LIVE `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
+2. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234** (QA operatore FAIL residui ATM09 → FIX1)
+3. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** · QA operatore PASS · Regola H (2026-08-20)
+4. **CARTO-IIM-PROVIDER-A-FIX1** — **CLOSED / PASS** · tip storico `f90c503` / **231** · QA operatore PASS · Regola H (2026-08-19)
+5. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6** — **CLOSED / PASS** · tip storico `c5bc4b1` / **228** · QA operatore PASS · Regola H (2026-08-18)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
@@ -479,7 +479,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
 - **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A` (casa D-Flight: [`WU-0013` §23](work-units/WU-0013-uas-geozone-dflight.md)) — **non** aperti
-- **Backlog 2026-08-19:** `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED** · `D-FLIGHT-CLOSE-CLEANUP-A` **OPEN** LIVE `ea83704` / **234** (QA FINALE PENDING, 2026-08-20) · `GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)` **CLOSED / PASS**. Finding QA 230 filtro IIM: [`WU-0012` §15i](work-units/WU-0012-carto-index-federated.md) — **risolto** da FIX1 **CLOSED** §15k
+- **Backlog 2026-08-19:** `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED** · `D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)` **CLOSED / PASS** LIVE `4f00433` / **235** (2026-08-20) · `GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)` **CLOSED / PASS**. Finding QA 230 filtro IIM: [`WU-0012` §15i](work-units/WU-0012-carto-index-federated.md) — **risolto** da FIX1 **CLOSED** §15k
 
 ---
 ## 7b. Workspace operativo unico

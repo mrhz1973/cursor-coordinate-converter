@@ -780,7 +780,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A** | Pulizia contenuto descrittivo Dettagli D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
-| **D-FLIGHT-CLOSE-CLEANUP-A** | Close modal: spariscono legenda, zone e overlay D-Flight | **OPEN** LIVE `ea83704` / **234** · REVIEW+deploy+ABQA PASS · **QA FINALE PENDING** — casa: WU-0013 §23 |
+| **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 
 #### MAP-TARGET-SCALE-A
 
@@ -836,13 +836,15 @@ Finding operatore: nella descrizione delle aree D-Flight restano visibili markup
 
 **Non** coperto dal backlog D-Flight A–H corrente. Testo completo e requirement: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
 
-#### D-FLIGHT-CLOSE-CLEANUP-A — **OPEN** (build 234, 2026-08-20)
+#### D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1) — **CLOSED / PASS** (build 235, 2026-08-20)
 
-**Stato:** LIVE/candidate `ea8370460ae133fbba2592235277a9cc1f7d9d1e` / **234** / `D-FLIGHT-CLOSE-CLEANUP-A` · blob `7232d08…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**.
+**Stato:** LIVE `4f004339c510c8848ffa0641908a487eeb3701c2` / **235** / `D-FLIGHT-CLOSE-CLEANUP-A-FIX1` · blob `d2b7e1cd…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · QA operatore **PASS** · auto-`finito` Regola H.
 
-Evidence: [`../orchestrator/inbox/2026-08-20_2105_D-FLIGHT-CLOSE-CLEANUP-A_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_2105_D-FLIGHT-CLOSE-CLEANUP-A_deploy-abqa.md).
+Catena: 234 (`ea83704`) QA operatore FAIL (residui ATM09 fino a pan) → FIX1 teardown sincrono preferred OFF + `InvalidateVisual` prima di `SetOverlayVisible`/`renderTileMap`.
 
-Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibile sulla mappa alcuna legenda D-Flight, zona, o overlay/geometria della sessione modal. **Non** modifica minimize/restore. WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+Evidence: [`../orchestrator/inbox/2026-08-20_2142_D-FLIGHT-CLOSE-CLEANUP-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_2142_D-FLIGHT-CLOSE-CLEANUP-A-FIX1_deploy-abqa.md) · finito [`../orchestrator/inbox/2026-08-20_2301_riepilogo_finito-D-FLIGHT-CLOSE-CLEANUP-A-FIX1.md`](../orchestrator/inbox/2026-08-20_2301_riepilogo_finito-D-FLIGHT-CLOSE-CLEANUP-A-FIX1.md).
+
+Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibile sulla mappa alcuna legenda D-Flight, zona, o overlay/geometria della sessione modal — **immediatamente**, senza pan/timer. **Non** modifica minimize/restore né auto-reload al reopen. WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
