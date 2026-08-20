@@ -464,11 +464,11 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · LIVE `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
-2. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234** (QA operatore FAIL residui ATM09 → FIX1)
-3. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** · QA operatore PASS · Regola H (2026-08-20)
-4. **CARTO-IIM-PROVIDER-A-FIX1** — **CLOSED / PASS** · tip storico `f90c503` / **231** · QA operatore PASS · Regola H (2026-08-19)
-5. **OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6** — **CLOSED / PASS** · tip storico `c5bc4b1` / **228** · QA operatore PASS · Regola H (2026-08-18)
+1. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — REVIEW PASS + deploy + ABQA PASS · LIVE `8a350f7` / **237** · blob `4d8c2b3…` · gate **QA FINALE CHATGPT — PENDING** (2026-08-21); rejected 236 `d223b38f` non deployato
+2. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
+3. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234** (QA operatore FAIL residui ATM09 → FIX1)
+4. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** · QA operatore PASS · Regola H (2026-08-20)
+5. **CARTO-IIM-PROVIDER-A-FIX1** — **CLOSED / PASS** · tip storico `f90c503` / **231** · QA operatore PASS · Regola H (2026-08-19)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
