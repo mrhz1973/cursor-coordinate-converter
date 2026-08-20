@@ -371,33 +371,19 @@ Note operative:
   - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
   - **METHOD-QA-PASS-AUTO-FINITO — CLOSED / PASS docs-only (2026-06-28):** commit task **`78ea6c9`**, autosync **`bacabef`**; regola QA-PASS auto-innesca finito (OM §4 Regola H); template coda bundle; monolite invariato **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo bundle runtime con coda pre-autorizzata.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
-  - **GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)** (OPEN, LIVE 233, QA FINALE PENDING) — resize bordi/angoli senza handle visibile; FIX1 full-perimeter + safe-top.
+  - **GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)** — **CLOSED / PASS** (2026-08-20) · LIVE `1b8aa3c` / **233** · QA operatore PASS · Regola H.
 
-### GLOBAL-MODAL-EDGE-RESIZE-A — **OPEN** (FIX1 build 233, 2026-08-20)
+### GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1) — **CLOSED / PASS** (build 233, 2026-08-20)
 
-Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo. **Non** accorpare con CARTO search/filter né con D-Flight close-cleanup.
+Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo.
 
-**Stato:** LIVE/candidate runtime `1b8aa3c688f9800a47d0f7851af4c3d38ffe3c00` / build **233** / `GLOBAL-MODAL-EDGE-RESIZE-A-FIX1` · blob `8bb4133…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**.
+**Stato:** **CLOSED / PASS end-to-end**. Runtime LIVE `1b8aa3c688f9800a47d0f7851af4c3d38ffe3c00` / build **233** / `GLOBAL-MODAL-EDGE-RESIZE-A-FIX1` · blob `8bb4133…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · attestazione «**QA GLOBAL-MODAL-EDGE-RESIZE-A-FIX1 PASS operatore**» → Regola H `finito`.
 
-Evidence: [`../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md) · review package [`../orchestrator/inbox/2026-08-20_1632_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1-review-package.md`](../orchestrator/inbox/2026-08-20_1632_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1-review-package.md)
+Evidence: [`../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md) · finito [`../orchestrator/inbox/2026-08-20_1921_riepilogo_finito-GLOBAL-MODAL-EDGE-RESIZE-A-FIX1.md`](../orchestrator/inbox/2026-08-20_1921_riepilogo_finito-GLOBAL-MODAL-EDGE-RESIZE-A-FIX1.md).
 
-Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato e i quattro angoli (hit-zone invisibili, Pointer Events shared `gisPanelAttachResize`).
+Consegna: hit-zone invisibili full-perimeter N/S/E/W + corners; first-open sotto chrome (`gisPanelDefaultRect` → `gisPanelSafeTop`); touched/reopen preservati; header actions prioritari.
 
-**Acceptance / residuo — FULL-PERIMETER EDGE RESIZE (operatore 2026-08-20):** il requisito corretto resta esplicito e **non** va dichiarato implementato/PASS finché la QA umana non lo conferma sui modal reali. Molti floating modal risultano ancora non ridimensionabili lungo l’intera lunghezza dei quattro lati.
-
-- **E** = resize attivo per **tutta** l’altezza del pannello;
-- **W** = resize attivo per **tutta** l’altezza;
-- **N** = resize attivo per **tutta** la larghezza;
-- **S** = resize attivo per **tutta** la larghezza;
-- **NW / NE / SW / SE** = resize diagonale;
-- nessuna zona morta lungo il perimetro;
-- nessun gap tra edge e corner;
-- nessun grip/handle visibile;
-- controlli header (close / minimize / actions) restano cliccabili e prioritari rispetto alle hit-zone.
-
-Residuo correlato first-open top-anchor: vedi **MODAL-OPEN-TOP-ALIGN-A** (sotto) — stessa casa globale modal; **non** apre un blocco runtime separato da questa voce.
-
-**Non** implementare in questo blocco: CARTO search/filter, D-Flight close-cleanup, UKHO.
+Finding pre-esistente (non regressione FIX1): Convert off-left dopo stress resize Track — documentato in review package.
 
 ### Backlog candidato — Personalizzazione HUD a schermo (visibilità + riposizionamento)
 
@@ -524,18 +510,7 @@ Blocco più delicato: da aprire **separatamente** dopo HUD-VIS o per decisione e
 
 ### MODAL-OPEN-TOP-ALIGN-A — First-open top anchor (globale)
 
-**Stato:** **BACKLOG / NOT OPENED** (registrato 2026-08-07; acceptance rafforzata 2026-08-20). **Non** è un blocco runtime nuovo. Casa canonica globale modal / layout shared. Residuo di acceptance del backlog globale modal (correlato a **GLOBAL-MODAL-EDGE-RESIZE-A**). **Non** implementato in COORD-FIX1.
-
-**Requisito (first-open):** tutti i floating modal/panel gestiti dalla shared modal/layout infrastructure, al **primo** open e in assenza di posizione utente già **touched / salvata / restaurata**, devono aprirsi alla Y più alta consentita dalla UI:
-
-- immediatamente sotto top chrome/header;
-- con safe padding minimo derivato dalla geometria/chrome reale (helper condiviso / `gisPanelSafeTop` o equivalente);
-- responsive alla reale altezza della chrome (desktop, viewport stretto, variazioni header/dock);
-- **niente** coordinate monitor-specific hardcoded.
-
-**Persistenza — prevalenza utente:** una posizione già salvata / touched / restored **deve** prevalere. **Non** riportare automaticamente in alto il pannello dopo drag, dopo resize, o a ogni reopen.
-
-**Nota operatore (caso visibile):** il modal **Traccia** apre ancora troppo in basso — caso di riferimento per la diagnosi/acceptance, non unico target.
+**Stato:** **CLOSED / PASS** (2026-08-20) — consegnato insieme a **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** (`1b8aa3c` / **233**): `gisPanelDefaultRect` ancora a `gisPanelSafeTop`; touched/saved/restored restano prevalenti. Attestazione nella stessa QA «**QA GLOBAL-MODAL-EDGE-RESIZE-A-FIX1 PASS operatore**».
 
 ### WAYPOINT-EDITOR-CENTER-A (+ FIX1–FIX3 + FIX3-FIX1) — Centra mappa + conversione editor waypoint
 

@@ -57,6 +57,8 @@ JSON: [`2026-08-20_1640_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1-abqa.json`](2026-08-20_1
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
+**CLOSED / PASS** — attestazione `QA GLOBAL-MODAL-EDGE-RESIZE-A-FIX1 PASS operatore` (2026-08-20) → Regola H `finito`
 
-Non attestare QA operatore. Non `finito`.
+- LIVE FRONTIER = **233** / `1b8aa3c`
+- GIS VPS serve **233** (`?v=1b8aa3c`)
+- GATE = **none**
