@@ -60,7 +60,7 @@ Normalizer does not write back into zone/session objects. Local QA: `raw_preserv
 - `git diff --numstat` BASE…CANDIDATE: `153 16 coordinate_converter Claude.html`
 - `git diff --stat`: `169 ++++ / ----` (153 insertions, 16 deletions)
 - `git diff --check`: PASS
-- Full diff artifact: `C:\tmp\dflight-details-fix1\full.diff`
+- Full runtime diff (complete text, persisted): [`2026-08-21_0021_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1-full-runtime-diff.md`](./2026-08-21_0021_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1-full-runtime-diff.md)
 - Bytes (candidate working file): `10924483`
 - Lines: `100694`
 - No ApplyPatch / formatter / EOL rewrite / full-file rewrite
@@ -106,3 +106,11 @@ Selftests added/updated: `DC_encoded_markup`, `DC_numeric_hostile`, `DC_mixed_en
 ## Verdict line
 
 D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1 REVIEW PACKAGE READY — MAIN UNCHANGED — NO DEPLOY
+
+## Evidence repair (docs-only)
+
+- Local `C:\tmp\...\full.diff` was **not** sufficient for REVIEW GPT-SOSTITUTIVA.
+- Full runtime diff is now persisted in-repo: `docs/orchestrator/inbox/2026-08-21_0021_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1-full-runtime-diff.md`
+- Includes complete `git diff` text plus `--numstat` / `--stat` / `--check`.
+- Runtime candidate `8a350f7a9654fe1de0b6757c31ae39fa6c07ac05` / blob `4d8c2b3a68c348b30c8683319c31df3cb01e138a` **unchanged**.
+- Main unchanged; origin push `DISABLED_PUSH`.
