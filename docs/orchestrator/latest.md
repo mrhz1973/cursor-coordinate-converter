@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-20 — **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1 CLOSED / PASS** · LIVE `1b8aa3c` / **233** · QA operatore PASS → Regola H `finito`. Evidence: [`inbox/2026-08-20_1921_riepilogo_finito-GLOBAL-MODAL-EDGE-RESIZE-A-FIX1.md`](inbox/2026-08-20_1921_riepilogo_finito-GLOBAL-MODAL-EDGE-RESIZE-A-FIX1.md).
+2026-08-20 — **D-FLIGHT-CLOSE-CLEANUP-A** candidato/LIVE `ea83704` / **234** · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**. Evidence: [`inbox/2026-08-20_2105_D-FLIGHT-CLOSE-CLEANUP-A_deploy-abqa.md`](inbox/2026-08-20_2105_D-FLIGHT-CLOSE-CLEANUP-A_deploy-abqa.md).
