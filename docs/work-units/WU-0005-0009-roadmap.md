@@ -371,15 +371,15 @@ Note operative:
   - **ROUTINE-CLEANUP-BUNDLE build 15 — CLOSED / PASS end-to-end:** runtime **`7b8cf04`**, blob **`71e353ee…`**, primo bundle METHOD-BUNDLING-DEFAULT (7 item: CSS legacy modal, renderAllMaps no-op, cleanup cosmetico); review **NON RICHIESTA**, deploy GIS-only PASS (byte **2423860**, SHA **`0caa7065…`**, CMP_PASS), **QA operatore PASS** («**QA ROUTINE-CLEANUP-BUNDLE PASS operatore**»); runtime VPS live **`7b8cf04`**, display **`B5.5Z · build 15`**.
   - **METHOD-QA-PASS-AUTO-FINITO — CLOSED / PASS docs-only (2026-06-28):** commit task **`78ea6c9`**, autosync **`bacabef`**; regola QA-PASS auto-innesca finito (OM §4 Regola H); template coda bundle; monolite invariato **`71e353ee…`**; runtime VPS **`7b8cf04`** build 15; prossimo bundle runtime con coda pre-autorizzata.
   - standardizzazione modal trasversale: altezza utile + scroll interno + rollout per-modal;
-  - **GLOBAL-MODAL-EDGE-RESIZE-A** (OPEN, candidato 232, REVIEW PENDING) — resize bordi/angoli senza handle visibile.
+  - **GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)** (OPEN, LIVE 233, QA FINALE PENDING) — resize bordi/angoli senza handle visibile; FIX1 full-perimeter + safe-top.
 
-### GLOBAL-MODAL-EDGE-RESIZE-A — **OPEN** (candidato 232, 2026-08-19)
+### GLOBAL-MODAL-EDGE-RESIZE-A — **OPEN** (FIX1 build 233, 2026-08-20)
 
 Casa canonica globale (cross-cutting). **Non** è un WU-ID nuovo. **Non** accorpare con CARTO search/filter né con D-Flight close-cleanup.
 
-**Stato:** candidato runtime `942ab73e73fa61870ab85a72d871b35f0105e8f2` / build **232** · blob `ae5b4df6…` · gate **REVIEW GPT-SOSTITUTIVA — PENDING** · **no deploy**. LIVE resta **231**.
+**Stato:** LIVE/candidate runtime `1b8aa3c688f9800a47d0f7851af4c3d38ffe3c00` / build **233** / `GLOBAL-MODAL-EDGE-RESIZE-A-FIX1` · blob `8bb4133…` · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**.
 
-Evidence: [`../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md`](../orchestrator/inbox/2026-08-19_0920_global-modal-edge-resize-a-evidence.md)
+Evidence: [`../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md) · review package [`../orchestrator/inbox/2026-08-20_1632_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1-review-package.md`](../orchestrator/inbox/2026-08-20_1632_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1-review-package.md)
 
 Obiettivo: eliminare la maniglia/rettangolo grafico di resize. Tutti i modal applicabili si ridimensionano trascinando l’intero lato e i quattro angoli (hit-zone invisibili, Pointer Events shared `gisPanelAttachResize`).
 

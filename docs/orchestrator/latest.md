@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-19 — **GLOBAL-MODAL-EDGE-RESIZE-A** candidato `942ab73` / **232** · LIVE `a2a2259` / **232** · gate **QA FINALE CHATGPT — PENDING** · deploy GIS + ABQA PASS. Evidence: [`inbox/2026-08-19_1215_GLOBAL-MODAL-EDGE-RESIZE-A_deploy-abqa.md`](inbox/2026-08-19_1215_GLOBAL-MODAL-EDGE-RESIZE-A_deploy-abqa.md).
+2026-08-20 — **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** candidato/LIVE `1b8aa3c` / **233** · REVIEW GPT-SOSTITUTIVA **PASS** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**. Evidence: [`inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md`](inbox/2026-08-20_1645_GLOBAL-MODAL-EDGE-RESIZE-A-FIX1_deploy-abqa.md).
