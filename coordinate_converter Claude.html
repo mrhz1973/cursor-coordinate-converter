@@ -24305,10 +24305,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "D-FLIGHT-CLOSE-CLEANUP-A";
-const APP_BUILD_DETAIL = "Close completa Zone D-Flight: cleanup overlay/zone/legende sessione; minimize invariato.";
+const APP_BUILD_ID = "D-FLIGHT-CLOSE-CLEANUP-A-FIX1";
+const APP_BUILD_DETAIL = "Close X: teardown visual ATM09/zone sincrono immediato (no pan/timer); reopen no auto-reload.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 234;
+const APP_BUILD_NUM = 235;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -38120,9 +38120,10 @@ function dflightWireFloatingPanel(dlg, kind){
 }
 
 /**
- * D-FLIGHT-CLOSE-CLEANUP-A — complete-close lifecycle (X / Esc / dflightCloseControlPanel).
+ * D-FLIGHT-CLOSE-CLEANUP-A-FIX1 — complete-close lifecycle (X / Esc / dflightCloseControlPanel).
  * Minimize must NOT call this.
- * Tears down session-owned map visuals (zones/overlays/legends/ATM09 paint).
+ * Tears down session-owned map visuals (zones/overlays/legends/ATM09 paint) synchronously.
+ * ATM09 preferred OFF + InvalidateVisual before SetOverlayVisible/renderTileMap.
  * Preserves in-memory client dataset; does NOT auto-restore visuals on reopen.
  */
 function dflightPanelCloseLifecycle(){
@@ -38137,13 +38138,17 @@ function dflightPanelCloseLifecycle(){
   _dflightRestoreOverlayOnPanelReopen = false;
   _dflightSelectedZoneId = null;
   try { if (typeof dflightCloseDetailsPanel === "function") dflightCloseDetailsPanel(); } catch(_){}
-  try {
-    if (typeof dflightSetOverlayVisible === "function") dflightSetOverlayVisible(false);
-  } catch(_){}
-  /* Drop ATM09 paint ownership for this closed session (Master UI + preferred). */
+  /* FIX1: disable ATM09 paint BEFORE overlay hide/renderTileMap,
+     otherwise ATM09 tiles are re-injected while preferred is still ON. */
   try { _dflightAtm09MasterUi = false; } catch(_){}
   try {
     if (typeof dflightAtm09SetPreferred === "function") dflightAtm09SetPreferred(false);
+  } catch(_){}
+  try {
+    if (typeof dflightAtm09InvalidateVisual === "function") dflightAtm09InvalidateVisual();
+  } catch(_){}
+  try {
+    if (typeof dflightSetOverlayVisible === "function") dflightSetOverlayVisible(false);
   } catch(_){}
   try {
     const dfLeg = document.getElementById("dflightRestrictionsLegend");
@@ -39709,8 +39714,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 235
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A-FIX1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40731,8 +40736,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 235
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -41187,6 +41192,7 @@ function dflightAtm09SetPreferred(on){
     _dflightAtm09SelectedId = null;
     _dflightAtm09LegendLoaded = false;
     dflightAtm09SetReady(false);
+    try { if (typeof dflightAtm09InvalidateVisual === "function") dflightAtm09InvalidateVisual(); } catch(_){}
     try { dflightAtm09ClearOverlayFx(); } catch(_){}
     try {
       const wrap = document.getElementById("dflightAtm09LegendWrap");
@@ -42661,8 +42667,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 235
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -42699,11 +42705,18 @@ function dflightSelfTestH(){
     add("CC_close_lifecycle_source", (function(){
       if (typeof dflightPanelCloseLifecycle !== "function") return false;
       const src = String(dflightPanelCloseLifecycle);
+      const iPref = src.indexOf("dflightAtm09SetPreferred(false)");
+      const iInv = src.indexOf("dflightAtm09InvalidateVisual");
+      const iVis = src.indexOf("dflightSetOverlayVisible(false)");
       return src.indexOf("_dflightRestoreOverlayOnPanelReopen = false") >= 0
-        && src.indexOf("dflightSetOverlayVisible(false)") >= 0
-        && src.indexOf("dflightAtm09SetPreferred(false)") >= 0
+        && iPref >= 0 && iInv >= 0 && iVis >= 0
+        && iPref < iVis && iInv < iVis
         && src.indexOf("_dflightAtm09MasterUi = false") >= 0
         && src.indexOf("_dflightClientSession") < 0;
+    })());
+    add("FIX1_preferred_off_invalidates_visual", (function(){
+      if (typeof dflightAtm09SetPreferred !== "function") return false;
+      return String(dflightAtm09SetPreferred).indexOf("dflightAtm09InvalidateVisual") >= 0;
     })());
 
     /* VISUAL-READY-A: pure/static + stubbed post-apply start (no live helper network). */
