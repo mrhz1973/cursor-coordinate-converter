@@ -495,3 +495,85 @@ Attesa: `QA MAP-CENTER-VIEWPORT-AWARE-A PASS operatore`.
 | Monolite | Invariato in questa sessione |
 
 **MAP-CENTER-VIEWPORT-AWARE-A PLAN READY — RUNTIME NOT OPENED**
+
+---
+
+## EXTENSION 2026-08-21 — POLYGON PANEL / DOCK + DRAWING VIEWPORT
+
+**Stato estensione:** **BACKLOG / NOT OPENED** (docs-only; **nessun** runtime in questa registrazione)  
+**ID invariato:** `MAP-CENTER-VIEWPORT-AWARE-A` — **non** creare un secondo backlog concorrente per il map center.  
+**Core storico CTA Centra / FIX1–FIX3:** resta **CLOSED / PASS** (build 93); questa sezione **estende** lo scope, non lo riapre silenziosamente.  
+**Evidence:** [`2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md`](2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md)  
+**Casa roadmap:** [`WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) § Map UX — voce `MAP-CENTER-VIEWPORT-AWARE-A` (estensione Poligoni).
+
+### Scope: POLYGON PANEL — DOCK + DRAWING VIEWPORT
+
+#### 1) Modal Poligoni laterale (desktop / viewport larga)
+
+- `#polygonPanel` deve poter operare come **pannello laterale**, preferenza **LATO DESTRO**.
+- Non occupare inutilmente il centro mappa; lasciare porzione ampia e utilizzabile.
+- **Non** coprire la scala mappa (`.tile-scale`) in basso a sinistra.
+- Riuso del sistema panel/modal esistente — **nessuna** seconda UI Poligoni.
+
+#### 2) Altezza
+
+- Sfruttare tutta l’altezza realmente disponibile della viewport GIS (topbar/header + vincoli strutturali).
+- Evitare la scrollbar verticale lunga del pannello come meccanismo principale quando esiste altezza disponibile.
+- Nessun overflow fuori viewport; footer/azioni sempre raggiungibili; scroll interno solo dove necessario.
+- Resize viewport → ricalcolo altezza disponibile; non coprire la scala.
+
+#### 3) «Nuovo poligono»
+
+- Premendo «Nuovo poligono» la modal **NON** deve minimizzarsi.
+- Resta visibile lateralmente; coordinate vertici / metriche / controlli drawing restano consultabili.
+- Porzione libera della mappa completamente interattiva.
+- Apertura pannello e avvio drawing restano **eventi distinti**.
+
+#### 4) Viewport-aware center (requisito principale)
+
+Prima di open/dock del pannello esiste un punto geografico visivamente al centro della mappa.  
+Dopo che Poligoni occupa spazio laterale, **quello stesso punto** deve risultare al centro della **porzione di mappa rimasta libera** — non al centro geometrico di `#miniMap` (che finirebbe sotto/al lato del pannello).
+
+Modello canonico (già in questo piano, sezioni 3–6 / opzione A′):
+
+- misura DOM reale (`getBoundingClientRect`);
+- rettangolo utile della mappa (panel-aware);
+- **zero** larghezze hardcoded;
+- più forte del solo comportamento delle CTA «Centra»: studiare applicazione alle **transizioni di geometry** del pannello Poligoni.
+
+#### 5) Transizioni da auditare
+
+Apertura · dock · resize pannello · Nuovo poligono · minimize · restore · chiusura · resize finestra.
+
+**Vincolo:** nessun drift cumulativo della camera. Ogni transizione usa un **anchor geografico deterministico**, non somma offset pixel ripetuti.
+
+#### 6) Scala / controlli mappa
+
+Scala resta visibile e leggibile. Dock destro preferito perché preserva naturalmente la scala in basso a sinistra. Non spostare la scala senza necessità.
+
+#### 7) Responsive
+
+- Desktop / viewport larga: dock laterale = target.
+- Viewport stretta/mobile: fallback adattivo (non forzare colonna inutilizzabile).
+- Soglia/fallback da determinare in implementazione col sistema responsive già canonico.
+
+#### 8) Relazione con altri backlog (collegare, **non** fondere runtime)
+
+| Backlog | Relazione |
+| --- | --- |
+| `GIS-POLYGON-METRICS-COMPACT-FORMAT-A` | 1 decimale → riduce larghezza numeri |
+| `GIS-POLYGON-WAYPOINT-INTERACTION-A` | drawing priority / snap / close-edit |
+| `GIS-POLYGON-PRESET-SHAPES-A` | create path correlato, bundle **non** automatico |
+
+### Classificazione (separazione esplicita)
+
+| Area | Classe |
+| --- | --- |
+| Layout CSS puro (dock destro, altezza disponibile, scroll interno) isolabile | **ROUTINE** |
+| Camera / center compensation su useful rect | **DELICATO** |
+| Open / minimize / restore / close + geometry transitions | **DELICATO** |
+| Drawing lifecycle («Nuovo poligono» senza minimize; panel stay-open) | **DELICATO** |
+
+### Zero runtime
+
+Questa estensione è **solo documentale**. Monolite, build, deploy e gate QA corrente **non** cambiano in questa registrazione.

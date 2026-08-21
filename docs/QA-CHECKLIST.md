@@ -1627,9 +1627,8 @@ Questo checklist **non** duplica la coda. Prompt GPT→Cursor: dichiarare `CLOSU
 | Deploy GIS-only PASS | HTTP 200 Tailscale; byte/SHA/`cmp` match; solo `goi-gis-app` |
 | `QA MAP-CENTER-VIEWPORT-AWARE-A-FIX3 PASS operatore` | trigger Regola H / `finito` |
 
-**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF.
-
-## TRACK-PROFILE-POINTS-DISPLAY-A — CLOSED / PASS end-to-end
+**Backlog UX residuo (non implementato):** ROUTING-PROFILE-EDIT-A; QA-OPERATOR-IT-ONLY-PREF.  
+**Estensione 2026-08-21 (NOT OPENED):** scope **POLYGON PANEL / DOCK + DRAWING VIEWPORT** sullo stesso ID — evidence [`orchestrator/inbox/2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md`](orchestrator/inbox/2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md); **non** riapre il CLOSED CTA Centra.
 
 **Blocco:** TRACK-PROFILE-POINTS-DISPLAY-A  
 **Stato:** **CLOSED / PASS end-to-end** (2026-08-01)  
