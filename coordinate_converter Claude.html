@@ -7721,6 +7721,9 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
 }
 
 #waypointModalPanel .wp-map-name-row{
+  position: relative;
+  z-index: 0;
+  flex-shrink: 0;
   margin: 0 0 var(--wp-space-3);
   padding: var(--wp-space-2) var(--wp-space-3);
   font-size: 0.84rem;
@@ -7825,7 +7828,10 @@ html[data-theme="light"] #waypointModal.waypoint-modal{
   border-radius: var(--wp-r-lg);
   border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   background: color-mix(in srgb, var(--panel) 90%, var(--surface-page) 10%);
-  overflow: visible;
+  /* GIS-WAYPOINT-MODAL-LAYOUT-A: cancel global .wp-modal-table-wrap max-height +
+     never spill list paint over following siblings (map-name radios). */
+  max-height: none;
+  overflow: hidden;
 }
 #waypointModalPanel #wp-list.track-points-list{
   overflow: auto;
@@ -13878,6 +13884,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <button type="button" id="wpEditorDelete" class="btn btn-sm btn-danger" hidden data-i18n="waypointModal.editor.delete">Elimina</button>
           </div>
         </div>
+        <div class="wp-map-name-row" role="radiogroup" aria-labelledby="wpMapNameLabel">
+          <span id="wpMapNameLabel" class="wp-map-name-row__title" data-i18n="waypointModal.mapNameLabel">Nome sulla mappa</span>
+          <label class="wp-radio-inline" data-i18n-tip="tip.waypointModal.mapNameAlwaysTip"><input type="radio" name="wpMapNameDisp" id="wpMapNameAlways" value="always"> <span data-i18n="waypointModal.mapNameAlways">Sempre visibile</span></label>
+          <label class="wp-radio-inline" data-i18n-tip="tip.waypointModal.mapNameTooltipModeTip"><input type="radio" name="wpMapNameDisp" id="wpMapNameTooltip" value="tooltip"> <span data-i18n="waypointModal.mapNameTooltip">Solo nel tooltip</span></label>
+        </div>
         <div class="wp-modal-table-wrap" id="wp-listWrap">
           <div id="wpListFavFeedback" class="wp-feedback wp-list-fav-feedback" aria-live="polite"></div>
           <div id="wpDeleteOneBar" class="wp-inline-confirm gis-rr-confirm-skin" role="region" aria-live="polite" hidden>
@@ -13921,11 +13932,6 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           </div>
         </div>
         <div id="wp-count" class="wp-count wp-count-badge" aria-live="polite"></div>
-        <div class="wp-map-name-row" role="radiogroup" aria-labelledby="wpMapNameLabel">
-          <span id="wpMapNameLabel" class="wp-map-name-row__title" data-i18n="waypointModal.mapNameLabel">Nome sulla mappa</span>
-          <label class="wp-radio-inline" data-i18n-tip="tip.waypointModal.mapNameAlwaysTip"><input type="radio" name="wpMapNameDisp" id="wpMapNameAlways" value="always"> <span data-i18n="waypointModal.mapNameAlways">Sempre visibile</span></label>
-          <label class="wp-radio-inline" data-i18n-tip="tip.waypointModal.mapNameTooltipModeTip"><input type="radio" name="wpMapNameDisp" id="wpMapNameTooltip" value="tooltip"> <span data-i18n="waypointModal.mapNameTooltip">Solo nel tooltip</span></label>
-        </div>
         <!-- Legacy host for renderMapWaypointsList(); kept hidden (UI = wp-list). -->
         <div id="map-waypoints" class="track-points-list" data-empty="—" hidden aria-hidden="true"></div>
       </div>
@@ -24385,10 +24391,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1";
-const APP_BUILD_DETAIL = "FIX1: remove leaked comment from tile-ctrls template (restore map toolbar geometry).";
+const APP_BUILD_ID = "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A";
+const APP_BUILD_DETAIL = "Waypoint modal map-name row layout (no list spill) + polygon metrics 1-decimal presentation.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 247;
+const APP_BUILD_NUM = 248;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39986,8 +39992,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 247
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -41008,8 +41014,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 247
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42942,8 +42948,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 247
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -82491,6 +82497,7 @@ function sanitizePolygonAreaUnit(u){
   return "auto";
 }
 function formatDistanceMetersForUnit(meters, unit){
+  /* Kept for callers outside compact polygon UI; polygon panel uses formatPolygonDistanceMeters. */
   const m = Number(meters);
   if (!Number.isFinite(m)) return "—";
   const u = sanitizePolygonLengthUnit(unit);
@@ -82500,12 +82507,38 @@ function formatDistanceMetersForUnit(meters, unit){
   }
   return formatMapMeasureDistance(m, u);
 }
+/** GIS-POLYGON-METRICS-COMPACT-FORMAT-A — presentation-only 1 decimal (units unchanged). */
+function formatPolygonCompactNum(v){
+  const n = Number(v);
+  if (!Number.isFinite(n)) return "—";
+  return n.toFixed(1);
+}
 function formatPolygonDistanceMeters(meters){
-  return formatDistanceMetersForUnit(meters, state.polygonMetricLengthUnit);
+  const m = Number(meters);
+  if (!Number.isFinite(m)) return "—";
+  const u = sanitizePolygonLengthUnit(state.polygonMetricLengthUnit);
+  if (u === "auto"){
+    if (m >= 1000) return formatPolygonCompactNum(m / 1000) + " km";
+    return formatPolygonCompactNum(m) + " m";
+  }
+  if (u === "km") return formatPolygonCompactNum(m / 1000) + " km";
+  if (u === "nm") return formatPolygonCompactNum(m / 1852) + " NM";
+  if (u === "mi") return formatPolygonCompactNum(m / 1609.344) + " mi";
+  if (u === "ft") return formatPolygonCompactNum(m / 0.3048) + " ft";
+  return formatPolygonCompactNum(m) + " m";
 }
 function fmtPolygonAreaPlain(m2){
   const m2n = Number(m2);
-  return fmtAreaPlain(m2n / 1e6, m2n, m2n / 1e4, state.polygonMetricAreaUnit);
+  if (!Number.isFinite(m2n)) return "—";
+  const unit = sanitizePolygonAreaUnit(state.polygonMetricAreaUnit);
+  if (unit === "m2") return formatPolygonCompactNum(m2n) + " m²";
+  if (unit === "ha") return formatPolygonCompactNum(m2n / 1e4) + " ha";
+  if (unit === "km2") return formatPolygonCompactNum(m2n / 1e6) + " km²";
+  const km2v = m2n / 1e6;
+  const hav = m2n / 1e4;
+  if (km2v >= 1) return formatPolygonCompactNum(km2v) + " km² (" + formatPolygonCompactNum(hav) + " ha)";
+  if (hav >= 1) return formatPolygonCompactNum(hav) + " ha (" + formatPolygonCompactNum(m2n) + " m²)";
+  return formatPolygonCompactNum(m2n) + " m²";
 }
 function polygonEditFormatDistance(meters){
   return formatPolygonDistanceMeters(meters);
