@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — backlog **`GIS-POLYGON-WAYPOINT-INTERACTION-A`** = **BACKLOG / NOT OPENED** (pointer priority + snap pixel + close→end edit). LIVE **238** / blob `c36109d1` invariato · FRONTIER idle. Evidence: [`inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md`](inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md). Nota: candidate VERTEX-COORD **239** REJECTED → FIX1 separato.
+2026-08-21 — `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` **promosso** LIVE build **240** (`4fb9c2f` · blob `192c3b41`). Backlog `GIS-WAYPOINT-MODAL-LAYOUT-A` = **NOT OPENED**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence deploy/ABQA in inbox.

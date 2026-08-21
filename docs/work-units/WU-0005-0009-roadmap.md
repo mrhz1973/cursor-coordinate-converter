@@ -786,6 +786,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | Candidate **239** `be49ed2` **REJECTED** (selftest APP_BUILD_ID stale) · **FIX1** in corso su review — **non** deployato |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
+| **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **BACKLOG / NOT OPENED** (2026-08-21) — CSS/layout vs lifecycle TBD |
 
 #### MAP-TARGET-SCALE-A
 
@@ -959,6 +960,18 @@ Unico close-on-click documentato sul dialog:
 **Acceptance futura:** click sulla mappa (pick/pan) **non** deve chiudere `#waypointModal` salvo azione esplicita UI (X / Esc / conferma unsaved). Investigare hit-test floating (`ev.target === wm` vs area mappa / backdrop percepito) e correggere senza introdurre modello waypoint parallelo.
 
 **Categoria:** **DELICATO** (lifecycle modal). Isolare da bundle poligoni.
+
+#### GIS-WAYPOINT-MODAL-LAYOUT-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto.
+
+**Finding:** con lista lunga/scorrimento, il gruppo «Nome sulla mappa» / «Sempre visibile» / «Solo nei tooltip» si sovrappone alle righe tabella (Nome/Dettagli/controlli).
+
+**Acceptance:** spazio layout proprio; zero overlap; scroll corretto; desktop/mobile/resize; azioni riga raggiungibili; semantica visibility invariata; `state.mapWaypoints[]` invariato; minimize/restore/resize invariati.
+
+**Categoria futura:** ROUTINE (CSS/layout) oppure DELICATO (lifecycle/DOM).
+
+Evidence: [`../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md).
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
