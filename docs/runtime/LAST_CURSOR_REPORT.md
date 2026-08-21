@@ -4,29 +4,30 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` |
-| **GATE** | **QA FINALE CHATGPT — PENDING** |
-| **RUNTIME LIVE** | tip `ea5b4c1…` · reviewed `eef8303…` · build **242** · blob `2e0075ba…` |
-| **RESULT** | REVIEW PASS + cherry-pick + deploy CMP + ABQA 33/33 PASS |
-| **WORKING TREE** | clean after evidence push |
+| **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` |
+| **GATE** | REVIEW PACKAGE READY · NO DEPLOY |
+| **RUNTIME LIVE** | build **242** · blob `2e0075ba…` |
+| **RUNTIME CANDIDATE** | `5857cbb2…` · build **243** · blob `04cfdfcc…` |
+| **RESULT** | Draft vertex drag via reused edit pipeline · review only |
 
 ## B. RIEPILOGO
 
-1. Cherry-pick exact reviewed → blob `2e0075ba…`.
-2. Deploy `ionos-n8n` HTTP 200 CMP PASS; proxy PID invariato.
-3. ABQA: Nuovo poligono no auto-minimize + verts list + manual minimize + edit/WP/track PASS.
-4. Gate QA FINALE CHATGPT PENDING · no operatore PASS · no finito.
+1. Root cause: draft overlay senza handle/drag.
+2. Fix: handles + `mapPolyEditDocDrag.source=draft` + `polygonApplyDraggedDraftVertex`; no premature persist.
+3. Local QA 21/21; selftest 243/FIX4.
+4. LIVE 242 invariato; no deploy.
 
 ## C. GIT
 
 ```
-origin/main tip promote: ea5b4c10366c5a34331f8a62c77efb8ea6aab615
-BLOB LIVE: 2e0075ba344713b17f0888c4e9594f414bb0db94
+CANDIDATE: 5857cbb2c3fc73e688ae26c1e2a359bb76199416
+BLOB: 04cfdfcc1eed8979e60b9ff176f93ceee79ccfcb
+BASE: 19a019138b2b23513467813fcb7c460ce88d862f
+LIVE BLOB: 2e0075ba344713b17f0888c4e9594f414bb0db94
 ```
 
 STATO FRESCO DA CURSOR
-origin/main HEAD: (see push)
+origin/main HEAD: (docs tip after publish)
 working tree: clean
-ultimo blocco PASS tecnico: GIS-POLYGON-VERTEX-COORD-UX-A-FIX3 deploy+ABQA
-prossimo candidato: attesa QA operatore
-note operative: no finito
+prossimo candidato: FIX4 build 243 review
+note operative: NO DEPLOY · NO REVIEW PASS · NO finito

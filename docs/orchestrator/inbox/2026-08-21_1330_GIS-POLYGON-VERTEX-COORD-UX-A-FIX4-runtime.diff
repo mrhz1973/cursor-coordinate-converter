@@ -1,0 +1,359 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index 2e0075b..04cfdfc 100644
+--- a/coordinate_converter Claude.html	
++++ b/coordinate_converter Claude.html	
+@@ -3070,8 +3070,10 @@ dialog.polygon-vertex-coord-dialog .poly-vertex-coord-actions{
+ .polygon-panel .poly-edit-leg-add.btn.btn-sm.btn-ghost{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
+ .polygon-panel .poly-edit-leg-del.btn.btn-sm.btn-danger-subtle{ min-width:28px; padding:2px 6px; font-size:.9em; line-height:1; flex-shrink:0; }
+ .poly-edit-overlay .poly-edit-shape{ stroke-width:2.5; }
+-.poly-edit-overlay .poly-edit-handle{ cursor:grab; touch-action:none; }
+-.poly-edit-overlay .poly-edit-handle.is-grabbing{ cursor:grabbing; }
++.poly-edit-overlay .poly-edit-handle,
++.gis-polygon-draft-overlay .poly-edit-handle{ cursor:grab; touch-action:none; }
++.poly-edit-overlay .poly-edit-handle.is-grabbing,
++.gis-polygon-draft-overlay .poly-edit-handle.is-grabbing{ cursor:grabbing; }
+ .poly-edit-overlay.is-move-mode .poly-edit-shape{ pointer-events:auto; cursor:grab; touch-action:none; }
+ .poly-edit-overlay.is-move-mode.is-grabbing .poly-edit-shape{ cursor:grabbing; }
+ .poly-edit-overlay.is-move-mode .poly-edit-handle,
+@@ -23910,11 +23912,18 @@ function mapPolyEditDocDragCleanup(){
+   if (polygonIsEditing() && state._polyEdit){
+     state._polyEdit.dragIdx = null;
+   }
++  try { state._polygonDraftDragIdx = null; } catch(_){}
+ }
+ function mapPolyEditDocDragMove(ev){
+   const d = mapPolyEditDocDrag;
+   if (!d || ev.pointerId !== d.pid) return;
+-  if (!polygonIsEditing()){
++  const isDraft = d.source === "draft";
++  if (isDraft){
++    if (!state.polygonDrawMode){
++      mapPolyEditDocDragCleanup();
++      return;
++    }
++  } else if (!polygonIsEditing()){
+     mapPolyEditDocDragCleanup();
+     return;
+   }
+@@ -23929,12 +23938,22 @@ function mapPolyEditDocDragMove(ev){
+   }
+   const ll = mapClientToLatLonMap(d.root, d.markerLat, d.markerLon, d.z, ev.clientX, ev.clientY);
+   if (ll && Number.isFinite(ll.lat) && Number.isFinite(ll.lon)){
+-    if (polygonApplyDraggedVertex(d.idx, ll.lat, ll.lon)){
++    const applied = isDraft
++      ? polygonApplyDraggedDraftVertex(d.idx, ll.lat, ll.lon)
++      : polygonApplyDraggedVertex(d.idx, ll.lat, ll.lon);
++    if (applied){
+       if (mapPolyEditDocDragRaf) cancelAnimationFrame(mapPolyEditDocDragRaf);
+       mapPolyEditDocDragRaf = requestAnimationFrame(() => {
+         mapPolyEditDocDragRaf = null;
+         const dd = mapPolyEditDocDrag;
+-        if (!dd || !polygonIsEditing()) return;
++        if (!dd) return;
++        if (dd.source === "draft"){
++          if (!state.polygonDrawMode) return;
++          if (dd.tileMap) renderPolygonDraftOverlay(dd.tileMap, dd.markerLat, dd.markerLon, dd.z);
++          try { renderPolygonDraftInfo(); } catch(_){}
++          return;
++        }
++        if (!polygonIsEditing()) return;
+         if (dd.tileMap) renderPolygonEditOverlay(dd.tileMap, dd.markerLat, dd.markerLon, dd.z);
+         try { renderPolygonEditInfo(); } catch(_){}
+         polygonRecomputeGeometryDirty();
+@@ -23950,7 +23969,21 @@ function mapPolyEditDocDragUp(ev){
+   const d = mapPolyEditDocDrag;
+   const wasClick = !d.didDrag;
+   const clickIdx = d.idx;
++  const src = d.source || "edit";
+   mapPolyEditDocDragCleanup();
++  if (src === "draft"){
++    if (state.polygonDrawMode){
++      if (wasClick && !mapPolyMoveDocDrag){
++        try { polygonOpenVertexCoordModal(clickIdx); } catch(_){}
++      } else {
++        if (d.tileMap) renderPolygonDraftOverlay(d.tileMap, d.markerLat, d.markerLon, d.z);
++        try { renderPolygonDraftInfo(); } catch(_){}
++      }
++    }
++    if (ev.cancelable) ev.preventDefault();
++    try { ev.stopPropagation(); } catch(_){}
++    return;
++  }
+   if (polygonIsEditing()){
+     if (wasClick && !state._polyEdit.moveMode && !mapPolyMoveDocDrag){
+       try { polygonOpenVertexCoordModal(clickIdx); } catch(_){}
+@@ -24326,10 +24359,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
+ /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
+ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
+ /** Visible runtime build label ÔÇö update before each runtime `finito`. */
+-const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3";
+-const APP_BUILD_DETAIL = "FIX3: Nuovo poligono keeps polygon panel open (no auto-minimize).";
++const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4";
++const APP_BUILD_DETAIL = "FIX4: draggable draft vertices during Nuovo poligono (_polygonDraftVertices).";
+ /** Monotonic runtime build counter ÔÇö increment on each runtime patch (not persisted). */
+-const APP_BUILD_NUM = 242;
++const APP_BUILD_NUM = 243;
+ const APP_BUILD_LABEL = APP_BUILD_ID + " ┬À build " + APP_BUILD_NUM + " ÔÇö " + APP_BUILD_DETAIL;
+ function applyAppBuildLabel(){
+   try {
+@@ -39927,8 +39960,8 @@ function dflightSelfTestF(){
+     })());
+ 
+     add("F_mvisa_build_199",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+ 
+     _dflightHelperBaseUrlOverride = "http://example.test:8010";
+     if (typeof state !== "undefined") state.forceOffline = true;
+@@ -40949,8 +40982,8 @@ function dflightSelfTestTf(){
+       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
+ 
+     add("Tf_build_196",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+   } catch (e){
+     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
+   } finally {
+@@ -42883,8 +42916,8 @@ function dflightSelfTestH(){
+       } catch(_){ return false; }
+     })());
+ 
+-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
++    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+     add("VR_FIX1_sync_loading_passes_zoom", (function(){
+       if (typeof dflightSyncLoadingUi !== "function") return false;
+       const src = String(dflightSyncLoadingUi);
+@@ -70484,7 +70517,8 @@ function attachPanHandlers(root, lat, lon, zoom){
+         return;
+       }
+       // Polygon draw mode: add vertex on click, finish on double-click.
+-      if (state.polygonDrawMode && !drag.moved && cx != null && cy != null){
++      if (state.polygonDrawMode && !drag.moved && cx != null && cy != null
++          && !(typeof mapPolyEditDocDrag !== "undefined" && mapPolyEditDocDrag && mapPolyEditDocDrag.source === "draft")){
+         const zPick = state.mapZoom || zoom;
+         const pick = mapClientToLatLonMap(root, lat, lon, zPick, cx, cy);
+         if (pick && Number.isFinite(pick.lat) && Number.isFinite(pick.lon)){
+@@ -82522,6 +82556,19 @@ function polygonApplyDraggedVertex(idx, lat, lon){
+   ed.working[i] = [lo, la];
+   return true;
+ }
++/** Apply lat/lon to draft ring only (FIX4; no gisPolygons persist). */
++function polygonApplyDraggedDraftVertex(idx, lat, lon){
++  if (!state.polygonDrawMode) return false;
++  const verts = state._polygonDraftVertices;
++  if (!Array.isArray(verts)) return false;
++  const i = Number(idx);
++  if (!Number.isFinite(i) || i < 0 || i >= verts.length) return false;
++  const la = Math.max(-90, Math.min(90, lat));
++  const lo = normalizeLon(lon);
++  if (!Number.isFinite(la) || !Number.isFinite(lo)) return false;
++  verts[i] = [lo, la];
++  return true;
++}
+ function polygonRecomputeEditDirty(){
+   if (!polygonIsEditing()) return;
+   const ed = state._polyEdit;
+@@ -82848,7 +82895,8 @@ function polygonGetVertexCoordRingSource(){
+     return { mode: "edit", ring: state._polyEdit.working, dragIdx: dragIdx };
+   }
+   if (state.polygonDrawMode && Array.isArray(state._polygonDraftVertices)){
+-    return { mode: "draft", ring: state._polygonDraftVertices, dragIdx: -1 };
++    const dragIdx = (state._polygonDraftDragIdx != null && Number.isFinite(Number(state._polygonDraftDragIdx))) ? Number(state._polygonDraftDragIdx) : -1;
++    return { mode: "draft", ring: state._polygonDraftVertices, dragIdx: dragIdx };
+   }
+   return null;
+ }
+@@ -83576,9 +83624,11 @@ function polygonStartDraw(){
+   try { if (typeof routingExitPickMode === "function") routingExitPickMode({ silent: true }); } catch(_){}
+   ensureGisState();
+   polygonHideDrawErr();
++  try { mapPolyEditDocDragCleanup(); } catch(_){}
+   state.polygonDrawMode = true;
+   state._polygonDraftVertices = [];
+   state._polygonDraftLastClick = null;
++  state._polygonDraftDragIdx = null;
+   state._polygonDraftName = "";
+   // Disable conflicting pick modes
+   try { ensureTrackState(); } catch(_){}
+@@ -83596,10 +83646,13 @@ function polygonStartDraw(){
+ }
+ function polygonCancelDraw(){
+   if (!state.polygonDrawMode) return;
++  try { mapPolyEditDocDragCleanup(); } catch(_){}
++  try { polygonCloseVertexCoordModal(); } catch(_){}
+   polygonHideDrawErr();
+   state.polygonDrawMode = false;
+   state._polygonDraftVertices = [];
+   state._polygonDraftLastClick = null;
++  state._polygonDraftDragIdx = null;
+   state._polygonDraftName = "";
+   trackSyncPickModeUi();
+   refreshTileMapForTrackUi();
+@@ -83635,9 +83688,12 @@ function polygonFinishDraw(){
+     renderPolygonPanelList();
+     return;
+   }
++  try { mapPolyEditDocDragCleanup(); } catch(_){}
++  try { polygonCloseVertexCoordModal(); } catch(_){}
+   state.polygonDrawMode = false;
+   state._polygonDraftVertices = [];
+   state._polygonDraftLastClick = null;
++  state._polygonDraftDragIdx = null;
+   state._polygonDraftName = "";
+   trackSyncPickModeUi();
+   refreshTileMapForTrackUi();
+@@ -83665,23 +83721,19 @@ function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
+   const ns = "http://www.w3.org/2000/svg";
+   const svg = document.createElementNS(ns, "svg");
+   svg.setAttribute("xmlns", ns);
+-  svg.setAttribute("class", "gis-polygon-draft-overlay");
+   svg.setAttribute("width", String(W));
+   svg.setAttribute("height", String(H));
+   svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+   svg.style.cssText = "position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:block;overflow:visible;z-index:5";
++  const verts = state._polygonDraftVertices;
+   const pxPts = [];
+-  for (const v of state._polygonDraftVertices){
+-    const px = tileMapLatLonToPx(root, v[1], v[0]); // v = [lon,lat] internally we store [lon,lat]
++  for (const v of verts){
++    const px = tileMapLatLonToPx(root, v[1], v[0]);
+     if (!px || !Number.isFinite(px.x) || !Number.isFinite(px.y)) continue;
+     pxPts.push({ x: px.x - tx, y: px.y - ty });
+   }
+   if (!pxPts.length) return;
+-  // Draw polygon outline (dashed) + closing line to first vertex
+   if (pxPts.length >= 2){
+-    const allPts = pxPts.slice();
+-    allPts.push(allPts[0]); // close
+-    const ptStr = allPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" ");
+     const poly = document.createElementNS(ns, "polygon");
+     poly.setAttribute("points", pxPts.map(p => p.x.toFixed(1) + "," + p.y.toFixed(1)).join(" "));
+     poly.setAttribute("fill", "#ca8a04");
+@@ -83690,20 +83742,110 @@ function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
+     poly.setAttribute("stroke-width", "2");
+     poly.setAttribute("stroke-dasharray", "6 4");
+     poly.setAttribute("stroke-linejoin", "round");
++    poly.style.pointerEvents = "none";
+     svg.appendChild(poly);
+   }
+-  // Vertex markers
+-  for (const p of pxPts){
+-    const c = document.createElementNS(ns, "circle");
+-    c.setAttribute("cx", p.x.toFixed(1));
+-    c.setAttribute("cy", p.y.toFixed(1));
+-    c.setAttribute("r", "4");
+-    c.setAttribute("fill", "#ca8a04");
+-    c.setAttribute("stroke", "#fff");
+-    c.setAttribute("stroke-width", "1.5");
+-    svg.appendChild(c);
++  const dragIdx = (state._polygonDraftDragIdx != null && Number.isFinite(Number(state._polygonDraftDragIdx))) ? Number(state._polygonDraftDragIdx) : -1;
++  const handleHint = (typeof t === "function" ? t("gis.polygonPanel.editVerticesHint") : "") || "Trascina il vertice";
++  for (let i = 0; i < pxPts.length; i++){
++    const p = pxPts[i];
++    const g = document.createElementNS(ns, "g");
++    g.setAttribute("class", "poly-edit-handle" + (i === dragIdx ? " is-grabbing" : ""));
++    g.setAttribute("data-index", String(i));
++    g.setAttribute("data-vertex-source", "draft");
++    g.style.cursor = (i === dragIdx) ? "grabbing" : "grab";
++    g.style.pointerEvents = "auto";
++    g.style.touchAction = "none";
++    if (handleHint) g.setAttribute("aria-label", handleHint);
++    const hit = document.createElementNS(ns, "circle");
++    hit.setAttribute("class", "poly-edit-handle-hit");
++    hit.setAttribute("cx", p.x.toFixed(1));
++    hit.setAttribute("cy", p.y.toFixed(1));
++    hit.setAttribute("r", "18");
++    hit.setAttribute("fill", "transparent");
++    hit.setAttribute("pointer-events", "all");
++    const vis = document.createElementNS(ns, "circle");
++    vis.setAttribute("cx", p.x.toFixed(1));
++    vis.setAttribute("cy", p.y.toFixed(1));
++    vis.setAttribute("r", "6");
++    vis.setAttribute("fill", "#fff");
++    vis.setAttribute("stroke", "#ca8a04");
++    vis.setAttribute("stroke-width", "2");
++    vis.style.pointerEvents = "none";
++    g.appendChild(hit);
++    g.appendChild(vis);
++    svg.appendChild(g);
++  }
++  let _polyDragReadoutPos = null;
++  let _polyDragReadoutTxt = "";
++  if (dragIdx >= 0 && dragIdx < verts.length && dragIdx < pxPts.length){
++    const wc = verts[dragIdx];
++    if (Array.isArray(wc) && wc.length >= 2 && Number.isFinite(wc[0]) && Number.isFinite(wc[1])){
++      try { _polyDragReadoutTxt = polygonFormatVertexCoordText(wc[0], wc[1], polygonVertexCoordFormat); } catch(_){ _polyDragReadoutTxt = ""; }
++      _polyDragReadoutPos = pxPts[dragIdx];
++    }
+   }
+-  tileMap.appendChild(svg);
++  const llRef = Number.isFinite(markerLat) ? markerLat : (state.lastPoint && state.lastPoint.lat);
++  const loRef = Number.isFinite(markerLon) ? markerLon : (state.lastPoint && state.lastPoint.lon);
++  const markerLa = Number.isFinite(llRef) ? llRef : 0;
++  const markerLo = Number.isFinite(loRef) ? loRef : 0;
++  const z = state.mapZoom || zoom || 11;
++  svg.addEventListener("pointerdown", (ev) => {
++    if (!state.polygonDrawMode) return;
++    if (ev.button !== 0) return;
++    const dlgV = document.getElementById("polygonVertexCoordDialog");
++    if (dlgV && dlgV.open) return;
++    if (mapPolyEditDocDrag || mapPolyMoveDocDrag) return;
++    const h = ev.target && ev.target.closest && ev.target.closest(".poly-edit-handle");
++    if (!h) return;
++    const idx = parseInt(h.getAttribute("data-index"), 10);
++    if (!Number.isFinite(idx) || idx < 0) return;
++    if (!Array.isArray(state._polygonDraftVertices) || idx >= state._polygonDraftVertices.length) return;
++    ev.stopPropagation();
++    if (ev.cancelable) ev.preventDefault();
++    try { mapMeasureDocDragCleanup(); } catch(_){}
++    try { mapTrackDocDragCleanup(); } catch(_){}
++    try { mapWptDocDragCleanup(); } catch(_){}
++    try { mapRrCenterDocDragCleanup(); } catch(_){}
++    try { mapPolyMoveDocDragCleanup(); } catch(_){}
++    state._polygonDraftDragIdx = idx;
++    state._polygonDraftLastClick = null;
++    mapPolyEditDocDrag = {
++      source: "draft",
++      pid: ev.pointerId,
++      idx,
++      root,
++      tileMap,
++      markerLat: markerLa,
++      markerLon: markerLo,
++      z,
++      startX: ev.clientX,
++      startY: ev.clientY,
++      didDrag: false
++    };
++    document.addEventListener("pointermove", mapPolyEditDocDragMove, true);
++    document.addEventListener("pointerup", mapPolyEditDocDragUp, true);
++    document.addEventListener("pointercancel", mapPolyEditDocDragUp, true);
++    try { h.classList.add("is-grabbing"); } catch(_){}
++    try { renderPolygonEditVertsList(); } catch(_){}
++  });
++  const wrap = document.createElement("div");
++  wrap.className = "gis-polygon-draft-overlay";
++  wrap.style.position = "absolute";
++  wrap.style.inset = "0";
++  wrap.style.pointerEvents = "none";
++  wrap.style.zIndex = "5";
++  wrap.appendChild(svg);
++  if (_polyDragReadoutPos && _polyDragReadoutTxt){
++    const ro = document.createElement("div");
++    ro.className = "poly-edit-drag-readout";
++    ro.setAttribute("aria-hidden", "true");
++    ro.style.left = _polyDragReadoutPos.x.toFixed(1) + "px";
++    ro.style.top = _polyDragReadoutPos.y.toFixed(1) + "px";
++    ro.textContent = _polyDragReadoutTxt;
++    wrap.appendChild(ro);
++  }
++  tileLayer.appendChild(wrap);
+ }
+ function _polygonPanelLayoutOpts(){
+   return {
