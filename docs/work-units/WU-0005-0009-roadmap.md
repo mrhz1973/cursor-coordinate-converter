@@ -778,6 +778,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
 | **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
+| **GIS-OBJECTS-SETTINGS-RELEGATE-A** | Accesso **Oggetti GIS** solo da Impostazioni ⚙ (niente toolbar mappa) | **LIVE** build **246** tip `f0ea637` · blob `3c575a83…` · deploy+ABQA PASS · **QA FINALE PENDING** — modulo **FROZEN / MAINTENANCE-ONLY** |
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
