@@ -4,30 +4,32 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `MAP-CENTER-VIEWPORT-AWARE-A` (estensione POLYGON PANEL) — docs-only |
-| **GATE** | **invariato** — `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · **QA FINALE CHATGPT — PENDING** |
-| **RUNTIME LIVE** | build **241** · blob `92ec73f7…` · tip promote `1d43c79…` |
-| **RESULT** | Extension registered · no runtime · no deploy |
-| **WORKING TREE** | clean @ docs tip |
+| **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` |
+| **GATE** | REVIEW PACKAGE READY · NO DEPLOY |
+| **RUNTIME LIVE** | build **241** · blob `92ec73f7…` |
+| **RUNTIME CANDIDATE** | `eef83032535f948b21491ca226757447168de2a3` · build **242** · blob `2e0075ba…` |
+| **RESULT** | Auto-minimize on Nuovo poligono removed · review only |
+| **WORKING TREE** | clean after docs push |
 
 ## B. RIEPILOGO
 
-1. Esteso piano canonico `MAP-CENTER-VIEWPORT-AWARE-A` (§ EXTENSION 2026-08-21) — **no** ID duplicato.
-2. Roadmap Map UX + OM + WU-0010 pointer + QA-CHECKLIST note.
-3. Evidence: `docs/orchestrator/inbox/2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md`.
-4. FRONTIER: solo ALTRI WORKSTREAM; gate/LIVE 241 invariati.
-5. Monolite blob `92ec73f7…` invariato.
+1. Root cause: `polygonStartDraw` → `polygonDrawMinimizeIfOpen`.
+2. Fix: remove call only; helpers kept; manual minimize PASS.
+3. Local QA 22/22; selftest triad 242/FIX3.
+4. Review branch + package; LIVE 241 unchanged; no deploy.
 
 ## C. GIT
 
 ```
-origin/main: 30d58c9f4c23e7ffa89ae6fb212033362b73e428
-BLOB: 92ec73f7be579e8616ee83fcab085f1c7c6a426d
+CANDIDATE: eef83032535f948b21491ca226757447168de2a3
+BLOB: 2e0075ba344713b17f0888c4e9594f414bb0db94
+BASE main: 710e8087b808df1cffbf491480015a2ea2af3a4c
+LIVE BLOB: 92ec73f7be579e8616ee83fcab085f1c7c6a426d
 ```
 
 STATO FRESCO DA CURSOR
-origin/main HEAD: 30d58c9f4c23e7ffa89ae6fb212033362b73e428
+origin/main HEAD: (docs tip after publish)
 working tree: clean
-ultimo blocco PASS tecnico: GIS-POLYGON-VERTEX-COORD-UX-A-FIX2 deploy+ABQA (gate QA PENDING)
-prossimo candidato: attesa QA operatore FIX2
-note operative: MAP-CENTER polygon extension BACKLOG NOT OPENED
+ultimo blocco PASS tecnico LIVE: FIX2 deploy+ABQA (QA FAIL → FIX3 review)
+prossimo candidato: FIX3 build 242 review
+note operative: NO DEPLOY · NO REVIEW PASS · NO finito
