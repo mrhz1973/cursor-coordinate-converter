@@ -4,12 +4,12 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | — |
-| **WU ATTIVA** | `—` (N/A) |
-| **BLOCCO ATTIVO** | none |
-| **STATO BLOCCO** | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1–FIX4) CLOSED / PASS** |
-| **GATE CORRENTE** | none |
-| **RUNTIME LIVE** | tip `ccb41668576686bd96ada4900e11e21f0e07ad3d` · build **243** · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` · blob `04cfdfcc1eed8979e60b9ff176f93ceee79ccfcb` |
-| **RUNTIME CANDIDATE** | none |
-| **NEXT** | Backlog NOT OPENED a scelta (MAP-CENTER est. POLYGON · METRICS-COMPACT · WP-TEXT-EXPORT · WP-MODAL-LAYOUT · POLY-WP-INTERACTION · …) |
-| **ALTRI WORKSTREAM** | QA FIX4 **PASS operatore** · finito Regola H · GIS VPS **243** |
+| **WORKSTREAM ATTIVO** | MAP-CENTER-VIEWPORT-AWARE-A (estensione POLYGON PANEL) |
+| **WU ATTIVA** | `—` (N/A — workstream block-based) |
+| **BLOCCO ATTIVO** | `MAP-CENTER-VIEWPORT-AWARE-A` |
+| **STATO BLOCCO** | deploy GIS **PASS** · ABQA **PASS** · **QA FINALE CHATGPT — PENDING** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **RUNTIME LIVE** | tip `6d0b78a0a67b9fc804a387d1fc37f30c85b0ca69` · build **244** · `MAP-CENTER-VIEWPORT-AWARE-A` · blob `de49d320b902bb0433f3bab349cee99fdfb6eb2b` |
+| **RUNTIME CANDIDATE** | none (promosso) |
+| **NEXT** | QA operatore ChatGPT · **non** finito finché non arriva `QA MAP-CENTER-VIEWPORT-AWARE-A PASS operatore` |
+| **ALTRI WORKSTREAM** | VERTEX-COORD FIX4 **CLOSED / PASS** · Backlog NOT OPENED: METRICS-COMPACT · WP-TEXT-EXPORT · WP-MODAL-LAYOUT · POLY-WP-INTERACTION · GIS VPS **244** |

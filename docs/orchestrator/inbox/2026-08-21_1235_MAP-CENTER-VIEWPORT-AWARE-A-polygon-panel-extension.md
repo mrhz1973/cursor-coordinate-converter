@@ -3,9 +3,10 @@
 **Tipo:** docs-only backlog extension  
 **ID:** `MAP-CENTER-VIEWPORT-AWARE-A` (stesso ID — **no** duplicate)  
 **Scope aggiunto:** **POLYGON PANEL — DOCK + DRAWING VIEWPORT**  
-**Stato:** **BACKLOG / NOT OPENED**  
-**Runtime:** **FORBIDDEN** in questo pass · monolite **invariato**  
-**FRONTIER gate:** **invariato** — `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · **QA FINALE CHATGPT — PENDING** · LIVE build **241**
+**Stato:** **OPENED / LIVE build 244** — estensione POLYGON PANEL ROUTINE implementata (layout + Ctrl+Z). Camera useful-rect DELICATO del piano originale resta fuori da questo pass.  
+**Runtime:** tip `6d0b78a` / blob `de49d320…` · deploy+ABQA PASS · gate **QA FINALE CHATGPT — PENDING**  
+**FRONTIER:** aggiornato (2026-08-21)  
+Evidence deploy: [`2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md)
 
 ## Precheck verificato
 

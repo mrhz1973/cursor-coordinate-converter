@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **GIS-POLYGON-VERTEX-COORD-UX-A-FIX4 CLOSED / PASS** (Regola H). LIVE `ccb4166` / **243** / blob `04cfdfcc…`. QA operatore PASS. Gate **none**. Inbox: [`inbox/2026-08-21_2035_riepilogo_finito-GIS-POLYGON-VERTEX-COORD-UX-A-FIX4.md`](inbox/2026-08-21_2035_riepilogo_finito-GIS-POLYGON-VERTEX-COORD-UX-A-FIX4.md).
+2026-08-21 — **MAP-CENTER-VIEWPORT-AWARE-A** LIVE **244** (polygon panel height/priority + Ctrl+Z). Deploy+ABQA **15/15 PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`inbox/2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](inbox/2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md). **NON** finito.
