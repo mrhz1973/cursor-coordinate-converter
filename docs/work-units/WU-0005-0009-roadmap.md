@@ -783,7 +783,8 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **BACKLOG / NOT OPENED** (2026-08-21) — riusa `P-VERTEX-FORMAT` / `autoDetect`; **non** rifare drag P2 |
+| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | Candidate **239** `be49ed2` **REJECTED** (selftest APP_BUILD_ID stale) · **FIX1** in corso su review — **non** deployato |
+| **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 
 #### MAP-TARGET-SCALE-A
@@ -914,25 +915,25 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-VERTEX-COORD-UX-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** finché non sbloccato.
+**Stato:** Candidate build **239** `be49ed2494dbaa9bdf25d55151b3ac15c390fd07` · blob `cd6a79d6…` — **REVIEW GPT-SOSTITUTIVA FAIL** (selftest `F_mvisa_build_199` / `Tf_build_196` / `H_build_214`: `APP_BUILD_NUM === 239` ma `APP_BUILD_ID` ancora `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`). **REJECTED / non deployato**. Prossimo: `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` (build **240** atteso).
 
-**Gap reali (solo questi):**
+**Gap (funzionalità 239 da preservare in FIX1):** lista vertici + format + live drag readout + Copia + Modifica/`autoDetect` paste; working-copy `_polyEdit`; zero schema/rete.
 
-1. lista coordinate di **ogni** vertice nella modal Poligoni (oggi `#polygonPanelEditLegs` = lati distanza/bearing, non lat/lon per vertice);
-2. pulsante **Copia** per ogni coordinata/vertice;
-3. modifica vertice con paste + **`autoDetect`** (oggi `polygonParseVertexCoordByFormat` è format-locked; **non** chiama `autoDetect`);
-4. durante drag vertice: readout coordinate **live** nel formato selezionato (oggi live = area/perimetro/lati via `renderPolygonEditInfo`, non lat/lon formattate).
+Evidence 239: [`../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md`](../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md) (su branch review; **non** LIVE).
 
-**Baseline da riusare (NON rifare):**
+#### GIS-POLYGON-WAYPOINT-INTERACTION-A
 
-- vertex drag mappa = P2 **CLOSED** (`mapPolyEditDocDrag*`, `polygonApplyDraggedVertex`);
-- format selector sessione = P-VERTEX-FORMAT **CLOSED** (`polygonVertexCoordFormat`, `POLY_VERTEX_COORD_FORMATS`);
-- modal singolo vertice = P-VERTEX-MODAL **CLOSED** (`#polygonVertexCoordDialog`);
-- parser condiviso convert = `autoDetect` (~Lat/Lon/UTM/MGRS/Plus/BNG/SK42 GK) già usato da Waypoint/Track paste.
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
 
-**Pattern Tracce (riuso interazione, NON modello dati):** `mapTrackDocDrag*` + `mapClientToLatLonMap` + document-capture; poligoni hanno già path più ricco — estendere `_polyEdit`, **non** fondere con `state.track`.
+**Requisiti (sintesi):**
 
-**Categoria:** UX lista/copy = ROUTINE; paste/`autoDetect` nel vertex editor e lifecycle edit = **DELICATO** (non mischiare in bundle con preset shapes se il metodo richiede isolamento).
+1. **Priorità tool in drawing:** sola apertura modal Poligoni ≠ cambio priorità Waypoint; solo «Nuovo poligono»/drawing attivo → waypoint visibili ma non drag/hit; click attraversa waypoint; restore immediato a fine/cancel drawing (modal WP aperta o chiusa). `state.mapWaypoints[]` canonico.
+2. **Snap pixel:** durante drawing, magnete screen-space verso waypoint read-only (coord esatte); no mutazione/auto-create WP; no snap globale ad altri oggetti.
+3. **Close modal Poligoni:** termina edit mode (handle/overlay/stato); no ghost edit; poligoni salvati preservati; dirty → fail-safe Salva/Annulla/conferma esistenti (no silent save/loss).
+
+**Categoria:** **DELICATO** — pointer priority + lifecycle + interaction state.
+
+Evidence: [`../orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md`](../orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md).
 
 #### GIS-WAYPOINT-COORD-UX-A
 
