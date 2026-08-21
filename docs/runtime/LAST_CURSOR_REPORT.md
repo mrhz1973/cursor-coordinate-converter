@@ -4,35 +4,40 @@
 
 | Campo | Valore |
 | --- | --- |
-| BLOCK | GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 |
-| GATE | QA FINALE CHATGPT — PENDING |
-| NEXT | Attesa QA operatore · non finito |
-| RUNTIME LIVE | `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · build **240** · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` |
-| DOCS TIP | `65f6996d2a03f0f4550533bcd4df5eaf55024c95` (+ deploy evidence commit) |
-| RESULT | DEPLOY + ABQA PASS — QA PENDING — WAYPOINT LAYOUT BACKLOG REGISTERED |
-| WORKING TREE | (post evidence push) |
+| **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` |
+| **GATE** | REVIEW PACKAGE READY · NO DEPLOY |
+| **NEXT** | Review ChatGPT · non promote · non finito |
+| **RUNTIME LIVE** | build **240** · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` · SHA `4fb9c2f…` |
+| **RUNTIME CANDIDATE** | build **241** · blob `92ec73f7be579e8616ee83fcab085f1c7c6a426d` · SHA `b578ec8e11c952bb6a2f99fb6d863e673da2f723` |
+| **RESULT** | Human QA FAIL 240 addressed in candidate · review package published |
+| **WORKING TREE** | clean on `main` @ `58fee0c` (docs only; LIVE blob unchanged) |
 
-## B. RIEPILOGO
+## B. RIEPILOGO COMPLETO
 
-1. FF promote exact `4fb9c2f` su main (solo monolite).
-2. Docs backlog `GIS-WAYPOINT-MODAL-LAYOUT-A` → `65f6996`; blob invariato.
-3. Deploy VPS via `ionos-n8n`: pull FF, restart solo `goi-gis-app`, CMP PASS, build 240.
-4. ABQA sul VPS: polygon flow A–T PASS; D4 selftest assertion stale ma handles OK; layout WP backlog non fixato.
-5. Autosync evidence + FRONTIER; **no** finito.
+1. Autosync orchestratore: sì — `docs/FRONTIER.md`, `docs/orchestrator/latest.md`, inbox review package + runtime.diff; push main docs `58fee0c`. Monolite **escluso** da main.
+2. Runtime candidate: branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX2-241` · commit `b578ec8` (monolite only) · tip docs on branch `32f18af`.
+3. Fix: lista Coordinate vertici condivisa anche in drawing su `_polygonDraftVertices`; wrap spostato fuori edit-bar; modal Modifica/apply draft senza persist prematuro.
+4. Edit-mode 240 preservato (`_polyEdit.working`, drag live, save/cancel).
+5. Local QA Playwright 25/25; selftest F/Tf/H → 241/FIX2; network delta 0; no deploy.
 
 ## C. OUTPUT GIT
 
-- `RUNTIME_CANDIDATE_SHA` / LIVE runtime = `4fb9c2f30868c0a90dcf745c2e146c34fd598a59`
-- docs/report container = PENDING_SELF_REFERENCE
-- `REMOTE_HEAD` main (docs tip at evidence) = vedi push evidence
-
-## STATO FRESCO DA CURSOR
-
-```text
-STATO FRESCO DA CURSOR
-origin/main HEAD: (post-evidence push)
-working tree: main
-ultimo blocco PASS: GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 deploy+ABQA (QA operatore PENDING)
-prossimo candidato: —
-note operative: QA FINALE CHATGPT PENDING; non finito; WAYPOINT-MODAL-LAYOUT-A backlog registered
 ```
+git log --oneline -5 (main):
+58fee0c docs: GIS-POLYGON-VERTEX-COORD-UX-A-FIX2 review package (build 241, no deploy).
+a080aaf docs: mark VERTEX-COORD FIX1 build 240 LIVE pending operator QA.
+…
+
+git rev-parse HEAD (main): 58fee0ce2743ec140faa696593efd22d16427568
+git rev-parse origin/main: 58fee0ce2743ec140faa696593efd22d16427568
+git rev-parse HEAD:coordinate_converter Claude.html: 192c3b41543d6bedfbc899e6b3c8d1e3fe427464
+CANDIDATE: b578ec8e11c952bb6a2f99fb6d863e673da2f723
+CANDIDATE BLOB: 92ec73f7be579e8616ee83fcab085f1c7c6a426d
+```
+
+STATO FRESCO DA CURSOR
+origin/main HEAD: 58fee0ce2743ec140faa696593efd22d16427568
+working tree: clean
+ultimo blocco PASS: (LIVE) GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 deploy+ABQA; QA umana FAIL → FIX2 review ready
+prossimo candidato: GIS-POLYGON-VERTEX-COORD-UX-A-FIX2 build 241 review
+note operative: NO DEPLOY · NO REVIEW PASS · NO finito
