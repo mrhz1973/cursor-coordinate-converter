@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — Docs-only: `MAP-CENTER-VIEWPORT-AWARE-A` **estensione POLYGON PANEL** registrata (**BACKLOG / NOT OPENED**, stesso ID). Gate **invariato**: `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · **QA FINALE CHATGPT — PENDING** · LIVE **241**. Evidence: [`inbox/2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md`](inbox/2026-08-21_1235_MAP-CENTER-VIEWPORT-AWARE-A-polygon-panel-extension.md).
+2026-08-21 — `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` **REVIEW PACKAGE READY** · candidate build **242** (`eef8303` · blob `2e0075ba`) · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX3-242` · **NO DEPLOY**. LIVE resta **241**. Root cause: `polygonStartDraw` → `polygonDrawMinimizeIfOpen`. Package: [`inbox/2026-08-21_1245_GIS-POLYGON-VERTEX-COORD-UX-A-FIX3-review-package.md`](inbox/2026-08-21_1245_GIS-POLYGON-VERTEX-COORD-UX-A-FIX3-review-package.md).

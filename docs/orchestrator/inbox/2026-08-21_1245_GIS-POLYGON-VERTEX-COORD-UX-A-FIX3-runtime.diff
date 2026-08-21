@@ -1,0 +1,60 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index 92ec73f..2e0075b 100644
+--- a/coordinate_converter Claude.html	
++++ b/coordinate_converter Claude.html	
+@@ -24326,10 +24326,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
+ /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
+ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
+ /** Visible runtime build label ÔÇö update before each runtime `finito`. */
+-const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A-FIX2";
+-const APP_BUILD_DETAIL = "FIX2: Coordinate vertici list during Nuovo poligono draft (_polygonDraftVertices).";
++const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3";
++const APP_BUILD_DETAIL = "FIX3: Nuovo poligono keeps polygon panel open (no auto-minimize).";
+ /** Monotonic runtime build counter ÔÇö increment on each runtime patch (not persisted). */
+-const APP_BUILD_NUM = 241;
++const APP_BUILD_NUM = 242;
+ const APP_BUILD_LABEL = APP_BUILD_ID + " ┬À build " + APP_BUILD_NUM + " ÔÇö " + APP_BUILD_DETAIL;
+ function applyAppBuildLabel(){
+   try {
+@@ -39927,8 +39927,8 @@ function dflightSelfTestF(){
+     })());
+ 
+     add("F_mvisa_build_199",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 241
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX2");
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
+ 
+     _dflightHelperBaseUrlOverride = "http://example.test:8010";
+     if (typeof state !== "undefined") state.forceOffline = true;
+@@ -40949,8 +40949,8 @@ function dflightSelfTestTf(){
+       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
+ 
+     add("Tf_build_196",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 241
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX2");
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
+   } catch (e){
+     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
+   } finally {
+@@ -42883,8 +42883,8 @@ function dflightSelfTestH(){
+       } catch(_){ return false; }
+     })());
+ 
+-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 241
+-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX2");
++    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 242
++      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX3");
+     add("VR_FIX1_sync_loading_passes_zoom", (function(){
+       if (typeof dflightSyncLoadingUi !== "function") return false;
+       const src = String(dflightSyncLoadingUi);
+@@ -83590,7 +83590,7 @@ function polygonStartDraw(){
+   trackSyncPickModeUi();
+   refreshTileMapForTrackUi();
+   renderPolygonPanelList();
+-  polygonDrawMinimizeIfOpen();
++  // FIX3: keep polygon panel open during drawing (no auto-minimize).
+   // MAP-TOOL-COORDINATOR-A: register as active map consumer.
+   try { mapToolActivate("polygon-draw", function(){ try { polygonCancelDraw(); } catch(_){} }); } catch(_){}
+ }
