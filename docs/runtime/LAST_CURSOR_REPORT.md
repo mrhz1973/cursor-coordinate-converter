@@ -1,43 +1,38 @@
 # LAST_CURSOR_REPORT
 
-> Rolling handoff completo del pass auto-`finito` su `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` dopo QA operatore PASS. Non LIVE STATE — prevale [`docs/FRONTIER.md`](../FRONTIER.md).
-
-## A. Header sintetico
+## A. Header
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` |
-| **GATE** | **none** (CLOSED / PASS) |
-| **NEXT** | — |
-| **Runtime LIVE** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` · build **238** · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` · blob `c36109d1ebda7470748a3284089bf11b262d01cf` |
-| **Result Cursor** | QA operatore PASS · auto-`finito` Regola H · docs-only |
-| **Working tree** | docs commit in corso |
+| BLOCK | GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 |
+| GATE | QA FINALE CHATGPT — PENDING |
+| NEXT | Attesa QA operatore · non finito |
+| RUNTIME LIVE | `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · build **240** · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` |
+| DOCS TIP | `65f6996d2a03f0f4550533bcd4df5eaf55024c95` (+ deploy evidence commit) |
+| RESULT | DEPLOY + ABQA PASS — QA PENDING — WAYPOINT LAYOUT BACKLOG REGISTERED |
+| WORKING TREE | (post evidence push) |
 
-## B. Identità git (F3)
+## B. RIEPILOGO
 
-| Campo | Valore |
-| --- | --- |
-| **RUNTIME_CANDIDATE_SHA** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `cbe83f9d6af5b823df48dab6873f4fe0b1ade9a0` (pre-finito tip) |
-| **real_task_commit** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` (runtime; finito = docs) |
-| **current_report_container** | `PENDING_SELF_REFERENCE` |
+1. FF promote exact `4fb9c2f` su main (solo monolite).
+2. Docs backlog `GIS-WAYPOINT-MODAL-LAYOUT-A` → `65f6996`; blob invariato.
+3. Deploy VPS via `ionos-n8n`: pull FF, restart solo `goi-gis-app`, CMP PASS, build 240.
+4. ABQA sul VPS: polygon flow A–T PASS; D4 selftest assertion stale ma handles OK; layout WP backlog non fixato.
+5. Autosync evidence + FRONTIER; **no** finito.
 
-Evidence: [`docs/orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md)
+## C. OUTPUT GIT
 
-## C. Esiti
-
-- QA operatore: **PASS** (`QA D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 PASS operatore`)
-- Finito docs-only: FRONTIER / OM §7.2 / roadmap / WU-0013 §23 / latest / inbox
-- Monolite invariato (blob `c36109d1…`)
-- origin push locale: **DISABLED_PUSH** (push espliciti URL)
+- `RUNTIME_CANDIDATE_SHA` / LIVE runtime = `4fb9c2f30868c0a90dcf745c2e146c34fd598a59`
+- docs/report container = PENDING_SELF_REFERENCE
+- `REMOTE_HEAD` main (docs tip at evidence) = vedi push evidence
 
 ## STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: (post-finito — verificare ls-remote)
-working tree: docs-only commit in corso
-ultimo blocco PASS: D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 CLOSED
+origin/main HEAD: (post-evidence push)
+working tree: main
+ultimo blocco PASS: GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 deploy+ABQA (QA operatore PENDING)
 prossimo candidato: —
-note operative: monolite invariato; GATE none; LIVE 238
+note operative: QA FINALE CHATGPT PENDING; non finito; WAYPOINT-MODAL-LAYOUT-A backlog registered
 ```
