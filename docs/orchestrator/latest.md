@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — backlog registrato **`D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A`** = **BACKLOG / NOT OPENED** (leggibilità ATM09 Dettagli + link sicuri; baseline 238). CLEANUP-A resta CLOSED / PASS. LIVE `d899cff` / **238** invariato. Inbox: [`inbox/2026-08-21_0219_D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A-backlog.md`](inbox/2026-08-21_0219_D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A-backlog.md).
+2026-08-21 — audit+backlog **GIS POLYGON + WAYPOINT COORD UX**: registrati `GIS-POLYGON-PRESET-SHAPES-A` · `GIS-POLYGON-VERTEX-COORD-UX-A` · `GIS-WAYPOINT-COORD-UX-A` = **BACKLOG / NOT OPENED**. Coord Waypoint = baseline `COORD-MODAL-FORMAT-COPY-A` CLOSED. LIVE `915d31e` / **238** invariato (docs-only). Evidence: [`inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md).

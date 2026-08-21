@@ -782,6 +782,9 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
+| **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
+| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **BACKLOG / NOT OPENED** (2026-08-21) — riusa `P-VERTEX-FORMAT` / `autoDetect`; **non** rifare drag P2 |
+| **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 
 #### MAP-TARGET-SCALE-A
 
@@ -888,6 +891,73 @@ Catena: 234 (`ea83704`) QA operatore FAIL (residui ATM09 fino a pan) → FIX1 te
 Evidence: [`../orchestrator/inbox/2026-08-20_2142_D-FLIGHT-CLOSE-CLEANUP-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-20_2142_D-FLIGHT-CLOSE-CLEANUP-A-FIX1_deploy-abqa.md) · finito [`../orchestrator/inbox/2026-08-20_2301_riepilogo_finito-D-FLIGHT-CLOSE-CLEANUP-A-FIX1.md`](../orchestrator/inbox/2026-08-20_2301_riepilogo_finito-D-FLIGHT-CLOSE-CLEANUP-A-FIX1.md).
 
 Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibile sulla mappa alcuna legenda D-Flight, zona, o overlay/geometria della sessione modal — **immediatamente**, senza pan/timer. **Non** modifica minimize/restore né auto-reload al reopen. WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+
+#### GIS-POLYGON-PRESET-SHAPES-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** — apertura futura richiede decisione prodotto di sblocco.
+
+**Gap reale:** assenti primitive/UX per creare quadrato, rettangolo, triangolo. Solo freehand click-vertices (`polygonStartDraw` / `_polygonDraftVertices`).
+
+**Baseline da riusare (NON rifare):** P1–P5, P2 vertex drag, P3/P3-ADD, P4 whole-move, P-VERTEX-MODAL / P-VERTEX-FORMAT — tutti **CLOSED / PASS**. Dopo creazione, il risultato deve entrare in `state.gisPolygons[]` via `gisFeatureAdd("polygon", …)` e usare lo **stesso** edit mode (`polygonEnterEdit` / `mapPolyEditDocDrag*`).
+
+**Proposta gesture minima (da decidere all’apertura):**
+
+| Forma | Gesture candidata A | Gesture candidata B | Decisione prodotto |
+| --- | --- | --- | --- |
+| Quadrato | click centro + drag a un vertice (lato = max(|dx|,|dy|) in mappa) | due angoli opposti con vincolo lati uguali | A vs B; asse-allineato al viewport? |
+| Rettangolo | due angoli opposti (asse-allineato) | tre click (angolo–angolo–altezza) | rotazione libera **OUT V1** salvo richiesta |
+| Triangolo | tre click vertici (finish automatico a 3) | click base1–base2 + drag apice | equilatero preset **OUT V1** se non richiesto |
+
+**Categoria:** ROUTINE/UX create + touch a `state.gisPolygons[]` create path → trattare create/persist come **DELICATO** leggero; edit post-create = riuso invariato.
+
+Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md).
+
+#### GIS-POLYGON-VERTEX-COORD-UX-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** finché non sbloccato.
+
+**Gap reali (solo questi):**
+
+1. lista coordinate di **ogni** vertice nella modal Poligoni (oggi `#polygonPanelEditLegs` = lati distanza/bearing, non lat/lon per vertice);
+2. pulsante **Copia** per ogni coordinata/vertice;
+3. modifica vertice con paste + **`autoDetect`** (oggi `polygonParseVertexCoordByFormat` è format-locked; **non** chiama `autoDetect`);
+4. durante drag vertice: readout coordinate **live** nel formato selezionato (oggi live = area/perimetro/lati via `renderPolygonEditInfo`, non lat/lon formattate).
+
+**Baseline da riusare (NON rifare):**
+
+- vertex drag mappa = P2 **CLOSED** (`mapPolyEditDocDrag*`, `polygonApplyDraggedVertex`);
+- format selector sessione = P-VERTEX-FORMAT **CLOSED** (`polygonVertexCoordFormat`, `POLY_VERTEX_COORD_FORMATS`);
+- modal singolo vertice = P-VERTEX-MODAL **CLOSED** (`#polygonVertexCoordDialog`);
+- parser condiviso convert = `autoDetect` (~Lat/Lon/UTM/MGRS/Plus/BNG/SK42 GK) già usato da Waypoint/Track paste.
+
+**Pattern Tracce (riuso interazione, NON modello dati):** `mapTrackDocDrag*` + `mapClientToLatLonMap` + document-capture; poligoni hanno già path più ricco — estendere `_polyEdit`, **non** fondere con `state.track`.
+
+**Categoria:** UX lista/copy = ROUTINE; paste/`autoDetect` nel vertex editor e lifecycle edit = **DELICATO** (non mischiare in bundle con preset shapes se il metodo richiede isolamento).
+
+#### GIS-WAYPOINT-COORD-UX-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto.
+
+**Coord UX — BASELINE (NON rifare):** `COORD-MODAL-FORMAT-COPY-A (+ FIX1)` **CLOSED / PASS** — `#waypointListCoordFormat`, `formatWaypointListCoordinates`, copy lista/editor, `parseWaypointEditorCoordText` → **`autoDetect`**, `state.mapWaypoints[]` canonico, `saveStore`.
+
+**Gap reale primario — modal lifecycle / map-click (DELICATO):**
+
+Finding operatore: con modal Waypoint aperta, un click sulla mappa chiuderebbe la modal.
+
+Audit build 238 (GIS): il path basemap `#miniMap` / `tileMap` `pointerup` con `waypointPickMode` **non** chiama `closeWaypointModal`; aggiorna draft + `openWaypointEditor({ fromDraft:true })` (~70473–70518).
+
+Unico close-on-click documentato sul dialog:
+
+```text
+#waypointModal "click" → if (ev.target === wm) → requestWaypointModalClose()
+→ waypointModalPerformCloseAndDeactivateTab → closeWaypointModal
+```
+
+(~77794–77796). Esc e X usano la stessa catena. Toolbar GIS waypoint **non** chiude (chiama `startWaypointNewWaypointFlow`); non-GIS toolbar può fare toggle-close (~69696).
+
+**Acceptance futura:** click sulla mappa (pick/pan) **non** deve chiudere `#waypointModal` salvo azione esplicita UI (X / Esc / conferma unsaved). Investigare hit-test floating (`ev.target === wm` vs area mappa / backdrop percepito) e correggere senza introdurre modello waypoint parallelo.
+
+**Categoria:** **DELICATO** (lifecycle modal). Isolare da bundle poligoni.
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
