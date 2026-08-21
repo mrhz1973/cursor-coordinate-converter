@@ -12719,6 +12719,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                   <span data-i18n="settings.resetLayout">Ripristina layout pannelli</span>
                 </button>
               </div>
+              <div class="hdr-settings-row hdr-settings-row-workbench">
+                <button type="button" id="btnSettingsOpenGisWorkbench" class="hdr-settings-help-btn"
+                        data-i18n-tip="tip.workbenchPanel" data-i18n-aria="workbench.title">
+                  <span class="hdr-settings-help-ico" aria-hidden="true">☰</span>
+                  <span data-i18n="workbench.title">Oggetti GIS</span>
+                </button>
+              </div>
               <div class="hdr-settings-danger-zone">
                 <p class="hdr-settings-danger-title" data-i18n="settings.fullReset.sectionTitle">Zona pericolosa</p>
                 <p class="hdr-settings-danger-hint" data-i18n="settings.fullReset.sectionHint">Solo dati locali del browser.</p>
@@ -24378,10 +24385,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-CENTER-VIEWPORT-AWARE-A-FIX1";
-const APP_BUILD_DETAIL = "FIX1: polygon panel dock LEFT + height between topbar and scale/footer (no cover right ctrls).";
+const APP_BUILD_ID = "GIS-OBJECTS-SETTINGS-RELEGATE-A";
+const APP_BUILD_DETAIL = "Relegate Oggetti GIS entry into Impostazioni (⚙); map toolbar access removed; module FROZEN.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 245;
+const APP_BUILD_NUM = 246;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39979,8 +39986,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 246
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -41001,8 +41008,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 246
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42935,8 +42942,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 246
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-OBJECTS-SETTINGS-RELEGATE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -49904,6 +49911,18 @@ function bindHeaderSettingsMenu(){
       ev.stopPropagation();
       if (typeof resetGisUiLayoutPanels === "function") resetGisUiLayoutPanels();
       closeHeaderSettingsMenu();
+    });
+  }
+  const wbFromSettings = document.getElementById("btnSettingsOpenGisWorkbench");
+  if (wbFromSettings && !wbFromSettings._gisWorkbenchSettingsBound){
+    wbFromSettings._gisWorkbenchSettingsBound = true;
+    wbFromSettings.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      try { closeHeaderSettingsMenu(); } catch(_){}
+      try {
+        if (typeof openGisWorkbenchPanel === "function") openGisWorkbenchPanel();
+      } catch(_){}
     });
   }
 }
@@ -69144,15 +69163,7 @@ function renderTileMap(lat, lon, zoom){
       const tipG = esc((typeof t === "function" ? (t("tip.myLocation") || "") : "") || "GPS");
       return `<button class="tgps-btn gis-gps-idle" type="button" id="btnGisMapMyLocation" data-role="gis-map-mylocation" data-tip="${tipG}" aria-label="${tipG}" aria-pressed="false" disabled><span class="tgps-label" aria-hidden="true">GPS</span></button>`;
     })()}
-    ${(() => {
-      if (!_gisHub) return "";
-      const dlgWb = document.getElementById("gisWorkbenchPanel");
-      const wbOn = !!(state.workbenchPanelOpen && dlgWb && dlgWb.open);
-      const tipWb = esc((typeof t === "function" ? (t("tip.workbenchPanel") || t("workbench.title") || "") : "") || "GIS Objects");
-      const cls = wbOn ? "twb-btn active" : "twb-btn";
-      const wbSvg = "<svg class=\"twb-ico-svg\" viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><line x1=\"8\" y1=\"6\" x2=\"21\" y2=\"6\"/><line x1=\"8\" y1=\"12\" x2=\"21\" y2=\"12\"/><line x1=\"8\" y1=\"18\" x2=\"21\" y2=\"18\"/><circle cx=\"4\" cy=\"6\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"4\" cy=\"12\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/><circle cx=\"4\" cy=\"18\" r=\"1.2\" fill=\"currentColor\" stroke=\"none\"/></svg>";
-      return `<button class="${cls}" type="button" data-role="workbench-open" data-tip="${tipWb}" aria-label="${tipWb}" aria-pressed="${wbOn ? "true" : "false"}">${wbSvg}</button>`;
-    })()}
+    /* GIS-OBJECTS-SETTINGS-RELEGATE-A: Oggetti GIS entry moved to Impostazioni (⚙) — no map toolbar button. */
   </div>`;
 
   // Floating measure box (ruler + protractor tool) — nascosto in GIS (pannello Misura floating #measurePanel).
