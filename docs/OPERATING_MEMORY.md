@@ -464,11 +464,11 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **GIS-POLYGON-VERTEX-COORD-UX-A-FIX4** — **CLOSED / PASS** · LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1–FIX3 + FIX4 draft drag
-2. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
-3. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
-4. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
-5. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234**
+1. **MAP-CENTER-VIEWPORT-AWARE-A** — **LIVE** build **244** tip `6d0b78a` · blob `de49d320…` · deploy+ABQA PASS · **QA FINALE PENDING** (2026-08-21); estensione POLYGON PANEL
+2. **GIS-POLYGON-VERTEX-COORD-UX-A-FIX4** — **CLOSED / PASS** · LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1–FIX3 + FIX4 draft drag
+3. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
+4. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
+5. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
