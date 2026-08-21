@@ -464,8 +464,8 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — REVIEW PASS + deploy + ABQA PASS · LIVE `d899cff` / **238** · blob `c36109d1…` · gate **QA FINALE CHATGPT — PENDING** (2026-08-21); ATM09 `dflightAtm09OpenDetails` Rule/Regola
-2. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…` (D-Flight generic details; ATM09 path residual → FIX2)
+1. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
+2. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
 3. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
 4. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234**
 5. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** · QA operatore PASS · Regola H (2026-08-20)
@@ -478,7 +478,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **Evidence rolling post-push:** [`docs/runtime/LAST_CURSOR_REPORT.md`](runtime/LAST_CURSOR_REPORT.md)
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
-- **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A` (casa D-Flight: [`WU-0013` §23](work-units/WU-0013-uas-geozone-dflight.md)) — **non** aperti
+- **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` — **non** aperti; `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)` **CLOSED / PASS** LIVE `d899cff` / **238** (2026-08-21)
 - **Backlog 2026-08-19:** `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED** · `D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)` **CLOSED / PASS** LIVE `4f00433` / **235** (2026-08-20) · `GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)` **CLOSED / PASS**. Finding QA 230 filtro IIM: [`WU-0012` §15i](work-units/WU-0012-carto-index-federated.md) — **risolto** da FIX1 **CLOSED** §15k
 
 ---

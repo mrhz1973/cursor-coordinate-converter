@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** REVIEW GPT-SOSTITUTIVA **PASS** · LIVE `d899cff` / **238** · deploy GIS + ABQA **PASS** · gate **QA FINALE CHATGPT — PENDING**. Evidence: [`inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md`](inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md). ATM09 Rule/Regola display-only (`dflightAtm09OpenDetails`).
+2026-08-21 — **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** **CLOSED / PASS** · LIVE `d899cff` / **238** · QA operatore PASS · auto-`finito` Regola H. Evidence: [`inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md).

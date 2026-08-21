@@ -1,16 +1,16 @@
 # LAST_CURSOR_REPORT
 
-> Rolling handoff: REVIEW PASS + FF exact promote + deploy GIS + ABQA per `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`. Non LIVE STATE — prevale [`docs/FRONTIER.md`](../FRONTIER.md).
+> Rolling handoff completo del pass auto-`finito` su `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` dopo QA operatore PASS. Non LIVE STATE — prevale [`docs/FRONTIER.md`](../FRONTIER.md).
 
 ## A. Header sintetico
 
 | Campo | Valore |
 | --- | --- |
 | **BLOCK** | `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` |
-| **GATE** | **QA FINALE CHATGPT — PENDING** |
-| **NEXT** | QA umana residua (ChatGPT) → attestazione operatore |
+| **GATE** | **none** (CLOSED / PASS) |
+| **NEXT** | — |
 | **Runtime LIVE** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` · build **238** · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` · blob `c36109d1ebda7470748a3284089bf11b262d01cf` |
-| **Result Cursor** | REVIEW PASS · FF exact · deploy CMP PASS · ABQA 21/21 PASS |
+| **Result Cursor** | QA operatore PASS · auto-`finito` Regola H · docs-only |
 | **Working tree** | docs commit in corso |
 
 ## B. Identità git (F3)
@@ -18,27 +18,26 @@
 | Campo | Valore |
 | --- | --- |
 | **RUNTIME_CANDIDATE_SHA** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` (pre-docs tip) |
-| **real_task_commit** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `cbe83f9d6af5b823df48dab6873f4fe0b1ade9a0` (pre-finito tip) |
+| **real_task_commit** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` (runtime; finito = docs) |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
-Evidence: [`docs/orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md)
+Evidence: [`docs/orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md)
 
 ## C. Esiti
 
-- Promote: FF exact candidate (no merge review branch)
-- Deploy GIS: HTTP 200 · CMP PASS · VPS HEAD/blob = candidate
-- ABQA: **21/21 PASS** (ATM09 panel evidence + screenshot)
-- Gate: **QA FINALE CHATGPT — PENDING**
-- origin push locale: **DISABLED_PUSH**
+- QA operatore: **PASS** (`QA D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 PASS operatore`)
+- Finito docs-only: FRONTIER / OM §7.2 / roadmap / WU-0013 §23 / latest / inbox
+- Monolite invariato (blob `c36109d1…`)
+- origin push locale: **DISABLED_PUSH** (push espliciti URL)
 
 ## STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: d899cff2c7ac24f1b9bba3eb99d10e08d2442b25 (pre-docs; post-docs = tip docs)
+origin/main HEAD: (post-finito — verificare ls-remote)
 working tree: docs-only commit in corso
-ultimo blocco PASS tecnico: D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 deploy+ABQA
-prossimo candidato: QA FINALE CHATGPT — PENDING
-note operative: LIVE blob c36109d1… build 238; ATM09 Rule/Regola display-only
+ultimo blocco PASS: D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 CLOSED
+prossimo candidato: —
+note operative: monolite invariato; GATE none; LIVE 238
 ```

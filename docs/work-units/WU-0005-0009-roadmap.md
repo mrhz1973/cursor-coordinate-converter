@@ -779,7 +779,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
-| **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A** | Pulizia contenuto descrittivo Dettagli D-Flight | **BACKLOG / NOT OPENED** — casa: WU-0013 §23 |
+| **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 
 #### MAP-TARGET-SCALE-A
@@ -830,7 +830,17 @@ Requisito: tutti i pulsanti della toolbar verticale a destra della mappa devono 
 - testo breve e comprensibile;
 - nessuna modifica funzionale alle azioni dei pulsanti.
 
-#### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A
+#### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2) — **CLOSED / PASS** (build 238, 2026-08-21)
+
+**Stato:** LIVE `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` / **238** / `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` · blob `c36109d1…` · REVIEW GPT-sostitutiva **PASS** · deploy GIS + ABQA **PASS** · QA operatore **PASS** · auto-`finito` Regola H.
+
+Catena: 236 rejected → 237 FIX1 (`dflightBuildDetailsHtml` entity-encoded) → 238 FIX2 (`dflightAtm09OpenDetails` Rule/Regola display-only).
+
+Evidence: [`../orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md) · finito [`../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md).
+
+Finding originale: markup HTML/entity in Dettagli. WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+
+#### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (storico requirement)
 
 Finding operatore: nella descrizione delle aree D-Flight restano visibili markup HTML, entity/codici o stringhe tecniche incomprensibili nella modal Dettagli.
 
