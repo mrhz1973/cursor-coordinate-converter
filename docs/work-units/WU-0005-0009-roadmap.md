@@ -783,7 +783,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | Candidate **239** `be49ed2` **REJECTED** (selftest APP_BUILD_ID stale) · **FIX1** in corso su review — **non** deployato |
+| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **LIVE** build **240** FIX1 `4fb9c2f` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **BACKLOG / NOT OPENED** (2026-08-21) — CSS/layout vs lifecycle TBD |
@@ -916,7 +916,7 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-VERTEX-COORD-UX-A
 
-**Stato:** Candidate build **239** `be49ed2494dbaa9bdf25d55151b3ac15c390fd07` · blob `cd6a79d6…` — **REVIEW GPT-SOSTITUTIVA FAIL** (selftest `F_mvisa_build_199` / `Tf_build_196` / `H_build_214`: `APP_BUILD_NUM === 239` ma `APP_BUILD_ID` ancora `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`). **REJECTED / non deployato**. Prossimo: `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` (build **240** atteso).
+**Stato:** **LIVE** build **240** `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md). (239 REJECTED per APP_BUILD_ID stale.)
 
 **Gap (funzionalità 239 da preservare in FIX1):** lista vertici + format + live drag readout + Copia + Modifica/`autoDetect` paste; working-copy `_polyEdit`; zero schema/rete.
 
