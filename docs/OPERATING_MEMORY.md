@@ -464,11 +464,11 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
-2. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
-3. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
-4. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234**
-5. **GLOBAL-MODAL-EDGE-RESIZE-A-FIX1** — **CLOSED / PASS** · tip storico `1b8aa3c` / **233** · QA operatore PASS · Regola H (2026-08-20)
+1. **GIS-POLYGON-VERTEX-COORD-UX-A-FIX4** — **CLOSED / PASS** · LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1–FIX3 + FIX4 draft drag
+2. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
+3. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
+4. **D-FLIGHT-CLOSE-CLEANUP-A-FIX1** — **CLOSED / PASS** · tip storico `4f00433` / **235** · blob `d2b7e1cd…` · QA operatore PASS · Regola H (2026-08-20)
+5. **D-FLIGHT-CLOSE-CLEANUP-A** — SUPERSEDED-by-FIX1 · tip storico `ea83704` / **234**
 
 ### 7.3 HISTORY (pointer compatti — dettaglio in WU / inbox / evidence)
 
@@ -485,8 +485,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **Backlog 2026-08-21 (NOT OPENED):** `GIS-POLYGON-WAYPOINT-INTERACTION-A` — pointer priority drawing vs Waypoint + snap pixel + close modal termina edit; **DELICATO**; evidence [`orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md`](orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md); **non** aperto
 - **Backlog 2026-08-21 (NOT OPENED):** `GIS-WAYPOINT-MODAL-LAYOUT-A` — overlap gruppo Nome/visibilità vs righe tabella; evidence [`orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md`](orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md)
 - **Backlog 2026-08-21 (NOT OPENED):** `GIS-POLYGON-METRICS-COMPACT-FORMAT-A` · `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A` — casa [`WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md); evidence [`orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md`](orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md) · [`orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md`](orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md)
-- **Runtime LIVE (post-promozione FIX3):** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` build **242** tip `ea5b4c1` · blob `2e0075ba…` · reviewed `eef8303…` — QA operatore **FAIL** (draft verts non trascinabili)
-- **Candidate (NO deploy):** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` build **243** `5857cbb…` · blob `04cfdfcc…` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX4-243` · **REVIEW PACKAGE READY** — session checkpoint [`orchestrator/inbox/2026-08-21_1340_session-checkpoint-stop-pc.md`](orchestrator/inbox/2026-08-21_1340_session-checkpoint-stop-pc.md)
+- **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1–FIX4) CLOSED / PASS** — LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21); supersede FIX3 tip `ea5b4c1` / **242**
 - **Backlog 2026-08-19:** `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED** · `D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)` **CLOSED / PASS** LIVE `4f00433` / **235** (2026-08-20) · `GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)` **CLOSED / PASS**. Finding QA 230 filtro IIM: [`WU-0012` §15i](work-units/WU-0012-carto-index-federated.md) — **risolto** da FIX1 **CLOSED** §15k
 
 ---

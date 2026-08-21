@@ -3,7 +3,7 @@
 **BLOCK-ID:** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4`  
 **Categoria:** DELICATO — draft vertex drag during Nuovo poligono  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE uscita:** **QA FINALE CHATGPT — PENDING** (QA operatore **non** attestata · **non** `finito`)
+**GATE uscita:** **CLOSED / PASS** (QA operatore PASS · finito Regola H)
 
 ## REVIEW GPT-SOSTITUTIVA
 
@@ -72,6 +72,6 @@ URL: `http://100.114.7.53:8000/coordinate_converter%20Claude.html?v=ccb4166-abqa
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
+**QA FINALE CHATGPT — PASS operatore** (2026-08-21) → auto-`finito` Regola H.
 
-Non attestare QA operatore. Non `finito`.
+Evidence chiusura: [`2026-08-21_2035_riepilogo_finito-GIS-POLYGON-VERTEX-COORD-UX-A-FIX4.md`](2026-08-21_2035_riepilogo_finito-GIS-POLYGON-VERTEX-COORD-UX-A-FIX4.md).
