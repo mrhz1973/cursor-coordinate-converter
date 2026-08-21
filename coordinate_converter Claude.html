@@ -2737,8 +2737,10 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   overflow:hidden;
 }
 .polygon-panel .polygon-panel-upper{
-  flex:0 0 auto;
-  max-height:min(42vh, 280px);
+  /* MAP-CENTER-VIEWPORT-AWARE-A: ops (units/name/verts) take remaining height; list stays below. */
+  flex:1 1 auto;
+  min-height:0;
+  max-height:none;
   overflow-x:hidden;
   overflow-y:auto;
   padding:12px 14px 8px;
@@ -2804,6 +2806,16 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   padding:8px 14px 0;
   border-top:1px solid var(--border);
 }
+/* During draw/edit: keep saved-list compact at bottom so Coordinate vertici stay primary. */
+.polygon-panel.poly-panel-focus-ops .poly-list-toolbar,
+.polygon-panel.poly-panel-focus-ops .poly-list-batch-bar{
+  flex:0 0 auto;
+}
+.polygon-panel.poly-panel-focus-ops #polygonPanelList.poly-list-wrap{
+  flex:0 1 auto;
+  min-height:40px;
+  max-height:min(22vh, 160px);
+}
 .polygon-panel .poly-list-selection-meta{
   margin-left:auto;
   font-size:.85rem;
@@ -2815,13 +2827,20 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   padding:6px 14px 0;
 }
 #polygonPanelList.poly-list-wrap{
-  flex:1 1 auto;
-  min-height:96px;
+  /* Saved list is secondary: grow only with leftover space after ops upper. */
+  flex:0 1 auto;
+  min-height:48px;
+  max-height:min(36vh, 280px);
   margin-top:0;
   overflow:auto;
   -webkit-overflow-scrolling:touch;
   border-top:1px solid var(--border);
   background:color-mix(in srgb, var(--panel) 92%, var(--surface-page) 8%);
+}
+.polygon-panel:not(.poly-panel-focus-ops) #polygonPanelList.poly-list-wrap{
+  flex:1 1 auto;
+  max-height:none;
+  min-height:96px;
 }
 .polygon-panel .poly-list-scroll-inner{
   min-width:0;
@@ -24359,10 +24378,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4";
-const APP_BUILD_DETAIL = "FIX4: draggable draft vertices during Nuovo poligono (_polygonDraftVertices).";
+const APP_BUILD_ID = "MAP-CENTER-VIEWPORT-AWARE-A";
+const APP_BUILD_DETAIL = "Polygon panel GIS height + verts priority + Ctrl+Z remove-last during Nuovo poligono.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 243;
+const APP_BUILD_NUM = 244;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39960,8 +39979,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -40982,8 +41001,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42916,8 +42935,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 243
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-VERTEX-COORD-UX-A-FIX4");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -50177,6 +50196,30 @@ function isTypingInField(){
 function bindHotkeys(){
   try { ensureGisInlineRenameKeyboardHooks(); } catch(_){}
   document.addEventListener("keydown", (ev) => {
+    // MAP-CENTER-VIEWPORT-AWARE-A: Ctrl/Cmd+Z during Nuovo poligono = Rimuovi ultimo punto
+    // (reuse polygonRemoveLastDraftPoint). Skip editable fields (native undo).
+    try {
+      const k0 = ev.key || "";
+      if ((ev.ctrlKey || ev.metaKey) && !ev.altKey && !ev.shiftKey && (k0 === "z" || k0 === "Z")){
+        if (state.polygonDrawMode){
+          const tgt = ev.target;
+          let editable = false;
+          try {
+            if (tgt){
+              const tag = String(tgt.tagName || "").toLowerCase();
+              if (tag === "input" || tag === "textarea" || tag === "select") editable = true;
+              else if (tgt.isContentEditable) editable = true;
+              else if (tgt.closest && tgt.closest("input, textarea, select, [contenteditable=''], [contenteditable='true']")) editable = true;
+            }
+          } catch(_){}
+          if (!editable){
+            ev.preventDefault();
+            try { polygonRemoveLastDraftPoint(); } catch(_){}
+            return;
+          }
+        }
+      }
+    } catch(_){}
     // Esc: priority to closing modal; otherwise blur/clear
       if (ev.key === "Escape"){
       try {
@@ -79869,10 +79912,11 @@ function gisPanelDefaultHeightPx(opts){
   const minH = Number.isFinite(opts.minH) ? opts.minH : GIS_PANEL_DEFAULTS.minH;
   const maxH = Math.max(minH, vh - pad * 2);
   const reserve = Number.isFinite(opts.topbarReserve) ? opts.topbarReserve : GIS_PANEL_DEFAULTS.topbarReserve;
+  const bottomReserve = Number.isFinite(opts.bottomScaleReserve) ? opts.bottomScaleReserve : 0;
   const frac = Number.isFinite(opts.defaultHeightFraction) ? opts.defaultHeightFraction : GIS_PANEL_DEFAULTS.defaultHeightFraction;
   const cap = Number.isFinite(opts.defaultHeightCap) ? opts.defaultHeightCap : GIS_PANEL_DEFAULTS.defaultHeightCap;
   const fromFrac = Math.floor(vh * frac);
-  const fromReserve = Math.floor(vh - reserve - pad * 2);
+  const fromReserve = Math.floor(vh - reserve - pad * 2 - bottomReserve);
   return Math.min(maxH, Math.max(minH, Math.min(cap, fromFrac, fromReserve)));
 }
 function gisPanelGetLayout(key, opts){
@@ -79961,8 +80005,9 @@ function gisPanelDefaultRect(root, opts){
   const w = Math.min(maxW, Math.max(minW, wWant));
   const h = Math.min(maxH, Math.max(minH, hWant));
   // Default placement: top-left under live chrome (MODAL-OPEN-TOP-ALIGN / EDGE-FIX1).
+  // preferRight: dock to right (polygon panel — leave bottom-left scale visible).
   // Touched/saved/restored layouts still win via gisPanelApplyLayout.
-  const left = pad;
+  const left = opts.preferRight ? Math.max(pad, vw - w - pad) : pad;
   const safeTop = (typeof gisPanelSafeTop === "function") ? gisPanelSafeTop(opts) : pad;
   const top = Math.max(pad, safeTop);
   return gisPanelClampRect({ left, top, w, h }, { pad, minW, minH, maxW, maxH });
@@ -83338,6 +83383,7 @@ function renderPolygonEditBar(){
     bar.hidden = true;
     polygonHideEditBarErr();
     polygonEditSyncTitle();
+    try { polygonSyncPanelOpsFocusClass(); } catch(_){}
     return;
   }
   bar.hidden = false;
@@ -83347,6 +83393,7 @@ function renderPolygonEditBar(){
   polygonEditSyncTitle();
   try { renderPolygonEditInfo(); } catch(_){}
   try { polygonEditStyleSyncUi(); } catch(_){}
+  try { polygonSyncPanelOpsFocusClass(); } catch(_){}
   const moveBtn = document.getElementById("polygonPanelEditMove");
   const moveHint = document.getElementById("polygonPanelEditMoveHint");
   if (moveBtn){
@@ -83850,10 +83897,20 @@ function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
 function _polygonPanelLayoutOpts(){
   return {
     key: "polygonPanel",
-    defaultWidth: 300,
-    defaultHeight: 260,
-    minWidth: 200,
-    minHeight: 140
+    pad: 12,
+    minW: 280,
+    minH: 220,
+    defaultW: 360,
+    defaultH: null,
+    /* Tall GIS-usable height; bottomScaleReserve keeps .tile-scale visible under dock. */
+    defaultHeightFraction: 0.92,
+    defaultHeightCap: 100000,
+    topbarReserve: 108,
+    bottomScaleReserve: 56,
+    preferRight: true,
+    bodyId: "polygonPanelBody",
+    headId: "polygonPanelHead",
+    closeId: "polygonPanelClose"
   };
 }
 function attachPolygonPanelFloatingGis(dlg){
@@ -83868,6 +83925,14 @@ function attachPolygonPanelFloatingGis(dlg){
   if (handles.length) gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
   gisPanelApplyLayout(dlg, opts);
   try { gisPanelAttachBringToFront(dlg, opts); } catch(_){}
+  try { polygonSyncPanelOpsFocusClass(); } catch(_){}
+}
+function polygonSyncPanelOpsFocusClass(){
+  const dlg = document.getElementById("polygonPanel");
+  if (!dlg) return;
+  let focusOps = false;
+  try { focusOps = !!state.polygonDrawMode || (typeof polygonIsEditing === "function" && polygonIsEditing()); } catch(_){}
+  try { dlg.classList.toggle("poly-panel-focus-ops", !!focusOps); } catch(_){}
 }
 /* ───── Polygon export (Pass D T1.1) ───── */
 function polygonXmlEscape(s){
@@ -96950,6 +97015,7 @@ function renderPolygonPanelList(){
   polygonSyncDraftNameUi();
   try { polygonSyncUnitsUi(); } catch(_){}
   try { renderPolygonDraftInfo(); } catch(_){}
+  try { polygonSyncPanelOpsFocusClass(); } catch(_){}
 }
 
 /** Session layout opts for Misura floating panel (Pass 6 6E.3c). */
