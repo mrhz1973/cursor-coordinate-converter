@@ -9,13 +9,21 @@
 ### Autorità remota
 `git ls-remote origin refs/heads/main` = autorità **finale** su HEAD. Lo stato operativo è nei documenti **pinnati a quella HEAD**, non nella memoria dell’agente. RAW/CDN possono essere stale.
 
+**Fallback se `ls-remote` non è tecnicamente disponibile** nel runtime dell’agente: dichiarare esplicitamente il fallback GitHub usato (es. default branch / API); **non** inventare HEAD; **non** attribuire al fallback l’autorità finale di `ls-remote`. La sola indisponibilità tecnica di `ls-remote` **non** è STOP se le fonti GitHub necessarie sono accessibili e non esiste conflitto di stato.
+
 ### CORE BOOT (obbligatorio; tipicamente ≤ ~100 righe totali)
-1. `git ls-remote origin refs/heads/main`
+1. `git ls-remote origin refs/heads/main` (o fallback dichiarato sopra)
 2. **Solo questo blocco** `AI-BOOT` del `README.md` (GitHub.`fetch_file` **range** limitato a questo blocco — non il resto del README)
 3. [`docs/FRONTIER.md`](docs/FRONTIER.md) (file piccolo; lettura completa ammessa)
-4. Hot-header (`<!-- WU-HOT-HEADER -->` … `<!-- /WU-HOT-HEADER -->`) della WU indicata da FRONTIER — path **solo** da FRONTIER; `fetch_file` fino a `<!-- /WU-HOT-HEADER -->`
+4. **WU-HOT-HEADER — solo se FRONTIER indica esplicitamente una WU attiva** (campo **`WU ATTIVA`** o path WU esplicito):
+   - se FRONTIER espone un **path WU valido** → `fetch_file` **solo** hot-header (`<!-- WU-HOT-HEADER -->` … `<!-- /WU-HOT-HEADER -->`) di **quel** path; path **solo** da FRONTIER;
+   - se FRONTIER dichiara esplicitamente **`WU ATTIVA` = `—` / `NONE` / `N/A`** (workstream block-based senza WU) → step 4 = **N/A** e CORE BOOT è **COMPLETO**;
+   - se FRONTIER implica che esiste una WU attiva ma **manca** il path → **STOP** (conflitto);
+   - **vietato** cercare/listare WU o inferire il path.
 
 Dopo questi passi: workstream, blocco, stato, gate, REVIEW BASE / CANDIDATE / RUNTIME LIVE (se applicabili), NEXT. Poi **STOP**.
+
+**Payload README:** durante CORE BOOT leggere **solo** il range `<!-- AI-BOOT: START -->` … `<!-- AI-BOOT: END -->`. Se il connector restituisce accidentalmente righe oltre `<!-- AI-BOOT: END -->`: ignorare **semanticamente** il contenuto eccedente; registrare finding di payload; al successivo accesso usare range più stretto; **non** retry/search iterativi nello stesso bootstrap; **non** considerarlo da solo un conflitto di LIVE STATE.
 
 **Payload vietati in CORE BOOT:** directory listing (`docs/work-units`), `GitHub.search`, code search, roadmap, OM completo / OM §4 / §7.2–§7.3, WU body, report/inbox/latest, HANDOFF, monolite.
 
@@ -35,7 +43,7 @@ Vietate in CORE BOOT le discovery query: `fetch`, `file`, `code`, `search`, `bra
 - **Regola I** (`METHOD-CONTEXT-SAFE-BOOTSTRAP`): acquisizione **progressiva**; niente preload di OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite. **CORE BOOT resta a 4 passi** (niente preload report).
 - **CONTEXT GUARD:** lean; dettagli in OM §4 (`CONTEXT-BUDGET-GUARD` + `CONNECTOR-SCHEMA-GUARD` + `CONNECTOR-DISCOVERY-HARD-GUARD` + `TOOL-PAYLOAD-GUARD`).
 - **AUTO-VIA:** passo tecnicamente determinato → procedere senza nuovo `vai` (unica copia canonica: questo blocco). AUTO-VIA **non amplia lo scope**: un NEXT di altra chat/task/workstream si riconosce ma **non si prende in carico**.
-- **`agg`:** Cursor ha concluso → refresh minimo HEAD + FRONTIER + WU hot-header; poi [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md) **una sola volta**. Se BLOCK/CANDIDATE del report coincidono con FRONTIER → handoff completo dell’ultimo pass; se il gate serve RAW/review/deploy, leggere **solo** l’evidence puntata dal report; poi AUTO-VIA. **Mai** chiedere all’operatore di copiare/incollare il riepilogo Cursor se GitHub contiene il report. Se report e FRONTIER confliggono → **FRONTIER prevale**; dichiarare report stale/conflict; non inventare stato. **`agg` ≠ `aggio`**.
+- **`agg`:** Cursor ha concluso → refresh minimo HEAD + FRONTIER + WU hot-header **solo se** `WU ATTIVA` non è N/A; poi [`docs/runtime/LAST_CURSOR_REPORT.md`](docs/runtime/LAST_CURSOR_REPORT.md) **una sola volta**. Se BLOCK/CANDIDATE del report coincidono con FRONTIER → handoff completo dell’ultimo pass; se il gate serve RAW/review/deploy, leggere **solo** l’evidence puntata dal report; poi AUTO-VIA. **Mai** chiedere all’operatore di copiare/incollare il riepilogo Cursor se GitHub contiene il report. Se report e FRONTIER confliggono → **FRONTIER prevale**; dichiarare report stale/conflict; non inventare stato. **`agg` ≠ `aggio`**.
 - **Nuova chat:** dopo CORE BOOT, se il gate/NEXT dipende da un pass Cursor già completato, `LAST_CURSOR_REPORT` si può leggere **una volta**, on-demand, prima di agire. Niente preload sistematico, niente aumento stabile del context.
 - **§7.2 / §7.3** (OM): on-demand recent/history, **non** bootstrap.
 

@@ -2,7 +2,7 @@
 # GIS Tool — OPERATING_MEMORY
 
 > Gli agenti devono leggere questo file prima di modificare il GIS Tool.  
-> **CORE BOOT:** `git ls-remote` → `README.md` blocco `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU attiva. Resto on demand (Regola I).  
+> **CORE BOOT:** `git ls-remote` → `README.md` blocco `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU **solo se** `WU ATTIVA` non è N/A. Resto on demand (Regola I).  
 > Questo file riguarda il **GIS monolite**, non il control-plane e non Planet-Clone.
 
 ---
@@ -43,7 +43,7 @@
 
 ## 4. Protocollo orchestratore minimo
 
-- ChatGPT e Cursor usano lo stesso **CORE BOOT**: README `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU attiva; roadmap/WU body/QA/HANDOFF solo on demand.
+- ChatGPT e Cursor usano lo stesso **CORE BOOT**: README `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU **solo se** FRONTIER espone path WU / `WU ATTIVA` non N/A; roadmap/WU body/QA/HANDOFF solo on demand.
 - Prompt Cursor = **TASK DELTA** (`METHOD-CURSOR-PROMPT-DELTA`): istruzioni esterne fuori dal prompt; nel prompt solo scope/acceptance/rischio task-specific + profilo di chiusura breve (es. `CLOSURE: STANDARD_RUNTIME_BUNDLE`). Il metodo stabile (session guard, deploy, ABQA, autosync, F3, finito) resta nel repo — Cursor lo applica da OM §4 / rule 30; **non** va ricopiato nel prompt.
 - Procedere per **bundle** coerenti (default METHOD-BUNDLING-DEFAULT); non frammentare il lavoro routine in micro-blocchi separati salvo categorie delicate (OM §4 Regola G).
 - Non toccare aree non correlate.
@@ -215,7 +215,7 @@ MODALITÀ CURSOR: AGENT
 repo: mrhz1973/cursor-coordinate-converter
 HEAD verificato (ls-remote) @ <timestamp> = <full-sha-post-finito>
 frontiera: <block-id> (<data>)
-CORE BOOT: README AI-BOOT → docs/FRONTIER.md → WU hot-header
+CORE BOOT: README AI-BOOT → docs/FRONTIER.md → WU hot-header (solo se WU ATTIVA non N/A)
 ```
 
 `git ls-remote origin refs/heads/main` è **autorità finale**; RAW/CDN secondari (possono essere stale); il blob SHA di un file **non** prova HEAD. Il lettore successivo esegue il **CORE BOOT** pinnato allo SHA del seed; mismatch frontiera dichiarata vs frontiera letta → **STOP fail-closed**. Un handoff da attore non capace di `ls-remote` è provvisorio e non azionabile. **Non** ricopiare nel seed Regole F/G/H/I, review/QA policy, `finito`, roadmap, WU body o stato dettagliato — vivono nel repository. Il seed **non** si persiste come current-state in `docs/HANDOFF.md` (file stabile/pointer). Seed post-push = **nuovo** SHA remoto verificato, mai automaticamente lo SHA iniziale del task.
@@ -223,10 +223,10 @@ CORE BOOT: README AI-BOOT → docs/FRONTIER.md → WU hot-header
 **Regola I — CONTEXT-SAFE BOOTSTRAP (METHOD-CONTEXT-SAFE-BOOTSTRAP).** Disciplina di apertura/handoff per evitare consumo eccessivo di contesto **senza** introdurre un nuovo gate e **senza** indebolire AUTO-VIA.
 
 1. **CORE BOOT (percorso standard).** All'apertura, in ordine:
-   1. `git ls-remote origin refs/heads/main`;
-   2. `README.md` — **solo** blocco `<!-- AI-BOOT: START -->` … `<!-- AI-BOOT: END -->` (`fetch_file` range);
+   1. `git ls-remote origin refs/heads/main` (autorità finale; se tecnicamente indisponibile → fallback GitHub dichiarato, senza autorità finale fittizia);
+   2. `README.md` — **solo** blocco `<!-- AI-BOOT: START -->` … `<!-- AI-BOOT: END -->` (`fetch_file` range); eccedenza oltre END → ignorare semanticamente + finding payload (no retry nello stesso bootstrap);
    3. [`docs/FRONTIER.md`](FRONTIER.md) (lettura completa ammessa);
-   4. hot-header (`<!-- WU-HOT-HEADER -->` … `<!-- /WU-HOT-HEADER -->`) della WU attiva indicata da FRONTIER — path **solo** da FRONTIER.
+   4. hot-header WU **solo se** FRONTIER indica esplicitamente una WU attiva (path valido). Se `WU ATTIVA` = `—` / `NONE` / `N/A` → step 4 = **N/A**, CORE BOOT **COMPLETO**. Se WU implicata ma path assente → **STOP**. Vietato listing/search WU per inferire il path.
    Con questi passi: workstream, blocco, stato, gate, SHA semantiche, NEXT. **OM §4 / §7.2 / §7.3 non** sono bootstrap obbligatorio.
 2. **No front-loading.** **Non** leggere integralmente OM §4, roadmap, WU body, QA-CHECKLIST, HANDOFF, LAST_CURSOR_REPORT, inbox, monolite **in CORE BOOT**. OM §4 = sola Regola necessaria al gate/task. Roadmap **non** obbligatoria se FRONTIER + hot-header determinano già il gate. HANDOFF **non** è seconda memoria. QA-CHECKLIST solo al gate QA. WU body solo nelle sezioni necessarie dopo l’hot-header. **Dopo** CORE BOOT: se il gate/NEXT dipende da un pass Cursor già completato, `LAST_CURSOR_REPORT` può essere letto **una sola volta**, on-demand, prima di agire — non è preload, non amplia il CORE BOOT.
 3. **Strumenti preferiti.** Per file grandi o review runtime: ricerca per simbolo/testo; range di linee; `compare_commits`; diff/patch; blob pinnati a FULL SHA. **Mai** preload del monolite. Estensione operativa in sessione: **`CONTEXT-BUDGET-GUARD`** sotto.
@@ -443,7 +443,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - Sul **control-plane** si usa **`aggio control`**.
 - **Trade-off:** `aggio` secco non identifica il repo; l’operatore deve lanciarlo nel contesto/chat corretto.
 - **`aggio` scoped GIS-only:** in questo repo `aggio`/`aggio gis` non significano «tutti i repo» (semantica dev-method storica); coerente con control-plane scoped `aggio control`.
-- CORE BOOT: `README.md` AI-BOOT → [`docs/FRONTIER.md`](FRONTIER.md) → WU hot-header; roadmap on demand.
+- CORE BOOT: `README.md` AI-BOOT → [`docs/FRONTIER.md`](FRONTIER.md) → WU hot-header solo se `WU ATTIVA` non N/A; roadmap on demand.
 
 **Flusso `aggio` / `aggio gis` (attivo da Fase 3):** legge/aggiorna, quando necessario:
 

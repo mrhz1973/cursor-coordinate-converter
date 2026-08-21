@@ -4,32 +4,26 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | SESSION CHECKPOINT — STOP PC |
-| **GATE** | FIX4 **REVIEW PACKAGE READY** · LIVE **242** · QA FIX3 **FAIL operatore** |
-| **RUNTIME LIVE** | tip `ea5b4c1…` · build **242** · blob `2e0075ba…` |
-| **RUNTIME CANDIDATE** | `5857cbb2…` · build **243** · blob `04cfdfcc…` · `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX4-243` |
-| **RESULT** | Checkpoint pubblicato · safe resume altro PC · no deploy |
-| **WORKING TREE** | clean after push |
+| **BLOCK** | METHOD-CONTEXT-SAFE-BOOTSTRAP — CORE BOOT WU-OPTIONAL (docs-only) |
+| **GATE** | method fix PASS · FIX4 gate **UNCHANGED** (review / REVIEW PACKAGE READY / NO DEPLOY) |
+| **NEXT** | Review GPT-SOSTITUTIVA FIX4 (altro PC) · **non** finito |
+| **RUNTIME LIVE** | build **242** · tip `ea5b4c10366c5a34331f8a62c77efb8ea6aab615` · blob `2e0075ba…` |
+| **RUNTIME_CANDIDATE_SHA** | `5857cbb2c3fc73e688ae26c1e2a359bb76199416` · build **243** · blob `04cfdfcc…` |
+| **WU ATTIVA** | N/A (`—`) |
+| **Result Cursor** | CORE-BOOT WU-OPTIONAL METHOD FIX PASS |
+| **Working tree (pre-report-commit)** | docs dirty → this commit |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `1f4ca8c6d561f9aa71c91fc5ac428c9b018cb2fe` |
+| **current_report_container** | `PENDING_SELF_REFERENCE` |
 
-## B. RIEPILOGO
+## B. RIEPILOGO COMPLETO
 
-1. Nessun nuovo runtime in questo pass.
-2. FIX4 già review-ready su GitHub; LIVE resta 242.
-3. Persistito QA FAIL operatore FIX3 + NEXT ripresa.
-4. Evidence: `docs/orchestrator/inbox/2026-08-21_1340_session-checkpoint-stop-pc.md`.
+1. Autosync orchestratore: sì — `docs/orchestrator/latest.md` + inbox `2026-08-21_1905_CORE-BOOT-WU-OPTIONAL-method-fix.md`. Monolite **escluso**.
+2. README AI-BOOT: step 4 WU-optional; fallback ls-remote; payload guard oltre END.
+3. FRONTIER: campo **WU ATTIVA = — (N/A)**; BLOCK/GATE/LIVE/CANDIDATE/NEXT invariati.
+4. OM §4 Regola I allineata (niente preload extra).
+5. Acceptance logica A/B/C: PASS senza GitHub.search/listing in CORE BOOT.
+6. NO runtime · NO deploy · NO REVIEW PASS FIX4 · NO finito.
 
-## C. GIT
+## C. OUTPUT GIT
 
-```
-origin/main: e627d50… (+ docs checkpoint tip dopo push)
-LIVE BLOB: 2e0075ba344713b17f0888c4e9594f414bb0db94
-FIX4 runtime: 5857cbb2c3fc73e688ae26c1e2a359bb76199416
-FIX4 branch tip: 105ea07a36244cb10c4e23a42e608c0acb92c608
-```
-
-STATO FRESCO DA CURSOR
-origin/main HEAD: (post checkpoint push)
-working tree: clean
-FIX4: REVIEW PACKAGE READY
-NEXT: Review GPT-SOSTITUTIVA FIX4 → STANDARD_RUNTIME_BUNDLE se PASS
-note operative: no finito · no deploy · VPS 242
+Vedi post-push verbatim nel messaggio operatore / RIEPILOGO chat.

@@ -5,6 +5,7 @@
 | Campo | Valore |
 | --- | --- |
 | **WORKSTREAM ATTIVO** | GIS-POLYGON-VERTEX-COORD-UX-A-FIX4 |
+| **WU ATTIVA** | `—` (N/A — workstream block-based; nessuna WU path per CORE BOOT step 4) |
 | **BLOCCO ATTIVO** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` |
 | **STATO BLOCCO** | **REVIEW PACKAGE READY** · **NO DEPLOY** · REVIEW PASS **non** attestato |
 | **GATE CORRENTE** | **review** (DELICATO — STOP pre-promote/deploy) · **SESSION CHECKPOINT** (altro PC) |
