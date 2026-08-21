@@ -114,7 +114,7 @@ Casa: [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-
 | ID | Stato |
 | --- | --- |
 | `GIS-POLYGON-PRESET-SHAPES-A` | **BACKLOG / NOT OPENED** |
-| `GIS-POLYGON-VERTEX-COORD-UX-A` | **BACKLOG / NOT OPENED** |
+| `GIS-POLYGON-VERTEX-COORD-UX-A` | **REVIEW PACKAGE READY** (build 239 · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-239` · **NOT deployed**) |
 | `GIS-WAYPOINT-COORD-UX-A` | **BACKLOG / NOT OPENED** (scope primario = lifecycle; coord = baseline) |
 
 **Non** aperti. **Non** FRONTIER. **Non** deploy. ID nuovi: nessun equivalente preesistente nel registry.

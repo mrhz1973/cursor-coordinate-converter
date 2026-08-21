@@ -1,0 +1,332 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index c36109d..cd6a79d 100644
+--- a/coordinate_converter Claude.html	
++++ b/coordinate_converter Claude.html	
+@@ -3015,6 +3015,16 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
+ .polygon-panel .poly-edit-info-value{ font-weight:500; }
+ .polygon-panel .poly-edit-legs-wrap{ margin:0 0 8px; font-size:.82rem; }
+ .polygon-panel .poly-edit-legs{ max-height:140px; overflow:auto; margin-top:4px; }
++.polygon-panel .poly-edit-verts-wrap{ margin:0 0 8px; font-size:.82rem; }
++.polygon-panel .poly-edit-verts{ max-height:180px; overflow:auto; margin-top:4px; }
++.polygon-panel .poly-edit-vert-row{ display:grid; grid-template-columns:2.2rem minmax(0,1fr) auto auto; gap:6px; padding:3px 0; border-bottom:1px solid rgba(128,128,128,.12); align-items:center; }
++.polygon-panel .poly-edit-vert-row:last-child{ border-bottom:none; }
++.polygon-panel .poly-edit-vert-num{ font-variant-numeric:tabular-nums; opacity:.85; }
++.polygon-panel .poly-edit-vert-coord{ font-size:.78rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
++.polygon-panel .poly-edit-vert-row.is-dragging .poly-edit-vert-coord{ font-weight:600; }
++.poly-edit-overlay .poly-edit-drag-readout{ position:absolute; transform:translate(-50%,-130%); pointer-events:none; z-index:7; max-width:min(280px,70vw); padding:2px 6px; border-radius:4px; font-size:11px; line-height:1.25; font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--fg,#0f172a); background:rgba(255,255,255,.92); border:1px solid rgba(100,116,139,.35); box-shadow:0 1px 2px rgba(15,23,42,.12); }
++@media (prefers-color-scheme: dark){ .poly-edit-overlay .poly-edit-drag-readout{ color:#e2e8f0; background:rgba(15,23,42,.92); border-color:rgba(148,163,184,.35); } }
++html[data-theme="dark"] .poly-edit-overlay .poly-edit-drag-readout{ color:#e2e8f0; background:rgba(15,23,42,.92); border-color:rgba(148,163,184,.35); }
+ .polygon-panel .poly-edit-style-wrap{ margin:0 0 8px; font-size:.82rem; }
+ .polygon-panel .poly-edit-style-body{ display:flex; flex-direction:column; gap:8px; margin-top:6px; }
+ .polygon-panel .poly-edit-style-row{ display:grid; grid-template-columns:minmax(0,1fr) auto; gap:6px 8px; align-items:center; }
+@@ -15010,6 +15020,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
+         <summary data-i18n="gis.polygonPanel.editLegs">Lati</summary>
+         <div id="polygonPanelEditLegs" class="poly-edit-legs"></div>
+       </details>
++      <details id="polygonPanelEditVertsWrap" class="poly-edit-verts-wrap" open>
++        <summary data-i18n="gis.polygonPanel.editVerticesList">Coordinate vertici</summary>
++        <div id="polygonPanelEditVerts" class="poly-edit-verts" role="list"></div>
++      </details>
+       <details id="polygonPanelEditStyleWrap" class="poly-edit-style-wrap">
+         <summary data-i18n="gis.polygonPanel.editStyle">Stile</summary>
+         <div class="poly-edit-style-body">
+@@ -15109,6 +15123,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
+     <select id="polygonVertexCoordFormatSel" class="poly-vertex-coord-format-sel"
+             data-role="poly-vertex-coord-format"
+             data-i18n-aria="gis.polygonPanel.vertexModalFormat"></select>
++    <p class="hint poly-vertex-coord-paste-hint" data-i18n="gis.polygonPanel.vertexModalPasteHint">Incolla qualsiasi formato riconosciuto (auto-detect). Il selettore governa solo la visualizzazione.</p>
+     <div id="polygonVertexCoordDdWrap" class="poly-vertex-coord-dd-wrap">
+       <label for="polygonVertexCoordLat" data-i18n="gis.polygonPanel.vertexModalLat">Latitudine</label>
+       <input type="text" id="polygonVertexCoordLat" inputmode="decimal" autocomplete="off" spellcheck="false"
+@@ -17238,6 +17253,10 @@ const I18N = {
+     "gis.polygonPanel.editPerimeter":"Perimetro",
+     "gis.polygonPanel.editUnit":"Unit├á",
+     "gis.polygonPanel.editLegs":"Lati",
++    "gis.polygonPanel.editVerticesList":"Coordinate vertici",
++    "gis.polygonPanel.editVertexCopy":"Copia",
++    "gis.polygonPanel.editVertexModify":"Modifica",
++    "gis.polygonPanel.vertexModalPasteHint":"Incolla qualsiasi formato riconosciuto (auto-detect). Il selettore governa solo la visualizzazione.",
+     "gis.polygonPanel.editStyle":"Stile",
+     "gis.polygonPanel.editStyleFill":"Riempimento",
+     "gis.polygonPanel.editStyleFillOpacity":"Opacit├á riempimento",
+@@ -24305,10 +24324,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
+ /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
+ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
+ /** Visible runtime build label ÔÇö update before each runtime `finito`. */
+-const APP_BUILD_ID = "D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2";
+-const APP_BUILD_DETAIL = "ATM09 Dettagli: Rule/Regola display-only (reuse helper 237; keep link text/URL).";
++const APP_BUILD_ID = "GIS-POLYGON-VERTEX-COORD-UX-A";
++const APP_BUILD_DETAIL = "Polygon edit: vertex coord list, live drag readout, copy, autoDetect paste.";
+ /** Monotonic runtime build counter ÔÇö increment on each runtime patch (not persisted). */
+-const APP_BUILD_NUM = 238;
++const APP_BUILD_NUM = 239;
+ const APP_BUILD_LABEL = APP_BUILD_ID + " ┬À build " + APP_BUILD_NUM + " ÔÇö " + APP_BUILD_DETAIL;
+ function applyAppBuildLabel(){
+   try {
+@@ -39906,7 +39925,7 @@ function dflightSelfTestF(){
+     })());
+ 
+     add("F_mvisa_build_199",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 238
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 239
+       && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2");
+ 
+     _dflightHelperBaseUrlOverride = "http://example.test:8010";
+@@ -40928,7 +40947,7 @@ function dflightSelfTestTf(){
+       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
+ 
+     add("Tf_build_196",
+-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 238
++      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 239
+       && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2");
+   } catch (e){
+     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
+@@ -42862,7 +42881,7 @@ function dflightSelfTestH(){
+       } catch(_){ return false; }
+     })());
+ 
+-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 238
++    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 239
+       && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2");
+     add("VR_FIX1_sync_loading_passes_zoom", (function(){
+       if (typeof dflightSyncLoadingUi !== "function") return false;
+@@ -65013,6 +65032,15 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
+     g.appendChild(vis);
+     svg.appendChild(g);
+   }
++  let _polyDragReadoutPos = null;
++  let _polyDragReadoutTxt = "";
++  if (dragIdx >= 0 && dragIdx < working.length && !moveMode){
++    const wc = working[dragIdx];
++    if (Array.isArray(wc) && wc.length >= 2 && Number.isFinite(wc[0]) && Number.isFinite(wc[1]) && dragIdx < pxPts.length){
++      try { _polyDragReadoutTxt = polygonFormatVertexCoordText(wc[0], wc[1], polygonVertexCoordFormat); } catch(_){ _polyDragReadoutTxt = ""; }
++      _polyDragReadoutPos = pxPts[dragIdx];
++    }
++  }
+   const llRef = Number.isFinite(markerLat) ? markerLat : (state.lastPoint && state.lastPoint.lat);
+   const loRef = Number.isFinite(markerLon) ? markerLon : (state.lastPoint && state.lastPoint.lon);
+   const markerLa = Number.isFinite(llRef) ? llRef : 0;
+@@ -65105,7 +65133,19 @@ function renderPolygonEditOverlay(tileMap, markerLat, markerLon, zoom){
+   const wrap = document.createElement("div");
+   wrap.className = "poly-edit-overlay" + (moveMode ? " is-move-mode" : "");
+   wrap.id = "polygonEditOverlay";
++  wrap.style.position = "absolute";
++  wrap.style.inset = "0";
++  wrap.style.pointerEvents = "none";
+   wrap.appendChild(svg);
++  if (_polyDragReadoutPos && _polyDragReadoutTxt){
++    const ro = document.createElement("div");
++    ro.className = "poly-edit-drag-readout";
++    ro.setAttribute("aria-hidden", "true");
++    ro.style.left = _polyDragReadoutPos.x.toFixed(1) + "px";
++    ro.style.top = _polyDragReadoutPos.y.toFixed(1) + "px";
++    ro.textContent = _polyDragReadoutTxt;
++    wrap.appendChild(ro);
++  }
+   tileLayer.appendChild(wrap);
+ }
+ 
+@@ -82511,7 +82551,10 @@ function polygonEditNameInputHandler(){
+ function renderPolygonEditInfo(){
+   const sumEl = document.getElementById("polygonPanelEditSummary");
+   const legsEl = document.getElementById("polygonPanelEditLegs");
+-  if (!sumEl || !legsEl || !polygonIsEditing()) return;
++  if (!sumEl || !legsEl || !polygonIsEditing()){
++    try { renderPolygonEditVertsList(); } catch(_){}
++    return;
++  }
+   const ed = state._polyEdit;
+   const pts = gisRingToLatLonPts(ed.working);
+   const n = pts.length;
+@@ -82567,6 +82610,7 @@ function renderPolygonEditInfo(){
+     p.className = "hint poly-edit-legs-empty";
+     p.textContent = lblNoData;
+     legsEl.appendChild(p);
++    try { renderPolygonEditVertsList(); } catch(_){}
+     return;
+   }
+   for (let i = 0; i < n; i++){
+@@ -82643,6 +82687,7 @@ function renderPolygonEditInfo(){
+     row.appendChild(actions);
+     legsEl.appendChild(row);
+   }
++  try { renderPolygonEditVertsList(); } catch(_){}
+ }
+ function polygonHideEditBarErr(){
+   const err = document.getElementById("polygonPanelEditErr");
+@@ -82753,8 +82798,129 @@ function polygonWireVertexCoordFormatOnce(){
+     sel.addEventListener("change", () => { polygonOnVertexCoordFormatChange(sel); });
+   });
+ }
+-function polygonFormatVertexCoordDisplay(lon, lat, fmt){
+-  const out = { ddLat: "", ddLon: "", combined: "", utmUnavailable: false };
++/** Single-line display/copy text for a vertex in the selected format (display-only). */
++function polygonFormatVertexCoordText(lon, lat, fmt){
++  const f = (POLY_VERTEX_COORD_FORMATS.indexOf(fmt) !== -1) ? fmt : (POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd");
++  const d = polygonFormatVertexCoordDisplay(lon, lat, f);
++  if (f === "dd"){
++    if (d.ddLat === "" && d.ddLon === "") return "";
++    return d.ddLat + ", " + d.ddLon;
++  }
++  if (d.utmUnavailable) return "";
++  return d.combined || "";
++}
++/** INPUT parse via Convert-canonical autoDetect (independent of display format). */
++function polygonParseVertexCoordInputText(raw){
++  const s = String(raw == null ? "" : raw).trim();
++  if (!s) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
++  try {
++    const det = autoDetect(s);
++    if (!det || !Number.isFinite(det.lat) || !Number.isFinite(det.lon)){
++      return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
++    }
++    validateLatLon(det.lat, det.lon);
++    const lonN = (typeof normalizeLon === "function") ? normalizeLon(det.lon) : det.lon;
++    if (det.lat < -90 || det.lat > 90) return { ok: false, key: "gis.polygonPanel.vertexModalLatRange" };
++    if (lonN < -180 || lonN > 180) return { ok: false, key: "gis.polygonPanel.vertexModalLonRange" };
++    const sanitized = gisSanitizeCoordinate([lonN, det.lat]);
++    if (!sanitized) return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
++    return { ok: true, lon: sanitized[0], lat: sanitized[1], type: det.type || "LatLon" };
++  } catch (e){
++    if (e && (e.key === "err.outRange" || e.i18nKey === "err.outRange")) return { ok: false, key: "gis.polygonPanel.vertexModalUtmRange" };
++    return { ok: false, key: "gis.polygonPanel.vertexModalCoordInvalid" };
++  }
++}
++function polygonCollectVertexCoordModalInputText(latStr, lonStr, combinedStr){
++  const comb = String(combinedStr == null ? "" : combinedStr).trim();
++  if (comb) return comb;
++  const lat = String(latStr == null ? "" : latStr).trim();
++  const lon = String(lonStr == null ? "" : lonStr).trim();
++  if (lat && lon) return lat + ", " + lon;
++  if (lat) return lat;
++  if (lon) return lon;
++  return "";
++}
++function renderPolygonEditVertsList(){
++  const vertsEl = document.getElementById("polygonPanelEditVerts");
++  if (!vertsEl) return;
++  vertsEl.textContent = "";
++  if (!polygonIsEditing()) return;
++  const ed = state._polyEdit;
++  if (!ed || !Array.isArray(ed.working)) return;
++  const fmt = POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) !== -1 ? polygonVertexCoordFormat : "dd";
++  const dragIdx = (ed.dragIdx != null && Number.isFinite(Number(ed.dragIdx))) ? Number(ed.dragIdx) : -1;
++  const copyLbl = (typeof t === "function" ? t("gis.polygonPanel.editVertexCopy") : "") || (typeof t === "function" ? t("btn.copy") : "") || "Copia";
++  const modLbl = (typeof t === "function" ? t("gis.polygonPanel.editVertexModify") : "") || "Modifica";
++  const lblNoData = (typeof t === "function" ? t("gis.polygonPanel.editNoData") : "") || "ÔÇö";
++  const n = ed.working.length;
++  if (n < 1){
++    const p = document.createElement("p");
++    p.className = "hint poly-edit-verts-empty";
++    p.textContent = lblNoData;
++    vertsEl.appendChild(p);
++    return;
++  }
++  for (let i = 0; i < n; i++){
++    const c = ed.working[i];
++    const lon = Array.isArray(c) ? Number(c[0]) : NaN;
++    const lat = Array.isArray(c) ? Number(c[1]) : NaN;
++    let coordTxt = "";
++    try { coordTxt = polygonFormatVertexCoordText(lon, lat, fmt); } catch(_){ coordTxt = ""; }
++    if (!coordTxt) coordTxt = lblNoData;
++    const row = document.createElement("div");
++    row.className = "poly-edit-vert-row" + (i === dragIdx ? " is-dragging" : "");
++    row.setAttribute("role", "listitem");
++    row.setAttribute("data-vertex-index", String(i));
++    const num = document.createElement("span");
++    num.className = "poly-edit-vert-num mono";
++    num.textContent = String(i + 1);
++    const coord = document.createElement("span");
++    coord.className = "poly-edit-vert-coord mono";
++    coord.textContent = coordTxt;
++    coord.title = coordTxt;
++    const copyBtn = document.createElement("button");
++    copyBtn.type = "button";
++    copyBtn.className = "btn btn-sm copy-btn poly-edit-vert-copy";
++    copyBtn.textContent = copyLbl;
++    copyBtn.setAttribute("data-copy", coordTxt);
++    copyBtn.title = copyLbl;
++    copyBtn.setAttribute("aria-label", copyLbl + " " + String(i + 1));
++    copyBtn.addEventListener("click", (ev) => {
++      ev.preventDefault();
++      ev.stopPropagation();
++      const txt = copyBtn.getAttribute("data-copy") || coordTxt;
++      try { copyText(txt, copyBtn); } catch(_){}
++    });
++    const modBtn = document.createElement("button");
++    modBtn.type = "button";
++    modBtn.className = "btn btn-sm btn-ghost poly-edit-vert-mod";
++    modBtn.textContent = modLbl;
++    modBtn.title = modLbl;
++    modBtn.setAttribute("aria-label", modLbl + " " + String(i + 1));
++    modBtn.addEventListener("click", (ev) => {
++      ev.preventDefault();
++      ev.stopPropagation();
++      polygonOpenVertexCoordModal(i);
++    });
++    row.appendChild(num);
++    row.appendChild(coord);
++    row.appendChild(copyBtn);
++    row.appendChild(modBtn);
++    vertsEl.appendChild(row);
++  }
++}
++function polygonRefreshEditOverlayForFormat(){
++  if (!polygonIsEditing()) return;
++  try {
++    const root = document.getElementById("miniMap");
++    if (!root) return;
++    const tileMap = root.querySelector(".tile-map") || root;
++    const la = (state.lastPoint && Number.isFinite(state.lastPoint.lat)) ? state.lastPoint.lat : (state.mapCenter && state.mapCenter.lat);
++    const lo = (state.lastPoint && Number.isFinite(state.lastPoint.lon)) ? state.lastPoint.lon : (state.mapCenter && state.mapCenter.lon);
++    renderPolygonEditOverlay(tileMap, la, lo, state.mapZoom);
++  } catch(_){}
++}
++function polygonFormatVertexCoordDisplay(lon, lat, fmt){  const out = { ddLat: "", ddLon: "", combined: "", utmUnavailable: false };
+   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return out;
+   const f = fmt || "dd";
+   if (f === "dd"){
+@@ -82859,14 +83025,15 @@ function polygonSyncVertexCoordModalUiFromCanon(){
+   }
+ }
+ function polygonVertexCoordModalTryUpdateCanonFromInputs(fmtOverride){
+-  const fmt = fmtOverride || polygonVertexCoordFormat || "dd";
++  void fmtOverride;
+   const latInp = document.getElementById("polygonVertexCoordLat");
+   const lonInp = document.getElementById("polygonVertexCoordLon");
+   const combInp = document.getElementById("polygonVertexCoordCombined");
+-  const v = polygonParseVertexCoordByFormat(fmt,
++  const text = polygonCollectVertexCoordModalInputText(
+     latInp ? latInp.value : "",
+     lonInp ? lonInp.value : "",
+     combInp ? combInp.value : "");
++  const v = polygonParseVertexCoordInputText(text);
+   if (v.ok) polygonVertexCoordModalCanon = { lon: v.lon, lat: v.lat };
+   return v;
+ }
+@@ -82876,9 +83043,12 @@ function polygonOnVertexCoordFormatChange(fromSel){
+   polygonVertexCoordFormat = (src && src.value) ? src.value : "dd";
+   if (POLY_VERTEX_COORD_FORMATS.indexOf(polygonVertexCoordFormat) === -1) polygonVertexCoordFormat = "dd";
+   polygonSyncVertexCoordFormatSelectValues(fromSel || null);
++  try { renderPolygonEditVertsList(); } catch(_){}
++  try { polygonRefreshEditOverlayForFormat(); } catch(_){}
+   const dlg = document.getElementById("polygonVertexCoordDialog");
+   if (!dlg || !dlg.open || !polygonVertexCoordModalCanon) return;
+-  polygonVertexCoordModalTryUpdateCanonFromInputs(prevFmt);
++  /* Keep canon: try parse previous display inputs; else leave canon untouched. */
++  try { polygonVertexCoordModalTryUpdateCanonFromInputs(prevFmt); } catch(_){}
+   polygonHideVertexCoordModalErr();
+   polygonSyncVertexCoordModalUiFromCanon();
+   const fmt = polygonVertexCoordFormat;
+@@ -82902,7 +83072,10 @@ function polygonShowVertexCoordModalErr(msgKey){
+   try { appRevealModalError(err); } catch(_){}
+ }
+ function polygonValidateVertexCoordModalInputs(latStr, lonStr, combinedStr, fmt){
+-  return polygonParseVertexCoordByFormat(fmt || polygonVertexCoordFormat || "dd", latStr, lonStr, combinedStr);
++  /* DISPLAY format ignored for INPUT: always autoDetect on collected text. */
++  void fmt;
++  const text = polygonCollectVertexCoordModalInputText(latStr, lonStr, combinedStr);
++  return polygonParseVertexCoordInputText(text);
+ }
+ function polygonCloseVertexCoordModal(){
+   polygonVertexCoordModalIdx = null;

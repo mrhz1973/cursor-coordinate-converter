@@ -1,43 +1,45 @@
 # LAST_CURSOR_REPORT
 
-> Rolling handoff completo del pass auto-`finito` su `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` dopo QA operatore PASS. Non LIVE STATE — prevale [`docs/FRONTIER.md`](../FRONTIER.md).
-
-## A. Header sintetico
+## A. Header
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` |
-| **GATE** | **none** (CLOSED / PASS) |
-| **NEXT** | — |
-| **Runtime LIVE** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` · build **238** · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` · blob `c36109d1ebda7470748a3284089bf11b262d01cf` |
-| **Result Cursor** | QA operatore PASS · auto-`finito` Regola H · docs-only |
-| **Working tree** | docs commit in corso |
+| BLOCK | GIS-POLYGON-VERTEX-COORD-UX-A |
+| GATE | review (DELICATO · STOP pre-deploy) |
+| NEXT | Review package ready · NO deploy · NO finito |
+| RUNTIME LIVE | build **238** · blob `c36109d1…` · SHA `d899cff…` |
+| RUNTIME CANDIDATE | FULL SHA `be49ed2494dbaa9bdf25d55151b3ac15c390fd07` · build **239** · blob `cd6a79d612ee613b97f2c620bc3dcb1fce547797` |
+| BRANCH | `review/GIS-POLYGON-VERTEX-COORD-UX-A-239` |
+| RESULT | REVIEW PACKAGE READY — MAIN RUNTIME NOT DEPLOYED |
+| WORKING TREE | (vedi commit docs su review branch) |
 
-## B. Identità git (F3)
+## B. RIEPILOGO COMPLETO
 
-| Campo | Valore |
-| --- | --- |
-| **RUNTIME_CANDIDATE_SHA** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `cbe83f9d6af5b823df48dab6873f4fe0b1ade9a0` (pre-finito tip) |
-| **real_task_commit** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` (runtime; finito = docs) |
-| **current_report_container** | `PENDING_SELF_REFERENCE` |
+1. Autosync orchestratore: sì (su review branch) — `docs/FRONTIER.md`, `docs/orchestrator/latest.md`, inbox review package + runtime diff; monolite **escluso** dal docs commit (già in `real_task_commit` `be49ed2`).
+2. Precheck BASE: `7ab549d449300480b5e5fe156d4d81415e8ed461` = origin/main; LIVE 238/blob `c36109d1` invariati; audit backlog presente.
+3. Implementazione: lista vertici, live drag readout, Copia exact, Modifica+autoDetect paste; build 239.
+4. Local QA A–T: PASS (browser harness localhost:8765); network resource delta 0 su gesture.
+5. `git diff --check` PASS.
+6. Deploy: **non eseguito**. Review PASS: **non attestato**. Finito: **no**.
 
-Evidence: [`docs/orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md)
+### OUTPUT GIT (al momento stesura report docs)
 
-## C. Esiti
+Vedi sezione C dopo push.
 
-- QA operatore: **PASS** (`QA D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 PASS operatore`)
-- Finito docs-only: FRONTIER / OM §7.2 / roadmap / WU-0013 §23 / latest / inbox
-- Monolite invariato (blob `c36109d1…`)
-- origin push locale: **DISABLED_PUSH** (push espliciti URL)
+## C. OUTPUT GIT
+
+- `real_task_commit` = `be49ed2494dbaa9bdf25d55151b3ac15c390fd07`
+- `current_report_container` = PENDING_SELF_REFERENCE (docs commit che contiene questo file)
+- `REMOTE_HEAD_AT_EVIDENCE_TIME` (main): `7ab549d449300480b5e5fe156d4d81415e8ed461`
+- facts autosync: EXTERNAL_ONLY / su review branch
 
 ## STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: (post-finito — verificare ls-remote)
-working tree: docs-only commit in corso
-ultimo blocco PASS: D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2 CLOSED
-prossimo candidato: —
-note operative: monolite invariato; GATE none; LIVE 238
+origin/main HEAD: 7ab549d449300480b5e5fe156d4d81415e8ed461 (LIVE 238 — non aggiornato)
+working tree: review branch con candidate 239
+ultimo blocco PASS: (nessun nuovo PASS deploy)
+prossimo candidato: GIS-POLYGON-VERTEX-COORD-UX-A build 239 in review
+note operative: STOP pre-deploy; review package su GitHub branch review/GIS-POLYGON-VERTEX-COORD-UX-A-239
 ```

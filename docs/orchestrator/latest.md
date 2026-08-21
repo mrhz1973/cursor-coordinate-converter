@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — audit+backlog **GIS POLYGON + WAYPOINT COORD UX**: registrati `GIS-POLYGON-PRESET-SHAPES-A` · `GIS-POLYGON-VERTEX-COORD-UX-A` · `GIS-WAYPOINT-COORD-UX-A` = **BACKLOG / NOT OPENED**. Coord Waypoint = baseline `COORD-MODAL-FORMAT-COPY-A` CLOSED. LIVE `915d31e` / **238** invariato (docs-only). Evidence: [`inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md).
+2026-08-21 — `GIS-POLYGON-VERTEX-COORD-UX-A` **REVIEW PACKAGE READY** (build **239** candidate `be49ed2` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-239`). LIVE resta **238**. **NO deploy / NO review PASS / NO finito**. Evidence: [`inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md`](inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md).

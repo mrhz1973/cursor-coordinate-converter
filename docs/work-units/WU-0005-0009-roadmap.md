@@ -783,7 +783,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **BACKLOG / NOT OPENED** (2026-08-21) — riusa `P-VERTEX-FORMAT` / `autoDetect`; **non** rifare drag P2 |
+| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **REVIEW PACKAGE READY** (2026-08-21) · build **239** · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-239` · **NOT deployed** |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 
 #### MAP-TARGET-SCALE-A
@@ -914,7 +914,7 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-VERTEX-COORD-UX-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Audit runtime build **238**. **Non** aperto. **Oggetti GIS FROZEN** finché non sbloccato.
+**Stato:** **REVIEW PACKAGE READY** (2026-08-21) · candidate build **239** · `be49ed2494dbaa9bdf25d55151b3ac15c390fd07` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-239` · LIVE resta **238** · **NO deploy**. Evidence: [`../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md`](../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md).
 
 **Gap reali (solo questi):**
 
