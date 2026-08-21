@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1) CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **247** tip `ac4789e` · blob `6e10d568…`. **Oggetti GIS FROZEN / MAINTENANCE-ONLY**. Evidence: [`inbox/2026-08-21_2300_riepilogo_finito-GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1.md`](inbox/2026-08-21_2300_riepilogo_finito-GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1.md).
+2026-08-21 — **VPS-MAINTENANCE-UPGRADE-REBOOT-A BLOCKED**. Kernel 138 + apt upgrade OK; **nginx failed** post-reboot (bind Tailscale `:443` race). Nessun repair. Evidence: [`docs/infra/evidence/2026-08-21_VPS-MAINTENANCE-UPGRADE-REBOOT-A.md`](../infra/evidence/2026-08-21_VPS-MAINTENANCE-UPGRADE-REBOOT-A.md). Prodotto invariato: GIS LIVE **247** / GIS-OBJECTS CLOSED (gate none).
