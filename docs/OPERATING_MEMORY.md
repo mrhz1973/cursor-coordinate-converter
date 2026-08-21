@@ -464,7 +464,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 
 ### 7.2 RECENT / POINTERS (rolling max ~5 — navigazione, non stato concorrente)
 
-1. **MAP-CENTER-VIEWPORT-AWARE-A-FIX1** — **LIVE** build **245** tip `03a222e` · blob `b9258d75…` · deploy+ABQA PASS · **QA FINALE PENDING** (2026-08-21); FIX1 dock sinistro + banda GIS (parent MAP-CENTER 244)
+1. **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1)** — **CLOSED / PASS** · LIVE `03a222e` / **245** · blob `b9258d75…` · QA operatore PASS · Regola H (2026-08-21); estensione POLYGON PANEL dock sinistro
 2. **GIS-POLYGON-VERTEX-COORD-UX-A-FIX4** — **CLOSED / PASS** · LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1–FIX3 + FIX4 draft drag
 3. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2** — **CLOSED / PASS** · LIVE `d899cff` / **238** · blob `c36109d1…` · QA operatore PASS · Regola H (2026-08-21); catena FIX1 237 + FIX2 ATM09
 4. **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1** — SUPERSEDED-by-FIX2 live · tip storico `8a350f7` / **237** · blob `4d8c2b3…`
@@ -479,7 +479,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
 - **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` — **non** aperti; `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)` **CLOSED / PASS** LIVE `d899cff` / **238** (2026-08-21)
-- **Backlog 2026-08-21:** `MAP-CENTER-VIEWPORT-AWARE-A` **estensione POLYGON PANEL** — **LIVE FIX1** build **245** tip `03a222e` · blob `b9258d75…` · QA FINALE PENDING (supersede 244 dock destro); evidence [`orchestrator/inbox/2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md`](orchestrator/inbox/2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md)
+- **Backlog 2026-08-21:** `MAP-CENTER-VIEWPORT-AWARE-A` **estensione POLYGON PANEL** — **CLOSED / PASS** LIVE FIX1 build **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · Regola H; evidence [`orchestrator/inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md`](orchestrator/inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md)
 - **Backlog 2026-08-21 (NOT OPENED):** `D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A` — leggibilità ATM09 Dettagli + link sicuri; casa [`WU-0013` §23](work-units/WU-0013-uas-geozone-dflight.md); baseline build **238**; **non** riaprire CLEANUP-A
 - **Backlog 2026-08-21 (NOT OPENED):** `GIS-POLYGON-PRESET-SHAPES-A` · `GIS-WAYPOINT-COORD-UX-A` — audit runtime 238; casa [`WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md); evidence [`orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md); Waypoint coord = baseline `COORD-MODAL-FORMAT-COPY-A` CLOSED; **Oggetti GIS FROZEN**
 - **Backlog 2026-08-21 (NOT OPENED):** `GIS-POLYGON-WAYPOINT-INTERACTION-A` — pointer priority drawing vs Waypoint + snap pixel + close modal termina edit; **DELICATO**; evidence [`orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md`](orchestrator/inbox/2026-08-21_1125_GIS-POLYGON-WAYPOINT-INTERACTION-A-backlog.md); **non** aperto

@@ -777,7 +777,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-TARGET-SCALE-A** | Visualizzazione mappa a scala nominale richiesta 1:N | **BACKLOG / NOT OPENED** |
 | **MAP-FRACTIONAL-ZOOM-A** | Zoom continuo/frazionario opzionale per layer compatibili | **BACKLOG / NOT OPENED** |
 | **MAP-PAN-TILE-OVERSCAN-A** | Eliminare bordi neri durante pan quando le tile sono già disponibili | **BACKLOG / NOT OPENED** |
-| **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **LIVE** build **245** tip `03a222e` · blob `b9258d75…` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
+| **MAP-CENTER-VIEWPORT-AWARE-A** (est. POLYGON PANEL) | Dock **sinistro** Poligoni (FIX1) + altezza banda GIS + priorità Coordinate vertici + Ctrl+Z = Rimuovi ultimo | **CLOSED / PASS** LIVE **245** tip `03a222e` · blob `b9258d75…` · QA operatore PASS · finito Regola H |
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
@@ -793,11 +793,11 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 
 #### MAP-CENTER-VIEWPORT-AWARE-A — estensione POLYGON PANEL / DOCK + DRAWING VIEWPORT
 
-**Stato:** **LIVE** build **245** `MAP-CENTER-VIEWPORT-AWARE-A-FIX1` · tip `03a222e429905477d4a288c4ba7cc5b986f08bff` · blob `b9258d757fd8bba291e4506680ba579a480f5c56`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**.
+**Stato:** **CLOSED / PASS** build **245** `MAP-CENTER-VIEWPORT-AWARE-A-FIX1` · tip `03a222e429905477d4a288c4ba7cc5b986f08bff` · blob `b9258d757fd8bba291e4506680ba579a480f5c56`. Deploy + ABQA **PASS**. QA operatore **PASS** · finito Regola H (2026-08-21).
 
 **ID:** stesso `MAP-CENTER-VIEWPORT-AWARE-A` — **non** creare backlog concorrente. Core CTA Centra / usable-rect **FIX1–FIX3 CLOSED / PASS** (build 93).
 
-**Delta 2026-08-21 implementati (ROUTINE):** altezza GIS utile + banda DOM (topbar/scala/footer); **FIX1** dock **sinistro** (QA FAIL su dock destro che copriva chrome); priorità ops/Coordinate vertici sopra lista salvati; durante draw/edit lista compatta; `Ctrl+Z` → `polygonRemoveLastDraftPoint` (no redo). Camera useful-rect / lifecycle DELICATO del piano originale: **non** in questo pass.
+**Delta 2026-08-21 implementati (ROUTINE):** altezza GIS utile + banda DOM (topbar/scala/footer); **FIX1** dock **sinistro** (QA FAIL su dock destro che copriva chrome); priorità ops/Coordinate vertici sopra lista salvati; durante draw/edit lista compatta; `Ctrl+Z` → `polygonRemoveLastDraftPoint` (no redo). Camera useful-rect / lifecycle DELICATO del piano originale: **non** in questo pass (resta backlog se riaperto).
 
 **Collegati (non fusi):** `GIS-POLYGON-METRICS-COMPACT-FORMAT-A` · `GIS-POLYGON-WAYPOINT-INTERACTION-A` · `GIS-POLYGON-PRESET-SHAPES-A`.
 

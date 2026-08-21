@@ -5,49 +5,45 @@
 | Campo | Valore |
 | --- | --- |
 | **BLOCK** | `MAP-CENTER-VIEWPORT-AWARE-A-FIX1` |
-| **GATE** | **QA FINALE CHATGPT — PENDING** |
-| **NEXT** | QA operatore · non finito |
+| **GATE** | **none** (CLOSED / PASS) |
+| **NEXT** | backlog NOT OPENED a scelta |
 | **RUNTIME LIVE** | tip `03a222e429905477d4a288c4ba7cc5b986f08bff` · build **245** · `MAP-CENTER-VIEWPORT-AWARE-A-FIX1` · blob `b9258d757fd8bba291e4506680ba579a480f5c56` |
-| **RUNTIME_CANDIDATE_SHA** | `03a222e429905477d4a288c4ba7cc5b986f08bff` |
-| **Result Cursor** | deploy GIS **PASS** · ABQA **18/18 PASS** · gate PENDING |
+| **RUNTIME_CANDIDATE_SHA** | `03a222e429905477d4a288c4ba7cc5b986f08bff` (immutable; monolite non toccato in finito) |
+| **Result Cursor** | **finito** Regola H · QA PASS operatore |
 | **Working tree (pre-report-commit)** | docs dirty → this commit |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `03a222e429905477d4a288c4ba7cc5b986f08bff` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `017e17c154121a023f403174867aeede71f38423` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync: sì — FRONTIER, OM §7.2, roadmap, backlog inbox, latest, deploy-abqa, abqa.json, questo report. Monolite **escluso** da questo commit (già in tip runtime `03a222e`).
-2. Input: `QA MAP-CENTER-VIEWPORT-AWARE-A FAIL operatore` — dock destro copriva chrome destro; caso 2 PASS.
-3. FIX1 runtime: `preferRight: false`; `polygonPanelComputeGisBand` / `polygonPanelApplyLeftGisBand`; migrazione layout destra; build **245**.
-4. Funzioni: `_polygonPanelLayoutOpts`, `polygonPanelComputeGisBand`, `polygonPanelApplyLeftGisBand`, `attachPolygonPanelFloatingGis`.
-5. i18n: nessuna nuova stringa (L10N freeze).
-6. Non toccato: METRICS-COMPACT, schema/storage, rete/GPS, caso 2 content order, Ctrl+Z path.
-7. Lint/selftest: triad F/Tf/H → 245 / FIX1.
-8. Deploy GIS-only PASS · CMP PASS · proxy PID invariato · HTTP 200.
-9. ABQA **18/18 PASS** (dock left, topbar/footer/scala, right ctrls free, verts, Ctrl+Z, FIX4 drag, narrow).
-10. Limiti: resize finestra a panel già aperto non ricalcola banda (riapertura sì); camera useful-rect DELICATO ancora fuori scope.
+1. Autosync finito: sì — FRONTIER CLOSED, OM §7.2, roadmap CLOSED, backlog, latest, riepilogo finito, deploy-abqa gate, LAST_CURSOR_REPORT. Monolite **escluso**.
+2. Trigger: `QA MAP-CENTER-VIEWPORT-AWARE-A-FIX1 PASS operatore` → Regola H.
+3. Runtime invariato: tip `03a222e` / **245** / blob `b9258d75…`.
+4. Funzioni: nessuna modifica runtime in questo pass.
+5. i18n: nessuna.
+6. Non toccato: monolite, METRICS-COMPACT, camera useful-rect DELICATO.
+7. Lint/selftest/ABQA/deploy: già PASS; non rieseguiti (docs-only finito).
+8. Limiti: camera useful-rect del piano originale resta fuori scope chiuso.
 
 ### STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: PENDING_SELF_REFERENCE (pre-container 03a222e)
+origin/main HEAD: PENDING_SELF_REFERENCE (pre-container 017e17c)
 working tree: dirty docs → this commit
-ultimo blocco PASS tecnico: MAP-CENTER-VIEWPORT-AWARE-A-FIX1 (deploy+ABQA)
-prossimo candidato: QA operatore MAP-CENTER / FIX1
-note operative: non finito; URL ?v=03a222e
+ultimo blocco PASS: MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1) CLOSED
+prossimo candidato: backlog NOT OPENED
+note operative: finito Regola H; monolite invariato
 ```
 
 ## C. OUTPUT GIT
 
 ```text
-(pre-container — real_task_commit)
-git log --oneline -5  → 03a222e fix(map): polygon panel dock LEFT…
-git rev-parse HEAD → 03a222e429905477d4a288c4ba7cc5b986f08bff
-git rev-parse origin/main → 03a222e429905477d4a288c4ba7cc5b986f08bff
-git branch --show-current → main
-git ls-remote origin refs/heads/main → 03a222e429905477d4a288c4ba7cc5b986f08bff
+(pre-container)
+git rev-parse HEAD → 017e17c154121a023f403174867aeede71f38423
+git rev-parse origin/main → 017e17c154121a023f403174867aeede71f38423
+git rev-parse HEAD:coordinate_converter Claude.html → b9258d757fd8bba291e4506680ba579a480f5c56
 RUNTIME_CANDIDATE_SHA = 03a222e429905477d4a288c4ba7cc5b986f08bff
-REMOTE_HEAD_AT_EVIDENCE_TIME = 03a222e429905477d4a288c4ba7cc5b986f08bff
+REMOTE_HEAD_AT_EVIDENCE_TIME = 017e17c154121a023f403174867aeede71f38423
 current_report_container = PENDING_SELF_REFERENCE
 ```

@@ -4,7 +4,7 @@
 **Parent:** `MAP-CENTER-VIEWPORT-AWARE-A` (stesso backlog — no duplicate)  
 **Categoria:** ROUTINE — FIX1 da QA FAIL operatore (dock / altezza vs chrome)  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE uscita:** **QA FINALE CHATGPT — PENDING**
+**GATE uscita:** **CLOSED / PASS** (QA operatore PASS · finito Regola H)
 
 ## Finding QA (input)
 
@@ -46,6 +46,6 @@ Dock sinistro · sotto topbar · sopra footer/scala · controlli destri liberi �
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
+**QA FINALE CHATGPT — PASS operatore** (2026-08-21) → auto-`finito` Regola H.
 
-Non attestare QA operatore. Non `finito`.
+Evidence chiusura: [`2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md`](2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md).

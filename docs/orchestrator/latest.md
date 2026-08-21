@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **MAP-CENTER-VIEWPORT-AWARE-A-FIX1** LIVE **245**. QA FAIL dock destro → dock **sinistro** + banda GIS (sotto topbar / sopra scala+footer). Tip `03a222e` · blob `b9258d75…` · deploy+ABQA **18/18 PASS** · gate **QA FINALE PENDING**. Evidence: [`inbox/2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md`](inbox/2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md).
+2026-08-21 — **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1) CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **245** tip `03a222e` · blob `b9258d75…`. Evidence: [`inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md`](inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md).

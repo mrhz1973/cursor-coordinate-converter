@@ -3,9 +3,10 @@
 **Tipo:** docs-only backlog extension  
 **ID:** `MAP-CENTER-VIEWPORT-AWARE-A` (stesso ID — **no** duplicate)  
 **Scope aggiunto:** **POLYGON PANEL — DOCK + DRAWING VIEWPORT**  
-**Stato:** **OPENED / LIVE build 245 FIX1** — estensione POLYGON PANEL ROUTINE + FIX1 dock sinistro. Camera useful-rect DELICATO del piano originale resta fuori da questo pass.  
-**Runtime:** tip `03a222e` / blob `b9258d75…` · deploy+ABQA PASS · gate **QA FINALE CHATGPT — PENDING**  
-**FRONTIER:** aggiornato (2026-08-21)  
+**Stato:** **CLOSED / PASS** build **245** FIX1 — estensione POLYGON PANEL ROUTINE + FIX1 dock sinistro. Camera useful-rect DELICATO del piano originale resta fuori (non in questo blocco).  
+**Runtime:** tip `03a222e` / blob `b9258d75…` · deploy+ABQA PASS · QA operatore PASS · finito Regola H  
+**FRONTIER:** CLOSED (2026-08-21)  
+Evidence finito: [`2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md`](2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md)  
 Evidence deploy FIX1: [`2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md`](2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md)  
 Evidence 244 (superseded dock): [`2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md)
 
