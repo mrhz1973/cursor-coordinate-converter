@@ -3,10 +3,11 @@
 **Tipo:** docs-only backlog extension  
 **ID:** `MAP-CENTER-VIEWPORT-AWARE-A` (stesso ID — **no** duplicate)  
 **Scope aggiunto:** **POLYGON PANEL — DOCK + DRAWING VIEWPORT**  
-**Stato:** **OPENED / LIVE build 244** — estensione POLYGON PANEL ROUTINE implementata (layout + Ctrl+Z). Camera useful-rect DELICATO del piano originale resta fuori da questo pass.  
-**Runtime:** tip `6d0b78a` / blob `de49d320…` · deploy+ABQA PASS · gate **QA FINALE CHATGPT — PENDING**  
+**Stato:** **OPENED / LIVE build 245 FIX1** — estensione POLYGON PANEL ROUTINE + FIX1 dock sinistro. Camera useful-rect DELICATO del piano originale resta fuori da questo pass.  
+**Runtime:** tip `03a222e` / blob `b9258d75…` · deploy+ABQA PASS · gate **QA FINALE CHATGPT — PENDING**  
 **FRONTIER:** aggiornato (2026-08-21)  
-Evidence deploy: [`2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md)
+Evidence deploy FIX1: [`2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md`](2026-08-21_2135_MAP-CENTER-VIEWPORT-AWARE-A-FIX1_deploy-abqa.md)  
+Evidence 244 (superseded dock): [`2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md)
 
 ## Precheck verificato
 
@@ -26,7 +27,7 @@ Evidence deploy: [`2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](
 
 ## Requisito operatore (sintesi)
 
-1. **Modal laterale** — desktop/viewport larga: `#polygonPanel` dock preferibilmente a **destra**; non centrare inutilmente sulla mappa; non coprire `.tile-scale` bottom-left; riuso panel system esistente.
+1. **Modal laterale** — desktop/viewport larga: `#polygonPanel` dock a **sinistra** (FIX1 post-QA: non coprire chrome destro); non centrare inutilmente sulla mappa; non coprire topbar / `.tile-scale` / footer; riuso panel system esistente.
 2. **Altezza** — usare altezza GIS disponibile; scroll interno solo se necessario; no overflow; azioni raggiungibili; ricalcolo su resize.
 3. **Nuovo poligono** — **no** auto-minimize; panel resta laterale; lista coordinate/metriche/controlli consultabili; mappa libera interattiva; open panel ≠ start drawing.
 4. **Viewport-aware center (principale)** — lo stesso punto geografico che era al centro pre-dock deve stare al centro della **porzione libera** post-dock (non centro geometrico `#miniMap`).
