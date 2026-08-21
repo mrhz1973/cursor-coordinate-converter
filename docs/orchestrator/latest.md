@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** **CLOSED / PASS** · LIVE `d899cff` / **238** · QA operatore PASS · auto-`finito` Regola H. Evidence: [`inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md).
+2026-08-21 — backlog registrato **`D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A`** = **BACKLOG / NOT OPENED** (leggibilità ATM09 Dettagli + link sicuri; baseline 238). CLEANUP-A resta CLOSED / PASS. LIVE `d899cff` / **238** invariato. Inbox: [`inbox/2026-08-21_0219_D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A-backlog.md`](inbox/2026-08-21_0219_D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A-backlog.md).

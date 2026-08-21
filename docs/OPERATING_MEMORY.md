@@ -479,6 +479,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **Legacy (non stato vivo):** `docs/checkpoint.md`, `docs/session-geolocalizzazione-e-mappa.md`, `docs/orchestrator/chatgpt-checkpoint.md`
 - **Piano/backlog:** [`docs/work-units/WU-0005-0009-roadmap.md`](work-units/WU-0005-0009-roadmap.md)
 - **Backlog 2026-08-17 (NOT OPENED):** `MAP-TARGET-SCALE-A` · `MAP-FRACTIONAL-ZOOM-A` · `MAP-PAN-TILE-OVERSCAN-A` — **non** aperti; `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)` **CLOSED / PASS** LIVE `d899cff` / **238** (2026-08-21)
+- **Backlog 2026-08-21 (NOT OPENED):** `D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A` — leggibilità ATM09 Dettagli + link sicuri; casa [`WU-0013` §23](work-units/WU-0013-uas-geozone-dflight.md); baseline build **238**; **non** riaprire CLEANUP-A
 - **Backlog 2026-08-19:** `CARTO-SEARCH-FILTER-LABEL-UX-A` **NOT OPENED** · `D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)` **CLOSED / PASS** LIVE `4f00433` / **235** (2026-08-20) · `GLOBAL-MODAL-EDGE-RESIZE-A (+ FIX1)` **CLOSED / PASS**. Finding QA 230 filtro IIM: [`WU-0012` §15i](work-units/WU-0012-carto-index-federated.md) — **risolto** da FIX1 **CLOSED** §15k
 
 ---

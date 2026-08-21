@@ -780,6 +780,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **MAP-RIGHT-TOOLBAR-TOOLTIPS-A** | Tooltip immediati su tutta la toolbar verticale destra mappa | **BACKLOG / NOT OPENED** |
 | **GIS-LEGENDS-NO-OVERLAP-COORD-BARS-A** | Legende D-Flight/ATM09: hard no-overlap barre coordinate | **BACKLOG / NOT OPENED** — casa: §8 sopra; **non** riaprire WU-0018 |
 | **D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)** | Pulizia contenuto descrittivo Dettagli D-Flight + ATM09 Rule/Regola | **CLOSED / PASS** LIVE `d899cff` / **238** · QA operatore PASS · Regola H (2026-08-21) — casa: WU-0013 §23 |
+| **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 
 #### MAP-TARGET-SCALE-A
@@ -839,6 +840,38 @@ Catena: 236 rejected → 237 FIX1 (`dflightBuildDetailsHtml` entity-encoded) →
 Evidence: [`../orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_0115_D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2_deploy-abqa.md) · finito [`../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md`](../orchestrator/inbox/2026-08-21_0210_riepilogo_finito-D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2.md).
 
 Finding originale: markup HTML/entity in Dettagli. WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
+
+#### D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). Residuo UX post-QA PASS di `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`. **Non** aperto come blocco runtime. **Non** riaprire CLEANUP-A (resta CLOSED / PASS).
+
+**Baseline sicuro:** LIVE build **238** / `dflightAtm09OpenDetails` + helpers display-only (Rule/Regola testo sicuro, raw invariati).
+
+**Requisito prodotto:**
+
+1. rendere cliccabili in modo **sicuro** i link originariamente presenti nel contenuto HTML di Rule / Regola;
+2. migliorare sensibilmente la leggibilità del pannello ATM09 (font, dimensioni, spaziatura, gerarchie, contrasto, colori);
+3. ispirazione estetica D-Flight, ma identità GIS scura con **sfondo nero/dark** dominante;
+4. preservare contenuto informativo e raw data;
+5. **non** reintrodurre raw HTML execution.
+
+**Sicurezza link (vincolo backlog):**
+
+- URL solo se esplicitamente estratti/validati (non raw HTML);
+- anchor create in modo controllato;
+- no `onclick` / `on*` / attributi raw;
+- schemi vietati: `javascript:`, `data:`, altri non autorizzati;
+- OPSEC / forced-offline / opt-in rete preservati;
+- zero fetch automatici;
+- apertura solo su azione esplicita utente.
+
+**Design intent:** testo chiaro alto contrasto; gerarchie secondarie più morbide; link distinguibili; Rule/Regola ariose (no muro di testo); ispirazione D-Flight senza copia obbligatoria palette/layout.
+
+**Scope futuro:** `dflightAtm09OpenDetails`; Rule/Regola; title/header/layout tipografico del pannello se serve; link testuali già normalizzati.
+
+**Fuori scope:** overlay ATM09; hit-test; provider/helper; dataset/raw mutation; close/minimize/restore; waypoint/tracce/poligoni; altre modal; global theme; cambio sfondo GIS generale.
+
+Casa: [`WU-0013` §23](WU-0013-uas-geozone-dflight.md). WU-0013 resta **CLOSED / PASS** — nessuna riapertura.
 
 #### D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (storico requirement)
 
