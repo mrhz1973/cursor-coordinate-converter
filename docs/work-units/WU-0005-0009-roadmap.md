@@ -915,7 +915,7 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-VERTEX-COORD-UX-A
 
-**Stato:** Candidate build **239** `be49ed2494dbaa9bdf25d55151b3ac15c390fd07` · blob `cd6a79d6…` — **REVIEW GPT-SOSTITUTIVA FAIL** (selftest `F_mvisa_build_199` / `Tf_build_196` / `H_build_214`: `APP_BUILD_NUM === 239` ma `APP_BUILD_ID` ancora `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2`). **REJECTED / non deployato**. Prossimo: `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` (build **240** atteso).
+**Stato:** Candidate build **239** `be49ed2` **REJECTED** (APP_BUILD_ID selftest stale). **FIX1** build **240** `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · blob `192c3b41…` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX1-240` — **REVIEW PACKAGE READY** · LIVE resta **238** · **NO deploy**. Evidence: [`../orchestrator/inbox/2026-08-21_1135_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1-review-package.md`](../orchestrator/inbox/2026-08-21_1135_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1-review-package.md).
 
 **Gap (funzionalità 239 da preservare in FIX1):** lista vertici + format + live drag readout + Copia + Modifica/`autoDetect` paste; working-copy `_polyEdit`; zero schema/rete.
 
