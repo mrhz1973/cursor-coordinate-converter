@@ -4,39 +4,41 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1` |
-| **GATE** | **none** (CLOSED / PASS) |
-| **NEXT** | backlog NOT OPENED a scelta |
-| **RUNTIME LIVE** | tip `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` · build **247** · blob `6e10d5686eaf7d18b85380bd15b85bd3827ad01c` |
-| **RUNTIME_CANDIDATE_SHA** | `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` (immutable; monolite non toccato in finito) |
-| **Result Cursor** | **finito** Regola H · QA PASS operatore |
+| **BLOCK** | `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` |
+| **GATE** | **QA FINALE CHATGPT — PENDING** |
+| **NEXT** | QA operatore (unica per il bundle) |
+| **RUNTIME LIVE** | tip `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` · build **247** (pre-promozione) |
+| **RUNTIME_CANDIDATE_SHA** | `aa6e8f5a5af7b215fcda7bc7055b2b6472143396` · build **248** · blob `dadbf8af428770ef1724bcd6444b17caeb69fdcf` |
+| **Result Cursor** | IMPLEMENTED · deploy PASS · ABQA 18/18 PASS · **non** finito |
 | **Working tree (pre-report-commit)** | docs dirty → this commit |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `3bea0a4f33d3b40d35dc8c24fe364df36ae892d4` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `aa6e8f5a5af7b215fcda7bc7055b2b6472143396` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync finito: sì — FRONTIER CLOSED, OM, roadmap, latest, riepilogo, deploy-abqa gate, LAST_CURSOR_REPORT. Monolite **escluso**.
-2. Trigger: `QA GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1 PASS operatore` → Regola H.
-3. Runtime invariato: tip `ac4789e` / **247** / blob `6e10d568…`.
-4. Policy confermata: Oggetti GIS FROZEN / MAINTENANCE-ONLY.
+1. Autosync orchestratore: sì — FRONTIER, latest, inbox deploy-abqa + abqa JSON, backlog status CONSUMED, OM, roadmap, LAST_CURSOR_REPORT. Monolite **escluso** (già in `aa6e8f5`).
+2. ITEM 1: `#waypointModalPanel .wp-modal-table-wrap` → `max-height:none; overflow:hidden`; radiogroup `.wp-map-name-row` spostato sopra la lista.
+3. ITEM 2: `formatPolygonCompactNum` + `formatPolygonDistanceMeters` / `fmtPolygonAreaPlain` a 1 decimale presentation-only.
+4. Deploy GIS PASS · ABQA 18/18 PASS.
+5. Backlog consumati (storico preservato): `GIS-WAYPOINT-MODAL-LAYOUT-A` · `GIS-POLYGON-METRICS-COMPACT-FORMAT-A`.
+6. Oggetti GIS resta FROZEN / MAINTENANCE-ONLY.
 
 ### STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: PENDING_SELF_REFERENCE (pre-container 3bea0a4)
+origin/main HEAD: aa6e8f5a5af7b215fcda7bc7055b2b6472143396 (pre-docs; PENDING_SELF_REFERENCE per questo commit)
 working tree: dirty docs → this commit
-ultimo blocco PASS: GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1) CLOSED
-prossimo candidato: backlog NOT OPENED
-note operative: finito Regola H; monolite invariato
+ultimo blocco PASS: GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1) CLOSED (LIVE 247)
+prossimo candidato: GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A build 248 — QA PENDING
+note operative: una sola QA operatore per il bundle; non finito
 ```
 
 ## C. OUTPUT GIT
 
 ```text
-REMOTE_HEAD_AT_EVIDENCE_TIME = 3bea0a4f33d3b40d35dc8c24fe364df36ae892d4
-RUNTIME_CANDIDATE_SHA = ac4789ea420bc691f9f8de5d7f751e040d3e6dc9
-blob monolite = 6e10d5686eaf7d18b85380bd15b85bd3827ad01c
-current_report_container = PENDING_SELF_REFERENCE
+git log --oneline -5: (see post-commit)
+git rev-parse HEAD: PENDING_SELF_REFERENCE
+git rev-parse origin/main: aa6e8f5a5af7b215fcda7bc7055b2b6472143396 (REMOTE_HEAD_AT_EVIDENCE_TIME)
+RUNTIME_CANDIDATE_SHA: aa6e8f5a5af7b215fcda7bc7055b2b6472143396
 ```

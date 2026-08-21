@@ -1,10 +1,11 @@
 # BACKLOG — GIS-POLYGON-METRICS-COMPACT-FORMAT-A
 
 **ID:** `GIS-POLYGON-METRICS-COMPACT-FORMAT-A`  
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21)  
+**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) — gate **QA FINALE PENDING**  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Poligoni)  
-**Runtime:** **non implementato** in questo pass (docs-only)  
-**FRONTIER:** **non aperto**
+**Runtime:** tip `aa6e8f5…` · build **248** · blob `dadbf8af…`  
+**Evidence bundle:** [`2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md)  
+**Nota:** storico backlog **non** cancellato.
 
 ## Motivazione
 

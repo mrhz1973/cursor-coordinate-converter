@@ -786,10 +786,10 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
-| **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **BACKLOG / NOT OPENED** (2026-08-21) — ROUTINE/UI salvo audit |
+| **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) · candidate **248** · QA PENDING |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
-| **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **BACKLOG / NOT OPENED** (2026-08-21) — CSS/layout vs lifecycle TBD |
+| **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) · candidate **248** · QA PENDING |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **BACKLOG / NOT OPENED** (2026-08-21) — zero rete; schema WP invariato |
 
 #### MAP-CENTER-VIEWPORT-AWARE-A — estensione POLYGON PANEL / DOCK + DRAWING VIEWPORT
@@ -939,13 +939,13 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-METRICS-COMPACT-FORMAT-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
+**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22). Candidate tip `aa6e8f5…` · build **248** · blob `dadbf8af…`. Gate **QA FINALE PENDING**. Storico backlog preservato.
 
 **Requisito:** in modal Poligoni, area / perimetro / lunghezze con **una sola cifra decimale** (anche live drawing/edit); solo presentation rounding; calcoli/geometria/coordinate/persist/export e unità invariati; no overflow orizzontale.
 
-**Categoria:** ROUTINE/UI salvo audit contrario.
+**Categoria:** ROUTINE/UI.
 
-Evidence: [`../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md).
+Evidence backlog: [`../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md). Bundle: [`../orchestrator/inbox/2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md`](../orchestrator/inbox/2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md).
 
 #### GIS-POLYGON-WAYPOINT-INTERACTION-A
 
@@ -988,15 +988,13 @@ Unico close-on-click documentato sul dialog:
 
 #### GIS-WAYPOINT-MODAL-LAYOUT-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto.
+**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22). Candidate tip `aa6e8f5…` · build **248** · blob `dadbf8af…`. Gate **QA FINALE PENDING**. Storico backlog preservato. Fix ROUTINE CSS/layout (no lifecycle modal).
 
 **Finding:** con lista lunga/scorrimento, il gruppo «Nome sulla mappa» / «Sempre visibile» / «Solo nei tooltip» si sovrappone alle righe tabella (Nome/Dettagli/controlli).
 
 **Acceptance:** spazio layout proprio; zero overlap; scroll corretto; desktop/mobile/resize; azioni riga raggiungibili; semantica visibility invariata; `state.mapWaypoints[]` invariato; minimize/restore/resize invariati.
 
-**Categoria futura:** ROUTINE (CSS/layout) oppure DELICATO (lifecycle/DOM).
-
-Evidence: [`../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md).
+Evidence backlog: [`../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md). Bundle: [`../orchestrator/inbox/2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md`](../orchestrator/inbox/2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md).
 
 #### GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
 
