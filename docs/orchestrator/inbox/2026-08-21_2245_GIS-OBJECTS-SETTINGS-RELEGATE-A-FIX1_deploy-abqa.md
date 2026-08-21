@@ -4,7 +4,7 @@
 **Parent:** `GIS-OBJECTS-SETTINGS-RELEGATE-A`  
 **Categoria:** ROUTINE — FIX1 layout toolbar  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE uscita:** **QA FINALE CHATGPT — PENDING**
+**GATE uscita:** **CLOSED / PASS** (QA operatore PASS · finito Regola H)
 
 ## Finding QA
 
@@ -42,6 +42,6 @@ No leaked text · no map workbench btn · colonna controlli stretta · GPS/zoom/
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
+**QA FINALE CHATGPT — PASS operatore** (2026-08-21) → auto-`finito` Regola H.
 
-Non attestare QA operatore. Non `finito`.
+Evidence chiusura: [`2026-08-21_2300_riepilogo_finito-GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1.md`](2026-08-21_2300_riepilogo_finito-GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1.md).

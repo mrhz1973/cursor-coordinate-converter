@@ -4,12 +4,12 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1 |
-| **WU ATTIVA** | `—` (N/A — workstream block-based) |
-| **BLOCCO ATTIVO** | `GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1` |
-| **STATO BLOCCO** | deploy GIS **PASS** · ABQA **PASS** · **QA FINALE CHATGPT — PENDING** |
-| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **WORKSTREAM ATTIVO** | — |
+| **WU ATTIVA** | `—` (N/A) |
+| **BLOCCO ATTIVO** | none |
+| **STATO BLOCCO** | **GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1) CLOSED / PASS** |
+| **GATE CORRENTE** | none |
 | **RUNTIME LIVE** | tip `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` · build **247** · `GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1` · blob `6e10d5686eaf7d18b85380bd15b85bd3827ad01c` |
-| **RUNTIME CANDIDATE** | none (promosso) |
-| **NEXT** | QA operatore ChatGPT · **non** finito finché non arriva `QA GIS-OBJECTS-SETTINGS-RELEGATE-A PASS operatore` (o `…-FIX1 PASS`) |
-| **ALTRI WORKSTREAM** | **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** · MAP-CENTER (+FIX1) **CLOSED** · GIS VPS **247** |
+| **RUNTIME CANDIDATE** | none |
+| **NEXT** | Backlog NOT OPENED a scelta (METRICS-COMPACT · WP-TEXT-EXPORT · WP-MODAL-LAYOUT · POLY-WP-INTERACTION · …) |
+| **ALTRI WORKSTREAM** | **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** · QA FIX1 **PASS operatore** · finito Regola H · MAP-CENTER **CLOSED** · GIS VPS **247** |
