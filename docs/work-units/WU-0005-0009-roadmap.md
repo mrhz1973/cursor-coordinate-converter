@@ -784,7 +784,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3)** | Lista coordinate vertici (edit + drawing) + no auto-minimize su Nuovo poligono | **LIVE** build **242** FIX3 tip `ea5b4c1` · blob `2e0075ba…` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
+| **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **LIVE** build **243** FIX4 tip `ccb4166` · blob `04cfdfcc…` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **BACKLOG / NOT OPENED** (2026-08-21) — ROUTINE/UI salvo audit |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
@@ -932,9 +932,9 @@ Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibi
 
 Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md).
 
-#### GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3)
+#### GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)
 
-**Stato:** **LIVE** build **242** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` · blob `2e0075ba344713b17f0888c4e9594f414bb0db94` · reviewed `eef83032535f948b21491ca226757447168de2a3` · tip `ea5b4c10366c5a34331f8a62c77efb8ea6aab615`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`../orchestrator/inbox/2026-08-21_1305_GIS-POLYGON-VERTEX-COORD-UX-A-FIX3_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1305_GIS-POLYGON-VERTEX-COORD-UX-A-FIX3_deploy-abqa.md). FIX2 human FAIL (auto-minimize) addressed.
+**Stato:** **LIVE** build **243** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` · blob `04cfdfcc1eed8979e60b9ff176f93ceee79ccfcb` · reviewed immutable `5857cbb2c3fc73e688ae26c1e2a359bb76199416` · tip `ccb41668576686bd96ada4900e11e21f0e07ad3d`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`../orchestrator/inbox/2026-08-21_1945_GIS-POLYGON-VERTEX-COORD-UX-A-FIX4_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1945_GIS-POLYGON-VERTEX-COORD-UX-A-FIX4_deploy-abqa.md). FIX3 human FAIL (draft verts non trascinabili) addressed by FIX4.
 
 #### GIS-POLYGON-METRICS-COMPACT-FORMAT-A
 

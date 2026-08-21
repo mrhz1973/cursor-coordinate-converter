@@ -4,26 +4,25 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | METHOD-CONTEXT-SAFE-BOOTSTRAP — CORE BOOT WU-OPTIONAL (docs-only) |
-| **GATE** | method fix PASS · FIX4 gate **UNCHANGED** (review / REVIEW PACKAGE READY / NO DEPLOY) |
-| **NEXT** | Review GPT-SOSTITUTIVA FIX4 (altro PC) · **non** finito |
-| **RUNTIME LIVE** | build **242** · tip `ea5b4c10366c5a34331f8a62c77efb8ea6aab615` · blob `2e0075ba…` |
-| **RUNTIME_CANDIDATE_SHA** | `5857cbb2c3fc73e688ae26c1e2a359bb76199416` · build **243** · blob `04cfdfcc…` |
-| **WU ATTIVA** | N/A (`—`) |
-| **Result Cursor** | CORE-BOOT WU-OPTIONAL METHOD FIX PASS |
+| **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX4` |
+| **GATE** | **QA FINALE CHATGPT — PENDING** |
+| **NEXT** | QA operatore ChatGPT · **non** finito |
+| **RUNTIME LIVE** | tip `ccb41668576686bd96ada4900e11e21f0e07ad3d` · build **243** · blob `04cfdfcc1eed8979e60b9ff176f93ceee79ccfcb` |
+| **RUNTIME_CANDIDATE_SHA** | reviewed immutable `5857cbb2c3fc73e688ae26c1e2a359bb76199416` (cherry-pick → tip above) |
+| **Result Cursor** | REVIEW PASS + deploy PASS + ABQA 17/17 PASS |
 | **Working tree (pre-report-commit)** | docs dirty → this commit |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `1f4ca8c6d561f9aa71c91fc5ac428c9b018cb2fe` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `ccb41668576686bd96ada4900e11e21f0e07ad3d` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync orchestratore: sì — `docs/orchestrator/latest.md` + inbox `2026-08-21_1905_CORE-BOOT-WU-OPTIONAL-method-fix.md`. Monolite **escluso**.
-2. README AI-BOOT: step 4 WU-optional; fallback ls-remote; payload guard oltre END.
-3. FRONTIER: campo **WU ATTIVA = — (N/A)**; BLOCK/GATE/LIVE/CANDIDATE/NEXT invariati.
-4. OM §4 Regola I allineata (niente preload extra).
-5. Acceptance logica A/B/C: PASS senza GitHub.search/listing in CORE BOOT.
-6. NO runtime · NO deploy · NO REVIEW PASS FIX4 · NO finito.
+1. Autosync orchestratore: sì — FRONTIER, latest, inbox deploy-abqa 1945, review-package status, roadmap pointer, LAST_CURSOR_REPORT. Monolite **escluso** da questo commit docs.
+2. Identità candidate: FULL SHA `5857cbb…` · blob `04cfdfcc…` · BASE `19a0191…` · branch `review/…-FIX4-243` — MATCH.
+3. Cherry-pick exact → tip `ccb4166…` · blob invariato · push main.
+4. Deploy GIS-only PASS (CMP/HTTP/markers) · proxy PID invariato.
+5. ABQA 17/17 PASS (acceptance 1–10).
+6. Gate: QA FINALE CHATGPT — PENDING. NO operator QA instructions. NO finito.
 
 ## C. OUTPUT GIT
 
-Vedi post-push verbatim nel messaggio operatore / RIEPILOGO chat.
+Vedi post-push verbatim nel messaggio operatore.
