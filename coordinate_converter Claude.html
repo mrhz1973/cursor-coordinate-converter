@@ -24378,10 +24378,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "MAP-CENTER-VIEWPORT-AWARE-A";
-const APP_BUILD_DETAIL = "Polygon panel GIS height + verts priority + Ctrl+Z remove-last during Nuovo poligono.";
+const APP_BUILD_ID = "MAP-CENTER-VIEWPORT-AWARE-A-FIX1";
+const APP_BUILD_DETAIL = "FIX1: polygon panel dock LEFT + height between topbar and scale/footer (no cover right ctrls).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 244;
+const APP_BUILD_NUM = 245;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39979,8 +39979,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -41001,8 +41001,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42935,8 +42935,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 244
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 245
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "MAP-CENTER-VIEWPORT-AWARE-A-FIX1");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -80005,7 +80005,7 @@ function gisPanelDefaultRect(root, opts){
   const w = Math.min(maxW, Math.max(minW, wWant));
   const h = Math.min(maxH, Math.max(minH, hWant));
   // Default placement: top-left under live chrome (MODAL-OPEN-TOP-ALIGN / EDGE-FIX1).
-  // preferRight: dock to right (polygon panel — leave bottom-left scale visible).
+  // preferRight: optional right dock; polygon panel FIX1 uses LEFT (preferRight false).
   // Touched/saved/restored layouts still win via gisPanelApplyLayout.
   const left = opts.preferRight ? Math.max(pad, vw - w - pad) : pad;
   const safeTop = (typeof gisPanelSafeTop === "function") ? gisPanelSafeTop(opts) : pad;
@@ -83902,20 +83902,107 @@ function _polygonPanelLayoutOpts(){
     minH: 220,
     defaultW: 360,
     defaultH: null,
-    /* Tall GIS-usable height; bottomScaleReserve keeps .tile-scale visible under dock. */
+    /* FIX1: LEFT dock; height = GIS band under topbar / above scale+footer. */
     defaultHeightFraction: 0.92,
     defaultHeightCap: 100000,
     topbarReserve: 108,
-    bottomScaleReserve: 56,
-    preferRight: true,
+    bottomScaleReserve: 96,
+    preferRight: false,
     bodyId: "polygonPanelBody",
     headId: "polygonPanelHead",
     closeId: "polygonPanelClose"
   };
 }
+/** FIX1: usable vertical band for #polygonPanel — below header/topbar, above scale/footer. */
+function polygonPanelComputeGisBand(opts){
+  opts = opts || {};
+  const pad = Number.isFinite(opts.pad) ? opts.pad : 12;
+  const gap = 8;
+  const vw = window.innerWidth || 0;
+  const vh = window.innerHeight || 0;
+  let top = pad;
+  try {
+    if (typeof gisPanelSafeTop === "function") top = gisPanelSafeTop(opts);
+  } catch(_){}
+  try {
+    const tb = document.getElementById("appTopbar");
+    if (tb && !tb.hidden){
+      const r = tb.getBoundingClientRect();
+      if (Number.isFinite(r.bottom) && r.bottom > 0) top = Math.max(top, Math.ceil(r.bottom + gap));
+    }
+  } catch(_){}
+  let bottom = vh - pad;
+  try {
+    const foot = document.querySelector("body > footer");
+    if (foot){
+      const fr = foot.getBoundingClientRect();
+      if (Number.isFinite(fr.top) && fr.top > 0) bottom = Math.min(bottom, Math.floor(fr.top - gap));
+    }
+  } catch(_){}
+  try {
+    const css = getComputedStyle(document.body).getPropertyValue("--gis-footer-reserve");
+    const px = parseFloat(css);
+    if (Number.isFinite(px) && px > 0) bottom = Math.min(bottom, Math.floor(vh - px - gap));
+  } catch(_){}
+  try {
+    const bl = document.querySelector("#miniMap .tile-bottom-left, #gisMapMount .tile-bottom-left");
+    if (bl){
+      const br = bl.getBoundingClientRect();
+      if (Number.isFinite(br.top) && br.top > top) bottom = Math.min(bottom, Math.floor(br.top - gap));
+    }
+  } catch(_){}
+  try {
+    const sc = document.querySelector("#miniMap .tile-scale, #gisMapMount .tile-scale");
+    if (sc){
+      const sr = sc.getBoundingClientRect();
+      if (Number.isFinite(sr.top) && sr.top > top) bottom = Math.min(bottom, Math.floor(sr.top - gap));
+    }
+  } catch(_){}
+  const minH = Number.isFinite(opts.minH) ? opts.minH : 220;
+  const availH = Math.max(0, Math.floor(bottom - top));
+  /* Never inflate past the GIS band (avoids covering footer/scale). */
+  const h = Math.max(Math.min(minH, availH || minH), availH);
+  const minW = Number.isFinite(opts.minW) ? opts.minW : 280;
+  const wWant = Number.isFinite(opts.defaultW) ? opts.defaultW : 360;
+  const w = Math.min(Math.max(minW, wWant), Math.max(minW, vw - pad * 2));
+  return { left: pad, top: top, w: w, h: h, bottom: bottom };
+}
+function polygonPanelApplyLeftGisBand(dlg, opts){
+  if (!dlg) return null;
+  opts = opts || _polygonPanelLayoutOpts();
+  const band = polygonPanelComputeGisBand(opts);
+  const softMinH = Math.min(Number.isFinite(opts.minH) ? opts.minH : 220, Math.max(80, band.h));
+  const clampOpts = Object.assign({}, opts, { minH: softMinH, maxH: Math.max(softMinH, band.h) });
+  const rect = gisPanelClampRect({ left: band.left, top: band.top, w: band.w, h: band.h }, clampOpts);
+  /* Keep top/bottom inside the measured band even if clamp relaxed on vh. */
+  rect.top = Math.max(band.top, Math.min(rect.top, Math.max(band.top, band.bottom - rect.h)));
+  if (rect.top + rect.h > band.bottom) rect.h = Math.max(softMinH, band.bottom - rect.top);
+  dlg.style.left = rect.left + "px";
+  dlg.style.top = rect.top + "px";
+  dlg.style.right = "auto";
+  dlg.style.bottom = "auto";
+  dlg.style.transform = "none";
+  dlg.style.width = rect.w + "px";
+  dlg.style.height = rect.h + "px";
+  try { gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h, touched: false }, opts); } catch(_){}
+  try { gisPanelSyncBodySize(dlg, opts); } catch(_){}
+  return rect;
+}
 function attachPolygonPanelFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
   const opts = _polygonPanelLayoutOpts();
+  /* FIX1: migrate session layouts that still dock on the right half. */
+  let forceDefaultBand = true;
+  try {
+    const lay = gisPanelGetLayout(opts.key, opts);
+    const vw = window.innerWidth || 0;
+    if (lay && Number.isFinite(lay.left) && lay.left > vw * 0.4){
+      try { if (typeof gPanelLayouts !== "undefined" && gPanelLayouts) delete gPanelLayouts[opts.key]; } catch(_){}
+      forceDefaultBand = true;
+    } else if (lay && lay.touched){
+      forceDefaultBand = false;
+    }
+  } catch(_){}
   gisPanelAttachDrag(dlg, Object.assign({}, opts, {
     threshold: 4,
     draggingClass: "dragging",
@@ -83923,7 +84010,12 @@ function attachPolygonPanelFloatingGis(dlg){
   }));
   const handles = [...dlg.querySelectorAll('[data-role="gis-panel-resize"][data-handle]')];
   if (handles.length) gisPanelAttachResize(dlg, Object.assign({}, opts, { handleEls: handles, threshold: 3 }));
-  gisPanelApplyLayout(dlg, opts);
+  try {
+    if (forceDefaultBand) polygonPanelApplyLeftGisBand(dlg, opts);
+    else gisPanelApplyLayout(dlg, opts);
+  } catch(_){
+    try { polygonPanelApplyLeftGisBand(dlg, opts); } catch(__){}
+  }
   try { gisPanelAttachBringToFront(dlg, opts); } catch(_){}
   try { polygonSyncPanelOpsFocusClass(); } catch(_){}
 }
