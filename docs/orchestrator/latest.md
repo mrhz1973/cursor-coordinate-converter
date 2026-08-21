@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **MAP-CENTER-VIEWPORT-AWARE-A** LIVE **244** (polygon panel height/priority + Ctrl+Z). Deploy+ABQA **15/15 PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`inbox/2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md`](inbox/2026-08-21_2105_MAP-CENTER-VIEWPORT-AWARE-A_deploy-abqa.md). **NON** finito.
+2026-08-21 — **VPS-HEALTH-CHECK-READONLY PASS**. Censimento LIVE VPS IONOS (CPU/RAM/swap/disco/porte/servizi/APT). Unico side effect: `apt-get update`. Nessun upgrade/reboot/deploy. Evidence: [`inbox/2026-08-21_2120_VPS-HEALTH-CHECK-READONLY.md`](inbox/2026-08-21_2120_VPS-HEALTH-CHECK-READONLY.md). Prodotto invariato: **MAP-CENTER-VIEWPORT-AWARE-A** LIVE **244**, gate **QA FINALE PENDING**.
