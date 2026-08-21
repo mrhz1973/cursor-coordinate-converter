@@ -6,9 +6,9 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | GIS-POLYGON-VERTEX-COORD-UX-A-FIX3 |
 | **BLOCCO ATTIVO** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` |
-| **STATO BLOCCO** | **REVIEW PACKAGE READY** · **NO DEPLOY** · REVIEW PASS **non** attestato |
-| **GATE CORRENTE** | **review** (DELICATO — STOP pre-promote/deploy) |
-| **RUNTIME LIVE** | tip `1d43c795a780380c48a66ad36fac039a9ef93cfa` · build **241** · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · blob `92ec73f7be579e8616ee83fcab085f1c7c6a426d` |
-| **RUNTIME CANDIDATE** | `eef83032535f948b21491ca226757447168de2a3` · build **242** · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` · blob `2e0075ba344713b17f0888c4e9594f414bb0db94` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX3-242` |
-| **NEXT** | Review ChatGPT del candidate · **non** deploy · **non** finito |
-| **ALTRI WORKSTREAM** | QA FIX2 **FAIL** (auto-minimize) → FIX3 addresses · `MAP-CENTER-VIEWPORT-AWARE-A` est. POLYGON PANEL **BACKLOG** · GIS VPS ancora **241** |
+| **STATO BLOCCO** | Deploy + ABQA **PASS** · **QA FINALE CHATGPT — PENDING** |
+| **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
+| **RUNTIME LIVE** | tip `ea5b4c10366c5a34331f8a62c77efb8ea6aab615` (cherry-pick di reviewed `eef83032535f948b21491ca226757447168de2a3`) · build **242** · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` · blob `2e0075ba344713b17f0888c4e9594f414bb0db94` |
+| **RUNTIME CANDIDATE** | — |
+| **NEXT** | Attesa attestazione QA operatore · **non** `finito` finché non arriva `QA … PASS operatore` |
+| **ALTRI WORKSTREAM** | Backlog NOT OPENED: `MAP-CENTER-VIEWPORT-AWARE-A` (est. POLYGON PANEL) · `GIS-POLYGON-METRICS-COMPACT-FORMAT-A` · `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A` · `GIS-WAYPOINT-MODAL-LAYOUT-A` · `GIS-POLYGON-WAYPOINT-INTERACTION-A` · GIS VPS serve **242** (`?v=ea5b4c1`) |

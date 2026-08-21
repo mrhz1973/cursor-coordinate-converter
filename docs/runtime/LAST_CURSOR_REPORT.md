@@ -5,31 +5,28 @@
 | Campo | Valore |
 | --- | --- |
 | **BLOCK** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX3` |
-| **GATE** | REVIEW PACKAGE READY · NO DEPLOY |
-| **RUNTIME LIVE** | build **241** · blob `92ec73f7…` |
-| **RUNTIME CANDIDATE** | `eef83032535f948b21491ca226757447168de2a3` · build **242** · blob `2e0075ba…` |
-| **RESULT** | Auto-minimize on Nuovo poligono removed · review only |
-| **WORKING TREE** | clean after docs push |
+| **GATE** | **QA FINALE CHATGPT — PENDING** |
+| **RUNTIME LIVE** | tip `ea5b4c1…` · reviewed `eef8303…` · build **242** · blob `2e0075ba…` |
+| **RESULT** | REVIEW PASS + cherry-pick + deploy CMP + ABQA 33/33 PASS |
+| **WORKING TREE** | clean after evidence push |
 
 ## B. RIEPILOGO
 
-1. Root cause: `polygonStartDraw` → `polygonDrawMinimizeIfOpen`.
-2. Fix: remove call only; helpers kept; manual minimize PASS.
-3. Local QA 22/22; selftest triad 242/FIX3.
-4. Review branch + package; LIVE 241 unchanged; no deploy.
+1. Cherry-pick exact reviewed → blob `2e0075ba…`.
+2. Deploy `ionos-n8n` HTTP 200 CMP PASS; proxy PID invariato.
+3. ABQA: Nuovo poligono no auto-minimize + verts list + manual minimize + edit/WP/track PASS.
+4. Gate QA FINALE CHATGPT PENDING · no operatore PASS · no finito.
 
 ## C. GIT
 
 ```
-CANDIDATE: eef83032535f948b21491ca226757447168de2a3
-BLOB: 2e0075ba344713b17f0888c4e9594f414bb0db94
-BASE main: 710e8087b808df1cffbf491480015a2ea2af3a4c
-LIVE BLOB: 92ec73f7be579e8616ee83fcab085f1c7c6a426d
+origin/main tip promote: ea5b4c10366c5a34331f8a62c77efb8ea6aab615
+BLOB LIVE: 2e0075ba344713b17f0888c4e9594f414bb0db94
 ```
 
 STATO FRESCO DA CURSOR
-origin/main HEAD: (docs tip after publish)
+origin/main HEAD: (see push)
 working tree: clean
-ultimo blocco PASS tecnico LIVE: FIX2 deploy+ABQA (QA FAIL → FIX3 review)
-prossimo candidato: FIX3 build 242 review
-note operative: NO DEPLOY · NO REVIEW PASS · NO finito
+ultimo blocco PASS tecnico: GIS-POLYGON-VERTEX-COORD-UX-A-FIX3 deploy+ABQA
+prossimo candidato: attesa QA operatore
+note operative: no finito
