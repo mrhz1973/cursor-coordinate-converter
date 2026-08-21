@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-21 — **MAP-CENTER-VIEWPORT-AWARE-A (+ FIX1) CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **245** tip `03a222e` · blob `b9258d75…`. Evidence: [`inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md`](inbox/2026-08-21_2145_riepilogo_finito-MAP-CENTER-VIEWPORT-AWARE-A-FIX1.md).
+2026-08-21 — **GIS-OBJECTS-SETTINGS-RELEGATE-A** LIVE **246**. Accesso **Oggetti GIS** solo da Impostazioni ⚙ (toolbar mappa rimossa). Modulo **FROZEN / MAINTENANCE-ONLY**. Tip `f0ea637` · blob `3c575a83…` · deploy+ABQA **12/12 PASS** · gate **QA FINALE PENDING**. Evidence: [`inbox/2026-08-21_2210_GIS-OBJECTS-SETTINGS-RELEGATE-A_deploy-abqa.md`](inbox/2026-08-21_2210_GIS-OBJECTS-SETTINGS-RELEGATE-A_deploy-abqa.md).
