@@ -783,10 +783,12 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A** | Lista coordinate tutti i vertici + copia + paste/`autoDetect` + readout live in drag | **LIVE** build **240** FIX1 `4fb9c2f` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
+| **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2)** | Lista coordinate tutti i vertici (edit + drawing) + copia + paste/`autoDetect` + readout live in drag | **PROMOTED** build **241** FIX2 blob `92ec73f7…` · tip `1d43c79` · deploy/ABQA in corso/pending evidence |
+| **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **BACKLOG / NOT OPENED** (2026-08-21) — ROUTINE/UI salvo audit |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **BACKLOG / NOT OPENED** (2026-08-21) — CSS/layout vs lifecycle TBD |
+| **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **BACKLOG / NOT OPENED** (2026-08-21) — zero rete; schema WP invariato |
 
 #### MAP-TARGET-SCALE-A
 
@@ -914,13 +916,21 @@ Requisito: alla **chiusura completa** del modal D-Flight non deve restare visibi
 
 Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md`](../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COORD-UX-audit-backlog.md).
 
-#### GIS-POLYGON-VERTEX-COORD-UX-A
+#### GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2)
 
-**Stato:** **LIVE** build **240** `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md). (239 REJECTED per APP_BUILD_ID stale.)
+**Stato:** build **241** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · blob `92ec73f7be579e8616ee83fcab085f1c7c6a426d` · reviewed candidate `b578ec8e11c952bb6a2f99fb6d863e673da2f723` · promoted cherry-pick tip `1d43c795a780380c48a66ad36fac039a9ef93cfa`. FIX1 240 human FAIL (lista assente in drawing) addressed. Gate post-deploy: **QA FINALE CHATGPT — PENDING**.
 
-**Gap (funzionalità 239 da preservare in FIX1):** lista vertici + format + live drag readout + Copia + Modifica/`autoDetect` paste; working-copy `_polyEdit`; zero schema/rete.
+Evidence FIX1: [`../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md). Review FIX2: [`../orchestrator/inbox/2026-08-21_1155_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2-review-package.md`](../orchestrator/inbox/2026-08-21_1155_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2-review-package.md).
 
-Evidence 239: [`../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md`](../orchestrator/inbox/2026-08-21_1105_GIS-POLYGON-VERTEX-COORD-UX-A-review-package.md) (su branch review; **non** LIVE).
+#### GIS-POLYGON-METRICS-COMPACT-FORMAT-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
+
+**Requisito:** in modal Poligoni, area / perimetro / lunghezze con **una sola cifra decimale** (anche live drawing/edit); solo presentation rounding; calcoli/geometria/coordinate/persist/export e unità invariati; no overflow orizzontale.
+
+**Categoria:** ROUTINE/UI salvo audit contrario.
+
+Evidence: [`../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-POLYGON-METRICS-COMPACT-FORMAT-A-backlog.md).
 
 #### GIS-POLYGON-WAYPOINT-INTERACTION-A
 
@@ -972,6 +982,14 @@ Unico close-on-click documentato sul dialog:
 **Categoria futura:** ROUTINE (CSS/layout) oppure DELICATO (lifecycle/DOM).
 
 Evidence: [`../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md`](../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAYOUT-A-backlog.md).
+
+#### GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
+
+**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
+
+**Requisito:** export Waypoint come testo semplice (file unico + clipboard); singolo e multi-selezione; ordine coerente lista/selezione; almeno Nome + Coordinata nel formato della modal; preferenza riga `NOME | COORDINATA | TIPO | NOTE`; formatter canonico; `state.mapWaypoints[]` invariato; zero rete.
+
+Evidence: [`../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md).
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
