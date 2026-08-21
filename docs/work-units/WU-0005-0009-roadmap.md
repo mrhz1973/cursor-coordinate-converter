@@ -783,7 +783,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-ATM09-DETAILS-READABILITY-LINKS-A** | ATM09 Dettagli: leggibilità tipografica + link sicuri (Rule/Regola) | **BACKLOG / NOT OPENED** — casa: WU-0013 §23; baseline sicuro build **238**; **non** riaprire CLEANUP-A |
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
-| **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2)** | Lista coordinate tutti i vertici (edit + drawing) + copia + paste/`autoDetect` + readout live in drag | **PROMOTED** build **241** FIX2 blob `92ec73f7…` · tip `1d43c79` · deploy/ABQA in corso/pending evidence |
+| **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2)** | Lista coordinate tutti i vertici (edit + drawing) + copia + paste/`autoDetect` + readout live in drag | **LIVE** build **241** FIX2 tip `1d43c79` · blob `92ec73f7…` · deploy+ABQA PASS · **QA FINALE CHATGPT — PENDING** |
 | **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **BACKLOG / NOT OPENED** (2026-08-21) — ROUTINE/UI salvo audit |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
@@ -918,9 +918,7 @@ Evidence audit: [`../orchestrator/inbox/2026-08-21_1040_GIS-POLYGON-WAYPOINT-COO
 
 #### GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2)
 
-**Stato:** build **241** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · blob `92ec73f7be579e8616ee83fcab085f1c7c6a426d` · reviewed candidate `b578ec8e11c952bb6a2f99fb6d863e673da2f723` · promoted cherry-pick tip `1d43c795a780380c48a66ad36fac039a9ef93cfa`. FIX1 240 human FAIL (lista assente in drawing) addressed. Gate post-deploy: **QA FINALE CHATGPT — PENDING**.
-
-Evidence FIX1: [`../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1145_GIS-POLYGON-VERTEX-COORD-UX-A-FIX1_deploy-abqa.md). Review FIX2: [`../orchestrator/inbox/2026-08-21_1155_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2-review-package.md`](../orchestrator/inbox/2026-08-21_1155_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2-review-package.md).
+**Stato:** **LIVE** build **241** `GIS-POLYGON-VERTEX-COORD-UX-A-FIX2` · blob `92ec73f7be579e8616ee83fcab085f1c7c6a426d` · reviewed `b578ec8e11c952bb6a2f99fb6d863e673da2f723` · tip `1d43c795a780380c48a66ad36fac039a9ef93cfa`. Deploy + ABQA **PASS**. Gate: **QA FINALE CHATGPT — PENDING**. Evidence: [`../orchestrator/inbox/2026-08-21_1215_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2_deploy-abqa.md`](../orchestrator/inbox/2026-08-21_1215_GIS-POLYGON-VERTEX-COORD-UX-A-FIX2_deploy-abqa.md).
 
 #### GIS-POLYGON-METRICS-COMPACT-FORMAT-A
 
