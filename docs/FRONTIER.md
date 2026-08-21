@@ -4,11 +4,11 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | — (idle; prossimo da backlog) |
-| **BLOCCO ATTIVO** | — |
-| **STATO BLOCCO** | `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)` **CLOSED / PASS** |
-| **GATE CORRENTE** | **none** |
+| **WORKSTREAM ATTIVO** | GIS-POLYGON-VERTEX-COORD-UX-A-FIX1 |
+| **BLOCCO ATTIVO** | `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` |
+| **STATO BLOCCO** | `REVIEW PACKAGE READY` · **NO deploy** · **NO review PASS** · **NO finito** |
+| **GATE CORRENTE** | **review** (DELICATO — STOP pre-deploy) |
 | **RUNTIME LIVE** | `d899cff2c7ac24f1b9bba3eb99d10e08d2442b25` · build **238** · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2` · helper **0.1.3** · blob `c36109d1ebda7470748a3284089bf11b262d01cf` |
-| **RUNTIME CANDIDATE** | — (nessun candidato aperto) |
-| **NEXT** | — |
-| **ALTRI WORKSTREAM** | WU-0012 **OPEN** · WU-0010 **OPEN** · WU-0021 **CLOSED / PASS** · WU-0020 **CLOSED / PASS** · **Oggetti GIS FROZEN** · GIS VPS serve **238** (`?v=d899cff`) · `D-FLIGHT-DETAILS-CONTENT-CLEANUP-A (+ FIX1 + FIX2)` **CLOSED / PASS** · `D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)` **CLOSED / PASS** · build **236** rejected / non deployato |
+| **RUNTIME CANDIDATE** | `4fb9c2f30868c0a90dcf745c2e146c34fd598a59` · build **240** · `GIS-POLYGON-VERTEX-COORD-UX-A-FIX1` · blob `192c3b41543d6bedfbc899e6b3c8d1e3fe427464` · branch `review/GIS-POLYGON-VERTEX-COORD-UX-A-FIX1-240` |
+| **NEXT** | Review GPT/operatore sul candidate FIX1 · **non** merge/deploy finché review PASS esplicito |
+| **ALTRI WORKSTREAM** | `GIS-POLYGON-WAYPOINT-INTERACTION-A` **BACKLOG / NOT OPENED** · WU-0012 **OPEN** · WU-0010 **OPEN** · **Oggetti GIS FROZEN** *(deroga SOLO vertex-coord UX)* · GIS VPS serve **238** · candidate **239** REJECTED |
