@@ -2848,33 +2848,37 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 }
 .polygon-panel .poly-list-table{
   width:100%;
-  min-width:756px;
+  /* GIS-POLYGON-TABLE-COL-RESIZE-A: no 756px floor — scroll only when useful mins can't fit. */
+  min-width:0;
   border-collapse:collapse;
   font-size:.82rem;
   table-layout:fixed;
-  --poly-sel-col:36px;
-  --poly-vis-col:44px;
-  --poly-name-col:140px;
-  --poly-vtx-col:52px;
-  --poly-area-col:72px;
-  --poly-perim-col:72px;
-  --poly-style-col:44px;
-  --poly-when-col:88px;
-  --poly-actions-col:128px;
+  --poly-sel-col:32px;
+  --poly-vis-col:36px;
+  --poly-name-col:120px;
+  --poly-vtx-col:44px;
+  --poly-area-col:64px;
+  --poly-perim-col:64px;
+  --poly-style-col:36px;
+  --poly-when-col:72px;
+  --poly-actions-col:120px;
 }
-.polygon-panel .poly-list-table col.poly-col-sel{ width:var(--poly-sel-col); min-width:36px; }
-.polygon-panel .poly-list-table col.poly-col-vis{ width:var(--poly-vis-col); min-width:36px; }
-.polygon-panel .poly-list-table col.poly-col-name{ width:var(--poly-name-col); min-width:72px; }
-.polygon-panel .poly-list-table col.poly-col-vtx{ width:var(--poly-vtx-col); min-width:44px; }
-.polygon-panel .poly-list-table col.poly-col-area{ width:var(--poly-area-col); min-width:56px; }
-.polygon-panel .poly-list-table col.poly-col-perim{ width:var(--poly-perim-col); min-width:56px; }
-.polygon-panel .poly-list-table col.poly-col-style{ width:var(--poly-style-col); min-width:36px; }
-.polygon-panel .poly-list-table col.poly-col-when{ width:var(--poly-when-col); min-width:64px; }
-.polygon-panel .poly-list-table col.poly-col-actions{ width:var(--poly-actions-col); min-width:112px; }
+.polygon-panel .poly-list-table col.poly-col-sel{ width:var(--poly-sel-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-vis{ width:var(--poly-vis-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-name{ width:var(--poly-name-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-vtx{ width:var(--poly-vtx-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-area{ width:var(--poly-area-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-perim{ width:var(--poly-perim-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-style{ width:var(--poly-style-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-when{ width:var(--poly-when-col); min-width:0; }
+.polygon-panel .poly-list-table col.poly-col-actions{ width:var(--poly-actions-col); min-width:0; }
 .polygon-panel .poly-list-table .poly-list-th-resize{
   position:relative;
   padding-right:12px;
   vertical-align:bottom;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .polygon-panel .poly-list-table th,
 .polygon-panel .poly-list-table td{
@@ -2882,6 +2886,9 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
   border-bottom:1px solid var(--border);
   vertical-align:middle;
   white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  min-width:0;
 }
 .polygon-panel .poly-list-table th{
   text-align:left;
@@ -2947,22 +2954,29 @@ body.gis-mode dialog#polygonPanel.polygon-panel > .app-modal-body{
 }
 .polygon-panel .poly-list-name{
   display:block;
-  min-width:120px;
-  max-width:none;
+  min-width:0;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 .polygon-panel .poly-list-name-editing{ padding:2px 4px; }
 .polygon-panel .poly-inline-rename-input{
   width:100%;
-  min-width:100px;
+  min-width:0;
   font-size:inherit;
   padding:2px 4px;
   box-sizing:border-box;
 }
-.polygon-panel .poly-list-num{ font-variant-numeric:tabular-nums; }
+.polygon-panel .poly-list-num{
+  font-variant-numeric:tabular-nums;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .polygon-panel .poly-list-actions-cell{
   text-align:left;
   white-space:nowrap;
-  min-width:120px;
+  min-width:0;
+  overflow:visible;
 }
 .polygon-panel .poly-list-actions-cell .poly-row-actions{
   display:flex;
@@ -24392,10 +24406,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A";
-const APP_BUILD_DETAIL = "WP coord format field sync + polygon dismiss/toolbar sync + track flyout autoclose + WP col resize.";
+const APP_BUILD_ID = "GIS-POLYGON-TABLE-COL-RESIZE-A";
+const APP_BUILD_DETAIL = "Polygon list column resize: lower useful mins, no premature table floor, fluid drag.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 249;
+const APP_BUILD_NUM = 250;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39993,8 +40007,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -41015,8 +41029,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42949,8 +42963,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -96852,13 +96866,13 @@ function polygonListColResizeSpan(handleKey){
 function polygonApplyPolyListColumnWidths(cont, tbl){
   if (!cont || !tbl) return;
   const pairs = [
-    ["--poly-vis-col", "_polyVisColPx", 36, 80],
-    ["--poly-name-col", "_polyNameColPx", 72, 560],
-    ["--poly-vtx-col", "_polyVtxColPx", 44, 120],
-    ["--poly-area-col", "_polyAreaColPx", 56, 200],
-    ["--poly-perim-col", "_polyPerimColPx", 56, 200],
-    ["--poly-style-col", "_polyStyleColPx", 36, 88],
-    ["--poly-when-col", "_polyWhenColPx", 64, 320],
+    ["--poly-vis-col", "_polyVisColPx", 28, 80],
+    ["--poly-name-col", "_polyNameColPx", 48, 560],
+    ["--poly-vtx-col", "_polyVtxColPx", 36, 120],
+    ["--poly-area-col", "_polyAreaColPx", 48, 200],
+    ["--poly-perim-col", "_polyPerimColPx", 48, 200],
+    ["--poly-style-col", "_polyStyleColPx", 28, 88],
+    ["--poly-when-col", "_polyWhenColPx", 52, 320],
     ["--poly-actions-col", "_polyActionsColPx", 112, 480]
   ];
   for (let i = 0; i < pairs.length; i++){
@@ -96896,36 +96910,37 @@ function ensurePolygonPanelListColResizeWired(){
   function polyColMetaFromHandle(h, table){
     const rectT = table.getBoundingClientRect();
     const w = Math.max(200, rectT.width);
+    /* GIS-POLYGON-TABLE-COL-RESIZE-A: useful mins only; softMax never clamps below startW at drag start. */
     if (h.classList.contains("poly-vis-col-resize")){
-      return { varName: "--poly-vis-col", prop: "_polyVisColPx", td: 2, min: 36, max: Math.min(80, Math.max(44, Math.floor(w * 0.08))) };
+      return { varName: "--poly-vis-col", prop: "_polyVisColPx", td: 2, min: 28, softMax: Math.min(80, Math.max(44, Math.floor(w * 0.12))) };
     }
     if (h.classList.contains("poly-name-col-resize")){
-      return { varName: "--poly-name-col", prop: "_polyNameColPx", td: 3, min: 72, max: Math.min(560, Math.max(120, Math.floor(w * 0.55))) };
+      return { varName: "--poly-name-col", prop: "_polyNameColPx", td: 3, min: 48, softMax: Math.min(560, Math.max(120, Math.floor(w * 0.7))) };
     }
     if (h.classList.contains("poly-vtx-col-resize")){
-      return { varName: "--poly-vtx-col", prop: "_polyVtxColPx", td: 4, min: 44, max: Math.min(120, Math.max(52, Math.floor(w * 0.14))) };
+      return { varName: "--poly-vtx-col", prop: "_polyVtxColPx", td: 4, min: 36, softMax: Math.min(120, Math.max(52, Math.floor(w * 0.16))) };
     }
     if (h.classList.contains("poly-area-col-resize")){
-      return { varName: "--poly-area-col", prop: "_polyAreaColPx", td: 5, min: 56, max: Math.min(200, Math.max(72, Math.floor(w * 0.18))) };
+      return { varName: "--poly-area-col", prop: "_polyAreaColPx", td: 5, min: 48, softMax: Math.min(200, Math.max(72, Math.floor(w * 0.22))) };
     }
     if (h.classList.contains("poly-perim-col-resize")){
-      return { varName: "--poly-perim-col", prop: "_polyPerimColPx", td: 6, min: 56, max: Math.min(200, Math.max(72, Math.floor(w * 0.18))) };
+      return { varName: "--poly-perim-col", prop: "_polyPerimColPx", td: 6, min: 48, softMax: Math.min(200, Math.max(72, Math.floor(w * 0.22))) };
     }
     if (h.classList.contains("poly-style-col-resize")){
-      return { varName: "--poly-style-col", prop: "_polyStyleColPx", td: 7, min: 36, max: Math.min(88, Math.max(44, Math.floor(w * 0.10))) };
+      return { varName: "--poly-style-col", prop: "_polyStyleColPx", td: 7, min: 28, softMax: Math.min(88, Math.max(44, Math.floor(w * 0.12))) };
     }
     if (h.classList.contains("poly-when-col-resize")){
-      return { varName: "--poly-when-col", prop: "_polyWhenColPx", td: 8, min: 64, max: Math.min(320, Math.max(88, Math.floor(w * 0.28))) };
+      return { varName: "--poly-when-col", prop: "_polyWhenColPx", td: 8, min: 52, softMax: Math.min(320, Math.max(88, Math.floor(w * 0.32))) };
     }
     if (h.classList.contains("poly-actions-col-resize")){
-      return { varName: "--poly-actions-col", prop: "_polyActionsColPx", td: 9, min: 112, max: Math.min(480, Math.max(128, Math.floor(w * 0.40))) };
+      return { varName: "--poly-actions-col", prop: "_polyActionsColPx", td: 9, min: 112, softMax: Math.min(480, Math.max(128, Math.floor(w * 0.45))) };
     }
     return null;
   }
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const nw = Math.max(drag.meta.min, Math.min(drag.meta.max, Math.round(drag.startW + dx)));
+    const nw = Math.max(drag.minW, Math.min(drag.maxW, Math.round(drag.startW + dx)));
     drag.table.style.setProperty(drag.meta.varName, nw + "px");
     const cont = document.getElementById("polygonPanelList");
     if (cont) cont[drag.meta.prop] = nw;
@@ -96942,7 +96957,8 @@ function ensurePolygonPanelListColResizeWired(){
     if (!meta) return;
     const cell = table.querySelector("tbody tr td:nth-child(" + meta.td + ")");
     const startW = cell ? cell.getBoundingClientRect().width : meta.min;
-    drag = { table, meta, startX: ev.clientX, startW };
+    const maxW = Math.max(startW, meta.softMax);
+    drag = { table, meta, startX: ev.clientX, startW, minW: meta.min, maxW };
     ev.preventDefault();
     ev.stopPropagation();
     document.addEventListener("pointermove", onMove);
