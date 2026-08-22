@@ -9278,20 +9278,21 @@ body.gis-mode dialog#waypointModal.waypoint-modal .waypoint-modal-map-host{
 .wp-radio-inline input{ accent-color:var(--accent); }
 .wp-modal-table-wrap{ overflow:auto; max-height:min(36vh, 320px); margin-top:6px; border:1px solid var(--border); border-radius:10px; }
 .wp-modal-table{
-  width:100%; border-collapse:collapse; font-size:.8rem;
+  width:100%; border-collapse:collapse; table-layout:fixed; font-size:.8rem;
   --wp-name-col:112px;
   --wp-details-col:180px;
 }
-.wp-modal-table col.wp-col-name{ width:var(--wp-name-col); min-width:72px; }
-.wp-modal-table col.wp-col-details{ width:var(--wp-details-col); min-width:96px; }
+.wp-modal-table col.wp-col-name{ width:var(--wp-name-col); min-width:0; }
+.wp-modal-table col.wp-col-details{ width:var(--wp-details-col); min-width:0; }
 .wp-modal-table .wp-th-name{
   position:relative;
   padding-right:12px;
-  min-width:100px;
+  min-width:0;
 }
 .wp-modal-table .wp-th-details{
   position:relative;
   padding-right:12px;
+  min-width:0;
 }
 .wp-modal-table .wp-th-name-lbl{ padding-right:2px; }
 .wp-modal-table .wp-th-details-lbl{ padding-right:2px; }
@@ -24391,10 +24392,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A";
-const APP_BUILD_DETAIL = "Waypoint modal map-name row layout (no list spill) + polygon metrics 1-decimal presentation.";
+const APP_BUILD_ID = "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A";
+const APP_BUILD_DETAIL = "WP coord format field sync + polygon dismiss/toolbar sync + track flyout autoclose + WP col resize.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 248;
+const APP_BUILD_NUM = 249;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -39992,8 +39993,8 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -41014,8 +41015,8 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -42948,8 +42949,8 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 248
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A");
+    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 249
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-MAP-UI-RESIDUAL-MAINTENANCE-A");
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -64160,8 +64161,7 @@ function ensureWpModalNameColResizeWired(){
   function onMove(ev){
     if (!drag) return;
     const dx = ev.clientX - drag.startX;
-    const maxW = Math.min(drag.capMax, drag.maxW);
-    const nw = Math.max(drag.minW, Math.min(maxW, Math.round(drag.startW + dx)));
+    const nw = Math.max(drag.minW, Math.min(drag.maxW, Math.round(drag.startW + dx)));
     drag.table.style.setProperty(drag.varName, nw + "px");
     const wl = document.getElementById("wp-list");
     if (!wl) return;
@@ -64180,6 +64180,8 @@ function ensureWpModalNameColResizeWired(){
     const isDetails = h.classList.contains("wp-details-col-resize");
     const cell = table.querySelector("tbody tr td:nth-child(" + (isDetails ? 5 : 3) + ")");
     const startW = cell ? cell.getBoundingClientRect().width : (isDetails ? 180 : 112);
+    /* GIS-WAYPOINT-TABLE-COL-RESIZE-A: never clamp max below startW (was causing jumps / stuck shrink). */
+    const softMax = Math.max(120, Math.floor(rectT.width * 0.8));
     drag = {
       table,
       kind: isDetails ? "details" : "name",
@@ -64187,8 +64189,7 @@ function ensureWpModalNameColResizeWired(){
       startX: ev.clientX,
       startW,
       minW: isDetails ? 96 : 72,
-      capMax: isDetails ? 520 : 520,
-      maxW: Math.max(isDetails ? 120 : 120, Math.floor(rectT.width * (isDetails ? 0.55 : 0.5)))
+      maxW: Math.max(startW, Math.min(520, softMax))
     };
     ev.preventDefault();
     document.addEventListener("pointermove", onMove);
@@ -67417,6 +67418,20 @@ function wireWaypointListCoordFormatOnce(){
   sel.addEventListener("change", (ev) => {
     state._waypointListCoordFormat = normalizeWaypointListCoordFormat(ev.target && ev.target.value);
     syncWaypointListCoordFormatSelect();
+    /* GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A: rewrite #wpFieldCoord from draft lat/lon (no save / no mapWaypoints mutation). */
+    try {
+      const d = state.waypointEditorDraft;
+      if (d){
+        if (!(Number.isFinite(d.lat) && Number.isFinite(d.lon))){
+          const el = document.getElementById("wpFieldCoord");
+          if (el){
+            const r = parseWaypointEditorCoordText(el.value);
+            if (r && r.ok){ d.lat = r.lat; d.lon = r.lon; }
+          }
+        }
+        if (Number.isFinite(d.lat) && Number.isFinite(d.lon)) writeWaypointEditorCoordFieldFromDraft();
+      }
+    } catch(_){}
     try { refreshWaypointEditorCoordConversionPreview(); } catch(_){}
     try { renderWpModalList(); } catch(_){}
   });
@@ -69786,6 +69801,9 @@ function renderTileMap(lat, lon, zoom){
         open(){ openPolygonPanel(); },
         close(){ closePolygonPanel(); }
       });
+      /* GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A: rebuild chrome so flyout hides immediately. */
+      try { trackSyncPickModeUi(); } catch(_){}
+      try { refreshTileMapForTrackUi(); } catch(_){}
     });
   }
   const trackRrMenu = root.querySelector('[data-role="track-map-rangerings"]');
@@ -69803,6 +69821,7 @@ function renderTileMap(lat, lon, zoom){
         close(){ try { closeRangeRingsPanel(); } catch(_){} }
       });
       try { trackSyncPickModeUi(); } catch(_){}
+      try { refreshTileMapForTrackUi(); } catch(_){}
     });
   }
   const waypointMapTgl = root.querySelector('[data-role="waypoint-map-toggle"]');
@@ -77992,7 +78011,10 @@ function gisInit(){
   if (polyClose) polyClose.addEventListener("click", (ev) => { ev.preventDefault(); handlePolyClose(); });
   if (polyDlg){
     polyDlg.addEventListener("cancel", (ev) => { ev.preventDefault(); handlePolyClose(); });
-    polyDlg.addEventListener("click", (ev) => { if (ev.target === polyDlg) handlePolyClose(); });
+    /* GIS floating: no backdrop-self dismiss (map clicks / padding must not close Poligoni). Close = X / Esc / toolbar toggle only. */
+    if (!document.body.classList.contains("gis-mode")){
+      polyDlg.addEventListener("click", (ev) => { if (ev.target === polyDlg) handlePolyClose(); });
+    }
   }
   const polyMin = document.querySelector('[data-role="polygonpanel-minimize"]');
   if (polyMin && !polyMin._gisPolyMinBtnBound){
@@ -82259,6 +82281,7 @@ function closePolygonPanel(){
   try { mapPolyMoveDocDragCleanup(); } catch(_){}
   try { mapPolyEditDocDragCleanup(); } catch(_){}
   if (state.polygonDrawMode){ try { polygonCancelDraw(); } catch(_){} }
+  try { mapToolDeactivate("polygon-draw"); } catch(_){}
   state._polygonDrawAutoMinimized = false;
   try { if (typeof gisClearPanelMinimizeUi === "function") gisClearPanelMinimizeUi("polygonPanel"); } catch(_){}
   try { polygonHideDeleteBar(); polygonCancelInlineRename(); } catch(_){}
@@ -82269,6 +82292,8 @@ function closePolygonPanel(){
     if (h) h.classList.remove("gis-panel-drag-head");
     try { if (dlg.open) dlg.close(); else dlg.removeAttribute("open"); } catch(_){ dlg.removeAttribute("open"); }
   }
+  /* GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A: mirror closeRangeRingsPanel — clear active/aria on map toggles. */
+  try { trackSyncPickModeUi(); } catch(_){}
 }
 /* ───── Polygon edit state (POLY-EDIT-B2) ───── */
 function polygonIsEditing(){
@@ -83789,6 +83814,7 @@ function polygonFinishDraw(){
   refreshTileMapForTrackUi();
   renderPolygonPanelList();
   polygonDrawRestoreIfAutoMinimized();
+  try { mapToolDeactivate("polygon-draw"); } catch(_){}
   try { setBadge("success", (typeof t === "function" ? t("gis.polygonPanel.savedOk") : "") || "Poligono salvato."); } catch(_){}
 }
 function renderPolygonDraftOverlay(tileMap, markerLat, markerLon, zoom){
