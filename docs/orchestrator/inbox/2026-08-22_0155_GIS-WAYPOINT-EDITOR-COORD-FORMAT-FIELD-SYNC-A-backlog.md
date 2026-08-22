@@ -1,7 +1,9 @@
 # BACKLOG — GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A
 
 **ID:** `GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A`  
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-22)  
+**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` (2026-08-22) — candidate tip `b264097…` · build **249** · blob `f0bb0be…` · **GATE: QA FINALE CHATGPT — PENDING** (non ancora LIVE finché PASS operatore)
+**Evidence:** [`2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md) · ABQA [`2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A-abqa.json`](2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A-abqa.json)
+**Nota:** storico backlog **non** cancellato.
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Waypoint)  
 **Origine:** QA FAIL `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` finding 1 — triage vs LIVE **247**: **preesistente** (non regressione bundle 248)
 
