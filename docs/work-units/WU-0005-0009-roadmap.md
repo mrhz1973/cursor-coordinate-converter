@@ -791,10 +791,10 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **BACKLOG / NOT OPENED** (2026-08-21) — zero rete; schema WP invariato |
-| **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL maintenance; ≠ `GIS-WAYPOINT-COORD-UX-A` |
-| **GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A** | Post-finalize: click mappa non dismissa modal; close reale → toolbar non attiva | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL; ≠ interaction drawing |
-| **GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A** | Flyout Traccia (Poligoni / Range & Bearing) si chiude dopo selezione voce | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL |
-| **GIS-WAYPOINT-TABLE-COL-RESIZE-A** | Resize colonne Nome/Dettagli stabile fino a min utile | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL; ≠ modal-layout overlap |
+| **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
+| **GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A** | Post-finalize: click mappa non dismissa modal; close reale → toolbar non attiva | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
+| **GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A** | Flyout Traccia (Poligoni / Range & Bearing) si chiude dopo selezione voce | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
+| **GIS-WAYPOINT-TABLE-COL-RESIZE-A** | Resize colonne Nome/Dettagli stabile fino a min utile | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
 
 #### MAP-CENTER-VIEWPORT-AWARE-A — estensione POLYGON PANEL / DOCK + DRAWING VIEWPORT
 

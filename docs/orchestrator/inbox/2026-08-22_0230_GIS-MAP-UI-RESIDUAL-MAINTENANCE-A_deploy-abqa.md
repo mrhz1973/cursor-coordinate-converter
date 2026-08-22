@@ -3,7 +3,7 @@
 **BLOCK-ID:** `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A`  
 **Categoria:** DELICATO — residual UI maintenance (4 finding QA preesistenti)  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE:** **QA FINALE CHATGPT — PENDING**
+**GATE:** **CLOSED / PASS** (QA operatore PASS · Regola H)
 
 ## Backlog consumati (storico preservato)
 
@@ -40,5 +40,5 @@ Format sync DD↔MGRS↔DMS↔UTM; no WP mutation; polygon finish → map click 
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING** (una sola QA operatore per il bundle). **Non** `finito` finché PASS operatore.  
+**CLOSED / PASS** — `QA GIS-MAP-UI-RESIDUAL-MAINTENANCE-A PASS operatore` → finito Regola H · LIVE **249**.  
 **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** invariato.

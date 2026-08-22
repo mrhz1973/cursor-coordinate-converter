@@ -1,8 +1,8 @@
 # BACKLOG — GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A
 
 **ID:** `GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A`  
-**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` (2026-08-22) — candidate tip `b264097…` · build **249** · blob `f0bb0be…` · **GATE: QA FINALE CHATGPT — PENDING** (non ancora LIVE finché PASS operatore)
-**Evidence:** [`2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md) · ABQA [`2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A-abqa.json`](2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A-abqa.json)
+**Stato:** **CONSUMED / CLOSED / PASS** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` (2026-08-22) — LIVE **249** · tip `b264097…` · blob `f0bb0be…` · QA PASS · Regola H
+**Evidence:** [`2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0230_GIS-MAP-UI-RESIDUAL-MAINTENANCE-A_deploy-abqa.md) · finito [`2026-08-22_0316_riepilogo_finito-GIS-MAP-UI-RESIDUAL-MAINTENANCE-A.md`](2026-08-22_0316_riepilogo_finito-GIS-MAP-UI-RESIDUAL-MAINTENANCE-A.md)
 **Nota:** storico backlog **non** cancellato.
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Poligoni)  
 **Origine:** QA FAIL `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` finding 2 — triage vs LIVE **247**: **preesistente** (non regressione bundle 248)
