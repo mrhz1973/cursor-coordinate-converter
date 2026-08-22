@@ -786,11 +786,15 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **D-FLIGHT-CLOSE-CLEANUP-A (+ FIX1)** | Close modal: spariscono legenda, zone e overlay D-Flight (teardown sincrono ATM09) | **CLOSED / PASS** LIVE `4f00433` / **235** · QA operatore PASS · Regola H (2026-08-20) — casa: WU-0013 §23 |
 | **GIS-POLYGON-PRESET-SHAPES-A** | Forme geometriche predefinite (quadrato / rettangolo / triangolo) → `state.gisPolygons[]` | **BACKLOG / NOT OPENED** (2026-08-21) — baseline edit P1–P5 / P-VERTEX* **CLOSED**; **Oggetti GIS FROZEN** finché non sbloccato |
 | **GIS-POLYGON-VERTEX-COORD-UX-A (+ FIX1 + FIX2 + FIX3 + FIX4)** | Lista coordinate vertici (edit + drawing) + no auto-minimize + draft verts trascinabili | **CLOSED / PASS** LIVE `ccb4166` / **243** · blob `04cfdfcc…` · QA operatore PASS · Regola H (2026-08-21) |
-| **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) · candidate **248** · QA PENDING |
+| **GIS-POLYGON-METRICS-COMPACT-FORMAT-A** | Area/perimetro/lati con **1** decimale (solo presentation) | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` candidate **248** · **QA FAIL** triage: no FIX1 · **non** promosso |
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
-| **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) · candidate **248** · QA PENDING |
+| **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED** da `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` candidate **248** · **QA FAIL** triage: no FIX1 · **non** promosso |
 | **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **BACKLOG / NOT OPENED** (2026-08-21) — zero rete; schema WP invariato |
+| **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL maintenance; ≠ `GIS-WAYPOINT-COORD-UX-A` |
+| **GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A** | Post-finalize: click mappa non dismissa modal; close reale → toolbar non attiva | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL; ≠ interaction drawing |
+| **GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A** | Flyout Traccia (Poligoni / Range & Bearing) si chiude dopo selezione voce | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL |
+| **GIS-WAYPOINT-TABLE-COL-RESIZE-A** | Resize colonne Nome/Dettagli stabile fino a min utile | **BACKLOG / NOT OPENED** (2026-08-22) — triage QA FAIL; ≠ modal-layout overlap |
 
 #### MAP-CENTER-VIEWPORT-AWARE-A — estensione POLYGON PANEL / DOCK + DRAWING VIEWPORT
 
