@@ -3,7 +3,7 @@
 **BLOCK-ID:** `GIS-POLYGON-TABLE-COL-RESIZE-A`  
 **Categoria:** ROUTINE  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE:** **QA FINALE CHATGPT — PENDING**
+**GATE:** **CLOSED / PASS** (QA operatore PASS · Regola H)
 
 ## A — Runtime candidate
 
@@ -29,5 +29,5 @@ Nome → min ~48; Area/Perim separati a 48; azioni presenti; metrics 1dp; toolba
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**. **Non** `finito` finché PASS operatore.  
+**CLOSED / PASS** — `QA GIS-POLYGON-TABLE-COL-RESIZE-A PASS operatore` → finito Regola H · LIVE **250**.  
 **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** invariato.

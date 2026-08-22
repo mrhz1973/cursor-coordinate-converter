@@ -1,9 +1,9 @@
 # BACKLOG — GIS-POLYGON-TABLE-COL-RESIZE-A
 
 **ID:** `GIS-POLYGON-TABLE-COL-RESIZE-A`  
-**Stato:** **CONSUMED / IMPLEMENTED** nel blocco omonimo (2026-08-22) — candidate tip `28e87f6…` · build **250** · blob `1482ead…` · **GATE: QA FINALE CHATGPT — PENDING**  
+**Stato:** **CONSUMED / CLOSED / PASS** (2026-08-22) — LIVE **250** · tip `28e87f6…` · blob `1482ead…` · QA PASS · Regola H  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Poligoni)  
-**Evidence:** [`2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md`](2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md) · ABQA [`2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A-abqa.json`](2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A-abqa.json)  
+**Evidence:** [`2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md`](2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md) · finito [`2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md`](2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md)  
 **Nota:** registrato al momento del consumo (nessun backlog NOT OPENED preesistente). Storico preservato.
 
 ## Problema

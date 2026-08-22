@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-22 — **GIS-POLYGON-TABLE-COL-RESIZE-A IMPLEMENTED / PENDING QA**. Candidate tip `28e87f6` · build **250** · blob `1482ead…`. Deploy + ABQA 12/12 PASS. LIVE resta **249** finché QA PASS. Evidence: [`inbox/2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md`](inbox/2026-08-22_0325_GIS-POLYGON-TABLE-COL-RESIZE-A_deploy-abqa.md).
+2026-08-22 — **GIS-POLYGON-TABLE-COL-RESIZE-A CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **250** tip `28e87f6` · blob `1482ead…`. Evidence: [`inbox/2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md`](inbox/2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md).

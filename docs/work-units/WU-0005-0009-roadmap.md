@@ -795,7 +795,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A** | Post-finalize: click mappa non dismissa modal; close reale → toolbar non attiva | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
 | **GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A** | Flyout Traccia (Poligoni / Range & Bearing) si chiude dopo selezione voce | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
 | **GIS-WAYPOINT-TABLE-COL-RESIZE-A** | Resize colonne Nome/Dettagli stabile fino a min utile | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
-| **GIS-POLYGON-TABLE-COL-RESIZE-A** | Resize/compressione colonne lista Poligoni fino a min utile (no floor 756) | **CONSUMED / IMPLEMENTED** candidate **250** · tip `28e87f6…` · **QA PENDING** |
+| **GIS-POLYGON-TABLE-COL-RESIZE-A** | Resize/compressione colonne lista Poligoni fino a min utile (no floor 756) | **CONSUMED / CLOSED** LIVE **250** tip `28e87f6…` · QA PASS · Regola H |
 
 #### MAP-CENTER-VIEWPORT-AWARE-A — estensione POLYGON PANEL / DOCK + DRAWING VIEWPORT
 
