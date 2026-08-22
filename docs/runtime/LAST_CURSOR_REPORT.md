@@ -5,38 +5,39 @@
 | Campo | Valore |
 | --- | --- |
 | **BLOCK** | `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` |
-| **GATE** | **QA FAIL / TRIAGE COMPLETE — no FIX1 — non finito** |
-| **NEXT** | Decisione operatore; 4 backlog NOT OPENED da triage |
-| **RUNTIME LIVE** | tip `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` · build **247** · blob `6e10d5686eaf7d18b85380bd15b85bd3827ad01c` |
-| **RUNTIME_CANDIDATE_SHA** | `aa6e8f5a5af7b215fcda7bc7055b2b6472143396` · build **248** · blob `dadbf8af…` (**non** promosso) |
-| **Result Cursor** | Triage docs-only · **nessun** patch runtime FIX1 |
+| **GATE** | **none** (CLOSED / PASS) |
+| **NEXT** | backlog NOT OPENED a scelta |
+| **RUNTIME LIVE** | tip `aa6e8f5a5af7b215fcda7bc7055b2b6472143396` · build **248** · blob `dadbf8af428770ef1724bcd6444b17caeb69fdcf` |
+| **RUNTIME_CANDIDATE_SHA** | `aa6e8f5a5af7b215fcda7bc7055b2b6472143396` (immutable; monolite non toccato in finito) |
+| **Result Cursor** | **finito** Regola H · QA PASS operatore |
 | **Working tree (pre-report-commit)** | docs dirty → this commit |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `6c848cccf2c55f8064b2b4ddb4f49a5e9b671d41` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `1aedb0754016ef0f8875f87ef4ac6c417d0b3bf6` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync: sì — triage evidence + 4 backlog + FRONTIER/OM/roadmap/latest/LAST_CURSOR_REPORT. Monolite **escluso**.
-2. Confronto 247≡248 su funzioni finding: hash identici; diff bundle solo layout map-name + metrics 1dp.
-3. FIX1 **non** eseguito (nessuna regressione bundle).
-4. Obiettivi bundle (no overlap WP · metrics 1dp) preservati sul candidate.
-5. Non finito · non PASS operatore.
+1. Autosync finito: sì — FRONTIER CLOSED, OM, roadmap, latest, riepilogo, LAST_CURSOR_REPORT. Monolite **escluso**.
+2. Trigger: `QA GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A PASS operatore` → Regola H.
+3. Runtime LIVE: tip `aa6e8f5` / **248** / blob `dadbf8af…`.
+4. Consumati: `GIS-WAYPOINT-MODAL-LAYOUT-A` · `GIS-POLYGON-METRICS-COMPACT-FORMAT-A`.
+5. Triage FAIL intermedio: no FIX1; 4 backlog residui NOT OPENED; PASS promuove 248.
+6. Oggetti GIS FROZEN / MAINTENANCE-ONLY invariato.
 
 ### STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: PENDING_SELF_REFERENCE (pre-container 6c848cc)
+origin/main HEAD: PENDING_SELF_REFERENCE (pre-container 1aedb07)
 working tree: dirty docs → this commit
-ultimo blocco PASS: GIS-OBJECTS-SETTINGS-RELEGATE-A (+ FIX1) CLOSED (LIVE 247)
-prossimo candidato: manutenzione 248 non promossa; backlog triage NOT OPENED
-note operative: non finito
+ultimo blocco PASS: GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A CLOSED (LIVE 248)
+prossimo candidato: backlog NOT OPENED
+note operative: finito Regola H
 ```
 
 ## C. OUTPUT GIT
 
 ```text
-REMOTE_HEAD_AT_EVIDENCE_TIME: 6c848cccf2c55f8064b2b4ddb4f49a5e9b671d41
-RUNTIME_CANDIDATE_SHA: aa6e8f5a5af7b215fcda7bc7055b2b6472143396
-RUNTIME LIVE: ac4789ea420bc691f9f8de5d7f751e040d3e6dc9
+REMOTE_HEAD_AT_EVIDENCE_TIME: 1aedb0754016ef0f8875f87ef4ac6c417d0b3bf6
+RUNTIME_LIVE / RUNTIME_CANDIDATE_SHA: aa6e8f5a5af7b215fcda7bc7055b2b6472143396
+blob: dadbf8af428770ef1724bcd6444b17caeb69fdcf
 ```

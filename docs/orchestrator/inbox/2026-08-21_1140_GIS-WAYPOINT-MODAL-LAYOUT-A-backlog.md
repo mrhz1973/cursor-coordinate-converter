@@ -1,10 +1,10 @@
 # BACKLOG — GIS-WAYPOINT-MODAL-LAYOUT-A
 
 **ID:** `GIS-WAYPOINT-MODAL-LAYOUT-A`  
-**Stato:** **CONSUMED / IMPLEMENTED** nel bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) — gate **QA FINALE PENDING**  
+**Stato:** **CONSUMED / CLOSED / PASS** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` (2026-08-22) — LIVE **248** · QA PASS · Regola H  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Waypoint)  
 **Runtime:** tip `aa6e8f5…` · build **248** · blob `dadbf8af…`  
-**Evidence bundle:** [`2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md)  
+**Evidence bundle:** [`2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md`](2026-08-22_0045_GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A_deploy-abqa.md) · finito [`2026-08-22_0215_riepilogo_finito-GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A.md`](2026-08-22_0215_riepilogo_finito-GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A.md)  
 **Nota:** storico backlog **non** cancellato.
 
 ## Finding operatore
