@@ -4,41 +4,41 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` |
-| **GATE** | **none** (CLOSED / PASS) |
-| **NEXT** | backlog NOT OPENED a scelta |
-| **RUNTIME LIVE** | tip `b26409724d8514a14bb84971d24db345635a5574` · build **249** · blob `f0bb0be1f7216dd8c708b8210704c2ec518df97b` |
-| **RUNTIME_CANDIDATE_SHA** | `b26409724d8514a14bb84971d24db345635a5574` (immutable; monolite non toccato in finito) |
-| **Result Cursor** | **finito** Regola H · QA PASS operatore |
+| **BLOCK** | `GIS-POLYGON-TABLE-COL-RESIZE-A` |
+| **GATE** | **QA FINALE CHATGPT — PENDING** |
+| **NEXT** | QA operatore · PASS → finito Regola H / promote **250** |
+| **RUNTIME LIVE** | tip `b264097…` · build **249** · blob `f0bb0be…` |
+| **RUNTIME_CANDIDATE_SHA** | `28e87f647e317c115b7566ed044fea24fca649cd` · build **250** · blob `1482ead343486fde6fe551e8d56308d216dd007c` |
+| **Result Cursor** | IMPLEMENTED · deploy PASS · ABQA **12/12** · PENDING QA |
 | **Working tree (pre-report-commit)** | docs dirty → this commit |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `c858f9c07b6f0455790212e8b60fce5ca6ff9550` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `28e87f647e317c115b7566ed044fea24fca649cd` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 
 ## B. RIEPILOGO COMPLETO
 
-1. Autosync finito: sì — FRONTIER CLOSED, OM, roadmap, latest, backlog×4 CLOSED, riepilogo, LAST_CURSOR_REPORT. Monolite **escluso**.
-2. Trigger: `QA GIS-MAP-UI-RESIDUAL-MAINTENANCE-A PASS operatore` → Regola H.
-3. Runtime LIVE: tip `b264097` / **249** / blob `f0bb0be…`.
-4. Consumati: EDITOR-COORD-FORMAT-FIELD-SYNC · PANEL-DISMISS-TOOLBAR · FLYOUT-AUTOCLOSE · WP-COL-RESIZE.
-5. Deploy GIS + ABQA 19/19 già PASS in pass precedente; QA operatore PASS → promote.
-6. Oggetti GIS FROZEN / MAINTENANCE-ONLY invariato.
+1. Autosync: sì — FRONTIER PENDING QA, backlog registrato+consumato, deploy-abqa, ABQA JSON, LAST_CURSOR_REPORT. Monolite escluso dal commit docs.
+2. Candidate tip `28e87f6` / **250** / blob `1482ead…` / byte `10855679` / SHA `2805b7c4…`.
+3. Fix: rimosso `min-width:756px`; Nome/Azioni senza floor 120; mins utili; drag fluido `maxW≥startW`; ellipsis Area/Perim/Nome.
+4. Session-only; no localStorage; Oggetti GIS FROZEN.
+5. Deploy GIS PASS · ABQA 12/12 PASS.
+6. Gate QA PENDING.
 
 ### STATO FRESCO DA CURSOR
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: PENDING_SELF_REFERENCE (pre-container c858f9c)
-working tree: docs dirty → finito commit
+origin/main HEAD: 28e87f647e317c115b7566ed044fea24fca649cd (runtime; docs PENDING_SELF_REFERENCE)
+working tree: docs dirty pre-container
 ultimo blocco PASS: GIS-MAP-UI-RESIDUAL-MAINTENANCE-A (LIVE 249)
-prossimo candidato: backlog NOT OPENED a scelta
-note operative: URL ?v=b264097 · Oggetti GIS FROZEN
+prossimo candidato: GIS-POLYGON-TABLE-COL-RESIZE-A (250) PENDING QA
+note operative: URL ?v=28e87f6
 ```
 
 ## C. OUTPUT GIT
 
 ```text
-git rev-parse origin/main (pre-finito docs): c858f9c07b6f0455790212e8b60fce5ca6ff9550
-RUNTIME_CANDIDATE_SHA / LIVE tip: b26409724d8514a14bb84971d24db345635a5574
-blob: f0bb0be1f7216dd8c708b8210704c2ec518df97b
+RUNTIME_CANDIDATE_SHA: 28e87f647e317c115b7566ed044fea24fca649cd
+blob: 1482ead343486fde6fe551e8d56308d216dd007c
+REMOTE_HEAD_AT_EVIDENCE_TIME: 28e87f647e317c115b7566ed044fea24fca649cd
 current_report_container: PENDING_SELF_REFERENCE
 ```
