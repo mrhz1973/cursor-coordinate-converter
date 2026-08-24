@@ -24419,9 +24419,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2";
-const APP_BUILD_DETAIL = "Copia testo: same TXT bundle; execCommand fallback mounts inside open dialog (HTTP).";
+const APP_BUILD_DETAIL = "Copia testo HTTP: shared TXT bundle; dialog-hosted execCommand without readonly; body retry.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 253;
+const APP_BUILD_NUM = 254;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71376,25 +71376,67 @@ function copyTextExecCommandHost(){
 /** Sync multiline-safe clipboard via execCommand (HTTP / non-secure / API denied). */
 function copyTextExecCommandFallback(payload){
   const text = String(payload == null ? "" : payload);
+  // Do NOT use readonly — it blocks focus/select inside <dialog> in Chromium.
   const ta = document.createElement("textarea");
   ta.value = text;
-  ta.setAttribute("readonly", "");
   ta.setAttribute("aria-hidden", "true");
-  ta.tabIndex = -1;
-  ta.style.cssText = "position:fixed;left:0;top:0;width:2px;height:2px;padding:0;margin:0;border:0;opacity:0;z-index:2147483647;";
+  ta.tabIndex = 0;
+  ta.setAttribute("data-goi-clipboard-temp", "1");
+  // Keep in-viewport and focusable; opacity 0 is enough to hide.
+  ta.style.cssText = "position:fixed;left:8px;top:8px;width:12px;height:12px;padding:0;margin:0;border:0;opacity:0.01;z-index:2147483647;color:transparent;caret-color:transparent;";
   const host = copyTextExecCommandHost();
   if (!host) return false;
   host.appendChild(ta);
   let ok = false;
   try {
-    ta.focus({ preventScroll: true });
-    ta.select();
-    try { ta.setSelectionRange(0, text.length); } catch(_){}
+    try { ta.focus({ preventScroll: true }); } catch(_){ try { ta.focus(); } catch(__){} }
+    // Select full payload explicitly (multiline).
+    try {
+      ta.select();
+      ta.setSelectionRange(0, text.length);
+    } catch(_){}
+    const selected = (typeof ta.value === "string")
+      ? ta.value.substring(ta.selectionStart || 0, ta.selectionEnd || 0)
+      : "";
+    if (selected.length !== text.length){
+      try {
+        if (typeof ta.createTextRange === "function"){
+          const range = ta.createTextRange();
+          range.collapse(true);
+          range.moveStart("character", 0);
+          range.moveEnd("character", text.length);
+          range.select();
+        }
+      } catch(__){}
+    }
     ok = !!document.execCommand("copy");
+    // Verify selection length when possible — empty selection => treat as fail.
+    if (ok){
+      const selLen = (ta.selectionEnd || 0) - (ta.selectionStart || 0);
+      if (text.length > 0 && selLen === 0 && document.activeElement !== ta){
+        ok = false;
+      }
+    }
   } catch(_){
     ok = false;
   }
   try { host.removeChild(ta); } catch(_){}
+  // Last resort: if dialog focus-trap still blocked copy, retry on body after
+  // briefly leaving the dialog's focus scope (same sync turn when possible).
+  if (!ok && host !== document.body){
+    const ta2 = document.createElement("textarea");
+    ta2.value = text;
+    ta2.setAttribute("data-goi-clipboard-temp", "1");
+    ta2.style.cssText = "position:fixed;left:8px;top:8px;width:12px;height:12px;opacity:0.01;z-index:2147483647;";
+    document.body.appendChild(ta2);
+    try {
+      ta2.focus();
+      ta2.select();
+      try { ta2.setSelectionRange(0, text.length); } catch(_){}
+      ok = !!document.execCommand("copy");
+    } catch(_){ ok = false; }
+    try { document.body.removeChild(ta2); } catch(_){}
+  }
   return ok;
 }
 
@@ -99997,13 +100039,25 @@ async function waypointsCopyPlainText(btn){
   // Transient evidence for ABQA / diagnostics (not persisted).
   try { state._lastWaypointsPlainTextClipboard = textOut; } catch(_){}
   let ok = false;
-  // Prefer sync execCommand-capable path immediately while dialog is still open (gesture + focus).
-  if (!(window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === "function")){
-    ok = copyTextExecCommandFallback(textOut);
-  } else if (typeof copyText === "function"){
+  const canAsyncClipboard = !!(window.isSecureContext
+    && typeof navigator !== "undefined"
+    && navigator.clipboard
+    && typeof navigator.clipboard.writeText === "function");
+  if (canAsyncClipboard){
     try { ok = !!(await copyText(textOut, null)); } catch(_){ ok = false; }
   }
-  if (!ok && typeof copyTextExecCommandFallback === "function"){
+  if (!ok){
+    // HTTP / denied API: copy while dialog can still host a focusable textarea.
+    ok = copyTextExecCommandFallback(textOut);
+  }
+  if (!ok){
+    // Release dialog focus trap, then retry on body in the same turn.
+    try {
+      const dlg = document.getElementById("waypointExportDialog");
+      if (dlg && dlg.open){
+        try { dlg.close(); } catch(_){ try { dlg.removeAttribute("open"); } catch(__){} }
+      }
+    } catch(_){}
     ok = copyTextExecCommandFallback(textOut);
   }
   const msgTpl = (typeof tIt === "function" ? (tIt("waypointModal.copiedTxtN") || "") : "") || "Testo copiato ({0} waypoint).";
