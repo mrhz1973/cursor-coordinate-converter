@@ -24418,10 +24418,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1";
-const APP_BUILD_DETAIL = "Fix multi-select Copia testo: await full selection payload before closing export dialog.";
+const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2";
+const APP_BUILD_DETAIL = "Copia testo: same TXT bundle; execCommand fallback mounts inside open dialog (HTTP).";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 252;
+const APP_BUILD_NUM = 253;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71364,28 +71364,58 @@ function clearForm(){
 // #endregion JS — TRACK WAYPOINT GIS LAYERS AND TOOLS
 // #region JS — CLIPBOARD HISTORY FAVORITES BATCH
 /* ========================= SECTION 17: COPY / CLIPBOARD ========================= */
+/** Host for execCommand fallback: topmost open <dialog> (focus trap) or body. */
+function copyTextExecCommandHost(){
+  try {
+    const open = document.querySelector("dialog[open]");
+    if (open) return open;
+  } catch(_){}
+  return document.body;
+}
+
+/** Sync multiline-safe clipboard via execCommand (HTTP / non-secure / API denied). */
+function copyTextExecCommandFallback(payload){
+  const text = String(payload == null ? "" : payload);
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly", "");
+  ta.setAttribute("aria-hidden", "true");
+  ta.tabIndex = -1;
+  ta.style.cssText = "position:fixed;left:0;top:0;width:2px;height:2px;padding:0;margin:0;border:0;opacity:0;z-index:2147483647;";
+  const host = copyTextExecCommandHost();
+  if (!host) return false;
+  host.appendChild(ta);
+  let ok = false;
+  try {
+    ta.focus({ preventScroll: true });
+    ta.select();
+    try { ta.setSelectionRange(0, text.length); } catch(_){}
+    ok = !!document.execCommand("copy");
+  } catch(_){
+    ok = false;
+  }
+  try { host.removeChild(ta); } catch(_){}
+  return ok;
+}
+
 async function copyText(text, btn){
   const payload = String(text == null ? "" : text);
   let ok = false;
-  try {
-    await navigator.clipboard.writeText(payload);
-    ok = true;
-  } catch(_) {
-    // Fallback — select full value explicitly (multiline-safe).
-    const ta = document.createElement("textarea");
-    ta.value = payload;
-    ta.setAttribute("readonly", "");
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    ta.style.left = "-9999px";
-    document.body.appendChild(ta);
+  const canAsyncClipboard = !!(window.isSecureContext
+    && typeof navigator !== "undefined"
+    && navigator.clipboard
+    && typeof navigator.clipboard.writeText === "function");
+  // On insecure HTTP (typical GIS VPS URL), Clipboard API is unavailable — do NOT
+  // await a failing writeText first (loses user gesture); go straight to execCommand
+  // with a textarea mounted INSIDE the open dialog so modal focus-trap allows select/copy.
+  if (canAsyncClipboard){
     try {
-      ta.focus();
-      ta.select();
-      try { ta.setSelectionRange(0, payload.length); } catch(__){}
-      ok = !!document.execCommand("copy");
-    } catch(__){ ok = false; }
-    try { document.body.removeChild(ta); } catch(__){}
+      await navigator.clipboard.writeText(payload);
+      ok = true;
+    } catch(_){ ok = false; }
+  }
+  if (!ok){
+    ok = copyTextExecCommandFallback(payload);
   }
   if (btn){
     const orig = btn.textContent;
@@ -78308,8 +78338,7 @@ function gisInit(){
           if (typeof waypointsExportPlainText === "function") waypointsExportPlainText();
           closeExp();
         } else if (k === "txt-clipboard"){
-          // Await full multi-line clipboard write while user activation is still valid;
-          // closing the dialog first caused multi-select paste to keep a stale single-WP clipboard.
+          // Keep export dialog open during copy (execCommand textarea must live inside dialog focus trap).
           const p = (typeof waypointsCopyPlainText === "function")
             ? waypointsCopyPlainText(b)
             : Promise.resolve(false);
@@ -99854,9 +99883,14 @@ function cotTypeForWaypoint(wp){
   return COT_DEFAULT_TYPE;
 }
 
-/** Waypoints to export: selected rows in #wp-list if any checked, else all. */
+/** Waypoints to export: canonical modal selection Set if any, else checked #wp-list rows, else all. */
 function getWaypointsForExportOrSelection(){
   ensureMapWaypointsState();
+  try { if (typeof wpModalPruneWaypointSelection === "function") wpModalPruneWaypointSelection(); } catch(_){}
+  if (typeof waypointModalSelectedRowIds !== "undefined" && waypointModalSelectedRowIds && waypointModalSelectedRowIds.size > 0){
+    const fromSet = state.mapWaypoints.filter(w => w && waypointModalSelectedRowIds.has(String(w.id)));
+    if (fromSet.length) return fromSet;
+  }
   const root = document.getElementById("wp-list");
   const checked = root ? [...root.querySelectorAll(".wp-sel-cb[data-wp-sel]:checked")] : [];
   if (!checked.length) return state.mapWaypoints.slice();
@@ -99927,35 +99961,50 @@ function txtExportFilenameForWaypoints(waypoints){
   return hm + "_waypoints_" + n + ".txt";
 }
 
-function waypointsExportPlainText(){
+/** Single source for TXT download + Copia testo (identical ordered snapshot + payload). */
+function getWaypointsPlainTextExportBundle(){
   ensureMapWaypointsState();
-  const list = getWaypointsForExportOrSelection();
+  const list = getWaypointsForExportOrSelection().slice();
+  return { list: list, text: buildWaypointsPlainText(list) };
+}
+
+function waypointsExportPlainText(){
+  const bundle = getWaypointsPlainTextExportBundle();
+  const list = bundle.list;
+  const textOut = bundle.text;
   if (!list.length){
     setBadge("info", (typeof tIt === "function"
       ? (tIt("waypointModal.exportTxtNoWaypoints") || "")
       : "") || (typeof t === "function" ? (t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty") || "") : "") || "Nessun waypoint da esportare.");
     return;
   }
-  const textOut = buildWaypointsPlainText(list);
   const fname = txtExportFilenameForWaypoints(list);
   downloadBlob(textOut, fname, "text/plain;charset=utf-8");
   setBadge("success", String((typeof t === "function" ? (t("waypointModal.exportedN") || "") : "") || "Esportati {0} waypoint.").replace("{0}", String(list.length)));
 }
 
 async function waypointsCopyPlainText(btn){
-  ensureMapWaypointsState();
-  // Snapshot selection + payload synchronously (same source as .txt export).
-  const list = getWaypointsForExportOrSelection().slice();
+  // Exact same bundle as Testo (.txt) — never editor draft / single active row.
+  const bundle = getWaypointsPlainTextExportBundle();
+  const list = bundle.list;
+  const textOut = bundle.text;
   if (!list.length){
     setBadge("info", (typeof tIt === "function"
       ? (tIt("waypointModal.exportTxtNoWaypoints") || "")
       : "") || (typeof t === "function" ? (t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty") || "") : "") || "Nessun waypoint da esportare.");
     return false;
   }
-  const textOut = buildWaypointsPlainText(list);
+  // Transient evidence for ABQA / diagnostics (not persisted).
+  try { state._lastWaypointsPlainTextClipboard = textOut; } catch(_){}
   let ok = false;
-  if (typeof copyText === "function"){
+  // Prefer sync execCommand-capable path immediately while dialog is still open (gesture + focus).
+  if (!(window.isSecureContext && navigator.clipboard && typeof navigator.clipboard.writeText === "function")){
+    ok = copyTextExecCommandFallback(textOut);
+  } else if (typeof copyText === "function"){
     try { ok = !!(await copyText(textOut, null)); } catch(_){ ok = false; }
+  }
+  if (!ok && typeof copyTextExecCommandFallback === "function"){
+    ok = copyTextExecCommandFallback(textOut);
   }
   const msgTpl = (typeof tIt === "function" ? (tIt("waypointModal.copiedTxtN") || "") : "") || "Testo copiato ({0} waypoint).";
   if (ok){
