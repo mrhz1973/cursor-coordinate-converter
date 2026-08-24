@@ -6,10 +6,10 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | — |
 | **WU ATTIVA** | `—` (N/A) |
-| **BLOCCO ATTIVO** | `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A` |
+| **BLOCCO ATTIVO** | `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1` |
 | **STATO BLOCCO** | **IMPLEMENTED / PENDING QA** |
 | **GATE CORRENTE** | **QA FINALE CHATGPT — PENDING** |
 | **RUNTIME LIVE** | tip `c3bf1124004972081e74d2a5c0900a042ab84577` · build **250** · `GIS-POLYGON-TABLE-COL-RESIZE-A` · blob `1482ead343486fde6fe551e8d56308d216dd007c` |
-| **RUNTIME CANDIDATE** | tip `84e34986d017eae450f045d54c0ea4afd64697f6` · build **251** · `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A` · blob `7ff2adbecd23bedd4b001ce368720bb279cbcc86` |
-| **NEXT** | QA operatore · FAIL → no finito · PASS → finito Regola H / promote 251 |
-| **ALTRI WORKSTREAM** | **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** (sblocco funzionale **limitato esclusivamente** a questo blocco) · GIS VPS candidate **251** deployed |
+| **RUNTIME CANDIDATE** | tip `4ad3b522a0d921a4344edccfa9e01d4413e95956` · build **252** · `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1` · blob `003b40b8a3b27346ef6768239fc021cffaea2e6e` |
+| **NEXT** | QA operatore · FAIL → no finito · PASS → finito Regola H / promote 252 |
+| **ALTRI WORKSTREAM** | **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** (sblocco limitato a WP text export/clipboard) · GIS VPS candidate **252** deployed · parent 251 FAIL caso 2 (copia multi) |

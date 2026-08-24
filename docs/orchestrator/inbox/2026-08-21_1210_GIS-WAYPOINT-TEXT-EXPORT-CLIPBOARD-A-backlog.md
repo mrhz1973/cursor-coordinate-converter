@@ -1,10 +1,10 @@
 # BACKLOG — GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
 
 **ID:** `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A`  
-**Stato:** **CONSUMED / OPENED** (2026-08-24) — runtime build **251** candidate; gate **QA FINALE CHATGPT — PENDING**  
+**Stato:** **CONSUMED / FIX1 PENDING QA** (2026-08-24) — parent **251** FAIL caso 2; candidate **252** FIX1  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Waypoint)  
-**Runtime:** tip `84e3498` · blob `7ff2adbe…` · evidence [`2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md`](2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md)  
-**FRONTIER:** blocco attivo PENDING QA  
+**Runtime:** tip `4ad3b52` · blob `003b40b8…` · evidence [`2026-08-24_1500_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1_deploy-abqa.md`](2026-08-24_1500_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1_deploy-abqa.md)  
+**FRONTIER:** blocco attivo FIX1 PENDING QA  
 **Sblocco:** funzionale **limitato esclusivamente** a questo blocco; Oggetti GIS resta FROZEN / MAINTENANCE-ONLY altrove.
 
 ## Motivazione
