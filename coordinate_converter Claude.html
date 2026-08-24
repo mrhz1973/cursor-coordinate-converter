@@ -24419,9 +24419,9 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2";
-const APP_BUILD_DETAIL = "Copia testo HTTP: shared TXT bundle; dialog-hosted execCommand without readonly; body retry.";
+const APP_BUILD_DETAIL = "Copia testo HTTP: TXT bundle; export-dialog host for execCommand; no readonly; body retry.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 254;
+const APP_BUILD_NUM = 255;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71364,11 +71364,15 @@ function clearForm(){
 // #endregion JS — TRACK WAYPOINT GIS LAYERS AND TOOLS
 // #region JS — CLIPBOARD HISTORY FAVORITES BATCH
 /* ========================= SECTION 17: COPY / CLIPBOARD ========================= */
-/** Host for execCommand fallback: topmost open <dialog> (focus trap) or body. */
+/** Host for execCommand fallback: prefer export dialog, else last open <dialog>, else body. */
 function copyTextExecCommandHost(){
   try {
-    const open = document.querySelector("dialog[open]");
-    if (open) return open;
+    const exp = document.getElementById("waypointExportDialog");
+    if (exp && exp.open) return exp;
+  } catch(_){}
+  try {
+    const opens = Array.prototype.slice.call(document.querySelectorAll("dialog[open]"));
+    if (opens.length) return opens[opens.length - 1];
   } catch(_){}
   return document.body;
 }
