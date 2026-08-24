@@ -14465,6 +14465,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kml" data-i18n="export.kml" data-i18n-tip="tip.waypointModal.exportKml">KML</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="kmz" data-i18n="export.kmz" data-i18n-tip="tip.waypointModal.exportKmz">KMZ</button>
       <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="csv" data-i18n="export.csv" data-i18n-tip="tip.waypointModal.exportCsv">CSV</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="txt" data-i18n="waypointModal.exportTxt" data-i18n-tip="tip.waypointModal.exportTxt" data-i18n-aria="waypointModal.exportTxtAria">Testo (.txt)</button>
+      <button type="button" class="btn btn-sm wp-export-fmt" data-wp-export-fmt="txt-clipboard" data-i18n="waypointModal.copyTxt" data-i18n-tip="tip.waypointModal.copyTxt" data-i18n-aria="waypointModal.copyTxtAria">Copia testo</button>
       <button type="button" class="btn btn-sm wp-export-fmt wp-export-cot-combo" id="waypointExportCotFormatBtn" data-wp-export-fmt="cot"
         data-i18n-tip="tip.waypointModal.exportCot" data-i18n-aria="waypointModal.exportCotAria">
         <span class="wp-export-cot-title" data-i18n="waypointModal.exportCot">CoT XML</span>
@@ -16348,6 +16350,13 @@ const I18N = {
     "waypointModal.exportKml":"Esporta KML",
     "waypointModal.exportKmz":"Esporta KMZ",
     "waypointModal.exportCsv":"Esporta CSV",
+    "waypointModal.exportTxt":"Testo (.txt)",
+    "waypointModal.exportTxtAria":"Scarica i waypoint in un unico file di testo",
+    "waypointModal.copyTxt":"Copia testo",
+    "waypointModal.copyTxtAria":"Copia negli appunti lo stesso testo dell'export .txt",
+    "waypointModal.exportTxtNoWaypoints":"Nessun waypoint da esportare (selezione vuota o nessun dato).",
+    "waypointModal.copiedTxtN":"Testo copiato ({0} waypoint).",
+    "waypointModal.txtExportFileFallback":"waypoint",
     "waypointModal.exportOpen":"Esporta",
     "waypointModal.exportOpenAria":"Apri la finestra di esportazione waypoint",
     "waypointModal.exportDialogTitle":"Esporta waypoint",
@@ -16465,6 +16474,8 @@ const I18N = {
     "tip.waypointModal.exportKml":"Esporta i waypoint in KML, includendo le note come descrizione.",
     "tip.waypointModal.exportKmz":"Esporta i waypoint in KMZ (ZIP con doc.kml).",
     "tip.waypointModal.exportCsv":"Esporta i waypoint in CSV (UTF-8 con BOM), includendo le note come descrizione.",
+    "tip.waypointModal.exportTxt":"Scarica un unico file .txt (una riga per waypoint: Nome | Coordinata | Tipo | Note). Usa il formato coordinate della modal; selezione se presente, altrimenti tutti. Zero rete.",
+    "tip.waypointModal.copyTxt":"Copia negli appunti lo stesso testo del file .txt (selezione se presente, altrimenti tutti). Zero rete.",
     "tip.waypointModal.exportCot":"Esporta in CoT XML (file .cot), un evento CoT per waypoint; se selezioni righe nella lista, solo quelle, altrimenti tutti. Nessuna rete.",
     "tip.waypointModal.exportOpen":"Scegli il formato di esportazione dei waypoint.",
     "tip.waypointModal.clearAll":"Elimina tutti i waypoint (chiede conferma).",
@@ -24406,10 +24417,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-POLYGON-TABLE-COL-RESIZE-A";
-const APP_BUILD_DETAIL = "Polygon list column resize: lower useful mins, no premature table floor, fluid drag.";
+const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A";
+const APP_BUILD_DETAIL = "Waypoint plain-text export (.txt) + clipboard; selection-aware; modal coord format.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 250;
+const APP_BUILD_NUM = 251;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -78273,6 +78284,10 @@ function gisInit(){
           if (typeof waypointsExportGeoJSON === "function") waypointsExportGeoJSON();
         } else if (k === "cot"){
           if (typeof waypointsExportCotXml === "function") waypointsExportCotXml();
+        } else if (k === "txt"){
+          if (typeof waypointsExportPlainText === "function") waypointsExportPlainText();
+        } else if (k === "txt-clipboard"){
+          if (typeof waypointsCopyPlainText === "function") waypointsCopyPlainText(b);
         } else if (k && typeof waypointsExport === "function"){
           waypointsExport(k);
         }
@@ -99821,6 +99836,99 @@ function getWaypointsForExportOrSelection(){
   const picked = state.mapWaypoints.filter(w => idSet.has(String(w.id)));
   if (picked.length) return picked;
   return state.mapWaypoints.slice();
+}
+
+/* ===== GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A — plain text (.txt) + clipboard ===== */
+/** Normalize a field for pipe-separated plaintext lines (no parallel schema). */
+function sanitizeWaypointTextExportField(s){
+  return String(s == null ? "" : s)
+    .replace(/\r\n|\r|\n/g, " ")
+    .replace(/\|/g, "/")
+    .replace(/\u00a0/g, " ")
+    .replace(/[ \t\f\v]+/g, " ")
+    .trim();
+}
+
+function waypointTextExportTipo(wp){
+  const raw = (wp && wp.meta && typeof wp.meta.icon === "string") ? String(wp.meta.icon).trim() : "";
+  if (!raw) return "";
+  try {
+    if (typeof waypointIconHumanLabel === "function"){
+      return sanitizeWaypointTextExportField(waypointIconHumanLabel(raw) || "");
+    }
+  } catch(_){}
+  return sanitizeWaypointTextExportField(raw);
+}
+
+/** One line: NOME | COORDINATA | TIPO | NOTE (coord = modal list format). */
+function formatWaypointTextExportLine(wp){
+  const name = sanitizeWaypointTextExportField((wp && wp.name) || "");
+  let coord = "";
+  try {
+    if (typeof formatWaypointListCoordinates === "function"){
+      coord = formatWaypointListCoordinates(wp && wp.lat, wp && wp.lon);
+    }
+  } catch(_){ coord = ""; }
+  if (!coord || coord === "—") coord = "";
+  else coord = sanitizeWaypointTextExportField(coord);
+  const tipo = waypointTextExportTipo(wp);
+  const notesRaw = (wp && wp.meta && typeof wp.meta.notes === "string") ? wp.meta.notes : "";
+  const notes = sanitizeWaypointTextExportField(notesRaw);
+  return name + " | " + coord + " | " + tipo + " | " + notes;
+}
+
+function buildWaypointsPlainText(waypoints){
+  const list = Array.isArray(waypoints) ? waypoints : [];
+  return list.map(formatWaypointTextExportLine).join("\n");
+}
+
+/** Leaf name before exportPrefixedDownloadFilename (same pattern as CoT). */
+function txtExportFilenameForWaypoints(waypoints){
+  const list = Array.isArray(waypoints) ? waypoints : [];
+  const n = list.length;
+  const hm = formatExportLocalHm(new Date());
+  if (n <= 0) return hm + "_waypoints_0.txt";
+  if (n === 1){
+    const rawNm = String((list[0] && list[0].name) || "").trim();
+    const fb = (typeof tIt === "function"
+      ? (tIt("waypointModal.txtExportFileFallback") || "")
+      : (typeof t === "function" ? (t("waypointModal.txtExportFileFallback") || "") : "")) || "waypoint";
+    const part = safeFilenamePart(rawNm) || safeFilenamePart(fb) || "waypoint";
+    return hm + "_" + part + ".txt";
+  }
+  return hm + "_waypoints_" + n + ".txt";
+}
+
+function waypointsExportPlainText(){
+  ensureMapWaypointsState();
+  const list = getWaypointsForExportOrSelection();
+  if (!list.length){
+    setBadge("info", (typeof tIt === "function"
+      ? (tIt("waypointModal.exportTxtNoWaypoints") || "")
+      : "") || (typeof t === "function" ? (t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty") || "") : "") || "Nessun waypoint da esportare.");
+    return;
+  }
+  const textOut = buildWaypointsPlainText(list);
+  const fname = txtExportFilenameForWaypoints(list);
+  downloadBlob(textOut, fname, "text/plain;charset=utf-8");
+  setBadge("success", String((typeof t === "function" ? (t("waypointModal.exportedN") || "") : "") || "Esportati {0} waypoint.").replace("{0}", String(list.length)));
+}
+
+function waypointsCopyPlainText(btn){
+  ensureMapWaypointsState();
+  const list = getWaypointsForExportOrSelection();
+  if (!list.length){
+    setBadge("info", (typeof tIt === "function"
+      ? (tIt("waypointModal.exportTxtNoWaypoints") || "")
+      : "") || (typeof t === "function" ? (t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty") || "") : "") || "Nessun waypoint da esportare.");
+    return;
+  }
+  const textOut = buildWaypointsPlainText(list);
+  if (typeof copyText === "function"){
+    try { copyText(textOut, btn || null); } catch(_){}
+  }
+  const msgTpl = (typeof tIt === "function" ? (tIt("waypointModal.copiedTxtN") || "") : "") || "Testo copiato ({0} waypoint).";
+  setBadge("success", String(msgTpl).replace("{0}", String(list.length)));
 }
 
 function waypointToCotEventXml(wp, opts){
