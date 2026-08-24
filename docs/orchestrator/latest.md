@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-24 — **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2 CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **255** tip `0a4b52b` · blob `e8f5d3c0…`. Evidence: [`inbox/2026-08-24_2137_riepilogo_finito-GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2.md`](inbox/2026-08-24_2137_riepilogo_finito-GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2.md).
+2026-08-24 — **APP-BUILD-LABEL-UX-A IMPLEMENTED — QA FINALE PENDING**. Runtime tip `f215011` build **256** · blob `7f9804d5…` · deploy GIS-only PASS · ABQA **24/24** PASS. Badge build/versione assente da topbar/HUD mappa; footer e About invariati. Evidence: [`inbox/2026-08-24_2205_APP-BUILD-LABEL-UX-A_deploy-abqa.md`](inbox/2026-08-24_2205_APP-BUILD-LABEL-UX-A_deploy-abqa.md).
