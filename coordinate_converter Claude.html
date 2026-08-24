@@ -24418,10 +24418,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2";
-const APP_BUILD_DETAIL = "Copia testo HTTP: TXT bundle; export-dialog host for execCommand; no readonly; body retry.";
+const APP_BUILD_ID = "APP-BUILD-LABEL-UX-A";
+const APP_BUILD_DETAIL = "Rimuove badge build/versione dalla topbar mappa; footer e About invariati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 255;
+const APP_BUILD_NUM = 256;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -77868,7 +77868,7 @@ function gisRelocatePrimaryToConvertModal(){
  *  reparent #miniMap into #gisMapMount, wire topbar listeners, and
  *  restore a persisted active tab. Idempotent: safe to call twice. */
 let _gisInitDone = false;
-/** APP-BUILD-LABEL-UX-A-FIX1: map status HUD removed; layer label kept for diagnostics. */
+/** APP-BUILD-LABEL-UX-A: map status HUD suppressed; layer label kept for diagnostics only. */
 function mapLayerHudLabel(){
   const layer = sanitizeMapLayer(state.mapLayer || "osm");
   try { return offlineLayerSelectLabel(layer); } catch(_){
@@ -77889,6 +77889,93 @@ function gisEnsureMapHud(){
 function updateGisMapHud(/* zoomOverride */){
   gisRemoveMapHud();
 }
+
+/* ===== APP-BUILD-LABEL-UX-A — no build badge on map topbar/HUD ===== */
+function buildLabelUxSelfTestAppBuildLabelUxA(){
+  const checks = [];
+  const add = function(name, ok, detail){
+    checks.push({ name: name, ok: !!ok, detail: detail || "" });
+  };
+  try {
+    add("BLUX_build_256",
+      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 256
+      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "APP-BUILD-LABEL-UX-A");
+    add("BLUX_no_gisMapHud_dom", !document.getElementById("gisMapHud"));
+    add("BLUX_gisEnsureMapHud_null",
+      typeof gisEnsureMapHud === "function" && gisEnsureMapHud() === null
+      && !document.getElementById("gisMapHud"));
+    if (typeof updateGisMapHud === "function") updateGisMapHud();
+    add("BLUX_updateGisMapHud_no_hud", !document.getElementById("gisMapHud"));
+    add("BLUX_no_hud_create_source", (function(){
+      if (typeof gisEnsureMapHud !== "function") return false;
+      const src = String(gisEnsureMapHud);
+      return src.indexOf("createElement") < 0 && src.indexOf("gisMapHud") >= 0;
+    })());
+    add("BLUX_no_build_chip_source", (function(){
+      if (typeof updateGisMapHud !== "function") return false;
+      const src = String(updateGisMapHud);
+      return src.indexOf('data-hud="build"') < 0 && src.indexOf("gis.hud.build") < 0;
+    })());
+    try { applyAppBuildLabel(); } catch(_){}
+    const foot = document.getElementById("appBuildFooter");
+    const about = document.getElementById("appBuildAbout");
+    const det = document.getElementById("appBuildAboutDetail");
+    const buildNeedle = " · build " + APP_BUILD_NUM;
+    add("BLUX_footer_build",
+      !!(foot && String(foot.textContent || "").indexOf(buildNeedle) >= 0));
+    add("BLUX_about_build",
+      !!(about && String(about.textContent || "").indexOf(buildNeedle) >= 0));
+    add("BLUX_about_detail",
+      !!(det && String(det.textContent || "").indexOf(String(APP_BUILD_DETAIL || "").slice(0, 24)) >= 0));
+    const mount = document.getElementById("gisMapMount");
+    const mapRoot = document.getElementById("miniMap");
+    add("BLUX_topbar_ctrls",
+      !!(mapRoot && mapRoot.querySelector(".tile-ctrls .tlayer-btn")
+        && mapRoot.querySelector(".tile-ctrls .tz-level")));
+    add("BLUX_app_topbar_tabs",
+      document.querySelectorAll("#appTopbar .app-tab").length >= 4);
+    add("BLUX_map_mount_no_build_badge", (function(){
+      if (!mount) return true;
+      if (mount.querySelector("#gisMapHud")) return false;
+      const chips = mount.querySelectorAll(".gis-map-hud-chip");
+      for (let i = 0; i < chips.length; i++){
+        const t = String(chips[i].textContent || "");
+        if (t.indexOf(" · build ") >= 0) return false;
+      }
+      return true;
+    })());
+  } catch (e){
+    add("BLUX_selftest_exception", false, String(e && e.message ? e.message : e));
+  }
+  return checks;
+}
+
+(function buildLabelUxExtendSelfTest(){
+  try {
+    const prevAll = dflightSelfTestAll;
+    dflightSelfTestAll = function(){
+      const prev = (typeof prevAll === "function") ? prevAll() : { ok: true, checks: [] };
+      const extra = buildLabelUxSelfTestAppBuildLabelUxA();
+      const checks = (prev.checks || []).concat(extra);
+      const pass = checks.every(function(c){ return c.ok; });
+      return Object.freeze({
+        ok: pass,
+        checks: Object.freeze(checks.map(function(c){ return Object.freeze(c); }))
+      });
+    };
+    if (window.GOIDflight){
+      try {
+        const api = Object.assign({}, window.GOIDflight, {
+          selfTest: dflightSelfTestAll,
+          selfTestBuildLabelUx: buildLabelUxSelfTestAppBuildLabelUxA
+        });
+        Object.freeze(api);
+        window.GOIDflight = api;
+      } catch(_){}
+    }
+  } catch(_){}
+})();
+
 let _gisFooterReserveBound = false;
 function syncGisFooterReserve(){
   try {
