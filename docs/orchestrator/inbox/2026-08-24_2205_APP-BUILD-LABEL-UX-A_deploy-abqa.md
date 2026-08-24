@@ -3,7 +3,7 @@
 **BLOCK-ID:** `APP-BUILD-LABEL-UX-A`  
 **Categoria:** ROUTINE  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE:** **QA FINALE CHATGPT — PENDING**
+**GATE:** **CLOSED / PASS** (QA operatore PASS · Regola H)
 
 ## Obiettivo
 
@@ -39,4 +39,4 @@ Desktop + narrow: nessun `#gisMapHud`/badge build in mappa/header/topbar; contro
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING** — attendere `QA APP-BUILD-LABEL-UX-A PASS operatore`. **Non** finito finché PASS operatore.
+**CLOSED / PASS** — `QA APP-BUILD-LABEL-UX-A PASS operatore` (2026-08-24) → finito Regola H · LIVE **256**.
