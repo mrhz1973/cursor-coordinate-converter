@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-22 — **GIS-POLYGON-TABLE-COL-RESIZE-A CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **250** tip `28e87f6` · blob `1482ead…`. Evidence: [`inbox/2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md`](inbox/2026-08-22_0339_riepilogo_finito-GIS-POLYGON-TABLE-COL-RESIZE-A.md).
+2026-08-24 — **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** deploy + ABQA PASS · gate **QA FINALE CHATGPT — PENDING**. Candidate **251** tip `84e3498` · blob `7ff2adbe…`. Sblocco funzionale **solo** questo blocco; Oggetti GIS FROZEN altrove. Evidence: [`inbox/2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md`](inbox/2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md).

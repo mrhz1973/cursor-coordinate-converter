@@ -1,10 +1,11 @@
 # BACKLOG — GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
 
 **ID:** `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A`  
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21)  
+**Stato:** **CONSUMED / OPENED** (2026-08-24) — runtime build **251** candidate; gate **QA FINALE CHATGPT — PENDING**  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Waypoint)  
-**Runtime:** **non implementato** in questo pass (docs-only)  
-**FRONTIER:** **non aperto**
+**Runtime:** tip `84e3498` · blob `7ff2adbe…` · evidence [`2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md`](2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md)  
+**FRONTIER:** blocco attivo PENDING QA  
+**Sblocco:** funzionale **limitato esclusivamente** a questo blocco; Oggetti GIS resta FROZEN / MAINTENANCE-ONLY altrove.
 
 ## Motivazione
 

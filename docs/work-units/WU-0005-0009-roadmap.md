@@ -790,7 +790,7 @@ Casa canonica generale: questa sezione. Dettaglio D-Flight: [`WU-0013` §23](WU-
 | **GIS-POLYGON-WAYPOINT-INTERACTION-A** | Priorità pointer drawing vs Waypoint + snap pixel + close modal termina edit | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; `state.mapWaypoints[]` canonico; **non** snap globale |
 | **GIS-WAYPOINT-COORD-UX-A** | Lifecycle modal Waypoint vs map-click (coord format/copy/paste = **BASELINE** CLOSED) | **BACKLOG / NOT OPENED** (2026-08-21) — **DELICATO**; **non** rifare `COORD-MODAL-FORMAT-COPY-A` |
 | **GIS-WAYPOINT-MODAL-LAYOUT-A** | Gruppo «Nome sulla mappa / Sempre visibile / Solo nei tooltip» non deve overlapparsi alle righe tabella | **CONSUMED / CLOSED** con bundle `GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A` LIVE **248** · QA PASS · Regola H |
-| **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **BACKLOG / NOT OPENED** (2026-08-21) — zero rete; schema WP invariato |
+| **GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A** | Export/clipboard testo semplice waypoint (Nome + coord formato modal) | **OPENED / PENDING QA** (2026-08-24) — build **251** candidate `84e3498`; sblocco limitato a questo blocco; Oggetti GIS FROZEN altrove |
 | **GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A** | Select formato editor WP riscrive `#wpFieldCoord` (stessa posizione; no mutazione) | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
 | **GIS-POLYGON-PANEL-DISMISS-TOOLBAR-SYNC-A** | Post-finalize: click mappa non dismissa modal; close reale → toolbar non attiva | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
 | **GIS-TRACK-TOOLBAR-FLYOUT-AUTOCLOSE-A** | Flyout Traccia (Poligoni / Range & Bearing) si chiude dopo selezione voce | **CONSUMED / CLOSED** con bundle `GIS-MAP-UI-RESIDUAL-MAINTENANCE-A` LIVE **249** · QA PASS · Regola H |
@@ -1003,11 +1003,12 @@ Evidence backlog: [`../orchestrator/inbox/2026-08-21_1140_GIS-WAYPOINT-MODAL-LAY
 
 #### GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
 
-**Stato:** **BACKLOG / NOT OPENED** (2026-08-21). **Non** aperto. **FRONTIER non toccato**.
+**Stato:** **OPENED / PENDING QA** (2026-08-24). Candidate build **251** tip `84e3498` · blob `7ff2adbe…`. Deploy + ABQA PASS.  
+**Sblocco:** esclusivamente questo blocco; **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** per ogni altra area.
 
 **Requisito:** export Waypoint come testo semplice (file unico + clipboard); singolo e multi-selezione; ordine coerente lista/selezione; almeno Nome + Coordinata nel formato della modal; preferenza riga `NOME | COORDINATA | TIPO | NOTE`; formatter canonico; `state.mapWaypoints[]` invariato; zero rete.
 
-Evidence: [`../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md).
+Evidence backlog: [`../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md`](../orchestrator/inbox/2026-08-21_1210_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-backlog.md). Deploy/ABQA: [`../orchestrator/inbox/2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md`](../orchestrator/inbox/2026-08-24_1042_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A_deploy-abqa.md).
 
 ### WU-0006 POLY-EDIT-B2 — Fondazione edit state (transiente)
 
