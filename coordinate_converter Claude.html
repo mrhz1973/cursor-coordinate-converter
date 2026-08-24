@@ -16356,6 +16356,7 @@ const I18N = {
     "waypointModal.copyTxtAria":"Copia negli appunti lo stesso testo dell'export .txt",
     "waypointModal.exportTxtNoWaypoints":"Nessun waypoint da esportare (selezione vuota o nessun dato).",
     "waypointModal.copiedTxtN":"Testo copiato ({0} waypoint).",
+    "waypointModal.copyTxtFailed":"Copia negli appunti non riuscita.",
     "waypointModal.txtExportFileFallback":"waypoint",
     "waypointModal.exportOpen":"Esporta",
     "waypointModal.exportOpenAria":"Apri la finestra di esportazione waypoint",
@@ -24417,10 +24418,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A";
-const APP_BUILD_DETAIL = "Waypoint plain-text export (.txt) + clipboard; selection-aware; modal coord format.";
+const APP_BUILD_ID = "GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1";
+const APP_BUILD_DETAIL = "Fix multi-select Copia testo: await full selection payload before closing export dialog.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 251;
+const APP_BUILD_NUM = 252;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71364,21 +71365,34 @@ function clearForm(){
 // #region JS — CLIPBOARD HISTORY FAVORITES BATCH
 /* ========================= SECTION 17: COPY / CLIPBOARD ========================= */
 async function copyText(text, btn){
+  const payload = String(text == null ? "" : text);
+  let ok = false;
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(payload);
+    ok = true;
   } catch(_) {
-    // Fallback
+    // Fallback — select full value explicitly (multiline-safe).
     const ta = document.createElement("textarea");
-    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-    document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); } catch(__){}
-    document.body.removeChild(ta);
+    ta.value = payload;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    try {
+      ta.focus();
+      ta.select();
+      try { ta.setSelectionRange(0, payload.length); } catch(__){}
+      ok = !!document.execCommand("copy");
+    } catch(__){ ok = false; }
+    try { document.body.removeChild(ta); } catch(__){}
   }
   if (btn){
     const orig = btn.textContent;
     btn.textContent = t("btn.copied");
     setTimeout(() => { btn.textContent = orig; }, 1200);
   }
+  return ok;
 }
 
 function copyAll(){
@@ -78279,19 +78293,33 @@ function gisInit(){
         const b = ev.target.closest && ev.target.closest("[data-wp-export-fmt]");
         if (!b || b.disabled) return;
         ev.preventDefault();
+        try { ev.stopPropagation(); } catch(_){}
         const k = b.getAttribute("data-wp-export-fmt");
+        const closeExp = () => {
+          if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
+        };
         if (k === "geojson"){
           if (typeof waypointsExportGeoJSON === "function") waypointsExportGeoJSON();
+          closeExp();
         } else if (k === "cot"){
           if (typeof waypointsExportCotXml === "function") waypointsExportCotXml();
+          closeExp();
         } else if (k === "txt"){
           if (typeof waypointsExportPlainText === "function") waypointsExportPlainText();
+          closeExp();
         } else if (k === "txt-clipboard"){
-          if (typeof waypointsCopyPlainText === "function") waypointsCopyPlainText(b);
+          // Await full multi-line clipboard write while user activation is still valid;
+          // closing the dialog first caused multi-select paste to keep a stale single-WP clipboard.
+          const p = (typeof waypointsCopyPlainText === "function")
+            ? waypointsCopyPlainText(b)
+            : Promise.resolve(false);
+          Promise.resolve(p).then(() => { closeExp(); }).catch(() => { closeExp(); });
         } else if (k && typeof waypointsExport === "function"){
           waypointsExport(k);
+          closeExp();
+        } else {
+          closeExp();
         }
-        if (typeof closeWaypointExportDialog === "function") closeWaypointExportDialog();
       });
     }
   }
@@ -99914,21 +99942,28 @@ function waypointsExportPlainText(){
   setBadge("success", String((typeof t === "function" ? (t("waypointModal.exportedN") || "") : "") || "Esportati {0} waypoint.").replace("{0}", String(list.length)));
 }
 
-function waypointsCopyPlainText(btn){
+async function waypointsCopyPlainText(btn){
   ensureMapWaypointsState();
-  const list = getWaypointsForExportOrSelection();
+  // Snapshot selection + payload synchronously (same source as .txt export).
+  const list = getWaypointsForExportOrSelection().slice();
   if (!list.length){
     setBadge("info", (typeof tIt === "function"
       ? (tIt("waypointModal.exportTxtNoWaypoints") || "")
       : "") || (typeof t === "function" ? (t("waypointModal.exportCoTNoWaypoints") || t("waypointModal.empty") || "") : "") || "Nessun waypoint da esportare.");
-    return;
+    return false;
   }
   const textOut = buildWaypointsPlainText(list);
+  let ok = false;
   if (typeof copyText === "function"){
-    try { copyText(textOut, btn || null); } catch(_){}
+    try { ok = !!(await copyText(textOut, null)); } catch(_){ ok = false; }
   }
   const msgTpl = (typeof tIt === "function" ? (tIt("waypointModal.copiedTxtN") || "") : "") || "Testo copiato ({0} waypoint).";
-  setBadge("success", String(msgTpl).replace("{0}", String(list.length)));
+  if (ok){
+    setBadge("success", String(msgTpl).replace("{0}", String(list.length)));
+  } else {
+    setBadge("error", (typeof tIt === "function" ? (tIt("waypointModal.copyTxtFailed") || "") : "") || "Copia negli appunti non riuscita.");
+  }
+  return ok;
 }
 
 function waypointToCotEventXml(wp, opts){
