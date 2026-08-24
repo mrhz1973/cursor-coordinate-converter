@@ -24,7 +24,7 @@ Su URL GIS `http://…` (non secure context) `navigator.clipboard` è assente. I
 | Tip | `0a4b52b9ccc2b3a230366021f51285a961798b8b` |
 | Build / ID | **255** / `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2` |
 | Blob | `e8f5d3c09fcd5ac0a255cf368a51daf3dfbd1a73` |
-| Byte / SHA-256 | `10867044` / (vedi report locale) |
+| Byte / SHA-256 | `10867044` / `09e01fe3a5d11965e5109bedecc155ecc95693599016c8d000fa59b5147feaaa` |
 | BASE | tip `4ad3b52` / FIX1 **252** |
 
 ## B — Deploy GIS-only — PASS
