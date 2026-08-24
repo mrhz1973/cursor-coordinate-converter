@@ -1,10 +1,10 @@
 # BACKLOG — GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A
 
 **ID:** `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A`  
-**Stato:** **CONSUMED / FIX2 PENDING QA** (2026-08-24) — candidate **255** FIX2 (HTTP clipboard)  
+**Stato:** **CONSUMED / CLOSED / PASS** (2026-08-24) — LIVE **255** via FIX2 · tip `0a4b52b…` · blob `e8f5d3c0…` · QA PASS · Regola H  
 **Casa primaria:** [`docs/work-units/WU-0005-0009-roadmap.md`](../../work-units/WU-0005-0009-roadmap.md) (Map UX / Waypoint)  
-**Runtime:** tip `0a4b52b` · blob `e8f5d3c0…` · evidence [`2026-08-24_1535_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2_deploy-abqa.md`](2026-08-24_1535_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2_deploy-abqa.md)  
-**FRONTIER:** blocco attivo FIX2 PENDING QA  
+**Runtime:** tip `0a4b52b` · blob `e8f5d3c0…` · evidence [`2026-08-24_1535_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2_deploy-abqa.md`](2026-08-24_1535_GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2_deploy-abqa.md) · finito [`2026-08-24_2137_riepilogo_finito-GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2.md`](2026-08-24_2137_riepilogo_finito-GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2.md)  
+**FRONTIER:** CLOSED / PASS (FIX2)  
 **Sblocco:** funzionale **limitato esclusivamente** a questo blocco; Oggetti GIS resta FROZEN / MAINTENANCE-ONLY altrove.
 
 ## Motivazione

@@ -4,7 +4,7 @@
 **Parent:** `GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1` (252) — QA FAIL operatore (copia multi ancora 1 riga)  
 **Categoria:** ROUTINE  
 **CLOSURE:** `STANDARD_RUNTIME_BUNDLE`  
-**GATE:** **QA FINALE CHATGPT — PENDING**
+**GATE:** **CLOSED / PASS** (QA operatore PASS · Regola H)
 
 ## Finding
 
@@ -41,4 +41,4 @@ Prove contenuto reale (HTTP, no Clipboard API): intercept `document.execCommand(
 
 ## Gate
 
-**QA FINALE CHATGPT — PENDING**
+**CLOSED / PASS** — `QA GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2 PASS operatore` → finito Regola H · LIVE **255**
