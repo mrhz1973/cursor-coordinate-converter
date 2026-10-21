@@ -24434,10 +24434,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A";
-const APP_BUILD_DETAIL = "Cerca: classificazione locale coordinate prima della rete; errore esplicito se invalide; centratura mappa se valide.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1";
+const APP_BUILD_DETAIL = "FIX1: intent/shape prima del parse; niente LatLon da indirizzi; apostrofi toponimi; prefisso DD; decimali EU.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 257;
+const APP_BUILD_NUM = 258;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51110,7 +51110,21 @@ function normalizeSearchQueryText(raw){
     .trim();
 }
 
-/** Compact MGRS alnum form used only for shape detection (not a new parser). */
+/** Detect explicit coordinate-format prefixes (case-insensitive). */
+function searchCoordExplicitPrefix(s){
+  const m = String(s || "").trim().match(/^(MGRS|UTM|DDM|DMS|DD|LAT\/?LON|LATLON|LAT|LON|LONG|COORDS?|LL)(?:\b|[:=\s-])/i);
+  if (!m) return null;
+  const raw = m[1].toUpperCase().replace("/", "");
+  let kind = "ll";
+  if (raw === "MGRS") kind = "mgrs";
+  else if (raw === "UTM") kind = "utm";
+  else if (raw === "DDM") kind = "ddm";
+  else if (raw === "DMS") kind = "dms";
+  else if (raw === "DD") kind = "dd";
+  return { kind: kind, prefix: m[1], rest: String(s || "").trim().slice(m[0].length).trim() };
+}
+
+/** Compact alnum body after optional MGRS label (shape detection only). */
 function mgrsCompactFromQuery(s){
   let c = String(s || "").trim().toUpperCase();
   c = c.replace(/^MGRS[:=\s-]*/,"");
@@ -51118,34 +51132,76 @@ function mgrsCompactFromQuery(s){
   return c;
 }
 
-/** True if input is recognizably MGRS-shaped (may still be semantically invalid). */
+/**
+ * Recognizable MGRS *intention* (may be incomplete/invalid).
+ * Broader than parseMGRS: allows invalid band letters and odd/long digit runs.
+ */
 function looksLikeMgrsSearchShape(s){
   const c = mgrsCompactFromQuery(s);
-  return /^\d{1,2}[C-HJ-NP-X][A-HJ-NP-Z][A-HJ-NP-V]\d{0,10}$/.test(c);
-}
-
-/** True if input is recognizably UTM-shaped (compact or token easting/northing). */
-function looksLikeUtmSearchShape(s){
-  let u = String(s || "").trim().toUpperCase();
-  u = u.replace(/^UTM[:=\s-]*/,"");
-  const compact = u.replace(/\s+/g,"");
-  if (/^\d{1,2}[A-Z]\d{10,14}$/.test(compact)) return true;
-  if (/\b\d{1,2}[A-Z]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
-  if (/\b\d{1,2}\s+[A-Z]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
-  if (/\b\d{1,2}\s*[NS]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
+  // zone + band letter + optional digraph + optional digits (0..12; odd/long = invalid later)
+  if (/^\d{1,2}[A-Z][A-Z]{2}\d{0,12}$/.test(c)) return true;
+  // incomplete: zone + band only (e.g. "32T")
+  if (/^\d{1,2}[A-Z]$/.test(c)) return true;
+  // incomplete: zone + band + digraph, no digits already covered by {0,12}
   return false;
 }
 
-/** Strict Lat/Lon shape — avoids classifying street addresses that merely contain digits. */
+/**
+ * Recognizable UTM *intention*, including incomplete (prefix or zone+letter + 1..2 numbers).
+ */
+function looksLikeUtmSearchShape(s){
+  let u = String(s || "").trim().toUpperCase();
+  const hadUtm = /^UTM(?:\b|[:=\s-])/.test(u);
+  u = u.replace(/^UTM[:=\s-]*/,"").trim();
+  const compact = u.replace(/\s+/g,"");
+  if (/^\d{1,2}[A-Z]\d{10,14}$/.test(compact)) return true;
+  // full token forms
+  if (/\b\d{1,2}[A-Z]\s+\d{3,7}(?:\.\d+)?\s+\d{3,7}(?:\.\d+)?\b/.test(u)) return true;
+  if (/\b\d{1,2}\s+[A-Z]\s+\d{3,7}(?:\.\d+)?\s+\d{3,7}(?:\.\d+)?\b/.test(u)) return true;
+  if (/\b\d{1,2}\s*[NS]\s+\d{3,7}(?:\.\d+)?\s+\d{3,7}(?:\.\d+)?\b/.test(u)) return true;
+  // incomplete: zone+letter + single easting (e.g. "33T 291952" / "UTM 33T 291952")
+  if (/\b\d{1,2}[A-Z]\s+\d{3,7}(?:\.\d+)?\s*$/.test(u)) return true;
+  if (/\b\d{1,2}\s+[A-Z]\s+\d{3,7}(?:\.\d+)?\s*$/.test(u)) return true;
+  // bare "33T" after UTM prefix
+  if (hadUtm && /^\d{1,2}[A-Z]$/.test(compact)) return true;
+  return false;
+}
+
+/**
+ * Lat/Lon shape for search — DMS markers only when tied to digits.
+ * Bare apostrophes in toponyms (L'Aquila) must NOT match.
+ */
 function looksLikeLatLonSearchShape(s){
   const t = String(s || "").trim();
   if (!t) return false;
-  if (/[°º]|[\u2032\u2033\u2019']|[\u201C\u201D"]/.test(t)) return true;
+  if (/[°º]/.test(t)) return true;
+  // primes / quotes only as DMS when adjacent to a digit
+  if (/\d\s*[\u2032\u2019']/.test(t) || /\d\s*[\u2033\u201C\u201D"]/.test(t)) return true;
   const up = t.toUpperCase();
   if (/\d/.test(up) && /\b[NS]\b/.test(up) && /\b[EW]\b/.test(up)) return true;
-  if (/^-?\d+(?:[.,]\d+)?\s*[,;]\s*-?\d+(?:[.,]\d+)?\s*$/.test(t)) return true;
+  // two plain decimals with ASCII dot, comma/semicolon separator
+  if (/^-?\d+\.\d+\s*[,;]\s*-?\d+\.\d+\s*$/.test(t)) return true;
   if (/^-?\d+\.\d+\s+-?\d+\.\d+\s*$/.test(t)) return true;
+  // integer pair with comma/semicolon (e.g. "45, 9" or "45;9") — not European decimals
+  if (/^-?\d+\s*,\s*-?\d+\s*$/.test(t)) return true;
+  if (/^-?\d+\s*;\s*-?\d+\s*$/.test(t)) return true;
   return false;
+}
+
+/**
+ * European decimal lat/lon written with comma decimals and ; or space separator.
+ * Returns a DD string with dots, or null if not that pattern.
+ * Avoids silent mis-parse via parseFreeTextLatLon comma→token split.
+ */
+function normalizeEuroDecimalLatLonSearch(s){
+  const t = String(s || "").trim();
+  // "45,5; 9,2" or "45,5;9,2"
+  let m = t.match(/^(-?\d+),(\d+)\s*;\s*(-?\d+),(\d+)$/);
+  if (m) return m[1] + "." + m[2] + ", " + m[3] + "." + m[4];
+  // "45,5 9,2" (exactly two euro-decimal groups)
+  m = t.match(/^(-?\d+),(\d+)\s+(-?\d+),(\d+)$/);
+  if (m) return m[1] + "." + m[2] + ", " + m[3] + "." + m[4];
+  return null;
 }
 
 function looksLikeBngSearchShape(s){
@@ -51153,40 +51209,94 @@ function looksLikeBngSearchShape(s){
   return /^[A-Za-z]{2}\d{2,10}$/.test(c);
 }
 
+/** True if the query contains alphabetic place lexemes (not coord keywords). */
+function searchInputHasPlaceLexemes(s){
+  const COORD_WORD = /^(N|S|E|W|UTM|MGRS|ZONE|ZONA|LAT|LON|LONG|LATLON|DD|DDM|DMS|NORTH|SOUTH|EAST|WEST|HEM|HEMISPHERE|EASTING|NORTHING|COORD|COORDS|COORDINATES|POS|POSITION|LL|BNG)$/i;
+  const tokens = String(s || "").split(/[\s,;:/=]+/).filter(Boolean);
+  for (let i = 0; i < tokens.length; i++){
+    const tok = tokens[i];
+    // alphabetic / apostrophe toponym tokens (Via, Settembre, L'Aquila, d'Ivoire)
+    if (/^[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ']*$/.test(tok) || /^[A-Za-zÀ-ÿ']+[A-Za-zÀ-ÿ]+$/.test(tok)){
+      if (!COORD_WORD.test(tok)) return true;
+    }
+  }
+  return false;
+}
+
+function searchCoordInvalid(){
+  return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+}
+
+function trySearchMgrs(s){
+  try {
+    const ll = mgrsToLatLonExt(s);
+    return { kind: "coord_valid", det: { type:"MGRS", lat: ll.lat, lon: ll.lon, mgrs: ll, raw: s } };
+  } catch(_){
+    return searchCoordInvalid();
+  }
+}
+
+function trySearchUtm(s){
+  try {
+    const u = parseUTMFree(s);
+    if (!u) return searchCoordInvalid();
+    validateUTM(u);
+    const ll = utmToLatLon(u.zone, u.hemisphere, u.easting, u.northing);
+    return { kind: "coord_valid", det: { type:"UTM", lat: ll.lat, lon: ll.lon, utm: u, raw: s } };
+  } catch(_){
+    return searchCoordInvalid();
+  }
+}
+
+function trySearchLatLon(s){
+  try {
+    const ll = parseFreeTextLatLon(s);
+    return { kind: "coord_valid", det: { type:"LatLon", lat: ll.lat, lon: ll.lon, raw: s } };
+  } catch(_){
+    return searchCoordInvalid();
+  }
+}
+
 /**
  * Classify Cerca input BEFORE any network geocoding.
+ * Separates intention (shape/prefix) from parse/validate.
  * kind: empty | coord_valid | coord_invalid | place_text
- * Reuses canonical parsers only; shape-first so incomplete MGRS is not coerced to LatLon.
+ * No indiscriminate autoDetect fallback (would strip address words → false LatLon).
  */
 function classifyGeoSearchInput(raw){
   const s = normalizeSearchQueryText(raw);
   if (!s) return { kind: "empty" };
 
+  const pref = searchCoordExplicitPrefix(s);
+
+  // --- Explicit prefixes force a coordinate family (never cross-format / place). ---
+  if (pref && pref.kind === "utm"){
+    return trySearchUtm(s);
+  }
+  if (pref && pref.kind === "mgrs"){
+    return trySearchMgrs(pref.rest ? ("MGRS " + pref.rest) : s);
+  }
+  if (pref && (pref.kind === "dd" || pref.kind === "ddm" || pref.kind === "dms" || pref.kind === "ll")){
+    const body = pref.rest || "";
+    if (!body) return searchCoordInvalid();
+    // Prefer European-decimal normalization on the body when applicable.
+    const euro = normalizeEuroDecimalLatLonSearch(body);
+    return trySearchLatLon(euro || body);
+  }
+
+  // --- Shape-first grid systems BEFORE place-lexeme gate (digraphs are 2 letters). ---
   if (looksLikeMgrsSearchShape(s)){
-    try {
-      const ll = mgrsToLatLonExt(s);
-      return { kind: "coord_valid", det: { type:"MGRS", lat: ll.lat, lon: ll.lon, mgrs: ll, raw: s } };
-    } catch(_){
-      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
-    }
+    return trySearchMgrs(s);
   }
   if (looksLikeUtmSearchShape(s)){
-    try {
-      const u = parseUTMFree(s);
-      if (!u) return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
-      validateUTM(u);
-      const ll = utmToLatLon(u.zone, u.hemisphere, u.easting, u.northing);
-      return { kind: "coord_valid", det: { type:"UTM", lat: ll.lat, lon: ll.lon, utm: u, raw: s } };
-    } catch(_){
-      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
-    }
+    return trySearchUtm(s);
   }
   if (looksLikePlusCode(s)){
     try {
       const p = decodePlusCode(s);
       return { kind: "coord_valid", det: { type:"OLC", lat: p.lat, lon: p.lon, plus: p, raw: s } };
     } catch(_){
-      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+      return searchCoordInvalid();
     }
   }
   if (looksLikeBngSearchShape(s)){
@@ -51194,7 +51304,7 @@ function classifyGeoSearchInput(raw){
       const ll = bngToWgs84(s);
       return { kind: "coord_valid", det: { type:"BNG", lat: ll.lat, lon: ll.lon, bng: s, raw: s } };
     } catch(_){
-      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+      return searchCoordInvalid();
     }
   }
   try {
@@ -51204,22 +51314,26 @@ function classifyGeoSearchInput(raw){
         const ll = sk42GaussKrugerToWgs84(gk.zone, gk.easting, gk.northing);
         return { kind: "coord_valid", det: { type:"SK42GK", lat: ll.lat, lon: ll.lon, sk42gk: gk, raw: s } };
       } catch(_){
-        return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+        return searchCoordInvalid();
       }
     }
   } catch(_){}
-  if (looksLikeLatLonSearchShape(s)){
-    try {
-      const ll = parseFreeTextLatLon(s);
-      return { kind: "coord_valid", det: { type:"LatLon", lat: ll.lat, lon: ll.lon, raw: s } };
-    } catch(_){
-      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
-    }
+
+  // --- Place lexemes: never extract coordinates by ignoring street words. ---
+  if (searchInputHasPlaceLexemes(s)){
+    return { kind: "place_text" };
   }
-  try {
-    const det = autoDetect(s);
-    return { kind: "coord_valid", det: det };
-  } catch(_){}
+
+  // European decimal pairs before generic LatLon shape.
+  const euroFull = normalizeEuroDecimalLatLonSearch(s);
+  if (euroFull){
+    return trySearchLatLon(euroFull);
+  }
+
+  if (looksLikeLatLonSearchShape(s)){
+    return trySearchLatLon(s);
+  }
+
   return { kind: "place_text" };
 }
 
@@ -101123,19 +101237,32 @@ function runSelfCheck(){
     const mg = latLonToMGRS(5.259444, -4.043909, 5);
     console.assert(/^30N/.test(mg), "MGRS should start with 30N");
 
-    // GIS-SEARCH-COORD-VALIDATION-CENTER-A — classify before geocoding
+    // GIS-SEARCH-COORD-VALIDATION-CENTER-A / FIX1 — classify before geocoding
     console.assert(typeof classifyGeoSearchInput === "function", "classifyGeoSearchInput present");
     console.assert(classifyGeoSearchInput("").kind === "empty", "search classify empty");
     console.assert(classifyGeoSearchInput("3 2t hu 12589 15323").kind === "coord_invalid", "invalid MGRS spaced");
     console.assert(classifyGeoSearchInput("32T HU 12589 15323").kind === "coord_invalid", "invalid MGRS spaced2");
     console.assert(classifyGeoSearchInput("32THU1258915323").kind === "coord_invalid", "invalid MGRS compact");
     console.assert(classifyGeoSearchInput("32T HU 12").kind === "coord_invalid", "incomplete MGRS not LatLon");
+    console.assert(classifyGeoSearchInput("32T").kind === "coord_invalid", "incomplete MGRS zone+band");
+    console.assert(classifyGeoSearchInput("UTM 33T 291952").kind === "coord_invalid", "incomplete UTM");
+    console.assert(classifyGeoSearchInput("32I NU 12589 15323").kind === "coord_invalid", "invalid MGRS band I");
+    console.assert(classifyGeoSearchInput("32T NU 125891 15323").kind === "coord_invalid", "odd MGRS digits");
+    console.assert(classifyGeoSearchInput("DD 95 10").kind === "coord_invalid", "DD prefix out of range not BNG");
     console.assert(classifyGeoSearchInput("La Spezia").kind === "place_text", "place text La Spezia");
+    console.assert(classifyGeoSearchInput("L'Aquila").kind === "place_text", "toponym apostrophe");
+    console.assert(classifyGeoSearchInput("Sant'Agata").kind === "place_text", "toponym apostrophe2");
+    console.assert(classifyGeoSearchInput("Cote d'Ivoire").kind === "place_text", "toponym apostrophe3");
     console.assert(classifyGeoSearchInput("Via Roma 12 Milano").kind === "place_text", "address with digits");
+    console.assert(classifyGeoSearchInput("Via 20 Settembre 12").kind === "place_text", "address two numbers");
+    console.assert(classifyGeoSearchInput("Rue du 11 Novembre 10").kind === "place_text", "FR address numbers");
+    console.assert(classifyGeoSearchInput("Route 66 km 12").kind === "place_text", "route numbers");
     console.assert(classifyGeoSearchInput("10041 Torino").kind === "place_text", "CAP+city place");
     const cDd = classifyGeoSearchInput("45.4642, 9.1900");
     console.assert(cDd.kind === "coord_valid" && cDd.det.type === "LatLon", "DD valid");
     console.assert(Math.abs(cDd.det.lat - 45.4642) < 1e-8 && Math.abs(cDd.det.lon - 9.19) < 1e-8, "DD known");
+    const cEuro = classifyGeoSearchInput("45,5; 9,2");
+    console.assert(cEuro.kind === "coord_valid" && Math.abs(cEuro.det.lat - 45.5) < 1e-9 && Math.abs(cEuro.det.lon - 9.2) < 1e-9, "EU decimals");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
     console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
