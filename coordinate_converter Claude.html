@@ -890,7 +890,11 @@ html[data-theme="light"] .geo-warn{color:#991b1b}
 }
 .geocode-card.geo-breaker .geo-input,
 .geocode-card.geo-breaker #btnGeoSearch{opacity:.55; pointer-events:none}
-.geocode-card.geo-disabled .geo-body{opacity:.45; pointer-events:none}
+.geocode-card.geo-disabled .geo-filter-row,
+.geocode-card.geo-disabled .geo-warn,
+.geocode-card.geo-disabled .geo-results{opacity:.45; pointer-events:none}
+.geocode-card.geo-disabled .geo-search-row,
+.geocode-card.geo-disabled .geo-search-feedback{opacity:1; pointer-events:auto}
 
 /* ==========================================================================
  * LOCALITY PILL (reverse-geocoded place name)
@@ -24434,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1";
-const APP_BUILD_DETAIL = "FIX1: intent/shape prima del parse; niente LatLon da indirizzi; apostrofi toponimi; prefisso DD; decimali EU.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX2";
+const APP_BUILD_DETAIL = "FIX2: coppie lat/lon miste e MGRS lunghi come intento; prefisso consuma tutto l'input; hit obsoleti invalidati; Cerca locale con OPSEC.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 258;
+const APP_BUILD_NUM = 259;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51112,7 +51116,10 @@ function normalizeSearchQueryText(raw){
 
 /** Detect explicit coordinate-format prefixes (case-insensitive). */
 function searchCoordExplicitPrefix(s){
-  const m = String(s || "").trim().match(/^(MGRS|UTM|DDM|DMS|DD|LAT\/?LON|LATLON|LAT|LON|LONG|COORDS?|LL)(?:\b|[:=\s-])/i);
+  const src = String(s || "").trim();
+  /* Consume an explicit separator (: = - whitespace) after the label.
+     A zero-width word-boundary must not win over "DD:44.1". DDM/DMS before DD. */
+  const m = src.match(/^(MGRS|UTM|DDM|DMS|DD|LAT\/?LON|LATLON|LAT|LON|LONG|COORDS?|LL)(?=$|[\s:=\-])/i);
   if (!m) return null;
   const raw = m[1].toUpperCase().replace("/", "");
   let kind = "ll";
@@ -51121,7 +51128,8 @@ function searchCoordExplicitPrefix(s){
   else if (raw === "DDM") kind = "ddm";
   else if (raw === "DMS") kind = "dms";
   else if (raw === "DD") kind = "dd";
-  return { kind: kind, prefix: m[1], rest: String(s || "").trim().slice(m[0].length).trim() };
+  let rest = src.slice(m[0].length).replace(/^[\s:=\-]+/, "").trim();
+  return { kind: kind, prefix: m[1], rest: rest };
 }
 
 /** Compact alnum body after optional MGRS label (shape detection only). */
@@ -51139,7 +51147,8 @@ function mgrsCompactFromQuery(s){
 function looksLikeMgrsSearchShape(s){
   const c = mgrsCompactFromQuery(s);
   // zone + band letter + optional digraph + optional digits (0..12; odd/long = invalid later)
-  if (/^\d{1,2}[A-Z][A-Z]{2}\d{0,12}$/.test(c)) return true;
+  /* Digit run wider than parseMGRS so over-long grids stay coord intent (then invalid). */
+  if (/^\d{1,2}[A-Z][A-Z]{2}\d{0,20}$/.test(c)) return true;
   // incomplete: zone + band only (e.g. "32T")
   if (/^\d{1,2}[A-Z]$/.test(c)) return true;
   // incomplete: zone + band + digraph, no digits already covered by {0,12}
@@ -51171,21 +51180,42 @@ function looksLikeUtmSearchShape(s){
  * Lat/Lon shape for search — DMS markers only when tied to digits.
  * Bare apostrophes in toponyms (L'Aquila) must NOT match.
  */
+/** Detach hemisphere letters glued to a number (44.1N / N44.1) without touching words. */
+function splitHemisphereGlued(s){
+  return String(s || "")
+    .replace(/(\d)([NnSsEeWw])(?![A-Za-z])/g, "$1 $2")
+    .replace(/(^|[^A-Za-z])([NnSsEeWw])(?=-?\d)/g, "$1$2 ");
+}
+
+/** Numeric / hemisphere token census. junk=true if any token is not a number or N/S/E/W. */
+function latLonTokenStats(s){
+  const parts = splitHemisphereGlued(s).split(/[\s,;]+/).filter(Boolean);
+  let count = 0;
+  let junk = false;
+  for (let i = 0; i < parts.length; i++){
+    const tok = parts[i];
+    if (/^-?\d+(?:\.\d+)?$/.test(tok)) count++;
+    else if (/^[NSEW]$/i.test(tok)) continue;
+    else junk = true;
+  }
+  return { count: count, junk: junk };
+}
+
+/**
+ * Lat/Lon intention: the whole string is only numbers + optional hemispheres
+ * (2 = DD, 4 = DDM, 6 = DMS), including mixed decimals and glued N/E letters.
+ * Place words are not an intention. DMS quotes count only next to a digit.
+ */
 function looksLikeLatLonSearchShape(s){
   const t = String(s || "").trim();
   if (!t) return false;
+  if (searchInputHasPlaceLexemes(t)) return false;
   if (/[°º]/.test(t)) return true;
-  // primes / quotes only as DMS when adjacent to a digit
   if (/\d\s*[\u2032\u2019']/.test(t) || /\d\s*[\u2033\u201C\u201D"]/.test(t)) return true;
-  const up = t.toUpperCase();
-  if (/\d/.test(up) && /\b[NS]\b/.test(up) && /\b[EW]\b/.test(up)) return true;
-  // two plain decimals with ASCII dot, comma/semicolon separator
-  if (/^-?\d+\.\d+\s*[,;]\s*-?\d+\.\d+\s*$/.test(t)) return true;
-  if (/^-?\d+\.\d+\s+-?\d+\.\d+\s*$/.test(t)) return true;
-  // integer pair with comma/semicolon (e.g. "45, 9" or "45;9") — not European decimals
-  if (/^-?\d+\s*,\s*-?\d+\s*$/.test(t)) return true;
-  if (/^-?\d+\s*;\s*-?\d+\s*$/.test(t)) return true;
-  return false;
+  const euro = normalizeEuroDecimalLatLonSearch(t);
+  const stats = latLonTokenStats(euro || t);
+  if (stats.junk) return false;
+  return stats.count === 2 || stats.count === 4 || stats.count === 6;
 }
 
 /**
@@ -51258,6 +51288,27 @@ function trySearchLatLon(s){
 }
 
 /**
+ * Explicit DD/DDM/DMS/LL prefix: the whole remainder must match that family.
+ * Extra words or the wrong component count are invalid — never dropped, never
+ * re-read as another format.
+ */
+function tryDeclaredLatLon(body, family){
+  const src0 = String(body || "").trim();
+  if (!src0) return searchCoordInvalid();
+  const euro = normalizeEuroDecimalLatLonSearch(src0);
+  const src = euro || src0;
+  const stats = latLonTokenStats(src);
+  if (stats.junk) return searchCoordInvalid();
+  const need = (family === "dd") ? 2 : (family === "ddm") ? 4 : (family === "dms") ? 6 : 0;
+  if (family === "ll"){
+    if (!(stats.count === 2 || stats.count === 4 || stats.count === 6)) return searchCoordInvalid();
+  } else if (stats.count !== need){
+    return searchCoordInvalid();
+  }
+  return trySearchLatLon(src);
+}
+
+/**
  * Classify Cerca input BEFORE any network geocoding.
  * Separates intention (shape/prefix) from parse/validate.
  * kind: empty | coord_valid | coord_invalid | place_text
@@ -51277,11 +51328,7 @@ function classifyGeoSearchInput(raw){
     return trySearchMgrs(pref.rest ? ("MGRS " + pref.rest) : s);
   }
   if (pref && (pref.kind === "dd" || pref.kind === "ddm" || pref.kind === "dms" || pref.kind === "ll")){
-    const body = pref.rest || "";
-    if (!body) return searchCoordInvalid();
-    // Prefer European-decimal normalization on the body when applicable.
-    const euro = normalizeEuroDecimalLatLonSearch(body);
-    return trySearchLatLon(euro || body);
+    return tryDeclaredLatLon(pref.rest, pref.kind);
   }
 
   // --- Shape-first grid systems BEFORE place-lexeme gate (digraphs are 2 letters). ---
@@ -53280,6 +53327,7 @@ function bindGeocode(){
   let debTO = null;
   let activeIdx = -1;
   let activeHits = [];
+  let hitsQuery = "";
   const feedbackEl = document.getElementById("geoSearchFeedback");
 
   const setSearchFeedback = (msg, kind) => {
@@ -53312,8 +53360,9 @@ function bindGeocode(){
     listEl.innerHTML = `<div class="geo-empty${errCls}">${esc(msg)}</div>`;
   };
 
-  const renderHits = (hits) => {
+  const renderHits = (hits, forQuery) => {
     activeHits = hits;
+    hitsQuery = String(forQuery || "");
     if (!hits.length){ renderEmpty(t("geo.noResults") || "Nessun risultato"); return; }
     listEl.hidden = false;
     listEl.innerHTML = hits.map((h, i) => {
@@ -53338,6 +53387,7 @@ function bindGeocode(){
   };
 
   const pickHit = (i) => {
+    if (hitsQuery !== normalizeSearchQueryText(input.value)) return;
     const h = activeHits[i];
     if (!h) return;
     clearSearchFeedback();
@@ -53365,6 +53415,7 @@ function bindGeocode(){
     listEl.innerHTML = "";
     activeIdx = -1;
     activeHits = [];
+    hitsQuery = "";
   };
 
   /** Apply a locally validated coordinate: marker + PUNTO + map center (canonical). */
@@ -53402,7 +53453,7 @@ function bindGeocode(){
       if (!isEffectivelyOnline()){
         const offHits = await offlineForwardSearch(query);
         if (myGen === gen){
-          if (offHits.length) renderHits(offHits);
+          if (offHits.length) renderHits(offHits, query);
           else renderEmpty(t("geo.offlineNone") || "Ricerca indirizzo non disponibile offline");
         }
         return;
@@ -53413,17 +53464,17 @@ function bindGeocode(){
         // Fall back to the offline dataset for a best-effort suggestion.
         const offHits = await offlineForwardSearch(query);
         if (myGen !== gen) return;
-        renderHits(offHits.length ? offHits : []);
+        renderHits(offHits.length ? offHits : [], query);
         if (!offHits.length) renderEmpty(t("geo.noResults") || "Nessun risultato");
         return;
       }
-      renderHits(hits);
+      renderHits(hits, query);
     } catch(e){
       if (myGen !== gen) return;
       // Try offline dataset as a consolation prize when the service fails.
       const offHits = await offlineForwardSearch(query);
       if (myGen !== gen) return;
-      if (offHits.length){ renderHits(offHits); return; }
+      if (offHits.length){ renderHits(offHits, query); return; }
       const key = (e && e.message) || "geo.unreachable";
       let msg = t("geo.err." + key) || t("geo." + key) || (e && e.message) || "Errore";
       renderEmpty(msg, true);
@@ -53465,18 +53516,21 @@ function bindGeocode(){
   };
 
   // Debounced "as-you-type" autocomplete (400ms) — skipped for coordinate-shaped input.
+  // Any edit drops the previous hit list immediately so Enter cannot apply it.
   input.addEventListener("input", () => {
     clearTimeout(debTO);
+    ++gen;
+    closeDropdown();
     clearSearchFeedback();
     const v = normalizeSearchQueryText(input.value);
-    if (!v || v.length < 3){ ++gen; closeDropdown(); return; }
+    if (!v || v.length < 3) return;
     const cls = classifyGeoSearchInput(v);
-    if (cls.kind === "coord_valid" || cls.kind === "coord_invalid"){
-      ++gen;
-      closeDropdown();
-      return;
-    }
-    debTO = setTimeout(() => runSearch(v, { fromTyping: true }), 400);
+    if (cls.kind === "coord_valid" || cls.kind === "coord_invalid") return;
+    const scheduled = v;
+    debTO = setTimeout(() => {
+      if (normalizeSearchQueryText(input.value) !== scheduled) return;
+      runSearch(scheduled, { fromTyping: true });
+    }, 400);
   });
   input.addEventListener("keydown", (ev) => {
     if (ev.key === "ArrowDown" && !listEl.hidden){
@@ -53487,16 +53541,22 @@ function bindGeocode(){
       setActive(Math.max(0, activeIdx - 1));
     } else if (ev.key === "Enter"){
       ev.preventDefault();
-      if (!listEl.hidden && activeHits.length){
+      clearTimeout(debTO);
+      const qNow = normalizeSearchQueryText(input.value);
+      if (!listEl.hidden && activeHits.length && hitsQuery === qNow){
         pickHit(activeIdx >= 0 ? activeIdx : 0);
       } else {
+        closeDropdown();
         runSearch(input.value, { fromTyping: false });
       }
     } else if (ev.key === "Escape"){
       if (!listEl.hidden){ ev.preventDefault(); closeDropdown(); }
     }
   });
-  if (btn) btn.addEventListener("click", () => runSearch(input.value, { fromTyping: false }));
+  if (btn) btn.addEventListener("click", () => {
+    clearTimeout(debTO);
+    runSearch(input.value, { fromTyping: false });
+  });
 
   // Re-run when filters change (only if the dropdown is open — otherwise
   // it's a silent preference update). Place-text only.
@@ -101263,6 +101323,19 @@ function runSelfCheck(){
     console.assert(Math.abs(cDd.det.lat - 45.4642) < 1e-8 && Math.abs(cDd.det.lon - 9.19) < 1e-8, "DD known");
     const cEuro = classifyGeoSearchInput("45,5; 9,2");
     console.assert(cEuro.kind === "coord_valid" && Math.abs(cEuro.det.lat - 45.5) < 1e-9 && Math.abs(cEuro.det.lon - 9.2) < 1e-9, "EU decimals");
+    const cMix = classifyGeoSearchInput("44.1, 9");
+    console.assert(cMix.kind === "coord_valid" && Math.abs(cMix.det.lat - 44.1) < 1e-9 && Math.abs(cMix.det.lon - 9) < 1e-9, "mixed DD comma");
+    console.assert(classifyGeoSearchInput("44 9").kind === "coord_valid", "integer DD pair");
+    console.assert(classifyGeoSearchInput("44.1N 9.8E").kind === "coord_valid", "glued hemisphere suffix");
+    console.assert(classifyGeoSearchInput("N44.1 E9.8").kind === "coord_valid", "glued hemisphere prefix");
+    console.assert(classifyGeoSearchInput("95.0 10").kind === "coord_invalid", "lat range space pair");
+    console.assert(classifyGeoSearchInput("95 10").kind === "coord_invalid", "lat range integer pair");
+    console.assert(classifyGeoSearchInput("32T NU 1258912 1532345").kind === "coord_invalid", "MGRS over-long digits");
+    const cColon = classifyGeoSearchInput("DD:44.1,9.8");
+    console.assert(cColon.kind === "coord_valid" && Math.abs(cColon.det.lat - 44.1) < 1e-9 && Math.abs(cColon.det.lon - 9.8) < 1e-9, "DD colon no space");
+    console.assert(classifyGeoSearchInput("DD 44foo 9bar").kind === "coord_invalid", "DD junk not stripped");
+    console.assert(classifyGeoSearchInput("DD Via 20 Settembre 12").kind === "coord_invalid", "DD place words invalid");
+    console.assert(classifyGeoSearchInput("DD 44 30 9 12").kind === "coord_invalid", "DD does not become DDM");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
     console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
