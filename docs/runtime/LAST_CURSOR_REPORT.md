@@ -4,66 +4,61 @@
 
 | Campo | Valore |
 | --- | --- |
-| **BLOCK** | `GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1` |
+| **BLOCK** | `GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX2` |
 | **GATE** | **REVIEW PACKAGE READY** (DELICATO) — nessun REVIEW PASS |
-| **NEXT** | Review ChatGPT su FIX1 → deploy solo dopo gate |
+| **NEXT** | Review ChatGPT su FIX2 → deploy solo dopo gate |
 | **Runtime LIVE** | tip `f215011` · build **256** |
-| **Candidate FULL SHA** | `7e41a1435394d1cc0d0cdb1b3c2f45d464e11635` |
-| **Build / ID / blob Git** | **258** · `GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1` · blob Git `9ca0a52676334278c464a6e7d4fbf17385dcb0ab` |
-| **SHA-256 WT CRLF** | `5f502ad0037f85cf54f045fde2f697ba3fe3429fa437b7c883c4f056bac500b3` |
-| **SHA-256 LF-norm** | `7dd417474c82d99129849a54d6a093981976e04270dbf10a8c321b33cfea695e` |
+| **Candidate FULL SHA** | `fd8d1cc53e88577fb8fe1c737c9db16864e996e3` |
+| **Build / blob Git** | **259** · blob Git `d82c51a8de8ad490a83b8a788e64808428b6a7c3` |
+| **SHA-256 WT CRLF** | `c66192e57d34bff57850b0bc27b472547860334dfa78ac306b48ace4aaa77876` |
+| **SHA-256 LF-norm** | `3d5344296a6fe6526de58d847fa4df00beefad4f77b9a6f110b42fd2b8cfb102` |
 | **Deployed state** | invariato (LIVE 256) — **NO DEPLOY** |
-| **Result Cursor** | FIX1 candidate + evidence; prior 257 FAIL registered |
+| **Result Cursor** | FIX2 candidate; 258 FAIL registrata |
 | **Working tree** | atteso pulito post-push |
 
 ### Identità SHA
 
 | Nome | Valore |
 | --- | --- |
-| **RUNTIME_CANDIDATE_SHA** | `7e41a1435394d1cc0d0cdb1b3c2f45d464e11635` |
-| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `3674fd457e672532a5e05a03863e586dab60d59a` (pre report container) |
+| **RUNTIME_CANDIDATE_SHA** | `fd8d1cc53e88577fb8fe1c737c9db16864e996e3` |
+| **REMOTE_HEAD_AT_EVIDENCE_TIME** | `68b1621caadea173d02f2fcbd6acd9e02b23b5a5` |
 | **docs/report HEAD** | `PENDING_SELF_REFERENCE` |
-| **real_task_commit** | `7e41a1435394d1cc0d0cdb1b3c2f45d464e11635` |
+| **real_task_commit** | `fd8d1cc53e88577fb8fe1c737c9db16864e996e3` |
 | **current_report_container** | `PENDING_SELF_REFERENCE` |
 | **final_remote_head_after_report_push** | `EXTERNAL_ONLY` |
 
-Evidence: [`docs/orchestrator/inbox/2026-10-21_1240_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1-review-package.md`](../orchestrator/inbox/2026-10-21_1240_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1-review-package.md)
-
 ## B. RIEPILOGO COMPLETO
 
-1. Prior candidate `4c2fd18` / build 257: **REVIEW GPT-SOSTITUTIVA FAIL** (R1–R5); non attribuito PASS.
-2. R5 rettifica: “blob” `643462c9…` era SHA-256 WT CRLF; blob Git 257 = `37325c50…`.
-3. FIX1: `classifyGeoSearchInput` riscritto — intent/shape → parse/validate; no `autoDetect` fallback; place lexemes; apostrofi; prefissi DD/UTM/MGRS; decimali EU.
-4. Build **258** · ID `…-FIX1`.
-5. Prove: 25/25 classify; UI R1–R4 PASS (Nominatim assente su invalid; indirizzi non → LatLon).
-6. Commit runtime `7e41a14`; autosync docs (questo report) in container successivo.
-7. **NO DEPLOY · NO FINITO.**
+1. FIX1 `7e41a14` / build 258 / blob `9ca0a526…`: **REVIEW GPT-SOSTITUTIVA FAIL** (F1–F4). Nessun PASS.
+2. F1: intento lat/lon su coppie miste e emisferi attaccati; invalide e MGRS troppo lunghi non vanno in geocoding.
+3. F2: prefisso consuma il separatore e rifiuta testo o componenti incompatibili (`DD` ≠ DDM).
+4. F3: edit azzera hit e generazione; Invio non applica risultati di un’altra query.
+5. F4: click Cerca resta disponibile per la conversione locale con OPSEC / geocoding off; i gate di rete restano in `runPlaceSearch`.
+6. Prove: 31/31 classify; UI stale / OPSEC / invalid come in evidence.
+7. Commit runtime `fd8d1cc`. **NO DEPLOY · NO FINITO.**
 
 ```text
 STATO FRESCO DA CURSOR
-origin/main HEAD: (pre-report) 3674fd4… — post-push EXTERNAL_ONLY
+origin/main HEAD: (pre-report) 68b1621… — post-push EXTERNAL_ONLY
 working tree: atteso clean
 ultimo blocco PASS: APP-BUILD-LABEL-UX-A (256 LIVE)
-prossimo candidato: GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1 @ 7e41a14 (REVIEW PACKAGE READY)
-note operative: 257 FAIL registrata; review FIX1; nessun deploy
+prossimo candidato: GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX2 @ fd8d1cc
+note operative: 257 e 258 FAIL registrate; nessun deploy
 ```
 
 ## C. OUTPUT GIT (pre-container)
 
 ```text
 git log --oneline -5
+fd8d1cc fix(search): complete coord intent, prefix consumption, stale hits (FIX2)
+68b1621 docs: GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1 REVIEW PACKAGE READY
 7e41a14 fix(search): harden Cerca coord classification before geocoding (FIX1)
 3674fd4 docs: GIS-SEARCH-COORD-VALIDATION-CENTER-A REVIEW PACKAGE READY
 4c2fd18 feat(search): classify coordinates locally before Nominatim (build 257)
-2e0547c docs: finito APP-BUILD-LABEL-UX-A after QA PASS
-478df26 docs: APP-BUILD-LABEL-UX-A PENDING QA (256 candidate)
 
 git rev-parse HEAD
-7e41a1435394d1cc0d0cdb1b3c2f45d464e11635
+fd8d1cc53e88577fb8fe1c737c9db16864e996e3
 
 git rev-parse origin/main
-3674fd457e672532a5e05a03863e586dab60d59a
-
-git rev-parse HEAD:coordinate_converter\ Claude.html
-9ca0a52676334278c464a6e7d4fbf17385dcb0ab
+68b1621caadea173d02f2fcbd6acd9e02b23b5a5
 ```
