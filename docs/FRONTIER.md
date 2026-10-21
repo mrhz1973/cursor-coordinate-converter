@@ -6,10 +6,10 @@
 | --- | --- |
 | **WORKSTREAM ATTIVO** | GIS Search |
 | **WU ATTIVA** | `—` (N/A) |
-| **BLOCCO ATTIVO** | `GIS-SEARCH-COORD-VALIDATION-CENTER-A` |
+| **BLOCCO ATTIVO** | `GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1` |
 | **STATO BLOCCO** | **REVIEW PACKAGE READY** |
-| **GATE CORRENTE** | Review DELICATO (ChatGPT / reviewer esterno) — **nessun** REVIEW PASS acquisito |
-| **RUNTIME LIVE** | tip `f215011d9b725664506a1a155e27b64d5011fb99` · build **256** · `APP-BUILD-LABEL-UX-A` · blob `7f9804d5333145552bba65d6570749c070656951` |
-| **RUNTIME CANDIDATE** | tip `4c2fd18ac3f9a568df8092825245bcc8f79d978f` · build **257** · `GIS-SEARCH-COORD-VALIDATION-CENTER-A` · blob `643462c97d1d5079e620c86c5d30c8289da28c3475da7b2353af9a8b78c46d77` |
-| **NEXT** | Review DELICATO su candidate → FIX se richiesto → deploy solo dopo gate |
+| **GATE CORRENTE** | Review DELICATO — candidate 257 **REVIEW GPT-SOSTITUTIVA FAIL** registrata; FIX1 in review (nessun PASS) |
+| **RUNTIME LIVE** | tip `f215011d9b725664506a1a155e27b64d5011fb99` · build **256** · `APP-BUILD-LABEL-UX-A` · blob Git `7f9804d5333145552bba65d6570749c070656951` |
+| **RUNTIME CANDIDATE** | tip `7e41a1435394d1cc0d0cdb1b3c2f45d464e11635` · build **258** · `GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1` · blob Git `9ca0a52676334278c464a6e7d4fbf17385dcb0ab` |
+| **NEXT** | Review DELICATO su FIX1 → deploy solo dopo gate |
 | **ALTRI WORKSTREAM** | **Oggetti GIS = FROZEN / MAINTENANCE-ONLY** · GIS VPS **256** |

@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-10-21 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A · REVIEW PACKAGE READY**. Candidate build **257** tip `4c2fd18` · blob `643462c9…`. LIVE resta **256** `f215011`. No deploy / no finito. Evidence: [`inbox/2026-10-21_1217_GIS-SEARCH-COORD-VALIDATION-CENTER-A-review-package.md`](inbox/2026-10-21_1217_GIS-SEARCH-COORD-VALIDATION-CENTER-A-review-package.md).
+2026-10-21 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1 · REVIEW PACKAGE READY**. Candidate build **258** tip `7e41a14` · blob Git `9ca0a526…`. Candidate 257 `4c2fd18` = **REVIEW GPT-SOSTITUTIVA FAIL** (registrata). LIVE **256** `f215011`. No deploy / no finito. Evidence: [`inbox/2026-10-21_1240_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1-review-package.md`](inbox/2026-10-21_1240_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1-review-package.md).
