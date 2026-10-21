@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX2";
-const APP_BUILD_DETAIL = "FIX2: coppie lat/lon miste e MGRS lunghi come intento; prefisso consuma tutto l'input; hit obsoleti invalidati; Cerca locale con OPSEC.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX3";
+const APP_BUILD_DETAIL = "FIX3: segno dopo il prefisso; DD/DDM/DMS con simboli; emisferi contraddittori rifiutati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 259;
+const APP_BUILD_NUM = 260;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51128,7 +51128,9 @@ function searchCoordExplicitPrefix(s){
   else if (raw === "DDM") kind = "ddm";
   else if (raw === "DMS") kind = "dms";
   else if (raw === "DD") kind = "dd";
-  let rest = src.slice(m[0].length).replace(/^[\s:=\-]+/, "").trim();
+  /* Separators are space, colon and equals. A minus glued to a digit is a sign
+     (DD -44.1 / DD:-44.1), not a separator to discard. */
+  let rest = src.slice(m[0].length).replace(/^(?:[\s:=]+|-(?![0-9]))+/, "").trim();
   return { kind: kind, prefix: m[1], rest: rest };
 }
 
@@ -51292,20 +51294,53 @@ function trySearchLatLon(s){
  * Extra words or the wrong component count are invalid — never dropped, never
  * re-read as another format.
  */
+/** Degree/minute/second marks become spaces so the census sees the same numbers
+ * the canonical parser will read. Words stay words (44foo, Via). */
+function latLonSymbolSpacing(s){
+  return String(s || "")
+    .replace(/[\u00B0\u00BA]/g, " ")
+    .replace(/[\u2032\u2033\u2018\u2019\u201C\u201D'"]/g, " ");
+}
+
+/** Whole-input census for a declared or bare lat/lon. conflict = N+S or E+W. */
+function latLonCensus(s){
+  const euro = normalizeEuroDecimalLatLonSearch(s);
+  const src = euro || String(s || "");
+  const parts = splitHemisphereGlued(latLonSymbolSpacing(src)).split(/[\s,;]+/).filter(Boolean);
+  let count = 0;
+  let junk = false;
+  let seenN = false, seenS = false, seenE = false, seenW = false;
+  for (let i = 0; i < parts.length; i++){
+    const tok = parts[i];
+    if (/^[+-]?\d+(?:\.\d+)?$/.test(tok)) count++;
+    else if (/^[NSEW]$/i.test(tok)){
+      const h = tok.toUpperCase();
+      if (h === "N") seenN = true;
+      else if (h === "S") seenS = true;
+      else if (h === "E") seenE = true;
+      else seenW = true;
+    } else junk = true;
+  }
+  return {
+    count: count,
+    junk: junk,
+    conflict: (seenN && seenS) || (seenE && seenW),
+    euro: euro
+  };
+}
+
 function tryDeclaredLatLon(body, family){
   const src0 = String(body || "").trim();
   if (!src0) return searchCoordInvalid();
-  const euro = normalizeEuroDecimalLatLonSearch(src0);
-  const src = euro || src0;
-  const stats = latLonTokenStats(src);
-  if (stats.junk) return searchCoordInvalid();
+  const census = latLonCensus(src0);
+  if (census.junk || census.conflict) return searchCoordInvalid();
   const need = (family === "dd") ? 2 : (family === "ddm") ? 4 : (family === "dms") ? 6 : 0;
   if (family === "ll"){
-    if (!(stats.count === 2 || stats.count === 4 || stats.count === 6)) return searchCoordInvalid();
-  } else if (stats.count !== need){
+    if (!(census.count === 2 || census.count === 4 || census.count === 6)) return searchCoordInvalid();
+  } else if (census.count !== need){
     return searchCoordInvalid();
   }
-  return trySearchLatLon(src);
+  return trySearchLatLon(census.euro || src0);
 }
 
 /**
@@ -51378,7 +51413,9 @@ function classifyGeoSearchInput(raw){
   }
 
   if (looksLikeLatLonSearchShape(s)){
-    return trySearchLatLon(s);
+    const census = latLonCensus(s);
+    if (census.conflict) return searchCoordInvalid();
+    return trySearchLatLon(census.euro || s);
   }
 
   return { kind: "place_text" };
@@ -101336,6 +101373,21 @@ function runSelfCheck(){
     console.assert(classifyGeoSearchInput("DD 44foo 9bar").kind === "coord_invalid", "DD junk not stripped");
     console.assert(classifyGeoSearchInput("DD Via 20 Settembre 12").kind === "coord_invalid", "DD place words invalid");
     console.assert(classifyGeoSearchInput("DD 44 30 9 12").kind === "coord_invalid", "DD does not become DDM");
+    const cNeg = classifyGeoSearchInput("DD -44.1, 9.8");
+    console.assert(cNeg.kind === "coord_valid" && Math.abs(cNeg.det.lat + 44.1) < 1e-9 && Math.abs(cNeg.det.lon - 9.8) < 1e-9, "DD keeps minus");
+    const cNegC = classifyGeoSearchInput("DD:-44.1,9.8");
+    console.assert(cNegC.kind === "coord_valid" && Math.abs(cNegC.det.lat + 44.1) < 1e-9 && Math.abs(cNegC.det.lon - 9.8) < 1e-9, "DD colon keeps minus");
+    const cBoth = classifyGeoSearchInput("DD -44.1, -9.8");
+    console.assert(cBoth.kind === "coord_valid" && cBoth.det.lat < 0 && cBoth.det.lon < 0, "DD keeps both minuses");
+    const cDdmN = classifyGeoSearchInput("DDM -44 6 9 48");
+    console.assert(cDdmN.kind === "coord_valid" && Math.abs(cDdmN.det.lat + 44.1) < 1e-9, "DDM keeps minus");
+    const cDmsN = classifyGeoSearchInput("DMS -44 6 0 9 48 0");
+    console.assert(cDmsN.kind === "coord_valid" && Math.abs(cDmsN.det.lat + 44.1) < 1e-6, "DMS keeps minus");
+    const cSym = classifyGeoSearchInput("DMS 44\u00b06'0\" N 9\u00b049'0\" E");
+    console.assert(cSym.kind === "coord_valid" && Math.abs(cSym.det.lat - 44.1) < 1e-9, "DMS symbols with prefix");
+    const cDdSym = classifyGeoSearchInput("DD 44.1\u00b0 N 9.8\u00b0 E");
+    console.assert(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
+    console.assert(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
     console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
