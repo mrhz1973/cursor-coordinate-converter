@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-08-24 — **APP-BUILD-LABEL-UX-A CLOSED / PASS**. QA operatore PASS → finito Regola H. LIVE **256** tip `f215011` · blob `7f9804d5…`. Evidence: [`inbox/2026-08-24_2253_riepilogo_finito-APP-BUILD-LABEL-UX-A.md`](inbox/2026-08-24_2253_riepilogo_finito-APP-BUILD-LABEL-UX-A.md).
+2026-10-21 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A · REVIEW PACKAGE READY**. Candidate build **257** tip `4c2fd18` · blob `643462c9…`. LIVE resta **256** `f215011`. No deploy / no finito. Evidence: [`inbox/2026-10-21_1217_GIS-SEARCH-COORD-VALIDATION-CENTER-A-review-package.md`](inbox/2026-10-21_1217_GIS-SEARCH-COORD-VALIDATION-CENTER-A-review-package.md).
