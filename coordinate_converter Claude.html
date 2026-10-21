@@ -862,6 +862,19 @@ main{max-width:1400px; margin:0 auto; padding:18px 20px 40px}
 }
 .geo-result.is-offline .geo-r-type{background:rgba(217,119,6,.18); color:#f59e0b}
 .geo-empty{padding:10px 12px; color:var(--muted); font-size:.82rem; text-align:center}
+.geo-empty.is-error{color:#fca5a5; text-align:left}
+html[data-theme="light"] .geo-empty.is-error{color:#991b1b}
+.geo-search-feedback{
+  display:none; margin:6px 0 0; padding:8px 10px; border-radius:6px;
+  font-size:.8rem; line-height:1.4;
+  background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.35); color:#fca5a5;
+}
+.geo-search-feedback.is-visible{display:block}
+.geo-search-feedback.is-ok{
+  background:rgba(34,197,94,.1); border-color:rgba(34,197,94,.35); color:#86efac;
+}
+html[data-theme="light"] .geo-search-feedback{color:#991b1b}
+html[data-theme="light"] .geo-search-feedback.is-ok{color:#166534}
 .geo-warn{
   display:flex; gap:8px; align-items:flex-start;
   padding:8px 10px; border-radius:6px;
@@ -13028,6 +13041,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <button id="btnGeoSearch" class="btn btn-primary btn-sm"
                 data-i18n="geo.search" data-i18n-tip="geo.searchTip">Cerca</button>
       </div>
+      <div id="geoSearchFeedback" class="geo-search-feedback" role="status" aria-live="polite" hidden></div>
       <div class="geo-filter-row">
         <label class="geo-filter-lbl">
           <span data-i18n="geo.country">Paese</span>
@@ -17849,7 +17863,7 @@ const I18N = {
     "fav.hint":"Salva i punti importanti con un nome per ritrovarli velocemente. Sono memorizzati solo nel tuo browser.",
     "fav.empty":"Nessun preferito. Salva il punto corrente con \"★ Aggiungi corrente\".",
     "fav.emptyHint":"Puoi anche aggiungere da waypoint o dopo una conversione.",
-    "search.panelHint":"La ricerca online parte solo con Cerca (Nominatim). Per coordinate usa Converti o il pick sulla mappa.",
+    "search.panelHint":"Con Cerca puoi inserire coordinate (DD/DDM/DMS/UTM/MGRS e formati supportati) o un luogo. Le coordinate si risolvono in locale; la ricerca online (Nominatim) parte solo per testi geografici.",
     "fav.renameConfirm":"Salvare il nuovo nome del preferito?",
     "fav.addWaypoint":"Waypoint",
     "fav.addWaypointOk":"Waypoint aggiunto dal preferito.",
@@ -18605,6 +18619,8 @@ const I18N = {
     "geo.noResults":"Nessun risultato",
     "geo.foundAs":"Trovato: {0}",
     "geo.confirmSearch":"'{0}' non è una coordinata riconosciuta. Cercarla come indirizzo su OpenStreetMap?",
+    "geo.coordInvalid":"Coordinata non valida o incompleta. Correggi l'input: nessuna ricerca geografica è stata avviata e il PUNTO in mappa non è il risultato di questa ricerca.",
+    "geo.coordOk":"Punto da coordinata (calcolo locale).",
     "geo.country":"Paese",
     "geo.countryPh":"es: it, fr, ci (ISO-3166-1)",
     "geo.bbox":"Solo nell'area visibile sulla mappa",
@@ -24418,10 +24434,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "APP-BUILD-LABEL-UX-A";
-const APP_BUILD_DETAIL = "Rimuove badge build/versione dalla topbar mappa; footer e About invariati.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A";
+const APP_BUILD_DETAIL = "Cerca: classificazione locale coordinate prima della rete; errore esplicito se invalide; centratura mappa se valide.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 256;
+const APP_BUILD_NUM = 257;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -51084,6 +51100,129 @@ function refreshHostsContactedUI(){
 }
 
 /* ========================= SECTION 15: UNIVERSAL AUTO-DETECT ========================= */
+
+/** Normalize Cerca query whitespace (spaces/tabs/newlines/Unicode spaces). */
+function normalizeSearchQueryText(raw){
+  return String(raw || "")
+    .replace(/[\u00A0\u2000-\u200B\u202F\u205F\u3000]/g, " ")
+    .replace(/[\t\r\n]+/g, " ")
+    .replace(/ +/g, " ")
+    .trim();
+}
+
+/** Compact MGRS alnum form used only for shape detection (not a new parser). */
+function mgrsCompactFromQuery(s){
+  let c = String(s || "").trim().toUpperCase();
+  c = c.replace(/^MGRS[:=\s-]*/,"");
+  c = c.replace(/[^\dA-Z]/g,"");
+  return c;
+}
+
+/** True if input is recognizably MGRS-shaped (may still be semantically invalid). */
+function looksLikeMgrsSearchShape(s){
+  const c = mgrsCompactFromQuery(s);
+  return /^\d{1,2}[C-HJ-NP-X][A-HJ-NP-Z][A-HJ-NP-V]\d{0,10}$/.test(c);
+}
+
+/** True if input is recognizably UTM-shaped (compact or token easting/northing). */
+function looksLikeUtmSearchShape(s){
+  let u = String(s || "").trim().toUpperCase();
+  u = u.replace(/^UTM[:=\s-]*/,"");
+  const compact = u.replace(/\s+/g,"");
+  if (/^\d{1,2}[A-Z]\d{10,14}$/.test(compact)) return true;
+  if (/\b\d{1,2}[A-Z]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
+  if (/\b\d{1,2}\s+[A-Z]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
+  if (/\b\d{1,2}\s*[NS]\s+\d{5,7}(?:\.\d+)?\s+\d{5,7}(?:\.\d+)?\b/.test(u)) return true;
+  return false;
+}
+
+/** Strict Lat/Lon shape — avoids classifying street addresses that merely contain digits. */
+function looksLikeLatLonSearchShape(s){
+  const t = String(s || "").trim();
+  if (!t) return false;
+  if (/[°º]|[\u2032\u2033\u2019']|[\u201C\u201D"]/.test(t)) return true;
+  const up = t.toUpperCase();
+  if (/\d/.test(up) && /\b[NS]\b/.test(up) && /\b[EW]\b/.test(up)) return true;
+  if (/^-?\d+(?:[.,]\d+)?\s*[,;]\s*-?\d+(?:[.,]\d+)?\s*$/.test(t)) return true;
+  if (/^-?\d+\.\d+\s+-?\d+\.\d+\s*$/.test(t)) return true;
+  return false;
+}
+
+function looksLikeBngSearchShape(s){
+  const c = String(s || "").trim().replace(/\s+/g,"");
+  return /^[A-Za-z]{2}\d{2,10}$/.test(c);
+}
+
+/**
+ * Classify Cerca input BEFORE any network geocoding.
+ * kind: empty | coord_valid | coord_invalid | place_text
+ * Reuses canonical parsers only; shape-first so incomplete MGRS is not coerced to LatLon.
+ */
+function classifyGeoSearchInput(raw){
+  const s = normalizeSearchQueryText(raw);
+  if (!s) return { kind: "empty" };
+
+  if (looksLikeMgrsSearchShape(s)){
+    try {
+      const ll = mgrsToLatLonExt(s);
+      return { kind: "coord_valid", det: { type:"MGRS", lat: ll.lat, lon: ll.lon, mgrs: ll, raw: s } };
+    } catch(_){
+      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+    }
+  }
+  if (looksLikeUtmSearchShape(s)){
+    try {
+      const u = parseUTMFree(s);
+      if (!u) return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+      validateUTM(u);
+      const ll = utmToLatLon(u.zone, u.hemisphere, u.easting, u.northing);
+      return { kind: "coord_valid", det: { type:"UTM", lat: ll.lat, lon: ll.lon, utm: u, raw: s } };
+    } catch(_){
+      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+    }
+  }
+  if (looksLikePlusCode(s)){
+    try {
+      const p = decodePlusCode(s);
+      return { kind: "coord_valid", det: { type:"OLC", lat: p.lat, lon: p.lon, plus: p, raw: s } };
+    } catch(_){
+      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+    }
+  }
+  if (looksLikeBngSearchShape(s)){
+    try {
+      const ll = bngToWgs84(s);
+      return { kind: "coord_valid", det: { type:"BNG", lat: ll.lat, lon: ll.lon, bng: s, raw: s } };
+    } catch(_){
+      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+    }
+  }
+  try {
+    const gk = parseSK42GaussKruger(s);
+    if (gk){
+      try {
+        const ll = sk42GaussKrugerToWgs84(gk.zone, gk.easting, gk.northing);
+        return { kind: "coord_valid", det: { type:"SK42GK", lat: ll.lat, lon: ll.lon, sk42gk: gk, raw: s } };
+      } catch(_){
+        return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+      }
+    }
+  } catch(_){}
+  if (looksLikeLatLonSearchShape(s)){
+    try {
+      const ll = parseFreeTextLatLon(s);
+      return { kind: "coord_valid", det: { type:"LatLon", lat: ll.lat, lon: ll.lon, raw: s } };
+    } catch(_){
+      return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
+    }
+  }
+  try {
+    const det = autoDetect(s);
+    return { kind: "coord_valid", det: det };
+  } catch(_){}
+  return { kind: "place_text" };
+}
+
 function autoDetect(input){
   const s = String(input || "").trim();
   if (!s) throw new ErrI18n("err.empty");
@@ -51425,7 +51564,7 @@ function renderResults(lat, lon, meta, opts = {}){
     // fresh lookup if auto-reverse is enabled and geocoding is allowed.
     state.lastLocality = null;
     updateLocalityRow(lat, lon, null);
-    if (state.geocodeReverseAuto && geocodingAllowed() && isEffectivelyOnline()){
+    if (!opts.skipReverse && state.geocodeReverseAuto && geocodingAllowed() && isEffectivelyOnline()){
       scheduleReverseLookup(lat, lon);
     }
   }
@@ -53027,6 +53166,23 @@ function bindGeocode(){
   let debTO = null;
   let activeIdx = -1;
   let activeHits = [];
+  const feedbackEl = document.getElementById("geoSearchFeedback");
+
+  const setSearchFeedback = (msg, kind) => {
+    if (!feedbackEl) return;
+    const text = String(msg || "");
+    if (!text){
+      feedbackEl.hidden = true;
+      feedbackEl.textContent = "";
+      feedbackEl.classList.remove("is-visible", "is-ok");
+      return;
+    }
+    feedbackEl.hidden = false;
+    feedbackEl.textContent = text;
+    feedbackEl.classList.add("is-visible");
+    feedbackEl.classList.toggle("is-ok", kind === "ok");
+  };
+  const clearSearchFeedback = () => setSearchFeedback("", "");
 
   const setActive = (i) => {
     activeIdx = i;
@@ -53036,9 +53192,10 @@ function bindGeocode(){
     });
   };
 
-  const renderEmpty = (msg) => {
+  const renderEmpty = (msg, isError) => {
     listEl.hidden = false;
-    listEl.innerHTML = `<div class="geo-empty">${esc(msg)}</div>`;
+    const errCls = isError ? " is-error" : "";
+    listEl.innerHTML = `<div class="geo-empty${errCls}">${esc(msg)}</div>`;
   };
 
   const renderHits = (hits) => {
@@ -53069,6 +53226,7 @@ function bindGeocode(){
   const pickHit = (i) => {
     const h = activeHits[i];
     if (!h) return;
+    clearSearchFeedback();
     closeDropdown();
     renderResults(h.lat, h.lon, {
       type: "LatLon",
@@ -53095,14 +53253,28 @@ function bindGeocode(){
     activeHits = [];
   };
 
-  /** Forward search. Returns nothing — results are rendered into listEl. */
-  const runSearch = async (query) => {
+  /** Apply a locally validated coordinate: marker + PUNTO + map center (canonical). */
+  const applyLocalCoord = (det) => {
+    if (!det || !Number.isFinite(det.lat) || !Number.isFinite(det.lon)) return false;
+    ++gen; // invalidate any in-flight place search
+    closeDropdown();
+    const meta = Object.assign({}, det, { source: "search-coord" });
+    renderResults(det.lat, det.lon, meta, { skipReverse: true });
+    setSearchFeedback(tIt("geo.coordOk") || "Punto da coordinata (calcolo locale).", "ok");
+    const mm = document.getElementById("miniMap");
+    if (mm) mm.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return true;
+  };
+
+  /** Forward place search only (Nominatim / offline cities). Never for coord-shaped input. */
+  const runPlaceSearch = async (query) => {
     if (!query){ closeDropdown(); return; }
     if (!state.geocodeEnabled || state.opsecStrict){
-      renderEmpty(t("geo.disabledMsg") || "Geocoding disabilitato nelle impostazioni");
+      renderEmpty(t("geo.disabledMsg") || "Geocoding disabilitato nelle impostazioni", true);
       return;
     }
     const myGen = ++gen;
+    clearSearchFeedback();
     renderEmpty(t("geo.searching") || "Ricerca in corso…");
     const opts = { limit: 10 };
     if (country && country.value.trim()){
@@ -53126,6 +53298,7 @@ function bindGeocode(){
       if (!hits.length){
         // Fall back to the offline dataset for a best-effort suggestion.
         const offHits = await offlineForwardSearch(query);
+        if (myGen !== gen) return;
         renderHits(offHits.length ? offHits : []);
         if (!offHits.length) renderEmpty(t("geo.noResults") || "Nessun risultato");
         return;
@@ -53135,19 +53308,61 @@ function bindGeocode(){
       if (myGen !== gen) return;
       // Try offline dataset as a consolation prize when the service fails.
       const offHits = await offlineForwardSearch(query);
+      if (myGen !== gen) return;
       if (offHits.length){ renderHits(offHits); return; }
       const key = (e && e.message) || "geo.unreachable";
       let msg = t("geo.err." + key) || t("geo." + key) || (e && e.message) || "Errore";
-      renderEmpty(msg);
+      renderEmpty(msg, true);
     }
   };
 
-  // Debounced "as-you-type" autocomplete (400ms).
+  /**
+   * Shared Cerca / Invio entry: classify locally first.
+   * coord_valid → local convert + center; coord_invalid → explicit error, no network;
+   * place_text → existing geocoding path.
+   */
+  const runSearch = async (query, opts) => {
+    const explicit = !(opts && opts.fromTyping);
+    const q = normalizeSearchQueryText(query);
+    if (!q){
+      ++gen;
+      clearSearchFeedback();
+      closeDropdown();
+      return;
+    }
+    const cls = classifyGeoSearchInput(q);
+    if (cls.kind === "coord_valid"){
+      applyLocalCoord(cls.det);
+      return;
+    }
+    if (cls.kind === "coord_invalid"){
+      ++gen; // drop stale place responses
+      closeDropdown();
+      if (explicit){
+        setSearchFeedback(tIt(cls.reasonKey || "geo.coordInvalid") || "Coordinata non valida.", "err");
+      } else {
+        clearSearchFeedback();
+      }
+      return;
+    }
+    // place_text
+    if (!explicit && q.length < 3){ closeDropdown(); return; }
+    await runPlaceSearch(q);
+  };
+
+  // Debounced "as-you-type" autocomplete (400ms) — skipped for coordinate-shaped input.
   input.addEventListener("input", () => {
     clearTimeout(debTO);
-    const v = input.value.trim();
-    if (v.length < 3){ closeDropdown(); return; }
-    debTO = setTimeout(() => runSearch(v), 400);
+    clearSearchFeedback();
+    const v = normalizeSearchQueryText(input.value);
+    if (!v || v.length < 3){ ++gen; closeDropdown(); return; }
+    const cls = classifyGeoSearchInput(v);
+    if (cls.kind === "coord_valid" || cls.kind === "coord_invalid"){
+      ++gen;
+      closeDropdown();
+      return;
+    }
+    debTO = setTimeout(() => runSearch(v, { fromTyping: true }), 400);
   });
   input.addEventListener("keydown", (ev) => {
     if (ev.key === "ArrowDown" && !listEl.hidden){
@@ -53161,19 +53376,18 @@ function bindGeocode(){
       if (!listEl.hidden && activeHits.length){
         pickHit(activeIdx >= 0 ? activeIdx : 0);
       } else {
-        const v = input.value.trim();
-        if (v) runSearch(v);
+        runSearch(input.value, { fromTyping: false });
       }
     } else if (ev.key === "Escape"){
       if (!listEl.hidden){ ev.preventDefault(); closeDropdown(); }
     }
   });
-  if (btn) btn.addEventListener("click", () => runSearch(input.value.trim()));
+  if (btn) btn.addEventListener("click", () => runSearch(input.value, { fromTyping: false }));
 
   // Re-run when filters change (only if the dropdown is open — otherwise
-  // it's a silent preference update).
+  // it's a silent preference update). Place-text only.
   [country, bboxCb].forEach(el => { if (el) el.addEventListener("change", () => {
-    if (!listEl.hidden){ runSearch(input.value.trim()); }
+    if (!listEl.hidden){ runSearch(input.value, { fromTyping: false }); }
   }); });
 
   // Dismiss on outside click (unless the click is on card itself).
@@ -100908,6 +101122,26 @@ function runSelfCheck(){
 
     const mg = latLonToMGRS(5.259444, -4.043909, 5);
     console.assert(/^30N/.test(mg), "MGRS should start with 30N");
+
+    // GIS-SEARCH-COORD-VALIDATION-CENTER-A — classify before geocoding
+    console.assert(typeof classifyGeoSearchInput === "function", "classifyGeoSearchInput present");
+    console.assert(classifyGeoSearchInput("").kind === "empty", "search classify empty");
+    console.assert(classifyGeoSearchInput("3 2t hu 12589 15323").kind === "coord_invalid", "invalid MGRS spaced");
+    console.assert(classifyGeoSearchInput("32T HU 12589 15323").kind === "coord_invalid", "invalid MGRS spaced2");
+    console.assert(classifyGeoSearchInput("32THU1258915323").kind === "coord_invalid", "invalid MGRS compact");
+    console.assert(classifyGeoSearchInput("32T HU 12").kind === "coord_invalid", "incomplete MGRS not LatLon");
+    console.assert(classifyGeoSearchInput("La Spezia").kind === "place_text", "place text La Spezia");
+    console.assert(classifyGeoSearchInput("Via Roma 12 Milano").kind === "place_text", "address with digits");
+    console.assert(classifyGeoSearchInput("10041 Torino").kind === "place_text", "CAP+city place");
+    const cDd = classifyGeoSearchInput("45.4642, 9.1900");
+    console.assert(cDd.kind === "coord_valid" && cDd.det.type === "LatLon", "DD valid");
+    console.assert(Math.abs(cDd.det.lat - 45.4642) < 1e-8 && Math.abs(cDd.det.lon - 9.19) < 1e-8, "DD known");
+    const cMgrs = classifyGeoSearchInput("30nul8431881439");
+    console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
+    const cUtm = classifyGeoSearchInput("33t 291952 4640699");
+    console.assert(cUtm.kind === "coord_valid" && cUtm.det.type === "UTM", "UTM lowercase valid");
+    console.assert(classifyGeoSearchInput("95.0, 10.0").kind === "coord_invalid", "lat out of range");
+    console.assert(classifyGeoSearchInput("45, 200").kind === "coord_invalid", "lon out of range");
 
     // MGRS parsing variants (spaced, compact, lowercase, with label)
     const a = mgrsToLatLonExt("30NUL8431881439");
