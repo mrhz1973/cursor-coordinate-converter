@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5";
-const APP_BUILD_DETAIL = "FIX5: segno + consumato; ordine assi E/N; coordinate incomplete rifiutate.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6";
+const APP_BUILD_DETAIL = "FIX6: token estranei rifiutati nel parser condiviso; incolla non geocodifica coordinate invalide.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 262;
+const APP_BUILD_NUM = 263;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27607,7 +27607,8 @@ function parseFreeTextLatLon(input){
       numbers.push(parseFloat(tok));
       continue;
     }
-    // unknown token: ignore
+    /* Whole input must match the grammar. Unknown words are not dropped. */
+    throw new ErrI18n("err.parseFailed");
   }
 
   if (numbers.length === 0) throw new ErrI18n("err.parseFailed");
@@ -75008,11 +75009,18 @@ function doPasteDetect(){
     setBadge(det.type, fmtDD(det.lat, det.lon).cardinal);
     renderResults(det.lat, det.lon, det);
   } catch(e){
-    // Nothing recognized as a coordinate. If the input looks like free text
-    // (has letters, no coord-ish digit clusters), offer geocoding as a last
-    // resort. We keep this explicit (user confirmation) to avoid silently
-    // sending pasted content to a 3rd-party server.
+    // Nothing recognized as a coordinate. A failed coordinate attempt is a
+    // local error — never offered as an address. Real place text still asks
+    // before any geocoding (OPSEC confirm).
     const input = s.trim();
+    let clsKind = "";
+    try { clsKind = classifyGeoSearchInput(input).kind; } catch(_){ clsKind = ""; }
+    if (clsKind !== "place_text"){
+      st.textContent = translateError(e);
+      st.className = "err";
+      setBadge("ERR", state.lang === "en" ? "Not recognized" : state.lang === "fr" ? "Non reconnu" : "Non riconosciuto");
+      return;
+    }
     const looksLikeFreeText = /[A-Za-z]/.test(input) && input.length <= 200;
     if (looksLikeFreeText && geocodingAllowed() && isEffectivelyOnline()){
       const q = input.replace(/\s+/g, " ").slice(0, 150);
@@ -101451,6 +101459,17 @@ function runSelfCheck(){
     console.assert(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
     console.assert(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
     console.assert(classifyGeoSearchInput("44\u00b0 foo1 9\u00b0 bar2").kind === "coord_invalid", "bare junk degrees");
+    let junkThrew = false;
+    try { parseFreeTextLatLon("44\u00b0 foo1 9\u00b0 bar2"); } catch(_){ junkThrew = true; }
+    console.assert(junkThrew, "shared parser rejects junk degrees");
+    let addrThrew = false;
+    try { autoDetect("Via 20 Settembre 12"); } catch(_){ addrThrew = true; }
+    console.assert(addrThrew, "autoDetect rejects street address");
+    let ddJunk = false;
+    try { parseFreeTextLatLon("DD 44foo 9bar"); } catch(_){ ddJunk = true; }
+    console.assert(ddJunk, "shared parser rejects DD junk");
+    console.assert(routingSearchTryParseCoords("DD 44foo 9bar") == null, "routing search rejects DD junk");
+    console.assert(routingSearchTryParseCoords("Via 20 Settembre 12") == null, "routing search rejects address");
     console.assert(classifyGeoSearchInput("44\u00b0 6foo 0\" N 9\u00b0 49bar 0\" E").kind === "coord_invalid", "bare alnum DMS");
     console.assert(classifyGeoSearchInput("44.1N").kind === "coord_invalid", "lat-only suffix");
     console.assert(classifyGeoSearchInput("N44.1").kind === "coord_invalid", "lat-only prefix");
