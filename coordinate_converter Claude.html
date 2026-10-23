@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4";
-const APP_BUILD_DETAIL = "FIX4: validazione intero input; lat incompleta; minuti/secondi negativi; assi duplicati; segno -0.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5";
+const APP_BUILD_DETAIL = "FIX5: segno + consumato; ordine assi E/N; coordinate incomplete rifiutate.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 261;
+const APP_BUILD_NUM = 262;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27578,8 +27578,8 @@ function parseFreeTextLatLon(input){
        .replace(/[;|\\\/]/g," ")
        .replace(/,/g," , ");
 
-  // Split attached letters from digits: "5N"→"5 N", "N5"→"N 5"
-  s = s.replace(/([A-Z])(-?\d)/g,"$1 $2").replace(/(\d)([A-Z])/g,"$1 $2");
+  // Split attached letters from digits: "5N"→"5 N", "N5"→"N 5", "E+9"→"E +9"
+  s = s.replace(/([A-Z])([+-]?\d)/g,"$1 $2").replace(/(\d)([A-Z])/g,"$1 $2");
 
   const tokens = s.split(/\s+/).filter(Boolean);
 
@@ -27588,19 +27588,22 @@ function parseFreeTextLatLon(input){
   let nsChar = null, nsPos = -1;
   let ewChar = null, ewPos = -1;
   let commaPos = -1;
+  let firstAxis = null;
   for (const tok of tokens){
     if (tok === ",") { if (commaPos < 0) commaPos = numbers.length; continue; }
     if (/^[NS]$/.test(tok)){
       if (nsChar !== null) throw new ErrI18n("err.parseFailed");
+      if (!firstAxis) firstAxis = "ns";
       nsChar = tok; nsPos = numbers.length;
       continue;
     }
     if (/^[EW]$/.test(tok)){
       if (ewChar !== null) throw new ErrI18n("err.parseFailed");
+      if (!firstAxis) firstAxis = "ew";
       ewChar = tok; ewPos = numbers.length;
       continue;
     }
-    if (/^-?\d+(\.\d+)?$/.test(tok)){
+    if (/^[+-]?\d+(\.\d+)?$/.test(tok)){
       numbers.push(parseFloat(tok));
       continue;
     }
@@ -27609,28 +27612,41 @@ function parseFreeTextLatLon(input){
 
   if (numbers.length === 0) throw new ErrI18n("err.parseFailed");
 
-  // Determine split between lat numbers and lon numbers
-  let split;
-  if (nsPos > 0){
-    // N/S used as suffix after lat numbers
-    split = nsPos;
-  } else if (nsPos === 0 && ewPos > 0){
-    // N/S prefix, E/W appears between lat and lon
-    split = ewPos;
-  } else if (nsPos === 0 && commaPos > 0){
-    split = commaPos;
-  } else if (commaPos > 0){
-    split = commaPos;
-  } else if (ewPos > 0 && ewPos < numbers.length){
-    split = ewPos;
-  } else if (numbers.length % 2 === 0){
-    split = numbers.length / 2;
+  let latNums, lonNums;
+  if (nsChar && ewChar){
+    /* Both axes labeled: bind numbers to the hemisphere that introduces them.
+       E9.8 N44.1 is longitude then latitude — never lat-first by default. */
+    let cut;
+    if (firstAxis === "ew") cut = (ewPos === 0) ? nsPos : ewPos;
+    else cut = (nsPos === 0) ? ewPos : nsPos;
+    if (!(cut > 0 && cut < numbers.length)) throw new ErrI18n("err.parseFailed");
+    if (firstAxis === "ew"){
+      lonNums = numbers.slice(0, cut);
+      latNums = numbers.slice(cut);
+    } else {
+      latNums = numbers.slice(0, cut);
+      lonNums = numbers.slice(cut);
+    }
   } else {
-    throw new ErrI18n("err.parseFailed");
+    let split;
+    if (nsPos > 0){
+      split = nsPos;
+    } else if (nsPos === 0 && ewPos > 0){
+      split = ewPos;
+    } else if (nsPos === 0 && commaPos > 0){
+      split = commaPos;
+    } else if (commaPos > 0){
+      split = commaPos;
+    } else if (ewPos > 0 && ewPos < numbers.length){
+      split = ewPos;
+    } else if (numbers.length % 2 === 0){
+      split = numbers.length / 2;
+    } else {
+      throw new ErrI18n("err.parseFailed");
+    }
+    latNums = numbers.slice(0, split);
+    lonNums = numbers.slice(split);
   }
-
-  const latNums = numbers.slice(0, split);
-  const lonNums = numbers.slice(split);
 
   if (!latNums.length || !lonNums.length || latNums.length > 3 || lonNums.length > 3)
     throw new ErrI18n("err.parseFailed");
@@ -51189,7 +51205,7 @@ function looksLikeUtmSearchShape(s){
 function splitHemisphereGlued(s){
   return String(s || "")
     .replace(/(\d)([NnSsEeWw])(?![A-Za-z])/g, "$1 $2")
-    .replace(/(^|[^A-Za-z])([NnSsEeWw])(?=-?\d)/g, "$1$2 ");
+    .replace(/(^|[^A-Za-z])([NnSsEeWw])(?=[+-]?\d)/g, "$1$2 ");
 }
 
 /** Numeric / hemisphere token census. junk=true if any token is not a number or N/S/E/W. */
@@ -51199,7 +51215,7 @@ function latLonTokenStats(s){
   let junk = false;
   for (let i = 0; i < parts.length; i++){
     const tok = parts[i];
-    if (/^-?\d+(?:\.\d+)?$/.test(tok)) count++;
+    if (/^[+-]?\d+(?:\.\d+)?$/.test(tok)) count++;
     else if (/^[NSEW]$/i.test(tok)) continue;
     else junk = true;
   }
@@ -51266,8 +51282,9 @@ function looksLikeIncompleteLatLonSearch(s){
   const t = String(s || "").trim();
   if (!t || searchInputHasPlaceLexemes(t)) return false;
   const census = latLonCensus(t);
-  if (census.junk || census.conflict) return false;
-  if (census.count !== 1) return false;
+  if (census.junk) return false;
+  /* N+S or E+W is a coordinate attempt even when the pair is incomplete. */
+  if (census.conflict) return true;
   const parts = splitHemisphereGlued(latLonSymbolSpacing(t)).split(/[\s,;]+/).filter(Boolean);
   let hasNS = false, hasEW = false;
   for (let i = 0; i < parts.length; i++){
@@ -51275,10 +51292,18 @@ function looksLikeIncompleteLatLonSearch(s){
     if (/^[NS]$/i.test(tok)) hasNS = true;
     else if (/^[EW]$/i.test(tok)) hasEW = true;
   }
-  if (hasEW) return false;
-  if (hasNS) return true;
-  if (/[\u00B0\u00BA]/.test(t)) return true;
-  if (/\d\s*[\u2032\u2019']/.test(t) || /\d\s*[\u2033\u201C\u201D"]/.test(t)) return true;
+  const hasHemi = hasNS || hasEW;
+  const hasSym = /[\u00B0\u00BA]/.test(t)
+    || /\d\s*[\u2032\u2019']/.test(t)
+    || /\d\s*[\u2033\u201C\u201D"]/.test(t);
+  if (!hasHemi && !hasSym) return false;
+  /* 2/4/6 numbers are a complete DD/DDM/DMS pair (axis order handled by the parser). */
+  if (census.count === 2 || census.count === 4 || census.count === 6) return false;
+  if (census.count === 1) return true;
+  /* One axis only, DMS-sized (N44 6 0 / E9 49 0) — not a lat/lon pair. */
+  if (census.count === 3 && hasHemi && !(hasNS && hasEW)) return true;
+  if (census.count === 5 && hasHemi) return true;
+  if (census.count > 6) return true;
   return false;
 }
 
@@ -51443,7 +51468,7 @@ function classifyGeoSearchInput(raw){
     return trySearchLatLon(euroFull);
   }
 
-  // Lat without lon (44.1N / N44.1 / 44.1 N): local error, never Nominatim.
+  // Incomplete or contradictory axis input (44.1N, E9.8, N44 6 0, 44.1 N S).
   if (looksLikeIncompleteLatLonSearch(s)){
     return searchCoordInvalid();
   }
@@ -101435,6 +101460,17 @@ function runSelfCheck(){
     console.assert(classifyGeoSearchInput("DD 44 N 9 N").kind === "coord_invalid", "duplicate axis N");
     const cNeg0 = classifyGeoSearchInput("DMS -0 0 1 9 0 0");
     console.assert(cNeg0.kind === "coord_valid" && cNeg0.det.lat < 0 && Math.abs(cNeg0.det.lat + 1/3600) < 1e-12 && Math.abs(cNeg0.det.lon - 9) < 1e-12, "DMS -0 keeps sign");
+    const cPlus = classifyGeoSearchInput("DMS +44 6 0 N 9 49 0 E");
+    console.assert(cPlus.kind === "coord_valid" && Math.abs(cPlus.det.lat - 44.1) < 1e-9 && Math.abs(cPlus.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lat");
+    const cPlusLon = classifyGeoSearchInput("DMS 44 6 0 N +9 49 0 E");
+    console.assert(cPlusLon.kind === "coord_valid" && Math.abs(cPlusLon.det.lat - 44.1) < 1e-9 && Math.abs(cPlusLon.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lon");
+    const cLonFirst = classifyGeoSearchInput("E9.8 N44.1");
+    console.assert(cLonFirst.kind === "coord_valid" && Math.abs(cLonFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLonFirst.det.lon - 9.8) < 1e-9, "lon-first axis");
+    const cLatFirst = classifyGeoSearchInput("N44.1 E9.8");
+    console.assert(cLatFirst.kind === "coord_valid" && Math.abs(cLatFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLatFirst.det.lon - 9.8) < 1e-9, "lat-first axis");
+    console.assert(classifyGeoSearchInput("E9.8").kind === "coord_invalid", "lon-only incomplete");
+    console.assert(classifyGeoSearchInput("N44 6 0").kind === "coord_invalid", "lat DMS incomplete");
+    console.assert(classifyGeoSearchInput("44.1 N S").kind === "coord_invalid", "contradictory incomplete");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
     console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
