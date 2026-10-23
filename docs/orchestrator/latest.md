@@ -5,4 +5,4 @@
 
 ## Ultimo aggiornamento
 
-2026-10-23 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4 · REVIEW PACKAGE READY**. Candidate build **261** tip `e3da4e8` · blob Git `b7d62b11…`. FIX3 `faed7b1` / build 260 = **REVIEW GPT-SOSTITUTIVA FAIL** (registrata; 257–259 già FAIL). LIVE **256** `f215011`. No deploy / no finito. Evidence: [`inbox/2026-10-23_1005_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4-review-package.md`](inbox/2026-10-23_1005_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4-review-package.md).
+2026-10-23 — **ROUTING-LAND-ONLY-NO-FERRY-A · AUDIT STOP (isolamento)**. Nessun candidate routing. **FRONTIER Search FIX4 invariato** (REVIEW PACKAGE READY, build **261** `e3da4e8`). Requisito land-only registrato; implementazione rimandata. Evidence: [`inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md`](inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md). LIVE **256**.
