@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6";
-const APP_BUILD_DETAIL = "FIX6: token estranei rifiutati nel parser condiviso; incolla non geocodifica coordinate invalide.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX7";
+const APP_BUILD_DETAIL = "FIX7: decimali europei nel parser condiviso; segno e emisfero contraddittori rifiutati.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 263;
+const APP_BUILD_NUM = 264;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27571,6 +27571,10 @@ function parseFreeTextLatLon(input){
   // Separators: space/colon/equals. A minus glued to a digit is a sign (DMS -0 / DD -44.1), not discarded.
   s = s.replace(/^(LAT\/?LON|LATLON|LAT|LONG|LON|COORDS?|COORDINATES?|POS|POSITION|LL|DD|DDM|DMS)(?=$|[\s:=\-])(?:[\s:=]+|-(?![0-9]))*/i,"");
 
+  // "45,5; 9,2" / "45,5 9,2" are decimal-comma pairs, not four DDM/DMS components.
+  const euroDecimal = normalizeEuroDecimalLatLonSearch(s);
+  if (euroDecimal) s = euroDecimal;
+
   // Normalize decorative symbols to spaces
   s = s.replace(/[°º]/g," ")
        .replace(/['\u2019\u2032`´]/g," ")
@@ -27585,6 +27589,7 @@ function parseFreeTextLatLon(input){
 
   // Walk through and separate: numbers, NS marker, EW marker, commas
   const numbers = [];
+  const signs = [];
   let nsChar = null, nsPos = -1;
   let ewChar = null, ewPos = -1;
   let commaPos = -1;
@@ -27605,6 +27610,7 @@ function parseFreeTextLatLon(input){
     }
     if (/^[+-]?\d+(\.\d+)?$/.test(tok)){
       numbers.push(parseFloat(tok));
+      signs.push(tok[0] === "-" ? -1 : (tok[0] === "+" ? 1 : 0));
       continue;
     }
     /* Whole input must match the grammar. Unknown words are not dropped. */
@@ -27613,7 +27619,7 @@ function parseFreeTextLatLon(input){
 
   if (numbers.length === 0) throw new ErrI18n("err.parseFailed");
 
-  let latNums, lonNums;
+  let latNums, lonNums, latSigns, lonSigns;
   if (nsChar && ewChar){
     /* Both axes labeled: bind numbers to the hemisphere that introduces them.
        E9.8 N44.1 is longitude then latitude — never lat-first by default. */
@@ -27624,9 +27630,13 @@ function parseFreeTextLatLon(input){
     if (firstAxis === "ew"){
       lonNums = numbers.slice(0, cut);
       latNums = numbers.slice(cut);
+      lonSigns = signs.slice(0, cut);
+      latSigns = signs.slice(cut);
     } else {
       latNums = numbers.slice(0, cut);
       lonNums = numbers.slice(cut);
+      latSigns = signs.slice(0, cut);
+      lonSigns = signs.slice(cut);
     }
   } else {
     let split;
@@ -27647,10 +27657,22 @@ function parseFreeTextLatLon(input){
     }
     latNums = numbers.slice(0, split);
     lonNums = numbers.slice(split);
+    latSigns = signs.slice(0, split);
+    lonSigns = signs.slice(split);
   }
 
   if (!latNums.length || !lonNums.length || latNums.length > 3 || lonNums.length > 3)
     throw new ErrI18n("err.parseFailed");
+
+  // An explicit sign must agree with the hemisphere letter (-44.1N, S+44.1 are contradictions).
+  if ((nsChar === "N" && latSigns[0] < 0) || (nsChar === "S" && latSigns[0] > 0) ||
+      (ewChar === "E" && lonSigns[0] < 0) || (ewChar === "W" && lonSigns[0] > 0))
+    throw new ErrI18n("err.parseFailed");
+  // Minutes/seconds never carry a minus, not even -0.
+  for (const side of [latSigns, lonSigns]){
+    if (side[1] < 0) throw new ErrI18n("err.minutes");
+    if (side[2] < 0) throw new ErrI18n("err.seconds");
+  }
 
   let lat = combineComponents(latNums);
   let lon = combineComponents(lonNums);
@@ -51243,15 +51265,16 @@ function looksLikeLatLonSearchShape(s){
 /**
  * European decimal lat/lon written with comma decimals and ; or space separator.
  * Returns a DD string with dots, or null if not that pattern.
- * Avoids silent mis-parse via parseFreeTextLatLon comma→token split.
+ * Also applied inside parseFreeTextLatLon, so Cerca, Converti, Incolla and
+ * routing read the same pair. A lone "45,5" stays a lat/lon integer pair.
  */
 function normalizeEuroDecimalLatLonSearch(s){
   const t = String(s || "").trim();
   // "45,5; 9,2" or "45,5;9,2"
-  let m = t.match(/^(-?\d+),(\d+)\s*;\s*(-?\d+),(\d+)$/);
+  let m = t.match(/^([+-]?\d+),(\d+)\s*;\s*([+-]?\d+),(\d+)$/);
   if (m) return m[1] + "." + m[2] + ", " + m[3] + "." + m[4];
   // "45,5 9,2" (exactly two euro-decimal groups)
-  m = t.match(/^(-?\d+),(\d+)\s+(-?\d+),(\d+)$/);
+  m = t.match(/^([+-]?\d+),(\d+)\s+([+-]?\d+),(\d+)$/);
   if (m) return m[1] + "." + m[2] + ", " + m[3] + "." + m[4];
   return null;
 }
@@ -83711,8 +83734,13 @@ function polygonParseVertexCoordInputText(raw){
 function polygonCollectVertexCoordModalInputText(latStr, lonStr, combinedStr){
   const comb = String(combinedStr == null ? "" : combinedStr).trim();
   if (comb) return comb;
-  const lat = String(latStr == null ? "" : latStr).trim();
-  const lon = String(lonStr == null ? "" : lonStr).trim();
+  // A single Lat/Lon field holds one number: "45,5" is a decimal comma, never a pair.
+  const field = (v) => {
+    const t = String(v == null ? "" : v).trim();
+    return /^[+-]?\d+,\d+$/.test(t) ? t.replace(",", ".") : t;
+  };
+  const lat = field(latStr);
+  const lon = field(lonStr);
   if (lat && lon) return lat + ", " + lon;
   if (lat) return lat;
   if (lon) return lon;
@@ -101477,6 +101505,32 @@ function runSelfCheck(){
     console.assert(classifyGeoSearchInput("DMS 44 -6 0 N 9 49 0 E").kind === "coord_invalid", "negative minutes");
     console.assert(classifyGeoSearchInput("DMS 44 6 -1 N 9 49 0 E").kind === "coord_invalid", "negative seconds");
     console.assert(classifyGeoSearchInput("DD 44 N 9 N").kind === "coord_invalid", "duplicate axis N");
+    for (const q of ["45,5; 9,2", "45,5 9,2", "45,5;9,2", "+45,5; +9,2"]){
+      const pe = parseFreeTextLatLon(q);
+      console.assert(pe.lat === 45.5 && pe.lon === 9.2, "shared parser euro decimals " + q);
+      const de = autoDetect(q);
+      console.assert(de.lat === 45.5 && de.lon === 9.2, "autoDetect euro decimals " + q);
+      const re = routingSearchTryParseCoords(q);
+      console.assert(re && re.lat === 45.5 && re.lon === 9.2, "routing euro decimals " + q);
+    }
+    const pIntPair = parseFreeTextLatLon("45, 5");
+    console.assert(pIntPair.lat === 45 && pIntPair.lon === 5, "integer pair stays lat/lon");
+    for (const q of ["-44.1N 9.8E", "+44.1S 9.8E", "N-44.1 E9.8", "S+44.1 E9.8", "44.1N -9.8E", "44.1N +9.8W", "DMS -0 0 1 N 9 0 0 E", "DMS 44 -0 30 N 9 49 0 E"]){
+      let threw = false;
+      try { parseFreeTextLatLon(q); } catch(_){ threw = true; }
+      console.assert(threw, "shared parser rejects sign/hemisphere conflict " + q);
+      console.assert(classifyGeoSearchInput(q).kind === "coord_invalid", "search rejects sign/hemisphere conflict " + q);
+      console.assert(routingSearchTryParseCoords(q) == null, "routing rejects sign/hemisphere conflict " + q);
+    }
+    const pNegS = parseFreeTextLatLon("-44.1S 9.8E");
+    console.assert(pNegS.lat === -44.1 && pNegS.lon === 9.8, "coherent minus + S");
+    const pPlusN = parseFreeTextLatLon("+44.1N 9.8E");
+    console.assert(pPlusN.lat === 44.1 && pPlusN.lon === 9.8, "coherent plus + N");
+    const pNeg0S = parseFreeTextLatLon("DMS -0 0 1 S 9 0 0 E");
+    console.assert(Math.abs(pNeg0S.lat + 1/3600) < 1e-12 && pNeg0S.lon === 9, "coherent -0 + S");
+    const vPolyEuro = polygonValidateVertexCoordModalInputs("45,5", "9,2", "", "dd");
+    console.assert(vPolyEuro.ok && vPolyEuro.lat === 45.5 && vPolyEuro.lon === 9.2, "polygon Lat/Lon fields decimal comma");
+    console.assert(!polygonValidateVertexCoordModalInputs("45,5", "", "", "dd").ok, "polygon lone Lat field is not a pair");
     const cNeg0 = classifyGeoSearchInput("DMS -0 0 1 9 0 0");
     console.assert(cNeg0.kind === "coord_valid" && cNeg0.det.lat < 0 && Math.abs(cNeg0.det.lat + 1/3600) < 1e-12 && Math.abs(cNeg0.det.lon - 9) < 1e-12, "DMS -0 keeps sign");
     const cPlus = classifyGeoSearchInput("DMS +44 6 0 N 9 49 0 E");
