@@ -5,6 +5,6 @@
 
 ## Ultimo aggiornamento
 
-2026-10-23 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5 · REVIEW PACKAGE READY**. Candidate build **262** tip `657422e` · blob Git `4385686a…`. FIX4 `e3da4e8` / build 261 = **REVIEW GPT-SOSTITUTIVA FAIL** (registrata; 257–260 già FAIL). LIVE **256**. No deploy / no finito. Evidence: [`inbox/2026-10-23_1115_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5-review-package.md`](inbox/2026-10-23_1115_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5-review-package.md).
+2026-10-23 — **GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6 · REVIEW PACKAGE READY**. Candidate build **263** tip `b60584c` · blob Git `3b60b3a1…`. FIX5 `657422e` / build 262 = **REVIEW GPT-SOSTITUTIVA FAIL** (C1–C2; P1–P3 erano PASS). LIVE **256**. No deploy / no finito. Evidence: [`inbox/2026-10-23_1200_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6-review-package.md`](inbox/2026-10-23_1200_GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6-review-package.md).
 
-Routing `ROUTING-LAND-ONLY-NO-FERRY-A` resta audit STOP (nessun candidate): [`inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md`](inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md).
+Routing `ROUTING-LAND-ONLY-NO-FERRY-A` resta audit STOP: [`inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md`](inbox/2026-10-23_1100_ROUTING-LAND-ONLY-NO-FERRY-A-audit-stop.md).
