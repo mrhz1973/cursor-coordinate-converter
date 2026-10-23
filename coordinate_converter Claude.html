@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX3";
-const APP_BUILD_DETAIL = "FIX3: segno dopo il prefisso; DD/DDM/DMS con simboli; emisferi contraddittori rifiutati.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4";
+const APP_BUILD_DETAIL = "FIX4: validazione intero input; lat incompleta; minuti/secondi negativi; assi duplicati; segno -0.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 260;
+const APP_BUILD_NUM = 261;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27567,8 +27567,9 @@ function parseFreeTextLatLon(input){
     return { lat: p.lat, lon: p.lon };
   }
 
-  // Strip leading textual labels ("LAT", "LATLON", "COORD(S)", "LL", "DD", "DMS", "DDM", "POS")
-  s = s.replace(/^(LAT\/?LON|LATLON|LAT|LONG|LON|COORDS?|COORDINATES?|POS|POSITION|LL|DD|DDM|DMS)[:=\s-]*/,"");
+  // Strip leading textual labels ("LAT", "LATLON", "COORD(S)", "LL", "DD", "DMS", "DDM", "POS").
+  // Separators: space/colon/equals. A minus glued to a digit is a sign (DMS -0 / DD -44.1), not discarded.
+  s = s.replace(/^(LAT\/?LON|LATLON|LAT|LONG|LON|COORDS?|COORDINATES?|POS|POSITION|LL|DD|DDM|DMS)(?=$|[\s:=\-])(?:[\s:=]+|-(?![0-9]))*/i,"");
 
   // Normalize decorative symbols to spaces
   s = s.replace(/[°º]/g," ")
@@ -27590,11 +27591,13 @@ function parseFreeTextLatLon(input){
   for (const tok of tokens){
     if (tok === ",") { if (commaPos < 0) commaPos = numbers.length; continue; }
     if (/^[NS]$/.test(tok)){
-      if (nsChar === null){ nsChar = tok; nsPos = numbers.length; }
+      if (nsChar !== null) throw new ErrI18n("err.parseFailed");
+      nsChar = tok; nsPos = numbers.length;
       continue;
     }
     if (/^[EW]$/.test(tok)){
-      if (ewChar === null){ ewChar = tok; ewPos = numbers.length; }
+      if (ewChar !== null) throw new ErrI18n("err.parseFailed");
+      ewChar = tok; ewPos = numbers.length;
       continue;
     }
     if (/^-?\d+(\.\d+)?$/.test(tok)){
@@ -27646,17 +27649,17 @@ function parseFreeTextLatLon(input){
 
 function combineComponents(nums){
   // nums: [d], [d,m], or [d,m,s]
-  // Sign preserved from first component only
-  const sign = nums[0] < 0 ? -1 : 1;
+  // Sign from degrees only (including IEEE -0). Minutes/seconds must be >= 0.
+  const sign = (nums[0] < 0 || Object.is(nums[0], -0)) ? -1 : 1;
   const a = nums.map(Math.abs);
   let dec;
   if (a.length === 1) dec = a[0];
   else if (a.length === 2){
-    if (a[1] < 0 || a[1] >= 60) throw new ErrI18n("err.minutes");
+    if (nums[1] < 0 || a[1] >= 60) throw new ErrI18n("err.minutes");
     dec = a[0] + a[1]/60;
   } else {
-    if (a[1] < 0 || a[1] >= 60) throw new ErrI18n("err.minutes");
-    if (a[2] < 0 || a[2] >= 60) throw new ErrI18n("err.seconds");
+    if (nums[1] < 0 || a[1] >= 60) throw new ErrI18n("err.minutes");
+    if (nums[2] < 0 || a[2] >= 60) throw new ErrI18n("err.seconds");
     dec = a[0] + a[1]/60 + a[2]/3600;
   }
   return sign * dec;
@@ -51255,6 +51258,30 @@ function searchInputHasPlaceLexemes(s){
   return false;
 }
 
+/**
+ * Latitude without longitude: one number + N/S (or degree mark), no E/W.
+ * Intention is coordinate entry — never forward to Nominatim as a place name.
+ */
+function looksLikeIncompleteLatLonSearch(s){
+  const t = String(s || "").trim();
+  if (!t || searchInputHasPlaceLexemes(t)) return false;
+  const census = latLonCensus(t);
+  if (census.junk || census.conflict) return false;
+  if (census.count !== 1) return false;
+  const parts = splitHemisphereGlued(latLonSymbolSpacing(t)).split(/[\s,;]+/).filter(Boolean);
+  let hasNS = false, hasEW = false;
+  for (let i = 0; i < parts.length; i++){
+    const tok = parts[i];
+    if (/^[NS]$/i.test(tok)) hasNS = true;
+    else if (/^[EW]$/i.test(tok)) hasEW = true;
+  }
+  if (hasEW) return false;
+  if (hasNS) return true;
+  if (/[\u00B0\u00BA]/.test(t)) return true;
+  if (/\d\s*[\u2032\u2019']/.test(t) || /\d\s*[\u2033\u201C\u201D"]/.test(t)) return true;
+  return false;
+}
+
 function searchCoordInvalid(){
   return { kind: "coord_invalid", reasonKey: "geo.coordInvalid" };
 }
@@ -51310,21 +51337,25 @@ function latLonCensus(s){
   let count = 0;
   let junk = false;
   let seenN = false, seenS = false, seenE = false, seenW = false;
+  let nsCount = 0, ewCount = 0;
   for (let i = 0; i < parts.length; i++){
     const tok = parts[i];
     if (/^[+-]?\d+(?:\.\d+)?$/.test(tok)) count++;
     else if (/^[NSEW]$/i.test(tok)){
       const h = tok.toUpperCase();
-      if (h === "N") seenN = true;
-      else if (h === "S") seenS = true;
-      else if (h === "E") seenE = true;
-      else seenW = true;
+      if (h === "N" || h === "S"){
+        nsCount++;
+        if (h === "N") seenN = true; else seenS = true;
+      } else {
+        ewCount++;
+        if (h === "E") seenE = true; else seenW = true;
+      }
     } else junk = true;
   }
   return {
     count: count,
     junk: junk,
-    conflict: (seenN && seenS) || (seenE && seenW),
+    conflict: (seenN && seenS) || (seenE && seenW) || nsCount > 1 || ewCount > 1,
     euro: euro
   };
 }
@@ -51412,9 +51443,15 @@ function classifyGeoSearchInput(raw){
     return trySearchLatLon(euroFull);
   }
 
+  // Lat without lon (44.1N / N44.1 / 44.1 N): local error, never Nominatim.
+  if (looksLikeIncompleteLatLonSearch(s)){
+    return searchCoordInvalid();
+  }
+
   if (looksLikeLatLonSearchShape(s)){
     const census = latLonCensus(s);
-    if (census.conflict) return searchCoordInvalid();
+    // Whole-input grammar: junk tokens (foo1, 6foo, …) are never ignored.
+    if (census.junk || census.conflict) return searchCoordInvalid();
     return trySearchLatLon(census.euro || s);
   }
 
@@ -101388,6 +101425,16 @@ function runSelfCheck(){
     const cDdSym = classifyGeoSearchInput("DD 44.1\u00b0 N 9.8\u00b0 E");
     console.assert(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
     console.assert(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
+    console.assert(classifyGeoSearchInput("44\u00b0 foo1 9\u00b0 bar2").kind === "coord_invalid", "bare junk degrees");
+    console.assert(classifyGeoSearchInput("44\u00b0 6foo 0\" N 9\u00b0 49bar 0\" E").kind === "coord_invalid", "bare alnum DMS");
+    console.assert(classifyGeoSearchInput("44.1N").kind === "coord_invalid", "lat-only suffix");
+    console.assert(classifyGeoSearchInput("N44.1").kind === "coord_invalid", "lat-only prefix");
+    console.assert(classifyGeoSearchInput("44.1 N").kind === "coord_invalid", "lat-only spaced");
+    console.assert(classifyGeoSearchInput("DMS 44 -6 0 N 9 49 0 E").kind === "coord_invalid", "negative minutes");
+    console.assert(classifyGeoSearchInput("DMS 44 6 -1 N 9 49 0 E").kind === "coord_invalid", "negative seconds");
+    console.assert(classifyGeoSearchInput("DD 44 N 9 N").kind === "coord_invalid", "duplicate axis N");
+    const cNeg0 = classifyGeoSearchInput("DMS -0 0 1 9 0 0");
+    console.assert(cNeg0.kind === "coord_valid" && cNeg0.det.lat < 0 && Math.abs(cNeg0.det.lat + 1/3600) < 1e-12 && Math.abs(cNeg0.det.lon - 9) < 1e-12, "DMS -0 keeps sign");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
     console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
