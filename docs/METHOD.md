@@ -86,8 +86,8 @@ See: [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0
 | Role | Tool / System | Status |
 |---|---|---|
 | Source of truth | GitHub (`mrhz1973/cursor-coordinate-converter`) | Active |
-| High-level orchestrator | ChatGPT web | Active |
-| Implementers | Claude Code / Cursor CLI | Active |
+| Orchestratore/implementatore principale | ChatGPT con strumenti disponibili | Attivo |
+| Supporto eventuale | Cursor CLI / Cursor Agent | Solo su incarico esplicito dell'utente |
 | Classifier / router / risk scorer | Ollama | Future optional |
 | Human gate channel | Telegram | Future optional |
 | Control plane | n8n | Future optional |
