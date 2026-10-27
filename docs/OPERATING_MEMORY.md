@@ -4,6 +4,7 @@
 > Gli agenti devono leggere questo file prima di modificare il GIS Tool.  
 > **CORE BOOT:** `git ls-remote` → `README.md` blocco `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU **solo se** `WU ATTIVA` non è N/A. Resto on demand (Regola I).  
 > Questo file riguarda il **GIS monolite**, non il control-plane e non Planet-Clone.
+> **Routing 27/10/2026:** ChatGPT è l'operatore principale; Cursor solo supporto eventuale, su incarico esplicito. Nessun agente esterno è assunto attivo. Il nome `coordinate_converter Claude.html` è un filename legacy: non rinominarlo nell'ambito del cambio di ruoli.
 
 ---
 

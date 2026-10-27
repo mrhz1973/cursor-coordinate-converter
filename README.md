@@ -6,6 +6,8 @@
 
 **Repo:** `mrhz1973/cursor-coordinate-converter` · **File operativo:** `coordinate_converter Claude.html` (HTML standalone, vanilla JS; no framework/npm/bundler).
 
+**Routing vigente dal 27/10/2026:** ChatGPT opera come orchestratore e implementatore tramite gli strumenti disponibili; Cursor è un supporto facoltativo e non va avviato senza incarico esplicito. Il nome storico del file HTML non indica un esecutore AI attivo.
+
 ### Autorità remota
 `git ls-remote origin refs/heads/main` = autorità **finale** su HEAD. Lo stato operativo è nei documenti **pinnati a quella HEAD**, non nella memoria dell’agente. RAW/CDN possono essere stale.
 
