@@ -1,0 +1,13 @@
+# Routing land-only — preflight read-only
+
+Base e6459c9c763819e8b69f5ffbc267d410200b6490, runtime FIX8 commit 762fb1605a7c20b3b7bd21a6b0cfa1c04f8e4739. Analisi statica mirata, nessun candidate, modifica o richiesta esterna.
+
+- GraphHopper: routingBuildGraphhopperRouteBody (90129) e routingBuildGraphhopperRoundTripBody (89324) non impongono alcuna priority FERRY. routingApplyAvoidPayloadToBody (88878) sostituisce interamente custom_model: un filtro aggiunto prima può essere cancellato quando avoid attivo. Comporre le priority e conservare le aree; verificare CH/disabilitazione per ogni variante.
+- Snap routingNearestForPoint (88025) costruisce GET /nearest solo con point; non prova che l'arco selezionato sia terrestre. La presenza road_environment/FERRY in /info è necessaria ma non dimostra il filtraggio dello snap o l'effettivo comportamento di ciascun profilo.
+- ORS: routingBuildOrsRouteBody (90767), routingBuildOrsRoundTripBody (90780) e routingApplyAvoidPayloadToOrsBody (90759) non aggiungono avoid_features:ferries; il merge deve conservare round_trip e avoid_polygons. routingPostOrsDirections (91001) invia il body senza arricchimento. Occorre attestare supporto effettivo per ogni profilo, errore fail-closed.
+- routingParseGraphhopperPath (90204) valida geometria e coordinate ma non attesta il tipo di arco; instructions:false e assenza di path_details lasciano impossibile distinguere un ferry dopo la risposta. Analoga verifica della risposta ORS necessaria; non assumere che un semplice LineString garantisca assenza di navigazione.
+- Da ispezionare/testare tutti callsite fetch e tutte le strade verso preview/salvataggio e fallback: questo preflight non certifica copertura o bypass ulteriori.
+
+Matrice da eseguire in ambiente controllato dopo apertura gate: payload effettivi GH/ORS per profili, VIA, A/R, alternative, round_trip e confronto, con/senza avoid poligoni; mock provider che rifiuta parametro, restituisce arco ferry, risposta incompleta, timeout e fallback, sempre senza preview/salvataggio; controlli snap vicino imbarco; bridge/tunnel ammessi; coppia terre separate deve restituire il messaggio richiesto. Aggiungere prove su grafo live autorizzato con tratte note e risultati verificabili, senza modificare dati o infrastruttura; distinguere prove payload da prova di esecuzione effettiva. Test rete OPSEC strict e offline, nessun retry senza vincolo. Verifica indipendente e QA browser prima di deploy.
+
+Limiti: nessuna verifica diretta della semantica dei parametri di /nearest o delle API provider in questa analisi; /info FERRY attestato dal preflight orchestratore non è prova che il filtro funzioni. Nessun risultato PASS sul routing.
