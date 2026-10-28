@@ -1,0 +1,9 @@
+# Review indipendente — GIS-SEARCH-SIMPLIFY-COUNTRY-A
+
+Esito: PASS scoped sulla copia SHA256 096c84ff39b42512e216fb3b57f8ec7afa1a4514b050b435c6f88a3b20835ae2; build266. Non estendere a patch successive o attestare QA operatore.
+
+Diff interamente rivisto rispetto a runtime LIVE 762fb160: elimina markup geoCountry, riferimento binding, applicazione countryCodes da filtro e riferimento nel listener; placeholder IT Roma; build bump. Nessun endpoint/consenso, storage, geolocalizzazione o codice di rete alterato. API condivisa geocodeSearch conserva parametro opzionale countryCodes per altri consumer; non esiste alcun riferimento a geoCountry nel candidate, né countryCodes nel callsite bindGeocode. Dati e traduzioni EN/FR conservati. L'input precedentemente non risultava persistito dal binding esaminato; nessun valore nascosto può generare quel filtro nel pannello.
+
+Test indipendente Chromium reale in check.cjs/results.json: viewport desktop e mobile emulato; pannello aperto tramite openSearchPanel, input tastiera e invio; assenza campo, placeholder, richiesta Nominatim mock effettiva senza parametro countrycodes, ricerca coordinate e punto numerico atteso, sei casi gate strict/geocoding off/offline senza tentativi Nominatim; zero pageerror. Altre richieste intercettate/bloccate. Non è prova dei provider reali, né qualità visiva/touch su dispositivo fisico.
+
+Selfcheck candidato in selfcheck.json: build266, 0 assertion e pageerror; log self-check passed. L'harness iniziale alternativo ha fallito timeout apertura pannello (non conteggiato come successo); quello finale usa openSearchPanel. L'implementatore ha individuato e corretto preventivamente un riferimento country rimasto nel listener: non applicare questa review a hash precedente.

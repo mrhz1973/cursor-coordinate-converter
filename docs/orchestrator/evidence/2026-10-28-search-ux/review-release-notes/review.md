@@ -1,0 +1,9 @@
+# Review indipendente — Note di rilascio
+
+PASS scoped sul candidate SHA256 85252fa3bb9fd43f9eeca4a5d1ddce8b5e9ee307be94defc5e0b66c61eda23ff, commit ce02321 (verificare FULL SHA prima pubblicazione). Base 87522a20faf8f30fbd3790160cc707a9386daffa. La review non certifica patch successive.
+
+Diff completo: pulsante nativo in Impostazioni; details/summary nella sezione Guida; focus programmato e scroll; CSS locale; descrizione build aggiornata. Nessuna modifica fetch, URL, storage, OPSEC, handler Guida esistente, GPS o motore geodetico. Le quattro voci e la nota «cronologia precedente incompleta» non inventano una cronologia esaustiva; riferimenti 255 e 256 coerenti con report canonici, 265 e 266 coerenti con lavoro recente.
+
+Browser Chromium desktop e mobile emulato, caricamento reale file candidato locale: attivazione Impostazioni con click, apertura Note con focus+Invio, verifica dialog aperto, details aperto e focus summary; Invio chiude details; pulsante X chiude Guida; pulsante Guida riapre dialog. Entrambi i viewport PASS e zero pageerror. HTTP esterne bloccate e registrate; durante i test sono comparsi tentativi api.open-meteo.com di elevation già avviati in background, quindi non si dichiara zero richieste complessive e non si attribuiscono a questa patch sulla sola base del test. L'analisi statica della patch non mostra nuovi network call.
+
+Harness check.cjs e results.json; selfcheck/gate OPSEC finali demandati all'orchestratore e QA. Non attesta dispositivo fisico, screenshot visivo, servizi provider reali o QA operatore. Il primo test controllava impropriamente zero requests e falliva per elevation background; successivo separa quell'osservazione dalla verifica UI e preserva i dettagli in results.json.

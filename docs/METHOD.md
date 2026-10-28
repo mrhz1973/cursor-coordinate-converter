@@ -187,3 +187,7 @@ The following method capabilities are **not required** for this project:
 - Splitting the single-file HTML architecture prematurely.
 - Any mandatory ES module or bundler migration.
 - Automated test suite (manual milestone testing is the current practice).
+
+
+## Note di rilascio
+Per ogni futura build LIVE aggiornare le note di rilascio nella Guida con numero build e modifiche verificate; distinguere candidate da rilasci pubblicati. Non inventare lo storico mancante. Le note accompagnano il candidate e sono verificate nella review e nella QA.
