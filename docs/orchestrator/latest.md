@@ -1,1 +1,1 @@
-Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 build265 LIVE: QA operatore PASS, CLOSED. Nuovo blocco GIS-SEARCH-SIMPLIFY-COUNTRY-A in implementazione.
+Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 CLOSED QA operatore PASS. Build266 LIVE: Paese rimosso, esempio Roma, note in Impostazioni, review e ABQA PASS, QA operatore PENDING.

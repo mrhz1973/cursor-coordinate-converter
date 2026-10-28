@@ -33,3 +33,9 @@ Evidence: DEPLOY.md e postdeploy/ nel pacchetto FIX8.
 
 ## Chiusura FIX8 — 2026-10-28
 QA GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8 PASS operatore: attestazione esplicita ricevuta in chat; blocco CLOSED. LIVE build265 invariato. Nuova richiesta operatore: rimuovere Paese e cambiare esempio Cerca; blocco GIS-SEARCH-SIMPLIFY-COUNTRY-A in implementazione, candidate non ancora disponibile. Fonte LIVE: FRONTIER.
+
+
+## GIS-SEARCH-SIMPLIFY-COUNTRY-A build266
+Utente ha attestato FIX8 PASS; chiuso in a7661f1. Richiesti rimozione Paese, esempio diverso, note release in Impostazioni. Candidate ce02321c6a95f729c6b9e1baeabe27077689a9c8 blob da1191e9a48353175f5ffef8f73ee3e8150212a7 SHA256 85252fa3bb9fd43f9eeca4a5d1ddce8b5e9ee307be94defc5e0b66c61eda23ff. Review indipendente scoped e QA locale PASS. Note documentano release255/256/265/266 e dichiarano storico incompleto; METHOD richiede aggiornamento futuro.
+Deploy GIS-only su VPS da repo6dc54d2, backup /tmp/goi-search-266-predeploy/runtime-before.html; hash file e HTTP coincidono. Servizi e processi invariati. ABQA HTTP PASS: desktop e mobile emulato, luogo mock senza countrycodes, coordinate,6 gate, accesso note, zero erroriJS. Richieste esterne intercettate; non attesta salute provider. Mobile emulato testo piccolo, verifica umana necessaria. QA OPERATORE PENDING. Nessun finito.
+Evidence docs/orchestrator/evidence/2026-10-28-search-ux/abqa; stato vivo FRONTIER.
