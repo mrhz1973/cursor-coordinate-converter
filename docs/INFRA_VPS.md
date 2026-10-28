@@ -1,3 +1,5 @@
+> **Aggiornamento verificato — 2026-10-28 (orchestratore, preflight nodo migrato).** Nodo corrente: IP pubblico `31.70.139.73`, Tailscale `100.99.54.93`, DNS tailnet `ionos-n8n-new.tailc01234.ts.net`. Il vecchio alias SSH locale `ionos-n8n` punta ancora a `217.160.71.145`: **non usarlo per il nodo corrente**. Nel preflight risultano quattro servizi controllati `active`; i percorsi dei servizi sono invariati. Questa nota registra la migrazione già verificata e non applica modifiche infrastrutturali. **Tutti i dati host e indirizzi del 2026-08-21 conservati sotto sono storici, non lo stato corrente.**
+
 # VPS GOI — runtime e deploy
 
 Documentazione operativa del nodo VPS che ospita proxy tailnet (Planet-Clone), server statico del monolite GIS e servizi di routing/geozone.
