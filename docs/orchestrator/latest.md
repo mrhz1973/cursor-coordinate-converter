@@ -1,1 +1,1 @@
-Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 CLOSED QA operatore PASS. Build266 LIVE: Paese rimosso, esempio Roma, note in Impostazioni, review e ABQA PASS, QA operatore PENDING.
+Stato vivo: [FRONTIER](../FRONTIER.md). Build267 LIVE: guida/FAQ, impostazioni, toolbar e note, review e ABQA PASS scoped; QA operatore PENDING.

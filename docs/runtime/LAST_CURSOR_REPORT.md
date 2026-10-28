@@ -43,3 +43,8 @@ Evidence docs/orchestrator/evidence/2026-10-28-search-ux/abqa; stato vivo FRONTI
 
 ## Riscontro operatore build266
 Screenshot 2026-10-28: Guida intestazione tagliata in alto, note rilascio e testo compressi nel riquadro Informazioni. QA operatore FAIL su layout, non attestato PASS. Richiesta supplementare: FAQ e guida utente in Impostazioni; pannello Strumenti vicino a Mappe offline; due azioni vista in un pulsante Esporta con icone più riconoscibili; pulsanti superiori più visibili/colorati. Preparazione locale soltanto; nessun candidate nuovo pubblicato. LIVE resta build266. FRONTIER prevale.
+
+
+## GIS-HELP-TOOLBAR-UX-A build267
+Utente segnala FAIL layout note266 e richiede guida/FAQ, Impostazioni ridisegnate, Strumenti vicino Mappe offline, Esporta con stampa/PDF e JPG, toolbar visibile, note full viewport. Candidate e7225e7ace9bb07f2039e0422e5cad3f9f2dbe7a blob 069a09fb748b366abf44ecd0c147b5c92c6c3eec SHA256 06fed6daf3f4843538eda8f9f0139e7bfc8605c26baae2bfd977f08eb7898f74. Review indipendente scoped PASS; fix due candidate intermedi falliti, incluso barra320. QA mobile 320/390 ricerca, editor waypoint/poligono, offline PASS. Meta viewport modifica globale: copertura non esaustiva. Nessun provider live testato.
+Deploy VPS e0ba92d, backup /tmp/goi-help-toolbar-267-predeploy/runtime-before.html, hash file/HTTP corrispondono. Servizi condivisi e PID invariati. ABQA HTTP PASS su desktop, mobile390/320 e viewport basso: Note/header/chiusura, Guida/FAQ, Strumenti, Esporta/JPG, Cerca e Mappe Offline; zero pageerror, richieste terze bloccate. QA OPERATORE PENDING; nessun PASS umano inventato. Audit estetico futuro con Astra e plugin UI non avviato.
