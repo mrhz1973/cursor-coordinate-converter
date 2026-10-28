@@ -1,1 +1,1 @@
-Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 build265 LIVE762fb160: review, QA mondiale, deploy e ABQA HTTP PASS. QA operatore PENDING. [Evidence](evidence/2026-10-28-fix8/INDEX.md).
+Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 build265 LIVE: QA operatore PASS, CLOSED. Nuovo blocco GIS-SEARCH-SIMPLIFY-COUNTRY-A in implementazione.

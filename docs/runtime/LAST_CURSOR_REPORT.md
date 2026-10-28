@@ -30,3 +30,6 @@ Deploy tecnico PASS, HTTP SHA256 finale verificato prima/dopo browser. VPS repo 
 AUTOMATED BROWSER QA GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8 PASS:24/24 punti desktop/mobile emulato,6/6 gate,zero erroriJS. Hash HTTP0c39ce77... invariato. Documenti HTTP reali; richieste esterne intercettate/bloccate; non attestata disponibilità cartografia/provider.
 GATE CORRENTE: QA FINALE CHATGPT — PENDING. QA operatore non attestata, nessun finito/chiusura. NEXT: verifica visiva operatore, poi chiusura e routing land-only.
 Evidence: DEPLOY.md e postdeploy/ nel pacchetto FIX8.
+
+## Chiusura FIX8 — 2026-10-28
+QA GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8 PASS operatore: attestazione esplicita ricevuta in chat; blocco CLOSED. LIVE build265 invariato. Nuova richiesta operatore: rimuovere Paese e cambiare esempio Cerca; blocco GIS-SEARCH-SIMPLIFY-COUNTRY-A in implementazione, candidate non ancora disponibile. Fonte LIVE: FRONTIER.
