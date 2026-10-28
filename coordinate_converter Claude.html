@@ -13041,17 +13041,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
         <input type="text" id="geoInput" class="geo-input"
                autocomplete="off" spellcheck="false" maxlength="250"
                data-i18n-ph="geo.placeholder"
-               placeholder="es: Abidjan, Côte d'Ivoire — oppure 'Torre di Pisa'">
+               placeholder="es: Roma — oppure 'Torre di Pisa'">
         <button id="btnGeoSearch" class="btn btn-primary btn-sm"
                 data-i18n="geo.search" data-i18n-tip="geo.searchTip">Cerca</button>
       </div>
       <div id="geoSearchFeedback" class="geo-search-feedback" role="status" aria-live="polite" hidden></div>
       <div class="geo-filter-row">
-        <label class="geo-filter-lbl">
-          <span data-i18n="geo.country">Paese</span>
-          <input type="text" id="geoCountry" class="geo-country" maxlength="20"
-                 data-i18n-ph="geo.countryPh" placeholder="es: it, fr, ci (ISO-3166-1)">
-        </label>
         <label class="geo-filter-chk" data-i18n-tip="geo.bboxTip">
           <input type="checkbox" id="geoBbox">
           <span data-i18n="geo.bbox">Solo nell'area visibile sulla mappa</span>
@@ -18616,7 +18611,7 @@ const I18N = {
     "geo.err.generic":"Impossibile ottenere la posizione. Riprova o verifica le impostazioni del browser.",
     "help.kbd.geoFocus":"Apri/focus sulla card Cerca indirizzo (Alt+F, anche Ctrl+F se il browser lo consente)",
     "geo.title":"Cerca indirizzo / località",
-    "geo.placeholder":"es: Abidjan, Côte d'Ivoire — oppure 'Torre di Pisa'",
+    "geo.placeholder":"es: Roma — oppure 'Torre di Pisa'",
     "geo.search":"Cerca",
     "geo.searchTip":"Esegui la ricerca ora (anche con Invio nel campo)",
     "geo.searching":"Ricerca in corso…",
@@ -24438,10 +24433,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8";
-const APP_BUILD_DETAIL = "FIX8: prefissi DD/DDM/DMS coerenti; MGRS antimeridiano e limite Svalbard.";
+const APP_BUILD_ID = "GIS-SEARCH-SIMPLIFY-COUNTRY-A";
+const APP_BUILD_DETAIL = "Cerca: rimosso filtro Paese e aggiornato esempio.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 265;
+const APP_BUILD_NUM = 266;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -53453,7 +53448,6 @@ function bindGeocode(){
   const input    = document.getElementById("geoInput");
   const btn      = document.getElementById("btnGeoSearch");
   const listEl   = document.getElementById("geoResults");
-  const country  = document.getElementById("geoCountry");
   const bboxCb   = document.getElementById("geoBbox");
   if (!card || !input || !listEl) return;
 
@@ -53583,9 +53577,6 @@ function bindGeocode(){
     clearSearchFeedback();
     renderEmpty(t("geo.searching") || "Ricerca in corso…");
     const opts = { limit: 10 };
-    if (country && country.value.trim()){
-      opts.countryCodes = country.value.trim().replace(/\s+/g, "").toLowerCase();
-    }
     if (bboxCb && bboxCb.checked){
       const vb = currentViewBbox();
       if (vb){ opts.viewbox = vb; opts.bounded = true; }
@@ -53701,7 +53692,7 @@ function bindGeocode(){
 
   // Re-run when filters change (only if the dropdown is open — otherwise
   // it's a silent preference update). Place-text only.
-  [country, bboxCb].forEach(el => { if (el) el.addEventListener("change", () => {
+  [bboxCb].forEach(el => { if (el) el.addEventListener("change", () => {
     if (!listEl.hidden){ runSearch(input.value, { fromTyping: false }); }
   }); });
 
