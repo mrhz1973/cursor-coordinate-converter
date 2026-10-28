@@ -4901,6 +4901,11 @@ body.mm-enlarged .sig-badge{display:none}
 .about-line{margin:2px 0; font-size:.9rem}
 .about-line.muted{color:var(--muted); font-size:.82rem; margin-top:6px}
 .about-line code{background:var(--panel); padding:1px 5px; border-radius:3px; font-size:.82rem}
+.release-notes{margin:8px 0; max-width:42rem;}
+.release-notes summary{cursor:pointer; color:var(--accent); padding:6px 0;}
+.release-notes summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.release-notes ul{padding-left:1.4em; margin:.35em 0 .8em;}
+.release-notes h4{margin:.8em 0 .25em;}
 
 .results-col h2{
   position:relative; padding-bottom:10px; margin-bottom:14px;
@@ -12775,6 +12780,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 </div>
               </div>
               <div class="hdr-settings-row hdr-settings-row-help">
+                <button id="btnReleaseNotes" class="hdr-settings-help-btn" type="button">Note di rilascio</button>
                 <button id="btnHelp" class="hdr-settings-help-btn" type="button"
                         data-i18n-tip="tip.help" data-i18n-aria="ctrl.help">
                   <span class="hdr-settings-help-ico" aria-hidden="true">?</span>
@@ -15963,6 +15969,18 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
             <span class="sig-sep">·</span>
             <span data-i18n="about.year">Anno</span>: <code>2026</code>
           </div>
+          <details id="releaseNotes" class="release-notes">
+            <summary id="releaseNotesSummary">Note di rilascio</summary>
+            <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
+            <h4>Build 266 — ricerca e note di rilascio</h4>
+            <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
+            <h4>Build 265 — coordinate</h4>
+            <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
+            <h4>Build 256 — versione</h4>
+            <ul><li>Indicazione della versione nel footer e nelle informazioni, senza badge sulla mappa.</li></ul>
+            <h4>Build 255 — waypoint</h4>
+            <ul><li>Copia dei waypoint dalla finestra di esportazione.</li></ul>
+          </details>
           <div class="about-line muted" id="appBuildAboutDetail">ROUTING-POINT-COORD-EDIT-A — atomic manual routing coordinates</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
           <div class="about-line muted" id="cartoIgmAttributionLegal">© Istituto Geografico Militare Italiano (IGM) — Quadri d'unione Serie 50, 100V, 25/25DB, 25V e 25K Automatica. Dati geografici elaborati per uso non commerciale.</div>
@@ -24434,7 +24452,7 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
 const APP_BUILD_ID = "GIS-SEARCH-SIMPLIFY-COUNTRY-A";
-const APP_BUILD_DETAIL = "Cerca: rimosso filtro Paese e aggiornato esempio.";
+const APP_BUILD_DETAIL = "Cerca semplificata e note di rilascio accessibili da Impostazioni.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
 const APP_BUILD_NUM = 266;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
@@ -77482,6 +77500,14 @@ function bindUI(){
 
   // Help modal
   document.getElementById("btnHelp").addEventListener("click", openHelp);
+  const releaseNotesButton = document.getElementById("btnReleaseNotes");
+  if (releaseNotesButton) releaseNotesButton.addEventListener("click", () => {
+    openHelp();
+    const notes = document.getElementById("releaseNotes");
+    const summary = document.getElementById("releaseNotesSummary");
+    if (notes) notes.open = true;
+    requestAnimationFrame(() => { if (summary) { summary.focus(); summary.scrollIntoView({ block: "center" }); } });
+  });
   document.getElementById("helpClose").addEventListener("click", closeHelp);
   const helpDlg = document.getElementById("helpOverlay");
   if (helpDlg){
