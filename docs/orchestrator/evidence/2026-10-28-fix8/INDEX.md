@@ -58,3 +58,6 @@ Per il retest locale finale usare il runtime estratto da `762fb160…`, verifica
 ### Completezza
 
 L'evidence raccolta copre le prove dichiarate nei rapporti sorgente, conserva il confronto FIX7/FIX8 e include review indipendente e QA locale del candidate finale. Rimangono esterni a questo snapshot: verifiche sul candidate finale via HTTP e VPS, ABQA dopo deploy e attestazione operatore. Non inferire PASS per questi gate dall'esistenza del pacchetto.
+
+## Post-deploy verificato
+[Deploy](DEPLOY.md) e [ABQA HTTP PASS](postdeploy/REPORT.md): runtime762fb160 build265, hash0c39ce77,24/24 punti e6/6 gate. QA operatore PENDING, nessuna chiusura. Stato vivo sempre FRONTIER.

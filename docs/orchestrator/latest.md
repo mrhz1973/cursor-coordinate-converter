@@ -1,3 +1,1 @@
-> AUTOSYNC NON AUTORITATIVO. Stato vivo: [FRONTIER](../FRONTIER.md).
-
-2026-10-28 — FIX8 build265 candidate762fb160, review Codex indipendente scoped PASS; QA finale prima deploy in corso. LIVE build256 con migrazione endpoint locale verificata. Nessun deploy/QA operatore/finito. [Evidence](evidence/2026-10-28-fix8/INDEX.md).
+Stato vivo: [FRONTIER](../FRONTIER.md). FIX8 build265 LIVE762fb160: review, QA mondiale, deploy e ABQA HTTP PASS. QA operatore PENDING. [Evidence](evidence/2026-10-28-fix8/INDEX.md).

@@ -4,13 +4,13 @@ Nome legacy preservato. Esecutore: Codex orchestratore e subagenti; nessun Curso
 
 ## Header
 BLOCK: GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8, build265.
-GATE: review indipendente Codex PASS scoped; QA finale pre-deploy PASS.
-NEXT: QA byte finali → deploy GIS-only → ABQA HTTP → QA operatore.
+GATE: review, deploy e ABQA PASS; QA FINALE CHATGPT — PENDING.
+NEXT: QA operatore → chiusura Search → routing land-only.
 RUNTIME_CANDIDATE_SHA / real_task_commit: `762fb1605a7c20b3b7bd21a6b0cfa1c04f8e4739`.
 Blob: `5da70951b43300f5165448049ba8c20a2f8ae867`.
 SHA256 LF: `0c39ce77e27b2d0116faa0638eec30020fd0e2865eab14bb024a487c92357145`.
 current_report_container: PENDING_SELF_REFERENCE; final_remote_head_after_report_push: EXTERNAL_ONLY.
-LIVE: build256 base f215011, sei modifiche endpoint locali verificate. Nessun deploy in questo pass.
+LIVE: build265 candidate762fb160, endpoint migrati preservati; deploy e hash HTTP PASS.
 
 ## Riepilogo completo
 1. CORE BOOT: FIX7 era ancora in review. Review distinta e browser hanno dimostrato prefissi DD/DDM/DMS accettati incoerentemente (9 falsi successi, incluso fallback BNG Incolla). FAIL registrato, difetto residuo acceptance non regressione specifica FIX7.
@@ -23,4 +23,10 @@ LIVE: build256 base f215011, sei modifiche endpoint locali verificate. Nessun de
 8. Invarianti: HTML standalone vanillaJS, nessuna dipendenza runtime, storage invariato, no GPS implicito, OPSEC/offline, Oggetti GIS maintenance-only.
 
 ## Evidence
-[Indice](../orchestrator/evidence/2026-10-28-fix8/INDEX.md): report completi separati, harness, JSON e manifest. Hash testati e limiti espliciti. Nessuna review esterna inventata, ABQA postdeploy o QA operatore attestata. Stato vivo solo FRONTIER.
+[Indice](../orchestrator/evidence/2026-10-28-fix8/INDEX.md): report completi separati, harness, JSON e manifest. Hash testati e limiti espliciti. Nessuna review esterna inventata; ABQA postdeploy attestata sotto; QA operatore non attestata. Stato vivo solo FRONTIER.
+
+## Aggiornamento post-deploy
+Deploy tecnico PASS, HTTP SHA256 finale verificato prima/dopo browser. VPS repo a31136b8bc14141993ec7a0f8dae27e8bf48ef66 pulito; LIVE runtime762fb160 build265. Backup e stash conservati, serviziPID invariati, nessuna modifica infrastrutturale.
+AUTOMATED BROWSER QA GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8 PASS:24/24 punti desktop/mobile emulato,6/6 gate,zero erroriJS. Hash HTTP0c39ce77... invariato. Documenti HTTP reali; richieste esterne intercettate/bloccate; non attestata disponibilità cartografia/provider.
+GATE CORRENTE: QA FINALE CHATGPT — PENDING. QA operatore non attestata, nessun finito/chiusura. NEXT: verifica visiva operatore, poi chiusura e routing land-only.
+Evidence: DEPLOY.md e postdeploy/ nel pacchetto FIX8.
