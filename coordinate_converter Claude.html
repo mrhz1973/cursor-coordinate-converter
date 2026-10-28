@@ -2,6 +2,7 @@
 <html lang="it" data-theme="dark">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="application-name" content="TMART GIS tool">
 <title>TMART GIS tool · B6.1RSD-A</title>
 <style>
@@ -5001,6 +5002,61 @@ body.spatial-drop-active::before{
   box-shadow:inset 0 0 0 3px var(--accent);
   background:color-mix(in srgb, var(--accent) 10%, transparent);
 }
+
+@media (min-width:769px) and (max-width:1250px){
+ body.gis-mode > header .header-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+ body.gis-mode > header .header-inner > .brand{grid-column:1;grid-row:1;min-height:0;max-width:100%;justify-self:center}
+ body.gis-mode > header .header-inner > .brand h1{white-space:nowrap;overflow-wrap:normal;word-break:normal;font-size:clamp(1.05rem,2.5vw,1.6rem)}
+ body.gis-mode > header .header-inner > .header-ctrls{grid-column:2;grid-row:1}
+ body.gis-mode > header .header-inner > #appTopbar{grid-column:1 / -1;grid-row:2;width:100%}
+ body.gis-mode #appTopbar .app-topbar-tabs{max-width:none}
+}
+/* GIS topbar actions: controls remain independently keyboard operable. */
+body.gis-mode .header-ctrls #btnPrint,
+body.gis-mode .header-ctrls #btnExportJpg,
+body.gis-mode .header-ctrls #btnTools{display:none}
+body.gis-mode #appTopbar .app-topbar-btn,
+body.gis-mode #appTopbar .app-tab{background:#263d68;color:#fff;border-color:#789ad1}
+body.gis-mode #appTopbar .app-tab.is-active{background:#456bb0;color:#fff;border-color:#c4d8ff}
+body.gis-mode #appTopbar .app-topbar-btn:hover,
+body.gis-mode #appTopbar .app-tab:hover{background:#405f98;color:#fff}
+body.gis-mode #appTopbar.app-topbar.export-menu-open{position:relative!important;z-index:1001!important}
+.gis-export-menu{position:relative;flex:none}
+.gis-export-menu summary{list-style:none}
+.gis-export-menu summary::-webkit-details-marker{display:none}
+.gis-export-options{position:absolute;right:0;top:calc(100% + 5px);z-index:1000;min-width:210px;padding:5px;border:1px solid var(--border);border-radius:10px;background:var(--panel);box-shadow:var(--shadow)}
+.gis-export-options button{display:flex;align-items:center;gap:8px;width:100%;padding:10px;border:0;border-radius:7px;background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}
+.gis-export-options button:hover,.gis-export-options button:focus-visible{background:var(--panel2)}
+body.gis-mode #helpOverlay .about-row{display:block}
+body.gis-mode #helpOverlay .about-monogram{display:none}
+body.gis-mode #helpOverlay .release-notes{max-width:none;width:100%;box-sizing:border-box}
+
+
+/* Menu Impostazioni: controlli leggibili e area pericolosa distinta. */
+.header-ctrls .hdr-settings-menu{width:min(340px,calc(100vw - 24px));box-sizing:border-box;max-height:calc(100dvh - 100px);overflow-y:auto;padding:16px}
+.header-ctrls .hdr-settings-menu-body{gap:12px}
+.header-ctrls .hdr-settings-row-lang,.header-ctrls .hdr-settings-row-theme{display:grid;grid-template-columns:1fr;gap:5px}
+.header-ctrls .hdr-settings-lbl{font-size:.82rem;text-transform:none;letter-spacing:0}
+.header-ctrls .hdr-settings-menu label.hdr-chip{min-width:0;width:100%;box-sizing:border-box;min-height:44px}
+.header-ctrls .hdr-settings-menu .hdr-chip-select{color:var(--text);padding-left:46px;padding-right:32px;font-size:.95rem}
+.header-ctrls .hdr-settings-help-btn{justify-content:flex-start;min-height:44px;font-size:.9rem;font-weight:600}
+.header-ctrls .hdr-settings-row-help{display:grid;grid-template-columns:1fr;gap:8px}
+.header-ctrls .hdr-settings-danger-zone{border:1px solid color-mix(in srgb,#dc2626 45%,var(--border));border-radius:10px;padding:12px}
+.header-ctrls .hdr-settings-help-btn:focus-visible,.gis-export-options button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+/* Vista note dedicata a schermo quasi intero, senza bloccare la mappa GIS. */
+dialog#helpOverlay.help-release-mode[open]{position:fixed!important;left:12px!important;top:12px!important;right:auto!important;bottom:auto!important;transform:none!important;margin:0!important;width:calc(100vw - 24px)!important;height:calc(100dvh - 24px)!important;max-width:none!important;max-height:none!important;z-index:1000!important;display:flex;flex-direction:column}
+dialog#helpOverlay.help-release-mode .app-modal-head{flex:0 0 auto}
+dialog#helpOverlay.help-release-mode .app-modal-body{flex:1 1 auto;min-height:0;overflow:auto}
+dialog#helpOverlay.help-release-mode .app-modal-body > :not(.about-block){display:none}
+dialog#helpOverlay.help-release-mode .about-row{display:block}
+dialog#helpOverlay.help-release-mode .about-monogram,dialog#helpOverlay.help-release-mode .about-row > div > :not(.release-notes){display:none}
+dialog#helpOverlay.help-release-mode .release-notes{display:block;width:100%;max-width:54rem;margin:0 auto;font-size:1rem;line-height:1.55}
+dialog#helpOverlay.help-release-mode .release-notes summary{display:none}
+dialog#helpOverlay.help-release-mode .gis-panel-resize-handle,
+dialog#helpOverlay.help-release-mode [data-role="helppanel-minimize"]{display:none}
+.user-guide-sections{margin:16px 0;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
+.user-guide-sections summary{cursor:pointer;font-weight:700;font-size:1rem}
+.user-guide-sections h4{margin:1em 0 .25em}.user-guide-sections p{line-height:1.5}
 
 /* ================= HELP / QR DIALOG MODALS ================= */
 /* Help / QR — modern <dialog> content modals */
@@ -12780,7 +12836,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
                 </div>
               </div>
               <div class="hdr-settings-row hdr-settings-row-help">
-                <button id="btnReleaseNotes" class="hdr-settings-help-btn" type="button">Note di rilascio</button>
+                <button id="btnUserGuide" class="hdr-settings-help-btn" type="button"><span aria-hidden="true">📘</span> Guida utente e FAQ</button>
+                <button id="btnReleaseNotes" class="hdr-settings-help-btn" type="button"><span aria-hidden="true">📋</span> Note di rilascio</button>
                 <button id="btnHelp" class="hdr-settings-help-btn" type="button"
                         data-i18n-tip="tip.help" data-i18n-aria="ctrl.help">
                   <span class="hdr-settings-help-ico" aria-hidden="true">?</span>
@@ -12840,6 +12897,14 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <span class="app-tab-lbl" data-i18n="tabs.layers">Mappe Offline</span>
     </button>
   </div>
+    <button id="btnTopbarTools" class="app-topbar-btn" type="button" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></button>
+    <details class="gis-export-menu" id="gisExportMenu">
+      <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></summary>
+      <div class="gis-export-options">
+        <button type="button" id="gisExportPrint"><span aria-hidden="true">🖨️</span> Stampa / salva PDF</button>
+        <button type="button" id="gisExportJpg"><span aria-hidden="true">📷</span> Esporta vista JPG</button>
+      </div>
+    </details>
   </div>
 </nav>
 
@@ -15836,6 +15901,33 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <p id="helpOverlayMinimizeNotice" class="gis-modal-minimize-notice hint" role="status" aria-live="polite" hidden></p>
   <div class="app-modal-body">
     <p data-i18n="help.intro">Una panoramica veloce delle funzioni principali. In fondo trovi tutte le scorciatoie da tastiera.</p>
+    <details id="userGuide" class="user-guide-sections"><summary id="userGuideSummary">Guida utente</summary><h4>Orientarsi nella mappa</h4>
+<p>Trascina la mappa per spostarti e usa i comandi di zoom per avvicinarti o allontanarti. Il punto e il centro della mappa possono essere diversi: controlla la lettura del punto prima di copiarne o condividerne le coordinate.</p>
+<h4>Cercare una posizione</h4>
+<p>Apri Cerca. Per una coordinata, inserisci per esempio 41.8908, 12.4922 e premi Cerca: il calcolo del punto è locale. Puoi anche cercare un luogo, per esempio Roma: la ricerca online è soggetta alle impostazioni di rete e privacy. L&#x27;opzione Solo nell&#x27;area visibile sulla mappa limita la ricerca all&#x27;area visualizzata.</p>
+<h4>Convertire coordinate</h4>
+<p>Apri Converti. In Input automatico incolla il testo e scegli Rileva e converti. Per inserire manualmente i valori usa Input manuale guidato e il formato desiderato, oppure Testo libero. Controlla formato, segni e lettere di emisfero. I risultati mostrano i formati disponibili.</p>
+<h4>Mappe offline</h4>
+<p>Apri Mappe offline, seleziona un&#x27;area e scegli lo strato e l&#x27;intervallo di zoom nella sezione Download mappe offline. Avvia Scarica area corrente mentre la rete è consentita e attendi la fine; salvare il nome di un&#x27;area e scaricarne le tessere sono azioni distinte. Quando sei offline, sono disponibili solo le tessere effettivamente presenti in cache, per gli strati e gli zoom scaricati. Se mancano, cambia zoom o preparale in anticipo. Alcuni strati non consentono il download massivo.</p>
+<h4>Strumenti, misure e tracce</h4>
+<p>Apri Strumenti per accedere alle funzioni raccolte nel relativo pannello, tra cui elaborazione batch e note. Per misurare o gestire tracce e waypoint usa i rispettivi comandi disponibili sulla mappa. Salva gli elementi che vuoi conservare e usa le funzioni di importazione o esportazione disponibili nel pannello pertinente.</p>
+<h4>Salvare ed esportare la vista</h4>
+<p>Il comando di esportazione JPG crea un&#x27;immagine della vista corrente; il comando di stampa può salvare i risultati come PDF tramite le opzioni del browser. Nell&#x27;esportazione puoi scegliere le opzioni mostrate, come scala e sovrapposizioni. Una JPEG non è una mappa navigabile e non costituisce un download di tessere offline. L&#x27;Export JPG offline nel pannello Mappe offline riguarda un&#x27;area e uno zoom scelti; usa le tessere in cache quando disponibili.</p>
+<h4>Dati locali e sicurezza</h4>
+<p>Preferiti, waypoint, tracce, preferenze e dati offline possono essere conservati nel browser. Perderli è possibile se si cancellano i dati del sito/browser; esporta prima ciò che ti serve. Cancella tutti i dati locali nelle Impostazioni è un&#x27;operazione distinta dalla semplice chiusura dei pannelli.</p>
+<p>La conversione di coordinate è locale. Una ricerca di luoghi online può inviare il testo al servizio di geocoding; la mappa online e altri servizi possono effettuare richieste di rete. Non inserire informazioni classificate in servizi esterni. OPSEC strict e la modalità offline impongono i rispettivi blocchi: verifica le impostazioni e gli eventuali consensi prima di usare servizi online.</p></details>
+<details id="userFaq" class="user-guide-sections"><summary>Domande frequenti</summary><h4>Perché una ricerca di coordinate funziona senza Internet?</h4>
+<p>La posizione viene calcolata localmente; la visualizzazione della mappa può comunque dipendere dalle tessere già salvate o dalla rete consentita.</p>
+<h4>Perché la mappa è vuota quando sono offline?</h4>
+<p>Potrebbero mancare tessere per lo strato, l&#x27;area o lo zoom scelto. Torna a uno zoom scaricato o prepara l&#x27;area offline quando la rete è consentita.</p>
+<h4>Salvare un&#x27;area equivale a scaricare le tessere?</h4>
+<p>No. Il nome e le impostazioni dell&#x27;area sono distinti dal download delle tessere. Controlla l&#x27;avanzamento del download.</p>
+<h4>Una ricerca di un luogo è privata?</h4>
+<p>Se la ricerca online è attiva, il testo viene inviato al servizio configurato. I dati trasmessi possono essere registrati dal servizio; usa OPSEC strict o offline quando necessario.</p>
+<h4>Come evito di perdere dati?</h4>
+<p>Esporta i dati importanti prima di cancellare i dati del browser o usare Cancella tutti i dati locali. Un&#x27;immagine JPG della mappa non sostituisce l&#x27;esportazione dei dati modificabili.</p>
+<h4>Un percorso calcolato esclude sempre i traghetti?</h4>
+<p>Non darlo per garantito: il vincolo di routing terrestre senza traghetti è ancora oggetto di lavoro e verifica.</p></details>
 
     <div class="mg-section-title" data-i18n="help.guide.title">Mini-guida</div>
     <div class="mini-guide">
@@ -15972,7 +16064,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -17835,9 +17927,9 @@ const I18N = {
     "help.guide.title":"Mini-guida",
     "help.kbd.title":"Scorciatoie da tastiera",
     "help.guide.convert.title":"Convertire una coordinata",
-    "help.guide.convert.body":"Nel campo <b>Input automatico</b> puoi incollare qualsiasi formato (DD / DDM / DMS / UTM / MGRS / Plus Codes / Gauss-Boaga / ED50 / ROMA40). Premi <kbd>Ctrl</kbd>+<kbd>Invio</kbd> per convertire. Ottieni subito tutti i formati sul datum WGS84, il link al punto e la mini-mappa.",
+    "help.guide.convert.body":"In Input automatico incolla una coordinata in uno dei formati supportati e scegli Rileva e converti. Controlla i risultati e gli eventuali errori.",
     "help.guide.gps.title":"La tua posizione (GPS)",
-    "help.guide.gps.body":"Pulsante <b>La mia posizione</b> → acquisisce il GPS una volta sola. <b>Tracking live</b> → aggiornamento continuo. I metadata (precisione, quota, velocità, heading) appaiono sotto ai risultati. Richiede HTTPS o localhost.",
+    "help.guide.gps.body":"La posizione del dispositivo viene richiesta su iniziativa dell’utente e richiede il consenso del browser.",
     "help.guide.map.title":"Mini-mappa",
     "help.guide.map.pan":"Trascina per spostarti, rotellina per zoom; doppio-click ricentra.",
     "help.guide.map.layers":"Cambia layer (satellite / strada / topo) dal menu in alto a destra.",
@@ -17853,11 +17945,11 @@ const I18N = {
     "help.guide.share.title":"Condividere & esportare",
     "help.guide.share.link":"<b>Copia link</b>: URL con la coordinata codificata, funziona offline.",
     "help.guide.share.qr":"<b>QR code</b>: apre il punto su Google/Apple Maps dallo smartphone.",
-    "help.guide.share.export":"Esporta punti/tracce in <b>GPX</b>, <b>KML</b>, <b>KMZ</b>, <b>GeoJSON</b>, <b>CSV</b>.",
+    "help.guide.share.export":"Usa le funzioni di importazione ed esportazione disponibili nel pannello pertinente.",
     "help.guide.import.title":"Importare file",
     "help.guide.import.body":"Trascina un file <code>.gpx</code> / <code>.kml</code> / <code>.geojson</code> / <code>.csv</code> ovunque sulla pagina: i punti vengono rilevati automaticamente e caricati nel Track o nel Batch.",
     "help.guide.privacy.title":"Privacy & offline",
-    "help.guide.privacy.body":"App 100% standalone. Nessuna telemetria, nessun server. I tile mappa sono gli unici dati di rete (OSM/Esri/Carto) e diventano opzionali una volta pre-cacheati. GPS, preferiti, cronologia e tracce restano nel tuo browser.",
+    "help.guide.privacy.body":"La conversione delle coordinate avviene localmente. Ricerca di luoghi, mappe online e altri servizi possono usare la rete: controlla le impostazioni privacy, OPSEC e i consensi.",
     "help.kbd.detect":"Rileva e converti (da Input automatico)",
     "help.kbd.focus":"Vai a Input automatico e seleziona tutto",
     "help.kbd.tools":"Apri/chiudi il pannello Strumenti",
@@ -18671,8 +18763,8 @@ const I18N = {
     "opsec.strict.seamarksBlocked":"OPSEC strict è attivo: OpenSeaMap seamarks è bloccato perché contatta direttamente un host internet dal browser.",
     "opsec.strict.activateWarn":"OPSEC strict graduato: geocoding e host internet pubblici vengono bloccati; il proxy tailnet richiede consenso per-sessione.",
     "help.guide.geo.title":"Geocoding (indirizzo ↔ coordinate)",
-    "help.guide.geo.fwd":"Card <b>Cerca indirizzo</b>: digita un luogo, scegli tra i risultati, il punto viene caricato e convertito. <kbd>Ctrl+F</kbd> / <kbd>Alt+F</kbd> apre il campo.",
-    "help.guide.geo.rev":"Dopo ogni conversione compare una riga <b>📍 Località</b> (reverse geocoding). Pulsante <kbd>🔄</kbd> per forzare una nuova query.",
+    "help.guide.geo.fwd":"Apri Cerca, inserisci il luogo e premi Cerca; la richiesta online è soggetta ai controlli di rete e privacy.",
+    "help.guide.geo.rev":"Il geocoding inverso è disponibile se abilitato e consentito dalle impostazioni di rete e privacy.",
     "help.guide.geo.opsec":"<b>OPSEC</b>: le ricerche vengono inviate a <code>nominatim.openstreetmap.org</code>. IP e query sono loggati — non usare con dati classificati.",
     "help.guide.geo.offline":"Offline: ricerca su un piccolo dataset di capitali integrato, espandibile importando un JSON dalle impostazioni.",
     "help.guide.geo.settings":"Impostazioni geocoding",
@@ -24451,10 +24543,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-SIMPLIFY-COUNTRY-A";
-const APP_BUILD_DETAIL = "Cerca semplificata e note di rilascio accessibili da Impostazioni.";
+const APP_BUILD_ID = "GIS-HELP-TOOLBAR-UX-A";
+const APP_BUILD_DETAIL = "Guida, FAQ, note di rilascio e barra strumenti.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 266;
+const APP_BUILD_NUM = 267;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -50301,6 +50393,9 @@ function openHelp(){
   try { closeHeaderSettingsMenu(); } catch(_){}
   const dlg = document.getElementById("helpOverlay");
   if (!dlg) return;
+  dlg.classList.remove("help-release-mode");
+  const title = document.getElementById("helpTitle");
+  if (title) title.textContent = t("help.title") || "Guida rapida e scorciatoie";
   const isGis = document.body.classList.contains("gis-mode");
   if (isGis && dlg.open && typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("helpOverlay")){
     try { gisRestoreMinimizedPanel("helpOverlay"); } catch(_){}
@@ -50312,6 +50407,7 @@ function openHelp(){
 function closeHelp(){
   const dlg = document.getElementById("helpOverlay");
   if (!dlg) return;
+  dlg.classList.remove("help-release-mode");
   try {
     if (document.body.classList.contains("gis-mode") && typeof gisClearPanelMinimizeUi === "function"){
       gisClearPanelMinimizeUi("helpOverlay");
@@ -77500,13 +77596,31 @@ function bindUI(){
 
   // Help modal
   document.getElementById("btnHelp").addEventListener("click", openHelp);
+  const userGuideButton = document.getElementById("btnUserGuide");
+  if (userGuideButton) userGuideButton.addEventListener("click", () => {
+    const dialog = document.getElementById("helpOverlay");
+    if (dialog) dialog.classList.remove("help-release-mode");
+    openHelp();
+    const guide = document.getElementById("userGuide");
+    const summary = document.getElementById("userGuideSummary");
+    if (guide) guide.open = true;
+    requestAnimationFrame(() => { if (summary) { const body = summary.closest(".app-modal-body"); try { summary.focus({preventScroll:true}); } catch(_) { summary.focus(); } if (body) body.scrollTop += summary.getBoundingClientRect().top - body.getBoundingClientRect().top - 8; } });
+  });
   const releaseNotesButton = document.getElementById("btnReleaseNotes");
   if (releaseNotesButton) releaseNotesButton.addEventListener("click", () => {
     openHelp();
+    const dialog = document.getElementById("helpOverlay");
+    if (dialog) dialog.classList.add("help-release-mode");
+    const title = document.getElementById("helpTitle");
+    if (title) { title.textContent = "Note di rilascio"; title.setAttribute("tabindex", "-1"); }
     const notes = document.getElementById("releaseNotes");
     const summary = document.getElementById("releaseNotesSummary");
     if (notes) notes.open = true;
-    requestAnimationFrame(() => { if (summary) { summary.focus(); summary.scrollIntoView({ block: "center" }); } });
+    requestAnimationFrame(() => { if (title) {
+      try { title.focus({preventScroll:true}); } catch(_) { title.focus(); }
+      const body = dialog && dialog.querySelector(".app-modal-body");
+      if (body) body.scrollTop = 0;
+    } });
   });
   document.getElementById("helpClose").addEventListener("click", closeHelp);
   const helpDlg = document.getElementById("helpOverlay");
@@ -78007,6 +78121,18 @@ function bindUI(){
   // ---- Tools drawer ----
   const btnTools = document.getElementById("btnTools");
   if (btnTools) btnTools.addEventListener("click", (ev) => { ev.preventDefault(); openToolsDrawer(); });
+  const topTools = document.getElementById("btnTopbarTools");
+  const exportMenu = document.getElementById("gisExportMenu");
+  const exportSummary = document.getElementById("gisExportSummary");
+  if (topTools) topTools.addEventListener("click", () => { if (exportMenu) exportMenu.open = false; openToolsDrawer(); });
+  if (exportMenu){
+    exportMenu.addEventListener("toggle", () => document.getElementById("appTopbar").classList.toggle("export-menu-open", exportMenu.open));
+    const forward = (target) => { exportMenu.open = false; const button = document.getElementById(target); if (button) button.click(); };
+    document.getElementById("gisExportPrint").addEventListener("click", () => forward("btnPrint"));
+    document.getElementById("gisExportJpg").addEventListener("click", () => forward("btnExportJpg"));
+    document.addEventListener("click", (ev) => { if (exportMenu.open && !exportMenu.contains(ev.target)) exportMenu.open = false; });
+    document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && exportMenu.open) { ev.preventDefault(); exportMenu.open = false; exportSummary.focus(); } });
+  }
   const toolsClose = document.getElementById("toolsDrawerClose");
   if (toolsClose) toolsClose.addEventListener("click", (ev) => { ev.preventDefault(); closeToolsDrawer(); });
   const toolsBd = document.getElementById("toolsDrawerBackdrop");
@@ -82722,6 +82848,15 @@ function clampHelpPanelRect(dlg){
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  // Keep the complete help header and close controls reachable on every viewport.
+  rect.w = Math.min(rect.w, Math.max(1, window.innerWidth - 24));
+  rect.h = Math.min(rect.h, Math.max(1, window.innerHeight - 24));
+  rect.left = Math.max(12, Math.min(rect.left, window.innerWidth - rect.w - 12));
+  const header = document.querySelector("body > header");
+  const headerBottom = header ? Math.max(0, header.getBoundingClientRect().bottom) : 0;
+  const safeTop = Math.min(Math.max(12, headerBottom + 8), Math.max(12, window.innerHeight - 64));
+  rect.h = Math.min(rect.h, Math.max(48, window.innerHeight - safeTop - 12));
+  rect.top = Math.max(safeTop, Math.min(rect.top, window.innerHeight - rect.h - 12));
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -82730,6 +82865,8 @@ function clampHelpPanelRect(dlg){
 }
 function wireHelpPanelFloatingGis(dlg){
   if (!dlg || !document.body.classList.contains("gis-mode")) return;
+  // The temporary fullscreen release view must never be saved as the guide layout.
+  if (dlg.classList.contains("help-release-mode")) return;
   dlg.classList.add("gis-panel-floating");
   dlg.style.position = "fixed";
   dlg.style.margin = "0";
