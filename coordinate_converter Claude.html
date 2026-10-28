@@ -24438,10 +24438,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX7";
-const APP_BUILD_DETAIL = "FIX7: decimali europei nel parser condiviso; segno e emisfero contraddittori rifiutati.";
+const APP_BUILD_ID = "GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8";
+const APP_BUILD_DETAIL = "FIX8: prefissi DD/DDM/DMS coerenti; MGRS antimeridiano e limite Svalbard.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 264;
+const APP_BUILD_NUM = 265;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -27567,6 +27567,10 @@ function parseFreeTextLatLon(input){
     return { lat: p.lat, lon: p.lon };
   }
 
+  // A declared format constrains each axis, not just the total number of tokens.
+  const declared = s.match(/^(DDM|DMS|DD)(?=$|[\s:=\-])/);
+  const componentsPerAxis = declared ? (declared[1] === "DD" ? 1 : declared[1] === "DDM" ? 2 : 3) : 0;
+
   // Strip leading textual labels ("LAT", "LATLON", "COORD(S)", "LL", "DD", "DMS", "DDM", "POS").
   // Separators: space/colon/equals. A minus glued to a digit is a sign (DMS -0 / DD -44.1), not discarded.
   s = s.replace(/^(LAT\/?LON|LATLON|LAT|LONG|LON|COORDS?|COORDINATES?|POS|POSITION|LL|DD|DDM|DMS)(?=$|[\s:=\-])(?:[\s:=]+|-(?![0-9]))*/i,"");
@@ -27662,6 +27666,9 @@ function parseFreeTextLatLon(input){
   }
 
   if (!latNums.length || !lonNums.length || latNums.length > 3 || lonNums.length > 3)
+    throw new ErrI18n("err.parseFailed");
+
+  if (componentsPerAxis && (latNums.length !== componentsPerAxis || lonNums.length !== componentsPerAxis))
     throw new ErrI18n("err.parseFailed");
 
   // An explicit sign must agree with the hemisphere letter (-44.1N, S+44.1 are contradictions).
@@ -27844,7 +27851,7 @@ function latLonToUTM(lat, lon){
   // Norway
   if (lat >= 56 && lat < 64 && lon >= 3 && lon < 12) zone = 32;
   // Svalbard
-  if (lat >= 72 && lat < 84){
+  if (lat >= 72 && lat <= 84){
     if (lon >= 0  && lon <  9) zone = 31;
     else if (lon >=  9 && lon < 21) zone = 33;
     else if (lon >= 21 && lon < 33) zone = 35;
@@ -28053,6 +28060,11 @@ function mgrsToLatLonExt(str){
   const center = utmToLatLon(p.zone, p.hemisphere, eCenter, nCenter);
   const sw = utmToLatLon(p.zone, p.hemisphere, p.easting,       p.northing);
   const ne = utmToLatLon(p.zone, p.hemisphere, p.easting + cs,  p.northing + cs);
+  // A valid MGRS cell can straddle the antimeridian. Canonical geographic longitudes
+  // must be in range before editor validation, without clamping the cell's SW point.
+  center.lon = normalizeLon(center.lon);
+  sw.lon = normalizeLon(sw.lon);
+  ne.lon = normalizeLon(ne.lon);
   return {
     lat: center.lat, lon: center.lon,
     precision: p.precision, cellSize: cs,
@@ -51420,7 +51432,7 @@ function tryDeclaredLatLon(body, family){
   } else if (census.count !== need){
     return searchCoordInvalid();
   }
-  return trySearchLatLon(census.euro || src0);
+  return trySearchLatLon(family === "ll" ? (census.euro || src0) : family.toUpperCase() + " " + src0);
 }
 
 /**
@@ -51510,6 +51522,12 @@ function classifyGeoSearchInput(raw){
 function autoDetect(input){
   const s = String(input || "").trim();
   if (!s) throw new ErrI18n("err.empty");
+  // An explicit lat/lon format never falls through to BNG or another grid parser.
+  const pref = searchCoordExplicitPrefix(s);
+  if (pref && (pref.kind === "dd" || pref.kind === "ddm" || pref.kind === "dms" || pref.kind === "ll")){
+    const ll = parseFreeTextLatLon(s);
+    return { type:"LatLon", lat: ll.lat, lon: ll.lon, raw: s };
+  }
   // British National Grid (BNG) — two letters + digits (2..10), permissive spaces.
   try {
     if (/^[A-Za-z]{2}\s*\d{2,10}\s*$/.test(s.replace(/\s+/g,""))){
@@ -101487,6 +101505,18 @@ function runSelfCheck(){
     console.assert(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
     console.assert(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
     console.assert(classifyGeoSearchInput("44\u00b0 foo1 9\u00b0 bar2").kind === "coord_invalid", "bare junk degrees");
+    for (const q of ["DD 44 6 9 49", "DDM 44.1 9.8", "DMS 44.1 9.8", "DDM 44 N 9 8 1 E"]){
+      console.assert(classifyGeoSearchInput(q).kind === "coord_invalid", "declared format rejected by search " + q);
+      for (const parse of [parseFreeTextLatLon, autoDetect]){
+        let rejected = false;
+        try { parse(q); } catch(_){ rejected = true; }
+        console.assert(rejected, "declared format rejected without fallback " + q);
+      }
+      console.assert(routingSearchTryParseCoords(q) == null, "routing rejects declared format " + q);
+    }
+    const anti = mgrsToLatLonExt("01NAA6602100000");
+    console.assert(anti.lon > 179.999 && anti.lon <= 180, "MGRS SW antimeridian normalized");
+    console.assert(latLonToUTM(84, 30).zone === 35, "Svalbard inclusive UTM upper latitude");
     let junkThrew = false;
     try { parseFreeTextLatLon("44\u00b0 foo1 9\u00b0 bar2"); } catch(_){ junkThrew = true; }
     console.assert(junkThrew, "shared parser rejects junk degrees");
