@@ -1,0 +1,47 @@
+diff --git "a/coordinate_converter Claude.html" "b/coordinate_converter Claude.html"
+index 71b6ee1..f00016b 100644
+--- a/coordinate_converter Claude.html	
++++ b/coordinate_converter Claude.html	
+@@ -9526,6 +9526,25 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
+   flex-direction:column;
+   padding-top:0;
+ }
++/* On compact screens, keep the complete workbench reachable inside the panel. */
++@media (max-width: 768px), (pointer: coarse) and (max-height: 480px){
++  body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel{
++    overflow-x:hidden;
++    overflow-y:auto;
++    -webkit-overflow-scrolling:touch;
++  }
++  body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel > .app-modal-body{
++    flex:0 0 auto;
++    max-height:none !important;
++    overflow:visible !important;
++  }
++  #gisWorkbenchPanel .wb-list-wrap{ flex:none; overflow:visible; }
++  #gisWorkbenchPanel .wb-row{
++    grid-template-columns:auto minmax(0,1fr) auto;
++  }
++  #gisWorkbenchPanel .wb-summary{ grid-column:1 / 3; }
++  #gisWorkbenchPanel .wb-actions{ grid-column:3; grid-row:1 / 3; }
++}
+ .gis-workbench-hint{ margin:0 12px 6px; font-size:.78rem; }
+ .wb-panel-status{ margin:0 12px 6px; }
+ .wb-panel-status.err{ color:var(--danger,#b91c1c); }
+@@ -82346,7 +82365,7 @@ function gisPanelResetEwWidth(root, opts, handle){
+ }
+ // Fit default panels on short screens without changing saved layouts.
+ function gisFitSmallDefaultPanelRect(rect, opts, root){
+-  if (!rect || (opts.key !== "search" && opts.key !== "favorites" && opts.key !== "convert" && !(root && root.id === "toolsDrawer")) ||
++  if (!rect || (opts.key !== "search" && opts.key !== "favorites" && opts.key !== "convert" && opts.key !== "gisWorkbenchPanel" && !(root && root.id === "toolsDrawer")) ||
+       !window.matchMedia("(max-width: 768px), (pointer: coarse) and (max-height: 480px)").matches) return;
+   const saved = gisPanelGetLayout(opts.key, opts);
+   if (saved && saved.touched) return;
+@@ -99053,6 +99072,7 @@ function clampGisWorkbenchPanelRect(dlg){
+   const L0 = parseFloat(dlg.style.left) || br.left;
+   const T0 = parseFloat(dlg.style.top) || br.top;
+   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
++  gisFitSmallDefaultPanelRect(rect, opts, dlg);
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
