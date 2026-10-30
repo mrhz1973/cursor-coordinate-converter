@@ -1,0 +1,80 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -9308,12 +9308,6 @@
+ .astro-panel .astro-notice{ margin-top:8px; font-size:.84rem; }
+ .astro-panel #astro-result-floating{ margin-top:8px; min-height:1.2em; }
+ @media (max-width:600px){
+-  body.gis-mode dialog#astroPanel.astro-panel{
+-    left:0 !important; right:0 !important; top:0 !important; bottom:auto !important;
+-    width:100vw !important; max-width:100vw;
+-    height:min(92vh, 720px) !important; max-height:92vh;
+-    border-radius:0;
+-  }
+   .astro-panel .astro-src-row{ gap:6px; }
+ }
+ /* Range Rings floating: hide the reparented <summary> so it doesn't look like
+@@ -9734,6 +9728,31 @@
+   box-sizing:border-box;
+   font-size:.8rem;
+   padding:4px 8px;
++}
++/* Shared field appearance for GIS search pickers and Astro date. */
++.rr-source-picker-search, #gisWorkbenchSearch, #astroDate2{
++  box-sizing:border-box; background:var(--surface-field); color:var(--text);
++  border:1px solid var(--border); border-radius:var(--radius-control);
++  padding:8px 10px; font:inherit;
++}
++.rr-source-picker-search{ width:100%; }
++#gisWorkbenchSearch{ font-size:.8rem; padding:4px 8px; }
++html[data-theme="dark"] #astroDate2{ color-scheme:dark; }
++html[data-theme="light"] #astroDate2{ color-scheme:light; }
++#rrSourcePickerDialog .rr-source-picker-list{
++  max-height:260px; overflow:auto; margin-top:8px; padding:4px;
++  border:1px solid var(--border); border-radius:8px; background:var(--panel2);
++}
++#rrSourcePickerDialog .rr-pick-item{
++  display:block; width:100%; text-align:left; margin:2px 0; padding:6px 8px;
++  border-radius:6px; border:1px solid transparent; background:transparent;
++  color:var(--text); font:inherit; cursor:pointer;
++}
++#rrSourcePickerDialog .rr-pick-item:hover{
++  background:var(--btn-hover-surface, color-mix(in srgb, var(--panel) 85%, var(--border) 15%));
++}
++#rrSourcePickerDialog .rr-pick-item:focus-visible{
++  outline:2px solid var(--accent); outline-offset:-2px; border-color:var(--accent);
+ }
+ .wb-count{ font-size:.72rem; white-space:nowrap; margin-left:auto; }
+ .wb-map-pick-btn.is-active{
+@@ -84319,6 +84338,10 @@
+   const L0 = parseFloat(dlg.style.left) || br.left;
+   const T0 = parseFloat(dlg.style.top) || br.top;
+   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
++  const layout = gisPanelGetLayout(opts.key, opts);
++  if (!layout || !layout.touched){
++    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
++  }
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
+@@ -97641,6 +97664,10 @@
+   const rect = Number.isFinite(opts.partialMinVisible)
+     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
+     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
++  const layout = gisPanelGetLayout(opts.key, opts);
++  if (!layout || !layout.touched){
++    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
++  }
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
+@@ -99766,6 +99793,10 @@
+   const L0 = parseFloat(dlg.style.left) || br.left;
+   const T0 = parseFloat(dlg.style.top) || br.top;
+   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
++  const layout = gisPanelGetLayout(opts.key, opts);
++  if (!layout || !layout.touched){
++    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
++  }
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
