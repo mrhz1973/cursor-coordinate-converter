@@ -1,0 +1,19 @@
+# QA integrata — provenienza MGRS waypoint e traccia
+
+File direttamente nel checkout: SHA-256 prima e dopo `33e8d90257e56dba0bdf47de9776b018f301a103c5688ad124aab10bf953f548`. Nessuna modifica al checkout o VPS e nessuna pulizia forzata dei profili; browser delle prove chiusi. Suite browser eseguite in sequenza; nessun timeout.
+
+- `core-results.json`: PASS, due script compilati, 594 vettori GEOTRANS di riferimento e regressioni UTM/MGRS, sei precisioni, valori adiacenti e sorgenti incoerenti. Non certifica tutte le celle o i confini.
+- `author.cjs` adattato al file integrato: PASS (`author-log.txt`) su trasferimenti, 36 transizioni formato, editor/conflitti, traccia e waypoint, sei precisioni, casi estremi, storage/reload, rollback quota, drag, errori visibili, 24 combinazioni XML GPX/KML, record legacy e fonti incoerenti. Output XML intercettato in memoria e controllato con DOMParser; non un download o reimport effettivo.
+- `independent.cjs`: PASS (`independent-log.txt`), ripete il runner dell'autore con l'aggiunta del revisore indipendente. Il controllo aggiuntivo usa eventi pointer sintetici centrati sul punto: click e mouse/touch a 0–3 px sotto quota non scrivono, non mutano origine e non creano falso avviso; touch a 4 px tenta una scrittura, errore di quota ripristina punto/origine e mostra avviso; nuovo jitter non lo cancella, retry riuscito dello stesso oggetto lo rimuove. Le prove XML del runner derivano dall'autore; non costituiscono una seconda implementazione indipendente. Non è una prova su hardware touch fisico.
+- Self-check debug e aggregato PASS (`selfcheck-results.json`): 1280×720 e 1920×900 919/919; 390×844 922/922; 320×720 924/924. Zero assert e pageerror nei controlli registrati. Il server restituisce HTML per ogni percorso e non verifica la resa delle risorse locali.
+- Routing mock 24/24 PASS (`results-final.json`, screenshot): 12 desktop 1440×960 e 12 mobile emulato 390×844, zero pageerror. Provider simulati e coordinate predisposte da API interna, azioni di calcolo in UI; non prova servizi reali o dispositivo fisico. Il testo storico `limits` che dice che strict/offline non sono inclusi è errato: i due casi sono presenti per ciascun viewport. L'etichetta `providerRequestsStayedMocked` usa un indice improprio e non costituisce una verifica indipendente; la policy del runner intercetta i provider e blocca le altre richieste esterne, ma consente loopback. Non raccoglie tutti gli errori console.
+
+## Rete e risorse
+
+Edge con HTTP(S) bloccati ha registrato 350 richieste bloccate nel runner autore e 360 nella variante del reviewer, nessuna eccezione JavaScript e nessun `ERR_FILE_NOT_FOUND` (`author-events.json`, `independent-events.json`). La precedente assenza di asset nel checkout sparse non si è ripresentata in queste prove; ciò non prova la resa grafica di tutti gli asset.
+
+Nei debug self-check sono registrati rispettivamente 237, 269, 245 e 243 errori `ERR_FAILED`, attribuiti alle richieste bloccate verso Open-Meteo, font e tile; URL e dettagli in `selfcheck-results.json`. Si tratta di console non pulite per l'ambiente intenzionalmente senza rete, non di prova dei servizi live.
+
+## Limiti e metodo
+
+Le prove sono circoscritte alla matrice `work/mgrs-waypoint-track/coverage-matrix.md`: esportazioni spaziali waypoint/traccia non conservano la provenienza strutturata; molte altre importazioni, eliminazioni con quota, interazioni di mappa e combinazioni restano non verificate. Coerenza numerica non dimostra autenticità della fonte o validità geodetica della cella. Runner autore e aggiunte reviewer sono riutilizzati sulla stessa revisione per confrontabilità. Decisione metodo **CONSEGNA** per la QA di questo blocco: controlli richiesti superati, limiti mantenuti espliciti; nessun miglioramento prestazionale dichiarato. Fonti di metodo consultate: skill Team App e Fusion, `references/applicazioni.md` e `references/valutatore.md`.
