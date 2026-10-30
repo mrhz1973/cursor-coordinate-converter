@@ -52,3 +52,7 @@ Deploy VPS e0ba92d, backup /tmp/goi-help-toolbar-267-predeploy/runtime-before.ht
 
 ## GIS-EXPORT-ALIGNMENT-A build268 — 2026-10-30
 Feedback operatore Esporta disallineato; utente chiede Strumenti come altre tab e cronologia da GitHub. Candidate cf9ae0aed70713191975d00395abfe36746388f6 blob f980a3dd843eb34b32895774fad6aa5ade255dd7 SHA256 51a3e9821d0f70c57ad23adb7f10bd66ee6214065ce0e0c7abc9870cc681a11d. CSS allineamento; Strumenti dialog floating GIS drag/resize/minimize e modalità classica preservata. Registro Git build1–267, commit precedenti numerazione, deploy verificati distinti: soggetti dei commit raggruppati per intervallo non attestano tutti i cambi o deploy. QA indipendente scoped PASS, un candidate intermedio FAIL corretto. Deploy VPS 1b06be8, backup /tmp/goi-export-history-268-predeploy/runtime-before.html, hash HTTP/file coincidono. Servizi e PID invariati. ABQA HTTP PASS viewport1920/1024/390/320, allineamento, pannelli, note, 12 gate senza Nominatim, zero erroriJS; richieste esterne intercettate, non prova provider. QA OPERATORE PENDING.
+
+
+## Riscontro operatore e apertura routing
+2026-10-30: utente riferisce «il resto va bene e puoi continuar con il progetto» e chiede un audit leggero del pannello Strumenti tramite screenshot. Si registra feedback positivo sul resto e autorizzazione a continuare; non si inventa attestazione PASS sul pannello Strumenti. Audit read-only separato, routing land-only aperto; runtime LIVE build268 invariato, candidate routing non ancora disponibile. Stato vivo FRONTIER.
