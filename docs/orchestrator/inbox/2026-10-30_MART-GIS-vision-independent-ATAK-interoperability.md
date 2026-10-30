@@ -63,6 +63,8 @@ Queste proposte vanno ordinate in attività verificabili. L’ordine sotto disti
 
 ### E. Mobile e distribuzione multipiattaforma
 
+**Chiarimento utente:** per ora MART GIS rimane un’applicazione web HTML. L’interfaccia deve adattarsi a smartphone Android e iPhone, anche piccoli (circa 5 pollici), con pulsanti e bersagli comodi da toccare; sui tablet deve sfruttare lo spazio disponibile. Un eventuale porting nativo è prospettiva successiva, non requisito immediato. Il numero di pollici non definisce da solo il viewport: verificare varie larghezze, altezze, orientamenti, zoom e touch, e distinguere emulatori da dispositivi reali. Come obiettivo progettuale iniziale, puntare a bersagli di almeno 44×44 pixel CSS ove praticabile, con spazio tra controlli; documentare e risolvere eccezioni in base all’uso reale.
+
 - **Esito:** studio di fattibilità PWA mobile e matrice browser/device per Android, iOS e PC.
 - **Criteri:** compatibilità touch/viewport, storage quota e persistenza offline, file import/export, permessi/localizzazione solo espliciti, accessibilità, test senza rete, update e rollback; nessuna raccolta telemetrica.
 - **Dipendenze:** Aggiornare la roadmap per riflettere il mobile richiesto; la scelta PWA o nativa dipende dallo studio tecnico.
