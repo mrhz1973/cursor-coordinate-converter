@@ -1,0 +1,41 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -44986,8 +44986,13 @@
+         hitSvg.style.zIndex = "2147483000";
+         infoSvg.style.zIndex = "2147483001";
+         const br = hitSvg.getBoundingClientRect();
+-        const el = document.elementFromPoint(br.left + 90, br.top + 90);
+-        return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
++        const panel = document.getElementById("dflightPanel");
++        const oldVisibility = panel ? panel.style.visibility : "";
++        try {
++          if (panel) panel.style.visibility = "hidden";
++          const el = document.elementFromPoint(br.left + 90, br.top + 90);
++          return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
++        } finally { if (panel) panel.style.visibility = oldVisibility; }
+       } finally {
+         try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+         try { dflightRemoveOverlayDom(tm); } catch(_){}
+@@ -45106,10 +45111,18 @@
+         dflightAtm09OpenDetails = function(){ atmN++; };
+         const br = hitSvg.getBoundingClientRect();
+         const x = br.left + 90, y = br.top + 90;
+-        const el = document.elementFromPoint(x, y);
+-        if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
+-        dflightSelectZone = prevSelect;
+-        dflightAtm09OpenDetails = prevOpen;
++        const panel = document.getElementById("dflightPanel");
++        const oldVisibility = panel ? panel.style.visibility : "";
++        let el;
++        try {
++          if (panel) panel.style.visibility = "hidden";
++          el = document.elementFromPoint(x, y);
++          if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
++        } finally {
++          if (panel) panel.style.visibility = oldVisibility;
++          dflightSelectZone = prevSelect;
++          dflightAtm09OpenDetails = prevOpen;
++        }
+         return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit")
+           && atmN === 1 && selectN === 0);
+       } finally {

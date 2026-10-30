@@ -1,0 +1,79 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -48946,6 +48946,11 @@
+       typeof _gisMinimizedPanels !== "undefined" && Array.isArray(_gisMinimizedPanels));
+ 
+     const prevMin = _gisMinimizedPanels.slice();
++    // Only panels absent and closed before this test may be used as restore probes.
++    const fixtureIds = ["favoritesPanel", "measurePanel", "layersPanel"].filter(function(id){
++      const dlg = document.getElementById(id);
++      return dlg && !dlg.open && !prevMin.some(function(row){ return row.id === id; });
++    });
+     const restorePrev = function(){
+       _gisMinimizedPanels = prevMin.slice();
+       try { gisRenderMinimizedDock(); } catch(_){}
+@@ -49001,8 +49006,62 @@
+         docks = document.querySelectorAll("#gisMinimizedDock");
+         add("DOCK_GA1_still_single_dock", docks.length === 1);
+         const chips = dock ? dock.querySelectorAll(".gis-minimized-dock-chip") : [];
+-        add("DOCK_GA1_all_chips_rendered", chips.length === ids.length, "chips=" + chips.length);
+-
++        const overflowItems = dock ? dock.querySelectorAll(".gis-dock-overflow-item") : [];
++        const represented = ids.map(function(pid){
++          const chipMatches = Array.prototype.filter.call(chips, function(el){
++            return el.getAttribute("data-gis-min-panel") === pid;
++          });
++          const overflowMatches = Array.prototype.filter.call(overflowItems, function(el){
++            return el.getAttribute("data-gis-overflow-panel") === pid;
++          });
++          return {
++            id: pid,
++            slot: chipMatches.length ? "chip" : (overflowMatches.length ? "overflow" : "missing"),
++            count: chipMatches.length + overflowMatches.length
++          };
++        });
++        const representedOk = represented.length === ids.length
++          && represented.every(function(item){ return item.count === 1; })
++          && chips.length + overflowItems.length === ids.length;
++        const overflowBtn = dock && dock.querySelector(".gis-dock-overflow-btn");
++        const overflowReachable = overflowItems.length === 0 || !!(overflowBtn && !overflowBtn.hidden && (function(){
++          const r = overflowBtn.getBoundingClientRect();
++          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
++          return r.width > 0 && r.height > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && !!(hit && (hit === overflowBtn || overflowBtn.contains(hit)));
++        })());
++        add("DOCK_GA1_all_panels_represented",
++          representedOk && overflowReachable,
++          "chips=" + chips.length + " overflow=" + overflowItems.length
++            + " represented=" + represented.map(function(x){ return x.id + ":" + x.slot; }).join(",")
++            + " overflowReachable=" + overflowReachable);
++        if (overflowItems.length){
++          const firstItem = Array.prototype.find.call(overflowItems, function(item){
++            return fixtureIds.indexOf(item.getAttribute("data-gis-overflow-panel")) >= 0;
++          });
++          const overflowId = firstItem ? firstItem.getAttribute("data-gis-overflow-panel") : "";
++          const rowBefore = (_gisMinimizedPanels || []).find(function(row){ return row.id === overflowId; });
++          let menuOk = false, itemOk = false, restoreOk = false, remMinOk = false;
++          try {
++            if (overflowReachable) overflowBtn.click();
++            const menu = dock.querySelector(".gis-dock-overflow-menu");
++            menuOk = !!(menu && !menu.hidden && overflowBtn.getAttribute("aria-expanded") === "true");
++            if (menuOk && firstItem){
++              const rect = firstItem.getBoundingClientRect();
++              const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
++              itemOk = rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight
++                && !!(hit && (hit === firstItem || firstItem.contains(hit)));
++              if (itemOk) firstItem.click();
++              const restored = document.getElementById(overflowId);
++              restoreOk = !!(itemOk && restored && restored.open && !gisPanelIsMinimized(overflowId));
++              if (restoreOk && rowBefore){
++                gisMinimizePanel(overflowId, rowBefore.labelKey);
++                remMinOk = gisPanelIsMinimized(overflowId);
++              }
++            }
++          } finally { try { gisDockCloseOverflowMenu(); } catch(_){} }
++          add("DOCK_GA1_overflow_menu_reachable", menuOk && itemOk, JSON.stringify({menuOk:menuOk,itemOk:itemOk}));
++          add("DOCK_GA1_overflow_restores_panel", restoreOk && remMinOk, JSON.stringify({id:overflowId || "no_safe_fixture",restoreOk:restoreOk,remMinOk:remMinOk}));
++        }
+         // Smoke whitelist (no deep lifecycle): restore/minimize roundtrip subset
+         const smokeIds = ["favoritesPanel", "measurePanel", "layersPanel", "helpOverlay", "astroPanel"];
+         let smokeOk = true;

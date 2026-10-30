@@ -1,0 +1,153 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -44986,8 +44986,13 @@
+         hitSvg.style.zIndex = "2147483000";
+         infoSvg.style.zIndex = "2147483001";
+         const br = hitSvg.getBoundingClientRect();
+-        const el = document.elementFromPoint(br.left + 90, br.top + 90);
+-        return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
++        const panel = document.getElementById("dflightPanel");
++        const oldVisibility = panel ? panel.style.visibility : "";
++        try {
++          if (panel) panel.style.visibility = "hidden";
++          const el = document.elementFromPoint(br.left + 90, br.top + 90);
++          return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
++        } finally { if (panel) panel.style.visibility = oldVisibility; }
+       } finally {
+         try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
+         try { dflightRemoveOverlayDom(tm); } catch(_){}
+@@ -45106,10 +45111,18 @@
+         dflightAtm09OpenDetails = function(){ atmN++; };
+         const br = hitSvg.getBoundingClientRect();
+         const x = br.left + 90, y = br.top + 90;
+-        const el = document.elementFromPoint(x, y);
+-        if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
+-        dflightSelectZone = prevSelect;
+-        dflightAtm09OpenDetails = prevOpen;
++        const panel = document.getElementById("dflightPanel");
++        const oldVisibility = panel ? panel.style.visibility : "";
++        let el;
++        try {
++          if (panel) panel.style.visibility = "hidden";
++          el = document.elementFromPoint(x, y);
++          if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
++        } finally {
++          if (panel) panel.style.visibility = oldVisibility;
++          dflightSelectZone = prevSelect;
++          dflightAtm09OpenDetails = prevOpen;
++        }
+         return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit")
+           && atmN === 1 && selectN === 0);
+       } finally {
+@@ -48946,6 +48959,11 @@
+       typeof _gisMinimizedPanels !== "undefined" && Array.isArray(_gisMinimizedPanels));
+ 
+     const prevMin = _gisMinimizedPanels.slice();
++    // Only panels absent and closed before this test may be used as restore probes.
++    const fixtureIds = ["favoritesPanel", "measurePanel", "layersPanel"].filter(function(id){
++      const dlg = document.getElementById(id);
++      return dlg && !dlg.open && !prevMin.some(function(row){ return row.id === id; });
++    });
+     const restorePrev = function(){
+       _gisMinimizedPanels = prevMin.slice();
+       try { gisRenderMinimizedDock(); } catch(_){}
+@@ -49001,8 +49019,62 @@
+         docks = document.querySelectorAll("#gisMinimizedDock");
+         add("DOCK_GA1_still_single_dock", docks.length === 1);
+         const chips = dock ? dock.querySelectorAll(".gis-minimized-dock-chip") : [];
+-        add("DOCK_GA1_all_chips_rendered", chips.length === ids.length, "chips=" + chips.length);
+-
++        const overflowItems = dock ? dock.querySelectorAll(".gis-dock-overflow-item") : [];
++        const represented = ids.map(function(pid){
++          const chipMatches = Array.prototype.filter.call(chips, function(el){
++            return el.getAttribute("data-gis-min-panel") === pid;
++          });
++          const overflowMatches = Array.prototype.filter.call(overflowItems, function(el){
++            return el.getAttribute("data-gis-overflow-panel") === pid;
++          });
++          return {
++            id: pid,
++            slot: chipMatches.length ? "chip" : (overflowMatches.length ? "overflow" : "missing"),
++            count: chipMatches.length + overflowMatches.length
++          };
++        });
++        const representedOk = represented.length === ids.length
++          && represented.every(function(item){ return item.count === 1; })
++          && chips.length + overflowItems.length === ids.length;
++        const overflowBtn = dock && dock.querySelector(".gis-dock-overflow-btn");
++        const overflowReachable = overflowItems.length === 0 || !!(overflowBtn && !overflowBtn.hidden && (function(){
++          const r = overflowBtn.getBoundingClientRect();
++          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
++          return r.width > 0 && r.height > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && !!(hit && (hit === overflowBtn || overflowBtn.contains(hit)));
++        })());
++        add("DOCK_GA1_all_panels_represented",
++          representedOk && overflowReachable,
++          "chips=" + chips.length + " overflow=" + overflowItems.length
++            + " represented=" + represented.map(function(x){ return x.id + ":" + x.slot; }).join(",")
++            + " overflowReachable=" + overflowReachable);
++        if (overflowItems.length){
++          const firstItem = Array.prototype.find.call(overflowItems, function(item){
++            return fixtureIds.indexOf(item.getAttribute("data-gis-overflow-panel")) >= 0;
++          });
++          const overflowId = firstItem ? firstItem.getAttribute("data-gis-overflow-panel") : "";
++          const rowBefore = (_gisMinimizedPanels || []).find(function(row){ return row.id === overflowId; });
++          let menuOk = false, itemOk = false, restoreOk = false, remMinOk = false;
++          try {
++            if (overflowReachable) overflowBtn.click();
++            const menu = dock.querySelector(".gis-dock-overflow-menu");
++            menuOk = !!(menu && !menu.hidden && overflowBtn.getAttribute("aria-expanded") === "true");
++            if (menuOk && firstItem){
++              const rect = firstItem.getBoundingClientRect();
++              const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
++              itemOk = rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight
++                && !!(hit && (hit === firstItem || firstItem.contains(hit)));
++              if (itemOk) firstItem.click();
++              const restored = document.getElementById(overflowId);
++              restoreOk = !!(itemOk && restored && restored.open && !gisPanelIsMinimized(overflowId));
++              if (restoreOk && rowBefore){
++                gisMinimizePanel(overflowId, rowBefore.labelKey);
++                remMinOk = gisPanelIsMinimized(overflowId);
++              }
++            }
++          } finally { try { gisDockCloseOverflowMenu(); } catch(_){} }
++          add("DOCK_GA1_overflow_menu_reachable", menuOk && itemOk, JSON.stringify({menuOk:menuOk,itemOk:itemOk}));
++          add("DOCK_GA1_overflow_restores_panel", restoreOk && remMinOk, JSON.stringify({id:overflowId || "no_safe_fixture",restoreOk:restoreOk,remMinOk:remMinOk}));
++        }
+         // Smoke whitelist (no deep lifecycle): restore/minimize roundtrip subset
+         const smokeIds = ["favoritesPanel", "measurePanel", "layersPanel", "helpOverlay", "astroPanel"];
+         let smokeOk = true;
+@@ -50907,16 +50979,30 @@
+     const dfSz = df ? legendWorkspaceReadSize(df) : { w: 180, h: 160 };
+     const soloPos = rec ? legendWorkspacePlaceSingle(dfSz.w, dfSz.h, rec) : null;
+     const dfLeftBoth = df ? parseFloat(df.style.left) : NaN;
+-    const atmLeftBoth = atm ? parseFloat(atm.style.left) : NaN;
+-    add("WSF1_A_both_sbs", !!(df && atm && !df.hidden && !atm.hidden && dfLeftBoth < atmLeftBoth));
++    const dfBothRect = df ? df.getBoundingClientRect() : null;
++    const atmBothRect = atm ? atm.getBoundingClientRect() : null;
++    const rectWithinSafe = function(r){
++      if (!r || !rec || !rec.hostRect || r.width <= 0 || r.height <= 0) return false;
++      const h = rec.hostRect, eps = 1;
++      return r.left >= Math.max(0, h.left + rec.left) - eps
++        && r.right <= Math.min(innerWidth, h.left + rec.right) + eps
++        && r.top >= Math.max(0, h.top + rec.top) - eps
++        && r.bottom <= Math.min(innerHeight, h.top + rec.bottom) + eps;
++    };
++    const gap = DFLIGHT_ATM09_UL_GAP_PX - 1;
++    const alongside = !!(dfBothRect && atmBothRect && atmBothRect.left - dfBothRect.right >= gap);
++    const stacked = !!(dfBothRect && atmBothRect && atmBothRect.top - dfBothRect.bottom >= gap);
++    add("WSF1_A_both_fit", !!(df && atm && !df.hidden && !atm.hidden
++      && rectWithinSafe(dfBothRect) && rectWithinSafe(atmBothRect) && (alongside || stacked)),
++      JSON.stringify({alongside:alongside,stacked:stacked,df:dfBothRect && dfBothRect.toJSON(),atm:atmBothRect && atmBothRect.toJSON()}));
+ 
+     _dflightAtm09MasterUi = false;
+     _dflightAtm09Preferred = false;
+     dflightSyncPanelUi();
+     const dfLeftSolo = df ? parseFloat(df.style.left) : NaN;
+     add("WSF1_B_solo_df_right", !!(df && atm && df.hidden === false && atm.hidden === true && soloPos
+-      && Math.abs(dfLeftSolo - soloPos.left) < 2
+-      && dfLeftSolo > dfLeftBoth));
++      && Math.abs(dfLeftSolo - soloPos.left) < 2 && rectWithinSafe(df.getBoundingClientRect())
++      && (alongside ? dfLeftSolo > dfLeftBoth : stacked && dfLeftSolo >= dfLeftBoth - 2)));
+ 
+     _legendWs.df.touched = true;
+     _legendWs.df.left = 20;

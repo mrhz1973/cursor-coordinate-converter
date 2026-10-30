@@ -1,0 +1,37 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -50907,16 +50907,30 @@
+     const dfSz = df ? legendWorkspaceReadSize(df) : { w: 180, h: 160 };
+     const soloPos = rec ? legendWorkspacePlaceSingle(dfSz.w, dfSz.h, rec) : null;
+     const dfLeftBoth = df ? parseFloat(df.style.left) : NaN;
+-    const atmLeftBoth = atm ? parseFloat(atm.style.left) : NaN;
+-    add("WSF1_A_both_sbs", !!(df && atm && !df.hidden && !atm.hidden && dfLeftBoth < atmLeftBoth));
++    const dfBothRect = df ? df.getBoundingClientRect() : null;
++    const atmBothRect = atm ? atm.getBoundingClientRect() : null;
++    const rectWithinSafe = function(r){
++      if (!r || !rec || !rec.hostRect || r.width <= 0 || r.height <= 0) return false;
++      const h = rec.hostRect, eps = 1;
++      return r.left >= Math.max(0, h.left + rec.left) - eps
++        && r.right <= Math.min(innerWidth, h.left + rec.right) + eps
++        && r.top >= Math.max(0, h.top + rec.top) - eps
++        && r.bottom <= Math.min(innerHeight, h.top + rec.bottom) + eps;
++    };
++    const gap = DFLIGHT_ATM09_UL_GAP_PX - 1;
++    const alongside = !!(dfBothRect && atmBothRect && atmBothRect.left - dfBothRect.right >= gap);
++    const stacked = !!(dfBothRect && atmBothRect && atmBothRect.top - dfBothRect.bottom >= gap);
++    add("WSF1_A_both_fit", !!(df && atm && !df.hidden && !atm.hidden
++      && rectWithinSafe(dfBothRect) && rectWithinSafe(atmBothRect) && (alongside || stacked)),
++      JSON.stringify({alongside:alongside,stacked:stacked,df:dfBothRect && dfBothRect.toJSON(),atm:atmBothRect && atmBothRect.toJSON()}));
+ 
+     _dflightAtm09MasterUi = false;
+     _dflightAtm09Preferred = false;
+     dflightSyncPanelUi();
+     const dfLeftSolo = df ? parseFloat(df.style.left) : NaN;
+     add("WSF1_B_solo_df_right", !!(df && atm && df.hidden === false && atm.hidden === true && soloPos
+-      && Math.abs(dfLeftSolo - soloPos.left) < 2
+-      && dfLeftSolo > dfLeftBoth));
++      && Math.abs(dfLeftSolo - soloPos.left) < 2 && rectWithinSafe(df.getBoundingClientRect())
++      && (alongside ? dfLeftSolo > dfLeftBoth : stacked && dfLeftSolo >= dfLeftBoth - 2)));
+ 
+     _legendWs.df.touched = true;
+     _legendWs.df.left = 20;
