@@ -1,1 +1,1 @@
-Stato vivo: [FRONTIER](../FRONTIER.md). Build267 LIVE: guida/FAQ, impostazioni, toolbar e note, review e ABQA PASS scoped; QA operatore PENDING.
+Stato vivo: [FRONTIER](../FRONTIER.md). Build268 LIVE: Esporta allineato, Strumenti pannello floating, cronologia ricostruita, review e ABQA PASS scoped; QA operatore PENDING.
