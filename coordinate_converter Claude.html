@@ -5163,12 +5163,17 @@ body.gis-mode .tools-drawer.open{visibility:visible;pointer-events:auto}
 body.gis-mode .tools-drawer.gis-panel-minimized{visibility:hidden;pointer-events:none}
 .tools-drawer-head{
   display:flex; align-items:center; justify-content:space-between;
+  gap:8px;
   padding:14px 18px; border-bottom:1px solid var(--border);
   background:linear-gradient(180deg, var(--surface-glass-hover), var(--panel2));
 }
 .tools-drawer-head h2{
-  margin:0; font-size:1.15rem; font-weight:700;
+  margin:0; min-width:0; flex:1 1 auto; font-size:1.15rem; font-weight:700;
   display:flex; align-items:center; gap:8px;
+}
+.tools-drawer-head .app-modal-head-actions{
+  display:flex; align-items:center; gap:4px;
+  flex:0 0 auto; margin-left:auto; position:relative; z-index:12;
 }
 /* Chip close: vedi .ui-panel-close sotto. */
 .tools-drawer-body{
@@ -9303,12 +9308,6 @@ body.gis-mode dialog#qrModal.qr-modal.gis-panel-floating .qr-svg-wrap svg{
 .astro-panel .astro-notice{ margin-top:8px; font-size:.84rem; }
 .astro-panel #astro-result-floating{ margin-top:8px; min-height:1.2em; }
 @media (max-width:600px){
-  body.gis-mode dialog#astroPanel.astro-panel{
-    left:0 !important; right:0 !important; top:0 !important; bottom:auto !important;
-    width:100vw !important; max-width:100vw;
-    height:min(92vh, 720px) !important; max-height:92vh;
-    border-radius:0;
-  }
   .astro-panel .astro-src-row{ gap:6px; }
 }
 /* Range Rings floating: hide the reparented <summary> so it doesn't look like
@@ -9729,6 +9728,31 @@ body.gis-mode dialog#gisWorkbenchPanel.gis-workbench-panel .wb-filter-chip:disab
   box-sizing:border-box;
   font-size:.8rem;
   padding:4px 8px;
+}
+/* Shared field appearance for GIS search pickers and Astro date. */
+.rr-source-picker-search, #gisWorkbenchSearch, #astroDate2{
+  box-sizing:border-box; background:var(--surface-field); color:var(--text);
+  border:1px solid var(--border); border-radius:var(--radius-control);
+  padding:8px 10px; font:inherit;
+}
+.rr-source-picker-search{ width:100%; }
+#gisWorkbenchSearch{ font-size:.8rem; padding:4px 8px; }
+html[data-theme="dark"] #astroDate2{ color-scheme:dark; }
+html[data-theme="light"] #astroDate2{ color-scheme:light; }
+#rrSourcePickerDialog .rr-source-picker-list{
+  max-height:260px; overflow:auto; margin-top:8px; padding:4px;
+  border:1px solid var(--border); border-radius:8px; background:var(--panel2);
+}
+#rrSourcePickerDialog .rr-pick-item{
+  display:block; width:100%; text-align:left; margin:2px 0; padding:6px 8px;
+  border-radius:6px; border:1px solid transparent; background:transparent;
+  color:var(--text); font:inherit; cursor:pointer;
+}
+#rrSourcePickerDialog .rr-pick-item:hover{
+  background:var(--btn-hover-surface, color-mix(in srgb, var(--panel) 85%, var(--border) 15%));
+}
+#rrSourcePickerDialog .rr-pick-item:focus-visible{
+  outline:2px solid var(--accent); outline-offset:-2px; border-color:var(--accent);
 }
 .wb-count{ font-size:.72rem; white-space:nowrap; margin-left:auto; }
 .wb-map-pick-btn.is-active{
@@ -12752,6 +12776,71 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   }
 }
 /* #endregion CSS — GIS FLOATING PANELS AND DIALOGS */
+
+/* Keep the mobile D-Flight close target clear of the NE resize hit area. */
+@media (max-width:600px){
+  body.gis-mode #dflightPanelClose { margin-right:8px; }
+}
+/* Touch targets: keep actual controls in flow; no overlapping invisible hit areas. */
+@media (pointer:coarse), (max-width:768px){
+  body.gis-mode { --gis-topbar-btn-h:44px; }
+  body.gis-mode .header-ctrls .hdr-icon-btn:not(.hdr-icon-btn-print){ width:44px; min-width:44px; height:44px; min-height:44px; }
+  body.gis-mode #appTopbar .app-tab,
+  body.gis-mode #appTopbar .app-topbar-btn { min-width:44px; min-height:44px; height:44px; }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls {
+    --ctrlW:52px;
+    top:12px;
+    max-height:max(44px, calc(100dvh - var(--gis-mobile-header-est, 132px) - var(--gis-footer-reserve, 0px) - 48px));
+    overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.gis-mode #gisMapMount .mini-map.mm-full .tile-map .tile-ctrls { top:12px; }
+  .app-modal-head { padding-top:6px; padding-bottom:6px; }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-size .ts-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-zoom .tz-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-exp,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-exp { min-width:44px; min-height:44px; }
+  /* The mobile column has an internal scrollbar: fit controls to its content width. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls > button,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-exp,
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-exp { width:100%; box-sizing:border-box; }
+  body.gis-mode #gisMapMount .tile-map .tlayer-item,
+  body.gis-mode #gisMapMount .tile-map .ttrk-menu-item,
+  body.gis-mode #gisMapMount .tile-map .twpt-menu-item { min-height:44px; }
+  .app-modal-close, .app-modal-min-btn,
+  .tools-drawer-head .drawer-close, .tab-drawer-close,
+  #layersPanelClose.app-modal-close,
+  .tile-map .tile-offline-float button.toff-close {
+    width:44px; height:44px; min-width:44px; min-height:44px; max-width:44px; max-height:44px;
+  }
+  body.gis-mode > header > #gisMinimizedDock .gis-dock-overflow-btn,
+  body.gis-mode > header > #gisMinimizedDock .gis-dock-overflow-item,
+  button.gis-minimized-dock-chip,
+  dialog.app-modal .btn, .tools-drawer .btn, .tab-drawer .btn,
+  #convertModalBody #btnMyLocation.geo-nav-btn,
+  #rrSourcePickerDialog .rr-source-picker-list .rr-pick-item { min-width:44px; min-height:44px; }
+}
+@media (max-width:768px){
+  body.gis-mode #gisMapMount .tile-map .tile-readout { right:max(66px, calc(env(safe-area-inset-right, 0px) + 60px)); }
+}
+
+@media (max-width:480px){
+  body.gis-mode #appTopbar .app-topbar-btn { flex-shrink:0; }
+}
+
+
+
+/* On very short screens the search hint and form share one scroll area. */
+@media (max-height:480px) and (max-width:768px), (max-height:480px) and (pointer:coarse){
+  body.gis-mode #searchPanel.gis-panel-floating[open] { overflow-y:auto; }
+  body.gis-mode #searchPanel.gis-panel-floating #searchPanelBody { max-height:none !important; overflow:visible !important; }
+}
+
 </style>
 </head>
 <body class="gis-boot">
@@ -14389,9 +14478,9 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
      Hosts the classic conversion flow (paste-section + manual
      input + geocoding + results) when opened from the topbar CTA.
      Content is reparented in on open and restored on close. -->
-<dialog id="convertModal" class="app-modal convert-modal">
+<dialog id="convertModal" class="app-modal convert-modal" aria-labelledby="convertModalTitle">
   <div class="app-modal-head" id="convertModalHead">
-    <h2 class="app-modal-title" data-i18n="convert.title">Convertitore — inserisci coordinate</h2>
+    <h2 class="app-modal-title" id="convertModalTitle" data-i18n="convert.title">Convertitore — inserisci coordinate</h2>
     <div class="app-modal-head-actions">
       <button type="button" data-role="convertmodal-minimize" class="app-modal-min-btn"
               data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
@@ -15801,8 +15890,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 <dialog class="tools-drawer" id="toolsDrawer" aria-modal="true" aria-labelledby="toolsDrawerTitle" aria-hidden="true">
   <div class="tools-drawer-head" id="toolsDrawerHead">
     <h2 id="toolsDrawerTitle">🧰 <span data-i18n="tools.title">Strumenti</span></h2>
-    <button type="button" class="app-modal-min-btn" id="toolsDrawerMinimize" data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
-    <button type="button" class="drawer-close" id="toolsDrawerClose" data-i18n-tip="tip.toolsDrawerClose" data-i18n-aria="tip.toolsDrawerClose">×</button>
+    <div class="app-modal-head-actions">
+      <button type="button" class="app-modal-min-btn" id="toolsDrawerMinimize" data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
+      <button type="button" class="drawer-close" id="toolsDrawerClose" data-i18n-tip="tip.toolsDrawerClose" data-i18n-aria="tip.toolsDrawerClose">×</button>
+    </div>
   </div>
   <div class="tools-drawer-body">
 
@@ -16084,7 +16175,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 269 — percorsi terrestri</h4><ul><li>Esclusi i collegamenti marittimi dai percorsi calcolati.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 269 — percorsi terrestri</h4><ul><li>Aggiunti controlli per escludere i traghetti segnalati dai provider.</li><li>Allineati i pulsanti di minimizzazione e chiusura di Strumenti.</li><li>Migliorati posizione e stile delle finestre; ingranditi i principali comandi touch.</li><li>Ridotti alcuni errori numerici nei riferimenti MGRS al metro.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -24538,13 +24629,21 @@ function positionWaypointToolbarMenuGis(miniMapRoot){
   const pad = 8;
   const vw = window.innerWidth, vh = window.innerHeight;
   const br = btn.getBoundingClientRect();
+  // Keep the menu within the actual space between GIS header and footer.
+  let safeTop = pad, safeBottom = vh - pad;
+  if (window.matchMedia("(pointer: coarse), (max-width: 768px)").matches){
+    const header = document.querySelector("body.gis-mode > header");
+    const footer = document.querySelector("body.gis-mode > footer");
+    if (header) safeTop = Math.max(safeTop, Math.ceil(header.getBoundingClientRect().bottom + pad));
+    if (footer) safeBottom = Math.min(safeBottom, Math.floor(footer.getBoundingClientRect().top - pad));
+    safeBottom = Math.max(safeTop + 44, safeBottom);
+    menu.style.maxHeight = Math.max(44, safeBottom - safeTop) + "px";
+  }
   const mr = menu.getBoundingClientRect();
   let left = Math.floor(br.left - mr.width - pad);
-  let top = Math.floor(br.top);
+  let top = Math.max(safeTop, Math.min(Math.floor(br.top), Math.floor(safeBottom - mr.height)));
   if (left < pad) left = pad;
   if (left + mr.width > vw - pad) left = Math.max(pad, Math.floor(vw - pad - mr.width));
-  if (top < pad) top = pad;
-  if (top + mr.height > vh - pad) top = Math.max(pad, Math.floor(vh - pad - mr.height));
   menu.style.left = left + "px";
   menu.style.top = top + "px";
   if (!_waypointToolbarMenuGisResizeBound){
@@ -24595,13 +24694,21 @@ function positionTrackToolbarMenuGis(miniMapRoot){
   const pad = 8;
   const vw = window.innerWidth, vh = window.innerHeight;
   const br = btn.getBoundingClientRect();
+  // Keep the menu within the actual space between GIS header and footer.
+  let safeTop = pad, safeBottom = vh - pad;
+  if (window.matchMedia("(pointer: coarse), (max-width: 768px)").matches){
+    const header = document.querySelector("body.gis-mode > header");
+    const footer = document.querySelector("body.gis-mode > footer");
+    if (header) safeTop = Math.max(safeTop, Math.ceil(header.getBoundingClientRect().bottom + pad));
+    if (footer) safeBottom = Math.min(safeBottom, Math.floor(footer.getBoundingClientRect().top - pad));
+    safeBottom = Math.max(safeTop + 44, safeBottom);
+    menu.style.maxHeight = Math.max(44, safeBottom - safeTop) + "px";
+  }
   const mr = menu.getBoundingClientRect();
   let left = Math.floor(br.left - mr.width - pad);
-  let top = Math.floor(br.top);
+  let top = Math.max(safeTop, Math.min(Math.floor(br.top), Math.floor(safeBottom - mr.height)));
   if (left < pad) left = pad;
   if (left + mr.width > vw - pad) left = Math.max(pad, Math.floor(vw - pad - mr.width));
-  if (top < pad) top = pad;
-  if (top + mr.height > vh - pad) top = Math.max(pad, Math.floor(vh - pad - mr.height));
   menu.style.left = left + "px";
   menu.style.top = top + "px";
   if (!_trackToolbarMenuGisResizeBound){
@@ -25638,6 +25745,17 @@ const APP_BUILD_DETAIL = "Percorsi terrestri senza collegamenti marittimi.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
 const APP_BUILD_NUM = 269;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
+/* Selftest: current build metadata and all visible labels must agree. */
+function selfTestBuildMetadataCurrent(){
+  if (!Number.isSafeInteger(APP_BUILD_NUM) || APP_BUILD_NUM <= 0 || !/^[A-Z0-9]+(?:-[A-Z0-9]+)+$/.test(APP_BUILD_ID) || !APP_BUILD_DETAIL.trim()) return false;
+  const display = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
+  const footer = document.getElementById("appBuildFooter"), about = document.getElementById("appBuildAbout"), detail = document.getElementById("appBuildAboutDetail");
+  return APP_BUILD_LABEL === display + " — " + APP_BUILD_DETAIL
+    && document.title === "TMART GIS tool · " + display
+    && !!footer && footer.textContent === display && !!about && about.textContent === display
+    && !!detail && detail.textContent === APP_BUILD_DETAIL;
+}
+
 function applyAppBuildLabel(){
   try {
     const buildDisp = APP_BUILD_ID + " · build " + APP_BUILD_NUM;
@@ -29252,14 +29370,22 @@ function mgrsToLatLonExt(str){
     eCenter += cs / 2;
     nCenter += cs / 2;
   }
-  const center = utmToLatLon(p.zone, p.hemisphere, eCenter, nCenter);
+  // A 1 m reference represents its SW corner. Bias only its returned point
+  // 0.1 micrometre into the cell in each UTM axis, so floating-point inverse /
+  // forward error does not usually put it in a neighbouring metre. This is an
+  // approximation of SW; the separate sw and ne corner values stay unbiased.
+  // No tolerance is applied when encoding arbitrary geographic or UTM points.
+  const inward = cs === 1 ? 1e-7 : 0;
+  const center = utmToLatLon(p.zone, p.hemisphere, eCenter + inward, nCenter + inward);
   const sw = utmToLatLon(p.zone, p.hemisphere, p.easting,       p.northing);
   const ne = utmToLatLon(p.zone, p.hemisphere, p.easting + cs,  p.northing + cs);
   // A valid MGRS cell can straddle the antimeridian. Canonical geographic longitudes
   // must be in range before editor validation, without clamping the cell's SW point.
-  center.lon = normalizeLon(center.lon);
-  sw.lon = normalizeLon(sw.lon);
-  ne.lon = normalizeLon(ne.lon);
+  // Preserve valid longitudes exactly: modulo arithmetic loses low bits even
+  // when no wrapping is needed, and can move a point across a grid boundary.
+  if (center.lon <= -180 || center.lon > 180) center.lon = normalizeLon(center.lon);
+  if (sw.lon <= -180 || sw.lon > 180) sw.lon = normalizeLon(sw.lon);
+  if (ne.lon <= -180 || ne.lon > 180) ne.lon = normalizeLon(ne.lon);
   return {
     lat: center.lat, lon: center.lon,
     precision: p.precision, cellSize: cs,
@@ -41288,8 +41414,7 @@ function dflightSelfTestF(){
     })());
 
     add("F_mvisa_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
+      selfTestBuildMetadataCurrent());
 
     _dflightHelperBaseUrlOverride = "http://example.test:8010";
     if (typeof state !== "undefined") state.forceOffline = true;
@@ -42310,8 +42435,7 @@ function dflightSelfTestTf(){
       && String(dflightEnsurePanelGeometryResize).indexOf("dflightSyncAdaptivePanelGeometry") >= 0);
 
     add("Tf_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
+      selfTestBuildMetadataCurrent());
   } catch (e){
     add("selftest_tf_exception", false, String(e && e.message ? e.message : e));
   } finally {
@@ -43687,6 +43811,7 @@ function dflightSelfTestAtm09(){
   const _prevBbox = _dflightAtm09InfoLastBboxKey;
   const _prevBase = _dflightHelperBaseUrlOverride;
   const _prevForceOff = (typeof state !== "undefined") ? state.forceOffline : undefined;
+  const _prevOpsec = (typeof state !== "undefined") ? state.opsecStrict : undefined;
   const _prevLegendLoaded = _dflightAtm09LegendLoaded;
   const _prevEnsureLegend = dflightAtm09EnsureLegend;
   const _prevGateOff = dflightAtm09OnNetworkGateOff;
@@ -43744,7 +43869,9 @@ function dflightSelfTestAtm09(){
   add("ATM09_preferred_independent_of_overlay", (function(){
     const prevMaster = _dflightAtm09MasterUi;
     const prevSess = _dflightClientSession;
+    const prevPanelOpen = _dflightPanelOpen;
     try {
+      _dflightPanelOpen = true;
       _dflightHelperBaseUrlOverride = "http://127.0.0.1:8010";
       if (typeof state !== "undefined"){ state.forceOffline = false; state.opsecStrict = false; }
       _dflightAtm09MasterUi = true;
@@ -43758,6 +43885,7 @@ function dflightSelfTestAtm09(){
       if (_dflightAtm09InfoTimer){ try { clearTimeout(_dflightAtm09InfoTimer); } catch(_){} _dflightAtm09InfoTimer = null; }
       _dflightAtm09MasterUi = prevMaster;
       _dflightClientSession = prevSess;
+      _dflightPanelOpen = prevPanelOpen;
     }
   })());
   add("ATM09_visible_with_master_only", (function(){
@@ -44032,7 +44160,7 @@ function dflightSelfTestAtm09(){
   _dflightAtm09InfoLastBboxKey = _prevBbox;
   _dflightHelperBaseUrlOverride = _prevBase;
   _dflightAtm09LegendLoaded = _prevLegendLoaded;
-  if (typeof state !== "undefined" && _prevForceOff !== undefined) state.forceOffline = _prevForceOff;
+  if (typeof state !== "undefined"){ state.forceOffline = _prevForceOff; state.opsecStrict = _prevOpsec; }
   try {
     const _ens = dflightAtm09EnsureLegend;
     dflightAtm09EnsureLegend = function(){ /* suppress toggle side-effect on open restore */ };
@@ -44244,8 +44372,7 @@ function dflightSelfTestH(){
       } catch(_){ return false; }
     })());
 
-    add("H_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 250
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "GIS-POLYGON-TABLE-COL-RESIZE-A");
+    add("H_build_214", selfTestBuildMetadataCurrent());
     add("VR_FIX1_sync_loading_passes_zoom", (function(){
       if (typeof dflightSyncLoadingUi !== "function") return false;
       const src = String(dflightSyncLoadingUi);
@@ -44639,27 +44766,37 @@ function dflightSelfTestH(){
     add("FIX3_D4_resize_handles_anchored", (function(){
       const dlg = document.getElementById("dflightPanel");
       if (!dlg) return false;
-      const se = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="se"]');
-      const nw = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="nw"]');
-      const ne = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="ne"]');
-      const sw = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="sw"]');
-      const ee = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="e"]');
-      const ww = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="w"]');
-      if (!se || !nw || !ne || !sw || !ee || !ww) return false;
-      const csSe = getComputedStyle(se), csNw = getComputedStyle(nw);
-      const csNe = getComputedStyle(ne), csSw = getComputedStyle(sw);
-      const csE = getComputedStyle(ee), csW = getComputedStyle(ww);
-      if (!(csSe.right === "0px" && csSe.bottom === "0px")) return false;
-      if (!(csNw.left === "0px" && csNw.top === "0px")) return false;
-      if (!(csSw.left === "0px" && csSw.bottom === "0px")) return false;
-      if (!(csNe.top === "0px" && csNe.right === "42px")) return false;
-      if (!(csE.right === "0px" && csW.left === "0px")) return false;
-      const det = document.getElementById("dflightDetailsPanel");
-      if (!det) return false;
-      const dSe = det.querySelector('[data-role="gis-panel-resize"][data-handle="se"]');
-      if (!dSe) return false;
-      const csDse = getComputedStyle(dSe);
-      return csDse.right === "0px" && csDse.bottom === "0px";
+      const handles = {};
+      for (const dir of ["se", "nw", "ne", "sw", "e", "w"]){
+        handles[dir] = dlg.querySelector('[data-role="gis-panel-resize"][data-handle="' + dir + '"]');
+        if (!handles[dir]) return false;
+      }
+      const wasOpen = dlg.hasAttribute("open");
+      const oldVisibility = dlg.style.visibility;
+      try {
+        // Synchronous geometry probe, without opening the D-Flight lifecycle.
+        dlg.style.visibility = "hidden";
+        if (!wasOpen) dlg.setAttribute("open", "");
+        const se = getComputedStyle(handles.se), nw = getComputedStyle(handles.nw);
+        const ne = getComputedStyle(handles.ne), sw = getComputedStyle(handles.sw);
+        const ee = getComputedStyle(handles.e), ww = getComputedStyle(handles.w);
+        if (!(se.right === "0px" && se.bottom === "0px" && nw.left === "0px" && nw.top === "0px"
+          && sw.left === "0px" && sw.bottom === "0px" && ne.top === "0px" && ne.right === "0px"
+          && ne.cursor === "nesw-resize" && ee.right === "0px" && ww.left === "0px")) return false;
+        const close = document.getElementById("dflightPanelClose");
+        if (!close) return false;
+        const a = handles.ne.getBoundingClientRect(), b = close.getBoundingClientRect();
+        if (!(a.width > 0 && a.height > 0 && b.width > 0 && b.height > 0)) return false;
+        if (Math.min(a.right,b.right) > Math.max(a.left,b.left) && Math.min(a.bottom,b.bottom) > Math.max(a.top,b.top)) return false;
+        const det = document.getElementById("dflightDetailsPanel");
+        const dSe = det && det.querySelector('[data-role="gis-panel-resize"][data-handle="se"]');
+        if (!dSe) return false;
+        const cs = getComputedStyle(dSe);
+        return cs.right === "0px" && cs.bottom === "0px";
+      } finally {
+        dlg.style.visibility = oldVisibility;
+        if (!wasOpen) dlg.removeAttribute("open");
+      }
     })());
   } catch (e){
     add("selftest_h_exception", false, String(e && e.message ? e.message : e));
@@ -44758,8 +44895,7 @@ function dflightSelfTestHitFixA(){
   const prevBase = _dflightHelperBaseUrlOverride;
   try {
     add("HitA_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     add("HitA_css_hit_fill", (function(){
       const srcFn = String(dflightDrawOverlayDom) + String(dflightAttachClickHandler);
@@ -44945,8 +45081,13 @@ function dflightSelfTestHitFixA(){
         hitSvg.style.zIndex = "2147483000";
         infoSvg.style.zIndex = "2147483001";
         const br = hitSvg.getBoundingClientRect();
-        const el = document.elementFromPoint(br.left + 90, br.top + 90);
-        return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
+        const panel = document.getElementById("dflightPanel");
+        const oldVisibility = panel ? panel.style.visibility : "";
+        try {
+          if (panel) panel.style.visibility = "hidden";
+          const el = document.elementFromPoint(br.left + 90, br.top + 90);
+          return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit"));
+        } finally { if (panel) panel.style.visibility = oldVisibility; }
       } finally {
         try { dflightAtm09RemoveInfoOverlayDom(tm); } catch(_){}
         try { dflightRemoveOverlayDom(tm); } catch(_){}
@@ -45065,10 +45206,18 @@ function dflightSelfTestHitFixA(){
         dflightAtm09OpenDetails = function(){ atmN++; };
         const br = hitSvg.getBoundingClientRect();
         const x = br.left + 90, y = br.top + 90;
-        const el = document.elementFromPoint(x, y);
-        if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
-        dflightSelectZone = prevSelect;
-        dflightAtm09OpenDetails = prevOpen;
+        const panel = document.getElementById("dflightPanel");
+        const oldVisibility = panel ? panel.style.visibility : "";
+        let el;
+        try {
+          if (panel) panel.style.visibility = "hidden";
+          el = document.elementFromPoint(x, y);
+          if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
+        } finally {
+          if (panel) panel.style.visibility = oldVisibility;
+          dflightSelectZone = prevSelect;
+          dflightAtm09OpenDetails = prevOpen;
+        }
         return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit")
           && atmN === 1 && selectN === 0);
       } finally {
@@ -45386,10 +45535,20 @@ function dflightSelfTestHitFixA(){
         dflightAtm09OpenDetails = function(){ atmN++; };
         const br = hitSvg.getBoundingClientRect();
         const x = br.left + 90, y = br.top + 90;
-        const el = document.elementFromPoint(x, y);
-        if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
-        dflightSelectZone = prevSelect;
-        dflightAtm09OpenDetails = prevOpen;
+        // This fixture checks map-layer dispatch. A previously opened panel can cover
+        // the chosen map point on a narrow viewport; isolate it for this probe only.
+        const panel = document.getElementById("dflightPanel");
+        const oldVisibility = panel ? panel.style.visibility : "";
+        let el;
+        try {
+          if (panel) panel.style.visibility = "hidden";
+          el = document.elementFromPoint(x, y);
+          if (el) el.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, clientX: x, clientY: y, view: window }));
+        } finally {
+          if (panel) panel.style.visibility = oldVisibility;
+          dflightSelectZone = prevSelect;
+          dflightAtm09OpenDetails = prevOpen;
+        }
         return !!(el && el.classList && el.classList.contains("dflight-atm09-info-hit")
           && atmN === 1 && selectN === 0
           && tm.querySelectorAll(".dflight-zone-hitlayer").length === 1
@@ -45772,8 +45931,7 @@ function dflightSelfTestOptB(){
     _dflightAtm09InfoLastFailReason = null;
 
     add("OptB_build_196",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     add("OptB_constants",
       DFLIGHT_ATM09_SUBDIV_MAX_DEPTH === 2
@@ -46210,8 +46368,7 @@ function dflightSelfTestOptB(){
       }
     })());
 
-    add("OptB_FIX5_build_214", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("OptB_FIX5_build_214", selfTestBuildMetadataCurrent());
 
     add("OptB_FIX2_any_enabled_all_on", (function(){
       for (let i = 0; i < DFLIGHT_TEMPORAL_STATES.length; i++) _dflightTemporalFilter[DFLIGHT_TEMPORAL_STATES[i]] = true;
@@ -46774,6 +46931,7 @@ function dflightSelfTestMVISA(){
   const add = function(name, ok, detail){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
+  const prevPanelOpen = _dflightPanelOpen;
   const prevMaster = _dflightAtm09MasterUi;
   const prevPref = _dflightAtm09Preferred;
   const prevVis = _dflightOverlayVisible;
@@ -46790,6 +46948,7 @@ function dflightSelfTestMVISA(){
   let prevForce = null;
   let prevOpsec = null;
   try {
+    _dflightPanelOpen = true;
     if (typeof state !== "undefined"){
       prevForce = state.forceOffline;
       prevOpsec = state.opsecStrict;
@@ -46802,8 +46961,7 @@ function dflightSelfTestMVISA(){
     _dflightOverlaySession = { dataset: { ok: true, zones: [] } };
 
     add("MVISA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     add("MVISA_ui_label_exact", (function(){
       const lbl = document.getElementById("dflightAtm09MasterLabel");
@@ -47013,6 +47171,7 @@ function dflightSelfTestMVISA(){
     add("MVISA_exception", false, String(e && e.message ? e.message : e));
   } finally {
     dflightAtm09EnsureLegend = prevEnsureLegend;
+    _dflightPanelOpen = prevPanelOpen;
     _dflightAtm09MasterUi = prevMaster;
     _dflightAtm09Preferred = prevPref;
     _dflightOverlayVisible = prevVis;
@@ -47769,8 +47928,7 @@ function dflightSelfTestIMPLA(){
 
     add("IMPLA_api", typeof dflightLegendPaintMode === "function" && typeof dflightSyncContextualLegends === "function");
     add("IMPLA_build_199",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     /* A: D ON / ATM OFF — F: restrictions overlay on map; in-panel hidden */
     add("IMPLA_A", (function(){
@@ -47939,8 +48097,7 @@ function dflightSelfTestLEGENDUX(){
     dflightEnsureAtm09UserLegend();
 
     add("LEGENDUX_build_201",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     /* SELFTEST 1+2: row count and canonical order */
     const rows = ulRoot ? ulRoot.querySelectorAll("ul li") : [];
@@ -48368,8 +48525,7 @@ function dflightSelfTestSideBySide(){
   }
   try {
     add("SBS_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("SBS_fn_present", typeof dflightEnsurePairLayout === "function");
     add("SBS_L_no_localStorage", (function(){
       const src = String(dflightEnsurePairLayout);
@@ -48757,8 +48913,7 @@ function brandingSelfTestTmartImplA(){
   };
   try {
     add("BRAND_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
 
     const main = document.querySelector(".brand-main");
     const by = document.querySelector(".brand-by");
@@ -48885,8 +49040,7 @@ function gisDockSelfTestGA1(){
   };
   try {
     add("DOCK_GA1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("DOCK_GA1_api",
       typeof gisDockReflow === "function"
       && typeof gisRenderMinimizedDock === "function"
@@ -48900,6 +49054,11 @@ function gisDockSelfTestGA1(){
       typeof _gisMinimizedPanels !== "undefined" && Array.isArray(_gisMinimizedPanels));
 
     const prevMin = _gisMinimizedPanels.slice();
+    // Only panels absent and closed before this test may be used as restore probes.
+    const fixtureIds = ["favoritesPanel", "measurePanel", "layersPanel"].filter(function(id){
+      const dlg = document.getElementById(id);
+      return dlg && !dlg.open && !prevMin.some(function(row){ return row.id === id; });
+    });
     const restorePrev = function(){
       _gisMinimizedPanels = prevMin.slice();
       try { gisRenderMinimizedDock(); } catch(_){}
@@ -48955,8 +49114,62 @@ function gisDockSelfTestGA1(){
         docks = document.querySelectorAll("#gisMinimizedDock");
         add("DOCK_GA1_still_single_dock", docks.length === 1);
         const chips = dock ? dock.querySelectorAll(".gis-minimized-dock-chip") : [];
-        add("DOCK_GA1_all_chips_rendered", chips.length === ids.length, "chips=" + chips.length);
-
+        const overflowItems = dock ? dock.querySelectorAll(".gis-dock-overflow-item") : [];
+        const represented = ids.map(function(pid){
+          const chipMatches = Array.prototype.filter.call(chips, function(el){
+            return el.getAttribute("data-gis-min-panel") === pid;
+          });
+          const overflowMatches = Array.prototype.filter.call(overflowItems, function(el){
+            return el.getAttribute("data-gis-overflow-panel") === pid;
+          });
+          return {
+            id: pid,
+            slot: chipMatches.length ? "chip" : (overflowMatches.length ? "overflow" : "missing"),
+            count: chipMatches.length + overflowMatches.length
+          };
+        });
+        const representedOk = represented.length === ids.length
+          && represented.every(function(item){ return item.count === 1; })
+          && chips.length + overflowItems.length === ids.length;
+        const overflowBtn = dock && dock.querySelector(".gis-dock-overflow-btn");
+        const overflowReachable = overflowItems.length === 0 || !!(overflowBtn && !overflowBtn.hidden && (function(){
+          const r = overflowBtn.getBoundingClientRect();
+          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return r.width > 0 && r.height > 0 && r.left >= 0 && r.right <= innerWidth && r.top >= 0 && r.bottom <= innerHeight && !!(hit && (hit === overflowBtn || overflowBtn.contains(hit)));
+        })());
+        add("DOCK_GA1_all_panels_represented",
+          representedOk && overflowReachable,
+          "chips=" + chips.length + " overflow=" + overflowItems.length
+            + " represented=" + represented.map(function(x){ return x.id + ":" + x.slot; }).join(",")
+            + " overflowReachable=" + overflowReachable);
+        if (overflowItems.length){
+          const firstItem = Array.prototype.find.call(overflowItems, function(item){
+            return fixtureIds.indexOf(item.getAttribute("data-gis-overflow-panel")) >= 0;
+          });
+          const overflowId = firstItem ? firstItem.getAttribute("data-gis-overflow-panel") : "";
+          const rowBefore = (_gisMinimizedPanels || []).find(function(row){ return row.id === overflowId; });
+          let menuOk = false, itemOk = false, restoreOk = false, remMinOk = false;
+          try {
+            if (overflowReachable) overflowBtn.click();
+            const menu = dock.querySelector(".gis-dock-overflow-menu");
+            menuOk = !!(menu && !menu.hidden && overflowBtn.getAttribute("aria-expanded") === "true");
+            if (menuOk && firstItem){
+              const rect = firstItem.getBoundingClientRect();
+              const hit = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+              itemOk = rect.width > 0 && rect.height > 0 && rect.left >= 0 && rect.right <= innerWidth && rect.top >= 0 && rect.bottom <= innerHeight
+                && !!(hit && (hit === firstItem || firstItem.contains(hit)));
+              if (itemOk) firstItem.click();
+              const restored = document.getElementById(overflowId);
+              restoreOk = !!(itemOk && restored && restored.open && !gisPanelIsMinimized(overflowId));
+              if (restoreOk && rowBefore){
+                gisMinimizePanel(overflowId, rowBefore.labelKey);
+                remMinOk = gisPanelIsMinimized(overflowId);
+              }
+            }
+          } finally { try { gisDockCloseOverflowMenu(); } catch(_){} }
+          add("DOCK_GA1_overflow_menu_reachable", menuOk && itemOk, JSON.stringify({menuOk:menuOk,itemOk:itemOk}));
+          add("DOCK_GA1_overflow_restores_panel", restoreOk && remMinOk, JSON.stringify({id:overflowId || "no_safe_fixture",restoreOk:restoreOk,remMinOk:remMinOk}));
+        }
         // Smoke whitelist (no deep lifecycle): restore/minimize roundtrip subset
         const smokeIds = ["favoritesPanel", "measurePanel", "layersPanel", "helpOverlay", "astroPanel"];
         let smokeOk = true;
@@ -49061,8 +49274,7 @@ function gisPanelSafeTopSelfTestFix1(){
   };
   try {
     add("SAFE_TOP_FIX1_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("SAFE_TOP_FIX1_api",
       typeof gisPanelSafeTop === "function"
       && typeof gisPanelClampRectPartialVisible === "function"
@@ -49194,8 +49406,7 @@ function gisPanelSafeTopSelfTestFix2(){
   };
   try {
     add("SAFE_TOP_FIX2_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("SAFE_TOP_FIX2_src_uses_dock",
       String(gisPanelSafeTop).indexOf("gisMinimizedDock") >= 0
       && String(gisPanelSafeTop).indexOf("Math.max") >= 0);
@@ -49432,8 +49643,7 @@ function gisDockSelfTestGB(){
   };
   try {
     add("DOCK_GB_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("DOCK_GB_workbench_branch",
       String(gisMinimizePanel).indexOf('panelId === "gisWorkbenchPanel"') >= 0);
     add("DOCK_GB_ordinary_ids_len",
@@ -49741,8 +49951,7 @@ function gisDockSelfTestGC(){
   };
   try {
     add("DOCK_GC_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("DOCK_GC_symbols",
       typeof offlinePanelMinimizeForBbox === "function"
       && typeof offlinePanelRestoreAfterBbox === "function"
@@ -50034,8 +50243,7 @@ function gisDockSelfTestGD(){
   };
   try {
     add("DOCK_GD_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("DOCK_GD_api",
       typeof gisDockPlanSlots === "function"
       && typeof gisDockMeasureHeader === "function"
@@ -50119,7 +50327,7 @@ function gisDockSelfTestGD(){
     };
     const slotOf = function(pid){
       const chip = document.querySelector('#gisMinimizedDock [data-gis-min-panel="' + pid + '"]');
-      if (!chip) return "";
+      if (!chip) return document.querySelector('#gisMinimizedDock [data-gis-overflow-panel="' + pid + '"]') ? "overflow" : "";
       const slot = chip.closest("[data-gis-dock-slot]");
       return slot ? (slot.getAttribute("data-gis-dock-slot") || "") : "";
     };
@@ -50138,6 +50346,26 @@ function gisDockSelfTestGD(){
       return true;
     };
 
+    let fourSnapshot = null;
+    const dockSnapshot = function(items){ return items.map(function(item){
+      const chip = document.querySelector('#gisMinimizedDock [data-gis-min-panel="' + item.id + '"]');
+      const r = chip ? chip.getBoundingClientRect() : null;
+      return { slot: slotOf(item.id), x: r ? r.left : null, y: r ? r.top : null, w: r ? r.width : null };
+    }); };
+    const countsMatchPlan = function(items, plan){
+      return ["right", "left", "row", "overflow"].every(function(slot){
+        return items.filter(function(x){ return x.slot === slot; }).length === plan[slot];
+      }) && items.every(function(x){ return ["right", "left", "row", "overflow"].indexOf(x.slot) >= 0; });
+    };
+    const firstChipUsesAvailableSide = function(items, plan){
+      if (!items.length || plan.narrow) return true;
+      const first = items[0];
+      if (!(first.w > 0)) return false;
+      const required = Math.max(48, Math.ceil(first.w));
+      if (plan.rightAvail - 20 >= required) return first.slot === "right";
+      if (plan.leftAvail - 20 >= required) return first.slot === "left";
+      return true;
+    };
     try {
       for (let i = 0; i < seq.length; i++){
         const s = seq[i];
@@ -50148,24 +50376,21 @@ function gisDockSelfTestGD(){
         gisMinimizePanel(s.id, s.key);
         add("DOCK_GD_min_" + s.id, gisPanelIsMinimized(s.id));
         if (i === 3){
-          const four = seq.slice(0, 4).map(function(x){ return slotOf(x.id); });
-          add("DOCK_GD_four_not_all_row",
-            four.some(function(sl){ return sl === "right" || sl === "left"; }),
-            four.join(","));
+          fourSnapshot = dockSnapshot(seq.slice(0, 4));
+          add("DOCK_GD_four_layout_matches_usable_sides", countsMatchPlan(fourSnapshot, _gisDockLastPlan || {}) && firstChipUsesAvailableSide(fourSnapshot, _gisDockLastPlan || {}) && collisionOk(),
+            JSON.stringify({items:fourSnapshot, plan:_gisDockLastPlan}));
         }
         if (i === 4){
-          const slots5 = seq.map(function(x){ return slotOf(x.id); });
-          const first4 = slots5.slice(0, 4);
-          const fifth = slots5[4];
-          const jumped = first4.every(function(sl){ return sl === "row"; }) && fifth === "row";
-          add("DOCK_GD_no_5th_chip_jump", !jumped, slots5.join(","));
-          add("DOCK_GD_fifth_uses_lateral_or_stable",
-            fifth === "left" || fifth === "right" || (first4.indexOf("right") >= 0 && fifth !== "row") || fifth === "row" && first4.some(function(sl){ return sl === "right" || sl === "left"; }),
-            "fifth=" + fifth + " first4=" + first4.join(","));
+          const fiveSnapshot = dockSnapshot(seq);
           const plan = _gisDockLastPlan || {};
-          add("DOCK_GD_plan_has_sides_or_stable",
-            (plan.right > 0 || plan.left > 0 || plan.narrow === true),
-            JSON.stringify(plan));
+          const stable = !!fourSnapshot && fourSnapshot.every(function(before, j){
+            const after = fiveSnapshot[j];
+            if (before.slot !== after.slot) return false;
+            return before.slot === "overflow" || (Math.abs(before.x - after.x) <= 1 && Math.abs(before.y - after.y) <= 1);
+          });
+          add("DOCK_GD_no_5th_chip_jump", stable, JSON.stringify({before:fourSnapshot,after:fiveSnapshot.slice(0,4)}));
+          add("DOCK_GD_fifth_layout_and_collision", countsMatchPlan(fiveSnapshot, plan) && firstChipUsesAvailableSide(fiveSnapshot, plan) && collisionOk(), JSON.stringify(fiveSnapshot));
+          add("DOCK_GD_five_slots_match_plan", countsMatchPlan(fiveSnapshot, plan) && firstChipUsesAvailableSide(fiveSnapshot, plan) && plan.right + plan.left + plan.row + plan.overflow === 5, JSON.stringify(plan));
           add("DOCK_GD_collision_guard_5", collisionOk());
           add("DOCK_GD_single_dock_5", document.querySelectorAll("#gisMinimizedDock").length === 1);
           add("DOCK_GD_sot_len_5", (_gisMinimizedPanels || []).length === 5, "n=" + (_gisMinimizedPanels || []).length);
@@ -50295,8 +50520,7 @@ function gisModalEdgeResizeSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail == null ? "" : String(detail) });
   };
   try {
-    add("EDGE_build_234", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("EDGE_build_234", selfTestBuildMetadataCurrent());
     add("EDGE_compute_fn", typeof gisPanelResizeCompute === "function" && typeof gisPanelEnsureEdgeResizeHandles === "function");
     const down = { startL: 100, startT: 80, startW: 400, startH: 300 };
     const rE = gisPanelResizeCompute(down, "e", 40, 0, 200, 160, 2000, 2000);
@@ -50320,7 +50544,7 @@ function gisModalEdgeResizeSelfTest(){
     const host = document.createElement("dialog");
     host.id = "edgeResizeProbeDlg";
     host.className = "app-modal";
-    host.style.cssText = "position:fixed;left:40px;top:60px;width:400px;height:300px;margin:0;display:block;box-sizing:border-box;z-index:2147483000;";
+    host.style.cssText = "position:fixed;left:40px;top:60px;width:" + Math.min(400, Math.max(1, window.innerWidth - 80)) + "px;height:300px;margin:0;display:block;box-sizing:border-box;z-index:2147483000;";
     host.innerHTML = '<div class="app-modal-head" id="edgeResizeProbeHead"><div class="app-modal-head-actions"><button type="button" class="app-modal-min-btn" id="edgeResizeProbeMin">-</button><button type="button" class="app-modal-close" id="edgeResizeProbeClose">x</button></div></div><div class="gis-panel-resize-handle" data-role="gis-panel-resize" data-handle="se"></div>';
     try { if (typeof closeTrackModal === "function") closeTrackModal(); } catch(_){}
     try { if (typeof closeConvertModal === "function") closeConvertModal(); } catch(_){}
@@ -50453,8 +50677,7 @@ function gisDialogMinHistorySelfTest(){
   };
   try {
     add("DH_build_214",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+      selfTestBuildMetadataCurrent());
     add("DH_whitelist",
       String(gisMinimizePanel).indexOf('panelId === "convertModal"') >= 0
       && String(gisMinimizePanel).indexOf('panelId === "searchPanel"') >= 0
@@ -50599,8 +50822,7 @@ function gisWorkspaceLegendsFSelfTest(){
   const prevWs = (_legendWs && typeof _legendWs === "object")
     ? { df: Object.assign({}, _legendWs.df), atm: Object.assign({}, _legendWs.atm) } : null;
   try {
-    add("WSF_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("WSF_build_217", selfTestBuildMetadataCurrent());
     add("WSF_two_fns", typeof dflightEnsureRestrictionsLegend === "function"
       && typeof dflightEnsureAtm09UserLegend === "function"
       && typeof legendWorkspaceLayout === "function"
@@ -50815,8 +51037,7 @@ function gisWorkspaceLegendsFix1SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF1_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("WSF1_build_217", selfTestBuildMetadataCurrent());
     add("WSF1_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("enterSoloDf") >= 0 && src.indexOf("wasSoloDf") >= 0
@@ -50853,16 +51074,30 @@ function gisWorkspaceLegendsFix1SelfTest(){
     const dfSz = df ? legendWorkspaceReadSize(df) : { w: 180, h: 160 };
     const soloPos = rec ? legendWorkspacePlaceSingle(dfSz.w, dfSz.h, rec) : null;
     const dfLeftBoth = df ? parseFloat(df.style.left) : NaN;
-    const atmLeftBoth = atm ? parseFloat(atm.style.left) : NaN;
-    add("WSF1_A_both_sbs", !!(df && atm && !df.hidden && !atm.hidden && dfLeftBoth < atmLeftBoth));
+    const dfBothRect = df ? df.getBoundingClientRect() : null;
+    const atmBothRect = atm ? atm.getBoundingClientRect() : null;
+    const rectWithinSafe = function(r){
+      if (!r || !rec || !rec.hostRect || r.width <= 0 || r.height <= 0) return false;
+      const h = rec.hostRect, eps = 1;
+      return r.left >= Math.max(0, h.left + rec.left) - eps
+        && r.right <= Math.min(innerWidth, h.left + rec.right) + eps
+        && r.top >= Math.max(0, h.top + rec.top) - eps
+        && r.bottom <= Math.min(innerHeight, h.top + rec.bottom) + eps;
+    };
+    const gap = DFLIGHT_ATM09_UL_GAP_PX - 1;
+    const alongside = !!(dfBothRect && atmBothRect && atmBothRect.left - dfBothRect.right >= gap);
+    const stacked = !!(dfBothRect && atmBothRect && atmBothRect.top - dfBothRect.bottom >= gap);
+    add("WSF1_A_both_fit", !!(df && atm && !df.hidden && !atm.hidden
+      && rectWithinSafe(dfBothRect) && rectWithinSafe(atmBothRect) && (alongside || stacked)),
+      JSON.stringify({alongside:alongside,stacked:stacked,df:dfBothRect && dfBothRect.toJSON(),atm:atmBothRect && atmBothRect.toJSON()}));
 
     _dflightAtm09MasterUi = false;
     _dflightAtm09Preferred = false;
     dflightSyncPanelUi();
     const dfLeftSolo = df ? parseFloat(df.style.left) : NaN;
     add("WSF1_B_solo_df_right", !!(df && atm && df.hidden === false && atm.hidden === true && soloPos
-      && Math.abs(dfLeftSolo - soloPos.left) < 2
-      && dfLeftSolo > dfLeftBoth));
+      && Math.abs(dfLeftSolo - soloPos.left) < 2 && rectWithinSafe(df.getBoundingClientRect())
+      && (alongside ? dfLeftSolo > dfLeftBoth : stacked && dfLeftSolo >= dfLeftBoth - 2)));
 
     _legendWs.df.touched = true;
     _legendWs.df.left = 20;
@@ -50926,8 +51161,7 @@ function gisWorkspaceLegendsFix2SelfTest(){
   const prevPrev = (_legendWsPrev && typeof _legendWsPrev === "object")
     ? { showAtm: !!_legendWsPrev.showAtm, showDf: !!_legendWsPrev.showDf } : null;
   try {
-    add("WSF2_build_217", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("WSF2_build_217", selfTestBuildMetadataCurrent());
     add("WSF2_enter_solo_src", (function(){
       const src = String(legendWorkspaceLayout);
       return src.indexOf("wasSoloDf") >= 0 && src.indexOf("isSoloDf") >= 0
@@ -79703,8 +79937,7 @@ function buildLabelUxSelfTestAppBuildLabelUxA(){
   };
   try {
     add("BLUX_build_256",
-      typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 256
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "APP-BUILD-LABEL-UX-A");
+      selfTestBuildMetadataCurrent());
     add("BLUX_no_gisMapHud_dom", !document.getElementById("gisMapHud"));
     add("BLUX_gisEnsureMapHud_null",
       typeof gisEnsureMapHud === "function" && gisEnsureMapHud() === null
@@ -79712,9 +79945,16 @@ function buildLabelUxSelfTestAppBuildLabelUxA(){
     if (typeof updateGisMapHud === "function") updateGisMapHud();
     add("BLUX_updateGisMapHud_no_hud", !document.getElementById("gisMapHud"));
     add("BLUX_no_hud_create_source", (function(){
-      if (typeof gisEnsureMapHud !== "function") return false;
-      const src = String(gisEnsureMapHud);
-      return src.indexOf("createElement") < 0 && src.indexOf("gisMapHud") >= 0;
+      if (typeof gisEnsureMapHud !== "function" || typeof updateGisMapHud !== "function" || document.getElementById("gisMapHud")) return false;
+      const sentinel = document.createElement("div");
+      sentinel.id = "gisMapHud";
+      document.body.appendChild(sentinel);
+      try {
+        const result = gisEnsureMapHud();
+        if (result !== null || document.getElementById("gisMapHud")) return false;
+        updateGisMapHud(); updateGisMapHud();
+        return !document.getElementById("gisMapHud");
+      } finally { if (sentinel.isConnected) sentinel.remove(); }
     })());
     add("BLUX_no_build_chip_source", (function(){
       if (typeof updateGisMapHud !== "function") return false;
@@ -80934,8 +81174,8 @@ function gisInit(){
           const lay = gPanelLayouts && gPanelLayouts.convert;
           if (lay && lay.touched) clampConvertModalRect(cm);
           else {
-            positionConvertModalNearTopbar(cm);
             applyConvertModalGisDefaultSize(cm);
+            positionConvertModalNearTopbar(cm);
           }
           gisPanelSyncBodySize(cm, _convertPanelLayoutOpts());
         } catch(_){}
@@ -82104,6 +82344,15 @@ function gisPanelResetEwWidth(root, opts, handle){
   try { gisPanelSyncBodySize(root, opts); } catch(_){}
   try { if (typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
 }
+// Fit default panels on short screens without changing saved layouts.
+function gisFitSmallDefaultPanelRect(rect, opts, root){
+  if (!rect || (opts.key !== "search" && opts.key !== "favorites" && opts.key !== "convert" && !(root && root.id === "toolsDrawer")) ||
+      !window.matchMedia("(max-width: 768px), (pointer: coarse) and (max-height: 480px)").matches) return;
+  const saved = gisPanelGetLayout(opts.key, opts);
+  if (saved && saved.touched) return;
+  const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
+  rect.h = Math.min(rect.h, Math.max(1, window.innerHeight - rect.top - pad));
+}
 function gisPanelApplyLayout(root, opts){
   opts = opts || {};
   if (!root) return null;
@@ -82113,8 +82362,10 @@ function gisPanelApplyLayout(root, opts){
   if (cur && cur.touched && (Number.isFinite(cur.left) || Number.isFinite(cur.top) || Number.isFinite(cur.w) || Number.isFinite(cur.h))){
     rect = { left: cur.left, top: cur.top, w: cur.w, h: cur.h };
   }
-  if (!rect) rect = gisPanelDefaultRect(root, opts);
+  const useDefaultRect = !rect;
+  if (useDefaultRect) rect = gisPanelDefaultRect(root, opts);
   rect = gisPanelClampRect(rect, opts);
+  if (useDefaultRect) gisFitSmallDefaultPanelRect(rect, opts, root);
   // Opt into explicit positioning.
   root.style.left = rect.left + "px";
   root.style.top = rect.top + "px";
@@ -82139,7 +82390,11 @@ function gisPanelSyncBodySize(root, opts){
      the body are automatically accounted for — not just the head element. */
   const topOffset = Math.max(0, bodyBr.top - br.top);
   const minBody = Number.isFinite(opts.bodyMinH) ? opts.bodyMinH : GIS_PANEL_DEFAULTS.bodyMinH;
-  const mh = Math.max(minBody, (h - topOffset - 3));
+  const fitPanel = opts.key === "search" || opts.key === "favorites" || opts.key === "convert" || root.id === "toolsDrawer";
+  const saved = fitPanel ? gisPanelGetLayout(opts.key, opts) : null;
+  const fitSmallDefault = fitPanel && !(saved && saved.touched) &&
+    window.matchMedia("(max-width: 768px), (pointer: coarse) and (max-height: 480px)").matches;
+  const mh = fitSmallDefault ? Math.max(0, h - topOffset - 3) : Math.max(minBody, (h - topOffset - 3));
   body.style.maxHeight = mh + "px";
   try {
     body.style.overflowY = "auto";
@@ -82549,6 +82804,8 @@ function positionConvertModalNearTopbar(dlg){
     T = pad + 6;
   }
 
+  // Initial placement must be fully visible; user-moved layouts retain partial visibility.
+  L = Math.max(pad, Math.min(vw - w - pad, L));
   const opts = _convertPanelLayoutOpts();
   const rect = Number.isFinite(opts.partialMinVisible)
     ? gisPanelClampRectPartialVisible({ left: L, top: T, w, h }, opts)
@@ -82559,6 +82816,8 @@ function positionConvertModalNearTopbar(dlg){
       })();
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
+  // Keep the default panel below the header and within short viewports.
+  dlg.style.height = Math.min(h, Math.max(0, vh - rect.top - pad)) + "px";
 }
 
 function openConvertModal(){
@@ -83735,6 +83994,7 @@ function clampConvertModalRect(dlg){
   const rect = Number.isFinite(opts.partialMinVisible)
     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  gisFitSmallDefaultPanelRect(rect, opts, dlg);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -83786,8 +84046,8 @@ function applyConvertModalGisLayout(dlg){
     dlg.style.height = rect.h + "px";
     gisPanelSetLayout(opts.key, { left: rect.left, top: rect.top, w: rect.w, h: rect.h }, opts);
   } else {
-    positionConvertModalNearTopbar(dlg);
     applyConvertModalGisDefaultSize(dlg);
+    positionConvertModalNearTopbar(dlg);
   }
 }
 function wireWaypointModalFloatingGis(dlg){
@@ -83856,6 +84116,7 @@ function clampSearchPanelRect(dlg){
   const rect = Number.isFinite(opts.partialMinVisible)
     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  gisFitSmallDefaultPanelRect(rect, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -83871,6 +84132,7 @@ function clampFavoritesPanelRect(dlg){
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  gisFitSmallDefaultPanelRect(rect, opts);
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -84119,6 +84381,11 @@ function clampLayersPanelRect(dlg){
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  const layout = gisPanelGetLayout(opts.key, opts);
+  if (!layout || !layout.touched){
+    // Default height must fit below the live header; do not alter user-moved layouts.
+    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
+  }
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -84165,6 +84432,10 @@ function clampRangeRingsPanelRect(dlg){
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  const layout = gisPanelGetLayout(opts.key, opts);
+  if (!layout || !layout.touched){
+    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
+  }
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -90512,8 +90783,7 @@ function routingAvoidAreasSelfTest(){
   const prevDraw = _routingAvoidSession.drawActive;
   const prevDraft = _routingAvoidSession.draft;
   try {
-    add("RAA_build_220", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RAA_build_220", selfTestBuildMetadataCurrent());
     add("RAA_ors_gateway_base", typeof ROUTING_ORS_GATEWAY_BASE === "string" && ROUTING_ORS_GATEWAY_BASE.indexOf("api.openrouteservice") < 0);
     add("RAA_ors_no_auto_fallback", typeof routingCalculateRoute === "function" && typeof routingIsOrsService === "function");
     add("RAA_capability_flags", ROUTING_AVOID_GH_ALT_WITH_AVOID === true && ROUTING_AVOID_GH_ROUND_TRIP_WITH_AVOID === true);
@@ -93352,8 +93622,7 @@ function routingProviderCompareSelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPC_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RPC_build_222", selfTestBuildMetadataCurrent());
     add("RPC_no_boot_start", _routingCompareSession.startedAt === 0 && !_routingCompareSession.loading);
     add("RPC_cta_fn", typeof routingCompareStart === "function" && typeof routingCompareChoose === "function");
     add("RPC_auto_no_ors", routingCompareAutoCandidates().indexOf("ors") < 0
@@ -93484,10 +93753,8 @@ function routingCompareFix1SelfTest(){
   const prevOrs = _routingCompareSession.ors;
   const prevChosen = _routingCompareSession.chosen;
   try {
-    add("RPCF1_build_222", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
-    add("RPCF2_build_223", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A"
+    add("RPCF1_build_222", selfTestBuildMetadataCurrent());
+    add("RPCF2_build_223", selfTestBuildMetadataCurrent()
       && typeof routingAlternativesAllowed === "function");
     const cta = document.getElementById("routingCompareBtn");
     add("RPCF1_cta_primary", !!(cta && cta.classList.contains("btn-primary") && cta.id === "routingCompareBtn"));
@@ -93777,8 +94044,7 @@ function routingCompareFix3SelfTest(){
   const wp0 = Array.isArray(state.mapWaypoints) ? state.mapWaypoints.slice() : [];
   const poly0 = Array.isArray(state.gisPolygons) ? state.gisPolygons.slice() : [];
   try {
-    add("RPCF3_build_224", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RPCF3_build_224", selfTestBuildMetadataCurrent());
     const ptsEl = document.getElementById("routingPointsList");
     const zone = document.getElementById("routingRouteOptionsZone");
     const cmp = document.getElementById("routingCompareSection");
@@ -93952,8 +94218,7 @@ function routingCompareFix4SelfTest(){
   const savedGh = _routingCompareSession.gh;
   const savedOrs = _routingCompareSession.ors;
   try {
-    add("RPCF4_build_225", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RPCF4_build_225", selfTestBuildMetadataCurrent());
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -94052,8 +94317,7 @@ function routingRingWarnFix1SelfTest(){
   const savedWarn = (typeof r.ringSemanticWarn === "boolean") ? r.ringSemanticWarn : null;
   const savedWarnKey = r.roundTripWarnKey || "";
   try {
-    add("RWF1_build_226", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RWF1_build_226", selfTestBuildMetadataCurrent());
     try { routingSetRouteMode("round_trip"); } catch(_){}
     const oab = [];
     for (let i = 0; i < 10; i++) oab.push({ lat: 44.1, lon: 9.82 + i * 0.002 });
@@ -94113,8 +94377,7 @@ function routingCompareFix6SelfTest(){
     checks.push({ name: name, ok: !!ok, detail: detail || "" });
   };
   try {
-    add("RPCF6_build_228", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RPCF6_build_228", selfTestBuildMetadataCurrent());
     const params = document.getElementById("routingParamsRow");
     const modeGroup = document.getElementById("routingModeGroup");
     const modeRow = document.getElementById("routingModeRow");
@@ -94249,8 +94512,7 @@ function routingCompareFix5SelfTest(){
   const savedProv = r.previewStyleProvider;
   const savedOverlay = r.activeOverlayKey;
   try {
-    add("RPCF5_build_follows_app", typeof APP_BUILD_NUM !== "undefined" && APP_BUILD_NUM === 234
-      && typeof APP_BUILD_ID !== "undefined" && APP_BUILD_ID === "D-FLIGHT-CLOSE-CLEANUP-A");
+    add("RPCF5_build_follows_app", selfTestBuildMetadataCurrent());
     const params = document.getElementById("routingParamsRow");
     const prof = document.getElementById("routingProfileSelect");
     const speed = document.getElementById("routingSpeedSelect");
@@ -97496,6 +97758,10 @@ function clampRoutingPlannerPanelRect(dlg){
   const rect = Number.isFinite(opts.partialMinVisible)
     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
+  const layout = gisPanelGetLayout(opts.key, opts);
+  if (!layout || !layout.touched){
+    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
+  }
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -99621,6 +99887,10 @@ function clampAstroPanelRect(dlg){
   const L0 = parseFloat(dlg.style.left) || br.left;
   const T0 = parseFloat(dlg.style.top) || br.top;
   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
+  const layout = gisPanelGetLayout(opts.key, opts);
+  if (!layout || !layout.touched){
+    rect.h = Math.min(rect.h, Math.max(0, window.innerHeight - rect.top - opts.pad));
+  }
   dlg.style.left = rect.left + "px";
   dlg.style.top = rect.top + "px";
   dlg.style.width = rect.w + "px";
@@ -102837,7 +103107,7 @@ function init(){
   refreshGeolocationBarriers();
 
   // Self-check (silent). Only runs if URL has ?debug
-  if (/[?&]debug\b/.test(location.search)) runSelfCheck();
+  if (/[?&]debug\b/.test(location.search)) requestAnimationFrame(function(){ runSelfCheck(); });
 
   // TRACK-POINT-CAP-2000 — one-shot legacy clamp notice. If ensureSavedTracksState
   // or the init() migration had to trim pre-existing tracks above TRACK_POINTS_CAP
@@ -102887,177 +103157,179 @@ function installMiniMapResizeObserver(){
 
 /* ========================= SECTION 25: SELF-CHECK ========================= */
 function runSelfCheck(){
+  let failures = 0;
+  const check = function(condition, ...args){ if (!condition) failures++; console.assert(condition, ...args); };
   try {
     const c1 = latLonToUTM(5.259444, -4.043909);
-    console.assert(c1.zone === 30, "Zone should be 30 for Ivory Coast");
-    console.assert(c1.hemisphere === "N");
+    check(c1.zone === 30, "Zone should be 30 for Ivory Coast");
+    check(c1.hemisphere === "N");
     const back = utmToLatLon(c1.zone, c1.hemisphere, c1.easting, c1.northing);
-    console.assert(Math.abs(back.lat - 5.259444) < 1e-6, "UTM round-trip lat");
-    console.assert(Math.abs(back.lon + 4.043909) < 1e-6, "UTM round-trip lon");
+    check(Math.abs(back.lat - 5.259444) < 1e-6, "UTM round-trip lat");
+    check(Math.abs(back.lon + 4.043909) < 1e-6, "UTM round-trip lon");
 
     // FIX3 — UTM inverse mid-latitude / MGRS identity (fixed conformal→geodetic rearrange)
     const qaMgrs = "32T NQ 75167 01394";
     const qaP = parseMGRS(qaMgrs);
-    console.assert(qaP.easting === 575167 && qaP.northing === 4901394, "QA MGRS parse E/N");
+    check(qaP.easting === 575167 && qaP.northing === 4901394, "QA MGRS parse E/N");
     const qaLl = mgrsToLatLonExt(qaMgrs);
-    console.assert(Math.abs(qaLl.lat - 44.26190620) < 1e-7 && Math.abs(qaLl.lon - 9.94169824) < 1e-7, "QA MGRS lat/lon vs known");
+    check(Math.abs(qaLl.lat - 44.26190620) < 1e-7 && Math.abs(qaLl.lon - 9.94169824) < 1e-7, "QA MGRS lat/lon vs known");
     const qaU = latLonToUTM(qaLl.lat, qaLl.lon);
-    console.assert(Math.abs(qaU.easting - 575167) < 0.10 && Math.abs(qaU.northing - 4901394) < 0.10, "QA MGRS UTM RT <0.10 m");
-    console.assert(latLonToMGRS(qaLl.lat, qaLl.lon, 5) === "32T NQ 75167 01394", "QA MGRS cell identity");
-    console.assert(formatMgrsCanonicalFromParse(qaP) === "32T NQ 75167 01394", "MGRS canonical formatter");
-    console.assert(formatMgrsCanonicalFromParse(parseMGRS("32T NQ 75 01")) === "32T NQ 75 01", "MGRS reduced precision preserved");
+    check(Math.abs(qaU.easting - 575167) < 0.10 && Math.abs(qaU.northing - 4901394) < 0.10, "QA MGRS UTM RT <0.10 m");
+    check(latLonToMGRS(qaLl.lat, qaLl.lon, 5) === "32T NQ 75167 01394", "QA MGRS cell identity");
+    check(formatMgrsCanonicalFromParse(qaP) === "32T NQ 75167 01394", "MGRS canonical formatter");
+    check(formatMgrsCanonicalFromParse(parseMGRS("32T NQ 75 01")) === "32T NQ 75 01", "MGRS reduced precision preserved");
 
     const cmU = latLonToUTM(44.1, 9.0);
-    console.assert(cmU.zone === 32 && Math.abs(cmU.easting - 500000) < 1e-6, "CM 44.1N/9E easting");
-    console.assert(Math.abs(cmU.northing - 4882979.718) < 0.01, "CM 44.1N/9E northing known");
+    check(cmU.zone === 32 && Math.abs(cmU.easting - 500000) < 1e-6, "CM 44.1N/9E easting");
+    check(Math.abs(cmU.northing - 4882979.718) < 0.01, "CM 44.1N/9E northing known");
     const cmB = utmToLatLon(cmU.zone, cmU.hemisphere, cmU.easting, cmU.northing);
-    console.assert(Math.abs(cmB.lat - 44.1) < 1e-9 && Math.abs(cmB.lon - 9) < 1e-9, "CM inverse exact");
+    check(Math.abs(cmB.lat - 44.1) < 1e-9 && Math.abs(cmB.lon - 9) < 1e-9, "CM inverse exact");
 
     const hiU = latLonToUTM(60, 15);
-    console.assert(hiU.zone === 33 && Math.abs(hiU.easting - 500000) < 1e-6, "60N/15E zone/easting");
-    console.assert(Math.abs(hiU.northing - 6651411.190) < 0.01, "60N/15E northing known");
+    check(hiU.zone === 33 && Math.abs(hiU.easting - 500000) < 1e-6, "60N/15E zone/easting");
+    check(Math.abs(hiU.northing - 6651411.190) < 0.01, "60N/15E northing known");
     const hiB = utmToLatLon(hiU.zone, hiU.hemisphere, hiU.easting, hiU.northing);
-    console.assert(Math.abs(hiB.lat - 60) < 1e-9 && Math.abs(hiB.lon - 15) < 1e-9, "60N inverse exact");
+    check(Math.abs(hiB.lat - 60) < 1e-9 && Math.abs(hiB.lon - 15) < 1e-9, "60N inverse exact");
 
     const sU = latLonToUTM(-34, 18);
-    console.assert(sU.zone === 34 && sU.hemisphere === "S", "S34 zone/hem");
-    console.assert(sU.northing > 1000000 && sU.northing < 10000000, "S34 false northing");
+    check(sU.zone === 34 && sU.hemisphere === "S", "S34 zone/hem");
+    check(sU.northing > 1000000 && sU.northing < 10000000, "S34 false northing");
     const sB = utmToLatLon(sU.zone, sU.hemisphere, sU.easting, sU.northing);
-    console.assert(Math.abs(sB.lat + 34) < 1e-9 && Math.abs(sB.lon - 18) < 1e-9, "S34 inverse exact");
+    check(Math.abs(sB.lat + 34) < 1e-9 && Math.abs(sB.lon - 18) < 1e-9, "S34 inverse exact");
 
     const mg = latLonToMGRS(5.259444, -4.043909, 5);
-    console.assert(/^30N/.test(mg), "MGRS should start with 30N");
+    check(/^30N/.test(mg), "MGRS should start with 30N");
 
     // GIS-SEARCH-COORD-VALIDATION-CENTER-A / FIX1 — classify before geocoding
-    console.assert(typeof classifyGeoSearchInput === "function", "classifyGeoSearchInput present");
-    console.assert(classifyGeoSearchInput("").kind === "empty", "search classify empty");
-    console.assert(classifyGeoSearchInput("3 2t hu 12589 15323").kind === "coord_invalid", "invalid MGRS spaced");
-    console.assert(classifyGeoSearchInput("32T HU 12589 15323").kind === "coord_invalid", "invalid MGRS spaced2");
-    console.assert(classifyGeoSearchInput("32THU1258915323").kind === "coord_invalid", "invalid MGRS compact");
-    console.assert(classifyGeoSearchInput("32T HU 12").kind === "coord_invalid", "incomplete MGRS not LatLon");
-    console.assert(classifyGeoSearchInput("32T").kind === "coord_invalid", "incomplete MGRS zone+band");
-    console.assert(classifyGeoSearchInput("UTM 33T 291952").kind === "coord_invalid", "incomplete UTM");
-    console.assert(classifyGeoSearchInput("32I NU 12589 15323").kind === "coord_invalid", "invalid MGRS band I");
-    console.assert(classifyGeoSearchInput("32T NU 125891 15323").kind === "coord_invalid", "odd MGRS digits");
-    console.assert(classifyGeoSearchInput("DD 95 10").kind === "coord_invalid", "DD prefix out of range not BNG");
-    console.assert(classifyGeoSearchInput("La Spezia").kind === "place_text", "place text La Spezia");
-    console.assert(classifyGeoSearchInput("L'Aquila").kind === "place_text", "toponym apostrophe");
-    console.assert(classifyGeoSearchInput("Sant'Agata").kind === "place_text", "toponym apostrophe2");
-    console.assert(classifyGeoSearchInput("Cote d'Ivoire").kind === "place_text", "toponym apostrophe3");
-    console.assert(classifyGeoSearchInput("Via Roma 12 Milano").kind === "place_text", "address with digits");
-    console.assert(classifyGeoSearchInput("Via 20 Settembre 12").kind === "place_text", "address two numbers");
-    console.assert(classifyGeoSearchInput("Rue du 11 Novembre 10").kind === "place_text", "FR address numbers");
-    console.assert(classifyGeoSearchInput("Route 66 km 12").kind === "place_text", "route numbers");
-    console.assert(classifyGeoSearchInput("10041 Torino").kind === "place_text", "CAP+city place");
+    check(typeof classifyGeoSearchInput === "function", "classifyGeoSearchInput present");
+    check(classifyGeoSearchInput("").kind === "empty", "search classify empty");
+    check(classifyGeoSearchInput("3 2t hu 12589 15323").kind === "coord_invalid", "invalid MGRS spaced");
+    check(classifyGeoSearchInput("32T HU 12589 15323").kind === "coord_invalid", "invalid MGRS spaced2");
+    check(classifyGeoSearchInput("32THU1258915323").kind === "coord_invalid", "invalid MGRS compact");
+    check(classifyGeoSearchInput("32T HU 12").kind === "coord_invalid", "incomplete MGRS not LatLon");
+    check(classifyGeoSearchInput("32T").kind === "coord_invalid", "incomplete MGRS zone+band");
+    check(classifyGeoSearchInput("UTM 33T 291952").kind === "coord_invalid", "incomplete UTM");
+    check(classifyGeoSearchInput("32I NU 12589 15323").kind === "coord_invalid", "invalid MGRS band I");
+    check(classifyGeoSearchInput("32T NU 125891 15323").kind === "coord_invalid", "odd MGRS digits");
+    check(classifyGeoSearchInput("DD 95 10").kind === "coord_invalid", "DD prefix out of range not BNG");
+    check(classifyGeoSearchInput("La Spezia").kind === "place_text", "place text La Spezia");
+    check(classifyGeoSearchInput("L'Aquila").kind === "place_text", "toponym apostrophe");
+    check(classifyGeoSearchInput("Sant'Agata").kind === "place_text", "toponym apostrophe2");
+    check(classifyGeoSearchInput("Cote d'Ivoire").kind === "place_text", "toponym apostrophe3");
+    check(classifyGeoSearchInput("Via Roma 12 Milano").kind === "place_text", "address with digits");
+    check(classifyGeoSearchInput("Via 20 Settembre 12").kind === "place_text", "address two numbers");
+    check(classifyGeoSearchInput("Rue du 11 Novembre 10").kind === "place_text", "FR address numbers");
+    check(classifyGeoSearchInput("Route 66 km 12").kind === "place_text", "route numbers");
+    check(classifyGeoSearchInput("10041 Torino").kind === "place_text", "CAP+city place");
     const cDd = classifyGeoSearchInput("45.4642, 9.1900");
-    console.assert(cDd.kind === "coord_valid" && cDd.det.type === "LatLon", "DD valid");
-    console.assert(Math.abs(cDd.det.lat - 45.4642) < 1e-8 && Math.abs(cDd.det.lon - 9.19) < 1e-8, "DD known");
+    check(cDd.kind === "coord_valid" && cDd.det.type === "LatLon", "DD valid");
+    check(Math.abs(cDd.det.lat - 45.4642) < 1e-8 && Math.abs(cDd.det.lon - 9.19) < 1e-8, "DD known");
     const cEuro = classifyGeoSearchInput("45,5; 9,2");
-    console.assert(cEuro.kind === "coord_valid" && Math.abs(cEuro.det.lat - 45.5) < 1e-9 && Math.abs(cEuro.det.lon - 9.2) < 1e-9, "EU decimals");
+    check(cEuro.kind === "coord_valid" && Math.abs(cEuro.det.lat - 45.5) < 1e-9 && Math.abs(cEuro.det.lon - 9.2) < 1e-9, "EU decimals");
     const cMix = classifyGeoSearchInput("44.1, 9");
-    console.assert(cMix.kind === "coord_valid" && Math.abs(cMix.det.lat - 44.1) < 1e-9 && Math.abs(cMix.det.lon - 9) < 1e-9, "mixed DD comma");
-    console.assert(classifyGeoSearchInput("44 9").kind === "coord_valid", "integer DD pair");
-    console.assert(classifyGeoSearchInput("44.1N 9.8E").kind === "coord_valid", "glued hemisphere suffix");
-    console.assert(classifyGeoSearchInput("N44.1 E9.8").kind === "coord_valid", "glued hemisphere prefix");
-    console.assert(classifyGeoSearchInput("95.0 10").kind === "coord_invalid", "lat range space pair");
-    console.assert(classifyGeoSearchInput("95 10").kind === "coord_invalid", "lat range integer pair");
-    console.assert(classifyGeoSearchInput("32T NU 1258912 1532345").kind === "coord_invalid", "MGRS over-long digits");
+    check(cMix.kind === "coord_valid" && Math.abs(cMix.det.lat - 44.1) < 1e-9 && Math.abs(cMix.det.lon - 9) < 1e-9, "mixed DD comma");
+    check(classifyGeoSearchInput("44 9").kind === "coord_valid", "integer DD pair");
+    check(classifyGeoSearchInput("44.1N 9.8E").kind === "coord_valid", "glued hemisphere suffix");
+    check(classifyGeoSearchInput("N44.1 E9.8").kind === "coord_valid", "glued hemisphere prefix");
+    check(classifyGeoSearchInput("95.0 10").kind === "coord_invalid", "lat range space pair");
+    check(classifyGeoSearchInput("95 10").kind === "coord_invalid", "lat range integer pair");
+    check(classifyGeoSearchInput("32T NU 1258912 1532345").kind === "coord_invalid", "MGRS over-long digits");
     const cColon = classifyGeoSearchInput("DD:44.1,9.8");
-    console.assert(cColon.kind === "coord_valid" && Math.abs(cColon.det.lat - 44.1) < 1e-9 && Math.abs(cColon.det.lon - 9.8) < 1e-9, "DD colon no space");
-    console.assert(classifyGeoSearchInput("DD 44foo 9bar").kind === "coord_invalid", "DD junk not stripped");
-    console.assert(classifyGeoSearchInput("DD Via 20 Settembre 12").kind === "coord_invalid", "DD place words invalid");
-    console.assert(classifyGeoSearchInput("DD 44 30 9 12").kind === "coord_invalid", "DD does not become DDM");
+    check(cColon.kind === "coord_valid" && Math.abs(cColon.det.lat - 44.1) < 1e-9 && Math.abs(cColon.det.lon - 9.8) < 1e-9, "DD colon no space");
+    check(classifyGeoSearchInput("DD 44foo 9bar").kind === "coord_invalid", "DD junk not stripped");
+    check(classifyGeoSearchInput("DD Via 20 Settembre 12").kind === "coord_invalid", "DD place words invalid");
+    check(classifyGeoSearchInput("DD 44 30 9 12").kind === "coord_invalid", "DD does not become DDM");
     const cNeg = classifyGeoSearchInput("DD -44.1, 9.8");
-    console.assert(cNeg.kind === "coord_valid" && Math.abs(cNeg.det.lat + 44.1) < 1e-9 && Math.abs(cNeg.det.lon - 9.8) < 1e-9, "DD keeps minus");
+    check(cNeg.kind === "coord_valid" && Math.abs(cNeg.det.lat + 44.1) < 1e-9 && Math.abs(cNeg.det.lon - 9.8) < 1e-9, "DD keeps minus");
     const cNegC = classifyGeoSearchInput("DD:-44.1,9.8");
-    console.assert(cNegC.kind === "coord_valid" && Math.abs(cNegC.det.lat + 44.1) < 1e-9 && Math.abs(cNegC.det.lon - 9.8) < 1e-9, "DD colon keeps minus");
+    check(cNegC.kind === "coord_valid" && Math.abs(cNegC.det.lat + 44.1) < 1e-9 && Math.abs(cNegC.det.lon - 9.8) < 1e-9, "DD colon keeps minus");
     const cBoth = classifyGeoSearchInput("DD -44.1, -9.8");
-    console.assert(cBoth.kind === "coord_valid" && cBoth.det.lat < 0 && cBoth.det.lon < 0, "DD keeps both minuses");
+    check(cBoth.kind === "coord_valid" && cBoth.det.lat < 0 && cBoth.det.lon < 0, "DD keeps both minuses");
     const cDdmN = classifyGeoSearchInput("DDM -44 6 9 48");
-    console.assert(cDdmN.kind === "coord_valid" && Math.abs(cDdmN.det.lat + 44.1) < 1e-9, "DDM keeps minus");
+    check(cDdmN.kind === "coord_valid" && Math.abs(cDdmN.det.lat + 44.1) < 1e-9, "DDM keeps minus");
     const cDmsN = classifyGeoSearchInput("DMS -44 6 0 9 48 0");
-    console.assert(cDmsN.kind === "coord_valid" && Math.abs(cDmsN.det.lat + 44.1) < 1e-6, "DMS keeps minus");
+    check(cDmsN.kind === "coord_valid" && Math.abs(cDmsN.det.lat + 44.1) < 1e-6, "DMS keeps minus");
     const cSym = classifyGeoSearchInput("DMS 44\u00b06'0\" N 9\u00b049'0\" E");
-    console.assert(cSym.kind === "coord_valid" && Math.abs(cSym.det.lat - 44.1) < 1e-9, "DMS symbols with prefix");
+    check(cSym.kind === "coord_valid" && Math.abs(cSym.det.lat - 44.1) < 1e-9, "DMS symbols with prefix");
     const cDdSym = classifyGeoSearchInput("DD 44.1\u00b0 N 9.8\u00b0 E");
-    console.assert(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
-    console.assert(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
-    console.assert(classifyGeoSearchInput("44\u00b0 foo1 9\u00b0 bar2").kind === "coord_invalid", "bare junk degrees");
+    check(cDdSym.kind === "coord_valid" && Math.abs(cDdSym.det.lat - 44.1) < 1e-9 && Math.abs(cDdSym.det.lon - 9.8) < 1e-9, "DD degree symbol");
+    check(classifyGeoSearchInput("44 N S 9 E").kind === "coord_invalid", "contradictory hemispheres");
+    check(classifyGeoSearchInput("44\u00b0 foo1 9\u00b0 bar2").kind === "coord_invalid", "bare junk degrees");
     for (const q of ["DD 44 6 9 49", "DDM 44.1 9.8", "DMS 44.1 9.8", "DDM 44 N 9 8 1 E"]){
-      console.assert(classifyGeoSearchInput(q).kind === "coord_invalid", "declared format rejected by search " + q);
+      check(classifyGeoSearchInput(q).kind === "coord_invalid", "declared format rejected by search " + q);
       for (const parse of [parseFreeTextLatLon, autoDetect]){
         let rejected = false;
         try { parse(q); } catch(_){ rejected = true; }
-        console.assert(rejected, "declared format rejected without fallback " + q);
+        check(rejected, "declared format rejected without fallback " + q);
       }
-      console.assert(routingSearchTryParseCoords(q) == null, "routing rejects declared format " + q);
+      check(routingSearchTryParseCoords(q) == null, "routing rejects declared format " + q);
     }
     const anti = mgrsToLatLonExt("01NAA6602100000");
-    console.assert(anti.lon > 179.999 && anti.lon <= 180, "MGRS SW antimeridian normalized");
-    console.assert(latLonToUTM(84, 30).zone === 35, "Svalbard inclusive UTM upper latitude");
+    check(anti.lon > 179.999 && anti.lon <= 180, "MGRS SW antimeridian normalized");
+    check(latLonToUTM(84, 30).zone === 35, "Svalbard inclusive UTM upper latitude");
     let junkThrew = false;
     try { parseFreeTextLatLon("44\u00b0 foo1 9\u00b0 bar2"); } catch(_){ junkThrew = true; }
-    console.assert(junkThrew, "shared parser rejects junk degrees");
+    check(junkThrew, "shared parser rejects junk degrees");
     let addrThrew = false;
     try { autoDetect("Via 20 Settembre 12"); } catch(_){ addrThrew = true; }
-    console.assert(addrThrew, "autoDetect rejects street address");
+    check(addrThrew, "autoDetect rejects street address");
     let ddJunk = false;
     try { parseFreeTextLatLon("DD 44foo 9bar"); } catch(_){ ddJunk = true; }
-    console.assert(ddJunk, "shared parser rejects DD junk");
-    console.assert(routingSearchTryParseCoords("DD 44foo 9bar") == null, "routing search rejects DD junk");
-    console.assert(routingSearchTryParseCoords("Via 20 Settembre 12") == null, "routing search rejects address");
-    console.assert(classifyGeoSearchInput("44\u00b0 6foo 0\" N 9\u00b0 49bar 0\" E").kind === "coord_invalid", "bare alnum DMS");
-    console.assert(classifyGeoSearchInput("44.1N").kind === "coord_invalid", "lat-only suffix");
-    console.assert(classifyGeoSearchInput("N44.1").kind === "coord_invalid", "lat-only prefix");
-    console.assert(classifyGeoSearchInput("44.1 N").kind === "coord_invalid", "lat-only spaced");
-    console.assert(classifyGeoSearchInput("DMS 44 -6 0 N 9 49 0 E").kind === "coord_invalid", "negative minutes");
-    console.assert(classifyGeoSearchInput("DMS 44 6 -1 N 9 49 0 E").kind === "coord_invalid", "negative seconds");
-    console.assert(classifyGeoSearchInput("DD 44 N 9 N").kind === "coord_invalid", "duplicate axis N");
+    check(ddJunk, "shared parser rejects DD junk");
+    check(routingSearchTryParseCoords("DD 44foo 9bar") == null, "routing search rejects DD junk");
+    check(routingSearchTryParseCoords("Via 20 Settembre 12") == null, "routing search rejects address");
+    check(classifyGeoSearchInput("44\u00b0 6foo 0\" N 9\u00b0 49bar 0\" E").kind === "coord_invalid", "bare alnum DMS");
+    check(classifyGeoSearchInput("44.1N").kind === "coord_invalid", "lat-only suffix");
+    check(classifyGeoSearchInput("N44.1").kind === "coord_invalid", "lat-only prefix");
+    check(classifyGeoSearchInput("44.1 N").kind === "coord_invalid", "lat-only spaced");
+    check(classifyGeoSearchInput("DMS 44 -6 0 N 9 49 0 E").kind === "coord_invalid", "negative minutes");
+    check(classifyGeoSearchInput("DMS 44 6 -1 N 9 49 0 E").kind === "coord_invalid", "negative seconds");
+    check(classifyGeoSearchInput("DD 44 N 9 N").kind === "coord_invalid", "duplicate axis N");
     for (const q of ["45,5; 9,2", "45,5 9,2", "45,5;9,2", "+45,5; +9,2"]){
       const pe = parseFreeTextLatLon(q);
-      console.assert(pe.lat === 45.5 && pe.lon === 9.2, "shared parser euro decimals " + q);
+      check(pe.lat === 45.5 && pe.lon === 9.2, "shared parser euro decimals " + q);
       const de = autoDetect(q);
-      console.assert(de.lat === 45.5 && de.lon === 9.2, "autoDetect euro decimals " + q);
+      check(de.lat === 45.5 && de.lon === 9.2, "autoDetect euro decimals " + q);
       const re = routingSearchTryParseCoords(q);
-      console.assert(re && re.lat === 45.5 && re.lon === 9.2, "routing euro decimals " + q);
+      check(re && re.lat === 45.5 && re.lon === 9.2, "routing euro decimals " + q);
     }
     const pIntPair = parseFreeTextLatLon("45, 5");
-    console.assert(pIntPair.lat === 45 && pIntPair.lon === 5, "integer pair stays lat/lon");
+    check(pIntPair.lat === 45 && pIntPair.lon === 5, "integer pair stays lat/lon");
     for (const q of ["-44.1N 9.8E", "+44.1S 9.8E", "N-44.1 E9.8", "S+44.1 E9.8", "44.1N -9.8E", "44.1N +9.8W", "DMS -0 0 1 N 9 0 0 E", "DMS 44 -0 30 N 9 49 0 E"]){
       let threw = false;
       try { parseFreeTextLatLon(q); } catch(_){ threw = true; }
-      console.assert(threw, "shared parser rejects sign/hemisphere conflict " + q);
-      console.assert(classifyGeoSearchInput(q).kind === "coord_invalid", "search rejects sign/hemisphere conflict " + q);
-      console.assert(routingSearchTryParseCoords(q) == null, "routing rejects sign/hemisphere conflict " + q);
+      check(threw, "shared parser rejects sign/hemisphere conflict " + q);
+      check(classifyGeoSearchInput(q).kind === "coord_invalid", "search rejects sign/hemisphere conflict " + q);
+      check(routingSearchTryParseCoords(q) == null, "routing rejects sign/hemisphere conflict " + q);
     }
     const pNegS = parseFreeTextLatLon("-44.1S 9.8E");
-    console.assert(pNegS.lat === -44.1 && pNegS.lon === 9.8, "coherent minus + S");
+    check(pNegS.lat === -44.1 && pNegS.lon === 9.8, "coherent minus + S");
     const pPlusN = parseFreeTextLatLon("+44.1N 9.8E");
-    console.assert(pPlusN.lat === 44.1 && pPlusN.lon === 9.8, "coherent plus + N");
+    check(pPlusN.lat === 44.1 && pPlusN.lon === 9.8, "coherent plus + N");
     const pNeg0S = parseFreeTextLatLon("DMS -0 0 1 S 9 0 0 E");
-    console.assert(Math.abs(pNeg0S.lat + 1/3600) < 1e-12 && pNeg0S.lon === 9, "coherent -0 + S");
+    check(Math.abs(pNeg0S.lat + 1/3600) < 1e-12 && pNeg0S.lon === 9, "coherent -0 + S");
     const vPolyEuro = polygonValidateVertexCoordModalInputs("45,5", "9,2", "", "dd");
-    console.assert(vPolyEuro.ok && vPolyEuro.lat === 45.5 && vPolyEuro.lon === 9.2, "polygon Lat/Lon fields decimal comma");
-    console.assert(!polygonValidateVertexCoordModalInputs("45,5", "", "", "dd").ok, "polygon lone Lat field is not a pair");
+    check(vPolyEuro.ok && vPolyEuro.lat === 45.5 && vPolyEuro.lon === 9.2, "polygon Lat/Lon fields decimal comma");
+    check(!polygonValidateVertexCoordModalInputs("45,5", "", "", "dd").ok, "polygon lone Lat field is not a pair");
     const cNeg0 = classifyGeoSearchInput("DMS -0 0 1 9 0 0");
-    console.assert(cNeg0.kind === "coord_valid" && cNeg0.det.lat < 0 && Math.abs(cNeg0.det.lat + 1/3600) < 1e-12 && Math.abs(cNeg0.det.lon - 9) < 1e-12, "DMS -0 keeps sign");
+    check(cNeg0.kind === "coord_valid" && cNeg0.det.lat < 0 && Math.abs(cNeg0.det.lat + 1/3600) < 1e-12 && Math.abs(cNeg0.det.lon - 9) < 1e-12, "DMS -0 keeps sign");
     const cPlus = classifyGeoSearchInput("DMS +44 6 0 N 9 49 0 E");
-    console.assert(cPlus.kind === "coord_valid" && Math.abs(cPlus.det.lat - 44.1) < 1e-9 && Math.abs(cPlus.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lat");
+    check(cPlus.kind === "coord_valid" && Math.abs(cPlus.det.lat - 44.1) < 1e-9 && Math.abs(cPlus.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lat");
     const cPlusLon = classifyGeoSearchInput("DMS 44 6 0 N +9 49 0 E");
-    console.assert(cPlusLon.kind === "coord_valid" && Math.abs(cPlusLon.det.lat - 44.1) < 1e-9 && Math.abs(cPlusLon.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lon");
+    check(cPlusLon.kind === "coord_valid" && Math.abs(cPlusLon.det.lat - 44.1) < 1e-9 && Math.abs(cPlusLon.det.lon - (9 + 49/60)) < 1e-9, "DMS plus lon");
     const cLonFirst = classifyGeoSearchInput("E9.8 N44.1");
-    console.assert(cLonFirst.kind === "coord_valid" && Math.abs(cLonFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLonFirst.det.lon - 9.8) < 1e-9, "lon-first axis");
+    check(cLonFirst.kind === "coord_valid" && Math.abs(cLonFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLonFirst.det.lon - 9.8) < 1e-9, "lon-first axis");
     const cLatFirst = classifyGeoSearchInput("N44.1 E9.8");
-    console.assert(cLatFirst.kind === "coord_valid" && Math.abs(cLatFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLatFirst.det.lon - 9.8) < 1e-9, "lat-first axis");
-    console.assert(classifyGeoSearchInput("E9.8").kind === "coord_invalid", "lon-only incomplete");
-    console.assert(classifyGeoSearchInput("N44 6 0").kind === "coord_invalid", "lat DMS incomplete");
-    console.assert(classifyGeoSearchInput("44.1 N S").kind === "coord_invalid", "contradictory incomplete");
+    check(cLatFirst.kind === "coord_valid" && Math.abs(cLatFirst.det.lat - 44.1) < 1e-9 && Math.abs(cLatFirst.det.lon - 9.8) < 1e-9, "lat-first axis");
+    check(classifyGeoSearchInput("E9.8").kind === "coord_invalid", "lon-only incomplete");
+    check(classifyGeoSearchInput("N44 6 0").kind === "coord_invalid", "lat DMS incomplete");
+    check(classifyGeoSearchInput("44.1 N S").kind === "coord_invalid", "contradictory incomplete");
     const cMgrs = classifyGeoSearchInput("30nul8431881439");
-    console.assert(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
+    check(cMgrs.kind === "coord_valid" && cMgrs.det.type === "MGRS", "MGRS lowercase valid");
     const cUtm = classifyGeoSearchInput("33t 291952 4640699");
-    console.assert(cUtm.kind === "coord_valid" && cUtm.det.type === "UTM", "UTM lowercase valid");
-    console.assert(classifyGeoSearchInput("95.0, 10.0").kind === "coord_invalid", "lat out of range");
-    console.assert(classifyGeoSearchInput("45, 200").kind === "coord_invalid", "lon out of range");
+    check(cUtm.kind === "coord_valid" && cUtm.det.type === "UTM", "UTM lowercase valid");
+    check(classifyGeoSearchInput("95.0, 10.0").kind === "coord_invalid", "lat out of range");
+    check(classifyGeoSearchInput("45, 200").kind === "coord_invalid", "lon out of range");
 
     // MGRS parsing variants (spaced, compact, lowercase, with label)
     const a = mgrsToLatLonExt("30NUL8431881439");
@@ -103065,51 +103337,51 @@ function runSelfCheck(){
     const c = mgrsToLatLonExt("30 N UL 84318 81439");
     const d = mgrsToLatLonExt("30nul8431881439");
     const e = mgrsToLatLonExt("MGRS: 30NUL8431881439");
-    console.assert(Math.abs(a.lat - b.lat) < 1e-9 && Math.abs(a.lat - c.lat) < 1e-9, "MGRS spaced/compact agree");
-    console.assert(Math.abs(a.lat - d.lat) < 1e-9 && Math.abs(a.lat - e.lat) < 1e-9, "MGRS lowercase/labeled agree");
+    check(Math.abs(a.lat - b.lat) < 1e-9 && Math.abs(a.lat - c.lat) < 1e-9, "MGRS spaced/compact agree");
+    check(Math.abs(a.lat - d.lat) < 1e-9 && Math.abs(a.lat - e.lat) < 1e-9, "MGRS lowercase/labeled agree");
 
     // UTM parsing variants (spaced, token+letter, compact no-space)
     const u1 = parseUTMFree("33T 291952 4640699");
     const u2 = parseUTMFree("33 T 291952 4640699");
     const u3 = parseUTMFree("33T2919524640699");
     const u4 = parseUTMFree("UTM: 33T2919524640699");
-    console.assert(u1 && u2 && u3 && u4, "UTM variants parse");
-    console.assert(u1.zone === 33 && u3.zone === 33 && u3.easting === 291952 && u3.northing === 4640699,
+    check(u1 && u2 && u3 && u4, "UTM variants parse");
+    check(u1.zone === 33 && u3.zone === 33 && u3.easting === 291952 && u3.northing === 4640699,
       "Compact UTM split 6+7 correct");
 
     // Vincenty Roma-Abidjan
     const v = vincentyInverse(41.9028, 12.4964, 5.3600, -4.0083);
-    console.assert(Math.abs(v.distance/1000 - 4557) < 20, "Roma-Abidjan ~4557 km");
+    check(Math.abs(v.distance/1000 - 4366.528479734) < 0.001, "Roma-Abidjan WGS84 reference");
 
     // Vincenty direct: round trip (inverse → direct → should return near point 2)
     const vd = vincentyDirect(41.9028, 12.4964, v.distance, v.initialBearing);
-    console.assert(Math.abs(vd.lat - 5.3600) < 1e-5 && Math.abs(vd.lon - (-4.0083)) < 1e-5,
+    check(Math.abs(vd.lat - 5.3600) < 1e-5 && Math.abs(vd.lon - (-4.0083)) < 1e-5,
       "Vincenty direct round-trip matches inverse");
 
-    console.assert(typeof parseRangeRingDistancesInput === "function" && typeof buildGeodesicCircleRing === "function", "Range rings: core helpers");
+    check(typeof parseRangeRingDistancesInput === "function" && typeof buildGeodesicCircleRing === "function", "Range rings: core helpers");
     const prRr = parseRangeRingDistancesInput("1,5,10", "m");
-    console.assert(prRr.length === 3 && prRr[0] === 1 && prRr[1] === 5 && prRr[2] === 10, "Range rings: parse m list");
-    console.assert(rangeRingUnitToMeters(1, "km") === 1000 && rangeRingMetersToUnit(1852, "NM") === 1, "Range rings: unit m ↔ km/NM");
+    check(prRr.length === 3 && prRr[0] === 1 && prRr[1] === 5 && prRr[2] === 10, "Range rings: parse m list");
+    check(rangeRingUnitToMeters(1, "km") === 1000 && rangeRingMetersToUnit(1852, "NM") === 1, "Range rings: unit m ↔ km/NM");
     const ring0 = buildGeodesicCircleRing(0, 0, 1000, 90);
-    console.assert(ring0.length >= 5 && Math.abs(ring0[0].lat - ring0[ring0.length - 1].lat) < 1e-9 &&
+    check(ring0.length >= 5 && Math.abs(ring0[0].lat - ring0[ring0.length - 1].lat) < 1e-9 &&
       Math.abs(ring0[0].lon - ring0[ring0.length - 1].lon) < 1e-6, "Range rings: geodesic ring closed (vincentyDirect)");
 
     // Export builders produce valid-looking output
     const gpx = buildGPX([{lat:41.9028, lon:12.4964, name:"Roma"}]);
     const kml = buildKML([{lat:41.9028, lon:12.4964, name:"Roma"}]);
     const gj  = JSON.parse(buildGeoJSON([{lat:41.9028, lon:12.4964, name:"Roma"}]));
-    console.assert(/<gpx\b/.test(gpx) && /<wpt\b/.test(gpx), "GPX output valid");
-    console.assert(/<kml\b/.test(kml) && /<Placemark>/.test(kml), "KML output valid");
-    console.assert(gj.type === "FeatureCollection" && gj.features[0].geometry.type === "Point", "GeoJSON output valid");
+    check(/<gpx\b/.test(gpx) && /<wpt\b/.test(gpx), "GPX output valid");
+    check(/<kml\b/.test(kml) && /<Placemark>/.test(kml), "KML output valid");
+    check(gj.type === "FeatureCollection" && gj.features[0].geometry.type === "Point", "GeoJSON output valid");
 
     // Permalink round trip
     const link = encodePermalink(41.9028, 12.4964);
-    console.assert(/^#ll=41\.9028,12\.4964/.test(link), "Permalink encode format");
+    check(/^#ll=41\.9028,12\.4964/.test(link), "Permalink encode format");
 
     // Mils conversion: 360° = 6400 mils, 90° = 1600 mils, 45° = 800 mils
-    console.assert(Math.round(degToMils(360)) === 6400, "360° → 6400 mils");
-    console.assert(Math.round(degToMils(90))  === 1600, "90° → 1600 mils");
-    console.assert(Math.round(degToMils(45))  === 800,  "45° → 800 mils");
+    check(Math.round(degToMils(360)) === 6400, "360° → 6400 mils");
+    check(Math.round(degToMils(90))  === 1600, "90° → 1600 mils");
+    check(Math.round(degToMils(45))  === 800,  "45° → 800 mils");
 
     // Route exports: verify GPX track, KML LineString/Polygon, GeoJSON LineString/Polygon output structure.
     const routePts = [
@@ -103118,43 +103390,43 @@ function runSelfCheck(){
       { lat: 40.8518, lon: 14.2681, name: "Napoli" }
     ];
     const gpxOpen = buildGPXRoute(routePts, false, "TestOpen");
-    console.assert(gpxOpen.includes("<trk>") && gpxOpen.includes("<trkseg>") &&
+    check(gpxOpen.includes("<trk>") && gpxOpen.includes("<trkseg>") &&
                    (gpxOpen.match(/<trkpt/g) || []).length === 3,
                    "GPX open track should contain exactly 3 trkpt");
     const gpxClosed = buildGPXRoute(routePts, true, "TestClosed");
-    console.assert((gpxClosed.match(/<trkpt/g) || []).length === 4,
+    check((gpxClosed.match(/<trkpt/g) || []).length === 4,
                    "GPX closed track should have 4 trkpt (first repeated)");
 
     const kmlLine = buildKMLRoute(routePts, false);
-    console.assert(kmlLine.includes("<LineString>") && !kmlLine.includes("<Polygon>"),
+    check(kmlLine.includes("<LineString>") && !kmlLine.includes("<Polygon>"),
                    "KML open route should contain LineString, no Polygon");
     const kmlPoly = buildKMLRoute(routePts, true);
-    console.assert(kmlPoly.includes("<Polygon>") && kmlPoly.includes("<LinearRing>"),
+    check(kmlPoly.includes("<Polygon>") && kmlPoly.includes("<LinearRing>"),
                    "KML closed route should contain Polygon/LinearRing");
 
     const gjLine = JSON.parse(buildGeoJSONRoute(routePts, false));
     const lineFeat = gjLine.features.find(f => f.geometry.type === "LineString");
-    console.assert(lineFeat && lineFeat.geometry.coordinates.length === 3,
+    check(lineFeat && lineFeat.geometry.coordinates.length === 3,
                    "GeoJSON open route should have a LineString with 3 points");
     const gjPoly = JSON.parse(buildGeoJSONRoute(routePts, true));
     const polyFeat = gjPoly.features.find(f => f.geometry.type === "Polygon");
-    console.assert(polyFeat && polyFeat.geometry.coordinates[0].length === 4,
+    check(polyFeat && polyFeat.geometry.coordinates[0].length === 4,
                    "GeoJSON closed route should have a Polygon ring with 4 points (closed)");
 
     // QR encoder — structural checks. Matrix size + finder/timing/dark module
     // positions are standard; full output was cross-verified module-by-module
     // against python-qrcode in development.
     const qr = qrEncode("https://www.google.com/maps?q=45.464200,9.190000");
-    console.assert(qr.version === 4, "QR version selected: " + qr.version);
-    console.assert(qr.matrix.size === 4 * qr.version + 17, "QR matrix size formula");
+    check(qr.version === 4, "QR version selected: " + qr.version);
+    check(qr.matrix.size === 4 * qr.version + 17, "QR matrix size formula");
     const qm = qr.matrix.M, qs = qr.matrix.size;
-    console.assert(qm[0][0] === 1 && qm[0][6] === 1 && qm[6][0] === 1 && qm[6][6] === 1, "QR TL finder edges");
-    console.assert(qm[3][3] === 1 && qm[1][1] === 0, "QR TL finder center/ring");
-    console.assert(qm[qs - 8][8] === 1, "QR dark module");
+    check(qm[0][0] === 1 && qm[0][6] === 1 && qm[6][0] === 1 && qm[6][6] === 1, "QR TL finder edges");
+    check(qm[3][3] === 1 && qm[1][1] === 0, "QR TL finder center/ring");
+    check(qm[qs - 8][8] === 1, "QR dark module");
     for (let i = 8; i <= qs - 9; i++){
-      console.assert(qm[6][i] === (i % 2 === 0 ? 1 : 0), "QR horizontal timing at " + i);
+      check(qm[6][i] === (i % 2 === 0 ? 1 : 0), "QR horizontal timing at " + i);
     }
-    console.assert(qrSelectVersion(10) === 1 && qrSelectVersion(50) === 4, "QR version scales with payload");
+    check(qrSelectVersion(10) === 1 && qrSelectVersion(50) === 4, "QR version scales with payload");
 
     // Route / area: a 1°×1° square at the equator has sides ≈ 111.32 km and area ≈ 12,308 km²
     const square = [
@@ -103162,58 +103434,58 @@ function runSelfCheck(){
     ];
     const perim = routeDistance(square, true);
     const perimKm = perim / 1000;
-    console.assert(perimKm > 440 && perimKm < 450, "Square perimeter near 445 km: " + perimKm.toFixed(2));
+    check(perimKm > 440 && perimKm < 450, "Square perimeter near 445 km: " + perimKm.toFixed(2));
     const areaKm2 = sphericalPolygonArea(square) / 1e6;
-    console.assert(areaKm2 > 12200 && areaKm2 < 12400, "Square area near 12,308 km²: " + areaKm2.toFixed(1));
+    check(areaKm2 > 12200 && areaKm2 < 12400, "Square area near 12,308 km²: " + areaKm2.toFixed(1));
     // Open route = 3 sides, closed = perimeter (4 sides). Ratio ≈ 3/4 (small deviation due to curvature).
     const open = routeDistance(square, false);
-    console.assert(open > 0 && open < perim, "Open route shorter than closed perimeter");
+    check(open > 0 && open < perim, "Open route shorter than closed perimeter");
 
     // Plus Code — known vectors from Google OLC reference (test_data/encoding.csv)
-    console.assert(encodePlusCode(47.0000625, 8.0000625, 10)        === "8FVC2222+22",      "OLC 47.0000625,8.0000625 L10");
-    console.assert(encodePlusCode(20.3701125, 2.782234375, 11)      === "7FG49QCJ+2VX",     "OLC 20.3701125,2.782234375 L11");
-    console.assert(encodePlusCode(-41.2730625, 174.7859375, 10)     === "4VCPPQGP+Q9",      "OLC -41.2730625,174.7859375 L10");
-    console.assert(encodePlusCode(37.539669125, -122.375069724, 15) === "849VGJQF+VX7QR3J", "OLC 37.54,-122.37 L15");
-    console.assert(encodePlusCode(-89.9999375, -179.9999375, 10)    === "22222222+22",      "OLC near-South-Pole");
+    check(encodePlusCode(47.0000625, 8.0000625, 10)        === "8FVC2222+22",      "OLC 47.0000625,8.0000625 L10");
+    check(encodePlusCode(20.3701125, 2.782234375, 11)      === "7FG49QCJ+2VX",     "OLC 20.3701125,2.782234375 L11");
+    check(encodePlusCode(-41.2730625, 174.7859375, 10)     === "4VCPPQGP+Q9",      "OLC -41.2730625,174.7859375 L10");
+    check(encodePlusCode(37.539669125, -122.375069724, 15) === "849VGJQF+VX7QR3J", "OLC 37.54,-122.37 L15");
+    check(encodePlusCode(-89.9999375, -179.9999375, 10)    === "22222222+22",      "OLC near-South-Pole");
     // Longitude normalization: 181 → -179, etc.
-    console.assert(encodePlusCode(1, 181, 4) === "62H30000+",                                "OLC longitude wraparound");
+    check(encodePlusCode(1, 181, 4) === "62H30000+",                                "OLC longitude wraparound");
     // Structural: Rome has "+" at position 8, total 11 chars at L=10
     const plusRome = encodePlusCode(41.9028, 12.4964, 10);
-    console.assert(plusRome.length === 11 && plusRome.charAt(8) === "+", "OLC structural format: " + plusRome);
+    check(plusRome.length === 11 && plusRome.charAt(8) === "+", "OLC structural format: " + plusRome);
 
     // --- Plus Code DECODER round-trip: encode → decode returns the *center*
     // of the cell, which matches the input only if the input itself sits on
     // a cell center. We use the reference test vectors, which are centers. ---
     const d1 = decodePlusCode("8FVC2222+22");
-    console.assert(Math.abs(d1.lat - 47.0000625)  < 1e-9, "OLC decode lat L10: " + d1.lat);
-    console.assert(Math.abs(d1.lon - 8.0000625)   < 1e-9, "OLC decode lon L10: " + d1.lon);
+    check(Math.abs(d1.lat - 47.0000625)  < 1e-9, "OLC decode lat L10: " + d1.lat);
+    check(Math.abs(d1.lon - 8.0000625)   < 1e-9, "OLC decode lon L10: " + d1.lon);
     const d2 = decodePlusCode("7FG49QCJ+2VX");
-    console.assert(Math.abs(d2.lat - 20.3701125)   < 1e-9, "OLC decode lat L11: " + d2.lat);
-    console.assert(Math.abs(d2.lon - 2.782234375)  < 1e-9, "OLC decode lon L11: " + d2.lon);
+    check(Math.abs(d2.lat - 20.3701125)   < 1e-9, "OLC decode lat L11: " + d2.lat);
+    check(Math.abs(d2.lon - 2.782234375)  < 1e-9, "OLC decode lon L11: " + d2.lon);
     const d3 = decodePlusCode("4VCPPQGP+Q9");
-    console.assert(Math.abs(d3.lat - (-41.2730625)) < 1e-9, "OLC decode lat NZ: " + d3.lat);
-    console.assert(Math.abs(d3.lon - 174.7859375)   < 1e-9, "OLC decode lon NZ: " + d3.lon);
+    check(Math.abs(d3.lat - (-41.2730625)) < 1e-9, "OLC decode lat NZ: " + d3.lat);
+    check(Math.abs(d3.lon - 174.7859375)   < 1e-9, "OLC decode lon NZ: " + d3.lon);
     const d4 = decodePlusCode("849VGJQF+VX7QR3J");
     // L15 precision is sub-cm; successive 1/5 and 1/4 divisions in grid mode
     // accumulate floating-point error at the 10th-decimal level. Tolerance
     // of 1e-7 degrees ≈ 1.1 cm at the equator — well below the code's stated
     // accuracy (≈ 2 m for 15-char codes).
-    console.assert(Math.abs(d4.lat - 37.539669125)  < 1e-7, "OLC decode lat L15: " + d4.lat);
-    console.assert(Math.abs(d4.lon - (-122.375069724)) < 1e-6, "OLC decode lon L15: " + d4.lon);
+    check(Math.abs(d4.lat - 37.539669125)  < 1e-7, "OLC decode lat L15: " + d4.lat);
+    check(Math.abs(d4.lon - (-122.375069724)) < 1e-6, "OLC decode lon L15: " + d4.lon);
     // Spaces and lowercase are tolerated
     const d5 = decodePlusCode(" 8fvc2222+22 ");
-    console.assert(Math.abs(d5.lat - 47.0000625) < 1e-9, "OLC decode case/spaces: " + d5.lat);
+    check(Math.abs(d5.lat - 47.0000625) < 1e-9, "OLC decode case/spaces: " + d5.lat);
     // Invalid inputs throw
     let plusThrew = 0;
     try { decodePlusCode("not-a-code");  } catch(_){ plusThrew++; }
     try { decodePlusCode("QCJ+2VX");     } catch(_){ plusThrew++; } // short code unsupported
     try { decodePlusCode("1BC22222+22"); } catch(_){ plusThrew++; } // "1" not in alphabet
-    console.assert(plusThrew === 3, "OLC decode rejects invalid input: " + plusThrew);
+    check(plusThrew === 3, "OLC decode rejects invalid input: " + plusThrew);
     // looksLikePlusCode heuristic
-    console.assert(looksLikePlusCode("8FVC2222+22") === true,  "OLC heuristic: valid code");
-    console.assert(looksLikePlusCode("30NUL8431881439") === false, "OLC heuristic: MGRS not OLC");
-    console.assert(looksLikePlusCode("33T 291952 4640699") === false, "OLC heuristic: UTM not OLC");
-    console.assert(looksLikePlusCode("5.25, -4.04") === false, "OLC heuristic: decimal not OLC");
+    check(looksLikePlusCode("8FVC2222+22") === true,  "OLC heuristic: valid code");
+    check(looksLikePlusCode("30NUL8431881439") === false, "OLC heuristic: MGRS not OLC");
+    check(looksLikePlusCode("33T 291952 4640699") === false, "OLC heuristic: UTM not OLC");
+    check(looksLikePlusCode("5.25, -4.04") === false, "OLC heuristic: decimal not OLC");
 
     // CoT waypoint XML: export → parse → payload (no state/localStorage mutation).
     (function(){
@@ -103225,30 +103497,30 @@ function runSelfCheck(){
         meta: { notes: "n0", cotUid: "GOI-TEST-UID-1", cotType: COT_DEFAULT_TYPE }
       };
       const xml = buildCotXmlForWaypoints([wp], { timeOverride: new Date("2026-01-15T12:00:00.000Z") });
-      console.assert(/<goiCotWaypointBundle/.test(xml) && /<event version="2.0"/.test(xml), "CoT export bundle + event");
-      console.assert(xml.indexOf("GOI-TEST-UID-1") >= 0, "CoT export uid");
+      check(/<goiCotWaypointBundle/.test(xml) && /<event version="2.0"/.test(xml), "CoT export bundle + event");
+      check(xml.indexOf("GOI-TEST-UID-1") >= 0, "CoT export uid");
       const doc = parseCotXmlToDocument(xml);
       const evs = collectCotPointEvents(doc);
-      console.assert(evs.length === 1, "CoT parse event count: " + evs.length);
+      check(evs.length === 1, "CoT parse event count: " + evs.length);
       const pay = cotEventToWaypointPayload(evs[0]);
-      console.assert(pay && Math.abs(pay.lat - 44.1027) < 1e-6 && Math.abs(pay.lon - 9.8236) < 1e-6, "CoT roundtrip lat/lon");
-      console.assert(pay && String(pay.name).indexOf("SelfCoT") >= 0, "CoT callsign/name");
-      console.assert(pay && pay.meta && pay.meta.cotUid === "GOI-TEST-UID-1", "CoT uid in meta");
-      console.assert(pay && pay.meta && typeof pay.meta.cotImportFp === "string" && pay.meta.cotImportFp.length > 8, "CoT import fingerprint in meta");
+      check(pay && Math.abs(pay.lat - 44.1027) < 1e-6 && Math.abs(pay.lon - 9.8236) < 1e-6, "CoT roundtrip lat/lon");
+      check(pay && String(pay.name).indexOf("SelfCoT") >= 0, "CoT callsign/name");
+      check(pay && pay.meta && pay.meta.cotUid === "GOI-TEST-UID-1", "CoT uid in meta");
+      check(pay && pay.meta && typeof pay.meta.cotImportFp === "string" && pay.meta.cotImportFp.length > 8, "CoT import fingerprint in meta");
     })();
 
     // Italian datums — cross-verified against NTv2 grid-based pyproj reference.
     // Tolerance ~20 m for Gauss-Boaga (3-param Helmert limit) and <3 m for ED50.
     const gbRoma   = wgs84ToGaussBoaga(41.918328, 12.451389);
-    console.assert(gbRoma.fuso === "E" && Math.abs(gbRoma.easting - 2308656.63) < 20 && Math.abs(gbRoma.northing - 4643860.07) < 20,
+    check(gbRoma.fuso === "E" && Math.abs(gbRoma.easting - 2308656.63) < 20 && Math.abs(gbRoma.northing - 4643860.07) < 20,
       "Gauss-Boaga Roma (IGM Monte Mario): " + gbRoma.easting.toFixed(1) + "," + gbRoma.northing.toFixed(1));
     const gbMi     = wgs84ToGaussBoaga(45.464211, 9.190298);
-    console.assert(gbMi.fuso === "W" && Math.abs(gbMi.easting - 1514904.78) < 20 && Math.abs(gbMi.northing - 5034558.09) < 20,
+    check(gbMi.fuso === "W" && Math.abs(gbMi.easting - 1514904.78) < 20 && Math.abs(gbMi.northing - 5034558.09) < 20,
       "Gauss-Boaga Milano Duomo: " + gbMi.easting.toFixed(1) + "," + gbMi.northing.toFixed(1));
     const ed50Roma = wgs84ToED50(41.918328, 12.451389);
-    console.assert(Math.abs(ed50Roma.lat - 41.919318) < 1e-4 && Math.abs(ed50Roma.lon - 12.452316) < 1e-4,
+    check(Math.abs(ed50Roma.lat - 41.919318) < 1e-4 && Math.abs(ed50Roma.lon - 12.452316) < 1e-4,
       "ED50 Roma: " + ed50Roma.lat.toFixed(6) + "," + ed50Roma.lon.toFixed(6));
-    console.assert(isInsideItaly(41.9, 12.5) && !isInsideItaly(48.8, 2.3), "isInsideItaly bounding box");
+    check(isInsideItaly(41.9, 12.5) && !isInsideItaly(48.8, 2.3), "isInsideItaly bounding box");
 
     // Storage round trip: does not throw, and we can read what we wrote.
     // Phase 1 GIS stores are persisted; selection/undo remain transient.
@@ -103272,11 +103544,11 @@ function runSelfCheck(){
     state.redoStack = [];
     ensureGisState();
     const emptyGisFc = gisAllAsFeatureCollection();
-    console.assert(emptyGisFc.type === "FeatureCollection" && emptyGisFc.features.length === 0,
+    check(emptyGisFc.type === "FeatureCollection" && emptyGisFc.features.length === 0,
       "GIS read-lens returns valid empty FeatureCollection");
-    console.assert(state.gisLayers.length >= 3 && state.gisLayers.some(l => l.id === GIS_DEFAULT_LAYER_IDS.waypoints),
+    check(state.gisLayers.length >= 3 && state.gisLayers.some(l => l.id === GIS_DEFAULT_LAYER_IDS.waypoints),
       "GIS seed layers are present");
-    console.assert(gisActionRecord({ type: "selfcheck.stub", inverse: { type: "selfcheck.undo" } }) === true &&
+    check(gisActionRecord({ type: "selfcheck.stub", inverse: { type: "selfcheck.undo" } }) === true &&
       state.undoStack.length === 1 && state.redoStack.length === 0,
       "GIS undo scaffold records transient actions");
     const addedTrack = gisFeatureAdd("track", {
@@ -103294,19 +103566,19 @@ function runSelfCheck(){
       geometry: { type: "Polygon", coordinates: [[[12.49, 41.90], [12.50, 41.90], [12.50, 41.91], [12.49, 41.90]]] }
     }, { recordUndo: false });
     const gisFc = gisAllAsFeatureCollection();
-    console.assert(addedTrack && addedTrack.geometry.type === "LineString" && addedPoly && addedPoly.geometry.type === "Polygon",
+    check(addedTrack && addedTrack.geometry.type === "LineString" && addedPoly && addedPoly.geometry.type === "Polygon",
       "GIS feature CRUD accepts LineString and Polygon");
-    console.assert(gisFc.features.some(f => f.id === "_gis_line_") && gisFc.features.some(f => f.id === "_gis_poly_"),
+    check(gisFc.features.some(f => f.id === "_gis_line_") && gisFc.features.some(f => f.id === "_gis_poly_"),
       "GIS read-lens includes new track/polygon stores");
     saveStore();
     const reloaded = loadStore();
-    console.assert(reloaded && Array.isArray(reloaded.favorites) && reloaded.favorites.some(f => f.id === "_t_"),
+    check(reloaded && Array.isArray(reloaded.favorites) && reloaded.favorites.some(f => f.id === "_t_"),
       "Favorites persist through saveStore/loadStore");
-    console.assert(reloaded && Array.isArray(reloaded.gisTracks) && reloaded.gisTracks.some(f => f.id === "_gis_line_") &&
+    check(reloaded && Array.isArray(reloaded.gisTracks) && reloaded.gisTracks.some(f => f.id === "_gis_line_") &&
       Array.isArray(reloaded.gisPolygons) && reloaded.gisPolygons.some(f => f.id === "_gis_poly_") &&
       Array.isArray(reloaded.gisLayers) && reloaded.gisLayers.length >= 3,
       "GIS stores persist through saveStore/loadStore");
-    console.assert(!("undoStack" in reloaded) && !("redoStack" in reloaded) && !("gisSelection" in reloaded),
+    check(!("undoStack" in reloaded) && !("redoStack" in reloaded) && !("gisSelection" in reloaded),
       "GIS undo/selection remain transient");
     state.favorites = state.favorites.filter(f => f.id !== "_t_");
     state.gisTracks = prevGis.tracks;
@@ -103322,24 +103594,25 @@ function runSelfCheck(){
 
     // DMS parse
     const free = parseFreeTextLatLon("5°15'34.0\"N 4°02'38.1\"W");
-    console.assert(Math.abs(free.lat - 5.2594444) < 1e-4, "DMS free parse lat");
-    console.assert(Math.abs(free.lon + 4.0439167) < 1e-4, "DMS free parse lon");
+    check(Math.abs(free.lat - 5.2594444) < 1e-4, "DMS free parse lat");
+    check(Math.abs(free.lon + 4.0439167) < 1e-4, "DMS free parse lon");
 
     const wmmP = wmmMagneticField(48.85, 2.35, 0, new Date("2026-01-15T12:00:00Z"));
-    console.assert(Math.abs(wmmP.decl) < 90 && Math.abs(wmmP.declAnnual) < 5, "WMM decl Paris-ish: " + wmmP.decl);
+    check(Math.abs(wmmP.decl) < 90 && Math.abs(wmmP.declAnnual) < 5, "WMM decl Paris-ish: " + wmmP.decl);
     const st0 = SunCalc.getTimes(new Date("2026-06-01T12:00:00Z"), 0, 0, 0);
-    console.assert(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
+    check(st0.sunrise < st0.sunset, "SunCalc: sunrise before sunset (equator)");
 
     // D-FLIGHT-A/B/CDE/F parser+normalizer+overlay+helper-client self-test
     if (typeof dflightSelfTestAll === "function"){
       const _dfSt = dflightSelfTestAll();
-      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B/CDE/F selfTest failed");
+      check(_dfSt && _dfSt.ok === true, "D-FLIGHT-A/B/CDE/F selfTest failed");
     } else if (typeof dflightSelfTest === "function"){
       const _dfSt = dflightSelfTest();
-      console.assert(_dfSt && _dfSt.ok === true, "D-FLIGHT-A selfTest failed");
+      check(_dfSt && _dfSt.ok === true, "D-FLIGHT-A selfTest failed");
     }
 
-    console.log("✔ Self-check passed");
+    if (failures === 0) console.log("✔ Self-check passed");
+    else console.error("✘ Self-check failed: " + failures + " assertion(s)");
   } catch(e){
     console.error("✘ Self-check failed:", e);
   }

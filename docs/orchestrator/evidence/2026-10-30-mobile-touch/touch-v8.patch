@@ -1,0 +1,186 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index 21305f2..7224183 100644
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -12781,6 +12781,66 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
+ @media (max-width:600px){
+   body.gis-mode #dflightPanelClose { margin-right:8px; }
+ }
++/* Touch targets: keep actual controls in flow; no overlapping invisible hit areas. */
++@media (pointer:coarse), (max-width:768px){
++  body.gis-mode { --gis-topbar-btn-h:44px; }
++  body.gis-mode .header-ctrls .hdr-icon-btn:not(.hdr-icon-btn-print){ width:44px; min-width:44px; height:44px; min-height:44px; }
++  body.gis-mode #appTopbar .app-tab,
++  body.gis-mode #appTopbar .app-topbar-btn { min-width:44px; min-height:44px; height:44px; }
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls {
++    --ctrlW:52px;
++    top:12px;
++    max-height:max(44px, calc(100dvh - var(--gis-mobile-header-est, 132px) - var(--gis-footer-reserve, 0px) - 48px));
++    overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain;
++    -webkit-overflow-scrolling:touch;
++  }
++  body.gis-mode #gisMapMount .mini-map.mm-full .tile-map .tile-ctrls { top:12px; }
++  .app-modal-head { padding-top:6px; padding-bottom:6px; }
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-size .ts-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tile-zoom .tz-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .tmeas-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-exp,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-exp { min-width:44px; min-height:44px; }
++  /* The mobile column has an internal scrollbar: fit controls to its content width. */
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls > button,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-btn,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-exp,
++  body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-exp { width:100%; box-sizing:border-box; }
++  body.gis-mode #gisMapMount .tile-map .tlayer-item,
++  body.gis-mode #gisMapMount .tile-map .ttrk-menu-item,
++  body.gis-mode #gisMapMount .tile-map .twpt-menu-item { min-height:44px; }
++  .app-modal-close, .app-modal-min-btn,
++  .tools-drawer-head .drawer-close, .tab-drawer-close,
++  #layersPanelClose.app-modal-close,
++  .tile-map .tile-offline-float button.toff-close {
++    width:44px; height:44px; min-width:44px; min-height:44px; max-width:44px; max-height:44px;
++  }
++  body.gis-mode > header > #gisMinimizedDock .gis-dock-overflow-btn,
++  body.gis-mode > header > #gisMinimizedDock .gis-dock-overflow-item,
++  button.gis-minimized-dock-chip,
++  dialog.app-modal .btn, .tools-drawer .btn, .tab-drawer .btn,
++  #convertModalBody #btnMyLocation.geo-nav-btn,
++  #rrSourcePickerDialog .rr-source-picker-list .rr-pick-item { min-width:44px; min-height:44px; }
++}
++@media (max-width:768px){
++  body.gis-mode #gisMapMount .tile-map .tile-readout { right:max(66px, calc(env(safe-area-inset-right, 0px) + 60px)); }
++}
++
++@media (max-width:480px){
++  body.gis-mode #appTopbar .app-topbar-btn { flex-shrink:0; }
++}
++
++
++
++/* On very short screens the search hint and form share one scroll area. */
++@media (max-height:480px) and (max-width:768px), (max-height:480px) and (pointer:coarse){
++  body.gis-mode #searchPanel.gis-panel-floating[open] { overflow-y:auto; }
++  body.gis-mode #searchPanel.gis-panel-floating #searchPanelBody { max-height:none !important; overflow:visible !important; }
++}
++
+ </style>
+ </head>
+ <body class="gis-boot">
+@@ -24569,13 +24629,21 @@ function positionWaypointToolbarMenuGis(miniMapRoot){
+   const pad = 8;
+   const vw = window.innerWidth, vh = window.innerHeight;
+   const br = btn.getBoundingClientRect();
++  // Keep the menu within the actual space between GIS header and footer.
++  let safeTop = pad, safeBottom = vh - pad;
++  if (window.matchMedia("(pointer: coarse), (max-width: 768px)").matches){
++    const header = document.querySelector("body.gis-mode > header");
++    const footer = document.querySelector("body.gis-mode > footer");
++    if (header) safeTop = Math.max(safeTop, Math.ceil(header.getBoundingClientRect().bottom + pad));
++    if (footer) safeBottom = Math.min(safeBottom, Math.floor(footer.getBoundingClientRect().top - pad));
++    safeBottom = Math.max(safeTop + 44, safeBottom);
++    menu.style.maxHeight = Math.max(44, safeBottom - safeTop) + "px";
++  }
+   const mr = menu.getBoundingClientRect();
+   let left = Math.floor(br.left - mr.width - pad);
+-  let top = Math.floor(br.top);
++  let top = Math.max(safeTop, Math.min(Math.floor(br.top), Math.floor(safeBottom - mr.height)));
+   if (left < pad) left = pad;
+   if (left + mr.width > vw - pad) left = Math.max(pad, Math.floor(vw - pad - mr.width));
+-  if (top < pad) top = pad;
+-  if (top + mr.height > vh - pad) top = Math.max(pad, Math.floor(vh - pad - mr.height));
+   menu.style.left = left + "px";
+   menu.style.top = top + "px";
+   if (!_waypointToolbarMenuGisResizeBound){
+@@ -24626,13 +24694,21 @@ function positionTrackToolbarMenuGis(miniMapRoot){
+   const pad = 8;
+   const vw = window.innerWidth, vh = window.innerHeight;
+   const br = btn.getBoundingClientRect();
++  // Keep the menu within the actual space between GIS header and footer.
++  let safeTop = pad, safeBottom = vh - pad;
++  if (window.matchMedia("(pointer: coarse), (max-width: 768px)").matches){
++    const header = document.querySelector("body.gis-mode > header");
++    const footer = document.querySelector("body.gis-mode > footer");
++    if (header) safeTop = Math.max(safeTop, Math.ceil(header.getBoundingClientRect().bottom + pad));
++    if (footer) safeBottom = Math.min(safeBottom, Math.floor(footer.getBoundingClientRect().top - pad));
++    safeBottom = Math.max(safeTop + 44, safeBottom);
++    menu.style.maxHeight = Math.max(44, safeBottom - safeTop) + "px";
++  }
+   const mr = menu.getBoundingClientRect();
+   let left = Math.floor(br.left - mr.width - pad);
+-  let top = Math.floor(br.top);
++  let top = Math.max(safeTop, Math.min(Math.floor(br.top), Math.floor(safeBottom - mr.height)));
+   if (left < pad) left = pad;
+   if (left + mr.width > vw - pad) left = Math.max(pad, Math.floor(vw - pad - mr.width));
+-  if (top < pad) top = pad;
+-  if (top + mr.height > vh - pad) top = Math.max(pad, Math.floor(vh - pad - mr.height));
+   menu.style.left = left + "px";
+   menu.style.top = top + "px";
+   if (!_trackToolbarMenuGisResizeBound){
+@@ -82268,6 +82344,15 @@ function gisPanelResetEwWidth(root, opts, handle){
+   try { gisPanelSyncBodySize(root, opts); } catch(_){}
+   try { if (typeof scheduleSaveUiState === "function") scheduleSaveUiState(); } catch(_){}
+ }
++// Fit default panels on short screens without changing saved layouts.
++function gisFitSmallDefaultPanelRect(rect, opts, root){
++  if (!rect || (opts.key !== "search" && opts.key !== "favorites" && opts.key !== "convert" && !(root && root.id === "toolsDrawer")) ||
++      !window.matchMedia("(max-width: 768px), (pointer: coarse) and (max-height: 480px)").matches) return;
++  const saved = gisPanelGetLayout(opts.key, opts);
++  if (saved && saved.touched) return;
++  const pad = Number.isFinite(opts.pad) ? opts.pad : GIS_PANEL_DEFAULTS.pad;
++  rect.h = Math.min(rect.h, Math.max(1, window.innerHeight - rect.top - pad));
++}
+ function gisPanelApplyLayout(root, opts){
+   opts = opts || {};
+   if (!root) return null;
+@@ -82277,8 +82362,10 @@ function gisPanelApplyLayout(root, opts){
+   if (cur && cur.touched && (Number.isFinite(cur.left) || Number.isFinite(cur.top) || Number.isFinite(cur.w) || Number.isFinite(cur.h))){
+     rect = { left: cur.left, top: cur.top, w: cur.w, h: cur.h };
+   }
+-  if (!rect) rect = gisPanelDefaultRect(root, opts);
++  const useDefaultRect = !rect;
++  if (useDefaultRect) rect = gisPanelDefaultRect(root, opts);
+   rect = gisPanelClampRect(rect, opts);
++  if (useDefaultRect) gisFitSmallDefaultPanelRect(rect, opts, root);
+   // Opt into explicit positioning.
+   root.style.left = rect.left + "px";
+   root.style.top = rect.top + "px";
+@@ -82303,7 +82390,11 @@ function gisPanelSyncBodySize(root, opts){
+      the body are automatically accounted for — not just the head element. */
+   const topOffset = Math.max(0, bodyBr.top - br.top);
+   const minBody = Number.isFinite(opts.bodyMinH) ? opts.bodyMinH : GIS_PANEL_DEFAULTS.bodyMinH;
+-  const mh = Math.max(minBody, (h - topOffset - 3));
++  const fitPanel = opts.key === "search" || opts.key === "favorites" || opts.key === "convert" || root.id === "toolsDrawer";
++  const saved = fitPanel ? gisPanelGetLayout(opts.key, opts) : null;
++  const fitSmallDefault = fitPanel && !(saved && saved.touched) &&
++    window.matchMedia("(max-width: 768px), (pointer: coarse) and (max-height: 480px)").matches;
++  const mh = fitSmallDefault ? Math.max(0, h - topOffset - 3) : Math.max(minBody, (h - topOffset - 3));
+   body.style.maxHeight = mh + "px";
+   try {
+     body.style.overflowY = "auto";
+@@ -83903,6 +83994,7 @@ function clampConvertModalRect(dlg){
+   const rect = Number.isFinite(opts.partialMinVisible)
+     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
+     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
++  gisFitSmallDefaultPanelRect(rect, opts, dlg);
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
+@@ -84024,6 +84116,7 @@ function clampSearchPanelRect(dlg){
+   const rect = Number.isFinite(opts.partialMinVisible)
+     ? gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts)
+     : gisPanelClampRect({ left: L0, top: T0, w, h }, opts);
++  gisFitSmallDefaultPanelRect(rect, opts);
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
+@@ -84039,6 +84132,7 @@ function clampFavoritesPanelRect(dlg){
+   const L0 = parseFloat(dlg.style.left) || br.left;
+   const T0 = parseFloat(dlg.style.top) || br.top;
+   const rect = gisPanelClampRectPartialVisible({ left: L0, top: T0, w, h }, opts);
++  gisFitSmallDefaultPanelRect(rect, opts);
+   dlg.style.left = rect.left + "px";
+   dlg.style.top = rect.top + "px";
+   dlg.style.width = rect.w + "px";
