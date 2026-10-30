@@ -16084,7 +16084,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 269 — percorsi terrestri</h4><ul><li>Esclusi i collegamenti marittimi dai percorsi calcolati.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -19375,6 +19375,9 @@ const I18N = {
     "routing.errorNetwork":"Impossibile raggiungere GraphHopper.",
     "routing.errorHttp":"Errore HTTP durante il calcolo del percorso.",
     "routing.errorNoPath":"Nessun percorso disponibile per i punti selezionati.",
+    "routing.landUnavailable":"Percorso terrestre non disponibile senza collegamenti marittimi.",
+    "routing.landUnverified":"Impossibile verificare che il percorso sia terrestre.",
+    "routing.landSnapFar":"Il percorso si aggancia troppo lontano da un punto scelto. Avvicina il punto a una strada terrestre.",
     "routing.errorInvalidResponse":"Risposta del router non valida.",
     "routing.errorCors":"Errore CORS / rete durante il calcolo del percorso.",
     "routing.errorGeneric":"Errore durante la richiesta al router.",
@@ -25630,10 +25633,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-EXPORT-ALIGNMENT-A";
-const APP_BUILD_DETAIL = "Allineamento Esporta e apertura del pannello Strumenti.";
+const APP_BUILD_ID = "ROUTING-LAND-ONLY-NO-FERRY-A";
+const APP_BUILD_DETAIL = "Percorsi terrestri senza collegamenti marittimi.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 268;
+const APP_BUILD_NUM = 269;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -86695,7 +86698,7 @@ const ROUTING_SNAP_SOFT_DELTA_M = 50;
 const ROUTING_SNAP_MAX_DELTA_M = 250;
 const ROUTING_GRAPHHOPPER_TIMEOUT_MS = 20000;
 const ROUTING_GRAPHHOPPER_INFO_TIMEOUT_MS = 3000;
-/** CH-first alternative routes (GraphHopper 11). Do not send ch.disable. */
+/** Alternative route limits (GraphHopper 11; land-only requires flexible routing). */
 const ROUTING_ALTERNATIVE_MAX_PATHS = 3;
 const ROUTING_ALTERNATIVE_MAX_WEIGHT_FACTOR = 1.4;
 const ROUTING_ALTERNATIVE_MAX_SHARE_FACTOR = 0.6;
@@ -89398,12 +89401,7 @@ function routingBuildRoutePointsLonLatFromSnap(){
       blocking.push({ index: i, id: p.id, status: st });
       continue;
     }
-    if ((st === "verified" || st === "confirmed") &&
-        Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
-      pointsLonLat.push([Number(p.snapLon), Number(p.snapLat)]);
-    } else {
-      pointsLonLat.push([Number(p.lon), Number(p.lat)]);
-    }
+    pointsLonLat.push([Number(p.lon), Number(p.lat)]);
   }
   if (blocking.length) return { ok: false, pointsLonLat: [], blocking: blocking };
   return { ok: true, pointsLonLat: pointsLonLat, blocking: [] };
@@ -90023,12 +90021,7 @@ function routingBuildClosedLoopLonLatFromSnap(){
       blocking.push({ index: i, id: p.id, status: stt });
       continue;
     }
-    if ((stt === "verified" || stt === "confirmed") &&
-        Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
-      pointsLonLat.push([Number(p.snapLon), Number(p.snapLat)]);
-    } else {
-      pointsLonLat.push([Number(p.lon), Number(p.lat)]);
-    }
+    pointsLonLat.push([Number(p.lon), Number(p.lat)]);
   }
   if (blocking.length) return { ok: false, pointsLonLat: [], blocking: blocking };
   if (pointsLonLat.length < 2) return { ok: false, pointsLonLat: [], blocking: [] };
@@ -90158,9 +90151,14 @@ function routingAvoidPreflightBlock(opts){
 function routingApplyAvoidPayloadToBody(body){
   if (!body || typeof body !== "object") return body;
   const payload = routingBuildAvoidAreasCustomModel();
-  if (!payload) return body;
-  body.custom_model = payload.custom_model;
+  const model = payload && payload.custom_model ? payload.custom_model : {};
+  model.priority = (Array.isArray(model.priority) ? model.priority : []).concat([
+    { if: "road_environment == FERRY", multiply_by: "0" }
+  ]);
+  body.custom_model = model;
   body["ch.disable"] = true;
+  body.details = ["road_environment"];
+  body.snap_preventions = ["ferry"];
   return body;
 }
 function routingAvoidTouchInvalidatePreview(){
@@ -90557,13 +90555,13 @@ function routingAvoidAreasSelfTest(){
       _routingAvoidSession.areas = [];
       const b2 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: false });
       routingApplyAvoidPayloadToBody(b2);
-      return !b2.custom_model && !("ch.disable" in b2) && !b2.algorithm;
+      return !!(b2.custom_model && b2.custom_model.priority.some(function(x){ return x.if === "road_environment == FERRY" && x.multiply_by === "0"; }) && b2["ch.disable"] === true && !b2.algorithm);
     })());
     add("RAA_payload_no_avoid_alt", (function(){
       _routingAvoidSession.areas = [];
       const b3 = routingBuildGraphhopperRouteBody("hiking", [[9.82, 44.10], [9.85, 44.12]], { withAlternatives: true });
       routingApplyAvoidPayloadToBody(b3);
-      return !b3.custom_model && b3.algorithm === "alternative_route";
+      return !!(b3.custom_model && b3.custom_model.priority.some(function(x){ return x.if === "road_environment == FERRY" && x.multiply_by === "0"; }) && b3.algorithm === "alternative_route");
     })());
     add("RAA_gis_polygons_untouched", Array.isArray(state.gisPolygons));
   } catch (e){
@@ -90861,10 +90859,6 @@ function routingBuildRoundTripStartLonLatFromSnap(){
   const st = p.snapStatus || "unverified";
   if (routingSnapStatusIsBlocking(st) || st === "unverified" || st === "stale")
     return { ok: false, pointLonLat: null, status: st };
-  if ((st === "verified" || st === "confirmed") &&
-      Number.isFinite(Number(p.snapLat)) && Number.isFinite(Number(p.snapLon))){
-    return { ok: true, pointLonLat: [Number(p.snapLon), Number(p.snapLat)] };
-  }
   return { ok: true, pointLonLat: [Number(p.lon), Number(p.lat)] };
 }
 async function routingCalculateRoundTripGraphhopper(){
@@ -91065,6 +91059,7 @@ async function routingCalculateRoundTripGraphhopper(){
   let timeoutId = null;
   let best = null;
   let lastGhMsg = "";
+  let landFailure = "";
 
   function armRouteTimeout(){
     if (timeoutId){ try { clearTimeout(timeoutId); } catch(_){} }
@@ -91132,14 +91127,16 @@ async function routingCalculateRoundTripGraphhopper(){
         }
         if (isAbort || timedOut) throw eCand;
         if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
+        if (routingLandNoConnection(eCand)) landFailure = "routing.landUnavailable";
         try {
           if (eCand && eCand.data && typeof eCand.data.message === "string") lastGhMsg = eCand.data.message;
         } catch(_){}
         continue;
       }
       if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
-      const validated = routingValidateGraphhopperResponse(data);
+      const validated = routingValidateGraphhopperResponse(data, [startSnap.pointLonLat]);
       if (!validated.ok){
+        if (validated.errKey === "routing.landUnverified" || validated.errKey === "routing.landSnapFar") landFailure = validated.errKey;
         try {
           if (data && typeof data.message === "string") lastGhMsg = data.message;
         } catch(_){}
@@ -91157,9 +91154,9 @@ async function routingCalculateRoundTripGraphhopper(){
 
     if (!state._routing || state._routing.requestSequence !== reqSeq || state._routing.requestController !== controller) return;
     if (!best){
-      r.routeError = "routing.roundTripNoCandidate";
-      let msg = routingT("routing.roundTripNoCandidate", "Nessun anello valido generato.");
-      if (lastGhMsg) msg = msg + ": " + String(lastGhMsg).slice(0, 180);
+      r.routeError = landFailure || "routing.roundTripNoCandidate";
+      let msg = routingT(r.routeError, r.routeError);
+      if (lastGhMsg && !landFailure) msg = msg + ": " + String(lastGhMsg).slice(0, 180);
       routingSetStatus(msg, true);
       routingSetRoundTripFeedback(msg, "err");
       return;
@@ -91386,10 +91383,12 @@ function routingMergeOutAndBackCoordinates(outbound, ret, opts){
   }
   const last = out[out.length - 1];
   const first = bak[0];
-  const same = routingPointsApproxEqualM(last, first, tolM);
+  // An imprecise match would create a synthetic segment not supplied by either provider.
+  const same = last.lat === first.lat && last.lon === first.lon;
   const merged = out.slice();
-  const startIdx = same ? 1 : 0;
-  for (let i = startIdx; i < bak.length; i++) merged.push(bak[i]);
+  // Never invent a connecting segment between independently calculated legs.
+  if (!same) return null;
+  for (let i = 1; i < bak.length; i++) merged.push(bak[i]);
   if (merged.length < 2) return null;
   return merged;
 }
@@ -91481,6 +91480,88 @@ function routingFocusResultAfterSuccess(){
     try { card.scrollIntoView(false); } catch(_){}
   }
 }
+function routingLandDetailsCoverGeometry(intervals, pointCount, allowed){
+  if (!Array.isArray(intervals) || !intervals.length || !Number.isInteger(pointCount) || pointCount < 2) return false;
+  let end = 0;
+  for (let i = 0; i < intervals.length; i++){
+    const x = intervals[i];
+    if (!Array.isArray(x) || x.length !== 3 || !Number.isInteger(x[0]) || !Number.isInteger(x[1]) ||
+        x[0] !== end || x[1] <= x[0] || x[1] >= pointCount || !allowed(x[2])) return false;
+    end = x[1];
+  }
+  return end === pointCount - 1;
+}
+function routingLandNoConnection(err){
+  if (!err || err.kind !== "http") return false;
+  if (err.status === 404 && err.data && err.data.error === "ors_not_found") return true;
+  const hints = err.data && Array.isArray(err.data.hints) ? err.data.hints : [];
+  return hints.some(function(h){ return h && typeof h.details === "string" && /ConnectionNotFoundException$/.test(h.details); });
+}
+function routingLandSnapVerified(requested, snapped){
+  if (!Array.isArray(requested) || !requested.length || !Array.isArray(snapped) || snapped.length !== requested.length) return false;
+  return requested.every(function(p, i){
+    const q = snapped[i];
+    if (!Array.isArray(p) || !Array.isArray(q) || p.length < 2 || q.length < 2 ||
+        ![p[0], p[1], q[0], q[1]].every(function(n){ return typeof n === "number" && Number.isFinite(n); })) return false;
+    const d = routingHaversineMeters(p[1], p[0], q[1], q[0]);
+    return Number.isFinite(d) && d <= ROUTING_SNAP_SOFT_DELTA_M;
+  });
+}
+function routingGraphhopperSnapVerified(path, requested){
+  const snapped = path && path.snapped_waypoints && path.snapped_waypoints.coordinates;
+  if (!Array.isArray(snapped)) return false;
+  // An automatic loop contains generated intermediate waypoints in addition to its start.
+  const relevant = requested && requested.length === 1 ? snapped.slice(0, 1) : snapped;
+  if (!routingLandSnapVerified(requested, relevant)) return false;
+  const geometry = path && path.points && path.points.coordinates;
+  if (!Array.isArray(geometry) || !geometry.length || !Array.isArray(geometry[0]) ||
+      !Number.isFinite(geometry[0][0]) || !Number.isFinite(geometry[0][1]) ||
+      routingHaversineMeters(relevant[0][1], relevant[0][0], geometry[0][1], geometry[0][0]) > 1) return false;
+  let cursor = 0;
+  for (let i = 0; i < relevant.length; i++){
+    let found = false;
+    while (cursor < geometry.length){
+      const q = geometry[cursor++], p = relevant[i];
+      if (Array.isArray(q) && q.length >= 2 && Number.isFinite(q[0]) && Number.isFinite(q[1]) &&
+          routingHaversineMeters(p[1], p[0], q[1], q[0]) <= 1){ found = true; break; }
+    }
+    if (!found) return false;
+  }
+  if (requested.length > 1){
+    const last = geometry[geometry.length - 1], end = relevant[relevant.length - 1];
+    if (!Array.isArray(last) || routingHaversineMeters(end[1], end[0], last[1], last[0]) > 1) return false;
+  }
+  return true;
+}
+function routingOrsSnapVerified(feature, requested){
+  const points = feature && feature.geometry && feature.geometry.coordinates;
+  const indexes = feature && feature.properties && feature.properties.way_points;
+  if (!Array.isArray(points) || !Array.isArray(indexes) || !Array.isArray(requested) || !requested.length) return false;
+  if (requested.length === 1){
+    if (!indexes.length || indexes[0] !== 0) return false;
+    return routingLandSnapVerified(requested, [points[0]]);
+  }
+  if (indexes.length !== requested.length || indexes[0] !== 0 || indexes[indexes.length - 1] !== points.length - 1) return false;
+  for (let i = 0; i < indexes.length; i++){
+    if (!Number.isInteger(indexes[i]) || indexes[i] < 0 || indexes[i] >= points.length || (i && indexes[i] < indexes[i - 1])) return false;
+  }
+  return routingLandSnapVerified(requested, indexes.map(function(i){ return points[i]; }));
+}
+function routingGraphhopperLandVerified(pathObj){
+  const points = pathObj && pathObj.points && pathObj.points.coordinates;
+  const details = pathObj && pathObj.details && pathObj.details.road_environment;
+  return Array.isArray(points) && routingLandDetailsCoverGeometry(details, points.length, function(value){
+    return typeof value === "string" && ["road", "bridge", "tunnel", "ford"].indexOf(value.toLowerCase()) >= 0;
+  });
+}
+function routingOrsLandVerified(feature){
+  const points = feature && feature.geometry && feature.geometry.coordinates;
+  const extras = feature && feature.properties && feature.properties.extras;
+  const values = extras && extras.waytype && extras.waytype.values;
+  return Array.isArray(points) && routingLandDetailsCoverGeometry(values, points.length, function(value){
+    return Number.isInteger(value) && value >= 1 && value <= 8 || value === 10;
+  });
+}
 function routingParseGraphhopperPath(pathObj, originalIndex){
   if (!pathObj || typeof pathObj !== "object") return null;
   const points = pathObj.points;
@@ -91540,13 +91621,17 @@ function routingParseGraphhopperPath(pathObj, originalIndex){
     metrics: metrics
   };
 }
-function routingValidateGraphhopperResponse(data){
+function routingValidateGraphhopperResponse(data, requestedPoints){
   if (!data || typeof data !== "object") return { ok: false, errKey: "routing.errorInvalidResponse" };
   const paths = Array.isArray(data.paths) ? data.paths : null;
   if (!paths || paths.length < 1) return { ok: false, errKey: "routing.errorNoPath" };
 
   const alternatives = [];
   const maxScan = Math.min(paths.length, ROUTING_ALTERNATIVE_MAX_PATHS);
+  for (let i = 0; i < maxScan; i++){
+    if (!routingGraphhopperLandVerified(paths[i])) return { ok: false, errKey: "routing.landUnverified" };
+    if (!routingGraphhopperSnapVerified(paths[i], requestedPoints)) return { ok: false, errKey: "routing.landSnapFar" };
+  }
   for (let i = 0; i < maxScan; i++){
     const alt = routingParseGraphhopperPath(paths[i], i);
     if (alt) alternatives.push(alt);
@@ -92039,9 +92124,12 @@ function routingBuildOrsAvoidPolygons(){
 function routingApplyAvoidPayloadToOrsBody(body){
   if (!body || typeof body !== "object") return body;
   const poly = routingBuildOrsAvoidPolygons();
-  if (!poly) return body;
   if (!body.options || typeof body.options !== "object") body.options = {};
-  body.options.avoid_polygons = poly;
+  if (poly) body.options.avoid_polygons = poly;
+  const avoid = Array.isArray(body.options.avoid_features) ? body.options.avoid_features.slice() : [];
+  if (avoid.indexOf("ferries") < 0) avoid.push("ferries");
+  body.options.avoid_features = avoid;
+  body.extra_info = ["waytype"];
   return body;
 }
 function routingBuildOrsRouteBody(pointsLonLat, opts){
@@ -92105,13 +92193,17 @@ function routingParseOrsFeature(feature, originalIndex){
   if (Number.isFinite(des) && des >= 0) metrics.descentM = des;
   return { originalIndex: originalIndex, previewCoordinates: previewCoordinates, elevationCoordinates: elevationCoordinates, metrics: metrics };
 }
-function routingValidateOrsResponse(data){
+function routingValidateOrsResponse(data, requestedPoints){
   if (!data || typeof data !== "object" || data.type !== "FeatureCollection")
     return { ok: false, errKey: "routing.errorOrsInvalidResponse" };
   const features = Array.isArray(data.features) ? data.features : null;
   if (!features || !features.length) return { ok: false, errKey: "routing.errorNoPath" };
   const alternatives = [];
   const maxScan = Math.min(features.length, ROUTING_ALTERNATIVE_MAX_PATHS);
+  for (let i = 0; i < maxScan; i++){
+    if (!routingOrsLandVerified(features[i])) return { ok: false, errKey: "routing.landUnverified" };
+    if (!routingOrsSnapVerified(features[i], requestedPoints)) return { ok: false, errKey: "routing.landSnapFar" };
+  }
   for (let i = 0; i < maxScan; i++){
     const alt = routingParseOrsFeature(features[i], i);
     if (alt) alternatives.push(alt);
@@ -92279,6 +92371,8 @@ async function routingVerifyOrsProvider(){
   }
 }
 async function routingPostOrsDirections(profile, bodyObj, controller){
+  const gate = routingNetworkGateOrs();
+  if (!gate.ok) throw { kind: "gate", errKey: gate.errKey };
   const res = await fetch(routingOrsDirectionsUrl(profile), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -92298,6 +92392,9 @@ async function routingPostOrsDirections(profile, bodyObj, controller){
     throw { kind: "http", status: res && res.status, bodyText: rawText, data: data };
   }
   if (!data || typeof data !== "object") throw { kind: "json" };
+  if (controller.signal.aborted){ const e = new Error("aborted"); e.name = "AbortError"; throw e; }
+  const gateAfter = routingNetworkGateOrs();
+  if (!gateAfter.ok) throw { kind: "gate", errKey: gateAfter.errKey };
   return data;
 }
 async function routingCalculateRoundTripOrs(){
@@ -92349,31 +92446,42 @@ async function routingCalculateRoundTripOrs(){
     if (r.roundTripSeed == null || !Number.isFinite(Number(r.roundTripSeed))) r.roundTripSeed = routingNewRoundTripSeed();
     const seeds = routingRoundTripSeedBatch(r.roundTripSeed);
     let best = null;
+    let landFailure = "";
     for (let si = 0; si < seeds.length; si++){
-      if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const seedGate = routingNetworkGateOrs();
+      if (!seedGate.ok) throw { kind: "gate", errKey: seedGate.errKey };
       timeoutId = setTimeout(function(){ timedOut = true; try { controller.abort(); } catch(_){} }, ROUTING_ORS_TIMEOUT_MS);
       const body = routingBuildOrsRoundTripBody(startLonLat, r.roundTripDistanceM, seeds[si]);
       let data;
       try { data = await routingPostOrsDirections(profile, body, controller); }
-      catch(e){ if (timedOut) throw e; continue; }
-      finally { if (timeoutId){ clearTimeout(timeoutId); timeoutId = null; } timedOut = false; }
-      const validated = routingValidateOrsResponse(data);
-      if (!validated.ok) continue;
+      catch(e){ if (timedOut || (e && (e.kind === "gate" || e.name === "AbortError"))) throw e; if (routingLandNoConnection(e)) landFailure = "routing.landUnavailable"; continue; }
+      finally { if (timeoutId){ clearTimeout(timeoutId); timeoutId = null; } }
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const afterGate = routingNetworkGateOrs();
+      if (!afterGate.ok) throw { kind: "gate", errKey: afterGate.errKey };
+      const validated = routingValidateOrsResponse(data, [startLonLat]);
+      if (!validated.ok){ if (validated.errKey === "routing.landUnverified" || validated.errKey === "routing.landSnapFar") landFailure = validated.errKey; continue; }
       const alt = validated.alternatives[0];
       if (!routingRoundTripClosureOk(alt.previewCoordinates, ROUTING_ROUND_TRIP_CLOSE_TOL_M)) continue;
       const score = routingScoreRoundTripCandidate(alt.metrics, r.roundTripDistanceM);
       if (!best || score < best.score) best = { score: score, validated: validated, seed: seeds[si] };
     }
     if (!best){
-      r.routeError = "routing.roundTripNoCandidate";
-      routingSetStatus(routingT("routing.roundTripNoCandidate", "No loop."), true);
+      r.routeError = landFailure || "routing.roundTripNoCandidate";
+      routingSetStatus(routingT(r.routeError, r.routeError), true);
       return;
     }
+    if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+    const finalGate = routingNetworkGateOrs();
+    if (!finalGate.ok) throw { kind: "gate", errKey: finalGate.errKey };
     r.roundTripSeed = best.seed;
     routingApplyRouteResultFromValidated(r, best.validated, profile);
   } catch(e){
+    if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller) return;
+    if (!timedOut && e && e.name === "AbortError") return;
     if (timedOut) routingSetStatus(routingT("routing.errorTimeout", "Timeout"), true);
-    else routingSetStatus(routingT("routing.errorOrsRoundTrip", "ORS round trip failed"), true);
+    else routingSetStatus(routingT(e && e.errKey || "routing.errorOrsRoundTrip", "ORS round trip failed"), true);
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
     if (state._routing && state._routing.requestSequence === reqSeq){
@@ -92433,15 +92541,23 @@ async function routingCalculateRouteOrs(){
     if (isOutAndBack){
       routingSetStatus(routingT("routing.calcOutbound", "Outbound…"), false);
       const dataOut = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat, { withAlternatives: false }), controller);
-      const outVal = routingValidateOrsResponse(dataOut);
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const outVal = routingValidateOrsResponse(dataOut, ptsRes.pointsLonLat);
       if (!outVal.ok) throw { kind: "ors", errKey: outVal.errKey };
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const returnGate = routingNetworkGateOrs();
+      if (!returnGate.ok) throw { kind: "gate", errKey: returnGate.errKey };
       routingSetStatus(routingT("routing.calcReturn", "Return…"), false);
       const dataRet = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat.slice().reverse(), { withAlternatives: false }), controller);
-      const retVal = routingValidateOrsResponse(dataRet);
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const retVal = routingValidateOrsResponse(dataRet, ptsRes.pointsLonLat.slice().reverse());
       if (!retVal.ok) throw { kind: "ors", errKey: retVal.errKey };
       const merged = routingMergeOutAndBackCoordinates(outVal.alternatives[0].previewCoordinates, retVal.alternatives[0].previewCoordinates);
       if (!merged) throw { kind: "ors", errKey: "routing.errorNoPath" };
       const mergedElev = routingMergeOutAndBackCoordinates(outVal.alternatives[0].elevationCoordinates, retVal.alternatives[0].elevationCoordinates);
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const finalGate = routingNetworkGateOrs();
+      if (!finalGate.ok) throw { kind: "gate", errKey: finalGate.errKey };
       r.alternatives = [];
       r.selectedAlternative = null;
       r.previewCoordinates = merged;
@@ -92457,14 +92573,19 @@ async function routingCalculateRouteOrs(){
       routingSetStatus(routingFmtRouteStatusMessage(r.routeMetrics), false);
     } else {
       const data = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(ptsRes.pointsLonLat, { withAlternatives: wantAlt }), controller);
-      const validated = routingValidateOrsResponse(data);
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const validated = routingValidateOrsResponse(data, ptsRes.pointsLonLat);
       if (!validated.ok) throw { kind: "ors", errKey: validated.errKey };
-      if (!state._routing || state._routing.requestSequence !== reqSeq) return;
+      if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller || controller.signal.aborted) return;
+      const finalGate = routingNetworkGateOrs();
+      if (!finalGate.ok) throw { kind: "gate", errKey: finalGate.errKey };
       routingApplyRouteResultFromValidated(r, validated, profile);
     }
   } catch(e){
+    if (!state._routing || state._routing.requestSequence !== reqSeq || r.requestController !== controller) return;
     if (!timedOut && e && e.name === "AbortError") return;
-    routingSetStatus(routingT(timedOut ? "routing.errorTimeout" : "routing.errorOrsHttp", "Error"), true);
+    const errKey = timedOut ? "routing.errorTimeout" : (e && e.errKey ? e.errKey : routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorOrsHttp");
+    routingSetStatus(routingT(errKey, errKey), true);
   } finally {
     if (timeoutId) clearTimeout(timeoutId);
     if (state._routing && state._routing.requestSequence === reqSeq){
@@ -92653,7 +92774,9 @@ function routingComparePackFromValidated(validated, extra){
     difficulty: difficulty
   };
 }
-async function routingComparePostJson(url, bodyObj, signal, timeoutMs){
+async function routingComparePostJson(url, bodyObj, signal, timeoutMs, gateOptions){
+  const gateBefore = routingNetworkGateGraphhopper(gateOptions);
+  if (!gateBefore.ok) throw { kind: "gate", errKey: gateBefore.errKey };
   const local = new AbortController();
   const onAbort = function(){ try { local.abort(); } catch(_){} };
   if (signal){
@@ -92680,6 +92803,9 @@ async function routingComparePostJson(url, bodyObj, signal, timeoutMs){
     }
     if (!res || !res.ok) throw { kind: "http", status: res && res.status, data: data, timedOut: timedOut };
     if (!data || typeof data !== "object") throw { kind: "json", timedOut: timedOut };
+    if (local.signal.aborted || (signal && signal.aborted)) throw { kind: "abort", timedOut: timedOut };
+    const gateAfter = routingNetworkGateGraphhopper(gateOptions);
+    if (!gateAfter.ok) throw { kind: "gate", errKey: gateAfter.errKey };
     return data;
   } catch(e){
     if (e && e.name === "AbortError") throw { kind: "abort", timedOut: timedOut };
@@ -92723,25 +92849,37 @@ async function routingCompareRunGh(snap, controller, seq){
   const url = resolved.endpoint + ROUTING_GRAPHHOPPER_ROUTE_PATH;
   const profile = snap.pair.gh;
   const extra = { provider: resolved.provider, endpoint: resolved.endpoint, profile: profile };
+  const gateOptions = { provider: resolved.provider, endpoint: resolved.endpoint };
+  const checkedPost = async function(body){
+    if (seq !== _routingCompareSession.sequence || controller.signal.aborted) throw { kind: "abort" };
+    const before = routingNetworkGateGraphhopper(gateOptions);
+    if (!before.ok) throw { kind: "gate", errKey: before.errKey };
+    const data = await routingComparePostJson(url, body, controller.signal, ROUTING_GRAPHHOPPER_TIMEOUT_MS, gateOptions);
+    if (seq !== _routingCompareSession.sequence || controller.signal.aborted) throw { kind: "abort" };
+    const after = routingNetworkGateGraphhopper(gateOptions);
+    if (!after.ok) throw { kind: "gate", errKey: after.errKey };
+    return data;
+  };
   return await routingCompareWithAvoid(snap.avoid, async function(){
       if (snap.mode === "round_trip" && !snap.constrainedLoop){
         const start = routingCompareLonLat(snap.points)[0];
         const seeds = routingRoundTripSeedBatch(snap.roundTripSeed);
         let best = null;
+        let landFailure = "";
         for (let si = 0; si < seeds.length; si++){
           if (seq !== _routingCompareSession.sequence) return { stale: true };
           const body = routingBuildGraphhopperRoundTripBody(profile, start, snap.roundTripDistanceM, seeds[si]);
           let data;
-          try { data = await routingComparePostJson(url, body, controller.signal, ROUTING_GRAPHHOPPER_TIMEOUT_MS); }
-          catch(e){ if (e && e.kind === "abort") return { aborted: true, timedOut: !!e.timedOut }; continue; }
-          const validated = routingValidateGraphhopperResponse(data);
-          if (!validated.ok) continue;
+          try { data = await checkedPost(body); }
+          catch(e){ if (e && e.kind === "abort") return { aborted: true, timedOut: !!e.timedOut }; if (e && e.kind === "gate") return routingComparePackFail(e.errKey); if (routingLandNoConnection(e)) landFailure = "routing.landUnavailable"; continue; }
+          const validated = routingValidateGraphhopperResponse(data, [start]);
+          if (!validated.ok){ if (validated.errKey === "routing.landUnverified" || validated.errKey === "routing.landSnapFar") landFailure = validated.errKey; continue; }
           const alt = validated.alternatives[0];
           if (!routingRoundTripClosureOk(alt.previewCoordinates, ROUTING_ROUND_TRIP_CLOSE_TOL_M)) continue;
           const score = routingScoreRoundTripCandidate(alt.metrics, snap.roundTripDistanceM);
           if (!best || score < best.score) best = { score: score, validated: validated };
         }
-        if (!best) return routingComparePackFail("routing.roundTripNoCandidate");
+        if (!best) return routingComparePackFail(landFailure || "routing.roundTripNoCandidate");
         return routingComparePackFromValidated(best.validated, extra);
       }
       const lonlat = snap.constrainedLoop
@@ -92750,15 +92888,15 @@ async function routingCompareRunGh(snap, controller, seq){
       if (snap.mode === "out_and_back"){
         const bodyOut = routingBuildGraphhopperRouteBody(profile, lonlat, { withAlternatives: false });
         let dataOut;
-        try { dataOut = await routingComparePostJson(url, bodyOut, controller.signal, ROUTING_GRAPHHOPPER_TIMEOUT_MS); }
-        catch(e){ return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : "routing.errorOutbound"); }
-        const outVal = routingValidateGraphhopperResponse(dataOut);
+        try { dataOut = await checkedPost(bodyOut); }
+        catch(e){ return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : e && e.errKey ? e.errKey : routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorOutbound"); }
+        const outVal = routingValidateGraphhopperResponse(dataOut, lonlat);
         if (!outVal.ok) return routingComparePackFail(outVal.errKey || "routing.errorOutbound");
         const bodyRet = routingBuildGraphhopperRouteBody(profile, lonlat.slice().reverse(), { withAlternatives: false });
         let dataRet;
-        try { dataRet = await routingComparePostJson(url, bodyRet, controller.signal, ROUTING_GRAPHHOPPER_TIMEOUT_MS); }
-        catch(e){ return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : "routing.errorReturn"); }
-        const retVal = routingValidateGraphhopperResponse(dataRet);
+        try { dataRet = await checkedPost(bodyRet); }
+        catch(e){ return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : e && e.errKey ? e.errKey : routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorReturn"); }
+        const retVal = routingValidateGraphhopperResponse(dataRet, lonlat.slice().reverse());
         if (!retVal.ok) return routingComparePackFail(retVal.errKey || "routing.errorReturn");
         const merged = routingMergeOutAndBackCoordinates(outVal.alternatives[0].previewCoordinates, retVal.alternatives[0].previewCoordinates);
         if (!merged) return routingComparePackFail("routing.errorNoPath");
@@ -92770,12 +92908,12 @@ async function routingCompareRunGh(snap, controller, seq){
       const wantAlt = routingAlternativesAllowed(Array.isArray(lonlat) ? lonlat.length : 0);
       const body = routingBuildGraphhopperRouteBody(profile, lonlat, { withAlternatives: wantAlt });
       let data;
-      try { data = await routingComparePostJson(url, body, controller.signal, ROUTING_GRAPHHOPPER_TIMEOUT_MS); }
+      try { data = await checkedPost(body); }
       catch(e){
         if (e && e.kind === "abort") return { aborted: true, timedOut: !!e.timedOut };
-        return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : "routing.errorHttp");
+        return routingComparePackFail((e && e.timedOut) ? "routing.errorTimeout" : e && e.errKey ? e.errKey : routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorHttp");
       }
-      const validated = routingValidateGraphhopperResponse(data);
+      const validated = routingValidateGraphhopperResponse(data, lonlat);
       if (!validated.ok) return routingComparePackFail(validated.errKey);
       return routingComparePackFromValidated(validated, extra);
   });
@@ -92786,25 +92924,36 @@ async function routingCompareRunOrs(snap, controller, seq){
   const profile = snap.pair.ors;
   if (!routingOrsProfileIsValid(profile)) return routingComparePackFail("routing.errorInvalidProfile");
   const extra = { provider: "ors", endpoint: routingOrsEndpoint(), profile: profile };
+  const checkedPost = async function(body){
+    if (seq !== _routingCompareSession.sequence || controller.signal.aborted){ const e = new Error("aborted"); e.name = "AbortError"; throw e; }
+    const before = routingNetworkGateOrs();
+    if (!before.ok) throw { kind: "gate", errKey: before.errKey };
+    const data = await routingPostOrsDirections(profile, body, controller);
+    if (seq !== _routingCompareSession.sequence || controller.signal.aborted){ const e = new Error("aborted"); e.name = "AbortError"; throw e; }
+    const after = routingNetworkGateOrs();
+    if (!after.ok) throw { kind: "gate", errKey: after.errKey };
+    return data;
+  };
   return await routingCompareWithAvoid(snap.avoid, async function(){
       if (snap.mode === "round_trip" && !snap.constrainedLoop){
         const start = routingCompareLonLat(snap.points)[0];
         const seeds = routingRoundTripSeedBatch(snap.roundTripSeed);
         let best = null;
+        let landFailure = "";
         for (let si = 0; si < seeds.length; si++){
           if (seq !== _routingCompareSession.sequence) return { stale: true };
           const body = routingBuildOrsRoundTripBody(start, snap.roundTripDistanceM, seeds[si]);
           let data;
-          try { data = await routingPostOrsDirections(profile, body, controller); }
-          catch(e){ if (e && e.name === "AbortError") return { aborted: true }; continue; }
-          const validated = routingValidateOrsResponse(data);
-          if (!validated.ok) continue;
+          try { data = await checkedPost(body); }
+          catch(e){ if (e && e.name === "AbortError") return { aborted: true }; if (e && e.kind === "gate") return routingComparePackFail(e.errKey); if (routingLandNoConnection(e)) landFailure = "routing.landUnavailable"; continue; }
+          const validated = routingValidateOrsResponse(data, [start]);
+          if (!validated.ok){ if (validated.errKey === "routing.landUnverified" || validated.errKey === "routing.landSnapFar") landFailure = validated.errKey; continue; }
           const alt = validated.alternatives[0];
           if (!routingRoundTripClosureOk(alt.previewCoordinates, ROUTING_ROUND_TRIP_CLOSE_TOL_M)) continue;
           const score = routingScoreRoundTripCandidate(alt.metrics, snap.roundTripDistanceM);
           if (!best || score < best.score) best = { score: score, validated: validated };
         }
-        if (!best) return routingComparePackFail("routing.roundTripNoCandidate");
+        if (!best) return routingComparePackFail(landFailure || "routing.roundTripNoCandidate");
         return routingComparePackFromValidated(best.validated, extra);
       }
       const lonlat = snap.constrainedLoop
@@ -92812,14 +92961,14 @@ async function routingCompareRunOrs(snap, controller, seq){
         : routingCompareLonLat(snap.points);
       if (snap.mode === "out_and_back"){
         let dataOut;
-        try { dataOut = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(lonlat, { withAlternatives: false }), controller); }
-        catch(e){ return routingComparePackFail("routing.errorOutbound"); }
-        const outVal = routingValidateOrsResponse(dataOut);
+        try { dataOut = await checkedPost(routingBuildOrsRouteBody(lonlat, { withAlternatives: false })); }
+        catch(e){ return routingComparePackFail(e && e.errKey || (routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorOutbound")); }
+        const outVal = routingValidateOrsResponse(dataOut, lonlat);
         if (!outVal.ok) return routingComparePackFail(outVal.errKey || "routing.errorOutbound");
         let dataRet;
-        try { dataRet = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(lonlat.slice().reverse(), { withAlternatives: false }), controller); }
-        catch(e){ return routingComparePackFail("routing.errorReturn"); }
-        const retVal = routingValidateOrsResponse(dataRet);
+        try { dataRet = await checkedPost(routingBuildOrsRouteBody(lonlat.slice().reverse(), { withAlternatives: false })); }
+        catch(e){ return routingComparePackFail(e && e.errKey || (routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorReturn")); }
+        const retVal = routingValidateOrsResponse(dataRet, lonlat.slice().reverse());
         if (!retVal.ok) return routingComparePackFail(retVal.errKey || "routing.errorReturn");
         const merged = routingMergeOutAndBackCoordinates(outVal.alternatives[0].previewCoordinates, retVal.alternatives[0].previewCoordinates);
         if (!merged) return routingComparePackFail("routing.errorNoPath");
@@ -92830,12 +92979,12 @@ async function routingCompareRunOrs(snap, controller, seq){
       }
       let data;
       const wantAlt = routingAlternativesAllowed(Array.isArray(lonlat) ? lonlat.length : 0);
-      try { data = await routingPostOrsDirections(profile, routingBuildOrsRouteBody(lonlat, { withAlternatives: wantAlt }), controller); }
+      try { data = await checkedPost(routingBuildOrsRouteBody(lonlat, { withAlternatives: wantAlt })); }
       catch(e){
         if (e && e.name === "AbortError") return { aborted: true };
-        return routingComparePackFail("routing.errorOrsHttp");
+        return routingComparePackFail(e && e.errKey || (routingLandNoConnection(e) ? "routing.landUnavailable" : "routing.errorOrsHttp"));
       }
-      const validated = routingValidateOrsResponse(data);
+      const validated = routingValidateOrsResponse(data, lonlat);
       if (!validated.ok) return routingComparePackFail(validated.errKey);
       return routingComparePackFromValidated(validated, extra);
   });
@@ -93111,9 +93260,17 @@ async function routingCompareStart(){
   const orsP = routingCompareRunOrs(snap, orsCtrl, seq).catch(function(e){
     return routingComparePackFail("routing.errorOrsHttp");
   });
-  const ghRes = await ghP;
-  const orsRes = await orsP;
+  let ghRes = await ghP;
+  let orsRes = await orsP;
   if (seq !== _routingCompareSession.sequence) return;
+  if (ghRes && ghRes.status === "pass"){
+    const gate = routingNetworkGateGraphhopper({ provider: ghRes.provider, endpoint: ghRes.endpoint });
+    if (!gate.ok || ghCtrl.signal.aborted) ghRes = routingComparePackFail(gate.errKey || "routing.errorGeneric");
+  }
+  if (orsRes && orsRes.status === "pass"){
+    const gate = routingNetworkGateOrs();
+    if (!gate.ok || orsCtrl.signal.aborted) orsRes = routingComparePackFail(gate.errKey || "routing.errorGeneric");
+  }
   if (routingCompareLiveFingerprint() !== snap.fingerprint){
     routingCompareAbortInFlight({ clearResults: true });
     return;
@@ -94292,6 +94449,39 @@ function routingCompareFix5SelfTest(){
 })();
 
 
+function routingLandOnlySelfTest(){
+  const checks = [];
+  function add(name, ok){ checks.push({ name: name, ok: !!ok }); }
+  const coords = [[9, 44], [9.1, 44.1]];
+  const gh = routingBuildGraphhopperRouteBody("hiking", coords, { withAlternatives: true });
+  const ors = routingBuildOrsRoundTripBody(coords[0], 3000, 1);
+  add("LAND_GH_payload", gh["ch.disable"] === true && gh.snap_preventions.indexOf("ferry") >= 0 &&
+    gh.details.indexOf("road_environment") >= 0 && gh.custom_model.priority.some(function(x){ return x.if === "road_environment == FERRY" && x.multiply_by === "0"; }));
+  add("LAND_ORS_payload", ors.options.avoid_features.indexOf("ferries") >= 0 && ors.extra_info.indexOf("waytype") >= 0 && !!ors.options.round_trip);
+  const g = { points: { coordinates: coords }, details: { road_environment: [[0, 1, "road"]] } };
+  add("LAND_GH_road", routingGraphhopperLandVerified(g));
+  g.details.road_environment[0][2] = "ferry";
+  add("LAND_GH_ferry_rejected", !routingGraphhopperLandVerified(g));
+  const o = { geometry: { coordinates: coords }, properties: { extras: { waytype: { values: [[0, 1, 7]] } } } };
+  add("LAND_ORS_road", routingOrsLandVerified(o));
+  o.properties.extras.waytype.values[0][2] = 9;
+  add("LAND_ORS_ferry_rejected", !routingOrsLandVerified(o));
+  delete o.properties.extras;
+  add("LAND_missing_rejected", !routingOrsLandVerified(o));
+  return checks;
+}
+(function routingLandOnlyExtendSelfTest(){
+  const previous = dflightSelfTestAll;
+  dflightSelfTestAll = function(){
+    const base = typeof previous === "function" ? previous() : { checks: [] };
+    const checks = (base.checks || []).concat(routingLandOnlySelfTest());
+    return Object.freeze({ ok: checks.every(function(c){ return c.ok; }), checks: Object.freeze(checks) });
+  };
+  if (window.GOIDflight){
+    window.GOIDflight = Object.freeze(Object.assign({}, window.GOIDflight, { selfTest: dflightSelfTestAll, selfTestRoutingLandOnly: routingLandOnlySelfTest }));
+  }
+})();
+
 async function routingCalculateRouteGraphhopper(){
   const r = state._routing;
   if (!r || r.requestLoading || r.infoLoading) return;
@@ -94587,7 +94777,7 @@ async function routingCalculateRouteGraphhopper(){
       }
     }
 
-    const validated = routingValidateGraphhopperResponse(data);
+    const validated = routingValidateGraphhopperResponse(data, snapPts.pointsLonLat);
     if (!validated.ok){
       let ghMsg = "";
       try {
@@ -94641,7 +94831,7 @@ async function routingCalculateRouteGraphhopper(){
         throw eRet;
       }
 
-      const validatedRet = routingValidateGraphhopperResponse(dataRet);
+      const validatedRet = routingValidateGraphhopperResponse(dataRet, returnPtsLonLat);
       if (!validatedRet.ok){
         let ghMsg = "";
         try {
@@ -94811,6 +95001,11 @@ async function routingCalculateRouteGraphhopper(){
     }
 
     if (e && e.kind === "http"){
+      if (routingLandNoConnection(e)){
+        r.routeError = "routing.landUnavailable";
+        routingSetStatus(routingT("routing.landUnavailable", "Percorso terrestre non disponibile senza collegamenti marittimi."), true);
+        return;
+      }
       const pnfIdx = routingExtractPointNotFoundIndex(e.data);
       if (pnfIdx >= 0){
         try {
@@ -94855,7 +95050,10 @@ async function routingCalculateRouteGraphhopper(){
     }
 
     if (e && e.kind === "gh"){
-      if (isOutAndBack && failedLeg === "return"){
+      if (e.errKey === "routing.landUnverified" || e.errKey === "routing.landSnapFar"){
+        r.routeError = e.errKey;
+        routingSetStatus(routingT(e.errKey, "Impossibile verificare che il percorso sia terrestre."), true);
+      } else if (isOutAndBack && failedLeg === "return"){
         r.routeError = "routing.errorReturn";
         let base = routingT("routing.errorReturn", "Calcolo ritorno non riuscito.");
         if (e.ghMsg) base = base + ": " + String(e.ghMsg).slice(0, 220);
