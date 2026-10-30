@@ -5025,8 +5025,10 @@ body.gis-mode #appTopbar .app-tab.is-active{background:#456bb0;color:#fff;border
 body.gis-mode #appTopbar .app-topbar-btn:hover,
 body.gis-mode #appTopbar .app-tab:hover{background:#405f98;color:#fff}
 body.gis-mode #appTopbar.app-topbar.export-menu-open{position:relative!important;z-index:1001!important}
-.gis-export-menu{position:relative;flex:none}
+.gis-export-menu{position:relative;flex:none;margin:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
 .gis-export-menu summary{list-style:none}
+.gis-export-menu summary::before{content:none}
+.gis-export-menu[open] summary{border:1px solid #789ad1;border-radius:10px;color:#fff}
 .gis-export-menu summary::-webkit-details-marker{display:none}
 .gis-export-options{position:absolute;right:0;top:calc(100% + 5px);z-index:1000;min-width:210px;padding:5px;border:1px solid var(--border);border-radius:10px;background:var(--panel);box-shadow:var(--shadow)}
 .gis-export-options button{display:flex;align-items:center;gap:8px;width:100%;padding:10px;border:0;border-radius:7px;background:transparent;color:var(--text);font:inherit;text-align:left;cursor:pointer}
@@ -5055,7 +5057,7 @@ dialog#helpOverlay.help-release-mode .app-modal-body > :not(.about-block){displa
 dialog#helpOverlay.help-release-mode .about-row{display:block}
 dialog#helpOverlay.help-release-mode .about-monogram,dialog#helpOverlay.help-release-mode .about-row > div > :not(.release-notes){display:none}
 dialog#helpOverlay.help-release-mode .release-notes{display:block;width:100%;max-width:54rem;margin:0 auto;font-size:1rem;line-height:1.55}
-dialog#helpOverlay.help-release-mode .release-notes summary{display:none}
+dialog#helpOverlay.help-release-mode .release-notes > summary{display:none}
 dialog#helpOverlay.help-release-mode .gis-panel-resize-handle,
 dialog#helpOverlay.help-release-mode [data-role="helppanel-minimize"]{display:none}
 .user-guide-sections{margin:16px 0;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
@@ -5147,6 +5149,18 @@ dialog.help-modal.app-modal .app-modal-body kbd{
   overflow:hidden;
 }
 .tools-drawer.open{transform:translateX(0)}
+dialog.tools-drawer:not([open]){display:none}
+body:not(.gis-mode) #toolsDrawerMinimize{display:none}
+/* GIS mode: Strumenti behaves as a floating panel, not a blocking side drawer. */
+body.gis-mode .tools-drawer-backdrop.open{display:none}
+body.gis-mode .tools-drawer{
+  inset:auto auto 12px 12px; width:min(460px,calc(100vw - 24px));
+  max-height:calc(100dvh - 24px); border:1px solid var(--border);
+  border-radius:var(--radius-card); padding:0; z-index:28;
+  transform:none; visibility:hidden; pointer-events:none;
+}
+body.gis-mode .tools-drawer.open{visibility:visible;pointer-events:auto}
+body.gis-mode .tools-drawer.gis-panel-minimized{visibility:hidden;pointer-events:none}
 .tools-drawer-head{
   display:flex; align-items:center; justify-content:space-between;
   padding:14px 18px; border-bottom:1px solid var(--border);
@@ -12901,7 +12915,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       <span class="app-tab-lbl" data-i18n="tabs.layers">Mappe Offline</span>
     </button>
   </div>
-    <button id="btnTopbarTools" class="app-topbar-btn" type="button" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></button>
+    <button id="btnTopbarTools" class="app-topbar-btn" type="button" aria-controls="toolsDrawer" aria-expanded="false" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></button>
     <details class="gis-export-menu" id="gisExportMenu">
       <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></summary>
       <div class="gis-export-options">
@@ -15784,9 +15798,10 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 
 <!-- ============ TOOLS DRAWER ============ -->
 <div class="tools-drawer-backdrop" id="toolsDrawerBackdrop" aria-hidden="true"></div>
-<aside class="tools-drawer" id="toolsDrawer" role="dialog" aria-modal="true" aria-labelledby="toolsDrawerTitle" aria-hidden="true">
-  <div class="tools-drawer-head">
+<dialog class="tools-drawer" id="toolsDrawer" aria-modal="true" aria-labelledby="toolsDrawerTitle" aria-hidden="true">
+  <div class="tools-drawer-head" id="toolsDrawerHead">
     <h2 id="toolsDrawerTitle">🧰 <span data-i18n="tools.title">Strumenti</span></h2>
+    <button type="button" class="app-modal-min-btn" id="toolsDrawerMinimize" data-i18n-tip="tip.panelMinimize" data-i18n-aria="tip.panelMinimize">−</button>
     <button type="button" class="drawer-close" id="toolsDrawerClose" data-i18n-tip="tip.toolsDrawerClose" data-i18n-aria="tip.toolsDrawerClose">×</button>
   </div>
   <div class="tools-drawer-body">
@@ -15890,7 +15905,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     </div>
 
   </div>
-</aside>
+  <div class="gis-panel-resize-handle h-se" data-role="gis-panel-resize" data-handle="se" data-i18n-aria="tip.panelResize"></div>
+</dialog>
 
 <!-- ============ HELP MODAL (keyboard shortcuts) ============ -->
 <dialog id="helpOverlay" class="app-modal help-modal" aria-labelledby="helpTitle" aria-modal="false">
@@ -16068,14 +16084,1081 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
-            <h4>Build 256 — versione</h4>
-            <ul><li>Indicazione della versione nel footer e nelle informazioni, senza badge sulla mappa.</li></ul>
-            <h4>Build 255 — waypoint</h4>
-            <ul><li>Copia dei waypoint dalla finestra di esportazione.</li></ul>
+            <h4>Archivio storico — rilasci documentati</h4>
+            <p>Sintesi ricostruita dai report di deploy: le modifiche riportate possono non essere esaustive. Versioni precedenti alla 176 e alcuni numeri mancanti non sono ancora ricostruiti. Le build 222 e 227 furono distribuite con QA automatica fallita e corrette successivamente. Il routing senza traghetti non è ancora garantito.</p>
+            <ul>
+<li>Build 256 — Versione: indicazione della build nel footer e nelle informazioni, senza etichetta sulla mappa.</li>
+<li>Build 255 — Waypoint: correzione della copia multipla di testo in contesto HTTP e coerenza con l&#39;esportazione TXT.</li>
+<li>Build 252 — Waypoint: correzione della copia multipla dal pannello di esportazione; successivamente corretta nella build 255.</li>
+<li>Build 251 — Waypoint: esportazione e copia del testo selezionato; successivamente corretta nelle build 252 e 255.</li>
+<li>Build 250 — Poligoni: colonne della tabella ridimensionabili, con larghezze minime e trascinamento pi&#249; fluido.</li>
+<li>Build 249 — Mappa: sincronizzazione del formato coordinate nei waypoint, della barra Poligoni e dei menu; ridimensionamento colonne waypoint.</li>
+<li>Build 248 — Waypoint e poligoni: disposizione della finestra waypoint e formato compatto delle misure.</li>
+<li>Build 247 — Oggetti GIS: ripristino della geometria della barra mappa dopo lo spostamento nelle Impostazioni.</li>
+<li>Build 246 — Oggetti GIS: accesso spostato nelle Impostazioni; sviluppo funzionale congelato, manutenzione consentita.</li>
+<li>Build 245 — Poligoni: pannello ancorato a sinistra e limitato alla zona utile della mappa.</li>
+<li>Build 244 — Poligoni: pannello con altezza adattata, priorit&#224; ai vertici e annullamento dell&#39;ultimo vertice con Ctrl+Z.</li>
+<li>Build 243 — Poligoni: trascinamento dei vertici provvisori durante il disegno.</li>
+<li>Build 242 — Poligoni: mantenimento del pannello aperto durante il disegno.</li>
+<li>Build 241 — Poligoni: coordinate dei vertici mostrate durante il disegno.</li>
+<li>Build 240 — Poligoni: miglioramenti all&#39;inserimento delle coordinate dei vertici.</li>
+<li>Build 238 — D-Flight: normalizzazione del testo Regola nei dettagli ATM09.</li>
+<li>Build 237 — D-Flight: normalizzazione dei caratteri codificati nei dettagli delle zone.</li>
+<li>Build 235 — D-Flight: sincronizzazione della rimozione degli elementi ATM09 alla chiusura completa del pannello.</li>
+<li>Build 234 — D-Flight: rimozione degli elementi grafici di sessione alla chiusura completa del pannello.</li>
+<li>Build 233 — Finestre: miglioramento delle aree di presa per il ridimensionamento e del posizionamento iniziale.</li>
+<li>Build 232 — Finestre: ridimensionamento dai bordi senza maniglia visibile.</li>
+<li>Build 231 — Cartografia IIM: correzione della disattivazione del filtro delle carte nautiche.</li>
+<li>Build 230 — Cartografia: separazione del provider snapshot IIM dal provider UKHO non disponibile.</li>
+<li>Build 228 — Routing: adattamento delle etichette del percorso su schermi mobili.</li>
+<li>Build 227 — Routing: modifiche a parametri, tracce, alternative, anello e punti VIA. Distribuita con QA automatica FAIL; corretta nella build successiva.</li>
+<li>Build 226 — Routing: correzione del ripristino dell&#39;avviso per il percorso ad anello.</li>
+<li>Build 224 — Routing: miglioramenti a disposizione, selezione VIA e leggibilit&#224; del confronto e dell&#39;anello.</li>
+<li>Build 223 — Routing: alternative consentite solo con due punti e correzione dell&#39;ordine dei punti VIA.</li>
+<li>Build 222 — Routing: miglioramenti al confronto e ai punti VIA dell&#39;anello. Distribuita con QA automatica FAIL; corretta nelle build successive.</li>
+<li>Build 221 — Routing: confronto su richiesta tra GraphHopper e ORS.</li>
+<li>Build 220 — Routing: integrazione del provider ORS.</li>
+<li>Build 219 — Routing: preservazione dell&#39;algoritmo quando sono attive aree da evitare.</li>
+<li>Build 215 — Spazio di lavoro: gestione distinta delle legende D-Flight e ATM09.</li>
+<li>Build 214 — Pannelli GIS: minimizzazione e ripristino di Converti e Cerca; Cronologia in finestra.</li>
+<li>Build 213 — Pannelli minimizzati: disposizione sui due lati e menu per gli elementi in eccesso.</li>
+<li>Build 212 — Pannelli GIS: coordinamento della minimizzazione e sincronizzazione dei pannelli cartografici.</li>
+<li>Build 210 — Pannelli minimizzati: calcolo della posizione superiore tenendo conto della barra reale.</li>
+<li>Build 208 — Pannelli GIS: introdotto il coordinamento dei pannelli minimizzati.</li>
+<li>Build 207 — Identit&#224; visiva: correzione dell&#39;intestazione e della firma.</li>
+<li>Build 206 — Identit&#224; visiva: introduzione del nome TMART GIS tool nell&#39;interfaccia.</li>
+<li>Build 205 — D-Flight: correzione del riposizionamento automatico dei pannelli dopo il trascinamento.</li>
+<li>Build 204 — D-Flight: miglioramenti al layout affiancato ATM09, al trascinamento e alla legenda.</li>
+<li>Build 203 — D-Flight: correzione del posizionamento verticale dei pannelli affiancati.</li>
+<li>Build 197 — ATM09: visualizzazione della legenda contestuale in base agli elementi mostrati.</li>
+<li>Build 196 — D-Flight e ATM09: comandi principali di visibilit&#224; indipendenti.</li>
+<li>Build 195 — D-Flight: miglioramenti all&#39;interazione per l&#39;aggiornamento dei dati.</li>
+<li>Build 192 — D-Flight: correzione delle geometrie nere con filtro temporale restrittivo.</li>
+<li>Build 183 — D-Flight: correzioni all&#39;interfaccia del filtro temporale.</li>
+<li>Build 176 — D-Flight: correzioni all&#39;apertura automatica e all&#39;interfaccia.</li>
+            </ul>
+
+<details class="release-history-numbered"><summary>Registro completo delle build nei commit</summary><p>Registro ricostruito dai commit del monolite, fino alla build 267. I commit sono raggruppati per intervallo dalla comparsa di una build fino alla build successiva: non attestano da soli la distribuzione né esauriscono tutte le modifiche. La scansione storica resta incompleta: le descrizioni dei commit non ricostruiscono ogni modifica. Le build 257–264, 236 e 239 erano candidate non promosse. Fonte Git: e7225e7.</p>
+<details><summary>Build 250–267</summary>
+<details><summary>Build 267 · deploy documentato</summary><p>2026-10-28 · <code>1e638d0</code> · GIS-HELP-TOOLBAR-UX-A</p><p>Guida, FAQ, note di rilascio e barra strumenti.</p><ul>
+<li><code>1e638d0</code> — feat(ui): improve settings help release notes and toolbar</li>
+<li><code>e7225e7</code> — fix(ui): make narrow toolbar actions reachable</li>
+</ul></details>
+<details><summary>Build 266 · distribuita con QA fallita, poi corretta</summary><p>2026-10-28 · <code>87522a2</code> · GIS-SEARCH-SIMPLIFY-COUNTRY-A</p><p>Cerca: rimosso filtro Paese e aggiornato esempio.</p><ul>
+<li><code>87522a2</code> — fix(search): remove country field and refresh example</li>
+<li><code>ce02321</code> — feat(help): document released changes in settings</li>
+</ul></details>
+<details><summary>Build 265 · deploy documentato</summary><p>2026-10-28 · <code>d72babe</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX8</p><p>FIX8: prefissi DD/DDM/DMS coerenti; MGRS antimeridiano e limite Svalbard.</p><ul>
+<li><code>d72babe</code> — fix(coords): enforce declared formats and normalize MGRS boundaries (FIX8)</li>
+<li><code>762fb16</code> — fix(runtime): preserve verified VPS migration endpoints in FIX8 candidate</li>
+</ul></details>
+<details><summary>Build 264 · candidate non promossa</summary><p>2026-10-23 · <code>080e71c</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX7</p><p>FIX7: decimali europei nel parser condiviso; segno e emisfero contraddittori rifiutati.</p><ul>
+<li><code>080e71c</code> — fix(search): euro decimals and sign/hemisphere coherence in the shared parser (FIX7)</li>
+</ul></details>
+<details><summary>Build 263 · candidate non promossa</summary><p>2026-10-23 · <code>b60584c</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX6</p><p>FIX6: token estranei rifiutati nel parser condiviso; incolla non geocodifica coordinate invalide.</p><ul>
+<li><code>b60584c</code> — fix(search): reject unknown tokens in the shared lat/lon parser (FIX6)</li>
+</ul></details>
+<details><summary>Build 262 · candidate non promossa</summary><p>2026-10-23 · <code>657422e</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX5</p><p>FIX5: segno + consumato; ordine assi E/N; coordinate incomplete rifiutate.</p><ul>
+<li><code>657422e</code> — fix(search): consume plus signs and bind values to axis markers (FIX5)</li>
+</ul></details>
+<details><summary>Build 261 · candidate non promossa</summary><p>2026-10-23 · <code>e3da4e8</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX4</p><p>FIX4: validazione intero input; lat incompleta; minuti/secondi negativi; assi duplicati; segno -0.</p><ul>
+<li><code>e3da4e8</code> — fix(search): whole-input validation, incomplete lat, signed DMS components (FIX4)</li>
+</ul></details>
+<details><summary>Build 260 · candidate non promossa</summary><p>2026-10-21 · <code>faed7b1</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX3</p><p>FIX3: segno dopo il prefisso; DD/DDM/DMS con simboli; emisferi contraddittori rifiutati.</p><ul>
+<li><code>faed7b1</code> — fix(search): keep signs, symbols and reject conflicting hemispheres (FIX3)</li>
+</ul></details>
+<details><summary>Build 259 · candidate non promossa</summary><p>2026-10-21 · <code>fd8d1cc</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX2</p><p>FIX2: coppie lat/lon miste e MGRS lunghi come intento; prefisso consuma tutto l</p><ul>
+<li><code>fd8d1cc</code> — fix(search): complete coord intent, prefix consumption, stale hits (FIX2)</li>
+</ul></details>
+<details><summary>Build 258 · candidate non promossa</summary><p>2026-10-21 · <code>7e41a14</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A-FIX1</p><p>FIX1: intent/shape prima del parse; niente LatLon da indirizzi; apostrofi toponimi; prefisso DD; decimali EU.</p><ul>
+<li><code>7e41a14</code> — fix(search): harden Cerca coord classification before geocoding (FIX1)</li>
+</ul></details>
+<details><summary>Build 257 · candidate non promossa</summary><p>2026-10-21 · <code>4c2fd18</code> · GIS-SEARCH-COORD-VALIDATION-CENTER-A</p><p>Cerca: classificazione locale coordinate prima della rete; errore esplicito se invalide; centratura mappa se valide.</p><ul>
+<li><code>4c2fd18</code> — feat(search): classify coordinates locally before Nominatim (build 257)</li>
+</ul></details>
+<details><summary>Build 256 · deploy documentato</summary><p>2026-08-24 · <code>f215011</code> · APP-BUILD-LABEL-UX-A</p><p>Rimuove badge build/versione dalla topbar mappa; footer e About invariati.</p><ul>
+<li><code>f215011</code> — fix(ui): remove map topbar build badge (build 256)</li>
+</ul></details>
+<details><summary>Build 255 · deploy documentato</summary><p>2026-08-24 · <code>0a4b52b</code> · </p><p>Copia testo HTTP: TXT bundle; export-dialog host for execCommand; no readonly; body retry.</p><ul>
+<li><code>0a4b52b</code> — fix(waypoints): prefer export dialog as clipboard host (build 255)</li>
+</ul></details>
+<details><summary>Build 254 · deploy da verificare</summary><p>2026-08-24 · <code>acb240d</code> · </p><p>Copia testo HTTP: shared TXT bundle; dialog-hosted execCommand without readonly; body retry.</p><ul>
+<li><code>acb240d</code> — fix(waypoints): HTTP clipboard copy without readonly focus trap (build 254)</li>
+</ul></details>
+<details><summary>Build 253 · deploy da verificare</summary><p>2026-08-24 · <code>6ff00df</code> · GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX2</p><p>Copia testo: same TXT bundle; execCommand fallback mounts inside open dialog (HTTP).</p><ul>
+<li><code>6ff00df</code> — fix(waypoints): clipboard copy via dialog-hosted execCommand (build 253)</li>
+</ul></details>
+<details><summary>Build 252 · deploy documentato</summary><p>2026-08-24 · <code>4ad3b52</code> · GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A-FIX1</p><p>Fix multi-select Copia testo: await full selection payload before closing export dialog.</p><ul>
+<li><code>4ad3b52</code> — fix(waypoints): await multi-select plain-text clipboard copy (build 252)</li>
+</ul></details>
+<details><summary>Build 251 · deploy documentato</summary><p>2026-08-24 · <code>84e3498</code> · GIS-WAYPOINT-TEXT-EXPORT-CLIPBOARD-A</p><p>Waypoint plain-text export (.txt) + clipboard; selection-aware; modal coord format.</p><ul>
+<li><code>84e3498</code> — feat(waypoints): plain-text export and clipboard (build 251)</li>
+</ul></details>
+<details><summary>Build 250 · deploy documentato</summary><p>2026-08-22 · <code>28e87f6</code> · GIS-POLYGON-TABLE-COL-RESIZE-A</p><p>Polygon list column resize: lower useful mins, no premature table floor, fluid drag.</p><ul>
+<li><code>28e87f6</code> — fix(ui): polygon list column resize — useful mins and fluid drag</li>
+</ul></details>
+</details>
+<details><summary>Build 200–249</summary>
+<details><summary>Build 249 · deploy documentato</summary><p>2026-08-22 · <code>bfb4dbc</code> · GIS-MAP-UI-RESIDUAL-MAINTENANCE-A</p><p>WP coord format field sync + polygon dismiss/toolbar sync + track flyout autoclose + WP col resize.</p><ul>
+<li><code>bfb4dbc</code> — fix(ui): map residual QA — coord format sync, polygon toolbar, flyout autoclose, WP col resize</li>
+<li><code>b264097</code> — fix(ui): sync polygon toolbar active state on panel open</li>
+</ul></details>
+<details><summary>Build 248 · deploy documentato</summary><p>2026-08-22 · <code>aa6e8f5</code> · GIS-WAYPOINT-POLYGON-UI-MAINTENANCE-A</p><p>Waypoint modal map-name row layout (no list spill) + polygon metrics 1-decimal presentation.</p><ul>
+<li><code>aa6e8f5</code> — fix(ui): waypoint modal layout + compact polygon metrics</li>
+</ul></details>
+<details><summary>Build 247 · deploy documentato</summary><p>2026-08-21 · <code>ac4789e</code> · GIS-OBJECTS-SETTINGS-RELEGATE-A-FIX1</p><p>FIX1: remove leaked comment from tile-ctrls template (restore map toolbar geometry).</p><ul>
+<li><code>ac4789e</code> — fix(ui): restore map toolbar geometry after Oggetti GIS relegate</li>
+</ul></details>
+<details><summary>Build 246 · deploy documentato</summary><p>2026-08-21 · <code>f0ea637</code> · GIS-OBJECTS-SETTINGS-RELEGATE-A</p><p>Relegate Oggetti GIS entry into Impostazioni (⚙); map toolbar access removed; module FROZEN.</p><ul>
+<li><code>f0ea637</code> — feat(ui): relegate Oggetti GIS entry into Impostazioni</li>
+</ul></details>
+<details><summary>Build 245 · deploy documentato</summary><p>2026-08-21 · <code>03a222e</code> · MAP-CENTER-VIEWPORT-AWARE-A-FIX1</p><p>FIX1: polygon panel dock LEFT + height between topbar and scale/footer (no cover right ctrls).</p><ul>
+<li><code>03a222e</code> — fix(map): polygon panel dock LEFT under topbar above scale/footer</li>
+</ul></details>
+<details><summary>Build 244 · deploy documentato</summary><p>2026-08-21 · <code>6d0b78a</code> · MAP-CENTER-VIEWPORT-AWARE-A</p><p>Polygon panel GIS height + verts priority + Ctrl+Z remove-last during Nuovo poligono.</p><ul>
+<li><code>6d0b78a</code> — feat(map): polygon panel GIS height, verts priority, Ctrl+Z remove-last</li>
+</ul></details>
+<details><summary>Build 243 · deploy documentato</summary><p>2026-08-21 · <code>ccb4166</code> · GIS-POLYGON-VERTEX-COORD-UX-A-FIX4</p><p>FIX4: draggable draft vertices during Nuovo poligono (_polygonDraftVertices).</p><ul>
+<li><code>ccb4166</code> — GIS-POLYGON-VERTEX-COORD-UX-A-FIX4: draggable draft vertices during polygon drawing (243).</li>
+</ul></details>
+<details><summary>Build 242 · deploy documentato</summary><p>2026-08-21 · <code>ea5b4c1</code> · GIS-POLYGON-VERTEX-COORD-UX-A-FIX3</p><p>FIX3: Nuovo poligono keeps polygon panel open (no auto-minimize).</p><ul>
+<li><code>ea5b4c1</code> — GIS-POLYGON-VERTEX-COORD-UX-A-FIX3: keep polygon panel open during drawing (242).</li>
+</ul></details>
+<details><summary>Build 241 · deploy documentato</summary><p>2026-08-21 · <code>1d43c79</code> · GIS-POLYGON-VERTEX-COORD-UX-A-FIX2</p><p>FIX2: Coordinate vertici list during Nuovo poligono draft (_polygonDraftVertices).</p><ul>
+<li><code>1d43c79</code> — GIS-POLYGON-VERTEX-COORD-UX-A-FIX2: show vertex coords during polygon drawing (241).</li>
+</ul></details>
+<details><summary>Build 240 · deploy documentato</summary><p>2026-08-21 · <code>4fb9c2f</code> · GIS-POLYGON-VERTEX-COORD-UX-A-FIX1</p><p>FIX1: sync current-build selftest APP_BUILD_ID/NUM with vertex coord UX (240).</p><ul>
+<li><code>4fb9c2f</code> — GIS-POLYGON-VERTEX-COORD-UX-A-FIX1: vertex coord UX + sync build selftests (240).</li>
+</ul></details>
+<details><summary>Build 239 · candidate non promossa</summary><p>2026-08-21 · <code>be49ed2</code> · GIS-POLYGON-VERTEX-COORD-UX-A</p><p>Polygon edit: vertex coord list, live drag readout, copy, autoDetect paste.</p><ul>
+<li><code>be49ed2</code> — GIS-POLYGON-VERTEX-COORD-UX-A: vertex coord list, live drag, autoDetect paste (build 239).</li>
+</ul></details>
+<details><summary>Build 238 · deploy documentato</summary><p>2026-08-21 · <code>d899cff</code> · D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX2</p><p>ATM09 Dettagli: Rule/Regola display-only (reuse helper 237; keep link text/URL).</p><ul>
+<li><code>d899cff</code> — fix(dflight): normalize ATM09 details Rule/Regola display text, build 238</li>
+</ul></details>
+<details><summary>Build 237 · deploy documentato</summary><p>2026-08-21 · <code>8a350f7</code> · D-FLIGHT-DETAILS-CONTENT-CLEANUP-A-FIX1</p><p>Dettagli zona: normalizza anche markup entity-encoded (bounded decode+strip).</p><ul>
+<li><code>8a350f7</code> — fix(dflight): normalize entity-encoded markup in zone details display, build 237</li>
+</ul></details>
+<details><summary>Build 236 · candidate non promossa</summary><p>2026-08-20 · <code>d223b38</code> · D-FLIGHT-DETAILS-CONTENT-CLEANUP-A</p><p>Dettagli zona: testo display sicuro (strip HTML/entity, no raw HTML).</p><ul>
+<li><code>d223b38</code> — fix(dflight): safe plain-text display for zone details content, build 236</li>
+</ul></details>
+<details><summary>Build 235 · deploy documentato</summary><p>2026-08-20 · <code>4f00433</code> · D-FLIGHT-CLOSE-CLEANUP-A-FIX1</p><p>Close X: teardown visual ATM09/zone sincrono immediato (no pan/timer); reopen no auto-reload.</p><ul>
+<li><code>4f00433</code> — ﻿fix(dflight): sync ATM09 visual teardown on complete panel close, build 235</li>
+</ul></details>
+<details><summary>Build 234 · deploy documentato</summary><p>2026-08-20 · <code>ea83704</code> · D-FLIGHT-CLOSE-CLEANUP-A</p><p>Close completa Zone D-Flight: cleanup overlay/zone/legende sessione; minimize invariato.</p><ul>
+<li><code>ea83704</code> — fix(dflight): clear session map visuals on complete panel close, build 234</li>
+</ul></details>
+<details><summary>Build 233 · deploy documentato</summary><p>2026-08-20 · <code>1b8aa3c</code> · GLOBAL-MODAL-EDGE-RESIZE-A-FIX1</p><p>FIX1: hit-zone N/S/E/W a tutta lunghezza; first-open sotto chrome (safeTop); grip invisibile.</p><ul>
+<li><code>1b8aa3c</code> — fix(ui): full-perimeter edge hit-zones and safe-top first-open, build 233</li>
+</ul></details>
+<details><summary>Build 232 · deploy documentato</summary><p>2026-08-19 · <code>942ab73</code> · GLOBAL-MODAL-EDGE-RESIZE-A</p><p>Resize globale modal: hit-zone invisibili su tutti i bordi e angoli; grip visibile rimosso.</p><ul>
+<li><code>942ab73</code> — feat(ui): global modal edge resize without visible grip, build 232</li>
+</ul></details>
+<details><summary>Build 231 · deploy documentato</summary><p>2026-08-19 · <code>f90c503</code> · CARTO-IIM-PROVIDER-A-FIX1</p><p>IIM snapshot Interactive Sailing Map (180), federato IGM. Filtro IIM deselezionabile. UKHO non a runtime.</p><ul>
+<li><code>f90c503</code> — feat(carto): allow unchecking IIM nautical chart filter, build 231</li>
+</ul></details>
+<details><summary>Build 230 · deploy documentato</summary><p>2026-08-19 · <code>8d6e0b0</code> · CARTO-IIM-PROVIDER-A</p><p>IIM snapshot Interactive Sailing Map (180), federato IGM. UKHO non a runtime.</p><ul>
+<li><code>8d6e0b0</code> — feat(carto): split IIM snapshot provider from blocked UKHO, build 230</li>
+</ul></details>
+<details><summary>Build 229 · candidate non promossa</summary><p>2026-08-19 · <code>a0e439e</code> · CARTO-IIM-UKHO-PROVIDERS-A</p><p>Federazione IIM/UKHO nell</p><ul>
+<li><code>a0e439e</code> — feat(carto): federate IIM footprints and UKHO CAL metadata, build 229</li>
+</ul></details>
+<details><summary>Build 228 · deploy documentato</summary><p>2026-08-18 · <code>c5bc4b1</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX6</p><p>Mobile Percorso chips wrap (FIX6).</p><ul>
+<li><code>c5bc4b1</code> — fix(routing): FIX6 mobile Percorso chips wrap, build 228</li>
+</ul></details>
+<details><summary>Build 227 · distribuita con QA fallita, poi corretta</summary><p>2026-08-18 · <code>118dc9d</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX5</p><p>Compact params, track lifecycle, alt borders, ring+VIA alts (FIX5).</p><ul>
+<li><code>118dc9d</code> — fix(routing): FIX5 compact params, track lifecycle, alt borders, ring+VIA, build 227</li>
+</ul></details>
+<details><summary>Build 226 · deploy documentato</summary><p>2026-08-18 · <code>2e61635</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4-FIX1</p><p>Ring semantic warn lifecycle fix (FIX4-FIX1).</p><ul>
+<li><code>2e61635</code> — fix(routing): FIX4-FIX1 ring warn lifecycle reset on invalidate, build 226</li>
+</ul></details>
+<details><summary>Build 225 · candidate non promossa</summary><p>2026-08-18 · <code>f1d9fc0</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX4</p><p>Routing params layout, multi-trace colors, ring warn, tab next-point (FIX4).</p><ul>
+<li><code>f1d9fc0</code> — feat(routing): FIX4 params layout, multi-trace colors, ring warn, build 225</li>
+</ul></details>
+<details><summary>Build 224 · deploy documentato</summary><p>2026-08-18 · <code>d455841</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX3</p><p>Routing layout + VIA pick + loop/compare readability (FIX3).</p><ul>
+<li><code>d455841</code> — feat(routing): FIX3 layout, VIA pick, loop/compare readability, build 224</li>
+</ul></details>
+<details><summary>Build 223 · deploy documentato</summary><p>2026-08-18 · <code>4a6dca9</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX2</p><p>Constrained Anello: alternatives only when request has exactly 2 points (FIX2).</p><ul>
+<li><code>4a6dca9</code> — feat(routing): gate alternatives to exactly 2 points and fix VIA reorder, build 223</li>
+</ul></details>
+<details><summary>Build 222 · distribuita con QA fallita, poi corretta</summary><p>2026-08-18 · <code>105bedf</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A-FIX1</p><p>Compare UX polish + constrained Anello via waypoints (FIX1).</p><ul>
+<li><code>105bedf</code> — feat(routing): compare UX polish and constrained Anello vias, build 222</li>
+</ul></details>
+<details><summary>Build 221 · deploy documentato</summary><p>2026-08-18 · <code>1a5e971</code> · OUTDOOR-ROUTING-F-PROVIDER-COMPARE-A</p><p>Opt-in GraphHopper vs OpenRouteService comparison in Routing planner.</p><ul>
+<li><code>1a5e971</code> — feat(routing): opt-in GraphHopper vs ORS compare, candidate build 221</li>
+</ul></details>
+<details><summary>Build 220 · deploy documentato</summary><p>2026-08-18 · <code>2687873</code> · OUTDOOR-ROUTING-ORS-PROVIDER-A</p><p>ORS provider opt-in via HTTPS gateway; GraphHopper unchanged.</p><ul>
+<li><code>2687873</code> — feat(routing): ORS provider opt-in candidate build 220</li>
+</ul></details>
+<details><summary>Build 219 · deploy documentato</summary><p>2026-08-18 · <code>5477a5e</code> · OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1</p><p>Avoid areas FIX1: preserve alternative_route and round_trip with custom_model.</p><ul>
+<li><code>5477a5e</code> — fix(routing): OUTDOOR-ROUTING-F-AVOID-AREAS-A-FIX1 preserve algorithm with avoid</li>
+</ul></details>
+<details><summary>Build 218 · deploy da verificare</summary><p>2026-08-18 · <code>12a7477</code> · OUTDOOR-ROUTING-F-AVOID-AREAS-A</p><p>Routing transient avoid areas: draw, list, GraphHopper custom_model session-only.</p><ul>
+<li><code>12a7477</code> — feat(routing): OUTDOOR-ROUTING-F-AVOID-AREAS-A transient avoid polygons</li>
+</ul></details>
+<details><summary>Build 217 · deploy da verificare</summary><p>2026-08-18 · <code>1e37e56</code> · GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2</p><p>Solo D-Flight legend auto-snaps right on any enter-solo transition; dual/touched contract unchanged.</p><ul>
+<li><code>1e37e56</code> — fix(gis): GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX2 solo D-Flight snap from none</li>
+</ul></details>
+<details><summary>Build 216 · deploy da verificare</summary><p>2026-08-18 · <code>f1dd580</code> · GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX1</p><p>Solo D-Flight legend auto-snaps right when ATM09 hides; dual/touched contract unchanged.</p><ul>
+<li><code>f1dd580</code> — fix(gis): GIS-WORKSPACE-LEGENDS-F-BATCH1-FIX1 solo D-Flight snap right</li>
+</ul></details>
+<details><summary>Build 215 · deploy documentato</summary><p>2026-08-17 · <code>7ef5c83</code> · GIS-WORKSPACE-LEGENDS-F-BATCH1</p><p>D-Flight + ATM09 legend workspace: distinct right overlays, independent drag, session-only touched.</p><ul>
+<li><code>7ef5c83</code> — feat(gis): GIS-WORKSPACE-LEGENDS-F-BATCH1 distinct D-Flight/ATM09 legend workspace</li>
+</ul></details>
+<details><summary>Build 214 · deploy documentato</summary><p>2026-08-17 · <code>7196b30</code> · GIS-DIALOG-MINIMIZE-HISTORY-A</p><p>Convert/Search minimize into shared dock; History floating dialog (no right-slide).</p><ul>
+<li><code>7196b30</code> — feat(gis): GIS-DIALOG-MINIMIZE-HISTORY-A Convert/Search dock + History dialog</li>
+</ul></details>
+<details><summary>Build 213 · deploy documentato</summary><p>2026-08-17 · <code>7fb0c20</code> · GIS-PANEL-DOCK-MGR-G-D-BATCH1</p><p>G-D-BATCH1: dual-side minimized dock, no 5th-chip jump, header-budget +N.</p><ul>
+<li><code>7fb0c20</code> — feat(dock): G-D-BATCH1 dual-side header dock and +N overflow</li>
+</ul></details>
+<details><summary>Build 212 · deploy documentato</summary><p>2026-08-17 · <code>7e984df</code> · GIS-PANEL-DOCK-MGR-G-BC-BATCH1</p><p>G-BC-BATCH1: certify G-C lifecycles (layers/poly/RR/interaction/D-Flight/carto) + selftest.</p><ul>
+<li><code>7e984df</code> — feat(dock): G-BC-BATCH1 certify G-C lifecycles + carto dock sync</li>
+</ul></details>
+<details><summary>Build 211 · deploy da verificare</summary><p>2026-08-17 · <code>361345d</code> · GIS-PANEL-DOCK-MGR-G-B</p><p>G-B: workbench whitelist in gisMinimizePanel + ordinary dock certification.</p><ul>
+<li><code>361345d</code> — feat(dock): G-B workbench whitelist + ordinary panel certification</li>
+</ul></details>
+<details><summary>Build 210 · deploy documentato</summary><p>2026-08-17 · <code>525e7df</code> · GIS-PANEL-DOCK-MGR-G-A1-FIX2</p><p>G-A1-FIX2: gisPanelSafeTop uses max(header,dock).bottom so row dock cannot cover handles.</p><ul>
+<li><code>525e7df</code> — fix(dock): G-A1-FIX2 safeTop uses real chrome bottom including dock</li>
+</ul></details>
+<details><summary>Build 209 · deploy da verificare</summary><p>2026-08-17 · <code>c122fd4</code> · GIS-PANEL-DOCK-MGR-G-A1-FIX1</p><p>G-A1-FIX1: dynamic gisPanelSafeTop for drag/clamp under header+dock z29; panels maxZ 28 unchanged.</p><ul>
+<li><code>c122fd4</code> — fix(dock): G-A1-FIX1 dynamic safeTop so drag handle stays below header</li>
+</ul></details>
+<details><summary>Build 208 · deploy documentato</summary><p>2026-08-16 · <code>7a5c42f</code> · GIS-PANEL-DOCK-MGR-G-A1</p><p>G-A1: thin global minimized dock coordinator; header chrome host; z panels max 28 / dock+header 29 / drawer 30.</p><ul>
+<li><code>7a5c42f</code> — feat(dock): G-A1 thin global minimized dock coordinator</li>
+</ul></details>
+<details><summary>Build 207 · deploy documentato</summary><p>2026-08-16 · <code>508dd03</code> · BRANDING-TMART-IMPL-A-FIX1</p><p>FIX1: remove header signature by Marty; app title strings brand-only; footer Realizzato da T.M. preserved.</p><ul>
+<li><code>508dd03</code> — fix(branding): FIX1 remove header by Marty signature</li>
+</ul></details>
+<details><summary>Build 206 · deploy documentato</summary><p>2026-08-16 · <code>1abc247</code> · BRANDING-TMART-IMPL-A</p><p>User-facing brand rename to TMART GIS tool (header/i18n/meta/title/footer/export); filename and technical IDs unchanged.</p><ul>
+<li><code>1abc247</code> — feat(branding): TMART GIS tool user-facing rename (IMPL-A)</li>
+</ul></details>
+<details><summary>Build 205 · deploy documentato</summary><p>2026-08-16 · <code>9820c8a</code> · D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX4</p><p>FIX4: no sibling re-pair on drag-end; resize-end/open/ATM09/resize-viewport pair-layout unchanged.</p><ul>
+<li><code>9820c8a</code> — fix(dflight): FIX4 no sibling re-pair on drag-end</li>
+</ul></details>
+<details><summary>Build 204 · deploy documentato</summary><p>2026-08-16 · <code>9643ca0</code> · D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX3</p><p>FIX3: Atm09 open + drag/resize-end pair-layout; legend stacking below floating modals; real-UI SBS_R proofs.</p><ul>
+<li><code>9643ca0</code> — fix(dflight): FIX3 Atm09 pair-layout + drag-end re-pair + legend z</li>
+</ul></details>
+<details><summary>Build 203 · deploy documentato</summary><p>2026-08-16 · <code>a40d216</code> · D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX2</p><p>FIX2: one-touched symmetric right/left/below/above post-clamp separation; explicit partial_visible when impossible.</p><ul>
+<li><code>a40d216</code> — fix(dflight): FIX2 symmetric one-touched vertical pick + partial_visible</li>
+</ul></details>
+<details><summary>Build 202 · deploy da verificare</summary><p>2026-08-16 · <code>ff4fa64</code> · D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A-FIX1</p><p>FIX1: one-touched pair-layout requires real post-clamp side clearance; no artificial horizontal overlap; stack fallback when dead-zone.</p><ul>
+<li><code>ff4fa64</code> — fix(dflight): FIX1 one-touched pair-layout post-clamp side clearance</li>
+</ul></details>
+<details><summary>Build 201 · deploy da verificare</summary><p>2026-08-16 · <code>a689fe8</code> · D-FLIGHT-PANEL-SIDEBYSIDE-IMPL-A</p><p>D-Flight Zone/Details pair layout: side-by-side when space allows; narrow stack fallback; respect touched; session-only.</p><ul>
+<li><code>a689fe8</code> — feat(dflight): side-by-side Zone/Details pair layout (IMPL-A)</li>
+</ul></details>
+<details><summary>Build 200 · deploy da verificare</summary><p>2026-08-16 · <code>67d9cc7</code> · D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX2</p><p>legend presentation remains stable across transient ATM09 tile reload after pan; real fallback/off still clears it.</p><ul>
+<li><code>67d9cc7</code> — fix(dflight): keep ATM09 legend stable across transient tile reload</li>
+</ul></details>
+</details>
+<details><summary>Build 150–199</summary>
+<details><summary>Build 199 · deploy da verificare</summary><p>2026-08-16 · <code>c1c1b85</code> · D-FLIGHT-ATM09-LEGEND-UX-IMPL-A-FIX1</p><p>ATM09 user legend adaptive layout: left of right controls, above coordinate readout; static non-draggable; 8-row topology unchanged.</p><ul>
+<li><code>c1c1b85</code> — fix(dflight): adapt ATM09 legend layout to map controls</li>
+</ul></details>
+<details><summary>Build 198 · deploy da verificare</summary><p>2026-08-16 · <code>469b685</code> · D-FLIGHT-ATM09-LEGEND-UX-IMPL-A</p><p>User-facing external ATM09 legend (8 rows, official D-Flight swatch pixels, inline data-URI); technical WMS legend hidden in normal paint; arbitration build 197 preserved.</p><ul>
+<li><code>469b685</code> — feat(dflight): add user-facing ATM09 legend</li>
+<li><code>016be9e</code> — fix(dflight): keep technical ATM09 legend non-competitive</li>
+</ul></details>
+<details><summary>Build 197 · deploy documentato</summary><p>2026-08-16 · <code>d2d3ab3</code> · D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A</p><p>Contextual single legend arbitration (paint-driven); D-FLIGHT-FAMILIARITY-FIRST; no raster restyle.</p><ul>
+<li><code>d2d3ab3</code> — D-FLIGHT-ATM09-VISUAL-PARITY-IMPL-A: paint-driven single legend (build 197)</li>
+</ul></details>
+<details><summary>Build 196 · deploy documentato</summary><p>2026-08-15 · <code>c7d1734</code> · D-FLIGHT-UX-COHERENCE-MASTER-VIS-A</p><p>Independent masters: D-Flight zones vs ATM09 overlay; ATM09 decoupled from temporal filters.</p><ul>
+<li><code>c7d1734</code> — D-FLIGHT-UX-COHERENCE-MASTER-VIS-A: independent D-Flight / ATM09 masters (build 196)</li>
+</ul></details>
+<details><summary>Build 195 · deploy documentato</summary><p>2026-08-15 · <code>2574250</code> · D-FLIGHT-UX-COHERENCE-AGGIORNA-A</p><p>Unified Aggiorna: gated remote refresh + always local temporal reeval.</p><ul>
+<li><code>2574250</code> — feat: D-FLIGHT-UX-COHERENCE-AGGIORNA-A (unified Aggiorna + local reeval)</li>
+</ul></details>
+<details><summary>Build 194 · deploy da verificare</summary><p>2026-08-15 · <code>0c0f97d</code> · D-FLIGHT-UX-COHERENCE-LEGEND-ATM09-UX-A</p><p>ATM09 contextual legend + overlay pulse + D-Flight panel scroll.</p><ul>
+<li><code>0c0f97d</code> — feat: D-Flight ATM09 contextual legend + overlay pulse + panel scroll</li>
+</ul></details>
+<details><summary>Build 193 · deploy da verificare</summary><p>2026-08-15 · <code>aa6e3ce</code> · D-FLIGHT-UX-COHERENCE-TEMPORAL-UX-A</p><p>Temporal select-all/none + pulse/fade + contextual D-Flight legend.</p><ul>
+<li><code>aa6e3ce</code> — feat: D-Flight temporal UX B1 (select-all, pulse/fade, legend)</li>
+</ul></details>
+<details><summary>Build 192 · deploy documentato</summary><p>2026-08-15 · <code>eb307db</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX5</p><p>ATM09 INFO hits stay transparent when non-interactive.</p><ul>
+<li><code>eb307db</code> — fix(dflight): ATM09 INFO hits stay transparent when non-interactive (FIX5)</li>
+<li><code>02be3a5</code> — test(dflight): harden OptB FIX5 selftests against black vectors</li>
+</ul></details>
+<details><summary>Build 191 · deploy da verificare</summary><p>2026-08-15 · <code>c3061a2</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX4</p><p>Restrictive temporal filter hides ATM09; INFO hit only when ALL ON.</p><ul>
+<li><code>c3061a2</code> — fix(dflight): restrictive temporal filter hides ATM09 (OPTION-B FIX4)</li>
+</ul></details>
+<details><summary>Build 190 · deploy da verificare</summary><p>2026-08-15 · <code>99db9a9</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX3</p><p>ALL OFF hides ATM09 raster; hit-test stays off.</p><ul>
+<li><code>99db9a9</code> — fix(dflight): ALL OFF hides ATM09 raster (OPTION-B FIX3)</li>
+</ul></details>
+<details><summary>Build 189 · deploy da verificare</summary><p>2026-08-15 · <code>1257ad9</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX2</p><p>ALL OFF disables D-Flight hit-test including ATM09 INFO.</p><ul>
+<li><code>1257ad9</code> — fix(dflight): ALL OFF disables ATM09 INFO hit-test (OPTION-B FIX2)</li>
+<li><code>0a4a505</code> — test(dflight): harden OptB FIX2 reactivate selftest against live overlay</li>
+</ul></details>
+<details><summary>Build 188 · deploy da verificare</summary><p>2026-08-15 · <code>4a66084</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A-FIX1</p><p>TEMP-B ATM09 dim selector aligned to actual tile DOM.</p><ul>
+<li><code>4a66084</code> — fix(dflight): TEMP-B ATM09 dim CSS selector matches real tile DOM (FIX1)</li>
+</ul></details>
+<details><summary>Build 187 · deploy da verificare</summary><p>2026-08-14 · <code>c3007f5</code> · D-FLIGHT-HIT-TEST-OPTION-B-IMPL-A</p><p>adaptive ATM09 INFO subdivision + raster temporal context dim.</p><ul>
+<li><code>c3007f5</code> — feat(dflight): OPTION-B adaptive ATM09 INFO subdivision + TEMP-B dim</li>
+</ul></details>
+<details><summary>Build 186 · deploy da verificare</summary><p>2026-08-14 · <code>7501d0f</code> · D-FLIGHT-HIT-TEST-FIX-A-FIX2</p><p>ATM09 INFO unavailable → visible NFZ vector fallback; auto-recovery on INFO 200.</p><ul>
+<li><code>7501d0f</code> — fix: D-FLIGHT-HIT-TEST-FIX-A-FIX2 — visible NFZ fallback after ATM09 INFO failure (build 186)</li>
+</ul></details>
+<details><summary>Build 185 · deploy da verificare</summary><p>2026-08-14 · <code>488b6c0</code> · D-FLIGHT-HIT-TEST-FIX-A-FIX1</p><p>ATM09_INFO stays above interaction-only hit-layer after temporal redraw.</p><ul>
+<li><code>488b6c0</code> — fix: D-FLIGHT-HIT-TEST-FIX-A-FIX1 — keep ATM09_INFO above hit-layer (build 185)</li>
+</ul></details>
+<details><summary>Build 184 · deploy da verificare</summary><p>2026-08-14 · <code>62de84e</code> · D-FLIGHT-HIT-TEST-FIX-A</p><p>ATM09 suppress keeps interaction-only NFZ hit layer; INFO failure no longer blanks click.</p><ul>
+<li><code>62de84e</code> — feat: D-FLIGHT-HIT-TEST-FIX-A — interaction-only NFZ hit layer (build 184)</li>
+</ul></details>
+<details><summary>Build 183 · deploy documentato</summary><p>2026-08-14 · <code>20b1b49</code> · D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX3</p><p>Resize top/height clamp inside usable map rect.</p><ul>
+<li><code>20b1b49</code> — fix(dflight): clamp panel resize to actual top inside usable rect</li>
+</ul></details>
+<details><summary>Build 182 · deploy da verificare</summary><p>2026-08-14 · <code>7f35382</code> · D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX2</p><p>Review hardening: non-destructive selftests + safe dialog open state + geometry clamp.</p><ul>
+<li><code>7f35382</code> — fix(dflight): FIX2 review hardening for temporal filter UI</li>
+</ul></details>
+<details><summary>Build 181 · deploy da verificare</summary><p>2026-08-14 · <code>b504c02</code> · D-FLIGHT-TEMPORAL-FILTER-UI-A-FIX1</p><p>Immediate temporal redraw + tooltips + adaptive D-Flight panel/details geometry.</p><ul>
+<li><code>b504c02</code> — fix(dflight): FIX1 temporal filter immediate redraw + adaptive panels</li>
+</ul></details>
+<details><summary>Build 180 · deploy da verificare</summary><p>2026-08-14 · <code>6c9c697</code> · D-FLIGHT-TEMPORAL-FILTER-UI-A</p><p>Temporal state visibility filter (session-only; default mostra-tutto).</p><ul>
+<li><code>6c9c697</code> — feat(dflight): temporal state visibility filter UI (session-only)</li>
+</ul></details>
+<details><summary>Build 179 · deploy da verificare</summary><p>2026-08-13 · <code>58ade6c</code> · D-FLIGHT-PERF-VISUAL-READY-A-FIX2</p><p>Close hides D-Flight map overlay; minimize keeps it; session kept.</p><ul>
+<li><code>58ade6c</code> — fix(dflight): FIX2 close hides overlay; minimize keeps session</li>
+<li><code>52927c5</code> — fix(dflight): FIX2 restore-flag close lifecycle (minimize preserves overlay)</li>
+</ul></details>
+<details><summary>Build 178 · deploy da verificare</summary><p>2026-08-13 · <code>12fcba5</code> · D-FLIGHT-PERF-VISUAL-READY-A-FIX1</p><p>Zoom-aware VISUAL READY (no ATM09 preparing above max zoom).</p><ul>
+<li><code>12fcba5</code> — fix(dflight): FIX1 zoom-aware VISUAL READY loading UI</li>
+</ul></details>
+<details><summary>Build 177 · deploy da verificare</summary><p>2026-08-13 · <code>f7a467e</code> · D-FLIGHT-PERF-VISUAL-READY-A</p><p>Post-apply ATM09 start + true VISUAL READY (no premature Pronto).</p><ul>
+<li><code>f7a467e</code> — feat(dflight): post-apply ATM09 start + true VISUAL READY UI</li>
+</ul></details>
+<details><summary>Build 176 · deploy documentato</summary><p>2026-08-13 · <code>fb773c9</code> · D-FLIGHT-H-AUTOLOAD-UX-A-FIX5</p><p>FIX5 selftest legend pure/static — no live DOM/toggle/network.</p><ul>
+<li><code>fb773c9</code> — fix(dflight): FIX5 selftest legend pure/static — no live DOM side-effects</li>
+</ul></details>
+<details><summary>Build 175 · deploy da verificare</summary><p>2026-08-13 · <code>6780c8b</code> · D-FLIGHT-H-AUTOLOAD-UX-A-FIX4</p><p>FIX4: isolate FIX3 selftests — no network, no live details panel mutation</p><ul>
+<li><code>6780c8b</code> — fix(dflight): FIX4 isolate FIX3 selftests from network and live panel</li>
+</ul></details>
+<details><summary>Build 174 · deploy da verificare</summary><p>2026-08-13 · <code>cacfa72</code> · D-FLIGHT-H-AUTOLOAD-UX-A-FIX3</p><p>FIX3: ATM09 legend visibility + details floating + resize handles</p><ul>
+<li><code>cacfa72</code> — fix(dflight): FIX3 ATM09 legend visibility, details floating, resize handles</li>
+</ul></details>
+<details><summary>Build 173 · deploy da verificare</summary><p>2026-08-13 · <code>2124d25</code> · D-FLIGHT-H-AUTOLOAD-UX-A-FIX2</p><p>FIX2: selftest stubs loadZones — no helperFetch / abort / token side effects</p><ul>
+<li><code>2124d25</code> — fix(dflight): isolate D-FLIGHT-H selftest from live helper pipeline (FIX2)</li>
+</ul></details>
+<details><summary>Build 172 · deploy da verificare</summary><p>2026-08-13 · <code>f811315</code> · D-FLIGHT-H-AUTOLOAD-UX-A-FIX1</p><p>FIX1: sync selftest H — no async leak, timer restore, real autoload asserts</p><ul>
+<li><code>f811315</code> — fix(dflight): harden D-FLIGHT-H selftest against async leaks (FIX1)</li>
+</ul></details>
+<details><summary>Build 171 · deploy da verificare</summary><p>2026-08-13 · <code>ad4882b</code> · D-FLIGHT-H-AUTOLOAD-UX-A</p><p>panel-open autoload + 30m update check + loading UX + legend polish</p><ul>
+<li><code>ad4882b</code> — feat(dflight): add panel autoload and operational loading UX</li>
+</ul></details>
+<details><summary>Build 170 · deploy da verificare</summary><p>2026-08-13 · <code>887d321</code> · D-FLIGHT-F-ATM09-ARCH-A-FIX2</p><p>ATM09 generation-complete readiness + settle-once (pre-deploy FIX2)</p><ul>
+<li><code>887d321</code> — feat: D-FLIGHT-F-ATM09-ARCH-A-FIX2 — generation-complete readiness + settle-once</li>
+</ul></details>
+<details><summary>Build 169 · deploy da verificare</summary><p>2026-08-13 · <code>a5da8d4</code> · D-FLIGHT-F-ATM09-ARCH-A-FIX1</p><p>ATM09 readiness fail-closed + network-gate abort (pre-deploy FIX1)</p><ul>
+<li><code>a5da8d4</code> — feat: D-FLIGHT-F-ATM09-ARCH-A-FIX1 — ATM09 readiness fail-closed + network-gate abort</li>
+</ul></details>
+<details><summary>Build 168 · deploy da verificare</summary><p>2026-08-13 · <code>5cbae9c</code> · D-FLIGHT-F-ATM09-ARCH-A</p><p>ATM09 official style overlay + ATM09_INFO interaction (pre-deploy candidate)</p><ul>
+<li><code>5cbae9c</code> — feat: D-FLIGHT-F-ATM09-ARCH-A candidate — ATM09 WMS tile proxy + ATM09_INFO</li>
+</ul></details>
+<details><summary>Build 167 · deploy da verificare</summary><p>2026-08-13 · <code>42edb6f</code> · D-FLIGHT-G-UI-OVERLAY-A-FIX2</p><p>Wheel UI isolation + Layer menu safeTop</p><ul>
+<li><code>42edb6f</code> — fix(dflight): harden wheel UI isolation + Layer menu safeTop (G-FIX2)</li>
+</ul></details>
+<details><summary>Build 166 · deploy da verificare</summary><p>2026-08-12 · <code>ddf84f3</code> · </p><p></p><ul>
+<li><code>ddf84f3</code> — fix(dflight): style-key ED path + CONDITIONAL CSS (build 166)</li>
+</ul></details>
+<details><summary>Build 165 · deploy da verificare</summary><p>2026-08-12 · <code>b97368e</code> · D-FLIGHT-G-UI-OVERLAY-A-FIX1</p><p>WFS style from rule/status · panel wheel isolation</p><ul>
+<li><code>b97368e</code> — fix(dflight): WFS rule/status style mapping + panel wheel isolation (G-FIX1)</li>
+</ul></details>
+<details><summary>Build 164 · deploy da verificare</summary><p>2026-08-12 · <code>950aa54</code> · </p><p>D-Flight overlay pan-sync · GIS panels · legend/hover · minimize whitelist</p><ul>
+<li><code>950aa54</code> — fix(dflight): allow GIS minimize for D-Flight panels (build 164)</li>
+</ul></details>
+<details><summary>Build 163 · deploy da verificare</summary><p>2026-08-12 · <code>457984b</code> · D-FLIGHT-G-UI-OVERLAY-A</p><p>D-Flight overlay pan-sync · GIS panels · legend/hover UX</p><ul>
+<li><code>457984b</code> — feat(dflight): UI overlay pan-sync, GIS panels, legend/hover (D-FLIGHT-G-UI-OVERLAY-A)</li>
+</ul></details>
+<details><summary>Build 162 · deploy da verificare</summary><p>2026-08-12 · <code>ddce434</code> · D-FLIGHT-F-FIX1</p><p>CORS expose X-GOI-DFlight-* · fail-closed pending SHA</p><ul>
+<li><code>ddce434</code> — fix(dflight): expose CORS dataset headers and fail-closed pending SHA</li>
+</ul></details>
+<details><summary>Build 161 · deploy da verificare</summary><p>2026-08-12 · <code>5270342</code> · D-FLIGHT-F</p><p>D-Flight helper client · session dataset · OPSEC-gated update</p><ul>
+<li><code>5270342</code> — feat(dflight): integrate helper client with OPSEC-gated session data</li>
+</ul></details>
+<details><summary>Build 160 · deploy da verificare</summary><p>2026-08-12 · <code>a37b912</code> · D-FLIGHT-CDE</p><p>D-Flight SVG overlay + Cataloghi toggle/legend + zone details</p><ul>
+<li><code>a37b912</code> — feat(dflight): D-FLIGHT-CDE SVG overlay + Cataloghi toggle/legend + zone details</li>
+</ul></details>
+<details><summary>Build 159 · deploy da verificare</summary><p>2026-08-12 · <code>4fc7ee3</code> · D-FLIGHT-B</p><p>D-Flight normalized semantic model on GOIDflight.normalize</p><ul>
+<li><code>4fc7ee3</code> — feat(dflight): add normalized semantic model</li>
+</ul></details>
+<details><summary>Build 158 · deploy da verificare</summary><p>2026-08-12 · <code>d52367b</code> · D-FLIGHT-A</p><p>pure D-Flight parser/adapter core A3-light with window.GOIDflight</p><ul>
+<li><code>d52367b</code> — feat(dflight): add pure client parser adapter</li>
+</ul></details>
+<details><summary>Build 157 · deploy da verificare</summary><p>2026-08-11 · <code>ac3a0ea</code> · MAP-ZOOM-FOCUS-ANCHOR-A-FIX1</p><p>restrict map zoom focus to neutral clicks and valid waypoint taps</p><ul>
+<li><code>ac3a0ea</code> — fix(map): guard neutral zoom focus interactions</li>
+</ul></details>
+<details><summary>Build 156 · deploy da verificare</summary><p>2026-08-11 · <code>f134629</code> · MAP-ZOOM-FOCUS-ANCHOR-A</p><p>anchor map zoom-in to focused point within usable viewport</p><ul>
+<li><code>f134629</code> — feat(map): anchor zoom-in to focused map point</li>
+</ul></details>
+<details><summary>Build 155 · deploy da verificare</summary><p>2026-08-11 · <code>7f41c8e</code> · WAYPOINT-EDITOR-CENTER-A-FIX3-FIX1</p><p>clear stale waypoint coordinate conversion and copy state</p><ul>
+<li><code>7f41c8e</code> — fix(waypoint): clear stale coordinate conversion preview</li>
+</ul></details>
+<details><summary>Build 154 · deploy da verificare</summary><p>2026-08-11 · <code>79155a3</code> · WAYPOINT-EDITOR-CENTER-A-FIX3</p><p>fix UTM inverse accuracy and make waypoint conversion preview copyable</p><ul>
+<li><code>79155a3</code> — fix(coords): correct UTM inverse and waypoint conversion preview</li>
+</ul></details>
+<details><summary>Build 153 · deploy da verificare</summary><p>2026-08-11 · <code>f4db001</code> · WAYPOINT-EDITOR-CENTER-A-FIX2</p><p>preserve raw waypoint coordinate text and center on Enter</p><ul>
+<li><code>f4db001</code> — fix(waypoint): preserve raw coordinate input and center on enter</li>
+</ul></details>
+<details><summary>Build 152 · deploy da verificare</summary><p>2026-08-11 · <code>defd22e</code> · WAYPOINT-EDITOR-CENTER-A-FIX1</p><p>align new waypoint center save and cancel actions with title</p><ul>
+<li><code>defd22e</code> — fix(waypoint): align new waypoint editor actions</li>
+</ul></details>
+<details><summary>Build 151 · deploy da verificare</summary><p>2026-08-11 · <code>be97282</code> · WAYPOINT-EDITOR-CENTER-A</p><p>center map from current waypoint editor coordinates</p><ul>
+<li><code>be97282</code> — feat(waypoint): add center action to waypoint editor</li>
+</ul></details>
+<details><summary>Build 150 · deploy da verificare</summary><p>2026-08-11 · <code>65c9ef8</code> · CARTO-IGM-SERIES-EXPAND-A-UX3-FIX3</p><p>reveal GIS UI atomically after startup initialization</p><ul>
+<li><code>65c9ef8</code> — fix(carto): reveal GIS UI after startup initialization</li>
+</ul></details>
+</details>
+<details><summary>Build 100–149</summary>
+<details><summary>Build 149 · deploy da verificare</summary><p>2026-08-11 · <code>cb2a38b</code> · CARTO-IGM-SERIES-EXPAND-A-UX3-FIX2</p><p>eliminate startup converter flash and top-align IGM panel</p><ul>
+<li><code>cb2a38b</code> — fix(carto): eliminate startup flash and top-align IGM panel</li>
+</ul></details>
+<details><summary>Build 148 · deploy da verificare</summary><p>2026-08-11 · <code>02c7b99</code> · CARTO-IGM-SERIES-EXPAND-A-UX3-FIX1</p><p>clear stale IGM results when all series filters are disabled</p><ul>
+<li><code>02c7b99</code> — fix(carto): clear stale IGM results with no active series</li>
+</ul></details>
+<details><summary>Build 147 · deploy da verificare</summary><p>2026-08-10 · <code>9588e6c</code> · CARTO-IGM-SERIES-EXPAND-A-UX3</p><p>auto-refresh IGM filters, open map by default and improve IGM panel layout</p><ul>
+<li><code>9588e6c</code> — fix(carto): streamline IGM filters and panel opening</li>
+</ul></details>
+<details><summary>Build 146 · deploy da verificare</summary><p>2026-08-10 · <code>ebc6752</code> · CARTO-IGM-SERIES-EXPAND-A-UX2</p><p>improve IGM footprint label contrast on light basemaps</p><ul>
+<li><code>ebc6752</code> — fix(carto): improve IGM label contrast on light basemaps</li>
+</ul></details>
+<details><summary>Build 145 · deploy da verificare</summary><p>2026-08-10 · <code>1482f16</code> · CARTO-IGM-SERIES-EXPAND-A-UX1</p><p>color-code IGM series footprints and clarify catalog actions</p><ul>
+<li><code>1482f16</code> — fix(carto): improve IGM series visual distinction</li>
+</ul></details>
+<details><summary>Build 144 · deploy da verificare</summary><p>2026-08-10 · <code>5356700</code> · CARTO-IGM-SERIES-EXPAND-A</p><p>expand IGM index with Series 25, 25V and validated RDN2008 footprints</p><ul>
+<li><code>5356700</code> — feat(carto): expand IGM series index</li>
+</ul></details>
+<details><summary>Build 143 · deploy da verificare</summary><p>2026-08-10 · <code>a667f74</code> · MAP-TRANSPARENT-OVERLAY-STACK-A-FIX4</p><p>use native Strava source dimensions for local overzoom crop</p><ul>
+<li><code>a667f74</code> — fix(map): use native Strava tile size for overzoom</li>
+</ul></details>
+<details><summary>Build 142 · deploy da verificare</summary><p>2026-08-08 · <code>261fcdf</code> · MAP-TRANSPARENT-OVERLAY-STACK-A-FIX3</p><p>preserve effective-online gate in Strava overzoom hydration</p><ul>
+<li><code>261fcdf</code> — fix(map): preserve Strava effective-online gate</li>
+</ul></details>
+<details><summary>Build 141 · deploy da verificare</summary><p>2026-08-08 · <code>5aaa54b</code> · MAP-TRANSPARENT-OVERLAY-STACK-A-FIX2</p><p>extend Strava display with local overzoom and distinguish raster overlays</p><ul>
+<li><code>5aaa54b</code> — fix(map): overzoom Strava and distinguish overlays</li>
+</ul></details>
+<details><summary>Build 140 · deploy da verificare</summary><p>2026-08-07 · <code>d42e3d2</code> · MAP-TRANSPARENT-OVERLAY-STACK-A-FIX1</p><p>preserve SonarChart path and enforce overlay offline max zoom</p><ul>
+<li><code>d42e3d2</code> — fix(map): enforce overlay max zoom and preserve sonar path</li>
+</ul></details>
+<details><summary>Build 139 · deploy da verificare</summary><p>2026-08-07 · <code>de8e053</code> · MAP-TRANSPARENT-OVERLAY-STACK-A</p><p>add OSM sharding and cached hiking, Strava Run and hillshade overlays</p><ul>
+<li><code>de8e053</code> — feat(map): add cached raster overlay stack</li>
+</ul></details>
+<details><summary>Build 138 · deploy da verificare</summary><p>2026-08-07 · <code>a0a6816</code> · COORD-MODAL-FORMAT-COPY-A-FIX1</p><p>move waypoint coordinate format to editor; auto-detect pasted coordinates and sync draft pin</p><ul>
+<li><code>a0a6816</code> — fix(coords): sync waypoint editor format and pasted coordinates</li>
+</ul></details>
+<details><summary>Build 137 · deploy da verificare</summary><p>2026-08-07 · <code>04c4d37</code> · COORD-MODAL-FORMAT-COPY-A</p><p>coordinate format and copy controls for waypoint, track and favorites lists</p><ul>
+<li><code>04c4d37</code> — feat(coords): add format and copy controls to coordinate lists</li>
+</ul></details>
+<details><summary>Build 136 · deploy da verificare</summary><p>2026-08-07 · <code>764e661</code> · CARTO-IGM-AREA-ESC-RESTORE-A</p><p>restore IGM panel on area-pick Escape; consume Esc fully</p><ul>
+<li><code>764e661</code> — fix(carto): preserve IGM panel on area-pick escape</li>
+</ul></details>
+<details><summary>Build 135 · deploy da verificare</summary><p>2026-08-07 · <code>c4d7db5</code> · CARTO-ARCHIVE-MATCH-A-FIX2</p><p>close archive editor after save; flash panel notices</p><ul>
+<li><code>c4d7db5</code> — fix(carto): close archive editor after save and flash notices</li>
+</ul></details>
+<details><summary>Build 134 · deploy da verificare</summary><p>2026-08-06 · <code>84c9710</code> · CARTO-ARCHIVE-MATCH-A-FIX1</p><p>fix archive persistence result and normalize ISO UTC</p><ul>
+<li><code>84c9710</code> — fix(carto): make archive persistence transactional</li>
+</ul></details>
+<details><summary>Build 133 · deploy da verificare</summary><p>2026-08-06 · <code>39ba407</code> · CARTO-ARCHIVE-MATCH-A</p><p>local IGM archive metadata catalog</p><ul>
+<li><code>39ba407</code> — feat(carto): add local IGM archive metadata catalog</li>
+</ul></details>
+<details><summary>Build 132 · deploy da verificare</summary><p>2026-08-06 · <code>51e0f5b</code> · CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX3</p><p>remove IGM label double-click navigation</p><ul>
+<li><code>51e0f5b</code> — fix(carto): remove IGM label double-click navigation</li>
+</ul></details>
+<details><summary>Build 131 · deploy da verificare</summary><p>2026-08-06 · <code>b89c140</code> · CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX2</p><p>recover IGM label double-click fit without map recenter</p><ul>
+<li><code>b89c140</code> — fix(carto): recover IGM label double-click fit</li>
+</ul></details>
+<details><summary>Build 130 · deploy da verificare</summary><p>2026-08-06 · <code>b5d2e44</code> · CARTO-IGM-RESULTS-UX-BUNDLE-B-FIX1</p><p>isolate IGM label double click from map recenter</p><ul>
+<li><code>b5d2e44</code> — fix(carto): isolate IGM label double click</li>
+</ul></details>
+<details><summary>Build 129 · deploy da verificare</summary><p>2026-08-06 · <code>0ad97ee</code> · CARTO-IGM-RESULTS-UX-BUNDLE-B</p><p>improve IGM area search and footprint navigation</p><ul>
+<li><code>0ad97ee</code> — feat(carto): improve IGM area and result navigation</li>
+</ul></details>
+<details><summary>Build 128 · deploy da verificare</summary><p>2026-08-06 · <code>8bdd69c</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX5</p><p>complete track displacement and IGM browser interaction fixes</p><ul>
+<li><code>8bdd69c</code> — fix(gis): complete box zoom and IGM browser UX</li>
+</ul></details>
+<details><summary>Build 127 · deploy da verificare</summary><p>2026-08-06 · <code>3bc6efe</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX4</p><p>preserve scoped IGM minimized dock label</p><ul>
+<li><code>3bc6efe</code> — fix(gis): preserve scoped IGM minimized label</li>
+</ul></details>
+<details><summary>Build 126 · deploy da verificare</summary><p>2026-08-06 · <code>8dc240d</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX3</p><p>box-zoom displaces track; IGM minimize and layer menu clickability</p><ul>
+<li><code>8dc240d</code> — fix(gis): disarm track on box-zoom and fix IGM panel UX</li>
+</ul></details>
+<details><summary>Build 125 · deploy da verificare</summary><p>2026-08-06 · <code>298c64d</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX2</p><p>preserve incoming map tool across self-deregistering cleanup</p><ul>
+<li><code>298c64d</code> — fix(gis): preserve map tool activation across cleanup</li>
+</ul></details>
+<details><summary>Build 124 · deploy da verificare</summary><p>2026-08-06 · <code>9a3d825</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A-FIX1</p><p>correct Web Mercator fit and reentrant map tool coordination</p><ul>
+<li><code>9a3d825</code> — fix(gis): correct map fit and tool reentrancy</li>
+</ul></details>
+<details><summary>Build 123 · deploy da verificare</summary><p>2026-08-06 · <code>1793382</code> · MAP-INTERACTION-CARTO-UX-BUNDLE-A</p><p>coordinate map tools, box zoom and IGM area workflow</p><ul>
+<li><code>1793382</code> — feat(gis): coordinate map tools and IGM area selection</li>
+</ul></details>
+<details><summary>Build 122 · deploy da verificare</summary><p>2026-08-06 · <code>62d24eb</code> · CARTO-UI-RESULTS-A-FIX3</p><p>use scoped Italian fallback for IGM UI labels</p><ul>
+<li><code>62d24eb</code> — fix(carto): add Italian fallback for frozen locales</li>
+</ul></details>
+<details><summary>Build 121 · deploy da verificare</summary><p>2026-08-05 · <code>105fd7f</code> · CARTO-UI-RESULTS-A-FIX2</p><p>align IGM results UI with EN/FR localization freeze</p><ul>
+<li><code>105fd7f</code> — fix(carto): align IGM UI with localization freeze</li>
+</ul></details>
+<details><summary>Build 120 · deploy da verificare</summary><p>2026-08-05 · <code>9991955</code> · CARTO-UI-RESULTS-A-FIX1</p><p>harden IGM results UI state and accessibility</p><ul>
+<li><code>9991955</code> — fix(carto): harden IGM results UI state and a11y</li>
+</ul></details>
+<details><summary>Build 119 · deploy da verificare</summary><p>2026-08-05 · <code>5e734f5</code> · CARTO-UI-RESULTS-A</p><p>IGM chart search results and footprint overlay</p><ul>
+<li><code>5e734f5</code> — feat(carto): add IGM search results UI</li>
+</ul></details>
+<details><summary>Build 118 · deploy da verificare</summary><p>2026-08-05 · <code>c80129e</code> · CARTO-SEARCH-ENGINE-A</p><p>embedded IGM local chart index search engine</p><ul>
+<li><code>c80129e</code> — feat(carto): embed IGM index search engine</li>
+</ul></details>
+<details><summary>Build 117 · deploy da verificare</summary><p>2026-08-05 · <code>8e3cee4</code> · MAP-BOX-ZOOM-A-FIX1</p><p>pixel-ratio box zoom fit</p><ul>
+<li><code>8e3cee4</code> — fix(map): fit box zoom to selected viewport area</li>
+</ul></details>
+<details><summary>Build 116 · deploy da verificare</summary><p>2026-08-05 · <code>ffbe9fd</code> · MAP-BOX-ZOOM-A</p><p>map box zoom control</p><ul>
+<li><code>ffbe9fd</code> — feat(map): add box zoom control</li>
+</ul></details>
+<details><summary>Build 115 · deploy da verificare</summary><p>2026-08-03 · <code>f718582</code> · ROUTING-ANELLO-A-FIX1</p><p>round trip batch gate and timeout hardening</p><ul>
+<li><code>f718582</code> — fix(routing): harden round trip batch execution</li>
+</ul></details>
+<details><summary>Build 114 · deploy da verificare</summary><p>2026-08-03 · <code>4135737</code> · ROUTING-ANELLO-A</p><p>native GraphHopper multi-seed loop routing</p><ul>
+<li><code>4135737</code> — feat(routing): add native multi-seed loop mode</li>
+</ul></details>
+<details><summary>Build 113 · deploy da verificare</summary><p>2026-08-03 · <code>dde5156</code> · ROUTING-ACTION-ROW-UX-A</p><p>unified routing mode and action row</p><ul>
+<li><code>dde5156</code> — style(routing): unify mode and action row</li>
+</ul></details>
+<details><summary>Build 112 · deploy da verificare</summary><p>2026-08-02 · <code>c1a6c89</code> · ROUTING-ANDATA-RITORNO-A</p><p>real GraphHopper out-and-back routing</p><ul>
+<li><code>c1a6c89</code> — feat(routing): add real out-and-back mode</li>
+</ul></details>
+<details><summary>Build 111 · deploy da verificare</summary><p>2026-08-02 · <code>5fc39e9</code> · UI-MODAL-ERROR-FOCUS-A-FIX2</p><p>layout-neutral modal error attention; scroll only if clipped</p><ul>
+<li><code>5fc39e9</code> — fix(ux): keep modal error attention layout-neutral</li>
+</ul></details>
+<details><summary>Build 110 · deploy da verificare</summary><p>2026-08-02 · <code>6d272d7</code> · UI-MODAL-ERROR-FOCUS-A-FIX1</p><p>uniform attention for all modal error messages</p><ul>
+<li><code>6d272d7</code> — fix(ux): unify modal error attention</li>
+</ul></details>
+<details><summary>Build 109 · deploy da verificare</summary><p>2026-08-02 · <code>89a08fb</code> · ROUTING-MODAL-OPEN-EXPANDED-A-FIX1</p><p>routing planner max height with operational width</p><ul>
+<li><code>89a08fb</code> — fix(routing): keep planner width operational</li>
+</ul></details>
+<details><summary>Build 108 · deploy da verificare</summary><p>2026-08-02 · <code>ae28eec</code> · ROUTING-MODAL-OPEN-EXPANDED-A</p><p>open routing planner at maximum usable viewport size</p><ul>
+<li><code>ae28eec</code> — fix(routing): open planner expanded</li>
+</ul></details>
+<details><summary>Build 107 · deploy da verificare</summary><p>2026-08-02 · <code>0b27e27</code> · UX-SEARCH-ERROR-FOCUS-A</p><p>routing search history, direct coordinate enter, modal error focus</p><ul>
+<li><code>0b27e27</code> — feat(ux): add routing history and focus modal errors</li>
+</ul></details>
+<details><summary>Build 106 · deploy da verificare</summary><p>2026-08-02 · <code>d1e770e</code> · ROUTING-GEOCODE-SNAP-A</p><p>preflight geocoded points against GraphHopper /nearest</p><ul>
+<li><code>d1e770e</code> — feat(routing): preflight geocoded points against GraphHopper</li>
+</ul></details>
+<details><summary>Build 105 · deploy da verificare</summary><p>2026-08-02 · <code>0c078ae</code> · B6.6AR-A-FIX3</p><p>routing actions below alternatives and speed</p><ul>
+<li><code>0c078ae</code> — fix(routing): place action bar below alternatives and speed</li>
+</ul></details>
+<details><summary>Build 104 · deploy da verificare</summary><p>2026-08-02 · <code>ab432b7</code> · B6.6AR-A-FIX2</p><p>scope red defaults to routes and tracks</p><ul>
+<li><code>ab432b7</code> — fix(routing): scope red defaults to routes and tracks</li>
+</ul></details>
+<details><summary>Build 103 · deploy da verificare</summary><p>2026-08-02 · <code>2728ca2</code> · B6.6AR-A-FIX1</p><p>alternative route UX, centering and red defaults</p><ul>
+<li><code>2728ca2</code> — fix(routing): improve alternative route feedback and centering</li>
+</ul></details>
+<details><summary>Build 102 · deploy da verificare</summary><p>2026-08-02 · <code>0d14820</code> · B6.6AR-A</p><p>selectable alternative routes</p><ul>
+<li><code>0d14820</code> — feat(routing): add selectable alternative routes</li>
+</ul></details>
+<details><summary>Build 101 · deploy da verificare</summary><p>2026-08-02 · <code>1f7c05f</code> · B6.5RGM-A-FIX2</p><p>ROUTING-GEOCODING-MULTIROW-A-FIX2 — per-point viewport-aware center</p><ul>
+<li><code>1f7c05f</code> — fix(routing): add viewport-aware point center action</li>
+</ul></details>
+<details><summary>Build 100 · deploy da verificare</summary><p>2026-08-02 · <code>5e87c86</code> · B6.5RGM-A-FIX1</p><p>ROUTING-GEOCODING-MULTIROW-A-FIX1 — anti-stale search + dropdown cleanup</p><ul>
+<li><code>5e87c86</code> — fix(routing): invalidate stale per-stop searches</li>
+</ul></details>
+</details>
+<details><summary>Build 50–99</summary>
+<details><summary>Build 99 · deploy da verificare</summary><p>2026-08-02 · <code>2468418</code> · B6.5RGM-A</p><p>ROUTING-GEOCODING-MULTIROW-A — per-stop geocoding search</p><ul>
+<li><code>2468418</code> — feat(routing): add per-stop geocoding search</li>
+</ul></details>
+<details><summary>Build 98 · deploy da verificare</summary><p>2026-08-01 · <code>cad28e7</code> · B6.4IHA-B2-FIX1</p><p>MAJOR-3-b2-FIX1 — verify persisted Import Hub apply</p><ul>
+<li><code>cad28e7</code> — fix(gis): verify import hub persistence</li>
+</ul></details>
+<details><summary>Build 97 · deploy da verificare</summary><p>2026-08-01 · <code>4d70bbc</code> · B6.4IHA-B2</p><p>MAJOR-3-b2 — apply Import Hub preview additively</p><ul>
+<li><code>4d70bbc</code> — feat(gis): apply import hub preview</li>
+</ul></details>
+<details><summary>Build 96 · deploy da verificare</summary><p>2026-08-01 · <code>0482ef8</code> · B6.3TPC-A</p><p>TRACK-POINT-CENTER-BUTTON-A — center individual track points</p><ul>
+<li><code>0482ef8</code> — feat(track): center individual track points</li>
+</ul></details>
+<details><summary>Build 95 · deploy da verificare</summary><p>2026-08-01 · <code>6475804</code> · B6.3RPC-A-FIX1</p><p>ROUTING-POINT-COORD-EDIT-A-FIX1 — clear stale coordinate feedback</p><ul>
+<li><code>6475804</code> — fix(routing): clear stale coordinate edit feedback</li>
+</ul></details>
+<details><summary>Build 94 · deploy da verificare</summary><p>2026-08-01 · <code>f509125</code> · B6.3RPC-A</p><p>ROUTING-POINT-COORD-EDIT-A — atomic manual routing coordinates</p><ul>
+<li><code>f509125</code> — feat(routing): edit point coordinates manually</li>
+</ul></details>
+<details><summary>Build 93 · deploy da verificare</summary><p>2026-08-01 · <code>d0688ea</code> · B6.2MCV-A-FIX3</p><p>MAP-CENTER-VIEWPORT-AWARE-A-FIX3 — normalized occluder edge selection</p><ul>
+<li><code>d0688ea</code> — fix(map): normalize viewport occluder edge selection</li>
+</ul></details>
+<details><summary>Build 92 · deploy da verificare</summary><p>2026-08-01 · <code>a640ca2</code> · B6.2MCV-A-FIX2</p><p>MAP-CENTER-VIEWPORT-AWARE-A-FIX2 — marker/camera split + antimeridian align</p><ul>
+<li><code>a640ca2</code> — fix(map): preserve marker and antimeridian containment</li>
+</ul></details>
+<details><summary>Build 91 · deploy da verificare</summary><p>2026-08-01 · <code>1a7c98c</code> · B6.2MCV-A-FIX1</p><p>MAP-CENTER-VIEWPORT-AWARE-A-FIX1 — viewport-aware camera containment fixes</p><ul>
+<li><code>1a7c98c</code> — fix(map): harden viewport-aware centering</li>
+</ul></details>
+<details><summary>Build 90 · deploy da verificare</summary><p>2026-08-01 · <code>5b5e052</code> · B6.2MC-A</p><p>MAP-CENTER-VIEWPORT-AWARE-A — usable-rect center/fit for floating GIS panels</p><ul>
+<li><code>5b5e052</code> — feat(map): viewport-aware center and fit for GIS panels</li>
+</ul></details>
+<details><summary>Build 89 · deploy da verificare</summary><p>2026-08-01 · <code>3838e9e</code> · B6.2TPD-A</p><p>TRACK-PROFILE-POINTS-DISPLAY-A — distance-decimated saved-track profile points</p><ul>
+<li><code>3838e9e</code> — feat(track): show saved-track profile points</li>
+</ul></details>
+<details><summary>Build 88 · deploy da verificare</summary><p>2026-07-31 · <code>da3397b</code> · B6.2BL-A-FIX1</p><p>APP-BUILD-LABEL-UX-A-FIX1 — remove map HUD and keep footer visible</p><ul>
+<li><code>da3397b</code> — fix(ui): remove map HUD and stabilize footer</li>
+</ul></details>
+<details><summary>Build 87 · deploy da verificare</summary><p>2026-07-31 · <code>6de0e98</code> · B6.2BL-A</p><p>APP-BUILD-LABEL-UX-A — remove technical build badge from map toolbar</p><ul>
+<li><code>6de0e98</code> — fix(ui): remove build badge from map toolbar</li>
+</ul></details>
+<details><summary>Build 86 · deploy da verificare</summary><p>2026-07-31 · <code>173b6cb</code> · B6.2UX-A-FIX1</p><p>ROUTING-UX-POLISH-BUNDLE-A-FIX1 — restore point mutations and highlight positioned points</p><ul>
+<li><code>173b6cb</code> — fix(routing): restore point changes and preserve endpoints</li>
+</ul></details>
+<details><summary>Build 85 · deploy da verificare</summary><p>2026-07-31 · <code>7653ee7</code> · B6.2UX-A</p><p>ROUTING-UX-POLISH-BUNDLE-A — undo, units, active point, points feedback and result focus</p><ul>
+<li><code>7653ee7</code> — feat(routing): add undo, units and planner feedback</li>
+</ul></details>
+<details><summary>Build 84 · deploy da verificare</summary><p>2026-07-31 · <code>58197bb</code> · B6.1RSD-A</p><p>ROUTING-SUMMARY-DEDUP-A — keep route status concise and metrics in cards</p><ul>
+<li><code>58197bb</code> — fix(routing): remove duplicate route metrics from status</li>
+</ul></details>
+<details><summary>Build 83 · deploy da verificare</summary><p>2026-07-31 · <code>8a641bc</code> · B6.1TSN-A</p><p>TRACK-SAVE-AS-NAME-A — choose track name before routing save</p><ul>
+<li><code>8a641bc</code> — feat(routing): choose name before saving track</li>
+</ul></details>
+<details><summary>Build 82 · deploy da verificare</summary><p>2026-07-30 · <code>1fc9d70</code> · B6.1TP-A-FIX3</p><p>TRACK-ELEVATION-PROFILE-A-FIX3 — align saved-profile map hover to canonical geometry</p><ul>
+<li><code>1fc9d70</code> — fix(track): align saved profile map hover to track geometry</li>
+</ul></details>
+<details><summary>Build 81 · deploy da verificare</summary><p>2026-07-30 · <code>ae9ca1e</code> · B6.1TP-A-FIX2</p><p>TRACK-ELEVATION-PROFILE-A-FIX2 — stabilize saved-profile resize lifecycle</p><ul>
+<li><code>ae9ca1e</code> — fix(track): stabilize saved profile resize observer</li>
+</ul></details>
+<details><summary>Build 80 · deploy da verificare</summary><p>2026-07-30 · <code>45bbf57</code> · B6.1TP-A-FIX1</p><p>TRACK-ELEVATION-PROFILE-A-FIX1 — elevation sync ownership and lifecycle hardening</p><ul>
+<li><code>45bbf57</code> — fix(track): harden saved elevation profile sync</li>
+</ul></details>
+<details><summary>Build 79 · deploy da verificare</summary><p>2026-07-30 · <code>4fb0d5a</code> · B6.1TP-A</p><p>TRACK-ELEVATION-PROFILE-A — saved-track elevation profile foundation</p><ul>
+<li><code>4fb0d5a</code> — feat(track): add saved-track elevation profiles</li>
+</ul></details>
+<details><summary>Build 78 · deploy da verificare</summary><p>2026-07-30 · <code>d28bc44</code> · B6.0ES-A</p><p>OUTDOOR-ROUTING-ELEVATION-STYLE-A — segmented elevation profile visual refresh</p><ul>
+<li><code>d28bc44</code> — feat(routing): restyle elevation profile</li>
+</ul></details>
+<details><summary>Build 77 · deploy da verificare</summary><p>2026-07-29 · <code>1e218a2</code> · B6.0TDP-A</p><p>TRACK-MODAL-DISPLAY-PREFS-A — track units and coordinate display formats</p><ul>
+<li><code>1e218a2</code> — feat(track): add display units and coordinate formats</li>
+</ul></details>
+<details><summary>Build 76 · deploy da verificare</summary><p>2026-07-29 · <code>d54c915</code> · B6.0R-A</p><p>OUTDOOR-ROUTING-REVERSE-A — reverse start destination and via order</p><ul>
+<li><code>d54c915</code> — feat(routing): add reverse route action</li>
+</ul></details>
+<details><summary>Build 75 · deploy da verificare</summary><p>2026-07-29 · <code>e7d9398</code> · B6.0E-FIX8</p><p>OUTDOOR-ROUTING-GH-E-QA-FIX8 — preserve planner language and numeric locale</p><ul>
+<li><code>e7d9398</code> — fix(routing): preserve planner numeric locale</li>
+</ul></details>
+<details><summary>Build 74 · deploy da verificare</summary><p>2026-07-29 · <code>8ea0938</code> · B6.0E-FIX7</p><p>OUTDOOR-ROUTING-GH-E-QA-FIX7 — repair runtime map sync, GIS guards and gap-safe decimation</p><ul>
+<li><code>8ea0938</code> — fix(routing): restore robust elevation pointer sync</li>
+</ul></details>
+<details><summary>Build 73 · deploy da verificare</summary><p>2026-07-29 · <code>abbd836</code> · B6.0E-FIX6</p><p>OUTDOOR-ROUTING-GH-E-QA-FIX6 — repair elevation data contract, units and difficulty formula</p><ul>
+<li><code>abbd836</code> — fix(routing): repair filtered elevation contract</li>
+</ul></details>
+<details><summary>Build 72 · deploy da verificare</summary><p>2026-07-29 · <code>476c446</code> · B6.0E-FIX5</p><p>OUTDOOR-ROUTING-GH-E-QA-FIX5 — filtered elevation gain, pointer sync, speed and grade details</p><ul>
+<li><code>476c446</code> — fix(routing): refine elevation metrics and pointer sync</li>
+</ul></details>
+<details><summary>Build 71 · deploy da verificare</summary><p>2026-07-29 · <code>166f1c4</code> · B6.0E-FIX4</p><p>OUTDOOR-ROUTING-GH-E-FIX4 — prevent stale pan hover and update sync marker only</p><ul>
+<li><code>166f1c4</code> — fix(routing): avoid full preview redraw on altitude hover</li>
+</ul></details>
+<details><summary>Build 70 · deploy da verificare</summary><p>2026-07-29 · <code>40d2b73</code> · B6.0E-FIX3</p><p>OUTDOOR-ROUTING-GH-E-FIX3 — fix map-sync cache coordinates and accessibility</p><ul>
+<li><code>40d2b73</code> — fix(routing): finalize elevation map sync</li>
+</ul></details>
+<details><summary>Build 69 · deploy da verificare</summary><p>2026-07-29 · <code>c060ced</code> · B6.0E-FIX2</p><p>OUTDOOR-ROUTING-GH-E-FIX2 — harden weighted difficulty, SVG decimation and pixel map sync</p><ul>
+<li><code>c060ced</code> — fix(routing): complete elevation profile hardening</li>
+</ul></details>
+<details><summary>Build 68 · deploy da verificare</summary><p>2026-07-29 · <code>ab9c0a9</code> · B6.0E-FIX1</p><p>OUTDOOR-ROUTING-GH-E-FIX1 — fail-soft elevation validation (non-finite ele → null, keep route)</p><ul>
+<li><code>ab9c0a9</code> — fix(routing): fail-soft invalid elevation samples in route response</li>
+</ul></details>
+<details><summary>Build 67 · deploy da verificare</summary><p>2026-07-29 · <code>e3cf114</code> · B6.0E</p><p>OUTDOOR-ROUTING-GH-E — elevation profile, difficulty, map sync</p><ul>
+<li><code>e3cf114</code> — feat(routing): add elevation profile and difficulty estimate</li>
+</ul></details>
+<details><summary>Build 66 · deploy da verificare</summary><p>2026-07-28 · <code>567b611</code> · B6.0D-FIX1</p><p>OUTDOOR-ROUTING-GH-D-FIX1 — harden route save transaction</p><ul>
+<li><code>567b611</code> — fix(routing): harden route save transaction</li>
+</ul></details>
+<details><summary>Build 65 · deploy da verificare</summary><p>2026-07-28 · <code>c806099</code> · B6.0D</p><p>OUTDOOR-ROUTING-GH-D — save current route as track</p><ul>
+<li><code>c806099</code> — feat(routing): save current route as track</li>
+</ul></details>
+<details><summary>Build 64 · deploy da verificare</summary><p>2026-07-27 · <code>dd9ad2f</code> · B6.0C-FIX1</p><p>OUTDOOR-ROUTING-GH-C-FIX1 — initialize planner with start and destination only</p><ul>
+<li><code>dd9ad2f</code> — fix(routing): initialize planner with start and destination</li>
+</ul></details>
+<details><summary>Build 63 · deploy da verificare</summary><p>2026-07-27 · <code>61b5b34</code> · B6.0C</p><p>OUTDOOR-ROUTING-GH-C — Local, VPS and Auto provider resolution</p><ul>
+<li><code>61b5b34</code> — feat(routing): add local and auto GraphHopper providers</li>
+</ul></details>
+<details><summary>Build 62 · deploy da verificare</summary><p>2026-07-27 · <code>89bbf28</code> · B6.0B2-FIX2</p><p>OUTDOOR-ROUTING-GH-B2-FIX2 — close downstream review findings</p><ul>
+<li><code>89bbf28</code> — fix(routing): close B2 downstream review findings</li>
+</ul></details>
+<details><summary>Build 61 · deploy da verificare</summary><p>2026-07-27 · <code>feb1eb3</code> · B6.0B2-FIX1</p><p>OUTDOOR-ROUTING-GH-B2-FIX1 — GraphHopper route preview with transient lifecycle</p><ul>
+<li><code>feb1eb3</code> — fix(routing): align B2 i18n and build metadata</li>
+</ul></details>
+<details><summary>Build 60 · deploy da verificare</summary><p>2026-07-27 · <code>42b01b3</code> · B6.0B2</p><p></p><ul>
+<li><code>42b01b3</code> — feat(routing): add GraphHopper outdoor route preview</li>
+</ul></details>
+<details><summary>Build 59 · deploy da verificare</summary><p>2026-07-27 · <code>ff43878</code> · </p><p>TRACK-POINT-CAP-2000-FIX2 — paginate point list + GIS import cap notice</p><ul>
+<li><code>ff43878</code> — fix(track): paginate large point lists and show import cap errors</li>
+</ul></details>
+<details><summary>Build 58 · deploy da verificare</summary><p>2026-07-26 · <code>c94297f</code> · </p><p>TRACK-POINT-CAP-2000-FIX1 — verify and rollback saved track creation</p><ul>
+<li><code>c94297f</code> — fix(track): verify and rollback saved track creation</li>
+</ul></details>
+<details><summary>Build 57 · deploy da verificare</summary><p>2026-07-26 · <code>249df83</code> · </p><p>TRACK-POINT-CAP-2000 — raise track point cap to 2000 safely</p><ul>
+<li><code>249df83</code> — feat(track): raise track point cap to 2000 safely</li>
+</ul></details>
+<details><summary>Build 56 · deploy da verificare</summary><p>2026-07-24 · <code>3a702e1</code> · </p><p></p><ul>
+<li><code>3a702e1</code> — fix(gis): disarm routing and bbox pick modes mutually (build 56)</li>
+</ul></details>
+<details><summary>Build 55 · deploy da verificare</summary><p>2026-07-24 · <code>3fc67c7</code> · </p><p></p><ul>
+<li><code>3fc67c7</code> — feat(gis): add outdoor routing map points and GPS (build 55)</li>
+</ul></details>
+<details><summary>Build 54 · deploy da verificare</summary><p>2026-07-24 · <code>d95f745</code> · </p><p></p><ul>
+<li><code>d95f745</code> — fix(gis): improve outdoor planner QA usability (build 54)</li>
+</ul></details>
+<details><summary>Build 53 · deploy da verificare</summary><p>2026-07-24 · <code>3760c77</code> · </p><p></p><ul>
+<li><code>3760c77</code> — fix(gis): harden outdoor route planner shell (build 53)</li>
+</ul></details>
+<details><summary>Build 52 · deploy da verificare</summary><p>2026-07-24 · <code>53e25d6</code> · </p><p></p><ul>
+<li><code>53e25d6</code> — feat(gis): add outdoor route planner shell (build 52)</li>
+</ul></details>
+<details><summary>Build 51 · deploy da verificare</summary><p>2026-07-24 · <code>1812010</code> · </p><p></p><ul>
+<li><code>1812010</code> — feat(gis): add unified import hub preview (build 51)</li>
+</ul></details>
+<details><summary>Build 50 · deploy da verificare</summary><p>2026-07-24 · <code>fb11986</code> · </p><p></p><ul>
+<li><code>fb11986</code> — fix(gis): prevent offline area table header overlap (build 50)</li>
+</ul></details>
+</details>
+<details><summary>Build 1–49</summary>
+<details><summary>Build 49 · deploy da verificare</summary><p>2026-07-24 · <code>ede0215</code> · </p><p></p><ul>
+<li><code>ede0215</code> — fix(gis): keep offline download controls and area list accessible (build 49)</li>
+</ul></details>
+<details><summary>Build 48 · deploy da verificare</summary><p>2026-07-24 · <code>5426cb1</code> · </p><p></p><ul>
+<li><code>5426cb1</code> — fix(gis): guard offline download destructive actions (build 48)</li>
+</ul></details>
+<details><summary>Build 47 · deploy da verificare</summary><p>2026-07-24 · <code>e130a6e</code> · </p><p></p><ul>
+<li><code>e130a6e</code> — feat(gis): add offline download pause resume and stop controls (build 47)</li>
+</ul></details>
+<details><summary>Build 46 · deploy da verificare</summary><p>2026-07-24 · <code>793f4cb</code> · </p><p></p><ul>
+<li><code>793f4cb</code> — fix(gis): verify track create and edit persistence (build 46)</li>
+</ul></details>
+<details><summary>Build 45 · deploy da verificare</summary><p>2026-07-23 · <code>33dc33d</code> · </p><p></p><ul>
+<li><code>33dc33d</code> — feat(gis): unify track create review and edit UX (build 45)</li>
+</ul></details>
+<details><summary>Build 44 · deploy da verificare</summary><p>2026-07-23 · <code>9cc7937</code> · </p><p></p><ul>
+<li><code>9cc7937</code> — fix(gis): align antimeridian track fit with rendered path (build 44)</li>
+</ul></details>
+<details><summary>Build 43 · deploy da verificare</summary><p>2026-07-23 · <code>bebf517</code> · </p><p></p><ul>
+<li><code>bebf517</code> — fix(gis): support antimeridian track brush rendering and fit (build 43)</li>
+</ul></details>
+<details><summary>Build 42 · deploy da verificare</summary><p>2026-07-23 · <code>d4f877a</code> · </p><p></p><ul>
+<li><code>d4f877a</code> — fix(gis): serialize brush imports and preserve review lifecycle (build 42)</li>
+</ul></details>
+<details><summary>Build 41 · deploy da verificare</summary><p>2026-07-23 · <code>db10408</code> · </p><p></p><ul>
+<li><code>db10408</code> — fix(gis): verify brush persistence and geometry guards (build 41)</li>
+</ul></details>
+<details><summary>Build 40 · deploy da verificare</summary><p>2026-07-23 · <code>75a1d5c</code> · </p><p></p><ul>
+<li><code>75a1d5c</code> — fix(gis): harden track brush lifecycle and pointer cleanup (build 40)</li>
+</ul></details>
+<details><summary>Build 39 · deploy da verificare</summary><p>2026-07-22 · <code>15f9640</code> · </p><p></p><ul>
+<li><code>15f9640</code> — feat(gis): add freehand saved-track brush (build 39)</li>
+</ul></details>
+<details><summary>Build 38 · deploy da verificare</summary><p>2026-07-21 · <code>40c97b6</code> · </p><p></p><ul>
+<li><code>40c97b6</code> — fix(gis): sync batch style inclusion before preview (build 38)</li>
+</ul></details>
+<details><summary>Build 37 · deploy da verificare</summary><p>2026-07-21 · <code>1146e59</code> · </p><p></p><ul>
+<li><code>1146e59</code> — fix(gis): close track style preview and guard batch targeting (build 37)</li>
+</ul></details>
+<details><summary>Build 36 · deploy da verificare</summary><p>2026-07-21 · <code>ab5455d</code> · </p><p></p><ul>
+<li><code>ab5455d</code> — feat(gis): add saved track style editor and batch apply (build 36)</li>
+</ul></details>
+<details><summary>Build 35 · deploy da verificare</summary><p>2026-07-21 · <code>1d28163</code> · </p><p></p><ul>
+<li><code>1d28163</code> — feat(gis): add KMZ drop and track map controls (build 35)</li>
+</ul></details>
+<details><summary>Build 34 · deploy da verificare</summary><p>2026-07-21 · <code>5f57a75</code> · </p><p></p><ul>
+<li><code>5f57a75</code> — feat(gis): add multi-file GPX/KML drag and drop import (build 34)</li>
+</ul></details>
+<details><summary>Build 33 · deploy da verificare</summary><p>2026-07-01 · <code>73269a0</code> · </p><p></p><ul>
+<li><code>73269a0</code> — feat(gis): add mission package export (build 33)</li>
+</ul></details>
+<details><summary>Build 32 · deploy da verificare</summary><p>2026-07-01 · <code>c0fb4da</code> · </p><p></p><ul>
+<li><code>c0fb4da</code> — feat(gis): add unified GIS export hub (build 32)</li>
+</ul></details>
+<details><summary>Build 31 · deploy da verificare</summary><p>2026-07-01 · <code>d9238b6</code> · </p><p></p><ul>
+<li><code>d9238b6</code> — fix(gis): persist offline area audit status (build 31)</li>
+</ul></details>
+<details><summary>Build 30 · deploy da verificare</summary><p>2026-07-01 · <code>d9c8f7b</code> · </p><p></p><ul>
+<li><code>d9c8f7b</code> — fix(gis): polish workbench panel styling (build 30)</li>
+</ul></details>
+<details><summary>Build 29 · deploy da verificare</summary><p>2026-07-01 · <code>eb1451b</code> · </p><p></p><ul>
+<li><code>eb1451b</code> — feat(gis): add workbench polygon map pick (build 29)</li>
+</ul></details>
+<details><summary>Build 28 · deploy da verificare</summary><p>2026-06-30 · <code>cef7d42</code> · </p><p></p><ul>
+<li><code>cef7d42</code> — feat(gis): add workbench map pick mode (build 28)</li>
+</ul></details>
+<details><summary>Build 27 · deploy da verificare</summary><p>2026-06-30 · <code>d2f7856</code> · </p><p></p><ul>
+<li><code>d2f7856</code> — feat(gis): add workbench selection highlight (build 27)</li>
+</ul></details>
+<details><summary>Build 26 · deploy da verificare</summary><p>2026-06-30 · <code>d74cbb7</code> · </p><p></p><ul>
+<li><code>d74cbb7</code> — feat(gis): add object workbench catalog</li>
+</ul></details>
+<details><summary>Build 25 · deploy da verificare</summary><p>2026-06-29 · <code>823bb73</code> · </p><p></p><ul>
+<li><code>823bb73</code> — feat(gis): harden offline tile errors and protected delete</li>
+</ul></details>
+<details><summary>Build 24 · deploy da verificare</summary><p>2026-06-29 · <code>07ad4f4</code> · </p><p></p><ul>
+<li><code>07ad4f4</code> — feat(gis): add offline coverage verifier</li>
+</ul></details>
+<details><summary>Build 23 · deploy da verificare</summary><p>2026-06-29 · <code>9b359b7</code> · </p><p></p><ul>
+<li><code>9b359b7</code> — feat(gis): add runtime diagnostics panel</li>
+</ul></details>
+<details><summary>Build 22 · deploy da verificare</summary><p>2026-06-29 · <code>fb871b7</code> · </p><p></p><ul>
+<li><code>fb871b7</code> — feat(gis): consolidate map UI and panel UX</li>
+</ul></details>
+<details><summary>Build 21 · deploy da verificare</summary><p>2026-06-28 · <code>19700b6</code> · </p><p></p><ul>
+<li><code>19700b6</code> — fix(gis): wheel zoom one step per detent</li>
+</ul></details>
+<details><summary>Build 20 · deploy da verificare</summary><p>2026-06-28 · <code>5fec693</code> · </p><p></p><ul>
+<li><code>5fec693</code> — fix(gis): limit wheel zoom to one step per burst</li>
+</ul></details>
+<details><summary>Build 19 · deploy da verificare</summary><p>2026-06-28 · <code>ec86b62</code> · </p><p></p><ul>
+<li><code>ec86b62</code> — feat(gis): polish HUD and panel resize UX</li>
+</ul></details>
+<details><summary>Build 18 · deploy da verificare</summary><p>2026-06-28 · <code>8f56566</code> · </p><p></p><ul>
+<li><code>8f56566</code> — feat(gis): extend residual panel resize and HUD polish</li>
+</ul></details>
+<details><summary>Build 17 · deploy da verificare</summary><p>2026-06-28 · <code>584135e</code> · </p><p></p><ul>
+<li><code>584135e</code> — feat(gis): expand panel resize and HUD controls</li>
+</ul></details>
+<details><summary>Build 16 · deploy da verificare</summary><p>2026-06-28 · <code>61bcda5</code> · </p><p></p><ul>
+<li><code>61bcda5</code> — feat(gis): add UX runtime bundle for panel resize and HUD</li>
+</ul></details>
+<details><summary>Build 15 · deploy da verificare</summary><p>2026-06-28 · <code>7b8cf04</code> · </p><p></p><ul>
+<li><code>7b8cf04</code> — chore(ui): remove dead modal CSS and renderAllMaps calls (build 15)</li>
+</ul></details>
+<details><summary>Build 14 · deploy da verificare</summary><p>2026-06-28 · <code>709079c</code> · </p><p></p><ul>
+<li><code>709079c</code> — chore(ui): apply safe backlog micro-fixes</li>
+</ul></details>
+<details><summary>Build 13 · deploy da verificare</summary><p>2026-06-28 · <code>266b116</code> · </p><p></p><ul>
+<li><code>266b116</code> — fix(ui): restore favorites panel inner scroll</li>
+</ul></details>
+<details><summary>Build 12 · deploy da verificare</summary><p>2026-06-28 · <code>f53e2d8</code> · </p><p></p><ul>
+<li><code>f53e2d8</code> — fix(ui): repair favorites panel close and scroll</li>
+</ul></details>
+<details><summary>Build 11 · deploy da verificare</summary><p>2026-06-28 · <code>06ed2a0</code> · </p><p></p><ul>
+<li><code>06ed2a0</code> — fix(ui): standardize favorites layout and polygon escape handling</li>
+</ul></details>
+<details><summary>Build 10 · deploy da verificare</summary><p>2026-06-28 · <code>33c95ad</code> · </p><p></p><ul>
+<li><code>33c95ad</code> — fix(ui): improve search panel viewport layout</li>
+</ul></details>
+<details><summary>Build 9 · deploy da verificare</summary><p>2026-06-27 · <code>b7b98c2</code> · </p><p></p><ul>
+<li><code>b7b98c2</code> — fix(gis): add polygon visibility indicator</li>
+</ul></details>
+<details><summary>Build 8 · deploy da verificare</summary><p>2026-06-27 · <code>b294140</code> · </p><p></p><ul>
+<li><code>b294140</code> — feat(convert): add waypoint favorite and map source picker</li>
+</ul></details>
+<details><summary>Build 7 · deploy da verificare</summary><p>2026-06-27 · <code>14605e9</code> · </p><p></p><ul>
+<li><code>14605e9</code> — fix(ui): make QR dialog resizable</li>
+</ul></details>
+<details><summary>Build 6 · deploy da verificare</summary><p>2026-06-27 · <code>e8e8ff1</code> · </p><p></p><ul>
+<li><code>e8e8ff1</code> — fix(ui): restore GIS help and QR dialog behavior</li>
+</ul></details>
+<details><summary>Build 5 · deploy da verificare</summary><p>2026-06-27 · <code>dcea02f</code> · </p><p></p><ul>
+<li><code>dcea02f</code> — refactor(ui): migrate help and QR modals to dialog</li>
+</ul></details>
+<details><summary>Build 4 · deploy da verificare</summary><p>2026-06-27 · <code>e1d7718</code> · </p><p></p><ul>
+<li><code>e1d7718</code> — fix(gis): align polygon table controls with tracks</li>
+</ul></details>
+<details><summary>Build 3 · deploy da verificare</summary><p>2026-06-27 · <code>0c5fe42</code> · </p><p></p><ul>
+<li><code>0c5fe42</code> — feat(gis): add resizable polygon columns</li>
+</ul></details>
+<details><summary>Build 2 · deploy da verificare</summary><p>2026-06-27 · <code>6892890</code> · </p><p></p><ul>
+<li><code>6892890</code> — feat(gis): add inline polygon rename</li>
+</ul></details>
+<details><summary>Build 1 · deploy da verificare</summary><p>2026-06-27 · <code>bd588a8</code> · </p><p></p><ul>
+<li><code>bd588a8</code> — feat(gis): add visible monotonic app build number</li>
+</ul></details>
+</details>
+</details>
+            <details class="release-history-before"><summary>Registro modifiche prima della numerazione</summary><p>Commit nel repository tra aprile e giugno 2026: descrizioni originali. La distribuzione come release non è attestata.</p><ol>
+<li><time>2026-04-23</time> · <code>bd17331</code> — chore: initial baseline before roadmap rev.2 deployment</li>
+<li><time>2026-04-24</time> · <code>9657b22</code> — GIS-first layout pivot</li>
+<li><time>2026-04-24</time> · <code>dd3c546</code> — feat(ui): glass UI restyle (only &lt;style&gt;) + session checkpoint</li>
+<li><time>2026-04-24</time> · <code>cff6bd7</code> — chore: pre-GIS cleanup (rename + remove DTG/live-tracking/range)</li>
+<li><time>2026-04-24</time> · <code>e7e4b56</code> — feat(gis+ui): GIS Phase 1 (foundation) + CSS semantic tokens sweep</li>
+<li><time>2026-04-24</time> · <code>5acbee0</code> — fix(gis-ui): stack map below chrome; export KMZ/CSV; zip EOCD fix</li>
+<li><time>2026-04-25</time> · <code>50566e6</code> — feat: export Waypoint Manager GPX/KML/KMZ/CSV + checkpoint 2026-04-25</li>
+<li><time>2026-04-25</time> · <code>b2546e0</code> — Stabilize GIS floating panels and UI polish</li>
+<li><time>2026-04-26</time> · <code>2d28a0a</code> — feat(offcache): saved areas list, selection toolbar, bbox feedback</li>
+<li><time>2026-04-26</time> · <code>d59d001</code> — Polish GIS UI tooltips and offline areas panel</li>
+<li><time>2026-04-26</time> · <code>1e482a4</code> — Refine GIS tooltip positioning and close controls</li>
+<li><time>2026-04-26</time> · <code>98e2462</code> — Improve offline maps selection and batch download flow</li>
+<li><time>2026-04-26</time> · <code>732a2e5</code> — Fix offline bbox drag hit area</li>
+<li><time>2026-04-26</time> · <code>415f1f4</code> — Clarify offline live tile tooltip</li>
+<li><time>2026-04-26</time> · <code>6acaa43</code> — Add JavaScript region markers to monolithic HTML</li>
+<li><time>2026-04-26</time> · <code>016f9d3</code> — Add CSS and JavaScript region markers</li>
+<li><time>2026-04-26</time> · <code>0e2c65f</code> — feat: persist GIS panel layout (coordconv_ui_v1), region markers, micro UX</li>
+<li><time>2026-04-26</time> · <code>8992329</code> — feat: Theme-1 tema automatico locale e aggiornamento checkpoint sessione</li>
+<li><time>2026-04-26</time> · <code>f6233a1</code> — fix(a11y): Theme-1 collega settings.themeAria alla select tema</li>
+<li><time>2026-04-26</time> · <code>6d9da0c</code> — feat(track): salvataggio archivio solo con almeno 2 punti e avviso in contesto</li>
+<li><time>2026-04-26</time> · <code>e763162</code> — feat(ui): chiude Fase 3A modal Converti (CSS scoped, footer unico, checkpoint)</li>
+<li><time>2026-04-27</time> · <code>e27901a</code> — feat(ui): Fase 3B modal Waypoint — shell, UX comandi, tooltip nome mappa</li>
+<li><time>2026-04-27</time> · <code>7fedfb1</code> — feat(ui): Waypoint Export dialog — primo step pattern export</li>
+<li><time>2026-04-27</time> · <code>66b75fb</code> — fix(ui): Waypoint modal — lista legacy, empty singolo, bulk su selezione</li>
+<li><time>2026-04-27</time> · <code>615a65f</code> — feat(ui): Waypoint Import dialog + drop locale (GeoJSON/JSON)</li>
+<li><time>2026-04-27</time> · <code>5e67aa7</code> — fix: modal Traccia dopo annulla file picker e pulizia mappa su delete salvata</li>
+<li><time>2026-04-27</time> · <code>8b1165e</code> — fix: cleanup comandi Traccia e gating salvataggio</li>
+<li><time>2026-04-27</time> · <code>0c0f648</code> — feat: traccia — modifica salvata, UX builder e bugfix overlay/orfani</li>
+<li><time>2026-04-27</time> · <code>21d1c04</code> — feat: tracce salvate batch/sort UX, anti-sfarf e workflow riepilogo NN</li>
+<li><time>2026-04-28</time> · <code>72aed86</code> — feat(ui): GIS monolite — Layers clip, float close, bbox pick nascosto, rename con conferma, resize colonna nome offline; checkpoint 2026-04-28</li>
+<li><time>2026-04-28</time> · <code>b2eb362</code> — feat(ui): refine post-pack 17 GIS UX</li>
+<li><time>2026-04-28</time> · <code>e89efb6</code> — feat: rifinitura Mappe Offline (toolbar, delta, nomi, progress batch)</li>
+<li><time>2026-04-28</time> · <code>6527451</code> — chore: Mappe Offline UI, doc backlog strategico e chiusura sessione (Finito)</li>
+<li><time>2026-04-29</time> · <code>ecb53a9</code> — feat: rifinitura waypoint CoT export/import, favoriti/converti verso waypoint e checkpoint</li>
+<li><time>2026-04-29</time> · <code>4f7eaa2</code> — feat: modal Traccia con dialog interni (salva, bozza, elimina) e doc sessione</li>
+<li><time>2026-04-29</time> · <code>13746fa</code> — feat: conferma eliminazione Range Rings in pannello (no window.confirm)</li>
+<li><time>2026-04-29</time> · <code>4f576a4</code> — feat(range-rings): modifica set, sposta centro mappa, conferma delete in pannello</li>
+<li><time>2026-04-29</time> · <code>1eb41bf</code> — feat: Range Rings centro da Favoriti/Waypoint/GeoJSON, I/O, rename in-pannello</li>
+<li><time>2026-04-29</time> · <code>e6c0a9a</code> — feat: Range Rings overlay etichette distanza e guide radiali 0/90/270</li>
+<li><time>2026-04-30</time> · <code>9f5ec8c</code> — feat(measure): M1 stato, persistenza gisMeasureFlow al load, notifiche GIS M3</li>
+<li><time>2026-04-30</time> · <code>a6e8c55</code> — fix(measure): evita doppia measSyncOperativeInfo dopo Esc</li>
+<li><time>2026-04-30</time> · <code>225fafe</code> — feat(measure): M2 pannello GIS aggiunge clear e gerarchia azioni</li>
+<li><time>2026-04-30</time> · <code>23552f1</code> — feat(measure): M5 export misura corrente GeoJSON/CSV</li>
+<li><time>2026-04-30</time> · <code>f817d66</code> — feat(measure): M6 halo label overlay per tema e tile</li>
+<li><time>2026-04-30</time> · <code>2a9b08a</code> — chore: chiusura sessione — RR rename/map tile hydrate, pulizia debug, checkpoint</li>
+<li><time>2026-05-01</time> · <code>9bdf35d</code> — feat(gis): Range Rings UI Blocco 1 e checkpoint sessione</li>
+<li><time>2026-05-01</time> · <code>682caf0</code> — feat: favoriti da waypoint modal e convertitore</li>
+<li><time>2026-05-01</time> · <code>51a9fc2</code> — feat: Pass 4B — SunCalc vendored inline, fix Astro, checkpoint sessione</li>
+<li><time>2026-05-01</time> · <code>35a722a</code> — feat: Pass 5 Step A — stato Astro transient, runAstroUI, i18n UTC+LMT; docs: chiusura sessione (finito)</li>
+<li><time>2026-05-01</time> · <code>7919d9d</code> — feat: Pass 5 Step B–E.2 Astro GIS (pannello, pickers, modali) + checkpoint finito</li>
+<li><time>2026-05-01</time> · <code>9a90fbc</code> — chore: finito sessione — Pass 5 E.3 partial offscreen waypoint/favoriti, checkpoint</li>
+<li><time>2026-05-02</time> · <code>af69673</code> — chore: finito sessione — Pass 6 batch monolite fino a 6E.1d, checkpoint</li>
+<li><time>2026-05-02</time> · <code>c392f1a</code> — chore: finito sessione — Pass 6 Step 6E.2 minimizza pannelli GIS, checkpoint</li>
+<li><time>2026-05-02</time> · <code>baaf406</code> — chore: finito sessione — Pass 6 Step 6F1/6F1a Converti waypoint, checkpoint</li>
+<li><time>2026-05-02</time> · <code>6c25d14</code> — chore: finito sessione — Pass 6 Step 6F2/6F2a waypoint batch Preferiti, icona pin, checkpoint</li>
+<li><time>2026-05-02</time> · <code>dd55393</code> — chore: finito sessione — Pass 6 Step 6F3 waypoint delete selezionati conferma interna, checkpoint</li>
+<li><time>2026-05-19</time> · <code>5ae8ff2</code> — fix: restore map click new waypoint flow</li>
+<li><time>2026-05-19</time> · <code>d125924</code> — feat: improve waypoint map pick UX</li>
+<li><time>2026-05-19</time> · <code>f2e4ea8</code> — fix: make waypoint double click save reliable</li>
+<li><time>2026-05-19</time> · <code>ede1ec4</code> — fix: make waypoint panel bottom actions reachable</li>
+<li><time>2026-05-19</time> · <code>c7933bc</code> — fix: save waypoint name with enter</li>
+<li><time>2026-05-19</time> · <code>6e0b416</code> — feat: render gis polygons overlay on tile map</li>
+<li><time>2026-05-19</time> · <code>a883b11</code> — feat: add polygon floating panel shell</li>
+<li><time>2026-05-19</time> · <code>cf03429</code> — fix: auto arm track drawing on open</li>
+<li><time>2026-05-19</time> · <code>4848950</code> — feat: add polygon draw interaction</li>
+<li><time>2026-05-20</time> · <code>4e7d3ff</code> — feat: add polygon export</li>
+<li><time>2026-05-20</time> · <code>9f98c5d</code> — feat: add polygon polish controls</li>
+<li><time>2026-05-27</time> · <code>c59d2de</code> — feat: add minimal export classification marking</li>
+<li><time>2026-05-27</time> · <code>0c4a795</code> — feat: add JPG map export</li>
+<li><time>2026-05-27</time> · <code>1259471</code> — feat: add offline area JPG export</li>
+<li><time>2026-05-27</time> · <code>4a98a33</code> — feat: improve offline map download and JPG export</li>
+<li><time>2026-06-12</time> · <code>b3bacf2</code> — feat: add Navionics basemap and OpenSeaMap seamark overlay</li>
+<li><time>2026-06-12</time> · <code>44b127c</code> — feat: derive Navionics proxy host from page host</li>
+<li><time>2026-06-13</time> · <code>fb4dcb0</code> — feat(i18n): rename Navionics proxy label to tailnet</li>
+<li><time>2026-06-13</time> · <code>8885e10</code> — feat(opsec): track real network tile/api hosts</li>
+<li><time>2026-06-13</time> · <code>81a3787</code> — feat(opsec): show contacted hosts in net status</li>
+<li><time>2026-06-13</time> · <code>d57ec16</code> — feat(opsec): graduated strict gate for external tile/api fetches</li>
+<li><time>2026-06-13</time> · <code>83d65ef</code> — fix(opsec): use internal confirm dialog and activateWarn once on toggle</li>
+<li><time>2026-06-13</time> · <code>65ebfb5</code> — fix(opsec): refine strict QA and i18n behavior</li>
+<li><time>2026-06-14</time> · <code>a6c7741</code> — feat(map): add SonarChart overlay layer</li>
+<li><time>2026-06-14</time> · <code>6c0c18e</code> — feat(offline): enable SonarChart offline download and cached rendering</li>
+<li><time>2026-06-14</time> · <code>43d9ece</code> — feat(offline): cache viewed tiles, Navionics/SonarChart exclusion, offline panel minimize</li>
+<li><time>2026-06-14</time> · <code>2dbb4fe</code> — fix(gis): raise map control column and align Layers button</li>
+<li><time>2026-06-14</time> · <code>0cd3c8c</code> — feat(gis): remove Navionics/SonarChart mutual exclusion (WU-0004 B1)</li>
+<li><time>2026-06-14</time> · <code>3eb167c</code> — docs(memory): define Claude counselor role limits</li>
+<li><time>2026-06-14</time> · <code>5201ff8</code> — fix(gis): remove accidental B2 monolite changes</li>
+<li><time>2026-06-14</time> · <code>72a194e</code> — fix(gis): guard polygon draw mode against map dblclick recenter</li>
+<li><time>2026-06-14</time> · <code>e4c2be3</code> — fix(gis): reduce map toolbar button size</li>
+<li><time>2026-06-14</time> · <code>f7260d9</code> — feat(gis): improve polygon panel workflow</li>
+<li><time>2026-06-14</time> · <code>54d8586</code> — feat(gis): ruler icon for measure toolbar button</li>
+<li><time>2026-06-14</time> · <code>c051ee1</code> — feat(gis): replace GPS toolbar emoji with quality label (B3)</li>
+<li><time>2026-06-14</time> · <code>7a02a7e</code> — feat(gis): expandable waypoint toolbar with pick and recenter (B5)</li>
+<li><time>2026-06-14</time> · <code>74d3f32</code> — feat(gis): move MGRS grid toggle into Layers overlay menu (B7)</li>
+<li><time>2026-06-14</time> · <code>e8395e9</code> — feat(gis): move polygons into track toolbar flyout (B6)</li>
+<li><time>2026-06-14</time> · <code>fa12567</code> — feat(gis): move Range &amp; Bearing into track toolbar flyout (B8)</li>
+<li><time>2026-06-14</time> · <code>cf6d796</code> — feat(gis): add OSM HOT and normalize open XYZ basemaps (WU-0008)</li>
+<li><time>2026-06-15</time> · <code>dad28b4</code> — feat(gis): add CyclOSM and OSM standard basemaps (WU-0008 8b)</li>
+<li><time>2026-06-15</time> · <code>a656541</code> — feat(gis): group Layers menu by map type with provider labels</li>
+<li><time>2026-06-15</time> · <code>cddc565</code> — feat(gis): add tileScheme y-order support (WU-0008 8c-A)</li>
+<li><time>2026-06-15</time> · <code>345d712</code> — fix(gis): clarify offline precache UX for complete areas</li>
+<li><time>2026-06-15</time> · <code>043b769</code> — feat(gis): add Esri basemap catalog (WU-0008 8c-B)</li>
+<li><time>2026-06-15</time> · <code>23db6b4</code> — fix(gis): make cacheable:false authoritative in browse-cache (WU-0008 8d-B0)</li>
+<li><time>2026-06-15</time> · <code>29ebf3a</code> — feat(gis): offline UX badge, OFFLINE_LAYER_IDS, cache counter (WU-0008 8d-B1-B1)</li>
+<li><time>2026-06-15</time> · <code>a0da9d1</code> — feat(gis): per-layer IndexedDB cache stats in offline panel (WU-0008 8d-B1-B2)</li>
+<li><time>2026-06-15</time> · <code>89f53ff</code> — fix(gis): clamp fit-area zoom to basemap maxZoom (WU-0008 8d-B1-B3)</li>
+<li><time>2026-06-15</time> · <code>2ca47b6</code> — feat(gis): add EOX Sentinel-2 cloudless layer (WU-0008 8d-B)</li>
+<li><time>2026-06-16</time> · <code>013b8cb</code> — feat(gis): add gsat Google Satellite layer via tailnet proxy</li>
+<li><time>2026-06-17</time> · <code>8d4deab</code> — feat: add Bing Satellite basemap bsat via tailnet proxy (WU-0009B B4.2)</li>
+<li><time>2026-06-18</time> · <code>150d6ac</code> — feat(gis): improve OPSEC strict proxy discoverability (WU-0009B B5.1)</li>
+<li><time>2026-06-18</time> · <code>32418de</code> — feat(gis): contain mobile viewport for iPhone layout (B5.2)</li>
+<li><time>2026-06-19</time> · <code>c5b305e</code> — feat(gis): add multi-unit map scale legend (B5.3)</li>
+<li><time>2026-06-19</time> · <code>caa2fc9</code> — feat(gis): remove scale m/km toggle; add graduated scale bars (B5.3a)</li>
+<li><time>2026-06-19</time> · <code>ad7d977</code> — fix(gis): resolve metric scale label overlap (B5.3b)</li>
+<li><time>2026-06-19</time> · <code>4d40fae</code> — feat(gis): optional scale on JPG export via canvas 2D (B5.4)</li>
+<li><time>2026-06-19</time> · <code>5500c26</code> — fix(gis): opaque white box for JPG export scale legend (B5.4a)</li>
+<li><time>2026-06-19</time> · <code>bd1c9e4</code> — fix(gis): improve JPG export scale legend spacing and readability (B5.4b)</li>
+<li><time>2026-06-19</time> · <code>f70b35d</code> — fix(gis): always render readable 1:N ratio on JPG export scale (B5.4c)</li>
+<li><time>2026-06-19</time> · <code>ed3f948</code> — fix(gis): two-column JPG scale legend with ratio on left (B5.4d)</li>
+<li><time>2026-06-19</time> · <code>cc86daf</code> — fix(gis): show Range Rings create button when center ready (B6.1)</li>
+<li><time>2026-06-19</time> · <code>d38c253</code> — feat: B6.2 Range Rings pick-first UX — minimize on Punta e crea</li>
+<li><time>2026-06-19</time> · <code>d69cacd</code> — feat(gis): add Range Rings style controls (B6.3)</li>
+<li><time>2026-06-19</time> · <code>22f19f1</code> — feat(gis): improve Range Rings label readability (B6.3a)</li>
+<li><time>2026-06-19</time> · <code>50b0a86</code> — fix(gis): Range Rings edit style parity (B6.3b)</li>
+<li><time>2026-06-19</time> · <code>20d2141</code> — fix(gis): center map on Range Rings edit (B6.3c)</li>
+<li><time>2026-06-19</time> · <code>d0a4a0a</code> — feat(gis): add Range Rings radial line controls (B6.4)</li>
+<li><time>2026-06-20</time> · <code>656dd13</code> — feat(gis): Range Rings panel full-height default + build label (B6.4a-2)</li>
+<li><time>2026-06-20</time> · <code>f943675</code> — feat(gis): Range Rings center drag in edit move-center mode (B6.5)</li>
+<li><time>2026-06-20</time> · <code>3963c76</code> — fix(gis): Range Rings center handle visibility — z-index + target marker (B6.5B-1)</li>
+<li><time>2026-06-20</time> · <code>97406ab</code> — feat(gis): Range Rings edit-mode center handle affordance (B6.6B)</li>
+<li><time>2026-06-20</time> · <code>0edf503</code> — feat: B5.4eB in-app scale layout aligned to JPG export</li>
+<li><time>2026-06-20</time> · <code>41f180b</code> — feat(gis): B6.6C Range Rings panel restore after pick-and-create</li>
+<li><time>2026-06-21</time> · <code>e6b28db</code> — feat(export): B5.5B JPG export map overlays dialog and SVG capture</li>
+<li><time>2026-06-21</time> · <code>6524183</code> — fix(export): B5.5B-1 JPG overlay style fidelity via inline computed styles</li>
+<li><time>2026-06-21</time> · <code>252ae5a</code> — feat(export): B5.5E JPG export supersampling 1x/2x/3x</li>
+<li><time>2026-06-21</time> · <code>1cbd4d1</code> — fix(export): B5.5E-1 JPG export default maximum quality 3x</li>
+<li><time>2026-06-21</time> · <code>25555c2</code> — fix(export): B5.5E-2 JPG export fixed maximum quality 3x without selector</li>
+<li><time>2026-06-21</time> · <code>5a10a48</code> — feat(export): B5.5C granular overlay selection and waypoint labels</li>
+<li><time>2026-06-21</time> · <code>5551622</code> — feat: B5.5D-1 JPG export coordinate box for map point and waypoint</li>
+<li><time>2026-06-21</time> · <code>3751e19</code> — fix: B5.5Z-FIX0 declare layer in offline-export JPG</li>
+<li><time>2026-06-21</time> · <code>019b2f8</code> — feat: B5.5Z-1 viewport snapshot and dynamic zoom level helpers</li>
+<li><time>2026-06-21</time> · <code>06c0b3b</code> — refactor: B5.5Z-2A extract geographic JPG mosaic core</li>
+<li><time>2026-06-21</time> · <code>d1b2905</code> — feat: B5.5Z-3 quick geographic JPG export from top button</li>
+<li><time>2026-06-22</time> · <code>1099655</code> — feat: B5.5Z-DELTA-A1 segmented tile-only quick JPG export at high zoom</li>
+<li><time>2026-06-22</time> · <code>3fa6212</code> — chore: B5.5Z-BUILD update visible APP_BUILD_ID to B5.5Z</li>
+<li><time>2026-06-22</time> · <code>debd5b4</code> — feat(measure): WU-0007 B4X1 label collision avoidance su segmenti corti</li>
+<li><time>2026-06-22</time> · <code>d4b73bb</code> — fix(measure): WU-0007 B4X2 sync pill label e tuning offset corti</li>
+<li><time>2026-06-22</time> · <code>002624e</code> — feat: WU-0007 T1 — unit&#224; distanza/velocit&#224; persistenti nella modal Traccia</li>
+<li><time>2026-06-22</time> · <code>b2d828f</code> — feat: WU-0007 B6.7a Range Rings showTitle e sezione Stili comprimibile</li>
+<li><time>2026-06-22</time> · <code>0ba6cdc</code> — feat: WU-0007 B6.7b Range Rings memoria ultimo stile persistente</li>
+<li><time>2026-06-22</time> · <code>e92e301</code> — feat: WU-0007 T1-FLOAT — float Traccia allineato a trackDisplayUnit</li>
+<li><time>2026-06-23</time> · <code>9bd2e4c</code> — feat: WU-0006 POLY-EDIT-B2 fondazione edit poligoni transiente</li>
+<li><time>2026-06-23</time> · <code>0e23b42</code> — fix: POLY-EDIT-B2 delega validita minima al sanitizer GIS</li>
+<li><time>2026-06-23</time> · <code>77ad65e</code> — feat: WU-0006 POLY-EDIT-B3 UI Modifica overlay edit barra Salva/Annulla</li>
+<li><time>2026-06-23</time> · <code>7a668d7</code> — feat: POLY-PARITY-P1 scheda info live + nome salvabile poligono edit</li>
+<li><time>2026-06-23</time> · <code>d30a3a8</code> — fix: POLY-PARITY-P1-FIX correzioni UI/i18n poligono edit</li>
+<li><time>2026-06-23</time> · <code>e22e40b</code> — feat: POLY-PARITY-P2 drag vertici poligono GIS in edit</li>
+<li><time>2026-06-23</time> · <code>f35e4d9</code> — fix: POLY-PARITY-P2-FIX pan suppression handle poligono + rimozione pointer capture</li>
+<li><time>2026-06-23</time> · <code>57c6d39</code> — feat: POLY-PARITY-P7-B1 contratto metadata poligono legacy-safe</li>
+<li><time>2026-06-24</time> · <code>af87259</code> — feat: POLY-UX-STABILITY-A1 handle vertici visibili ingresso Modifica</li>
+<li><time>2026-06-24</time> · <code>db2f6ea</code> — fix(gis): restore minimized polygon panel from toolbar</li>
+<li><time>2026-06-24</time> · <code>cb9f92f</code> — fix(gis): cancel polygon edit when closing panel</li>
+<li><time>2026-06-24</time> · <code>70ed7b3</code> — fix(gis): redraw polygon map after closing edit</li>
+<li><time>2026-06-24</time> · <code>87cbe64</code> — fix(gis): open polygon panel without auto-starting draw</li>
+<li><time>2026-06-24</time> · <code>47bb3f6</code> — feat(gis): show polygon created and updated dates</li>
+<li><time>2026-06-24</time> · <code>fc38247</code> — feat(gis): delete polygon vertices during edit</li>
+<li><time>2026-06-24</time> · <code>6083abe</code> — fix(gis): redraw polygon immediately after cancel edit</li>
+<li><time>2026-06-25</time> · <code>5df925f</code> — feat(gis): insert polygon vertices during edit</li>
+<li><time>2026-06-25</time> · <code>505e7d0</code> — feat(gis): move whole polygon during edit (P4-B1)</li>
+<li><time>2026-06-25</time> · <code>8bc7804</code> — fix(gis): preserve polygon draft on rejected create (P5-B1)</li>
+<li><time>2026-06-25</time> · <code>59f2bd1</code> — fix(gis): show draft-reject error when polygon panel auto-minimized (P5-B1-FIX)</li>
+<li><time>2026-06-25</time> · <code>5cc2e1b</code> — feat(gis): clarify polygon move-mode toggle label (P5-B2-A)</li>
+<li><time>2026-06-25</time> · <code>b68c774</code> — fix(gis): generate unique polygon default names (P5-B2-B)</li>
+<li><time>2026-06-25</time> · <code>d893775</code> — feat(gis): edit polygon name during drawing (P5-B2-C)</li>
+<li><time>2026-06-25</time> · <code>c2c4836</code> — feat(gis): show live polygon draft metrics (P5-B2-D)</li>
+<li><time>2026-06-25</time> · <code>aea7434</code> — feat(gis): remove last polygon draft point (P5-B2-E)</li>
+<li><time>2026-06-25</time> · <code>739bf49</code> — fix(gis): clear stale polygon draft error after geometry change (P5-B2-F)</li>
+<li><time>2026-06-25</time> · <code>e0e9578</code> — refactor(gis): align polygon panel with standard modal layout (P-UI-UNIFORM)</li>
+<li><time>2026-06-26</time> · <code>8c266ae</code> — feat(gis): selectable measurement units for polygon metrics (P-UNITS)</li>
+<li><time>2026-06-26</time> · <code>8be2845</code> — fix(gis): isolate polygon metric units from measure state (P-UNITS-FIX)</li>
+<li><time>2026-06-26</time> · <code>11838a1</code> — feat(gis): add NM mi and ft polygon metric units (P-UNITS-RB-PARITY)</li>
+<li><time>2026-06-26</time> · <code>a4fa8e7</code> — feat(gis): edit polygon vertex coordinates in modal (P-VERTEX-MODAL)</li>
+<li><time>2026-06-26</time> · <code>5f8f73d</code> — fix(gis): restore polygon edit legs list (P-VERTEX-MODAL-FIX)</li>
+<li><time>2026-06-26</time> · <code>5449cb9</code> — fix(gis): hide closed polygon panel correctly (P-VERTEX-MODAL-FIX2)</li>
+<li><time>2026-06-26</time> · <code>7ffee22</code> — feat(gis): add polygon style schema and rendering (P-STYLE-A+B)</li>
+<li><time>2026-06-26</time> · <code>95c100d</code> — fix(gis): strict numeric preserve-or-omit for polygon style fields (P-STYLE-A+B review fix)</li>
+<li><time>2026-06-26</time> · <code>efca0bf</code> — feat(gis): preserve polygon style in GeoJSON and KML exports (P-STYLE-D)</li>
+<li><time>2026-06-27</time> · <code>0a51379</code> — feat(gis): add polygon style editor working copy (P-STYLE-C)</li>
+<li><time>2026-06-27</time> · <code>b9db963</code> — feat(gis): add vertex coordinate format selector</li>
+<li><time>2026-06-27</time> · <code>6ef714a</code> — fix(gis): mirror vertex coordinate format selector</li>
+<li><time>2026-06-27</time> · <code>0409ad4</code> — feat(gis): enrich polygon list metadata</li>
+<li><time>2026-06-27</time> · <code>d65410f</code> — fix(gis): align polygon list table and modal stacking</li>
+<li><time>2026-06-27</time> · <code>28cc2d2</code> — fix(gis): improve polygon table overflow and panel layout</li>
+</ol></details>
           </details>
           <div class="about-line muted" id="appBuildAboutDetail">ROUTING-POINT-COORD-EDIT-A — atomic manual routing coordinates</div>
           <div class="about-line muted" data-i18n="about.desc">Convertitore standalone di coordinate geografiche. Offline, zero dipendenze, WGS84.</div>
@@ -24547,10 +25630,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-HELP-TOOLBAR-UX-A";
-const APP_BUILD_DETAIL = "Guida, FAQ, note di rilascio e barra strumenti.";
+const APP_BUILD_ID = "GIS-EXPORT-ALIGNMENT-A";
+const APP_BUILD_DETAIL = "Allineamento Esporta e apertura del pannello Strumenti.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 267;
+const APP_BUILD_NUM = 268;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -69261,6 +70344,15 @@ function importTrackFile(file){
 }
 /* ============== TOOLS DRAWER ============== */
 
+/* Session-only geometry: no new persistent storage fields. */
+let _toolsFloatingLayout = null;
+function toolsFloatingLayoutOpts(){
+  return { key:"", pad:12, minW:280, minH:160, defaultW:460,
+    defaultHeightFraction:0.72, defaultHeightCap:720, partialMinVisible:72,
+    headId:"toolsDrawerHead", closeId:"toolsDrawerClose", bodyEl:document.querySelector("#toolsDrawer .tools-drawer-body"),
+    getLayout:()=>_toolsFloatingLayout, setLayout:v=>{_toolsFloatingLayout=v;} };
+}
+
 function openToolsDrawer(){
   const d = document.getElementById("toolsDrawer");
   const bk = document.getElementById("toolsDrawerBackdrop");
@@ -69270,11 +70362,31 @@ function openToolsDrawer(){
   if (bodyEl) bodyEl.scrollTop = 0;
   const pw = document.getElementById("toolsPanelWrap");
   if (pw) pw.scrollTop = 0;
+  const isGis = document.body.classList.contains("gis-mode");
+  if (isGis){
+    d.setAttribute("aria-modal", "false");
+  } else {
+    d.setAttribute("aria-modal", "true");
+    d.style.top = d.style.left = d.style.right = d.style.bottom = d.style.width = d.style.height = "";
+    d.style.zIndex = d.style.transform = d.style.position = "";
+  }
+  if (!d.open) d.show();
   d.classList.add("open");
+  if (isGis){
+    const opts=toolsFloatingLayoutOpts();
+    gisPanelAttachDrag(d,opts);
+    gisPanelAttachResize(d,Object.assign({},opts,{handleEls:[...d.querySelectorAll('[data-role="gis-panel-resize"]')]}));
+    gisPanelAttachBringToFront(d,opts);
+    gisPanelApplyLayout(d,opts);
+    gisPanelBringToFront(d,opts);
+  }
   d.setAttribute("aria-hidden", "false");
-  bk.classList.add("open");
-  bk.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  if (!isGis){
+    bk.classList.add("open");
+    bk.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  document.getElementById("btnTopbarTools")?.setAttribute("aria-expanded", "true");
   // The drawer is the sole entry point to the bottom tool strip; opening it
   // is the user's signal that they want to use the tools, so we reveal the
   // strip (if still hidden) and remember the choice for the session.
@@ -69308,10 +70420,14 @@ function closeToolsDrawer(){
   if (!d || !bk) return;
   if (document.body.classList.contains("gis-mode")) closeToolsModal();
   d.classList.remove("open");
+  d.classList.remove("gis-panel-minimized");
+  gisRemoveFromMinimizedDock("toolsDrawer");
+  if (d.open) d.close();
   d.setAttribute("aria-hidden", "true");
   bk.classList.remove("open");
   bk.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+  document.getElementById("btnTopbarTools")?.setAttribute("aria-expanded", "false");
 }
 
 /** Scroll a <details> section into view, open it, flash its border.
@@ -78128,7 +79244,10 @@ function bindUI(){
   const topTools = document.getElementById("btnTopbarTools");
   const exportMenu = document.getElementById("gisExportMenu");
   const exportSummary = document.getElementById("gisExportSummary");
-  if (topTools) topTools.addEventListener("click", () => { if (exportMenu) exportMenu.open = false; openToolsDrawer(); });
+  if (topTools) topTools.addEventListener("click", () => { if (exportMenu) exportMenu.open = false; const d = document.getElementById("toolsDrawer"); if (gisPanelIsMinimized("toolsDrawer")) gisRestoreMinimizedPanel("toolsDrawer"); else if (d && d.classList.contains("open")) closeToolsDrawer(); else openToolsDrawer(); });
+  const toolsMinimize = document.getElementById("toolsDrawerMinimize");
+  if (toolsMinimize) toolsMinimize.addEventListener("click", () => gisMinimizePanel("toolsDrawer", "tools.title"));
+  document.getElementById("toolsDrawer")?.addEventListener("cancel", ev => { ev.preventDefault(); closeToolsDrawer(); });
   if (exportMenu){
     exportMenu.addEventListener("toggle", () => document.getElementById("appTopbar").classList.toggle("export-menu-open", exportMenu.open));
     const forward = (target) => { exportMenu.open = false; const button = document.getElementById(target); if (button) button.click(); };
@@ -80010,6 +81129,7 @@ const GIS_MIN_BLOCKED_MAP = {
   polygonPanel: { nid: "polygonPanelMinimizeNotice", key: "polygonPanel.minimizeBlockedSubdialog" }
 };
 const GIS_MIN_FOCUS_MAP = {
+  toolsDrawer: { headId: "toolsDrawerHead", minSel: '#toolsDrawerMinimize' },
   trackModal: { headId: "trackModalHead", minSel: '[data-role="trackmodal-minimize"]' },
   waypointModal: { headId: "waypointModalHead", minSel: '[data-role="waypointmodal-minimize"]' },
   favoritesPanel: { headId: "favoritesPanelHead", minSel: '[data-role="favoritespanel-minimize"]' },
@@ -80643,6 +81763,8 @@ function gisMinimizePanel(panelId, labelKey, opts){
     /* GIS-DIALOG-MINIMIZE-HISTORY-A: Cerca — GIS floating. */
   } else if (panelId === "historyPanel"){
     /* GIS-DIALOG-MINIMIZE-HISTORY-A: Cronologia floating dialog. */
+  } else if (panelId === "toolsDrawer"){
+    /* Tool drawer contains no blocking subdialog on minimize. */
   } else if (panelId === "cartoIgmPanel"){
     /* Indice IGM: minimize during area-pick / map-first flows (FIX3 QA §14). */
   } else if (panelId === "dflightPanel" || panelId === "dflightDetailsPanel"){
