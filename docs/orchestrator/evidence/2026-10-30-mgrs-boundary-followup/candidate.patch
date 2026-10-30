@@ -1,0 +1,56 @@
+diff --git "a/coordinate_converter Claude.html" "b/coordinate_converter Claude.html"
+index a53ff74..86cfe2f 100644
+--- "a/coordinate_converter Claude.html"
++++ "b/coordinate_converter Claude.html"
+@@ -29182,6 +29182,9 @@ function latLonToUTM(lat, lon){
+   if (lat < -80 || lat > 84) throw new ErrI18n("err.outRange");
+   let zone = Math.floor((lon + 180) / 6) + 1;
+   if (zone > 60) zone = 60;
++  // Addition can round a representable longitude below a boundary up to it.
++  // Compare the original longitude with the exact integer boundary instead.
++  if (zone > 1 && lon < -180 + 6 * (zone - 1)) zone--;
+   // Norway
+   if (lat >= 56 && lat < 64 && lon >= 3 && lon < 12) zone = 32;
+   // Svalbard
+@@ -29324,7 +29327,10 @@ function utmToLatLon(zone, hem, easting, northing){
+ function latitudeBand(lat){
+   if (lat < -80 || lat > 84) return null;
+   if (lat >= 72) return "X";
+-  return LAT_BANDS[Math.floor((lat + 80) / 8)];
++  let index = Math.floor((lat + 80) / 8);
++  // Addition may round a latitude immediately below a boundary up to it.
++  if (index > 0 && lat < -80 + 8 * index) index--;
++  return LAT_BANDS[index];
+ }
+ 
+ // A source is attached only by a parser or an explicit transfer of that result.
+@@ -29349,8 +29355,19 @@ function resultPointToMGRS(lat, lon, source, precision){
+   return latLonToMGRS(lat, lon, precision);
+ }
+ 
+-function latLonToMGRS(lat, lon, precision){
++// Use only for MGRS derived from a geographic point, never for source UTM.
++function geographicPointMGRSUTM(lat, lon){
+   const utm = latLonToUTM(lat, lon);
++  if (lat < 0 && utm.hemisphere === "S" && utm.northing === 10000000){
++    // Southern false northing rounded up to the equator despite lat < 0.
++    // Use the immediately preceding double for MGRS cell selection only.
++    return { ...utm, northing: 10000000 - Math.pow(2, -29) };
++  }
++  return utm;
++}
++
++function latLonToMGRS(lat, lon, precision){
++  const utm = geographicPointMGRSUTM(lat, lon);
+   return utmToMGRS(utm, lat, precision);
+ }
+ 
+@@ -29390,7 +29407,7 @@ function formatMgrsCanonicalFromParse(p){
+ }
+ 
+ function latLonToAllMGRS(lat, lon){
+-  const utm = latLonToUTM(lat, lon);
++  const utm = geographicPointMGRSUTM(lat, lon);
+   return {
+     band: latitudeBand(lat),
+     "1m":   utmToMGRS(utm, lat, 5),

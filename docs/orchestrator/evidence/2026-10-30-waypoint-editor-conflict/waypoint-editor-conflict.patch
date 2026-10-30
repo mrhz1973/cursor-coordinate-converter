@@ -1,0 +1,190 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index a53ff74..2c6427a 100644
+--- a/coordinate_converter Claude.html	
++++ b/coordinate_converter Claude.html	
+@@ -17779,6 +17779,7 @@ const I18N = {
+     "waypointModal.editor.notesPh":"Note (max 500 caratteri)",
+     "waypointModal.editor.save":"Salva",
+     "waypointModal.savedOk":"Waypoint salvato.",
++    "waypointModal.editConflict":"Il waypoint è stato modificato o rimosso durante la modifica. Le tue modifiche non sono state salvate. Copia gli eventuali valori inseriti, quindi riapri il waypoint per rivedere i dati aggiornati.",
+     "waypointModal.editor.cancel":"Annulla",
+     "waypointModal.editor.delete":"Elimina",
+     "waypointModal.editor.newFlowHint":"Inserisci le coordinate nel campo sotto oppure clicca sulla mappa per scegliere il punto. Premi Salva per confermare.",
+@@ -20284,6 +20285,7 @@ const I18N = {
+     "waypointModal.editor.notesPh":"Notes (max 500 chars)",
+     "waypointModal.editor.save":"Save",
+     "waypointModal.savedOk":"Waypoint saved.",
++    "waypointModal.editConflict":"The waypoint was changed or removed while editing. Your changes were not saved. Copy any values you entered, then reopen the waypoint to review the current data.",
+     "waypointModal.editor.cancel":"Cancel",
+     "waypointModal.editor.delete":"Delete",
+     "waypointModal.editor.newFlowHint":"Enter coordinates below or click the map to choose the point. Press Save to confirm.",
+@@ -22508,6 +22510,7 @@ const I18N = {
+     "waypointModal.editor.notesPh":"Notes (500 caractères max)",
+     "waypointModal.editor.save":"Enregistrer",
+     "waypointModal.savedOk":"Waypoint enregistré.",
++    "waypointModal.editConflict":"Le waypoint a été modifié ou supprimé pendant l’édition. Vos modifications ne sont pas enregistrées. Copiez les valeurs saisies, puis rouvrez le waypoint pour consulter les données actuelles.",
+     "waypointModal.editor.cancel":"Annuler",
+     "waypointModal.editor.delete":"Supprimer",
+     "waypointModal.editor.newFlowHint":"Saisissez les coordonnées ci-dessous ou cliquez sur la carte pour choisir le point. Validez avec Enregistrer.",
+@@ -101496,6 +101499,7 @@ function openWaypointEditor(opts){
+       lat: p.lat,
+       lon: p.lon,
+       _sourceSnapshot: captureResultUtmSource(p.lat, p.lon, p.utmSource),
++      _rawSourceSnapshot: JSON.stringify(p.utmSource || null),
+       _originalLat: p.lat, _originalLon: p.lon, _coordEdited: false,
+       name: p.name || "",
+       icon: (p.meta && p.meta.icon) || "hq",
+@@ -101549,6 +101553,11 @@ function openWaypointEditor(opts){
+   }
+   if (colorEl) colorEl.value = sanitizeTrackColor(d.color);
+   if (notesEl) notesEl.value = d.notes || "";
++  if (id){
++    const initial = pickWaypointForEditor(id);
++    d._fieldsSnapshot = waypointEditorFields(initial);
++    d._rawFieldsSnapshot = waypointEditorRawFields(initial);
++  }
+   if (delBtn) delBtn.hidden = !id;
+   const actionsRow = document.getElementById("wpEditorActionsRow");
+   if (actionsRow) actionsRow.hidden = !id;
+@@ -101602,17 +101611,12 @@ function startWaypointNewWaypointFlow(){
+ 
+ /** Parse free-text waypoint editor coordinate via Convert-canonical `autoDetect` (WGS84). */
+ // A display-only reformat can represent a point at lower precision. Reuse the
+-// original only while the displayed text is unedited and the live waypoint is
+-// still the one from which this editor was opened.
++// original while the displayed text is unedited. The current waypoint is
++// resolved separately at save time, since it may have moved in the meantime.
+ function waypointEditorOriginalPoint(d, text){
+   if (!d || d._coordEdited || text !== d._initialCoordText ||
+       !Number.isFinite(d._originalLat) || !Number.isFinite(d._originalLon)) return null;
+-  if (!d.id) return { lat: d._originalLat, lon: d._originalLon, utmSource: d._sourceSnapshot || null };
+-  const live = state.mapWaypoints.find(p => p.id === d.id);
+-  if (!live || live.lat !== d._originalLat || live.lon !== d._originalLon) return null;
+-  const liveSource = captureResultUtmSource(live.lat, live.lon, live.utmSource);
+-  if (JSON.stringify(liveSource) !== JSON.stringify(d._sourceSnapshot || null)) return null;
+-  return { lat: live.lat, lon: live.lon, utmSource: liveSource };
++  return { lat: d._originalLat, lon: d._originalLon, utmSource: d._sourceSnapshot || null };
+ }
+ function parseWaypointEditorCoordText(str){
+   const s = String(str || "").trim();
+@@ -101787,18 +101791,51 @@ function centerMapFromWaypointEditor(){
+   }
+ }
+ 
++// Compare the values represented by the editor, without normalizing or
++// overwriting any fields that the user did not change.
++function pickWaypointForEditor(id){
++  return state.mapWaypoints.find(p => p.id === id) || null;
++}
++function waypointEditorRawFields(p){
++  const meta = (p && p.meta) || {};
++  return { name: p && p.name, icon: meta.icon, color: meta.color, notes: meta.notes };
++}
++function waypointEditorFields(p){
++  const meta = (p && p.meta) || {};
++  const icon = String(meta.icon || "hq").toLowerCase();
++  return {
++    name: String((p && p.name) || "").trim().slice(0, 60),
++    icon: TRACK_WPT_ICON_SET.has(icon) ? icon : "hq",
++    color: sanitizeTrackColor(meta.color || "#2563eb"),
++    notes: String(meta.notes || "").slice(0, 500)
++  };
++}
++function waypointEditorConflict(){
++  setWaypointEditorCoordErrorFeedback(t("waypointModal.editConflict"));
++  try {
++    const fb = document.getElementById("wpFieldCoordFeedback");
++    if (fb) appRevealModalError(fb);
++  } catch(_){}
++}
++
+ /** Validate + commit the current editor draft. New waypoints are
+  *  appended via `waypointAdd`; existing ones are patched in place. */
+ function commitWaypointEditor(){
+   const d = state.waypointEditorDraft;
+   if (!d) return;
+   try { clearWaypointCoordInputDebounce(); } catch(_){}
+-  // Gate: always parse the CURRENT field text — never trust stale draft coords alone.
++  ensureMapWaypointsState();
++  const live = d.id ? pickWaypointForEditor(d.id) : null;
++  if (d.id && !live){ waypointEditorConflict(); return; }
+   const coordEl = document.getElementById("wpFieldCoord");
+   const text = coordEl ? String(coordEl.value || "") : "";
+-  let parsed = parseWaypointEditorCoordText(text);
+-  const original = parsed.ok ? waypointEditorOriginalPoint(d, text) : null;
+-  if (original) parsed = { ok: true, lat: original.lat, lon: original.lon, utmSource: original.utmSource };
++  const original = waypointEditorOriginalPoint(d, text);
++  // Untouched coordinates belong to the live waypoint, not its displayed,
++  // potentially rounded snapshot. Explicit input is always parsed afresh.
++  let parsed = original && live
++    ? { ok: true, lat: live.lat, lon: live.lon, utmSource: captureResultUtmSource(live.lat, live.lon, live.utmSource) }
++    : original ? { ok: true, lat: original.lat, lon: original.lon, utmSource: original.utmSource }
++    : parseWaypointEditorCoordText(text);
+   if (!parsed.ok){
+     if (coordEl) coordEl.setAttribute("aria-invalid", "true");
+     const key = (parsed.err && (parsed.err.key || parsed.err.i18nKey)) || "err.notRecognized";
+@@ -101832,13 +101869,35 @@ function commitWaypointEditor(){
+   const icon = TRACK_WPT_ICON_SET.has(iconRaw) ? iconRaw : "hq";
+   const color = sanitizeTrackColor((colorEl && colorEl.value) || "#2563eb");
+   const notes = (notesEl && notesEl.value ? String(notesEl.value) : "").slice(0, 500);
+-  const meta = { from: d.id ? "waypoint-editor-modal" : "waypoint-editor-modal-new", icon, color };
+-  if (notes) meta.notes = notes;
++  const meta = { from: d.id ? "waypoint-editor-modal" : "waypoint-editor-modal-new", icon, color, notes };
+ 
+   if (d.id){
+-    if (original) waypointUpdate(d.id, { name, meta });
+-    else waypointUpdate(d.id, { lat, lon, name, meta, utmSource: parsed.utmSource });
++    const current = waypointEditorFields(live);
++    const before = d._fieldsSnapshot;
++    const rawBefore = d._rawFieldsSnapshot;
++    const rawCurrent = waypointEditorRawFields(live);
++    const edited = { name, icon, color, notes };
++    if (!before || !rawBefore){ waypointEditorConflict(); return; }
++    for (const key of Object.keys(edited)){
++      if (edited[key] !== before[key] && !Object.is(rawCurrent[key], rawBefore[key]) && edited[key] !== current[key]){
++        waypointEditorConflict(); return;
++      }
++    }
++    const currentSource = captureResultUtmSource(live.lat, live.lon, live.utmSource);
++    const sourceEqual = (a, b) => JSON.stringify(a || null) === JSON.stringify(b || null);
++    if (!original && (live.lat !== d._originalLat || live.lon !== d._originalLon || JSON.stringify(live.utmSource || null) !== d._rawSourceSnapshot) &&
++        (live.lat !== lat || live.lon !== lon || !sourceEqual(currentSource, parsed.utmSource))){
++      waypointEditorConflict(); return;
++    }
++    const patch = {};
++    if (name !== before.name) patch.name = name;
++    const metaPatch = {};
++    for (const key of ["icon", "color", "notes"]) if (edited[key] !== before[key]) metaPatch[key] = edited[key];
++    if (Object.keys(metaPatch).length) patch.meta = metaPatch;
++    if (!original){ patch.lat = lat; patch.lon = lon; patch.utmSource = parsed.utmSource; }
++    if (!waypointUpdate(d.id, patch)){ waypointEditorConflict(); return; }
+   } else {
++    if (!notes) delete meta.notes;
+     waypointAdd(lat, lon, name, meta, { utmSource: parsed.utmSource });
+   }
+   try { setBadge("success", t("waypointModal.savedOk")); } catch(_){}
+@@ -101864,14 +101923,16 @@ function waypointUpdate(id, patch){
+   if (patch && patch.meta && typeof patch.meta === "object"){
+     const mi = patch.meta;
+     const cur = p.meta || {};
+-    p.meta = {
+-      from: cur.from || mi.from || "waypoint-editor-modal",
+-      icon: TRACK_WPT_ICON_SET.has(String(mi.icon || cur.icon || "hq").toLowerCase())
+-        ? String(mi.icon || cur.icon || "hq").toLowerCase() : "hq",
+-      color: sanitizeTrackColor(mi.color || cur.color || "#2563eb"),
+-      notes: (typeof mi.notes === "string" ? mi.notes : (cur.notes || "")).slice(0, 500)
+-    };
+-    if (!p.meta.notes) delete p.meta.notes;
++    p.meta = Object.assign({}, cur);
++    if (Object.prototype.hasOwnProperty.call(mi, "icon")){
++      const icon = String(mi.icon || "hq").toLowerCase();
++      p.meta.icon = TRACK_WPT_ICON_SET.has(icon) ? icon : "hq";
++    }
++    if (Object.prototype.hasOwnProperty.call(mi, "color")) p.meta.color = sanitizeTrackColor(mi.color);
++    if (typeof mi.notes === "string"){
++      if (mi.notes) p.meta.notes = mi.notes.slice(0, 500); else delete p.meta.notes;
++    }
++    if (!p.meta.from && mi.from) p.meta.from = mi.from;
+   }
+   p.updatedAt = Date.now();
+   saveStore();
