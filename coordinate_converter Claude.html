@@ -16228,7 +16228,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 269 — percorsi terrestri</h4><ul><li>Aggiunti controlli per escludere i traghetti segnalati dai provider.</li><li>Allineati i pulsanti di minimizzazione e chiusura di Strumenti.</li><li>Migliorati posizione e stile delle finestre; ingranditi i principali comandi touch e adattati barra e menu della mappa in orizzontale.</li><li>Migliorata la scelta di zone e fasce e la conservazione delle coordinate UTM nei dati e nelle esportazioni.</li><li>Protette le modifiche ai waypoint quando il punto cambia durante la modifica.</li><li>Resa scorrevole la lista Oggetti GIS sugli schermi più piccoli.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 269 — percorsi terrestri</h4><ul><li>Aggiunti controlli per escludere i traghetti segnalati dai provider.</li><li>Allineati i pulsanti di minimizzazione e chiusura di Strumenti.</li><li>Migliorati posizione e stile delle finestre; ingranditi i principali comandi touch e adattati barra e menu della mappa in orizzontale.</li><li>Migliorata la scelta di zone e fasce e la conservazione delle coordinate UTM nei dati e nelle esportazioni.</li><li>Protette le modifiche ai waypoint e conservato il formato di origine dopo il ricaricamento.</li><li>Resa scorrevole la lista Oggetti GIS sugli schermi più piccoli.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -103204,12 +103204,14 @@ function init(){
         .slice(0, 200)
           .map(p => {
             // Sanitize meta: accept only the known whitelist
-            // (from/icon/color/notes) and clamp strings. Everything
+            // (from/srcFmt/icon/color/notes and CoT fields) and clamp strings. Everything
             // else is dropped defensively — localStorage is untrusted.
             let meta = null;
             if (p.meta && typeof p.meta === "object"){
               const m = {};
               if (typeof p.meta.from === "string") m.from = p.meta.from.slice(0, 40);
+              // Source format is produced by the converted-result and favorite waypoint flows.
+              if (typeof p.meta.srcFmt === "string") m.srcFmt = p.meta.srcFmt.slice(0, 24);
               if (typeof p.meta.icon === "string"){
                 const ic = p.meta.icon.toLowerCase();
                 if (TRACK_WPT_ICON_SET.has(ic)) m.icon = ic;

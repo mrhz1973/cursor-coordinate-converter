@@ -1,0 +1,18 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -103396,12 +103396,14 @@
+         .slice(0, 200)
+           .map(p => {
+             // Sanitize meta: accept only the known whitelist
+-            // (from/icon/color/notes) and clamp strings. Everything
++            // (from/srcFmt/icon/color/notes and CoT fields) and clamp strings. Everything
+             // else is dropped defensively — localStorage is untrusted.
+             let meta = null;
+             if (p.meta && typeof p.meta === "object"){
+               const m = {};
+               if (typeof p.meta.from === "string") m.from = p.meta.from.slice(0, 40);
++              // Source format is produced by the converted-result and favorite waypoint flows.
++              if (typeof p.meta.srcFmt === "string") m.srcFmt = p.meta.srcFmt.slice(0, 24);
+               if (typeof p.meta.icon === "string"){
+                 const ic = p.meta.icon.toLowerCase();
+                 if (TRACK_WPT_ICON_SET.has(ic)) m.icon = ic;

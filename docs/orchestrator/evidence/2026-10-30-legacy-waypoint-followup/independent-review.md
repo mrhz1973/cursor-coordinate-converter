@@ -1,0 +1,9 @@
+# Review indipendente — metadato srcFmt waypoint
+
+Esito: nessun finding bloccante per la correzione limitata al caricamento da localStorage. SHA-256 base, verificato prima e dopo: fcc92f798b30e9bd0ffb60102f75ba847415c0bb0e5ee89d66b0ad07f9e8eb93. Patch 9842c7a454f2af0093d628409ad196f9a2d80ee4533560e531b9e45fb38f7734; applicabile e riprodotta su copia separata con risultato SHA-256 f0965b0b76dbaa49e3213849e78ebb8efb5cc4d367dbec75e0444b352389ee43, identico al candidato.
+
+Analisi: i due produttori `favoriteAddAsWaypoint` e `waypointAddFromConvertedPoint` creano già `srcFmt` con limite 24. Il caricamento ora ne ammette esclusivamente il tipo stringa e applica lo stesso limite, senza estendere la whitelist a campi generici o ai punti traccia. Ricerca dei riferimenti nel monolite: il valore è prodotto e caricato, non direttamente usato nel rendering. Gli schemi GeoJSON e CoT rimangono invariati e non garantiscono il round-trip di srcFmt. Il campo già perso nei salvataggi precedenti non è ricostruibile.
+
+Prova indipendente `review.cjs`, risultati `results.json`, Edge headless in contesto isolato, HTTP/HTTPS bloccati e browser chiuso: conversione UTM tramite la ricerca coordinate, creazione waypoint e reload mantengono srcFmt UTM; null, numero, booleano, oggetto e array scartati; stringa lunga tagliata a 24 unità UTF-16; proprietà extra e icona sconosciuta scartate. Payload HTML conservato come dato troncato, non eseguito né rilevato come elemento img nel pannello waypoint e rendering mappa provati. Nessun pageerror. La verifica non copre tutti i possibili sink e non è un audit XSS.
+
+Esaminate anche le prove dell'autore, che coprono edit/reload, creazione da preferito, record e traccia legacy, import GeoJSON/CoT e costruzione export su dati sintetici; la prova indipendente qui non ripete tutti quei percorsi né verifica un download. Nessuna modifica al checkout o VPS e nessuna cancellazione di profili.
