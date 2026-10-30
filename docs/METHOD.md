@@ -191,3 +191,7 @@ The following method capabilities are **not required** for this project:
 
 ## Note di rilascio
 Per ogni futura build LIVE aggiornare le note di rilascio nella Guida con numero build e modifiche verificate; distinguere candidate da rilasci pubblicati. Non inventare lo storico mancante. Le note accompagnano il candidate e sono verificate nella review e nella QA.
+
+## QA automatizzata di routine — decisione operatore 2026-10-30
+
+L'operatore autorizza la QA automatizzata con browser e revisione AI a sostituire la verifica visiva manuale obbligatoria per i controlli GIS di routine. Procedere automaticamente dopo test applicabili realmente eseguiti e review AI con evidence, senza attendere attestazioni umane per controlli affidabilmente automatizzati. Chiedere all'operatore solo difetti che richiedono il suo intervento, decisioni estetiche o prove non verificabili affidabilmente dagli strumenti disponibili. Questa decisione prevale sul requisito generale di QA visiva manuale per la routine; non inventare PASS operatore e non chiamare umano un test automatico. I gate tecnici, le review indipendenti richieste, OPSEC e stop fail-closed restano invariati. Per categorie delicate applicare comunque i controlli specifici e non estendere automaticamente l'esenzione alle decisioni o prove non verificabili.
