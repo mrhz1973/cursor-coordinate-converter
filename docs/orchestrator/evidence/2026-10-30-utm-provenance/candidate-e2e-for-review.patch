@@ -1,0 +1,1776 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index 71b6ee1..3cf917f 100644
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -24481,7 +24481,7 @@ function basemapMenuOutsideClose(ev){
+   if (!state.mapBasemapMenuOpen) return;
+   if (ev.target.closest && ev.target.closest('[data-role="basemap-layers-root"]')) return;
+   state.mapBasemapMenuOpen = false;
+-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+ }
+ 
+ let _basemapMenuGisResizeBound = false;
+@@ -24587,7 +24587,7 @@ function positionBasemapMenuGis(miniMapRoot){
+       if (!document.body.classList.contains("gis-mode")) return;
+       if (!state.mapBasemapMenuOpen) return;
+       state.mapBasemapMenuOpen = false;
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     }, true);
+   }
+ }
+@@ -24601,7 +24601,7 @@ function waypointToolbarMenuOutsideClose(ev){
+     try {
+       const lp = state.lastPoint || state.viewCenter;
+       const z = state.mapZoom || 11;
+-      if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++      if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+     } catch(_){}
+   }
+ }
+@@ -24652,7 +24652,7 @@ function positionWaypointToolbarMenuGis(miniMapRoot){
+       if (!document.body.classList.contains("gis-mode")) return;
+       if (!state.mapWaypointToolbarMenuOpen) return;
+       state.mapWaypointToolbarMenuOpen = false;
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     }, true);
+   }
+ }
+@@ -24666,7 +24666,7 @@ function trackToolbarMenuOutsideClose(ev){
+     try {
+       const lp = state.lastPoint || state.viewCenter;
+       const z = state.mapZoom || 11;
+-      if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++      if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+     } catch(_){}
+   }
+ }
+@@ -24717,7 +24717,7 @@ function positionTrackToolbarMenuGis(miniMapRoot){
+       if (!document.body.classList.contains("gis-mode")) return;
+       if (!state.mapTrackToolbarMenuOpen) return;
+       state.mapTrackToolbarMenuOpen = false;
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     }, true);
+   }
+ }
+@@ -24909,7 +24909,7 @@ function applyGisDirectInputsToMap(){
+     const lp = state.lastPoint || state.viewCenter || o;
+     const z = state.mapZoom || 11;
+     if (root && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+-      renderTileMap(lp.lat, lp.lon, z);
++      renderTileMap(lp.lat, lp.lon, z, lp);
+       updateMeasureReadouts(root);
+     }
+     try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+@@ -25094,7 +25094,7 @@ function mapWptDocDragUp(ev){
+         ensureMapWaypointsState();
+         const p = (state.mapWaypoints || []).find(x => x && String(x.id) === String(wptId));
+         if (p && Number.isFinite(p.lat) && Number.isFinite(p.lon)){
+-          mapZoomFocusSet(p.lat, p.lon, "waypoint-marker");
++          mapZoomFocusSet(p.lat, p.lon, "waypoint-marker", p);
+         }
+       } catch(_){}
+     }
+@@ -25510,8 +25510,10 @@ function trackUpdatePointLatLon(id, lat, lon){
+   const p = state.track.points.find(x => x.id === id);
+   if (!p) return;
+   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+-  p.lat = Math.max(-90, Math.min(90, lat));
+-  p.lon = normalizeLon(lon);
++  const nextLat = Math.max(-90, Math.min(90, lat));
++  const nextLon = normalizeLon(lon);
++  if (p.lat !== nextLat || p.lon !== nextLon) delete p.utmSource;
++  p.lat = nextLat; p.lon = nextLon;
+ }
+ 
+ /** NATO-style tactical symbols on map (simplified geometry, not full APP-6). */
+@@ -29306,6 +29308,28 @@ function latitudeBand(lat){
+   return LAT_BANDS[Math.floor((lat + 80) / 8)];
+ }
+ 
++// A source is attached only by a parser or an explicit transfer of that result.
++// Numeric agreement checks integrity; it does not establish object identity.
++function captureResultUtmSource(lat, lon, source){
++  if (!source || typeof source !== "object") return null;
++  const u = { zone: source.zone, hemisphere: source.hemisphere,
++              easting: source.easting, northing: source.northing };
++  try {
++    validateUTM(u);
++    const ll = utmToLatLon(u.zone, u.hemisphere, u.easting, u.northing);
++    if (ll.lat !== lat || ll.lon !== lon) return null;
++    return u;
++  } catch(_){ return null; }
++}
++
++function resultPointToMGRS(lat, lon, source, precision){
++  const u = captureResultUtmSource(lat, lon, source);
++  if (u && latLonToUTM(lat, lon).zone === u.zone){
++    return utmToMGRS(u, lat, precision);
++  }
++  return latLonToMGRS(lat, lon, precision);
++}
++
+ function latLonToMGRS(lat, lon, precision){
+   const utm = latLonToUTM(lat, lon);
+   return utmToMGRS(utm, lat, precision);
+@@ -32235,10 +32259,10 @@ function jpgExportNormalizeCoords(src){
+   };
+ }
+ 
+-function jpgExportFormatCoordLines(lat, lon, format){
++function jpgExportFormatCoordLines(lat, lon, format, utmSource){
+   try {
+     if (format === "primary"){
+-      return { ok: true, lines: [fmtPrimary(lat, lon)] };
++      return { ok: true, lines: [fmtPrimary(lat, lon, utmSource)] };
+     }
+     if (format === "dd"){
+       return { ok: true, lines: [fmtDD(lat, lon).cardinal] };
+@@ -32253,12 +32277,12 @@ function jpgExportFormatCoordLines(lat, lon, format){
+       return { ok: true, lines: [fmtUTM(latLonToUTM(lat, lon))] };
+     }
+     if (format === "mgrs"){
+-      return { ok: true, lines: [latLonToMGRS(lat, lon, JPG_EXPORT_COORDS_MGRS_PRECISION)] };
++      return { ok: true, lines: [resultPointToMGRS(lat, lon, utmSource, JPG_EXPORT_COORDS_MGRS_PRECISION)] };
+     }
+     if (format === "dd_mgrs"){
+       const ddLine = fmtDD(lat, lon).cardinal;
+       let mgrsLine = "MGRS: N/D";
+-      try { mgrsLine = latLonToMGRS(lat, lon, JPG_EXPORT_COORDS_MGRS_PRECISION); } catch(_){}
++      try { mgrsLine = resultPointToMGRS(lat, lon, utmSource, JPG_EXPORT_COORDS_MGRS_PRECISION); } catch(_){}
+       return { ok: true, lines: [ddLine, mgrsLine] };
+     }
+   } catch(_){
+@@ -32272,7 +32296,7 @@ function jpgExportFormatCoordLines(lat, lon, format){
+ function jpgExportResolveCoordsModel(coordsCfg){
+   coordsCfg = jpgExportNormalizeCoords(coordsCfg);
+   if (!coordsCfg.enabled) return null;
+-  let lat, lon, title;
++  let lat, lon, title, sourcePoint = null;
+   if (coordsCfg.source === "viewCenter"){
+     const vc = state.viewCenter;
+     if (!vc || !jpgExportIsValidLatLon(vc.lat, vc.lon)){
+@@ -32280,6 +32304,7 @@ function jpgExportResolveCoordsModel(coordsCfg){
+     }
+     lat = vc.lat;
+     lon = vc.lon;
++    sourcePoint = vc;
+     title = t("export.jpg.coordsSourceViewCenter");
+   } else if (coordsCfg.source === "lastPoint"){
+     const lp = state.lastPoint;
+@@ -32288,6 +32313,7 @@ function jpgExportResolveCoordsModel(coordsCfg){
+     }
+     lat = lp.lat;
+     lon = lp.lon;
++    sourcePoint = lp;
+     title = t("export.jpg.coordsSourceLastPoint");
+   } else if (coordsCfg.source === "waypoint"){
+     const wpId = coordsCfg.waypointId;
+@@ -32300,12 +32326,13 @@ function jpgExportResolveCoordsModel(coordsCfg){
+     }
+     lat = wp.lat;
+     lon = wp.lon;
++    sourcePoint = wp;
+     const nm = wp.name && String(wp.name).trim();
+     title = nm || t("export.jpg.coordsWaypointFallback");
+   } else {
+     return { ok: false, errorKey: "export.jpg.coordsSourceUnavailable" };
+   }
+-  const fmtResult = jpgExportFormatCoordLines(lat, lon, coordsCfg.format);
++  const fmtResult = jpgExportFormatCoordLines(lat, lon, coordsCfg.format, sourcePoint && sourcePoint.utmSource);
+   if (!fmtResult || !fmtResult.ok){
+     return { ok: false, errorKey: (fmtResult && fmtResult.errorKey) || "export.jpg.coordsFormatUnavailable" };
+   }
+@@ -33775,7 +33802,7 @@ function buildSinglePointFromResult(){
+   const desc = [];
+   desc.push("DD: " + fmtDD(r.lat, r.lon).cardinal);
+   try { desc.push("UTM: " + fmtUTM(latLonToUTM(r.lat, r.lon))); } catch(_){}
+-  try { desc.push("MGRS: " + latLonToMGRS(r.lat, r.lon, 5)); } catch(_){}
++  try { desc.push("MGRS: " + resultPointToMGRS(r.lat, r.lon, r.utmSource, 5)); } catch(_){}
+   return {
+     lat: r.lat, lon: r.lon,
+     name: (r.meta && r.meta.raw) ? String(r.meta.raw).slice(0, 80) : `Point ${round(r.lat,6)}, ${round(r.lon,6)}`,
+@@ -35603,7 +35630,7 @@ function gisImportHubRefreshAfterMutation(){
+   try { if (typeof renderSavedTracksList === "function") renderSavedTracksList(); } catch(_){}
+   try {
+     if (state.lastPoint && typeof renderMiniMap === "function"){
+-      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     } else if (typeof renderMiniMap === "function"){
+       renderMiniMap(DEFAULT_MAP_LAT, DEFAULT_MAP_LON, false);
+     }
+@@ -38944,6 +38971,18 @@ function dflightRedrawOverlayFromSession(tileMap){
+   try { dflightDrawOverlayDom(tileMap, _dflightOverlaySession.dataset); } catch(_){}
+ }
+ 
++// Choose a complete coordinate pair and its source as one object. Zero is a
++// valid latitude or longitude; never combine axes from unrelated points.
++function dflightChooseMapAnchor(){
++  const vc = state.viewCenter;
++  if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)) return vc;
++  if (Number.isFinite(state.mapCenterLat) && Number.isFinite(state.mapCenterLon)){
++    return { lat: state.mapCenterLat, lon: state.mapCenterLon };
++  }
++  const lp = state.lastPoint;
++  if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) return lp;
++  return null;
++}
+ function dflightSetOverlayVisible(visible){
+   const next = !!visible;
+   if (next && !(_dflightOverlaySession && _dflightOverlaySession.dataset)){
+@@ -38964,10 +39003,9 @@ function dflightSetOverlayVisible(visible){
+   // Force tile re-render so ATM09 <img> tiles appear/disappear with the toggle.
+   try {
+     if (typeof renderTileMap === "function" && typeof state !== "undefined"){
+-      const lat = (state.viewCenter && state.viewCenter.lat) || state.mapCenterLat || state.lastPoint && state.lastPoint.lat;
+-      const lon = (state.viewCenter && state.viewCenter.lon) || state.mapCenterLon || state.lastPoint && state.lastPoint.lon;
++      const anchor = dflightChooseMapAnchor();
+       const z = state.mapZoom || 11;
+-      if (Number.isFinite(lat) && Number.isFinite(lon)) renderTileMap(lat, lon, z);
++      if (anchor) renderTileMap(anchor.lat, anchor.lon, z, anchor);
+     }
+   } catch(_){}
+   try { dflightSyncPanelUi(); } catch(_){}
+@@ -42581,11 +42619,10 @@ function dflightAtm09IsEligibleForStart(zoom){
+ function dflightRequestMapRedrawForDflight(_reason){
+   try {
+     if (typeof renderTileMap !== "function" || typeof state === "undefined") return false;
+-    const lat = (state.viewCenter && state.viewCenter.lat) || state.mapCenterLat || (state.lastPoint && state.lastPoint.lat);
+-    const lon = (state.viewCenter && state.viewCenter.lon) || state.mapCenterLon || (state.lastPoint && state.lastPoint.lon);
++    const anchor = dflightChooseMapAnchor();
+     const z = state.mapZoom || 11;
+-    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+-    renderTileMap(lat, lon, z);
++    if (!anchor) return false;
++    renderTileMap(anchor.lat, anchor.lon, z, anchor);
+     return true;
+   } catch(_){
+     return false;
+@@ -51962,10 +51999,10 @@ function bindHotkeys(){
+           try {
+             const lp = state.lastPoint || state.viewCenter;
+             const z = state.mapZoom || 11;
+-            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+           } catch(_){}
+         } else if (state.lastPoint){
+-          renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++          renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+         }
+         ev.preventDefault();
+         return;
+@@ -51976,7 +52013,7 @@ function bindHotkeys(){
+           try {
+             const lp = state.lastPoint || state.viewCenter;
+             const z = state.mapZoom || 11;
+-            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+           } catch(_){}
+         }
+         ev.preventDefault();
+@@ -51988,7 +52025,7 @@ function bindHotkeys(){
+           try {
+             const lp = state.lastPoint || state.viewCenter;
+             const z = state.mapZoom || 11;
+-            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++            if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+           } catch(_){}
+         }
+         ev.preventDefault();
+@@ -53019,7 +53056,7 @@ function cardCopy(label, text, targetId){
+ 
+ function renderResults(lat, lon, meta, opts = {}){
+   const skipHistory = opts.skipHistory === true;
+-  state.lastResult = { lat, lon, meta: meta || null, when: Date.now() };
++  state.lastResult = { lat, lon, meta: meta || null, utmSource: captureResultUtmSource(lat, lon, opts.utmSource), when: Date.now() };
+   const root = document.getElementById("results");
+   root.innerHTML = "";
+ 
+@@ -53033,7 +53070,7 @@ function renderResults(lat, lon, meta, opts = {}){
+   // information together and frees vertical space for the mini-map.
+   let mgrsTab, utmTab;
+   try {
+-    const mg1m = latLonToMGRS(lat, lon, 5); // 5+5 = 10 digits → 1 m precision
++    const mg1m = resultPointToMGRS(lat, lon, state.lastResult.utmSource, 5); // 5+5 = 10 digits → 1 m precision
+     const band = latitudeBand(lat);
+     const cellInfo = (meta && meta.type === "MGRS" && meta.mgrs && meta.mgrs.precision < 5)
+       ? renderCellInfo(meta.mgrs) : "";
+@@ -53281,7 +53318,7 @@ function renderResults(lat, lon, meta, opts = {}){
+   });
+ 
+   // Pannello mappe laterale (mini-mappa SVG + link esterni)
+-  renderMiniMap(lat, lon);
++  renderMiniMap(lat, lon, true, state.lastResult);
+   renderMapLinks(lat, lon);
+ 
+   // Mark primary
+@@ -53304,7 +53341,7 @@ function renderResults(lat, lon, meta, opts = {}){
+     }
+   }
+ 
+-  if (!skipHistory) pushHistory({ lat, lon, meta });
++  if (!skipHistory) pushHistory({ lat, lon, meta, utmSource: state.lastResult.utmSource });
+   renderGpsMetadata(meta);
+   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+   try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
+@@ -53838,9 +53875,9 @@ const MGRS_BAND_LAT = {
+  *   for a brand-new conversion); if false, preserves the user's panned view
+  *   (used by size/layer toggles which just re-render).
+  */
+-function renderMiniMap(lat, lon, resetView = true){
+-  state.lastPoint = { lat, lon };
+-  if (resetView) state.viewCenter = { lat, lon };
++function renderMiniMap(lat, lon, resetView = true, sourcePoint = null){
++  state.lastPoint = { lat, lon, utmSource: captureResultUtmSource(lat, lon, sourcePoint && sourcePoint.utmSource) };
++  if (resetView) state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, state.lastPoint.utmSource) };
+   const root = document.getElementById("miniMap");
+   if (!root) return;
+   // Always render the tile map: when offline, hydrateMapTiles() will serve
+@@ -53848,7 +53885,7 @@ function renderMiniMap(lat, lon, resetView = true){
+   // This keeps the cached satellite/street imagery visible offline instead
+   // of reverting to the schematic SVG map. Users can still force the SVG
+   // fallback via the layers menu if needed.
+-  renderTileMap(lat, lon, state.mapZoom || 11);
++  renderTileMap(lat, lon, state.mapZoom || 11, state.lastPoint);
+   try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
+   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+@@ -54645,7 +54682,7 @@ function setMapSize(size){
+   }
+   saveStore();
+   // Preserve the user's panned view across size changes
+-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+   else syncOfflinePanelMapFloat(document.querySelector("#miniMap .tile-map"));
+ }
+ 
+@@ -54804,7 +54841,7 @@ function bindGeocodeSettings(){
+       state._onOpsecChange = state._onOpsecChange || [];
+       state._onOpsecChange.push(function opsecStrictMapRefresh(){
+         try {
+-          if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++          if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+         } catch(_){}
+       });
+     }
+@@ -54997,7 +55034,7 @@ function bindGeocode(){
+     ++gen; // invalidate any in-flight place search
+     closeDropdown();
+     const meta = Object.assign({}, det, { source: "search-coord" });
+-    renderResults(det.lat, det.lon, meta, { skipReverse: true });
++    renderResults(det.lat, det.lon, meta, { skipReverse: true, utmSource: det.type === "UTM" ? det.utm : null });
+     setSearchFeedback(tIt("geo.coordOk") || "Punto da coordinata (calcolo locale).", "ok");
+     const mm = document.getElementById("miniMap");
+     if (mm) mm.scrollIntoView({ behavior: "smooth", block: "nearest" });
+@@ -55167,7 +55204,7 @@ function setMapLayer(layer){
+   const pcl = document.getElementById("pcLayer");
+   if (pcl && OFFLINE_LAYER_IDS.includes(layer)) pcl.value = layer;
+   saveStore();
+-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+   else try { updateTileCacheCounterUi(); } catch(_){}
+ }
+ 
+@@ -55819,10 +55856,10 @@ function updatePointElev(root, lat, lon){
+  * Format a coordinate in the user's primary output unit, using a compact
+  * representation suitable for a small overlay that follows the cursor.
+  */
+-function fmtPrimary(lat, lon){
++function fmtPrimary(lat, lon, utmSource){
+   const p = state.primary || "MGRS";
+   try {
+-    if (p === "MGRS")  return latLonToMGRS(lat, lon, 5);
++    if (p === "MGRS")  return resultPointToMGRS(lat, lon, utmSource, 5);
+     if (p === "UTM"){
+       const u = latLonToUTM(lat, lon);
+       return `${u.zone}${u.hemisphere} ${Math.round(u.easting)} ${Math.round(u.northing)}`;
+@@ -56983,7 +57020,7 @@ async function performOfflineGlobalReset(){
+     clearOfflineDeltaTileHints(document.getElementById("miniMap"));
+     drawCoverageOverlay(tm);
+   }
+-  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++  if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+   else if (state.viewCenter && Number.isFinite(state.viewCenter.lat)){
+     renderTileMap(state.viewCenter.lat, state.viewCenter.lon, state.mapZoom || 11);
+   }
+@@ -57984,7 +58021,7 @@ function onPrecacheStart(){
+       }
+     }
+     try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+-    if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++    if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     updatePrecacheEstimate();
+     updateOfflineAreasToolbarUI();
+     try { updateOfflineLayerCacheStats(); } catch(_){}
+@@ -58101,7 +58138,7 @@ function refreshTileMapForOfflineBboxUi(){
+   if (!root) return;
+   const a = anchorLatLonForTileMapRender();
+   if (a && Number.isFinite(a.lat) && Number.isFinite(a.lon)){
+-    renderTileMap(a.lat, a.lon, state.mapZoom || 11);
++    renderTileMap(a.lat, a.lon, state.mapZoom || 11, a);
+     return;
+   }
+   const tm = root.querySelector(".tile-map");
+@@ -58358,14 +58395,16 @@ function mapZoomFocusCameraMatches(f){
+   if (Math.abs(Number(z) - f.cameraZoom) > MAP_ZOOM_FOCUS_ZOOM_EPS) return false;
+   return true;
+ }
+-function mapZoomFocusSet(lat, lon, source){
++function mapZoomFocusSet(lat, lon, source, sourcePoint = null){
+   try {
+     if (!Number.isFinite(lat) || !Number.isFinite(lon) || Math.abs(lat) > 90) return false;
+     const cam = mapZoomFocusCaptureCamera();
+     if (!Number.isFinite(cam.cameraLat) || !Number.isFinite(cam.cameraLon) || !Number.isFinite(cam.cameraZoom)) return false;
++    const pointUtmSource = captureResultUtmSource(lat, lon, sourcePoint && sourcePoint.utmSource);
+     gMapZoomFocus = {
+       lat: Math.max(-85.05, Math.min(85.05, lat)),
+-      lon: normalizeLon(lon),
++      lon: pointUtmSource ? lon : normalizeLon(lon),
++      utmSource: pointUtmSource, _pointRef: pointUtmSource ? sourcePoint : null,
+       source: String(source || ""),
+       cameraLat: cam.cameraLat,
+       cameraLon: cam.cameraLon,
+@@ -58378,6 +58417,9 @@ function mapZoomFocusGetValid(){
+   const f = gMapZoomFocus;
+   if (!f || !Number.isFinite(f.lat) || !Number.isFinite(f.lon)){ gMapZoomFocus = null; return null; }
+   if (!mapZoomFocusCameraMatches(f)){ gMapZoomFocus = null; return null; }
++  const p = f._pointRef;
++  const isLive = p && (!p.id || (Array.isArray(state.mapWaypoints) && state.mapWaypoints.includes(p)));
++  f.utmSource = isLive && p.lat === f.lat && p.lon === f.lon ? captureResultUtmSource(f.lat, f.lon, p.utmSource) : null;
+   return f;
+ }
+ function mapZoomFocusRefreshCameraSignature(){
+@@ -60103,7 +60145,7 @@ async function runOfflineAreasPrecacheQueue(queueIds, opts){
+     try { syncOfflineDownloadControlsUi({ forceStatus: true }); } catch(_){}
+     updatePrecacheEstimate();
+     updateOfflineAreasToolbarUI();
+-    if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++    if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     try { updateOfflineLayerCacheStats(); } catch(_){}
+   }
+   return lastQueueInfo;
+@@ -60523,7 +60565,7 @@ async function confirmRemoveNamedArea(area){
+     deleteNamedAreaMetadataOnlyById(sid);
+     showOfflineDeleteTilesFeedback(res);
+     try {
+-      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     } catch(_){}
+   }
+ }
+@@ -62174,7 +62216,7 @@ function ensureSavedTracksState(){
+         id: String(p.id || uidNamed()),
+         lat: p.lat, lon: p.lon,
+         name: String(p.name || "").slice(0, 60),
+-        meta
++        meta, utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource)
+       });
+     }
+     st.points = clean;
+@@ -62686,7 +62728,7 @@ function savedTrackAddFromPoints(opts){
+       id: String(p.id || uidNamed()),
+       lat: p.lat, lon: p.lon,
+       name: String(p.name || "").slice(0, 60),
+-      meta
++      meta, utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource)
+     });
+   }
+   if (snap.length < 2){
+@@ -64134,6 +64176,7 @@ function savedTrackSanitizeCloneForVerify(st){
+       lat: p.lat,
+       lon: p.lon,
+       name: String(p.name || "").slice(0, 60),
++      utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource),
+       meta: savedTrackSanitizePointMetaForVerify(p.meta)
+     });
+   }
+@@ -64192,6 +64235,7 @@ function savedTrackPointsEqualCanonical(aPts, bPts){
+     if (Math.abs(pa.lat - pb.lat) > 1e-9 || Math.abs(pa.lon - pb.lon) > 1e-9) return false;
+     if (String(pa.name || "") !== String(pb.name || "")) return false;
+     if (!savedTrackPointMetaEqualForVerify(pa.meta, pb.meta)) return false;
++    if (JSON.stringify(captureResultUtmSource(pa.lat, pa.lon, pa.utmSource)) !== JSON.stringify(captureResultUtmSource(pb.lat, pb.lon, pb.utmSource))) return false;
+   }
+   return true;
+ }
+@@ -64601,7 +64645,8 @@ function saveCurrentTrackToLibrary(name, opts){
+     id: String(p.id || uidNamed()),
+     lat: p.lat, lon: p.lon,
+     name: String(p.name || "").slice(0, 60),
+-    meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null
++    meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null,
++    utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource)
+   }));
+   const rid = opts.replaceSavedId ? String(opts.replaceSavedId) : "";
+   let didReplace = false;
+@@ -64872,6 +64917,7 @@ function trackCurrentPointsMatchSavedSnapshot(savedPts){
+     const nb = String(cur[i].name || "").slice(0, 60);
+     if (na !== nb) return false;
+     if (trackPointMetaComparable(a[i].meta) !== trackPointMetaComparable(cur[i].meta)) return false;
++    if (JSON.stringify(captureResultUtmSource(a[i].lat, a[i].lon, a[i].utmSource)) !== JSON.stringify(captureResultUtmSource(cur[i].lat, cur[i].lon, cur[i].utmSource))) return false;
+   }
+   return true;
+ }
+@@ -65428,7 +65474,8 @@ function beginEditSavedTrackById(id){
+     lat: p.lat,
+     lon: p.lon,
+     name: String(p.name || "").slice(0, 60),
+-    meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null
++    meta: p.meta && typeof p.meta === "object" ? JSON.parse(JSON.stringify(p.meta)) : null,
++    utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource)
+   }));
+   state.track.closed = !!st.closed;
+   const chk = document.getElementById("trackClosed");
+@@ -66417,7 +66464,7 @@ function ensureOfflineAreasListDelegation(){
+           renderOfflineAreasList();
+           const tm = document.querySelector("#miniMap .tile-map");
+           if (tm) drawCoverageOverlay(tm);
+-          if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++          if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+           showOfflineDeleteTilesFeedback(res);
+         }
+       })();
+@@ -68028,7 +68075,7 @@ function gisAllAsFeatureCollection(opts){
+ }
+ 
+ /** Add a point to the track. Deduplicates consecutive duplicates. */
+-function trackAddPoint(lat, lon, name, meta){
++function trackAddPoint(lat, lon, name, meta, utmSource){
+   try {
+     if (typeof trackBrushBlocksTrackMutation === "function" && trackBrushBlocksTrackMutation()){
+       if (typeof trackBrushNotifyBlocked === "function") trackBrushNotifyBlocked();
+@@ -68053,7 +68100,8 @@ function trackAddPoint(lat, lon, name, meta){
+     lat: lat,
+     lon: lon,
+     name: (typeof name === "string" ? name : "").slice(0, 60),
+-    meta: meta || null
++    meta: meta || null,
++    utmSource: captureResultUtmSource(lat, lon, utmSource)
+   });
+   // After the first point exists, re-enable map-click insertion while the Track panel is open
+   // (GIS: only meaningful when the floating Track panel is active).
+@@ -68100,6 +68148,7 @@ function waypointAdd(lat, lon, name, meta, opts){
+     lat, lon,
+     name: (typeof name === "string" ? name : "").slice(0, 60),
+     meta: meta || null,
++    utmSource: captureResultUtmSource(lat, lon, opts && opts.utmSource),
+     createdAt: now,
+     updatedAt: now
+   });
+@@ -68122,8 +68171,10 @@ function waypointUpdateLatLon(id, lat, lon){
+   const p = state.mapWaypoints.find(x => x.id === id);
+   if (!p) return;
+   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+-  p.lat = Math.max(-90, Math.min(90, lat));
+-  p.lon = normalizeLon(lon);
++  const nextLat = Math.max(-90, Math.min(90, lat));
++  const nextLon = normalizeLon(lon);
++  if (p.lat !== nextLat || p.lon !== nextLon) delete p.utmSource;
++  p.lat = nextLat; p.lon = nextLon;
+ }
+ 
+ function waypointRename(id, name){
+@@ -68375,7 +68426,7 @@ function trackAddFromText(text){
+     try {
+       const d = autoDetect(line);
+       if (d && Number.isFinite(d.lat) && Number.isFinite(d.lon)){
+-        parsed.push({ lat: d.lat, lon: d.lon });
++        parsed.push({ lat: d.lat, lon: d.lon, utmSource: d.type === "UTM" ? captureResultUtmSource(d.lat, d.lon, d.utm) : null });
+       } else { fail++; }
+     } catch(_){ fail++; }
+   }
+@@ -68390,7 +68441,7 @@ function trackAddFromText(text){
+     state.track.points.push({
+       id: uidNamed(),
+       lat: p.lat, lon: p.lon,
+-      name: "", meta: { from: "paste" }
++      name: "", meta: { from: "paste" }, utmSource: p.utmSource
+     });
+   }
+   saveStore();
+@@ -68417,7 +68468,7 @@ function trackAddCurrent(){
+     setBadge("error", t("track.cannotAdd"));
+     return;
+   }
+-  const added = trackAddPoint(p.lat, p.lon, "", { from: "current" });
++  const added = trackAddPoint(p.lat, p.lon, "", { from: "current" }, p.utmSource);
+   if (added) setBadge("success", t("track.addedOk"));
+ }
+ 
+@@ -69048,7 +69099,7 @@ function trackPickScheduleDeferredMapClick(lat, lon, cx, cy){
+ function refreshTileMapForTrackUi(){
+   const lp = state.lastPoint;
+   if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+-    renderMiniMap(lp.lat, lp.lon, false);
++    renderMiniMap(lp.lat, lp.lon, false, lp);
+     try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+     return;
+   }
+@@ -69219,7 +69270,7 @@ function trackPointCoordFormatEffective(){
+   if (p === "MGRS") return "mgrs";
+   return "dd";
+ }
+-function formatTrackPointCoordinates(lat, lon){
++function formatTrackPointCoordinates(lat, lon, utmSource){
+   const la = Number(lat), lo = Number(lon);
+   if (!Number.isFinite(la) || !Number.isFinite(lo)) return "—";
+   const mode = trackPointCoordFormatEffective();
+@@ -69227,7 +69278,7 @@ function formatTrackPointCoordinates(lat, lon){
+     if (mode === "ddm") return fmtDDM(la, lo);
+     if (mode === "dms") return fmtDMS(la, lo);
+     if (mode === "utm") return fmtUTM(latLonToUTM(la, lo));
+-    if (mode === "mgrs") return latLonToMGRS(la, lo, 5);
++    if (mode === "mgrs") return resultPointToMGRS(la, lo, utmSource, 5);
+     return fmtDD(la, lo).signed;
+   } catch(_){
+     return "—";
+@@ -69267,7 +69318,7 @@ function waypointListCoordFormatEffective(){
+   return "dd";
+ }
+ /** Waypoint list + editor coordinate display (WGS84 lat/lon → formatter). Session format; no data mutation. */
+-function formatWaypointListCoordinates(lat, lon){
++function formatWaypointListCoordinates(lat, lon, utmSource){
+   const la = Number(lat), lo = Number(lon);
+   if (!Number.isFinite(la) || !Number.isFinite(lo)) return "—";
+   const mode = waypointListCoordFormatEffective();
+@@ -69275,7 +69326,7 @@ function formatWaypointListCoordinates(lat, lon){
+     if (mode === "ddm") return fmtDDM(la, lo);
+     if (mode === "dms") return fmtDMS(la, lo);
+     if (mode === "utm") return fmtUTM(latLonToUTM(la, lo));
+-    if (mode === "mgrs") return latLonToMGRS(la, lo, 5);
++    if (mode === "mgrs") return resultPointToMGRS(la, lo, utmSource, 5);
+     return fmtDD(la, lo).cardinal;
+   } catch(_){
+     return "—";
+@@ -69293,12 +69344,12 @@ function writeWaypointEditorCoordFieldFromDraft(){
+   const d = state.waypointEditorDraft;
+   if (!coordEl || !d) return;
+   if (!(Number.isFinite(d.lat) && Number.isFinite(d.lon))) return;
+-  const s = formatWaypointListCoordinates(d.lat, d.lon);
++  const s = formatWaypointListCoordinates(d.lat, d.lon, d._sourceSnapshot);
+   if (s && s !== "—") coordEl.value = s;
+   try { syncWaypointEditorCenterBtn(); } catch(_){}
+ }
+ /** Prefer MGRS identity (parse→canonical) when source is MGRS and preview format is MGRS. */
+-function formatWaypointEditorConversionValue(sourceText, lat, lon){
++function formatWaypointEditorConversionValue(sourceText, lat, lon, utmSource){
+   const mode = waypointListCoordFormatEffective();
+   if (mode === "mgrs"){
+     try {
+@@ -69307,7 +69358,7 @@ function formatWaypointEditorConversionValue(sourceText, lat, lon){
+       if (canon) return canon;
+     } catch(_){}
+   }
+-  const formatted = formatWaypointListCoordinates(lat, lon);
++  const formatted = formatWaypointListCoordinates(lat, lon, utmSource);
+   if (formatted && formatted !== "—") return formatted;
+   if (Number.isFinite(lat) && Number.isFinite(lon)) return lat.toFixed(5) + ", " + lon.toFixed(5);
+   return "";
+@@ -69386,9 +69437,10 @@ function refreshWaypointEditorCoordConversionPreview(){
+     try { clearWaypointEditorCoordFeedback(); } catch(_){}
+     return;
+   }
+-  state.waypointEditorDraft.lat = r.lat;
+-  state.waypointEditorDraft.lon = r.lon;
+-  const value = formatWaypointEditorConversionValue(el.value, r.lat, r.lon);
++  const point = waypointEditorOriginalPoint(state.waypointEditorDraft, String(el.value || "")) || r;
++  state.waypointEditorDraft.lat = point.lat;
++  state.waypointEditorDraft.lon = point.lon;
++  const value = formatWaypointEditorConversionValue(el.value, point.lat, point.lon, point.utmSource);
+   setWaypointEditorCoordConversionFeedback(value, r.type);
+   if (!state.waypointEditorDraft.id){
+     try { syncWaypointDraftPinFromEditor(); } catch(_){}
+@@ -69405,16 +69457,17 @@ function wireWaypointListCoordFormatOnce(){
+     /* GIS-WAYPOINT-EDITOR-COORD-FORMAT-FIELD-SYNC-A: rewrite #wpFieldCoord from draft lat/lon (no save / no mapWaypoints mutation). */
+     try {
+       const d = state.waypointEditorDraft;
+-      if (d){
+-        if (!(Number.isFinite(d.lat) && Number.isFinite(d.lon))){
+-          const el = document.getElementById("wpFieldCoord");
+-          if (el){
+-            const r = parseWaypointEditorCoordText(el.value);
+-            if (r && r.ok){ d.lat = r.lat; d.lon = r.lon; }
+-          }
++      const el = document.getElementById("wpFieldCoord");
++      const point = el && waypointEditorOriginalPoint(d, String(el.value || ""));
++      if (point){
++        const formatted = formatWaypointListCoordinates(point.lat, point.lon, point.utmSource);
++        if (formatted && formatted !== "—"){
++          el.value = formatted;
++          d._initialCoordText = formatted;
+         }
+-        if (Number.isFinite(d.lat) && Number.isFinite(d.lon)) writeWaypointEditorCoordFieldFromDraft();
+       }
++      // An edited or invalid field stays exactly as typed; format selection is
++      // a display operation and must not discard unsaved input.
+     } catch(_){}
+     try { refreshWaypointEditorCoordConversionPreview(); } catch(_){}
+     try { renderWpModalList(); } catch(_){}
+@@ -69613,7 +69666,7 @@ function renderTrackPointsList(){
+     head.hidden = false;
+     let coordsLine = "";
+     if (!expanded){
+-      const fmtShort = (p) => formatTrackPointCoordinates(p.lat, p.lon);
++      const fmtShort = (p) => formatTrackPointCoordinates(p.lat, p.lon, p.utmSource);
+       if (n === 1){
+         coordsLine = `<div class="tps-coords">${esc(trackPointDisplayLabel(0, n))}: ${esc(fmtShort(pts[0]))}</div>`;
+       } else {
+@@ -69697,7 +69750,7 @@ function renderTrackPointsList(){
+   }
+ 
+   const html = pageRows.map(({ i, p, leg }) => {
+-    const coordStr = formatTrackPointCoordinates(p.lat, p.lon);
++    const coordStr = formatTrackPointCoordinates(p.lat, p.lon, p.utmSource);
+     let legStr = "";
+     if (i > 0 && leg && Number.isFinite(leg.dist)){
+       legStr = `<span class="tp-leg">${esc(t("track.leg"))} #${i}: ${formatTrackDistance(leg.dist, tdu)} · ${leg.brg.toFixed(1)}°</span>`;
+@@ -70049,7 +70102,7 @@ function buildWaypointTooltipText(p){
+   } catch(_){
+     lines.push(p.lat.toFixed(5) + ", " + p.lon.toFixed(5));
+   }
+-  try { lines.push("MGRS: " + latLonToMGRS(p.lat, p.lon, 5)); } catch(_){}
++  try { lines.push("MGRS: " + resultPointToMGRS(p.lat, p.lon, p.utmSource, 5)); } catch(_){}
+   const icRaw = ((p.meta && p.meta.icon) ? String(p.meta.icon) : "hq").toLowerCase();
+   let icLab = icRaw;
+   try {
+@@ -70221,7 +70274,7 @@ function renderMapWaypointsList(){
+   const html = pts.map((p, i) => {
+     const coordStr = p.lat.toFixed(5) + ", " + p.lon.toFixed(5);
+     let mgrsStr = "";
+-    try { mgrsStr = " · " + latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
++    try { mgrsStr = " · " + resultPointToMGRS(p.lat, p.lon, p.utmSource, 5); } catch(_){}
+     const ic = (p.meta && p.meta.icon) ? String(p.meta.icon) : "—";
+     return `<div class="track-point-row" data-id="${esc(p.id)}" data-idx="${i}">
+       <span class="tp-idx">📌</span>
+@@ -70346,13 +70399,13 @@ function buildCsvFromTrack(){
+   ];
+   pts.forEach((p, i) => {
+     let mgrs = "";
+-    try { mgrs = latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
++    try { mgrs = resultPointToMGRS(p.lat, p.lon, p.utmSource, 5); } catch(_){}
+     const nm = (p.name || "").replace(/"/g, '""');
+     rows.push(`track,${i+1},"${nm}",${round(p.lat,7)},${round(p.lon,7)},"${mgrs}"`);
+   });
+   wps.forEach((p, i) => {
+     let mgrs = "";
+-    try { mgrs = latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
++    try { mgrs = resultPointToMGRS(p.lat, p.lon, p.utmSource, 5); } catch(_){}
+     const nm = (p.name || "").replace(/"/g, '""');
+     rows.push(`waypoint,${i+1},"${nm}",${round(p.lat,7)},${round(p.lon,7)},"${mgrs}"`);
+   });
+@@ -70415,7 +70468,7 @@ function exportSavedTrackSingleFile(st, kind){
+     ];
+     pts.forEach((p, i) => {
+       let mgrs = "";
+-      try { mgrs = latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
++      try { mgrs = resultPointToMGRS(p.lat, p.lon, p.utmSource, 5); } catch(_){}
+       const nm = String(p.name || "").replace(/"/g, '""');
+       rows.push(`track,${i+1},"${nm}",${round(p.lat,7)},${round(p.lon,7)},"${mgrs}"`);
+     });
+@@ -70469,7 +70522,7 @@ function exportSavedTracksZipBundle(tracks, kind){
+       ];
+       pts.forEach((p, i) => {
+         let mgrs = "";
+-        try { mgrs = latLonToMGRS(p.lat, p.lon, 5); } catch(_){}
++        try { mgrs = resultPointToMGRS(p.lat, p.lon, p.utmSource, 5); } catch(_){}
+         const nm = String(p.name || "").replace(/"/g, '""');
+         rows.push(`track,${i+1},"${nm}",${round(p.lat,7)},${round(p.lon,7)},"${mgrs}"`);
+       });
+@@ -70728,7 +70781,7 @@ function openTrackPasteModal(){
+  *   - Bottom-right: coordinate live + attribuzione
+  * The marker is drawn at the exact point.
+  */
+-function renderTileMap(lat, lon, zoom){
++function renderTileMap(lat, lon, zoom, pointSource = null){
+   const root = document.getElementById("miniMap");
+   if (!root) return;
+   revokeMapBlobUrls(root);
+@@ -70740,7 +70793,7 @@ function renderTileMap(lat, lon, zoom){
+   if (!root.clientWidth){
+     root._tileRetries = (root._tileRetries || 0) + 1;
+     if (root._tileRetries < 5){
+-      requestAnimationFrame(() => renderTileMap(lat, lon, zoom));
++      requestAnimationFrame(() => renderTileMap(lat, lon, zoom, pointSource));
+       return;
+     }
+   }
+@@ -71331,7 +71384,7 @@ function renderTileMap(lat, lon, zoom){
+   // Bottom-right readout stack:
+   //   Row 1 (PUNTO)   → static, filled from the converted point.
+   //   Row 2 (CURSORE) → live, updated on mousemove/touchmove.
+-  const initCoord = esc(fmtPrimary(lat, lon));
++  const initCoord = esc(fmtPrimary(lat, lon, pointSource && pointSource.utmSource));
+   const primFmt = esc(state.primary || "MGRS");
+   const fmtBadge = `<span class="trp-fmt-lab" data-role="coord-fmt-label">${primFmt}</span>`;
+   const cycleBtn = `<button class="trp-action" type="button" data-role="coord-cycle" aria-label="${esc(buildCoordCycleTooltip())}">⇄</button>`;
+@@ -71435,12 +71488,12 @@ function renderTileMap(lat, lon, zoom){
+           if (newZoom === curZoom) return;
+           if (mapZoomApplyFocusedZoomIn(root, newZoom, focus)){
+             try { saveStore(); } catch(_){}
+-            renderTileMap(focus.lat, focus.lon, newZoom);
++            renderTileMap(focus.lat, focus.lon, newZoom, focus);
+             return;
+           }
+         }
+       }
+-      renderTileMap(lat, lon, zoom + d);
++      renderTileMap(lat, lon, zoom + d, pointSource);
+     });
+   });
+   const boxZoomBtn = root.querySelector('[data-role="box-zoom-toggle"]');
+@@ -71460,8 +71513,8 @@ function renderTileMap(lat, lon, zoom){
+       refreshCoordCycleMapUi();
+       const pEl = root.querySelector('.trp-point [data-role="point-coord"]');
+       const cEl = root.querySelector('.trp-cursor [data-role="cursor-coord"]');
+-      if (pEl) pEl.textContent = fmtPrimary(lat, lon);
+-      if (cEl) cEl.textContent = fmtPrimary(lat, lon);
++      if (pEl) pEl.textContent = fmtPrimary(lat, lon, pointSource && pointSource.utmSource);
++      if (cEl) cEl.textContent = fmtPrimary(lat, lon, pointSource && pointSource.utmSource);
+       try { syncHdrChipValue(document.getElementById("primarySelect")); } catch(_){}
+     });
+   });
+@@ -71478,7 +71531,7 @@ function renderTileMap(lat, lon, zoom){
+         state.mapTrackToolbarMenuOpen = false;
+       }
+       state.mapBasemapMenuOpen = next;
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   root.querySelectorAll(".tlayer-item[data-layer]").forEach(b => {
+@@ -71492,7 +71545,7 @@ function renderTileMap(lat, lon, zoom){
+       ev.stopPropagation();
+       try { state.mapBasemapMenuOpen = false; } catch(_){}
+       try { if (typeof openCartoIgmPanel === "function") openCartoIgmPanel(); } catch(_){}
+-      try { renderTileMap(lat, lon, zoom); } catch(_){}
++      try { renderTileMap(lat, lon, zoom, pointSource); } catch(_){}
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="dflightZones"]').forEach(b => {
+@@ -71502,7 +71555,7 @@ function renderTileMap(lat, lon, zoom){
+       const hasDs = !!(typeof _dflightOverlaySession !== "undefined" && _dflightOverlaySession && _dflightOverlaySession.dataset);
+       if (!hasDs){
+         try { if (typeof dflightOpenControlPanel === "function") dflightOpenControlPanel(); } catch(_){}
+-        try { renderTileMap(lat, lon, zoom); } catch(_){}
++        try { renderTileMap(lat, lon, zoom, pointSource); } catch(_){}
+         return;
+       }
+       const next = !(typeof _dflightOverlayVisible !== "undefined" && _dflightOverlayVisible);
+@@ -71510,7 +71563,7 @@ function renderTileMap(lat, lon, zoom){
+       if (next){
+         try { if (typeof dflightOpenControlPanel === "function") dflightOpenControlPanel(); } catch(_){}
+       }
+-      try { renderTileMap(lat, lon, zoom); } catch(_){}
++      try { renderTileMap(lat, lon, zoom, pointSource); } catch(_){}
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="seamarks"]').forEach(b => {
+@@ -71518,7 +71571,7 @@ function renderTileMap(lat, lon, zoom){
+       ev.stopPropagation();
+       state.showSeamarks = !state.showSeamarks;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="mgrs"]').forEach(b => {
+@@ -71526,7 +71579,7 @@ function renderTileMap(lat, lon, zoom){
+       ev.stopPropagation();
+       state.showGrid = !state.showGrid;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="sonarchart"]').forEach(b => {
+@@ -71537,13 +71590,13 @@ function renderTileMap(lat, lon, zoom){
+         const ok = await ensureProxyConsent("sonarchart");
+         if (!ok){
+           state.showSonarChart = false;
+-          renderTileMap(lat, lon, zoom);
++          renderTileMap(lat, lon, zoom, pointSource);
+           return;
+         }
+       }
+       state.showSonarChart = next;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="hillshadeOverlay"]').forEach(b => {
+@@ -71554,13 +71607,13 @@ function renderTileMap(lat, lon, zoom){
+         const ok = await ensureProxyConsent("hillshadeOverlay");
+         if (!ok){
+           state.showHillshadeOverlay = false;
+-          renderTileMap(lat, lon, zoom);
++          renderTileMap(lat, lon, zoom, pointSource);
+           return;
+         }
+       }
+       state.showHillshadeOverlay = next;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="waymarkedHiking"]').forEach(b => {
+@@ -71568,7 +71621,7 @@ function renderTileMap(lat, lon, zoom){
+       ev.stopPropagation();
+       state.showWaymarkedHiking = !state.showWaymarkedHiking;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   root.querySelectorAll('.tlayer-item[data-overlay="stravaRunHeatmap"]').forEach(b => {
+@@ -71579,21 +71632,21 @@ function renderTileMap(lat, lon, zoom){
+         const ok = await ensureProxyConsent("stravaRunHeatmap");
+         if (!ok){
+           state.showStravaRunHeatmap = false;
+-          renderTileMap(lat, lon, zoom);
++          renderTileMap(lat, lon, zoom, pointSource);
+           return;
+         }
+       }
+       state.showStravaRunHeatmap = next;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   const recenterBtn = root.querySelector(".tile-recenter");
+   if (recenterBtn){
+     recenterBtn.addEventListener("click", () => {
+-      state.viewCenter = { lat, lon };
++      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource) };
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const pickBtn = root.querySelector(".tile-pick");
+@@ -71620,7 +71673,7 @@ function renderTileMap(lat, lon, zoom){
+   const closeMeasureBox = () => {
+     state.mapMeasurePanelOpen = false;
+     saveStore();
+-    renderTileMap(lat, lon, zoom);
++    renderTileMap(lat, lon, zoom, pointSource);
+   };
+   const exitMeasure = () => {
+     mapMeasureDocDragCleanup();
+@@ -71633,7 +71686,7 @@ function renderTileMap(lat, lon, zoom){
+     const out = root.querySelector('[data-role="measure-out"]');
+     if (out) out.textContent = "—";
+     saveStore();
+-    renderTileMap(lat, lon, zoom);
++    renderTileMap(lat, lon, zoom, pointSource);
+   };
+   if (measToggle){
+     measToggle.addEventListener("click", (ev) => {
+@@ -71648,7 +71701,7 @@ function renderTileMap(lat, lon, zoom){
+       // Opening the panel arms the tool immediately (so clicks add points).
+       if (next) state.mapMeasureMode = true;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const mbClose = root.querySelector('[data-role="measure-box-close"]');
+@@ -71661,7 +71714,7 @@ function renderTileMap(lat, lon, zoom){
+       state.mapMeasureKind = String(b.dataset.kind || "line");
+       state.mapMeasureMode = true;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   });
+   const unitSel = root.querySelector('[data-role="measure-unit"]');
+@@ -71763,7 +71816,7 @@ function renderTileMap(lat, lon, zoom){
+         try { updatePrecacheEstimate(); } catch(_){}
+         try { updateOfflineLayerCacheStats(); } catch(_){}
+       }
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const offFloatClose = root.querySelector('[data-role="offline-float-close"]');
+@@ -71772,7 +71825,7 @@ function renderTileMap(lat, lon, zoom){
+       ev.stopPropagation();
+       state.offlineDownloadVisible = false;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const trackMapTgl = root.querySelector('[data-role="track-map-toggle"]');
+@@ -71799,7 +71852,7 @@ function renderTileMap(lat, lon, zoom){
+         state.mapWaypointToolbarMenuOpen = false;
+       }
+       state.mapTrackToolbarMenuOpen = next;
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const trackPolyMenu = root.querySelector('[data-role="track-map-polygons"]');
+@@ -71878,7 +71931,7 @@ function renderTileMap(lat, lon, zoom){
+         state.mapTrackToolbarMenuOpen = false;
+       }
+       state.mapWaypointToolbarMenuOpen = next;
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const waypointPickMenu = root.querySelector('[data-role="waypoint-map-pick"]');
+@@ -71892,7 +71945,7 @@ function renderTileMap(lat, lon, zoom){
+       }
+       state.mapPickMode = nextPick;
+       root.classList.toggle("map-pick-mode", !!state.mapPickMode);
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const waypointRecenterMenu = root.querySelector('[data-role="waypoint-map-recenter"]');
+@@ -71900,9 +71953,9 @@ function renderTileMap(lat, lon, zoom){
+     waypointRecenterMenu.addEventListener("click", (ev) => {
+       ev.stopPropagation();
+       state.mapWaypointToolbarMenuOpen = false;
+-      state.viewCenter = { lat, lon };
++      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource) };
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+   const rrMapBtn = root.querySelector('[data-role="rangerings-open"]');
+@@ -71970,10 +72023,10 @@ function renderTileMap(lat, lon, zoom){
+     gridBtn.addEventListener("click", () => {
+       state.showGrid = !state.showGrid;
+       saveStore();
+-      renderTileMap(lat, lon, zoom);
++      renderTileMap(lat, lon, zoom, pointSource);
+     });
+   }
+-  attachPanHandlers(root, lat, lon, zoom);
++  attachPanHandlers(root, lat, lon, zoom, pointSource);
+   try { boxZoomSyncAfterRender(root); } catch(_){}
+   if (document.body.classList.contains("gis-mode") && root && !root._gisMapDblCenterWired){
+     root._gisMapDblCenterWired = true;
+@@ -71983,7 +72036,7 @@ function renderTileMap(lat, lon, zoom){
+     const __tm = root && root.querySelector(".tile-map");
+     if (typeof routingAttachAltitudeMapHoverOnce === "function") routingAttachAltitudeMapHoverOnce(__tm);
+   } catch(_){}
+-  attachCursorReadout(root, lat, lon, zoom);
++  attachCursorReadout(root, lat, lon, zoom, pointSource);
+   attachWheelZoom(root, lat, lon, zoom, layer);
+   let __hydrateFetchSig = null;
+   if (typeof AbortController !== "undefined"){
+@@ -72111,7 +72164,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
+         const mapRoot = document.getElementById("miniMap") || root;
+         if (mapZoomApplyFocusedZoomIn(mapRoot, newZoom, focus)){
+           saveStore();
+-          renderTileMap(focus.lat, focus.lon, newZoom);
++          renderTileMap(focus.lat, focus.lon, newZoom, focus);
+           return;
+         }
+       }
+@@ -72134,7 +72187,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
+     state.viewCenter = { lat: newLat, lon: newLon };
+     state.mapZoom    = newZoom;
+     saveStore();
+-    renderTileMap(anchor.lat, anchor.lon, newZoom);
++    renderTileMap(anchor.lat, anchor.lon, newZoom, anchor);
+   };
+ 
+   root.addEventListener("wheel", (ev) => {
+@@ -72212,7 +72265,7 @@ function attachWheelZoom(root, lat, lon, zoom, layer){
+  * politeness — short enough that brief pauses feel live, long enough that
+  * dragging across the map doesn't fire dozens of requests.
+  */
+-function attachCursorReadout(root, lat, lon, zoom){
++function attachCursorReadout(root, lat, lon, zoom, pointSource){
+   const tileMap   = root.querySelector(".tile-map");
+   const coordEl   = root.querySelector('.trp-cursor [data-role="cursor-coord"]');
+   const elevEl    = root.querySelector('.trp-cursor [data-role="cursor-elev"]');
+@@ -72347,7 +72400,7 @@ function attachCursorReadout(root, lat, lon, zoom){
+     lastPt = null;
+     // Pointer left the map → show the point's own values again so the
+     // row stays meaningful instead of going blank.
+-    coordEl.textContent = fmtPrimary(lat, lon);
++    coordEl.textContent = fmtPrimary(lat, lon, pointSource && pointSource.utmSource);
+     state.mapCursorLL = { lat, lon };
+     setCursorElev(lat, lon);
+     try {
+@@ -72473,7 +72526,7 @@ function gisMapOnDblClickCenter(ev){
+  * ignored so they keep behaving as normal buttons. A small dead-zone (<3 px)
+  * also prevents accidental map moves when the user just clicks.
+  */
+-function attachPanHandlers(root, lat, lon, zoom){
++function attachPanHandlers(root, lat, lon, zoom, pointSource){
+   const tileMap   = root.querySelector(".tile-map");
+   const tileLayer = root.querySelector(".tile-layer");
+   if (!tileMap || !tileLayer) return;
+@@ -72691,7 +72744,7 @@ function attachPanHandlers(root, lat, lon, zoom){
+               if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+               return;
+             }
+-            renderTileMap(lat, lon, zPick);
++            renderTileMap(lat, lon, zPick, pointSource);
+           } else {
+           const now = (typeof performance !== "undefined" && performance.now) ? performance.now() : Date.now();
+           const pend = state._trackPickPending;
+@@ -72852,7 +72905,7 @@ function attachPanHandlers(root, lat, lon, zoom){
+       newLat = Math.max(-85.05, Math.min(85.05, newLat));
+       state.viewCenter = { lat: newLat, lon: newLon };
+       saveStore();
+-      renderTileMap(lat, lon, z);
++      renderTileMap(lat, lon, z, pointSource);
+     };
+ 
+     window.addEventListener("mousemove", onMove);
+@@ -73468,7 +73521,7 @@ function copyAll(){
+   const { lat, lon } = r;
+   const parts = [];
+   try {
+-    parts.push("MGRS: " + latLonToMGRS(lat, lon, 5));
++    parts.push("MGRS: " + resultPointToMGRS(lat, lon, r.utmSource, 5));
+   } catch(_){
+     parts.push("MGRS: " + t("res.outOfRange"));
+   }
+@@ -73499,6 +73552,7 @@ function pushHistory(entry){
+     lat: entry.lat, lon: entry.lon,
+     type: entry.meta && entry.meta.type ? entry.meta.type : "LatLon",
+     raw:  entry.meta && entry.meta.raw  ? entry.meta.raw  : null,
++    utmSource: captureResultUtmSource(entry.lat, entry.lon, entry.utmSource),
+     when: now.getTime(),
+     srcTag,
+     locality: loc ? (loc.display_name || "") : ""
+@@ -73514,7 +73568,7 @@ function renderHistory(){
+   const hist = state.history.filter(h => {
+     if (!flt) return true;
+     let mgrs = "";
+-    try { mgrs = latLonToMGRS(h.lat, h.lon, 5).toLowerCase(); } catch(_){}
++    try { mgrs = resultPointToMGRS(h.lat, h.lon, h.utmSource, 5).toLowerCase(); } catch(_){}
+     const blob = ((h.raw || "") + " " + mgrs).toLowerCase();
+     return blob.indexOf(flt) !== -1;
+   });
+@@ -73553,7 +73607,7 @@ function renderHistory(){
+   root.querySelectorAll("button[data-hist]").forEach(b => {
+     b.addEventListener("click", () => {
+       const h = state.history[parseInt(b.dataset.hist,10)];
+-      if (h) renderResults(h.lat, h.lon, { type: h.type, raw: h.raw });
++      if (h) renderResults(h.lat, h.lon, { type: h.type, raw: h.raw }, { utmSource: h.utmSource });
+     });
+   });
+ }
+@@ -73628,7 +73682,8 @@ function pushFavoriteEntrySilent(lat, lon, opts){
+     lat, lon,
+     createdAt,
+     locality: loc ? (loc.display_name || "") : "",
+-    meta: opts.meta != null ? opts.meta : null
++    meta: opts.meta != null ? opts.meta : null,
++    utmSource: captureResultUtmSource(lat, lon, opts.utmSource)
+   });
+   if (state.favorites.length > 200) state.favorites.length = 200;
+   if (opts.deferPersist){
+@@ -73680,6 +73735,7 @@ function addConvertedResultToFavoritesSilent(){
+     preferredName,
+     notes: "",
+     meta: r.meta || null,
++    utmSource: r.utmSource,
+     localityObj: loc
+   });
+   if (ok) flashPasteStatusLine(t("fav.savedFromConverter"), "ok");
+@@ -73697,7 +73753,8 @@ function favoriteAddFromWaypointRowId(wpId){
+   const ok = pushFavoriteEntrySilent(p.lat, p.lon, {
+     preferredName,
+     notes,
+-    meta: p.meta || null
++    meta: p.meta || null,
++    utmSource: p.utmSource
+   });
+   if (ok){
+     showWpModalListFavFeedback("ok", t("fav.savedFromWaypoint"));
+@@ -73741,7 +73798,8 @@ function addCurrentAsFavorite(){
+     // Persist the locality so exports / post-load displays don't need a
+     // fresh reverse lookup (and keep working offline).
+     locality: loc ? (loc.display_name || "") : "",
+-    meta: r.meta || null
++    meta: r.meta || null,
++    utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource)
+   });
+   // Keep at most 200 favorites to avoid storage bloat
+   if (state.favorites.length > 200) state.favorites.length = 200;
+@@ -73835,6 +73893,7 @@ function waypointModalAddSelectedRowsToFavorites(){
+       preferredName,
+       notes,
+       meta: p.meta || null,
++      utmSource: p.utmSource,
+       deferPersist: true
+     });
+     if (ok){
+@@ -73895,14 +73954,14 @@ function favWireCoordFmtSelectOnce(){
+   });
+ }
+ 
+-function formatFavoriteListCoordinate(lat, lon, mode){
++function formatFavoriteListCoordinate(lat, lon, mode, utmSource){
+   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return "—";
+   const m = mode || "dd";
+   try {
+     if (m === "signed") return fmtDD(lat, lon).signed;
+     if (m === "ddm") return fmtDDM(lat, lon);
+     if (m === "dms") return fmtDMS(lat, lon);
+-    if (m === "mgrs5") return latLonToMGRS(lat, lon, 5);
++    if (m === "mgrs5") return resultPointToMGRS(lat, lon, utmSource, 5);
+     return fmtDD(lat, lon).cardinal;
+   } catch(_){
+     try { return fmtDD(lat, lon).cardinal; } catch(__){ return "—"; }
+@@ -74030,7 +74089,7 @@ function clearFavorites(){
+ function loadFavorite(id){
+   const f = state.favorites.find(x => x.id === id);
+   if (!f) return;
+-  renderResults(f.lat, f.lon, f.meta || { type:"LatLon", raw: f.name });
++  renderResults(f.lat, f.lon, f.meta || { type:"LatLon", raw: f.name }, { utmSource: f.utmSource });
+   window.scrollTo({ top: 0, behavior: "smooth" });
+ }
+ 
+@@ -74048,7 +74107,8 @@ function favoriteAddAsWaypoint(favId){
+   const nm = String(f.name || "").trim().slice(0, 60) || String(t("waypointModal.unnamed") || "WP").slice(0, 60);
+   const meta = { from: "favorite", icon: "hq", color: "#ca8a04" };
+   if (f.meta && f.meta.type) meta.srcFmt = String(f.meta.type).slice(0, 24);
+-  const ok = waypointAdd(f.lat, normalizeLon(f.lon), nm, meta);
++  const favSource = captureResultUtmSource(f.lat, f.lon, f.utmSource);
++  const ok = waypointAdd(f.lat, favSource ? f.lon : normalizeLon(f.lon), nm, meta, { utmSource: favSource });
+   if (ok){
+     try { setBadge("success", t("fav.addWaypointOk")); } catch(_){}
+   } else {
+@@ -74120,7 +74180,7 @@ function renderFavorites(){
+   const list = state.favorites.filter(f => {
+     if (!flt) return true;
+     let mgrs = "";
+-    try { mgrs = latLonToMGRS(f.lat, f.lon, 5).toLowerCase(); } catch(_){}
++    try { mgrs = resultPointToMGRS(f.lat, f.lon, f.utmSource, 5).toLowerCase(); } catch(_){}
+     const blob = ((f.name || "") + " " + (f.notes || "") + " " + mgrs).toLowerCase();
+     return blob.indexOf(flt) !== -1;
+   });
+@@ -74144,7 +74204,7 @@ function renderFavorites(){
+     const locTip = esc(String(f.locality || "").slice(0, 240));
+     const locHtml = f.locality ? `<div class="fav-loc" data-tip="${locTip}">📍 ${esc(f.locality)}</div>` : "";
+     const fid = esc(f.id);
+-    const coordRaw = formatFavoriteListCoordinate(f.lat, f.lon, favoritesListCoordDisplayMode);
++    const coordRaw = formatFavoriteListCoordinate(f.lat, f.lon, favoritesListCoordDisplayMode, f.utmSource);
+     const coordDisp = esc(coordRaw);
+     const copyLbl = esc(t("btn.copy"));
+     const copyTip = esc(t("tip.copy"));
+@@ -74482,7 +74542,7 @@ function astroIndexPickerWaypoints(){
+     const sid = w.id != null ? String(w.id) : "";
+     const coordStr = lat.toFixed(5) + ", " + nl.toFixed(5);
+     let mgrsStr = "";
+-    try { mgrsStr = String(latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
++    try { mgrsStr = String(captureResultUtmSource(lat, lon, w.utmSource) ? resultPointToMGRS(lat, lon, w.utmSource, 5) : latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
+     const whenStr = (typeof formatWaypointTableWhen === "function") ? String(formatWaypointTableWhen(w) || "").trim() : "";
+     const meta = w.meta && typeof w.meta === "object" ? w.meta : null;
+     let notesFull = "";
+@@ -74847,7 +74907,7 @@ function astroIndexPickerFavorites(){
+     const nm = String(f.name != null ? f.name : "").trim() || (lat.toFixed(4) + ", " + nl.toFixed(4));
+     const coordStr = lat.toFixed(5) + ", " + nl.toFixed(5);
+     let mgrsStr = "";
+-    try { mgrsStr = String(latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
++    try { mgrsStr = String(captureResultUtmSource(lat, lon, f.utmSource) ? resultPointToMGRS(lat, lon, f.utmSource, 5) : latLonToMGRS(lat, nl, 5) || "").trim(); } catch(_){ mgrsStr = ""; }
+     const notesFull = String(f.notes != null ? f.notes : "").trim().slice(0, 500);
+     const notesDisplay = notesFull ? notesFull.slice(0, 96) : "";
+     const localityFull = String(f.locality != null ? f.locality : "").trim().slice(0, 200);
+@@ -75910,7 +75970,7 @@ function importSessionObject(data){
+   if (Array.isArray(data.history)) state.history = data.history.slice(0, 30);
+   if (Array.isArray(data.favorites)) {
+     state.favorites = data.favorites.map(f => ({
+-      id: f.id || uid(), name: f.name || "?", lat: f.lat, lon: f.lon, createdAt: f.createdAt || Date.now(), meta: f.meta || null,
++      id: f.id || uid(), name: f.name || "?", lat: f.lat, lon: f.lon, createdAt: f.createdAt || Date.now(), meta: f.meta || null, utmSource: captureResultUtmSource(f.lat, f.lon, f.utmSource),
+       notes: (typeof f.notes === "string" ? f.notes : "").slice(0, 500)
+     })).slice(0, 200);
+   }
+@@ -75942,7 +76002,7 @@ function buildPrintReportHtml(){
+   let rows = "";
+   for (const f of state.favorites) {
+     let m = "—";
+-    try { m = latLonToMGRS(f.lat, f.lon, 5); } catch(_){}
++    try { m = resultPointToMGRS(f.lat, f.lon, f.utmSource, 5); } catch(_){}
+     const notes = f.notes ? esc(String(f.notes)) : "—";
+     rows += `<tr><td>${esc(f.name)}</td><td>${m}</td><td>${esc(fmtDD(f.lat, f.lon).cardinal)}</td><td>${notes}</td></tr>`;
+   }
+@@ -75985,7 +76045,7 @@ function doBatch(){
+     try {
+       const det = autoDetect(line);
+       const u = (function(){ try { return latLonToUTM(det.lat, det.lon); } catch(_){ return null; }})();
+-      const m = (function(){ try { return latLonToMGRS(det.lat, det.lon, 5); } catch(_){ return null; }})();
++      const m = (function(){ try { return resultPointToMGRS(det.lat, det.lon, det.type === "UTM" ? det.utm : null, 5); } catch(_){ return null; }})();
+       rows.push({
+         input: line, ok: true,
+         lat: det.lat, lon: det.lon,
+@@ -76487,7 +76547,7 @@ function doConvert(){
+       lat = mg.lat; lon = mg.lon;
+       meta = { type:"MGRS", raw: txt, mgrs: mg };
+     }
+-    renderResults(lat, lon, meta);
++    renderResults(lat, lon, meta, { utmSource: meta && meta.type === "UTM" ? meta.utm : null });
+   } catch(e){
+     showError(translateError(e));
+   }
+@@ -76510,7 +76570,7 @@ function doPasteDetect(){
+     st.textContent = t(lbl);
+     st.className = "ok";
+     setBadge(det.type, fmtDD(det.lat, det.lon).cardinal);
+-    renderResults(det.lat, det.lon, det);
++    renderResults(det.lat, det.lon, det, { utmSource: det.type === "UTM" ? det.utm : null });
+   } catch(e){
+     // Nothing recognized as a coordinate. A failed coordinate attempt is a
+     // local error — never offered as an address. Real place text still asks
+@@ -76701,7 +76761,7 @@ function applyLanguage(lang){
+   // Re-render last result so labels are localized (no duplicate history entry)
+   if (state.lastResult){
+     const r = state.lastResult;
+-    renderResults(r.lat, r.lon, r.meta, { skipHistory: true });
++    renderResults(r.lat, r.lon, r.meta, { skipHistory: true, utmSource: r.utmSource });
+   }
+   if (typeof syncOfflineLayerSelect === "function") syncOfflineLayerSelect();
+   if (typeof updatePrecacheEstimate === "function") updatePrecacheEstimate();
+@@ -77544,8 +77604,8 @@ function rrApplyCenterFromPicker(lat, lon, noticeKey){
+   const lp = state.lastPoint || state.viewCenter;
+   const z = state.mapZoom || 11;
+   try {
+-    if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon) && state.lastPoint) renderTileMap(state.lastPoint.lat, state.lastPoint.lon, z);
+-    else if (lp && Number.isFinite(lp.lat)) renderTileMap(lp.lat, lp.lon, z);
++    if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon) && state.lastPoint) renderTileMap(state.lastPoint.lat, state.lastPoint.lon, z, state.lastPoint);
++    else if (lp && Number.isFinite(lp.lat)) renderTileMap(lp.lat, lp.lon, z, lp);
+   } catch(_){}
+   try { refreshTileMapForTrackUi(); } catch(_){}
+   if (typeof noticeKey === "string" && noticeKey) try { rrShowOk(noticeKey); } catch(_){}
+@@ -78138,7 +78198,7 @@ function rangeRingsEnterPickAndCreateMode(){
+     const r = document.getElementById("miniMap");
+     const lp = state.lastPoint || state.viewCenter;
+     const z = state.mapZoom || 11;
+-    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+   } catch(_){}
+ }
+ 
+@@ -78351,7 +78411,7 @@ function refreshRangeRingsAfterStateChange(){
+   if (tileMap){
+     try { renderRangeRingsOverlay(tileMap, lp.lat, lp.lon, z); } catch(_){}
+   } else if (root && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+-    try { renderTileMap(lp.lat, lp.lon, z); } catch(_){}
++    try { renderTileMap(lp.lat, lp.lon, z, lp); } catch(_){}
+   }
+   renderRangeRingsList();
+ }
+@@ -78821,7 +78881,7 @@ function updateNetStatus(){
+   // The marker stays at state.lastPoint (passed as lat/lon), while the actual
+   // view center comes from state.viewCenter (preserved by skipping the reset).
+   if (state.lastPoint){
+-    renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++    renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+   }
+   try { syncForceOfflineCheckbox(); } catch(_){}
+   try { if (typeof routingOnNetworkPolicyChange === "function") routingOnNetworkPolicyChange(); } catch(_){}
+@@ -79270,7 +79330,7 @@ function bindUI(){
+     pcH.addEventListener("change", (e) => {
+       state.tilePackHints = e.target.checked;
+       saveStore();
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     });
+   }
+   // Offline panel: force-offline simulation (checkbox; state mirrors header badge).
+@@ -79281,7 +79341,7 @@ function bindUI(){
+       state.forceOffline = !!ev.target.checked;
+       saveStore();
+       updateNetStatus();
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+       else if (state.viewCenter) renderTileMap(state.viewCenter.lat, state.viewCenter.lon, state.mapZoom || 11);
+     });
+   }
+@@ -80650,6 +80710,7 @@ function gisInit(){
+   if (wpCoord && !wpCoord._wpCoordLifecycleBound){
+     wpCoord._wpCoordLifecycleBound = true;
+     wpCoord.addEventListener("input", (ev) => {
++      if (state.waypointEditorDraft) state.waypointEditorDraft._coordEdited = true;
+       clearWaypointCoordInputDebounce();
+       // Invalidate previous Conversione/Copia immediately so data-copy cannot stay stale.
+       try { clearWaypointEditorCoordFeedback(); } catch(_){}
+@@ -81092,7 +81153,7 @@ function gisInit(){
+       const r = document.getElementById("miniMap");
+       const lp = state.lastPoint || state.viewCenter;
+       const z = state.mapZoom || 11;
+-      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+       saveStore();
+       try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+       return;
+@@ -81110,7 +81171,7 @@ function gisInit(){
+       const r = document.getElementById("miniMap");
+       const lp = state.lastPoint || state.viewCenter;
+       const z = state.mapZoom || 11;
+-      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+       saveStore();
+       try { measClearMsgs(); measSyncOperativeInfo(); } catch(_){}
+     }
+@@ -81124,7 +81185,7 @@ function gisInit(){
+       const r = document.getElementById("miniMap");
+       const lp = state.lastPoint || state.viewCenter;
+       const z = state.mapZoom || 11;
+-      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++      if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+       try { measSyncOperativeInfo(); } catch(_){}
+       if (state.polygonDrawMode){ try { renderPolygonDraftInfo(); } catch(_){} }
+       try { if (typeof routingRenderAltitudePanel === "function") routingRenderAltitudePanel(); } catch(_){}
+@@ -83403,7 +83464,7 @@ function waypointModalAttachMap(){
+   mh.appendChild(mm);
+   const lp = state.lastPoint || state.viewCenter;
+   const z = state.mapZoom || 11;
+-  if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++  if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+   else renderTileMap(44.1028, 9.8238, z);
+ }
+ 
+@@ -83415,7 +83476,7 @@ function waypointModalDetachMap(){
+   else slot.parent.appendChild(mm);
+   const lp = state.lastPoint || state.viewCenter;
+   const z = state.mapZoom || 11;
+-  if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++  if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+   else if (typeof refreshTileMapForTrackUi === "function") refreshTileMapForTrackUi();
+ }
+ 
+@@ -85815,18 +85876,18 @@ function polygonSyncRenderMapAfterEditEnd(){
+   try {
+     const vc = state.viewCenter;
+     const lp = state.lastPoint;
+-    let lat, lon;
++    let lat, lon, pointSource;
+     if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
+       lat = vc.lat;
+-      lon = vc.lon;
++      lon = vc.lon; pointSource = vc;
+     } else if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+       lat = lp.lat;
+-      lon = lp.lon;
++      lon = lp.lon; pointSource = lp;
+     } else return;
+     const z = state.mapZoom || 11;
+     const root = document.getElementById("miniMap");
+     if (!root || !root.querySelector(".tile-map")) return;
+-    renderTileMap(lat, lon, z);
++    renderTileMap(lat, lon, z, pointSource);
+   } catch(_){}
+ }
+ function polygonScheduleEditOverlayRefresh(){
+@@ -85848,18 +85909,18 @@ function polygonScheduleEditOverlayRefresh(){
+     if (typeof gisPanelIsMinimized === "function" && gisPanelIsMinimized("polygonPanel")) return;
+     const vc = state.viewCenter;
+     const lp = state.lastPoint;
+-    let lat, lon;
++    let lat, lon, pointSource;
+     if (vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon)){
+       lat = vc.lat;
+-      lon = vc.lon;
++      lon = vc.lon; pointSource = vc;
+     } else if (lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)){
+       lat = lp.lat;
+-      lon = lp.lon;
++      lon = lp.lon; pointSource = lp;
+     } else return;
+     const z = state.mapZoom || 11;
+     const root = document.getElementById("miniMap");
+     if (!root || !root.querySelector(".tile-map")) return;
+-    renderTileMap(lat, lon, z);
++    renderTileMap(lat, lon, z, pointSource);
+   });
+ }
+ function polygonRefreshEditUi(){
+@@ -99809,7 +99870,7 @@ function openMeasureFloatingPanelGis(){
+     const r = document.getElementById("miniMap");
+     const lp = state.lastPoint || state.viewCenter;
+     const z = state.mapZoom || 11;
+-    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z);
++    if (r && lp && Number.isFinite(lp.lat) && Number.isFinite(lp.lon)) renderTileMap(lp.lat, lp.lon, z, lp);
+     measSyncOperativeInfo();
+   } catch(_){}
+   try { trackSyncPickModeUi(); } catch(_){}
+@@ -100644,7 +100705,7 @@ async function handleOfflineAreaRowDelete(id){
+     } catch(_){}
+     showOfflineDeleteTilesFeedback(res);
+     try {
+-      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (res.deleted > 0 && state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     } catch(_){}
+   }
+ }
+@@ -101092,7 +101153,7 @@ function getCurrentConvertedPointForWaypoint(){
+   const r = state.lastResult;
+   if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)) return null;
+   if (r.lat < -90 || r.lat > 90 || r.lon < -180 || r.lon > 180) return null;
+-  return { lat: r.lat, lon: r.lon, meta: r.meta || null, when: r.when };
++  return { lat: r.lat, lon: r.lon, meta: r.meta || null, utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource), when: r.when };
+ }
+ function hasCurrentConvertedPointForWaypoint(){
+   return !!getCurrentConvertedPointForWaypoint();
+@@ -101218,7 +101279,7 @@ function renderWpModalList(){
+     <th class="wp-th-actions">${esc(t("waypointModal.listColActions"))}</th>
+   </tr></thead><tbody>`;
+   html += pts.map(p => {
+-    const coordStr = formatWaypointListCoordinates(p.lat, p.lon);
++    const coordStr = formatWaypointListCoordinates(p.lat, p.lon, p.utmSource);
+     const icLab = waypointIconHumanLabel((p.meta && p.meta.icon) ? p.meta.icon : "hq");
+     const rowCls = (p.id === draftId) ? " is-editing" : "";
+     const nmVal = esc(p.name || "");
+@@ -101414,6 +101475,8 @@ function openWaypointEditor(opts){
+       id: p.id,
+       lat: p.lat,
+       lon: p.lon,
++      _sourceSnapshot: captureResultUtmSource(p.lat, p.lon, p.utmSource),
++      _originalLat: p.lat, _originalLon: p.lon, _coordEdited: false,
+       name: p.name || "",
+       icon: (p.meta && p.meta.icon) || "hq",
+       color: (p.meta && p.meta.color) || "#2563eb",
+@@ -101431,6 +101494,11 @@ function openWaypointEditor(opts){
+       notes: ""
+     };
+   }
++  if (!d.id){
++    d._originalLat = d.lat; d._originalLon = d.lon;
++    d._sourceSnapshot = captureResultUtmSource(d.lat, d.lon, d.utmSource);
++    d._coordEdited = false;
++  }
+   state.waypointEditorDraft = d;
+ 
+   const titleEl = document.getElementById("wpEditorTitle");
+@@ -101444,12 +101512,13 @@ function openWaypointEditor(opts){
+   if (nameEl) nameEl.value = d.name || "";
+   if (coordEl){
+     if (Number.isFinite(d.lat) && Number.isFinite(d.lon)){
+-      const s = formatWaypointListCoordinates(d.lat, d.lon);
++      const s = formatWaypointListCoordinates(d.lat, d.lon, d._sourceSnapshot);
+       coordEl.value = (s && s !== "—") ? s : "";
+     } else {
+       coordEl.value = "";
+     }
+     coordEl.removeAttribute("aria-invalid");
++    d._initialCoordText = String(coordEl.value || "");
+   }
+   try { syncWaypointListCoordFormatSelect(); } catch(_){}
+   try { clearWaypointEditorCoordFeedback(); } catch(_){}
+@@ -101512,13 +101581,27 @@ function startWaypointNewWaypointFlow(){
+ }
+ 
+ /** Parse free-text waypoint editor coordinate via Convert-canonical `autoDetect` (WGS84). */
++// A display-only reformat can represent a point at lower precision. Reuse the
++// original only while the displayed text is unedited and the live waypoint is
++// still the one from which this editor was opened.
++function waypointEditorOriginalPoint(d, text){
++  if (!d || d._coordEdited || text !== d._initialCoordText ||
++      !Number.isFinite(d._originalLat) || !Number.isFinite(d._originalLon)) return null;
++  if (!d.id) return { lat: d._originalLat, lon: d._originalLon, utmSource: d._sourceSnapshot || null };
++  const live = state.mapWaypoints.find(p => p.id === d.id);
++  if (!live || live.lat !== d._originalLat || live.lon !== d._originalLon) return null;
++  const liveSource = captureResultUtmSource(live.lat, live.lon, live.utmSource);
++  if (JSON.stringify(liveSource) !== JSON.stringify(d._sourceSnapshot || null)) return null;
++  return { lat: live.lat, lon: live.lon, utmSource: liveSource };
++}
+ function parseWaypointEditorCoordText(str){
+   const s = String(str || "").trim();
+   if (!s) return { ok: false, empty: true };
+   try {
+     const det = autoDetect(s);
+     validateLatLon(det.lat, det.lon);
+-    return { ok: true, lat: det.lat, lon: normalizeLon(det.lon), type: det.type || "LatLon" };
++    const utmSource = det.type === "UTM" ? captureResultUtmSource(det.lat, det.lon, det.utm) : null;
++    return { ok: true, lat: det.lat, lon: utmSource ? det.lon : normalizeLon(det.lon), type: det.type || "LatLon", utmSource };
+   } catch(err){
+     return { ok: false, empty: false, err: err };
+   }
+@@ -101567,7 +101650,7 @@ function applyWaypointEditorCoordSuccess(lat, lon, type, opts){
+     const sourceText = (opts.sourceText != null)
+       ? String(opts.sourceText)
+       : (input ? String(input.value || "") : "");
+-    const value = formatWaypointEditorConversionValue(sourceText, lat, lon);
++    const value = formatWaypointEditorConversionValue(sourceText, lat, lon, opts.utmSource);
+     setWaypointEditorCoordConversionFeedback(value, type);
+   }
+   // rewriteField remains supported for rare init callers; default runtime paths must leave source text intact.
+@@ -101587,7 +101670,7 @@ function handleWaypointEditorCoordEnter(){
+   const text = String(el.value || "");
+   const r = parseWaypointEditorCoordText(text);
+   if (r.ok){
+-    applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: false, softFeedback: false });
++    applyWaypointEditorCoordSuccess(r.lat, r.lon, r.type, { rewriteField: false, softFeedback: false, utmSource: r.utmSource });
+     if (typeof gisMapCenterOnLatLon === "function"){
+       try { gisMapCenterOnLatLon(r.lat, r.lon); } catch(_){}
+     }
+@@ -101676,8 +101759,8 @@ function centerMapFromWaypointEditor(){
+   }
+   if (typeof gisMapCenterOnLatLon !== "function") return false;
+   try {
+-    const ok = !!gisMapCenterOnLatLon(parsed.lat, parsed.lon);
+-    if (ok){ try { mapZoomFocusSet(parsed.lat, parsed.lon, "waypoint"); } catch(_){} }
++    const ok = !!gisMapCenterOnLatLon(parsed.lat, parsed.lon, { sourcePoint: parsed });
++    if (ok){ try { mapZoomFocusSet(parsed.lat, parsed.lon, "waypoint", parsed); } catch(_){} }
+     return ok;
+   } catch(_){
+     return false;
+@@ -101693,7 +101776,9 @@ function commitWaypointEditor(){
+   // Gate: always parse the CURRENT field text — never trust stale draft coords alone.
+   const coordEl = document.getElementById("wpFieldCoord");
+   const text = coordEl ? String(coordEl.value || "") : "";
+-  const parsed = parseWaypointEditorCoordText(text);
++  let parsed = parseWaypointEditorCoordText(text);
++  const original = parsed.ok ? waypointEditorOriginalPoint(d, text) : null;
++  if (original) parsed = { ok: true, lat: original.lat, lon: original.lon, utmSource: original.utmSource };
+   if (!parsed.ok){
+     if (coordEl) coordEl.setAttribute("aria-invalid", "true");
+     const key = (parsed.err && (parsed.err.key || parsed.err.i18nKey)) || "err.notRecognized";
+@@ -101716,7 +101801,7 @@ function commitWaypointEditor(){
+     return;
+   }
+   const lat = Math.max(-90, Math.min(90, d.lat));
+-  const lon = normalizeLon(d.lon);
++  const lon = (parsed.utmSource || original) ? d.lon : normalizeLon(d.lon);
+ 
+   const nameEl = document.getElementById("wpFieldName");
+   const iconEl = document.getElementById("wpFieldIcon");
+@@ -101731,9 +101816,10 @@ function commitWaypointEditor(){
+   if (notes) meta.notes = notes;
+ 
+   if (d.id){
+-    waypointUpdate(d.id, { lat, lon, name, meta });
++    if (original) waypointUpdate(d.id, { name, meta });
++    else waypointUpdate(d.id, { lat, lon, name, meta, utmSource: parsed.utmSource });
+   } else {
+-    waypointAdd(lat, lon, name, meta);
++    waypointAdd(lat, lon, name, meta, { utmSource: parsed.utmSource });
+   }
+   try { setBadge("success", t("waypointModal.savedOk")); } catch(_){}
+   closeWaypointEditor();
+@@ -101745,8 +101831,14 @@ function waypointUpdate(id, patch){
+   const p = state.mapWaypoints.find(x => x.id === id);
+   if (!p) return false;
+   if (patch && Number.isFinite(patch.lat) && Number.isFinite(patch.lon)){
+-    p.lat = Math.max(-90, Math.min(90, patch.lat));
+-    p.lon = normalizeLon(patch.lon);
++    const source = captureResultUtmSource(patch.lat, patch.lon, patch.utmSource);
++    const nextLat = Math.max(-90, Math.min(90, patch.lat));
++    const nextLon = source ? patch.lon : normalizeLon(patch.lon);
++    if (p.lat !== nextLat || p.lon !== nextLon) delete p.utmSource;
++    p.lat = nextLat; p.lon = nextLon;
++    if (Object.prototype.hasOwnProperty.call(patch, "utmSource")){
++      if (source) p.utmSource = source; else delete p.utmSource;
++    }
+   }
+   if (patch && typeof patch.name === "string") p.name = patch.name.slice(0, 60);
+   if (patch && patch.meta && typeof patch.meta === "object"){
+@@ -101976,7 +102068,7 @@ function waypointAddFromConvertedPoint(){
+   if (lr && lr.meta && lr.meta.type){
+     meta.srcFmt = String(lr.meta.type).slice(0, 24);
+   }
+-  const ok = waypointAdd(pt.lat, pt.lon, name, meta);
++  const ok = waypointAdd(pt.lat, pt.lon, name, meta, { utmSource: pt.utmSource });
+   if (ok){
+     try { setConvertWaypointFeedback("ok", t("convert.waypointAdded")); } catch(_){}
+   } else {
+@@ -102059,7 +102151,7 @@ function waypointImportSelectedFavoritesAsWaypoints(){
+     const name = String(f.name || "").trim().slice(0, 60);
+     const meta = { from: "favorites-import", icon: "hq", color: "#2563eb" };
+     if (f.notes && String(f.notes).trim()) meta.notes = String(f.notes).slice(0, 500);
+-    const ok = waypointAdd(f.lat, f.lon, name, meta);
++    const ok = waypointAdd(f.lat, f.lon, name, meta, { utmSource: f.utmSource });
+     if (ok) added++; else skipped++;
+   }
+   try {
+@@ -102075,7 +102167,8 @@ function waypointImportSelectedFavoritesAsWaypoints(){
+ function gisMapCenterOnLatLon(lat, lon, opts){
+   opts = opts || {};
+   try { validateLatLon(lat, lon); } catch(_){ return false; }
+-  const latC = Math.max(-85.05, Math.min(85.05, lat)), lonC = normalizeLon(lon);
++  const inputSource = captureResultUtmSource(lat, lon, opts.sourcePoint && opts.sourcePoint.utmSource);
++  const latC = Math.max(-85.05, Math.min(85.05, lat)), lonC = inputSource ? lon : normalizeLon(lon);
+   let z = state.mapZoom || 11;
+   if (!opts.skipZoomBump && z < 12) z = 14;
+   const root = document.getElementById("miniMap");
+@@ -102084,7 +102177,7 @@ function gisMapCenterOnLatLon(lat, lon, opts){
+   try { const u = gisMapUsableRect(root); if (u && !u.fallback) cam = gisMapOffsetVC(root, latC, lonC, z, u); } catch(_){}
+   state.viewCenter = { lat: cam.lat, lon: cam.lon };
+   state.mapZoom = z;
+-  try { renderTileMap(latC, lonC, z); return true; } catch(_){ return false; }
++  try { renderTileMap(latC, lonC, z, inputSource ? opts.sourcePoint : null); return true; } catch(_){ return false; }
+ }
+ 
+ /** Center the tile-map on the given waypoint. */
+@@ -102092,8 +102185,8 @@ function waypointsZoomTo(id){
+   ensureMapWaypointsState();
+   const p = state.mapWaypoints.find(x => x.id === id);
+   if (!p) return;
+-  if (gisMapCenterOnLatLon(p.lat, p.lon)){
+-    try { mapZoomFocusSet(p.lat, p.lon, "waypoint"); } catch(_){}
++  if (gisMapCenterOnLatLon(p.lat, p.lon, { sourcePoint: p })){
++    try { mapZoomFocusSet(p.lat, p.lon, "waypoint", p); } catch(_){}
+     try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
+   }
+ }
+@@ -102102,7 +102195,7 @@ function waypointsZoomTo(id){
+ function favoriteMapCenterTo(id){
+   const fav = state.favorites.find(x => x.id === id);
+   if (!fav || !Number.isFinite(fav.lat) || !Number.isFinite(fav.lon)) return;
+-  if (gisMapCenterOnLatLon(fav.lat, fav.lon)){
++  if (gisMapCenterOnLatLon(fav.lat, fav.lon, { sourcePoint: fav })){
+     try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
+   }
+ }
+@@ -102350,7 +102443,7 @@ function formatWaypointTextExportLine(wp){
+   let coord = "";
+   try {
+     if (typeof formatWaypointListCoordinates === "function"){
+-      coord = formatWaypointListCoordinates(wp && wp.lat, wp && wp.lon);
++      coord = formatWaypointListCoordinates(wp && wp.lat, wp && wp.lon, wp && wp.utmSource);
+     }
+   } catch(_){ coord = ""; }
+   if (!coord || coord === "—") coord = "";
+@@ -102980,7 +103073,7 @@ function init(){
+             id: String(p.id || uidNamed()),
+             lat: p.lat, lon: p.lon,
+             name: String(p.name || "").slice(0, 60),
+-              meta,
++              meta, utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource),
+               createdAt: Number.isFinite(cAt) ? cAt : undefined,
+               updatedAt: Number.isFinite(uAt) ? uAt : undefined
+             };
+@@ -103002,7 +103095,7 @@ function init(){
+           id: String(p.id || uidNamed()),
+           lat: p.lat, lon: p.lon,
+           name: String(p.name || "").slice(0, 60),
+-          meta: p.meta || null
++          meta: p.meta || null, utmSource: captureResultUtmSource(p.lat, p.lon, p.utmSource)
+         };
+         if (row.meta && row.meta.from === "waypoint-editor") migratedWp.push(row);
+         else kept.push(row);
+@@ -103142,7 +103235,7 @@ function installMiniMapResizeObserver(){
+     deb = setTimeout(() => {
+       lastW = w;
+       // Preserve the current pan/zoom/layer so the user doesn't lose their view.
+-      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     }, 140);
+   });
+   _miniMapResizeObserver.observe(root);
+@@ -103150,7 +103243,7 @@ function installMiniMapResizeObserver(){
+   // reliably, so also listen for the explicit event as a belt-and-braces.
+   window.addEventListener("orientationchange", () => {
+     setTimeout(() => {
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
++      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false, state.lastPoint);
+     }, 250);
+   });
+ }
