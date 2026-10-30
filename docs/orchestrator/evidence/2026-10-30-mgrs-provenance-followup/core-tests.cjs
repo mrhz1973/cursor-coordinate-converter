@@ -1,0 +1,52 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert'),path=require('path'),crypto=require('crypto');
+const here=__dirname;
+const raw=fs.readFileSync(path.join(here,'candidate.html'));
+const html=raw.toString('utf8').replace(/\r\n/g,'\n');
+const scripts=[...html.matchAll(/<script>\s*\n([\s\S]*?)\n<\/script>/g)];
+assert.equal(scripts.length,2); scripts.forEach((x,i)=>new vm.Script(x[1],{filename:`inline-${i}`}));
+function extract(name){let i=html.indexOf('function '+name+'('); assert(i>=0,name); let j=html.indexOf('\n}',i); assert(j>=0,name); return html.slice(i,j+2);}
+const constants=html.slice(html.indexOf('const WGS84 = {'),html.indexOf('// #endregion JS — CONSTANTS'));
+const names=['validateUTM','latLonToUTM','utmToLatLon','latitudeBand','geographicPointMGRSUTM','latLonToMGRS','utmToMGRS','captureResultUtmSource','resultPointToMGRS'];
+const ctx={};vm.createContext(ctx);
+vm.runInContext('const DEG=Math.PI/180,RAD=180/Math.PI; const pad=(s,w)=>String(s).padStart(w,"0"); class ErrI18n extends Error {}\n'+constants+names.map(extract).join('\n'),ctx);
+const point=u=>({...ctx.utmToLatLon(u.zone,u.hemisphere,u.easting,u.northing),u});
+const mg=(p,n=5)=>ctx.resultPointToMGRS(p.lat,p.lon,p.u,n);
+const source={zone:46,hemisphere:'S',easting:389603,northing:6540383};const p=point(source);
+assert.equal(mg(p),'46J CL 89603 40383'); assert.equal(ctx.latLonToMGRS(p.lat,p.lon,5),'46J CL 89602 40383');
+const expected=['46J CL','46J CL 8 4','46J CL 89 40','46J CL 896 403','46J CL 8960 4038','46J CL 89603 40383'];
+for(let i=0;i<=5;i++) assert.equal(mg(p,i),expected[i]);
+for(const [e,n,want] of [[389602.999,6540382.999,'46J CL 89602 40382'],[389603.001,6540383.001,'46J CL 89603 40383'],[400000,6600000,'46J DM 00000 00000'],[399999.999,6599999.999,'46J CL 99999 99999']])assert.equal(mg(point({...source,easting:e,northing:n})),want);
+const down=x=>{const b=new ArrayBuffer(8),d=new DataView(b);d.setFloat64(0,x);d.setBigUint64(0,d.getBigUint64(0)-1n);return d.getFloat64(0)};
+assert.equal(mg(point({...source,easting:down(389603)})),'46J CL 89602 40383');
+assert.equal(mg(point({...source,northing:down(6540383)})),'46J CL 89603 40382');
+const geo=ctx.latLonToMGRS(p.lat,p.lon,5);
+for(const bad of [null,{}, {...source,zone:0}, {...source,zone:47}, {...source,hemisphere:'N'}, {...source,easting:'389603'}, {...source,easting:389604}, {...source,northing:NaN}])assert.equal(ctx.resultPointToMGRS(p.lat,p.lon,bad,5),geo);
+assert.equal(ctx.resultPointToMGRS(p.lat+1e-7,p.lon,source,5),ctx.latLonToMGRS(p.lat+1e-7,p.lon,5));
+const copy=ctx.captureResultUtmSource(p.lat,p.lon,source);source.easting=123456;assert.equal(copy.easting,389603);
+const restored=JSON.parse(JSON.stringify({lat:p.lat,lon:p.lon,u:copy}));assert.equal(mg(restored),'46J CL 89603 40383');
+const nonNatural=point({zone:31,hemisphere:'N',easting:100000,northing:1000000});assert.equal(ctx.latLonToUTM(nonNatural.lat,nonNatural.lon).zone,30);assert.equal(mg(nonNatural),ctx.latLonToMGRS(nonNatural.lat,nonNatural.lon,5));
+const refs=JSON.parse(fs.readFileSync(path.join(here,'geotrans-reference.json'),'utf8')); let compared=0;
+for(const item of refs){const q=point(item);const got=mg(q).replace(/\s/g,'');assert.equal(got,item.reference.replace(/^0(?=[0-9])/,''),JSON.stringify(item));compared++;}
+ctx.captureResultMgrsSource=()=>null;ctx.state={mapWaypoints:[]};ctx.mapZoomFocusCaptureCamera=()=>({cameraLat:0,cameraLon:0,cameraZoom:11});ctx.mapZoomFocusCameraMatches=()=>true;
+vm.runInContext('let gMapZoomFocus=null;\n'+['normalizeLon','mapZoomFocusSet','mapZoomFocusGetValid'].map(extract).join('\n'),ctx);
+let wp={id:'explicit',lat:p.lat,lon:p.lon,utmSource:copy};ctx.state.mapWaypoints=[wp];
+assert(ctx.mapZoomFocusSet(wp.lat,wp.lon,'waypoint',wp));assert(ctx.mapZoomFocusGetValid().utmSource);
+delete wp.utmSource;assert.equal(ctx.mapZoomFocusGetValid().utmSource,null);
+wp.utmSource=copy;assert(ctx.mapZoomFocusSet(wp.lat,wp.lon,'waypoint',wp));ctx.state.mapWaypoints=[];assert.equal(ctx.mapZoomFocusGetValid().utmSource,null);
+const independent={lat:p.lat,lon:p.lon};assert(ctx.mapZoomFocusSet(independent.lat,independent.lon,'independent',independent));assert.equal(ctx.mapZoomFocusGetValid().utmSource,null);
+vm.runInContext(extract('dflightChooseMapAnchor')+'\n'+extract('waypointUpdate'),ctx);
+const origin={zone:32,hemisphere:'N',easting:500000,northing:0};const pos=point(origin);
+const eqWp={id:'eq',lat:pos.lat,lon:pos.lon,utmSource:origin};ctx.state.mapWaypoints=[eqWp];
+ctx.ensureMapWaypointsState=()=>{};ctx.saveStore=()=>{};ctx.renderMapWaypointsAll=()=>{};
+assert(ctx.waypointUpdate('eq',{lat:pos.lat,lon:pos.lon,name:'rename'}));assert(eqWp.utmSource);
+assert(ctx.waypointUpdate('eq',{lat:pos.lat,lon:pos.lon,utmSource:null}));assert(!eqWp.utmSource);
+eqWp.utmSource=origin;assert(ctx.waypointUpdate('eq',{lat:pos.lat,lon:pos.lon,utmSource:{...origin,zone:31}}));assert(!eqWp.utmSource);
+const center={lat:0,lon:pos.lon,utmSource:origin};ctx.state.viewCenter=center;ctx.state.mapCenterLat=12;ctx.state.mapCenterLon=13;ctx.state.lastPoint=wp;
+assert.strictEqual(ctx.dflightChooseMapAnchor(),center);
+center.lat=5;center.lon=0;assert.strictEqual(ctx.dflightChooseMapAnchor(),center);
+ctx.state.viewCenter={lat:null,lon:0};ctx.state.mapCenterLat=0;ctx.state.mapCenterLon=0;let fallback=ctx.dflightChooseMapAnchor();assert.strictEqual(fallback.lat,0);assert.strictEqual(fallback.lon,0);assert(!fallback.utmSource);
+ctx.state.mapCenterLat=null;ctx.state.mapCenterLon=null;assert.strictEqual(ctx.dflightChooseMapAnchor(),wp);
+ctx.state.lastPoint=null;assert.strictEqual(ctx.dflightChooseMapAnchor(),null);
+console.log(JSON.stringify({status:'pass',candidateSha256:crypto.createHash('sha256').update(raw).digest('hex'),inlineScripts:scripts.length,geotransVectors:compared,precisionTests:6,adjacentDoubleTests:2,staleChecks:9,zoneFallback:'pass'},null,2));
+
+

@@ -1,0 +1,715 @@
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -13751,6 +13751,7 @@
+       <summary data-i18n="sec.track">📍 Traccia a punti</summary>
+       <div class="section-body track-builder">
+         <p class="hint" style="color:var(--muted); font-size:.85rem" data-i18n="track.hint">Costruisci una traccia (polyline o poligono) aggiungendo punti uno alla volta: da Input automatico, cliccando sulla mini-mappa, da una lista, o importando GPX/KML/KMZ/GeoJSON. Esporta la traccia in qualsiasi formato.</p>
++        <p id="trackMgrsTransferHint" class="hint" role="note" data-i18n="res.mgrsTransferWarning"></p>
+         <div class="track-toolbar">
+           <div class="track-new-wrap">
+             <button type="button" id="btnTrackNew" class="btn btn-sm btn-primary btn-track-new"
+@@ -14070,6 +14071,7 @@
+       <summary data-i18n="waypointModal.title">Waypoint</summary>
+       <div class="section-body wp-manager">
+         <p class="hint" data-i18n="waypointModal.hint">Crea, modifica e gestisci i waypoint sulla mappa. Ogni waypoint ha nome, coordinata, icona NATO, colore e note opzionali.</p>
++        <p id="wpToolbarMgrsTransferHint" class="hint" role="note" data-i18n="res.mgrsTransferWarning"></p>
+         <div class="wp-toolbar">
+           <button type="button" id="wpAddBtn" class="btn btn-sm btn-primary" data-i18n="waypointModal.new" data-i18n-tip="tip.waypointModal.new">Nuovo waypoint</button>
+           <button type="button" id="wpFromConvertedBtn" class="btn btn-sm" disabled data-i18n="waypointModal.fromConverted" data-i18n-tip="tip.waypointModal.fromConverted">Da punto convertito</button>
+@@ -14080,6 +14082,7 @@
+           <input type="file" id="wpImportFile" class="file-input-hidden" accept=".geojson,.json,.xml,.cot,application/geo+json,application/json,application/xml,text/xml">
+         </div>
+         <div id="waypointEditor" class="wp-editor" hidden aria-live="polite">
++          <p id="wpMgrsTransferHint" class="hint" role="note" data-i18n="res.mgrsTransferWarning"></p>
+           <div class="wp-editor-head">
+             <strong id="wpEditorTitle" data-i18n="waypointModal.editor.newTitle">Nuovo waypoint</strong>
+             <div class="wp-editor-head-actions" role="group">
+@@ -14334,6 +14337,7 @@
+             <button type="button" id="favInlineConfirmCancel" class="btn btn-sm" data-i18n="track.unsavedCloseCancel">Annulla</button>
+           </div>
+         </div>
++        <p id="favMgrsTransferHint" class="hint" role="note" data-i18n="res.mgrsTransferWarning"></p>
+         <div id="favorites-list"></div>
+         <div class="actions" style="flex-wrap:wrap">
+           <button id="btnFavAdd" class="btn btn-primary" data-i18n="fav.add" data-i18n-tip="tip.favAdd">★ Aggiungi corrente</button>
+@@ -14761,6 +14765,7 @@
+   </div>
+   <div class="app-modal-body waypoint-fav-picker-body">
+     <p class="hint" data-i18n="waypointModal.favoritesPickerHint">Spunta uno o più preferiti e conferma. I waypoint troppo vicini a punti già presenti vengono saltati.</p>
++    <p id="favPickerMgrsTransferHint" class="hint" role="note" data-i18n="res.mgrsTransferWarning"></p>
+     <div id="waypointFavPickerList" class="waypoint-fav-picker-list" role="group" aria-live="polite"></div>
+     <p id="waypointFavPickerEmpty" class="hint" hidden role="status"></p>
+     <div class="waypoint-fav-picker-actions">
+@@ -18274,6 +18279,13 @@
+     "paste.detectedLL":"Formato rilevato: Lat/Lon",
+     "paste.detectedUTM":"Formato rilevato: UTM",
+     "paste.detectedMGRS":"Formato rilevato: MGRS",
++    "res.mgrsStorageFailed":"Salvataggio locale non riuscito: il riferimento resta solo nella sessione corrente. Copialo prima di uscire.",
++    "res.mgrsHistorySessionOnly":"La cronologia non è salvata tra sessioni. Copia il riferimento o salvalo nei preferiti.",
++    "res.mgrsTransferWarning":"Cronologia e preferiti conservano il riferimento. Waypoint, tracce, collegamenti e alcuni export conservano solo il punto rappresentativo. Copia il riferimento originale prima di procedere.",
++    "res.mgrsInput":"Riferimento MGRS inserito (cella; validità geodetica non verificata)",
++    "res.mgrsPoint":"MGRS del punto rappresentativo (zona naturale, 1 m)",
++    "res.mgrsInputPrecision":"Precisione del riferimento inserito",
++    "res.mgrsEscaped":"testo con escape: barra inversa raddoppiata; controlli: barra inversa + uXXXX",
+     "paste.detectedOLC":"Formato rilevato: Plus Code",
+     "paste.detectedBNG":"Formato rilevato: British National Grid (BNG)",
+     "paste.detectedSK42GK":"Formato rilevato: Gauss-Krüger SK42",
+@@ -20777,6 +20789,13 @@
+     "paste.detectedLL":"Detected format: Lat/Lon",
+     "paste.detectedUTM":"Detected format: UTM",
+     "paste.detectedMGRS":"Detected format: MGRS",
++    "res.mgrsStorageFailed":"Local save failed: the reference remains only in this session. Copy it before leaving.",
++    "res.mgrsHistorySessionOnly":"History is not saved between sessions. Copy the reference or save it to favorites.",
++    "res.mgrsTransferWarning":"History and favorites retain the reference. Waypoints, tracks, links and some exports retain only the representative point. Copy the original reference before proceeding.",
++    "res.mgrsInput":"Entered MGRS reference (cell; geodetic validity not verified)",
++    "res.mgrsPoint":"MGRS of representative point (natural zone, 1 m)",
++    "res.mgrsInputPrecision":"Precision of entered reference",
++    "res.mgrsEscaped":"escaped literal: backslash doubled; controls: backslash + uXXXX",
+     "paste.detectedOLC":"Detected format: Plus Code",
+     "paste.detectedBNG":"Detected format: British National Grid (BNG)",
+     "paste.detectedSK42GK":"Detected format: SK42 Gauss-Krüger",
+@@ -22933,6 +22952,13 @@
+     "paste.detectedLL":"Format détecté : Lat/Lon",
+     "paste.detectedUTM":"Format détecté : UTM",
+     "paste.detectedMGRS":"Format détecté : MGRS",
++    "res.mgrsStorageFailed":"Échec de l’enregistrement local : la référence reste seulement dans cette session. Copiez-la avant de quitter.",
++    "res.mgrsHistorySessionOnly":"L’historique n’est pas conservé entre les sessions. Copiez la référence ou ajoutez-la aux favoris.",
++    "res.mgrsTransferWarning":"L’historique et les favoris conservent la référence. Les points de cheminement, traces, liens et certains exports ne conservent que le point représentatif. Copiez la référence originale avant de continuer.",
++    "res.mgrsInput":"Référence MGRS saisie (cellule ; validité géodésique non vérifiée)",
++    "res.mgrsPoint":"MGRS du point représentatif (zone naturelle, 1 m)",
++    "res.mgrsInputPrecision":"Précision de la référence saisie",
++    "res.mgrsEscaped":"texte échappé : barre oblique inverse doublée ; contrôles : barre oblique inverse + uXXXX",
+     "paste.detectedOLC":"Format détecté : Plus Code",
+     "paste.detectedBNG":"Format détecté : British National Grid (BNG)",
+     "paste.detectedSK42GK":"Format détecté : Gauss-Krüger SK42",
+@@ -34063,16 +34089,34 @@
+   }
+ }
+ 
++// Encode the literal as XML-safe text without changing the shared XML writer.
++// Backslash is doubled; all C0 controls and forbidden XML 1.0 code points are
++// written as backslash-u plus four uppercase hex digits (UTF-16 code unit).
++// Escaping TAB/LF/CR also avoids XML line-ending normalization.
++function mgrsLiteralForExport(raw){
++  const slash = String.fromCharCode(92);
++  let out = "";
++  for (const c of String(raw)){
++    const cp = c.codePointAt(0);
++    if (c === slash) out += slash + slash;
++    else if (cp < 0x20 || (cp >= 0xD800 && cp <= 0xDFFF) || cp === 0xFFFE || cp === 0xFFFF)
++      out += slash + "u" + cp.toString(16).toUpperCase().padStart(4, "0");
++    else out += c;
++  }
++  return out;
++}
+ function buildSinglePointFromResult(){
+   const r = state.lastResult;
+   if (!r) return null;
+   const desc = [];
+   desc.push("DD: " + fmtDD(r.lat, r.lon).cardinal);
+   try { desc.push("UTM: " + fmtUTM(latLonToUTM(r.lat, r.lon))); } catch(_){}
+-  try { desc.push("MGRS: " + resultPointToMGRS(r.lat, r.lon, r.utmSource, 5)); } catch(_){}
++  const original = captureResultMgrsSource(r.lat, r.lon, r.mgrsSource);
++  if (original) desc.push(t("res.mgrsInput") + " [" + t("res.mgrsEscaped") + "]: " + mgrsLiteralForExport(original.raw) + " (" + original.cellSize + " m)");
++  try { desc.push((original ? t("res.mgrsPoint") : "MGRS") + ": " + resultPointToMGRS(r.lat, r.lon, r.utmSource, 5)); } catch(_){ if (original) desc.push(t("res.mgrsPoint") + ": " + t("res.outOfRange")); }
+   return {
+     lat: r.lat, lon: r.lon,
+-    name: (r.meta && r.meta.raw) ? String(r.meta.raw).slice(0, 80) : `Point ${round(r.lat,6)}, ${round(r.lon,6)}`,
++    name: (r.meta && r.meta.raw) ? (r.meta.type === "MGRS" ? mgrsLiteralForExport(String(r.meta.raw).slice(0, 80)) : String(r.meta.raw).slice(0, 80)) : `Point ${round(r.lat,6)}, ${round(r.lon,6)}`,
+     desc: desc.join(" | "),
+     datumExtras: state.exportDatumExtras ? buildDatumExtras(r.lat, r.lon) : null
+   };
+@@ -53325,9 +53369,73 @@
+   return `<button class="btn btn-sm btn-icon copy-btn" data-copy="${esc(text)}" data-label="${esc(label)}">${t("btn.copy")}</button>`;
+ }
+ 
++// Explicitly attached only by an MGRS input path; coordinate equality alone is
++// never evidence of origin. Reparse to detect stale or corrupted attachments.
++// This does not validate whether the cell intersects its zone and band.
++function captureResultMgrsSource(lat, lon, source){
++  if (!source || typeof source.raw !== "string") return null;
++  try {
++    const parsed = parseMGRS(source.raw);
++    const point = mgrsToLatLonExt(source.raw);
++    if (point.lat !== lat || point.lon !== lon || parsed.precision !== source.precision) return null;
++    return { raw: source.raw, precision: parsed.precision, cellSize: parsed.cellSize };
++  } catch (_) { return null; }
++}
++function mgrsSourceFromHistory(record){
++  if (!record || !record.mgrsSource) return null;
++  const source = record.mgrsSource;
++  const raw = source.rawField === "history.raw" ? record.raw : source.raw;
++  return captureResultMgrsSource(record.lat, record.lon, { raw, precision: source.precision });
++}
++function mgrsSourceFromFavorite(record){
++  if (!record || !record.mgrsSource) return null;
++  const source = record.mgrsSource;
++  const raw = source.rawField === "favorite.meta.raw" ? (record.meta && record.meta.raw) : source.raw;
++  return captureResultMgrsSource(record.lat, record.lon, { raw, precision: source.precision });
++}
++function mgrsHistoryMarker(source){ return source ? { rawField: "history.raw", precision: source.precision } : null; }
++function mgrsFavoriteMarker(source){ return source ? { rawField: "favorite.meta.raw", precision: source.precision } : null; }
++function showMgrsPanelTransferWarning(panelId){
++  const panel = document.getElementById(panelId);
++  if (!panel || !panel.open) return;
++  let note = panel.querySelector("[data-mgrs-panel-warning]");
++  if (!note){
++    note = document.createElement("p");
++    note.className = "hint";
++    note.setAttribute("role", "status");
++    note.setAttribute("data-mgrs-panel-warning", "");
++    note.setAttribute("data-i18n", "res.mgrsTransferWarning");
++    const head = panel.querySelector(".app-modal-head");
++    if (head) head.after(note); else panel.prepend(note);
++  }
++  note.textContent = t("res.mgrsTransferWarning");
++}
++function renderMgrsPersistenceWarnings(){
++  const root = document.getElementById("results"), result = state.lastResult;
++  if (!root) return;
++  const keys = result && result.mgrsSource && result.mgrsWarnings ? Object.values(result.mgrsWarnings) : [];
++  let note = root.querySelector("[data-mgrs-storage-warning]");
++  if (!keys.length){ if (note) note.remove(); return; }
++  if (!note){ note = document.createElement("p"); note.setAttribute("data-mgrs-storage-warning", ""); note.setAttribute("role", "alert"); root.prepend(note); }
++  note.textContent = keys.map(key => t(key)).join(" ");
++}
++function showMgrsPersistenceWarning(key, scope = "history"){
++  if (!state.lastResult || !state.lastResult.mgrsSource) return;
++  state.lastResult.mgrsWarnings = state.lastResult.mgrsWarnings || {};
++  state.lastResult.mgrsWarnings[scope] = key;
++  renderMgrsPersistenceWarnings();
++}
++function clearMgrsPersistenceWarning(scope){
++  if (state.lastResult && state.lastResult.mgrsWarnings) delete state.lastResult.mgrsWarnings[scope];
++  renderMgrsPersistenceWarnings();
++}
++function mgrsSourceFromInput(raw){
++  const p = parseMGRS(raw);
++  return { raw: String(raw), precision: p.precision };
++}
+ function renderResults(lat, lon, meta, opts = {}){
+   const skipHistory = opts.skipHistory === true;
+-  state.lastResult = { lat, lon, meta: meta || null, utmSource: captureResultUtmSource(lat, lon, opts.utmSource), when: Date.now() };
++  state.lastResult = { lat, lon, meta: meta || null, utmSource: captureResultUtmSource(lat, lon, opts.utmSource), mgrsSource: captureResultMgrsSource(lat, lon, opts.mgrsSource), mgrsWarnings: opts.mgrsWarnings ? Object.assign({}, opts.mgrsWarnings) : {}, _mgrsHistoryRecord: opts.mgrsHistoryRecord || null, when: Date.now() };
+   const root = document.getElementById("results");
+   root.innerHTML = "";
+ 
+@@ -53340,6 +53448,13 @@
+   // grouping them under one card with a tab switcher keeps related
+   // information together and frees vertical space for the mini-map.
+   let mgrsTab, utmTab;
++  const original = state.lastResult.mgrsSource;
++    const originalHtml = original ? `<div class="line sub">${esc(t("res.mgrsInput"))}</div>
++      <div class="line"><code style="white-space:pre-wrap">${esc(original.raw)}</code>
++      <button type="button" class="btn btn-sm copy-btn" data-copy="" data-mgrs-source-copy>${esc(t("btn.copy"))}</button></div>
++      <div class="line sub">${esc(t("res.mgrsInputPrecision"))}: ${original.cellSize} m</div>
++      <div class="line sub" role="note">${esc(t("res.mgrsTransferWarning"))}</div>
++      <div class="line sub">${esc(t("res.mgrsPoint"))}</div>` : "";
+   try {
+     const mg1m = resultPointToMGRS(lat, lon, state.lastResult.utmSource, 5); // 5+5 = 10 digits → 1 m precision
+     const band = latitudeBand(lat);
+@@ -53350,6 +53465,7 @@
+       label: t("res.mgrs"),
+       copyText: mg1m,
+       body: `
++        ${originalHtml}
+         <div class="line"><b><code>${esc(mg1m)}</code></b></div>
+         <div class="line sub">${t("res.band")}: ${band}</div>
+         ${cellInfo}`
+@@ -53357,7 +53473,7 @@
+   } catch(e){
+     mgrsTab = {
+       kind: "MGRS", label: t("res.mgrs"), copyText: "",
+-      body: `<div class="line sub">${esc(t("res.outOfRange"))}</div>`
++      body: `${originalHtml}<div class="line sub">${esc(t("res.outOfRange"))}</div>`
+     };
+   }
+   try {
+@@ -53390,7 +53506,10 @@
+     (["MGRS","UTM"].includes(state.primary))      ? state.primary :
+     (ct.GRID && ["MGRS","UTM"].includes(ct.GRID)) ? ct.GRID :
+     "MGRS";
+-  root.appendChild(makeMultiCard("GRID", [mgrsTab, utmTab], gridInitial));
++  const gridCard = makeMultiCard("GRID", [mgrsTab, utmTab], gridInitial);
++  const originalCopy = gridCard.querySelector("[data-mgrs-source-copy]");
++  if (originalCopy && state.lastResult.mgrsSource) originalCopy.setAttribute("data-copy", state.lastResult.mgrsSource.raw);
++  root.appendChild(gridCard);
+ 
+   // ---- Composite card: DD + DDM + DMS (geographic coordinates) ----------
+   const ddTab = {
+@@ -53612,7 +53731,8 @@
+     }
+   }
+ 
+-  if (!skipHistory) pushHistory({ lat, lon, meta, utmSource: state.lastResult.utmSource });
++  if (!skipHistory) pushHistory({ lat, lon, meta, utmSource: state.lastResult.utmSource, mgrsSource: state.lastResult.mgrsSource });
++  renderMgrsPersistenceWarnings();
+   renderGpsMetadata(meta);
+   try { if (typeof syncConvertResultWaypointBtn === "function") syncConvertResultWaypointBtn(); } catch(_){}
+   try { if (typeof syncWaypointModalToolbarUi === "function") syncWaypointModalToolbarUi(); } catch(_){}
+@@ -54147,8 +54267,8 @@
+  *   (used by size/layer toggles which just re-render).
+  */
+ function renderMiniMap(lat, lon, resetView = true, sourcePoint = null){
+-  state.lastPoint = { lat, lon, utmSource: captureResultUtmSource(lat, lon, sourcePoint && sourcePoint.utmSource) };
+-  if (resetView) state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, state.lastPoint.utmSource) };
++  state.lastPoint = { lat, lon, utmSource: captureResultUtmSource(lat, lon, sourcePoint && sourcePoint.utmSource), mgrsSource: captureResultMgrsSource(lat, lon, sourcePoint && sourcePoint.mgrsSource) };
++  if (resetView) state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, state.lastPoint.utmSource), mgrsSource: captureResultMgrsSource(lat, lon, state.lastPoint.mgrsSource) };
+   const root = document.getElementById("miniMap");
+   if (!root) return;
+   // Always render the tile map: when offline, hydrateMapTiles() will serve
+@@ -55305,7 +55425,7 @@
+     ++gen; // invalidate any in-flight place search
+     closeDropdown();
+     const meta = Object.assign({}, det, { source: "search-coord" });
+-    renderResults(det.lat, det.lon, meta, { skipReverse: true, utmSource: det.type === "UTM" ? det.utm : null });
++    renderResults(det.lat, det.lon, meta, { skipReverse: true, utmSource: det.type === "UTM" ? det.utm : null, mgrsSource: det.type === "MGRS" ? mgrsSourceFromInput(det.raw) : null });
+     setSearchFeedback(tIt("geo.coordOk") || "Punto da coordinata (calcolo locale).", "ok");
+     const mm = document.getElementById("miniMap");
+     if (mm) mm.scrollIntoView({ behavior: "smooth", block: "nearest" });
+@@ -58672,10 +58792,11 @@
+     const cam = mapZoomFocusCaptureCamera();
+     if (!Number.isFinite(cam.cameraLat) || !Number.isFinite(cam.cameraLon) || !Number.isFinite(cam.cameraZoom)) return false;
+     const pointUtmSource = captureResultUtmSource(lat, lon, sourcePoint && sourcePoint.utmSource);
++    const pointMgrsSource = captureResultMgrsSource(lat, lon, sourcePoint && sourcePoint.mgrsSource);
+     gMapZoomFocus = {
+       lat: Math.max(-85.05, Math.min(85.05, lat)),
+-      lon: pointUtmSource ? lon : normalizeLon(lon),
+-      utmSource: pointUtmSource, _pointRef: pointUtmSource ? sourcePoint : null,
++      lon: (pointUtmSource || pointMgrsSource) ? lon : normalizeLon(lon),
++      utmSource: pointUtmSource, mgrsSource: pointMgrsSource, _pointRef: (pointUtmSource || pointMgrsSource) ? sourcePoint : null,
+       source: String(source || ""),
+       cameraLat: cam.cameraLat,
+       cameraLon: cam.cameraLon,
+@@ -58691,6 +58812,7 @@
+   const p = f._pointRef;
+   const isLive = p && (!p.id || (Array.isArray(state.mapWaypoints) && state.mapWaypoints.includes(p)));
+   f.utmSource = isLive && p.lat === f.lat && p.lon === f.lon ? captureResultUtmSource(f.lat, f.lon, p.utmSource) : null;
++  f.mgrsSource = isLive && p.lat === f.lat && p.lon === f.lon ? captureResultMgrsSource(f.lat, f.lon, p.mgrsSource) : null;
+   return f;
+ }
+ function mapZoomFocusRefreshCameraSignature(){
+@@ -68697,7 +68819,7 @@
+     try {
+       const d = autoDetect(line);
+       if (d && Number.isFinite(d.lat) && Number.isFinite(d.lon)){
+-        parsed.push({ lat: d.lat, lon: d.lon, utmSource: d.type === "UTM" ? captureResultUtmSource(d.lat, d.lon, d.utm) : null });
++        parsed.push({ lat: d.lat, lon: d.lon, isMgrs: d.type === "MGRS", utmSource: d.type === "UTM" ? captureResultUtmSource(d.lat, d.lon, d.utm) : null });
+       } else { fail++; }
+     } catch(_){ fail++; }
+   }
+@@ -68717,7 +68839,7 @@
+   }
+   saveStore();
+   renderTrackAll();
+-  return { ok: parsed.length, fail };
++  return { ok: parsed.length, fail, mgrsNotTransferred: parsed.some(p => p.isMgrs) };
+ }
+ 
+ /** Add the currently converted point (from state.lastResult/lastPoint). */
+@@ -68740,7 +68862,11 @@
+     return;
+   }
+   const added = trackAddPoint(p.lat, p.lon, "", { from: "current" }, p.utmSource);
+-  if (added) setBadge("success", t("track.addedOk"));
++  if (added){
++    const source = captureResultMgrsSource(p.lat, p.lon, p.mgrsSource);
++    setBadge("success", t("track.addedOk") + (source ? " " + t("res.mgrsTransferWarning") : ""));
++    if (source) showMgrsPanelTransferWarning("trackModal");
++  }
+ }
+ 
+ /** Sync track map-add modes: banners, Strumenti button, map toolbar toggles. */
+@@ -69378,7 +69504,7 @@
+   const z = state.mapZoom || 11;
+   const r = document.getElementById("miniMap");
+   if (r && r.querySelector(".tile-map") && vc && Number.isFinite(vc.lat) && Number.isFinite(vc.lon))
+-    renderTileMap(vc.lat, vc.lon, z);
++    renderTileMap(vc.lat, vc.lon, z, vc);
+   try { if (typeof trackSyncPickModeUi === "function") trackSyncPickModeUi(); } catch(_){}
+ }
+ 
+@@ -71037,7 +71163,8 @@
+   if (!text.trim()) return;
+   const r = trackAddFromText(text);
+   if (r.ok > 0){
+-    setBadge("success", t("track.importedN").replace("{0}", r.ok));
++    setBadge("success", t("track.importedN").replace("{0}", r.ok) + (r.mgrsNotTransferred ? " " + t("res.mgrsTransferWarning") : ""));
++    if (r.mgrsNotTransferred) showMgrsPanelTransferWarning("trackModal");
+   } else {
+     setBadge("error", t("err.importFailed") || "Import failed.");
+   }
+@@ -71951,7 +72078,7 @@
+   const recenterBtn = root.querySelector(".tile-recenter");
+   if (recenterBtn){
+     recenterBtn.addEventListener("click", () => {
+-      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource) };
++      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource), mgrsSource: captureResultMgrsSource(lat, lon, pointSource && pointSource.mgrsSource) };
+       saveStore();
+       renderTileMap(lat, lon, zoom, pointSource);
+     });
+@@ -72260,7 +72387,7 @@
+     waypointRecenterMenu.addEventListener("click", (ev) => {
+       ev.stopPropagation();
+       state.mapWaypointToolbarMenuOpen = false;
+-      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource) };
++      state.viewCenter = { lat, lon, utmSource: captureResultUtmSource(lat, lon, pointSource && pointSource.utmSource), mgrsSource: captureResultMgrsSource(lat, lon, pointSource && pointSource.mgrsSource) };
+       saveStore();
+       renderTileMap(lat, lon, zoom, pointSource);
+     });
+@@ -73827,10 +73954,12 @@
+   if (!r) return;
+   const { lat, lon } = r;
+   const parts = [];
++  const original = captureResultMgrsSource(lat, lon, r.mgrsSource);
++  if (original) parts.push(t("res.mgrsInput") + ": " + original.raw + " (" + original.cellSize + " m)");
+   try {
+-    parts.push("MGRS: " + resultPointToMGRS(lat, lon, r.utmSource, 5));
++    parts.push((original ? t("res.mgrsPoint") : "MGRS") + ": " + resultPointToMGRS(lat, lon, r.utmSource, 5));
+   } catch(_){
+-    parts.push("MGRS: " + t("res.outOfRange"));
++    parts.push((original ? t("res.mgrsPoint") : "MGRS") + ": " + t("res.outOfRange"));
+   }
+   parts.push("DD: " + fmtDD(lat, lon).cardinal);
+   parts.push("DDM: " + fmtDDM(lat, lon));
+@@ -73855,18 +73984,30 @@
+     ? entry.meta.locality
+     : (state.lastLocality && Math.abs(state.lastLocality.lat - entry.lat) < 1e-4 && Math.abs(state.lastLocality.lon - entry.lon) < 1e-4
+       ? state.lastLocality : null);
+-  state.history.unshift({
++  const mgrsSource = captureResultMgrsSource(entry.lat, entry.lon, entry.mgrsSource);
++  const historySnapshot = mgrsSource ? state.history.slice() : null;
++  const historyRecord = {
+     lat: entry.lat, lon: entry.lon,
+     type: entry.meta && entry.meta.type ? entry.meta.type : "LatLon",
+-    raw:  entry.meta && entry.meta.raw  ? entry.meta.raw  : null,
++    raw: mgrsSource ? mgrsSource.raw : (entry.meta && entry.meta.raw ? entry.meta.raw : null),
+     utmSource: captureResultUtmSource(entry.lat, entry.lon, entry.utmSource),
++    mgrsSource: mgrsHistoryMarker(mgrsSource),
+     when: now.getTime(),
+     srcTag,
+     locality: loc ? (loc.display_name || "") : ""
+-  });
++  };
++  state.history.unshift(historyRecord);
++  if (mgrsSource && state.lastResult) state.lastResult._mgrsHistoryRecord = historyRecord;
+   if (state.history.length > 10) state.history.pop();
+   renderHistory();
+-  if (state.persist) saveStore();
++  if (state.persist){
++    if (saveStore() !== true && mgrsSource){
++      state.history = historySnapshot;
++      if (state.lastResult) state.lastResult._mgrsHistoryRecord = null;
++      renderHistory();
++      showMgrsPersistenceWarning("res.mgrsStorageFailed");
++    }
++  } else if (mgrsSource) showMgrsPersistenceWarning("res.mgrsHistorySessionOnly");
+ }
+ function renderHistory(){
+   const root = document.getElementById("history-list");
+@@ -73876,7 +74017,7 @@
+     if (!flt) return true;
+     let mgrs = "";
+     try { mgrs = resultPointToMGRS(h.lat, h.lon, h.utmSource, 5).toLowerCase(); } catch(_){}
+-    const blob = ((h.raw || "") + " " + mgrs).toLowerCase();
++    const blob = ((h.raw || (mgrsSourceFromHistory(h) || {}).raw || "") + " " + mgrs).toLowerCase();
+     return blob.indexOf(flt) !== -1;
+   });
+   if (!state.history.length){
+@@ -73903,7 +74044,7 @@
+     const locHtml = locStr ? `<div class="hist-loc" data-tip="${esc(locStr)}">📍 ${esc(locStr)}</div>` : "";
+     item.innerHTML = `
+       <div>
+-        <div>${srcHtml}${esc(h.raw || fmtDD(h.lat, h.lon).cardinal)}</div>
++        <div>${srcHtml}${esc(h.raw || (mgrsSourceFromHistory(h) || {}).raw || fmtDD(h.lat, h.lon).cardinal)}</div>
+         <div class="meta">${h.type} · ${when}</div>
+         ${locHtml}
+       </div>
+@@ -73914,7 +74055,7 @@
+   root.querySelectorAll("button[data-hist]").forEach(b => {
+     b.addEventListener("click", () => {
+       const h = state.history[parseInt(b.dataset.hist,10)];
+-      if (h) renderResults(h.lat, h.lon, { type: h.type, raw: h.raw }, { utmSource: h.utmSource });
++      if (h) renderResults(h.lat, h.lon, { type: h.type, raw: h.raw || (mgrsSourceFromHistory(h) || {}).raw || null }, { utmSource: h.utmSource, mgrsSource: mgrsSourceFromHistory(h) });
+     });
+   });
+ }
+@@ -73955,6 +74096,12 @@
+   return String(max + 1).padStart(3, "0");
+ }
+ /** Append one favorite without browser prompts (pattern checkbox still honored). */
++function mgrsFavoriteMeta(meta, source){
++  if (!source) return meta || null;
++  const copy = meta && typeof meta === "object" ? Object.assign({}, meta) : { type: "MGRS" };
++  copy.raw = source.raw;
++  return copy;
++}
+ function pushFavoriteEntrySilent(lat, lon, opts){
+   opts = opts || {};
+   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return false;
+@@ -73982,6 +74129,7 @@
+   if (!name) return false;
+   const notes = String(opts.notes || "").trim().slice(0, 500);
+   const createdAt = Date.now();
++  const favoriteSnapshot = captureResultMgrsSource(lat, lon, opts.mgrsSource) ? state.favorites.slice() : null;
+   state.favorites.unshift({
+     id: uid(),
+     name,
+@@ -73989,15 +74137,22 @@
+     lat, lon,
+     createdAt,
+     locality: loc ? (loc.display_name || "") : "",
+-    meta: opts.meta != null ? opts.meta : null,
+-    utmSource: captureResultUtmSource(lat, lon, opts.utmSource)
++    meta: mgrsFavoriteMeta(opts.meta, captureResultMgrsSource(lat, lon, opts.mgrsSource)),
++    utmSource: captureResultUtmSource(lat, lon, opts.utmSource),
++    mgrsSource: mgrsFavoriteMarker(captureResultMgrsSource(lat, lon, opts.mgrsSource))
+   });
+   if (state.favorites.length > 200) state.favorites.length = 200;
+   if (opts.deferPersist){
+     /* 6F.2: caller runs renderFavorites + saveStore once after batch inserts. */
+   } else {
+     renderFavorites();
+-    saveStore();
++    if (saveStore() !== true && favoriteSnapshot){
++      state.favorites = favoriteSnapshot;
++      renderFavorites();
++      showMgrsPersistenceWarning("res.mgrsStorageFailed", "favorite");
++      return false;
++    }
++    if (favoriteSnapshot) clearMgrsPersistenceWarning("favorite");
+   }
+   return true;
+ }
+@@ -74043,9 +74198,11 @@
+     notes: "",
+     meta: r.meta || null,
+     utmSource: r.utmSource,
++    mgrsSource: r.mgrsSource,
+     localityObj: loc
+   });
+   if (ok) flashPasteStatusLine(t("fav.savedFromConverter"), "ok");
++  else if (captureResultMgrsSource(r.lat, r.lon, r.mgrsSource)) flashPasteStatusLine(t("res.mgrsStorageFailed"), "err");
+ }
+ function favoriteAddFromWaypointRowId(wpId){
+   ensureMapWaypointsState();
+@@ -74096,6 +74253,7 @@
+   if (!name) return;
+   const notes = (window.prompt(t("fav.notesPrompt"), "") || "").trim().slice(0, 500);
+   const createdAt = Date.now();
++  const favoriteSnapshot = captureResultMgrsSource(r.lat, r.lon, r.mgrsSource) ? state.favorites.slice() : null;
+   state.favorites.unshift({
+     id: uid(),
+     name,
+@@ -74105,13 +74263,21 @@
+     // Persist the locality so exports / post-load displays don't need a
+     // fresh reverse lookup (and keep working offline).
+     locality: loc ? (loc.display_name || "") : "",
+-    meta: r.meta || null,
+-    utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource)
++    meta: mgrsFavoriteMeta(r.meta, captureResultMgrsSource(r.lat, r.lon, r.mgrsSource)),
++    utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource),
++    mgrsSource: mgrsFavoriteMarker(captureResultMgrsSource(r.lat, r.lon, r.mgrsSource))
+   });
+   // Keep at most 200 favorites to avoid storage bloat
+   if (state.favorites.length > 200) state.favorites.length = 200;
+   renderFavorites();
+-  saveStore();
++  if (saveStore() !== true && favoriteSnapshot){
++    state.favorites = favoriteSnapshot;
++    renderFavorites();
++    showMgrsPersistenceWarning("res.mgrsStorageFailed", "favorite");
++    flashPasteStatusLine(t("res.mgrsStorageFailed"), "err");
++    return;
++  }
++  if (favoriteSnapshot) clearMgrsPersistenceWarning("favorite");
+   // Give quick visual feedback in the pasteStatus line
+   const st = document.getElementById("pasteStatus");
+   if (st){ st.textContent = t("fav.saved"); st.className = "ok"; setTimeout(() => { if (st.textContent === t("fav.saved")) { st.textContent = ""; st.className = ""; } }, 2000); }
+@@ -74396,7 +74562,10 @@
+ function loadFavorite(id){
+   const f = state.favorites.find(x => x.id === id);
+   if (!f) return;
+-  renderResults(f.lat, f.lon, f.meta || { type:"LatLon", raw: f.name }, { utmSource: f.utmSource });
++  const source = mgrsSourceFromFavorite(f);
++  const meta = f.meta ? Object.assign({}, f.meta) : { type:"LatLon", raw: f.name };
++  if (source) meta.raw = source.raw;
++  renderResults(f.lat, f.lon, meta, { utmSource: f.utmSource, mgrsSource: source });
+   window.scrollTo({ top: 0, behavior: "smooth" });
+ }
+ 
+@@ -74417,7 +74586,7 @@
+   const favSource = captureResultUtmSource(f.lat, f.lon, f.utmSource);
+   const ok = waypointAdd(f.lat, favSource ? f.lon : normalizeLon(f.lon), nm, meta, { utmSource: favSource });
+   if (ok){
+-    try { setBadge("success", t("fav.addWaypointOk")); } catch(_){}
++    try { setBadge("success", t("fav.addWaypointOk") + (mgrsSourceFromFavorite(f) ? " " + t("res.mgrsTransferWarning") : "")); } catch(_){}
+   } else {
+     try { setBadge("info", t("fav.addWaypointDup")); } catch(_){}
+   }
+@@ -76277,7 +76446,7 @@
+   if (Array.isArray(data.history)) state.history = data.history.slice(0, 30);
+   if (Array.isArray(data.favorites)) {
+     state.favorites = data.favorites.map(f => ({
+-      id: f.id || uid(), name: f.name || "?", lat: f.lat, lon: f.lon, createdAt: f.createdAt || Date.now(), meta: f.meta || null, utmSource: captureResultUtmSource(f.lat, f.lon, f.utmSource),
++      id: f.id || uid(), name: f.name || "?", lat: f.lat, lon: f.lon, createdAt: f.createdAt || Date.now(), meta: mgrsFavoriteMeta(f.meta, mgrsSourceFromFavorite(f)), utmSource: captureResultUtmSource(f.lat, f.lon, f.utmSource), mgrsSource: mgrsFavoriteMarker(mgrsSourceFromFavorite(f)),
+       notes: (typeof f.notes === "string" ? f.notes : "").slice(0, 500)
+     })).slice(0, 200);
+   }
+@@ -76854,7 +77023,7 @@
+       lat = mg.lat; lon = mg.lon;
+       meta = { type:"MGRS", raw: txt, mgrs: mg };
+     }
+-    renderResults(lat, lon, meta, { utmSource: meta && meta.type === "UTM" ? meta.utm : null });
++    renderResults(lat, lon, meta, { utmSource: meta && meta.type === "UTM" ? meta.utm : null, mgrsSource: meta && meta.type === "MGRS" ? mgrsSourceFromInput(meta.raw) : null });
+   } catch(e){
+     showError(translateError(e));
+   }
+@@ -76877,7 +77046,7 @@
+     st.textContent = t(lbl);
+     st.className = "ok";
+     setBadge(det.type, fmtDD(det.lat, det.lon).cardinal);
+-    renderResults(det.lat, det.lon, det, { utmSource: det.type === "UTM" ? det.utm : null });
++    renderResults(det.lat, det.lon, det, { utmSource: det.type === "UTM" ? det.utm : null, mgrsSource: det.type === "MGRS" ? mgrsSourceFromInput(s) : null });
+   } catch(e){
+     // Nothing recognized as a coordinate. A failed coordinate attempt is a
+     // local error — never offered as an address. Real place text still asks
+@@ -77068,7 +77237,7 @@
+   // Re-render last result so labels are localized (no duplicate history entry)
+   if (state.lastResult){
+     const r = state.lastResult;
+-    renderResults(r.lat, r.lon, r.meta, { skipHistory: true, utmSource: r.utmSource });
++    renderResults(r.lat, r.lon, r.meta, { skipHistory: true, utmSource: r.utmSource, mgrsSource: r.mgrsSource, mgrsWarnings: r.mgrsWarnings, mgrsHistoryRecord: r._mgrsHistoryRecord });
+   }
+   if (typeof syncOfflineLayerSelect === "function") syncOfflineLayerSelect();
+   if (typeof updatePrecacheEstimate === "function") updatePrecacheEstimate();
+@@ -79298,11 +79467,14 @@
+   // Persist toggle
+   document.getElementById("persistToggle").addEventListener("change", (e) => {
+     state.persist = !!e.target.checked;
+-    if (!state.persist){
+-      // When disabling persistence, wipe history from storage immediately
+-      saveStore();
+-    } else {
+-      saveStore();
++    // Settings can change while the current MGRS result is visible. Only the
++    // history record explicitly created for that result is eligible here.
++    const saved = saveStore() === true;
++    const r = state.lastResult, h = r && r._mgrsHistoryRecord;
++    if (r && r.mgrsSource && h && state.history.includes(h)){
++      if (!saved) showMgrsPersistenceWarning("res.mgrsStorageFailed", "history");
++      else if (!state.persist) showMgrsPersistenceWarning("res.mgrsHistorySessionOnly", "history");
++      else clearMgrsPersistenceWarning("history");
+     }
+   });
+ 
+@@ -101466,7 +101638,7 @@
+   const r = state.lastResult;
+   if (!r || !Number.isFinite(r.lat) || !Number.isFinite(r.lon)) return null;
+   if (r.lat < -90 || r.lat > 90 || r.lon < -180 || r.lon > 180) return null;
+-  return { lat: r.lat, lon: r.lon, meta: r.meta || null, utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource), when: r.when };
++  return { lat: r.lat, lon: r.lon, meta: r.meta || null, utmSource: captureResultUtmSource(r.lat, r.lon, r.utmSource), mgrsSource: captureResultMgrsSource(r.lat, r.lon, r.mgrsSource), when: r.when };
+ }
+ function hasCurrentConvertedPointForWaypoint(){
+   return !!getCurrentConvertedPointForWaypoint();
+@@ -102190,8 +102362,9 @@
+     if (!notes) delete meta.notes;
+     waypointAdd(lat, lon, name, meta, { utmSource: parsed.utmSource });
+   }
+-  try { setBadge("success", t("waypointModal.savedOk")); } catch(_){}
++  try { setBadge("success", t("waypointModal.savedOk") + (!original && parsed.type === "MGRS" ? " " + t("res.mgrsTransferWarning") : "")); } catch(_){}
+   closeWaypointEditor();
++  if (!original && parsed.type === "MGRS") showMgrsPanelTransferWarning("waypointModal");
+ }
+ 
+ /** Patch an existing waypoint. Used by the modal editor save flow. */
+@@ -102441,7 +102614,8 @@
+   }
+   const ok = waypointAdd(pt.lat, pt.lon, name, meta, { utmSource: pt.utmSource });
+   if (ok){
+-    try { setConvertWaypointFeedback("ok", t("convert.waypointAdded")); } catch(_){}
++    try { setConvertWaypointFeedback("ok", t("convert.waypointAdded") + (pt.mgrsSource ? " " + t("res.mgrsTransferWarning") : "")); } catch(_){}
++    if (pt.mgrsSource) showMgrsPanelTransferWarning("waypointModal");
+   } else {
+     try { setConvertWaypointFeedback("info", t("waypointModal.fromConvertedDup")); } catch(_){}
+   }
+@@ -102512,7 +102686,7 @@
+   const ids = [...mount.querySelectorAll(".wp-fav-pick-cb:checked")].map(cb => String(cb.getAttribute("data-fav-id") || "")).filter(Boolean);
+   if (!ids.length) return;
+   ensureMapWaypointsState();
+-  let added = 0, skipped = 0, dup = 0;
++  let added = 0, skipped = 0, dup = 0, mgrsNotTransferred = false;
+   const cap = 200;
+   for (const fid of ids){
+     if (state.mapWaypoints.length >= cap) break;
+@@ -102523,23 +102697,44 @@
+     const meta = { from: "favorites-import", icon: "hq", color: "#2563eb" };
+     if (f.notes && String(f.notes).trim()) meta.notes = String(f.notes).slice(0, 500);
+     const ok = waypointAdd(f.lat, f.lon, name, meta, { utmSource: f.utmSource });
+-    if (ok) added++; else skipped++;
++    if (ok){ added++; if (mgrsSourceFromFavorite(f)) mgrsNotTransferred = true; } else skipped++;
+   }
+   try {
+     const msg = String(t("waypointModal.favoritesImportResult"))
+       .replace("{0}", String(added)).replace("{1}", String(dup)).replace("{2}", String(skipped));
+-    setBadge(added ? "success" : "info", msg);
++    setBadge(added ? "success" : "info", msg + (mgrsNotTransferred ? " " + t("res.mgrsTransferWarning") : ""));
+   } catch(_){}
+   closeWaypointFromFavoritesDialog();
++  if (mgrsNotTransferred) showMgrsPanelTransferWarning("waypointModal");
+ }
+ 
+ /** Center the hub tile map on lat/lon without touching `lastResult` or `lastPoint`
+  *  (uses `renderTileMap` + `viewCenter` only). */
++function mgrsFavoriteMapAnchor(favorite){
++  const initial = mgrsSourceFromFavorite(favorite);
++  if (!initial) return favorite;
++  const originalLat = favorite.lat, originalLon = favorite.lon;
++  let revoked = false;
++  function liveSource(){
++    if (revoked) return null;
++    if (!Array.isArray(state.favorites) || !state.favorites.includes(favorite) || favorite.lat !== originalLat || favorite.lon !== originalLon){ revoked = true; return null; }
++    const current = mgrsSourceFromFavorite(favorite);
++    if (!current || current.raw !== initial.raw || current.precision !== initial.precision){ revoked = true; return null; }
++    return current;
++  }
++  return {
++    get lat(){ liveSource(); return favorite.lat; },
++    get lon(){ liveSource(); return favorite.lon; },
++    get mgrsSource(){ return liveSource(); },
++    get utmSource(){ return liveSource() ? captureResultUtmSource(favorite.lat, favorite.lon, favorite.utmSource) : null; }
++  };
++}
+ function gisMapCenterOnLatLon(lat, lon, opts){
+   opts = opts || {};
+   try { validateLatLon(lat, lon); } catch(_){ return false; }
+   const inputSource = captureResultUtmSource(lat, lon, opts.sourcePoint && opts.sourcePoint.utmSource);
+-  const latC = Math.max(-85.05, Math.min(85.05, lat)), lonC = inputSource ? lon : normalizeLon(lon);
++  const inputMgrs = captureResultMgrsSource(lat, lon, opts.sourcePoint && opts.sourcePoint.mgrsSource);
++  const latC = Math.max(-85.05, Math.min(85.05, lat)), lonC = (inputSource || inputMgrs) ? lon : normalizeLon(lon);
+   let z = state.mapZoom || 11;
+   if (!opts.skipZoomBump && z < 12) z = 14;
+   const root = document.getElementById("miniMap");
+@@ -102548,7 +102743,8 @@
+   try { const u = gisMapUsableRect(root); if (u && !u.fallback) cam = gisMapOffsetVC(root, latC, lonC, z, u); } catch(_){}
+   state.viewCenter = { lat: cam.lat, lon: cam.lon };
+   state.mapZoom = z;
+-  try { renderTileMap(latC, lonC, z, inputSource ? opts.sourcePoint : null); return true; } catch(_){ return false; }
++  const usableMgrs = captureResultMgrsSource(latC, lonC, opts.sourcePoint && opts.sourcePoint.mgrsSource);
++  try { renderTileMap(latC, lonC, z, (inputSource || usableMgrs) ? opts.sourcePoint : null); return true; } catch(_){ return false; }
+ }
+ 
+ /** Center the tile-map on the given waypoint. */
+@@ -102566,7 +102762,11 @@
+ function favoriteMapCenterTo(id){
+   const fav = state.favorites.find(x => x.id === id);
+   if (!fav || !Number.isFinite(fav.lat) || !Number.isFinite(fav.lon)) return;
+-  if (gisMapCenterOnLatLon(fav.lat, fav.lon, { sourcePoint: fav })){
++  // Selecting another favorite cancels the old anchor even at identical coordinates.
++  try { mapZoomFocusClear(); } catch(_){}
++  const anchor = mgrsFavoriteMapAnchor(fav);
++  if (gisMapCenterOnLatLon(fav.lat, fav.lon, { sourcePoint: anchor })){
++    if (anchor !== fav){ try { mapZoomFocusSet(fav.lat, fav.lon, "favorite", anchor); } catch(_){} }
+     try { setBadge("success", t("map.noticeCenteredOnPoint")); } catch(_){}
+   }
+ }
