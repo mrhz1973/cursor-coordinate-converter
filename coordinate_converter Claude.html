@@ -12751,6 +12751,97 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     height:min(88dvh, calc(100dvh - env(safe-area-inset-top, 0px)));
   }
 }
+
+/* GIS mobile: compact navigation, recover map height, and keep a small toolbar handle reachable. */
+.gis-mobile-landscape-control,
+.gis-mobile-toolbar-toggle,
+.gis-mobile-fullscreen-exit{display:none;}
+.gis-mobile-fullscreen-exit[hidden]{display:none!important;}
+body.gis-mode.gis-fullscreen-active > header,
+body.gis-mode.gis-fullscreen-active > footer{display:none!important;}
+body.gis-mode.gis-fullscreen-active #gisMapMount{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;min-height:0!important;
+  z-index:1!important;overflow:visible!important;background:#0a1a2d;
+}
+body.gis-mode.gis-fullscreen-active #gisMapMount > #miniMap{position:relative;width:100%;height:100%;}
+body.gis-mode.gis-fullscreen-active .gis-mobile-fullscreen-exit{
+  position:absolute;display:grid!important;place-items:center;left:max(8px,env(safe-area-inset-left,0px));
+  top:max(8px,env(safe-area-inset-top,0px));z-index:9999;width:38px;height:38px;padding:0;
+  border:1px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(15,23,42,.88);color:#fff;
+  font:700 18px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.4);cursor:pointer;
+}
+@media (max-width:1024px){
+  body.gis-mode #appTopbar .gis-mobile-landscape-control{display:inline-flex!important;}
+  body.gis-mode #appTopbar .gis-mobile-landscape-control{width:38px;min-width:38px;height:38px;min-height:38px;padding:0;justify-content:center;}
+}
+@media (max-width:1024px) and (max-height:600px) and (orientation:landscape){
+  body.gis-mode{--gis-mobile-header-est:48px;--gis-map-ctrl-top:4px;--gis-footer-reserve:0px!important;}
+  body.gis-mode>footer{display:none!important;}
+  body.gis-mode>header{position:sticky;height:48px;box-sizing:border-box;transition:height .18s ease;padding:2px max(6px,env(safe-area-inset-left,0px));overflow:visible;}
+  body.gis-mode .header-inner{
+    position:relative;display:block;height:44px;min-height:0;padding:0;margin:0;max-width:none;
+  }
+  body.gis-mode .header-inner>.header-start-spacer{display:none;}
+  body.gis-mode .header-inner>.brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;width:max-content;min-width:0;max-width:35vw;align-items:center;justify-content:center;min-height:0;margin:0;pointer-events:none;z-index:2;}
+  body.gis-mode .header-inner>.brand h1{font-size:clamp(.74rem,1.6vw,.86rem);line-height:1;white-space:nowrap;}
+  body.gis-mode .header-inner>.brand p{display:none;}
+  body.gis-mode .header-inner>.header-ctrls{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;flex:0 0 auto;align-self:center;flex-wrap:nowrap;gap:4px;margin:0;order:0;}
+  body.gis-mode .net-status{min-height:28px;padding:0 7px;font-size:.7rem;gap:5px;border-radius:8px;}
+  body.gis-mode .net-status .net-dot{width:9px;height:9px;}
+  body.gis-mode .header-ctrls .hdr-iconbar{padding:1px;gap:1px;}
+  body.gis-mode .header-ctrls .hdr-icon-btn{width:32px;height:30px;font-size:1rem;}
+  body.gis-mode .header-inner>#appTopbar{position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;flex:0 0 auto;width:max-content;min-width:0;max-width:calc(100% - 190px);align-self:center;justify-self:start;order:0;}
+  body.gis-mode #appTopbar .app-topbar-spacer{display:none;}
+  body.gis-mode #appTopbar .app-topbar-actions{
+    display:flex;width:max-content;height:38px;min-width:0;max-width:100%;flex:0 0 auto;flex-wrap:nowrap!important;justify-content:flex-start;
+    gap:3px;overflow-x:auto!important;overflow-y:hidden!important;padding:0 2px;box-sizing:border-box;scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+  }
+  body.gis-mode #appTopbar .app-topbar-actions::-webkit-scrollbar{display:none;}
+  body.gis-mode #appTopbar .app-topbar-tabs{display:flex;flex:0 0 auto;max-width:none;min-width:0;overflow-x:visible;overflow-y:visible;gap:3px;padding:0;}
+  body.gis-mode #appTopbar .app-topbar-btn,
+  body.gis-mode #appTopbar .app-tab,
+  body.gis-mode #appTopbar .gis-export-menu summary{
+    flex:0 0 38px;width:38px;min-width:38px;height:36px;min-height:36px;padding:0 4px;gap:0;border-radius:8px;font-size:0;
+  }
+  body.gis-mode #appTopbar .app-tab-ico{font-size:15px;line-height:1;}
+  body.gis-mode #appTopbar #topbarConvertBtn>span[aria-hidden],
+  body.gis-mode #appTopbar #btnTopbarTools>span[aria-hidden],
+  body.gis-mode #appTopbar #gisExportSummary>span:first-child,
+  body.gis-mode #appTopbar .gis-mobile-fullscreen-icon{font-size:15px;line-height:1;}
+  body.gis-mode #appTopbar .app-topbar-cta-label,
+  body.gis-mode #appTopbar .app-tab-lbl,
+  body.gis-mode #appTopbar #btnTopbarTools>span:not([aria-hidden]),
+  body.gis-mode #appTopbar #gisExportSummary>span:not(:first-child){
+    position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;
+    clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+  }
+  body.gis-mode .header-inner>.brand h1{margin:0;padding:0 5px;pointer-events:none;}
+  body.gis-mode .header-ctrls>#btnTopbarTools,
+  body.gis-mode .header-ctrls>#gisExportMenu summary{
+    display:inline-flex!important;flex:0 0 32px;width:32px;min-width:32px;height:30px;min-height:30px;justify-content:center;
+    padding:0;gap:0;border-radius:8px;font-size:0;
+  }
+  body.gis-mode .header-ctrls>#gisExportMenu{display:flex;flex:0 0 auto;position:relative;}
+  body.gis-mode .header-ctrls>#btnTopbarTools>span[aria-hidden],
+  body.gis-mode .header-ctrls>#gisExportMenu summary>span:first-child{font-size:14px;line-height:1;}
+  body.gis-mode .header-ctrls>#btnTopbarTools>span:not([aria-hidden]),
+  body.gis-mode .header-ctrls>#gisExportMenu summary>span:not(:first-child){
+    position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;
+    clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+  }
+  body.gis-mode .gis-mobile-toolbar-toggle{
+    display:grid;position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);place-items:center;width:36px;height:20px;
+    padding:0;border:1px solid #7694c9;border-top:0;border-radius:0 0 9px 9px;background:#263d68;color:#fff;
+    box-shadow:0 3px 8px rgba(0,0,0,.28);font:700 13px/1 system-ui,sans-serif;z-index:35;cursor:pointer;
+  }
+  .gis-map-mount{height:calc(100dvh - var(--gis-mobile-header-est) - env(safe-area-inset-bottom,0px));min-height:150px;transition:height .18s ease;}
+  body.gis-mode.gis-mobile-toolbar-collapsed{--gis-mobile-header-est:22px;}
+  body.gis-mode.gis-mobile-toolbar-collapsed>header{height:22px;min-height:22px;padding:0 4px;overflow:visible;}
+  body.gis-mode.gis-mobile-toolbar-collapsed>.header-inner,
+  body.gis-mode.gis-mobile-toolbar-collapsed>header>.header-inner{display:none!important;}
+}
+
 /* #endregion CSS — GIS FLOATING PANELS AND DIALOGS */
 </style>
 </head>
@@ -12880,6 +12971,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
       </div>
     </div>
   </div>
+
+  <button id="gisMobileToolbarToggle" class="gis-mobile-toolbar-toggle" type="button" aria-controls="appTopbar" aria-expanded="true" data-i18n-tip="gis.mobile.toolbarHide" data-i18n-aria="gis.mobile.toolbarHide"><span aria-hidden="true">⌃</span></button>
 </header>
 
 <!-- ============ GIS TOPBAR (tab bar + CTAs) ============
@@ -12890,7 +12983,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-topbar-spacer" aria-hidden="true"></div>
   <div class="app-topbar-actions">
     <button id="topbarConvertBtn" class="app-topbar-btn" type="button"
-          data-i18n="cta.convert" data-i18n-tip="tip.convertCta">
+          data-i18n-tip="tip.convertCta" data-i18n-aria="cta.convert">
     <span aria-hidden="true">🧮</span> <span class="app-topbar-cta-label" data-i18n="cta.convert">Converti</span>
   </button>
     <div class="app-topbar-tabs" role="tablist" aria-label="Pannelli mappa">
@@ -12917,12 +13010,13 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   </div>
     <button id="btnTopbarTools" class="app-topbar-btn" type="button" aria-controls="toolsDrawer" aria-expanded="false" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></button>
     <details class="gis-export-menu" id="gisExportMenu">
-      <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></summary>
+      <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true" data-i18n-tip="gis.mobile.export" data-i18n-aria="gis.mobile.export"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></summary>
       <div class="gis-export-options">
         <button type="button" id="gisExportPrint"><span aria-hidden="true">🖨️</span> Stampa / salva PDF</button>
         <button type="button" id="gisExportJpg"><span aria-hidden="true">📷</span> Esporta vista JPG</button>
       </div>
     </details>
+    <button id="gisMobileFullscreenBtn" class="app-topbar-btn gis-mobile-landscape-control" type="button" aria-expanded="false" data-i18n-tip="gis.mobile.fullscreen" data-i18n-aria="gis.mobile.fullscreen"><span class="gis-mobile-fullscreen-icon" aria-hidden="true">⛶</span></button>
   </div>
 </nav>
 
@@ -12935,7 +13029,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
        In gis-mode the #miniMap is reparented here at init so the
        map becomes the primary canvas. In classic-mode this div
        stays empty and #miniMap remains in its maps-col aside. -->
-  <div id="gisMapMount" class="gis-map-mount" hidden></div>
+  <div id="gisMapMount" class="gis-map-mount" hidden><button id="gisMobileFullscreenExit" class="gis-mobile-fullscreen-exit" type="button" hidden aria-expanded="true" data-i18n-tip="gis.mobile.fullscreenExit" data-i18n-aria="gis.mobile.fullscreenExit"><span class="gis-mobile-fullscreen-icon" aria-hidden="true">⤢</span></button></div>
 
   <!-- Ingressi coordinate: priorità 1 automatico, 2 manuale, 3 geocoding -->
   <!-- ============ AUTOMATIC INPUT (paste / detect) ============ -->
@@ -16084,7 +16178,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 272 — layout mobile e menu Layer</h4><ul><li>Il menu Layer si apre senza ridisegnare la mappa, riducendo lampeggi e ricaricamenti sui telefoni.</li><li>In orizzontale icone di navigazione, titolo e comandi sono allineati su un'unica riga; Strumenti ed Esporta si trovano a destra, accanto a Online e Impostazioni. Il footer scompare per lasciare più spazio alla mappa.</li></ul><h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -17368,6 +17462,11 @@ const I18N = {
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Converti",
+    "gis.mobile.fullscreen":"Schermo intero",
+    "gis.mobile.fullscreenExit":"Esci da schermo intero",
+    "gis.mobile.export":"Esporta",
+    "gis.mobile.toolbarHide":"Nascondi barra",
+    "gis.mobile.toolbarShow":"Mostra barra",
     "convert.title":"Convertitore — inserisci coordinate",
     "menu.otherTools":"Apri nello spazio sotto",
     "tabs.track":"Traccia",
@@ -19878,6 +19977,11 @@ const I18N = {
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Convert",
+    "gis.mobile.fullscreen":"Full screen",
+    "gis.mobile.fullscreenExit":"Exit full screen",
+    "gis.mobile.export":"Export",
+    "gis.mobile.toolbarHide":"Hide toolbar",
+    "gis.mobile.toolbarShow":"Show toolbar",
     "convert.title":"Converter — enter coordinates",
     "menu.otherTools":"Open in the panel below",
     "tabs.track":"Track",
@@ -22101,6 +22205,11 @@ const I18N = {
     "app.titleSig":"Marty",
     "app.subtitle":"DD · DDM · DMS · UTM · MGRS — WGS84",
     "cta.convert":"Convertir",
+    "gis.mobile.fullscreen":"Plein écran",
+    "gis.mobile.fullscreenExit":"Quitter le plein écran",
+    "gis.mobile.export":"Exporter",
+    "gis.mobile.toolbarHide":"Masquer la barre",
+    "gis.mobile.toolbarShow":"Afficher la barre",
     "convert.title":"Convertisseur — saisir les coordonnées",
     "menu.otherTools":"Ouvrir dans le panneau ci-dessous",
     "tabs.track":"Trace",
@@ -24387,6 +24496,14 @@ function basemapMenuOutsideClose(ev){
   if (!state.mapBasemapMenuOpen) return;
   if (ev.target.closest && ev.target.closest('[data-role="basemap-layers-root"]')) return;
   state.mapBasemapMenuOpen = false;
+  if (document.body.classList.contains("gis-mode")){
+    const root = document.querySelector("#gisMapMount .tile-map");
+    const menu = root && root.querySelector('[data-role="basemap-menu"]');
+    const btn = root && root.querySelector('[data-role="basemap-menu-toggle"]');
+    if (menu) menu.hidden = true;
+    if (btn) btn.setAttribute("aria-expanded", "false");
+    return;
+  }
   if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
 }
 
@@ -25645,10 +25762,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-IOS-LAYER-DISMISS-A";
-const APP_BUILD_DETAIL = "Menu Layer: evita la chiusura da eventi mouse compatibili con il tocco.";
+const APP_BUILD_ID = "GIS-MOBILE-LANDSCAPE-UX-A";
+const APP_BUILD_DETAIL = "Layer senza ridisegno della mappa; barra mobile compatta e vista espandibile.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 271;
+const APP_BUILD_NUM = 272;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -71256,6 +71373,13 @@ function renderTileMap(lat, lon, zoom){
         state.mapTrackToolbarMenuOpen = false;
       }
       state.mapBasemapMenuOpen = next;
+      if (document.body.classList.contains("gis-mode")){
+        const menu = root.querySelector('[data-role="basemap-menu"]');
+        if (menu) menu.hidden = !next;
+        bmToggle.setAttribute("aria-expanded", next ? "true" : "false");
+        if (next) positionBasemapMenuGis(root);
+        return;
+      }
       renderTileMap(lat, lon, zoom);
     });
   }
@@ -79822,6 +79946,109 @@ function bindGisFooterReserve(){
     }
   } catch(_){}
 }
+function gisMobileUiText(key, fallback){
+  try { const value = typeof t === "function" ? t(key) : ""; if (value && value !== key) return String(value); } catch(_){}
+  return fallback;
+}
+function gisSetMobileToolbarCollapsed(collapsed){
+  if (!document.body.classList.contains("gis-mode")) return;
+  const next = !!collapsed;
+  document.body.classList.toggle("gis-mobile-toolbar-collapsed", next);
+  const btn = document.getElementById("gisMobileToolbarToggle");
+  if (!btn) return;
+  const key = next ? "gis.mobile.toolbarShow" : "gis.mobile.toolbarHide";
+  const label = gisMobileUiText(key, next ? "Mostra barra" : "Nascondi barra");
+  btn.setAttribute("aria-expanded", next ? "false" : "true");
+  btn.setAttribute("aria-label", label);
+  btn.setAttribute("data-tip", label);
+  btn.title = label;
+  const icon = btn.querySelector("span[aria-hidden]");
+  if (icon) icon.textContent = next ? "⌄" : "⌃";
+}
+function gisSetCompactLandscapeHeader(compact){
+  const actions = document.querySelector("#appTopbar .app-topbar-actions");
+  const headerInner = document.querySelector("body.gis-mode .header-inner");
+  const controls = headerInner && headerInner.querySelector(":scope > .header-ctrls");
+  const brand = headerInner && (headerInner.querySelector(":scope > .brand") || document.querySelector("#appTopbar .brand"));
+  const tools = document.getElementById("btnTopbarTools");
+  const exportMenu = document.getElementById("gisExportMenu");
+  const fullscreen = document.getElementById("gisMobileFullscreenBtn");
+  const netStatus = document.getElementById("netStatus");
+  if (!actions || !headerInner || !controls || !brand || !tools || !exportMenu) return;
+  if (compact){
+    if (tools.parentElement !== controls) controls.insertBefore(tools, netStatus || controls.firstChild);
+    if (exportMenu.parentElement !== controls) controls.insertBefore(exportMenu, netStatus || null);
+    if (brand.parentElement !== headerInner) headerInner.insertBefore(brand, controls);
+    return;
+  }
+  if (tools.parentElement !== actions) actions.insertBefore(tools, fullscreen || null);
+  if (exportMenu.parentElement !== actions) actions.insertBefore(exportMenu, fullscreen || null);
+  if (brand.parentElement !== headerInner) headerInner.insertBefore(brand, controls);
+}
+function gisSyncFullscreenUi(){
+  const nativeFullscreen = !!document.fullscreenElement;
+  const fallbackFullscreen = document.body.classList.contains("gis-fullscreen-fallback");
+  const active = nativeFullscreen || fallbackFullscreen;
+  document.body.classList.toggle("gis-fullscreen-active", active);
+  const buttons = [document.getElementById("gisMobileFullscreenBtn"), document.getElementById("gisMobileFullscreenExit")].filter(Boolean);
+  const label = gisMobileUiText(active ? "gis.mobile.fullscreenExit" : "gis.mobile.fullscreen", active ? "Esci da schermo intero" : "Schermo intero");
+  buttons.forEach(btn => {
+    btn.setAttribute("aria-expanded", active ? "true" : "false");
+    btn.setAttribute("aria-label", label);
+    btn.setAttribute("data-tip", label);
+    btn.title = label;
+    const icon = btn.querySelector(".gis-mobile-fullscreen-icon");
+    if (icon) icon.textContent = active ? "⤢" : "⛶";
+  });
+  const exit = document.getElementById("gisMobileFullscreenExit");
+  if (exit) exit.hidden = !active;
+}
+async function gisToggleMobileFullscreen(){
+  if (document.fullscreenElement){
+    try { await document.exitFullscreen(); } catch(_){}
+    gisSyncFullscreenUi();
+    return;
+  }
+  if (document.body.classList.contains("gis-fullscreen-fallback")){
+    document.body.classList.remove("gis-fullscreen-fallback", "gis-fullscreen-active");
+    gisSyncFullscreenUi();
+    return;
+  }
+  const docEl = document.documentElement;
+  if (document.fullscreenEnabled && docEl && typeof docEl.requestFullscreen === "function"){
+    try { await docEl.requestFullscreen(); return; } catch(_){}
+  }
+  document.body.classList.add("gis-fullscreen-fallback", "gis-fullscreen-active");
+  gisSyncFullscreenUi();
+}
+function bindGisMobileViewportControls(){
+  const toolbar = document.getElementById("gisMobileToolbarToggle");
+  if (toolbar && !toolbar._gisMobileToolbarBound){
+    toolbar._gisMobileToolbarBound = true;
+    toolbar.addEventListener("click", ev => { ev.preventDefault(); gisSetMobileToolbarCollapsed(!document.body.classList.contains("gis-mobile-toolbar-collapsed")); });
+  }
+  [document.getElementById("gisMobileFullscreenBtn"), document.getElementById("gisMobileFullscreenExit")].forEach(btn => {
+    if (!btn || btn._gisMobileFullscreenBound) return;
+    btn._gisMobileFullscreenBound = true;
+    btn.addEventListener("click", ev => { ev.preventDefault(); gisToggleMobileFullscreen(); });
+  });
+  if (!document._gisMobileFullscreenChangeBound){
+    document._gisMobileFullscreenChangeBound = true;
+    document.addEventListener("fullscreenchange", gisSyncFullscreenUi);
+  }
+  if (!window._gisMobileOrientationResetBound){
+    window._gisMobileOrientationResetBound = true;
+    const compactLandscape = window.matchMedia("(max-width: 1024px) and (max-height: 600px) and (orientation: landscape)");
+    const syncCompactLayout = ev => {
+      gisSetCompactLandscapeHeader(!!ev.matches);
+      if (!ev.matches) gisSetMobileToolbarCollapsed(false);
+    };
+    if (typeof compactLandscape.addEventListener === "function") compactLandscape.addEventListener("change", syncCompactLayout);
+    else if (typeof compactLandscape.addListener === "function") compactLandscape.addListener(syncCompactLayout);
+  }
+  gisSyncFullscreenUi();
+}
+
 function gisInit(){
   if (_gisInitDone) return;
   _gisInitDone = true;
@@ -79846,6 +80073,7 @@ function gisInit(){
   }
 
   document.body.classList.add("gis-mode");
+  bindGisMobileViewportControls();
   // UX3-FIX3 — gis-boot resta fino a fine gisInit (reveal atomico via rAF).
   try { gisRelocatePrimaryToConvertModal(); } catch(_){}
 
@@ -79862,6 +80090,9 @@ function gisInit(){
       hi.insertBefore(tb, brand);
       try { tb.hidden = false; } catch(_){}
       try { tb.removeAttribute("hidden"); } catch(_){}
+    }
+    if (window.matchMedia("(max-width: 1024px) and (max-height: 600px) and (orientation: landscape)").matches){
+      gisSetCompactLandscapeHeader(true);
     }
   } catch(_){}
 
