@@ -1,8 +1,8 @@
 # Build 272 — Layer iOS e barra mobile compatta
 
-## Esito candidato
+## Esito release
 
-La correzione locale ha superato il gate pre-deploy. Commit, pubblicazione GitHub e deploy VPS non sono ancora avvenuti.
+Build 272 è pubblicata su GitHub e sul VPS. Commit applicativo: `dd3968e8012692dcdb95c55dc3886afcae48dfa5`; SHA-256 del runtime: `523a0cdd295d8c5840ed736fd07b65513889b85da533b6f3e715e5a60210c234`. Il servizio GIS è attivo e il contenuto HTTP coincide con il file distribuito. Dettagli in [DEPLOY-RESULT.md](DEPLOY-RESULT.md).
 
 ## Modifiche
 
@@ -34,12 +34,20 @@ Screenshot 667×375:
 - [Barra compressa](build272-landscape-667-toolbar-collapsed.png)
 - [Mappa espansa](build272-landscape-667-map-expanded.png)
 
+## Verifica automatizzata sul VPS
+
+La pagina pubblicata è stata aperta con Edge/Chromium in emulazione touch a 844×390 e 667×375. Entrambi i profili rilevano Build 272 e verificano il centro verticale comune della navigazione, del titolo, di Strumenti, Esporta, Online e Impostazioni (y=24 px), l’assenza di sovrapposizioni e l’apertura del menu Layer senza ridisegno della mappa. Entrambi passano con zero errori JavaScript.
+
+- [Screenshot remoto 844×390](build272-live-landscape-844x390.png)
+- [Screenshot remoto 667×375](build272-live-landscape-667x375.png)
+- [Risultati post-deploy](build272-postdeploy-results.json) · [script QA](build272-postdeploy-qa.js)
+
 Esito macchina completo: [build272-results.json](build272-results.json). Harness: [build272-regression.js](build272-regression.js).
 
 ## Limiti residui
 
-Le tessere SVG verificano la composizione e l’area della mappa; non verificano i fornitori cartografici reali. Il fullscreen nativo è stato verificato in Chromium; il ripiego in Edge touch emulato. Safari e Chrome su un iPhone reale, le aree sicure e la viewport dinamica restano da verificare. Il ripiego espande la mappa nell’area web visibile, ma non nasconde la barra del browser iOS.
+Le tessere SVG locali e la QA remota verificano la composizione e l’interazione; i fornitori cartografici reali sono stati bloccati durante il replay browser e non sono verificati da questa prova. Il fullscreen nativo è stato verificato in Chromium; il ripiego in Edge touch emulato. Safari e Chrome su un iPhone reale, le aree sicure e la viewport dinamica restano da verificare. Il ripiego espande la mappa nell’area web visibile, ma non nasconde la barra del browser iOS. Strumenti, Esporta e Impostazioni sono controlli compatti da 32×30 px: il layout è verificato, non il comfort del tocco su telefoni piccoli.
 
 ## Prossimo passo
 
-Dopo la pubblicazione su GitHub, distribuire Build 272 sul solo servizio GIS del VPS e svolgere Automated Browser QA sulla versione remota. Il controllo su iPhone reale rimane un checkpoint separato.
+Nicola può provare Build 272 su Safari e Chrome dell’iPhone, in verticale e in orizzontale: aprire Layer, lasciare visibile il menu e selezionare una mappa. Questo controllo reale resta separato dalla QA automatizzata.
