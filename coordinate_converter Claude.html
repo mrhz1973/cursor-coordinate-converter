@@ -16084,7 +16084,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -25645,10 +25645,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-MOBILE-LAYER-MENU-A";
-const APP_BUILD_DETAIL = "Menu Layer mobile: riposizionamento durante le variazioni del viewport.";
+const APP_BUILD_ID = "GIS-IOS-LAYER-DISMISS-A";
+const APP_BUILD_DETAIL = "Menu Layer: evita la chiusura da eventi mouse compatibili con il tocco.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
-const APP_BUILD_NUM = 270;
+const APP_BUILD_NUM = 271;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
 function applyAppBuildLabel(){
   try {
@@ -79597,7 +79597,9 @@ function bindUI(){
 
   if (!_basemapMenuOutsideBound){
     _basemapMenuOutsideBound = true;
-    document.addEventListener("mousedown", basemapMenuOutsideClose, true);
+    // Use the unified pointer event so iOS touch compatibility mouse events
+    // cannot close a menu that has just opened from the same tap.
+    document.addEventListener(typeof PointerEvent === "function" ? "pointerdown" : "mousedown", basemapMenuOutsideClose, true);
   }
   if (!_waypointToolbarMenuOutsideBound){
     _waypointToolbarMenuOutsideBound = true;
