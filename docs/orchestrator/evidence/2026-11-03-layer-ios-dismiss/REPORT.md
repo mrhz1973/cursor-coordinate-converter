@@ -2,7 +2,7 @@
 
 ## Esito
 
-Build 271 è una mitigazione circoscritta candidata al rilascio. Safari e Chrome su iOS hanno mostrato lo stesso sintomo: il menu si apre e si chiude subito. Il codice aveva una sola chiusura automatica basata su `mousedown` in fase capture. Il fix usa `pointerdown` sui browser che lo supportano e mantiene `mousedown` come fallback per quelli più vecchi.
+Build 271 è stata pubblicata su GitHub e sul VPS come mitigazione circoscritta. Safari e Chrome su iOS hanno mostrato lo stesso sintomo: il menu si apre e si chiude subito. Il codice aveva una sola chiusura automatica basata su `mousedown` in fase capture. Il fix usa `pointerdown` sui browser che lo supportano e mantiene `mousedown` come fallback per quelli più vecchi.
 
 Il cambio è reversibile. La traccia nativa degli eventi su iPhone non è disponibile in questa sessione: la prova di compatibilità in Edge inietta esplicitamente un `mousedown` tardivo dopo l’apertura. Non dimostra quale sequenza produca iOS fisico. Build 271 va quindi riprovata da Nicola su Safari e Chrome iOS prima di dichiarare chiuso il difetto.
 
@@ -11,6 +11,8 @@ Il cambio è reversibile. La traccia nativa degli eventi su iPhone non è dispon
 - File runtime: `coordinate_converter Claude.html`.
 - Build: `GIS-IOS-LAYER-DISMISS-A`, Build 271.
 - SHA-256 runtime: `7f96e58ea912cd9c017c225b1d12276f5ef397c55b3e4ee6c8bfbd11c5b76ea8`.
+- Commit applicativo GitHub/VPS: `173611f27299662bcc203212d063158ee411a5cf`.
+- [Link Tailscale Build 271](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=271).
 - Il solo comportamento modificato è l’evento globale di chiusura esterna del menu Layer. Note di rilascio aggiornate.
 
 ## Verifiche
@@ -22,4 +24,4 @@ Il cambio è reversibile. La traccia nativa degli eventi su iPhone non è dispon
 
 ## Limiti e prossimo passo
 
-Non è stata eseguita una prova su dispositivo iOS reale, né una registrazione dell’ordine degli eventi nativi di Safari o Chrome. Dopo la pubblicazione, chiedere a Nicola di ricaricare [Build 271](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=271), toccare una volta l’icona Layer e verificare che il menu resti visibile e consenta la scelta di una mappa. Se il menu si chiude ancora, acquisire una breve registrazione dello schermo e proseguire con una diagnosi WebKit su dispositivo.
+Non è stata eseguita una prova su dispositivo iOS reale, né una registrazione dell’ordine degli eventi nativi di Safari o Chrome. Chiedere a Nicola di ricaricare [Build 271](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=271), toccare una volta l’icona Layer e verificare che il menu resti visibile e consenta la scelta di una mappa. Se il menu si chiude ancora, acquisire una breve registrazione dello schermo e proseguire con una diagnosi WebKit su dispositivo. L’esito e il perimetro del deploy sono in [DEPLOY-RESULT.md](DEPLOY-RESULT.md); lo script eseguito è [deploy-gis-build271.sh](deploy-gis-build271.sh).
