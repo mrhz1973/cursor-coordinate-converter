@@ -166,9 +166,9 @@ Option 3 — Navionics nautical charts (tailnet proxy on VPS)
 The **Navionics** basemap does not load tiles directly from the browser. Navionics/Garmin require authentication and block cross-origin requests (CORS). The app reads tiles from a small **Python proxy** ([**Planet-Clone**](https://github.com/mrhz1973/Planet-Clone)), hosted on the VPS and reachable only over the **Tailscale tailnet**.
 
 ```
-Browser (tailnet client)  →  http://100.114.7.53:8000/coordinate_converter%20Claude.html
+Browser (tailnet client)  →  http://100.99.54.93:8000/coordinate_converter%20Claude.html
          ↓
-    Navionics layer nav  →  http://100.114.7.53:5000/tiles/{z}/{x}/{y}.png
+    Navionics layer nav  →  http://100.99.54.93:5000/tiles/{z}/{x}/{y}.png
                               ↓
                        proxy.py (Planet-Clone, systemd)
                               ↓
@@ -179,9 +179,9 @@ Browser (tailnet client)  →  http://100.114.7.53:8000/coordinate_converter%20C
 
 | Service | URL |
 |---------|-----|
-| GIS app | `http://100.114.7.53:8000/coordinate_converter%20Claude.html` |
-| Navionics proxy | `http://100.114.7.53:5000` |
-| Health check | `http://100.114.7.53:5000/status` → JSON with `tokens_ok: true` |
+| GIS app | `http://100.99.54.93:8000/coordinate_converter%20Claude.html` |
+| Navionics proxy | `http://100.99.54.93:5000` |
+| Health check | `http://100.99.54.93:5000/status` |
 
 **VPS layout** (under `/root/local-files/handoff-runtime/`):
 
@@ -190,13 +190,21 @@ Browser (tailnet client)  →  http://100.114.7.53:8000/coordinate_converter%20C
 
 **Runtime:** `goi-gis-app.service` (port 8000) and `goi-nav-proxy.service` (port 5000) bind to the Tailscale IPv4 resolved at startup (`tailscale ip -4 | head -n1`); `ExecStartPre` waits for Tailscale; `Restart=on-failure`. Reboot-test deferred (VPS shared with n8n).
 
-**Tailscale ACL:** a manual additive grant was applied in the Tailscale admin console on **2026-06-13**:
+**Historical Tailscale ACL:** the manual grant applied on **2026-06-13** targeted the VPS's then-current address `100.114.7.53`; it is not the current node address:
 
 ```json
 { "src": ["autogroup:member"], "dst": ["100.114.7.53/32"], "ip": ["tcp:8000", "tcp:5000"] }
 ```
 
-Without this grant, tailnet clients could not reach the VPS on ports 8000/5000 (root cause diagnosed 2026-06-13: restrictive ACL, not host firewall). An SSH tunnel was used briefly for smoke tests only; it is **not** the final architecture.
+That restriction was the root cause of the June 2026 connection failure. The current VPS Tailscale address is `100.99.54.93`; the current policy file was not inspected during the 2026-11-03 HTTP check. For a new computer, an admin should verify the live policy and grant only the intended user/device access to TCP `8000` (app) and, if needed, TCP `5000` (nautical proxy). Do not reuse the historical destination or broad source rule without checking the current tailnet policy.
+
+### Access for a friend with a separate Tailscale account
+
+Share the single VPS device `ionos-n8n-new` with the friend using Tailscale's device-sharing invitation. The friend installs [Tailscale for Windows](https://tailscale.com/docs/install/windows), signs in with their own account and accepts the single-use invitation. The owner must first inspect the current access policy and permit only the intended recipient to TCP `8000` (app), plus TCP `5000` if nautical proxy access is wanted. Broad existing allow rules must also be reviewed; adding a narrower rule alone does not revoke broader access.
+
+After acceptance, open `http://100.99.54.93:8000/coordinate_converter%20Claude.html`. If Tailscale assigns a different shared-device address to the recipient, use that address or the shared device's full MagicDNS name. The VPS serves the HTML and its local assets directly; no app file needs to be copied to the friend's computer.
+
+Step-by-step instructions and the prompt for the friend's AI are in [Accesso amico via Tailscale](docs/TAILSCALE_GIS_ACCESS.md). See [Tailscale device sharing](https://tailscale.com/docs/features/sharing) and [access controls](https://tailscale.com/docs/features/access-control). No invitation or access-policy change is created by these repository instructions.
 
 In the map **Layers** menu (stack icon), choose **Navionics**. The monolite derives the proxy host from `location.hostname` (commit `44b127c`), so the same page served from the VPS tailnet IP uses the co-located proxy automatically.
 
@@ -220,12 +228,14 @@ In the map **Layers** menu (stack icon), choose **Navionics**. The monolite deri
 
 Hosting / Deploy
 
-The app can be published to **Firebase Hosting** and a **VPS staging** demo environment. Full procedures are documented in [`docs/hosting/firebase-vps-deploy.md`](docs/hosting/firebase-vps-deploy.md).
+The app currently has two distinct hosted copies. Firebase is the public copy; the more recent GIS runtime is served by the VPS on the Tailscale network. They are not two public/private directories on the VPS. The Firebase copy has three main basemap choices; the Tailscale runtime exposes twelve base-map choices, including nautical charts through the private VPS proxy.
 
 | Environment | URL |
 |-------------|-----|
-| Firebase Hosting | https://gistoolmarty-33cf8.web.app |
-| VPS staging | http://217.160.71.145/gis/ |
+| Public Firebase Hosting (separate deployment) | https://gistoolmarty-33cf8.web.app |
+| VPS GIS runtime (Tailscale-only; Build 268 verified 2026-11-03) | http://100.99.54.93:8000/coordinate_converter%20Claude.html |
+
+For every complete GIS release, push the verified runtime and release notes to GitHub `main`, then deploy the GIS app to the VPS after all applicable gates pass. Firebase Hosting is a separate public deployment and is updated only when separately requested.
 
 Minimal helper (from repository root):
 

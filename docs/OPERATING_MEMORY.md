@@ -5,6 +5,7 @@
 > **CORE BOOT:** `git ls-remote` → `README.md` blocco `AI-BOOT` → [`docs/FRONTIER.md`](FRONTIER.md) → hot-header WU **solo se** `WU ATTIVA` non è N/A. Resto on demand (Regola I).  
 > Questo file riguarda il **GIS monolite**, non il control-plane e non Planet-Clone.
 > **Routing 27/10/2026:** ChatGPT è l'operatore principale; Cursor solo supporto eventuale, su incarico esplicito. Nessun agente esterno è assunto attivo. Il nome `coordinate_converter Claude.html` è un filename legacy: non rinominarlo nell'ambito del cambio di ruoli.
+> **Autorizzazione permanente circoscritta — 2026-11-03:** per ogni nuova versione GIS completa, l'utente autorizza commit e push su GitHub `main` e deploy del solo runtime GIS sul VPS, senza chiedere conferma a ogni rilascio. Si applica solo dopo PASS dei gate pertinenti e note di rilascio aggiornate. Non comprende Firebase/public hosting, proxy, configurazione provider, infrastruttura o servizi non GIS. In caso di gate FAIL o NON_VERIFICATO non pubblicare né distribuire la candidata.
 
 ---
 
@@ -314,13 +315,13 @@ Principio in dubbio: **meno fonti, più specifiche, una sola volta, on-demand.**
 
 1. implementazione in Cursor;
 2. controlli tecnici / QA pre-commit a schermo sul file locale (`coordinate_converter Claude.html`), opzionale;
-3. pubblicazione secondo metodo corrente (`finito`/commit selettivo + push `origin` ove applicabile);
-4. **deploy VPS** necessario per QA/uso su tailnet — **modalità deploy:**
-   - eseguito da **Cursor via SSH**, alias `ionos-n8n`, in **un unico prompt** (non far digitare comandi manuali all'operatore per deploy ordinario);
+3. **per ogni nuova versione GIS completa**, commit selettivo e push del runtime verificato e delle relative note su `origin/main`; la standing authorization 2026-11-03 non richiede una nuova conferma per ogni versione;
+4. **deploy VPS** GIS-only dopo PASS dei gate pertinenti — **modalità deploy:**
+   - eseguito via SSH sull'alias corrente `ionos-n8n-new`, in **un unico prompt** (non far digitare comandi manuali all'operatore per deploy ordinario);
    - il prompt deploy deve coprire: `git pull origin main`; `systemctl restart goi-gis-app`; smoke HTTP (status, Content-Length, build label);
    - clone GIS VPS: `/root/local-files/handoff-runtime/cursor-coordinate-converter`;
    - **GIS-only** per blocchi GIS-only; Planet-Clone/proxy **solo** se cambia il proxy;
-   - riferimento: [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](runtime/VPS_DEPLOY_RUNTIME.md);
+   - riferimento: [`docs/INFRA_VPS.md`](INFRA_VPS.md);
 5. **Automated Browser QA PRE-OPERATORE** (Regola D2bis / `AUTOMATED-BROWSER-QA-PREOP`) sull’URL deployato — eseguita da **Cursor**; attestazione `AUTOMATED BROWSER QA <BLOCK-ID> PASS|FAIL|NOT APPLICABLE`;
 6. **solo se** Automated Browser QA = PASS (o N/A giustificato): Cursor dichiara deploy PASS + URL + Automated Browser QA esito + gate **`QA FINALE CHATGPT — PENDING`** — **non** emette istruzioni QA umane;
 7. **QA umana residua (Regola D2 / `QA-HUMAN-SHORT-TARGETED`):**
@@ -501,7 +502,7 @@ Se il report manca o l’evidence puntata è assente: non inventare; chiedere/ot
 - **NON** usare `Tools\CesiumTest` per il GIS Tool.
 - `Tools\CesiumTest` è il clone di Planet-Clone / proxy Navionics: progetto diverso.
 - Se un task coinvolge Planet-Clone o proxy Navionics, dichiararlo esplicitamente come lavoro **separato** dal GIS monolite.
-- **Runtime/deploy VPS GOI** (post WU-0009 `gsat`): supporto operativo in [`docs/runtime/VPS_DEPLOY_RUNTIME.md`](runtime/VPS_DEPLOY_RUNTIME.md) — Planet-Clone runtime separato dal GIS; proxy `goi-nav-proxy.service` su tailnet `100.114.7.53:5000`; dettagli deploy/smoke/cache/boot in quel documento. Inventario host esteso: [`docs/INFRA_VPS.md`](INFRA_VPS.md). LIVE STATE = [`docs/FRONTIER.md`](FRONTIER.md); il doc runtime non lo sostituisce.
+- **Runtime/deploy VPS GOI** (post WU-0009 `gsat`): supporto operativo in [`docs/INFRA_VPS.md`](INFRA_VPS.md) — Planet-Clone runtime separato dal GIS; proxy `goi-nav-proxy.service` su tailnet `100.99.54.93:5000`; dettagli deploy/smoke/cache/boot in quel documento. LIVE STATE = [`docs/FRONTIER.md`](FRONTIER.md); l'inventario infrastruttura non lo sostituisce.
 
 ---
 

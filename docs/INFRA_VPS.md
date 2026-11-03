@@ -1,5 +1,7 @@
 > **Aggiornamento verificato — 2026-10-28 (orchestratore, preflight nodo migrato).** Nodo corrente: IP pubblico `31.70.139.73`, Tailscale `100.99.54.93`, DNS tailnet `ionos-n8n-new.tailc01234.ts.net`. Il vecchio alias SSH locale `ionos-n8n` punta ancora a `217.160.71.145`: **non usarlo per il nodo corrente**. Nel preflight risultano quattro servizi controllati `active`; i percorsi dei servizi sono invariati. Questa nota registra la migrazione già verificata e non applica modifiche infrastrutturali. **Tutti i dati host e indirizzi del 2026-08-21 conservati sotto sono storici, non lo stato corrente.**
 
+> **Verifica runtime — 2026-11-03:** il GIS sul tailnet risponde `HTTP 200` a `http://100.99.54.93:8000/coordinate_converter%20Claude.html`; SHA-256 servito `51a3e9821d0f70c57ad23adb7f10bd66ee6214065ce0e0c7abc9870cc681a11d` (Build 268). La copia pubblica `https://gistoolmarty-33cf8.web.app/` è un deployment Firebase separato (HTTP 200, ultimo aggiornamento 2026-05-27), non una seconda directory pubblica del VPS. Da questo client `http://31.70.139.73/gis/` reindirizza a HTTPS ma il TLS non completa; il vecchio IP `217.160.71.145` rifiuta la connessione. Non è quindi verificata una copia GIS accessibile pubblicamente sul VPS.
+
 # VPS GOI — runtime e deploy
 
 Documentazione operativa del nodo VPS che ospita proxy tailnet (Planet-Clone), server statico del monolite GIS e servizi di routing/geozone.
@@ -27,7 +29,8 @@ Dati rilevati **live** il **2026-08-21** (post-manutenzione apt + reboot + fix b
 | Reboot required | **REBOOT_NOT_REQUIRED** |
 | APT pending | **4 phased** (non forzati): `console-setup`, `console-setup-linux`, `keyboard-configuration`, `snapd` |
 | Failed units | **0** |
-| Accesso SSH | `ssh ionos-n8n` (alias in `~/.ssh/config` dell'operatore; chiave già configurata) |
+| Accesso SSH storico | `ssh ionos-n8n` (alias precedente, punta all'IP errato; non usare) |
+| Accesso SSH corrente | `ssh ionos-n8n-new` (alias in `~/.ssh/config` dell'operatore) |
 
 **GIS LIVE sul VPS:** tip `ac4789ea420bc691f9f8de5d7f751e040d3e6dc9` · build **247** · nessun `git pull` in questo housekeeping.
 
@@ -195,7 +198,7 @@ Evidence: [`docs/infra/evidence/2026-08-21_VPS-NGINX-TAILSCALE-BOOT-RACE-FIX-A.m
 ### Proxy (Planet-Clone)
 
 ```bash
-ssh ionos-n8n
+ssh ionos-n8n-new
 cd /root/local-files/handoff-runtime/Planet-Clone
 git status -s                    # atteso: vuoto
 git pull origin main
@@ -204,7 +207,7 @@ git rev-parse HEAD
 systemctl daemon-reload
 systemctl restart goi-nav-proxy
 systemctl is-active goi-nav-proxy   # atteso: active
-curl http://100.114.7.53:5000/status
+curl http://100.99.54.93:5000/status
 # atteso: gsat presente, static_fallback_configured: true
 ```
 
@@ -216,7 +219,7 @@ git status -s                    # atteso: vuoto
 git pull origin main
 git rev-parse HEAD
 systemctl restart goi-gis-app
-curl -I http://100.114.7.53:8000/coordinate_converter%20Claude.html
+curl -I http://100.99.54.93:8000/coordinate_converter%20Claude.html
 # atteso: HTTP 200
 ```
 

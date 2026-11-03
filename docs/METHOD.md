@@ -74,7 +74,7 @@ Development is:
 **Current effective posture: Level 2.5 / Level 3-track**
 
 - Recoverable work (scoped patches, docs, UI changes) should be batched and auto-proceeded by the implementer without per-step confirmation.
-- Irreversible or high-risk actions (deploy, destructive deletion, credential handling, external API setup, production mutations) remain gated and require explicit human confirmation.
+- Irreversible or high-risk actions (deploy, destructive deletion, credential handling, external API setup, production mutations) remain gated and require explicit human confirmation, except where the project owner has recorded a narrower standing authorization in `docs/OPERATING_MEMORY.md`. That authorization never bypasses the release gates or expands to adjacent services.
 - The posture may be upgraded toward Level 3 as confidence in tooling and workflow grows.
 
 See: [core/03-autonomy-levels.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/03-autonomy-levels.md)
@@ -135,9 +135,9 @@ Not active. Not applicable unless future work introduces Google Apps Script.
 
 ## Project-specific gates
 
-The following actions require explicit human confirmation regardless of autonomy level:
+The following actions require explicit human confirmation regardless of autonomy level, except for an applicable, narrower standing authorization recorded in `docs/OPERATING_MEMORY.md`:
 
-- deploy or publication to any external service;
+- deploy or publication to any external service outside the specifically authorized GIS VPS release workflow;
 - destructive deletion (files, branches, stored data);
 - irreversible migrations;
 - credential or secret handling;
@@ -145,6 +145,8 @@ The following actions require explicit human confirmation regardless of autonomy
 - privacy-sensitive data transmission;
 - production-impacting runtime mutations;
 - force-push or history rewrite on `main`.
+
+**GIS Tool standing release authorization (2026-11-03):** for each complete GIS runtime version, commit and push the verified release to canonical GitHub `main`, then update the GIS static app on the VPS. Perform this only after the applicable candidate, review, release-note, and runtime gates pass. Scope is limited to the GIS app and its existing service; it does not authorize Firebase/public hosting, proxy or map-provider changes, infrastructure changes, or changes to unrelated services. A failed or unverified gate means no release deploy.
 
 See: [core/06-gates-and-decision-packets.md](https://github.com/mrhz1973/dev-method/blob/v0.1.1/core/06-gates-and-decision-packets.md)
 
