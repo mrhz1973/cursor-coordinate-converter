@@ -6412,7 +6412,7 @@ body.printing-report #printReport:not(:empty){
  * visibility inside drawers / modals (they live outside <main>). */
 :root{
   --gis-topbar-h:46px;
-  --gis-topbar-btn-h:36px;
+  --gis-topbar-btn-h:54px;
   --gis-drawer-w:min(480px, 96vw);
 }
 body.gis-mode > header{
@@ -6621,14 +6621,14 @@ html[data-theme="light"] body.gis-mode #gisDropImportNotice.is-error{
   box-sizing:border-box;
   min-height:var(--gis-topbar-btn-h);
   height:var(--gis-topbar-btn-h);
-  padding:0 12px;
+  padding:3px 8px 2px;
   border-radius:10px;
   border:1px solid var(--border);
   background:var(--panel2);
   color:var(--text);
   font-weight:600; font-size:.82rem;
-  display:inline-flex; align-items:center; justify-content:center;
-  gap:6px;
+  display:inline-flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:2px;
   white-space:nowrap;
   line-height:1.1;
   transition:background .15s ease, color .15s ease, border-color .15s ease,
@@ -6677,11 +6677,37 @@ html[data-theme="light"] body.gis-mode #gisDropImportNotice.is-error{
   border-color:color-mix(in srgb, var(--accent) 45%, var(--border));
   box-shadow:0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent);
 }
+.app-topbar-main{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:20px;
+  white-space:nowrap;
+}
+.app-topbar-caption{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  min-width:0;
+  padding:1px 4px;
+  border:1px solid color-mix(in srgb, var(--accent) 42%, var(--border));
+  border-radius:4px;
+  background:color-mix(in srgb, var(--accent) 12%, var(--panel2));
+  color:var(--muted);
+  font-size:.61rem;
+  font-weight:600;
+  line-height:1.05;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .app-tab-ico{ font-size:1rem; line-height:1; }
 .app-tab-lbl{ font-size:.82rem; }
 @media (max-width:720px){
   .app-tab-lbl{ display:none; }
-  .app-tab{ padding:0 10px; min-width:var(--gis-topbar-btn-h); }
+  .app-tab{ padding:3px 8px 2px; min-width:var(--gis-topbar-btn-h); }
   .app-topbar-menu-label{ display:none; }
   .app-topbar-cta-label{ display:none; }
   .app-topbar-tabs{ max-width:min(56vw, 420px); }
@@ -6694,8 +6720,8 @@ body.gis-mode{
 }
 .gis-map-mount{
   position:relative; width:100%;
-  height:calc(100vh - var(--gis-topbar-h) - 76px - var(--gis-footer-reserve, 0px));
-  height:calc(100dvh - var(--gis-topbar-h) - 76px - var(--gis-footer-reserve, 0px));
+  height:calc(100vh - var(--gis-topbar-h) - 86px - var(--gis-footer-reserve, 0px));
+  height:calc(100dvh - var(--gis-topbar-h) - 86px - var(--gis-footer-reserve, 0px));
   min-height:360px;
   background:#0a1a2d;
   /* GIS: non clip controlli mappa (Layers / ombre) che possono estendersi di pochi px fuori dal box tile. */
@@ -6765,10 +6791,10 @@ body.gis-mode #gisMapMount > #miniMap.mini-map{
  * old 124px left dead space at the top and pushed the bottom tools onto the
  * coordinate readout. Raised the column to reclaim that space. */
 body.gis-mode{
-  --gis-map-ctrl-top:98px;
+  --gis-map-ctrl-top:12px;
 }
 @media (max-width:720px){
-  body.gis-mode{ --gis-map-ctrl-top:118px; }
+  body.gis-mode{ --gis-map-ctrl-top:12px; }
 }
 body.gis-mode #gisMapMount .tile-map .tile-ctrls{
   top:max(12px, calc(env(safe-area-inset-top, 0px) + var(--gis-map-ctrl-top)));
@@ -6784,6 +6810,8 @@ body.gis-mode #gisMapMount .tile-map .tile-ctrls{
 body.gis-mode #gisMapMount .tile-map .tile-readout{
   z-index:5;
 }
+/* Keep the extra Layer caption exclusive to the GIS control stack. */
+.tile-layer-caption{ display:none; }
 /* GIS: basemap (Layer) lives in the right stack, first — flow layout, full button width.
  * Override the base inline-flex / flex-start so it matches the other column
  * controls (full --ctrlW width, centered) and the Layers button aligns with them. */
@@ -6792,6 +6820,9 @@ body.gis-mode #gisMapMount .tile-map .tile-layers{
   left:auto !important;
   top:auto !important;
   display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width:52px;
   width:100%;
   align-self:stretch;
   align-items:stretch;
@@ -6827,6 +6858,24 @@ body.gis-mode #gisMapMount .tile-map .tile-layers .tlayer-btn .tlayer-ico{
   max-height:100%;
   object-fit:contain;
   display:block;
+}
+body.gis-mode #gisMapMount .tile-map .tile-layers .tile-layer-caption{
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  padding:1px 2px;
+  border:1px solid color-mix(in srgb, var(--accent) 42%, var(--border));
+  border-radius:4px;
+  background:color-mix(in srgb, var(--accent) 14%, var(--panel2));
+  color:var(--text);
+  font-size:.52rem;
+  font-weight:700;
+  line-height:1.05;
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:none;
 }
 body.gis-mode #gisMapMount .tile-map .tile-ctrls .twpt-group,
 body.gis-mode #gisMapMount .tile-map .tile-ctrls .ttrk-group{
@@ -12570,7 +12619,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
  * Desktop (>768px) base CSS unchanged. */
 @media (max-width: 768px){
   body.gis-mode{
-    --gis-mobile-header-est:132px;
+    --gis-mobile-header-est:142px;
     --gis-map-ctrl-top:max(8px, env(safe-area-inset-top, 0px));
     --gis-minimized-dock-offset:calc(env(safe-area-inset-top, 0px) + 92px);
   }
@@ -12638,7 +12687,8 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   }
   body.gis-mode #appTopbar .app-topbar-btn{
     min-height:var(--gis-topbar-btn-h);
-    padding:0 8px;
+    height:var(--gis-topbar-btn-h);
+    padding:3px 6px 2px;
     font-size:.82rem;
   }
   .gis-map-mount{
@@ -12768,20 +12818,22 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 }
 @media (max-width: 480px){
   body.gis-mode{
-    --gis-mobile-header-est:148px;
+    --gis-mobile-header-est:158px;
   }
   body.gis-mode #gisMapMount .tile-map .tile-ctrls{
     --ctrlW:36px;
     gap:3px;
   }
   body.gis-mode #appTopbar .app-tab{
-    padding:0 8px;
-    min-width:34px;
+    padding:3px 6px 2px;
+    min-width:48px;
+    min-height:54px;
+    height:54px;
   }
 }
 @media (max-width: 926px) and (max-height: 480px) and (orientation: landscape){
   body.gis-mode{
-    --gis-mobile-header-est:88px;
+    --gis-mobile-header-est:98px;
   }
   body.gis-mode .header-inner > .brand h1{
     font-size:clamp(.92rem, 2.8vw, 1.08rem);
@@ -12836,10 +12888,11 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
 }
 /* Touch targets: keep actual controls in flow; no overlapping invisible hit areas. */
 @media (pointer:coarse), (max-width:768px){
-  body.gis-mode { --gis-topbar-btn-h:44px; }
+  body.gis-mode { --gis-topbar-btn-h:54px; }
   body.gis-mode .header-ctrls .hdr-icon-btn:not(.hdr-icon-btn-print){ width:44px; min-width:44px; height:44px; min-height:44px; }
   body.gis-mode #appTopbar .app-tab,
-  body.gis-mode #appTopbar .app-topbar-btn { min-width:44px; min-height:44px; height:44px; }
+  body.gis-mode #appTopbar .app-topbar-btn { min-height:54px; height:54px; }
+  body.gis-mode #appTopbar .app-tab { min-width:48px; min-height:54px; height:54px; }
   body.gis-mode #gisMapMount .tile-map .tile-ctrls {
     --ctrlW:52px;
     top:12px;
@@ -13032,34 +13085,39 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
   <div class="app-topbar-spacer" aria-hidden="true"></div>
   <div class="app-topbar-actions">
     <button id="topbarConvertBtn" class="app-topbar-btn" type="button"
-          data-i18n="cta.convert" data-i18n-tip="tip.convertCta">
-    <span aria-hidden="true">🧮</span> <span class="app-topbar-cta-label" data-i18n="cta.convert">Converti</span>
+          data-i18n-tip="tip.convertCta">
+    <span class="app-topbar-main"><span aria-hidden="true">🧮</span> <span class="app-topbar-cta-label" data-i18n="cta.convert">Converti</span></span>
+    <span class="app-topbar-caption" data-i18n="topbar.caption.convert" aria-hidden="true">Converti coordinate</span>
   </button>
     <div class="app-topbar-tabs" role="tablist" aria-label="Pannelli mappa">
     <button class="app-tab" data-tab="favorites" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.favorites.tip">
-      <span class="app-tab-ico" aria-hidden="true">★</span>
-      <span class="app-tab-lbl" data-i18n="tabs.favorites">Preferiti</span>
+      <span class="app-topbar-main"><span class="app-tab-ico" aria-hidden="true">★</span>
+      <span class="app-tab-lbl" data-i18n="tabs.favorites">Preferiti</span></span>
+      <span class="app-topbar-caption" data-i18n="topbar.caption.favorites" aria-hidden="true">Punti salvati</span>
     </button>
     <button class="app-tab" data-tab="geocoding" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.geocoding.tip">
-      <span class="app-tab-ico" aria-hidden="true">🔎</span>
-      <span class="app-tab-lbl" data-i18n="tabs.geocoding">Cerca</span>
+      <span class="app-topbar-main"><span class="app-tab-ico" aria-hidden="true">🔎</span>
+      <span class="app-tab-lbl" data-i18n="tabs.geocoding">Cerca</span></span>
+      <span class="app-topbar-caption" data-i18n="topbar.caption.search" aria-hidden="true">Trova luoghi</span>
     </button>
     <button class="app-tab" data-tab="history" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.history.tip">
-      <span class="app-tab-ico" aria-hidden="true">🗂</span>
-      <span class="app-tab-lbl" data-i18n="tabs.history">Cronologia</span>
+      <span class="app-topbar-main"><span class="app-tab-ico" aria-hidden="true">🗂</span>
+      <span class="app-tab-lbl" data-i18n="tabs.history">Cronologia</span></span>
+      <span class="app-topbar-caption" data-i18n="topbar.caption.history" aria-hidden="true">Ricerche recenti</span>
     </button>
     <button class="app-tab" data-tab="layers" type="button" role="tab" aria-selected="false"
             data-i18n-tip="tabs.layers.tip">
-      <span class="app-tab-ico" aria-hidden="true">🗺</span>
-      <span class="app-tab-lbl" data-i18n="tabs.layers">Mappe Offline</span>
+      <span class="app-topbar-main"><span class="app-tab-ico" aria-hidden="true">🗺</span>
+      <span class="app-tab-lbl" data-i18n="tabs.layers">Mappe Offline</span></span>
+      <span class="app-topbar-caption" data-i18n="topbar.caption.offline" aria-hidden="true">Mappe offline</span>
     </button>
   </div>
-    <button id="btnTopbarTools" class="app-topbar-btn" type="button" aria-controls="toolsDrawer" aria-expanded="false" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></button>
+    <button id="btnTopbarTools" class="app-topbar-btn" type="button" aria-controls="toolsDrawer" aria-expanded="false" data-i18n-tip="tip.tools" data-i18n-aria="ctrl.tools"><span class="app-topbar-main"><span aria-hidden="true">🧰</span><span data-i18n="ctrl.tools">Strumenti</span></span><span class="app-topbar-caption" data-i18n="topbar.caption.tools" aria-hidden="true">Altri strumenti</span></button>
     <details class="gis-export-menu" id="gisExportMenu">
-      <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></summary>
+      <summary class="app-topbar-btn" id="gisExportSummary" aria-haspopup="true"><span class="app-topbar-main"><span aria-hidden="true">📤</span><span>Esporta</span><span aria-hidden="true">▾</span></span><span class="app-topbar-caption" data-i18n="topbar.caption.export" aria-hidden="true">Dati e vista</span></summary>
       <div class="gis-export-options">
         <button type="button" id="gisExportPrint"><span aria-hidden="true">🖨️</span> Stampa / salva PDF</button>
         <button type="button" id="gisExportJpg"><span aria-hidden="true">📷</span> Esporta vista JPG</button>
@@ -17536,6 +17594,14 @@ const I18N = {
     "tabs.layers":"Mappe Offline",
     "tabs.layers.tip":"Mappa e offline",
     "tip.convertCta":"Apri il modulo di conversione (Ctrl+Invio da qui).",
+    "topbar.caption.convert":"Converti coordinate",
+    "topbar.caption.favorites":"Punti salvati",
+    "topbar.caption.search":"Trova luoghi",
+    "topbar.caption.history":"Ricerche recenti",
+    "topbar.caption.offline":"Mappe offline",
+    "topbar.caption.tools":"Altri strumenti",
+    "topbar.caption.export":"Dati e vista",
+    "topbar.caption.layer":"Livelli",
     "tip.otherTools":"Nel pannello Strumenti (header): griglia Batch, Note, Sessione, Astro, declinazione.",
     "tip.tabDrawerClose":"Chiudi pannello (Esc).",
     "ctrl.primary":"Primario",
@@ -20059,6 +20125,14 @@ const I18N = {
     "tabs.layers":"Offline maps",
     "tabs.layers.tip":"Map and offline",
     "tip.convertCta":"Open the conversion form (Ctrl+Enter from here).",
+    "topbar.caption.convert":"Convert coordinates",
+    "topbar.caption.favorites":"Saved points",
+    "topbar.caption.search":"Find places",
+    "topbar.caption.history":"Recent searches",
+    "topbar.caption.offline":"Offline maps",
+    "topbar.caption.tools":"More tools",
+    "topbar.caption.export":"Data and view",
+    "topbar.caption.layer":"Layers",
     "tip.otherTools":"In the Tools panel (header): grid for Batch, Notes, Session, Astro, magnetic declination.",
     "tip.tabDrawerClose":"Close panel (Esc).",
     "ctrl.primary":"Primary",
@@ -22292,6 +22366,14 @@ const I18N = {
     "tabs.layers":"Cartes hors ligne",
     "tabs.layers.tip":"Carte et hors ligne",
     "tip.convertCta":"Ouvrir le formulaire de conversion (Ctrl+Entrée).",
+    "topbar.caption.convert":"Convertir les coordonnées",
+    "topbar.caption.favorites":"Points enregistrés",
+    "topbar.caption.search":"Trouver un lieu",
+    "topbar.caption.history":"Recherches récentes",
+    "topbar.caption.offline":"Cartes hors ligne",
+    "topbar.caption.tools":"Autres outils",
+    "topbar.caption.export":"Données et vue",
+    "topbar.caption.layer":"Couches",
     "tip.otherTools":"Dans le panneau Outils (barre du haut) : grille Batch, Notes, Session, Astro, déclinaison.",
     "tip.tabDrawerClose":"Fermer le panneau (Échap).",
     "ctrl.primary":"Principal",
@@ -29256,6 +29338,36 @@ function makeUTM(zone, letter, easting, northing){
 }
 
 /* ========================= SECTION 8: MGRS PARSER ========================= */
+/* Resolve an MGRS 100 km row in the stated latitude band.  Based on the
+ * UTMRow validity rule in GeographicLib 2.5 MGRS.cpp (MIT/X11), whose
+ * band/column exceptions preserve grid squares crossing projected boundaries:
+ * https://sources.debian.org/src/geographiclib/2.5-1/src/MGRS.cpp/ */
+function mgrsResolveUtm100kRow(bandIndex, columnIndex, periodicRowIndex){
+  const band = bandIndex - 10; // GeographicLib band index: C=-10 ... X=9
+  const north = band >= 0;
+  const centerRow = 100 * (8 * band + 4) / 90;
+  const minRow = band > -10 ? Math.floor(centerRow - 4.3 - (north ? 0.1 : 0)) : -90;
+  const maxRow = band < 9 ? Math.floor(centerRow + 4.4 - (north ? 0.1 : 0)) : 94;
+  // Match C++ integer division (truncate toward zero), not JS floor for negatives.
+  const baseRow = Math.trunc((minRow + maxRow) / 2) - 10;
+  let row = ((periodicRowIndex - baseRow + 100) % 20) + baseRow;
+
+  if (row < minRow || row > maxRow){
+    // Symmetry across the equator and central meridian for the four
+    // band-edge intersections in GeographicLib's UTMRow validity rule.
+    const symmetricBand = band >= 0 ? band : -band - 1;
+    const symmetricRow = row >= 0 ? row : -row - 1;
+    const symmetricColumn = columnIndex < 4 ? columnIndex : -columnIndex + 7;
+    const crossesBandEdge =
+      (symmetricRow === 70 && symmetricBand === 8 && symmetricColumn >= 2) ||
+      (symmetricRow === 71 && symmetricBand === 7 && symmetricColumn <= 2) ||
+      (symmetricRow === 79 && symmetricBand === 9 && symmetricColumn >= 1) ||
+      (symmetricRow === 80 && symmetricBand === 8 && symmetricColumn <= 1);
+    if (!crossesBandEdge) return null;
+  }
+  return row;
+}
+
 function parseMGRS(str){
   let s = String(str || "").trim().toUpperCase();
   if (!s) throw new ErrI18n("err.empty");
@@ -29286,20 +29398,14 @@ function parseMGRS(str){
   const rowSet = (zone % 2 === 1) ? MGRS_ROW_ODD : MGRS_ROW_EVEN;
   const rowIdx = rowSet.indexOf(row);
   if (rowIdx < 0) throw new ErrI18n("err.mgrsInvalid");
-  let n100k = rowIdx * 100000;
-
-  // Resolve ambiguity of 2,000,000 m cycles via latitude band
   const bandIdx = LAT_BANDS.indexOf(band);
   if (bandIdx < 0) throw new ErrI18n("err.mgrsBand");
-  const bandLatMin = -80 + bandIdx * 8;
-  const bandLatMax = (band === "X") ? 84 : (bandLatMin + 8);
-  const bandLatMid = (bandLatMin + bandLatMax) / 2;
+  const validRow = mgrsResolveUtm100kRow(bandIdx, colIdx, rowIdx);
+  if (validRow === null) throw new ErrI18n("err.mgrsInvalid");
 
-  // Approximate northing at the central meridian of this zone for the middle latitude of the band
-  const cm = (zone - 1) * 6 - 180 + 3;
-  const approxN = latLonToUTM(bandLatMid, cm).northing;
-  const cycles = Math.round((approxN - n100k) / 2000000);
-  n100k += cycles * 2000000;
+  // The resolved signed row is relative to the equator. MGRS stores southern
+  // northings with the standard 10,000,000 m false northing.
+  const n100k = validRow * 100000 + (bandIdx < 10 ? 10000000 : 0);
 
   const hemisphere = (band >= "N") ? "N" : "S";
   const easting  = e100k + eFrac;
@@ -36537,8 +36643,9 @@ function bindWorkbenchImportHubOnce(){
         try { fileIn.value = ""; } catch(_){}
         return;
       }
-      const files = fileIn.files;
-      if (!files || !files.length) return;
+      // FileList is live: snapshot it before clearing the picker below.
+      const files = Array.prototype.slice.call(fileIn.files || [], 0);
+      if (!files.length) return;
       Promise.resolve()
         .then(() => gisImportHubAnalyzeFiles(files))
         .catch(() => {
@@ -36611,8 +36718,9 @@ function bindWorkbenchImportHubOnce(){
       ev.stopPropagation();
       clearVis();
       if (hubIsBusy()) return;
-      const files = ev.dataTransfer && ev.dataTransfer.files;
-      if (!files || !files.length) return;
+      // Snapshot files while the drop event still exposes its DataTransfer list.
+      const files = Array.prototype.slice.call((ev.dataTransfer && ev.dataTransfer.files) || [], 0);
+      if (!files.length) return;
       Promise.resolve()
         .then(() => gisImportHubAnalyzeFiles(files))
         .catch(() => {
@@ -71345,6 +71453,7 @@ function renderTileMap(lat, lon, zoom, pointSource = null){
     const bmOpen = !!state.mapBasemapMenuOpen;
     const compactBasemap = _gisHub && window.matchMedia("(max-width:926px) and (max-height:480px) and (orientation:landscape) and (pointer:coarse)").matches;
     const tipPick = esc(t("tip.basemapPicker"));
+    const layerCaption = esc(t("topbar.caption.layer"));
     const lblMap = esc(t("map.layerMap"));
     const lblOsmHot = esc(t("map.layerOsmHot"));
     const lblOsmStandard = esc(t("map.layerOsmStandard"));
@@ -71452,6 +71561,7 @@ function renderTileMap(lat, lon, zoom, pointSource = null){
       aria-haspopup="${compactBasemap ? "dialog" : "true"}" aria-expanded="${bmOpen ? "true" : "false"}">
       <img class="tlayer-ico" src="assets/layers.svg" width="20" height="20" alt="" decoding="async">
     </button>
+    <span class="tile-layer-caption" aria-hidden="true">${layerCaption}</span>
     ${compactBasemap ? `<dialog class="compact-basemap-dialog" aria-label="${tipPick}"><div class="compact-basemap-head"><strong>${tipPick}</strong><button type="button" class="compact-basemap-close" data-role="compact-basemap-close" aria-label="${esc(t("tip.floatingClose"))}">×</button></div>` : ""}
     <div class="tlayer-menu" data-role="basemap-menu" role="menu"${bmOpen ? "" : " hidden"}>
       ${tlayerSection(lblSecTopo, topoItems)}
