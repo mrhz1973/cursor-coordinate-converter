@@ -4,18 +4,23 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Routing land-only |
-| **WU ATTIVA** | `—` (N/A) |
-| **BLOCCO ATTIVO** | ROUTING-LAND-ONLY-NO-FERRY-A |
-| **STATO BLOCCO** | IN PAUSA SU RICHIESTA UTENTE — GATE DEPLOY NON SUPERATO |
-| **GATE CORRENTE** | QA sul byte 33e8d902 PASS scoped: 594 vettori, browser waypoint/tracce, self-check quattro viewport e routing mock 24/24. Export/import spaziali e permalink non conservano pienamente la provenienza; provider live provati parzialmente. Asset checkout disponibili, richieste esterne della QA intenzionalmente bloccate. Nessun deploy del candidato integrato. QA visiva routine automatizzata autorizzata; nessun PASS operatore inventato |
+| **WORKSTREAM ATTIVO** | Hotfix menu Layer mobile Build 270 → poi riprendere routing land-only |
+| **WU ATTIVA** | `GIS-MOBILE-LAYER-MENU-A` (rilascio Build 270) |
+| **BLOCCO ATTIVO** | `GIS-MOBILE-LAYER-MENU-A` |
+| **STATO BLOCCO** | QA UI funzionale Build 270 PASS; cleanup Edge v3 FAIL (exit 1), distinto dai risultati app. Push GitHub/deploy VPS pendenti; LIVE resta Build 268 |
+| **GATE CORRENTE** | Replay accoppiato Edge Chromium: 5 viewport, LIVE chiude su resize 5/5, Build270 resta visibile/sicura e attiva MGRS 5/5; `pageErrors=0`. Richieste esterne intercettate, console non pulita; Safari e tile reali non verificati. Review statica script deploy PASS; `bash -n` PASS. Nessun PASS operatore inventato |
 | **RUNTIME LIVE** | cf9ae0aed70713191975d00395abfe36746388f6 build268 blob f980a3dd843eb34b32895774fad6aa5ade255dd7 SHA256 HTTP 51a3e9821d0f70c57ad23adb7f10bd66ee6214065ce0e0c7abc9870cc681a11d |
-| **RUNTIME CANDIDATE** | Build269 candidato integrato: SHA256 33e8d90257e56dba0bdf47de9776b018f301a103c5688ad124aab10bf953f548, versionato con questo aggiornamento, non deployato; commit/blob da identificare via Git |
-| **NEXT** | Verificare preservazione e limiti export/import MGRS, validità geodetica residua e provider reali; riesaminare gate → deploy solo dopo PASS |
-| **EVIDENCE** | [Review e ABQA build268](orchestrator/evidence/2026-10-30-export-history/abqa/ABQA.md) · [Cronologia fonti](orchestrator/evidence/2026-10-30-export-history/history/report.md) · [QA integrata precedente](orchestrator/evidence/2026-10-30-integrated-qa/REPORT.md) · [Self-check 320](orchestrator/evidence/2026-10-30-selfcheck-320/REPORT.md) · [Audit finestre](orchestrator/evidence/2026-10-30-modal-ui-audit/REPORT.md) · [Inventario 38 finestre](orchestrator/evidence/2026-10-30-modal-ui-full-audit/REPORT.md) · [QA integrata touch](orchestrator/evidence/2026-10-30-qa-integrated-touch/REPORT.md) · [Workbench mobile](orchestrator/evidence/2026-10-30-mobile-workbench-fix/REPORT.md) · [QA integrata UTM](orchestrator/evidence/2026-10-30-qa-integrated-utm/REPORT.md) · [Toolbar landscape](orchestrator/evidence/2026-10-30-landscape-toolbar/rebased-report.md) · [Confini](orchestrator/evidence/2026-10-30-mgrs-boundary-followup/report.md) · [QA locale precedente](orchestrator/evidence/2026-10-30-qa-final-landscape/REPORT.md) · [QA srcFmt](orchestrator/evidence/2026-10-30-qa-integrated-srcfmt/REPORT.md) · [Provenienza MGRS parziale](orchestrator/evidence/2026-10-30-mgrs-provenance-followup/report.md) · [Provider live parziale](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [QA MGRS precedente](orchestrator/evidence/2026-10-30-qa-final-mgrs/REPORT.md) · [Waypoint e tracce MGRS](orchestrator/evidence/2026-10-30-mgrs-waypoint-track/coverage-matrix.md) · [QA waypoint/tracce](orchestrator/evidence/2026-10-30-qa-mgrs-track-integrated/REPORT.md) |
+| **RUNTIME CANDIDATE** | Build 270, SHA-256 `704022b03f7e0b314f0ce88f64cb26c9641739e68d70b41319427d7dad01b544`, basata sui byte LIVE 268 con solo fix Layer mobile; commit GitHub e deploy ancora da completare. Build269 candidata full preservata nel ramo `candidate/build269-20261103` |
+| **NEXT** | Completare commit/push Build270; deploy GIS-only e verificare SHA HTTP e PID invariati dei servizi non GIS; poi riprendere routing terrestre senza ferry e gli altri gate rimasti |
+| **EVIDENCE** | [QA mobile Build270](orchestrator/evidence/2026-11-03-mobile-layer-hotfix/REPORT.md) · [Replay accoppiato](orchestrator/evidence/2026-11-03-mobile-layer-hotfix/replay-v3/REPLAY.md) · [Review deploy](orchestrator/evidence/2026-11-03-mobile-layer-deploy/DEPLOY-SCRIPT-REVIEW-00233.md) · [QA geodesica indipendente](orchestrator/evidence/2026-11-03-geodesy-reference-replay/REPORT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
 | **VPS VERIFICATO** | IONOS31.70.139.73, tailnet100.99.54.93 / ionos-n8n-new. Vecchio alias locale ionos-n8n errato. ServiziGIS active, nessuna modifica infrastrutturale |
 | **ALTRI WORKSTREAM** | L’utente ha richiesto evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK: aggiornare roadmap e priorità. Audit di uniformità delle finestre richiesto e in corso |
 
+## Ripresa — 2026-11-03
+
+L’utente ha ripreso il lavoro e ha dato priorità alla correzione del menu Layer su mobile, da pubblicare sul VPS per provare le mappe. Il candidato Build 270 deriva dai byte LIVE Build 268 e modifica solo la gestione/posizione del menu Layer più i metadati di release. La Build 269 più ampia resta preservata separatamente e non è inclusa in questo hotfix.
+
+La QA accoppiata usa lo stesso runner e cinque profili per LIVE e Build 270; evidenze e limiti sono collegate sopra. I controlli funzionali sono PASS; il runner v3 ha avuto un timeout separato durante la chiusura di Edge. Il rilascio resta pendente finché GitHub/VPS non verificano lo stesso SHA del runtime. Il VPS attualmente serve Build 268. Dopo la correzione mobile, riprendere il blocco routing `ROUTING-LAND-ONLY-NO-FERRY-A`; i test provider/browser restano non verificati o incompleti come documentato.
 ## Checkpoint di pausa — 2026-10-30
 
 Pausa richiesta dall'utente; nessun lavoro automatico fino alla ripresa. L'app LIVE resta build 268: il candidato build 269 SHA-256 `33e8d90257e56dba0bdf47de9776b018f301a103c5688ad124aab10bf953f548` è su GitHub ma non è stato distribuito. QA locale scoped e prove provider parziali sono collegate sopra; non attestano la chiusura dei gate.

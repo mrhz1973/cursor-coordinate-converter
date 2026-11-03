@@ -1,0 +1,92 @@
+diff --git a/coordinate_converter Claude.html b/coordinate_converter Claude.html
+index f980a3d..3acd864 100644
+--- a/coordinate_converter Claude.html
++++ b/coordinate_converter Claude.html
+@@ -16084,7 +16084,7 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
+           <details id="releaseNotes" class="release-notes">
+             <summary id="releaseNotesSummary">Note di rilascio</summary>
+             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
+-            <h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
++            <h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
+             <h4>Build 265 — coordinate</h4>
+             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
+@@ -24391,6 +24391,7 @@ function basemapMenuOutsideClose(ev){
+ }
+ 
+ let _basemapMenuGisResizeBound = false;
++let _basemapMenuGisResizeRaf = 0;
+ function positionBasemapMenuGis(miniMapRoot){
+   if (!miniMapRoot || !document.body.classList.contains("gis-mode")) return;
+   if (!state.mapBasemapMenuOpen) return;
+@@ -24420,7 +24421,9 @@ function positionBasemapMenuGis(miniMapRoot){
+   function place(){
+     try { void menu.offsetWidth; } catch(_){}
+     const pad = 8;
+-    const vw = window.innerWidth, vh = window.innerHeight;
++    const visualViewport = window.visualViewport;
++    const vw = visualViewport && visualViewport.width > 0 ? Math.floor(visualViewport.width) : window.innerWidth;
++    const vh = visualViewport && visualViewport.height > 0 ? Math.floor(visualViewport.height) : window.innerHeight;
+     const br = btn.getBoundingClientRect();
+     // FIX2: never place under GIS header — first menu row was partially covered.
+     let safeTop = pad;
+@@ -24441,8 +24444,11 @@ function positionBasemapMenuGis(miniMapRoot){
+         if (visible) safeBottom = Math.min(safeBottom, fr.top - pad);
+       }
+     } catch(_){}
+-    if (!(safeBottom > safeTop + 40)) safeBottom = Math.max(safeTop + 40, vh - pad);
+-    menu.style.maxHeight = Math.max(160, Math.floor(safeBottom - safeTop)) + "px";
++    if (!(safeBottom > safeTop)){
++      safeTop = pad;
++      safeBottom = Math.max(safeTop + 1, vh - pad);
++    }
++    menu.style.maxHeight = Math.max(1, Math.floor(safeBottom - safeTop)) + "px";
+     try { void menu.offsetHeight; } catch(_){}
+     const mr = menu.getBoundingClientRect();
+     let left = Math.floor(br.left - mr.width - pad);
+@@ -24486,15 +24492,24 @@ function positionBasemapMenuGis(miniMapRoot){
+   // Second pass after Cataloghi/IGM rows finish layout (avoids under-measure).
+   try { requestAnimationFrame(function(){ try { place(); } catch(_){} }); } catch(_){ place(); }
+ 
+-  // Resize behavior: simplest non-invasive policy is to close the menu.
++  // Preserve and reposition the open menu when the mobile viewport changes.
+   if (!_basemapMenuGisResizeBound){
+     _basemapMenuGisResizeBound = true;
+-    window.addEventListener("resize", () => {
+-      if (!document.body.classList.contains("gis-mode")) return;
+-      if (!state.mapBasemapMenuOpen) return;
+-      state.mapBasemapMenuOpen = false;
+-      if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
+-    }, true);
++    const schedulePosition = () => {
++      if (!document.body.classList.contains("gis-mode") || !state.mapBasemapMenuOpen) return;
++      if (_basemapMenuGisResizeRaf) return;
++      _basemapMenuGisResizeRaf = requestAnimationFrame(() => {
++        _basemapMenuGisResizeRaf = 0;
++        if (!document.body.classList.contains("gis-mode") || !state.mapBasemapMenuOpen) return;
++        const liveRoot = document.querySelector("#gisMapMount .tile-map");
++        if (!liveRoot) return;
++        try { positionBasemapMenuGis(liveRoot); } catch(_){}
++      });
++    };
++    window.addEventListener("resize", schedulePosition, { passive:true });
++    if (window.visualViewport){
++      window.visualViewport.addEventListener("resize", schedulePosition, { passive:true });
++    }
+   }
+ }
+ 
+@@ -25630,10 +25645,10 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
+ /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
+ const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
+ /** Visible runtime build label — update before each runtime `finito`. */
+-const APP_BUILD_ID = "GIS-EXPORT-ALIGNMENT-A";
+-const APP_BUILD_DETAIL = "Allineamento Esporta e apertura del pannello Strumenti.";
++const APP_BUILD_ID = "GIS-MOBILE-LAYER-MENU-A";
++const APP_BUILD_DETAIL = "Menu Layer mobile: riposizionamento durante le variazioni del viewport.";
+ /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
+-const APP_BUILD_NUM = 268;
++const APP_BUILD_NUM = 270;
+ const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
+ function applyAppBuildLabel(){
+   try {
