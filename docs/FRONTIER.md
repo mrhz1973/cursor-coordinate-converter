@@ -8,12 +8,12 @@
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
 | **STATO BLOCCO** | La Build 276 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
-| **GATE CORRENTE** | Build 276: QA emulata Edge/WebKit superata; verifica fisica iPhone e rotazione ancora aperta. Routing: validazione candidato e prove provider/browser ancora aperte. |
-| **RUNTIME LIVE** | Build 276 · SHA-256 `e516669a69a8da2c41b0334c42ea9a4766fa4a78380675207d0ac6460697efa6` · file e HTTP VPS concordano |
+| **GATE CORRENTE** | Build 277: QA gesti simulati e layout superata; verifica fisica iPhone e rotazione ancora aperta. Routing: validazione candidato e prove provider/browser ancora aperte. |
+| **RUNTIME LIVE** | Build 277 · SHA-256 `feec09e1e09b6ef565f1bdd62afc955de941c28aaf247a7c568119f483c595c0` · file e HTTP VPS concordano |
 | **RUNTIME CANDIDATE** | `candidate/build269-20261103`: contiene modifiche no-ferry, non integra le successive Build 270–276; non distribuirlo direttamente. |
 | **NEXT** | Individuare le modifiche routing del candidato, integrarle selettivamente nel runtime corrente e verificare richieste, risposte, alternative e assenza di percorso prima del rilascio. |
 | **EVIDENCE** | [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) · [Caso isolato](orchestrator/evidence/2026-10-30-routing-island-probe/report.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 276 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 277 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03
