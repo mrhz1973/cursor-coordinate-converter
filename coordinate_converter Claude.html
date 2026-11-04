@@ -12613,6 +12613,12 @@ body.gis-mode .tool-item--gis-grid-dup{ display:none !important; }
     -webkit-overflow-scrolling:touch;
     scrollbar-width:thin;
   }
+  /* Keep the mobile scroll container from clipping the open Layer menu. */
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls.is-basemap-menu-open{
+    overflow-x:visible;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:auto;
+  }
   body.gis-mode #gisMapMount .tile-map .tile-readout{
     right:max(52px, calc(env(safe-area-inset-right, 0px) + 46px));
     bottom:max(10px, env(safe-area-inset-bottom, 0px));
@@ -12769,6 +12775,20 @@ body.gis-mode.gis-fullscreen-active .gis-mobile-fullscreen-exit{
   top:max(8px,env(safe-area-inset-top,0px));z-index:9999;width:38px;height:38px;padding:0;
   border:1px solid rgba(255,255,255,.4);border-radius:10px;background:rgba(15,23,42,.88);color:#fff;
   font:700 18px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.4);cursor:pointer;
+}
+@media (min-width:769px) and (max-width:926px) and (max-height:480px) and (orientation:landscape){
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls{
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:thin;
+  }
+  body.gis-mode #gisMapMount .tile-map .tile-ctrls.is-basemap-menu-open{
+    overflow-x:visible;
+    overflow-y:visible;
+    -webkit-overflow-scrolling:auto;
+  }
 }
 @media (max-width:1024px){
   body.gis-mode #appTopbar .gis-mobile-landscape-control{display:inline-flex!important;}
@@ -16178,7 +16198,7 @@ body.gis-mode.gis-fullscreen-active .gis-mobile-fullscreen-exit{
           <details id="releaseNotes" class="release-notes">
             <summary id="releaseNotesSummary">Note di rilascio</summary>
             <p>Archivio delle versioni disponibili: la cronologia precedente è incompleta.</p>
-            <h4>Build 274 — barra mobile in orizzontale</h4><ul><li>Corretto l’allineamento della barra per evitare che i comandi escano dal bordo dello schermo.</li></ul><h4>Build 273 — stabilità in orizzontale su iPhone</h4><ul><li>Eliminate le animazioni di altezza della barra e della mappa durante i cambi della viewport, per evitare movimenti mentre Safari si assesta dopo la rotazione.</li></ul><h4>Build 272 — layout mobile e menu Layer</h4><ul><li>Il menu Layer si apre senza ridisegnare la mappa, riducendo lampeggi e ricaricamenti sui telefoni.</li><li>In orizzontale icone di navigazione, titolo e comandi sono allineati su un'unica riga; Strumenti ed Esporta si trovano a destra, accanto a Online e Impostazioni. Il footer scompare per lasciare più spazio alla mappa.</li></ul><h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
+            <h4>Build 274 — barra mobile e Layer</h4><ul><li>Corretto l’allineamento della barra in orizzontale.</li><li>Adattata la visualizzazione del pannello Layer sui telefoni.</li><li>Resa scorrevole la colonna dei comandi quando lo spazio in orizzontale è ridotto.</li></ul><h4>Build 273 — stabilità in orizzontale su iPhone</h4><ul><li>Eliminate le animazioni di altezza della barra e della mappa durante i cambi della viewport, per evitare movimenti mentre Safari si assesta dopo la rotazione.</li></ul><h4>Build 272 — layout mobile e menu Layer</h4><ul><li>Il menu Layer si apre senza ridisegnare la mappa, riducendo lampeggi e ricaricamenti sui telefoni.</li><li>In orizzontale icone di navigazione, titolo e comandi sono allineati su un'unica riga; Strumenti ed Esporta si trovano a destra, accanto a Online e Impostazioni. Il footer scompare per lasciare più spazio alla mappa.</li></ul><h4>Build 271 — apertura Layer sui browser iOS</h4><ul><li>Il menu Layer non si chiude più sullo stesso tocco che lo apre, mantenendo la chiusura al tocco esterno.</li></ul><h4>Build 270 — menu Layer per schermi mobili</h4><ul><li>Durante rotazione e variazioni dell’area visibile il menu Layer resta aperto e viene riposizionato, così continua a scorrere e accetta la selezione di mappe e overlay.</li></ul><h4>Build 268 — barra strumenti</h4><ul><li>Allineato il pulsante Esporta agli altri comandi della barra.</li><li>Strumenti si apre come pannello sulla mappa.</li></ul><h4>Build 267 — guida e interfaccia</h4><ul><li>Aggiunte guida utente e domande frequenti nelle Impostazioni.</li><li>Riorganizzati Strumenti ed Esporta, migliorata la leggibilità dei pulsanti e delle note di rilascio.</li></ul><h4>Build 266 — ricerca e note di rilascio</h4>
             <ul><li>Rimosso il filtro Paese da Cerca e aggiornato l'esempio di ricerca.</li><li>Aggiunto questo elenco delle note di rilascio.</li></ul>
             <h4>Build 265 — coordinate</h4>
             <ul><li>Validazione coerente delle coordinate nei diversi ingressi e supporto dei decimali con virgola.</li><li>Corretti casi MGRS all'antimeridiano e al limite settentrionale della zona Svalbard.</li></ul>
@@ -24491,6 +24511,15 @@ const state = {
   rangeRingSets: []
 };
 
+function setGisBasemapMenuUi(root, open){
+  if (!root || !root.querySelector) return;
+  const menu = root.querySelector('[data-role="basemap-menu"]');
+  const btn = root.querySelector('[data-role="basemap-menu-toggle"]');
+  const ctrls = root.querySelector('.tile-ctrls');
+  if (menu) menu.hidden = !open;
+  if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+  if (ctrls) ctrls.classList.toggle('is-basemap-menu-open', !!open);
+}
 let _basemapMenuOutsideBound = false;
 function basemapMenuOutsideClose(ev){
   if (!state.mapBasemapMenuOpen) return;
@@ -24498,10 +24527,7 @@ function basemapMenuOutsideClose(ev){
   state.mapBasemapMenuOpen = false;
   if (document.body.classList.contains("gis-mode")){
     const root = document.querySelector("#gisMapMount .tile-map");
-    const menu = root && root.querySelector('[data-role="basemap-menu"]');
-    const btn = root && root.querySelector('[data-role="basemap-menu-toggle"]');
-    if (menu) menu.hidden = true;
-    if (btn) btn.setAttribute("aria-expanded", "false");
+    setGisBasemapMenuUi(root, false);
     return;
   }
   if (state.lastPoint) renderMiniMap(state.lastPoint.lat, state.lastPoint.lon, false);
@@ -25762,8 +25788,8 @@ const UI_STORAGE_KEY = "coordconv_ui_v1";
 /** Strong-confirm word for full local wipe (same in IT/EN/FR UI). */
 const APP_FULL_RESET_CONFIRM_WORD = "CANCELLA";
 /** Visible runtime build label — update before each runtime `finito`. */
-const APP_BUILD_ID = "GIS-IOS-LANDSCAPE-OVERFLOW-A";
-const APP_BUILD_DETAIL = "Allineamento della barra mobile in orizzontale.";
+const APP_BUILD_ID = "GIS-IOS-LAYER-VIEWPORT-A";
+const APP_BUILD_DETAIL = "Barra mobile e visibilità del menu Layer.";
 /** Monotonic runtime build counter — increment on each runtime patch (not persisted). */
 const APP_BUILD_NUM = 274;
 const APP_BUILD_LABEL = APP_BUILD_ID + " · build " + APP_BUILD_NUM + " — " + APP_BUILD_DETAIL;
@@ -51854,6 +51880,7 @@ function bindHotkeys(){
         state.mapBasemapMenuOpen = false;
         /* GIS: solo redraw controlli — renderTileMap senza toccare viewCenter via resetView. */
         if (document.body.classList.contains("gis-mode")){
+          setGisBasemapMenuUi(document.querySelector("#gisMapMount .tile-map"), false);
           try {
             const lp = state.lastPoint || state.viewCenter;
             const z = state.mapZoom || 11;
@@ -55058,6 +55085,7 @@ function currentViewBbox(){
 function setMapLayer(layer){
   layer = sanitizeMapLayer(layer);
   state.mapBasemapMenuOpen = false;
+  if (document.body.classList.contains("gis-mode")) setGisBasemapMenuUi(document.querySelector("#gisMapMount .tile-map"), false);
   state.mapLayer = layer;
   const pcl = document.getElementById("pcLayer");
   if (pcl && OFFLINE_LAYER_IDS.includes(layer)) pcl.value = layer;
@@ -70961,7 +70989,7 @@ function renderTileMap(lat, lon, zoom){
 
   // Top-right: size + zoom controls + MGRS grid toggle (GIS hub: no size strip,
   // no duplicate offline shortcut — offline opens from top tab / intercept.)
-  html += `<div class="tile-ctrls">
+  html += `<div class="tile-ctrls${_gisHub && state.mapBasemapMenuOpen ? " is-basemap-menu-open" : ""}">
     ${_gisHub ? basemapLayersHtml : ""}
     ${_gisHub ? "" : `<div class="tile-size">
       <button class="ts-btn ${size === "small" ? "active" : ""}" type="button" data-size="small" aria-label="${esc(t("map.sizeSmall"))}" data-tip="${esc(t("map.sizeSmall"))}">⚬</button>
@@ -71374,9 +71402,7 @@ function renderTileMap(lat, lon, zoom){
       }
       state.mapBasemapMenuOpen = next;
       if (document.body.classList.contains("gis-mode")){
-        const menu = root.querySelector('[data-role="basemap-menu"]');
-        if (menu) menu.hidden = !next;
-        bmToggle.setAttribute("aria-expanded", next ? "true" : "false");
+        setGisBasemapMenuUi(root, next);
         if (next) positionBasemapMenuGis(root);
         return;
       }
