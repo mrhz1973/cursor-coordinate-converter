@@ -1,4 +1,4 @@
-# Build 273 candidate — stabilita viewport in landscape
+# Build 273 — stabilita viewport in landscape
 
 ## Sintomo e diagnosi
 
@@ -6,11 +6,11 @@ L’utente riferisce che Build 272, su iPhone in orizzontale, fa oscillare l’i
 
 La review comparativa del codice ha isolato una modifica nuova in Build 272: la mappa e l’header animano l’altezza per 180 ms. La mappa usa `100dvh`, che può variare mentre Safari mostra o nasconde i propri comandi dopo la rotazione. L’ipotesi è che le variazioni successive ritargettino l’animazione e facciano muovere la mappa mentre si tenta di toccarla. È un’ipotesi plausibile dal diff, non una diagnosi dimostrata sul dispositivo fisico.
 
-## Modifica candidata
+## Modifica rilasciata
 
 - Rimossa la transizione di altezza di `.gis-map-mount` e dell’header compatto in landscape.
 - Lasciate invariate geometria, breakpoint, menu Layer, pulsanti, modalità fullscreen e comportamento portrait.
-- Etichetta runtime candidata: Build 273, `GIS-IOS-LANDSCAPE-STABILITY-A`.
+- Build 273, `GIS-IOS-LANDSCAPE-STABILITY-A`, è pubblicata su GitHub e VPS; l’esito è in [`DEPLOY-RESULT.md`](DEPLOY-RESULT.md).
 
 ## Verifica controllata
 
@@ -32,4 +32,4 @@ Decisione del Valutatore: **CORREGGI_PASSAGGIO**. Il gate della Build 272 verifi
 - Safari e Chrome su iPhone fisico restano **NON VERIFICATI**. Playwright WebKit non è installato in questo ambiente; non è stato installato un nuovo browser per questo intervento.
 - La simulazione automatica modifica la finestra del browser, ma non riproduce i controlli dinamici di Safari né l’animazione hardware di rotazione.
 - Nessun test ha caricato mappe esterne; la prova copre la geometria del mount e il comando Layer.
-- Prossimo passo: distribuire questa patch solo dopo il gate locale; poi l’utente/Nicola può confermare su Safari reale se l’oscillazione e l’instabilità al tocco sono scomparse.
+- Prossimo passo: provare Build 273 su Safari iPhone fisico in landscape e verificare che la mappa resti ferma e Layer/pulsanti siano premibili.

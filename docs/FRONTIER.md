@@ -4,16 +4,16 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Menu Layer iOS e barra compatta Build 272; dopo retest, routing terrestre senza ferry |
+| **WORKSTREAM ATTIVO** | Stabilità landscape iPhone Build 273; dopo retest, routing terrestre senza ferry |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
-| **BLOCCO ATTIVO** | `MOBILE-IOS-LAYER-RETEST-272` |
-| **STATO BLOCCO** | Build 272 è pubblicata su GitHub e VPS. QA locale su sei profili e replay Edge touch live su due landscape PASS; menu Layer apre senza ridisegnare la mappa. Retest su iPhone reale ancora richiesto prima di dichiarare risolto il difetto WebKit. |
-| **GATE CORRENTE** | [QA pre-deploy Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/REPORT.md): sei profili PASS, nessun errore JS, menu, allineamento e fullscreen verificati. [QA live](orchestrator/evidence/2026-11-03-ios-layer-flicker/build272-postdeploy-results.json): 844×390 e 667×375 PASS; titolo e controlli hanno centro verticale `y=24 px`, nessuna sovrapposizione, Layer apre senza redraw. Deploy strict e verifica SSH indipendente PASS: runtime e HTTP SHA `523a0cdd295d8c5840ed736fd07b65513889b85da533b6f3e715e5a60210c234`; GIS active, servizi non GIS e n8n invariati. Safari/Chrome iOS reale e provider cartografici restano da verificare. |
-| **RUNTIME LIVE** | Build 272 · SHA-256 `523a0cdd295d8c5840ed736fd07b65513889b85da533b6f3e715e5a60210c234` |
+| **BLOCCO ATTIVO** | `MOBILE-IOS-LANDSCAPE-STABILITY-273` |
+| **STATO BLOCCO** | Build 273 è pubblicata su GitHub e VPS. Il confronto Edge con viewport landscape variabile ha ridotto lo scarto transitorio mappa da 17–22 px a 0 px su due profili; Layer e maniglia barra rispondono dopo la sequenza. Safari/Chrome iOS fisico restano da verificare. |
+| **GATE CORRENTE** | [Report Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md): confronto stress 844×390 e 667×375 PASS, geometria stabile, Layer raggiungibile. [QA live](orchestrator/evidence/2026-11-04-ios-landscape-stability/postdeploy-results.json): Build 273, layer e barra touch PASS su entrambi i profili, zero errori JS. Deploy strict e verifica SSH indipendente PASS: runtime e HTTP SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`; GIS active, servizi non GIS e n8n invariati. Safari/Chrome iOS reale, animazione di rotazione fisica e provider cartografici restano da verificare. |
+| **RUNTIME LIVE** | Build 273 · SHA-256 `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a` |
 | **RUNTIME CANDIDATE** | Nessuno; Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Nicola ricarica [Build 272](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=272) su Safari e Chrome iOS, in verticale e orizzontale: apre Layer, attende che il menu resti visibile e seleziona una mappa. Se passa, riprendere `ROUTING-LAND-ONLY-NO-FERRY-A`; se no, chiedere una breve registrazione e continuare la diagnosi WebKit. |
-| **EVIDENCE** | [Diagnosi, QA e screenshot Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/REPORT.md) · [Esito deploy Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/DEPLOY-RESULT.md) · [Risultati QA live](orchestrator/evidence/2026-11-03-ios-layer-flicker/build272-postdeploy-results.json) · [Diagnosi e QA Layer iOS 271](orchestrator/evidence/2026-11-03-layer-ios-dismiss/REPORT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 272; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
+| **NEXT** | Ricaricare [Build 273](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=273) su Safari iPhone e provare in landscape: ruotare il telefono, attendere che la barra di Safari si assesti, toccare Layer e alcuni pulsanti. Se ora è stabile, fare un controllo rapido anche in portrait e riprendere `ROUTING-LAND-ONLY-NO-FERRY-A`; se il tremolio rimane, indicare modello iPhone e versione iOS/Safari per restringere la diagnosi. |
+| **EVIDENCE** | [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [QA live Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/postdeploy-results.json) · [Diagnosi, QA e screenshot Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/REPORT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 273; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03
@@ -23,6 +23,10 @@ L’utente ha dato priorità al menu Layer su iOS, che su Build 270 si apriva e 
 Build 272 aggiunge l’apertura e la chiusura Layer senza ridisegnare la mappa, e compatta la barra in landscape a 48 px con navigazione a sinistra, titolo centrato e controlli a destra sulla stessa linea. Build 272 è live su GitHub e VPS. QA locale su sei profili e post-deploy Edge touch su due viewport landscape PASS; HTTP/runtime SHA corrispondono e gli altri servizi sono rimasti invariati. Il replay live blocca i provider esterni; il retest su iPhone fisico resta necessario. Dati e limiti completi: [REPORT Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/REPORT.md) e [deploy](orchestrator/evidence/2026-11-03-ios-layer-flicker/DEPLOY-RESULT.md).
 
 La QA Build 270 usava Edge Chromium touch; WebKit/Safari reale e caricamento dei provider esterni non erano stati verificati. Build 271 è una mitigazione candidata; il retest richiesto è descritto sopra. Dopo quel checkpoint, riprendere `ROUTING-LAND-ONLY-NO-FERRY-A` con i gate provider/browser già documentati.
+
+## Ripresa — 2026-11-04
+
+L’utente ha riferito che Build 272 su iPhone landscape oscillava e rendeva i pulsanti difficili da premere. Il confronto del codice ha isolato come ipotesi le transizioni di altezza da 180 ms aggiunte alla mappa e alla barra mentre la mappa usa `100dvh`. Build 273 rimuove solo queste transizioni. Il replay di sette altezze variabili in Edge touch ha misurato uno scarto massimo di 17,23 px (844×390) e 22 px (667×375) su Build 272, contro 0 px su Build 273; il tocco Layer e la maniglia barra sono rimasti utilizzabili. Commit `450c83188956401ce098747879195ac3b20932f4`, runtime SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`, distribuito e verificato via HTTP/SSH. Il test resta emulazione Chromium, non prova Safari fisico né la UI dinamica del browser iOS; il retest dell’utente è il gate residuo.
 
 ## Checkpoint di pausa — 2026-10-30
 
