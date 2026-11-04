@@ -4,16 +4,16 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Scala e coordinate della mappa più compatte su mobile, con possibilità di minimizzarle |
+| **WORKSTREAM ATTIVO** | Rifinitura portrait mobile di testata, controlli mappa e indicatori inferiori |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
-| **BLOCCO ATTIVO** | `GIS-MOBILE-MAP-READOUT-275` |
-| **STATO BLOCCO** | La candidata 275 rende più compatti scala, coordinate e crediti su mobile; aggiunge frecce indipendenti per scala e coordinate. QA locale in corso. |
-| **GATE CORRENTE** | [QA scala e coordinate](orchestrator/evidence/2026-11-04-mobile-scale-readout/REPORT.md): prove Edge/WebKit emulati su frecce, formati, scala, rotazione e Layer PASS. Il runner indipendente resta FAIL per limiti propri documentati; i casi critici sono stati ricontrollati separatamente. La Build 274 è stata confermata dall'utente su iPhone con Edge e Safari nei casi riportati. |
-| **RUNTIME LIVE** | Build 274 · SHA-256 `74d2db4ada570a50e59e1bde8879726dd7702bc3cee1c67922ace5da7d5e9c3b` · prova utente iPhone positiva nei casi riportati |
-| **RUNTIME CANDIDATE** | Build 275 locale · SHA-256 `196b23cb090adad35129dab05dda3cefd1aa4b94516274e4007fa9dad26bde84`. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Pubblicare la 275 sul VPS e verificare byte HTTP e servizi; il link dell'app rimane invariato. |
+| **BLOCCO ATTIVO** | `GIS-MOBILE-PORTRAIT-276` |
+| **STATO BLOCCO** | L'utente richiede titolo allineato a Online/Impostazioni, controlli mappa più piccoli e centrati, scala e coordinate affiancate con una sola freccia; verificare l'icona Layer. |
+| **GATE CORRENTE** | [QA scala e coordinate](orchestrator/evidence/2026-11-04-mobile-scale-readout/REPORT.md): prove Edge/WebKit emulati su frecce, formati, scala, rotazione e Layer PASS; un runner indipendente resta FAIL per limiti documentati e casi ricontrollati separatamente. Build 275 su iPhone fisico NON VERIFICATA. |
+| **RUNTIME LIVE** | Build 275 · SHA-256 `196b23cb090adad35129dab05dda3cefd1aa4b94516274e4007fa9dad26bde84` · HTTP e file VPS concordano |
+| **RUNTIME CANDIDATE** | Nessuno per il blocco mobile appena distribuito. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
+| **NEXT** | Attuare le correzioni portrait richieste, verificare i layout mobile/desktop e la stabilità dopo rotazione, poi distribuire la nuova versione GIS sul VPS. |
 | **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 274; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 275; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03
