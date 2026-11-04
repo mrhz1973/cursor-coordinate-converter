@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnostica schermo — TMART GIS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #10151e; color: #f2f5fa; font: 16px/1.5 system-ui, sans-serif; }
+    main { max-width: 650px; margin: auto; padding: 24px; }
+    h1 { font-size: 1.4rem; line-height: 1.2; }
+    p { color: #c9d4e4; }
+    button { min-height: 52px; padding: 12px 18px; border: 0; border-radius: 10px; background: #3769ca; color: white; font: 700 1rem system-ui, sans-serif; cursor: pointer; }
+    #status { min-height: 3em; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Diagnostica Layer di TMART GIS</h1>
+  <p>Tieni il telefono verticale e premi Avvia. Tocca Layer due volte seguendo le indicazioni sullo schermo: dopo ogni tocco segnala se il pannello è apparso. Alla fine copia il risultato.</p>
+  <p>La sonda confronta due modalità temporanee e registra dimensioni, posizione del menu, eventi del pulsante e versione del browser. Il risultato resta sul telefono finché non scegli di copiarlo. Il GIS viene caricato normalmente e può usare i dati salvati e le connessioni previste dalle sue impostazioni.</p>
+  <button id="start" type="button">Avvia la diagnosi</button>
+  <p id="status" role="status"></p>
+</main>
+<script>
+function sha256Sync(bytes) {
+  // The same SHA-256 fallback used by the application for non-secure contexts.
+  const K = new Uint32Array([
+    0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+    0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+    0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+    0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+    0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+    0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+    0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+    0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
+  ]);
+  const u8 = new Uint8Array(bytes), bitLen = u8.length * 8;
+  const padded = new Uint8Array(((u8.length + 9 + 63) & ~63)); padded.set(u8); padded[u8.length] = 0x80;
+  const dv = new DataView(padded.buffer); dv.setUint32(padded.length-4,bitLen>>>0,false); dv.setUint32(padded.length-8,Math.floor(bitLen/0x100000000),false);
+  const rotr = (x,n) => (x>>>n)|(x<<(32-n));
+  let h0=0x6a09e667,h1=0xbb67ae85,h2=0x3c6ef372,h3=0xa54ff53a,h4=0x510e527f,h5=0x9b05688c,h6=0x1f83d9ab,h7=0x5be0cd19;
+  const w = new Uint32Array(64);
+  for (let i=0;i<padded.length;i+=64) {
+    for (let j=0;j<16;j++) w[j]=dv.getUint32(i+j*4,false);
+    for (let j=16;j<64;j++) { const s0=rotr(w[j-15],7)^rotr(w[j-15],18)^(w[j-15]>>>3), s1=rotr(w[j-2],17)^rotr(w[j-2],19)^(w[j-2]>>>10); w[j]=(w[j-16]+s0+w[j-7]+s1)>>>0; }
+    let a=h0,b=h1,c=h2,d=h3,e=h4,f=h5,g=h6,h=h7;
+    for (let j=0;j<64;j++) { const s1=rotr(e,6)^rotr(e,11)^rotr(e,25), ch=(e&f)^(~e&g), t1=(h+s1+ch+K[j]+w[j])>>>0, s0=rotr(a,2)^rotr(a,13)^rotr(a,22), maj=(a&b)^(a&c)^(b&c), t2=(s0+maj)>>>0; h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0; }
+    h0=(h0+a)>>>0;h1=(h1+b)>>>0;h2=(h2+c)>>>0;h3=(h3+d)>>>0;h4=(h4+e)>>>0;h5=(h5+f)>>>0;h6=(h6+g)>>>0;h7=(h7+h)>>>0;
+  }
+  return [h0,h1,h2,h3,h4,h5,h6,h7].map(n=>n.toString(16).padStart(8,'0')).join('');
+}
+async function sourceSha256(bytes) {
+  if (window.isSecureContext && window.crypto && crypto.subtle) {
+    const hash = await crypto.subtle.digest('SHA-256',bytes);
+    return Array.from(new Uint8Array(hash),n=>n.toString(16).padStart(2,'0')).join('');
+  }
+  return sha256Sync(bytes);
+}
+function mobileViewportProbe(sourceInfo) {
+  'use strict';
+  const data = {schema:'tmart-layer-diagnostic-v1',build:273,sourceSha256:sourceInfo.sha256,userAgent:navigator.userAgent,stages:[]};
+  let phase=0, collecting=false, current=null, overlay=null;
+  const round=n=>Number.isFinite(n)?Math.round(n*10)/10:null;
+  const rect=el=>{if(!el)return null;const r=el.getBoundingClientRect();return {x:round(r.x),y:round(r.y),w:round(r.width),h:round(r.height),right:round(r.right),bottom:round(r.bottom)};};
+  const style=el=>{if(!el)return null;const s=getComputedStyle(el);return {display:s.display,position:s.position,overflowX:s.overflowX,overflowY:s.overflowY,webkitOverflowScrolling:s.webkitOverflowScrolling,visibility:s.visibility,zIndex:s.zIndex,transform:s.transform};};
+  const role=el=>{const n=el&&el.closest&&el.closest('[data-role]');return n?n.getAttribute('data-role'):null;};
+  function snapshot(reason){
+    if(!current)return;
+    const root=document.documentElement, vv=window.visualViewport;
+    const toggle=document.querySelector('#gisMapMount [data-role="basemap-menu-toggle"]');
+    const menu=document.querySelector('#gisMapMount [data-role="basemap-menu"]');
+    const controls=toggle&&toggle.closest('.tile-ctrls'), r=menu&&menu.getBoundingClientRect();
+    let hit=null;
+    if(r&&r.width>0&&r.height>0){
+      const x=Math.max(0,Math.min(innerWidth-1,r.left+Math.min(35,r.width/2)));
+      const y=Math.max(0,Math.min(innerHeight-1,r.top+Math.min(35,r.height/2)));
+      const el=document.elementFromPoint(x,y);
+      hit={x:round(x),y:round(y),inside:!!(el&&menu.contains(el)),tag:el&&el.tagName,role:role(el)};
+    }
+    current.samples.push({reason,root:[root.clientWidth,root.scrollWidth],viewport:vv?{w:round(vv.width),h:round(vv.height),x:round(vv.offsetLeft),y:round(vv.offsetTop),scale:round(vv.scale)}:null,expanded:toggle&&toggle.getAttribute('aria-expanded'),hidden:menu&&menu.hidden,menu:rect(menu),menuStyle:style(menu),controls:rect(controls),controlsStyle:style(controls),hit});
+  }
+  function displayPrompt(message,answers){
+    overlay.textContent='';
+    const p=document.createElement('div');p.textContent=message;p.style.marginBottom='7px';overlay.appendChild(p);
+    answers.forEach(([label,action])=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.style.cssText='min-height:40px;margin:3px 5px 0 0;padding:6px 12px;background:#3568ca;color:#fff;border:0;border-radius:7px;font:700 14px system-ui';b.addEventListener('click',action);overlay.appendChild(b);});
+  }
+  function waitForTap(){
+    collecting=false;
+    displayPrompt(phase===0?'1/2 — Tocca una volta il pulsante Layer sulla mappa.':'2/2 — Tocca di nuovo il pulsante Layer sulla mappa.',[]);
+  }
+  function nextStage(visible){
+    current.visibleReported=visible; data.stages.push(current); current=null;
+    if(phase===0){
+      const toggle=document.querySelector('#gisMapMount [data-role="basemap-menu-toggle"]');
+      if(toggle&&toggle.getAttribute('aria-expanded')==='true')toggle.click();
+      const styleElement=document.createElement('style');styleElement.id='tmart-layer-diagnostic-ab';
+      styleElement.textContent='body.gis-mode #gisMapMount .tile-map .tile-ctrls{overflow-x:visible!important;overflow-y:visible!important;-webkit-overflow-scrolling:auto!important}';
+      document.head.appendChild(styleElement);phase=1;waitForTap();
+    }else finish();
+  }
+  function finish(){
+    collecting=false;
+    const report=JSON.stringify(data);
+    overlay.style.cssText='position:fixed;z-index:2147483647;inset:8px;overflow:auto;padding:18px;background:#10151e;color:white;border:1px solid #7d9bd5;border-radius:12px;font:16px/1.4 system-ui;box-sizing:border-box';
+    overlay.innerHTML='<strong>Diagnosi Layer completata</strong><p>Premi Copia e incolla il risultato nella chat.</p><button id="layerCopy" type="button" style="min-height:48px;padding:10px 18px;border:0;border-radius:9px;background:#3769ca;color:white;font:700 16px system-ui">Copia risultato</button><p id="layerMessage" role="status"></p><textarea id="layerReport" readonly aria-label="Risultato diagnosi" style="width:100%;height:45vh;font:12px monospace;box-sizing:border-box"></textarea>';
+    const text=overlay.querySelector('#layerReport'),message=overlay.querySelector('#layerMessage');text.value=report;
+    overlay.querySelector('#layerCopy').addEventListener('click',async()=>{try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(report);else{text.focus();text.select();text.setSelectionRange(0,text.value.length);if(!document.execCommand('copy'))throw new Error('copy');}message.textContent='Copiato. Incolla il risultato nella chat.';}catch(_){text.focus();text.select();text.setSelectionRange(0,text.value.length);message.textContent='Tieni premuto sul testo selezionato e scegli Copia.';}});
+    window.__tmartLayerProbe={result:data};
+  }
+  function onEvent(ev){
+    if(overlay&&overlay.contains(ev.target))return;
+    const t=ev.target&&ev.target.closest&&ev.target.closest('[data-role="basemap-menu-toggle"]');
+    if(!collecting&&t&&(ev.type==='pointerdown'||ev.type==='touchstart')){
+      collecting=true;current={mode:phase===0?'standard':'overflow-visible',events:[],samples:[]};snapshot('prima-del-click');
+      setTimeout(()=>snapshot('dopo-0ms'),0);setTimeout(()=>snapshot('dopo-200ms'),200);setTimeout(()=>snapshot('dopo-1000ms'),1000);
+      setTimeout(()=>{snapshot('dopo-1500ms');displayPrompt('Il pannello Layer è apparso?', [['Sì',()=>nextStage(true)],['No',()=>nextStage(false)]]);},1500);
+    }
+    if(collecting&&current&&current.events.length<16)current.events.push({type:ev.type,role:role(ev.target),tag:ev.target&&ev.target.tagName});
+  }
+  function start(){
+    overlay=document.createElement('div');overlay.id='tmart-layer-probe';overlay.style.cssText='position:fixed;z-index:2147483647;left:8px;bottom:8px;max-width:76vw;padding:9px;background:#10151e;color:#fff;border:1px solid #7d9bd5;border-radius:9px;font:700 14px/1.3 system-ui;box-sizing:border-box';document.body.appendChild(overlay);
+    ['pointerdown','pointerup','touchstart','touchend','click'].forEach(type=>document.addEventListener(type,onEvent,true));waitForTap();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+}
+
+document.getElementById('start').addEventListener('click', async function () {
+  const button = this, status = document.getElementById('status');
+  button.disabled = true; status.textContent = 'Caricamento della versione attuale del GIS…';
+  try {
+    const response = await fetch('./coordinate_converter%20Claude.html?v=273', { cache:'no-store' });
+    if (!response.ok) throw new Error('Impossibile caricare il GIS dal server.');
+    status.textContent = 'Verifica della versione in corso…';
+    const bytes = await response.arrayBuffer();
+    const sha256 = await sourceSha256(bytes);
+    if (sha256 !== '4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a') throw new Error('Il file GIS online è cambiato: questa diagnosi è riservata alla Build 273 originale.');
+    const html = new TextDecoder('utf-8').decode(bytes);
+    if (!/const APP_BUILD_NUM\s*=\s*273\s*;/.test(html) || !html.includes('GIS-IOS-LANDSCAPE-STABILITY-A')) throw new Error('La versione online non è la Build 273 prevista.');
+    const injection = '<script>(' + mobileViewportProbe.toString() + ')(' + JSON.stringify({sha256,bytes:bytes.byteLength}) + ');<' + '/script>';
+    if (!html.includes('</head>')) throw new Error('Pagina GIS non riconosciuta.');
+    const instrumented = html.replace('</head>', injection + '</head>');
+    history.replaceState(null,'','./coordinate_converter%20Claude.html?layer-diagnosi=273');
+    document.open(); document.write(instrumented); document.close();
+  } catch (error) { status.textContent = error.message || 'Diagnosi non avviata.'; button.disabled = false; }
+});
+</script>
+</body>
+</html>
