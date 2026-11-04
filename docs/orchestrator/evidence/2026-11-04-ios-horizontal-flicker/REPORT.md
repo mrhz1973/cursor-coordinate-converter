@@ -22,6 +22,8 @@ Il controllo locale della sonda in Edge emulato ha verificato hash del file, car
 
 Il replay automatico di 30 secondi ha prodotto tutti i controlli funzionali PASS e il JSON, ma il processo è rimasto fermo nella chiusura del browser ed è stato interrotto. Il runner è stato corretto per chiudere le connessioni locali prima del browser; un successivo replay breve è terminato con exit 0. Questo limite di cleanup non è un esito Safari.
 
+La sonda statica è pubblicata sul VPS all’[indirizzo diagnostico](http://100.99.54.93:8000/diagnostica-viewport-273.html), commit `a4f9a81308ecd776c833402f058d81dc6cad65cd`, SHA-256 `15c48f830341b1237083d90a02690a0a3588e6f721bab1980f6c8b3681462380`. Il deploy ha verificato che il runtime restasse SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`, senza riavviare il servizio GIS; gli altri servizi sono rimasti invariati. Una successiva sessione SSH strict ha confermato worktree pulito e servizio attivo; dal PC la pagina risponde HTTP 200.
+
 ## Prossimo passo
 
 Raccogliere la telemetria sullo stesso iPhone mentre si verifica il tremolio. Se cambiano `scrollX` o `scrollWidth`, cercare lo scorrimento/elemento responsabile; se cambiano viewport o rettangoli, seguire gli eventi correlati; se le misure restano stabili mentre il video salta, indagare il disegno/compositing. Solo dopo la misura applicare la modifica circoscritta e ripetere la prova sul dispositivo reale.

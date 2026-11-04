@@ -7,11 +7,11 @@
 | **WORKSTREAM ATTIVO** | Oscillazione orizzontale iPhone Build 273; diagnosi su dispositivo reale |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `MOBILE-IOS-HORIZONTAL-FLICKER-273` |
-| **STATO BLOCCO** | Il video dell’utente mostra che Build 273 oscilla ancora in orizzontale su iPhone. La causa non è stabilita; nessuna correzione runtime è stata applicata. Preparata una sonda opt-in per raccogliere misure sul dispositivo reale. |
-| **GATE CORRENTE** | [Indagine orizzontale](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): il video mostra alternanza delle bande laterali; Chromium emulato non riproduce overflow root né un ciclo di ridisegni. La sonda è stata provata localmente in Edge emulato e attende pubblicazione e misura su iPhone. Safari/iPhone fisico NON VERIFICATO. |
+| **STATO BLOCCO** | Il video dell’utente mostra che Build 273 oscilla ancora in orizzontale su iPhone. La causa non è stabilita; nessuna correzione runtime è stata applicata. La sonda opt-in è pubblicata per raccogliere misure sul dispositivo reale. |
+| **GATE CORRENTE** | [Indagine orizzontale](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): il video mostra alternanza delle bande laterali; Chromium emulato non riproduce overflow root né un ciclo di ridisegni. La sonda è stata provata localmente in Edge emulato e pubblicata sul VPS; attende misura su iPhone. Safari/iPhone fisico NON VERIFICATO. |
 | **RUNTIME LIVE** | Build 273 · SHA-256 `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a` |
 | **RUNTIME CANDIDATE** | Nessuno; Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Pubblicare la pagina diagnostica statica, acquisire misure sullo stesso iPhone mentre oscilla, individuare la causa e solo allora correggere e ripetere la prova fisica. |
+| **NEXT** | Aprire su iPhone [la pagina diagnostica](http://100.99.54.93:8000/diagnostica-viewport-273.html), acquisire e copiare le misure mentre oscilla, individuare la causa e solo allora correggere e ripetere la prova fisica. |
 | **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 273; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
