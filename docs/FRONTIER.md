@@ -7,11 +7,11 @@
 | **WORKSTREAM ATTIVO** | Scala e coordinate della mappa più compatte su mobile, con possibilità di minimizzarle |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `GIS-MOBILE-MAP-READOUT-275` |
-| **STATO BLOCCO** | L'utente chiede scala e coordinate più compatte sullo schermo del telefono, con frecce per minimizzarle e priorità alle coordinate del cursore. Analisi e implementazione da avviare. |
-| **GATE CORRENTE** | [Indagine iPhone](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): l'utente conferma su iPhone la prova Build 274 con Edge e Safari. Nel test riferito il Layer è visibile e l'orizzontale è stabile; su Edge sono confermati anche scelta mappa e scorrimento dei comandi. La causa precisa del tremolio non è dimostrata. |
+| **STATO BLOCCO** | La candidata 275 rende più compatti scala, coordinate e crediti su mobile; aggiunge frecce indipendenti per scala e coordinate. QA locale in corso. |
+| **GATE CORRENTE** | [QA scala e coordinate](orchestrator/evidence/2026-11-04-mobile-scale-readout/REPORT.md): prove Edge/WebKit emulati su frecce, formati, scala, rotazione e Layer PASS. Il runner indipendente resta FAIL per limiti propri documentati; i casi critici sono stati ricontrollati separatamente. La Build 274 è stata confermata dall'utente su iPhone con Edge e Safari nei casi riportati. |
 | **RUNTIME LIVE** | Build 274 · SHA-256 `74d2db4ada570a50e59e1bde8879726dd7702bc3cee1c67922ace5da7d5e9c3b` · prova utente iPhone positiva nei casi riportati |
-| **RUNTIME CANDIDATE** | Nessuno per il nuovo blocco. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Analizzare e compattare scala/coordinate su mobile, mantenendo i dati e verificando pulsanti, posizione e possibilità di ripristino; dopo le prove appropriate pubblicare la nuova versione GIS sul VPS. |
+| **RUNTIME CANDIDATE** | Build 275 locale · SHA-256 `196b23cb090adad35129dab05dda3cefd1aa4b94516274e4007fa9dad26bde84`. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
+| **NEXT** | Pubblicare la 275 sul VPS e verificare byte HTTP e servizi; il link dell'app rimane invariato. |
 | **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 274; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
