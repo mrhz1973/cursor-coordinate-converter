@@ -8,12 +8,12 @@
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `MOBILE-IOS-HORIZONTAL-FLICKER-273` |
 | **STATO BLOCCO** | La prova fisica Edge su iPhone mostra il Layer invisibile pur aperto; con un override temporaneo della toolbar il Layer diventa visibile. Il tremolio in orizzontale resta da verificare sulla candidata. |
-| **GATE CORRENTE** | [Indagine iPhone](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): candidato 274 verificato in Edge e WebKit emulati, in attesa del deploy per la prova fisica Edge/Safari. Stabilità orizzontale sul candidato NON VERIFICATA. |
-| **RUNTIME LIVE** | Build 273 · SHA-256 `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a` |
-| **RUNTIME CANDIDATE** | Build 274 locale, SHA-256 `74d2db4ada570a50e59e1bde8879726dd7702bc3cee1c67922ace5da7d5e9c3b`: interviene su allineamento, visibilità del Layer e scroll della toolbar landscape. Il precedente candidato 274 solo header non è mai stato pubblicato ed è sostituito. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Distribuire il candidato autorizzato sul servizio GIS VPS, verificare SHA e servizi, poi controllare sullo stesso iPhone visibilità/selezione Layer e stabilità dopo rotazioni, anche in Safari. Non dichiarare risolto il tremolio prima della prova fisica. |
+| **GATE CORRENTE** | [Indagine iPhone](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): candidata 274 sul VPS dopo QA Edge/WebKit emulati e verifica SHA; in attesa della prova fisica Edge/Safari. Stabilità orizzontale sulla 274 NON VERIFICATA. |
+| **RUNTIME LIVE** | Build 274 · SHA-256 `74d2db4ada570a50e59e1bde8879726dd7702bc3cee1c67922ace5da7d5e9c3b` · candidata per verifica fisica |
+| **RUNTIME CANDIDATE** | La 274 live interviene su allineamento, visibilità del Layer e scroll della toolbar landscape. Il precedente candidato 274 solo header non è mai stato pubblicato ed è sostituito. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
+| **NEXT** | Sullo stesso iPhone controllare visibilità e selezione Layer in verticale, scorrimento dei comandi e stabilità in orizzontale dopo rotazioni, con Edge e Safari quando possibile. Non dichiarare risolto il tremolio prima della prova fisica. Se necessario raccogliere [la sonda viewport 274](http://100.99.54.93:8000/diagnostica-viewport-274.html). |
 | **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 273; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 274; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03

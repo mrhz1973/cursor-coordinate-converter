@@ -38,6 +38,14 @@ La prima esecuzione della nuova suite ha fallito su 926×359 perché la toolbar 
 
 La [sonda viewport 274](../../../../diagnostica-viewport-274.html) verifica lo SHA esatto del candidato e produce un report compatto da copiare. Replay locale touch in WebKit ed Edge: caricamento corretto, Layer aperto, campioni in entrambe le orientazioni e nessun POST della sonda o errore JS. Questi controlli non sostituiscono la prova fisica della 274 e non confermano la stabilità in Safari su iPhone.
 
+## Deploy candidato 274
+
+Il 4 novembre la candidata è stata distribuita sul servizio GIS Tailscale con commit `8792f88f68d1d8cdcd0f4528d99c4897be99265c`. Lo script ha verificato branch e stato pulito, base 273, discendenza e hash, poi ha avanzato il checkout in fast-forward. Il server statico non è stato riavviato; l'hash del runtime letto via HTTP è `74d2db4ada570a50e59e1bde8879726dd7702bc3cee1c67922ace5da7d5e9c3b`, identico al file distribuito. Proxy, GraphHopper, ORS e n8n sono risultati invariati. Il primo push GitHub ha ricevuto un errore server, senza avanzare il ramo; il successivo tentativo è riuscito e il deploy ha verificato il tip esatto.
+
+Il replay della sonda 274 tramite l'indirizzo Tailscale live è passato su WebKit e Edge emulati, con hash del runtime corretto, apertura Layer, misure in entrambe le orientazioni e nessun POST della sonda o errore JS ([esiti](viewport-274-helper-live-results.json)).
+
+La prova dell'utente sulla 274 è aperta: verificare Layer, scorrimento della colonna e stabilità in orizzontale sullo stesso iPhone, con Safari separatamente quando possibile. Il deploy è una versione di verifica, non un'attestazione di risoluzione del tremolio.
+
 ## Sonda per iPhone fisico
 
 `diagnostica-viewport-273.html` è una pagina opt-in: scarica il runtime dallo stesso server/origine, ne controlla lo SHA-256 della Build 273 e lo riapre nel documento principale con una sonda aggiunta. La sonda misura per 30 secondi dimensioni, rettangoli DOM, viewport visuale, inset ed eventi. Mostra il risultato da copiare e **non lo invia automaticamente**; il report non contiene coordinate, contenuti delle mappe o dati salvati. Il GIS viene comunque eseguito normalmente e può leggere i propri dati locali e caricare le risorse previste dalle sue impostazioni. La pagina strumentata condivide origine e storage del GIS; l’iniezione e il piccolo indicatore aggiungono un possibile effetto di osservazione, quindi la riproduzione sul dispositivo va confrontata con il video originale.
