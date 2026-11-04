@@ -4,16 +4,16 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Rifinitura portrait mobile di testata, controlli mappa e indicatori inferiori |
+| **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti; verifica iPhone della Build 276 aperta in parallelo |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
-| **BLOCCO ATTIVO** | `GIS-MOBILE-PORTRAIT-276` |
-| **STATO BLOCCO** | L'utente richiede titolo allineato a Online/Impostazioni, controlli mappa più piccoli e centrati, scala e coordinate affiancate con una sola freccia; verificare l'icona Layer. |
-| **GATE CORRENTE** | [QA scala e coordinate](orchestrator/evidence/2026-11-04-mobile-scale-readout/REPORT.md): prove Edge/WebKit emulati su frecce, formati, scala, rotazione e Layer PASS; un runner indipendente resta FAIL per limiti documentati e casi ricontrollati separatamente. Build 275 su iPhone fisico NON VERIFICATA. |
-| **RUNTIME LIVE** | Build 275 · SHA-256 `196b23cb090adad35129dab05dda3cefd1aa4b94516274e4007fa9dad26bde84` · HTTP e file VPS concordano |
-| **RUNTIME CANDIDATE** | Nessuno per il blocco mobile appena distribuito. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Attuare le correzioni portrait richieste, verificare i layout mobile/desktop e la stabilità dopo rotazione, poi distribuire la nuova versione GIS sul VPS. |
-| **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 275; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
+| **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
+| **STATO BLOCCO** | La Build 276 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
+| **GATE CORRENTE** | Build 276: QA emulata Edge/WebKit superata; verifica fisica iPhone e rotazione ancora aperta. Routing: validazione candidato e prove provider/browser ancora aperte. |
+| **RUNTIME LIVE** | Build 276 · SHA-256 `e516669a69a8da2c41b0334c42ea9a4766fa4a78380675207d0ac6460697efa6` · file e HTTP VPS concordano |
+| **RUNTIME CANDIDATE** | `candidate/build269-20261103`: contiene modifiche no-ferry, non integra le successive Build 270–276; non distribuirlo direttamente. |
+| **NEXT** | Individuare le modifiche routing del candidato, integrarle selettivamente nel runtime corrente e verificare richieste, risposte, alternative e assenza di percorso prima del rilascio. |
+| **EVIDENCE** | [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) · [Caso isolato](orchestrator/evidence/2026-10-30-routing-island-probe/report.md) |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 276 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03
