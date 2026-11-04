@@ -4,15 +4,15 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Stabilità landscape iPhone Build 273; dopo retest, routing terrestre senza ferry |
+| **WORKSTREAM ATTIVO** | Oscillazione orizzontale iPhone Build 273; diagnosi su dispositivo reale |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
-| **BLOCCO ATTIVO** | `MOBILE-IOS-LANDSCAPE-STABILITY-273` |
-| **STATO BLOCCO** | Build 273 è pubblicata su GitHub e VPS. Il confronto Edge con viewport landscape variabile ha ridotto lo scarto transitorio mappa da 17–22 px a 0 px su due profili; Layer e maniglia barra rispondono dopo la sequenza. Safari/Chrome iOS fisico restano da verificare. |
-| **GATE CORRENTE** | [Report Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md): confronto stress 844×390 e 667×375 PASS, geometria stabile, Layer raggiungibile. [QA live](orchestrator/evidence/2026-11-04-ios-landscape-stability/postdeploy-results.json): Build 273, layer e barra touch PASS su entrambi i profili, zero errori JS. Deploy strict e verifica SSH indipendente PASS: runtime e HTTP SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`; GIS active, servizi non GIS e n8n invariati. Safari/Chrome iOS reale, animazione di rotazione fisica e provider cartografici restano da verificare. |
+| **BLOCCO ATTIVO** | `MOBILE-IOS-HORIZONTAL-FLICKER-273` |
+| **STATO BLOCCO** | Il video dell’utente mostra che Build 273 oscilla ancora in orizzontale su iPhone. La causa non è stabilita; nessuna correzione runtime è stata applicata. Preparata una sonda opt-in per raccogliere misure sul dispositivo reale. |
+| **GATE CORRENTE** | [Indagine orizzontale](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): il video mostra alternanza delle bande laterali; Chromium emulato non riproduce overflow root né un ciclo di ridisegni. La sonda è stata provata localmente in Edge emulato e attende pubblicazione e misura su iPhone. Safari/iPhone fisico NON VERIFICATO. |
 | **RUNTIME LIVE** | Build 273 · SHA-256 `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a` |
 | **RUNTIME CANDIDATE** | Nessuno; Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Ricaricare [Build 273](http://100.99.54.93:8000/coordinate_converter%20Claude.html?v=273) su Safari iPhone e provare in landscape: ruotare il telefono, attendere che la barra di Safari si assesti, toccare Layer e alcuni pulsanti. Se ora è stabile, fare un controllo rapido anche in portrait e riprendere `ROUTING-LAND-ONLY-NO-FERRY-A`; se il tremolio rimane, indicare modello iPhone e versione iOS/Safari per restringere la diagnosi. |
-| **EVIDENCE** | [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [QA live Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/postdeploy-results.json) · [Diagnosi, QA e screenshot Build 272](orchestrator/evidence/2026-11-03-ios-layer-flicker/REPORT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
+| **NEXT** | Pubblicare la pagina diagnostica statica, acquisire misure sullo stesso iPhone mentre oscilla, individuare la causa e solo allora correggere e ripetere la prova fisica. |
+| **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 273; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
@@ -27,6 +27,8 @@ La QA Build 270 usava Edge Chromium touch; WebKit/Safari reale e caricamento dei
 ## Ripresa — 2026-11-04
 
 L’utente ha riferito che Build 272 su iPhone landscape oscillava e rendeva i pulsanti difficili da premere. Il confronto del codice ha isolato come ipotesi le transizioni di altezza da 180 ms aggiunte alla mappa e alla barra mentre la mappa usa `100dvh`. Build 273 rimuove solo queste transizioni. Il replay di sette altezze variabili in Edge touch ha misurato uno scarto massimo di 17,23 px (844×390) e 22 px (667×375) su Build 272, contro 0 px su Build 273; il tocco Layer e la maniglia barra sono rimasti utilizzabili. Commit `450c83188956401ce098747879195ac3b20932f4`, runtime SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`, distribuito e verificato via HTTP/SSH. Il test resta emulazione Chromium, non prova Safari fisico né la UI dinamica del browser iOS; il retest dell’utente è il gate residuo.
+
+Il successivo video dell’utente dimostra che la Build 273 oscilla ancora orizzontalmente: pagina e mappa si muovono mentre la barra del browser rimane ferma. Un confronto di geometria e listener in Chromium emulato non ha riprodotto overflow o un ciclo di ridisegno. La causa resta sconosciuta. La sonda opt-in preparata carica una copia strumentata della stessa Build 273 nello stesso origin, misura viewport/DOM per 30 secondi e presenta dati da copiare senza invio automatico. Occorre eseguirla su iPhone reale prima di scegliere una patch; non dichiarare il difetto risolto senza prova fisica della correzione.
 
 ## Checkpoint di pausa — 2026-10-30
 
