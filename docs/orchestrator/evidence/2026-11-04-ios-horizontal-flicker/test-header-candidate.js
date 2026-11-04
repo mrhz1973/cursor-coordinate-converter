@@ -6,7 +6,7 @@ const server=http.createServer((req,res)=>{const name=decodeURIComponent(new URL
 (async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const origin=`http://127.0.0.1:${server.address().port}`,results=[];
 try{for(const engine of ['webkit','edge']){
  const browser=engine==='webkit'?await webkit.launch({headless:true,executablePath:process.env.TMART_WEBKIT_EXECUTABLE || undefined}):await chromium.launch({channel:'msedge',headless:true});
- for(const build of (process.env.TMART_QUICK==='1'?['candidate']:['baseline','candidate']))for(const viewport of (process.env.TMART_QUICK==='1'?[{width:926,height:359},{width:428,height:926}]:[{width:832,height:359},{width:926,height:359},{width:428,height:926},{width:667,height:375}])){
+ for(const build of (process.env.TMART_QUICK==='1'||process.env.TMART_ONLY_CANDIDATE==='1'?['candidate']:['baseline','candidate']))for(const viewport of (process.env.TMART_QUICK==='1'?[{width:926,height:359},{width:428,height:926}]:[{width:832,height:359},{width:926,height:359},{width:428,height:926},{width:667,height:375}])){
   const ctx=await browser.newContext({...devices['iPhone 13 Pro'],viewport,screen:viewport,deviceScaleFactor:3}),page=await ctx.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort('blockedbyclient'));
   try{
    await page.goto(`${origin}/${build}.html`,{waitUntil:'domcontentloaded',timeout:60000});await page.waitForSelector('#gisMapMount [data-role="basemap-menu-toggle"]',{timeout:60000});await page.waitForTimeout(400);
@@ -27,5 +27,5 @@ try{for(const engine of ['webkit','edge']){
  }
  await browser.close();
 }}finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
-fs.writeFileSync(path.join(__dirname,process.env.TMART_QUICK==='1'?'header-layer-selection-results.json':'header-candidate-results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify(results.map(r=>({engine:r.engine,build:r.build,width:r.viewport.width,root:r.geometry&&[r.geometry.clientWidth,r.geometry.scrollWidth],iconRight:r.geometry?.iconRight,layout:r.geometry?.innerDisplay,settingsOpen:r.settingsOpen,layer:r.layer,layerSelection:r.layerSelection,pass:r.pass,error:r.error}))));
+fs.writeFileSync(path.join(__dirname,process.env.TMART_QUICK==='1'?'header-layer-selection-results.json':process.env.TMART_ONLY_CANDIDATE==='1'?'header-final-results.json':'header-candidate-results.json'),JSON.stringify(results,null,2));console.log(JSON.stringify(results.map(r=>({engine:r.engine,build:r.build,width:r.viewport.width,root:r.geometry&&[r.geometry.clientWidth,r.geometry.scrollWidth],iconRight:r.geometry?.iconRight,layout:r.geometry?.innerDisplay,settingsOpen:r.settingsOpen,layer:r.layer,layerSelection:r.layerSelection,pass:r.pass,error:r.error}))));
 })().catch(e=>{console.error(e.stack||e);server.close();process.exitCode=1;});
