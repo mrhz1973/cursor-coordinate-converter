@@ -44,7 +44,7 @@ Il 4 novembre la candidata è stata distribuita sul servizio GIS Tailscale con c
 
 Il replay della sonda 274 tramite l'indirizzo Tailscale live è passato su WebKit e Edge emulati, con hash del runtime corretto, apertura Layer, misure in entrambe le orientazioni e nessun POST della sonda o errore JS ([esiti](viewport-274-helper-live-results.json)).
 
-La prova dell'utente sulla 274 è aperta: verificare Layer, scorrimento della colonna e stabilità in orizzontale sullo stesso iPhone, con Safari separatamente quando possibile. Il deploy è una versione di verifica, non un'attestazione di risoluzione del tremolio.
+L'utente ha poi confermato la prova fisica della Build 274 sul proprio iPhone. Alla richiesta di verificare in **Edge** Layer e scelta di una mappa in verticale, due rotazioni, stabilità in orizzontale per circa 15 secondi e scorrimento dei comandi a destra, ha risposto «sì». Alla richiesta separata di verificare in **Safari** visibilità di Layer e stabilità in orizzontale, ha risposto «sì funziona». Il riscontro è positivo per i casi e il dispositivo riportati; non prova ogni dispositivo o una durata maggiore, né dimostra quale modifica sia stata la causa della cessazione del tremolio.
 
 ## Sonda per iPhone fisico
 
@@ -54,12 +54,12 @@ Il controllo locale della sonda in Edge emulato ha verificato hash del file, car
 
 Il replay automatico di 30 secondi ha prodotto tutti i controlli funzionali PASS e il JSON, ma il processo è rimasto fermo nella chiusura del browser ed è stato interrotto. Il runner è stato corretto per chiudere le connessioni locali prima del browser; un successivo replay breve è terminato con exit 0. Questo limite di cleanup non è un esito Safari.
 
-La sonda statica è pubblicata sul VPS all’[indirizzo diagnostico](http://100.99.54.93:8000/diagnostica-viewport-273.html), commit `a4f9a81308ecd776c833402f058d81dc6cad65cd`, SHA-256 `15c48f830341b1237083d90a02690a0a3588e6f721bab1980f6c8b3681462380`. Il deploy ha verificato che il runtime restasse SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`, senza riavviare il servizio GIS; gli altri servizi sono rimasti invariati. Una successiva sessione SSH strict ha confermato worktree pulito e servizio attivo; dal PC la pagina risponde HTTP 200.
+La sonda statica della 273 è stata pubblicata sul VPS all’[indirizzo diagnostico](http://100.99.54.93:8000/diagnostica-viewport-273.html), commit `a4f9a81308ecd776c833402f058d81dc6cad65cd`, SHA-256 `15c48f830341b1237083d90a02690a0a3588e6f721bab1980f6c8b3681462380`. La sonda è vincolata al runtime 273 e non si avvia ora che è live la 274. Il deploy originario aveva verificato che il runtime restasse SHA `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a`, senza riavviare il servizio GIS; gli altri servizi erano rimasti invariati.
 
 Un [replay live](live-diagnostic-smoke-results.json) in Edge touch emulato ha aperto la sonda via HTTP Tailscale, esercitato il calcolo SHA senza WebCrypto e prodotto il campo risultato senza POST o errori JS. Anche questo è un controllo del loader, non una prova fisica.
 
 ## Prossimo passo
 
-Raccogliere la telemetria sullo stesso iPhone mentre si verifica il tremolio. Se cambiano `scrollX` o `scrollWidth`, cercare lo scorrimento/elemento responsabile; se cambiano viewport o rettangoli, seguire gli eventi correlati; se le misure restano stabili mentre il video salta, indagare il disegno/compositing. Solo dopo la misura applicare la modifica circoscritta e ripetere la prova sul dispositivo reale.
+Il test fisico descritto sopra ha dato esito positivo. Conservare la distinzione tra risultato osservato e causa: se il tremolio ricompare su quel telefono, raccogliere geometria e viewport nel momento in cui si verifica. Il blocco corrente passa alla compattazione di scala e coordinate mobile richiesta successivamente dall'utente.
 
 Evidenze: [`video-edge-timeline.json`](video-edge-timeline.json), [`geometry-results.json`](geometry-results.json), [`diagnostic-smoke-results.json`](diagnostic-smoke-results.json), [`diagnostic-smoke-auto-results.json`](diagnostic-smoke-auto-results.json).
