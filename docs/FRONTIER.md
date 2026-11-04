@@ -4,14 +4,14 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Oscillazione orizzontale iPhone Build 273; diagnosi su dispositivo reale |
+| **WORKSTREAM ATTIVO** | Oscillazione orizzontale e Layer verticale su iPhone; diagnosi su dispositivo reale |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `MOBILE-IOS-HORIZONTAL-FLICKER-273` |
-| **STATO BLOCCO** | Il video dell’utente mostra che Build 273 oscilla ancora in orizzontale su iPhone. La causa non è stabilita; nessuna correzione runtime è stata applicata. La sonda opt-in è pubblicata per raccogliere misure sul dispositivo reale. |
-| **GATE CORRENTE** | [Indagine orizzontale](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): il video mostra alternanza delle bande laterali; Chromium emulato non riproduce overflow root né un ciclo di ridisegni. La sonda è stata provata localmente in Edge emulato e pubblicata sul VPS; attende misura su iPhone. Safari/iPhone fisico NON VERIFICATO. |
+| **STATO BLOCCO** | La misura fisica con Edge su iPhone ha rilevato un overflow orizzontale di 4 px; l'utente segnala tremolio iniziale e pannello Layer invisibile in verticale. La causa del tremolio e quella del Layer non sono ancora dimostrate. |
+| **GATE CORRENTE** | [Indagine iPhone](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md): l'overflow è riprodotto e corretto in un candidato locale WebKit; la sonda Layer A/B è pubblicata sul VPS e attende la prova dell'utente. Safari/iPhone fisico NON VERIFICATO. |
 | **RUNTIME LIVE** | Build 273 · SHA-256 `4d608550a63261c0d7b6d5088c6bd6d1c62c3fe521253341ccad19f99f1d996a` |
-| **RUNTIME CANDIDATE** | Nessuno; Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
-| **NEXT** | Aprire su iPhone [la pagina diagnostica](http://100.99.54.93:8000/diagnostica-viewport-273.html), acquisire e copiare le misure mentre oscilla, individuare la causa e solo allora correggere e ripetere la prova fisica. |
+| **RUNTIME CANDIDATE** | Build 274 locale, SHA-256 `e4564e6da70b462383b52ed02d2dd9afdc9d3bcbdbe60a0c63ffc92f0c1934e6` (da ricalcolare prima di ogni deploy); applica soltanto la correzione della barra. Build 269 più ampia resta preservata nel ramo `candidate/build269-20261103`. |
+| **NEXT** | Acquisire il risultato della [sonda Layer](http://100.99.54.93:8000/diagnostica-layer-273.html) su iPhone; la sonda è vincolata alla 273, quindi non sostituire il runtime prima che la prova sia completata. Integrare un'eventuale correzione basata sull'esito, poi distribuire e verificare su iPhone/Edge e Safari. |
 | **EVIDENCE** | [Indagine e sonda orizzontale Build 273](orchestrator/evidence/2026-11-04-ios-horizontal-flicker/REPORT.md) · [Diagnosi e QA Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/REPORT.md) · [Esito deploy Build 273](orchestrator/evidence/2026-11-04-ios-landscape-stability/DEPLOY-RESULT.md) · [Routing runtime](orchestrator/evidence/2026-11-03-routing-runtime-tailnet/REPORT.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`. SSH strict verificato come `root` sull’IP corretto; alias locale `ionos-n8n` punta ancora al vecchio IP e non va usato. Runtime Build 273; GIS active; proxy, GraphHopper, ORS e n8n invariati. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
