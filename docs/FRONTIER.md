@@ -4,11 +4,11 @@
 
 | Campo | Valore |
 | --- | --- |
-| **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti; verifica iPhone della Build 276 aperta in parallelo |
+| **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
-| **STATO BLOCCO** | La Build 276 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
-| **GATE CORRENTE** | Build 277: QA gesti simulati e layout superata; verifica fisica iPhone e rotazione ancora aperta. Routing: validazione candidato e prove provider/browser ancora aperte. |
+| **STATO BLOCCO** | La Build 277 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
+| **GATE CORRENTE** | Build 277: operatore conferma su iPhone zoom a due dita, pan, pulsanti e stabilità in verticale e orizzontale (2026-11-05). Routing: validazione candidato e prove provider/browser ancora aperte. |
 | **RUNTIME LIVE** | Build 277 · SHA-256 `feec09e1e09b6ef565f1bdd62afc955de941c28aaf247a7c568119f483c595c0` · file e HTTP VPS concordano |
 | **RUNTIME CANDIDATE** | `candidate/build269-20261103`: contiene modifiche no-ferry, non integra le successive Build 270–276; non distribuirlo direttamente. |
 | **NEXT** | Individuare le modifiche routing del candidato, integrarle selettivamente nel runtime corrente e verificare richieste, risposte, alternative e assenza di percorso prima del rilascio. |
