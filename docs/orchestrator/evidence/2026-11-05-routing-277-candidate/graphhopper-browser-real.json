@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-05",
+  "browser": "Chrome 156.0.8078.81",
+  "testOrigin": "https://app.invalid",
+  "page": { "status": 200, "secureContext": true },
+  "permission": { "name": "local-network", "stateDuringTest": "granted", "scope": "temporary Playwright context and synthetic origin only", "clearedAndContextClosed": true },
+  "httpDiagnostics": {
+    "graphhopperInfo": { "method": "GET", "status": 200, "cors": "passed; wildcard origin" },
+    "orsStatus": { "sent": false, "reason": "stopped after GraphHopper GET returned 2xx" }
+  },
+  "ferryCase": {
+    "methodology": "direct browser provider test; documented public synthetic pair; hiking profile",
+    "cors": { "preflights": 2, "preflightStatus": 204, "preflightOrigin": "exact synthetic origin", "postStatus": 200, "postOrigin": "wildcard", "failures": 0 },
+    "baseline": {
+      "status": 200,
+      "paths": 1,
+      "distanceMeters": 1253.9,
+      "timeMilliseconds": 714529,
+      "geometryPointCount": 11,
+      "roadEnvironment": { "fullCoverage": true, "intervalCount": 2, "intervalLabels": { "road": 1, "ferry": 1 }, "containsFerry": true },
+      "snapOffsetMeters": [13.5, 21.2],
+      "allSnapsWithin50m": true
+    },
+    "candidateNoFerry": {
+      "payloadFlags": { "profile": "hiking", "details": ["road_environment"], "chDisable": true, "ferryPriorityMultiplier": "0", "snapPreventions": ["ferry"], "avoidAreas": false },
+      "status": 200,
+      "paths": 1,
+      "distanceMeters": 1615.9,
+      "timeMilliseconds": 1326949,
+      "geometryPointCount": 58,
+      "roadEnvironment": { "fullCoverage": true, "intervalCount": 1, "intervalLabels": { "road": 1 }, "containsFerry": false },
+      "snapOffsetMeters": [13.5, 407.4],
+      "allSnapsWithin50m": false,
+      "gate": "FAIL_SNAP_DISTANCE"
+    }
+  },
+  "terrestrialPositiveCase": {
+    "methodology": "one direct browser provider POST; documented public synthetic points; hiking profile; candidate no-ferry payload",
+    "cors": { "preflightStatus": 204, "preflightOrigin": "exact synthetic origin", "postStatus": 200, "postOrigin": "wildcard", "failures": 0 },
+    "status": 200,
+    "paths": 1,
+    "elapsedMilliseconds": 199,
+    "distanceMeters": 749.7,
+    "timeMilliseconds": 552922,
+    "geometryPointCount": 15,
+    "roadEnvironment": { "fullCoverage": true, "intervalCount": 1, "intervalLabels": { "road": 1 }, "containsFerry": false },
+    "snapOffsetMeters": [1.4, 1.9],
+    "allSnapsWithin50m": true,
+    "gate": "PASS_SCOPED_PROVIDER_RESPONSE"
+  },
+  "limits": [
+    "No raw response body, requested or snapped coordinates, credentials, cookies, or secrets were saved.",
+    "The ferry case used two POSTs (baseline then candidate); the terrestrial case used one candidate POST. No retries or fallbacks.",
+    "No ORS route test, no integrated GIS UI execution, no route preview/save, and no VPS/server configuration changes.",
+    "The terrestrial case is scoped to one GraphHopper profile and one positive route; it does not resolve the ferry-case snap failure."
+  ]
+}
