@@ -7,13 +7,13 @@
 | **WORKSTREAM ATTIVO** | Routing terrestre senza traghetti |
 | **WU ATTIVA** | — (ripresa a livello blocco; nessuna WU in esecuzione) |
 | **BLOCCO ATTIVO** | `ROUTING-LAND-ONLY-NO-FERRY-A` |
-| **STATO BLOCCO** | La Build 278 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
+| **STATO BLOCCO** | La Build 279 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
 | **GATE CORRENTE** | Build 277: operatore conferma su iPhone zoom a due dita, pan, pulsanti e stabilità in verticale e orizzontale (2026-11-05). Routing: validazione candidato e prove provider/browser ancora aperte. |
-| **RUNTIME LIVE** | Build 278 · SHA-256 `8cb9d27b1a4c8b38d1432fbb0507341f1cf26473e50211d128ed9465aa41d827` · file e HTTP VPS concordano |
+| **RUNTIME LIVE** | Build 279 · SHA-256 `bb6db0079ad5376e256191ef5a32c51b21c53fab8de653454c184d41f673f253` · file e HTTP VPS concordano |
 | **RUNTIME CANDIDATE** | Staging routing sulla Build 277: SHA `8bada07bf241118fe4e32ecfd3aa214521803ab7092018e98866adfa81414116`; non distribuito. Suite mock 38+4 e 13 QA compare PASS, review indipendente senza blocker; ORS reale e UI completa restano aperti. |
 | **NEXT** | Risolvere origine HTTPS e CORS ORS preservando i servizi VPS; completare test UI con provider reali e QA geodetica prima di distribuire il candidato. |
 | **EVIDENCE** | [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) · [Caso isolato](orchestrator/evidence/2026-10-30-routing-island-probe/report.md) |
-| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 278 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
+| **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 279 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
 
 ## Ripresa — 2026-11-03
@@ -44,4 +44,8 @@ Le attività degli agenti sono state interrotte prima delle consegne finali: non
 
 ## Checkpoint 2026-11-05 — MGRS
 
-Build 278 live: correzione dei quadrati/bande MGRS, QA browser Search/Converti 10+10 e review geografica campionata PASS; non certificazione globale. Il pannello Converti nel test si apre parzialmente fuori viewport: test completati con drag reale, difetto UI da correggere. Routing candidato resta non distribuito e va riallineato a Build 278; HTTPS/ORS in sviluppo isolato.
+Build 278 live: correzione dei quadrati/bande MGRS, QA browser Search/Converti 10+10 e review geografica campionata PASS; non certificazione globale. Difetto iniziale di posizionamento Converti corretto nella Build 279; QA desktop/mobile, drag e riapertura PASS. Routing candidato resta non distribuito e va riallineato a Build 278; HTTPS/ORS in sviluppo isolato.
+
+## Checkpoint 2026-11-05 — Converti
+
+Build 279 pubblicata, apertura iniziale Converti nel viewport, QA desktop 1280x1600 e mobile 390x844/320x568 PASS; drag e posizione salvata preservati. Routing staging va riallineato a Build 279; proxy HTTPS ancora in review.
