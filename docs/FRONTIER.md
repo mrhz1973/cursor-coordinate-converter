@@ -10,8 +10,8 @@
 | **STATO BLOCCO** | La Build 277 live non contiene le difese no-ferry presenti nel candidato Build 269; non garantisce percorsi senza traghetti. Il candidato richiede integrazione e QA sul runtime corrente. |
 | **GATE CORRENTE** | Build 277: operatore conferma su iPhone zoom a due dita, pan, pulsanti e stabilità in verticale e orizzontale (2026-11-05). Routing: validazione candidato e prove provider/browser ancora aperte. |
 | **RUNTIME LIVE** | Build 277 · SHA-256 `feec09e1e09b6ef565f1bdd62afc955de941c28aaf247a7c568119f483c595c0` · file e HTTP VPS concordano |
-| **RUNTIME CANDIDATE** | `candidate/build269-20261103`: contiene modifiche no-ferry, non integra le successive Build 270–276; non distribuirlo direttamente. |
-| **NEXT** | Individuare le modifiche routing del candidato, integrarle selettivamente nel runtime corrente e verificare richieste, risposte, alternative e assenza di percorso prima del rilascio. |
+| **RUNTIME CANDIDATE** | Staging routing sulla Build 277: SHA `17491204ec21c870b41b95a355cd14ffcb6fac7e71f9e2c35c3894827bf8bba6`; non distribuito. Suite mock 38+4 e QA compare dedicate PASS; ORS reale e UI completa restano aperti. |
+| **NEXT** | Risolvere origine HTTPS e CORS ORS preservando i servizi VPS; completare test UI con provider reali e QA geodetica prima di distribuire il candidato. |
 | **EVIDENCE** | [Build 276](orchestrator/evidence/2026-11-04-mobile-portrait-276/REPORT.md) · [Routing indipendente](orchestrator/evidence/2026-10-30-routing-live-independent/REPORT.md) · [Ferry profiles](orchestrator/evidence/2026-10-30-routing-ferry-profiles/report.md) · [Caso isolato](orchestrator/evidence/2026-10-30-routing-island-probe/report.md) |
 | **VPS VERIFICATO** | IONOS `31.70.139.73`, tailnet `100.99.54.93`; Build 277 verificata via HTTP, altri servizi invariati. Non usare il vecchio alias SSH. |
 | **ALTRI WORKSTREAM** | Restano evoluzione waypoint/tracce, 3D, mobile e interoperabilità formati ATAK; audit uniformità finestre richiesto. |
