@@ -1,23 +1,23 @@
 # LAST_CURSOR_REPORT — checkpoint operativo GPT
 
-Questo rapporto mantiene il percorso canonico durante il passaggio autorizzato da Codex a GPT. È redatto da GPT; nessuna esecuzione Cursor o Codex è attribuita a questo pass.
+Il percorso canonico è mantenuto durante il passaggio autorizzato da Codex a GPT. Questo pass è stato eseguito da GPT; nessuna esecuzione Cursor o Codex viene attribuita al lavoro.
 
-## Stato
+## Accesso autonomo VPS richiesto dall'operatore
 
-**Build 281 live.** Runtime source commit `0c0f6785654dbba279774bb8569788088f0762e9`, blob `3dcff61081a2f461f8841953986ced17b058eab1`, SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62`, 11.108.861 byte. Deploy 2026-11-09 17:17:38 Europe/Rome; ABQA live conclusa 17:18:57. Checkpoint VPS `cee1c9a1e71a38fc36ba33ab717870730d70036b`.
+Preparazione tecnica PASS il 9 novembre 2026 alle 19:14:06 Europe/Rome. Remote Desktop Commander 0.3.1 installato da identità systemd dinamica non-root, home e workspace persistenti dedicati, filesystem protetto e capacità vuote. Review indipendente GPT PASS. Il tunnel ASUS è stato usato per il bootstrap iniziale; il nuovo accesso diretto non è ancora collaudato.
 
-QA candidata: 9+1 casi / 123+11 assert PASS. REVIEW GPT-SOSTITUTIVA PASS. ABQA: 3 documenti HTTPS nativi / 3 casi / 23 assert PASS, nessuna sostituzione HTML, zero routing/POST/pageerror. Sintassi 2/2 PASS. Unico restart GIS; configurazioni e servizi condivisi preservati. Il backup e i journal sono nel dossier.
+**NEXT / WAIT:** avvio di associazione, codice effettivo approvato nel browser, identificazione del nuovo device ID Linux, prove sul workspace/confini, politica ordinaria on-failure e riconnessione dopo riavvio della sola unit. Il checkpoint documenta PREPARED_NOT_STARTED. Nessuna credenziale privata o codice temporaneo è pubblicato. Non dichiarare autonomia né deploy privilegiato disponibili prima dei rispettivi gate.
 
-Il blocco routing precedente è chiuso. `GIS-WINDOW-CONTROLS-A` resta aperto esclusivamente per la QA operatore residua su telefono. Non è stato attribuito un PASS umano alla Build 281; il reviewer AI esterno resta un backstop non eseguito.
+## Stato applicativo
 
-## NEXT / WAIT
+Build 281 invariata: source commit0c0f6785654dbba279774bb8569788088f0762e9, blob3dcff61081a2f461f8841953986ced17b058eab1, SHA-256e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62, 11.108.861 byte. Il checkout VPS resta al checkpoint cee1c9a1e71a38fc36ba33ab717870730d70036b. Runtime/HEAD/stato Git, quattro PID e listener TCP invariati durante l'installazione del nuovo agente.
 
-Attendere il [caso operatore Astro](../orchestrator/evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md); dopo PASS, chiusura secondo Regola H e prosecuzione dell'audit mirato. Le prove mobili automatiche sono emulazione Edge/Windows, non Safari/iPhone fisico.
+Deploy e ABQA della 281 già PASS nel proprio dossier. `GIS-WINDOW-CONTROLS-A` resta aperto per il solo riscontro operatore Astro su telefono. Routing precedente chiuso; reviewer AI esterno backstop non eseguito.
 
-Fonte live: [FRONTIER](../FRONTIER.md). [Rapporto](../orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md) · [Inbox del pass](../orchestrator/inbox/2026-11-09_1734_windows281-live.md).
+[FRONTIER](../FRONTIER.md) · [Rapporto accesso VPS](../orchestrator/evidence/2026-11-09-vps-direct-access/REPORT.md) · [Inbox](../orchestrator/inbox/2026-11-09_1921_vps-access-prepared.md) · [Rilascio 281](../orchestrator/evidence/2026-11-09-gis-window-controls-281/REPORT.md).
 
 ## F3
 
-`real_task_commit = c6be9e7134282b31ce0f0e90d84264feb7ca3441`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
+`real_task_commit = 2137bbbecb869236cfaade368b43d329c4742cd6`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
 
-Task reale pubblicato/verificato il 2026-11-09T16:32:55.726328+00:00. Non aggiungere un commit per riportare l'hash di questo autosync: verifica del proprio push, HEAD finale e tree sono esterne.
+Task reale pubblicato e verificato il 2026-11-09T19:20:15.957038+01:00. Il risultato del proprio push/final HEAD è esterno; nessun commit aggiuntivo di auto-riferimento.

@@ -1,11 +1,13 @@
 # Ultimo checkpoint orchestratore
 
-Stato vivo: [FRONTIER](../FRONTIER.md). **9 novembre 2026 — Build 281 live, deploy e ABQA PASS.**
+Stato vivo: [FRONTIER](../FRONTIER.md). **9 novembre 2026 — accesso autonomo VPS preparato; associazione e collaudo diretto attesi.**
 
-Il blocco routing 280 è chiuso dopo la conferma dei tre casi. Il nuovo bundle corregge nome accessibile Converti, Escape Guida/Converti e geometria mobile Astro. Sintassi 2/2, QA candidata 9+1 casi / 123+11 assert, REVIEW GPT-SOSTITUTIVA e deploy tecnico PASS; ABQA sulla vera risposta HTTPS: 3 documenti, 3 casi e 23 assert PASS. Runtime SHA-256 `e8bd8c1d354919064cfd09033f97fe294f366d34c12f1e92dc1d5a3bcd38ca62`, 11.108.861 byte.
+La richiesta dell'operatore di lavorare senza computer acceso ha avviato la preparazione di Remote Desktop Commander 0.3.1 sul VPS. Installazione non-root con DynamicUser e workspace dedicato PASS alle 19:14:06 Europe/Rome. Review statica indipendente GPT PASS. Il bootstrap è passato temporaneamente dal tunnel ASUS ancora disponibile. Runtime, repository, quattro servizi e listener TCP sono rimasti identici.
 
-**Gate residuo:** un solo riscontro umano su Astro nel telefono dell'operatore. Nessuna QA umana della 281 inferita dalla conferma routing. Backstop AI esterno non eseguito, distinto dalla review GPT sostitutiva. Il prossimo passo è [il controllo operatore mirato](evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md).
+**NEXT accesso:** avviare la nuova unit, consegnare il codice effettivo all'operatore, completare il pairing con il medesimo account del connettore; poi verificare direttamente il nuovo ID Linux, i confini e la persistenza dopo riavvio. Il codice temporaneo e i token non vengono pubblicati in Git. Nessun PASS di autonomia anticipato e nessuna abilitazione implicita del deploy privilegiato.
 
-[Riepilogo completo](inbox/2026-11-09_1734_windows281-live.md) · [Rapporto ed evidenze](evidence/2026-11-09-gis-window-controls-281/REPORT.md).
+**Gate applicativo separato:** Build 281 live, deploy e ABQA già PASS; resta il [riscontro Astro su telefono](evidence/2026-11-09-gis-window-controls-281/OPERATOR-CHECK-281.md). Routing precedente chiuso; backstop AI esterno non eseguito.
 
-`real_task_commit = c6be9e7134282b31ce0f0e90d84264feb7ca3441`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
+[Rapporto accesso VPS](evidence/2026-11-09-vps-direct-access/REPORT.md) · [Inbox](inbox/2026-11-09_1921_vps-access-prepared.md) · [Rilascio 281](evidence/2026-11-09-gis-window-controls-281/REPORT.md).
+
+`real_task_commit = 2137bbbecb869236cfaade368b43d329c4742cd6`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
