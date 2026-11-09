@@ -1,11 +1,11 @@
 # Ultimo checkpoint orchestratore
 
-Stato vivo: [FRONTIER](../FRONTIER.md). **9 novembre 2026 — HTTPS 443 e Build 280 live.**
+Stato vivo: [FRONTIER](../FRONTIER.md). **9 novembre 2026 — QA operatore routing280 acquisita.**
 
-Pacchetto infrastrutturale applicato dopo approvazione specifica. Build 280 SHA `70553e5270ad7049ae8c762c97abded9f2cd3d5fc986a776748b518867a7ffde` pubblicata e distribuita; HTTP/HTTPS/file VPS concordi. Gate tecnici e Automated Browser QA sulla pagina live PASS; provider reali verificati su tutti i 7 profili prima del deploy e confronto MTB dopo il deploy. Solo GIS riavviato durante il deploy runtime.
+L'operatore ha confermato i tre casi residui; attestazione aggregata registrata, senza inventare browser, dispositivo o località. Il blocco routing è chiuso secondo OM Regola H sul percorso REVIEW GPT-SOSTITUTIVA già loggato; review AI esterna non eseguita, backstop quando disponibile. Runtime Build280 e servizi invariati.
 
-**Restano QA operatore sul territorio/telefono reale e review esterna post-hoc.** Nessun FINITO o PASS operatore. HTTP precedente e HTTPS hanno archivi browser separati, senza migrazione automatica. Codex e Cursor NOT_RUN.
+Avviato l'audit dell'uniformità delle finestre già richiesto: inventario statico e riproduzione mirata nel browser, nessun nuovo candidato runtime. Pubblicazione del task riuscita dal nuovo bare isolato su ASUSDESKTOP dopo il mancato riscontro del primo collegamento; nessun checkout preesistente modificato.
 
-[Riepilogo completo](inbox/2026-11-09_1448_https443-build280-live.md) · [Evidenze](evidence/2026-11-09-https443-release-280/REPORT.md) · [Tre casi umani residui](evidence/2026-11-09-https443-release-280/QA-OPERATORE.md).
+[Riepilogo completo](inbox/2026-11-09_1608_routing280-operator-closure.md) · [Attestazione e metodo](evidence/2026-11-09-routing-280-operator-closure/REPORT.md).
 
-`real_task_commit = fcca5cdf53e355c397a365fb15d77d729691bcf7`; commit runtime `c33f58c956e9630b03f9ff86eb35eccd35879a4a`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
+`real_task_commit = 1a2a0a10d9db9aec4dc74ea8ba2a6b6dde1d45f8`; `current_report_container = PENDING_SELF_REFERENCE`; esito del proprio autosync e HEAD finale `EXTERNAL_ONLY`.
